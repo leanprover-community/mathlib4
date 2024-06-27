@@ -3,7 +3,7 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
+import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.Data.Fin.Tuple.Reflection
 
@@ -11,13 +11,11 @@ import Mathlib.Data.Fin.Tuple.Reflection
 # Torsion points on Weierstrass curves
 -/
 
-open Polynomial
+open Pointwise Polynomial
 
 universe u v
 
 namespace MonoidHom
-
-open scoped Pointwise
 
 variable {G : Type u} [Group G] {H : Type v} [Group H] (f : G →* H)
 
@@ -46,105 +44,120 @@ namespace WeierstrassCurve
 
 variable {R : Type u} [CommRing R] {F : Type v} [Field F]
 
+section DivisionPolynomial
+
+variable {W : WeierstrassCurve R}
+
+lemma evalEval_ψ₂_sq {x y : R} (h : W.toAffine.Equation x y) :
+    W.ψ₂.evalEval x y ^ 2 = W.Ψ₂Sq.eval x := by
+  rw [← AdjoinRoot.evalEval_mk h, ← map_pow, Affine.CoordinateRing.mk_ψ₂_sq,
+    AdjoinRoot.evalEval_mk h, evalEval_C]
+
+lemma evalEval_Ψ_sq (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
+    (W.Ψ n).evalEval x y ^ 2 = (W.ΨSq n).eval x := by
+  rw [← AdjoinRoot.evalEval_mk h, ← map_pow, Affine.CoordinateRing.mk_Ψ_sq,
+    AdjoinRoot.evalEval_mk h, evalEval_C]
+
+lemma evalEval_ψ (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
+    (W.ψ n).evalEval x y = (W.Ψ n).evalEval x y := by
+  rw [← AdjoinRoot.evalEval_mk h, Affine.CoordinateRing.mk_ψ, AdjoinRoot.evalEval_mk h]
+
+lemma evalEval_φ (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
+    (W.φ n).evalEval x y = (W.Φ n).eval x := by
+  rw [← AdjoinRoot.evalEval_mk h, Affine.CoordinateRing.mk_φ, AdjoinRoot.evalEval_mk h, evalEval_C]
+
+noncomputable instance [IsDomain R] (h : (4 : R) ≠ 0) : Fintype {x : R // W.Ψ₂Sq.eval x = 0} :=
+  @Fintype.ofFinite _ <| finite_setOf_isRoot <| W.Ψ₂Sq_ne_zero h
+
+noncomputable instance [IsDomain R] {n : ℤ} (h : (n : R) ≠ 0) :
+    Fintype {x : R // (W.ΨSq n).eval x = 0} :=
+  @Fintype.ofFinite _ <| finite_setOf_isRoot <| W.ΨSq_ne_zero h
+
+noncomputable instance [IsDomain R] (n : ℤ) : Fintype {x : R // (W.Φ n).eval x = 0} :=
+  @Fintype.ofFinite _ <| finite_setOf_isRoot <| W.Φ_ne_zero n
+
 protected noncomputable def ω (W : WeierstrassCurve R) (n : ℤ) : R[X][Y] :=
   sorry
 
-namespace Affine
+end DivisionPolynomial
 
-namespace Point
+namespace Affine.Point
 
 variable (W' : Affine R) (W : Affine F)
 
-def equivOptionSubtypeFun (p : W'.Point → Prop) :
-    {P : W'.Point // p P} → Option {xy : R × R // ∃ h : W'.Nonsingular xy.1 xy.2, p <| some h}
-  | ⟨zero, _⟩ => none
-  | ⟨@some _ _ _ x y h, ph⟩ => .some ⟨⟨x, y⟩, h, ph⟩
-
 @[simps]
-def equivOptionSubtype {p : W'.Point → Prop} (p0 : p 0) :
-    {P : W'.Point // p P} ≃ Option {xy : R × R // ∃ h : W'.Nonsingular xy.1 xy.2, p <| some h} where
-  toFun := equivOptionSubtypeFun W' p
+def equivNonsingularSubtype {p : W'.Point → Prop} (p0 : p 0) : {P : W'.Point // p P} ≃
+    WithZero {xy : R × R // ∃ h : W'.Nonsingular xy.1 xy.2, p <| some h} where
+  toFun P := match P with
+    | ⟨zero, _⟩ => none
+    | ⟨@some _ _ _ x y h, ph⟩ => .some ⟨⟨x, y⟩, h, ph⟩
   invFun P := P.casesOn ⟨0, p0⟩ fun xy => ⟨some xy.property.choose, xy.property.choose_spec⟩
   left_inv := by rintro (_ | _) <;> rfl
   right_inv := by rintro (_ | _) <;> rfl
 
-lemma equivOptionSubtype_zero {p : W'.Point → Prop} (p0 : p 0) :
-    equivOptionSubtype W' p0 ⟨0, p0⟩ = none :=
+lemma equivNonsingularSubtype_zero {p : W'.Point → Prop} (p0 : p 0) :
+    equivNonsingularSubtype W' p0 ⟨0, p0⟩ = none :=
   rfl
 
 variable {W'} in
-lemma equivOptionSubtype_some {x y : R} (h : W'.Nonsingular x y) {p : W'.Point → Prop} (p0 : p 0)
-    (ph : p <| some h) : equivOptionSubtype W' p0 ⟨some h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ :=
-  rfl
-
-lemma equivOptionSubtype_symm_none {p : W'.Point → Prop} (p0 : p 0) :
-    (equivOptionSubtype W' p0).symm none = ⟨0, p0⟩ :=
-  rfl
-
-variable {W'} in
-lemma equivOptionSubtype_symm_some {x y : R} (h : W'.Nonsingular x y) {p : W'.Point → Prop}
+lemma equivNonsingularSubtype_some {x y : R} (h : W'.Nonsingular x y) {p : W'.Point → Prop}
     (p0 : p 0) (ph : p <| some h) :
-    (equivOptionSubtype W' p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨some h, ph⟩ :=
+    equivNonsingularSubtype W' p0 ⟨some h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ :=
+  rfl
+
+lemma equivNonsingularSubtype_symm_none {p : W'.Point → Prop} (p0 : p 0) :
+    (equivNonsingularSubtype W' p0).symm none = ⟨0, p0⟩ :=
+  rfl
+
+variable {W'} in
+lemma equivNonsingularSubtype_symm_some {x y : R} (h : W'.Nonsingular x y) {p : W'.Point → Prop}
+    (p0 : p 0) (ph : p <| some h) :
+    (equivNonsingularSubtype W' p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨some h, ph⟩ :=
   rfl
 
 @[simps!]
-def equivOption : W'.Point ≃ Option {xy : R × R // W'.Nonsingular xy.1 xy.2} :=
-  (Equiv.Set.univ W'.Point).symm.trans <| (equivOptionSubtype W' trivial).trans
+def equivNonsingular : W'.Point ≃ WithZero {xy : R × R // W'.Nonsingular xy.1 xy.2} :=
+  (Equiv.Set.univ W'.Point).symm.trans <| (equivNonsingularSubtype W' trivial).trans
     (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
 
-lemma equivOption_zero : equivOption W' 0 = none :=
+lemma equivNonsingular_zero : equivNonsingular W' 0 = none :=
   rfl
 
 variable {W'} in
-lemma equivOption_some {x y : R} (h : W'.Nonsingular x y) :
-    equivOption W' (some h) = .some ⟨⟨x, y⟩, h⟩ := by
+lemma equivNonsingular_some {x y : R} (h : W'.Nonsingular x y) :
+    equivNonsingular W' (some h) = .some ⟨⟨x, y⟩, h⟩ := by
   rfl
 
-lemma equivOption_symm_none : (equivOption W').symm none = 0 :=
+lemma equivNonsingular_symm_none : (equivNonsingular W').symm none = 0 :=
   rfl
 
 variable {W'} in
-lemma equivOption_symm_some {x y : R} (h : W'.Nonsingular x y) :
-    (equivOption W').symm (.some ⟨⟨x, y⟩, h⟩) = some h :=
+lemma equivNonsingular_symm_some {x y : R} (h : W'.Nonsingular x y) :
+    (equivNonsingular W').symm (.some ⟨⟨x, y⟩, h⟩) = some h :=
   rfl
 
-def zsmulKerEquivOption (n : ℤ) : (zsmulAddGroupHom n : W.Point →+ W.Point).ker ≃
-    Option {xy : F × F | ∃ h : W.Nonsingular xy.1 xy.2, n • some h = 0} :=
-  equivOptionSubtype W <| smul_zero n
+def zsmulKerEquivNonsingular (n : ℤ) : (zsmulAddGroupHom n : W.Point →+ W.Point).ker ≃
+    WithZero {xy : F × F // ∃ h : W.Nonsingular xy.1 xy.2, n • some h = 0} :=
+  equivNonsingularSubtype W <| smul_zero n
 
-lemma zsmulKerEquivOption_zero (n : ℤ) : zsmulKerEquivOption W n 0 = none :=
-  rfl
-
-variable {W} in
-lemma zsmulKerEquivOption_some {n : ℤ} {x y : F} (h : W.Nonsingular x y) (hn : n • some h = 0) :
-    zsmulKerEquivOption W n ⟨some h, hn⟩ = .some ⟨⟨x, y⟩, h, hn⟩ :=
-  rfl
-
-lemma zsmulKerEquivOption_symm_zero (n : ℤ) : (zsmulKerEquivOption W n).symm none = 0 :=
+lemma zsmulKerEquivNonsingular_zero (n : ℤ) : zsmulKerEquivNonsingular W n ⟨0, zero_mem _⟩ = none :=
   rfl
 
 variable {W} in
-lemma zsmulKerEquivOption_symm_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
-    (hn : n • some h = 0) : (zsmulKerEquivOption W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨some h, hn⟩ :=
+lemma zsmulKerEquivNonsingular_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
+    (hn : n • some h = 0) : zsmulKerEquivNonsingular W n ⟨some h, hn⟩ = .some ⟨⟨x, y⟩, h, hn⟩ :=
   rfl
 
-end Point
+lemma zsmulKerEquivNonsingular_symm_none (n : ℤ) : (zsmulKerEquivNonsingular W n).symm none = 0 :=
+  rfl
 
-end Affine
+variable {W} in
+lemma zsmulKerEquivNonsingular_symm_some {n : ℤ} {x y : F} (h : W.Nonsingular x y)
+    (hn : n • some h = 0) :
+    (zsmulKerEquivNonsingular W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨some h, hn⟩ :=
+  rfl
 
-lemma evalEval_Ψ_sq (W : WeierstrassCurve R) (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
-    (W.Ψ n).evalEval x y ^ 2 = (W.ΨSq n).eval x := by
-  rw [← AdjoinRoot.evalEval_mk h, ← map_pow, Affine.CoordinateRing.mk_Ψ_sq,
-    AdjoinRoot.evalEval_mk h, Polynomial.evalEval_C]
-
-lemma evalEval_ψ (W : WeierstrassCurve R) (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
-    (W.ψ n).evalEval x y = (W.Ψ n).evalEval x y := by
-  rw [← AdjoinRoot.evalEval_mk h, Affine.CoordinateRing.mk_ψ, AdjoinRoot.evalEval_mk h]
-
-lemma evalEval_φ (W : WeierstrassCurve R) (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
-    (W.φ n).evalEval x y = (W.Φ n).eval x := by
-  rw [← AdjoinRoot.evalEval_mk h, Affine.CoordinateRing.mk_φ, AdjoinRoot.evalEval_mk h,
-    Polynomial.evalEval_C]
+end Affine.Point
 
 namespace Jacobian
 
@@ -210,69 +223,71 @@ lemma toAffineEquivSubtype_symm_some {x y : F} (h : W.NonsingularLift ⟦![x, y,
 
 variable (W) in
 @[simps!]
-noncomputable def equivOptionSubtype {p : W.Point → Prop} (p0 : p 0) : {P : W.Point // p P} ≃
-    Option {xy : F × F // ∃ h : W.NonsingularLift ⟦![xy.1, xy.2, 1]⟧, p <| mk h} :=
-  ((toAffineEquivSubtype p).trans <| Affine.Point.equivOptionSubtype W p0).trans
+noncomputable def equivNonsingularSubtype {p : W.Point → Prop} (p0 : p 0) : {P : W.Point // p P} ≃
+    WithZero {xy : F × F // ∃ h : W.NonsingularLift ⟦![xy.1, xy.2, 1]⟧, p <| mk h} :=
+  ((toAffineEquivSubtype p).trans <| Affine.Point.equivNonsingularSubtype W p0).trans
     (Equiv.setCongr <| Set.ext fun _ => by simpa only [← nonsingular_some] using by rfl).optionCongr
 
-lemma equivOptionSubtype_zero {p : W.Point → Prop} (p0 : p 0) :
-    equivOptionSubtype W p0 ⟨0, p0⟩ = none := by
-  rw [equivOptionSubtype_apply, toAffineEquivSubtype_zero]
+lemma equivNonsingularSubtype_zero {p : W.Point → Prop} (p0 : p 0) :
+    equivNonsingularSubtype W p0 ⟨0, p0⟩ = none := by
+  rw [equivNonsingularSubtype_apply, toAffineEquivSubtype_zero]
   rfl
 
-lemma equivOptionSubtype_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧) {p : W.Point → Prop}
-    (p0 : p 0) (ph : p <| mk h) : equivOptionSubtype W p0 ⟨mk h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ := by
-  rw [equivOptionSubtype_apply, toAffineEquivSubtype_some]
-  rfl
-
-lemma equivOptionSubtype_symm_none {p : W.Point → Prop} (p0 : p 0) :
-    (equivOptionSubtype W p0).symm none = ⟨0, p0⟩ :=
-  rfl
-
-lemma equivOptionSubtype_symm_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧)
+lemma equivNonsingularSubtype_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧)
     {p : W.Point → Prop} (p0 : p 0) (ph : p <| mk h) :
-    (equivOptionSubtype W p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨mk h, ph⟩ :=
+    equivNonsingularSubtype W p0 ⟨mk h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ := by
+  rw [equivNonsingularSubtype_apply, toAffineEquivSubtype_some]
+  rfl
+
+lemma equivNonsingularSubtype_symm_none {p : W.Point → Prop} (p0 : p 0) :
+    (equivNonsingularSubtype W p0).symm none = ⟨0, p0⟩ :=
+  rfl
+
+lemma equivNonsingularSubtype_symm_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧)
+    {p : W.Point → Prop} (p0 : p 0) (ph : p <| mk h) :
+    (equivNonsingularSubtype W p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨mk h, ph⟩ :=
   rfl
 
 variable (W) in
 @[simps!]
-noncomputable def equivOption : W.Point ≃ Option {xy : F × F // W.Nonsingular ![xy.1, xy.2, 1]} :=
-  (Equiv.Set.univ W.Point).symm.trans <| (equivOptionSubtype W trivial).trans
+noncomputable def equivNonsingular :
+    W.Point ≃ WithZero {xy : F × F // W.Nonsingular ![xy.1, xy.2, 1]} :=
+  (Equiv.Set.univ W.Point).symm.trans <| (equivNonsingularSubtype W trivial).trans
     (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
 
-lemma equivOption_zero : equivOption W 0 = none := by
-  erw [equivOption_apply, toAffineEquivSubtype_zero]
+lemma equivNonsingular_zero : equivNonsingular W 0 = none := by
+  erw [equivNonsingular_apply, toAffineEquivSubtype_zero]
   rfl
 
-lemma equivOption_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧) :
-    equivOption W (mk h) = .some ⟨⟨x, y⟩, h⟩ := by
-  erw [equivOption_apply, toAffineEquivSubtype_some]
+lemma equivNonsingular_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧) :
+    equivNonsingular W (mk h) = .some ⟨⟨x, y⟩, h⟩ := by
+  erw [equivNonsingular_apply, toAffineEquivSubtype_some]
   rfl
 
-lemma equivOption_symm_none : (equivOption W).symm none = 0 :=
+lemma equivNonsingular_symm_none : (equivNonsingular W).symm none = 0 :=
   rfl
 
-lemma equivOption_symm_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧) :
-    (equivOption W).symm (.some ⟨⟨x, y⟩, h⟩) = mk h :=
+lemma equivNonsingular_symm_some {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧) :
+    (equivNonsingular W).symm (.some ⟨⟨x, y⟩, h⟩) = mk h :=
   rfl
 
 variable (W) in
-noncomputable def zsmulKerEquivOption (n : ℤ) : (zsmulAddGroupHom n : W.Point →+ W.Point).ker ≃
-    Option {xy : F × F | ∃ h : W.NonsingularLift ⟦![xy.1, xy.2, 1]⟧, n • mk h = 0} :=
-  equivOptionSubtype W <| smul_zero n
+noncomputable def zsmulKerEquivNonsingular (n : ℤ) : (zsmulAddGroupHom n : W.Point →+ W.Point).ker ≃
+    WithZero {xy : F × F // ∃ h : W.NonsingularLift ⟦![xy.1, xy.2, 1]⟧, n • mk h = 0} :=
+  equivNonsingularSubtype W <| smul_zero n
 
-lemma zsmulKerEquivOption_zero (n : ℤ) : zsmulKerEquivOption W n 0 = none :=
-  equivOptionSubtype_zero _
+lemma zsmulKerEquivNonsingular_zero (n : ℤ) : zsmulKerEquivNonsingular W n ⟨0, zero_mem _⟩ = none :=
+  equivNonsingularSubtype_zero _
 
-lemma zsmulKerEquivOption_some {n : ℤ} {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧)
-    (hn : n • mk h = 0) : zsmulKerEquivOption W n ⟨mk h, hn⟩ = .some ⟨⟨x, y⟩, h, hn⟩ :=
-  equivOptionSubtype_some ..
+lemma zsmulKerEquivNonsingular_some {n : ℤ} {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧)
+    (hn : n • mk h = 0) : zsmulKerEquivNonsingular W n ⟨mk h, hn⟩ = .some ⟨⟨x, y⟩, h, hn⟩ :=
+  equivNonsingularSubtype_some ..
 
-lemma zsmulKerEquivOption_symm_zero (n : ℤ) : (zsmulKerEquivOption W n).symm none = 0 :=
+lemma zsmulKerEquivNonsingular_symm_none (n : ℤ) : (zsmulKerEquivNonsingular W n).symm none = 0 :=
   rfl
 
-lemma zsmulKerEquivOption_symm_some {n : ℤ} {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧)
-    (hn : n • mk h = 0) : (zsmulKerEquivOption W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨mk h, hn⟩ :=
+lemma zsmulKerEquivNonsingular_symm_some {n : ℤ} {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]⟧)
+    (hn : n • mk h = 0) : (zsmulKerEquivNonsingular W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨mk h, hn⟩ :=
   rfl
 
 lemma nonsingular_zsmul (n : ℤ) (P : W.Point) : W.NonsingularLift (n • P).point := by
@@ -291,21 +306,6 @@ lemma zsmul_eq_zero_iff (n : ℤ) {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]
     n • mk h = 0 ↔ (W.ψ n).evalEval x y = 0 := by
   rw [Point.ext_iff, zsmul, zero_point, Quotient.eq]
   exact equiv_zero_iff_Z_eq_zero <| zsmul n h ▸ nonsingular_zsmul n (mk h)
-
-noncomputable def optionOfZSMulKer {n : ℤ} (P : (zsmulAddGroupHom n : W.Point →+ W.Point).ker) :
-    Option {xy : F × F | (W.ψ n).evalEval xy.1 xy.2 = 0} :=
-  (zsmulKerEquivOption W n P).map fun xy =>
-    by exact ⟨xy, (zsmul_eq_zero_iff n xy.property.choose).mp xy.property.choose_spec⟩
-
-lemma optionOfZSMulKer_injective (n : ℤ) : (@optionOfZSMulKer _ _ W n).Injective :=
-  (Option.map_injective <| by rintro ⟨_, _⟩ ⟨_, _⟩; simp only [Subtype.mk.injEq, imp_self]).comp
-    (zsmulKerEquivOption W n).injective
-
-instance (n : ℤ) : Fintype {xy : F × F | (W.ψ n).evalEval xy.1 xy.2 = 0} := by
-  sorry
-
-noncomputable instance (n : ℤ) : Fintype (zsmulAddGroupHom n : W.Point →+ W.Point).ker :=
-  Fintype.ofInjective optionOfZSMulKer <| optionOfZSMulKer_injective n
 
 end Point
 
