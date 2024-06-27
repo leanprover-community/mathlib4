@@ -130,6 +130,7 @@ lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 
   · rw [binaryEntropy_eq']
     cases h <;> simp [*]
 
+-- TODO find home or inline
 lemma zero_lt_log_two : 0 < log 2 := by
   exact (log_pos_iff zero_lt_two).mpr one_lt_two
 
@@ -603,12 +604,9 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
           rw [this] at hy
           linarith
 
-theorem extracted_1 {q : ℕ} {x : ℝ}
-    (h : DifferentiableAt ℝ (deriv (qaryEntropy q)) x)
-    (contAt : ContinuousAt (deriv (qaryEntropy q)) x) (xis1 : x = 1) :
-    ¬ContinuousAt (deriv (qaryEntropy q)) x := by
+lemma not_continuousAt_deriv_qaryEntropy_one {q : ℕ} :
+    ¬ContinuousAt (deriv (qaryEntropy q)) 1 := by
   apply not_continuousAt_of_tendsto_nhdsWithin_Iio_atBot
-  rw [xis1]
   have asdf : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[<] 1) atBot := by
     have : (fun (x:ℝ) ↦ log (q - 1) + (1 - x).log - x.log)
       = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by
@@ -629,12 +627,9 @@ theorem extracted_1 {q : ℕ} {x : ℝ}
     · simp_all
       linarith [two_inv_lt_one (α:=ℝ)]
 
-private lemma extracted_2 {q : ℕ} {x : ℝ}
-  (h : DifferentiableAt ℝ (deriv (qaryEntropy q)) x)
-  (contAt : ContinuousAt (deriv (qaryEntropy q)) x) (xis0 : x = 0) :
-  ¬ContinuousAt (deriv (qaryEntropy q)) x := by
+lemma not_continuousAt_deriv_qaryEntropy_zero {q : ℕ} :
+    ¬ContinuousAt (deriv (qaryEntropy q)) 0 := by
   apply not_continuousAt_of_tendsto_nhdsWithin_Ioi_atTop
-  rw [xis0]
   have asdf : Tendsto (fun x ↦ log (q - 1) + log (1 - x) - log x) (𝓝[>] 0) atTop := by
     have : (fun (x:ℝ) ↦ log (q - 1) + (1 - x).log - x.log)
       = (fun x ↦ log (q - 1) + ((1 - x).log - x.log)) := by
@@ -658,7 +653,7 @@ private lemma extracted_2 {q : ℕ} {x : ℝ}
 lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
     deriv^[2] (qaryEntropy q) x = -1 / (x * (1 - x)) := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, Function.comp_apply]
-  by_cases is_x_where_nondiff : x ≠ 0 ∧ x ≠ 1
+  by_cases is_x_where_nondiff : x ≠ 0 ∧ x ≠ 1  -- normal case
   · obtain ⟨h, hh⟩ := is_x_where_nondiff
     suffices ∀ᶠ y in (𝓝 x),
         deriv (fun x ↦ (qaryEntropy q) x) y = log (q - 1) + log (1 - y) - log y by
@@ -675,6 +670,7 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
       · exact differentiableAt_log h
     filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh]
       with y h h2 using deriv_qaryEntropy h h2
+  -- Pathological case where we use junk value (because function not differentiable)
   · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
     rw [deriv_zero_of_not_differentiableAt]
     simp_all only [ne_eq, not_and, Decidable.not_not]
@@ -684,8 +680,12 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
     · intro h
       have contAt := h.continuousAt
       cases this with
-      | inl xis0 => exact (extracted_2 h contAt xis0) contAt
-      | inr xis1 => exact (extracted_1 h contAt xis1) contAt
+      | inl xis0 =>
+        rw [xis0] at contAt
+        exact not_continuousAt_deriv_qaryEntropy_zero contAt
+      | inr xis1 =>
+        rw [xis1] at contAt
+        exact not_continuousAt_deriv_qaryEntropy_one contAt
 
 lemma deriv2_binaryEntropy {x : ℝ} : deriv^[2] binaryEntropy x = -1 / (x * (1-x)) :=
   deriv2_qaryEntropy
