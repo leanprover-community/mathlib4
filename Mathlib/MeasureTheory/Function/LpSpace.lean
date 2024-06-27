@@ -11,6 +11,7 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Measure.OpenPos
+import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Order.Filter.IndicatorFunction
@@ -674,10 +675,12 @@ theorem memℒp_indicator_iff_restrict (hs : MeasurableSet s) :
 
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
 `μ.restrict s` are the same. -/
-theorem snorm_restrict_eq {s : Set α} (hs : MeasurableSet s) (hsf : f.support ⊆ s) :
+theorem snorm_restrict_eq [SFinite μ] {s : Set α} (hsf : f.support ⊆ s) :
     snorm f p (μ.restrict s) = snorm f p μ := by
+  replace hsf := hsf.trans <| subset_toMeasurable μ s
   simp_rw [Function.support_subset_iff', ← Set.indicator_apply_eq_self] at hsf
-  simp_rw [← snorm_indicator_eq_snorm_restrict hs, funext hsf]
+  simp_rw [← μ.restrict_toMeasurable_of_sFinite s,
+    ← snorm_indicator_eq_snorm_restrict (measurableSet_toMeasurable μ s), funext hsf]
 
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/

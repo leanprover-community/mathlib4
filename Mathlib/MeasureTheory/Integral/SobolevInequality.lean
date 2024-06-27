@@ -624,19 +624,16 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F] {p q : ℝ≥0} (h
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
   use t * C
   intro u hu h2u
-  let s' := toMeasurable μ s
-  have hs' : MeasurableSet s' := measurableSet_toMeasurable μ s
-  have hus' : support u ⊆ s' := h2u.trans <| subset_toMeasurable μ s
-  calc snorm u q μ = snorm u q (μ.restrict s') := by rw [snorm_restrict_eq hs' hus']
-    _ ≤ snorm u p' (μ.restrict s') * t := by
+  calc snorm u q μ = snorm u q (μ.restrict s) := by rw [snorm_restrict_eq h2u]
+    _ ≤ snorm u p' (μ.restrict s) * t := by
         convert snorm_le_snorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
         rw [← ENNReal.coe_rpow_of_nonneg]
-        · simp [s', ENNReal.coe_toNNReal hs.measure_lt_top.ne]
+        · simp [ENNReal.coe_toNNReal hs.measure_lt_top.ne]
         · rw [one_div, one_div]
           norm_cast
           rw [hp']
           simpa using hpq
-    _ = snorm u p' μ * t := by rw [snorm_restrict_eq hs' hus']
+    _ = snorm u p' μ * t := by rw [snorm_restrict_eq h2u]
     _ ≤ (C * snorm (fderiv ℝ u) p μ) * t := by
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
