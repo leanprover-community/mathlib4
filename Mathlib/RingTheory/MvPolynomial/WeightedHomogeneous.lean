@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.DirectSum.Decomposition
 
 #align_import ring_theory.mv_polynomial.weighted_homogeneous from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -478,6 +479,50 @@ theorem weightedHomogeneousComponent_weighted_homogeneous_polynomial [DecidableE
     · rfl
     · simp only [coeff_zero]
 #align mv_polynomial.weighted_homogeneous_component_weighted_homogeneous_polynomial MvPolynomial.weightedHomogeneousComponent_weighted_homogeneous_polynomial
+
+theorem weightedHomogeneousComponent_of_weighted_homogeneous_polynomial_same
+    (m : M) (p : MvPolynomial σ R) (hp : IsWeightedHomogeneous w p m) :
+    weightedHomogeneousComponent w m p = p := by
+  classical
+  ext x
+  rw [coeff_weightedHomogeneousComponent]
+  by_cases zero_coeff : coeff x p = 0
+  · split_ifs
+    rfl; rw [zero_coeff]
+  · rw [hp zero_coeff, if_pos rfl]
+
+theorem weightedHomogeneousComponent_of_weightedHomogeneous_ne
+    (m n : M) (p : MvPolynomial σ R) (hp : IsWeightedHomogeneous w p m) :
+    n ≠ m → weightedHomogeneousComponent w n p = 0 := by
+  classical
+  intro hn
+  ext x
+  rw [coeff_weightedHomogeneousComponent]
+  by_cases zero_coeff : coeff x p = 0
+  · split_ifs <;> simp only [zero_coeff, coeff_zero]
+  · rw [if_neg (by simp only [hp zero_coeff, hn.symm, not_false_eq_true]), coeff_zero]
+
+variable (R w)
+
+theorem DirectSum.coeLinearMap_eq_support_sum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
+    (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
+    (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
+      DFinsupp.sum x (fun _ x => ↑x) := by
+  rw [DirectSum.coeLinearMap_eq_]
+  rw [DirectSum.coeLinearMap_eq_dfinsupp_sum]
+
+theorem DirectSum.coeAddMonoidHom_eq_support_sum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
+    (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
+    (DirectSum.coeAddMonoidHom fun i : M => weightedHomogeneousSubmodule R w i) x =
+      DFinsupp.sum x (fun _ x => ↑x) :=
+  DirectSum.coeLinearMap_eq_support_sum R w x
+
+theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
+    (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
+    (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
+      finsum fun m => x m := by
+  rw [DirectSum.coeLinearMap_eq_support_sum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
+  apply DirectSum.support_subset_submodule
 
 end WeightedHomogeneousComponent
 
