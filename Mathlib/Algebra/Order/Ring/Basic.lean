@@ -396,36 +396,36 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
 section deprecated
 set_option linter.deprecated false
 
-@[deprecated Even.pow_nonneg] -- 2024-04-06
+@[deprecated Even.pow_nonneg (since := "2024-04-06")]
 lemma pow_bit0_nonneg (a : R) (n : ℕ) : 0 ≤ a ^ bit0 n := (even_bit0 _).pow_nonneg _
 #align pow_bit0_nonneg pow_bit0_nonneg
 
-@[deprecated Even.pow_pos] -- 2024-04-06
+@[deprecated Even.pow_pos (since := "2024-04-06")]
 lemma pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n := (even_bit0 _).pow_pos h
 #align pow_bit0_pos pow_bit0_pos
 
-@[deprecated Even.pow_pos_iff] -- 2024-04-06
+@[deprecated Even.pow_pos_iff (since := "2024-04-06")]
 lemma pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 :=
   (even_bit0 _).pow_pos_iff (by simpa [bit0])
 #align pow_bit0_pos_iff pow_bit0_pos_iff
 
-@[simp, deprecated Odd.pow_neg_iff] -- 2024-04-06
+@[simp, deprecated Odd.pow_neg_iff (since := "2024-04-06")]
 lemma pow_bit1_neg_iff : a ^ bit1 n < 0 ↔ a < 0 := (odd_bit1 _).pow_neg_iff
 #align pow_bit1_neg_iff pow_bit1_neg_iff
 
-@[simp, deprecated Odd.pow_nonneg_iff] -- 2024-04-06
+@[simp, deprecated Odd.pow_nonneg_iff (since := "2024-04-06")]
 lemma pow_bit1_nonneg_iff : 0 ≤ a ^ bit1 n ↔ 0 ≤ a := (odd_bit1 _).pow_nonneg_iff
 #align pow_bit1_nonneg_iff pow_bit1_nonneg_iff
 
-@[simp, deprecated Odd.pow_nonpos_iff] -- 2024-04-06
+@[simp, deprecated Odd.pow_nonpos_iff (since := "2024-04-06")]
 lemma pow_bit1_nonpos_iff : a ^ bit1 n ≤ 0 ↔ a ≤ 0 := (odd_bit1 _).pow_nonpos_iff
 #align pow_bit1_nonpos_iff pow_bit1_nonpos_iff
 
-@[simp, deprecated Odd.pow_pos_iff] -- 2024-04-06
+@[simp, deprecated Odd.pow_pos_iff (since := "2024-04-06")]
 lemma pow_bit1_pos_iff : 0 < a ^ bit1 n ↔ 0 < a := (odd_bit1 _).pow_pos_iff
 #align pow_bit1_pos_iff pow_bit1_pos_iff
 
-@[deprecated Odd.strictMono_pow] -- 2024-04-06
+@[deprecated Odd.strictMono_pow (since := "2024-04-06")]
 lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := (odd_bit1 _).strictMono_pow
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
@@ -438,23 +438,29 @@ end LinearOrderedSemiring
 Those lemmas have been deprecated on 2023-12-23.
 -/
 
-@[deprecated] alias pow_mono := pow_right_mono
-@[deprecated] alias pow_le_pow := pow_le_pow_right
-@[deprecated] alias pow_le_pow_of_le_left := pow_le_pow_left
-@[deprecated] alias pow_lt_pow_of_lt_left := pow_lt_pow_left
-@[deprecated] alias strictMonoOn_pow := pow_left_strictMonoOn
-@[deprecated] alias pow_strictMono_right := pow_right_strictMono
-@[deprecated] alias pow_lt_pow := pow_lt_pow_right
-@[deprecated] alias pow_lt_pow_iff := pow_lt_pow_iff_right
-@[deprecated] alias pow_le_pow_iff := pow_le_pow_iff_right
-@[deprecated] alias self_lt_pow := lt_self_pow
-@[deprecated] alias strictAnti_pow := pow_right_strictAnti
-@[deprecated] alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
-@[deprecated] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
-@[deprecated] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
-@[deprecated] alias le_of_pow_le_pow := le_of_pow_le_pow_left
-@[deprecated] alias self_le_pow := le_self_pow
-@[deprecated] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
-@[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
-@[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
-@[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right
+@[deprecated (since := "2023-12-23")] alias pow_mono := pow_right_mono
+@[deprecated (since := "2023-12-23")] alias pow_le_pow := pow_le_pow_right
+@[deprecated (since := "2023-12-23")] alias pow_le_pow_of_le_left := pow_le_pow_left
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_left := pow_lt_pow_left
+@[deprecated (since := "2023-12-23")] alias strictMonoOn_pow := pow_left_strictMonoOn
+@[deprecated (since := "2023-12-23")] alias pow_strictMono_right := pow_right_strictMono
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow := pow_lt_pow_right
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow_iff := pow_lt_pow_iff_right
+@[deprecated (since := "2023-12-23")] alias pow_le_pow_iff := pow_le_pow_iff_right
+@[deprecated (since := "2023-12-23")] alias self_lt_pow := lt_self_pow
+@[deprecated (since := "2023-12-23")] alias strictAnti_pow := pow_right_strictAnti
+
+@[deprecated (since := "2023-12-23")]
+alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
+
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
+@[deprecated (since := "2023-12-23")] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
+@[deprecated (since := "2023-12-23")] alias le_of_pow_le_pow := le_of_pow_le_pow_left
+@[deprecated (since := "2023-12-23")] alias self_le_pow := le_self_pow
+@[deprecated (since := "2023-12-23")] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
+
+@[deprecated (since := "2023-12-23")]
+protected alias Nat.pow_right_strictMono := pow_right_strictMono
+
+@[deprecated (since := "2023-12-23")] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
+@[deprecated (since := "2023-12-23")] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right
