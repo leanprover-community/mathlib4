@@ -577,8 +577,9 @@ def liftedConeIsLimit : IsLimit (liftedCone c t) where
       h :=
         (isLimitOfPreserves (T : C ⥤ C) t).hom_ext fun j => by
           dsimp
-          rw [Category.assoc, ← t.fac, Category.assoc, t.fac, commuting]
-          sorry } --apply Coalgebra.Hom.h }
+          rw [Category.assoc, ← t.fac, Category.assoc, t.fac, commuting, ← assoc, ← assoc, t.fac,
+            assoc, ← Functor.map_comp, t.fac]
+          exact (s.π.app j).h }
   uniq s m J := by
     ext1
     apply t.hom_ext
