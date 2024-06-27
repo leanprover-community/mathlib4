@@ -106,7 +106,7 @@ To understand the importance of order of precedence, consider the example below
 example (a b c : Nat) : (a + b) + c = (b + a) + c := by
   nth_rewrite 2 [Nat.add_comm] -- ⊢ (b + a) + c = (b + a) + c
 ```
-Here, although the occurrence parameter is `2`, `(a + b)` is rewritten to `(b + a)`. This happens,
+Here, although the occurrence parameter is `2`, `(a + b)` is rewritten to `(b + a)`. This happens
 because in order of precedence, the first occurrence of `_ + _` is the one that adds `a + b` to `c`.
 The occurrence in `a + b` counts as the second occurrence.
 
