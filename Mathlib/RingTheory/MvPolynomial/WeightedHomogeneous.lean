@@ -504,25 +504,28 @@ theorem weightedHomogeneousComponent_of_weightedHomogeneous_ne
 
 variable (R w)
 
-theorem DirectSum.coeLinearMap_eq_support_sum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
+open DirectSum
+
+-- Should we keep these three specific `DirectSum` lemmas?
+-- Should the name space be `MvPolynomial.DirectSum`?
+theorem DirectSum.coeLinearMap_eq_dfinsupp_sum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
-    (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
+    (coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
       DFinsupp.sum x (fun _ x => ↑x) := by
-  rw [DirectSum.coeLinearMap_eq_]
-  rw [DirectSum.coeLinearMap_eq_dfinsupp_sum]
+  rw [_root_.DirectSum.coeLinearMap_eq_dfinsupp_sum]
 
 theorem DirectSum.coeAddMonoidHom_eq_support_sum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (DirectSum.coeAddMonoidHom fun i : M => weightedHomogeneousSubmodule R w i) x =
       DFinsupp.sum x (fun _ x => ↑x) :=
-  DirectSum.coeLinearMap_eq_support_sum R w x
+  DirectSum.coeLinearMap_eq_dfinsupp_sum R w x
 
 theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq σ] [DecidableEq R] [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
       finsum fun m => x m := by
-  rw [DirectSum.coeLinearMap_eq_support_sum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
-  apply DirectSum.support_subset_submodule
+  rw [DirectSum.coeLinearMap_eq_dfinsupp_sum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
+  apply DirectSum.support_subset
 
 end WeightedHomogeneousComponent
 
