@@ -236,7 +236,7 @@ lemma foov_image :
     simp
     rw [comp_relation_aux_map]
 
-lemma foo : RingHom.ker (Q.foov P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
+lemma foov_ker : RingHom.ker (Q.foov P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
   apply le_antisymm
   · intro p hp
     rw [RingHom.mem_ker] at hp
@@ -293,7 +293,7 @@ noncomputable def comp : Presentation R T where
       have hvker : RingHom.ker v.toRingHom =
           Ideal.span (Set.range fun rp ↦ (rename Sum.inr) (P.relation rp)) := by
         simp [v]
-        erw [foo]
+        erw [foov_ker]
         erw [P.ker_algebraMap_eq_span_range_relation]
         rw [Ideal.map_span]
         congr
