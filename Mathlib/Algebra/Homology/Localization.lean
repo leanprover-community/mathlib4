@@ -359,6 +359,19 @@ noncomputable instance :
       (F.mapHomologicalComplexUpToQuasiIso c) :=
   ⟨F.mapHomologicalComplexUpToQuasiIsoFactorsh c⟩
 
+variable {c}
+
+lemma mapHomologicalComplexUpToQuasiIsoFactorsh_hom_app (K : HomologicalComplex C c) :
+    (F.mapHomologicalComplexUpToQuasiIsoFactorsh c).hom.app
+        ((HomotopyCategory.quotient _ _).obj K) =
+      (F.mapHomologicalComplexUpToQuasiIso c).map
+          ((HomologicalComplexUpToQuasiIso.quotientCompQhIso C c).hom.app K) ≫
+        (F.mapHomologicalComplexUpToQuasiIsoFactors c).hom.app K ≫
+          (HomologicalComplexUpToQuasiIso.quotientCompQhIso D c).inv.app _ ≫
+            HomologicalComplexUpToQuasiIso.Qh.map
+              ((F.mapHomotopyCategoryFactors c).inv.app K) := by
+  sorry
+
 end
 
 end CategoryTheory.Functor
