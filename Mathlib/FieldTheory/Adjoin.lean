@@ -414,8 +414,8 @@ theorem adjoin_adjoin_left (T : Set E) :
   rw [SetLike.ext'_iff]
   change (adjoin (adjoin F S) T : Set E) = _
   apply subset_antisymm <;> rw [adjoin_subset_adjoin_iff] <;> constructor
-  · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ (Set.subset_union_left _ _) hx
-  · exact subset_adjoin_of_subset_right _ _ (Set.subset_union_right _ _)
+  · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ Set.subset_union_left hx
+  · exact subset_adjoin_of_subset_right _ _ Set.subset_union_right
   -- Porting note: orginal proof times out
   · exact Set.range_subset_iff.mpr fun f ↦ Subfield.subset_closure (.inl ⟨f, rfl⟩)
   -- Porting note: orginal proof times out
