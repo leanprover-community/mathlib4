@@ -83,7 +83,7 @@ namespace EllSequence
 
 /-- The expression `W((m+n)/2) * W((m-n)/2)` is the basic building block of elliptic relations,
 where integers `m` and `n` should have the same parity. -/
-def addMulSub (m n : ℤ) : R := W ((m + n).div 2) * W ((m - n).div 2)
+private def addMulSub (m n : ℤ) : R := W ((m + n).div 2) * W ((m - n).div 2)
 /- Implementation note: we use `Int.div _ 2` instead of `_ / 2` so that `(-m).div 2 = -(m.div 2)`
 and lemmas like `addMulSub_neg₀` hold unconditionally, even though in the case we care about
 (`m` and `n` both even or both odd) both are equal. -/
@@ -91,7 +91,7 @@ and lemmas like `addMulSub_neg₀` hold unconditionally, even though in the case
 /-- The four-index elliptic relation, defined in terms of `addMulSub`,
 featuring the three partitions of four indices into two pairs.
 Intended to apply to four integers of the same parity. -/
-def rel₄ (a b c d : ℤ) : R :=
+private def rel₄ (a b c d : ℤ) : R :=
   addMulSub W a b * addMulSub W c d
     - addMulSub W a c * addMulSub W b d
     + addMulSub W a d * addMulSub W b c
@@ -110,7 +110,7 @@ def net (p q r s : ℤ) : R :=
     + W (q + r + s) * W (q - r) * W (p + s) * W p
 
 variable {W} in
-lemma net_eq_rel₄ {p q r s : ℤ} :
+private lemma net_eq_rel₄ {p q r s : ℤ} :
     net W p q r s = rel₄ W (2 * p + s) (2 * q + s) (2 * r + s) s := by
   simp_rw [net, rel₄, addMulSub, add_add_add_comm _ s, add_sub_add_comm, sub_self, add_zero,
     add_assoc, ← two_mul, add_sub_cancel_right, ← left_distrib, ← mul_sub_left_distrib,
@@ -152,39 +152,39 @@ lemma net_add_sub_iff (m n : ℤ) :
   rw [net]; conv_rhs => rw [← sub_eq_zero]
   ring_nf
 
-lemma addMulSub_two_zero : addMulSub W 2 0 = W 1 ^ 2 := (sq _).symm
-lemma addMulSub_three_one : addMulSub W 3 1 = W 2 * W 1 := rfl
+private lemma addMulSub_two_zero : addMulSub W 2 0 = W 1 ^ 2 := (sq _).symm
+private lemma addMulSub_three_one : addMulSub W 3 1 = W 2 * W 1 := rfl
 
-lemma addMulSub_even (m n : ℤ) : addMulSub W (2 * m) (2 * n) = W (m + n) * W (m - n) := by
+private lemma addMulSub_even (m n : ℤ) : addMulSub W (2 * m) (2 * n) = W (m + n) * W (m - n) := by
   simp_rw [addMulSub, ← left_distrib, ← mul_sub_left_distrib, Int.mul_div_cancel_left _ two_ne_zero]
 
-lemma addMulSub_odd (m n : ℤ) :
+private lemma addMulSub_odd (m n : ℤ) :
     addMulSub W (2 * m + 1) (2 * n + 1) = W (m + n + 1) * W (m - n) := by
   have h k := Int.mul_div_cancel_left k two_ne_zero
   rw [addMulSub, ← h (m + n + 1), ← h (m - n)]; congr <;> ring
 
-lemma addMulSub_same (zero : W 0 = 0) (m : ℤ) : addMulSub W m m = 0 := by
+private lemma addMulSub_same (zero : W 0 = 0) (m : ℤ) : addMulSub W m m = 0 := by
   rw [addMulSub, sub_self, Int.zero_div, zero, mul_zero]
 
-lemma addMulSub_neg₀ (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
+private lemma addMulSub_neg₀ (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W (-m) n = addMulSub W m n := by
   simp_rw [addMulSub, ← neg_add', neg_add_eq_sub, ← neg_sub m, Int.neg_div, neg]; ring
 
-lemma addMulSub_neg₁ (m n : ℤ) : addMulSub W m (-n) = addMulSub W m n := by
+private lemma addMulSub_neg₁ (m n : ℤ) : addMulSub W m (-n) = addMulSub W m n := by
   rw [addMulSub, addMulSub, mul_comm]; abel_nf
 
-lemma addMulSub_abs₀ (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
+private lemma addMulSub_abs₀ (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W |m| n = addMulSub W m n := by
   obtain h | h := abs_choice m <;> simp only [h, addMulSub_neg₀ W neg]
 
-lemma addMulSub_abs₁ (m n : ℤ) : addMulSub W m |n| = addMulSub W m n := by
+private lemma addMulSub_abs₁ (m n : ℤ) : addMulSub W m |n| = addMulSub W m n := by
   obtain h | h := abs_choice n <;> simp only [h, addMulSub_neg₁]
 
-lemma addMulSub_swap (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
+private lemma addMulSub_swap (neg : ∀ k, W (-k) = -W k) (m n : ℤ) :
     addMulSub W m n = - addMulSub W n m := by
   rw [addMulSub, addMulSub, ← neg_sub, Int.neg_div, neg]; ring_nf
 
-lemma rel₃_iff₄ (m n r : ℤ) :
+private lemma rel₃_iff₄ (m n r : ℤ) :
     Rel₃ W m n r ↔ rel₄ W (2 * m) (2 * n) (2 * r) 0 = 0 := by
   rw [rel₄, ← mul_zero 2, Rel₃]
   simp_rw [addMulSub_even, add_zero, sub_zero]
@@ -209,7 +209,7 @@ open Int Equiv
 
 variable {W a b c d} (same : HaveSameParity₄ a b c d)
 
-lemma rel₄_eq_net : rel₄ W a b c d = net W ((a - d) / 2) ((b - d) / 2) ((c - d) / 2) d := by
+private lemma rel₄_eq_net : rel₄ W a b c d = net W ((a - d) / 2) ((b - d) / 2) ((c - d) / 2) d := by
   have h := @Int.two_mul_ediv_two_of_even
   rw [net_eq_rel₄, h, h, h]; · simp_rw [sub_add_cancel]
   all_goals simp only [← negOnePow_eq_iff, same.1, same.2.1, same.2.2]
@@ -244,13 +244,13 @@ lemma six_le_of_strictAnti₄ (anti : StrictAnti₄ a b c d) : 6 ≤ a := by
 
 variable (W) in
 /-- A hybrid product formed by one factor from an `addMulSub` and one from another `addMulSub`. -/
-def addMulSub₄ (a b c d : ℤ) : R := W ((a + b).div 2) * W ((c - d).div 2)
+private def addMulSub₄ (a b c d : ℤ) : R := W ((a + b).div 2) * W ((c - d).div 2)
 
-lemma addMulSub₄_mul_addMulSub₄ :
+private lemma addMulSub₄_mul_addMulSub₄ :
     addMulSub₄ W a b c d * addMulSub₄ W c d a b = addMulSub W a b * addMulSub W c d := by
   simp_rw [addMulSub₄, addMulSub]; ring
 
-lemma addMulSub_transf :
+private lemma addMulSub_transf :
     addMulSub W (avg₄ a b c d - d) (avg₄ a b c d - c) = addMulSub₄ W a b c d ∧
       addMulSub W (avg₄ a b c d - d) (avg₄ a b c d - b) = addMulSub₄ W a c b d ∧
       addMulSub W (avg₄ a b c d - d) |avg₄ a b c d - a| = addMulSub₄ W b c a d ∧
@@ -260,7 +260,7 @@ lemma addMulSub_transf :
   simp_rw [addMulSub_abs₁, addMulSub, addMulSub₄, sub_add_sub_comm, same.avg₄_add_avg₄]
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> ring_nf
 
-theorem rel₄_transf :
+private theorem rel₄_transf :
     rel₄ W (avg₄ a b c d - d) (avg₄ a b c d - c) (avg₄ a b c d - b) |avg₄ a b c d - a| =
       rel₄ W a b c d := by
   obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆⟩ := same.addMulSub_transf (W := W)
@@ -291,7 +291,7 @@ def rel₆ (k l a b c d : ℤ) : R := addMulSub W k l * rel₄ W a b c d
 three `rel₄`s with two fixed indices and two free indices that share one fixed index
 (the larger one) and two free indices with the first `rel₄`.
 The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
-lemma rel₆_eq₃ (c d m n r : ℤ) :
+private lemma rel₆_eq₃ (c d m n r : ℤ) :
     rel₆ W c d m n r c = rel₆ W m c n r c d - rel₆ W n c m r c d + rel₆ W r c m n c d := by
   simp_rw [rel₆, rel₄]; ring
 
@@ -299,7 +299,7 @@ lemma rel₆_eq₃ (c d m n r : ℤ) :
 three `rel₄`s with two fixed indices and two free indices that share one fixed index
 (the smaller one) and two free indices with the first `rel₄`.
 The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
-lemma rel₆_eq₃' (c d m n r : ℤ) :
+private lemma rel₆_eq₃' (c d m n r : ℤ) :
     rel₆ W c d m n r d = rel₆ W m d n r c d - rel₆ W n d m r c d + rel₆ W r d m n c d := by
   simp_rw [rel₆, rel₄]; ring
 
@@ -307,7 +307,7 @@ lemma rel₆_eq₃' (c d m n r : ℤ) :
 with one or two indices chosen from two possibilities (fixed indices) and
 the other indices chosen from the indices of the first `rel₄`.
 The coefficient before the first `rel₄` is `addMulSub` applied to the two fixed indices. -/
-theorem rel₆_eq₁₀ (c d m n r s : ℤ) :
+private theorem rel₆_eq₁₀ (c d m n r s : ℤ) :
     rel₆ W c d m n r s =
       rel₆ W n d m r s c - rel₆ W r d m n s c + rel₆ W s d m n r c
       + rel₆ W n c m r s d - rel₆ W r c m n s d + rel₆ W s c m n r d
@@ -317,7 +317,7 @@ theorem rel₆_eq₁₀ (c d m n r s : ℤ) :
 
 /-- It is also possible to directly express an arbitrary `rel₄`
 in terms of `rel₄`s with the last two indices fixed. -/
-theorem addMulSub_sq_mul_rel₄_eq₉ (c d m n r s : ℤ) :
+private theorem addMulSub_sq_mul_rel₄_eq₉ (c d m n r s : ℤ) :
     (addMulSub W c d) ^ 2 * rel₄ W m n r s =
       addMulSub W m c * (rel₆ W n d r s c d - rel₆ W r d n s c d + rel₆ W s d n r c d)
                     -- = rel₆ W c d n r s d ↑ by rel₆_eq₃'   = rel₆ W c d n r s c ↓ by rel₆_eq₃
@@ -336,13 +336,13 @@ of the elliptic relation according to `rel₃_iff_evenRec` and `rel₄_iff_evenR
 def EvenRec (m : ℤ) : Prop :=
   W (2 * m) * W 2 * W 1 ^ 2 = W m * (W (m - 1) ^ 2 * W (m + 2) - W (m - 2) * W (m + 1) ^ 2)
 
-lemma rel₃_iff_oddRec (m : ℤ) : Rel₃ W (m + 1) m 1 ↔ OddRec W m := by
+private lemma rel₃_iff_oddRec (m : ℤ) : Rel₃ W (m + 1) m 1 ↔ OddRec W m := by
   rw [Rel₃, OddRec]; ring_nf
 
-lemma rel₃_iff_evenRec (m : ℤ) : Rel₃ W (m + 1) (m - 1) 1 ↔ EvenRec W m := by
+private lemma rel₃_iff_evenRec (m : ℤ) : Rel₃ W (m + 1) (m - 1) 1 ↔ EvenRec W m := by
   rw [Rel₃, EvenRec]; ring_nf
 
-lemma rel₄_iff_evenRec (m : ℤ) : rel₄ W (2 * m + 1) (2 * m - 1) 3 1 = 0 ↔ EvenRec W m := by
+private lemma rel₄_iff_evenRec (m : ℤ) : rel₄ W (2 * m + 1) (2 * m - 1) 3 1 = 0 ↔ EvenRec W m := by
   rw [iff_comm, EvenRec, ← sub_eq_zero, show 2 * m - 1 = 2 * (m - 1) + 1 by ring]
   convert_to _ ↔ rel₄ W _ _ (2 * 1 + 1) (2 * 0 + 1) = 0
   simp_rw [rel₄, addMulSub_odd]; ring_nf
@@ -366,7 +366,7 @@ lemma negOnePow_cMin (a : ℤ) : (cMin a).negOnePow = a.negOnePow := by
   rw [negOnePow_cMin_eq_dMin, negOnePow_dMin]
 
 variable {W}
-lemma addMulSub_mem_nonZeroDivisors (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰) (a : ℤ) :
+private lemma addMulSub_mem_nonZeroDivisors (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰) (a : ℤ) :
     addMulSub W (cMin a) (dMin a) ∈ R⁰ := by
   rw [cMin, dMin]; split_ifs; exacts [mul_mem one one, mul_mem two one]
 
@@ -381,7 +381,7 @@ section Rel₄OfValid
 variable (W) in
 /-- The four-index elliptic relation restricted to the case where the four indices are
 nonnegative, have the same parity and are strictly decreasing. -/
-def Rel₄OfValid (a b c d : ℤ) : Prop :=
+private def Rel₄OfValid (a b c d : ℤ) : Prop :=
   HaveSameParity₄ a b c d → StrictAnti₄ a b c d → rel₄ W a b c d = 0
 
 variable {a c₀ d₀ : ℤ} (par : c₀.negOnePow = d₀.negOnePow) (le : 0 ≤ d₀) (lt : d₀ < c₀)
@@ -390,7 +390,7 @@ variable {a c₀ d₀ : ℤ} (par : c₀.negOnePow = d₀.negOnePow) (le : 0 ≤
 /-- If `rel₄` holds for all quadruples of the form `(a', b, c₀, d₀)` for arbitrary `b` and
 `a' < a`, then it holds for `(a, b, c, c₀)` and `(a, b, c, d₀)` for arbitrary `b` and `c`
 (subject to some technical conditions). -/
-lemma rel₄_fix₁_of_fix₂ (b c : ℤ) :
+private lemma rel₄_fix₁_of_fix₂ (b c : ℤ) :
     Rel₄OfValid W a b c c₀ ∧ (c₀ < c → Rel₄OfValid W a b c d₀) := by
   refine ⟨fun same anti ↦ mem _ ?_, fun _hc same anti ↦ mem _ ?_⟩ <;> rw [mul_comm, ← rel₆]
   on_goal 1 => rw [rel₆_eq₃]; have _hc := trivial
@@ -405,7 +405,7 @@ lemma rel₄_fix₁_of_fix₂ (b c : ℤ) :
 /-- If `rel₄` holds for all quadruples of the form `(a', b, c₀, d₀)` for arbitrary `b` and
 `a' < a`, then it holds for `(a, b, c, d)` for arbitrary `b`, `c` and `d`
 (subject to some technical conditions). -/
-lemma rel₄_of_fix₂ (b c d : ℤ) (hc : c₀ < d) (par' : d.negOnePow = d₀.negOnePow) :
+private lemma rel₄_of_fix₂ (b c d : ℤ) (hc : c₀ < d) (par' : d.negOnePow = d₀.negOnePow) :
     Rel₄OfValid W a b c d := fun same ⟨_, hdc, hcb, hba⟩ ↦ mem _ <| by
   rw [mul_comm, ← rel₆, rel₆_eq₁₀]; simp_rw [rel₆]
   have fix₁ b c := (rel₄_fix₁_of_fix₂ par le lt rel mem b c).1
@@ -419,7 +419,7 @@ lemma rel₄_of_fix₂ (b c d : ℤ) (hc : c₀ < d) (par' : d.negOnePow = d₀.
 
 /-- Specialize previous lemmas to the case `c₀ = cMin a` and `d₀ = dMin a`,
 and combine them to remove technical conditions about the relative order of the indices. -/
-theorem rel₄_of_min₂ (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
+private theorem rel₄_of_min₂ (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (rel : ∀ {a' b}, a' ≤ a → Rel₄OfValid W a' b (cMin a) (dMin a)) (b c d : ℤ) :
     Rel₄OfValid W a b c d := fun same anti ↦ by
   obtain hc|hc := lt_or_le (cMin a) d
@@ -438,7 +438,7 @@ theorem rel₄_of_min₂ (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
   exacts [rel le_rfl same anti, fix.2 hc same anti]
 
 -- The main inductive argument.
-theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
+private theorem rel₄_of_anti_oddRec_evenRec (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
     (oddRec : ∀ m ≥ 2, OddRec W m) (evenRec : ∀ m ≥ 3, EvenRec W m) :
     ∀ ⦃a b c d : ℤ⦄, Rel₄OfValid W a b c d :=
   -- apply induction on `a`
@@ -476,26 +476,27 @@ section Perm
 
 variable (neg : ∀ k, W (-k) = -W k)
 
-lemma rel₄_abs {m n r s : ℤ} : rel₄ W |m| |n| |r| |s| = rel₄ W m n r s := by
+private lemma rel₄_abs {m n r s : ℤ} : rel₄ W |m| |n| |r| |s| = rel₄ W m n r s := by
   simp_rw [rel₄, addMulSub_abs₀ W neg, addMulSub_abs₁]
 
-lemma rel₄_swap₀₁ {m n r s : ℤ} : rel₄ W m n r s = - rel₄ W n m r s := by
+private lemma rel₄_swap₀₁ {m n r s : ℤ} : rel₄ W m n r s = - rel₄ W n m r s := by
   simp_rw [rel₄, addMulSub_swap W neg n m]; ring
 
-lemma rel₄_swap₁₂ {m n r s : ℤ} : rel₄ W m n r s = - rel₄ W m r n s := by
+private lemma rel₄_swap₁₂ {m n r s : ℤ} : rel₄ W m n r s = - rel₄ W m r n s := by
   simp_rw [rel₄, addMulSub_swap W neg r n]; ring
 
-lemma rel₄_swap₂₃ {m n r s : ℤ} : rel₄ W m n r s = - rel₄ W m n s r := by
+private lemma rel₄_swap₂₃ {m n r s : ℤ} : rel₄ W m n r s = - rel₄ W m n s r := by
   simp_rw [rel₄, addMulSub_swap W neg s r]; ring
 
 open Equiv
 
 variable (W) in
 /-- The four-index elliptic relation with a tuple as input. -/
-def relFin4 (t : Fin 4 → ℤ) : R := rel₄ W (t 0) (t 1) (t 2) (t 3)
+private def rel₄Fin4 (t : Fin 4 → ℤ) : R := rel₄ W (t 0) (t 1) (t 2) (t 3)
 
 /-- `rel₄` is invariant (up to sign) under permutation of the four indices. -/
-theorem relFin4_perm (σ : Perm (Fin 4)) : ∀ t, relFin4 W (t ∘ σ) = Perm.sign σ • relFin4 W t := by
+private theorem rel₄Fin4_perm (σ : Perm (Fin 4)) :
+    ∀ t, rel₄Fin4 W (t ∘ σ) = Perm.sign σ • rel₄Fin4 W t := by
   have := (Perm.mclosure_swap_castSucc_succ 3).symm ▸ Submonoid.mem_top σ
   refine Submonoid.closure_induction this ?_ (by simp) fun σ τ hσ hτ t ↦ ?_
   · rintro _ ⟨i, rfl⟩ t; fin_cases i <;>
@@ -503,20 +504,21 @@ theorem relFin4_perm (σ : Perm (Fin 4)) : ∀ t, relFin4 W (t ∘ σ) = Perm.si
     exacts [rel₄_swap₀₁ neg, rel₄_swap₁₂ neg, rel₄_swap₂₃ neg]
   rw [Perm.coe_mul, ← Function.comp.assoc, hτ, hσ, map_mul, mul_comm, mul_smul]
 
-lemma relFin4_perm' (σ : Perm (Fin 4)) (t) : Perm.sign σ • relFin4 W (t ∘ σ) = relFin4 W t := by
-  rw [relFin4_perm neg, ← mul_smul, Int.units_mul_self, one_smul]
+private lemma rel₄Fin4_perm' (σ : Perm (Fin 4)) (t) :
+    Perm.sign σ • rel₄Fin4 W (t ∘ σ) = rel₄Fin4 W t := by
+  rw [rel₄Fin4_perm neg, ← mul_smul, Int.units_mul_self, one_smul]
 
 variable (zero : W 0 = 0)
 
 /-! `rel₄` is trivial when two indices are equal. -/
 
-lemma rel₄_same₀₁ (m r s : ℤ) : rel₄ W m m r s = 0 := by
+private lemma rel₄_same₀₁ (m r s : ℤ) : rel₄ W m m r s = 0 := by
   simp_rw [rel₄, addMulSub_same W zero]; ring
 
-lemma rel₄_same₁₂ (m n s : ℤ) : rel₄ W m n n s = 0 := by
+private lemma rel₄_same₁₂ (m n s : ℤ) : rel₄ W m n n s = 0 := by
   simp_rw [rel₄, addMulSub_same W zero]; ring
 
-lemma rel₄_same₂₃ (m n r : ℤ) : rel₄ W m n r r = 0 := by
+private lemma rel₄_same₂₃ (m n r : ℤ) : rel₄ W m n r r = 0 := by
   simp_rw [rel₄, addMulSub_same W zero]; ring
 
 variable (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
@@ -524,7 +526,7 @@ variable (one : W 1 ∈ R⁰) (two : W 2 ∈ R⁰)
 
 /-- The four-index `rel₄` relations follow from
 the single-index `oddRec` and `evenRec` recursive relations. -/
-theorem rel₄_of_oddRec_evenRec {a b c d : ℤ} (same : HaveSameParity₄ a b c d) :
+private theorem rel₄_of_oddRec_evenRec {a b c d : ℤ} (same : HaveSameParity₄ a b c d) :
     rel₄ W a b c d = 0 := by
   let t := ![|a|, |b|, |c|, |d|]
   have nonneg i : 0 ≤ t i := by fin_cases i <;> exact abs_nonneg _
@@ -533,8 +535,8 @@ theorem rel₄_of_oddRec_evenRec {a b c d : ℤ} (same : HaveSameParity₄ a b c
     simp_rw [σ, coe_trans, ← Function.comp.assoc]
     exact (Tuple.monotone_sort t).comp_antitone fun _ _ ↦ Fin.rev_le_rev.mpr
   clear_value σ -- otherwise, unifying `t (σ i)` with `(t ∘ σ) i` is extremely slow
-  rw [← rel₄_abs neg]; change relFin4 W t = 0
-  rw [← relFin4_perm' neg σ, relFin4]; simp_rw [Function.comp]
+  rw [← rel₄_abs neg]; change rel₄Fin4 W t = 0
+  rw [← rel₄Fin4_perm' neg σ, rel₄Fin4]; simp_rw [Function.comp]
   by_cases h₃₂ : t (σ 3) = t (σ 2); · rw [h₃₂, rel₄_same₂₃ zero, smul_zero]
   by_cases h₂₁ : t (σ 2) = t (σ 1); · rw [h₂₁, rel₄_same₁₂ zero, smul_zero]
   by_cases h₁₀ : t (σ 1) = t (σ 0); · rw [h₁₀, rel₄_same₀₁ zero, smul_zero]
@@ -633,7 +635,7 @@ lemma neg (m : ℤ) : W (-m) = - W m := by
   · convert sub_add_neg_sub_mul_eq_zero ell (1 - m) (m + 1) 1 using 2; ring_nf
   · convert sub_add_neg_sub_mul_eq_zero ell (-m) (m + 1) 1 using 2; ring_nf
 
-protected lemma rel₄ {a b c d : ℤ} (same : HaveSameParity₄ a b c d) : rel₄ W a b c d = 0 :=
+private lemma rel₄ {a b c d : ℤ} (same : HaveSameParity₄ a b c d) : rel₄ W a b c d = 0 :=
   rel₄_of_oddRec_evenRec (ell.neg one two) (ell.zero 1 two) one two
     (fun _ _ ↦ ell.oddRec _) (fun _ _ ↦ ell.evenRec _) same
 
