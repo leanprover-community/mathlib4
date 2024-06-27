@@ -227,6 +227,10 @@ theorem Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y �
   mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
 #align odd.nat_add_dvd_pow_add_pow Odd.nat_add_dvd_pow_add_pow
 
+/-- `x ^ n + 1` is divisible by `x + 1` only if `n` is odd.  -/
+theorem Odd.nat_add_one_dvd_pow_add_one (x : ℕ) {n : ℕ} (hn : Odd n) : x + 1 ∣ x ^ n + 1 := by
+  simpa only [one_pow] using hn.nat_add_dvd_pow_add_pow x 1
+
 theorem geom_sum_mul [Ring α] (x : α) (n : ℕ) : (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by
   have := (Commute.one_right x).geom_sum₂_mul n
   rw [one_pow, geom_sum₂_with_one] at this
