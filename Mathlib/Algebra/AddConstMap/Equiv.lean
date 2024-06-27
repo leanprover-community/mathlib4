@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.AddConstMap.Basic
+import Mathlib.GroupTheory.Perm.Basic
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`
 
@@ -29,20 +30,6 @@ add_decl_doc AddConstEquiv.toAddConstMap
 @[inherit_doc]
 scoped [AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
 
-/-- A typeclass saying that `F` is a type of bundled equivalences `G ≃ H`
-semiconjugating `(· + a)` to `(· + b)`. -/
-class AddConstEquivClass (F : Type*) (G H : outParam (Type*)) [Add G] [Add H]
-    (a : outParam G) (b : outParam H) extends EquivLike F G H where
-  /-- A map of `AddConstEquivClass` class semiconjugates shift by `a` to the shift by `b`:
-  `∀ x, f (x + a) = f x + b`. -/
-  map_add_const (f : F) (x : G) : f (x + a) = f x + b
-
-instance (priority := 100) {F : Type*} {G H : outParam Type*} [Add G] [Add H]
-    {a : outParam G} {b : outParam H} [h : AddConstEquivClass F G H a b] :
-    AddConstMapClass F G H a b where
-  toDFunLike := inferInstance
-  __ := h
-
 namespace AddConstEquiv
 
 variable {G H K : Type*} [Add G] [Add H] [Add K] {a : G} {b : H} {c : K}
@@ -51,12 +38,15 @@ lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
-    AddConstEquivClass (G ≃+c[a, b] H) G H a b where
+    EquivLike (G ≃+c[a, b] H) G H where
   coe f := f.toEquiv
   inv f := f.toEquiv.symm
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
+
+instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
+    AddConstMapClass (G ≃+c[a, b] H) G H a b where
   map_add_const f x := f.map_add_const' x
 
 @[ext] lemma ext {e₁ e₂ : G ≃+c[a, b] H} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ := DFunLike.ext _ _ h
