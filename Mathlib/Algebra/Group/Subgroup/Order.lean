@@ -16,10 +16,10 @@ variable {G S : Type*} [SetLike S G]
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
 @[to_additive "An additive subgroup of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance (priority := 75) toOrderedCommGroup [OrderedCommGroup G]
+instance (priority := 75) toOrderedCommGroup [CommGroup G] [OrderedCommGroup G]
     [SubgroupClass S G] (H : S) : OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.orderedCommGroup _ (by rfl) (fun _ _ => by rfl) (fun _ => by rfl) (fun _ _ => by rfl)
+    (fun _ _ => by rfl) fun _ _ => by rfl
 #align subgroup_class.to_ordered_comm_group SubgroupClass.toOrderedCommGroup
 #align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
 
@@ -28,10 +28,10 @@ instance (priority := 75) toOrderedCommGroup [OrderedCommGroup G]
 @[to_additive
       "An additive subgroup of a `LinearOrderedAddCommGroup` is a
         `LinearOrderedAddCommGroup`."]
-instance (priority := 75) toLinearOrderedCommGroup [LinearOrderedCommGroup G]
+instance (priority := 75) toLinearOrderedCommGroup [CommGroup G] [LinearOrderedCommGroup G]
     [SubgroupClass S G] (H : S) : LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.linearOrderedCommGroup _ (by rfl) (fun _ _ => by rfl) (fun _ => by rfl)
+    (fun _ _ => by rfl) (fun _ _ => by rfl) (fun _ _ => by rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup_class.to_linear_ordered_comm_group SubgroupClass.toLinearOrderedCommGroup
 #align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
@@ -43,10 +43,10 @@ variable {G : Type*}
 
 /-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance toOrderedCommGroup [OrderedCommGroup G] (H : Subgroup G) :
+instance toOrderedCommGroup [CommGroup G] [OrderedCommGroup G] (H : Subgroup G) :
     OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.orderedCommGroup _ (by rfl) (fun _ _ => by rfl) (fun _ => by rfl) (fun _ _ => by rfl)
+    (fun _ _ =>  by rfl) fun _ _ => by rfl
 #align subgroup.to_ordered_comm_group Subgroup.toOrderedCommGroup
 #align add_subgroup.to_ordered_add_comm_group AddSubgroup.toOrderedAddCommGroup
 
@@ -54,10 +54,10 @@ instance toOrderedCommGroup [OrderedCommGroup G] (H : Subgroup G) :
 @[to_additive
       "An `AddSubgroup` of a `LinearOrderedAddCommGroup` is a
         `LinearOrderedAddCommGroup`."]
-instance toLinearOrderedCommGroup [LinearOrderedCommGroup G] (H : Subgroup G) :
+instance toLinearOrderedCommGroup [CommGroup G] [LinearOrderedCommGroup G] (H : Subgroup G) :
     LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.linearOrderedCommGroup _ (by rfl) (fun _ _ => by rfl) (fun _ => by rfl)
+    (fun _ _ => by rfl) (fun _ _ => by rfl) (fun _ _ => by rfl) (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_linear_ordered_comm_group Subgroup.toLinearOrderedCommGroup
 #align add_subgroup.to_linear_ordered_add_comm_group AddSubgroup.toLinearOrderedAddCommGroup
 

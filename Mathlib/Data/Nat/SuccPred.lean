@@ -31,7 +31,7 @@ variable {m n : ℕ}
   pred_le := pred_le
   min_of_le_pred {a} ha := by
     cases a
-    · exact isMin_bot
+    · exact isMin_bot (α := ℕ)
     · exact (not_succ_le_self _ ha).elim
   le_pred_of_lt {a} {b} h := by
     cases b

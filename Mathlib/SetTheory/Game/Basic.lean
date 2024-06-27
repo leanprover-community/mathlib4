@@ -198,9 +198,10 @@ theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏
   apply PGame.add_lf_add_left h
 #align game.add_lf_add_left SetTheory.Game.add_lf_add_left
 
-instance orderedAddCommGroup : OrderedAddCommGroup Game :=
-  { Game.instAddCommGroupWithOneGame, Game.instPartialOrderGame with
-    add_le_add_left := @add_le_add_left _ _ _ Game.covariantClass_add_le }
+instance orderedAddCommGroup : OrderedAddCommGroup Game where
+  __ := Game.instAddCommGroupWithOneGame
+  __ := Game.instPartialOrderGame
+  add_le_add_left := @add_le_add_left _ _ _ Game.covariantClass_add_le
 #align game.ordered_add_comm_group SetTheory.Game.orderedAddCommGroup
 
 /-- A small family of games is bounded above. -/

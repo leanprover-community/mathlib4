@@ -22,19 +22,19 @@ variable {α β : Type*}
 
 /-- An ordered (additive) commutative monoid is a commutative monoid with a partial order such that
 addition is monotone. -/
-class OrderedAddCommMonoid (α : Type*) extends AddCommMonoid α, PartialOrder α where
+class OrderedAddCommMonoid (α : Type*) [AddCommMonoid α] extends PartialOrder α where
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c, c + a ≤ c + b
 #align ordered_add_comm_monoid OrderedAddCommMonoid
 
 /-- An ordered commutative monoid is a commutative monoid with a partial order such that
 multiplication is monotone. -/
 @[to_additive]
-class OrderedCommMonoid (α : Type*) extends CommMonoid α, PartialOrder α where
+class OrderedCommMonoid (α : Type*) [CommMonoid α] extends PartialOrder α where
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c, c * a ≤ c * b
 #align ordered_comm_monoid OrderedCommMonoid
 
 section OrderedCommMonoid
-variable [OrderedCommMonoid α]
+variable [CommMonoid α] [OrderedCommMonoid α]
 
 @[to_additive]
 instance OrderedCommMonoid.toCovariantClassLeft : CovariantClass α α (· * ·) (· ≤ ·) where
@@ -43,7 +43,7 @@ instance OrderedCommMonoid.toCovariantClassLeft : CovariantClass α α (· * ·)
 #align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.toCovariantClassLeft
 
 @[to_additive]
-theorem OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
+theorem OrderedCommMonoid.toCovariantClassRight (M : Type*) [CommMonoid M] [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
   inferInstance
 #align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.toCovariantClassRight
@@ -53,14 +53,14 @@ end OrderedCommMonoid
 
 /-- An ordered cancellative additive commutative monoid is a partially ordered commutative additive
 monoid in which addition is cancellative and monotone. -/
-class OrderedCancelAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α where
+class OrderedCancelAddCommMonoid (α : Type*) [AddCommMonoid α] extends OrderedAddCommMonoid α where
   protected le_of_add_le_add_left : ∀ a b c : α, a + b ≤ a + c → b ≤ c
 #align ordered_cancel_add_comm_monoid OrderedCancelAddCommMonoid
 
 /-- An ordered cancellative commutative monoid is a partially ordered commutative monoid in which
 multiplication is cancellative and monotone. -/
 @[to_additive OrderedCancelAddCommMonoid]
-class OrderedCancelCommMonoid (α : Type*) extends OrderedCommMonoid α where
+class OrderedCancelCommMonoid (α : Type*) [CommMonoid α] extends OrderedCommMonoid α where
   protected le_of_mul_le_mul_left : ∀ a b c : α, a * b ≤ a * c → b ≤ c
 #align ordered_cancel_comm_monoid OrderedCancelCommMonoid
 
@@ -68,7 +68,7 @@ class OrderedCancelCommMonoid (α : Type*) extends OrderedCommMonoid α where
 #align ordered_cancel_add_comm_monoid.to_ordered_add_comm_monoid OrderedCancelAddCommMonoid.toOrderedAddCommMonoid
 
 section OrderedCancelCommMonoid
-variable [OrderedCancelCommMonoid α]
+variable [CommMonoid α] [OrderedCancelCommMonoid α]
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -97,10 +97,10 @@ theorem OrderedCancelCommMonoid.toContravariantClassRight :
 
 -- See note [lower instance priority]
 @[to_additive OrderedCancelAddCommMonoid.toCancelAddCommMonoid]
-instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCommMonoid α :=
-  { ‹OrderedCancelCommMonoid α› with
+instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCommMonoid α where
+    __ := ‹CommMonoid α›
     mul_left_cancel :=
-      fun a b c h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge }
+      fun a b c h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge
 #align ordered_cancel_comm_monoid.to_cancel_comm_monoid OrderedCancelCommMonoid.toCancelCommMonoid
 #align ordered_cancel_add_comm_monoid.to_cancel_add_comm_monoid OrderedCancelAddCommMonoid.toCancelAddCommMonoid
 
@@ -114,33 +114,34 @@ end OrderedCancelCommMonoid
 #noalign bit0_pos
 
 /-- A linearly ordered additive commutative monoid. -/
-class LinearOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, LinearOrder α
+class LinearOrderedAddCommMonoid (α : Type*) [AddCommMonoid α]
+    extends OrderedAddCommMonoid α, LinearOrder α
 #align linear_ordered_add_comm_monoid LinearOrderedAddCommMonoid
 
 /-- A linearly ordered commutative monoid. -/
 @[to_additive]
-class LinearOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, LinearOrder α
+class LinearOrderedCommMonoid (α : Type*) [CommMonoid α] extends OrderedCommMonoid α, LinearOrder α
 #align linear_ordered_comm_monoid LinearOrderedCommMonoid
 
 /-- A linearly ordered cancellative additive commutative monoid is an additive commutative monoid
 with a decidable linear order in which addition is cancellative and monotone. -/
-class LinearOrderedCancelAddCommMonoid (α : Type*) extends OrderedCancelAddCommMonoid α,
-    LinearOrderedAddCommMonoid α
+class LinearOrderedCancelAddCommMonoid (α : Type*) [AddCommMonoid α]
+    extends OrderedCancelAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align linear_ordered_cancel_add_comm_monoid LinearOrderedCancelAddCommMonoid
 
 /-- A linearly ordered cancellative commutative monoid is a commutative monoid with a linear order
 in which multiplication is cancellative and monotone. -/
 @[to_additive LinearOrderedCancelAddCommMonoid]
-class LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid α,
-    LinearOrderedCommMonoid α
+class LinearOrderedCancelCommMonoid (α : Type*) [CommMonoid α]
+    extends OrderedCancelCommMonoid α, LinearOrderedCommMonoid α
 #align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
 
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    OrderTop α where
+class LinearOrderedAddCommMonoidWithTop (α : Type*) [AddCommMonoid α]
+    extends LinearOrderedAddCommMonoid α, OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
@@ -148,7 +149,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCom
 
 section LinearOrderedAddCommMonoidWithTop
 
-variable [LinearOrderedAddCommMonoidWithTop α] {a b : α}
+variable [AddCommMonoid α] [LinearOrderedAddCommMonoidWithTop α] {a b : α}
 
 @[simp]
 theorem top_add (a : α) : ⊤ + a = ⊤ :=
@@ -162,7 +163,7 @@ theorem add_top (a : α) : a + ⊤ = ⊤ :=
 
 end LinearOrderedAddCommMonoidWithTop
 
-variable [LinearOrderedCommMonoid α] {a : α}
+variable [CommMonoid α] [LinearOrderedCommMonoid α] {a : α}
 
 @[to_additive (attr := simp)]
 theorem one_le_mul_self_iff : 1 ≤ a * a ↔ 1 ≤ a :=

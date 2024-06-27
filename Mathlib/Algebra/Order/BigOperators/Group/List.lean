@@ -153,7 +153,7 @@ lemma sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → N)
 #align list.sum_le_foldr_max List.sum_le_foldr_max
 
 @[to_additive sum_pos]
-lemma one_lt_prod_of_one_lt [OrderedCommMonoid M] :
+lemma one_lt_prod_of_one_lt [CommMonoid M] [OrderedCommMonoid M] :
     ∀ l : List M, (∀ x ∈ l, (1 : M) < x) → l ≠ [] → 1 < l.prod
   | [], _, h => (h rfl).elim
   | [b], h, _ => by simpa using h
@@ -169,8 +169,8 @@ lemma one_lt_prod_of_one_lt [OrderedCommMonoid M] :
 #align list.sum_pos List.sum_pos
 
 @[to_additive]
-lemma single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) :
-    ∀ x ∈ l, x ≤ l.prod := by
+lemma single_le_prod [CommMonoid M] [OrderedCommMonoid M] {l : List M}
+    (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) : ∀ x ∈ l, x ≤ l.prod := by
   induction l
   · simp
   simp_rw [prod_cons, forall_mem_cons] at hl₁ ⊢
@@ -181,14 +181,14 @@ lemma single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, (1
 #align list.single_le_sum List.single_le_sum
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
-lemma all_one_of_le_one_le_of_prod_eq_one [OrderedCommMonoid M] {l : List M}
+lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [OrderedCommMonoid M] {l : List M}
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) (hl₂ : l.prod = 1) {x : M} (hx : x ∈ l) : x = 1 :=
   _root_.le_antisymm (hl₂ ▸ single_le_prod hl₁ _ hx) (hl₁ x hx)
 #align list.all_one_of_le_one_le_of_prod_eq_one List.all_one_of_le_one_le_of_prod_eq_one
 #align list.all_zero_of_le_zero_le_of_sum_eq_zero List.all_zero_of_le_zero_le_of_sum_eq_zero
 
 section CanonicallyOrderedCommMonoid
-variable [CanonicallyOrderedCommMonoid M] {l : List M}
+variable [CommMonoid M] [CanonicallyOrderedCommMonoid M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by

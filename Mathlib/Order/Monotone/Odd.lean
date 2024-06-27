@@ -19,7 +19,8 @@ prove versions of this lemma for `Antitone`, `StrictMono`, and `StrictAnti`.
 
 open Set
 
-variable {G H : Type*} [LinearOrderedAddCommGroup G] [OrderedAddCommGroup H]
+variable {G H : Type*}
+  [AddCommGroup G] [AddCommGroup H] [LinearOrderedAddCommGroup G] [OrderedAddCommGroup H]
 
 /-- An odd function on a linear ordered additive commutative group is strictly monotone on the whole
 group provided that it is strictly monotone on `Set.Ici 0`. -/
@@ -34,7 +35,7 @@ theorem strictMono_of_odd_strictMonoOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x
 group provided that it is strictly antitone on `Set.Ici 0`. -/
 theorem strictAnti_of_odd_strictAntiOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
     (h₂ : StrictAntiOn f (Ici 0)) : StrictAnti f :=
-  @strictMono_of_odd_strictMonoOn_nonneg G Hᵒᵈ _ _ _ h₁ h₂
+  @strictMono_of_odd_strictMonoOn_nonneg G Hᵒᵈ _ _ _ _ _ h₁ h₂
 #align strict_anti_of_odd_strict_anti_on_nonneg strictAnti_of_odd_strictAntiOn_nonneg
 
 /-- An odd function on a linear ordered additive commutative group is monotone on the whole group
@@ -50,5 +51,5 @@ theorem monotone_of_odd_of_monotoneOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x)
 provided that it is monotone on `Set.Ici 0`. -/
 theorem antitone_of_odd_of_monotoneOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
     (h₂ : AntitoneOn f (Ici 0)) : Antitone f :=
-  @monotone_of_odd_of_monotoneOn_nonneg G Hᵒᵈ _ _ _ h₁ h₂
+  @monotone_of_odd_of_monotoneOn_nonneg G Hᵒᵈ _ _ _ _ _ h₁ h₂
 #align antitone_of_odd_of_monotone_on_nonneg antitone_of_odd_of_monotoneOn_nonneg

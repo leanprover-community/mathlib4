@@ -17,11 +17,11 @@ variable {α : Type*}
 
 namespace Prod
 
-variable {G H : Type*}
+variable {G H : Type*} [CommGroup G] [CommGroup H]
 
 @[to_additive]
 instance [OrderedCommGroup G] [OrderedCommGroup H] : OrderedCommGroup (G × H) :=
-  { Prod.instCommGroup, Prod.instPartialOrder G H, Prod.instOrderedCancelCommMonoid
+  { Prod.instCommGroup (G := G) (H := H), Prod.instPartialOrder G H, Prod.instOrderedCancelCommMonoid
     with }
 
 namespace Lex

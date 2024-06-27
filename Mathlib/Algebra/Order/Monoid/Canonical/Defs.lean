@@ -94,7 +94,8 @@ end ExistsMulOfLE
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
-class CanonicallyOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, OrderBot α where
+class CanonicallyOrderedAddCommMonoid (α : Type*) [AddCommMonoid α]
+    extends OrderedAddCommMonoid α, OrderBot α where
   /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
   protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
   /-- For any `a` and `b`, `a ≤ a + b` -/
@@ -115,7 +116,8 @@ attribute [instance 100] CanonicallyOrderedAddCommMonoid.toOrderBot
   be more natural that collections of all things ≥ 1).
 -/
 @[to_additive]
-class CanonicallyOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, OrderBot α where
+class CanonicallyOrderedCommMonoid (α : Type*) [CommMonoid α]
+    extends OrderedCommMonoid α, OrderBot α where
   /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
   protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
   /-- For any `a` and `b`, `a ≤ a * b` -/
@@ -129,14 +131,14 @@ attribute [instance 100] CanonicallyOrderedCommMonoid.toOrderBot
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) CanonicallyOrderedCommMonoid.existsMulOfLE (α : Type u)
-    [h : CanonicallyOrderedCommMonoid α] : ExistsMulOfLE α :=
-  { h with }
+    [CommMonoid α] [CanonicallyOrderedCommMonoid α] : ExistsMulOfLE α where
+  __ := ‹CanonicallyOrderedCommMonoid α›
 #align canonically_ordered_monoid.has_exists_mul_of_le CanonicallyOrderedCommMonoid.existsMulOfLE
 #align canonically_ordered_add_monoid.has_exists_add_of_le CanonicallyOrderedAddCommMonoid.existsAddOfLE
 
 section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedCommMonoid α] {a b c d : α}
+variable [CommMonoid α] [CanonicallyOrderedCommMonoid α] {a b c d : α}
 
 @[to_additive]
 theorem le_self_mul : a ≤ a * c :=
@@ -288,26 +290,29 @@ theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔
 
 end CanonicallyOrderedCommMonoid
 
-theorem pos_of_gt {M : Type*} [CanonicallyOrderedAddCommMonoid M] {n m : M} (h : n < m) : 0 < m :=
+theorem pos_of_gt {M : Type*} [AddCommMonoid M] [CanonicallyOrderedAddCommMonoid M]
+    {n m : M} (h : n < m) : 0 < m :=
   lt_of_le_of_lt (zero_le _) h
 #align pos_of_gt pos_of_gt
 
 namespace NeZero
 
-theorem pos {M} (a : M) [CanonicallyOrderedAddCommMonoid M] [NeZero a] : 0 < a :=
+theorem pos {M} (a : M) [AddCommMonoid M] [CanonicallyOrderedAddCommMonoid M] [NeZero a] : 0 < a :=
   (zero_le a).lt_of_ne <| NeZero.out.symm
 #align ne_zero.pos NeZero.pos
 
-theorem of_gt {M} [CanonicallyOrderedAddCommMonoid M] {x y : M} (h : x < y) : NeZero y :=
+theorem of_gt {M} [AddCommMonoid M] [CanonicallyOrderedAddCommMonoid M]
+    {x y : M} (h : x < y) : NeZero y :=
   of_pos <| pos_of_gt h
 #align ne_zero.of_gt NeZero.of_gt
 
 -- 1 < p is still an often-used `Fact`, due to `Nat.Prime` implying it, and it implying `Nontrivial`
 -- on `ZMod`'s ring structure. We cannot just set this to be any `x < y`, else that becomes a
 -- metavariable and it will hugely slow down typeclass inference.
-instance (priority := 10) of_gt' {M : Type*} [CanonicallyOrderedAddCommMonoid M] [One M] {y : M}
-  -- Porting note: Fact.out has different type signature from mathlib3
-  [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
+instance (priority := 10) of_gt'
+    {M : Type*} [AddCommMonoid M] [CanonicallyOrderedAddCommMonoid M] [One M] {y : M}
+    -- Porting note: Fact.out has different type signature from mathlib3
+    [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
 
 #noalign ne_zero.bit0
@@ -316,14 +321,14 @@ end NeZero
 
 /-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
     whose ordering is a linear order. -/
-class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
-  extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
+class CanonicallyLinearOrderedAddCommMonoid (α : Type*) [AddCommMonoid α]
+    extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddCommMonoid
 
 /-- A canonically linear-ordered monoid is a canonically ordered monoid
     whose ordering is a linear order. -/
 @[to_additive]
-class CanonicallyLinearOrderedCommMonoid (α : Type*)
+class CanonicallyLinearOrderedCommMonoid (α : Type*) [CommMonoid α]
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
 
@@ -331,7 +336,7 @@ attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrde
 
 section CanonicallyLinearOrderedCommMonoid
 
-variable [CanonicallyLinearOrderedCommMonoid α]
+variable [CommMonoid α] [CanonicallyLinearOrderedCommMonoid α]
 
 -- see Note [lower instance priority]
 @[to_additive]

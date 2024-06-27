@@ -333,7 +333,7 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 end LinearOrder
 
 section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup α] {a b : α}
+variable [CommGroup α] [LinearOrderedCommGroup α] {a b : α}
 
 @[to_additive] lemma mabs_pow (n : ℕ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ n := by
   obtain ha | ha := le_total a 1
@@ -372,7 +372,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] {a b c d : α}
+variable [AddCommGroup α] [LinearOrderedAddCommGroup α] {a b c d : α}
 
 -- Porting note:
 -- Lean can perfectly well find this instance,

@@ -39,7 +39,7 @@ end MonoidHom
 
 section OrderedSemiring
 
-variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
+variable [Semiring R] [OrderedSemiring R] {a b x y : R} {n m : ℕ}
 
 theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
   | 0 => (pow_zero _).le
@@ -125,7 +125,7 @@ end OrderedSemiring
 
 section StrictOrderedSemiring
 
-variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
+variable [Semiring R] [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 
 @[gcongr]
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n
@@ -184,7 +184,7 @@ theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := pow_pos ha _
 end StrictOrderedSemiring
 
 section StrictOrderedRing
-variable [StrictOrderedRing R] {a : R}
+variable [Ring R] [StrictOrderedRing R] {a : R}
 
 lemma sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 := by rw [sq]; exact mul_pos_of_neg_of_neg ha ha
 #align sq_pos_of_neg sq_pos_of_neg
@@ -192,7 +192,7 @@ lemma sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 := by rw [sq]; exact mul_pos_of_neg
 end StrictOrderedRing
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
+variable [Semiring R] [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
 
 lemma pow_le_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=
   (pow_left_strictMonoOn hn).le_iff_le ha hb

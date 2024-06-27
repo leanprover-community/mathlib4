@@ -22,7 +22,7 @@ namespace Set
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup α] {a b c d : α}
+variable [CommGroup α] [OrderedCommGroup α] {a b c d : α}
 
 /-! `inv_mem_Ixx_iff`, `sub_mem_Ixx_iff` -/
 
@@ -55,7 +55,7 @@ end OrderedCommGroup
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup α] {a b c d : α}
+variable [AddCommGroup α] [OrderedAddCommGroup α] {a b c d : α}
 
 /-! `add_mem_Ixx_iff_left` -/
 
@@ -136,7 +136,7 @@ theorem sub_mem_Ioo_iff_right : a - b ∈ Set.Ioo c d ↔ b ∈ Set.Ioo (a - d) 
 
 -- I think that symmetric intervals deserve attention and API: they arise all the time,
 -- for instance when considering metric balls in `ℝ`.
-theorem mem_Icc_iff_abs_le {R : Type*} [LinearOrderedAddCommGroup R] {x y z : R} :
+theorem mem_Icc_iff_abs_le {R : Type*} [AddCommGroup R] [LinearOrderedAddCommGroup R] {x y z : R} :
     |x - y| ≤ z ↔ y ∈ Icc (x - z) (x + z) :=
   abs_le.trans <| and_comm.trans <| and_congr sub_le_comm neg_le_sub_iff_le_add
 #align set.mem_Icc_iff_abs_le Set.mem_Icc_iff_abs_le
@@ -145,7 +145,7 @@ end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
+variable [AddCommGroup α] [LinearOrderedAddCommGroup α]
 
 /-- If we remove a smaller interval from a larger, the result is nonempty -/
 theorem nonempty_Ico_sdiff {x dx y dy : α} (h : dy < dx) (hx : 0 < dx) :
@@ -165,7 +165,7 @@ section PairwiseDisjoint
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup α] (a b : α)
+variable [CommGroup α] [OrderedCommGroup α] (a b : α)
 
 @[to_additive]
 theorem pairwise_disjoint_Ioc_mul_zpow :
@@ -233,7 +233,7 @@ end OrderedCommGroup
 
 section OrderedRing
 
-variable [OrderedRing α] (a : α)
+variable [Ring α] [OrderedRing α] (a : α)
 
 theorem pairwise_disjoint_Ioc_add_intCast :
     Pairwise (Disjoint on fun n : ℤ => Ioc (a + n) (a + n + 1)) := by

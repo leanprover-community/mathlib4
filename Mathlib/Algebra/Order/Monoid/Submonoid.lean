@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.ZeroLEOne
 -/
 
 namespace SubmonoidClass
-variable {M S : Type*} [SetLike S M]
+variable {M S : Type*} [SetLike S M] [CommMonoid M]
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of an `OrderedCommMonoid` is an `OrderedCommMonoid`. -/
@@ -63,7 +63,7 @@ instance (priority := 75) toLinearOrderedCancelCommMonoid [LinearOrderedCancelCo
 end SubmonoidClass
 
 namespace Submonoid
-variable {M : Type*}
+variable {M : Type*} [CommMonoid M]
 
 /-- A submonoid of an `OrderedCommMonoid` is an `OrderedCommMonoid`. -/
 @[to_additive "An `AddSubmonoid` of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`."]

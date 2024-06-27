@@ -389,7 +389,8 @@ theorem false_of_nontrivial_of_product_domain (R S : Type*) [Ring R] [Ring S] [I
 /-! ### Order -/
 
 
-instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) :=
+instance [Semiring α] [Semiring β] [OrderedSemiring α] [OrderedSemiring β] :
+    OrderedSemiring (α × β) :=
   { inferInstanceAs (Semiring (α × β)), inferInstanceAs (OrderedAddCommMonoid (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩
     mul_le_mul_of_nonneg_left := fun _ _ _ hab hc =>
@@ -397,14 +398,16 @@ instance [OrderedSemiring α] [OrderedSemiring β] : OrderedSemiring (α × β) 
     mul_le_mul_of_nonneg_right := fun _ _ _ hab hc =>
       ⟨mul_le_mul_of_nonneg_right hab.1 hc.1, mul_le_mul_of_nonneg_right hab.2 hc.2⟩ }
 
-instance [OrderedCommSemiring α] [OrderedCommSemiring β] : OrderedCommSemiring (α × β) :=
+instance [CommSemiring α] [CommSemiring β] [OrderedCommSemiring α] [OrderedCommSemiring β] :
+    OrderedCommSemiring (α × β) :=
   { inferInstanceAs (OrderedSemiring (α × β)), inferInstanceAs (CommSemiring (α × β)) with }
 
 -- Porting note: compile fails with `inferInstanceAs (OrderedSemiring (α × β))`
-instance [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
+instance [Ring α] [Ring β] [OrderedRing α] [OrderedRing β] : OrderedRing (α × β) :=
   { inferInstanceAs (Ring (α × β)), inferInstanceAs (OrderedAddCommGroup (α × β)) with
     zero_le_one := ⟨zero_le_one, zero_le_one⟩
     mul_nonneg := fun _ _ ha hb => ⟨mul_nonneg ha.1 hb.1, mul_nonneg ha.2 hb.2⟩ }
 
-instance [OrderedCommRing α] [OrderedCommRing β] : OrderedCommRing (α × β) :=
+instance [CommRing α] [CommRing β] [OrderedCommRing α] [OrderedCommRing β] :
+    OrderedCommRing (α × β) :=
   { inferInstanceAs (OrderedRing (α × β)), inferInstanceAs (CommRing (α × β)) with }

@@ -50,8 +50,9 @@ instance instCanonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
-instance instLinearOrderedSemiring : LinearOrderedSemiring ℕ := inferInstance
 instance instStrictOrderedSemiring : StrictOrderedSemiring ℕ := inferInstance
+instance instLinearOrderedSemiring : LinearOrderedSemiring ℕ where
+  __ := instLinearOrderedCommSemiring
 instance instStrictOrderedCommSemiring : StrictOrderedCommSemiring ℕ := inferInstance
 instance instOrderedSemiring : OrderedSemiring ℕ := StrictOrderedSemiring.toOrderedSemiring'
 instance instOrderedCommSemiring : OrderedCommSemiring ℕ :=

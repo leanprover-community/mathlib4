@@ -209,7 +209,7 @@ end CompleteLattice
 
 section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedCommMonoid M]
+variable [CommMonoid M] [CanonicallyOrderedCommMonoid M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
@@ -234,7 +234,7 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
 end CanonicallyOrderedCommMonoid
 
 section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup M]
+variable [CommGroup M] [LinearOrderedCommGroup M]
 
 open scoped symmDiff
 

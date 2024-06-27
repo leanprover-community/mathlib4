@@ -16,7 +16,7 @@ assert_not_exists MonoidWithZero
 
 namespace Prod
 
-variable {α β : Type*}
+variable {α β : Type*} [CommMonoid α] [CommMonoid β]
 
 @[to_additive]
 instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α × β) where

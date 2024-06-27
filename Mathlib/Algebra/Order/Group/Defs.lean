@@ -30,14 +30,14 @@ variable {α : Type u}
 
 /-- An ordered additive commutative group is an additive commutative group
 with a partial order in which addition is strictly monotone. -/
-class OrderedAddCommGroup (α : Type u) extends AddCommGroup α, PartialOrder α where
+class OrderedAddCommGroup (α : Type u) [AddCommGroup α] extends PartialOrder α where
   /-- Addition is monotone in an ordered additive commutative group. -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align ordered_add_comm_group OrderedAddCommGroup
 
 /-- An ordered commutative group is a commutative group
 with a partial order in which multiplication is strictly monotone. -/
-class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
+class OrderedCommGroup (α : Type u) [CommGroup α] extends PartialOrder α where
   /-- Multiplication is monotone in an ordered commutative group. -/
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
 #align ordered_comm_group OrderedCommGroup
@@ -45,21 +45,22 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
-instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    CovariantClass α α (· * ·) (· ≤ ·) where
+instance OrderedCommGroup.to_covariantClass_left_le
+    (α : Type u) [CommGroup α] [OrderedCommGroup α] : CovariantClass α α (· * ·) (· ≤ ·) where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le
 #align ordered_add_comm_group.to_covariant_class_left_le OrderedAddCommGroup.to_covariantClass_left_le
 
 -- See note [lower instance priority]
 @[to_additive OrderedAddCommGroup.toOrderedCancelAddCommMonoid]
-instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCommGroup α] :
-    OrderedCancelCommMonoid α :=
+instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid
+    [CommGroup α ] [OrderedCommGroup α] : OrderedCancelCommMonoid α :=
 { ‹OrderedCommGroup α› with le_of_mul_le_mul_left := fun a b c ↦ le_of_mul_le_mul_left' }
 #align ordered_comm_group.to_ordered_cancel_comm_monoid OrderedCommGroup.toOrderedCancelCommMonoid
 #align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
-example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
+example (α : Type u) [AddCommGroup α] [OrderedAddCommGroup α] :
+    CovariantClass α α (swap (· + ·)) (· < ·) :=
   IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le α
 
 -- Porting note: this instance is not used,
@@ -68,8 +69,8 @@ example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· 
 -- but without the motivation clearly explained.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCommGroup α] :
-    ContravariantClass α α (· * ·) (· ≤ ·) where
+theorem OrderedCommGroup.to_contravariantClass_left_le
+    (α : Type u) [CommGroup α] [OrderedCommGroup α] : ContravariantClass α α (· * ·) (· ≤ ·) where
       elim a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_left_le OrderedCommGroup.to_contravariantClass_left_le
 #align ordered_add_comm_group.to_contravariant_class_left_le OrderedAddCommGroup.to_contravariantClass_left_le
@@ -79,7 +80,8 @@ theorem OrderedCommGroup.to_contravariantClass_left_le (α : Type u) [OrderedCom
 -- See further explanation on `OrderedCommGroup.to_contravariantClass_left_le`.
 /-- A choice-free shortcut instance. -/
 @[to_additive "A choice-free shortcut instance."]
-theorem OrderedCommGroup.to_contravariantClass_right_le (α : Type u) [OrderedCommGroup α] :
+theorem OrderedCommGroup.to_contravariantClass_right_le
+    (α : Type u) [CommGroup α] [OrderedCommGroup α] :
     ContravariantClass α α (swap (· * ·)) (· ≤ ·) where
       elim a b c bc := by simpa using mul_le_mul_right' bc a⁻¹
 #align ordered_comm_group.to_contravariant_class_right_le OrderedCommGroup.to_contravariantClass_right_le
@@ -1093,13 +1095,14 @@ end LinearOrder
 /-- A linearly ordered additive commutative group is an
 additive commutative group with a linear order in which
 addition is monotone. -/
-class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
+class LinearOrderedAddCommGroup (α : Type u) [AddCommGroup α]
+    extends OrderedAddCommGroup α, LinearOrder α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
 /-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
-  SubNegMonoid α, Nontrivial α where
+class LinearOrderedAddCommGroupWithTop (α : Type*) [CommSubNegMonoid α]
+    extends LinearOrderedAddCommMonoidWithTop α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 #align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
@@ -1108,12 +1111,12 @@ class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddComm
 commutative group with a linear order in which
 multiplication is monotone. -/
 @[to_additive]
-class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
+class LinearOrderedCommGroup (α : Type u) [CommGroup α] extends OrderedCommGroup α, LinearOrder α
 #align linear_ordered_comm_group LinearOrderedCommGroup
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {a b c : α}
+variable [CommGroup α] [LinearOrderedCommGroup α] {a b c : α}
 
 @[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
 theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
@@ -1191,7 +1194,7 @@ section NormNumLemmas
 
 /- The following lemmas are stated so that the `norm_num` tactic can use them with the
 expected signatures.  -/
-variable [OrderedCommGroup α] {a b : α}
+variable [CommGroup α] [OrderedCommGroup α] {a b : α}
 
 @[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=

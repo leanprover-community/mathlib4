@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Monoid.Basic
 -/
 
 
-variable {α β : Type*}
+variable {α β : Type*} [CommGroup α]
 
 /-- Pullback an `OrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
@@ -22,8 +22,10 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One 
     [Div β] [Pow β ℕ] [Pow β ℤ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : OrderedCommGroup β where
-  toCommGroup := hf.commGroup f one mul inv div npow zpow
+    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    letI := hf.commGroup f one mul inv div npow zpow
+    OrderedCommGroup β where
+  __ := hf.commGroup f one mul inv div npow zpow
   toPartialOrder := PartialOrder.lift f hf
   __ := hf.orderedCommMonoid f one mul npow
 
@@ -39,7 +41,9 @@ def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : 
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
     (sup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (inf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
+    letI := hf.commGroup f one mul inv div npow zpow
     LinearOrderedCommGroup β where
+  __ := hf.commGroup f one mul inv div npow zpow
   toOrderedCommGroup := hf.orderedCommGroup f one mul inv div npow zpow
   __ := LinearOrder.lift f hf sup inf
 #align function.injective.linear_ordered_comm_group Function.Injective.linearOrderedCommGroup

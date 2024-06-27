@@ -20,7 +20,7 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type*}
+variable {α : Type u} {β : Type*} [CommMonoid α]
 
 /-- Pullback an `OrderedCommMonoid` under an injective map.
 See note [reducible non-instances]. -/
@@ -28,8 +28,9 @@ See note [reducible non-instances]. -/
 def Function.Injective.orderedCommMonoid [OrderedCommMonoid α] {β : Type*} [One β] [Mul β]
     [Pow β ℕ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    letI := hf.commMonoid f one mul npow
     OrderedCommMonoid β where
-  toCommMonoid := hf.commMonoid f one mul npow
+  __ := hf.commMonoid f one mul npow
   toPartialOrder := PartialOrder.lift f hf
   mul_le_mul_left a b ab c := show f (c * a) ≤ f (c * b) by
     rw [mul, mul]; apply mul_le_mul_left'; exact ab
@@ -42,7 +43,10 @@ See note [reducible non-instances]. -/
     "Pullback an `OrderedCancelAddCommMonoid` under an injective map."]
 def Function.Injective.orderedCancelCommMonoid [OrderedCancelCommMonoid α] [One β] [Mul β] [Pow β ℕ]
     (f : β → α) (hf : Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : OrderedCancelCommMonoid β where
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    letI := hf.commMonoid f one mul npow
+    OrderedCancelCommMonoid β where
+  __ := hf.commMonoid f one mul npow
   toOrderedCommMonoid := hf.orderedCommMonoid f one mul npow
   le_of_mul_le_mul_left a b c (bc : f (a * b) ≤ f (a * c)) :=
     (mul_le_mul_iff_left (f a)).1 (by rwa [← mul, ← mul])
@@ -56,7 +60,9 @@ def Function.Injective.linearOrderedCommMonoid [LinearOrderedCommMonoid α] {β 
     [Mul β] [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (sup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (inf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
+    letI := hf.commMonoid f one mul npow
     LinearOrderedCommMonoid β where
+  __ := hf.commMonoid f one mul npow
   toOrderedCommMonoid := hf.orderedCommMonoid f one mul npow
   __ := LinearOrder.lift f hf sup inf
 #align function.injective.linear_ordered_comm_monoid Function.Injective.linearOrderedCommMonoid
@@ -70,7 +76,9 @@ def Function.Injective.linearOrderedCancelCommMonoid [LinearOrderedCancelCommMon
     [Mul β] [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
+    letI := hf.commMonoid f one mul npow
     LinearOrderedCancelCommMonoid β where
+  __ := hf.commMonoid f one mul npow
   toOrderedCancelCommMonoid := hf.orderedCancelCommMonoid f one mul npow
   __ := hf.linearOrderedCommMonoid f one mul npow hsup hinf
 #align function.injective.linear_ordered_cancel_comm_monoid Function.Injective.linearOrderedCancelCommMonoid

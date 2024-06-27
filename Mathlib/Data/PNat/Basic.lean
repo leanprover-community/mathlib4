@@ -21,7 +21,14 @@ that `Data.PNat.Defs` can have very few imports.
 -/
 
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
+  Add, Mul, Distrib for PNat
+
+instance : Pow ℕ+ ℕ where
+  pow a n := ⟨a.1 ^ n, Nat.pow_pos a.2⟩
+
+instance : CommMonoid ℕ+ := Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
+
+instance : LinearOrderedCancelCommMonoid ℕ+ := sorry
 
 namespace PNat
 

@@ -29,20 +29,21 @@ assert_not_exists MonoidHom
 variable {α : Type*}
 
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
-class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
+class LinearOrderedSemifield (α : Type*) [Semifield α] extends LinearOrderedCommSemiring α
 #align linear_ordered_semifield LinearOrderedSemifield
 
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
-class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
+class LinearOrderedField (α : Type*) [Field α] extends LinearOrderedCommRing α
 #align linear_ordered_field LinearOrderedField
 
 -- See note [lower instance priority]
-instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOrderedField α] :
+instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield
+    [Field α] [LinearOrderedField α] :
     LinearOrderedSemifield α :=
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
 #align linear_ordered_field.to_linear_ordered_semifield LinearOrderedField.toLinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {a b : α}
+variable [Field α] [LinearOrderedSemifield α] {a b : α}
 
 @[simp] lemma inv_pos : 0 < a⁻¹ ↔ 0 < a :=
   suffices ∀ a : α, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩

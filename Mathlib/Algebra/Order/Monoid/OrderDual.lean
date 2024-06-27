@@ -80,13 +80,13 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
 #align order_dual.covariant_class_swap_mul_lt OrderDual.covariantClass_swap_mul_lt
 
 @[to_additive]
-instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
+instance orderedCommMonoid [CommMonoid α] [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
   { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
 #align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
 #align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
 
 @[to_additive OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass]
-instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
+instance OrderedCancelCommMonoid.to_contravariantClass [CommMonoid α] [OrderedCancelCommMonoid α] :
     ContravariantClass αᵒᵈ αᵒᵈ HMul.hMul LE.le where
     elim a b c := OrderedCancelCommMonoid.le_of_mul_le_mul_left (α := α) a c b
 -- Porting note: Lean 3 to_additive name omits first namespace part
@@ -94,16 +94,18 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
 #align order_dual.ordered_cancel_comm_monoid.to_contravariant_class OrderDual.OrderedCancelCommMonoid.to_contravariantClass
 
 @[to_additive]
-instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
+instance orderedCancelCommMonoid [CommMonoid α] [OrderedCancelCommMonoid α] :
+    OrderedCancelCommMonoid αᵒᵈ :=
   { le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 @[to_additive]
-instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
+instance linearOrderedCancelCommMonoid [CommMonoid α] [LinearOrderedCancelCommMonoid α] :
     LinearOrderedCancelCommMonoid αᵒᵈ :=
   { OrderDual.instLinearOrder α, OrderDual.orderedCancelCommMonoid with }
 
 @[to_additive]
-instance linearOrderedCommMonoid [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
+instance linearOrderedCommMonoid [CommMonoid α] [LinearOrderedCommMonoid α] :
+    LinearOrderedCommMonoid αᵒᵈ :=
   { OrderDual.instLinearOrder α, OrderDual.orderedCommMonoid with }
 
 end OrderDual

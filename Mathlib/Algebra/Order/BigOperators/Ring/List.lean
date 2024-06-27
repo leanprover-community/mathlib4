@@ -18,7 +18,7 @@ namespace List
 
 /-- The product of a list of positive natural numbers is positive,
 and likewise for any nontrivial ordered semiring. -/
-lemma prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R) < a) :
+lemma prod_pos [Semiring R] [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R) < a) :
     0 < l.prod := by
   induction' l with a l ih
   · simp
@@ -28,7 +28,7 @@ lemma prod_pos [StrictOrderedSemiring R] (l : List R) (h : ∀ a ∈ l, (0 : R) 
 
 /-- A variant of `List.prod_pos` for `CanonicallyOrderedCommSemiring`. -/
 @[simp] lemma _root_.CanonicallyOrderedCommSemiring.list_prod_pos
-    {α : Type*} [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+    {α : Type*} [CommSemiring α] [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     ∀ {l : List α}, 0 < l.prod ↔ (∀ x ∈ l, (0 : α) < x)
   | [] => by simp
   | (x :: xs) => by simp_rw [prod_cons, forall_mem_cons, CanonicallyOrderedCommSemiring.mul_pos,

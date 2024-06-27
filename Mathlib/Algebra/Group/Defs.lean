@@ -1087,6 +1087,13 @@ lemma zpow_neg_coe_of_pos (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = 
 
 end DivInvMonoid
 
+/-- A `CommSubNegMonoid` is a `SubNegMonoid` with commutative `(+)`. -/
+class CommSubNegMonoid (G : Type u) extends SubNegMonoid G, AddCommMonoid G
+
+/-- A `CommDivInvMonoid` is a `DivInvMonoid` with commutative `(*)`. -/
+@[to_additive CommSubNegMonoid]
+class CommDivInvMonoid (G : Type u) extends DivInvMonoid G, CommMonoid G
+
 section InvOneClass
 
 /-- Typeclass for expressing that `-0 = 0`. -/
@@ -1303,6 +1310,11 @@ variable [CommGroup G]
 
 -- see Note [lower instance priority]
 @[to_additive]
+instance (priority := 100) CommGroup.toCommDivInvMonoid : CommDivInvMonoid G :=
+  { ‹CommGroup G› with }
+
+-- see Note [lower instance priority]
+@[to_additive]
 instance (priority := 100) CommGroup.toCancelCommMonoid : CancelCommMonoid G :=
   { ‹CommGroup G›, Group.toCancelMonoid with }
 
@@ -1361,6 +1373,8 @@ initialize_simps_projections CancelCommMonoid
 initialize_simps_projections AddCancelCommMonoid
 initialize_simps_projections DivInvMonoid
 initialize_simps_projections SubNegMonoid
+initialize_simps_projections CommDivInvMonoid
+initialize_simps_projections CommSubNegMonoid
 initialize_simps_projections DivInvOneMonoid
 initialize_simps_projections SubNegZeroMonoid
 initialize_simps_projections DivisionMonoid

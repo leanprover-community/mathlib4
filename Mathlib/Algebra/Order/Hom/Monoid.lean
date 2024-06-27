@@ -188,6 +188,7 @@ end OrderedZero
 
 section OrderedAddCommGroup
 
+variable [AddCommGroup α] [AddCommMonoid β]
 variable [OrderedAddCommGroup α] [OrderedAddCommMonoid β] [i : FunLike F α β]
 variable [iamhc : AddMonoidHomClass F α β] (f : F)
 
@@ -457,6 +458,7 @@ end Preorder
 
 section Mul
 
+variable [CommMonoid α] [CommMonoid β] [CommMonoid γ]
 variable [OrderedCommMonoid α] [OrderedCommMonoid β] [OrderedCommMonoid γ]
 
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
@@ -494,6 +496,7 @@ end Mul
 
 section OrderedCommMonoid
 
+variable [CommMonoid α] [CommMonoid β]
 variable {hα : OrderedCommMonoid α} {hβ : OrderedCommMonoid β}
 
 @[to_additive (attr := simp)]
@@ -512,6 +515,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
+variable [CommGroup α] [CommGroup β]
 variable {hα : OrderedCommGroup α} {hβ : OrderedCommGroup β}
 
 /-- Makes an ordered group homomorphism from a proof that the map preserves multiplication. -/
@@ -678,6 +682,7 @@ end Preorder
 
 section Mul
 
+variable [CommMonoidWithZero α] [CommMonoidWithZero β] [CommMonoidWithZero γ]
 variable [LinearOrderedCommMonoidWithZero α] [LinearOrderedCommMonoidWithZero β]
   [LinearOrderedCommMonoidWithZero γ]
 

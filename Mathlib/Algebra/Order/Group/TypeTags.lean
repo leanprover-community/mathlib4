@@ -13,18 +13,18 @@ import Mathlib.Algebra.Order.Monoid.TypeTags
 
 variable {α : Type*}
 
-instance Multiplicative.orderedCommGroup [OrderedAddCommGroup α] :
+instance Multiplicative.orderedCommGroup [AddCommGroup α] [OrderedAddCommGroup α] :
     OrderedCommGroup (Multiplicative α) :=
-  { Multiplicative.commGroup, Multiplicative.orderedCommMonoid with }
+  { Multiplicative.commGroup (α := α), Multiplicative.orderedCommMonoid with }
 
-instance Additive.orderedAddCommGroup [OrderedCommGroup α] :
+instance Additive.orderedAddCommGroup [CommGroup α] [OrderedCommGroup α] :
     OrderedAddCommGroup (Additive α) :=
-  { Additive.addCommGroup, Additive.orderedAddCommMonoid with }
+  { Additive.addCommGroup (α := α), Additive.orderedAddCommMonoid with }
 
-instance Multiplicative.linearOrderedCommGroup [LinearOrderedAddCommGroup α] :
+instance Multiplicative.linearOrderedCommGroup [AddCommGroup α] [LinearOrderedAddCommGroup α] :
     LinearOrderedCommGroup (Multiplicative α) :=
   { Multiplicative.linearOrder, Multiplicative.orderedCommGroup with }
 
-instance Additive.linearOrderedAddCommGroup [LinearOrderedCommGroup α] :
+instance Additive.linearOrderedAddCommGroup [CommGroup α] [LinearOrderedCommGroup α] :
     LinearOrderedAddCommGroup (Additive α) :=
   { Additive.linearOrder, Additive.orderedAddCommGroup with }

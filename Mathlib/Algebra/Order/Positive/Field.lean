@@ -16,7 +16,7 @@ ordered commutative group.
 -/
 
 
-variable {K : Type*} [LinearOrderedField K]
+variable {K : Type*} [Field K] [LinearOrderedField K]
 
 namespace Positive
 
@@ -36,8 +36,12 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
   rfl
 #align positive.coe_zpow Positive.coe_zpow
 
+local instance : CommGroup { x : K // 0 < x } where
+  toInv := Positive.Subtype.inv
+  __ := Subtype.coe_injective.commMonoid (Subtype.val) (by exact val_one) val_mul val_pow
+  mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne'
+
 instance : LinearOrderedCommGroup { x : K // 0 < x } :=
-  { Positive.Subtype.inv, Positive.linearOrderedCancelCommMonoid with
-    mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne' }
+  { Positive.linearOrderedCancelCommMonoid with }
 
 end Positive

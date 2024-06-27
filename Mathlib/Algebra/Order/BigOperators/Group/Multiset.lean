@@ -22,7 +22,7 @@ variable {ι α β : Type*}
 
 namespace Multiset
 section OrderedCommMonoid
-variable [OrderedCommMonoid α] {s t : Multiset α} {a : α}
+variable [CommMonoid α] [OrderedCommMonoid α] {s t : Multiset α} {a : α}
 
 @[to_additive sum_nonneg]
 lemma one_le_prod_of_one_le : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
@@ -76,7 +76,7 @@ lemma prod_map_le_prod (f : α → α) (h : ∀ x, x ∈ s → f x ≤ x) : (s.m
 
 @[to_additive]
 lemma prod_le_prod_map (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) : s.prod ≤ (s.map f).prod :=
-  @prod_map_le_prod αᵒᵈ _ _ f h
+  @prod_map_le_prod αᵒᵈ _ _ _ f h
 #align multiset.prod_le_prod_map Multiset.prod_le_prod_map
 #align multiset.sum_le_sum_map Multiset.sum_le_sum_map
 
@@ -90,7 +90,7 @@ lemma pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
 end OrderedCommMonoid
 
 section
-variable [CommMonoid α] [OrderedCommMonoid β]
+variable [CommMonoid α] [CommMonoid β] [OrderedCommMonoid β]
 
 @[to_additive le_sum_of_subadditive_on_pred]
 lemma le_prod_of_submultiplicative_on_pred (f : α → β)
@@ -145,7 +145,7 @@ lemma le_prod_nonempty_of_submultiplicative (f : α → β) (h_mul : ∀ a b, f 
 end
 
 section OrderedCancelCommMonoid
-variable [OrderedCancelCommMonoid α] {s : Multiset ι} {f g : ι → α}
+variable [CommMonoid α] [OrderedCancelCommMonoid α] {s : Multiset ι} {f g : ι → α}
 
 @[to_additive sum_lt_sum]
 lemma prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
@@ -163,7 +163,7 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 end OrderedCancelCommMonoid
 
 section CanonicallyOrderedCommMonoid
-variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
+variable [CommMonoid α] [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
 
 @[to_additive] lemma prod_eq_one_iff : m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l ↦ by simpa using List.prod_eq_one_iff
@@ -185,7 +185,7 @@ lemma max_le_of_forall_le {α : Type*} [LinearOrder α] [OrderBot α] (l : Multi
   simpa using List.max_le_of_forall_le _ _ h
 #align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le
 
-lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
+lemma abs_sum_le_sum_abs [AddCommGroup α] [LinearOrderedAddCommGroup α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero abs_add s
 #align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs

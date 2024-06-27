@@ -61,31 +61,32 @@ instance Multiplicative.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrd
 instance Additive.boundedOrder [LE α] : ∀ [BoundedOrder α], BoundedOrder (Additive α) :=
   fun {inst} => inst
 
-instance Multiplicative.orderedCommMonoid [OrderedAddCommMonoid α] :
+instance Multiplicative.orderedCommMonoid [AddCommMonoid α] [OrderedAddCommMonoid α] :
     OrderedCommMonoid (Multiplicative α) :=
-  { Multiplicative.partialOrder, Multiplicative.commMonoid with
-    mul_le_mul_left := @OrderedAddCommMonoid.add_le_add_left α _ }
+  { Multiplicative.partialOrder, Multiplicative.commMonoid (α := α) with
+    mul_le_mul_left := @OrderedAddCommMonoid.add_le_add_left α _ _ }
 
-instance Additive.orderedAddCommMonoid [OrderedCommMonoid α] :
+instance Additive.orderedAddCommMonoid [CommMonoid α] [OrderedCommMonoid α] :
     OrderedAddCommMonoid (Additive α) :=
-  { Additive.partialOrder, Additive.addCommMonoid with
-    add_le_add_left := @OrderedCommMonoid.mul_le_mul_left α _ }
+  { Additive.partialOrder, Additive.addCommMonoid (α := α) with
+    add_le_add_left := @OrderedCommMonoid.mul_le_mul_left α _ _ }
 
-instance Multiplicative.orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
+instance Multiplicative.orderedCancelAddCommMonoid
+    [AddCommMonoid α] [OrderedCancelAddCommMonoid α] :
     OrderedCancelCommMonoid (Multiplicative α) :=
   { Multiplicative.orderedCommMonoid with
-    le_of_mul_le_mul_left := @OrderedCancelAddCommMonoid.le_of_add_le_add_left α _ }
+    le_of_mul_le_mul_left := @OrderedCancelAddCommMonoid.le_of_add_le_add_left α _ _ }
 
-instance Additive.orderedCancelAddCommMonoid [OrderedCancelCommMonoid α] :
+instance Additive.orderedCancelAddCommMonoid [CommMonoid α] [OrderedCancelCommMonoid α] :
     OrderedCancelAddCommMonoid (Additive α) :=
   { Additive.orderedAddCommMonoid with
-    le_of_add_le_add_left := @OrderedCancelCommMonoid.le_of_mul_le_mul_left α _ }
+    le_of_add_le_add_left := @OrderedCancelCommMonoid.le_of_mul_le_mul_left α _ _ }
 
-instance Multiplicative.linearOrderedCommMonoid [LinearOrderedAddCommMonoid α] :
+instance Multiplicative.linearOrderedCommMonoid [AddCommMonoid α] [LinearOrderedAddCommMonoid α] :
     LinearOrderedCommMonoid (Multiplicative α) :=
   { Multiplicative.linearOrder, Multiplicative.orderedCommMonoid with }
 
-instance Additive.linearOrderedAddCommMonoid [LinearOrderedCommMonoid α] :
+instance Additive.linearOrderedAddCommMonoid [CommMonoid α] [LinearOrderedCommMonoid α] :
     LinearOrderedAddCommMonoid (Additive α) :=
   { Additive.linearOrder, Additive.orderedAddCommMonoid with }
 
@@ -96,22 +97,23 @@ instance Multiplicative.existsMulOfLe [Add α] [LE α] [ExistsAddOfLE α] :
 instance Additive.existsAddOfLe [Mul α] [LE α] [ExistsMulOfLE α] : ExistsAddOfLE (Additive α) :=
   ⟨@exists_mul_of_le α _ _ _⟩
 
-instance Multiplicative.canonicallyOrderedCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+instance Multiplicative.canonicallyOrderedCommMonoid
+    [AddCommMonoid α] [CanonicallyOrderedAddCommMonoid α] :
     CanonicallyOrderedCommMonoid (Multiplicative α) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.orderBot,
-    Multiplicative.existsMulOfLe with le_self_mul := @le_self_add α _ }
+    Multiplicative.existsMulOfLe with le_self_mul := @le_self_add α _ _ }
 
-instance Additive.canonicallyOrderedAddCommMonoid [CanonicallyOrderedCommMonoid α] :
+instance Additive.canonicallyOrderedAddCommMonoid [CommMonoid α] [CanonicallyOrderedCommMonoid α] :
     CanonicallyOrderedAddCommMonoid (Additive α) :=
   { Additive.orderedAddCommMonoid, Additive.orderBot, Additive.existsAddOfLe with
-    le_self_add := @le_self_mul α _ }
+    le_self_add := @le_self_mul α _ _ }
 
 instance Multiplicative.canonicallyLinearOrderedCommMonoid
-    [CanonicallyLinearOrderedAddCommMonoid α] :
+    [AddCommMonoid α] [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedCommMonoid (Multiplicative α) :=
   { Multiplicative.canonicallyOrderedCommMonoid, Multiplicative.linearOrder with }
 
-instance [CanonicallyLinearOrderedCommMonoid α] :
+instance [CommMonoid α] [CanonicallyLinearOrderedCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (Additive α) :=
   { Additive.canonicallyOrderedAddCommMonoid, Additive.linearOrder with }
 

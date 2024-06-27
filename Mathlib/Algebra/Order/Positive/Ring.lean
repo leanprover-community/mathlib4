@@ -94,7 +94,7 @@ instance covariantClass_add_le [AddMonoid M] [PartialOrder M]
 
 section Mul
 
-variable [StrictOrderedSemiring R]
+variable [Semiring R] [StrictOrderedSemiring R]
 
 instance : Mul { x : R // 0 < x } :=
   ⟨fun x y => ⟨x * y, mul_pos x.2 y.2⟩⟩
@@ -134,20 +134,24 @@ end Mul
 
 section mul_comm
 
-instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
-    OrderedCommMonoid { x : R // 0 < x } :=
-  { Subtype.partialOrder _,
-    Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow with
-    mul_le_mul_left := fun _ _ hxy c =>
-      Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_left hxy c.2.le }
+instance orderedCommMonoid [CommSemiring R] [StrictOrderedCommSemiring R] [Nontrivial R] :
+    letI := Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
+    OrderedCommMonoid { x : R // 0 < x } where
+  __ := Subtype.partialOrder _
+  __ := Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
+  mul_le_mul_left := fun _ _ hxy c =>
+      Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_left hxy c.2.le
 #align positive.subtype.ordered_comm_monoid Positive.orderedCommMonoid
 
 /-- If `R` is a nontrivial linear ordered commutative semiring, then `{x : R // 0 < x}` is a linear
 ordered cancellative commutative monoid. -/
-instance linearOrderedCancelCommMonoid [LinearOrderedCommSemiring R] :
-    LinearOrderedCancelCommMonoid { x : R // 0 < x } :=
-  { Subtype.instLinearOrder _, Positive.orderedCommMonoid with
-    le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
+instance linearOrderedCancelCommMonoid [CommSemiring R] [LinearOrderedCommSemiring R] :
+    letI := Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
+    LinearOrderedCancelCommMonoid { x : R // 0 < x } where
+  __ := Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
+  __ := Subtype.instLinearOrder _
+  __ := Positive.orderedCommMonoid
+  le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h
 #align positive.subtype.linear_ordered_cancel_comm_monoid Positive.linearOrderedCancelCommMonoid
 
 end mul_comm

@@ -28,10 +28,12 @@ namespace Pi
 @[to_additive
       "The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid."]
-instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMonoid (Z i)] :
+instance orderedCommMonoid {ι : Type*} {Z : ι → Type*}
+    [∀ i, CommMonoid (Z i)] [∀ i, OrderedCommMonoid (Z i)] :
+    letI := Pi.commMonoid (f := Z)
     OrderedCommMonoid (∀ i, Z i) where
   __ := Pi.partialOrder
-  __ := Pi.commMonoid
+  __ := Pi.commMonoid (f := Z)
   mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
 #align pi.ordered_comm_monoid Pi.orderedCommMonoid
 #align pi.ordered_add_comm_monoid Pi.orderedAddCommMonoid
@@ -49,7 +51,8 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 @[to_additive
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
-instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
+instance {ι : Type*} {Z : ι → Type*}
+    [∀ i, CommMonoid (Z i)] [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
     CanonicallyOrderedCommMonoid (∀ i, Z i) where
   __ := Pi.instOrderBot
   __ := Pi.orderedCommMonoid
@@ -57,24 +60,26 @@ instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z
   le_self_mul _ _ := fun _ => le_self_mul
 
 @[to_additive]
-instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
+instance orderedCancelCommMonoid
+    [∀ i, CommMonoid <| f i] [∀ i, OrderedCancelCommMonoid <| f i] :
+    letI := Pi.commMonoid (f := f)
     OrderedCancelCommMonoid (∀ i : I, f i) where
-  __ := Pi.commMonoid
+  __ := Pi.commMonoid (f := f)
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
   mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
 #align pi.ordered_cancel_comm_monoid Pi.orderedCancelCommMonoid
 #align pi.ordered_cancel_add_comm_monoid Pi.orderedAddCancelCommMonoid
 
 @[to_additive]
-instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) where
-  __ := Pi.commGroup
+instance orderedCommGroup [∀ i, CommGroup <| f i] [∀ i, OrderedCommGroup <| f i] :
+    OrderedCommGroup (∀ i : I, f i) where
   __ := Pi.orderedCommMonoid
-  npow := Monoid.npow
 #align pi.ordered_comm_group Pi.orderedCommGroup
 #align pi.ordered_add_comm_group Pi.orderedAddCommGroup
 
-instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) where
-  __ := Pi.semiring
+instance orderedSemiring [∀ i, Semiring (f i)] [∀ i, OrderedSemiring (f i)] :
+    OrderedSemiring (∀ i, f i) where
+  __ := Pi.semiring (f := f)
   __ := Pi.partialOrder
   add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
   zero_le_one := fun i => zero_le_one (α := f i)
@@ -82,19 +87,21 @@ instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i
   mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
 #align pi.ordered_semiring Pi.orderedSemiring
 
-instance orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) where
-  __ := Pi.commSemiring
+instance orderedCommSemiring [∀ i, CommSemiring (f i)] [∀ i, OrderedCommSemiring (f i)] :
+    OrderedCommSemiring (∀ i, f i) where
+  __ := Pi.commSemiring (f := f)
   __ := Pi.orderedSemiring
 #align pi.ordered_comm_semiring Pi.orderedCommSemiring
 
-instance orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) where
-  __ := Pi.ring
+instance orderedRing [∀ i, Ring (f i)] [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) where
+  __ := Pi.ring (f := f)
   __ := Pi.orderedSemiring
   mul_nonneg _ _ ha hb := fun _ => mul_nonneg (ha _) (hb _)
 #align pi.ordered_ring Pi.orderedRing
 
-instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) where
-  __ := Pi.commRing
+instance orderedCommRing [∀ i, CommRing (f i)] [∀ i, OrderedCommRing (f i)] :
+    OrderedCommRing (∀ i, f i) where
+  __ := Pi.commRing (f := f)
   __ := Pi.orderedRing
 #align pi.ordered_comm_ring Pi.orderedCommRing
 

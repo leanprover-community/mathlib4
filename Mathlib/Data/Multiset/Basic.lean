@@ -675,17 +675,17 @@ instance : CovariantClass (Multiset α) (Multiset α) (· + ·) (· ≤ ·) :=
 instance : ContravariantClass (Multiset α) (Multiset α) (· + ·) (· ≤ ·) :=
   ⟨fun _s _t _u => add_le_add_iff_left'.1⟩
 
-instance : OrderedCancelAddCommMonoid (Multiset α) where
-  zero := 0
-  add := (· + ·)
+instance : AddCommMonoid (Multiset α) where
   add_comm := fun s t => Quotient.inductionOn₂ s t fun l₁ l₂ => Quot.sound perm_append_comm
   add_assoc := fun s₁ s₂ s₃ =>
     Quotient.inductionOn₃ s₁ s₂ s₃ fun l₁ l₂ l₃ => congr_arg _ <| append_assoc l₁ l₂ l₃
-  zero_add := fun s => Quot.inductionOn s fun l => rfl
   add_zero := fun s => Quotient.inductionOn s fun l => congr_arg _ <| append_nil l
-  add_le_add_left := fun s₁ s₂ => add_le_add_left
-  le_of_add_le_add_left := fun s₁ s₂ s₃ => le_of_add_le_add_left
+  zero_add := fun s => Quot.inductionOn s fun l => rfl
   nsmul := nsmulRec
+
+instance : OrderedCancelAddCommMonoid (Multiset α) where
+  add_le_add_left _ _ := add_le_add_left
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left
 
 theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_add_left (zero_le t) s
 #align multiset.le_add_right Multiset.le_add_right

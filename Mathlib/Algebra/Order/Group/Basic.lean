@@ -20,7 +20,7 @@ open Function Int
 variable {α M R : Type*}
 
 section OrderedCommGroup
-variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
+variable [CommGroup α] [OrderedCommGroup α] {m n : ℤ} {a b : α}
 
 @[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
   obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
@@ -99,7 +99,7 @@ end OrderedCommGroup
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
+variable [CommGroup α] [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
 
 @[to_additive] lemma zpow_le_zpow_iff' (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
   (zpow_strictMono_left α hn).le_iff_le

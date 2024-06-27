@@ -11,7 +11,7 @@ import Mathlib.Data.Finset.Lattice
 -/
 
 namespace Finset
-variable {ι R : Type*} [LinearOrderedSemiring R] {a b : ι → R}
+variable {ι R : Type*} [Semiring R] [LinearOrderedSemiring R] {a b : ι → R}
 
 theorem sup_mul_le_mul_sup_of_nonneg [OrderBot R] (s : Finset ι) (ha : ∀ i ∈ s, 0 ≤ a i)
     (hb : ∀ i ∈ s, 0 ≤ b i) : s.sup (a * b) ≤ s.sup a * s.sup b :=

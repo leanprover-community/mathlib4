@@ -14,7 +14,7 @@ rings.
 -/
 
 namespace Multiset
-variable {R : Type*}
+variable {R : Type*} [CommSemiring R]
 
 section OrderedCommSemiring
 variable [OrderedCommSemiring R] {s : Multiset R}

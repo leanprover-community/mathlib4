@@ -949,7 +949,7 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 #align map_finset_sup' map_finset_sup'
 
-lemma nsmul_sup' [LinearOrderedAddCommMonoid β] {s : Finset α}
+lemma nsmul_sup' [AddCommMonoid β] [LinearOrderedAddCommMonoid β] {s : Finset α}
     (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
   let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
@@ -1130,7 +1130,7 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 #align map_finset_inf' map_finset_inf'
 
-lemma nsmul_inf' [LinearOrderedAddCommMonoid β] {s : Finset α}
+lemma nsmul_inf' [AddCommMonoid β] [LinearOrderedAddCommMonoid β] {s : Finset α}
     (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
   let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }

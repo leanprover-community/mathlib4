@@ -178,7 +178,7 @@ instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Non
   __ := instMonoidWithZero
   mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
 
-variable [CanonicallyOrderedCommSemiring α]
+variable [CommSemiring α] [CanonicallyOrderedCommSemiring α]
 
 private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
   induction' c with c
@@ -199,13 +199,14 @@ instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
       rw [mul_comm, distrib', mul_comm b, mul_comm c] }
 
 instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
-  { WithTop.commSemiring, WithTop.canonicallyOrderedAddCommMonoid with
+  { WithTop.commSemiring (α := α), WithTop.canonicallyOrderedAddCommMonoid with
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps (config := .asFn)]
-protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSemiring R]
-    [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
+protected def _root_.RingHom.withTopMap {R S : Type*}
+    [CommSemiring R] [CanonicallyOrderedCommSemiring R] [DecidableEq R] [Nontrivial R]
+    [CommSemiring S] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
 #align ring_hom.with_top_map RingHom.withTopMap
@@ -302,7 +303,7 @@ end MonoidWithZero
 instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithBot α) := WithTop.instCommMonoidWithZero
 
-instance commSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+instance commSemiring [CommSemiring α] [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     CommSemiring (WithBot α) :=
   WithTop.commSemiring
 
@@ -430,9 +431,9 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0 ⟩
 
-instance orderedCommSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+instance orderedCommSemiring [CommSemiring α] [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     OrderedCommSemiring (WithBot α) :=
-  { WithBot.zeroLEOneClass, WithBot.orderedAddCommMonoid, WithBot.commSemiring with
+  { WithBot.zeroLEOneClass, WithBot.orderedAddCommMonoid, WithBot.commSemiring (α := α) with
     mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
     mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right }
 

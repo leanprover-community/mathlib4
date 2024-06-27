@@ -35,29 +35,33 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
-class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
-  CommMonoidWithZero α where
+class LinearOrderedCommMonoidWithZero (α : Type*) [CommMonoidWithZero α] extends LinearOrder α where
+  protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c, c * a ≤ c * b
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 #align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
 
 /-- A linearly ordered commutative group with a zero element. -/
-class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
-  CommGroupWithZero α
+class LinearOrderedCommGroupWithZero (α : Type*) [CommGroupWithZero α]
+    extends LinearOrderedCommMonoidWithZero α
 #align linear_ordered_comm_group_with_zero LinearOrderedCommGroupWithZero
 
+instance (priority := 100) LinearOrderedCommMonoidWithZero.toOrderedCommMonoid
+    [CommMonoidWithZero α] [LinearOrderedCommMonoidWithZero α] : OrderedCommMonoid α where
+  __ := ‹LinearOrderedCommMonoidWithZero α›
+
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
-    [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
+    [CommMonoidWithZero α] [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
   { ‹LinearOrderedCommMonoidWithZero α› with }
 #align linear_ordered_comm_monoid_with_zero.to_zero_le_one_class LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 
 instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
-    [CanonicallyOrderedAddCommMonoid α] [One α] : ZeroLEOneClass α :=
+    [AddCommMonoid α] [CanonicallyOrderedAddCommMonoid α] [One α] : ZeroLEOneClass α :=
   ⟨zero_le 1⟩
 #align canonically_ordered_add_monoid.to_zero_le_one_class canonicallyOrderedAddCommMonoid.toZeroLeOneClass
 
 section LinearOrderedCommMonoidWithZero
-variable [LinearOrderedCommMonoidWithZero α] {a b c d x y z : α} {n : ℕ}
+variable [CommMonoidWithZero α] [LinearOrderedCommMonoidWithZero α] {a b c d x y z : α} {n : ℕ}
 
 /-
 The following facts are true more generally in a (linearly) ordered commutative monoid.
@@ -68,9 +72,10 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
     [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
+    letI := hf.commMonoidWithZero f zero one mul npow
     LinearOrderedCommMonoidWithZero β :=
-  { LinearOrder.lift f hf hsup hinf, hf.orderedCommMonoid f one mul npow,
-    hf.commMonoidWithZero f zero one mul npow with
+  letI := hf.commMonoidWithZero f zero one mul npow
+  { LinearOrder.lift f hf hsup hinf, hf.orderedCommMonoid f one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
 #align function.injective.linear_ordered_comm_monoid_with_zero Function.Injective.linearOrderedCommMonoidWithZero
@@ -112,7 +117,7 @@ lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by simp_rw [zero_lt_if
 end LinearOrderedCommMonoidWithZero
 
 section LinearOrderedCommGroupWithZero
-variable [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
+variable [CommGroupWithZero α] [LinearOrderedCommGroupWithZero α] {a b c d : α} {m n : ℕ}
 
 -- TODO: Do we really need the following two?
 /-- Alias of `mul_le_one'` for unification. -/
@@ -280,13 +285,18 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
+-- Move this to appropriate place
+local instance : CommSubNegMonoid (Additive αᵒᵈ) where
+  __ := Additive.subNegMonoid
+  add_comm := add_comm
+
 #adaptation_note /-- 2024-04-23
 After https://github.com/leanprover/lean4/pull/3965,
 we need to either write `@inv_zero (G₀ := α) (_)` in `neg_top`,
 or use `set_option backward.isDefEq.lazyProjDelta false`.
 See https://github.com/leanprover-community/mathlib4/issues/12535 -/
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
-  { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
+  { instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := set_option backward.isDefEq.lazyProjDelta false in @inv_zero _ (_)
     add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
@@ -304,24 +314,36 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
 
 end LinearOrderedCommGroupWithZero
 
-instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
-    [LinearOrderedAddCommMonoidWithTop α] :
-    LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
-  { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
+-- Move this to appropriate place... or not
+local instance [AddCommMonoid α] [LinearOrderedAddCommMonoidWithTop α] :
+    CommMonoidWithZero (Multiplicative αᵒᵈ) where
+    __ := Multiplicative.commMonoid (α := α)
     zero := Multiplicative.ofAdd (⊤ : α)
-    zero_mul := @top_add _ (_)
     -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3. See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
-    mul_zero := @add_top _ (_)
+    zero_mul := @top_add α _ _
+    mul_zero := @add_top α _ _
+
+instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
+    [AddCommMonoid α] [LinearOrderedAddCommMonoidWithTop α] :
+    LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
+  { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
 #align multiplicative.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 
-instance [LinearOrderedAddCommGroupWithTop α] :
+local instance [CommSubNegMonoid α] [LinearOrderedAddCommGroupWithTop α] :
+    CommGroupWithZero (Multiplicative αᵒᵈ) where
+  __ := Multiplicative.divInvMonoid
+  mul_comm := mul_comm
+  zero_mul := zero_mul
+  mul_zero := mul_zero
+  mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel α _ (_)
+  inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top α _ (_)
+
+instance [CommSubNegMonoid α] [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
-  { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
-    Multiplicative.instNontrivial with
-    inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top _ (_)
-    mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
+  { instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
+    Multiplicative.instNontrivial (α := α) with }
 
 namespace WithZero
 section Preorder
@@ -435,8 +457,8 @@ protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := 
 
 end LinearOrder
 
-instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
-  { WithZero.commMonoidWithZero.toCommMonoid, WithZero.partialOrder with
+instance orderedCommMonoid [CommMonoid α] [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
+  { WithZero.commMonoidWithZero (α := α) |>.toCommMonoid, WithZero.partialOrder with
     mul_le_mul_left := fun _ _ => mul_le_mul_left' }
 
 /-
@@ -448,15 +470,15 @@ elements are ≤ 1 and then 1 is the top element.
 -/
 /-- If `0` is the least element in `α`, then `WithZero α` is an `OrderedAddCommMonoid`. -/
 -- See note [reducible non-instances]
-protected abbrev orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
-    OrderedAddCommMonoid (WithZero α) :=
-  { WithZero.partialOrder, WithZero.addCommMonoid with
+protected abbrev orderedAddCommMonoid [AddCommMonoid α] [OrderedAddCommMonoid α]
+    (zero_le : ∀ a : α, 0 ≤ a) : OrderedAddCommMonoid (WithZero α) :=
+  { WithZero.partialOrder, WithZero.addCommMonoid (α := α) with
     add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
 #align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
 
 -- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
-instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+instance canonicallyOrderedAddCommMonoid [AddCommMonoid α] [CanonicallyOrderedAddCommMonoid α] :
     CanonicallyOrderedAddCommMonoid (WithZero α) :=
   { WithZero.orderBot,
     WithZero.orderedAddCommMonoid _root_.zero_le,
@@ -469,20 +491,21 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
       · exact WithZero.coe_le_coe.2 le_self_add }
 #align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddCommMonoid
 
-instance canonicallyLinearOrderedAddCommMonoid [CanonicallyLinearOrderedAddCommMonoid α] :
+instance canonicallyLinearOrderedAddCommMonoid
+    [AddCommMonoid α] [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithZero α) :=
   { WithZero.canonicallyOrderedAddCommMonoid, WithZero.linearOrder with }
 #align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddCommMonoid
 
-instance instLinearOrderedCommMonoidWithZero [LinearOrderedCommMonoid α] :
+instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrderedCommMonoid α] :
     LinearOrderedCommMonoidWithZero (WithZero α) :=
-  { WithZero.linearOrder, WithZero.commMonoidWithZero with
+  { WithZero.linearOrder, WithZero.commMonoidWithZero (α := α) with
     mul_le_mul_left := fun _ _ ↦ mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
 #align with_zero.linear_ordered_comm_monoid_with_zero WithZero.instLinearOrderedCommMonoidWithZero
 
-instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
+instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrderedCommGroup α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
   __ := instLinearOrderedCommMonoidWithZero
-  __ := commGroupWithZero
+  __ := commGroupWithZero (α := α)
 
 end WithZero

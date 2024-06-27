@@ -396,10 +396,11 @@ instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
+instance orderedAddCommMonoid [AddCommMonoid α] [OrderedAddCommMonoid α] :
+    OrderedAddCommMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
 
-instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
+instance linearOrderedAddCommMonoidWithTop [AddCommMonoid α] [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoidWithTop (WithTop α) :=
   { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
     top_add' := WithTop.top_add }
@@ -414,7 +415,7 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+instance canonicallyOrderedAddCommMonoid [AddCommMonoid α] [CanonicallyOrderedAddCommMonoid α] :
     CanonicallyOrderedAddCommMonoid (WithTop α) :=
   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
     le_self_add := fun a b =>
@@ -424,19 +425,19 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
       | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
       | ⊤, (b : α) => le_rfl }
 
-instance [CanonicallyLinearOrderedAddCommMonoid α] :
+instance [AddCommMonoid α] [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
   { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
 @[simp]
-theorem zero_lt_top [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=
+theorem zero_lt_top [AddCommMonoid α] [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=
   coe_lt_top 0
 #align with_top.zero_lt_top WithTop.zero_lt_top
 
 -- Porting note (#10618): simp can already prove this.
 -- @[simp]
 @[norm_cast]
-theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
+theorem zero_lt_coe [AddCommMonoid α] [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
   coe_lt_coe
 #align with_top.zero_lt_coe WithTop.zero_lt_coe
 
@@ -784,11 +785,12 @@ protected theorem add_lt_add_of_lt_of_le [CovariantClass α α (· + ·) (· ≤
 
 end Add
 
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
-  { WithBot.partialOrder, WithBot.addCommMonoid with
+instance orderedAddCommMonoid [AddCommMonoid α] [OrderedAddCommMonoid α] :
+    OrderedAddCommMonoid (WithBot α) :=
+  { WithBot.partialOrder, WithBot.addCommMonoid (α := α) with
     add_le_add_left := fun _ _ h c => add_le_add_left h c }
 
-instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
+instance linearOrderedAddCommMonoid [AddCommMonoid α] [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoid (WithBot α) :=
   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
 
