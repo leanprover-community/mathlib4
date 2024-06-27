@@ -365,16 +365,20 @@ theorem hasLimits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Reflec
 #align category_theory.has_limits_of_reflective CategoryTheory.hasLimits_of_reflective
 
 /-- If `C` has colimits of shape `J` then any reflective subcategory has colimits of shape `J`. -/
+theorem hasColimit_of_reflective (F : J ⥤ D) (R : D ⥤ C) [Reflective R] [HasColimit (F ⋙ R)] :
+    HasColimit F := by
+  let c := (monadicLeftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
+  letI : PreservesColimitsOfShape J (monadicLeftAdjoint R) :=
+        (monadicAdjunction R).leftAdjointPreservesColimits.1
+  let t : IsColimit c := isColimitOfPreserves (monadicLeftAdjoint R) (colimit.isColimit _)
+  apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
+  apply
+    (isoWhiskerLeft F (asIso (monadicAdjunction R).counit) : _) ≪≫ F.rightUnitor
+
+/-- If `C` has colimits of shape `J` then any reflective subcategory has colimits of shape `J`. -/
 theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfShape J C] :
     HasColimitsOfShape J D where
-  has_colimit := fun F => by
-      let c := (monadicLeftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
-      letI : PreservesColimitsOfShape J _ :=
-        (monadicAdjunction R).leftAdjointPreservesColimits.1
-      let t : IsColimit c := isColimitOfPreserves (monadicLeftAdjoint R) (colimit.isColimit _)
-      apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
-      apply
-        (isoWhiskerLeft F (asIso (monadicAdjunction R).counit) : _) ≪≫ F.rightUnitor
+  has_colimit := fun F => hasColimit_of_reflective F R
 #align category_theory.has_colimits_of_shape_of_reflective CategoryTheory.hasColimitsOfShape_of_reflective
 
 /-- If `C` has colimits then any reflective subcategory has colimits. -/
