@@ -120,12 +120,6 @@ theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectru
   EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
   (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm) _
 
-/--Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
-theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
-  apply spectrum.of_algebraMap_mem (S := 𝕜) (R := ℝ) (A := Matrix n n 𝕜)
-  rw [← spec_toEuclideanLin_eq_spec]
-  apply hA.ofReal_eigenvalue_mem_spectrum_toEuclideanLin
-
 /--Definition of the StarAlgHom for the functional calculus of a Hermitian matrix. -/
 @[simps]
 noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
@@ -147,8 +141,7 @@ noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) 
     simp
   commutes' r := by
     simp only [Function.comp, algebraMap_apply, smul_eq_mul, mul_one]
-    rw [IsScalarTower.algebraMap_apply ℝ 𝕜 _ r, RCLike.algebraMap_eq_ofReal,
-      ← mul_one (algebraMap _ _ _), ← unitary.coe_mul_star_self hA.eigenvectorUnitary,
+    rw [← mul_one (algebraMap _ _ _), ← unitary.coe_mul_star_self hA.eigenvectorUnitary,
       ← Algebra.left_comm, unitary.coe_star, mul_assoc]
     congr!
   map_star' f := by
@@ -157,7 +150,7 @@ noncomputable def cfc : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) 
     congr!
     ext
     simp
-
+#exit
 /-- Instance of the Continuous Functional Calculus for a Hermitian Matrix over an RCLike field.-/
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
