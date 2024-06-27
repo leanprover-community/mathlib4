@@ -120,6 +120,8 @@ instance : AddZeroClass StieltjesFunction where
   zero_add _ := ext fun _ ↦ zero_add _
   add_zero _ := ext fun _ ↦ add_zero _
 
+@[simp] lemma add_apply (f g : StieltjesFunction) (x : ℝ) : (f + g) x = f x + g x := rfl
+
 instance : AddCommMonoid StieltjesFunction where
   nsmul n f := nsmulRec n f
   add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
@@ -140,7 +142,7 @@ instance : Module ℝ≥0 StieltjesFunction where
 
 @[simp] lemma zero_apply (x : ℝ) : (0 : StieltjesFunction) x = 0 := rfl
 
-@[simp] lemma add_apply (f g : StieltjesFunction) (x : ℝ) : (f + g) x = f x + g x := rfl
+lemma smul_def (c : ℝ≥0) (f : StieltjesFunction) (x : ℝ) : (c • f) x = c * f x := rfl
 
 /-- If a function `f : ℝ → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
 at `x` is a Stieltjes function, i.e., it is monotone and right-continuous. -/
@@ -565,9 +567,8 @@ lemma measure_add (f g : StieltjesFunction) : (f + g).measure = f.measure + g.me
 @[simp]
 lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction) : (c • f).measure = c • f.measure := by
   refine Measure.ext_of_Ioc _ _ (fun a b _ ↦ ?_)
-  simp only [measure_Ioc, Measure.smul_apply]
-  change ofReal (c * f b - c * f a) = c • ofReal (f b - f a)
-  rw [← _root_.mul_sub, ENNReal.ofReal_mul zero_le_coe, ofReal_coe_nnreal, ← smul_eq_mul]
-  rfl
+  simp only [measure_Ioc, Measure.smul_apply, smul_def]
+  rw [← _root_.mul_sub, ENNReal.ofReal_mul zero_le_coe, ofReal_coe_nnreal, ← smul_eq_mul,
+    ENNReal.smul_def]
 
 end StieltjesFunction
