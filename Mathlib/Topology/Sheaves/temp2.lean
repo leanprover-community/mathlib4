@@ -596,9 +596,20 @@ section skyscraper
 
 open Classical
 
+noncomputable instance : Unique (⊤_ AddCommGrp.{u}) := by
+  let e : ⊤_ AddCommGrp.{u} ≅ AddCommGrp.of PUnit :=
+    terminalIsoIsTerminal (IsTerminal.ofUniqueHom (fun _ => 0) fun X f => by aesop)
+  exact Equiv.unique ⟨e.hom, e.inv, Iso.hom_inv_id_apply e, Iso.inv_hom_id_apply e⟩
+
+lemma subsingleton__ (M : ModuleCat (ℛ.presheaf.stalk pt)) (W : Opens ℛ) (h : pt ∉ W) :
+    Subsingleton ((skyscraperPresheaf pt $ AddCommGrp.of M).obj $ op W) := by
+  let e : ((skyscraperPresheaf pt $ AddCommGrp.of M).obj $ op W) ≅ ⊤_ AddCommGrp :=
+    eqToIso (by simp only [skyscraperPresheaf_obj, ite_eq_right_iff]; tauto)
+  exact Equiv.subsingleton ⟨e.hom, e.inv, e.hom_inv_id_apply, e.inv_hom_id_apply⟩
+
 noncomputable
-instance skyModule (M : ModuleCat (ℛ.presheaf.stalk pt)) (U : Opens ℛ) :
-    Module (ℛ.presheaf.obj $ op U) $
+instance skySMul (M : ModuleCat (ℛ.presheaf.stalk pt)) (U : Opens ℛ) :
+    SMul (ℛ.presheaf.obj $ op U) $
       (skyscraperPresheaf pt $ AddCommGrp.of M).obj (op U) where
   smul r m :=
     if h : pt ∈ U
@@ -608,12 +619,6 @@ instance skyModule (M : ModuleCat (ℛ.presheaf.stalk pt)) (U : Opens ℛ) :
             AddCommGrp.of M := eqToIso (by aesop)
       e.inv $ M.3.smul (ℛ.presheaf.germ ⟨pt, h⟩ r) (e.hom m)
     else 0
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  add_smul := sorry
-  zero_smul := sorry
 
 lemma skyModule.smul_def (M : ModuleCat (ℛ.presheaf.stalk pt)) (U : Opens ℛ)
     (r : (ℛ.presheaf.obj $ op U)) (m : (skyscraperPresheaf pt $ AddCommGrp.of M).obj (op U)) :
@@ -626,64 +631,445 @@ lemma skyModule.smul_def (M : ModuleCat (ℛ.presheaf.stalk pt)) (U : Opens ℛ)
       e.inv $ M.3.smul (ℛ.presheaf.germ ⟨pt, h⟩ r) (e.hom m)
     else 0 := rfl
 
+-- set_option maxHeartbeats 1000000 in
+noncomputable
+instance skyMulAction (M : ModuleCat (ℛ.presheaf.stalk pt)) (U : Opens ℛ) :
+    MulAction (ℛ.presheaf.obj $ op U) $
+      (skyscraperPresheaf pt $ AddCommGrp.of M).obj (op U) where
+  one_smul m := by
+    rw [skyModule.smul_def]
+    simp only [skyscraperPresheaf_obj, AddCommGrp.coe_of, eqToIso.inv, map_one, eqToIso.hom]
+    split_ifs with h
+    · generalize_proofs _ _ h1 h2
+      apply_fun eqToHom h1.symm
+      pick_goal 2
+      · exact (ConcreteCategory.bijective_of_isIso (eqToHom h1.symm)).injective
+      erw [← CategoryTheory.comp_apply]
+      rw [eqToHom_trans, eqToHom_refl, id_apply]
+      exact M.3.one_smul (eqToHom h2 m)
+    · exact (subsingleton__ ℛ _ _ _ h).elim _ _
+  mul_smul r s m := by
+    rw [skyModule.smul_def, skyModule.smul_def]
+    simp only [skyscraperPresheaf_obj, AddCommGrp.coe_of, eqToIso.inv, map_mul, eqToIso.hom]
+    split_ifs with h
+    · congr 1
+      convert M.3.mul_smul (ℛ.presheaf.germ ⟨pt, h⟩ r) (ℛ.presheaf.germ ⟨pt, h⟩ s) _
+      rw [skyModule.smul_def]
+      simp only [AddCommGrp.coe_of, skyscraperPresheaf_obj, eqToIso.inv, eqToIso.hom]
+      rw [dif_pos h]
+      erw [← CategoryTheory.comp_apply]
+      rw [eqToHom_trans, eqToHom_refl, id_apply]
+      rfl
+    · exact (subsingleton__ ℛ _ _ _ h).elim _ _
+
+noncomputable
+instance skyDistribMulAction (M : ModuleCat (ℛ.presheaf.stalk pt)) (U : Opens ℛ) :
+    DistribMulAction (ℛ.presheaf.obj $ op U) $
+      (skyscraperPresheaf pt $ AddCommGrp.of M).obj (op U) where
+  smul_zero r := by
+    rw [skyModule.smul_def]
+    simp only [skyscraperPresheaf_obj, AddCommGrp.coe_of, eqToIso.inv, eqToIso.hom, map_zero,
+      dite_eq_right_iff]
+    intro h
+    convert AddMonoidHom.map_zero _
+    convert M.3.smul_zero _
+  smul_add r m n := by
+    rw [skyModule.smul_def]
+    simp only [skyscraperPresheaf_obj, AddCommGrp.coe_of, eqToIso.inv, eqToIso.hom, map_add]
+    split_ifs with h
+    · congr 1
+      rw [skyModule.smul_def, skyModule.smul_def]
+      simp only [AddCommGrp.coe_of, skyscraperPresheaf_obj, eqToIso.inv, eqToIso.hom]
+      rw [dif_pos h, dif_pos h]
+      conv_rhs => erw [← map_add]
+      congr 1
+      convert M.3.smul_add _ _ _
+    · exact (subsingleton__ ℛ _ _ _ h).elim _ _
+
+noncomputable
+instance skyModule (M : ModuleCat (ℛ.presheaf.stalk pt)) (U : Opens ℛ) :
+    Module (ℛ.presheaf.obj $ op U) $
+      (skyscraperPresheaf pt $ AddCommGrp.of M).obj (op U) where
+  add_smul r s m := by
+    rw [skyModule.smul_def, skyModule.smul_def, skyModule.smul_def]
+    simp only [skyscraperPresheaf_obj, AddCommGrp.coe_of, eqToIso.inv, map_add, eqToIso.hom]
+    split_ifs with h
+    · conv_rhs => erw [← map_add]
+      congr 1
+      convert M.3.add_smul _ _ _
+    · exact (subsingleton__ ℛ _ _ _ h).elim _ _
+  zero_smul m := by
+    rw [skyModule.smul_def]
+    simp only [skyscraperPresheaf_obj, AddCommGrp.coe_of, eqToIso.inv, map_zero, eqToIso.hom,
+      dite_eq_right_iff]
+    intro h
+    convert AddMonoidHom.map_zero _
+    convert M.3.zero_smul _
+
+
+noncomputable def rightObj (M : ModuleCat (ℛ.presheaf.stalk pt)) : SheafOfModules (forget2Ring ℛ) where
+val :=
+{ presheaf := skyscraperPresheaf pt $ AddCommGrp.of M
+  module := fun U => skyModule ℛ pt M U.unop
+  map_smul := fun {U V} i r x => by
+    simp only [skyscraperPresheaf_obj, skyscraperPresheaf_map]
+    split_ifs with hV
+    · rw [skyModule.smul_def, skyModule.smul_def]
+      simp only [AddCommGrp.coe_of, op_unop, skyscraperPresheaf_obj, eqToIso.inv, eqToIso.hom]
+      have hU : pt ∈ U.unop := leOfHom i.unop hV
+      rw [dif_pos hV, dif_pos hU]
+      erw [← CategoryTheory.comp_apply]
+      rw [eqToHom_trans]
+      congr 1
+      congr 1
+      · erw [TopCat.Presheaf.germ_res_apply]
+      · erw [← CategoryTheory.comp_apply]
+        rw [eqToHom_trans]
+        rfl
+    · exact (subsingleton__ ℛ _ _ _ hV).elim _ _ }
+isSheaf := skyscraperPresheaf_isSheaf _ _
+
+@[simps]
+noncomputable def rightMap {M N : ModuleCat (ℛ.presheaf.stalk pt)} (l : M ⟶ N) :
+    rightObj ℛ pt M ⟶ rightObj ℛ pt N where
+  val :=
+  { hom := skyscraperPresheafFunctor _ |>.map l.toAddMonoidHom
+    map_smul := by
+      rintro U (r : ℛ.presheaf.obj U) (x : ((skyscraperPresheaf pt (AddCommGrp.of M)).obj U))
+
+      rw [skyModule.smul_def, skyModule.smul_def]
+      simp only [skyscraperPresheaf_obj, skyscraperPresheaf_map, skyscraperPresheafFunctor_map,
+        SkyscraperPresheafFunctor.map'_app, AddCommGrp.coe_of, op_unop, eqToIso.inv, eqToIso.hom]
+
+      split_ifs with h
+      . erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply]
+        rw [eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]
+        simp only [Category.assoc]
+        rw [eqToHom_trans, eqToHom_refl, Category.comp_id]
+        rw [CategoryTheory.comp_apply]
+        erw [l.map_smul]
+        congr
+      · exact (subsingleton__ ℛ _ _ _ h).elim _ _ }
+
+lemma rightMap_id (M : ModuleCat (ℛ.presheaf.stalk pt)) :
+    rightMap ℛ pt (𝟙 M) = 𝟙 _ := by
+  ext U x
+  simp only [PresheafOfModules.Hom.app, rightMap_val_hom, skyscraperPresheafFunctor_map,
+    SkyscraperPresheafFunctor.map'_app, skyscraperPresheaf_obj, IsTerminal.from_self,
+    LinearMap.coe_mk, SheafOfModules.id_val, PresheafOfModules.Hom.id_hom, NatTrans.id_app]
+  split_ifs with h
+  · change _ = x
+    generalize_proofs h1 h2
+    suffices eqToHom h1 ≫ _ ≫ eqToHom h2 = 𝟙 _ by
+      rw [this]; rfl
+    rw [show LinearMap.toAddMonoidHom (𝟙 M) = 𝟙 (AddCommGrp.of M) from rfl,
+      Category.id_comp, eqToHom_trans, eqToHom_refl]
+  · exact (subsingleton__ ℛ _ _ _ h).elim _ _
+
+lemma rightMap_comp {A B C : ModuleCat (ℛ.presheaf.stalk pt)} (f : A ⟶ B) (g : B ⟶ C) :
+    rightMap ℛ pt (f ≫ g) = rightMap ℛ pt f ≫ rightMap ℛ pt g := by
+  ext U x
+  simp only [PresheafOfModules.Hom.app, rightMap_val_hom, skyscraperPresheafFunctor_map,
+    SkyscraperPresheafFunctor.map'_app, skyscraperPresheaf_obj, LinearMap.coe_mk,
+    SheafOfModules.comp_val, PresheafOfModules.Hom.comp_hom, NatTrans.comp_app]
+  split_ifs with h
+  · rw [show LinearMap.toAddMonoidHom (f ≫ g) =
+      (AddCommGrp.ofHom f.toAddMonoidHom : (AddCommGrp.of A ⟶ AddCommGrp.of B)) ≫
+      (AddCommGrp.ofHom g.toAddMonoidHom : (AddCommGrp.of B ⟶ AddCommGrp.of C)) from rfl]
+    conv_rhs => rw [Category.assoc, Category.assoc, eqToHom_trans_assoc, eqToHom_refl,
+      Category.id_comp]
+    rfl
+  · exact (subsingleton__ ℛ _ _ _ h).elim _ _
+
 @[simps]
 noncomputable def right : ModuleCat (ℛ.presheaf.stalk pt) ⥤ SheafOfModules (forget2Ring ℛ) where
-  obj M :=
-  { val :=
-    { presheaf := skyscraperPresheaf pt $ AddCommGrp.of M
-      module := fun U => skyModule ℛ pt M U.unop
-      map_smul := sorry }
-    isSheaf := skyscraperPresheaf_isSheaf _ _ }
-  map {M N} l :=
-  { val :=
-    { hom := skyscraperPresheafFunctor _ |>.map l.toAddMonoidHom
-      map_smul := by
-        rintro U (r : ℛ.presheaf.obj U) (x : ((skyscraperPresheaf pt (AddCommGrp.of M)).obj U))
+  obj := rightObj ℛ pt
+  map := rightMap ℛ pt
+  map_id := rightMap_id ℛ pt
+  map_comp := rightMap_comp ℛ pt
 
-        rw [skyModule.smul_def, skyModule.smul_def]
-        simp only [skyscraperPresheaf_obj, skyscraperPresheaf_map, skyscraperPresheafFunctor_map,
-          SkyscraperPresheafFunctor.map'_app, AddCommGrp.coe_of, op_unop, eqToIso.inv, eqToIso.hom]
+noncomputable def leftObj (ℳ : SheafOfModules (forget2Ring ℛ)) :
+    ModuleCat (ℛ.presheaf.stalk pt) :=
+  ModuleCat.of _ $ TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt
 
-        split_ifs with h
-        . erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply]
-          rw [eqToHom_trans_assoc, eqToHom_refl, Category.id_comp]
-          simp only [Category.assoc]
-          rw [eqToHom_trans, eqToHom_refl, Category.comp_id]
-          rw [CategoryTheory.comp_apply]
-          erw [l.map_smul]
-          congr
-        · sorry
-          } }
-  map_id := sorry
-  map_comp := sorry
+@[simps]
+noncomputable def leftMap {ℳ 𝒩 : SheafOfModules (forget2Ring ℛ)} (l : ℳ ⟶ 𝒩) :
+    leftObj ℛ pt ℳ ⟶ leftObj ℛ pt 𝒩 where
+  toFun := TopCat.Presheaf.stalkFunctor (C := AddCommGrp) pt |>.map l.1.1
+  map_add' := map_add _
+  map_smul' r m := by
+    simp only [TopCat.Presheaf.stalkFunctor_obj, RingHom.id_apply]
+    obtain ⟨U, memU, m, rfl⟩ := TopCat.Presheaf.germ_exist ℳ.1.presheaf pt m
+    obtain ⟨V, memV, r, rfl⟩ := ℛ.presheaf.germ_exist pt r
+    change (TopCat.Presheaf.stalkFunctor AddCommGrp pt).map l.val.hom (stalkSMulStalk _ _ _ _ _) =
+      stalkSMulStalk _ _ _ _ _
+    erw [germ_smul_germ]
+    erw [TopCat.Presheaf.stalkFunctor_map_germ_apply U ⟨pt, memU⟩]
+    erw [TopCat.Presheaf.stalkFunctor_map_germ_apply (V ⊓ U) ⟨pt, ⟨memV, memU⟩⟩]
+    delta sectionSMulSection
+    erw [l.1.map_smul]
+    generalize_proofs _ _ h1 h2
+    rw [show (l.val.hom.app { unop := V ⊓ U }) ((ℳ.val.map { unop := homOfLE h2 }) m) =
+      𝒩.1.map (op $ homOfLE $ inf_le_right) (l.1.hom.app _ m) by
+      erw [← CategoryTheory.comp_apply, l.1.hom.naturality]; rfl]
+    change TopCat.Presheaf.germ 𝒩.val.presheaf ⟨pt, _⟩ (sectionSMulSection _ _ _ _ _ _) = _
+    erw [germ_smul_germ]
+    rfl
 
+lemma leftMap_id (ℳ : SheafOfModules (forget2Ring ℛ)) :
+    leftMap ℛ pt (𝟙 ℳ) = 𝟙 _ := by
+  ext x
+  rw [leftMap_apply]
+  simp
+
+lemma leftMap_comp {𝒜 ℬ 𝒞 : SheafOfModules (forget2Ring ℛ)} (f : 𝒜 ⟶ ℬ) (g : ℬ ⟶ 𝒞) :
+    leftMap ℛ pt (f ≫ g) = leftMap ℛ pt f ≫ leftMap ℛ pt g := by
+  ext x
+  rw [leftMap_apply]
+  simp only [TopCat.Presheaf.stalkFunctor_obj, SheafOfModules.comp_val,
+    PresheafOfModules.Hom.comp_hom, Functor.map_comp, AddCommGrp.coe_comp, Function.comp_apply,
+    ModuleCat.coe_comp]
+  rw [leftMap_apply, leftMap_apply]
+  rfl
+
+@[simps]
 noncomputable def left : SheafOfModules (forget2Ring ℛ) ⥤ ModuleCat (ℛ.presheaf.stalk pt) where
-  obj ℳ := ModuleCat.of _ $ TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt
-  map {ℳ 𝒩} g :=
-  { toFun := TopCat.Presheaf.stalkFunctor (C := AddCommGrp) pt |>.map g.1.1
-    map_add' := map_add _
-    map_smul' := fun r m => sorry }
-  map_id := sorry
-  map_comp := sorry
+  obj := leftObj ℛ pt
+  map := leftMap ℛ pt
+  map_id := leftMap_id ℛ pt
+  map_comp := leftMap_comp ℛ pt
 
+@[simps]
+noncomputable def adjHomEquivToFun (ℳ : SheafOfModules (forget2Ring ℛ))
+    (N : ModuleCat (ℛ.presheaf.stalk pt))
+    (f : leftObj ℛ pt ℳ ⟶ N) : (ℳ ⟶ rightObj ℛ pt N) where
+  val :=
+    { hom := (skyscraperPresheafStalkAdjunction pt).homEquiv _ _ f.toAddMonoidHom
+      map_smul := fun U r x => by
+        simp only [TopCat.Presheaf.stalkFunctor_obj, skyscraperPresheafFunctor_obj,
+          skyscraperPresheafStalkAdjunction, Equiv.coe_fn_mk,
+          StalkSkyscraperPresheafAdjunctionAuxs.toSkyscraperPresheaf_app, skyscraperPresheaf_obj]
+        split_ifs with h
+        · rw [skyModule.smul_def]
+          simp only [AddCommGrp.coe_of, op_unop, skyscraperPresheaf_obj, eqToIso.inv, eqToIso.hom]
+          rw [dif_pos h]
+          erw [CategoryTheory.comp_apply, CategoryTheory.comp_apply]
+          congr 1
+          change f ((TopCat.Presheaf.germ ℳ.val.presheaf ⟨pt, h⟩) _) = _
+          have eq : (TopCat.Presheaf.germ ℳ.val.presheaf ⟨pt, h⟩) (r • x) =
+            sectionSMulStalk ℛ ℳ pt U.unop h r (TopCat.Presheaf.germ ℳ.1.presheaf ⟨pt, h⟩ x) := by
+            rw [section_smul_germ]
+            delta sectionSMulSection
+            fapply TopCat.Presheaf.germ_ext
+            · exact U.unop
+            · exact h
+            · exact 𝟙 _
+            · exact eqToHom (by aesop)
+            · erw [ℳ.1.map_smul, ℳ.1.map_smul]
+              congr 1
+              · change _ = (ℛ.presheaf.map _ ≫ ℛ.presheaf.map _) _
+                rw [← ℛ.presheaf.map_comp]
+                rfl
+              · change _ = (ℳ.1.presheaf.map _ ≫ _) _
+                rw [← ℳ.1.presheaf.map_comp]
+                rfl
+          rw [eq]
+          replace eq :
+            sectionSMulStalk ℛ ℳ pt U.unop h r (TopCat.Presheaf.germ ℳ.1.presheaf ⟨pt, h⟩ x) =
+            stalkSMulStalk ℛ ℳ pt (ℛ.presheaf.germ ⟨pt, h⟩ r)
+              (TopCat.Presheaf.germ ℳ.1.presheaf ⟨pt, h⟩ x) := by
+            rw [germ_smul_germ]
+            symm
+            fapply sectionSMulSection.germ
+            · exact h
+            · exact h
+            · apply mem_openSetModule
+            · rw [germ_sectionOnOpenSetModule]
+          rw [eq]
+          erw [f.map_smul ((ℛ.presheaf.germ ⟨pt, h⟩) r)
+            ((TopCat.Presheaf.germ ℳ.val.presheaf ⟨pt, h⟩) x)]
+          congr 1
+          erw [← CategoryTheory.comp_apply]
+          rw [Category.assoc, Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id]
+          rfl
+        · exact (subsingleton__ ℛ _ _ _ h).elim _ _ }
+
+noncomputable def adjHomEquivInvFun (ℳ : SheafOfModules (forget2Ring ℛ))
+    (N : ModuleCat (ℛ.presheaf.stalk pt))
+    (f : ℳ ⟶ rightObj ℛ pt N) :
+    leftObj ℛ pt ℳ ⟶ N where
+  toFun := (skyscraperPresheafStalkAdjunction pt).homEquiv _ _ |>.symm f.1.1
+  map_add' := map_add _
+  map_smul' r m := by
+    simp only [TopCat.Presheaf.stalkFunctor_obj, AddCommGrp.coe_of, skyscraperPresheafFunctor_obj,
+      skyscraperPresheafStalkAdjunction, Equiv.coe_fn_symm_mk, RingHom.id_apply]
+    change (StalkSkyscraperPresheafAdjunctionAuxs.fromStalk pt f.val.hom)
+      (stalkSMulStalk _ _ _ _ _) = _
+    obtain ⟨U, memU, r, rfl⟩ := ℛ.presheaf.germ_exist pt r
+    obtain ⟨V, memV, m, rfl⟩ := TopCat.Presheaf.germ_exist (F := ℳ.val.presheaf) pt m
+    erw [germ_smul_germ]
+    erw [← CategoryTheory.comp_apply]
+
+    conv_lhs =>
+      simp only [StalkSkyscraperPresheafAdjunctionAuxs.fromStalk, TopCat.Presheaf.germ]
+      rw [colimit.ι_desc]
+    conv_rhs =>
+      erw [← CategoryTheory.comp_apply]
+      rhs
+      simp only [StalkSkyscraperPresheafAdjunctionAuxs.fromStalk, TopCat.Presheaf.germ]
+      rw [colimit.ι_desc]
+    simp only [AddCommGrp.coe_of, Functor.comp_obj, Functor.op_obj, OpenNhds.inclusion_obj,
+      skyscraperPresheaf_obj, Functor.const_obj_obj, comp_apply]
+    erw [f.1.map_smul]
+
+    have eq1 :
+      (f.val.hom.app { unop := U ⊓ V }) ((ℳ.val.presheaf.map { unop := homOfLE inf_le_right }) m) =
+      (rightObj ℛ pt N).1.presheaf.map (op $ homOfLE $ inf_le_right) (f.1.hom.app _ m) := by
+      erw [← CategoryTheory.comp_apply, f.1.hom.naturality]; rfl
+    erw [eq1]
+    simp only [rightObj, skyscraperPresheaf_obj, skyscraperPresheaf_map]
+    rw [dif_pos ⟨memU, memV⟩]
+    erw [skyModule.smul_def]
+    rw [dif_pos ⟨memU, memV⟩]
+    simp only [AddCommGrp.coe_of, skyscraperPresheaf_obj, eqToIso.inv, Opens.coe_inf, eqToIso.hom]
+    erw [← CategoryTheory.comp_apply]
+    rw [eqToHom_trans, eqToHom_refl, id_apply]
+    congr 1
+    · erw [TopCat.Presheaf.germ_res_apply]
+    · erw [← CategoryTheory.comp_apply]
+      rw [eqToHom_trans]
+      rfl
+
+noncomputable def adjHomEquiv
+    (ℳ : SheafOfModules (forget2Ring ℛ))
+    (N : ModuleCat (ℛ.presheaf.stalk pt)) :
+    (leftObj ℛ pt ℳ ⟶ N) ≃ (ℳ ⟶ rightObj ℛ pt N) where
+  toFun := adjHomEquivToFun ℛ pt ℳ N
+  invFun := adjHomEquivInvFun ℛ pt ℳ N
+  left_inv f := by
+    ext x
+    simp only [adjHomEquivInvFun, TopCat.Presheaf.stalkFunctor_obj, AddCommGrp.coe_of,
+      skyscraperPresheafFunctor_obj, adjHomEquivToFun, Equiv.symm_apply_apply,
+      LinearMap.toAddMonoidHom_coe]
+    rfl
+  right_inv f := by
+    ext U x
+    simp only [PresheafOfModules.Hom.app, adjHomEquivToFun, TopCat.Presheaf.stalkFunctor_obj,
+      skyscraperPresheafFunctor_obj, adjHomEquivInvFun, AddCommGrp.coe_of, LinearMap.coe_mk]
+    have := (skyscraperPresheafStalkAdjunction pt).homEquiv ℳ.val.presheaf
+      (AddCommGrp.of N) |>.right_inv f.1.1
+    exact congr(($this).app U x)
+
+noncomputable def adjUnit : 𝟭 (SheafOfModules (forget2Ring ℛ)) ⟶ left ℛ pt ⋙ right ℛ pt where
+  app ℳ :=
+  { val :=
+    { hom := (skyscraperPresheafStalkAdjunction pt).unit.app ℳ.1.1
+      map_smul := by
+        rintro U (r : ℛ.presheaf.obj U) (x : ℳ.1.presheaf.obj U)
+        simp only [Functor.comp_obj, left_obj, right_obj, Functor.id_obj,
+          skyscraperPresheafStalkAdjunction, TopCat.Presheaf.stalkFunctor_obj,
+          skyscraperPresheafFunctor_obj, StalkSkyscraperPresheafAdjunctionAuxs.unit_app,
+          StalkSkyscraperPresheafAdjunctionAuxs.toSkyscraperPresheaf_app, skyscraperPresheaf_obj,
+          Category.id_comp]
+        split_ifs with hU
+        · rw [skyModule.smul_def]
+          rw [dif_pos hU]
+          erw [CategoryTheory.comp_apply]
+          simp only [AddCommGrp.coe_of, op_unop, skyscraperPresheaf_obj, eqToIso.inv, eqToIso.hom]
+          congr 1
+          change _ = stalkSMulStalk _ _ _ _ _
+          erw [← CategoryTheory.comp_apply]
+          rw [Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id]
+          erw [germ_smul_germ]
+          symm
+          delta sectionSMulSection
+          erw [← ℳ.1.map_smul]
+          erw [TopCat.Presheaf.germ_res_apply]
+        · exact (subsingleton__ ℛ _ _ _ hU).elim _ _ } }
+  naturality {ℳ 𝒩} f := by
+    ext U x
+    simp only [Functor.comp_obj, left_obj, right_obj, Functor.id_obj, PresheafOfModules.Hom.app,
+      Functor.id_map, SheafOfModules.comp_val, PresheafOfModules.Hom.comp_hom, NatTrans.comp_app,
+      LinearMap.coe_mk, Functor.comp_map, left_map, right_map, rightMap_val_hom,
+      skyscraperPresheafFunctor_map, SkyscraperPresheafFunctor.map'_app, skyscraperPresheaf_obj]
+    have := (skyscraperPresheafStalkAdjunction pt).unit.naturality f.1.1
+    simp only [Functor.id_obj, Functor.comp_obj, TopCat.Presheaf.stalkFunctor_obj,
+      skyscraperPresheafFunctor_obj, Functor.id_map, Functor.comp_map,
+      skyscraperPresheafFunctor_map] at this
+    convert congr(($this).app U x)
+
+noncomputable def adjCounit : right ℛ pt ⋙ left ℛ pt ⟶ 𝟭 (ModuleCat (ℛ.presheaf.stalk pt)) where
+  app M :=
+  { toFun := (skyscraperPresheafStalkAdjunction pt).counit.app $ AddCommGrp.of M
+    map_add' := map_add _
+    map_smul' := by
+      rintro r x
+      simp only [Functor.id_obj, Functor.comp_obj, skyscraperPresheafFunctor_obj,
+        TopCat.Presheaf.stalkFunctor_obj, AddCommGrp.coe_of, skyscraperPresheafStalkAdjunction,
+        StalkSkyscraperPresheafAdjunctionAuxs.counit_app, right_obj, left_obj, RingHom.id_apply]
+      change (skyscraperPresheafStalkOfSpecializes pt (AddCommGrp.of ↑M) _).hom
+        (stalkSMulStalk ℛ (rightObj ℛ pt M) _ _ _) = _
+      obtain ⟨U, memU, r, rfl⟩ := ℛ.presheaf.germ_exist pt r
+      obtain ⟨V, memV, x, rfl⟩ := TopCat.Presheaf.germ_exist (rightObj ℛ pt M).1.presheaf pt x
+      erw [germ_smul_germ]
+      erw [← CategoryTheory.comp_apply]
+      erw [← CategoryTheory.comp_apply]
+      conv_lhs => simp only [skyscraperPresheafStalkOfSpecializes, TopCat.Presheaf.germ]
+      conv_rhs => rhs; simp only [skyscraperPresheafStalkOfSpecializes, TopCat.Presheaf.germ]
+
+      rw [colimit.isoColimitCocone_ι_hom, colimit.isoColimitCocone_ι_hom]
+      simp only [AddCommGrp.coe_of, skyscraperPresheafCoconeOfSpecializes_pt,
+        skyscraperPresheafCoconeOfSpecializes_ι_app, Functor.comp_obj, Functor.op_obj,
+        OpenNhds.inclusion_obj, skyscraperPresheaf_obj, Functor.const_obj_obj]
+      have := skyModule.smul_def ℛ pt M (U ⊓ V) (r |_ (U ⊓ V)) (x |_ (U ⊓ V))
+      simp only [skyscraperPresheaf_obj, AddCommGrp.coe_of, eqToIso.inv, Opens.coe_inf,
+        eqToIso.hom] at this
+      rw [dif_pos ⟨memU, memV⟩] at this
+      simp only at this
+      erw [TopCat.Presheaf.germ_res_apply] at this
+      simp only [Opens.coe_inf, Opens.infLELeft_apply_mk] at this
+      apply_fun eqToHom (by rw [if_pos ⟨memU, memV⟩] :
+        (if pt ∈ U ⊓ V then AddCommGrp.of M else ⊤_ AddCommGrp) = AddCommGrp.of M) at this
+      convert this
+      erw [← CategoryTheory.comp_apply]
+      rw [eqToHom_trans, eqToHom_refl, id_apply]
+      congr!
+      erw [← CategoryTheory.comp_apply]
+      simp only [rightObj, skyscraperPresheaf_obj, skyscraperPresheaf_map, comp_apply]
+      rw [dif_pos ⟨memU, memV⟩]
+      erw [← CategoryTheory.comp_apply]
+      rw [eqToHom_trans] }
+  naturality {M N} f := by
+    ext x
+    have := (skyscraperPresheafStalkAdjunction pt).counit.naturality $ AddCommGrp.ofHom
+      f.toAddMonoidHom
+
+    simp only [Functor.comp_obj, skyscraperPresheafFunctor_obj, TopCat.Presheaf.stalkFunctor_obj,
+      Functor.id_obj, Functor.comp_map, skyscraperPresheafFunctor_map, Functor.id_map, right_obj,
+      left_obj, right_map, left_map, AddCommGrp.coe_of, ModuleCat.coe_comp,
+      Function.comp_apply] at this ⊢
+    convert congr($this x)
 
 noncomputable def adj : left ℛ pt ⊣ right ℛ pt where
-  homEquiv ℳ M :=
-  { toFun := fun l =>
-    { val :=
-      { hom := (skyscraperPresheafStalkAdjunction pt).homEquiv _ _ l.toAddMonoidHom
-        map_smul := sorry } }
-    invFun := fun ℓ =>
-    { toFun := (skyscraperPresheafStalkAdjunction pt).homEquiv _ _ |>.symm ℓ.1.1
-      map_add' := map_add _
-      map_smul' := fun r m => by dsimp [skyscraperPresheafStalkAdjunction]; sorry }
-    left_inv := sorry
-    right_inv := sorry }
-  unit := sorry
-  counit := sorry
-  homEquiv_unit := sorry
-  homEquiv_counit := sorry
+  homEquiv := adjHomEquiv ℛ pt
+  unit := adjUnit ℛ pt
+  counit := adjCounit ℛ pt
+  homEquiv_unit {ℳ N f} := by
+    ext U x
+    have := (skyscraperPresheafStalkAdjunction pt).homEquiv_unit
+      (f := AddCommGrp.ofHom f.toAddMonoidHom)
+    simp only [skyscraperPresheafFunctor_obj, TopCat.Presheaf.stalkFunctor_obj,
+      whiskeringLeft_obj_obj, colimit.cocone_x, left_obj, Functor.id_obj, Functor.comp_obj,
+      skyscraperPresheafFunctor_map, right_obj, right_map, SheafOfModules.comp_val,
+      PresheafOfModules.Hom.comp_app, LinearMap.coe_comp, Function.comp_apply] at this ⊢
+    exact congr(($this).app U x)
 
+  homEquiv_counit {ℳ N f} := by
+    ext x
+    have := (skyscraperPresheafStalkAdjunction pt).homEquiv_counit (g := f.1.1)
+    simp only [TopCat.Presheaf.stalkFunctor_obj, skyscraperPresheafFunctor_obj, right_obj,
+      Functor.id_obj, left_obj, left_map, ModuleCat.coe_comp, Function.comp_apply] at this ⊢
+    exact congr($this x)
 
 noncomputable def injectiveHullModuleCat : ModuleCat (ℛ.presheaf.stalk pt) :=
   Injective.under <| ModuleCat.of _ (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt)
@@ -695,138 +1081,68 @@ noncomputable def toInjectiveHullModuleCat :
 
 instance : Mono (toInjectiveHullModuleCat ℛ ℳ pt) := Injective.ι_mono _
 
--- noncomputable abbrev skyAux : (Opens ℛ)ᵒᵖ ⥤ AddCommGrp :=
--- skyscraperPresheaf pt (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt)
+noncomputable abbrev skyAux : (Opens ℛ)ᵒᵖ ⥤ AddCommGrp :=
+skyscraperPresheaf pt (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt)
 
--- noncomputable def skyAuxIsoOfMem (U : Opens ℛ) (h : pt ∈ U) :
---     (skyAux ℛ ℳ pt).obj (op U) ≅
---     (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :=
---   eqToIso (by aesop)
+noncomputable def skyAuxIsoOfMem (U : Opens ℛ) (h : pt ∈ U) :
+    (skyAux ℛ ℳ pt).obj (op U) ≅
+    (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt) :=
+  eqToIso (by aesop)
 
--- noncomputable def skyAuxIsoOfNotMem (U : Opens ℛ) (h : pt ∉ U) :
---     (skyAux ℛ ℳ pt).obj (op U) ≅ ⊤_ AddCommGrp.{u} :=
---   eqToIso (by aesop)
+noncomputable def skyAuxIsoOfNotMem (U : Opens ℛ) (h : pt ∉ U) :
+    (skyAux ℛ ℳ pt).obj (op U) ≅ ⊤_ AddCommGrp.{u} :=
+  eqToIso (by aesop)
 
-
--- @[simps]
--- noncomputable def toSkyAux : ℳ.1.presheaf ⟶ skyAux ℛ ℳ pt where
---   app U :=
---     if h : pt ∈ U.unop
---     then TopCat.Presheaf.germ (F := ℳ.1.presheaf) ⟨pt, h⟩ ≫ (skyAuxIsoOfMem ℛ ℳ pt U.unop h).inv
---     else 0
---   naturality {U V} i := by
---     if hV : pt ∈ V.unop
---     then
---       have hU : pt ∈ U.unop := leOfHom i.unop hV
---       simp only [skyscraperPresheaf_obj, op_unop, skyscraperPresheaf_map]
---       rw [dif_pos hV, dif_pos hU, dif_pos hV]
---       unfold skyAuxIsoOfMem
---       simp only [op_unop, skyscraperPresheaf_obj, eqToIso.inv, Category.assoc, eqToHom_trans]
---       rw [← Category.assoc]
---       congr 1
---       erw [TopCat.Presheaf.germ_res]
---     else
---       apply IsTerminal.hom_ext
---       exact ((if_neg hV).symm.ndrec terminalIsTerminal)
-
-
--- noncomputable instance : Unique (⊤_ AddCommGrp.{u}) := by
---   let e : ⊤_ AddCommGrp.{u} ≅ AddCommGrp.of PUnit :=
---     terminalIsoIsTerminal (IsTerminal.ofUniqueHom (fun _ => 0) fun X f => by aesop)
---   exact Equiv.unique ⟨e.hom, e.inv, Iso.hom_inv_id_apply e, Iso.inv_hom_id_apply e⟩
-
--- noncomputable instance skyAux.smul (U : Opens ℛ) :
---     SMul (ℛ.presheaf.obj $ op U) ((skyAux ℛ ℳ pt).obj $ op U) where
---   smul r x :=
---     if h : pt ∈ U
---     then (skyAuxIsoOfMem ℛ ℳ pt U h).inv $
---       (Module.section_stalk ℛ ℳ pt U h).smul r
---         ((skyAuxIsoOfMem ℛ ℳ pt U h).hom x)
---     else 0
-
--- noncomputable instance skyAux.mulAction (U : Opens ℛ) :
---     MulAction  (ℛ.presheaf.obj $ op U) ((skyAux ℛ ℳ pt).obj $ op U) where
---   one_smul m := show dite _ _ _ = _ by
---     split_ifs with h
---     · convert Iso.hom_inv_id_apply (skyAuxIsoOfMem ℛ ℳ pt U h) _
---       exact (Module.section_stalk ℛ ℳ _ _ _).one_smul _
---     · apply_fun (skyAuxIsoOfNotMem ℛ ℳ pt U h).hom
---       · apply Subsingleton.elim
---       · exact (ConcreteCategory.bijective_of_isIso (skyAuxIsoOfNotMem ℛ ℳ pt U h).hom).injective
---   mul_smul r s m := show dite _ _ _ = dite _ _ _ by
---     split_ifs with h1
---     · congr 1
---       convert (Module.section_stalk ℛ ℳ _ _ _).mul_smul r s ((skyAuxIsoOfMem ℛ ℳ pt U h1).hom m)
---       change (skyAuxIsoOfMem ℛ ℳ pt U h1).hom (dite _ _ _) = _
---       rw [dif_pos h1]
---       exact Iso.inv_hom_id_apply _ _
---     · rfl
-
--- noncomputable instance skyAux.distribMulAction (U : Opens ℛ) :
---     DistribMulAction  (ℛ.presheaf.obj $ op U) ((skyAux ℛ ℳ pt).obj $ op U) where
---   smul_zero r := show dite _ _ _ = _ by
---     split_ifs with h
---     · convert Iso.hom_inv_id_apply (skyAuxIsoOfMem ℛ ℳ pt U h) 0
---       rw [map_zero]
---       erw [(skyAuxIsoOfMem ℛ ℳ pt U h).hom.map_zero]
---       exact (Module.section_stalk ℛ ℳ _ _ _).smul_zero _
---     · rfl
---   smul_add r x y := show dite _ _ _ = dite _ _ _ + dite _ _ _ by
---     split_ifs with h
---     · rw [← map_add]
---       congr 1
---       rw [map_add]
---       exact (Module.section_stalk ℛ ℳ _ _ _).smul_add _ _ _
---     · rw [add_zero]
-
--- noncomputable instance skyAux.module (U : Opens ℛ) :
---     Module (ℛ.presheaf.obj $ op U) ((skyAux ℛ ℳ pt).obj $ op U) where
---   add_smul r s m := show dite _ _ _ = dite _ _ _ + dite _ _ _ by
---     split_ifs with h
---     · rw [← map_add]
---       congr 1
---       exact (Module.section_stalk ℛ ℳ _ _ _).add_smul _ _ _
---     · rw [zero_add]
---   zero_smul m := show dite _ _ _ = _ by
---     split_ifs with h
---     · convert Iso.hom_inv_id_apply (skyAuxIsoOfMem ℛ ℳ pt U h) 0
---       erw [(skyAuxIsoOfMem ℛ ℳ pt U h).hom.map_zero]
---       exact (Module.section_stalk ℛ ℳ _ _ _).zero_smul _
---     · rfl
 
 @[simps]
+noncomputable def toSkyAux : ℳ.1.presheaf ⟶ skyAux ℛ ℳ pt where
+  app U :=
+    if h : pt ∈ U.unop
+    then TopCat.Presheaf.germ (F := ℳ.1.presheaf) ⟨pt, h⟩ ≫ (skyAuxIsoOfMem ℛ ℳ pt U.unop h).inv
+    else 0
+  naturality {U V} i := by
+    if hV : pt ∈ V.unop
+    then
+      have hU : pt ∈ U.unop := leOfHom i.unop hV
+      simp only [skyscraperPresheaf_obj, op_unop, skyscraperPresheaf_map]
+      rw [dif_pos hV, dif_pos hU, dif_pos hV]
+      unfold skyAuxIsoOfMem
+      simp only [op_unop, skyscraperPresheaf_obj, eqToIso.inv, Category.assoc, eqToHom_trans]
+      rw [← Category.assoc]
+      congr 1
+      erw [TopCat.Presheaf.germ_res]
+    else
+      apply IsTerminal.hom_ext
+      exact ((if_neg hV).symm.ndrec terminalIsTerminal)
+
 noncomputable def sky : SheafOfModules (forget2Ring ℛ) :=
   right ℛ pt |>.obj $
     ModuleCat.of _ (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) ℳ.1.presheaf pt)
 
-@[simps]
-noncomputable def toSky : ℳ ⟶ sky ℛ ℳ pt :=
-  (adj ℛ pt).homEquiv _ _ $ _
-  -- val :=
-  --   { hom := toSkyAux ℛ ℳ pt
-  --     map_smul := fun U (r : ℛ.presheaf.obj U) x => by
-  --       dsimp only [sky_val_presheaf, skyscraperPresheaf_obj, toSkyAux, op_unop, sky_val_module]
-  --       split_ifs with h
-  --       · simp only [AddCommGrp.coe_comp', Function.comp_apply]
-  --         change _ = dite _ _ _
-  --         rw [dif_pos h]
-  --         congr 1
-  --         erw [Iso.inv_hom_id_apply]
-  --         change (TopCat.Presheaf.germ ℳ.val.presheaf ⟨pt, h⟩)
-  --           ((ℳ.1.module _).smul _ _) =
-  --           sectionSMulStalk ℛ ℳ pt U.unop _ r ((TopCat.Presheaf.germ ℳ.val.presheaf ⟨pt, h⟩) x)
-  --         erw [section_smul_germ]
-  --         delta sectionSMulSection
-  --         erw [← ℳ.1.map_smul]
-  --         erw [TopCat.Presheaf.germ_res_apply]
-  --         rfl
-  --       · apply_fun (skyAuxIsoOfNotMem ℛ ℳ pt U.unop h).hom
-  --         · apply Subsingleton.elim
-  --         · exact (ConcreteCategory.bijective_of_isIso
-  --             (skyAuxIsoOfNotMem ℛ ℳ pt U.unop h).hom).injective }
+noncomputable def toSky : ℳ ⟶ sky ℛ ℳ pt where
+  val :=
+    { hom := toSkyAux ℛ ℳ pt
+      map_smul := fun U (r : ℛ.presheaf.obj U) x => by
+        dsimp only [sky, right_obj, toSkyAux, skyscraperPresheaf_obj, op_unop]
+        split_ifs with h
+        · rw [skyModule.smul_def]
+          simp only [skyAuxIsoOfMem, op_unop, skyscraperPresheaf_obj, eqToIso.inv,
+            AddCommGrp.coe_of, eqToIso.hom]
+          rw [dif_pos h]
 
-noncomputable def nextSkyAux : (Opens ℛ)ᵒᵖ ⥤ AddCommGrp :=
-  skyscraperPresheaf pt (AddCommGrp.of $ injectiveHullModuleCat ℛ ℳ pt)
+          erw [CategoryTheory.comp_apply]
+          congr 1
+          erw [← CategoryTheory.comp_apply]
+          rw [Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id]
+          change _ = stalkSMulStalk ℛ ℳ pt _ _
+          erw [germ_smul_germ]
+          symm
+          delta sectionSMulSection
+          erw [← ℳ.1.map_smul]
+          erw [TopCat.Presheaf.germ_res_apply]
+        · aesop
+        · exact (smul_zero _).symm }
+
 
 noncomputable def skies : SheafOfModules $ forget2Ring ℛ :=
   ∏ᶜ fun (pt : ℛ) => (sky ℛ ℳ pt)
@@ -849,99 +1165,44 @@ instance toSkies_mono : Mono (toSkies ℛ ℳ) where
     erw [← LinearMap.comp_apply, ← LinearMap.comp_apply] at this
     simp only [ ← PresheafOfModules.Hom.comp_app, ← SheafOfModules.comp_val,
       Category.assoc, Pi.lift_π] at this
-    simp only [PresheafOfModules.Hom.app, sky_val_presheaf, skyscraperPresheaf_obj,
-      SheafOfModules.comp_val, PresheafOfModules.Hom.comp_hom, toSky_val_hom, NatTrans.comp_app,
-      toSkyAux_app, op_unop, dif_pos hy] at this
+    simp only [sky, right_obj, PresheafOfModules.Hom.app, toSky, toSkyAux, skyscraperPresheaf_obj,
+      op_unop, SheafOfModules.comp_val, PresheafOfModules.Hom.comp_hom, NatTrans.comp_app,
+      LinearMap.coe_mk] at this
+    rw [dif_pos hy] at this
     apply_fun (skyAuxIsoOfMem ℛ ℳ y U.unop hy).inv
     exact this
     · exact (ConcreteCategory.bijective_of_isIso (skyAuxIsoOfMem ℛ ℳ y U.unop hy).inv).1
 
-noncomputable def nextSky : SheafOfModules (forget2Ring ℛ) where
-  val :=
-    { presheaf := nextSkyAux ℛ ℳ pt
-      module := sorry
-      map_smul := sorry }
-  isSheaf := sorry
+noncomputable def nextSky : SheafOfModules (forget2Ring ℛ) :=
+  (right ℛ pt).obj (injectiveHullModuleCat ℛ ℳ pt)
 
 noncomputable def nextSkies : SheafOfModules (forget2Ring ℛ) := ∏ᶜ fun x => nextSky ℛ ℳ x
 
 noncomputable def skiesToNextSkies : skies ℛ ℳ ⟶ nextSkies ℛ ℳ :=
-  Pi.map fun pt =>
-  { val :=
-  { hom := (skyscraperPresheafFunctor pt).map $
-      (forget₂ _ AddCommGrp).map (toInjectiveHullModuleCat ℛ ℳ pt)
-    map_smul := sorry } }
+  Pi.map fun pt => (right ℛ pt).map $ toInjectiveHullModuleCat _ _ _
 
-instance : Mono (skiesToNextSkies ℛ ℳ) := by
-  unfold skiesToNextSkies
-  apply (config := {allowSynthFailures := true }) Pi.map_mono
-  intro x
-  sorry
+instance : (left ℛ pt).PreservesMonomorphisms := by
+  constructor
+  intro ℳ 𝒩 f inst1
+  let ℳ' := SheafOfModules.toSheaf (forget2Ring ℛ) |>.obj ℳ
+  let 𝒩' := SheafOfModules.toSheaf (forget2Ring ℛ) |>.obj 𝒩
+  let f' : ℳ' ⟶ 𝒩' := SheafOfModules.toSheaf (forget2Ring ℛ) |>.map f
+  have : Mono f' := inferInstance
+  have := TopCat.Presheaf.stalk_mono_of_mono (f := f') pt
+  rw [ConcreteCategory.mono_iff_injective_of_preservesPullback] at this ⊢
+  intro x y h
+  exact @this x y h
 
-instance : Injective (nextSky ℛ ℳ pt) := by sorry
-  -- haveI inst1 : Injective (injectiveHullModuleCat ℛ ℳ pt) := Injective.injective_under _
-  -- haveI inst2 : Injective _ := Injective.injective_of_adjoint
-  --   (adj := stalkSkyscraperSheafAdjunction pt (C := ModuleCat.{u} (ℛ.presheaf.stalk pt)))
-  --   (injectiveHullModuleCat ℛ ℳ pt)
-  -- constructor
-  -- rintro M₁ M₂ g f inst3
+instance : (right ℛ pt).IsRightAdjoint := (adj ℛ pt).isRightAdjoint
 
-  -- let M₁ₓ := ModuleCat.of (ℛ.presheaf.stalk pt)
-  --   (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) M₁.1.presheaf pt)
-  -- let M₂ₓ := ModuleCat.of (ℛ.presheaf.stalk pt)
-  --   (TopCat.Presheaf.stalk.{u} (C := AddCommGrp) M₂.1.presheaf pt)
-  -- let fₓ : M₁ₓ ⟶ M₂ₓ := {
-  --   (TopCat.Presheaf.stalkFunctor AddCommGrp pt).map f.1.1 with
-  --   map_smul' := fun x y => by
-  --     dsimp only [TopCat.Presheaf.stalkFunctor_obj, ZeroHom.toFun_eq_coe,
-  --       AddMonoidHom.toZeroHom_coe, AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply]
-  --     obtain ⟨Ox, mem_x, x, rfl⟩ := ℛ.presheaf.germ_exist pt x
-  --     obtain ⟨Oy, mem_y, y, rfl⟩ := TopCat.Presheaf.germ_exist M₁.1.presheaf pt y
-  --     simp only
-  --     change (TopCat.Presheaf.stalkFunctor AddCommGrp pt).map f.val.hom
-  --       (stalkSMulStalk _ _ _ _ _) =
-  --       stalkSMulStalk _ _ _ _ _
-  --     erw [germ_smul_germ]
-  --     erw [TopCat.Presheaf.stalkFunctor_map_germ_apply (f := f.1.1) (x := ⟨pt, mem_y⟩)]
+instance skiesToNextSkiesMono : Mono (skiesToNextSkies ℛ ℳ) := by
+  unfold skiesToNextSkies; infer_instance
 
-  --     erw [TopCat.Presheaf.stalkFunctor_map_germ_apply (f := f.1.1)
-  --       (x := (⟨pt, ⟨mem_x, mem_y⟩⟩ : (Ox ⊓ Oy : Opens _)))]
-  --     erw [germ_smul_germ]
-  --     congr 1
-  --     erw [f.1.map_smul (op $ Ox ⊓ Oy) (x |_ _) (y |_ _)]
-  --     delta sectionSMulSection
-  --     congr! 1
-  --     change (M₁.1.presheaf.map _ ≫ f.1.1.app _) y = _
-  --     rw [f.1.1.naturality]
-  --     rfl
-  -- }
-  -- let e :
-  --     (skyscraperPresheaf pt (injectiveHullModuleCat ℛ ℳ pt)).stalk pt ≅ (injectiveHullModuleCat ℛ ℳ pt) :=
-  --   skyscraperPresheafStalkOfSpecializes pt (injectiveHullModuleCat ℛ ℳ pt)
-  --   (specializes_refl pt)
-  -- let e := skyscraperPresheafStalkOfSpecializes pt (injectiveHullModuleCat ℛ ℳ pt)
-  --   (specializes_refl pt)
-  -- let gₓ' : M₁ₓ ⟶ (skyscraperPresheaf pt (injectiveHullModuleCat ℛ ℳ pt)).stalk pt :=
-  --   sorry
-
-  -- let gₓ : M₁ₓ ⟶ (injectiveHullModuleCat ℛ ℳ pt) := gₓ' ≫ e.hom
-  -- have inst3' : Mono f.1.1 := by
-  --   sorry
-  -- have : Mono fₓ := by
-  --   suffices Mono ((TopCat.Presheaf.stalkFunctor AddCommGrp pt).map f.1.1) by
-  --     rw [ConcreteCategory.mono_iff_injective_of_preservesPullback] at this ⊢
-  --     exact this
-
-  --   convert TopCat.Presheaf.stalk_mono_of_mono.{u} (C := AddCommGrp)
-  --     (F := ⟨M₁.1.presheaf, M₁.isSheaf⟩) (G := ⟨M₂.1.presheaf, M₂.isSheaf⟩)
-  --     (f := ⟨f.1.1⟩) (x := pt)
-  --   apply Sheaf.Hom.mono_of_presheaf_mono
-
-  -- let hₓ := @Injective.factorThru _ _ _ M₁ₓ M₂ₓ inst1 gₓ fₓ inferInstance
-  -- let h : M₂.1.presheaf ⟶ skyscraperPresheaf pt _ := (skyscraperPresheafStalkAdjunction pt).homEquiv _ _ ((forget₂ _ AddCommGrp).map hₓ)
-  -- refine ⟨⟨⟨h ≫ (skyscraperPresheafFunctor _).map _, ?_⟩⟩, ?_⟩
-
-  -- sorry
+instance : Injective (nextSky ℛ ℳ pt) := by
+  haveI inst1 : Injective (injectiveHullModuleCat ℛ ℳ pt) := Injective.injective_under _
+  haveI inst2 : Injective _ :=
+    Injective.injective_of_adjoint (adj := adj ℛ pt) (injectiveHullModuleCat ℛ ℳ pt)
+  exact inst2
 
 instance : Injective (nextSkies ℛ ℳ) := inferInstanceAs <| Injective $ ∏ᶜ fun _ => _
 
