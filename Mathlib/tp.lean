@@ -1,6 +1,6 @@
-import Batteries.Data.Rat.Basic
+import Lean.Elab.Command
 
-open Lean --Elab --Command
+open Lean
 
 /-- `Bench` is a structure with the data used to compute the `!bench` summary.
 It contains
@@ -42,7 +42,8 @@ def summary (bc : Bench) :=
   let instrs := bc.diff
   let reldiff := bc.reldiff * 10 ^ 4
   let (sgn : Int) := if reldiff < 0 then -1 else 1
-  let reldiff := (Rat.toFloat sgn) * reldiff
+  let (sgnf : Float) := if reldiff < 0 then -1 else 1
+  let reldiff := sgnf * reldiff
   let middle :=
     [bc.file.dropWhile (!·.isAlpha), formatDiff instrs, formatPerc (sgn * reldiff.toUInt32.val) 0 2]
   "|".intercalate (""::middle ++ [""])
@@ -62,14 +63,3 @@ def benchOutput (js : System.FilePath) : IO Unit := do
   IO.println ("\n".intercalate msg.toList)
 
 run_cmd benchOutput "t2.json"
-
-#eval show IO _ from do
-  let dats ← IO.ofExcept (Json.parse (← IO.FS.readFile "t2.json") >>= fromJson? (α := Array Bench))
-  let (pos, neg) := dats.partition (0 < ·.diff)
-  let header := "|File|Instructions|%|\n|-|-:|:-:|"
-  IO.println s!"{header}\n|`Increase`|||"
-  for d in pos.qsort fun a b => b.diff < a.diff do
-    IO.println (summary d)
-  IO.println s!"|`Decrease`|||"
-  for d in neg.qsort fun a b => a.diff < b.diff  do
-    IO.println (summary d)
