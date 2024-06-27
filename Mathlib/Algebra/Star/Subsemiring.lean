@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Subsemiring.Basic
 A *-subring is a subring of a *-ring which is closed under *.
 -/
 
-universe v w
+universe v
 
 /-- A (unital) star subsemiring is a non-associative ring which is closed under the `star`
 operation. -/
@@ -67,6 +67,18 @@ lemma coe_mk (S : Subsemiring R) (h) : ((⟨S, h⟩ : StarSubsemiring R) : Set R
 @[simp]
 theorem mem_toSubsemiring {S : StarSubsemiring R} {x} : x ∈ S.toSubsemiring ↔ x ∈ S :=
   Iff.rfl
+
+@[simp]
+theorem coe_toSubsemiring (S : StarSubsemiring R) : (S.toSubsemiring : Set R) = S :=
+  rfl
+
+theorem toSubsemiring_injective :
+    Function.Injective (toSubsemiring : StarSubsemiring R → Subsemiring R) := fun S T h =>
+  ext fun x => by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
+
+theorem toSubsemiring_inj {S U : StarSubsemiring R} : S.toSubsemiring = U.toSubsemiring ↔ S = U :=
+  toSubsemiring_injective.eq_iff
+
 
 /-- Copy of a non-unital star subalgebra with a new `carrier` equal to the old one.
 Useful to fix definitional equalities. -/
