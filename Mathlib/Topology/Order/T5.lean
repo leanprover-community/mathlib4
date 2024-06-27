@@ -87,23 +87,15 @@ theorem ordT5Nhd_mem_nhdsSet (hd : Disjoint s (closure t)) : ordT5Nhd s t ∈ �
     (compl_section_ordSeparatingSet_mem_nhds hd hx)
 #align set.ord_t5_nhd_mem_nhds_set Set.ordT5Nhd_mem_nhdsSet
 
-/-- Refines ordT5Nhd to satisfy `IsOpen` -/
-def ordT5OpenNhd (s t : Set X) : Set X := interior <| ordT5Nhd s t
-
-theorem disjoint_ordT5OpenNhd : Disjoint (ordT5OpenNhd s t) (ordT5OpenNhd t s) :=
-    disjoint_ordT5Nhd.mono interior_subset interior_subset
-
-theorem subset_ordT5OpenNhd (hd : Disjoint s (closure t)) : s ⊆ ordT5OpenNhd s t :=
-  subset_interior_iff_mem_nhdsSet.mpr <| ordT5Nhd_mem_nhdsSet hd
-
 end Set
 
 open Set
 
 /-- A linear order with order topology is a completely normal Hausdorff topological space. -/
 instance (priority := 100) OrderTopology.completelyNormalSpace : CompletelyNormalSpace X :=
-  ⟨fun s t h₁ h₂ ↦ ⟨ordT5OpenNhd s t, ordT5OpenNhd t s, isOpen_interior, isOpen_interior,
-    subset_ordT5OpenNhd h₂, subset_ordT5OpenNhd h₁.symm, disjoint_ordT5OpenNhd⟩⟩
+  ⟨fun s t h₁ h₂ => separatedNhds_iff_disjoint.2 <| Filter.disjoint_iff.2
+    ⟨ordT5Nhd s t, ordT5Nhd_mem_nhdsSet h₂, ordT5Nhd t s, ordT5Nhd_mem_nhdsSet h₁.symm,
+      disjoint_ordT5Nhd⟩⟩
 
 instance (priority := 100) OrderTopology.t5Space : T5Space X := T5Space.mk
 #align order_topology.t5_space OrderTopology.t5Space
