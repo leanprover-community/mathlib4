@@ -64,27 +64,56 @@ lemma condition : yoneda.map (hf'.fst g) ≫ f' = yoneda.map (hf'.snd g) ≫ g :
 
 variable {g}
 
-noncomputable def lift {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X)
-    (hi : i ≫ f = yoneda.map h ≫ g) : Z ⟶ hf.pullback g :=
-  Yoneda.fullyFaithful.preimage <| (Limits.pullback.lift _ _ hi) ≫ (hf.pullbackIso g).inv
+section
 
-noncomputable def lift' {Z : C} (i : Z ⟶ Y) (h : Z ⟶ X)
-    (hi : (yoneda.map i) ≫ f' = yoneda.map h ≫ g) : Z ⟶ hf'.pullback g :=
-  hf'.lift _ _ hi
+variable {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X)
+    (hi : i ≫ f = yoneda.map h ≫ g)
 
-noncomputable def symmetry : hf'.pullback g ⟶ hg.pullback f' :=
-  hg.lift (yoneda.map <| hf'.snd g) (hf'.fst g) (condition _ _).symm
+noncomputable def lift : Z ⟶ hf.pullback g :=
+  Yoneda.fullyFaithful.preimage <| Limits.pullback.lift _ _ hi ≫ (hf.pullbackIso g).inv
+
+@[reassoc (attr := simp)]
+lemma lift_fst : yoneda.map (hf.lift i h hi) ≫
+    (hf.pullbackIso g).hom ≫ pullback.fst = i := by simp [lift]
+
+@[reassoc (attr := simp)]
+lemma lift_snd : hf.lift i h hi ≫ hf.snd g = h :=
+  yoneda.map_injective (by simp [lift])
 
 end
 
-def yoneda_representable [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+section
+
+variable {Z : C} (i : Z ⟶ Y) (h : Z ⟶ X) (hi : (yoneda.map i) ≫ f' = yoneda.map h ≫ g)
+
+noncomputable def lift' : Z ⟶ hf'.pullback g := hf'.lift _ _ hi
+
+@[reassoc (attr := simp)]
+lemma lift'_fst : hf'.lift' i h hi ≫ hf'.fst g = i :=
+  yoneda.map_injective (by simp [lift'])
+
+@[reassoc (attr := simp)]
+lemma lift'_snd : hf'.lift' i h hi ≫ hf'.snd g = h := by
+  simp [lift']
+
+end
+
+noncomputable def symmetry : hf'.pullback g ⟶ hg.pullback f' :=
+  hg.lift' (hf'.snd g) (hf'.fst g) (condition _ _).symm
+
+@[reassoc (attr := simp)]
+lemma symmetry_fst : hf'.symmetry hg ≫ hg.fst f' = hf'.snd g := by simp [symmetry]
+
+@[reassoc (attr := simp)]
+lemma symmetry_snd : hf'.symmetry hg ≫ hg.snd f' = hf'.fst g := by simp [symmetry]
+
+end
+
+lemma yoneda_map [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     Presheaf.representable (yoneda.map f) := fun Z g ↦ by
   obtain ⟨g, rfl⟩ := yoneda.map_surjective g
   have : PreservesLimit (cospan f g) yoneda := sorry
   exact ⟨Limits.pullback f g, ⟨PreservesPullback.iso _ _ _⟩⟩
-
--- def pullback_yoneda {X : C} (g : yoneda.obj X ⟶ G) : yoneda.obj (pullback hf g) ⟶ F :=
---   Functor.reprY (hF := hf g)
 
 end Presheaf.representable
 
@@ -100,7 +129,7 @@ variable {P}
 lemma presheaf.representable {f : F ⟶ G} (hf : P.presheaf f) : Presheaf.representable f :=
   hf.choose
 
-lemma presheaf.representable_spec {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoneda.obj X ⟶ G) :
+lemma presheaf.property {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoneda.obj X ⟶ G) :
     P (hf.choose.snd g) :=
   hf.choose_spec g
 
