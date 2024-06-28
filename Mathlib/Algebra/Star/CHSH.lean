@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Tactic.Polyrith
-import Mathlib.Algebra.Star.Order
 
 #align_import algebra.star.chsh from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 

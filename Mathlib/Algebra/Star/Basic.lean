@@ -7,10 +7,10 @@ import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Data.SetLike.Basic
-import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.SetLike.Basic
+import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.star.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 

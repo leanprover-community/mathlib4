@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Complex.Basic
+import Mathlib.Data.Real.Star
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
-import Mathlib.Data.Real.Star
 
 /-! # Continuous functions as a star-ordered ring -/
 

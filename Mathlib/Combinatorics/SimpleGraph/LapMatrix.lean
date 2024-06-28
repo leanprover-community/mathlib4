@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adrian Wüthrich
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.Data.Real.Star
+import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Laplacian Matrix

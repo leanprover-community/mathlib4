@@ -3,10 +3,10 @@ Copyright (c) 2024 Lean FRO. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Algebra.Field.Opposite
 
 /-!
 # *-ring structure on ℚ and ℚ≥0.
