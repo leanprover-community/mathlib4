@@ -96,7 +96,7 @@ instance : Invertible (basisMatrix K) := by
 def c := (finrank ℚ K) * ‖fun i j => (basisMatrix K)⁻¹ i j‖
 
 theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) :
-  ∀ i, Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ) ≤
+    ∀ i, Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ) ≤
     @c K _ _ * House (algebraMap (𝓞 K) K α) := fun i => calc
 
    _ = Complex.abs (∑ j, (basisMatrix  K)⁻¹ i j *
