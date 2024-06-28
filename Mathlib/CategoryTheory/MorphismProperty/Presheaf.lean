@@ -1,5 +1,5 @@
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Types
@@ -15,21 +15,11 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A morphism of presheaves is representable if for all diagrams
-```
-      yoneda(X)
-        |
-        |
-        v
-F --f--> G
-```
-The pullback `F ×_G yoneda.obj X` is representable. -/
+/-- A morphism of presheaves `F ⟶ G` is representable if for any `X : C`, and any morphism
+`g : yoneda.obj X ⟶ G`, the pullback `F ×_G yoneda.obj X` is also representable. -/
 def Presheaf.representable : MorphismProperty (Cᵒᵖ ⥤ Type v) :=
   fun _ G f ↦ ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), (pullback f g).Representable
 
--- TODO: prove this notion is stable under composition!
--- TODO: prove isomorphisms are representable (`RespectsIso`)
--- TODO: stable under base change
 
 namespace Presheaf.representable
 
@@ -196,6 +186,47 @@ lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
     P.presheaf ≤ P'.presheaf := fun _ _ _ hf ↦
   ⟨hf.representable, fun _ g ↦ h _ (hf.property g)⟩
 
+
 end MorphismProperty
+
+open MorphismProperty Limits
+
+instance : IsStableUnderComposition (Presheaf.representable (C:=C)) where
+  comp_mem {F G H} f g hf hg := by
+    intro X h
+    --let a := Limits.pullback.snd g h
+    let H : pullback f (pullback.fst (f:=g) (g:=h)) ≅ pullback (f ≫ g) h :=
+      pullbackRightPullbackFstIso g h f
+    constructor
+    -- use g × h fancy pullback
+    -- then use f × fancy pullback
+    -- this is x_1!
+
+-- variable {F G : Cᵒᵖ ⥤ Type v} (P : MorphismProperty C)
+
+-- TODO: prove this notion is stable under composition!
+-- TODO: stable under base change
+
+    --let H : (pullback (f ≫ g) h) ≅ pullback f (pullback g h) :=
+
+lemma isomorphisms_le : MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
+  fun _ _ f hf X g ↦
+  letI : IsIso f := hf
+  let h := Limits.pullback.snd (f:=f) (g:=g)
+  ⟨X, ⟨(asIso h).symm⟩⟩
+
+lemma Representable.respectsIso : MorphismProperty.isomorphisms (Presheaf.representable (C:=C)) := by sorry
+
+-- TODO: should follow from some Iso thing + composition
+lemma Representable.respectsIso : RespectsIso (Presheaf.representable (C:=C)) := by
+  constructor
+  · intro F G H e f hf
+    sorry
+  sorry
+
+-- ismultiplicative later
+
+-- instance :
+
 
 end CategoryTheory
