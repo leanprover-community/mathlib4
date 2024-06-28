@@ -748,7 +748,7 @@ theorem IntermediateField.isSeparable_adjoin_simple_iff_separable {x : E} :
     Algebra.IsSeparable F F⟮x⟯ ↔ IsSeparable F x := by
   refine ⟨fun _ ↦ ?_, fun hsep ↦ ?_⟩
   · exact separable_of_mem_isSeparable F E <| mem_adjoin_simple_self F x
-  · have h := hsep.isIntegral
+  · have h := IsSeparable.isIntegral hsep
     haveI := adjoin.finiteDimensional h
     rwa [← finSepDegree_eq_finrank_iff,
       finSepDegree_adjoin_simple_eq_finrank_iff F E x h.isAlgebraic]
@@ -768,7 +768,7 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
   have hzero : aeval x g = 0 := by
     simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=
-    isIntegral_trans (R := F) (A := E) _ hsep.isIntegral |>.tower_top
+    isIntegral_trans (R := F) (A := E) _ (IsSeparable.isIntegral hsep) |>.tower_top
   simp_rw [← h, separable_map] at hsep
   replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
   haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E

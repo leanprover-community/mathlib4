@@ -196,7 +196,7 @@ class IsSepClosure [Algebra k K] : Prop where
 
 /-- A separably closed field is its separable closure. -/
 instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
-  ⟨by assumption, isSeparable_self k⟩
+  ⟨by assumption, Algebra.isSeparable_self k⟩
 
 /-- If `K` is perfect and is a separable closure of `k`,
 then it is also an algebraic closure of `k`. -/
