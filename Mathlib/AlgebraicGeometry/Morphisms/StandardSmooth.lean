@@ -5,6 +5,7 @@ Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.RingHom.StandardSmooth
 
@@ -61,6 +62,8 @@ class IsSmoothCurve (f : X ⟶ Y) : Prop where
   smooth_of_relativeDimension_one : IsStandardSmoothOfRelativeDimension 1 f
   /-- `f` is separated. -/
   isSeparated : IsSeparated f
+  /-- `f` is quasi-compact. -/
+  quasiCompact : QuasiCompact f
 
 def standardSmoothAffineTarget : AffineTargetMorphismProperty := fun _ _ f _ ↦
   IsStandardSmooth f
@@ -175,7 +178,9 @@ lemma standardSmoothAffineTarget_isLocal :
       intro y hy
       simp [V']
       simp [U'] at hy
+      have : y.val ∈ U.1 := hy
       sorry
+      --show f.val.base y.val ∈ V.1
     · simp [U', V']
       have e₁ : Scheme.ιOpens (Y.basicOpen a) ''ᵁ
         (Opens.map (Y.basicOpen a).inclusion).obj ↑V = V := by
