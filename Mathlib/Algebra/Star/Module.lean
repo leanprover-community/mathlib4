@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.LinearAlgebra.Prod
 

@@ -5,7 +5,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth
 -/
 
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Endomorphisms of a module
