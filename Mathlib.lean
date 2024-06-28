@@ -2228,6 +2228,7 @@ import Mathlib.Data.PFunctor.Univariate.Basic
 import Mathlib.Data.PFunctor.Univariate.M
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Defs
+import Mathlib.Data.PNat.Equiv
 import Mathlib.Data.PNat.Factors
 import Mathlib.Data.PNat.Find
 import Mathlib.Data.PNat.Interval
@@ -2758,6 +2759,7 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
@@ -3349,6 +3351,7 @@ import Mathlib.Order.Filter.Partial
 import Mathlib.Order.Filter.Pi
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Ring
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.Subsingleton
 import Mathlib.Order.Filter.Ultrafilter
@@ -3591,6 +3594,7 @@ import Mathlib.RingTheory.Generators
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.Radical
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
@@ -3801,6 +3805,7 @@ import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.SetTheory.Surreal.Basic
 import Mathlib.SetTheory.Surreal.Dyadic
+import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.Tactic
