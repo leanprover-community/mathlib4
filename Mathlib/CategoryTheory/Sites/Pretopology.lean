@@ -214,12 +214,7 @@ theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
   (gi C).gc.l_bot
 #align category_theory.pretopology.to_grothendieck_bot CategoryTheory.Pretopology.toGrothendieck_bot
 
-instance : CompleteSemilatticeInf (Pretopology C) where
-  le_refl J X S hS := hS
-  le_trans a b c h1 h2 X S hS := h2 _ <| h1 _ hS
-  le_antisymm a b h1 h2 := by
-    ext X S
-    refine ⟨fun h => h1 _ h, fun h => h2 _ h⟩
+instance : InfSet (Pretopology C) where
   sInf T := {
     coverings := fun X S => ∀ t ∈ T, t X S
     has_isos := fun X Y f hf t _ => t.has_isos _
@@ -230,13 +225,37 @@ instance : CompleteSemilatticeInf (Pretopology C) where
       · intros
         apply hSi _ _ _ ht
   }
-  sInf_le T t ht X S hS := hS _ <| ht
-  le_sInf T t ht X S hS q hq := ht _ hq _ hS
 
-instance : CompleteLattice (Pretopology C) := completeLatticeOfInf _ fun S => by
+def completeLattice : CompleteLattice (Pretopology C) := completeLatticeOfInf _ fun S => by
   refine ⟨?_, ?_⟩
-  · sorry
-  · sorry
+  · intro t ht X S hS
+    exact hS _ <| ht
+  · intro t ht X S hS q hq
+    apply ht
+    · exact hq
+    · exact hS
+
+/-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
+definitionally equal to the bottom and top respectively.
+-/
+instance : CompleteLattice (Pretopology C) :=
+  CompleteLattice.copy (completeLattice C) _ rfl ⊤
+    (by
+      apply le_antisymm
+      · exact @CompleteLattice.le_top _ (completeLattice C) (⊤ : Pretopology C)
+      · intro X S _
+        apply Set.mem_univ)
+    (trivial C)
+    (by
+      apply le_antisymm
+      · intro X S hS
+        dsimp [trivial] at hS
+        obtain ⟨_, _, f, h⟩ := hS
+        rw [h]
+        apply has_isos
+      · exact @CompleteLattice.bot_le _ (completeLattice C) (trivial C))
+    _ rfl _ rfl _ rfl sInf rfl
+
 
 end Pretopology
 
