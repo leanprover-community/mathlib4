@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weihong Xu
 -/
 
-import Mathlib.AlgebraicGeometry.Spec
+import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
 /-!
