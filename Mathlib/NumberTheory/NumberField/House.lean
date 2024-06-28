@@ -5,8 +5,6 @@ Authors: Michail Karatarakis
 -/
 import Mathlib.Analysis.Matrix
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-
 
 /-!
 # House of an algebraic number
