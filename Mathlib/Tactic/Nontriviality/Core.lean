@@ -6,14 +6,13 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 import Qq.MetaM
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Attr.Core
-import Std.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 
 set_option autoImplicit true
 
 namespace Mathlib.Tactic.Nontriviality
-open Lean Elab Meta Tactic Qq Std.Tactic
+open Lean Elab Meta Tactic Qq
 
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
@@ -44,18 +43,20 @@ def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) 
     g.assign q(subsingleton_or_nontrivial_elim $g₁ $g₂)
     pure g₂.mvarId!
 
+open Lean.Elab.Tactic.SolveByElim in
 /--
 Tries to generate a `Nontrivial α` instance using `nontrivial_of_ne` or `nontrivial_of_lt`
 and local hypotheses.
 -/
 def nontrivialityByAssumption (g : MVarId) : MetaM Unit := do
   g.inferInstance <|> do
-    _ ← SolveByElim.solveByElim.processSyntax {maxDepth := 6}
+    _ ← processSyntax {maxDepth := 6}
       false false [← `(nontrivial_of_ne), ← `(nontrivial_of_lt)] [] #[] [g]
 
 /-- Attempts to generate a `Nontrivial α` hypothesis.
 
-The tactic first looks for an instance using `infer_instance`.
+The tactic first checks to see that there is not already a `Nontrivial α` instance
+before trying to synthesize one using other techniques.
 
 If the goal is an (in)equality, the type `α` is inferred from the goal.
 Otherwise, the type needs to be specified in the tactic invocation, as `nontriviality α`.

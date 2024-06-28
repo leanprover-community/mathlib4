@@ -3,13 +3,12 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Std.Tactic.Simpa
-import Std.Tactic.Lint.Basic
+import Batteries.Tactic.Lint.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Init.Data.Int.Order
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Init.Data.Int.Order
 
 /-!
 # Lemmas for `linarith`.
@@ -68,7 +67,10 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
     a * b = 0 := by
   simp [h]
 
-lemma nat_cast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
+lemma natCast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_nonneg := natCast_nonneg
 
 end Linarith
 

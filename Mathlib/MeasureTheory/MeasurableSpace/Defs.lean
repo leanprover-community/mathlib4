@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
 import Mathlib.Order.Disjointed
+import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
 #align_import measure_theory.measurable_space_def from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
@@ -39,7 +40,7 @@ measurable space, σ-algebra, measurable function
 
 open Set Encodable Function Equiv
 
-open Classical
+open scoped Classical
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
 
@@ -64,7 +65,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 #align measurable_set MeasurableSet
 
--- porting note: todo: `scoped[MeasureTheory]` doesn't work for unknown reason
+-- Porting note (#11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
@@ -122,11 +123,7 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
     exact m.measurableSet_iUnion _ fun _ => h _
 #align measurable_set.Union MeasurableSet.iUnion
 
-@[deprecated MeasurableSet.iUnion]
-theorem MeasurableSet.biUnion_decode₂ [Encodable β] ⦃f : β → Set α⦄ (h : ∀ b, MeasurableSet (f b))
-    (n : ℕ) : MeasurableSet (⋃ b ∈ decode₂ β n, f b) :=
-  .iUnion fun _ => .iUnion fun _ => h _
-#align measurable_set.bUnion_decode₂ MeasurableSet.biUnion_decode₂
+#align measurable_set.bUnion_decode₂ MeasurableSet.iUnion
 
 protected theorem MeasurableSet.biUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by
@@ -486,7 +483,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
-      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_range_iff.2 hf) }
+      measurableSet_iUnion := fun f hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun s hs =>
       hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
@@ -497,7 +494,8 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 #align measurable_space.measurable_set_top MeasurableSpace.measurableSet_top
 
-@[simp, nolint simpNF] -- porting note: todo: `simpNF` claims that this lemma doesn't simplify LHS
+@[simp, nolint simpNF] -- Porting note (#11215): TODO: `simpNF` claims that
+-- this lemma doesn't simplify LHS
 theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
   Iff.rfl
@@ -511,7 +509,7 @@ theorem measurableSet_sInf {ms : Set (MeasurableSpace α)} {s : Set α} :
 
 theorem measurableSet_iInf {ι} {m : ι → MeasurableSpace α} {s : Set α} :
     MeasurableSet[iInf m] s ↔ ∀ i, MeasurableSet[m i] s := by
-  rw [iInf, measurableSet_sInf, forall_range_iff]
+  rw [iInf, measurableSet_sInf, forall_mem_range]
 #align measurable_space.measurable_set_infi MeasurableSpace.measurableSet_iInf
 
 theorem measurableSet_sup {m₁ m₂ : MeasurableSpace α} {s : Set α} :
@@ -527,8 +525,8 @@ theorem measurableSet_sSup {ms : Set (MeasurableSpace α)} {s : Set α} :
 #align measurable_space.measurable_set_Sup MeasurableSpace.measurableSet_sSup
 
 theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
-    MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s :=
-  by simp only [iSup, measurableSet_sSup, exists_range_iff]
+    MeasurableSet[iSup m] s ↔ GenerateMeasurable { s : Set α | ∃ i, MeasurableSet[m i] s } s := by
+  simp only [iSup, measurableSet_sSup, exists_range_iff]
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_iSup
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
@@ -549,6 +547,7 @@ end MeasurableSpace
 
 /-- A function `f` between measurable spaces is measurable if the preimage of every
   measurable set is measurable. -/
+@[fun_prop]
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 #align measurable Measurable
@@ -567,7 +566,7 @@ section MeasurableFunctions
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 #align measurable_id measurable_id
 
-@[measurability]
+@[fun_prop, measurability]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 #align measurable_id' measurable_id'
 
@@ -578,12 +577,12 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 #align measurable.comp Measurable.comp
 
 -- This is needed due to reducibility issues with the `measurability` tactic.
-@[aesop safe 50 (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf
 
-@[simp, measurability]
+@[simp, fun_prop, measurability]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 #align measurable_const measurable_const

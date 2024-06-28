@@ -15,6 +15,8 @@ This file exists to minimize the dependencies of `Mathlib.Algebra.GroupWithZero.
 which is a part of the algebraic hierarchy used by basic tactics.
 -/
 
+assert_not_exists DenselyOrdered
+
 universe u
 
 variable {M₀ M₀' : Type*} [MulZeroOneClass M₀] [Nontrivial M₀]

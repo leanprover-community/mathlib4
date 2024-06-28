@@ -90,7 +90,6 @@ end Metric
 namespace AntilipschitzWith
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-
 variable {K : ℝ≥0} {f : α → β}
 
 open EMetric
@@ -131,7 +130,7 @@ theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : 
     (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
   calc
     edist x y ≤ Kf * edist (f x) (f y) := hf x y
-    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := (ENNReal.mul_left_mono (hg _ _))
+    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := ENNReal.mul_left_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 #align antilipschitz_with.comp AntilipschitzWith.comp
 
@@ -165,7 +164,7 @@ theorem to_rightInverse (hf : AntilipschitzWith K f) {g : β → α} (hg : Funct
 theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod.map f f) ≤ 𝓤 α := by
   refine ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).2 fun ε h₀ => ?_
   refine ⟨(↑K)⁻¹ * ε, ENNReal.mul_pos (ENNReal.inv_ne_zero.2 ENNReal.coe_ne_top) h₀.ne', ?_⟩
-  refine' fun x hx => (hf x.1 x.2).trans_lt _
+  refine fun x hx => (hf x.1 x.2).trans_lt ?_
   rw [mul_comm, ← div_eq_mul_inv] at hx
   rw [mul_comm]
   exact ENNReal.mul_lt_of_lt_div hx
@@ -196,14 +195,14 @@ theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β]
 theorem closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
     {f : α → β} [CompleteSpace α] (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     ClosedEmbedding f :=
-  { (hf.uniformEmbedding hfc).embedding with closed_range := hf.isClosed_range hfc }
+  { (hf.uniformEmbedding hfc).embedding with isClosed_range := hf.isClosed_range hfc }
 #align antilipschitz_with.closed_embedding AntilipschitzWith.closedEmbedding
 
 theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s
 #align antilipschitz_with.subtype_coe AntilipschitzWith.subtype_coe
 
-@[nontriviality] -- porting note: added `nontriviality`
+@[nontriviality] -- Porting note: added `nontriviality`
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 #align antilipschitz_with.of_subsingleton AntilipschitzWith.of_subsingleton

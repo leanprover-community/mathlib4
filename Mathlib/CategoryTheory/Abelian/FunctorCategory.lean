@@ -28,10 +28,9 @@ section
 
 universe z w v u
 
--- porting note: removed restrictions on universes
+-- Porting note: removed restrictions on universes
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type w} [Category.{z} D] [Abelian D]
 
 namespace FunctorCategory
@@ -74,6 +73,7 @@ theorem coimageImageComparison_app :
   erw [kernelComparison_comp_ι _ ((evaluation C D).obj X),
     π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
   conv_lhs => rw [← coimage_image_factorisation α]
+  rfl
 #align category_theory.abelian.functor_category.coimage_image_comparison_app CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app
 
 theorem coimageImageComparison_app' :
@@ -102,7 +102,7 @@ noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
 
 end
 
---porting note: the following section should be unnecessary because there are no longer
+-- Porting note: the following section should be unnecessary because there are no longer
 --any universe restrictions for `functorCategoryAbelian`
 --
 --section
@@ -116,7 +116,7 @@ end
 --/-- A variant with specialized universes for a common case. -/
 --noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) :=
 --  Abelian.functorCategoryAbelian.{u, u + 1, u, u}
---#align category_theory.abelian.functor_category_abelian' CategoryTheory.Abelian.functorCategoryAbelian'
+-- #align category_theory.abelian.functor_category_abelian' CategoryTheory.Abelian.functorCategoryAbelian'
 --
 --end
 

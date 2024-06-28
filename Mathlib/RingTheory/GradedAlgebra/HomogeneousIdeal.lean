@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.Module.GradedModule
@@ -50,7 +50,7 @@ graded algebra, homogeneous
 
 open SetLike DirectSum Set
 
-open BigOperators Pointwise DirectSum
+open Pointwise DirectSum
 
 variable {ιA ιAA ιM σA σAA σM R A AA M : Type*}
 variable [SetLike σA A] [SetLike σAA AA] [SetLike σM M]
@@ -60,6 +60,7 @@ variable (𝒜 : ιA → σA) (ℳ : ιM → σM) (𝒜𝒜 : ιAA → σAA)
 
 section HomogeneousDef
 
+<<<<<<< HEAD
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Ring AA] [Module A M]
 variable [SetLike σA A] [AddSubmonoidClass σA A]
@@ -85,6 +86,12 @@ structure HomogeneousSubring extends Subring AA :=
 def Submodule.IsHomogeneous : Prop :=
   ∀ (i : ιM) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
 #align ideal.is_homogeneous Submodule.IsHomogeneous
+=======
+variable [Semiring A]
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+variable [DecidableEq ι] [AddMonoid ι] [GradedRing 𝒜]
+variable (I : Ideal A)
+>>>>>>> origin/master
 
 /-- An `I : Ideal A` is homogeneous if for every `r ∈ I`, all homogeneous components
   of `r` are in `I`. -/
@@ -97,6 +104,13 @@ structure HomogeneousSubmodule extends Submodule A M where
   is_homogeneous' : Submodule.IsHomogeneous ℳ toSubmodule
 #align homogeneous_ideal HomogeneousSubmodule
 
+
+theorem Ideal.IsHomogeneous.mem_iff {I} (hI : Ideal.IsHomogeneous 𝒜 I) {x} :
+    x ∈ I ↔ ∀ i, (decompose 𝒜 x i : A) ∈ I := by
+  classical
+  refine ⟨fun hx i ↦ hI i hx, fun hx ↦ ?_⟩
+  rw [← DirectSum.sum_support_decompose 𝒜 x]
+  exact Ideal.sum_mem _ (fun i _ ↦ hx i)
 
 /-- For any `Semiring A`, we collect the homogeneous ideals of `A` into a type. -/
 def HomogeneousIdeal := HomogeneousSubmodule A 𝒜
@@ -163,10 +177,19 @@ theorem HomogeneousIdeal.ext
   HomogeneousSubmodule.ext h
 #align homogeneous_ideal.ext HomogeneousIdeal.ext
 
+<<<<<<< HEAD
 @[ext]
 theorem HomogeneousSubring.ext {x y : HomogeneousSubring 𝒜𝒜} (h : x.toSubring = y.toSubring) :
     x = y :=
   HomogeneousSubring.toSubring_injective h
+=======
+theorem HomogeneousIdeal.ext' {I J : HomogeneousIdeal 𝒜} (h : ∀ i, ∀ x ∈ 𝒜 i, x ∈ I ↔ x ∈ J) :
+    I = J := by
+  ext
+  rw [I.isHomogeneous.mem_iff, J.isHomogeneous.mem_iff]
+  apply forall_congr'
+  exact fun i ↦ h i _ (decompose 𝒜 _ i).2
+>>>>>>> origin/master
 
 @[simp]
 theorem HomogeneousSubmodule.mem_iff {I : HomogeneousSubmodule A ℳ} {x : M} :
@@ -188,6 +211,7 @@ end HomogeneousDef
 
 section HomogeneousCore
 
+<<<<<<< HEAD
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Ring AA] [Module A M]
 
@@ -203,6 +227,11 @@ homogeneous subring contained in `A'` as a subring.
 -/
 def Subring.homogeneousCore' (R : Subring AA) : Subring AA :=
   Subring.closure ((↑) '' (((↑) : Subtype (Homogeneous 𝒜𝒜) → AA) ⁻¹' R))
+=======
+variable [Semiring A]
+variable [SetLike σ A] (𝒜 : ι → σ)
+variable (I : Ideal A)
+>>>>>>> origin/master
 
 /-- For any `I : Ideal A`, not necessarily homogeneous, `I.homogeneousCore' 𝒜`
 is the largest homogeneous ideal of `A` contained in `I`, as an ideal. -/
@@ -234,6 +263,7 @@ end HomogeneousCore
 
 section IsHomogeneousSubmoduleDefs
 
+<<<<<<< HEAD
 variable [AddMonoid ιA] [SetLike σA A] [SetLike σA A]
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Ring AA] [AddSubmonoidClass σA A] [Module A M] [GradedRing 𝒜]
@@ -245,6 +275,12 @@ variable (p : Submodule A M) (I : Ideal A) (R : Subring AA)
 theorem Submodule.isHomogeneous_iff_forall_subset :
     p.IsHomogeneous ℳ ↔ ∀ i, (p : Set M) ⊆ GradedModule.proj ℳ i ⁻¹' (p : Set M) :=
   Iff.rfl
+=======
+variable [Semiring A]
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+variable [DecidableEq ι] [AddMonoid ι] [GradedRing 𝒜]
+variable (I : Ideal A)
+>>>>>>> origin/master
 
 theorem Ideal.isHomogeneous_iff_forall_subset :
     I.IsHomogeneous 𝒜 ↔ ∀ i, (I : Set A) ⊆ GradedRing.proj 𝒜 i ⁻¹' (I : Set A) :=
@@ -290,6 +326,7 @@ theorem Ideal.mul_homogeneous_element_mem_of_mem {I : Ideal A} (r x : A)
 theorem Submodule.homogeneous_span (s : Set M) (h : ∀ x ∈ s, Homogeneous ℳ x) :
     (Submodule.span A s).IsHomogeneous ℳ := by
   rintro i r hr
+<<<<<<< HEAD
   rw [mem_span_set] at hr
   obtain ⟨c, hc, rfl⟩ := hr
   rw [Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
@@ -302,6 +339,20 @@ theorem Submodule.homogeneous_span (s : Set M) (h : ∀ x ∈ s, Homogeneous ℳ
 theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x) :
     (Ideal.span s).IsHomogeneous 𝒜 :=
   Submodule.homogeneous_span 𝒜 𝒜 s h
+=======
+  rw [Ideal.span, Finsupp.span_eq_range_total] at hr
+  rw [LinearMap.mem_range] at hr
+  obtain ⟨s, rfl⟩ := hr
+  rw [Finsupp.total_apply, Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply,
+    AddSubmonoidClass.coe_finset_sum]
+  refine Ideal.sum_mem _ ?_
+  rintro z hz1
+  rw [smul_eq_mul]
+  refine Ideal.mul_homogeneous_element_mem_of_mem 𝒜 (s z) z ?_ ?_ i
+  · rcases z with ⟨z, hz2⟩
+    apply h _ hz2
+  · exact Ideal.subset_span z.2
+>>>>>>> origin/master
 #align ideal.is_homogeneous_span Ideal.homogeneous_span
 
 theorem Subring.homogeneous_closure (s : Set AA) (h : ∀ x ∈ s, Homogeneous 𝒜𝒜 x) :
@@ -451,11 +502,16 @@ section Operations
 
 section Semiring
 
+<<<<<<< HEAD
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M]
 
 variable [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA A]
 variable [GradedRing 𝒜] [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
+=======
+variable [Semiring A] [DecidableEq ι] [AddMonoid ι]
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+>>>>>>> origin/master
 
 namespace Submodule.IsHomogeneous
 
@@ -476,7 +532,7 @@ theorem sup {I J : Submodule A M} (HI : I.IsHomogeneous ℳ) (HJ : J.IsHomogeneo
     (I ⊔ J).IsHomogeneous ℳ := by
   rw [iff_exists (𝒜 := 𝒜) (ℳ := ℳ)] at HI HJ ⊢
   obtain ⟨⟨s₁, rfl⟩, ⟨s₂, rfl⟩⟩ := HI, HJ
-  refine' ⟨s₁ ∪ s₂, _⟩
+  refine ⟨s₁ ∪ s₂, ?_⟩
   rw [Set.image_union]
   exact (Submodule.span_union _ _).symm
 
@@ -534,7 +590,17 @@ theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
 #align ideal.is_homogeneous.sup Ideal.IsHomogeneous.sup
 
 protected theorem iSup {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
+<<<<<<< HEAD
     (⨆ i, f i).IsHomogeneous 𝒜 := Submodule.IsHomogeneous.iSup (𝒜 := 𝒜) h
+=======
+    (⨆ i, f i).IsHomogeneous 𝒜 := by
+  simp_rw [iff_exists] at h ⊢
+  choose s hs using h
+  refine ⟨⋃ i, s i, ?_⟩
+  simp_rw [Set.image_iUnion, Ideal.span_iUnion]
+  congr
+  exact funext hs
+>>>>>>> origin/master
 #align ideal.is_homogeneous.supr Ideal.IsHomogeneous.iSup
 
 protected theorem iInf {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
@@ -784,12 +850,19 @@ end Semiring
 
 section CommSemiring
 
+<<<<<<< HEAD
 variable {𝒜}
 
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [CommSemiring A] [Module A M]
 
 variable [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜]
+=======
+variable [CommSemiring A]
+variable [DecidableEq ι] [AddMonoid ι]
+variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
+variable (I : Ideal A)
+>>>>>>> origin/master
 
 -- In general, submodules cannot be multiplied, so this theorem is not generalized
 theorem Ideal.IsHomogeneous.mul {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous 𝒜) :
@@ -823,6 +896,7 @@ section homogeneousCore
 
 open HomogeneousSubmodule HomogeneousIdeal
 
+<<<<<<< HEAD
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M]
 
@@ -831,6 +905,11 @@ variable [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜]
 variable [DecidableEq ιM] [VAdd ιA ιM] [Decomposition ℳ] [GradedSMul 𝒜 ℳ]
 
 variable (I : Ideal A) (p : Submodule A M)
+=======
+variable [Semiring A] [DecidableEq ι] [AddMonoid ι]
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+variable (I : Ideal A)
+>>>>>>> origin/master
 
 theorem Submodule.homogeneousCore.gc :
     GaloisConnection toSubmodule (Submodule.homogeneousCore 𝒜 ℳ) := fun I _ =>
@@ -867,15 +946,21 @@ theorem Ideal.homogeneousCore_eq_sSup :
   Submodule.homogeneousCore_eq_sSup 𝒜 𝒜 I
 #align ideal.homogeneous_core_eq_Sup Ideal.homogeneousCore_eq_sSup
 
+<<<<<<< HEAD
 theorem Submodule.homogeneousCore'_eq_sSup :
     p.homogeneousCore' ℳ = sSup { q : Submodule A M | q.IsHomogeneous ℳ ∧ q ≤ p } := by
   refine' (IsLUB.sSup_eq _).symm
+=======
+theorem Ideal.homogeneousCore'_eq_sSup :
+    I.homogeneousCore' 𝒜 = sSup { J : Ideal A | J.IsHomogeneous 𝒜 ∧ J ≤ I } := by
+  refine (IsLUB.sSup_eq ?_).symm
+>>>>>>> origin/master
   apply IsGreatest.isLUB
   have coe_mono : Monotone (toSubmodule : HomogeneousSubmodule A ℳ → Submodule A M) := fun x y => id
   convert coe_mono.map_isGreatest (Submodule.homogeneousCore.gc 𝒜 ℳ).isGreatest_u using 1
   ext x
   rw [mem_image, mem_setOf_eq]
-  refine' ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, _⟩
+  refine ⟨fun hI => ⟨⟨x, hI.1⟩, ⟨hI.2, rfl⟩⟩, ?_⟩
   rintro ⟨x, ⟨hx, rfl⟩⟩
   exact ⟨x.isHomogeneous, hx⟩
 
@@ -893,6 +978,7 @@ section HomogeneousHull
 
 open HomogeneousSubmodule
 
+<<<<<<< HEAD
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M] [DecidableEq ιA] [AddMonoid ιA]
 variable [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜] [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
@@ -904,6 +990,17 @@ smallest  homogeneous `A`-submodule containing `p`. -/
 def Submodule.homogeneousHull : HomogeneousSubmodule A ℳ :=
   ⟨Submodule.span A { r : M | ∃ (i : ιM) (x : p), (DirectSum.decompose ℳ (x : M) i : M) = r }, by
     refine' Submodule.homogeneous_span 𝒜 ℳ _ fun x hx => _
+=======
+variable [Semiring A] [DecidableEq ι] [AddMonoid ι]
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+variable (I : Ideal A)
+
+/-- For any `I : Ideal A`, not necessarily homogeneous, `I.homogeneousHull 𝒜` is
+the smallest homogeneous ideal containing `I`. -/
+def Ideal.homogeneousHull : HomogeneousIdeal 𝒜 :=
+  ⟨Ideal.span { r : A | ∃ (i : ι) (x : I), (DirectSum.decompose 𝒜 (x : A) i : A) = r }, by
+    refine Ideal.homogeneous_span _ _ fun x hx => ?_
+>>>>>>> origin/master
     obtain ⟨i, x, rfl⟩ := hx
     apply SetLike.homogeneous_coe⟩
 
@@ -917,8 +1014,18 @@ theorem Submodule.le_toSubmodule_homogeneousHull :
     p ≤ (Submodule.homogeneousHull 𝒜 ℳ p).toSubmodule := by
   intro r hr
   classical
+<<<<<<< HEAD
   rw [← DirectSum.sum_support_decompose ℳ r]
   exact Submodule.sum_mem _ fun j _ ↦ Submodule.subset_span ⟨j, ⟨⟨r, hr⟩, rfl⟩⟩
+=======
+  rw [← DirectSum.sum_support_decompose 𝒜 r]
+  refine Ideal.sum_mem _ ?_
+  intro j _
+  apply Ideal.subset_span
+  use j
+  use ⟨r, hr⟩
+#align ideal.le_to_ideal_homogeneous_hull Ideal.le_toIdeal_homogeneousHull
+>>>>>>> origin/master
 
 theorem Ideal.le_toSubmodule_homogeneousHull : I ≤ (I.homogeneousHull 𝒜).toIdeal :=
   Submodule.le_toSubmodule_homogeneousHull 𝒜 𝒜 I
@@ -994,10 +1101,15 @@ section GaloisConnection
 
 open HomogeneousSubmodule HomogeneousIdeal
 
+<<<<<<< HEAD
 variable [AddCommMonoid M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [Semiring A] [Module A M] [DecidableEq ιA] [AddMonoid ιA]
 
 variable [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜] [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
+=======
+variable [Semiring A] [DecidableEq ι] [AddMonoid ι]
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+>>>>>>> origin/master
 
 theorem Submodule.homogeneousHull.gc :
     GaloisConnection (Submodule.homogeneousHull 𝒜 ℳ) toSubmodule := fun _ J =>
@@ -1037,10 +1149,16 @@ end GaloisConnection
 section IrrelevantIdeal
 
 variable [Semiring A]
+<<<<<<< HEAD
 
 variable [CanonicallyOrderedAddCommMonoid ιA]
 
 variable [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜]
+=======
+variable [DecidableEq ι]
+variable [CanonicallyOrderedAddCommMonoid ι]
+variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
+>>>>>>> origin/master
 
 open GradedRing SetLike.GradedMonoid DirectSum
 

@@ -25,7 +25,7 @@ namespace Submodule
 variable (S : Type*) {R M : Type*} [Semiring R] [AddCommMonoid M] [Semiring S]
   [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
 
-/-- `V.restrict_scalars S` is the `S`-submodule of the `S`-module given by restriction of scalars,
+/-- `V.restrictScalars S` is the `S`-submodule of the `S`-module given by restriction of scalars,
 corresponding to `V`, an `R`-submodule of the original `R`-module.
 -/
 def restrictScalars (V : Submodule R M) : Submodule S M where

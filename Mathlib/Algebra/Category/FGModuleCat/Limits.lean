@@ -37,13 +37,12 @@ open CategoryTheory.Limits
 namespace FGModuleCat
 
 variable {J : Type} [SmallCategory J] [FinCategory J]
-
 variable {k : Type v} [Field k]
 
 variable {R : Type v} [Ring R] [IsNoetherianRing R]
 
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
-    FiniteDimensional k (∏ fun j => Z j : ModuleCat.{v} k) :=
+    FiniteDimensional k (∏ᶜ fun j => Z j : ModuleCat.{v} k) :=
   haveI : FiniteDimensional k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
   FiniteDimensional.of_injective (ModuleCat.piIsoPi _).hom
     ((ModuleCat.mono_iff_injective _).1 (by infer_instance))

@@ -3,10 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Eric Wieser
 -/
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Derivative
 
 #align_import analysis.calculus.deriv.polynomial from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
@@ -32,26 +32,19 @@ derivative, polynomial
 
 universe u v w
 
-open scoped Classical Topology BigOperators Filter ENNReal Polynomial
+open scoped Classical Topology Filter ENNReal Polynomial
 
 open Filter Asymptotics Set
 
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
 
 namespace Polynomial
@@ -60,7 +53,6 @@ namespace Polynomial
 
 
 variable {R : Type*} [CommSemiring R] [Algebra R 𝕜]
-
 variable (p : 𝕜[X]) (q : R[X])
 
 /-- The derivative (in the analysis sense) of a polynomial `p` is given by `p.derivative`. -/

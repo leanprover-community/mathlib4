@@ -139,11 +139,8 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
 /-- A recursor for `EReal` in terms of the coercion.
 
-A typical invocation looks like `induction x using EReal.rec`. Note that using `induction`
-directly will unfold `EReal` to `Option` which is undesirable.
-
 When working in term mode, note that pattern matching can be used directly. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
     ∀ a : EReal, C a
   | ⊥ => h_bot
@@ -203,10 +200,11 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
 /-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that the relation is symmetric. -/
 @[elab_as_elim]
-theorem induction₂_symm {P : EReal → EReal → Prop} (symm : Symmetric P) (top_top : P ⊤ ⊤)
-    (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x)
-    (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥) (coe_coe : ∀ x y : ℝ, P x y)
-    (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥) (bot_bot : P ⊥ ⊥) : ∀ x y, P x y :=
+theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x y → P y x)
+    (top_top : P ⊤ ⊤) (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0)
+    (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x) (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥)
+    (coe_coe : ∀ x y : ℝ, P x y) (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥)
+    (bot_bot : P ⊥ ⊥) : ∀ x y, P x y :=
   @induction₂ P top_top top_pos top_zero top_neg top_bot (fun _ h => symm <| top_pos _ h)
     pos_bot (symm top_zero) coe_coe zero_bot (fun _ h => symm <| top_neg _ h) neg_bot (symm top_bot)
     (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
@@ -219,7 +217,7 @@ record more basic properties of multiplication.
 -/
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
-  induction' x using EReal.rec with x <;> induction' y using EReal.rec with y <;>
+  induction' x with x <;> induction' y with y <;>
     try { rfl }
   rw [← coe_mul, ← coe_mul, mul_comm]
 #align ereal.mul_comm EReal.mul_comm
@@ -244,7 +242,7 @@ instance : MulZeroOneClass EReal where
 
 instance canLift : CanLift EReal ℝ (↑) fun r => r ≠ ⊤ ∧ r ≠ ⊥ where
   prf x hx := by
-    induction x using EReal.rec
+    induction x
     · simp at hx
     · simp
     · simp at hx
@@ -344,11 +342,11 @@ theorem top_ne_zero : (⊤ : EReal) ≠ 0 :=
 
 theorem range_coe : range Real.toEReal = {⊥, ⊤}ᶜ := by
   ext x
-  induction x using EReal.rec <;> simp
+  induction x <;> simp
 
 theorem range_coe_eq_Ioo : range Real.toEReal = Ioo ⊥ ⊤ := by
   ext x
-  induction x using EReal.rec <;> simp
+  induction x <;> simp
 
 @[simp, norm_cast]
 theorem coe_add (x y : ℝ) : (↑(x + y) : EReal) = x + y :=
@@ -449,10 +447,10 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
 
 lemma exists_between_coe_real {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
   obtain ⟨a, ha₁, ha₂⟩ := exists_between h
-  induction' a using EReal.rec with a₀
-  · exact (not_lt_bot ha₁).elim
-  · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
-  · exact (not_top_lt ha₂).elim
+  induction a with
+  | h_bot => exact (not_lt_bot ha₁).elim
+  | h_real a₀ => exact ⟨a₀, ha₁, ha₂⟩
+  | h_top => exact (not_top_lt ha₂).elim
 
 @[simp]
 lemma image_coe_Icc (x y : ℝ) : Real.toEReal '' Icc x y = Icc ↑x ↑y := by
@@ -802,6 +800,47 @@ theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ :=
   rfl
 #align ereal.top_add_coe EReal.top_add_coe
 
+/-- For any extended real number `x` which is not `⊥`, the sum of `⊤` and `x` is equal to `⊤`. -/
+@[simp]
+theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
+  induction x using EReal.rec
+  · exfalso; exact h (Eq.refl ⊥)
+  · exact top_add_coe _
+  · exact top_add_top
+
+/-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
+theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
+  constructor <;> intro h
+  · by_contra h'
+    rw [h', add_bot] at h
+    exact bot_ne_top h
+  · cases x
+    case h_bot => contradiction
+    case h_top => rfl
+    case h_real r => exact top_add_of_ne_bot h
+
+/-- For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`. -/
+@[simp]
+theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
+  rw [add_comm, top_add_of_ne_bot h]
+
+/-- For any extended real number `x`, the sum of `x` and `⊤` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
+theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
+
+/-- For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
+then their sum is also greater than `0`. -/
+theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by
+  induction a using EReal.rec
+  · exfalso; exact not_lt_bot ha
+  · induction b using EReal.rec
+    · exfalso; exact not_lt_bot hb
+    · norm_cast at *; exact Left.add_pos ha hb
+    · exact add_top_of_ne_bot (bot_lt_zero.trans ha).ne' ▸ hb
+  · rw [top_add_of_ne_bot (bot_lt_zero.trans hb).ne']
+    exact ha
+
 @[simp]
 theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
   rfl
@@ -822,7 +861,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | (y : ℝ), (z : ℝ), h => by
     simpa only [← coe_add, EReal.coe_le_coe_iff, add_le_add_iff_left] using h
 
--- porting note: todo: add `MulLECancellable.strictMono*` etc
+-- Porting note (#11215): TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
   not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
 #align ereal.add_lt_add_right_coe EReal.add_lt_add_right_coe
@@ -883,6 +922,7 @@ instance : Neg EReal := ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
   neg_zero := congr_arg Real.toEReal neg_zero
+  zsmul := zsmulRec
 
 @[simp]
 theorem neg_top : -(⊤ : EReal) = ⊥ :=
@@ -943,7 +983,6 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 @[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_le
 #align ereal.neg_le_neg_iff EReal.neg_le_neg_iff
 
--- porting note: new lemma
 @[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
 
 /-- `-a ≤ b ↔ -b ≤ a` on `EReal`. -/
@@ -1036,6 +1075,12 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
   rfl
 #align ereal.to_real_sub EReal.toReal_sub
 
+theorem add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
+  induction a using EReal.rec
+  · rw [bot_add b, bot_sub b]
+  · norm_cast; linarith
+  · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
+
 /-! ### Multiplication -/
 
 @[simp] theorem top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
@@ -1082,6 +1127,16 @@ theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
   rw [EReal.mul_comm]
   exact mul_top_of_pos h
 #align ereal.top_mul_of_pos EReal.top_mul_of_pos
+
+/-- The product of two positive extended real numbers is positive. -/
+theorem mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
+  induction' a using EReal.rec with a
+  · exfalso; exact not_lt_bot ha
+  · induction' b using EReal.rec with b
+    · exfalso; exact not_lt_bot hb
+    · norm_cast at *; exact Left.mul_pos ha hb
+    · rw [EReal.mul_comm, top_mul_of_pos ha]; exact hb
+  · rw [top_mul_of_pos hb]; exact ha
 
 theorem top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
   rw [EReal.mul_comm]
@@ -1159,7 +1214,8 @@ infinite. This version eliminates some cases by assuming that `P` is symmetric a
 `P (-x) y` for all `x`, `y`. -/
 @[elab_as_elim]
 theorem induction₂_symm_neg {P : EReal → EReal → Prop}
-    (symm : Symmetric P) (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
+    (symm : ∀ {x y}, P x y → P y x)
+    (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
     (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
     ∀ x y, P x y :=
   have neg_right : ∀ {x y}, P x y → P x (-y) := fun h => symm <| neg_left <| symm h
@@ -1189,9 +1245,73 @@ instance : HasDistribNeg EReal where
     rw [x.mul_comm, x.mul_comm]
     exact y.neg_mul x
 
+theorem right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    (a + b) * c = a * c + b * c := by
+  rcases eq_or_lt_of_le ha with (rfl | a_pos)
+  · simp
+  rcases eq_or_lt_of_le hb with (rfl | b_pos)
+  · simp
+  rcases lt_trichotomy c 0 with (c_neg | rfl | c_pos)
+  · induction c using EReal.rec
+    · rw [mul_bot_of_pos a_pos, mul_bot_of_pos b_pos, mul_bot_of_pos (add_pos a_pos b_pos),
+        add_bot ⊥]
+    · induction a using EReal.rec
+      · exfalso; exact not_lt_bot a_pos
+      · induction b using EReal.rec
+        · norm_cast
+        · norm_cast; exact right_distrib _ _ _
+        · norm_cast
+          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_neg c_neg, add_bot]
+      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_neg c_neg, bot_add]
+    · exfalso; exact not_top_lt c_neg
+  · simp
+  · induction c using EReal.rec
+    · exfalso; exact not_lt_bot c_pos
+    · induction a using EReal.rec
+      · exfalso; exact not_lt_bot a_pos
+      · induction b using EReal.rec
+        · norm_cast
+        · norm_cast; exact right_distrib _ _ _
+        · norm_cast
+          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_pos c_pos,
+            add_top_of_ne_bot (coe_ne_bot _)]
+      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_pos c_pos,
+          top_add_of_ne_bot (ne_bot_of_gt (mul_pos b_pos c_pos))]
+    · rw [mul_top_of_pos a_pos, mul_top_of_pos b_pos, mul_top_of_pos (add_pos a_pos b_pos),
+        top_add_top]
+
+theorem left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    c * (a + b) = c * a + c * b := by
+  nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
+  exact right_distrib_of_nonneg ha hb
+
+theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
+  symm
+  refine ⟨fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z), ?_⟩
+  intro h
+  induction x using EReal.rec
+  · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
+    intro z
+    specialize h (z-1) (bot_lt_coe (z-1))
+    apply lt_of_le_of_lt h
+    rw [EReal.coe_lt_coe_iff]
+    exact sub_one_lt z
+  · induction y using EReal.rec
+    · exact bot_le
+    · norm_cast
+      norm_cast at h
+      by_contra x_lt_y
+      rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, x_lt_z, z_lt_y⟩
+      specialize h z x_lt_z
+      exact not_le_of_lt z_lt_y h
+    · exfalso
+      specialize h (_+ 1) (EReal.coe_lt_coe_iff.2 (lt_add_one _))
+      exact not_le_of_lt (coe_lt_top (_ + 1)) h
+  · exact le_top
+
 /-! ### Absolute value -/
 
--- porting note: todo: use `Real.nnabs` for the case `(x : ℝ)`
+-- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
 /-- The absolute value from `EReal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
 a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
@@ -1215,7 +1335,7 @@ theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=
 
 @[simp]
 theorem abs_eq_zero_iff {x : EReal} : x.abs = 0 ↔ x = 0 := by
-  induction x using EReal.rec
+  induction x
   · simp only [abs_bot, ENNReal.top_ne_zero, bot_ne_zero]
   · simp only [abs_def, coe_eq_zero, ENNReal.ofReal_eq_zero, abs_nonpos_iff]
   · simp only [abs_top, ENNReal.top_ne_zero, top_ne_zero]
@@ -1245,7 +1365,7 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
-    rw [Ne.def, abs_eq_zero_iff, coe_eq_zero]
+    rw [Ne, abs_eq_zero_iff, coe_eq_zero]
     exact h.ne'
   | neg_left h => rwa [neg_mul, EReal.abs_neg, EReal.abs_neg]
 #align ereal.abs_mul EReal.abs_mul

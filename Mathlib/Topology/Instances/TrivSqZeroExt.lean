@@ -29,7 +29,6 @@ one value.
 open scoped Topology
 variable {α S R M : Type*}
 
--- mathport name: exprtsze
 local notation "tsze" => TrivSqZeroExt
 
 namespace TrivSqZeroExt
@@ -45,7 +44,7 @@ instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
 
 theorem nhds_def (x : tsze R M) : 𝓝 x = (𝓝 x.fst).prod (𝓝 x.snd) := by
-  cases x
+  cases x using Prod.rec
   exact nhds_prod_eq
 #align triv_sq_zero_ext.nhds_def TrivSqZeroExt.nhds_def
 

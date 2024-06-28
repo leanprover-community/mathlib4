@@ -48,13 +48,13 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     it follows that `f` vanishes on a neighborhood of `x`, proving the claim. -/
   rintro x ⟨xu, xU⟩
   rcases hf x xU with ⟨p, r, hp⟩
-  obtain ⟨y, yu, hxy⟩ : ∃ y ∈ u, edist x y < r / 2
-  exact EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
+  obtain ⟨y, yu, hxy⟩ : ∃ y ∈ u, edist x y < r / 2 :=
+    EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
   let q := p.changeOrigin (y - x)
   have has_series : HasFPowerSeriesOnBall f q y (r / 2) := by
     have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_coe_nnnorm_sub] at hxy
     have := hp.changeOrigin (A.trans_le ENNReal.half_le_self)
-    simp only [add_sub_cancel'_right] at this
+    simp only [add_sub_cancel] at this
     apply this.mono (ENNReal.half_pos hp.r_pos.ne')
     apply ENNReal.le_sub_of_add_le_left ENNReal.coe_ne_top
     apply (add_le_add A.le (le_refl (r / 2))).trans (le_of_eq _)

@@ -122,8 +122,8 @@ instance : AddMonoid (Completion α) :=
         show 0 • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
     nsmul_succ := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_id continuous_map) fun a ↦
-        show (n + 1) • (a : Completion α) = (a : Completion α) + n • (a : Completion α) by
+        (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
+        show (n + 1) • (a : Completion α) = n • (a : Completion α) + (a : Completion α) by
           rw [← coe_smul, succ_nsmul, coe_add, coe_smul] }
 
 instance : SubNegMonoid (Completion α) :=
@@ -141,9 +141,9 @@ instance : SubNegMonoid (Completion α) :=
         show (0 : ℤ) • (a : Completion α) = 0 by rw [← coe_smul, ← coe_zero, zero_smul]
     zsmul_succ' := fun n a ↦
       Completion.induction_on a
-        (isClosed_eq continuous_map <| continuous_map₂ continuous_id continuous_map) fun a ↦
+        (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
           show Int.ofNat n.succ • (a : Completion α) = _ by
-            rw [← coe_smul, show Int.ofNat n.succ • a = a + Int.ofNat n • a from
+            rw [← coe_smul, show Int.ofNat n.succ • a = Int.ofNat n • a + a from
               SubNegMonoid.zsmul_succ' n a, coe_add, coe_smul]
     zsmul_neg' := fun n a ↦
       Completion.induction_on a
@@ -201,7 +201,7 @@ section UniformAddCommGroup
 
 variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
 
-instance : AddCommGroup (Completion α) :=
+instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
     add_comm := fun a b ↦
       Completion.induction_on₂ a b
@@ -233,7 +233,7 @@ variable [UniformSpace α] [AddGroup α] [UniformAddGroup α] [UniformSpace β] 
 open UniformSpace UniformSpace.Completion
 
 /-- Extension to the completion of a continuous group hom. -/
-def AddMonoidHom.extension [CompleteSpace β] [SeparatedSpace β] (f : α →+ β) (hf : Continuous f) :
+def AddMonoidHom.extension [CompleteSpace β] [T0Space β] (f : α →+ β) (hf : Continuous f) :
     Completion α →+ β :=
   have hf : UniformContinuous f := uniformContinuous_addMonoidHom_of_continuous hf
   { toFun := Completion.extension f
@@ -248,13 +248,13 @@ def AddMonoidHom.extension [CompleteSpace β] [SeparatedSpace β] (f : α →+ �
         rw_mod_cast [extension_coe hf, extension_coe hf, extension_coe hf, f.map_add] }
 #align add_monoid_hom.extension AddMonoidHom.extension
 
-theorem AddMonoidHom.extension_coe [CompleteSpace β] [SeparatedSpace β] (f : α →+ β)
+theorem AddMonoidHom.extension_coe [CompleteSpace β] [T0Space β] (f : α →+ β)
     (hf : Continuous f) (a : α) : f.extension hf a = f a :=
   UniformSpace.Completion.extension_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
 #align add_monoid_hom.extension_coe AddMonoidHom.extension_coe
 
 @[continuity]
-theorem AddMonoidHom.continuous_extension [CompleteSpace β] [SeparatedSpace β] (f : α →+ β)
+theorem AddMonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α →+ β)
     (hf : Continuous f) : Continuous (f.extension hf) :=
   UniformSpace.Completion.continuous_extension
 #align add_monoid_hom.continuous_extension AddMonoidHom.continuous_extension

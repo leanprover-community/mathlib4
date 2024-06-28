@@ -85,9 +85,7 @@ def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterva
 
 end stdSimplex
 
-/-! ### Topological vector space -/
-
-
+/-! ### Topological vector spaces -/
 section TopologicalSpace
 
 variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
@@ -96,7 +94,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] 
 
 theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
-  exact image_closure_subset_closure_image (by continuity)
+  exact image_closure_subset_closure_image (by fun_prop)
 #align segment_subset_closure_open_segment segment_subset_closure_openSegment
 
 end TopologicalSpace
@@ -111,7 +109,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
 theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
   exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
-    Continuous.continuousOn <| by continuity).symm
+    Continuous.continuousOn <| by fun_prop).symm
 #align closure_open_segment closure_openSegment
 
 end PseudoMetricSpace
@@ -217,7 +215,7 @@ theorem Convex.add_smul_sub_mem_interior' {s : Set E} (hs : Convex 𝕜 s) {x y 
     x + t • (y - x) ∈ interior s := by
   simpa only [sub_smul, smul_sub, one_smul, add_sub, add_comm] using
     hs.combo_interior_closure_mem_interior hy hx ht.1 (sub_nonneg.mpr ht.2)
-      (add_sub_cancel'_right _ _)
+      (add_sub_cancel _ _)
 #align convex.add_smul_sub_mem_interior' Convex.add_smul_sub_mem_interior'
 
 /-- If `x ∈ s` and `y ∈ interior s`, then the segment `(x, y]` is included in `interior s`. -/
@@ -229,7 +227,7 @@ theorem Convex.add_smul_sub_mem_interior {s : Set E} (hs : Convex 𝕜 s) {x y :
 /-- If `x ∈ closure s` and `x + y ∈ interior s`, then `x + t y ∈ interior s` for `t ∈ (0, 1]`. -/
 theorem Convex.add_smul_mem_interior' {s : Set E} (hs : Convex 𝕜 s) {x y : E} (hx : x ∈ closure s)
     (hy : x + y ∈ interior s) {t : 𝕜} (ht : t ∈ Ioc (0 : 𝕜) 1) : x + t • y ∈ interior s := by
-  simpa only [add_sub_cancel'] using hs.add_smul_sub_mem_interior' hx hy ht
+  simpa only [add_sub_cancel_left] using hs.add_smul_sub_mem_interior' hx hy ht
 #align convex.add_smul_mem_interior' Convex.add_smul_mem_interior'
 
 /-- If `x ∈ s` and `x + y ∈ interior s`, then `x + t y ∈ interior s` for `t ∈ (0, 1]`. -/
@@ -261,14 +259,15 @@ open AffineMap
 protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
     (h : (s \ interior s).Pairwise fun x y => ∃ c : 𝕜, lineMap x y c ∈ interior s) :
     StrictConvex 𝕜 s := by
-  refine' strictConvex_iff_openSegment_subset.2 _
+  refine strictConvex_iff_openSegment_subset.2 ?_
   intro x hx y hy hne
   by_cases hx' : x ∈ interior s
   · exact hs.openSegment_interior_self_subset_interior hx' hy
   by_cases hy' : y ∈ interior s
   · exact hs.openSegment_self_interior_subset_interior hx hy'
   rcases h ⟨hx, hx'⟩ ⟨hy, hy'⟩ hne with ⟨c, hc⟩
-  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset_iff.2 ⟨hc, union_subset _ _⟩)
+  refine (openSegment_subset_union x y ⟨c, rfl⟩).trans
+    (insert_subset_iff.2 ⟨hc, union_subset ?_ ?_⟩)
   exacts [hs.openSegment_self_interior_subset_interior hx hc,
     hs.openSegment_interior_self_subset_interior hc hy]
 #align convex.strict_convex' Convex.strictConvex'
@@ -279,10 +278,10 @@ protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
 protected theorem Convex.strictConvex {s : Set E} (hs : Convex 𝕜 s)
     (h : (s \ interior s).Pairwise fun x y => ([x -[𝕜] y] \ frontier s).Nonempty) :
     StrictConvex 𝕜 s := by
-  refine' hs.strictConvex' <| h.imp_on fun x hx y hy _ => _
+  refine hs.strictConvex' <| h.imp_on fun x hx y hy _ => ?_
   simp only [segment_eq_image_lineMap, ← self_diff_frontier]
   rintro ⟨_, ⟨⟨c, hc, rfl⟩, hcs⟩⟩
-  refine' ⟨c, hs.segment_subset hx.1 hy.1 _, hcs⟩
+  refine ⟨c, hs.segment_subset hx.1 hy.1 ?_, hcs⟩
   exact (segment_eq_image_lineMap 𝕜 x y).symm ▸ mem_image_of_mem _ hc
 #align convex.strict_convex Convex.strictConvex
 
@@ -319,8 +318,8 @@ theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs
     closure s ⊆ homothety x t '' interior s := by
   intro y hy
   have hne : t ≠ 0 := (one_pos.trans ht).ne'
-  refine'
-    ⟨homothety x t⁻¹ y, hs.openSegment_interior_closure_subset_interior hx hy _,
+  refine
+    ⟨homothety x t⁻¹ y, hs.openSegment_interior_closure_subset_interior hx hy ?_,
       (AffineEquiv.homothetyUnitsMulHom x (Units.mk0 t hne)).apply_symm_apply y⟩
   rw [openSegment_eq_image_lineMap, ← inv_one, ← inv_Ioi (zero_lt_one' ℝ), ← image_inv, image_image,
     homothety_eq_lineMap]
@@ -350,7 +349,7 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
 theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
     {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
-  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
+  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by fun_prop
   apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
   convert h
   rw [segment_eq_image ℝ x y]
@@ -358,7 +357,7 @@ theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
 /-- A nonempty convex set is path connected. -/
 protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
     IsPathConnected s := by
-  refine' isPathConnected_iff.mpr ⟨hne, _⟩
+  refine isPathConnected_iff.mpr ⟨hne, ?_⟩
   intro x x_in y y_in
   exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected
@@ -384,3 +383,39 @@ protected theorem TopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E 
 #align topological_add_group.path_connected TopologicalAddGroup.pathConnectedSpace
 
 end ContinuousSMul
+
+section ComplementsConnected
+
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup E]
+
+local notation "π" => Submodule.linearProjOfIsCompl _ _
+
+attribute [local instance 100] TopologicalAddGroup.pathConnectedSpace
+
+/-- Given two complementary subspaces `p` and `q` in `E`, if the complement of `{0}`
+is path connected in `p` then the complement of `q` is path connected in `E`. -/
+theorem isPathConnected_compl_of_isPathConnected_compl_zero [ContinuousSMul ℝ E]
+    {p q : Submodule ℝ E} (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) :
+    IsPathConnected (qᶜ : Set E) := by
+  rw [isPathConnected_iff] at hpc ⊢
+  constructor
+  · rcases hpc.1 with ⟨a, ha⟩
+    exact ⟨a, mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) ha⟩
+  · intro x hx y hy
+    have : π hpq x ≠ 0 ∧ π hpq y ≠ 0 := by
+      constructor <;> intro h <;> rw [Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq] at h <;>
+        [exact hx h; exact hy h]
+    rcases hpc.2 (π hpq x) this.1 (π hpq y) this.2 with ⟨γ₁, hγ₁⟩
+    let γ₂ := PathConnectedSpace.somePath (π hpq.symm x) (π hpq.symm y)
+    let γ₁' : Path (_ : E) _ := γ₁.map continuous_subtype_val
+    let γ₂' : Path (_ : E) _ := γ₂.map continuous_subtype_val
+    refine ⟨(γ₁'.add γ₂').cast (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq x).symm
+      (Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hpq y).symm, fun t ↦ ?_⟩
+    rw [Path.cast_coe, Path.add_apply]
+    change γ₁ t + (γ₂ t : E) ∉ q
+    rw [← Submodule.linearProjOfIsCompl_apply_eq_zero_iff hpq, LinearMap.map_add,
+      Submodule.linearProjOfIsCompl_apply_right, add_zero,
+      Submodule.linearProjOfIsCompl_apply_eq_zero_iff]
+    exact mt (Submodule.eq_zero_of_coe_mem_of_disjoint hpq.disjoint) (hγ₁ t)
+
+end ComplementsConnected

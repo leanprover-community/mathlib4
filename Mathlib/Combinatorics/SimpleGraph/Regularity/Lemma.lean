@@ -66,9 +66,8 @@ We currently only prove the equipartition version of SRL.
 
 open Finpartition Finset Fintype Function SzemerediRegularity
 
-open scoped Classical
-
-variable {α : Type*} [Fintype α] (G : SimpleGraph α) {ε : ℝ} {l : ℕ}
+variable {α : Type*} [DecidableEq α] [Fintype α] (G : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ}
+  {l : ℕ}
 
 /-- Effective **Szemerédi Regularity Lemma**: For any sufficiently large graph, there is an
 `ε`-uniform equipartition of bounded size (where the bound does not depend on the graph). -/
@@ -77,9 +76,9 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
       P.IsEquipartition ∧ l ≤ P.parts.card ∧ P.parts.card ≤ bound ε l ∧ P.IsUniform G ε := by
   obtain hα | hα := le_total (card α) (bound ε l)
   -- If `card α ≤ bound ε l`, then the partition into singletons is acceptable.
-  · refine' ⟨⊥, bot_isEquipartition _, _⟩
+  · refine ⟨⊥, bot_isEquipartition _, ?_⟩
     rw [card_bot, card_univ]
-    exact ⟨hl, hα, botIsUniform _ hε⟩
+    exact ⟨hl, hα, bot_isUniform _ hε⟩
   -- Else, let's start from a dummy equipartition of size `initialBound ε l`.
   let t := initialBound ε l
   have htα : t ≤ (univ : Finset α).card :=
@@ -89,7 +88,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   obtain hε₁ | hε₁ := le_total 1 ε
   -- If `ε ≥ 1`, then this dummy equipartition is `ε`-uniform, so we're done.
   · exact ⟨dum, hdum₁, (le_initialBound ε l).trans hdum₂.ge,
-      hdum₂.le.trans (initialBound_le_bound ε l), (dum.isUniformOne G).mono hε₁⟩
+      hdum₂.le.trans (initialBound_le_bound ε l), (dum.isUniform_one G).mono hε₁⟩
   -- Else, set up the induction on energy. We phrase it through the existence for each `i` of an
   -- equipartition of size bounded by `stepBound^[i] (initialBound ε l)` and which is either
   -- `ε`-uniform or has energy at least `ε ^ 5 / 4 * i`.
@@ -101,8 +100,8 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   -- For `i > 4 / ε ^ 5` we know that the partition we get can't have energy `≥ ε ^ 5 / 4 * i > 1`,
   -- so it must instead be `ε`-uniform and we won.
     obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := h (⌊4 / ε ^ 5⌋₊ + 1)
-    refine' ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans _,
-      hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) _⟩
+    refine ⟨P, hP₁, (le_initialBound _ _).trans hP₂, hP₃.trans ?_,
+      hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) ?_⟩
     · rw [iterate_succ_apply']
       exact mul_le_mul_left' (pow_le_pow_left (by norm_num) (by norm_num) _) _
     calc
@@ -116,14 +115,14 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   intro i
   induction' i with i ih
   -- For `i = 0`, the dummy equipartition is enough.
-  · refine' ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr _⟩
+  · refine ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr ?_⟩
     rw [Nat.cast_zero, mul_zero]
     exact mod_cast dum.energy_nonneg G
   -- For the induction step at `i + 1`, find `P` the equipartition at `i`.
   obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := ih
   by_cases huniform : P.IsUniform G ε
   -- If `P` is already uniform, then no need to break it up further. We can just return `P` again.
-  · refine' ⟨P, hP₁, hP₂, _, Or.inl huniform⟩
+  · refine ⟨P, hP₁, hP₂, ?_, Or.inl huniform⟩
     rw [iterate_succ_apply']
     exact hP₃.trans (le_stepBound _)
   -- Else, `P` must instead have energy at least `ε ^ 5 / 4 * i`.
@@ -142,7 +141,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   have hPα : P.parts.card * 16 ^ P.parts.card ≤ card α :=
     (Nat.mul_le_mul hsize (Nat.pow_le_pow_of_le_right (by norm_num) hsize)).trans hα
   -- We return the increment equipartition of `P`, which has energy `≥ ε ^ 5 / 4 * (i + 1)`.
-  refine' ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, _, _, Or.inr <| le_trans _ <|
+  refine ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, ?_, ?_, Or.inr <| le_trans ?_ <|
     energy_increment hP₁ ((seven_le_initialBound ε l).trans hP₂) hεl' hPα huniform hε.le hε₁⟩
   · rw [card_increment hPα huniform]
     exact hP₂.trans (le_stepBound _)

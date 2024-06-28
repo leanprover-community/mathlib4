@@ -5,77 +5,106 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
-import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Analysis.Fourier.Inversion
 
 /-!
 # Fourier transform on Schwartz functions
 
-This file will construct the Fourier transform as a continuous linear map acting on Schwartz
-functions.
-
-For now, it only contains the fact that the Fourier transform of a Schwartz function is
-differentiable, with an explicit derivative given by a Fourier transform. See
-`SchwartzMap.hasFDerivAt_fourier`.
+This file constructs the Fourier transform as a continuous linear map acting on Schwartz
+functions, in `fourierTransformCLM`. It is also given as a continuous linear equiv, in
+`fourierTransformCLE`.
 -/
 
-open Real Complex MeasureTheory Filter TopologicalSpace SchwartzSpace SchwartzMap MeasureTheory
-  MeasureTheory.Measure FiniteDimensional VectorFourier
+open Real Complex TopologicalSpace SchwartzMap MeasureTheory MeasureTheory.Measure
 
-noncomputable section
+open scoped FourierTransform BigOperators
 
-variable {D : Type*} [NormedAddCommGroup D] [NormedSpace ℝ D]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {V : Type*} [NormedAddCommGroup V] [NormedSpace ℂ V]
-  (L : D →L[ℝ] E →L[ℝ] ℝ)
+namespace SchwartzMap
 
-/-- Multiplication by a linear map on Schwartz space: for `f : D → V` a Schwartz function and `L` a
-bilinear map from `D × E` to `ℝ`, we define a new Schwartz function on `D` taking values in the
-space of linear maps from `E` to `V`, given by
-`(VectorFourier.mul_L_schwartz L f) (v) = -(2 * π * I) • L (v, ⬝) • f v`.
-The point of this definition is that the derivative of the Fourier transform of `f` is the
-Fourier transform of `VectorFourier.mul_L_schwartz L f`. -/
-def VectorFourier.mul_L_schwartz : 𝓢(D, V) →L[ℝ] 𝓢(D, E →L[ℝ] V) :=
-  -(2 * π * I) • (bilinLeftCLM (ContinuousLinearMap.smulRightL ℝ E V).flip L.hasTemperateGrowth)
+variable
+  (𝕜 : Type*) [RCLike 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+  [MeasurableSpace V] [BorelSpace V]
 
-lemma VectorFourier.mul_L_schwartz_apply (f : 𝓢(D, V)) (d : D) :
-    VectorFourier.mul_L_schwartz L f d = VectorFourier.mul_L L f d := rfl
+/-- The Fourier transform on a real inner product space, as a continuous linear map on the
+Schwartz space. -/
+noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
+  refine mkCLM (fun (f : V → E) ↦ 𝓕 f) ?_ ?_ ?_ ?_
+  · intro f g x
+    simp only [fourierIntegral_eq, Pi.add_apply, smul_add]
+    rw [integral_add]
+    · exact (fourierIntegral_convergent_iff _).2 f.integrable
+    · exact (fourierIntegral_convergent_iff _).2 g.integrable
+  · intro c f x
+    simp only [fourierIntegral_eq, Pi.smul_apply, RingHom.id_apply, smul_comm _ c, integral_smul]
+  · intro f
+    exact Real.contDiff_fourierIntegral (fun n _ ↦ integrable_pow_mul volume f n)
+  · rintro ⟨k, n⟩
+    refine ⟨Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1),
+       (2 * π) ^ n * (2 * ↑n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card
+         * 2 ^ integrablePower (volume : Measure V) *
+         (∫ (x : V), (1 + ‖x‖) ^ (- (integrablePower (volume : Measure V) : ℝ))) * 2,
+       ⟨by positivity, fun f x ↦ ?_⟩⟩
+    apply (pow_mul_norm_iteratedFDeriv_fourierIntegral_le (f.smooth ⊤)
+      (fun k n _hk _hn ↦ integrable_pow_mul_iteratedFDeriv _ f k n) le_top le_top x).trans
+    simp only [mul_assoc]
+    gcongr
+    calc
+    ∑ p in Finset.range (n + 1) ×ˢ Finset.range (k + 1),
+        ∫ (v : V), ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 (⇑f) v‖
+      ≤ ∑ p in Finset.range (n + 1) ×ˢ Finset.range (k + 1),
+        2 ^ integrablePower (volume : Measure V) *
+        (∫ (x : V), (1 + ‖x‖) ^ (- (integrablePower (volume : Measure V) : ℝ))) * 2 *
+        ((Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)).sup
+          (schwartzSeminormFamily 𝕜 V E)) f := by
+      apply Finset.sum_le_sum (fun p hp ↦ ?_)
+      simp only [Finset.mem_product, Finset.mem_range] at hp
+      apply (f.integral_pow_mul_iteratedFDeriv_le 𝕜 _ _ _).trans
+      simp only [mul_assoc]
+      rw [two_mul]
+      gcongr
+      · apply Seminorm.le_def.1
+        have : (0, p.2) ∈ (Finset.range (n + integrablePower (volume : Measure V) + 1)
+            ×ˢ Finset.range (k + 1)) := by simp [hp.2]
+        apply Finset.le_sup this (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2 (E := V) (F := E))
+      · apply Seminorm.le_def.1
+        have : (p.1 + integrablePower (volume : Measure V), p.2) ∈ (Finset.range
+            (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)) := by
+          simp [hp.2]
+          linarith
+        apply Finset.le_sup this (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2 (E := V) (F := E))
+    _ = _ := by simp [mul_assoc]
 
-lemma SchwartzMap.integrable_pow_mul [MeasurableSpace D] [BorelSpace D] [FiniteDimensional ℝ D]
-    (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarMeasure μ] :
-    Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
-  let l := finrank ℝ D + 1 + k
-  obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
-    let m : ℕ × ℕ := (l, 0)
-    refine ⟨2 ^ m.1 * (Finset.Iic m).sup (fun m => SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity,
-      fun x ↦ ?_⟩
-    simpa using f.one_add_le_sup_seminorm_apply (m := m) (k := l) (n := 0) (𝕜 := ℝ) le_rfl le_rfl x
-  have : Integrable (fun x : D => C * (1 + ‖x‖) ^ (-((finrank ℝ D + 1 : ℕ) : ℝ))) μ := by
-    apply (integrable_one_add_norm ?_).const_mul
-    exact Nat.cast_lt.mpr Nat.le.refl
-  apply this.mono ((aestronglyMeasurable_id.norm.pow _).mul f.continuous.aestronglyMeasurable.norm)
-    (eventually_of_forall (fun x ↦ ?_))
-  conv_rhs => rw [norm_of_nonneg (by positivity), rpow_neg (by positivity), ← div_eq_mul_inv]
-  rw [le_div_iff' (by positivity)]
-  simp only [id_eq, Pi.mul_apply, Pi.pow_apply, norm_mul, norm_pow, norm_norm, rpow_nat_cast]
-  calc
-    (1 + ‖x‖) ^ (finrank ℝ D + 1) * (‖x‖ ^ k * ‖f x‖)
-      ≤ (1 + ‖x‖) ^ (finrank ℝ D + 1) * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
-    _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
-    _ ≤ C := hC x
+@[simp] lemma fourierTransformCLM_apply (f : 𝓢(V, E)) :
+    fourierTransformCLM 𝕜 f = 𝓕 f := rfl
 
-lemma SchwartzMap.integrable [MeasurableSpace D] [BorelSpace D] [FiniteDimensional ℝ D]
-    (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
-    Integrable f μ :=
-  (f.integrable_pow_mul (μ := μ) 0).mono f.continuous.aestronglyMeasurable
-    (eventually_of_forall (fun _ ↦ by simp))
+variable [CompleteSpace E]
 
-attribute [local instance 200] secondCountableTopologyEither_of_left
+/-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
+Schwartz space. -/
+noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
+  __ := fourierTransformCLM 𝕜
+  invFun := (compCLMOfContinuousLinearEquiv 𝕜 (LinearIsometryEquiv.neg ℝ (E := V)))
+      ∘L (fourierTransformCLM 𝕜)
+  left_inv := by
+    intro f
+    ext x
+    change 𝓕 (𝓕 f) (-x) = f x
+    rw [← fourierIntegralInv_eq_fourierIntegral_neg, Continuous.fourier_inversion f.continuous
+      f.integrable (fourierTransformCLM 𝕜 f).integrable]
+  right_inv := by
+    intro f
+    ext x
+    change 𝓕 (fun x ↦ (𝓕 f) (-x)) x = f x
+    simp_rw [← fourierIntegralInv_eq_fourierIntegral_neg, Continuous.fourier_inversion_inv
+      f.continuous f.integrable (fourierTransformCLM 𝕜 f).integrable]
+  continuous_invFun := ContinuousLinearMap.continuous _
 
-/-- The Fourier transform of a Schwartz map `f` has a Fréchet derivative (everywhere in its domain)
-and its derivative is the Fourier transform of the Schwartz map `mul_L_schwartz L f`. -/
-theorem SchwartzMap.hasFDerivAt_fourier [CompleteSpace V] [MeasurableSpace D] [BorelSpace D]
-    {μ : Measure D} [FiniteDimensional ℝ D] [IsAddHaarMeasure μ] (f : 𝓢(D, V)) (w : E) :
-    HasFDerivAt (fourierIntegral fourierChar μ L.toLinearMap₂ f)
-      (fourierIntegral fourierChar μ L.toLinearMap₂ (mul_L_schwartz L f) w) w :=
-  VectorFourier.hasFDerivAt_fourier L f.integrable
-    (by simpa using f.integrable_pow_mul (μ := μ) 1) w
+@[simp] lemma fourierTransformCLE_apply (f : 𝓢(V, E)) :
+    fourierTransformCLE 𝕜 f = 𝓕 f := rfl
+
+@[simp] lemma fourierTransformCLE_symm_apply (f : 𝓢(V, E)) :
+    (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := by
+  ext x
+  exact (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
