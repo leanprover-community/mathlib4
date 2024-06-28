@@ -547,7 +547,7 @@ noncomputable section GradedAlgebra
 
 /-- The homogeneous submodules form a graded ring.
 This instance is used by `DirectSum.commSemiring` and `DirectSum.algebra`. -/
-instance HomogeneousSubmodule.gcomm_monoid [DecidableEq σ] :
+instance HomogeneousSubmodule.gcomm_monoid :
     SetLike.GradedMonoid (homogeneousSubmodule σ R) :=
   IsWeightedHomogeneous.WeightedHomogeneousSubmodule.gcomm_monoid
 
@@ -570,7 +570,11 @@ theorem decomposition.decompose'_eq :
     decomposition.decompose' = fun φ : MvPolynomial σ R =>
       DirectSum.mk (fun i : ℕ => ↥(homogeneousSubmodule σ R i)) (Finset.image degree φ.support)
         fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
-  sorry -- should be rfl
+  have hw : degree = (weightedDegree 1 : (σ →₀ ℕ) → ℕ) := by
+    ext d
+    simp [weightedDegree, degree, Finsupp.total, Finsupp.sum]
+  rw [hw]
+  rfl
 
 end GradedAlgebra
 
