@@ -1471,123 +1471,49 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
   map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 #align ereal.coe_ennreal_pow EReal.coe_ennreal_pow
 
-/-!
-# Division By Extended Nonnegative Reals
-
-We define a division of an extended real `EReal` by an extended nonnegative real `ENNReal`
-as the multiplication by the coercion of its inverse. It is an instance of division.
--/
-
-/--
-Division of an extended real (`EReal`) by an extended nonnegative real (`ENNReal`).
-Defined by inversion in `[0, ∞]`, coercion to `[-∞,+∞]`, and multiplication in `[-∞,+∞]`.--/
-noncomputable def divENNReal : EReal → ENNReal → EReal :=
-  fun (a : EReal) (b : ENNReal) ↦ a * b⁻¹
-
-noncomputable instance ENNReal.instHDiv : HDiv EReal ENNReal EReal where
-  hDiv := divENNReal
-
-theorem div_eq_inv_mul {a : EReal} {b : ENNReal} : a / b = b⁻¹ * a := mul_comm _ _
-
-theorem mul_div {a b : EReal} {c : ENNReal} : a * (b / c) = (a * b) / c := by
-  change a * (b * c⁻¹) = (a * b) * c⁻¹
-  rw [mul_assoc]
-
-theorem mul_div_right {a c : EReal} {b : ENNReal} : (a / b) * c = (a * c) / b := by
-  rw [mul_comm, mul_div, mul_comm]
-
-theorem mul_inv_cancel {a : EReal} {b : ENNReal} (h : b ≠ 0) (h' : b ≠ ⊤) : (a / b) * b = a := by
-  change (a * b⁻¹) * b = a
-  rw [mul_assoc, ← coe_ennreal_mul, mul_comm b⁻¹ b, ENNReal.mul_inv_cancel h h',
-    coe_ennreal_one, mul_one]
+/-! ### Inverse of an extended real-/
+noncomputable instance : DivInvMonoid EReal where
+  inv := fun (a : EReal) ↦ match a with
+  | none => 0
+  | some b => match b with
+    | none => 0
+    | some c => (c⁻¹ : ℝ)
 
 @[simp]
-theorem div_one {a : EReal} : a / (1 : ENNReal) = a := by
-  change a * (1 : ENNReal)⁻¹ = a
-  rw [inv_one, coe_ennreal_one, mul_one a]
+theorem inv_bot : (⊥ : EReal)⁻¹ = 0 := rfl
 
 @[simp]
-theorem div_top {a : EReal} : a / (⊤ : ENNReal) = 0 := by
-  change a * (⊤ : ENNReal)⁻¹ = 0
-  rw [inv_top, coe_ennreal_zero, mul_zero]
+theorem inv_top : (⊤ : EReal)⁻¹ = 0 := rfl
 
-theorem pos_div_zero {a : EReal} (h : 0 < a) : a / (0 : ENNReal) = ⊤ := by
-  change a * (0 : ENNReal)⁻¹ = ⊤
-  rw [ENNReal.inv_zero, coe_ennreal_top, mul_top_of_pos h]
-
-theorem neg_div_zero {a : EReal} (h : a < 0) : a / (0 : ENNReal) = ⊥ := by
-  change a * (0 : ENNReal)⁻¹ = ⊥
-  rw [ENNReal.inv_zero, coe_ennreal_top, mul_top_of_neg h]
+theorem coe_inv (x : ℝ) : (x⁻¹ : ℝ) = (x : EReal)⁻¹ := rfl
 
 @[simp]
-theorem zero_div {b : ENNReal} : (0 : EReal) / b = 0 := MulZeroClass.zero_mul (ENNReal.toEReal b⁻¹)
+theorem inv_zero : (0 : EReal)⁻¹ = 0 := by
+  change (0 : ℝ)⁻¹ = (0 : EReal)
+  rw [GroupWithZero.inv_zero, coe_zero]
 
-theorem top_div_ntop {b : ENNReal} (h : b ≠ ⊤) : (⊤ : EReal) / b = ⊤ := by
-  apply top_mul_of_pos
-  simp [h]
+noncomputable instance : DivInvOneMonoid EReal where
+  inv_one := by nth_rw 1 [← coe_one, ← coe_inv 1, _root_.inv_one, coe_one]
 
-theorem bot_div_ntop {b : ENNReal} (h : b ≠ ⊤) : (⊥ : EReal) / b = ⊥ := by
-  apply bot_mul_of_pos
-  simp [h]
+theorem inv_neg (a : EReal) : (-a)⁻¹ = -a⁻¹ := by
+  induction a using EReal.rec
+  · rw [neg_bot, inv_top, inv_bot, neg_zero]
+  · rw [← coe_inv _, ← coe_neg _⁻¹, ← coe_neg _, ← coe_inv (-_)]
+    exact EReal.coe_eq_coe_iff.2 _root_.inv_neg
+  · rw [neg_top, inv_bot, inv_top, neg_zero]
 
-theorem mul_div_mul {a : EReal} {b c : ENNReal} (h : c ≠ 0) (h' : c ≠ ⊤) :
-    (a * c) / (b * c) = a / b := by
-  change (a * c) * (b * c)⁻¹ = a * b⁻¹
-  suffices h : (c * (b * c)⁻¹ = b⁻¹) by rw [← h, mul_assoc]; norm_cast
-  calc
-    c * (b * c)⁻¹ = c * (b⁻¹ * c⁻¹) := by rw [ENNReal.mul_inv (Or.inr h') (Or.inr h)]
-                _ = b⁻¹ * c⁻¹ * c   := mul_comm c (b⁻¹ * c⁻¹)
-                _ = b⁻¹ * (c⁻¹ * c) := mul_assoc b⁻¹ c⁻¹ c
-                _ = b⁻¹ * 1         := by rw [ENNReal.inv_mul_cancel h h']
-                _ = b⁻¹             := mul_one b⁻¹
+theorem inv_inv {a : EReal} (h : a ≠ ⊥) (h' : a ≠ ⊤) : (a⁻¹)⁻¹ = a := by
+  rw [← coe_toReal h' h, ← coe_inv a.toReal, ← coe_inv a.toReal⁻¹, _root_.inv_inv a.toReal]
 
-theorem div_mul {a : EReal} {b c : ENNReal} (h : b ≠ 0 ∨ c ≠ ⊤) (h' : b ≠ ⊤ ∨ c ≠ 0) :
-    (a / b) / c = a / (b * c) := by
-  change (a * b⁻¹) * c⁻¹ = a * (b * c)⁻¹
-  suffices h : b⁻¹ * c⁻¹ = (b * c)⁻¹ by rw [← h, mul_assoc]; norm_cast
-  exact (ENNReal.mul_inv h h').symm
-
-theorem div_left_mono (b : ENNReal) : Monotone fun a : EReal ↦ a / b := by
-  intro _ _ h
-  apply mul_le_mul_of_nonneg_right h
-  norm_cast
-  exact bot_le
-
-theorem div_left_mono' {a a' : EReal} (b : ENNReal) (h : a ≤ a') : a / b ≤ a' / b :=
-  div_left_mono b h
-
-theorem div_left_strictMono {b : ENNReal} (h : b ≠ 0) (h' : b ≠ ⊤) :
-    StrictMono fun a : EReal ↦ a / b := by
-  intro a c a_lt_c
-  simp only
-  apply lt_of_le_of_ne
-  · exact div_left_mono' b (le_of_lt a_lt_c)
-  · intro ab_eq_cb
-    apply ne_of_lt a_lt_c
-    rw [← @mul_inv_cancel a b h h', ab_eq_cb, @mul_inv_cancel c b h h']
-
-theorem div_left_strictMono' {a a' : EReal} {b : ENNReal} (h₁ : b ≠ 0) (h₂ : b ≠ ⊤)
-    (h₃ : a < a') : a / b < a' / b := div_left_strictMono h₁ h₂ h₃
-
-theorem le_div_iff_mul_le {a c : EReal} {b : ENNReal} (h : b ≠ 0) (h' : b ≠ ⊤) :
-    a ≤ c / b ↔ a * b ≤ c := by
-  nth_rw 1 [← @mul_inv_cancel a b h h']
-  exact mul_div_right ▸ StrictMono.le_iff_le (div_left_strictMono h h')
-
-theorem div_le_iff_le_mul {a c : EReal} {b : ENNReal} (h : b ≠ 0) (h' : b ≠ ⊤) :
-    a / b ≤ c ↔ a ≤ b * c := by
-  nth_rw 1 [← @mul_inv_cancel c b h h']
-  rw [mul_div_right, mul_comm c b]
-  exact StrictMono.le_iff_le (div_left_strictMono h h')
-
-theorem nneg_div {a : EReal} {b : ENNReal} (h : 0 ≤ a) : 0 ≤ a / b :=
-  le_of_eq_of_le (Eq.symm zero_div) (div_left_mono b h)
-
-theorem npos_div {a : EReal} {b : ENNReal} (h : a ≤ 0) : a / b ≤ 0 :=
-  le_of_le_of_eq (div_left_mono b h) zero_div
-
-theorem div_right_distrib_of_nneg {a b : EReal} {c : ENNReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
-    (a + b) / c = (a / c) + (b / c) := right_distrib_of_nonneg h h'
+theorem mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
+  induction a, b using EReal.induction₂_symm with
+  | top_top | top_zero | top_bot | zero_bot | bot_bot => simp
+  | @symm a b h => rw [mul_comm b a, mul_comm b⁻¹ a⁻¹]; exact h
+  | top_pos x x_pos => rw [top_mul_of_pos (EReal.coe_pos.2 x_pos), inv_top, zero_mul]
+  | top_neg x x_neg => rw [top_mul_of_neg (EReal.coe_neg'.2 x_neg), inv_bot, inv_top, zero_mul]
+  | pos_bot x x_pos => rw [mul_bot_of_pos (EReal.coe_pos.2 x_pos), inv_bot, mul_zero]
+  | coe_coe x y => rw [← coe_mul, ← coe_inv, _root_.mul_inv, coe_mul, coe_inv, coe_inv]
+  | neg_bot x x_neg => rw [mul_bot_of_neg (EReal.coe_neg'.2 x_neg), inv_top, inv_bot, mul_zero]
 
 end EReal
 
