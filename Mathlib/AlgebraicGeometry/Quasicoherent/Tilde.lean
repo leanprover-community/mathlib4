@@ -178,11 +178,15 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((𝒪_SpecR).val.obj U) ((Tilde.presheafInAddCommGrp R M).obj U) :=
   inferInstanceAs $ Module _ (Tilde.sectionsSubmodule R M U)
 
+noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
+    Module ((Spec.structureSheaf R).1.obj U) ((Tilde.presheafInAddCommGrp R M).obj U) :=
+  inferInstanceAs $ Module _ (Tilde.sectionsSubmodule R M U)
+
 open Tilde in
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
-noncomputable def TildeInModules : SheafOfModules (𝒪_SpecR) where
+noncomputable def TildeAsSheafOfModules : SheafOfModules (𝒪_SpecR) where
   val := {
     presheaf := (presheafInAddCommGrp R M)
     module := inferInstance
@@ -197,16 +201,19 @@ noncomputable def TildeInModules : SheafOfModules (𝒪_SpecR) where
   }
   isSheaf := (TildeInAddCommGrp R M).2
 
+-- R ≅ S Mod(R) ≅ Module(S)
+noncomputable def TildeInModuleCat :
+    TopCat.Presheaf (ModuleCat ((Spec.structureSheaf R).1.obj (op ⊤))) (PrimeSpectrum.Top R) :=
+  (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) sorry).obj (TildeAsSheafOfModules R M).1
+
 namespace Tilde
 
-instance (x:PrimeSpectrum.Top R): Module R (TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeInModules R M).1.presheaf x)where
-  smul r m:= by sorry
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  add_smul := sorry
-  zero_smul := sorry
+    -- { pt := _
+    --   ι := { app := fun U =>
+    --     openToLocalization R M ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2 } }
+
+
+
 
 /-- The ring homomorphism that takes a section of the structure sheaf of `R` on the open set `U`,
 implemented as a subtype of dependent functions to localizations at prime ideals, and evaluates
@@ -229,6 +236,32 @@ theorem openToLocalization_apply (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpe
     (hx : x ∈ U) (s : (TildeInAddCommGrp R M).1.obj (op U)) :
     openToLocalization R M U x hx s = (s.1 ⟨x, hx⟩ : _) :=
   rfl
+
+-- stalk of M at x is an R-module
+-- for each open U, M~(U) is an R-module
+-- how should we do the second part? do we want to do it via `Gamma(SpecR) = R`, or do we want to
+-- define R -action on `\prod_{x \in U} M_x`
+noncomputable def smul_by_r (r : R) (x : PrimeSpectrum.Top R) :
+    TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeAsSheafOfModules R M).1.presheaf x ⟶
+    TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeAsSheafOfModules R M).1.presheaf x :=
+  (TopCat.Presheaf.stalkFunctor AddCommGrp.{u} (x)).map
+  { app := fun U =>
+    { toFun := fun (m) => (((TildeAsSheafOfModules R M).1.module _).smul
+              ((Spec.structureSheaf R).1.map (op $ homOfLE le_top)
+                ((StructureSheaf.globalSectionsIso R).hom r)) m)
+      map_zero' := sorry
+      map_add' := sorry }
+    naturality := sorry }
+
+
+noncomputable instance (x:PrimeSpectrum.Top R): Module R (TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeAsSheafOfModules R M).1.presheaf x) where
+  smul r m:= smul_by_r R M r x m
+  one_smul := sorry
+  mul_smul := sorry
+  smul_zero := sorry
+  smul_add := sorry
+  add_smul := sorry
+  zero_smul := sorry
 
 noncomputable def stalkToFiberAddMonoidHom (x : PrimeSpectrum.Top R) :
     (TildeInAddCommGrp R M).presheaf.stalk x ⟶ AddCommGrp.of (LocalizedModule x.asIdeal.primeCompl M) :=
@@ -254,9 +287,26 @@ theorem stalkToFiberAddMonoidHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
     stalkToFiberAddMonoidHom R M x ((TildeInAddCommGrp R M).presheaf.germ x s) = s.1 x := by
   cases x; exact stalkToFiberAddMonoidHom_germ' R M U _ _ _
 
+-- example : TopCat.Sheaf (ModuleCat R) (PrimeSpectrum.Top R) := _
+
+-- #check (TildeInModules R M).1.obj (op ⊤)
+-- example : M → (TildeInModules R M).1.presheaf.obj (op ⊤) := _
+-- stalk M at x \iso M_x as R-module addcommgrp
+--                        as R_x module (localization)
+                          -- R_x = stalk Spec R at x
 def localizationToStalk (x : PrimeSpectrum.Top R) :
-    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶ ModuleCat.of R (TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeInModules R M).1.presheaf x) :=
-  show LocalizedModule x.asIdeal.primeCompl M →+ _ from LocalizedModule.lift (x.asIdeal.primeCompl)
+    AddCommGrp.of (LocalizedModule x.asIdeal.primeCompl M) ⟶
+    (TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeAsSheafOfModules R M).1.presheaf x) where
+  toFun := Quotient.lift (fun (m, s) => _) _
+  map_zero' := _
+  map_add' := _
+
+  -- show LocalizedModule x.asIdeal.primeCompl M →+ _ from
+
+  -- have := LocalizedModule.lift (x.asIdeal.primeCompl) (M := M)
+  --   (M'' := TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeInModules R M).1.presheaf x)
+  --   (g := _)
+
 
 
 end Tilde
