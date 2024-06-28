@@ -1611,7 +1611,7 @@ theorem bot_div_nontop_pos {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊥ / a = 
 theorem bot_div_nonbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊥ / a = ⊤ :=
   bot_mul_of_neg (inv_neg_of_nbot_neg h h')
 
-/-! ## Division and Multiplication -/
+/-! #### Division and Multiplication -/
 
 theorem div_self {a : EReal} (h₁ : a ≠ ⊥) (h₂ : a ≠ ⊤) (h₃ : a ≠ 0) : a / a = 1 := by
   rw [← coe_toReal h₂ h₁] at h₃ ⊢
@@ -1643,6 +1643,84 @@ theorem mul_div_mul_cancel {a b c : EReal} (h₁ : c ≠ ⊥) (h₂ : c ≠ ⊤)
   rw [mul_assoc, mul_inv b c]
   congr
   exact mul_div_cancel h₁ h₂ h₃
+
+/-! #### Division Distributivity -/
+
+theorem div_right_distrib_of_nneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
+    (a + b) / c = (a / c) + (b / c) :=
+  EReal.right_distrib_of_nonneg h h'
+
+/-! #### Division and Order s-/
+
+theorem monotone_div_right_of_nonneg {b : EReal} (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
+  fun _ _ h' ↦ mul_le_mul_of_nonneg_right h' (inv_nonneg_of_nonneg h)
+
+theorem monotone_div_right_of_nonneg_apply {a a' b : EReal} (h : 0 ≤ b) (h' : a ≤ a') :
+    a / b ≤ a' / b :=
+  monotone_div_right_of_nonneg h h'
+
+theorem strictMono_div_right_of_pos {b : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
+    StrictMono fun a ↦ a / b := by
+  intro a a' a_lt_a'
+  apply lt_of_le_of_ne <| monotone_div_right_of_nonneg_apply (le_of_lt h) (le_of_lt a_lt_a')
+  intro hyp
+  apply ne_of_lt a_lt_a'
+  rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h), hyp,
+    @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_gt h)]
+
+theorem strictMono_div_right_of_pos_apply {a a' b : EReal} (h₁ : 0 < b) (h₂ : b ≠ ⊤)
+    (h₃ : a < a') : a / b < a' / b :=
+  strictMono_div_right_of_pos h₁ h₂ h₃
+
+theorem antitone_div_right_of_nonpos {b : EReal} (h : b ≤ 0) : Antitone fun a ↦ a / b := by
+  intro a a' h'
+  change a' * b⁻¹ ≤ a * b⁻¹
+  rw [← neg_neg (a * b⁻¹), ← neg_neg (a' * b⁻¹), neg_le_neg_iff, mul_comm a b⁻¹, mul_comm a' b⁻¹,
+    ← neg_mul b⁻¹ a, ← neg_mul b⁻¹ a', mul_comm (-b⁻¹) a, mul_comm (-b⁻¹) a', ← inv_neg b]
+  have : 0 ≤ -b := by apply le_neg_of_le_neg; simp [h]
+  exact monotone_div_right_of_nonneg_apply this h'
+
+theorem antitone_div_right_of_nonpos_apply {a a' b : EReal} (h : b ≤ 0) (h' : a ≤ a') :
+    a' / b ≤ a / b :=
+  antitone_div_right_of_nonpos h h'
+
+theorem strictAnti_div_right_of_neg {b : EReal} (h : b < 0) (h' : b ≠ ⊥) :
+    StrictAnti fun a ↦ a / b := by
+  intro a a' a_lt_a'
+  simp only
+  apply lt_of_le_of_ne <| antitone_div_right_of_nonpos_apply (le_of_lt h) (le_of_lt a_lt_a')
+  intro hyp
+  apply ne_of_lt a_lt_a'
+  rw [← @EReal.mul_div_cancel a b h' (ne_top_of_lt h) (ne_of_lt h), ← hyp,
+    @EReal.mul_div_cancel a' b h' (ne_top_of_lt h) (ne_of_lt h)]
+
+theorem strictAnti_div_right_of_neg_apply {a a' b : EReal} (h₁ : b < 0) (h₂ : b ≠ ⊥)
+    (h₃ : a < a') : a' / b < a / b :=
+  strictAnti_div_right_of_neg h₁ h₂ h₃
+
+theorem le_div_iff_mul_le {a b c : EReal} (h : b > 0) (h' : b ≠ ⊤) :
+    a ≤ c / b ↔ a * b ≤ c := by
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [mul_div b a b, mul_comm a b]
+  exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
+
+theorem div_le_iff_le_mul {a b c : EReal} (h : b > 0) (h' : b ≠ ⊤) :
+    a / b ≤ c ↔ a ≤ b * c := by
+  nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [mul_div b c b, mul_comm b]
+  exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
+
+theorem div_nonneg {a b : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) : 0 ≤ a / b :=
+  mul_nonneg h (inv_nonneg_of_nonneg h')
+
+theorem div_nonpos_of_nonpos_of_nonneg {a b : EReal} (h : a ≤ 0) (h' : 0 ≤ b) : a / b ≤ 0 :=
+  mul_nonpos_of_nonpos_of_nonneg h (inv_nonneg_of_nonneg h')
+
+theorem div_nonpos_of_nonneg_of_nonpos {a b : EReal} (h : 0 ≤ a) (h' : b ≤ 0) : a / b ≤ 0 :=
+  mul_nonpos_of_nonneg_of_nonpos h (inv_nonpos_of_nonpos h')
+
+theorem div_nonneg_of_nonpos_of_nonpos {a b : EReal} (h : a ≤ 0) (h' : b ≤ 0) : 0 ≤ a / b :=
+  le_of_eq_of_le (Eq.symm zero_div) (antitone_div_right_of_nonpos_apply h' h)
 
 end EReal
 
