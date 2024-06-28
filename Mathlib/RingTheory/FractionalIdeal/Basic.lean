@@ -510,6 +510,10 @@ theorem coe_add (I J : FractionalIdeal S P) : (↑(I + J) : Submodule R P) = I +
   rfl
 #align fractional_ideal.coe_add FractionalIdeal.coe_add
 
+theorem mem_add (I J : FractionalIdeal S P) (x : P) :
+    x ∈ I + J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = x := by
+  rw [← mem_coe, coe_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
+
 @[simp, norm_cast]
 theorem coeIdeal_sup (I J : Ideal R) : ↑(I ⊔ J) = (I + J : FractionalIdeal S P) :=
   coeToSubmodule_injective <| coeSubmodule_sup _ _ _
