@@ -428,7 +428,8 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
 
 /-- The constant factor occurring in the conclusion of `snorm_le_snorm_fderiv_one`.
 It only depends on `E`, `μ` and `p`. -/
-irreducible_def snormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 := lintegralPowLePowLIntegralFDerivConst μ p ^ p⁻¹
+irreducible_def snormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 :=
+  lintegralPowLePowLIntegralFDerivConst μ p ^ p⁻¹
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
