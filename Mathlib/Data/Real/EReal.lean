@@ -1579,6 +1579,71 @@ theorem inv_neg_of_nbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 
     exact inv_lt_zero.2 h
   · exact (not_top_lt h).rec
 
+/-! ### Division -/
+
+theorem div_eq_inv_mul (a b : EReal) : a / b = b⁻¹ * a := EReal.mul_comm a b⁻¹
+
+theorem coe_div (a b : ℝ) : (a / b : ℝ) = (a : EReal) / (b : EReal) := rfl
+
+@[simp]
+theorem div_bot {a : EReal} : a / ⊥ = 0 := inv_bot ▸ mul_zero a
+
+@[simp]
+theorem div_top {a : EReal} : a / ⊤ = 0 := inv_top ▸ mul_zero a
+
+@[simp]
+theorem div_zero {a : EReal} : a / 0 = 0 := by
+  change a * 0⁻¹ = 0
+  rw [inv_zero, mul_zero a]
+
+@[simp]
+theorem zero_div {a : EReal} : 0 / a = 0 := zero_mul a⁻¹
+
+theorem top_div_nontop_pos {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊤ / a = ⊤ :=
+  top_mul_of_pos (inv_pos_of_ntop_pos h h')
+
+theorem top_div_nonbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊤ / a = ⊥ :=
+  top_mul_of_neg (inv_neg_of_nbot_neg h h')
+
+theorem bot_div_nontop_pos {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊥ / a = ⊥ :=
+  bot_mul_of_pos (inv_pos_of_ntop_pos h h')
+
+theorem bot_div_nonbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊥ / a = ⊤ :=
+  bot_mul_of_neg (inv_neg_of_nbot_neg h h')
+
+/-! ## Division and Multiplication -/
+
+theorem div_self {a : EReal} (h₁ : a ≠ ⊥) (h₂ : a ≠ ⊤) (h₃ : a ≠ 0) : a / a = 1 := by
+  rw [← coe_toReal h₂ h₁] at h₃ ⊢
+  rw [← coe_div, _root_.div_self (coe_ne_zero.1 h₃), coe_one]
+
+theorem mul_div (a b c : EReal) : a * (b / c) = (a * b) / c := by
+  change a * (b * c⁻¹) = (a * b) * c⁻¹
+  rw [mul_assoc]
+
+theorem mul_div_right (a b c : EReal) : (a / b) * c = (a * c) / b := by
+  rw [mul_comm, EReal.mul_div, mul_comm]
+
+theorem div_div (a b c : EReal) : a / b / c = a / (b * c) := by
+  change (a * b⁻¹) * c⁻¹ = a * (b * c)⁻¹
+  rw [mul_assoc a b⁻¹, mul_inv]
+
+theorem div_mul_cancel {a b : EReal} (h₁ : b ≠ ⊥) (h₂ : b ≠ ⊤) (h₃ : b ≠ 0) : (a / b) * b = a := by
+  change (a * b⁻¹) * b = a
+  rw [mul_assoc, mul_comm b⁻¹ b]
+  change a * (b / b) = a
+  rw [div_self h₁ h₂ h₃, mul_one]
+
+theorem mul_div_cancel {a b : EReal} (h₁ : b ≠ ⊥) (h₂ : b ≠ ⊤) (h₃ : b ≠ 0) : b * (a / b) = a := by
+  rw [mul_comm, div_mul_cancel h₁ h₂ h₃]
+
+theorem mul_div_mul_cancel {a b c : EReal} (h₁ : c ≠ ⊥) (h₂ : c ≠ ⊤) (h₃ : c ≠ 0) :
+    (a * c) / (b * c) = a / b := by
+  change (a * c) * (b * c)⁻¹ = a * b⁻¹
+  rw [mul_assoc, mul_inv b c]
+  congr
+  exact mul_div_cancel h₁ h₂ h₃
+
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
