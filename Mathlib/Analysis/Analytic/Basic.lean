@@ -7,6 +7,7 @@ import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Topology.Algebra.InfiniteSum.Module
+import Mathlib.Algebra.Star.Order
 
 #align_import analysis.analytic.basic from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 

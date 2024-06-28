@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
+import Mathlib.Data.Real.Star
 
 /-! # Continuous functions as a star-ordered ring -/
 

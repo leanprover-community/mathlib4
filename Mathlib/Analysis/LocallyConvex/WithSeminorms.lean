@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Module.LocallyConvex
+import Mathlib.Data.Real.Sqrt
 
 #align_import analysis.locally_convex.with_seminorms from "leanprover-community/mathlib"@"b31173ee05c911d61ad6a05bd2196835c932e0ec"
 

@@ -5,6 +5,7 @@ Authors: Adrian Wüthrich
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.LinearAlgebra.Matrix.PosDef
+import Mathlib.Data.Real.Star
 
 /-!
 # Laplacian Matrix
