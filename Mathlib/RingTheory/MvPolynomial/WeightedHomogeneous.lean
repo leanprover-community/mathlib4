@@ -315,16 +315,16 @@ theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeighte
     apply Finset.le_sup hd
 #align mv_polynomial.is_weighted_homogeneous.weighted_total_degree MvPolynomial.IsWeightedHomogeneous.weighted_total_degree
 
-/-- The weighted homogeneous submodules form a graded monoid. -/
-instance WeightedHomogeneousSubmodule.gcomm_monoid {w : σ → M} :
-    SetLike.GradedMonoid (weightedHomogeneousSubmodule R w) where
-  one_mem := isWeightedHomogeneous_one R w
-  mul_mem _ _ _ _ := IsWeightedHomogeneous.mul
-#align mv_polynomial.is_weighted_homogeneous.weighted_homogeneous_submodule.gcomm_monoid MvPolynomial.IsWeightedHomogeneous.WeightedHomogeneousSubmodule.gcomm_monoid
-
 end IsWeightedHomogeneous
 
 variable {R}
+
+/-- The weighted homogeneous submodules form a graded monoid. -/
+lemma WeightedHomogeneousSubmodule.gcomm_monoid {w : σ → M} :
+    SetLike.GradedMonoid (weightedHomogeneousSubmodule R w) where
+  one_mem := isWeightedHomogeneous_one R w
+  mul_mem _ _ _ _ := IsWeightedHomogeneous.mul
+#align mv_polynomial.is_weighted_homogeneous.weighted_homogeneous_submodule.gcomm_monoid MvPolynomial.WeightedHomogeneousSubmodule.gcomm_monoid
 
 /-- `weightedHomogeneousComponent w n φ` is the part of `φ` that is weighted homogeneous of
   weighted degree `n`, with respect to the weights `w`.
@@ -686,7 +686,7 @@ def weightedDecomposition [DecidableEq σ] [DecidableEq R] [DecidableEq M] :
 def weightedGradedAlgebra [DecidableEq σ] [DecidableEq R] [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where
   toDecomposition := weightedDecomposition R w
-  toGradedMonoid  := inferInstance
+  toGradedMonoid  := WeightedHomogeneousSubmodule.gcomm_monoid
 
 theorem weightedDecomposition.decompose'_eq [DecidableEq σ] [DecidableEq R] [DecidableEq M] :
   (weightedDecomposition R w).decompose' = fun φ : MvPolynomial σ R =>

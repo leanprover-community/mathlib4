@@ -547,9 +547,9 @@ noncomputable section GradedAlgebra
 
 /-- The homogeneous submodules form a graded ring.
 This instance is used by `DirectSum.commSemiring` and `DirectSum.algebra`. -/
-instance HomogeneousSubmodule.gcomm_monoid :
+scoped instance HomogeneousSubmodule.gcomm_monoid :
     SetLike.GradedMonoid (homogeneousSubmodule σ R) :=
-  IsWeightedHomogeneous.WeightedHomogeneousSubmodule.gcomm_monoid
+  WeightedHomogeneousSubmodule.gcomm_monoid
 
 variable [DecidableEq σ] [DecidableEq R]
 
