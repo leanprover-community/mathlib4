@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Field.Canonical.Defs
 import Mathlib.Algebra.Order.Field.InjSurj
-import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Nonneg.Canonical
 
 #align_import algebra.order.nonneg.field from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -17,9 +17,6 @@ This file defines instances and prove some properties about the nonnegative elem
 
 This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatically.
 
-## Main declarations
-
-* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedSemifield` if `α` is a `LinearOrderedField`.
 -/
 
 assert_not_exists abs_inv
