@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Cli.Basic
 import Mathlib.Init.Data.Nat.Notation
 
 /-!
@@ -18,9 +17,19 @@ All of these have been rewritten from the `lint-style.py` script.
 For now, this only contains the linters for the copyright and author headers and large files:
 further linters will be ported in subsequent PRs.
 
+An executable running all these linters is defined in `scripts/lint_style.lean`.
 -/
 
-open Lean Elab System
+open System
+
+/-- Different kinds of "broad imports" that are linted against. -/
+inductive BroadImports
+  /-- Importing the entire "Mathlib.Tactic" folder -/
+  | TacticFolder
+  /-- Importing any module in `Lake`, unless carefully measured
+  This has caused unexpected regressions in the past. -/
+  | Lake
+deriving BEq
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
@@ -30,11 +39,19 @@ inductive StyleError where
   | copyright (context : Option String)
   /-- Malformed authors line in the copyright header -/
   | authors
+  /-- The bare string "Adaptation note" (or variants thereof): instead, the
+  #adaptation_note command should be used. -/
+  | adaptationNote
+  /-- Lint against "too broad" imports, such as `Mathlib.Tactic` or any module in `Lake`
+  (unless carefully measured) -/
+  | broadImport (module : BroadImports)
+  /-- Line longer than 100 characters -/
+  | lineLength (actual : Int) : StyleError
   /-- The current file was too large: this error contains the current number of lines
   as well as a size limit (slightly larger). On future runs, this linter will allow this file
   to grow up to this limit. -/
   | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) : StyleError
-  deriving BEq
+deriving BEq
 
 /-- How to format style errors -/
 inductive ErrorFormat
@@ -51,9 +68,18 @@ inductive ErrorFormat
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String := match err with
   | StyleError.copyright (some context) => s!"Malformed or missing copyright header: {context}"
-  | StyleError.copyright none => s!"Malformed or missing copyright header"
+  | StyleError.copyright none => "Malformed or missing copyright header"
   | StyleError.authors =>
     "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
+  | StyleError.adaptationNote =>
+    "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
+  | StyleError.broadImport BroadImports.TacticFolder =>
+    "Files in mathlib cannot import the whole tactic folder"
+  | StyleError.broadImport BroadImports.Lake =>
+      "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see \
+      e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to \
+      benchmark it. If this is fine, feel free to allow this linter."
+  | StyleError.lineLength n => s!"Line has {n} characters, which is more than 100"
   | StyleError.fileTooLong current_size size_limit =>
     match style with
     | ErrorFormat.github =>
@@ -68,6 +94,9 @@ def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String :=
 def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.copyright _ => "ERR_COP"
   | StyleError.authors => "ERR_AUT"
+  | StyleError.adaptationNote => "ERR_ADN"
+  | StyleError.broadImport _ => "ERR_IMP"
+  | StyleError.lineLength _ => "ERR_LIN"
   | StyleError.fileTooLong _ _ => "ERR_NUM_LIN"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -75,7 +104,7 @@ and the path to the file. -/
 structure ErrorContext where
   /-- The underlying `StyleError`-/
   error : StyleError
-  /-- The line number of the error -/
+  /-- The line number of the error (1-based) -/
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
@@ -87,6 +116,7 @@ def StyleError.normalise (err : StyleError) : StyleError := match err with
   | StyleError.fileTooLong _ _ => StyleError.fileTooLong 0 0
   -- We do *not* care about the *kind* of wrong copyright.
   | StyleError.copyright _ => StyleError.copyright ""
+  | StyleError.lineLength _ => StyleError.lineLength 0
   | _ => err
 
 /-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
@@ -131,7 +161,15 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- Use default values for parameters which are normalised.
         -- NB: keep this in sync with `normalise` above!
         | "ERR_COP" => some (StyleError.copyright "")
+        | "ERR_LIN" => some (StyleError.lineLength 0)
         | "ERR_AUT" => some (StyleError.authors)
+        | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_IMP" =>
+          -- XXX tweak exceptions messages to ease parsing?
+          if (error_message.get! 0).containsSubstr "tactic" then
+            some (StyleError.broadImport BroadImports.TacticFolder)
+          else
+            some (StyleError.broadImport BroadImports.Lake)
         | "ERR_NUM_LIN" =>
           -- Parse the error message in the script. `none` indicates invalid input.
           match (error_message.get? 0, error_message.get? 3) with
@@ -214,6 +252,56 @@ def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
         output := output.push (StyleError.authors, 4)
   return output
 
+/-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
+def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  let mut lineNumber := 1
+  for line in lines do
+    -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
+    if line.containsSubstr "daptation note" then
+      errors := errors.push (StyleError.adaptationNote, lineNumber)
+    lineNumber := lineNumber + 1
+  return errors
+
+/-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
+def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  -- All import statements must be placed "at the beginning" of the file:
+  -- we can have any number of blank lines, imports and single or multi-line comments.
+  -- Doc comments, however, are not allowed: there is no item they could document.
+  let mut inDocComment : Bool := False
+  let mut lineNumber := 1
+  for line in lines do
+    if inDocComment then
+      if line.endsWith "-/" then
+        inDocComment := False
+    else
+      -- If `line` is just a single-line comment (starts with "--"), we just continue.
+      if line.startsWith "/-" then
+        inDocComment := True
+      else if let some (rest) := line.dropPrefix? "import " then
+          -- If there is any in-line or beginning doc comment on that line, trim that.
+          -- Small hack: just split the string on space, "/" and "-":
+          -- none of these occur in module names, so this is safe.
+          if let some name := ((toString rest).split (" /-".contains ·)).head? then
+            if name == "Mathlib.Tactic" then
+              errors := errors.push (StyleError.broadImport BroadImports.TacticFolder, lineNumber)
+            else if name == "Lake" || name.startsWith "Lake." then
+              errors := errors.push (StyleError.broadImport BroadImports.Lake, lineNumber)
+      lineNumber := lineNumber + 1
+  return errors
+
+/-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
+We allow #aligns or URLs to be longer, though.
+-/
+def lineLengthLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let errors := (lines.toList.enumFrom 1).filterMap (fun (line_number, line) ↦
+    if line.length > 101 &&
+      !(line.startsWith "#align" || line.containsSubstr "http" || line.startsWith "-- #align")  then
+      some (StyleError.lineLength line.length, line_number)
+    else none)
+  errors.toArray
+
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
 def isImportsOnlyFile (lines : Array String) : Bool :=
@@ -240,7 +328,9 @@ def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Optio
 end
 
 /-- All text-based linters registered in this file. -/
-def allLinters : Array TextbasedLinter := #[copyrightHeaderLinter]
+def allLinters : Array TextbasedLinter := #[
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
+  ]
 
 /-- Read a file, apply all text-based linters and print the formatted errors.
 `sizeLimit` is any pre-existing limit on this file's size.
@@ -291,33 +381,3 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
     if ← lintFile path (sizeLimits.get? 0) styleExceptions style then
       numberErrorFiles := numberErrorFiles + 1
   return numberErrorFiles
-
-open Cli in
-/-- Implementation of the `lint_style` command line program. -/
-def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  let errorStyle := match (args.hasFlag "github", args.hasFlag "update") with
-    | (true, _) => ErrorFormat.github
-    | (false, true) => ErrorFormat.exceptionsFile
-    | (false, false) => ErrorFormat.humanReadable
-  let mut numberErrorFiles : UInt32 := 0
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (mkFilePath [s]) errorStyle
-    numberErrorFiles := numberErrorFiles + n
-  return numberErrorFiles
-
-open Cli in
-/-- Setting up command line options and help text for `lake exe lint_style`. -/
--- so far, no help options or so: perhaps that is fine?
-def lint_style : Cmd := `[Cli|
-  lint_style VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
-  Print errors about any unexpected style errors to standard output."
-
-  FLAGS:
-    github;     "Print errors in a format suitable for github problem matchers\n\
-                 otherwise, produce human-readable output"
-    update;     "Print errors solely for the style exceptions file"
-]
-
-/-- The entry point to the `lake exe lint_style` command. -/
-def main (args : List String) : IO UInt32 := do lint_style.validate args
