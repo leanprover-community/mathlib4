@@ -348,8 +348,8 @@ open FiniteDimensional
 /-- The constant factor occurring in the conclusion of `lintegral_pow_le_pow_lintegral_fderiv`.
 It only depends on `E`, `μ` and `p`.
 It is determined by the ratio of the measures on `E` and `ℝⁿ` and
-the operator norm of `e` (raised to suitable powers involving `p`).-/
-def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
+the operator norm of a chosen equivalence `E ≃ ℝⁿ` (raised to suitable powers involving `p`).-/
+irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let ι := Fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by
     rw [finrank_fintype_fun_eq_card, Fintype.card_fin (finrank ℝ E)]
@@ -362,7 +362,7 @@ compactly-supported function `u` on a normed space `E` of finite dimension `n �
 with Haar measure. Then the Lebesgue integral of the pointwise expression
 `|u x| ^ (n / (n - 1))` is bounded above by a constant times the `n / (n - 1)`-th power of the
 Lebesgue integral of the Fréchet derivative of `u`. -/
-theorem lintegral_pow_le_pow_lintegral_fderiv  {u : E → F}
+theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
     (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
     {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
     ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p ∂μ ≤
@@ -385,9 +385,10 @@ theorem lintegral_pow_le_pow_lintegral_fderiv  {u : E → F}
   have hc : 0 < c := addHaarScalarFactor_pos_of_isAddHaarMeasure ..
   have h2c : μ = c • ((volume : Measure (ι → ℝ)).map e.symm) := isAddLeftInvariant_eq_smul ..
   have h3c : (c : ℝ≥0∞) ≠ 0 := by simp_rw [ne_eq, ENNReal.coe_eq_zero, hc.ne', not_false_eq_true]
+  have h0C : C = (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹ := by
+    simp_rw [C, lintegralPowLePowLIntegralFDerivConst]
   have hC : C * c ^ p = c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p := by
-    rw [show C = (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹ from rfl,
-      inv_mul_cancel_right₀ (NNReal.rpow_pos hc).ne']
+    rw [h0C, inv_mul_cancel_right₀ (NNReal.rpow_pos hc).ne']
   rw [h2c, ENNReal.smul_def, lintegral_smul_measure, lintegral_smul_measure]
   let v : (ι → ℝ) → F := u ∘ e.symm
   have hv : ContDiff ℝ 1 v := hu.comp e.symm.contDiff
@@ -427,7 +428,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv  {u : E → F}
 
 /-- The constant factor occurring in the conclusion of `snorm_le_snorm_fderiv_one`.
 It only depends on `E`, `μ` and `p`. -/
-def snormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 := lintegralPowLePowLIntegralFDerivConst μ p ^ p⁻¹
+irreducible_def snormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 := lintegralPowLePowLIntegralFDerivConst μ p ^ p⁻¹
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
@@ -580,7 +581,7 @@ theorem snorm_le_snorm_fderiv_of_eq_inner  {u : E → F'}
 variable (F) in
 /-- The constant factor occurring in the conclusion of `snorm_le_snorm_fderiv_of_eq`.
 It only depends on `E`, `F`, `μ` and `p`. -/
-def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) : ℝ≥0 :=
+irreducible_def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) : ℝ≥0 :=
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
   let e : F ≃L[ℝ] F' := toEuclidean
   ‖(e.symm : F' →L[ℝ] F)‖₊ * snormLESNormFDerivOfEqInnerConst μ p * ‖(e : F →L[ℝ] F')‖₊
@@ -626,12 +627,16 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F]
     _ ≤ C₁ * C * snorm (fderiv ℝ v) p μ := by rw [mul_assoc]; gcongr
     _ ≤ C₁ * C * (C₂ * snorm (fderiv ℝ u) p μ) := by
       gcongr; exact snorm_le_nnreal_smul_snorm_of_ae_le_mul (eventually_of_forall h4v) p
-    _ = (C₁ * C * C₂ : ℝ≥0) * snorm (fderiv ℝ u) p μ := by push_cast; simp_rw [mul_assoc]
+    _ = SNormLESNormFDerivOfEqConst F μ p * snorm (fderiv ℝ u) p μ := by
+      simp_rw [SNormLESNormFDerivOfEqConst]
+      push_cast
+      simp_rw [mul_assoc]
+
 
 variable (F) in
 /-- The constant factor occurring in the conclusion of `snorm_le_snorm_fderiv_of_le`.
 It only depends on `F`, `μ`, `s`, `p` and `q`. -/
-def snormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set E) (p q : ℝ≥0) : ℝ≥0 :=
+irreducible_def snormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set E) (p q : ℝ≥0) : ℝ≥0 :=
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ) * SNormLESNormFDerivOfEqConst F μ p
 
@@ -684,7 +689,8 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
           exact h2u.trans subset_closure
         rel [snorm_le_snorm_fderiv_of_eq μ hu h2u' hp (mod_cast (zero_le p).trans_lt h2p) hp']
-    _ = (t * C) * snorm (fderiv ℝ u) p μ := by ring
+    _ = snormLESNormFDerivOfLeConst F μ s p q * snorm (fderiv ℝ u) p μ := by
+      simp_rw [snormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
