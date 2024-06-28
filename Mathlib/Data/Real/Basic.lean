@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Order.CauSeq.Completion
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
