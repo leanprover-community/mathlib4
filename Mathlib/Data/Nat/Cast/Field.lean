@@ -30,7 +30,8 @@ theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (hn : (n : 
     ((m / n : ℕ) : α) = m / n := by
   rcases n_dvd with ⟨k, rfl⟩
   have : n ≠ 0 := by rintro rfl; simp at hn
-  rw [Nat.mul_div_cancel_left _ this.bot_lt, mul_comm n, cast_mul, mul_div_cancel_right₀ _ hn]
+  rw [Nat.mul_div_cancel_left _ (by exact this.bot_lt (α := ℕ)), mul_comm n, cast_mul,
+    mul_div_cancel_right₀ _ hn]
 #align nat.cast_div Nat.cast_div
 
 theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d : ℕ}
@@ -43,7 +44,7 @@ theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α]
+variable [Semifield α] [LinearOrderedSemifield α]
 
 lemma cast_inv_le_one : ∀ n : ℕ, (n⁻¹ : α) ≤ 1
   | 0 => by simp

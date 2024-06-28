@@ -135,17 +135,19 @@ end Zero
 /-! ### Algebraic order structures -/
 
 
-instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
-  { (inferInstance : AddCommMonoid (DFinsupp α)),
-    (inferInstance : PartialOrder (DFinsupp α)) with
-    add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
+instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, OrderedAddCommMonoid (α i)] :
+  OrderedAddCommMonoid (Π₀ i, α i) :=
+{ (inferInstance : AddCommMonoid (DFinsupp α)),
+  (inferInstance : PartialOrder (DFinsupp α)) with
+  add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
-instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
-    OrderedCancelAddCommMonoid (Π₀ i, α i) :=
-  { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
-    le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
+instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, OrderedCancelAddCommMonoid (α i)] :
+  OrderedCancelAddCommMonoid (Π₀ i, α i) :=
+{ (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
+  le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
-instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) (α i) (· + ·) (· ≤ ·)] :
+instance [∀ i, AddCommMonoid (α i)] [∀ i, OrderedAddCommMonoid (α i)]
+    [∀ i, ContravariantClass (α i) (α i) (· + ·) (· ≤ ·)] :
     ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
@@ -189,7 +191,7 @@ section CanonicallyOrderedAddCommMonoid
 
 -- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
-variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
 
 instance : OrderBot (Π₀ i, α i) where
   bot := 0
@@ -307,7 +309,8 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [∀ i, CanonicallyLinearOrderedAddCommMonoid (α i)] [DecidableEq ι] {f g : Π₀ i, α i}
+variable [∀ i, AddCommMonoid (α i)] [∀ i, CanonicallyLinearOrderedAddCommMonoid (α i)]
+  [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by

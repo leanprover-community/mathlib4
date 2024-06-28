@@ -22,7 +22,7 @@ open Function Int
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
+variable [Semifield α] [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
 /-! ### Integer powers -/
 
@@ -120,7 +120,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
+variable [Field α] [LinearOrderedField α] {a b c d : α} {n : ℤ}
 
 #noalign zpow_bit0_nonneg
 #noalign zpow_bit0_pos
@@ -214,6 +214,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 def evalZPow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
+    let _f ← synthInstanceQ q(Field $α)
     let _a ← synthInstanceQ q(LinearOrderedField $α)
     assumeInstancesCommute
     match ← whnfR b with
@@ -235,7 +236,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
     let ra ← core zα pα a
-    let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(LinearOrderedSemifield $α)) :
+    let ofNonneg (pa : Q(0 ≤ $a)) (_f : Q(Field $α)) (_oα : Q(LinearOrderedSemifield $α)) :
         MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
@@ -248,15 +249,17 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
     match ra with
     | .positive pa =>
       try
+        let _f ← synthInstanceQ q(Field $α)
         let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
         haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
         pure (.positive q(zpow_pos_of_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
+        let fα ← synthInstanceQ q(Semifield $α)
         let oα ← synthInstanceQ q(LinearOrderedSemifield $α)
-        orElse (← catchNone (ofNonneg q(le_of_lt $pa) oα)) (ofNonzero q(ne_of_gt $pa) oα)
-    | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
+        orElse (← catchNone (ofNonneg q(le_of_lt $pa) fα oα)) (ofNonzero q(ne_of_gt $pa) oα)
+    | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u))) (← synthInstanceQ (_ : Q(Type u)))
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 

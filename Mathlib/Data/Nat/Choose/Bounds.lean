@@ -25,7 +25,7 @@ bounds `n^r/r^r ≤ n.choose r ≤ e^r n^r/r^r` in the future.
 
 open Nat
 
-variable {α : Type*} [LinearOrderedSemifield α]
+variable {α : Type*} [Semifield α] [LinearOrderedSemifield α]
 
 namespace Nat
 

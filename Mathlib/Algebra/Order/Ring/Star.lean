@@ -25,8 +25,8 @@ namespace StarOrderedRing
 must commute. We provide this only as an example as opposed to a lemma because we never expect the
 type class assumptions to be satisfied without a `CommSemiring` intance already in scope; not that
 it is impossible, only that it shouldn't occur in practice. -/
-example {R : Type*} [OrderedSemiring R] [StarRing R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x)
-    (hy : 0 ≤ y) : x * y = y * x := by
+example {R : Type*} [Semiring R] [OrderedSemiring R] [StarRing R] [StarOrderedRing R]
+    {x y : R} (hx : 0 ≤ x) (hy : 0 ≤ y) : x * y = y * x := by
   rw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
     IsSelfAdjoint.of_nonneg hy]
 
@@ -55,7 +55,6 @@ abbrev toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedCommSemiring R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
-  mul_comm := mul_comm
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right a b c := by simpa only [mul_comm _ c] using mul_le_mul_of_nonneg_left
 
@@ -69,5 +68,4 @@ abbrev toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
     [StarRing R] [StarOrderedRing R] : OrderedCommRing R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
-  mul_comm := mul_comm
   mul_nonneg _ _ := let _ := toOrderedCommSemiring R; mul_nonneg

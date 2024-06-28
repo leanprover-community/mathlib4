@@ -25,7 +25,7 @@ namespace Finset
 
 section OrderedCommMonoid
 
-variable [CommMonoid M] [OrderedCommMonoid N]
+variable [CommMonoid M] [CommMonoid N] [OrderedCommMonoid N]
 
 /-- Let `{x | p x}` be a subsemigroup of a commutative monoid `M`. Let `f : M → N` be a map
 submultiplicative on `{x | p x}`, i.e., `p x → p y → f (x * y) ≤ f x * f y`. Let `g i`, `i ∈ s`, be
@@ -192,7 +192,7 @@ theorem prod_eq_one_iff_of_one_le' :
 @[to_additive sum_eq_zero_iff_of_nonpos]
 theorem prod_eq_one_iff_of_le_one' :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
-  @prod_eq_one_iff_of_one_le' _ Nᵒᵈ _ _ _
+  @prod_eq_one_iff_of_one_le' _ Nᵒᵈ _ _ _ _
 #align finset.prod_eq_one_iff_of_le_one' Finset.prod_eq_one_iff_of_le_one'
 
 @[to_additive single_le_sum]
@@ -224,7 +224,7 @@ theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s
 
 @[to_additive card_nsmul_le_sum]
 theorem pow_card_le_prod (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, n ≤ f x) :
-    n ^ s.card ≤ s.prod f := @Finset.prod_le_pow_card _ Nᵒᵈ _ _ _ _ h
+    n ^ s.card ≤ s.prod f := @Finset.prod_le_pow_card _ Nᵒᵈ _ _ _ _ _ h
 #align finset.pow_card_le_prod Finset.pow_card_le_prod
 #align finset.card_nsmul_le_sum Finset.card_nsmul_le_sum
 
@@ -254,23 +254,24 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
     (h : ∀ y ∉ t, ∏ x ∈ s.filter fun x ↦ g x = y, f x ≤ 1) :
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s.filter fun x ↦ g x = y, f x :=
-  @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
+  @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ _ h
 #align finset.prod_le_prod_fiberwise_of_prod_fiber_le_one' Finset.prod_le_prod_fiberwise_of_prod_fiber_le_one'
 #align finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos Finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos
 
 end OrderedCommMonoid
 
-theorem abs_sum_le_sum_abs {G : Type*} [LinearOrderedAddCommGroup G] (f : ι → G) (s : Finset ι) :
-    |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
+theorem abs_sum_le_sum_abs {G : Type*} [AddCommGroup G] [LinearOrderedAddCommGroup G]
+    (f : ι → G) (s : Finset ι) : |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| :=
+  le_sum_of_subadditive _ abs_zero abs_add s f
 #align finset.abs_sum_le_sum_abs Finset.abs_sum_le_sum_abs
 
-theorem abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
-    (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
+theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrderedAddCommGroup G]
+    {f : ι → G} {s : Finset ι} (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg hf)]
 #align finset.abs_sum_of_nonneg Finset.abs_sum_of_nonneg
 
-theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
-    (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
+theorem abs_sum_of_nonneg' {G : Type*} [AddCommGroup G] [LinearOrderedAddCommGroup G]
+    {f : ι → G} {s : Finset ι} (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
 #align finset.abs_sum_of_nonneg' Finset.abs_sum_of_nonneg'
 
@@ -391,7 +392,7 @@ end DoubleCounting
 
 section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [CanonicallyOrderedCommMonoid M] {f : ι → M} {s t : Finset ι}
 
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
@@ -440,7 +441,7 @@ end CanonicallyOrderedCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [OrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive sum_lt_sum]
 theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
@@ -560,7 +561,7 @@ end OrderedCancelCommMonoid
 
 section LinearOrderedCancelCommMonoid
 
-variable [LinearOrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [LinearOrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive exists_lt_of_sum_lt]
 theorem exists_lt_of_prod_lt' (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) : ∃ i ∈ s, f i < g i := by
@@ -595,7 +596,7 @@ end Finset
 
 namespace Fintype
 section OrderedCommMonoid
-variable [Fintype ι] [OrderedCommMonoid M] {f : ι → M}
+variable [Fintype ι] [CommMonoid M] [OrderedCommMonoid M] {f : ι → M}
 
 @[to_additive (attr := mono) sum_mono]
 theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
@@ -619,7 +620,7 @@ lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
 end OrderedCommMonoid
 
 section OrderedCancelCommMonoid
-variable [Fintype ι] [OrderedCancelCommMonoid M] {f : ι → M}
+variable [Fintype ι] [CommMonoid M] [OrderedCancelCommMonoid M] {f : ι → M}
 
 @[to_additive sum_strictMono]
 theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
@@ -699,10 +700,11 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let .some ps ← proveFinsetNonempty s | pure none
-      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
+      let .some pacm ← trySynthInstanceQ q(AddCommMonoid $α) | pure none
+      let .some poc ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps))
+      return some q(@sum_pos $ι $α $pacm $poc $f $s (fun i _ ↦ $pr i) $ps))
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos
@@ -710,9 +712,10 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     else
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      let pacm ← synthInstanceQ q(AddCommMonoid $α)
+      let po ← synthInstanceQ q(OrderedAddCommMonoid $α)
       assertInstancesCommute
-      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
+      return .nonnegative q(@sum_nonneg $ι $α $pacm $po $f $s fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 end Mathlib.Meta.Positivity

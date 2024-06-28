@@ -23,7 +23,7 @@ variable {ι α β : Type*}
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
+variable [Semifield α] [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
 /-- `Equiv.mulLeft₀` as an order_iso. -/
 @[simps! (config := { simpRhs := true })]
@@ -50,7 +50,7 @@ theorem le_div_iff (hc : 0 < c) : a ≤ b / c ↔ a * c ≤ b :=
   ⟨fun h => div_mul_cancel₀ b (ne_of_lt hc).symm ▸ mul_le_mul_of_nonneg_right h hc.le, fun h =>
     calc
       a = a * c * (1 / c) := mul_mul_div a (ne_of_lt hc).symm
-      _ ≤ b * (1 / c) := mul_le_mul_of_nonneg_right h (one_div_pos.2 hc).le
+      _ ≤ b * (1 / c) := mul_le_mul_of_nonneg_right h (one_div_pos (a := c) |>.2 hc).le
       _ = b / c := (div_eq_mul_one_div b c).symm
       ⟩
 #align le_div_iff le_div_iff
@@ -621,7 +621,7 @@ end LinearOrderedSemifield
 
 section
 
-variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
+variable [Field α] [LinearOrderedField α] {a b c d : α} {n : ℤ}
 
 /-! ### Lemmas about pos, nonneg, nonpos, neg -/
 
@@ -1010,7 +1010,7 @@ namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
 section LinearOrderedSemifield
-variable {α : Type*} [LinearOrderedSemifield α] {a b : α}
+variable {α : Type*} [Semifield α] [LinearOrderedSemifield α] {a b : α}
 
 private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   div_nonneg ha.le hb
@@ -1034,6 +1034,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
+  let _f ← synthInstanceQ (q(Semifield $α) : Q(Type u))
   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
@@ -1054,6 +1055,7 @@ such that `positivity` successfully recognises `a`. -/
 def evalInv : PositivityExt where eval {u α} zα pα e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
+  let _f ← synthInstanceQ (q(Semifield $α) : Q(Type u))
   let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
@@ -1068,7 +1070,8 @@ def evalInv : PositivityExt where eval {u α} zα pα e := do
 @[positivity _ ^ (0:ℤ), Pow.pow _ (0:ℤ)]
 def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
-  _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
-  pure (.positive (q(zpow_zero_pos $a) : Expr))
+  let f ← synthInstanceQ (q(Semifield $α) : Q(Type u))
+  let l ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  pure (.positive (q(@zpow_zero_pos $α $f $l $a) : Expr))
 
 end Mathlib.Meta.Positivity

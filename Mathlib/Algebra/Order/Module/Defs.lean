@@ -794,7 +794,7 @@ instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α β�
 end Left
 
 section Right
-variable [Preorder α] [Ring α] [OrderedAddCommGroup β] [Module α β]
+variable [Preorder α] [Ring α] [AddCommGroup β] [OrderedAddCommGroup β] [Module α β]
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
   elim _b hb a₁ a₂ ha := by
@@ -820,10 +820,10 @@ end Right
 end OrderDual
 
 section OrderedRing
-variable [OrderedRing α]
+variable [Ring α] [OrderedRing α]
 
 section OrderedAddCommGroup
-variable [OrderedAddCommGroup β] [Module α β]
+variable [AddCommGroup β] [OrderedAddCommGroup β] [Module α β]
 
 #noalign eq_of_smul_eq_smul_of_neg_of_le
 
@@ -942,7 +942,8 @@ lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β]
 end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedAddCommGroup β] [Module α β] [PosSMulMono α β] {a : α} {b b₁ b₂ : β}
+variable [AddCommGroup β] [LinearOrderedAddCommGroup β] [Module α β] [PosSMulMono α β]
+  {a : α} {b b₁ b₂ : β}
 
 lemma smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : β) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
   (antitone_smul_left ha : Antitone (_ : β → β)).map_max
@@ -956,8 +957,8 @@ end LinearOrderedAddCommGroup
 end OrderedRing
 
 section LinearOrderedRing
-variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [PosSMulStrictMono α β]
-  {a : α} {b : β}
+variable [Ring α] [LinearOrderedRing α] [AddCommGroup β] [LinearOrderedAddCommGroup β]
+  [Module α β] [PosSMulStrictMono α β] {a : α} {b : β}
 
 lemma nonneg_and_nonneg_or_nonpos_and_nonpos_of_smul_nonneg (hab : 0 ≤ a • b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
@@ -990,7 +991,7 @@ lemma smul_nonpos_iff_neg_imp_nonneg : a • b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧
 end LinearOrderedRing
 
 section LinearOrderedSemifield
-variable [LinearOrderedSemifield α] [AddCommGroup β] [PartialOrder β]
+variable [Semifield α] [LinearOrderedSemifield α] [AddCommGroup β] [PartialOrder β]
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction α β] [PosSMulMono α β] :
@@ -1006,7 +1007,8 @@ instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZe
 end LinearOrderedSemifield
 
 section Field
-variable [LinearOrderedField α] [OrderedAddCommGroup β] [Module α β] {a : α} {b₁ b₂ : β}
+variable [Field α] [LinearOrderedField α] [AddCommGroup β] [OrderedAddCommGroup β] [Module α β]
+  {a : α} {b₁ b₂ : β}
 
 section PosSMulMono
 variable [PosSMulMono α β]
@@ -1137,6 +1139,8 @@ lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ] : SMulPosReflectLT α β wh
 end Lift
 
 section Nat
+
+variable [Semiring α]
 
 instance OrderedSemiring.toPosSMulMonoNat [OrderedSemiring α] : PosSMulMono ℕ α where
   elim _n _ _a _b hab := nsmul_le_nsmul_right hab _

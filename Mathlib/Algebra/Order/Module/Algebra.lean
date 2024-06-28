@@ -16,11 +16,11 @@ This file proves properties of algebras where both rings are ordered compatibly.
 `positivity` extension for `algebraMap`
 -/
 
-variable {α β : Type*} [OrderedCommSemiring α]
+variable {α β : Type*} [CommSemiring α] [OrderedCommSemiring α]
 
 section OrderedSemiring
 variable (β)
-variable [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α}
+variable [Semiring β] [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α}
 
 @[mono] lemma algebraMap_mono : Monotone (algebraMap α β) :=
   fun a₁ a₂ ha ↦ by
@@ -36,7 +36,7 @@ lemma algebraMap_nonneg (ha : 0 ≤ a) : 0 ≤ algebraMap α β a := by simpa us
 end OrderedSemiring
 
 section StrictOrderedSemiring
-variable [StrictOrderedSemiring β] [Algebra α β]
+variable [Semiring β] [StrictOrderedSemiring β] [Algebra α β]
 
 section SMulPosMono
 variable [SMulPosMono α β] [SMulPosReflectLE α β] {a₁ a₂ : α}
@@ -100,13 +100,13 @@ def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
     return .nonnegative q(algebraMap_nonneg $β $pa)
   | _ => pure .none
 
-example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 ≤ a) :
+example [Semiring β] [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 ≤ a) :
     0 ≤ algebraMap α β a := by positivity
 
-example [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 < a) :
+example [Semiring β] [OrderedSemiring β] [Algebra α β] [SMulPosMono α β] {a : α} (ha : 0 < a) :
     0 ≤ algebraMap α β a := by positivity
 
-example [StrictOrderedSemiring β] [Algebra α β] [SMulPosStrictMono α β] {a : α} (ha : 0 < a) :
-    0 < algebraMap α β a := by positivity
+example [Semiring β] [StrictOrderedSemiring β] [Algebra α β] [SMulPosStrictMono α β]
+    {a : α} (ha : 0 < a) : 0 < algebraMap α β a := by positivity
 
 end Mathlib.Meta.Positivity

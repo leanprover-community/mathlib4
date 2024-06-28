@@ -176,7 +176,7 @@ end ConditionallyCompleteLattice
 
 namespace LinearOrderedField
 
-variable {K : Type*} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
+variable {K : Type*} [Field K] [LinearOrderedField K] {a b r : K} (hr : 0 < r)
 
 open Set
 

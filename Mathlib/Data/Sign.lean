@@ -413,7 +413,7 @@ end LinearOrder
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
+variable [Semiring α] [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem sign_one : sign (1 : α) = 1 :=
@@ -425,7 +425,7 @@ end OrderedSemiring
 section OrderedRing
 
 @[simp]
-lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α]
+lemma sign_intCast {α : Type*} [Ring α] [OrderedRing α] [Nontrivial α]
     [DecidableRel ((· < ·) : α → α → Prop)] (n : ℤ) :
     sign (n : α) = sign n := by
   simp only [sign_apply, Int.cast_pos, Int.cast_lt_zero]
@@ -434,7 +434,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {a b : α}
+variable [Ring α] [LinearOrderedRing α] {a b : α}
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -499,7 +499,7 @@ end AddGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
+variable [AddCommGroup α] [LinearOrderedAddCommGroup α]
 
 /- I'm not sure why this is necessary, see
 https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.20vs.20decidable_rel

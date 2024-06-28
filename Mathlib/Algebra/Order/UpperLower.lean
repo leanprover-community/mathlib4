@@ -22,7 +22,7 @@ open Pointwise
 
 section OrderedCommMonoid
 
-variable {α : Type*} [OrderedCommMonoid α] {s : Set α} {x : α}
+variable {α : Type*} [CommMonoid α] [OrderedCommMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
@@ -40,7 +40,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {α : Type*} [OrderedCommGroup α] {s t : Set α} {a : α}
+variable {α : Type*} [CommGroup α] [OrderedCommGroup α] {s t : Set α} {a : α}
 
 @[to_additive]
 theorem IsUpperSet.smul (hs : IsUpperSet s) : IsUpperSet (a • s) := hs.image <| OrderIso.mulLeft _

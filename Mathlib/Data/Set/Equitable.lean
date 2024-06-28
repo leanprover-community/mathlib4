@@ -75,7 +75,7 @@ end LinearOrder
 
 section OrderedSemiring
 
-variable [OrderedSemiring β]
+variable [Semiring β] [OrderedSemiring β]
 
 theorem Subsingleton.equitableOn {s : Set α} (hs : s.Subsingleton) (f : α → β) : s.EquitableOn f :=
   fun i j hi hj => by

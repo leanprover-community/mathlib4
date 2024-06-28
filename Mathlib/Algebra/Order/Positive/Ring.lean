@@ -134,8 +134,11 @@ end Mul
 
 section mul_comm
 
+def dumb [CommSemiring R] [StrictOrderedCommSemiring R] : CommMonoid { x : R // 0 < x } :=
+  Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
+
+attribute [local instance] dumb in
 instance orderedCommMonoid [CommSemiring R] [StrictOrderedCommSemiring R] [Nontrivial R] :
-    letI := Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
     OrderedCommMonoid { x : R // 0 < x } where
   __ := Subtype.partialOrder _
   __ := Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
@@ -143,10 +146,10 @@ instance orderedCommMonoid [CommSemiring R] [StrictOrderedCommSemiring R] [Nontr
       Subtype.coe_le_coe.1 <| mul_le_mul_of_nonneg_left hxy c.2.le
 #align positive.subtype.ordered_comm_monoid Positive.orderedCommMonoid
 
+attribute [local instance] dumb in
 /-- If `R` is a nontrivial linear ordered commutative semiring, then `{x : R // 0 < x}` is a linear
 ordered cancellative commutative monoid. -/
 instance linearOrderedCancelCommMonoid [CommSemiring R] [LinearOrderedCommSemiring R] :
-    letI := Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
     LinearOrderedCancelCommMonoid { x : R // 0 < x } where
   __ := Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
   __ := Subtype.instLinearOrder _

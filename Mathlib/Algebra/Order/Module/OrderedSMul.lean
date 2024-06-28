@@ -45,8 +45,8 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 /-- The ordered scalar product property is when an ordered additive commutative monoid
 with a partial order has a scalar multiplication which is compatible with the order.
 -/
-class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] :
-  Prop where
+class OrderedSMul (R M : Type*) [Semiring R] [OrderedSemiring R]
+    [AddCommMonoid M] [OrderedAddCommMonoid M] [SMulWithZero R M] : Prop where
   /-- Scalar multiplication by positive elements preserves the order. -/
   protected smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, a < b → 0 < c → c • a < c • b
   /-- If `c • a < c • b` for some positive `c`, then `a < b`. -/
@@ -56,7 +56,8 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
 variable {ι α β γ 𝕜 R M N : Type*}
 
 section OrderedSMul
-variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
+variable [Semiring R] [OrderedSemiring R] [AddCommMonoid M] [OrderedAddCommMonoid M]
+  [SMulWithZero R M] [OrderedSMul R M]
   {s : Set M} {a b : M} {c : R}
 
 instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
@@ -73,13 +74,14 @@ end OrderedSMul
 
 /-- To prove that a linear ordered monoid is an ordered module, it suffices to verify only the first
 axiom of `OrderedSMul`. -/
-theorem OrderedSMul.mk'' [OrderedSemiring 𝕜] [LinearOrderedAddCommMonoid M] [SMulWithZero 𝕜 M]
+theorem OrderedSMul.mk'' [Semiring 𝕜] [OrderedSemiring 𝕜]
+    [AddCommMonoid M] [LinearOrderedAddCommMonoid M] [SMulWithZero 𝕜 M]
     (h : ∀ ⦃c : 𝕜⦄, 0 < c → StrictMono fun a : M => c • a) : OrderedSMul 𝕜 M :=
   { smul_lt_smul_of_pos := fun hab hc => h hc hab
     lt_of_smul_lt_smul_of_pos := fun hab hc => (h hc).lt_iff_lt.1 hab }
 #align ordered_smul.mk'' OrderedSMul.mk''
 
-instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ M :=
+instance Nat.orderedSMul [AddCommMonoid M] [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ M :=
   OrderedSMul.mk'' fun n hn a b hab => by
     cases n with
     | zero => cases hn
@@ -89,7 +91,7 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
       | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add (ih n.succ_pos) hab]
 #align nat.ordered_smul Nat.orderedSMul
 
-instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
+instance Int.orderedSMul [AddCommGroup M] [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
     · simp only [Int.ofNat_eq_coe, Int.natCast_pos, natCast_zsmul] at hn ⊢
@@ -98,7 +100,8 @@ instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
 #align int.ordered_smul Int.orderedSMul
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero R M]
+variable [Semiring R] [LinearOrderedSemiring R] [AddCommMonoid M] [LinearOrderedAddCommMonoid M]
+  [SMulWithZero R M]
   [OrderedSMul R M] {a : R}
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
@@ -110,8 +113,8 @@ end LinearOrderedSemiring
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield 𝕜] [OrderedAddCommMonoid M] [OrderedAddCommMonoid N]
-  [MulActionWithZero 𝕜 M] [MulActionWithZero 𝕜 N]
+variable [Semifield 𝕜] [LinearOrderedSemifield 𝕜] [AddCommMonoid M] [OrderedAddCommMonoid M]
+  [AddCommMonoid N] [OrderedAddCommMonoid N] [MulActionWithZero 𝕜 M] [MulActionWithZero 𝕜 N]
 
 /-- To prove that a vector space over a linear ordered field is ordered, it suffices to verify only
 the first axiom of `OrderedSMul`. -/
@@ -132,7 +135,7 @@ instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :
   OrderedSMul.mk' fun _ _ _ h hc =>
     ⟨smul_le_smul_of_nonneg_left h.1.1 hc.le, smul_le_smul_of_nonneg_left h.1.2 hc.le⟩
 
-instance Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
+instance Pi.orderedSMul {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, OrderedAddCommMonoid (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg_left (h.le i) hc.le
 #align pi.ordered_smul Pi.orderedSMul

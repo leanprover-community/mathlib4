@@ -20,15 +20,14 @@ It is defined in `Data.PNat.Defs`, but most of the development is deferred to he
 that `Data.PNat.Defs` can have very few imports.
 -/
 
+instance PNat.instCommMonoid : CommMonoid ℕ+ := Positive.dumb
+
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  Add, Mul, Distrib for PNat
+  -- LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
+  Distrib for PNat
 
-instance : Pow ℕ+ ℕ where
-  pow a n := ⟨a.1 ^ n, Nat.pow_pos a.2⟩
-
-instance : CommMonoid ℕ+ := Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
-
-instance : LinearOrderedCancelCommMonoid ℕ+ := sorry
+instance PNat.instLinearOrderedCancelCommMonoid : LinearOrderedCancelCommMonoid ℕ+ :=
+  Positive.linearOrderedCancelCommMonoid
 
 namespace PNat
 

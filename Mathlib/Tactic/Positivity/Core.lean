@@ -122,25 +122,25 @@ initialize registerBuiltinAttribute {
 lemma lt_of_le_of_ne' [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat [StrictOrderedSemiring A]
+lemma pos_of_isNat [Semiring A] [StrictOrderedSemiring A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Nat.cast_pos.2
   simpa using w
 
-lemma nonneg_of_isNat [OrderedSemiring A]
+lemma nonneg_of_isNat [Semiring A] [OrderedSemiring A]
     (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg n
 
-lemma nz_of_isNegNat [StrictOrderedRing A]
+lemma nz_of_isNegNat [Ring A] [StrictOrderedRing A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   simp only [ne_eq, neg_eq_zero]
   apply ne_of_gt
   simpa using w
 
-lemma pos_of_isRat [LinearOrderedRing A] :
+lemma pos_of_isRat [Ring A] [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
@@ -148,11 +148,11 @@ lemma pos_of_isRat [LinearOrderedRing A] :
     rw [eq]
     exact mul_pos pos_n pos_invOf_d
 
-lemma nonneg_of_isRat [LinearOrderedRing A] :
+lemma nonneg_of_isRat [Ring A] [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
   | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
-lemma nz_of_isRat [LinearOrderedRing A] :
+lemma nz_of_isRat [Ring A] [LinearOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
@@ -184,12 +184,14 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isBool .. => failure
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
+      let _a ← synthInstanceQ q(Semiring $α)
       let _a ← synthInstanceQ q(StrictOrderedSemiring $α)
       assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
       haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
-      pure (.positive q(@pos_of_isNat $α _ _ _ $p $p'))
+      pure (.positive q(@pos_of_isNat $α _ _ _ _ $p $p'))
     else
+      let _a ← synthInstanceQ q(Semiring $α)
       let _a ← synthInstanceQ q(OrderedSemiring $α)
       assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
@@ -216,6 +218,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
+  let _i ← synthInstanceQ (q(AddCommMonoid $α) : Q(Type u))
   let _i ← synthInstanceQ (q(CanonicallyOrderedAddCommMonoid $α) : Q(Type u))
   assumeInstancesCommute
   pure (.nonnegative q(zero_le $e))

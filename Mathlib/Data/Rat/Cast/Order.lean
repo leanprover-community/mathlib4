@@ -26,7 +26,7 @@ theorem castHom_rat : castHom ℚ = RingHom.id ℚ :=
 
 section LinearOrderedField
 
-variable {K : Type*} [LinearOrderedField K]
+variable {K : Type*} [Field K] [LinearOrderedField K]
 
 theorem cast_pos_of_pos (hq : 0 < q) : (0 : K) < q := by
   rw [Rat.cast_def]
@@ -134,7 +134,7 @@ end Rat
 
 namespace NNRat
 
-variable {K} [LinearOrderedSemifield K] {p q : ℚ≥0}
+variable {K} [Semifield K] [LinearOrderedSemifield K] {p q : ℚ≥0}
 
 theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
   rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul,
@@ -217,10 +217,12 @@ def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
   match ← core q(inferInstance) q(inferInstance) a with
   | .positive pa =>
+    let _fα ← synthInstanceQ q(Field $α)
     let _oα ← synthInstanceQ q(LinearOrderedField $α)
     assumeInstancesCommute
     return .positive q((Rat.cast_pos (K := $α)).mpr $pa)
   | .nonnegative pa =>
+    let _fα ← synthInstanceQ q(Field $α)
     let _oα ← synthInstanceQ q(LinearOrderedField $α)
     assumeInstancesCommute
     return .nonnegative q((Rat.cast_nonneg (K := $α)).mpr $pa)
@@ -237,10 +239,12 @@ def evalNNRatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@NNRat.cast _ (_) ($a : ℚ≥0)) := e | throwError "not NNRat.cast"
   match ← core q(inferInstance) q(inferInstance) a with
   | .positive pa =>
+    let _fα ← synthInstanceQ q(Semifield $α)
     let _oα ← synthInstanceQ q(LinearOrderedSemifield $α)
     assumeInstancesCommute
     return .positive q((NNRat.cast_pos (K := $α)).mpr $pa)
   | _ =>
+    let _fα ← synthInstanceQ q(Semifield $α)
     let _oα ← synthInstanceQ q(LinearOrderedSemifield $α)
     assumeInstancesCommute
     return .nonnegative q(NNRat.cast_nonneg _)

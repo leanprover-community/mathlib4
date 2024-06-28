@@ -228,7 +228,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
+variable [CommMonoid α] [OrderedCancelCommMonoid α] {s : Set α} {a : α}
 
 @[to_additive]
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :

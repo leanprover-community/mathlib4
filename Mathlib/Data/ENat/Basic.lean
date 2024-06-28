@@ -29,10 +29,14 @@ and forth using `ENat.some_eq_coe`, or restate the lemma for `ENat`.
 def ENat : Type :=
   WithTop ℕ
 deriving Zero,
-  -- AddCommMonoidWithOne,
-  CanonicallyOrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
-  LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
+  AddCommMonoidWithOne,
+  CommSemiring,
+  Nontrivial,
+  -- CanonicallyOrderedCommSemiring, Nontrivial,
+  LinearOrder, Bot, Top, Sub,
+  -- LinearOrder, Bot, Top, CanonicallyLinearOrderedAddCommMonoid, Sub,
+  WellFoundedRelation, Inhabited
+  -- LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
   -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
 
@@ -44,6 +48,12 @@ notation "ℕ∞" => ENat
 
 namespace ENat
 
+instance instCanonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ∞ :=
+  WithTop.instCanonicallyOrderedCommSemiring
+
+instance instCanonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ∞ :=
+  WithTop.instCanonicallyLinearOrderedAddCommMonoid
+
 -- Porting note: instances that derive failed to find
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
@@ -52,6 +62,8 @@ instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
 instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 instance : IsWellOrder ℕ∞ (· < ·) where
+instance instLinearOrderedAddCommMonoidWithTop : LinearOrderedAddCommMonoidWithTop ℕ∞ where
+  top_add' := WithTop.top_add
 
 variable {m n : ℕ∞}
 

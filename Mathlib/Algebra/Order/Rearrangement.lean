@@ -54,8 +54,8 @@ variable {ι α β : Type*}
 
 section SMul
 
-variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [OrderedSMul α β]
-  {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
+variable [Ring α] [LinearOrderedRing α] [AddCommGroup β] [LinearOrderedAddCommGroup β]
+  [Module α β] [OrderedSMul α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
 
 /-- **Rearrangement Inequality**: Pointwise scalar multiplication of `f` and `g` is maximized when
 `f` and `g` monovary together. Stated by permuting the entries of `g`. -/
@@ -359,7 +359,7 @@ Special cases of the above when scalar multiplication is actually multiplication
 section Mul
 
 
-variable [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
+variable [Ring α] [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 
 /-- **Rearrangement Inequality**: Pointwise multiplication of `f` and `g` is maximized when `f` and
 `g` monovary together. Stated by permuting the entries of `g`. -/

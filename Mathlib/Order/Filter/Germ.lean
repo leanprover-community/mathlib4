@@ -832,20 +832,21 @@ instance instDistribLattice [DistribLattice β] : DistribLattice (Germ l β) whe
   le_sup_inf f g h := inductionOn₃ f g h fun _f _g _h ↦ eventually_of_forall fun _ ↦ le_sup_inf
 
 @[to_additive]
-instance instOrderedCommMonoid [OrderedCommMonoid β] : OrderedCommMonoid (Germ l β) where
+instance instOrderedCommMonoid [CommMonoid β] [OrderedCommMonoid β] :
+    OrderedCommMonoid (Germ l β) where
   mul_le_mul_left f g := inductionOn₂ f g fun _f _g H h ↦ inductionOn h fun _h ↦ H.mono
     fun _x H ↦ mul_le_mul_left' H _
 
 @[to_additive]
-instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid β] :
+instance instOrderedCancelCommMonoid [CommMonoid β] [OrderedCancelCommMonoid β] :
     OrderedCancelCommMonoid (Germ l β) where
   le_of_mul_le_mul_left f g h := inductionOn₃ f g h fun _f _g _h H ↦ H.mono
     fun _x ↦ le_of_mul_le_mul_left'
 
 @[to_additive]
-instance instOrderedCommGroup [OrderedCommGroup β] : OrderedCommGroup (Germ l β) where
+instance instOrderedCommGroup [CommGroup β] [OrderedCommGroup β] : OrderedCommGroup (Germ l β) where
   __ := instOrderedCancelCommMonoid
-  __ := instCommGroup
+  __ := instCommGroup (G := β) (l := l)
 
 @[to_additive]
 instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ l β) where
@@ -857,13 +858,13 @@ instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (
     rw [dif_pos hx, hc]
 
 @[to_additive]
-instance instCanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
+instance instCanonicallyOrderedCommMonoid [CommMonoid β] [CanonicallyOrderedCommMonoid β] :
     CanonicallyOrderedCommMonoid (Germ l β) where
   __ := instExistsMulOfLE
   le_self_mul x y := inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul
 
-instance instOrderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) where
-  __ := instSemiring
+instance instOrderedSemiring [Semiring β] [OrderedSemiring β] : OrderedSemiring (Germ l β) where
+  __ := instSemiring (R := β) (l := l)
   __ := instOrderedAddCommMonoid
   zero_le_one := const_le zero_le_one
   mul_le_mul_of_nonneg_left x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦ hh.mp <| hfg.mono
@@ -871,19 +872,20 @@ instance instOrderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) 
   mul_le_mul_of_nonneg_right x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦ hh.mp <| hfg.mono
     fun _a ↦ mul_le_mul_of_nonneg_right
 
-instance instOrderedCommSemiring [OrderedCommSemiring β] : OrderedCommSemiring (Germ l β) where
+instance instOrderedCommSemiring [CommSemiring β] [OrderedCommSemiring β] :
+    OrderedCommSemiring (Germ l β) where
   __ := instOrderedSemiring
-  __ := instCommSemiring
+  __ := instCommSemiring (R := β) (l := l)
 
-instance instOrderedRing [OrderedRing β] : OrderedRing (Germ l β) where
-  __ := instRing
+instance instOrderedRing [Ring β] [OrderedRing β] : OrderedRing (Germ l β) where
+  __ := instRing (R := β) (l := l)
   __ := instOrderedAddCommGroup
   __ := instOrderedSemiring
   mul_nonneg x y := inductionOn₂ x y fun _f _g hf hg ↦ hg.mp <| hf.mono fun _a ↦ mul_nonneg
 
-instance instOrderedCommRing [OrderedCommRing β] : OrderedCommRing (Germ l β) where
-  __ := instOrderedRing
-  __ := instOrderedCommSemiring
+instance instOrderedCommRing [CommRing β] [OrderedCommRing β] : OrderedCommRing (Germ l β) where
+  __ := instOrderedRing (β := β) (l := l)
+  __ := instOrderedCommSemiring (β := β) (l := l)
 
 end Germ
 

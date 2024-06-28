@@ -116,7 +116,7 @@ end ContravariantLT
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup α] (a b c : α)
+variable [AddCommGroup α] [OrderedAddCommGroup α] (a b c : α)
 
 /-!
 ### Preimages under `x ↦ a + x`
@@ -507,7 +507,7 @@ end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] (a b c d : α)
+variable [AddCommGroup α] [LinearOrderedAddCommGroup α] (a b c d : α)
 
 @[simp]
 theorem preimage_const_add_uIcc : (fun x => a + x) ⁻¹' [[b, c]] = [[b - a, c - a]] := by
@@ -589,7 +589,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] {a : α}
+variable [Field α] [LinearOrderedField α] {a : α}
 
 @[simp]
 theorem preimage_mul_const_Iio (a : α) {c : α} (h : 0 < c) :
@@ -856,7 +856,7 @@ theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
   rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
 #align set.inv_Ioi Set.inv_Ioi
 
-theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
+theorem image_const_mul_Ioi_zero {k : Type*} [Field k] [LinearOrderedField k] {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
   erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage, preimage_const_mul_Ioi 0 (inv_pos.mpr hx),
     zero_div]

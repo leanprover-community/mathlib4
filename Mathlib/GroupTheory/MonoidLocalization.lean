@@ -2044,7 +2044,7 @@ variable {α : Type*}
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
+variable [CommMonoid α] [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
 instance le : LE (Localization s) :=
@@ -2148,7 +2148,7 @@ def mkOrderEmbedding (b : s) : α ↪o Localization s where
 end OrderedCancelCommMonoid
 
 @[to_additive]
-instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
+instance [CommMonoid α] [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
     LinearOrderedCancelCommMonoid (Localization s) :=
   { Localization.orderedCancelCommMonoid with
     le_total := fun a b =>

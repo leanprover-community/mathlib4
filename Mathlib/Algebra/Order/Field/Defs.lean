@@ -43,7 +43,7 @@ instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
 #align linear_ordered_field.to_linear_ordered_semifield LinearOrderedField.toLinearOrderedSemifield
 
-variable [Field α] [LinearOrderedSemifield α] {a b : α}
+variable [Semifield α] [LinearOrderedSemifield α] {a b : α}
 
 @[simp] lemma inv_pos : 0 < a⁻¹ ↔ 0 < a :=
   suffices ∀ a : α, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
