@@ -82,11 +82,73 @@ example : CommRing <| @TensorProduct A _ B B _ _ f.toAlgebra.toModule f.toAlgebr
 --   sorry
 example (N : ModuleCat R) : Module A (RestrictScalars A R N) := by infer_instance
 
-example (M N : ModuleCat R) :
+example (N : ModuleCat R) : Module A N := by
+  apply?
+
+
+def left_mul (M N : ModuleCat R) :
     let M' := (RestrictScalars A R M)
     let N' := (RestrictScalars A R N)
+    Module R  (M' ⊗[A] N') := by
+  let M' := (RestrictScalars A R M)
+  letI _: Module R M' := by exact RestrictScalars.moduleOrig A R ↑M
+  exact TensorProduct.leftModule
+
+
+
+def aux_map (M N : ModuleCat R) :
+    let M':= RestrictScalars A R M
+    let N':= RestrictScalars A R N
+    (R →  (M' ⊗[A] N') → (M' ⊗[A] N')) := by
+    intro M' N'
+    intro x m
+    have E := TensorProduct.comm A M' N'
+    have m':= (left_mul R M N).smul x m
+    exact (E : M' ⊗[A] N' →ₗ[A] N' ⊗[A] M') m
+
+
+def right_mul (M N : ModuleCat R):
+    let M':= RestrictScalars A R M
+    let N':= RestrictScalars A R N
+    Module (R ⊗[A] R) (M' ⊗[A] N') where
+  smul x m := sorry
+  zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]
+  smul_zero x := by simp only [(· • ·), map_zero]
+  smul_add x m₁ m₂ := by simp only [(· • ·), map_add]
+  add_smul x y m := by simp only [(· • ·), map_add, LinearMap.add_apply]
+  one_smul m := by
+    -- Porting note: was one `simp only`, not two
+    simp only [(· • ·), Algebra.TensorProduct.one_def]
+    simp only [moduleAux_apply, one_smul]
+  mul_smul x y m := by
+
+example (M : ModuleCat R) : Module (R ⊗[A] R) M := by
+  sorry
+
+example (M N : ModuleCat A) (K : ModuleCat R) (E : RestrictScalars A R K ≃ₗ[A] N) :
+    Module R N := by
+  have E': RestrictScalars A R K →ₗ[A] N := by exact ↑E
+  have E'' : RestrictScalars A R K →+ N := by exact E'.toAddMonoidHom
+  letI _: Module R _ := by exact RestrictScalars.moduleOrig A R ↑K
+  have : SMul R ↑N := by exact?
+  have := Function.Surjective.module R E''
+
+  --have E := TensorProduct.comm A ↑M ↑N
+
+
+example (M N : ModuleCat R) :
+    let M' := (RestrictScalars A R M)
     Module (R ⊗[A] R) (M' ⊗[A] R) := by
-  have : (M' ⊗[A] R) → TensorProduct R M (R ⊗[A] R) := by exact?
+  let M' := (RestrictScalars A R M)
+  let N' := (RestrictScalars A R N)
+  have R_left : Module R (M' ⊗[A] N') := by
+    letI _: Module R M' := by exact RestrictScalars.moduleOrig A R ↑M
+    exact TensorProduct.leftModule
+
+  have R_right : Module R (M' ⊗[A] R) := by
+    exact TensorProduct.rightModule
+
+-- R M (R ⊗[A] R)
 
 
 
@@ -95,7 +157,7 @@ example (M N : ModuleCat R) :
     let N' := (RestrictScalars A R N)
     letI _ := @TensorProduct.Algebra.module A R R (M' ⊗[A] N') _ _ _ _ _
     Module (R ⊗[A] R) (M' ⊗[A] N') := by
-
+    have : Module (R ⊗[A] R) (M ⊗[R] N) := TensorProduct.leftModule
   sorry
 
 --example : B ⟶ (TensorPower A n ((restrictScalars f).obj ⟨B⟩)) := by sorry
