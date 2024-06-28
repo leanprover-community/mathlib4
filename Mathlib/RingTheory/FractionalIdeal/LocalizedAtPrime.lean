@@ -2,7 +2,7 @@ import Mathlib.RingTheory.FractionalIdeal.Extended
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.DedekindDomain.Ideal
 
-open IsLocalization Localization Algebra FractionalIdeal Submodule nonZeroDivisors
+open IsLocalization Localization Algebra FractionalIdeal Submodule nonZeroDivisors Finset
 
 variable {A : Type*} [CommRing A] [IsDomain A] (P : Ideal A) [P.IsPrime]
 variable (I : FractionalIdeal A⁰ (FractionRing A)) (J : FractionalIdeal A⁰ (FractionRing A))
@@ -22,15 +22,15 @@ instance instIsFractionRingLocalizationAtPrimeFractionRing : IsFractionRing Aₚ
 namespace FractionalIdeal
 
 /-- The localization of a fractional ideal `I` of a domain `A`, at a prime ideal `P` of `A`.-/
-abbrev localizedAtPrime [IsDomain A] : FractionalIdeal Aₚ⁰ K :=
+abbrev localizedAtPrime : FractionalIdeal Aₚ⁰ K :=
   I.extended K hf
 
-theorem localizedAtPrime_eq : (I.localizedAtPrime P).coeToSubmodule = Submodule.span Aₚ I := by
+theorem coe_localizedAtPrime : (I.localizedAtPrime P).coeToSubmodule = Submodule.span Aₚ I := by
   rw [extended_eq]
   simp [map_unique hf (RingHom.id K) (fun a ↦ IsScalarTower.algebraMap_apply A Aₚ K a)]
 
 theorem mem_localizedAtPrime_iff (x : K) : x ∈ I.localizedAtPrime P ↔ x ∈ Submodule.span Aₚ I := by
-  rw [← I.localizedAtPrime_eq P, mem_coe]
+  rw [← I.coe_localizedAtPrime P, mem_coe]
 
 theorem self_subset_localizedAtPrime : (I : Set K) ⊆ I.localizedAtPrime P := by
   intro x hx
@@ -38,9 +38,9 @@ theorem self_subset_localizedAtPrime : (I : Set K) ⊆ I.localizedAtPrime P := b
   exact Submodule.subset_span hx
 
 theorem mem_localizedAtPrime_iff_eq (x : K) : x ∈ I.localizedAtPrime P ↔
-    ∃ i : I, ∃ s : P.primeCompl, x = Localization.mk 1 s • i := by
+    ∃ i : I, ∃ s : P.primeCompl, x = mk 1 s • i := by
   refine ⟨fun h ↦ ?_, fun ⟨i, s, h⟩ ↦ ?_⟩; swap
-  · exact h ▸ (smul_mem _ _ <| I.self_subset_localizedAtPrime P (Subtype.coe_prop i))
+  · exact h ▸ (smul_mem _ (mk 1 s) <| I.self_subset_localizedAtPrime P (Subtype.coe_prop i))
   rw [mem_localizedAtPrime_iff] at h
   refine span_induction h (fun y yI ↦ ⟨⟨y, yI⟩, 1, by rw [mk_one, one_smul]⟩) ⟨0, 1, by simp⟩ ?_ ?_
   · rintro _ _ ⟨i₁, s₁, rfl⟩ ⟨i₂, s₂, rfl⟩
@@ -90,11 +90,10 @@ theorem div_localizedAtPrime_le :
   by_cases J0 : J = 0
   · rw [J0, localizedAtPrime_zero, div_zero, localizedAtPrime_zero, div_zero]
   intro t ht
+  simp only [val_eq_coe, coe_localizedAtPrime] at ht
   refine span_induction ht (fun x hx ↦ ?_) (zero_mem _)
     (fun x y hx hy ↦ Submodule.add_mem _ hx hy) (fun x y hy ↦ smul_mem _ x hy)
-  simp_rw [map_unique hf (RingHom.id K) (fun a ↦ IsScalarTower.algebraMap_apply A Aₚ K a),
-    RingHom.id_apply, Set.image_id', SetLike.mem_coe] at hx
-  simp only [val_eq_coe, mem_coe, mem_div_iff_of_nonzero (J.localizedAtPrime_ne_zero P J0)]
+  simp_rw [val_eq_coe, mem_coe, mem_div_iff_of_nonzero (J.localizedAtPrime_ne_zero P J0)]
   intro y hy
   rw [mem_localizedAtPrime_iff] at hy ⊢
   refine span_induction hy (fun j hj ↦ subset_span ?_) (by simp)
@@ -102,8 +101,6 @@ theorem div_localizedAtPrime_le :
     (fun a z hz ↦ Algebra.mul_smul_comm a x z ▸ Submodule.smul_mem _ a hz)
   rw [div_nonzero J0] at hx
   exact (Submodule.mem_div_iff_forall_mul_mem).1 hx j hj
-
-open BigOperators Finset
 
 variable {J}
 
@@ -117,12 +114,11 @@ theorem div_localizedAtPrime (hJ : J.coeToSubmodule.FG) :
   simp_rw [val_eq_coe, mem_coe, mem_localizedAtPrime_iff]
   -- Construct s ∈ P.primeCompl such that (s • t)J ⊆ I. Then s • t ∈ I/J, so t ∈ span Aₚ (I/J).
   obtain ⟨n, g, hgJ⟩ := fg_iff_exists_fin_generating_family.1 hJ
-  have : ∀ i : Fin n, ∃ c ∈ P.primeCompl, c • (t * (g i)) ∈ I := by
-    intro i
+  have : ∀ i : Fin n, ∃ c ∈ P.primeCompl, c • (t * (g i)) ∈ I := fun i ↦
     have giJ : g i ∈ J := by rw [← mem_coe, ← hgJ]; exact subset_span ⟨i, rfl⟩
-    exact exists_smul_mem_of_mem_localizedAtPrime <| ht (g i) (J.self_subset_localizedAtPrime P giJ)
+    exists_smul_mem_of_mem_localizedAtPrime <| ht (g i) (J.self_subset_localizedAtPrime P giJ)
   choose c cP hc using this
-  let s := ∏ i : Fin n, (c i)
+  let s := Finset.prod univ c
   let b := (mk s 1 : Aₚ) • t
   have : t = (mk 1 ⟨s, Submonoid.prod_mem _ (fun i _ ↦ cP i)⟩) • b := by
     rw [smul_smul, mk_mul, one_mul, mul_one, mk_self ⟨s, _⟩, one_smul]
