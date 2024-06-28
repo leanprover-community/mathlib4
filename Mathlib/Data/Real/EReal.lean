@@ -1130,9 +1130,9 @@ theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
 
 /-- The product of two positive extended real numbers is positive. -/
 theorem mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
-  induction' a using EReal.rec with a
+  induction a using EReal.rec
   · exfalso; exact not_lt_bot ha
-  · induction' b using EReal.rec with b
+  · induction b using EReal.rec
     · exfalso; exact not_lt_bot hb
     · norm_cast at *; exact Left.mul_pos ha hb
     · rw [EReal.mul_comm, top_mul_of_pos ha]; exact hb
@@ -1519,9 +1519,10 @@ theorem mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 /-! #### Inversion and Absolute Value -/
 
 theorem sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ := by
-  induction' a using EReal.rec with a
-  · simp
-  · rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
+  induction a using EReal.rec with
+  | h_bot | h_top => simp
+  | h_real a =>
+    rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, ← inv_neg, abs_def a,
         coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
     · rw [coe_zero, sign_zero, SignType.coe_zero, abs_zero, coe_ennreal_zero, inv_zero, mul_zero]
@@ -1529,12 +1530,12 @@ theorem sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ 
       simp only [abs_def a, coe_ennreal_ofReal, ge_iff_le, abs_nonneg, max_eq_left]
       congr
       exact abs_of_pos a_pos
-  · simp
 
 theorem sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : EReal) = a⁻¹ := by
-  induction' a using EReal.rec with a
-  · simp
-  · rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
+  induction a using EReal.rec with
+  | h_bot | h_top  => simp
+  | h_real a =>
+    rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, abs_def a,
         ← ofReal_inv_of_pos (abs_pos_of_neg a_neg), coe_ennreal_ofReal,
         max_eq_left (inv_nonneg.2 (abs_nonneg a)), ← coe_neg |a|⁻¹, ← coe_inv a, abs_of_neg a_neg,
@@ -1545,39 +1546,30 @@ theorem sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : 
           max_eq_left (inv_nonneg.2 (abs_nonneg a)), ← coe_inv a]
       congr
       exact abs_of_pos a_pos
-  · simp
 
 /-! #### Inversion and Positivity -/
 
 theorem inv_nonneg_of_nonneg {a : EReal} (h : 0 ≤ a) : 0 ≤ a⁻¹ := by
-  induction' a using EReal.rec with a
-  · simp
-  · rw [← coe_inv a, EReal.coe_nonneg, inv_nonneg]
-    exact EReal.coe_nonneg.1 h
-  · simp
+  induction a using EReal.rec with
+  | h_bot | h_top => simp
+  | h_real a => rw [← coe_inv a, EReal.coe_nonneg, inv_nonneg]; exact EReal.coe_nonneg.1 h
 
 theorem inv_nonpos_of_nonpos {a : EReal} (h : a ≤ 0) : a⁻¹ ≤ 0 := by
-  induction' a using EReal.rec with a
-  · simp
-  · rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]
-    exact EReal.coe_nonpos.1 h
-  · simp
+  induction a using EReal.rec with
+  | h_bot | h_top => simp
+  | h_real a => rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]; exact EReal.coe_nonpos.1 h
 
 theorem inv_pos_of_ntop_pos {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : 0 < a⁻¹ := by
-  induction' a using EReal.rec with a
-  · exact (not_lt_bot h).rec
-  · rw [← coe_inv a]
-    norm_cast at *
-    exact inv_pos_of_pos h
-  · exact (h' (Eq.refl ⊤)).rec
+  induction a using EReal.rec with
+  | h_bot => exact (not_lt_bot h).rec
+  | h_real a =>  rw [← coe_inv a]; norm_cast at *; exact inv_pos_of_pos h
+  | h_top => exact (h' (Eq.refl ⊤)).rec
 
 theorem inv_neg_of_nbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 0 := by
-  induction' a using EReal.rec with a
-  · exact (h' (Eq.refl ⊥)).rec
-  · rw [← coe_inv a]
-    norm_cast at *
-    exact inv_lt_zero.2 h
-  · exact (not_top_lt h).rec
+  induction a using EReal.rec with
+  | h_bot => exact (h' (Eq.refl ⊥)).rec
+  | h_real a => rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
+  | h_top => exact (not_top_lt h).rec
 
 /-! ### Division -/
 
