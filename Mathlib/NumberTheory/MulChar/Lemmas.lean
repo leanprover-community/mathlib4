@@ -25,7 +25,7 @@ lemma eq_iff {R R' : Type*} [CommMonoid R] [CommMonoidWithZero R'] {g : Rˣ}
 section Ring
 
 variable {R R' : Type*} [CommRing R] [CommRing R']
--- example {a b : Rˣ}
+
 /-- Define the conjugation (`star`) of a multiplicative character by conjugating pointwise. -/
 @[simps!]
 def starComp [StarRing R'] (χ : MulChar R R') : MulChar R R' :=
@@ -39,12 +39,12 @@ lemma val_mem_rootsOfUnity (a : Rˣ) {χ : MulChar R R'} :
     equivToUnitHom χ a ∈ rootsOfUnity ⟨Fintype.card Rˣ, Fintype.card_pos⟩ R' := by
   rw [mem_rootsOfUnity, ← map_pow, ← (equivToUnitHom χ).map_one, PNat.mk_coe, pow_card_eq_one]
 
+open Complex in
 /-- The conjugate of a multiplicative character with values in `ℂ` is its inverse. -/
 lemma starComp_eq_inv (χ : MulChar R ℂ) : χ.starComp = χ⁻¹ := by
   ext1 a
   rw [starComp_apply, inv_apply_eq_inv']
-  have H := Complex.norm_eq_one_of_mem_rootsOfUnity <| χ.val_mem_rootsOfUnity a
-  exact (Complex.inv_eq_conj H).symm
+  exact (inv_eq_conj <| norm_eq_one_of_mem_rootsOfUnity <| χ.val_mem_rootsOfUnity a).symm
 
 lemma starComp_apply' (χ : MulChar R ℂ) (a : R) : (starRingEnd ℂ) (χ a) = χ⁻¹ a := by
   rw [← starComp_eq_inv, starComp, ringHomComp_apply]
@@ -62,7 +62,7 @@ variable {R : Type*} [CommMonoidWithZero R]
 
 
 variable (M) in
-/-- The order of the unit group of a finite monoid as a `PNat`. -/
+/-- The order of the unit group of a finite monoid as a `PNat` (for use in `rootsOfUnity`). -/
 abbrev Monoid.orderUnits : ℕ+ := ⟨Fintype.card Mˣ, Fintype.card_pos⟩
 
 /-- Given a finite monoid `M` with unit group `Mˣ` cyclic of order `n` and an `n`th root of
@@ -87,19 +87,18 @@ variable (M R) in
 of order `n` is isomorphic to the group of `n`th roots of unity in the target `R`. -/
 noncomputable def equiv_rootsOfUnity [inst_cyc : IsCyclic Mˣ] :
     MulChar M R ≃* rootsOfUnity (Monoid.orderUnits M) R where
-      toFun χ :=
-        ⟨χ.toUnitHom <| Classical.choose inst_cyc.exists_generator, by
-          simp only [toUnitHom_eq, mem_rootsOfUnity, PNat.mk_coe, ← map_pow, pow_card_eq_one,
-            map_one]⟩
-      invFun ζ := ofRootOfUnity ζ.prop <| Classical.choose_spec inst_cyc.exists_generator
-      left_inv χ := by
-        simp only [toUnitHom_eq, eq_iff <| Classical.choose_spec inst_cyc.exists_generator,
-          ofRootOfUnity_spec, coe_equivToUnitHom]
-      right_inv ζ := by
-        ext
-        simp only [toUnitHom_eq, coe_equivToUnitHom, ofRootOfUnity_spec]
-      map_mul' x y := by
-        simp only [toUnitHom_eq, equivToUnitHom_mul_apply, Submonoid.mk_mul_mk]
+  toFun χ :=
+    ⟨χ.toUnitHom <| Classical.choose inst_cyc.exists_generator, by
+      simp only [toUnitHom_eq, mem_rootsOfUnity, PNat.mk_coe, ← map_pow, pow_card_eq_one, map_one]⟩
+  invFun ζ := ofRootOfUnity ζ.prop <| Classical.choose_spec inst_cyc.exists_generator
+  left_inv χ := by
+    simp only [toUnitHom_eq, eq_iff <| Classical.choose_spec inst_cyc.exists_generator,
+      ofRootOfUnity_spec, coe_equivToUnitHom]
+  right_inv ζ := by
+    ext
+    simp only [toUnitHom_eq, coe_equivToUnitHom, ofRootOfUnity_spec]
+  map_mul' x y := by
+    simp only [toUnitHom_eq, equivToUnitHom_mul_apply, Submonoid.mk_mul_mk]
 
 end IsCyclic
 
@@ -150,19 +149,18 @@ lemma exists_mulChar_orderOf_eq_card_units {ζ : R} (hζ : IsPrimitiveRoot ζ (M
 
 variable {F}
 
-/- The non-zero values of a multiplicative character of order `n` are `n`th roots of unity -/
+/- The non-zero values of a multiplicative character of order `n` are `n`th roots of unity. -/
 lemma val_mem_rootsOfUnity_orderOf (χ : MulChar F R) {a : F} (ha : a ≠ 0) :
     ∃ ζ ∈ rootsOfUnity ⟨orderOf χ, χ.orderOf_pos⟩ R, ζ = χ a := by
   have hu : IsUnit (χ a) := ha.isUnit.map χ
   refine ⟨hu.unit, ?_, IsUnit.unit_spec hu⟩
-  rw [mem_rootsOfUnity, PNat.mk_coe, Units.ext_iff]
-  push_cast
-  rw [IsUnit.unit_spec, ← χ.pow_apply' χ.orderOf_pos.ne', pow_orderOf_eq_one,
+  rw [mem_rootsOfUnity, PNat.mk_coe, Units.ext_iff, Units.val_pow_eq_pow_val, Units.val_one,
+    IsUnit.unit_spec, ← χ.pow_apply' χ.orderOf_pos.ne', pow_orderOf_eq_one,
     show a = (isUnit_iff_ne_zero.mpr ha).unit by simp only [IsUnit.unit_spec],
     MulChar.one_apply_coe]
 
 /-- The non-zero values of a multiplicative character `χ` such that `χ^n = 1`
-are `n`th roots of unity -/
+are `n`th roots of unity. -/
 lemma val_mem_rootsOfUnity_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1)
     {a : F} (ha : a ≠ 0) :
     ∃ ζ ∈ rootsOfUnity ⟨n, Nat.pos_of_ne_zero hn⟩ R, ζ = χ a := by
@@ -181,9 +179,7 @@ lemma exists_val_eq_pow {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ 
     ∃ k < n, χ a = μ ^ k := by
   have hn' := Nat.pos_of_ne_zero hn
   obtain ⟨ζ, hζ₁, hζ₂⟩ := val_mem_rootsOfUnity_of_pow_eq_one hn hχ ha
-  have hζ' : ζ.val ^ n = 1 := by
-    rw [← PNat.mk_coe n hn']
-    exact (mem_rootsOfUnity' ⟨n, hn'⟩ ↑ζ).mp hζ₁
+  have hζ' : ζ.val ^ n = 1 := (mem_rootsOfUnity' ⟨n, hn'⟩ ↑ζ).mp hζ₁
   obtain ⟨k, hk₁, hk₂⟩ := hμ.eq_pow_of_pow_eq_one hζ' hn'
   exact ⟨k, hk₁, (hζ₂ ▸ hk₂).symm⟩
 
@@ -192,16 +188,12 @@ lemma exists_val_eq_pow {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ 
 lemma val_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1)
     {μ : R} (hμ : IsPrimitiveRoot μ n) (a : F) :
     χ a ∈ Algebra.adjoin ℤ {μ} := by
-  by_cases h : a = 0
-  · rw [h, χ.map_zero]
-    exact Subalgebra.zero_mem _
+  rcases eq_or_ne a 0 with rfl | h
+  · exact χ.map_zero ▸ Subalgebra.zero_mem _
   · obtain ⟨ζ, hζ₁, hζ₂⟩ := val_mem_rootsOfUnity_of_pow_eq_one hn hχ h
-    rw [← hζ₂]
-    rw [mem_rootsOfUnity, Units.ext_iff] at hζ₁
-    push_cast at hζ₁
+    rw [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val] at hζ₁
     obtain ⟨k, _, hk⟩ := IsPrimitiveRoot.eq_pow_of_pow_eq_one hμ hζ₁ (Nat.pos_of_ne_zero hn)
-    rw [← hk]
-    exact Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton ℤ μ) k
+    exact hζ₂ ▸ hk ▸ Subalgebra.pow_mem _ (Algebra.self_mem_adjoin_singleton ℤ μ) k
 
 /-- The values of a multiplicative character of order `n` are contained in `ℤ[μ]` when
 `μ` is a primitive `n`th root of unity. -/

@@ -483,12 +483,12 @@ lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 
 
 lemma ringHomComp_inv {R : Type*} [CommRing R] (χ : MulChar R R') (f : R' →+* R'') :
     (χ.ringHomComp f)⁻¹ = χ⁻¹.ringHomComp f := by
-  ext1 a
+  ext1
   simp only [inv_apply, Ring.inverse_unit, ringHomComp_apply]
 
 lemma ringHomComp_mul (χ φ : MulChar R R') (f : R' →+* R'') :
     (χ * φ).ringHomComp f = χ.ringHomComp f * φ.ringHomComp f := by
-  ext1 a
+  ext1
   simp only [ringHomComp_apply, coeToFun_mul, Pi.mul_apply, map_mul]
 
 lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
