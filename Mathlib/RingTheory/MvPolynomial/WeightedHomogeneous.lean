@@ -633,7 +633,7 @@ end CanonicallyLinearOrderedMonoid
 section GradedAlgebra
 
 /- Here, given a weight `w : σ → M`, where `M` is an additive and commutative monoid, we endow the
-  ring of multivariate polynomials `mv_polynomial σ R` with the structure of a graded algebra -/
+  ring of multivariate polynomials `MvPolynomial σ R` with the structure of a graded algebra -/
 variable (w : σ → M) [AddCommMonoid M]
 
 theorem weightedHomogeneousComponent_eq_zero_of_not_mem [DecidableEq M]
@@ -659,9 +659,10 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
   rw [DirectSum.mk_apply_of_not_mem hm, Submodule.coe_zero,
     weightedHomogeneousComponent_eq_zero_of_not_mem w φ m hm]
 
-/-- Given a weight w, the decomposition of mv_polynomial σ R into weighted homogeneous submodules -/
+/-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
+submodules -/
 def weightedDecomposition [DecidableEq σ] [DecidableEq R] [DecidableEq M] :
-  DirectSum.Decomposition (weightedHomogeneousSubmodule R w) where
+    DirectSum.Decomposition (weightedHomogeneousSubmodule R w) where
   decompose' := decompose' R w
   left_inv φ := by
     conv_rhs => rw [← sum_weightedHomogeneousComponent w φ]
@@ -689,10 +690,10 @@ def weightedGradedAlgebra [DecidableEq σ] [DecidableEq R] [DecidableEq M] :
   toGradedMonoid  := WeightedHomogeneousSubmodule.gcomm_monoid
 
 theorem weightedDecomposition.decompose'_eq [DecidableEq σ] [DecidableEq R] [DecidableEq M] :
-  (weightedDecomposition R w).decompose' = fun φ : MvPolynomial σ R =>
-    DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
-      (Finset.image (weightedDegree w) φ.support) fun m =>
-        ⟨weightedHomogeneousComponent w m φ, weightedHomogeneousComponent_mem w φ m⟩ := rfl
+    (weightedDecomposition R w).decompose' = fun φ : MvPolynomial σ R =>
+      DirectSum.mk (fun i : M => ↥(weightedHomogeneousSubmodule R w i))
+        (Finset.image (weightedDegree w) φ.support) fun m =>
+          ⟨weightedHomogeneousComponent w m φ, weightedHomogeneousComponent_mem w φ m⟩ := rfl
 
 theorem weightedDecomposition.decompose'_apply [DecidableEq σ] [DecidableEq R] [DecidableEq M]
     (φ : MvPolynomial σ R) (m : M) :
