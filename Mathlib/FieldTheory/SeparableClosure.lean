@@ -80,7 +80,7 @@ def separableClosure : IntermediateField F E where
   mul_mem' := isSeparable_mul
   add_mem' := isSeparable_add
   algebraMap_mem' := isSeparable_algebraMap E
-  inv_mem' := isSeparable_inv
+  inv_mem' _ := isSeparable_inv
 
 variable {F E K}
 
@@ -163,8 +163,9 @@ theorem le_separableClosure_iff (L : IntermediateField F E) :
 
 /-- The separable closure in `E` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.separableClosure_eq_bot :
-    separableClosure (separableClosure F E) E = ⊥ := bot_unique fun x hx ↦
-  mem_bot.2 ⟨⟨IsSeparable.of_algebra_isSeparable_of_isSeparable F (x, mem_separableClosure_iff.1 hx)⟩, rfl⟩
+    separableClosure (separableClosure F E) E = ⊥ :=
+  bot_unique fun x hx ↦ mem_bot.2
+    ⟨⟨x, IsSeparable.of_algebra_isSeparable_of_isSeparable F (mem_separableClosure_iff.1 hx)⟩, rfl⟩
 
 /-- The normal closure in `E/F` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.normalClosure_eq_self :
