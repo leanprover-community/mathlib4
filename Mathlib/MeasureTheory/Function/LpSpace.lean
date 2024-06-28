@@ -647,6 +647,24 @@ theorem snormEssSup_indicator_eq_snormEssSup_restrict {f : α → F} (hs : Measu
     ENNReal.essSup_indicator_eq_essSup_restrict hs]
 #align measure_theory.snorm_ess_sup_indicator_eq_snorm_ess_sup_restrict MeasureTheory.snormEssSup_indicator_eq_snormEssSup_restrict
 
+/-
+lemma foo {f : α → F} : ∃ (s : Set α), MeasurableSet s ∧ s ⊆ f.support ∧
+    snorm f p (μ.restrict s) = snorm f p μ := by
+  by_cases hp_zero : p = 0
+  · exact ⟨∅, MeasurableSet.empty, Set.empty_subset _, by simp [hp_zero]⟩
+  rcases eq_zero_or_pos (snorm f p μ) with hf | hf
+  · exact ⟨∅, MeasurableSet.empty, Set.empty_subset _, by simp [hf]⟩
+  by_cases hp_top : p = ∞
+  · obtain ⟨u, -, u_mem, u_lim⟩ : ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n ∈ Set.Ioo 0 (snorm f p μ)) ∧
+      Tendsto u atTop (𝓝 (snorm f p μ)) := exists_seq_strictMono_tendsto' hf
+    simp_rw [hp_top, snorm_exponent_top]
+
+
+
+
+#exit
+-/
+
 theorem snorm_indicator_eq_snorm_restrict {f : α → F} (hs : MeasurableSet s) :
     snorm (s.indicator f) p μ = snorm f p (μ.restrict s) := by
   by_cases hp_zero : p = 0
@@ -672,12 +690,36 @@ theorem memℒp_indicator_iff_restrict (hs : MeasurableSet s) :
   simp [Memℒp, aestronglyMeasurable_indicator_iff hs, snorm_indicator_eq_snorm_restrict hs]
 #align measure_theory.mem_ℒp_indicator_iff_restrict MeasureTheory.memℒp_indicator_iff_restrict
 
+lemma set_lintegral_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
+    ∫⁻ x in s, f x ∂μ = ∫⁻ x, f x ∂μ := by
+  apply le_antisymm (set_lintegral_le_lintegral s fun x ↦ f x)
+  apply le_trans (le_of_eq _) (lintegral_indicator_le _ _)
+  congr with x
+  simp [Set.indicator]
+  split_ifs with h
+  · rfl
+  · exact Function.support_subset_iff'.1 hsf x h
+
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
 `μ.restrict s` are the same. -/
-theorem snorm_restrict_eq {s : Set α} (hs : MeasurableSet s) (hsf : f.support ⊆ s) :
+theorem snorm_restrict_eq {s : Set α} (hsf : f.support ⊆ s) :
     snorm f p (μ.restrict s) = snorm f p μ := by
-  simp_rw [Function.support_subset_iff', ← Set.indicator_apply_eq_self] at hsf
-  simp_rw [← snorm_indicator_eq_snorm_restrict hs, funext hsf]
+  apply le_antisymm (snorm_mono_measure _ Measure.restrict_le_self)
+  rcases eq_zero_or_pos (snorm f p μ) with hf | hf
+  · simp [hf]
+  rcases eq_zero_or_pos p with rfl | hp0
+  · simp
+  by_cases hp_top : p = ∞
+  · sorry
+  · simp_rw [snorm_eq_snorm' hp0.ne' hp_top, snorm']
+    apply ENNReal.rpow_le_rpow _ (by simp)
+    apply le_of_eq (Eq.symm _)
+    apply set_lintegral_eq_of_support_subset
+    have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0.ne' hp_top
+    simpa [this] using hsf
+
+
+#exit
 
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/
