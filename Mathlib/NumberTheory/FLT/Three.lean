@@ -588,7 +588,8 @@ lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y 
 
 lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z ^ 3 := by
   have h1 : S.z * (S.x * S.y * S.u⁻¹) = S.w ^ 3 := by
-    rw [← mul_assoc, ← mul_assoc S.z, mul_comm S.z, mul_assoc S.x, mul_comm S.z, ← mul_assoc, x_mul_y_mul_z_eq_u_w_cube]
+    rw [← mul_assoc, ← mul_assoc S.z, mul_comm S.z, mul_assoc S.x, mul_comm S.z, ← mul_assoc,
+      x_mul_y_mul_z_eq_u_w_cube]
     simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
   have h2 : IsCoprime S.z (S.x * S.y * S.u⁻¹) :=
     (isCoprime_mul_unit_right_right (Units.isUnit _) S.z _).2 <|
