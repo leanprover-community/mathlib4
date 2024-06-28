@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
 
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 import Mathlib.Analysis.Matrix
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 -- /-!
 -- # House of an algebraic number
@@ -24,10 +24,7 @@ variable {K : Type*} [Field K] [NumberField K]
 
 noncomputable section
 
-open Module.Free FiniteDimensional NumberField.canonicalEmbedding
-
-open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional Matrix
-  Set Algebra Polynomial Basis Finset
+open Module.Free FiniteDimensional NumberField.canonicalEmbedding NumberField
 
 /-- The house of an algebraic number as the norm of its image by the canonical embedding.-/
 abbrev House (α : K) : ℝ := ‖canonicalEmbedding K α‖
@@ -83,8 +80,8 @@ theorem det_of_basisMatrix_non_zero : (basisMatrix K).transpose.det ≠ 0 := by
          RingHom.equivRatAlgHom
       rw [show (basisMatrix K).transpose = N by {
         ext:2
-        simp only [N, transpose_apply, latticeBasis_apply,
-          integralBasis_apply, of_apply, apply_at]
+        simp only [N, Matrix.transpose_apply, latticeBasis_apply,
+          integralBasis_apply, Matrix.of_apply, apply_at]
         rfl}]
       rw [← pow_ne_zero_iff two_ne_zero]
       convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
@@ -95,11 +92,11 @@ theorem det_of_basisMatrix_non_zero : (basisMatrix K).transpose.det ≠ 0 := by
 
 instance : Invertible (basisMatrix K) := by
     have :(basisMatrix K).transpose.det ≠ 0 := det_of_basisMatrix_non_zero K
-    rw [det_transpose (basisMatrix K)] at this
-    exact invertibleOfIsUnitDet _ (Ne.isUnit this)
+    rw [Matrix.det_transpose (basisMatrix K)] at this
+    exact Matrix.invertibleOfIsUnitDet _ (Ne.isUnit this)
 
 /-- `c` is defined as the product of the maximum absolute value of the entries of the
- inverse of the matrix `basisMatrix` and  `(finrank ℚ K)`. -/
+  inverse of the matrix `basisMatrix` and  `(finrank ℚ K)`. -/
 def c := (finrank ℚ K) * ‖fun i j => (basisMatrix K)⁻¹ i j‖
 
 universe u u' v
@@ -110,7 +107,7 @@ variable [Fintype n] [DecidableEq n] [CommRing α]
 
 lemma inv_mulVec_eq_vec (A : Matrix n n α) [Invertible A]
   {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
-  rw [hM, mulVec_mulVec, inv_mul_of_invertible, one_mulVec]
+  rw [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
 
 theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
   ((((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) ≤
@@ -125,8 +122,8 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
         ext
         rw [← (latticeBasis K).sum_repr (canonicalEmbedding K α),
             ← Equiv.sum_comp (equivReindex K)]
-        simp_rw [canonicalEmbedding.integralBasis_repr_apply, mulVec, dotProduct,
-          basisMatrix, transpose_apply, Matrix.of_apply, Finset.sum_apply,
+        simp_rw [canonicalEmbedding.integralBasis_repr_apply, Matrix.mulVec, Matrix.dotProduct,
+          basisMatrix, Matrix.transpose_apply, Matrix.of_apply, Finset.sum_apply,
           mul_comm, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm,
           Pi.smul_apply, smul_eq_mul]
       have : (basisMatrix K)⁻¹.mulVec (fun j => canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
@@ -140,25 +137,25 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
            trans
            ·  trans
               · apply AbsoluteValue.sum_le Complex.abs
-              · apply sum_le_sum
+              · apply Finset.sum_le_sum
                 intros j _
                 exact (AbsoluteValue.map_mul Complex.abs _ _).le
-           · apply sum_le_sum
+           · apply Finset.sum_le_sum
              intros j _
              apply mul_le_mul_of_nonneg_right
              · rw [← Complex.norm_eq_abs]
-               exact norm_entry_le_entrywise_sup_norm (basisMatrix K)⁻¹
+               exact Matrix.norm_entry_le_entrywise_sup_norm (basisMatrix K)⁻¹
              · exact AbsoluteValue.nonneg Complex.abs _
     _ ≤ ∑ _, ‖fun i j => (basisMatrix K)⁻¹ i j‖ * House  (algebraMap (𝓞 K) K α) := by
-          apply sum_le_sum
+          apply Finset.sum_le_sum
           intros j _
           apply mul_le_mul_of_nonneg_left
           · rw [← Complex.norm_eq_abs]
             exact norm_le_pi_norm ((canonicalEmbedding K) ((algebraMap (𝓞 K) K) α)) j
           · exact norm_nonneg fun i j ↦ (basisMatrix K)⁻¹ i j
     _ =  ↑(finrank ℚ K) * ‖fun i j => (basisMatrix K)⁻¹ i j‖ * House  (algebraMap (𝓞 K) K α) := by
-          rw [sum_const]
-          simp only [card_univ, nsmul_eq_mul]
+          rw [Finset.sum_const]
+          simp only [Finset.card_univ, nsmul_eq_mul]
           rw [NumberField.Embeddings.card]
           rw [mul_assoc]
 
