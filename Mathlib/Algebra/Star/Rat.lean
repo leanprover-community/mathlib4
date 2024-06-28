@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Lean FRO. All rights reserved.
+Copyright (c) 2024 Yael Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Yael Dillies
 -/
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Star.Basic
