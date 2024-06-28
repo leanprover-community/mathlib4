@@ -3,9 +3,10 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-
 import Mathlib.Analysis.Matrix
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+
 
 /-!
 # House of an algebraic number
@@ -99,16 +100,6 @@ instance : Invertible (basisMatrix K) := by
   inverse of the matrix `basisMatrix` and  `(finrank ℚ K)`. -/
 def c := (finrank ℚ K) * ‖fun i j => (basisMatrix K)⁻¹ i j‖
 
-universe u u' v
-
-variable {m : Type u} {n : Type u'} {α : Type v}
-
-variable [Fintype n] [DecidableEq n] [CommRing α]
-
-lemma inv_mulVec_eq_vec (A : Matrix n n α) [Invertible A]
-    {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
-  rw [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
-
 theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
     ((((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) ≤
     @c K _ _ * House (algebraMap (𝓞 K) K α) := fun i => calc
@@ -128,7 +119,7 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
           Pi.smul_apply, smul_eq_mul]
       have : (basisMatrix K)⁻¹.mulVec (fun j => canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
         ((((integralBasis K).reindex (equivReindex K).symm))).repr α i := by
-        {rw [inv_mulVec_eq_vec (basisMatrix  K) this]}
+        {rw [Matrix.inv_mulVec_eq_vec (basisMatrix  K) this]}
       rw [← this]
       rfl
 
