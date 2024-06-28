@@ -1040,7 +1040,7 @@ over `E`. -/
 theorem minpoly.map_eq_of_separable_of_isPurelyInseparable (x : K)
     (hsep : IsSeparable F x) [IsPurelyInseparable F E] :
     (minpoly F x).map (algebraMap F E) = minpoly E x := by
-  have hi := hsep.isIntegral
+  have hi := IsSeparable.isIntegral hsep
   have hi' : IsIntegral E x := IsIntegral.tower_top hi
   refine eq_of_monic_of_dvd_of_natDegree_le (monic hi') ((monic hi).map (algebraMap F E))
     (dvd_map_of_isScalarTower F E x) (le_of_eq ?_)

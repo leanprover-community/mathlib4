@@ -24,7 +24,11 @@ import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.PurelyInseparable
 
+/-!
+# TODO
+-/
+
 -- -1. add notation, replace into new notation (finished)
--- 0. rename IsSeparable lemmas (finished)
+-- 0. rename IsSeparable lemmas (not finished) (check every lemma's name in change notation)
 -- 1. add lemmas as in IsIntegral
 -- 2. add separable_neg separable_smul and Field.separable_sub separable_pow,..., rename them

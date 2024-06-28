@@ -139,7 +139,7 @@ variable (F E K)
 
 /-- The separable closure of `F` in `E` is algebraic over `F`. -/
 instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
-  ⟨fun x ↦ isAlgebraic_iff.2 x.2.isIntegral.isAlgebraic⟩
+  ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.2).isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
