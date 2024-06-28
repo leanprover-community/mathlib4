@@ -971,12 +971,13 @@ theorem volume_preserving_piFinsetUnion (α : ι → Type*) [DecidableEq ι] {s 
   measurePreserving_piFinsetUnion h (fun _ ↦ volume)
 
 theorem measurePreserving_pi {β : ι → Type*} [∀ i, MeasurableSpace (β i)]
-    (ν : (i : ι) → Measure (β i)) [∀ i, SigmaFinite (ν i)] {f : (i : ι) → (α i) → (β i)}
+    (ν : (i : ι) → Measure (β i)) {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]
     (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
     MeasurePreserving (fun a i ↦ f i (a i)) (Measure.pi μ) (Measure.pi ν) where
   measurable :=
     measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
   map_eq := by
+    haveI : ∀ i, SigmaFinite (μ i) := fun i ↦ (hf i).sigmaFinite
     refine (Measure.pi_eq fun s hs ↦ ?_).symm
     rw [Measure.map_apply, Set.preimage_pi, Measure.pi_pi]
     simp_rw [← MeasurePreserving.measure_preimage (hf _) (hs _)]
@@ -984,9 +985,8 @@ theorem measurePreserving_pi {β : ι → Type*} [∀ i, MeasurableSpace (β i)]
     · exact MeasurableSet.univ_pi hs
 
 theorem volume_preserving_pi {α' β' : ι → Type*} [∀ i, MeasureSpace (α' i)]
-    [∀ i, MeasureSpace (β' i)] [∀ i, SigmaFinite (volume : Measure (α' i))]
-    [∀ i, SigmaFinite (volume : Measure (β' i))] {f : (i : ι) → (α' i) → (β' i)}
-    (hf : ∀ i, MeasurePreserving (f i)) :
+    [∀ i, MeasureSpace (β' i)] [∀ i, SigmaFinite (volume : Measure (β' i))]
+    {f : (i : ι) → (α' i) → (β' i)} (hf : ∀ i, MeasurePreserving (f i)) :
     MeasurePreserving (fun (a : (i : ι) → α' i) (i : ι) ↦ (f i) (a i)) :=
   measurePreserving_pi _ _ hf
 
