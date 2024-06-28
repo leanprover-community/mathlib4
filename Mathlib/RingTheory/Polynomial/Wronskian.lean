@@ -1,20 +1,23 @@
 /-
 Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jineon Baek and Seewoo Lee
+Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Wronskian of a pair of polynomial
 
-This file defines Wronskian of a pair of polynomial, which is `W(a, b) = ab' - a'b`, and prove basic properties of it.
+This file defines Wronskian of a pair of polynomial, which is `W(a, b) = ab' - a'b`.
+We also prove basic properties of it.
 
 ## Main declarations
 
 - `wronskian_eq_sum_zero`: We have `W(a, b) = W(b, c)` when `a + b + c = 0`.
-- `wronskian.degree_lt_add`: Degree of Wronskian `W(a, b)` is strictly smaller than the sum of degrees of `a` and `b`
-- `wronskian.natDegree_lt_add`: `natDegree` version of the above theorem. We need to assume that the Wronskian is nonzero. (Otherwise, `a = b = 1` gives a counterexample.)
+- `wronskian.degree_lt_add`: Degree of Wronskian `W(a, b)` is strictly smaller than
+  the sum of degrees of `a` and `b`
+- `wronskian.natDegree_lt_add`: `natDegree` version of the above theorem. We need to assume that
+  the Wronskian is nonzero. (Otherwise, `a = b = 1` gives a counterexample.)
 -/
 
 noncomputable section
