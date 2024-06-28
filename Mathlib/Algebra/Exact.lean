@@ -28,11 +28,11 @@ import Mathlib.LinearAlgebra.Quotient
 
 namespace Function
 
-variable {R M M' N N' P P' Q : Type*}
+variable {R M M' N N' P P' : Type*}
 
 section Function
 
-variable (f : M → N) (g : N → P) (h : P → Q)
+variable (f : M → N) (g : N → P) (g' : P → P')
 
 /-- The maps `f` and `g` form an exact pair :
   `g y = 0` iff `y` belongs to the image of `f` -/
@@ -51,9 +51,9 @@ lemma Exact.of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
   fun y => Iff.intro (h2 y) <|
     Exists.rec ((forall_apply_eq_imp_iff (p := (g · = 0))).mpr (congrFun h1) y)
 
-lemma Exact.comp_injective [Zero P] [Zero Q] (exact : Exact f g)
-    (inj : Function.Injective h) (h0 : h 0 = 0) :
-    Exact f (h ∘ g) := by
+lemma Exact.comp_injective [Zero P] [Zero P'] (exact : Exact f g)
+    (inj : Function.Injective g') (h0 : g' 0 = 0) :
+    Exact f (g' ∘ g) := by
   intro x
   refine ⟨fun H => exact x |>.mp <| inj <| h0 ▸ H, ?_⟩
   intro H
