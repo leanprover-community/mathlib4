@@ -10,8 +10,6 @@ import Mathlib.Data.Complex.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Data.Real.Star
 
-assert_not_exists NNReal
-
 #align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
 /-!
@@ -46,7 +44,7 @@ element of a `StarModule` over `ℂ`.
   `ComplexStarModule`.
 -/
 
-
+assert_not_exists NNReal
 namespace Complex
 
 open ComplexConjugate
