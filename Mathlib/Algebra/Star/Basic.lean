@@ -79,7 +79,7 @@ instance instStar : Star s where
 
 end StarMemClass
 
-/-- Typeclass for a star operation with is involutive.
+/-- Typeclass for a star operation which is involutive.
 -/
 class InvolutiveStar (R : Type u) extends Star R where
   /-- Involutive condition. -/
@@ -143,6 +143,18 @@ export StarMul (star_mul)
 attribute [simp 900] star_mul
 
 section StarMul
+
+/-- Any commutative magma admits the trivial `*`-structure. -/
+abbrev starMulOfMulComm {R : Type*} [Mul R] (mul_comm : ∀ r s : R, r * s = s * r) : StarMul R where
+  star := id
+  star_involutive _ := rfl
+  star_mul := mul_comm
+
+instance Nat.instStarMul : StarMul ℕ := starMulOfMulComm Nat.mul_comm
+instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
+
+instance Int.instStarMul : StarMul ℤ := starMulOfMulComm Int.mul_comm
+instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 
 variable [Mul R] [StarMul R]
 
@@ -235,10 +247,7 @@ theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / s
 
 See note [reducible non-instances].
 -/
-abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R where
-  star := id
-  star_involutive _ := rfl
-  star_mul := mul_comm
+abbrev starMulOfComm {R : Type*} [CommMonoid R] : StarMul R := starMulOfMulComm mul_comm
 #align star_semigroup_of_comm starMulOfComm
 
 section
@@ -454,8 +463,6 @@ abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
 
 instance Nat.instStarRing : StarRing ℕ := starRingOfComm
 instance Int.instStarRing : StarRing ℤ := starRingOfComm
-instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
-instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
