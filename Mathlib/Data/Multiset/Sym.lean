@@ -49,7 +49,7 @@ theorem sym2_eq_zero_iff {m : Multiset α} : m.sym2 = 0 ↔ m = 0 :=
 
 theorem sym2_cons (a : α) (m : Multiset α) :
     (m.cons a).sym2 = ((m.cons a).map <| fun b => s(a, b)) + m.sym2 :=
-  m.inductionOn fun xs => by simp [Multiset.sym2, List.sym2]
+  m.inductionOn fun _ => rfl
 
 theorem mk_mem_sym2_iff {m : Multiset α} {a b : α} :
     s(a, b) ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
