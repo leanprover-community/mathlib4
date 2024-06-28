@@ -47,6 +47,10 @@ protected def sym2 (m : Multiset α) : Multiset (Sym2 α) :=
 theorem sym2_eq_zero_iff {m : Multiset α} : m.sym2 = 0 ↔ m = 0 :=
   m.inductionOn fun xs => by simp
 
+theorem sym2_cons (a : α) (m : Multiset α) :
+    (m.cons a).sym2 = ((m.cons a).map <| fun b => s(a, b)) + m.sym2 :=
+  m.inductionOn fun xs => by simp [Multiset.sym2, List.sym2]
+
 theorem mk_mem_sym2_iff {m : Multiset α} {a b : α} :
     s(a, b) ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
   m.inductionOn fun xs => by simp [List.mk_mem_sym2_iff]
