@@ -1580,6 +1580,16 @@ theorem div_le_iff_le_mul {a c : EReal} {b : ENNReal} (h : b ≠ 0) (h' : b ≠ 
   nth_rw 1 [← @mul_inv_cancel c b h h']
   rw [mul_div_right, mul_comm c b]
   exact StrictMono.le_iff_le (div_left_strictMono h h')
+
+theorem nneg_div {a : EReal} {b : ENNReal} (h : 0 ≤ a) : 0 ≤ a / b :=
+  le_of_eq_of_le (Eq.symm zero_div) (div_left_mono b h)
+
+theorem npos_div {a : EReal} {b : ENNReal} (h : a ≤ 0) : a / b ≤ 0 :=
+  le_of_le_of_eq (div_left_mono b h) zero_div
+
+theorem div_right_distrib_of_nneg {a b : EReal} {c : ENNReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
+    (a + b) / c = (a / c) + (b / c) := right_distrib_of_nonneg h h'
+
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
