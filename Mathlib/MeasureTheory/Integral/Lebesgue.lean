@@ -802,6 +802,16 @@ theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ�
   lintegral_indicator_const₀ hs.nullMeasurableSet c
 #align measure_theory.lintegral_indicator_const MeasureTheory.lintegral_indicator_const
 
+lemma set_lintegral_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
+    ∫⁻ x in s, f x ∂μ = ∫⁻ x, f x ∂μ := by
+  apply le_antisymm (set_lintegral_le_lintegral s fun x ↦ f x)
+  apply le_trans (le_of_eq _) (lintegral_indicator_le _ _)
+  congr with x
+  simp [Set.indicator]
+  split_ifs with h
+  · rfl
+  · exact Function.support_subset_iff'.1 hsf x h
+
 theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : ℝ≥0∞) :
     ∫⁻ x in { x | f x = r }, f x ∂μ = r * μ { x | f x = r } := by
   have : ∀ᵐ x ∂μ, x ∈ { x | f x = r } → f x = r := ae_of_all μ fun _ hx => hx
