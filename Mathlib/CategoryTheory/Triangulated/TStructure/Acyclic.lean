@@ -69,11 +69,6 @@ noncomputable abbrev FromHeartToHeart : t₁.Heart ⥤ t₂.Heart :=
 
 def AcyclicToHeart : (AcyclicCategory F t₁ t₂) ⥤ t₁.Heart := fullSubcategoryInclusion _
 
-/-
-def FromAcyclicFactorization : F.FromAcyclic t₁ t₂ ≅
-    fullSubcategoryInclusion (AcyclicObject F t₁ t₂) ⋙ F.FromHeartToHeart t₁ t₂ := sorry
--/
-
 end Functor
 
 namespace AcyclicCategory
