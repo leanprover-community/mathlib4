@@ -10,6 +10,7 @@ import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 
+-- **TODO** move this entire file out of DedekindDomain! Add reference.
 # Frobenius elements
 
 Frobenius elements in Galois groups.
@@ -45,7 +46,11 @@ all we know is that it satisfies the two properties).
 
 ## The construction
 
-We follow a proof in a footnote of a book by Milne. **TODO** which book
+* [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
+
+
+We follow a proof in footnote 2 on p141 of [J. S. Milne,  *Algebraic Number Theory*][milne-ANT]
+**TODO** add to `docs/references.bib`.
 
 The Galois orbit of `Q` consists of `Q` and possibly some other primes `Q'`. The unit group
 `(B/Q)ˣ` is finite and hence cyclic; so by the Chinese Remainder Theorem we may choose `y ∈ B`
