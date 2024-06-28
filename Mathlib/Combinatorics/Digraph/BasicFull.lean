@@ -321,7 +321,7 @@ def edgeSetIso (V : Type _) : Digraph V ≃o Set (V × V) where
 
 @[simp]
 lemma edgeSetIso_symm_adj {s : Set (V × V)} : ((edgeSetIso V).symm s).Adj v w ↔
-(v, w) ∈ s := Iff.rfl
+  (v, w) ∈ s := Iff.rfl
 
 /-- `G.edgeSet` is the edge set for `G`.
 This is an abbreviation for `edgeSetIso G` that permits dot notation. -/
@@ -543,35 +543,35 @@ theorem mk'_mem_incidenceSet_right_iff : (a, b) ∈ G.incidenceSet b ↔ G.Adj a
       rfl
 
 theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a = (e : V × V).1 ∨ a
-= (e : V × V).2 := and_iff_right e.2
+  = (e : V × V).2 := and_iff_right e.2
 
 theorem adj_of_mem_incidenceSet (e : V × V) (h : a ≠ b) (ha : e ∈ G.incidenceSet a)
   (hb : e ∈ G.incidenceSet b) : G.Adj a b ∨ G.Adj b a := by
-    rw [incidenceSet] at ha hb
-    simp only [Set.sep_or, Set.mem_union, Set.mem_setOf_eq] at ha hb
-    cases' ha with ha1 ha2
-    · cases' ha1 with ha11 ha12
-      · cases' hb with hb1 hb2
-        · cases' hb1 with hb11 hb12
-          have H : a = b := by
-            rw [ha12, ← hb12]
-          contradiction
-        · left
-          cases' hb2 with hb21 hb22
-          have h3 : e = (a, b) := by rw [ha12, hb22]
-          rw [h3] at hb21
-          exact hb21
+  rw [incidenceSet] at ha hb
+  simp only [Set.sep_or, Set.mem_union, Set.mem_setOf_eq] at ha hb
+  cases' ha with ha1 ha2
+  · cases' ha1 with ha11 ha12
     · cases' hb with hb1 hb2
-      · cases' ha2 with ha21 ha22
-        cases' hb1 with hb11 hb12
-        right
-        have h3 : e = (b, a) := by rw [ha22, hb12]
-        rw [h3] at ha21
-        exact ha21
-      · cases' ha2 with ha21 ha22
-        cases' hb2 with hb21 hb22
-        have h3 : a = b := by rw [hb22, ha22]
+      · cases' hb1 with hb11 hb12
+        have H : a = b := by
+          rw [ha12, ← hb12]
         contradiction
+      · left
+        cases' hb2 with hb21 hb22
+        have h3 : e = (a, b) := by rw [ha12, hb22]
+        rw [h3] at hb21
+        exact hb21
+  · cases' hb with hb1 hb2
+    · cases' ha2 with ha21 ha22
+      cases' hb1 with hb11 hb12
+      right
+      have h3 : e = (b, a) := by rw [ha22, hb12]
+      rw [h3] at ha21
+      exact ha21
+    · cases' ha2 with ha21 ha22
+      cases' hb2 with hb21 hb22
+      have h3 : a = b := by rw [hb22, ha22]
+      contradiction
 
 instance decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     DecidablePred (· ∈ G.incidenceSet v) := by
@@ -591,8 +591,7 @@ theorem mem_outNeighborSet (v w : V) : w ∈ G.outNeighborSet v ↔ G.Adj v w :=
 
 @[simp]
 theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔
-  w ∈ G.inNeighborSet v ∪ G.outNeighborSet v :=
-  Iff.rfl
+  w ∈ G.inNeighborSet v ∪ G.outNeighborSet v := Iff.rfl
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : (v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
