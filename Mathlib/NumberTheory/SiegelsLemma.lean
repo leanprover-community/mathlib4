@@ -69,6 +69,7 @@ Their difference is the solution we are looking for
 
 private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
   rw [mem_Icc] at hv ⊢
+  -- TODO why isn't this a lemma
   have mulVec_def : A.mulVec v =
       fun i ↦ Finset.sum univ fun j : β ↦ A i j * v j := rfl
   rw [mulVec_def]
