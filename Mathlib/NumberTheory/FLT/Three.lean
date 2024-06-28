@@ -549,6 +549,53 @@ lemma coprime_y_z : IsCoprime S.y S.z := by
   · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
     rw [z_spec, coe_eta]
 
+lemma x_mul_y_mul_z_eq_u_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
+  suffices hh : λ ^ (3 * S.multiplicity - 2) * S.x * λ * S.y * λ * S.z =
+      S.u * λ ^ (3 * S.multiplicity) * S.w ^ 3 by
+    rw [show λ ^ (3 * multiplicity S - 2) * x S * λ * y S * λ * z S =
+      λ ^ (3 * multiplicity S - 2) * λ * λ * x S * y S * z S by ring] at hh
+    have := S.two_le_multiplicity
+    rw [mul_comm _ (λ ^ (3 * multiplicity S)), ← pow_succ, ← pow_succ,
+      show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by omega, mul_assoc, mul_assoc,
+      mul_assoc] at hh
+    simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', hζ.zeta_sub_one_prime'.ne_zero, ne_eq,
+      mul_eq_zero, OfNat.ofNat_ne_zero, false_or, false_and, or_false] at hh
+    convert hh using 1
+    ring
+  simp only [← x_spec, mul_assoc, ← y_spec, ← z_spec]
+  simp only [mul_comm 3, pow_mul, ← mul_pow, ← w_spec]
+  rw [← S.H, a_cube_add_b_cube_eq_mul]
+  ring
+
+lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X ^ 3 := by
+  have h1 : S.x * (S.y * S.z * S.u⁻¹) = S.w ^ 3 := by
+    simp [← mul_assoc, x_mul_y_mul_z_eq_u_w_cube, mul_comm _ (S.w ^ 3)]
+  have h2 : IsCoprime S.x (S.y * S.z * S.u⁻¹) :=
+    (isCoprime_mul_unit_right_right (Units.isUnit _) S.x _).2 <|
+      IsCoprime.mul_right S.coprime_x_y S.coprime_x_z
+  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨X, ⟨u₁, hX⟩⟩
+  exact ⟨u₁, X, by simp [← hX, mul_comm]⟩
+
+lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y ^ 3 := by
+  have h1 : S.y * (S.x * S.z * S.u⁻¹) = S.w ^ 3 := by
+    rw [← mul_assoc, ← mul_assoc S.y, mul_comm S.y, x_mul_y_mul_z_eq_u_w_cube]
+    simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
+  have h2 : IsCoprime S.y (S.x * S.z * S.u⁻¹) :=
+    (isCoprime_mul_unit_right_right (Units.isUnit _) S.y _).2 <|
+      IsCoprime.mul_right S.coprime_x_y.symm S.coprime_y_z
+  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Y, ⟨u₂, hY⟩⟩
+  exact ⟨u₂, Y, by simp [← hY, mul_comm]⟩
+
+lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z ^ 3 := by
+  have h1 : S.z * (S.x * S.y * S.u⁻¹) = S.w ^ 3 := by
+    rw [← mul_assoc, ← mul_assoc S.z, mul_comm S.z, mul_assoc S.x, mul_comm S.z, ← mul_assoc, x_mul_y_mul_z_eq_u_w_cube]
+    simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
+  have h2 : IsCoprime S.z (S.x * S.y * S.u⁻¹) :=
+    (isCoprime_mul_unit_right_right (Units.isUnit _) S.z _).2 <|
+      IsCoprime.mul_right S.coprime_x_z.symm S.coprime_y_z.symm
+  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Z, ⟨u₃, hZ⟩⟩
+  exact ⟨u₃, Z, by simp [← hZ, mul_comm]⟩
+
 end Solution
 
 end FermatLastTheoremForThreeGen
