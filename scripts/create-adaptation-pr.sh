@@ -39,11 +39,17 @@ git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
 
 echo "Create a pull request, label with 'awaiting-review' and 'awaiting-CI'"
 echo "Set the base of the PR to 'bump/$BUMPVERSION'"
+echo "Here is a suggested 'gh' command to do this:"
+echo "> gh pr create -l awaiting-review -l awaiting-CI -B bump/$BUMPVERSION"
 echo "Post the link to the PR in the #nightly-testing channel on Zulip: '#xyz adaptations for nightly-$NIGHTLYDATE'"
 
+read -p "Press enter to continue"
 
 git checkout nightly-testing
 git merge "bump/nightly-$NIGHTLYDATE"
-  # hopefully this goes smoothly
-  # but there may be changes you introduced while merging
-  # that should be copied back to nightly-testing
+
+echo "Please check if there are any conflicts and resolve them"
+echo "Open '`pwd`' in a new terminal and run 'git status'"
+read -p "Press enter to continue"
+
+git push
