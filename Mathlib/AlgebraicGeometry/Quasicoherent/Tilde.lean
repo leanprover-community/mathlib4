@@ -203,8 +203,8 @@ noncomputable def TildeAsSheafOfModules : SheafOfModules (𝒪_SpecR) where
 
 noncomputable def TildeInModuleCat :
     TopCat.Presheaf (ModuleCat R) (PrimeSpectrum.Top R) :=
-  (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) (Limits.initialOpOfTerminal
-  Limits.isTerminalTop)).obj (TildeAsSheafOfModules R M).1 ⋙
+  (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) $
+    Limits.initialOpOfTerminal Limits.isTerminalTop).obj (TildeAsSheafOfModules R M).1 ⋙
   ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom
 
 namespace Tilde
