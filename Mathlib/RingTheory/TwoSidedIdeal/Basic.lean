@@ -31,6 +31,7 @@ A two-sided ideal of a ring `R` is a subset of `R` that contains `0` and is clos
 negation, and absorbs multiplication on both sides.
 -/
 structure TwoSidedIdeal (R : Type*) [NonUnitalNonAssocRing R] where
+  /-- every two-sided-ideal is induced by a congruence relation on the ring. -/
   ringCon : RingCon R
 
 end definitions
