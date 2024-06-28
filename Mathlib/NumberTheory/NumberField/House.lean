@@ -4,157 +4,138 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
 
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+import Mathlib.Analysis.Matrix
 
-/-!
-# House of an algebraic number
-This file defines the house of an algebraic number `α`, which is
-the largest modulus of its conjugates.
+-- /-!
+-- # House of an algebraic number
+-- This file defines the house of an algebraic number `α`, which is
+-- the largest modulus of its conjugates.
 
-## References
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [Keng, H. L, *Introduction to number theory*][keng1982house]
+-- ## References
+-- * [D. Marcus, *Number Fields*][marcus1977number]
+-- * [Keng, H. L, *Introduction to number theory*][keng1982house]
 
-## Tags
-number field, algebraic number, house
--/
+-- ## Tags
+-- number field, algebraic number, house
+-- -/
+
+variable {K : Type*} [Field K] [NumberField K]
+
+noncomputable section
+
+open Module.Free FiniteDimensional NumberField.canonicalEmbedding
 
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional Matrix
   Set Algebra Polynomial Basis Finset
 
-variable {K : Type*} [Field K] [NumberField K]
+/-- The house of an algebraic number as the norm of its image by the canonical embedding.-/
+abbrev House (α : K) : ℝ := ‖canonicalEmbedding K α‖
 
-local notation "h" => finrank ℚ K
+theorem House_eq_sup' (α : K) :
+    House α = Finset.univ.sup' Finset.univ_nonempty (fun φ : K →+* ℂ ↦ ‖φ α‖₊) := by
+  rw [House, ← coe_nnnorm, nnnorm_eq, ← Finset.sup'_eq_sup Finset.univ_nonempty]
 
-theorem Matrix.inv_mulVec_eq {u v : Fin h → ℂ} {M : Matrix (Fin h) (Fin h) ℂ} [Invertible M]
-    (hM : u = M.mulVec v) : M⁻¹.mulVec u = v := by
-  simp only [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
+variable (K)
 
-theorem Finset.max'_eq_of_eq {γ : Type _} [LinearOrder γ] {s t : Finset γ} (hs : s.Nonempty)
-    (ht : t.Nonempty) (hst : s = t) : s.max' hs = t.max' ht := by simp_rw [hst]
+/-- An equivalence between the set of embeddings of `K` into `ℂ` and the index set of the chosen
+  basis of the ring of integers of `K`. -/
+abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) := by
+  refine Fintype.equivOfCardEq ?_
+  rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
 
-/-- `Finset.max'OfFintype` takes a function `f` from a finite and nonempty type `s` to a
-  linearly ordered type `γ`, and returns the maximum value of `f` over all elements of `s`. -/
-def Finset.max'OfFintype {s γ : Type _} [Fintype s] [Nonempty s] (f : Π _ : s, γ)
-    [LinearOrder γ] : γ := by
-  apply Finset.max' (f '' Set.univ).toFinset
-  simp only [Set.image_univ, Set.toFinset_range, Finset.image_nonempty]
-  exact Finset.univ_nonempty
+/-- The basis matrix for the embeddings of `K` into `ℂ`. This matrix is formed by taking the lattice
+    basis vectors of `K` and reindexing them according to the equivalence `equivReindex`, then
+    transposing the resulting matrix. -/
+abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
+  (Matrix.of fun i ↦ latticeBasis K (equivReindex K i)).transpose
 
-/-- `Matrix.max_abs_entry` takes a matrix `B` of size `finrank ℚ K` and returns the maximum
-  absolute value of its entries. This is done by first finding the maximum absolute value of the
-  entries in each row, and then finding the maximum of those row maxima. -/
-noncomputable def Matrix.maxAbsEntry (B : Matrix (Fin (finrank ℚ K)) (Fin (finrank ℚ K)) ℂ) := by
-  letI : Nonempty (Fin (finrank ℚ K)) := Fin.pos_iff_nonempty.mp (finrank_pos)
-  apply Finset.max'OfFintype (fun i => Finset.max'OfFintype (fun j => Complex.abs (B i j)))
+theorem canonicalEmbedding.mem_rat_span_latticeBasis (x : K) :
+    (canonicalEmbedding K) x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
+  rw [← Basis.sum_repr (integralBasis K) x, map_sum]
+  simp_rw [map_rat_smul]
+  refine Submodule.sum_smul_mem _ _ (fun i _ ↦ Submodule.subset_span ?_)
+  rw [← latticeBasis_apply]
+  exact Set.mem_range_self i
 
-noncomputable section
+theorem canonicalEmbedding.integralBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
+    (canonicalEmbedding.latticeBasis K).repr (canonicalEmbedding K x) i =
+      (integralBasis K).repr x i := by
+  rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
+    Rat.cast_inj]
+  let f := (canonicalEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
+    (fun x ↦ mem_rat_span_latticeBasis K x)
+  suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
+    (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
+  refine Basis.ext (integralBasis K) (fun i ↦ ?_)
+  have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
+    apply Subtype.val_injective
+    rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
+      latticeBasis_apply]
+    rfl
+  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
 
-/-- There is noncomputably a bijection between `Fin h` and `ChooseBasisIndex ℤ (𝓞 K)`
- composing the equivalence `σ` with an equivalence derived from the cardinality of
-the embeddings and the cardinality of the integral basis of `K`.-/
-abbrev Fin.equivChooseBasisIndex : Fin h ≃ ChooseBasisIndex ℤ (𝓞 K) :=
-  (Fintype.equivFinOfCardEq (card K ℂ)).symm.trans
-    (equivOfCardEq ((card K ℂ).trans (finrank_eq_card_basis (integralBasis K))))
+instance : DecidableEq (K →+* ℂ) := Classical.typeDecidableEq (K →+* ℂ)
 
-/-- `basisReindex` is a basis of `𝓞 K` over `ℤ` by reindexing the basis
-provided by `RingOfIntegers.basis K` using the inverse of the equivalence `f`.-/
-abbrev basisReindex : Basis (Fin h) ℤ (𝓞 K) := (RingOfIntegers.basis K).reindex
-  (Fin.equivChooseBasisIndex).symm
+theorem det_of_basisMatrix_non_zero : (basisMatrix K).transpose.det ≠ 0 := by
+      let e : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) := equivReindex K
+      let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
+         RingHom.equivRatAlgHom
+      rw [show (basisMatrix K).transpose = N by {
+        ext:2
+        simp only [N, transpose_apply, latticeBasis_apply, integralBasis_apply, of_apply, apply_at]
+        rfl}]
+      rw [← pow_ne_zero_iff two_ne_zero]
+      convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
+        (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
+      rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
+      exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
+        (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
 
-/-- `basisMatrixTranspose` is the matrix whose `(i, j)` coefficient is `σⱼ (b i)`. -/
-def basisMatrixTranspose : Matrix (Fin h) (Fin h) ℂ := ((embeddingsMatrixReindex ℚ ℂ
-  (fun i => algebraMap (𝓞 K) K (basisReindex i))
-    ((Fintype.equivFinOfCardEq (card K ℂ)).symm.trans (RingHom.equivRatAlgHom)))).transpose
-
-theorem embeddings_matrix_reindex_eq_basis_matrix_transpose :
-    ((embeddingsMatrixReindex ℚ ℂ (fun i => ((reindex (integralBasis K)
-    ((Fintype.equivFinOfCardEq (card K ℂ)).symm.trans
-    (equivOfCardEq ((card K ℂ).trans (finrank_eq_card_basis (integralBasis K))))).symm) i))
-      ((Fintype.equivFinOfCardEq (card K ℂ)).symm.trans (RingHom.equivRatAlgHom)))) =
-     (@basisMatrixTranspose K  _ _).transpose := by
-  simp only [basisMatrixTranspose, integralBasis, coe_reindex, Equiv.symm_symm,
-    Function.comp_apply, localizationLocalization_apply, transpose_transpose]
-
-theorem rootSet_abs_nonempty (α : K) :
-    (toFinset (⇑Complex.abs '' rootSet (minpoly ℚ α) ℂ)).Nonempty := by
-  rw [toFinset_nonempty]
-  apply Set.Nonempty.image
-  rw [← range_eval_eq_rootSet_minpoly]
-  apply range_nonempty
-
-theorem range_embeddings_eq {j : Fin h} (α : K) : (Set.range fun σ : (Fin h) → K →+* ℂ => σ j α) =
-    Set.range fun φ : K →+* ℂ => φ α :=
-  ext (fun _ => Iff.symm (Function.Surjective.exists fun b => Exists.intro (fun _ => b) rfl))
-
-/-- The house of `α` is the largest modulus of its conjugates.-/
-abbrev House (α : K) : ℝ :=
-  (Complex.abs '' rootSet (minpoly ℚ α) ℂ).toFinset.max' (rootSet_abs_nonempty α)
-
-theorem rootSet_abs_nonempty' {j : Fin h} (α : K) :
-    (toFinset (⇑Complex.abs '' range fun σ : Fin h → K →+* ℂ => σ j α)).Nonempty := by
-  rw [toFinset_nonempty]; apply Set.Nonempty.image; apply range_nonempty
-
-theorem house_modulus_eq_max {j : Fin h} (α : K) :
-    House α = (Finset.max' (toFinset (⇑Complex.abs ''
-    (Set.range fun σ : (Fin h) → K →+* ℂ => σ j α))) (rootSet_abs_nonempty' α)) := by
-  apply Finset.max'_eq_of_eq (rootSet_abs_nonempty α) (rootSet_abs_nonempty' α)
-  rw [toFinset_inj.mpr (congrArg (Set.image ⇑Complex.abs) (range_embeddings_eq α))]
-  apply toFinset_inj.mpr
-  rw [range_eval_eq_rootSet_minpoly]
+instance : Invertible (basisMatrix K) := by
+    have :(basisMatrix K).transpose.det ≠ 0 := det_of_basisMatrix_non_zero K
+    rw [det_transpose (basisMatrix K)] at this
+    exact invertibleOfIsUnitDet _ (Ne.isUnit this)
 
 /-- `c` is defined as the product of the maximum absolute value of the entries of the
- inverse of the matrix `B` and  `h`. -/
-def c := @Matrix.maxAbsEntry K _ _ basisMatrixTranspose⁻¹ * h
+ inverse of the matrix `basisMatrix` and  `(finrank ℚ K)`. -/
+def c := (finrank ℚ K) * ‖fun i j => (basisMatrix K)⁻¹ i j‖
 
-theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs (basisReindex.repr α i) ≤
-    @c K _ _ * House (algebraMap (𝓞 K) K α) := by
+universe u u' v
 
-  intros i
+variable {m : Type u} {n : Type u'} {α : Type v}
 
-  let σ := (Fintype.equivFinOfCardEq (card K ℂ)).symm
+variable [Fintype n] [DecidableEq n] [CommRing α]
 
-  let c' := @Matrix.maxAbsEntry K _ _ basisMatrixTranspose⁻¹
+lemma inv_mulVec_eq_vec (A : Matrix n n α) [Invertible A]
+  {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
+  rw [hM, mulVec_mulVec, inv_mul_of_invertible, one_mulVec]
 
-  calc Complex.abs (basisReindex.repr α i) =
-    Complex.abs (∑ j, (basisMatrixTranspose)⁻¹ i j *  σ _ (algebraMap (𝓞 K) K α)) := by
-    {
-      haveI : Invertible (@basisMatrixTranspose K _ _ ) := by
-        have : (@basisMatrixTranspose K  _ _ ).det ≠ 0 := by
-          rw [(det_transpose (basisMatrixTranspose)).symm,
-            ← embeddings_matrix_reindex_eq_basis_matrix_transpose,
-            ← pow_ne_zero_iff two_ne_zero,
-            ← discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ ((reindex (integralBasis K)
-               (Fin.equivChooseBasisIndex).symm))
-               ((Fintype.equivFinOfCardEq (card K ℂ)).symm.trans RingHom.equivRatAlgHom)]
-          convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
-           (discr_not_zero_of_basis ℚ ( reindex (integralBasis K)
-             (Fin.equivChooseBasisIndex).symm))
-        exact invertibleOfIsUnitDet _ (Ne.isUnit this)
+theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
+  ((((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) ≤
+    @c K _ _ * House (algebraMap (𝓞 K) K α) := fun i => calc
 
-      have getEntries : (basisMatrixTranspose)⁻¹.mulVec
-         (fun j => σ j (algebraMap (𝓞 K) K α)) i = basisReindex.repr α i := by
-        have : (fun j => σ j (algebraMap (𝓞 K) K α)) =
-          (basisMatrixTranspose) *ᵥ fun {i} => (basisReindex.repr α) i := by
-          ext j
-          nth_rewrite 1 [← sum_repr basisReindex α]
-          unfold basisMatrixTranspose embeddingsMatrixReindex
-            RingHom.equivRatAlgHom embeddingsMatrix RingHom.toRatAlgHom algebraMap
-            toRingHom Matrix.reindex
-          simp only [id.map_eq_id, Subalgebra.toSubsemiring_subtype, RingHomCompTriple.comp_eq,
-             coe_reindex, Equiv.symm_symm, Function.comp_apply, zsmul_eq_mul, map_sum,
-             _root_.map_mul, map_intCast, RingHom.coe_coe, Subalgebra.coe_val, Equiv.refl_symm,
-             Equiv.coe_refl, Equiv.coe_trans, Equiv.coe_fn_mk, transpose_submatrix, mulVec,
-             dotProduct, submatrix_apply, Function.comp_apply, id_eq, transpose_apply, of_apply,
-             AlgHom.coe_mk]
-          rw [Fintype.sum_congr]
-          intros i
-          rw [mul_comm]
-        rw [Matrix.inv_mulVec_eq this]
-      rw [← getEntries]
+  Complex.abs (((((integralBasis K).reindex (equivReindex K).symm))).repr α i : ℂ) =
+
+    Complex.abs (∑ j, (basisMatrix  K)⁻¹ i j *
+        (canonicalEmbedding K (algebraMap (𝓞 K) K α) j)) := by
+      have : canonicalEmbedding K α = (basisMatrix K).mulVec (fun i ↦
+         (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
+        ext
+        rw [← (latticeBasis K).sum_repr (canonicalEmbedding K α),
+            ← Equiv.sum_comp (equivReindex K)]
+        simp_rw [canonicalEmbedding.integralBasis_repr_apply, mulVec, dotProduct,
+          basisMatrix, transpose_apply, Matrix.of_apply, Finset.sum_apply,
+          mul_comm, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm,
+          Pi.smul_apply, smul_eq_mul]
+      have : (basisMatrix K)⁻¹.mulVec (fun j => canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
+        ((((integralBasis K).reindex (equivReindex K).symm))).repr α i := by
+        {rw [inv_mulVec_eq_vec (basisMatrix  K) this]}
+      rw [← this]
       rfl
-      }
-       _ ≤ ∑ _, c' * Complex.abs (σ _ (algebraMap (𝓞 K) K α)) := by
+
+    _ ≤ ∑ j, ‖fun i j => (basisMatrix K)⁻¹ i j‖ *
+         Complex.abs (canonicalEmbedding K (algebraMap (𝓞 K) K α) j) := by
            trans
            ·  trans
               · apply AbsoluteValue.sum_le Complex.abs
@@ -164,28 +145,20 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs (ba
            · apply sum_le_sum
              intros j _
              apply mul_le_mul_of_nonneg_right
-             · simp only [c', Matrix.maxAbsEntry, Finset.max'OfFintype, max' ,image_univ,
-                  toFinset_range, id_eq, sup'_image, Function.comp_apply, le_sup'_iff,
-                  Finset.mem_univ, true_and]
-               use i
-               use j
+             · rw [← Complex.norm_eq_abs]
+               exact norm_entry_le_entrywise_sup_norm (basisMatrix K)⁻¹
              · exact AbsoluteValue.nonneg Complex.abs _
-       _ ≤ ∑ _, c' * House (algebraMap (𝓞 K) K α) := by
+    _ ≤ ∑ _, ‖fun i j => (basisMatrix K)⁻¹ i j‖ * House  (algebraMap (𝓞 K) K α) := by
           apply sum_le_sum
           intros j _
           apply mul_le_mul_of_nonneg_left
-          · rw [house_modulus_eq_max (algebraMap (𝓞 K) K α)]
-            apply le_max'
-            simp only [toFinset_image, toFinset_range, Finset.mem_image, Finset.mem_univ, true_and,
-              exists_exists_eq_and]
-            use σ
-          · simp only [c', Matrix.maxAbsEntry, Finset.max'OfFintype, max', image_univ,
-            toFinset_range, id_eq, sup'_image, Function.comp_apply, le_sup'_iff, Finset.mem_univ,
-            apply_nonneg, and_self, exists_const, true_and]
-            use i
-            use j
-       _ =  c' * h * House  (algebraMap (𝓞 K) K α) := by
-        rw [sum_const, Finset.card_fin, nsmul_eq_mul, ← mul_assoc,
-            mul_comm ↑h (Matrix.maxAbsEntry (basisMatrixTranspose)⁻¹)]
+          · rw [← Complex.norm_eq_abs]
+            exact norm_le_pi_norm ((canonicalEmbedding K) ((algebraMap (𝓞 K) K) α)) j
+          · exact norm_nonneg fun i j ↦ (basisMatrix K)⁻¹ i j
+    _ =  ↑(finrank ℚ K) * ‖fun i j => (basisMatrix K)⁻¹ i j‖ * House  (algebraMap (𝓞 K) K α) := by
+          rw [sum_const]
+          simp only [card_univ, nsmul_eq_mul]
+          rw [NumberField.Embeddings.card]
+          rw [mul_assoc]
 
 end section
