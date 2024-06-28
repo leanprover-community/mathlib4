@@ -596,6 +596,39 @@ lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z 
   rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Z, ⟨u₃, hZ⟩⟩
   exact ⟨u₃, Z, by simp [← hZ, mul_comm]⟩
 
+/-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
+`S.x = S.u₁ * S.X ^ 3` -/
+noncomputable def u₁ := (x_eq_unit_mul_cube S).choose
+
+/-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
+`S.x = S.u₁ * S.X ^ 3` -/
+noncomputable def X := (x_eq_unit_mul_cube S).choose_spec.choose
+
+lemma u₁_X_spec : S.x = S.u₁ * S.X ^ 3 := by
+  exact (x_eq_unit_mul_cube S).choose_spec.choose_spec
+
+/-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
+`S.y = S.u₂ * S.Y ^ 3` -/
+noncomputable def u₂ := (y_eq_unit_mul_cube S).choose
+
+/-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
+`S.y = S.u₂ * S.Y ^ 3` -/
+noncomputable def Y := (y_eq_unit_mul_cube S).choose_spec.choose
+
+lemma u₂_Y_spec : S.y = S.u₂ * S.Y ^ 3 := by
+  exact (y_eq_unit_mul_cube S).choose_spec.choose_spec
+
+/-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
+`S.z = S.u₃ * S.Z ^ 3` -/
+noncomputable def u₃ := (z_eq_unit_mul_cube S).choose
+
+/-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
+`S.z = S.u₃ * S.Z ^ 3` -/
+noncomputable def Z := (z_eq_unit_mul_cube S).choose_spec.choose
+
+lemma u₃_Z_spec : S.z = S.u₃ * S.Z ^ 3 := by
+  exact (z_eq_unit_mul_cube S).choose_spec.choose_spec
+
 end Solution
 
 end FermatLastTheoremForThreeGen
