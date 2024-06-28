@@ -89,7 +89,7 @@ variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
 theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
     MDifferentiableAt I I e x := by
   rw [mdifferentiableAt_iff]
-  refine' ⟨(e.continuousOn x hx).continuousAt (e.open_source.mem_nhds hx), _⟩
+  refine ⟨(e.continuousOn x hx).continuousAt (e.open_source.mem_nhds hx), ?_⟩
   have mem :
     I ((chartAt H x : M → H) x) ∈ I.symm ⁻¹' ((chartAt H x).symm ≫ₕ e).source ∩ range I := by
     simp only [hx, mfld_simps]
@@ -113,7 +113,7 @@ theorem mdifferentiableOn_atlas (h : e ∈ atlas H M) : MDifferentiableOn I I e 
 theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e.target) :
     MDifferentiableAt I I e.symm x := by
   rw [mdifferentiableAt_iff]
-  refine' ⟨(e.continuousOn_symm x hx).continuousAt (e.open_target.mem_nhds hx), _⟩
+  refine ⟨(e.continuousOn_symm x hx).continuousAt (e.open_target.mem_nhds hx), ?_⟩
   have mem : I x ∈ I.symm ⁻¹' (e.symm ≫ₕ chartAt H (e.symm x)).source ∩ range I := by
     simp only [hx, mfld_simps]
   have : e.symm.trans (chartAt H (e.symm x)) ∈ contDiffGroupoid ∞ I :=

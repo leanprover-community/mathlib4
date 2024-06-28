@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2018 Johan Commelin All rights reserved.
+Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
@@ -21,6 +21,8 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
   `α` to `βˣ`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Function
 
@@ -146,15 +148,15 @@ theorem coe_liftRight {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x)
 
 @[to_additive (attr := simp)]
 theorem mul_liftRight_inv {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
-    f x * ↑(liftRight f g h x)⁻¹ = 1 :=
-  by rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_liftRight]
+    f x * ↑(liftRight f g h x)⁻¹ = 1 := by
+  rw [Units.mul_inv_eq_iff_eq_mul, one_mul, coe_liftRight]
 #align units.mul_lift_right_inv Units.mul_liftRight_inv
 #align add_units.add_lift_right_neg AddUnits.add_liftRight_neg
 
 @[to_additive (attr := simp)]
 theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = f x) (x) :
-    ↑(liftRight f g h x)⁻¹ * f x = 1 :=
-  by rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_liftRight]
+    ↑(liftRight f g h x)⁻¹ * f x = 1 := by
+  rw [Units.inv_mul_eq_iff_eq_mul, mul_one, coe_liftRight]
 #align units.lift_right_inv_mul Units.liftRight_inv_mul
 #align add_units.lift_right_neg_add AddUnits.liftRight_neg_add
 

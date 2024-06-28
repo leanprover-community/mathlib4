@@ -21,7 +21,7 @@ for positive real `a`, or complex `a` with positive real part. (See also
 
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
-open scoped Real Topology FourierTransform RealInnerProductSpace BigOperators
+open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
@@ -73,7 +73,7 @@ theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s 
       (mem_atTop_sets.mpr ⟨0, fun b hb => ⟨b, abs_of_nonneg hb⟩⟩)]
   exact
     (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg ha s).tendsto_zero_of_tendsto
-      (tendsto_exp_atBot.comp <| tendsto_id.neg_const_mul_atTop (neg_lt_zero.mpr one_half_pos))
+      (tendsto_exp_atBot.comp <| tendsto_id.const_mul_atTop_of_neg (neg_lt_zero.mpr one_half_pos))
 #align tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact
 
 theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
@@ -100,7 +100,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
     exact mul_pos pi_pos ha
   have h2 : 0 < (↑π / a).re := by
     rw [div_eq_mul_inv, re_ofReal_mul, inv_re]
-    refine' mul_pos pi_pos (div_pos ha <| normSq_pos.mpr _)
+    refine mul_pos pi_pos (div_pos ha <| normSq_pos.mpr ?_)
     contrapose! ha
     rw [ha, zero_re]
   have f_bd : f =O[cocompact ℝ] (fun x => |x| ^ (-2 : ℝ)) := by

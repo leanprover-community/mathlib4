@@ -61,7 +61,7 @@ Linear algebra:
     diagonalization: 'https://en.wikipedia.org/wiki/Diagonalizable_matrix'
     triangularization: 'https://en.wikipedia.org/wiki/Triangular_matrix#Triangularisability'
     invariant subspaces of an endomorphism: 'https://en.wikipedia.org/wiki/Invariant_subspace'
-    generalized eigenspaces: 'Module.End.generalizedEigenspace'
+    generalized eigenspaces: 'Module.End.genEigenspace'
     kernels lemma: 'https://fr.wikipedia.org/wiki/Lemme_des_noyaux'
     Jordan-Chevalley-Dunford decomposition: 'Module.End.exists_isNilpotent_isSemisimple'
     Jordan normal form: 'https://en.wikipedia.org/wiki/Jordan_normal_form'
@@ -573,7 +573,7 @@ Probability Theory:
   Convergence of a sequence of random variables:
     convergence in probability: 'MeasureTheory.TendstoInMeasure'
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
-    almost surely convergence: 'MeasureTheory.Measure.ae'
+    almost surely convergence: 'MeasureTheory.ae'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
     Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
     Levy's theorem: ''

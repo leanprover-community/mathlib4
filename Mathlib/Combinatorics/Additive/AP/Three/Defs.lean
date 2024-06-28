@@ -3,9 +3,10 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Interval.Finset
 import Mathlib.Combinatorics.Additive.FreimanHom
-import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Order.Interval.Finset.Fin
 
 #align_import combinatorics.additive.salem_spencer from "leanprover-community/mathlib"@"acf5258c81d0bc7cb254ed026c1352e685df306c"
 
@@ -233,7 +234,7 @@ variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
     ThreeGPFree (insert a s) ↔
       ThreeGPFree s ∧ ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a * c = b * b → a = b := by
-  refine' threeGPFree_insert.trans _
+  refine threeGPFree_insert.trans ?_
   rw [← and_assoc]
   exact and_iff_left fun b hb c hc h => ((mul_lt_mul_of_lt_of_lt (hs _ hb) (hs _ hc)).ne h).elim
 #align mul_salem_spencer_insert_of_lt threeGPFree_insert_of_lt
@@ -268,7 +269,7 @@ section Nat
 
 theorem threeAPFree_iff_eq_right {s : Set ℕ} :
     ThreeAPFree s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ∀ ⦃c⦄, c ∈ s → a + c = b + b → a = c := by
-  refine' forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨_, _⟩
+  refine forall₄_congr fun a _ha b hb => forall₃_congr fun c hc habc => ⟨?_, ?_⟩
   · rintro rfl
     exact (add_left_cancel habc).symm
   · rintro rfl
@@ -297,7 +298,7 @@ The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `roth
 def mulRothNumber : Finset α →o ℕ :=
   ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ ThreeGPFree (t : Set α)) s.card, by
     rintro t u htu
-    refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
+    refine Nat.findGreatest_mono (fun m => ?_) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 #align mul_roth_number mulRothNumber
@@ -340,7 +341,7 @@ theorem mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
 
 @[to_additive (attr := simp)]
 theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 := by
-  refine' ThreeGPFree.mulRothNumber_eq _
+  refine ThreeGPFree.mulRothNumber_eq ?_
   rw [coe_singleton]
   exact threeGPFree_singleton a
 #align mul_roth_number_singleton mulRothNumber_singleton
@@ -355,8 +356,8 @@ theorem mulRothNumber_union_le (s t : Finset α) :
     _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
     _ ≤ (u ∩ s).card + (u ∩ t).card := card_union_le _ _
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
-      ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
-      ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
+      ((hu.mono inter_subset_left).le_mulRothNumber inter_subset_right)
+      ((hu.mono inter_subset_left).le_mulRothNumber inter_subset_right)
 #align mul_roth_number_union_le mulRothNumber_union_le
 #align add_roth_number_union_le addRothNumber_union_le
 
@@ -366,7 +367,7 @@ theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
   obtain ⟨u, hus, hucard, hu⟩ := mulRothNumber_spec s
   obtain ⟨v, hvt, hvcard, hv⟩ := mulRothNumber_spec t
   rw [← hucard, ← hvcard, ← card_product]
-  refine' ThreeGPFree.le_mulRothNumber _ (product_subset_product hus hvt)
+  refine ThreeGPFree.le_mulRothNumber ?_ (product_subset_product hus hvt)
   rw [coe_product]
   exact hu.prod hv
 #align le_mul_roth_number_product le_mulRothNumber_product
@@ -427,7 +428,7 @@ variable [CancelCommMonoid α] (s : Finset α) (a : α)
 @[to_additive (attr := simp)]
 theorem mulRothNumber_map_mul_left :
     mulRothNumber (s.map <| mulLeftEmbedding a) = mulRothNumber s := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s.map <| mulLeftEmbedding a)
     rw [subset_map_iff] at hus
     obtain ⟨u, hus, rfl⟩ := hus
@@ -510,5 +511,19 @@ theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat 
   convert (image_add_left_Ico 0 (b - a) _).symm
   exact (add_tsub_cancel_of_le h).symm
 #align add_roth_number_Ico addRothNumber_Ico
+
+lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
+    addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k :=
+  IsAddFreimanIso.addRothNumber_congr $ mod_cast isAddFreimanIso_Iio two_ne_zero hkn
+
+lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
+    addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
+  suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by
+    exact (AddMonoidHomClass.isAddFreimanHom (Nat.castRingHom _) h.mapsTo).addRothNumber_mono h
+  refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp; omega), ?_⟩
+  · simpa using fun x ↦ natCast_strictMono hkn
+  simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_iff_val_lt_val,
+    val_cast_of_lt, Nat.lt_succ_iff.2 hkn, coe_range]
+  exact fun x hx ↦ ⟨x, hx, by simp⟩
 
 end rothNumberNat
