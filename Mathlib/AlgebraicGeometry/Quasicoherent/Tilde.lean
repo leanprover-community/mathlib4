@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Weihong Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Weihong Xu
+Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian Zhang, Weihong Xu
 -/
 
 import Mathlib.Algebra.Module.LocalizedModule
@@ -196,5 +196,69 @@ noncomputable def TildeInModules : SheafOfModules (𝒪_SpecR) where
       rfl
   }
   isSheaf := (TildeInAddCommGrp R M).2
+
+namespace Tilde
+
+instance (x:PrimeSpectrum.Top R): Module R (TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeInModules R M).1.presheaf x)where
+  smul r m:= by sorry
+  one_smul := sorry
+  mul_smul := sorry
+  smul_zero := sorry
+  smul_add := sorry
+  add_smul := sorry
+  zero_smul := sorry
+
+/-- The ring homomorphism that takes a section of the structure sheaf of `R` on the open set `U`,
+implemented as a subtype of dependent functions to localizations at prime ideals, and evaluates
+the section on the point corresponding to a given prime ideal. -/
+def openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R) (hx : x ∈ U) :
+    (TildeInAddCommGrp R M).1.obj (op U) ⟶ AddCommGrp.of (LocalizedModule x.asIdeal.primeCompl M) where
+  toFun s := (s.1 ⟨x, hx⟩ : _)
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
+@[simp]
+theorem coe_openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
+    (hx : x ∈ U) :
+    (openToLocalization R M U x hx :
+        (TildeInAddCommGrp R M).1.obj (op U) → LocalizedModule x.asIdeal.primeCompl M) =
+      fun s => (s.1 ⟨x, hx⟩ : _) :=
+  rfl
+
+theorem openToLocalization_apply (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
+    (hx : x ∈ U) (s : (TildeInAddCommGrp R M).1.obj (op U)) :
+    openToLocalization R M U x hx s = (s.1 ⟨x, hx⟩ : _) :=
+  rfl
+
+noncomputable def stalkToFiberAddMonoidHom (x : PrimeSpectrum.Top R) :
+    (TildeInAddCommGrp R M).presheaf.stalk x ⟶ AddCommGrp.of (LocalizedModule x.asIdeal.primeCompl M) :=
+  Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (TildeInAddCommGrp R M).1)
+    { pt := _
+      ι := { app := fun U =>
+        openToLocalization R M ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2 } }
+
+@[simp]
+theorem germ_comp_stalkToFiberAddMonoidHom (U : Opens (PrimeSpectrum.Top R)) (x : U) :
+    (TildeInAddCommGrp R M).presheaf.germ x ≫ stalkToFiberAddMonoidHom R M x = openToLocalization R M U x x.2 :=
+  Limits.colimit.ι_desc _ _
+
+@[simp]
+theorem stalkToFiberAddMonoidHom_germ' (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
+    (hx : x ∈ U) (s : (TildeInAddCommGrp R M).1.obj (op U)) :
+    stalkToFiberAddMonoidHom R M x ((TildeInAddCommGrp R M).presheaf.germ ⟨x, hx⟩ s) = (s.1 ⟨x, hx⟩ : _) :=
+  DFunLike.ext_iff.1 (germ_comp_stalkToFiberAddMonoidHom R M U ⟨x, hx⟩ : _) s
+
+@[simp]
+theorem stalkToFiberAddMonoidHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
+    (s : (TildeInAddCommGrp R M).1.obj (op U)) :
+    stalkToFiberAddMonoidHom R M x ((TildeInAddCommGrp R M).presheaf.germ x s) = s.1 x := by
+  cases x; exact stalkToFiberAddMonoidHom_germ' R M U _ _ _
+
+def localizationToStalk (x : PrimeSpectrum.Top R) :
+    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶ ModuleCat.of R (TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeInModules R M).1.presheaf x) :=
+  show LocalizedModule x.asIdeal.primeCompl M →+ _ from LocalizedModule.lift (x.asIdeal.primeCompl)
+
+
+end Tilde
 
 end AlgebraicGeometry
