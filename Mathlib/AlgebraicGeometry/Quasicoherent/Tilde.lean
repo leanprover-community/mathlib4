@@ -209,21 +209,15 @@ noncomputable def TildeInModuleCat :
 
 namespace Tilde
 
-    -- { pt := _
-    --   ι := { app := fun U =>
-    --     openToLocalization R M ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2 } }
-
-
-
-
 /-- The ring homomorphism that takes a section of the structure sheaf of `R` on the open set `U`,
 implemented as a subtype of dependent functions to localizations at prime ideals, and evaluates
 the section on the point corresponding to a given prime ideal. -/
 def openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R) (hx : x ∈ U) :
-    (TildeInAddCommGrp R M).1.obj (op U) ⟶ AddCommGrp.of (LocalizedModule x.asIdeal.primeCompl M) where
+    (TildeInModuleCat R M).1.obj (op U) ⟶
+    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
   toFun s := (s.1 ⟨x, hx⟩ : _)
-  map_zero' := rfl
   map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem coe_openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
@@ -238,75 +232,43 @@ theorem openToLocalization_apply (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpe
     openToLocalization R M U x hx s = (s.1 ⟨x, hx⟩ : _) :=
   rfl
 
--- stalk of M at x is an R-module
--- for each open U, M~(U) is an R-module
--- how should we do the second part? do we want to do it via `Gamma(SpecR) = R`, or do we want to
--- define R -action on `\prod_{x \in U} M_x`
-noncomputable def smul_by_r (r : R) (x : PrimeSpectrum.Top R) :
-    TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeAsSheafOfModules R M).1.presheaf x ⟶
-    TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeAsSheafOfModules R M).1.presheaf x :=
-  (TopCat.Presheaf.stalkFunctor AddCommGrp.{u} (x)).map
-  { app := fun U =>
-    { toFun := fun (m) => (((TildeAsSheafOfModules R M).1.module _).smul
-              ((Spec.structureSheaf R).1.map (op $ homOfLE le_top)
-                ((StructureSheaf.globalSectionsIso R).hom r)) m)
-      map_zero' := sorry
-      map_add' := sorry }
-    naturality := sorry }
-
-
-noncomputable instance (x:PrimeSpectrum.Top R): Module R (TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeAsSheafOfModules R M).1.presheaf x) where
-  smul r m:= smul_by_r R M r x m
-  one_smul := sorry
-  mul_smul := sorry
-  smul_zero := sorry
-  smul_add := sorry
-  add_smul := sorry
-  zero_smul := sorry
-
-noncomputable def stalkToFiberAddMonoidHom (x : PrimeSpectrum.Top R) :
-    (TildeInAddCommGrp R M).presheaf.stalk x ⟶ AddCommGrp.of (LocalizedModule x.asIdeal.primeCompl M) :=
-  Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (TildeInAddCommGrp R M).1)
+noncomputable def stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
+    TopCat.Presheaf.stalk (TildeInModuleCat R M) x ⟶
+    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
+  Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (TildeInModuleCat R M))
     { pt := _
-      ι := { app := fun U =>
-        openToLocalization R M ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2 } }
+      ι :=
+      { app := fun U =>
+          (openToLocalization R M ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2)
+        naturality := fun {U V} i => by aesop_cat } }
 
 @[simp]
-theorem germ_comp_stalkToFiberAddMonoidHom (U : Opens (PrimeSpectrum.Top R)) (x : U) :
-    (TildeInAddCommGrp R M).presheaf.germ x ≫ stalkToFiberAddMonoidHom R M x = openToLocalization R M U x x.2 :=
+theorem germ_comp_stalkToFiberLinearMap (U : Opens (PrimeSpectrum.Top R)) (x : U) :
+    TopCat.Presheaf.germ (TildeInModuleCat R M) x ≫ stalkToFiberLinearMap R M x =
+    openToLocalization R M U x x.2 :=
   Limits.colimit.ι_desc _ _
 
 @[simp]
-theorem stalkToFiberAddMonoidHom_germ' (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
-    (hx : x ∈ U) (s : (TildeInAddCommGrp R M).1.obj (op U)) :
-    stalkToFiberAddMonoidHom R M x ((TildeInAddCommGrp R M).presheaf.germ ⟨x, hx⟩ s) = (s.1 ⟨x, hx⟩ : _) :=
-  DFunLike.ext_iff.1 (germ_comp_stalkToFiberAddMonoidHom R M U ⟨x, hx⟩ : _) s
+theorem stalkToFiberLinearMap_germ' (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
+    (hx : x ∈ U) (s : (TildeInModuleCat R M).1.obj (op U)) :
+    stalkToFiberLinearMap R M x
+      (TopCat.Presheaf.germ (TildeInModuleCat R M) ⟨x, hx⟩ s) = (s.1 ⟨x, hx⟩ : _) :=
+  DFunLike.ext_iff.1 (germ_comp_stalkToFiberLinearMap R M U ⟨x, hx⟩ : _) s
 
 @[simp]
-theorem stalkToFiberAddMonoidHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
-    (s : (TildeInAddCommGrp R M).1.obj (op U)) :
-    stalkToFiberAddMonoidHom R M x ((TildeInAddCommGrp R M).presheaf.germ x s) = s.1 x := by
-  cases x; exact stalkToFiberAddMonoidHom_germ' R M U _ _ _
+theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
+    (s : (TildeInModuleCat R M).1.obj (op U)) :
+    stalkToFiberLinearMap R M x (TopCat.Presheaf.germ (TildeInModuleCat R M) x s) =
+    s.1 x := by
+  cases x; exact stalkToFiberLinearMap_germ' R M U _ _ _
 
--- example : TopCat.Sheaf (ModuleCat R) (PrimeSpectrum.Top R) := _
-
--- #check (TildeInModules R M).1.obj (op ⊤)
--- example : M → (TildeInModules R M).1.presheaf.obj (op ⊤) := _
--- stalk M at x \iso M_x as R-module addcommgrp
---                        as R_x module (localization)
-                          -- R_x = stalk Spec R at x
-def localizationToStalk (x : PrimeSpectrum.Top R) :
-    AddCommGrp.of (LocalizedModule x.asIdeal.primeCompl M) ⟶
-    (TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeAsSheafOfModules R M).1.presheaf x) where
-  toFun := Quotient.lift (fun (m, s) => _) _
-  map_zero' := _
-  map_add' := _
-
-  -- show LocalizedModule x.asIdeal.primeCompl M →+ _ from
-
-  -- have := LocalizedModule.lift (x.asIdeal.primeCompl) (M := M)
-  --   (M'' := TopCat.Presheaf.stalk (C := AddCommGrp.{u}) (TildeInModules R M).1.presheaf x)
-  --   (g := _)
+noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
+    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
+    (TopCat.Presheaf.stalk (TildeInModuleCat R M) x) :=
+  show LocalizedModule x.asIdeal.primeCompl M →ₗ[R]
+    TopCat.Presheaf.stalk.{u, u + 1} (X := PrimeSpectrum.Top R)
+      (C := ModuleCat R) (TildeInModuleCat R M) x from
+  LocalizedModule.lift _ sorry sorry
 
 
 
