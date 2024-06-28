@@ -396,9 +396,8 @@ lemma eta_add_one_mul_neg_eta_eq_one : ((η : 𝓞 K) + 1) * (-η) = 1 :=
 is associated with `λ`. -/
 lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b {p : 𝓞 K} (hp : Prime p)
     (hpab : p ∣ S.a + S.b) (hpaetab : p ∣ S.a + η * S.b) : Associated p λ := by
-  by_cases p_lam : (p ∣ λ)
-  · exact hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
-  exfalso
+  suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
+  by_contra p_lam
   refine hp.not_unit <| IsCoprime.isUnit_of_dvd' S.coprime ?_ ?_
   · refine (Prime.dvd_or_dvd hp ?_).resolve_left ‹_›
     rw [show λ * S.a = η * (S.a + S.b) - (S.a + η * S.b) by rw [coe_eta]; ring]
