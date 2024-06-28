@@ -366,7 +366,7 @@ alias ⟨SpecializingMap.closure_singleton_subset, _⟩ := specializingMap_iff_c
 
 lemma SpecializingMap.stableUnderSpecialization_image (hf : SpecializingMap f)
     {s : Set X} (hs : StableUnderSpecialization s) : StableUnderSpecialization (f '' s) :=
-IsLowerSet.image_fibration hf hs
+  IsLowerSet.image_fibration hf hs
 
 alias StableUnderSpecialization.image := SpecializingMap.stableUnderSpecialization_image
 
@@ -376,7 +376,7 @@ lemma specializingMap_iff_stableUnderSpecialization_image_singleton :
 
 lemma specializingMap_iff_stableUnderSpecialization_image :
     SpecializingMap f ↔ ∀ s, StableUnderSpecialization s → StableUnderSpecialization (f '' s) :=
-Relation.fibration_iff_isLowerSet_image
+  Relation.fibration_iff_isLowerSet_image
 
 lemma specializingMap_iff_closure_singleton (hf : Continuous f) :
     SpecializingMap f ↔ ∀ x, f '' closure {x} = closure {f x} := by
@@ -425,7 +425,7 @@ alias StableUnderGeneralization.image := GeneralizingMap.stableUnderGeneralizati
 
 lemma GeneralizingMap.stableUnderGeneralization_range (h : GeneralizingMap f) :
     StableUnderGeneralization (range f) :=
-@image_univ _ _ f ▸ stableUnderGeneralization_univ.image h
+  @image_univ _ _ f ▸ stableUnderGeneralization_univ.image h
 
 /-!
 ### `Inseparable` relation
