@@ -105,7 +105,6 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
     @c K _ _ * House (algebraMap (𝓞 K) K α) := fun i => calc
 
   Complex.abs (((((integralBasis K).reindex (equivReindex K).symm))).repr α i : ℂ) =
-
     Complex.abs (∑ j, (basisMatrix  K)⁻¹ i j *
         (canonicalEmbedding K (algebraMap (𝓞 K) K α) j)) := by
       have : canonicalEmbedding K α = (basisMatrix K).mulVec (fun i ↦
