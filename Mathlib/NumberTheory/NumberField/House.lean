@@ -125,6 +125,7 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) :
               (fun _ _ =>  mul_le_mul_of_nonneg_right ?_ (AbsoluteValue.nonneg Complex.abs _))
              · rw [← Complex.norm_eq_abs]
                exact Matrix.norm_entry_le_entrywise_sup_norm (basisMatrix K)⁻¹
+
     _ ≤ ∑ _, ‖fun i j => (basisMatrix K)⁻¹ i j‖ * House  (algebraMap (𝓞 K) K α) := by
           apply Finset.sum_le_sum
           intros j _
