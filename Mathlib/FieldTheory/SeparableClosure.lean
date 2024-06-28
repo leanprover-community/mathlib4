@@ -143,7 +143,7 @@ instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure 
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
-  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
+  ⟨fun x ↦ by simpa only [minpoly_eq] using x.2⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if all of its elements are separable over `F`. -/
@@ -159,7 +159,7 @@ theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L
 if and only if it is separable over `F`. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
-  ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩, fun _ ↦ le_separableClosure _ _ _⟩
+  ⟨fun h ↦ ⟨fun x ↦ by simpa only [minpoly_eq] using h x.2⟩, fun _ ↦ le_separableClosure _ _ _⟩
 
 /-- The separable closure in `E` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.separableClosure_eq_bot :
