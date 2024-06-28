@@ -337,26 +337,6 @@ variable (n : ℕ) {𝔽 : Type*} [Field 𝔽] [Fintype 𝔽]
 
 local notation "q" => Fintype.card 𝔽
 
-noncomputable instance {k : ℕ} :
-    Fintype ({ s : Fin k → (Fin n → 𝔽) // LinearIndependent 𝔽 s}) :=
-  Fintype.ofFinite _
-
-noncomputable instance {k : ℕ} {s : { s : Fin k → Fin n → 𝔽 // LinearIndependent 𝔽 s }} :
-    Fintype (Submodule.span 𝔽 (Set.range (s : Fin k → Fin n → 𝔽)) : Set (Fin n → 𝔽)) :=
-  Fintype.ofFinite _
-
-noncomputable instance {k : ℕ} {s : { s : Fin k → Fin n → 𝔽 // LinearIndependent 𝔽 s }} :
-    Fintype ((Submodule.span 𝔽 (Set.range (s : Fin k → Fin n → 𝔽)))ᶜ : Set (Fin n → 𝔽)) :=
-  Fintype.ofFinite _
-
-lemma complement_card {k : ℕ} (s : { s : Fin k → Fin n → 𝔽 // LinearIndependent 𝔽 s }):
-    Fintype.card ((Submodule.span 𝔽 (Set.range (s : Fin k → Fin n → 𝔽)))ᶜ : Set (Fin n → 𝔽)) =
-      (q) ^ n - (q) ^ k := by
-  simp only [Fintype.card_compl_set, Fintype.card_pi, Finset.prod_const, Finset.card_univ,
-    Fintype.card_fin, SetLike.coe_sort_coe,
-    card_eq_pow_finrank (K := 𝔽) (V := Submodule.span 𝔽 (Set.range (s : Fin k → Fin n → 𝔽))),
-    finrank_span_eq_card s.property]
-
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
 vector in the complement of their span.
 -/
@@ -374,15 +354,31 @@ def inductiveStepEquiv {k : ℕ} :
     Fin.tail_cons, heq_eq_eq, and_self]
 
 lemma card_LinearInependent_subtype {k : ℕ} (hk : k ≤ n) :
-    Fintype.card { s : Fin k → (Fin n → 𝔽) // LinearIndependent 𝔽 s } =
+    Nat.card { s : Fin k → (Fin n → 𝔽) // LinearIndependent 𝔽 s } =
       ∏ i : Fin k, ((q) ^ n - (q) ^ i.val) := by
+  have {m : ℕ} : Fintype ({ s : Fin m → (Fin n → 𝔽) // LinearIndependent 𝔽 s}) :=
+      Fintype.ofFinite _
+  rw [Nat.card_eq_fintype_card]
   induction' k with k ih
-  · simp only [Nat.zero_eq, LinearIndependent, Finsupp.total_fin_zero, LinearMap.ker_zero,
-    Fintype.card_ofSubsingleton, Finset.univ_eq_empty, Finset.prod_empty]
-  · simp only [Fintype.card_congr (inductiveStepEquiv n), Fintype.card_sigma, complement_card n,
-    Finset.sum_const, Finset.card_univ, ih (Nat.le_of_succ_le hk), smul_eq_mul, mul_comm,
-    Fin.prod_univ_succAbove _ k, Fin.natCast_eq_last, Fin.val_last, Fin.succAbove_last,
-    Fin.coe_castSucc]
+  · simp only [LinearIndependent, Finsupp.total_fin_zero, ker_zero, Fintype.card_ofSubsingleton,
+    Finset.univ_eq_empty, Finset.prod_empty]
+  · have {s : { s : Fin k → Fin n → 𝔽 // LinearIndependent 𝔽 s }} :
+      Fintype (Submodule.span 𝔽 (Set.range (s : Fin k → Fin n → 𝔽)) : Set (Fin n → 𝔽)) :=
+    Fintype.ofFinite _
+    have {s : { s : Fin k → Fin n → 𝔽 // LinearIndependent 𝔽 s }} :
+        Fintype ((Submodule.span 𝔽 (Set.range (s : Fin k → Fin n → 𝔽)))ᶜ : Set (Fin n → 𝔽)) :=
+      Fintype.ofFinite _
+    have (s : { s : Fin k → Fin n → 𝔽 // LinearIndependent 𝔽 s }) :
+        Fintype.card ((Submodule.span 𝔽 (Set.range (s : Fin k → Fin n → 𝔽)))ᶜ : Set (Fin n → 𝔽)) =
+      (q) ^ n - (q) ^ k := by
+        simp only [Fintype.card_compl_set, Fintype.card_pi, Finset.prod_const, Finset.card_univ,
+          Fintype.card_fin, SetLike.coe_sort_coe,
+          card_eq_pow_finrank (K := 𝔽) (V := Submodule.span 𝔽 (Set.range (s : Fin k → Fin n → 𝔽))),
+          finrank_span_eq_card s.property]
+    simp only [Fintype.card_congr (inductiveStepEquiv n), Fintype.card_sigma,
+      Fintype.sum_congr _ _ this, Finset.sum_const, Finset.card_univ, ih (Nat.le_of_succ_le hk),
+      smul_eq_mul, mul_comm, Fin.prod_univ_succAbove _ k, Fin.natCast_eq_last, Fin.val_last,
+      Fin.succAbove_last, Fin.coe_castSucc]
 
 /-- Equivalence between `GL n F` and `n` vectors of length `n` that are linearly independent. Given
 by sending a matrix to its coloumns. -/
@@ -406,15 +402,12 @@ noncomputable def equiv_GL_linearindependent {F : Type*} [Field F] (hn : 0 < n) 
   left_inv := fun x ↦ Units.ext (ext fun i j ↦ rfl)
   right_inv := by exact congrFun rfl
 
-noncomputable instance : Fintype (GL (Fin n) 𝔽) := by
-    exact Fintype.ofFinite (GL (Fin n) 𝔽)
-
-theorem card_GL : Fintype.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ (n) - q ^ ( i : ℕ )) := by
+theorem card_GL : Nat.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ (n) - q ^ ( i : ℕ )) := by
   by_cases hn : n = 0
   · rw [hn]
-    simp only [Fintype.card_unique, Finset.univ_eq_empty, mul_zero, pow_zero,
-    Finset.prod_empty]
-  · rw [Fintype.card_congr (equiv_GL_linearindependent n (Nat.pos_of_ne_zero hn))]
+    simp only [hn, Nat.card_eq_fintype_card, Fintype.card_unique, Finset.univ_eq_empty, pow_zero,
+      Finset.prod_empty]
+  · rw [Nat.card_congr (equiv_GL_linearindependent n (Nat.pos_of_ne_zero hn))]
     exact card_LinearInependent_subtype _ (Nat.le_refl n)
 
 end cardinal
