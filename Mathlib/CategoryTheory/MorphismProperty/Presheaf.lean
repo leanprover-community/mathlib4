@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Yoneda
 
 namespace CategoryTheory
 
-open Limits
+open Category Limits
 
 universe v u
 
@@ -166,8 +166,35 @@ lemma presheaf.property {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoneda.ob
     P (hf.choose.snd g) :=
   hf.choose_spec g
 
+-- this lemma is also introduced in PR #10425, this should be moved to CategoryTheory.Yoneda
+/-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
+with morphisms `yoneda.obj X ⟶ P` agree. -/
+lemma _root_.CategoryTheory.hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v} {f g : P ⟶ Q}
+    (h : ∀ (X : C) (p : yoneda.obj X ⟶ P), p ≫ f = p ≫ g) :
+    f = g := by
+  ext X x
+  simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
+    using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
+
 -- if P is compatible w/ isos/comps/base change, then so is `presheaf P`
 -- TODO: yoneda.map f satisfies P if f does
+
+lemma presheaf_monomorphisms_le_monomorphisms :
+    (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
+  suffices ∀ {X : C} {a b : yoneda.obj X ⟶ F}, a ≫ f = b ≫ f → a = b from
+    ⟨fun _ _ h ↦ hom_ext_yoneda (fun _ _ ↦ this (by simp only [assoc, h]))⟩
+  intro X a b h
+  suffices hf.representable.lift (g := a ≫ f) a (𝟙 X) (by simp) =
+      hf.representable.lift b (𝟙 X) (by simp [← h]) by
+    simpa using yoneda.congr_map
+      this =≫ ((hf.representable.pullbackIso (a ≫ f)).hom ≫ pullback.fst)
+  have : Mono (hf.representable.snd (a ≫ f)) := hf.property (a ≫ f)
+  simp only [← cancel_mono (hf.representable.snd (a ≫ f)),
+    Presheaf.representable.lift_snd]
+
+lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
+    P.presheaf ≤ P'.presheaf := fun _ _ _ hf ↦
+  ⟨hf.representable, fun _ g ↦ h _ (hf.property g)⟩
 
 end MorphismProperty
 

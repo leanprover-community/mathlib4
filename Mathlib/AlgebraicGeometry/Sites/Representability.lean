@@ -22,9 +22,14 @@ namespace Scheme
 
 abbrev openImmersion : MorphismProperty (Scheme.{u}) := @IsOpenImmersion
 
+lemma openImmersion_le_monomorphisms :
+    openImmersion ≤ MorphismProperty.monomorphisms Scheme.{u} := fun _ _ _ _ ↦
+  MorphismProperty.monomorphisms.infer_property _
+
 lemma mono_of_openImmersion_presheaf {F G : Scheme.{u}ᵒᵖ ⥤ Type u}
-    {f : F ⟶ G} (hf : openImmersion.presheaf f) : Mono f := by
-  sorry
+    {f : F ⟶ G} (hf : openImmersion.presheaf f) : Mono f :=
+  MorphismProperty.presheaf_monomorphisms_le_monomorphisms _
+    (MorphismProperty.presheaf_monotone (openImmersion_le_monomorphisms) _ hf)
 
 variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u)) {ι : Type u}
   {X : ι → Scheme.{u}} (f : (i : ι) → yoneda.obj (X i) ⟶ F.1)
@@ -80,9 +85,9 @@ noncomputable def glueData : GlueData where
         ((hf j).representable.lift'
           (pullback.fst ≫ (hf i).representable.snd (f j))
           (pullback.snd ≫ (hf i).representable.fst (f k)) sorry)
-        sorry
+        (by simp)
   t_fac := sorry
-  cocycle := sorry
+  cocycle i j k := sorry
   f_open := isOpenImmersion_fst F f hf
 
 noncomputable def toGlued (i : ι) : X i ⟶ (glueData F f hf).glued :=
@@ -90,7 +95,7 @@ noncomputable def toGlued (i : ι) : X i ⟶ (glueData F f hf).glued :=
 
 def yonedaGluedToSheaf :
     subcanonical_zariskiTopology.yoneda.obj (glueData F f hf).glued ⟶ F := by
-  -- use the 1-hypercover of the gluedscheme defined in GluingHyperCover
+  -- use the 1-hypercover of the glued scheme defined in GluingHyperCover
   sorry
 
 @[simp]
