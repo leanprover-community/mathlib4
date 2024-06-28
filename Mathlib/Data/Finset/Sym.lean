@@ -62,6 +62,8 @@ theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) (ha : a ∉ s) :
     (insert a s).sym2 = ((insert a s).image fun b => s(a, b)) ∪ s.sym2 := by
   simpa [map_eq_image] using sym2_cons a s ha
 
+theorem sym2_map (s : Finset α) (f : α ↪ β) : (s.map f).sym2 = s.sym2.map (by apply?)
+
 instance _root_.Sym2.instFintype [Fintype α] : Fintype (Sym2 α) where
   elems := Finset.univ.sym2
   complete := fun x ↦ by rw [mem_sym2_iff]; exact (fun a _ ↦ mem_univ a)
@@ -123,6 +125,15 @@ theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := rfl
 theorem card_sym2 (s : Finset α) : s.sym2.card = Nat.choose (s.card + 1) 2 := by
   rw [card_def, sym2_val, Multiset.card_sym2, ← card_def]
 #align finset.card_sym2 Finset.card_sym2
+
+/-- `Finset.sym2` can be written as a filter taking one triangle of the the product. -/
+theorem sym2_eq_filter [LinearOrder α] (s : Finset α) :
+    s.sym2 = ((s ×ˢ s).filter fun p => p.1 ≤ p.2).attach.map
+      (.trans (Subtype.impEmbedding _ _ <| by simp) Sym2.sortEquiv.symm.toEmbedding) := by
+  apply Finset.ext
+  rw [Sym2.sortEquiv.symm.surjective.forall]
+  rintro ⟨⟨x, y⟩, hxy⟩
+  aesop
 
 end
 
