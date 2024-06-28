@@ -520,8 +520,6 @@ theorem snorm_le_snorm_fderiv_of_eq_inner  {u : E → F'}
     have : (p : ℝ) * (n - 1) - (n - p) = n * (p - 1) := by ring
     field_simp [this]; ring
   have h4γ : (γ : ℝ) ≠ 0 := (zero_lt_one.trans h1γ).ne'
-  -- obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_one μ hn
-  -- refine ⟨C * γ, @fun F _ _ _ u hu h2u ↦ ?_⟩
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [snorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := by
@@ -669,10 +667,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
         gcongr
       positivity
     · positivity
-  -- obtain ⟨C, hC⟩ := snorm_le_snorm_fderiv_of_eq F μ hp (mod_cast (zero_le p).trans_lt h2p) hp'
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
-  -- use t * C
-  -- intro u hu h2u
   let C := SNormLESNormFDerivOfEqConst F μ p
   calc snorm u q μ = snorm u q (μ.restrict s) := by rw [snorm_restrict_eq h2u]
     _ ≤ snorm u p' (μ.restrict s) * t := by
