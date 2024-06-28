@@ -1995,6 +1995,7 @@ import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.FunLike.Fintype
 import Mathlib.Data.Greedoid.Basic
+import Mathlib.Data.Greedoid.Language
 import Mathlib.Data.HashMap
 import Mathlib.Data.Holor
 import Mathlib.Data.Int.AbsoluteValue
