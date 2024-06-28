@@ -368,7 +368,8 @@ variable [PreservesLimitOfIsCoreflexivePair F]
 /-- Reflexive (crude) monadicity theorem. If `F` has a right adjoint, `C` has and `F` preserves
 coreflexive equalizers and `F` reflects isomorphisms, then `F` is comonadic.
 -/
-def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms : ComonadicLeftAdjoint F where
+def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms :
+    ComonadicLeftAdjoint F where
   adj := adj
   eqv := by
     have : ∀ (X : adj.toComonad.Coalgebra), IsIso ((comparisonAdjunction adj).counit.app X) := by
@@ -386,7 +387,8 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms : Comonad
       change IsIso (IsLimit.conePointUniqueUpToIso _ ?_).inv
       infer_instance
       -- Porting note: passing instances through
-      have : IsCoreflexivePair (G.map (F.map (adj.unit.app Y))) (adj.unit.app (G.obj (F.obj Y))) := by
+      have : IsCoreflexivePair (G.map (F.map (adj.unit.app Y)))
+          (adj.unit.app (G.obj (F.obj Y))) := by
         apply IsCoreflexivePair.mk' (G.map (adj.counit.app _)) _ _
         · rw [← G.map_comp, ← G.map_id]
           exact congr_arg G.map (adj.left_triangle_components Y)
@@ -395,7 +397,7 @@ def comonadicOfHasPreservesCoreflexiveEqualizersOfReflectsIsomorphisms : Comonad
       apply @unitEqualizerOfCoreflectsEqualizer _ _ _ _ _ _ _ _ ?_
       apply reflectsLimitOfReflectsIsomorphisms
     exact (comparisonAdjunction adj).toEquivalence.symm.isEquivalence_inverse
---PreservesLimit (parallelPair (G.map (F.map (adj.unit.app Y))) (adj.unit.app (G.obj (F.obj Y)))) F
+
 end CoreflexiveComonadicity
 
 end
