@@ -2007,6 +2007,7 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Quotient
+import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.Fintype.Sum
@@ -2707,7 +2708,6 @@ import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Alternating.DomCoprod
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Basis.Bilinear
 import Mathlib.LinearAlgebra.Basis.Flag
