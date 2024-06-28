@@ -161,7 +161,7 @@ def PresheafCompForget :
     PresheafInAddCommGrp R M ⋙ forget AddCommGrp ≅ (TildeInType R M).1 :=
   NatIso.ofComponents fun U => Iso.refl _
 
-def SheafInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
+def TildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
   ⟨PresheafInAddCommGrp R M,
     (-- We check the sheaf condition under `forget CommRingCat`.
           TopCat.Presheaf.isSheaf_iff_isSheaf_comp
@@ -183,7 +183,7 @@ noncomputable def TildeInModules : SheafOfModules (forget2Ring R) where
     module := inferInstance
     map_smul := by
       intro U V f r m
-      dsimp [SheafInAddCommGrp, PresheafInAddCommGrp, TildeInType]
+      dsimp [TildeInAddCommGrp, PresheafInAddCommGrp, TildeInType]
       rw [Subtype.ext_iff]
       ext x
       dsimp [subpresheafToTypes]
@@ -193,6 +193,13 @@ noncomputable def TildeInModules : SheafOfModules (forget2Ring R) where
       rw [smul_def]
       rfl
   }
-  isSheaf := (SheafInAddCommGrp R M).2
+  isSheaf := (TildeInAddCommGrp R M).2
+
+noncomputable def structurePresheafCompForget :
+    (TildeInModules R M).val.presheaf ≅ (TildeInAddCommGrp R M).1 :=
+  NatIso.ofComponents fun U => Iso.refl _
+
+-- Todo: the isomorphism between the stalk of TildeInModules R M at x and the localization of
+-- M at x.
 
 end Tilde
