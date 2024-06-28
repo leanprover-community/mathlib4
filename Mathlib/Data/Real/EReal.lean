@@ -49,7 +49,7 @@ if and only if they have the same absolute value and the same sign.
 real, ereal, complete lattice
 -/
 
-open Function ENNReal NNReal Set
+open Function ENNReal NNReal Set SignType
 
 noncomputable section
 
@@ -1471,7 +1471,8 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
   map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 #align ereal.coe_ennreal_pow EReal.coe_ennreal_pow
 
-/-! ### Inverse of an extended real-/
+/-! ### Inverse -/
+
 noncomputable instance : DivInvMonoid EReal where
   inv := fun (a : EReal) ↦ match a with
   | none => 0
@@ -1514,6 +1515,37 @@ theorem mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
   | pos_bot x x_pos => rw [mul_bot_of_pos (EReal.coe_pos.2 x_pos), inv_bot, mul_zero]
   | coe_coe x y => rw [← coe_mul, ← coe_inv, _root_.mul_inv, coe_mul, coe_inv, coe_inv]
   | neg_bot x x_neg => rw [mul_bot_of_neg (EReal.coe_neg'.2 x_neg), inv_top, inv_bot, mul_zero]
+
+/-! #### Inverse and absolute value -/
+
+theorem sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ := by
+  induction' a using EReal.rec with a
+  · simp
+  · rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
+    · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, ← inv_neg, abs_def a,
+        coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
+    · rw [coe_zero, sign_zero, SignType.coe_zero, abs_zero, coe_ennreal_zero, inv_zero, mul_zero]
+    · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul]
+      simp only [abs_def a, coe_ennreal_ofReal, ge_iff_le, abs_nonneg, max_eq_left]
+      congr
+      exact abs_of_pos a_pos
+  · simp
+
+theorem sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : EReal) = a⁻¹ := by
+  induction' a using EReal.rec with a
+  · simp
+  · rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
+    · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, abs_def a,
+        ← ofReal_inv_of_pos (abs_pos_of_neg a_neg), coe_ennreal_ofReal,
+        max_eq_left (inv_nonneg.2 (abs_nonneg a)), ← coe_neg |a|⁻¹, ← coe_inv a, abs_of_neg a_neg,
+        ← _root_.inv_neg, neg_neg]
+    · simp
+    · rw [sign_coe, _root_.sign_pos a_pos, SignType.coe_one, one_mul, abs_def a,
+        ← ofReal_inv_of_pos (abs_pos_of_pos a_pos), coe_ennreal_ofReal,
+          max_eq_left (inv_nonneg.2 (abs_nonneg a)), ← coe_inv a]
+      congr
+      exact abs_of_pos a_pos
+  · simp
 
 end EReal
 
