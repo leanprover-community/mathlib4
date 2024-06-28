@@ -35,6 +35,9 @@ structure ValuationSubring extends Subring K where
   mem_or_inv_mem' : ∀ x : K, x ∈ carrier ∨ x⁻¹ ∈ carrier
 #align valuation_subring ValuationSubring
 
+/-- If `K` is an `R`-algebra, `Place K R` is the collection of valuation subrings in `K`
+that are `R`-subalgebras. It can be given a locally ringed space structure,
+in which setting it is known as the Zariski--Riemann space. -/
 structure Place (R) [CommSemiring R] [Algebra R K] extends ValuationSubring K, Subalgebra R K
 
 namespace ValuationSubring
