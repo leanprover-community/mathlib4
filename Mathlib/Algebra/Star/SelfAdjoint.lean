@@ -151,10 +151,12 @@ section AddCommMonoid
 
 variable [AddCommMonoid R] [StarAddMonoid R]
 
+@[simp]
 theorem _root_.isSelfAdjoint_add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 #align is_self_adjoint_add_star_self isSelfAdjoint_add_star_self
 
+@[simp]
 theorem _root_.isSelfAdjoint_star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 #align is_self_adjoint_star_add_self isSelfAdjoint_star_add_self
@@ -267,6 +269,7 @@ theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) :=
   simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 #align is_self_adjoint.zpow IsSelfAdjoint.zpow
 
+@[simp]
 lemma _root_.isSelfAdjoint_nnratCast (q : ℚ≥0) : IsSelfAdjoint (q : R) := star_nnratCast _
 
 end DivisionSemiring
@@ -275,6 +278,7 @@ section DivisionRing
 
 variable [DivisionRing R] [StarRing R]
 
+@[simp]
 theorem _root_.isSelfAdjoint_ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
   star_ratCast _
 #align is_self_adjoint_rat_cast isSelfAdjoint_ratCast
