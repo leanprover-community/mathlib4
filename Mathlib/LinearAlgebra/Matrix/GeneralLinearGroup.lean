@@ -405,7 +405,7 @@ noncomputable def equiv_GL_linearindependent {F : Type*} [Field F] (hn : 0 < n) 
 theorem card_GL : Nat.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ (n) - q ^ ( i : ℕ )) := by
   by_cases hn : n = 0
   · rw [hn]
-    simp only [hn, Nat.card_eq_fintype_card, Fintype.card_unique, Finset.univ_eq_empty, pow_zero,
+    simp only [Nat.card_eq_fintype_card, Fintype.card_unique, Finset.univ_eq_empty, pow_zero,
       Finset.prod_empty]
   · rw [Nat.card_congr (equiv_GL_linearindependent n (Nat.pos_of_ne_zero hn))]
     exact card_LinearInependent_subtype _ (Nat.le_refl n)
