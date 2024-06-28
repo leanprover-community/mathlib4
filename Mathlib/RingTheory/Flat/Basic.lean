@@ -282,7 +282,8 @@ lemma lTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
 
   let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
     Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
-      Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g) (LinearMap.exact_iff.mp exact).symm
+      Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
+        (LinearMap.exact_iff.mp exact).symm
   have inj0 : Function.Injective ι := by simpa [ι] using Subtype.val_injective
   have eq0 : g = ι.comp π := by aesop
 
