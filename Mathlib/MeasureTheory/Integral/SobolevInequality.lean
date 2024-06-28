@@ -29,6 +29,11 @@ In the formalization we use the operation `MeasureTheory.lmarginal` to work with
 integrals, and use `MeasureTheory.lmarginal_insert'` to conveniently push one of the integrals
 inside. The Hölder's inequality step is done using `ENNReal.lintegral_mul_prod_norm_pow_le`.
 
+The conclusions of the main results below are an estimation up to a constant multiple.
+We don't really care about this constant, other than that it only depends on some pieces of data,
+typically `E`, `μ`, `p` and sometimes also the codomain of `u` or the support of `u`.
+We state these constants as separate definitions.
+
 ## Main results
 
 * `MeasureTheory.snorm_le_snorm_fderiv_of_eq`:
