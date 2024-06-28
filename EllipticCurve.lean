@@ -1,4 +1,3 @@
-import Mathlib
 import Mathlib.AlgebraicGeometry.Morphisms.StandardSmooth
 
 noncomputable section
