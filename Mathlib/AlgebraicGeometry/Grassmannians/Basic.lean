@@ -1,14 +1,84 @@
+import Mathlib
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.RingTheory.TensorProduct.Basic
 
 open AlgebraicGeometry Scheme FiniteDimensional CategoryTheory Matrix
 
 noncomputable section
 
 universe u v w
+
+section
+
+open CommRingCat TensorProduct CategoryTheory.Limits
+
+noncomputable
+nonrec abbrev Spec.algebraMap (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
+  Spec (.of S) ⟶ Spec (.of R) := Spec.map (CommRingCat.ofHom (algebraMap R S))
+
+noncomputable
+def pullbackSpecIso (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
+    (pullback (Spec.algebraMap R S) (Spec.algebraMap R T)) ≅ Spec (.of <| S ⊗[R] T) := by
+  refine (PreservesPullback.iso (Scheme.Spec) _ _).symm ≪≫ Scheme.Spec.mapIso ?_
+  refine (pushoutIsoUnopPullback _ _).op ≪≫ (Iso.op ?_)
+  letI H := CommRingCat.pushoutCoconeIsColimit (CommRingCat.ofHom (algebraMap R S))
+    (CommRingCat.ofHom (algebraMap R T))
+  refine RingEquiv.toCommRingCatIso ?_ ≪≫ (colimit.isoColimitCocone ⟨_, H⟩).symm
+  dsimp
+  refine AlgEquiv.toRingEquiv (R := R) ?_
+  apply (config := { allowSynthFailures := true }) @Algebra.TensorProduct.congr
+  · convert IsScalarTower.of_algebraMap_eq ?_
+    refine fun _ ↦ rfl
+  · apply (config := { allowSynthFailures := true, newGoals := .all }) AlgEquiv.mk
+    exacts [Equiv.refl _, fun _ _ ↦ rfl, fun _ _ ↦ rfl, fun _ ↦ rfl]
+  · apply (config := { allowSynthFailures := true, newGoals := .all }) AlgEquiv.mk
+    exacts [Equiv.refl _, fun _ _ ↦ rfl, fun _ _ ↦ rfl, fun _ ↦ rfl]
+
+lemma pullbackSpecIso_inv_fst
+    {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
+    (pullbackSpecIso R S T).inv ≫ pullback.fst =
+      Spec.algebraMap _ _ := by
+  simp only [pullbackSpecIso, Scheme.Spec_obj, Scheme.Spec_map, Quiver.Hom.unop_op',
+    CommRingCat.coe_of, AlgEquiv.toRingEquiv_eq_coe, id_eq, CommRingCat.pushoutCocone_pt,
+    Functor.mapIso_trans, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, Iso.symm_inv,
+    RingEquiv.toCommRingCatIso_inv, RingEquiv.toRingHom_eq_coe, op_comp, unop_comp,
+    Quiver.Hom.unop_op, Spec.map_comp, Category.assoc, PreservesPullback.iso_hom]
+  erw [pullbackComparison_comp_fst]
+  simp only [Scheme.Spec_map, ← Spec.map_comp, Category.assoc]
+  congr 1
+  rw [← Category.assoc, ← (Iso.inv _).unop_op, ← unop_comp]
+  erw [pushoutIsoUnopPullback_inv_fst]
+  simp only [Quiver.Hom.unop_op, colimit.isoColimitCocone_ι_hom_assoc, span_right,
+    CommRingCat.pushoutCocone_pt, CommRingCat.coe_of, PushoutCocone.ι_app_right,
+    CommRingCat.pushoutCocone_inr, AlgHom.toRingHom_eq_coe]
+  ext; rfl
+
+lemma pullbackSpecIso_inv_snd
+    {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
+    (pullbackSpecIso R S T).inv ≫ pullback.snd =
+      Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.includeRight.toRingHom)) := by
+  simp only [pullbackSpecIso, Scheme.Spec_obj, Scheme.Spec_map, Quiver.Hom.unop_op',
+    CommRingCat.coe_of, AlgEquiv.toRingEquiv_eq_coe, id_eq, CommRingCat.pushoutCocone_pt,
+    Functor.mapIso_trans, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, Iso.symm_inv,
+    RingEquiv.toCommRingCatIso_inv, RingEquiv.toRingHom_eq_coe, op_comp, unop_comp,
+    Quiver.Hom.unop_op, Spec.map_comp, Category.assoc, PreservesPullback.iso_hom,
+    AlgHom.toRingHom_eq_coe]
+  erw [pullbackComparison_comp_snd]
+  simp only [Scheme.Spec_map, ← Spec.map_comp, Category.assoc]
+  congr 1
+  rw [← Category.assoc, ← (Iso.inv _).unop_op, ← unop_comp]
+  erw [pushoutIsoUnopPullback_inv_snd]
+  simp only [Quiver.Hom.unop_op, colimit.isoColimitCocone_ι_hom_assoc, span_right,
+    CommRingCat.pushoutCocone_pt, CommRingCat.coe_of, PushoutCocone.ι_app_right,
+    CommRingCat.pushoutCocone_inr, AlgHom.toRingHom_eq_coe]
+  ext; rfl
+
+
+end
 
 section
 
@@ -344,9 +414,17 @@ def glueData : GlueData where
       (Limits.pullback.snd (f := open_immersion hr j k) (g := open_immersion hr j i))
       (Limits.pullback.fst (f := open_immersion hr i j) (g := open_immersion hr i k) ≫
       transition_Spec hr i j) ?_
-    sorry
+    have := pullbackSpecIso_inv_snd {R :=  MvPolynomial (Fin (finrank K V - r) × Fin r) K}
+      {S := Localization.Away (equation hr j k)} {T := Localization.Away (equation hr i j)}
   t_fac := sorry
   cocycle := sorry
   f_open _ _ := inferInstance
+
+/-
+lemma pullbackSpecIso_inv_snd
+    {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
+    (pullbackSpecIso R S T).inv ≫ pullback.snd =
+      Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.includeRight.toRingHom)) := by
+-/
 
 end Grassmannian
