@@ -100,7 +100,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     P₁ = P₂ := by
   have hp (hc' : P₁.coroot = P₂.coroot) : P₁.reflection_perm = P₂.reflection_perm := by
     ext i j
-    refine P₁.eq_of_root _ _ ?_
+    refine P₁.root.injective ?_
     conv_rhs => rw [hr]
     rw [root_reflection_perm, root_reflection_perm]
     simp only [hr, he, hc', reflection_apply]

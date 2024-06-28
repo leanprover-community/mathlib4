@@ -120,12 +120,6 @@ namespace RootPairing
 variable {ι R M N}
 variable (P : RootPairing ι R M N) (i j : ι)
 
-lemma eq_of_root (h : P.root i = P.root j) : i = j :=
-  (EmbeddingLike.apply_eq_iff_eq P.root).mp h
-
-lemma root_ne (h: i ≠ j) : P.root i ≠ P.root j :=
-  fun h' ↦ h (eq_of_root P i j h')
-
 lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
 
