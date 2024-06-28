@@ -37,3 +37,7 @@ def PretopologyOfRingProp : CategoryTheory.Pretopology Scheme where
       apply MorphismProperty.comp_mem
       apply hR h hh Z g hg
       apply hS _ _ hh
+
+/- In general, we want to intersect this with some kind of "pretopology of jointly surjective
+families". To define that topology, we need the fact that a base change of a surjective morphism of
+schemes is surjective (see [[Stacks], Tag 01S1]). -/
