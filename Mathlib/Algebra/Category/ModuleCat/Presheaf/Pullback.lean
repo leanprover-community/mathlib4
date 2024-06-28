@@ -12,6 +12,7 @@ universe v v₁ v₂ u₁ u₂ u
 open CategoryTheory Opposite
 
 variable {C : Type u₁} [Category.{u} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u} [SmallCategory E]
 
 namespace ModuleCat
 
@@ -48,6 +49,7 @@ end ModuleCat
 
 namespace PresheafOfModules
 
+section
 
 variable {F}
 variable {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
@@ -145,6 +147,17 @@ def freeYonedaEquiv (M : PresheafOfModules.{u} S) (X : C) :
 --   ι :=
 --     { app := fun X ↦ X.hom
 --       naturality := sorry }
+
+end
+
+variable {R : Eᵒᵖ ⥤ RingCat.{u}} {M N : PresheafOfModules.{u} R}
+
+lemma ext' {f g : M ⟶ N}
+    (h : ∀ {U : E} (m : (free R).obj (yoneda.obj U) ⟶ M), m ≫ f = m ≫ g) :
+    f = g := by
+  ext U m
+  have foo := (freeYonedaEquiv _ _).symm m
+  sorry
 
 
 end PresheafOfModules
