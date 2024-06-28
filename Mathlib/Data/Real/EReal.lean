@@ -1574,6 +1574,12 @@ theorem le_div_iff_mul_le {a c : EReal} {b : ENNReal} (h : b ≠ 0) (h' : b ≠ 
     a ≤ c / b ↔ a * b ≤ c := by
   nth_rw 1 [← @mul_inv_cancel a b h h']
   exact mul_div_right ▸ StrictMono.le_iff_le (div_left_strictMono h h')
+
+theorem div_le_iff_le_mul {a c : EReal} {b : ENNReal} (h : b ≠ 0) (h' : b ≠ ⊤) :
+    a / b ≤ c ↔ a ≤ b * c := by
+  nth_rw 1 [← @mul_inv_cancel c b h h']
+  rw [mul_div_right, mul_comm c b]
+  exact StrictMono.le_iff_le (div_left_strictMono h h')
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
