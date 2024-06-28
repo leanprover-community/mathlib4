@@ -10,14 +10,11 @@ import Mathlib.Data.ENNReal.Real
 import Init.Data.Fin.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Function
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.SetTheory.Cardinal.Basic
-
-
 
 
 
@@ -27,7 +24,7 @@ open MeasureTheory ENNReal Set Function BigOperators Finset
 --defining partition given measure, disjointness defined measure-theoretically
 -- cover for now is defined in the set-theoretic sense,
 -- could change but many lemmas would be harder
-
+--this change could be written as measure of union is 1, measure of complement is zero
 structure partition {α : Type*} (m : MeasurableSpace α) (μ : Measure α) [IsProbabilityMeasure μ] :=
   f : ℕ → Set α         -- A function from natural numbers to sets of terms in α
   measurable : ∀ n, MeasurableSet (f n)  -- Each set is measurable
@@ -56,7 +53,6 @@ structure finpart' {α : Type*} (m : MeasurableSpace α) (μ : Measure α) [IsPr
 --defining a function which given a finite partition gives back
 --the countable partition whith a tail of empty sets
 
-
 def finpart_to_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (n : ℕ) (fp : finpart m μ n) : partition m μ
     where
@@ -75,7 +71,7 @@ def finpart_to_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α}
         exact fp.disjoint ⟨i, hi⟩ ⟨j, hj⟩ (λ h ↦ hij (Fin.val_eq_of_eq h))
       · simp only [dif_pos hi, dif_neg hj, Set.inter_empty, measure_empty]
     · simp only [dif_neg hi, Set.empty_inter, measure_empty]
-  cover:= by
+  cover:= by -- simple the union is same set so same measure
     ext x
     constructor
     · tauto
@@ -88,6 +84,10 @@ def finpart_to_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
 
 --defining function that takes two partitions and gives the refinement partition
+-- what are points that would be included all points that are covered by both
+-- need to show that the set of point that lie at most in one of them has measure zero
+-- first the set of points not covered by first one, then set of points not covered by the second one
+--that's it.
 
 def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p1 p2 : partition m μ) : partition m μ :=
@@ -141,11 +141,22 @@ def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [Is
 
 noncomputable section
 
+#check ENNReal.log
+#check Real.log
+
 --defining entropy and conditional entropy
 -- need to choose whether to write entropy as a function to extended reals or
 -- or send it to zero if the sum diverges
+
+--def met_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+  --(p : partition m μ) : ℝ≥0∞ :=
+ -- ∑' (n : ℕ),
+ --   (μ (p.f n))
+
+
+
  def met_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
-  (p : partition m μ) : ℝ :=
+  (p : partition m μ) : ℝ  :=
   -∑' (n : ℕ),
     (μ (p.f n)).toReal* Real.log ((μ (p.f n)).toReal)
 
@@ -188,7 +199,7 @@ end section
 #check MeasureTheory.measure_biUnion_finset
 
 
---useful lemmas
+--useful lemmas for max_entropy
 
 lemma addone {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
  (p : partition m μ) : (μ (⋃ i, p.f i)) = ∑' i , μ (p.f i) := by
@@ -228,7 +239,7 @@ lemma equiv {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabili
 #check @_root_.mul_lt_mul_left
 #check mul_lt_mul_left
 
---maximal entropy theorem
+--maximal entropy theorem, small details to fill
 
 theorem max_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
 (n : ℕ) (fp : finpart m μ n) :(met_entropy' n fp  ≤ Real.log n) ∧ (met_entropy' n fp = Real.log (n) ↔
@@ -490,7 +501,8 @@ lemma info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProb
       exact compl_subset_compl_of_subset h
     exact measure_mono_null h' (eqset₃ p)
 
-
+#check setIntegral_const
+#check lintegral_iUnion_ae
 
 lemma should_this_be_in_the_library
     {X : Type*} [MeasurableSpace X] (μ : Measure X) {ι : Type*} [Countable ι]
@@ -513,6 +525,8 @@ lemma should_this_be_in_the_library
 #check MeasureTheory.setIntegral_const --integral of a constant
 #check measure_union
 
+--lemma necessary for ent_inf
+
 lemma lentinf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
     (p : partition m μ) (n: ℕ ) : μ (eqset₀ p n) = 0 → μ (p.f n)=0 := by
     intro h
@@ -531,7 +545,7 @@ lemma lentinf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabi
 
 
 
-
+-- should I have used the lebesgue integral instead?
 
 theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
     (p : partition m μ) {c: ℕ → ℝ}:
