@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.FieldTheory.Finite.GaloisField
+import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Data.Matrix.Rank
 
 #align_import linear_algebra.matrix.general_linear_group from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
