@@ -21,8 +21,6 @@ variable {α β : Type*}
 
 namespace List
 
-attribute [simp] join
-
 -- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
@@ -54,7 +52,7 @@ theorem join_filter_not_isEmpty  :
       simp [join_filter_not_isEmpty (L := L)]
 #align list.join_filter_empty_eq_ff List.join_filter_not_isEmpty
 
-@[deprecated] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty -- 2024-02-25
+@[deprecated (since := "2024-02-25")] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
 
 @[simp]
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :

@@ -215,12 +215,12 @@ section deprecated
 
 set_option linter.deprecated false
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit0_val (n : ℤ) : bit0 n = 2 * n :=
   (two_mul _).symm
 #align int.bit0_val Int.bit0_val
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit1_val (n : ℤ) : bit1 n = 2 * n + 1 :=
   congr_arg (· + (1 : ℤ)) (bit0_val _)
 #align int.bit1_val Int.bit1_val
@@ -265,27 +265,27 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
   cases b <;> cases bodd n <;> simp [(show bodd 2 = false by rfl)]
 #align int.bodd_bit Int.bodd_bit
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-01-02")]
 theorem bodd_bit0 (n : ℤ) : bodd (bit0 n) = false :=
   bodd_bit false n
 #align int.bodd_bit0 Int.bodd_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-01-02")]
 theorem bodd_bit1 (n : ℤ) : bodd (bit1 n) = true :=
   bodd_bit true n
 #align int.bodd_bit1 Int.bodd_bit1
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit0_ne_bit1 (m n : ℤ) : bit0 m ≠ bit1 n :=
   mt (congr_arg bodd) <| by simp
 #align int.bit0_ne_bit1 Int.bit0_ne_bit1
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit1_ne_bit0 (m n : ℤ) : bit1 m ≠ bit0 n :=
   (bit0_ne_bit1 _ _).symm
 #align int.bit1_ne_bit0 Int.bit1_ne_bit0
 
-@[deprecated]
+@[deprecated (since := "2023-01-02")]
 theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using bit1_ne_bit0 m 0
 #align int.bit1_ne_zero Int.bit1_ne_zero
 

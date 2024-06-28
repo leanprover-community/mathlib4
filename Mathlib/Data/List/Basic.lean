@@ -11,7 +11,6 @@ import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
-import Batteries.Data.List.Lemmas
 import Mathlib.Tactic.Common
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
@@ -101,7 +100,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-@[deprecated] alias mem_split := append_of_mem -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias mem_split := append_of_mem
 #align list.mem_split List.append_of_mem
 
 #align list.mem_of_ne_of_mem List.mem_of_ne_of_mem
@@ -353,10 +352,10 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 -- Porting note: in Batteries
 #align list.nil_eq_append_iff List.nil_eq_append
 
-@[deprecated] alias append_eq_cons_iff := append_eq_cons -- 2024-03-24
+@[deprecated (since := "2024-03-24")] alias append_eq_cons_iff := append_eq_cons
 #align list.append_eq_cons_iff List.append_eq_cons
 
-@[deprecated] alias cons_eq_append_iff := cons_eq_append -- 2024-03-24
+@[deprecated (since := "2024-03-24")] alias cons_eq_append_iff := cons_eq_append
 #align list.cons_eq_append_iff List.cons_eq_append
 
 #align list.append_eq_append_iff List.append_eq_append_iff
@@ -375,10 +374,10 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 
 #align list.append_inj_left' List.append_inj_left'ₓ -- implicits order
 
-@[deprecated] alias append_left_cancel := append_cancel_left -- deprecated since 2024-01-18
+@[deprecated (since := "2024-01-18")] alias append_left_cancel := append_cancel_left
 #align list.append_left_cancel List.append_cancel_left
 
-@[deprecated] alias append_right_cancel := append_cancel_right -- deprecated since 2024-01-18
+@[deprecated (since := "2024-01-18")] alias append_right_cancel := append_cancel_right
 #align list.append_right_cancel List.append_cancel_right
 
 @[simp] theorem append_left_eq_self {x y : List α} : x ++ y = y ↔ x = [] := by
@@ -672,6 +671,22 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
   exact getLast_append_singleton _
 #align list.last_replicate_succ List.getLast_replicate_succ
 
+/-- If the last element of `l` does not satisfy `p`, then it is also the last element of
+`l.filter p`. -/
+lemma getLast_filter {p : α → Bool} :
+    ∀ (l : List α) (hlp : l.filter p ≠ []), p (l.getLast (hlp <| ·.symm ▸ rfl)) = true →
+      (l.filter p).getLast hlp = l.getLast (hlp <| ·.symm ▸ rfl)
+  | [a], h, h' => by rw [List.getLast_singleton'] at h'; simp [List.filter_cons, h']
+  | a :: b :: as, h, h' => by
+    rw [List.getLast_cons_cons] at h' ⊢
+    simp only [List.filter_cons (x := a)] at h ⊢
+    obtain ha | ha := Bool.eq_false_or_eq_true (p a)
+    · simp only [ha, ite_true]
+      rw [getLast_cons, getLast_filter (b :: as) _ h']
+      exact ne_nil_of_mem <| mem_filter.2 ⟨getLast_mem _, h'⟩
+    · simp only [ha, cond_false] at h ⊢
+      exact getLast_filter (b :: as) h h'
+
 /-! ### getLast? -/
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
@@ -909,7 +924,7 @@ end deprecated
 -- not just use the equational lemmas.
 
 -- @[simp]
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
 #align list.modify_head_modify_head List.modifyHead_modifyHead
@@ -1038,6 +1053,15 @@ theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a 
   Sublist.cons₂ _ s
 #align list.sublist.cons_cons List.Sublist.cons_cons
 
+lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l₂ ∨ a = b ∧ l₁ <+ l₂ := by
+  constructor
+  · rintro (_ | _)
+    · exact Or.inl ‹_›
+    · exact Or.inr ⟨rfl, ‹_›⟩
+  · rintro (h | ⟨rfl, h⟩)
+    · exact h.cons _
+    · rwa [cons_sublist_cons]
+
 #align list.sublist_append_left List.sublist_append_left
 #align list.sublist_append_right List.sublist_append_right
 
@@ -1065,7 +1089,7 @@ theorem Sublist.of_cons_cons {l₁ l₂ : List α} {a b : α} (h : a :: l₁ <+ 
 theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
 
 attribute [simp] cons_sublist_cons
-@[deprecated] alias cons_sublist_cons_iff := cons_sublist_cons -- 2024-04-07
+@[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
 #align list.cons_sublist_cons_iff List.cons_sublist_cons_iff
 
 #align list.append_sublist_append_left List.append_sublist_append_left
@@ -1250,7 +1274,7 @@ theorem mem_iff_nthLe {a} {l : List α} : a ∈ l ↔ ∃ n h, nthLe l n h = a :
 #align list.mem_iff_nth List.mem_iff_get?
 #align list.nth_zero List.get?_zero
 
-@[deprecated] alias get?_injective := get?_inj -- 2024-05-03
+@[deprecated (since := "2024-05-03")] alias get?_injective := get?_inj
 #align list.nth_injective List.get?_inj
 
 #align list.nth_map List.get?_map
@@ -1416,7 +1440,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := nthLe_reverse' ..
 
 -- FIXME: prove it the other way around
-attribute [deprecated get_reverse'] nthLe_reverse' -- 2023-01-05
+attribute [deprecated get_reverse' (since := "2023-01-05")] nthLe_reverse'
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
     l = [l.nthLe 0 (by omega)] := by
@@ -1765,19 +1789,6 @@ theorem cons_get_drop_succ {l : List α} {n} :
 #align list.drop_take List.drop_take
 #align list.map_drop List.map_drop
 #align list.modify_nth_tail_eq_take_drop List.modifyNthTail_eq_take_drop
-
-@[simp]
-theorem modifyNth_nil (f : α → α) (n : ℕ) :
-    modifyNth f n [] = [] := by cases n <;> rfl
-
-@[simp]
-theorem modifyNth_zero_cons (f : α → α) (a : α) (l : List α) :
-    modifyNth f 0 (a :: l) = f a :: l := rfl
-
-@[simp]
-theorem modifyNth_succ_cons (f : α → α) (n : ℕ) (a : α) (l : List α) :
-    modifyNth f (n + 1) (a :: l) = a :: modifyNth f n l := rfl
-
 #align list.modify_nth_eq_take_drop List.modifyNth_eq_take_drop
 #align list.modify_nth_eq_take_cons_drop List.modifyNth_eq_take_cons_drop
 #align list.update_nth_eq_take_cons_drop List.set_eq_take_cons_drop
@@ -2120,7 +2131,7 @@ theorem get_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
   nthLe_succ_scanl
 
 -- FIXME: we should do the proof the other way around
-attribute [deprecated get_succ_scanl] nthLe_succ_scanl -- 2023-01-05
+attribute [deprecated get_succ_scanl (since := "2023-01-05")] nthLe_succ_scanl
 
 end Scanl
 
