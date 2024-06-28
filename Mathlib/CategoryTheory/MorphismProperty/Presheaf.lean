@@ -56,17 +56,17 @@ noncomputable def fst : hf'.pullback g ⟶ Y :=
 noncomputable def snd : hf.pullback g ⟶ X :=
   Yoneda.fullyFaithful.preimage ((hf.pullbackIso g).hom ≫ Limits.pullback.snd)
 
-@[simp, reassoc]
+@[reassoc]
 lemma yoneda_map_fst : yoneda.map (hf'.fst g) = (hf'.pullbackIso g).hom ≫ Limits.pullback.fst := by
   simp only [fst, Functor.FullyFaithful.map_preimage]
 
-@[simp, reassoc]
+@[reassoc]
 lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackIso g).hom ≫ Limits.pullback.snd := by
   simp only [snd, Functor.FullyFaithful.map_preimage]
 
 @[reassoc]
 lemma condition : yoneda.map (hf'.fst g) ≫ f' = yoneda.map (hf'.snd g) ≫ g := by
-  simpa using Limits.pullback.condition
+  simpa [yoneda_map_fst, yoneda_map_snd] using Limits.pullback.condition
 
 variable {g}
 
@@ -79,13 +79,13 @@ lemma hom_ext {Z : C} {a b : Z ⟶ hf.pullback g}
   rw [← cancel_mono (hf.pullbackIso g).hom]
   ext1
   · simpa using h₁
-  · simpa using yoneda.congr_map h₂
+  · simpa [yoneda_map_snd] using yoneda.congr_map h₂
 
 @[ext]
 lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g}
     (h₁ : a ≫ hf'.fst g = b ≫ hf'.fst g)
     (h₂ : a ≫ hf'.snd g = b ≫ hf'.snd g) : a = b :=
-  hf'.hom_ext (by simpa using yoneda.congr_map h₁) h₂
+  hf'.hom_ext (by simpa [yoneda_map_fst] using yoneda.congr_map h₁) h₂
 
 section
 
@@ -101,7 +101,7 @@ lemma lift_fst : yoneda.map (hf.lift i h hi) ≫
 
 @[reassoc (attr := simp)]
 lemma lift_snd : hf.lift i h hi ≫ hf.snd g = h :=
-  yoneda.map_injective (by simp [lift])
+  yoneda.map_injective (by simp [yoneda_map_snd, lift])
 
 end
 
@@ -113,7 +113,7 @@ noncomputable def lift' : Z ⟶ hf'.pullback g := hf'.lift _ _ hi
 
 @[reassoc (attr := simp)]
 lemma lift'_fst : hf'.lift' i h hi ≫ hf'.fst g = i :=
-  yoneda.map_injective (by simp [lift'])
+  yoneda.map_injective (by simp [yoneda_map_fst, lift'])
 
 @[reassoc (attr := simp)]
 lemma lift'_snd : hf'.lift' i h hi ≫ hf'.snd g = h := by
@@ -132,6 +132,14 @@ lemma symmetry_snd : hf'.symmetry hg ≫ hg.snd f' = hf'.fst g := by simp [symme
 
 @[reassoc (attr := simp)]
 lemma symmetry_symmetry : hf'.symmetry hg ≫ hg.symmetry hf' = 𝟙 _ := by aesop_cat
+
+@[simps]
+noncomputable def symmetryIso : hf'.pullback g ≅ hg.pullback f' where
+  hom := hf'.symmetry hg
+  inv := hg.symmetry hf'
+
+instance : IsIso (hf'.symmetry hg) :=
+  (hf'.symmetryIso hg).isIso_hom
 
 end
 
