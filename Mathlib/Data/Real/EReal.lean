@@ -1481,6 +1481,7 @@ as the multiplication by the coercion of its inverse. It is an instance of divis
 /--
 Division of an extended real (`EReal`) by an extended nonnegative real (`ENNReal`).
 Defined by inversion in `[0, ∞]`, coercion to `[-∞,+∞]`, and multiplication in `[-∞,+∞]`.--/
+
 noncomputable def divENNReal : EReal → ENNReal → EReal :=
   fun (a : EReal) (b : ENNReal) ↦ a * b⁻¹
 
@@ -1530,6 +1531,16 @@ theorem bot_div_ntop {b : ENNReal} (h : b ≠ ⊤) : (⊥ : EReal) / b = ⊥ := 
   apply bot_mul_of_pos
   simp [h]
 
+theorem mul_div_mul {a : EReal} {b c : ENNReal} (h : c ≠ 0) (h' : c ≠ ⊤) :
+    (a * c) / (b * c) = a / b := by
+  change (a * c) * (b * c)⁻¹ = a * b⁻¹
+  suffices h : (c * (b * c)⁻¹ = b⁻¹) by rw [← h, mul_assoc]; norm_cast
+  calc
+    c * (b * c)⁻¹ = c * (b⁻¹ * c⁻¹) := by rw [ENNReal.mul_inv (Or.inr h') (Or.inr h)]
+                _ = b⁻¹ * c⁻¹ * c   := mul_comm c (b⁻¹ * c⁻¹)
+                _ = b⁻¹ * (c⁻¹ * c) := mul_assoc b⁻¹ c⁻¹ c
+                _ = b⁻¹ * 1         := by rw [ENNReal.inv_mul_cancel h h']
+                _ = b⁻¹             := mul_one b⁻¹
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
