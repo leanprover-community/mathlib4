@@ -78,11 +78,8 @@ theorem det_of_basisMatrix_non_zero : (basisMatrix K).transpose.det ≠ 0 := by
       let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
          RingHom.equivRatAlgHom
       rw [show (basisMatrix K).transpose = N by {
-        ext:2
-        simp only [N, Matrix.transpose_apply, latticeBasis_apply,
-          integralBasis_apply, Matrix.of_apply, apply_at]
-        rfl}]
-      rw [← pow_ne_zero_iff two_ne_zero]
+        ext:2; simp only [N, Matrix.transpose_apply, latticeBasis_apply, integralBasis_apply,
+        Matrix.of_apply, apply_at]; rfl}, ← pow_ne_zero_iff two_ne_zero]
       convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
         (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
       rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
@@ -98,12 +95,11 @@ instance : Invertible (basisMatrix K) := by
   inverse of the matrix `basisMatrix` and  `(finrank ℚ K)`. -/
 def c := (finrank ℚ K) * ‖fun i j => (basisMatrix K)⁻¹ i j‖
 
-theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
-    ((((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) ≤
+theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) :
+  ∀ i, Complex.abs (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ) ≤
     @c K _ _ * House (algebraMap (𝓞 K) K α) := fun i => calc
 
-  Complex.abs (((((integralBasis K).reindex (equivReindex K).symm))).repr α i : ℂ) =
-    Complex.abs (∑ j, (basisMatrix  K)⁻¹ i j *
+   _ = Complex.abs (∑ j, (basisMatrix  K)⁻¹ i j *
         (canonicalEmbedding K (algebraMap (𝓞 K) K α) j)) := by
       have : canonicalEmbedding K α = (basisMatrix K).mulVec (fun i ↦
          (((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) := by
@@ -115,36 +111,28 @@ theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
           mul_comm, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm,
           Pi.smul_apply, smul_eq_mul]
       have : (basisMatrix K)⁻¹.mulVec (fun j => canonicalEmbedding K (algebraMap (𝓞 K) K α) j) i =
-        ((((integralBasis K).reindex (equivReindex K).symm))).repr α i := by
+        ((integralBasis K).reindex (equivReindex K).symm).repr α i := by
         {rw [Matrix.inv_mulVec_eq_vec (basisMatrix  K) this]}
-      rw [← this]
-      rfl
+      rw [← this]; rfl
 
     _ ≤ ∑ j, ‖fun i j => (basisMatrix K)⁻¹ i j‖ *
          Complex.abs (canonicalEmbedding K (algebraMap (𝓞 K) K α) j) := by
            trans
            ·  trans
               · apply AbsoluteValue.sum_le Complex.abs
-              · apply Finset.sum_le_sum
-                intros j _
-                exact (AbsoluteValue.map_mul Complex.abs _ _).le
+              · apply Finset.sum_le_sum (fun _ _ => (AbsoluteValue.map_mul Complex.abs _ _).le)
            · apply Finset.sum_le_sum
-             intros j _
-             apply mul_le_mul_of_nonneg_right
+              (fun _ _ =>  mul_le_mul_of_nonneg_right ?_ (AbsoluteValue.nonneg Complex.abs _))
              · rw [← Complex.norm_eq_abs]
                exact Matrix.norm_entry_le_entrywise_sup_norm (basisMatrix K)⁻¹
-             · exact AbsoluteValue.nonneg Complex.abs _
     _ ≤ ∑ _, ‖fun i j => (basisMatrix K)⁻¹ i j‖ * House  (algebraMap (𝓞 K) K α) := by
           apply Finset.sum_le_sum
           intros j _
-          apply mul_le_mul_of_nonneg_left
+          apply mul_le_mul_of_nonneg_left _ (norm_nonneg fun i j ↦ (basisMatrix K)⁻¹ i j)
           · rw [← Complex.norm_eq_abs]
             exact norm_le_pi_norm ((canonicalEmbedding K) ((algebraMap (𝓞 K) K) α)) j
-          · exact norm_nonneg fun i j ↦ (basisMatrix K)⁻¹ i j
+
     _ =  ↑(finrank ℚ K) * ‖fun i j => (basisMatrix K)⁻¹ i j‖ * House  (algebraMap (𝓞 K) K α) := by
-          rw [Finset.sum_const]
-          simp only [Finset.card_univ, nsmul_eq_mul]
-          rw [NumberField.Embeddings.card]
-          rw [mul_assoc]
+          rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Embeddings.card, mul_assoc]
 
 end section
