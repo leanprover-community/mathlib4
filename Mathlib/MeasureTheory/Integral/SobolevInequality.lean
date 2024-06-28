@@ -341,7 +341,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 open FiniteDimensional
 
 /-- The constant factor occurring in the conclusion of `lintegral_pow_le_pow_lintegral_fderiv`.
-It only depends on `E`, `μ` and `p`. -/
+It only depends on `E`, `μ` and `p`.
+It is determined by the ratio of the measures on `E` and `ℝⁿ` and
+the operator norm of `e` (raised to suitable powers involving `p`).-/
 def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let ι := Fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by
@@ -352,9 +354,9 @@ def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
-with Haar measure. There exists a constant `C` depending only on `E`, such that the Lebesgue
-integral of the pointwise expression `|u x| ^ (n / (n - 1))` is bounded above by `C` times the
-`n / (n - 1)`-th power of the Lebesgue integral of the Fréchet derivative of `u`. -/
+with Haar measure. Then the Lebesgue integral of the pointwise expression
+`|u x| ^ (n / (n - 1))` is bounded above by a constant times the `n / (n - 1)`-th power of the
+Lebesgue integral of the Fréchet derivative of `u`. -/
 theorem lintegral_pow_le_pow_lintegral_fderiv  {u : E → F}
     (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
     {p : ℝ} (hp : Real.IsConjExponent (finrank ℝ E) p) :
@@ -364,9 +366,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv  {u : E → F}
   an explicit basis in `MeasureTheory.lintegral_pow_le_pow_lintegral_fderiv_aux`.
   This proof is not too hard, but takes quite some steps, reasoning about the equivalence
   `e : E ≃ ℝⁿ`, relating the measures on each sides of the equivalence,
-  and estimating the derivative using the chain rule.
-  The constant `C` is determined by the ratio of the measures on `E` and `ℝⁿ` and
-  the operator norm of `e` (raised to suitable powers involving `p`). -/
+  and estimating the derivative using the chain rule. -/
   set C := lintegralPowLePowLIntegralFDerivConst μ p
   let ι := Fin (finrank ℝ E)
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
@@ -426,9 +426,8 @@ def snormLESNormFDerivOneConst (p : ℝ) : ℝ≥0 := lintegralPowLePowLIntegral
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n ≥ 2`, equipped
-with Haar measure. There exists a constant `C` depending only on `E`, such that the `Lᵖ` norm of
-`u`, where `p := n / (n - 1)`, is bounded above by `C` times the `L¹` norm of the Fréchet derivative
-of `u`. -/
+with Haar measure. Then the `Lᵖ` norm of `u`, where `p := n / (n - 1)`, is bounded above by
+a constant times the `L¹` norm of the Fréchet derivative of `u`. -/
 theorem snorm_le_snorm_fderiv_one  {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
     {p : ℝ≥0} (hp : NNReal.IsConjExponent (finrank ℝ E) p) :
     snorm u p μ ≤ snormLESNormFDerivOneConst μ p * snorm (fderiv ℝ u) 1 μ := by
@@ -451,8 +450,8 @@ variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [Comple
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 ≤ p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
-There exists a constant `C` depending only on `E` and `p`, such that the `Lᵖ'` norm of `u`
-is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
+the Fréchet derivative of `u`.
 
 Note: The codomain of `u` needs to be a Hilbert space.
 -/
@@ -586,8 +585,8 @@ def SNormLESNormFDerivOfEqConst [FiniteDimensional ℝ F] (p : ℝ) : ℝ≥0 :=
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped
 with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
-There exists a constant `C` depending only on `E` and `p`, such that the `Lᵖ'` norm of `u`
-is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
+the Fréchet derivative of `u`.
 
 This is the version where the codomain of `u` is a finite dimensional normed space.
 -/
@@ -637,8 +636,8 @@ def snormLESNormFDerivOfLeConst [FiniteDimensional ℝ F] (s : Set E) (p q : ℝ
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n` and `0 < q ≤ (p⁻¹ - (finrank ℝ E : ℝ)⁻¹)⁻¹`.
-There exists a constant `C` depending only on `E`, `s`, `p` and `q`, such that the `L^q` norm of `u`
-is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+Then the `L^q` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
+the Fréchet derivative of `u`.
 
 Note: The codomain of `u` needs to be a finite dimensional normed space.
 -/
@@ -690,8 +689,8 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension
 `n`, equipped with Haar measure, and let `1 < p < n`.
-There exists a constant `C` depending only on `E`, `s` and `p`, such that the `Lᵖ` norm of `u`
-is bounded above by `C` times the `Lᵖ` norm of the Fréchet derivative of `u`.
+Then the `Lᵖ` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
+the Fréchet derivative of `u`.
 
 Note: The codomain of `u` needs to be a finite dimensional normed space.
 -/
