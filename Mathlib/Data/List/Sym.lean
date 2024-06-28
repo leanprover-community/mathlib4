@@ -27,7 +27,7 @@ from a given list. These are list versions of `Nat.multichoose`.
 
 namespace List
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section Sym2
 
@@ -36,6 +36,12 @@ If `xs` has no duplicates then neither does `xs.sym2`. -/
 protected def sym2 : List α → List (Sym2 α)
   | [] => []
   | x :: xs => (x :: xs).map (fun y => s(x, y)) ++ xs.sym2
+
+theorem sym2_map (f : α → β) (xs : List α) :
+    (xs.map f).sym2 = xs.sym2.map (Sym2.map f) := by
+  induction xs with
+  | nil => simp [List.sym2]
+  | cons x xs ih => simp [List.sym2, ih, Function.comp]
 
 theorem mem_sym2_cons_iff {x : α} {xs : List α} {z : Sym2 α} :
     z ∈ (x :: xs).sym2 ↔ z = s(x, x) ∨ (∃ y, y ∈ xs ∧ z = s(x, y)) ∨ z ∈ xs.sym2 := by
