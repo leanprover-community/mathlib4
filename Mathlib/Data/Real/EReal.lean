@@ -1525,3 +1525,16 @@ unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
 
 end Tactic
 -/
+
+/-!
+# Division By Extended Nonnegative Reals
+
+We define a division of an extended real `EReal` by an extended nonnegative real `ENNReal`
+as the multiplication by the coercion of its inverse. It is an instance of division.
+-/
+
+/--
+Division of an extended real (EReal) by an extended nonnegative real (ENNReal). Defined by inversion in
+[0, ∞], coercion to [-∞,+∞], and multiplication in [-∞,+∞].--/
+noncomputable def EReal.divENNReal : EReal → ENNReal → EReal :=
+  fun (a : EReal) (b : ENNReal) ↦ a * b⁻¹
