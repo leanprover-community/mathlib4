@@ -547,7 +547,7 @@ lemma isCoprime_y_z : IsCoprime S.y S.z := by
   · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
     rw [z_spec, coe_eta]
 
-lemma x_mul_y_mul_z_eq_u_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
+lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
   suffices hh : λ ^ (3 * S.multiplicity - 2) * S.x * λ * S.y * λ * S.z =
       S.u * λ ^ (3 * S.multiplicity) * S.w ^ 3 by
     rw [show λ ^ (3 * multiplicity S - 2) * x S * λ * y S * λ * z S =
@@ -567,7 +567,7 @@ lemma x_mul_y_mul_z_eq_u_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
 
 lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X ^ 3 := by
   have h1 : S.x * (S.y * S.z * S.u⁻¹) = S.w ^ 3 := by
-    simp [← mul_assoc, x_mul_y_mul_z_eq_u_w_cube, mul_comm _ (S.w ^ 3)]
+    simp [← mul_assoc, x_mul_y_mul_z_eq_u_mul_w_cube, mul_comm _ (S.w ^ 3)]
   have h2 : IsCoprime S.x (S.y * S.z * S.u⁻¹) :=
     (isCoprime_mul_unit_right_right (Units.isUnit _) S.x _).2 <|
       IsCoprime.mul_right S.isCoprime_x_y S.isCoprime_x_z
@@ -576,7 +576,7 @@ lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X 
 
 lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y ^ 3 := by
   have h1 : S.y * (S.x * S.z * S.u⁻¹) = S.w ^ 3 := by
-    rw [← mul_assoc, ← mul_assoc S.y, mul_comm S.y, x_mul_y_mul_z_eq_u_w_cube]
+    rw [← mul_assoc, ← mul_assoc S.y, mul_comm S.y, x_mul_y_mul_z_eq_u_mul_w_cube]
     simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
   have h2 : IsCoprime S.y (S.x * S.z * S.u⁻¹) :=
     (isCoprime_mul_unit_right_right (Units.isUnit _) S.y _).2 <|
@@ -587,7 +587,7 @@ lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y 
 lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z ^ 3 := by
   have h1 : S.z * (S.x * S.y * S.u⁻¹) = S.w ^ 3 := by
     rw [← mul_assoc, ← mul_assoc S.z, mul_comm S.z, mul_assoc S.x, mul_comm S.z, ← mul_assoc,
-      x_mul_y_mul_z_eq_u_w_cube]
+      x_mul_y_mul_z_eq_u_mul_w_cube]
     simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
   have h2 : IsCoprime S.z (S.x * S.y * S.u⁻¹) :=
     (isCoprime_mul_unit_right_right (Units.isUnit _) S.z _).2 <|
