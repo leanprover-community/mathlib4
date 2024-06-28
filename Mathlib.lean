@@ -719,6 +719,7 @@ import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Prod
 import Mathlib.Algebra.Star.Rat
+import Mathlib.Algebra.Star.Regular
 import Mathlib.Algebra.Star.RingQuot
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarAlgHom
