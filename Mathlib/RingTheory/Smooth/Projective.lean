@@ -493,12 +493,12 @@ end Algebra
 
 end H1Cotangent
 
+variable (R S) in
 /--
 This is the first homology of the naive cotangent complex,
 defined as the kernel of `I/I² → S ⊗[R[S]] Ω[R[S]⁄R]` with `0 → I → R[S] → S → 0` being the
 standard presentation.
 -/
-variable (R S) in
 abbrev Algebra.H1Cotangent : Type _ := (Generators.self R S).H1Cotangent
 
 /-- `S` is a formally smooth algebra over `R` iff `H¹(L[S/R]) = 0` and `Ω[S⁄R]` is projective. -/
@@ -510,5 +510,5 @@ theorem Algebra.FormallySmooth.iff_of_generators (P : Generators.{u} R S) :
 
 /-- `S` is a formally smooth algebra over `R` iff `H¹(L[S/R]) = 0` and `Ω[S⁄R]` is projective. -/
 theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
-    Algebra.FormallySmooth R S ↔ Subsingleton (H1Cotangent R S) ∧ Module.Projective S (Ω[S⁄R]) := by
+    Algebra.FormallySmooth R S ↔ Subsingleton (H1Cotangent R S) ∧ Module.Projective S (Ω[S⁄R]) :=
   Algebra.FormallySmooth.iff_of_generators _
