@@ -47,7 +47,7 @@ This file contains basics about the (relative) separable closure of a field exte
 - `separableClosure.isSepClosure`: the separable closure in a separably closed extension
   is a separable closure of the base field.
 
-- `IntermediateField.isSeparable_adjoin_iff_separable`: `F(S) / F` is a separable extension if and
+- `IntermediateField.isSeparable_adjoin_iff_isSeparable`: `F(S) / F` is a separable extension if and
   only if all elements of `S` are separable elements.
 
 - `separableClosure.eq_top_iff`: the separable closure of `F` in `E` is equal to `E`
@@ -77,10 +77,10 @@ of `E / F`, is defined to be the intermediate field of `E / F` consisting of all
 elements. The previous results prove that these elements are closed under field operations. -/
 def separableClosure : IntermediateField F E where
   carrier := {x | IsSeparable F x}
-  mul_mem' := separable_mul
-  add_mem' := separable_add
-  algebraMap_mem' := separable_algebraMap E
-  inv_mem' := separable_inv
+  mul_mem' := isSeparable_mul
+  add_mem' := isSeparable_add
+  algebraMap_mem' := isSeparable_algebraMap E
+  inv_mem' := isSeparable_inv
 
 variable {F E K}
 
@@ -164,7 +164,7 @@ theorem le_separableClosure_iff (L : IntermediateField F E) :
 /-- The separable closure in `E` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.separableClosure_eq_bot :
     separableClosure (separableClosure F E) E = ⊥ := bot_unique fun x hx ↦
-  mem_bot.2 ⟨⟨x, mem_separableClosure_iff.1 hx |>.comap_minpoly_of_isSeparable F⟩, rfl⟩
+  mem_bot.2 ⟨⟨IsSeparable.of_algebra_isSeparable_of_isSeparable F (x, mem_separableClosure_iff.1 hx)⟩, rfl⟩
 
 /-- The normal closure in `E/F` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.normalClosure_eq_self :
@@ -205,7 +205,7 @@ abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
-theorem IntermediateField.isSeparable_adjoin_iff_separable {S : Set E} :
+theorem IntermediateField.isSeparable_adjoin_iff_isSeparable {S : Set E} :
     Algebra.IsSeparable F (adjoin F S) ↔ ∀ x ∈ S, IsSeparable F x :=
   (le_separableClosure_iff F E _).symm.trans adjoin_le_iff
 
@@ -224,7 +224,8 @@ theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] 
 `separableClosure F K` is equal to `separableClosure E K`. -/
 theorem separableClosure.eq_restrictScalars_of_isSeparable [Algebra E K] [IsScalarTower F E K]
     [Algebra.IsSeparable F E] : separableClosure F K = (separableClosure E K).restrictScalars F :=
-  (separableClosure.le_restrictScalars F E K).antisymm fun _ h ↦ h.comap_minpoly_of_isSeparable F
+  (separableClosure.le_restrictScalars F E K).antisymm fun _ h ↦
+    IsSeparable.of_algebra_isSeparable_of_isSeparable F h
 
 /-- If `K / E / F` is a field extension tower, then `E` adjoin `separableClosure F K` is contained
 in `separableClosure E K`. -/

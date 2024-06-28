@@ -101,7 +101,7 @@ of fields.
   the same separable degree. In particular, if `S` is an intermediate field of `K / F` such that
   `S / F` is algebraic, the `E(S) / E` and `S / F` have the same separable degree.
 
-- `minpoly.map_eq_of_separable_of_isPurelyInseparable`: if `K / E / F` is a field extension tower,
+- `minpoly.map_eq_of_isSeparable_of_isPurelyInseparable`: if `K / E / F` is a field extension tower,
   such that `E / F` is purely inseparable, then for any element `x` of `K` separable over `F`,
   it has the same minimal polynomials over `F` and over `E`.
 
@@ -573,10 +573,10 @@ theorem separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
   set L := separableClosure F E
   refine ⟨(IsAlgebraic.tower_top L (Algebra.IsAlgebraic.isAlgebraic (R := F) x)).isIntegral,
     fun h ↦ ?_⟩
-  haveI := (isSeparable_adjoin_simple_iff_separable L E).2 h
+  haveI := (isSeparable_adjoin_simple_iff_isSeparable L E).2 h
   haveI : Algebra.IsSeparable F (restrictScalars F L⟮x⟯) := Algebra.IsSeparable.trans F L L⟮x⟯
   have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
-  exact ⟨⟨x, mem_separableClosure_iff.2 <| separable_of_mem_isSeparable F E hx⟩, rfl⟩
+  exact ⟨⟨x, mem_separableClosure_iff.2 <| isSeparable_of_mem_isSeparable F E hx⟩, rfl⟩
 
 /-- An intermediate field of `E / F` contains the separable closure of `F` in `E`
 if `E` is purely inseparable over it. -/
@@ -762,11 +762,11 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparabl
 /-- If `E / F` is a field extension of exponential characteristic `q`, if `{ u_i }` is a
 family of separable elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }`
 is also `F`-linearly independent for any natural number `n`. -/
-theorem LinearIndependent.map_pow_expChar_pow_of_separable
+theorem LinearIndependent.map_pow_expChar_pow_of_isIntegral'
     (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   let E' := adjoin F (Set.range v)
-  haveI : Algebra.IsSeparable F E' := (isSeparable_adjoin_iff_separable F _).2 <| by
+  haveI : Algebra.IsSeparable F E' := (isSeparable_adjoin_iff_isSeparable F _).2 <| by
     rintro _ ⟨y, rfl⟩; exact hsep y
   let v' (i : ι) : E' := ⟨v i, subset_adjoin F _ ⟨i, rfl⟩⟩
   have h' : LinearIndependent F v' := h.of_comp E'.val.toLinearMap
@@ -896,7 +896,7 @@ variable {F K} in
 /-- If `K / E / F` is a field extension tower such that `E / F` is purely inseparable,
 if `{ u_i }` is a family of separable elements of `K` which is `F`-linearly independent,
 then it is also `E`-linearly independent. -/
-theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInseparable F E]
+theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyInseparable F E]
     {ι : Type*} {v : ι → K} (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent E v := by
   obtain ⟨q, _⟩ := ExpChar.exists F
@@ -915,7 +915,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInsep
     contrapose!
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
     rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow this]
-  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_separable q n hsep) lF₀ <| by
+  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isIntegral' q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
     rw [Finsupp.total_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
     rw [← hl, Finsupp.total_apply, Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
@@ -938,7 +938,7 @@ lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
   rw [separableClosure.adjoin_eq_of_isAlgebraic_of_isSeparable K, rank_top'] at h
   obtain ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
   exact h.antisymm' (b.mk_eq_rank'' ▸ (b.linearIndependent.map' S.val.toLinearMap
-    (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_separable E
+    (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_isSeparable E
       (fun i ↦ by simpa only [minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i)) |>.cardinal_le_rank))
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
@@ -1037,7 +1037,7 @@ variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any element `x` of `K` separable over `F`, it has the same minimal polynomials over `F` and
 over `E`. -/
-theorem minpoly.map_eq_of_separable_of_isPurelyInseparable (x : K)
+theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
     (hsep : IsSeparable F x) [IsPurelyInseparable F E] :
     (minpoly F x).map (algebraMap F E) = minpoly E x := by
   have hi := IsSeparable.isIntegral hsep
@@ -1045,8 +1045,8 @@ theorem minpoly.map_eq_of_separable_of_isPurelyInseparable (x : K)
   refine eq_of_monic_of_dvd_of_natDegree_le (monic hi') ((monic hi).map (algebraMap F E))
     (dvd_map_of_isScalarTower F E x) (le_of_eq ?_)
   have hsep' := IsSeparable.of_isScalarTower E hsep
-  haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
-  haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep'
+  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
+  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
   have := Algebra.IsSeparable.isAlgebraic E E⟮x⟯
   rw [Polynomial.natDegree_map, ← adjoin.finrank hi, ← adjoin.finrank hi',
@@ -1067,7 +1067,7 @@ theorem Polynomial.Separable.map_irreducible_of_isPurelyInseparable {f : F[X]} (
     exact ⟨this.unit, by rw [IsUnit.unit_spec, minpoly.eq_of_irreducible hirr hx]⟩
   have ha' : Associated (f.map (algebraMap F E)) ((minpoly F x).map (algebraMap F E)) :=
     ha.map (mapRingHom (algebraMap F E)).toMonoidHom
-  have heq := minpoly.map_eq_of_separable_of_isPurelyInseparable E x (ha.separable hsep)
+  have heq := minpoly.map_eq_of_isSeparable_of_isPurelyInseparable E x (ha.separable hsep)
   rw [ha'.irreducible_iff, heq]
   exact minpoly.irreducible (Algebra.IsIntegral.isIntegral x)
 
