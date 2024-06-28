@@ -4,14 +4,24 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
-import Mathlib.Order.KrullDimension
+import Mathlib.Topology.KrullDimension
 
 /-!
-# Krull dimension of a (commutative) ring
+# Krull dimensions of (commutative) rings
 
-Given a commutative ring, its ring theoretic krull dimension is the order theoretic krull dimension
-applied to its prime spectrum. Unfolding this definition, it is the length of longest series of
+Given a commutative ring, its ring theoretic Krull dimension is the order theoretic Krull dimension
+applied to its prime spectrum. Unfolding this definition, it is the length of the longest series of
 prime ideals ordered by inclusion.
+
+Key results in this file include:
+1. the ring theoretic Krull dimension of a commutative ring is equal to the topological Krull
+   dimension of its prime spectrum;
+2. given a surjective homomorphism `f : R →+* S` of commutative rings, the Krull dimension of `S`
+   cannot exceed that of `R`;
+3. the Krull dimension of any quotient ring of a commutative ring must be less than or equal to
+   the Krull dimension of that commutative ring;
+4. two isomorphic commutative rings have the same Krull dimension;
+5. the Krull dimension of a field is zero.
 -/
 
 /--
@@ -22,7 +32,23 @@ noncomputable abbrev ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop �
 
 namespace ringKrullDim
 
-/-- If `R ⟶ S` is a surjective ring homomorphism, then `ringKrullDim S ≤ ringKrullDim R`. -/
+open PrimeSpectrum OrderDual in
+lemma eq_topologicalKrullDim (R : Type _) [CommRing R] :
+    ringKrullDim R = topologicalKrullDim (PrimeSpectrum R) :=
+  Eq.symm $ krullDim_orderDual.symm.trans $ krullDim_eq_of_orderIso $ OrderIso.symm {
+    toFun := fun p ↦ ⟨zeroLocus p.asIdeal, isIrreducible_zeroLocus_iff _ |>.mpr <| by
+      simpa only [p.isPrime.radical] using p.isPrime, isClosed_zeroLocus p.asIdeal⟩
+    invFun := fun s ↦ ⟨vanishingIdeal s.1, isIrreducible_iff_vanishingIdeal_isPrime.mp s.2.1⟩
+    left_inv := fun p ↦ PrimeSpectrum.ext _ _ <| by
+      simp_rw [vanishingIdeal_zeroLocus_eq_radical, p.isPrime.radical]
+    right_inv := fun s ↦ Subtype.ext <| by
+      simpa [zeroLocus_vanishingIdeal_eq_closure] using s.2.2.closure_eq
+    map_rel_iff' := by
+      intro p q
+      change zeroLocus _ ≤ zeroLocus _ ↔ _
+      simp [zeroLocus_subset_zeroLocus_iff, q.isPrime.radical] }
+
+/-- If `f : R →+* S` is surjective, then `ringKrullDim S ≤ ringKrullDim R`. -/
 theorem le_of_surj (R S : Type _) [CommRing R] [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) : ringKrullDim S ≤ ringKrullDim R :=
   krullDim_le_of_strictMono (PrimeSpectrum.comap f) (Monotone.strictMono_of_injective
@@ -38,5 +64,15 @@ theorem eq_of_ringEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S)
     ringKrullDim R = ringKrullDim S :=
   le_antisymm (le_of_surj S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
     (le_of_surj R S e (EquivLike.surjective e))
+
+section Field
+
+lemma eq_zero_of_field (F : Type _) [Field F] : ringKrullDim F = 0 :=
+  krullDim_eq_zero_of_unique
+
+lemma eq_zero_of_isField (F : Type _) [CommRing F] (hF : IsField F) : ringKrullDim F = 0 :=
+  @krullDim_eq_zero_of_unique _ _ <| @PrimeSpectrum.instUnique _ hF.toField
+
+end Field
 
 end ringKrullDim
