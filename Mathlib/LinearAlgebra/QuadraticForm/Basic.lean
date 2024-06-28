@@ -134,6 +134,10 @@ end QuadraticForm
 
 end Polar
 
+/-- The proposition that a bilinear form acts as a companion to a-/
+structure LinearMap.BilinForm.IsCompanion {R M} [CommSemiring R] [AddCommMonoid M] [Module R M]
+    (B : BilinForm R M) (Q : M → R) : Prop where
+  map_add (x y) : Q (x + y) = Q x + Q y + B x y
 /-- A quadratic form over a module.
 
 For a more familiar constructor when `R` is a ring, see `QuadraticForm.ofPolar`. -/
@@ -141,8 +145,7 @@ structure QuadraticForm (R : Type u) (M : Type v)
     [CommSemiring R] [AddCommMonoid M] [Module R M] where
   toFun : M → R
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = a * a * toFun x
-  exists_companion' :
-    ∃ B : BilinForm R M, ∀ x y, toFun (x + y) = toFun x + toFun y + B x y
+  exists_companion' : ∃ B : BilinForm R M, B.IsCompanion toFun
 #align quadratic_form QuadraticForm
 
 namespace QuadraticForm
@@ -216,7 +219,7 @@ theorem map_smul (a : R) (x : M) : Q (a • x) = a * a * Q x :=
   Q.toFun_smul a x
 #align quadratic_form.map_smul QuadraticForm.map_smul
 
-theorem exists_companion : ∃ B : BilinForm R M, ∀ x y, Q (x + y) = Q x + Q y + B x y :=
+theorem exists_companion : ∃ B : BilinForm R M, B.IsCompanion Q :=
   Q.exists_companion'
 #align quadratic_form.exists_companion QuadraticForm.exists_companion
 
@@ -224,7 +227,7 @@ theorem map_add_add_add_map (x y z : M) :
     Q (x + y + z) + (Q x + Q y + Q z) = Q (x + y) + Q (y + z) + Q (z + x) := by
   obtain ⟨B, h⟩ := Q.exists_companion
   rw [add_comm z x]
-  simp only [h, map_add, LinearMap.add_apply]
+  simp only [h.map_add, map_add, LinearMap.add_apply]
   abel
 #align quadratic_form.map_add_add_add_map QuadraticForm.map_add_add_add_map
 
@@ -275,7 +278,8 @@ theorem polar_add_left (x x' y : M) : polar Q (x + x') y = polar Q x y + polar Q
 @[simp]
 theorem polar_smul_left (a : R) (x y : M) : polar Q (a • x) y = a * polar Q x y := by
   obtain ⟨B, h⟩ := Q.exists_companion
-  simp_rw [polar, h, Q.map_smul, LinearMap.map_smul₂, sub_sub, add_sub_cancel_left, smul_eq_mul]
+  simp_rw [polar, h.map_add, Q.map_smul, LinearMap.map_smul₂, sub_sub, add_sub_cancel_left,
+    smul_eq_mul]
 #align quadratic_form.polar_smul_left QuadraticForm.polar_smul_left
 
 @[simp]
@@ -349,15 +353,15 @@ def ofPolar (toFun : M → R) (toFun_smul : ∀ (a : R) (x : M), toFun (a • x)
     exists_companion' := ⟨LinearMap.mk₂ R (polar toFun) (polar_add_left) (polar_smul_left)
       (fun x _ _ ↦ by simp_rw [polar_comm _ x, polar_add_left])
       (fun _ _ _ ↦ by rw [polar_comm, polar_smul_left, polar_comm]),
-      fun _ _ ↦ by
+      ⟨fun _ _ ↦ by
         simp only [LinearMap.mk₂_apply]
-        rw [polar, sub_sub, add_sub_cancel]⟩ }
+        rw [polar, sub_sub, add_sub_cancel]⟩⟩ }
 #align quadratic_form.of_polar QuadraticForm.ofPolar
 
 /-- In a ring the companion bilinear form is unique and equal to `QuadraticForm.polar`. -/
 theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
   LinearMap.ext₂ fun x y => by
-    rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub,
+    rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec.map_add, sub_sub,
       add_sub_cancel_left]
 #align quadratic_form.some_exists_companion QuadraticForm.choose_exists_companion
 
@@ -405,6 +409,12 @@ section SMul
 variable [Monoid S] [Monoid T] [DistribMulAction S R] [DistribMulAction T R]
 variable [SMulCommClass S R R] [SMulCommClass T R R]
 
+theorem _root_.LinearMap.BilinForm.IsCompanion.smul
+    {B : BilinForm R M} {Q : M → R} (s : S) (h : B.IsCompanion Q) :
+    letI := SMulCommClass.symm S R R
+    BilinForm.IsCompanion (s • B) (s • Q) where
+  map_add x y := by simp [h.map_add]
+
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
 This provides an `R`-action via `Algebra.id`. -/
@@ -415,7 +425,7 @@ instance : SMul S (QuadraticForm R M) :=
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
         letI := SMulCommClass.symm S R R
-        ⟨a • B, by simp [h]⟩ }⟩
+        ⟨a • B, .smul a h⟩ }⟩
 
 @[simp]
 theorem coeFn_smul (a : S) (Q : QuadraticForm R M) : ⇑(a • Q) = a • ⇑Q :=
