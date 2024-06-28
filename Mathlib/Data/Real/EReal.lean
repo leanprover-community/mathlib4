@@ -1481,7 +1481,6 @@ as the multiplication by the coercion of its inverse. It is an instance of divis
 /--
 Division of an extended real (`EReal`) by an extended nonnegative real (`ENNReal`).
 Defined by inversion in `[0, ∞]`, coercion to `[-∞,+∞]`, and multiplication in `[-∞,+∞]`.--/
-
 noncomputable def divENNReal : EReal → ENNReal → EReal :=
   fun (a : EReal) (b : ENNReal) ↦ a * b⁻¹
 
