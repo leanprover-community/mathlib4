@@ -924,7 +924,7 @@ end deprecated
 -- not just use the equational lemmas.
 
 -- @[simp]
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
 #align list.modify_head_modify_head List.modifyHead_modifyHead
