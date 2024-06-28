@@ -327,8 +327,8 @@ lemma iff_lTensor_exact [Small.{v} R] :
     Flat R M ↔
     ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N'']
-      (f : N →ₗ[R] N') (g : N' →ₗ[R] N''), Function.Exact f g →
-      Function.Exact (f.lTensor M) (g.lTensor M) := by
+      (f : N →ₗ[R] N') (g : N' →ₗ[R] N''),
+        Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) := by
   refine ⟨fun _ => lTensor_exact R M, fun H => iff_lTensor_preserves_injective_linearMap R M |>.mpr
     fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) => ?_⟩
@@ -343,8 +343,8 @@ lemma iff_rTensor_exact [Small.{v} R] :
     Flat R M ↔
     ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N'']
-      (f : N →ₗ[R] N') (g : N' →ₗ[R] N''), Function.Exact f g →
-      Function.Exact (f.rTensor M) (g.rTensor M) := by
+      (f : N →ₗ[R] N') (g : N' →ₗ[R] N''),
+        Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) := by
   refine ⟨fun _ => rTensor_exact R M, fun H => iff_rTensor_preserves_injective_linearMap R M |>.mpr
     fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) => ?_⟩
