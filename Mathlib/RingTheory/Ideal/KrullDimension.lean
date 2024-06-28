@@ -33,7 +33,7 @@ noncomputable abbrev ringKrullDim (R : Type _) [CommRing R] : WithBot (WithTop �
 namespace ringKrullDim
 
 open PrimeSpectrum OrderDual in
-lemma eq_topologicalKrullDim (R : Type _) [CommRing R] :
+theorem eq_topologicalKrullDim (R : Type _) [CommRing R] :
     ringKrullDim R = topologicalKrullDim (PrimeSpectrum R) :=
   Eq.symm $ krullDim_orderDual.symm.trans $ krullDim_eq_of_orderIso $ OrderIso.symm {
     toFun := fun p ↦ ⟨zeroLocus p.asIdeal, isIrreducible_zeroLocus_iff _ |>.mpr <| by
@@ -67,10 +67,10 @@ theorem eq_of_ringEquiv (R S : Type _) [CommRing R] [CommRing S] (e : R ≃+* S)
 
 section Field
 
-lemma eq_zero_of_field (F : Type _) [Field F] : ringKrullDim F = 0 :=
+theorem eq_zero_of_field (F : Type _) [Field F] : ringKrullDim F = 0 :=
   krullDim_eq_zero_of_unique
 
-lemma eq_zero_of_isField (F : Type _) [CommRing F] (hF : IsField F) : ringKrullDim F = 0 :=
+theorem eq_zero_of_isField (F : Type _) [CommRing F] (hF : IsField F) : ringKrullDim F = 0 :=
   @krullDim_eq_zero_of_unique _ _ <| @PrimeSpectrum.instUnique _ hF.toField
 
 end Field
