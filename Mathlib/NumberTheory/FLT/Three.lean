@@ -515,25 +515,39 @@ lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
 attribute [instance] IsCyclotomicExtension.Rat.three_pid
 
 lemma coprime_x_y : IsCoprime S.x S.y := by
-  apply isCoprime_of_prime_dvd
-  · simp only [not_and]
-    intro _  hy
-    apply lambda_not_dvd_y S
-    simp [hy]
-  · intro p hp p_dvd_x p_dvd_y
-    have aux1 := dvd_mul_of_dvd_right p_dvd_x (λ ^ (3 * S.multiplicity - 2))
-    rw [← x_spec] at aux1
-    have aux2 := dvd_mul_of_dvd_right p_dvd_y (η -1)
-    rw [coe_eta, ← y_spec] at aux2
-    have aux3 : Associated p (hζ.toInteger - 1) := by
-      apply associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b
-      exact hp
-      exact aux1
-      exact aux2
-    have aux4 : λ ∣ S.x := by
-      rw [← Associated.dvd_iff_dvd_left aux3]
-      exact p_dvd_x
-    exact lambda_not_dvd_x S aux4
+  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hy ↦ lambda_not_dvd_y S (by simp [hy]))) ?_
+  intro p hp p_dvd_x p_dvd_y
+  refine lambda_not_dvd_x S ?_
+  rw [← Associated.dvd_iff_dvd_left <| associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b S hp ?_ ?_]
+  · exact p_dvd_x
+  · rw [x_spec]
+    exact dvd_mul_of_dvd_right p_dvd_x (λ ^ (3 * S.multiplicity - 2))
+  · convert dvd_mul_of_dvd_right p_dvd_y (η -1) using 1
+    rw [y_spec, coe_eta]
+
+lemma coprime_x_z : IsCoprime S.x S.z := by
+  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
+  intro p hp p_dvd_x p_dvd_z
+  refine lambda_not_dvd_x S ?_
+  rw [← Associated.dvd_iff_dvd_left <|
+    associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b S hp ?_ ?_]
+  · exact p_dvd_x
+  · rw [x_spec]
+    exact dvd_mul_of_dvd_right p_dvd_x (λ ^ (3 * S.multiplicity - 2))
+  · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
+    rw [z_spec, coe_eta]
+
+lemma coprime_y_z : IsCoprime S.y S.z := by
+  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
+  intro p hp p_dvd_y p_dvd_z
+  refine lambda_not_dvd_y S ?_
+  rw [← Associated.dvd_iff_dvd_left <|
+    associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b S hp ?_ ?_]
+  · exact p_dvd_y
+  · rw [y_spec]
+    exact dvd_mul_of_dvd_right p_dvd_y (η - 1)
+  · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
+    rw [z_spec, coe_eta]
 
 end Solution
 
