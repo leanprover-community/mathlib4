@@ -1471,6 +1471,21 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
   map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 #align ereal.coe_ennreal_pow EReal.coe_ennreal_pow
 
+/-!
+# Division By Extended Nonnegative Reals
+
+We define a division of an extended real `EReal` by an extended nonnegative real `ENNReal`
+as the multiplication by the coercion of its inverse. It is an instance of division.
+-/
+
+/--
+Division of an extended real (`EReal`) by an extended nonnegative real (`ENNReal`).
+Defined by inversion in `[0, ∞]`, coercion to `[-∞,+∞]`, and multiplication in `[-∞,+∞]`.--/
+noncomputable def divENNReal : EReal → ENNReal → EReal :=
+  fun (a : EReal) (b : ENNReal) ↦ a * b⁻¹
+
+noncomputable instance ENNReal.instHDiv : HDiv EReal ENNReal EReal where
+  hDiv := divENNReal
 
 theorem div_eq_inv_mul {a : EReal} {b : ENNReal} : a / b = b⁻¹ * a := mul_comm _ _
 
