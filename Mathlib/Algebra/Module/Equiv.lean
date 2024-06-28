@@ -1132,14 +1132,11 @@ def smulOfUnit (a : Rˣ) : M ≃ₗ[R] M :=
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism between the two function spaces. -/
-def arrowCongr {R R₁ M₁ M₂ M₂₁ M₂₂ : Type*} [CommSemiring R] [Semiring R₁] [AddCommMonoid M₁]
-    [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R₁ M₁] [Module R₁ M₂]
-    [Module R₁ M₂₁] [Module R₁ M₂₂] [Module R M₂₁] [Module R M₂₂] [SMulCommClass R₁ R M₂₁]
-    [SMulCommClass R₁ R M₂₂]
-    (e₁ : M₁ ≃ₗ[R₁] M₂) (e₂ : M₂₁ ≃ₗ[R₁] M₂₂) (h : ∀ (c : R) (x), e₂ (c • x) = c • e₂ x) :
-    (M₁ →ₗ[R₁] M₂₁) ≃ₗ[R] M₂ →ₗ[R₁] M₂₂ where
-  toFun := fun f : M₁ →ₗ[R₁] M₂₁ => (e₂ : M₂₁ →ₗ[R₁] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R₁] M₁)
-  invFun f := (e₂.symm : M₂₂ →ₗ[R₁] M₂₁).comp <| f.comp (e₁ : M₁ →ₗ[R₁] M₂)
+def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
+    [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁]
+    [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[R] M₂ →ₗ[R] M₂₂ where
+  toFun := fun f : M₁ →ₗ[R] M₂₁ => (e₂ : M₂₁ →ₗ[R] M₂₂).comp <| f.comp (e₁.symm : M₂ →ₗ[R] M₁)
+  invFun f := (e₂.symm : M₂₂ →ₗ[R] M₂₁).comp <| f.comp (e₁ : M₁ →ₗ[R] M₂)
   left_inv f := by
     ext x
     simp only [symm_apply_apply, Function.comp_apply, coe_comp, coe_coe]
@@ -1151,17 +1148,14 @@ def arrowCongr {R R₁ M₁ M₂ M₂₁ M₂₂ : Type*} [CommSemiring R] [Semi
     simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
   map_smul' c f := by
     ext x
-    simp  [smul_apply, Function.comp_apply, coe_comp, map_smulₛₗ e₂, coe_coe, IsLinearMap.map_smul,
-      h]
+    simp only [smul_apply, Function.comp_apply, coe_comp, map_smulₛₗ e₂, coe_coe]
 #align linear_equiv.arrow_congr LinearEquiv.arrowCongr
 
 @[simp]
-theorem arrowCongr_apply {R R₁ M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [Semiring R₁]
-    [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R₁ M₁]
-    [Module R₁ M₂] [Module R₁ M₂₁] [Module R₁ M₂₂] [Module R M₂₁] [Module R M₂₂]
-    [SMulCommClass R₁ R M₂₁] [SMulCommClass R₁ R M₂₂] (e₁ : M₁ ≃ₗ[R₁] M₂) (e₂ : M₂₁ ≃ₗ[R₁] M₂₂)
-    (h : ∀ (c : R) (x), e₂ (c • x) = c • e₂ x) (f : M₁ →ₗ[R₁] M₂₁) (x : M₂) :
-    arrowCongr e₁ e₂ h f x = e₂ (f (e₁.symm x)) :=
+theorem arrowCongr_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
+    [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂]
+    [Module R M₂₁] [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) (f : M₁ →ₗ[R] M₂₁)
+    (x : M₂) : arrowCongr e₁ e₂ f x = e₂ (f (e₁.symm x)) :=
   rfl
 #align linear_equiv.arrow_congr_apply LinearEquiv.arrowCongr_apply
 
@@ -1169,15 +1163,14 @@ theorem arrowCongr_apply {R R₁ M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiri
 theorem arrowCongr_symm_apply {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂]
     [Module R M₂₁] [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) (f : M₂ →ₗ[R] M₂₂)
-    (x : M₁) : (arrowCongr e₁ e₂ (map_smul _)).symm f x = e₂.symm (f (e₁ x)) :=
+    (x : M₁) : (arrowCongr e₁ e₂).symm f x = e₂.symm (f (e₁ x)) :=
   rfl
 #align linear_equiv.arrow_congr_symm_apply LinearEquiv.arrowCongr_symm_apply
 
 theorem arrowCongr_comp {N N₂ N₃ : Sort _} [AddCommMonoid N] [AddCommMonoid N₂] [AddCommMonoid N₃]
     [Module R N] [Module R N₂] [Module R N₃] (e₁ : M ≃ₗ[R] N) (e₂ : M₂ ≃ₗ[R] N₂) (e₃ : M₃ ≃ₗ[R] N₃)
     (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) :
-    arrowCongr e₁ e₃ (map_smul _) (g.comp f) =
-      (arrowCongr e₂ e₃ (map_smul _) g).comp (arrowCongr e₁ e₂ (map_smul _) f) := by
+    arrowCongr e₁ e₃ (g.comp f) = (arrowCongr e₂ e₃ g).comp (arrowCongr e₁ e₂ f) := by
   ext
   simp only [symm_apply_apply, arrowCongr_apply, LinearMap.comp_apply]
 #align linear_equiv.arrow_congr_comp LinearEquiv.arrowCongr_comp
@@ -1186,21 +1179,20 @@ theorem arrowCongr_trans {M₁ M₂ M₃ N₁ N₂ N₃ : Sort _} [AddCommMonoid
     [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃] [AddCommMonoid N₁]
     [Module R N₁] [AddCommMonoid N₂] [Module R N₂] [AddCommMonoid N₃] [Module R N₃]
     (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : N₁ ≃ₗ[R] N₂) (e₃ : M₂ ≃ₗ[R] M₃) (e₄ : N₂ ≃ₗ[R] N₃) :
-    (arrowCongr e₁ e₂ (map_smul _)).trans (arrowCongr e₃ e₄ (map_smul _)) =
-      arrowCongr (e₁.trans e₃) (e₂.trans e₄) (map_smul _):=
+    (arrowCongr e₁ e₂).trans (arrowCongr e₃ e₄) = arrowCongr (e₁.trans e₃) (e₂.trans e₄) :=
   rfl
 #align linear_equiv.arrow_congr_trans LinearEquiv.arrowCongr_trans
 
 /-- If `M₂` and `M₃` are linearly isomorphic then the two spaces of linear maps from `M` into `M₂`
 and `M` into `M₃` are linearly isomorphic. -/
 def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ[R] M₃ :=
-  arrowCongr (LinearEquiv.refl R M) f (map_smul _)
+  arrowCongr (LinearEquiv.refl R M) f
 #align linear_equiv.congr_right LinearEquiv.congrRight
 
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
 themselves are linearly isomorphic. -/
 def conj (e : M ≃ₗ[R] M₂) : Module.End R M ≃ₗ[R] Module.End R M₂ :=
-  arrowCongr e e (map_smul _)
+  arrowCongr e e
 #align linear_equiv.conj LinearEquiv.conj
 
 theorem conj_apply (e : M ≃ₗ[R] M₂) (f : Module.End R M) :
