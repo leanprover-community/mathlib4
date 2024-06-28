@@ -52,8 +52,7 @@ theorem wronskian_anticomm (a b : R[X]) : wronskian a b = -wronskian b a := by
   rw [wronskian, wronskian]; ring
 
 theorem wronskian_eq_of_sum_zero {a b c : R[X]} (h : a + b + c = 0) :
-    wronskian a b = wronskian b c :=
-  by
+    wronskian a b = wronskian b c := by
   rw [← neg_eq_iff_add_eq_zero] at h
   rw [← h]
   rw [wronskian_neg_right]
@@ -66,8 +65,7 @@ private theorem degree_ne_bot {a : R[X]} (ha : a ≠ 0) : a.degree ≠ ⊥ := by
   intro h; rw [Polynomial.degree_eq_bot] at h; exact ha h
 
 theorem wronskian.degree_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
-    (wronskian a b).degree < a.degree + b.degree :=
-  by
+    (wronskian a b).degree < a.degree + b.degree := by
   calc
     (wronskian a b).degree ≤ max (a * derivative b).degree (derivative a * b).degree :=
       Polynomial.degree_sub_le _ _
@@ -90,8 +88,7 @@ theorem wronskian.degree_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
       }
 
 theorem wronskian.natDegree_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
-    (wronskian a b).natDegree < a.natDegree + b.natDegree :=
-  by
+    (wronskian a b).natDegree < a.natDegree + b.natDegree := by
   have ha : a ≠ 0 := by intro h; subst h; rw [wronskian_zero_left] at hw; exact hw rfl
   have hb : b ≠ 0 := by intro h; subst h; rw [wronskian_zero_right] at hw; exact hw rfl
   rw [← WithBot.coe_lt_coe, WithBot.coe_add]
