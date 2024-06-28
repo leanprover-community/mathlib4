@@ -1553,6 +1553,9 @@ theorem div_left_mono (b : ENNReal) : Monotone fun a : EReal ↦ a / b := by
   apply mul_le_mul_of_nonneg_right h
   norm_cast
   exact bot_le
+
+theorem div_left_mono' {a a' : EReal} (b : ENNReal) (h : a ≤ a') : a / b ≤ a' / b :=
+  div_left_mono b h
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
