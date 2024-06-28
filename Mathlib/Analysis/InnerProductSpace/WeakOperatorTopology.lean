@@ -129,22 +129,30 @@ of this topology. In particular, we show that it is a topological vector space.
 -/
 section Topology
 
+variable (𝕜) (E) (F) in
+/-- The function that induces the topology on `E →WOT[𝕜] F`, namely the function that takes
+an `A` and maps it to `fun ⟨x, y⟩ => ⟪x, A y⟫` in `E × F → 𝕜`. -/
+def inducingFn : (E →WOT[𝕜] F) →ₗ[𝕜] (E × F → 𝕜) where
+  toFun := fun A ⟨x, y⟩ => ⟪y, A x⟫
+  map_add' := fun x y => by ext; simp [inner_add_right]
+  map_smul' := fun x y => by ext; simp [inner_smul_right]
+
 /-- The weak operator topology is the coarsest topology such that `fun A => ⟪x, A y⟫` is
 continuous for all `x, y`. -/
 instance instTopologicalSpace : TopologicalSpace (E →WOT[𝕜] F) :=
-  TopologicalSpace.induced (fun A (⟨x, y⟩ : E × F) => ⟪y, A x⟫) Pi.topologicalSpace
+  .induced (inducingFn _ _ _) Pi.topologicalSpace
 
-lemma coeFn_continuous : Continuous fun (A : E →WOT[𝕜] F) (⟨x, y⟩ : E × F) => ⟪y, A x⟫ :=
+lemma continuous_inducingFn : Continuous (inducingFn 𝕜 E F) :=
   continuous_induced_dom
 
-lemma inner_apply_continuous (x : E) (y : F) : Continuous fun (A : E →WOT[𝕜] F) => ⟪y, A x⟫ := by
-  refine (continuous_pi_iff.mp coeFn_continuous) ⟨x, y⟩
+lemma continuous_inner_apply (x : E) (y : F) : Continuous fun (A : E →WOT[𝕜] F) => ⟪y, A x⟫ := by
+  refine (continuous_pi_iff.mp continuous_inducingFn) ⟨x, y⟩
 
 lemma continuous_of_inner_apply_continuous {α : Type*} [TopologicalSpace α] {g : α → E →WOT[𝕜] F}
     (h : ∀ x y, Continuous fun a => ⟪y, (g a) x⟫) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr fun p => h p.1 p.2)
 
-lemma embedding : Embedding fun (A : E →WOT[𝕜] F) (p : E × F) => ⟪p.2, A p.1⟫ := by
+lemma embedding_inducingFn : Embedding (inducingFn 𝕜 E F) := by
   refine Function.Injective.embedding_induced fun A B hAB => ?_
   rw [ext_inner_iff]
   simpa [Function.funext_iff] using hAB
@@ -158,43 +166,24 @@ lemma tendsto_iff_forall_inner_apply_tendsto {α : Type*} {l : Filter α} {f : �
   have hmain : (∀ x y, Tendsto (fun a => ⟪y, (f a) x⟫) l (𝓝 ⟪y, A x⟫))
       ↔ ∀ (p : E × F), Tendsto (fun a => ⟪p.2, (f a) p.1⟫) l (𝓝 ⟪p.2, A p.1⟫) :=
     ⟨fun h p => h p.1 p.2, fun h x y => h ⟨x, y⟩⟩
-  rw [hmain, ← tendsto_pi_nhds, Embedding.tendsto_nhds_iff embedding]
+  rw [hmain, ← tendsto_pi_nhds, Embedding.tendsto_nhds_iff embedding_inducingFn]
   rfl
 
 lemma le_nhds_iff_forall_inner_apply_le_nhds {l : Filter (E →WOT[𝕜] F)} {A : E →WOT[𝕜] F} :
     l ≤ 𝓝 A ↔ ∀ x y, l.map (fun T => ⟪y, T x⟫) ≤ 𝓝 (⟪y, A x⟫) :=
   tendsto_iff_forall_inner_apply_tendsto (f := id)
 
-instance instT2Space : T2Space (E →WOT[𝕜] F) := Embedding.t2Space embedding
+instance instT3Space : T3Space (E →WOT[𝕜] F) := Embedding.t3Space embedding_inducingFn
 
-instance instContinuousAdd : ContinuousAdd (E →WOT[𝕜] F) := by
-  refine ⟨continuous_induced_rng.2 ?_⟩
-  change Continuous (fun ⟨A, B⟩ p => ⟪p.2, (A + B) p.1⟫)
-  simp only [add_apply, inner_add_right]
-  refine Continuous.add ?_ ?_
-  · exact Continuous.comp coeFn_continuous continuous_fst
-  · exact Continuous.comp coeFn_continuous continuous_snd
-
-instance instContinuousSMul : ContinuousSMul 𝕜 (E →WOT[𝕜] F) := by
-  refine ⟨continuous_induced_rng.2 ?_⟩
-  change Continuous (fun ⟨r, A⟩ p => ⟪p.2, (r • A) p.1⟫)
-  simp only [smul_apply, inner_smul_right]
-  refine Continuous.mul ?_ ?_
-  · change Continuous ((fun x _ => x) ∘ Prod.fst)
-    exact Continuous.comp (by fun_prop) continuous_fst
-  · exact Continuous.comp coeFn_continuous continuous_snd
+instance instContinuousAdd : ContinuousAdd (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
+instance instContinuousNeg : ContinuousNeg (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
+instance instContinuousSMul : ContinuousSMul 𝕜 (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 
 instance instTopologicalAddGroup : TopologicalAddGroup (E →WOT[𝕜] F) where
-  continuous_neg := by
-    refine continuous_induced_rng.2 ?_
-    change Continuous (fun (A : E →WOT[𝕜] F) (p : E × F) => ⟪p.2, (-A) p.1⟫)
-    simp only [neg_apply, inner_neg_right]
-    exact Continuous.comp continuous_neg coeFn_continuous
 
-instance instUniformSpace : UniformSpace (E →WOT[𝕜] F) := TopologicalAddGroup.toUniformSpace _
+instance instUniformSpace : UniformSpace (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F) inferInstance
 
-instance instUniformAddGroup : UniformAddGroup (E →WOT[𝕜] F) :=
-  comm_topologicalAddGroup_is_uniform
+instance instUniformAddGroup : UniformAddGroup (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F)
 
 end Topology
 
