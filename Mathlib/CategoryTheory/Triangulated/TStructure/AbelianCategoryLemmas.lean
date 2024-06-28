@@ -274,21 +274,6 @@ noncomputable def homologyIsoKernelCokernelToAbelianCoimage :
   (RightHomologyData.ofIsLimitKernelForkCokernelToAbelianCoimage S _
     (kernelIsKernel _)).homologyIso
 
-
-/-
-lemma image_compat : (Abelian.imageIsoImage S.f).hom ≫ (imageToKernel' S.f S.g S.zero) =
-    S.abelianImageToKernel := by
-  refine Mono.right_cancellation (f := kernel.ι S.g) _ _ ?_
-  refine Epi.left_cancellation (f := (Abelian.imageIsoImage S.f).inv) _ _ ?_
-  conv_lhs => rw [← Category.assoc, ← Category.assoc,  Iso.inv_hom_id, Category.id_comp]
-  simp only [imageToKernel']
-  simp only [kernel.lift_ι, IsImage.isoExt_inv, image.isImage_lift,
-    ShortComplex.abelianImageToKernel_comp_kernel_ι, equalizer_as_kernel]
-  refine Epi.left_cancellation (f := factorThruImage S.f) _ _ ?_
-  simp only [image.fac, image.fac_lift_assoc, Abelian.imageStrongEpiMonoFactorisation_I,
-    Abelian.imageStrongEpiMonoFactorisation_e, kernel.lift_ι]
--/
-
 def imageToKernelIsIsoOfExact {S : ShortComplex A} (h : IsZero S.homology) :
     IsIso S.abelianImageToKernel := by
   have : Epi S.abelianImageToKernel := by

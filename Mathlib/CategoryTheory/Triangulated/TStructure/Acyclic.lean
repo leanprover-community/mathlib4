@@ -56,7 +56,6 @@ abbrev FromAcyclic : (AcyclicCategory F t₁ t₂) ⥤ t₂.Heart := by
   simp only [comp_obj, fullSubcategoryInclusion.obj]
   exact h
 
-
 abbrev FromHeart : t₁.Heart ⥤ D := t₁.ιHeart ⋙ F
 
 instance : Functor.Additive (F.FromHeart t₁) where

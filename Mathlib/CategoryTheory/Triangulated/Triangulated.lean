@@ -192,7 +192,8 @@ def someOctahedron' [IsTriangulated C] : Octahedron comm h₁₂ h₂₃ h₁₃
   (IsTriangulated.octahedron_axiom comm h₁₂ h₂₃ h₁₃).some
 
 /-- A choice of octahedron given by the octahedron axiom. -/
-def someOctahedron [IsTriangulated C]
+def
+someOctahedron [IsTriangulated C]
     {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
     {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
     {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
