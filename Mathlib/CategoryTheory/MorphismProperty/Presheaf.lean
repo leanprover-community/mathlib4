@@ -1,6 +1,7 @@
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
@@ -46,8 +47,12 @@ noncomputable def fst : hf'.pullback g ⟶ Y :=
 noncomputable def snd : hf.pullback g ⟶ X :=
   Yoneda.fullyFaithful.preimage ((hf.pullbackIso g).hom ≫ Limits.pullback.snd)
 
+noncomputable abbrev fst_yoneda : yoneda.obj (hf.pullback g) ⟶ F :=
+  (hf.pullbackIso g).hom ≫ Limits.pullback.fst
+
 @[reassoc]
-lemma yoneda_map_fst : yoneda.map (hf'.fst g) = (hf'.pullbackIso g).hom ≫ Limits.pullback.fst := by
+lemma yoneda_map_fst :
+    yoneda.map (hf'.fst g) = (hf'.pullbackIso g).hom ≫ Limits.pullback.fst := by
   simp only [fst, Functor.FullyFaithful.map_preimage]
 
 @[reassoc]
@@ -197,36 +202,31 @@ instance : IsStableUnderComposition (Presheaf.representable (C:=C)) where
     --let a := Limits.pullback.snd g h
     let H : pullback f (pullback.fst (f:=g) (g:=h)) ≅ pullback (f ≫ g) h :=
       pullbackRightPullbackFstIso g h f
-    constructor
-    -- use g × h fancy pullback
-    -- then use f × fancy pullback
-    -- this is x_1!
+    let a := hg.pullback h
+    use hf.pullback (hg.fst_yoneda h)
+    refine ⟨hf.pullbackIso (hg.fst_yoneda h) ≪≫ ?_ ≪≫ H⟩
+    fapply IsPullback.isoPullback
+    apply pullback.fst
+    apply pullback.snd ≫ _
+    apply (hg.pullbackIso h).hom
+    sorry  -- is there API missing for interactions between pullbacks and isos (not IsIso?)
 
--- variable {F G : Cᵒᵖ ⥤ Type v} (P : MorphismProperty C)
+lemma Representable.StableUnderBaseChange :
+    StableUnderBaseChange (Presheaf.representable (C:=C)) := by
+  intro F G G' H f g f' g' BC hg X h
+  use hg.pullback (h ≫ f)
+  refine ⟨hg.pullbackIso (h ≫ f) ≪≫ ?_⟩
+  sorry -- should be easy now if I would know the right lemma
 
--- TODO: prove this notion is stable under composition!
--- TODO: stable under base change
-
-    --let H : (pullback (f ≫ g) h) ≅ pullback f (pullback g h) :=
+lemma Representable.ofIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
+  fun X g ↦ ⟨X, ⟨(asIso <| Limits.pullback.snd (f:=f) (g:=g)).symm⟩⟩
 
 lemma isomorphisms_le : MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
-  fun _ _ f hf X g ↦
-  letI : IsIso f := hf
-  let h := Limits.pullback.snd (f:=f) (g:=g)
-  ⟨X, ⟨(asIso h).symm⟩⟩
+  fun _ _ f hf ↦ letI : IsIso f := hf; Representable.ofIso f
 
-lemma Representable.respectsIso : MorphismProperty.isomorphisms (Presheaf.representable (C:=C)) := by sorry
-
--- TODO: should follow from some Iso thing + composition
-lemma Representable.respectsIso : RespectsIso (Presheaf.representable (C:=C)) := by
-  constructor
-  · intro F G H e f hf
-    sorry
-  sorry
-
--- ismultiplicative later
-
--- instance :
+lemma Representable.respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
+  ⟨fun _ _ hf ↦ comp_mem _ _ _ (Representable.ofIso _) hf,
+  fun _ _ hf ↦ comp_mem _ _ _ hf <| Representable.ofIso _⟩
 
 
 end CategoryTheory
