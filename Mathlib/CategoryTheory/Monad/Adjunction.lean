@@ -310,20 +310,13 @@ instance [Coreflective R] (X : (coreflectorAdjunction R).toComonad.Coalgebra) :
 instance comparison_essSurj [Coreflective R] :
     (Comonad.comparison (coreflectorAdjunction R)).EssSurj := by
   refine ⟨fun X => ⟨(coreflector R).obj X.A, ⟨?_⟩⟩⟩
-  symm
   refine Comonad.Coalgebra.isoMk ?_ ?_
-  · exact (asIso ((coreflectorAdjunction R).counit.app X.A)).symm
-  dsimp only [Functor.comp_map, Comonad.comparison_obj_a, asIso_hom, Functor.comp_obj,
-    Comonad.comparison_obj_A, Adjunction.toComonad_coe]
-  rw [← cancel_epi ((coreflectorAdjunction R).counit.app X.A)]
-  dsimp only [Functor.id_obj, Functor.comp_obj]
+  · exact (asIso ((coreflectorAdjunction R).counit.app X.A))
+  rw [← cancel_mono ((coreflectorAdjunction R).counit.app X.A)]
+  simp only [Adjunction.counit_naturality, Functor.comp_obj, Functor.id_obj,
+    Adjunction.left_triangle_components_assoc, assoc]
+  erw [X.counit]
   simp
-  have := Adjunction.counit_naturality (coreflectorAdjunction R) X.a
-  rw [← Category.assoc]
-  let adj := (coreflectorAdjunction R)
-  change (adj.counit.app X.A ≫ X.a) ≫ R.map (adj.unit.app ((coreflector R).obj X.A)) =
-    R.map (adj.unit.app ((coreflector R).obj X.A))
-  sorry
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L):
     (Comonad.comparison adj).Full where
@@ -342,7 +335,8 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
   eqv := { full := Reflective.comparison_full _ }
 #align category_theory.monadic_of_reflective CategoryTheory.monadicOfReflective
 
-instance (priority := 100) comonadicOfReflective [Coreflective R] :
+/-- Any coreflective inclusion has a comonadic left adjoint. -/
+instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
   adj := coreflectorAdjunction R
   eqv := { full := Coreflective.comparison_full _ }
