@@ -551,8 +551,6 @@ lemma HomogeneousSubmodule.gcomm_monoid :
     SetLike.GradedMonoid (homogeneousSubmodule σ R) :=
   WeightedHomogeneousSubmodule.gcomm_monoid
 
-variable [DecidableEq σ] [DecidableEq R]
-
 /-- The decomposition of `MvPolynomial σ R` into  homogeneous submodules -/
 abbrev decomposition  :
     DirectSum.Decomposition (homogeneousSubmodule σ R) :=
@@ -562,8 +560,8 @@ abbrev decomposition  :
 abbrev gradedAlgebra : GradedAlgebra (homogeneousSubmodule σ R) :=
   weightedGradedAlgebra R (1 : σ → ℕ)
 
-theorem decomposition.decompose'_apply [DecidableEq σ] [DecidableEq R] (φ : MvPolynomial σ R)
-    (i : ℕ) : (decomposition.decompose' φ i : MvPolynomial σ R) = homogeneousComponent i φ :=
+theorem decomposition.decompose'_apply (φ : MvPolynomial σ R) (i : ℕ) :
+    (decomposition.decompose' φ i : MvPolynomial σ R) = homogeneousComponent i φ :=
   weightedDecomposition.decompose'_apply R _ φ i
 
 theorem decomposition.decompose'_eq :
