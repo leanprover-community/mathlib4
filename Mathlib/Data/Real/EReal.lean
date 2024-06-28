@@ -1556,6 +1556,16 @@ theorem div_left_mono (b : ENNReal) : Monotone fun a : EReal ↦ a / b := by
 
 theorem div_left_mono' {a a' : EReal} (b : ENNReal) (h : a ≤ a') : a / b ≤ a' / b :=
   div_left_mono b h
+
+theorem div_left_strictMono {b : ENNReal} (h : b ≠ 0) (h' : b ≠ ⊤) :
+    StrictMono fun a : EReal ↦ a / b := by
+  intro a c a_lt_c
+  simp only
+  apply lt_of_le_of_ne
+  · exact div_left_mono' b (le_of_lt a_lt_c)
+  · intro ab_eq_cb
+    apply ne_of_lt a_lt_c
+    rw [← @mul_inv_cancel a b h h', ab_eq_cb, @mul_inv_cancel c b h h']
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
