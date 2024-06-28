@@ -1547,6 +1547,12 @@ theorem div_mul {a : EReal} {b c : ENNReal} (h : b ≠ 0 ∨ c ≠ ⊤) (h' : b 
   change (a * b⁻¹) * c⁻¹ = a * (b * c)⁻¹
   suffices h : b⁻¹ * c⁻¹ = (b * c)⁻¹ by rw [← h, mul_assoc]; norm_cast
   exact (ENNReal.mul_inv h h').symm
+
+theorem div_left_mono (b : ENNReal) : Monotone fun a : EReal ↦ a / b := by
+  intro _ _ h
+  apply mul_le_mul_of_nonneg_right h
+  norm_cast
+  exact bot_le
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
