@@ -3,11 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Polynomial
-import Mathlib.RingTheory.Smooth.Basic
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.Algebra.Module.Projective
-import Mathlib.RingTheory.Generators
+import Mathlib.RingTheory.Kaehler.Basic
 
 /-!
 # Relation of smoothness and `Ω[S⁄R]`
