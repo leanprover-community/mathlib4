@@ -1721,7 +1721,7 @@ theorem eq_prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
 reduces to the difference of the last and first terms
 when the function we are summing is monotone.
 -/
-theorem sum_range_tsub [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
+theorem sum_range_tsub [AddCommMonoid α] [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] {f : ℕ → α} (h : Monotone f) (n : ℕ) :
     ∑ i ∈ range n, (f (i + 1) - f i) = f n - f 0 := by
   apply sum_range_induction
@@ -2000,7 +2000,7 @@ theorem prod_ite_one (s : Finset α) (p : α → Prop) [DecidablePred p]
 #align finset.sum_ite_zero Finset.sum_ite_zero
 
 @[to_additive]
-theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [OrderedCommMonoid γ]
+theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [CommMonoid γ] [OrderedCommMonoid γ]
     [CovariantClass γ γ (· * ·) (· < ·)] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
     (hdf : 1 < f d) : ∏ m ∈ s.erase d, f m < ∏ m ∈ s, f m := by
   conv in ∏ m ∈ s, f m => rw [← Finset.insert_erase hd]

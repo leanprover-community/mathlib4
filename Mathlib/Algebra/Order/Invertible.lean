@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Cast.Order
 # Lemmas about `invOf` in ordered (semi)rings.
 -/
 
-variable {α : Type*} [LinearOrderedSemiring α] {a : α}
+variable {α : Type*} [Semiring α] [LinearOrderedSemiring α] {a : α}
 
 @[simp]
 theorem invOf_pos [Invertible a] : 0 < ⅟ a ↔ 0 < a :=

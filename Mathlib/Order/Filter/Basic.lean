@@ -1885,11 +1885,12 @@ theorem EventuallyLE.mul_le_mul' [Mul β] [Preorder β] [CovariantClass β β (�
 #align filter.eventually_le.mul_le_mul' Filter.EventuallyLE.mul_le_mul'
 #align filter.eventually_le.add_le_add Filter.EventuallyLE.add_le_add
 
-theorem EventuallyLE.mul_nonneg [OrderedSemiring β] {l : Filter α} {f g : α → β} (hf : 0 ≤ᶠ[l] f)
-    (hg : 0 ≤ᶠ[l] g) : 0 ≤ᶠ[l] f * g := by filter_upwards [hf, hg] with x using _root_.mul_nonneg
+theorem EventuallyLE.mul_nonneg [Semiring β] [OrderedSemiring β]
+    {l : Filter α} {f g : α → β} (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) : 0 ≤ᶠ[l] f * g := by
+  filter_upwards [hf, hg] with x using _root_.mul_nonneg
 #align filter.eventually_le.mul_nonneg Filter.EventuallyLE.mul_nonneg
 
-theorem eventually_sub_nonneg [OrderedRing β] {l : Filter α} {f g : α → β} :
+theorem eventually_sub_nonneg [Ring β] [OrderedRing β] {l : Filter α} {f g : α → β} :
     0 ≤ᶠ[l] g - f ↔ f ≤ᶠ[l] g :=
   eventually_congr <| eventually_of_forall fun _ => sub_nonneg
 #align filter.eventually_sub_nonneg Filter.eventually_sub_nonneg

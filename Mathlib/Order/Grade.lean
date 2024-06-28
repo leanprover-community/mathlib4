@@ -342,7 +342,7 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
     cases n
     · exact a.elim0
     rw [h.eq_bot, Fin.bot_eq_zero]
-    exact isMin_bot
+    exact isMin_bot (α := ℕ)
 #align grade_min_order.fin_to_nat GradeMinOrder.finToNat
 
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=

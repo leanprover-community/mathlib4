@@ -27,7 +27,7 @@ variable {R : Type*}
 
 namespace Int
 section OrderedRing
-variable [OrderedRing R]
+variable [Ring R] [OrderedRing R]
 
 lemma cast_mono : Monotone (Int.cast : ℤ → R) := by
   intro m n h
@@ -69,7 +69,7 @@ lemma cast_strictMono : StrictMono (fun x : ℤ => (x : R)) :=
 end OrderedRing
 
 section LinearOrderedRing
-variable [LinearOrderedRing R] {a b n : ℤ} {x : R}
+variable [Ring R] [LinearOrderedRing R] {a b n : ℤ} {x : R}
 
 @[simp, norm_cast]
 lemma cast_min : ↑(min a b) = (min a b : R) := Monotone.map_min cast_mono

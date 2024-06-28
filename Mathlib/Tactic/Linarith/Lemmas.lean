@@ -24,32 +24,39 @@ namespace Linarith
 
 theorem lt_irrefl {α : Type u} [Preorder α] {a : α} : ¬a < a := _root_.lt_irrefl a
 
-theorem eq_of_eq_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (hb : b = 0) : a + b = 0 := by
+theorem eq_of_eq_of_eq {α} [Semiring α] [OrderedSemiring α]
+    {a b : α} (ha : a = 0) (hb : b = 0) : a + b = 0 := by
   simp [*]
 
-theorem le_of_eq_of_le {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (hb : b ≤ 0) : a + b ≤ 0 := by
+theorem le_of_eq_of_le {α} [Semiring α] [OrderedSemiring α]
+    {a b : α} (ha : a = 0) (hb : b ≤ 0) : a + b ≤ 0 := by
   simp [*]
 
-theorem lt_of_eq_of_lt {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (hb : b < 0) : a + b < 0 := by
+theorem lt_of_eq_of_lt {α} [Semiring α] [OrderedSemiring α]
+    {a b : α} (ha : a = 0) (hb : b < 0) : a + b < 0 := by
   simp [*]
 
-theorem le_of_le_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a ≤ 0) (hb : b = 0) : a + b ≤ 0 := by
+theorem le_of_le_of_eq {α} [Semiring α] [OrderedSemiring α]
+    {a b : α} (ha : a ≤ 0) (hb : b = 0) : a + b ≤ 0 := by
   simp [*]
 
-theorem lt_of_lt_of_eq {α} [OrderedSemiring α] {a b : α} (ha : a < 0) (hb : b = 0) : a + b < 0 := by
+theorem lt_of_lt_of_eq {α} [Semiring α] [OrderedSemiring α]
+    {a b : α} (ha : a < 0) (hb : b = 0) : a + b < 0 := by
   simp [*]
 
-theorem mul_neg {α} [StrictOrderedRing α] {a b : α} (ha : a < 0) (hb : 0 < b) : b * a < 0 :=
+theorem mul_neg {α} [Ring α] [StrictOrderedRing α]
+    {a b : α} (ha : a < 0) (hb : 0 < b) : b * a < 0 :=
   have : (-b)*a > 0 := mul_pos_of_neg_of_neg (neg_neg_of_pos hb) ha
   neg_of_neg_pos (by simpa)
 
-theorem mul_nonpos {α} [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 :=
+theorem mul_nonpos {α} [Ring α] [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b * a ≤ 0 :=
   have : (-b)*a ≥ 0 := mul_nonneg_of_nonpos_of_nonpos (le_of_lt (neg_neg_of_pos hb)) ha
   by simpa
 
 -- used alongside `mul_neg` and `mul_nonpos`, so has the same argument pattern for uniformity
 @[nolint unusedArguments]
-theorem mul_eq {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (_ : 0 < b) : b * a = 0 := by
+theorem mul_eq {α} [Semiring α] [OrderedSemiring α]
+    {a b : α} (ha : a = 0) (_ : 0 < b) : b * a = 0 := by
   simp [*]
 
 lemma eq_of_not_lt_of_not_gt {α} [LinearOrder α] (a b : α) (h1 : ¬ a < b) (h2 : ¬ b < a) : a = b :=
@@ -67,7 +74,8 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
     a * b = 0 := by
   simp [h]
 
-lemma natCast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
+lemma natCast_nonneg (α : Type u) [Ring α] [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n :=
+  Nat.cast_nonneg n
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_nonneg := natCast_nonneg

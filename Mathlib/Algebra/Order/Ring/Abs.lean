@@ -19,7 +19,7 @@ import Mathlib.Data.Nat.Cast.Order
 variable {α : Type*}
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedCommGroup α] {a b : α}
+variable [CommGroup α] [LinearOrderedCommGroup α] {a b : α}
 
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n
@@ -37,7 +37,7 @@ lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {n : ℕ} {a b c : α}
+variable [Ring α] [LinearOrderedRing α] {n : ℕ} {a b c : α}
 
 @[simp] lemma abs_one : |(1 : α)| = 1 := abs_of_pos zero_lt_one
 #align abs_one abs_one
@@ -103,7 +103,7 @@ lemma abs_le_iff_mul_self_le : |a| ≤ |b| ↔ a * a ≤ b * b := by
 #align abs_le_iff_mul_self_le abs_le_iff_mul_self_le
 
 lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
-  simpa only [abs_one, one_mul] using @abs_le_iff_mul_self_le α _ a 1
+  simpa only [abs_one, one_mul] using @abs_le_iff_mul_self_le α _ _ a 1
 #align abs_le_one_iff_mul_self_le_one abs_le_one_iff_mul_self_le_one
 
 -- Porting note: added `simp` to replace `pow_bit0_abs`
@@ -152,29 +152,29 @@ lemma sq_eq_sq_iff_abs_eq_abs (a b : α) : a ^ 2 = b ^ 2 ↔ |a| = |b| := by
 #align sq_eq_sq_iff_abs_eq_abs sq_eq_sq_iff_abs_eq_abs
 
 @[simp] lemma sq_le_one_iff_abs_le_one (a : α) : a ^ 2 ≤ 1 ↔ |a| ≤ 1 := by
-  simpa only [one_pow, abs_one] using @sq_le_sq _ _ a 1
+  simpa only [one_pow, abs_one] using @sq_le_sq _ _ _ a 1
 #align sq_le_one_iff_abs_le_one sq_le_one_iff_abs_le_one
 
 @[simp] lemma sq_lt_one_iff_abs_lt_one (a : α) : a ^ 2 < 1 ↔ |a| < 1 := by
-  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ a 1
+  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ _ a 1
 #align sq_lt_one_iff_abs_lt_one sq_lt_one_iff_abs_lt_one
 
 @[simp] lemma one_le_sq_iff_one_le_abs (a : α) : 1 ≤ a ^ 2 ↔ 1 ≤ |a| := by
-  simpa only [one_pow, abs_one] using @sq_le_sq _ _ 1 a
+  simpa only [one_pow, abs_one] using @sq_le_sq _ _ _ 1 a
 #align one_le_sq_iff_one_le_abs one_le_sq_iff_one_le_abs
 
 @[simp] lemma one_lt_sq_iff_one_lt_abs (a : α) : 1 < a ^ 2 ↔ 1 < |a| := by
-  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ 1 a
+  simpa only [one_pow, abs_one] using @sq_lt_sq _ _ _ 1 a
 #align one_lt_sq_iff_one_lt_abs one_lt_sq_iff_one_lt_abs
 
-lemma exists_abs_lt {α : Type*} [LinearOrderedRing α] (a : α) : ∃ b > 0, |a| < b :=
+lemma exists_abs_lt {α : Type*} [Ring α] [LinearOrderedRing α] (a : α) : ∃ b > 0, |a| < b :=
   ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, lt_add_one |a|⟩
 
 end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing α] {a b c d : α}
+variable [CommRing α] [LinearOrderedCommRing α] {a b c d : α}
 
 theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a * b := by
   rw [abs_mul_abs_self]
@@ -215,7 +215,7 @@ end
 open Nat
 
 section LinearOrderedRing
-variable {R : Type*} [LinearOrderedRing R] {a b : R} {n : ℕ}
+variable {R : Type*} [Ring R] [LinearOrderedRing R] {a b : R} {n : ℕ}
 
 lemma pow_eq_pow_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
   match n.even_xor_odd with

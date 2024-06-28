@@ -11,7 +11,7 @@ import Mathlib.Data.Nat.Cast.Order
 variable {R : Type*}
 
 section OrderedSemiring
-variable [OrderedSemiring R] {a : R}
+variable [Semiring R] [OrderedSemiring R] {a : R}
 
 /-- **Bernoulli's inequality**. This version works for semirings but requires
 additional hypotheses `0 ≤ a * a` and `0 ≤ (1 + a) * (1 + a)`. -/
@@ -38,7 +38,7 @@ lemma one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a)) (
 end OrderedSemiring
 
 section LinearOrderedRing
-variable [LinearOrderedRing R] {a : R} {n : ℕ}
+variable [Ring R] [LinearOrderedRing R] {a : R} {n : ℕ}
 
 /-- **Bernoulli's inequality** for `n : ℕ`, `-2 ≤ a`. -/
 lemma one_add_mul_le_pow (H : -2 ≤ a) (n : ℕ) : 1 + n * a ≤ (1 + a) ^ n :=

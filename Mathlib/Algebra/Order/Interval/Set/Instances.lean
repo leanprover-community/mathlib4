@@ -42,7 +42,7 @@ variable {α : Type*}
 
 section OrderedSemiring
 
-variable [OrderedSemiring α]
+variable [Semiring α] [OrderedSemiring α]
 
 /-! ### Instances for `↥(Set.Icc 0 1)` -/
 
@@ -143,24 +143,24 @@ instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
   Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 #align set.Icc.monoid_with_zero Set.Icc.monoidWithZero
 
-instance commMonoidWithZero {α : Type*} [OrderedCommSemiring α] :
+instance commMonoidWithZero {α : Type*} [CommSemiring α] [OrderedCommSemiring α] :
     CommMonoidWithZero (Icc (0 : α) 1) :=
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 #align set.Icc.comm_monoid_with_zero Set.Icc.commMonoidWithZero
 
-instance cancelMonoidWithZero {α : Type*} [OrderedRing α] [NoZeroDivisors α] :
+instance cancelMonoidWithZero {α : Type*} [Ring α] [OrderedRing α] [NoZeroDivisors α] :
     CancelMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelMonoidWithZero α _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 #align set.Icc.cancel_monoid_with_zero Set.Icc.cancelMonoidWithZero
 
-instance cancelCommMonoidWithZero {α : Type*} [OrderedCommRing α] [NoZeroDivisors α] :
+instance cancelCommMonoidWithZero {α : Type*} [CommRing α] [OrderedCommRing α] [NoZeroDivisors α] :
     CancelCommMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelCommMonoidWithZero α _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 #align set.Icc.cancel_comm_monoid_with_zero Set.Icc.cancelCommMonoidWithZero
 
-variable {β : Type*} [OrderedRing β]
+variable {β : Type*} [Ring β] [OrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Icc (0 : β) 1) : 1 - t ∈ Icc (0 : β) 1 := by
   rw [mem_Icc] at *
@@ -234,7 +234,8 @@ instance semigroup : Semigroup (Ico (0 : α) 1) :=
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ico.semigroup Set.Ico.semigroup
 
-instance commSemigroup {α : Type*} [OrderedCommSemiring α] : CommSemigroup (Ico (0 : α) 1) :=
+instance commSemigroup {α : Type*} [CommSemiring α] [OrderedCommSemiring α] :
+    CommSemigroup (Ico (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ico.comm_semigroup Set.Ico.commSemigroup
 
@@ -242,7 +243,7 @@ end Set.Ico
 
 end OrderedSemiring
 
-variable [StrictOrderedSemiring α]
+variable [Semiring α] [StrictOrderedSemiring α]
 
 /-! ### Instances for `↥(Set.Ioc 0 1)` -/
 
@@ -311,16 +312,17 @@ instance monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) :=
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 #align set.Ioc.monoid Set.Ioc.monoid
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) :=
+instance commSemigroup {α : Type*} [CommSemiring α] [StrictOrderedCommSemiring α] :
+    CommSemigroup (Ioc (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioc.comm_semigroup Set.Ioc.commSemigroup
 
-instance commMonoid {α : Type*} [StrictOrderedCommSemiring α] [Nontrivial α] :
+instance commMonoid {α : Type*} [CommSemiring α] [StrictOrderedCommSemiring α] [Nontrivial α] :
     CommMonoid (Ioc (0 : α) 1) :=
   Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 #align set.Ioc.comm_monoid Set.Ioc.commMonoid
 
-instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
+instance cancelMonoid {α : Type*} [Ring α] [StrictOrderedRing α] [IsDomain α] :
     CancelMonoid (Ioc (0 : α) 1) :=
   { Set.Ioc.monoid with
     mul_left_cancel := fun a _ _ h =>
@@ -329,7 +331,7 @@ instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h : _) }
 #align set.Ioc.cancel_monoid Set.Ioc.cancelMonoid
 
-instance cancelCommMonoid {α : Type*} [StrictOrderedCommRing α] [IsDomain α] :
+instance cancelCommMonoid {α : Type*} [CommRing α] [StrictOrderedCommRing α] [IsDomain α] :
     CancelCommMonoid (Ioc (0 : α) 1) :=
   { Set.Ioc.cancelMonoid, Set.Ioc.commMonoid with }
 #align set.Ioc.cancel_comm_monoid Set.Ioc.cancelCommMonoid
@@ -363,11 +365,12 @@ instance semigroup : Semigroup (Ioo (0 : α) 1) :=
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioo.semigroup Set.Ioo.semigroup
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) :=
+instance commSemigroup {α : Type*} [CommSemiring α] [StrictOrderedCommSemiring α] :
+    CommSemigroup (Ioo (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioo.comm_semigroup Set.Ioo.commSemigroup
 
-variable {β : Type*} [OrderedRing β]
+variable {β : Type*} [Ring β] [OrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
   rw [mem_Ioo] at *
