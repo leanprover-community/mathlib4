@@ -243,7 +243,8 @@ instance IntermediateField.isSeparable_sup (L1 L2 : IntermediateField F E)
 
 /-- A compositum of separable extensions is separable. -/
 instance IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
-    [h : ∀ i, Algebra.IsSeparable F (t i)] : Algebra.IsSeparable F (⨆ i, t i : IntermediateField F E) := by
+    [h : ∀ i, Algebra.IsSeparable F (t i)] :
+    Algebra.IsSeparable F (⨆ i, t i : IntermediateField F E) := by
   simp_rw [← le_separableClosure_iff] at h ⊢
   exact iSup_le h
 
@@ -383,7 +384,8 @@ end Tower
 end IntermediateField
 
 /-- A separable extension has separable degree equal to degree. -/
-theorem Algebra.IsSeparable.sepDegree_eq [Algebra.IsSeparable F E] : sepDegree F E = Module.rank F E := by
+theorem Algebra.IsSeparable.sepDegree_eq [Algebra.IsSeparable F E] :
+    sepDegree F E = Module.rank F E := by
   rw [sepDegree, (separableClosure.eq_top_iff F E).2 ‹_›, IntermediateField.rank_top']
 
 /-- A separable extension has inseparable degree one. -/

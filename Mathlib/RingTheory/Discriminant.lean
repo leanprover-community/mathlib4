@@ -151,7 +151,8 @@ variable (b : ι → L) (pb : PowerBasis K L)
 determinant of the matrix whose `(i, j)` coefficient is `σⱼ (b i)`, where `σⱼ : L →ₐ[K] E` is the
 embedding in an algebraically closed field `E` corresponding to `j : ι` via a bijection
 `e : ι ≃ (L →ₐ[K] E)`. -/
-theorem discr_eq_det_embeddingsMatrixReindex_pow_two [Algebra.IsSeparable K L] (e : ι ≃ (L →ₐ[K] E)) :
+theorem discr_eq_det_embeddingsMatrixReindex_pow_two
+    [Algebra.IsSeparable K L] (e : ι ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K b) = (embeddingsMatrixReindex K E b e).det ^ 2 := by
   rw [discr_def, RingHom.map_det, RingHom.mapMatrix_apply,
     traceMatrix_eq_embeddingsMatrixReindex_mul_trans, det_mul, det_transpose, pow_two]

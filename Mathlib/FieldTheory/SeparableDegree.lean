@@ -109,7 +109,8 @@ This file contains basics about the separable degree of a field extension.
 - `IntermediateField.isSeparable_adjoin_simple_iff_isSeparable`: `F⟮x⟯ / F` is a separable extension
   if and only if `x` is a separable element.
 
-- `Algebra.IsSeparable.trans`: if `E / F` and `K / E` are both separable, then `K / F` is also separable.
+- `Algebra.IsSeparable.trans`: if `E / F` and `K / E` are both separable, then `K / F` is also
+  separable.
 
 ## Tags
 
@@ -738,8 +739,8 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
 
 end Field
 
-lemma IntermediateField.isSeparable_of_mem_isSeparable {L : IntermediateField F E} [Algebra.IsSeparable F L]
-    {x : E} (h : x ∈ L) : IsSeparable F x := by
+lemma IntermediateField.isSeparable_of_mem_isSeparable {L : IntermediateField F E}
+    [Algebra.IsSeparable F L] {x : E} (h : x ∈ L) : IsSeparable F x := by
   simpa only [minpoly_eq] using Algebra.IsSeparable.isSeparable F (K := L) ⟨x, h⟩
 
 /-- `F⟮x⟯ / F` is a separable extension if and only if `x` is a separable element.
@@ -760,7 +761,8 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
     [Algebra.IsSeparable F E] {x : K} (hsep : IsSeparable E x) : IsSeparable F x := by
   set f := minpoly E x with hf
   let E' : IntermediateField F E := adjoin F f.coeffs
-  haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ Algebra.IsSeparable.isIntegral F x
+  haveI : FiniteDimensional F E' :=
+    finiteDimensional_adjoin fun x _ ↦ Algebra.IsSeparable.isIntegral F x
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
   have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
   clear_value g

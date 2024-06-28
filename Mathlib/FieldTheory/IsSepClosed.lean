@@ -233,7 +233,8 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : Algebra.IsSeparable k K 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
   to_normal.toIsAlgebraic :=  inferInstance
-  to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _ (Algebra.IsSeparable.isSeparable k x)
+  to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _
+    (Algebra.IsSeparable.isSeparable k x)
 
 end IsSepClosure
 
@@ -246,7 +247,8 @@ theorem surjective_comp_algebraMap_of_isSeparable {E : Type*}
     [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsSeparable L E] :
     Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
   fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
-    fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s, IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
+    fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s,
+      IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
 
 variable [Algebra.IsSeparable K L] {L}
 
@@ -254,7 +256,8 @@ variable [Algebra.IsSeparable K L] {L}
   closed extension M of K. -/
 noncomputable irreducible_def lift : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
-    (fun x _ ↦ ⟨Algebra.IsSeparable.isIntegral K x, splits_codomain _ (Algebra.IsSeparable.isSeparable K x)⟩)
+    (fun x _ ↦ ⟨Algebra.IsSeparable.isIntegral K x,
+      splits_codomain _ (Algebra.IsSeparable.isSeparable K x)⟩)
     (IntermediateField.adjoin_univ K L)
 
 end IsSepClosed

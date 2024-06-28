@@ -399,7 +399,8 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
-  have : Algebra.IsSeparable (FractionRing A) (FractionRing B) := Algebra.IsSeparable.of_equiv_equiv _ _ H
+  have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
+    Algebra.IsSeparable.of_equiv_equiv _ _ H
   have : FiniteDimensional (FractionRing A) (FractionRing B) := Module.Finite.of_equiv_equiv _ _ H
   have : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra _ L
   simp only [AlgEquiv.toLinearEquiv_toLinearMap, Submodule.map_comp]

@@ -664,8 +664,9 @@ instance isPurelyInseparable_iSup {ι : Sort*} {t : ι → IntermediateField F E
 
 /-- If `F` is a field of exponential characteristic `q`, `F(S) / F` is separable, then
 `F(S) = F(S ^ (q ^ n))` for any natural number `n`. -/
-theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E) [Algebra.IsSeparable F (adjoin F S)]
-    (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((· ^ q ^ n) '' S) := by
+theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
+    [Algebra.IsSeparable F (adjoin F S)] (q : ℕ) [ExpChar F q] (n : ℕ) :
+    adjoin F S = adjoin F ((· ^ q ^ n) '' S) := by
   set L := adjoin F S
   set M := adjoin F ((· ^ q ^ n) '' S)
   have hi : M ≤ L := by
@@ -673,7 +674,8 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E) [Algebra.IsS
     rintro _ ⟨y, hy, rfl⟩
     exact pow_mem (subset_adjoin F S hy) _
   letI := (inclusion hi).toAlgebra
-  haveI : Algebra.IsSeparable M (extendScalars hi) := Algebra.isSeparable_tower_top_of_isSeparable F M L
+  haveI : Algebra.IsSeparable M (extendScalars hi) :=
+    Algebra.isSeparable_tower_top_of_isSeparable F M L
   haveI : IsPurelyInseparable M (extendScalars hi) := by
     haveI := expChar_of_injective_algebraMap (algebraMap F M).injective q
     rw [extendScalars_adjoin hi, isPurelyInseparable_adjoin_iff_pow_mem M _ q]
@@ -861,19 +863,20 @@ variable [Algebra E K] [IsScalarTower F E K] {F E}
 is separable, then `E` adjoin `separableClosure F K` is equal to `K`. It is a special case of
 `separableClosure.adjoin_eq_of_isAlgebraic`, and is an intermediate result used to prove it. -/
 lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
-    [Algebra.IsSeparable E K] : adjoin E (separableClosure F K : Set K) = ⊤ := top_unique fun x _ ↦ by
-  set S := separableClosure F K
-  set L := adjoin E (S : Set K)
-  have := Algebra.isSeparable_tower_top_of_isSeparable E L K
-  let i : S →+* L := Subsemiring.inclusion fun x hx ↦ subset_adjoin E (S : Set K) hx
-  let _ : Algebra S L := i.toAlgebra
-  let _ : SMul S L := Algebra.toSMul
-  have : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-  have : Algebra.IsAlgebraic F K := Algebra.IsAlgebraic.trans (L := E)
-  have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K
-  have := IsPurelyInseparable.tower_top S L K
-  obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
-  exact y.2
+    [Algebra.IsSeparable E K] : adjoin E (separableClosure F K : Set K) = ⊤ :=
+  top_unique fun x _ ↦ by
+    set S := separableClosure F K
+    set L := adjoin E (S : Set K)
+    have := Algebra.isSeparable_tower_top_of_isSeparable E L K
+    let i : S →+* L := Subsemiring.inclusion fun x hx ↦ subset_adjoin E (S : Set K) hx
+    let _ : Algebra S L := i.toAlgebra
+    let _ : SMul S L := Algebra.toSMul
+    have : IsScalarTower S L K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
+    have : Algebra.IsAlgebraic F K := Algebra.IsAlgebraic.trans (L := E)
+    have : IsPurelyInseparable S K := separableClosure.isPurelyInseparable F K
+    have := IsPurelyInseparable.tower_top S L K
+    obtain ⟨y, rfl⟩ := IsPurelyInseparable.surjective_algebraMap_of_isSeparable L K x
+    exact y.2
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then
 `E` adjoin `separableClosure F K` is equal to `separableClosure E K`. -/
@@ -938,8 +941,9 @@ lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
   rw [separableClosure.adjoin_eq_of_isAlgebraic_of_isSeparable K, rank_top'] at h
   obtain ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
   exact h.antisymm' (b.mk_eq_rank'' ▸ (b.linearIndependent.map' S.val.toLinearMap
-    (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_isSeparable E
-      (fun i ↦ by simpa only [minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i)) |>.cardinal_le_rank))
+    (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_isSeparable
+      E (fun i ↦ by simpa only [minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i))
+      |>.cardinal_le_rank))
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
 then $[E:F] [K:E]_s = [K:F]_s$.

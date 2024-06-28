@@ -353,13 +353,15 @@ end FiniteIntermediateField
 
 end Field
 
-variable (F E : Type*) [Field F] [Field E] [Algebra F E] [FiniteDimensional F E] [Algebra.IsSeparable F E]
+variable (F E : Type*) [Field F] [Field E] [Algebra F E]
+    [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 @[simp]
 theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E := by
   convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)
-    (Algebra.IsSeparable.isSeparable _ _) (IsAlgClosed.splits_codomain _)).trans (PowerBasis.finrank _).symm
+    (Algebra.IsSeparable.isSeparable _ _) (IsAlgClosed.splits_codomain _)).trans
+      (PowerBasis.finrank _).symm
 #align alg_hom.card AlgHom.card
 
 @[simp]
