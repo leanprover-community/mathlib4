@@ -193,10 +193,10 @@ lemma isHomogeneous_polynomial : W.polynomial.IsHomogeneous 3 := by
   · exact (isHomogeneous_C_mul_X ..).mul <| isHomogeneous_X_pow ..
   · exact isHomogeneous_C_mul_X_pow ..
 
-instance : GradedRing <| homogeneousSubmodule (Fin 3) R :=
-  sorry -- `MvPolynomial.IsHomogeneous.HomogeneousSubmodule.gcommSemiring`?
+noncomputable instance [DecidableEq R] : GradedRing <| homogeneousSubmodule (Fin 3) R :=
+  gradedAlgebra
 
-lemma isHomogeneous_span_polynomial :
+lemma isHomogeneous_span_polynomial [DecidableEq R] :
     (Ideal.span {W.polynomial}).IsHomogeneous <| homogeneousSubmodule (Fin 3) R :=
   Ideal.homogeneous_span (homogeneousSubmodule (Fin 3) R) {W.polynomial} <|
     by simpa only [Set.mem_singleton_iff, forall_eq] using ⟨3, W.isHomogeneous_polynomial⟩
