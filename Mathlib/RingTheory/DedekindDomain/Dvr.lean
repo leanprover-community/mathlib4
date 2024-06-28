@@ -165,9 +165,8 @@ fractional ideal has an inverse. -/
 theorem IsDedekindDomainDvr.isDedekindDomainInv (hA : IsDedekindDomainDvr A) :
     IsDedekindDomainInv A := by
   refine (isDedekindDomainInv_iff (K := FractionRing A)).2 fun I hI ↦ ?_
-  apply le_antisymm I.mul_one_div_le_one
   have ⟨J, hJ⟩ := le_one_iff_exists_coeIdeal.1 I.mul_one_div_le_one
-  suffices J = ⊤ by rw [← hJ, this, coeIdeal_top]
+  suffices J = ⊤ by rw [inv_eq, ← hJ, this, coeIdeal_top]
   -- We know I * I⁻¹ = J for some integral ideal J, which we want to prove is ⊤. If J ≠ ⊤, then J
   -- would be contained within a maximal ideal P, and localizing at P yields a contradiction.
   by_contra J_ne_top
