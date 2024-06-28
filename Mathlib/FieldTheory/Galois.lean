@@ -135,7 +135,7 @@ variable (F K E : Type*) [Field F] [Field K] [Field E] {E' : Type*} [Field E'] [
 variable [Algebra F K] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
 theorem IsGalois.tower_top_of_isGalois [IsGalois F E] : IsGalois K E :=
-  { to_isSeparable := isSeparable_tower_top_of_isSeparable F K E
+  { to_isSeparable := Algebra.isSeparable_tower_top_of_isSeparable F K E
     to_normal := Normal.tower_top_of_normal F K E }
 #align is_galois.tower_top_of_is_galois IsGalois.tower_top_of_isGalois
 
@@ -454,7 +454,7 @@ variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k 
   [IsScalarTower k K F] [IsGalois k F]
 
 instance IsGalois.normalClosure : IsGalois k (normalClosure k K F) where
-  to_isSeparable := isSeparable_tower_bot_of_isSeparable k _ F
+  to_isSeparable := Algebra.isSeparable_tower_bot_of_isSeparable k _ F
 #align is_galois.normal_closure IsGalois.normalClosure
 
 end normalClosure

@@ -702,7 +702,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
   · rw [finrank_of_infinite_dimensional hfd]
     have halg := Algebra.IsSeparable.isAlgebraic F E
     obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional hfd (finSepDegree F E)
-    have : Algebra.IsSeparable F L := isSeparable_tower_bot_of_isSeparable F L E
+    have : Algebra.IsSeparable F L := Algebra.isSeparable_tower_bot_of_isSeparable F L E
     have := (halg.tower_top L)
     have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E
     rw [H L h] at hd
@@ -715,7 +715,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      (Algebra.IsSeparable.isSeparable F x).map_minpoly L
+      IsSeparable.of_isScalarTower L (Algebra.IsSeparable.isSeparable F x)
   set M := L⟮x⟯
   have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
@@ -771,7 +771,7 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
     isIntegral_trans (R := F) (A := E) _ hsep.isIntegral |>.tower_top
   simp_rw [← h, separable_map] at hsep
   replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
-  haveI : Algebra.IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
+  haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
   haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
   haveI := adjoin.finiteDimensional halg
   haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
@@ -792,10 +792,10 @@ theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
 /-- If `x` and `y` are both separable elements, then `F⟮x, y⟯ / F` is a separable extension.
 As a consequence, any rational function of `x` and `y` is also a separable element. -/
 theorem IntermediateField.isSeparable_adjoin_pair_of_separable {x y : E}
-    (hx : IsSeparable F x).Separable) (hy : (minpoly F y) :
+    (hx : IsSeparable F x) (hy : IsSeparable F y) :
     Algebra.IsSeparable F F⟮x, y⟯ := by
   rw [← adjoin_simple_adjoin_simple]
-  replace hy := hy.map_minpoly F⟮x⟯
+  replace hy := IsSeparable.of_isScalarTower F⟮x⟯ hy
   rw [← isSeparable_adjoin_simple_iff_separable] at hx hy
   exact Algebra.IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 

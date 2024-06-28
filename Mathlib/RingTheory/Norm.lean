@@ -196,7 +196,7 @@ variable (K)
 
 theorem norm_eq_norm_adjoin [FiniteDimensional K L] [Algebra.IsSeparable K L] (x : L) :
     norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
-  letI := isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
+  letI := Algebra.isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
   let pbL := Field.powerBasisOfFiniteOfSeparable K⟮x⟯ L
   let pbx := IntermediateField.adjoin.powerBasis (Algebra.IsSeparable.isIntegral K x)
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -270,7 +270,7 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
       ((@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod
         fun σ : L →ₐ[K] E => σ pb.gen) ^ finrank L F := by
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
-  haveI : Algebra.IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
+  haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
     ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
@@ -295,7 +295,7 @@ theorem norm_eq_prod_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
   rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
     norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
   · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
-  · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
+  · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact Algebra.IsSeparable.isSeparable K _
 #align algebra.norm_eq_prod_embeddings Algebra.norm_eq_prod_embeddings
 
@@ -369,8 +369,8 @@ theorem norm_norm [Algebra L F] [IsScalarTower K L F] [Algebra.IsSeparable K F] 
     apply (algebraMap K A).injective
     haveI : FiniteDimensional L F := FiniteDimensional.right K L F
     haveI : FiniteDimensional K L := FiniteDimensional.left K L F
-    haveI : Algebra.IsSeparable K L := isSeparable_tower_bot_of_isSeparable K L F
-    haveI : Algebra.IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
+    haveI : Algebra.IsSeparable K L := Algebra.isSeparable_tower_bot_of_isSeparable K L F
+    haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
     letI : ∀ σ : L →ₐ[K] A,
         haveI := σ.toRingHom.toAlgebra
         Fintype (F →ₐ[L] A) := fun _ => inferInstance

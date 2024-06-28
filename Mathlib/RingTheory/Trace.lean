@@ -390,7 +390,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
       finrank L F •
         (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ : L →ₐ[K] E => σ pb.gen := by
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
-  haveI : Algebra.IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
+  haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
   · rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
@@ -418,7 +418,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
   · convert (sum_embeddings_eq_finrank_mul L E pb).symm
     ext
     simp
-  · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
+  · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact Algebra.IsSeparable.isSeparable K _
 #align trace_eq_sum_embeddings trace_eq_sum_embeddings
 

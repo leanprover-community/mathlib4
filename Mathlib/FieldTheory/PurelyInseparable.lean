@@ -310,7 +310,7 @@ instance perfectClosure.isAlgebraic : Algebra.IsAlgebraic F (perfectClosure F E)
   the converse is not necessarily true (see https://math.stackexchange.com/a/3009197)
   even when `E / F` is algebraic. -/
 theorem perfectClosure.eq_bot_of_isSeparable [Algebra.IsSeparable F E] : perfectClosure F E = ⊥ :=
-  haveI := isSeparable_tower_bot_of_isSeparable F (perfectClosure F E) E
+  haveI := Algebra.isSeparable_tower_bot_of_isSeparable F (perfectClosure F E) E
   eq_bot_of_isPurelyInseparable_of_isSeparable _
 
 /-- An intermediate field of `E / F` is contained in the relative perfect closure of `F` in `E`
@@ -582,7 +582,8 @@ theorem separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
 if `E` is purely inseparable over it. -/
 theorem separableClosure_le (L : IntermediateField F E)
     [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
-  obtain ⟨y, rfl⟩ := h.inseparable' _ <| (mem_separableClosure_iff.1 hx).map_minpoly L
+  obtain ⟨y, rfl⟩ := h.inseparable' _ <|
+    IsSeparable.of_isScalarTower L (mem_separableClosure_iff.1 hx)
   exact y.2
 
 /-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the
@@ -672,7 +673,7 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E) [Algebra.IsS
     rintro _ ⟨y, hy, rfl⟩
     exact pow_mem (subset_adjoin F S hy) _
   letI := (inclusion hi).toAlgebra
-  haveI : Algebra.IsSeparable M (extendScalars hi) := isSeparable_tower_top_of_isSeparable F M L
+  haveI : Algebra.IsSeparable M (extendScalars hi) := Algebra.isSeparable_tower_top_of_isSeparable F M L
   haveI : IsPurelyInseparable M (extendScalars hi) := by
     haveI := expChar_of_injective_algebraMap (algebraMap F M).injective q
     rw [extendScalars_adjoin hi, isPurelyInseparable_adjoin_iff_pow_mem M _ q]
@@ -684,7 +685,7 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E) [Algebra.IsS
 `F(S) = F(S ^ (q ^ n))` for any subset `S` of `E` and any natural number `n`. -/
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' [Algebra.IsSeparable F E] (S : Set E)
     (q : ℕ) [ExpChar F q] (n : ℕ) : adjoin F S = adjoin F ((· ^ q ^ n) '' S) :=
-  haveI := isSeparable_tower_bot_of_isSeparable F (adjoin F S) E
+  haveI := Algebra.isSeparable_tower_bot_of_isSeparable F (adjoin F S) E
   adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E S q n
 
 -- TODO: prove the converse when `F(S) / F` is finite
@@ -752,7 +753,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparabl
   let E' := adjoin F (s.image v : Set E)
   haveI : FiniteDimensional F E' := finiteDimensional_adjoin
     fun x _ ↦ Algebra.IsIntegral.isIntegral x
-  haveI : Algebra.IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
+  haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
   let v' (i : s) : E' := ⟨v i.1, subset_adjoin F _ (Finset.mem_image.2 ⟨i.1, i.2, rfl⟩)⟩
   have h' : LinearIndependent F v' := (h s).of_comp E'.val.toLinearMap
   exact (h'.map_pow_expChar_pow_of_fd_isSeparable q n).map'
@@ -863,7 +864,7 @@ lemma adjoin_eq_of_isAlgebraic_of_isSeparable [Algebra.IsAlgebraic F E]
     [Algebra.IsSeparable E K] : adjoin E (separableClosure F K : Set K) = ⊤ := top_unique fun x _ ↦ by
   set S := separableClosure F K
   set L := adjoin E (S : Set K)
-  have := isSeparable_tower_top_of_isSeparable E L K
+  have := Algebra.isSeparable_tower_top_of_isSeparable E L K
   let i : S →+* L := Subsemiring.inclusion fun x hx ↦ subset_adjoin E (S : Set K) hx
   let _ : Algebra S L := i.toAlgebra
   let _ : SMul S L := Algebra.toSMul
@@ -1043,7 +1044,7 @@ theorem minpoly.map_eq_of_separable_of_isPurelyInseparable (x : K)
   have hi' : IsIntegral E x := IsIntegral.tower_top hi
   refine eq_of_monic_of_dvd_of_natDegree_le (monic hi') ((monic hi).map (algebraMap F E))
     (dvd_map_of_isScalarTower F E x) (le_of_eq ?_)
-  have hsep' := hsep.map_minpoly E
+  have hsep' := IsSeparable.of_isScalarTower E hsep
   haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
   haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
