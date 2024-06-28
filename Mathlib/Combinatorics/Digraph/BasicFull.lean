@@ -316,10 +316,12 @@ def edgeSetIso (V : Type _) : Digraph V ≃o Set (V × V) where
   invFun s := ⟨fun v w ↦ (v, w) ∈ s⟩
   left_inv := by intro G; simp
   right_inv := by intro s; simp
-  map_rel_iff' := by intro G G'; simp only [Equiv.coe_fn_mk, Set.le_eq_subset, Set.setOf_subset_setOf, Prod.forall]; apply Iff.rfl
+  map_rel_iff' := by intro G G'; simp only [Equiv.coe_fn_mk, Set.le_eq_subset,
+  Set.setOf_subset_setOf, Prod.forall]; apply Iff.rfl
 
 @[simp]
-lemma edgeSetIso_symm_adj {s : Set (V × V)} : ((edgeSetIso V).symm s).Adj v w ↔ (v, w) ∈ s := Iff.rfl
+lemma edgeSetIso_symm_adj {s : Set (V × V)} : ((edgeSetIso V).symm s).Adj v w ↔
+(v, w) ∈ s := Iff.rfl
 
 /-- `G.edgeSet` is the edge set for `G`.
 This is an abbreviation for `edgeSetIso G` that permits dot notation. -/
@@ -540,8 +542,8 @@ theorem mk'_mem_incidenceSet_right_iff : (a, b) ∈ G.incidenceSet b ↔ G.Adj a
     · right
       rfl
 
-theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a = (e : V × V).1 ∨ a = (e : V × V).2 :=
-  and_iff_right e.2
+theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a = (e : V × V).1 ∨ a
+= (e : V × V).2 := and_iff_right e.2
 
 theorem adj_of_mem_incidenceSet (e : V × V) (h : a ≠ b) (ha : e ∈ G.incidenceSet a)
   (hb : e ∈ G.incidenceSet b) : G.Adj a b ∨ G.Adj b a := by
@@ -960,7 +962,7 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
   repeat' rw [Subtype.mk_eq_mk]
   cases e₁
   cases e₂
-  simp
+  simp only [Prod.mk.injEq, and_imp]
   intro h1 h2
   simp [hinj h1, hinj h2]
 
