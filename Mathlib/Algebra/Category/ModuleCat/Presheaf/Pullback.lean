@@ -71,8 +71,14 @@ def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} S :=
     map_comp := fun {X Y Z} f g ↦ by
       apply free_ext
       intro x
-      sorry
-       }
+      dsimp [restrictScalarsComp'App, AddEquiv.refl, Equiv.refl]
+      dsimp only [DFunLike.coe]
+      dsimp
+      erw [freeDesc_apply (x := x)]
+      erw [freeDesc_apply (x := x)]
+      rw [F.map_comp]
+      symm
+      apply freeDesc_apply }
 
 open ModuleCat in
 noncomputable
@@ -81,13 +87,24 @@ def freeMap {F G : Cᵒᵖ ⥤ Type u} (α : F ⟶ G) : freeObj (S := S) F ⟶ f
     apply free_ext
     intro x
     simp_rw [free_map_eq_freeDesc]
-    dsimp only [freeObj]
-    erw [BundledCorePresheafOfModules.restrictionApp_toPresheafOfModules]
-    erw [BundledCorePresheafOfModules.restrictionApp_toPresheafOfModules]
-    dsimp only
-    erw [comp_apply, comp_apply]
-    erw [ModuleCat.restrictScalars.map_apply]
-    sorry
+    transitivity freeUnit (α.app Y (F.map f x))
+    · dsimp only [freeObj]
+      erw [BundledCorePresheafOfModules.restrictionApp_toPresheafOfModules]
+      dsimp
+      erw [comp_apply]
+      erw [ModuleCat.restrictScalars.map_apply]
+      erw [freeDesc_apply (x := x)]
+      apply freeDesc_apply
+    · transitivity freeUnit (G.map f (α.app X x))
+      · congr
+        exact NatTrans.naturality_apply α f x
+      · dsimp
+        erw [BundledCorePresheafOfModules.restrictionApp_toPresheafOfModules]
+        dsimp
+        erw [comp_apply]
+        erw [freeDesc_apply (x := x)]
+        symm
+        apply freeDesc_apply
 
 variable (S) in
 noncomputable
