@@ -3,7 +3,8 @@ Copyright (c) 2024 Weihong Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weihong Xu
 -/
-import Mathlib.AlgebraicGeometry.StructureSheaf
+
+import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
 /-!
@@ -12,6 +13,11 @@ import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
 Given any commutative ring `R` and `R`-module `M`, we construct the sheaf `M^~` of `𝒪_SpecR`-modules
 such that `M^~(U)` is the set of dependent functions that are locally fractions.
+
+## Main definitions
+
+* `AlgebraicGeometry.TildeInAddCommGrp` : `M^~` as a sheaf of abelian groups.
+* `AlgebraicGeometry.TildeInModules` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 
 -/
 
@@ -159,9 +165,7 @@ end Tilde
 -/
 def TildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
   ⟨Tilde.presheafInAddCommGrp R M,
-    (-- We check the sheaf condition under `forget AddCommGrp`.
-          TopCat.Presheaf.isSheaf_iff_isSheaf_comp
-          _ _).mpr
+    (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr
       (TopCat.Presheaf.isSheaf_of_iso (Tilde.presheafCompForget R M).symm (TildeInType R M).cond)⟩
 
 -- `SheafOfModules` want `Sheaf ... RingCat`; but we have a `Sheaf ... CommRingCat`, so we forget.
