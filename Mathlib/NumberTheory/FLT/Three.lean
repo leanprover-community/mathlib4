@@ -510,7 +510,7 @@ lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   · exact lambda_not_dvd_w _ <| hζ.zeta_sub_one_prime'.dvd_of_dvd_pow h
   · simp [hζ.zeta_sub_one_prime'.ne_zero]
 
-attribute [instance] IsCyclotomicExtension.Rat.three_pid
+attribute [local instance] IsCyclotomicExtension.Rat.three_pid
 
 lemma coprime_x_y : IsCoprime S.x S.y := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hy ↦ lambda_not_dvd_y S (by simp [hy]))) ?_
