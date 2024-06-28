@@ -800,6 +800,47 @@ theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ :=
   rfl
 #align ereal.top_add_coe EReal.top_add_coe
 
+/-- For any extended real number `x` which is not `⊥`, the sum of `⊤` and `x` is equal to `⊤`. -/
+@[simp]
+theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
+  induction x using EReal.rec
+  · exfalso; exact h (Eq.refl ⊥)
+  · exact top_add_coe _
+  · exact top_add_top
+
+/-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
+theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
+  constructor <;> intro h
+  · by_contra h'
+    rw [h', add_bot] at h
+    exact bot_ne_top h
+  · cases x
+    case h_bot => contradiction
+    case h_top => rfl
+    case h_real r => exact top_add_of_ne_bot h
+
+/-- For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`. -/
+@[simp]
+theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
+  rw [add_comm, top_add_of_ne_bot h]
+
+/-- For any extended real number `x`, the sum of `x` and `⊤` is equal to `⊤`
+if and only if `x` is not `⊥`. -/
+theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
+
+/-- For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
+then their sum is also greater than `0`. -/
+theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by
+  induction a using EReal.rec
+  · exfalso; exact not_lt_bot ha
+  · induction b using EReal.rec
+    · exfalso; exact not_lt_bot hb
+    · norm_cast at *; exact Left.add_pos ha hb
+    · exact add_top_of_ne_bot (bot_lt_zero.trans ha).ne' ▸ hb
+  · rw [top_add_of_ne_bot (bot_lt_zero.trans hb).ne']
+    exact ha
+
 @[simp]
 theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
   rfl
@@ -1034,6 +1075,12 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
   rfl
 #align ereal.to_real_sub EReal.toReal_sub
 
+theorem add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
+  induction a using EReal.rec
+  · rw [bot_add b, bot_sub b]
+  · norm_cast; linarith
+  · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
+
 /-! ### Multiplication -/
 
 @[simp] theorem top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
@@ -1080,6 +1127,16 @@ theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
   rw [EReal.mul_comm]
   exact mul_top_of_pos h
 #align ereal.top_mul_of_pos EReal.top_mul_of_pos
+
+/-- The product of two positive extended real numbers is positive. -/
+theorem mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
+  induction' a using EReal.rec with a
+  · exfalso; exact not_lt_bot ha
+  · induction' b using EReal.rec with b
+    · exfalso; exact not_lt_bot hb
+    · norm_cast at *; exact Left.mul_pos ha hb
+    · rw [EReal.mul_comm, top_mul_of_pos ha]; exact hb
+  · rw [top_mul_of_pos hb]; exact ha
 
 theorem top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
   rw [EReal.mul_comm]
@@ -1187,6 +1244,70 @@ instance : HasDistribNeg EReal where
   mul_neg := fun x y => by
     rw [x.mul_comm, x.mul_comm]
     exact y.neg_mul x
+
+theorem right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    (a + b) * c = a * c + b * c := by
+  rcases eq_or_lt_of_le ha with (rfl | a_pos)
+  · simp
+  rcases eq_or_lt_of_le hb with (rfl | b_pos)
+  · simp
+  rcases lt_trichotomy c 0 with (c_neg | rfl | c_pos)
+  · induction c using EReal.rec
+    · rw [mul_bot_of_pos a_pos, mul_bot_of_pos b_pos, mul_bot_of_pos (add_pos a_pos b_pos),
+        add_bot ⊥]
+    · induction a using EReal.rec
+      · exfalso; exact not_lt_bot a_pos
+      · induction b using EReal.rec
+        · norm_cast
+        · norm_cast; exact right_distrib _ _ _
+        · norm_cast
+          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_neg c_neg, add_bot]
+      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_neg c_neg, bot_add]
+    · exfalso; exact not_top_lt c_neg
+  · simp
+  · induction c using EReal.rec
+    · exfalso; exact not_lt_bot c_pos
+    · induction a using EReal.rec
+      · exfalso; exact not_lt_bot a_pos
+      · induction b using EReal.rec
+        · norm_cast
+        · norm_cast; exact right_distrib _ _ _
+        · norm_cast
+          rw [add_top_of_ne_bot (coe_ne_bot _), top_mul_of_pos c_pos,
+            add_top_of_ne_bot (coe_ne_bot _)]
+      · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_pos c_pos,
+          top_add_of_ne_bot (ne_bot_of_gt (mul_pos b_pos c_pos))]
+    · rw [mul_top_of_pos a_pos, mul_top_of_pos b_pos, mul_top_of_pos (add_pos a_pos b_pos),
+        top_add_top]
+
+theorem left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
+    c * (a + b) = c * a + c * b := by
+  nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
+  exact right_distrib_of_nonneg ha hb
+
+theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
+  symm
+  refine ⟨fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z), ?_⟩
+  intro h
+  induction x using EReal.rec
+  · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
+    intro z
+    specialize h (z-1) (bot_lt_coe (z-1))
+    apply lt_of_le_of_lt h
+    rw [EReal.coe_lt_coe_iff]
+    exact sub_one_lt z
+  · induction y using EReal.rec
+    · exact bot_le
+    · norm_cast
+      norm_cast at h
+      by_contra x_lt_y
+      rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, x_lt_z, z_lt_y⟩
+      specialize h z x_lt_z
+      exact not_le_of_lt z_lt_y h
+    · exfalso
+      specialize h (_+ 1) (EReal.coe_lt_coe_iff.2 (lt_add_one _))
+      exact not_le_of_lt (coe_lt_top (_ + 1)) h
+  · exact le_top
 
 /-! ### Absolute value -/
 

@@ -167,7 +167,7 @@ private def f (n : ℕ) : WType' β (n + 1) → Σa : α, β a → WType' β n
 private def finv (n : ℕ) : (Σa : α, β a → WType' β n) → WType' β (n + 1)
   | ⟨a, f⟩ =>
     let f' := fun i : β a => (f i).val
-    have : WType.depth ⟨a, f'⟩ ≤ n + 1 := add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
+    have : WType.depth ⟨a, f'⟩ ≤ n + 1 := Nat.add_le_add_right (Finset.sup_le fun b _ => (f b).2) 1
     ⟨⟨a, f'⟩, this⟩
 
 variable [Encodable α]

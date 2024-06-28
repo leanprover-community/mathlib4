@@ -125,6 +125,7 @@
   "Mathlib.Tactic.NoncommRing",
   "Mathlib.Tactic.Nontriviality",
   "Mathlib.Tactic.NormNum",
+  "Mathlib.Tactic.NormNum.Basic",
   "Mathlib.Tactic.NormNum.Core",
   "Mathlib.Tactic.NormNum.Eq",
   "Mathlib.Tactic.NormNum.Ineq",
@@ -218,6 +219,7 @@
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators": ["Mathlib.Data.List.FinRange"],
   "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Logic.Nontrivial.Basic"],
+  "Mathlib.Tactic.NoncommRing": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Tactic.MoveAdd":
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
   "Mathlib.Tactic.Measurability":
@@ -303,6 +305,7 @@
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
+  "Mathlib.Data.Matroid.Map": ["Mathlib.Data.Set.Subset"],
   "Mathlib.Data.List.TFAE": ["Batteries.Tactic.Classical"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
@@ -320,8 +323,10 @@
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
+  "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
-  "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Algebra.Module.LinearMap.Star":
+  ["Mathlib.Algebra.Module.Equiv", "Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
