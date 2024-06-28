@@ -295,6 +295,12 @@ def mkEmbedding (a : α) : α ↪ Sym2 α where
     simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, true_and, Prod.swap_prod_mk] at h
     obtain rfl | ⟨rfl, rfl⟩ := h <;> rfl
 
+/-- `Sym2.map` as an embedding. -/
+@[simps]
+def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β where
+  toFun := map f
+  inj' := map.injective f.injective
+
 section Membership
 
 /-! ### Membership and set coercion -/
