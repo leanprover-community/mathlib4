@@ -406,7 +406,7 @@ noncomputable def equiv_GL_linearindependent {F : Type*} [Field F] (hn : 0 < n) 
   left_inv := fun x ↦ Units.ext (ext fun i j ↦ rfl)
   right_inv := by exact congrFun rfl
 
-noncomputable instance fintype : Fintype (GL (Fin n) 𝔽) := by
+noncomputable instance : Fintype (GL (Fin n) 𝔽) := by
     exact Fintype.ofFinite (GL (Fin n) 𝔽)
 
 theorem card_GL : Fintype.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ (n) - q ^ ( i : ℕ )) := by
