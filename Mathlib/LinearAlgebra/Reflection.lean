@@ -180,31 +180,25 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
     (hyΦ : y ∈ Φ) :
     x = y := by
   have : _root_.Finite Φ := hΦ
-  set sx : M ≃ₗ[R] M := Module.reflection hfx
-  set sy : M ≃ₗ[R] M := Module.reflection hgy
-  set sxy : M ≃ₗ[R] M := sy.trans sx
-  have hx : sx y = y - (2 : R) • x := by rw [Module.reflection_apply, hfy]
-  have hy : sy x = x - (2 : R) • y := by rw [Module.reflection_apply, hgx]
+  set sxy : M ≃ₗ[R] M := (Module.reflection hgy).trans (Module.reflection hfx)
   have hb : BijOn sxy Φ Φ :=
     (bijOn_reflection_of_mapsTo hfx hxfΦ).comp (bijOn_reflection_of_mapsTo hgy hygΦ)
-  set F : ℕ → M := fun n ↦ y + (2 * n : ℤ) • (x - y)
-  have hF : ∀ n : ℕ, (sxy^[n]) y = F n := by
+  have hsxy : ∀ n : ℕ, (sxy^[n]) y = y + (2 * n : ℤ) • (x - y) := by
     intro n
     induction n with
-    | zero => simp [F]
+    | zero => simp
     | succ n ih =>
-      simp only [F, sx, sy, sxy, iterate_succ', ih, hx, hy, two_smul, smul_add,
-        mul_add, add_smul, comp_apply, map_zsmul, zsmul_sub, map_add, neg_sub, map_neg,
-        smul_neg, map_sub, Nat.cast_succ, mul_one, LinearEquiv.trans_apply,
-        reflection_apply_self hfx, reflection_apply_self hgy]
+      simp only [iterate_succ', comp_apply, ih, zsmul_sub, map_add, LinearEquiv.trans_apply,
+        reflection_apply_self, map_neg, reflection_apply, hfy, two_smul, neg_sub, map_sub,
+        map_zsmul, hgx, smul_neg, smul_add, Nat.cast_succ, mul_add, mul_one, add_smul, sxy]
       abel
-  set f' : ℕ → Φ := fun n ↦ ⟨F n, by
-    rw [← IsFixedPt.image_iterate hb.image_eq n, ← hF]; exact mem_image_of_mem _ hyΦ⟩
+  set f' : ℕ → Φ := fun n ↦ ⟨(sxy^[n]) y, by
+    rw [← IsFixedPt.image_iterate hb.image_eq n]; exact mem_image_of_mem _ hyΦ⟩
   have : ¬ Injective f' := not_injective_infinite_finite f'
   contrapose! this
   intros n m hnm
-  rw [Subtype.mk_eq_mk, add_right_inj, ← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero,
-    sub_eq_zero] at hnm
+  rw [Subtype.mk_eq_mk, hsxy, hsxy, add_right_inj, ← sub_eq_zero, ← sub_smul, smul_eq_zero,
+    sub_eq_zero, sub_eq_zero] at hnm
   simpa using hnm.resolve_right this
 
 lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [NoZeroSMulDivisors ℤ M]
