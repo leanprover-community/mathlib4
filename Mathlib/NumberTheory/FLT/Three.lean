@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.FLT.Basic
+import Mathlib.NumberTheory.Cyclotomic.PID
 import Mathlib.NumberTheory.Cyclotomic.Three
 
 /-!
@@ -510,6 +511,29 @@ lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
     mul_comm _ 3, mul_dvd_mul_iff_left _] at h
   · exact lambda_not_dvd_w _ <| hζ.zeta_sub_one_prime'.dvd_of_dvd_pow h
   · simp [hζ.zeta_sub_one_prime'.ne_zero]
+
+attribute [instance] IsCyclotomicExtension.Rat.three_pid
+
+lemma coprime_x_y : IsCoprime S.x S.y := by
+  apply isCoprime_of_prime_dvd
+  · simp only [not_and]
+    intro _  hy
+    apply lambda_not_dvd_y S
+    simp [hy]
+  · intro p hp p_dvd_x p_dvd_y
+    have aux1 := dvd_mul_of_dvd_right p_dvd_x (λ ^ (3 * S.multiplicity - 2))
+    rw [← x_spec] at aux1
+    have aux2 := dvd_mul_of_dvd_right p_dvd_y (η -1)
+    rw [coe_eta, ← y_spec] at aux2
+    have aux3 : Associated p (hζ.toInteger - 1) := by
+      apply associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b
+      exact hp
+      exact aux1
+      exact aux2
+    have aux4 : λ ∣ S.x := by
+      rw [← Associated.dvd_iff_dvd_left aux3]
+      exact p_dvd_x
+    exact lambda_not_dvd_x S aux4
 
 end Solution
 
