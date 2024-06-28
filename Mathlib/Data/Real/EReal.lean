@@ -1516,7 +1516,7 @@ theorem mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
   | coe_coe x y => rw [← coe_mul, ← coe_inv, _root_.mul_inv, coe_mul, coe_inv, coe_inv]
   | neg_bot x x_neg => rw [mul_bot_of_neg (EReal.coe_neg'.2 x_neg), inv_top, inv_bot, mul_zero]
 
-/-! #### Inverse and absolute value -/
+/-! #### Inversion and Absolute Value -/
 
 theorem sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ := by
   induction' a using EReal.rec with a
@@ -1546,6 +1546,38 @@ theorem sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : 
       congr
       exact abs_of_pos a_pos
   · simp
+
+/-! #### Inversion and Positivity -/
+
+theorem inv_nonneg_of_nonneg {a : EReal} (h : 0 ≤ a) : 0 ≤ a⁻¹ := by
+  induction' a using EReal.rec with a
+  · simp
+  · rw [← coe_inv a, EReal.coe_nonneg, inv_nonneg]
+    exact EReal.coe_nonneg.1 h
+  · simp
+
+theorem inv_nonpos_of_nonpos {a : EReal} (h : a ≤ 0) : a⁻¹ ≤ 0 := by
+  induction' a using EReal.rec with a
+  · simp
+  · rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]
+    exact EReal.coe_nonpos.1 h
+  · simp
+
+theorem inv_pos_of_ntop_pos {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : 0 < a⁻¹ := by
+  induction' a using EReal.rec with a
+  · exact (not_lt_bot h).rec
+  · rw [← coe_inv a]
+    norm_cast at *
+    exact inv_pos_of_pos h
+  · exact (h' (Eq.refl ⊤)).rec
+
+theorem inv_neg_of_nbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 0 := by
+  induction' a using EReal.rec with a
+  · exact (h' (Eq.refl ⊥)).rec
+  · rw [← coe_inv a]
+    norm_cast at *
+    exact inv_lt_zero.2 h
+  · exact (not_top_lt h).rec
 
 end EReal
 
