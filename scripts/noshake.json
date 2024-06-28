@@ -42,7 +42,7 @@
   "Mathlib.Data.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
   "Mathlib.Data.Rat.Init",
-  "Mathlib.Data.Set.Subset",
+  "Mathlib.Data.Set.Notation",
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
   "Mathlib.Geometry.Manifold.Instances.Real",
