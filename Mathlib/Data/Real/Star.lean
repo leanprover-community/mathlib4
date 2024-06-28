@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Real.Sqrt
 
-open scoped NNReal
-
 /-! # `ℝ` and `ℝ≥0` are *-ordered rings. -/
+
+open scoped NNReal
 
 /-- Although the instance `RCLike.toStarOrderedRing` exists, it is locked behind the
 `ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we

@@ -8,6 +8,10 @@ import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Cast.Defs
 import Mathlib.Algebra.Field.Opposite
 
+/-!
+# *-ring structure on ℚ and ℚ≥0.
+-/
+
 instance Rat.instStarRing : StarRing ℚ := starRingOfComm
 instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
 instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
