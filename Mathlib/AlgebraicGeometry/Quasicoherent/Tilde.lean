@@ -177,11 +177,21 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((forget2Ring R).val.obj U) ((PresheafInAddCommGrp R M).obj U) :=
   inferInstanceAs $ Module _ (sectionsSubmodule R M U)
 
-noncomputable example : SheafOfModules (forget2Ring R) where
+noncomputable def TildeInModules : SheafOfModules (forget2Ring R) where
   val := {
     presheaf := (PresheafInAddCommGrp R M)
     module := inferInstance
-    map_smul := sorry
+    map_smul := by
+      intro U V f r m
+      dsimp [SheafInAddCommGrp, PresheafInAddCommGrp, TildeInType]
+      rw [Subtype.ext_iff]
+      ext x
+      dsimp [subpresheafToTypes]
+      simp only [forget2Ring, sheafCompose_obj_val, Functor.comp_obj, Functor.comp_map] at r ⊢
+      change (Spec.structureSheaf R).val.obj U at r
+      change r • (m.1 ⟨x.1, _⟩) = _
+      rw [smul_def]
+      rfl
   }
   isSheaf := (SheafInAddCommGrp R M).2
 
