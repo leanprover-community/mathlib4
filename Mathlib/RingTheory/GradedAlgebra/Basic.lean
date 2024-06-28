@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
+Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Decomposition
@@ -185,9 +185,7 @@ abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[
   left_inv := AlgHom.congr_fun right_inv
   right_inv := by
     suffices decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _ from AlgHom.congr_fun this
-    -- Porting note: was ext i x : 2
-    refine DirectSum.algHom_ext' _ _ fun i => ?_
-    ext x
+    ext i x : 2
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
 #align graded_algebra.of_alg_hom GradedAlgebra.ofAlgHom
 
@@ -300,6 +298,27 @@ def GradedRing.projZeroRingHom : A →+* A where
       simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
 #align graded_ring.proj_zero_ring_hom GradedRing.projZeroRingHom
 
+section GradeZero
+
+/-- The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`. -/
+def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
+  A →+* SetLike.GradeZero.subsemiring 𝒜)
+
+@[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
+    (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
+
+@[simp] lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
+    GradedRing.projZeroRingHom' 𝒜 a = a := by
+  ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+
+/-- The ring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective. -/
+lemma GradedRing.projZeroRingHom'_surjective :
+    Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
+  Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
+
+end GradeZero
+
 variable {a b : A} {n i : ι}
 
 namespace DirectSum
@@ -345,3 +364,43 @@ theorem coe_decompose_mul_of_right_mem (n) [Decidable (i ≤ n)] (b_mem : b ∈ 
 end DirectSum
 
 end CanonicalOrder
+
+namespace DirectSum.IsInternal
+
+
+variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
+variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
+variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
+
+-- The following lines were given on Zulip by Adam Topaz
+/-- The canonical isomorphism of an internal direct sum with the ambiant algebra -/
+noncomputable def coeAlgIso (hM : DirectSum.IsInternal M) :
+    (DirectSum ι fun i => ↥(M i)) ≃ₐ[R] A :=
+  { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with commutes' := fun r => by simp }
+
+/-- Given an `R`-algebra `A` and a family `ι → Submodule R A` of submodules
+parameterized by an additive monoid `ι`
+and statisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
+such that `DirectSum.is_internal M` (`A` is the direct sum of the `M i`),
+we endow `A` with the structure of a graded algebra.
+The submodules are the *homogeneous* parts -/
+noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M :=
+  { (inferInstance : SetLike.GradedMonoid M) with
+    decompose' := hM.coeAlgIso.symm
+    left_inv := hM.coeAlgIso.symm.left_inv
+    right_inv := hM.coeAlgIso.left_inv }
+
+end DirectSum.IsInternal
+
+/-
+namespace DirectSum.Decomposition
+
+variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
+variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
+variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
+
+def gradedAlgebra (dM : DirectSum.Decomposition M) : GradedAlgebra M :=
+  { (inferInstance : SetLike.GradedMonoid M) with toDecomposition := dM }
+
+end DirectSum.Decomposition
+-/

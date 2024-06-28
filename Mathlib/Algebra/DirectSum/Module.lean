@@ -308,6 +308,13 @@ def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
   toModule R ι M fun i ↦ (A i).subtype
 #align direct_sum.coe_linear_map DirectSum.coeLinearMap
 
+theorem coeLinearMap_eq_dfinsupp_sum [DecidableEq M] (x : DirectSum ι fun i => A i) :
+    coeLinearMap A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
+  simp only [coeLinearMap, toModule, DFinsupp.lsum, LinearEquiv.coe_mk, LinearMap.coe_mk,
+    AddHom.coe_mk]
+  rw [DFinsupp.sumAddHom_apply]
+  simp only [LinearMap.toAddMonoidHom_coe, Submodule.coeSubtype]
+
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)

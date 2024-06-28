@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Set.Image
 import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
@@ -751,6 +752,26 @@ protected lemma Memℒp.piecewise [DecidablePred (· ∈ s)] {g}
     exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hg.2
 
 end Indicator
+
+section Topology
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+  {μ : Measure X} [IsFiniteMeasureOnCompacts μ]
+
+/-- A bounded measurable function with compact support is in L^p. -/
+theorem _root_.HasCompactSupport.memℒp_of_bound {f : X → E} (hf : HasCompactSupport f)
+    (h2f : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ := by
+  have := memℒp_top_of_bound h2f C hfC
+  exact this.memℒp_of_exponent_le_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_nmem_tsupport) (hf.measure_lt_top.ne) le_top
+
+/-- A continuous function with compact support is in L^p. -/
+theorem _root_.Continuous.memℒp_of_hasCompactSupport [OpensMeasurableSpace X]
+    {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : Memℒp f p μ := by
+  have := hf.memℒp_top_of_hasCompactSupport h'f μ
+  exact this.memℒp_of_exponent_le_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_nmem_tsupport) (h'f.measure_lt_top.ne) le_top
+
+end Topology
 
 section IndicatorConstLp
 
