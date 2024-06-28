@@ -1541,6 +1541,12 @@ theorem mul_div_mul {a : EReal} {b c : ENNReal} (h : c ≠ 0) (h' : c ≠ ⊤) :
                 _ = b⁻¹ * (c⁻¹ * c) := mul_assoc b⁻¹ c⁻¹ c
                 _ = b⁻¹ * 1         := by rw [ENNReal.inv_mul_cancel h h']
                 _ = b⁻¹             := mul_one b⁻¹
+
+theorem div_mul {a : EReal} {b c : ENNReal} (h : b ≠ 0 ∨ c ≠ ⊤) (h' : b ≠ ⊤ ∨ c ≠ 0) :
+    (a / b) / c = a / (b * c) := by
+  change (a * b⁻¹) * c⁻¹ = a * (b * c)⁻¹
+  suffices h : b⁻¹ * c⁻¹ = (b * c)⁻¹ by rw [← h, mul_assoc]; norm_cast
+  exact (ENNReal.mul_inv h h').symm
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
