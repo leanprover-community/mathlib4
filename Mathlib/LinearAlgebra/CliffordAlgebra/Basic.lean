@@ -197,6 +197,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
 #align clifford_algebra.hom_ext CliffordAlgebra.hom_ext
 
 -- This proof closely follows `TensorAlgebra.induction`
+attribute [-instance] IntermediateField.module' normalClosure.algebra in
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
 and is preserved under addition and muliplication, then it holds for all of `CliffordAlgebra Q`.
 
