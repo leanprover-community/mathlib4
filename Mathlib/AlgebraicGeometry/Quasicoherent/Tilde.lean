@@ -262,15 +262,25 @@ theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
     s.1 x := by
   cases x; exact stalkToFiberLinearMap_germ' R M U _ _ _
 
+def toOpen (U : Opens (PrimeSpectrum.Top R)) :
+    ModuleCat.of R M ⟶ (TildeInModuleCat R M).1.obj (op U) where
+  toFun f :=
+  ⟨fun x => LocalizedModule.mkLinearMap _ _ f, fun x =>
+    ⟨U, x.2, 𝟙 _, f, 1, fun y => ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
+  map_add' f g := Subtype.eq <| funext fun x => LinearMap.map_add _ _ _
+  map_smul' := sorry
+
+noncomputable def toStalk (x : PrimeSpectrum.Top R) :
+    ModuleCat.of R M ⟶ TopCat.Presheaf.stalk (TildeInModuleCat R M) x :=
+  (toOpen R M ⊤ ≫ TopCat.Presheaf.germ (TildeInModuleCat R M) ⟨x, by trivial⟩)
+
 noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
     (TopCat.Presheaf.stalk (TildeInModuleCat R M) x) :=
   show LocalizedModule x.asIdeal.primeCompl M →ₗ[R]
     TopCat.Presheaf.stalk.{u, u + 1} (X := PrimeSpectrum.Top R)
       (C := ModuleCat R) (TildeInModuleCat R M) x from
-  LocalizedModule.lift _ sorry sorry
-
-
+  LocalizedModule.lift _ (toStalk R M x) sorry
 
 end Tilde
 
