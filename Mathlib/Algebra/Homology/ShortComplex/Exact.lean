@@ -941,8 +941,6 @@ instance : F.PreservesEpimorphisms where
     exact ((S.map F).exact_iff_epi (by simp)).1
       (((S.exact_iff_epi rfl).2 hf).map F)
 
--- This is true for any faithful functor.
-example [Faithful F] [CategoryWithHomology C] : F.ReflectsEpimorphisms := inferInstance
 
 end Functor
 
