@@ -934,8 +934,6 @@ instance : F.PreservesMonomorphisms where
     exact ((S.map F).exact_iff_mono (by simp)).1
       (((S.exact_iff_mono rfl).2 hf).map F)
 
--- This is true for any faithful functor.
-example [Faithful F] [CategoryWithHomology C] : F.ReflectsMonomorphisms := inferInstance
 
 instance : F.PreservesEpimorphisms where
   preserves {X Y} f hf := by
