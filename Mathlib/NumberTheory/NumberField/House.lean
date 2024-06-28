@@ -110,7 +110,7 @@ lemma inv_mulVec_eq_vec (A : Matrix n n α) [Invertible A]
   rw [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
 
 theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
-  ((((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) ≤
+    ((((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)) ≤
     @c K _ _ * House (algebraMap (𝓞 K) K α) := fun i => calc
 
   Complex.abs (((((integralBasis K).reindex (equivReindex K).symm))).repr α i : ℂ) =
