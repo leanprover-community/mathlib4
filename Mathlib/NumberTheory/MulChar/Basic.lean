@@ -430,12 +430,21 @@ section nontrivial
 
 variable {R : Type*} [CommMonoid R] {R' : Type*} [CommMonoidWithZero R']
 
+lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
+  simp only [ext_iff, one_apply_coe]
+
+lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
+  simp only [Ne, eq_one_iff, not_forall]
+
 /-- A multiplicative character is *nontrivial* if it takes a value `≠ 1` on a unit. -/
+@[deprecated (since := "2024-06-16")]
 def IsNontrivial (χ : MulChar R R') : Prop :=
   ∃ a : Rˣ, χ a ≠ 1
 #align mul_char.is_nontrivial MulChar.IsNontrivial
 
+set_option linter.deprecated false in
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
+@[deprecated (since := "2024-06-16")]
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
   simp only [IsNontrivial, Ne, ext_iff, not_forall, one_apply_coe]
 #align mul_char.is_nontrivial_iff MulChar.isNontrivial_iff
@@ -467,7 +476,23 @@ def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
     map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, map_zero] }
 #align mul_char.ring_hom_comp MulChar.ringHomComp
 
+lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
+    Function.Injective (ringHomComp (R := R) · f) := by
+  simpa only [Function.Injective, ext_iff, ringHomComp, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    using fun χ χ' h a ↦ hf (h a)
+
+lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
+    χ.ringHomComp f = 1 ↔ χ = 1 := by
+  conv_lhs => rw [← (show  (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
+  exact (injective_ringHomComp hf).eq_iff
+
+lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
+    χ.ringHomComp f ≠ 1 ↔ χ ≠ 1 :=
+  (ringHomComp_eq_one_iff hf).not
+
+set_option linter.deprecated false in
 /-- Composition with an injective ring homomorphism preserves nontriviality. -/
+@[deprecated ringHomComp_ne_one_iff (since := "2024-06-16")]
 theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' →+* R''}
     (hf : Function.Injective f) : (χ.ringHomComp f).IsNontrivial := by
   obtain ⟨a, ha⟩ := hχ
@@ -562,13 +587,17 @@ variable {R : Type*} [CommMonoid R] [Fintype R] {R' : Type*} [CommRing R']
 
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
-theorem IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'}
-    (hχ : χ.IsNontrivial) : ∑ a, χ a = 0 := by
-  rcases hχ with ⟨b, hb⟩
+theorem sum_eq_zero_of_ne_one [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1) : ∑ a, χ a = 0 := by
+  rcases ne_one_iff.mp hχ with ⟨b, hb⟩
   refine eq_zero_of_mul_eq_self_left hb ?_
-  simp only [Finset.mul_sum, ← map_mul]
-  exact Fintype.sum_bijective _ (Units.mulLeft_bijective b) _ _ fun x => rfl
-#align mul_char.is_nontrivial.sum_eq_zero MulChar.IsNontrivial.sum_eq_zero
+  simpa only [Finset.mul_sum, ← map_mul] using b.mulLeft_bijective.sum_comp _
+#align mul_char.is_nontrivial.sum_eq_zero MulChar.sum_eq_zero_of_ne_one
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-06-16")]
+lemma IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'} (hχ : χ.IsNontrivial) :
+    ∑ a, χ a = 0 :=
+  sum_eq_zero_of_ne_one ((isNontrivial_iff _).mp hχ)
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/

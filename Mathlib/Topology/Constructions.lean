@@ -157,8 +157,8 @@ variable [TopologicalSpace X]
 
 open OrderDual
 
-instance : TopologicalSpace Xᵒᵈ := ‹TopologicalSpace X›
-instance [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹DiscreteTopology X›
+instance OrderDual.instTopologicalSpace : TopologicalSpace Xᵒᵈ := ‹_›
+instance OrderDual.instDiscreteTopology [DiscreteTopology X] : DiscreteTopology Xᵒᵈ := ‹_›
 
 theorem continuous_toDual : Continuous (toDual : X → Xᵒᵈ) := continuous_id
 #align continuous_to_dual continuous_toDual
@@ -183,6 +183,11 @@ theorem nhds_toDual (x : X) : 𝓝 (toDual x) = map toDual (𝓝 x) := rfl
 
 theorem nhds_ofDual (x : X) : 𝓝 (ofDual x) = map ofDual (𝓝 x) := rfl
 #align nhds_of_dual nhds_ofDual
+
+variable [Preorder X] {x : X}
+
+instance OrderDual.instNeBotNhdsWithinIoi [(𝓝[<] x).NeBot] : (𝓝[>] toDual x).NeBot := ‹_›
+instance OrderDual.instNeBotNhdsWithinIio [(𝓝[>] x).NeBot] : (𝓝[<] toDual x).NeBot := ‹_›
 
 end
 
@@ -556,6 +561,17 @@ theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
     𝓝[s ×ˢ t] (x, y) = 𝓝[s] x ×ˢ 𝓝[t] y := by
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
 #align nhds_within_prod_eq nhdsWithin_prod_eq
+
+instance Prod.instNeBotNhdsWithinIio [Preorder X] [Preorder Y] {x : X × Y}
+    [hx₁ : (𝓝[<] x.1).NeBot] [hx₂ : (𝓝[<] x.2).NeBot] : (𝓝[<] x).NeBot := by
+  refine (hx₁.prod hx₂).mono ?_
+  rw [← nhdsWithin_prod_eq]
+  exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
+
+instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
+    [(𝓝[>] x.1).NeBot] [(𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot :=
+  Prod.instNeBotNhdsWithinIio (X := Xᵒᵈ) (Y := Yᵒᵈ)
+    (x := (OrderDual.toDual x.1, OrderDual.toDual x.2))
 
 #noalign continuous_uncurry_of_discrete_topology
 
@@ -934,26 +950,26 @@ theorem continuous_sum_elim {f : X → Z} {g : Y → Z} :
   continuous_sum_dom
 #align continuous_sum_elim continuous_sum_elim
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.sum_elim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.elim f g) :=
   continuous_sum_elim.2 ⟨hf, hg⟩
 #align continuous.sum_elim Continuous.sum_elim
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_isLeft : Continuous (isLeft : X ⊕ Y → Bool) :=
   continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_isRight : Continuous (isRight : X ⊕ Y → Bool) :=
   continuous_sum_dom.2 ⟨continuous_const, continuous_const⟩
 
-@[continuity]
+@[continuity, fun_prop]
 -- Porting note: the proof was `continuous_sup_rng_left continuous_coinduced_rng`
 theorem continuous_inl : Continuous (@inl X Y) := ⟨fun _ => And.left⟩
 #align continuous_inl continuous_inl
 
-@[continuity]
+@[continuity, fun_prop]
 -- Porting note: the proof was `continuous_sup_rng_right continuous_coinduced_rng`
 theorem continuous_inr : Continuous (@inr X Y) := ⟨fun _ => And.right⟩
 #align continuous_inr continuous_inr
@@ -962,7 +978,6 @@ theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) 
   Iff.rfl
 #align is_open_sum_iff isOpen_sum_iff
 
--- Porting note (#10756): new theorem
 theorem isClosed_sum_iff {s : Set (X ⊕ Y)} :
     IsClosed s ↔ IsClosed (inl ⁻¹' s) ∧ IsClosed (inr ⁻¹' s) := by
   simp only [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
@@ -1032,7 +1047,7 @@ theorem continuous_sum_map {f : X → Y} {g : Z → W} :
     embedding_inl.continuous_iff.symm.and embedding_inr.continuous_iff.symm
 #align continuous_sum_map continuous_sum_map
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.sum_map {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
   continuous_sum_map.2 ⟨hf, hg⟩
@@ -1077,7 +1092,7 @@ theorem closedEmbedding_subtype_val (h : IsClosed { a | p a }) :
   ⟨embedding_subtype_val, by rwa [Subtype.range_coe_subtype]⟩
 #align closed_embedding_subtype_coe closedEmbedding_subtype_val
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_subtype_val : Continuous (@Subtype.val X p) :=
   continuous_induced_dom
 #align continuous_subtype_val continuous_subtype_val
@@ -1107,7 +1122,7 @@ nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set X} (hs : IsClosed s
   closedEmbedding_subtype_val hs
 #align is_closed.closed_embedding_subtype_coe IsClosed.closedEmbedding_subtype_val
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
   continuous_induced_rng.2 h
@@ -1132,7 +1147,6 @@ theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((
   rfl
 #align subtype.dense_iff Subtype.dense_iff
 
--- Porting note (#10756): new lemma
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [inducing_subtype_val.map_nhds_eq, Subtype.range_val]
 
@@ -1174,18 +1188,18 @@ theorem ContinuousAt.restrictPreimage {f : X → Y} {s : Set Y} {x : f ⁻¹' s}
   h.restrict _
 #align continuous_at.restrict_preimage ContinuousAt.restrictPreimage
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.codRestrict {f : X → Y} {s : Set Y} (hf : Continuous f) (hs : ∀ a, f a ∈ s) :
     Continuous (s.codRestrict f hs) :=
   hf.subtype_mk hs
 #align continuous.cod_restrict Continuous.codRestrict
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f s t)
     (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
   (h2.comp continuous_subtype_val).codRestrict _
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f) :
     Continuous (s.restrictPreimage f) :=
   h.restrict _
@@ -1230,12 +1244,12 @@ theorem quotientMap_quot_mk : QuotientMap (@Quot.mk X r) :=
   ⟨Quot.exists_rep, rfl⟩
 #align quotient_map_quot_mk quotientMap_quot_mk
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_quot_mk : Continuous (@Quot.mk X r) :=
   continuous_coinduced_rng
 #align continuous_quot_mk continuous_quot_mk
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_quot_lift {f : X → Y} (hr : ∀ a b, r a b → f a = f b) (h : Continuous f) :
     Continuous (Quot.lift f hr : Quot r → Y) :=
   continuous_coinduced_dom.2 h
@@ -1260,7 +1274,8 @@ theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
   h.quotient_lift hs
 #align continuous.quotient_lift_on' Continuous.quotient_liftOn'
 
-@[continuity] theorem Continuous.quotient_map' {t : Setoid Y} {f : X → Y} (hf : Continuous f)
+@[continuity, fun_prop]
+theorem Continuous.quotient_map' {t : Setoid Y} {f : X → Y} (hf : Continuous f)
     (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map' f H) :=
   (continuous_quotient_mk'.comp hf).quotient_lift _
 #align continuous.quotient_map' Continuous.quotient_map'
@@ -1379,7 +1394,7 @@ theorem Continuous.update [DecidableEq ι] (hf : Continuous f) (i : ι) {g : X �
 #align continuous.update Continuous.update
 
 /-- `Function.update f i x` is continuous in `(f, x)`. -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_update [DecidableEq ι] (i : ι) :
     Continuous fun f : (∀ j, π j) × π i => update f.1 i f.2 :=
   continuous_fst.update i continuous_snd
@@ -1571,7 +1586,7 @@ section Sigma
 variable {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*} [∀ i, TopologicalSpace (σ i)]
   [∀ k, TopologicalSpace (τ k)] [TopologicalSpace X]
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sigmaMk {i : ι} : Continuous (@Sigma.mk ι σ i) :=
   continuous_iSup_rng continuous_coinduced_rng
 #align continuous_sigma_mk continuous_sigmaMk
@@ -1658,7 +1673,7 @@ theorem continuous_sigma_iff {f : Sigma σ → X} :
 #align continuous_sigma_iff continuous_sigma_iff
 
 /-- A map out of a sum type is continuous if its restriction to each summand is. -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_sigma {f : Sigma σ → X} (hf : ∀ i, Continuous fun a => f ⟨i, a⟩) :
     Continuous f :=
   continuous_sigma_iff.2 hf
@@ -1686,7 +1701,7 @@ theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁
   continuous_sigma_iff.trans <| by simp only [Sigma.map, embedding_sigmaMk.continuous_iff, comp]
 #align continuous_sigma_map continuous_sigma_map
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} (hf : ∀ i, Continuous (f₂ i)) :
     Continuous (Sigma.map f₁ f₂) :=
   continuous_sigma_map.2 hf
