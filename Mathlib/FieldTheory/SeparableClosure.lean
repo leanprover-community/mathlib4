@@ -76,7 +76,7 @@ section separableClosure
 of `E / F`, is defined to be the intermediate field of `E / F` consisting of all separable
 elements. The previous results prove that these elements are closed under field operations. -/
 def separableClosure : IntermediateField F E where
-  carrier := {x | (minpoly F x).Separable}
+  carrier := {x | IsSeparable F x}
   mul_mem' := separable_mul
   add_mem' := separable_add
   algebraMap_mem' := separable_algebraMap E
@@ -87,7 +87,7 @@ variable {F E K}
 /-- An element is contained in the separable closure of `F` in `E` if and only if
 it is a separable element. -/
 theorem mem_separableClosure_iff {x : E} :
-    x ∈ separableClosure F E ↔ (minpoly F x).Separable := Iff.rfl
+    x ∈ separableClosure F E ↔ IsSeparable F x := Iff.rfl
 
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then `i x` is contained in
 `separableClosure F K` if and only if `x` is contained in `separableClosure F E`. -/
@@ -147,7 +147,7 @@ instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure 
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if all of its elements are separable over `F`. -/
-theorem le_separableClosure' {L : IntermediateField F E} (hs : ∀ x : L, (minpoly F x).Separable) :
+theorem le_separableClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsSeparable F x) :
     L ≤ separableClosure F E := fun x h ↦ by simpa only [minpoly_eq] using hs ⟨x, h⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
@@ -206,7 +206,7 @@ abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem IntermediateField.isSeparable_adjoin_iff_separable {S : Set E} :
-    Algebra.IsSeparable F (adjoin F S) ↔ ∀ x ∈ S, (minpoly F x).Separable :=
+    Algebra.IsSeparable F (adjoin F S) ↔ ∀ x ∈ S, IsSeparable F x :=
   (le_separableClosure_iff F E _).symm.trans adjoin_le_iff
 
 /-- The separable closure of `F` in `E` is equal to `E` if and only if `E / F` is

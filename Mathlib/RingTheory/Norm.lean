@@ -243,7 +243,7 @@ open IntermediateField IntermediateField.AdjoinSimple Polynomial
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
-    (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : (minpoly R pb.gen).Separable) :
+    (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : IsSeparable R pb.gen) :
     algebraMap R F (norm R pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).prod fun σ => σ pb.gen := by
   letI := Classical.decEq F

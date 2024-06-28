@@ -365,7 +365,7 @@ open Algebra IntermediateField
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
 theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
-    (hE : (minpoly K pb.gen).Splits (algebraMap K E)) (hfx : (minpoly K pb.gen).Separable) :
+    (hE : (minpoly K pb.gen).Splits (algebraMap K E)) (hfx : IsSeparable K pb.gen) :
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E

@@ -75,7 +75,7 @@ theorem integral [IsGalois F E] (x : E) : IsIntegral F x :=
   to_normal.isIntegral x
 #align is_galois.integral IsGalois.integral
 
-theorem separable [IsGalois F E] (x : E) : (minpoly F x).Separable :=
+theorem separable [IsGalois F E] (x : E) : IsSeparable F x :=
   Algebra.IsSeparable.isSeparable F x
 #align is_galois.separable IsGalois.separable
 
@@ -91,7 +91,7 @@ instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E]
 #align is_galois.of_fixed_field IsGalois.of_fixed_field
 
 theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F E] {α : E}
-    (hα : IsIntegral F α) (h_sep : (minpoly F α).Separable)
+    (hα : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : (minpoly F α).Splits (algebraMap F F⟮α⟯)) :
     Fintype.card (F⟮α⟯ ≃ₐ[F] F⟮α⟯) = finrank F F⟮α⟯ := by
   letI : Fintype (F⟮α⟯ →ₐ[F] F⟮α⟯) := IntermediateField.fintypeOfAlgHomAdjoinIntegral F hα
@@ -112,7 +112,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
       map_add' := fun _ _ => rfl
       commutes' := fun _ => rfl }
   have H : IsIntegral F α := IsGalois.integral F α
-  have h_sep : (minpoly F α).Separable := IsGalois.separable F α
+  have h_sep : IsSeparable F α := IsGalois.separable F α
   have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
   replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α) := by
     simpa using

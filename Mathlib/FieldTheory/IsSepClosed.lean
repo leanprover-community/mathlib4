@@ -170,7 +170,7 @@ theorem algebraMap_surjective
     Function.Surjective (algebraMap k K) := by
   refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsSeparable.isIntegral k x)
-  have hsep : (minpoly k x).Separable := Algebra.IsSeparable.isSeparable k x
+  have hsep : IsSeparable k x := Algebra.IsSeparable.isSeparable k x
   have h : (minpoly k x).degree = 1 :=
     degree_eq_one_of_irreducible k (minpoly.irreducible (Algebra.IsSeparable.isIntegral k x)) hsep
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x

@@ -142,7 +142,7 @@ section IsPurelyInseparable
 inseparable if and only if the minimal polynomial of every element of `E ∖ F` is not separable. -/
 class IsPurelyInseparable : Prop where
   isIntegral : Algebra.IsIntegral F E
-  inseparable' (x : E) : (minpoly F x).Separable → x ∈ (algebraMap F E).range
+  inseparable' (x : E) : IsSeparable F x → x ∈ (algebraMap F E).range
 
 attribute [instance] IsPurelyInseparable.isIntegral
 
@@ -156,13 +156,13 @@ theorem IsPurelyInseparable.isAlgebraic [IsPurelyInseparable F E] :
 variable {E}
 
 theorem IsPurelyInseparable.inseparable [IsPurelyInseparable F E] :
-    ∀ x : E, (minpoly F x).Separable → x ∈ (algebraMap F E).range :=
+    ∀ x : E, IsSeparable F x → x ∈ (algebraMap F E).range :=
   IsPurelyInseparable.inseparable'
 
 variable {F K}
 
 theorem isPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
-    IsIntegral F x ∧ ((minpoly F x).Separable → x ∈ (algebraMap F E).range) :=
+    IsIntegral F x ∧ (IsSeparable F x → x ∈ (algebraMap F E).range) :=
   ⟨fun h x ↦ ⟨h.isIntegral' x, h.inseparable' x⟩, fun h ↦ ⟨⟨fun x ↦ (h x).1⟩, fun x ↦ (h x).2⟩⟩
 
 /-- Transfer `IsPurelyInseparable` across an `AlgEquiv`. -/
@@ -762,7 +762,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparabl
 family of separable elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }`
 is also `F`-linearly independent for any natural number `n`. -/
 theorem LinearIndependent.map_pow_expChar_pow_of_separable
-    (hsep : ∀ i : ι, (minpoly F (v i)).Separable)
+    (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   let E' := adjoin F (Set.range v)
   haveI : Algebra.IsSeparable F E' := (isSeparable_adjoin_iff_separable F _).2 <| by
@@ -896,7 +896,7 @@ variable {F K} in
 if `{ u_i }` is a family of separable elements of `K` which is `F`-linearly independent,
 then it is also `E`-linearly independent. -/
 theorem LinearIndependent.map_of_isPurelyInseparable_of_separable [IsPurelyInseparable F E]
-    {ι : Type*} {v : ι → K} (hsep : ∀ i : ι, (minpoly F (v i)).Separable)
+    {ι : Type*} {v : ι → K} (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent E v := by
   obtain ⟨q, _⟩ := ExpChar.exists F
   haveI := expChar_of_injective_algebraMap (algebraMap F K).injective q
@@ -1037,7 +1037,7 @@ variable {F K} in
 for any element `x` of `K` separable over `F`, it has the same minimal polynomials over `F` and
 over `E`. -/
 theorem minpoly.map_eq_of_separable_of_isPurelyInseparable (x : K)
-    (hsep : (minpoly F x).Separable) [IsPurelyInseparable F E] :
+    (hsep : IsSeparable F x) [IsPurelyInseparable F E] :
     (minpoly F x).map (algebraMap F E) = minpoly E x := by
   have hi := hsep.isIntegral
   have hi' : IsIntegral E x := IsIntegral.tower_top hi

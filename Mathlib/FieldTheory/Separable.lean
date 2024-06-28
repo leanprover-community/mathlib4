@@ -595,7 +595,7 @@ theorem Algebra.IsSeparable.isIntegral [Algebra.IsSeparable F K] :
 
 variable {F}
 
-theorem isSeparable_iff : Algebra.IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
+theorem isSeparable_iff : Algebra.IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ IsSeparable F x :=
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩, fun h => ⟨fun x => (h x).2⟩⟩
 #align is_separable_iff isSeparable_iff
 
@@ -634,7 +634,7 @@ section IsSeparableTower
 over `K`. -/
 theorem Polynomial.Separable.map_minpoly {A : Type*} [CommRing A]
     (K : Type*) [Field K] [Algebra A K] {R : Type*} [CommRing R] [Algebra A R] [Algebra K R]
-    [IsScalarTower A K R] {x : R} (h : (minpoly A x).Separable) : (minpoly K x).Separable :=
+    [IsScalarTower A K R] {x : R} (h : IsSeparable A x) : IsSeparable K x :=
   h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
 
 variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F E] [Algebra K E]
@@ -684,7 +684,7 @@ variable {R S T : Type*} [CommRing S]
 variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K S] [Algebra K L]
 
-theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : (minpoly K pb.gen).Separable)
+theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
     (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
   let _ := (PowerBasis.AlgHom.fintype pb : Fintype (S →ₐ[K] L))
