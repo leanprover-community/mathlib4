@@ -106,7 +106,7 @@ variable {m : Type u} {n : Type u'} {α : Type v}
 variable [Fintype n] [DecidableEq n] [CommRing α]
 
 lemma inv_mulVec_eq_vec (A : Matrix n n α) [Invertible A]
-  {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
+    {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by
   rw [hM, Matrix.mulVec_mulVec, Matrix.inv_mul_of_invertible, Matrix.one_mulVec]
 
 theorem basis_repr_abs_le_const_mul_house (α : 𝓞 K) : ∀ i, Complex.abs
