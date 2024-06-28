@@ -289,7 +289,7 @@ instance separable : Algebra.IsSeparable (FixedPoints.subfield G F) F :=
   ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
-    erw [IsSeparable, ← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,
+    erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,
       minpoly, Polynomial.map_toSubring _ (subfield G F).toSubring]
     exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
 #align fixed_points.separable FixedPoints.separable

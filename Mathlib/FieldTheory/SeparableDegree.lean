@@ -715,7 +715,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      (Algebra.IsSeparable.separable F x).map_minpoly L
+      (Algebra.IsSeparable.isSeparable F x).map_minpoly L
   set M := L⟮x⟯
   have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
@@ -740,7 +740,7 @@ end Field
 
 lemma IntermediateField.separable_of_mem_isSeparable {L : IntermediateField F E} [Algebra.IsSeparable F L]
     {x : E} (h : x ∈ L) : (minpoly F x).Separable := by
-  simpa only [minpoly_eq] using Algebra.IsSeparable.separable F (K := L) ⟨x, h⟩
+  simpa only [minpoly_eq] using Algebra.IsSeparable.isSeparable F (K := L) ⟨x, h⟩
 
 /-- `F⟮x⟯ / F` is a separable extension if and only if `x` is a separable element.
 As a consequence, any rational function of `x` is also a separable element. -/
@@ -787,7 +787,7 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
 /-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
 theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
     [Algebra.IsSeparable F E] [Algebra.IsSeparable E K] : Algebra.IsSeparable F K :=
-  ⟨fun x ↦ (Algebra.IsSeparable.separable E x).comap_minpoly_of_isSeparable F⟩
+  ⟨fun x ↦ (Algebra.IsSeparable.isSeparable E x).comap_minpoly_of_isSeparable F⟩
 
 /-- If `x` and `y` are both separable elements, then `F⟮x, y⟯ / F` is a separable extension.
 As a consequence, any rational function of `x` and `y` is also a separable element. -/
@@ -806,7 +806,7 @@ variable {F}
 /-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
 theorem separable_algebraMap (x : F) : (minpoly F ((algebraMap F E) x)).Separable := by
   rw [minpoly.algebraMap_eq (algebraMap F E).injective]
-  exact Algebra.IsSeparable.separable F x
+  exact Algebra.IsSeparable.isSeparable F x
 
 variable {E}
 

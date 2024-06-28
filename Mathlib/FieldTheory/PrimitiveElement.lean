@@ -141,7 +141,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
       --   sub_zero, mul_div_cancel_left β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
     rw [finale]
     exact Subtype.mem (-p.coeff 0 / p.coeff 1)
-  have h_sep : h.Separable := separable_gcd_right _ (Algebra.IsSeparable.separable F β).map
+  have h_sep : h.Separable := separable_gcd_right _ (Algebra.IsSeparable.isSeparable F β).map
   have h_root : h.eval β = 0 := by
     apply eval_gcd_eq_zero
     · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
@@ -359,7 +359,7 @@ variable (F E : Type*) [Field F] [Field E] [Algebra F E] [FiniteDimensional F E]
 theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E := by
   convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)
-    (Algebra.IsSeparable.separable _ _) (IsAlgClosed.splits_codomain _)).trans (PowerBasis.finrank _).symm
+    (Algebra.IsSeparable.isSeparable _ _) (IsAlgClosed.splits_codomain _)).trans (PowerBasis.finrank _).symm
 #align alg_hom.card AlgHom.card
 
 @[simp]
@@ -396,7 +396,7 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     F⟮α⟯ = ⊤ ↔ Function.Injective fun φ : E →ₐ[F] A ↦ φ α := by
   classical
   simp_rw [primitive_element_iff_minpoly_natDegree_eq, ← card_rootSet_eq_natDegree (K := A)
-    (Algebra.IsSeparable.separable F α) (hA _), ← toFinset_card,
+    (Algebra.IsSeparable.isSeparable F α) (hA _), ← toFinset_card,
     ← (Algebra.IsAlgebraic.of_finite F E).range_eval_eq_rootSet_minpoly_of_splits _ hA α,
     ← AlgHom.card_of_splits F E A hA, Fintype.card, toFinset_range, Finset.card_image_iff,
     Finset.coe_univ, ← injective_iff_injOn_univ]

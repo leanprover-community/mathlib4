@@ -419,7 +419,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
     ext
     simp
   · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
-    exact Algebra.IsSeparable.separable K _
+    exact Algebra.IsSeparable.isSeparable K _
 #align trace_eq_sum_embeddings trace_eq_sum_embeddings
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :

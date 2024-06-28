@@ -76,7 +76,7 @@ theorem integral [IsGalois F E] (x : E) : IsIntegral F x :=
 #align is_galois.integral IsGalois.integral
 
 theorem separable [IsGalois F E] (x : E) : (minpoly F x).Separable :=
-  Algebra.IsSeparable.separable F x
+  Algebra.IsSeparable.isSeparable F x
 #align is_galois.separable IsGalois.separable
 
 theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=

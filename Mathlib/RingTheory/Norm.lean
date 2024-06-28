@@ -296,7 +296,7 @@ theorem norm_eq_prod_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
     norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
   · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
   · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
-    exact Algebra.IsSeparable.separable K _
+    exact Algebra.IsSeparable.isSeparable K _
 #align algebra.norm_eq_prod_embeddings Algebra.norm_eq_prod_embeddings
 
 theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L) :

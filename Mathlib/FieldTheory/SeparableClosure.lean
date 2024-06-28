@@ -153,7 +153,7 @@ theorem le_separableClosure' {L : IntermediateField F E} (hs : ∀ x : L, (minpo
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if it is separable over `F`. -/
 theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L] :
-    L ≤ separableClosure F E := le_separableClosure' F E (Algebra.IsSeparable.separable F)
+    L ≤ separableClosure F E := le_separableClosure' F E (Algebra.IsSeparable.isSeparable F)
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if and only if it is separable over `F`. -/
@@ -213,7 +213,7 @@ theorem IntermediateField.isSeparable_adjoin_iff_separable {S : Set E} :
 separable. -/
 theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ Algebra.IsSeparable F E :=
   ⟨fun h ↦ ⟨fun _ ↦ mem_separableClosure_iff.1 (h ▸ mem_top)⟩,
-    fun _ ↦ top_unique fun x _ ↦ mem_separableClosure_iff.2 (Algebra.IsSeparable.separable _ x)⟩
+    fun _ ↦ top_unique fun x _ ↦ mem_separableClosure_iff.2 (Algebra.IsSeparable.isSeparable _ x)⟩
 
 /-- If `K / E / F` is a field extension tower, then `separableClosure F K` is contained in
 `separableClosure E K`. -/

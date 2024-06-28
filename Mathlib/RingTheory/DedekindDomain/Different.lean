@@ -501,7 +501,7 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
     FractionalIdeal.coe_spanSingleton, Submodule.span_singleton_mul]
   ext y
   have hne₁ : aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))) ≠ 0 :=
-    (Algebra.IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+    (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   have : algebraMap B L (aeval x (derivative (minpoly A x))) ≠ 0 := by
     rwa [minpoly.isIntegrallyClosed_eq_field_fractions K L hAx, derivative_map,
       aeval_map_algebraMap, aeval_algebraMap_apply] at hne₁

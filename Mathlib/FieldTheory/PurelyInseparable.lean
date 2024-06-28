@@ -190,7 +190,7 @@ variable (F E K)
 /-- If `E / F` is both purely inseparable and separable, then `algebraMap F E` is surjective. -/
 theorem IsPurelyInseparable.surjective_algebraMap_of_isSeparable
     [IsPurelyInseparable F E] [Algebra.IsSeparable F E] : Function.Surjective (algebraMap F E) :=
-  fun x ↦ IsPurelyInseparable.inseparable F x (Algebra.IsSeparable.separable F x)
+  fun x ↦ IsPurelyInseparable.inseparable F x (Algebra.IsSeparable.isSeparable F x)
 
 /-- If `E / F` is both purely inseparable and separable, then `algebraMap F E` is bijective. -/
 theorem IsPurelyInseparable.bijective_algebraMap_of_isSeparable
@@ -938,7 +938,7 @@ lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
   obtain ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
   exact h.antisymm' (b.mk_eq_rank'' ▸ (b.linearIndependent.map' S.val.toLinearMap
     (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_separable E
-      (fun i ↦ by simpa only [minpoly_eq] using Algebra.IsSeparable.separable F (b i)) |>.cardinal_le_rank))
+      (fun i ↦ by simpa only [minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i)) |>.cardinal_le_rank))
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
 then $[E:F] [K:E]_s = [K:F]_s$.

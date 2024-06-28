@@ -557,10 +557,10 @@ variable (F K : Type*) [CommRing F] [Ring K] [Algebra F K]
 -- is separable and normal, so if the definition of separable changes here at some point
 -- to allow non-algebraic extensions, then the definition of `IsGalois` must also be changed.
 
+notation " IsSeparable " F:max x:max => (Polynomial.Separable (minpoly F x))
 
-variable {K} in
-def IsSeparable (x : K) : Prop :=
-  (minpoly F x).Separable
+-- theorem IsSeparable.of_minpoly_eq {x x' : K} (h : minpoly F x = minpoly F x') (hx : IsSeparable F x) : IsSeparable F x' := by
+--   simpa only [IsSeparable, ← h]
 
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
@@ -571,39 +571,39 @@ We define this for general (commutative) rings and only assume `F` and `K` are f
 is needed for a proof.
 -/
 @[mk_iff isSeparable_def] class Algebra.IsSeparable : Prop where
-  separable' (x : K) : IsSeparable F x
+  isSeparable' : ∀ (x : K), (IsSeparable F x)
 #align is_separable Algebra.IsSeparable
 
 variable {K}
 
-theorem Algebra.IsSeparable.separable [Algebra.IsSeparable F K] : ∀ x : K, (minpoly F x).Separable :=
-  IsSeparable.separable'
-#align is_separable.separable Algebra.IsSeparable.separable
+theorem Algebra.IsSeparable.isSeparable [Algebra.IsSeparable F K] : ∀ x : K, IsSeparable F x :=
+  Algebra.IsSeparable.isSeparable'
+#align is_separable.separable Algebra.IsSeparable.isSeparable
 
 variable {F} in
 /-- If the minimal polynomial of `x : K` over `F` is separable, then `x` is integral over `F`,
 because the minimal polynomial of a non-integral element is `0`, which is not separable. -/
-theorem Polynomial.Separable.isIntegral {x : K} (h : (minpoly F x).Separable) : IsIntegral F x := by
+theorem Polynomial.Separable.isIntegral {x : K} (h : IsSeparable F x) : IsIntegral F x := by
   cases subsingleton_or_nontrivial F
   · haveI := Module.subsingleton F K
     exact ⟨1, monic_one, Subsingleton.elim _ _⟩
   · exact of_not_not (h.ne_zero <| minpoly.eq_zero ·)
 
 theorem Algebra.IsSeparable.isIntegral [Algebra.IsSeparable F K] :
-    ∀ x : K, IsIntegral F x := fun x ↦ (Algebra.IsSeparable.separable F x).isIntegral
+    ∀ x : K, IsIntegral F x := fun x ↦ (Algebra.IsSeparable.isSeparable F x).isIntegral
 #align is_separable.is_integral Algebra.IsSeparable.isIntegral
 
 variable {F}
 
 theorem isSeparable_iff : Algebra.IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (minpoly F x).Separable :=
-  ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.separable F x⟩, fun h => ⟨fun x => (h x).2⟩⟩
+  ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩, fun h => ⟨fun x => (h x).2⟩⟩
 #align is_separable_iff isSeparable_iff
 
 variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
 
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
-  ⟨fun _ ↦ by rw [_root_.IsSeparable, ← minpoly.algEquiv_eq e.symm]; exact Algebra.IsSeparable.separable F _⟩
+  ⟨fun _ ↦ by rw [← minpoly.algEquiv_eq e.symm]; exact Algebra.IsSeparable.isSeparable F _⟩
 
 theorem AlgEquiv.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
   ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
@@ -617,7 +617,7 @@ end CommRing
 
 instance isSeparable_self (F : Type*) [Field F] : Algebra.IsSeparable F F :=
   ⟨fun x => by
-    rw [_root_.IsSeparable, minpoly.eq_X_sub_C']
+    rw [minpoly.eq_X_sub_C']
     exact separable_X_sub_C⟩
 #align is_separable_self isSeparable_self
 
@@ -641,7 +641,7 @@ variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F 
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] : Algebra.IsSeparable K E :=
-  ⟨fun x ↦ (Algebra.IsSeparable.separable F x).map_minpoly _⟩
+  ⟨fun x ↦ (Algebra.IsSeparable.isSeparable F x).map_minpoly _⟩
 #align is_separable_tower_top_of_is_separable isSeparable_tower_top_of_isSeparable
 
 theorem isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] : Algebra.IsSeparable F K :=
@@ -649,7 +649,7 @@ theorem isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] : Alg
     have ⟨_q, hq⟩ :=
       minpoly.dvd F x
         ((aeval_algebraMap_eq_zero_iff _ _ _).mp (minpoly.aeval F ((algebraMap K E) x)))
-    (hq ▸ h.separable (algebraMap K E x)).of_mul_left⟩
+    (hq ▸ h.isSeparable (algebraMap K E x)).of_mul_left⟩
 #align is_separable_tower_bot_of_is_separable isSeparable_tower_bot_of_isSeparable
 
 variable {E}
