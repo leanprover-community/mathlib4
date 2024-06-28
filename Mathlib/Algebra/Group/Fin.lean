@@ -61,7 +61,7 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
       exact le_of_lt ha
   sub := Fin.sub
   sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦
-    Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
+    Fin.ext <| by simp [Fin.sub_def, Fin.neg_def, Fin.add_def, Nat.add_comm]
   zsmul := zsmulRec
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
@@ -104,8 +104,8 @@ lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 :=
 lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   rcases k with ⟨_ | k, hk⟩
   · simp only [zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, zero_lt_succ]
-  have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
-    rw [Nat.add_right_comm, Nat.add_assoc, Nat.add_assoc, add_mod_right]
+  have : (n + 1 + (k + 1)) % (n + 2) = k % (n + 2) := by
+    rw [Nat.add_comm, Nat.add_right_comm, Nat.add_assoc, Nat.add_assoc, add_mod_right]
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
     mod_eq_of_lt ((lt_succ_self _).trans hk)]
 #align fin.lt_sub_one_iff Fin.lt_sub_one_iff

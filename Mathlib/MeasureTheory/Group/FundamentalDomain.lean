@@ -822,7 +822,7 @@ lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
     [MeasurableSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) : covolume G α ν = ν s := by
   dsimp [covolume]
-  simp only [(fund_dom_s.hasFundamentalDomain ν), ↓reduceDite]
+  simp only [(fund_dom_s.hasFundamentalDomain ν), ↓reduceDIte]
   rw [fund_dom_s.measure_eq]
   exact (fund_dom_s.hasFundamentalDomain ν).ExistsIsFundamentalDomain.choose_spec
 

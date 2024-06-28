@@ -785,7 +785,7 @@ protected theorem uniformity_eq_of_basis {ι : Sort*} {p : ι → Prop} {V : ι 
   simp_rw [iInf_uniformity, uniformity_comap,
     (UniformFun.hasBasis_uniformity_of_basis _ _ h).eq_biInf, comap_iInf, comap_principal,
     Function.comp_apply, UniformFun.gen, Subtype.forall, UniformOnFun.gen, preimage_setOf_eq,
-    Prod.map_apply, Function.comp_apply, UniformFun.toFun_ofFun, restrict_apply]
+    Prod.map_fst, Prod.map_snd, Function.comp_apply, UniformFun.toFun_ofFun, restrict_apply]
 
 protected theorem uniformity_eq : 𝓤 (α →ᵤ[𝔖] β) = ⨅ s ∈ 𝔖, ⨅ V ∈ 𝓤 β, 𝓟 (UniformOnFun.gen 𝔖 s V) :=
   UniformOnFun.uniformity_eq_of_basis _ _ (𝓤 β).basis_sets

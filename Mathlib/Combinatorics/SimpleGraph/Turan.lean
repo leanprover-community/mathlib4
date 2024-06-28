@@ -124,9 +124,11 @@ lemma exists_isTuranMaximal :
 
 end Defs
 
-namespace IsTuranMaximal
+section Forward
 
 variable {s t u : V} (h : G.IsTuranMaximal r)
+
+namespace IsTuranMaximal
 
 /-- In a Turán-maximal graph, non-adjacent vertices have the same degree. -/
 lemma degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
@@ -295,5 +297,7 @@ theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal
 theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
     G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (Fintype.card V) r) :=
   ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩
+
+end Forward
 
 end SimpleGraph

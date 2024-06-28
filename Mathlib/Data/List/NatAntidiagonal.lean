@@ -78,7 +78,7 @@ theorem antidiagonal_succ' {n : ℕ} :
   simp only [antidiagonal, range_succ, Nat.add_sub_cancel_left, map_append, append_assoc,
     Nat.sub_self, singleton_append, map_map, map]
   congr 1
-  apply map_congr
+  apply map_congr_left
   simp (config := { contextual := true }) [le_of_lt, Nat.succ_eq_add_one, Nat.sub_add_comm]
 #align list.nat.antidiagonal_succ' List.Nat.antidiagonal_succ'
 
@@ -96,7 +96,7 @@ theorem map_swap_antidiagonal {n : ℕ} :
     (antidiagonal n).map Prod.swap = (antidiagonal n).reverse := by
   rw [antidiagonal, map_map, ← List.map_reverse, range_eq_range', reverse_range', ←
     range_eq_range', map_map]
-  apply map_congr
+  apply map_congr_left
   simp (config := { contextual := true }) [Nat.sub_sub_self, Nat.lt_succ_iff]
 #align list.nat.map_swap_antidiagonal List.Nat.map_swap_antidiagonal
 
