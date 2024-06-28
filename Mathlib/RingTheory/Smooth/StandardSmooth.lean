@@ -45,7 +45,7 @@ attribute [instance] relations_finite
 variable {R S}
 variable (P : SubmersivePresentation R S)
 
-lemma card_relations_le_card_vars_of_isFinite [P.IsFinite] : 
+lemma card_relations_le_card_vars_of_isFinite [P.IsFinite] :
     Nat.card P.relations ≤ Nat.card P.vars :=
   Nat.card_le_card_of_injective P.map P.map_inj
 
@@ -424,6 +424,16 @@ class IsStandardSmooth : Prop where
 
 namespace IsStandardSmooth
 
+section Localization
+
+variable (r : R) [IsLocalization.Away r S]
+
+/-- If `S` is the localization away from `r`, then `S` is `R`-standard smooth. -/
+lemma of_isLocalizationAway : IsStandardSmooth.{0, 0} R S where
+  out := ⟨SubmersivePresentation.localizationAway (S := S) r, inferInstance⟩
+
+end Localization
+
 section Comp
 
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -450,13 +460,3 @@ class IsStandardSmoothOfRelativeDimension (n : ℕ) : Prop where
   out : ∃ (P : SubmersivePresentation.{t, w} R S), P.IsStandardSmoothOfRelativeDimension n
 
 end Algebra
-
-namespace RingHom
-
-variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
-
-/-- A ring morphism `A →+* B` is standard-smooth, if `B` is a standard-smooth `A`-algebra. -/
-def IsStandardSmooth (f : A →+* B) : Prop :=
-  @Algebra.IsStandardSmooth.{0, 0} A _ B _ f.toAlgebra
-
-end RingHom
