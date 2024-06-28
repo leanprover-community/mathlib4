@@ -512,7 +512,7 @@ lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
 
 attribute [local instance] IsCyclotomicExtension.Rat.three_pid
 
-lemma coprime_x_y : IsCoprime S.x S.y := by
+lemma isCoprime_x_y : IsCoprime S.x S.y := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hy ↦ lambda_not_dvd_y S (by simp [hy]))) ?_
   intro p hp p_dvd_x p_dvd_y
   refine lambda_not_dvd_x S ?_
@@ -523,7 +523,7 @@ lemma coprime_x_y : IsCoprime S.x S.y := by
   · convert dvd_mul_of_dvd_right p_dvd_y (η -1) using 1
     rw [y_spec, coe_eta]
 
-lemma coprime_x_z : IsCoprime S.x S.z := by
+lemma isCoprime_x_z : IsCoprime S.x S.z := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
   intro p hp p_dvd_x p_dvd_z
   refine lambda_not_dvd_x S ?_
@@ -535,7 +535,7 @@ lemma coprime_x_z : IsCoprime S.x S.z := by
   · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
     rw [z_spec, coe_eta]
 
-lemma coprime_y_z : IsCoprime S.y S.z := by
+lemma isCoprime_y_z : IsCoprime S.y S.z := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
   intro p hp p_dvd_y p_dvd_z
   refine lambda_not_dvd_y S ?_
@@ -570,7 +570,7 @@ lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X 
     simp [← mul_assoc, x_mul_y_mul_z_eq_u_w_cube, mul_comm _ (S.w ^ 3)]
   have h2 : IsCoprime S.x (S.y * S.z * S.u⁻¹) :=
     (isCoprime_mul_unit_right_right (Units.isUnit _) S.x _).2 <|
-      IsCoprime.mul_right S.coprime_x_y S.coprime_x_z
+      IsCoprime.mul_right S.isCoprime_x_y S.isCoprime_x_z
   rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨X, ⟨u₁, hX⟩⟩
   exact ⟨u₁, X, by simp [← hX, mul_comm]⟩
 
@@ -580,7 +580,7 @@ lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y 
     simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
   have h2 : IsCoprime S.y (S.x * S.z * S.u⁻¹) :=
     (isCoprime_mul_unit_right_right (Units.isUnit _) S.y _).2 <|
-      IsCoprime.mul_right S.coprime_x_y.symm S.coprime_y_z
+      IsCoprime.mul_right S.isCoprime_x_y.symm S.isCoprime_y_z
   rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Y, ⟨u₂, hY⟩⟩
   exact ⟨u₂, Y, by simp [← hY, mul_comm]⟩
 
@@ -591,7 +591,7 @@ lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z 
     simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
   have h2 : IsCoprime S.z (S.x * S.y * S.u⁻¹) :=
     (isCoprime_mul_unit_right_right (Units.isUnit _) S.z _).2 <|
-      IsCoprime.mul_right S.coprime_x_z.symm S.coprime_y_z.symm
+      IsCoprime.mul_right S.isCoprime_x_z.symm S.isCoprime_y_z.symm
   rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Z, ⟨u₃, hZ⟩⟩
   exact ⟨u₃, Z, by simp [← hZ, mul_comm]⟩
 
