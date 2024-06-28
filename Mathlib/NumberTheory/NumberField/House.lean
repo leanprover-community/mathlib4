@@ -7,18 +7,18 @@ Authors: Michail Karatarakis
 import Mathlib.Analysis.Matrix
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
--- /-!
--- # House of an algebraic number
--- This file defines the house of an algebraic number `α`, which is
--- the largest modulus of its conjugates.
+/-!
+# House of an algebraic number
+This file defines the house of an algebraic number `α`, which is
+the largest modulus of its conjugates.
 
--- ## References
--- * [D. Marcus, *Number Fields*][marcus1977number]
--- * [Keng, H. L, *Introduction to number theory*][keng1982house]
+## References
+* [D. Marcus, *Number Fields*][marcus1977number]
+* [Keng, H. L, *Introduction to number theory*][keng1982house]
 
--- ## Tags
--- number field, algebraic number, house
--- -/
+## Tags
+number field, algebraic number, house
+-/
 
 variable {K : Type*} [Field K] [NumberField K]
 
