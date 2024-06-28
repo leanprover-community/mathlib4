@@ -44,9 +44,9 @@ abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) := by
   refine Fintype.equivOfCardEq ?_
   rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
 
-/-- The basis matrix for the embeddings of `K` into `ℂ`. This matrix is formed by taking the lattice
-    basis vectors of `K` and reindexing them according to the equivalence `equivReindex`, then
-    transposing the resulting matrix. -/
+/-- The basis matrix for the embeddings of `K` into `ℂ`. This matrix is formed by
+  taking the lattice basis vectors of `K` and reindexing them according to the
+  equivalence `equivReindex`, then transposing the resulting matrix. -/
 abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
   (Matrix.of fun i ↦ latticeBasis K (equivReindex K i)).transpose
 
@@ -83,7 +83,8 @@ theorem det_of_basisMatrix_non_zero : (basisMatrix K).transpose.det ≠ 0 := by
          RingHom.equivRatAlgHom
       rw [show (basisMatrix K).transpose = N by {
         ext:2
-        simp only [N, transpose_apply, latticeBasis_apply, integralBasis_apply, of_apply, apply_at]
+        simp only [N, transpose_apply, latticeBasis_apply,
+          integralBasis_apply, of_apply, apply_at]
         rfl}]
       rw [← pow_ne_zero_iff two_ne_zero]
       convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
