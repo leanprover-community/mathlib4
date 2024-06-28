@@ -9,6 +9,7 @@ import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Algebra.DirectSum.Decomposition
+import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 #align_import analysis.inner_product_space.projection from "leanprover-community/mathlib"@"0b7c740e25651db0ba63648fbae9f9d6f941e31b"
 
@@ -477,6 +478,10 @@ def orthogonalProjection : E →L[𝕜] K :=
     nlinarith [orthogonalProjectionFn_norm_sq K x]
 #align orthogonal_projection orthogonalProjection
 
+
+
+
+theorem orthoeigen_commute {A B : E →ₗ[𝕜] E}(α : ℝ )(orthogonalProjection P : eigenspace A )(hAB: A ∘ₗ B = B ∘ₗ  A)(hA : A.IsSymmetric): A * P = P * A  := by sorry
 variable {K}
 
 @[simp]
@@ -1441,5 +1446,6 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
   · rintro ⟨h, coe_h⟩
     rw [← h.span_eq, coe_h, hv_coe]
 #align maximal_orthonormal_iff_basis_of_finite_dimensional maximal_orthonormal_iff_basis_of_finiteDimensional
+
 
 end OrthonormalBasis
