@@ -1471,6 +1471,50 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
   map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 #align ereal.coe_ennreal_pow EReal.coe_ennreal_pow
 
+
+theorem div_eq_inv_mul {a : EReal} {b : ENNReal} : a / b = b⁻¹ * a := mul_comm _ _
+
+theorem mul_div {a b : EReal} {c : ENNReal} : a * (b / c) = (a * b) / c := by
+  change a * (b * c⁻¹) = (a * b) * c⁻¹
+  rw [mul_assoc]
+
+theorem mul_div_right {a c : EReal} {b : ENNReal} : (a / b) * c = (a * c) / b := by
+  rw [mul_comm, mul_div, mul_comm]
+
+theorem mul_inv_cancel {a : EReal} {b : ENNReal} (h : b ≠ 0) (h' : b ≠ ⊤) : (a / b) * b = a := by
+  change (a * b⁻¹) * b = a
+  rw [mul_assoc, ← coe_ennreal_mul, mul_comm b⁻¹ b, ENNReal.mul_inv_cancel h h',
+    coe_ennreal_one, mul_one]
+
+@[simp]
+theorem div_one {a : EReal} : a / (1 : ENNReal) = a := by
+  change a * (1 : ENNReal)⁻¹ = a
+  rw [inv_one, coe_ennreal_one, mul_one a]
+
+@[simp]
+theorem div_top {a : EReal} : a / (⊤ : ENNReal) = 0 := by
+  change a * (⊤ : ENNReal)⁻¹ = 0
+  rw [inv_top, coe_ennreal_zero, mul_zero]
+
+theorem pos_div_zero {a : EReal} (h : 0 < a) : a / (0 : ENNReal) = ⊤ := by
+  change a * (0 : ENNReal)⁻¹ = ⊤
+  rw [ENNReal.inv_zero, coe_ennreal_top, mul_top_of_pos h]
+
+theorem neg_div_zero {a : EReal} (h : a < 0) : a / (0 : ENNReal) = ⊥ := by
+  change a * (0 : ENNReal)⁻¹ = ⊥
+  rw [ENNReal.inv_zero, coe_ennreal_top, mul_top_of_neg h]
+
+@[simp]
+theorem zero_div {b : ENNReal} : (0 : EReal) / b = 0 := MulZeroClass.zero_mul (ENNReal.toEReal b⁻¹)
+
+theorem top_div_ntop {b : ENNReal} (h : b ≠ ⊤) : (⊤ : EReal) / b = ⊤ := by
+  apply top_mul_of_pos
+  simp [h]
+
+theorem bot_div_ntop {b : ENNReal} (h : b ≠ ⊤) : (⊥ : EReal) / b = ⊥ := by
+  apply bot_mul_of_pos
+  simp [h]
+
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
@@ -1525,16 +1569,3 @@ unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
 
 end Tactic
 -/
-
-/-!
-# Division By Extended Nonnegative Reals
-
-We define a division of an extended real `EReal` by an extended nonnegative real `ENNReal`
-as the multiplication by the coercion of its inverse. It is an instance of division.
--/
-
-/--
-Division of an extended real (EReal) by an extended nonnegative real (ENNReal). Defined by inversion in
-[0, ∞], coercion to [-∞,+∞], and multiplication in [-∞,+∞].--/
-noncomputable def EReal.divENNReal : EReal → ENNReal → EReal :=
-  fun (a : EReal) (b : ENNReal) ↦ a * b⁻¹
