@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Lean FRO. All rights reserved.
+Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Eric Wieser
 -/
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.Star.Basic
