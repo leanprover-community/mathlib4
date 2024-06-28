@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Star.Pi
+import Mathlib.Algebra.Star.Rat
 
 #align_import algebra.star.self_adjoint from "leanprover-community/mathlib"@"a6ece35404f60597c651689c1b46ead86de5ac1b"
 
@@ -151,10 +152,12 @@ section AddCommMonoid
 
 variable [AddCommMonoid R] [StarAddMonoid R]
 
+@[simp]
 theorem add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 #align is_self_adjoint_add_star_self IsSelfAdjoint.add_star_self
 
+@[simp]
 theorem star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 #align is_self_adjoint_star_add_self IsSelfAdjoint.star_add_self
@@ -267,6 +270,7 @@ theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) :=
   simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 #align is_self_adjoint.zpow IsSelfAdjoint.zpow
 
+@[simp]
 protected lemma nnratCast (q : ℚ≥0) : IsSelfAdjoint (q : R) := star_nnratCast _
 
 end DivisionSemiring
@@ -275,6 +279,7 @@ section DivisionRing
 
 variable [DivisionRing R] [StarRing R]
 
+@[simp]
 protected theorem ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
   star_ratCast _
 #align is_self_adjoint_rat_cast IsSelfAdjoint.ratCast
