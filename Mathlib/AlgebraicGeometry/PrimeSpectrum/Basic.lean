@@ -9,6 +9,7 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.Topology.Irreducible
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sober
 
@@ -557,12 +558,12 @@ lemma vanishingIdeal_isIrreducible :
     fun h ↦ ⟨zeroLocus I, (isIrreducible_zeroLocus_iff_of_radical _ h.isRadical).mpr h,
       (vanishingIdeal_zeroLocus_eq_radical I).trans h.radical⟩⟩
 
-lemma vanishingIdeal_isClosed_isIrreducible :
-    vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = {P | P.IsPrime} := by
+lemma vanishingIdeal_isIrreducibleClosed :
+    vanishingIdeal (R := R) '' {s | IsIrreducibleClosed s} = {P | P.IsPrime} := by
   refine (subset_antisymm ?_ ?_).trans vanishingIdeal_isIrreducible
-  · exact Set.image_subset _ fun _ ↦ And.right
+  · exact Set.image_subset _ fun _ ↦ fun a ↦ Set.mem_of_mem_inter_left a
   rintro _ ⟨s, hs, rfl⟩
-  exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
+  exact ⟨closure s, ⟨hs.closure, isClosed_closure⟩, vanishingIdeal_closure s⟩
 
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
@@ -964,7 +965,7 @@ Zero loci of prime ideals are closed irreducible sets in the Zariski topology an
 irreducible set is a zero locus of some prime ideal.
 -/
 protected def pointsEquivIrreducibleCloseds :
-    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducible s ∧ IsClosed s}ᵒᵈ where
+    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducibleClosed s}ᵒᵈ where
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
@@ -1003,16 +1004,16 @@ protected def minimalPrimes.equivIrreducibleComponents :
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
   (e.trans <| PrimeSpectrum.pointsEquivIrreducibleCloseds R).minimalsIsoMaximals.trans
-    (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_closed, and_comm]).dual
+    (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_irreducibleClosed]).dual
 
 namespace PrimeSpectrum
 
 lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
     minimalPrimes R := by
-  rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals, ← minimals_swap,
-    ← PrimeSpectrum.vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
-  exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.1
+  rw [irreducibleComponents_eq_maximals_irreducibleClosed, minimalPrimes_eq_minimals,
+    ← minimals_swap, ← vanishingIdeal_isIrreducibleClosed, image_minimals_of_rel_iff_rel]
+  exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.2
 
 lemma zeroLocus_minimalPrimes :
     zeroLocus ∘ (↑) '' minimalPrimes R =
