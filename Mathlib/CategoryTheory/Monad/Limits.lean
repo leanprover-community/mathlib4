@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Scott Morrison, Bhavik Mehta, Jack McKoen
 -/
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Limits
@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 #align_import category_theory.monad.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
-# Limits and colimits in the category of algebras
+# Limits and colimits in the category of (co)algebras
 
 This file shows that the forgetful functor `forget T : Algebra T ⥤ C` for a monad `T : C ⥤ C`
 creates limits and creates any colimits which `T` preserves.
@@ -18,6 +18,11 @@ This is used to show that `Algebra T` has any limits which `C` has, and any coli
 and `T` preserves.
 This is generalised to the case of a monadic functor `D ⥤ C`.
 
+Dually, this file shows that the forgetful functor `forget T : Coalgebra T ⥤ C` for a
+comonad `T : C ⥤ C` creates colimits and creates any limits which `T` preserves.
+This is used to show that `Coalgebra T` has any colimits which `C` has, and any limits which `C` has
+and `T` preserves.
+This is generalised to the case of a comonadic functor `D ⥤ C`.
 -/
 
 
@@ -403,11 +408,10 @@ noncomputable def leftAdjointPreservesTerminalOfReflective (R : D ⥤ C) [Reflec
 
 end
 
+-- We dualise all of the above for comonads.
 namespace Comonad
 
-variable {C : Type u₁} [Category.{v₁} C]
 variable {T : Comonad C}
-variable {J : Type u} [Category.{v} J]
 
 namespace ForgetCreatesColimits'
 
@@ -429,10 +433,12 @@ def coconePoint : Coalgebra T where
   A := c.pt
   a := t.desc (newCocone D c)
   counit := t.hom_ext fun j ↦ by
-    simp
+    simp only [Functor.comp_obj, forget_obj, Functor.id_obj, Functor.const_obj_obj,
+      IsColimit.fac_assoc, newCocone_ι_app, assoc, NatTrans.naturality, Functor.id_map, comp_id]
     rw [← Category.assoc, (D.obj j).counit, Category.id_comp]
   coassoc := t.hom_ext fun j ↦ by
-    simp
+    simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, IsColimit.fac_assoc,
+      newCocone_ι_app, assoc, NatTrans.naturality, Functor.comp_map]
     rw [← Category.assoc, (D.obj j).coassoc, ← Functor.map_comp, t.fac (newCocone D c) j,
       newCocone_ι_app, Functor.map_comp, assoc]
 

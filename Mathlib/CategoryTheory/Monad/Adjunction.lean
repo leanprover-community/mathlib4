@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Scott Morrison, Bhavik Mehta, Jack McKoen
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Algebra
@@ -9,9 +9,9 @@ import Mathlib.CategoryTheory.Monad.Algebra
 #align_import category_theory.monad.adjunction from "leanprover-community/mathlib"@"ea3009f6c1a37dc031f741382dbb3ed93c965620"
 
 /-!
-# Adjunctions and monads
+# Adjunctions and (co)monads
 
-We develop the basic relationship between adjunctions and monads.
+We develop the basic relationship between adjunctions and (co)monads.
 
 Given an adjunction `h : L ⊣ R`, we have `h.toMonad : Monad C` and `h.toComonad : Comonad D`.
 We then have
@@ -22,7 +22,8 @@ and dually `Comonad.comparison`.
 We say `R : D ⥤ C` is `MonadicRightAdjoint`, if it is a right adjoint and its `Monad.comparison`
 is an equivalence of categories. (Similarly for `ComonadicLeftAdjoint`.)
 
-Finally we prove that reflective functors are `MonadicRightAdjoint`.
+Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflective functors are
+`ComonadicLeftAdjoint`.
 -/
 
 
@@ -255,6 +256,10 @@ instance μ_iso_of_reflective [Reflective R] : IsIso (reflectorAdjunction R).toM
   dsimp
   infer_instance
 #align category_theory.μ_iso_of_reflective CategoryTheory.μ_iso_of_reflective
+
+instance δ_iso_of_coreflective [Coreflective R] : IsIso (coreflectorAdjunction R).toComonad.δ := by
+  dsimp
+  infer_instance
 
 attribute [instance] MonadicRightAdjoint.eqv
 attribute [instance] ComonadicLeftAdjoint.eqv
