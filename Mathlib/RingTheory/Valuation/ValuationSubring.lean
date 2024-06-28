@@ -38,7 +38,11 @@ structure ValuationSubring extends Subring K where
 /-- If `K` is an `R`-algebra, `Place K R` is the collection of valuation subrings in `K`
 that are `R`-subalgebras. It can be given a locally ringed space structure,
 in which setting it is known as the Zariski--Riemann space. -/
-structure Place (R) [CommSemiring R] [Algebra R K] extends ValuationSubring K, Subalgebra R K
+structure Place (R) [CommSemiring R] [Algebra R K]
+  extends ValuationSubring K, Subalgebra R K
+
+/-- A place as a subalgebra. -/
+add_decl_doc Place.toSubalgebra
 
 namespace ValuationSubring
 
