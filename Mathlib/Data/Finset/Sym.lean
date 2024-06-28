@@ -68,6 +68,7 @@ theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
 theorem sym2_map (f : α ↪ β) (s : Finset α) : (s.map f).sym2 = s.sym2.map (.sym2Map f) :=
   Finset.val_injective <| s.val.sym2_map _
 
+-- follows from `Multiset.dedup_sym2` and `Multiset.sym2_map`
 proof_wanted sym2_image [DecidableEq β] (f : α → β) (s : Finset α) :
     (s.image f).sym2 = s.sym2.image (Sym2.map f)
 

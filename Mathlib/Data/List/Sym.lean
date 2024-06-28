@@ -118,6 +118,8 @@ protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
       simp only [Sym2.eq_iff, true_and]
       rintro (rfl | ⟨rfl, rfl⟩) <;> rfl
 
+proof_wanted dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sym2
+
 protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     xs.sym2 ~ ys.sym2 := by
   induction h with
