@@ -440,23 +440,23 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
     exact hpaetasqb.sub hpaetab
 
 /-- Given `S : Solution`, we let `S.y` be any element such that `S.a + η * S.b = λ * S.y` -/
-noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
+private noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
 
-lemma y_spec : S.a + η * S.b = λ * S.y :=
+private lemma y_spec : S.a + η * S.b = λ * S.y :=
   (lambda_dvd_a_add_eta_mul_b S).choose_spec
 
 /-- Given `S : Solution`, we let `S.z` be any element such that `S.a + η ^ 2 * S.b = λ * S.z` -/
-noncomputable def z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
+private noncomputable def z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
 
-lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z :=
+private lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z :=
   (lambda_dvd_a_add_eta_sq_mul_b S).choose_spec
 
-lemma lambda_not_dvd_y : ¬ λ ∣ S.y := fun h ↦ by
+private lemma lambda_not_dvd_y : ¬ λ ∣ S.y := fun h ↦ by
   replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
   rw [coe_eta, ← y_spec, ← pow_two] at h
   exact lambda_sq_not_a_add_eta_mul_b _ h
 
-lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
+private lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
   replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
   rw [coe_eta, ← z_spec, ← pow_two] at h
   exact lambda_sq_not_dvd_a_add_eta_sq_mul_b _ h
@@ -476,19 +476,19 @@ lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
 
 /-- Given `S : Solution`, we let `S.x` be any element such that
 `S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x` -/
-noncomputable def x := (lambda_pow_dvd_a_add_b S).choose
+private noncomputable def x := (lambda_pow_dvd_a_add_b S).choose
 
-lemma x_spec : S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x :=
+private lemma x_spec : S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x :=
   (lambda_pow_dvd_a_add_b S).choose_spec
 
 /-- Given `S : Solution`, we let `S.w` be any element such that `S.c = λ ^ S.multiplicity * S.w` -/
-noncomputable def w :=
+private noncomputable def w :=
   (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose
 
-lemma w_spec : S.c = λ ^ S.multiplicity * S.w :=
+private lemma w_spec : S.c = λ ^ S.multiplicity * S.w :=
 (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose_spec
 
-lemma lambda_not_dvd_w : ¬ λ ∣ S.w := by
+private lemma lambda_not_dvd_w : ¬ λ ∣ S.w := by
   intro h
   replace h := mul_dvd_mul_left (λ ^ S.multiplicity) h
   rw [← w_spec] at h
@@ -497,7 +497,7 @@ lemma lambda_not_dvd_w : ¬ λ ∣ S.w := by
   rw [pow_succ', mul_comm] at hh
   exact hh h
 
-lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
+private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   replace h := mul_dvd_mul_left (λ ^ (3 * S.multiplicity - 2)) h
   rw [mul_comm, ← x_spec] at h
   replace h :=
@@ -512,7 +512,7 @@ lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
 
 attribute [local instance] IsCyclotomicExtension.Rat.three_pid
 
-lemma isCoprime_x_y : IsCoprime S.x S.y := by
+private lemma isCoprime_x_y : IsCoprime S.x S.y := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hy ↦ lambda_not_dvd_y S (by simp [hy]))) ?_
   intro p hp p_dvd_x p_dvd_y
   refine lambda_not_dvd_x S ?_
@@ -523,7 +523,7 @@ lemma isCoprime_x_y : IsCoprime S.x S.y := by
   · convert dvd_mul_of_dvd_right p_dvd_y (η -1) using 1
     rw [y_spec, coe_eta]
 
-lemma isCoprime_x_z : IsCoprime S.x S.z := by
+private lemma isCoprime_x_z : IsCoprime S.x S.z := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
   intro p hp p_dvd_x p_dvd_z
   refine lambda_not_dvd_x S ?_
@@ -535,7 +535,7 @@ lemma isCoprime_x_z : IsCoprime S.x S.z := by
   · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
     rw [z_spec, coe_eta]
 
-lemma isCoprime_y_z : IsCoprime S.y S.z := by
+private lemma isCoprime_y_z : IsCoprime S.y S.z := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
   intro p hp p_dvd_y p_dvd_z
   refine lambda_not_dvd_y S ?_
@@ -547,7 +547,7 @@ lemma isCoprime_y_z : IsCoprime S.y S.z := by
   · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
     rw [z_spec, coe_eta]
 
-lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
+private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
   suffices hh : λ ^ (3 * S.multiplicity - 2) * S.x * λ * S.y * λ * S.z =
       S.u * λ ^ (3 * S.multiplicity) * S.w ^ 3 by
     rw [show λ ^ (3 * multiplicity S - 2) * x S * λ * y S * λ * z S =
@@ -565,7 +565,7 @@ lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
   rw [← S.H, a_cube_add_b_cube_eq_mul]
   ring
 
-lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X ^ 3 := by
+private lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X ^ 3 := by
   have h1 : S.x * (S.y * S.z * S.u⁻¹) = S.w ^ 3 := by
     simp [← mul_assoc, x_mul_y_mul_z_eq_u_mul_w_cube, mul_comm _ (S.w ^ 3)]
   have h2 : IsCoprime S.x (S.y * S.z * S.u⁻¹) :=
@@ -574,7 +574,7 @@ lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X 
   rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨X, ⟨u₁, hX⟩⟩
   exact ⟨u₁, X, by simp [← hX, mul_comm]⟩
 
-lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y ^ 3 := by
+private lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y ^ 3 := by
   have h1 : S.y * (S.x * S.z * S.u⁻¹) = S.w ^ 3 := by
     rw [← mul_assoc, ← mul_assoc S.y, mul_comm S.y, x_mul_y_mul_z_eq_u_mul_w_cube]
     simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
@@ -584,7 +584,7 @@ lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y 
   rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Y, ⟨u₂, hY⟩⟩
   exact ⟨u₂, Y, by simp [← hY, mul_comm]⟩
 
-lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z ^ 3 := by
+private lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z ^ 3 := by
   have h1 : S.z * (S.x * S.y * S.u⁻¹) = S.w ^ 3 := by
     rw [← mul_assoc, ← mul_assoc S.z, mul_comm S.z, mul_assoc S.x, mul_comm S.z, ← mul_assoc,
       x_mul_y_mul_z_eq_u_mul_w_cube]
@@ -597,35 +597,35 @@ lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z 
 
 /-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
 `S.x = S.u₁ * S.X ^ 3` -/
-noncomputable def u₁ := (x_eq_unit_mul_cube S).choose
+private noncomputable def u₁ := (x_eq_unit_mul_cube S).choose
 
 /-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
 `S.x = S.u₁ * S.X ^ 3` -/
-noncomputable def X := (x_eq_unit_mul_cube S).choose_spec.choose
+private noncomputable def X := (x_eq_unit_mul_cube S).choose_spec.choose
 
-lemma u₁_X_spec : S.x = S.u₁ * S.X ^ 3 := by
+private lemma u₁_X_spec : S.x = S.u₁ * S.X ^ 3 := by
   exact (x_eq_unit_mul_cube S).choose_spec.choose_spec
 
 /-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
 `S.y = S.u₂ * S.Y ^ 3` -/
-noncomputable def u₂ := (y_eq_unit_mul_cube S).choose
+private noncomputable def u₂ := (y_eq_unit_mul_cube S).choose
 
 /-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
 `S.y = S.u₂ * S.Y ^ 3` -/
-noncomputable def Y := (y_eq_unit_mul_cube S).choose_spec.choose
+private noncomputable def Y := (y_eq_unit_mul_cube S).choose_spec.choose
 
-lemma u₂_Y_spec : S.y = S.u₂ * S.Y ^ 3 := by
+private lemma u₂_Y_spec : S.y = S.u₂ * S.Y ^ 3 := by
   exact (y_eq_unit_mul_cube S).choose_spec.choose_spec
 
 /-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
 `S.z = S.u₃ * S.Z ^ 3` -/
-noncomputable def u₃ := (z_eq_unit_mul_cube S).choose
+private noncomputable def u₃ := (z_eq_unit_mul_cube S).choose
 
 /-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
 `S.z = S.u₃ * S.Z ^ 3` -/
-noncomputable def Z := (z_eq_unit_mul_cube S).choose_spec.choose
+private noncomputable def Z := (z_eq_unit_mul_cube S).choose_spec.choose
 
-lemma u₃_Z_spec : S.z = S.u₃ * S.Z ^ 3 := by
+private lemma u₃_Z_spec : S.z = S.u₃ * S.Z ^ 3 := by
   exact (z_eq_unit_mul_cube S).choose_spec.choose_spec
 
 end Solution
