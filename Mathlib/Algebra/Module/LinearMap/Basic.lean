@@ -26,13 +26,6 @@ universe u u' v w x y z
 
 variable {R R₁ R₂ R₃ k S S₃ T M M₁ M₂ M₃ N₁ N₂ N₃ ι : Type*}
 
-section
-
-/-- `M →ₗ⋆[R] N` is the type of `R`-conjugate-linear maps from `M` to `N`. -/
-notation:25 M " →ₗ⋆[" R:25 "] " M₂:0 => LinearMap (starRingEnd R) M M₂
-
-end
-
 /-- Reinterpret an additive homomorphism as a `ℚ`-linear map. -/
 def AddMonoidHom.toRatLinearMap [AddCommGroup M] [Module ℚ M] [AddCommGroup M₂] [Module ℚ M₂]
     (f : M →+ M₂) : M →ₗ[ℚ] M₂ :=
