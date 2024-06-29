@@ -103,8 +103,8 @@ lemma hom_ext {M₁ M₂ : ModuleCatNew.{v} R} {f g : M₁ ⟶ M₂} (h : ∀ (x
 
 lemma hom_ext'
     {M₁ M₂ : ModuleCatNew.{v} R} {f g : M₁ ⟶ M₂} (h : f.linearMap = g.linearMap) :
-    f = g :=
-  by cases f; cases g; subst h; rfl
+    f = g := by
+  cases f; cases g; subst h; rfl
 
 @[simp]
 lemma hom_mk_apply {M₁ M₂ : ModuleCatNew.{u} R} (f : M₁ →ₗ[R] M₂) (x : M₁) :
