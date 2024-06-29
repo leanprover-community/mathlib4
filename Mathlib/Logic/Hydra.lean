@@ -126,7 +126,7 @@ theorem cutExpand_fibration (r : α → α → Prop) :
     · rw [add_assoc, erase_add_right_pos _ h]
 #align relation.cut_expand_fibration Relation.cutExpand_fibration
 
-/-- `cut_expand` preserves leftward-closedness under a relation. -/
+/-- `CutExpand` preserves leftward-closedness under a relation. -/
 lemma cutExpand_closed [IsIrrefl α r] (p : α → Prop)
     (h : ∀ {a' a}, r a' a → p a → p a') :
     ∀ {s' s}, CutExpand r s' s → (∀ a ∈ s, p a) → ∀ a ∈ s', p a := by
@@ -143,10 +143,10 @@ lemma cutExpand_double {a a₁ a₂} (h₁ : r a₁ a) (h₂ : r a₂ a) : CutEx
     tauto
 
 lemma cutExpand_pair_left {a' a b} (hr : r a' a) : CutExpand r {a', b} {a, b} :=
-    (cutExpand_add_right {b}).2 (cutExpand_singleton_singleton hr)
+  (cutExpand_add_right {b}).2 (cutExpand_singleton_singleton hr)
 
 lemma cutExpand_pair_right {a b' b} (hr : r b' b) : CutExpand r {a, b'} {a, b} :=
-    (cutExpand_add_left {a}).2 (cutExpand_singleton_singleton hr)
+  (cutExpand_add_left {a}).2 (cutExpand_singleton_singleton hr)
 
 lemma cutExpand_double_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a₂ a) :
     CutExpand r {a₁, a₂, b} {a, b} :=
