@@ -3615,6 +3615,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.IsPrincipal
+import Mathlib.RingTheory.Ideal.KrullDimension
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.MinimalPrime
@@ -4256,6 +4257,7 @@ import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.Irreducible
 import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalAtTarget
 import Mathlib.Topology.LocallyConstant.Algebra
