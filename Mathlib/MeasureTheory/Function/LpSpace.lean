@@ -648,24 +648,6 @@ theorem snormEssSup_indicator_eq_snormEssSup_restrict {f : α → F} (hs : Measu
     ENNReal.essSup_indicator_eq_essSup_restrict hs]
 #align measure_theory.snorm_ess_sup_indicator_eq_snorm_ess_sup_restrict MeasureTheory.snormEssSup_indicator_eq_snormEssSup_restrict
 
-/-
-lemma foo {f : α → F} : ∃ (s : Set α), MeasurableSet s ∧ s ⊆ f.support ∧
-    snorm f p (μ.restrict s) = snorm f p μ := by
-  by_cases hp_zero : p = 0
-  · exact ⟨∅, MeasurableSet.empty, Set.empty_subset _, by simp [hp_zero]⟩
-  rcases eq_zero_or_pos (snorm f p μ) with hf | hf
-  · exact ⟨∅, MeasurableSet.empty, Set.empty_subset _, by simp [hf]⟩
-  by_cases hp_top : p = ∞
-  · obtain ⟨u, -, u_mem, u_lim⟩ : ∃ u, StrictMono u ∧ (∀ (n : ℕ), u n ∈ Set.Ioo 0 (snorm f p μ)) ∧
-      Tendsto u atTop (𝓝 (snorm f p μ)) := exists_seq_strictMono_tendsto' hf
-    simp_rw [hp_top, snorm_exponent_top]
-
-
-
-
-#exit
--/
-
 theorem snorm_indicator_eq_snorm_restrict {f : α → F} (hs : MeasurableSet s) :
     snorm (s.indicator f) p μ = snorm f p (μ.restrict s) := by
   by_cases hp_zero : p = 0

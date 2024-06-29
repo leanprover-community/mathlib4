@@ -631,13 +631,13 @@ lemma snorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s : S
 
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
 `μ.restrict s` are the same. -/
-theorem snorm_restrict_eq {s : Set α} {f : α → F} (hsf : f.support ⊆ s) :
+theorem snorm_restrict_eq_of_support_subset {s : Set α} {f : α → F} (hsf : f.support ⊆ s) :
     snorm f p (μ.restrict s) = snorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
   by_cases hp_top : p = ∞
   · simp only [hp_top, snorm_exponent_top, snormEssSup]
-    apply ENNReal.essSup_eq_of_support_subset
+    apply ENNReal.essSup_restrict_eq_of_support_subset
     apply Function.support_subset_iff.2 (fun x hx ↦ ?_)
     simp only [ne_eq, ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
     exact Function.support_subset_iff.1 hsf x hx

@@ -304,7 +304,7 @@ theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ)
       simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
 #align ennreal.coe_ess_sup ENNReal.coe_essSup
 
-lemma essSup_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
+lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
     essSup f (μ.restrict s) = essSup f μ := by
   apply le_antisymm (essSup_mono_measure' Measure.restrict_le_self)
   apply le_of_forall_lt (fun c hc ↦ ?_)
