@@ -237,11 +237,6 @@ theorem kerint_self {k N : ℕ} (hkN : N ≤ k) (f : ((n : ℕ+) → X n) → �
   ext x
   rw [kerint, if_neg <| not_lt.2 hkN]
 
-theorem updateFinset_self {ι : Type*} [DecidableEq ι] {α : ι → Type*} (x : (i : ι) → α i)
-    {s : Finset ι} (y : (i : s) → α i) : (fun i : s ↦ updateFinset x s y i) = y := by
-  ext i
-  simp [updateFinset, i.2]
-
 theorem kerint_eq {a b c : ℕ} (hab : a < b) (hbc : b < c) {f : ((n : ℕ+) → X n) → ℝ≥0∞}
     (hf : Measurable f) (x₀ : X 0) :
     kerint κ a c f x₀ = kerint κ a b (kerint κ b c f x₀) x₀ := by
