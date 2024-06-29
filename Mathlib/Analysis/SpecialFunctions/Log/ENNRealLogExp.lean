@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.ENNRealExp
 /-!
 # Properties of the extended logarithm and exponential
 
-We prove that `log` and `exp` define an order isomorphisms between `ℝ≥0∞` and `EReal`.
+We prove that `log` and `exp` define an order isomorphism between `ℝ≥0∞` and `EReal`.
 
 ## Main Definitions
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
@@ -20,11 +20,10 @@ and `exp`.
 - `ENNReal.log_exp`, `ENNReal.exp_log`: `log` and `exp` are inverses of each other.
 - `ENNReal.exp_nmul`, `ENNReal.exp_mul`: `exp` satisfies the identities `exp (n * x) = (exp x) ^ n`
 and `exp (x * y) = (exp x) ^ y`.
--
-
+- `instMetrizableSpaceEReal`: `EReal` is a metrizable space.
 
 ## Tags
-ENNReal, EReal, logarithm
+ENNReal, EReal, logarithm, exponential
 -/
 namespace ENNReal
 

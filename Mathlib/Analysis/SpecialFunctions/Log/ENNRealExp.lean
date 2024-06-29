@@ -17,7 +17,7 @@ in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ 
 
 ## Main Results
 - `ENNReal.exp_strictMono`: `exp` is increasing;
-- `ENNReal.exp_neg`, `ENNReal.exp_add`: `exp` satisfy
+- `ENNReal.exp_neg`, `ENNReal.exp_add`: `exp` satisfies
 the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
 
 ## Tags
