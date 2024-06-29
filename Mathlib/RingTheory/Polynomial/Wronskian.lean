@@ -87,9 +87,9 @@ theorem wronskian.natDegree_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   have hb : b ≠ 0 := by intro h; subst h; rw [wronskian_zero_right] at hw; exact hw rfl
   rw [← WithBot.coe_lt_coe, WithBot.coe_add]
   convert ← wronskian.degree_lt_add ha hb
-  . exact Polynomial.degree_eq_natDegree hw
-  . exact Polynomial.degree_eq_natDegree ha
-  . exact Polynomial.degree_eq_natDegree hb
+  · exact Polynomial.degree_eq_natDegree hw
+  · exact Polynomial.degree_eq_natDegree ha
+  · exact Polynomial.degree_eq_natDegree hb
 
 -- Note: the following is false!
 -- Counterexample: b = a = 1 →
