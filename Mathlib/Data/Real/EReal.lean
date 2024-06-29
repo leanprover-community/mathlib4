@@ -217,7 +217,7 @@ record more basic properties of multiplication.
 -/
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
-  induction' x with x <;> induction' y with y <;>
+  induction x <;> induction y  <;>
     try { rfl }
   rw [← coe_mul, ← coe_mul, mul_comm]
 #align ereal.mul_comm EReal.mul_comm
