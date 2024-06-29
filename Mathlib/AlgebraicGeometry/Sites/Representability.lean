@@ -271,7 +271,7 @@ noncomputable def yonedaIsoSheaf :
 end Representability
 
 open Representability in
-theorem representability_is_local : F.1.Representable where
+theorem representability : F.1.Representable where
   has_representation := ⟨(glueData hf).glued,
     ⟨(sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf)⟩⟩
 
