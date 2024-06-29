@@ -119,6 +119,7 @@ import Mathlib.Algebra.Category.ModuleCatNew.Basic
 import Mathlib.Algebra.Category.ModuleCatNew.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCatNew.Free
 import Mathlib.Algebra.Category.ModuleCatNew.Presheaf.Basic
+import Mathlib.Algebra.Category.ModuleCatNew.Presheaf.Free
 import Mathlib.Algebra.Category.MonCat.Adjunctions
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Colimits
