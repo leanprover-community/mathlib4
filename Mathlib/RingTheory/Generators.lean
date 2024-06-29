@@ -108,6 +108,15 @@ def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) 
     Generators R S :=
   ofSurjective (f ∘ X) (by rwa [show aeval (f ∘ X) = f by ext; simp])
 
+@[simp]
+lemma ofAlgHom_algebraMap {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
+    algebraMap (ofAlgHom f h).Ring S = f.toRingHom := by
+  ext x
+  show (aeval (f ∘ X)) (C x) = f (C x)
+  simp
+  show aeval (f ∘ X) (X x) = f (X x)
+  simp
+
 /-- Construct `Generators` from a family of generators of `S`. -/
 noncomputable
 def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S := by
