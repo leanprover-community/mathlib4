@@ -503,7 +503,7 @@ lemma hasSum_nat_hurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
       - SignType.sign (n + 1 - a) / (↑|n + 1 - a| : ℂ) ^ s) / 2) (hurwitzZetaOdd a s) := by
   refine (hasSum_int_hurwitzZetaOdd a hs).nat_add_neg_add_one.congr_fun fun n ↦ ?_
   rw [Int.cast_neg, Int.cast_add, Int.cast_one, sub_div, sub_eq_add_neg, Int.cast_natCast]
-  have : -(n + 1) + a = -(n + 1 - a) := by { push_cast; ring_nf }
+  have : -(n + 1) + a = -(n + 1 - a) := by ring_nf
   rw [this, Left.sign_neg, abs_neg, SignType.coe_neg, neg_div, neg_div]
 
 /-- Formula for `hurwitzZetaOdd` as a Dirichlet series in the convergence range, with sum over `ℕ`

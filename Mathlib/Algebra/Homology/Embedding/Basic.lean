@@ -105,6 +105,37 @@ class IsTruncLE extends e.IsRelIff : Prop where
   mem_prev {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) :
     ∃ i, e.f i = i'
 
+open Classical in
+/-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
+noncomputable def r (i' : ι') : Option ι :=
+  if h : ∃ (i : ι), e.f i = i'
+  then some h.choose
+  else none
+
+lemma r_eq_some {i : ι} {i' : ι'} (hi : e.f i = i') :
+    e.r i' = some i := by
+  have h : ∃ (i : ι), e.f i = i' := ⟨i, hi⟩
+  have : h.choose = i := e.injective_f (h.choose_spec.trans (hi.symm))
+  dsimp [r]
+  rw [dif_pos ⟨i, hi⟩, this]
+
+lemma r_eq_none (i' : ι') (hi : ∀ i, e.f i ≠ i') :
+    e.r i' = none :=
+  dif_neg (by
+    rintro ⟨i, hi'⟩
+    exact hi i hi')
+
+@[simp] lemma r_f (i : ι) : e.r (e.f i) = some i := r_eq_some _ rfl
+
+lemma f_eq_of_r_eq_some {i : ι} {i' : ι'} (hi : e.r i' = some i) :
+    e.f i = i' := by
+  by_cases h : ∃ (k : ι), e.f k = i'
+  · obtain ⟨k, rfl⟩ := h
+    rw [r_f] at hi
+    congr 1
+    simpa using hi.symm
+  · simp [e.r_eq_none i' (by simpa using h)] at hi
+
 end Embedding
 
 /-- The obvious embedding from `up ℕ` to `up ℤ`. -/
