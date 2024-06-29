@@ -83,7 +83,8 @@ theorem card_sym2 {m : Multiset α} :
   refine m.inductionOn fun xs => ?_
   simp [List.length_sym2]
 
-proof_wanted dedup_sym2 [DecidableEq α] (m : Multiset α) : m.sym2.dedup = m.dedup.sym2
+theorem dedup_sym2 [DecidableEq α] (m : Multiset α) : m.sym2.dedup = m.dedup.sym2 :=
+  m.inductionOn fun xs => by simp [List.dedup_sym2]
 
 end Sym2
 

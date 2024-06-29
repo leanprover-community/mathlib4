@@ -24,7 +24,7 @@ universe u
 
 namespace List
 
-variable {α : Type u} [DecidableEq α]
+variable {α β : Type*} [DecidableEq α]
 
 @[simp]
 theorem dedup_nil : dedup [] = ([] : List α) :=
@@ -131,6 +131,39 @@ theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ ded
   · rw [dedup_cons_of_mem' h, insert_of_mem h]
   · rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]
 #align list.dedup_append List.dedup_append
+
+theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
+    (xs : List α) :
+    (xs.map f).dedup = xs.dedup.map f := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [map_cons]
+    by_cases h : x ∈ xs
+    · rw [dedup_cons_of_mem h, dedup_cons_of_mem (mem_map_of_mem f h), ih]
+    · rw [dedup_cons_of_not_mem h, dedup_cons_of_not_mem <| (mem_map_of_injective hf).not.mpr h, ih,
+        map_cons]
+
+theorem Subset.dedup_append {xs ys : List α} (h : xs ⊆ ys) :
+    dedup (xs ++ ys) = dedup ys := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [cons_append]
+    have : x ∈ xs ++ ys := mem_append_of_mem_right _ <| h (mem_cons_self _ _)
+    rw [dedup_cons_of_mem this, ih (subset_of_cons_subset h)]
+
+theorem Disjoint.dedup_append {xs ys : List α} (h : Disjoint xs ys) :
+    dedup (xs ++ ys) = dedup xs ++ dedup ys := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [cons_append]
+    rw [disjoint_cons_left] at h
+    obtain hx | hx := Decidable.em (x ∈ xs)
+    · rw [dedup_cons_of_mem hx, dedup_cons_of_mem (mem_append_of_mem_left _ hx), ih h.2]
+    · rw [dedup_cons_of_not_mem hx, dedup_cons_of_not_mem (not_mem_append hx h.1), ih h.2,
+        cons_append]
 
 theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]
   | 0, h => (h rfl).elim

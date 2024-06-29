@@ -118,7 +118,66 @@ protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
       simp only [Sym2.eq_iff, true_and]
       rintro (rfl | ⟨rfl, rfl⟩) <;> rfl
 
-proof_wanted dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sym2
+theorem map_mk_sublist_sym2 (x : α) (xs : List α) (h : x ∈ xs) :
+    map (fun y ↦ s(x, y)) xs <+ xs.sym2 := by
+  induction xs with
+  | nil => simp
+  | cons x' xs ih =>
+    simp [List.sym2]
+    cases h with
+    | head =>
+      exact Sublist.cons₂ _ (sublist_append_left _ _)
+    | tail _ h =>
+      apply Sublist.cons
+      rw [← singleton_append]
+      refine Sublist.append ?_ (ih h)
+      rw [singleton_sublist, mem_map]
+      exact ⟨_, h, Sym2.eq_swap⟩
+
+theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
+    (map (fun y ↦ s(x, y)) xs).Disjoint xs.sym2 := by
+  induction xs with
+  | nil => simp
+  | cons x' xs ih =>
+    simp only [mem_cons, not_or] at h
+    rw [List.sym2, map_cons, map_cons, disjoint_cons_left, disjoint_append_right,
+      disjoint_cons_right]
+    refine ⟨?_, ⟨⟨?_, ?_⟩, ?_⟩⟩
+    · refine not_mem_cons_of_ne_of_not_mem ?_ (not_mem_append ?_ ?_)
+      · simp [h.1]
+      · simp_rw [mem_map, not_exists, not_and]
+        intro x'' hx
+        simp_rw [Sym2.mk_eq_mk_iff, Prod.swap_prod_mk, Prod.mk.injEq, true_and]
+        rintro (⟨rfl, rfl⟩ | rfl)
+        · exact h.2 hx
+        · exact h.2 hx
+      · simp [mk_mem_sym2_iff, h.2]
+    · simp [h.1]
+    · intro z hx hy
+      rw [List.mem_map] at hx hy
+      obtain ⟨a, hx, rfl⟩ := hx
+      obtain ⟨b, hy, hx⟩ := hy
+      simp [Sym2.mk_eq_mk_iff, Ne.symm h.1] at hx
+      obtain ⟨rfl, rfl⟩ := hx
+      exact h.2 hy
+    · exact ih h.2
+
+theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sym2 := by
+  induction xs with
+  | nil => simp only [List.sym2, dedup_nil]
+  | cons x xs ih =>
+    simp only [List.sym2, map_cons, cons_append]
+    obtain hm | hm := Decidable.em (x ∈ xs)
+    · rw [dedup_cons_of_mem hm, ← ih, dedup_cons_of_mem,
+        List.Subset.dedup_append (map_mk_sublist_sym2 _ _ hm).subset]
+      refine mem_append_of_mem_left _ ?_
+      rw [mem_map]
+      exact ⟨_, hm, Sym2.eq_swap⟩
+    · rw [dedup_cons_of_not_mem hm, List.sym2, map_cons, ←ih, dedup_cons_of_not_mem, cons_append,
+        List.Disjoint.dedup_append, dedup_map_of_injective]
+      · exact (Sym2.mkEmbedding _).injective
+      · exact map_mk_disjoint_sym2 x xs hm
+      · simp [hm, mem_sym2_iff]
 
 protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     xs.sym2 ~ ys.sym2 := by
