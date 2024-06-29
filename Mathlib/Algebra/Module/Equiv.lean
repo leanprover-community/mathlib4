@@ -80,10 +80,6 @@ notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
 a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 
-/-- The notation `M ≃ₗ⋆[R] M₂` denotes the type of star-linear equivalences between `M` and `M₂`
-over the `⋆` endomorphism of the underlying starred ring `R`. -/
-notation:50 M " ≃ₗ⋆[" R "] " M₂ => LinearEquiv (starRingEnd R) M M₂
-
 /-- `SemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear equivs
 `M → M₂`.
 
