@@ -1502,6 +1502,14 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
   map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 #align ereal.coe_ennreal_pow EReal.coe_ennreal_pow
 
+/-! ### Min and Max -/
+
+theorem min_neg_neg (x y : EReal) : min (-x) (-y) = -max x y := by
+  rcases le_total x y with (h | h) <;> simp_all
+
+theorem max_neg_neg (x y : EReal) : max (-x) (-y) = -min x y := by
+  rcases le_total x y with (h | h) <;> simp_all
+
 end EReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
