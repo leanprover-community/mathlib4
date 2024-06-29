@@ -778,7 +778,4 @@ instance [IsEmpty α] : IsEmpty (Sym2 α) :=
 instance [Nontrivial α] : Nontrivial (Sym2 α) :=
   diag_injective.nontrivial
 
-unsafe instance [Repr α] : Repr (Sym2 α) where
-  reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
-
 end Sym2
