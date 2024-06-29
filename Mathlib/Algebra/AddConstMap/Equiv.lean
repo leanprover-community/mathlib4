@@ -94,4 +94,25 @@ lemma self_trans_symm (e : G ≃+c[a, b] H) : e.trans e.symm = .refl a :=
 lemma symm_trans_self (e : G ≃+c[a, b] H) : e.symm.trans e = .refl b :=
   toEquiv_injective e.toEquiv.symm_trans_self
 
+instance instOne : One (G ≃+c[a, a] G) := ⟨.refl _⟩
+instance instMul : Mul (G ≃+c[a, a] G) := ⟨fun f g ↦ g.trans f⟩
+instance instInv : Inv (G ≃+c[a, a] G) := ⟨.symm⟩
+instance instDiv : Div (G ≃+c[a, a] G) := ⟨fun f g ↦ f * g⁻¹⟩
+
+instance instPowNat : Pow (G ≃+c[a, a] G) ℕ where
+  pow e n := ⟨e^n, (e.toAddConstMap^n).map_add_const'⟩
+
+instance instPowInt : Pow (G ≃+c[a, a] G) ℤ where
+  pow e n := ⟨e^n,
+    match n with
+    | .ofNat n => (e^n).map_add_const'
+    | .negSucc n => (e.symm^(n + 1)).map_add_const'⟩
+
+instance instMonoid : Monoid (G ≃+c[a, a] G) :=
+  toEquiv_injective.monoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+instance instGroup : Group (G ≃+c[a, a] G) :=
+  toEquiv_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
+
 end AddConstEquiv
