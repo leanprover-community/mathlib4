@@ -911,8 +911,7 @@ protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
 
 protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
   refine ⟨fun h => ?_, fun h => RCLike.inv_pos_of_pos h⟩
-  have : z = z⁻¹⁻¹ := by simp
-  rw [this]
+  rw [← inv_inv z]
   exact RCLike.inv_pos_of_pos h
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
@@ -958,11 +957,11 @@ scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
     OrderedSMul K A where
-  smul_lt_smul_of_pos {x} {y} {c} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
-  lt_of_smul_lt_smul_of_pos {x} {y} {c} hxy hc := by
-    have : c⁻¹ • c • x < c⁻¹ • c • y := StarModule.smul_lt_smul_of_pos hxy
-      (RCLike.inv_pos_of_pos hc)
-    simpa [smul_smul, inv_mul_cancel ((ne_of_lt hc).symm)] using this
+  smul_lt_smul_of_pos {x y c} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
+  lt_of_smul_lt_smul_of_pos {x y c} hxy hc := by
+    have : c⁻¹ • c • x < c⁻¹ • c • y :=
+      StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
+    simpa [smul_smul, inv_mul_cancel hc.ne'] using this
 
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 
