@@ -589,7 +589,7 @@ theorem trans_assoc (ePP₂ : P ≃ᵃⁱ[𝕜] P₂) (eP₂G : P₂ ≃ᵃⁱ[�
 #align affine_isometry_equiv.trans_assoc AffineIsometryEquiv.trans_assoc
 
 /-- The group of affine isometries of a `NormedAddTorsor`, `P`. -/
-instance : Group (P ≃ᵃⁱ[𝕜] P) where
+instance instGroup : Group (P ≃ᵃⁱ[𝕜] P) where
   mul e₁ e₂ := e₂.trans e₁
   one := refl _ _
   inv := symm
@@ -804,8 +804,9 @@ theorem dist_pointReflection_fixed (x y : P) : dist (pointReflection 𝕜 x y) x
 #align affine_isometry_equiv.dist_point_reflection_fixed AffineIsometryEquiv.dist_pointReflection_fixed
 
 set_option linter.deprecated false in
-theorem dist_pointReflection_self' (x y : P) : dist (pointReflection 𝕜 x y) y = ‖bit0 (x -ᵥ y)‖ :=
-  by rw [pointReflection_apply, dist_eq_norm_vsub V, vadd_vsub_assoc, bit0]
+theorem dist_pointReflection_self' (x y : P) :
+    dist (pointReflection 𝕜 x y) y = ‖bit0 (x -ᵥ y)‖ := by
+  rw [pointReflection_apply, dist_eq_norm_vsub V, vadd_vsub_assoc, bit0]
 #align affine_isometry_equiv.dist_point_reflection_self' AffineIsometryEquiv.dist_pointReflection_self'
 
 set_option linter.deprecated false in
@@ -821,8 +822,9 @@ theorem pointReflection_fixed_iff [Invertible (2 : 𝕜)] {x y : P} :
 
 variable [NormedSpace ℝ V]
 
-theorem dist_pointReflection_self_real (x y : P) : dist (pointReflection ℝ x y) y = 2 * dist x y :=
-  by rw [dist_pointReflection_self, Real.norm_two]
+theorem dist_pointReflection_self_real (x y : P) :
+    dist (pointReflection ℝ x y) y = 2 * dist x y := by
+  rw [dist_pointReflection_self, Real.norm_two]
 #align affine_isometry_equiv.dist_point_reflection_self_real AffineIsometryEquiv.dist_pointReflection_self_real
 
 @[simp]
@@ -847,10 +849,7 @@ theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
         f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
     ext v
-    -- Porting note: was just `simp`
-    simp only [(AffineIsometryEquiv.coe_toHomeomorph), Function.comp_apply, (AffineMap.map_vadd),
-      eq_self_iff_true, (AffineIsometryEquiv.toHomeomorph_symm),
-      (AffineIsometryEquiv.coe_vaddConst), (vadd_vsub), (AffineIsometryEquiv.coe_vaddConst_symm)]
+    simp
   rw [this]
   simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
 #align affine_map.continuous_linear_iff AffineMap.continuous_linear_iff
@@ -863,10 +862,7 @@ theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.l
       (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
         f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
     ext v
-    -- Porting note: was just `simp`
-    simp only [(AffineIsometryEquiv.coe_toHomeomorph), Function.comp_apply, (AffineMap.map_vadd),
-      eq_self_iff_true, (AffineIsometryEquiv.toHomeomorph_symm),
-      (AffineIsometryEquiv.coe_vaddConst), (vadd_vsub), (AffineIsometryEquiv.coe_vaddConst_symm)]
+    simp
   rw [this]
   simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
 #align affine_map.is_open_map_linear_iff AffineMap.isOpenMap_linear_iff

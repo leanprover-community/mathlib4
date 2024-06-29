@@ -38,7 +38,6 @@ universe u v w
 open Cardinal Submodule Module Function
 
 variable {R : Type u} {M : Type v} {N : Type w}
-
 variable [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 namespace FiniteDimensional
@@ -108,7 +107,6 @@ open FiniteDimensional
 namespace LinearEquiv
 
 variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
-
 variable [Module R M] [Module R M₂]
 
 /-- The dimension of a finite dimensional space is preserved under linear equivalence. -/

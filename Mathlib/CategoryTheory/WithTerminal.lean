@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Bicategory.Functor
+import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 #align_import category_theory.with_terminal from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
@@ -67,7 +67,7 @@ namespace WithTerminal
 variable {C}
 
 /-- Morphisms for `WithTerminal C`. -/
--- porting note: unsupported `nolint has_nonempty_instance`
+-- Porting note(#5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithTerminal C → WithTerminal C → Type v
   | of X, of Y => X ⟶ Y
@@ -123,10 +123,10 @@ def incl : C ⥤ WithTerminal C where
   map f := f
 #align category_theory.with_terminal.incl CategoryTheory.WithTerminal.incl
 
-instance : Full (incl : C ⥤ _) where
-  preimage f := f
+instance : (incl : C ⥤ _).Full where
+  map_surjective f := ⟨f, rfl⟩
 
-instance : Faithful (incl : C ⥤ _) where
+instance : (incl : C ⥤ _).Faithful where
 
 /-- Map `WithTerminal` with respect to a functor `F : C ⥤ D`. -/
 @[simps]
@@ -367,7 +367,7 @@ namespace WithInitial
 variable {C}
 
 /-- Morphisms for `WithInitial C`. -/
--- porting note: unsupported `nolint has_nonempty_instance`
+-- Porting note(#5171): removed `nolint has_nonempty_instance`
 @[simp]
 def Hom : WithInitial C → WithInitial C → Type v
   | of X, of Y => X ⟶ Y
@@ -421,10 +421,10 @@ def incl : C ⥤ WithInitial C where
   map f := f
 #align category_theory.with_initial.incl CategoryTheory.WithInitial.incl
 
-instance : Full (incl : C ⥤ _) where
-  preimage f := f
+instance : (incl : C ⥤ _).Full where
+  map_surjective f := ⟨f, rfl⟩
 
-instance : Faithful (incl : C ⥤ _) where
+instance : (incl : C ⥤ _).Faithful where
 
 /-- Map `WithInitial` with respect to a functor `F : C ⥤ D`. -/
 @[simps]

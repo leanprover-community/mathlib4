@@ -22,39 +22,39 @@ section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
 
-theorem Finset.Nonempty.cSup_eq_max' {s : Finset α} (h : s.Nonempty) : sSup ↑s = s.max' h :=
+theorem Finset.Nonempty.csSup_eq_max' {s : Finset α} (h : s.Nonempty) : sSup ↑s = s.max' h :=
   eq_of_forall_ge_iff fun _ => (csSup_le_iff s.bddAbove h.to_set).trans (s.max'_le_iff h).symm
-#align finset.nonempty.cSup_eq_max' Finset.Nonempty.cSup_eq_max'
+#align finset.nonempty.cSup_eq_max' Finset.Nonempty.csSup_eq_max'
 
-theorem Finset.Nonempty.cInf_eq_min' {s : Finset α} (h : s.Nonempty) : sInf ↑s = s.min' h :=
-  @Finset.Nonempty.cSup_eq_max' αᵒᵈ _ s h
-#align finset.nonempty.cInf_eq_min' Finset.Nonempty.cInf_eq_min'
+theorem Finset.Nonempty.csInf_eq_min' {s : Finset α} (h : s.Nonempty) : sInf ↑s = s.min' h :=
+  @Finset.Nonempty.csSup_eq_max' αᵒᵈ _ s h
+#align finset.nonempty.cInf_eq_min' Finset.Nonempty.csInf_eq_min'
 
-theorem Finset.Nonempty.cSup_mem {s : Finset α} (h : s.Nonempty) : sSup (s : Set α) ∈ s := by
-  rw [h.cSup_eq_max']
+theorem Finset.Nonempty.csSup_mem {s : Finset α} (h : s.Nonempty) : sSup (s : Set α) ∈ s := by
+  rw [h.csSup_eq_max']
   exact s.max'_mem _
-#align finset.nonempty.cSup_mem Finset.Nonempty.cSup_mem
+#align finset.nonempty.cSup_mem Finset.Nonempty.csSup_mem
 
-theorem Finset.Nonempty.cInf_mem {s : Finset α} (h : s.Nonempty) : sInf (s : Set α) ∈ s :=
-  @Finset.Nonempty.cSup_mem αᵒᵈ _ _ h
-#align finset.nonempty.cInf_mem Finset.Nonempty.cInf_mem
+theorem Finset.Nonempty.csInf_mem {s : Finset α} (h : s.Nonempty) : sInf (s : Set α) ∈ s :=
+  @Finset.Nonempty.csSup_mem αᵒᵈ _ _ h
+#align finset.nonempty.cInf_mem Finset.Nonempty.csInf_mem
 
-theorem Set.Nonempty.cSup_mem (h : s.Nonempty) (hs : s.Finite) : sSup s ∈ s := by
+theorem Set.Nonempty.csSup_mem (h : s.Nonempty) (hs : s.Finite) : sSup s ∈ s := by
   lift s to Finset α using hs
-  exact Finset.Nonempty.cSup_mem h
-#align set.nonempty.cSup_mem Set.Nonempty.cSup_mem
+  exact Finset.Nonempty.csSup_mem h
+#align set.nonempty.cSup_mem Set.Nonempty.csSup_mem
 
-theorem Set.Nonempty.cInf_mem (h : s.Nonempty) (hs : s.Finite) : sInf s ∈ s :=
-  @Set.Nonempty.cSup_mem αᵒᵈ _ _ h hs
-#align set.nonempty.cInf_mem Set.Nonempty.cInf_mem
+theorem Set.Nonempty.csInf_mem (h : s.Nonempty) (hs : s.Finite) : sInf s ∈ s :=
+  @Set.Nonempty.csSup_mem αᵒᵈ _ _ h hs
+#align set.nonempty.cInf_mem Set.Nonempty.csInf_mem
 
-theorem Set.Finite.cSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a ↔ ∀ x ∈ s, x < a :=
-  ⟨fun h _ hx => (le_csSup hs.bddAbove hx).trans_lt h, fun H => H _ <| h.cSup_mem hs⟩
-#align set.finite.cSup_lt_iff Set.Finite.cSup_lt_iff
+theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a ↔ ∀ x ∈ s, x < a :=
+  ⟨fun h _ hx => (le_csSup hs.bddAbove hx).trans_lt h, fun H => H _ <| h.csSup_mem hs⟩
+#align set.finite.cSup_lt_iff Set.Finite.csSup_lt_iff
 
-theorem Set.Finite.lt_cInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
-  @Set.Finite.cSup_lt_iff αᵒᵈ _ _ _ hs h
-#align set.finite.lt_cInf_iff Set.Finite.lt_cInf_iff
+theorem Set.Finite.lt_csInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
+  @Set.Finite.csSup_lt_iff αᵒᵈ _ _ _ hs h
+#align set.finite.lt_cInf_iff Set.Finite.lt_csInf_iff
 
 end ConditionallyCompleteLinearOrder
 

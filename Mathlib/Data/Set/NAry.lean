@@ -48,11 +48,11 @@ theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
 #align set.image2_subset_right Set.image2_subset_right
 
 theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image2 f s t :=
-  ball_image_of_ball fun _ ha => mem_image2_of_mem ha hb
+  forall_mem_image.2 fun _ ha => mem_image2_of_mem ha hb
 #align set.image_subset_image2_left Set.image_subset_image2_left
 
 theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
-  ball_image_of_ball fun _ => mem_image2_of_mem ha
+  forall_mem_image.2 fun _ => mem_image2_of_mem ha
 #align set.image_subset_image2_right Set.image_subset_image2_right
 
 theorem forall_image2_iff {p : γ → Prop} :
@@ -375,16 +375,16 @@ theorem image2_inter_union_subset_union :
     image2 f (s ∩ s') (t ∪ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_right]
   exact
-    union_subset_union (image2_subset_right <| inter_subset_left _ _)
-      (image2_subset_right <| inter_subset_right _ _)
+    union_subset_union (image2_subset_right inter_subset_left)
+      (image2_subset_right inter_subset_right)
 #align set.image2_inter_union_subset_union Set.image2_inter_union_subset_union
 
 theorem image2_union_inter_subset_union :
     image2 f (s ∪ s') (t ∩ t') ⊆ image2 f s t ∪ image2 f s' t' := by
   rw [image2_union_left]
   exact
-    union_subset_union (image2_subset_left <| inter_subset_left _ _)
-      (image2_subset_left <| inter_subset_right _ _)
+    union_subset_union (image2_subset_left inter_subset_left)
+      (image2_subset_left inter_subset_right)
 #align set.image2_union_inter_subset_union Set.image2_union_inter_subset_union
 
 theorem image2_inter_union_subset {f : α → α → β} {s t : Set α} (hf : ∀ a b, f a b = f b a) :

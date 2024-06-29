@@ -26,6 +26,6 @@ instance Units.orderedCommGroup [OrderedCommMonoid α] : OrderedCommGroup αˣ :
 #align units.ordered_comm_group Units.orderedCommGroup
 #align add_units.ordered_add_comm_group AddUnits.orderedAddCommGroup
 
--- porting note: the mathlib3 proof was
+-- Porting note: the mathlib3 proof was
 -- mul_le_mul_left := fun a b h c => (mul_le_mul_left' (h : (a : α) ≤ b) _ : (c : α) * a ≤ c * b) }
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/elaboration.20failure.20in.20algebra.2Eorder.2Egroup.2Eunits

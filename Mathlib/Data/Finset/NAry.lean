@@ -23,7 +23,6 @@ We do not define `Finset.image₃` as its only purpose would be to prove propert
 and `Set.image2` already fulfills this task.
 -/
 
-
 open Function Set
 
 variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*}
@@ -509,7 +508,7 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
   rw [image₂_insert_left]
   by_cases h : Disjoint (image (f a) t) (image₂ f s t)
   · rw [card_union_of_disjoint h]
-    exact (card_image_of_injective _ <| hf _ <| mem_insert_self _ _).symm.dvd.add ih
+    exact Nat.dvd_add (card_image_of_injective _ <| hf _ <| mem_insert_self _ _).symm.dvd ih
   simp_rw [← biUnion_image_left, disjoint_biUnion_right, not_forall] at h
   obtain ⟨b, hb, h⟩ := h
   rwa [union_eq_right.2]

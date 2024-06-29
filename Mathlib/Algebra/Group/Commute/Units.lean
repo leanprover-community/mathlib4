@@ -13,6 +13,9 @@ import Mathlib.Algebra.Group.Semiconj.Units
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 variable {M : Type*}
 
 section Monoid
@@ -114,7 +117,7 @@ lemma Commute.units_zpow_left (h : Commute ↑u a) (m : ℤ) : Commute ↑(u ^ m
 @[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
 def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
-    (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
+    (by rwa [← _root_.pow_succ', Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
 #align units.of_pow Units.ofPow
 #align add_units.of_nsmul AddUnits.ofNSMul

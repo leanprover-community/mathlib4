@@ -71,6 +71,7 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
       = (associated (R := A) Q₁).tmul (associated (R := R) Q₂) := by
   rw [QuadraticForm.tmul, tensorDistrib, BilinForm.tmul]
   dsimp
+  have : Subsingleton (Invertible (2 : A)) := inferInstance
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :

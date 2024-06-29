@@ -27,8 +27,6 @@ This file contains some results about vector spaces over the field of fractions 
 -/
 
 
-open BigOperators
-
 open nonZeroDivisors
 
 section Localization
@@ -42,7 +40,6 @@ section AddCommMonoid
 open Submodule
 
 variable [CommSemiring Rₛ] [Algebra R Rₛ] [hT : IsLocalization S Rₛ]
-
 variable {M M' : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTower R Rₛ M]
   [AddCommMonoid M'] [Module R M'] [Module Rₛ M'] [IsScalarTower R Rₛ M'] (f : M →ₗ[R] M')
   [IsLocalizedModule S f]
@@ -61,7 +58,7 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   rw [linearIndependent_iff'] at hv ⊢
   intro t g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S t g
-  have h0 : f (∑ i in t, g' i • v i) = 0 := by
+  have h0 : f (∑ i ∈ t, g' i • v i) = 0 := by
     apply_fun ((a : R) • ·) at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]
@@ -126,15 +123,10 @@ end IsLocalizedModule
 section LocalizationLocalization
 
 variable {R : Type*} (Rₛ : Type*) [CommSemiring R] [CommRing Rₛ] [Algebra R Rₛ]
-
 variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
-
 variable {A : Type*} [CommRing A] [Algebra R A]
-
 variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
-
 variable [Algebra Rₛ Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ]
-
 variable [hA : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
 
 open Submodule
@@ -179,7 +171,6 @@ end LocalizationLocalization
 section FractionRing
 
 variable (R K : Type*) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
-
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :

@@ -54,9 +54,9 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
   haveI : NeZero p := ⟨h0⟩
   rw [Nat.prime_iff_card_units]
   -- Prove cardinality of `Units` of `ZMod p` is both `≤ p-1` and `≥ p-1`
-  refine' le_antisymm (Nat.card_units_zmod_lt_sub_one hp1) _
+  refine le_antisymm (Nat.card_units_zmod_lt_sub_one hp1) ?_
   have hp' : p - 2 + 1 = p - 1 := tsub_add_eq_add_tsub hp1
-  let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a (a ^ (p - 2)) (by rw [← pow_succ, hp', ha])
+  let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a (a ^ (p - 2)) (by rw [← pow_succ', hp', ha])
   calc
     p - 1 = orderOf a := order_of_a.symm
     _ = orderOf a' := (orderOf_injective (Units.coeHom (ZMod p)) Units.ext a')

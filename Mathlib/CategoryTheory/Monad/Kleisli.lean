@@ -44,7 +44,7 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
 
 /-- The Kleisli category on a monad `T`.
     cf Definition 5.2.9 in [Riehl][riehl2017]. -/
-instance Kleisli.category : Category (Kleisli T) where
+instance category : Category (Kleisli T) where
   Hom := fun X Y : C => X ⟶ (T : C ⥤ C).obj Y
   id X := T.η.app X
   comp {X} {Y} {Z} f g := f ≫ (T : C ⥤ C).map g ≫ T.μ.app Z
@@ -55,7 +55,7 @@ instance Kleisli.category : Category (Kleisli T) where
   assoc f g h := by
     simp only [Functor.map_comp, Category.assoc, Monad.assoc]
     erw [T.μ.naturality_assoc]
-#align category_theory.kleisli.kleisli.category CategoryTheory.Kleisli.Kleisli.category
+#align category_theory.kleisli.kleisli.category CategoryTheory.Kleisli.category
 
 namespace Adjunction
 
@@ -121,8 +121,8 @@ variable (U : Comonad C)
 instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
   ⟨(default : C)⟩
 
-/-- The co-Kleisli category on a comonad `U`.-/
-instance Cokleisli.category : Category (Cokleisli U) where
+/-- The co-Kleisli category on a comonad `U`. -/
+instance category : Category (Cokleisli U) where
   Hom := fun X Y : C => (U : C ⥤ C).obj X ⟶ Y
   id X := U.ε.app X
   comp {X} {Y} {Z} f g := U.δ.app X ≫ (U : C ⥤ C).map f ≫ g
@@ -134,7 +134,7 @@ instance Cokleisli.category : Category (Cokleisli U) where
     -- Porting note: something was broken here and was easier just to redo from scratch
     simp only [Functor.map_comp, ← Category.assoc, eq_whisker]
     simp only [Category.assoc, U.δ.naturality, Functor.comp_map, U.coassoc_assoc]
-#align category_theory.cokleisli.cokleisli.category CategoryTheory.Cokleisli.Cokleisli.category
+#align category_theory.cokleisli.cokleisli.category CategoryTheory.Cokleisli.category
 
 namespace Adjunction
 

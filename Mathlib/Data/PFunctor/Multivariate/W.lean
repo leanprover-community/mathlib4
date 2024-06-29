@@ -130,7 +130,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp MvPFunctor.wp
 
 /-- W-type of `P` -/
--- Porting note: used to have @[nolint has_nonempty_instance]
+-- Porting note(#5171): used to have @[nolint has_nonempty_instance]
 def W (α : TypeVec n) : Type _ :=
   P.wp α
 set_option linter.uppercaseLean3 false in
@@ -271,8 +271,7 @@ set_option linter.uppercaseLean3 false in
 -- Can it be avoided?
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
-@[reducible]
-def objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
+abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → β) : P (α ::: β) :=
   ⟨a, splitFun f' f⟩
 #align mvpfunctor.obj_append1 MvPFunctor.objAppend1
@@ -280,8 +279,8 @@ def objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
 theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) :
     appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
-      P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) :=
-  by rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
+      P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) := by
+  rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
 #align mvpfunctor.map_obj_append1 MvPFunctor.map_objAppend1
 
 /-!

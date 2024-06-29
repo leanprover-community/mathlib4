@@ -321,7 +321,7 @@ alias ⟨_, SupIrred.supPrime⟩ := supPrime_iff_supIrred
 alias ⟨_, InfIrred.infPrime⟩ := infPrime_iff_infIrred
 #align inf_irred.inf_prime InfIrred.infPrime
 
--- porting note: was attribute [protected] SupIrred.supPrime InfIrred.infPrime
+-- Porting note: was attribute [protected] SupIrred.supPrime InfIrred.infPrime
 
 end DistribLattice
 

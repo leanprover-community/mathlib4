@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Control.Basic
-import Mathlib.Data.HashMap
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -21,11 +21,11 @@ an assignment of values to `x₁, ..., xₙ` such that every inequality in `S` i
 
 Specifically, we aim to show that they are *not* satisfiable. This amounts to proving a
 contradiction. If our goal is also a linear inequality, we negate it and move it to a hypothesis
-before trying to prove `false`.
+before trying to prove `False`.
 
 When the inequalities are over a dense linear order, `linarith` is a decision procedure: it will
-prove `false` if and only if the inequalities are unsatisfiable. `linarith` will also run on some
-types like `ℤ` that are not dense orders, but it will fail to prove `false` on some unsatisfiable
+prove `False` if and only if the inequalities are unsatisfiable. `linarith` will also run on some
+types like `ℤ` that are not dense orders, but it will fail to prove `False` on some unsatisfiable
 problems. It will run over concrete types like `ℕ`, `ℚ`, and `ℝ`, as well as abstract types that
 are instances of `LinearOrderedCommRing`.
 
@@ -54,17 +54,29 @@ Preprocessors are allowed to branch, that is, to case split on disjunctions. `li
 overall if it succeeds in all cases. This leads to exponential blowup in the number of `linarith`
 calls, and should be used sparingly. The default preprocessor set does not include case splits.
 
-## Fourier-Motzkin elimination
+## Oracles
 
-The oracle implemented to search for certificates uses Fourier-Motzkin variable elimination.
-This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
-`n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
-unsatisfiable iff the comparison `0 < 0` is in the resulting set.
+There are two oracles that can be used in `linarith` so far.
 
-While performing this elimination, we track the history of each derived comparison. This allows us
-to represent any comparison at any step as a positive combination of comparisons from the original
-set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
-by counting how many copies of each original comparison appear in the history.
+1. **Fourier-Motzkin elimination.**
+  This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+  `n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
+  unsatisfiable iff the comparison `0 < 0` is in the resulting set.
+  While performing this elimination, we track the history of each derived comparison. This allows us
+  to represent any comparison at any step as a positive combination of comparisons from the original
+  set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
+  by counting how many copies of each original comparison appear in the history.
+  This oracle was historically implemented earlier, and is sometimes faster on small states, but it
+  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and can not handle
+  large problems. You can use it with `linarith (config := { oracle := .fourierMotzkin })`.
+
+2. **Simplex Algorithm (default).**
+  This oracle reduces the search for a unsatisfiability certificate to some Linear Programming
+  problem. The problem is then solved by a standard Simplex Algorithm. We use
+  [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
+  terminates.
+  The default version of the algorithm operates with sparse matrices as it is usually faster. You
+  can invoke the dense version by `linarith (config := { oracle := .simplexAlgorithmDense })`.
 
 ## Implementation details
 
@@ -79,22 +91,21 @@ goals by splitting them into two weak inequalities and running twice. But it doe
 disequality hypotheses, since this would lead to a number of runs exponential in the number of
 disequalities in the context.
 
-The Fourier-Motzkin oracle is very modular. It can easily be replaced with another function of type
-`certificateOracle := List Comp → ℕ → TacticM ((Std.HashMap ℕ ℕ))`,
+The oracle is very modular. It can easily be replaced with another function of type
+`List Comp → ℕ → MetaM ((Batteries.HashMap ℕ ℕ))`,
 which takes a list of comparisons and the largest variable
 index appearing in those comparisons, and returns a map from comparison indices to coefficients.
 An alternate oracle can be specified in the `LinarithConfig` object.
 
--- TODO Not implemented yet
 A variant, `nlinarith`, adds an extra preprocessing step to handle some basic nonlinear goals.
-There is a hook in the `linarith_config` configuration object to add custom preprocessing routines.
+There is a hook in the `LinarithConfig` configuration object to add custom preprocessing routines.
 
 The certificate checking step is *not* by reflection. `linarith` converts the certificate into a
-proof term of type `false`.
+proof term of type `False`.
 
 Some of the behavior of `linarith` can be inspected with the option
 `set_option trace.linarith true`.
-Because the variable elimination happens outside the tactic monad, we cannot trace intermediate
+However, both oracles mainly runs outside the tactic monad, so we cannot trace intermediate
 steps there.
 
 ## File structure
@@ -108,8 +119,9 @@ The components of `linarith` are spread between a number of files for the sake o
 * `Preprocessing.lean` contains functions used at the beginning of the tactic to transform
   hypotheses into a shape suitable for the main routine.
 * `Parsing.lean` contains functions used to compute the linear structure of an expression.
-* `Elimination.lean` contains the Fourier-Motzkin elimination routine.
-* `Verification.lean` contains the certificate checking functions that produce a proof of `false`.
+* The `Oracle` folder contains files implementing the oracles that can be used to produce a
+  certificate of unsatisfiability.
+* `Verification.lean` contains the certificate checking functions that produce a proof of `False`.
 * `Frontend.lean` contains the control methods and user-facing components of the tactic.
 
 ## Tags
@@ -120,10 +132,57 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 set_option autoImplicit true
 
 open Lean Elab Tactic Meta
-open Std
+open Batteries
 
 
 namespace Linarith
+
+/-! ### Config objects
+
+The config object is defined in the frontend, instead of in `Datatypes.lean`, since the oracles must
+be in context to choose a default.
+
+-/
+
+section
+open Meta
+
+/-- A configuration object for `linarith`. -/
+structure LinarithConfig : Type where
+  /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
+  -- TODO There should be a def for this, rather than calling `evalTactic`?
+  discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
+  -- We can't actually store a `Type` here,
+  -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
+  -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
+  -- For now, we simply don't support restricting the type.
+  -- (restrict_type : Option Type := none)
+  /-- Prove goals which are not linear comparisons by first calling `exfalso`. -/
+  exfalso : Bool := true
+  /-- Transparency mode for identifying atomic expressions in comparisons. -/
+  transparency : TransparencyMode := .reducible
+  /-- Split conjunctions in hypotheses. -/
+  splitHypotheses : Bool := true
+  /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
+  splitNe : Bool := false
+  /-- Override the list of preprocessors. -/
+  preprocessors : List GlobalBranchingPreprocessor := defaultPreprocessors
+  /-- Specify an oracle for identifying candidate contradictions.
+  `.simplexAlgorithmSparse`, `.simplexAlgorithmSparse`, and `.fourierMotzkin` are available. -/
+  oracle : CertificateOracle := .simplexAlgorithmSparse
+
+/--
+`cfg.updateReducibility reduce_default` will change the transparency setting of `cfg` to
+`default` if `reduce_default` is true. In this case, it also sets the discharger to `ring!`,
+since this is typically needed when using stronger unification.
+-/
+def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
+    LinarithConfig :=
+  if reduce_default then
+    { cfg with transparency := .default, discharger := do evalTactic (← `(tactic| ring1!)) }
+  else cfg
+
+end
 
 /-! ### Control -/
 
@@ -198,13 +257,13 @@ def partitionByType (l : List Expr) : MetaM (ExprMultiMap Expr) :=
 
 /--
 Given a list `ls` of lists of proofs of comparisons, `findLinarithContradiction cfg ls` will try to
-prove `false` by calling `linarith` on each list in succession. It will stop at the first proof of
-`false`, and fail if no contradiction is found with any list.
+prove `False` by calling `linarith` on each list in succession. It will stop at the first proof of
+`False`, and fail if no contradiction is found with any list.
 -/
 def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
     MetaM Expr :=
   try
-    ls.firstM (fun L => proveFalseByLinarith cfg g L)
+    ls.firstM (fun L => proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g L)
   catch e => throwError "linarith failed to find a contradiction\n{g}\n{e.toMessageData}"
 
 
@@ -227,10 +286,10 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     trace[linarith] "hypotheses appear in {hyp_set.size} different types"
       if let some t := prefType then
         let (i, vs) ← hyp_set.find t
-        proveFalseByLinarith cfg g vs <|>
+        proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs <|>
         findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
       else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
-  let mut preprocessors := cfg.preprocessors.getD defaultPreprocessors
+  let mut preprocessors := cfg.preprocessors
   if cfg.splitNe then
     preprocessors := Linarith.removeNe :: preprocessors
   if cfg.splitHypotheses then
@@ -273,11 +332,11 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
       linarith only_on hyps cfg g₂
       return
 
-  /- If we are proving a comparison goal (and not just `false`), we consider the type of the
+  /- If we are proving a comparison goal (and not just `False`), we consider the type of the
     elements in the comparison to be the "preferred" type. That is, if we find comparison
     hypotheses in multiple types, we will run `linarith` on the goal type first.
     In this case we also receive a new variable from moving the goal to a hypothesis.
-    Otherwise, there is no preferred type and no new variable; we simply change the goal to `false`.
+    Otherwise, there is no preferred type and no new variable; we simply change the goal to `False`.
   -/
 
   let (g, target_type, new_var) ← match ← applyContrLemma g with
@@ -323,8 +382,8 @@ goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 An example:
 ```lean
 example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
-        (h3 : 12*y - 4* z < 0)  : False :=
-by linarith
+        (h3 : 12*y - 4* z < 0)  : False := by
+  linarith
 ```
 
 `linarith` will use all appropriate hypotheses and the negation of the goal, if applicable.
@@ -338,8 +397,8 @@ Disequality hypotheses require case splitting and are not normally considered
 
 `linarith!` will use a stronger reducibility setting to try to identify atoms. For example,
 ```lean
-example (x : ℚ) : id x ≥ x :=
-by linarith
+example (x : ℚ) : id x ≥ x := by
+  linarith
 ```
 will fail, because `linarith` will not identify `x` and `id x`. `linarith!` will.
 This can sometimes be expensive.
@@ -356,9 +415,9 @@ optional arguments:
 * If `splitNe` is `true`, `linarith` will case split on disequality hypotheses.
   For a given `x ≠ y` hypothesis, `linarith` is run with both `x < y` and `x > y`,
   and so this runs linarith exponentially many times with respect to the number of
-  disequality hypotheses. (False by default.)
-* If `exfalso` is false, `linarith` will fail when the goal is neither an inequality nor `false`.
-  (True by default.)
+  disequality hypotheses. (`false` by default.)
+* If `exfalso` is `false`, `linarith` will fail when the goal is neither an inequality nor `False`.
+  (`true` by default.)
 * `restrict_type` (not yet implemented in mathlib4)
   will only use hypotheses that are inequalities over `tp`. This is useful
   if you have e.g. both integer and rational valued inequalities in the local context, which can
@@ -422,8 +481,7 @@ elab_rules : tactic
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
     let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
     let cfg := { cfg with
-      preprocessors := some (cfg.preprocessors.getD defaultPreprocessors ++
-        [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
+      preprocessors := cfg.preprocessors.concat nlinarithExtras }
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported

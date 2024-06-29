@@ -33,15 +33,14 @@ hadamard product, hadamard
 
 
 variable {α β γ m n : Type*}
-
 variable {R : Type*}
 
 namespace Matrix
 
-open Matrix BigOperators
+open Matrix
 
 /-- `Matrix.hadamard` defines the Hadamard product,
-    which is the pointwise product of two matrices of the same size.-/
+    which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
 #align matrix.hadamard Matrix.hadamard
@@ -53,7 +52,6 @@ theorem hadamard_apply [Mul α] (A : Matrix m n α) (B : Matrix m n α) (i j) :
   rfl
 #align matrix.hadamard_apply Matrix.hadamard_apply
 
--- mathport name: matrix.hadamard
 scoped infixl:100 " ⊙ " => Matrix.hadamard
 
 section BasicProperties
@@ -113,7 +111,6 @@ end Zero
 section One
 
 variable [DecidableEq n] [MulZeroOneClass α]
-
 variable (M : Matrix n n α)
 
 theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
@@ -142,7 +139,6 @@ end Diagonal
 section trace
 
 variable [Fintype m] [Fintype n]
-
 variable (R) [Semiring α] [Semiring R] [Module R α]
 
 theorem sum_hadamard_eq : (∑ i : m, ∑ j : n, (A ⊙ B) i j) = trace (A * Bᵀ) :=

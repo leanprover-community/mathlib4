@@ -335,7 +335,7 @@ theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFroben
 variable {R}
 
 theorem frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
-  (frobenius R p).map_mul x y
+  map_mul (frobenius R p) x y
 #align frobenius_mul frobenius_mul
 
 theorem frobenius_one : frobenius R p 1 = 1 :=
@@ -343,11 +343,11 @@ theorem frobenius_one : frobenius R p 1 = 1 :=
 #align frobenius_one frobenius_one
 
 theorem MonoidHom.map_frobenius : f (frobenius R p x) = frobenius S p (f x) :=
-  f.map_pow x p
+  map_pow f x p
 #align monoid_hom.map_frobenius MonoidHom.map_frobenius
 
 theorem RingHom.map_frobenius : g (frobenius R p x) = frobenius S p (g x) :=
-  g.map_pow x p
+  map_pow g x p
 #align ring_hom.map_frobenius RingHom.map_frobenius
 
 theorem MonoidHom.map_iterate_frobenius (n : ℕ) :
@@ -362,12 +362,12 @@ theorem RingHom.map_iterate_frobenius (n : ℕ) :
 
 theorem MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
     f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
-  f.iterate_map_pow _ _ _
+  iterate_map_pow f _ _ _
 #align monoid_hom.iterate_map_frobenius MonoidHom.iterate_map_frobenius
 
 theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
     f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
-  f.iterate_map_pow _ _ _
+  iterate_map_pow f _ _ _
 #align ring_hom.iterate_map_frobenius RingHom.iterate_map_frobenius
 
 variable (R S)
@@ -397,39 +397,40 @@ theorem frobenius_add : frobenius R p (x + y) = frobenius R p x + frobenius R p 
   (frobenius R p).map_add x y
 #align frobenius_add frobenius_add
 
-theorem frobenius_nat_cast (n : ℕ) : frobenius R p n = n :=
+theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
-#align frobenius_nat_cast frobenius_nat_cast
+#align frobenius_nat_cast frobenius_natCast
 
-open BigOperators
+@[deprecated (since := "2024-04-17")]
+alias frobenius_nat_cast := frobenius_natCast
 
 variable {R}
 
 theorem list_sum_pow_char (l : List R) : l.sum ^ p = (l.map (· ^ p : R → R)).sum :=
-  (frobenius R p).map_list_sum _
+  map_list_sum (frobenius R p) _
 #align list_sum_pow_char list_sum_pow_char
 
 theorem multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R → R)).sum :=
-  (frobenius R p).map_multiset_sum _
+  map_multiset_sum (frobenius R p) _
 #align multiset_sum_pow_char multiset_sum_pow_char
 
 theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i in s, f i) ^ p = ∑ i in s, f i ^ p :=
-  (frobenius R p).map_sum _ _
+    (∑ i ∈ s, f i) ^ p = ∑ i ∈ s, f i ^ p :=
+  map_sum (frobenius R p) _ _
 #align sum_pow_char sum_pow_char
 
 variable (n : ℕ)
 
 theorem list_sum_pow_char_pow (l : List R) : l.sum ^ p ^ n = (l.map (· ^ p ^ n : R → R)).sum :=
-  (iterateFrobenius R p n).map_list_sum _
+  map_list_sum (iterateFrobenius R p n) _
 
 theorem multiset_sum_pow_char_pow (s : Multiset R) :
     s.sum ^ p ^ n = (s.map (· ^ p ^ n : R → R)).sum :=
-  (iterateFrobenius R p n).map_multiset_sum _
+  map_multiset_sum (iterateFrobenius R p n) _
 
 theorem sum_pow_char_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i in s, f i) ^ p ^ n = ∑ i in s, f i ^ p ^ n :=
-  (iterateFrobenius R p n).map_sum _ _
+    (∑ i ∈ s, f i) ^ p ^ n = ∑ i ∈ s, f i ^ p ^ n :=
+  map_sum (iterateFrobenius R p n) _ _
 
 end CommSemiring
 
@@ -438,11 +439,11 @@ section CommRing
 variable [CommRing R] (p : ℕ) [ExpChar R p] (x y : R)
 
 theorem frobenius_neg : frobenius R p (-x) = -frobenius R p x :=
-  (frobenius R p).map_neg x
+  map_neg ..
 #align frobenius_neg frobenius_neg
 
 theorem frobenius_sub : frobenius R p (x - y) = frobenius R p x - frobenius R p y :=
-  (frobenius R p).map_sub x y
+  map_sub ..
 #align frobenius_sub frobenius_sub
 
 end CommRing
