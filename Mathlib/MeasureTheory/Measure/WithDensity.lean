@@ -496,7 +496,8 @@ theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable (μ : Measur
 #align measure_theory.set_lintegral_with_density_eq_set_lintegral_mul_non_measurable MeasureTheory.setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable
 
 @[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable := setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable
+alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable :=
+  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable
 
 theorem lintegral_withDensity_eq_lintegral_mul_non_measurable₀ (μ : Measure α) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (h'f : ∀ᵐ x ∂μ, f x < ∞) (g : α → ℝ≥0∞) :
@@ -525,7 +526,8 @@ theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ (μ : Mea
 #align measure_theory.set_lintegral_with_density_eq_set_lintegral_mul_non_measurable₀ MeasureTheory.setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀
 
 @[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀ := setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀
+alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀ :=
+  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀
 
 theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀' (μ : Measure α) [SFinite μ]
     {f : α → ℝ≥0∞} (s : Set α) (hf : AEMeasurable f (μ.restrict s)) (g : α → ℝ≥0∞)
@@ -534,7 +536,8 @@ theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀' (μ : Me
   rw [restrict_withDensity' s, lintegral_withDensity_eq_lintegral_mul_non_measurable₀ _ hf h'f]
 
 @[deprecated (since := "2024-06-29")]
-alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀' := setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀'
+alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀' :=
+  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀'
 
 theorem withDensity_mul₀ {μ : Measure α} {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :

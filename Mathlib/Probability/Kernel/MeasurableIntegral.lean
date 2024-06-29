@@ -208,7 +208,8 @@ theorem _root_.Measurable.setLIntegral_kernel_prod_right {f : α → β → ℝ�
 #align measurable.set_lintegral_kernel_prod_right Measurable.setLIntegral_kernel_prod_right
 
 @[deprecated (since := "2024-06-29")]
-alias _root_.Measurable.set_lintegral_kernel_prod_right := _root_.Measurable.setLIntegral_kernel_prod_right
+alias _root_.Measurable.set_lintegral_kernel_prod_right :=
+  _root_.Measurable.setLIntegral_kernel_prod_right
 
 theorem _root_.Measurable.lintegral_kernel_prod_left' {f : β × α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun y => ∫⁻ x, f (x, y) ∂κ y :=
@@ -227,7 +228,8 @@ theorem _root_.Measurable.setLIntegral_kernel_prod_left {f : β → α → ℝ�
 #align measurable.set_lintegral_kernel_prod_left Measurable.setLIntegral_kernel_prod_left
 
 @[deprecated (since := "2024-06-29")]
-alias _root_.Measurable.set_lintegral_kernel_prod_left := _root_.Measurable.setLIntegral_kernel_prod_left
+alias _root_.Measurable.set_lintegral_kernel_prod_left :=
+  _root_.Measurable.setLIntegral_kernel_prod_left
 
 theorem _root_.Measurable.lintegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun a => ∫⁻ b, f b ∂κ a :=

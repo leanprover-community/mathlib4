@@ -1549,7 +1549,8 @@ theorem MeasurePreserving.setLIntegral_comp_preimage_emb {mb : MeasurableSpace �
 #align measure_theory.measure_preserving.set_lintegral_comp_preimage_emb MeasureTheory.MeasurePreserving.setLIntegral_comp_preimage_emb
 
 @[deprecated (since := "2024-06-29")]
-alias MeasurePreserving.set_lintegral_comp_preimage_emb := MeasurePreserving.setLIntegral_comp_preimage_emb
+alias MeasurePreserving.set_lintegral_comp_preimage_emb :=
+  MeasurePreserving.setLIntegral_comp_preimage_emb
 
 theorem MeasurePreserving.setLIntegral_comp_emb {mb : MeasurableSpace β} {ν : Measure β}
     {g : α → β} (hg : MeasurePreserving g μ ν) (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞)

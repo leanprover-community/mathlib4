@@ -223,7 +223,8 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite [SigmaFinite μ] {f g : �
 #align measure_theory.ae_le_of_forall_set_lintegral_le_of_sigma_finite MeasureTheory.ae_le_of_forall_setLIntegral_le_of_sigmaFinite
 
 @[deprecated (since := "2024-06-29")]
-alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite := ae_le_of_forall_setLIntegral_le_of_sigmaFinite
+alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite :=
+  ae_le_of_forall_setLIntegral_le_of_sigmaFinite
 
 theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
@@ -240,7 +241,8 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
   rwa [haf, hag]
 
 @[deprecated (since := "2024-06-29")]
-alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ := ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀
+alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ :=
+  ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀
 
 theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
@@ -252,7 +254,8 @@ theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
   filter_upwards [A, B] with x using le_antisymm
 
 @[deprecated (since := "2024-06-29")]
-alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ := ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀
+alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ :=
+  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀
 
 theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g)
@@ -261,7 +264,8 @@ theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : �
 #align measure_theory.ae_eq_of_forall_set_lintegral_eq_of_sigma_finite MeasureTheory.ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
 
 @[deprecated (since := "2024-06-29")]
-alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite := ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
+alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite :=
+  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
 
 end ENNReal
 
