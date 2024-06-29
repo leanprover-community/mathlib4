@@ -75,7 +75,9 @@ end IsConjRoot
 
 section Separable
 -- do we need elementwise IsSeparable (just like IsIntegral) and rename old one into Field.IsSeparable
-
+--`separable_mul`
+--`Field.separable_add`
+--`Field.separable_inv`
 theorem Polynomial.Separable.minpoly_add {x y : A} (hx : (minpoly R x).Separable) (hy : (minpoly R y).Separable) : (minpoly R (x + y)).Separable := sorry
 
 theorem Polynomial.Separable.minpoly_neg {x : A} (hx : (minpoly R x).Separable) : (minpoly R (-x)).Separable := sorry
