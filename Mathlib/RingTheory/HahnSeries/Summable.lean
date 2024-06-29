@@ -387,10 +387,10 @@ theorem smul_support_finite [AddCommMonoid R] [SMulWithZero R V] (s : SummableFa
   Set.Finite.subset (Set.toFinite ((s.finite_co_support' gh.1).prod
     (t.finite_co_support' gh.2)).toFinset) (smul_support_subset_prod s t gh)
 
-theorem isPWO_iUnion_support_prod [AddCommMonoid R] [SMulWithZero R V] (s : SummableFamily Γ R α)
-    (t : SummableFamily Γ' V β) : (⋃ (a : α × β), ((fun a ↦ (HahnModule.of R).symm
-      (s a.1 • (HahnModule.of R) (t a.2))) a).support).IsPWO := by
-  apply (s.isPWO_iUnion_support.vAdd t.isPWO_iUnion_support).mono
+theorem isPWO_iUnion_support_prod [AddCommMonoid R] [SMulWithZero R V] {s : α → HahnSeries Γ R}
+    {t : β → HahnSeries Γ' V} (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
+    (⋃ (a : α × β), ((fun a ↦ (HahnModule.of R).symm ((s a.1) • (HahnModule.of R) (t a.2))) a).support).IsPWO := by
+  apply (hs.vAdd ht).mono
   have hsupp : ∀ a : α × β, support ((fun a ↦ s a.1 • (HahnModule.of R) (t a.2)) a) ⊆
       (s a.1).support +ᵥ (t a.2).support := by
     intro a
@@ -425,7 +425,7 @@ theorem finite_co_support_prod [AddCommMonoid R] [SMulWithZero R V] (s : Summabl
 def FamilySMul [AddCommMonoid R] [SMulWithZero R V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) : (SummableFamily Γ' V (α × β)) where
   toFun a := (HahnModule.of R).symm (s (a.1) • ((HahnModule.of R) (t (a.2))))
-  isPWO_iUnion_support' := isPWO_iUnion_support_prod s t
+  isPWO_iUnion_support' := isPWO_iUnion_support_prod s.isPWO_iUnion_support t.isPWO_iUnion_support
   finite_co_support' g := finite_co_support_prod s t g
 
 /-!
@@ -572,24 +572,58 @@ theorem hsum_family_mul {β : Type*} (s : SummableFamily Γ R α) (t : SummableF
   exact hsum_family_smul s t
 
 /-!
-/-- A summable family made from a finite collection of summable families. -/
-def piFamily {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
-    (t : Π i : σ, SummableFamily Γ R (α i)) : (SummableFamily Γ R (Π i ∈ s, α i)) where
-  toFun a := by
-    refine ∏ i ∈ s, (t i) (a i ?_)
+theorem pi_PWO_iUnion_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
+    {t : Π i : σ, (α i) → HahnSeries Γ R}
+    (ht : ∀ i : σ, (⋃ a : α i, ((t i) a).support).IsPWO) :
+    (⋃ a : (i : σ) → i ∈ s → α i,
+      (∏ i ∈ s, if h : i ∈ s then (t i) (a i h) else 1).support).IsPWO := by
+  refine cons_induction ?_ ?_ s
+  · simp only [prod_empty]
+    have h : ⋃ (a : (i : σ) → i ∈ (∅ : Finset σ) → α i) , support (1 : HahnSeries Γ R) ⊆ {0} := by
+      simp
+    exact Set.Subsingleton.isPWO <| Set.subsingleton_of_subset_singleton h
+  · intro a s' has hp
+    refine (isPWO_iUnion_support_prod (ht a) hp).mono ?_
+    intro g hg
+    simp_all only [dite_true, mem_cons, not_false_eq_true, prod_cons, or_false,
+      or_true, Set.mem_iUnion, mem_support, ne_eq, Prod.exists]
+    obtain ⟨i, hi⟩ := hg
 
-  isPWO_iUnion_support' := by
-    refine cons_induction ?_ ?_ s
-    · simp_all only [prod_empty]
-      have h : ⋃ (a : (i : σ) → i ∈ (∅ : Finset σ) → α i) , support (1 : HahnSeries Γ R) ⊆ {0} := by
-        simp_all
-      exact Set.Subsingleton.isPWO <| Set.subsingleton_of_subset_singleton h
-    · intro a s has hs
-      simp only at hs
-      simp only [prod_cons]
---      refine (FamilyMul ?_ ?_).PWO_iUnion_support'
-      sorry
-  finite_co_support' := sorry
+    sorry
+
+
+apply (s.isPWO_iUnion_support.vAdd t.isPWO_iUnion_support).mono
+  have hsupp : ∀ a : α × β, support ((fun a ↦ s a.1 • (HahnModule.of R) (t a.2)) a) ⊆
+      (s a.1).support +ᵥ (t a.2).support := by
+    intro a
+    rw [show t a.2 = (HahnModule.of R).symm ((HahnModule.of R) (t a.2)) by rfl]
+    simp only
+    exact HahnModule.support_smul_subset_vAdd_support (x := s a.1)
+  refine Set.Subset.trans (Set.iUnion_mono fun a => (hsupp a)) ?_
+  simp_all only [Set.iUnion_subset_iff, Prod.forall]
+  exact fun a b => Set.vadd_subset_vadd (Set.subset_iUnion_of_subset a fun x y ↦ y)
+    (Set.subset_iUnion_of_subset b fun x y ↦ y)
+
+theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
+    {t : Π i : σ, (α i) → HahnSeries Γ R} (htp : ∀ i : σ, (⋃ a : α i, ((t i) a).support).IsPWO)
+    (htfc : ∀ i : σ, {a : α i | ((t i) a).coeff g ≠ 0}.Finite) :
+    {a : (i : σ) → i ∈ s → α i |
+      ((fun a ↦ ∏ i ∈ s, if h : i ∈ s then (t i) (a i h) else 1) a).coeff g ≠ 0}.Finite := by
+  sorry
+
+/-- A summable family made from a finite collection of summable families. -/
+def PiFamily {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
+    (t : Π i : σ, SummableFamily Γ R (α i)) : (SummableFamily Γ R (Π i ∈ s, α i)) where
+  toFun a := Finset.prod s fun i => if h : i ∈ s then (t i) (a i h) else 1
+  isPWO_iUnion_support' := pi_PWO_iUnion_support s α fun i => (t i).isPWO_iUnion_support
+  finite_co_support' g :=
+    pi_finite_co_support s α g (fun i => (t i).isPWO_iUnion_support)
+      (fun i => (t i).finite_co_support g)
+
+theorem hsum_pi_family {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
+    (t : Π i : σ, SummableFamily Γ R (α i)) :
+    (PiFamily s α t).hsum = ∏ i ∈ s, (t i).hsum := by
+  sorry
 -/
 
 end Semiring
@@ -823,8 +857,8 @@ theorem powerSeriesFamilySMul (r : R) (f : PowerSeries R) :
 
 /-- This is missing a suitable isomorphism. -/
 def mvpowerseries_family_aux {σ : Type*} (s : Finset σ) (f : PowerSeries R)
-   (t : SummableFamily Γ R (s →₀ ℕ)) :
-    SummableFamily Γ R ((s →₀ ℕ) × ℕ) := FamilyMul t (PowerSeriesFamily hx f)
+    (t : SummableFamily Γ R (s →₀ ℕ)) : SummableFamily Γ R ((s →₀ ℕ) × ℕ) :=
+  FamilyMul t (PowerSeriesFamily hx f)
 
 theorem sum_coeff {α} (s : Finset α) (f : α → HahnSeries Γ R) (g : Γ) :
     (Finset.sum s f).coeff g = Finset.sum s (fun i => (f i).coeff g) :=
