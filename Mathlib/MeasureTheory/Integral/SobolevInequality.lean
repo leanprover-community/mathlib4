@@ -303,8 +303,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
   By taking the product over these `n` factors, raising them to the power `(n-1)⁻¹` and integrating,
   we get the inequality `∫ |u| ^ (n/(n-1)) ≤ ∫ x, ∏ i, (∫ xᵢ, |Du(update x i xᵢ)|)^(n-1)⁻¹`.
   The result then follows from the grid-lines lemma. -/
-  have : Nontrivial ι :=
-    Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.one_lt)
   have : (1:ℝ) ≤ ↑#ι - 1 := by
     have hι : (2:ℝ) ≤ #ι := by exact_mod_cast hp.one_lt
     linarith
