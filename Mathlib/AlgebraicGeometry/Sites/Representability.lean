@@ -155,18 +155,6 @@ lemma liftW_q₃ : liftW hf a b c h₁ h₂ ≫ q₃ hf i j k = c := by simp [li
 
 end
 
-noncomputable def t' : W hf i j k ⟶ W hf j k i :=
-  liftW hf (q₂ _ _ _ _) (q₃ _ _ _ _) (q₁ _ _ _ _) (by simp) (by simp)
-
-@[reassoc (attr := simp)]
-lemma t'_q₁ : t' hf i j k ≫ q₁ hf j k i = q₂ hf i j k := by simp [t']
-
-@[reassoc (attr := simp)]
-lemma t'_q₂ : t' hf i j k ≫ q₂ hf j k i = q₃ hf i j k := by simp [t']
-
-@[reassoc (attr := simp)]
-lemma t'_q₃ : t' hf i j k ≫ q₃ hf j k i = q₁ hf i j k := by simp [t']
-
 @[simps]
 noncomputable def glueData : GlueData where
   J := ι
@@ -179,14 +167,13 @@ noncomputable def glueData : GlueData where
   f_id := isIso_p₁_self hf
   t i j := (hf i).representable.symmetry (hf j).representable
   t_id i := by ext1 <;> simp [p₁_self_eq_p₂ hf i]
-  t' i j k := t' hf i j k
+  t' i j k := liftW hf (q₂ _ _ _ _) (q₃ _ _ _ _) (q₁ _ _ _ _) (by simp) (by simp)
   t_fac i j k := by
     dsimp
     ext
-    · simp only [assoc, Presheaf.representable.symmetry_fst, eq_q₁, t'_q₁]
+    · simp [eq_q₁]
       rfl
-    · simp only [assoc, Presheaf.representable.symmetry_snd]
-      apply t'_q₃
+    · simpa using liftW_q₃ _ _ _ _ _ _
   cocycle i j k := by apply hom_ext_W; all_goals simp
   f_open := isOpenImmersion_p₁ hf
 
