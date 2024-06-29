@@ -14,10 +14,10 @@ In this file we establish exactness properties of adic completions. In particula
 
 ## Main results
 
-- `LinearMap.adicCompletion_surjective`: Adic completion preserves surjectivity.
-- `LinearMap.adicCompletion_injective`: Adic completion preserves injectivity
+- `AdicCompletion.map_surjective`: Adic completion preserves surjectivity.
+- `AdicCompletion.map_injective`: Adic completion preserves injectivity
   of maps between finite modules over a Noetherian ring.
-- `LinearMap.adicCompletion_exact`: Over a noetherian ring adic completion is exact on finite
+- `AdicCompletion.map_exact`: Over a noetherian ring adic completion is exact on finite
   modules.
 
 ## Implementation details
@@ -28,11 +28,14 @@ All results are proven directly without using Mittag-Leffler systems.
 
 universe u v w t
 
-open AdicCompletion
+open LinearMap
+
+namespace AdicCompletion
+
+variable {R : Type u} [CommRing R] {I : Ideal R}
 
 section Surjectivity
 
-variable {R : Type u} [CommRing R] {I : Ideal R}
 variable {M : Type v} [AddCommGroup M] [Module R M]
 variable {N : Type w} [AddCommGroup N] [Module R N]
 
@@ -40,42 +43,40 @@ variable {f : M →ₗ[R] N} (hf : Function.Surjective f)
 
 /- In each step, a preimage is constructed from the preimage of the previous step by
 subtracting this delta. -/
-private noncomputable def LinearMap.adicCompletionPreimageDelta (x : AdicCauchySequence I N)
+private noncomputable def mapPreimageDelta (x : AdicCauchySequence I N)
     {n : ℕ} {y yₙ : M} (hy : f y = x (n + 1)) (hyₙ : f yₙ = x n) :
-    { d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } := by
-  suffices h : f (yₙ - y) ∈ Submodule.map f (I ^ n • ⊤ : Submodule R M) by
-    choose d dmem hd using h
-    exact ⟨⟨d, dmem⟩, hd⟩
-  rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hf, map_sub,
-    hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
-  exact AdicCauchySequence.mk_eq_mk (Nat.le_succ n) x
+    { d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } :=
+  have h : f (yₙ - y) ∈ Submodule.map f (I ^ n • ⊤ : Submodule R M) := by
+    rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hf, map_sub,
+      hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
+    exact AdicCauchySequence.mk_eq_mk (Nat.le_succ n) x
+  ⟨⟨h.choose, h.choose_spec.1⟩, h.choose_spec.2⟩
 
 /- Inductively construct preimage of cauchy sequence. -/
-private noncomputable def LinearMap.adicCompletionPreimage (x : AdicCauchySequence I N) :
+private noncomputable def mapPreimage (x : AdicCauchySequence I N) :
     (n : ℕ) → f ⁻¹' {x n}
   | .zero => ⟨(hf (x 0)).choose, (hf (x 0)).choose_spec⟩
-  | .succ n => by
-      choose y hy using hf (x (n + 1))
-      let ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := adicCompletionPreimage x n
-      let ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := adicCompletionPreimageDelta hf x hy hyₙ
-      exact ⟨yₙ - d, by simpa [p]⟩
+  | .succ n =>
+      let y := (hf (x (n + 1))).choose
+      have hy := (hf (x (n + 1))).choose_spec
+      let ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := mapPreimage x n
+      let ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := mapPreimageDelta hf x hy hyₙ
+      ⟨yₙ - d, by simpa [p]⟩
 
 variable (I)
 
 /-- Adic completion preserves surjectivity -/
-theorem LinearMap.adicCompletion_surjective :
-    Function.Surjective (map I f) := fun y ↦ by
+theorem map_surjective : Function.Surjective (map I f) := fun y ↦ by
   apply AdicCompletion.induction_on I N y (fun b ↦ ?_)
-  let a := LinearMap.adicCompletionPreimage hf b
+  let a := mapPreimage hf b
   refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩
   · refine fun n ↦ SModEq.symm ?_
-    simp only [SModEq.symm, SModEq, adicCompletionPreimage, Submodule.Quotient.mk_sub,
+    simp only [SModEq.symm, SModEq, mapPreimage, Submodule.Quotient.mk_sub,
       sub_eq_self, Submodule.Quotient.mk_eq_zero, SetLike.coe_mem, a]
   · exact _root_.AdicCompletion.ext fun n ↦ congrArg _ ((a n).property)
 
 end Surjectivity
 
-variable {R : Type u} [CommRing R] (I : Ideal R)
 variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N]
 variable {P : Type u} [AddCommGroup P] [Module R P]
@@ -84,8 +85,12 @@ section Injectivity
 
 variable [IsNoetherianRing R] [Module.Finite R N]
 
+open LinearMap
+
+variable (I)
+
 /-- Adic completion preserves injectivity of finite modules over a Noetherian ring. -/
-theorem LinearMap.adicCompletion_injective (f : M →ₗ[R] N) (hf : Function.Injective f) :
+theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
     Function.Injective (map I f) := by
   obtain ⟨k, hk⟩ := Ideal.exists_pow_inf_eq_pow_smul I (range f)
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
@@ -112,18 +117,17 @@ variable {f : M →ₗ[R] N} {g : N →ₗ[R] P} (hf : Function.Injective f)
 
 section
 
-variable {I} {k : ℕ}
+variable {k : ℕ}
   (hkn : ∀ n ≥ k, I ^ n • ⊤ ⊓ LinearMap.range f = I ^ (n - k) • (I ^ k • ⊤ ⊓ LinearMap.range f))
-  (x : AdicCauchySequence I N)
-  (hker : ∀ (n : ℕ), g (x n) ∈ (I ^ n • ⊤ : Submodule R P))
+  (x : AdicCauchySequence I N) (hker : ∀ (n : ℕ), g (x n) ∈ (I ^ n • ⊤ : Submodule R P))
 
 /- In each step, a preimage is constructed from the preimage of the previous step by
 adding this delta. -/
-private noncomputable def LinearMap.adicCompletionExactAuxDelta {n : ℕ} {d : N}
+private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
     (hdmem : d ∈ (I ^ (k + n + 1) • ⊤ : Submodule R N)) {y yₙ : M}
     (hd : f y = x (k + n + 1) - d) (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N)) :
     { d : (I ^ n • ⊤ : Submodule R M)
-      | f (yₙ + d) - x (k + n + 1) ∈ (I ^ (k + n + 1) • ⊤ : Submodule R N) } := by
+      | f (yₙ + d) - x (k + n + 1) ∈ (I ^ (k + n + 1) • ⊤ : Submodule R N) } :=
   have h : f (y - yₙ) ∈ (I ^ (k + n) • ⊤ : Submodule R N) := by
     simp only [map_sub, hd]
     convert_to x (k + n + 1) - x (k + n) - d - (f yₙ - x (k + n)) ∈ I ^ (k + n) • ⊤
@@ -134,30 +138,36 @@ private noncomputable def LinearMap.adicCompletionExactAuxDelta {n : ℕ} {d : N
       · exact (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by omega))) hdmem
   have hincl : I ^ (k + n - k) • (I ^ k • ⊤ ⊓ range f) ≤ I ^ (k + n - k) • (range f) :=
     smul_mono_right _ inf_le_right
-  refine ⟨⟨y - yₙ, ?_⟩, ?_⟩
-  · convert_to y - yₙ ∈ (I ^ (k + n - k) • ⊤ : Submodule R M)
+  have hyyₙ : y - yₙ ∈ (I ^ n • ⊤ : Submodule R M) := by
+    convert_to y - yₙ ∈ (I ^ (k + n - k) • ⊤ : Submodule R M)
     · simp
     · rw [← Submodule.comap_map_eq_of_injective hf (I ^ (k + n - k) • ⊤ : Submodule R M),
         Submodule.map_smul'', Submodule.map_top]
       apply hincl
       rw [← hkn (k + n) (by omega)]
       exact ⟨h, ⟨y - yₙ, rfl⟩⟩
-  · simpa [hd, Nat.succ_eq_add_one, Nat.add_assoc]
+  ⟨⟨y - yₙ, hyyₙ⟩, by simpa [hd, Nat.succ_eq_add_one, Nat.add_assoc]⟩
 
 open Submodule
 
 /- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
-private noncomputable def LinearMap.adicCompletionExactAux :
+private noncomputable def mapExactAux :
     (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
-  | .zero => by
-      choose d y hdmem hdy using h2 0
-      exact ⟨y, by simpa [hdy]⟩
-  | .succ n => by
-      choose d y hdmem hdy using h2 (n + 1)
+  | .zero =>
+      let d := (h2 0).choose
+      let y := (h2 0).choose_spec.choose
+      have hdy : f y = x (k + 0) - d := (h2 0).choose_spec.choose_spec.right
+      have hdmem := (h2 0).choose_spec.choose_spec.left
+      ⟨y, by simpa [hdy]⟩
+  | .succ n =>
+      let d := (h2 <| n + 1).choose
+      let y := (h2 <| n + 1).choose_spec.choose
+      have hdy : f y = x (k + (n + 1)) - d := (h2 <| n + 1).choose_spec.choose_spec.right
+      have hdmem := (h2 <| n + 1).choose_spec.choose_spec.left
       let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
-        adicCompletionExactAux n
-      let ⟨d, hd⟩ := adicCompletionExactAuxDelta hf hkn x hdmem hdy hyₙ
-      exact ⟨yₙ + d, hd⟩
+        mapExactAux n
+      let ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
+      ⟨yₙ + d, hd⟩
  where
   h1 (n : ℕ) : g (x (k + n)) ∈ Submodule.map g (I ^ (k + n) • ⊤ : Submodule R N) := by
     rw [map_smul'', Submodule.map_top, range_eq_top.mpr hg]
@@ -170,9 +180,8 @@ private noncomputable def LinearMap.adicCompletionExactAux :
 
 end
 
-/-- adicCompletion over a Noetherian ring is exact on finitely generated modules. -/
-theorem LinearMap.adicCompletion_exact :
-    Function.Exact (map I f) (map I g) := by
+/-- `AdicCompletion` over a Noetherian ring is exact on finitely generated modules. -/
+theorem map_exact : Function.Exact (map I f) (map I g) := by
   refine LinearMap.exact_of_comp_eq_zero_of_ker_le_range ?_ (fun y ↦ ?_)
   · rw [map_comp, hfg.linearMap_comp_eq_zero, AdicCompletion.map_zero]
   · apply AdicCompletion.induction_on I N y (fun b ↦ ?_)
@@ -180,10 +189,10 @@ theorem LinearMap.adicCompletion_exact :
     obtain ⟨k, hk⟩ := Ideal.exists_pow_inf_eq_pow_smul I (LinearMap.range f)
     have hb (n : ℕ) : g (b n) ∈ (I ^ n • ⊤ : Submodule R P) := by
       simpa using congrArg (fun x ↦ x.val n) hz
-    let a := adicCompletionExactAux hf hfg hg hk b hb
+    let a := mapExactAux hf hfg hg hk b hb
     refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩
     · refine fun n ↦ SModEq.symm ?_
-      simp [a, adicCompletionExactAux, SModEq]
+      simp [a, mapExactAux, SModEq]
     · ext n
       suffices h : Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (f (a n)) =
             Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (b (k + n)) by

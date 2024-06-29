@@ -53,10 +53,8 @@ lemma Exact.of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
 
 lemma Exact.of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
     (hr : ∀ y, g y = 0 → y ∈ Set.range f) :
-    Exact f g := by
-  refine fun y ↦ ⟨hr y, ?_⟩
-  rintro ⟨x, rfl⟩
-  exact congrFun hc x
+    Exact f g :=
+  fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
 
 end Function
 

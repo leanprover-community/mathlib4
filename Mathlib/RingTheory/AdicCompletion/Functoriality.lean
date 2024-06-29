@@ -14,8 +14,8 @@ In this file we establish functorial properties of the adic completion.
 
 ## Main definitions
 
-- `LinearMap.adicCauchy I f`: the linear map on `I`-adic cauchy sequences induced by `f`
-- `LinearMap.adicCompletion I f`: the linear map on `I`-adic completions induced by `f`
+- `AdicCauchySequence.map I f`: the linear map on `I`-adic cauchy sequences induced by `f`
+- `AdicCompletion.map I f`: the linear map on `I`-adic completions induced by `f`
 
 ## Main results
 
