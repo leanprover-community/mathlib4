@@ -295,7 +295,7 @@ protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   simp
 #align ore_localization.inv_zero OreLocalization.inv_zero
 
-instance : DivisionRing R[R⁰⁻¹] where
+instance (priority := 900) : DivisionRing R[R⁰⁻¹] where
   mul_inv_cancel := OreLocalization.mul_inv_cancel
   inv_zero := OreLocalization.inv_zero
   nnqsmul := _
