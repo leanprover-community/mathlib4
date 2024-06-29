@@ -455,7 +455,7 @@ theorem isStronglyCoatomic_of_wellFounded_gt (h : WellFounded ((· > ·) : α �
   isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| isStronglyAtomic_of_wellFounded_lt (α := αᵒᵈ) h
 
 instance [WellFoundedLT α] : IsStronglyAtomic α :=
-    isStronglyAtomic_of_wellFounded_lt wellFounded_lt
+  isStronglyAtomic_of_wellFounded_lt wellFounded_lt
 
 instance [WellFoundedGT α] : IsStronglyCoatomic α :=
     isStronglyCoatomic_of_wellFounded_gt wellFounded_gt
