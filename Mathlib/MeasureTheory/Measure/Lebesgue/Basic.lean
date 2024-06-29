@@ -375,16 +375,6 @@ theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (
   simp only [B]
 #align real.smul_map_diagonal_volume_pi Real.smul_map_diagonal_volume_pi
 
--- todo: move
-theorem mulVec_stdBasisMatrix {R n m} [Semiring R] [DecidableEq n] [Fintype m]
-    [DecidableEq m] (i : n) (j : m) (c : R) (x : m → R) :
-    mulVec (stdBasisMatrix i j c) x = Function.update (0 : n → R) i (c * x j) := by
-  ext i'
-  simp [stdBasisMatrix, mulVec, dotProduct]
-  rcases eq_or_ne i i' with rfl|h
-  · simp
-  simp [h, h.symm]
-
 /-- A transvection preserves Lebesgue measure. -/
 theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionStruct ι ℝ) :
     MeasurePreserving (toLin' t.toMatrix) := by
