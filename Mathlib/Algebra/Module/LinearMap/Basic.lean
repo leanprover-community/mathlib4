@@ -7,7 +7,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 #align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
@@ -19,19 +18,13 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 assert_not_exists Submonoid
 assert_not_exists Finset
+assert_not_exists Star
 
 open Function
 
 universe u u' v w x y z
 
 variable {R R₁ R₂ R₃ k S S₃ T M M₁ M₂ M₃ N₁ N₂ N₃ ι : Type*}
-
-section
-
-/-- `M →ₗ⋆[R] N` is the type of `R`-conjugate-linear maps from `M` to `N`. -/
-notation:25 M " →ₗ⋆[" R:25 "] " M₂:0 => LinearMap (starRingEnd R) M M₂
-
-end
 
 /-- Reinterpret an additive homomorphism as a `ℚ`-linear map. -/
 def AddMonoidHom.toRatLinearMap [AddCommGroup M] [Module ℚ M] [AddCommGroup M₂] [Module ℚ M₂]
