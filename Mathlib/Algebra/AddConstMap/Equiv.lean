@@ -108,11 +108,20 @@ instance instPowInt : Pow (G ≃+c[a, a] G) ℤ where
     | .ofNat n => (e^n).map_add_const'
     | .negSucc n => (e.symm^(n + 1)).map_add_const'⟩
 
-instance instMonoid : Monoid (G ≃+c[a, a] G) :=
-  toEquiv_injective.monoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
-
 instance instGroup : Group (G ≃+c[a, a] G) :=
   toEquiv_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     fun _ _ ↦ rfl
+
+/-- Projection from `G ≃+c[a, a] G` to permutations `G ≃ G`, as a monoid homomorphism. -/
+@[simps! apply]
+def toPerm : (G ≃+c[a, a] G) →* Equiv.Perm G :=
+  .mk' toEquiv fun _ _ ↦ rfl
+
+/-- Projection from `G ≃+c[a, a] G` to `G →+c[a, a] G`, as a monoid homomorphism. -/
+@[simps! apply]
+def toAddConstMapHom : (G ≃+c[a, a] G) →* (G →+c[a, a] G) where
+  toFun := toAddConstMap
+  map_mul' _ _ := rfl
+  map_one' := rfl
 
 end AddConstEquiv
