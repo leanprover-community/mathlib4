@@ -24,9 +24,9 @@ noncomputable section
 
 open scoped Polynomial Classical
 
-open Polynomial
+namespace Polynomial
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 /-- Wronskian: W(a, b) = ab' - a'b. -/
 def wronskian (a b : R[X]) : R[X] :=
@@ -34,11 +34,11 @@ def wronskian (a b : R[X]) : R[X] :=
 
 @[simp]
 theorem wronskian_zero_left (a : R[X]) : wronskian 0 a = 0 := by
-  simp_rw [wronskian]; simp only [MulZeroClass.zero_mul, derivative_zero, sub_self]
+  simp_rw [wronskian]; simp only [zero_mul, derivative_zero, sub_self]
 
 @[simp]
 theorem wronskian_zero_right (a : R[X]) : wronskian a 0 = 0 := by
-  simp_rw [wronskian]; simp only [derivative_zero, MulZeroClass.mul_zero, sub_self]
+  simp_rw [wronskian]; simp only [derivative_zero, mul_zero, sub_self]
 
 theorem wronskian_neg_left (a b : R[X]) : wronskian (-a) b = -wronskian a b := by
   simp_rw [wronskian, derivative_neg]; ring
@@ -57,12 +57,7 @@ theorem wronskian_anticomm (a b : R[X]) : wronskian a b = -wronskian b a := by
 theorem wronskian_eq_of_sum_zero {a b c : R[X]} (h : a + b + c = 0) :
     wronskian a b = wronskian b c := by
   rw [← neg_eq_iff_add_eq_zero] at h
-  rw [← h]
-  rw [wronskian_neg_right]
-  rw [wronskian_add_right]
-  rw [wronskian_self]
-  rw [add_zero]
-  rw [← wronskian_anticomm]
+  rw [← h, wronskian_neg_right, wronskian_add_right, wronskian_self, add_zero, ← wronskian_anticomm]
 
 private theorem degree_ne_bot {a : R[X]} (ha : a ≠ 0) : a.degree ≠ ⊥ := by
   intro h; rw [Polynomial.degree_eq_bot] at h; exact ha h
@@ -75,20 +70,16 @@ theorem wronskian.degree_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
     _ < a.degree + b.degree := by
       rw [max_lt_iff]
       constructor
-      case left => .
-      {
+      case left =>
         apply lt_of_le_of_lt
         exact degree_mul_le a (derivative b)
         rw [WithBot.add_lt_add_iff_left (degree_ne_bot ha)]
         exact Polynomial.degree_derivative_lt hb
-      }
-      case right => .
-      {
+      case right =>
         apply lt_of_le_of_lt
         exact degree_mul_le (derivative a) b
         rw [WithBot.add_lt_add_iff_right (degree_ne_bot hb)]
         exact Polynomial.degree_derivative_lt ha
-      }
 
 theorem wronskian.natDegree_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
     (wronskian a b).natDegree < a.natDegree + b.natDegree := by
@@ -96,9 +87,9 @@ theorem wronskian.natDegree_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   have hb : b ≠ 0 := by intro h; subst h; rw [wronskian_zero_right] at hw; exact hw rfl
   rw [← WithBot.coe_lt_coe, WithBot.coe_add]
   convert ← wronskian.degree_lt_add ha hb
-  exact Polynomial.degree_eq_natDegree hw
-  exact Polynomial.degree_eq_natDegree ha
-  exact Polynomial.degree_eq_natDegree hb
+  . exact Polynomial.degree_eq_natDegree hw
+  . exact Polynomial.degree_eq_natDegree ha
+  . exact Polynomial.degree_eq_natDegree hb
 
 -- Note: the following is false!
 -- Counterexample: b = a = 1 →
