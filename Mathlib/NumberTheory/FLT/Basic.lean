@@ -40,7 +40,7 @@ any soultion `(a, b, c)` should be a common multiple of triples of zeroes or uni
 def FermatLastTheoremWithSolutionUnit (α : Type*) [Semiring α] (n : ℕ) : Prop :=
   FermatLastTheoremWithSolution α n (λ a b c ↦ ∃ d a' b' c' : α,
     (a = a' * d ∧ b = b' * d ∧ c = c' * d) ∧
-    (a = 0 ∨ IsUnit a) ∧ (b = 0 ∨ IsUnit b) ∧ (c = 0 ∨ IsUnit c))
+    (a' = 0 ∨ IsUnit a') ∧ (b' = 0 ∨ IsUnit b') ∧ (c' = 0 ∨ IsUnit c'))
 
 /-- Statement of Fermat's Last Theorem over the naturals for a given exponent. -/
 def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWithSolutionZero ℕ n
@@ -61,7 +61,7 @@ lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 := sorry
 variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
 
 lemma FermatLastTheoremWithSolutionZero.mono (hmn : m ∣ n)
-  (hm : FermatLastTheoremWithSolutionZero α m) : FermatLastTheoremWithSolutionZero α n := by
+    (hm : FermatLastTheoremWithSolutionZero α m) : FermatLastTheoremWithSolutionZero α n := by
   rintro a b c heq
   obtain ⟨k, rfl⟩ := hmn
   simp_rw [pow_mul'] at heq
@@ -135,19 +135,19 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
 -/
 
 lemma fermatLastTheoremFor_iff_nat {n : ℕ} :
-  FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℕ n := Iff.rfl
+    FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℕ n := Iff.rfl
 
 lemma fermatLastTheoremFor_iff_int {n : ℕ} :
-  FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℤ n :=
-    (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 2
+    FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℤ n :=
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 2
 
 lemma fermatLastTheoremFor_iff_rat {n : ℕ} :
-  FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℚ n :=
-    (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 3
+    FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℚ n :=
+  (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 3
 
 /-- Fermat's Last Theorem for polynomials. This is a consequence of Mason--Stothers theorem. -/
 theorem fermatLastTheoremWithPolynomial {k : Type*} [Field k] {n : ℕ} (chn : ¬ringChar k ∣ n) :
-  FermatLastTheoremWithSolutionUnit k[X] n := sorry
+    FermatLastTheoremWithSolutionUnit k[X] n := sorry
 
 open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
