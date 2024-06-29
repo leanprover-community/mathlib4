@@ -295,7 +295,7 @@ end
 noncomputable
 section
 
-/-- A class giving a chosen right adjoint of a 1-morphism `left`. -/
+/-- A structure giving a chosen right adjoint of a 1-morphism `left`. -/
 structure RightAdjoint (left : a ⟶ b) where
   /-- The right adjoint to `left`. -/
   right : b ⟶ a
@@ -318,10 +318,10 @@ def rightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
   (getRightAdjoint f).right
 
 /-- Evidence that `f⁺⁺` is a right adjoint of `f`. -/
-def rightAdjoint.adjunction (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ rightAdjoint f :=
+def Adjunction.ofIsLeftAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ rightAdjoint f :=
   (getRightAdjoint f).adj
 
-/-- A class giving a chosen left adjoint of a 1-morphism `right`. -/
+/-- A structure giving a chosen left adjoint of a 1-morphism `right`. -/
 structure LeftAdjoint (right : b ⟶ a) where
   /-- The left adjoint to `right`. -/
   left : a ⟶ b
@@ -344,7 +344,7 @@ def leftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
   (getLeftAdjoint f).left
 
 /-- Evidence that `f⁺` is a left adjoint of `f`. -/
-def leftAdjoint.adjunction (f : b ⟶ a) [IsRightAdjoint f] : leftAdjoint f ⊣ f :=
+def Adjunction.ofIsRightAdjoint (f : b ⟶ a) [IsRightAdjoint f] : leftAdjoint f ⊣ f :=
   (getLeftAdjoint f).adj
 
 end
