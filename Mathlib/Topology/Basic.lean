@@ -168,7 +168,6 @@ theorem TopologicalSpace.ext_iff_isClosed {t₁ t₂ : TopologicalSpace X} :
 
 alias ⟨_, TopologicalSpace.ext_isClosed⟩ := TopologicalSpace.ext_iff_isClosed
 
--- Porting note (#10756): new lemma
 theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (p := ¬p)⟩
 
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
@@ -338,6 +337,16 @@ theorem interior_iInter_of_finite [Finite ι] (f : ι → Set X) :
     interior (⋂ i, f i) = ⋂ i, interior (f i) := by
   rw [← sInter_range, (finite_range f).interior_sInter, biInter_range]
 #align interior_Inter interior_iInter_of_finite
+
+@[simp]
+theorem interior_iInter₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m < n, f m) = ⋂ m < n, interior (f m) :=
+  (finite_lt_nat n).interior_biInter f
+
+@[simp]
+theorem interior_iInter₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m ≤ n, f m) = ⋂ m ≤ n, interior (f m) :=
+  (finite_le_nat n).interior_biInter f
 
 theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
@@ -518,6 +527,16 @@ theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set X) :
     closure (⋃ i, f i) = ⋃ i, closure (f i) := by
   rw [← sUnion_range, (finite_range _).closure_sUnion, biUnion_range]
 #align closure_Union closure_iUnion_of_finite
+
+@[simp]
+theorem closure_iUnion₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m < n, f m) = ⋃ m < n, closure (f m) :=
+  (finite_lt_nat n).closure_biUnion f
+
+@[simp]
+theorem closure_iUnion₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m ≤ n, f m) = ⋃ m ≤ n, closure (f m) :=
+  (finite_le_nat n).closure_biUnion f
 
 theorem interior_subset_closure : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
@@ -1248,6 +1267,16 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
   mem_closure_iff_clusterPt
 #align mem_closure_iff_nhds_within_ne_bot mem_closure_iff_nhdsWithin_neBot
 
+lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t ∩ s).Nonempty := by
+  rw [nhdsWithin, inf_neBot_iff]
+  exact forall₂_congr fun U _ ↦
+    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
+
+@[gcongr]
+theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
+  inf_le_inf_left _ (principal_mono.mpr h)
+#align nhds_within_mono nhdsWithin_mono
+
 lemma not_mem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
 
@@ -1719,7 +1748,6 @@ theorem image_closure_subset_closure_image (h : Continuous f) :
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
 
--- Porting note (#10756): new lemma
 theorem closure_image_closure (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm

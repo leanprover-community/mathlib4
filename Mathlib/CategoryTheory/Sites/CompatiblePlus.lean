@@ -162,8 +162,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note: this used to work with `ext`
-  -- See https://github.com/leanprover-community/mathlib4/issues/5229
+  -- Porting note (#11041): this used to work with `ext`
   apply Multiequalizer.hom_ext
   intro a
   dsimp
@@ -188,7 +187,7 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [ι_plusCompIso_hom, Functor.map_comp, Category.assoc]
   simp only [← Category.assoc]
   congr 1
-  -- See https://github.com/leanprover-community/mathlib4/issues/5229
+  -- Porting note (#11041): was ext
   apply Multiequalizer.hom_ext; intro a
   rw [Category.assoc, diagramCompIso_hom_ι, ← F.map_comp]
   simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]

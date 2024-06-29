@@ -45,22 +45,16 @@ abbrev HVertexOperator (Γ : Type*) [PartialOrder Γ] (R : Type*) [CommRing R]
 namespace VertexAlg
 
 @[ext]
-theorem HetVertexOperator.ext (A B : HVertexOperator Γ R V W) (h : ∀(v : V), A v = B v) :
+theorem HetVertexOperator.ext (A B : HVertexOperator Γ R V W) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
 /-- The coefficient of a heterogeneous vertex operator, viewed as a formal power series with
 coefficients in linear maps. -/
 @[simps]
 def coeff (A : HVertexOperator Γ R V W) (n : Γ) : V →ₗ[R] W where
-  toFun := fun (x : V) => (A x).coeff n
-  map_add' := by
-      intro x y
-      simp only [map_add, HahnSeries.add_coeff', Pi.add_apply, forall_const]
-      exact rfl
-  map_smul' := by
-      intro r x
-      simp only [map_smul, HahnSeries.smul_coeff, RingHom.id_apply, forall_const]
-      exact rfl
+  toFun x := (A x).coeff n
+  map_add' x y := by simp only [map_add, ← HahnSeries.add_coeff]
+  map_smul' r x := by simp only [map_smul, RingHom.id_apply, ← HahnSeries.smul_coeff]
 
 theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) : (A v).coeff.support.IsPWO :=
   (A v).isPWO_support'
@@ -75,15 +69,13 @@ theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ 
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
 def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
-    (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
-  toFun := fun x =>
+    (hf : ∀ x : V, (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
+  toFun x :=
   { coeff := fun g => f g x
     isPWO_support' := hf x }
-  map_add' := by
-    intros
+  map_add' _ _ := by
     simp only [map_add]
     exact rfl
-  map_smul' := by
-    intros
+  map_smul' r x := by
     simp only [map_smul, RingHom.id_apply]
     exact rfl

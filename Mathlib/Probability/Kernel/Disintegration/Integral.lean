@@ -41,7 +41,7 @@ lemma lintegral_condKernel_mem (a : α) {s : Set (β × Ω)} (hs : MeasurableSet
   conv_rhs => rw [← kernel.compProd_fst_condKernel κ]
   simp_rw [kernel.compProd_apply _ _ _ hs]
 
-lemma set_lintegral_condKernel_eq_measure_prod (a : α) {s : Set β} (hs : MeasurableSet s)
+lemma setLIntegral_condKernel_eq_measure_prod (a : α) {s : Set β} (hs : MeasurableSet s)
     {t : Set Ω} (ht : MeasurableSet t) :
     ∫⁻ b in s, kernel.condKernel κ (a, b) t ∂(kernel.fst κ a) = κ a (s ×ˢ t) := by
   have : κ a (s ×ˢ t) = (kernel.fst κ ⊗ₖ kernel.condKernel κ) a (s ×ˢ t) := by
@@ -55,29 +55,41 @@ lemma set_lintegral_condKernel_eq_measure_prod (a : α) {s : Set β} (hs : Measu
   simp_rw [this]
   rw [lintegral_indicator _ hs]
 
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condKernel_eq_measure_prod := setLIntegral_condKernel_eq_measure_prod
+
 lemma lintegral_condKernel (hf : Measurable f) (a : α) :
     ∫⁻ b, ∫⁻ ω, f (b, ω) ∂(kernel.condKernel κ (a, b)) ∂(kernel.fst κ a) = ∫⁻ x, f x ∂(κ a) := by
   conv_rhs => rw [← kernel.compProd_fst_condKernel κ]
   rw [kernel.lintegral_compProd _ _ _ hf]
 
-lemma set_lintegral_condKernel (hf : Measurable f) (a : α) {s : Set β}
+lemma setLIntegral_condKernel (hf : Measurable f) (a : α) {s : Set β}
     (hs : MeasurableSet s) {t : Set Ω} (ht : MeasurableSet t) :
     ∫⁻ b in s, ∫⁻ ω in t, f (b, ω) ∂(kernel.condKernel κ (a, b)) ∂(kernel.fst κ a)
       = ∫⁻ x in s ×ˢ t, f x ∂(κ a) := by
   conv_rhs => rw [← kernel.compProd_fst_condKernel κ]
-  rw [kernel.set_lintegral_compProd _ _ _ hf hs ht]
+  rw [kernel.setLIntegral_compProd _ _ _ hf hs ht]
 
-lemma set_lintegral_condKernel_univ_right (hf : Measurable f) (a : α) {s : Set β}
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condKernel := setLIntegral_condKernel
+
+lemma setLIntegral_condKernel_univ_right (hf : Measurable f) (a : α) {s : Set β}
     (hs : MeasurableSet s) :
     ∫⁻ b in s, ∫⁻ ω, f (b, ω) ∂(kernel.condKernel κ (a, b)) ∂(kernel.fst κ a)
       = ∫⁻ x in s ×ˢ Set.univ, f x ∂(κ a) := by
-  rw [← set_lintegral_condKernel hf a hs MeasurableSet.univ]; simp_rw [Measure.restrict_univ]
+  rw [← setLIntegral_condKernel hf a hs MeasurableSet.univ]; simp_rw [Measure.restrict_univ]
 
-lemma set_lintegral_condKernel_univ_left (hf : Measurable f) (a : α) {t : Set Ω}
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condKernel_univ_right := setLIntegral_condKernel_univ_right
+
+lemma setLIntegral_condKernel_univ_left (hf : Measurable f) (a : α) {t : Set Ω}
     (ht : MeasurableSet t) :
     ∫⁻ b, ∫⁻ ω in t, f (b, ω) ∂(kernel.condKernel κ (a, b)) ∂(kernel.fst κ a)
       = ∫⁻ x in Set.univ ×ˢ t, f x ∂(κ a) := by
-  rw [← set_lintegral_condKernel hf a MeasurableSet.univ ht]; simp_rw [Measure.restrict_univ]
+  rw [← setLIntegral_condKernel hf a MeasurableSet.univ ht]; simp_rw [Measure.restrict_univ]
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condKernel_univ_left := setLIntegral_condKernel_univ_left
 
 end Lintegral
 
@@ -107,9 +119,8 @@ lemma setIntegral_condKernel (a : α) {s : Set β} (hs : MeasurableSet s)
   rw [← kernel.compProd_fst_condKernel κ] at hf
   rw [setIntegral_compProd hs ht hf]
 
-@[deprecated]
-alias set_integral_condKernel :=
-  setIntegral_condKernel -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel := setIntegral_condKernel
 
 lemma setIntegral_condKernel_univ_right (a : α) {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ Set.univ) (κ a)) :
@@ -117,9 +128,8 @@ lemma setIntegral_condKernel_univ_right (a : α) {s : Set β} (hs : MeasurableSe
       = ∫ x in s ×ˢ Set.univ, f x ∂(κ a) := by
   rw [← setIntegral_condKernel a hs MeasurableSet.univ hf]; simp_rw [Measure.restrict_univ]
 
-@[deprecated]
-alias set_integral_condKernel_univ_right :=
-  setIntegral_condKernel_univ_right -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel_univ_right := setIntegral_condKernel_univ_right
 
 lemma setIntegral_condKernel_univ_left (a : α) {t : Set Ω} (ht : MeasurableSet t)
     (hf : IntegrableOn f (Set.univ ×ˢ t) (κ a)) :
@@ -127,9 +137,8 @@ lemma setIntegral_condKernel_univ_left (a : α) {t : Set Ω} (ht : MeasurableSet
       = ∫ x in Set.univ ×ˢ t, f x ∂(κ a) := by
   rw [← setIntegral_condKernel a MeasurableSet.univ ht hf]; simp_rw [Measure.restrict_univ]
 
-@[deprecated]
-alias set_integral_condKernel_univ_left :=
-  setIntegral_condKernel_univ_left -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel_univ_left := setIntegral_condKernel_univ_left
 
 end Integral
 
@@ -152,7 +161,7 @@ lemma lintegral_condKernel_mem {s : Set (β × Ω)} (hs : MeasurableSet s) :
   rfl
 #align probability_theory.lintegral_cond_kernel_mem MeasureTheory.Measure.lintegral_condKernel_mem
 
-lemma set_lintegral_condKernel_eq_measure_prod {s : Set β} (hs : MeasurableSet s) {t : Set Ω}
+lemma setLIntegral_condKernel_eq_measure_prod {s : Set β} (hs : MeasurableSet s) {t : Set Ω}
     (ht : MeasurableSet t) :
     ∫⁻ b in s, ρ.condKernel b t ∂ρ.fst = ρ (s ×ˢ t) := by
   have : ρ (s ×ˢ t) = (ρ.fst ⊗ₘ ρ.condKernel) (s ×ˢ t) := by
@@ -165,7 +174,10 @@ lemma set_lintegral_condKernel_eq_measure_prod {s : Set β} (hs : MeasurableSet 
     by_cases hb : b ∈ s <;> simp [hb]
   simp_rw [this]
   rw [lintegral_indicator _ hs]
-#align probability_theory.set_lintegral_cond_kernel_eq_measure_prod MeasureTheory.Measure.set_lintegral_condKernel_eq_measure_prod
+#align probability_theory.set_lintegral_cond_kernel_eq_measure_prod MeasureTheory.Measure.setLIntegral_condKernel_eq_measure_prod
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condKernel_eq_measure_prod := setLIntegral_condKernel_eq_measure_prod
 
 lemma lintegral_condKernel (hf : Measurable f) :
     ∫⁻ b, ∫⁻ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫⁻ x, f x ∂ρ := by
@@ -173,27 +185,36 @@ lemma lintegral_condKernel (hf : Measurable f) :
   rw [lintegral_compProd hf]
 #align probability_theory.lintegral_cond_kernel MeasureTheory.Measure.lintegral_condKernel
 
-lemma set_lintegral_condKernel (hf : Measurable f) {s : Set β}
+lemma setLIntegral_condKernel (hf : Measurable f) {s : Set β}
     (hs : MeasurableSet s) {t : Set Ω} (ht : MeasurableSet t) :
     ∫⁻ b in s, ∫⁻ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst
       = ∫⁻ x in s ×ˢ t, f x ∂ρ := by
   conv_rhs => rw [← compProd_fst_condKernel ρ]
-  rw [set_lintegral_compProd  hf hs ht]
-#align probability_theory.set_lintegral_cond_kernel MeasureTheory.Measure.set_lintegral_condKernel
+  rw [setLIntegral_compProd  hf hs ht]
+#align probability_theory.set_lintegral_cond_kernel MeasureTheory.Measure.setLIntegral_condKernel
 
-lemma set_lintegral_condKernel_univ_right (hf : Measurable f) {s : Set β}
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condKernel := setLIntegral_condKernel
+
+lemma setLIntegral_condKernel_univ_right (hf : Measurable f) {s : Set β}
     (hs : MeasurableSet s) :
     ∫⁻ b in s, ∫⁻ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst
       = ∫⁻ x in s ×ˢ Set.univ, f x ∂ρ := by
-  rw [← set_lintegral_condKernel hf hs MeasurableSet.univ]; simp_rw [Measure.restrict_univ]
-#align probability_theory.set_lintegral_cond_kernel_univ_right MeasureTheory.Measure.set_lintegral_condKernel_univ_right
+  rw [← setLIntegral_condKernel hf hs MeasurableSet.univ]; simp_rw [Measure.restrict_univ]
+#align probability_theory.set_lintegral_cond_kernel_univ_right MeasureTheory.Measure.setLIntegral_condKernel_univ_right
 
-lemma set_lintegral_condKernel_univ_left (hf : Measurable f) {t : Set Ω}
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condKernel_univ_right := setLIntegral_condKernel_univ_right
+
+lemma setLIntegral_condKernel_univ_left (hf : Measurable f) {t : Set Ω}
     (ht : MeasurableSet t) :
     ∫⁻ b, ∫⁻ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst
       = ∫⁻ x in Set.univ ×ˢ t, f x ∂ρ := by
-  rw [← set_lintegral_condKernel hf MeasurableSet.univ ht]; simp_rw [Measure.restrict_univ]
-#align probability_theory.set_lintegral_cond_kernel_univ_left MeasureTheory.Measure.set_lintegral_condKernel_univ_left
+  rw [← setLIntegral_condKernel hf MeasurableSet.univ ht]; simp_rw [Measure.restrict_univ]
+#align probability_theory.set_lintegral_cond_kernel_univ_left MeasureTheory.Measure.setLIntegral_condKernel_univ_left
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condKernel_univ_left := setLIntegral_condKernel_univ_left
 
 end Lintegral
 
@@ -224,9 +245,8 @@ lemma setIntegral_condKernel {s : Set β} (hs : MeasurableSet s)
   rw [setIntegral_compProd hs ht hf]
 #align probability_theory.set_integral_cond_kernel MeasureTheory.Measure.setIntegral_condKernel
 
-@[deprecated]
-alias set_integral_condKernel :=
-  setIntegral_condKernel -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel := setIntegral_condKernel
 
 lemma setIntegral_condKernel_univ_right {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ Set.univ) ρ) :
@@ -234,9 +254,8 @@ lemma setIntegral_condKernel_univ_right {s : Set β} (hs : MeasurableSet s)
   rw [← setIntegral_condKernel hs MeasurableSet.univ hf]; simp_rw [Measure.restrict_univ]
 #align probability_theory.set_integral_cond_kernel_univ_right MeasureTheory.Measure.setIntegral_condKernel_univ_right
 
-@[deprecated]
-alias set_integral_condKernel_univ_right :=
-  setIntegral_condKernel_univ_right -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel_univ_right := setIntegral_condKernel_univ_right
 
 lemma setIntegral_condKernel_univ_left {t : Set Ω} (ht : MeasurableSet t)
     (hf : IntegrableOn f (Set.univ ×ˢ t) ρ) :
@@ -244,9 +263,8 @@ lemma setIntegral_condKernel_univ_left {t : Set Ω} (ht : MeasurableSet t)
   rw [← setIntegral_condKernel MeasurableSet.univ ht hf]; simp_rw [Measure.restrict_univ]
 #align probability_theory.set_integral_cond_kernel_univ_left MeasureTheory.Measure.setIntegral_condKernel_univ_left
 
-@[deprecated]
-alias set_integral_condKernel_univ_left :=
-  setIntegral_condKernel_univ_left -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_condKernel_univ_left := setIntegral_condKernel_univ_left
 
 end Integral
 

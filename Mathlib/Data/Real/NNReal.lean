@@ -11,6 +11,7 @@ import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Algebra.Ring.Regular
 
 #align_import data.real.nnreal from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
@@ -1186,7 +1187,9 @@ end Set
 namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
--- Porting note (#11180): removed @[pp_nodot]
+-- Porting note (kmill): `pp_nodot` has no affect here
+-- unless RFC lean4#1910 leads to dot notation for CoeFun
+@[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩
   map_zero' := by ext; simp
@@ -1228,7 +1231,7 @@ open NNReal
 
 variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
-/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
   `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
 theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
     {r : ℝ≥0} (hr : 0 < r) : ∃ d : Γ₀ˣ, f d < r := by
@@ -1247,7 +1250,7 @@ theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*�
   use u ^ n
   rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
 
-/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
   real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
 theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
     {r : ℝ} (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
