@@ -1473,6 +1473,7 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
 
 /-! ### Inverse -/
 
+/-- Mmultiplicative inverse of an `EReal`. -/
 protected def inv : EReal → EReal
   | ⊥ => 0
   | ⊤ => 0
