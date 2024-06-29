@@ -24,7 +24,6 @@ ultraproduct, Los's theorem
 
 -/
 
-
 universe u v
 
 variable {α : Type*} (M : α → Type*) (u : Ultrafilter α)
