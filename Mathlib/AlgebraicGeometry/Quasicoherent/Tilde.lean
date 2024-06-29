@@ -7,6 +7,7 @@ Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian 
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
+import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 
 /-!
 
@@ -308,8 +309,97 @@ theorem germ_toOpen (U : Opens (PrimeSpectrum.Top R)) (x : U) (f : M) :
       (toOpen R M U f) = toStalk R M x f := by rw [← toOpen_germ]; rfl
 
 lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
-    IsUnit ((algebraMap R (Module.End R ↑((TildeInModuleCat R M).stalk x))) r) := by
-  sorry
+    IsUnit ((algebraMap R (Module.End R ((TildeInModuleCat R M).stalk x))) r) := by
+  rw [Module.End_isUnit_iff]
+  refine ⟨?_, ?_⟩
+  · rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+    intro st h
+    simp only [LinearMap.mem_ker, Module.algebraMap_end_apply] at h
+    change st = 0
+    obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (TildeInModuleCat R M)) x st
+    erw [smul_germ] at h
+    rw [show (0 : (TildeInModuleCat R M).stalk x) = (TildeInModuleCat R M).germ ⟨x, mem⟩ 0 by
+      rw [map_zero]] at h
+
+    obtain ⟨W, mem_W, iU, iV, h⟩ := TopCat.Presheaf.germ_eq (h := h)
+    rw [map_smul, map_zero] at h
+    obtain ⟨W', (mem_W' : x ∈ W'), (iW : W' ⟶ W), num, den, eq1⟩ :=
+      ((TildeInModuleCat R M).map iU.op) s |>.2 ⟨x, mem_W⟩
+    let O := W' ⊓ (PrimeSpectrum.basicOpen r)
+    suffices (TildeInModuleCat R M).map
+        (op $ (homOfLE $ inf_le_left.trans (leOfHom $ iW ≫ iU) : O ⟶ U)) s = 0 by
+      apply_fun (TildeInModuleCat R M).germ ⟨x, sorry⟩ at this
+      erw [TopCat.Presheaf.germ_res_apply] at this
+      rw [this, map_zero]
+
+    refine Subtype.ext $ funext fun q => show _ = 0 from ?_
+    obtain ⟨den_not_mem, eq1⟩ := eq1 ⟨q.1, q.2.1⟩
+    simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, res_apply] at eq1
+    change s.1 ⟨q, _⟩ = 0
+    apply_fun (TildeInModuleCat R M).map (op iW) at h
+    rw [map_smul] at h
+    replace h := congr_fun (Subtype.ext_iff.1 h) ⟨q.1, sorry⟩
+    change r.1 • s.1 ⟨q.1, _⟩ = 0 at h
+    set x := s.1 ⟨q.1, _⟩
+    clear_value x
+    induction x using LocalizedModule.induction_on with
+    | h a b =>
+      rw [LocalizedModule.smul'_mk, show (0 : Localizations R M q) = LocalizedModule.mk 0 1 by rfl,
+        LocalizedModule.mk_eq] at h
+      obtain ⟨(c : q.1.asIdeal.primeCompl), hc⟩ := h
+      simp only [Quiver.Hom.unop_op', one_smul, smul_zero] at hc
+      rw [show (0 : Localizations R M q) = LocalizedModule.mk 0 1 by rfl, LocalizedModule.mk_eq]
+      refine ⟨c * ⟨r, q.2.2⟩, ?_⟩
+      simp only [Quiver.Hom.unop_op', one_smul, smul_zero, mul_smul]
+      exact hc
+
+  · intro st
+    obtain ⟨U, mem, s, rfl⟩ := TopCat.Presheaf.germ_exist (F := (TildeInModuleCat R M)) x st
+    let O := U ⊓ (PrimeSpectrum.basicOpen r)
+    have mem_O : x ∈ O := ⟨mem, r.2⟩
+    refine ⟨TopCat.Presheaf.germ (TildeInModuleCat R M) ⟨x, mem_O⟩
+      ⟨fun q => (Localization.mk 1 ⟨r, q.2.2⟩ : Localization.AtPrime q.1.asIdeal) • s.1
+        ⟨q.1, q.2.1⟩, fun q => ?_⟩, ?_⟩
+    · obtain ⟨V, mem_V, (iV : V ⟶ U), num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
+      refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y => ?_⟩
+      obtain ⟨h1, h2⟩ := hV ⟨y, y.2.1⟩
+      refine ⟨y.1.asIdeal.primeCompl.mul_mem y.2.2.2 h1, ?_⟩
+      simp only [Opens.coe_inf, isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply] at h2 ⊢
+      set x := s.1 ⟨y.1, _⟩
+      clear_value x
+      induction x using LocalizedModule.induction_on with
+      | h a b =>
+      rw [LocalizedModule.mk_smul_mk, one_smul, LocalizedModule.smul'_mk, ← h2,
+        LocalizedModule.smul'_mk, LocalizedModule.mk_eq]
+      refine ⟨1, ?_⟩
+      simp only [one_smul]
+      rw [mul_comm _ b, mul_smul, mul_smul]
+      rfl
+    · simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply,
+        Module.algebraMap_end_apply]
+      rw [← map_smul]
+      fapply TopCat.Presheaf.germ_ext
+      · exact O
+      · exact mem_O
+      · exact 𝟙 _
+      · exact homOfLE inf_le_left
+      refine Subtype.eq <| funext fun y => ?_
+      simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, op_id,
+        CategoryTheory.Functor.map_id, LinearMapClass.map_smul,
+        id_apply]
+      rw [smul_section_apply]
+      change _ = s.1 ⟨y.1, _⟩
+      set x := s.1 ⟨y.1, _⟩
+      change r.1 • Localization.mk 1 _ • x = _
+      clear_value x
+
+      induction x using LocalizedModule.induction_on with
+      | h a b =>
+        rw [LocalizedModule.mk_smul_mk, one_smul, LocalizedModule.smul'_mk, LocalizedModule.mk_eq]
+        refine ⟨1, ?_⟩
+        simp only [one_smul]
+        rw [mul_comm _ b, mul_smul]
+        rfl
 
 noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
