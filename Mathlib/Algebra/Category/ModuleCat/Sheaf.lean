@@ -104,13 +104,13 @@ noncomputable def forgetToSheafModuleCat (X : Cᵒᵖ) (hX : Limits.IsInitial X)
       ((PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1)
       (CategoryTheory.forget.{max v₁ u₁} (ModuleCat (R.1.obj X)))]
     let e : (PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.val ⋙
-          CategoryTheory.forget (ModuleCat ↑(R.val.obj X)) ≅
-          (M.1.presheaf ⋙ CategoryTheory.forget AddCommGrp) :=
+        CategoryTheory.forget (ModuleCat ↑(R.val.obj X)) ≅
+        (M.1.presheaf ⋙ CategoryTheory.forget AddCommGrp) :=
       NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
     rw [Presheaf.isSheaf_of_iso_iff e]
     apply Presheaf.isSheaf_comp_of_isSheaf
     exact M.2⟩
-  map f := {val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1}
+  map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
 `SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v}`

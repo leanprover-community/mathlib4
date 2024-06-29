@@ -506,12 +506,6 @@ When `X` is initial, we have `Module (R.obj X) (M.obj c)` for any `c : Cᵒᵖ`.
 
 -/
 
-
-private noncomputable def module_over_initial (X : Cᵒᵖ) (hX : Limits.IsInitial X)
-    (c : Cᵒᵖ) (M : PresheafOfModules.{v} R) :
-    Module (R.1.obj X) (M.presheaf.obj c) :=
-  Module.compHom (M.presheaf.obj c) (R.1.map (hX.to c))
-
 /--
 Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`
 when `X` is initial.
@@ -525,25 +519,23 @@ noncomputable def forgetToPresheafModuleCatObj
     (X : Cᵒᵖ) (hX : Limits.IsInitial X) (M : PresheafOfModules.{v} R) :
     Cᵒᵖ ⥤ ModuleCat (R.1.obj X) :=
 { obj := fun c =>
-      letI := module_over_initial (R := R) X hX
+      letI : Module (R.1.obj X) (M.presheaf.obj c) :=
+        Module.compHom (M.presheaf.obj c) (R.1.map (hX.to c))
       ModuleCat.of _ (M.presheaf.obj c)
   map := fun {c₁ c₂} f =>
     { toFun := fun x => M.presheaf.map f x
       map_add' := M.presheaf.map f |>.map_add
       map_smul' := fun r (m : M.presheaf.obj c₁) => by
-        dsimp
         change M.presheaf.map f (R.1.map (hX.to c₁) _ • m) = R.1.map (hX.to c₂) _ • _
         rw [M.map_smul, ← CategoryTheory.comp_apply, ← R.map_comp]
         congr
         apply hX.hom_ext }
   map_id := fun c => by
-      dsimp
       ext x
       change M.presheaf.map _ x = x
       rw [M.presheaf.map_id]
       rfl
   map_comp := fun {c₁ c₂ c₃} f g => by
-      dsimp
       ext x
       change M.presheaf.map _ x = (M.presheaf.map _ ≫ M.presheaf.map _) x
       rw [← M.presheaf.map_comp] }
@@ -564,14 +556,8 @@ noncomputable def forgetToPresheafModuleCatMap
   { app := fun c =>
     { toFun := f.app c
       map_add' := (f.app c).map_add
-      map_smul' := fun r (m : M.presheaf.obj c) => by
-        change f.app c (R.1.map (hX.to c) _ • m) = R.1.map (hX.to c) _ • _
-        exact (f.app c).map_smul (R.1.map (hX.to c) _) m }
-    naturality := fun {c₁ c₂} i => by
-      dsimp
-      ext x
-      have := f.hom.naturality i
-      exact congr($this x) }
+      map_smul' := fun r (m : M.presheaf.obj c) => (f.app c).map_smul (R.1.map (hX.to c) _) m }
+    naturality := fun {c₁ c₂} i => by ext x; exact congr($(f.hom.naturality i) x) }
 
 /--
 The forgetful functor from presheaves of modules over a presheaf of rings `R` to presheaves of
@@ -585,8 +571,6 @@ noncomputable def forgetToPresheafModuleCat (X : Cᵒᵖ) (hX : Limits.IsInitial
     PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ ModuleCat (R.1.obj X) where
   obj M := forgetToPresheafModuleCatObj X hX M
   map f := forgetToPresheafModuleCatMap X hX f
-  map_id _ := rfl
-  map_comp _ _ := rfl
 
 end module_over_initial
 
