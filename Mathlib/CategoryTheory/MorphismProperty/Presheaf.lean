@@ -145,11 +145,7 @@ lemma lift_fst : yoneda.map (hf.lift i h hi) ≫ (hf.pullbackCone g).fst = i := 
 
 @[reassoc (attr := simp)]
 lemma lift_snd : hf.lift i h hi ≫ hf.snd g = h :=
-  yoneda.map_injective <| by
-  -- TODO: better proof not involving unfolding API? yoneda_map_snd or sth?
-    simp [-yoneda_map_snd]
-    sorry
-    --simp [PullbackCone.IsLimit.lift_snd]
+  yoneda.map_injective <| by simp [lift]
 
 end
 
@@ -209,14 +205,6 @@ def presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v) :=
 
 variable {P}
 
-lemma yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} (f : X ⟶ Y) :
-    P.presheaf (yoneda.map f) := by
-  use Presheaf.representable.yoneda_map f
-  intro Z g
-  sorry
-  -- have : P (pullback f (Yoneda.fullyFaithful.preimage g)) := sorry
-
-
 lemma presheaf.representable {f : F ⟶ G} (hf : P.presheaf f) : Presheaf.representable f :=
   hf.choose
 
@@ -233,6 +221,20 @@ lemma _root_.CategoryTheory.hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v} {f g : P �
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
     using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
+
+lemma yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} (f : X ⟶ Y) (hf : P f) :
+    P.presheaf (yoneda.map f) := by
+  use Presheaf.representable.yoneda_map f
+  intro Z g
+  -- Want: IsPullback fst snd f (Yoneda.fullyFaithful.preimage g)
+  -- For this need: yoneda reflects limits!
+  have : IsPullback ((Presheaf.representable.yoneda_map f).fst g)
+    ((Presheaf.representable.yoneda_map f).snd g) f (Yoneda.fullyFaithful.preimage g) := sorry
+  -- wrong lemma
+  have := hP.snd f (Yoneda.fullyFaithful.preimage g) hf
+
+  sorry
+  -- have : P (pullback f (Yoneda.fullyFaithful.preimage g)) := sorry
 
 lemma presheaf_monomorphisms_le_monomorphisms :
     (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
@@ -291,6 +293,7 @@ lemma Representable.ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] :
 lemma isomorphisms_le : MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
   fun _ _ f hf ↦ letI : IsIso f := hf; Representable.ofIsIso f
 
+-- follows from stable under BC!
 lemma Representable.respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
   ⟨fun _ _ hf ↦ comp_mem _ _ _ (Representable.ofIsIso _) hf,
   fun _ _ hf ↦ comp_mem _ _ _ hf <| Representable.ofIsIso _⟩
@@ -301,7 +304,7 @@ Calle's notes on current pullback API (I might try PR some of this if I don't en
 - pullback f g: is there no super easy way to access its cone? (i.e. pullback.cone?)
   - should start by constructing the cone, then deriving pullback etc
 
-- Is BigSquare lacking...? i.e. is there a way to do it w/ specified PullbackCones?
+- Is there too few variants of the BigSquare lemmas? i.e. is there a way to do it w/ specified PullbackCones?
   (Pullback.mk is slightly annoying there)
   - Want: BigSquare & pullback interaction
 
