@@ -54,7 +54,7 @@ lemma sSup_eq_zero : sSup s = 0 ↔ s = ∅ ∨ s = {0} := by
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
   refine ⟨fun h ↦ ?_, inf_eq_bot_of_bot_mem⟩
   rw [← bot_eq_zero, sInf_eq_bot] at h
-  obtain ⟨_, hn₁, hn₂⟩  := h 1 (by decide)
-  exact lt_one_iff_eq_zero.mp hn₂ ▸ hn₁
+  obtain ⟨_, h₁, h₂⟩  := h 1 (by decide)
+  exact lt_one_iff_eq_zero.mp h₂ ▸ h₁
 
 end ENat
