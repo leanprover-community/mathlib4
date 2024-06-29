@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.DirectLimit
 
 #align_import algebra.category.Module.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
@@ -45,9 +45,9 @@ instance moduleObj (j) :
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
-  { AddGroupCat.sectionsAddSubgroup.{v, w}
-      (F ⋙ forget₂ (ModuleCat R) AddCommGroupCat.{w} ⋙
-          forget₂ AddCommGroupCat AddGroupCat.{w}) with
+  { AddGrp.sectionsAddSubgroup.{v, w}
+      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{w} ⋙
+          forget₂ AddCommGrp AddGrp.{w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
       simp only [forget_map, Functor.comp_map, Pi.smul_apply, map_smul]
@@ -162,33 +162,33 @@ instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂AddCommGroupPreservesLimitsAux :
-    IsLimit ((forget₂ (ModuleCat R) AddCommGroupCat).mapCone (limitCone F)) :=
-  letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGroupCat) ⋙ forget _)) :=
+    IsLimit ((forget₂ (ModuleCat R) AddCommGrp).mapCone (limitCone F)) :=
+  letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGrp) ⋙ forget _)) :=
     inferInstanceAs <| Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))
-  AddCommGroupCat.limitConeIsLimit
-    (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGroupCat.{w})
+  AddCommGrp.limitConeIsLimit
+    (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGrp.{w})
 #align Module.forget₂_AddCommGroup_preserves_limits_aux ModuleCat.forget₂AddCommGroupPreservesLimitsAux
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits. -/
 instance forget₂AddCommGroupPreservesLimit :
-    PreservesLimit F (forget₂ (ModuleCat R) AddCommGroupCat) :=
+    PreservesLimit F (forget₂ (ModuleCat R) AddCommGrp) :=
   preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
     (forget₂AddCommGroupPreservesLimitsAux F)
 
 instance forget₂AddCommGroupReflectsLimit :
-    ReflectsLimit F (forget₂ (ModuleCat R) AddCommGroupCat) :=
+    ReflectsLimit F (forget₂ (ModuleCat R) AddCommGrp) :=
   reflectsLimitOfReflectsIsomorphisms _ _
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
 instance forget₂AddCommGroupPreservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v}
-      (forget₂ (ModuleCat.{w} R) AddCommGroupCat.{w}) where
+      (forget₂ (ModuleCat.{w} R) AddCommGrp.{w}) where
   preservesLimitsOfShape := { preservesLimit := inferInstance }
 #align Module.forget₂_AddCommGroup_preserves_limits_of_size ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :
-    PreservesLimits (forget₂ (ModuleCat R) AddCommGroupCat.{w}) :=
+    PreservesLimits (forget₂ (ModuleCat R) AddCommGrp.{w}) :=
   ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize.{w, w}
 #align Module.forget₂_AddCommGroup_preserves_limits ModuleCat.forget₂AddCommGroupPreservesLimits
 

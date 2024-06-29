@@ -47,7 +47,7 @@ section Coeff
 open HahnModule
 
 @[ext]
-theorem ext (A B : HVertexOperator Γ R V W) (h : ∀(v : V), A v = B v) :
+theorem ext (A B : HVertexOperator Γ R V W) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.ext := ext
