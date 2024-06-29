@@ -363,7 +363,7 @@ protected theorem setLIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFund
 #align measure_theory.is_add_fundamental_domain.set_lintegral_eq MeasureTheory.IsAddFundamentalDomain.setLIntegral_eq
 
 @[deprecated (since := "2024-06-29")]
-alias set_lintegral_eq := setLIntegral_eq
+alias set_lintegral_eq := MeasureTheory.IsFundamentalDomain.setLIntegral_eq
 
 @[to_additive]
 theorem measure_set_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ) {A : Set α}
