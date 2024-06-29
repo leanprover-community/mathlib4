@@ -48,8 +48,8 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 
 variable {s : Set ℕ∞}
 
-lemma sSup_eq_zero : sSup s = 0 ↔ s = ∅ ∨ s = {0} := by
-  rw [← bot_eq_zero, sSup_eq_bot']
+lemma sSup_eq_zero : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
+  sSup_eq_bot'
 
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s :=
   ⟨fun h ↦ have ⟨_, h₁, h₂⟩  := (sInf_eq_bot.mp h) 1 (by decide)
