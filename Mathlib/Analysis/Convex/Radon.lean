@@ -66,7 +66,7 @@ open FiniteDimensional
 
 variable [FiniteDimensional 𝕜 E]
 
-/-- Corner case for the `helly_theorem'`. -/
+/-- Corner case for `helly_theorem'`. -/
 private lemma helly_theorem_corner {F : ι → Set E} [Fintype ι] [DecidableEq ι]
     (h_card_small : Fintype.card ι ≤ finrank 𝕜 E + 1)
     (h_inter : ∀ I : Finset ι, I.card ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
@@ -92,7 +92,7 @@ theorem helly_theorem' {F : ι → Set E} [Fintype ι]
   · exact helly_theorem_corner (le_of_eq hn) h_inter
   /- Construct a family of vectors indexed by `ι` such that the vector corresponding to `i : ι`
   is an arbitrary element of the intersection of all `F j` except `F i`. -/
-  let a (i : ι) : E := Set.Nonempty.some (s := ⋂₀ (F '' (Finset.univ.erase i))) <| by
+  let a (i : ι) : E := Set.Nonempty.some (s := ⋂₀ (F '' Finset.univ.erase i)) <| by
     let ι' :=  Finset.univ.erase i
     let F' : ι' → Set E := fun i ↦ F i
     rw [show ⋂₀ (F '' ι') = ⋂ i, F' i by simp [iInter_subtype]]
@@ -128,7 +128,7 @@ theorem helly_theorem' {F : ι → Set E} [Fintype ι]
   rintro - ⟨j, hj, rfl⟩
   /- Since `j ∈ Iᶜ` and `i ∈ I`, we conclude that `i ≠ j`, and hence by the definition of `a`:
   `a j ∈ ⋂ F '' (Set.univ \ {j}) ⊆ F i`. -/
-  apply mem_of_subset_of_mem (s₁ := ⋂₀ (F '' (Finset.univ.erase j)))
+  apply mem_of_subset_of_mem (s₁ := ⋂₀ (F '' Finset.univ.erase j))
   · apply sInter_subset_of_mem
     use i
     simp only [coe_erase, coe_univ, mem_diff, Set.mem_univ, mem_singleton_iff, true_and,
@@ -161,16 +161,15 @@ theorem helly_theorem_set' {F : Finset (Set E)}
     (⋂₀ (F : Set (Set E))).Nonempty := by
   classical -- for DecidableEq, required for the family version
   rw [show ⋂₀ F = ⋂ X : F, (X : Set E) by ext; simp]
-  apply Convex.helly_theorem' (F := fun x : F ↦ x.val) (𝕜 := 𝕜)
-  · exact fun X ↦ h_convex X (by simp)
-  · intro G _
-    let G' : Finset (Set E) := Finset.image Subtype.val G
-    rw [show ⋂ i ∈ G, ↑i = ⋂₀ (G' : Set (Set E)) by simp [G']]
-    apply h_inter G'
-    · rw [Finset.image_subset_iff]
-      simp
-    · apply le_trans Finset.card_image_le
-      assumption
+  refine Convex.helly_theorem' (F := fun x : F ↦ x.val) (fun X ↦ h_convex X (by simp)) ?_
+  intro G _
+  let G' : Finset (Set E) := Finset.image Subtype.val G
+  rw [show ⋂ i ∈ G, ↑i = ⋂₀ (G' : Set (Set E)) by simp [G']]
+  apply h_inter G'
+  · rw [Finset.image_subset_iff]
+    simp
+  · apply le_trans Finset.card_image_le
+    assumption
 
 /-- **Helly's theorem** for finite sets of convex sets in its classical form.
 
@@ -184,8 +183,7 @@ theorem helly_theorem_set {F : Finset (Set E)}
     (⋂₀ (F : Set (Set E))).Nonempty := by
   apply helly_theorem_set' h_convex
   intro I hI_ss hI_card
-  obtain ⟨J, _, hJ_ss, hJ_card⟩ := Finset.exists_intermediate_set (finrank 𝕜 E + 1 - I.card)
-    (by omega) hI_ss
+  obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_subsuperset_card_eq hI_ss hI_card h_card
   have : ⋂₀ (J : Set (Set E)) ⊆ ⋂₀ I := sInter_mono (by simpa [hI_ss])
   apply Set.Nonempty.mono this
   exact h_inter J hJ_ss (by omega)
@@ -204,11 +202,10 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
   /- By the finite version of theorem, every finite subfamily has an intersection. -/
   have h_fin (I : Finset ι) : (⋂ i ∈ I, F i).Nonempty := by
     rw [show ⋂ i ∈ I, F i = ⋂ i : I, F ↑i by simp only [iInter_subtype]]
-    apply Convex.helly_theorem' (ι := I) (F := fun i : I ↦ F i) (𝕜 := 𝕜)
-    · simp only [Subtype.forall]; exact fun a _ ↦ h_convex a
-    · intro J hJ_card
-      rw [show ⋂ i ∈ J, F ↑i = ⋂ i ∈ Finset.image Subtype.val J, F i by simp [iInter_subtype]]
-      exact h_inter _ (le_trans Finset.card_image_le hJ_card)
+    apply Convex.helly_theorem' (F := fun i : I ↦ F i) (𝕜 := 𝕜) (by simp [h_convex])
+    intro J hJ_card
+    rw [show ⋂ i ∈ J, F ↑i = ⋂ i ∈ Finset.image Subtype.val J, F i by simp [iInter_subtype]]
+    exact h_inter _ (le_trans Finset.card_image_le hJ_card)
   /- The following is a clumsy proof that family of compact sets with the finite intersection
   property has a nonempty intersection. -/
   have i0 : ι := Nonempty.some h_nonempty
@@ -255,16 +252,15 @@ theorem helly_theorem_set_compact' [TopologicalSpace E] [T2Space E] {F : Set (Se
     (⋂₀ (F : Set (Set E))).Nonempty := by
   classical -- for DecidableEq, required for the family version
   rw [show ⋂₀ F = ⋂ X : F, (X : Set E) by ext; simp]
-  apply Convex.helly_theorem_compact' (F := fun x : F ↦ x.val) (𝕜 := 𝕜)
-  · exact fun X ↦ h_convex X (by simp)
-  · exact fun X ↦ h_compact X (by simp)
-  · intro G _
-    let G' : Finset (Set E) := Finset.image Subtype.val G
-    rw [show ⋂ i ∈ G, ↑i = ⋂₀ (G' : Set (Set E)) by simp [G']]
-    apply h_inter G'
-    · simp [G']
-    · apply le_trans Finset.card_image_le
-      assumption
+  refine Convex.helly_theorem_compact' (F := fun x : F ↦ x.val)
+    (fun X ↦ h_convex X (by simp)) (fun X ↦ h_compact X (by simp)) ?_
+  intro G _
+  let G' : Finset (Set E) := Finset.image Subtype.val G
+  rw [show ⋂ i ∈ G, ↑i = ⋂₀ (G' : Set (Set E)) by simp [G']]
+  apply h_inter G'
+  · simp [G']
+  · apply le_trans Finset.card_image_le
+    assumption
 
 /-- **Helly's theorem** for sets of compact convex sets in its classical version.
 
