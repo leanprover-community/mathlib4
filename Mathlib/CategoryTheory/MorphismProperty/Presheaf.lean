@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Calle Sönne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Calle Sönne, Joël Riou, Ravi Vakil
+-/
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
@@ -20,8 +25,8 @@ section
 
 variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (t : PullbackCone f g) (ht : IsLimit t)
 
-lemma pullbackCone_eq_mk_self (t : PullbackCone f g) : t = PullbackCone.mk t.fst t.snd t.condition := by
-  sorry
+--lemma pullbackCone_eq_mk_self (t : PullbackCone f g) : t = PullbackCone.mk t.fst t.snd t.condition := by
+--  sorry
 
 def pullbackCone_iso_mk_self : t ≅ PullbackCone.mk t.fst t.snd t.condition := by
   apply PullbackCone.ext (by apply Iso.refl) <;> simp
@@ -65,16 +70,18 @@ noncomputable def pullbackIso : yoneda.obj (hf.pullback g) ≅ Limits.pullback f
 /-- The pullback cone obtained by the isomorphism `hf.pullbackIso`. -/
 -- TODO: should be PullbackCone f g?
 noncomputable def pullbackCone : PullbackCone f g :=
-  (limit.cone (cospan f g)).extend (hf.pullbackIso g).hom
+  PullbackCone.mk ((hf.pullbackIso g).hom ≫ pullback.fst)
+    ((hf.pullbackIso g).hom ≫ pullback.snd) (by simpa using pullback.condition)
 
-/-- The projection `yoneda.obj (hf.pullback g) ⟶ F`. -/
-noncomputable def pullbackConeFst : yoneda.obj (hf.pullback g) ⟶ F := (hf.pullbackCone g).fst
-
-/-- The projection `yoneda.obj (hf.pullback g) ⟶ yoneda.obj X`. -/
-noncomputable def pullbackConeSnd : yoneda.obj (hf.pullback g) ⟶ yoneda.obj X := (hf.pullbackCone g).snd
+--/-- The projection `yoneda.obj (hf.pullback g) ⟶ F`. -/
+--noncomputable def pullbackConeFst : yoneda.obj (hf.pullback g) ⟶ F := (hf.pullbackCone g).fst
+--
+--/-- The projection `yoneda.obj (hf.pullback g) ⟶ yoneda.obj X`. -/
+--noncomputable def pullbackConeSnd : yoneda.obj (hf.pullback g) ⟶ yoneda.obj X := (hf.pullbackCone g).snd
 
 noncomputable def pullbackConeIsLimit : IsLimit (hf.pullbackCone g) :=
-  IsLimit.extendIso _ <| limit.isLimit (cospan f g)
+  IsLimit.ofIsoLimit (pullbackIsPullback _ _)
+    (PullbackCone.ext (hf.pullbackIso g).symm (by simp [pullbackCone]) (by simp [pullbackCone]))
 
 noncomputable def snd : hf.pullback g ⟶ X :=
   Yoneda.fullyFaithful.preimage ((hf.pullbackCone g).snd)
@@ -83,11 +90,10 @@ noncomputable def fst : hf'.pullback g ⟶ Y :=
   Yoneda.fullyFaithful.preimage ((hf'.pullbackCone g).fst)
 
 -- TODO: need to add comp here?
-@[simp]
+-- Note(JR): while these are useful to setup the API, better not make these simp lemmas
 lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackCone g).snd := by
   apply Functor.FullyFaithful.map_preimage
 
-@[simp]
 lemma yoneda_map_fst : yoneda.map (hf'.fst g) = (hf'.pullbackCone g).fst := by
   apply Functor.FullyFaithful.map_preimage
 
@@ -141,11 +147,11 @@ noncomputable def lift : Z ⟶ hf.pullback g :=
 
 @[reassoc (attr := simp)]
 lemma lift_fst : yoneda.map (hf.lift i h hi) ≫ (hf.pullbackCone g).fst = i := by
-  simp [lift, PullbackCone.IsLimit.lift_fst]
+  simp [lift]
 
 @[reassoc (attr := simp)]
 lemma lift_snd : hf.lift i h hi ≫ hf.snd g = h :=
-  yoneda.map_injective <| by simp [lift]
+  yoneda.map_injective (by simp [lift, yoneda_map_snd])
 
 end
 
