@@ -229,7 +229,12 @@ instance : Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
 lemma injective {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
     (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :
     a ≫ toGlued hf i = b ≫ toGlued hf j := by
-  sorry
+  let φ : U ⟶ V hf i j := (hf i).representable.lift' a b h
+  have h₁ : φ ≫ p₁ hf i j = a := by simp [φ]
+  have h₂ : φ ≫ p₂ hf i j = b := by simp [φ]
+  rw [← h₁, ← h₂, assoc, assoc]
+  congr 1
+  exact ((glueData hf).glue_condition i j).symm.trans (by simp; rfl)
 
 instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
   equalizerSieve_mem := by
