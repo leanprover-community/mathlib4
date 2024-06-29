@@ -10,7 +10,6 @@ import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 
--- **TODO** move this entire file out of DedekindDomain! Add reference.
 # Frobenius elements
 
 Frobenius elements in Galois groups.
@@ -22,35 +21,29 @@ and say `Q` is a maximal ideal of `B` dividing `P` of `A`. This file contains th
 construction of an element `Frob Q` in `Gal(L/K)`, and a proof that
 modulo `Q` it raises elements to the power `q := |A/P|`.
 
-More generally, our theory works in the "AKLB" setting, with `B/A` a finite extension of
-integral domains, and the corresponding extension `L/K` of fields of fractions is
-assumed finite and Galois. Given `Q/P` a compatible pair of maximal ideals, under the
-assumption that `A/P` is a finite field of size `q`, we construct an element `Frob_Q`
-in `Gal(L/K)` and prove:
+In fact we work in more generality, with a construction which also applies in the function
+field setting.
+
+We start with `A ⊆ B` an extension of integral domains, let `G` be `B ≃ₐ[A] B`,
+and assume that `A` equals the `G`-invariants of `B` (this assumption is true in the applications
+to number fields and function fields). Given `Q/P` a compatible pair of maximal ideals, under the
+assumption that `A/P` is a finite field of size `q` and `B/Q` is also finite,
+we construct an element `Frob_Q` in `G` and prove:
 
 1) `Frob_Q • Q = Q`;
 2) `x ^ q ≡ Frob_Q x (mod Q)`.
 
-Examples where these hypotheses hold are:
-
-1) Finite Galois extensions of number fields and their integers or `S`-integers;
-2) Finite Galois extensions of function fields over finite fields, and their `S`-integers for
-   `S` a nonempty set of places;
-3) Finite Galois extensions of finite fields L/K where B/A=L/K and Q/P=0/0 (recovering the
-classical theory of Frobenius elements)
-
 Note that if `Q` is ramified, there is more than one choice of `Frob_Q` satisfying the defining
-equations; for example if `L=ℚ(i)` and `K=ℚ` then both the identity and complex conjugation
+equations; for example if `B=ℤ[i]` and `A=ℤ` then both the identity and complex conjugation
 work for `Frob Q` if `Q=(1+i)`. In this situation `Frob` returns a random one (i.e. it's opaque;
 all we know is that it satisfies the two properties).
 
+In the applications, `galRestrict` will provide us with the isomorphism `L ≃ₐ[K] L ≃* B ≃ₐ[A] B`
+which we need to construct the actual Frobenius elements in Galois groups.
+
 ## The construction
 
-* [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
-
-
 We follow a proof in footnote 2 on p141 of [J. S. Milne,  *Algebraic Number Theory*][milne-ANT]
-**TODO** add to `docs/references.bib`.
 
 The Galois orbit of `Q` consists of `Q` and possibly some other primes `Q'`. The unit group
 `(B/Q)ˣ` is finite and hence cyclic; so by the Chinese Remainder Theorem we may choose `y ∈ B`
@@ -77,13 +70,15 @@ Formalising Mathematics 2024 course.
 
 ## TODO
 
-Application to number fields and their rings of integers. In other words,
-restrict to number field case, supply the finiteness typeclasses `Fintype (A ⧸ P)`
-and `Fintype (B ⧸ Q)`, supply the descent hypothesis (a Galois-stable element of `B`
-is in `A`) and finally apply the identification `(B ≃ₐ[A] B) ≃* (L ≃ₐ[K] L)` (which we have)
-to get Frobenius elements in finite Galois groups of number fields.
+Check that the hypotheses are satisfied in the two main applications:
 
-Application to function fields over finite fields.
+1) Finite Galois extensions of number fields and their integers or `S`-integers;
+2) Finite Galois extensions of function fields over finite fields, and their `S`-integers for
+   `S` a nonempty set of places;
+
+Note that the theorem could also be used to construct the Frobenius element in the
+case where `A` and `B` are finite fields, and `Q/P=0/0` (recovering the
+classical theory of Frobenius elements).
 
 -/
 
@@ -91,12 +86,14 @@ variable (A : Type*) [CommRing A] {B : Type*} [CommRing B] [Algebra A B]
 
 open scoped Pointwise -- to get Galois action on ideals
 
-namespace ArithmeticFrobenius
+namespace ArithmeticFrobenius -- So it will be absolutely clear which Frob we're talking about
+-- some authors like to use "Geometric Frobenius", which is the the inverse of this one
 
 namespace Abstract -- stuff in here is auxiliary variables etc, general stuff which will
 -- work in number field and function field settings. This namespace is full of junk
 -- like `y_spec` and `F_spec` which are auxiliary constructions needed for `Frob` and
 -- which we will never need again.
+
 /-
 
 ## Auxiliary variables
@@ -269,8 +266,8 @@ lemma exists_Frob : ∃ σ : B ≃ₐ[A] B, σ (y A Q) - (y A Q) ^ (Fintype.card
     sub_eq_zero] at hσ
   exact (Submodule.Quotient.eq Q).mp (hσ.symm)
 
-/-- TODO: if I put a docstring here does it show up on hover? And does the linter
-want it? -/
+/-- An auxiliary arithmetic Frobenius element, in the automorphism group of the integer ring
+rather than the global field itself. -/
 noncomputable abbrev Frob := (exists_Frob A Q isGalois P).choose
 
 lemma Frob_spec : (Frob A Q isGalois P) • (y A Q) - (y A Q) ^ (Fintype.card (A⧸P)) ∈ Q :=
