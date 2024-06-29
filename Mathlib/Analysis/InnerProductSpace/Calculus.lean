@@ -395,12 +395,7 @@ theorem Homeomorph.contDiff_unitBall : ContDiff ℝ n fun x : E => (unitBall x :
   PartialHomeomorph.contDiff_univUnitBall
 #align cont_diff_homeomorph_unit_ball Homeomorph.contDiff_unitBall
 
-@[deprecated PartialHomeomorph.contDiffOn_univUnitBall_symm]
-theorem Homeomorph.contDiffOn_unitBall_symm {f : E → E}
-    (h : ∀ (y) (hy : y ∈ ball (0 : E) 1), f y = Homeomorph.unitBall.symm ⟨y, hy⟩) :
-    ContDiffOn ℝ n f <| ball 0 1 :=
-  PartialHomeomorph.contDiffOn_univUnitBall_symm.congr h
-#align cont_diff_on_homeomorph_unit_ball_symm Homeomorph.contDiffOn_unitBall_symm
+#align cont_diff_on_homeomorph_unit_ball_symm PartialHomeomorph.contDiffOn_univUnitBall_symm
 
 namespace PartialHomeomorph
 

@@ -23,6 +23,7 @@ This property already has a name, namely `α ≃ ℕ`, but here we are intereste
 typeclass.
 -/
 
+assert_not_exists OrderedSemiring
 
 variable {α β : Type*}
 
@@ -144,7 +145,7 @@ instance sum : Denumerable (Sum α β) :=
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
       Option.mem_def, Sum.exists]
-    cases bodd n <;> simp [decodeSum, bit, encodeSum, bit0_eq_two_mul, bit1]⟩
+    cases bodd n <;> simp [decodeSum, bit, encodeSum, bit0, bit1, Nat.two_mul]⟩
 #align denumerable.sum Denumerable.sum
 
 section Sigma
@@ -221,7 +222,7 @@ open scoped Classical
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
   _root_.by_contradiction fun h =>
     have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
-      lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, add_tsub_cancel_of_le hax]⟩
+      lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
     Fintype.false
       ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
             (fun (y : ℕ) (hy : y ∈ s) => Subtype.mk y hy)
@@ -243,9 +244,7 @@ theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_lt h
   have : Nat.find hx ≤ k := Nat.find_min' _ (hk ▸ x.2)
-  show (y : ℕ) + Nat.find hx + 1 ≤ x by
-    rw [hk]
-    exact add_le_add_right (add_le_add_left this _) _
+  show (y : ℕ) + Nat.find hx + 1 ≤ x by omega
 #align nat.subtype.succ_le_of_lt Nat.Subtype.succ_le_of_lt
 
 theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
@@ -253,15 +252,13 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
       (h ⟨_, Nat.find_spec hx⟩ hxy).not_lt <|
-        calc
-          (y : ℕ) ≤ (y : ℕ) + Nat.find hx := le_add_of_nonneg_right (Nat.zero_le _)
-          _ < (y : ℕ) + Nat.find hx + 1 := Nat.lt_succ_self _
+        (by omega : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
 #align nat.subtype.le_succ_of_forall_lt_le Nat.Subtype.le_succ_of_forall_lt_le
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
     -- Porting note: replaced `x + _`, added type annotations
-    (x : ℕ) ≤ (x + Nat.find (exists_succ x): ℕ) := le_self_add
+    (x : ℕ) ≤ (x + Nat.find (exists_succ x) : ℕ) := le_add_right ..
     _ < (succ x : ℕ) := Nat.lt_succ_self (x + _)
 #align nat.subtype.lt_succ_self Nat.Subtype.lt_succ_self
 
@@ -270,14 +267,12 @@ theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
     lt_of_le_of_lt h (lt_succ_self _)⟩
 #align nat.subtype.lt_succ_iff_le Nat.Subtype.lt_succ_iff_le
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Returns the `n`-th element of a set, according to the usual ordering of `ℕ`. -/
 def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
   | 0 => ⊥
   | n + 1 => succ (ofNat s n)
 #align nat.subtype.of_nat Nat.Subtype.ofNat
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
   | x => fun hx => by
     set t : List s :=
@@ -326,7 +321,6 @@ private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· 
 
 open Finset
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_not_mem]

@@ -319,6 +319,9 @@ theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases
 
 #align option.ne_none_iff_is_some Option.ne_none_iff_isSome
 
+theorem exists_ne_none {p : Option α → Prop} : (∃ x ≠ none, p x) ↔ (∃ x : α, p x) := by
+  simp only [← exists_prop, bex_ne_none]
+
 @[simp]
 theorem isSome_map (f : α → β) (o : Option α) : isSome (o.map f) = isSome o := by
   cases o <;> rfl
@@ -470,5 +473,8 @@ lemma bnot_comp_isNone : (! ·) ∘ @Option.isNone α = Option.isSome := by
 @[simp]
 lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.isSome a := by
   cases a <;> simp
+
+lemma eq_none_or_eq_some (a : Option α) : a = none ∨ ∃ x, a = some x :=
+  Option.exists.mp exists_eq'
 
 end Option

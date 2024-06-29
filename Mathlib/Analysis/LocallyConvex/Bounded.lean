@@ -84,7 +84,7 @@ theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → S
   exact (hA i hi).mono_left hV
 #align filter.has_basis.is_vonN_bounded_basis_iff Filter.HasBasis.isVonNBounded_iff
 
-@[deprecated] -- since 2024-01-12
+@[deprecated (since := "2024-01-12")]
 alias _root_.Filter.HasBasis.isVonNBounded_basis_iff := Filter.HasBasis.isVonNBounded_iff
 
 /-- Subsets of bounded sets are bounded. -/
@@ -162,7 +162,7 @@ lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionR
     {S : Set (∀ i, E i)} : IsVonNBounded 𝕜 S ↔ ∀ i, IsVonNBounded 𝕜 (eval i '' S) := by
   simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
     smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff, Function.comp,
-    ← image_smul, image_image]; rfl
+    ← image_smul, image_image, eval, Pi.smul_apply, Pi.zero_apply]
 
 section Image
 

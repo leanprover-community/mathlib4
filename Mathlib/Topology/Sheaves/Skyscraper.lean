@@ -86,7 +86,7 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
     else ((if_neg h).symm.ndrec terminalIsTerminal).from _
   naturality U V i := by
     simp only [skyscraperPresheaf_map]; by_cases hV : p₀ ∈ V.unop
-    · have hU : p₀ ∈ U.unop := leOfHom i.unop hV; split_ifs <;>
+    · have hU : p₀ ∈ U.unop := leOfHom i.unop hV; split_ifs
       simp only [eqToHom_trans_assoc, Category.assoc, eqToHom_trans]
     · apply ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext
 #align skyscraper_presheaf_functor.map' SkyscraperPresheafFunctor.map'
@@ -228,8 +228,8 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
           dsimp [skyscraperPresheaf]
           rw [if_neg]
           · exact terminalIsTerminal
-          · -- Adaptation note: 2024-03-24
-            -- Previously the universe annotation was not needed here.
+          · #adaptation_note /-- 2024-03-24
+            Previously the universe annotation was not needed here. -/
             exact Set.not_mem_empty PUnit.unit.{u+1})))
 #align skyscraper_presheaf_is_sheaf skyscraperPresheaf_isSheaf
 
@@ -273,11 +273,9 @@ def toSkyscraperPresheaf {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ 
     by_cases hV : p₀ ∈ V.unop
     · have hU : p₀ ∈ U.unop := leOfHom inc.unop hV
       split_ifs
-      · erw [← Category.assoc, 𝓕.germ_res inc.unop, Category.assoc, Category.assoc, eqToHom_trans]
-      · aesop_cat
+      erw [← Category.assoc, 𝓕.germ_res inc.unop, Category.assoc, Category.assoc, eqToHom_trans]
     · split_ifs
-      · exact ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext ..
-      · aesop_cat
+      exact ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext ..
 #align stalk_skyscraper_presheaf_adjunction_auxs.to_skyscraper_presheaf StalkSkyscraperPresheafAdjunctionAuxs.toSkyscraperPresheaf
 
 /-- If `f : 𝓕 ⟶ skyscraperPresheaf p₀ c` is a natural transformation, then there is a morphism
@@ -398,8 +396,7 @@ instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
 -/
 def stalkSkyscraperSheafAdjunction [HasColimits C] :
     Sheaf.forget C X ⋙ Presheaf.stalkFunctor _ p₀ ⊣ skyscraperSheafFunctor p₀ where
-  -- Porting note: `ext1` is changed to `Sheaf.Hom.ext`,
-  -- see https://github.com/leanprover-community/mathlib4/issues/5229
+  -- Porting note (#11041): `ext1` is changed to `Sheaf.Hom.ext`,
   homEquiv 𝓕 c :=
     ⟨fun f => ⟨toSkyscraperPresheaf p₀ f⟩, fun g => fromStalk p₀ g.1, fromStalk_to_skyscraper p₀,
       fun g => Sheaf.Hom.ext _ _ <| to_skyscraper_fromStalk _ _⟩
