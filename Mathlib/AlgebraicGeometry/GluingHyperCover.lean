@@ -94,8 +94,19 @@ noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued w
   p₁ i₁ i₂ _ := D.f i₁ i₂
   p₂ i₁ i₂ j := D.t i₁ i₂ ≫ D.f i₂ i₁
   w i₁ i₂ _ := by simp only [Category.assoc, Scheme.GlueData.glue_condition]
-  mem₀ := sorry
-  mem₁ := sorry
+  mem₀ := by
+    refine zariskiTopology.superset_covering ?_ (zariskiTopology_openCover D.openCover)
+    rw [Sieve.sets_iff_generate] -- the name of this lemma should be changed!
+    rintro W _ ⟨i⟩
+    exact ⟨_, 𝟙 _, _, ⟨i⟩, by simp; rfl⟩
+  mem₁ i₁ i₂ W p₁ p₂ fac := by
+    dsimp at p₁ p₂ fac ⊢
+    refine zariskiTopology.superset_covering ?_ (zariskiTopology.top_mem _)
+    intro T g _
+    dsimp
+    have ⟨φ, h₁, h₂⟩ := PullbackCone.IsLimit.lift' (D.vPullbackConeIsLimit i₁ i₂)
+      (g ≫ p₁) (g ≫ p₂) (by simpa using g ≫= fac)
+    exact ⟨⟨⟩, φ, h₁.symm, h₂.symm⟩
 
 variable {F : Sheaf Scheme.zariskiTopology (Type v)}
 
