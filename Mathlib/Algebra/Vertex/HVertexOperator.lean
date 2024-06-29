@@ -48,7 +48,7 @@ section Coeff
 open HahnModule
 
 @[ext]
-theorem ext (A B : HVertexOperator Γ R V W) (h : ∀(v : V), A v = B v) :
+theorem ext (A B : HVertexOperator Γ R V W) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
 /-- The coefficient of a heterogeneous vertex operator, viewed as a formal power series with
@@ -76,16 +76,14 @@ theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W → Γ 
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
 def of_coeff (f : Γ → V →ₗ[R] W)
-    (hf : ∀(x : V), (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
+    (hf : ∀ x : V, (Function.support (f · x)).IsPWO) : HVertexOperator Γ R V W where
   toFun := fun x =>
   { coeff := fun g => f g x
     isPWO_support' := hf x }
-  map_add' := by
-    intros
+  map_add' _ _ := by
     simp only [map_add]
     exact rfl
-  map_smul' := by
-    intros
+  map_smul' r x := by
     simp only [map_smul, RingHom.id_apply]
     exact rfl
 

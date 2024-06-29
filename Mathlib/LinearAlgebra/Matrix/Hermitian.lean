@@ -52,7 +52,7 @@ protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermiti
     IsSelfAdjoint A := h
 #align matrix.is_hermitian.is_self_adjoint Matrix.IsHermitian.isSelfAdjoint
 
--- @[ext] -- Porting note: incorrect ext, not a structure or a lemma proving x = y
+-- @[ext] -- Porting note (#11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 #align matrix.is_hermitian.ext Matrix.IsHermitian.ext
