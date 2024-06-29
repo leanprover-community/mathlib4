@@ -215,12 +215,45 @@ lemma fac (i : ι) :
   simp only [comp_id]
   apply GlueData.sheafValGluedMk_val
 
+lemma fac' {i : ι} {V : Scheme.{u}} (a : V ⟶ X i) :
+    (yonedaGluedToSheaf hf).val.app _ (a ≫ toGlued hf i) =
+      yonedaEquiv (yoneda.map a ≫ f i) := by
+  rw [← fac hf i]
+  rfl
+
 instance : Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
   Presheaf.isLocallySurjective_of_isLocallySurjective_fac _
     (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
       (yonedaGluedToSheaf hf).val = Sigma.desc f by aesop_cat)
 
-instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) := sorry
+lemma injective {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
+    (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :
+    a ≫ toGlued hf i = b ≫ toGlued hf j := by
+  sorry
+
+instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
+  equalizerSieve_mem := by
+    rintro ⟨U⟩ (α β : U ⟶ _) h
+    dsimp at h
+    have mem := zariskiTopology_openCover (glueData hf).openCover
+    refine GrothendieckTopology.superset_covering _ ?_
+      (zariskiTopology.intersection_covering (zariskiTopology.pullback_stable α mem)
+        (zariskiTopology.pullback_stable β mem))
+    rintro V (γ : _ ⟶ U) ⟨⟨W₁, a, _, ⟨i⟩, fac₁⟩, ⟨W₂, b, _, ⟨j⟩, fac₂⟩⟩
+    change γ ≫ α = γ ≫ β
+    rw [← fac₁, ← fac₂]
+    apply injective
+    replace h := congr_arg (F.1.map γ.op) h
+    apply yonedaEquiv.injective
+    simp at h
+    have eq₁ := congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) α
+    have eq₂ := congr_fun ((yonedaGluedToSheaf hf).val.naturality γ.op) β
+    dsimp at eq₁ eq₂
+    convert h using 1
+    · erw [← eq₁, ← fac₁, ← fac' hf]
+      rfl
+    · erw [← eq₂, ← fac₂, ← fac' hf]
+      rfl
 
 instance : IsIso (yonedaGluedToSheaf hf) := by
   rw [← Sheaf.isLocallyBijective_iff_isIso (yonedaGluedToSheaf hf)]
