@@ -123,7 +123,6 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
 #adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
 (Part of the code was ignoring the `maxDischargeDepth` setting:
  now that we have to increase it, other paths become slow.) -/
-set_option maxHeartbeats 400000 in
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
 -/
 theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :

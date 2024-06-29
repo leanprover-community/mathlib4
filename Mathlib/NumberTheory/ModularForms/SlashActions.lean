@@ -103,7 +103,6 @@ local notation:100 f " ∣[" k "]" γ:100 => ModularForm.slash k γ f
 #adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
 (Part of the code was ignoring the `maxDischargeDepth` setting:
  now that we have to increase it, other paths become slow.) -/
-set_option maxHeartbeats 400000 in
 private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
     f ∣[k](A * B) = (f ∣[k]A) ∣[k]B := by
   ext1 x
