@@ -55,7 +55,7 @@ noncomputable def supportedEquivMvPolynomial (s : Set σ) : supported R s ≃ₐ
     (AlgEquiv.ofInjective (rename ((↑) : s → σ)) (rename_injective _ Subtype.val_injective)).symm
 #align mv_polynomial.supported_equiv_mv_polynomial MvPolynomial.supportedEquivMvPolynomial
 
-@[simp, nolint simpNF]  -- Porting note: the `simpNF` linter complained about this lemma.
+@[simp]  -- Porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
     (supportedEquivMvPolynomial s).symm (C x) = algebraMap R (supported R s) x := by
   ext1
@@ -63,7 +63,7 @@ theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.supported_equiv_mv_polynomial_symm_C MvPolynomial.supportedEquivMvPolynomial_symm_C
 
-@[simp, nolint simpNF]  -- Porting note: the `simpNF` linter complained about this lemma.
+@[simp]  -- Porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
     (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
   by simp [supportedEquivMvPolynomial]

@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
-import Mathlib.Data.PNat.Defs
+import Mathlib.Data.PNat.Equiv
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
@@ -148,17 +148,6 @@ instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· 
 instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
   Positive.contravariantClass_add_lt
 
-/-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
-@[simps (config := .asFn)]
-def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
-  toFun := PNat.natPred
-  invFun := Nat.succPNat
-  left_inv := succPNat_natPred
-  right_inv := Nat.natPred_succPNat
-#align equiv.pnat_equiv_nat Equiv.pnatEquivNat
-#align equiv.pnat_equiv_nat_symm_apply Equiv.pnatEquivNat_symm_apply
-#align equiv.pnat_equiv_nat_apply Equiv.pnatEquivNat_apply
-
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
 @[simps! (config := .asFn) apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
@@ -235,22 +224,22 @@ set_option linter.deprecated false
 -- TODO: these lemmas are perhaps incomplete:
 -- * 1 is not represented as a bit0 or bit1
 -- * strict inequalities?
-@[simp, deprecated]
+@[simp, deprecated (since := "2022-12-23")]
 theorem bit0_le_bit0 (n m : ℕ+) : bit0 n ≤ bit0 m ↔ bit0 (n : ℕ) ≤ bit0 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit0_le_bit0 PNat.bit0_le_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2022-12-23")]
 theorem bit0_le_bit1 (n m : ℕ+) : bit0 n ≤ bit1 m ↔ bit0 (n : ℕ) ≤ bit1 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit0_le_bit1 PNat.bit0_le_bit1
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2022-12-23")]
 theorem bit1_le_bit0 (n m : ℕ+) : bit1 n ≤ bit0 m ↔ bit1 (n : ℕ) ≤ bit0 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit1_le_bit0 PNat.bit1_le_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2022-12-23")]
 theorem bit1_le_bit1 (n m : ℕ+) : bit1 n ≤ bit1 m ↔ bit1 (n : ℕ) ≤ bit1 (m : ℕ) :=
   Iff.rfl
 #align pnat.bit1_le_bit1 PNat.bit1_le_bit1

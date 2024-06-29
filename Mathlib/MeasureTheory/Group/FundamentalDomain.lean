@@ -268,7 +268,7 @@ theorem lintegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0�
     ∫⁻ x, f x ∂μ = ∑' g : G, ∫⁻ x in g • s, f x ∂μ := h.lintegral_eq_tsum f
     _ = ∑' g : G, ∫⁻ x in g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
     _ = ∑' g : G, ∫⁻ x in s, f (g⁻¹ • x) ∂μ := tsum_congr fun g => Eq.symm <|
-      (measurePreserving_smul g⁻¹ μ).set_lintegral_comp_emb (measurableEmbedding_const_smul _) _ _
+      (measurePreserving_smul g⁻¹ μ).setLIntegral_comp_emb (measurableEmbedding_const_smul _) _ _
 #align measure_theory.is_fundamental_domain.lintegral_eq_tsum' MeasureTheory.IsFundamentalDomain.lintegral_eq_tsum'
 #align measure_theory.is_add_fundamental_domain.lintegral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.lintegral_eq_tsum'
 
@@ -277,32 +277,38 @@ theorem lintegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0�
   (lintegral_eq_tsum' h f).trans ((Equiv.inv G).tsum_eq (fun g ↦ ∫⁻ (x : α) in s, f (g • x) ∂μ))
 
 @[to_additive]
-theorem set_lintegral_eq_tsum (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) (t : Set α) :
+theorem setLIntegral_eq_tsum (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) (t : Set α) :
     ∫⁻ x in t, f x ∂μ = ∑' g : G, ∫⁻ x in t ∩ g • s, f x ∂μ :=
   calc
     ∫⁻ x in t, f x ∂μ = ∑' g : G, ∫⁻ x in g • s, f x ∂μ.restrict t :=
       h.lintegral_eq_tsum_of_ac restrict_le_self.absolutelyContinuous _
     _ = ∑' g : G, ∫⁻ x in t ∩ g • s, f x ∂μ := by simp only [h.restrict_restrict, inter_comm]
-#align measure_theory.is_fundamental_domain.set_lintegral_eq_tsum MeasureTheory.IsFundamentalDomain.set_lintegral_eq_tsum
-#align measure_theory.is_add_fundamental_domain.set_lintegral_eq_tsum MeasureTheory.IsAddFundamentalDomain.set_lintegral_eq_tsum
+#align measure_theory.is_fundamental_domain.set_lintegral_eq_tsum MeasureTheory.IsFundamentalDomain.setLIntegral_eq_tsum
+#align measure_theory.is_add_fundamental_domain.set_lintegral_eq_tsum MeasureTheory.IsAddFundamentalDomain.setLIntegral_eq_tsum
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_eq_tsum := setLIntegral_eq_tsum
 
 @[to_additive]
-theorem set_lintegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) (t : Set α) :
+theorem setLIntegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) (t : Set α) :
     ∫⁻ x in t, f x ∂μ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ :=
   calc
-    ∫⁻ x in t, f x ∂μ = ∑' g : G, ∫⁻ x in t ∩ g • s, f x ∂μ := h.set_lintegral_eq_tsum f t
+    ∫⁻ x in t, f x ∂μ = ∑' g : G, ∫⁻ x in t ∩ g • s, f x ∂μ := h.setLIntegral_eq_tsum f t
     _ = ∑' g : G, ∫⁻ x in t ∩ g⁻¹ • s, f x ∂μ := ((Equiv.inv G).tsum_eq _).symm
     _ = ∑' g : G, ∫⁻ x in g⁻¹ • (g • t ∩ s), f x ∂μ := by simp only [smul_set_inter, inv_smul_smul]
     _ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := tsum_congr fun g => Eq.symm <|
-      (measurePreserving_smul g⁻¹ μ).set_lintegral_comp_emb (measurableEmbedding_const_smul _) _ _
-#align measure_theory.is_fundamental_domain.set_lintegral_eq_tsum' MeasureTheory.IsFundamentalDomain.set_lintegral_eq_tsum'
-#align measure_theory.is_add_fundamental_domain.set_lintegral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.set_lintegral_eq_tsum'
+      (measurePreserving_smul g⁻¹ μ).setLIntegral_comp_emb (measurableEmbedding_const_smul _) _ _
+#align measure_theory.is_fundamental_domain.set_lintegral_eq_tsum' MeasureTheory.IsFundamentalDomain.setLIntegral_eq_tsum'
+#align measure_theory.is_add_fundamental_domain.set_lintegral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.setLIntegral_eq_tsum'
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_eq_tsum' := setLIntegral_eq_tsum'
 
 @[to_additive]
 theorem measure_eq_tsum_of_ac (h : IsFundamentalDomain G s μ) (hν : ν ≪ μ) (t : Set α) :
     ν t = ∑' g : G, ν (t ∩ g • s) := by
   have H : ν.restrict t ≪ μ := Measure.restrict_le_self.absolutelyContinuous.trans hν
-  simpa only [set_lintegral_one, Pi.one_def,
+  simpa only [setLIntegral_one, Pi.one_def,
     Measure.restrict_apply₀ ((h.nullMeasurableSet_smul _).mono_ac H), inter_comm] using
     h.lintegral_eq_tsum_of_ac H 1
 #align measure_theory.is_fundamental_domain.measure_eq_tsum_of_ac MeasureTheory.IsFundamentalDomain.measure_eq_tsum_of_ac
@@ -318,7 +324,7 @@ theorem measure_eq_tsum' (h : IsFundamentalDomain G s μ) (t : Set α) :
 @[to_additive]
 theorem measure_eq_tsum (h : IsFundamentalDomain G s μ) (t : Set α) :
     μ t = ∑' g : G, μ (g • t ∩ s) := by
-  simpa only [set_lintegral_one] using h.set_lintegral_eq_tsum' (fun _ => 1) t
+  simpa only [setLIntegral_one] using h.setLIntegral_eq_tsum' (fun _ => 1) t
 #align measure_theory.is_fundamental_domain.measure_eq_tsum MeasureTheory.IsFundamentalDomain.measure_eq_tsum
 #align measure_theory.is_add_fundamental_domain.measure_eq_tsum MeasureTheory.IsAddFundamentalDomain.measure_eq_tsum
 
@@ -346,21 +352,24 @@ theorem measure_eq_card_smul_of_smul_ae_eq_self [Finite G] (h : IsFundamentalDom
 #align measure_theory.is_add_fundamental_domain.measure_eq_card_smul_of_vadd_ae_eq_self MeasureTheory.IsAddFundamentalDomain.measure_eq_card_smul_of_vadd_ae_eq_self
 
 @[to_additive]
-protected theorem set_lintegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ)
+protected theorem setLIntegral_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ)
     (f : α → ℝ≥0∞) (hf : ∀ (g : G) (x), f (g • x) = f x) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x in t, f x ∂μ :=
   calc
-    ∫⁻ x in s, f x ∂μ = ∑' g : G, ∫⁻ x in s ∩ g • t, f x ∂μ := ht.set_lintegral_eq_tsum _ _
+    ∫⁻ x in s, f x ∂μ = ∑' g : G, ∫⁻ x in s ∩ g • t, f x ∂μ := ht.setLIntegral_eq_tsum _ _
     _ = ∑' g : G, ∫⁻ x in g • t ∩ s, f (g⁻¹ • x) ∂μ := by simp only [hf, inter_comm]
-    _ = ∫⁻ x in t, f x ∂μ := (hs.set_lintegral_eq_tsum' _ _).symm
-#align measure_theory.is_fundamental_domain.set_lintegral_eq MeasureTheory.IsFundamentalDomain.set_lintegral_eq
-#align measure_theory.is_add_fundamental_domain.set_lintegral_eq MeasureTheory.IsAddFundamentalDomain.set_lintegral_eq
+    _ = ∫⁻ x in t, f x ∂μ := (hs.setLIntegral_eq_tsum' _ _).symm
+#align measure_theory.is_fundamental_domain.set_lintegral_eq MeasureTheory.IsFundamentalDomain.setLIntegral_eq
+#align measure_theory.is_add_fundamental_domain.set_lintegral_eq MeasureTheory.IsAddFundamentalDomain.setLIntegral_eq
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_eq := MeasureTheory.IsFundamentalDomain.setLIntegral_eq
 
 @[to_additive]
 theorem measure_set_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ) {A : Set α}
     (hA₀ : MeasurableSet A) (hA : ∀ g : G, (fun x => g • x) ⁻¹' A = A) : μ (A ∩ s) = μ (A ∩ t) := by
   have : ∫⁻ x in s, A.indicator 1 x ∂μ = ∫⁻ x in t, A.indicator 1 x ∂μ := by
-    refine hs.set_lintegral_eq ht (Set.indicator A fun _ => 1) fun g x ↦ ?_
+    refine hs.setLIntegral_eq ht (Set.indicator A fun _ => 1) fun g x ↦ ?_
     convert (Set.indicator_comp_right (g • · : α → α) (g := fun _ ↦ (1 : ℝ≥0∞))).symm
     rw [hA g]
   simpa [Measure.restrict_apply hA₀, lintegral_indicator _ hA₀] using this
@@ -372,7 +381,7 @@ theorem measure_set_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDoma
   are equal."]
 protected theorem measure_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDomain G t μ) :
     μ s = μ t := by
-  simpa only [set_lintegral_one] using hs.set_lintegral_eq ht (fun _ => 1) fun _ _ => rfl
+  simpa only [setLIntegral_one] using hs.setLIntegral_eq ht (fun _ => 1) fun _ _ => rfl
 #align measure_theory.is_fundamental_domain.measure_eq MeasureTheory.IsFundamentalDomain.measure_eq
 #align measure_theory.is_add_fundamental_domain.measure_eq MeasureTheory.IsAddFundamentalDomain.measure_eq
 
@@ -408,7 +417,7 @@ protected theorem hasFiniteIntegral_on_iff (hs : IsFundamentalDomain G s μ)
     (ht : IsFundamentalDomain G t μ) {f : α → E} (hf : ∀ (g : G) (x), f (g • x) = f x) :
     HasFiniteIntegral f (μ.restrict s) ↔ HasFiniteIntegral f (μ.restrict t) := by
   dsimp only [HasFiniteIntegral]
-  rw [hs.set_lintegral_eq ht]
+  rw [hs.setLIntegral_eq ht]
   intro g x; rw [hf]
 #align measure_theory.is_fundamental_domain.has_finite_integral_on_iff MeasureTheory.IsFundamentalDomain.hasFiniteIntegral_on_iff
 #align measure_theory.is_add_fundamental_domain.has_finite_integral_on_iff MeasureTheory.IsAddFundamentalDomain.hasFiniteIntegral_on_iff
@@ -513,7 +522,7 @@ theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
     μ t = ∑' g : G, μ (g • t ∩ s) := hs.measure_eq_tsum t
     _ = μ (⋃ g : G, g • t ∩ s) := Eq.symm <| measure_iUnion₀ hd fun _ =>
       (ht.smul _).inter hs.nullMeasurableSet
-    _ ≤ μ s := measure_mono (iUnion_subset fun _ => inter_subset_right _ _)
+    _ ≤ μ s := measure_mono (iUnion_subset fun _ => inter_subset_right)
 #align measure_theory.is_fundamental_domain.measure_le_of_pairwise_disjoint MeasureTheory.IsFundamentalDomain.measure_le_of_pairwise_disjoint
 #align measure_theory.is_add_fundamental_domain.measure_le_of_pairwise_disjoint MeasureTheory.IsAddFundamentalDomain.measure_le_of_pairwise_disjoint
 
@@ -600,13 +609,13 @@ theorem mem_fundamentalInterior :
 
 @[to_additive MeasureTheory.addFundamentalFrontier_subset]
 theorem fundamentalFrontier_subset : fundamentalFrontier G s ⊆ s :=
-  inter_subset_left _ _
+  inter_subset_left
 #align measure_theory.fundamental_frontier_subset MeasureTheory.fundamentalFrontier_subset
 #align measure_theory.add_fundamental_frontier_subset MeasureTheory.addFundamentalFrontier_subset
 
 @[to_additive MeasureTheory.addFundamentalInterior_subset]
 theorem fundamentalInterior_subset : fundamentalInterior G s ⊆ s :=
-  diff_subset _ _
+  diff_subset
 #align measure_theory.fundamental_interior_subset MeasureTheory.fundamentalInterior_subset
 #align measure_theory.add_fundamental_interior_subset MeasureTheory.addFundamentalInterior_subset
 

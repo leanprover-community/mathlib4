@@ -5,7 +5,7 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -577,6 +577,7 @@ theorem one_kroneckerTMul_one [DecidableEq m] [DecidableEq n] :
   kroneckerMap_one_one _ (zero_tmul _) (tmul_zero _) rfl
 #align matrix.one_kronecker_tmul_one Matrix.one_kroneckerTMul_one
 
+unseal mul in
 theorem mul_kroneckerTMul_mul [Fintype m] [Fintype m'] (A : Matrix l m α) (B : Matrix m n α)
     (A' : Matrix l' m' β) (B' : Matrix m' n' β) :
     (A * B) ⊗ₖₜ[R] (A' * B') = A ⊗ₖₜ[R] A' * B ⊗ₖₜ[R] B' :=
@@ -589,6 +590,7 @@ section CommRing
 
 variable [CommRing R] [CommRing α] [CommRing β] [Algebra R α] [Algebra R β]
 
+unseal mul in
 theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
     (A : Matrix m m α) (B : Matrix n n β) :
     det (A ⊗ₖₜ[R] B) = (det A ^ Fintype.card n) ⊗ₜ[R] (det B ^ Fintype.card m) := by

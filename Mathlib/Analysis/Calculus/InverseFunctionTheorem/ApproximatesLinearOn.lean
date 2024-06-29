@@ -303,8 +303,8 @@ theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearR
   refine
     le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
-    (hf.mono_set (inter_subset_left s t)).image_mem_nhds f'symm (inter_mem hs ht) hc
-  exact mem_of_superset this (image_subset _ (inter_subset_right _ _))
+    (hf.mono_set inter_subset_left).image_mem_nhds f'symm (inter_mem hs ht) hc
+  exact mem_of_superset this (image_subset _ inter_subset_right)
 #align approximates_linear_on.map_nhds_eq ApproximatesLinearOn.map_nhds_eq
 
 end LocallyOnto

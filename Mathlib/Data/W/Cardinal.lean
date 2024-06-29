@@ -35,7 +35,6 @@ namespace WType
 
 open Cardinal
 
--- Porting note: `W` is a special name, exceptionally in upper case in Lean3
 set_option linter.uppercaseLean3 false
 
 theorem cardinal_mk_eq_sum' : #(WType β) = sum (fun a : α => #(WType β) ^ lift.{u} #(β a)) :=
