@@ -97,7 +97,7 @@ noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued w
   mem₀ := sorry
   mem₁ := sorry
 
-variable (F : Sheaf Scheme.zariskiTopology (Type v))
+variable {F : Sheaf Scheme.zariskiTopology (Type v)}
 
 section
 
@@ -111,7 +111,7 @@ noncomputable def sheafValGluedMk : F.val.obj (op D.glued) :=
       property := fun _ ↦ h _ _ }
 
 @[simp]
-lemma sheafValGluedMk_val (j : D.J) : F.val.map (D.ι j).op (D.sheafValGluedMk F s h) = s j :=
+lemma sheafValGluedMk_val (j : D.J) : F.val.map (D.ι j).op (D.sheafValGluedMk s h) = s j :=
   Multifork.IsLimit.sectionsEquiv_apply_val (D.oneHypercover.isLimitMultifork F) _ _
 
 end

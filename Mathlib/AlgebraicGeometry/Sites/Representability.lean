@@ -1,6 +1,12 @@
+/-
+Copyright (c) 2024 Calle Sönne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Calle Sönne, Joël Riou, Ravi Vakil
+-/
 import Mathlib.CategoryTheory.MorphismProperty.Presheaf
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.GluingHyperCover
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 
@@ -14,7 +20,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 namespace AlgebraicGeometry
 
-open CategoryTheory Category Limits
+open CategoryTheory Category Limits Opposite
 
 universe u
 
@@ -66,6 +72,7 @@ lemma isIso_fst_self (i : ι) :
   · simp
   · simp [fst_self_eq_snd F f hf i]
 
+--@[simps]
 noncomputable def glueData : GlueData where
   J := ι
   U := X
@@ -93,15 +100,23 @@ noncomputable def glueData : GlueData where
 noncomputable def toGlued (i : ι) : X i ⟶ (glueData F f hf).glued :=
   (glueData F f hf).ι i
 
-def yonedaGluedToSheaf :
-    subcanonical_zariskiTopology.yoneda.obj (glueData F f hf).glued ⟶ F := by
-  -- use the 1-hypercover of the glued scheme defined in GluingHyperCover
-  sorry
+noncomputable def yonedaGluedToSheaf :
+    subcanonical_zariskiTopology.yoneda.obj (glueData F f hf).glued ⟶ F :=
+  Sheaf.homEquiv.symm (yonedaEquiv.symm
+    ((glueData F f hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
+      intro i j
+      dsimp
+      sorry)))
 
 @[simp]
 lemma fac (i : ι) :
-    yoneda.map (toGlued F f hf i) ≫ (yonedaGluedToSheaf F f hf).val = f i :=
-  sorry
+    yoneda.map (toGlued F f hf i) ≫ (yonedaGluedToSheaf F f hf).val = f i := by
+  dsimp [yonedaGluedToSheaf, Sheaf.homEquiv, Functor.FullyFaithful.homEquiv]
+  apply yonedaEquiv.injective
+  rw [yonedaEquiv_apply, yonedaEquiv_apply]
+  dsimp
+  simp only [comp_id]
+  apply GlueData.sheafValGluedMk_val
 
 instance : Sheaf.IsLocallySurjective (yonedaGluedToSheaf F f hf) :=
   Presheaf.isLocallySurjective_of_isLocallySurjective_fac _
@@ -124,7 +139,6 @@ open Representability in
 theorem representability_is_local : F.1.Representable where
   has_representation := ⟨(glueData F f hf).glued,
     ⟨(sheafToPresheaf _ _).mapIso (yonedaIsoSheaf F f hf)⟩⟩
-
 
 end Scheme
 
