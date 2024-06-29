@@ -35,8 +35,8 @@ open Topology Filter TopologicalSpace Filter Set Function
 
 namespace WithZeroTopology
 
-variable {α Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ₂ : Γ₀} {l : Filter α}
-  {f : α → Γ₀}
+variable {α Γ₀ : Type*} [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
+  {γ γ₁ γ₂ : Γ₀} {l : Filter α} {f : α → Γ₀}
 
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.
 A subset U is open if 0 ∉ U or if there is an invertible element γ₀ such that {γ | γ < γ₀} ⊆ U. -/

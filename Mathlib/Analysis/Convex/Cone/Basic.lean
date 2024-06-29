@@ -54,7 +54,7 @@ variable {𝕜 E F G : Type*}
 section Definitions
 
 variable (𝕜 E)
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [OrderedSemiring 𝕜]
 
 /-- A convex cone is a subset `s` of a `𝕜`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
@@ -71,7 +71,7 @@ namespace ConvexCone
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [OrderedSemiring 𝕜] [AddCommMonoid E]
 
 section SMul
 
@@ -82,12 +82,12 @@ instance : SetLike (ConvexCone 𝕜 E) E where
   coe_injective' S T h := by cases S; cases T; congr
 
 @[simp]
-theorem coe_mk {s : Set E} {h₁ h₂} : ↑(@mk 𝕜 _ _ _ _ s h₁ h₂) = s :=
+theorem coe_mk {s : Set E} {h₁ h₂} : ↑(@mk 𝕜 _ _ _ _ _ s h₁ h₂) = s :=
   rfl
 #align convex_cone.coe_mk ConvexCone.coe_mk
 
 @[simp]
-theorem mem_mk {s : Set E} {h₁ h₂ x} : x ∈ @mk 𝕜 _ _ _ _ s h₁ h₂ ↔ x ∈ s :=
+theorem mem_mk {s : Set E} {h₁ h₂ x} : x ∈ @mk 𝕜 _ _ _ _ _ s h₁ h₂ ↔ x ∈ s :=
   Iff.rfl
 #align convex_cone.mem_mk ConvexCone.mem_mk
 
@@ -280,7 +280,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrderedField 𝕜]
 
 section MulAction
 
@@ -295,7 +295,7 @@ end MulAction
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup E] [Module 𝕜 E]
+variable [AddCommGroup E] [OrderedAddCommGroup E] [Module 𝕜 E]
 
 /-- Constructs an ordered module given an `OrderedAddCommGroup`, a cone, and a proof that
 the order relation is the one defined by the cone.
@@ -317,7 +317,7 @@ end LinearOrderedField
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [OrderedSemiring 𝕜]
 
 section AddCommMonoid
 
@@ -481,7 +481,7 @@ namespace Submodule
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [OrderedSemiring 𝕜]
 
 section AddCommMonoid
 
@@ -543,7 +543,8 @@ namespace ConvexCone
 
 section PositiveCone
 
-variable (𝕜 E) [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable (𝕜 E) [Semiring 𝕜] [OrderedSemiring 𝕜] [AddCommGroup E] [OrderedAddCommGroup E]
+  [Module 𝕜 E] [OrderedSMul 𝕜 E]
 
 /-- The positive cone is the convex cone formed by the set of nonnegative elements in an ordered
 module.
@@ -621,7 +622,7 @@ end ConvexCone
 
 section ConeFromConvex
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Field 𝕜] [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Convex
 

@@ -134,17 +134,18 @@ end Zero
 
 /-! ### Algebraic order structures -/
 
-
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.instAddCommMonoid, Finsupp.partialorder with
+instance orderedAddCommMonoid [AddCommMonoid α] [OrderedAddCommMonoid α] :
+    OrderedAddCommMonoid (ι →₀ α) :=
+  { Finsupp.instAddCommMonoid (α := ι) (M := α), Finsupp.partialorder with
     add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
-instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
+instance orderedCancelAddCommMonoid [AddCommMonoid α] [OrderedCancelAddCommMonoid α] :
     OrderedCancelAddCommMonoid (ι →₀ α) :=
   { Finsupp.orderedAddCommMonoid with
     le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
+instance contravariantClass [AddCommMonoid α] [OrderedAddCommMonoid α]
+    [ContravariantClass α α (· + ·) (· ≤ ·)] :
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
@@ -183,7 +184,7 @@ end SMulWithZero
 
 section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddCommMonoid α] {f g : ι →₀ α}
+variable [AddCommMonoid α] [CanonicallyOrderedAddCommMonoid α] {f g : ι →₀ α}
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -271,7 +272,7 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddCommMonoid α]
+variable [AddCommMonoid α] [CanonicallyLinearOrderedAddCommMonoid α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by

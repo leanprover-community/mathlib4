@@ -407,6 +407,7 @@ instance : Archimedean ℤ :=
 instance : Archimedean ℚ :=
   archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
 
+attribute [local instance] Nonneg.dubm in
 instance Nonneg.archimedean [AddCommMonoid α] [OrderedAddCommMonoid α] [Archimedean α] :
     Archimedean { x : α // 0 ≤ x } :=
   ⟨fun x y hy =>

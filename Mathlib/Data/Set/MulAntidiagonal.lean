@@ -101,7 +101,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
+variable [CommMonoid α] [OrderedCancelCommMonoid α] (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]
 theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : α × α).1 ≤ (y : α × α).1)
@@ -133,8 +133,8 @@ theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t
 end OrderedCancelCommMonoid
 
 @[to_additive Set.AddAntidiagonal.finite_of_isWF]
-theorem finite_of_isWF [LinearOrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsWF) (ht : t.IsWF)
-    (a) : (mulAntidiagonal s t a).Finite :=
+theorem finite_of_isWF [CommMonoid α] [LinearOrderedCancelCommMonoid α] {s t : Set α}
+    (hs : s.IsWF) (ht : t.IsWF) (a) : (mulAntidiagonal s t a).Finite :=
   finite_of_isPWO hs.isPWO ht.isPWO a
 #align set.mul_antidiagonal.finite_of_is_wf Set.MulAntidiagonal.finite_of_isWF
 #align set.add_antidiagonal.finite_of_is_wf Set.AddAntidiagonal.finite_of_isWF

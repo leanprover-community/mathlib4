@@ -32,6 +32,14 @@ end Rat
 
 instance instSemifield : Semifield ℚ≥0 := Nonneg.dumb
 
+instance instCanonicallyLinearOrderedSemifield : CanonicallyLinearOrderedSemifield ℚ≥0 :=
+  Nonneg.canonicallyLinearOrderedSemifield
+
+instance instLinearOrderedSemifield : LinearOrderedSemifield ℚ≥0 := Nonneg.linearOrderedSemifield
+
+instance instLinearOrderedCommGroupWithZero : LinearOrderedCommGroupWithZero ℚ≥0 :=
+  Nonneg.linearOrderedCommGroupWithZero
+
 -- The `LinearOrderedSemifield` and `LinearOrderedCommGroupWithZero` instances are shortcut
 -- instances for performance
 -- deriving instance CanonicallyLinearOrderedSemifield, LinearOrderedSemifield,

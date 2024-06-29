@@ -24,7 +24,7 @@ We don't need the full ring structure, only that there is an order embedding `�
 /-! ### General locally finite ordered ring -/
 
 namespace Finset
-variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] [DecidableEq α] {n : ℕ}
+variable {α : Type*} [Ring α] [OrderedRing α] [LocallyFiniteOrder α] [DecidableEq α] {n : ℕ}
 
 /-- Hollow box centered at `0 : α` going from `-n` to `n`. -/
 def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
@@ -59,8 +59,9 @@ open Finset
 /-! ### Product of locally finite ordered rings -/
 
 namespace Prod
-variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableEq α] [DecidableEq β] [@DecidableRel (α × β) (· ≤ ·)]
+variable {α β : Type*} [Ring α] [OrderedRing α] [Ring β] [OrderedRing β]
+  [LocallyFiniteOrder α] [LocallyFiniteOrder β] [DecidableEq α] [DecidableEq β]
+  [@DecidableRel (α × β) (· ≤ ·)]
 
 @[simp] lemma card_box_succ (n : ℕ) :
     (box (n + 1) : Finset (α × β)).card =

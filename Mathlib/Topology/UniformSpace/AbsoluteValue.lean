@@ -30,7 +30,7 @@ open Set Function Filter Uniformity
 
 namespace AbsoluteValue
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrderedField 𝕜]
 variable {R : Type*} [CommRing R] (abv : AbsoluteValue R 𝕜)
 
 /-- The uniform structure coming from an absolute value. -/

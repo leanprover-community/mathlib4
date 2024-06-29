@@ -52,7 +52,7 @@ namespace GeneralizedContinuedFraction
 
 open GeneralizedContinuedFraction (of)
 
-variable {K : Type*} [LinearOrderedField K] {v : K} {n : ℕ}
+variable {K : Type*} [Field K] [LinearOrderedField K] {v : K} {n : ℕ}
 
 /-- Given two continuants `pconts` and `conts` and a value `fr`, this function returns
 - `conts.a / conts.b` if `fr = 0`

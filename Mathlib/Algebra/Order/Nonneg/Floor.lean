@@ -23,7 +23,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 
 namespace Nonneg
 
-variable {α : Type*}
+variable {α : Type*} [Semiring α]
 
 instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
     FloorSemiring { r : α // 0 ≤ r } where

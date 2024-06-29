@@ -28,9 +28,12 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
+  Multiset Nat.Primes deriving Inhabited, AddCommMonoid, Bot, DistribLattice,
+  -- Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
 #align prime_multiset PrimeMultiset
+
+instance : CanonicallyOrderedAddCommMonoid PrimeMultiset := by delta PrimeMultiset; infer_instance
 
 instance : OrderBot PrimeMultiset where
   bot_le := by simp only [bot_le, forall_const]

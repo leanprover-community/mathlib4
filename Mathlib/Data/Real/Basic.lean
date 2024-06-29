@@ -381,7 +381,7 @@ instance partialOrder : PartialOrder ℝ where
   le_antisymm a b := by
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
-    simpa [mk_eq] using @CauSeq.le_antisymm _ _ a b
+    simpa [mk_eq] using @CauSeq.le_antisymm _ _ _ a b
 
 instance : Preorder ℝ := by infer_instance
 
@@ -567,8 +567,7 @@ noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
   simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
 
-noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
-  toLinearOrderedCommRing := linearOrderedCommRing
+noncomputable instance field : Field ℝ where
   mul_inv_cancel := by
     rintro ⟨a⟩ h
     rw [mul_comm]
@@ -582,12 +581,13 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
     rw [← ofCauchy_ratCast, Rat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_intCast]
+#align real.field Real.field
+
+noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
+  toLinearOrderedCommRing := linearOrderedCommRing
 
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance
-
-noncomputable instance field : Field ℝ := by infer_instance
-#align real.field Real.field
 
 noncomputable instance : DivisionRing ℝ := by infer_instance
 

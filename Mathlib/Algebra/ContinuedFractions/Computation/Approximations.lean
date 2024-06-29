@@ -56,7 +56,7 @@ open GeneralizedContinuedFraction (of)
 
 open Int
 
-variable {K : Type*} {v : K} {n : ℕ} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} {v : K} {n : ℕ} [Field K] [LinearOrderedField K] [FloorRing K]
 
 namespace IntFractPair
 

@@ -304,7 +304,7 @@ end LinearOrder
 
 section LinearOrderedAddCommGroup
 
-variable [TopologicalSpace α] [LinearOrderedAddCommGroup α] [OrderTopology α]
+variable [TopologicalSpace α] [AddCommGroup α] [LinearOrderedAddCommGroup α] [OrderTopology α]
 variable {l : Filter β} {f g : β → α}
 
 theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
@@ -314,7 +314,8 @@ theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| <
   · refine (Equiv.subRight a).iInf_congr fun x => ?_; simp [Iio]
 #align nhds_eq_infi_abs_sub nhds_eq_iInf_abs_sub
 
-theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
+theorem orderTopology_of_nhds_abs {α : Type*}
+    [TopologicalSpace α] [AddCommGroup α] [LinearOrderedAddCommGroup α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
   refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
   rw [h_nhds]

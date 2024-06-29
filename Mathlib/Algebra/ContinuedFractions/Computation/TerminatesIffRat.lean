@@ -35,7 +35,7 @@ namespace GeneralizedContinuedFraction
 
 open GeneralizedContinuedFraction (of)
 
-variable {K : Type*} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} [Field K] [LinearOrderedField K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided

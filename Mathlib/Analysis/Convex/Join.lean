@@ -22,8 +22,8 @@ variable {ι : Sort*} {𝕜 E : Type*}
 
 section OrderedSemiring
 
-variable (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] {s t s₁ s₂ t₁ t₂ u : Set E}
-  {x y : E}
+variable (𝕜) [Semiring 𝕜] [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+  {s t s₁ s₂ t₁ t₂ u : Set E} {x y : E}
 
 /-- The join of two sets is the union of the segments joining them. This can be interpreted as the
 topological join, but within the original space. -/
@@ -127,7 +127,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t u : Set E} {x y : E}
+variable [Field 𝕜] [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t u : Set E} {x y : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by

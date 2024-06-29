@@ -277,6 +277,10 @@ theorem Periodic.int_mul_eq [Ring α] (h : Periodic f c) (n : ℤ) : f (n * c) =
   (h.int_mul n).eq
 #align function.periodic.int_mul_eq Function.Periodic.int_mul_eq
 
+section AddCommGroup
+
+variable [AddCommGroup α]
+
 /-- If a function `f` is `Periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico 0 c` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico₀ [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
@@ -319,6 +323,8 @@ theorem Periodic.image_uIcc [LinearOrderedAddCommGroup α] [Archimedean α] (h :
     rw [uIcc_of_ge (add_le_of_nonpos_right hc.le), ← h.neg.image_Icc (neg_pos.2 hc) (a + c),
       add_neg_cancel_right]
   | inr hc => rw [uIcc_of_le (le_add_of_nonneg_right hc.le), h.image_Icc hc]
+
+end AddCommGroup
 
 theorem periodic_with_period_zero [AddZeroClass α] (f : α → β) : Periodic f 0 := fun x => by
   rw [add_zero]
@@ -622,6 +628,6 @@ theorem Antiperiodic.div [Add α] [DivisionMonoid β] [HasDistribNeg β] (hf : A
 
 end Function
 
-theorem Int.fract_periodic (α) [LinearOrderedRing α] [FloorRing α] :
+theorem Int.fract_periodic (α) [Ring α] [LinearOrderedRing α] [FloorRing α] :
     Function.Periodic Int.fract (1 : α) := fun a => mod_cast Int.fract_add_int a 1
 #align int.fract_periodic Int.fract_periodic

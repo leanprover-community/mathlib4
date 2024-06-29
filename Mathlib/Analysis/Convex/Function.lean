@@ -36,7 +36,7 @@ variable {𝕜 E F α β ι : Type*}
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [OrderedSemiring 𝕜]
 
 section AddCommMonoid
 
@@ -44,7 +44,7 @@ variable [AddCommMonoid E] [AddCommMonoid F]
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β]
+variable [AddCommMonoid α] [OrderedAddCommMonoid α] [AddCommMonoid β] [OrderedAddCommMonoid β]
 
 section SMul
 
@@ -497,7 +497,7 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 
-variable [OrderedCancelAddCommMonoid β]
+variable [AddCommMonoid β] [OrderedCancelAddCommMonoid β]
 
 section DistribMulAction
 
@@ -596,8 +596,8 @@ end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [LinearOrderedAddCommMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E}
-  {f g : E → β}
+variable [AddCommMonoid β] [LinearOrderedAddCommMonoid β] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  {s : Set E} {f g : E → β}
 
 /-- The pointwise maximum of convex functions is convex. -/
 theorem ConvexOn.sup (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) : ConvexOn 𝕜 s (f ⊔ g) := by
@@ -706,7 +706,7 @@ end LinearOrderedAddCommMonoid
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [LinearOrderedCancelAddCommMonoid β]
+variable [AddCommMonoid β] [LinearOrderedCancelAddCommMonoid β]
 
 section OrderedSMul
 
@@ -830,7 +830,7 @@ end LinearOrderedCancelAddCommMonoid
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup β] [SMul 𝕜 E] [Module 𝕜 β] {s : Set E} {f g : E → β}
+variable [AddCommGroup β] [OrderedAddCommGroup β] [SMul 𝕜 E] [Module 𝕜 β] {s : Set E} {f g : E → β}
 
 /-- A function `-f` is convex iff `f` is concave. -/
 @[simp]
@@ -933,8 +933,8 @@ end AddCommMonoid
 
 section AddCancelCommMonoid
 
-variable [AddCancelCommMonoid E] [OrderedAddCommMonoid β] [Module 𝕜 E] [SMul 𝕜 β] {s : Set E}
-  {f : E → β}
+variable [AddCancelCommMonoid E] [AddCommMonoid β] [OrderedAddCommMonoid β] [Module 𝕜 E] [SMul 𝕜 β]
+  {s : Set E} {f : E → β}
 
 /-- Right translation preserves strict convexity. -/
 theorem StrictConvexOn.translate_right (hf : StrictConvexOn 𝕜 s f) (c : E) :
@@ -970,11 +970,11 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [OrderedCommSemiring 𝕜] [AddCommMonoid E]
+variable [CommSemiring 𝕜] [OrderedCommSemiring 𝕜] [AddCommMonoid E]
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β]
+variable [AddCommMonoid β] [OrderedAddCommMonoid β]
 
 section Module
 
@@ -1001,11 +1001,11 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [Field 𝕜] [LinearOrderedField 𝕜] [AddCommGroup E] [AddCommGroup F]
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β]
+variable [AddCommMonoid β] [OrderedAddCommMonoid β]
 
 section Module
 
@@ -1035,11 +1035,11 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommMonoid E]
+variable [Field 𝕜] [LinearOrderedField 𝕜] [AddCommMonoid E]
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β]
+variable [AddCommMonoid β] [OrderedAddCommMonoid β]
 
 section SMul
 
@@ -1092,8 +1092,8 @@ end LinearOrderedField
 
 section OrderIso
 
-variable [OrderedSemiring 𝕜] [OrderedAddCommMonoid α] [SMul 𝕜 α]
-  [OrderedAddCommMonoid β] [SMul 𝕜 β]
+variable [Semiring 𝕜] [OrderedSemiring 𝕜] [AddCommMonoid α] [OrderedAddCommMonoid α] [SMul 𝕜 α]
+  [AddCommMonoid β] [OrderedAddCommMonoid β] [SMul 𝕜 β]
 
 theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜 univ f) :
     StrictConvexOn 𝕜 univ f.symm := by
@@ -1137,10 +1137,11 @@ end OrderIso
 
 
 section LinearOrderedField
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrderedField 𝕜]
 
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid β] [AddCommMonoid E] [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [OrderedAddCommMonoid β] [AddCommMonoid E]
+  [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
   {f : E → β} {s : Set E} {x y : E}
 
 /-- A strictly convex function admits at most one global minimum. -/
@@ -1163,7 +1164,7 @@ lemma StrictConcaveOn.eq_of_isMaxOn (hf : StrictConcaveOn 𝕜 s f) (hfx : IsMax
 end OrderedAddCommMonoid
 
 section LinearOrderedCancelAddCommMonoid
-variable [LinearOrderedCancelAddCommMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [LinearOrderedCancelAddCommMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
   {x y z : 𝕜} {s : Set 𝕜} {f : 𝕜 → β}
 
 theorem ConvexOn.le_right_of_left_le'' (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hz : z ∈ s) (hxy : x < y)

@@ -46,7 +46,8 @@ other arguments belong to specific domains.
 
 section OrderedRing
 
-variable [OrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
+variable [Ring k] [OrderedRing k] [AddCommGroup E] [OrderedAddCommGroup E]
+  [Module k E] [OrderedSMul k E]
 variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
@@ -106,8 +107,8 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing k] [OrderedAddCommGroup E] [Module k E] [OrderedSMul k E]
-  [Invertible (2 : k)] {a a' b b' : E} {r r' : k}
+variable [Ring k] [LinearOrderedRing k] [AddCommGroup E] [OrderedAddCommGroup E]
+  [Module k E] [OrderedSMul k E] [Invertible (2 : k)] {a a' b b' : E} {r r' : k}
 
 theorem midpoint_le_midpoint (ha : a ≤ a') (hb : b ≤ b') : midpoint k a b ≤ midpoint k a' b' :=
   lineMap_mono_endpoints ha hb (invOf_nonneg.2 zero_le_two) <| invOf_le_one one_le_two
@@ -117,7 +118,7 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField k] [OrderedAddCommGroup E]
+variable [Field k] [LinearOrderedField k] [AddCommGroup E] [OrderedAddCommGroup E]
 variable [Module k E] [OrderedSMul k E]
 
 section

@@ -19,7 +19,7 @@ namespace Set
 
 open Pointwise
 
-variable {α : Type*} {s t : Set α}
+variable {α : Type*} {s t : Set α} [CommMonoid α]
 
 @[to_additive]
 theorem IsPWO.mul [OrderedCancelCommMonoid α] (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s * t) := by
@@ -53,7 +53,8 @@ namespace Finset
 open Pointwise
 
 variable {α : Type*}
-variable [OrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsPWO) (ht : t.IsPWO) (a : α)
+variable [CommMonoid α] [OrderedCancelCommMonoid α] {s t : Set α}
+  (hs : s.IsPWO) (ht : t.IsPWO) (a : α)
 
 /-- `Finset.mulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` that multiply to `a`, but its construction requires proofs that `s` and `t` are
@@ -111,8 +112,8 @@ theorem isPWO_support_mulAntidiagonal : { a | (mulAntidiagonal hs ht a).Nonempty
 #align finset.is_pwo_support_add_antidiagonal Finset.isPWO_support_addAntidiagonal
 
 @[to_additive]
-theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t : Set α}
-    (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
+theorem mulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrderedCancelCommMonoid α]
+    {s t : Set α} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
     mulAntidiagonal hs.isPWO ht.isPWO (hs.min hns * ht.min hnt) = {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
   simp only [mem_mulAntidiagonal, mem_singleton, Prod.ext_iff]

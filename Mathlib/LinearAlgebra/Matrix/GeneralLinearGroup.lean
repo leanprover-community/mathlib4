@@ -195,7 +195,7 @@ end SpecialLinearGroup
 
 section
 
-variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCommRing R]
+variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [CommRing R] [LinearOrderedCommRing R]
 
 section
 
@@ -225,7 +225,7 @@ end
 
 section Neg
 
-variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [LinearOrderedCommRing R]
+variable {n : Type u} {R : Type v} [DecidableEq n] [Fintype n] [CommRing R] [LinearOrderedCommRing R]
   [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on general linear group on even cardinality `n` given by negating
@@ -263,7 +263,7 @@ end Neg
 
 namespace SpecialLinearGroup
 
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [LinearOrderedCommRing R]
+variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R] [LinearOrderedCommRing R]
 
 /-- `Matrix.SpecialLinearGroup n R` embeds into `GL_pos n R` -/
 def toGLPos : SpecialLinearGroup n R →* GLPos n R where

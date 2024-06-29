@@ -1313,7 +1313,9 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     exact IsIntegral.of_finite _ _
   have key₂ : g.map (algebraMap _ _) - C (AdjoinSimple.gen K (aeval (root p) g)) =
       minpoly K⟮aeval (root p) g⟯ (root p) :=
-    minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm) (by simp [AdjoinSimple.gen])
+    minpoly.eq_of_irreducible_of_monic (hg _ _ key₁.symm)
+      (by simp only [AdjoinSimple.gen, aeval_eq, map_sub, aeval_map_algebraMap, aeval_C,
+        algebraMap_apply, sub_self])
       (Monic.sub_of_left (hgm.map _) (degree_lt_degree (by simpa [Nat.pos_iff_ne_zero] using hg')))
   have key₂' : finrank K⟮aeval (root p) g⟯ Kx = natDegree g := by
     trans natDegree (minpoly K⟮aeval (root p) g⟯ (root p))
@@ -1324,7 +1326,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
         simp
       rw [← finrank_top', ← this, adjoin.finrank]
       exact IsIntegral.of_finite _ _
-    · simp [← key₂]
+    · simp only [← key₂, natDegree_sub_C, natDegree_map]
   have := FiniteDimensional.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
   rwa [key₁', key₂', (AdjoinRoot.powerBasis hp₁.ne_zero).finrank, powerBasis_dim, eq_comm] at this
 

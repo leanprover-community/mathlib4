@@ -55,7 +55,7 @@ variable {𝕜 E F : Type*}
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [OrderedSemiring 𝕜]
 
 section AddCommMonoid
 
@@ -281,7 +281,7 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [OrderedCommSemiring 𝕜]
+variable [CommSemiring 𝕜] [OrderedCommSemiring 𝕜]
 
 section AddCommMonoid
 
@@ -308,7 +308,7 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [OrderedRing 𝕜]
+variable [Ring 𝕜] [OrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -380,7 +380,7 @@ end AddCommGroup
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x y : E}
+variable [AddCommGroup E] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x y : E}
 
 /-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
 lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
@@ -404,7 +404,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrderedField 𝕜]
 
 section AddCommGroup
 
@@ -445,7 +445,8 @@ section OrdConnected
 
 /-- If `s` is an order-connected set in an ordered module over an ordered semiring
 and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
-theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid E] [Module 𝕜 E]
+theorem Set.OrdConnected.starConvex
+    [Semiring 𝕜] [OrderedSemiring 𝕜] [AddCommMonoid E] [OrderedAddCommMonoid E] [Module 𝕜 E]
     [OrderedSMul 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected) (hx : x ∈ s)
     (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab
@@ -466,8 +467,8 @@ theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid
       _ = x := Convex.combo_self hab _
 #align set.ord_connected.star_convex Set.OrdConnected.starConvex
 
-theorem starConvex_iff_ordConnected [LinearOrderedField 𝕜] {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) :
-    StarConvex 𝕜 x s ↔ s.OrdConnected := by
+theorem starConvex_iff_ordConnected [Field 𝕜] [LinearOrderedField 𝕜] {x : 𝕜} {s : Set 𝕜}
+    (hx : x ∈ s) : StarConvex 𝕜 x s ↔ s.OrdConnected := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, starConvex_iff_segment_subset, segment_eq_uIcc]
 #align star_convex_iff_ord_connected starConvex_iff_ordConnected
 

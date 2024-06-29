@@ -213,7 +213,7 @@ end
 
 section CanonicallyOrderedAddCommMonoid
 variable [DecidableEq ι]
-variable [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
+variable [AddCommMonoid μ] [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
 
 theorem finsuppAntidiag_zero (s : Finset ι) :
     finsuppAntidiag s (0 : μ) = {(0 : ι →₀ μ)} := by

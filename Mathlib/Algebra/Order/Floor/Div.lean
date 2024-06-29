@@ -50,7 +50,8 @@ Note in both cases we only allow dividing by positive inputs. We enforce the fol
 variable {ι α β : Type*}
 
 section OrderedAddCommMonoid
-variable (α β) [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
+variable (α β) [AddCommMonoid α] [OrderedAddCommMonoid α] [AddCommMonoid β] [OrderedAddCommMonoid β]
+  [SMulZeroClass α β]
 
 /-- Typeclass for division rounded down. For each `a > 0`, this asserts the existence of a right
 adjoint to the map `b ↦ a • b : β → β`. -/
@@ -117,8 +118,8 @@ end CeilDiv
 end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
-variable [LinearOrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
-  [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b c : β}
+variable [AddCommMonoid α] [LinearOrderedAddCommMonoid α] [AddCommMonoid β] [OrderedAddCommMonoid β]
+  [SMulZeroClass α β] [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b c : β}
 
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
   obtain ha | ha := le_or_lt a 0
@@ -128,7 +129,8 @@ lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
 end LinearOrderedAddCommMonoid
 
 section OrderedSemiring
-variable [OrderedSemiring α] [OrderedAddCommMonoid β] [MulActionWithZero α β]
+variable [Semiring α] [OrderedSemiring α] [AddCommMonoid β] [OrderedAddCommMonoid β]
+  [MulActionWithZero α β]
 
 section FloorDiv
 variable [FloorDiv α β] {a : α}
@@ -192,8 +194,8 @@ lemma ceilDiv_eq_add_pred_div (a b : ℕ) : a ⌈/⌉ b = (a + b - 1) / b := rfl
 end Nat
 
 namespace Pi
-variable {π : ι → Type*} [OrderedAddCommMonoid α] [∀ i, OrderedAddCommMonoid (π i)]
-  [∀ i, SMulZeroClass α (π i)]
+variable {π : ι → Type*} [AddCommMonoid α] [OrderedAddCommMonoid α] [∀ i, AddCommMonoid (π i)]
+  [∀ i, OrderedAddCommMonoid (π i)] [∀ i, SMulZeroClass α (π i)]
 
 section FloorDiv
 variable [∀ i, FloorDiv α (π i)]
@@ -225,7 +227,8 @@ end CeilDiv
 end Pi
 
 namespace Finsupp
-variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
+variable [AddCommMonoid α] [OrderedAddCommMonoid α] [AddCommMonoid β] [OrderedAddCommMonoid β]
+  [SMulZeroClass α β]
 
 section FloorDiv
 variable [FloorDiv α β] {f : ι →₀ β} {a : α}

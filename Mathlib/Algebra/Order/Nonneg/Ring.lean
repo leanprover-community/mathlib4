@@ -149,8 +149,10 @@ protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (
 #align nonneg.coe_nsmul Nonneg.coe_nsmul
 
 -- inlining this is problematic 🧐
-local instance [AddCommMonoid α] [OrderedAddCommMonoid α] : AddCommMonoid { x : α // 0 ≤ x } :=
+def dubm [AddCommMonoid α] [OrderedAddCommMonoid α] : AddCommMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+
+attribute [local instance] dubm
 
 instance orderedAddCommMonoid [AddCommMonoid α] [OrderedAddCommMonoid α] :
     OrderedAddCommMonoid { x : α // 0 ≤ x } :=

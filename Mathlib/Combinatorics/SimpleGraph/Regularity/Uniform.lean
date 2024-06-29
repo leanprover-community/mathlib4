@@ -44,7 +44,7 @@ is less than `ε`.
 
 open Finset
 
-variable {α 𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {α 𝕜 : Type*} [Field 𝕜] [LinearOrderedField 𝕜]
 
 /-! ### Graph uniformity -/
 

@@ -42,7 +42,7 @@ convergence, fractions
 -/
 
 
-variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} (v : K) [Field K] [LinearOrderedField K] [FloorRing K]
 
 open GeneralizedContinuedFraction (of)
 open GeneralizedContinuedFraction
@@ -71,7 +71,7 @@ def ContinuedFraction.of : ContinuedFraction K :=
 namespace GeneralizedContinuedFraction
 
 theorem of_convergents_eq_convergents' : (of v).convergents = (of v).convergents' :=
-  @ContinuedFraction.convergents_eq_convergents' _ _ (ContinuedFraction.of v)
+  @ContinuedFraction.convergents_eq_convergents' _ _ _ (ContinuedFraction.of v)
 #align generalized_continued_fraction.of_convergents_eq_convergents' GeneralizedContinuedFraction.of_convergents_eq_convergents'
 
 /-- The recurrence relation for the `convergents` of the continued fraction expansion

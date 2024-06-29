@@ -374,17 +374,19 @@ instance add_contravariantClass_le :
     exact h.not_lt (add_lt_add_left h' a)⟩
 #align nat_ordinal.add_contravariant_class_le NatOrdinal.add_contravariantClass_le
 
+instance : AddCommMonoid NatOrdinal where
+  add := (· + ·)
+  add_assoc := nadd_assoc
+  zero := 0
+  zero_add := zero_nadd
+  add_zero := nadd_zero
+  add_comm := nadd_comm
+  nsmul := nsmulRec
+
 instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
   { NatOrdinal.linearOrder with
-    add := (· + ·)
-    add_assoc := nadd_assoc
-    add_le_add_left := fun a b => add_le_add_left
-    le_of_add_le_add_left := fun a b c => le_of_add_le_add_left
-    zero := 0
-    zero_add := zero_nadd
-    add_zero := nadd_zero
-    add_comm := nadd_comm
-    nsmul := nsmulRec }
+    add_le_add_left := fun _ _ => add_le_add_left
+    le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left }
 
 instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
@@ -763,24 +765,26 @@ open Ordinal
 instance : Mul NatOrdinal :=
   ⟨nmul⟩
 
+instance : CommSemiring NatOrdinal where
+  mul := (· * ·)
+  left_distrib := nmul_nadd
+  right_distrib := nadd_nmul
+  zero_mul := zero_nmul
+  mul_zero := nmul_zero
+  mul_assoc := nmul_assoc
+  one := 1
+  one_mul := one_nmul
+  mul_one := nmul_one
+  mul_comm := nmul_comm
+
 -- Porting note: had to add universe annotations to ensure that the
 -- two sources lived in the same universe.
 instance : OrderedCommSemiring NatOrdinal.{u} :=
   { NatOrdinal.orderedCancelAddCommMonoid.{u},
     NatOrdinal.linearOrder.{u} with
-    mul := (· * ·)
-    left_distrib := nmul_nadd
-    right_distrib := nadd_nmul
-    zero_mul := zero_nmul
-    mul_zero := nmul_zero
-    mul_assoc := nmul_assoc
-    one := 1
-    one_mul := one_nmul
-    mul_one := nmul_one
-    mul_comm := nmul_comm
     zero_le_one := @zero_le_one Ordinal _ _ _ _
-    mul_le_mul_of_nonneg_left := fun a b c => nmul_le_nmul_of_nonneg_left
-    mul_le_mul_of_nonneg_right := fun a b c => nmul_le_nmul_of_nonneg_right }
+    mul_le_mul_of_nonneg_left := fun _ _ _ => nmul_le_nmul_of_nonneg_left
+    mul_le_mul_of_nonneg_right := fun _ _ _ => nmul_le_nmul_of_nonneg_right }
 
 namespace Ordinal
 

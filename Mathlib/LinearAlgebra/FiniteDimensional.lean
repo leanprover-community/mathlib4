@@ -284,7 +284,7 @@ open Finset
 
 section
 
-variable {L : Type*} [LinearOrderedField L]
+variable {L : Type*} [Field L] [LinearOrderedField L]
 variable {W : Type v} [AddCommGroup W] [Module L W]
 
 /-- A slight strengthening of `exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card`

@@ -21,7 +21,7 @@ open CauSeq
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrderedField α]
 variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
 -- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
@@ -154,10 +154,10 @@ theorem ofRat_mul (x y : β) :
   congr_arg mk (const_mul _ _)
 #align cau_seq.completion.of_rat_mul CauSeq.Completion.ofRat_mul
 
-private theorem zero_def : 0 = @mk _ _ _ _ abv _ 0 :=
+private theorem zero_def : 0 = @mk _ _ _ _ _ abv _ 0 :=
   rfl
 
-private theorem one_def : 1 = @mk _ _ _ _ abv _ 1 :=
+private theorem one_def : 1 = @mk _ _ _ _ _ abv _ 1 :=
   rfl
 
 instance Cauchy.ring : Ring (Cauchy abv) :=
@@ -185,7 +185,7 @@ end
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrderedField α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance Cauchy.commRing : CommRing (Cauchy abv) :=
@@ -200,7 +200,7 @@ open scoped Classical
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrderedField α]
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
 instance instNNRatCast : NNRatCast (Cauchy abv) where nnratCast q := ofRat q
@@ -231,7 +231,7 @@ theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
 #align cau_seq.completion.inv_zero CauSeq.Completion.inv_zero
 
 @[simp]
-theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
+theorem inv_mk {f} (hf) : (@mk α _ _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
   congr_arg mk <| by rw [dif_neg]
 #align cau_seq.completion.inv_mk CauSeq.Completion.inv_mk
 
@@ -296,7 +296,7 @@ end
 
 section
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrderedField α]
 variable {β : Type*} [Field β] {abv : β → α} [IsAbsoluteValue abv]
 
 /-- The Cauchy completion forms a field. -/
@@ -307,7 +307,7 @@ end
 
 end CauSeq.Completion
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrderedField α]
 
 namespace CauSeq
 

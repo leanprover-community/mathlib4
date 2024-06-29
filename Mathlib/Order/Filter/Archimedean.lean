@@ -23,6 +23,10 @@ variable {α R : Type*}
 
 open Filter Set Function
 
+section Semiring
+
+variable [Semiring R]
+
 @[simp]
 theorem Nat.comap_cast_atTop [StrictOrderedSemiring R] [Archimedean R] :
     comap ((↑) : ℕ → R) atTop = atTop :=
@@ -51,6 +55,12 @@ theorem Filter.Eventually.natCast_atTop [OrderedSemiring R] [Archimedean R] {p :
 
 @[deprecated (since := "2024-04-17")]
 alias Filter.Eventually.nat_cast_atTop := Filter.Eventually.natCast_atTop
+
+end Semiring
+
+section Ring
+
+variable [Ring R]
 
 @[simp] theorem Int.comap_cast_atTop [StrictOrderedRing R] [Archimedean R] :
     comap ((↑) : ℤ → R) atTop = atTop :=
@@ -104,6 +114,12 @@ theorem Filter.Eventually.intCast_atBot [StrictOrderedRing R] [Archimedean R] {p
 @[deprecated (since := "2024-04-17")]
 alias Filter.Eventually.int_cast_atBot := Filter.Eventually.intCast_atBot
 
+end Ring
+
+section Field
+
+variable [Field R]
+
 @[simp]
 theorem Rat.comap_cast_atTop [LinearOrderedField R] [Archimedean R] :
     comap ((↑) : ℚ → R) atTop = atTop :=
@@ -148,6 +164,12 @@ theorem Filter.Eventually.ratCast_atBot [LinearOrderedField R] [Archimedean R] {
 @[deprecated (since := "2024-04-17")]
 alias Filter.Eventually.rat_cast_atBot := Filter.Eventually.ratCast_atBot
 
+end Field
+
+section Semiring
+
+variable [Semiring R]
+
 theorem atTop_hasAntitoneBasis_of_archimedean [OrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n :=
   hasAntitoneBasis_atTop.comp_mono Nat.mono_cast tendsto_natCast_atTop_atTop
@@ -157,8 +179,10 @@ theorem atTop_hasCountableBasis_of_archimedean [StrictOrderedSemiring R] [Archim
   ⟨atTop_hasAntitoneBasis_of_archimedean.1, to_countable _⟩
 #align at_top_countable_basis_of_archimedean atTop_hasCountableBasis_of_archimedean
 
+end Semiring
+
 -- Porting note (#11215): TODO: generalize to a `StrictOrderedRing`
-theorem atBot_hasCountableBasis_of_archimedean [LinearOrderedRing R] [Archimedean R] :
+theorem atBot_hasCountableBasis_of_archimedean [Ring R] [LinearOrderedRing R] [Archimedean R] :
     (atBot : Filter R).HasCountableBasis (fun _ : ℤ => True) fun m => Iic m :=
   { countable := to_countable _
     toHasBasis :=
@@ -167,12 +191,13 @@ theorem atBot_hasCountableBasis_of_archimedean [LinearOrderedRing R] [Archimedea
         fun m _ => ⟨m, trivial, Subset.rfl⟩ }
 #align at_bot_countable_basis_of_archimedean atBot_hasCountableBasis_of_archimedean
 
-instance (priority := 100) atTop_isCountablyGenerated_of_archimedean [StrictOrderedSemiring R]
-    [Archimedean R] : (atTop : Filter R).IsCountablyGenerated :=
+instance (priority := 100) atTop_isCountablyGenerated_of_archimedean
+    [Semiring R] [StrictOrderedSemiring R] [Archimedean R] :
+    (atTop : Filter R).IsCountablyGenerated :=
   atTop_hasCountableBasis_of_archimedean.isCountablyGenerated
 #align at_top_countably_generated_of_archimedean atTop_isCountablyGenerated_of_archimedean
 
-instance (priority := 100) atBot_isCountablyGenerated_of_archimedean [LinearOrderedRing R]
+instance (priority := 100) atBot_isCountablyGenerated_of_archimedean [Ring R] [LinearOrderedRing R]
     [Archimedean R] : (atBot : Filter R).IsCountablyGenerated :=
   atBot_hasCountableBasis_of_archimedean.isCountablyGenerated
 #align at_bot_countably_generated_of_archimedean atBot_isCountablyGenerated_of_archimedean
@@ -183,7 +208,7 @@ variable {l : Filter α} {f : α → R} {r : R}
 
 section LinearOrderedSemiring
 
-variable [LinearOrderedSemiring R] [Archimedean R]
+variable [Semiring R] [LinearOrderedSemiring R] [Archimedean R]
 
 /-- If a function tends to infinity along a filter, then this function multiplied by a positive
 constant (on the left) also tends to infinity. The archimedean assumption is convenient to get a
@@ -227,7 +252,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing R] [Archimedean R]
+variable [Ring R] [LinearOrderedRing R] [Archimedean R]
 
 /-- See also `Filter.Tendsto.atTop_mul_const_of_neg` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
@@ -261,7 +286,7 @@ end LinearOrderedRing
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [LinearOrderedCancelAddCommMonoid R] [Archimedean R]
+variable [AddCommMonoid R] [LinearOrderedCancelAddCommMonoid R] [Archimedean R]
 
 theorem Tendsto.atTop_nsmul_const {f : α → ℕ} (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atTop := by
@@ -274,7 +299,7 @@ end LinearOrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup R] [Archimedean R]
+variable [AddCommGroup R] [LinearOrderedAddCommGroup R] [Archimedean R]
 
 theorem Tendsto.atTop_nsmul_neg_const {f : α → ℕ} (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x • r) l atBot := by simpa using hf.atTop_nsmul_const (neg_pos.2 hr)

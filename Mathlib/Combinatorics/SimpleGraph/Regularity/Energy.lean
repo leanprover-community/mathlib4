@@ -58,7 +58,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
 #align finpartition.energy_le_one Finpartition.energy_le_one
 
 @[simp, norm_cast]
-theorem coe_energy {𝕜 : Type*} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
+theorem coe_energy {𝕜 : Type*} [Field 𝕜] [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
     (∑ uv ∈ P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (P.parts.card : 𝕜) ^ 2 := by
   rw [energy]; norm_cast
 #align finpartition.coe_energy Finpartition.coe_energy
