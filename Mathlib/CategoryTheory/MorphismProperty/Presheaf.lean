@@ -68,25 +68,22 @@ noncomputable def pullbackIso : yoneda.obj (hf.pullback g) ≅ Limits.pullback f
   Functor.reprW (hF := hf g)
 
 /-- The pullback cone obtained by the isomorphism `hf.pullbackIso`. -/
--- TODO: should be PullbackCone f g?
 noncomputable def pullbackCone : PullbackCone f g :=
   PullbackCone.mk ((hf.pullbackIso g).hom ≫ pullback.fst)
     ((hf.pullbackIso g).hom ≫ pullback.snd) (by simpa using pullback.condition)
 
---/-- The projection `yoneda.obj (hf.pullback g) ⟶ F`. -/
---noncomputable def pullbackConeFst : yoneda.obj (hf.pullback g) ⟶ F := (hf.pullbackCone g).fst
---
---/-- The projection `yoneda.obj (hf.pullback g) ⟶ yoneda.obj X`. -/
---noncomputable def pullbackConeSnd : yoneda.obj (hf.pullback g) ⟶ yoneda.obj X := (hf.pullbackCone g).snd
-
+/-- The pullback cone obtained via `hf.pullbackIso` is a limit cone. -/
 noncomputable def pullbackConeIsLimit : IsLimit (hf.pullbackCone g) :=
   IsLimit.ofIsoLimit (pullbackIsPullback _ _)
     (PullbackCone.ext (hf.pullbackIso g).symm (by simp [pullbackCone]) (by simp [pullbackCone]))
 
-noncomputable def snd : hf.pullback g ⟶ X :=
+/-- The preimage under yoneda of the second projection of `hf.pullbackCone g` -/
+noncomputable abbrev snd : hf.pullback g ⟶ X :=
   Yoneda.fullyFaithful.preimage ((hf.pullbackCone g).snd)
 
-noncomputable def fst : hf'.pullback g ⟶ Y :=
+/-- The preimage under yoneda of the first projection of `hf.pullbackCone g`, whenever this
+makes sense. -/
+noncomputable abbrev fst : hf'.pullback g ⟶ Y :=
   Yoneda.fullyFaithful.preimage ((hf'.pullbackCone g).fst)
 
 -- TODO: need to add comp here?
@@ -104,6 +101,13 @@ lemma condition_yoneda : (hf.pullbackCone g).fst ≫ f = yoneda.map (hf.snd g) �
 @[reassoc]
 lemma condition : yoneda.map (hf'.fst g) ≫ f' = yoneda.map (hf'.snd g) ≫ g := by
   simpa only [yoneda_map_fst] using hf'.condition_yoneda g
+
+/-- Variant of `condition` when all vertices of the pullback square lie in the image of yoneda. -/
+@[reassoc]
+lemma condition' {X Y Z : C} {f : X ⟶ Z} (g : yoneda.obj Y ⟶ yoneda.obj Z)
+    (hf : Presheaf.representable (yoneda.map f)) :
+      hf.fst g ≫ f = hf.snd g ≫ (Yoneda.fullyFaithful.preimage g) :=
+  yoneda.map_injective <| by simp [condition_yoneda]
 
 variable {g}
 
@@ -198,8 +202,6 @@ lemma yoneda_map [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
   obtain ⟨g, rfl⟩ := yoneda.map_surjective g
   exact ⟨Limits.pullback f g, ⟨PreservesPullback.iso _ _ _⟩⟩
 
--- TODO: yoneda.map f satisfies P if f does
-
 end Presheaf.representable
 
 namespace MorphismProperty
@@ -228,19 +230,15 @@ lemma _root_.CategoryTheory.hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v} {f g : P �
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
     using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
 
-lemma yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} (f : X ⟶ Y) (hf : P f) :
+lemma yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y} (hf : P f) :
     P.presheaf (yoneda.map f) := by
   use Presheaf.representable.yoneda_map f
   intro Z g
-  -- Want: IsPullback fst snd f (Yoneda.fullyFaithful.preimage g)
-  -- For this need: yoneda reflects limits!
-  have : IsPullback ((Presheaf.representable.yoneda_map f).fst g)
-    ((Presheaf.representable.yoneda_map f).snd g) f (Yoneda.fullyFaithful.preimage g) := sorry
-  -- wrong lemma
-  have := hP.snd f (Yoneda.fullyFaithful.preimage g) hf
-
-  sorry
-  -- have : P (pullback f (Yoneda.fullyFaithful.preimage g)) := sorry
+  have BC : IsPullback ((Presheaf.representable.yoneda_map f).fst g)
+      ((Presheaf.representable.yoneda_map f).snd g) f (Yoneda.fullyFaithful.preimage g) := by
+    apply IsPullback.of_map yoneda ((Presheaf.representable.yoneda_map f).condition' g)
+    simpa using IsPullback.of_isLimit <| (Presheaf.representable.yoneda_map f).pullbackConeIsLimit g
+  exact hP BC hf
 
 lemma presheaf_monomorphisms_le_monomorphisms :
     (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
