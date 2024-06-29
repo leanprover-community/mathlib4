@@ -107,7 +107,7 @@ theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
       ∃ _ : HasLeftKanExtension f (𝟙 a), Lan.CommuteWith f (𝟙 a) f] := by
   tfae_have 1 → 2
   · intro h
-    exact IsAbsKan.hasAbsLeftKanExtension (rightAdjoint.adjunction f).isAbsoluteLeftKan
+    exact IsAbsKan.hasAbsLeftKanExtension (Adjunction.ofIsLeftAdjoint f).isAbsoluteLeftKan
   tfae_have 2 → 3
   · intro h
     exact ⟨inferInstance, inferInstance⟩
@@ -187,7 +187,7 @@ theorem isRightAdjoint_TFAE (u : b ⟶ a) :
       ∃ _ : HasLeftKanLift u (𝟙 a), LanLift.CommuteWith u (𝟙 a) u] := by
   tfae_have 1 → 2
   · intro h
-    exact IsAbsKan.hasAbsLeftKanLift (leftAdjoint.adjunction u).isAbsoluteLeftKanLift
+    exact IsAbsKan.hasAbsLeftKanLift (Adjunction.ofIsRightAdjoint u).isAbsoluteLeftKanLift
   tfae_have 2 → 3
   · intro h
     exact ⟨inferInstance, inferInstance⟩
@@ -241,7 +241,7 @@ def isKanOfWhiskerLeftAdjoint
 
 instance {f : a ⟶ b} {g : a ⟶ c} {x : B} {h : c ⟶ x} [IsLeftAdjoint h] [HasLeftKanExtension f g] :
     Lan.CommuteWith f g h :=
-  ⟨⟨isKanOfWhiskerLeftAdjoint (lanIsKan f g) (rightAdjoint.adjunction h)⟩⟩
+  ⟨⟨isKanOfWhiskerLeftAdjoint (lanIsKan f g) (Adjunction.ofIsLeftAdjoint h)⟩⟩
 
 end LeftExtension
 
