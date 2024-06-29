@@ -3148,6 +3148,7 @@ import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
 import Mathlib.NumberTheory.FLT.Three
 import Mathlib.NumberTheory.FermatPsp
+import Mathlib.NumberTheory.Frobenius.Basic
 import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.FunctionField
 import Mathlib.NumberTheory.GaussSum
@@ -3529,7 +3530,6 @@ import Mathlib.RingTheory.DedekindDomain.Different
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
-import Mathlib.RingTheory.DedekindDomain.Frobenius
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.DedekindDomain.PID
