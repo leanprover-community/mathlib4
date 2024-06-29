@@ -144,26 +144,37 @@ theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.I
     · rw [dedup_cons_of_not_mem h, dedup_cons_of_not_mem <| (mem_map_of_injective hf).not.mpr h, ih,
         map_cons]
 
-theorem Subset.dedup_append {xs ys : List α} (h : xs ⊆ ys) :
-    dedup (xs ++ ys) = dedup ys := by
+theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) :
+    xs ∪ ys = ys := by
   induction xs with
   | nil => simp
   | cons x xs ih =>
-    rw [cons_append]
-    have : x ∈ xs ++ ys := mem_append_of_mem_right _ <| h (mem_cons_self _ _)
-    rw [dedup_cons_of_mem this, ih (subset_of_cons_subset h)]
+    rw [cons_union]
+    have : x ∈ xs ∪ ys := mem_union_iff.mpr <| .inr <| h (mem_cons_self _ _)
+    rw [insert_of_mem this, ih (subset_of_cons_subset h)]
+
+theorem Subset.dedup_append {xs ys : List α} (h : xs ⊆ ys) :
+    dedup (xs ++ ys) = dedup ys := by
+  rw [List.dedup_append, Subset.union_eq_right (h.trans <| subset_dedup _)]
+
+theorem Disjoint.union_eq {xs ys : List α} (h : Disjoint xs ys) :
+    xs ∪ ys = xs.dedup ++ ys := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [cons_union]
+    rw [disjoint_cons_left] at h
+    obtain hx | hx := Decidable.em (x ∈ xs)
+    · rw [dedup_cons_of_mem hx, insert_of_mem (mem_union_iff.mpr <| .inl hx), ih h.2]
+    · rw [dedup_cons_of_not_mem hx, insert_of_not_mem, ih h.2, cons_append]
+      rw [mem_union_iff, not_or]
+      exact ⟨hx, h.1⟩
 
 theorem Disjoint.dedup_append {xs ys : List α} (h : Disjoint xs ys) :
     dedup (xs ++ ys) = dedup xs ++ dedup ys := by
-  induction xs with
-  | nil => simp
-  | cons x xs ih =>
-    rw [cons_append]
-    rw [disjoint_cons_left] at h
-    obtain hx | hx := Decidable.em (x ∈ xs)
-    · rw [dedup_cons_of_mem hx, dedup_cons_of_mem (mem_append_of_mem_left _ hx), ih h.2]
-    · rw [dedup_cons_of_not_mem hx, dedup_cons_of_not_mem (not_mem_append hx h.1), ih h.2,
-        cons_append]
+  rw [List.dedup_append, Disjoint.union_eq]
+  intro a hx hy
+  exact h hx (mem_dedup.mp hy)
 
 theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]
   | 0, h => (h rfl).elim
