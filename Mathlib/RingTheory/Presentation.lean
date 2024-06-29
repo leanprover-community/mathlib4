@@ -47,19 +47,19 @@ structure Algebra.Presentation extends Algebra.Generators.{w} R S where
   relation : relations → MvPolynomial vars R
   /-- The relations span the kernel of the canonical map. -/
   ker_algebraMap_eq_span_range_relation :
-    RingHom.ker (algebraMap (MvPolynomial vars R) S) = Ideal.span (Set.range <| relation)
+    RingHom.ker (aeval val) = Ideal.span (Set.range <| relation)
 
 namespace Algebra.Presentation
 
 variable {R S}
 variable (P : Presentation.{t, w} R S)
 
-protected abbrev Ideal : Ideal P.Ring := RingHom.ker <| algebraMap P.Ring S
+protected abbrev Ideal : Ideal P.Ring := RingHom.ker <| aeval P.val
 
 lemma ideal_eq_span_range_relation : P.Ideal = Ideal.span (Set.range <| P.relation) :=
   P.ker_algebraMap_eq_span_range_relation
 
-lemma algebraMap_relation (i) : algebraMap (MvPolynomial P.vars R) S (P.relation i) = 0 := by
+lemma algebraMap_relation (i) : aeval P.val (P.relation i) = 0 := by
   rw [← RingHom.mem_ker, ker_algebraMap_eq_span_range_relation]
   exact Ideal.subset_span ⟨i, rfl⟩
 

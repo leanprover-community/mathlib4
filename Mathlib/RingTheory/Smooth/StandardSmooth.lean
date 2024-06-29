@@ -8,6 +8,7 @@ import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
+import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
 
 /-!
 # Standard smooth algebras
@@ -68,10 +69,22 @@ noncomputable def linearMap : (P.relations → P.Ring) →ₗ[P.Ring] (P.relatio
   Basis.constr P.basis P.Ring
     (fun j i : P.relations ↦ MvPolynomial.pderiv (P.map i) (P.relation j))
 
+noncomputable def jacobiMatrix [Fintype P.relations] [DecidableEq P.relations] :
+    Matrix P.relations P.relations P.Ring :=
+  LinearMap.toMatrix P.basis P.basis P.linearMap
+
 /-- The determinant of a `P : SubmersivePresentation` is the determinant
 of `P.linearMap` viewed as element of `S`. -/
 noncomputable def det : S :=
   algebraMap P.Ring S <| LinearMap.det P.linearMap
+
+lemma det_eq_jacobiMatrix_det [Fintype P.relations] [DecidableEq P.relations] :
+     P.det = algebraMap P.Ring S P.jacobiMatrix.det := by
+   simp [jacobiMatrix, det]
+
+lemma jacobiMatrix_apply [Fintype P.relations] [DecidableEq P.relations] (i j : P.relations) :
+    P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
+  simp [jacobiMatrix, LinearMap.toMatrix, linearMap]
 
 section Constructors
 
@@ -460,3 +473,140 @@ class IsStandardSmoothOfRelativeDimension (n : ℕ) : Prop where
   out : ∃ (P : SubmersivePresentation.{t, w} R S), P.IsStandardSmoothOfRelativeDimension n
 
 end Algebra
+
+variable {R : Type} [CommRing R]
+variable (W : WeierstrassCurve.Projective R)
+
+open MvPolynomial
+
+namespace WeierstrassCurve.Projective
+
+noncomputable abbrev P1 : MvPolynomial (Fin 3) R :=
+  X 2 ^ 2 + (C W.a₁ * X 0 + C W.a₃) * X 2 - X 0 ^ 3 - C W.a₂ * X 0 ^ 2 - C W.a₄ * X 0 - C W.a₆
+
+noncomputable abbrev P2 : MvPolynomial (Fin 3) R :=
+  X 1 * (pderiv 0 W.P1) - C 1
+
+abbrev ring1 : Type := MvPolynomial (Fin 3) R ⧸ (Ideal.span {P1 W, P2 W})
+
+noncomputable abbrev generators1 : Algebra.Generators R (ring1 W) :=
+  Algebra.Generators.ofAlgHom (Ideal.Quotient.mkₐ R (Ideal.span {P1 W, P2 W}))
+    (Ideal.Quotient.mkₐ_surjective _ _)
+
+noncomputable abbrev presentation1 : Algebra.SubmersivePresentation R (ring1 W) where
+  vars := Fin 3
+  val := W.generators1.val
+  σ' := W.generators1.σ'
+  aeval_val_σ' := W.generators1.aeval_val_σ'
+  relations := Fin 2
+  relation i := match i with
+    | 0 => P1 W
+    | 1 => P2 W
+  map (i : Fin 2) := match i with
+    | 0 => (0 : Fin 3)
+    | 1 => (1 : Fin 3)
+  relations_finite := inferInstance
+  map_inj i j h := by
+    match i, j with
+    | 0, 0 => simp
+    | 1, 1 => simp
+    | 0, 1 => aesop
+    | 1, 0 => aesop
+  ker_algebraMap_eq_span_range_relation := by
+    show RingHom.ker (algebraMap W.generators1.Ring W.ring1) = _
+    simp only [Algebra.Generators.ofAlgHom_algebraMap, AlgHom.toRingHom_eq_coe, Ideal.Quotient.mkₐ_ker]
+    congr
+    ext x
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_range]
+    constructor
+    · intro hx
+      cases hx
+      · use 0
+        symm
+        simpa
+      · use 1
+        symm
+        simpa
+    · intro ⟨y, hy⟩
+      match y with
+      | 0 => simp at hy; exact Or.inl hy.symm
+      | 1 => simp at hy; exact Or.inr hy.symm
+
+example : W.presentation1.Ring = MvPolynomial (Fin 3) R := rfl
+
+open Algebra.SubmersivePresentation
+
+attribute [-simp] map_ofNat Fin.isValue
+
+lemma ring1_id00 :
+    (pderiv (W.presentation1.map 0)) (W.presentation1.relation 0) =
+      pderiv 0 W.P1 := by
+  rfl
+
+lemma ring1_id10 :
+    (pderiv (W.presentation1.map 1)) (W.presentation1.relation 0) = 0 := by
+  simp
+
+lemma ring1_id11 :
+    (pderiv (W.presentation1.map 1)) (W.presentation1.relation 1) =
+      pderiv 0 W.P1 := by
+  simp
+  show -(X 0 ^ 2 * (pderiv 1) (C 3)) - C W.a₂ * (X 0 * (pderiv 1) (C 2)) = 0
+  rw [pderiv_C]
+  rw [pderiv_C]
+  simp
+
+lemma ring1_jac_det : W.presentation1.jacobiMatrix.det =
+    (pderiv 0 W.P1) ^ 2 := by
+  rw [Matrix.det_fin_two]
+  rw [jacobiMatrix_apply, ring1_id00]
+  rw [jacobiMatrix_apply, ring1_id11]
+  nth_rw 2 [jacobiMatrix_apply]
+  rw [ring1_id10]
+  simp
+  ring
+
+lemma pres1_isUnit_pderv : IsUnit ((algebraMap W.presentation1.Ring W.ring1) ((pderiv 0) W.P1)) := by
+  rw [isUnit_iff_exists_inv]
+  use (Ideal.Quotient.mk _ (X (1 : Fin 2)))
+  have : (Ideal.Quotient.mk (Ideal.span {W.P1, W.P2})) 1 =
+      Ideal.Quotient.mk _ (X (1 : Fin 3) * (pderiv 0 W.P1)) := by
+    rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    rw [← Ideal.neg_mem_iff]
+    rw [neg_sub]
+    apply Ideal.subset_span
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff]
+    exact Or.inr rfl
+  erw [← _root_.map_one (Ideal.Quotient.mk _)]
+  rw [this]
+  rw [_root_.map_mul]
+  rw [mul_comm]
+  congr
+
+/-- this is needed because of an instance diamond, see
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Diamond.20in.20.60Algebra.2EGenerators.60
+-/
+lemma alg_eq_alg : Ideal.Quotient.algebra W.presentation1.Ring = W.presentation1.instRing := by
+  ext r x
+  simp
+  refine Quotient.inductionOn x (fun x ↦ ?_)
+  conv_rhs => rw [@Algebra.smul_def _ _ _ _ (W.presentation1.instRing)]
+  conv_lhs => rw [@Algebra.smul_def _ _ _ _ (Ideal.Quotient.algebra W.presentation1.Ring)]
+  show Ideal.Quotient.mk _ r * ⟦x⟧ = aeval W.presentation1.val r * ⟦x⟧
+  congr
+  ext p
+  · simp; rfl
+  · simp; rfl
+
+lemma pres1_stdsmooth : (presentation1 W).IsStandardSmooth where
+  det_isUnit := by
+    rw [det_eq_jacobiMatrix_det]
+    rw [ring1_jac_det]
+    rw [map_pow]
+    rw [isUnit_pow_iff (by omega)]
+    rw [← alg_eq_alg]
+    exact W.pres1_isUnit_pderv
+  presentation_finite := {
+    finite_relations := inferInstanceAs <| Finite (Fin 2)
+    finite_vars := inferInstanceAs <| Finite (Fin 3)
+  }
