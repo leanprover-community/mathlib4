@@ -1095,7 +1095,7 @@ theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology
 
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
-@[deprecated isClosed_setOf_continuous]
+@[deprecated isClosed_setOf_continuous (since := "2024-06-29")]
 theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
     (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} :=
