@@ -30,34 +30,56 @@ variable {F G : Cᵒᵖ ⥤ Type v} {f : F ⟶ G} (hf : Presheaf.representable f
   {Y : C} {f' : yoneda.obj Y ⟶ G} (hf' : Presheaf.representable f')
   {X : C} (g : yoneda.obj X ⟶ G) (hg : Presheaf.representable g)
 
-/-- Let `f : F ⟶ G` be a morphism in the category of presheaves of types on
-a category `C`, such that `hf : Presheaf.representable f`. Then, for any
-`g : yoneda.obj X ⟶ G`, this is a choice of an object `hf.pullback g` equipped
-with an isomorphism between `yoneda.obj (hf.pullback g)` and the categorical
-pullback of `f` and `g` in the category of presheaves. -/
+/-- Let `f : F ⟶ G` be a representable morphism in the category of presheaves of types on
+a category `C`. Then, for any `g : yoneda.obj X ⟶ G`, `hf.pullback g` denotes the (choice of) a
+corresponding object in `C` equipped with an isomorphism between `yoneda.obj (hf.pullback g)`
+and the categorical pullback of `f` and `g` in the category of presheaves. -/
 noncomputable def pullback : C :=
   Functor.reprX (hF := hf g)
 
+/-- The given isomorphism between `yoneda.obj (hf.pullback g)` and the choice of categorical
+pullback of `f` and `g`-/
 noncomputable def pullbackIso : yoneda.obj (hf.pullback g) ≅ Limits.pullback f g :=
   Functor.reprW (hF := hf g)
-
-noncomputable def fst : hf'.pullback g ⟶ Y :=
-  Yoneda.fullyFaithful.preimage ((hf'.pullbackIso g).hom ≫ Limits.pullback.fst)
 
 noncomputable def snd : hf.pullback g ⟶ X :=
   Yoneda.fullyFaithful.preimage ((hf.pullbackIso g).hom ≫ Limits.pullback.snd)
 
+@[reassoc]
+lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackIso g).hom ≫ Limits.pullback.snd := by
+  simp only [snd, Functor.FullyFaithful.map_preimage]
+
 noncomputable abbrev fst_yoneda : yoneda.obj (hf.pullback g) ⟶ F :=
   (hf.pullbackIso g).hom ≫ Limits.pullback.fst
+
+@[reassoc]
+lemma condition_yoneda : hf.fst_yoneda g ≫ f = yoneda.map (hf.snd g) ≫ g := by
+  simpa [yoneda_map_snd] using Limits.pullback.condition
+
+#check IsPullback
+
+-- pullbackConeOfLeftIso
+-- pullbackConeOfRightIso
+
+noncomputable def isPullback : IsLimit (PullbackCone.mk _ _ (hf.condition_yoneda g)) := by
+  fapply IsLimit.ofIsoLimit (r:= limit.cone (Limits.cospan f g))
+
+  sorry
+
+
+--IsPullback (hf.fst_yoneda g) (yoneda.map <| hf.snd g) f g := by
+  sorry
+
+
+
+noncomputable def fst : hf'.pullback g ⟶ Y :=
+  Yoneda.fullyFaithful.preimage ((hf'.pullbackIso g).hom ≫ Limits.pullback.fst)
 
 @[reassoc]
 lemma yoneda_map_fst :
     yoneda.map (hf'.fst g) = (hf'.pullbackIso g).hom ≫ Limits.pullback.fst := by
   simp only [fst, Functor.FullyFaithful.map_preimage]
 
-@[reassoc]
-lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackIso g).hom ≫ Limits.pullback.snd := by
-  simp only [snd, Functor.FullyFaithful.map_preimage]
 
 @[reassoc]
 lemma condition : yoneda.map (hf'.fst g) ≫ f' = yoneda.map (hf'.snd g) ≫ g := by
@@ -205,28 +227,37 @@ instance : IsStableUnderComposition (Presheaf.representable (C:=C)) where
     let a := hg.pullback h
     use hf.pullback (hg.fst_yoneda h)
     refine ⟨hf.pullbackIso (hg.fst_yoneda h) ≪≫ ?_ ≪≫ H⟩
-    fapply IsPullback.isoPullback
-    apply pullback.fst
-    apply pullback.snd ≫ _
-    apply (hg.pullbackIso h).hom
-    sorry  -- is there API missing for interactions between pullbacks and isos (not IsIso?)
+    change pullback f ((hg.pullbackIso h).hom ≫ Limits.pullback.fst) ≅ _
+
+    let φ := asIso <| pullback.fst (f:=(pullback.snd (f:=f) (g:=pullback.fst)))
+      (g:=(hg.pullbackIso h).hom)
+    refine ?_ ≪≫ φ
+
+    -- need pullbackLeftPullback?Iso?
+    sorry
+    -- fapply IsPullback.isoPullback
+    -- apply pullback.fst
+    -- apply pullback.snd ≫ _
+    -- apply (hg.pullbackIso h).hom
 
 lemma Representable.StableUnderBaseChange :
     StableUnderBaseChange (Presheaf.representable (C:=C)) := by
   intro F G G' H f g f' g' BC hg X h
   use hg.pullback (h ≫ f)
   refine ⟨hg.pullbackIso (h ≫ f) ≪≫ ?_⟩
+  --apply (pullbackAssoc _ _ _ _)
+
   sorry -- should be easy now if I would know the right lemma
 
-lemma Representable.ofIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
+lemma Representable.ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
   fun X g ↦ ⟨X, ⟨(asIso <| Limits.pullback.snd (f:=f) (g:=g)).symm⟩⟩
 
 lemma isomorphisms_le : MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
-  fun _ _ f hf ↦ letI : IsIso f := hf; Representable.ofIso f
+  fun _ _ f hf ↦ letI : IsIso f := hf; Representable.ofIsIso f
 
 lemma Representable.respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
-  ⟨fun _ _ hf ↦ comp_mem _ _ _ (Representable.ofIso _) hf,
-  fun _ _ hf ↦ comp_mem _ _ _ hf <| Representable.ofIso _⟩
+  ⟨fun _ _ hf ↦ comp_mem _ _ _ (Representable.ofIsIso _) hf,
+  fun _ _ hf ↦ comp_mem _ _ _ hf <| Representable.ofIsIso _⟩
 
 
 end CategoryTheory
