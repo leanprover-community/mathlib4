@@ -471,7 +471,6 @@ theorem totalDegree_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.total_degree_X_pow MvPolynomial.totalDegree_X_pow
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem totalDegree_list_prod :
     ∀ s : List (MvPolynomial σ R), s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum
   | [] => by rw [@List.prod_nil (MvPolynomial σ R) _, totalDegree_one]; rfl

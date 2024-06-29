@@ -39,7 +39,6 @@ theorem assoc_flip :
 set_option linter.uppercaseLean3 false in
 #align Mod_.assoc_flip Mod_.assoc_flip
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- A morphism of module objects. -/
 @[ext]
 structure Hom (M N : Mod_ A) where
@@ -72,8 +71,7 @@ instance : Category (Mod_ A) where
   id := id
   comp f g := comp f g
 
--- Porting note: added because `Hom.ext` is not triggered automatically
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
   Hom.ext _ _ h

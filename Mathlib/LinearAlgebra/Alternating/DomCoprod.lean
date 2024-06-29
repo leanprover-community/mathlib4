@@ -249,7 +249,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]
   simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, (· ∘ ·), mul_inv_rev, inv_mul_cancel_right,
     Subgroup.inv_mem_iff, MonoidHom.mem_range, Finset.univ_filter_exists,
-    Finset.sum_image (Perm.sumCongrHom_injective.injOn _)]
+    Finset.sum_image Perm.sumCongrHom_injective.injOn]
   -- now we're ready to clean up the RHS, pulling out the summation
   rw [domCoprod.summand_mk'', MultilinearMap.domCoprod_alternization_coe, ← Finset.sum_product',
     Finset.univ_product_univ, ← MultilinearMap.domDomCongrEquiv_apply, _root_.map_sum,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Module.Equiv
+import Mathlib.Algebra.Module.LinearMap.Star
 import Mathlib.LinearAlgebra.Prod
 
 #align_import algebra.star.module from "leanprover-community/mathlib"@"aa6669832974f87406a3d9d70fc5707a60546207"
@@ -119,8 +119,7 @@ variable {A} [Invertible (2 : R)]
 def selfAdjointPart : A →ₗ[R] selfAdjoint A where
   toFun x :=
     ⟨(⅟ 2 : R) • (x + star x), by
-      simp only [selfAdjoint.mem_iff, star_smul, add_comm, StarAddMonoid.star_add, star_inv',
-        star_bit0, star_one, star_star, star_invOf (2 : R), star_trivial]⟩
+      rw [selfAdjoint.mem_iff, star_smul, star_trivial, star_add, star_star, add_comm]⟩
   map_add' x y := by
     ext
     simp [add_add_add_comm]

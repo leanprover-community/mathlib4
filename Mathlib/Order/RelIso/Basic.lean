@@ -442,7 +442,7 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
     induction' ac with _ _ IH
-    refine' ⟨_, fun q h => _⟩
+    refine ⟨_, fun q h => ?_⟩
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h
 #align acc_lift₂_iff acc_lift₂_iff
@@ -460,7 +460,7 @@ theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r := by
   constructor
   · exact RelHomClass.wellFounded (Quotient.mkRelHom H)
-  · refine' fun wf => ⟨fun q => _⟩
+  · refine fun wf => ⟨fun q => ?_⟩
     obtain ⟨a, rfl⟩ := q.exists_rep
     exact acc_lift₂_iff.2 (wf.apply a)
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
@@ -503,10 +503,10 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
 def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
   haveI := @IsAsymm.isIrrefl β s _
-  refine' ⟨⟨f, fun a b e => _⟩, @fun a b => ⟨fun h => _, H _ _⟩⟩
-  · refine' ((@trichotomous _ r _ a b).resolve_left _).resolve_right _ <;>
+  refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
+  · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_ <;>
       exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)
-  · refine' (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => _) fun h' => _)
+  · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => ?_) fun h' => ?_)
     · subst e
       exact irrefl _ h
     · exact asymm (H _ _ h') h
@@ -599,7 +599,7 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
 @[simps]
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
-  inj' := f.injective.Prod_map g.injective
+  inj' := f.injective.prodMap g.injective
   map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply

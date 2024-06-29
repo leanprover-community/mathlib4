@@ -154,18 +154,27 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 
 end Functor
 
-@[reassoc (attr := simp)]
-theorem map_hom_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
-    (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
-  simp [← NatTrans.comp_app, ← Functor.map_comp]
-#align category_theory.map_hom_inv_app CategoryTheory.map_hom_inv_app
-#align category_theory.map_hom_inv_app_assoc CategoryTheory.map_hom_inv_app_assoc
+namespace Iso
 
 @[reassoc (attr := simp)]
-theorem map_inv_hom_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
+theorem map_hom_inv_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
+    (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
+  simp [← NatTrans.comp_app, ← Functor.map_comp]
+#align category_theory.map_hom_inv_app CategoryTheory.Iso.map_hom_inv_id_app
+#align category_theory.map_hom_inv_app_assoc CategoryTheory.Iso.map_hom_inv_id_app_assoc
+
+@[reassoc (attr := simp)]
+theorem map_inv_hom_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
     (F.map e.inv).app Z ≫ (F.map e.hom).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
-#align category_theory.map_inv_hom_app CategoryTheory.map_inv_hom_app
-#align category_theory.map_inv_hom_app_assoc CategoryTheory.map_inv_hom_app_assoc
+#align category_theory.map_inv_hom_app CategoryTheory.Iso.map_inv_hom_id_app
+#align category_theory.map_inv_hom_app_assoc CategoryTheory.Iso.map_inv_hom_id_app_assoc
+
+end Iso
+
+@[deprecated (since := "2024-06-09")] alias map_hom_inv_app := Iso.map_hom_inv_id_app
+@[deprecated (since := "2024-06-09")] alias map_inv_hom_app := Iso.map_inv_hom_id_app
+@[deprecated (since := "2024-06-09")] alias map_hom_inv_app_assoc := Iso.map_hom_inv_id_app_assoc
+@[deprecated (since := "2024-06-09")] alias map_inv_hom_app_assoc := Iso.map_inv_hom_id_app_assoc
 
 end CategoryTheory

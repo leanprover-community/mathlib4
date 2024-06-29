@@ -863,7 +863,7 @@ variable {α β γ δ : Type*}
 /-- Records a way to turn an element of `α` into a function from `β` to `γ`. The most generic use
 is to recursively uncurry. For instance `f : α → β → γ → δ` will be turned into
 `↿f : α × β × γ → δ`. One can also add instances for bundled maps. -/
-class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) where
+class HasUncurry (α : Type*) (β : outParam Type*) (γ : outParam Type*) where
   /-- Uncurrying operator. The most generic use is to recursively uncurry. For instance
   `f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
   for bundled maps. -/
