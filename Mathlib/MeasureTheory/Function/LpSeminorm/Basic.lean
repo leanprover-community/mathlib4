@@ -643,7 +643,7 @@ theorem snorm_restrict_eq {s : Set α} {f : α → F} (hsf : f.support ⊆ s) :
     exact Function.support_subset_iff.1 hsf x hx
   · simp_rw [snorm_eq_snorm' hp0 hp_top, snorm']
     congr 1
-    apply set_lintegral_eq_of_support_subset
+    apply setLIntegral_eq_of_support_subset
     have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0 hp_top
     simpa [this] using hsf
 
