@@ -3,7 +3,6 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-!
@@ -186,7 +185,7 @@ theorem I_apply_nnreal (n : ℕ) (t : ℝ≥0) : I n t = t ^ ((n:ℝ)/2) := by
   ext
   simp [I]
   rw [← Real.rpow_two, ← Real.rpow_mul]
-  · simp [mul_div_cancel']
+  · simp [mul_div_cancel₀]
   · exact NNReal.zero_le_coe
 
 @[measurability]
@@ -213,7 +212,7 @@ theorem B_succ (n : ℕ) : B (n + 1) = B n * NNReal.Beta (1 / 2) (n / 2 + 1) := 
   field_simp [h₁.ne', h₂.ne', NNReal.Gamma_half]
   rw [add_div, NNReal.rpow_add, NNReal.sqrt_eq_rpow]
   · ring
-  · apply Subtype.ne_of_val_ne
+  · apply Subtype.coe_ne_coe.mp
     dsimp
     exact Real.pi_ne_zero
 
@@ -231,7 +230,7 @@ lemma integral_sub_sq_sqrt_pow {R : ℝ} (hR : 0 ≤ R) :
   have h4 : ∀ a b : ℝ, a - a * b = a * (1 - b) := by intros; ring
   calc ∫ x in (-R)..R, (Real.sqrt (R ^ 2 - x ^ 2)) ^ n
       = ∫ x in (R * sin a)..(R * sin b), (Real.sqrt (R ^ 2 - x ^ 2)) ^ n := by
-        simp
+        simp [a, b]
     _ = ∫ θ in a..b, (Real.sqrt (R ^ 2 - (R * sin θ) ^ 2)) ^ n * (R * cos θ) :=
         intervalIntegral.integral_comp_mul_deriv h1 h2 h3 |>.symm
     _ = ∫ θ in a..b, cos θ ^ (n + 1) * R ^ (n + 1) := by
@@ -243,7 +242,7 @@ lemma integral_sub_sq_sqrt_pow {R : ℝ} (hR : 0 ≤ R) :
         rw [Set.uIcc_of_le] at hx
         · rw [← cos_eq_sqrt_one_sub_sin_sq hx.1 hx.2] -- lemma: wrong = order, wrong hyp statement
           ring
-        simp [neg_le_self_iff]; positivity
+        simp [a, b, neg_le_self_iff]; positivity
 
 /-- auxiliary one-variable integral -/
 theorem lintegral_I_sub_sq_nnreal (n : ℕ) (R : ℝ≥0) :
@@ -295,7 +294,7 @@ theorem lintegral_I_sub_sq (n : ℕ) (c : ℝ) :
     push_cast
     have : (r ^ 2) ^ ((((n : ℝ) + 1) / 2)) = r ^ n * r := by
       rw [← NNReal.rpow_two, ← NNReal.rpow_mul]
-      simp (discharger := positivity) [mul_div_cancel', NNReal.rpow_add']
+      simp (discharger := positivity) [mul_div_cancel₀, NNReal.rpow_add']
     rw [this]
     ring
   · have h₁ : (fun t ↦ ↑(I n (c - t ^ 2))) = (fun _ ↦ 0 : ℝ → ℝ≥0∞) := by
