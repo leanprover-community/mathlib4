@@ -331,6 +331,8 @@
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
+  "Mathlib.Algebra.Category.MonCat.Basic":
+  ["Mathlib.Algebra.Ring.Action.Group"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
   ["Mathlib.Algebra.Module.Submodule.Order"],
   "Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
