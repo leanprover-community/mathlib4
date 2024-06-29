@@ -1135,7 +1135,7 @@ lemma iso_localizedModule_eq_refl : iso S (mkLinearMap S M) = refl R (LocalizedM
   exact Eq.symm <| univ (refl R (LocalizedModule S M)) (by simp)
 
 variable {M₀ M₀'} [AddCommGroup M₀] [AddCommGroup M₀'] [Module R M₀] [Module R M₀']
-variable (f₀ : M₀  →ₗ[R] M₀') [IsLocalizedModule S f₀]
+variable (f₀ : M₀ →ₗ[R] M₀') [IsLocalizedModule S f₀]
 variable {M₁ M₁'} [AddCommGroup M₁] [AddCommGroup M₁'] [Module R M₁] [Module R M₁']
 variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
 
@@ -1190,7 +1190,7 @@ end LocalizedModule
 namespace IsLocalizedModule
 
 variable {M₀ M₀'} [AddCommGroup M₀] [AddCommGroup M₀'] [Module R M₀] [Module R M₀']
-variable (f₀ : M₀  →ₗ[R] M₀') [IsLocalizedModule S f₀]
+variable (f₀ : M₀ →ₗ[R] M₀') [IsLocalizedModule S f₀]
 variable {M₁ M₁'} [AddCommGroup M₁] [AddCommGroup M₁'] [Module R M₁] [Module R M₁']
 variable (f₁ : M₁ →ₗ[R] M₁') [IsLocalizedModule S f₁]
 variable {M₂ M₂'} [AddCommGroup M₂] [AddCommGroup M₂'] [Module R M₂] [Module R M₂']
