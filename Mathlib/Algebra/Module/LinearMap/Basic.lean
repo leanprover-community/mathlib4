@@ -13,43 +13,7 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 #align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
 
 /-!
-# (Semi)linear maps
-
-In this file we define
-
-* `LinearMap σ M M₂`, `M →ₛₗ[σ] M₂` : a semilinear map between two `Module`s. Here,
-  `σ` is a `RingHom` from `R` to `R₂` and an `f : M →ₛₗ[σ] M₂` satisfies
-  `f (c • x) = (σ c) • (f x)`. We recover plain linear maps by choosing `σ` to be `RingHom.id R`.
-  This is denoted by `M →ₗ[R] M₂`. We also add the notation `M →ₗ⋆[R] M₂` for star-linear maps.
-
-* `IsLinearMap R f` : predicate saying that `f : M → M₂` is a linear map. (Note that this
-  was not generalized to semilinear maps.)
-
-We then provide `LinearMap` with the following instances:
-
-* `LinearMap.addCommMonoid` and `LinearMap.addCommGroup`: the elementwise addition structures
-  corresponding to addition in the codomain
-* `LinearMap.distribMulAction` and `LinearMap.module`: the elementwise scalar action structures
-  corresponding to applying the action in the codomain.
-
-## Implementation notes
-
-To ensure that composition works smoothly for semilinear maps, we use the typeclasses
-`RingHomCompTriple`, `RingHomInvPair` and `RingHomSurjective` from
-`Mathlib.Algebra.Ring.CompTypeclasses`.
-
-## Notation
-
-* Throughout the file, we denote regular linear maps by `fₗ`, `gₗ`, etc, and semilinear maps
-  by `f`, `g`, etc.
-
-## TODO
-
-* Parts of this file have not yet been generalized to semilinear maps (i.e. `CompatibleSMul`)
-
-## Tags
-
-linear map
+# Further results on (semi)linear maps
 -/
 
 
