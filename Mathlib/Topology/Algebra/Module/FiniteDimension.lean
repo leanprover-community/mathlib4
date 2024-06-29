@@ -7,6 +7,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
+import Mathlib.RingTheory.Ideal.LocalRing
 
 #align_import topology.algebra.module.finite_dimension from "leanprover-community/mathlib"@"9425b6f8220e53b059f5a4904786c3c4b50fc057"
 
@@ -288,6 +289,14 @@ def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' whe
   left_inv _ := rfl
   right_inv _ := ContinuousLinearMap.coe_injective rfl
 #align linear_map.to_continuous_linear_map LinearMap.toContinuousLinearMap
+
+/-- Algebra equivalence between the linear maps and continuous linear maps on a finite dimensional
+    space. -/
+def _root_.Module.End.toContinuousLinearMap (E : Type v) [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
+  { LinearMap.toContinuousLinearMap with
+    map_mul' := fun _ _ ↦ rfl
+    commutes' := fun _ ↦ rfl }
 
 @[simp]
 theorem coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=

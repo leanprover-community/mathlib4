@@ -385,7 +385,6 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by
@@ -559,7 +558,6 @@ section UnitAddCircle
 
 instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
 
-/- ./././Mathport/Syntax/Translate/Command.lean:328:31: unsupported: @[derive] abbrev -/
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)

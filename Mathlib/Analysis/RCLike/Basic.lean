@@ -3,10 +3,11 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Algebra.Star.Order
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Data.Real.Sqrt
 
 #align_import data.is_R_or_C.basic from "leanprover-community/mathlib"@"baa88307f3e699fa7054ef04ec79fa4f056169cb"
 
@@ -876,18 +877,42 @@ lemma nonpos_iff_exists_ofReal : z ≤ 0 ↔ ∃ x ≤ (0 : ℝ), x = z := by
 lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
   simp_rw [neg_iff (K := K), ext_iff (K := K)]; aesop
 
-@[simp]
+@[simp, norm_cast]
 lemma ofReal_le_ofReal {x y : ℝ} : (x : K) ≤ (y : K) ↔ x ≤ y := by
   rw [le_iff_re_im]
   simp
 
-@[simp]
+@[simp, norm_cast]
+lemma ofReal_lt_ofReal {x y : ℝ} : (x : K) < (y : K) ↔ x < y := by
+  rw [lt_iff_re_im]
+  simp
+
+@[simp, norm_cast]
 lemma ofReal_nonneg {x : ℝ} : 0 ≤ (x : K) ↔ 0 ≤ x := by
   rw [← ofReal_zero, ofReal_le_ofReal]
 
-@[simp]
+@[simp, norm_cast]
 lemma ofReal_nonpos {x : ℝ} : (x : K) ≤ 0 ↔ x ≤ 0 := by
   rw [← ofReal_zero, ofReal_le_ofReal]
+
+@[simp, norm_cast]
+lemma ofReal_pos {x : ℝ} : 0 < (x : K) ↔ 0 < x := by
+  rw [← ofReal_zero, ofReal_lt_ofReal]
+
+@[simp, norm_cast]
+lemma ofReal_lt_zero {x : ℝ} : (x : K) < 0 ↔ x < 0 := by
+  rw [← ofReal_zero, ofReal_lt_ofReal]
+
+protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
+  rw [pos_iff_exists_ofReal] at hz
+  obtain ⟨x, hx, hx'⟩ := hz
+  rw [← hx', ← ofReal_inv, ofReal_pos]
+  exact inv_pos_of_pos hx
+
+protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
+  refine ⟨fun h => ?_, fun h => RCLike.inv_pos_of_pos h⟩
+  rw [← inv_inv z]
+  exact RCLike.inv_pos_of_pos h
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
@@ -927,6 +952,18 @@ theorem toOrderedSMul : OrderedSMul ℝ K :=
     exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
 
 scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
+
+/-- A star algebra over `K` has a scalar multiplication that respects the order.  -/
+lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
+    [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
+    OrderedSMul K A where
+  smul_lt_smul_of_pos {x y c} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
+  lt_of_smul_lt_smul_of_pos {x y c} hxy hc := by
+    have : c⁻¹ • c • x < c⁻¹ • c • y :=
+      StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
+    simpa [smul_smul, inv_mul_cancel hc.ne'] using this
+
+scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 
 end Order
 

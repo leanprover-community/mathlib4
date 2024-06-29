@@ -5,7 +5,9 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.Algebra.Ring.Action.Group
 
 #align_import algebra.category.Mon.basic from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
@@ -90,15 +92,12 @@ instance instFunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y :=
 instance instMonoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
   inferInstanceAs <| MonoidHomClass (X →* Y) X Y
 
--- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note (#10756): added lemma
 @[to_additive (attr := simp)] lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
     (forget MonCat).map f = f := rfl
 
@@ -169,6 +168,16 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
 @[to_additive]
 instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
 
+/-- Universe lift functor for monoids. -/
+@[to_additive (attr := simps)
+  "Universe lift functor for additive monoids."]
+def uliftFunctor : MonCat.{u} ⥤ MonCat.{max u v} where
+  obj X := MonCat.of (ULift.{v, u} X)
+  map {X Y} f := MonCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
+
 end MonCat
 
 /-- The category of commutative monoids and monoid morphisms. -/
@@ -213,15 +222,12 @@ instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
 instance instFunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y by infer_instance
 
--- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
--- porting note (#10756): added lemma
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
     (forget CommMonCat).map f = (f : X → Y) :=
@@ -281,6 +287,16 @@ add_decl_doc AddCommMonCat.ofHom
 @[to_additive (attr := simp)]
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
+
+/-- Universe lift functor for commutative monoids. -/
+@[to_additive (attr := simps)
+  "Universe lift functor for additive commutative monoids."]
+def uliftFunctor : CommMonCat.{u} ⥤ CommMonCat.{max u v} where
+  obj X := CommMonCat.of (ULift.{v, u} X)
+  map {X Y} f := CommMonCat.ofHom <|
+    MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
+  map_id X := by rfl
+  map_comp {X Y Z} f g := by rfl
 
 end CommMonCat
 
