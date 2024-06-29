@@ -1473,12 +1473,14 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
 
 /-! ### Inverse -/
 
-noncomputable instance : DivInvMonoid EReal where
-  inv := fun (a : EReal) ↦ match a with
-  | none => 0
-  | some b => match b with
-    | none => 0
-    | some c => (c⁻¹ : ℝ)
+protected def inv : EReal → EReal
+  | ⊥ => 0
+  | ⊤ => 0
+  | (x : ℝ) => (x⁻¹ : ℝ)
+
+instance : Inv (EReal) := ⟨EReal.inv⟩
+
+noncomputable instance : DivInvMonoid EReal where inv := EReal.inv
 
 @[simp]
 theorem inv_bot : (⊥ : EReal)⁻¹ = 0 := rfl
