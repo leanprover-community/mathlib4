@@ -1,7 +1,7 @@
 #! /bin/bash
 
-src='9a197688-9bf0-4c59-8bb4-16affe9579f1'
-tgt='cf9a210c-14f3-42e0-8ad8-827f5aed7f56'
+src='f01069e1-9ea8-4195-8185-e5876b95baff' #'9a197688-9bf0-4c59-8bb4-16affe9579f1'
+tgt='613072c0-b56d-4fd5-88cb-990b4680f7fb' #'cf9a210c-14f3-42e0-8ad8-827f5aed7f56'
 
 # usage: significant commit1 commit2
 #
