@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Integral.Marginal
-import Mathlib.Analysis.SpecialFunctions.Gaussian
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-!
 A loose port of https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Ball_Volume.html
