@@ -157,7 +157,7 @@ theorem Disjoint.union_eq {xs ys : List α} (h : Disjoint xs ys) :
     rw [cons_union]
     rw [disjoint_cons_left] at h
     obtain hx | hx := Decidable.em (x ∈ xs)
-    · rw [dedup_cons_of_mem hx, insert_of_mem (mem_union_iff.mpr <| .inl hx), ih h.2]
+    · rw [dedup_cons_of_mem hx, insert_of_mem (mem_union_left hx _), ih h.2]
     · rw [dedup_cons_of_not_mem hx, insert_of_not_mem, ih h.2, cons_append]
       rw [mem_union_iff, not_or]
       exact ⟨hx, h.1⟩
