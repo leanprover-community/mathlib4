@@ -115,6 +115,10 @@ import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 import Mathlib.Algebra.Category.ModuleCat.Simple
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
+import Mathlib.Algebra.Category.ModuleCatNew.Basic
+import Mathlib.Algebra.Category.ModuleCatNew.ChangeOfRings
+import Mathlib.Algebra.Category.ModuleCatNew.Free
+import Mathlib.Algebra.Category.ModuleCatNew.Presheaf.Basic
 import Mathlib.Algebra.Category.MonCat.Adjunctions
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Colimits
