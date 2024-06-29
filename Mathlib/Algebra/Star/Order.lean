@@ -231,6 +231,7 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   rintro - ⟨s, rfl⟩
   simp
 
+@[aesop 10% apply]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   (isSelfAdjoint_zero R).mono hx
 
@@ -278,6 +279,44 @@ lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
   simpa using star_lt_star_iff (x := x) (y := 1)
 
 end Semiring
+
+section StarModule
+
+variable {A : Type*} [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+  [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A] [Module R A]
+  [StarModule R A] [NoZeroSMulDivisors R A] [IsScalarTower R A A] [SMulCommClass R A A]
+
+lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c) :
+    c • a < c • b := by
+  rw [← sub_pos] at hab ⊢
+  rw [← smul_sub]
+  refine lt_of_le_of_ne ?le ?ne
+  case le =>
+    have hab := le_of_lt hab
+    rw [StarOrderedRing.nonneg_iff] at hab ⊢
+    refine AddSubmonoid.closure_induction hab ?mem ?zero ?add
+    case mem =>
+      intro x hx
+      have hc := le_of_lt hc
+      rw [StarOrderedRing.nonneg_iff] at hc
+      refine AddSubmonoid.closure_induction hc ?memc ?zeroc ?addc
+      case memc =>
+        intro c' hc'
+        obtain ⟨z, hz⟩ := hc'
+        obtain ⟨y, hy⟩ := hx
+        apply AddSubmonoid.subset_closure
+        refine ⟨z • y, ?_⟩
+        simp only [star_smul, smul_mul_smul, hz, hy]
+      case zeroc => simpa only [zero_smul] using zero_mem _
+      case addc => exact fun c' d ↦ by simpa only [add_smul] using add_mem
+    case zero => simpa only [smul_zero] using zero_mem _
+    case add => exact fun x y ↦ by simpa only [smul_add] using add_mem
+  case ne =>
+    refine (smul_ne_zero ?_ ?_).symm
+    · exact (ne_of_lt hc).symm
+    · exact (ne_of_lt hab).symm
+
+end StarModule
 
 section OrderClass
 

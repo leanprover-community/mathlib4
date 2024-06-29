@@ -1281,4 +1281,8 @@ protected theorem HasCompactSupport.fderiv (hf : HasCompactSupport f) :
   hf.mono' <| support_fderiv_subset 𝕜
 #align has_compact_support.fderiv HasCompactSupport.fderiv
 
+protected theorem HasCompactSupport.fderiv_apply (hf : HasCompactSupport f) (v : E) :
+    HasCompactSupport (fderiv 𝕜 f · v) :=
+  hf.fderiv 𝕜 |>.comp_left (g := fun L : E →L[𝕜] F ↦ L v) rfl
+
 end Support

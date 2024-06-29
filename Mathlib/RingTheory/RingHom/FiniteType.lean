@@ -108,7 +108,7 @@ theorem finiteType_stableUnderBaseChange : StableUnderBaseChange @FiniteType := 
     replace h : Algebra.FiniteType R T := by
       rw [RingHom.FiniteType] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
     suffices Algebra.FiniteType S (S ⊗[R] T) by
-      rw [RingHom.FiniteType]; convert this; congr; ext; simp_rw [Algebra.smul_def]; rfl
+      rw [RingHom.FiniteType]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
     infer_instance
 
 end RingHom

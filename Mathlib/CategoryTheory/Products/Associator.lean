@@ -53,6 +53,5 @@ instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalenc
   (by infer_instance : (associativity C D E).inverse.IsEquivalence)
 #align category_theory.prod.inverse_associator_is_equivalence CategoryTheory.prod.inverseAssociatorIsEquivalence
 
--- TODO unitors?
 -- TODO pentagon natural transformation? ...satisfying?
 end CategoryTheory.prod

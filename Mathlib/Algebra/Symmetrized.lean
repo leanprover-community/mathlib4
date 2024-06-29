@@ -46,13 +46,14 @@ variable {α : Type*}
 
 /-- The element of `SymAlg α` that represents `a : α`. -/
 @[match_pattern]
--- Porting note (#11180): removed @[pp_nodot]
 def sym : α ≃ αˢʸᵐ :=
   Equiv.refl _
 #align sym_alg.sym SymAlg.sym
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
--- Porting note (#11180): removed @[pp_nodot]
+-- Porting note (kmill): `pp_nodot` has no affect here
+-- unless RFC lean4#1910 leads to dot notation for CoeFun
+@[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=
   Equiv.refl _
 #align sym_alg.unsym SymAlg.unsym

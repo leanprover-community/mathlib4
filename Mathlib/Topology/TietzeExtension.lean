@@ -112,7 +112,7 @@ theorem ContinuousMap.exists_extension_forall_mem {Y : Type v} [TopologicalSpace
   exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
 
 instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
-    [∀ i, TietzeExtension (Y i)] : TietzeExtension (∀ i, Y i) where
+    [∀ i, TietzeExtension.{u} (Y i)] : TietzeExtension.{u} (∀ i, Y i) where
   exists_restrict_eq' s hs f := by
     obtain ⟨g', hg'⟩ := Classical.skolem.mp <| fun i ↦
       ContinuousMap.exists_restrict_eq hs (ContinuousMap.piEquiv _ _ |>.symm f i)
@@ -120,7 +120,7 @@ instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, Topolog
 
 instance Prod.instTietzeExtension {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TietzeExtension.{u, v} Y] [TopologicalSpace Z] [TietzeExtension.{u, w} Z] :
-    TietzeExtension (Y × Z) where
+    TietzeExtension.{u, max w v} (Y × Z) where
   exists_restrict_eq' s hs f := by
     obtain ⟨g₁, hg₁⟩ := (ContinuousMap.fst.comp f).exists_restrict_eq hs
     obtain ⟨g₂, hg₂⟩ := (ContinuousMap.snd.comp f).exists_restrict_eq hs

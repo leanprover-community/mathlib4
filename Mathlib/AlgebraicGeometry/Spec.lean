@@ -319,7 +319,6 @@ section SpecΓ
 
 open AlgebraicGeometry.LocallyRingedSpace
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`.  -/
 @[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
@@ -344,20 +343,15 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_naturality AlgebraicGeometry.Spec_Γ_naturality
 
-#adaptation_note /-- 2024-04-23
-This `maxHeartbeats` was not previously required.
-Without the backwards compatibility flag even more is needed. -/
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
-set_option maxHeartbeats 40000 in
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
-def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
+def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1} (fun R =>
     -- Porting note: In Lean3, this `IsIso` is synthesized automatically
     letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
     asIso (toSpecΓ R)) fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
 set_option linter.uppercaseLean3 false in
-#align algebraic_geometry.Spec_Γ_identity AlgebraicGeometry.SpecΓIdentity
+#align algebraic_geometry.Spec_Γ_identity AlgebraicGeometry.LocallyRingedSpace.SpecΓIdentity
 
 end SpecΓ
 

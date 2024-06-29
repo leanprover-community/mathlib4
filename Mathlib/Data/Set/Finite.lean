@@ -1035,6 +1035,9 @@ theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | 
     ← and_assoc, Finset.coeEmb] using h.subset
 #align set.finite.finite_subsets Set.Finite.finite_subsets
 
+protected theorem Finite.powerset {s : Set α} (h : s.Finite) : (𝒫 s).Finite :=
+  h.finite_subsets
+
 section Pi
 variable {ι : Type*} [Finite ι] {κ : ι → Type*} {t : ∀ i, Set (κ i)}
 

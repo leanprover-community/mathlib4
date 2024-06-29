@@ -417,7 +417,7 @@ theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : 
     rw [mem_setOf_eq, gauge_smul_of_nonneg hr₀]
     exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
   refine mem_closure_of_tendsto ?_ this
-  exact Filter.Tendsto.mono_left (Continuous.tendsto' (by continuity) _ _ (one_smul _ _))
+  exact Filter.Tendsto.mono_left (Continuous.tendsto' (by fun_prop) _ _ (one_smul _ _))
     inf_le_left
 
 theorem mem_frontier_of_gauge_eq_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)

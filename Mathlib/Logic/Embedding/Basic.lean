@@ -198,22 +198,11 @@ protected def ofIsEmpty {α β} [IsEmpty α] : α ↪ β :=
 
 /-- Change the value of an embedding `f` at one point. If the prescribed image
 is already occupied by some `f a'`, then swap the values at these two points. -/
-def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
+def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : α ↪ β :=
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y (h : ite _ _ _ = ite _ _ _)
-    -- TODO: once we have `cc` we can avoid all the manual cases below by doing
-    -- split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc
-    split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
-        (try subst b) <;>
-        (try simp only [f.injective.eq_iff, not_true_eq_false] at *)
-    · rw [h₁,h₂]
-    · rw [h₁,h]
-    · rw [h₅, ← h]
-    · exact h₆.symm
-    · exfalso; exact h₅ h.symm
-    · exfalso; exact h₁ h
-    · exact h ⟩
+    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc⟩
 #align function.embedding.set_value Function.Embedding.setValue
 
 @[simp]

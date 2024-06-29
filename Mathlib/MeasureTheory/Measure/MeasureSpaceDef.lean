@@ -414,11 +414,12 @@ variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν 
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function. -/
+@[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 #align ae_measurable AEMeasurable
 
-@[aesop unsafe 30% apply (rule_sets := [Measurable])]
+@[fun_prop, aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
 #align measurable.ae_measurable Measurable.aemeasurable
@@ -451,7 +452,7 @@ theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurab
   ⟨fun hf => AEMeasurable.congr hf h, fun hg => AEMeasurable.congr hg h.symm⟩
 #align ae_measurable_congr aemeasurable_congr
 
-@[simp, measurability]
+@[simp, fun_prop, measurability]
 theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
   measurable_const.aemeasurable
 #align ae_measurable_const aemeasurable_const
@@ -471,9 +472,9 @@ theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : �
   ⟨g ∘ hf.mk f, hg.comp hf.measurable_mk, EventuallyEq.fun_comp hf.ae_eq_mk _⟩
 #align measurable.comp_ae_measurable Measurable.comp_aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : δ → β}
-    (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x => g (f x)) μ :=
+    (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf
 
 end

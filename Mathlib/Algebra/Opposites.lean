@@ -64,9 +64,6 @@ reverses left and right in multiplication. -/
 def MulOpposite (α : Type*) : Type _ := PreOpposite α
 #align mul_opposite MulOpposite
 #align add_opposite AddOpposite
--- Porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
--- both tagged with it in mathlib3
-
 
 /-- Multiplicative opposite of a type. -/
 postfix:max "ᵐᵒᵖ" => MulOpposite
@@ -84,7 +81,7 @@ def op : α → αᵐᵒᵖ :=
 #align add_opposite.op AddOpposite.op
 
 /-- The element of `α` represented by `x : αᵐᵒᵖ`. -/
-@[to_additive "The element of `α` represented by `x : αᵃᵒᵖ`."]
+@[to_additive (attr := pp_nodot) "The element of `α` represented by `x : αᵃᵒᵖ`."]
 def unop : αᵐᵒᵖ → α :=
   PreOpposite.unop'
 #align mul_opposite.unop MulOpposite.unop
@@ -113,9 +110,9 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 #align mul_opposite.unop_comp_op MulOpposite.unop_comp_op
 #align add_opposite.unop_comp_op AddOpposite.unop_comp_op
 
-/-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
-@[to_additive (attr := simp, elab_as_elim)
-  "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec'`."]
+/-- A recursor for `MulOpposite`. Use as `induction x`. -/
+@[to_additive (attr := simp, elab_as_elim, induction_eliminator, cases_eliminator)
+  "A recursor for `AddOpposite`. Use as `induction x`."]
 protected def rec' {F : αᵐᵒᵖ → Sort*} (h : ∀ X, F (op X)) : ∀ X, F X := fun X ↦ h (unop X)
 #align mul_opposite.rec MulOpposite.rec'
 #align add_opposite.rec AddOpposite.rec'

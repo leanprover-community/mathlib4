@@ -213,10 +213,12 @@ variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsSca
 The multiplication map on `A ⊗[R] B`,
 as an `R`-bilinear map.
 -/
+@[irreducible]
 def mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B :=
   TensorProduct.map₂ (LinearMap.mul R A) (LinearMap.mul R B)
 #align algebra.tensor_product.mul Algebra.TensorProduct.mul
 
+unseal mul in
 @[simp]
 theorem mul_apply (a₁ a₂ : A) (b₁ b₂ : B) :
     mul (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
@@ -227,12 +229,14 @@ theorem mul_apply (a₁ a₂ : A) (b₁ b₂ : B) :
 instance instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
 
+unseal mul in
 @[simp]
 theorem tmul_mul_tmul (a₁ a₂ : A) (b₁ b₂ : B) :
     a₁ ⊗ₜ[R] b₁ * a₂ ⊗ₜ[R] b₂ = (a₁ * a₂) ⊗ₜ[R] (b₁ * b₂) :=
   rfl
 #align algebra.tensor_product.tmul_mul_tmul Algebra.TensorProduct.tmul_mul_tmul
 
+unseal mul in
 theorem _root_.SemiconjBy.tmul {a₁ a₂ a₃ : A} {b₁ b₂ b₃ : B}
     (ha : SemiconjBy a₁ a₂ a₃) (hb : SemiconjBy b₁ b₂ b₃) :
     SemiconjBy (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃) :=
@@ -310,6 +314,7 @@ variable [CommSemiring R]
 variable [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
+unseal mul in
 protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
   -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
@@ -613,6 +618,7 @@ def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
     letI : Algebra R C := RestrictScalars.algebra R S C
     letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
     ext
+    dsimp
     exact h_mul _ _ _ _
 #align algebra.tensor_product.alg_hom_of_linear_map_tensor_product Algebra.TensorProduct.algHomOfLinearMapTensorProduct
 
@@ -651,6 +657,7 @@ def algEquivOfLinearEquivTripleTensorProduct (f : (A ⊗[R] B) ⊗[R] C ≃ₗ[R
     (A ⊗[R] B) ⊗[R] C ≃ₐ[R] D :=
   AlgEquiv.ofLinearEquiv f h_one <| f.map_mul_iff.2 <| by
     ext
+    dsimp
     exact h_mul _ _ _ _ _ _
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
 
@@ -785,6 +792,7 @@ section
 
 variable (B)
 
+unseal mul in
 /-- The tensor product of R-algebras is commutative, up to algebra isomorphism.
 -/
 protected def comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A :=
@@ -821,6 +829,7 @@ section
 
 variable {R A}
 
+unseal mul in
 theorem assoc_aux_1 (a₁ a₂ : A) (b₁ b₂ : B) (c₁ c₂ : C) :
     (TensorProduct.assoc R A B C) (((a₁ * a₂) ⊗ₜ[R] (b₁ * b₂)) ⊗ₜ[R] (c₁ * c₂)) =
       (TensorProduct.assoc R A B C) ((a₁ ⊗ₜ[R] b₁) ⊗ₜ[R] c₁) *

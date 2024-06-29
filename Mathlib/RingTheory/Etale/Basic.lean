@@ -24,10 +24,6 @@ under `R`-algebra homomorphisms and compositions.
 We show that étale is stable under algebra isomorphisms, composition and
 localization at an element.
 
-## TODO:
-
-- Show that étale is stable under base change.
-
 -/
 
 
@@ -182,12 +178,14 @@ theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
 section Comp
 
 variable (R A B)
-variable [Algebra A B] [IsScalarTower R A B]
 
-/-- Étale is stable under composition. -/
-theorem comp [Etale R A] [Etale A B] : Etale R B where
+/-- Etale is stable under composition. -/
+theorem comp [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale A B] : Etale R B where
   formallyEtale := FormallyEtale.comp R A B
   finitePresentation := FinitePresentation.trans R A B
+
+/-- Etale is stable under base change. -/
+instance baseChange [Etale R A] : Etale B (B ⊗[R] A) where
 
 end Comp
 

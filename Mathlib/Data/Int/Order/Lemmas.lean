@@ -42,14 +42,6 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
   exact Int.ofNat_le.symm
 #align int.nat_abs_le_iff_mul_self_le Int.natAbs_le_iff_mul_self_le
 
-theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
-  rcases eq_or_ne a 0 with (rfl | ha)
-  · simp only [Int.ediv_zero, Int.dvd_zero]
-  rcases h with ⟨d, rfl⟩
-  refine ⟨d, ?_⟩
-  rw [mul_assoc, Int.mul_ediv_cancel_left _ ha]
-#align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
-
 lemma pow_right_injective (h : 1 < a.natAbs) : Injective ((a ^ ·) : ℕ → ℤ) := by
   refine (?_ : Injective (natAbs ∘ (a ^ · : ℕ → ℤ))).of_comp
   convert Nat.pow_right_injective h using 2

@@ -294,10 +294,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   rw [mem_antidiagonal] at h
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
   field_simp [hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc]
-  -- Porting note: was `cc`, which was not yet ported
-  left
-  left
-  ring
+  left; left; ring
 #align bernoulli_power_series_mul_exp_sub_one bernoulliPowerSeries_mul_exp_sub_one
 
 section Faulhaber

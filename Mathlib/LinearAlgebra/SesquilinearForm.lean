@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
 import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
 

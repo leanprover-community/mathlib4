@@ -130,9 +130,7 @@ theorem toMatrix_injective [DecidableEq n] [MonoidWithZero α] [Nontrivial α] :
     use i
     cases' hf : f i with fi
     · cases' hg : g i with gi
-      -- Porting note: was `cc`
-      · rw [hf, hg] at hi
-        exact (hi rfl).elim
+      · rw [hf, hg] at hi; exact (hi rfl).elim
       · use gi
         simp
     · use fi

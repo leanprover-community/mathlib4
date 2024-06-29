@@ -241,8 +241,8 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
         (G.continuous.comp (by continuity)).continuousOn ?_
     rintro x hx
     norm_num [hx]
-  map_zero_left x := by set_option tactic.skipAssignedInstances false in norm_num
-  map_one_left x := by set_option tactic.skipAssignedInstances false in norm_num
+  map_zero_left x := by norm_num
+  map_one_left x := by norm_num
 #align continuous_map.homotopy.trans ContinuousMap.Homotopy.trans
 
 theorem trans_apply {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) (x : I × X) :

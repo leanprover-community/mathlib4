@@ -413,8 +413,7 @@ section
 
 
 theorem norm_indicator_le_one (s : Set α) (x : α) : ‖(indicator s (1 : α → ℝ)) x‖ ≤ 1 := by
-  simp only [indicator, Pi.one_apply]; split_ifs <;>
-  set_option tactic.skipAssignedInstances false in norm_num
+  simp only [indicator, Pi.one_apply]; split_ifs <;> norm_num
 #align counterexample.phillips_1940.norm_indicator_le_one Counterexample.Phillips1940.norm_indicator_le_one
 
 /-- A functional in the dual space of bounded functions gives rise to a bounded additive measure,

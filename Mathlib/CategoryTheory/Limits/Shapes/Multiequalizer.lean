@@ -175,6 +175,7 @@ namespace MulticospanIndex
 variable {C : Type u} [Category.{v} C] (I : MulticospanIndex.{w} C)
 
 /-- The multicospan associated to `I : MulticospanIndex`. -/
+@[simps]
 def multicospan : WalkingMulticospan I.fstTo I.sndTo ⥤ C where
   obj x :=
     match x with
@@ -190,26 +191,6 @@ def multicospan : WalkingMulticospan I.fstTo I.sndTo ⥤ C where
   map_comp := by
     rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
 #align category_theory.limits.multicospan_index.multicospan CategoryTheory.Limits.MulticospanIndex.multicospan
-
-@[simp]
-theorem multicospan_obj_left (a) : I.multicospan.obj (WalkingMulticospan.left a) = I.left a :=
-  rfl
-#align category_theory.limits.multicospan_index.multicospan_obj_left CategoryTheory.Limits.MulticospanIndex.multicospan_obj_left
-
-@[simp]
-theorem multicospan_obj_right (b) : I.multicospan.obj (WalkingMulticospan.right b) = I.right b :=
-  rfl
-#align category_theory.limits.multicospan_index.multicospan_obj_right CategoryTheory.Limits.MulticospanIndex.multicospan_obj_right
-
-@[simp]
-theorem multicospan_map_fst (b) : I.multicospan.map (WalkingMulticospan.Hom.fst b) = I.fst b :=
-  rfl
-#align category_theory.limits.multicospan_index.multicospan_map_fst CategoryTheory.Limits.MulticospanIndex.multicospan_map_fst
-
-@[simp]
-theorem multicospan_map_snd (b) : I.multicospan.map (WalkingMulticospan.Hom.snd b) = I.snd b :=
-  rfl
-#align category_theory.limits.multicospan_index.multicospan_map_snd CategoryTheory.Limits.MulticospanIndex.multicospan_map_snd
 
 variable [HasProduct I.left] [HasProduct I.right]
 
@@ -377,9 +358,7 @@ def ofι (I : MulticospanIndex.{w} C) (P : C) (ι : ∀ a, P ⟶ I.left a)
         | WalkingMulticospan.right b => ι (I.fstTo b) ≫ I.fst b
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _) <;>
-          dsimp <;>
-          simp only [Category.id_comp, Category.comp_id, Functor.map_id,
-            MulticospanIndex.multicospan_obj_left, MulticospanIndex.multicospan_obj_right]
+          dsimp <;> simp
         apply w }
 #align category_theory.limits.multifork.of_ι CategoryTheory.Limits.Multifork.ofι
 

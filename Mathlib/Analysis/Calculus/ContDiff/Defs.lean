@@ -1537,6 +1537,10 @@ theorem contDiff_succ_iff_hasFDerivAt {n : ℕ} :
     contDiffOn_succ_iff_hasFDerivWithin uniqueDiffOn_univ, Set.mem_univ, forall_true_left]
 #align cont_diff_succ_iff_has_fderiv contDiff_succ_iff_hasFDerivAt
 
+theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
+    ∃ f' : E → E →L[𝕜] F, Continuous f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
+  convert contDiff_succ_iff_hasFDerivAt using 4; simp
+
 /-! ### Iterated derivative -/
 
 

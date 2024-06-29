@@ -655,7 +655,6 @@
  ["docBlame", "Mathlib.Tactic.parameter"],
  ["docBlame", "Mathlib.Tactic.piInstance"],
  ["docBlame", "Mathlib.Tactic.piInstanceDeriveField"],
- ["docBlame", "Mathlib.Tactic.pp_nodot"],
  ["docBlame", "Mathlib.Tactic.prettyCases"],
  ["docBlame", "Mathlib.Tactic.printSorryIn"],
  ["docBlame", "Mathlib.Tactic.propagateTags"],

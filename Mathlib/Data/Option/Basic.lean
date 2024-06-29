@@ -474,4 +474,7 @@ lemma bnot_comp_isNone : (! ·) ∘ @Option.isNone α = Option.isSome := by
 lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.isSome a := by
   cases a <;> simp
 
+lemma eq_none_or_eq_some (a : Option α) : a = none ∨ ∃ x, a = some x :=
+  Option.exists.mp exists_eq'
+
 end Option

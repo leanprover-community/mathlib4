@@ -343,8 +343,8 @@ lemma reverse_charpoly (M : Matrix n n R) :
   suffices t_inv ^ Fintype.card n * p = invert q by
     apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
-      invert.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
-      ← mul_one (Fintype.card n : ℤ), ← T_pow, invert.map_pow, invert_T, mul_comm]
+      _root_.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
+      ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
   simp [t, map_smul', smul_eq_diagonal_mul]

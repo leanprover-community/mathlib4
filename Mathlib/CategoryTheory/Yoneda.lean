@@ -369,9 +369,8 @@ def yonedaPairing : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   Functor.prod yoneda.op (𝟭 (Cᵒᵖ ⥤ Type v₁)) ⋙ Functor.hom (Cᵒᵖ ⥤ Type v₁)
 #align category_theory.yoneda_pairing CategoryTheory.yonedaPairing
 
--- Porting note: we need to provide this `@[ext]` lemma separately,
+-- Porting note (#5229): we need to provide this `@[ext]` lemma separately,
 -- as `ext` will not look through the definition.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma yonedaPairingExt {X : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)} {x y : (yonedaPairing C).obj X}
     (w : ∀ Y, x.app Y = y.app Y) : x = y :=
@@ -518,9 +517,8 @@ to `coyoneda.rightOp.obj X ⟶ F`, functorially in both `X` and `F`.
 def coyonedaPairing : C × (C ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   Functor.prod coyoneda.rightOp (𝟭 (C ⥤ Type v₁)) ⋙ Functor.hom (C ⥤ Type v₁)
 
--- Porting note: we need to provide this `@[ext]` lemma separately,
+-- Porting note (#5229): we need to provide this `@[ext]` lemma separately,
 -- as `ext` will not look through the definition.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma coyonedaPairingExt {X : C × (C ⥤ Type v₁)} {x y : (coyonedaPairing C).obj X}
     (w : ∀ Y, x.app Y = y.app Y) : x = y :=

@@ -94,7 +94,7 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
   · simp only [Nat.zero_eq, ascPochhammer_zero, smeval_one, one_smul]
   · simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
     simp only [← C_eq_natCast, smeval_C_mul, hn, ← nsmul_eq_smul_cast R n]
-    exact rfl
+    simp only [nsmul_eq_mul, Nat.cast_id]
 
 variable {R S : Type*}
 
@@ -204,7 +204,7 @@ theorem choose_natCast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choo
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
   rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
-  ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial]
+    ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial]
 
 @[deprecated (since := "2024-04-17")]
 alias choose_nat_cast := choose_natCast

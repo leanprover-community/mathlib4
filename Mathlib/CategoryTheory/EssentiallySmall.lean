@@ -96,7 +96,7 @@ class LocallySmall (C : Type u) [Category.{v} C] : Prop where
   hom_small : ∀ X Y : C, Small.{w} (X ⟶ Y) := by infer_instance
 #align category_theory.locally_small CategoryTheory.LocallySmall
 
-instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X ⟶ Y) :=
+instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small.{w, v} (X ⟶ Y) :=
   LocallySmall.hom_small X Y
 
 theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]

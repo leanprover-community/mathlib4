@@ -3561,10 +3561,11 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   -- We want this to be fast, so use only the basic and `Finset.Nonempty`-specific rules.
   let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `finsetNonempty]
   let options : Aesop.Options' :=
-    { terminal := true, -- Fail if the new goal is not closed.
-      generateScript := false,
-      useDefaultSimpSet := false, -- Avoiding the whole simp set to speed up the tactic.
-      warnOnNonterminal := false } -- Don't show a warning on failure, simply return `none`.
+    { terminal := true -- Fail if the new goal is not closed.
+      generateScript := false
+      useDefaultSimpSet := false -- Avoiding the whole simp set to speed up the tactic.
+      warnOnNonterminal := false -- Don't show a warning on failure, simply return `none`.
+      forwardMaxDepth? := none }
   let rules ← Aesop.mkLocalRuleSet rulesets options
   let (remainingGoals, _) ←
     try Aesop.search (options := options.toOptions) mvar (.some rules)

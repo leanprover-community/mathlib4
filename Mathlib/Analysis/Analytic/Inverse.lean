@@ -353,7 +353,7 @@ analytic function. Another option would be to compute explicitly its terms (with
 coefficients) to obtain an explicit geometric bound, but this would be very painful.
 
 Instead, we will use the above intuition, but in a slightly different form, with finite sums and an
-induction. I learnt this trick in [pöschel2017siegelsternberg]. Let
+induction. I learnt this trick in [poeschel2017siegelsternberg]. Let
 $S_n = \sum_{k=1}^n Q_k a^k$ (where `a` is a positive real parameter to be chosen suitably small).
 The above computation but with finite sums shows that
 
@@ -568,7 +568,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
       _ ≤ ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i k‖ :=
         (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i k‖ := fun k _ => by positivity
         single_le_sum this (by simp [one_le_n]))
-      _ ≤ (I + 1) * a := IRec (n + 1) (by set_option tactic.skipAssignedInstances false in norm_num)
+      _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
 #align formal_multilinear_series.radius_right_inv_pos_of_radius_pos FormalMultilinearSeries.radius_rightInv_pos_of_radius_pos
 
 end FormalMultilinearSeries

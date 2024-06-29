@@ -140,7 +140,6 @@ theorem lmarginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) 
 
 variable {μ}
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
     ∫⋯∫⁻_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   let α : Type _ := ({i} : Finset δ)

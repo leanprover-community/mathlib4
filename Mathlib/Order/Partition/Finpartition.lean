@@ -498,9 +498,16 @@ theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := b
 /-- The part of the finpartition that `a` lies in. -/
 def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUnique_mem ha) else ∅
 
-theorem part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
+lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
-theorem mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
+lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
+
+lemma part_eq_of_mem (ht : t ∈ P.parts) (hat : a ∈ t) : P.part a = t := by
+  apply P.eq_of_mem_parts (P.part_mem _) ht (P.mem_part _) hat <;> exact mem_of_subset (P.le ht) hat
+
+lemma mem_part_iff_part_eq_part {b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    a ∈ P.part b ↔ P.part a = P.part b :=
+  ⟨fun c ↦ (P.part_eq_of_mem (P.part_mem hb) c), fun c ↦ c ▸ P.mem_part ha⟩
 
 theorem part_surjOn : Set.SurjOn P.part s P.parts := fun p hp ↦ by
   obtain ⟨x, hx⟩ := P.nonempty_of_mem_parts hp
@@ -521,8 +528,7 @@ def equivSigmaParts : s ≃ Σ t : P.parts, t.1 where
     ext e
     · obtain ⟨⟨p, mp⟩, ⟨f, mf⟩⟩ := x
       dsimp only at mf ⊢
-      have mfs := mem_of_subset (P.le mp) mf
-      rw [P.eq_of_mem_parts mp (P.part_mem mfs) mf (P.mem_part mfs)]
+      rw [P.part_eq_of_mem mp mf]
     · simp
 
 lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin t.1.card,

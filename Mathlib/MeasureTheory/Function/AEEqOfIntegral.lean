@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.NormedSpace.Dual
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Order.Filter.Ring
 
 #align_import measure_theory.function.ae_eq_of_integral from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 

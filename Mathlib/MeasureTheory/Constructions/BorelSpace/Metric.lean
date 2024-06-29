@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Thickening
+import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+import Mathlib.Topology.MetricSpace.Thickening
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -54,7 +55,7 @@ theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
   (continuous_infDist_pt s).measurable
 #align measurable_inf_dist measurable_infDist
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.infDist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infDist (f x) s :=
   measurable_infDist.comp hf
@@ -65,7 +66,7 @@ theorem measurable_infNndist {s : Set α} : Measurable fun x => infNndist x s :=
   (continuous_infNndist_pt s).measurable
 #align measurable_inf_nndist measurable_infNndist
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.infNndist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infNndist (f x) s :=
   measurable_infNndist.comp hf
@@ -80,7 +81,7 @@ theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
   continuous_dist.measurable
 #align measurable_dist measurable_dist
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => dist (f b) (g b) :=
   (@continuous_dist α _).measurable2 hf hg
@@ -91,7 +92,7 @@ theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
   continuous_nndist.measurable
 #align measurable_nndist measurable_nndist
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => nndist (f b) (g b) :=
   (@continuous_nndist α _).measurable2 hf hg
@@ -113,12 +114,12 @@ theorem measurableSet_eball : MeasurableSet (EMetric.ball x ε) :=
   EMetric.isOpen_ball.measurableSet
 #align measurable_set_eball measurableSet_eball
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_edist_right : Measurable (edist x) :=
   (continuous_const.edist continuous_id).measurable
 #align measurable_edist_right measurable_edist_right
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_edist_left : Measurable fun y => edist y x :=
   (continuous_id.edist continuous_const).measurable
 #align measurable_edist_left measurable_edist_left
@@ -128,7 +129,7 @@ theorem measurable_infEdist {s : Set α} : Measurable fun x => infEdist x s :=
   continuous_infEdist.measurable
 #align measurable_inf_edist measurable_infEdist
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.infEdist {f : β → α} (hf : Measurable f) {s : Set α} :
     Measurable fun x => infEdist (f x) s :=
   measurable_infEdist.comp hf
@@ -187,13 +188,13 @@ theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
   continuous_edist.measurable
 #align measurable_edist measurable_edist
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => edist (f b) (g b) :=
   (@continuous_edist α _).measurable2 hf hg
 #align measurable.edist Measurable.edist
 
-@[measurability]
+@[measurability, fun_prop]
 theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => edist (f a) (g a)) μ :=
   (@continuous_edist α _).aemeasurable2 hf hg
@@ -241,12 +242,12 @@ theorem measurable_norm : Measurable (norm : α → ℝ) :=
   continuous_norm.measurable
 #align measurable_norm measurable_norm
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a => norm (f a) :=
   measurable_norm.comp hf
 #align measurable.norm Measurable.norm
 
-@[measurability]
+@[measurability, fun_prop]
 theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => norm (f a)) μ :=
   measurable_norm.comp_aemeasurable hf
@@ -257,12 +258,12 @@ theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
 #align measurable_nnnorm measurable_nnnorm
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
   measurable_nnnorm.comp hf
 #align measurable.nnnorm Measurable.nnnorm
 
-@[measurability]
+@[measurability, fun_prop]
 theorem AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
@@ -273,12 +274,12 @@ theorem measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) 
   measurable_nnnorm.coe_nnreal_ennreal
 #align measurable_ennnorm measurable_ennnorm
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
   hf.nnnorm.coe_nnreal_ennreal
 #align measurable.ennnorm Measurable.ennnorm
 
-@[measurability]
+@[measurability, fun_prop]
 theorem AEMeasurable.ennnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => (‖f a‖₊ : ℝ≥0∞)) μ :=
   measurable_ennnorm.comp_aemeasurable hf

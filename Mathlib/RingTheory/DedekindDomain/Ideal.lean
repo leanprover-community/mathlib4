@@ -388,7 +388,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
       rwa [Ne, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
     -- By maximality of `P` and `M`, we have that `P ≤ M` implies `P = M`.
-    have hPM' := (P.IsPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
+    have hPM' := (P.isPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
     subst hPM'
     -- By minimality of `Z`, erasing `P` from `Z` is exactly what we need.
     refine ⟨Z.erase P, ?_, ?_⟩

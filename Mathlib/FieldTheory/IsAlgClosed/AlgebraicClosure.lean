@@ -129,7 +129,6 @@ instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
   (toAdjoinMonic k).toAlgebra
 #align algebraic_closure.adjoin_monic.algebra AlgebraicClosure.AdjoinMonic.algebra
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 -- Porting note: In the statement, the type of `C` had to be made explicit.
 theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk _).comp
     (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl

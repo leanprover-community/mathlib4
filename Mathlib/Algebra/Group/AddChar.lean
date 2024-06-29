@@ -83,7 +83,7 @@ instance instFunLike : FunLike (AddChar A M) A M where
 
 #noalign add_char.has_coe_to_fun
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
+-- Porting note (#5229): added.
 @[ext] lemma ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
   DFunLike.ext f g h
 

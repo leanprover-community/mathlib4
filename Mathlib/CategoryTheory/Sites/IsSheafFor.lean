@@ -517,12 +517,9 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
     IsSheafFor P (S : Presieve X) ↔ YonedaSheafCondition P S := by
   rw [IsSheafFor, YonedaSheafCondition]
   simp_rw [extension_iff_amalgamation]
-  rw [Equiv.forall_congr_left' natTransEquivCompatibleFamily]
+  rw [Equiv.forall_congr_left natTransEquivCompatibleFamily]
   rw [Subtype.forall]
-  apply forall₂_congr
-  intro x hx
-  rw [Equiv.exists_unique_congr_left _]
-  simp
+  exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
 #align category_theory.presieve.is_sheaf_for_iff_yoneda_sheaf_condition CategoryTheory.Presieve.isSheafFor_iff_yonedaSheafCondition
 
 /--

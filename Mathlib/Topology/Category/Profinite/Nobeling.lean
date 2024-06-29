@@ -778,13 +778,11 @@ theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := b
 instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) :=
   ⟨0, 1, ne_of_apply_ne DFunLike.coe <| (Function.const_injective (β := ℤ)).ne zero_ne_one⟩
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
   simp only [Products.lt_nil_empty, Products.eval, List.map, List.prod_nil, Set.image_empty,
     Submodule.span_empty, Submodule.mem_bot, one_ne_zero] at h
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Products.span_nil_eq_top :
     Submodule.span ℤ (eval ({fun _ ↦ false} : Set (I → Bool)) '' {nil}) = ⊤ := by
   rw [Set.image_singleton, eq_top_iff]
@@ -823,7 +821,6 @@ instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyCon
   simp [LocallyConstant.ext_iff] at h ⊢
   exact h x
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem GoodProducts.linearIndependentSingleton :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
   refine linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) ?_

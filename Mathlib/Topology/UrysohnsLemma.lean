@@ -187,7 +187,6 @@ theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
   · exact indicator_apply_le' (fun _ => le_rfl) fun _ => zero_le_one
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
     have := add_le_add (ihn (left c)) (ihn (right c))
-    set_option tactic.skipAssignedInstances false in
     norm_num at this
     exact Iff.mpr (div_le_one zero_lt_two) this
 #align urysohns.CU.approx_le_one Urysohns.CU.approx_le_one

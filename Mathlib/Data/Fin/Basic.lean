@@ -335,10 +335,7 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 
 @[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
 
-theorem rev_involutive : Involutive (rev : Fin n → Fin n) := fun i =>
-  ext <| by
-    dsimp only [rev]
-    rw [← Nat.sub_sub, Nat.sub_sub_self (Nat.add_one_le_iff.2 i.is_lt), Nat.add_sub_cancel_right]
+theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 #align fin.rev_involutive Fin.rev_involutive
 
 /-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
@@ -405,12 +402,16 @@ theorem le_rev_iff {i j : Fin n} : i ≤ rev j ↔ j ≤ rev i := by
 #align fin.last_val Fin.val_last
 #align fin.le_last Fin.le_last
 
+@[simp] theorem val_rev_zero [NeZero n] : ((rev 0 : Fin n) : ℕ) = n.pred := rfl
+
 #align fin.last_pos Fin.last_pos
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
 
 theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
-theorem one_lt_last [NeZero n] : 1 < last (n + 1) := Nat.lt_add_left_iff_pos.2 n.pos_of_neZero
+theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
+  rw [lt_iff_val_lt_val, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
+  exact NeZero.ne n
 
 end Order
 

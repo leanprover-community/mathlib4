@@ -792,7 +792,7 @@ theorem continuousOn_multiset_prod {f : ι → X → M} (s : Multiset ι) {t : S
 #align continuous_on_multiset_prod continuousOn_multiset_prod
 #align continuous_on_multiset_sum continuousOn_multiset_sum
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_finset_prod {f : ι → X → M} (s : Finset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => ∏ i ∈ s, f i a :=
   continuous_multiset_prod _
