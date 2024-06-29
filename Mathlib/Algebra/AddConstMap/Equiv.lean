@@ -65,7 +65,7 @@ def symm (e : G ≃+c[a, b] H) : H ≃+c[b, a] G where
 /-- A custom projection for `simps`. -/
 def Simps.symm_apply (e : G ≃+c[a, b] H) : H → G := e.symm
 
-initialize_simps_projections AddConstEquiv (toFun → apply, invFun → symm_apply, +toEquiv)
+initialize_simps_projections AddConstEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp] lemma symm_symm (e : G ≃+c[a, b] H) : e.symm.symm = e := rfl
 
@@ -123,5 +123,16 @@ def toAddConstMapHom : (G ≃+c[a, a] G) →* (G →+c[a, a] G) where
   toFun := toAddConstMap
   map_mul' _ _ := rfl
   map_one' := rfl
+
+/-- Group equivalence between `G ≃+c[a, a] G` and the units of `G →+c[a, a] G`. -/
+@[simps!]
+def equivUnits : (G ≃+c[a, a] G) ≃* (G →+c[a, a] G)ˣ where
+  toFun := toAddConstMapHom.toHomUnits
+  invFun u :=
+    { toEquiv := Equiv.Perm.equivUnitsEnd.symm <| Units.map AddConstMap.toEnd u
+      map_add_const' := u.1.2 }
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
 
 end AddConstEquiv
