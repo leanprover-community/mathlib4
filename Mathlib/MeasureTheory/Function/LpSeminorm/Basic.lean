@@ -1030,7 +1030,7 @@ theorem le_snorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (C 
   rw [ENNReal.smul_def, smul_eq_mul, snorm_eq_lintegral_rpow_nnnorm hp hp',
     ENNReal.le_rpow_one_div_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
-    one_div_mul_cancel (ENNReal.toReal_pos hp hp').ne.symm, ENNReal.rpow_one, ← set_lintegral_const,
+    one_div_mul_cancel (ENNReal.toReal_pos hp hp').ne.symm, ENNReal.rpow_one, ← setLIntegral_const,
     ← lintegral_indicator _ hs]
   refine lintegral_mono_ae ?_
   filter_upwards [hf] with x hx

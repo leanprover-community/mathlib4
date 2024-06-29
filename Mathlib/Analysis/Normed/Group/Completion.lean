@@ -43,6 +43,10 @@ instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
       exact Continuous.comp Completion.continuous_extension continuous_sub
     · rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]
 
+@[simp]
+theorem nnnorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
+  simp [nnnorm]
+
 end Completion
 
 end UniformSpace
