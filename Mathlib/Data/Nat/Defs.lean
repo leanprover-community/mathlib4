@@ -770,6 +770,10 @@ protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) :=by
   | 0 => by simp
   | n + 1 => by rw [Nat.pow_succ, mul_eq_zero, Nat.pow_eq_zero]; omega
 
+/-- For `a > 1`, `a ^ b = a` iff `b = 1`. -/
+lemma pow_eq_self_iff {a b : ℕ} (ha : 1 < a) : a ^ b = a ↔ b = 1 :=
+  (Nat.pow_right_injective ha).eq_iff' a.pow_one
+
 lemma le_self_pow (hn : n ≠ 0) : ∀ a : ℕ, a ≤ a ^ n
   | 0 => zero_le _
   | a + 1 => by simpa using Nat.pow_le_pow_right a.succ_pos (Nat.one_le_iff_ne_zero.2 hn)

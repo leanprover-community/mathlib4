@@ -162,7 +162,7 @@ lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionR
     {S : Set (∀ i, E i)} : IsVonNBounded 𝕜 S ↔ ∀ i, IsVonNBounded 𝕜 (eval i '' S) := by
   simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
     smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff, Function.comp,
-    ← image_smul, image_image]; rfl
+    ← image_smul, image_image, eval, Pi.smul_apply, Pi.zero_apply]
 
 section Image
 
