@@ -281,8 +281,6 @@ theorem lintegral_prod_lintegral_pow_le
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
-
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
