@@ -110,7 +110,8 @@ end Exp
 
 section OrderIso
 
-/-- `ENNReal.log` and its inverse `ENNReal.exp` are an order isomorphism between `ℝ≥0∞` and `EReal`. -/
+/-- `ENNReal.log` and its inverse `ENNReal.exp` are an order isomorphism between `ℝ≥0∞` and
+`EReal`. -/
 noncomputable
 def logOrderIso : ℝ≥0∞ ≃o EReal where
   toFun := log
