@@ -1336,7 +1336,6 @@ theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x
       exact not_le_of_lt x_lt_z (h z z_lt_y)
     case h_top x =>
       exfalso
-      --specialize h (x + 1) (coe_lt_top (x + 1))
       norm_cast at h
       exact not_le_of_lt (lt_add_one x) <| h (x + 1) (coe_lt_top (x + 1))
   case h_top => exact le_top

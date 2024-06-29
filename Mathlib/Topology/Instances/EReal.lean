@@ -261,16 +261,22 @@ lemma liminf_add_top_of_ne_bot {α : Type*} {f : Filter α} {u : α → EReal} {
   exact coe_sub x y ▸ @liminf_add_gt_of_gt α f u v (x - y) y
     (h ▸ coe_sub x y ▸ coe_lt_top (x-y)) hy |>.le
 
-theorem add_liminf_le_liminf_add {α : Type*} {f : Filter α} {u v : α → EReal}
-    (h : liminf u f ≠ ⊥ ∨ liminf v f ≠ ⊤) : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
+theorem add_liminf_le_liminf_add {α : Type*} {f : Filter α} {u v : α → EReal} :
+    (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
   by_cases hu : liminf u f = ⊥
-  · sorry
+  · simp_all
   by_cases hv : liminf v f = ⊥
-  · sorry
+  · simp_all
+  have h' : limsup (-(u + v)) f = limsup (-u + -v) f := by
+    apply limsup_congr
+    filter_upwards [eventually_lt_of_lt_liminf (bot_lt_iff_ne_bot.mpr hu),
+      eventually_lt_of_lt_liminf (bot_lt_iff_ne_bot.mpr hv)] with x hux hvx
+    dsimp
+    rw [neg_add (Or.inl hux.ne_bot) (Or.inr hvx.ne_bot), sub_eq_add_neg]
   rw [← neg_le_neg_iff, neg_add (Or.inl hu) (Or.inr hv), sub_eq_add_neg]
+  rw [← neg_inj, neg_bot] at hu hv
   simp_rw [← limsup_neg] at hu hv ⊢
-  --convert limsup_add_le_add_limsup
-  sorry
+  exact h' ▸ limsup_add_le_add_limsup (Or.inr hv) (Or.inl hu)
 
 theorem limsup_le_iff {α : Type*} {f : Filter α} {u : α → EReal} {b : EReal} :
     limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
