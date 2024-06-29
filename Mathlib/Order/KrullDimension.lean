@@ -79,10 +79,10 @@ lemma krullDim_eq_top_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] 
     simp
 
 lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
-    iSup_le <| fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
+  iSup_le <| fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
 
 lemma height_mono {a b : α} (h : a ≤ b) : height α a ≤ height α b :=
-    krullDim_le_of_strictMono (fun x ↦ ⟨x, le_trans x.2 h⟩) <| fun _ _ ↦ id
+  krullDim_le_of_strictMono (fun x ↦ ⟨x, le_trans x.2 h⟩) <| fun _ _ ↦ id
 
 lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
     krullDim α = (LTSeries.longestOf α).length :=
