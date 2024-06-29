@@ -519,9 +519,7 @@ noncomputable def forgetToPresheafModuleCatObj
     (X : Cᵒᵖ) (hX : Limits.IsInitial X) (M : PresheafOfModules.{v} R) :
     Cᵒᵖ ⥤ ModuleCat (R.1.obj X) :=
 { obj := fun c =>
-      letI : Module (R.1.obj X) (M.presheaf.obj c) :=
-        Module.compHom (M.presheaf.obj c) (R.1.map (hX.to c))
-      ModuleCat.of _ (M.presheaf.obj c)
+    ModuleCat.restrictScalars (R.1.map (hX.to c)) |>.obj <| M.obj c
   map := fun {c₁ c₂} f =>
     { toFun := fun x => M.presheaf.map f x
       map_add' := M.presheaf.map f |>.map_add
