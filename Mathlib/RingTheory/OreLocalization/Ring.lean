@@ -235,12 +235,11 @@ protected theorem inv_def {r : R} {s : R⁰} :
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
   induction' x with r s
   rw [OreLocalization.inv_def, OreLocalization.one_def]
-  by_cases hr : r = 0
-  · exfalso
-    apply h
-    simp [hr]
-  · simp only [hr, ↓reduceDIte]
-    apply OreLocalization.mul_inv ⟨r, _⟩
+  have hr : r ≠ 0 := by
+    rintro rfl
+    simp at h
+  simp only [hr, ↓reduceDite]
+  apply OreLocalization.mul_inv ⟨r, _⟩
 #align ore_localization.mul_inv_cancel OreLocalization.mul_inv_cancel
 
 protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
