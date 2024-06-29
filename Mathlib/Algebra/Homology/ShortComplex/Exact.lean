@@ -934,12 +934,6 @@ instance : F.PreservesMonomorphisms where
     exact ((S.map F).exact_iff_mono (by simp)).1
       (((S.exact_iff_mono rfl).2 hf).map F)
 
-instance [Faithful F] [CategoryWithHomology C] : F.ReflectsMonomorphisms where
-  reflects {X Y} f hf := by
-    let S := ShortComplex.mk (0 : X ⟶ X) f zero_comp
-    exact (S.exact_iff_mono rfl).1
-      ((ShortComplex.exact_map_iff_of_faithful S F).1
-      (((S.map F).exact_iff_mono (by simp)).2 hf))
 
 instance : F.PreservesEpimorphisms where
   preserves {X Y} f hf := by
@@ -947,12 +941,6 @@ instance : F.PreservesEpimorphisms where
     exact ((S.map F).exact_iff_epi (by simp)).1
       (((S.exact_iff_epi rfl).2 hf).map F)
 
-instance [Faithful F] [CategoryWithHomology C] : F.ReflectsEpimorphisms where
-  reflects {X Y} f hf := by
-    let S := ShortComplex.mk f (0 : Y ⟶ Y) comp_zero
-    exact (S.exact_iff_epi rfl).1
-      ((ShortComplex.exact_map_iff_of_faithful S F).1
-      (((S.map F).exact_iff_epi (by simp)).2 hf))
 
 end Functor
 
