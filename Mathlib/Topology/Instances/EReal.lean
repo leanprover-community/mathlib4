@@ -328,6 +328,13 @@ theorem limsup_max {α : Type*} {f : Filter α} {u v : α → EReal} :
   · exact max_le (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a))))
       (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a))))
 
+theorem liminf_min {α : Type*} {f : Filter α} {u v : α → EReal} :
+    liminf (fun a ↦ min (u a) (v a)) f = min (liminf u f) (liminf v f) := by
+  rw [← neg_inj, ← max_neg_neg]
+  simp_rw [← limsup_neg]
+  convert limsup_max
+  simp [max_neg_neg]
+
 /-! ### Continuity of addition -/
 
 theorem continuousAt_add_coe_coe (a b : ℝ) :
