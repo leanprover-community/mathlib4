@@ -5,7 +5,7 @@ universe u v₁ u₁
 
 open CategoryTheory
 
-namespace PresheavesOfModules
+namespace PresheafOfModules
 
 variable {C : Type u₁} [Category.{v₁} C] (R : Cᵒᵖ ⥤ RingCat.{u})
 
@@ -27,4 +27,4 @@ noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R where
         congr
         exact NatTrans.naturality_apply φ f x }
 
-end PresheavesOfModules
+end PresheafOfModules
