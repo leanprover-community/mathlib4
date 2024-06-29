@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.MvPolynomial.Tower
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -24,10 +27,6 @@ import Mathlib.RingTheory.Ideal.Cotangent
   A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
 - `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
-
-## TODO
-* Define `Algebra.Presentation` that extends `Generators` and contains the data of a family of
-  relations that spans the kernel of the presentation.
 
 -/
 
@@ -126,6 +125,31 @@ def self : Generators R S where
   σ' := X
   aeval_val_σ' := aeval_X _
 
+section Localization
+
+variable (r : R) [IsLocalization.Away r S]
+
+/-- If `S` is the localization of `R` away from `r`, we obtain a canonical generator mapping
+to the inverse of `r`. -/
+@[simps vars val, simps (config := .lemmasOnly) σ]
+noncomputable
+def localizationAway : Generators R S where
+  vars := Unit
+  val _ := IsLocalization.Away.invSelf r
+  σ' s :=
+    letI a : R := (IsLocalization.Away.sec r s).1
+    letI n : ℕ := (IsLocalization.Away.sec r s).2
+    C a * X () ^ n
+  aeval_val_σ' s := by
+    rw [_root_.map_mul, algHom_C, map_pow, aeval_X]
+    simp only [← IsLocalization.Away.sec_spec, map_pow, IsLocalization.Away.invSelf]
+    rw [← IsLocalization.mk'_pow, one_pow, ← IsLocalization.mk'_one (M := Submonoid.powers r) S r]
+    rw [← IsLocalization.mk'_pow, one_pow, mul_assoc, ← IsLocalization.mk'_mul]
+    rw [mul_one, one_mul, IsLocalization.mk'_pow]
+    simp
+
+end Localization
+
 variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
@@ -154,6 +178,32 @@ def extendScalars (P : Generators R T) : Generators S T where
   val := P.val
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
+
+noncomputable
+def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators T (T ⊗[R] S) := by
+  apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
+  intro x
+  induction x using TensorProduct.induction_on with
+  | zero => exact ⟨0, map_zero _⟩
+  | tmul a b =>
+    let X := P.σ b
+    use a • MvPolynomial.map (algebraMap R T) X
+    simp only [LinearMapClass.map_smul, X, aeval_map_algebraMap]
+    have : ∀ y : P.Ring,
+      aeval (fun x ↦ (1 ⊗ₜ[R] P.val x : T ⊗[R] S)) y = 1 ⊗ₜ aeval (fun x ↦ P.val x) y := by
+      intro y
+      induction y using MvPolynomial.induction_on with
+      | h_C a =>
+        rw [aeval_C, aeval_C, TensorProduct.algebraMap_apply, algebraMap_eq_smul_one, smul_tmul,
+          algebraMap_eq_smul_one]
+      | h_add p q hp hq => simp [map_add, tmul_add, hp, hq]
+      | h_X p i hp => simp [hp]
+    rw [this, P.aeval_val_σ, smul_tmul', smul_eq_mul, mul_one]
+  | add x y ex ey =>
+    obtain ⟨a, ha⟩ := ex
+    obtain ⟨b, hb⟩ := ey
+    use (a + b)
+    rw [map_add, ha, hb]
 
 end Construction
 
