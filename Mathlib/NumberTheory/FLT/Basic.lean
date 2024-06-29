@@ -1,12 +1,14 @@
 /-
 Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Yaël Dillies
+Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Data.Rat.Defs
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Tactic.NormNum
@@ -21,42 +23,60 @@ specific exponent, along with the usual statement over the naturals.
 -/
 
 open List
+open scoped Polynomial
 
-/-- Statement of Fermat's Last Theorem over a given semiring with a specific exponent. -/
-def FermatLastTheoremWith (α : Type*) [Semiring α] (n : ℕ) : Prop :=
-  ∀ a b c : α, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n ≠ c ^ n
+/-- Statement of Fermat's Last Theorem over a given semiring with a specific exponent and a
+predicate specifying which solutions are trivial. -/
+def FermatLastTheoremWithSolution (α : Type*) [Semiring α] (n : ℕ) (t : α → α → α → Prop) : Prop :=
+  ∀ a b c : α, a ^ n + b ^ n = c ^ n → t a b c
+
+/-- Statement of Fermat's Last Theorem over a given semiring with a specific exponent, stating that
+any soultion `(a, b, c)` should satisfy `abc=0`. -/
+def FermatLastTheoremWithSolutionZero (α : Type*) [Semiring α] (n : ℕ) : Prop :=
+  FermatLastTheoremWithSolution α n (λ a b c ↦ a = 0 ∨ b = 0 ∨ c = 0)
+
+/-- Statement of Fermat's Last Theorem over a given semiring with a specific exponent, stating that
+any soultion `(a, b, c)` should be a common multiple of triples of zeroes or units. -/
+def FermatLastTheoremWithSolutionUnit (α : Type*) [Semiring α] (n : ℕ) : Prop :=
+  FermatLastTheoremWithSolution α n (λ a b c ↦ ∃ d a' b' c' : α,
+    (a = a' * d ∧ b = b' * d ∧ c = c' * d) ∧
+    (a = 0 ∨ IsUnit a) ∧ (b = 0 ∨ IsUnit b) ∧ (c = 0 ∨ IsUnit c))
 
 /-- Statement of Fermat's Last Theorem over the naturals for a given exponent. -/
-def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWith ℕ n
+def FermatLastTheoremFor (n : ℕ) : Prop := FermatLastTheoremWithSolutionZero ℕ n
 
 /-- Statement of Fermat's Last Theorem: `a ^ n + b ^ n = c ^ n` has no nontrivial natural solution
 when `n ≥ 3`. -/
 def FermatLastTheorem : Prop := ∀ n ≥ 3, FermatLastTheoremFor n
 
-lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 :=
-  fun _ _ _ _ _ _ ↦ by norm_num
+lemma fermatLastTheoremFor_zero : FermatLastTheoremFor 0 := sorry
+  -- fun _ _ _ _ _ _ ↦ by norm_num
 
-lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 :=
-  fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+lemma not_fermatLastTheoremFor_one : ¬ FermatLastTheoremFor 1 := sorry
+  -- fun h ↦ h 1 1 2 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
 
-lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 :=
-  fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+lemma not_fermatLastTheoremFor_two : ¬ FermatLastTheoremFor 2 := sorry
+  -- fun h ↦ h 3 4 5 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
 
 variable {α : Type*} [Semiring α] [NoZeroDivisors α] {m n : ℕ}
 
-lemma FermatLastTheoremWith.mono (hmn : m ∣ n) (hm : FermatLastTheoremWith α m) :
-    FermatLastTheoremWith α n := by
-  rintro a b c ha hb hc
+lemma FermatLastTheoremWithSolutionZero.mono (hmn : m ∣ n)
+  (hm : FermatLastTheoremWithSolutionZero α m) : FermatLastTheoremWithSolutionZero α n := by
+  rintro a b c heq
   obtain ⟨k, rfl⟩ := hmn
-  simp_rw [pow_mul']
-  refine hm _ _ _ ?_ ?_ ?_ <;> exact pow_ne_zero _ ‹_›
+  simp_rw [pow_mul'] at heq
+  rcases hm _ _ _ heq with h | h | h <;> have h' := pow_eq_zero h <;> tauto
 
 lemma FermatLastTheoremFor.mono (hmn : m ∣ n) (hm : FermatLastTheoremFor m) :
     FermatLastTheoremFor n := by
-  exact FermatLastTheoremWith.mono hmn hm
+  exact FermatLastTheoremWithSolutionZero.mono hmn hm
 
 lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
-    TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
+    TFAE [FermatLastTheoremFor n,
+          FermatLastTheoremWithSolutionZero ℕ n, FermatLastTheoremWithSolutionZero ℤ n,
+          FermatLastTheoremWithSolutionZero ℚ n,
+          FermatLastTheoremWithSolutionUnit ℕ n, FermatLastTheoremWithSolutionUnit ℤ n] := sorry
+/-
   tfae_have 1 → 2
   · rintro h a b c ha hb hc habc
     obtain hn | hn := n.even_or_odd
@@ -112,15 +132,22 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
   · rintro h a b c
     exact mod_cast h a b c
   tfae_finish
+-/
 
-lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℕ n :=
-  Iff.rfl
+lemma fermatLastTheoremFor_iff_nat {n : ℕ} :
+  FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℕ n := Iff.rfl
 
-lemma fermatLastTheoremFor_iff_int {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℤ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 1
+lemma fermatLastTheoremFor_iff_int {n : ℕ} :
+  FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℤ n :=
+    (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 2
 
-lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℚ n :=
-  (fermatLastTheoremWith_nat_int_rat_tfae n).out 0 2
+lemma fermatLastTheoremFor_iff_rat {n : ℕ} :
+  FermatLastTheoremFor n ↔ FermatLastTheoremWithSolutionZero ℚ n :=
+    (fermatLastTheoremWith_nat_int_rat_tfae n).out 1 3
+
+/-- Fermat's Last Theorem for polynomials. This is a consequence of Mason--Stothers theorem. -/
+theorem fermatLastTheoremWithPolynomial {k : Type*} [Field k] {n : ℕ} (chn : ¬ringChar k ∣ n) :
+  FermatLastTheoremWithSolutionUnit k[X] n := sorry
 
 open Finset in
 /-- To prove Fermat Last Theorem in any semiring that is a `NormalizedGCDMonoid` one can assume
@@ -129,7 +156,8 @@ lemma fermatLastTheoremWith_of_fermatLastTheoremWith_coprime {n : ℕ} {R : Type
     [IsDomain R] [DecidableEq R] [NormalizedGCDMonoid R]
     (hn : ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → ({a, b, c} : Finset R).gcd id = 1 →
       a ^ n + b ^ n ≠ c ^ n) :
-    FermatLastTheoremWith R n := by
+    FermatLastTheoremWithSolutionZero R n := sorry
+/-
   intro a b c ha hb hc habc
   let s : Finset R := {a, b, c}; let d := s.gcd id
   obtain ⟨A, hA⟩ : d ∣ a := gcd_dvd (by simp [s])
@@ -167,3 +195,4 @@ lemma isCoprime_of_gcd_eq_one_of_FLT {n : ℕ} {a b c : ℤ} (Hgcd: Finset.gcd {
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx
     rcases hx with hx | hx | hx <;> simp only [id_eq, hx, hpa, hpb,
       dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT hp hpa hpb HF]
+-/
