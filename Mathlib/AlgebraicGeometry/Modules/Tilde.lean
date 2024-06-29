@@ -6,6 +6,7 @@ Authors: Weihong Xu
 
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.AlgebraicGeometry.StructureSheaf
+import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
 /-!
@@ -169,32 +170,20 @@ def TildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
     (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr
       (TopCat.Presheaf.isSheaf_of_iso (Tilde.presheafCompForget R M).symm (TildeInType R M).cond)⟩
 
--- `SheafOfModules` want `Sheaf ... RingCat`; but we have a `Sheaf ... CommRingCat`, so we forget.
-local notation3 "𝒪_SpecR" =>
-  sheafCompose (Opens.grothendieckTopology (PrimeSpectrum.Top R))
-    (forget₂ CommRingCat RingCat) |>.obj (Spec.structureSheaf R)
-
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module ((𝒪_SpecR).val.obj U) ((Tilde.presheafInAddCommGrp R M).obj U) :=
+    Module ((Spec (CommRingCat.of R)).ringCatSheaf.1.obj U)
+      ((Tilde.presheafInAddCommGrp R M).obj U) :=
   inferInstanceAs $ Module _ (Tilde.sectionsSubmodule R M U)
 
 open Tilde in
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
-noncomputable def TildeInModules : SheafOfModules (𝒪_SpecR) where
-  val := {
-    presheaf := (presheafInAddCommGrp R M)
+noncomputable def TildeInModules : (Spec (CommRingCat.of R)).Modules where
+  val :=
+  { presheaf := (presheafInAddCommGrp R M)
     module := inferInstance
-    map_smul := by
-      intro U V f r m
-      dsimp [TildeInAddCommGrp, presheafInAddCommGrp, TildeInType]
-      ext x
-      change (Spec.structureSheaf R).val.obj U at r
-      change r • (m.1 ⟨x.1, _⟩) = _
-      rw [sections_smul_localizations_def]
-      rfl
-  }
+    map_smul := fun _ _ _ => rfl }
   isSheaf := (TildeInAddCommGrp R M).2
 
 end AlgebraicGeometry
