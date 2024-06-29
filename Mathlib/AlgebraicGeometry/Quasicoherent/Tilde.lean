@@ -328,7 +328,8 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     let O := W' ⊓ (PrimeSpectrum.basicOpen r)
     suffices (TildeInModuleCat R M).map
         (op $ (homOfLE $ inf_le_left.trans (leOfHom $ iW ≫ iU) : O ⟶ U)) s = 0 by
-      apply_fun (TildeInModuleCat R M).germ ⟨x, sorry⟩ at this
+      apply_fun (TildeInModuleCat R M).germ
+        (⟨x, ⟨mem_W', r.2⟩⟩ : (W' ⊓ PrimeSpectrum.basicOpen r.1 : Opens _)) at this
       erw [TopCat.Presheaf.germ_res_apply] at this
       rw [this, map_zero]
 
@@ -338,7 +339,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
     change s.1 ⟨q, _⟩ = 0
     apply_fun (TildeInModuleCat R M).map (op iW) at h
     rw [map_smul] at h
-    replace h := congr_fun (Subtype.ext_iff.1 h) ⟨q.1, sorry⟩
+    replace h := congr_fun (Subtype.ext_iff.1 h) ⟨q.1, q.2.1⟩
     change r.1 • s.1 ⟨q.1, _⟩ = 0 at h
     set x := s.1 ⟨q.1, _⟩
     clear_value x
