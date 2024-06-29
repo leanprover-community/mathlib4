@@ -138,47 +138,47 @@ theorem isLocallyNoetherian_iff_of_iSup_eq_top
 
 open CategoryTheory in
 /-- A version of `isLocallyNoetherian_iff_of_iSup_eq_top` using `Scheme.OpenCover`. -/
-theorem isLocallyNoetherian_iff_of_affine_openCover {C : Scheme.OpenCover.{v, u} X}
-    (hAff : ∀ (i : C.J), IsAffine (C.obj i)) :
+theorem isLocallyNoetherian_iff_of_affine_openCover {𝒰 : Scheme.OpenCover.{v, u} X}
+    (hAff : ∀ (i : 𝒰.J), IsAffine (𝒰.obj i)) :
     IsLocallyNoetherian X ↔
-    ∀ (i : C.J), IsNoetherianRing Γ(C.obj i, ⊤) := by
+    ∀ (i : 𝒰.J), IsNoetherianRing Γ(𝒰.obj i, ⊤) := by
   constructor
   · intro h i
-    let U := Scheme.Hom.opensRange (C.map i)
+    let U := Scheme.Hom.opensRange (𝒰.map i)
     have := h.component_noetherian ⟨U, isAffineOpen_opensRange _⟩
     apply isNoetherianRing_of_ringEquiv (R := Γ(X, U))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
-    exact (Scheme.openImmersionΓ (C.map i)).symm
+    exact (Scheme.openImmersionΓ (𝒰.map i)).symm
   · intro hCNoeth
-    let fS i : X.affineOpens := ⟨Scheme.Hom.opensRange (C.map i), isAffineOpen_opensRange _⟩
+    let fS i : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.map i), isAffineOpen_opensRange _⟩
     let S : Set X.affineOpens := Set.range fS
     apply isLocallyNoetherian_of_affine_cover (S := S)
-    rw [← Scheme.OpenCover.iSup_opensRange C, iSup_range]
+    rw [← Scheme.OpenCover.iSup_opensRange 𝒰, iSup_range]
     rintro _ ⟨i, rfl⟩
-    apply isNoetherianRing_of_ringEquiv (R := Γ(C.obj i, ⊤))
+    apply isNoetherianRing_of_ringEquiv (R := Γ(𝒰.obj i, ⊤))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
-    exact Scheme.openImmersionΓ (C.map i)
+    exact Scheme.openImmersionΓ (𝒰.map i)
 
 
 /-- A scheme is locally Noetherian if it has an open cover by
 locally Noetherian schemes. -/
-theorem isLocallyNoetherian_of_openCover (C : Scheme.OpenCover.{max v u, u} X)
-    (hC : ∀ (i : C.J), IsLocallyNoetherian (C.obj i)) :
+theorem isLocallyNoetherian_of_openCover (𝒰 : Scheme.OpenCover.{max v u, u} X)
+    (h𝒰 : ∀ (i : 𝒰.J), IsLocallyNoetherian (𝒰.obj i)) :
     IsLocallyNoetherian X := by
-  let C' := Scheme.OpenCover.affineRefinement C
-  let m := Scheme.OpenCover.fromAffineRefinement C
+  let 𝒰' := Scheme.OpenCover.affineRefinement 𝒰
+  let m := Scheme.OpenCover.fromAffineRefinement 𝒰
   apply Iff.mpr
-  apply isLocallyNoetherian_iff_of_affine_openCover (C := C'.openCover)
+  apply isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰'.openCover)
   · intro i
     rw [Scheme.AffineOpenCover.openCover_obj]
     exact isAffine_Spec _
   · intro i
-    let X := (C.obj (m.idx i))
+    let X := (𝒰.obj (m.idx i))
     let U : X.affineOpens := ⟨(m.app i).opensRange, by
       convert isAffineOpen_opensRange (m.app i)
       exact isAffine_Spec _⟩
     have hNoeth : IsNoetherianRing Γ(X, U) := by
-      apply (hC (m.idx i)).component_noetherian
+      apply (h𝒰 (m.idx i)).component_noetherian
     apply isNoetherianRing_of_ringEquiv (R := Γ(X, U))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
     symm
@@ -277,9 +277,9 @@ theorem isNoetherian_iff_of_finite_iSup_eq_top {S : Finset X.affineOpens}
     apply CompactSpace.isCompact_univ
 
 /-- A version of `isNoetherian_iff_of_finite_iSup_eq_top` using `Scheme.OpenCover`. -/
-theorem isNoetherian_iff_of_finite_affine_openCover {C : Scheme.OpenCover.{v, u} X}
-    (hFin: Finite C.J) (hAff : ∀ (i : C.J), IsAffine (C.obj i)) :
-    IsNoetherian X ↔ ∀ (i : C.J), IsNoetherianRing Γ(C.obj i, ⊤) := by
+theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v, u} X}
+    (hFin: Finite 𝒰.J) (hAff : ∀ (i : 𝒰.J), IsAffine (𝒰.obj i)) :
+    IsNoetherian X ↔ ∀ (i : 𝒰.J), IsNoetherianRing Γ(𝒰.obj i, ⊤) := by
   constructor
   · intro h i
     apply (isLocallyNoetherian_iff_of_affine_openCover hAff).mp
@@ -287,7 +287,7 @@ theorem isNoetherian_iff_of_finite_affine_openCover {C : Scheme.OpenCover.{v, u}
   · intro hNoeth
     convert IsNoetherian.mk
     exact (isLocallyNoetherian_iff_of_affine_openCover hAff).mpr hNoeth
-    exact Scheme.OpenCover.compactSpace C
+    exact Scheme.OpenCover.compactSpace 𝒰
 
 open CategoryTheory in
 /-- A Noetherian scheme has a Noetherian underlying topological space.
@@ -296,15 +296,15 @@ open CategoryTheory in
 instance (priority := 100) IsNoetherian.noetherianSpace [h : IsNoetherian X] :
     NoetherianSpace X := by
   apply TopologicalSpace.noetherian_univ_iff.mp
-  let C := X.affineCover.finiteSubcover
-  rw [← C.iUnion_range]
-  suffices ∀ i : C.J, NoetherianSpace (Set.range <| (C.map i).val.base) by
+  let 𝒰 := X.affineCover.finiteSubcover
+  rw [← 𝒰.iUnion_range]
+  suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).val.base) by
     apply NoetherianSpace.iUnion
   intro i
-  have : IsAffine (C.obj i) := by
+  have : IsAffine (𝒰.obj i) := by
     rw [X.affineCover.finiteSubcover_obj]
     apply Scheme.isAffine_affineCover
-  let U : X.affineOpens := ⟨Scheme.Hom.opensRange (C.map i), isAffineOpen_opensRange _⟩
+  let U : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.map i), isAffineOpen_opensRange _⟩
   apply noetherianSpace_of_affineOpen U
   apply h.component_noetherian
 
