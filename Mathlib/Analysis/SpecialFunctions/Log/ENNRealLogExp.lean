@@ -8,22 +8,20 @@ import Mathlib.Analysis.SpecialFunctions.Log.ENNRealExp
 /-!
 # Properties of the extended logarithm and exponential
 
-We define `log` as an extension of the logarithm of a positive real
-to the extended nonnegative reals `ℝ≥0∞`. The function takes values
-in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
+We prove that `log` and `exp` define an order isomorphisms between `ℝ≥0∞` and `EReal`.
 
 ## Main Definitions
-- `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
--- - `ENNReal.log_orderIso`, `ENNReal.log_equiv`: `log` seen respectively
--- as an order isomorphism and an homeomorphism.
+- `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
+and `exp`.
+- `ENNReal.log_homeomorph`: `log` as a homeomorphism.
+- `ENNReal.exp_homeomorph`: `exp` as a homeomorphism.
 
 ## Main Results
-- `ENNReal.log_strictMono`: `log` is increasing;
-- `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
-  injective, surjective, and bijective;
-- `ENNReal.log_mul_add`, `ENNReal.log_pow`, `ENNReal.log_rpow`: `log` satisfy
-the identities `log (x * y) = log x + log y` and `log (x ^ y) = y * log x`
-(with either `y ∈ ℕ` or `y ∈ ℝ`).
+- `ENNReal.log_exp`, `ENNReal.exp_log`: `log` and `exp` are inverses of each other.
+- `ENNReal.exp_nmul`, `ENNReal.exp_mul`: `exp` satisfies the identities `exp (n * x) = (exp x) ^ n`
+and `exp (x * y) = (exp x) ^ y`.
+-
+
 
 ## Tags
 ENNReal, EReal, logarithm
@@ -53,28 +51,28 @@ end LogExp
 section Log
 
 @[simp]
-theorem log_lt_log_iff {x y : ℝ≥0∞} : log x < log y ↔ x < y := by
+lemma log_lt_log_iff {x y : ℝ≥0∞} : log x < log y ↔ x < y := by
   refine ⟨fun h ↦ ?_, fun h ↦ log_strictMono h⟩
   rw [← exp_log x, ← exp_log y]
   exact exp_strictMono h
 
-@[simp] theorem bot_lt_log_iff {x : ℝ≥0∞} : ⊥ < log x ↔ 0 < x := log_zero ▸ @log_lt_log_iff 0 x
+@[simp] lemma bot_lt_log_iff {x : ℝ≥0∞} : ⊥ < log x ↔ 0 < x := log_zero ▸ @log_lt_log_iff 0 x
 
-@[simp] theorem log_lt_top_iff {x : ℝ≥0∞} : log x < ⊤ ↔ x < ⊤ := log_top ▸ @log_lt_log_iff x ⊤
+@[simp] lemma log_lt_top_iff {x : ℝ≥0∞} : log x < ⊤ ↔ x < ⊤ := log_top ▸ @log_lt_log_iff x ⊤
 
-@[simp] theorem log_lt_zero_iff {x : ℝ≥0∞} : log x < 0 ↔ x < 1 := log_one ▸ @log_lt_log_iff x 1
+@[simp] lemma log_lt_zero_iff {x : ℝ≥0∞} : log x < 0 ↔ x < 1 := log_one ▸ @log_lt_log_iff x 1
 
-@[simp] theorem zero_lt_log_iff {x : ℝ≥0∞} : 0 < log x ↔ 1 < x := log_one ▸ @log_lt_log_iff 1 x
+@[simp] lemma zero_lt_log_iff {x : ℝ≥0∞} : 0 < log x ↔ 1 < x := log_one ▸ @log_lt_log_iff 1 x
 
 @[simp]
-theorem log_le_log_iff {x y : ℝ≥0∞} : log x ≤ log y ↔ x ≤ y := by
+lemma log_le_log_iff {x y : ℝ≥0∞} : log x ≤ log y ↔ x ≤ y := by
   refine ⟨fun h ↦ ?_, fun h ↦ log_monotone h⟩
   rw [← exp_log x, ← exp_log y]
   exact exp_monotone h
 
-@[simp] theorem log_le_zero_iff {x : ℝ≥0∞} : log x ≤ 0 ↔ x ≤ 1 := log_one ▸ @log_le_log_iff x 1
+@[simp] lemma log_le_zero_iff {x : ℝ≥0∞} : log x ≤ 0 ↔ x ≤ 1 := log_one ▸ @log_le_log_iff x 1
 
-@[simp] theorem zero_le_log_iff {x : ℝ≥0∞} : 0 ≤ log x ↔ 1 ≤ x := log_one ▸ @log_le_log_iff 1 x
+@[simp] lemma zero_le_log_iff {x : ℝ≥0∞} : 0 ≤ log x ↔ 1 ≤ x := log_one ▸ @log_le_log_iff 1 x
 
 end Log
 
@@ -130,12 +128,12 @@ section Continuity
 /-- `log` as a homeomorphism. -/
 noncomputable def log_homeomorph : ℝ≥0∞ ≃ₜ EReal := logOrderIso.toHomeomorph
 
-@[simp] theorem log_homeomorph_apply (x : ℝ≥0∞) : log_homeomorph x = log x := rfl
+@[simp] lemma log_homeomorph_apply (x : ℝ≥0∞) : log_homeomorph x = log x := rfl
 
 /-- `exp` as a homeomorphism. -/
 noncomputable def exp_homeomorph : EReal ≃ₜ ℝ≥0∞ := logOrderIso.symm.toHomeomorph
 
-@[simp] theorem exp_homeomorph_apply (x : EReal) : exp_homeomorph x = exp x := rfl
+@[simp] lemma exp_homeomorph_apply (x : EReal) : exp_homeomorph x = exp x := rfl
 
 @[continuity, fun_prop]
 lemma continuous_log : Continuous log := logOrderIso.continuous

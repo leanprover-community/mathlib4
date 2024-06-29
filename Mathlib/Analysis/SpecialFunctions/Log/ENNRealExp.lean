@@ -14,19 +14,14 @@ in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ 
 
 ## Main Definitions
 - `ENNReal.exp`: The extension of the real exponential to `EReal`.
-- `ENNReal.log_orderIso`, `ENNReal.log_equiv`: `log` seen respectively
-as an order isomorphism and an homeomorphism.
 
 ## Main Results
-- `ENNReal.log_strictMono`: `log` is increasing;
-- `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
-  injective, surjective, and bijective;
-- `ENNReal.log_mul_add`, `ENNReal.log_pow`, `ENNReal.log_rpow`: `log` satisfy
-the identities `log (x * y) = log x + log y` and `log (x ^ y) = y * log x`
-(with either `y ∈ ℕ` or `y ∈ ℝ`).
+- `ENNReal.exp_strictMono`: `exp` is increasing;
+- `ENNReal.exp_neg`, `ENNReal.exp_add`: `exp` satisfy
+the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
 
 ## Tags
-ENNReal, EReal, logarithm
+ENNReal, EReal, exponential
 -/
 namespace ENNReal
 

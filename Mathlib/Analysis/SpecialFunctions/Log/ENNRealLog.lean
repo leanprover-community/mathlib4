@@ -16,8 +16,6 @@ in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 
 ## Main Definitions
 - `ENNReal.log`: The extension of the real logarithm to `ℝ≥0∞`.
--- - `ENNReal.log_orderIso`, `ENNReal.log_equiv`: `log` seen respectively
--- as an order isomorphism and an homeomorphism.
 
 ## Main Results
 - `ENNReal.log_strictMono`: `log` is increasing;
