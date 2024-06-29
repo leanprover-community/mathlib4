@@ -36,8 +36,8 @@ def MulticospanIndex.sectionsEquiv :
   left_inv _ := rfl
   right_inv s := by
     ext (_|r)
-    . rfl
-    . exact s.property (.fst r)
+    · rfl
+    · exact s.property (.fst r)
 
 namespace Multifork
 
