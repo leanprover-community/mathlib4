@@ -35,13 +35,14 @@ variable {α : Type*}
 
 /-- An ordered additive commutative monoid is called `Archimedean` if for any two elements `x`, `y`
 such that `0 < y`, there exists a natural number `n` such that `x ≤ n • y`. -/
-class Archimedean (α) [OrderedAddCommMonoid α] : Prop where
+class Archimedean (α) [AddCommMonoid α] [OrderedAddCommMonoid α] : Prop where
   /-- For any two elements `x`, `y` such that `0 < y`, there exists a natural number `n`
   such that `x ≤ n • y`. -/
   arch : ∀ (x : α) {y : α}, 0 < y → ∃ n : ℕ, x ≤ n • y
 #align archimedean Archimedean
 
-instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archimedean αᵒᵈ :=
+instance OrderDual.archimedean [AddCommGroup α] [OrderedAddCommGroup α] [Archimedean α] :
+    Archimedean αᵒᵈ :=
   ⟨fun x y hy =>
     let ⟨n, hn⟩ := Archimedean.arch (-ofDual x) (neg_pos.2 hy)
     ⟨n, by rwa [neg_nsmul, neg_le_neg_iff] at hn⟩⟩
@@ -49,7 +50,7 @@ instance OrderDual.archimedean [OrderedAddCommGroup α] [Archimedean α] : Archi
 
 variable {M : Type*}
 
-theorem exists_lt_nsmul [OrderedAddCommMonoid M] [Archimedean M]
+theorem exists_lt_nsmul [AddCommMonoid M] [OrderedAddCommMonoid M] [Archimedean M]
     [CovariantClass M M (· + ·) (· < ·)] {a : M} (ha : 0 < a) (b : M) :
     ∃ n : ℕ, b < n • a :=
   let ⟨k, hk⟩ := Archimedean.arch b ha
@@ -57,7 +58,7 @@ theorem exists_lt_nsmul [OrderedAddCommMonoid M] [Archimedean M]
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] [Archimedean α]
+variable [AddCommGroup α] [LinearOrderedAddCommGroup α] [Archimedean α]
 
 /-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor: for
 `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/
@@ -117,19 +118,19 @@ theorem existsUnique_sub_zsmul_mem_Ioc {a : α} (ha : 0 < a) (b c : α) :
 
 end LinearOrderedAddCommGroup
 
-theorem exists_nat_ge [OrderedSemiring α] [Archimedean α] (x : α) : ∃ n : ℕ, x ≤ n := by
+theorem exists_nat_ge [Semiring α] [OrderedSemiring α] [Archimedean α] (x : α) : ∃ n : ℕ, x ≤ n := by
   nontriviality α
   exact (Archimedean.arch x one_pos).imp fun n h => by rwa [← nsmul_one]
 #align exists_nat_ge exists_nat_ge
 
-instance (priority := 100) [OrderedSemiring α] [Archimedean α] : IsDirected α (· ≤ ·) :=
+instance (priority := 100) [Semiring α] [OrderedSemiring α] [Archimedean α] : IsDirected α (· ≤ ·) :=
   ⟨fun x y ↦
     let ⟨m, hm⟩ := exists_nat_ge x; let ⟨n, hn⟩ := exists_nat_ge y
     let ⟨k, hmk, hnk⟩ := exists_ge_ge m n
     ⟨k, hm.trans <| Nat.mono_cast hmk, hn.trans <| Nat.mono_cast hnk⟩⟩
 
 section StrictOrderedSemiring
-variable [StrictOrderedSemiring α] [Archimedean α] {y : α}
+variable [Semiring α] [StrictOrderedSemiring α] [Archimedean α] {y : α}
 
 lemma exists_nat_gt (x : α) : ∃ n : ℕ, x < n :=
   (exists_lt_nsmul zero_lt_one x).imp fun n hn ↦ by rwa [← nsmul_one]
@@ -157,7 +158,7 @@ lemma pow_unbounded_of_one_lt [ExistsAddOfLE α] (x : α) (hy1 : 1 < y) : ∃ n 
 end StrictOrderedSemiring
 
 section StrictOrderedRing
-variable [StrictOrderedRing α] [Archimedean α]
+variable [Ring α] [StrictOrderedRing α] [Archimedean α]
 
 theorem exists_int_gt (x : α) : ∃ n : ℤ, x < n :=
   let ⟨n, h⟩ := exists_nat_gt x
@@ -185,7 +186,7 @@ theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α)
 end StrictOrderedRing
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring α] [Archimedean α] [ ExistsAddOfLE α] {x y : α}
+variable [Semiring α] [LinearOrderedSemiring α] [Archimedean α] [ ExistsAddOfLE α] {x y : α}
 
 /-- Every x greater than or equal to 1 is between two successive
 natural-number powers of every y greater than one. -/
@@ -204,7 +205,7 @@ theorem exists_nat_pow_near (hx : 1 ≤ x) (hy : 1 < y) : ∃ n : ℕ, y ^ n ≤
 end LinearOrderedSemiring
 
 section LinearOrderedSemifield
-variable [LinearOrderedSemifield α] [Archimedean α] [ExistsAddOfLE α] {x y ε : α}
+variable [Semifield α] [LinearOrderedSemifield α] [Archimedean α] [ExistsAddOfLE α] {x y ε : α}
 
 /-- Every positive `x` is between two successive integer powers of
 another `y` greater than one. This is the same as `exists_mem_Ioc_zpow`,
@@ -272,7 +273,7 @@ lemma exists_nat_one_div_lt (hε : 0 < ε) : ∃ n : ℕ, 1 / (n + 1 : α) < ε 
 end LinearOrderedSemifield
 
 section LinearOrderedField
-variable [LinearOrderedField α] [Archimedean α] {x y ε : α}
+variable [Field α] [LinearOrderedField α] [Archimedean α] {x y ε : α}
 
 theorem exists_rat_gt (x : α) : ∃ q : ℚ, x < q :=
   let ⟨n, h⟩ := exists_nat_gt x
@@ -345,10 +346,10 @@ end LinearOrderedField
 
 section LinearOrderedField
 
-variable [LinearOrderedField α]
+variable [Field α] [LinearOrderedField α]
 
 theorem archimedean_iff_nat_lt : Archimedean α ↔ ∀ x : α, ∃ n : ℕ, x < n :=
-  ⟨@exists_nat_gt α _, fun H =>
+  ⟨@exists_nat_gt α _ _, fun H =>
     ⟨fun x y y0 =>
       (H (x / y)).imp fun n h => le_of_lt <| by rwa [div_lt_iff y0, ← nsmul_eq_mul] at h⟩⟩
 #align archimedean_iff_nat_lt archimedean_iff_nat_lt
@@ -361,7 +362,7 @@ theorem archimedean_iff_nat_le : Archimedean α ↔ ∀ x : α, ∃ n : ℕ, x �
 #align archimedean_iff_nat_le archimedean_iff_nat_le
 
 theorem archimedean_iff_int_lt : Archimedean α ↔ ∀ x : α, ∃ n : ℤ, x < n :=
-  ⟨@exists_int_gt α _, by
+  ⟨@exists_int_gt α _ _, by
     rw [archimedean_iff_nat_lt]
     intro h x
     obtain ⟨n, h⟩ := h x
@@ -377,7 +378,7 @@ theorem archimedean_iff_int_le : Archimedean α ↔ ∀ x : α, ∃ n : ℤ, x �
 #align archimedean_iff_int_le archimedean_iff_int_le
 
 theorem archimedean_iff_rat_lt : Archimedean α ↔ ∀ x : α, ∃ q : ℚ, x < q where
-  mp := @exists_rat_gt α _
+  mp := @exists_rat_gt α _ _
   mpr H := archimedean_iff_nat_lt.2 fun x ↦
     let ⟨q, h⟩ := H x; ⟨⌈q⌉₊, lt_of_lt_of_le h <| mod_cast Nat.le_ceil _⟩
 #align archimedean_iff_rat_lt archimedean_iff_rat_lt
@@ -406,7 +407,7 @@ instance : Archimedean ℤ :=
 instance : Archimedean ℚ :=
   archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
 
-instance Nonneg.archimedean [OrderedAddCommMonoid α] [Archimedean α] :
+instance Nonneg.archimedean [AddCommMonoid α] [OrderedAddCommMonoid α] [Archimedean α] :
     Archimedean { x : α // 0 ≤ x } :=
   ⟨fun x y hy =>
     let ⟨n, hr⟩ := Archimedean.arch (x : α) (hy : (0 : α) < y)
@@ -417,14 +418,15 @@ instance : Archimedean NNRat := Nonneg.archimedean
 
 /-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/
-noncomputable def Archimedean.floorRing (α) [LinearOrderedRing α] [Archimedean α] : FloorRing α :=
+noncomputable def Archimedean.floorRing (α) [Ring α] [LinearOrderedRing α] [Archimedean α] :
+    FloorRing α :=
   FloorRing.ofFloor α (fun a => Classical.choose (exists_floor a)) fun z a =>
     (Classical.choose_spec (exists_floor a) z).symm
 #align archimedean.floor_ring Archimedean.floorRing
 
 -- see Note [lower instance priority]
 /-- A linear ordered field that is a floor ring is archimedean. -/
-instance (priority := 100) FloorRing.archimedean (α) [LinearOrderedField α] [FloorRing α] :
+instance (priority := 100) FloorRing.archimedean (α) [Field α] [LinearOrderedField α] [FloorRing α] :
     Archimedean α := by
   rw [archimedean_iff_int_le]
   exact fun x => ⟨⌈x⌉, Int.le_ceil x⟩

@@ -42,6 +42,10 @@ deriving instance Sub for NNRat
 deriving instance Inhabited for NNRat
 
 -- huh?
+instance NNRat.instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℚ≥0 :=
+  Nonneg.linearOrderedCommMonoidWithZero
+
+-- huh?
 instance NNRat.instCanonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℚ≥0 :=
   Nonneg.canonicallyOrderedCommSemiring
 

@@ -65,7 +65,7 @@ variable {F α β : Type*}
 /-- A `FloorSemiring` is an ordered semiring over `α` with a function
 `floor : α → ℕ` satisfying `∀ (n : ℕ) (x : α), n ≤ ⌊x⌋ ↔ (n : α) ≤ x)`.
 Note that many lemmas require a `LinearOrder`. Please see the above `TODO`. -/
-class FloorSemiring (α) [OrderedSemiring α] where
+class FloorSemiring (α) [Semiring α] [OrderedSemiring α] where
   /-- `FloorSemiring.floor a` computes the greatest natural `n` such that `(n : α) ≤ a`. -/
   floor : α → ℕ
   /-- `FloorSemiring.ceil a` computes the least natural `n` such that `a ≤ (n : α)`. -/
@@ -94,7 +94,7 @@ namespace Nat
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
+variable [Semiring α] [OrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
 
 /-- `⌊a⌋₊` is the greatest natural `n` such that `n ≤ a`. If `a` is negative, then `⌊a⌋₊ = 0`. -/
 def floor : α → ℕ :=
@@ -126,7 +126,7 @@ end OrderedSemiring
 
 section LinearOrderedSemiring
 
-variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
+variable [Semiring α] [LinearOrderedSemiring α] [FloorSemiring α] {a : α} {n : ℕ}
 
 theorem le_floor_iff (ha : 0 ≤ a) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a :=
   FloorSemiring.gc_floor ha
@@ -211,7 +211,7 @@ theorem le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋₊ ↔ (n : α) ≤ a := by
 
 @[simp]
 theorem one_le_floor_iff (x : α) : 1 ≤ ⌊x⌋₊ ↔ 1 ≤ x :=
-  mod_cast @le_floor_iff' α _ _ x 1 one_ne_zero
+  mod_cast @le_floor_iff' α _ _ _ x 1 one_ne_zero
 #align nat.one_le_floor_iff Nat.one_le_floor_iff
 
 theorem floor_lt' (hn : n ≠ 0) : ⌊a⌋₊ < n ↔ a < n :=
@@ -312,7 +312,7 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉₊ :=
 #align nat.le_ceil Nat.le_ceil
 
 @[simp]
-theorem ceil_intCast {α : Type*} [LinearOrderedRing α] [FloorSemiring α] (z : ℤ) :
+theorem ceil_intCast {α : Type*} [Ring α] [LinearOrderedRing α] [FloorSemiring α] (z : ℤ) :
     ⌈(z : α)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by
     simp only [ceil_le, Int.toNat_le]
@@ -528,7 +528,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] [FloorSemiring α]
+variable [Ring α] [LinearOrderedRing α] [FloorSemiring α]
 
 theorem sub_one_lt_floor (a : α) : a - 1 < ⌊a⌋₊ :=
   sub_lt_iff_lt_add.2 <| lt_floor_add_one a
@@ -538,7 +538,7 @@ end LinearOrderedRing
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] [FloorSemiring α]
+variable [Semifield α] [LinearOrderedSemifield α] [FloorSemiring α]
 
 -- TODO: should these lemmas be `simp`? `norm_cast`?
 
@@ -574,7 +574,7 @@ end LinearOrderedSemifield
 end Nat
 
 /-- There exists at most one `FloorSemiring` structure on a linear ordered semiring. -/
-theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
+theorem subsingleton_floorSemiring {α} [Semiring α] [LinearOrderedSemiring α] :
     Subsingleton (FloorSemiring α) := by
   refine ⟨fun H₁ H₂ => ?_⟩
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
@@ -594,7 +594,7 @@ theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
 /-- A `FloorRing` is a linear ordered ring over `α` with a function
 `floor : α → ℤ` satisfying `∀ (z : ℤ) (a : α), z ≤ floor a ↔ (z : α) ≤ a)`.
 -/
-class FloorRing (α) [LinearOrderedRing α] where
+class FloorRing (α) [Ring α] [LinearOrderedRing α] where
   /-- `FloorRing.floor a` computes the greatest integer `z` such that `(z : α) ≤ a`. -/
   floor : α → ℤ
   /-- `FloorRing.ceil a` computes the least integer `z` such that `a ≤ (z : α)`. -/
@@ -616,7 +616,7 @@ instance : FloorRing ℤ where
     rfl
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
-def FloorRing.ofFloor (α) [LinearOrderedRing α] (floor : α → ℤ)
+def FloorRing.ofFloor (α) [Ring α] [LinearOrderedRing α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
     ceil := fun a => -floor (-a)
@@ -625,7 +625,7 @@ def FloorRing.ofFloor (α) [LinearOrderedRing α] (floor : α → ℤ)
 #align floor_ring.of_floor FloorRing.ofFloor
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
-def FloorRing.ofCeil (α) [LinearOrderedRing α] (ceil : α → ℤ)
+def FloorRing.ofCeil (α) [Ring α] [LinearOrderedRing α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
     ceil
@@ -635,7 +635,7 @@ def FloorRing.ofCeil (α) [LinearOrderedRing α] (ceil : α → ℤ)
 
 namespace Int
 
-variable [LinearOrderedRing α] [FloorRing α] {z : ℤ} {a : α}
+variable [Ring α] [LinearOrderedRing α] [FloorRing α] {z : ℤ} {a : α}
 
 /-- `Int.floor a` is the greatest integer `z` such that `z ≤ a`. It is denoted with `⌊a⌋`. -/
 def floor : α → ℤ :=
@@ -838,7 +838,8 @@ theorem floor_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
     ⌊a - (no_index (OfNat.ofNat n))⌋ = ⌊a⌋ - OfNat.ofNat n :=
   floor_sub_nat a n
 
-theorem abs_sub_lt_one_of_floor_eq_floor {α : Type*} [LinearOrderedCommRing α] [FloorRing α]
+theorem abs_sub_lt_one_of_floor_eq_floor {α : Type*}
+    [CommRing α] [LinearOrderedCommRing α] [FloorRing α]
     {a b : α} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
   have : a < ⌊a⌋ + 1 := lt_floor_add_one a
   have : b < ⌊b⌋ + 1 := lt_floor_add_one b
@@ -1117,7 +1118,7 @@ theorem image_fract (s : Set α) : fract '' s = ⋃ m : ℤ, (fun x : α => x - 
 
 section LinearOrderedField
 
-variable {k : Type*} [LinearOrderedField k] [FloorRing k] {b : k}
+variable {k : Type*} [Field k] [LinearOrderedField k] [FloorRing k] {b : k}
 
 theorem fract_div_mul_self_mem_Ico (a b : k) (ha : 0 < a) : fract (b / a) * a ∈ Ico 0 a :=
   ⟨(mul_nonneg_iff_of_pos_right ha).2 (fract_nonneg (b / a)),
@@ -1442,7 +1443,7 @@ section round
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] [FloorRing α]
+variable [Ring α] [LinearOrderedRing α] [FloorRing α]
 
 /-- `round` rounds a number to the nearest integer. `round (1 / 2) = 1` -/
 def round (x : α) : ℤ :=
@@ -1560,7 +1561,7 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] [FloorRing α]
+variable [Field α] [LinearOrderedField α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   simp_rw [round, (by simp only [lt_div_iff', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
@@ -1623,7 +1624,8 @@ end round
 
 namespace Nat
 
-variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
+variable [Semiring α] [Semiring β] [LinearOrderedSemiring α] [LinearOrderedSemiring β]
+  [FloorSemiring α] [FloorSemiring β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem floor_congr (h : ∀ n : ℕ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
@@ -1649,7 +1651,7 @@ end Nat
 
 namespace Int
 
-variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
+variable [Ring α] [Ring β] [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem floor_congr (h : ∀ n : ℤ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋ = ⌊b⌋ :=
@@ -1676,7 +1678,7 @@ end Int
 
 namespace Int
 
-variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
+variable [Field α] [Field β] [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
@@ -1691,7 +1693,7 @@ end Int
 
 section FloorRingToSemiring
 
-variable [LinearOrderedRing α] [FloorRing α]
+variable [Ring α] [LinearOrderedRing α] [FloorRing α]
 
 /-! #### A floor ring as a floor semiring -/
 
@@ -1753,7 +1755,7 @@ alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
 end FloorRingToSemiring
 
 /-- There exists at most one `FloorRing` structure on a given linear ordered ring. -/
-theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (FloorRing α) := by
+theorem subsingleton_floorRing {α} [Ring α] [LinearOrderedRing α] : Subsingleton (FloorRing α) := by
   refine ⟨fun H₁ H₂ => ?_⟩
   have : H₁.floor = H₂.floor :=
     funext fun a => (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
@@ -1764,11 +1766,11 @@ theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (Floor
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
-private theorem int_floor_nonneg [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
+private theorem int_floor_nonneg [Ring α] [LinearOrderedRing α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
     0 ≤ ⌊a⌋ :=
   Int.floor_nonneg.2 ha
 
-private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a : α}
+private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrderedRing α] [FloorRing α] {a : α}
     (ha : 0 < a) :
     0 ≤ ⌊a⌋ :=
   int_floor_nonneg ha.le
@@ -1777,7 +1779,7 @@ private theorem int_floor_nonneg_of_pos [LinearOrderedRing α] [FloorRing α] {a
 @[positivity ⌊ _ ⌋]
 def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
-  | 0, ~q(ℤ), ~q(@Int.floor $α' $i $j $a) =>
+  | 0, ~q(ℤ), ~q(@Int.floor $α' $i $i' $j $a) =>
     match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa =>
         assertInstancesCommute
@@ -1788,7 +1790,7 @@ def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Int.floor application"
 
-private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
+private theorem nat_ceil_pos [Semiring α] [LinearOrderedSemiring α] [FloorSemiring α] {a : α} :
     0 < a → 0 < ⌈a⌉₊ :=
   Nat.ceil_pos.2
 
@@ -1796,7 +1798,7 @@ private theorem nat_ceil_pos [LinearOrderedSemiring α] [FloorSemiring α] {a : 
 @[positivity ⌈ _ ⌉₊]
 def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
-  | 0, ~q(ℕ), ~q(@Nat.ceil $α' $i $j $a) =>
+  | 0, ~q(ℕ), ~q(@Nat.ceil $α' $i $i' $j $a) =>
     let _i : Q(LinearOrderedSemiring $α') ← synthInstanceQ (u := u_1) _
     assertInstancesCommute
     match ← core q(inferInstance) q(inferInstance) a with
@@ -1806,14 +1808,14 @@ def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Nat.ceil application"
 
-private theorem int_ceil_pos [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
+private theorem int_ceil_pos [Ring α] [LinearOrderedRing α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
   Int.ceil_pos.2
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈ _ ⌉]
 def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
-  | 0, ~q(ℤ), ~q(@Int.ceil $α' $i $j $a) =>
+  | 0, ~q(ℤ), ~q(@Int.ceil $α' $i $i' $j $a) =>
     match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa =>
         assertInstancesCommute

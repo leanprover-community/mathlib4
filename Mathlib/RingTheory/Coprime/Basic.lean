@@ -418,8 +418,8 @@ theorem neg_neg_iff (x y : R) : IsCoprime (-x) (-y) ↔ IsCoprime x y :=
 
 end CommRing
 
-theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
-    a ^ 2 + b ^ 2 ≠ 0 := by
+theorem sq_add_sq_ne_zero {R : Type*} [CommRing R] [LinearOrderedCommRing R]
+    {a b : R} (h : IsCoprime a b) : a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
   obtain ⟨ha, hb⟩ := (add_eq_zero_iff'
   --Porting TODO: replace with sq_nonneg when that file is ported

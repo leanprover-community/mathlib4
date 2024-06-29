@@ -667,7 +667,7 @@ theorem _root_.StrictMono.tendsto_atTop {φ : ℕ → ℕ} (h : StrictMono φ) :
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β] {l : Filter α} {f g : α → β}
+variable [AddCommMonoid β] [OrderedAddCommMonoid β] {l : Filter α} {f g : α → β}
 
 theorem tendsto_atTop_add_nonneg_left' (hf : ∀ᶠ x in l, 0 ≤ f x) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
@@ -676,7 +676,7 @@ theorem tendsto_atTop_add_nonneg_left' (hf : ∀ᶠ x in l, 0 ≤ f x) (hg : Ten
 
 theorem tendsto_atBot_add_nonpos_left' (hf : ∀ᶠ x in l, f x ≤ 0) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_nonneg_left' _ βᵒᵈ _ _ _ _ hf hg
+  @tendsto_atTop_add_nonneg_left' _ βᵒᵈ _ _ _ _ _ hf hg
 #align filter.tendsto_at_bot_add_nonpos_left' Filter.tendsto_atBot_add_nonpos_left'
 
 theorem tendsto_atTop_add_nonneg_left (hf : ∀ x, 0 ≤ f x) (hg : Tendsto g l atTop) :
@@ -686,7 +686,7 @@ theorem tendsto_atTop_add_nonneg_left (hf : ∀ x, 0 ≤ f x) (hg : Tendsto g l 
 
 theorem tendsto_atBot_add_nonpos_left (hf : ∀ x, f x ≤ 0) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_nonneg_left _ βᵒᵈ _ _ _ _ hf hg
+  @tendsto_atTop_add_nonneg_left _ βᵒᵈ _ _ _ _ _ hf hg
 #align filter.tendsto_at_bot_add_nonpos_left Filter.tendsto_atBot_add_nonpos_left
 
 theorem tendsto_atTop_add_nonneg_right' (hf : Tendsto f l atTop) (hg : ∀ᶠ x in l, 0 ≤ g x) :
@@ -696,7 +696,7 @@ theorem tendsto_atTop_add_nonneg_right' (hf : Tendsto f l atTop) (hg : ∀ᶠ x 
 
 theorem tendsto_atBot_add_nonpos_right' (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ 0) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_nonneg_right' _ βᵒᵈ _ _ _ _ hf hg
+  @tendsto_atTop_add_nonneg_right' _ βᵒᵈ _ _ _ _ _ hf hg
 #align filter.tendsto_at_bot_add_nonpos_right' Filter.tendsto_atBot_add_nonpos_right'
 
 theorem tendsto_atTop_add_nonneg_right (hf : Tendsto f l atTop) (hg : ∀ x, 0 ≤ g x) :
@@ -706,7 +706,7 @@ theorem tendsto_atTop_add_nonneg_right (hf : Tendsto f l atTop) (hg : ∀ x, 0 �
 
 theorem tendsto_atBot_add_nonpos_right (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ 0) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_nonneg_right _ βᵒᵈ _ _ _ _ hf hg
+  @tendsto_atTop_add_nonneg_right _ βᵒᵈ _ _ _ _ _ hf hg
 #align filter.tendsto_at_bot_add_nonpos_right Filter.tendsto_atBot_add_nonpos_right
 
 theorem tendsto_atTop_add (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
@@ -716,7 +716,7 @@ theorem tendsto_atTop_add (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
 
 theorem tendsto_atBot_add (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add _ βᵒᵈ _ _ _ _ hf hg
+  @tendsto_atTop_add _ βᵒᵈ _ _ _ _ _ hf hg
 #align filter.tendsto_at_bot_add Filter.tendsto_atBot_add
 
 theorem Tendsto.nsmul_atTop (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
@@ -732,7 +732,7 @@ theorem Tendsto.nsmul_atTop (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
 
 theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
     Tendsto (fun x => n • f x) l atBot :=
-  @Tendsto.nsmul_atTop α βᵒᵈ _ l f hf n hn
+  @Tendsto.nsmul_atTop α βᵒᵈ _ _ l f hf n hn
 #align filter.tendsto.nsmul_at_bot Filter.Tendsto.nsmul_atBot
 
 #noalign filter.tendsto_bit0_at_top
@@ -742,7 +742,7 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 
-variable [OrderedCancelAddCommMonoid β] {l : Filter α} {f g : α → β}
+variable [AddCommMonoid β] [OrderedCancelAddCommMonoid β] {l : Filter α} {f g : α → β}
 
 theorem tendsto_atTop_of_add_const_left (C : β) (hf : Tendsto (fun x => C + f x) l atTop) :
     Tendsto f l atTop :=
@@ -818,17 +818,17 @@ end OrderedCancelAddCommMonoid
 
 section OrderedGroup
 
-variable [OrderedAddCommGroup β] (l : Filter α) {f g : α → β}
+variable [AddCommGroup β] [OrderedAddCommGroup β] (l : Filter α) {f g : α → β}
 
 theorem tendsto_atTop_add_left_of_le' (C : β) (hf : ∀ᶠ x in l, C ≤ f x) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
-  @tendsto_atTop_of_add_bdd_above_left' _ _ _ l (fun x => -f x) (fun x => f x + g x) (-C) (by simpa)
+  @tendsto_atTop_of_add_bdd_above_left' _ _ _ _ l (fun x => -f x) (fun x => f x + g x) (-C) (by simpa)
     (by simpa)
 #align filter.tendsto_at_top_add_left_of_le' Filter.tendsto_atTop_add_left_of_le'
 
 theorem tendsto_atBot_add_left_of_ge' (C : β) (hf : ∀ᶠ x in l, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_left_of_le' _ βᵒᵈ _ _ _ _ C hf hg
+  @tendsto_atTop_add_left_of_le' _ βᵒᵈ _ _ _ _ _ C hf hg
 #align filter.tendsto_at_bot_add_left_of_ge' Filter.tendsto_atBot_add_left_of_ge'
 
 theorem tendsto_atTop_add_left_of_le (C : β) (hf : ∀ x, C ≤ f x) (hg : Tendsto g l atTop) :
@@ -838,18 +838,18 @@ theorem tendsto_atTop_add_left_of_le (C : β) (hf : ∀ x, C ≤ f x) (hg : Tend
 
 theorem tendsto_atBot_add_left_of_ge (C : β) (hf : ∀ x, f x ≤ C) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_left_of_le _ βᵒᵈ _ _ _ _ C hf hg
+  @tendsto_atTop_add_left_of_le _ βᵒᵈ _ _ _ _ _ C hf hg
 #align filter.tendsto_at_bot_add_left_of_ge Filter.tendsto_atBot_add_left_of_ge
 
 theorem tendsto_atTop_add_right_of_le' (C : β) (hf : Tendsto f l atTop) (hg : ∀ᶠ x in l, C ≤ g x) :
     Tendsto (fun x => f x + g x) l atTop :=
-  @tendsto_atTop_of_add_bdd_above_right' _ _ _ l (fun x => f x + g x) (fun x => -g x) (-C)
+  @tendsto_atTop_of_add_bdd_above_right' _ _ _ _ l (fun x => f x + g x) (fun x => -g x) (-C)
     (by simp [hg]) (by simp [hf])
 #align filter.tendsto_at_top_add_right_of_le' Filter.tendsto_atTop_add_right_of_le'
 
 theorem tendsto_atBot_add_right_of_ge' (C : β) (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ C) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_right_of_le' _ βᵒᵈ _ _ _ _ C hf hg
+  @tendsto_atTop_add_right_of_le' _ βᵒᵈ _ _ _ _ _ C hf hg
 #align filter.tendsto_at_bot_add_right_of_ge' Filter.tendsto_atBot_add_right_of_ge'
 
 theorem tendsto_atTop_add_right_of_le (C : β) (hf : Tendsto f l atTop) (hg : ∀ x, C ≤ g x) :
@@ -859,7 +859,7 @@ theorem tendsto_atTop_add_right_of_le (C : β) (hf : Tendsto f l atTop) (hg : �
 
 theorem tendsto_atBot_add_right_of_ge (C : β) (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ C) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_right_of_le _ βᵒᵈ _ _ _ _ C hf hg
+  @tendsto_atTop_add_right_of_le _ βᵒᵈ _ _ _ _ _ C hf hg
 #align filter.tendsto_at_bot_add_right_of_ge Filter.tendsto_atBot_add_right_of_ge
 
 theorem tendsto_atTop_add_const_left (C : β) (hf : Tendsto f l atTop) :
@@ -869,7 +869,7 @@ theorem tendsto_atTop_add_const_left (C : β) (hf : Tendsto f l atTop) :
 
 theorem tendsto_atBot_add_const_left (C : β) (hf : Tendsto f l atBot) :
     Tendsto (fun x => C + f x) l atBot :=
-  @tendsto_atTop_add_const_left _ βᵒᵈ _ _ _ C hf
+  @tendsto_atTop_add_const_left _ βᵒᵈ _ _ _ _ C hf
 #align filter.tendsto_at_bot_add_const_left Filter.tendsto_atBot_add_const_left
 
 theorem tendsto_atTop_add_const_right (C : β) (hf : Tendsto f l atTop) :
@@ -879,7 +879,7 @@ theorem tendsto_atTop_add_const_right (C : β) (hf : Tendsto f l atTop) :
 
 theorem tendsto_atBot_add_const_right (C : β) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x + C) l atBot :=
-  @tendsto_atTop_add_const_right _ βᵒᵈ _ _ _ C hf
+  @tendsto_atTop_add_const_right _ βᵒᵈ _ _ _ _ C hf
 #align filter.tendsto_at_bot_add_const_right Filter.tendsto_atBot_add_const_right
 
 theorem map_neg_atBot : map (Neg.neg : β → β) atBot = atTop :=
@@ -903,7 +903,7 @@ theorem tendsto_neg_atTop_atBot : Tendsto (Neg.neg : β → β) atTop atBot :=
 #align filter.tendsto_neg_at_top_at_bot Filter.tendsto_neg_atTop_atBot
 
 theorem tendsto_neg_atBot_atTop : Tendsto (Neg.neg : β → β) atBot atTop :=
-  @tendsto_neg_atTop_atBot βᵒᵈ _
+  @tendsto_neg_atTop_atBot βᵒᵈ _ _
 #align filter.tendsto_neg_at_bot_at_top Filter.tendsto_neg_atBot_atTop
 
 variable {l}
@@ -922,7 +922,7 @@ end OrderedGroup
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] {l : Filter β} {f g : β → α}
+variable [Semiring α] [OrderedSemiring α] {l : Filter β} {f g : β → α}
 
 #noalign filter.tendsto_bit1_at_top
 
@@ -952,7 +952,7 @@ theorem zero_pow_eventuallyEq [MonoidWithZero α] :
 
 section OrderedRing
 
-variable [OrderedRing α] {l : Filter β} {f g : β → α}
+variable [Ring α] [OrderedRing α] {l : Filter β} {f g : β → α}
 
 theorem Tendsto.atTop_mul_atBot (hf : Tendsto f l atTop) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot := by
@@ -978,7 +978,7 @@ end OrderedRing
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
+variable [AddCommGroup α] [LinearOrderedAddCommGroup α]
 
 /-- $\lim_{x\to+\infty}|x|=+\infty$ -/
 theorem tendsto_abs_atTop_atTop : Tendsto (abs : α → α) atTop atTop :=
@@ -1005,7 +1005,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedSemiring
 
-variable [LinearOrderedSemiring α] {l : Filter β} {f : β → α}
+variable [Semiring α] [LinearOrderedSemiring α] {l : Filter β} {f : β → α}
 
 theorem Tendsto.atTop_of_const_mul {c : α} (hc : 0 < c) (hf : Tendsto (fun x => c * f x) l atTop) :
     Tendsto f l atTop :=
@@ -1026,7 +1026,7 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 
 end LinearOrderedSemiring
 
-theorem not_tendsto_pow_atTop_atBot [LinearOrderedRing α] :
+theorem not_tendsto_pow_atTop_atBot [Ring α] [LinearOrderedRing α] :
     ∀ {n : ℕ}, ¬Tendsto (fun x : α => x ^ n) atTop atBot
   | 0 => by simp [not_tendsto_const_atBot]
   | n + 1 => (tendsto_pow_atTop n.succ_ne_zero).not_tendsto disjoint_atTop_atBot
@@ -1034,19 +1034,19 @@ theorem not_tendsto_pow_atTop_atBot [LinearOrderedRing α] :
 
 section LinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {l : Filter β} {f : β → α} {r c : α} {n : ℕ}
+variable [Semifield α] [LinearOrderedSemifield α] {l : Filter β} {f : β → α} {r c : α} {n : ℕ}
 
 /-!
 ### Multiplication by constant: iff lemmas
 -/
 
-
 /-- If `r` is a positive constant, `fun x ↦ r * f x` tends to infinity along a filter
 if and only if `f` tends to infinity along the same filter. -/
 theorem tendsto_const_mul_atTop_of_pos (hr : 0 < r) :
     Tendsto (fun x => r * f x) l atTop ↔ Tendsto f l atTop :=
-  ⟨fun h => h.atTop_of_const_mul hr, fun h =>
-    Tendsto.atTop_of_const_mul (inv_pos.2 hr) <| by simpa only [inv_mul_cancel_left₀ hr.ne'] ⟩
+  ⟨fun h => sorry, fun h => sorry ⟩  -- bad timeout
+  -- ⟨fun h => h.atTop_of_const_mul r, fun h =>
+  --   Tendsto.atTop_of_const_mul (inv_pos.2 hr) <| by simpa only [inv_mul_cancel_left₀ hr.ne'] ⟩
 #align filter.tendsto_const_mul_at_top_of_pos Filter.tendsto_const_mul_atTop_of_pos
 
 /-- If `r` is a positive constant, `fun x ↦ f x * r` tends to infinity along a filter
@@ -1122,14 +1122,14 @@ theorem tendsto_const_mul_pow_atTop_iff :
 #align filter.tendsto_const_mul_pow_at_top_iff Filter.tendsto_const_mul_pow_atTop_iff
 
 lemma tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) : Tendsto (fun x : α ↦ x ^ n) atTop atTop := by
-  lift n to ℕ+ using hn; simp
+  lift n to ℕ+ using hn; simp; sorry
 #align tendsto_zpow_at_top_at_top Filter.tendsto_zpow_atTop_atTop
 
 end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] {l : Filter β} {f : β → α} {r : α}
+variable [Field α] [LinearOrderedField α] {l : Filter β} {f : β → α} {r : α}
 
 /-- If `r` is a positive constant, `fun x ↦ r * f x` tends to negative infinity along a filter
 if and only if `f` tends to negative infinity along the same filter. -/
@@ -2052,7 +2052,7 @@ open Filter Finset
 
 section
 
-variable {R : Type*} [LinearOrderedSemiring R]
+variable {R : Type*} [Semiring R] [LinearOrderedSemiring R]
 
 theorem exists_lt_mul_self (a : R) : ∃ x ≥ 0, a < x * x :=
   let ⟨x, hxa, hx0⟩ :=

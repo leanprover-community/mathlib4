@@ -373,7 +373,7 @@ theorem geom_sum_Ico' [DivisionRing α] {x : α} (hx : x ≠ 1) {m n : ℕ} (hmn
   convert neg_div_neg_eq (x ^ m - x ^ n) (1 - x) using 2 <;> abel
 #align geom_sum_Ico' geom_sum_Ico'
 
-theorem geom_sum_Ico_le_of_lt_one [LinearOrderedField α] {x : α} (hx : 0 ≤ x) (h'x : x < 1)
+theorem geom_sum_Ico_le_of_lt_one [Field α] [LinearOrderedField α] {x : α} (hx : 0 ≤ x) (h'x : x < 1)
     {m n : ℕ} : ∑ i ∈ Ico m n, x ^ i ≤ x ^ m / (1 - x) := by
   rcases le_or_lt m n with (hmn | hmn)
   · rw [geom_sum_Ico' h'x.ne hmn]
@@ -463,12 +463,12 @@ section Order
 
 variable {n : ℕ} {x : α}
 
-theorem geom_sum_pos [StrictOrderedSemiring α] (hx : 0 ≤ x) (hn : n ≠ 0) :
+theorem geom_sum_pos [Semiring α] [StrictOrderedSemiring α] (hx : 0 ≤ x) (hn : n ≠ 0) :
     0 < ∑ i ∈ range n, x ^ i :=
   sum_pos' (fun k _ => pow_nonneg hx _) ⟨0, mem_range.2 hn.bot_lt, by simp⟩
 #align geom_sum_pos geom_sum_pos
 
-theorem geom_sum_pos_and_lt_one [StrictOrderedRing α] (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
+theorem geom_sum_pos_and_lt_one [Ring α] [StrictOrderedRing α] (hx : x < 0) (hx' : 0 < x + 1) (hn : 1 < n) :
     (0 < ∑ i ∈ range n, x ^ i) ∧ ∑ i ∈ range n, x ^ i < 1 := by
   refine Nat.le_induction ?_ ?_ n (show 2 ≤ n from hn)
   · rw [geom_sum_two]
@@ -481,7 +481,7 @@ theorem geom_sum_pos_and_lt_one [StrictOrderedRing α] (hx : x < 0) (hx' : 0 < x
       mul_neg_of_neg_of_pos hx ihn.1⟩
 #align geom_sum_pos_and_lt_one geom_sum_pos_and_lt_one
 
-theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 ≤ 0) (n : ℕ) :
+theorem geom_sum_alternating_of_le_neg_one [Ring α] [StrictOrderedRing α] (hx : x + 1 ≤ 0) (n : ℕ) :
     if Even n then (∑ i ∈ range n, x ^ i) ≤ 0 else 1 ≤ ∑ i ∈ range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx
   induction' n with n ih
@@ -495,7 +495,7 @@ theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 �
     simpa only [mul_one] using mul_le_mul_of_nonpos_left ih hx0
 #align geom_sum_alternating_of_le_neg_one geom_sum_alternating_of_le_neg_one
 
-theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 0) (hn : 1 < n) :
+theorem geom_sum_alternating_of_lt_neg_one [Ring α] [StrictOrderedRing α] (hx : x + 1 < 0) (hn : 1 < n) :
     if Even n then (∑ i ∈ range n, x ^ i) < 0 else 1 < ∑ i ∈ range n, x ^ i := by
   have hx0 : x < 0 := (le_add_of_nonneg_right zero_le_one).trans_lt hx
   refine Nat.le_induction ?_ ?_ n (show 2 ≤ n from hn)
@@ -517,7 +517,7 @@ theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 
     exact this.trans hx
 #align geom_sum_alternating_of_lt_neg_one geom_sum_alternating_of_lt_neg_one
 
-theorem geom_sum_pos' [LinearOrderedRing α] (hx : 0 < x + 1) (hn : n ≠ 0) :
+theorem geom_sum_pos' [Ring α] [LinearOrderedRing α] (hx : 0 < x + 1) (hn : n ≠ 0) :
     0 < ∑ i ∈ range n, x ^ i := by
   obtain _ | _ | n := n
   · cases hn rfl
@@ -527,7 +527,7 @@ theorem geom_sum_pos' [LinearOrderedRing α] (hx : 0 < x + 1) (hn : n ≠ 0) :
   · exact geom_sum_pos hx' (by simp only [Nat.succ_ne_zero, Ne, not_false_iff])
 #align geom_sum_pos' geom_sum_pos'
 
-theorem Odd.geom_sum_pos [LinearOrderedRing α] (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
+theorem Odd.geom_sum_pos [Ring α] [LinearOrderedRing α] (h : Odd n) : 0 < ∑ i ∈ range n, x ^ i := by
   rcases n with (_ | _ | k)
   · exact ((show ¬Odd 0 by decide) h).elim
   · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
@@ -540,7 +540,7 @@ theorem Odd.geom_sum_pos [LinearOrderedRing α] (h : Odd n) : 0 < ∑ i ∈ rang
   · exact geom_sum_pos' hx k.succ.succ_ne_zero
 #align odd.geom_sum_pos Odd.geom_sum_pos
 
-theorem geom_sum_pos_iff [LinearOrderedRing α] (hn : n ≠ 0) :
+theorem geom_sum_pos_iff [Ring α] [LinearOrderedRing α] (hn : n ≠ 0) :
     (0 < ∑ i ∈ range n, x ^ i) ↔ Odd n ∨ 0 < x + 1 := by
   refine ⟨fun h => ?_, ?_⟩
   · rw [or_iff_not_imp_left, ← not_le, ← Nat.even_iff_not_odd]
@@ -551,7 +551,7 @@ theorem geom_sum_pos_iff [LinearOrderedRing α] (hn : n ≠ 0) :
     · exact geom_sum_pos' hx' hn
 #align geom_sum_pos_iff geom_sum_pos_iff
 
-theorem geom_sum_ne_zero [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
+theorem geom_sum_ne_zero [Ring α] [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
     ∑ i ∈ range n, x ^ i ≠ 0 := by
   obtain _ | _ | n := n
   · cases hn rfl
@@ -565,7 +565,7 @@ theorem geom_sum_ne_zero [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
   · exact (geom_sum_pos' h n.succ.succ_ne_zero).ne'
 #align geom_sum_ne_zero geom_sum_ne_zero
 
-theorem geom_sum_eq_zero_iff_neg_one [LinearOrderedRing α] (hn : n ≠ 0) :
+theorem geom_sum_eq_zero_iff_neg_one [Ring α] [LinearOrderedRing α] (hn : n ≠ 0) :
     ∑ i ∈ range n, x ^ i = 0 ↔ x = -1 ∧ Even n := by
   refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
   contrapose! h
@@ -576,7 +576,7 @@ theorem geom_sum_eq_zero_iff_neg_one [LinearOrderedRing α] (hn : n ≠ 0) :
   · exact geom_sum_ne_zero hx hn
 #align geom_sum_eq_zero_iff_neg_one geom_sum_eq_zero_iff_neg_one
 
-theorem geom_sum_neg_iff [LinearOrderedRing α] (hn : n ≠ 0) :
+theorem geom_sum_neg_iff [Ring α] [LinearOrderedRing α] (hn : n ≠ 0) :
     ∑ i ∈ range n, x ^ i < 0 ↔ Even n ∧ x + 1 < 0 := by
   rw [← not_iff_not, not_lt, le_iff_lt_or_eq, eq_comm,
     or_congr (geom_sum_pos_iff hn) (geom_sum_eq_zero_iff_neg_one hn), Nat.odd_iff_not_even, ←

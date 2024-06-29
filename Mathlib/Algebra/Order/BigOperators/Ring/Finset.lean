@@ -96,7 +96,7 @@ end PosMulStrictMono
 end CommMonoidWithZero
 
 section OrderedCommSemiring
-variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
+variable [CommSemiring R] [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
 
 /-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
   sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
@@ -120,7 +120,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
 end OrderedCommSemiring
 
 section LinearOrderedCommSemiring
-variable [LinearOrderedCommSemiring R] [ExistsAddOfLE R]
+variable [CommSemiring R] [LinearOrderedCommSemiring R] [ExistsAddOfLE R]
 
 /-- **Cauchy-Schwarz inequality** for finsets. -/
 lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
@@ -142,13 +142,13 @@ lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
 
 end LinearOrderedCommSemiring
 
-lemma abs_prod [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
+lemma abs_prod [CommRing R] [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
     |∏ x ∈ s, f x| = ∏ x ∈ s, |f x| :=
   map_prod absHom _ _
 #align finset.abs_prod Finset.abs_prod
 
 section CanonicallyOrderedCommSemiring
-variable [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
+variable [CommSemiring R] [CanonicallyOrderedCommSemiring R] {f g h : ι → R} {s : Finset ι} {i : ι}
 
 /-- Note that the name is to match `CanonicallyOrderedCommSemiring.mul_pos`. -/
 @[simp] lemma _root_.CanonicallyOrderedCommSemiring.prod_pos [Nontrivial R] :
@@ -179,25 +179,26 @@ section AbsoluteValue
 
 variable {S : Type*}
 
-lemma AbsoluteValue.sum_le [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
+lemma AbsoluteValue.sum_le [Semiring R] [Semiring S] [OrderedSemiring S] (abv : AbsoluteValue R S)
     (s : Finset ι) (f : ι → R) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   Finset.le_sum_of_subadditive abv (map_zero _) abv.add_le _ _
 #align absolute_value.sum_le AbsoluteValue.sum_le
 
-lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [IsAbsoluteValue abv]
+lemma IsAbsoluteValue.abv_sum [Semiring R] [Semiring S] [OrderedSemiring S]
+    (abv : R → S) [IsAbsoluteValue abv]
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
 @[deprecated (since := "2024-02-14")] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
 
-nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [CommRing S] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
   map_prod abv f s
 #align absolute_value.map_prod AbsoluteValue.map_prod
 
-lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+lemma IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [CommRing S] [LinearOrderedCommRing S]
     (abv : R → S) [IsAbsoluteValue abv] (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).map_prod _ _

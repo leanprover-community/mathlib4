@@ -28,7 +28,7 @@ open Int
 
 namespace Rat
 
-variable {α : Type*} [LinearOrderedField α] [FloorRing α]
+variable {α : Type*} [Field α] [LinearOrderedField α] [FloorRing α]
 
 protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   rw [Rat.floor]
@@ -55,7 +55,7 @@ protected theorem floor_def {q : ℚ} : ⌊q⌋ = q.num / q.den := Rat.floor_def
 
 theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d : ℚ)⌋ = n / (↑d : ℤ) := by
   rw [Rat.floor_def]
-  obtain rfl | hd := @eq_zero_or_pos _ _ d
+  obtain rfl | hd := @eq_zero_or_pos _ _ _ d
   · simp
   set q := (n : ℚ) / d with q_eq
   obtain ⟨c, n_eq_c_mul_num, d_eq_c_mul_denom⟩ : ∃ c, n = c * q.num ∧ (d : ℤ) = c * q.den := by

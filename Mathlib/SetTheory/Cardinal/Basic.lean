@@ -674,8 +674,7 @@ instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + 
 #align cardinal.add_swap_covariant_class Cardinal.add_swap_covariantClass
 
 instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.partialOrder with
+  { Cardinal.partialOrder with
     bot := 0
     bot_le := Cardinal.zero_le
     add_le_add_left := fun a b => add_le_add_left
@@ -698,19 +697,18 @@ instance : CanonicallyOrderedAddCommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.linearOrder with
+  { Cardinal.linearOrder with
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+  { Cardinal.commSemiring with }
 
 -- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.canonicallyOrderedCommSemiring with }
+  { Cardinal.commSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0
@@ -761,7 +759,7 @@ theorem power_le_power_right {a b c : Cardinal} : a ≤ b → a ^ c ≤ b ^ c :=
 #align cardinal.power_le_power_right Cardinal.power_le_power_right
 
 theorem power_pos {a : Cardinal} (b : Cardinal) (ha : 0 < a) : 0 < a ^ b :=
-  (power_ne_zero _ ha.ne').bot_lt
+  (power_ne_zero _ ha.ne').bot_lt (α := Cardinal)
 #align cardinal.power_pos Cardinal.power_pos
 
 end OrderProperties

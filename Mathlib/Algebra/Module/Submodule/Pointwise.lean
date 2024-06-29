@@ -190,8 +190,7 @@ theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
 
 instance : CanonicallyOrderedAddCommMonoid (Submodule R M) :=
-  { Submodule.pointwiseAddCommMonoid,
-    Submodule.completeLattice with
+  { Submodule.completeLattice with
     add_le_add_left := fun _a _b => sup_le_sup_left
     exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
     le_self_add := fun _a _b => le_sup_left }
