@@ -51,10 +51,8 @@ variable {s : Set ℕ∞}
 lemma sSup_eq_zero : sSup s = 0 ↔ s = ∅ ∨ s = {0} := by
   rw [← bot_eq_zero, sSup_eq_bot']
 
-lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
-  refine ⟨fun h ↦ ?_, inf_eq_bot_of_bot_mem⟩
-  rw [← bot_eq_zero, sInf_eq_bot] at h
-  obtain ⟨_, h₁, h₂⟩  := h 1 (by decide)
-  exact lt_one_iff_eq_zero.mp h₂ ▸ h₁
+lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s :=
+  ⟨fun h ↦ have ⟨_, h₁, h₂⟩  := (sInf_eq_bot.mp h) 1 (by decide)
+  lt_one_iff_eq_zero.mp h₂ ▸ h₁, inf_eq_bot_of_bot_mem⟩
 
 end ENat
