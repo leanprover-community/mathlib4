@@ -38,9 +38,9 @@ section Definition
 /-- Exponential as a function from `EReal` to `ℝ≥0∞`. -/
 noncomputable
 def exp : EReal → ℝ≥0∞
-| ⊥ => 0
-| ⊤ => ∞
-| (x : ℝ) => ENNReal.ofReal (Real.exp x)
+  | ⊥ => 0
+  | ⊤ => ∞
+  | (x : ℝ) => ENNReal.ofReal (Real.exp x)
 
 @[simp] lemma exp_bot : exp ⊥ = 0 := rfl
 @[simp] lemma exp_zero : exp 0 = 1 := by simp [exp]
