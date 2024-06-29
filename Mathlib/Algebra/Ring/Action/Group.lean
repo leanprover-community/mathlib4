@@ -7,6 +7,13 @@ import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Algebra.Ring.Equiv
 
+/-!
+# If a group acts multiplicatively on a semring, each group element acts by a ring automorphism.
+
+This result is split out from `Mathlib.Algebra.Ring.Action.Basic`
+to avoid needing the import of `Mathlib.GroupTheory.GroupAction.Group`.
+-/
+
 section Semiring
 
 variable (G : Type*) [Group G]
