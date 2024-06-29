@@ -1022,6 +1022,24 @@ theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
   exact h2f.filter_mono _root_.atBot_le_cocompact |>.tendsto
 
+open UniformSpace in
+lemma _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {f : ℝ → F} (hf : ContDiff ℝ 1 f) (h'f : HasCompactSupport f) (x : ℝ) :
+    (‖f x‖₊ : ℝ≥0∞) ≤ ∫⁻ y in Iic x, ‖deriv f y‖₊ := by
+  let I : F →L[ℝ] Completion F := Completion.toComplL
+  let f' : ℝ → Completion F := I ∘ f
+  have hf' : ContDiff ℝ 1 f' := hf.continuousLinearMap_comp I
+  have h'f' : HasCompactSupport f' := h'f.comp_left rfl
+  have : (‖f' x‖₊ : ℝ≥0∞) ≤ ∫⁻ y in Iic x, ‖deriv f' y‖₊ := by
+    rw [← HasCompactSupport.integral_Iic_deriv_eq hf' h'f' x]
+    exact ennnorm_integral_le_lintegral_ennnorm _
+  convert this with y
+  · simp [f', I, Completion.nnnorm_coe]
+  · rw [fderiv.comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
+    simp only [ContinuousLinearMap.fderiv]
+    simp [I]
+
 end IicFTC
 
 section UnivFTC
