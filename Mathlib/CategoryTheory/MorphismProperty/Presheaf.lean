@@ -42,62 +42,64 @@ pullback of `f` and `g`-/
 noncomputable def pullbackIso : yoneda.obj (hf.pullback g) ≅ Limits.pullback f g :=
   Functor.reprW (hF := hf g)
 
+/-- The pullback cone obtained by the isomorphism `hf.pullbackIso`. -/
+-- TODO: should be PullbackCone f g?
+noncomputable def pullbackCone : PullbackCone f g :=
+  (limit.cone (cospan f g)).extend (hf.pullbackIso g).hom
+
+/-- The projection `yoneda.obj (hf.pullback g) ⟶ F`. -/
+noncomputable def pullbackConeFst : yoneda.obj (hf.pullback g) ⟶ F := by
+  apply (hf.pullbackCone g).π.app WalkingCospan.left
+
+/-- The projection `yoneda.obj (hf.pullback g) ⟶ yoneda.obj X`. -/
+noncomputable def pullbackConeSnd : yoneda.obj (hf.pullback g) ⟶ yoneda.obj X := by
+  apply (hf.pullbackCone g).π.app WalkingCospan.right
+
+noncomputable def pullbackConeIsLimit : IsLimit (hf.pullbackCone g) :=
+  IsLimit.extendIso _ <| limit.isLimit (cospan f g)
+
 noncomputable def snd : hf.pullback g ⟶ X :=
-  Yoneda.fullyFaithful.preimage ((hf.pullbackIso g).hom ≫ Limits.pullback.snd)
-
-@[reassoc]
-lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackIso g).hom ≫ Limits.pullback.snd := by
-  simp only [snd, Functor.FullyFaithful.map_preimage]
-
-noncomputable abbrev fst_yoneda : yoneda.obj (hf.pullback g) ⟶ F :=
-  (hf.pullbackIso g).hom ≫ Limits.pullback.fst
-
-@[reassoc]
-lemma condition_yoneda : hf.fst_yoneda g ≫ f = yoneda.map (hf.snd g) ≫ g := by
-  simpa [yoneda_map_snd] using Limits.pullback.condition
-
-#check IsPullback
-
--- pullbackConeOfLeftIso
--- pullbackConeOfRightIso
-
-noncomputable def isPullback : IsLimit (PullbackCone.mk _ _ (hf.condition_yoneda g)) := by
-  fapply IsLimit.ofIsoLimit (r:= limit.cone (Limits.cospan f g))
-
-  sorry
-
-
---IsPullback (hf.fst_yoneda g) (yoneda.map <| hf.snd g) f g := by
-  sorry
-
-
+  Yoneda.fullyFaithful.preimage (hf.pullbackConeSnd g)
 
 noncomputable def fst : hf'.pullback g ⟶ Y :=
-  Yoneda.fullyFaithful.preimage ((hf'.pullbackIso g).hom ≫ Limits.pullback.fst)
+  Yoneda.fullyFaithful.preimage (hf'.pullbackConeFst g)
+
+-- TODO: need to add comp here?
+@[simp]
+lemma yoneda_map_snd : yoneda.map (hf.snd g) = hf.pullbackConeSnd g := by
+  apply Functor.FullyFaithful.map_preimage
+
+@[simp]
+lemma yoneda_map_fst : yoneda.map (hf'.fst g) = hf'.pullbackConeFst g := by
+  apply Functor.FullyFaithful.map_preimage
 
 @[reassoc]
-lemma yoneda_map_fst :
-    yoneda.map (hf'.fst g) = (hf'.pullbackIso g).hom ≫ Limits.pullback.fst := by
-  simp only [fst, Functor.FullyFaithful.map_preimage]
-
+lemma condition_yoneda : hf.pullbackConeFst g ≫ f = yoneda.map (hf.snd g) ≫ g := by
+  simpa only [yoneda_map_snd] using (hf.pullbackCone g).condition
 
 @[reassoc]
 lemma condition : yoneda.map (hf'.fst g) ≫ f' = yoneda.map (hf'.snd g) ≫ g := by
-  simpa [yoneda_map_fst, yoneda_map_snd] using Limits.pullback.condition
+  simpa only [yoneda_map_fst] using hf'.condition_yoneda g
 
 variable {g}
 
+-- can use this: IsLimit.hom_ext (in terms of pullback cones) somewhere here?
+
+/-- Two morphisms `a b : Z ⟶ hf.pullback g` are equal if
+* Their compositions (in `C`) with `hf.snd g : hf.pullback  ⟶ X` are equal.
+* The compositions of `yoneda.map a` and `yoneda.map b` with `hf.pullbackCone g`.fst are equal. -/
 @[ext 100]
 lemma hom_ext {Z : C} {a b : Z ⟶ hf.pullback g}
-    (h₁ : yoneda.map a ≫ (hf.pullbackIso g).hom ≫ pullback.fst =
-      yoneda.map b ≫ (hf.pullbackIso g).hom ≫ pullback.fst)
+    (h₁ : yoneda.map a ≫ (hf.pullbackCone g).fst = yoneda.map b ≫ (hf.pullbackCone g).fst)
     (h₂ : a ≫ hf.snd g = b ≫ hf.snd g) : a = b := by
   apply yoneda.map_injective
+  -- TODO: simplify proof from here
   rw [← cancel_mono (hf.pullbackIso g).hom]
   ext1
   · simpa using h₁
   · simpa [yoneda_map_snd] using yoneda.congr_map h₂
 
+/-- TODO -/
 @[ext]
 lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g}
     (h₁ : a ≫ hf'.fst g = b ≫ hf'.fst g)
@@ -106,19 +108,30 @@ lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g}
 
 section
 
-variable {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X)
-    (hi : i ≫ f = yoneda.map h ≫ g)
+/- In this section we develop some API for pulling back the universal property
+of `yoneda.obj (hf.pullback g)` to `C`.
 
+In particular, we will develop analogues of ..., where as many properties as possible are
+phrased inside the category `C`. -/
+
+variable {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X) (hi : i ≫ f = yoneda.map h ≫ g)
+
+/-- The universal property of `yoneda.obj (hf.pullback g)`, when applied to representable objects.
+-/
 noncomputable def lift : Z ⟶ hf.pullback g :=
-  Yoneda.fullyFaithful.preimage <| Limits.pullback.lift _ _ hi ≫ (hf.pullbackIso g).inv
+  Yoneda.fullyFaithful.preimage <| PullbackCone.IsLimit.lift (hf.pullbackConeIsLimit g) _ _ hi
 
 @[reassoc (attr := simp)]
-lemma lift_fst : yoneda.map (hf.lift i h hi) ≫
-    (hf.pullbackIso g).hom ≫ pullback.fst = i := by simp [lift]
+lemma lift_fst : yoneda.map (hf.lift i h hi) ≫ hf.pullbackConeFst g = i := by
+  simp [lift, pullbackConeFst, PullbackCone.IsLimit.lift_fst]
 
 @[reassoc (attr := simp)]
 lemma lift_snd : hf.lift i h hi ≫ hf.snd g = h :=
-  yoneda.map_injective (by simp [yoneda_map_snd, lift])
+  yoneda.map_injective <| by
+  -- TODO: better proof not involving unfolding API? yoneda_map_snd or sth?
+    simp [-yoneda_map_snd]
+    sorry
+    --simp [PullbackCone.IsLimit.lift_snd]
 
 end
 
