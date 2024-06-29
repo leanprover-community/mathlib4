@@ -12,7 +12,6 @@ variable {C : Type u₁} [Category.{v₁} C] (R : Cᵒᵖ ⥤ RingCat.{u})
 -- with `ModuleCatNew.free` irreducible, this is 2440218 heartbeats
 -- with `ModuleCatNew.free` not irreducible, this is 2630801 heartbeats
 -- why is this so slow?
-count_heartbeats in
 set_option maxHeartbeats 3200000 in
 noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R where
   obj F :=
