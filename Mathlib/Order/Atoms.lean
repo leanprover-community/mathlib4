@@ -359,7 +359,7 @@ section StronglyAtomic
 
 variable {α : Type*} {a b : α} [Preorder α]
 
-/-- An order is strongly atomic if every nontrivial interval `[a,b]`
+/-- An order is strongly atomic if every nontrivial interval `[a, b]`
 contains an element covering `a`. -/
 @[mk_iff]
 class IsStronglyAtomic (α : Type*) [Preorder α] : Prop where
