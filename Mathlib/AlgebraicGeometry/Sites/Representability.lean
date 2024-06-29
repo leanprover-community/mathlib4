@@ -45,7 +45,7 @@ variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u)) {ι : Type u}
 namespace Representability
 
 variable {F f}
-variable (i j : ι)
+variable (i j k : ι)
 
 noncomputable abbrev V := (hf i).representable.pullback (f j)
 noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).representable.fst (f j)
@@ -73,12 +73,99 @@ lemma p₁_self_eq_p₂ (i : ι) :
   apply yoneda.map_injective
   rw [← cancel_mono (f i), (hf i).representable.condition (f i)]
 
+@[reassoc]
+lemma condition (i j : ι) : yoneda.map (p₁ hf i j) ≫ f i = yoneda.map (p₂ hf i j) ≫ f j :=
+  (hf i).representable.condition (f j)
+
 lemma isIso_p₁_self (i : ι) :
     IsIso (p₁ hf i i) := by
   refine ⟨(hf i).representable.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
   ext1
   · simp
   · simp [p₁_self_eq_p₂ hf i]
+
+-- the "triple" intersections of `X i`, `X j` and `X k`,
+-- defined as a fibre product over `X i` of `V hf i j` and `V hf i k`
+noncomputable def W := pullback (p₁ hf i j) (p₁ hf i k)
+
+@[reassoc]
+lemma condition₃ : (pullback.fst ≫ p₁ hf i j : W hf i j k ⟶ _ ) = pullback.snd ≫ p₁ hf i k := by
+  apply pullback.condition
+
+noncomputable def q₁ : W hf i j k ⟶ X i := pullback.fst ≫ p₁ hf i j
+noncomputable def q₂ : W hf i j k ⟶ X j := pullback.fst ≫ p₂ hf i j
+noncomputable def q₃ : W hf i j k ⟶ X k := pullback.snd ≫ p₂ hf i k
+
+noncomputable def ιW : yoneda.obj (W hf i j k) ⟶ F.1 := yoneda.map (q₁ hf i j k) ≫ f i
+
+@[reassoc (attr := simp)]
+lemma yoneda_map_q₁_f : yoneda.map (q₁ hf i j k) ≫ f i = ιW hf i j k := rfl
+
+@[reassoc (attr := simp)]
+lemma yoneda_map_q₂_f : yoneda.map (q₂ hf i j k) ≫ f j = ιW hf i j k := by
+  dsimp only [q₁, q₂, ιW]
+  simp only [Functor.map_comp, assoc, condition]
+
+@[reassoc (attr := simp)]
+lemma yoneda_map_q₃_f : yoneda.map (q₃ hf i j k) ≫ f k = ιW hf i j k := by
+  rw [← yoneda_map_q₁_f]
+  dsimp only [q₃, q₁, ιW]
+  rw [Functor.map_comp, assoc, ← condition hf i k, ← Functor.map_comp_assoc,
+    ← condition₃, Functor.map_comp, assoc]
+
+lemma eq_q₁ : pullback.snd ≫ p₁ hf i k = q₁ hf i j k := by
+  apply yoneda.map_injective
+  have := mono_of_openImmersion_presheaf (hf i)
+  rw [← cancel_mono (f i), Functor.map_comp, assoc, yoneda_map_q₁_f,
+    condition hf, ← Functor.map_comp_assoc]
+  apply yoneda_map_q₃_f
+
+variable {hf i j k} in
+lemma hom_ext_W {Z : Scheme} {α β : Z ⟶ W hf i j k}
+    (h₁ : α ≫ q₁ hf i j k = β ≫ q₁ hf i j k)
+    (h₂ : α ≫ q₂ hf i j k = β ≫ q₂ hf i j k)
+    (h₃ : α ≫ q₃ hf i j k = β ≫ q₃ hf i j k) : α = β := by
+  dsimp [W]
+  ext
+  · simpa using h₁
+  · simpa using h₂
+  · simpa [← eq_q₁] using h₁
+  · simpa using h₃
+
+section
+
+variable {Z : Scheme} (a : Z ⟶ X i) (b : Z ⟶ X j) (c : Z ⟶ X k)
+  (h₁ : yoneda.map a ≫ f i = yoneda.map b ≫ f j)
+  (h₂ : yoneda.map a ≫ f i = yoneda.map c ≫ f k)
+
+variable {i j k}
+
+noncomputable def liftW : Z ⟶ W hf i j k :=
+  pullback.lift ((hf i).representable.lift' a b h₁)
+    ((hf i).representable.lift' a c h₂) (by simp)
+
+@[reassoc (attr := simp)]
+lemma liftW_q₁ : liftW hf a b c h₁ h₂ ≫ q₁ hf i j k = a := by simp [liftW, q₁]
+
+@[reassoc (attr := simp)]
+lemma liftW_q₂ : liftW hf a b c h₁ h₂ ≫ q₂ hf i j k = b := by simp [liftW, q₂]
+
+@[reassoc (attr := simp)]
+lemma liftW_q₃ : liftW hf a b c h₁ h₂ ≫ q₃ hf i j k = c := by simp [liftW, q₃]
+
+end
+
+noncomputable def t' : W hf i j k ⟶ W hf j k i :=
+  liftW hf (q₂ _ _ _ _) (q₃ _ _ _ _) (q₁ _ _ _ _) (by simp) (by simp)
+
+@[reassoc (attr := simp)]
+lemma t'_q₁ : t' hf i j k ≫ q₁ hf j k i = q₂ hf i j k := by simp [t']
+
+@[reassoc (attr := simp)]
+lemma t'_q₂ : t' hf i j k ≫ q₂ hf j k i = q₃ hf i j k := by simp [t']
+
+@[reassoc (attr := simp)]
+lemma t'_q₃ : t' hf i j k ≫ q₃ hf j k i = q₁ hf i j k := by simp [t']
 
 @[simps]
 noncomputable def glueData : GlueData where
@@ -92,17 +179,15 @@ noncomputable def glueData : GlueData where
   f_id := isIso_p₁_self hf
   t i j := (hf i).representable.symmetry (hf j).representable
   t_id i := by ext1 <;> simp [p₁_self_eq_p₂ hf i]
-  t' i j k :=
-      pullback.lift
-        ((hf j).representable.lift'
-          (pullback.fst ≫ (hf i).representable.snd (f j))
-          (pullback.snd ≫ (hf i).representable.snd (f k)) sorry)
-        ((hf j).representable.lift'
-          (pullback.fst ≫ (hf i).representable.snd (f j))
-          (pullback.snd ≫ (hf i).representable.fst (f k)) sorry)
-        (by simp)
-  t_fac := sorry
-  cocycle i j k := sorry
+  t' i j k := t' hf i j k
+  t_fac i j k := by
+    dsimp
+    ext
+    · simp only [assoc, Presheaf.representable.symmetry_fst, eq_q₁, t'_q₁]
+      rfl
+    · simp only [assoc, Presheaf.representable.symmetry_snd]
+      apply t'_q₃
+  cocycle i j k := by apply hom_ext_W; all_goals simp
   f_open := isOpenImmersion_p₁ hf
 
 noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
@@ -114,7 +199,11 @@ noncomputable def yonedaGluedToSheaf :
     ((glueData hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
       intro i j
       dsimp
-      sorry)))
+      apply yonedaEquiv.symm.injective
+      rw [yonedaEquiv_naturality, Equiv.symm_apply_apply,
+        FunctorToTypes.map_comp_apply, yonedaEquiv_naturality, yonedaEquiv_naturality,
+        Equiv.symm_apply_apply, ← Functor.map_comp_assoc,
+        Presheaf.representable.symmetry_fst, condition])))
 
 @[simp]
 lemma fac (i : ι) :
