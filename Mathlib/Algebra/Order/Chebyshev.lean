@@ -48,7 +48,8 @@ variable {ι α β : Type*}
 
 section SMul
 
-variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [OrderedSMul α β]
+variable [Ring α] [LinearOrderedRing α] [AddCommGroup β] [LinearOrderedAddCommGroup β]
+  [Module α β] [OrderedSMul α β]
   {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
@@ -101,7 +102,7 @@ Special cases of the above when scalar multiplication is actually multiplication
 
 section Mul
 
-variable [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
+variable [Ring α] [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
@@ -148,7 +149,7 @@ theorem Antivary.card_mul_sum_le_sum_mul_sum (hfg : Antivary f g) :
 
 end Mul
 
-variable [LinearOrderedField α] {s : Finset ι} {f : ι → α}
+variable [Field α] [LinearOrderedField α] {s : Finset ι} {f : ι → α}
 
 theorem sum_div_card_sq_le_sum_sq_div_card :
     ((∑ i ∈ s, f i) / s.card) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) / s.card := by

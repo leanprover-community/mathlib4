@@ -70,7 +70,7 @@ variable {K F R : Type*} [DivisionRing K]
 
 section
 
-variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
+variable (F R) (Γ₀ : Type*) [CommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
 --porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
@@ -84,8 +84,8 @@ structure Valuation extends R →*₀ Γ₀ where
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
 
 You should also extend this typeclass when you extend `Valuation`. -/
-class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
-  [FunLike F R Γ₀]
+class ValuationClass (F) (R Γ₀ : outParam Type*)
+  [CommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ₀] [Ring R] [FunLike F R Γ₀]
   extends MonoidWithZeroHomClass F R Γ₀ : Prop where
   /-- The valuation of a a sum is less that the sum of the valuations -/
   map_add_le_max (f : F) (x y : R) : f (x + y) ≤ max (f x) (f y)
@@ -107,7 +107,7 @@ namespace Valuation
 
 variable {Γ₀ : Type*}
 variable {Γ'₀ : Type*}
-variable {Γ''₀ : Type*} [LinearOrderedCommMonoidWithZero Γ''₀]
+variable {Γ''₀ : Type*} [CommMonoidWithZero Γ''₀] [LinearOrderedCommMonoidWithZero Γ''₀]
 
 section Basic
 
@@ -115,7 +115,8 @@ variable [Ring R]
 
 section Monoid
 
-variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+variable [CommMonoidWithZero Γ₀] [CommMonoidWithZero Γ'₀]
+  [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
 
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
@@ -282,7 +283,7 @@ end Monoid
 
 section Group
 
-variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y z : R}
+variable [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y z : R}
 
 @[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
@@ -364,7 +365,8 @@ end Basic
 -- end of section
 namespace IsEquiv
 
-variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+variable [Ring R] [CommMonoidWithZero Γ₀] [CommMonoidWithZero Γ'₀]
+  [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
   {v : Valuation R Γ₀} {v₁ : Valuation R Γ₀} {v₂ : Valuation R Γ'₀} {v₃ : Valuation R Γ''₀}
 
 @[refl]
@@ -412,14 +414,15 @@ end IsEquiv
 -- end of namespace
 section
 
-theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
-    [LinearOrderedCommMonoidWithZero Γ'₀] [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
+theorem isEquiv_of_map_strictMono [CommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ₀]
+    [CommMonoidWithZero Γ'₀] [LinearOrderedCommMonoidWithZero Γ'₀] [Ring R]
+    {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
     (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 #align valuation.is_equiv_of_map_strict_mono Valuation.isEquiv_of_map_strictMono
 
-theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀)
+theorem isEquiv_of_val_le_one [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
+    [CommGroupWithZero Γ'₀] [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀)
     (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
   intro x y
   by_cases hy : y = 0; · simp [hy, zero_iff]
@@ -438,18 +441,18 @@ theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     rwa [h]
 #align valuation.is_equiv_of_val_le_one Valuation.isEquiv_of_val_le_one
 
-theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
+theorem isEquiv_iff_val_le_one [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
+    [CommGroupWithZero Γ'₀] [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1 :=
   ⟨fun h x => by simpa using h x 1, isEquiv_of_val_le_one _ _⟩
 #align valuation.is_equiv_iff_val_le_one Valuation.isEquiv_iff_val_le_one
 
-theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
+theorem isEquiv_iff_val_eq_one [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
+    [CommGroupWithZero Γ'₀] [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
   constructor
   · intro h x
-    simpa using @IsEquiv.val_eq _ _ _ _ _ _ v v' h x 1
+    simpa using @IsEquiv.val_eq _ _ _ _ _ _ _ _ v v' h x 1
   · intro h
     apply isEquiv_of_val_le_one
     intro x
@@ -480,8 +483,8 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
         exact le_of_eq hx'
 #align valuation.is_equiv_iff_val_eq_one Valuation.isEquiv_iff_val_eq_one
 
-theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
+theorem isEquiv_iff_val_lt_one [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
+    [CommGroupWithZero Γ'₀] [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 := by
   constructor
   · intro h x
@@ -508,14 +511,15 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
         exact hh.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
 #align valuation.is_equiv_iff_val_lt_one Valuation.isEquiv_iff_val_lt_one
 
-theorem isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
+theorem isEquiv_iff_val_sub_one_lt_one [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
+    [CommGroupWithZero Γ'₀] [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     v.IsEquiv v' ↔ ∀ {x : K}, v (x - 1) < 1 ↔ v' (x - 1) < 1 := by
   rw [isEquiv_iff_val_lt_one]
   exact (Equiv.subRight 1).surjective.forall
 #align valuation.is_equiv_iff_val_sub_one_lt_one Valuation.isEquiv_iff_val_sub_one_lt_one
 
-theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
+theorem isEquiv_tfae [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
+    [CommGroupWithZero Γ'₀] [LinearOrderedCommGroupWithZero Γ'₀]
     (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     [v.IsEquiv v', ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1, ∀ {x}, v x = 1 ↔ v' x = 1, ∀ {x}, v x < 1 ↔ v' x < 1,
         ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE := by
@@ -531,7 +535,8 @@ end
 section Supp
 
 variable [CommRing R]
-variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+variable [CommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ₀]
+  [CommMonoidWithZero Γ'₀] [LinearOrderedCommMonoidWithZero Γ'₀]
 variable (v : Valuation R Γ₀)
 
 /-- The support of a valuation `v : R → Γ₀` is the ideal of `R` where `v` vanishes. -/
@@ -589,7 +594,7 @@ end Valuation
 
 section AddMonoid
 
-variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
+variable (R) [Ring R] (Γ₀ : Type*) [AddCommMonoid Γ₀] [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
 -- porting note (#5171): removed @[nolint has_nonempty_instance]

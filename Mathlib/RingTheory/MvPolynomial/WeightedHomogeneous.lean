@@ -485,7 +485,7 @@ end AddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [AddCommMonoid M] [CanonicallyOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
   of weighted degree `0` of a polynomial is its constant coefficient. -/
@@ -522,7 +522,8 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedMonoid
 
-variable [CanonicallyLinearOrderedAddCommMonoid M] {w : σ → M} (φ : MvPolynomial σ R)
+variable [AddCommMonoid M] [CanonicallyLinearOrderedAddCommMonoid M]
+  {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- If `w` is a nontorsion weight function, then the finitely supported function `m : σ →₀ ℕ`
   has weighted degree zero if and only if `∀ x : σ, m x = 0`. -/

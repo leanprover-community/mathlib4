@@ -190,7 +190,7 @@ end Semiring
 
 section StrictOrderedSemiring
 
-variable {S : Type*} [StrictOrderedSemiring S]
+variable {S : Type*} [Semiring S] [StrictOrderedSemiring S]
 
 theorem ascPochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (ascPochhammer S n).eval s := by
   induction' n with n ih

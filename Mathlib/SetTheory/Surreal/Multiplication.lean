@@ -501,6 +501,22 @@ namespace Surreal
 
 open SetTheory.PGame.Equiv
 
+noncomputable instance : CommRing Surreal where
+  __ := Surreal.orderedAddCommGroup
+  mul := Surreal.lift₂ (fun x y ox oy ↦ ⟦⟨x * y, ox.mul oy⟩⟧)
+    (fun ox₁ oy₁ ox₂ oy₂ hx hy ↦ Quotient.sound <| mul_congr ox₁ ox₂ oy₁ oy₂ hx hy)
+  mul_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound (mul_assoc_equiv _ _ _)
+  one := mk 1 numeric_one
+  one_mul := by rintro ⟨_⟩; exact Quotient.sound (one_mul_equiv _)
+  mul_one := by rintro ⟨_⟩; exact Quotient.sound (mul_one_equiv _)
+  left_distrib := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound (left_distrib_equiv _ _ _)
+  right_distrib := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound (right_distrib_equiv _ _ _)
+  mul_comm := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound (mul_comm_equiv _ _)
+  zero_mul := by rintro ⟨_⟩; exact Quotient.sound (zero_mul_equiv _)
+  mul_zero := by rintro ⟨_⟩; exact Quotient.sound (mul_zero_equiv _)
+  add_left_neg := add_left_neg
+  zsmul := _
+
 noncomputable instance : LinearOrderedCommRing Surreal where
   __ := Surreal.orderedAddCommGroup
   mul := Surreal.lift₂ (fun x y ox oy ↦ ⟦⟨x * y, ox.mul oy⟩⟧)

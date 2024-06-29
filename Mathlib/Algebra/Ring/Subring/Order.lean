@@ -24,7 +24,7 @@ variable {R S : Type*} [SetLike S R] (s : S)
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance (priority := 75) toOrderedRing [OrderedRing R] [SubringClass S R] :
+instance (priority := 75) toOrderedRing [Ring R] [OrderedRing R] [SubringClass S R] :
     OrderedRing s :=
   Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
@@ -32,7 +32,7 @@ instance (priority := 75) toOrderedRing [OrderedRing R] [SubringClass S R] :
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance (priority := 75) toOrderedCommRing [OrderedCommRing R] [SubringClass S R] :
+instance (priority := 75) toOrderedCommRing [CommRing R] [OrderedCommRing R] [SubringClass S R] :
     OrderedCommRing s :=
   Subtype.coe_injective.orderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
@@ -40,7 +40,7 @@ instance (priority := 75) toOrderedCommRing [OrderedCommRing R] [SubringClass S 
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance (priority := 75) toLinearOrderedRing [LinearOrderedRing R] [SubringClass S R] :
+instance (priority := 75) toLinearOrderedRing [Ring R] [LinearOrderedRing R] [SubringClass S R] :
     LinearOrderedRing s :=
   Subtype.coe_injective.linearOrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
@@ -49,8 +49,8 @@ instance (priority := 75) toLinearOrderedRing [LinearOrderedRing R] [SubringClas
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance (priority := 75) toLinearOrderedCommRing [LinearOrderedCommRing R] [SubringClass S R] :
-    LinearOrderedCommRing s :=
+instance (priority := 75) toLinearOrderedCommRing
+    [CommRing R] [LinearOrderedCommRing R] [SubringClass S R] : LinearOrderedCommRing s :=
   Subtype.coe_injective.linearOrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -63,32 +63,32 @@ namespace Subring
 variable {R : Type*}
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance toOrderedRing [OrderedRing R] (s : Subring R) : OrderedRing s :=
+instance toOrderedRing [Ring R] [OrderedRing R] (s : Subring R) : OrderedRing s :=
   SubringClass.toOrderedRing s
 #align subring.to_ordered_ring Subring.toOrderedRing
 
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance toOrderedCommRing [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
+instance toOrderedCommRing [CommRing R] [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
   SubringClass.toOrderedCommRing s
 #align subring.to_ordered_comm_ring Subring.toOrderedCommRing
 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance toLinearOrderedRing [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
+instance toLinearOrderedRing [Ring R] [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
   SubringClass.toLinearOrderedRing s
 #align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
 
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance toLinearOrderedCommRing [LinearOrderedCommRing R] (s : Subring R) :
+instance toLinearOrderedCommRing [CommRing R] [LinearOrderedCommRing R] (s : Subring R) :
     LinearOrderedCommRing s :=
   SubringClass.toLinearOrderedCommRing s
 #align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
 
 /-- The inclusion `S → R` of a subring, as an ordered ring homomorphism. -/
-def orderedSubtype {R : Type*} [OrderedRing R] (s : Subring R) : s →+*o R where
+def orderedSubtype {R : Type*} [Ring R] [OrderedRing R] (s : Subring R) : s →+*o R where
   __ := s.subtype
   monotone' := fun _ _ h ↦ h
 
-variable {R : Type*} [OrderedRing R]
+variable {R : Type*} [Ring R] [OrderedRing R]
 
 lemma orderedSubtype_coe (s : Subring R) : Subring.orderedSubtype s = Subring.subtype s := rfl
 

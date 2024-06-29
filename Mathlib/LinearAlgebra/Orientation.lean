@@ -38,7 +38,7 @@ noncomputable section
 
 section OrderedCommSemiring
 
-variable (R : Type*) [StrictOrderedCommSemiring R]
+variable (R : Type*) [CommSemiring R] [StrictOrderedCommSemiring R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable (ι ι' : Type*)
@@ -137,7 +137,7 @@ end OrderedCommSemiring
 
 section OrderedCommRing
 
-variable {R : Type*} [StrictOrderedCommRing R]
+variable {R : Type*} [CommRing R] [StrictOrderedCommRing R]
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 @[simp]
@@ -213,7 +213,7 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [LinearOrderedCommRing R]
+variable {R : Type*} [CommRing R] [LinearOrderedCommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 
@@ -354,7 +354,7 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrderedField R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {ι : Type*}
 

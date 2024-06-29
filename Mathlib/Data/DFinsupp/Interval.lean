@@ -205,7 +205,8 @@ end Lattice
 section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
+  [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 
 theorem card_Iic : (Iic f).card = ∏ i ∈ f.support, (Iic (f i)).card := by
