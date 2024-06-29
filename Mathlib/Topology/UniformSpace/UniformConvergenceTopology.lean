@@ -1099,7 +1099,7 @@ in the topology of uniform convergence on the sets of `𝔖`. -/
 theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
     (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} :=
-  isClosed_setOf_continuous _ ⟨fun u hu ↦ h _ <| by simpa only [isOpen_iSup_iff, isOpen_coinduced]⟩
+  isClosed_setOf_continuous ⟨fun u hu ↦ h _ <| by simpa only [isOpen_iSup_iff, isOpen_coinduced]⟩
 
 variable (𝔖) in
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)
