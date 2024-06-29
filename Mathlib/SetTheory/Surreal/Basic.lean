@@ -35,11 +35,10 @@ In this file, we show that the surreals form a linear ordered commutative group.
 In `Mathlib.SetTheory.Surreal.Multiplication`, we define multiplication and show that the
 surreals form a linear ordered commutative ring.
 
+In `Mathlib.SetTheory.Surreal.Division`, we prove that the surreals form a linear ordered
+field.
+
 One can also map all the ordinals into the surreals!
-
-### Todo
-
-- Define the field structure on the surreals.
 
 ## References
 
@@ -202,6 +201,19 @@ theorem numeric_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves]
   Numeric.mk (fun _ => isEmptyElim) H isEmptyElim
 #align pgame.numeric_of_is_empty_right_moves SetTheory.PGame.numeric_of_isEmpty_rightMoves
 
+/-- Inserting a smaller numeric left option into a numeric results in a numeric. -/
+theorem numeric_of_insertLeft_numeric (x : PGame) (x_num : x.Numeric)
+    (x' : PGame) (x'_num : x'.Numeric) (h : x' ≤ x) : (insertLeft x x').Numeric := by
+  rw [le_iff_forall_lt x'_num x_num] at h
+  unfold Numeric at x_num ⊢
+  rcases x with ⟨xl, xr, xL, xR⟩
+  simp only [insertLeft, Sum.forall, forall_const] at x_num ⊢
+  constructor
+  · simp only [x_num.1, implies_true, true_and]
+    simp only [rightMoves_mk, moveRight_mk] at h
+    exact h.2
+  · simp only [x_num, implies_true, x'_num, and_self]
+
 theorem numeric_zero : Numeric 0 :=
   numeric_of_isEmpty 0
 #align pgame.numeric_zero SetTheory.PGame.numeric_zero
@@ -301,6 +313,12 @@ instance : One Surreal :=
 instance : Inhabited Surreal :=
   ⟨0⟩
 
+@[simp]
+lemma mk_eq_mk {x y : PGame.{u}} {hx hy} : mk x hx = mk y hy ↔ x ≈ y := Quotient.eq
+
+@[simp]
+lemma mk_eq_zero {x : PGame.{u}} {hx} : mk x hx = 0 ↔ x ≈ 0 := Quotient.eq
+
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
 def lift {α} (f : ∀ x, Numeric x → α)
     (H : ∀ {x y} (hx : Numeric x) (hy : Numeric y), x.Equiv y → f x hx = f y hy) : Surreal → α :=
@@ -324,9 +342,32 @@ instance instLE : LE Surreal :=
 @[simp]
 lemma mk_le_mk {x y : PGame.{u}} {hx hy} : mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
 
+@[simp]
+lemma zero_le_mk {x : PGame.{u}} {hx} : 0 ≤ mk x hx ↔ 0 ≤ x := Iff.rfl
+
 instance instLT : LT Surreal :=
   ⟨lift₂ (fun x y _ _ => x < y) fun _ _ _ _ hx hy => propext (lt_congr hx hy)⟩
 #align surreal.has_lt Surreal.instLT
+
+@[simp]
+lemma mk_lt_mk {x y : PGame.{u}} {hx hy} : mk x hx < mk y hy ↔ x < y := Iff.rfl
+
+@[simp]
+lemma zero_lt_mk {x : PGame.{u}} {hx} : 0 < mk x hx ↔ 0 < x := Iff.rfl
+
+theorem moveLeft_lt' {x : PGame} (o : Numeric x) (i) :
+    Surreal.mk (x.moveLeft i) (by
+      rw [numeric_def] at o
+      exact o.2.1 i
+    ) < Surreal.mk x o := by
+  exact Numeric.moveLeft_lt o i
+
+theorem lt_moveRight' {x : PGame} (o : Numeric x) (j) :
+    Surreal.mk x o < Surreal.mk (x.moveRight j) (by
+      rw [numeric_def] at o
+      exact o.2.2 j
+    ) := by
+  exact Numeric.lt_moveRight o j
 
 /-- Addition on surreals is inherited from pre-game addition:
 the sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
@@ -357,6 +398,15 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
   nsmul := nsmulRec
   zsmul := zsmulRec
+
+lemma add_def {x y: PGame} (hx: x.Numeric) (hy: y.Numeric):
+    Surreal.mk x hx + Surreal.mk y hy = Surreal.mk (x + y) (hx.add hy) := by rfl
+
+lemma sub_def {x y: PGame} (hx: x.Numeric) (hy: y.Numeric):
+    Surreal.mk x hx - Surreal.mk y hy = Surreal.mk (x - y) (hx.sub hy) := by rfl
+
+@[simp]
+lemma zero_def : mk 0 numeric_zero = 0 := by rfl
 
 noncomputable instance : LinearOrderedAddCommGroup Surreal :=
   { Surreal.orderedAddCommGroup with
