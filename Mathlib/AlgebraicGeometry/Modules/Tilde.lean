@@ -68,7 +68,7 @@ the dependent functions that are locally fractions. This is often denoted by `M^
 
 See also `Tilde.isLocallyFraction`.
 -/
-def TildeInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
+def tildeInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
   subsheafToTypes (Tilde.isLocallyFraction R M)
 
 namespace Tilde
@@ -138,16 +138,16 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
       rfl
 
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    AddCommGroup ((TildeInType R M).1.obj U) :=
+    AddCommGroup ((tildeInType R M).1.obj U) :=
   inferInstanceAs $ AddCommGroup (sectionsSubmodule R M U)
 
 /--
 `M^~` as a presheaf of abelian groups over `Spec R`
 -/
 def presheafInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
-  obj U := AddCommGrp.of ((TildeInType R M).1.obj U)
+  obj U := AddCommGrp.of ((tildeInType R M).1.obj U)
   map {U V} i :=
-    { toFun := (TildeInType R M).1.map i
+    { toFun := (tildeInType R M).1.map i
       map_zero' := rfl
       map_add' := fun x y => rfl}
 
@@ -157,7 +157,7 @@ checking that after forgeting the abelian group structure of `M^~` as sheaf of a
 get the original sheaf of sets.
 -/
 def presheafCompForget :
-    presheafInAddCommGrp R M ⋙ forget AddCommGrp ≅ (TildeInType R M).1 :=
+    presheafInAddCommGrp R M ⋙ forget AddCommGrp ≅ (tildeInType R M).1 :=
   NatIso.ofComponents fun U => Iso.refl _
 
 end Tilde
@@ -165,10 +165,10 @@ end Tilde
 /--
 `M^~` as a sheaf of abelian groups over `Spec R`
 -/
-def TildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
+def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
   ⟨Tilde.presheafInAddCommGrp R M,
     (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr
-      (TopCat.Presheaf.isSheaf_of_iso (Tilde.presheafCompForget R M).symm (TildeInType R M).cond)⟩
+      (TopCat.Presheaf.isSheaf_of_iso (Tilde.presheafCompForget R M).symm (tildeInType R M).cond)⟩
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Module ((Spec (CommRingCat.of R)).ringCatSheaf.1.obj U)
@@ -179,11 +179,11 @@ open Tilde in
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
-noncomputable def TildeInModules : (Spec (CommRingCat.of R)).Modules where
+noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
   val :=
   { presheaf := (presheafInAddCommGrp R M)
     module := inferInstance
     map_smul := fun _ _ _ => rfl }
-  isSheaf := (TildeInAddCommGrp R M).2
+  isSheaf := (tildeInAddCommGrp R M).2
 
 end AlgebraicGeometry
