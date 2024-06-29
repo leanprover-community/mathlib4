@@ -39,8 +39,8 @@ namespace Rel
 
 section Asymmetric
 
-variable [LinearOrderedField 𝕜] (r : α → β → Prop) [∀ a, DecidablePred (r a)] {s s₁ s₂ : Finset α}
-  {t t₁ t₂ : Finset β} {a : α} {b : β} {δ : 𝕜}
+variable [Field 𝕜] [LinearOrderedField 𝕜] (r : α → β → Prop) [∀ a, DecidablePred (r a)]
+  {s s₁ s₂ : Finset α} {t t₁ t₂ : Finset β} {a : α} {b : β} {δ : 𝕜}
 
 /-- Finset of edges of a relation between two finsets of vertices. -/
 def interedges (s : Finset α) (t : Finset β) : Finset (α × β) :=

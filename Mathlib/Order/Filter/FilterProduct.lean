@@ -93,12 +93,12 @@ noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
   Lattice.toLinearOrder _
 
 @[to_additive]
-noncomputable instance linearOrderedCommGroup [LinearOrderedCommGroup β] :
+noncomputable instance linearOrderedCommGroup [CommGroup β] [LinearOrderedCommGroup β] :
     LinearOrderedCommGroup β* where
   __ := instOrderedCommGroup
   __ := instLinearOrder
 
-instance instStrictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSemiring β* where
+instance instStrictOrderedSemiring [Semiring β] [StrictOrderedSemiring β] : StrictOrderedSemiring β* where
   __ := instOrderedSemiring
   __ := instOrderedAddCancelCommMonoid
   mul_lt_mul_of_pos_left x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦
@@ -106,34 +106,32 @@ instance instStrictOrderedSemiring [StrictOrderedSemiring β] : StrictOrderedSem
   mul_lt_mul_of_pos_right x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦
     coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a ↦ mul_lt_mul_of_pos_right
 
-instance instStrictOrderedCommSemiring [StrictOrderedCommSemiring β] :
+instance instStrictOrderedCommSemiring [CommSemiring β] [StrictOrderedCommSemiring β] :
     StrictOrderedCommSemiring β* where
   __ := instStrictOrderedSemiring
-  __ := instOrderedCommSemiring
 
-instance instStrictOrderedRing [StrictOrderedRing β] : StrictOrderedRing β* where
-  __ := instRing
+instance instStrictOrderedRing [Ring β] [StrictOrderedRing β] : StrictOrderedRing β* where
   __ := instStrictOrderedSemiring
   zero_le_one := const_le zero_le_one
   mul_pos x y := inductionOn₂ x y fun _f _g hf hg ↦
     coe_pos.2 <| (coe_pos.1 hg).mp <| (coe_pos.1 hf).mono fun _x ↦ mul_pos
 
-instance instStrictOrderedCommRing [StrictOrderedCommRing β] : StrictOrderedCommRing β* where
+instance instStrictOrderedCommRing
+    [CommRing β] [StrictOrderedCommRing β] : StrictOrderedCommRing β* where
   __ := instStrictOrderedRing
-  __ := instOrderedCommRing
 
-noncomputable instance instLinearOrderedRing [LinearOrderedRing β] : LinearOrderedRing β* where
+noncomputable instance instLinearOrderedRing
+    [Ring β] [LinearOrderedRing β] : LinearOrderedRing β* where
   __ := instStrictOrderedRing
   __ := instLinearOrder
 
-noncomputable instance instLinearOrderedField [LinearOrderedField β] : LinearOrderedField β* where
+noncomputable instance instLinearOrderedField
+    [Field β] [LinearOrderedField β] : LinearOrderedField β* where
   __ := instLinearOrderedRing
-  __ := instField
 
-noncomputable instance instLinearOrderedCommRing [LinearOrderedCommRing β] :
+noncomputable instance instLinearOrderedCommRing [CommRing β] [LinearOrderedCommRing β] :
     LinearOrderedCommRing β* where
   __ := instLinearOrderedRing
-  __ := instCommMonoid
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
   inductionOn₂ x y fun a b => by
@@ -153,7 +151,7 @@ theorem min_def [K : LinearOrder β] (x y : β*) : min x y = map₂ min x y :=
       exact h.mono fun i hi => (min_eq_right hi).symm
 #align filter.germ.min_def Filter.Germ.min_def
 
-theorem abs_def [LinearOrderedAddCommGroup β] (x : β*) : |x| = map abs x :=
+theorem abs_def [AddCommGroup β] [LinearOrderedAddCommGroup β] (x : β*) : |x| = map abs x :=
   inductionOn x fun _a => rfl
 #align filter.germ.abs_def Filter.Germ.abs_def
 
@@ -168,7 +166,7 @@ theorem const_min [LinearOrder β] (x y : β) : (↑(min x y : β) : β*) = min 
 #align filter.germ.const_min Filter.Germ.const_min
 
 @[simp]
-theorem const_abs [LinearOrderedAddCommGroup β] (x : β) : (↑|x| : β*) = |↑x| := by
+theorem const_abs [AddCommGroup β] [LinearOrderedAddCommGroup β] (x : β) : (↑|x| : β*) = |↑x| := by
   rw [abs_def, map_const]
 #align filter.germ.const_abs Filter.Germ.const_abs
 

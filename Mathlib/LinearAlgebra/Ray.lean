@@ -29,7 +29,7 @@ noncomputable section
 
 section StrictOrderedCommSemiring
 
-variable (R : Type*) [StrictOrderedCommSemiring R]
+variable (R : Type*) [CommSemiring R] [StrictOrderedCommSemiring R]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {N : Type*} [AddCommMonoid N] [Module R N]
 variable (ι : Type*) [DecidableEq ι]
@@ -111,8 +111,8 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   rw [mul_smul, mul_smul, h₁, ← h₂, smul_comm]
 #align same_ray.trans SameRay.trans
 
-variable {S : Type*} [OrderedCommSemiring S] [Algebra S R] [Module S M] [SMulPosMono S R]
-  [IsScalarTower S R M] {a : S}
+variable {S : Type*} [CommSemiring S] [OrderedCommSemiring S]
+  [Algebra S R] [Module S M] [SMulPosMono S R] [IsScalarTower S R M] {a : S}
 
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
 lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) := by
@@ -385,7 +385,7 @@ end StrictOrderedCommSemiring
 
 section StrictOrderedCommRing
 
-variable {R : Type*} [StrictOrderedCommRing R]
+variable {R : Type*} [CommRing R] [StrictOrderedCommRing R]
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
 
 /-- `SameRay.neg` as an `iff`. -/
@@ -497,7 +497,7 @@ end StrictOrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {R : Type*} [LinearOrderedCommRing R]
+variable {R : Type*} [CommRing R] [LinearOrderedCommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 -- Porting note: Needed to add coercion ↥ below
@@ -639,7 +639,7 @@ end LinearOrderedCommRing
 
 namespace SameRay
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrderedField R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -695,7 +695,7 @@ end SameRay
 
 section LinearOrderedField
 
-variable {R : Type*} [LinearOrderedField R]
+variable {R : Type*} [Field R] [LinearOrderedField R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :

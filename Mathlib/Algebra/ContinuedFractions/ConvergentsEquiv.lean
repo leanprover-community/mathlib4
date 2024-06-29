@@ -339,7 +339,7 @@ In practice, one most commonly deals with (regular) continued fractions, which s
 positivity criterion required here. The analogous result for them
 (see `ContinuedFractions.convergents_eq_convergents`) hence follows directly from this theorem.
 -/
-theorem convergents_eq_convergents' [LinearOrderedField K]
+theorem convergents_eq_convergents' [Field K] [LinearOrderedField K]
     (s_pos : ∀ {gp : Pair K} {m : ℕ}, m < n → g.s.get? m = some gp → 0 < gp.a ∧ 0 < gp.b) :
     g.convergents n = g.convergents' n := by
   induction n generalizing g with
@@ -399,8 +399,8 @@ namespace ContinuedFraction
 
 /-- Shows that the recurrence relation (`convergents`) and direct evaluation (`convergents'`) of a
 (regular) continued fraction coincide. -/
-nonrec theorem convergents_eq_convergents' [LinearOrderedField K] {c : ContinuedFraction K} :
-    (↑c : GeneralizedContinuedFraction K).convergents =
+nonrec theorem convergents_eq_convergents' [Field K] [LinearOrderedField K]
+    {c : ContinuedFraction K} : (↑c : GeneralizedContinuedFraction K).convergents =
     (↑c : GeneralizedContinuedFraction K).convergents' := by
   ext n
   apply convergents_eq_convergents'

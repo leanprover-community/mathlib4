@@ -355,14 +355,14 @@ theorem _root_.OrderIso.isBoundedUnder_ge_comp [Preorder α] [Preorder β] (e : 
 #align order_iso.is_bounded_under_ge_comp OrderIso.isBoundedUnder_ge_comp
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_le_inv [OrderedCommGroup α] {l : Filter β} {u : β → α} :
+theorem isBoundedUnder_le_inv [CommGroup α] [OrderedCommGroup α] {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≤ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≥ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_ge_comp
 #align filter.is_bounded_under_le_inv Filter.isBoundedUnder_le_inv
 #align filter.is_bounded_under_le_neg Filter.isBoundedUnder_le_neg
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_ge_inv [OrderedCommGroup α] {l : Filter β} {u : β → α} :
+theorem isBoundedUnder_ge_inv [CommGroup α] [OrderedCommGroup α] {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≥ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_le_comp
 #align filter.is_bounded_under_ge_inv Filter.isBoundedUnder_ge_inv
@@ -399,7 +399,8 @@ theorem isBoundedUnder_ge_inf [SemilatticeInf α] {f : Filter β} {u v : β → 
   isBoundedUnder_le_sup (α := αᵒᵈ)
 #align filter.is_bounded_under_ge_inf Filter.isBoundedUnder_ge_inf
 
-theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u : β → α} :
+theorem isBoundedUnder_le_abs
+    [AddCommGroup α] [LinearOrderedAddCommGroup α] {f : Filter β} {u : β → α} :
     (f.IsBoundedUnder (· ≤ ·) fun a => |u a|) ↔
       f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≥ ·) u :=
   isBoundedUnder_le_sup.trans <| and_congr Iff.rfl isBoundedUnder_le_neg

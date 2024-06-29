@@ -673,7 +673,7 @@ theorem decomp' (f : V1 →ᵃ[k] V2) : (f.linear : V1 → V2) = ⇑f - fun _ =>
   simp only [LinearMap.map_zero, Pi.add_apply, add_sub_cancel_right, zero_add]
 #align affine_map.decomp' AffineMap.decomp'
 
-theorem image_uIcc {k : Type*} [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
+theorem image_uIcc {k : Type*} [Field k] [LinearOrderedField k] (f : k →ᵃ[k] k) (a b : k) :
     f '' Set.uIcc a b = Set.uIcc (f a) (f b) := by
   have : ⇑f = (fun x => x + f 0) ∘ fun x => x * (f 1 - f 0) := by
     ext x

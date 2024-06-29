@@ -125,7 +125,7 @@ end coe
 
 -- Note: this could be relaxed to something like `LinearOrderedDivisionRing` in the future.
 -- Fix a discrete linear ordered field with `floor` function.
-variable [LinearOrderedField K] [FloorRing K]
+variable [Field K] [LinearOrderedField K] [FloorRing K]
 
 /-- Creates the integer and fractional part of a value `v`, i.e. `⟨⌊v⌋, v - ⌊v⌋⟩`. -/
 protected def of (v : K) : IntFractPair K :=
@@ -176,7 +176,7 @@ protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
     Stream'.Seq.tail
       -- create a sequence from `IntFractPair.stream`
       ⟨IntFractPair.stream v, -- the underlying stream
-        @stream_isSeq _ _ _ v⟩⟩ -- the proof that the stream is a sequence
+        @stream_isSeq _ _ _ _ v⟩⟩ -- the proof that the stream is a sequence
 #align generalized_continued_fraction.int_fract_pair.seq1 GeneralizedContinuedFraction.IntFractPair.seq1
 
 end IntFractPair
@@ -192,7 +192,8 @@ process stops when the fractional part `v - ⌊v⌋` hits 0 at some step.
 The implementation uses `IntFractPair.stream` to obtain the partial denominators of the continued
 fraction. Refer to said function for more details about the computation process.
 -/
-protected def of [LinearOrderedField K] [FloorRing K] (v : K) : GeneralizedContinuedFraction K :=
+protected def of [Field K] [LinearOrderedField K] [FloorRing K]
+    (v : K) : GeneralizedContinuedFraction K :=
   let ⟨h, s⟩ := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
   ⟨h.b, -- the head is just the first integer part
     s.map fun p => ⟨1, p.b⟩⟩ -- the sequence consists of the remaining integer parts as the partial
