@@ -44,46 +44,54 @@ variable (F : Sheaf (Scheme.zariskiTopology.{u}) (Type u)) {ι : Type u}
 
 namespace Representability
 
-lemma isOpenImmersion_snd (i j : ι) :
-    IsOpenImmersion ((hf i).representable.snd (f j)) := (hf i).property (f j)
+variable {F f}
+variable (i j : ι)
 
-lemma symmetryIso_hom_comp_snd (i j : ι) :
-    ((hf i).representable.symmetryIso (hf j).representable).hom ≫
-      ((hf j).representable.snd (f i)) = (hf i).representable.fst (f j) := by
+noncomputable abbrev V := (hf i).representable.pullback (f j)
+noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).representable.fst (f j)
+noncomputable abbrev p₂ : V hf i j ⟶ X j := (hf i).representable.snd (f j)
+
+noncomputable abbrev symmetryIso : V hf i j ≅ V hf j i :=
+  ((hf i).representable.symmetryIso (hf j).representable)
+
+lemma isOpenImmersion_p₂ (i j : ι) :
+    IsOpenImmersion (p₂ hf i j) := (hf i).property (f j)
+
+lemma symmetryIso_hom_comp_p₂ (i j : ι) :
+    (symmetryIso hf i j).hom ≫ p₂ hf j i = p₁ hf i j := by
   simp
 
-lemma isOpenImmersion_fst (i j : ι) :
-    IsOpenImmersion ((hf i).representable.fst (f j)) := by
-  have := isOpenImmersion_snd F f hf j i
-  rw [← symmetryIso_hom_comp_snd F f hf]
+lemma isOpenImmersion_p₁ (i j : ι) :
+    IsOpenImmersion (p₁ hf i j) := by
+  have := isOpenImmersion_p₂ hf j i
+  rw [← symmetryIso_hom_comp_p₂ hf]
   infer_instance
 
-@[simp]
-lemma fst_self_eq_snd (i : ι) :
-    (hf i).representable.fst (f i) = (hf i).representable.snd (f i) := by
+lemma p₁_self_eq_p₂ (i : ι) :
+    p₁ hf i i = p₂ hf i i := by
   have := mono_of_openImmersion_presheaf (hf i)
   apply yoneda.map_injective
   rw [← cancel_mono (f i), (hf i).representable.condition (f i)]
 
-lemma isIso_fst_self (i : ι) :
-    IsIso ((hf i).representable.fst (f i)) := by
+lemma isIso_p₁_self (i : ι) :
+    IsIso (p₁ hf i i) := by
   refine ⟨(hf i).representable.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
   ext1
   · simp
-  · simp [fst_self_eq_snd F f hf i]
+  · simp [p₁_self_eq_p₂ hf i]
 
---@[simps]
+@[simps]
 noncomputable def glueData : GlueData where
   J := ι
   U := X
-  V := fun (i, j) ↦ (hf i).representable.pullback (f j)
-  f i j := (hf i).representable.fst (f j)
+  V := fun (i, j) ↦ V hf i j
+  f := p₁ hf
   f_mono i j := by
-    have := isOpenImmersion_fst F f hf i j
+    have := isOpenImmersion_p₁ hf i j
     infer_instance
-  f_id := isIso_fst_self F f hf
+  f_id := isIso_p₁_self hf
   t i j := (hf i).representable.symmetry (hf j).representable
-  t_id i := by ext1 <;> simp [fst_self_eq_snd F f hf i]
+  t_id i := by ext1 <;> simp [p₁_self_eq_p₂ hf i]
   t' i j k :=
       pullback.lift
         ((hf j).representable.lift'
@@ -95,22 +103,22 @@ noncomputable def glueData : GlueData where
         (by simp)
   t_fac := sorry
   cocycle i j k := sorry
-  f_open := isOpenImmersion_fst F f hf
+  f_open := isOpenImmersion_p₁ hf
 
-noncomputable def toGlued (i : ι) : X i ⟶ (glueData F f hf).glued :=
-  (glueData F f hf).ι i
+noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
+  (glueData hf).ι i
 
 noncomputable def yonedaGluedToSheaf :
-    subcanonical_zariskiTopology.yoneda.obj (glueData F f hf).glued ⟶ F :=
+    subcanonical_zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F :=
   Sheaf.homEquiv.symm (yonedaEquiv.symm
-    ((glueData F f hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
+    ((glueData hf).sheafValGluedMk (fun i ↦ yonedaEquiv (f i)) (by
       intro i j
       dsimp
       sorry)))
 
 @[simp]
 lemma fac (i : ι) :
-    yoneda.map (toGlued F f hf i) ≫ (yonedaGluedToSheaf F f hf).val = f i := by
+    yoneda.map (toGlued hf i) ≫ (yonedaGluedToSheaf hf).val = f i := by
   dsimp [yonedaGluedToSheaf, Sheaf.homEquiv, Functor.FullyFaithful.homEquiv]
   apply yonedaEquiv.injective
   rw [yonedaEquiv_apply, yonedaEquiv_apply]
@@ -118,27 +126,27 @@ lemma fac (i : ι) :
   simp only [comp_id]
   apply GlueData.sheafValGluedMk_val
 
-instance : Sheaf.IsLocallySurjective (yonedaGluedToSheaf F f hf) :=
+instance : Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
   Presheaf.isLocallySurjective_of_isLocallySurjective_fac _
-    (show Sigma.desc (fun i ↦ yoneda.map (toGlued F f hf i)) ≫
-      (yonedaGluedToSheaf F f hf).val = Sigma.desc f by aesop_cat)
+    (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
+      (yonedaGluedToSheaf hf).val = Sigma.desc f by aesop_cat)
 
-instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf F f hf) := sorry
+instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) := sorry
 
-instance : IsIso (yonedaGluedToSheaf F f hf) := by
-  rw [← Sheaf.isLocallyBijective_iff_isIso (yonedaGluedToSheaf F f hf)]
+instance : IsIso (yonedaGluedToSheaf hf) := by
+  rw [← Sheaf.isLocallyBijective_iff_isIso (yonedaGluedToSheaf hf)]
   constructor <;> infer_instance
 
 noncomputable def yonedaIsoSheaf :
-    subcanonical_zariskiTopology.yoneda.obj (glueData F f hf).glued ≅ F :=
-  asIso (yonedaGluedToSheaf F f hf)
+    subcanonical_zariskiTopology.yoneda.obj (glueData hf).glued ≅ F :=
+  asIso (yonedaGluedToSheaf hf)
 
 end Representability
 
 open Representability in
 theorem representability_is_local : F.1.Representable where
-  has_representation := ⟨(glueData F f hf).glued,
-    ⟨(sheafToPresheaf _ _).mapIso (yonedaIsoSheaf F f hf)⟩⟩
+  has_representation := ⟨(glueData hf).glued,
+    ⟨(sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf)⟩⟩
 
 end Scheme
 
