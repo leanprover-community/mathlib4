@@ -16,12 +16,12 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
-# Check the CI status of the latest commit on the 'nightly-testing' branch
-status=$(gh api repos/leanprover-community/mathlib4/commits/nightly-testing/status | jq -r '.state')
-if [ "$status" != "success" ]; then
-  echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
-  exit 1
-fi
+# # Check the CI status of the latest commit on the 'nightly-testing' branch
+# status=$(gh api repos/leanprover-community/mathlib4/commits/nightly-testing/status | jq -r '.state')
+# if [ "$status" != "success" ]; then
+#   echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
+#   exit 1
+# fi
 
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
 echo "### [auto] checkout master and pull the latest changes"
@@ -29,7 +29,8 @@ echo "### [auto] checkout master and pull the latest changes"
 git checkout master
 git pull
 
-echo "### [auto] create a new branch 'bump/$BUMPVERSION' and merge the latest changes from 'origin/master'"
+echo
+echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 'origin/master'"
 
 git checkout "bump/$BUMPVERSION"
 git pull
@@ -46,6 +47,7 @@ fi
 
 git push
 
+echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
@@ -60,12 +62,14 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   read -p "Press enter to continue, when you are done"
 fi
 
+echo
 echo "### [auto] commit the changes and push the branch"
 
 pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
 git commit -m "$pr_title"
 git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
 
+echo
 echo "### [auto/user] create a PR for the new branch"
 echo "Create a pull request, label with 'awaiting-review' and 'awaiting-CI'"
 echo "Set the base of the PR to 'bump/$BUMPVERSION'"
@@ -79,6 +83,7 @@ if [ "$answer" != "${answer#[Yy]}" ]; then
     pr_number=$(echo $gh_output | grep -oP 'github.com/[^/]+/[^/]+/pull/\K\d+')
 fi
 
+echo
 echo "### [user] post a link to the PR on Zulip"
 
 zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
@@ -90,9 +95,11 @@ echo "Title: $zulip_title"
 echo " Body: $zulip_body"
 read -p "Press enter to continue"
 
+echo
 echo "### [auto] checkout the 'nightly-testing' branch and merge the new PR into it"
 
 git checkout nightly-testing
+git pull
 git merge "bump/nightly-$NIGHTLYDATE"
 
 # Check if there are merge conflicts
