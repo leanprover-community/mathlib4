@@ -16,6 +16,26 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
+section
+
+variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (t : PullbackCone f g) (ht : IsLimit t)
+
+lemma pullbackCone_eq_mk_self (t : PullbackCone f g) : t = PullbackCone.mk t.fst t.snd t.condition := by
+  sorry
+
+def pullbackCone_iso_mk_self : t ≅ PullbackCone.mk t.fst t.snd t.condition := by
+  apply PullbackCone.ext (by apply Iso.refl) <;> simp
+
+def pullbackCone_iso_mk_self_pt : t.pt ≅ (PullbackCone.mk t.fst t.snd t.condition).pt := by
+  exact Iso.refl t.pt
+
+-- TODO: look at pullbackIsPullback...!
+def pullbackConeMkSelf_isLimit : IsLimit (PullbackCone.mk t.fst t.snd t.condition) := by
+  apply IsLimit.ofIsoLimit ht
+  apply PullbackCone.ext (by apply Iso.refl) <;> simp
+
+end
+
 /-- A morphism of presheaves `F ⟶ G` is representable if for any `X : C`, and any morphism
 `g : yoneda.obj X ⟶ G`, the pullback `F ×_G yoneda.obj X` is also representable. -/
 def Presheaf.representable : MorphismProperty (Cᵒᵖ ⥤ Type v) :=
@@ -30,52 +50,74 @@ variable {F G : Cᵒᵖ ⥤ Type v} {f : F ⟶ G} (hf : Presheaf.representable f
   {Y : C} {f' : yoneda.obj Y ⟶ G} (hf' : Presheaf.representable f')
   {X : C} (g : yoneda.obj X ⟶ G) (hg : Presheaf.representable g)
 
-/-- Let `f : F ⟶ G` be a morphism in the category of presheaves of types on
-a category `C`, such that `hf : Presheaf.representable f`. Then, for any
-`g : yoneda.obj X ⟶ G`, this is a choice of an object `hf.pullback g` equipped
-with an isomorphism between `yoneda.obj (hf.pullback g)` and the categorical
-pullback of `f` and `g` in the category of presheaves. -/
+/-- Let `f : F ⟶ G` be a representable morphism in the category of presheaves of types on
+a category `C`. Then, for any `g : yoneda.obj X ⟶ G`, `hf.pullback g` denotes the (choice of) a
+corresponding object in `C` equipped with an isomorphism between `yoneda.obj (hf.pullback g)`
+and the categorical pullback of `f` and `g` in the category of presheaves. -/
 noncomputable def pullback : C :=
   Functor.reprX (hF := hf g)
 
+/-- The given isomorphism between `yoneda.obj (hf.pullback g)` and the choice of categorical
+pullback of `f` and `g`-/
 noncomputable def pullbackIso : yoneda.obj (hf.pullback g) ≅ Limits.pullback f g :=
   Functor.reprW (hF := hf g)
 
-noncomputable def fst : hf'.pullback g ⟶ Y :=
-  Yoneda.fullyFaithful.preimage ((hf'.pullbackIso g).hom ≫ Limits.pullback.fst)
+/-- The pullback cone obtained by the isomorphism `hf.pullbackIso`. -/
+-- TODO: should be PullbackCone f g?
+noncomputable def pullbackCone : PullbackCone f g :=
+  (limit.cone (cospan f g)).extend (hf.pullbackIso g).hom
+
+/-- The projection `yoneda.obj (hf.pullback g) ⟶ F`. -/
+noncomputable def pullbackConeFst : yoneda.obj (hf.pullback g) ⟶ F := (hf.pullbackCone g).fst
+
+/-- The projection `yoneda.obj (hf.pullback g) ⟶ yoneda.obj X`. -/
+noncomputable def pullbackConeSnd : yoneda.obj (hf.pullback g) ⟶ yoneda.obj X := (hf.pullbackCone g).snd
+
+noncomputable def pullbackConeIsLimit : IsLimit (hf.pullbackCone g) :=
+  IsLimit.extendIso _ <| limit.isLimit (cospan f g)
 
 noncomputable def snd : hf.pullback g ⟶ X :=
-  Yoneda.fullyFaithful.preimage ((hf.pullbackIso g).hom ≫ Limits.pullback.snd)
+  Yoneda.fullyFaithful.preimage ((hf.pullbackCone g).snd)
 
-noncomputable abbrev fst_yoneda : yoneda.obj (hf.pullback g) ⟶ F :=
-  (hf.pullbackIso g).hom ≫ Limits.pullback.fst
+noncomputable def fst : hf'.pullback g ⟶ Y :=
+  Yoneda.fullyFaithful.preimage ((hf'.pullbackCone g).fst)
+
+-- TODO: need to add comp here?
+@[simp]
+lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackCone g).snd := by
+  apply Functor.FullyFaithful.map_preimage
+
+@[simp]
+lemma yoneda_map_fst : yoneda.map (hf'.fst g) = (hf'.pullbackCone g).fst := by
+  apply Functor.FullyFaithful.map_preimage
 
 @[reassoc]
-lemma yoneda_map_fst :
-    yoneda.map (hf'.fst g) = (hf'.pullbackIso g).hom ≫ Limits.pullback.fst := by
-  simp only [fst, Functor.FullyFaithful.map_preimage]
-
-@[reassoc]
-lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackIso g).hom ≫ Limits.pullback.snd := by
-  simp only [snd, Functor.FullyFaithful.map_preimage]
+lemma condition_yoneda : (hf.pullbackCone g).fst ≫ f = yoneda.map (hf.snd g) ≫ g := by
+  simpa only [yoneda_map_snd] using (hf.pullbackCone g).condition
 
 @[reassoc]
 lemma condition : yoneda.map (hf'.fst g) ≫ f' = yoneda.map (hf'.snd g) ≫ g := by
-  simpa [yoneda_map_fst, yoneda_map_snd] using Limits.pullback.condition
+  simpa only [yoneda_map_fst] using hf'.condition_yoneda g
 
 variable {g}
 
+-- can use this: IsLimit.hom_ext (in terms of pullback cones) somewhere here?
+
+/-- Two morphisms `a b : Z ⟶ hf.pullback g` are equal if
+* Their compositions (in `C`) with `hf.snd g : hf.pullback  ⟶ X` are equal.
+* The compositions of `yoneda.map a` and `yoneda.map b` with `hf.pullbackCone g`.fst are equal. -/
 @[ext 100]
 lemma hom_ext {Z : C} {a b : Z ⟶ hf.pullback g}
-    (h₁ : yoneda.map a ≫ (hf.pullbackIso g).hom ≫ pullback.fst =
-      yoneda.map b ≫ (hf.pullbackIso g).hom ≫ pullback.fst)
+    (h₁ : yoneda.map a ≫ (hf.pullbackCone g).fst = yoneda.map b ≫ (hf.pullbackCone g).fst)
     (h₂ : a ≫ hf.snd g = b ≫ hf.snd g) : a = b := by
   apply yoneda.map_injective
+  -- TODO: simplify proof from here
   rw [← cancel_mono (hf.pullbackIso g).hom]
   ext1
   · simpa using h₁
   · simpa [yoneda_map_snd] using yoneda.congr_map h₂
 
+/-- TODO -/
 @[ext]
 lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g}
     (h₁ : a ≫ hf'.fst g = b ≫ hf'.fst g)
@@ -84,19 +126,30 @@ lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g}
 
 section
 
-variable {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X)
-    (hi : i ≫ f = yoneda.map h ≫ g)
+/- In this section we develop some API for pulling back the universal property
+of `yoneda.obj (hf.pullback g)` to `C`.
 
+In particular, we will develop analogues of ..., where as many properties as possible are
+phrased inside the category `C`. -/
+
+variable {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X) (hi : i ≫ f = yoneda.map h ≫ g)
+
+/-- The universal property of `yoneda.obj (hf.pullback g)`, when applied to representable objects.
+-/
 noncomputable def lift : Z ⟶ hf.pullback g :=
-  Yoneda.fullyFaithful.preimage <| Limits.pullback.lift _ _ hi ≫ (hf.pullbackIso g).inv
+  Yoneda.fullyFaithful.preimage <| PullbackCone.IsLimit.lift (hf.pullbackConeIsLimit g) _ _ hi
 
 @[reassoc (attr := simp)]
-lemma lift_fst : yoneda.map (hf.lift i h hi) ≫
-    (hf.pullbackIso g).hom ≫ pullback.fst = i := by simp [lift]
+lemma lift_fst : yoneda.map (hf.lift i h hi) ≫ (hf.pullbackCone g).fst = i := by
+  simp [lift, PullbackCone.IsLimit.lift_fst]
 
 @[reassoc (attr := simp)]
 lemma lift_snd : hf.lift i h hi ≫ hf.snd g = h :=
-  yoneda.map_injective (by simp [yoneda_map_snd, lift])
+  yoneda.map_injective <| by
+  -- TODO: better proof not involving unfolding API? yoneda_map_snd or sth?
+    simp [-yoneda_map_snd]
+    sorry
+    --simp [PullbackCone.IsLimit.lift_snd]
 
 end
 
@@ -143,6 +196,8 @@ lemma yoneda_map [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
   obtain ⟨g, rfl⟩ := yoneda.map_surjective g
   exact ⟨Limits.pullback f g, ⟨PreservesPullback.iso _ _ _⟩⟩
 
+-- TODO: yoneda.map f satisfies P if f does
+
 end Presheaf.representable
 
 namespace MorphismProperty
@@ -153,6 +208,14 @@ def presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v) :=
   fun _ G f ↦ ∃ (hf : Presheaf.representable f), ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), P (hf.snd g)
 
 variable {P}
+
+lemma yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} (f : X ⟶ Y) :
+    P.presheaf (yoneda.map f) := by
+  use Presheaf.representable.yoneda_map f
+  intro Z g
+  sorry
+  -- have : P (pullback f (Yoneda.fullyFaithful.preimage g)) := sorry
+
 
 lemma presheaf.representable {f : F ⟶ G} (hf : P.presheaf f) : Presheaf.representable f :=
   hf.choose
@@ -171,18 +234,17 @@ lemma _root_.CategoryTheory.hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v} {f g : P �
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
     using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
 
--- if P is compatible w/ isos/comps/base change, then so is `presheaf P`
--- TODO: yoneda.map f satisfies P if f does
-
 lemma presheaf_monomorphisms_le_monomorphisms :
     (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
   suffices ∀ {X : C} {a b : yoneda.obj X ⟶ F}, a ≫ f = b ≫ f → a = b from
     ⟨fun _ _ h ↦ hom_ext_yoneda (fun _ _ ↦ this (by simp only [assoc, h]))⟩
   intro X a b h
+  /- It suffices to show that the lifts of `a` and `b` to morphisms
+  `X ⟶ hf.representable.pullback g` are equal. -/
   suffices hf.representable.lift (g := a ≫ f) a (𝟙 X) (by simp) =
       hf.representable.lift b (𝟙 X) (by simp [← h]) by
-    simpa using yoneda.congr_map
-      this =≫ ((hf.representable.pullbackIso (a ≫ f)).hom ≫ pullback.fst)
+    simpa using yoneda.congr_map this =≫ (hf.representable.pullbackCone (a ≫ f)).fst
+  -- This follows from the fact that the induced maps `hf.representable.pullback g ⟶ X` are Mono.
   have : Mono (hf.representable.snd (a ≫ f)) := hf.property (a ≫ f)
   simp only [← cancel_mono (hf.representable.snd (a ≫ f)),
     Presheaf.representable.lift_snd]
@@ -191,42 +253,63 @@ lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
     P.presheaf ≤ P'.presheaf := fun _ _ _ hf ↦
   ⟨hf.representable, fun _ g ↦ h _ (hf.property g)⟩
 
-
 end MorphismProperty
 
 open MorphismProperty Limits
 
 instance : IsStableUnderComposition (Presheaf.representable (C:=C)) where
-  comp_mem {F G H} f g hf hg := by
-    intro X h
-    --let a := Limits.pullback.snd g h
-    let H : pullback f (pullback.fst (f:=g) (g:=h)) ≅ pullback (f ≫ g) h :=
-      pullbackRightPullbackFstIso g h f
-    let a := hg.pullback h
-    use hf.pullback (hg.fst_yoneda h)
-    refine ⟨hf.pullbackIso (hg.fst_yoneda h) ≪≫ ?_ ≪≫ H⟩
-    fapply IsPullback.isoPullback
-    apply pullback.fst
-    apply pullback.snd ≫ _
-    apply (hg.pullbackIso h).hom
-    sorry  -- is there API missing for interactions between pullbacks and isos (not IsIso?)
+  comp_mem {F G H} f g hf hg := fun X h ↦ by
+    use hf.pullback (hg.pullbackCone h).fst
+
+    /- The morphism `f₁` puts the pullback of `f ≫ g` and `h` into a `bigSquare` with
+    `yoneda.obj (hg.pullback h)`. -/
+    let f₁ : pullback (f ≫ g) h ⟶ yoneda.obj (hg.pullback h) :=
+      PullbackCone.IsLimit.lift (hg.pullbackConeIsLimit h) (pullback.fst ≫ f) pullback.snd
+        (by rw [← pullback.condition, assoc])
+
+    /- It follows that `pullback (f ≫ g) h` is the "limit point" of a pullback over `f` and
+    `(hg.pullbackCone h).snd`. -/
+    -- TODO: this should be done using the IsPullback API!
+    let P' := leftSquareIsPullback f₁ (hg.pullbackCone h).snd f g pullback.fst
+      (hg.pullbackCone h).fst h (by simp [f₁]) (hg.pullbackCone h).condition
+      (pullbackConeMkSelf_isLimit _ (hg.pullbackConeIsLimit h))
+      (by simpa only [PullbackCone.IsLimit.lift_snd, f₁] using pullbackIsPullback (f ≫ g) h)
+
+    refine ⟨Limits.IsLimit.conePointUniqueUpToIso (hf.pullbackConeIsLimit _) P'⟩
 
 lemma Representable.StableUnderBaseChange :
     StableUnderBaseChange (Presheaf.representable (C:=C)) := by
-  intro F G G' H f g f' g' BC hg X h
+  intro F G G' H f g f' g' P₁ hg X h
   use hg.pullback (h ≫ f)
-  refine ⟨hg.pullbackIso (h ≫ f) ≪≫ ?_⟩
-  sorry -- should be easy now if I would know the right lemma
+  let P₂ := IsPullback.of_isLimit (limit.isLimit (cospan g' h))
+  let P := IsPullback.paste_horiz P₂ P₁
+  refine ⟨hg.pullbackIso (h ≫ f) ≪≫ P.isoPullback.symm⟩
 
-lemma Representable.ofIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
+lemma Representable.ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
   fun X g ↦ ⟨X, ⟨(asIso <| Limits.pullback.snd (f:=f) (g:=g)).symm⟩⟩
 
 lemma isomorphisms_le : MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
-  fun _ _ f hf ↦ letI : IsIso f := hf; Representable.ofIso f
+  fun _ _ f hf ↦ letI : IsIso f := hf; Representable.ofIsIso f
 
 lemma Representable.respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
-  ⟨fun _ _ hf ↦ comp_mem _ _ _ (Representable.ofIso _) hf,
-  fun _ _ hf ↦ comp_mem _ _ _ hf <| Representable.ofIso _⟩
+  ⟨fun _ _ hf ↦ comp_mem _ _ _ (Representable.ofIsIso _) hf,
+  fun _ _ hf ↦ comp_mem _ _ _ hf <| Representable.ofIsIso _⟩
+
+/-
+Calle's notes on current pullback API (I might try PR some of this if I don't end up finding good ways
+  to do it):
+- pullback f g: is there no super easy way to access its cone? (i.e. pullback.cone?)
+  - should start by constructing the cone, then deriving pullback etc
+
+- Is BigSquare lacking...? i.e. is there a way to do it w/ specified PullbackCones?
+  (Pullback.mk is slightly annoying there)
+  - Want: BigSquare & pullback interaction
+
+- PullbackCone:
+ - Want PullbackCone.IsLimit.uniqueUpToIso? (not sure if I need this in the end)
+ - More PullbackCone.IsLimit constructors?
+ - PullbackCone eq mk self (as above?)
+-/
 
 
 end CategoryTheory
