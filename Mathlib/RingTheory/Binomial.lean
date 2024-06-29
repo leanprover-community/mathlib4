@@ -123,8 +123,7 @@ theorem multichoose_succ_succ (r : R) (k : ℕ) :
     multichoose (r + 1) (k + 1) = multichoose r (k + 1) + multichoose (r + 1) k := by
   refine nsmul_right_injective (Nat.factorial (k + 1)) (Nat.factorial_ne_zero (k + 1)) ?_
   simp only [factorial_nsmul_multichoose_eq_ascPochhammer, smul_add]
-  rw [add_comm (smeval (ascPochhammer ℕ (k+1)) r)]
-  exact ascPochhammer_succ_succ r k
+  rw [add_comm (smeval (ascPochhammer ℕ (k+1)) r), ascPochhammer_succ_succ r k]
 
 @[simp]
 theorem multichoose_one (k : ℕ) : multichoose (1 : R) k = 1 := by
