@@ -108,6 +108,8 @@ structure ErrorContext where
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
+  /-- An automatic fix of this error (if possible) -/
+  autofix : Option String
 
 /-- The parts of a `StyleError` which are considered when matching against the existing
   style exceptions: for example, we ignore the particular line length of a "line too long" error. -/
@@ -181,7 +183,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
           | _ => none
         | _ => none
       -- Omit the line number, as we don't use it anyway.
-      err.map fun e ↦ (ErrorContext.mk e 0 path)
+      err.map fun e ↦ (ErrorContext.mk e 0 path none)
     -- It would be nice to print an error on any line which doesn't match the above format,
     -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
     -- anyway as the style exceptions file is mostly automatically generated.
@@ -209,7 +211,7 @@ structure AutomaticFix where
 /-- Core logic of a text based linter: given a collection of lines,
 return an array of all style errors with line numbers,
 and a list of all possible machine-applicable fixes. -/
-abbrev TextbasedLinter := Array String → (Array (StyleError × ℕ) × Option (List AutomaticFix))
+abbrev TextbasedLinter := Array String → Array (StyleError × ℕ × Option String)
 
 /-! Definitions of the actual text-based linters. -/
 section
@@ -230,35 +232,37 @@ including the copy year and holder, the license and main author(s) of the file (
 def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
   -- Unlike the Python script, we just emit one warning.
   let start := lines.extract 0 4
-  -- The header should start and end with blank comments.
-  let _ : Option (_ × Option (List AutomaticFix)) := match (start.get? 0, start.get? 4) with
-  | (some "/-", some "-/") => none
-  | (some "/-", _) => return (#[(StyleError.copyright none, 4)], none)
-  | _ => return (#[(StyleError.copyright none, 0)], none)
+  -- -- The header should start and end with blank comments.
+  -- let _ : Option (StyleError × ℕ × Option String) := match (start.get? 0, start.get? 4) with
+  -- | (some "/-", some "-/") => none
+  --   --some (StyleError.adaptationNote, 2, none)
+  --   --return #[(StyleError.copyright none, 4, none)]
+  -- --| (some "/-", _) => return #[(StyleError.copyright none, 4, none)]
+  -- | _ => return #[(StyleError.copyright none, 0, none)]
 
   -- If this is given, we go over the individual lines one by one,
   -- and provide some context on what is mis-formatted (if anything).
-  let mut output := Array.mkEmpty 0
+  let mut output : Array (StyleError × ℕ × Option String) := Array.mkEmpty 0
   -- By hypotheses above, start has at least five lines, so the `none` cases below are never hit.
   -- The first real line should state the copyright.
   if let some copy := start.get? 1 then
     if !(copy.startsWith "Copyright (c) 20" && copy.endsWith ". All rights reserved.") then
-      output := output.push (StyleError.copyright "Copyright line is malformed", 2)
+      output := output.push (StyleError.copyright "Copyright line is malformed", 2, none)
   -- The second line should be standard.
   let expectedSecondLine := "Released under Apache 2.0 license as described in the file LICENSE."
   if start.get? 2 != some expectedSecondLine then
     output := output.push (StyleError.copyright
-      s!"Second line should be \"{expectedSecondLine}\"", 3)
+      s!"Second line should be \"{expectedSecondLine}\"", 3, none)
   -- The third line should contain authors.
   if let some line := start.get? 3 then
     if !line.containsSubstr "Author" then
       output := output.push (StyleError.copyright
-        "The third line should describe the file's main authors", 4)
+        "The third line should describe the file's main authors", 4, none)
     else
       -- If it does, we check the authors line is formatted correctly.
       if !isCorrectAuthorsLine line then
-        output := output.push (StyleError.authors, 4)
-  return (output, none)
+        output := output.push (StyleError.authors, 4, none)
+  return output
 
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -267,9 +271,9 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
   for line in lines do
     -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
     if line.containsSubstr "daptation note" then
-      errors := errors.push (StyleError.adaptationNote, lineNumber)
+      errors := errors.push (StyleError.adaptationNote, lineNumber, none)
     lineNumber := lineNumber + 1
-  return (errors, none)
+  return errors
 
 /-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
 def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -293,11 +297,11 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
           -- none of these occur in module names, so this is safe.
           if let some name := ((toString rest).split (" /-".contains ·)).head? then
             if name == "Mathlib.Tactic" then
-              errors := errors.push (StyleError.broadImport BroadImports.TacticFolder, lineNumber)
+              errors := errors.push (StyleError.broadImport BroadImports.TacticFolder, lineNumber, none)
             else if name == "Lake" || name.startsWith "Lake." then
-              errors := errors.push (StyleError.broadImport BroadImports.Lake, lineNumber)
+              errors := errors.push (StyleError.broadImport BroadImports.Lake, lineNumber, none)
       lineNumber := lineNumber + 1
-  return (errors, none)
+  return errors
 
 /-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
 We allow #aligns or URLs to be longer, though.
@@ -306,9 +310,9 @@ def lineLengthLinter : TextbasedLinter := fun lines ↦ Id.run do
   let errors := (lines.toList.enumFrom 1).filterMap (fun (line_number, line) ↦
     if line.length > 101 &&
       !(line.startsWith "#align" || line.containsSubstr "http" || line.startsWith "-- #align")  then
-      some (StyleError.lineLength line.length, line_number)
+      some (StyleError.lineLength line.length, line_number, none)
     else none)
-  (errors.toArray, none)
+  errors.toArray
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -366,21 +370,21 @@ together with a collection of all automatically applicable fixes.
 `sizeLimit` is any pre-existing limit on this file's size.
 `exceptions` are any other style exceptions. -/
 def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array ErrorContext) :
-    IO (Array ErrorContext × Option (List AutomaticFix)) := do
+    IO (Array ErrorContext) := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if isImportsOnlyFile lines then
-    return (#[], none)
+    return #[]
   let mut errors := #[]
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
-    errors := #[ErrorContext.mk (StyleError.fileTooLong n limit) 1 path]
-  -- TODO: actually forward the real output
+    errors := #[ErrorContext.mk (StyleError.fileTooLong n limit) 1 path none]
+  -- TODO: this design won't work; need to perform replacements here!
   let allOutput := (Array.map (fun lint ↦
-    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines).1)) allLinters
+    (Array.map (fun (e, n, auto) ↦ ErrorContext.mk e n path auto)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
   errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
-  return (errors, none)
+  return errors
 
 /-- Lint all files referenced in a given import-only file.
 Print formatted errors and possibly update the style exceptions file accordingly.
@@ -413,15 +417,14 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
     -- TODO: process any auto-fixable lints in order; if there are replacements,
     -- apply the new lints one after the other... not too bad, but requires doing so!
     -- TODO: rewrite files in-place for this
-    let (errors, autofixes) := ← lintFile path (sizeLimits.get? 0) styleExceptions
+    let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
     match mode with
     | OutputSetting.print style => formatErrors allUnexpectedErrors style
     | OutputSetting.fix =>
-      if let some _ := autofixes then
-        IO.println "TODO: the --fix option is not implemented yet"
+      IO.println "TODO: the --fix option is not implemented yet"
     | OutputSetting.append =>
         if allUnexpectedErrors.size > 0 then
           formatErrors allUnexpectedErrors ErrorFormat.humanReadable
