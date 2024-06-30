@@ -368,7 +368,7 @@ lemma Indep.exists_bijOn_of_map {I : Set β} (hf) (hI : (M.map f hf).Indep I) :
 lemma map_image_indep_iff {hf} {I : Set α} (hI : I ⊆ M.E) :
     (M.map f hf).Indep (f '' I) ↔ M.Indep I := by
   rw [map_indep_iff]
-  refine ⟨fun ⟨J, hJ, hIJ⟩ ↦ ?_, fun h ↦ ⟨I, h, rfl⟩ ⟩
+  refine ⟨fun ⟨J, hJ, hIJ⟩ ↦ ?_, fun h ↦ ⟨I, h, rfl⟩⟩
   rw [hf.image_eq_image_iff hI hJ.subset_ground] at hIJ; rwa [hIJ]
 
 @[simp] lemma map_base_iff (M : Matroid α) (f : α → β) (hf) {B : Set β} :

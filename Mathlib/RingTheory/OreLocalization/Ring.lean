@@ -16,7 +16,7 @@ import Mathlib.RingTheory.OreLocalization.Basic
 # Module and Ring instances of Ore Localizations
 
 The `Monoid` and `DistribMulAction` instances and additive versions are provided in
-`RingTheory/OreLocalization/Basic.lean`.
+`Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
 
@@ -108,19 +108,13 @@ variable (hf : ∀ s : S, f s = fS s)
 units of `T`, to a ring homomorphism `R[S⁻¹] →+* T`. This extends the construction on
 monoids. -/
 def universalHom : R[S⁻¹] →+* T :=
-  {
-    universalMulHom f.toMonoidHom fS
-      hf with
+  { universalMulHom f.toMonoidHom fS hf with
     map_zero' := by
-      -- Porting note: `change` required because of new `Coe`
-      change (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) 0 = 0
+      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       rw [OreLocalization.zero_def, universalMulHom_apply]
       simp
     map_add' := fun x y => by
-      -- Porting note: `change` required because of new `Coe`
-      change (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) (x + y)
-        = (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) x
-        + (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) y
+      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       induction' x with r₁ s₁
       induction' y with r₂ s₂
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
@@ -241,12 +235,11 @@ protected theorem inv_def {r : R} {s : R⁰} :
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
   induction' x with r s
   rw [OreLocalization.inv_def, OreLocalization.one_def]
-  by_cases hr : r = 0
-  · exfalso
-    apply h
-    simp [hr]
-  · simp only [hr, ↓reduceDite]
-    apply OreLocalization.mul_inv ⟨r, _⟩
+  have hr : r ≠ 0 := by
+    rintro rfl
+    simp at h
+  simp only [hr, ↓reduceDite]
+  apply OreLocalization.mul_inv ⟨r, _⟩
 #align ore_localization.mul_inv_cancel OreLocalization.mul_inv_cancel
 
 protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
