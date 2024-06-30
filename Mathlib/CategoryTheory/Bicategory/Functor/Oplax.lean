@@ -130,9 +130,7 @@ attribute [nolint docBlame] CategoryTheory.OplaxFunctor.mapId
   CategoryTheory.OplaxFunctor.map₂_leftUnitor
   CategoryTheory.OplaxFunctor.map₂_rightUnitor
 
-instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
-  ⟨toPrelaxFunctor⟩
-#align category_theory.oplax_functor.has_coe_to_prelax CategoryTheory.OplaxFunctor.hasCoeToPrelax
+#noalign category_theory.oplax_functor.has_coe_to_prelax
 
 variable (F : OplaxFunctor B C)
 
@@ -168,7 +166,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   mapComp := fun f g => by
     exact (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
   mapComp_naturality_left := fun η g => by
-    dsimp;
+    dsimp
     rw [← G.map₂_comp_assoc, mapComp_naturality_left, G.map₂_comp_assoc, mapComp_naturality_left,
       assoc]
   mapComp_naturality_right := fun η => by
