@@ -80,15 +80,39 @@ variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y)
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
-def evaluationMap (x : X) : Y.residueField (f.val.base x) ⟶ X.residueField x :=
+def residueFieldMap (x : X) : Y.residueField (f.val.base x) ⟶ X.residueField x :=
   LocalRing.ResidueField.map (LocallyRingedSpace.stalkMap f x)
+
+lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
+    LocalRing.residue _ ≫ residueFieldMap f x = stalkMap f x ≫ LocalRing.residue _ := by
+  simp [residueFieldMap]
+  rfl
+
+@[simp]
+lemma residueFieldMap_id (x : X) :
+    residueFieldMap (𝟙 X) x = 𝟙 (X.residueField x) := by
+  simp only [id_val', SheafedSpace.id_base, TopCat.coe_id, id_eq, residueFieldMap, stalkMap]
+  have : PresheafedSpace.stalkMap (𝟙 X.toSheafedSpace) x = 𝟙 (X.stalk x) :=
+    PresheafedSpace.stalkMap.id _ _
+  simp_rw [this]
+  apply LocalRing.ResidueField.map_id
+
+@[simp]
+lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
+    residueFieldMap (f ≫ g) x = residueFieldMap g (f.val.base x) ≫ residueFieldMap f x := by
+  simp only [comp_val, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap, stalkMap]
+  convert_to LocalRing.ResidueField.map
+      (PresheafedSpace.stalkMap g.val (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x) = _
+  · congr
+    apply PresheafedSpace.stalkMap.comp
+  · apply LocalRing.ResidueField.map_comp
 
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.1.base).obj V) :
-    Y.evaluation ⟨f.val.base x, x.property⟩ ≫ evaluationMap f x.val =
+    Y.evaluation ⟨f.val.base x, x.property⟩ ≫ residueFieldMap f x.val =
       f.val.c.app (op V) ≫ X.evaluation x := by
   dsimp only [LocallyRingedSpace.evaluation,
-    LocallyRingedSpace.evaluationMap]
+    LocallyRingedSpace.residueFieldMap]
   rw [Category.assoc]
   ext a
   simp only [comp_apply]
@@ -97,17 +121,17 @@ lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.1.base).obj V) :
 
 lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.1.base).obj V)
     (a : Y.presheaf.obj (op V)) :
-    evaluationMap f x.val (Y.evaluation ⟨f.val.base x, x.property⟩ a) =
+    residueFieldMap f x.val (Y.evaluation ⟨f.val.base x, x.property⟩ a) =
       X.evaluation x (f.val.c.app (op V) a) := by
   simpa using congrFun (congrArg DFunLike.coe <| evaluation_naturality f x) a
 
 @[reassoc]
 lemma Γevaluation_naturality (x : X) :
-    Y.Γevaluation (f.val.base x) ≫ evaluationMap f x =
+    Y.Γevaluation (f.val.base x) ≫ residueFieldMap f x =
       f.val.c.app (op ⊤) ≫ X.Γevaluation x :=
   evaluation_naturality f ⟨x, by simp only [Opens.map_top]; trivial⟩
 
 lemma Γevaluation_naturality_apply (x : X) (a : Y.presheaf.obj (op ⊤)) :
-    LocallyRingedSpace.evaluationMap f x (Y.Γevaluation (f.val.base x) a) =
+    residueFieldMap f x (Y.Γevaluation (f.val.base x) a) =
       X.Γevaluation x (f.val.c.app (op ⊤) a) :=
   evaluation_naturality_apply f ⟨x, by simp only [Opens.map_top]; trivial⟩ a
