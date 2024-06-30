@@ -238,7 +238,7 @@ theorem limsup_add_le_of_le {α : Type*} {f : Filter α} {u v : α → EReal} {a
   · exact limsup_add_le_of_lt ha hb
   by_cases hb' : b = ⊤
   · convert le_top;
-    rw [hb'];
+    rw [hb']
     exact add_top_of_ne_bot ha.ne_bot
   exact (limsup_add_le_add_limsup (hb ▸ Or.inr hb') (Or.inl ha.ne_top)).trans
     (add_le_add ha.le hb.le)
