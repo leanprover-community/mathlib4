@@ -510,7 +510,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     convert this using 3
     show stereographic' n (-v) v = 0
     dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
+    simp only [AddHomClass.map_eq_zero_iff]
     apply stereographic_neg_apply
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
@@ -548,7 +548,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
     convert this using 3
     show stereographic' n (-v) v = 0
     dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
+    simp only [AddHomClass.map_eq_zero_iff]
     apply stereographic_neg_apply
   have : HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by

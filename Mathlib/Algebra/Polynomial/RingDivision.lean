@@ -456,7 +456,7 @@ theorem X_sub_C_pow_dvd_iff {p : R[X]} {t : R} {n : ℕ} :
   simp [C_eq_algebraMap]
 
 theorem comp_X_add_C_eq_zero_iff {p : R[X]} (t : R) :
-    p.comp (X + C t) = 0 ↔ p = 0 := AddEquivClass.map_eq_zero_iff (algEquivAevalXAddC t)
+    p.comp (X + C t) = 0 ↔ p = 0 := AddHomClass.map_eq_zero_iff (algEquivAevalXAddC t)
 
 theorem comp_X_add_C_ne_zero_iff {p : R[X]} (t : R) :
     p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := Iff.not <| comp_X_add_C_eq_zero_iff t
