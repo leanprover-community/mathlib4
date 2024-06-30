@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Sébastien Gouëzel, Patrick Massot, Ruben Van de Velde, Floris Van Doorn,
 Junyan Xu
 -/
+import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.Data.MvPolynomial.Funext
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 
@@ -40,13 +41,13 @@ def SmoothSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
   zero_mem' :=
     ⟨(tsupport_eq_empty_iff.mpr rfl).subset.trans (empty_subset _), contDiff_const (c := 0)⟩
   smul_mem' r f hf :=
-    ⟨(closure_mono <| support_smul_subset_right r f).trans hf.1, contDiff_const.smul hf.2⟩
+    ⟨(closure_mono <| support_const_smul_subset r f).trans hf.1, contDiff_const.smul hf.2⟩
 
 namespace SmoothSupportedOn
 
 variable {n : ℕ∞} {s : Set E}
 
-instance : FunLike (SmoothSupportedOn 𝕜 E F n s) E (fun _ ↦ F) where
+instance : FunLike (SmoothSupportedOn 𝕜 E F n s) E F where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
 
@@ -95,7 +96,7 @@ lemma inj_L : Injective (L ι) :=
   (injective_iff_map_eq_zero _).mpr fun p hp ↦ by
     have H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 :=
       isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero
-        (by exact continuous_eval p |>.locallyIntegrable.locallyIntegrableOn _)
+        (continuous_eval p |>.locallyIntegrable.locallyIntegrableOn _)
         fun g hg _h2g g_supp ↦ by
           simpa [mul_comm (g _), L] using congr($hp ⟨g, g_supp.trans ball_subset_closedBall, hg⟩)
     simp_rw [MvPolynomial.funext_iff, map_zero]

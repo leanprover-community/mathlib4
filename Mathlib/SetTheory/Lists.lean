@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.Sigma.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import set_theory.lists from "leanprover-community/mathlib"@"497d1e06409995dd8ec95301fa8d8f3480187f4c"
 
@@ -82,7 +83,7 @@ def toList : ∀ {b}, Lists' α b → List (Lists α)
   | _, cons' a l => ⟨_, a⟩ :: l.toList
 #align lists'.to_list Lists'.toList
 
--- porting notes: removed @[simp]
+-- Porting note (#10618): removed @[simp]
 -- simp can prove this: by simp only [@Lists'.toList, @Sigma.eta]
 theorem toList_cons (a : Lists α) (l) : toList (cons a l) = a :: l.toList := by simp
 #align lists'.to_list_cons Lists'.toList_cons
@@ -116,16 +117,19 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
       -- change l' with cons' a l
       --
       -- This can be removed.
-      simpa [cons] using IH rfl
+      simpa [cons, l'] using IH rfl
 #align lists'.of_to_list Lists'.of_toList
 
 end Lists'
 
 mutual
+  /-- Equivalence of ZFA lists. Defined inductively. -/
   inductive Lists.Equiv : Lists α → Lists α → Prop
     | refl (l) : Lists.Equiv l l
     | antisymm {l₁ l₂ : Lists' α true} :
       Lists'.Subset l₁ l₂ → Lists'.Subset l₂ l₁ → Lists.Equiv ⟨_, l₁⟩ ⟨_, l₂⟩
+
+  /-- Subset relation for ZFA lists. Defined inductively. -/
   inductive Lists'.Subset : Lists' α true → Lists' α true → Prop
     | nil {l} : Lists'.Subset Lists'.nil l
     | cons {a a' l l'} :
@@ -136,12 +140,6 @@ end
 #align lists'.subset Lists'.Subset
 
 local infixl:50 " ~ " => Lists.Equiv
-
-/-- Equivalence of ZFA lists. Defined inductively. -/
-add_decl_doc Lists.Equiv
-
-/-- Subset relation for ZFA lists. Defined inductively. -/
-add_decl_doc Lists'.Subset
 
 namespace Lists'
 
@@ -163,7 +161,7 @@ theorem mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
 #align lists'.mem_cons Lists'.mem_cons
 
 theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
-  refine' ⟨fun h => _, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
+  refine ⟨fun h => ?_, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
   generalize h' : Lists'.cons a l₁ = l₁' at h
   cases' h with l a' a'' l l' e m s;
   · cases a
@@ -174,8 +172,8 @@ theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l�
 theorem ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
     Lists'.ofList l₁ ⊆ Lists'.ofList l₂ := by
   induction' l₁ with _ _ l₁_ih; · exact Subset.nil
-  refine' Subset.cons (Lists.Equiv.refl _) _ (l₁_ih (List.subset_of_cons_subset h))
-  simp at h; simp [h]
+  refine Subset.cons (Lists.Equiv.refl _) ?_ (l₁_ih (List.subset_of_cons_subset h))
+  simp only [List.cons_subset] at h; simp [h]
 #align lists'.of_list_subset Lists'.ofList_subset
 
 @[refl]
@@ -295,7 +293,7 @@ theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
 #align lists.is_list_of_mem Lists.isList_of_mem
 
 theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ ↔ l₁ ⊆ l₂ ∧ l₂ ⊆ l₁ := by
-  refine' ⟨fun h => _, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
+  refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
   cases' h with _ _ _ h₁ h₂
   · simp [Lists'.Subset.refl]
   · exact ⟨h₁, h₂⟩
@@ -357,7 +355,7 @@ instance instSetoidLists : Setoid (Lists α) :=
 section Decidable
 
 /-- Auxiliary function to prove termination of decidability checking -/
-@[simp, deprecated] -- porting note: replaced by termination_by
+@[simp, deprecated (since := "2023-06-24")]
 def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →
@@ -386,22 +384,23 @@ mutual
       decidable_of_iff' (l₁ = l₂) <| by
         cases l₁
         apply equiv_atom.trans
-        simp [atom]
+        simp only [atom]
         constructor <;> (rintro ⟨rfl⟩; rfl)
     | ⟨false, l₁⟩, ⟨true, l₂⟩ => isFalse <| by rintro ⟨⟩
     | ⟨true, l₁⟩, ⟨false, l₂⟩ => isFalse <| by rintro ⟨⟩
     | ⟨true, l₁⟩, ⟨true, l₂⟩ => by
       haveI : Decidable (l₁ ⊆ l₂) :=
         have : SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
-            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) :=
-          by decreasing_tactic
+            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) := by
+          decreasing_tactic
         Subset.decidable l₁ l₂
       haveI : Decidable (l₂ ⊆ l₁) :=
         have : SizeOf.sizeOf l₂ + SizeOf.sizeOf l₁ <
-            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) :=
-          by decreasing_tactic
+            SizeOf.sizeOf (⟨true, l₁⟩ : Lists α) + SizeOf.sizeOf (⟨true, l₂⟩ : Lists α) := by
+          decreasing_tactic
         Subset.decidable l₂ l₁
       exact decidable_of_iff' _ Equiv.antisymm_iff
+  termination_by x y => sizeOf x + sizeOf y
   instance Subset.decidable : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
     | Lists'.nil, l₂ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
@@ -410,10 +409,11 @@ mutual
         mem.decidable ⟨b, a⟩ l₂
       haveI :=
         have : SizeOf.sizeOf l₁ + SizeOf.sizeOf l₂ <
-            SizeOf.sizeOf (Lists'.cons' a l₁) + SizeOf.sizeOf l₂ :=
-          by decreasing_tactic
+            SizeOf.sizeOf (Lists'.cons' a l₁) + SizeOf.sizeOf l₂ := by
+          decreasing_tactic
         Subset.decidable l₁ l₂
       exact decidable_of_iff' _ (@Lists'.cons_subset _ ⟨_, _⟩ _ _)
+  termination_by x y => sizeOf x + sizeOf y
   instance mem.decidable : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
     | a, Lists'.nil => isFalse <| by rintro ⟨_, ⟨⟩, _⟩
     | a, Lists'.cons' b l₂ => by
@@ -423,22 +423,19 @@ mutual
       haveI :=
         have :
           SizeOf.sizeOf a + SizeOf.sizeOf l₂ <
-            SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) :=
-          by decreasing_tactic
+            SizeOf.sizeOf a + SizeOf.sizeOf (Lists'.cons' b l₂) := by
+          decreasing_tactic
         mem.decidable a l₂
-      refine' decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) _
+      refine decidable_of_iff' (a ~ ⟨_, b⟩ ∨ a ∈ l₂) ?_
       rw [← Lists'.mem_cons]; rfl
+  termination_by x y => sizeOf x + sizeOf y
 end
-termination_by
-  Subset.decidable x y => sizeOf x + sizeOf y
-  Equiv.decidable x y => sizeOf x + sizeOf y
-  mem.decidable x y => sizeOf x + sizeOf y
 #align lists.equiv.decidable Lists.Equiv.decidable
 #align lists.subset.decidable Lists.Subset.decidable
 #align lists.mem.decidable Lists.mem.decidable
 
 -- This is an autogenerated declaration, so there's nothing we can do about it.
-attribute [nolint nonClassInstance] Lists.Equiv.decidable._unary._mutual
+attribute [nolint nonClassInstance] Lists.Equiv.decidable._mutual
 
 end Decidable
 
@@ -476,7 +473,7 @@ instance : Inhabited (Finsets α) :=
 
 instance [DecidableEq α] : DecidableEq (Finsets α) := by
   unfold Finsets
-  -- porting notes: infer_instance does not work for some reason
+  -- Porting note: infer_instance does not work for some reason
   exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))
 
 end Finsets

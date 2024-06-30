@@ -3,11 +3,10 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.Pointwise
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.Coset
 
 #align_import group_theory.double_coset from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -24,7 +23,7 @@ this is the usual left or right quotient of a group by a subgroup.
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
 * `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
--- porting note: removed import
+-- Porting note: removed import
 -- import Mathlib.Tactic.Group
 
 variable {G : Type*} [Group G] {α : Type*} [Mul α] (J : Subgroup G) (g : G)
@@ -63,7 +62,7 @@ theorem mem_doset_of_not_disjoint {H K : Subgroup G} {a b : G}
   rw [Set.not_disjoint_iff] at h
   simp only [mem_doset] at *
   obtain ⟨x, ⟨l, hl, r, hr, hrx⟩, y, hy, ⟨r', hr', rfl⟩⟩ := h
-  refine' ⟨y⁻¹ * l, H.mul_mem (H.inv_mem hy) hl, r * r'⁻¹, K.mul_mem hr (K.inv_mem hr'), _⟩
+  refine ⟨y⁻¹ * l, H.mul_mem (H.inv_mem hy) hl, r * r'⁻¹, K.mul_mem hr (K.inv_mem hr'), ?_⟩
   rwa [mul_assoc, mul_assoc, eq_inv_mul_iff_mul_eq, ← mul_assoc, ← mul_assoc, eq_mul_inv_iff_mul_eq]
 #align doset.mem_doset_of_not_disjoint Doset.mem_doset_of_not_disjoint
 
@@ -143,7 +142,7 @@ theorem mk_out'_eq_mul (H K : Subgroup G) (g : G) :
   have := eq H K (mk H K g : Quotient ↑H ↑K).out' g
   rw [out_eq'] at this
   obtain ⟨h, h_h, k, hk, T⟩ := this.1 rfl
-  refine' ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq _)⟩
+  refine ⟨h⁻¹, k⁻¹, H.inv_mem h_h, K.inv_mem hk, eq_mul_inv_of_mul_eq (eq_inv_mul_of_mul_eq ?_)⟩
   rw [← mul_assoc, ← T]
 #align doset.mk_out'_eq_mul Doset.mk_out'_eq_mul
 
@@ -166,7 +165,7 @@ theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.un
     iff_true_iff]
   use mk H K x
   obtain ⟨h, k, h3, h4, h5⟩ := mk_out'_eq_mul H K x
-  refine' ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, _⟩
+  refine ⟨h⁻¹, H.inv_mem h3, k⁻¹, K.inv_mem h4, ?_⟩
   simp only [h5, Subgroup.coe_mk, ← mul_assoc, one_mul, mul_left_inv, mul_inv_cancel_right]
 #align doset.union_quot_to_doset Doset.union_quotToDoset
 
@@ -177,10 +176,10 @@ theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
     Subgroup.mem_carrier, SetLike.mem_coe]
   constructor
   · rintro ⟨y, h_h⟩
-    refine' ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.2, _⟩
-    simp only [← mul_assoc, Subgroup.coe_mk, inv_mul_cancel_right, SubgroupClass.coe_inv]
+    refine ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.2, ?_⟩
+    simp only [← mul_assoc, Subgroup.coe_mk, inv_mul_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
-    refine' ⟨⟨y, hy⟩, _⟩
+    refine ⟨⟨y, hy⟩, ?_⟩
     simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right, Subgroup.coe_mk]
 #align doset.doset_union_right_coset Doset.doset_union_rightCoset
 
@@ -190,10 +189,10 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doset]
   constructor
   · rintro ⟨y, h_h⟩
-    refine' ⟨y, y.2, a⁻¹ * y⁻¹ * x, h_h, _⟩
-    simp only [← mul_assoc, one_mul, mul_right_inv, mul_inv_cancel_right, SubgroupClass.coe_inv]
+    refine ⟨y, y.2, a⁻¹ * y⁻¹ * x, h_h, ?_⟩
+    simp only [← mul_assoc, one_mul, mul_right_inv, mul_inv_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
-    refine' ⟨⟨x, hx⟩, _⟩
+    refine ⟨⟨x, hx⟩, ?_⟩
     simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]
 #align doset.doset_union_left_coset Doset.doset_union_leftCoset
 

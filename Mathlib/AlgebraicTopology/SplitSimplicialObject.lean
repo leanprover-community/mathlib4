@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Products
 
 #align_import algebraic_topology.split_simplicial_object from "leanprover-community/mathlib"@"dd1f8496baa505636a82748e6b652165ea888733"
 
@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 In this file, we introduce the notion of split simplicial object.
 If `C` is a category that has finite coproducts, a splitting
-`s : Splitting X` of a simplical object `X` in `C` consists
+`s : Splitting X` of a simplicial object `X` in `C` consists
 of the datum of a sequence of objects `s.N : ℕ → C` (which
 we shall refer to as "nondegenerate simplices") and a
 sequence of morphisms `s.ι n : s.N n → X _[n]` that have
@@ -99,7 +99,7 @@ instance : Fintype (IndexSet Δ) :=
         ext1
         simpa only [Fin.mk_eq_mk] using h₁.1
       subst h₂
-      refine' ext _ _ rfl _
+      refine ext _ _ rfl ?_
       ext : 2
       exact eq_of_heq h₁.2)
 
@@ -134,10 +134,10 @@ theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
     rcases A with ⟨_, ⟨f, hf⟩⟩
     simp only at h
     subst h
-    refine' ext _ _ rfl _
-    · haveI := hf
-      simp only [eqToHom_refl, comp_id]
-      exact eq_id_of_epi f
+    refine ext _ _ rfl ?_
+    haveI := hf
+    simp only [eqToHom_refl, comp_id]
+    exact eq_id_of_epi f
 #align simplicial_object.splitting.index_set.eq_id_iff_eq SimplicialObject.Splitting.IndexSet.eqId_iff_eq
 
 theorem eqId_iff_len_eq : A.EqId ↔ A.1.unop.len = Δ.unop.len := by
@@ -214,7 +214,7 @@ def cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
 
 end Splitting
 
---porting note: removed @[nolint has_nonempty_instance]
+--porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A splitting of a simplicial object `X` consists of the datum of a sequence
 of objects `N`, a sequence of morphisms `ι : N n ⟶ X _[n]` such that
 for all `Δ : SimplexCategoryᵒᵖ`, the canonical map `Splitting.map X ι Δ`
@@ -314,7 +314,7 @@ end Splitting
 
 variable (C)
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The category `SimplicialObject.Split C` is the category of simplicial objects
 in `C` equipped with a splitting, and morphisms are morphisms of simplicial objects
 which are compatible with the splittings. -/
@@ -337,11 +337,11 @@ def mk' {X : SimplicialObject C} (s : Splitting X) : Split C :=
   ⟨X, s⟩
 #align simplicial_object.split.mk' SimplicialObject.Split.mk'
 
--- porting note : removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in `SimplicialObject.Split C` are morphisms of simplicial objects that
 are compatible with the splittings. -/
 structure Hom (S₁ S₂ : Split C) where
-  /-- the morphism between the underlying simplical objects -/
+  /-- the morphism between the underlying simplicial objects -/
   F : S₁.X ⟶ S₂.X
   /-- the morphism between the "nondegenerate" `n`-simplices for all `n : ℕ` -/
   f : ∀ n : ℕ, S₁.s.N n ⟶ S₂.s.N n
@@ -383,7 +383,7 @@ variable {C}
 
 namespace Split
 
--- porting note: added as `Hom.ext` is not triggered automatically
+-- Porting note: added as `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {S₁ S₂ : Split C} (Φ₁ Φ₂ : S₁ ⟶ S₂) (h : ∀ n : ℕ, Φ₁.f n = Φ₂.f n) : Φ₁ = Φ₂ :=
   Hom.ext _ _ h

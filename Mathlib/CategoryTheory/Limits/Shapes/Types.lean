@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Data.Set.Subsingleton
 
 #align_import category_theory.limits.shapes.types from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
@@ -72,20 +73,20 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
 @[simp 1001]
 theorem pi_map_π_apply {β : Type v} [Small.{u} β] {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
+    (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) :=
   Limit.map_π_apply.{v, u} _ _ _
 #align category_theory.limits.types.pi_map_π_apply CategoryTheory.Limits.Types.pi_map_π_apply
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) := by
+    (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) := by
   simp
 #align category_theory.limits.types.pi_map_π_apply' CategoryTheory.Limits.Types.pi_map_π_apply'
 
 /-- The category of types has `PUnit` as a terminal object. -/
 def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
-  -- porting note: tidy was able to fill the structure automatically
+  -- Porting note: tidy was able to fill the structure automatically
   cone :=
     { pt := PUnit
       π := (Functor.uniqueFromEmpty _).hom }
@@ -107,7 +108,7 @@ noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
   terminalIsTerminal.ofIso terminalIso
 #align category_theory.limits.types.is_terminal_punit CategoryTheory.Limits.Types.isTerminalPunit
 
--- porting note: the following three instances have been added to ease
+-- Porting note: the following three instances have been added to ease
 -- the automation in a definition in `AlgebraicTopology.SimplicialSet`
 noncomputable instance : Inhabited (⊤_ (Type u)) :=
   ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
@@ -133,7 +134,7 @@ noncomputable def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅
 
 /-- The category of types has `PEmpty` as an initial object. -/
 def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
-  -- porting note: tidy was able to fill the structure automatically
+  -- Porting note: tidy was able to fill the structure automatically
   cocone :=
     { pt := PEmpty
       ι := (Functor.uniqueFromEmpty _).inv }
@@ -152,6 +153,14 @@ noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
 noncomputable def isInitialPunit : IsInitial (PEmpty : Type u) :=
   initialIsInitial.ofIso initialIso
 #align category_theory.limits.types.is_initial_punit CategoryTheory.Limits.Types.isInitialPunit
+
+/-- An object in `Type u` is initial if and only if it is empty. -/
+lemma initial_iff_empty (X : Type u) : Nonempty (IsInitial X) ↔ IsEmpty X := by
+  constructor
+  · intro ⟨h⟩
+    exact Function.isEmpty (IsInitial.to h PEmpty)
+  · intro h
+    exact ⟨IsInitial.ofIso Types.isInitialPunit <| Equiv.toIso <| Equiv.equivOfIsEmpty PEmpty X⟩
 
 open CategoryTheory.Limits.WalkingPair
 
@@ -218,7 +227,7 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.types.binary_product_iso_inv_comp_snd CategoryTheory.Limits.Types.binaryProductIso_inv_comp_snd
 
--- porting note: it was originally @[simps (config := { typeMd := reducible })]
+-- Porting note: it was originally @[simps (config := { typeMd := reducible })]
 -- We add the option `type_md` to tell `@[simps]` to not treat homomorphisms `X ⟶ Y` in `Type*` as
 -- a function type
 /-- The functor which sends `X, Y` to the product type `X × Y`. -/
@@ -237,8 +246,8 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
 explicit binary product functor given by the product type.
 -/
 noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor : Type u ⥤ _) := by
-  refine' NatIso.ofComponents (fun X => _) (fun _ => _)
-  · refine' NatIso.ofComponents (fun Y => _) (fun _ => _)
+  refine NatIso.ofComponents (fun X => ?_) (fun _ => ?_)
+  · refine NatIso.ofComponents (fun Y => ?_) (fun _ => ?_)
     · exact ((limit.isLimit _).conePointUniqueUpToIso (binaryProductLimit X Y)).symm
     · apply Limits.prod.hom_ext <;> simp <;> rfl
   · ext : 2
@@ -267,7 +276,7 @@ def binaryCoproductColimitCocone (X Y : Type u) : Limits.ColimitCocone (pair X Y
 #align category_theory.limits.types.binary_coproduct_colimit_cocone CategoryTheory.Limits.Types.binaryCoproductColimitCocone
 
 /-- The categorical binary coproduct in `Type u` is the sum `X ⊕ Y`. -/
-noncomputable def binaryCoproductIso (X Y : Type u) : Limits.coprod X Y ≅ Sum X Y :=
+noncomputable def binaryCoproductIso (X Y : Type u) : Limits.coprod X Y ≅ X ⊕ Y :=
   colimit.isoColimitCocone (binaryCoproductColimitCocone X Y)
 #align category_theory.limits.types.binary_coproduct_iso CategoryTheory.Limits.Types.binaryCoproductIso
 
@@ -287,13 +296,13 @@ theorem binaryCoproductIso_inr_comp_hom (X Y : Type u) :
 
 @[elementwise (attr := simp)]
 theorem binaryCoproductIso_inl_comp_inv (X Y : Type u) :
-    ↾(Sum.inl : X ⟶ Sum X Y) ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inl :=
+    ↾(Sum.inl : X ⟶ X ⊕ Y) ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inl :=
   colimit.isoColimitCocone_ι_inv (binaryCoproductColimitCocone X Y) ⟨WalkingPair.left⟩
 #align category_theory.limits.types.binary_coproduct_iso_inl_comp_inv CategoryTheory.Limits.Types.binaryCoproductIso_inl_comp_inv
 
 @[elementwise (attr := simp)]
 theorem binaryCoproductIso_inr_comp_inv (X Y : Type u) :
-    ↾(Sum.inr : Y ⟶ Sum X Y) ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inr :=
+    ↾(Sum.inr : Y ⟶ X ⊕ Y) ≫ (binaryCoproductIso X Y).inv = Limits.coprod.inr :=
   colimit.isoColimitCocone_ι_inv (binaryCoproductColimitCocone X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.types.binary_coproduct_iso_inr_comp_inv CategoryTheory.Limits.Types.binaryCoproductIso_inr_comp_inv
 
@@ -310,11 +319,11 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         ← show _ = c.inr from
           h.comp_coconePointUniqueUpToIso_inv (binaryCoproductColimit X Y) ⟨WalkingPair.right⟩]
       dsimp [binaryCoproductCocone]
-      refine'
+      refine
         ⟨(h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.injective.comp
             Sum.inl_injective,
           (h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.injective.comp
-            Sum.inr_injective, _⟩
+            Sum.inr_injective, ?_⟩
       erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr, ←
         Set.image_compl_eq
           (h.coconePointUniqueUpToIso (binaryCoproductColimit X Y)).symm.toEquiv.bijective]
@@ -323,7 +332,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
         exact fun _ => or_not
-      refine' ⟨BinaryCofan.IsColimit.mk _ _ _ _ _⟩
+      refine ⟨BinaryCofan.IsColimit.mk _ ?_ ?_ ?_ ?_⟩
       · intro T f g x
         exact
           if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁).symm ⟨x, h⟩)
@@ -352,7 +361,7 @@ noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range f)ᶜ → Y)) := by
   apply Nonempty.some
   rw [binaryCofan_isColimit_iff]
-  refine' ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, _⟩
+  refine ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, ?_⟩
   symm
   rw [← eq_compl_iff_isCompl]
   exact Subtype.range_val
@@ -372,7 +381,7 @@ def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
 #align category_theory.limits.types.product_limit_cone CategoryTheory.Limits.Types.productLimitCone
 
 /-- The categorical product in `TypeMax.{v, u}` is the type theoretic product `Π j, F j`. -/
-noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ F ≅ ∀ j, F j :=
+noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ᶜ F ≅ ∀ j, F j :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 #align category_theory.limits.types.product_iso CategoryTheory.Limits.Types.productIso
 
@@ -417,7 +426,7 @@ noncomputable def productLimitCone :
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
-    (∏ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
+    (∏ᶜ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
 @[simp]
@@ -464,7 +473,7 @@ theorem coproductIso_ι_comp_hom {J : Type v} (F : J → TypeMax.{v, u}) (j : J)
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 #align category_theory.limits.types.coproduct_iso_ι_comp_hom CategoryTheory.Limits.Types.coproductIso_ι_comp_hom
 
--- porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
+-- Porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
 -- removed simp attribute because it seems it never applies
 theorem coproductIso_mk_comp_inv {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
@@ -483,7 +492,7 @@ The converse of `unique_of_type_equalizer`.
 noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X, f x = y) :
     IsLimit (Fork.ofι _ w) :=
   Fork.IsLimit.mk' _ fun s => by
-    refine' ⟨fun i => _, _, _⟩
+    refine ⟨fun i => ?_, ?_, ?_⟩
     · apply Classical.choose (t (s.ι i) _)
       apply congr_fun s.condition i
     · funext i
@@ -498,7 +507,7 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
     ∃! x : X, f x = y := by
   let y' : PUnit ⟶ Y := fun _ => y
   have hy' : y' ≫ g = y' ≫ h := funext fun _ => hy
-  refine' ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_fun (Fork.IsLimit.lift' t y' _).2 ⟨⟩, _⟩
+  refine ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_fun (Fork.IsLimit.lift' t y' _).2 ⟨⟩, ?_⟩
   intro x' hx'
   suffices (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1 by
     rw [← this]
@@ -529,7 +538,7 @@ noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
   limit.isoLimitCone equalizerLimit
 #align category_theory.limits.types.equalizer_iso CategoryTheory.Limits.Types.equalizerIso
 
--- porting note: was @[elementwise], but it produces a trivial lemma
+-- Porting note: was @[elementwise], but it produces a trivial lemma
 @[simp]
 theorem equalizerIso_hom_comp_subtype : (equalizerIso g h).hom ≫ Subtype.val = equalizer.ι g h := by
   rfl
@@ -576,7 +585,7 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
     rintro _ _ ⟨x⟩
     change x ∈ f ⁻¹' U ↔ x ∈ g ⁻¹' U
     rw [H]
-  -- porting note: tidy was able to fill the structure automatically
+  -- Porting note: tidy was able to fill the structure automatically
   have eqv : _root_.Equivalence fun x y => x ∈ U ↔ y ∈ U :=
     { refl := by tauto
       symm := by tauto
@@ -608,7 +617,7 @@ theorem coequalizerIso_π_comp_hom :
   colimit.isoColimitCocone_ι_hom (coequalizerColimit f g) WalkingParallelPair.one
 #align category_theory.limits.types.coequalizer_iso_π_comp_hom CategoryTheory.Limits.Types.coequalizerIso_π_comp_hom
 
--- porting note: was @[elementwise], but it produces a trivial lemma
+-- Porting note: was @[elementwise], but it produces a trivial lemma
 @[simp]
 theorem coequalizerIso_quot_comp_inv :
     ↾Quot.mk (CoequalizerRel f g) ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
@@ -619,6 +628,12 @@ end Cofork
 
 section Pullback
 
+open CategoryTheory.Limits.WalkingPair
+
+open CategoryTheory.Limits.WalkingCospan
+
+open CategoryTheory.Limits.WalkingCospan.Hom
+
 -- #synth HasPullbacks.{u} (Type u)
 instance : HasPullbacks.{u} (Type u) :=
   -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
@@ -626,17 +641,13 @@ instance : HasPullbacks.{u} (Type u) :=
   -- inferInstance
   hasPullbacks_of_hasWidePullbacks.{u} (Type u)
 
-open CategoryTheory.Limits.WalkingPair
-
-open CategoryTheory.Limits.WalkingCospan
-
-open CategoryTheory.Limits.WalkingCospan.Hom
+instance : HasPushouts.{u} (Type u) :=
+  hasPushouts_of_hasWidePushouts.{u} (Type u)
 
 variable {W X Y Z : Type u}
-
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/
@@ -702,21 +713,219 @@ theorem pullbackIsoPullback_inv_fst :
 #align category_theory.limits.types.pullback_iso_pullback_inv_fst CategoryTheory.Limits.Types.pullbackIsoPullback_inv_fst
 
 @[simp]
+theorem pullbackIsoPullback_inv_fst_apply (x : (Types.pullbackCone f g).pt) :
+    (pullback.fst : _ ⟶ X) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).fst) x := by
+  rw [elementwise_of% pullbackIsoPullback_inv_fst]
+
+@[simp]
 theorem pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd = fun p => (p.1 : X × Y).snd :=
   (pullbackConeIsoPullback f g).inv.w right
 #align category_theory.limits.types.pullback_iso_pullback_inv_snd CategoryTheory.Limits.Types.pullbackIsoPullback_inv_snd
 
+@[simp]
+theorem pullbackIsoPullback_inv_snd_apply (x : (Types.pullbackCone f g).pt) :
+    (pullback.snd : _ ⟶ Y) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).snd) x := by
+  rw [elementwise_of% pullbackIsoPullback_inv_snd]
+
 end Pullback
 
 section Pushout
 
--- #synth HasPushouts.{u} (Type u)
-instance : HasPushouts.{u} (Type u) :=
-  -- FIXME does not work via `inferInstance` despite `#synth HasPushouts.{u} (Type u)` succeeding.
-  -- https://github.com/leanprover-community/mathlib4/issues/5752
-  -- inferInstance
-  hasPushouts_of_hasWidePushouts.{u} (Type u)
+variable {S X₁ X₂ : Type u} (f : S ⟶ X₁) (g : S ⟶ X₂)
+
+/-- The pushout of two maps `f : S ⟶ X₁` and `g : S ⟶ X₂` is the quotient
+by the equivalence relation on `X₁ ⊕ X₂` generated by this relation. -/
+inductive Pushout.Rel (f : S ⟶ X₁) (g : S ⟶ X₂) : X₁ ⊕ X₂ → X₁ ⊕ X₂ → Prop
+  | inl_inr (s : S) : Pushout.Rel f g (Sum.inl (f s)) (Sum.inr (g s))
+
+/-- Construction of the pushout in the category of types, as a quotient of `X₁ ⊕ X₂`. -/
+def Pushout : Type u := _root_.Quot (Pushout.Rel f g)
+
+/-- In case `f : S ⟶ X₁` is a monomorphism, this relation is the equivalence relation
+generated by `Pushout.Rel f g`. -/
+inductive Pushout.Rel' : X₁ ⊕ X₂ → X₁ ⊕ X₂ → Prop
+  | refl (x : X₁ ⊕ X₂) : Rel' x x
+  | inl_inl (x₀ y₀ : S) (h : g x₀ = g y₀) : Rel' (Sum.inl (f x₀)) (Sum.inl (f y₀))
+  | inl_inr (s : S) : Rel' (Sum.inl (f s)) (Sum.inr (g s))
+  | inr_inl (s : S) : Rel' (Sum.inr (g s)) (Sum.inl (f s))
+
+/-- The quotient of `X₁ ⊕ X₂` by the relation `PushoutRel' f g`. -/
+def Pushout' : Type u := _root_.Quot (Pushout.Rel' f g)
+
+namespace Pushout
+
+/-- The left inclusion in the constructed pushout `Pushout f g`. -/
+@[simp]
+def inl : X₁ ⟶ Pushout f g := fun x => Quot.mk _ (Sum.inl x)
+
+/-- The right inclusion in the constructed pushout `Pushout f g`. -/
+@[simp]
+def inr : X₂ ⟶ Pushout f g := fun x => Quot.mk _ (Sum.inr x)
+
+lemma condition : f ≫ inl f g = g ≫ inr f g := by
+  ext x
+  exact Quot.sound (Rel.inl_inr x)
+
+/-- The constructed pushout cocone in the category of types. -/
+@[simps!]
+def cocone : PushoutCocone f g := PushoutCocone.mk _ _ (condition f g)
+
+/-- The cocone `cocone f g` is colimit. -/
+def isColimitCocone : IsColimit (cocone f g) :=
+  PushoutCocone.IsColimit.mk _ (fun s => Quot.lift (fun x => match x with
+      | Sum.inl x₁ => s.inl x₁
+      | Sum.inr x₂ => s.inr x₂) (by
+    rintro _ _ ⟨t⟩
+    exact congr_fun s.condition t)) (fun _ => rfl) (fun _ => rfl) (fun s m h₁ h₂ => by
+      ext ⟨x₁|x₂⟩
+      · exact congr_fun h₁ x₁
+      · exact congr_fun h₂ x₂)
+
+@[simp]
+lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
+    Rel' f g (Sum.inl x₁) (Sum.inl y₁) ↔ x₁ = y₁ ∨
+      ∃ (x₀ y₀ : S) (_ : g x₀ = g y₀), x₁ = f x₀ ∧ y₁ = f y₀ := by
+  constructor
+  · rintro (_|⟨_, _, h⟩)
+    · exact Or.inl rfl
+    · exact Or.inr ⟨_, _, h, rfl, rfl⟩
+  · rintro (rfl | ⟨_,_ , h, rfl, rfl⟩)
+    · apply Rel'.refl
+    · exact Rel'.inl_inl _ _ h
+
+@[simp]
+lemma inl_rel'_inr_iff (x₁ : X₁) (x₂ : X₂) :
+    Rel' f g (Sum.inl x₁) (Sum.inr x₂) ↔
+      ∃ (s : S), x₁ = f s ∧ x₂ = g s := by
+  constructor
+  · rintro ⟨_⟩
+    exact ⟨_, rfl, rfl⟩
+  · rintro ⟨s, rfl, rfl⟩
+    exact Rel'.inl_inr _
+
+@[simp]
+lemma inr_rel'_inr_iff (x₂ y₂ : X₂) :
+    Rel' f g (Sum.inr x₂) (Sum.inr y₂) ↔ x₂ = y₂ := by
+  constructor
+  · rintro ⟨_⟩
+    rfl
+  · rintro rfl
+    apply Rel'.refl
+
+variable {f g}
+
+lemma Rel'.symm {x y : X₁ ⊕ X₂} (h : Rel' f g x y) :
+    Rel' f g y x := by
+  obtain _|⟨_, _, h⟩|_|_ := h
+  · apply Rel'.refl
+  · exact Rel'.inl_inl _ _ h.symm
+  · exact Rel'.inr_inl _
+  · exact Rel'.inl_inr _
+
+variable (f g)
+
+lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
+  refl := Rel'.refl
+  symm h := h.symm
+  trans := by
+    rintro x y z (_|⟨_, _, h⟩|s|_) hyz
+    · exact hyz
+    · obtain z₁|z₂ := z
+      · rw [inl_rel'_inl_iff] at hyz
+        obtain rfl|⟨_, _, h', h'', rfl⟩ := hyz
+        · exact Rel'.inl_inl _ _ h
+        · obtain rfl := (mono_iff_injective f).1 inferInstance h''
+          exact Rel'.inl_inl _ _ (h.trans h')
+      · rw [inl_rel'_inr_iff] at hyz
+        obtain ⟨s, hs, rfl⟩ := hyz
+        obtain rfl := (mono_iff_injective f).1 inferInstance hs
+        rw [← h]
+        apply Rel'.inl_inr
+    · obtain z₁|z₂ := z
+      · replace hyz := hyz.symm
+        rw [inl_rel'_inr_iff] at hyz
+        obtain ⟨s', rfl, hs'⟩ := hyz
+        exact Rel'.inl_inl _ _ hs'
+      · rw [inr_rel'_inr_iff] at hyz
+        subst hyz
+        apply Rel'.inl_inr
+    · obtain z₁|z₂ := z
+      · rw [inl_rel'_inl_iff] at hyz
+        obtain rfl|⟨_, _, h, h', rfl⟩  := hyz
+        · apply Rel'.inr_inl
+        · obtain rfl := (mono_iff_injective f).1 inferInstance h'
+          rw [h]
+          apply Rel'.inr_inl
+      · rw [inl_rel'_inr_iff] at hyz
+        obtain ⟨s, hs, rfl⟩ := hyz
+        obtain rfl := (mono_iff_injective f).1 inferInstance hs
+        apply Rel'.refl
+
+/-- The obvious equivalence `Pushout f g ≃ Pushout' f g`. -/
+def equivPushout' : Pushout f g ≃ Pushout' f g where
+  toFun := Quot.lift (Quot.mk _) (by
+    rintro _ _ ⟨⟩
+    apply Quot.sound
+    apply Rel'.inl_inr)
+  invFun := Quot.lift (Quot.mk _) (by
+    rintro a b (_|⟨x₀, y₀, h⟩|_|_)
+    · rfl
+    · have h₀ : Rel f g _ _ := Rel.inl_inr x₀
+      rw [Quot.sound h₀, h]
+      symm
+      apply Quot.sound
+      apply Rel.inl_inr
+    · apply Quot.sound
+      apply Rel.inl_inr
+    · symm
+      apply Quot.sound
+      apply Rel.inl_inr)
+  left_inv := by rintro ⟨x⟩; rfl
+  right_inv := by rintro ⟨x⟩; rfl
+
+lemma quot_mk_eq_iff [Mono f] (a b : X₁ ⊕ X₂) :
+    (Quot.mk _ a : Pushout f g) = Quot.mk _ b ↔ Rel' f g a b := by
+  rw [← (equivalence_rel' f g).quot_mk_eq_iff]
+  exact ⟨fun h => (equivPushout' f g).symm.injective h,
+    fun h => (equivPushout' f g).injective h⟩
+
+lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
+    (inl f g x₁ = inr f g x₂) ↔
+      ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
+  refine (Pushout.quot_mk_eq_iff f g (Sum.inl x₁) (Sum.inr x₂)).trans ?_
+  constructor
+  · rintro ⟨⟩
+    exact ⟨_, rfl, rfl⟩
+  · rintro ⟨s, rfl, rfl⟩
+    apply Rel'.inl_inr
+
+end Pushout
+
+variable {f g}
+
+lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
+    (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
+    c'.inl x₁ = c'.inr x₂ := by
+  convert congr_arg e.hom.hom h
+  · exact congr_fun (e.hom.w WalkingSpan.left).symm x₁
+  · exact congr_fun (e.hom.w WalkingSpan.right).symm x₂
+
+lemma pushoutCocone_inl_eq_inr_iff_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
+    (x₁ : X₁) (x₂ : X₂) :
+    c.inl x₁ = c.inr x₂ ↔ c'.inl x₁ = c'.inr x₂ := by
+  constructor
+  · apply pushoutCocone_inl_eq_inr_imp_of_iso e
+  · apply pushoutCocone_inl_eq_inr_imp_of_iso e.symm
+
+lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    (h₁ : Function.Injective f) (x₁ : X₁) (x₂ : X₂) :
+    c.inl x₁ = c.inr x₂ ↔ ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
+  rw [pushoutCocone_inl_eq_inr_iff_of_iso
+    (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc (Pushout.isColimitCocone f g))
+    (by aesop_cat))]
+  have := (mono_iff_injective f).2 h₁
+  apply Pushout.inl_eq_inr_iff
 
 end Pushout
 

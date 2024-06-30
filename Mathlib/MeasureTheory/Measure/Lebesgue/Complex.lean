@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 #align_import measure_theory.measure.lebesgue.complex from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -39,7 +40,7 @@ theorem measurableEquivPi_symm_apply (p : (Fin 2) → ℝ) :
 
 /-- Measurable equivalence between `ℂ` and `ℝ × ℝ`. -/
 def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
-  equivRealProdClm.toHomeomorph.toMeasurableEquiv
+  equivRealProdCLM.toHomeomorph.toMeasurableEquiv
 #align complex.measurable_equiv_real_prod Complex.measurableEquivRealProd
 
 @[simp]

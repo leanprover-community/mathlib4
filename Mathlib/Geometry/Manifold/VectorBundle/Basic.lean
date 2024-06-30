@@ -59,9 +59,6 @@ fields, they can also be C^k vector bundles, etc.
   bundle.
 -/
 
-set_option autoImplicit true
-
-
 assert_not_exists mfderiv
 
 open Bundle Set PartialHomeomorph
@@ -144,7 +141,7 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
         (extChartAt IB x.proj).prod (PartialEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
   simp only [PartialEquiv.trans_assoc, mfld_simps]
-  -- porting note: should not be needed
+  -- Porting note: should not be needed
   rw [PartialEquiv.prod_trans, PartialEquiv.refl_trans]
 #align fiber_bundle.ext_chart_at FiberBundle.extChartAt
 
@@ -186,8 +183,8 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp,
-    PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe, extChartAt_self_apply,
-    modelWithCornersSelf_coe, id_def]
+    PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
+    extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
   have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
@@ -282,7 +279,6 @@ variable [NontriviallyNormedField 𝕜] {EB : Type*} [NormedAddCommGroup EB] [No
 section WithTopology
 
 variable [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] (F E)
-
 variable [FiberBundle F E] [VectorBundle 𝕜 F E]
 
 /-- When `B` is a smooth manifold with corners with respect to a model `IB` and `E` is a
@@ -328,58 +324,59 @@ theorem contMDiffOn_symm_coordChangeL :
 
 variable {e e'}
 
-theorem contMDiffAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+theorem contMDiffAt_coordChangeL {x : B} (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     ContMDiffAt IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   (contMDiffOn_coordChangeL IB e e').contMDiffAt <|
     (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨h, h'⟩
 
-theorem smoothAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+theorem smoothAt_coordChangeL {x : B} (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     SmoothAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   contMDiffAt_coordChangeL IB h h'
 
 variable {IB}
+variable {s : Set M} {f : M → B} {g : M → F} {x : M}
 
-protected theorem ContMDiffWithinAt.coordChangeL {f : M → B}
+protected theorem ContMDiffWithinAt.coordChangeL
     (hf : ContMDiffWithinAt IM IB n f s x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffWithinAt IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
   (contMDiffAt_coordChangeL IB he he').comp_contMDiffWithinAt _ hf
 
-protected nonrec theorem ContMDiffAt.coordChangeL {f : M → B}
+protected nonrec theorem ContMDiffAt.coordChangeL
     (hf : ContMDiffAt IM IB n f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffAt IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   hf.coordChangeL he he'
 
-protected theorem ContMDiffOn.coordChangeL {f : M → B}
+protected theorem ContMDiffOn.coordChangeL
     (hf : ContMDiffOn IM IB n f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     ContMDiffOn IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
   fun x hx ↦ (hf x hx).coordChangeL (he hx) (he' hx)
 
-protected theorem ContMDiff.coordChangeL {f : M → B}
+protected theorem ContMDiff.coordChangeL
     (hf : ContMDiff IM IB n f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     ContMDiff IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) := fun x ↦
   (hf x).coordChangeL (he x) (he' x)
 
-protected nonrec theorem SmoothWithinAt.coordChangeL {f : M → B}
+protected nonrec theorem SmoothWithinAt.coordChangeL
     (hf : SmoothWithinAt IM IB f s x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothWithinAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
   hf.coordChangeL he he'
 
-protected nonrec theorem SmoothAt.coordChangeL {f : M → B}
+protected nonrec theorem SmoothAt.coordChangeL
     (hf : SmoothAt IM IB f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   hf.coordChangeL he he'
 
-protected nonrec theorem SmoothOn.coordChangeL {f : M → B}
+protected nonrec theorem SmoothOn.coordChangeL
     (hf : SmoothOn IM IB f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     SmoothOn IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
   hf.coordChangeL he he'
 
-protected nonrec theorem Smooth.coordChangeL {f : M → B}
+protected nonrec theorem Smooth.coordChangeL
     (hf : Smooth IM IB f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     Smooth IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) :=
   hf.coordChangeL he he'
 
-protected theorem ContMDiffWithinAt.coordChange {f : M → B} {g : M → F}
+protected theorem ContMDiffWithinAt.coordChange
     (hf : ContMDiffWithinAt IM IB n f s x) (hg : ContMDiffWithinAt IM 𝓘(𝕜, F) n g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) s x := by
@@ -390,39 +387,39 @@ protected theorem ContMDiffWithinAt.coordChange {f : M → B} {g : M → F}
     exact (Trivialization.coordChangeL_apply' e e' hy (g y)).symm
   · exact (Trivialization.coordChangeL_apply' e e' ⟨he, he'⟩ (g x)).symm
 
-protected nonrec theorem ContMDiffAt.coordChange {f : M → B} {g : M → F}
+protected nonrec theorem ContMDiffAt.coordChange
     (hf : ContMDiffAt IM IB n f x) (hg : ContMDiffAt IM 𝓘(𝕜, F) n g x) (he : f x ∈ e.baseSet)
     (he' : f x ∈ e'.baseSet) :
     ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) x :=
   hf.coordChange hg he he'
 
-protected theorem ContMDiffOn.coordChange {f : M → B} {g : M → F} (hf : ContMDiffOn IM IB n f s)
+protected theorem ContMDiffOn.coordChange (hf : ContMDiffOn IM IB n f s)
     (hg : ContMDiffOn IM 𝓘(𝕜, F) n g s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     ContMDiffOn IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) s := fun x hx ↦
   (hf x hx).coordChange (hg x hx) (he hx) (he' hx)
 
-protected theorem ContMDiff.coordChange {f : M → B} {g : M → F} (hf : ContMDiff IM IB n f)
+protected theorem ContMDiff.coordChange (hf : ContMDiff IM IB n f)
     (hg : ContMDiff IM 𝓘(𝕜, F) n g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     ContMDiff IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
 
-protected nonrec theorem SmoothWithinAt.coordChange {f : M → B} {g : M → F}
+protected nonrec theorem SmoothWithinAt.coordChange
     (hf : SmoothWithinAt IM IB f s x) (hg : SmoothWithinAt IM 𝓘(𝕜, F) g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothWithinAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s x :=
   hf.coordChange hg he he'
 
-protected nonrec theorem SmoothAt.coordChange {f : M → B} {g : M → F} (hf : SmoothAt IM IB f x)
+protected nonrec theorem SmoothAt.coordChange (hf : SmoothAt IM IB f x)
     (hg : SmoothAt IM 𝓘(𝕜, F) g x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) x :=
   hf.coordChange hg he he'
 
-protected nonrec theorem SmoothOn.coordChange {f : M → B} {g : M → F} (hf : SmoothOn IM IB f s)
+protected nonrec theorem SmoothOn.coordChange (hf : SmoothOn IM IB f s)
     (hg : SmoothOn IM 𝓘(𝕜, F) g s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     SmoothOn IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s :=
   hf.coordChange hg he he'
 
-protected theorem Smooth.coordChange {f : M → B} {g : M → F} (hf : Smooth IM IB f)
+protected theorem Smooth.coordChange (hf : Smooth IM IB f)
     (hg : Smooth IM 𝓘(𝕜, F) g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     Smooth IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
@@ -440,9 +437,9 @@ theorem Trivialization.contMDiffOn_symm_trans :
     (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
   rintro ⟨b, x⟩ hb
   refine Prod.ext ?_ rfl
-  · have : (e.toPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet
-    · simp_all only [Trivialization.mem_target, mfld_simps]
-    exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
+  have : (e.toPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet := by
+    simp_all only [Trivialization.mem_target, mfld_simps]
+  exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
 variable {IB e e'}
 
@@ -476,8 +473,8 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     haveI : MemTrivializationAtlas e := ⟨he⟩
     haveI : MemTrivializationAtlas e' := ⟨he'⟩
     rw [mem_smoothFiberwiseLinear_iff]
-    refine' ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
-      smoothOn_symm_coordChangeL IB e e', _⟩
+    refine ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
+      smoothOn_symm_coordChangeL IB e e', ?_⟩
     refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
     · simp only [e.symm_trans_source_eq e', FiberwiseLinear.partialHomeomorph, trans_toPartialEquiv,
         symm_toPartialEquiv]
@@ -488,13 +485,13 @@ instance SmoothFiberwiseLinear.hasGroupoid :
 /-- A smooth vector bundle `E` is naturally a smooth manifold. -/
 instance Bundle.TotalSpace.smoothManifoldWithCorners :
     SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace F E) := by
-  refine' { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) _ with }
+  refine { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) ?_ with }
   intro e he
   rw [mem_smoothFiberwiseLinear_iff] at he
   obtain ⟨φ, U, hU, hφ, h2φ, heφ⟩ := he
   rw [isLocalStructomorphOn_contDiffGroupoid_iff]
-  refine' ⟨ContMDiffOn.congr _ (EqOnSource.eqOn heφ),
-      ContMDiffOn.congr _ (EqOnSource.eqOn (EqOnSource.symm' heφ))⟩
+  refine ⟨ContMDiffOn.congr ?_ (EqOnSource.eqOn heφ),
+      ContMDiffOn.congr ?_ (EqOnSource.eqOn (EqOnSource.symm' heφ))⟩
   · rw [EqOnSource.source_eq heφ]
     apply smoothOn_fst.prod_mk
     exact (hφ.comp contMDiffOn_fst <| prod_subset_preimage_fst _ _).clm_apply contMDiffOn_snd
@@ -597,9 +594,7 @@ is a smooth vector bundle. -/
 instance smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
   smoothOn_coordChangeL := by
     rintro - - ⟨i, rfl⟩ ⟨i', rfl⟩
-    -- Porting note: Originally `Z.smoothOn_coordChange IB i i'`
-    refine'
-      (VectorBundleCore.IsSmooth.smoothOn_coordChange (Z := Z) (IB := IB) i i').congr fun b hb => _
+    refine (Z.smoothOn_coordChange IB i i').congr fun b hb ↦ ?_
     ext v
     exact Z.localTriv_coordChange_eq i i' hb v
 #align vector_bundle_core.smooth_vector_bundle VectorBundleCore.smoothVectorBundle
@@ -638,12 +633,12 @@ instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E�
   smoothOn_coordChangeL := by
     rintro _ _ ⟨e₁, e₂, i₁, i₂, rfl⟩ ⟨e₁', e₂', i₁', i₂', rfl⟩
     rw [SmoothOn]
-    refine' ContMDiffOn.congr _ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
-    refine' ContMDiffOn.clm_prodMap _ _
-    · refine' (smoothOn_coordChangeL IB e₁ e₁').mono _
+    refine ContMDiffOn.congr ?_ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
+    refine ContMDiffOn.clm_prodMap ?_ ?_
+    · refine (smoothOn_coordChangeL IB e₁ e₁').mono ?_
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac
-    · refine' (smoothOn_coordChangeL IB e₂ e₂').mono _
+    · refine (smoothOn_coordChangeL IB e₂ e₂').mono ?_
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac
 #align bundle.prod.smooth_vector_bundle Bundle.Prod.smoothVectorBundle
@@ -708,7 +703,7 @@ theorem smoothVectorBundle : @SmoothVectorBundle
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { smoothOn_coordChangeL := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-      refine' (a.smoothOn_smoothCoordChange he he').congr _
+      refine (a.smoothOn_smoothCoordChange he he').congr ?_
       intro b hb
       ext v
       rw [a.smoothCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,

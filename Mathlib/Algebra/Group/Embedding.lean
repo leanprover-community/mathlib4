@@ -3,7 +3,7 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Embedding.Basic
 
 #align_import algebra.hom.embedding from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -12,6 +12,8 @@ import Mathlib.Logic.Embedding.Basic
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 variable {G : Type*}
 

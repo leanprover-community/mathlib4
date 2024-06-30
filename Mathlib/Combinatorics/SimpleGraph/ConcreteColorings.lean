@@ -5,8 +5,6 @@ Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Data.Nat.Parity
-import Mathlib.Data.ZMod.Basic
 
 /-!
 # Concrete colorings of common graphs
@@ -42,10 +40,28 @@ def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph
 
 theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
-  have hc := (pathGraph.bicoloring n).to_colorable
+  have hc := (pathGraph.bicoloring n).colorable
   apply le_antisymm
-  · exact chromaticNumber_le_of_colorable hc
+  · exact hc.chromaticNumber_le
   · simpa only [pathGraph_two_eq_top, chromaticNumber_top] using
-      hc.chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
+      chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
+
+theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
+    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    Even p.length ↔ (c u ↔ c v) := by
+  induction p with
+  | nil => simp
+  | @cons u v w h p ih =>
+    simp only [Walk.length_cons, Nat.even_add_one]
+    have : ¬ c u = true ↔ c v = true := by
+      rw [← not_iff, ← Bool.eq_iff_iff]
+      exact c.valid h
+    tauto
+
+theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
+    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    Odd p.length ↔ (¬c u ↔ c v) := by
+  rw [Nat.odd_iff_not_even, c.even_length_iff_congr p]
+  tauto
 
 end SimpleGraph

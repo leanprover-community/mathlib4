@@ -3,8 +3,9 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis, Patrick Massot
 -/
-import Mathlib.Tactic.Qify
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Qify
 
 /-!
 # `rify` tactic
@@ -73,10 +74,13 @@ macro_rules
     simp (config := {decide := false}) only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
       $[at $location]?)
 
-@[rify_simps] lemma rat_cast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
-@[rify_simps] lemma rat_cast_le (a b : ℚ) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
-@[rify_simps] lemma rat_cast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
-@[rify_simps] lemma rat_cast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
+@[rify_simps] lemma ratCast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp
+@[rify_simps] lemma ratCast_le (a b : ℚ) : a ≤ b ↔ (a : ℝ) ≤ (b : ℝ) := by simp
+@[rify_simps] lemma ratCast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
+@[rify_simps] lemma ratCast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
+
+@[deprecated (since := "2024-04-17")]
+alias rat_cast_ne := ratCast_ne
 
 -- See note [no_index around OfNat.ofNat]
 @[rify_simps] lemma ofNat_rat_real (a : ℕ) [a.AtLeastTwo] :

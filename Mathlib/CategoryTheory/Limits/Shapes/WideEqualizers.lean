@@ -117,7 +117,6 @@ theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
   CategoryTheory.Limits.WalkingParallelFamily.hom_id
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C} (f : J → (X ⟶ Y))
 
 /-- `parallelFamily f` is the diagram in `C` consisting of the given family of morphisms, each with
@@ -229,8 +228,8 @@ theorem Cotrident.app_one (s : Cotrident f) (j : J) : f j ≫ s.ι.app one = s.�
 `∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂`.
 -/
 @[simps]
-def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂) : Trident f
-    where
+def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂) :
+    Trident f where
   pt := P
   π :=
     { app := fun X => WalkingParallelFamily.casesOn X ι (ι ≫ f (Classical.arbitrary J))
@@ -429,14 +428,14 @@ theorem Cotrident.IsColimit.homIso_natural [Nonempty J] {t : Cotrident f} {Z Z' 
 
 /-- This is a helper construction that can be useful when verifying that a category has certain wide
     equalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (λ j, F.map (line j))`, and a trident on `λ j, F.map (line j)`, we get a cone
-    on `F`.
+    `parallelFamily (fun j ↦ F.map (line j))`, and a trident on `fun j ↦ F.map (line j)`,
+    we get a cone on `F`.
 
     If you're thinking about using this, have a look at
     `hasWideEqualizers_of_hasLimit_parallelFamily`, which you may find to be an easier way of
     achieving your goal. -/
-def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j)) : Cone F
-    where
+def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j)) :
+    Cone F where
   pt := t.pt
   π :=
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> aesop_cat)
@@ -475,8 +474,8 @@ theorem Cocone.ofCotrident_ι {F : WalkingParallelFamily J ⥤ C}
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (fun j ↦ F.map (line j))` and a cone on `F`, we get a trident on
     `fun j ↦ F.map (line j)`. -/
-def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) : Trident fun j => F.map (line j)
-    where
+def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) :
+    Trident fun j => F.map (line j) where
   pt := t.pt
   π :=
     { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> aesop_cat)

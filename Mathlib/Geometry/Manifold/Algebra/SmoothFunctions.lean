@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -91,14 +91,14 @@ under pointwise multiplication.
 @[to_additive]
 instance semigroup {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H' G]
     [SmoothMul I' G] : Semigroup C^∞⟮I, N; I', G⟯ :=
-  FunLike.coe_injective.semigroup _ coe_mul
+  DFunLike.coe_injective.semigroup _ coe_mul
 #align smooth_map.semigroup SmoothMap.semigroup
 #align smooth_map.add_semigroup SmoothMap.addSemigroup
 
 @[to_additive]
 instance monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [SmoothMul I' G] : Monoid C^∞⟮I, N; I', G⟯ :=
-  FunLike.coe_injective.monoid _ coe_one coe_mul coe_pow
+  DFunLike.coe_injective.monoid _ coe_one coe_mul coe_pow
 #align smooth_map.monoid SmoothMap.monoid
 #align smooth_map.add_monoid SmoothMap.addMonoid
 
@@ -107,7 +107,7 @@ instance monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
   Similar to `AddMonoidHom.coeFn`."]
 def coeFnMonoidHom {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [SmoothMul I' G] : C^∞⟮I, N; I', G⟯ →* N → G where
-  toFun := FunLike.coe
+  toFun := DFunLike.coe
   map_one' := coe_one
   map_mul' := coe_mul
 #align smooth_map.coe_fn_monoid_hom SmoothMap.coeFnMonoidHom
@@ -132,7 +132,7 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
 
 variable (I') {N}
 
--- porting note: TODO: generalize to any smooth map instead of `Set.inclusion`
+-- Porting note (#11215): TODO: generalize to any smooth map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^∞⟮I, V; I', G⟯` to `C^∞⟮I, U; I', G⟯`. -/
 @[to_additive "For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group
@@ -150,7 +150,7 @@ variable {I I'}
 @[to_additive]
 instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [SmoothMul I' G] : CommMonoid C^∞⟮I, N; I', G⟯ :=
-  FunLike.coe_injective.commMonoid _ coe_one coe_mul coe_pow
+  DFunLike.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 #align smooth_map.comm_monoid SmoothMap.commMonoid
 #align smooth_map.add_comm_monoid SmoothMap.addCommMonoid
 

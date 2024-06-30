@@ -3,26 +3,27 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Prod.Lex
 
 #align_import data.multiset.fintype from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Multiset coercion to type
 
-This module defines a `hasCoeToSort` instance for multisets and gives it a `Fintype` instance.
+This module defines a `CoeSort` instance for multisets and gives it a `Fintype` instance.
 It also defines `Multiset.toEnumFinset`, which is another way to enumerate the elements of
 a multiset. These coercions and definitions make it easier to sum over multisets using existing
 `Finset` theory.
 
 ## Main definitions
 
-* A coercion from `m : Multiset α` to a `Type*`. For `x : m`, then there is a coercion `↑x : α`,
-  and `x.2` is a term of `Fin (m.count x)`. The second component is what ensures each term appears
-  with the correct multiplicity. Note that this coercion requires `decidableEq α` due to
-  `Multiset.count`.
+* A coercion from `m : Multiset α` to a `Type*`. Each `x : m` has two components.
+  The first, `x.1`, can be obtained via the coercion `↑x : α`,
+  and it yields the underlying element of the multiset.
+  The second, `x.2`, is a term of `Fin (m.count x)`,
+  and its function is to ensure each term appears with the correct multiplicity.
+  Note that this coercion requires `DecidableEq α` due to the definition using `Multiset.count`.
 * `Multiset.toEnumFinset` is a `Finset` version of this.
 * `Multiset.coeEmbedding` is the embedding `m ↪ α × ℕ`, whose first component is the coercion
   and whose second component enumerates elements with multiplicity.
@@ -34,23 +35,19 @@ multiset enumeration
 -/
 
 
-open BigOperators
-
 variable {α : Type*} [DecidableEq α] {m : Multiset α}
 
-/-- Auxiliary definition for the `hasCoeToSort` instance. This prevents the `hasCoe m α`
-instance from inadvertently applying to other sigma types. One should not use this definition
-directly. -/
--- Porting note: @[nolint has_nonempty_instance]
-def Multiset.ToType (m : Multiset α) : Type _ :=
-  Σx : α, Fin (m.count x)
+/-- Auxiliary definition for the `CoeSort` instance. This prevents the `CoeOut m α`
+instance from inadvertently applying to other sigma types. -/
+def Multiset.ToType (m : Multiset α) : Type _ := (x : α) × Fin (m.count x)
 #align multiset.to_type Multiset.ToType
 
 /-- Create a type that has the same number of elements as the multiset.
 Terms of this type are triples `⟨x, ⟨i, h⟩⟩` where `x : α`, `i : ℕ`, and `h : i < m.count x`.
-This way repeated elements of a multiset appear multiple times with different values of `i`. -/
-instance : CoeSort (Multiset α) (Type _) :=
-  ⟨Multiset.ToType⟩
+This way repeated elements of a multiset appear multiple times from different values of `i`. -/
+instance : CoeSort (Multiset α) (Type _) := ⟨Multiset.ToType⟩
+
+example : DecidableEq m := inferInstanceAs <| DecidableEq ((x : α) × Fin (m.count x))
 
 -- Porting note: syntactic equality
 #noalign multiset.coe_sort_eq
@@ -64,7 +61,6 @@ def Multiset.mkToType (m : Multiset α) (x : α) (i : Fin (m.count x)) : m :=
 
 /-- As a convenience, there is a coercion from `m : Type*` to `α` by projecting onto the first
 component. -/
--- Porting note: was `Coe m α`
 instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
   ⟨fun x ↦ x.1⟩
 #align multiset.has_coe_to_sort.has_coe instCoeSortMultisetType.instCoeOutToTypeₓ
@@ -72,21 +68,15 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 -- Porting note: syntactic equality
 #noalign multiset.fst_coe_eq_coe
 
-@[simp]
-theorem Multiset.coe_eq {x y : m} : (x : α) = (y : α) ↔ x.1 = y.1 := by
-  cases x
-  cases y
-  rfl
-#align multiset.coe_eq Multiset.coe_eq
+-- Syntactic equality
+#noalign multiset.coe_eq
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 #align multiset.coe_mk Multiset.coe_mk
 
-@[simp]
-theorem Multiset.coe_mem {x : m} : ↑x ∈ m :=
-  Multiset.count_pos.mp (pos_of_gt x.2.2)
+@[simp] lemma Multiset.coe_mem {x : m} : ↑x ∈ m := Multiset.count_pos.mp (by have := x.2.2; omega)
 #align multiset.coe_mem Multiset.coe_mem
 
 @[simp]
@@ -109,7 +99,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
       simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
       simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
-      exact fun h ↦ Multiset.count_pos.mp (pos_of_gt h))
+      exact fun h ↦ Multiset.count_pos.mp (by omega))
 
 /-- Construct a finset whose elements enumerate the elements of the multiset `m`.
 The `ℕ` component is used to differentiate between equal elements: if `x` appears `n` times
@@ -125,7 +115,7 @@ theorem Multiset.mem_toEnumFinset (m : Multiset α) (p : α × ℕ) :
 #align multiset.mem_to_enum_finset Multiset.mem_toEnumFinset
 
 theorem Multiset.mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1 ∈ m :=
-  Multiset.count_pos.mp <| pos_of_gt <| (m.mem_toEnumFinset p).mp h
+  have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by omega)
 #align multiset.mem_of_mem_to_enum_finset Multiset.mem_of_mem_toEnumFinset
 
 @[mono]
@@ -139,7 +129,7 @@ theorem Multiset.toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂)
 @[simp]
 theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset ↔ m₁ ≤ m₂ := by
-  refine' ⟨fun h ↦ _, Multiset.toEnumFinset_mono⟩
+  refine ⟨fun h ↦ ?_, Multiset.toEnumFinset_mono⟩
   rw [Multiset.le_iff_count]
   intro x
   by_cases hx : x ∈ m₁
@@ -154,8 +144,7 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
 /-- The embedding from a multiset into `α × ℕ` where the second coordinate enumerates repeats.
 If you are looking for the function `m → α`, that would be plain `(↑)`. -/
 @[simps]
-def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
-    where
+def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ where
   toFun x := (x, x.2)
   inj' := by
     intro ⟨x, i, hi⟩ ⟨y, j, hj⟩
@@ -166,8 +155,7 @@ def Multiset.coeEmbedding (m : Multiset α) : m ↪ α × ℕ
 /-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
 that `Finset` to a type. -/
 @[simps]
-def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset
-    where
+def Multiset.coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
   toFun x :=
     ⟨m.coeEmbedding x, by
       rw [Multiset.mem_toEnumFinset]
@@ -266,7 +254,7 @@ theorem Multiset.prod_eq_prod_coe [CommMonoid α] (m : Multiset α) : m.prod = �
 
 @[to_additive]
 theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
-    m.prod = ∏ x in m.toEnumFinset, x.1 := by
+    m.prod = ∏ x ∈ m.toEnumFinset, x.1 := by
   congr
   simp
 #align multiset.prod_eq_prod_to_enum_finset Multiset.prod_eq_prod_toEnumFinset
@@ -274,7 +262,7 @@ theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
 
 @[to_additive]
 theorem Multiset.prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
-    ∏ x in m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
+    ∏ x ∈ m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
   rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.1.1 x.1.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x ↦ f x.1 x.2]
   · intro x

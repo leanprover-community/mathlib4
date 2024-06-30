@@ -35,8 +35,13 @@ universe u v
   Since this definition allows for Automata with infinite states, a `Fintype` instance must be
   supplied for true `εNFA`'s. -/
 structure εNFA (α : Type u) (σ : Type v) where
+  /-- Transition function. The automaton is rendered non-deterministic by this transition function
+  returning `Set σ` (rather than `σ`), and ε-transitions are made possible by taking `Option α`
+  (rather than `α`). -/
   step : σ → Option α → Set σ
+  /-- Starting states. -/
   start : Set σ
+  /-- Set of acceptance states. -/
   accept : Set σ
 #align ε_NFA εNFA
 
@@ -183,7 +188,7 @@ def toεNFA (M : NFA α σ) : εNFA α σ where
 @[simp]
 theorem toεNFA_εClosure (M : NFA α σ) (S : Set σ) : M.toεNFA.εClosure S = S := by
   ext a
-  refine' ⟨_, εNFA.εClosure.base _⟩
+  refine ⟨?_, εNFA.εClosure.base _⟩
   rintro (⟨_, h⟩ | ⟨_, _, h, _⟩)
   · exact h
   · cases h

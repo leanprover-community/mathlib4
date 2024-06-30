@@ -27,6 +27,7 @@ open CategoryTheory
 
 /-- The category of sup-semilattices with a bottom element. -/
 structure SemilatSupCat : Type (u + 1) where
+  /-- The underlying type of a sup-semilattice with a bottom element. -/
   protected X : Type u
   [isSemilatticeSup : SemilatticeSup X]
   [isOrderBot : OrderBot.{u} X]
@@ -34,6 +35,7 @@ structure SemilatSupCat : Type (u + 1) where
 
 /-- The category of inf-semilattices with a top element. -/
 structure SemilatInfCat : Type (u + 1) where
+  /-- The underlying type of an inf-semilattice with a top element. -/
   protected X : Type u
   [isSemilatticeInf : SemilatticeInf X]
   [isOrderTop : OrderTop.{u} X]
@@ -41,7 +43,7 @@ structure SemilatInfCat : Type (u + 1) where
 
 namespace SemilatSupCat
 
-instance : CoeSort SemilatSupCat (Type*) :=
+instance : CoeSort SemilatSupCat Type* :=
   ⟨SemilatSupCat.X⟩
 
 attribute [instance] isSemilatticeSup isOrderBot
@@ -69,14 +71,14 @@ instance : LargeCategory.{u} SemilatSupCat where
 
 -- Porting note: added
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (SupBotHom X Y) X (fun _ => Y) from inferInstance
+instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (SupBotHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory SemilatSupCat where
   forget :=
     { obj := SemilatSupCat.X
-      map := FunLike.coe }
-  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
+      map := DFunLike.coe }
+  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
 instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
   forget₂ :=
@@ -96,7 +98,7 @@ end SemilatSupCat
 
 namespace SemilatInfCat
 
-instance : CoeSort SemilatInfCat (Type*) :=
+instance : CoeSort SemilatInfCat Type* :=
   ⟨SemilatInfCat.X⟩
 
 attribute [instance] isSemilatticeInf isOrderTop
@@ -122,15 +124,15 @@ instance : LargeCategory.{u} SemilatInfCat where
   comp_id := InfTopHom.id_comp
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
--- Porting note: added
-instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (InfTopHom X Y) X (fun _ => Y) from inferInstance
+-- Porting note (#10754): added instance
+instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (InfTopHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory SemilatInfCat where
   forget :=
     { obj := SemilatInfCat.X
-      map := FunLike.coe }
-  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
+      map := DFunLike.coe }
+  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
 instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
   forget₂ :=

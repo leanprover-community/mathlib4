@@ -19,17 +19,15 @@ These are just restatements of similar statements about `TrivSqZeroExt R M`.
 
 -/
 
-open NormedSpace -- For `exp`.
+open NormedSpace -- For `NormedSpace.exp`.
 
 namespace DualNumber
 
 open TrivSqZeroExt
 
 variable (𝕜 : Type*) {R : Type*}
-
-variable [IsROrC 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
-
-variable [TopologicalRing R] [CompleteSpace R] [T2Space R]
+variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [Algebra 𝕜 R]
+variable [UniformSpace R] [TopologicalRing R] [CompleteSpace R] [T2Space R]
 
 @[simp]
 theorem exp_eps : exp 𝕜 (eps : DualNumber R) = 1 + eps :=

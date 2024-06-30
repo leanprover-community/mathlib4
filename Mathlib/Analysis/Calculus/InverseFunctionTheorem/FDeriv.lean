@@ -47,15 +47,10 @@ open scoped Topology Classical NNReal
 noncomputable section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-
 variable {ε : ℝ}
 
 open Asymptotics Filter Metric Set
@@ -80,7 +75,7 @@ theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
     (hf : HasStrictFDerivAt f f' a) {c : ℝ≥0} (hc : Subsingleton E ∨ 0 < c) :
     ∃ s ∈ 𝓝 a, ApproximatesLinearOn f f' s c := by
   cases' hc with hE hc
-  · refine' ⟨univ, IsOpen.mem_nhds isOpen_univ trivial, fun x _ y _ => _⟩
+  · refine ⟨univ, IsOpen.mem_nhds isOpen_univ trivial, fun x _ y _ => ?_⟩
     simp [@Subsingleton.elim E hE x y]
   have := hf.def hc
   rw [nhds_prod_eq, Filter.Eventually, mem_prod_same_iff] at this
@@ -218,7 +213,9 @@ theorem to_local_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a)
 end HasStrictFDerivAt
 
 /-- If a function has an invertible strict derivative at all points, then it is an open map. -/
-theorem open_map_of_strict_fderiv_equiv [CompleteSpace E] {f : E → F} {f' : E → E ≃L[𝕜] F}
+theorem isOpenMap_of_hasStrictFDerivAt_equiv [CompleteSpace E] {f : E → F} {f' : E → E ≃L[𝕜] F}
     (hf : ∀ x, HasStrictFDerivAt f (f' x : E →L[𝕜] F) x) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => (hf x).map_nhds_eq_of_equiv.ge
-#align open_map_of_strict_fderiv_equiv open_map_of_strict_fderiv_equiv
+#align open_map_of_strict_fderiv_equiv isOpenMap_of_hasStrictFDerivAt_equiv
+@[deprecated (since := "2024-03-23")]
+alias open_map_of_strict_fderiv_equiv := isOpenMap_of_hasStrictFDerivAt_equiv

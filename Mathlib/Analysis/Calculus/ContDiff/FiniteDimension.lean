@@ -34,12 +34,12 @@ variable [CompleteSpace 𝕜]
 /-- A family of continuous linear maps is `C^n` on `s` if all its applications are. -/
 theorem contDiffOn_clm_apply {n : ℕ∞} {f : E → F →L[𝕜] G} {s : Set E} [FiniteDimensional 𝕜 F] :
     ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
-  refine' ⟨fun h y => h.clm_apply contDiffOn_const, fun h => _⟩
+  refine ⟨fun h y => h.clm_apply contDiffOn_const, fun h => ?_⟩
   let d := finrank 𝕜 F
   have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
   let e₁ := ContinuousLinearEquiv.ofFinrankEq hd
   let e₂ := (e₁.arrowCongr (1 : G ≃L[𝕜] G)).trans (ContinuousLinearEquiv.piRing (Fin d))
-  rw [← comp.left_id f, ← e₂.symm_comp_self]
+  rw [← id_comp f, ← e₂.symm_comp_self]
   exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i => h _)
 #align cont_diff_on_clm_apply contDiffOn_clm_apply
 
@@ -71,8 +71,8 @@ theorem contDiffOn_succ_of_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f 
 theorem contDiffOn_succ_iff_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f : E → F} {s : Set E}
     (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
-      DifferentiableOn 𝕜 f s ∧ ∀ y, ContDiffOn 𝕜 n (fun x => fderivWithin 𝕜 f s x y) s :=
-  by rw [contDiffOn_succ_iff_fderivWithin hs, contDiffOn_clm_apply]
+      DifferentiableOn 𝕜 f s ∧ ∀ y, ContDiffOn 𝕜 n (fun x => fderivWithin 𝕜 f s x y) s := by
+  rw [contDiffOn_succ_iff_fderivWithin hs, contDiffOn_clm_apply]
 #align cont_diff_on_succ_iff_fderiv_apply contDiffOn_succ_iff_fderiv_apply
 
 end FiniteDimensional

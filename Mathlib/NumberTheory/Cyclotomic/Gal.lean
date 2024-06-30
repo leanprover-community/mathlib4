@@ -56,22 +56,16 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
   apply_fun Units.val at hfg
   simp only [IsPrimitiveRoot.coe_autToPow_apply] at hfg
-  -- Porting note: was `generalize_proofs hf' hg' at hfg`
-  revert hfg
-  generalize_proofs hf' hg'
-  intro hfg
+  generalize_proofs hf' hg' at hfg
   have hf := hf'.choose_spec
   have hg := hg'.choose_spec
-  -- Porting note: was `generalize_proofs hζ at hf hg`
-  revert hf hg
-  generalize_proofs hζ
-  intro hf hg
+  generalize_proofs hζ at hf hg
   suffices f (hμ.toRootsOfUnity : Lˣ) = g (hμ.toRootsOfUnity : Lˣ) by
     apply AlgEquiv.coe_algHom_injective
     apply (hμ.powerBasis K).algHom_ext
     exact this
   rw [ZMod.eq_iff_modEq_nat] at hfg
-  refine' (hf.trans _).trans hg.symm
+  refine (hf.trans ?_).trans hg.symm
   rw [← rootsOfUnity.coe_pow _ hf'.choose, ← rootsOfUnity.coe_pow _ hg'.choose]
   congr 2
   rw [pow_eq_pow_iff_modEq]
@@ -138,7 +132,7 @@ noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
       replace key := rootsOfUnity.coe_injective key
       rw [pow_eq_pow_iff_modEq, ← Subgroup.orderOf_coe, ← orderOf_units, hζ.val_toRootsOfUnity_coe,
         ← (zeta_spec n K L).eq_orderOf, ← ZMod.eq_iff_modEq_nat] at key
-      simp only [ZMod.nat_cast_val, ZMod.cast_id', id.def] at key
+      simp only [ZMod.natCast_val, ZMod.cast_id', id] at key
       exact Units.ext key }
 #align is_cyclotomic_extension.aut_equiv_pow IsCyclotomicExtension.autEquivPow
 
@@ -154,13 +148,11 @@ noncomputable def fromZetaAut : L ≃ₐ[K] L :=
 
 theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [fromZetaAut, autEquivPow_symm_apply]
--- Porting note: `generalize_proofs` did not generalize the same proofs, making the proof different.
-  generalize_proofs h1 h2
-  nth_rewrite 4 [← (zeta_spec n K L).powerBasis_gen K]
-  have := Exists.choose_spec ((zeta_spec n K L).eq_pow_of_pow_eq_one hμ.pow_eq_one n.pos)
-  rw [PowerBasis.equivOfMinpoly_gen, h1.powerBasis_gen K, ZMod.coe_unitOfCoprime,
-    ZMod.val_cast_of_lt this.1]
-  exact this.2
+  generalize_proofs hζ h _ hμ _
+  nth_rewrite 4 [← hζ.powerBasis_gen K]
+  rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
+  convert h.choose_spec.2
+  exact ZMod.val_cast_of_lt h.choose_spec.1
 #align is_cyclotomic_extension.from_zeta_aut_spec IsCyclotomicExtension.fromZetaAut_spec
 
 end IsCyclotomicExtension
@@ -170,7 +162,7 @@ section Gal
 variable [Field L] (hμ : IsPrimitiveRoot μ n) [Algebra K L] [IsCyclotomicExtension {n} K L]
   (h : Irreducible (cyclotomic n K)) {K}
 
-/-- `IsCyclotomicExtension.autEquivPow` repackaged in terms of `gal`.
+/-- `IsCyclotomicExtension.autEquivPow` repackaged in terms of `Gal`.
 Asserts that the Galois group of `cyclotomic n K` is equivalent to `(ZMod n)ˣ`
 if `cyclotomic n K` is irreducible in the base field. -/
 noncomputable def galCyclotomicEquivUnitsZMod : (cyclotomic n K).Gal ≃* (ZMod n)ˣ :=
@@ -179,7 +171,7 @@ noncomputable def galCyclotomicEquivUnitsZMod : (cyclotomic n K).Gal ≃* (ZMod 
     (IsCyclotomicExtension.autEquivPow L h)
 #align gal_cyclotomic_equiv_units_zmod galCyclotomicEquivUnitsZMod
 
-/-- `IsCyclotomicExtension.autEquivPow` repackaged in terms of `gal`.
+/-- `IsCyclotomicExtension.autEquivPow` repackaged in terms of `Gal`.
 Asserts that the Galois group of `X ^ n - 1` is equivalent to `(ZMod n)ˣ`
 if `cyclotomic n K` is irreducible in the base field. -/
 noncomputable def galXPowEquivUnitsZMod : (X ^ (n : ℕ) - 1 : K[X]).Gal ≃* (ZMod n)ˣ :=

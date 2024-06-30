@@ -46,11 +46,8 @@ This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.le
 
 
 variable {R : Type*} [CommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
-
 variable (Q : QuadraticForm R M)
-
 variable {n : ℕ}
 
 namespace CliffordAlgebra
@@ -88,7 +85,9 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
   RingQuot.instAlgebra _
 
 -- verify there are no diamonds
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+-- but doesn't work at `reducible_and_instances` #10906
 example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
@@ -135,8 +134,8 @@ variable (Q)
 from `CliffordAlgebra Q` to `A`.
 -/
 @[simps symm_apply]
-def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ (CliffordAlgebra Q →ₐ[R] A)
-    where
+def lift :
+    { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ (CliffordAlgebra Q →ₐ[R] A) where
   toFun f :=
     RingQuot.liftAlgHom R
       ⟨TensorAlgebra.lift R (f : M →ₗ[R] A), fun x y (h : Rel Q x y) => by
@@ -147,10 +146,10 @@ def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ 
       rw [LinearMap.comp_apply, AlgHom.toLinearMap_apply, comp_ι_sq_scalar]⟩
   left_inv f := by
     ext x
-    -- porting note: removed `simp only` proof which gets stuck simplifying `LinearMap.comp_apply`
+    -- Porting note: removed `simp only` proof which gets stuck simplifying `LinearMap.comp_apply`
     exact (RingQuot.liftAlgHom_mkAlgHom_apply _ _ _ _).trans (TensorAlgebra.lift_ι_apply _ x)
   right_inv F :=
-    -- porting note: replaced with proof derived from the one for `TensorAlgebra`
+    -- Porting note: replaced with proof derived from the one for `TensorAlgebra`
     RingQuot.ringQuot_ext' _ _ _ <|
       TensorAlgebra.hom_ext <|
         LinearMap.ext fun x => by
@@ -176,14 +175,14 @@ theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap 
 theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m : M, f m * f m = algebraMap _ _ (Q m))
     (g : CliffordAlgebra Q →ₐ[R] A) : g.toLinearMap.comp (ι Q) = f ↔ g = lift Q ⟨f, cond⟩ := by
   convert (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).symm_apply_eq
-  -- porting note: added `Subtype.mk_eq_mk`
+  -- Porting note: added `Subtype.mk_eq_mk`
   rw [lift_symm_apply, Subtype.mk_eq_mk]
 #align clifford_algebra.lift_unique CliffordAlgebra.lift_unique
 
 @[simp]
 theorem lift_comp_ι (g : CliffordAlgebra Q →ₐ[R] A) :
     lift Q ⟨g.toLinearMap.comp (ι Q), comp_ι_sq_scalar _⟩ = g := by
-  -- porting note: removed `rw [lift_symm_apply]; rfl`, changed `convert` to `exact`
+  -- Porting note: removed `rw [lift_symm_apply]; rfl`, changed `convert` to `exact`
   exact (lift Q : _ ≃ (CliffordAlgebra Q →ₐ[R] A)).apply_symm_apply g
 #align clifford_algebra.lift_comp_ι CliffordAlgebra.lift_comp_ι
 
@@ -205,27 +204,28 @@ See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.righ
 -/
 @[elab_as_elim]
 theorem induction {C : CliffordAlgebra Q → Prop}
-    (h_grade0 : ∀ r, C (algebraMap R (CliffordAlgebra Q) r)) (h_grade1 : ∀ x, C (ι Q x))
-    (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
+    (algebraMap : ∀ r, C (algebraMap R (CliffordAlgebra Q) r)) (ι : ∀ x, C (ι Q x))
+    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
     (a : CliffordAlgebra Q) : C a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from M
   let s : Subalgebra R (CliffordAlgebra Q) :=
     { carrier := C
-      mul_mem' := @h_mul
-      add_mem' := @h_add
-      algebraMap_mem' := h_grade0 }
-  -- porting note: Added `h`. `h` is needed for `of`.
+      mul_mem' := @mul
+      add_mem' := @add
+      algebraMap_mem' := algebraMap }
+  -- Porting note: Added `h`. `h` is needed for `of`.
   letI h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
-  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = algebraMap _ _ (Q m) } :=
-    ⟨(ι Q).codRestrict (Subalgebra.toSubmodule s) h_grade1, fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
+    ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
+      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
     ext
-    simp
-    -- porting note: `simp` can't apply this
+    simp [of]
+    -- Porting note: `simp` can't apply this
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra
-  -- porting note: was `convert Subtype.prop (lift Q of a); exact AlgHom.congr_fun of_id a`
+  -- Porting note: was `convert Subtype.prop (lift Q of a); exact AlgHom.congr_fun of_id a`
   rw [← AlgHom.id_apply (R := R) a, of_id]
   exact Subtype.prop (lift Q of a)
 #align clifford_algebra.induction CliffordAlgebra.induction
@@ -249,8 +249,8 @@ theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (
     (f : M →ₗ[R] A) :
     (∀ x, f x * f x = algebraMap _ _ (Q x)) ↔
       (LinearMap.mul R A).compl₂ f ∘ₗ f + (LinearMap.mul R A).flip.compl₂ f ∘ₗ f =
-        Q.polarBilin.toLin.compr₂ (Algebra.linearMap R A) := by
-  simp_rw [FunLike.ext_iff]
+        Q.polarBilin.compr₂ (Algebra.linearMap R A) := by
+  simp_rw [DFunLike.ext_iff]
   refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
   change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
   apply h2.mul_left_cancel
@@ -304,11 +304,8 @@ theorem ι_range_map_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebra
 section Map
 
 variable {M₁ M₂ M₃ : Type*}
-
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
-
 variable [Module R M₁] [Module R M₂] [Module R M₃]
-
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
 /-- Any linear map that preserves the quadratic form lifts to an `AlgHom` between algebras.
@@ -351,17 +348,37 @@ theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 #align clifford_algebra.ι_range_map_map CliffordAlgebra.ι_range_map_map
 
+open Function in
+/-- If `f` is a linear map from `M₁` to `M₂` that preserves the quadratic forms, and if it has
+a linear retraction `g` that also preserves the quadratic forms, then `CliffordAlgebra.map g`
+is a retraction of `CliffordAlgebra.map f`. -/
+lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (f : Q₁ →qᵢ Q₂) (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
+  refine fun x => ?_
+  replace h : g.comp f = QuadraticForm.Isometry.id Q₁ := DFunLike.ext _ _ h
+  rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
+
+/-- If a linear map preserves the quadratic forms and is surjective, then the algebra
+maps it induces between Clifford algebras is also surjective. -/
+lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
+    (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) :=
+  CliffordAlgebra.induction
+    (fun r ↦ ⟨algebraMap R (CliffordAlgebra Q₁) r, by simp only [AlgHom.commutes]⟩)
+    (fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x, by simp only [map_apply_ι, hx]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x * y, by simp only [map_mul, hx, hy]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simp only [map_add, hx, hy]⟩)
+
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/
 @[simps! apply]
 def equivOfIsometry (e : Q₁.IsometryEquiv Q₂) : CliffordAlgebra Q₁ ≃ₐ[R] CliffordAlgebra Q₂ :=
   AlgEquiv.ofAlgHom (map e.toIsometry) (map e.symm.toIsometry)
     ((map_comp_map _ _).trans <| by
-      convert map_id Q₂ using 2  -- porting note: replaced `_` with `Q₂`
+      convert map_id Q₂ using 2  -- Porting note: replaced `_` with `Q₂`
       ext m
       exact e.toLinearEquiv.apply_symm_apply m)
     ((map_comp_map _ _).trans <| by
-      convert map_id Q₁ using 2  -- porting note: replaced `_` with `Q₁`
+      convert map_id Q₁ using 2  -- Porting note: replaced `_` with `Q₁`
       ext m
       exact e.toLinearEquiv.symm_apply_apply m)
 #align clifford_algebra.equiv_of_isometry CliffordAlgebra.equivOfIsometry

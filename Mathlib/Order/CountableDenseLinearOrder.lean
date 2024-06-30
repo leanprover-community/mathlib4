@@ -33,7 +33,7 @@ back and forth, dense, countable, order
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 namespace Order
 
@@ -46,7 +46,7 @@ theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α]
     ∃ m : α, (∀ x ∈ lo, x < m) ∧ ∀ y ∈ hi, m < y :=
   if nlo : lo.Nonempty then
     if nhi : hi.Nonempty then
-      -- both sets are nonempty, use densely_ordered
+      -- both sets are nonempty, use `DenselyOrdered`
         Exists.elim
         (exists_between (lo_lt_hi _ (Finset.max'_mem _ nlo) _ (Finset.min'_mem _ nhi))) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm.1, fun y hy ↦
@@ -61,7 +61,7 @@ theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α]
         Exists.elim
         (exists_lt (Finset.min' hi nhi)) fun m hm ↦
         ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ lt_of_lt_of_le hm (Finset.min'_le hi y hy)⟩
-    else-- both sets are empty, use nonempty
+    else -- both sets are empty, use `Nonempty`
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 #align order.exists_between_finsets Order.exists_between_finsets
@@ -166,11 +166,11 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
   carrier := {f | ∃ a, (a, b) ∈ f.val}
   mem_gt f := by
     rcases (definedAtLeft α b).mem_gt f.comm with ⟨f', ⟨a, ha⟩, hl⟩
-    refine' ⟨f'.comm, ⟨a, _⟩, _⟩
+    refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
     · change (a, b) ∈ f'.val.image _
       rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]
     · change _ ⊆ f'.val.image _
-      rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.subset_image, ← Finset.coe_image,
+      rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
         Finset.coe_subset]
 #align order.partial_iso.defined_at_right Order.PartialIso.definedAtRight
 
@@ -199,8 +199,9 @@ open PartialIso
 -- variable (α β)
 
 /-- Any countable linear order embeds in any nontrivial dense linear order. -/
-theorem embedding_from_countable_to_dense [Encodable α] [DenselyOrdered β] [Nontrivial β] :
+theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [Nontrivial β] :
     Nonempty (α ↪o β) := by
+  cases nonempty_encodable α
   rcases exists_pair_lt β with ⟨x, y, hxy⟩
   cases' exists_between hxy with a ha
   haveI : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
@@ -217,15 +218,17 @@ theorem embedding_from_countable_to_dense [Encodable α] [DenselyOrdered β] [No
 #align order.embedding_from_countable_to_dense Order.embedding_from_countable_to_dense
 
 /-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. -/
-theorem iso_of_countable_dense [Encodable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
-    [Nonempty α] [Encodable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
-    Nonempty (α ≃o β) :=
+theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
+    [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
+    Nonempty (α ≃o β) := by
+  cases nonempty_encodable α
+  cases nonempty_encodable β
   let to_cofinal : Sum α β → Cofinal (PartialIso α β) := fun p ↦
     Sum.recOn p (definedAtLeft β) (definedAtRight α)
   let our_ideal : Ideal (PartialIso α β) := idealOfCofinals default to_cofinal
   let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inl a))
   let G b := invOfIdeal b our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inr b))
-  ⟨OrderIso.ofCmpEqCmp (fun a ↦ (F a).val) (fun b ↦ (G b).val) fun a b ↦ by
+  exact ⟨OrderIso.ofCmpEqCmp (fun a ↦ (F a).val) (fun b ↦ (G b).val) fun a b ↦ by
       rcases (F a).prop with ⟨f, hf, ha⟩
       rcases (G b).prop with ⟨g, hg, hb⟩
       rcases our_ideal.directed _ hf _ hg with ⟨m, _, fm, gm⟩

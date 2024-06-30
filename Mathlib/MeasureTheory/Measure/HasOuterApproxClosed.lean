@@ -171,7 +171,7 @@ theorem measure_le_lintegral [MeasurableSpace X] [OpensMeasurableSpace X] (μ : 
   · apply lintegral_mono
     intro x
     by_cases hxF : x ∈ F
-    · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n hxF, coe_one, le_refl]
+    · simp only [hxF, indicator_of_mem, apprSeq_apply_eq_one hF n hxF, ENNReal.coe_one, le_refl]
     · simp only [hxF, not_false_eq_true, indicator_of_not_mem, zero_le]
 
 /-- The integrals along a decreasing approximating sequence to the indicator of a closed set
@@ -188,17 +188,17 @@ noncomputable instance (X : Type*) [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] : HasOuterApproxClosed X := by
   letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   refine ⟨fun F hF ↦ ?_⟩
-  · use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
-    refine ⟨?_, ⟨?_, ?_⟩⟩
-    · exact fun n x ↦ thickenedIndicator_le_one Nat.one_div_pos_of_nat F x
-    · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
-    · have key := thickenedIndicator_tendsto_indicator_closure
-                (δseq := fun (n : ℕ) ↦ (1 : ℝ) / (n + 1))
-                (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_0_nat F
-      rw [tendsto_pi_nhds] at *
-      intro x
-      nth_rw 2 [← IsClosed.closure_eq hF]
-      exact key x
+  use fun n ↦ thickenedIndicator (δ := (1 : ℝ) / (n + 1)) Nat.one_div_pos_of_nat F
+  refine ⟨?_, ⟨?_, ?_⟩⟩
+  · exact fun n x ↦ thickenedIndicator_le_one Nat.one_div_pos_of_nat F x
+  · exact fun n x hxF ↦ one_le_thickenedIndicator_apply X Nat.one_div_pos_of_nat hxF
+  · have key := thickenedIndicator_tendsto_indicator_closure
+              (δseq := fun (n : ℕ) ↦ (1 : ℝ) / (n + 1))
+              (fun _ ↦ Nat.one_div_pos_of_nat) tendsto_one_div_add_atTop_nhds_zero_nat F
+    rw [tendsto_pi_nhds] at *
+    intro x
+    nth_rw 2 [← IsClosed.closure_eq hF]
+    exact key x
 
 namespace MeasureTheory
 
@@ -212,8 +212,8 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
   have ν_finite : IsFiniteMeasure ν := by
     constructor
     have whole := h 1
-    simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, coe_one, lintegral_const, one_mul]
-      at whole
+    simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
+      one_mul] at whole
     simpa [← whole] using IsFiniteMeasure.measure_univ_lt_top
   have obs_μ := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed μ
   have obs_ν := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed ν

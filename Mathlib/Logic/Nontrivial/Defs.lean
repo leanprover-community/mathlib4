@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Init.Logic
 import Mathlib.Init.Function
+import Mathlib.Tactic.TypeStar
 
 #align_import logic.nontrivial from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -22,7 +24,7 @@ Basic results about nontrivial types are in `Mathlib.Logic.Nontrivial.Basic`.
 
 variable {α : Type*} {β : Type*}
 
-open Classical
+open scoped Classical
 
 /-- Predicate typeclass for expressing that a type is not reduced to a single element. In rings,
 this is equivalent to `0 ≠ 1`. In vector spaces, this is equivalent to positive dimension. -/
@@ -79,7 +81,7 @@ theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
 #align subsingleton_iff subsingleton_iff
 
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
-  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, not_not]
+  simp only [nontrivial_iff, subsingleton_iff, not_exists, Classical.not_not]
 #align not_nontrivial_iff_subsingleton not_nontrivial_iff_subsingleton
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
@@ -91,7 +93,7 @@ theorem not_subsingleton (α) [Nontrivial α] : ¬Subsingleton α :=
 #align not_subsingleton not_subsingleton
 
 lemma not_subsingleton_iff_nontrivial : ¬ Subsingleton α ↔ Nontrivial α := by
-  rw [← not_nontrivial_iff_subsingleton, not_not]
+  rw [← not_nontrivial_iff_subsingleton, Classical.not_not]
 
 /-- A type is either a subsingleton or nontrivial. -/
 theorem subsingleton_or_nontrivial (α : Type*) : Subsingleton α ∨ Nontrivial α := by
@@ -118,6 +120,6 @@ protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
 namespace Bool
 
 instance : Nontrivial Bool :=
-  ⟨⟨true, false, fun .⟩⟩
+  ⟨⟨true, false, nofun⟩⟩
 
 end Bool

@@ -286,7 +286,7 @@ theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen 
 @[to_additive]
 theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ := by
-  rw [← not_iff_not, ← Ne.def, ← pos_iff_ne_zero,
+  rw [← not_iff_not, ← Ne, ← pos_iff_ne_zero,
     measure_pos_iff_nonempty_of_smulInvariant G hμ hU, nonempty_iff_ne_empty]
 #align measure_theory.measure_eq_zero_iff_eq_empty_of_smul_invariant MeasureTheory.measure_eq_zero_iff_eq_empty_of_smulInvariant
 #align measure_theory.measure_eq_zero_iff_eq_empty_of_vadd_invariant MeasureTheory.measure_eq_zero_iff_eq_empty_of_vaddInvariant
@@ -301,7 +301,7 @@ theorem smul_ae_eq_self_of_mem_zpowers {x y : G} (hs : (x • s : Set α) =ᵐ[�
   have he' : QuasiMeasurePreserving e.symm μ μ :=
     (measurePreserving_smul x⁻¹ μ).quasiMeasurePreserving
   have h := he.image_zpow_ae_eq he' k hs
-  simp only [← MonoidHom.map_zpow] at h
+  simp only [e, ← MonoidHom.map_zpow] at h
   simpa only [MulAction.toPermHom_apply, MulAction.toPerm_apply, image_smul] using h
 #align measure_theory.smul_ae_eq_self_of_mem_zpowers MeasureTheory.smul_ae_eq_self_of_mem_zpowers
 
@@ -310,7 +310,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
     {μ : Measure α} [VAddInvariantMeasure G α μ] {x y : G}
     (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
     (y +ᵥ s : Set α) =ᵐ[μ] s := by
-  letI : MeasurableSpace (Multiplicative G) := (inferInstanceAs (MeasurableSpace G))
+  letI : MeasurableSpace (Multiplicative G) := inferInstanceAs (MeasurableSpace G)
   letI : SMulInvariantMeasure (Multiplicative G) α μ :=
     ⟨fun g => VAddInvariantMeasure.measure_preimage_vadd (Multiplicative.toAdd g)⟩
   letI : MeasurableSMul (Multiplicative G) α :=
@@ -321,7 +321,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
   exact smul_ae_eq_self_of_mem_zpowers (G := Multiplicative G) hs hy
 #align measure_theory.vadd_ae_eq_self_of_mem_zmultiples MeasureTheory.vadd_ae_eq_self_of_mem_zmultiples
 
-attribute [to_additive existing vadd_ae_eq_self_of_mem_zmultiples] smul_ae_eq_self_of_mem_zpowers
+attribute [to_additive existing] smul_ae_eq_self_of_mem_zpowers
 
 @[to_additive]
 theorem inv_smul_ae_eq_self {x : G} (hs : (x • s : Set α) =ᵐ[μ] s) : (x⁻¹ • s : Set α) =ᵐ[μ] s :=

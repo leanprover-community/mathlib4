@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.Banach
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import analysis.normed_space.complemented from "leanprover-community/mathlib"@"3397560e65278e5f31acefcdea63138bd53d1cd4"
 
@@ -40,7 +40,7 @@ theorem ker_closedComplemented_of_finiteDimensional_range (f : E →L[𝕜] F)
     [FiniteDimensional 𝕜 (range f)] : (ker f).ClosedComplemented := by
   set f' : E →L[𝕜] range f := f.codRestrict _ (LinearMap.mem_range_self (f : E →ₗ[𝕜] F))
   rcases f'.exists_right_inverse_of_surjective (f : E →ₗ[𝕜] F).range_rangeRestrict with ⟨g, hg⟩
-  simpa only [ker_codRestrict] using f'.closedComplemented_ker_of_rightInverse g (ext_iff.1 hg)
+  simpa only [f', ker_codRestrict] using f'.closedComplemented_ker_of_rightInverse g (ext_iff.1 hg)
 #align continuous_linear_map.ker_closed_complemented_of_finite_dimensional_range ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range
 
 end
@@ -86,7 +86,7 @@ isomorphic to `E`. -/
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
   haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
-  refine' (p.prodEquivOfIsCompl q h).toContinuousLinearEquivOfContinuous _
+  refine (p.prodEquivOfIsCompl q h).toContinuousLinearEquivOfContinuous ?_
   exact (p.subtypeL.coprod q.subtypeL).continuous
 #align subspace.prod_equiv_of_closed_compl Submodule.prodEquivOfClosedCompl
 

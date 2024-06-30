@@ -42,13 +42,13 @@ specified explicitly, as `Category.{v} C`.
 Typically any concrete example will either be a `SmallCategory`, where `v = u`,
 which can be introduced as
 ```
-universes u
-variables {C : Type u} [SmallCategory C]
+universe u
+variable {C : Type u} [SmallCategory C]
 ```
 or a `LargeCategory`, where `u = v+1`, which can be introduced as
 ```
-universes u
-variables {C : Type (u+1)} [LargeCategory C]
+universe u
+variable {C : Type (u+1)} [LargeCategory C]
 ```
 
 In order for the library to handle these cases uniformly,
@@ -61,11 +61,11 @@ can not be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```
-universes v u
+universe v u
 ```
 or
 ```
-universes v₁ v₂ u₁ u₂
+universe v₁ v₂ u₁ u₂
 ```
 when multiple independent universes are needed.
 
@@ -108,25 +108,40 @@ scoped notation "𝟙" => CategoryStruct.id  -- type as \b1
 /-- Notation for composition of morphisms in a category. -/
 scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 
+/-- Close the main goal with `sorry` if its type contains `sorry`, and fail otherwise. -/
+syntax (name := sorryIfSorry) "sorry_if_sorry" : tactic
+
+open Lean Meta Elab.Tactic in
+@[tactic sorryIfSorry, inherit_doc sorryIfSorry] def evalSorryIfSorry : Tactic := fun _ => do
+  let goalType ← getMainTarget
+  if goalType.hasSorry then
+    closeMainGoal (← mkSorry goalType true)
+  else
+    throwError "The goal does not contain `sorry`"
+
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
+It also turns on `zetaDelta` in the `simp` config, allowing `aesop_cat` to unfold any `let`s.
 This tactic fails when it is unable to solve the goal, making it suitable for
 use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (options := { introsTransparency? := some .default, terminal := true })
-            (simp_options := { decide := true })
-  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+  first | sorry_if_sorry |
+  aesop $c* (config := { introsTransparency? := some .default, terminal := true })
+            (simp_config := { decide := true, zetaDelta := true })
+            (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--
 We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
 -/
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop? $c* (options := { introsTransparency? := some .default, terminal := true })
-  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+  first | sorry_if_sorry |
+  aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
+             (simp_config := { decide := true, zetaDelta := true })
+             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
 A variant of `aesop_cat` which does not fail when it is unable to solve the
 goal. Use this only for exploration! Nonterminal `aesop` is even worse than
@@ -134,20 +149,21 @@ nonterminal `simp`.
 -/
 macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false })
-    (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+    aesop $c* (config := { introsTransparency? := some .default, warnOnNonterminal := false })
+              (simp_config := { decide := true, zetaDelta := true })
+              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 
 -- We turn on `ext` inside `aesop_cat`.
-attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCore'
+attribute [aesop safe tactic (rule_sets := [CategoryTheory])] Std.Tactic.Ext.extCore'
 
 -- We turn on the mathlib version of `rfl` inside `aesop_cat`.
-attribute [aesop safe tactic (rule_sets [CategoryTheory])] Mathlib.Tactic.rflTac
+attribute [aesop safe tactic (rule_sets := [CategoryTheory])] Mathlib.Tactic.rflTac
 
 -- Porting note:
 -- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
 -- now that etaExperiment is always on.
-attribute [aesop safe (rule_sets [CategoryTheory])] Subsingleton.elim
+attribute [aesop safe (rule_sets := [CategoryTheory])] Subsingleton.elim
 
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
@@ -162,16 +178,12 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
   /-- Identity morphisms are right identities for composition. -/
   comp_id : ∀ {X Y : obj} (f : X ⟶ Y), f ≫ 𝟙 Y = f := by aesop_cat
   /-- Composition in a category is associative. -/
-  assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h :=
-    by aesop_cat
+  assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
+    aesop_cat
 #align category_theory.category CategoryTheory.Category
 #align category_theory.category.assoc CategoryTheory.Category.assoc
 #align category_theory.category.comp_id CategoryTheory.Category.comp_id
 #align category_theory.category.id_comp CategoryTheory.Category.id_comp
-
--- Porting note: `restate_axiom` should not be necessary in lean4
--- Hopefully we can just remove the backticks from field names,
--- then delete the invocation of `restate_axiom`.
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
@@ -360,7 +372,6 @@ end
 section
 
 variable (C : Type u)
-
 variable [Category.{v} C]
 
 universe u'

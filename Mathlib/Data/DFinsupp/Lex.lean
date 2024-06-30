@@ -3,6 +3,7 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
+import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.NeLocus
 import Mathlib.Order.WellFoundedSet
@@ -53,7 +54,7 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι 
   classical
   have : (x.neLocus y : Set ι).WellFoundedOn r := (x.neLocus y).finite_toSet.wellFoundedOn
   obtain ⟨i, hi, hl⟩ := this.has_min { i | x i < y i } ⟨⟨j, mem_neLocus.2 hlt.ne⟩, hlt⟩
-  refine' ⟨i, fun k hk ↦ ⟨hle k, _⟩, hi⟩
+  refine ⟨i, fun k hk ↦ ⟨hle k, ?_⟩, hi⟩
   exact of_not_not fun h ↦ hl ⟨k, mem_neLocus.2 (ne_of_not_le h).symm⟩ ((hle k).lt_of_not_le h) hk
 #align dfinsupp.lex_lt_of_lt_of_preorder DFinsupp.lex_lt_of_lt_of_preorder
 
@@ -78,7 +79,7 @@ instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π�
   lt := (· < ·)
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
-    (FunLike.coe_injective (F := DFinsupp α))
+    (DFunLike.coe_injective (F := DFinsupp α))
 #align dfinsupp.lex.partial_order DFinsupp.Lex.partialOrder
 
 section LinearOrder
@@ -131,7 +132,7 @@ variable [∀ i, PartialOrder (α i)]
 
 theorem toLex_monotone : Monotone (@toLex (Π₀ i, α i)) := by
   intro a b h
-  refine' le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ _)
+  refine le_of_lt_or_eq (or_iff_not_imp_right.2 fun hne ↦ ?_)
   classical
   exact ⟨Finset.min' _ (nonempty_neLocus_iff.2 hne),
     fun j hj ↦ not_mem_neLocus.1 fun h ↦ (Finset.min'_le _ _ h).not_lt hj,

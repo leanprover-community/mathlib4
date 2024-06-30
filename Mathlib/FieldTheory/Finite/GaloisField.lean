@@ -56,7 +56,7 @@ theorem galois_poly_separable {K : Type*} [Field K] (p q : ℕ) [CharP K p] (h :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
-  rw [derivative_sub, derivative_X_pow, derivative_X, C_eq_nat_cast, h]
+  rw [derivative_sub, derivative_X_pow, derivative_X, C_eq_natCast, h]
   ring
 #align galois_poly_separable galois_poly_separable
 
@@ -97,7 +97,7 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
-  -- Porting note : in the statment of `key`, replaced `g_poly` by its value otherwise the
+  -- Porting note: in the statment of `key`, replaced `g_poly` by its value otherwise the
   -- proof fails
   have key : Fintype.card (g_poly.rootSet (GaloisField p n)) = g_poly.natDegree :=
     card_rootSet_eq_natDegree (galois_poly_separable p _ (dvd_pow (dvd_refl p) h))
@@ -121,24 +121,24 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
   cases p; cases hp
   refine Subring.closure_induction hx ?_ ?_ ?_ ?_ ?_ ?_ <;> simp_rw [mem_rootSet_of_ne aux]
   · rintro x (⟨r, rfl⟩ | hx)
-    · simp only [map_sub, map_pow, aeval_X]
+    · simp only [g_poly, map_sub, map_pow, aeval_X]
       rw [← map_pow, ZMod.pow_card_pow, sub_self]
     · dsimp only [GaloisField] at hx
       rwa [mem_rootSet_of_ne aux] at hx
   · rw [← coeff_zero_eq_aeval_zero']
-    simp only [coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
+    simp only [g_poly, coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
       one_ne_zero, coeff_sub]
     intro hn
     exact Nat.not_lt_zero 1 (pow_eq_zero hn.symm ▸ hp)
-  · simp
-  · simp only [aeval_X_pow, aeval_X, AlgHom.map_sub, add_pow_char_pow, sub_eq_zero]
+  · simp [g_poly]
+  · simp only [g_poly, aeval_X_pow, aeval_X, AlgHom.map_sub, add_pow_char_pow, sub_eq_zero]
     intro x y hx hy
     rw [hx, hy]
   · intro x hx
-    simp only [sub_eq_zero, aeval_X_pow, aeval_X, AlgHom.map_sub, sub_neg_eq_add] at *
+    simp only [g_poly, sub_eq_zero, aeval_X_pow, aeval_X, AlgHom.map_sub, sub_neg_eq_add] at *
     rw [neg_pow, hx, CharP.neg_one_pow_char_pow]
     simp
-  · simp only [aeval_X_pow, aeval_X, AlgHom.map_sub, mul_pow, sub_eq_zero]
+  · simp only [g_poly, aeval_X_pow, aeval_X, AlgHom.map_sub, mul_pow, sub_eq_zero]
     intro x y hx hy
     rw [hx, hy]
 #align galois_field.finrank GaloisField.finrank

@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
 
@@ -28,7 +28,6 @@ open CategoryTheory.MonoidalCategory
 namespace CategoryTheory.Monoidal
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 namespace FunctorCategory
@@ -45,7 +44,6 @@ def tensorObj : C ⥤ D where
 #align category_theory.monoidal.functor_category.tensor_obj CategoryTheory.Monoidal.FunctorCategory.tensorObj
 
 variable {F G F' G'}
-
 variable (α : F ⟶ G) (β : F' ⟶ G')
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.)

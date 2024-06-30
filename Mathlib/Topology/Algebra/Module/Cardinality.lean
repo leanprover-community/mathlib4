@@ -3,10 +3,11 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Module.Card
 import Mathlib.SetTheory.Cardinal.CountableCover
-import Mathlib.Data.Real.Cardinality
+import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Perfect
+import Mathlib.Topology.MetricSpace.Perfect
 
 /-!
 # Cardinality of open subsets of vector spaces
@@ -34,7 +35,7 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
   refine ⟨isClosed_univ, preperfect_iff_nhds.2 (fun x _ U hU ↦ ?_)⟩
   rcases NormedField.exists_norm_lt_one 𝕜 with ⟨c, c_pos, hc⟩
   have A : Tendsto (fun n ↦ x + c^n) atTop (𝓝 (x + 0)) :=
-    tendsto_const_nhds.add (tendsto_pow_atTop_nhds_0_of_norm_lt_1 hc)
+    tendsto_const_nhds.add (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc)
   rw [add_zero] at A
   have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
   rcases B.exists with ⟨n, hn⟩
@@ -74,7 +75,7 @@ lemma cardinal_eq_of_mem_nhds_zero
     have : Tendsto (fun n ↦ (c^n) ⁻¹ • x) atTop (𝓝 ((0 : 𝕜) • x)) := by
       have : Tendsto (fun n ↦ (c^n)⁻¹) atTop (𝓝 0) := by
         simp_rw [← inv_pow]
-        apply tendsto_pow_atTop_nhds_0_of_norm_lt_1
+        apply tendsto_pow_atTop_nhds_zero_of_norm_lt_one
         rw [norm_inv]
         exact inv_lt_one hc
       exact Tendsto.smul_const this x
@@ -99,7 +100,7 @@ theorem cardinal_eq_of_mem_nhds
     {s : Set E} {x : E} (hs : s ∈ 𝓝 x) : #s = #E := by
   let g := Homeomorph.addLeft x
   let t := g ⁻¹' s
-  have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa using hs)
+  have : t ∈ 𝓝 0 := g.continuous.continuousAt.preimage_mem_nhds (by simpa [g] using hs)
   have A : #t = #E := cardinal_eq_of_mem_nhds_zero 𝕜 this
   have B : #t = #s := Cardinal.mk_subtype_of_equiv s g.toEquiv
   rwa [B] at A

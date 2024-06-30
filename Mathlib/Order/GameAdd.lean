@@ -29,10 +29,7 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 decreases at a time.
 -/
 
-set_option autoImplicit true
-
-
-variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop}
+variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop} {a : α} {b : β}
 
 /-! ### `Prod.GameAdd` -/
 
@@ -103,7 +100,7 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
-  refine' Acc.intro _ fun h => _
+  refine Acc.intro _ fun h => ?_
   rintro (⟨ra⟩ | ⟨rb⟩)
   exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
 #align acc.prod_game_add Acc.prod_gameAdd
@@ -202,8 +199,8 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) s(a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
-  refine' Acc.intro _ fun s => _
-  induction' s using Sym2.inductionOn with c d
+  refine Acc.intro _ fun s => ?_
+  induction' s with c d
   rw [Sym2.GameAdd]
   dsimp
   rintro ((rc | rd) | (rd | rc))
@@ -230,7 +227,7 @@ def GameAdd.fix {C : α → α → Sort*} (hr : WellFounded rα)
     C a b := by
   -- Porting note: this was refactored for #3414 (reenableeta), and could perhaps be cleaned up.
   have := hr.sym2_gameAdd
-  dsimp only [GameAdd, lift₂, FunLike.coe, EquivLike.coe] at this
+  dsimp only [GameAdd, lift₂, DFunLike.coe, EquivLike.coe] at this
   exact @WellFounded.fix (α × α) (fun x => C x.1 x.2) _ this.of_quotient_lift₂
     (fun ⟨x₁, x₂⟩ IH' => IH x₁ x₂ fun a' b' => IH' ⟨a', b'⟩) (a, b)
 #align sym2.game_add.fix Sym2.GameAdd.fix

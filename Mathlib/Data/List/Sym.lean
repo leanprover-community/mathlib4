@@ -159,19 +159,18 @@ protected def sym : (n : ℕ) → List α → List (Sym α n)
   | 0, _ => [.nil]
   | _, [] => []
   | n + 1, x :: xs => ((x :: xs).sym n |>.map fun p => x ::ₛ p) ++ xs.sym (n + 1)
-  termination_by _ n xs => n + xs.length
 
 variable {xs ys : List α} {n : ℕ}
 
 theorem sym_one_eq : xs.sym 1 = xs.map (· ::ₛ .nil) := by
   induction xs with
-  | nil => rfl
+  | nil => simp only [List.sym, Nat.succ_eq_add_one, Nat.reduceAdd, map_nil]
   | cons x xs ih =>
     rw [map_cons, ← ih, List.sym, List.sym, map_singleton, singleton_append]
 
 theorem sym2_eq_sym_two : xs.sym2.map (Sym2.equivSym α) = xs.sym 2 := by
   induction xs with
-  | nil => rfl
+  | nil => simp only [List.sym, map_eq_nil, sym2_eq_nil_iff]
   | cons x xs ih =>
     rw [List.sym, ← ih, sym_one_eq, map_map, List.sym2, map_append, map_map]
     rfl
@@ -187,12 +186,11 @@ theorem sym_map {β : Type*} (f : α → β) (n : ℕ) (xs : List α) :
     congr
     ext s
     simp only [Function.comp_apply, Sym.map_cons]
-  termination_by _ n xs => n + xs.length
 
 protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sym n <+ ys.sym n :=
   match n, h with
   | 0, _ => by simp [List.sym]
-  | n + 1, .slnil => .slnil
+  | n + 1, .slnil => by simp only [refl]
   | n + 1, .cons a h => by
     rw [List.sym, ← nil_append (List.sym (n + 1) xs)]
     apply Sublist.append (nil_sublist _)
@@ -202,7 +200,6 @@ protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sy
     apply Sublist.append
     · exact ((cons₂ a h).sym n).map _
     · exact h.sym (n + 1)
-  termination_by _ n xs ys h => n + xs.length + ys.length
 
 theorem sym_sublist_sym_cons {a : α} : xs.sym n <+ (a :: xs).sym n :=
   (sublist_cons a xs).sym n
@@ -224,7 +221,6 @@ theorem mem_of_mem_of_mem_sym {n : ℕ} {xs : List α} {a : α} {z : Sym α n}
     · rw [mem_cons]
       right
       exact mem_of_mem_of_mem_sym ha hz
-  termination_by _ n xs _ _ _ _ => n + xs.length
 
 theorem first_mem_of_cons_mem_sym {xs : List α} {n : ℕ} {a : α} {z : Sym α n}
     (h : a ::ₛ z ∈ xs.sym (n + 1)) : a ∈ xs :=
@@ -246,18 +242,16 @@ protected theorem Nodup.sym (n : ℕ) {xs : List α} (h : xs.Nodup) : (xs.sym n)
       obtain ⟨z, _hz, rfl⟩ := hz
       have := first_mem_of_cons_mem_sym hz'
       simp only [nodup_cons, this, not_true_eq_false, false_and] at h
-  termination_by _ n xs _ => n + xs.length
 
 theorem length_sym {n : ℕ} {xs : List α} :
     (xs.sym n).length = Nat.multichoose xs.length n :=
   match n, xs with
   | 0, _ => by rw [List.sym, Nat.multichoose]; rfl
-  | n + 1, [] => rfl
+  | n + 1, [] => by simp [List.sym]
   | n + 1, x :: xs => by
     rw [List.sym, length_append, length_map, length_cons]
     rw [@length_sym n (x :: xs), @length_sym (n + 1) xs]
     rw [Nat.multichoose_succ_succ, length_cons, add_comm]
-  termination_by _ n xs => n + xs.length
 
 end Sym
 

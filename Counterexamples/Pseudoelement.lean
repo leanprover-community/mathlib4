@@ -56,7 +56,7 @@ def y : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
 
 /-- `biprod.fst ≫ x` is pseudoequal to `biprod.fst y`. -/
 theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst y) := by
-  refine' ⟨of ℤ ℚ, 𝟙 _, 𝟙 _, inferInstance, _, _⟩
+  refine ⟨of ℤ ℚ, 𝟙 _, 𝟙 _, inferInstance, ?_, ?_⟩
   · exact (ModuleCat.epi_iff_surjective _).2 fun a => ⟨(a : ℚ), rfl⟩
   · dsimp [x, y]
     simp
@@ -64,11 +64,11 @@ theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst
 
 /-- `biprod.snd ≫ x` is pseudoequal to `biprod.snd y`. -/
 theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd y) := by
-  refine' ⟨of ℤ ℚ, 𝟙 _, 2 • 𝟙 _, inferInstance, _, _⟩
-  · refine' (ModuleCat.epi_iff_surjective _).2 fun a => ⟨(show ℚ from a) / 2, _⟩
+  refine ⟨of ℤ ℚ, 𝟙 _, 2 • 𝟙 _, inferInstance, ?_, ?_⟩
+  · refine (ModuleCat.epi_iff_surjective _).2 fun a => ⟨(show ℚ from a) / 2, ?_⟩
     simpa only [two_smul] using add_halves' (show ℚ from a)
   · dsimp [x, y]
-    refine' ConcreteCategory.hom_ext _ _ fun a => _
+    refine ConcreteCategory.hom_ext _ _ fun a => ?_
     simp_rw [biprod.lift_snd]; rfl
 #align counterexample.snd_x_pseudo_eq_snd_y Counterexample.snd_x_pseudo_eq_snd_y
 
@@ -89,14 +89,14 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   have ha₁ := congr_arg π₁ ha
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₁
-  simp only [BinaryBiproduct.bicone_fst, biprod.lift_fst, CategoryTheory.id_apply,
+  simp only [π₁, φ, BinaryBiproduct.bicone_fst, biprod.lift_fst, CategoryTheory.id_apply,
     biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
     Preadditive.add_comp, BinaryBicone.inl_fst, BinaryBicone.inr_fst, smul_zero, add_zero] at ha₁
   let π₂ := (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₂ := congr_arg π₂ ha
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₂
-  simp only [BinaryBiproduct.bicone_snd, biprod.lift_snd, CategoryTheory.id_apply,
+  simp only [π₁, π₂, φ, BinaryBiproduct.bicone_snd, biprod.lift_snd, CategoryTheory.id_apply,
     biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
     Preadditive.add_comp, BinaryBicone.inl_snd, BinaryBicone.inr_snd, zero_add, two_smul] at ha₂
   erw [add_apply, CategoryTheory.id_apply] at ha₂
@@ -122,8 +122,8 @@ theorem snd_mk'_x_eq_snd_mk'_y :
 #align counterexample.snd_mk_x_eq_snd_mk_y Counterexample.snd_mk'_x_eq_snd_mk'_y
 
 -- Porting note: needs explicit type ascription `: Quotient <| Pseudoelement.setoid _`
---               for some reason the setoid instance isn't picked up automatically
---               despite the local instance ~20 lines up
+-- for some reason the setoid instance isn't picked up automatically,
+-- despite the local instance ~20 lines up
 /-- `⟦x⟧ ≠ ⟦y⟧`. -/
 theorem mk'_x_ne_mk'_y : (⟦x⟧ : Quotient <| Pseudoelement.setoid _) ≠ ⟦y⟧ :=
   fun h => x_not_pseudo_eq <| Quotient.eq'.1 h

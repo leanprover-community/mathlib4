@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.Order.Category.BddOrd
 import Mathlib.Order.Category.Lat
 import Mathlib.Order.Category.Semilat
@@ -27,13 +27,14 @@ open CategoryTheory
 
 /-- The category of bounded lattices with bounded lattice morphisms. -/
 structure BddLat where
+  /-- The underlying lattice of a bounded lattice. -/
   toLat : Lat
   [isBoundedOrder : BoundedOrder toLat]
 #align BddLat BddLat
 
 namespace BddLat
 
-instance : CoeSort BddLat (Type*) :=
+instance : CoeSort BddLat Type* :=
   ⟨fun X => X.toLat⟩
 
 instance (X : BddLat) : Lattice X :=
@@ -43,7 +44,7 @@ attribute [instance] BddLat.isBoundedOrder
 
 /-- Construct a bundled `BddLat` from `Lattice` + `BoundedOrder`. -/
 def of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat :=
-  -- porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
+  -- Porting note: was `⟨⟨α⟩⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{α := α}⟩
 #align BddLat.of BddLat.of
 
@@ -64,14 +65,14 @@ instance : LargeCategory.{u} BddLat where
   assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
 -- Porting note: added.
-instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (BoundedLatticeHom X Y) X (fun _ => Y) from inferInstance
+instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (BoundedLatticeHom X Y) X Y from inferInstance
 
 instance : ConcreteCategory BddLat where
   forget :=
   { obj := (↑)
-    map := FunLike.coe }
-  forget_faithful := ⟨(FunLike.coe_injective ·)⟩
+    map := DFunLike.coe }
+  forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
 instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
   forget₂ :=

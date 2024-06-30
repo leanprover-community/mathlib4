@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.Bind
 
 #align_import data.multiset.pi from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
@@ -23,7 +23,7 @@ open Function
 /-- Given `δ : α → Type*`, `Pi.empty δ` is the trivial dependent function out of the empty
 multiset. -/
 def Pi.empty (δ : α → Sort*) : ∀ a ∈ (0 : Multiset α), δ a :=
-  fun.
+  nofun
 #align multiset.pi.empty Multiset.Pi.empty
 
 universe u v
@@ -52,13 +52,13 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro a'' _ rfl
-  refine' hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ => _
+  refine hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ => ?_
   rcases ne_or_eq a'' a with (h₁ | rfl)
-  rcases eq_or_ne a'' a' with (rfl | h₂)
+  on_goal 1 => rcases eq_or_ne a'' a' with (rfl | h₂)
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 #align multiset.pi.cons_swap Multiset.Pi.cons_swap
 
-@[simp, nolint simpNF] --Porting note: false positive, this lemma can prove itself
+@[simp, nolint simpNF] -- Porting note: false positive, this lemma can prove itself
 theorem pi.cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
     (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
   ext a' h'
@@ -88,7 +88,7 @@ def pi (m : Multiset α) (t : ∀ a, Multiset (β a)) : Multiset (∀ a ∈ m, �
       intro a a' m n
       by_cases eq : a = a'
       · subst eq; rfl
-      · simp [map_bind, bind_bind (t a') (t a)]
+      · simp only [map_bind, map_map, comp_apply, bind_bind (t a') (t a)]
         apply bind_hcongr
         · rw [cons_swap a a']
         intro b _
@@ -122,13 +122,13 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
   Multiset.induction_on s (fun _ _ => nodup_singleton _)
     (by
       intro a s ih hs ht
-      have has : a ∉ s := by simp at hs; exact hs.1
-      have hs : Nodup s := by simp at hs; exact hs.2
+      have has : a ∉ s := by simp only [nodup_cons] at hs; exact hs.1
+      have hs : Nodup s := by simp only [nodup_cons] at hs; exact hs.2
       simp only [pi_cons, nodup_bind]
-      refine'
+      refine
         ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (Pi.cons_injective has),
-          _⟩
-      refine' (ht a <| mem_cons_self _ _).pairwise _
+          ?_⟩
+      refine (ht a <| mem_cons_self _ _).pairwise ?_
       exact fun b₁ _ b₂ _ neb =>
         disjoint_map_map.2 fun f _ g _ eq =>
           have : Pi.cons s a b₁ f a (mem_cons_self _ _) = Pi.cons s a b₂ g a (mem_cons_self _ _) :=
@@ -152,7 +152,7 @@ theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     · rw [Pi.cons_ne _ h]
       apply hf'
   · intro hf
-    refine' ⟨_, hf a (mem_cons_self _ _), _, fun a ha => hf a (mem_cons_of_mem ha), _⟩
+    refine ⟨_, hf a (mem_cons_self _ _), _, fun a ha => hf a (mem_cons_of_mem ha), ?_⟩
     rw [pi.cons_eta]
 #align multiset.mem_pi Multiset.mem_pi
 

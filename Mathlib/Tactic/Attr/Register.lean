@@ -3,8 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Lean.Meta.Tactic.Simp
-import Std.Tactic.LabelAttr
+import Lean.Meta.Tactic.Simp.SimpTheorems
+import Lean.Meta.Tactic.Simp.RegisterCommand
+import Lean.LabelAttribute
 
 /-!
 # Attributes used in `Mathlib`
@@ -37,8 +38,8 @@ register_simp_attr field_simps
 /-- Simp attribute for lemmas about `Even` -/
 register_simp_attr parity_simps
 
-/-- "Simp attribute for lemmas about `IsROrC`" -/
-register_simp_attr isROrC_simps
+/-- "Simp attribute for lemmas about `RCLike`" -/
+register_simp_attr rclike_simps
 
 /-- The simpset `rify_simps` is used by the tactic `rify` to move expressions from `ℕ`, `ℤ`, or
 `ℚ` to `ℝ`. -/

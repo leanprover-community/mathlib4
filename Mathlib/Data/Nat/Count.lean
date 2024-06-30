@@ -78,7 +78,7 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
     simp_rw [mem_map, mem_range, addLeftEmbedding_apply]
     rintro x hx ⟨c, _, rfl⟩
     exact (self_le_add_right _ _).not_lt hx
-  simp_rw [count_eq_card_filter_range, range_add, filter_union, card_disjoint_union this,
+  simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
     filter_map, addLeftEmbedding, card_map]
   rfl
 #align nat.count_add Nat.count_add
@@ -146,8 +146,20 @@ theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n 
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 #align nat.count_lt_card Nat.count_lt_card
 
-variable {q : ℕ → Prop}
+theorem count_of_forall {n : ℕ} (hp : ∀ n' < n, p n') : count p n = n := by
+  rw [count_eq_card_filter_range, filter_true_of_mem, card_range]
+  · simpa only [Finset.mem_range]
 
+@[simp] theorem count_true (n : ℕ) : count (fun _ ↦ True) n = n := count_of_forall fun _ _ ↦ trivial
+
+theorem count_of_forall_not {n : ℕ} (hp : ∀ n' < n, ¬p n') : count p n = 0 := by
+  rw [count_eq_card_filter_range, filter_false_of_mem, card_empty]
+  · simpa only [Finset.mem_range]
+
+@[simp] theorem count_false (n : ℕ) : count (fun _ ↦ False) n = 0 :=
+  count_of_forall_not fun _ _ ↦ id
+
+variable {q : ℕ → Prop}
 variable [DecidablePred q]
 
 theorem count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by

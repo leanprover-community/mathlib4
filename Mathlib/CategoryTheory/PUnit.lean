@@ -31,7 +31,7 @@ namespace Functor
 def star : C ⥤ Discrete PUnit.{w + 1} :=
   (Functor.const _).obj ⟨⟨⟩⟩
 #align category_theory.functor.star CategoryTheory.Functor.star
--- Porting note: simp can simplify this
+-- Porting note (#10618): simp can simplify this
 attribute [nolint simpNF] star_map_down_down
 variable {C}
 
@@ -74,7 +74,7 @@ theorem equiv_punit_iff_unique :
     Nonempty (C ≌ Discrete PUnit.{w + 1}) ↔ Nonempty C ∧ ∀ x y : C, Nonempty <| Unique (x ⟶ y) := by
   constructor
   · rintro ⟨h⟩
-    refine' ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro _⟩
+    refine ⟨⟨h.inverse.obj ⟨⟨⟩⟩⟩, fun x y => Nonempty.intro ?_⟩
     let f : x ⟶ y := by
       have hx : x ⟶ h.inverse.obj ⟨⟨⟩⟩ := by convert h.unit.app x
       have hy : h.inverse.obj ⟨⟨⟩⟩ ⟶ y := by convert h.unitInv.app y
@@ -92,7 +92,7 @@ theorem equiv_punit_iff_unique :
     simp [eq_iff_true_of_subsingleton]
   · rintro ⟨⟨p⟩, h⟩
     haveI := fun x y => (h x y).some
-    refine'
+    refine
       Nonempty.intro
         (CategoryTheory.Equivalence.mk ((Functor.const _).obj ⟨⟨⟩⟩)
           ((@Functor.const <| Discrete PUnit).obj p) ?_ (by apply Functor.punitExt))

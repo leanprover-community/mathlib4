@@ -51,12 +51,8 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 section Square
 
 variable {E : Type u₃} {F : Type u₄} [Category.{v₃} E] [Category.{v₄} F]
-
 variable {G : C ⥤ E} {H : D ⥤ F} {L₁ : C ⥤ D} {R₁ : D ⥤ C} {L₂ : E ⥤ F} {R₂ : F ⥤ E}
-
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
-
---include adj₁ adj₂
 
 /-- Suppose we have a square of functors (where the top and bottom are adjunctions `L₁ ⊣ R₁` and
 `L₂ ⊣ R₂` respectively).
@@ -77,8 +73,7 @@ This can be seen as a bijection of the 2-cells:
 
 Note that if one of the transformations is an iso, it does not imply the other is an iso.
 -/
-def transferNatTrans : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂)
-    where
+def transferNatTrans : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) where
   toFun h :=
     { app := fun X => adj₂.unit.app _ ≫ R₂.map (h.app _ ≫ H.map (adj₁.counit.app _))
       naturality := fun X Y f => by
@@ -135,7 +130,6 @@ end Square
 section Self
 
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
-
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 /-- Given two adjunctions `L₁ ⊣ R₁` and `L₂ ⊣ R₂` both between categories `C`, `D`, there is a
