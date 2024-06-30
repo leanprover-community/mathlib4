@@ -1304,7 +1304,7 @@ theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrde
 #align is_of_fin_add_order.prod_mk IsOfFinAddOrder.prod_mk
 
 @[to_additive]
-lemma orderOf_mk {a : α} {b : β} : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
+lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
   (a, b).orderOf
 
 end Prod

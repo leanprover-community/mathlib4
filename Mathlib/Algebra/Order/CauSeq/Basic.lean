@@ -11,7 +11,6 @@ import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Init.Align
 import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Ring
 
 #align_import data.real.cau_seq from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 
