@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+import Mathlib.CategoryTheory.Conj
 
 /-!
 # Bijections between morphisms in two localized categories
@@ -44,7 +45,7 @@ are localization functors for `W₁` and `W₂`, then this is the induced map
 for all objects `X` and `Y`. -/
 noncomputable def homMap (f : L₁.obj X ⟶ L₁.obj Y) :
     L₂.obj (Φ.functor.obj X) ⟶ L₂.obj (Φ.functor.obj Y) :=
-  Iso.homEquiv ((CatCommSq.iso _ _ _ _).symm.app _) ((CatCommSq.iso _ _ _ _).symm.app _)
+  Iso.homCongr ((CatCommSq.iso _ _ _ _).symm.app _) ((CatCommSq.iso _ _ _ _).symm.app _)
     ((Φ.localizedFunctor L₁ L₂).map f)
 
 @[simp]
@@ -96,7 +97,7 @@ lemma homMap_homMap (f : L₁.obj X ⟶ L₁.obj Y) :
   let e' : Ψ.functor ⋙ L₃ ≅ L₂ ⋙ G' := CatCommSq.iso _ _ _ _
   rw [Φ.homMap_apply L₁ L₂ G e, Ψ.homMap_apply L₂ L₃ G' e',
     (Φ.comp Ψ).homMap_apply L₁ L₃ (G ⋙ G')
-    (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e' ≪≫
+      (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e' ≪≫
       (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight e _ ≪≫
       Functor.associator _ _ _)]
   dsimp
@@ -159,8 +160,7 @@ lemma homEquiv_id : homEquiv W L₁ L₂ (𝟙 (L₁.obj X)) = 𝟙 (L₂.obj X)
 lemma homEquiv_isoOfHom_inv (f : Y ⟶ X) (hf : W f) :
     homEquiv W L₁ L₂ (isoOfHom L₁ W f hf).inv = (isoOfHom L₂ W f hf).inv := by
   rw [← cancel_mono (isoOfHom L₂ W f hf).hom, Iso.inv_hom_id, isoOfHom_hom,
-    ← homEquiv_map W L₁ L₂ f, ← homEquiv_comp, isoOfHom_inv,
-    IsIso.inv_hom_id, homEquiv_id]
+    ← homEquiv_map W L₁ L₂ f, ← homEquiv_comp, isoOfHom_inv_hom_id, homEquiv_id]
 
 end Localization
 
