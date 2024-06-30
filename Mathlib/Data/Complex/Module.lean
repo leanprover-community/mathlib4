@@ -274,7 +274,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 #align complex.conj_ae_coe Complex.conjAe_coe
 
 /-- The matrix representation of `conjAe`. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
   ext i j

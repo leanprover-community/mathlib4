@@ -286,6 +286,7 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
 -- Move this to appropriate place
+/-- sorry -/
 local instance : CommSubNegMonoid (Additive αᵒᵈ) where
   __ := Additive.subNegMonoid
   add_comm := add_comm
@@ -315,6 +316,7 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
 end LinearOrderedCommGroupWithZero
 
 -- Move this to appropriate place... or not
+/-- sorry -/
 def LinearOrderedAddCommMonoidWithTop.toCommMonoidWithZero
     [AddCommMonoid α] [LinearOrderedAddCommMonoidWithTop α] :
     CommMonoidWithZero (Multiplicative αᵒᵈ) where
@@ -334,6 +336,7 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
 #align multiplicative.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 
+/-- sorry -/
 local instance [CommSubNegMonoid α] [LinearOrderedAddCommGroupWithTop α] :
     CommGroupWithZero (Multiplicative αᵒᵈ) where
   __ := Multiplicative.divInvMonoid

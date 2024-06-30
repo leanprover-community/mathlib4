@@ -261,7 +261,7 @@ theorem trace_comp_comm :
 
 variable {R M N P}
 
-@[simp]
+@[simp, nolint simpNF]
 theorem trace_transpose' (f : M →ₗ[R] M) :
     trace R _ (Module.Dual.transpose (R := R) f) = trace R M f := by
   rw [← comp_apply, trace_transpose]

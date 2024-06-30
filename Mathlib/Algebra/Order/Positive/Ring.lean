@@ -134,6 +134,7 @@ end Mul
 
 section mul_comm
 
+/-- sorry -/
 def dumb [CommSemiring R] [StrictOrderedCommSemiring R] : CommMonoid { x : R // 0 < x } :=
   Subtype.coe_injective.commMonoid (M₂ := R) (Subtype.val) val_one val_mul val_pow
 

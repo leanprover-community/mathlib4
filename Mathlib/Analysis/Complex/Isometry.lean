@@ -163,7 +163,7 @@ theorem toMatrix_rotation (a : circle) :
 #align to_matrix_rotation toMatrix_rotation
 
 /-- The determinant of `rotation` (as a linear map) is equal to `1`. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem det_rotation (a : circle) : LinearMap.det ((rotation a).toLinearEquiv : ℂ →ₗ[ℝ] ℂ) = 1 := by
   rw [← LinearMap.det_toMatrix basisOneI, toMatrix_rotation, Matrix.det_fin_two]
   simp [← normSq_apply]

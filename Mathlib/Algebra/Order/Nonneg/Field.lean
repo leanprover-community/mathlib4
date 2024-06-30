@@ -103,6 +103,7 @@ instance instNNRatSMul : SMul ℚ≥0 {x : α // 0 ≤ x} where
     (⟨q • a, by rw [NNRat.smul_def]; exact mul_nonneg q.cast_nonneg ha⟩ : {x : α // 0 ≤ x}) =
       q • a := rfl
 
+/-- sorry -/
 abbrev dumb : Semifield {x : α // 0 ≤ x} :=
   Subtype.coe_injective.semifield _ Nonneg.coe_zero Nonneg.coe_one (fun _ _ => rfl)
     (fun _ _ => rfl) Nonneg.coe_inv Nonneg.coe_div Nonneg.coe_nsmul Nonneg.coe_nnqsmul

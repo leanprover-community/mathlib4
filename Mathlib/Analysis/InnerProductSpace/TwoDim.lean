@@ -624,7 +624,7 @@ protected theorem rightAngleRotation (z : ℂ) :
   ring
 #align complex.right_angle_rotation Complex.rightAngleRotation
 
-@[simp]
+@[simp, nolint simpNF]
 protected theorem kahler (w z : ℂ) : Complex.orientation.kahler w z = conj w * z := by
   rw [Orientation.kahler_apply_apply]
   apply Complex.ext <;> simp

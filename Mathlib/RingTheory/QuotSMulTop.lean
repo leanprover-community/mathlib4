@@ -65,7 +65,7 @@ lemma map_comp_mkQ (f : M →ₗ[R] M') :
 
 variable (M)
 
-@[simp]
+@[simp, nolint simpNF]
 lemma map_id : map r (LinearMap.id : M →ₗ[R] M) = .id :=
   DFunLike.ext _ _ <| (mkQ_surjective _).forall.mpr fun _ => rfl
 

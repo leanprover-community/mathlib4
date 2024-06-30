@@ -134,7 +134,7 @@ def IsometryEquiv.prodProdProdComm
   map_app' _ := add_add_add_comm _ _ _ _
 
 /-- If a product is anisotropic then its components must be. The converse is not true. -/
-theorem anisotropic_of_prod {R} [CommRing R] [OrderedCommRing R] [Module R M₁] [Module R M₂]
+theorem anisotropic_of_prod {R} [CommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (h : (Q₁.prod Q₂).Anisotropic) :
     Q₁.Anisotropic ∧ Q₂.Anisotropic := by
   simp_rw [Anisotropic, prod_apply, Prod.forall, Prod.mk_eq_zero] at h
@@ -310,7 +310,7 @@ theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
 #align quadratic_form.equivalent.pi QuadraticForm.Equivalent.pi
 
 /-- If a family is anisotropic then its components must be. The converse is not true. -/
-theorem anisotropic_of_pi [Fintype ι] {R} [CommRing R] [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
+theorem anisotropic_of_pi [Fintype ι] {R} [CommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} (h : (pi Q).Anisotropic) : ∀ i, (Q i).Anisotropic := by
   simp_rw [Anisotropic, pi_apply, Function.funext_iff, Pi.zero_apply] at h
   intro i x hx

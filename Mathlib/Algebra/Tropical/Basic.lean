@@ -577,12 +577,12 @@ theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) :
 -- lemma add_eq_zero_iff {a b : tropical R} :
 --   a + b = 1 ↔ a = 1 ∨ b = 1 := sorry
 -- Porting note (#10618): removing @[simp], `simp` can prove it
-theorem mul_eq_zero_iff {R : Type*} [AddCommMonoid R] [LinearOrderedAddCommMonoid R]
+theorem mul_eq_zero_iff {R : Type*} [AddCommMonoid R]
     {a b : Tropical (WithTop R)} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
   simp [← untrop_inj_iff, WithTop.add_eq_top]
 #align tropical.mul_eq_zero_iff Tropical.mul_eq_zero_iff
 
-instance {R : Type*} [AddCommMonoid R] [LinearOrderedAddCommMonoid R] :
+instance {R : Type*} [AddCommMonoid R] :
     NoZeroDivisors (Tropical (WithTop R)) :=
   ⟨mul_eq_zero_iff.mp⟩
 

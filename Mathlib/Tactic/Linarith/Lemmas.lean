@@ -24,7 +24,7 @@ namespace Linarith
 
 theorem lt_irrefl {α : Type u} [Preorder α] {a : α} : ¬a < a := _root_.lt_irrefl a
 
-theorem eq_of_eq_of_eq {α} [Semiring α] [OrderedSemiring α]
+theorem eq_of_eq_of_eq {α} [Semiring α]
     {a b : α} (ha : a = 0) (hb : b = 0) : a + b = 0 := by
   simp [*]
 

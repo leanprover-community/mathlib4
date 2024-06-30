@@ -354,7 +354,7 @@ variable {n : Type*} [Fintype n]
 variable (b : Basis n R₃ M₃)
 variable (J J₃ A A' : Matrix n n R₃)
 
-@[simp]
+@[simp, nolint simpNF]
 theorem isAdjointPair_toBilin' [DecidableEq n] :
     BilinForm.IsAdjointPair (Matrix.toBilin' J) (Matrix.toBilin' J₃) (Matrix.toLin' A)
         (Matrix.toLin' A') ↔

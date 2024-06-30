@@ -69,7 +69,7 @@ theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
 instance : NormOneClass ℍ :=
   ⟨by rw [norm_eq_sqrt_real_inner, inner_self, normSq.map_one, Real.sqrt_one]⟩
 
-@[simp, norm_cast]
+@[simp, nolint simpNF, norm_cast]
 theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
   rw [norm_eq_sqrt_real_inner, inner_self, normSq_coe, Real.sqrt_sq_eq_abs, Real.norm_eq_abs]
 #align quaternion.norm_coe Quaternion.norm_coe

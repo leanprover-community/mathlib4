@@ -34,7 +34,7 @@ open Matrix
 
 variable (M : Matrix n n R)
 
-@[simp]
+@[simp, nolint simpNF]
 theorem minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
   minpoly.algEquiv_eq (toLinAlgEquiv' : Matrix n n R ≃ₐ[R] _) M
 #align matrix.minpoly_to_lin' Matrix.minpoly_toLin'
@@ -57,7 +57,7 @@ end Matrix
 
 namespace LinearMap
 
-@[simp]
+@[simp, nolint simpNF]
 theorem minpoly_toMatrix' (f : (n → R) →ₗ[R] n → R) : minpoly R (toMatrix' f) = minpoly R f :=
   minpoly.algEquiv_eq (toMatrixAlgEquiv' : _ ≃ₐ[R] Matrix n n R) f
 #align linear_map.minpoly_to_matrix' LinearMap.minpoly_toMatrix'

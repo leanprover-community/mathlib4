@@ -69,6 +69,7 @@ lemma sub_eq_top_iff {a b : WithTop α} : a - b = ⊤ ↔ (a = ⊤ ∨ b = ⊤) 
   cases a <;> cases b <;> simp [← coe_sub]
 
 -- Move this to appropriate spot
+/-- sorry -/
 local instance instCommSubNegMonoid : CommSubNegMonoid (WithTop α) where
   add_comm := add_comm
   sub_eq_add_neg a b := by

@@ -149,6 +149,7 @@ protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (
 #align nonneg.coe_nsmul Nonneg.coe_nsmul
 
 -- inlining this is problematic 🧐
+/-- sorry -/
 def dubm [AddCommMonoid α] [OrderedAddCommMonoid α] : AddCommMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
@@ -261,6 +262,7 @@ theorem mk_pow [Semiring α] [OrderedSemiring α] {x : α} (hx : 0 ≤ x) (n : �
 #align nonneg.mk_pow Nonneg.mk_pow
 
 -- cannot inline this
+/-- sorry -/
 local instance [Semiring α] [OrderedSemiring α] : Semiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => by rfl) (fun _ _ => rfl) fun _ => rfl
@@ -277,6 +279,7 @@ instance strictOrderedSemiring [Semiring α] [StrictOrderedSemiring α] :
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => by rfl) (fun _ _ => rfl) fun _ => rfl
 #align nonneg.strict_ordered_semiring Nonneg.strictOrderedSemiring
 
+/-- sorry -/
 local instance [CommSemiring α] [OrderedCommSemiring α] : CommSemiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl

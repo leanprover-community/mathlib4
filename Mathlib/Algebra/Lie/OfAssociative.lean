@@ -323,7 +323,7 @@ theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
   simpa using N.lie_mem hm
 #align lie_submodule.to_endomorphism_comp_subtype_mem LieSubmodule.toEnd_comp_subtype_mem
 
-@[simp]
+@[simp, nolint simpNF]
 theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
     (toEnd R L M x).restrict h = toEnd R L N x := by
   ext; simp [LinearMap.restrict_apply]

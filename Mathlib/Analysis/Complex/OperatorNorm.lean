@@ -22,7 +22,7 @@ open ContinuousLinearMap
 namespace Complex
 
 /-- The determinant of `conjLIE`, as a linear map. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem det_conjLIE : LinearMap.det (conjLIE.toLinearEquiv : ℂ →ₗ[ℝ] ℂ) = -1 :=
   det_conjAe
 #align complex.det_conj_lie Complex.det_conjLIE

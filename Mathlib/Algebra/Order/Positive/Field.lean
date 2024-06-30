@@ -36,6 +36,7 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
   rfl
 #align positive.coe_zpow Positive.coe_zpow
 
+/-- sorry -/
 local instance : CommGroup { x : K // 0 < x } where
   toInv := Positive.Subtype.inv
   __ := Subtype.coe_injective.commMonoid (Subtype.val) (by exact val_one) val_mul val_pow

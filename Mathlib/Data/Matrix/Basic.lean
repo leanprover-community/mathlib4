@@ -2426,13 +2426,13 @@ theorem conjTranspose_inv_ofNat_smul [DivisionSemiring R] [AddCommMonoid α] [St
     ((no_index (OfNat.ofNat c : R))⁻¹ • M)ᴴ = (OfNat.ofNat c : R)⁻¹ • Mᴴ :=
   conjTranspose_inv_natCast_smul c M
 
-@[simp]
+@[simp, nolint simpNF]
 theorem conjTranspose_inv_intCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMonoid α]
     [Module R α] (c : ℤ) (M : Matrix m n α) : ((c : R)⁻¹ • M)ᴴ = (c : R)⁻¹ • Mᴴ :=
   Matrix.ext <| by simp
 #align matrix.conj_transpose_inv_int_cast_smul Matrix.conjTranspose_inv_intCast_smul
 
-@[simp]
+@[simp, nolint simpNF]
 theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMonoid α] [Module R α]
     (c : ℚ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp

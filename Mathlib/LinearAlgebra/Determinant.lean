@@ -210,7 +210,7 @@ theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
   apply det_toMatrix_eq_det_toMatrix b
 #align linear_map.det_to_matrix LinearMap.det_toMatrix
 
-@[simp]
+@[simp, nolint simpNF]
 theorem det_toMatrix' {ι : Type*} [Fintype ι] [DecidableEq ι] (f : (ι → A) →ₗ[A] ι → A) :
     Matrix.det (LinearMap.toMatrix' f) = LinearMap.det f := by simp [← toMatrix_eq_toMatrix']
 #align linear_map.det_to_matrix' LinearMap.det_toMatrix'
@@ -221,7 +221,7 @@ theorem det_toLin (b : Basis ι R M) (f : Matrix ι ι R) :
   rw [← LinearMap.det_toMatrix b, LinearMap.toMatrix_toLin]
 #align linear_map.det_to_lin LinearMap.det_toLin
 
-@[simp]
+@[simp, nolint simpNF]
 theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matrix.det f := by
   simp only [← toLin_eq_toLin', det_toLin]
 #align linear_map.det_to_lin' LinearMap.det_toLin'

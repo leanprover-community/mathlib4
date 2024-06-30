@@ -727,7 +727,7 @@ lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
   exact IsTriangularizable.iSup_eq_top x
 
 open LinearMap FiniteDimensional in
-@[simp]
+@[simp, nolint simpNF]
 lemma trace_toEnd_weightSpace [IsDomain R] [IsPrincipalIdealRing R]
     [Module.Free R M] [Module.Finite R M] (χ : L → R) (x : L) :
     trace R _ (toEnd R L (weightSpace M χ) x) = finrank R (weightSpace M χ) • χ x := by

@@ -20,7 +20,7 @@ space over `ℝ`.
 namespace Complex
 
 /-- The determinant of `conjAe`, as a linear map. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem det_conjAe : LinearMap.det conjAe.toLinearMap = -1 := by
   rw [← LinearMap.det_toMatrix basisOneI, toMatrix_conjAe, Matrix.det_fin_two_of]
   simp
