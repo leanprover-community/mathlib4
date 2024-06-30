@@ -115,7 +115,6 @@ makes sense. -/
 noncomputable abbrev fst : hf'.pullback g ⟶ Y :=
   Yoneda.fullyFaithful.preimage ((hf'.pullbackCone g).fst)
 
--- TODO: need to add comp here?
 -- Note(JR): while these are useful to setup the API, better not make these simp lemmas
 lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackCone g).snd := by
   apply Functor.FullyFaithful.map_preimage
