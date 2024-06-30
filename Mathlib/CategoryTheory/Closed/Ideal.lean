@@ -152,8 +152,8 @@ def cartesianClosedOfReflective : CartesianClosed D :=
     closed := fun B =>
       { rightAdj :=i ⋙ exp (i.obj B) ⋙ reflector i
         adj := by
-          apply Adjunction.restrictFullyFaithful i.fullyFaithfulOfReflective
-            i.fullyFaithfulOfReflective (exp.adjunction (i.obj B))
+          apply (exp.adjunction (i.obj B)).restrictFullyFaithful i.fullyFaithfulOfReflective
+            i.fullyFaithfulOfReflective
           · symm
             refine NatIso.ofComponents (fun X => ?_) (fun f => ?_)
             · haveI :=
