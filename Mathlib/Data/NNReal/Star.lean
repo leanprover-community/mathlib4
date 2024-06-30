@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Lean FRO. All rights reserved.
+Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Jireh Loreaux
 -/
 import Mathlib.Data.Real.Star
 import Mathlib.Data.NNReal.Basic
