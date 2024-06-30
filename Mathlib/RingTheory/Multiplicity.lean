@@ -255,7 +255,7 @@ theorem le_multiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F α �
     (f : F) {a b : α} : multiplicity a b ≤ multiplicity (f a) (f b) :=
   multiplicity_le_multiplicity_iff.mpr fun n ↦ by rw [← map_pow]; exact map_dvd f
 
-theorem multiplicity_map_eq {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
+theorem multiplicity_map_eq {F : Type*} [EquivLike F α β] [MulHomClass F α β]
     (f : F) {a b : α} : multiplicity (f a) (f b) = multiplicity a b :=
   multiplicity_eq_multiplicity_iff.mpr fun n ↦ by rw [← map_pow]; exact map_dvd_iff f
 
