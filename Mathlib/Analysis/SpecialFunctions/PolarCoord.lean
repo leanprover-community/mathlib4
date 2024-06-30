@@ -30,7 +30,7 @@ open scoped Real Topology
 It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
 @[simps]
 def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
-  toFun q := (Real.sqrt (q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
+  toFun q := (√(q.1 ^ 2 + q.2 ^ 2), Complex.arg (Complex.equivRealProd.symm q))
   invFun p := (p.1 * cos p.2, p.1 * sin p.2)
   source := {q | 0 < q.1} ∪ {q | q.2 ≠ 0}
   target := Ioi (0 : ℝ) ×ˢ Ioo (-π) π
@@ -41,7 +41,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · simpa using hr
     · right
       simp at hr
-      simpa only [ne_of_gt hr, Ne.def, mem_setOf_eq, mul_eq_zero, false_or_iff,
+      simpa only [ne_of_gt hr, Ne, mem_setOf_eq, mul_eq_zero, false_or_iff,
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
@@ -49,8 +49,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       true_and_iff, Complex.arg_lt_pi_iff]
     constructor
     · cases' hxy with hxy hxy
-      · dsimp at hxy; linarith [sq_pos_of_ne_zero _ hxy.ne', sq_nonneg y]
-      · linarith [sq_nonneg x, sq_pos_of_ne_zero _ hxy]
+      · dsimp at hxy; linarith [sq_pos_of_ne_zero hxy.ne', sq_nonneg y]
+      · linarith [sq_nonneg x, sq_pos_of_ne_zero hxy]
     · cases' hxy with hxy hxy
       · exact Or.inl (le_of_lt hxy)
       · exact Or.inr hxy
@@ -68,7 +68,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       ring
   left_inv' := by
     rintro ⟨x, y⟩ _
-    have A : sqrt (x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
+    have A : √(x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
       rw [Complex.abs_apply, Complex.normSq_add_mul_I]
     have Z := Complex.abs_mul_cos_add_sin_mul_I (x + y * Complex.I)
     simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
@@ -86,8 +86,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
-    refine' ContinuousOn.comp (f := Complex.equivRealProd.symm)
-      (g := Complex.arg) (fun z hz => _) _ A
+    refine ContinuousOn.comp (f := Complex.equivRealProd.symm)
+      (g := Complex.arg) (fun z hz => ?_) ?_ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 #align polar_coord polarCoord
@@ -100,7 +100,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
   convert HasFDerivAt.prod (𝕜 := ℝ)
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
-  simp [smul_smul, add_comm, neg_mul, neg_smul, smul_neg]
+  simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
 #align has_fderiv_at_polar_coord_symm hasFDerivAt_polarCoord_symm
 
 -- Porting note: this instance is needed but not automatically synthesised
@@ -115,7 +115,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
     exact hx.2
   have B : volume (LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) : Set (ℝ × ℝ)) = 0 := by
     apply Measure.addHaar_submodule
-    rw [Ne.def, LinearMap.ker_eq_top]
+    rw [Ne, LinearMap.ker_eq_top]
     intro h
     have : (LinearMap.snd ℝ ℝ ℝ) (0, 1) = (0 : ℝ × ℝ →ₗ[ℝ] ℝ) (0, 1) := by rw [h]
     simp at this
@@ -141,12 +141,12 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   calc
     ∫ p, f p = ∫ p in polarCoord.source, f p := by
       rw [← integral_univ]
-      apply set_integral_congr_set_ae
+      apply setIntegral_congr_set_ae
       exact polarCoord_source_ae_eq_univ.symm
     _ = ∫ p in polarCoord.target, abs (B p).det • f (polarCoord.symm p) := by
       apply integral_target_eq_integral_abs_det_fderiv_smul volume A
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
-      apply set_integral_congr polarCoord.open_target.measurableSet fun x hx => ?_
+      apply setIntegral_congr polarCoord.open_target.measurableSet fun x hx => ?_
       rw [B_det, abs_of_pos]
       exact hx.1
 #align integral_comp_polar_coord_symm integral_comp_polarCoord_symm

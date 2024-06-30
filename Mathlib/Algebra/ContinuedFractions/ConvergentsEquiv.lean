@@ -5,7 +5,6 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -175,7 +174,7 @@ theorem succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squashSeq :
           convergents'Aux (squashSeq s (m + 1)) (m + 2)
         by simpa only [convergents'Aux, s_head_eq]
       have : convergents'Aux s.tail (m + 2) = convergents'Aux (squashSeq s.tail m) (m + 1) := by
-        refine' IH gp_succ_n _
+        refine IH gp_succ_n ?_
         simpa [Stream'.Seq.get?_tail] using s_succ_nth_eq
       have : (squashSeq s (m + 1)).head = some gp_head :=
         (squashSeq_nth_of_lt m.succ_pos).trans s_head_eq
@@ -279,7 +278,7 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
       calc
         (b * g.h + a) / b = b * g.h / b + a / b := by ring
         -- requires `Field`, not `DivisionRing`
-        _ = g.h + a / b := by rw [mul_div_cancel_left _ b_ne_zero]
+        _ = g.h + a / b := by rw [mul_div_cancel_left₀ _ b_ne_zero]
     | succ n' =>
       obtain ⟨⟨pa, pb⟩, s_n'th_eq⟩ : ∃ gp_n', g.s.get? n' = some gp_n' :=
         g.s.ge_stable n'.le_succ s_nth_eq
@@ -324,7 +323,7 @@ theorem succ_nth_convergent_eq_squashGCF_nth_convergent [Field K]
             (continuantsAux_eq_continuantsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
             (continuantsAux_eq_continuantsAux_squashGCF_of_le n'.le_succ).symm]
         symm
-        simpa only [eq1, eq2, eq3, eq4, mul_div_cancel _ b_ne_zero]
+        simpa only [eq1, eq2, eq3, eq4, mul_div_cancel_right₀ _ b_ne_zero]
       field_simp
       congr 1 <;> ring
 #align generalized_continued_fraction.succ_nth_convergent_eq_squash_gcf_nth_convergent GeneralizedContinuedFraction.succ_nth_convergent_eq_squashGCF_nth_convergent
@@ -375,12 +374,12 @@ theorem convergents_eq_convergents' [LinearOrderedField K]
               simp_all only [Option.some.injEq]
             rwa [this]
           have m_lt_n : m < m.succ := Nat.lt_succ_self m
-          refine' ⟨(s_pos (Nat.lt.step m_lt_n) mth_s_eq).left, _⟩
-          refine' add_pos (s_pos (Nat.lt.step m_lt_n) mth_s_eq).right _
+          refine ⟨(s_pos (Nat.lt.step m_lt_n) mth_s_eq).left, ?_⟩
+          refine add_pos (s_pos (Nat.lt.step m_lt_n) mth_s_eq).right ?_
           have : 0 < gp_succ_m.a ∧ 0 < gp_succ_m.b := s_pos (lt_add_one <| m + 1) s_succ_mth_eq
           exact div_pos this.left this.right
         · -- the easy case: before the squashed position, nothing changes
-          refine' s_pos (Nat.lt.step <| Nat.lt.step succ_m_lt_n) _
+          refine s_pos (Nat.lt.step <| Nat.lt.step succ_m_lt_n) ?_
           exact Eq.trans (squashGCF_nth_of_lt succ_m_lt_n).symm s_mth_eq'
       -- now the result follows from the fact that the convergents coincide at the squashed position
       -- as established in `succ_nth_convergent_eq_squashGCF_nth_convergent`.

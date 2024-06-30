@@ -104,7 +104,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         exact (sup_bot _).symm
       · ext a
         rw [if_neg ht.ne_empty, mem_sup]
-        refine' ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, _⟩
+        refine ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
         obtain ⟨b, hb, rfl⟩ := hf
@@ -116,7 +116,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
       · rw [if_pos rfl, image_empty, sup_empty, bot_eq_empty]
       · ext a
         rw [if_neg hs.ne_empty, mem_sup]
-        refine' ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, _⟩
+        refine ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
         obtain ⟨b, hb, rfl⟩ := ha

@@ -96,7 +96,7 @@ elab (name := casesM) "casesm" recursive:"*"? ppSpace pats:term,+ : tactic => do
 /-- Common implementation of `cases_type` and `cases_type!`. -/
 def elabCasesType (heads : Array Ident)
     (recursive := false) (allowSplit := true) : TacticM Unit := do
-  let heads ← heads.mapM resolveGlobalConstNoOverloadWithInfo
+  let heads ← heads.mapM (fun stx => realizeGlobalConstNoOverloadWithInfo stx)
   liftMetaTactic (casesType heads recursive allowSplit)
 
 /--

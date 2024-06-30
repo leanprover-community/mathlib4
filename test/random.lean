@@ -6,7 +6,7 @@ open Random
 section Rand
 
 /--
-info: 44
+info: 33
 -/
 #guard_msgs in
 #eval do
@@ -17,7 +17,7 @@ info: 44
 
 -- using higher universes
 /--
-info: ULift.up 17
+info: ULift.up 19
 -/
 #guard_msgs in
 #eval do
@@ -31,9 +31,9 @@ end Rand
 section RandT
 
 /--
-info: Got 15
-Got 29
-44
+info: Got 6
+Got 27
+33
 -/
 #guard_msgs in
 #eval show IO _ from do
@@ -45,9 +45,9 @@ Got 29
     return i.1 + j.1)
 
 /--
-info: Got 15
-Got 29
-44
+info: Got 6
+Got 27
+33
 -/
 #guard_msgs in
 #eval show Lean.Meta.MetaM _ from do
@@ -73,5 +73,47 @@ Got 4
     let j ← randBound Int 4 4 (by norm_num)
     IO.println s!"Got {i}"
     return i.1 + j.1)
+
+/--
+info: GOOD
+-/
+#guard_msgs in
+#eval show IO _ from do
+  IO.runRandWith 257 <| do
+    let mut count := 0
+    for _ in [:10000] do
+      if (← randFin (n := 2)) == 1 then count := count + 1
+    if Float.abs (0.333 - (count / Nat.toFloat 10000)) < 0.01 then
+      IO.println "GOOD"
+    else
+      IO.println "BAD"
+
+/--
+info: GOOD
+-/
+#guard_msgs in
+#eval show IO _ from do
+  IO.runRandWith 257 <| do
+    let mut count := 0
+    for _ in [:10000] do
+      if (← randFin (n := 1)) == 0 then count := count + 1
+    if Float.abs (0.5 - (count / Nat.toFloat 10000)) < 0.01 then
+      IO.println "GOOD"
+    else
+      IO.println "BAD"
+
+/--
+info: GOOD
+-/
+#guard_msgs in
+#eval show IO _ from do
+  IO.runRandWith 257 <| do
+    let mut count := 0
+    for _ in [:10000] do
+      if (← randFin (n := 9)) == 5 then count := count + 1
+    if Float.abs (0.1 - (count / Nat.toFloat 10000)) < 0.01 then
+      IO.println "GOOD"
+    else
+      IO.println "BAD"
 
 end RandT

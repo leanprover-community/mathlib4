@@ -101,7 +101,7 @@ protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 :
 #align with_top.map_zero WithTop.map_zero
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
-  ⟨some_le_some.2 zero_le_one⟩
+  ⟨coe_le_coe.2 zero_le_one⟩
 
 end One
 
@@ -116,20 +116,8 @@ instance add : Add (WithTop α) :=
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 #align with_top.coe_add WithTop.coe_add
 
-section deprecated
-set_option linter.deprecated false
-
-@[norm_cast, deprecated]
-theorem coe_bit0 : ((bit0 x : α) : WithTop α) = (bit0 x : WithTop α) :=
-  rfl
-#align with_top.coe_bit0 WithTop.coe_bit0
-
-@[norm_cast, deprecated]
-theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithTop α) = (bit1 a : WithTop α) :=
-  rfl
-#align with_top.coe_bit1 WithTop.coe_bit1
-
-end deprecated
+#noalign with_top.coe_bit0
+#noalign with_top.coe_bit1
 
 @[simp]
 theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
@@ -175,7 +163,7 @@ theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by s
 
 theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c + a ↔ b = c := by
   lift a to α using ha
-  obtain rfl | hb := (eq_or_ne b ⊤)
+  obtain rfl | hb := eq_or_ne b ⊤
   · rw [top_add, eq_comm, WithTop.add_coe_eq_top_iff, eq_comm]
   lift b to α using hb
   simp_rw [← WithTop.coe_add, eq_comm, WithTop.add_eq_coe, coe_eq_coe, exists_and_left,
@@ -186,7 +174,7 @@ theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊤) (h : b + a = c +
 
 theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + c ↔ b = c := by
   lift a to α using ha
-  obtain rfl | hb := (eq_or_ne b ⊤)
+  obtain rfl | hb := eq_or_ne b ⊤
   · rw [add_top, eq_comm, WithTop.coe_add_eq_top_iff, eq_comm]
   lift b to α using hb
   simp_rw [← WithTop.coe_add, eq_comm, WithTop.add_eq_coe, eq_comm, coe_eq_coe,
@@ -214,9 +202,9 @@ instance covariantClass_swap_add_le [LE α] [CovariantClass α α (swap (· + ·
 instance contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (· + ·) (· < ·) :=
   ⟨fun a b c h => by
-    induction a using WithTop.recTopCoe; · exact (not_none_lt _ h).elim
-    induction b using WithTop.recTopCoe; · exact (not_none_lt _ h).elim
-    induction c using WithTop.recTopCoe
+    induction a; · exact (WithTop.not_top_lt _ h).elim
+    induction b; · exact (WithTop.not_top_lt _ h).elim
+    induction c
     · exact coe_lt_top _
     · exact coe_lt_coe.2 (lt_of_add_lt_add_left <| coe_lt_coe.1 h)⟩
 #align with_top.contravariant_class_add_lt WithTop.contravariantClass_add_lt
@@ -224,7 +212,7 @@ instance contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (
 instance contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap (· + ·)) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (swap (· + ·)) (· < ·) :=
   ⟨fun a b c h => by
-    cases a <;> cases b <;> try exact (not_none_lt _ h).elim
+    cases a <;> cases b <;> try exact (WithTop.not_top_lt _ h).elim
     cases c
     · exact coe_lt_top _
     · exact coe_lt_coe.2 (lt_of_add_lt_add_right <| coe_lt_coe.1 h)⟩
@@ -233,9 +221,9 @@ instance contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap 
 protected theorem le_of_add_le_add_left [LE α] [ContravariantClass α α (· + ·) (· ≤ ·)] (ha : a ≠ ⊤)
     (h : a + b ≤ a + c) : b ≤ c := by
   lift a to α using ha
-  induction c using WithTop.recTopCoe
+  induction c
   · exact le_top
-  · induction b using WithTop.recTopCoe
+  · induction b
     · exact (not_top_le_coe _ h).elim
     · simp only [← coe_add, coe_le_coe] at h ⊢
       exact le_of_add_le_add_left h
@@ -306,9 +294,9 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [CovariantClass α α (·
 protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
     (f : F) (a b : WithTop α) :
     (a + b).map f = a.map f + b.map f := by
-  induction a using WithTop.recTopCoe
+  induction a
   · exact (top_add _).symm
-  · induction b using WithTop.recTopCoe
+  · induction b
     · exact (add_top _).symm
     · rw [map_coe, map_coe, ← coe_add, ← coe_add, ← map_add]
       rfl
@@ -340,8 +328,7 @@ instance addMonoid : AddMonoid (WithTop α) where
     | ⊤, 0 => 0
     | ⊤, _n + 1 => ⊤
   nsmul_zero a := by cases a <;> simp [zero_nsmul]
-  nsmul_succ n a := by
-    cases a <;> cases n <;> simp [succ_nsmul, coe_add, some_eq_coe, none_eq_top]
+  nsmul_succ n a := by cases a <;> cases n <;> simp [succ_nsmul, coe_add]
 
 @[simp, norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
 
@@ -373,14 +360,32 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
       simp only -- Porting note: Had to add this...?
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
 
-@[simp, norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithTop α) = n := rfl
-#align with_top.coe_nat WithTop.coe_nat
+@[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
+#align with_top.coe_nat WithTop.coe_natCast
 
-@[simp] lemma nat_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
-#align with_top.nat_ne_top WithTop.nat_ne_top
+@[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
+#align with_top.nat_ne_top WithTop.natCast_ne_top
 
-@[simp] lemma top_ne_nat (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
-#align with_top.top_ne_nat WithTop.top_ne_nat
+@[simp] lemma top_ne_natCast (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
+#align with_top.top_ne_nat WithTop.top_ne_natCast
+
+@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
+@[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
+@[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : α) : WithTop α) = OfNat.ofNat n := rfl
+@[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
+    (m : WithTop α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+  coe_eq_coe
+@[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
+    no_index (OfNat.ofNat n) = (m : WithTop α) ↔ OfNat.ofNat n = m :=
+  coe_eq_coe
+@[simp] lemma ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithTop α) ≠ ⊤ :=
+  natCast_ne_top n
+@[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ no_index (OfNat.ofNat n) :=
+  top_ne_natCast n
 
 end AddMonoidWithOne
 
@@ -487,7 +492,7 @@ lemma one_eq_coe : 1 = (a : WithBot α) ↔ a = 1 := eq_comm.trans coe_eq_one
 @[to_additive (attr := simp)] lemma one_ne_bot : (1 : WithBot α) ≠ ⊥ := coe_ne_bot
 
 @[to_additive (attr := simp)]
-theorem unbot_one [One α] : (1 : WithBot α).unbot coe_ne_bot = 1 :=
+theorem unbot_one : (1 : WithBot α).unbot coe_ne_bot = 1 :=
   rfl
 #align with_bot.unbot_one WithBot.unbot_one
 #align with_bot.unbot_zero WithBot.unbot_zero
@@ -525,7 +530,7 @@ protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 :
 #align with_bot.map_zero WithBot.map_zero
 
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
-  ⟨some_le_some.2 zero_le_one⟩
+  ⟨coe_le_coe.2 zero_le_one⟩
 
 end One
 
@@ -569,14 +574,32 @@ variable [AddMonoidWithOne α]
 
 instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
 
-@[norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithBot α) = n := rfl
-#align with_bot.coe_nat WithBot.coe_nat
+@[norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithBot α) = n := rfl
+#align with_bot.coe_nat WithBot.coe_natCast
 
-@[simp] lemma nat_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
-#align with_bot.nat_ne_bot WithBot.nat_ne_bot
+@[simp] lemma natCast_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
+#align with_bot.nat_ne_bot WithBot.natCast_ne_bot
 
-@[simp] lemma bot_ne_nat (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
-#align with_bot.bot_ne_nat WithBot.bot_ne_nat
+@[simp] lemma bot_ne_natCast (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
+#align with_bot.bot_ne_nat WithBot.bot_ne_natCast
+
+@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
+@[deprecated (since := "2024-04-05")] alias nat_ne_bot := natCast_ne_bot
+@[deprecated (since := "2024-04-05")] alias bot_ne_nat := bot_ne_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : α) : WithBot α) = OfNat.ofNat n := rfl
+@[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
+    (m : WithBot α) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n :=
+  coe_eq_coe
+@[simp] lemma ofNat_eq_coe (n : ℕ) [n.AtLeastTwo] (m : α) :
+    no_index (OfNat.ofNat n) = (m : WithBot α) ↔ OfNat.ofNat n = m :=
+  coe_eq_coe
+@[simp] lemma ofNat_ne_bot (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n : WithBot α) ≠ ⊥ :=
+  natCast_ne_bot n
+@[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ no_index (OfNat.ofNat n) :=
+  bot_ne_natCast n
 
 end AddMonoidWithOne
 
@@ -595,22 +618,8 @@ theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
   rfl
 #align with_bot.coe_add WithBot.coe_add
 
-section deprecated
-set_option linter.deprecated false
-
--- Porting note: added norm_cast
-@[norm_cast, deprecated]
-theorem coe_bit0 : ((bit0 x : α) : WithBot α) = (bit0 x : WithBot α) :=
-  rfl
-#align with_bot.coe_bit0 WithBot.coe_bit0
-
--- Porting note: added norm_cast
-@[norm_cast, deprecated]
-theorem coe_bit1 [One α] {a : α} : ((bit1 a : α) : WithBot α) = (bit1 a : WithBot α) :=
-  rfl
-#align with_bot.coe_bit1 WithBot.coe_bit1
-
-end deprecated
+#noalign with_bot.coe_bit0
+#noalign with_bot.coe_bit1
 
 @[simp]
 theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=

@@ -66,7 +66,7 @@ variable {M α : Type*} [Bornology M] [SMul M α] {s s₁ s₂ t t₁ t₂ : Set
 protected lemma empty : Absorbs M s ∅ := by simp [Absorbs]
 #align absorbs_empty Absorbs.empty
 
-@[deprecated] -- Deprecated since 16 January 2024
+@[deprecated (since := "2024-01-16")]
 alias _root_.absorbs_empty := Absorbs.empty
 
 protected lemma eventually (h : Absorbs M s t) : ∀ᶠ a in cobounded M, t ⊆ a • s := h
@@ -105,7 +105,7 @@ protected lemma sUnion (hT : T.Finite) (hs : ∀ t ∈ T, Absorbs M s t) :
 @[simp]
 lemma _root_.absorbs_iUnion {ι : Sort*} [Finite ι] {t : ι → Set α} :
     Absorbs M s (⋃ i, t i) ↔ ∀ i, Absorbs M s (t i) :=
-  (finite_range t).absorbs_sUnion.trans forall_range_iff
+  (finite_range t).absorbs_sUnion.trans forall_mem_range
 
 protected alias ⟨_, iUnion⟩ := absorbs_iUnion
 
@@ -116,7 +116,7 @@ lemma _root_.Set.Finite.absorbs_biUnion {ι : Type*} {t : ι → Set α} {I : Se
 
 protected alias ⟨_, biUnion⟩ := Set.Finite.absorbs_biUnion
 
-@[deprecated] -- Deprecated since 16 January 2024
+@[deprecated (since := "2024-01-16")]
 alias _root_.Set.Finite.absorbs_iUnion := Set.Finite.absorbs_biUnion
 
 @[simp]
@@ -127,7 +127,7 @@ lemma _root_.absorbs_biUnion_finset {ι : Type*} {t : ι → Set α} {I : Finset
 
 protected alias ⟨_, biUnion_finset⟩ := absorbs_biUnion_finset
 
-@[deprecated] -- Deprecated since 16 January 2024
+@[deprecated (since := "2024-01-16")]
 alias _root_.absorbs_iUnion_finset := absorbs_biUnion_finset
 
 end SMul
@@ -180,13 +180,13 @@ protected lemma inter (hs : Absorbs G₀ s u) (ht : Absorbs G₀ t u) : Absorbs 
 @[simp]
 lemma _root_.absorbs_iInter {ι : Sort*} [Finite ι] {s : ι → Set α} :
     Absorbs G₀ (⋂ i, s i) t ↔ ∀ i, Absorbs G₀ (s i) t :=
-  (finite_range s).absorbs_sInter.trans forall_range_iff
+  (finite_range s).absorbs_sInter.trans forall_mem_range
 
 protected alias ⟨_, iInter⟩ := absorbs_iInter
 
 lemma _root_.Set.Finite.absorbs_biInter {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set α} :
     Absorbs G₀ (⋂ i ∈ I, s i) t ↔ ∀ i ∈ I, Absorbs G₀ (s i) t := by
-  simpa only [sInter_image, ball_image_iff] using (hI.image s).absorbs_sInter
+  simpa only [sInter_image, forall_mem_image] using (hI.image s).absorbs_sInter
 
 protected alias ⟨_, biInter⟩ := Set.Finite.absorbs_biInter
 
@@ -228,7 +228,7 @@ protected theorem mono (ht : Absorbent M s) (hsub : s ⊆ t) : Absorbent M t := 
   (ht x).mono_left hsub
 #align absorbent.subset Absorbent.mono
 
-@[deprecated] -- Deprecated since 16 January 2024
+@[deprecated (since := "2024-01-16")]
 protected alias subset := Absorbent.mono
 
 theorem _root_.absorbent_iff_forall_absorbs_singleton : Absorbent M s ↔ ∀ x, Absorbs M s {x} := .rfl

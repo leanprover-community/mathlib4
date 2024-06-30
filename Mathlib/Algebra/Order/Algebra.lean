@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
 
 #align_import algebra.order.algebra from "leanprover-community/mathlib"@"f5a600f8102c8bfdbd22781968a20a539304c1b4"

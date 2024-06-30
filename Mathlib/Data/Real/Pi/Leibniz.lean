@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Benjamin Davidson
+Authors: Benjamin Davidson, Jeremy Tan
 -/
 import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
@@ -14,19 +14,19 @@ namespace Real
 
 open Filter Finset
 
-open scoped BigOperators Topology
+open scoped Topology
 
 /-- **Leibniz's series for `π`**. The alternating sum of odd number reciprocals is `π / 4`,
 proved by using Abel's limit theorem to extend the Maclaurin series of `arctan` to 1. -/
 theorem tendsto_sum_pi_div_four :
-    Tendsto (fun k => ∑ i in range k, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
+    Tendsto (fun k => ∑ i ∈ range k, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
   -- The series is alternating with terms of decreasing magnitude, so it converges to some limit
   obtain ⟨l, h⟩ :
-      ∃ l, Tendsto (fun n ↦ ∑ i in range n, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 l) := by
+      ∃ l, Tendsto (fun n ↦ ∑ i ∈ range n, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 l) := by
     apply Antitone.tendsto_alternating_series_of_tendsto_zero
     · exact antitone_iff_forall_lt.mpr fun _ _ _ ↦ by gcongr
     · apply Tendsto.inv_tendsto_atTop; apply tendsto_atTop_add_const_right
-      exact tendsto_nat_cast_atTop_atTop.const_mul_atTop zero_lt_two
+      exact tendsto_natCast_atTop_atTop.const_mul_atTop zero_lt_two
   -- Abel's limit theorem states that the corresponding power series has the same limit as `x → 1⁻`
   have abel := tendsto_tsum_powerSeries_nhdsWithin_lt h
   -- Massage the expression to get `x ^ (2 * n + 1)` in the tsum rather than `x ^ n`...
@@ -51,7 +51,7 @@ theorem tendsto_sum_pi_div_four :
     rw [Set.mem_Iio] at hy2
     have ny : ‖y‖ < 1 := by rw [norm_eq_abs, abs_lt]; constructor <;> linarith
     rw [← (hasSum_arctan ny).tsum_eq, Function.comp_apply, ← tsum_mul_right]
-    simp_rw [mul_assoc, ← pow_mul, ← pow_succ', div_mul_eq_mul_div]
+    simp_rw [mul_assoc, ← pow_mul, ← pow_succ, div_mul_eq_mul_div]
     norm_cast
   -- But `arctan` is continuous everywhere, so the limit is `arctan 1 = π / 4`
   rwa [tendsto_nhds_unique abel ((continuous_arctan.tendsto 1).mono_left m), arctan_one] at h

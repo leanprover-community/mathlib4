@@ -3,10 +3,11 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
-import Mathlib.Tactic.Conv
 
 #align_import algebra.ring.idempotents from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
@@ -30,7 +31,6 @@ projection, idempotent
 
 
 variable {M N S M₀ M₁ R G G₀ : Type*}
-
 variable [Mul M] [Monoid N] [Semigroup S] [MulZeroClass M₀] [MulOneClass M₁] [NonAssocRing R]
   [Group G] [CancelMonoidWithZero G₀]
 
@@ -91,8 +91,8 @@ theorem iff_eq_one {p : G} : IsIdempotentElem p ↔ p = 1 :=
 
 @[simp]
 theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 := by
-  refine'
-    Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => _) fun h =>
+  refine
+    Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => ?_) fun h =>
       h.elim (fun hp => hp.symm ▸ zero) fun hp => hp.symm ▸ one
   exact mul_left_cancel₀ hp (h.trans (mul_one p).symm)
 #align is_idempotent_elem.iff_eq_zero_or_one IsIdempotentElem.iff_eq_zero_or_one

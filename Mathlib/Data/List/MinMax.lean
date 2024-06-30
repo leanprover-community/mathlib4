@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
 import Mathlib.Data.List.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Order.WithBot
 
 #align_import data.list.min_max from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -22,9 +24,6 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 `[]`
 -/
 
-set_option autoImplicit true
-
-
 namespace List
 
 variable {α β : Type*}
@@ -41,7 +40,8 @@ def argAux (a : Option α) (b : α) : Option α :=
 @[simp]
 theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
   List.reverseRecOn l (by simp) fun tl hd => by
-    simp [argAux]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
+    simp only [foldl_append, foldl_cons, argAux, foldl_nil, append_eq_nil, and_false, false_and,
+      iff_false]; cases foldl (argAux r) o tl <;> simp; try split_ifs <;> simp
 #align list.foldl_arg_aux_eq_none List.foldl_argAux_eq_none
 
 private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (some a) l → m ∈ a :: l :=
@@ -138,8 +138,8 @@ theorem not_lt_of_mem_argmin : a ∈ l → m ∈ argmin f l → ¬f a < f m :=
 
 theorem argmax_concat (f : α → β) (a : α) (l : List α) :
     argmax f (l ++ [a]) =
-      Option.casesOn (argmax f l) (some a) fun c => if f c < f a then some a else some c :=
-  by rw [argmax, argmax]; simp [argAux]
+      Option.casesOn (argmax f l) (some a) fun c => if f c < f a then some a else some c := by
+  rw [argmax, argmax]; simp [argAux]
 #align list.argmax_concat List.argmax_concat
 
 theorem argmin_concat (f : α → β) (a : α) (l : List α) :
@@ -218,7 +218,7 @@ theorem index_of_argmax :
     · cases not_le_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
     · rw [if_neg, if_neg]
-      exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
+      · exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne
     · rw [if_pos rfl]
@@ -311,13 +311,19 @@ theorem minimum_mem {l : List α} {m : α} : (minimum l : WithBot α) = m → m 
 #align list.minimum_mem List.minimum_mem
 
 @[simp]
-theorem maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] :=
+theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] :=
   argmax_eq_none
+
+@[simp, deprecated maximum_eq_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
+theorem maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] := maximum_eq_bot
 #align list.maximum_eq_none List.maximum_eq_none
 
 @[simp]
-theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] :=
+theorem minimum_eq_top {l : List α} : l.minimum = ⊤ ↔ l = [] :=
   argmin_eq_none
+
+@[simp, deprecated minimum_eq_top "Don't mix Option and WithTop" (since := "2024-05-27")]
+theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] := minimum_eq_top
 #align list.minimum_eq_none List.minimum_eq_none
 
 theorem not_lt_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
@@ -331,7 +337,7 @@ theorem minimum_not_lt_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a
 theorem not_lt_maximum_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
   cases h : l.maximum
   · simp_all
-  · simp [WithBot.some_eq_coe, WithBot.coe_lt_coe, not_lt_maximum_of_mem ha h, not_false_iff]
+  · simp [not_lt_maximum_of_mem ha h, not_false_iff]
 #align list.not_lt_maximum_of_mem' List.not_lt_maximum_of_mem'
 
 theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l :=
@@ -441,12 +447,12 @@ lemma coe_minimum_of_length_pos (h : 0 < l.length) :
   WithTop.coe_untop _ _
 
 @[simp]
-theorem le_maximum_of_length_pos_iff (h : 0 < l.length) :
+theorem le_maximum_of_length_pos_iff {b : α} (h : 0 < l.length) :
     b ≤ maximum_of_length_pos h ↔ b ≤ l.maximum :=
   WithBot.le_unbot_iff _
 
 @[simp]
-theorem minimum_of_length_pos_le_iff (h : 0 < l.length) :
+theorem minimum_of_length_pos_le_iff {b : α} (h : 0 < l.length) :
     minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
   le_maximum_of_length_pos_iff (α := αᵒᵈ) h
 
@@ -468,12 +474,12 @@ theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
     l.minimum_of_length_pos w ≤ a :=
   le_maximum_of_length_pos_of_mem (α := αᵒᵈ) h w
 
-theorem getElem_le_maximum_of_length_pos (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
+theorem getElem_le_maximum_of_length_pos {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l[i] ≤ l.maximum_of_length_pos h := by
   apply le_maximum_of_length_pos_of_mem
   exact get_mem l i w
 
-theorem minimum_of_length_pos_le_getElem (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
+theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l.minimum_of_length_pos h ≤ l[i] :=
   getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
@@ -509,8 +515,8 @@ theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a �
   induction' l with y l IH
   · exact absurd hx (not_mem_nil _)
   · obtain hl | hl := hx
-    simp only [foldr, foldr_cons]
-    · exact le_max_of_le_left h
+    · simp only [foldr, foldr_cons]
+      exact le_max_of_le_left h
     · exact le_max_of_le_right (IH (by assumption))
 #align list.le_max_of_le List.le_max_of_le
 

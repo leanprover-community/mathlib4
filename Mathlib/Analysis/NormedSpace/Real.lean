@@ -59,15 +59,15 @@ theorem dist_smul_add_one_sub_smul_le {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
     _ = dist y x := by rw [sub_zero, one_mul]
 
 theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = closedBall x r := by
-  refine' Subset.antisymm closure_ball_subset_closedBall fun y hy => _
+  refine Subset.antisymm closure_ball_subset_closedBall fun y hy => ?_
   have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 :=
     ((continuous_id.smul continuous_const).add continuous_const).continuousWithinAt
   convert this.mem_closure _ _
   · rw [one_smul, sub_add_cancel]
   · simp [closure_Ico zero_ne_one, zero_le_one]
   · rintro c ⟨hc0, hc1⟩
-    rw [mem_ball, dist_eq_norm, add_sub_cancel, norm_smul, Real.norm_eq_abs, abs_of_nonneg hc0,
-      mul_comm, ← mul_one r]
+    rw [mem_ball, dist_eq_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs,
+      abs_of_nonneg hc0, mul_comm, ← mul_one r]
     rw [mem_closedBall, dist_eq_norm] at hy
     replace hr : 0 < r := ((norm_nonneg _).trans hy).lt_of_ne hr.symm
     apply mul_lt_mul' <;> assumption
@@ -82,7 +82,7 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
   cases' hr.lt_or_lt with hr hr
   · rw [closedBall_eq_empty.2 hr, ball_eq_empty.2 hr.le, interior_empty]
-  refine' Subset.antisymm _ ball_subset_interior_closedBall
+  refine Subset.antisymm ?_ ball_subset_interior_closedBall
   intro y hy
   rcases (mem_closedBall.1 <| interior_subset hy).lt_or_eq with (hr | rfl)
   · exact hr
@@ -92,8 +92,7 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     have hf1 : (1 : ℝ) ∈ f ⁻¹' interior (closedBall x <| dist y x) := by simpa [f]
     have h1 : (1 : ℝ) ∈ interior (Icc (-1 : ℝ) 1) :=
       interior_mono this (preimage_interior_subset_interior_preimage hfc hf1)
-    contrapose h1
-    simp
+    simp at h1
   intro c hc
   rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_right hr]
   simpa [f, dist_eq_norm, norm_smul] using hc

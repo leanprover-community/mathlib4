@@ -149,8 +149,8 @@ open Mathlib.Tactic.BicategoryCoherence
 It can prove any equality made up only of associators, unitors, and identities.
 ```lean
 example {C : Type} [Category C] [MonoidalCategory C] :
-  (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom :=
-by pure_coherence
+  (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
+  pure_coherence
 ```
 
 Users will typically just use the `coherence` tactic,
@@ -262,7 +262,8 @@ elab_rules : tactic
       MonoidalCategory.whiskerRight_tensor, MonoidalCategory.whiskerRight_id,
       MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,
       MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
-      MonoidalCategory.whisker_assoc];
+      MonoidalCategory.whisker_assoc,
+      MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id];
     -- I'm not sure if `tensorHom` should be expanded.
     try simp only [MonoidalCategory.tensorHom_def]
     ))
