@@ -226,7 +226,7 @@ theorem formPerm_apply_get (xs : List α) (h : Nodup xs) (i : Fin xs.length) :
     · simp
     · rw [formPerm_apply_lt_get (x :: xs) h _ (Nat.succ_lt_succ hn')]
       congr
-      rw [Nat.mod_eq_of_lt]; simpa [Nat.succ_eq_add_one]
+      rw [Nat.mod_eq_of_lt]; simpa
 
 set_option linter.deprecated false in
 @[deprecated formPerm_apply_get (since := "2024-04-23")]
@@ -306,7 +306,7 @@ theorem formPerm_pow_apply_get (l : List α) (h : Nodup l) (n : ℕ) (i : Fin l.
       l.get ⟨((i.val + n) % l.length), (Nat.mod_lt _ (i.val.zero_le.trans_lt i.isLt))⟩ := by
   induction' n with n hn
   · simp [Nat.mod_eq_of_lt i.isLt]
-  · simp [pow_succ', mul_apply, hn, formPerm_apply_get _ h, Nat.succ_eq_add_one, ← Nat.add_assoc]
+  · simp [pow_succ', mul_apply, hn, formPerm_apply_get _ h, ← Nat.add_assoc]
 
 set_option linter.deprecated false in
 @[deprecated formPerm_pow_apply_get (since := "2024-04-23")]

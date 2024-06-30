@@ -185,7 +185,6 @@ theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, 
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
--- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
