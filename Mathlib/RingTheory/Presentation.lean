@@ -19,13 +19,13 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
 
 - `Algebra.Presentation`: A presentation of a `R`-algebra `S` is a family of
   generators with
-  1. `relations`: The type of relations.
+  1. `rels`: The type of relations.
   2. `relation : relations → MvPolynomial vars R`: The assignment of
      each relation to a polynomial in the generators.
 - `Algebra.Presentation.IsFinite`: A presentation is called finite, if both variables and relations
   are finite.
-- `Algebra.dimension`: The dimension of a presentation is the number of generators minus the number
-  of relations.
+- `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
+  minus the number of relations.
 
 We also give constructors for localization and base change.
 
@@ -45,33 +45,34 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 /--
 A presentation of a `R`-algebra `S` is a family of
 generators with
-1. `relations`: The type of relations.
+1. `rels`: The type of relations.
 2. `relation : relations → MvPolynomial vars R`: The assignment of
 each relation to a polynomial in the generators.
 -/
 @[nolint checkUnivs]
 structure Algebra.Presentation extends Algebra.Generators.{w} R S where
   /-- The type of relations.  -/
-  relations : Type t
+  rels : Type t
   /-- The assignment of each relation to a polynomial in the generators. -/
-  relation : relations → MvPolynomial vars R
+  relation : rels → MvPolynomial vars R
   /-- The relations span the kernel of the canonical map. -/
   ker_algebraMap_eq_span_range_relation :
-    RingHom.ker (aeval val) = Ideal.span (Set.range <| relation)
+    RingHom.ker (aeval val) = Ideal.span (Set.range relation)
 
 namespace Algebra.Presentation
 
 variable {R S}
 variable (P : Presentation.{t, w} R S)
 
-lemma ideal_eq_span_range_relation : P.ker = Ideal.span (Set.range <| P.relation) :=
-  P.ker_algebraMap_eq_span_range_relation
+lemma span_range_relation_eq_ker : Ideal.span (Set.range P.relation) = P.ker :=
+  P.ker_algebraMap_eq_span_range_relation.symm
 
+@[simp]
 lemma algebraMap_relation (i) : aeval P.val (P.relation i) = 0 := by
   rw [← RingHom.mem_ker, ker_algebraMap_eq_span_range_relation]
   exact Ideal.subset_span ⟨i, rfl⟩
 
-/-- The polynomial algebra wrt a family of generators module a family of relations. -/
+/-- The polynomial algebra wrt a family of generators modulo a family of relations. -/
 protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.ker
 
 /-- `P.Quotient` is `P.Ring`-isomorphic to `S` and in particular `R`-isomorphic to `S`. -/
@@ -92,29 +93,29 @@ minus the cardinality of the relations.
 
 Note: this definition is completely non-sensical for non-finite presentations and
 even then for this to make sense, you should assume that the presentation
-is standard smooth.
+is a complete intersection.
 -/
 noncomputable def dimension : ℕ :=
-  Nat.card P.vars - Nat.card P.relations
+  Nat.card P.vars - Nat.card P.rels
 
-/-- A presentation is called finite if there are only finitely-many
+/-- A presentation is finite if there are only finitely-many
 relations and finitely-many relations. -/
 class IsFinite (P : Presentation.{t, w} R S) : Prop where
   finite_vars : Finite P.vars
-  finite_relations : Finite P.relations
+  finite_rels : Finite P.rels
 
-attribute [instance] IsFinite.finite_vars IsFinite.finite_relations
+attribute [instance] IsFinite.finite_vars IsFinite.finite_rels
 
 lemma ideal_fg_of_isFinite [P.IsFinite] : P.ker.FG := by
   use (Set.finite_range P.relation).toFinset
-  simp [ideal_eq_span_range_relation]
+  simp [span_range_relation_eq_ker]
 
 /-- If a presentation is finite, the corresponding quotient is
 of finite presentation. -/
 instance [P.IsFinite] : FinitePresentation R P.Quotient :=
   FinitePresentation.quotient P.ideal_fg_of_isFinite
 
-lemma finitePresentation_of_presentation_of_isFinite [P.IsFinite] :
+lemma finitePresentation_of_isFinite [P.IsFinite] :
     FinitePresentation R S :=
   FinitePresentation.equiv (P.quotientEquiv.restrictScalars R)
 
@@ -147,10 +148,10 @@ private lemma ker_algebraMap_eq_span_range_relation_localizationAway :
 
 /-- If `S` is the localization of `R` away from `r`, we can construct a natural
 presentation of `S` as `R`-algebra with a single generator `X` and the relation `r * X - 1 = 0`. -/
-@[simps relations relation]
+@[simps rels relation]
 noncomputable def localizationAway : Presentation R S where
   toGenerators := Generators.localizationAway r
-  relations := Unit
+  rels := Unit
   relation _ := C r * X () - 1
   ker_algebraMap_eq_span_range_relation := by
     simp only [Generators.localizationAway_vars, Set.range_const]
@@ -158,7 +159,7 @@ noncomputable def localizationAway : Presentation R S where
 
 instance localizationAway_isFinite : (localizationAway r (S := S)).IsFinite where
   finite_vars := inferInstanceAs <| Finite Unit
-  finite_relations := inferInstanceAs <| Finite Unit
+  finite_rels := inferInstanceAs <| Finite Unit
 
 @[simp]
 lemma localizationAway_dimension_zero : (localizationAway r (S := S)).dimension = 0 := by
@@ -189,12 +190,15 @@ private lemma ker_algebraMap_eq_span_range_relation_baseChange :
         simp
       | h_add p q hp hq => simp only [map_add, hp, hq]
       | h_X p i hp =>
-        simp [_root_.map_mul, e, hp]
+        simp only [_root_.map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul,
+          _root_.map_one, IsScalarTower.coe_toAlgHom', Generators.algebraMap_apply, aeval_X, e]
         rfl
-    erw [H, ker_algebraMap_eq_span_range_relation] at H'
-    erw [← Ideal.mem_comap, Ideal.comap_symm, Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
+    erw [H, ker_algebraMap_eq_span_range_relation, ← Ideal.mem_comap, Ideal.comap_symm,
+      Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
     convert H'
-    simp
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+      TensorProduct.includeRight_apply, TensorProduct.lift_tmul, _root_.map_one, mapAlgHom_apply,
+      one_mul]
     rfl
   · rw [Ideal.span_le]
     intro x ⟨y, hy⟩
@@ -213,7 +217,7 @@ obtain a natural presentation of `T ⊗[R] S` over `T`. -/
 noncomputable
 def baseChange : Presentation T (T ⊗[R] S) where
   __ := Generators.baseChange P.toGenerators
-  relations := P.relations
+  rels := P.rels
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
   ker_algebraMap_eq_span_range_relation := P.ker_algebraMap_eq_span_range_relation_baseChange
 

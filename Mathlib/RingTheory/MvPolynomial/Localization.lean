@@ -102,7 +102,7 @@ def auxHom : (MvPolynomial Unit R) ⧸ (Ideal.span { C r * X () - 1 }) →ₐ[R]
       simp [hx]
 
 @[simp]
-lemma auxHom_mk (p : MvPolynomial Unit R) :
+private lemma auxHom_mk (p : MvPolynomial Unit R) :
     auxHom S r p = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
   rfl
 
