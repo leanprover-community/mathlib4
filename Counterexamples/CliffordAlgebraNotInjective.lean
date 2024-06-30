@@ -291,10 +291,10 @@ theorem CliffordAlgebra.not_forall_algebraMap_injective.{v} :
 
 open Q60596 in
 /-- The general bonus statement: not every quadratic form is the diagonal of a bilinear form. -/
-theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
+theorem QuadraticForm.not_forall_toQuadraticForm_surjective.{v} :
     -- TODO: make `R` universe polymorphic
-    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] (Q : QuadraticForm R M),
-      Q ∈ Set.range BilinForm.toQuadraticForm :=
+    ¬∀ (R : Type) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M],
+      Function.Surjective (BilinForm.toQuadraticForm : BilinForm R M → QuadraticForm R M) :=
   fun h => Q_not_in_range_toQuadraticForm <| by
     let uU := ULift.moduleEquiv (R := K) (M := L)
     obtain ⟨x, hx⟩ := h K (ULift L) (Q.comp uU)
