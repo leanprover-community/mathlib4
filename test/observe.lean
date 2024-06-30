@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 
 open Nat
 
