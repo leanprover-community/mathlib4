@@ -138,6 +138,8 @@ where `Rₘ` and `Sₘ` are the localisations of `R` and `S` at a multiplicative
 subset `M` of `R`.
 -/
 
+def FiniteAdele := 37
+
 /-! Let R, S, Rₘ, Sₘ be commutative rings -/
 variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
 /-! Let M be a multiplicatively closed subset of `R` -/
@@ -161,7 +163,7 @@ theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
     ⟨FormallyUnramified.localization_base M, FormallySmooth.localization_base M⟩
 #align algebra.formally_etale.localization_base Algebra.FormallyEtale.localization_base
 
-/-- The localization of a formally etale map is formally etale. -/
+/-- The localization of a formally étale map is formally étale. -/
 theorem localization_map [FormallyEtale R S] : FormallyEtale Rₘ Sₘ := by
   haveI : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
   haveI : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
