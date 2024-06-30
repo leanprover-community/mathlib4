@@ -347,11 +347,12 @@ private theorem norm_eq_of_equiv_aux {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : �
 private theorem norm_eq_of_equiv {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) (hfg : f ≈ g) :
     padicNorm p (f (stationaryPoint hf)) = padicNorm p (g (stationaryPoint hg)) := by
   by_contra h
-  cases' lt_or_le (padicNorm p (g (stationaryPoint hg))) (padicNorm p (f (stationaryPoint hf))) with
-    hlt hle
-  · exact norm_eq_of_equiv_aux hf hg hfg h hlt
-  · apply norm_eq_of_equiv_aux hg hf (Setoid.symm hfg) (Ne.symm h)
-    apply lt_of_le_of_ne hle h
+  cases lt_or_le (padicNorm p (g (stationaryPoint hg))) (padicNorm p (f (stationaryPoint hf))) with
+  | inl hlt =>
+    exact norm_eq_of_equiv_aux hf hg hfg h hlt
+  | inr hle =>
+    apply norm_eq_of_equiv_aux hg hf (Setoid.symm hfg) (Ne.symm h)
+    exact lt_of_le_of_ne hle h
 
 theorem norm_equiv {f g : PadicSeq p} (hfg : f ≈ g) : f.norm = g.norm :=
   if hf : f ≈ 0 then by
@@ -637,9 +638,11 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; rw [dif_neg hne] at hge
   apply not_le_of_gt _ hge
-  cases' _root_.le_total N (stationaryPoint hne) with hgen hngen
-  · apply hN _ hgen _ hi
-  · have := stationaryPoint_spec hne le_rfl hngen
+  cases _root_.le_total N (stationaryPoint hne) with
+  | inl hgen =>
+    exact hN _ hgen _ hi
+  | inr hngen =>
+    have := stationaryPoint_spec hne le_rfl hngen
     rw [← this]
     exact hN _ le_rfl _ hi
 #align padic_norm_e.defn padicNormE.defn
