@@ -15,6 +15,9 @@ We say that the morphism `η` in a monoidal category is in normal form if
 2. each `ηᵢ` is a non-structural 2-morphism of the form `f₁ ◁ ... ◁ fₘ ◁ θ`, and
 3. `θ` is of the form `ι ▷ g₁ ▷ ... ▷ gₗ`
 
+Note that the structural morphisms `αᵢ` are not necessarily normalized, as the main purpose
+to be to get a list of the non-structural morphisms out.
+
 ## Main definitions
 - `Tactic.Monoidal.eval`: Given a Lean expression `e` that represents a morphism in a monoidal
 category, this function returns a pair of `⟨e', pr⟩` where `e'` is the normalized expression of `e`
@@ -664,9 +667,12 @@ end Mathlib.Tactic.Monoidal
 
 open Mathlib.Tactic.Monoidal
 
-/-- `normalize% η` is the normalization of the 2-morphism `η`. It is of the form
-`α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₙ ≫ ηₙ ≫ αₙ₊₁`, where `αᵢ` are structural 2-morphisms
-and `ηᵢ` are non-structural 2-morphisms. -/
+/-- `normalize% η` is the normalization of the 2-morphism `η`.
+1. The normalized 2-morphism is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where
+  each `αᵢ` is a structural 2-morphism (consisting of associators and unitors),
+2. each `ηᵢ` is a non-structural 2-morphism of the form `f₁ ◁ ... ◁ fₘ ◁ θ`, and
+3. `θ` is of the form `ι ▷ g₁ ▷ ... ▷ gₗ`
+-/
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   MonoidalM.run (← mkContext e) do (← eval e).expr.e
