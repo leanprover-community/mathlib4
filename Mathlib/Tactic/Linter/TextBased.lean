@@ -199,9 +199,17 @@ def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit :
   for e in errors do
     IO.println (outputMessage e style)
 
+/-- Describes an automatic fix to a style lint. -/
+structure AutomaticFix where
+  /-- Line number of the fix to be made: we assume that fixes preserve the number of lines -/
+  lineNumber : ℕ
+  /-- Fixed line: to be inserted at this line -/
+  newLine : String
+
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers. -/
-abbrev TextbasedLinter := Array String → Array (StyleError × ℕ)
+return an array of all style errors with line numbers,
+and a list of all possible machine-applicable fixes. -/
+abbrev TextbasedLinter := Array String → (Array (StyleError × ℕ) × Option (List AutomaticFix))
 
 /-! Definitions of the actual text-based linters. -/
 section
@@ -223,10 +231,10 @@ def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
   -- Unlike the Python script, we just emit one warning.
   let start := lines.extract 0 4
   -- The header should start and end with blank comments.
-  let _ := match (start.get? 0, start.get? 4) with
+  let _ : Option (_ × Option (List AutomaticFix)) := match (start.get? 0, start.get? 4) with
   | (some "/-", some "-/") => none
-  | (some "/-", _) => return #[(StyleError.copyright none, 4)]
-  | _ => return #[(StyleError.copyright none, 0)]
+  | (some "/-", _) => return (#[(StyleError.copyright none, 4)], none)
+  | _ => return (#[(StyleError.copyright none, 0)], none)
 
   -- If this is given, we go over the individual lines one by one,
   -- and provide some context on what is mis-formatted (if anything).
@@ -250,7 +258,7 @@ def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
       -- If it does, we check the authors line is formatted correctly.
       if !isCorrectAuthorsLine line then
         output := output.push (StyleError.authors, 4)
-  return output
+  return (output, none)
 
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -261,7 +269,7 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
     if line.containsSubstr "daptation note" then
       errors := errors.push (StyleError.adaptationNote, lineNumber)
     lineNumber := lineNumber + 1
-  return errors
+  return (errors, none)
 
 /-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
 def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
@@ -289,7 +297,7 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
             else if name == "Lake" || name.startsWith "Lake." then
               errors := errors.push (StyleError.broadImport BroadImports.Lake, lineNumber)
       lineNumber := lineNumber + 1
-  return errors
+  return (errors, none)
 
 /-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
 We allow #aligns or URLs to be longer, though.
@@ -300,7 +308,7 @@ def lineLengthLinter : TextbasedLinter := fun lines ↦ Id.run do
       !(line.startsWith "#align" || line.containsSubstr "http" || line.startsWith "-- #align")  then
       some (StyleError.lineLength line.length, line_number)
     else none)
-  errors.toArray
+  (errors.toArray, none)
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -365,8 +373,9 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   let mut errors := #[]
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
     errors := #[ErrorContext.mk (StyleError.fileTooLong n limit) 1 path]
+  -- XXX: process output of fixable errors
   let allOutput := (Array.map (fun lint ↦
-    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
+    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines).1)) allLinters
   -- This this list is not sorted: for github, this is fine.
   errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
   return errors
