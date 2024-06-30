@@ -20,7 +20,7 @@ and all other outcomes are equally likely.
 `qaryEntropy (q : ℕ) (p : ℝ) := p * log (q - 1) - p * log p - (1 - p) * log (1 - p)`
 
 This file assumes that entropy is measured in Nats, hence the use of natural logarithms.
-Most lemmas are also valid using a different-base logarithms.
+Most lemmas are also valid using a logarithm in a different base.
 
 ## Tags
 
