@@ -787,7 +787,7 @@ instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
 #align pgame.setoid SetTheory.PGame.setoid
 
-theorem Equiv.equiv_def {x y : PGame}: x ≈ y ↔ x ≤ y ∧ y ≤ x := by rfl
+theorem Equiv.equiv_def {x y : PGame} : x ≈ y ↔ x ≤ y ∧ y ≤ x := by rfl
 
 theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
   h.1
