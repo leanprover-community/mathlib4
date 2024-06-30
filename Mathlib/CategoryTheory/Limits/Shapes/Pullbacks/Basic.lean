@@ -62,6 +62,7 @@ Sections:
 3. HasPullback / pullback interactions (1122-1620?). Goes in one file
 -- ofCompMono should go in a diagrams file maybe
 
+CONSTRUCTIONS (everything except last bit on haspullback):
 4. pullbackConeofLeft/RightIso goes where?? (ends at 1950)
 5. rest after bigSquare goes into `Diagram.lean` (`Big.lean`?)
 
