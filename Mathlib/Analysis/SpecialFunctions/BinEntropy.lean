@@ -282,20 +282,10 @@ end general
 
 lemma differentiableAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
     DifferentiableAt ℝ (fun p => -p * log p - (1 - p) * log (1 - p)) x := by
-  apply DifferentiableAt.sub
-  apply DifferentiableAt.mul
-  apply DifferentiableAt.neg
-  exact differentiableAt_id'
-  apply DifferentiableAt.log differentiableAt_id' xne0
-  apply DifferentiableAt.mul
-  apply DifferentiableAt.sub
-  apply differentiableAt_const
-  exact differentiableAt_id'
-  apply DifferentiableAt.log
-  apply DifferentiableAt.sub
-  apply differentiableAt_const
-  exact differentiableAt_id'
-  exact sub_ne_zero.mpr gne1.symm
+  refine DifferentiableAt.sub (DifferentiableAt.mul (by fun_prop) ?_)
+      (DifferentiableAt.mul (by fun_prop)
+        (DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr gne1.symm)))
+  exact DifferentiableAt.log differentiableAt_id' xne0
 
 lemma differentiableAt_binaryEntropy' {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
     DifferentiableAt ℝ binaryEntropy x := by
