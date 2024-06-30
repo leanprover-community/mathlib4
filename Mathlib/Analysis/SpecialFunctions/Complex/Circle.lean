@@ -3,9 +3,9 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Algebra.Group.AddChar
 
 #align_import analysis.special_functions.complex.circle from "leanprover-community/mathlib"@"f333194f5ecd1482191452c5ea60b37d4d6afa08"
 
@@ -257,7 +257,14 @@ noncomputable def toCircle : AddChar (ZMod N) circle where
 
 lemma toCircle_intCast (j : ℤ) :
     toCircle (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
-  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_coe,
+  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_intCast,
+    Function.Periodic.lift_coe, expMapCircle_apply]
+  push_cast
+  ring_nf
+
+lemma toCircle_natCast (j : ℕ) :
+    toCircle (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
+  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_natCast,
     Function.Periodic.lift_coe, expMapCircle_apply]
   push_cast
   ring_nf
