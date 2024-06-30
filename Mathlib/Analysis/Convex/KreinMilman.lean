@@ -75,14 +75,14 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
     rw [← hBmin ({ z ∈ t | ∀ w ∈ t, l w ≤ l z })
       ⟨⟨z, hzt, hz⟩, h.isClosed htclos, hst.trans h.isExtreme⟩ (t.sep_subset _)] at hyB
     exact hl.not_le (hyB.2 x hxt)
-  refine' zorn_superset _ fun F hFS hF => _
+  refine zorn_superset _ fun F hFS hF => ?_
   obtain rfl | hFnemp := F.eq_empty_or_nonempty
   · exact ⟨s, ⟨hsnemp, hscomp.isClosed, IsExtreme.rfl⟩, fun _ => False.elim⟩
-  refine' ⟨⋂₀ F, ⟨_, isClosed_sInter fun t ht => (hFS ht).2.1,
+  refine ⟨⋂₀ F, ⟨?_, isClosed_sInter fun t ht => (hFS ht).2.1,
     isExtreme_sInter hFnemp fun t ht => (hFS ht).2.2⟩, fun t ht => sInter_subset_of_mem ht⟩
   haveI : Nonempty (↥F) := hFnemp.to_subtype
   rw [sInter_eq_iInter]
-  refine' IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u => _)
+  refine IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ (fun t u => ?_)
     (fun t => (hFS t.mem).1)
     (fun t => hscomp.of_isClosed_subset (hFS t.mem).2.1 (hFS t.mem).2.2.1) fun t =>
       (hFS t.mem).2.1
@@ -108,7 +108,7 @@ theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex
 
 /-- A continuous affine map is surjective from the extreme points of a compact set to the extreme
 points of the image of that set. This inclusion is in general strict. -/
-lemma surjOn_extremePoints_image (f : E →A[ℝ] F) (hs : IsCompact s) :
+lemma surjOn_extremePoints_image (f : E →ᴬ[ℝ] F) (hs : IsCompact s) :
     SurjOn f (extremePoints ℝ s) (extremePoints ℝ (f '' s)) := by
   rintro w hw
   -- The fiber of `w` is nonempty and compact

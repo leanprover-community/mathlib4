@@ -3,7 +3,6 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-
 import Mathlib.Algebra.Group.Commute.Hom
 import Mathlib.Algebra.Group.Prod
 
@@ -29,16 +28,18 @@ There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`s.
 For a product of a family of morphisms of monoids, see `MonoidHom.noncommPiCoprod`.
 -/
 
+assert_not_exists MonoidWithZero
+
 namespace MulHom
 
 variable {M N P : Type*} [Mul M] [Mul N] [Semigroup P]
   (f : M →ₙ* P) (g : N →ₙ* P) (comm : ∀ m n, Commute (f m) (g n))
 
-/-- Coproduct of two `MulHom`s with the same codomain with commutation assumption :
+/-- Coproduct of two `MulHom`s with the same codomain with `Commute` assumption:
   `f.noncommCoprod g _ (p : M × N) = f p.1 * g p.2`.
   (For the commutative case, use `MulHom.coprod`) -/
 @[to_additive (attr := simps)
-    "Coproduct of two `AddHom`s with the same codomain with commutation assumption:
+    "Coproduct of two `AddHom`s with the same codomain with `AddCommute` assumption:
     `f.noncommCoprod g _ (p : M × N) = f p.1 + g p.2`.
     (For the commutative case, use `AddHom.coprod`)"]
 def noncommCoprod : M × N →ₙ* P where

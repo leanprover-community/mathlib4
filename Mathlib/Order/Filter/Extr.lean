@@ -290,15 +290,15 @@ theorem IsExtrOn.on_subset (hf : IsExtrOn f t a) (h : s ⊆ t) : IsExtrOn f s a 
 #align is_extr_on.on_subset IsExtrOn.on_subset
 
 theorem IsMinOn.inter (hf : IsMinOn f s a) (t) : IsMinOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_min_on.inter IsMinOn.inter
 
 theorem IsMaxOn.inter (hf : IsMaxOn f s a) (t) : IsMaxOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_max_on.inter IsMaxOn.inter
 
 theorem IsExtrOn.inter (hf : IsExtrOn f s a) (t) : IsExtrOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_extr_on.inter IsExtrOn.inter
 
 /-! ### Composition with (anti)monotone functions -/
@@ -635,7 +635,7 @@ section Eventually
 theorem Filter.EventuallyLE.isMaxFilter {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : g ≤ᶠ[l] f) (hfga : f a = g a) (h : IsMaxFilter f l a) :
     IsMaxFilter g l a := by
-  refine' hle.mp (h.mono fun x hf hgf => _)
+  refine hle.mp (h.mono fun x hf hgf => ?_)
   rw [← hfga]
   exact le_trans hgf hf
 #align filter.eventually_le.is_max_filter Filter.EventuallyLE.isMaxFilter

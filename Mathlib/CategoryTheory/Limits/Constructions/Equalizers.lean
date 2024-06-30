@@ -48,8 +48,9 @@ abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
   pullback.fst
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst
 
-theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) : pullbackFst F = pullback.snd :=
-  by convert (eq_whisker pullback.condition Limits.prod.fst :
+theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
+    pullbackFst F = pullback.snd := by
+  convert (eq_whisker pullback.condition Limits.prod.fst :
       (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst_eq_pullback_snd CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst_eq_pullback_snd
 
@@ -200,7 +201,7 @@ def preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts [HasBinaryCoprod
   ⟨fun {K} =>
     preservesColimitOfPreservesColimitCocone (coequalizerCoconeIsColimit K) <|
       { desc := fun c => by
-          refine' (PreservesPushout.iso _ _ _).inv ≫ pushout.desc _ _ _
+          refine (PreservesPushout.iso _ _ _).inv ≫ pushout.desc ?_ ?_ ?_
           · exact c.ι.app WalkingParallelPair.one
           · exact c.ι.app WalkingParallelPair.one
           apply (mapIsColimitOfPreservesOfIsColimit G _ _ (coprodIsCoprod _ _)).hom_ext

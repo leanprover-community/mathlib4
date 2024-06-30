@@ -50,6 +50,7 @@ def IsSelfAdjoint [Star R] (x : R) : Prop :=
 #align is_self_adjoint IsSelfAdjoint
 
 /-- An element of a star monoid is normal if it commutes with its adjoint. -/
+@[mk_iff]
 class IsStarNormal [Mul R] [Star R] (x : R) : Prop where
   /-- A normal element of a star monoid commutes with its adjoint. -/
   star_comm_self : Commute (star x) x
@@ -125,11 +126,7 @@ theorem add {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjo
   simp only [isSelfAdjoint_iff, star_add, hx.star_eq, hy.star_eq]
 #align is_self_adjoint.add IsSelfAdjoint.add
 
-set_option linter.deprecated false in
-@[deprecated]
-theorem bit0 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit0 x) := by
-  simp only [isSelfAdjoint_iff, star_bit0, hx.star_eq]
-#align is_self_adjoint.bit0 IsSelfAdjoint.bit0
+#noalign is_self_adjoint.bit0
 
 end AddMonoid
 
@@ -173,6 +170,7 @@ theorem conjugate' {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (star 
   simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 #align is_self_adjoint.conjugate' IsSelfAdjoint.conjugate'
 
+@[aesop 10% apply]
 theorem isStarNormal {x : R} (hx : IsSelfAdjoint x) : IsStarNormal x :=
   ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
 #align is_self_adjoint.is_star_normal IsSelfAdjoint.isStarNormal
@@ -204,11 +202,7 @@ section Semiring
 
 variable [Semiring R] [StarRing R]
 
-set_option linter.deprecated false in
-@[deprecated]
-theorem bit1 {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (bit1 x) := by
-  simp only [isSelfAdjoint_iff, star_bit1, hx.star_eq]
-#align is_self_adjoint.bit1 IsSelfAdjoint.bit1
+#noalign is_self_adjoint.bit1
 
 @[simp]
 theorem _root_.isSelfAdjoint_natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
@@ -511,11 +505,7 @@ theorem star_val_eq {x : skewAdjoint R} : star (x : R) = -x :=
 instance : Inhabited (skewAdjoint R) :=
   ⟨0⟩
 
-set_option linter.deprecated false in
-@[deprecated]
-theorem bit0_mem {x : R} (hx : x ∈ skewAdjoint R) : bit0 x ∈ skewAdjoint R := by
-  rw [mem_iff, star_bit0, mem_iff.mp hx, bit0, bit0, neg_add]
-#align skew_adjoint.bit0_mem skewAdjoint.bit0_mem
+#noalign skew_adjoint.bit0_mem
 
 end AddGroup
 

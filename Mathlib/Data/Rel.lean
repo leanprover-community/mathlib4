@@ -31,6 +31,13 @@ Relations are also known as set-valued functions, or partial multifunctions.
   related to `x` are in `s`.
 * `Rel.restrict_domain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
+
+## TODOs
+
+The `Rel.comp` function uses the notation `r • s`, rather than the more common `r ∘ s` for things
+named `comp`. This is because the latter is already used for function composition, and causes a
+clash. A better notation should be found, perhaps a variant of `r ∘r s` or `r; s`.
+
 -/
 
 variable {α β γ : Type*}
@@ -91,7 +98,6 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 #align rel.comp Rel.comp
 
 -- Porting note: the original `∘` syntax can't be overloaded here, lean considers it ambiguous.
--- TODO: Change this syntax to something nicer?
 /-- Local syntax for composition of relations. -/
 local infixr:90 " • " => Rel.comp
 
@@ -245,8 +251,8 @@ theorem preimage_id (s : Set α) : preimage (@Eq α) s = s := by
   simp only [preimage, inv_id, image_id]
 #align rel.preimage_id Rel.preimage_id
 
-theorem preimage_comp (s : Rel β γ) (t : Set γ) : preimage (r • s) t = preimage r (preimage s t) :=
-  by simp only [preimage, inv_comp, image_comp]
+theorem preimage_comp (s : Rel β γ) (t : Set γ) :
+    preimage (r • s) t = preimage r (preimage s t) := by simp only [preimage, inv_comp, image_comp]
 #align rel.preimage_comp Rel.preimage_comp
 
 theorem preimage_univ : r.preimage Set.univ = r.dom := by rw [preimage, image_univ, codom_inv]
@@ -259,8 +265,8 @@ theorem preimage_empty : r.preimage ∅ = ∅ := by rw [preimage, image_empty]
 theorem preimage_inv (s : Set α) : r.inv.preimage s = r.image s := by rw [preimage, inv_inv]
 
 @[simp]
-theorem preimage_bot (s : Set β) : (⊥ : Rel α β).preimage s = ∅ :=
-  by rw [preimage, inv_bot, image_bot]
+theorem preimage_bot (s : Set β) : (⊥ : Rel α β).preimage s = ∅ := by
+  rw [preimage, inv_bot, image_bot]
 
 @[simp]
 theorem preimage_top {s : Set β} (h : Set.Nonempty s) :
@@ -276,8 +282,8 @@ theorem image_eq_dom_of_codomain_subset {s : Set β} (h : r.codom ⊆ s) : r.pre
     have hy : y ∈ s := h ⟨x, ryx⟩
     exact ⟨y, ⟨hy, ryx⟩⟩
 
-theorem preimage_eq_codom_of_domain_subset {s : Set α} (h : r.dom ⊆ s) : r.image s = r.codom :=
-  by apply r.inv.image_eq_dom_of_codomain_subset (by rwa [← codom_inv] at h)
+theorem preimage_eq_codom_of_domain_subset {s : Set α} (h : r.dom ⊆ s) : r.image s = r.codom := by
+  apply r.inv.image_eq_dom_of_codomain_subset (by rwa [← codom_inv] at h)
 
 theorem image_inter_dom_eq (s : Set α) : r.image (s ∩ r.dom) = r.image s := by
   apply Set.eq_of_subset_of_subset
@@ -407,10 +413,8 @@ theorem Relation.is_graph_iff (r : Rel α β) : (∃! f, Function.graph f = r) �
 
 namespace Set
 
--- TODO: if image were defined with bounded quantification in corelib, the next two would
--- be definitional
 theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).image s := by
-  simp [Set.image, Rel.image]
+  rfl
 #align set.image_eq Set.image_eq
 
 theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by

@@ -46,6 +46,9 @@ See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` 
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 universe u v w
 
 open Function
@@ -88,7 +91,7 @@ class VAdd (G : Type u) (P : Type v) where
 #align has_vadd VAdd
 
 /-- Type class for the `-ᵥ` notation. -/
-class VSub (G : outParam (Type*)) (P : Type*) where
+class VSub (G : outParam Type*) (P : Type*) where
   /-- `a -ᵥ b` computes the difference of `a` and `b`. The meaning of this notation is
   type-dependent, but it is intended to be used for additive torsors. -/
   vsub : P → P → G
@@ -582,10 +585,6 @@ monoids. To work, it has to map fields to fields. This means that we should also
 fields to the multiplicative structure `Monoid`, which could solve defeq problems for powers if
 needed. These problems do not come up in practice, so most of the time we will not need to adjust
 the `npow` field when defining multiplicative objects.
-
-A basic theory for the power function on monoids and the `ℕ`-action on additive monoids is built in
-the file `Algebra.GroupPower.Basic`. For now, we only register the most basic properties that we
-need right away.
 -/
 
 
@@ -633,15 +632,19 @@ instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
 
 attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
-section
-
-variable {M : Type*} [Monoid M]
+section Monoid
+variable {M : Type*} [Monoid M] {a b c : M} {m n : ℕ}
 
 @[to_additive (attr := simp) nsmul_eq_smul]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
   rfl
 #align npow_eq_pow npow_eq_pow
 #align nsmul_eq_smul nsmul_eq_smul
+
+@[to_additive] lemma left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
+  rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
+#align left_inv_eq_right_inv left_inv_eq_right_inv
+#align left_neg_eq_right_neg left_neg_eq_right_neg
 
 -- the attributes are intentionally out of order. `zero_smul` proves `zero_nsmul`.
 @[to_additive zero_nsmul, simp]
@@ -656,17 +659,75 @@ theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
 #align pow_succ' pow_succ
 #align succ_nsmul' succ_nsmul
 
-end
+@[to_additive (attr := simp) one_nsmul]
+lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
+#align pow_one pow_one
+#align one_nsmul one_nsmul
 
-section Monoid
-
-variable {M : Type u} [Monoid M]
+@[to_additive succ_nsmul'] lemma pow_succ' (a : M) : ∀ n, a ^ (n + 1) = a * a ^ n
+  | 0 => by simp
+  | n + 1 => by rw [pow_succ _ n, pow_succ, pow_succ', mul_assoc]
+#align pow_succ pow_succ'
+#align succ_nsmul succ_nsmul'
 
 @[to_additive]
-theorem left_inv_eq_right_inv {a b c : M} (hba : b * a = 1) (hac : a * c = 1) : b = c := by
-  rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
-#align left_inv_eq_right_inv left_inv_eq_right_inv
-#align left_neg_eq_right_neg left_neg_eq_right_neg
+lemma pow_mul_comm' (a : M) (n : ℕ) : a ^ n * a = a * a ^ n := by rw [← pow_succ, pow_succ']
+#align pow_mul_comm' pow_mul_comm'
+#align nsmul_add_comm' nsmul_add_comm'
+
+/-- Note that most of the lemmas about powers of two refer to it as `sq`. -/
+@[to_additive two_nsmul] lemma pow_two (a : M) : a ^ 2 = a * a := by rw [pow_succ, pow_one]
+#align pow_two pow_two
+#align two_nsmul two_nsmul
+
+-- TODO: Should `alias` automatically transfer `to_additive` statements?
+@[to_additive existing two_nsmul] alias sq := pow_two
+#align sq sq
+
+@[to_additive three'_nsmul]
+lemma pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
+#align pow_three' pow_three'
+
+@[to_additive three_nsmul]
+lemma pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
+#align pow_three pow_three
+
+-- the attributes are intentionally out of order.
+@[to_additive nsmul_zero, simp] lemma one_pow : ∀ n, (1 : M) ^ n = 1
+  | 0 => pow_zero _
+  | n + 1 => by rw [pow_succ, one_pow, one_mul]
+#align one_pow one_pow
+#align nsmul_zero nsmul_zero
+
+@[to_additive add_nsmul]
+lemma pow_add (a : M) (m : ℕ) : ∀ n, a ^ (m + n) = a ^ m * a ^ n
+  | 0 => by rw [Nat.add_zero, pow_zero, mul_one]
+  | n + 1 => by rw [pow_succ, ← mul_assoc, ← pow_add, ← pow_succ, Nat.add_assoc]
+#align pow_add pow_add
+
+@[to_additive] lemma pow_mul_comm (a : M) (m n : ℕ) : a ^ m * a ^ n = a ^ n * a ^ m := by
+  rw [← pow_add, ← pow_add, Nat.add_comm]
+#align pow_mul_comm pow_mul_comm
+#align nsmul_add_comm nsmul_add_comm
+
+@[to_additive mul_nsmul] lemma pow_mul (a : M) (m : ℕ) : ∀ n, a ^ (m * n) = (a ^ m) ^ n
+  | 0 => by rw [Nat.mul_zero, pow_zero, pow_zero]
+  | n + 1 => by rw [Nat.mul_succ, pow_add, pow_succ, pow_mul]
+-- Porting note: we are taking the opportunity to swap the names `mul_nsmul` and `mul_nsmul'`
+-- using #align, so that in mathlib4 they will match the multiplicative ones.
+#align pow_mul pow_mul
+#align mul_nsmul' mul_nsmul
+
+@[to_additive mul_nsmul']
+lemma pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul_comm, pow_mul]
+#align pow_mul' pow_mul'
+#align mul_nsmul mul_nsmul'
+
+@[to_additive nsmul_left_comm]
+lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
+  rw [← pow_mul, Nat.mul_comm, pow_mul]
+#align pow_right_comm pow_right_comm
+#align nsmul_left_comm nsmul_left_comm
 
 end Monoid
 
@@ -968,9 +1029,8 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 #align coe_nat_zsmul natCast_zsmul
 #align of_nat_zsmul natCast_zsmul
 
--- 2024-03-20
-@[deprecated] alias zpow_coe_nat := zpow_natCast
-@[deprecated] alias coe_nat_zsmul := natCast_zsmul
+@[deprecated (since := "2024-03-20")] alias zpow_coe_nat := zpow_natCast
+@[deprecated (since := "2024-03-20")] alias coe_nat_zsmul := natCast_zsmul
 
 -- See note [no_index around OfNat.ofNat]
 @[to_additive ofNat_zsmul]
@@ -1003,6 +1063,27 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 
 alias division_def := div_eq_mul_inv
 #align division_def division_def
+
+@[to_additive (attr := simp) one_zsmul]
+lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
+#align zpow_one zpow_one
+#align one_zsmul one_zsmul
+
+@[to_additive two_zsmul] lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by rw [zpow_ofNat, pow_two]
+#align zpow_two zpow_two
+#align two_zsmul two_zsmul
+
+@[to_additive neg_one_zsmul]
+lemma zpow_neg_one (x : G) : x ^ (-1 : ℤ) = x⁻¹ :=
+  (zpow_negSucc x 0).trans <| congr_arg Inv.inv (pow_one x)
+#align zpow_neg_one zpow_neg_one
+#align neg_one_zsmul neg_one_zsmul
+
+@[to_additive]
+lemma zpow_neg_coe_of_pos (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
+  | _ + 1, _ => zpow_negSucc _ _
+#align zpow_neg_coe_of_pos zpow_neg_coe_of_pos
+#align zsmul_neg_coe_of_pos zsmul_neg_coe_of_pos
 
 end DivInvMonoid
 
@@ -1081,8 +1162,8 @@ theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
 #align neg_eq_of_add_eq_zero_right neg_eq_of_add_eq_zero_right
 
 @[to_additive]
-theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
-  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
+theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a := by
+  rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
 #align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
 #align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
 
@@ -1154,8 +1235,8 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_self a) h
 
 @[to_additive (attr := simp)]
-theorem mul_right_inv (a : G) : a * a⁻¹ = 1 :=
-  by rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
+theorem mul_right_inv (a : G) : a * a⁻¹ = 1 := by
+  rw [← mul_left_inv a⁻¹, inv_eq_of_mul (mul_left_inv a)]
 #align mul_right_inv mul_right_inv
 #align add_right_neg add_right_neg
 
@@ -1166,26 +1247,26 @@ theorem mul_inv_self (a : G) : a * a⁻¹ = 1 :=
 #align add_neg_self add_neg_self
 
 @[to_additive (attr := simp)]
-theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b :=
-  by rw [← mul_assoc, mul_left_inv, one_mul]
+theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b := by
+  rw [← mul_assoc, mul_left_inv, one_mul]
 #align inv_mul_cancel_left inv_mul_cancel_left
 #align neg_add_cancel_left neg_add_cancel_left
 
 @[to_additive (attr := simp)]
-theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b :=
-  by rw [← mul_assoc, mul_right_inv, one_mul]
+theorem mul_inv_cancel_left (a b : G) : a * (a⁻¹ * b) = b := by
+  rw [← mul_assoc, mul_right_inv, one_mul]
 #align mul_inv_cancel_left mul_inv_cancel_left
 #align add_neg_cancel_left add_neg_cancel_left
 
 @[to_additive (attr := simp)]
-theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a :=
-  by rw [mul_assoc, mul_right_inv, mul_one]
+theorem mul_inv_cancel_right (a b : G) : a * b * b⁻¹ = a := by
+  rw [mul_assoc, mul_right_inv, mul_one]
 #align mul_inv_cancel_right mul_inv_cancel_right
 #align add_neg_cancel_right add_neg_cancel_right
 
 @[to_additive (attr := simp)]
-theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a :=
-  by rw [mul_assoc, mul_left_inv, mul_one]
+theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
+  rw [mul_assoc, mul_left_inv, mul_one]
 #align inv_mul_cancel_right inv_mul_cancel_right
 #align neg_add_cancel_right neg_add_cancel_right
 
@@ -1235,10 +1316,20 @@ instance (priority := 100) CommGroup.toDivisionCommMonoid : DivisionCommMonoid G
 #align inv_mul_cancel_comm inv_mul_cancel_comm
 #align neg_add_cancel_comm neg_add_cancel_comm
 
+@[to_additive (attr := simp)]
+lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv_mul_cancel_left]
+#align mul_inv_cancel_comm mul_inv_cancel_comm
+#align add_neg_cancel_comm add_neg_cancel_comm
+
 @[to_additive (attr := simp)] lemma inv_mul_cancel_comm_assoc (a b : G) : a⁻¹ * (b * a) = b := by
   rw [mul_comm, mul_inv_cancel_right]
 #align inv_mul_cancel_comm_assoc inv_mul_cancel_comm_assoc
 #align neg_add_cancel_comm_assoc neg_add_cancel_comm_assoc
+
+@[to_additive (attr := simp)] lemma mul_inv_cancel_comm_assoc (a b : G) : a * (b * a⁻¹) = b := by
+  rw [mul_comm, inv_mul_cancel_right]
+#align mul_inv_cancel_comm_assoc mul_inv_cancel_comm_assoc
+#align add_neg_cancel_comm_assoc add_neg_cancel_comm_assoc
 
 end CommGroup
 

@@ -5,7 +5,7 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -241,8 +241,8 @@ theorem det_kroneckerMapBilinear [CommSemiring R] [Fintype m] [Fintype n] [Decid
       det (A.map fun a => f a 1) ^ Fintype.card n * det (B.map fun b => f 1 b) ^ Fintype.card m :=
   calc
     det (kroneckerMapBilinear f A B) =
-        det (kroneckerMapBilinear f A 1 * kroneckerMapBilinear f 1 B) :=
-      by rw [← kroneckerMapBilinear_mul_mul f h_comm, Matrix.mul_one, Matrix.one_mul]
+        det (kroneckerMapBilinear f A 1 * kroneckerMapBilinear f 1 B) := by
+      rw [← kroneckerMapBilinear_mul_mul f h_comm, Matrix.mul_one, Matrix.one_mul]
     _ = det (blockDiagonal fun _ => A.map fun a => f a 1) *
         det (blockDiagonal fun _ => B.map fun b => f 1 b) := by
       rw [det_mul, ← diagonal_one, ← diagonal_one, kroneckerMapBilinear_apply_apply,
@@ -410,7 +410,7 @@ theorem trace_kronecker [Fintype m] [Fintype n] [Semiring α] (A : Matrix m m α
 theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommRing R]
     (A : Matrix m m R) (B : Matrix n n R) :
     det (A ⊗ₖ B) = det A ^ Fintype.card n * det B ^ Fintype.card m := by
-  refine' (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans _
+  refine (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans ?_
   congr 3
   · ext i j
     exact mul_one _
@@ -426,7 +426,7 @@ theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
   · cases isEmpty_or_nonempty n
     · exact Subsingleton.elim _ _
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
-      refine' mt (fun hAB => _) hA
+      refine mt (fun hAB => ?_) hA
       rw [det_kronecker] at hAB
       exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_left hAB)
     rw [nonsing_inv_apply_not_isUnit _ hA, zero_kronecker, nonsing_inv_apply_not_isUnit _ hAB]
@@ -434,7 +434,7 @@ theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
   · cases isEmpty_or_nonempty m
     · exact Subsingleton.elim _ _
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
-      refine' mt (fun hAB => _) hB
+      refine mt (fun hAB => ?_) hB
       rw [det_kronecker] at hAB
       exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_right hAB)
     rw [nonsing_inv_apply_not_isUnit _ hB, kronecker_zero, nonsing_inv_apply_not_isUnit _ hAB]
@@ -592,7 +592,7 @@ variable [CommRing R] [CommRing α] [CommRing β] [Algebra R α] [Algebra R β]
 theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
     (A : Matrix m m α) (B : Matrix n n β) :
     det (A ⊗ₖₜ[R] B) = (det A ^ Fintype.card n) ⊗ₜ[R] (det B ^ Fintype.card m) := by
-  refine' (det_kroneckerMapBilinear (TensorProduct.mk R α β) tmul_mul_tmul _ _).trans _
+  refine (det_kroneckerMapBilinear (TensorProduct.mk R α β) tmul_mul_tmul _ _).trans ?_
   simp (config := { eta := false }) only [mk_apply, ← includeLeft_apply (S := R),
     ← includeRight_apply]
   simp only [← AlgHom.mapMatrix_apply, ← AlgHom.map_det]

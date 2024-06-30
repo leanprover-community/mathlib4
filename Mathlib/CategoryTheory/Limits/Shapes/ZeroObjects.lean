@@ -87,8 +87,7 @@ theorem eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
 #align category_theory.limits.is_zero.eq_of_tgt CategoryTheory.Limits.IsZero.eq_of_tgt
 
 /-- Any two zero objects are isomorphic. -/
-def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y
-    where
+def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
   hom := hX.to_ Y
   inv := hX.from_ Y
   hom_inv_id := hX.eq_of_src _ _
@@ -116,8 +115,8 @@ def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
 #align category_theory.limits.is_zero.iso_is_terminal CategoryTheory.Limits.IsZero.isoIsTerminal
 
 theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
-  refine' ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f => _⟩⟩,
-    fun Z => ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f => _⟩⟩⟩
+  refine ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f => ?_⟩⟩,
+    fun Z => ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f => ?_⟩⟩⟩
   · rw [← cancel_epi e.inv]
     apply hY.eq_of_src
   · rw [← cancel_mono e.hom]
@@ -145,18 +144,18 @@ theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
 #align category_theory.iso.is_zero_iff CategoryTheory.Iso.isZero_iff
 
 theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
-  constructor <;> intro G <;> refine' ⟨⟨⟨_⟩, _⟩⟩
-  · refine'
+  constructor <;> intro G <;> refine ⟨⟨⟨?_⟩, ?_⟩⟩
+  · refine
       { app := fun X => (hF _).to_ _
-        naturality := _ }
+        naturality := ?_ }
     intros
     exact (hF _).eq_of_src _ _
   · intro f
     ext
     apply (hF _).eq_of_src _ _
-  · refine'
+  · refine
       { app := fun X => (hF _).from_ _
-        naturality := _ }
+        naturality := ?_ }
     intros
     exact (hF _).eq_of_tgt _ _
   · intro f

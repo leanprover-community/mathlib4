@@ -82,7 +82,7 @@ instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidab
 
 @[to_additive]
 instance centerCharacteristic : (center G).Characteristic := by
-  refine' characteristic_iff_comap_le.mpr fun ϕ g hg => _
+  refine characteristic_iff_comap_le.mpr fun ϕ g hg => ?_
   rw [mem_center_iff]
   intro h
   rw [← ϕ.injective.eq_iff, ϕ.map_mul, ϕ.map_mul]

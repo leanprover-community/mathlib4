@@ -50,7 +50,7 @@ The middle object of the fork diagram given in Equation (3) of [MM92], as well a
 of <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 def FirstObj : Type max v u :=
-  ∏ fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)
 #align category_theory.equalizer.first_obj CategoryTheory.Equalizer.FirstObj
 
 variable {P R}
@@ -100,7 +100,7 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v u :=
-  ∏ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ᶜ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 #align category_theory.equalizer.sieve.second_obj CategoryTheory.Equalizer.Sieve.SecondObj
 
 variable {P S}
@@ -191,7 +191,7 @@ The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag
 contains the data used to check a family of elements for a presieve is compatible.
 -/
 @[simp] def SecondObj : Type max v u :=
-  ∏ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
+  ∏ᶜ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 #align category_theory.equalizer.presieve.second_obj CategoryTheory.Equalizer.Presieve.SecondObj
@@ -263,9 +263,11 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
 
 namespace Arrows
 
+variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
+
 open Presieve
 
-variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B) [UnivLE.{w, max v u}]
+variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B)
     [(Presieve.ofArrows X π).hasPullbacks]
 -- TODO: allow `I : Type w` 
 
@@ -274,7 +276,7 @@ The middle object of the fork diagram of <https://stacks.math.columbia.edu/tag/0
 The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arrises if the family of
 arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
-def FirstObj : Type max v u := ∏ (fun i ↦ P.obj (op (X i)))
+def FirstObj : Type w := ∏ᶜ (fun i ↦ P.obj (op (X i)))
 
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj P X ⟶ _) z₁ =
@@ -288,8 +290,8 @@ The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag
 The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)` arrises if the
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
-def SecondObj : Type max v u  :=
-  ∏ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
+def SecondObj : Type w  :=
+  ∏ᶜ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P X π) (h : ∀ ij, (Pi.π _ ij : SecondObj P X π ⟶ _) z₁ =

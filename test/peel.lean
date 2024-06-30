@@ -85,7 +85,6 @@ example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
   guard_target =ₐ x - ε = y - n
   linarith
 
--- mutes `'peel 0 this' tactic does nothing [linter.unusedTactic]`
 set_option linter.unusedTactic false in
 example (x y : ℝ) (h : ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x + n = y + ε) :
     ∀ ε > 0, ∃ N : ℕ, ∀ n ≥ N, x - ε = y - n := by
@@ -213,8 +212,6 @@ example (f : ℕ → ℕ) (h : toInf f) : toInf (fun n => 2 * f n) := by
 
 /-! ## Error messages -/
 
--- mutes `'peel h' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /--
 error: Tactic 'peel' could not match quantifiers in
   x = y
@@ -224,8 +221,6 @@ and
 #guard_msgs in example (x y : ℝ) (h : x = y) : x = y := by
   peel h
 
--- mutes `'peel h' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /--
 error: Tactic 'peel' could not match quantifiers in
   ∃ y, ∀ (x : ℕ), x ≠ y
@@ -236,8 +231,6 @@ and
 example (h : ∃ y : ℕ, ∀ x, x ≠ y) : ∀ x : ℕ, ∃ y, x ≠ y := by
   peel h
 
--- mutes `'peel h' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /--
 error: Tactic 'peel' could not match quantifiers in
   ∀ (n : ℕ), 0 ≤ n

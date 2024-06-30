@@ -76,8 +76,6 @@ error: The given degree is '0'.  However,
 #guard_msgs in
 example : natDegree (X + X ^ 2 : ℕ[X]) = 0 := by compute_degree!
 
--- mutes `'compute_degree!' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /--
 error: 'compute_degree' inapplicable. The goal
   X.natDegree ≠ 0
@@ -86,8 +84,6 @@ is expected to be '≤' or '='.
 #guard_msgs in
 example : natDegree (X : ℕ[X]) ≠ 0 := by compute_degree!
 
--- mutes `'compute_degree!' tactic does nothing [linter.unusedTactic]`
-set_option linter.unusedTactic false in
 /--
 error: 'compute_degree' inapplicable. The LHS must be an application of 'natDegree', 'degree', or 'coeff'.
 -/
@@ -216,7 +212,7 @@ example : natDegree ((5 * X * C 3 : _root_.Rat[X]) ^ 4) ≤ 4 := by compute_degr
 
 example : natDegree ((C a * X) ^ 4) ≤ 4 := by compute_degree
 
-example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree; rfl
+example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by compute_degree
 
 example : natDegree ((X : ℤ[X]) ^ 4) ≤ 40 := by compute_degree!
 
