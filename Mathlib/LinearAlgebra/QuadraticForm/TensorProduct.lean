@@ -116,8 +116,7 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticForm A (A ⊗[R] M₂)⦄
   replace h (a m) : Q₁ (a ⊗ₜ m) = Q₂ (a ⊗ₜ m) := by
     rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', map_smul, map_smul, h]
   ext x
-  -- TODO: remove `using` after #14204 lands
-  induction x using TensorProduct.induction_on with
+  induction x with
   | tmul => simp [h]
   | zero => simp
   | add x y hx hy =>
