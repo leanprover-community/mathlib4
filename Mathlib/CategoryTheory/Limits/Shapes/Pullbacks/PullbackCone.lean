@@ -72,6 +72,11 @@ The file is structured as follows:
 
 After this, we repeat the same structure for the dual notions.
 
+
+TODO:
+1. pullbackcone iso API
+ (constructor?)
+
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)

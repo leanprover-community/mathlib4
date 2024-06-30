@@ -21,23 +21,38 @@ This is useful when wanting to pick a pullback.
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
 ```
-
-
+  pullback f g ---pullback.snd f g---> Y
+      |                                |
+      |                                |
+pullback.snd f g                       g
+      |                                |
+      v                                v
+      X --------------f--------------> Z
 ```
 
-TODO today:
-- documentation for basic pullback API
+* `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
+  express the fact that a given pair of morphisms has a pushout.
+* `pushout f g`: Given a `HasPushout f g` instance, this function returns the choice of a colimit
+  object corresponding to the pushout of `f` and `g`. It fits into the following diagram:
+```
+      X --------------f--------------> Y
+      |                                |
+      g                          pushout.inr f g
+      |                                |
+      v                                v
+      Z ---pushout.inl f g---> pushout f g
+```
 
 # API
--- basic pullback API (Is this missing API for accessing the cone?) (until line 184)
--- then some basic constructions (should this go in other file?)
+We provide the following API for using the universal property of `pullback f g`:
+-- lift, ext lift' lift_fst lift_snd
 
 -- functoriality pullbackComparison? (TODO: another file for these kind of results?)
 
 -- symmetry
 
 
-
+NOTE: golfed some proofs also
 
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
@@ -116,13 +131,13 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
 
 -- TODO: typo has been fixed here and in the next
 @[simp]
-theorem PullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasLimit (cospan f g)] : PullbackCone.fst (limit.cone (cospan f g)) = pullback.fst := rfl
+theorem PullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (cospan f g)] :
+    PullbackCone.fst (limit.cone (cospan f g)) = pullback.fst := rfl
 #align category_theory.limits.pullback_cone.fst_colimit_cocone CategoryTheory.Limits.PullbackCone.fst_limit_cone
 
 @[simp]
-theorem PullbackCone.snd_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasLimit (cospan f g)] : PullbackCone.snd (limit.cone (cospan f g)) = pullback.snd := rfl
+theorem PullbackCone.snd_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (cospan f g)] :
+    PullbackCone.snd (limit.cone (cospan f g)) = pullback.snd := rfl
 #align category_theory.limits.pullback_cone.snd_colimit_cocone CategoryTheory.Limits.PullbackCone.snd_limit_cone
 
 -- Porting note (#10618): simp can prove this; removed simp
@@ -335,15 +350,7 @@ theorem pullback.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y �
     (h₂ : g₁ = g₂) [HasPullback f₁ g₁] [HasPullback f₂ g₂] :
     (pullback.congrHom h₁ h₂).inv =
       pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  ext
-  · erw [pullback.lift_fst]
-    rw [Iso.inv_comp_eq]
-    erw [pullback.lift_fst_assoc]
-    rw [Category.comp_id, Category.comp_id]
-  · erw [pullback.lift_snd]
-    rw [Iso.inv_comp_eq]
-    erw [pullback.lift_snd_assoc]
-    rw [Category.comp_id, Category.comp_id]
+  ext <;> simp [Iso.inv_comp_eq]
 #align category_theory.limits.pullback.congr_hom_inv CategoryTheory.Limits.pullback.congrHom_inv
 
 instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂]
@@ -378,15 +385,7 @@ theorem pushout.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X �
     (h₂ : g₁ = g₂) [HasPushout f₁ g₁] [HasPushout f₂ g₂] :
     (pushout.congrHom h₁ h₂).inv =
       pushout.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  ext
-  · erw [pushout.inl_desc]
-    rw [Iso.comp_inv_eq, Category.id_comp]
-    erw [pushout.inl_desc]
-    rw [Category.id_comp]
-  · erw [pushout.inr_desc]
-    rw [Iso.comp_inv_eq, Category.id_comp]
-    erw [pushout.inr_desc]
-    rw [Category.id_comp]
+  ext <;> simp [Iso.comp_inv_eq]
 #align category_theory.limits.pushout.congr_hom_inv CategoryTheory.Limits.pushout.congrHom_inv
 
 theorem pushout.mapLift_comp {X Y S T S' : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) (i' : S' ⟶ S)
