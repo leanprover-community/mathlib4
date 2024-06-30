@@ -625,8 +625,6 @@ namespace List
 
 variable {α : Type*}
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- Auxiliary for `List.splitWrtComposition`. -/
 def splitWrtCompositionAux : List α → List ℕ → List (List α)
   | _, [] => []
@@ -645,8 +643,6 @@ def splitWrtComposition (l : List α) (c : Composition n) : List (List α) :=
 -- Porting note: can't refer to subeqn in Lean 4 this way, and seems to definitionally simp
 --attribute [local simp] splitWrtCompositionAux.equations._eqn_1
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 @[local simp]
 theorem splitWrtCompositionAux_cons (l : List α) (n ns) :
     l.splitWrtCompositionAux (n::ns) = take n l::(drop n l).splitWrtCompositionAux ns := by
@@ -998,7 +994,7 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
   intro i hi
   have i_lt : i < d.boundaries.card := by
     -- Porting note: relied on `convert` unfolding definitions, switched to using a `simpa`
-    simpa [CompositionAsSet.blocks, length_ofFn, Nat.succ_eq_add_one,
+    simpa [CompositionAsSet.blocks, length_ofFn,
       d.card_boundaries_eq_succ_length] using Nat.lt_succ_iff.2 hi
   have i_lt' : i < c.boundaries.card := i_lt
   have i_lt'' : i < c.length + 1 := by rwa [c.card_boundaries_eq_succ_length] at i_lt'

@@ -76,6 +76,7 @@ theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
   embedding_coe.tendsto_nhds_iff.symm
 #align ennreal.tendsto_coe ENNReal.tendsto_coe
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   embedding_coe.continuous
 #align ennreal.continuous_coe ENNReal.continuous_coe
@@ -195,8 +196,13 @@ theorem tendsto_coe_nhds_top {f : α → ℝ≥0} {l : Filter α} :
   rw [tendsto_nhds_top_iff_nnreal, atTop_basis_Ioi.tendsto_right_iff]; simp
 #align ennreal.tendsto_coe_nhds_top ENNReal.tendsto_coe_nhds_top
 
+@[simp]
+theorem tendsto_ofReal_nhds_top {f : α → ℝ} {l : Filter α} :
+    Tendsto (fun x ↦ ENNReal.ofReal (f x)) l (𝓝 ∞) ↔ Tendsto f l atTop :=
+  tendsto_coe_nhds_top.trans Real.tendsto_toNNReal_atTop_iff
+
 theorem tendsto_ofReal_atTop : Tendsto ENNReal.ofReal atTop (𝓝 ∞) :=
-  tendsto_coe_nhds_top.2 tendsto_real_toNNReal_atTop
+  tendsto_ofReal_nhds_top.2 tendsto_id
 #align ennreal.tendsto_of_real_at_top ENNReal.tendsto_ofReal_atTop
 
 theorem nhds_zero : 𝓝 (0 : ℝ≥0∞) = ⨅ (a) (_ : a ≠ 0), 𝓟 (Iio a) :=
@@ -272,7 +278,6 @@ theorem biInf_le_nhds : ∀ x : ℝ≥0∞, ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + 
     simpa only [← coe_one, top_sub_coe, top_add, Icc_self, principal_singleton] using pure_le_nhds _
   | (x : ℝ≥0) => (nhds_of_ne_top coe_ne_top).ge
 
--- Porting note (#10756): new lemma
 protected theorem tendsto_nhds_of_Icc {f : Filter α} {u : α → ℝ≥0∞} {a : ℝ≥0∞}
     (h : ∀ ε > 0, ∀ᶠ x in f, u x ∈ Icc (a - ε) (a + ε)) : Tendsto u f (𝓝 a) := by
   refine Tendsto.mono_right ?_ (biInf_le_nhds _)
@@ -1525,21 +1530,18 @@ theorem ediam_eq {s : Set ℝ} (h : Bornology.IsBounded s) :
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · simp
   refine le_antisymm (Metric.ediam_le_of_forall_dist_le fun x hx y hy => ?_) ?_
-  · have := Real.subset_Icc_sInf_sSup_of_isBounded h
-    exact Real.dist_le_of_mem_Icc (this hx) (this hy)
+  · exact Real.dist_le_of_mem_Icc (h.subset_Icc_sInf_sSup hx) (h.subset_Icc_sInf_sSup hy)
   · apply ENNReal.ofReal_le_of_le_toReal
     rw [← Metric.diam, ← Metric.diam_closure]
-    have h' := Real.isBounded_iff_bddBelow_bddAbove.1 h
     calc sSup s - sInf s ≤ dist (sSup s) (sInf s) := le_abs_self _
-    _ ≤ Metric.diam (closure s) := dist_le_diam_of_mem h.closure (csSup_mem_closure hne h'.2)
-        (csInf_mem_closure hne h'.1)
+    _ ≤ Metric.diam (closure s) := dist_le_diam_of_mem h.closure (csSup_mem_closure hne h.bddAbove)
+        (csInf_mem_closure hne h.bddBelow)
 #align real.ediam_eq Real.ediam_eq
 
 /-- For a bounded set `s : Set ℝ`, its `Metric.diam` is equal to `sSup s - sInf s`. -/
 theorem diam_eq {s : Set ℝ} (h : Bornology.IsBounded s) : Metric.diam s = sSup s - sInf s := by
   rw [Metric.diam, Real.ediam_eq h, ENNReal.toReal_ofReal]
-  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
-  exact sub_nonneg.2 (Real.sInf_le_sSup s h.1 h.2)
+  exact sub_nonneg.2 (Real.sInf_le_sSup s h.bddBelow h.bddAbove)
 #align real.diam_eq Real.diam_eq
 
 @[simp]

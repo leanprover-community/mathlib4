@@ -8,6 +8,7 @@ import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Tactic.Generalize
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 #align_import topology.gluing from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -388,7 +389,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
   -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
   have : Continuous (h.t i j) := map_continuous (self := ContinuousMap.toContinuousMapClass) _
   set_option tactic.skipAssignedInstances false in
-  exact ((Continuous.subtype_mk (by continuity) _).prod_mk (by continuity)).subtype_mk _
+  exact ((Continuous.subtype_mk (by fun_prop) _).prod_mk (by fun_prop)).subtype_mk _
 
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
@@ -507,7 +508,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion (TopCat.of α) (U i))
-  use Set.inter_subset_left _ _
+  use Set.inter_subset_left
   constructor
   · erw [← Set.image_preimage_eq_inter_range]
     apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap

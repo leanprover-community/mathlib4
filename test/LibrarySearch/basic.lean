@@ -6,6 +6,7 @@ import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
 
+set_option linter.setOption false
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.

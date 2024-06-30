@@ -261,7 +261,6 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _ _)
 #align list.prev_mem List.prev_mem
 
--- Porting note (#10756): new theorem
 theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
     next l (l.get i) (get_mem _ _ _) = l.get ⟨(i + 1) % l.length,
       Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩
@@ -294,7 +293,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
           dsimp
           rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
             Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
-        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
+        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), hi']
         · exact hn.of_cons
       · rw [getLast_eq_get]
         intro h
@@ -303,7 +302,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       · rw [get_cons_succ]; exact get_mem _ _ _
 
 set_option linter.deprecated false in
-@[deprecated next_get] -- 2023-01-27
+@[deprecated next_get (since := "2023-01-27")]
 theorem next_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     next l (l.nthLe n hn) (nthLe_mem _ _ _) =
       l.nthLe ((n + 1) % l.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) :=
@@ -420,14 +419,13 @@ theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
   exact (reverse_reverse l).symm
 #align list.next_reverse_eq_prev List.next_reverse_eq_prev
 
-set_option linter.deprecated false in
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
     l.next x hx = l'.next x (h.mem_iff.mp hx) := by
-  obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
+  obtain ⟨k, hk, rfl⟩ := get_of_mem hx
   obtain ⟨n, rfl⟩ := id h
-  rw [next_nthLe _ hn]
-  simp_rw [← nthLe_rotate' _ n k]
-  rw [next_nthLe _ (h.nodup_iff.mp hn), ← nthLe_rotate' _ n]
+  rw [next_get _ hn]
+  simp_rw [get_eq_get_rotate _ n k]
+  rw [next_get _ (h.nodup_iff.mp hn), get_eq_get_rotate _ n]
   simp [add_assoc]
 #align list.is_rotated_next_eq List.isRotated_next_eq
 
@@ -507,8 +505,8 @@ theorem empty_eq : ∅ = @nil α :=
 instance : Inhabited (Cycle α) :=
   ⟨nil⟩
 
-/-- An induction principle for `Cycle`. Use as `induction s using Cycle.induction_on`. -/
-@[elab_as_elim]
+/-- An induction principle for `Cycle`. Use as `induction s`. -/
+@[elab_as_elim, induction_eliminator]
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
   Quotient.inductionOn' s fun l => by
@@ -844,7 +842,6 @@ nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α)
   Quotient.inductionOn' s prev_reverse_eq_next
 #align cycle.prev_reverse_eq_next Cycle.prev_reverse_eq_next
 
--- Porting note (#10756): new theorem
 @[simp]
 nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : α)
     (hx : x ∈ s.reverse) :
@@ -857,7 +854,6 @@ theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ 
   simp [← prev_reverse_eq_next]
 #align cycle.next_reverse_eq_prev Cycle.next_reverse_eq_prev
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem next_reverse_eq_prev' (s : Cycle α) (hs : Nodup s.reverse) (x : α) (hx : x ∈ s.reverse) :
     s.reverse.next hs x hx = s.prev (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) := by
@@ -968,7 +964,7 @@ variable {r : α → α → Prop} {s : Cycle α}
 
 theorem Chain.imp {r₁ r₂ : α → α → Prop} (H : ∀ a b, r₁ a b → r₂ a b) (p : Chain r₁ s) :
     Chain r₂ s := by
-  induction s using Cycle.induction_on
+  induction s
   · trivial
   · rw [chain_coe_cons] at p ⊢
     exact p.imp H
@@ -980,7 +976,7 @@ theorem chain_mono : Monotone (Chain : (α → α → Prop) → Cycle α → Pro
 #align cycle.chain_mono Cycle.chain_mono
 
 theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := by
-  induction' s using Cycle.induction_on with a l _
+  induction' s with a l _
   · exact fun _ => Cycle.Chain.nil r
   intro hs
   have Ha : a ∈ (a :: l : Cycle α) := by simp
@@ -1006,7 +1002,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
 
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by
-    induction' s using Cycle.induction_on with a l _
+    induction' s with a l _
     · exact fun _ b hb => (not_mem_nil _ hb).elim
     intro hs b hb c hc
     rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
@@ -1021,7 +1017,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
 #align cycle.chain_iff_pairwise Cycle.chain_iff_pairwise
 
 theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
-  induction' s using Cycle.induction_on with a l _ h
+  induction' s with a l _ h
   · rfl
   · have ha := mem_cons_self a l
     exact (irrefl_of r a <| chain_iff_pairwise.1 h a ha a ha).elim

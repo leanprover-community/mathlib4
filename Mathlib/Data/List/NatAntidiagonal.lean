@@ -79,14 +79,14 @@ theorem antidiagonal_succ' {n : ℕ} :
     Nat.sub_self, singleton_append, map_map, map]
   congr 1
   apply map_congr
-  simp (config := { contextual := true }) [le_of_lt, Nat.succ_eq_add_one, Nat.sub_add_comm]
+  simp (config := { contextual := true }) [le_of_lt, Nat.sub_add_comm]
 #align list.nat.antidiagonal_succ' List.Nat.antidiagonal_succ'
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
   rw [antidiagonal_succ']
-  simp only [antidiagonal_succ, map_cons, Prod_map, id_eq, map_map, cons_append, cons.injEq,
+  simp only [antidiagonal_succ, map_cons, Prod.map_apply, id_eq, map_map, cons_append, cons.injEq,
     append_cancel_right_eq, true_and]
   ext
   simp

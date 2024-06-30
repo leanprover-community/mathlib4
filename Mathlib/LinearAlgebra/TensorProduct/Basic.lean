@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Submodule.Bilinear
-import Mathlib.GroupTheory.Congruence
-import Mathlib.LinearAlgebra.Basic
+import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.Tactic.Abel
 import Mathlib.Tactic.SuppressCompilation
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
@@ -13,22 +13,26 @@ import Mathlib.Tactic.SuppressCompilation
 /-!
 # Tensor product of modules over commutative semirings.
 
-This file constructs the tensor product of modules over commutative semirings. Given a semiring
-`R` and modules over it `M` and `N`, the standard construction of the tensor product is
+This file constructs the tensor product of modules over commutative semirings. Given a semiring `R`
+and modules over it `M` and `N`, the standard construction of the tensor product is
 `TensorProduct R M N`. It is also a module over `R`.
 
-It comes with a canonical bilinear map `M → N → TensorProduct R M N`.
+It comes with a canonical bilinear map
+`TensorProduct.mk R M N : M →ₗ[R] N →ₗ[R] TensorProduct R M N`.
 
-Given any bilinear map `M → N → P`, there is a unique linear map `TensorProduct R M N → P` whose
-composition with the canonical bilinear map `M → N → TensorProduct R M N` is the given bilinear
-map `M → N → P`.
+Given any bilinear map `f : M →ₗ[R] N →ₗ[R] P`, there is a unique linear map
+`TensorProduct.lift f : TensorProduct R M N →ₗ[R] P` whose composition with the canonical bilinear
+map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+`TensorProduct.lift.unique`.
 
-We start by proving basic lemmas about bilinear maps.
 
-## Notations
+## Notation
 
-This file uses the localized notation `M ⊗ N` and `M ⊗[R] N` for `TensorProduct R M N`, as well
-as `m ⊗ₜ n` and `m ⊗ₜ[R] n` for `TensorProduct.tmul R m n`.
+* This file introduces the notation `M ⊗ N` and `M ⊗[R] N` for the tensor product space
+  `TensorProduct R M N`.
+* It introduces the notation `m ⊗ₜ n` and `m ⊗ₜ[R] n` for the tensor product of two elements,
+  otherwise written as `TensorProduct.tmul R m n`.
+
 
 ## Tags
 
@@ -131,7 +135,7 @@ infixl:100 " ⊗ₜ " => tmul _
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- Porting note: make the arguments of induction_on explicit
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
@@ -499,7 +503,7 @@ theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := 
 theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
     (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n) :
     ∃ m n, x = m ⊗ₜ n := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero =>
     use 0, 0
     rw [TensorProduct.zero_tmul]

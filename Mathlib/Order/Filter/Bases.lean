@@ -1107,10 +1107,10 @@ theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGene
     Nat.recOn n (hs.index _ <| this 0) fun n xn =>
       hs.index _ <| inter_mem (this <| n + 1) (hs.mem_of_mem xn.2)
   have x_anti : Antitone fun i => s (x i).1 :=
-    antitone_nat_of_succ_le fun i => (hs.set_index_subset _).trans (inter_subset_right _ _)
+    antitone_nat_of_succ_le fun i => (hs.set_index_subset _).trans inter_subset_right
   have x_subset : ∀ i, s (x i).1 ⊆ x' i := by
     rintro (_ | i)
-    exacts [hs.set_index_subset _, (hs.set_index_subset _).trans (inter_subset_left _ _)]
+    exacts [hs.set_index_subset _, (hs.set_index_subset _).trans inter_subset_left]
   refine ⟨fun i => (x i).1, fun i => (x i).2, ?_⟩
   have : (⨅ i, 𝓟 (s (x i).1)).HasAntitoneBasis fun i => s (x i).1 := .iInf_principal x_anti
   convert this

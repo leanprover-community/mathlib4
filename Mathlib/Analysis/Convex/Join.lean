@@ -118,8 +118,8 @@ theorem convexJoin_subset (hs : s ⊆ u) (ht : t ⊆ u) (hu : Convex 𝕜 u) : c
 #align convex_join_subset convexJoin_subset
 
 theorem convexJoin_subset_convexHull (s t : Set E) : convexJoin 𝕜 s t ⊆ convexHull 𝕜 (s ∪ t) :=
-  convexJoin_subset ((subset_union_left _ _).trans <| subset_convexHull _ _)
-      ((subset_union_right _ _).trans <| subset_convexHull _ _) <|
+  convexJoin_subset (subset_union_left.trans <| subset_convexHull _ _)
+      (subset_union_right.trans <| subset_convexHull _ _) <|
     convex_convexHull _ _
 #align convex_join_subset_convex_hull convexJoin_subset_convexHull
 

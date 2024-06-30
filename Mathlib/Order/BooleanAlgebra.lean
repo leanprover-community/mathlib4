@@ -738,7 +738,6 @@ instance OrderDual.instBooleanAlgebra : BooleanAlgebra αᵒᵈ where
 theorem sup_inf_inf_compl : x ⊓ y ⊔ x ⊓ yᶜ = x := by rw [← sdiff_eq, sup_inf_sdiff _ _]
 #align sup_inf_inf_compl sup_inf_inf_compl
 
-@[simp]
 theorem compl_sdiff : (x \ y)ᶜ = x ⇨ y := by
   rw [sdiff_eq, himp_eq, compl_inf, compl_compl, sup_comm]
 #align compl_sdiff compl_sdiff
@@ -873,10 +872,11 @@ protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [B
 
 end lift
 
-instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit := by
-  refine'
-  { PUnit.instBiheytingAlgebra with
-    .. } <;> (intros; trivial)
+instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where
+  __ := PUnit.instBiheytingAlgebra
+  le_sup_inf := _
+  inf_compl_le_bot _ := trivial
+  top_le_sup_compl _ := trivial
 
 namespace DistribLattice
 

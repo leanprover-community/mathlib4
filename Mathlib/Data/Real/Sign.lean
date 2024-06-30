@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.NormNum.Inv
 
 #align_import data.real.sign from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

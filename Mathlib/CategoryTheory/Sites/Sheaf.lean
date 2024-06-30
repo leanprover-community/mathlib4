@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import category_theory.sites.sheaf from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
@@ -76,6 +77,13 @@ https://stacks.math.columbia.edu/tag/00VR
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
 #align category_theory.presheaf.is_sheaf CategoryTheory.Presheaf.IsSheaf
+
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike in
+/-- Condition that a presheaf with values in a concrete category is separated for
+a Grothendieck topology. -/
+def IsSeparated (P : Cᵒᵖ ⥤ A) [ConcreteCategory A] : Prop :=
+  ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : P.obj (op X)),
+    (∀ (Y : C) (f : Y ⟶ X) (_ : S f), P.map f.op x = P.map f.op y) → x = y
 
 section LimitSheafCondition
 
@@ -193,7 +201,7 @@ theorem isSheaf_iff_isLimit :
     `S` of `J`, the natural cone associated to `P` and `S` admits at most one morphism from every
     cone in the same category. -/
 theorem isSeparated_iff_subsingleton :
-    (∀ E : A, IsSeparated J (P ⋙ coyoneda.obj (op E))) ↔
+    (∀ E : A, Presieve.IsSeparated J (P ⋙ coyoneda.obj (op E))) ↔
       ∀ ⦃X : C⦄ (S : Sieve X), S ∈ J X → ∀ c, Subsingleton (c ⟶ P.mapCone S.arrows.cocone.op) :=
   ⟨fun h _ S hS => (subsingleton_iff_isSeparatedFor P S).2 fun E => h E.unop S hS, fun h E _ S hS =>
     (subsingleton_iff_isSeparatedFor P S).1 (h S hS) (op E)⟩
@@ -232,20 +240,20 @@ variable {J}
   the `x`s to obtain a single morphism `E ⟶ P.obj (op X)`. -/
 def IsSheaf.amalgamate {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
     (hP : Presheaf.IsSheaf J P) (S : J.Cover X) (x : ∀ I : S.Arrow, E ⟶ P.obj (op I.Y))
-    (hx : ∀ I : S.Relation, x I.fst ≫ P.map I.g₁.op = x I.snd ≫ P.map I.g₂.op) : E ⟶ P.obj (op X) :=
-  (hP _ _ S.condition).amalgamate (fun Y f hf => x ⟨Y, f, hf⟩) fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ w =>
-    hx ⟨Y₁, Y₂, Z, g₁, g₂, f₁, f₂, h₁, h₂, w⟩
+    (hx : ∀ ⦃I₁ I₂ : S.Arrow⦄ (r : I₁.Relation I₂),
+       x I₁ ≫ P.map r.g₁.op = x I₂ ≫ P.map r.g₂.op) : E ⟶ P.obj (op X) :=
+  (hP _ _ S.condition).amalgamate (fun Y f hf => x ⟨Y, f, hf⟩) fun _ _ _ _ _ _ _ h₁ h₂ w =>
+    @hx { hf := h₁ } { hf := h₂ } { w := w }
 #align category_theory.presheaf.is_sheaf.amalgamate CategoryTheory.Presheaf.IsSheaf.amalgamate
 
 @[reassoc (attr := simp)]
 theorem IsSheaf.amalgamate_map {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
     (hP : Presheaf.IsSheaf J P) (S : J.Cover X) (x : ∀ I : S.Arrow, E ⟶ P.obj (op I.Y))
-    (hx : ∀ I : S.Relation, x I.fst ≫ P.map I.g₁.op = x I.snd ≫ P.map I.g₂.op) (I : S.Arrow) :
+    (hx : ∀ ⦃I₁ I₂ : S.Arrow⦄ (r : I₁.Relation I₂),
+       x I₁ ≫ P.map r.g₁.op = x I₂ ≫ P.map r.g₂.op)
+    (I : S.Arrow) :
     hP.amalgamate S x hx ≫ P.map I.f.op = x _ := by
-  rcases I with ⟨Y, f, hf⟩
-  apply
-    @Presieve.IsSheafFor.valid_glue _ _ _ _ _ _ (hP _ _ S.condition) (fun Y f hf => x ⟨Y, f, hf⟩)
-      (fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ w => hx ⟨Y₁, Y₂, Z, g₁, g₂, f₁, f₂, h₁, h₂, w⟩) f hf
+  apply (hP _ _ S.condition).valid_glue
 #align category_theory.presheaf.is_sheaf.amalgamate_map CategoryTheory.Presheaf.IsSheaf.amalgamate_map
 
 theorem IsSheaf.hom_ext {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
@@ -419,6 +427,12 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
       rfl
 #align category_theory.is_sheaf_iff_is_sheaf_of_type CategoryTheory.isSheaf_iff_isSheaf_of_type
 
+variable {J} in
+lemma Presheaf.IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hP : Presheaf.IsSheaf J P)
+    {X : C} (S : Sieve X) (hS : S ∈ J X) : Presieve.IsSheafFor P S.arrows := by
+  rw [isSheaf_iff_isSheaf_of_type] at hP
+  exact hP S hS
+
 /-- The category of sheaves taking values in Type is the same as the category of set-valued sheaves.
 -/
 @[simps]
@@ -535,7 +549,8 @@ section MultiequalizerConditions
 
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
-  lift := fun E : Multifork _ => hP.amalgamate S (fun I => E.ι _) fun I => E.condition _
+  lift := fun E : Multifork _ => hP.amalgamate S (fun I => E.ι _)
+    (fun _ _ r => E.condition ⟨_, _, r⟩)
   fac := by
     rintro (E : Multifork _) (a | b)
     · apply hP.amalgamate_map
@@ -558,7 +573,8 @@ theorem isSheaf_iff_multifork :
   intro h E X S hS x hx
   let T : J.Cover X := ⟨S, hS⟩
   obtain ⟨hh⟩ := h _ T
-  let K : Multifork (T.index P) := Multifork.ofι _ E (fun I => x I.f I.hf) fun I => hx _ _ _ _ I.w
+  let K : Multifork (T.index P) := Multifork.ofι _ E (fun I => x I.f I.hf)
+    (fun I => hx _ _ _ _ I.r.w)
   use hh.lift K
   dsimp; constructor
   · intro Y f hf
