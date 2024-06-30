@@ -3,9 +3,8 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
+import Mathlib.Data.Real.EReal
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Topology.Instances.EReal
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Extended Nonnegative Real Logarithm
@@ -199,3 +198,4 @@ lemma log_inv {x : ℝ≥0∞} : log x⁻¹ = - log x := by
 end Morphism
 
 end ENNReal
+#minimize_imports

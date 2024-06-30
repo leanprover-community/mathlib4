@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealExp
+import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Properties of the extended logarithm and exponential
@@ -166,3 +168,4 @@ end ENNReal
 
 instance : TopologicalSpace.MetrizableSpace EReal :=
   ENNReal.logOrderIso.symm.toHomeomorph.embedding.metrizableSpace
+#minimize_imports
