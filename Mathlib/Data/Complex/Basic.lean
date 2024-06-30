@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.Lemmas
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 import Mathlib.Tactic.Ring

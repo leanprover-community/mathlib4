@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Module.Equiv
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.Lemmas
 
 /-!
 # Notation for star-linear maps

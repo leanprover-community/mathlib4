@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.Lemmas
 
 #align_import algebra.star.big_operators from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
