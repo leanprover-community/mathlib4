@@ -81,7 +81,6 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op U)) (x : U) :
   rw [X.toRingedSpace.mem_basicOpen f x]
   exact (X.evaluation_ne_zero_iff_isUnit x f)
 
-@[simp]
 lemma Γevaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
     X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
   evaluation_ne_zero_iff_mem_basicOpen X f ⟨x, trivial⟩
