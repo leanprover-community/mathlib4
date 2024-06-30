@@ -28,7 +28,7 @@ A lax functor `F` between bicategories `B` and `C` consists of
 
 ## Future work
 
-Some constructions in the Bicategory library have only been done in terms of oplax functors,
+Some constructions in the bicategory library have only been done in terms of oplax functors,
 since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A possible project would
 be to mirror these constructions for lax functors.
 
@@ -166,7 +166,7 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : L
       whiskerLeft_comp]
 
 /-- A structure on an Lax functor that promotes an Lax functor to a pseudofunctor.
-See `Pseudofunctor.mkOfLax` (TODO).
+See `Pseudofunctor.mkOfLax`.
 -/
 structure PseudoCore (F : LaxFunctor B C) where
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)

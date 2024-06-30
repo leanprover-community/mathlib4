@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yuma Mizuno
+Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 
 #align_import category_theory.bicategory.functor from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -18,24 +19,6 @@ several constructors for pseudofunctors:
   `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
 * `pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe
   isomorphisms.
-
-The additional constructors are useful when constructing a pseudofunctor where the construction
-of the oplax functor associated with it is already done. For example, the composition of
-pseudofunctors can be defined by using the composition of oplax functors as follows:
-```lean
-def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
-  mkOfOplax ((F : OplaxFunctor B C).comp G)
-  { mapIdIso := fun a ↦ (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
-    mapCompIso := fun f g ↦
-      (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
-```
-although the composition of pseudofunctors in this file is defined by using the default constructor
-because `obviously` wasn't smart enough in mathlib3 and the porter of this file was too lazy
-to investigate this issue further in mathlib4. Similarly, the composition is also defined by using
-`mkOfOplax'` after giving appropriate instances for `IsIso`. The former constructor
-`mkOfOplax` requires isomorphisms as data type `Iso`, and so it is useful if you don't want
-to forget the definitions of the inverses. On the other hand, the latter constructor
-`mkOfOplax'` is useful if you want to use propositional type class `IsIso`.
 
 ## Main definitions
 * `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`
@@ -116,10 +99,6 @@ attribute [reassoc]
 attribute [simp]
   map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor map₂_right_unitor
 
-section
-
-open Iso
-
 /-- The underlying prelax functor. -/
 add_decl_doc Pseudofunctor.toPrelaxFunctor
 
@@ -150,10 +129,11 @@ variable (F : Pseudofunctor B C)
 #noalign category_theory.pseudofunctor.to_prelax_functor_map₂
 
 /-- The oplax functor associated with a pseudofunctor. -/
+@[simps]
 def toOplax : OplaxFunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => (F.mapId a).hom
-  mapComp := fun f g => (F.mapComp f g).hom
+  mapId a := (F.mapId a).hom
+  mapComp f g := (F.mapComp f g).hom
 #align category_theory.pseudofunctor.to_oplax CategoryTheory.Pseudofunctor.toOplax
 
 instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
@@ -163,34 +143,17 @@ instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
 -- Porting note: `toOplax_eq_coe` is a syntactic tautology in lean 4
 #noalign category_theory.pseudofunctor.to_oplax_eq_coe
 
-@[simp]
-theorem to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
-  rfl
-#align category_theory.pseudofunctor.to_oplax_obj CategoryTheory.Pseudofunctor.to_oplax_obj
+/-- The lax functor associated with a pseudofunctor. -/
+@[simps]
+def toLax : LaxFunctor B C where
+  toPrelaxFunctor := F.toPrelaxFunctor
+  mapId a := (F.mapId a).inv
+  mapComp f g := (F.mapComp f g).inv
+  map₂_leftUnitor {a b} f := by rw [← IsIso.inv_eq_inv, ←F.map₂_inv]; simp
+  map₂_rightUnitor {a b} f := by rw [← IsIso.inv_eq_inv, ←F.map₂_inv]; simp
 
-@[simp]
-theorem to_oplax_map {a b : B} (f : a ⟶ b) : (F : OplaxFunctor B C).map f = F.map f :=
-  rfl
-
-@[simp]
-theorem to_oplax_map₂ {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
-    (F : OplaxFunctor B C).map₂ η = F.map₂ η :=
-  rfl
-
--- Porting note: to_oplax_map₂ related `OplaxFunctor.map₂` to `Pseudofunctor.map₂` but neither
--- of these exist
-#noalign category_theory.pseudofunctor.to_oplax_map₂
-
-@[simp]
-theorem to_oplax_mapId (a : B) : (F : OplaxFunctor B C).mapId a = (F.mapId a).hom :=
-  rfl
-#align category_theory.pseudofunctor.to_oplax_map_id CategoryTheory.Pseudofunctor.to_oplax_mapId
-
-@[simp]
-theorem to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
-    (F : OplaxFunctor B C).mapComp f g = (F.mapComp f g).hom :=
-  rfl
-#align category_theory.pseudofunctor.to_oplax_map_comp CategoryTheory.Pseudofunctor.to_oplax_mapComp
+instance hasCoeToLax : Coe (Pseudofunctor B C) (LaxFunctor B C) :=
+  ⟨toLax⟩
 
 /-- The identity pseudofunctor. -/
 @[simps]
@@ -217,47 +180,62 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   map₂_right_unitor f := by dsimp; simp
 #align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
 
+section
+
+open Iso
+
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
 def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
-  map₂_whisker_left := fun f g h η => by
-    dsimp
+  map₂_whisker_left f g h η := by
     rw [F'.mapCompIso_hom f g, ← F.mapComp_naturality_right_assoc, ← F'.mapCompIso_hom f h,
       hom_inv_id, comp_id]
-  map₂_whisker_right := fun η h => by
-    dsimp
+  map₂_whisker_right η h := by
     rw [F'.mapCompIso_hom _ h, ← F.mapComp_naturality_left_assoc, ← F'.mapCompIso_hom _ h,
       hom_inv_id, comp_id]
-  map₂_associator := fun f g h => by
-    dsimp
+  map₂_associator f g h := by
     rw [F'.mapCompIso_hom (f ≫ g) h, F'.mapCompIso_hom f g, ← F.map₂_associator_assoc, ←
       F'.mapCompIso_hom f (g ≫ h), ← F'.mapCompIso_hom g h, whiskerLeft_hom_inv_assoc,
       hom_inv_id, comp_id]
 #align category_theory.pseudofunctor.mk_of_oplax CategoryTheory.Pseudofunctor.mkOfOplax
 
-/-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
--/
-@[simps]
+/-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
+@[simps!]
 noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
-    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C where
-  toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => asIso (F.mapId a)
-  mapComp := fun f g => asIso (F.mapComp f g)
-  map₂_whisker_left := fun f g h η => by
-    dsimp
-    rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_right]
-  map₂_whisker_right := fun η h => by
-    dsimp
-    rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_left]
-  map₂_associator := fun f g h => by
-    dsimp
-    simp only [← assoc]
-    rw [IsIso.eq_comp_inv, ← inv_whiskerLeft, IsIso.eq_comp_inv]
-    simp only [assoc, F.map₂_associator]
+    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C :=
+  mkOfOplax F {
+    mapIdIso := fun a ↦ asIso (F.mapId a),
+    mapCompIso := fun f g ↦ asIso (F.mapComp f g) }
 #align category_theory.pseudofunctor.mk_of_oplax' CategoryTheory.Pseudofunctor.mkOfOplax'
+
+/-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
+@[simps]
+def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore): Pseudofunctor B C where
+  toPrelaxFunctor := F.toPrelaxFunctor
+  mapId := F'.mapIdIso
+  mapComp := F'.mapCompIso
+  map₂_whisker_left f g h η := by
+    rw [F'.mapCompIso_inv, ← LaxFunctor.mapComp_naturality_right, ← F'.mapCompIso_inv,
+      hom_inv_id_assoc]
+  map₂_whisker_right η h := by
+    rw [F'.mapCompIso_inv, ← LaxFunctor.mapComp_naturality_left, ← F'.mapCompIso_inv,
+      hom_inv_id_assoc]
+  map₂_associator {a b c d} f g h := by
+    rw [F'.mapCompIso_inv, F'.mapCompIso_inv, ← inv_comp_eq, ← IsIso.inv_comp_eq]
+    simp
+  map₂_left_unitor {a b} f := by rw [← IsIso.inv_eq_inv, ← F.map₂_inv]; simp
+  map₂_right_unitor {a b} f := by rw [← IsIso.inv_eq_inv, ← F.map₂_inv]; simp
+
+/-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
+@[simps!]
+noncomputable def mkOfLax' (F : LaxFunctor B C) [∀ a, IsIso (F.mapId a)]
+    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C :=
+  mkOfLax F
+  { mapIdIso := fun a => (asIso (F.mapId a)).symm
+    mapCompIso := fun f g => (asIso (F.mapComp f g)).symm }
 
 end
 
