@@ -593,7 +593,7 @@ variable {J P} in
 /-- If `F : Cᵒᵖ ⥤ A` is a sheaf for a Grothendieck topology `J` on `C`,
 and `S` is a cover of `X : C`, then the multifork `S.multifork F` is limit. -/
 def IsSheaf.isLimitMultifork
-     (hP : Presheaf.IsSheaf J P) {X : C} (S : J.Cover X) : IsLimit (S.multifork P) := by
+    (hP : Presheaf.IsSheaf J P) {X : C} (S : J.Cover X) : IsLimit (S.multifork P) := by
   rw [Presheaf.isSheaf_iff_multifork] at hP
   exact (hP X S).some
 
