@@ -3,14 +3,40 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
-import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
-import Mathlib.CategoryTheory.Limits.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+
 import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
+import Mathlib.CategoryTheory.MorphismProperty.Limits
+
+/-!
+
+# Representable morphisms of presheaves
+
+In this file we define and develop basic results on the representability of morphisms of presheaves.
+
+## Main definitions
+
+* `Presheaf.representable` is a `MorphismProperty` expressing the fact that a morphism of presheaves
+  is representable.
+* `MorphismProperty.presheaf`: given a `P : MorphismProperty C`, we say that a morphism of
+  presheaves `f : F ⟶ G` satisfies `P.presheaf` if it is representable, and the property `P`
+  holds for the preimage under yoneda of pullbacks of `f` by morphisms `g : yoneda.obj X ⟶ G`.
+
+## API
+
+
+## Main results
+* `presheaf_isStableUnderComposition`: Being representable is stable under composition.
+* `presheaf_stableUnderBaseChange`: Being representable is stable under base change.
+* `presheaf.ofIso`: Isomorphisms are representable
+
+* `presheaf_yoneda_map`: If `f : X ⟶ Y` satisfies `P`, and `P` is stable under compostions,
+  then `yoneda.map f` satisfies `P.presheaf`.
+
+## TODO
+Prove the corresponding results (comp / iso / respects iso etc) for `P.presheaf`.
+
+-/
 
 
 namespace CategoryTheory
@@ -67,6 +93,9 @@ pullback of `f` and `g`-/
 noncomputable def pullbackIso : yoneda.obj (hf.pullback g) ≅ Limits.pullback f g :=
   Functor.reprW (hF := hf g)
 
+-- (Calle): I think the following API could probably be improved somewhat, as I am still not
+-- so familiar with the pullback API.
+
 /-- The pullback cone obtained by the isomorphism `hf.pullbackIso`. -/
 noncomputable def pullbackCone : PullbackCone f g :=
   PullbackCone.mk ((hf.pullbackIso g).hom ≫ pullback.fst)
@@ -94,6 +123,9 @@ lemma yoneda_map_snd : yoneda.map (hf.snd g) = (hf.pullbackCone g).snd := by
 lemma yoneda_map_fst : yoneda.map (hf'.fst g) = (hf'.pullbackCone g).fst := by
   apply Functor.FullyFaithful.map_preimage
 
+/- (Calle): A possibly better approach to the API would be to construct pullbackCone
+so that `yoneda.map (hf.snd g)` is definitionally `pullbackCone.snd`. Then `condition_yoneda`
+would just bee pullbackCone.condition -/
 @[reassoc]
 lemma condition_yoneda : (hf.pullbackCone g).fst ≫ f = yoneda.map (hf.snd g) ≫ g := by
   simpa only [yoneda_map_snd] using (hf.pullbackCone g).condition
@@ -111,41 +143,31 @@ lemma condition' {X Y Z : C} {f : X ⟶ Z} (g : yoneda.obj Y ⟶ yoneda.obj Z)
 
 variable {g}
 
--- can use this: IsLimit.hom_ext (in terms of pullback cones) somewhere here?
-
 /-- Two morphisms `a b : Z ⟶ hf.pullback g` are equal if
 * Their compositions (in `C`) with `hf.snd g : hf.pullback  ⟶ X` are equal.
-* The compositions of `yoneda.map a` and `yoneda.map b` with `hf.pullbackCone g`.fst are equal. -/
+* The compositions of `yoneda.map a` and `yoneda.map b` with `(hf.pullbackCone g).fst` are equal. -/
 @[ext 100]
 lemma hom_ext {Z : C} {a b : Z ⟶ hf.pullback g}
     (h₁ : yoneda.map a ≫ (hf.pullbackCone g).fst = yoneda.map b ≫ (hf.pullbackCone g).fst)
-    (h₂ : a ≫ hf.snd g = b ≫ hf.snd g) : a = b := by
-  apply yoneda.map_injective
-  -- TODO: simplify proof from here
-  rw [← cancel_mono (hf.pullbackIso g).hom]
-  ext1
-  · simpa using h₁
-  · simpa [yoneda_map_snd] using yoneda.congr_map h₂
+    (h₂ : a ≫ hf.snd g = b ≫ hf.snd g) : a = b :=
+  yoneda.map_injective <|
+    PullbackCone.IsLimit.hom_ext (hf.pullbackConeIsLimit g) h₁ (by simpa using yoneda.congr_map h₂)
 
-/-- TODO -/
+/-- In the case of a representable morphism `f' : yoneda.obj Y ⟶ G`, whose codomain lies
+in the image of yoneda, we get that two morphism `a b : Z ⟶ hf.pullback g` are equal if
+* Their compositions (in `C`) with `hf'.snd g : hf.pullback  ⟶ X` are equal.
+* Their compositions (in `C`) with `hf'.fst g : hf.pullback  ⟶ X` are equal. -/
 @[ext]
-lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g}
-    (h₁ : a ≫ hf'.fst g = b ≫ hf'.fst g)
+lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g} (h₁ : a ≫ hf'.fst g = b ≫ hf'.fst g)
     (h₂ : a ≫ hf'.snd g = b ≫ hf'.snd g) : a = b :=
   hf'.hom_ext (by simpa [yoneda_map_fst] using yoneda.congr_map h₁) h₂
 
 section
 
-/- In this section we develop some API for pulling back the universal property
-of `yoneda.obj (hf.pullback g)` to `C`.
-
-In particular, we will develop analogues of ..., where as many properties as possible are
-phrased inside the category `C`. -/
-
 variable {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X) (hi : i ≫ f = yoneda.map h ≫ g)
 
-/-- The universal property of `yoneda.obj (hf.pullback g)`, when applied to representable objects.
--/
+/-- The lift (in `C`) obtained from the universal property of `yoneda.obj (hf.pullback g)`, in the
+case when one of the morphisms lies in the image of `yoneda.map`. -/
 noncomputable def lift : Z ⟶ hf.pullback g :=
   Yoneda.fullyFaithful.preimage <| PullbackCone.IsLimit.lift (hf.pullbackConeIsLimit g) _ _ hi
 
@@ -197,6 +219,7 @@ instance : IsIso (hf'.symmetry hg) :=
 
 end
 
+/-- When `C` has pullbacks, then `yoneda.map f` is representable for any `f : X ⟶ Y`. -/
 lemma yoneda_map [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
     Presheaf.representable (yoneda.map f) := fun Z g ↦ by
   obtain ⟨g, rfl⟩ := yoneda.map_surjective g
@@ -208,11 +231,16 @@ namespace MorphismProperty
 
 variable {F G : Cᵒᵖ ⥤ Type v} (P : MorphismProperty C)
 
+/-- Given a morphism property `P` in a category `C`, a morphism `f : F ⟶ G` of presheaves in the
+category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
+* The morphism is representable.
+* The property `P` holds for the pullback of `f` by any morphism `g : yoneda.obj X ⟶ G`. -/
 def presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v) :=
   fun _ G f ↦ ∃ (hf : Presheaf.representable f), ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), P (hf.snd g)
 
 variable {P}
 
+/-- A morphism satisfying `P.presheaf` is representable. -/
 lemma presheaf.representable {f : F ⟶ G} (hf : P.presheaf f) : Presheaf.representable f :=
   hf.choose
 
@@ -230,8 +258,11 @@ lemma _root_.CategoryTheory.hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v} {f g : P �
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
     using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
 
-lemma yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y} (hf : P f) :
-    P.presheaf (yoneda.map f) := by
+/-- If `P : MorphismProperty C` is stable under base change, then for any `f : X ⟶ Y` in `C`,
+`yoneda.map f` satisfies `P.presheaf` if `f` does. -/
+-- TODO: converse!
+lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : X ⟶ Y}
+    (hf : P f) : P.presheaf (yoneda.map f) := by
   use Presheaf.representable.yoneda_map f
   intro Z g
   have BC : IsPullback ((Presheaf.representable.yoneda_map f).fst g)
@@ -240,6 +271,7 @@ lemma yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y : C} {f : 
     simpa using IsPullback.of_isLimit <| (Presheaf.representable.yoneda_map f).pullbackConeIsLimit g
   exact hP BC hf
 
+/-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms.-/
 lemma presheaf_monomorphisms_le_monomorphisms :
     (monomorphisms C).presheaf ≤ monomorphisms _ := fun F G f hf ↦ by
   suffices ∀ {X : C} {a b : yoneda.obj X ⟶ F}, a ≫ f = b ≫ f → a = b from
@@ -255,15 +287,14 @@ lemma presheaf_monomorphisms_le_monomorphisms :
   simp only [← cancel_mono (hf.representable.snd (a ≫ f)),
     Presheaf.representable.lift_snd]
 
+/-- If `P' : MorphismProperty C` is satisfied whenever `P` is, then also `P'.presheaf` is
+satisfied whenever `P.presheaf` is. -/
 lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
     P.presheaf ≤ P'.presheaf := fun _ _ _ hf ↦
   ⟨hf.representable, fun _ g ↦ h _ (hf.property g)⟩
 
-end MorphismProperty
-
-open MorphismProperty Limits
-
-instance : IsStableUnderComposition (Presheaf.representable (C:=C)) where
+instance presheaf_isStableUnderComposition :
+    IsStableUnderComposition (Presheaf.representable (C:=C)) where
   comp_mem {F G H} f g hf hg := fun X h ↦ by
     use hf.pullback (hg.pullbackCone h).fst
 
@@ -283,7 +314,7 @@ instance : IsStableUnderComposition (Presheaf.representable (C:=C)) where
 
     refine ⟨Limits.IsLimit.conePointUniqueUpToIso (hf.pullbackConeIsLimit _) P'⟩
 
-lemma Representable.StableUnderBaseChange :
+lemma presheaf_stableUnderBaseChange :
     StableUnderBaseChange (Presheaf.representable (C:=C)) := by
   intro F G G' H f g f' g' P₁ hg X h
   use hg.pullback (h ≫ f)
@@ -291,16 +322,15 @@ lemma Representable.StableUnderBaseChange :
   let P := IsPullback.paste_horiz P₂ P₁
   refine ⟨hg.pullbackIso (h ≫ f) ≪≫ P.isoPullback.symm⟩
 
-lemma Representable.ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
+lemma presheaf_ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
   fun X g ↦ ⟨X, ⟨(asIso <| Limits.pullback.snd (f:=f) (g:=g)).symm⟩⟩
 
-lemma isomorphisms_le : MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
-  fun _ _ f hf ↦ letI : IsIso f := hf; Representable.ofIsIso f
+lemma presheaf_isomorphisms_le :
+    MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
+  fun _ _ f hf ↦ letI : IsIso f := hf; presheaf_ofIsIso f
 
--- follows from stable under BC!
-lemma Representable.respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
-  ⟨fun _ _ hf ↦ comp_mem _ _ _ (Representable.ofIsIso _) hf,
-  fun _ _ hf ↦ comp_mem _ _ _ hf <| Representable.ofIsIso _⟩
+lemma presheaf_respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
+  presheaf_stableUnderBaseChange.respectsIso
 
 /-
 Calle's notes on current pullback API (I might try PR some of this if I don't end up finding good ways
@@ -318,5 +348,6 @@ Calle's notes on current pullback API (I might try PR some of this if I don't en
  - PullbackCone eq mk self (as above?)
 -/
 
+end MorphismProperty
 
 end CategoryTheory
