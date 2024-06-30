@@ -403,9 +403,10 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
     | OutputSetting.print style => formatErrors allUnexpectedErrors style
     | OutputSetting.append =>
         if allUnexpectedErrors.size > 0 then
-      let formatted := (allUnexpectedErrors.map
-        (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
-      IO.FS.appendToFile exceptionsFilePath s!"{"\n".intercalate formatted}\n"
+          formatErrors allUnexpectedErrors ErrorFormat.humanReadable
+          let formatted := (allUnexpectedErrors.map
+            (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
+          IO.FS.appendToFile exceptionsFilePath s!"{"\n".intercalate formatted}\n"
     | OutputSetting.regenerate =>
       -- Empty the style exceptions file first: `writeFile` overwrites previous contents.
       IO.FS.writeFile exceptionsFilePath s!""
