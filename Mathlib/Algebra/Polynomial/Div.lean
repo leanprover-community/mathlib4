@@ -448,7 +448,7 @@ theorem sum_modByMonic_coeff (hq : q.Monic) {n : ℕ} (hn : q.degree ≤ n) :
       (sum_monomial_eq _)
 #align polynomial.sum_mod_by_monic_coeff Polynomial.sum_modByMonic_coeff
 
-theorem mul_div_mod_by_monic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
+theorem mul_divByMonic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
     q * p /ₘ q = p := by
   nontriviality R
   refine (div_modByMonic_unique _ 0 hmo ⟨by rw [zero_add], ?_⟩).1
