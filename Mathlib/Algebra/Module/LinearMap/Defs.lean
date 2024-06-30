@@ -220,6 +220,11 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
 
+@[simp, norm_cast]
+lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
+    ⇑(f : M →ₛₗ[σ] M₃) = f :=
+  rfl
+
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign LinearMap.has_coe_to_fun
 
