@@ -157,6 +157,13 @@ theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := LinearMap
 theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := LinearMap.IsAlt.isRefl H
 #align bilin_form.is_alt.is_refl LinearMap.BilinForm.IsAlt.isRefl
 
+theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : a + b + c = 0) :
+    B a b = B b c := by
+  have : B a a + B a b + B a c = B a c + B b c + B c c := by
+    simp_rw [← map_add, ← map_add₂, hAdd, map_zero, LinearMap.zero_apply]
+  rw [H, H, zero_add, add_zero, add_comm] at this
+  exact add_left_cancel this
+
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
   fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
 #align bilin_form.is_alt.add LinearMap.BilinForm.IsAlt.add
@@ -184,11 +191,6 @@ theorem isAlt_zero : (0 : BilinForm R M).IsAlt := fun _ => rfl
 theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
   ⟨fun h => neg_neg B ▸ h.neg, IsAlt.neg⟩
 #align bilin_form.is_alt_neg LinearMap.BilinForm.isAlt_neg
-
-theorem Alt_eq_of_sum_zero {B : BilinForm R₁ M₁} {a b c : M₁} (hB : B.IsAlt) (hSum : a + b + c = 0) :
-    B a b = B b c := by
-  rw [← neg_eq_iff_add_eq_zero] at hSum
-  rw [← hSum, B.neg_right, B.add_right, hB.self_eq_zero, ← hB.neg_eq, add_zero]
 
 /-! ### Linear adjoints -/
 

@@ -304,6 +304,12 @@ theorem ortho_comm {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 #align linear_map.is_alt.ortho_comm LinearMap.IsAlt.ortho_comm
 
+theorem eq_of_add_add_eq_zero {a b c : M₁} (hAdd : a + b + c = 0) : B a b = B b c := by
+  have : B a a + B a b + B a c = B a c + B b c + B c c := by
+    simp_rw [← map_add, ← map_add₂, hAdd, map_zero, LinearMap.zero_apply]
+  rw [H, H, zero_add, add_zero, add_comm] at this
+  exact add_left_cancel this
+
 end IsAlt
 
 end AddCommGroup
