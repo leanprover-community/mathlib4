@@ -852,7 +852,7 @@ theorem lintegral_indicator_const {s : Set α} (hs : MeasurableSet s) (c : ℝ�
 
 lemma setLIntegral_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x, f x ∂μ := by
-  apply le_antisymm (set_lintegral_le_lintegral s fun x ↦ f x)
+  apply le_antisymm (setLIntegral_le_lintegral s fun x ↦ f x)
   apply le_trans (le_of_eq _) (lintegral_indicator_le _ _)
   congr with x
   simp [Set.indicator]
