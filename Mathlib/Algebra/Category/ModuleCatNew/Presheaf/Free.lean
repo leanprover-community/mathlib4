@@ -9,15 +9,16 @@ namespace PresheafOfModulesNew
 
 variable {C : Type u₁} [Category.{v₁} C] (R : Cᵒᵖ ⥤ RingCat.{u})
 
--- with `ModuleCatNew.free` irreducible, this is 2440218 heartbeats
--- with `ModuleCatNew.free` not irreducible, this is 2630801 heartbeats
--- why is this so slow?
-set_option maxHeartbeats 3200000 in
+variable {R} in
+@[simps]
+noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModulesNew.{u} R where
+  obj := fun X ↦ (ModuleCatNew.free (R.obj X)).obj (F.obj X)
+  map := fun {X Y} f ↦ ModuleCatNew.freeDesc
+      (fun x ↦ ModuleCatNew.freeMk (R := R.obj Y) (F.map f x))
+
+@[simps]
 noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModulesNew.{u} R where
-  obj F :=
-    { obj := fun X ↦ (ModuleCatNew.free (R.obj X)).obj (F.obj X)
-      map := fun {X Y} f ↦ ModuleCatNew.freeDesc
-          (fun x ↦ ModuleCatNew.freeMk (R := R.obj Y) (F.map f x)) }
+  obj := freeObj
   map {F G} φ :=
     { app := fun X ↦ (ModuleCatNew.free (R.obj X)).map (φ.app X)
       naturality := fun {X Y} f ↦ by
