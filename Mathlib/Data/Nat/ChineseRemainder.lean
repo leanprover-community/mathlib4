@@ -3,8 +3,10 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
+import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.GCD.BigOperators
+
 /-!
 # Chinese Remainder Theorem
 
@@ -23,14 +25,14 @@ Chinese Remainder Theorem, Gödel, beta function
 namespace Nat
 
 variable {ι : Type*}
-open BigOperators
 
 lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
     a ≡ b [MOD l.prod] ↔ ∀ i, a ≡ b [MOD l.get i] := by
   induction' l with m l ih
   · simp [modEq_one]
   · have : Coprime m l.prod := coprime_list_prod_right_iff.mpr (List.pairwise_cons.mp co).1
-    simp [← modEq_and_modEq_iff_modEq_mul this, ih (List.Pairwise.of_cons co)]
+    simp only [List.prod_cons, ← modEq_and_modEq_iff_modEq_mul this, ih (List.Pairwise.of_cons co),
+      List.length_cons]
     constructor
     · rintro ⟨h0, hs⟩ i
       cases i using Fin.cases <;> simp [h0, hs]
@@ -40,8 +42,11 @@ lemma modEq_list_prod_iff' {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise
     a ≡ b [MOD (l.map s).prod] ↔ ∀ i ∈ l, a ≡ b [MOD s i] := by
   induction' l with i l ih
   · simp [modEq_one]
-  · have : Coprime (s i) (l.map s).prod := coprime_list_prod_right_iff.mpr
-      (by simp; intro j hj; exact (List.pairwise_cons.mp co).1 j hj)
+  · have : Coprime (s i) (l.map s).prod := by
+      simp only [coprime_list_prod_right_iff, List.mem_map, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
+      intro j hj
+      exact (List.pairwise_cons.mp co).1 j hj
     simp [← modEq_and_modEq_iff_modEq_mul this, ih (List.Pairwise.of_cons co)]
 
 variable (a s : ι → ℕ)
@@ -52,13 +57,17 @@ def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
     { k // ∀ i ∈ l, k ≡ a i [MOD s i] }
   | [],     _  => ⟨0, by simp⟩
   | i :: l, co => by
-    have : Coprime (s i) (l.map s).prod := coprime_list_prod_right_iff.mpr
-      (by simp; intro j hj; exact (List.pairwise_cons.mp co).1 j hj)
+    have : Coprime (s i) (l.map s).prod := by
+      simp only [coprime_list_prod_right_iff, List.mem_map, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
+      intro j hj
+      exact (List.pairwise_cons.mp co).1 j hj
     have ih := chineseRemainderOfList l co.of_cons
     have k := chineseRemainder this (a i) ih
-    exact ⟨k, by
-      simp [k.prop.1]; intro j hj
-      exact ((modEq_list_prod_iff' co.of_cons).mp k.prop.2 j hj).trans (ih.prop j hj)⟩
+    use k
+    simp only [List.mem_cons, forall_eq_or_imp, k.prop.1, true_and]
+    intro j hj
+    exact ((modEq_list_prod_iff' co.of_cons).mp k.prop.2 j hj).trans (ih.prop j hj)
 
 @[simp] theorem chineseRemainderOfList_nil :
     (chineseRemainderOfList a s [] List.Pairwise.nil : ℕ) = 0 := rfl
@@ -66,24 +75,34 @@ def chineseRemainderOfList : (l : List ι) → l.Pairwise (Coprime on s) →
 theorem chineseRemainderOfList_lt_prod (l : List ι)
     (co : l.Pairwise (Coprime on s)) (hs : ∀ i ∈ l, s i ≠ 0) :
     chineseRemainderOfList a s l co < (l.map s).prod := by
-  cases' l with i l <;> simp
-  · simp [chineseRemainderOfList]
-    have : Coprime (s i) (l.map s).prod := coprime_list_prod_right_iff.mpr
-      (by simp; intro j hj; exact (List.pairwise_cons.mp co).1 j hj)
-    exact chineseRemainder_lt_mul this (a i)
-      (chineseRemainderOfList a s l co.of_cons)
-        (hs i (by simp)) (by simp; intro j hj; exact hs j (by simp [hj]))
+  cases l with
+  | nil => simp
+  | cons i l =>
+    simp only [chineseRemainderOfList, List.map_cons, List.prod_cons]
+    have : Coprime (s i) (l.map s).prod := by
+      simp only [coprime_list_prod_right_iff, List.mem_map, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
+      intro j hj
+      exact (List.pairwise_cons.mp co).1 j hj
+    refine chineseRemainder_lt_mul this (a i) (chineseRemainderOfList a s l co.of_cons)
+      (hs i (List.mem_cons_self _ l)) ?_
+    simp only [ne_eq, List.prod_eq_zero_iff, List.mem_map, not_exists, not_and]
+    intro j hj
+    exact hs j (List.mem_cons_of_mem _ hj)
 
 theorem chineseRemainderOfList_modEq_unique (l : List ι)
     (co : l.Pairwise (Coprime on s)) {z} (hz : ∀ i ∈ l, z ≡ a i [MOD s i]) :
     z ≡ chineseRemainderOfList a s l co [MOD (l.map s).prod] := by
   induction' l with i l ih
   · simp [modEq_one]
-  · simp [chineseRemainderOfList]
-    have : Coprime (s i) (l.map s).prod := coprime_list_prod_right_iff.mpr
-      (by simp; intro j hj; exact (List.pairwise_cons.mp co).1 j hj)
+  · simp only [List.map_cons, List.prod_cons, chineseRemainderOfList]
+    have : Coprime (s i) (l.map s).prod := by
+      simp only [coprime_list_prod_right_iff, List.mem_map, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
+      intro j hj
+      exact (List.pairwise_cons.mp co).1 j hj
     exact chineseRemainder_modEq_unique this
-      (hz i (by simp)) (ih co.of_cons (fun j hj => hz j (by simp [hj])))
+      (hz i (List.mem_cons_self _ _)) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
 
 theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
     (hs : ∀ i ∈ l, s i ≠ 0) (co : l.Pairwise (Coprime on s)) :
@@ -131,16 +150,16 @@ theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
   exact chineseRemainderOfList_lt_prod a s l
     (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)
 
-/-- The natural number less than `∏ i in t, s i` congruent to
+/-- The natural number less than `∏ i ∈ t, s i` congruent to
 `a i` mod `s i` for all  `i ∈ t`. -/
 def chineseRemainderOfFinset (t : Finset ι)
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
-    { k // ∀ i ∈ t, k ≡ a i [MOD s i] } :=
-  by simpa using chineseRemainderOfMultiset a s t.nodup (by simpa using hs) (by simpa using pp)
+    { k // ∀ i ∈ t, k ≡ a i [MOD s i] } := by
+  simpa using chineseRemainderOfMultiset a s t.nodup (by simpa using hs) (by simpa using pp)
 
 theorem chineseRemainderOfFinset_lt_prod {t : Finset ι}
     (hs : ∀ i ∈ t, s i ≠ 0) (pp : Set.Pairwise t (Coprime on s)) :
-    chineseRemainderOfFinset a s t hs pp < ∏ i in t, s i := by
+    chineseRemainderOfFinset a s t hs pp < ∏ i ∈ t, s i := by
   simpa [chineseRemainderOfFinset] using
     chineseRemainderOfMultiset_lt_prod a s t.nodup (by simpa using hs) (by simpa using pp)
 

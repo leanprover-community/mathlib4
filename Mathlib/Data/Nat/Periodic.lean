@@ -6,7 +6,7 @@ Authors: Bolton Bailey
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.nat.periodic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 

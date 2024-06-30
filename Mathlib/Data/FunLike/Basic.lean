@@ -218,7 +218,7 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
   ne_iff.mp h
 #align fun_like.exists_ne DFunLike.exists_ne
 
-/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
+/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
   ⟨fun _ _ ↦ coe_injective <| Subsingleton.elim _ _⟩
 #align fun_like.subsingleton_cod DFunLike.subsingleton_cod

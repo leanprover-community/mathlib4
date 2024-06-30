@@ -25,7 +25,7 @@ We prove four versions of this theorem.
   point $x ∈ (a, b)$ function $f$ has derivative $f'(x)$, then concludes that $f'(c)=0$ for some
   $c∈(a, b)$.
 * `exists_deriv_eq_zero` deals with `deriv f` instead of an arbitrary function `f'` and a predicate
-  `has_deriv_at`; since we use zero as the "junk" value for `deriv f c`, this version does not
+  `HasDerivAt`; since we use zero as the "junk" value for `deriv f c`, this version does not
   assume that `f` is differentiable on the open interval.
 * `exists_hasDerivAt_eq_zero'` is similar to `exists_hasDerivAt_eq_zero` but instead of assuming
   continuity on the closed interval $[a, b]$ it assumes that $f$ tends to the same limit as $x$
@@ -79,7 +79,7 @@ theorem exists_deriv_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l
     (hfb : Tendsto f (𝓝[<] b) (𝓝 l)) : ∃ c ∈ Ioo a b, deriv f c = 0 := by
   by_cases h : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x
   · exact exists_hasDerivAt_eq_zero' hab hfa hfb fun x hx => (h x hx).hasDerivAt
-  · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x
-    · push_neg at h; exact h
+  · obtain ⟨c, hc, hcdiff⟩ : ∃ x ∈ Ioo a b, ¬DifferentiableAt ℝ f x := by
+      push_neg at h; exact h
     exact ⟨c, hc, deriv_zero_of_not_differentiableAt hcdiff⟩
 #align exists_deriv_eq_zero' exists_deriv_eq_zero'

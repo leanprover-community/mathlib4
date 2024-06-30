@@ -166,9 +166,9 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
   dsimp [yonedaFamilyOfElements_fromCocone]
   have hgf₁ : S.arrows (g₁ ≫ f₁) := by exact Sieve.downward_closed S hf₁ g₁
   have hgf₂ : S.arrows (g₂ ≫ f₂) := by exact Sieve.downward_closed S hf₂ g₂
-  let F : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk (g₂ ≫ f₂) : Over X) := (Over.homMk (𝟙 Z) )
-  let F₁ : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk f₁ : Over X) := (Over.homMk g₁)
-  let F₂ : (Over.mk (g₂ ≫ f₂) : Over X) ⟶ (Over.mk f₂ : Over X) := (Over.homMk g₂)
+  let F : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk (g₂ ≫ f₂) : Over X) := Over.homMk (𝟙 Z)
+  let F₁ : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk f₁ : Over X) := Over.homMk g₁
+  let F₂ : (Over.mk (g₂ ≫ f₂) : Over X) ⟶ (Over.mk f₂ : Over X) := Over.homMk g₂
   have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ F
   have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ F₁
   have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ F₂
@@ -242,7 +242,7 @@ instance : Category (SheafOfTypes J) where
   comp_id _ := Hom.ext _ _ <| comp_id _
   assoc _ _ _ := Hom.ext _ _ <| assoc _ _ _
 
--- Porting note: we need to restate the ext lemma in terms of the categorical morphism
+-- Porting note (#11041): we need to restate the `ext` lemma in terms of the categorical morphism.
 -- not just the underlying structure.
 -- It would be nice if this boilerplate weren't necessary.
 @[ext]
@@ -265,9 +265,9 @@ def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
 
-instance : Full (sheafOfTypesToPresheaf J) where preimage f := ⟨f⟩
+instance : (sheafOfTypesToPresheaf J).Full where map_surjective f := ⟨⟨f⟩, rfl⟩
 
-instance : Faithful (sheafOfTypesToPresheaf J) where
+instance : (sheafOfTypesToPresheaf J).Faithful where
 
 /--
 The category of sheaves on the bottom (trivial) grothendieck topology is equivalent to the category
@@ -278,10 +278,8 @@ def sheafOfTypesBotEquiv : SheafOfTypes (⊥ : GrothendieckTopology C) ≌ Cᵒ�
   functor := sheafOfTypesToPresheaf _
   inverse :=
     { obj := fun P => ⟨P, Presieve.isSheaf_bot⟩
-      map := fun f => (sheafOfTypesToPresheaf _).preimage f }
-  unitIso :=
-    { hom := { app := fun _ => ⟨𝟙 _⟩ }
-      inv := { app := fun _ => ⟨𝟙 _⟩ } }
+      map := fun f => ⟨f⟩ }
+  unitIso := Iso.refl _
   counitIso := Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_bot_equiv CategoryTheory.sheafOfTypesBotEquiv

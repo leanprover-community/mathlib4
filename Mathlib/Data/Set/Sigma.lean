@@ -43,7 +43,7 @@ theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type*} (f : ι → 
 theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
     Sigma.mk i '' (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) := by
-  refine' (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm _
+  refine (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm ?_
   rintro ⟨j, x⟩ ⟨y, hys, hxy⟩
   simp only [hf.eq_iff, Sigma.map, Sigma.ext_iff] at hxy
   rcases hxy with ⟨rfl, hxy⟩; rw [heq_iff_eq] at hxy; subst y
@@ -51,7 +51,7 @@ theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (h
 #align set.image_sigma_mk_preimage_sigma_map Set.image_sigmaMk_preimage_sigmaMap
 
 /-- Indexed sum of sets. `s.sigma t` is the set of dependent pairs `⟨i, a⟩` such that `i ∈ s` and
-`a ∈ t i`.-/
+`a ∈ t i`. -/
 protected def sigma (s : Set ι) (t : ∀ i, Set (α i)) : Set (Σ i, α i) := {x | x.1 ∈ s ∧ x.2 ∈ t x.1}
 #align set.sigma Set.sigma
 

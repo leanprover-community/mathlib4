@@ -565,8 +565,7 @@ theorem ext {f g : InfHom α β} (h : ∀ a, f a = g a) : f = g :=
 
 /-- Copy of an `InfHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : InfHom α β) (f' : α → β) (h : f' = f) : InfHom α β
-    where
+protected def copy (f : InfHom α β) (f' : α → β) (h : f' = f) : InfHom α β where
   toFun := f'
   map_inf' := h.symm ▸ f.map_inf'
 #align inf_hom.copy InfHom.copy
@@ -734,16 +733,14 @@ def toBotHom (f : SupBotHom α β) : BotHom α β :=
   { f with }
 #align sup_bot_hom.to_bot_hom SupBotHom.toBotHom
 
-instance : FunLike (SupBotHom α β) α β
-    where
+instance : FunLike (SupBotHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : SupBotHomClass (SupBotHom α β) α β
-    where
+instance : SupBotHomClass (SupBotHom α β) α β where
   map_sup f := f.map_sup'
   map_bot f := f.map_bot'
 
@@ -1480,8 +1477,7 @@ variable [Inf α] [Top α] [Inf β] [Top β] [Inf γ] [Top γ]
 /-- Reinterpret a finitary infimum homomorphism as a finitary supremum homomorphism between the dual
 lattices. -/
 @[simps]
-protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ
-    where
+protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_top'⟩
   invFun f := ⟨InfHom.dual.symm f.toSupHom, f.map_bot'⟩
   left_inv _ := rfl
@@ -1589,6 +1585,48 @@ theorem symm_dual_comp (g : BoundedLatticeHom βᵒᵈ γᵒᵈ) (f : BoundedLat
 #align bounded_lattice_hom.symm_dual_comp BoundedLatticeHom.symm_dual_comp
 
 end BoundedLatticeHom
+
+/-! ### Prod -/
+
+namespace LatticeHom
+variable [Lattice α] [Lattice β]
+
+/-- Natural projection homomorphism from `α × β` to `α`. -/
+def fst : LatticeHom (α × β) α where
+  toFun := Prod.fst
+  map_sup' _ _ := rfl
+  map_inf' _ _ := rfl
+
+/-- Natural projection homomorphism from `α × β` to `β`. -/
+def snd : LatticeHom (α × β) β where
+  toFun := Prod.snd
+  map_sup' _ _ := rfl
+  map_inf' _ _ := rfl
+
+@[simp, norm_cast] lemma coe_fst : ⇑(fst (α := α) (β := β)) = Prod.fst := rfl
+@[simp, norm_cast] lemma coe_snd : ⇑(snd (α := α) (β := β)) = Prod.snd := rfl
+lemma fst_apply (x : α × β) : fst x = x.fst := rfl
+lemma snd_apply (x : α × β) : snd x = x.snd := rfl
+
+end LatticeHom
+
+/-! ### Pi -/
+
+namespace Pi
+variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)]
+
+/-- Evaluation as a lattice homomorphism. -/
+def evalLatticeHom (i : ι) : LatticeHom (∀ i, α i) (α i) where
+  toFun := Function.eval i
+  map_sup' _a _b := rfl
+  map_inf' _a _b := rfl
+
+@[simp, norm_cast]
+lemma coe_evalLatticeHom (i : ι) : ⇑(evalLatticeHom (α := α) i) = Function.eval i := rfl
+
+lemma evalLatticeHom_apply (i : ι) (f : ∀ i, α i) : evalLatticeHom i f = f i := rfl
+
+end Pi
 
 /-! ### `WithTop`, `WithBot` -/
 
@@ -1817,7 +1855,7 @@ lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
   DFunLike.coe_injective <| by
-    refine' (congr_arg Option.map _).trans Option.map_id
+    refine (congr_arg Option.map ?_).trans Option.map_id
     rw [withBot_id]
     rfl
 #align lattice_hom.with_top_with_bot_id LatticeHom.withTopWithBot_id

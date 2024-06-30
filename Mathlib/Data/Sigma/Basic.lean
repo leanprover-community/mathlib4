@@ -56,7 +56,7 @@ instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq
 @[simp] -- @[nolint simpNF]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
     Sigma.mk a₁ b₁ = ⟨a₂, b₂⟩ ↔ a₁ = a₂ ∧ HEq b₁ b₂ :=
-  ⟨fun h ↦ by cases h; exact ⟨rfl, heq_of_eq rfl⟩, -- in Lean 3 `simp` solved this
+  ⟨fun h ↦ by cases h; simp,
    fun ⟨h₁, h₂⟩ ↦ by subst h₁; rw [eq_of_heq h₂]⟩
 #align sigma.mk.inj_iff Sigma.mk.inj_iff
 
@@ -182,6 +182,24 @@ theorem Sigma.curry_uncurry {γ : ∀ a, β a → Type*} (f : ∀ (x) (y : β x)
     Sigma.curry (Sigma.uncurry f) = f :=
   rfl
 #align sigma.curry_uncurry Sigma.curry_uncurry
+
+theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a, DecidableEq (β a)]
+    (i : Σ a, β a) (f : (i : Σ a, β a) → γ i.1 i.2) (x : γ i.1 i.2) :
+    Sigma.curry (Function.update f i x) =
+      Function.update (Sigma.curry f) i.1 (Function.update (Sigma.curry f i.1) i.2 x) := by
+  obtain ⟨ia, ib⟩ := i
+  ext ja jb
+  unfold Sigma.curry
+  obtain rfl | ha := eq_or_ne ia ja
+  · obtain rfl | hb := eq_or_ne ib jb
+    · simp
+    · simp only [update_same]
+      rw [Function.update_noteq (mt _ hb.symm), Function.update_noteq hb.symm]
+      rintro h
+      injection h
+  · rw [Function.update_noteq (ne_of_apply_ne Sigma.fst _), Function.update_noteq]
+    · exact ha.symm
+    · exact ha.symm
 
 /-- Convert a product type to a Σ-type. -/
 def Prod.toSigma {α β} (p : α × β) : Σ_ : α, β :=

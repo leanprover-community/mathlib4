@@ -12,6 +12,9 @@ import Mathlib.Data.Bracket
 # The bracket on a group given by commutator.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 /-- The commutator of two elements `g₁` and `g₂`. -/
 instance commutatorElement {G : Type*} [Group G] : Bracket G G :=
   ⟨fun g₁ g₂ ↦ g₁ * g₂ * g₁⁻¹ * g₂⁻¹⟩

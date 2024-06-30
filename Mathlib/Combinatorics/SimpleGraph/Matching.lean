@@ -112,7 +112,7 @@ theorem IsMatching.even_card {M : Subgraph G} [Fintype M.verts] (h : M.IsMatchin
 #align simple_graph.subgraph.is_matching.even_card SimpleGraph.Subgraph.IsMatching.even_card
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
-  refine' ⟨_, fun hm => ⟨fun v _ => hm v, fun v => _⟩⟩
+  refine ⟨?_, fun hm => ⟨fun v _ => hm v, fun v => ?_⟩⟩
   · rintro ⟨hm, hs⟩ v
     exact hm (hs v)
   · obtain ⟨w, hw, -⟩ := hm v
