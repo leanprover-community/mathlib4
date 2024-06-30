@@ -201,10 +201,10 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_obj, prelaxfunctor_map, map_obj, Cat.comp_obj, prelaxfunctor_map₂,
-        map₂_app, mapComp_hom_app, Iso.refl_hom, mapComp_inv_app, Iso.refl_inv, Category.comp_id,
-        Category.id_comp]
-      rfl
+      simp only [prelaxfunctor_toLaxPreFunctor_toPrefunctor_obj,
+        prelaxfunctor_toLaxPreFunctor_toPrefunctor_map, map_obj, Cat.comp_obj,
+        prelaxfunctor_toLaxPreFunctor_map₂, map₂_app, Cat.whiskerLeft_app, mapComp_hom_app,
+        Iso.refl_hom, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
     · rfl
   map₂_whisker_right := by
     intros
@@ -509,10 +509,10 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [prelaxfunctor_obj, prelaxfunctor_map, map_obj, Cat.comp_obj, prelaxfunctor_map₂,
-        map₂_app, mapComp_hom_app, Iso.refl_hom, mapComp_inv_app, Iso.refl_inv, Category.comp_id,
-        Category.id_comp]
-      rfl
+      simp only [prelaxfunctor_toLaxPreFunctor_toPrefunctor_obj,
+        prelaxfunctor_toLaxPreFunctor_toPrefunctor_map, map_obj, Cat.comp_obj,
+        prelaxfunctor_toLaxPreFunctor_map₂, map₂_app, Cat.whiskerLeft_app, mapComp_hom_app,
+        Iso.refl_hom, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
     · rfl
   map₂_whisker_right := by
     intros

@@ -170,9 +170,18 @@ theorem to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
   rfl
 #align category_theory.pseudofunctor.to_oplax_obj CategoryTheory.Pseudofunctor.to_oplax_obj
 
+@[simp]
+theorem to_oplax_map {a b : B} (f : a ⟶ b) : (F : OplaxFunctor B C).map f = F.map f :=
+  rfl
+
 -- Porting note: to_oplax_map related `OplaxFunctor.map` to `Pseudofunctor.map` but neither
 -- of these exist
 #noalign category_theory.pseudofunctor.to_oplax_map
+
+@[simp]
+theorem to_oplax_map₂ {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
+    (F : OplaxFunctor B C).map₂ η = F.map₂ η :=
+  rfl
 
 -- Porting note: to_oplax_map₂ related `OplaxFunctor.map₂` to `Pseudofunctor.map₂` but neither
 -- of these exist
@@ -214,13 +223,7 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   map₂_right_unitor f := by dsimp; simp
 #align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
 
--- TODO: clean up
--- -- `comp` is near the `maxHeartbeats` limit (and seems to go over in CI),
--- -- so we defer creating its `@[simp]` lemmas until a separate command.
--- attribute [simps] comp
-
-/-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
--/
+/-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
 def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor

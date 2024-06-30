@@ -62,7 +62,7 @@ and do not need to strictly preserve the identity. Instead, there are specified 
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
-structure OplaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
+structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
   [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
   mapId (a : B) : map (𝟙 a) ⟶ 𝟙 (obj a)
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map (f ≫ g) ⟶ map f ≫ map g
@@ -130,9 +130,7 @@ attribute [nolint docBlame] CategoryTheory.OplaxFunctor.mapId
   CategoryTheory.OplaxFunctor.map₂_leftUnitor
   CategoryTheory.OplaxFunctor.map₂_rightUnitor
 
-instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
-  ⟨toPrelaxFunctor⟩
-#align category_theory.oplax_functor.has_coe_to_prelax CategoryTheory.OplaxFunctor.hasCoeToPrelax
+#noalign category_theory.oplax_functor.has_coe_to_prelax
 
 variable (F : OplaxFunctor B C)
 
@@ -167,7 +165,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   mapId := fun a => G.map₂ (F.mapId a) ≫ G.mapId (F.obj a)
   mapComp := fun f g => G.map₂ (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
   mapComp_naturality_left := fun η g => by
-    dsimp;
+    dsimp
     rw [← G.map₂_comp_assoc, mapComp_naturality_left, G.map₂_comp_assoc, mapComp_naturality_left,
       assoc]
   mapComp_naturality_right := fun η => by

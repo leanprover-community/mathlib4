@@ -127,6 +127,13 @@ theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.pderiv_C_mul MvPolynomial.pderiv_C_mul
 
+theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R} {i : σ} :
+    pderiv i (map φ f) = map φ (pderiv i f) := by
+  apply induction_on f (fun r ↦ by simp) (fun p q hp hq ↦ by simp [hp, hq]) fun p j eq ↦ ?_
+  obtain rfl | h := eq_or_ne j i
+  · simp [eq]
+  · simp [eq, h]
+
 end PDeriv
 
 end MvPolynomial
