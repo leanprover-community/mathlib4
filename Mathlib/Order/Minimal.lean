@@ -144,21 +144,19 @@ theorem minimals_antichain : IsAntichain r (minimals r s) :=
 
 end IsAntisymm
 
-set_option autoImplicit true
-
-theorem mem_minimals_iff_forall_ssubset_not_mem (s : Set (Set α)) :
+theorem mem_minimals_iff_forall_ssubset_not_mem {x : Set α} (s : Set (Set α)) :
     x ∈ minimals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ⊂ x → y ∉ s :=
   mem_minimals_iff_forall_lt_not_mem' (· ⊂ ·)
 
-theorem mem_minimals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
+theorem mem_minimals_iff_forall_lt_not_mem [PartialOrder α] {x : α} {s : Set α} :
     x ∈ minimals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y < x → y ∉ s :=
   mem_minimals_iff_forall_lt_not_mem' (· < ·)
 
-theorem mem_maximals_iff_forall_ssubset_not_mem {s : Set (Set α)} :
+theorem mem_maximals_iff_forall_ssubset_not_mem {x : Set α} {s : Set (Set α)} :
     x ∈ maximals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x ⊂ y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· ⊂ ·)
 
-theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
+theorem mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {x : α} {s : Set α} :
     x ∈ maximals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x < y → y ∉ s :=
   mem_maximals_iff_forall_lt_not_mem' (· < ·)
 
@@ -315,7 +313,7 @@ theorem IsAntichain.maximals_lowerClosure (hs : IsAntichain (· ≤ ·) s) :
 
 section Image
 
-variable {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
+variable {β : Type*} {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
 
 section
 variable {x : Set α} (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) {a : α}
@@ -411,7 +409,7 @@ def OrderIso.maximalsIsoMinimals (f : s ≃o tᵒᵈ) :
 end
 
 theorem inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
-    (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
+    {x : Set α} (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
     x ∩ f ⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) := by
   ext a
   simp only [minimals, mem_inter_iff, mem_image, and_imp, forall_exists_index,
@@ -421,7 +419,7 @@ theorem inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
         fun ⟨⟨hax,hay⟩,h⟩ ↦ ⟨hax, ⟨⟨_, hax, rfl⟩, hay⟩, fun a' ha' ha'y hsa' ↦
           (hf hax ha').mp (h ha' ha'y ((hf ha' hax).mpr hsa'))⟩⟩
 
-theorem inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset
+theorem inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset {x : Set α} {y : Set β}
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (hy : y ⊆ f '' x) :
     x ∩ f ⁻¹' (minimals s y) = minimals r (x ∩ f ⁻¹' y) := by
   rw [← inter_eq_self_of_subset_right hy, inter_minimals_preimage_inter_eq_of_rel_iff_rel_on hf,
@@ -431,7 +429,8 @@ theorem RelEmbedding.inter_preimage_minimals_eq (f : r ↪r s) (x : Set α) (y :
     x ∩ f⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) :=
   inter_minimals_preimage_inter_eq_of_rel_iff_rel_on (by simp [f.map_rel_iff]) y
 
-theorem RelEmbedding.inter_preimage_minimals_eq_of_subset (f : r ↪r s) (h : y ⊆ f '' x) :
+theorem RelEmbedding.inter_preimage_minimals_eq_of_subset {y : Set β} {x : Set α}
+    (f : r ↪r s) (h : y ⊆ f '' x) :
     x ∩ f ⁻¹' (minimals s y) = minimals r (x ∩ f ⁻¹' y) := by
   rw [inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ h]; simp [f.map_rel_iff]
 
@@ -449,13 +448,13 @@ theorem RelIso.maximals_preimage_eq (f : r ≃r s) (y : Set β) :
     maximals r (f ⁻¹' y) = f ⁻¹' (maximals s y) :=
   f.swap.minimals_preimage_eq y
 
-theorem inter_maximals_preimage_inter_eq_of_rel_iff_rel_on
+theorem inter_maximals_preimage_inter_eq_of_rel_iff_rel_on {x : Set α}
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
     x ∩ f ⁻¹' (maximals s ((f '' x) ∩ y)) = maximals r (x ∩ f ⁻¹' y) := by
   apply inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
   exact fun _ _ a b ↦ hf b a
 
-theorem inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset
+theorem inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset {y : Set β} {x : Set α}
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (hy : y ⊆ f '' x) :
     x ∩ f ⁻¹' (maximals s y) = maximals r (x ∩ f ⁻¹' y) := by
   apply inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ hy
@@ -465,8 +464,8 @@ theorem RelEmbedding.inter_preimage_maximals_eq (f : r ↪r s) (x : Set α) (y :
     x ∩ f⁻¹' (maximals s ((f '' x) ∩ y)) = maximals r (x ∩ f ⁻¹' y) :=
   inter_minimals_preimage_inter_eq_of_rel_iff_rel_on (by simp [f.map_rel_iff]) y
 
-theorem RelEmbedding.inter_preimage_maximals_eq_of_subset (f : r ↪r s) (h : y ⊆ f '' x) :
-    x ∩ f ⁻¹' (maximals s y) = maximals r (x ∩ f ⁻¹' y) := by
+theorem RelEmbedding.inter_preimage_maximals_eq_of_subset {y : Set β} {x : Set α}
+    (f : r ↪r s) (h : y ⊆ f '' x) : x ∩ f ⁻¹' (maximals s y) = maximals r (x ∩ f ⁻¹' y) := by
   rw [inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset _ h]; simp [f.map_rel_iff]
 
 theorem RelEmbedding.maximals_preimage_eq (f : r ↪r s) (y : Set β) :
