@@ -52,7 +52,8 @@ def myYonedaLemma : F.flip ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ≅
     yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F :=
   NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => by
     dsimp
-    exact (yonedaSections _ _).symm
+    apply Equiv.toIso
+    exact Equiv.trans Equiv.ulift (yonedaEquiv).symm
     ) sorry) sorry
 
 noncomputable def yonedaYonedaColimit₂ :

@@ -139,10 +139,10 @@ section FullyFaithful
 --           rfl
 --           )
 
-/-- Natural version of `equivOfFullyFaithful`. -/
-def natIsoOfFullyFaithful {D : Type u₂} [Category.{max v₁ v₂} D] (F : C ⥤ D) [Full F] [Faithful F]
-    (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
-  NatIso.ofComponents (fun Y => Equiv.toIso ((equivOfFullyFaithful F).symm.trans Equiv.ulift.symm))
+-- /-- Natural version of `equivOfFullyFaithful`. -/
+-- def natIsoOfFullyFaithful {D : Type u₂} [Category.{max v₁ v₂} D] (F : C ⥤ D) [F.Full] [F.Faithful]
+--     (X : C) : F.op ⋙ yoneda.obj (F.obj X) ≅ yoneda.obj X ⋙ uliftFunctor.{v₂} :=
+--   NatIso.ofComponents (fun Y => Equiv.toIso (Equiv.trans (Functor.FullyFaithful.homEquiv _).symm Equiv.ulift.symm)) sorry
 
 end FullyFaithful
 
@@ -453,28 +453,37 @@ variable {C}
 
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of yoneda lemma when `C` is small. -/
-def smallCurriedYonedaLemma {C : Type u₁} [SmallCategory C] :
+def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     (yoneda.op ⋙ coyoneda : Cᵒᵖ ⥤ (Cᵒᵖ ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation Cᵒᵖ (Type u₁) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun F ↦ Equiv.toIso yonedaEquiv)) (by
     intro X Y f
     ext a b
     dsimp [yonedaEquiv]
     simp [← FunctorToTypes.naturality])
-#aligncategory_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
+#align category_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
 
 /-- The curried version of the Yoneda lemma. -/
-def curriedYonedaLemma {C : Type u} [Category.{v} C] :
-    yoneda.op ⋙ coyoneda ≅ evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} :=
-  NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => yonedaSections _ _)) <| by
-    intros X Y f
-    ext _ g
-    rw [← ULift.down_inj]
-    simpa using congrFun (g.naturality f) (𝟙 _)
+def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
+    yoneda.op ⋙ coyoneda ≅
+      evaluation Cᵒᵖ (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+  NatIso.ofComponents
+    (fun X => NatIso.ofComponents
+      (fun Y => Equiv.toIso <| yonedaEquiv.trans Equiv.ulift.symm)
+      (by
+        intros Y Z f
+        ext g
+        rw [← ULift.down_inj]
+        simpa using yonedaEquiv_comp _ _))
+    (by
+      intros Y Z f
+      ext F g
+      rw [← ULift.down_inj]
+      simpa using (yonedaEquiv_naturality _ _).symm)
 
 /-- Version of the Yoneda lemma where the presheaf is fixed but the argument varies. -/
-def yonedaOpCompYonedaObj {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type v) :
-    yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u} :=
-  isoWhiskerRight curriedYonedaLemma ((evaluation _ _).obj P)
+def yonedaOpCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁) :
+    yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
+  isoWhiskerRight largeCurriedYonedaLemma ((evaluation _ _).obj P)
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
@@ -613,11 +622,34 @@ variable {C}
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma {C : Type u₁} [SmallCategory C] :
-    (coyoneda.rightOp ⋙ coyoneda : C ⥤ (C ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation C (Type u₁) :=
+    coyoneda.rightOp ⋙ coyoneda ≅ evaluation C (Type u₁) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun F ↦ Equiv.toIso coyonedaEquiv)) (by
     intro X Y f
     ext a b
     simp [coyonedaEquiv, ← FunctorToTypes.naturality])
+
+/-- The curried version of the Coyoneda lemma. -/
+def largeCurriedCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
+    (coyoneda.rightOp ⋙ coyoneda) ≅
+      evaluation C (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+  NatIso.ofComponents
+    (fun X => NatIso.ofComponents
+      (fun Y => Equiv.toIso <| coyonedaEquiv.trans Equiv.ulift.symm)
+      (by
+        intros Y Z f
+        ext g
+        rw [← ULift.down_inj]
+        simpa using coyonedaEquiv_comp _ _))
+    (by
+      intro Y Z f
+      ext F g
+      rw [← ULift.down_inj]
+      simpa using (coyonedaEquiv_naturality _ _).symm)
+
+/-- Version of the Coyoneda lemma where the presheaf is fixed but the argument varies. -/
+def coyonedaCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : C ⥤ Type v₁) :
+    coyoneda.rightOp ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
+  isoWhiskerRight largeCurriedCoyonedaLemma ((evaluation _ _).obj P)
 
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma' {C : Type u₁} [SmallCategory C] :
