@@ -3,16 +3,15 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!
 
 # Residue fields of points
 
 Any point `x` of a locally ringed space `X` comes with a natural residue field, namely the residue
-field of the stalk at `x`. Moreover, for every open subset of `X` containing `x`, we have a canonical
-evaluation map from `Γ(X, U)` to the residue field of `X` at `x`.
+field of the stalk at `x`. Moreover, for every open subset of `X` containing `x`, we have a
+canonical evaluation map from `Γ(X, U)` to the residue field of `X` at `x`.
 
 ## Main definitions
 
@@ -41,8 +40,8 @@ at `x`. -/
 def residueField (x : X) : CommRingCat :=
   CommRingCat.of <| LocalRing.ResidueField (X.stalk x)
 
-lemma residueField_isField (x : X) : IsField (X.residueField x) :=
-  Field.toIsField (LocalRing.ResidueField (X.stalk x))
+instance (x : X) : Field (X.residueField x) :=
+  inferInstanceAs <| Field (LocalRing.ResidueField (X.stalk x))
 
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections
@@ -76,14 +75,16 @@ lemma Γevaluation_ne_zero_iff_isUnit (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f ≠ 0 ↔ IsUnit ((X.presheaf.germ x) f) :=
   LocalRing.residue_ne_zero_iff_isUnit _
 
-lemma mem_basicOpen_iff_evaluation_ne_zero (f : X.presheaf.obj (op U)) (x : U) :
-    x.val ∈ X.toRingedSpace.basicOpen f ↔ X.evaluation x f ≠ 0 := by
+@[simp]
+lemma evaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op U)) (x : U) :
+    X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
   rw [X.toRingedSpace.mem_basicOpen f x]
-  exact (X.evaluation_ne_zero_iff_isUnit x f).symm
+  exact (X.evaluation_ne_zero_iff_isUnit x f)
 
-lemma mem_basicOpen_iff_Γevaluation_ne_zero (f : X.presheaf.obj (op ⊤)) (x : X) :
-    x ∈ X.toRingedSpace.basicOpen f ↔ X.Γevaluation x f ≠ 0 :=
-  mem_basicOpen_iff_evaluation_ne_zero X f ⟨x, trivial⟩
+@[simp]
+lemma Γevaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
+    X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
+  evaluation_ne_zero_iff_mem_basicOpen X f ⟨x, trivial⟩
 
 variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y)
 
@@ -92,7 +93,8 @@ a morphism of residue fields in the other direction. -/
 def evaluationMap (x : X) : Y.residueField (f.val.base x) ⟶ X.residueField x :=
   LocalRing.ResidueField.map (LocallyRingedSpace.stalkMap f x)
 
-lemma evaluation_naturality {V : Opens Y} (x : f ⁻¹ᵁ V) :
+@[reassoc]
+lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.1.base).obj V) :
     Y.evaluation ⟨f.val.base x, x.property⟩ ≫ evaluationMap f x.val =
       f.val.c.app (op V) ≫ X.evaluation x := by
   dsimp only [LocallyRingedSpace.evaluation,
@@ -103,17 +105,19 @@ lemma evaluation_naturality {V : Opens Y} (x : f ⁻¹ᵁ V) :
   erw [LocalRing.ResidueField.map_residue, PresheafedSpace.stalkMap_germ'_apply]
   rfl
 
-lemma evaluation_naturality_apply {V : Opens Y} (x :  f⁻¹ᵁ V) (a : Y.presheaf.obj (op V)) :
+lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.1.base).obj V)
+    (a : Y.presheaf.obj (op V)) :
     evaluationMap f x.val (Y.evaluation ⟨f.val.base x, x.property⟩ a) =
       X.evaluation x (f.val.c.app (op V) a) := by
   simpa using congrFun (congrArg DFunLike.coe <| evaluation_naturality f x) a
 
+@[reassoc]
 lemma Γevaluation_naturality (x : X) :
     Y.Γevaluation (f.val.base x) ≫ evaluationMap f x =
       f.val.c.app (op ⊤) ≫ X.Γevaluation x :=
-  evaluation_naturality f ⟨x, show x ∈ f ⁻¹ᵁ ⊤ by simp only [Opens.map_top]; trivial⟩
+  evaluation_naturality f ⟨x, by simp only [Opens.map_top]; trivial⟩
 
 lemma Γevaluation_naturality_apply (x : X) (a : Y.presheaf.obj (op ⊤)) :
     LocallyRingedSpace.evaluationMap f x (Y.Γevaluation (f.val.base x) a) =
       X.Γevaluation x (f.val.c.app (op ⊤) a) :=
-  evaluation_naturality_apply f ⟨x, show x ∈ f ⁻¹ᵁ ⊤ by simp only [Opens.map_top]; trivial⟩ a
+  evaluation_naturality_apply f ⟨x, by simp only [Opens.map_top]; trivial⟩ a
