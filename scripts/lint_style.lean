@@ -18,10 +18,14 @@ open Cli
 
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
+  if args.hasFlag "update" && args.hasFlag "regenerate" then
+    IO.println "invalid options: the --update and --regenerate flags are mutually exclusive"
+    return 2
   let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
-  let mode : OutputSetting := if args.hasFlag "update" then
-    OutputSetting.append
-  else OutputSetting.print errorStyle
+  let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "regenerate") with
+  | (true, _) => OutputSetting.append
+  | (_, true) => OutputSetting.regenerate
+  | _ => OutputSetting.print errorStyle
   let mut numberErrorFiles : UInt32 := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     let n ← lintAllFiles (System.mkFilePath [s]) mode
@@ -40,6 +44,8 @@ def lint_style : Cmd := `[Cli|
                  otherwise, produce human-readable output"
     update;     "Append all new errors to the current list of exceptions \
                  (leaving existing entries untouched)"
+    regenerate; "Regenerate the file of style exceptions: \
+                 add entries for all current errors and update or remove all obsolete ones"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/

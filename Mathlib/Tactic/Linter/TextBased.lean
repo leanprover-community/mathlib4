@@ -339,6 +339,8 @@ inductive OutputSetting : Type
   /-- Append all new errors to the style exceptions file (and print them),
   leaving existing ones intact -/
   | append
+  /-- Regenerate the whole style exceptions file -/
+  | regenerate
   deriving BEq
 
 /-- Append a given string at the end of an existing file. -/
@@ -404,4 +406,11 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
       let formatted := (allUnexpectedErrors.map
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
       IO.FS.appendToFile exceptionsFilePath s!"{"\n".intercalate formatted}\n"
+    | OutputSetting.regenerate =>
+      -- Empty the style exceptions file first: `writeFile` overwrites previous contents.
+      IO.FS.writeFile exceptionsFilePath s!""
+      let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
+      let this_output := "\n".intercalate
+        (allUnexpectedErrors.map (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
+      IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
   return numberErrorFiles
