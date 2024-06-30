@@ -160,10 +160,7 @@ end
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
-    map_star' := fun a => (calc
-      (f ∘ g) (star a) = f ( g (star a)) := rfl
-      _ = star (f (g a)) := by rw [map_star, map_star]
-      _ = star ((f ∘ g) a) := rfl )}
+    map_star' := fun a => by simp [Function.comp_def, map_star, map_star] }
 
 @[simp]
 theorem coe_comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : ⇑(comp f g) = f ∘ g :=

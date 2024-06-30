@@ -803,7 +803,7 @@ theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ :=
 /-- For any extended real number `x` which is not `⊥`, the sum of `⊤` and `x` is equal to `⊤`. -/
 @[simp]
 theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
-  induction x using EReal.rec
+  induction x
   · exfalso; exact h (Eq.refl ⊥)
   · exact top_add_coe _
   · exact top_add_top
@@ -812,13 +812,13 @@ theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
 if and only if `x` is not `⊥`. -/
 theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
   constructor <;> intro h
-  · by_contra h'
-    rw [h', add_bot] at h
+  · rintro rfl
+    rw [add_bot] at h
     exact bot_ne_top h
-  · cases x
-    case h_bot => contradiction
-    case h_top => rfl
-    case h_real r => exact top_add_of_ne_bot h
+  · cases x with
+    | h_bot => contradiction
+    | h_top => rfl
+    | h_real r => exact top_add_of_ne_bot h
 
 /-- For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`. -/
 @[simp]
@@ -832,9 +832,9 @@ theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [a
 /-- For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
 then their sum is also greater than `0`. -/
 theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by
-  induction a using EReal.rec
+  induction a
   · exfalso; exact not_lt_bot ha
-  · induction b using EReal.rec
+  · induction b
     · exfalso; exact not_lt_bot hb
     · norm_cast at *; exact Left.add_pos ha hb
     · exact add_top_of_ne_bot (bot_lt_zero.trans ha).ne' ▸ hb
@@ -1076,7 +1076,7 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
 #align ereal.to_real_sub EReal.toReal_sub
 
 theorem add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
-  induction a using EReal.rec
+  induction a
   · rw [bot_add b, bot_sub b]
   · norm_cast; linarith
   · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
@@ -1130,9 +1130,9 @@ theorem top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
 
 /-- The product of two positive extended real numbers is positive. -/
 theorem mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
-  induction a using EReal.rec
+  induction a
   · exfalso; exact not_lt_bot ha
-  · induction b using EReal.rec
+  · induction b
     · exfalso; exact not_lt_bot hb
     · norm_cast at *; exact Left.mul_pos ha hb
     · rw [EReal.mul_comm, top_mul_of_pos ha]; exact hb
@@ -1252,12 +1252,12 @@ theorem right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
   rcases eq_or_lt_of_le hb with (rfl | b_pos)
   · simp
   rcases lt_trichotomy c 0 with (c_neg | rfl | c_pos)
-  · induction c using EReal.rec
+  · induction c
     · rw [mul_bot_of_pos a_pos, mul_bot_of_pos b_pos, mul_bot_of_pos (add_pos a_pos b_pos),
         add_bot ⊥]
-    · induction a using EReal.rec
+    · induction a
       · exfalso; exact not_lt_bot a_pos
-      · induction b using EReal.rec
+      · induction b
         · norm_cast
         · norm_cast; exact right_distrib _ _ _
         · norm_cast
@@ -1265,11 +1265,11 @@ theorem right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
       · rw [top_add_of_ne_bot (ne_bot_of_gt b_pos), top_mul_of_neg c_neg, bot_add]
     · exfalso; exact not_top_lt c_neg
   · simp
-  · induction c using EReal.rec
+  · induction c
     · exfalso; exact not_lt_bot c_pos
-    · induction a using EReal.rec
+    · induction a
       · exfalso; exact not_lt_bot a_pos
-      · induction b using EReal.rec
+      · induction b
         · norm_cast
         · norm_cast; exact right_distrib _ _ _
         · norm_cast
@@ -1289,14 +1289,14 @@ theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z
   symm
   refine ⟨fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z), ?_⟩
   intro h
-  induction x using EReal.rec
+  induction x
   · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
     intro z
     specialize h (z-1) (bot_lt_coe (z-1))
     apply lt_of_le_of_lt h
     rw [EReal.coe_lt_coe_iff]
     exact sub_one_lt z
-  · induction y using EReal.rec
+  · induction y
     · exact bot_le
     · norm_cast
       norm_cast at h
@@ -1501,7 +1501,7 @@ noncomputable instance : DivInvOneMonoid EReal where
   inv_one := by nth_rw 1 [← coe_one, ← coe_inv 1, _root_.inv_one, coe_one]
 
 theorem inv_neg (a : EReal) : (-a)⁻¹ = -a⁻¹ := by
-  induction a using EReal.rec
+  induction a
   · rw [neg_bot, inv_top, inv_bot, neg_zero]
   · rw [← coe_inv _, ← coe_neg _⁻¹, ← coe_neg _, ← coe_inv (-_)]
     exact EReal.coe_eq_coe_iff.2 _root_.inv_neg
@@ -1523,7 +1523,7 @@ theorem mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 /-! #### Inversion and Absolute Value -/
 
 theorem sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ := by
-  induction a using EReal.rec with
+  induction a with
   | h_bot | h_top => simp
   | h_real a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
@@ -1536,7 +1536,7 @@ theorem sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ 
       exact abs_of_pos a_pos
 
 theorem sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : EReal) = a⁻¹ := by
-  induction a using EReal.rec with
+  induction a with
   | h_bot | h_top  => simp
   | h_real a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
@@ -1554,23 +1554,23 @@ theorem sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : 
 /-! #### Inversion and Positivity -/
 
 theorem inv_nonneg_of_nonneg {a : EReal} (h : 0 ≤ a) : 0 ≤ a⁻¹ := by
-  induction a using EReal.rec with
+  induction a with
   | h_bot | h_top => simp
   | h_real a => rw [← coe_inv a, EReal.coe_nonneg, inv_nonneg]; exact EReal.coe_nonneg.1 h
 
 theorem inv_nonpos_of_nonpos {a : EReal} (h : a ≤ 0) : a⁻¹ ≤ 0 := by
-  induction a using EReal.rec with
+  induction a with
   | h_bot | h_top => simp
   | h_real a => rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]; exact EReal.coe_nonpos.1 h
 
 theorem inv_pos_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : 0 < a⁻¹ := by
-  induction a using EReal.rec with
+  induction a with
   | h_bot => exact (not_lt_bot h).rec
   | h_real a =>  rw [← coe_inv a]; norm_cast at *; exact inv_pos_of_pos h
   | h_top => exact (h' (Eq.refl ⊤)).rec
 
 theorem inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 0 := by
-  induction a using EReal.rec with
+  induction a with
   | h_bot => exact (h' (Eq.refl ⊥)).rec
   | h_real a => rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
   | h_top => exact (not_top_lt h).rec
