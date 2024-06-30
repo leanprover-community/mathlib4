@@ -18,9 +18,6 @@ package mathlib where
 ## Mathlib dependencies on upstream projects.
 -/
 
-meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
-
 require "leanprover-community" / "batteries" @ "git#nightly-testing"
 require "leanprover-community" / "Qq" @ "git#nightly-testing"
 require "leanprover-community" / "aesop" @ "git#nightly-testing"
