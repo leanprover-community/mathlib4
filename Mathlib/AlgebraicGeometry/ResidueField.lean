@@ -41,6 +41,9 @@ at `x`. -/
 def residueField (x : X) : CommRingCat :=
   CommRingCat.of <| LocalRing.ResidueField (X.stalk x)
 
+lemma residueField_isField (x : X) : IsField (X.residueField x) :=
+  Field.toIsField (LocalRing.ResidueField (X.stalk x))
+
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections
 over `U` to the residue field of `x`.
