@@ -293,7 +293,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
           dsimp
           rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
             Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
-        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
+        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), hi']
         · exact hn.of_cons
       · rw [getLast_eq_get]
         intro h

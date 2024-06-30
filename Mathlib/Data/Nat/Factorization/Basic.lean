@@ -991,7 +991,7 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filter fun x => p �
     · simp
     simp_rw [← Ico_succ_succ, Ico_insert_right (succ_le_succ hn.le), Ico_succ_right]
   simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, card_insert_eq_ite, IH,
-    Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n), Nat.succ_eq_add_one]
+    Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
 #align nat.Ioc_filter_dvd_card_eq_div Nat.Ioc_filter_dvd_card_eq_div
 
 /-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.
