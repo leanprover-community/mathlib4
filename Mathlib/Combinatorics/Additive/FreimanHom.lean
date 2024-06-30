@@ -362,7 +362,7 @@ lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
       aux hm hkmn']
     simp_rw [← Nat.cast_add_one]
     rw [Fin.val_cast_of_lt (aux hm hkmn), Nat.lt_succ_iff]
-  · simp [Nat.succ_eq_add_one, Nat.lt_succ_iff]
+  · simp [Nat.lt_succ_iff]
 
 end Fin
 

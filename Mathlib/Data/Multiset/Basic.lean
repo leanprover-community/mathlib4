@@ -58,6 +58,12 @@ theorem quot_mk_to_coe'' (l : List α) : @Eq (Multiset α) (Quot.mk Setoid.r l) 
 #align multiset.quot_mk_to_coe'' Multiset.quot_mk_to_coe''
 
 @[simp]
+theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
+    (h : ∀ a b : List α, a ≈ b → f a = f b) : Quotient.lift f h (x : Multiset α) = f x :=
+  Quotient.lift_mk _ _ _
+#align multiset.lift_coe Multiset.lift_coe
+
+@[simp]
 theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ ~ l₂ :=
   Quotient.eq
 #align multiset.coe_eq_coe Multiset.coe_eq_coe

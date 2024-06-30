@@ -298,6 +298,7 @@ theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [FunLike G β γ] [
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
 #align map_prod map_prod
 #align map_sum map_sum
+#align linear_equiv.map_sum map_sumₓ
 
 @[to_additive]
 theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α) :

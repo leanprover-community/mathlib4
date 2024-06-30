@@ -38,8 +38,8 @@ variable {α β γ : Type*}
 @[simp, nolint simpNF] lemma ofEquiv_inj {a b : Specialization α} : ofEquiv a = ofEquiv b ↔ a = b :=
 Iff.rfl
 
-/-- A recursor for `Specialization`. -/
-@[induction_eliminator]
+/-- A recursor for `Specialization`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : Specialization α → Sort*} (h : ∀ a, β (toEquiv a)) (a : Specialization α) :
     β a :=
   h (ofEquiv a)

@@ -13,22 +13,26 @@ import Mathlib.Tactic.SuppressCompilation
 /-!
 # Tensor product of modules over commutative semirings.
 
-This file constructs the tensor product of modules over commutative semirings. Given a semiring
-`R` and modules over it `M` and `N`, the standard construction of the tensor product is
+This file constructs the tensor product of modules over commutative semirings. Given a semiring `R`
+and modules over it `M` and `N`, the standard construction of the tensor product is
 `TensorProduct R M N`. It is also a module over `R`.
 
-It comes with a canonical bilinear map `M → N → TensorProduct R M N`.
+It comes with a canonical bilinear map
+`TensorProduct.mk R M N : M →ₗ[R] N →ₗ[R] TensorProduct R M N`.
 
-Given any bilinear map `M → N → P`, there is a unique linear map `TensorProduct R M N → P` whose
-composition with the canonical bilinear map `M → N → TensorProduct R M N` is the given bilinear
-map `M → N → P`.
+Given any bilinear map `f : M →ₗ[R] N →ₗ[R] P`, there is a unique linear map
+`TensorProduct.lift f : TensorProduct R M N →ₗ[R] P` whose composition with the canonical bilinear
+map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is shown in the theorem
+`TensorProduct.lift.unique`.
 
-We start by proving basic lemmas about bilinear maps.
 
-## Notations
+## Notation
 
-This file uses the localized notation `M ⊗ N` and `M ⊗[R] N` for `TensorProduct R M N`, as well
-as `m ⊗ₜ n` and `m ⊗ₜ[R] n` for `TensorProduct.tmul R m n`.
+* This file introduces the notation `M ⊗ N` and `M ⊗[R] N` for the tensor product space
+  `TensorProduct R M N`.
+* It introduces the notation `m ⊗ₜ n` and `m ⊗ₜ[R] n` for the tensor product of two elements,
+  otherwise written as `TensorProduct.tmul R m n`.
+
 
 ## Tags
 

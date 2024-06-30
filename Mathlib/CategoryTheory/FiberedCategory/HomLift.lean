@@ -256,7 +256,7 @@ instance lift_id_inv (S : 𝒮) {a b : 𝒳} (φ : a ≅ b) [p.IsHomLift (𝟙 S
 
 instance lift_id_inv_isIso (S : 𝒮) {a b : 𝒳} (φ : a ⟶ b) [IsIso φ] [p.IsHomLift (𝟙 S) φ] :
     p.IsHomLift (𝟙 S) (inv φ) :=
- (IsIso.inv_id (X := S)) ▸ (IsHomLift.inv p _ φ)
+  (IsIso.inv_id (X := S)) ▸ (IsHomLift.inv p _ φ)
 
 end IsHomLift
 
