@@ -137,6 +137,11 @@ theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedu
   simp [le_dedup, hno]
 #align multiset.nodup.le_dedup_iff_le Multiset.Nodup.le_dedup_iff_le
 
+theorem Disjoint.dedup_add {s t : Multiset α} (h : Disjoint s t) :
+    dedup (s + t) = dedup s + dedup t := by
+  induction s, t using Quot.induction_on₂
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.dedup_append h
+
 end Multiset
 
 theorem Multiset.Nodup.le_nsmul_iff_le {α : Type*} {s t : Multiset α} {n : ℕ} (h : s.Nodup)
