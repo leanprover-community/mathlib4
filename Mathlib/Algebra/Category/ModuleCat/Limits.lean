@@ -119,7 +119,7 @@ def limitCone : Cone F where
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
-def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
+def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
   refine IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
     (fun s => ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
                 ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
@@ -155,7 +155,7 @@ lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (ModuleCat.{w} R)
 #align Module.has_limits_of_size ModuleCat.hasLimitsOfSize
 
 instance hasLimits : HasLimits (ModuleCat.{w} R) :=
-  ModuleCat.hasLimitsOfSize.{w, w, u}
+  ModuleCat.hasLimitsOfSize.{w, w, w, u}
 #align Module.has_limits ModuleCat.hasLimits
 
 instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
