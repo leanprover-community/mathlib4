@@ -22,16 +22,14 @@ namespace CategoryTheory
 
 open Limits
 
-theorem Functor.map_le_map {C D} [Preorder C] [Preorder D]
-    (F : C ⥤ D) {X Y : C} (h : X ≤ Y) : F.obj X ≤ F.obj Y := (F.map h.hom).le
-
 universe v u
 variable {C : Type u} [Category.{v} C] [HasFiniteProducts C] [HasPullbacks C]
 
 variable (C) in
 /-- The Dialectica category. An object of the category is a triple `⟨U, X, α ⊆ U × X⟩`,
 and a morphism from `⟨U, X, α⟩` to `⟨V, Y, β⟩` is a pair `(f : U ⟶ V, F : U ⨯ Y ⟶ X)` such that
-`α(u, F(u, y)) ≤ β(f(u), y)`. -/
+`{(u,y) | α(u, F(u, y))} ⊆ {(u,y) | β(f(u), y)}`. The subset `α` is actually encoded as an element
+of `Subobject (U × X)`, and the above inequality is expressed using pullbacks. -/
 structure Dial where
   /-- The source object -/
   src : C
@@ -47,7 +45,7 @@ local notation "π₂" => prod.snd
 local notation "π(" a ", " b ")" => prod.lift a b
 
 /-- A morphism in the `Dial C` category from `⟨U, X, α⟩` to `⟨V, Y, β⟩` is a pair
-`(f : U ⟶ V, F : U ⨯ Y ⟶ X)` such that `α(u, F(u, y)) ≤ β(f(u), y)`. -/
+`(f : U ⟶ V, F : U ⨯ Y ⟶ X)` such that `{(u,y) | α(u, F(u, y))} ≤ {(u,y) | β(f(u), y)}`. -/
 @[ext] structure Hom (X Y : Dial C) where
   /-- Maps the sources -/
   f : X.src ⟶ Y.src
@@ -64,8 +62,8 @@ theorem comp_le_lemma {X Y Z : Dial C} (F : Dial.Hom X Y) (G : Dial.Hom Y Z) :
     (Subobject.pullback (prod.map (F.f ≫ G.f) (𝟙 Z.tgt))).obj Z.rel := by
   intro F1
   let F2 := prod.map F.f (𝟙 Z.tgt)
-  have h1 := (Subobject.pullback F1).map_le_map F.le
-  have h2 := (Subobject.pullback F2).map_le_map G.le
+  have h1 := (Subobject.pullback F1).monotone F.le
+  have h2 := (Subobject.pullback F2).monotone G.le
   rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at h1 h2
   rw [(_ : F1 ≫ _ = _)] at h1
   rw [(_ : F2 ≫ _ = _), (_ : F2 ≫ _ = _)] at h2

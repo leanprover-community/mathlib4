@@ -45,11 +45,11 @@ local notation "π(" a ", " b ")" => prod.lift a b
     simp only [tensorObj, Subobject.inf_pullback]
     apply inf_le_inf <;> rw [← Subobject.pullback_comp, ← Subobject.pullback_comp]
     · have := (Subobject.pullback (prod.map π₁ π₁ :
-        (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).map_le_map (Hom.le f)
+        (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).monotone (Hom.le f)
       rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at this
       convert this using 3 <;> simp
     · have := (Subobject.pullback (prod.map π₂ π₂ :
-        (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).map_le_map (Hom.le g)
+        (X₁.src ⨯ Y₁.src) ⨯ X₂.tgt ⨯ Y₂.tgt ⟶ _)).monotone (Hom.le g)
       rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at this
       convert this using 3 <;> simp
 

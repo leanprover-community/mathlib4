@@ -51,7 +51,7 @@ theorem himp_pullback {X Y : C} (g : X ⟶ Y) (f₁ f₂) :
     (pullback g).obj (f₁ ⇨ f₂) = (pullback g).obj f₁ ⇨ (pullback g).obj f₂ := by
   apply le_antisymm
   · rw [le_himp_iff, ← inf_pullback]
-    exact (pullback g).map_le_map himp_inf_le
+    exact (pullback g).monotone himp_inf_le
   · exact HasHImp.himp_pullback_le _
 
 end Subobject
@@ -97,7 +97,7 @@ open MonoidalCategory CartesianClosed
       (slice_lhs 1 2 => rfl); (slice_rhs 1 2 => rfl); congr 1; simp
     · let F : (ihomObj X Y₁).src ⨯ X.src ⨯ Y₂.tgt ⟶ Y₁.src ⨯ Y₂.tgt :=
         π(π(π₂ ≫ π₁, π₁ ≫ π₁) ≫ (exp.ev X.src).app Y₁.src, π₂ ≫ π₂)
-      have := (Subobject.pullback F).map_le_map (Dial.Hom.le f)
+      have := (Subobject.pullback F).monotone (Dial.Hom.le f)
       rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at this
       convert this using 4 <;> ext <;> simp [F]
       · (slice_lhs 1 2 => rfl); (slice_rhs 1 2 => rfl); congr 1; simp
@@ -153,7 +153,7 @@ open MonoidalCategory CartesianClosed
     dsimp
     rw [Subobject.himp_pullback, ← Subobject.pullback_comp, ← Subobject.pullback_comp,
       le_himp_iff, inf_comm]
-    have := (Subobject.pullback π(π(π₂ ≫ π₁, π₁), π₂ ≫ π₂)).map_le_map (Dial.Hom.le f)
+    have := (Subobject.pullback π(π(π₂ ≫ π₁, π₁), π₂ ≫ π₂)).monotone (Dial.Hom.le f)
     simp [Subobject.inf_pullback, ← Subobject.pullback_comp,
       ← Subobject.pullback_comp] at this
     set G := π(prod.map π₁ (𝟙 _), π₁ ≫ π₂) ≫ f.F ≫ π₁
@@ -209,7 +209,7 @@ theorem curry_natural_right {X Y Z Z' : Dial C} (f : tensorObj X Y ⟶ Z) (g : Z
     π(prod.map π₁ (𝟙 _), π₁ ≫ π₂) ≫ CartesianClosed.uncurry (f.f ≫ π₂),
     π(π₁ ≫ π₂, π(π₁ ≫ π₁, π₂)) ≫ f.F)
   le := by
-    have := (Subobject.pullback π(π₁ ≫ π₂, π(π₁ ≫ π₁, π₂))).map_le_map (Hom.le f)
+    have := (Subobject.pullback π(π₁ ≫ π₂, π(π₁ ≫ π₁, π₂))).monotone (Hom.le f)
     rw [ihomObj_rel, Subobject.himp_pullback] at this
     rw [tensorObj_rel, Subobject.inf_pullback]
     simp [Subobject.inf_pullback, Subobject.himp_pullback, ← Subobject.pullback_comp] at this ⊢
