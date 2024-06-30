@@ -33,8 +33,14 @@ In this file we define and develop basic results on the representability of morp
 * `presheaf_yoneda_map`: If `f : X ⟶ Y` satisfies `P`, and `P` is stable under compostions,
   then `yoneda.map f` satisfies `P.presheaf`.
 
+For the following results, we assume that `P : MorphismProperty C` is stable under base change:
+* `presheaf_stableUnderBaseChange`: `P.presheaf` is stable under base change
+* `presheaf_respectsIso`: `P.presheaf` respects isomorphisms
+* `presheaf_isStableUnderComp`: If `P` is stable under composition, then so is `P.presheaf`
+
 ## TODO
-Prove the corresponding results (comp / iso / respects iso etc) for `P.presheaf`.
+Can improve definitions & basic API
+converse of `presheaf_yoneda_map`
 
 -/
 
@@ -408,6 +414,9 @@ lemma presheaf_isStableUnderComp [P.IsStableUnderComposition] : IsStableUnderCom
       exists_prop]
     use hBC
     apply P.comp_mem _ _ (hf.property _) (hg.property _)
+
+lemma presheaf_respectsIso : RespectsIso P.presheaf :=
+  (presheaf_stableUnderBaseChange hP₀).respectsIso
 
 end
 
