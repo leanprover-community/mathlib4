@@ -361,12 +361,8 @@ lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻�
     exact sub_ne_zero_of_ne fun a ↦ xis1 a.symm
 
 @[simp] lemma differentiableAt_log_const_neg {x c : ℝ} (h : x ≠ c) :
-    DifferentiableAt ℝ (fun p ↦ log (c - p)) x := by
-  apply DifferentiableAt.log
-  apply DifferentiableAt.sub
-  apply differentiableAt_const
-  apply differentiableAt_id'
-  exact sub_ne_zero.mpr h.symm
+    DifferentiableAt ℝ (fun p ↦ log (c - p)) x :=
+DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr h.symm)
 
 /-- Binary entropy has derivative `log (1 - p) - log p`.
 It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
