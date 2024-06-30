@@ -27,8 +27,13 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   | (_, true) => OutputSetting.regenerate
   | _ => OutputSetting.print errorStyle
   let mut numberErrorFiles : UInt32 := 0
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (System.mkFilePath [s]) mode
+
+  -- When regenerating the exceptions, we have to be careful to not over-write one collection
+  -- of errors in the first turn: down-grade all but the first output setting to `append`.
+  numberErrorFiles ← lintAllFiles (System.mkFilePath ["Mathlib.lean"]) mode
+  let mode' := if mode == OutputSetting.regenerate then OutputSetting.append else mode
+  for s in ["Archive.lean", "Counterexamples.lean"] do
+    let n ← lintAllFiles (System.mkFilePath [s]) mode'
     numberErrorFiles := numberErrorFiles + n
   return numberErrorFiles
 
