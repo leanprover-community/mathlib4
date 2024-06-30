@@ -264,14 +264,11 @@ lemma toCircle_intCast (j : ℤ) :
 
 lemma toCircle_natCast (j : ℕ) :
     toCircle (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
-  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_natCast,
-    Function.Periodic.lift_coe, expMapCircle_apply]
-  push_cast
-  ring_nf
+  rw [← Int.cast_natCast, toCircle_intCast, Int.cast_natCast]
 
 lemma toCircle_apply (j : ZMod N) :
     toCircle j = Complex.exp (2 * π * Complex.I * j.val / N) := by
-  rw [← Int.cast_natCast, ← toCircle_intCast, natCast_val, intCast_zmod_cast]
+  rw [← toCircle_natCast, natCast_zmod_val]
 
 /-- The additive character from `ZMod N` to `ℂ`, sending
 `j mod N` to `exp (2 * π * I * j / N)`. -/
