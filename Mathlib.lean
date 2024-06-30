@@ -1147,6 +1147,7 @@ import Mathlib.Analysis.NormedSpace.Unitization
 import Mathlib.Analysis.NormedSpace.UnitizationL1
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.NormedSpace.WeakDual
+import Mathlib.Analysis.NormedSpace.WeakOperatorTopology
 import Mathlib.Analysis.NormedSpace.WithLp
 import Mathlib.Analysis.NormedSpace.lpSpace
 import Mathlib.Analysis.ODE.Gronwall
