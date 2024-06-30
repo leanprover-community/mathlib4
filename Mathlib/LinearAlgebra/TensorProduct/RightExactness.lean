@@ -544,7 +544,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
           simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype, smul_eq_mul, tmul_mul_tmul]
-          rfl
+          with_unfolding_all rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
           obtain ⟨y', hy'⟩ := hy
