@@ -80,7 +80,7 @@ instance : Category (Dial C) where
   id_comp f := by simp; rfl
   comp_id f := by simp; rfl
   assoc f g h := by
-    simp
+    simp only [Category.assoc, Hom.mk.injEq, true_and]
     rw [← Category.assoc, ← Category.assoc]; congr 1
     ext <;> simp
 

@@ -174,20 +174,20 @@ theorem symmetry (X Y : Dial C) :
     tensorSymm X Y ≫ tensorSymm Y X = 𝟙 (tensorObj X Y) := by aesop_cat
 
 theorem braiding_naturality_right (X : Dial C) {Y Z : Dial C} (f : Y ⟶ Z) :
-  tensorHom (𝟙 X) f ≫ tensorSymm X Z = tensorSymm X Y ≫ tensorHom f (𝟙 X) := by aesop_cat
+    tensorHom (𝟙 X) f ≫ tensorSymm X Z = tensorSymm X Y ≫ tensorHom f (𝟙 X) := by aesop_cat
 
 theorem braiding_naturality_left {X Y : Dial C} (f : X ⟶ Y) (Z : Dial C) :
-  tensorHom f (𝟙 Z) ≫ tensorSymm Y Z = tensorSymm X Z ≫ tensorHom (𝟙 Z) f := by aesop_cat
+    tensorHom f (𝟙 Z) ≫ tensorSymm Y Z = tensorSymm X Z ≫ tensorHom (𝟙 Z) f := by aesop_cat
 
 theorem hexagon_forward (X Y Z : Dial C) :
-  (associator X Y Z).hom ≫ tensorSymm X (Y ⊗ Z) ≫ (associator Y Z X).hom =
-    tensorHom (tensorSymm X Y) (𝟙 Z) ≫ (associator Y X Z).hom ≫
-    tensorHom (𝟙 Y) (tensorSymm X Z) := by aesop_cat
+    (associator X Y Z).hom ≫ tensorSymm X (Y ⊗ Z) ≫ (associator Y Z X).hom =
+      tensorHom (tensorSymm X Y) (𝟙 Z) ≫ (associator Y X Z).hom ≫
+      tensorHom (𝟙 Y) (tensorSymm X Z) := by aesop_cat
 
 theorem hexagon_reverse (X Y Z : Dial C) :
-  (associator X Y Z).inv ≫ tensorSymm (X ⊗ Y) Z ≫ (associator Z X Y).inv =
-    tensorHom (𝟙 X) (tensorSymm Y Z) ≫ (associator X Z Y).inv ≫
-    tensorHom (tensorSymm X Z) (𝟙 Y) := by aesop_cat
+    (associator X Y Z).inv ≫ tensorSymm (X ⊗ Y) Z ≫ (associator Z X Y).inv =
+      tensorHom (𝟙 X) (tensorSymm Y Z) ≫ (associator X Z Y).inv ≫
+      tensorHom (tensorSymm X Z) (𝟙 Y) := by aesop_cat
 
 instance : SymmetricCategory (Dial C) where
   braiding := braiding
