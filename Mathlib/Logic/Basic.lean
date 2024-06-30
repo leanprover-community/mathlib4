@@ -353,19 +353,9 @@ alias Iff.or := or_congr
 alias ⟨Or.rotate, _⟩ := or_rotate
 #align or.rotate Or.rotate
 
-@[deprecated Or.imp (since := "2022-10-24")]
-theorem or_of_or_of_imp_of_imp {a b c d : Prop} (h₁ : a ∨ b) (h₂ : a → c) (h₃ : b → d) :
-    c ∨ d :=
-  Or.imp h₂ h₃ h₁
-#align or_of_or_of_imp_of_imp or_of_or_of_imp_of_imp
-
-@[deprecated Or.imp_left (since := "2022-10-24")]
-theorem or_of_or_of_imp_left {a c b : Prop} (h₁ : a ∨ c) (h : a → b) : b ∨ c := Or.imp_left h h₁
-#align or_of_or_of_imp_left or_of_or_of_imp_left
-
-@[deprecated Or.imp_right (since := "2022-10-24")]
-theorem or_of_or_of_imp_right {c a b : Prop} (h₁ : c ∨ a) (h : a → b) : c ∨ b := Or.imp_right h h₁
-#align or_of_or_of_imp_right or_of_or_of_imp_right
+#align or_of_or_of_imp_of_imp Or.imp
+#align or_of_or_of_imp_left Or.imp_left
+#align or_of_or_of_imp_right Or.imp_right
 
 theorem Or.elim3 {c d : Prop} (h : a ∨ b ∨ c) (ha : a → d) (hb : b → d) (hc : c → d) : d :=
   Or.elim h ha fun h₂ ↦ Or.elim h₂ hb hc
@@ -591,7 +581,6 @@ theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
     h ▸ z = cast (congr_arg P h) z := by induction h; rfl
 
--- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
     HEq (@Eq.rec α a' motive p a t) p := by
@@ -1158,6 +1147,12 @@ theorem forall₂_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ 
   Iff.trans (forall_congr' fun _ ↦ forall_and) forall_and
 #align ball_and_distrib forall₂_and
 
+theorem forall_and_left [Nonempty α] (q : Prop) (p : α → Prop) :
+    (∀ x, q ∧ p x) ↔ (q ∧ ∀ x, p x) := by rw [forall_and, forall_const]
+
+theorem forall_and_right [Nonempty α] (p : α → Prop) (q : Prop) :
+    (∀ x, p x ∧ q) ↔ (∀ x, p x) ∧ q := by rw [forall_and, forall_const]
+
 theorem exists_mem_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
   Iff.trans (exists_congr fun _ ↦ exists_or) exists_or
 #align bex_or_distrib exists_mem_or
@@ -1172,19 +1167,9 @@ theorem exists_mem_or_left :
   exact Iff.trans (exists_congr fun x ↦ or_and_right) exists_or
 #align bex_or_left_distrib exists_mem_or_left
 
-@[deprecated (since := "2023-03-23")] alias not_ball_of_bex_not := not_forall₂_of_exists₂_not
-@[deprecated (since := "2023-03-23")] alias Decidable.not_ball := Decidable.not_forall₂
-@[deprecated (since := "2023-03-23")] alias not_ball := not_forall₂
-@[deprecated (since := "2023-03-23")] alias ball_true_iff := forall₂_true_iff
-@[deprecated (since := "2023-03-23")] alias ball_and := forall₂_and
-@[deprecated (since := "2023-03-23")] alias not_bex := not_exists_mem
-@[deprecated (since := "2023-03-23")] alias bex_or := exists_mem_or
-@[deprecated (since := "2023-03-23")] alias ball_or_left := forall₂_or_left
-@[deprecated (since := "2023-03-23")] alias bex_or_left := exists_mem_or_left
-
 end BoundedQuantifiers
 
-#align classical.not_ball not_ball
+#align classical.not_ball not_forall₂
 
 section ite
 

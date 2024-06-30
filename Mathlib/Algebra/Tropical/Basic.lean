@@ -62,14 +62,13 @@ namespace Tropical
 /-- Reinterpret `x : R` as an element of `Tropical R`.
 See `Tropical.tropEquiv` for the equivalence.
 -/
---@[pp_nodot] Porting note: not implemented in Lean4
 def trop : R → Tropical R :=
   id
 #align tropical.trop Tropical.trop
 
 /-- Reinterpret `x : Tropical R` as an element of `R`.
 See `Tropical.tropEquiv` for the equivalence. -/
---@[pp_nodot] Porting note: not implemented in Lean4
+@[pp_nodot]
 def untrop : Tropical R → R :=
   id
 #align tropical.untrop Tropical.untrop
