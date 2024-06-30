@@ -50,12 +50,11 @@ over `U` to the residue field of `x`.
 If we interpret sections over `U` as functions of `X` defined on `U`, then this ring map
 corresponds to evaluation at `x`.
 -/
-def evaluation (x : U) :
-    X.presheaf.obj (op U) ⟶ X.residueField x :=
+def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
   X.presheaf.germ x ≫ LocalRing.residue _
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
-def Γevaluation (x : X) : LocallyRingedSpace.Γ.obj (op X) ⟶ X.residueField x :=
+def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
   X.evaluation ⟨x, show x ∈ ⊤ from trivial⟩
 
 @[simp]
@@ -68,6 +67,7 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
   simp
 
+@[simp]
 lemma Γevaluation_eq_zero_iff_not_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f = 0 ↔ x ∉ X.toRingedSpace.basicOpen f :=
   evaluation_eq_zero_iff_not_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
