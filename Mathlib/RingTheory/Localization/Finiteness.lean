@@ -155,7 +155,7 @@ variable {R : Type u} [CommRing R] {S : Type v} [CommRing S] {f : R →+* S}
 To check that the kernel of a ring homomorphism is finitely generated,
 it suffices to check this after localizing at a spanning set of the source.
 -/
-lemma RingHom.ker_FG_of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
+lemma RingHom.ker_fg_of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
     (H : ∀ g : t, (RingHom.ker (Localization.awayMap f g.val)).FG) :
     (RingHom.ker f).FG := by
   apply Module.Finite.iff_fg.mp

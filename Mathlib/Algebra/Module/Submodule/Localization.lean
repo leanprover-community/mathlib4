@@ -50,8 +50,8 @@ def Submodule.localized' : Submodule S N where
     exact ⟨y • m, M'.smul_mem y hm, t * s, by simp [← hyt, ← hx, IsLocalizedModule.mk'_smul_mk']⟩
 
 lemma Submodule.mem_localized' (x : N) :
-    x ∈ Submodule.localized' S p f M' ↔ ∃ m ∈ M', ∃ s : p, IsLocalizedModule.mk' f m s = x := by
-  rfl
+    x ∈ Submodule.localized' S p f M' ↔ ∃ m ∈ M', ∃ s : p, IsLocalizedModule.mk' f m s = x :=
+  Iff.rfl
 
 /-- The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`. -/
 abbrev Submodule.localized : Submodule (Localization p) (LocalizedModule p M) :=
