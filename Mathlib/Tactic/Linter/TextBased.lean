@@ -332,6 +332,21 @@ def allLinters : Array TextbasedLinter := #[
     copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
   ]
 
+/-- Controls what kind of output this programme produces. -/
+inductive OutputSetting : Type
+  /-- Print any style error to standard output (the default) -/
+  | print (style : ErrorFormat)
+  /-- Append all new errors to the style exceptions file (and print them),
+  leaving existing ones intact -/
+  | append
+  deriving BEq
+
+/-- Append a given string at the end of an existing file. -/
+-- XXX: move this to `Init.System.IO.lean` in Lean core
+def IO.FS.appendToFile (fname : FilePath) (content : String) : IO Unit := do
+  let previous_content ← IO.FS.readFile fname
+  IO.FS.writeFile fname (previous_content ++ content)
+
 /-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
 `sizeLimit` is any pre-existing limit on this file's size.
 `exceptions` are any other style exceptions. -/
@@ -354,18 +369,19 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
 /-- Lint all files referenced in a given import-only file.
 Print formatted errors and possibly update the style exceptions file accordingly.
 Return the number of files which had new style errors.
-`style` specifies if errors should be formatted for github or human consumption. -/
-def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
+`mode` specifies what kind of output this script should produce. -/
+def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
   -- Read all module names from the file at `path`.
   let allModules ← IO.FS.lines path
   -- Read the style exceptions file.
-  -- We also have a `nolints` file with manual exceptions for the linter.
-  let exceptions ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
+  let exceptionsFilePath := (mkFilePath ["scripts", "style-exceptions.txt"])
+  let exceptions ← IO.FS.lines exceptionsFilePath
   let mut styleExceptions := parseStyleExceptions exceptions
+  -- We also have a `nolints` file with manual exceptions for the linter.
   let nolints ← IO.FS.lines (mkFilePath ["scripts", "nolints-style.txt"])
   styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
 
-  let mut numberErrorFiles := 0
+  let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
   for module in allModules do
     let module := module.stripPrefix "import "
@@ -381,5 +397,11 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
-    formatErrors allUnexpectedErrors style
+    match mode with
+    | OutputSetting.print style => formatErrors allUnexpectedErrors style
+    | OutputSetting.append =>
+        if allUnexpectedErrors.size > 0 then
+      let formatted := (allUnexpectedErrors.map
+        (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
+      IO.FS.appendToFile exceptionsFilePath s!"{"\n".intercalate formatted}\n"
   return numberErrorFiles

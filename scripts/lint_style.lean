@@ -18,13 +18,13 @@ open Cli
 
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  let errorStyle := match (args.hasFlag "github", args.hasFlag "update") with
-    | (true, _) => ErrorFormat.github
-    | (false, true) => ErrorFormat.exceptionsFile
-    | (false, false) => ErrorFormat.humanReadable
+  let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
+  let mode : OutputSetting := if args.hasFlag "update" then
+    OutputSetting.append
+  else OutputSetting.print errorStyle
   let mut numberErrorFiles : UInt32 := 0
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (System.mkFilePath [s]) errorStyle
+    let n ← lintAllFiles (System.mkFilePath [s]) mode
     numberErrorFiles := numberErrorFiles + n
   return numberErrorFiles
 
@@ -38,7 +38,8 @@ def lint_style : Cmd := `[Cli|
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
-    update;     "Print errors solely for the style exceptions file"
+    update;     "Append all new errors to the current list of exceptions \
+                 (leaving existing entries untouched)"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
