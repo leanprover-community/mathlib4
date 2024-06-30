@@ -34,7 +34,7 @@ open scoped NNReal
 section LogExp
 
 @[simp] lemma log_exp (x : EReal) : log (exp x) = x := by
-  induction x using EReal.rec
+  induction x
   · simp
   · rw [exp_coe, log_ofReal, if_neg (not_le.mpr (Real.exp_pos _)), Real.log_exp]
   · simp
