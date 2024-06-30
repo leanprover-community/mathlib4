@@ -205,6 +205,11 @@ theorem dedup_add (s t : Multiset α) : dedup (s + t) = ndunion s (dedup t) :=
   Quot.induction_on₂ s t fun _ _ => congr_arg ((↑) : List α → Multiset α) <| dedup_append _ _
 #align multiset.dedup_add Multiset.dedup_add
 
+theorem Disjoint.ndunion_eq {s t : Multiset α} (h : Disjoint s t) :
+    s.ndunion t = s.dedup + t := by
+  induction s, t using Quot.induction_on₂
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.union_eq h
+
 /-! ### finset inter -/
 
 

@@ -117,6 +117,11 @@ theorem dedup_ext {s t : Multiset α} : dedup s = dedup t ↔ ∀ a, a ∈ s ↔
   simp [Nodup.ext]
 #align multiset.dedup_ext Multiset.dedup_ext
 
+theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
+    (s : Multiset α) :
+    (s.map f).dedup = s.dedup.map f :=
+  Quot.induction_on s fun l => by simp [List.dedup_map_of_injective hf l]
+
 theorem dedup_map_dedup_eq [DecidableEq β] (f : α → β) (s : Multiset α) :
     dedup (map f (dedup s)) = dedup (map f s) := by
   simp [dedup_ext]
