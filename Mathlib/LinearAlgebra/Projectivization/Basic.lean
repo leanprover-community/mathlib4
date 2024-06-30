@@ -122,9 +122,8 @@ theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (m
 
 variable {K}
 
-/-- An induction principle for `Projectivization`.
-Use as `induction v using Projectivization.ind`. -/
-@[elab_as_elim]
+/-- An induction principle for `Projectivization`. Use as `induction v`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
   Quotient.ind' <| Subtype.rec <| h
 #align projectivization.ind Projectivization.ind
