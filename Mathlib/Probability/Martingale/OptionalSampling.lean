@@ -183,7 +183,6 @@ theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
   exact condexp_of_aestronglyMeasurable' hσ.measurableSpace_le h_meas h_int
 #align measure_theory.martingale.condexp_stopped_value_stopping_time_ae_eq_restrict_le MeasureTheory.Martingale.condexp_stoppedValue_stopping_time_ae_eq_restrict_le
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- **Optional Sampling theorem**. If `τ` is a bounded stopping time and `σ` is another stopping
 time, then the value of a martingale `f` at the stopping time `min τ σ` is almost everywhere equal
 to the conditional expectation of `f` stopped at `τ` with respect to the σ-algebra generated
@@ -192,9 +191,9 @@ theorem stoppedValue_min_ae_eq_condexp [SigmaFiniteFiltration μ ℱ] (h : Marti
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) {n : ι} (hτ_le : ∀ x, τ x ≤ n)
     [h_sf_min : SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
     (stoppedValue f fun x => min (σ x) (τ x)) =ᵐ[μ] μ[stoppedValue f τ|hσ.measurableSpace] := by
-  refine'
-    (h.stoppedValue_ae_eq_condexp_of_le hτ (hσ.min hτ) (fun x => min_le_right _ _) hτ_le).trans _
-  refine' ae_of_ae_restrict_of_ae_restrict_compl {x | σ x ≤ τ x} _ _
+  refine
+    (h.stoppedValue_ae_eq_condexp_of_le hτ (hσ.min hτ) (fun x => min_le_right _ _) hτ_le).trans ?_
+  refine ae_of_ae_restrict_of_ae_restrict_compl {x | σ x ≤ τ x} ?_ ?_
   · exact condexp_min_stopping_time_ae_eq_restrict_le hσ hτ
   · suffices μ[stoppedValue f τ|(hσ.min hτ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}]
         μ[stoppedValue f τ|hσ.measurableSpace] by
@@ -208,9 +207,9 @@ theorem stoppedValue_min_ae_eq_condexp [SigmaFiniteFiltration μ ℱ] (h : Marti
     · exact stoppedValue f τ
     · rw [IsStoppingTime.measurableSpace_min hσ, IsStoppingTime.measurableSpace_min hτ, inf_comm]
     · have h1 : μ[stoppedValue f τ|hτ.measurableSpace] = stoppedValue f τ := by
-        refine' condexp_of_stronglyMeasurable hτ.measurableSpace_le _ _
-        · refine' Measurable.stronglyMeasurable _
-          exact measurable_stoppedValue h.adapted.progMeasurable_of_discrete hτ
+        apply condexp_of_stronglyMeasurable hτ.measurableSpace_le
+        · exact Measurable.stronglyMeasurable <|
+            measurable_stoppedValue h.adapted.progMeasurable_of_discrete hτ
         · exact integrable_stoppedValue ι hτ h.integrable hτ_le
       rw [h1]
       exact (condexp_stoppedValue_stopping_time_ae_eq_restrict_le h hτ hσ hτ_le).symm

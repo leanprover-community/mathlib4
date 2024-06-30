@@ -37,7 +37,7 @@ namespace AlgebraicGeometry
 
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
 abbrev RingedSpace : TypeMax.{u+1, v+1} :=
-  SheafedSpace.{_, v, u} CommRingCat.{v}
+  SheafedSpace.{v+1, v, u} CommRingCat.{v}
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace AlgebraicGeometry.RingedSpace
 
@@ -48,7 +48,7 @@ open SheafedSpace
 variable (X : RingedSpace)
 
 -- Porting note (#10670): this was not necessary in mathlib3
-instance : CoeSort RingedSpace (Type*) where
+instance : CoeSort RingedSpace Type* where
   coe X := X.carrier
 
 /--

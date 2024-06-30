@@ -72,7 +72,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   have I : (interior ((g • V) • {x})).Nonempty := by
     apply hi.mono
     apply interior_mono
-    exact smul_subset_smul_right (inter_subset_right _ _)
+    exact smul_subset_smul_right inter_subset_right
   obtain ⟨y, hy⟩ : (interior (V • ({x} : Set X))).Nonempty := by
     rw [smul_assoc, interior_smul] at I
     exact smul_set_nonempty.1 I

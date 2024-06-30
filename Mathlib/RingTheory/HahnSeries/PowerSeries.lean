@@ -172,7 +172,7 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
     classical
       change (f * g).coeff n = _
       simp_rw [mul_coeff]
-      refine' (sum_filter_ne_zero _).symm.trans <| (sum_congr _ fun _ _ ↦ rfl).trans <|
+      refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
         sum_filter_ne_zero _
       ext m
       simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,

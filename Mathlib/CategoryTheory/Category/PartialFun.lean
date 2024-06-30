@@ -42,7 +42,7 @@ set_option linter.uppercaseLean3 false
 
 namespace PartialFun
 
-instance : CoeSort PartialFun (Type*) :=
+instance : CoeSort PartialFun Type* :=
   ⟨id⟩
 
 -- Porting note(#5171): removed `@[nolint has_nonempty_instance]`; linter not ported yet
@@ -145,7 +145,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
           -- `Part.mem_bind_iff` means that `b ∈ Part.bind f g` is equivalent
           -- to `∃ (a : α), a ∈ f ∧ b ∈ g a`, while in mathlib3 it was equivalent
           -- to `∃ (a : α) (H : a ∈ f), b ∈ g a`
-          refine' (Part.mem_bind_iff.trans _).trans PFun.mem_toSubtype_iff.symm
+          refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
           · dsimp [Part.toOption]
@@ -184,6 +184,6 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
     fun f =>
     Pointed.Hom.ext _ _ <|
       funext fun a => Option.recOn a rfl fun a => by
-        classical
         convert Part.some_toOption _
+        simpa using (Part.get_eq_iff_mem (by trivial)).mp rfl
 #align Type_to_PartialFun_iso_PartialFun_to_Pointed typeToPartialFunIsoPartialFunToPointed

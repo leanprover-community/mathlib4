@@ -604,8 +604,8 @@ protected theorem disjoint_iff [OrderBot α] [OrderBot β] {x y : α × β} :
     Disjoint x y ↔ Disjoint x.1 y.1 ∧ Disjoint x.2 y.2 := by
   constructor
   · intro h
-    refine' ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, _⟩ ⟨hy, _⟩).1,
-      fun b hx hy ↦ (@h (⊥, b) ⟨_, hx⟩ ⟨_, hy⟩).2⟩
+    refine ⟨fun a hx hy ↦ (@h (a, ⊥) ⟨hx, ?_⟩ ⟨hy, ?_⟩).1,
+      fun b hx hy ↦ (@h (⊥, b) ⟨?_, hx⟩ ⟨?_, hy⟩).2⟩
     all_goals exact bot_le
   · rintro ⟨ha, hb⟩ z hza hzb
     exact ⟨ha hza.1 hzb.1, hb hza.2 hzb.2⟩

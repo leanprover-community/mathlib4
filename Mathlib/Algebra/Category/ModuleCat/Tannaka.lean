@@ -25,10 +25,10 @@ A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 -/
 def ringEquivEndForget₂ (R : Type u) [Ring R] :
-    R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u})) where
+    R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGrp.{u})) where
   toFun r :=
     { app := fun M =>
-        @AddCommGroupCat.ofHom M.carrier M.carrier _ _ (DistribMulAction.toAddMonoidHom M r)
+        @AddCommGrp.ofHom M.carrier M.carrier _ _ (DistribMulAction.toAddMonoidHom M r)
       naturality := fun M N f => by
         ext
         exact (f.map_smul _ _).symm }
@@ -48,14 +48,14 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
     apply NatTrans.ext
     ext
     dsimp
-    simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, add_smul]
+    simp only [AddCommGrp.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, add_smul]
     rfl
   map_mul' := by
     intros
     apply NatTrans.ext
     ext
     dsimp
-    simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, mul_smul]
+    simp only [AddCommGrp.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, mul_smul]
     rfl
 
 #align ring_equiv_End_forget₂ ringEquivEndForget₂
