@@ -45,10 +45,10 @@ def exp : EReal → ℝ≥0∞
 @[simp] lemma exp_coe (x : ℝ) : exp x = ENNReal.ofReal (Real.exp x) := rfl
 
 @[simp] lemma exp_eq_zero_iff {x : EReal} : exp x = 0 ↔ x = ⊥ := by
-  induction x using EReal.rec <;> simp [Real.exp_pos]
+  induction x <;> simp [Real.exp_pos]
 
 @[simp] lemma exp_eq_top_iff {x : EReal} : exp x = ∞ ↔ x = ⊤ := by
-  induction x using EReal.rec <;> simp
+  induction x <;> simp
 
 end Definition
 
@@ -57,10 +57,10 @@ section Monotonicity
 
 lemma exp_strictMono : StrictMono exp := by
   intro x y h
-  induction x using EReal.rec
+  induction x
   · rw [exp_bot, pos_iff_ne_zero, ne_eq, exp_eq_zero_iff]
     exact h.ne'
-  · induction' y using EReal.rec with y
+  · induction' y with y
     · simp at h
     · simp_rw [exp_coe]
       exact ENNReal.ofReal_lt_ofReal_iff'.mpr ⟨Real.exp_lt_exp_of_lt (mod_cast h), Real.exp_pos y⟩
@@ -76,23 +76,23 @@ end Monotonicity
 section Morphism
 
 lemma exp_neg (x : EReal) : exp (-x) = (exp x)⁻¹ := by
-  induction x using EReal.rec
+  induction x
   · simp
   · rw [exp_coe, ← EReal.coe_neg, exp_coe, ← ENNReal.ofReal_inv_of_pos (Real.exp_pos _),
       Real.exp_neg]
   · simp
 
 lemma exp_add (x y : EReal) : exp (x + y) = exp x * exp y := by
-  induction x using EReal.rec
+  induction x
   · simp
-  · induction y using EReal.rec
+  · induction y
     · simp
     · simp only [← EReal.coe_add, exp_coe]
       rw [← ENNReal.ofReal_mul (Real.exp_nonneg _), Real.exp_add]
     · simp only [EReal.coe_add_top, exp_top, exp_coe]
       rw [ENNReal.mul_top]
       simp [Real.exp_pos]
-  · induction y using EReal.rec
+  · induction y
     · simp
     · simp only [EReal.top_add_coe, exp_top, exp_coe]
       rw [ENNReal.top_mul]
