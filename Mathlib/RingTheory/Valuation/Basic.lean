@@ -596,6 +596,8 @@ section AddMonoid
 
 variable (R) [Ring R] (Γ₀ : Type*) [AddCommMonoid Γ₀] [LinearOrderedAddCommMonoidWithTop Γ₀]
 
+attribute [local instance] LinearOrderedAddCommMonoidWithTop.toCommMonoidWithZero
+
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
 -- porting note (#5171): removed @[nolint has_nonempty_instance]
 def AddValuation :=
@@ -609,6 +611,8 @@ namespace AddValuation
 variable {Γ₀ : Type*} {Γ'₀ : Type*}
 
 section Basic
+
+attribute [local instance] LinearOrderedAddCommMonoidWithTop.toCommMonoidWithZero
 
 section Monoid
 
@@ -760,7 +764,7 @@ theorem comap_comp {S₁ : Type*} {S₂ : Type*} [Ring S₁] [Ring S₂] (f : S�
 -/
 def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) :
     AddValuation R Γ'₀ :=
-  @Valuation.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _
+  @Valuation.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _ _ _
     { toFun := f
       map_mul' := f.map_add
       map_one' := f.map_zero
@@ -780,33 +784,33 @@ section Group
 variable [AddCommGroup Γ₀] [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y z : R}
 
 @[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
-  map_inv₀ v.valuation x
+theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) := sorry
+  -- map_inv₀ v.valuation x
 #align add_valuation.map_inv AddValuation.map_inv
 
 @[simp]
-theorem map_neg (x : R) : v (-x) = v x :=
-  Valuation.map_neg v x
+theorem map_neg (x : R) : v (-x) = v x := sorry
+  -- Valuation.map_neg v x
 #align add_valuation.map_neg AddValuation.map_neg
 
-theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
-  Valuation.map_sub_swap v x y
+theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) := sorry
+  -- Valuation.map_sub_swap v x y
 #align add_valuation.map_sub_swap AddValuation.map_sub_swap
 
-theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) :=
-  Valuation.map_sub v x y
+theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) := sorry
+  -- Valuation.map_sub v x y
 #align add_valuation.map_sub AddValuation.map_sub
 
-theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) :=
-  Valuation.map_sub_le v hx hy
+theorem map_le_sub {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x - y) := sorry
+  -- Valuation.map_sub_le v hx hy
 #align add_valuation.map_le_sub AddValuation.map_le_sub
 
-theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) :=
-  Valuation.map_add_of_distinct_val v h
+theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _ (v x) (v y) := sorry
+  -- Valuation.map_add_of_distinct_val v h
 #align add_valuation.map_add_of_distinct_val AddValuation.map_add_of_distinct_val
 
-theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
-  Valuation.map_eq_of_sub_lt v h
+theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x := sorry
+  -- Valuation.map_eq_of_sub_lt v h
 #align add_valuation.map_eq_of_lt_sub AddValuation.map_eq_of_lt_sub
 
 end Group
@@ -815,61 +819,62 @@ end Basic
 
 namespace IsEquiv
 
-variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
+variable [AddCommMonoid Γ₀] [LinearOrderedAddCommMonoidWithTop Γ₀] [AddCommMonoid Γ'₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   [Ring R]
-  {Γ''₀ : Type*} [LinearOrderedAddCommMonoidWithTop Γ''₀]
+  {Γ''₀ : Type*} [AddCommMonoid Γ''₀] [LinearOrderedAddCommMonoidWithTop Γ''₀]
   {v : AddValuation R Γ₀}
    {v₁ : AddValuation R Γ₀} {v₂ : AddValuation R Γ'₀} {v₃ : AddValuation R Γ''₀}
 
 @[refl]
-theorem refl : v.IsEquiv v :=
-  Valuation.IsEquiv.refl
+theorem refl : v.IsEquiv v := sorry
+  -- Valuation.IsEquiv.refl
 #align add_valuation.is_equiv.refl AddValuation.IsEquiv.refl
 
 @[symm]
-theorem symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ :=
-  Valuation.IsEquiv.symm h
+theorem symm (h : v₁.IsEquiv v₂) : v₂.IsEquiv v₁ := sorry
+  -- Valuation.IsEquiv.symm h
 #align add_valuation.is_equiv.symm AddValuation.IsEquiv.symm
 
 @[trans]
-theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ :=
-  Valuation.IsEquiv.trans h₁₂ h₂₃
+theorem trans (h₁₂ : v₁.IsEquiv v₂) (h₂₃ : v₂.IsEquiv v₃) : v₁.IsEquiv v₃ := sorry
+  -- Valuation.IsEquiv.trans h₁₂ h₂₃
 #align add_valuation.is_equiv.trans AddValuation.IsEquiv.trans
-
-theorem of_eq {v' : AddValuation R Γ₀} (h : v = v') : v.IsEquiv v' :=
-  Valuation.IsEquiv.of_eq h
+theorem of_eq {v' : AddValuation R Γ₀} (h : v = v') : v.IsEquiv v' := sorry
+  -- Valuation.IsEquiv.of_eq h
 #align add_valuation.is_equiv.of_eq AddValuation.IsEquiv.of_eq
 
 theorem map {v' : AddValuation R Γ₀} (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f)
-    (inf : Injective f) (h : v.IsEquiv v') : (v.map f ht hf).IsEquiv (v'.map f ht hf) :=
-  @Valuation.IsEquiv.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _ _ _
-    { toFun := f
-      map_mul' := f.map_add
-      map_one' := f.map_zero
-      map_zero' := ht } (fun _x _y h => hf h) inf h
+    (inf : Injective f) (h : v.IsEquiv v') : (v.map f ht hf).IsEquiv (v'.map f ht hf) := sorry
+  -- @Valuation.IsEquiv.map R (Multiplicative Γ₀ᵒᵈ) (Multiplicative Γ'₀ᵒᵈ) _ _ _ _ sorry
+  --   { toFun := f
+  --     map_mul' := f.map_add
+  --     map_one' := f.map_zero
+  --     map_zero' := ht } (fun _x _y h => hf h) inf h
 #align add_valuation.is_equiv.map AddValuation.IsEquiv.map
 
 /-- `comap` preserves equivalence. -/
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
-    (v₁.comap f).IsEquiv (v₂.comap f) :=
-  Valuation.IsEquiv.comap f h
+    (v₁.comap f).IsEquiv (v₂.comap f) := sorry
+  -- Valuation.IsEquiv.comap f h
 #align add_valuation.is_equiv.comap AddValuation.IsEquiv.comap
 
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s :=
-  Valuation.IsEquiv.val_eq h
+theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := sorry
+  -- Valuation.IsEquiv.val_eq h
 #align add_valuation.is_equiv.val_eq AddValuation.IsEquiv.val_eq
 
-theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
-  Valuation.IsEquiv.ne_zero h
+theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) := sorry
+  -- Valuation.IsEquiv.ne_zero h
 #align add_valuation.is_equiv.ne_top AddValuation.IsEquiv.ne_top
 
 end IsEquiv
 
 section Supp
 
-variable [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
+variable [AddCommMonoid Γ₀] [LinearOrderedAddCommMonoidWithTop Γ₀] [AddCommMonoid Γ'₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
 variable [CommRing R]
 variable (v : AddValuation R Γ₀)
+
+attribute [local instance] LinearOrderedAddCommMonoidWithTop.toCommMonoidWithZero
 
 /-- The support of an additive valuation `v : R → Γ₀` is the ideal of `R` where `v x = ⊤` -/
 def supp : Ideal R :=

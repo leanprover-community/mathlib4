@@ -92,7 +92,7 @@ the rationals. Hence we define `LinearOrderedField.cutMap β : α → Set β` wh
 
 section CutMap
 
-variable [LinearOrderedField α]
+variable [Field α] [LinearOrderedField α]
 
 section DivisionRing
 
@@ -129,7 +129,7 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 
 end DivisionRing
 
-variable (β) [LinearOrderedField β] {a a₁ a₂ : α} {b : β} {q : ℚ}
+variable (β) [Field β] [LinearOrderedField β] {a a₁ a₂ : α} {b : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
   simp_rw [cutMap, Rat.cast_lt]
@@ -172,8 +172,8 @@ end CutMap
 
 section InducedMap
 
-variable (α β γ) [LinearOrderedField α] [ConditionallyCompleteLinearOrderedField β]
-  [ConditionallyCompleteLinearOrderedField γ]
+variable (α β γ) [Field α] [LinearOrderedField α] [Field β] [ConditionallyCompleteLinearOrderedField β]
+  [Field γ] [ConditionallyCompleteLinearOrderedField γ]
 
 /-- The induced order preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the
@@ -358,7 +358,7 @@ end LinearOrderedField
 
 section Real
 
-variable {R S : Type*} [OrderedRing R] [LinearOrderedRing S]
+variable {R S : Type*} [Ring R] [OrderedRing R] [Ring S] [LinearOrderedRing S]
 
 theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
   (monotone_iff_map_nonneg f).2 fun r h => by

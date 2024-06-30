@@ -315,7 +315,8 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
 end LinearOrderedCommGroupWithZero
 
 -- Move this to appropriate place... or not
-local instance [AddCommMonoid α] [LinearOrderedAddCommMonoidWithTop α] :
+def LinearOrderedAddCommMonoidWithTop.toCommMonoidWithZero
+    [AddCommMonoid α] [LinearOrderedAddCommMonoidWithTop α] :
     CommMonoidWithZero (Multiplicative αᵒᵈ) where
     __ := Multiplicative.commMonoid (α := α)
     zero := Multiplicative.ofAdd (⊤ : α)
@@ -323,6 +324,8 @@ local instance [AddCommMonoid α] [LinearOrderedAddCommMonoidWithTop α] :
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
     zero_mul := @top_add α _ _
     mul_zero := @add_top α _ _
+
+attribute [local instance] LinearOrderedAddCommMonoidWithTop.toCommMonoidWithZero
 
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [AddCommMonoid α] [LinearOrderedAddCommMonoidWithTop α] :
