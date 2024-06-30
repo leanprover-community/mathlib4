@@ -15,6 +15,17 @@ We say that the morphism `η` in a monoidal category is in normal form if
 2. each `ηᵢ` is a non-structural 2-morphism of the form `f₁ ◁ ... ◁ fₘ ◁ θ`, and
 3. `θ` is of the form `ι ▷ g₁ ▷ ... ▷ gₗ`
 
+## Main definitions
+- `Tactic.Monoidal.eval`: Given a Lean expression `e` that represents a morphism in a monoidal
+category, this function returns a pair of `⟨e', pr⟩` where `e'` is the normalized expression of `e`
+and `pr` is a proof that `e = e'`.
+
+## Implementation notes
+The function `Tactic.Monoidal.eval` fails to produce a proof term when the environment cannot
+find the necessary `MonoidalCategory C` instance. This occurs when running the string diagram
+widget, and the error makes it impossible for the string diagram widget to generate the diagram.
+To work around the widget failure, if the proof generation fails when `eval` running, it returns a
+meaningless term `mkConst ``True` in place of the proof term.
 -/
 
 namespace Mathlib.Tactic.Monoidal
