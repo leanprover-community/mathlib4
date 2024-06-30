@@ -240,7 +240,8 @@ theorem limsup_add_le_of_le {α : Type*} {f : Filter α} {u v : α → EReal} {a
   · convert le_top;
     rw [hb'];
     exact add_top_of_ne_bot ha.ne_bot
-  exact (limsup_add_le_add_limsup (hb ▸ Or.inr hb') (Or.inl ha.ne_top)).trans (add_le_add ha.le hb.le)
+  exact (limsup_add_le_add_limsup (hb ▸ Or.inr hb') (Or.inl ha.ne_top)).trans
+    (add_le_add ha.le hb.le)
 
 lemma liminf_neg {α : Type*} {f : Filter α} {v : α → EReal} : liminf (- v) f = - limsup v f :=
   EReal.negOrderIso.limsup_apply.symm
