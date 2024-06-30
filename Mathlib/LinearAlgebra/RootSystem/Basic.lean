@@ -180,7 +180,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   apply Dual.eq_of_preReflection_mapsTo' (P₁.ne_zero i) (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
-  ·  exact P₁.mapsTo_reflection_root i
+  · exact P₁.mapsTo_reflection_root i
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
 

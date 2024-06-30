@@ -119,8 +119,8 @@ structure RootSystem extends RootPairing ι R M N :=
 
 namespace RootPairing
 
-variable {ι R M N} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-(P : RootPairing ι R M N) (i j : ι)
+variable {ι R M N}
+variable (P : RootPairing ι R M N) (i j : ι)
 
 lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
