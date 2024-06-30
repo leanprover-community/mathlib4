@@ -6,6 +6,8 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 
 /-!
 # The weak operator topology
@@ -48,8 +50,8 @@ open scoped Topology
 /-- The type copy of `E →L[𝕜] F` endowed with the weak operator topology, denoted as
 `E →WOT[𝕜] F`. -/
 @[irreducible]
-def ContinuousLinearMapWOT (𝕜 : Type*) (E : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup E]
-    [TopologicalSpace E] [Module 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] := E →L[𝕜] F
+def ContinuousLinearMapWOT (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring 𝕜] [AddCommGroup E]
+    [TopologicalSpace E] [Module 𝕜 E] [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F] := E →L[𝕜] F
 
 @[inherit_doc]
 notation:25 E " →WOT[" 𝕜 "]" F => ContinuousLinearMapWOT 𝕜 E F
@@ -57,9 +59,9 @@ notation:25 E " →WOT[" 𝕜 "]" F => ContinuousLinearMapWOT 𝕜 E F
 namespace ContinuousLinearMapWOT
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} [RCLike 𝕜] [AddCommGroup E] [TopologicalSpace E]
-  [Module 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [Module 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-local notation "⟪" x ", " y "⟫" => inner (𝕜 := 𝕜) x y
+--local notation "⟪" x ", " y "⟫" => inner (𝕜 := 𝕜) x y
 
 /-!
 ### Basic properties common with `E →L[𝕜] F`
@@ -100,10 +102,18 @@ lemma _root_.ContinuousLinearMap.toWOT_apply {A : E →L[𝕜] F} {x : E} :
 unseal ContinuousLinearMapWOT in
 lemma ext_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x, A x = B x := ContinuousLinearMap.ext_iff
 
-lemma ext_inner_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x y, ⟪y, A x⟫ = ⟪y, B x⟫ := by
+--lemma ext_inner_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x y, ⟪y, A x⟫ = ⟪y, B x⟫ := by
+--  refine ⟨fun h _ _ => by simp [h], fun h => ?_⟩
+--  rw [ext_iff]
+--  exact fun x => ext_inner_left 𝕜 fun y => h x y
+
+lemma ext_dual_iff {A B : E →WOT[𝕜] F} :
+    A = B ↔ ∀ x (y : NormedSpace.Dual 𝕜 F), y (A x) = y (B x) := by
   refine ⟨fun h _ _ => by simp [h], fun h => ?_⟩
   rw [ext_iff]
-  exact fun x => ext_inner_left 𝕜 fun y => h x y
+  intro x
+  specialize h x
+  rwa [← NormedSpace.eq_iff_forall_dual_eq 𝕜] at h
 
 @[simp] lemma zero_apply (x : E) : (0 : E →WOT[𝕜] F) x = 0 := by simp only [DFunLike.coe]; rfl
 
@@ -132,8 +142,8 @@ section Topology
 variable (𝕜) (E) (F) in
 /-- The function that induces the topology on `E →WOT[𝕜] F`, namely the function that takes
 an `A` and maps it to `fun ⟨x, y⟩ => ⟪x, A y⟫` in `E × F → 𝕜`. -/
-def inducingFn : (E →WOT[𝕜] F) →ₗ[𝕜] (E × F → 𝕜) where
-  toFun := fun A ⟨x, y⟩ => ⟪y, A x⟫
+def inducingFn : (E →WOT[𝕜] F) →ₗ[𝕜] (E × (NormedSpace.Dual 𝕜 F) → 𝕜) where
+  toFun := fun A ⟨x, y⟩ => y (A x)
   map_add' := fun x y => by ext; simp [inner_add_right]
   map_smul' := fun x y => by ext; simp [inner_smul_right]
 
@@ -145,16 +155,16 @@ instance instTopologicalSpace : TopologicalSpace (E →WOT[𝕜] F) :=
 lemma continuous_inducingFn : Continuous (inducingFn 𝕜 E F) :=
   continuous_induced_dom
 
-lemma continuous_inner_apply (x : E) (y : F) : Continuous fun (A : E →WOT[𝕜] F) => ⟪y, A x⟫ := by
+lemma continuous_inner_apply (x : E) (y : NormedSpace.Dual 𝕜 F) : Continuous fun (A : E →WOT[𝕜] F) => y (A x) := by
   refine (continuous_pi_iff.mp continuous_inducingFn) ⟨x, y⟩
 
 lemma continuous_of_inner_apply_continuous {α : Type*} [TopologicalSpace α] {g : α → E →WOT[𝕜] F}
-    (h : ∀ x y, Continuous fun a => ⟪y, (g a) x⟫) : Continuous g :=
+    (h : ∀ x (y : NormedSpace.Dual 𝕜 F), Continuous fun a => y (g a x)) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr fun p => h p.1 p.2)
 
 lemma embedding_inducingFn : Embedding (inducingFn 𝕜 E F) := by
   refine Function.Injective.embedding_induced fun A B hAB => ?_
-  rw [ext_inner_iff]
+  rw [ext_dual_iff]
   simpa [Function.funext_iff] using hAB
 
 open Filter in
@@ -162,15 +172,15 @@ open Filter in
 `A : E →WOT[𝕜] F` along filter `l` iff `⟪y, (f a), x⟫` tends to `⟪y, A x⟫` along the same filter. -/
 lemma tendsto_iff_forall_inner_apply_tendsto {α : Type*} {l : Filter α} {f : α → E →WOT[𝕜] F}
     {A : E →WOT[𝕜] F} :
-    Tendsto f l (𝓝 A) ↔ ∀ x y, Tendsto (fun a => ⟪y, (f a) x⟫) l (𝓝 ⟪y, A x⟫) := by
-  have hmain : (∀ x y, Tendsto (fun a => ⟪y, (f a) x⟫) l (𝓝 ⟪y, A x⟫))
-      ↔ ∀ (p : E × F), Tendsto (fun a => ⟪p.2, (f a) p.1⟫) l (𝓝 ⟪p.2, A p.1⟫) :=
+    Tendsto f l (𝓝 A) ↔ ∀ x (y : NormedSpace.Dual 𝕜 F), Tendsto (fun a => y (f a x)) l (𝓝 (y (A x))) := by
+  have hmain : (∀ x (y : NormedSpace.Dual 𝕜 F), Tendsto (fun a => y (f a x)) l (𝓝 (y (A x))))
+      ↔ ∀ (p : E × (NormedSpace.Dual 𝕜 F)), Tendsto (fun a => p.2 (f a p.1)) l (𝓝 (p.2 (A p.1))) :=
     ⟨fun h p => h p.1 p.2, fun h x y => h ⟨x, y⟩⟩
   rw [hmain, ← tendsto_pi_nhds, Embedding.tendsto_nhds_iff embedding_inducingFn]
   rfl
 
 lemma le_nhds_iff_forall_inner_apply_le_nhds {l : Filter (E →WOT[𝕜] F)} {A : E →WOT[𝕜] F} :
-    l ≤ 𝓝 A ↔ ∀ x y, l.map (fun T => ⟪y, T x⟫) ≤ 𝓝 (⟪y, A x⟫) :=
+    l ≤ 𝓝 A ↔ ∀ x (y : NormedSpace.Dual 𝕜 F), l.map (fun T => y (T x)) ≤ 𝓝 (y (A x)) :=
   tendsto_iff_forall_inner_apply_tendsto (f := id)
 
 instance instT3Space : T3Space (E →WOT[𝕜] F) := Embedding.t3Space embedding_inducingFn
@@ -192,8 +202,8 @@ section Seminorms
 
 /-- The family of seminorms that induce the weak operator topology, namely `‖⟪y, A x⟫‖` for
 all `x` and `y`.  -/
-def seminorm (x : E) (y : F) : Seminorm 𝕜 (E →WOT[𝕜] F) where
-  toFun A := ‖⟪y, A x⟫‖
+def seminorm (x : E) (y : NormedSpace.Dual 𝕜 F) : Seminorm 𝕜 (E →WOT[𝕜] F) where
+  toFun A := ‖y (A x)‖
   map_zero' := by simp
   add_le' A B := by simp [inner_add_right]; exact norm_add_le _ _
   neg' A := by simp
@@ -202,7 +212,7 @@ def seminorm (x : E) (y : F) : Seminorm 𝕜 (E →WOT[𝕜] F) where
 variable (𝕜) (E) (F) in
 /-- The family of seminorms that induce the weak operator topology, namely `‖⟪y, A x⟫‖` for
 all `x` and `y`.  -/
-def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F) :=
+def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × (NormedSpace.Dual 𝕜 F)) :=
   fun ⟨x, y⟩ => seminorm x y
 
 lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamily 𝕜 E F).basisSets id := by
@@ -210,8 +220,8 @@ lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamil
   rw [nhds_induced, nhds_pi]
   simp only [map_zero, zero_apply, inner_zero_right]
   have h := @Metric.nhds_basis_ball 𝕜 _ 0
-  have h' := Filter.hasBasis_pi fun _ : (E × F) => h
-  have h'' := Filter.HasBasis.comap (fun (A : E →WOT[𝕜] F) (p : E × F) => ⟪p.2, A p.1⟫) h'
+  have h' := Filter.hasBasis_pi fun _ : (E × (NormedSpace.Dual 𝕜 F)) => h
+  have h'' := Filter.HasBasis.comap (fun (A : E →WOT[𝕜] F) (p : E × (NormedSpace.Dual 𝕜 F)) => p.2 (A p.1)) h'
   refine h''.to_hasBasis ?_ ?_
   · intro U hU
     obtain ⟨hU₁, hU₂⟩ := hU
@@ -242,9 +252,9 @@ lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamil
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) :=
   SeminormFamily.withSeminorms_of_hasBasis _ hasBasis_seminorms
 
-instance instLocallyConvexSpace [Module ℝ (E →WOT[𝕜] F)] [IsScalarTower ℝ 𝕜 (E →WOT[𝕜] F)] :
-    LocallyConvexSpace ℝ (E →WOT[𝕜] F) :=
-  withSeminorms.toLocallyConvexSpace
+--instance instLocallyConvexSpace [Module ℝ (E →WOT[𝕜] F)] [IsScalarTower ℝ 𝕜 (E →WOT[𝕜] F)] :
+--    LocallyConvexSpace ℝ (E →WOT[𝕜] F) :=
+--  withSeminorms.toLocallyConvexSpace
 
 end Seminorms
 
@@ -253,7 +263,7 @@ end ContinuousLinearMapWOT
 section NormedSpace
 
 variable {𝕜 : Type*} {E : Type*} {F : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The weak operator topology is coarser than the norm topology, i.e. the inclusion map is
 continuous. -/
@@ -262,8 +272,6 @@ lemma ContinuousLinearMap.continuous_toWOT :
     Continuous (ContinuousLinearMap.toWOT 𝕜 E F) := by
   refine ContinuousLinearMapWOT.continuous_of_inner_apply_continuous fun x y => ?_
   simp_rw [ContinuousLinearMap.toWOT_apply]
-  refine Continuous.inner continuous_const ?_
-  change Continuous fun a => (ContinuousLinearMap.id 𝕜 (E →L[𝕜] F)).flip x a
   fun_prop
 
 /-- The inclusion map from `E →[𝕜] F` to `E →WOT[𝕜] F`, bundled as a continuous linear map. -/
