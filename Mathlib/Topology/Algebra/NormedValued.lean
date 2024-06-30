@@ -29,7 +29,8 @@ open Filter Set Valuation
 
 open scoped NNReal
 
-variable {K : Type*} [hK : NormedField K] (h : IsNonarchimedean (norm : K → ℝ))
+variable {K : Type*} [hK : NormedField K]
+variable (h : IsNonarchimedean (A := K) (norm : K → ℝ))
 
 namespace NormedField
 
@@ -59,7 +60,7 @@ end NormedField
 
 namespace Valued
 
-variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {L : Type*} [Field L] {Γ₀ : Type*} [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
   [val : Valued L Γ₀] [hv : RankOne val.v]
 
 /-- The norm function determined by a rank one valuation on a field `L`. -/

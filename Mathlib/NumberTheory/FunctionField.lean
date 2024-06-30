@@ -244,7 +244,7 @@ set_option linter.uppercaseLean3 false in
 #align function_field.infty_valued_Fqt FunctionField.inftyValuedFqt
 
 theorem inftyValuedFqt.def {x : RatFunc Fq} :
-    @Valued.v (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x = inftyValuationDef Fq x :=
+    @Valued.v (RatFunc Fq) _ _ _ _ (inftyValuedFqt Fq) x = inftyValuationDef Fq x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align function_field.infty_valued_Fqt.def FunctionField.inftyValuedFqt.def
@@ -264,12 +264,12 @@ instance : Inhabited (FqtInfty Fq) :=
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
-  @Valued.valuedCompletion _ _ _ _ (inftyValuedFqt Fq)
+  @Valued.valuedCompletion _ _ _ _ _ (inftyValuedFqt Fq)
 set_option linter.uppercaseLean3 false in
 #align function_field.valued_Fqt_infty FunctionField.valuedFqtInfty
 
 theorem valuedFqtInfty.def {x : FqtInfty Fq} :
-    Valued.v x = @Valued.extension (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x :=
+    Valued.v x = @Valued.extension (RatFunc Fq) _ _ _ _ (inftyValuedFqt Fq) x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align function_field.valued_Fqt_infty.def FunctionField.valuedFqtInfty.def
