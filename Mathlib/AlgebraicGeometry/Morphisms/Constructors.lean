@@ -6,10 +6,20 @@ Authors: Andrew Yang
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 
 /-!
+
 # Constructors for properties of morphisms between schemes
 
 This file provides some constructors to obtain morphism properties of schemes from other morphism
-properties.
+properties:
+
+- `AffineTargetMorphismProperty.diagonal` : Given an affine target morphism property `P`,
+  `P.diagonal f` holds if `P (pullback.mapDesc f₁ f₂ f)` holds for two affine open
+  immersions `f₁` and `f₂`.
+- `MorphismProperty.topologically`: Given a property `P` of maps of topological spaces,
+  `(topologically P) f` holds if `P` holds for the underlying continuous map of `f`.
+
+Also provides API for showing the standard locality and stability properties for these
+types of properties.
 
 -/
 
