@@ -9,15 +9,25 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.HasPullback
 #align_import category_theory.limits.shapes.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
 
 /-!
-# HasPullback (API for HasLimits)
-`HasPullback f g` and `pullback f g` provide API for ....
+# Constructions with pullbacks
 
-# Diagrams
-The file `Pullbacks/Diagrams.lean` provides results for diagrams containing multiple pullback
-squares, and how these interact with one another.
+The file `Pullbacks/Diagrams.lean` provides results for different constructions using pullbacks.
+For example, results concerning pasting squares can be found within this file, and other
+constructions which combine multiple pullbacks.
 
-It contains the following results
+## Main results
 
+
+
+
+Outline:
+1. some Mono things (different file probably)
+2. pullback cone from an isomorphism (and some more mono things)
+--- line 380
+3. more mono things
+4. Has kernel / cokernel (different file?)
+5. bigSquare --> 700
+6. Associativity (rest of the file, could be its own file)
 
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)

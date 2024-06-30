@@ -59,14 +59,11 @@ Sections:
 
 1. span / cospan setup (first 500 lines). Goes in one file
 2. PullbackCone / PushoutCone basics (500-1122). Maybe some things goes elsewhere
+Mono / Epi should probably go into a separate `Mono.lean` file
 3. HasPullback / pullback interactions (1122-1620?). Goes in one file
--- ofCompMono should go in a diagrams file maybe
 
-CONSTRUCTIONS (everything except last bit on haspullback):
-4. pullbackConeofLeft/RightIso goes where?? (ends at 1950)
-5. rest after bigSquare goes into `Diagram.lean` (`Big.lean`?)
+5. rest after bigSquare goes into `Constructions.lean`
 
-HasPullbacks/HasPushout at the end of the file goes in 3.!
 -/
 
 noncomputable section

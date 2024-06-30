@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.Basic
 #align_import category_theory.limits.shapes.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
 
 /-!
-# PullbackCone (API for Cones)
+# PullbackCone
 
 This file provides API for interacting with cones (resp. cocones) in the case of pullbacks
 (resp. pushouts).
@@ -28,8 +28,18 @@ t.pt ---t.snd---> Y
 The type `PullbackCone f g` is implemented as an abbrevation for `Cone (cospan f g)`, so general
 results about cones are also available for `PullbackCone f g`.
 
-* `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a......
-
+* `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`
+provides the data of a cocone pictured as follows
+```
+  X -----f------> Y
+  |               |
+  g               t.inr
+  |               |
+  v               v
+  Z ---t.inl---> t.pt
+```
+Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
+`Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
 
 ## API
 We summarize the most important parts of the API for pullback cones here. The dual notions for
@@ -58,9 +68,9 @@ The file is structured as follows:
 2. API for the interaction between `PullbackCone` and `IsLimit`.
 3. `PullbackCone.flip`
 4. Results about pullbacks of monomorphisms (TODO: move to another file?)
-5. Certain constructors of pullback cones from cones. (TODO)
+5. Certain constructors of pullback cones from cones.
 
-After this, we repeat the same structure for pushout cones.
+After this, we repeat the same structure for the dual notions.
 
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
@@ -356,6 +366,42 @@ end Monomorphisms
 
 end PullbackCone
 
+/-- This is a helper construction that can be useful when verifying that a category has all
+    pullbacks. Given `F : WalkingCospan ⥤ C`, which is really the same as
+    `cospan (F.map inl) (F.map inr)`, and a pullback cone on `F.map inl` and `F.map inr`, we
+    get a cone on `F`.
+
+    If you're thinking about using this, have a look at `hasPullbacks_of_hasLimit_cospan`,
+    which you may find to be an easier way of achieving your goal. -/
+@[simps]
+def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) (F.map inr)) :
+    Cone F where
+  pt := t.pt
+  π := t.π ≫ (diagramIsoCospan F).inv
+#align category_theory.limits.cone.of_pullback_cone CategoryTheory.Limits.Cone.ofPullbackCone
+
+/-- Given `F : WalkingCospan ⥤ C`, which is really the same as `cospan (F.map inl) (F.map inr)`,
+    and a cone on `F`, we get a pullback cone on `F.map inl` and `F.map inr`. -/
+@[simps]
+def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
+    PullbackCone (F.map inl) (F.map inr) where
+  pt := t.pt
+  π := t.π ≫ (diagramIsoCospan F).hom
+#align category_theory.limits.pullback_cone.of_cone CategoryTheory.Limits.PullbackCone.ofCone
+
+/-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
+composing with `diagramIsoCospan`. -/
+@[simps!]
+def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
+    (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
+      PullbackCone.mk (t.π.app WalkingCospan.left) (t.π.app WalkingCospan.right)
+        ((t.π.naturality inl).symm.trans (t.π.naturality inr : _)) :=
+  Cones.ext (Iso.refl _) <| by
+    rintro (_ | (_ | _)) <;>
+      · dsimp
+        simp
+#align category_theory.limits.pullback_cone.iso_mk CategoryTheory.Limits.PullbackCone.isoMk
+
 /-- A pushout cocone is just a cocone on the span formed by two morphisms `f : X ⟶ Y` and
     `g : X ⟶ Z`. -/
 abbrev PushoutCocone (f : X ⟶ Y) (g : X ⟶ Z) :=
@@ -628,20 +674,6 @@ def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : Pu
 end PushoutCocone
 
 /-- This is a helper construction that can be useful when verifying that a category has all
-    pullbacks. Given `F : WalkingCospan ⥤ C`, which is really the same as
-    `cospan (F.map inl) (F.map inr)`, and a pullback cone on `F.map inl` and `F.map inr`, we
-    get a cone on `F`.
-
-    If you're thinking about using this, have a look at `hasPullbacks_of_hasLimit_cospan`,
-    which you may find to be an easier way of achieving your goal. -/
-@[simps]
-def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) (F.map inr)) :
-    Cone F where
-  pt := t.pt
-  π := t.π ≫ (diagramIsoCospan F).inv
-#align category_theory.limits.cone.of_pullback_cone CategoryTheory.Limits.Cone.ofPullbackCone
-
-/-- This is a helper construction that can be useful when verifying that a category has all
     pushout. Given `F : WalkingSpan ⥤ C`, which is really the same as
     `span (F.map fst) (F.map snd)`, and a pushout cocone on `F.map fst` and `F.map snd`,
     we get a cocone on `F`.
@@ -654,28 +686,6 @@ def Cocone.ofPushoutCocone {F : WalkingSpan ⥤ C} (t : PushoutCocone (F.map fst
   pt := t.pt
   ι := (diagramIsoSpan F).hom ≫ t.ι
 #align category_theory.limits.cocone.of_pushout_cocone CategoryTheory.Limits.Cocone.ofPushoutCocone
-
-/-- Given `F : WalkingCospan ⥤ C`, which is really the same as `cospan (F.map inl) (F.map inr)`,
-    and a cone on `F`, we get a pullback cone on `F.map inl` and `F.map inr`. -/
-@[simps]
-def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
-    PullbackCone (F.map inl) (F.map inr) where
-  pt := t.pt
-  π := t.π ≫ (diagramIsoCospan F).hom
-#align category_theory.limits.pullback_cone.of_cone CategoryTheory.Limits.PullbackCone.ofCone
-
-/-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
-composing with `diagramIsoCospan`. -/
-@[simps!]
-def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
-    (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
-      PullbackCone.mk (t.π.app WalkingCospan.left) (t.π.app WalkingCospan.right)
-        ((t.π.naturality inl).symm.trans (t.π.naturality inr : _)) :=
-  Cones.ext (Iso.refl _) <| by
-    rintro (_ | (_ | _)) <;>
-      · dsimp
-        simp
-#align category_theory.limits.pullback_cone.iso_mk CategoryTheory.Limits.PullbackCone.isoMk
 
 /-- Given `F : WalkingSpan ⥤ C`, which is really the same as `span (F.map fst) (F.map snd)`,
     and a cocone on `F`, we get a pushout cocone on `F.map fst` and `F.map snd`. -/

@@ -8,14 +8,35 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.PullbackCone
 #align_import category_theory.limits.shapes.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
 
 /-!
-# HasPullback (API for HasLimits)
-`HasPullback f g` and `pullback f g` provide API for ....
+# HasPullback
+`HasPullback f g` and `pullback f g` provides API for `HasLimit`...  `HasLimit (cospan f g)`.
 
-# Diagrams
-The file `Pullbacks/Diagrams.lean` provides results for diagrams containing multiple pullback
-squares, and how these interact with one another.
+This is useful when wanting to pick a pullback.
 
-It contains the following results
+# Main definitions
+
+* `HasPullback f g`: this is an abbreviation for `HasLimit (cospan f g)`, and is a typeclass used to
+  express the fact that a given pair of morphisms has a pullback.
+
+* `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
+  object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
+```
+
+
+```
+
+TODO today:
+- documentation for basic pullback API
+
+# API
+-- basic pullback API (Is this missing API for accessing the cone?) (until line 184)
+-- then some basic constructions (should this go in other file?)
+
+-- functoriality pullbackComparison? (TODO: another file for these kind of results?)
+
+-- symmetry
+
+
 
 
 ## References
@@ -93,15 +114,16 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
   colimit.desc _ (PushoutCocone.mk h k w)
 #align category_theory.limits.pushout.desc CategoryTheory.Limits.pushout.desc
 
+-- TODO: typo has been fixed here and in the next
 @[simp]
-theorem PullbackCone.fst_colimit_cocone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+theorem PullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasLimit (cospan f g)] : PullbackCone.fst (limit.cone (cospan f g)) = pullback.fst := rfl
-#align category_theory.limits.pullback_cone.fst_colimit_cocone CategoryTheory.Limits.PullbackCone.fst_colimit_cocone
+#align category_theory.limits.pullback_cone.fst_colimit_cocone CategoryTheory.Limits.PullbackCone.fst_limit_cone
 
 @[simp]
-theorem PullbackCone.snd_colimit_cocone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+theorem PullbackCone.snd_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasLimit (cospan f g)] : PullbackCone.snd (limit.cone (cospan f g)) = pullback.snd := rfl
-#align category_theory.limits.pullback_cone.snd_colimit_cocone CategoryTheory.Limits.PullbackCone.snd_colimit_cocone
+#align category_theory.limits.pullback_cone.snd_colimit_cocone CategoryTheory.Limits.PullbackCone.snd_limit_cone
 
 -- Porting note (#10618): simp can prove this; removed simp
 theorem PushoutCocone.inl_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y)
