@@ -47,12 +47,20 @@ Interaction with `IsLimit`:
   a given `PullbackCone` is a limit cone.
 * `PullbackCone.isLimit.mk` provides a convenient way to show that a `PullbackCone` constructed using
   `PullbackCone.mk` is a limit cone.
-
-* TODO: lift & ext
+* `PullbackCone.IsLimit.lift` and `PullbackCone.IsLimit.lift'` provides convenient ways for
+  constructing the morphisms to the point of a limit `PullbackCone` from the universal property.
+* `PullbackCone.IsLimit.hom_ext` provides a convenient way to show that two morphisms to the point
+  of a limit `PullbackCone` are equal.
 
 # Structure
-The file is structured as follows
+The file is structured as follows:
+1. Definition of `PullbackCone` and some API for it.
+2. API for the interaction between `PullbackCone` and `IsLimit`.
+3. `PullbackCone.flip`
+4. Results about pullbacks of monomorphisms (TODO: move to another file?)
+5. Certain constructors of pullback cones from cones. (TODO)
 
+After this, we repeat the same structure for pushout cones.
 
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
