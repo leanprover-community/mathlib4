@@ -360,25 +360,27 @@ def IO.FS.appendToFile (fname : FilePath) (content : String) : IO Unit := do
   let previous_content ← IO.FS.readFile fname
   IO.FS.writeFile fname (previous_content ++ content)
 
-/-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
+/-- Read a file and apply all text-based linters.
+Return a list of all unexpected errors,
+together with a collection of all automatically applicable fixes.
 `sizeLimit` is any pre-existing limit on this file's size.
 `exceptions` are any other style exceptions. -/
 def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array ErrorContext) :
-    IO (Array ErrorContext) := do
+    IO (Array ErrorContext × Option (List AutomaticFix)) := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if isImportsOnlyFile lines then
-    return #[]
+    return (#[], none)
   let mut errors := #[]
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
     errors := #[ErrorContext.mk (StyleError.fileTooLong n limit) 1 path]
-  -- XXX: process output of fixable errors
+  -- TODO: actually forward the real output
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines).1)) allLinters
   -- This this list is not sorted: for github, this is fine.
   errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
-  return errors
+  return (errors, none)
 
 /-- Lint all files referenced in a given import-only file.
 Print formatted errors and possibly update the style exceptions file accordingly.
@@ -407,14 +409,19 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
       match errctx.error with
       | StyleError.fileTooLong _ limit => some limit
       | _ => none)
-    let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
+    -- TODO: actually handle auto-fixable errors here!
+    -- TODO: process any auto-fixable lints in order; if there are replacements,
+    -- apply the new lints one after the other... not too bad, but requires doing so!
+    -- TODO: rewrite files in-place for this
+    let (errors, autofixes) := ← lintFile path (sizeLimits.get? 0) styleExceptions
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
     match mode with
     | OutputSetting.print style => formatErrors allUnexpectedErrors style
     | OutputSetting.fix =>
-      IO.println "TODO: the --fix option is not implemented yet"
+      if let some _ := autofixes then
+        IO.println "TODO: the --fix option is not implemented yet"
     | OutputSetting.append =>
         if allUnexpectedErrors.size > 0 then
           formatErrors allUnexpectedErrors ErrorFormat.humanReadable
