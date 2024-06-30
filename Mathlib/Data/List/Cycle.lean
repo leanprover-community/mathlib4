@@ -506,8 +506,8 @@ theorem empty_eq : ∅ = @nil α :=
 instance : Inhabited (Cycle α) :=
   ⟨nil⟩
 
-/-- An induction principle for `Cycle`. Use as `induction s using Cycle.induction_on`. -/
-@[elab_as_elim]
+/-- An induction principle for `Cycle`. Use as `induction s`. -/
+@[elab_as_elim, induction_eliminator]
 theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
     (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
   Quotient.inductionOn' s fun l => by
@@ -965,7 +965,7 @@ variable {r : α → α → Prop} {s : Cycle α}
 
 theorem Chain.imp {r₁ r₂ : α → α → Prop} (H : ∀ a b, r₁ a b → r₂ a b) (p : Chain r₁ s) :
     Chain r₂ s := by
-  induction s using Cycle.induction_on
+  induction s
   · trivial
   · rw [chain_coe_cons] at p ⊢
     exact p.imp H
@@ -977,7 +977,7 @@ theorem chain_mono : Monotone (Chain : (α → α → Prop) → Cycle α → Pro
 #align cycle.chain_mono Cycle.chain_mono
 
 theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := by
-  induction' s using Cycle.induction_on with a l _
+  induction' s with a l _
   · exact fun _ => Cycle.Chain.nil r
   intro hs
   have Ha : a ∈ (a :: l : Cycle α) := by simp
@@ -1003,7 +1003,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
 
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by
-    induction' s using Cycle.induction_on with a l _
+    induction' s with a l _
     · exact fun _ b hb => (not_mem_nil _ hb).elim
     intro hs b hb c hc
     rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
@@ -1018,7 +1018,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
 #align cycle.chain_iff_pairwise Cycle.chain_iff_pairwise
 
 theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
-  induction' s using Cycle.induction_on with a l _ h
+  induction' s with a l _ h
   · rfl
   · have ha := mem_cons_self a l
     exact (irrefl_of r a <| chain_iff_pairwise.1 h a ha a ha).elim
