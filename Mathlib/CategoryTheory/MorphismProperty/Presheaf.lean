@@ -247,6 +247,44 @@ lemma presheaf.property {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoneda.ob
     P (hf.choose.snd g) :=
   hf.choose_spec g
 
+-- (Calle): this can definitely be golfed later. Also maybe provide other versions
+-- of this lemma with other pullback API's (e.g. `pullback f g` could be useful)
+-- possibly this should be the definition, and the weaker condition should be derived from this?
+lemma presheaf.property' (hP : StableUnderBaseChange P) {f : F ⟶ G} (hf : P.presheaf f) :
+    ∀ ⦃X Y : C⦄ {g : yoneda.obj X ⟶ G} {fst : yoneda.obj Y ⟶ F} {snd : Y ⟶ X}
+    (_ : IsPullback fst (yoneda.map snd) f g), P snd := by
+  intro X Y g fst snd h
+  have h' := IsPullback.of_isLimit (hf.representable.pullbackConeIsLimit g)
+  rw [← hf.representable.yoneda_map_snd] at h' -- TODO: this should be unecessary w better API above
+  have comp := h.isoIsPullback_hom_snd h'
+
+  apply congr_arg (Yoneda.fullyFaithful.preimage ·) at comp
+  rw [Functor.FullyFaithful.preimage_map] at comp
+  rw [← comp, Yoneda.fullyFaithful.preimage_comp]
+
+  simpa using hP.respectsIso.1 (Yoneda.fullyFaithful.preimageIso <| h.isoIsPullback h') _
+    (hf.property g)
+
+lemma presheaf_mk' (hP : StableUnderBaseChange P) {f : F ⟶ G} (hf : Presheaf.representable f) :
+  (∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C)
+    (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X) (_ : IsPullback fst (yoneda.map snd) f g),
+    P snd) → P.presheaf f := by
+  intro h
+  use hf
+  intro X g
+  obtain ⟨Y, fst, snd, ⟨h, P_snd⟩⟩ := h g
+
+  have h' := IsPullback.of_isLimit (hf.pullbackConeIsLimit g)
+  rw [← hf.yoneda_map_snd] at h' -- TODO: this should be unecessary w better API above
+  have comp := h'.isoIsPullback_hom_snd h
+
+  apply congr_arg (Yoneda.fullyFaithful.preimage ·) at comp
+  rw [Functor.FullyFaithful.preimage_map] at comp
+  rw [← comp, Yoneda.fullyFaithful.preimage_comp]
+
+  simpa using hP.respectsIso.1 (Yoneda.fullyFaithful.preimageIso <| h'.isoIsPullback h) _
+    P_snd
+
 -- this lemma is also introduced in PR #10425, this should be moved to CategoryTheory.Yoneda
 /-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
 with morphisms `yoneda.obj X ⟶ P` agree. -/
@@ -331,6 +369,47 @@ lemma representable_isomorphisms_le :
 
 lemma representable_respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
   representable_stableUnderBaseChange.respectsIso
+
+section
+
+variable [HasPullbacks C] (hP₀ : StableUnderBaseChange P)
+
+lemma presheaf_stableUnderBaseChange : StableUnderBaseChange (MorphismProperty.presheaf P) := by
+  intro F G G' H f g f' g' hfBC hg
+  have hg' := representable_stableUnderBaseChange hfBC hg.representable
+  use hg'
+  intro X h
+
+  have P₁ : IsPullback ((hg'.pullbackCone h).fst ≫ f') (yoneda.map (hg'.snd h)) g (h ≫ f) := by
+    rw [hg'.yoneda_map_snd h]
+    exact IsPullback.paste_horiz (IsPullback.of_isLimit (hg'.pullbackConeIsLimit h)) hfBC
+
+  apply hg.property' hP₀ P₁
+
+
+-- if P.presheaf assumes `StableUnderBaseChange`, this could be maybe an instance
+-- (Calle): This is definitely golfable
+lemma presheaf_isStableUnderComp [P.IsStableUnderComposition] : IsStableUnderComposition (P.presheaf) where
+  comp_mem {F G H} f g hf hg := by
+    have hfg : Presheaf.representable (f ≫ g) := Presheaf.representable.comp_mem f g
+      hf.representable hg.representable
+    apply P.presheaf_mk' hP₀ hfg
+    intro X h
+    -- (Calle): Maybe its worth givin P.presheaf.representable a shorter name, e.g. P.presheaf.repr
+    have hgBC := IsPullback.of_isLimit (hg.representable.pullbackConeIsLimit h)
+    have hfBC := IsPullback.of_isLimit (hf.representable.pullbackConeIsLimit
+      (hg.representable.pullbackCone h).fst)
+    have hBC := IsPullback.paste_vert hfBC hgBC
+    have := hBC.cone.pt
+    use hf.representable.pullback (hg.representable.pullbackCone h).fst
+    use hBC.cone.fst
+    use hf.representable.snd (hg.representable.pullbackCone h).fst ≫ (hg.representable.snd h)
+    simp only [IsPullback.cone_fst, Functor.map_comp, Functor.FullyFaithful.map_preimage,
+      exists_prop]
+    use hBC
+    apply P.comp_mem _ _ (hf.property _) (hg.property _)
+
+end
 
 /-
 Calle's notes on current pullback API (I might try PR some of this if I don't end up finding good ways
