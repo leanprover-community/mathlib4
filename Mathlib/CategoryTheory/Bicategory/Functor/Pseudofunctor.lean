@@ -154,8 +154,8 @@ def toLax : LaxFunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId a := (F.mapId a).inv
   mapComp f g := (F.mapComp f g).inv
-  map₂_leftUnitor {a b} f := by rw [← IsIso.inv_eq_inv, ←F.map₂_inv]; simp
-  map₂_rightUnitor {a b} f := by rw [← IsIso.inv_eq_inv, ←F.map₂_inv]; simp
+  map₂_leftUnitor {a b} f := by rw [← IsIso.inv_eq_inv, ← F.map₂_inv]; simp
+  map₂_rightUnitor {a b} f := by rw [← IsIso.inv_eq_inv, ← F.map₂_inv]; simp
 
 instance hasCoeToLax : Coe (Pseudofunctor B C) (LaxFunctor B C) :=
   ⟨toLax⟩
