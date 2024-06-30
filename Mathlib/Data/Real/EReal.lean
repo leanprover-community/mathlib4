@@ -1016,7 +1016,7 @@ theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_iff_neg_l
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
     - (x + y) = - x - y := by
-  induction x using EReal.rec <;> induction y using EReal.rec <;> try tauto
+  induction x <;> induction y <;> try tauto
   rw [← coe_add, ← coe_neg, ← coe_neg, ← coe_sub, neg_add']
 
 lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y ≠ ⊤) :
@@ -1320,14 +1320,14 @@ theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z
 
 theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
   refine ⟨fun h ↦ ?_, fun h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h⟩
-  induction x using EReal.rec
+  induction x
   case h_bot =>
     refine ((eq_bot_iff_forall_lt y).2 fun z ↦ ?_).le
     refine lt_of_not_le fun z_le_y ↦ (not_le_of_lt (bot_lt_coe (z - 1)) (h (z - 1)
       (lt_of_lt_of_le ?_ z_le_y)))
     exact_mod_cast sub_one_lt z
   case h_real =>
-    induction y using EReal.rec
+    induction y
     case h_bot => exact bot_le
     case h_real x y =>
       norm_cast at h ⊢
