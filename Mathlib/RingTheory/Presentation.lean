@@ -197,8 +197,8 @@ private lemma span_range_relation_eq_ker_baseChange :
         simp only [Generators.algebraMap_apply, algHom_C, TensorProduct.algebraMap_apply,
           id.map_eq_id, RingHom.id_apply, e]
         erw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
-        simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.map_tmul,
-          AlgHom.coe_id, id_eq, _root_.map_one, algebraMap_eq]
+        simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
+          TensorProduct.map_tmul, AlgHom.coe_id, id_eq, _root_.map_one, algebraMap_eq]
         erw [aeval_C]
         simp
       | h_add p q hp hq => simp only [map_add, hp, hq]
