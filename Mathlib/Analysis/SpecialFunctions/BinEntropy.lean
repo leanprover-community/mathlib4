@@ -360,10 +360,6 @@ lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻�
     exact differentiable_const_minus x
     exact sub_ne_zero_of_ne fun a ↦ xis1 a.symm
 
-@[simp] lemma differentiableAt_log_const_neg {x c : ℝ} (h : x ≠ c) :
-    DifferentiableAt ℝ (fun p ↦ log (c - p)) x :=
-DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr h.symm)
-
 /-- Binary entropy has derivative `log (1 - p) - log p`.
 It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
 lemma deriv_binaryEntropy' {x : ℝ} :
@@ -388,8 +384,8 @@ lemma deriv_binaryEntropy' {x : ℝ} :
       exact differentiable_const_minus x
       exact sub_ne_zero.mpr hh.symm
       apply differentiableAt_id'
-      exact differentiableAt_log_const_neg hh
-    · exact differentiableAt_log_const_neg hh
+      exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
+    · exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
     · apply DifferentiableAt.mul
       apply differentiableAt_id'
       apply DifferentiableAt.log
@@ -401,7 +397,7 @@ lemma deriv_binaryEntropy' {x : ℝ} :
       exact differentiableAt_log h
     · apply DifferentiableAt.mul
       apply differentiable_const_minus
-      exact differentiableAt_log_const_neg hh
+      exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
   · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
     rw [← binaryEntropy_eq]
     rw [deriv_zero_of_not_differentiableAt]
@@ -472,7 +468,7 @@ lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (qnot1 : q ≠ 1) (xne0: x ≠ 
     apply DifferentiableAt.sub
     apply differentiableAt_const
     exact differentiableAt_id'
-    exact differentiableAt_log_const_neg gne1
+    exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr gne1.symm)
   convert hasDerivAt_deriv_iff.mpr diffAt using 1
   exact Eq.symm (deriv_qaryEntropy' xne0 gne1)
 
@@ -652,7 +648,7 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
           ring
       · apply DifferentiableAt.add
         simp_all only [ne_eq, differentiableAt_const]
-        exact differentiableAt_log_const_neg hh
+        exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
       · exact differentiableAt_log h
     filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh]
       with y h h2 using deriv_qaryEntropy h h2
