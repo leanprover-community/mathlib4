@@ -212,7 +212,7 @@ theorem Disjoint.ndunion_eq {s t : Multiset α} (h : Disjoint s t) :
 
 theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t = t := by
   induction s, t using Quot.induction_on₂
-  rw [quot_mk_to_coe'', quot_mk_to_coe'', coe_ndunion, List.Subset.union_eq_right h]
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Subset.union_eq_right h
 
 /-! ### finset inter -/
 
