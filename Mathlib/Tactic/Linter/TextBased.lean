@@ -332,18 +332,16 @@ def allLinters : Array TextbasedLinter := #[
     copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
   ]
 
-/-- Read a file, apply all text-based linters and print the formatted errors.
+/-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
 `sizeLimit` is any pre-existing limit on this file's size.
-`exceptions` are any other style exceptions.
-`style` specifies if errors should be formatted for github or human consumption.
-Return `true` if there were new errors (and `false` otherwise). -/
-def lintFile (path : FilePath) (sizeLimit : Option ℕ)
-  (exceptions : Array ErrorContext) (style : ErrorFormat) : IO Bool := do
+`exceptions` are any other style exceptions. -/
+def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array ErrorContext) :
+    IO (Array ErrorContext) := do
   let lines ← IO.FS.lines path
   -- We don't need to run any checks on imports-only files.
   -- NB. The Python script used to still run a few linters; this is in fact not necessary.
   if isImportsOnlyFile lines then
-    return false
+    return #[]
   let mut errors := #[]
   if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
     errors := #[ErrorContext.mk (StyleError.fileTooLong n limit) 1 path]
@@ -351,10 +349,10 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ)
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
   errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
-  formatErrors errors style
-  return errors.size > 0
+  return errors
 
 /-- Lint all files referenced in a given import-only file.
+Print formatted errors to standard output.
 Return the number of files which had new style errors.
 `style` specifies if errors should be formatted for github or human consumption. -/
 def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
@@ -368,6 +366,7 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
   styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
 
   let mut numberErrorFiles := 0
+  let mut allUnexpectedErrors := #[]
   for module in allModules do
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
@@ -378,6 +377,9 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
       match errctx.error with
       | StyleError.fileTooLong _ limit => some limit
       | _ => none)
-    if ← lintFile path (sizeLimits.get? 0) styleExceptions style then
+    let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
+    if errors.size > 0 then
+      allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
+    formatErrors allUnexpectedErrors style
   return numberErrorFiles
