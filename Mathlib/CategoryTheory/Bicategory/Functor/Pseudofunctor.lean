@@ -132,9 +132,7 @@ attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
   CategoryTheory.Pseudofunctor.map₂_left_unitor
   CategoryTheory.Pseudofunctor.map₂_right_unitor
 
-instance hasCoeToPrelaxFunctor : Coe (Pseudofunctor B C) (PrelaxFunctor B C) :=
-  ⟨toPrelaxFunctor⟩
-#align category_theory.pseudofunctor.has_coe_to_prelax_functor CategoryTheory.Pseudofunctor.hasCoeToPrelaxFunctor
+#noalign category_theory.pseudofunctor.has_coe_to_prelax_functor
 
 variable (F : Pseudofunctor B C)
 
@@ -174,10 +172,6 @@ theorem to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
 theorem to_oplax_map {a b : B} (f : a ⟶ b) : (F : OplaxFunctor B C).map f = F.map f :=
   rfl
 
--- Porting note: to_oplax_map related `OplaxFunctor.map` to `Pseudofunctor.map` but neither
--- of these exist
-#noalign category_theory.pseudofunctor.to_oplax_map
-
 @[simp]
 theorem to_oplax_map₂ {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
     (F : OplaxFunctor B C).map₂ η = F.map₂ η :=
@@ -212,10 +206,10 @@ instance : Inhabited (Pseudofunctor B B) :=
 /-- Composition of pseudofunctors. -/
 @[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D where
-  toPrelaxFunctor := (F : PrelaxFunctor B C).comp (G : PrelaxFunctor C D)
+  toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
-  -- Note: whilst these are all provable by `aesop_cat`, the proof is too slow
+  -- Note: whilst these are all provable by `aesop_cat`, the proof is very slow
   map₂_whisker_left f η := by dsimp; simp
   map₂_whisker_right η h := by dsimp; simp
   map₂_associator f g h := by dsimp; simp

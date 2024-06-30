@@ -161,9 +161,9 @@ instance : Inhabited (OplaxFunctor B B) :=
 /-- Composition of oplax functors. -/
 --@[simps]
 def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
-  toPrelaxFunctor := PrelaxFunctor.comp F.toPrelaxFunctor G.toPrelaxFunctor
-  mapId := fun a => G.map₂ (F.mapId a) ≫ G.mapId (F.obj a)
-  mapComp := fun f g => G.map₂ (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
+  toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
+  mapId := fun a => (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
+  mapComp := fun f g => (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
   mapComp_naturality_left := fun η g => by
     dsimp
     rw [← G.map₂_comp_assoc, mapComp_naturality_left, G.map₂_comp_assoc, mapComp_naturality_left,
