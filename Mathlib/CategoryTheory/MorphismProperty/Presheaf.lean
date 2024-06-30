@@ -57,7 +57,8 @@ section
 
 variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (t : PullbackCone f g) (ht : IsLimit t)
 
---lemma pullbackCone_eq_mk_self (t : PullbackCone f g) : t = PullbackCone.mk t.fst t.snd t.condition := by
+--lemma pullbackCone_eq_mk_self (t : PullbackCone f g) : t = PullbackCone.mk t.fst t.snd t.condition
+-- := by
 --  sorry
 
 def pullbackCone_iso_mk_self : t ≅ PullbackCone.mk t.fst t.snd t.condition := by
@@ -398,7 +399,8 @@ lemma presheaf_stableUnderBaseChange : StableUnderBaseChange (MorphismProperty.p
 
 -- if P.presheaf assumes `StableUnderBaseChange`, this could be maybe an instance
 -- (Calle): This is definitely golfable
-lemma presheaf_isStableUnderComp [P.IsStableUnderComposition] : IsStableUnderComposition (P.presheaf) where
+lemma presheaf_isStableUnderComp [P.IsStableUnderComposition] :
+    IsStableUnderComposition (P.presheaf) where
   comp_mem {F G H} f g hf hg := by
     have hfg : Presheaf.representable (f ≫ g) := Presheaf.representable.comp_mem f g
       hf.representable hg.representable
@@ -424,13 +426,13 @@ lemma presheaf_respectsIso : RespectsIso P.presheaf :=
 end
 
 /-
-Calle's notes on current pullback API (I might try PR some of this if I don't end up finding good ways
-  to do it):
+Calle's notes on current pullback API (I might try PR some of this if I don't end up finding good
+  ways to do it):
 - pullback f g: is there no super easy way to access its cone? (i.e. pullback.cone?)
   - should start by constructing the cone, then deriving pullback etc
 
-- Is there too few variants of the BigSquare lemmas? i.e. is there a way to do it w/ specified PullbackCones?
-  (Pullback.mk is slightly annoying there)
+- Is there too few variants of the BigSquare lemmas? i.e. is there a way to do it w/ specified
+  PullbackCones? (Pullback.mk is slightly annoying there)
   - Want: BigSquare & pullback interaction
 
 - PullbackCone:
