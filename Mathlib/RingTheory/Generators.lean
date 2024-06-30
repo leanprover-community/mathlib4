@@ -93,7 +93,7 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_
 section Construction
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
-@[simps vars val]
+@[simps val, simps (config := .lemmasOnly) vars]
 noncomputable
 def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R := R) val)) :
     Generators R S where
@@ -131,7 +131,7 @@ variable (r : R) [IsLocalization.Away r S]
 
 /-- If `S` is the localization of `R` away from `r`, we obtain a canonical generator mapping
 to the inverse of `r`. -/
-@[simps vars val, simps (config := .lemmasOnly) σ]
+@[simps val, simps (config := .lemmasOnly) vars σ]
 noncomputable
 def localizationAway : Generators R S where
   vars := Unit
@@ -154,7 +154,7 @@ variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may constuct the family of generators `R[X, Y] → T`. -/
-@[simps vars val, simps (config := .lemmasOnly) σ]
+@[simps val, simps (config := .lemmasOnly) vars σ]
 noncomputable
 def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   vars := Q.vars ⊕ P.vars
@@ -171,7 +171,7 @@ def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
 gives a family of generators `S[X] → T`. -/
-@[simps vars val]
+@[simps val, simps (config := .lemmasOnly) vars]
 noncomputable
 def extendScalars (P : Generators R T) : Generators S T where
   vars := P.vars
@@ -181,6 +181,7 @@ def extendScalars (P : Generators R T) : Generators S T where
 
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
+@[simps! val, simps! (config := .lemmasOnly) vars]
 noncomputable
 def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators T (T ⊗[R] S) := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
@@ -336,6 +337,9 @@ section Cotangent
 
 /-- The kernel of a presentation. -/
 abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
+
+lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) :=
+  rfl
 
 /-- The cotangent space of a presentation.
 This is a type synonym so that `P = R[X]` can act on it through the action of `S` without creating

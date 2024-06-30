@@ -54,22 +54,22 @@ structure Algebra.Presentation extends Algebra.Generators.{w} R S where
   /-- The type of relations.  -/
   rels : Type t
   /-- The assignment of each relation to a polynomial in the generators. -/
-  relation : rels → MvPolynomial vars R
+  relation : rels → toGenerators.Ring
   /-- The relations span the kernel of the canonical map. -/
-  ker_algebraMap_eq_span_range_relation :
-    RingHom.ker (aeval val) = Ideal.span (Set.range relation)
+  span_range_relation_eq_ker :
+    Ideal.span (Set.range relation) = toGenerators.ker
 
 namespace Algebra.Presentation
 
 variable {R S}
 variable (P : Presentation.{t, w} R S)
 
-lemma span_range_relation_eq_ker : Ideal.span (Set.range P.relation) = P.ker :=
-  P.ker_algebraMap_eq_span_range_relation.symm
+lemma ker_eq_span_range_relation : P.ker = Ideal.span (Set.range P.relation) :=
+  P.span_range_relation_eq_ker.symm
 
 @[simp]
-lemma algebraMap_relation (i) : aeval P.val (P.relation i) = 0 := by
-  rw [← RingHom.mem_ker, ker_algebraMap_eq_span_range_relation]
+lemma aeval_val_relation (i) : aeval P.val (P.relation i) = 0 := by
+  rw [← RingHom.mem_ker, ← P.ker_eq_ker_aeval_val, ker_eq_span_range_relation]
   exact Ideal.subset_span ⟨i, rfl⟩
 
 /-- The polynomial algebra wrt a family of generators modulo a family of relations. -/
@@ -127,9 +127,9 @@ variable (r : R) [IsLocalization.Away r S]
 
 open IsLocalization.Away
 
-private lemma ker_algebraMap_eq_span_range_relation_localizationAway :
-    RingHom.ker (aeval (S₁ := S) (Generators.localizationAway r).val) =
-      Ideal.span { C r * X () - 1 } := by
+private lemma span_range_relation_eq_ker_localizationAway :
+    Ideal.span { C r * X () - 1 } =
+      RingHom.ker (aeval (S₁ := S) (Generators.localizationAway r).val) := by
   have : aeval (S₁ := S) (Generators.localizationAway r).val =
       (mvPolynomialQuotientEquiv S r).toAlgHom.comp
         (Ideal.Quotient.mkₐ R (Ideal.span {C r * X () - 1})) := by
@@ -142,20 +142,19 @@ private lemma ker_algebraMap_eq_span_range_relation_localizationAway :
   erw [← RingHom.comap_ker]
   simp only [Generators.localizationAway_vars, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
     AlgEquiv.toAlgHom_toRingHom]
-  show Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r)) =
-    Ideal.span {C r * X () - 1}
+  show Ideal.span {C r * X () - 1} = Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r))
   simp [RingHom.ker_equiv, ← RingHom.ker_eq_comap_bot]
 
 /-- If `S` is the localization of `R` away from `r`, we can construct a natural
 presentation of `S` as `R`-algebra with a single generator `X` and the relation `r * X - 1 = 0`. -/
-@[simps rels relation]
+@[simps relation, simps (config := .lemmasOnly) rels]
 noncomputable def localizationAway : Presentation R S where
   toGenerators := Generators.localizationAway r
   rels := Unit
   relation _ := C r * X () - 1
-  ker_algebraMap_eq_span_range_relation := by
+  span_range_relation_eq_ker := by
     simp only [Generators.localizationAway_vars, Set.range_const]
-    apply ker_algebraMap_eq_span_range_relation_localizationAway r
+    apply span_range_relation_eq_ker_localizationAway r
 
 instance localizationAway_isFinite : (localizationAway r (S := S)).IsFinite where
   finite_vars := inferInstanceAs <| Finite Unit
@@ -163,16 +162,27 @@ instance localizationAway_isFinite : (localizationAway r (S := S)).IsFinite wher
 
 @[simp]
 lemma localizationAway_dimension_zero : (localizationAway r (S := S)).dimension = 0 := by
-  simp [Presentation.dimension, localizationAway]
+  simp [Presentation.dimension, localizationAway, Generators.localizationAway_vars]
 
 end Localization
 
 variable {T} [CommRing T] [Algebra R T] (P : Presentation R S)
 
-private lemma ker_algebraMap_eq_span_range_relation_baseChange :
-    RingHom.ker (aeval (R := T) (S₁ := T ⊗[R] S) P.baseChange.val) =
-      Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) := by
+private lemma span_range_relation_eq_ker_baseChange :
+    Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
+      RingHom.ker (aeval (R := T) (S₁ := T ⊗[R] S) P.baseChange.val) := by
   apply le_antisymm
+  · rw [Ideal.span_le]
+    intro x ⟨y, hy⟩
+    have Z := aeval_val_relation P y
+    apply_fun TensorProduct.includeRight (R := R) (A := T) at Z
+    rw [map_zero] at Z
+    simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy, algebraMap_apply,
+      TensorProduct.includeRight_apply]
+    erw [aeval_map_algebraMap]
+    show _ = TensorProduct.includeRight _
+    erw [map_aeval, TensorProduct.includeRight.comp_algebraMap]
+    rfl
   · intro x hx
     rw [RingHom.mem_ker] at hx
     have H := Algebra.TensorProduct.lTensor_ker (A := T) (IsScalarTower.toAlgHom R P.Ring S)
@@ -187,38 +197,35 @@ private lemma ker_algebraMap_eq_span_range_relation_baseChange :
         simp only [Generators.algebraMap_apply, algHom_C, TensorProduct.algebraMap_apply,
           id.map_eq_id, RingHom.id_apply, e]
         erw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
+        simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.map_tmul,
+          AlgHom.coe_id, id_eq, _root_.map_one, algebraMap_eq]
+        erw [aeval_C]
         simp
       | h_add p q hp hq => simp only [map_add, hp, hq]
       | h_X p i hp =>
         simp only [_root_.map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul,
           _root_.map_one, IsScalarTower.coe_toAlgHom', Generators.algebraMap_apply, aeval_X, e]
-        rfl
-    erw [H, ker_algebraMap_eq_span_range_relation, ← Ideal.mem_comap, Ideal.comap_symm,
+        congr
+        erw [aeval_X]
+        rw [Generators.baseChange_val]
+    erw [H] at H'
+    replace H' : e.symm x ∈ Ideal.map TensorProduct.includeRight P.ker := H'
+    erw [← P.span_range_relation_eq_ker, ← Ideal.mem_comap, Ideal.comap_symm,
       Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
     convert H'
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
       TensorProduct.includeRight_apply, TensorProduct.lift_tmul, _root_.map_one, mapAlgHom_apply,
       one_mul]
     rfl
-  · rw [Ideal.span_le]
-    intro x ⟨y, hy⟩
-    have Z := algebraMap_relation P y
-    apply_fun TensorProduct.includeRight (R := R) (A := T) at Z
-    rw [map_zero] at Z
-    simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy, algebraMap_apply,
-      TensorProduct.includeRight_apply]
-    erw [aeval_map_algebraMap]
-    show _ = TensorProduct.includeRight _
-    erw [map_aeval, TensorProduct.includeRight.comp_algebraMap]
-    rfl
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/
+@[simps relation, simps (config := .lemmasOnly) rels]
 noncomputable
 def baseChange : Presentation T (T ⊗[R] S) where
   __ := Generators.baseChange P.toGenerators
   rels := P.rels
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
-  ker_algebraMap_eq_span_range_relation := P.ker_algebraMap_eq_span_range_relation_baseChange
+  span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange
 
 end Construction
