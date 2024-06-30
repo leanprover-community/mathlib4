@@ -369,6 +369,19 @@ def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 #align local_ring.residue LocalRing.residue
 
+variable {R}
+
+lemma residue_ker : RingHom.ker (residue R) = maximalIdeal R :=
+  Ideal.mk_ker
+
+lemma residue_eq_zero_iff (x : R) : residue R x = 0 ↔ x ∈ maximalIdeal R := by
+  rw [← RingHom.mem_ker, residue_ker]
+
+lemma residue_ne_zero_iff_isUnit (x : R) : residue R x ≠ 0 ↔ IsUnit x := by
+  rw [← not_iff_not, ne_eq, not_not, residue_eq_zero_iff, mem_maximalIdeal, mem_nonunits_iff]
+
+variable (R)
+
 instance ResidueField.algebra : Algebra R (ResidueField R) :=
   Ideal.Quotient.algebra _
 #align local_ring.residue_field.algebra LocalRing.ResidueField.algebra
