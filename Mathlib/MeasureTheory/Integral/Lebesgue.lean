@@ -855,7 +855,7 @@ lemma setLIntegral_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hs
   apply le_antisymm (setLIntegral_le_lintegral s fun x ↦ f x)
   apply le_trans (le_of_eq _) (lintegral_indicator_le _ _)
   congr with x
-  simp [Set.indicator]
+  simp only [indicator]
   split_ifs with h
   · rfl
   · exact Function.support_subset_iff'.1 hsf x h
