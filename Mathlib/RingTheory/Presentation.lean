@@ -33,6 +33,9 @@ We also give constructors for localization and base change.
 
 - Define composition of presentations.
 - Define `Hom`s of presentations.
+## Notes
+This contribution was created as part of the AIM workshop
+"Formalizing algebraic geometry" in June 2024.
 
 -/
 
