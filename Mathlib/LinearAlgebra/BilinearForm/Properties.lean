@@ -186,7 +186,7 @@ theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
 #align bilin_form.is_alt_neg LinearMap.BilinForm.isAlt_neg
 
 theorem Alt_eq_of_sum_zero {B : BilinForm R₁ M₁} {a b c : M₁} (hB : B.IsAlt) (hSum : a + b + c = 0) :
-  B a b = B b c := by
+    B a b = B b c := by
   rw [← neg_eq_iff_add_eq_zero] at hSum
   rw [← hSum, B.neg_right, B.add_right, hB.self_eq_zero, ← hB.neg_eq, add_zero]
 
