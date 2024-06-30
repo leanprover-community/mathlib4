@@ -1473,7 +1473,8 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
 
 /-! ### Inverse -/
 
-/-- Mmultiplicative inverse of an `EReal`. -/
+/-- Multiplicative inverse of an `EReal`. We choose `0⁻¹ = 0` to guarantee several good properties,
+for instance `(a * b)⁻¹ = a⁻¹ * b⁻¹`. -/
 protected def inv : EReal → EReal
   | ⊥ => 0
   | ⊤ => 0
@@ -1562,13 +1563,13 @@ theorem inv_nonpos_of_nonpos {a : EReal} (h : a ≤ 0) : a⁻¹ ≤ 0 := by
   | h_bot | h_top => simp
   | h_real a => rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]; exact EReal.coe_nonpos.1 h
 
-theorem inv_pos_of_ntop_pos {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : 0 < a⁻¹ := by
+theorem inv_pos_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : 0 < a⁻¹ := by
   induction a using EReal.rec with
   | h_bot => exact (not_lt_bot h).rec
   | h_real a =>  rw [← coe_inv a]; norm_cast at *; exact inv_pos_of_pos h
   | h_top => exact (h' (Eq.refl ⊤)).rec
 
-theorem inv_neg_of_nbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 0 := by
+theorem inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 0 := by
   induction a using EReal.rec with
   | h_bot => exact (h' (Eq.refl ⊥)).rec
   | h_real a => rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
@@ -1594,17 +1595,17 @@ theorem div_zero {a : EReal} : a / 0 = 0 := by
 @[simp]
 theorem zero_div {a : EReal} : 0 / a = 0 := zero_mul a⁻¹
 
-theorem top_div_nontop_pos {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊤ / a = ⊤ :=
-  top_mul_of_pos (inv_pos_of_ntop_pos h h')
+theorem top_div_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊤ / a = ⊤ :=
+  top_mul_of_pos (inv_pos_of_pos_ne_top h h')
 
-theorem top_div_nonbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊤ / a = ⊥ :=
-  top_mul_of_neg (inv_neg_of_nbot_neg h h')
+theorem top_div_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊤ / a = ⊥ :=
+  top_mul_of_neg (inv_neg_of_neg_ne_bot h h')
 
-theorem bot_div_nontop_pos {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊥ / a = ⊥ :=
-  bot_mul_of_pos (inv_pos_of_ntop_pos h h')
+theorem bot_div_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : ⊥ / a = ⊥ :=
+  bot_mul_of_pos (inv_pos_of_pos_ne_top h h')
 
-theorem bot_div_nonbot_neg {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊥ / a = ⊤ :=
-  bot_mul_of_neg (inv_neg_of_nbot_neg h h')
+theorem bot_div_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : ⊥ / a = ⊤ :=
+  bot_mul_of_neg (inv_neg_of_neg_ne_bot h h')
 
 /-! #### Division and Multiplication -/
 
@@ -1641,7 +1642,7 @@ theorem mul_div_mul_cancel {a b c : EReal} (h₁ : c ≠ ⊥) (h₂ : c ≠ ⊤)
 
 /-! #### Division Distributivity -/
 
-theorem div_right_distrib_of_nneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
+theorem div_right_distrib_of_nonneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
     (a + b) / c = (a / c) + (b / c) :=
   EReal.right_distrib_of_nonneg h h'
 
@@ -1650,20 +1651,20 @@ theorem div_right_distrib_of_nneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
 theorem monotone_div_right_of_nonneg {b : EReal} (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
   fun _ _ h' ↦ mul_le_mul_of_nonneg_right h' (inv_nonneg_of_nonneg h)
 
-theorem monotone_div_right_of_nonneg_apply {a a' b : EReal} (h : 0 ≤ b) (h' : a ≤ a') :
+theorem div_le_div_right_of_nonneg {a a' b : EReal} (h : 0 ≤ b) (h' : a ≤ a') :
     a / b ≤ a' / b :=
   monotone_div_right_of_nonneg h h'
 
 theorem strictMono_div_right_of_pos {b : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
     StrictMono fun a ↦ a / b := by
   intro a a' a_lt_a'
-  apply lt_of_le_of_ne <| monotone_div_right_of_nonneg_apply (le_of_lt h) (le_of_lt a_lt_a')
+  apply lt_of_le_of_ne <| div_le_div_right_of_nonneg (le_of_lt h) (le_of_lt a_lt_a')
   intro hyp
   apply ne_of_lt a_lt_a'
   rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h), hyp,
     @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_gt h)]
 
-theorem strictMono_div_right_of_pos_apply {a a' b : EReal} (h₁ : 0 < b) (h₂ : b ≠ ⊤)
+theorem div_lt_div_right_of_pos {a a' b : EReal} (h₁ : 0 < b) (h₂ : b ≠ ⊤)
     (h₃ : a < a') : a / b < a' / b :=
   strictMono_div_right_of_pos h₁ h₂ h₃
 
@@ -1673,9 +1674,9 @@ theorem antitone_div_right_of_nonpos {b : EReal} (h : b ≤ 0) : Antitone fun a 
   rw [← neg_neg (a * b⁻¹), ← neg_neg (a' * b⁻¹), neg_le_neg_iff, mul_comm a b⁻¹, mul_comm a' b⁻¹,
     ← neg_mul b⁻¹ a, ← neg_mul b⁻¹ a', mul_comm (-b⁻¹) a, mul_comm (-b⁻¹) a', ← inv_neg b]
   have : 0 ≤ -b := by apply le_neg_of_le_neg; simp [h]
-  exact monotone_div_right_of_nonneg_apply this h'
+  exact div_le_div_right_of_nonneg this h'
 
-theorem antitone_div_right_of_nonpos_apply {a a' b : EReal} (h : b ≤ 0) (h' : a ≤ a') :
+theorem div_le_div_right_of_nonpos {a a' b : EReal} (h : b ≤ 0) (h' : a ≤ a') :
     a' / b ≤ a / b :=
   antitone_div_right_of_nonpos h h'
 
@@ -1683,13 +1684,13 @@ theorem strictAnti_div_right_of_neg {b : EReal} (h : b < 0) (h' : b ≠ ⊥) :
     StrictAnti fun a ↦ a / b := by
   intro a a' a_lt_a'
   simp only
-  apply lt_of_le_of_ne <| antitone_div_right_of_nonpos_apply (le_of_lt h) (le_of_lt a_lt_a')
+  apply lt_of_le_of_ne <| div_le_div_right_of_nonpos (le_of_lt h) (le_of_lt a_lt_a')
   intro hyp
   apply ne_of_lt a_lt_a'
   rw [← @EReal.mul_div_cancel a b h' (ne_top_of_lt h) (ne_of_lt h), ← hyp,
     @EReal.mul_div_cancel a' b h' (ne_top_of_lt h) (ne_of_lt h)]
 
-theorem strictAnti_div_right_of_neg_apply {a a' b : EReal} (h₁ : b < 0) (h₂ : b ≠ ⊥)
+theorem div_lt_div_right_of_neg {a a' b : EReal} (h₁ : b < 0) (h₂ : b ≠ ⊥)
     (h₃ : a < a') : a' / b < a / b :=
   strictAnti_div_right_of_neg h₁ h₂ h₃
 
@@ -1699,7 +1700,7 @@ theorem le_div_iff_mul_le {a b c : EReal} (h : b > 0) (h' : b ≠ ⊤) :
   rw [mul_div b a b, mul_comm a b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
-theorem div_le_iff_le_mul {a b c : EReal} (h : b > 0) (h' : b ≠ ⊤) :
+theorem div_le_iff_le_mul {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
     a / b ≤ c ↔ a ≤ b * c := by
   nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' (ne_of_gt h)]
   rw [mul_div b c b, mul_comm b]
@@ -1715,7 +1716,7 @@ theorem div_nonpos_of_nonneg_of_nonpos {a b : EReal} (h : 0 ≤ a) (h' : b ≤ 0
   mul_nonpos_of_nonneg_of_nonpos h (inv_nonpos_of_nonpos h')
 
 theorem div_nonneg_of_nonpos_of_nonpos {a b : EReal} (h : a ≤ 0) (h' : b ≤ 0) : 0 ≤ a / b :=
-  le_of_eq_of_le (Eq.symm zero_div) (antitone_div_right_of_nonpos_apply h' h)
+  le_of_eq_of_le (Eq.symm zero_div) (div_le_div_right_of_nonpos h' h)
 
 end EReal
 
