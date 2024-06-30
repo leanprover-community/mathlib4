@@ -138,8 +138,6 @@ where `Rₘ` and `Sₘ` are the localisations of `R` and `S` at a multiplicative
 subset `M` of `R`.
 -/
 
-def FiniteAdele := 37
-
 /-! Let R, S, Rₘ, Sₘ be commutative rings -/
 variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
 /-! Let M be a multiplicatively closed subset of `R` -/
