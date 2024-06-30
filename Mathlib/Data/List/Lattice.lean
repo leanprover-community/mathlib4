@@ -201,7 +201,7 @@ theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := b
   simp only [List.inter, elem_eq_mem, mem_reverse]
 #align list.inter_reverse List.inter_reverse
 
-theorem Subset.inter_eq_right {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs := by
+theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs := by
   induction xs with
   | nil => simp
   | cons x xs ih =>
