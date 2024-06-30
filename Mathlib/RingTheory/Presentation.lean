@@ -49,6 +49,7 @@ generators with
 2. `relation : relations → MvPolynomial vars R`: The assignment of
 each relation to a polynomial in the generators.
 -/
+@[nolint checkUnivs]
 structure Algebra.Presentation extends Algebra.Generators.{w} R S where
   /-- The type of relations.  -/
   relations : Type t

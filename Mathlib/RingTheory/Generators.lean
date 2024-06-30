@@ -179,6 +179,8 @@ def extendScalars (P : Generators R T) : Generators S T where
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
 
+/-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
+obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
 noncomputable
 def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators T (T ⊗[R] S) := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
