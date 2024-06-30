@@ -3,7 +3,6 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.RowCol
 
@@ -24,7 +23,7 @@ matrix, trace, diagonal
 -/
 
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 
@@ -112,7 +111,7 @@ theorem trace_multiset_sum (s : Multiset (Matrix n n R)) : trace s.sum = (s.map 
 
 @[simp]
 theorem trace_sum (s : Finset ι) (f : ι → Matrix n n R) :
-    trace (∑ i in s, f i) = ∑ i in s, trace (f i) :=
+    trace (∑ i ∈ s, f i) = ∑ i ∈ s, trace (f i) :=
   map_sum (traceAddMonoidHom n R) f s
 #align matrix.trace_sum Matrix.trace_sum
 
@@ -181,8 +180,8 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
 #align matrix.trace_mul_cycle' Matrix.trace_mul_cycle'
 
 @[simp]
-theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
-    trace (col a * row b) = dotProduct a b := by
+theorem trace_col_mul_row {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R] (a b : n → R) :
+    trace (col ι a * row ι b) = dotProduct a b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
 #align matrix.trace_col_mul_row Matrix.trace_col_mul_row

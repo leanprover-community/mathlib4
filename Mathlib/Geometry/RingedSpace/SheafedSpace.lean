@@ -21,7 +21,10 @@ presheaves.
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor
 
-variable (C : Type*) [Category C]
+universe u v
+
+variable (C : Type u) [Category.{v} C]
+
 
 -- Porting note: removed
 -- local attribute [tidy] tactic.op_induction'
@@ -48,7 +51,7 @@ instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.coe_carrier AlgebraicGeometry.SheafedSpace.coeCarrier
 
-instance coeSort : CoeSort (SheafedSpace C) (Type*) where
+instance coeSort : CoeSort (SheafedSpace C) Type* where
   coe := fun X => X.1
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
@@ -90,12 +93,19 @@ instance : Category (SheafedSpace C) :=
   show Category (InducedCategory (PresheafedSpace C) SheafedSpace.toPresheafedSpace) by
     infer_instance
 
--- Porting note: adding an ext lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): adding an `ext` lemma.
 @[ext]
 theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
   PresheafedSpace.ext α β w h
+
+/-- Constructor for isomorphisms in the category `SheafedSpace C`. -/
+@[simps]
+def isoMk {X Y : SheafedSpace C} (e : X.toPresheafedSpace ≅ Y.toPresheafedSpace) : X ≅ Y where
+  hom := e.hom
+  inv := e.inv
+  hom_inv_id := e.hom_inv_id
+  inv_hom_id := e.inv_hom_id
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
 @[simps! obj map]
@@ -106,7 +116,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: can't derive `Full` functor automatically
 instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
-  preimage f := f
+  map_surjective f := ⟨f, rfl⟩
 
 -- Porting note: can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where
@@ -135,8 +145,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem id_c_app (X : SheafedSpace C) (U) :
-    (𝟙 X : X ⟶ X).c.app U = eqToHom (by aesop_cat) := by
-  aesop_cat
+    (𝟙 X : X ⟶ X).c.app U = 𝟙 _ := rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.id_c_app AlgebraicGeometry.SheafedSpace.id_c_app
 
@@ -187,10 +196,17 @@ def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : Ope
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.restrict AlgebraicGeometry.SheafedSpace.restrict
 
+/-- The map from the restriction of a presheafed space.
+-/
+@[simps!]
+def ofRestrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)}
+    (h : OpenEmbedding f) : X.restrict h ⟶ X := X.toPresheafedSpace.ofRestrict h
+
 /-- The restriction of a sheafed space `X` to the top subspace is isomorphic to `X` itself.
 -/
+@[simps! hom inv]
 def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.openEmbedding ⊤) ≅ X :=
-  forgetToPresheafedSpace.preimageIso X.toPresheafedSpace.restrictTopIso
+  isoMk (X.toPresheafedSpace.restrictTopIso)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.restrict_top_iso AlgebraicGeometry.SheafedSpace.restrictTopIso
 
@@ -237,7 +253,7 @@ noncomputable instance [HasLimits C] :
           limit_isSheaf _ fun j => Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
         (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
 
-instance [HasLimits C] : HasColimits (SheafedSpace C) :=
+instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
   hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
 noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=

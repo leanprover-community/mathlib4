@@ -128,13 +128,13 @@ theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd
 @[simp]
 theorem exp_inl (x : R) : exp 𝕜 (inl x : tsze R M) = inl (exp 𝕜 x) := by
   rw [exp_def_of_smul_comm, snd_inl, fst_inl, smul_zero, inr_zero, add_zero]
-  · rw [snd_inl, fst_inl, smul_zero, smul_zero]
+  rw [snd_inl, fst_inl, smul_zero, smul_zero]
 #align triv_sq_zero_ext.exp_inl TrivSqZeroExt.exp_inl
 
 @[simp]
 theorem exp_inr (m : M) : exp 𝕜 (inr m : tsze R M) = 1 + inr m := by
   rw [exp_def_of_smul_comm, snd_inr, fst_inr, exp_zero, one_smul, inl_one]
-  · rw [snd_inr, fst_inr, MulOpposite.op_zero, zero_smul, zero_smul]
+  rw [snd_inr, fst_inr, MulOpposite.op_zero, zero_smul, zero_smul]
 #align triv_sq_zero_ext.exp_inr TrivSqZeroExt.exp_inr
 
 end Ring

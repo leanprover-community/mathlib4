@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
@@ -34,6 +34,9 @@ resembling the notation $R^{\times}$ for the units of a ring, which is common in
 The results here should be used to golf the basic `Group` lemmas.
 -/
 
+assert_not_exists Multiplicative
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 open Function
 
@@ -833,6 +836,10 @@ theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
 #align is_add_unit.add_unit_spec IsAddUnit.addUnit_spec
 
 @[to_additive (attr := simp)]
+theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
+  Units.eq_iff.1 rfl
+
+@[to_additive (attr := simp)]
 theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
   Units.mul_inv _
 #align is_unit.coe_inv_mul IsUnit.val_inv_mul
@@ -1173,8 +1180,8 @@ end DivisionCommMonoid
 end IsUnit
 
 @[field_simps]
-lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u :=
-  by rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
+lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := by
+  rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 #align divp_eq_div divp_eq_div
 
 @[to_additive]
@@ -1214,13 +1221,13 @@ noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a
 
 end NoncomputableDefs
 
--- 2024--03-20
-attribute [deprecated div_mul_cancel_right] IsUnit.div_mul_left
-attribute [deprecated sub_add_cancel_right] IsAddUnit.sub_add_left
-attribute [deprecated div_mul_cancel_left] IsUnit.div_mul_right
-attribute [deprecated sub_add_cancel_left] IsAddUnit.sub_add_right
+attribute [deprecated div_mul_cancel_right (since := "2024-03-20")] IsUnit.div_mul_left
+attribute [deprecated sub_add_cancel_right (since := "2024-03-20")] IsAddUnit.sub_add_left
+attribute [deprecated div_mul_cancel_left (since := "2024-03-20")] IsUnit.div_mul_right
+attribute [deprecated sub_add_cancel_left (since := "2024-03-20")] IsAddUnit.sub_add_right
 -- The names `IsUnit.mul_div_cancel` and `IsAddUnit.add_sub_cancel` have been reused
--- @[deprecated] alias IsUnit.mul_div_cancel := IsUnit.mul_div_cancel_right
--- @[deprecated] alias IsAddUnit.add_sub_cancel := IsAddUnit.add_sub_cancel_right
-@[deprecated] alias IsUnit.mul_div_cancel' := IsUnit.mul_div_cancel
-@[deprecated] alias IsAddUnit.add_sub_cancel' := IsAddUnit.add_sub_cancel
+-- @[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel := IsUnit.mul_div_cancel_right
+-- @[deprecated (since := "2024-03-20")]
+-- alias IsAddUnit.add_sub_cancel := IsAddUnit.add_sub_cancel_right
+@[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel' := IsUnit.mul_div_cancel
+@[deprecated (since := "2024-03-20")] alias IsAddUnit.add_sub_cancel' := IsAddUnit.add_sub_cancel

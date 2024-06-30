@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 
 -/
 
-import Std.Data.Nat.Gcd
+import Batteries.Data.Nat.Gcd
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Mathport.Rename
 

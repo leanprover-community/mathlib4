@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Function.Indicator
+import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Sets.Closeds
 
@@ -45,16 +45,19 @@ protected theorem tfae (f : X → Y) :
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  tfae_have 1 → 4; exact fun h y => h {y}
-  tfae_have 4 → 3; exact fun h x => h (f x)
-  tfae_have 3 → 2; exact fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 1 → 4
+  · exact fun h y => h {y}
+  tfae_have 4 → 3
+  · exact fun h x => h (f x)
+  tfae_have 3 → 2
+  · exact fun h x => IsOpen.mem_nhds (h x) rfl
   tfae_have 2 → 5
   · intro h x
     rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
     exact ⟨U, hU, hx, eq⟩
   tfae_have 5 → 1
   · intro h s
-    refine' isOpen_iff_forall_mem_open.2 fun x hx => _
+    refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ?_
     rcases h x with ⟨U, hU, hxU, eq⟩
     exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩
   tfae_finish
@@ -96,11 +99,9 @@ protected theorem eventually_eq {f : X → Y} (hf : IsLocallyConstant f) (x : X)
   (iff_eventually_eq f).1 hf x
 #align is_locally_constant.eventually_eq IsLocallyConstant.eventually_eq
 
--- Porting note (#10756): new lemma
 theorem iff_isOpen_fiber_apply {f : X → Y} : IsLocallyConstant f ↔ ∀ x, IsOpen (f ⁻¹' {f x}) :=
   (IsLocallyConstant.tfae f).out 0 2
 
--- Porting note (#10756): new lemma
 theorem iff_isOpen_fiber {f : X → Y} : IsLocallyConstant f ↔ ∀ y, IsOpen (f ⁻¹' {y}) :=
   (IsLocallyConstant.tfae f).out 0 3
 
@@ -449,16 +450,10 @@ theorem flip_unflip {X α β : Type*} [Finite α] [TopologicalSpace X]
 
 section Comap
 
-open scoped Classical
-
 variable [TopologicalSpace Y]
 
-/-- Pull back of locally constant maps under any map, by pre-composition.
-
-This definition only makes sense if `f` is continuous,
-in which case it sends locally constant functions to their precomposition with `f`.
-See also `LocallyConstant.coe_comap`. -/
-noncomputable def comap (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
+/-- Pull back of locally constant maps under a continuous map, by pre-composition. -/
+def comap (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
   ⟨g ∘ f, g.isLocallyConstant.comp_continuous f.continuous⟩
 #align locally_constant.comap LocallyConstant.comap
 
@@ -560,10 +555,11 @@ end Indicator
 
 section Equiv
 
-/-- The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
-    homeomorphism `X ≃ₜ Y` -/
+/--
+The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
+homeomorphism `X ≃ₜ Y`
+-/
 @[simps]
-noncomputable
 def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ LocallyConstant Y Z where
   toFun := comap e.symm
   invFun := comap e
@@ -573,6 +569,17 @@ def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ Lo
   right_inv := by
     intro
     simp [comap_comap]
+
+/--
+The equivalence between `LocallyConstant X Y` and `LocallyConstant X Z` given an
+equivalence `Y ≃ Z`
+-/
+@[simps]
+def congrRight (e : Y ≃ Z) : LocallyConstant X Y ≃ LocallyConstant X Z where
+  toFun := map e
+  invFun := map e.symm
+  left_inv := by intro; ext; simp
+  right_inv := by intro; ext; simp
 
 variable (X) in
 /--
@@ -608,7 +615,7 @@ def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) 
     rw [IsLocallyConstant.iff_continuous] at hf hg ⊢
     dsimp only [coe_mk]
     rw [Set.union_eq_iUnion] at h
-    refine' (locallyFinite_of_finite _).continuous h (fun i ↦ _) (fun i ↦ _)
+    refine (locallyFinite_of_finite _).continuous h (fun i ↦ ?_) (fun i ↦ ?_)
     · cases i <;> [exact h₂; exact h₁]
     · cases i <;> rw [continuousOn_iff_continuous_restrict]
       · convert hg
@@ -643,7 +650,7 @@ lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : I
 /-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
 
 TODO: Generalise this construction to `ContinuousMap`. -/
-noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
     LocallyConstant C₀ Z :=
