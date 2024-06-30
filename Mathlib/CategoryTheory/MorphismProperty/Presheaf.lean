@@ -190,6 +190,7 @@ section
 
 variable {Z : C} (i : Z ⟶ Y) (h : Z ⟶ X) (hi : (yoneda.map i) ≫ f' = yoneda.map h ≫ g)
 
+/-- TODO -/
 noncomputable def lift' : Z ⟶ hf'.pullback g := hf'.lift _ _ hi
 
 @[reassoc (attr := simp)]
@@ -202,6 +203,7 @@ lemma lift'_snd : hf'.lift' i h hi ≫ hf'.snd g = h := by
 
 end
 
+/-- TODO -/
 noncomputable def symmetry : hf'.pullback g ⟶ hg.pullback f' :=
   hg.lift' (hf'.snd g) (hf'.fst g) (condition _ _).symm
 
@@ -214,6 +216,7 @@ lemma symmetry_snd : hf'.symmetry hg ≫ hg.snd f' = hf'.fst g := by simp [symme
 @[reassoc (attr := simp)]
 lemma symmetry_symmetry : hf'.symmetry hg ≫ hg.symmetry hf' = 𝟙 _ := by aesop_cat
 
+/-- TODO -/
 @[simps]
 noncomputable def symmetryIso : hf'.pullback g ≅ hg.pullback f' where
   hom := hf'.symmetry hg

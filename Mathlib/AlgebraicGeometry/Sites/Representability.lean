@@ -10,7 +10,7 @@ import Mathlib.AlgebraicGeometry.GluingHyperCover
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 
-/-
+/-!
 # Representability
 
 ## References
@@ -26,6 +26,7 @@ universe u
 
 namespace Scheme
 
+/-- TODO -/
 abbrev openImmersion : MorphismProperty (Scheme.{u}) := @IsOpenImmersion
 
 lemma openImmersion_le_monomorphisms :
@@ -51,6 +52,7 @@ noncomputable abbrev V := (hf i).representable.pullback (f j)
 noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).representable.fst (f j)
 noncomputable abbrev p₂ : V hf i j ⟶ X j := (hf i).representable.snd (f j)
 
+/-- TODO -/
 noncomputable abbrev symmetryIso : V hf i j ≅ V hf j i :=
   ((hf i).representable.symmetryIso (hf j).representable)
 
@@ -92,10 +94,14 @@ noncomputable def W := pullback (p₁ hf i j) (p₁ hf i k)
 lemma condition₃ : (pullback.fst ≫ p₁ hf i j : W hf i j k ⟶ _ ) = pullback.snd ≫ p₁ hf i k := by
   apply pullback.condition
 
+/-- TODO -/
 noncomputable def q₁ : W hf i j k ⟶ X i := pullback.fst ≫ p₁ hf i j
+/-- TODO -/
 noncomputable def q₂ : W hf i j k ⟶ X j := pullback.fst ≫ p₂ hf i j
+/-- TODO -/
 noncomputable def q₃ : W hf i j k ⟶ X k := pullback.snd ≫ p₂ hf i k
 
+/-- TODO -/
 noncomputable def ιW : yoneda.obj (W hf i j k) ⟶ F.1 := yoneda.map (q₁ hf i j k) ≫ f i
 
 @[reassoc (attr := simp)]
@@ -140,6 +146,7 @@ variable {Z : Scheme} (a : Z ⟶ X i) (b : Z ⟶ X j) (c : Z ⟶ X k)
 
 variable {i j k}
 
+/-- TODO -/
 noncomputable def liftW : Z ⟶ W hf i j k :=
   pullback.lift ((hf i).representable.lift' a b h₁)
     ((hf i).representable.lift' a c h₂) (by simp)
@@ -155,6 +162,7 @@ lemma liftW_q₃ : liftW hf a b c h₁ h₂ ≫ q₃ hf i j k = c := by simp [li
 
 end
 
+/-- TODO -/
 @[simps]
 noncomputable def glueData : GlueData where
   J := ι
@@ -177,9 +185,11 @@ noncomputable def glueData : GlueData where
   cocycle i j k := by apply hom_ext_W; all_goals simp
   f_open := isOpenImmersion_p₁ hf
 
+/-- TODO -/
 noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
   (glueData hf).ι i
 
+/-- TODO -/
 noncomputable def yonedaGluedToSheaf :
     subcanonical_zariskiTopology.yoneda.obj (glueData hf).glued ⟶ F :=
   Sheaf.homEquiv.symm (yonedaEquiv.symm
@@ -251,6 +261,7 @@ instance : IsIso (yonedaGluedToSheaf hf) := by
   rw [← Sheaf.isLocallyBijective_iff_isIso (yonedaGluedToSheaf hf)]
   constructor <;> infer_instance
 
+/-- TODO -/
 noncomputable def yonedaIsoSheaf :
     subcanonical_zariskiTopology.yoneda.obj (glueData hf).glued ≅ F :=
   asIso (yonedaGluedToSheaf hf)

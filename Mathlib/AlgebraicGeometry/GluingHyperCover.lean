@@ -7,6 +7,12 @@ import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Sites.OneHypercover
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 
+/-!
+# Gluing Hypercovers
+
+In this file ...
+
+-/
 universe v u
 
 open CategoryTheory Opposite Limits
@@ -18,11 +24,13 @@ namespace Limits
 
 variable (I : MulticospanIndex (Type u))
 
+/-- TODO -/
 @[ext]
 structure MulticospanIndex.sections where
   val (i : I.L) : I.left i
   property (r : I.R) : I.fst r (val _) = I.snd r (val _)
 
+/-- TODO -/
 @[simps]
 def MulticospanIndex.sectionsEquiv :
     I.sections ≃ I.multicospan.sections where
@@ -49,6 +57,7 @@ namespace Multifork
 variable {I}
 variable (c : Multifork I)
 
+/-- TODO -/
 @[simps]
 def toSections (x : c.pt) : I.sections where
   val i := c.ι i x
@@ -64,6 +73,7 @@ namespace IsLimit
 variable {c}
 variable (hc : IsLimit c)
 
+/-- TODO -/
 noncomputable def sectionsEquiv : I.sections ≃ c.pt :=
   (Equiv.ofBijective _ (c.isLimit_types_iff.1 ⟨hc⟩)).symm
 
@@ -89,6 +99,7 @@ namespace AlgebraicGeometry.Scheme.GlueData
 
 variable (D : Scheme.GlueData.{u})
 
+/-- TODO -/
 @[simps]
 noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued where
   I₀ := D.J
@@ -121,6 +132,7 @@ variable (s : ∀ (j : D.J), F.val.obj (op (D.U j)))
   (h : ∀ (i j : D.J), F.val.map (D.f i j).op (s i) =
     F.val.map ((D.f j i).op ≫ (D.t i j).op) (s j))
 
+/-- TODO -/
 noncomputable def sheafValGluedMk : F.val.obj (op D.glued) :=
   Multifork.IsLimit.sectionsEquiv (D.oneHypercover.isLimitMultifork F)
     { val := s
