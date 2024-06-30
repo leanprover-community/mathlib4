@@ -11,15 +11,11 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.PullbackCone
 # HasPullback (API for HasLimits)
 `HasPullback f g` and `pullback f g` provide API for ....
 
-
-
-
 # Diagrams
 The file `Pullbacks/Diagrams.lean` provides results for diagrams containing multiple pullback
 squares, and how these interact with one another.
 
 It contains the following results
-
 
 
 ## References
@@ -534,6 +530,59 @@ theorem inr_comp_pushoutSymmetry_inv [HasPushout f g] :
 
 end PushoutSymmetry
 
+variable (C)
+
+/-- `HasPullbacks` represents a choice of pullback for every pair of morphisms
+
+See <https://stacks.math.columbia.edu/tag/001W>
+-/
+abbrev HasPullbacks :=
+  HasLimitsOfShape WalkingCospan C
+#align category_theory.limits.has_pullbacks CategoryTheory.Limits.HasPullbacks
+
+/-- `HasPushouts` represents a choice of pushout for every pair of morphisms -/
+abbrev HasPushouts :=
+  HasColimitsOfShape WalkingSpan C
+#align category_theory.limits.has_pushouts CategoryTheory.Limits.HasPushouts
+
+/-- If `C` has all limits of diagrams `cospan f g`, then it has all pullbacks -/
+theorem hasPullbacks_of_hasLimit_cospan
+    [∀ {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z}, HasLimit (cospan f g)] : HasPullbacks C :=
+  { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
+#align category_theory.limits.has_pullbacks_of_has_limit_cospan CategoryTheory.Limits.hasPullbacks_of_hasLimit_cospan
+
+/-- If `C` has all colimits of diagrams `span f g`, then it has all pushouts -/
+theorem hasPushouts_of_hasColimit_span
+    [∀ {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}, HasColimit (span f g)] : HasPushouts C :=
+  { has_colimit := fun F => hasColimitOfIso (diagramIsoSpan F) }
+#align category_theory.limits.has_pushouts_of_has_colimit_span CategoryTheory.Limits.hasPushouts_of_hasColimit_span
+
+/-- The duality equivalence `WalkingSpanᵒᵖ ≌ WalkingCospan` -/
+@[simps!]
+def walkingSpanOpEquiv : WalkingSpanᵒᵖ ≌ WalkingCospan :=
+  widePushoutShapeOpEquiv _
+#align category_theory.limits.walking_span_op_equiv CategoryTheory.Limits.walkingSpanOpEquiv
+
+/-- The duality equivalence `WalkingCospanᵒᵖ ≌ WalkingSpan` -/
+@[simps!]
+def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
+  widePullbackShapeOpEquiv _
+#align category_theory.limits.walking_cospan_op_equiv CategoryTheory.Limits.walkingCospanOpEquiv
+
+-- see Note [lower instance priority]
+/-- Having wide pullback at any universe level implies having binary pullbacks. -/
+instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [h : Category.{v} D]
+    [h' : HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D := by
+  haveI I := @hasWidePullbacks_shrink.{0, w} D h h'
+  infer_instance
+#align category_theory.limits.has_pullbacks_of_has_wide_pullbacks CategoryTheory.Limits.hasPullbacks_of_hasWidePullbacks
+
+-- see Note [lower instance priority]
+/-- Having wide pushout at any universe level implies having binary pushouts. -/
+instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Category.{v} D]
+    [h' : HasWidePushouts.{w} D] : HasPushouts.{v,u} D := by
+  haveI I := @hasWidePushouts_shrink.{0, w} D h h'
+  infer_instance
 
 
 end CategoryTheory.Limits
