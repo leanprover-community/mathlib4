@@ -275,7 +275,7 @@ lemma presheaf.property' (hP : StableUnderBaseChange P) {f : F ⟶ G} (hf : P.pr
     (hf.property g)
 
 lemma presheaf_mk' (hP : StableUnderBaseChange P) {f : F ⟶ G} (hf : Presheaf.representable f) :
-  (∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C)
+    (∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C)
     (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X) (_ : IsPullback fst (yoneda.map snd) f g),
     P snd) → P.presheaf f := by
   intro h
