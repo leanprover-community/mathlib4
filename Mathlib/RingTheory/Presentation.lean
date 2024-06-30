@@ -17,7 +17,7 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
 
 ## Main definition
 
-- `Algebra.Presentation`: A presentation of a `R`-algebra `S` is a family of
+- `Algebra.Presentation`: A presentation of an `R`-algebra `S` is a family of
   generators with
   1. `rels`: The type of relations.
   2. `relation : relations → MvPolynomial vars R`: The assignment of
@@ -43,7 +43,7 @@ open TensorProduct MvPolynomial
 variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /--
-A presentation of a `R`-algebra `S` is a family of
+A presentation of an `R`-algebra `S` is a family of
 generators with
 1. `rels`: The type of relations.
 2. `relation : relations → MvPolynomial vars R`: The assignment of
