@@ -26,9 +26,9 @@ In this file we define and develop basic results on the representability of morp
 
 
 ## Main results
-* `presheaf_isStableUnderComposition`: Being representable is stable under composition.
-* `presheaf_stableUnderBaseChange`: Being representable is stable under base change.
-* `presheaf.ofIso`: Isomorphisms are representable
+* `representable_isStableUnderComposition`: Being representable is stable under composition.
+* `representable_stableUnderBaseChange`: Being representable is stable under base change.
+* `representable_ofIso`: Isomorphisms are representable
 
 * `presheaf_yoneda_map`: If `f : X ⟶ Y` satisfies `P`, and `P` is stable under compostions,
   then `yoneda.map f` satisfies `P.presheaf`.
@@ -292,7 +292,7 @@ lemma presheaf_monotone {P' : MorphismProperty C} (h : P ≤ P') :
     P.presheaf ≤ P'.presheaf := fun _ _ _ hf ↦
   ⟨hf.representable, fun _ g ↦ h _ (hf.property g)⟩
 
-instance presheaf_isStableUnderComposition :
+instance representable_isStableUnderComposition :
     IsStableUnderComposition (Presheaf.representable (C:=C)) where
   comp_mem {F G H} f g hf hg := fun X h ↦ by
     use hf.pullback (hg.pullbackCone h).fst
@@ -313,7 +313,7 @@ instance presheaf_isStableUnderComposition :
 
     refine ⟨Limits.IsLimit.conePointUniqueUpToIso (hf.pullbackConeIsLimit _) P'⟩
 
-lemma presheaf_stableUnderBaseChange :
+lemma representable_stableUnderBaseChange :
     StableUnderBaseChange (Presheaf.representable (C:=C)) := by
   intro F G G' H f g f' g' P₁ hg X h
   use hg.pullback (h ≫ f)
@@ -321,15 +321,16 @@ lemma presheaf_stableUnderBaseChange :
   let P := IsPullback.paste_horiz P₂ P₁
   refine ⟨hg.pullbackIso (h ≫ f) ≪≫ P.isoPullback.symm⟩
 
-lemma presheaf_ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] : Presheaf.representable f :=
+lemma representable_ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] :
+    Presheaf.representable f :=
   fun X g ↦ ⟨X, ⟨(asIso <| Limits.pullback.snd (f:=f) (g:=g)).symm⟩⟩
 
-lemma presheaf_isomorphisms_le :
+lemma representable_isomorphisms_le :
     MorphismProperty.isomorphisms (Cᵒᵖ ⥤ Type v) ≤ Presheaf.representable :=
-  fun _ _ f hf ↦ letI : IsIso f := hf; presheaf_ofIsIso f
+  fun _ _ f hf ↦ letI : IsIso f := hf; representable_ofIsIso f
 
-lemma presheaf_respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
-  presheaf_stableUnderBaseChange.respectsIso
+lemma representable_respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
+  representable_stableUnderBaseChange.respectsIso
 
 /-
 Calle's notes on current pullback API (I might try PR some of this if I don't end up finding good ways
