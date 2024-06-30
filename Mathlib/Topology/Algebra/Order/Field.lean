@@ -3,10 +3,9 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Topology.Algebra.Order.Group
-import Mathlib.Topology.Algebra.Field
 import Mathlib.Data.Set.Pointwise.Interval
-import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Topology.Algebra.Field
+import Mathlib.Topology.Algebra.Order.Group
 
 #align_import topology.algebra.order.field from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
@@ -63,7 +62,7 @@ instance (priority := 100) LinearOrderedField.topologicalRing : TopologicalRing 
 tends to a positive constant `C` then `f * g` tends to `Filter.atTop`. -/
 theorem Filter.Tendsto.atTop_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop := by
-  refine' tendsto_atTop_mono' _ _ (hf.atTop_mul_const (half_pos hC))
+  refine tendsto_atTop_mono' _ ?_ (hf.atTop_mul_const (half_pos hC))
   filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0]
     with x hg hf using mul_le_mul_of_nonneg_left hg.le hf
 #align filter.tendsto.at_top_mul Filter.Tendsto.atTop_mul
@@ -194,7 +193,7 @@ theorem tendsto_const_mul_pow_nhds_iff {n : ℕ} {c d : 𝕜} (hc : c ≠ 0) :
 
 theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠ 0) :
     Tendsto (fun x : 𝕜 => c * x ^ n) atTop (𝓝 d) ↔ n = 0 ∧ c = d ∨ n < 0 ∧ d = 0 := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · cases n with -- Porting note: Lean 3 proof used `by_cases`, then `lift` but `lift` failed
     | ofNat n =>
       left

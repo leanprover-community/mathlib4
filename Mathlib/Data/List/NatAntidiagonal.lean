@@ -41,7 +41,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
     rw [mem_range, Nat.lt_succ_iff] at hi
     exact Nat.add_sub_cancel' hi
   · rintro rfl
-    refine' ⟨x.fst, _, _⟩
+    refine ⟨x.fst, ?_, ?_⟩
     · rw [mem_range]
       omega
     · exact Prod.ext rfl (by simp only [Nat.add_sub_cancel_left])
@@ -68,7 +68,7 @@ theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
 theorem antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) :: (antidiagonal n).map (Prod.map Nat.succ id) := by
   simp only [antidiagonal, range_succ_eq_map, map_cons, true_and_iff, Nat.add_succ_sub_one,
-    Nat.add_zero, id.def, eq_self_iff_true, Nat.sub_zero, map_map, Prod.map_mk]
+    Nat.add_zero, id, eq_self_iff_true, Nat.sub_zero, map_map, Prod.map_mk]
   apply congr rfl (congr rfl _)
   ext; simp
 #align list.nat.antidiagonal_succ List.Nat.antidiagonal_succ
@@ -79,14 +79,14 @@ theorem antidiagonal_succ' {n : ℕ} :
     Nat.sub_self, singleton_append, map_map, map]
   congr 1
   apply map_congr
-  simp (config := { contextual := true }) [le_of_lt, Nat.succ_eq_add_one, Nat.sub_add_comm]
+  simp (config := { contextual := true }) [le_of_lt, Nat.sub_add_comm]
 #align list.nat.antidiagonal_succ' List.Nat.antidiagonal_succ'
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) :: (antidiagonal n).map (Prod.map Nat.succ Nat.succ) ++ [(n + 2, 0)] := by
   rw [antidiagonal_succ']
-  simp only [antidiagonal_succ, map_cons, Prod_map, id_eq, map_map, cons_append, cons.injEq,
+  simp only [antidiagonal_succ, map_cons, Prod.map_apply, id_eq, map_map, cons_append, cons.injEq,
     append_cancel_right_eq, true_and]
   ext
   simp

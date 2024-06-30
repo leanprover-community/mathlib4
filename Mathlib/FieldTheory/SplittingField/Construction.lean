@@ -33,7 +33,7 @@ actual `SplittingField` will be a quotient of a `MvPolynomial`, it has nice inst
 
 noncomputable section
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 universe u v w
 
@@ -277,10 +277,15 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
 instance instField : Field (SplittingField f) where
   __ := commRing _
   __ := instGroupWithZero _
+  nnratCast q := algebraMap K _ q
   ratCast q := algebraMap K _ q
+  nnqsmul := (· • ·)
+  qsmul := (· • ·)
+  nnratCast_def q := by change algebraMap K _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
   ratCast_def q := by
     change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  qsmul := (· • ·)
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
   qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 

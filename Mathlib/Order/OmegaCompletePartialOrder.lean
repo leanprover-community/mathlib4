@@ -199,8 +199,7 @@ variable [OmegaCompletePartialOrder α]
 /-- Transfer an `OmegaCompletePartialOrder` on `β` to an `OmegaCompletePartialOrder` on `α`
 using a strictly monotone function `f : β →o α`, a definition of ωSup and a proof that `f` is
 continuous with regard to the provided `ωSup` and the ωCPO on `α`. -/
-@[reducible]
-protected def lift [PartialOrder β] (f : β →o α) (ωSup₀ : Chain β → β)
+protected abbrev lift [PartialOrder β] (f : β →o α) (ωSup₀ : Chain β → β)
     (h : ∀ x y, f x ≤ f y → x ≤ y) (h' : ∀ c, f (ωSup₀ c) = ωSup (c.map f)) :
     OmegaCompletePartialOrder β where
   ωSup := ωSup₀
@@ -232,8 +231,8 @@ theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup 
 theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ x := by
   constructor <;> intros
   · trans ωSup c
-    exact le_ωSup _ _
-    assumption
+    · exact le_ωSup _ _
+    · assumption
   exact ωSup_le _ _ ‹_›
 #align omega_complete_partial_order.ωSup_le_iff OmegaCompletePartialOrder.ωSup_le_iff
 
@@ -295,9 +294,9 @@ lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinu
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
   constructor
-  intro c
-  rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
-  simp only [OrderHom.coe_mk]
+  · intro c
+    rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
+    simp only [OrderHom.coe_mk]
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
@@ -417,7 +416,7 @@ theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ 
   constructor
   · split_ifs with h
     swap
-    rintro ⟨⟨⟩⟩
+    · rintro ⟨⟨⟩⟩
     intro h'
     have hh := Classical.choose_spec h
     simp only [mem_some_iff] at h'
@@ -565,7 +564,7 @@ variable {α β : Type*} [OmegaCompletePartialOrder α] [CompleteLinearOrder β]
 
 theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊓ g) := by
-  refine' fun c => eq_of_forall_ge_iff fun z => _
+  refine fun c => eq_of_forall_ge_iff fun z => ?_
   simp only [inf_le_iff, hf c, hg c, ωSup_le_iff, ← forall_or_left, ← forall_or_right,
              Chain.map_coe, OrderHom.coe_inf, ge_iff_le, Pi.inf_apply, Function.comp]
   exact ⟨fun h _ ↦ h _ _, fun h i j ↦
@@ -857,8 +856,8 @@ def apply : (α →𝒄 β) × α →𝒄 β where
       intro j
       apply le_ωSup_of_le (max i j)
       apply apply_mono
-      exact monotone_fst (OrderHom.mono _ (le_max_left _ _))
-      exact monotone_snd (OrderHom.mono _ (le_max_right _ _))
+      · exact monotone_fst (OrderHom.mono _ (le_max_left _ _))
+      · exact monotone_snd (OrderHom.mono _ (le_max_right _ _))
     · apply ωSup_le
       intro i
       apply le_ωSup_of_le i

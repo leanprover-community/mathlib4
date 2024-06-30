@@ -686,11 +686,9 @@ instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 -- Porting note: new. This could probably be moved to tests or removed.
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
--- Porting note (#10756): new lemma
 @[simp, norm_cast]
 lemma ofENat_top : ofENat ⊤ = ⊤ := rfl
 
--- Porting note (#10756): new lemma
 @[simp, norm_cast]
 lemma ofENat_coe (n : ℕ) : ofENat n = n := rfl
 
@@ -704,10 +702,9 @@ theorem ofENat_one : ofENat 1 = 1 := rfl
 theorem ofENat_ofNat (n : Nat) [n.AtLeastTwo] : ofENat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   rfl
 
--- Porting note (#10756): new theorem
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
-  cases n using ENat.recTopCoe with
+  cases n with
   | top => simp
   | coe n => simp
 
@@ -862,7 +859,7 @@ theorem lt_find (n : ℕ) (h : ∀ m ≤ n, ¬P m) : (n : PartENat) < find P := 
 #align part_enat.lt_find PartENat.lt_find
 
 theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m := by
-  refine' ⟨_, lt_find P n⟩
+  refine ⟨?_, lt_find P n⟩
   intro h m hm
   by_cases H : (find P).Dom
   · apply Nat.find_min H
@@ -889,13 +886,7 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
     top_add' := top_add }
 
 noncomputable instance : CompleteLinearOrder PartENat :=
-  { PartENat.lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
-    PartENat.linearOrder with
-    inf := (· ⊓ ·)
-    sup := (· ⊔ ·)
-    top := ⊤
-    bot := ⊥
-    le := (· ≤ ·)
-    lt := (· < ·) }
+  { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
+    linearOrder, LinearOrder.toBiheytingAlgebra with }
 
 end PartENat

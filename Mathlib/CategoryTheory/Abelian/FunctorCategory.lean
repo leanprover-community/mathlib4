@@ -73,6 +73,7 @@ theorem coimageImageComparison_app :
   erw [kernelComparison_comp_ι _ ((evaluation C D).obj X),
     π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
   conv_lhs => rw [← coimage_image_factorisation α]
+  rfl
 #align category_theory.abelian.functor_category.coimage_image_comparison_app CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app
 
 theorem coimageImageComparison_app' :
@@ -115,7 +116,7 @@ end
 --/-- A variant with specialized universes for a common case. -/
 --noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) :=
 --  Abelian.functorCategoryAbelian.{u, u + 1, u, u}
---#align category_theory.abelian.functor_category_abelian' CategoryTheory.Abelian.functorCategoryAbelian'
+-- #align category_theory.abelian.functor_category_abelian' CategoryTheory.Abelian.functorCategoryAbelian'
 --
 --end
 

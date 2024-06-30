@@ -101,9 +101,7 @@ theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
 #align complex.not_lt_zero_iff Complex.not_lt_zero_iff
 
 theorem eq_re_of_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
-  apply Complex.ext
-  rfl
-  simp only [← (Complex.le_def.1 hz).2, Complex.zero_im, Complex.ofReal_im]
+  rw [eq_comm, ← conj_eq_iff_re, conj_eq_iff_im, ← (Complex.le_def.1 hz).2, Complex.ofReal_im]
 #align complex.eq_re_of_real_le Complex.eq_re_of_ofReal_le
 
 @[simp]

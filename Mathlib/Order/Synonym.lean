@@ -202,7 +202,8 @@ theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
   Iff.rfl
 #align of_lex_inj ofLex_inj
 
-/-- A recursor for `Lex`. Use as `induction x using Lex.rec`. -/
+/-- A recursor for `Lex`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
 #align lex.rec Lex.rec
 

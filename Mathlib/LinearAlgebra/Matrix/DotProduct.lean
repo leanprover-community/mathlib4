@@ -41,8 +41,8 @@ variable [Semiring R] [Fintype n]
 theorem dotProduct_stdBasis_eq_mul [DecidableEq n] (v : n → R) (c : R) (i : n) :
     dotProduct v (LinearMap.stdBasis R (fun _ => R) i c) = v i * c := by
   rw [dotProduct, Finset.sum_eq_single i, LinearMap.stdBasis_same]
-  exact fun _ _ hb => by rw [LinearMap.stdBasis_ne _ _ _ _ hb, mul_zero]
-  exact fun hi => False.elim (hi <| Finset.mem_univ _)
+  · exact fun _ _ hb => by rw [LinearMap.stdBasis_ne _ _ _ _ hb, mul_zero]
+  · exact fun hi => False.elim (hi <| Finset.mem_univ _)
 #align matrix.dot_product_std_basis_eq_mul Matrix.dotProduct_stdBasis_eq_mul
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -150,7 +150,7 @@ lemma mul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (B : Matrix p n R) :
 lemma conjTranspose_mul_self_mulVec_eq_zero (A : Matrix m n R) (v : n → R) :
     (Aᴴ * A) *ᵥ v = 0 ↔ A *ᵥ v = 0 := by
   simpa only [← Matrix.col_mulVec, col_eq_zero] using
-    conjTranspose_mul_self_mul_eq_zero A (col v)
+    conjTranspose_mul_self_mul_eq_zero A (col (Fin 1) v)
 
 lemma self_mul_conjTranspose_mulVec_eq_zero (A : Matrix m n R) (v : m → R) :
     (A * Aᴴ) *ᵥ v = 0 ↔ Aᴴ *ᵥ v = 0 := by
@@ -159,7 +159,7 @@ lemma self_mul_conjTranspose_mulVec_eq_zero (A : Matrix m n R) (v : m → R) :
 lemma vecMul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (v : n → R) :
     v ᵥ* (Aᴴ * A) = 0 ↔ v ᵥ* Aᴴ = 0 := by
   simpa only [← Matrix.row_vecMul, row_eq_zero] using
-    mul_conjTranspose_mul_self_eq_zero A (row v)
+    mul_conjTranspose_mul_self_eq_zero A (row (Fin 1) v)
 
 lemma vecMul_self_mul_conjTranspose_eq_zero (A : Matrix m n R) (v : m → R) :
     v ᵥ* (A * Aᴴ) = 0 ↔ v ᵥ* A = 0 := by

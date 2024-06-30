@@ -160,9 +160,9 @@ theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omeg
     constructor
     all_goals
       rw [← Cardinal.ord_aleph0]
-      refine'
+      refine
         Cardinal.lsub_lt_ord_of_isRegular.{u, u} Cardinal.isRegular_aleph0
-          (Cardinal.lt_aleph0_of_finite _) fun i => _
+          (Cardinal.lt_aleph0_of_finite _) fun i => ?_
       rw [Cardinal.ord_aleph0]
     · apply ihl
     · apply ihr
@@ -200,7 +200,6 @@ instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd]
   cons' short_hd short_tl
 #align pgame.list_short.cons SetTheory.PGame.ListShort.cons
 
--- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 instance listShortGet :
     ∀ (L : List PGame.{u}) [ListShort L] (i : Fin (List.length L)), Short (List.get L i)
   | [], _, n => by
@@ -209,14 +208,7 @@ instance listShortGet :
   | _::_, ListShort.cons' S _, ⟨0, _⟩ => S
   | hd::tl, ListShort.cons' _ S, ⟨n + 1, h⟩ =>
     @listShortGet tl S ⟨n, (add_lt_add_iff_right 1).mp h⟩
-
-set_option linter.deprecated false in
-@[deprecated listShortGet]
-instance listShortNthLe (L : List PGame.{u}) [ListShort L] (i : Fin (List.length L)) :
-    Short (List.nthLe L i i.is_lt) := by
-  rw [List.nthLe_eq]
-  apply listShortGet
-#align pgame.list_short_nth_le SetTheory.PGame.listShortNthLe
+#align pgame.list_short_nth_le SetTheory.PGame.listShortGet
 
 instance shortOfLists : ∀ (L R : List PGame) [ListShort L] [ListShort R], Short (PGame.ofLists L R)
   | L, R, _, _ => by
@@ -274,7 +266,7 @@ Instances for the two projections separately are provided below.
 def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     constructor
-    · refine' @decidable_of_iff' _ _ mk_le_mk (id _)
+    · refine @decidable_of_iff' _ _ mk_le_mk (id ?_)
       apply @And.decidable _ _ ?_ ?_
       · apply @Fintype.decidableForallFintype xl _ ?_ _
         intro i
@@ -282,7 +274,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
       · apply @Fintype.decidableForallFintype yr _ ?_ _
         intro i
         apply (leLFDecidable _ _).2
-    · refine' @decidable_of_iff' _ _ mk_lf_mk (id _)
+    · refine @decidable_of_iff' _ _ mk_lf_mk (id ?_)
       apply @Or.decidable _ _ ?_ ?_
       · apply @Fintype.decidableExistsFintype yl _ ?_ _
         intro i
