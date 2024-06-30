@@ -6,7 +6,7 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 
