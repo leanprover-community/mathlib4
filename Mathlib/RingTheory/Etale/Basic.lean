@@ -131,21 +131,21 @@ We now consider a commutative square of commutative rings
 R -----> S
 |        |
 |        |
-\/       \/
+v        v
 Rₘ ----> Sₘ
 
 where `Rₘ` and `Sₘ` are the localisations of `R` and `S` at a multiplicatively closed
 subset `M` of `R`.
 -/
 
--- Let R, S, Rₘ, Sₘ be commutative rings
+/-! Let R, S, Rₘ, Sₘ be commutative rings -/
 variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
--- Let M be a multiplicatively closed subset of `R`
+/-! Let M be a multiplicatively closed subset of `R` -/
 variable (M : Submonoid R)
--- Assume that the rings are in a commutative as above
+/-! Assume that the rings are in a commutative diagram as above. -/
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
--- and that Rₘ and Sₘ are localizations of R and S at M
+/-! and that Rₘ and Sₘ are localizations of R and S at M. -/
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 
 -- Porting note: no longer supported
