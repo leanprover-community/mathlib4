@@ -19,8 +19,8 @@ evaluation map from `Γ(X, U)` to the residue field of `X` at `x`.
 The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
 
 - `residueField`: the residue field of the stalk at `x`.
-- `evaluation`: for open subsets `U` of `X` containing `x`, the evaluation map from sections over `U` to
-  the residue field at `x`.
+- `evaluation`: for open subsets `U` of `X` containing `x`, the evaluation map from sections over
+  `U` to the residue field at `x`.
 - `evaluationMap`: a morphism of locally ringed spaces induces a morphism, i.e. extension, of
   residue fields.
 
