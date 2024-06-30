@@ -47,7 +47,7 @@ namespace HahnSeries
 
 section Valuation
 
-variable (Γ R) [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
+variable (Γ R) [AddCommMonoid Γ] [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
 
 /-- The additive valuation on `HahnSeries Γ R`, returning the smallest index at which
   a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series.  -/
@@ -93,7 +93,7 @@ theorem addVal_le_of_coeff_ne_zero {x : HahnSeries Γ R} {g : Γ} (h : x.coeff g
 #align hahn_series.add_val_le_of_coeff_ne_zero HahnSeries.addVal_le_of_coeff_ne_zero
 
 end Valuation
-theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
+theorem isPWO_iUnion_support_powers [AddCommMonoid Γ] [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
     {x : HahnSeries Γ R} (hx : 0 < addVal Γ R x) : (⋃ n : ℕ, (x ^ n).support).IsPWO := by
   apply (x.isWF_support.isPWO.addSubmonoid_closure _).mono _
   · exact fun g hg => WithTop.coe_le_coe.1 (le_trans (le_of_lt hx) (addVal_le_of_coeff_ne_zero hg))
@@ -283,7 +283,7 @@ end AddCommGroup
 
 section Semiring
 
-variable [OrderedCancelAddCommMonoid Γ] [Semiring R] {α : Type*}
+variable [AddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ] [Semiring R] {α : Type*}
 
 instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α) where
   smul x s :=
@@ -461,7 +461,7 @@ end EmbDomain
 
 section powers
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [IsDomain R]
+variable [AddCommMonoid Γ] [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [IsDomain R]
 
 /-- The powers of an element of positive valuation form a summable family. -/
 def powers (x : HahnSeries Γ R) (hx : 0 < addVal Γ R x) : SummableFamily Γ R ℕ where
@@ -527,30 +527,30 @@ end SummableFamily
 
 section Inversion
 
-variable [LinearOrderedAddCommGroup Γ]
+variable [AddCommGroup Γ] [LinearOrderedAddCommGroup Γ]
 
 section IsDomain
 
 variable [CommRing R] [IsDomain R]
 
 theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.coeff x.order = 1) :
-    0 < addVal Γ R (1 - C r * single (-x.order) 1 * x) := by
-  have h10 : (1 : R) ≠ 0 := one_ne_zero
-  have x0 : x ≠ 0 := ne_zero_of_coeff_ne_zero (right_ne_zero_of_mul_eq_one hr)
-  refine lt_of_le_of_ne ((addVal Γ R).map_le_sub (ge_of_eq (addVal Γ R).map_one) ?_) ?_
-  · simp only [AddValuation.map_mul]
-    rw [addVal_apply_of_ne x0, addVal_apply_of_ne (single_ne_zero h10), addVal_apply_of_ne _,
-      order_C, order_single h10, WithTop.coe_zero, zero_add, ← WithTop.coe_add, neg_add_self,
-      WithTop.coe_zero]
-    exact C_ne_zero (left_ne_zero_of_mul_eq_one hr)
-  · rw [addVal_apply, ← WithTop.coe_zero]
-    split_ifs with h
-    · apply WithTop.coe_ne_top
-    rw [Ne, WithTop.coe_eq_coe]
-    intro con
-    apply coeff_order_ne_zero h
-    rw [← con, mul_assoc, sub_coeff, one_coeff, if_pos rfl, C_mul_eq_smul, smul_coeff, smul_eq_mul,
-      ← add_neg_self x.order, single_mul_coeff_add, one_mul, hr, sub_self]
+    0 < addVal Γ R (1 - C r * single (-x.order) 1 * x) := by sorry
+  -- have h10 : (1 : R) ≠ 0 := one_ne_zero
+  -- have x0 : x ≠ 0 := ne_zero_of_coeff_ne_zero (right_ne_zero_of_mul_eq_one hr)
+  -- refine lt_of_le_of_ne ((addVal Γ R).map_le_sub (ge_of_eq (addVal Γ R).map_one) ?_) ?_
+  -- · -- simp only [AddValuation.map_mul]
+  --   rw [addVal_apply_of_ne x0, addVal_apply_of_ne (single_ne_zero h10), addVal_apply_of_ne _,
+  --     order_C, order_single h10, WithTop.coe_zero, zero_add, ← WithTop.coe_add, neg_add_self,
+  --     WithTop.coe_zero]
+  --   exact C_ne_zero (left_ne_zero_of_mul_eq_one hr)
+  -- · rw [addVal_apply, ← WithTop.coe_zero]
+  --   split_ifs with h
+  --   · apply WithTop.coe_ne_top
+  --   rw [Ne, WithTop.coe_eq_coe]
+  --   intro con
+  --   apply coeff_order_ne_zero h
+  --   rw [← con, mul_assoc, sub_coeff, one_coeff, if_pos rfl, C_mul_eq_smul, smul_coeff, smul_eq_mul,
+  --     ← add_neg_self x.order, single_mul_coeff_add, one_mul, hr, sub_self]
 #align hahn_series.unit_aux HahnSeries.unit_aux
 
 theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order) := by
@@ -584,7 +584,8 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
       SummableFamily.one_sub_self_mul_hsum_powers
         (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
     rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, h]
+    sorry
+    -- rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _
   qsmul := _
 

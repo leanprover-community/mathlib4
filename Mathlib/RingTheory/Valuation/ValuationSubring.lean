@@ -160,6 +160,10 @@ def ValueGroup :=
 -- deriving LinearOrderedCommGroupWithZero
 #align valuation_subring.value_group ValuationSubring.ValueGroup
 
+instance : CommGroupWithZero A.ValueGroup := by
+  unfold ValueGroup
+  infer_instance
+
 -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
   unfold ValueGroup
@@ -411,8 +415,9 @@ end ValuationSubring
 namespace Valuation
 
 variable {K}
-variable {Γ Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ]
-  [LinearOrderedCommGroupWithZero Γ₁] [LinearOrderedCommGroupWithZero Γ₂] (v : Valuation K Γ)
+variable {Γ Γ₁ Γ₂ : Type*} [CommGroupWithZero Γ] [LinearOrderedCommGroupWithZero Γ]
+  [CommGroupWithZero Γ₁] [LinearOrderedCommGroupWithZero Γ₁]
+  [CommGroupWithZero Γ₂] [LinearOrderedCommGroupWithZero Γ₂] (v : Valuation K Γ)
   (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
 
 /-- The valuation subring associated to a valuation. -/
@@ -902,7 +907,7 @@ end ValuationSubring
 
 namespace Valuation
 
-variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
+variable {Γ : Type*} [CommGroupWithZero Γ] [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
 
 -- @[simp] -- Porting note: not in simpNF
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=

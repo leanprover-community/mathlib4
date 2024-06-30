@@ -26,7 +26,7 @@ open Function Multiplicative
 
 open scoped NNReal
 
-variable {R : Type*} [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {R : Type*} [Ring R] {Γ₀ : Type*} [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
 
 namespace Valuation
 

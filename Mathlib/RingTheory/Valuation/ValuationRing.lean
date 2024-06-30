@@ -142,19 +142,13 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_total := ValuationRing.le_total _ _
   decidableLE := by classical infer_instance
 
-noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
-  { linearOrder .. with
+noncomputable instance commGroupWithZero : CommGroupWithZero (ValueGroup A K) where
     mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]; apply Setoid.refl'
     one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]; apply Setoid.refl'
     mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]; apply Setoid.refl'
     mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]; apply Setoid.refl'
-    mul_le_mul_left := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
-      use c; simp only [Algebra.smul_def]; ring
     zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]; apply Setoid.refl'
     mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]; apply Setoid.refl'
-    zero_le_one := ⟨0, by rw [zero_smul]⟩
     exists_pair_ne := by
       use 0, 1
       intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
@@ -170,7 +164,15 @@ noncomputable instance linearOrderedCommGroupWithZero :
       contrapose ha
       simp only [Classical.not_not] at ha ⊢
       rw [ha]
-      rfl }
+      rfl
+
+noncomputable instance linearOrderedCommGroupWithZero :
+    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
+  { linearOrder .. with
+    mul_le_mul_left := by
+      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
+      use c; simp only [Algebra.smul_def]; ring
+    zero_le_one := ⟨0, by rw [zero_smul]⟩ }
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 def valuation : Valuation K (ValueGroup A K) where
@@ -399,7 +401,7 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsD
 section
 
 variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
-  [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (hh : v.Integers 𝒪)
+  [CommGroupWithZero Γ] [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (hh : v.Integers 𝒪)
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
 is a valuation ring. -/
