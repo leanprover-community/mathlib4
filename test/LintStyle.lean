@@ -55,6 +55,14 @@ note: this linter can be disabled with `set_option linter.setOption false`
 set_option linter.setOption true in
 set_option trace.profiler.output "foo"
 
+/--
+warning: Forbidden set_option `debug.moduleNameAtTimeout`; please remove
+note: this linter can be disabled with `set_option linter.setOption false`
+-/
+#guard_msgs in
+set_option linter.setOption true in
+set_option debug.moduleNameAtTimeout false
+
 -- The lint does not fire on arbitrary options.
 set_option autoImplicit false
 

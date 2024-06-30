@@ -60,7 +60,7 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if let some (head) := stx.find? is_set_option then
       if let some (name) := parse_set_option head then
-        if #[`pp, `profiler, `trace].contains name.getRoot then
+        if #[`pp, `profiler, `trace, `debug].contains name.getRoot then
           Linter.logLint linter.setOption head m!"Forbidden set_option `{name}`; please remove"
 
 initialize addLinter setOptionLinter
