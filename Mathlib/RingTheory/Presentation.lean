@@ -33,9 +33,11 @@ We also give constructors for localization and base change.
 
 - Define composition of presentations.
 - Define `Hom`s of presentations.
+
 ## Notes
-This contribution was created as part of the AIM workshop
-"Formalizing algebraic geometry" in June 2024.
+
+This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
+in June 2024.
 
 -/
 
@@ -67,12 +69,9 @@ namespace Algebra.Presentation
 variable {R S}
 variable (P : Presentation.{t, w} R S)
 
-lemma ker_eq_span_range_relation : P.ker = Ideal.span (Set.range P.relation) :=
-  P.span_range_relation_eq_ker.symm
-
 @[simp]
 lemma aeval_val_relation (i) : aeval P.val (P.relation i) = 0 := by
-  rw [← RingHom.mem_ker, ← P.ker_eq_ker_aeval_val, ker_eq_span_range_relation]
+  rw [← RingHom.mem_ker, ← P.ker_eq_ker_aeval_val, ← P.span_range_relation_eq_ker]
   exact Ideal.subset_span ⟨i, rfl⟩
 
 /-- The polynomial algebra wrt a family of generators modulo a family of relations. -/
