@@ -109,6 +109,7 @@ theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
 In other words, if a base change exists for a quadratic form, it is unique.
 
 Note that unlike `QuadraticForm.baseChange`, this does not need `Invertible (2 : R)`. -/
+@[ext]
 theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticForm A (A ⊗[R] M₂)⦄
     (h : ∀ m, Q₁ (1 ⊗ₜ m) = Q₂ (1 ⊗ₜ m)) :
     Q₁ = Q₂ := by
