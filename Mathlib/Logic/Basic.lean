@@ -1147,6 +1147,12 @@ theorem forall₂_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ 
   Iff.trans (forall_congr' fun _ ↦ forall_and) forall_and
 #align ball_and_distrib forall₂_and
 
+theorem forall_and_left [Nonempty α] (q : Prop) (p : α → Prop) :
+    (∀ x, q ∧ p x) ↔ (q ∧ ∀ x, p x) := by rw [forall_and, forall_const]
+
+theorem forall_and_right [Nonempty α] (p : α → Prop) (q : Prop) :
+    (∀ x, p x ∧ q) ↔ (∀ x, p x) ∧ q := by rw [forall_and, forall_const]
+
 theorem exists_mem_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
   Iff.trans (exists_congr fun _ ↦ exists_or) exists_or
 #align bex_or_distrib exists_mem_or
@@ -1161,19 +1167,9 @@ theorem exists_mem_or_left :
   exact Iff.trans (exists_congr fun x ↦ or_and_right) exists_or
 #align bex_or_left_distrib exists_mem_or_left
 
-@[deprecated (since := "2023-03-23")] alias not_ball_of_bex_not := not_forall₂_of_exists₂_not
-@[deprecated (since := "2023-03-23")] alias Decidable.not_ball := Decidable.not_forall₂
-@[deprecated (since := "2023-03-23")] alias not_ball := not_forall₂
-@[deprecated (since := "2023-03-23")] alias ball_true_iff := forall₂_true_iff
-@[deprecated (since := "2023-03-23")] alias ball_and := forall₂_and
-@[deprecated (since := "2023-03-23")] alias not_bex := not_exists_mem
-@[deprecated (since := "2023-03-23")] alias bex_or := exists_mem_or
-@[deprecated (since := "2023-03-23")] alias ball_or_left := forall₂_or_left
-@[deprecated (since := "2023-03-23")] alias bex_or_left := exists_mem_or_left
-
 end BoundedQuantifiers
 
-#align classical.not_ball not_ball
+#align classical.not_ball not_forall₂
 
 section ite
 

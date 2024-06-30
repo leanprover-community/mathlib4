@@ -31,8 +31,16 @@ given for natural numbers.
 
 ## TODO
 
--/
+* Generalized versions of basic identities of Nat.choose.
+Further results in Elliot's paper:
+* A CommRing is binomial if and only if it admits a λ-ring structure with trivial Adams operations.
+* The free commutative binomial ring on a set `X` is the ring of integer-valued polynomials in the
+variables `X`.  (also, noncommutative version?)
+* Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
+ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
+`1 + I`.
 
+-/
 section Multichoose
 
 open Function Polynomial
@@ -114,8 +122,7 @@ theorem multichoose_succ_succ (r : R) (k : ℕ) :
     multichoose (r + 1) (k + 1) = multichoose r (k + 1) + multichoose (r + 1) k := by
   refine nsmul_right_injective (Nat.factorial (k + 1)) (Nat.factorial_ne_zero (k + 1)) ?_
   simp only [factorial_nsmul_multichoose_eq_ascPochhammer, smul_add]
-  rw [add_comm (smeval (ascPochhammer ℕ (k+1)) r)]
-  exact ascPochhammer_succ_succ r k
+  rw [add_comm (smeval (ascPochhammer ℕ (k+1)) r), ascPochhammer_succ_succ r k]
 
 @[simp]
 theorem multichoose_one (k : ℕ) : multichoose (1 : R) k = 1 := by
@@ -150,7 +157,7 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
   · simp only [Nat.zero_eq, ascPochhammer_zero, smeval_one, one_smul]
   · simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
     simp only [← C_eq_natCast, smeval_C_mul, hn, ← nsmul_eq_smul_cast R n]
-    exact rfl
+    simp only [nsmul_eq_mul, Nat.cast_id]
 
 variable {R S : Type*}
 
@@ -358,7 +365,7 @@ theorem choose_natCast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choo
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
   rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
-  ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial]
+    ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial]
 
 @[deprecated (since := "2024-04-17")]
 alias choose_nat_cast := choose_natCast
