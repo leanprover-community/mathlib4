@@ -122,12 +122,6 @@ namespace RootPairing
 variable {ι R M N} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 (P : RootPairing ι R M N) (i j : ι)
 
-lemma eq_of_root (h : P.root i = P.root j) : i = j := by
-  exact (EmbeddingLike.apply_eq_iff_eq P.root).mp h
-
-lemma root_ne (h: i ≠ j) : P.root i ≠ P.root j :=
-  fun h' ↦ h (eq_of_root P i j h')
-
 lemma ne_zero [CharZero R] : (P.root i : M) ≠ 0 :=
   fun h ↦ by simpa [h] using P.root_coroot_two i
 
@@ -349,10 +343,10 @@ lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
 /-- Two roots are orthogonal when they are fixed by each others' reflections. -/
 def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 
-lemma IsOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
+lemma isOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
   simp only [IsOrthogonal, and_comm]
 
-lemma IsOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
+lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [Commute, SemiconjBy]
   ext v
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h

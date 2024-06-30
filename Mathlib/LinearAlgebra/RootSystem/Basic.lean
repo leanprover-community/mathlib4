@@ -65,7 +65,7 @@ private theorem choose_choose_eq_of_mapsTo :
 
 /-- The bijection on the indexing set induced by reflection. -/
 @[simps]
-private def equiv_of_mapsTo :
+protected def equiv_of_mapsTo :
     ι ≃ ι where
   toFun j := (exist_eq_reflection_of_mapsTo p root coroot i j h).choose
   invFun j := (exist_eq_reflection_of_mapsTo p root coroot i j h).choose
@@ -167,7 +167,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     P₁ = P₂ := by
   have hp (hc' : P₁.coroot = P₂.coroot) : P₁.reflection_perm = P₂.reflection_perm := by
     ext i j
-    refine P₁.eq_of_root _ _ ?_
+    refine P₁.root.injective ?_
     conv_rhs => rw [hr]
     rw [root_reflection_perm, root_reflection_perm]
     simp only [hr, he, hc', reflection_apply]
@@ -236,7 +236,7 @@ def mk' [Finite ι] [CharZero R] [NoZeroSMulDivisors R M]
   root := root
   coroot := coroot
   root_coroot_two := hp
-  reflection_perm i := equiv_of_mapsTo p root coroot i hr hp
+  reflection_perm i := RootPairing.equiv_of_mapsTo p root coroot i hr hp
   reflection_perm_root i j := by
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hr).choose_spec,
       preReflection_apply, LinearMap.flip_apply]
@@ -319,17 +319,12 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M]
     (hs : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
     (hsp : span R (range root) = ⊤) :
     RootSystem ι R M N where
-  toPerfectPairing := p
-  root := root
-  coroot := coroot
-  root_coroot_two := hp
+
   span_eq_top := hsp
-  reflection_perm i := equiv_of_mapsTo p root coroot i hs hp
-  reflection_perm_root i j := by
-    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec,
-      preReflection_apply, LinearMap.flip_apply]
-  reflection_perm_coroot i j := by
-    refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_).symm
+  toRootPairing := RootPairing.mk' p root coroot hp hs <| by
+    rintro i - ⟨j, rfl⟩
+    use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
+    refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec]
 
 end RootSystem
