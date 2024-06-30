@@ -301,6 +301,15 @@ instance : One Surreal :=
 instance : Inhabited Surreal :=
   ⟨0⟩
 
+@[simp]
+lemma mk_eq_mk {x y : PGame.{u}} {hx hy} : mk x hx = mk y hy ↔ x ≈ y := by
+  rw [mk, mk, Quotient.eq]; rfl
+
+@[simp]
+lemma mk_eq_zero {x : PGame.{u}} {hx} : mk x hx = 0 ↔ x ≈ 0 := by
+  change mk x hx = mk 0 numeric_zero ↔ x ≈ 0
+  rw [mk_eq_mk]
+
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
 def lift {α} (f : ∀ x, Numeric x → α)
     (H : ∀ {x y} (hx : Numeric x) (hy : Numeric y), x.Equiv y → f x hx = f y hy) : Surreal → α :=
