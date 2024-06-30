@@ -112,7 +112,7 @@ variable (G K)
 theorem Functor.locallyCoverDense_of_isCoverDense [Full G] [G.IsCoverDense K] :
     LocallyCoverDense K G := by
   intro X T
-  refine' K.superset_covering _ (K.bind_covering T.property
+  refine K.superset_covering ?_ (K.bind_covering T.property
     fun Y f _ => G.is_cover_of_isCoverDense _ Y)
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', rfl : _ = _⟩, rfl⟩
   use W; use G.preimage (f' ≫ f); use g

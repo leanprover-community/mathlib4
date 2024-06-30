@@ -211,7 +211,6 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by
-/- Porting note: just needs a `refine'` now, instead of term mode -/
   refine HomologicalComplex.Hom.isoOfComponents (fun i =>
     (Rep.diagonalHomEquiv i A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)

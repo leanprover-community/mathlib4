@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.Order.CauSeq.BigOperators
+import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
@@ -43,32 +44,32 @@ theorem isCauSeq_exp (z : ℂ) : IsCauSeq abs fun n => ∑ m ∈ range n, z ^ m 
 
 /-- The Cauchy sequence consisting of partial sums of the Taylor series of
 the complex exponential function -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def exp' (z : ℂ) : CauSeq ℂ Complex.abs :=
   ⟨fun n => ∑ m ∈ range n, z ^ m / m.factorial, isCauSeq_exp z⟩
 #align complex.exp' Complex.exp'
 
 /-- The complex exponential function, defined via its Taylor series -/
--- Porting note (#11180): removed `@[pp_nodot]`
 -- Porting note: removed `irreducible` attribute, so I can prove things
+@[pp_nodot]
 def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 #align complex.exp Complex.exp
 
 /-- The complex sine function, defined via `exp` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def sin (z : ℂ) : ℂ :=
   (exp (-z * I) - exp (z * I)) * I / 2
 #align complex.sin Complex.sin
 
 /-- The complex cosine function, defined via `exp` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def cos (z : ℂ) : ℂ :=
   (exp (z * I) + exp (-z * I)) / 2
 #align complex.cos Complex.cos
 
 /-- The complex tangent function, defined as `sin z / cos z` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def tan (z : ℂ) : ℂ :=
   sin z / cos z
 #align complex.tan Complex.tan
@@ -78,19 +79,19 @@ def cot (z : ℂ) : ℂ :=
   cos z / sin z
 
 /-- The complex hyperbolic sine function, defined via `exp` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def sinh (z : ℂ) : ℂ :=
   (exp z - exp (-z)) / 2
 #align complex.sinh Complex.sinh
 
 /-- The complex hyperbolic cosine function, defined via `exp` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def cosh (z : ℂ) : ℂ :=
   (exp z + exp (-z)) / 2
 #align complex.cosh Complex.cosh
 
 /-- The complex hyperbolic tangent function, defined as `sinh z / cosh z` -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 def tanh (z : ℂ) : ℂ :=
   sinh z / cosh z
 #align complex.tanh Complex.tanh
@@ -109,25 +110,25 @@ open Complex
 noncomputable section
 
 /-- The real exponential function, defined as the real part of the complex exponential -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def exp (x : ℝ) : ℝ :=
   (exp x).re
 #align real.exp Real.exp
 
 /-- The real sine function, defined as the real part of the complex sine -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def sin (x : ℝ) : ℝ :=
   (sin x).re
 #align real.sin Real.sin
 
 /-- The real cosine function, defined as the real part of the complex cosine -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def cos (x : ℝ) : ℝ :=
   (cos x).re
 #align real.cos Real.cos
 
 /-- The real tangent function, defined as the real part of the complex tangent -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def tan (x : ℝ) : ℝ :=
   (tan x).re
 #align real.tan Real.tan
@@ -137,20 +138,20 @@ nonrec def cot (x : ℝ) : ℝ :=
   (cot x).re
 
 /-- The real hypebolic sine function, defined as the real part of the complex hyperbolic sine -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def sinh (x : ℝ) : ℝ :=
   (sinh x).re
 #align real.sinh Real.sinh
 
 /-- The real hypebolic cosine function, defined as the real part of the complex hyperbolic cosine -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def cosh (x : ℝ) : ℝ :=
   (cosh x).re
 #align real.cosh Real.cosh
 
 /-- The real hypebolic tangent function, defined as the real part of
 the complex hyperbolic tangent -/
--- Porting note (#11180): removed `@[pp_nodot]`
+@[pp_nodot]
 nonrec def tanh (x : ℝ) : ℝ :=
   (tanh x).re
 #align real.tanh Real.tanh
@@ -1385,7 +1386,6 @@ theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 
     _ = 2 * abs x := by simp [two_mul, mul_two, mul_add, mul_comm, add_mul, Nat.factorial]
 #align complex.abs_exp_sub_one_le Complex.abs_exp_sub_one_le
 
-set_option tactic.skipAssignedInstances false in
 theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 - x) ≤ abs x ^ 2 :=
   calc
     abs (exp x - 1 - x) = abs (exp x - ∑ m ∈ range 2, x ^ m / m.factorial) := by
@@ -1616,7 +1616,7 @@ theorem cos_one_le : cos 1 ≤ 2 / 3 :=
   calc
     cos 1 ≤ |(1 : ℝ)| ^ 4 * (5 / 96) + (1 - 1 ^ 2 / 2) :=
       sub_le_iff_le_add.1 (abs_sub_le_iff.1 (cos_bound (by simp))).1
-    _ ≤ 2 / 3 := by set_option tactic.skipAssignedInstances false in norm_num
+    _ ≤ 2 / 3 := by norm_num
 #align real.cos_one_le Real.cos_one_le
 
 theorem cos_one_pos : 0 < cos 1 :=
@@ -1645,7 +1645,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in #3907.)
       repeat erw [Finset.sum_range_succ]
-      set_option tactic.skipAssignedInstances false in norm_num [Nat.factorial]
+      norm_num [Nat.factorial]
       nlinarith
     _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
 #align real.exp_bound_div_one_sub_of_interval' Real.exp_bound_div_one_sub_of_interval'
@@ -1725,10 +1725,10 @@ end Mathlib.Meta.Positivity
 
 namespace Complex
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12230
-@[simp, nolint simpNF]
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma.
+See https://github.com/leanprover-community/mathlib4/issues/12230 -/
+@[simp]
 theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
   simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]

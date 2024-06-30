@@ -160,7 +160,7 @@ theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T)
 
 end Prod
 
-section Prod_map
+section prodMap
 
 variable [NonUnitalNonAssocSemiring R'] [NonUnitalNonAssocSemiring S'] [NonUnitalNonAssocSemiring T]
 variable (f : R →ₙ+* R') (g : S →ₙ+* S')
@@ -184,7 +184,7 @@ theorem prod_comp_prodMap (f : T →ₙ+* R) (g : T →ₙ+* S) (f' : R →ₙ+*
   rfl
 #align non_unital_ring_hom.prod_comp_prod_map NonUnitalRingHom.prod_comp_prodMap
 
-end Prod_map
+end prodMap
 
 end NonUnitalRingHom
 
@@ -249,7 +249,7 @@ theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).co
 
 end Prod
 
-section Prod_map
+section prodMap
 
 variable [NonAssocSemiring R'] [NonAssocSemiring S'] [NonAssocSemiring T]
 variable (f : R →+* R') (g : S →+* S')
@@ -273,7 +273,7 @@ theorem prod_comp_prodMap (f : T →+* R) (g : T →+* S) (f' : R →+* R') (g' 
   rfl
 #align ring_hom.prod_comp_prod_map RingHom.prod_comp_prodMap
 
-end Prod_map
+end prodMap
 
 end RingHom
 

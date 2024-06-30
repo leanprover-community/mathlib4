@@ -1213,12 +1213,12 @@ theorem preimage_connectedComponent_connected [TopologicalSpace β] {f : α → 
   · left
     rw [Subset.antisymm_iff] at T₁_u
     suffices f ⁻¹' connectedComponent t ⊆ f ⁻¹' T₁
-      from (this.trans T₁_u.1).trans (inter_subset_right _ _)
+      from (this.trans T₁_u.1).trans inter_subset_right
     exact preimage_mono h
   · right
     rw [Subset.antisymm_iff] at T₂_v
     suffices f ⁻¹' connectedComponent t ⊆ f ⁻¹' T₂
-      from (this.trans T₂_v.1).trans (inter_subset_right _ _)
+      from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
 #align preimage_connected_component_connected preimage_connectedComponent_connected
 

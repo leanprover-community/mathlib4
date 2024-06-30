@@ -45,7 +45,7 @@ scalar action of `R` on `M`.
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead.
 -/
-class SMulMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [SMul R M] [SetLike S M] :
+class SMulMemClass (S : Type*) (R : outParam Type*) (M : Type*) [SMul R M] [SetLike S M] :
     Prop where
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
@@ -56,7 +56,7 @@ additive action of `R` on `M`.
 
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
 class instead. -/
-class VAddMemClass (S : Type*) (R : outParam <| Type*) (M : Type*) [VAdd R M] [SetLike S M] :
+class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetLike S M] :
     Prop where
   /-- Addition by a scalar with an element of the set remains in the set. -/
   vadd_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r +ᵥ m ∈ s
@@ -246,7 +246,9 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →[R] M := by refine' { toFun := Subtype.val.. }; simp [val_smul]
+protected def subtype : p →[R] M where
+  toFun := Subtype.val
+  map_smul' := by simp [val_smul]
 #align sub_mul_action.subtype SubMulAction.subtype
 
 @[simp]

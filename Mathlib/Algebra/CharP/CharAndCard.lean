@@ -63,7 +63,7 @@ theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : �
       h.trans <|
         Int.natCast_dvd_natCast.mp <|
           (CharP.intCast_eq_zero_iff R (ringChar R) (Fintype.card R)).mp <|
-            mod_cast CharP.cast_card_eq_zero R,
+            mod_cast Nat.cast_card_eq_zero R,
       fun h => ?_⟩
   by_contra h₀
   rcases exists_prime_addOrderOf_dvd_card p h with ⟨r, hr⟩
@@ -82,3 +82,8 @@ theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : �
   mt (isUnit_iff_not_dvd_char R p).mp
     (Classical.not_not.mpr ((prime_dvd_char_iff_dvd_card p).mpr hp))
 #align not_is_unit_prime_of_dvd_card not_isUnit_prime_of_dvd_card
+
+lemma charP_of_card_eq_prime {R : Type*} [NonAssocRing R] [Fintype R] (p : ℕ) [hp : Fact p.Prime]
+    (hR : Fintype.card R = p) : CharP R p :=
+  have := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.1.one_lt)
+  (CharP.charP_iff_prime_eq_zero hp.1).2 (hR ▸ Nat.cast_card_eq_zero R)

@@ -3,10 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Defs
+import Mathlib.Logic.Function.Iterate
 
 #align_import algebra.parity from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
@@ -28,6 +28,7 @@ to `Algebra.Group.Even`.
 `Algebra.Group.Even` for the definition of even elements.
 -/
 
+assert_not_exists DenselyOrdered
 assert_not_exists OrderedRing
 
 open MulOpposite
@@ -160,6 +161,9 @@ lemma Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd a → Odd (
   rintro ⟨a, rfl⟩; exact ⟨f a, by simp [two_mul]⟩
 #align odd.map Odd.map
 
+lemma Odd.natCast {R : Type*} [Semiring R] {n : ℕ} (hn : Odd n) : Odd (n : R) :=
+  hn.map <| Nat.castRingHom R
+
 @[simp] lemma Odd.mul : Odd a → Odd b → Odd (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   refine ⟨2 * a * b + b + a, ?_⟩
@@ -266,10 +270,6 @@ lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
 
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by
   rwa [← even_iff_two_dvd, ← odd_iff_not_even]
-
-lemma isCompl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
-  simp only [← Set.compl_setOf, isCompl_compl, odd_iff_not_even]
-#align nat.is_compl_even_odd Nat.isCompl_even_odd
 
 lemma even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by
   simp [Xor', odd_iff_not_even, Decidable.em (Even n)]

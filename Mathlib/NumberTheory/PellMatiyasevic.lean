@@ -3,11 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Star.Unitary
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.ModEq
 import Mathlib.NumberTheory.Zsqrtd.Basic
-import Mathlib.Tactic.Monotonicity
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.pell_matiyasevic from "leanprover-community/mathlib"@"795b501869b9fa7aa716d5fdadd00c03f983a605"
 
@@ -273,7 +272,7 @@ theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
       rw [← mul_two]
       exact Nat.mul_le_mul_left _ a1
     simp only [_root_.pow_succ, gt_iff_lt]
-    refine' lt_of_lt_of_le _ this
+    refine lt_of_lt_of_le ?_ this
     exact add_lt_add_of_lt_of_le IH (lt_of_le_of_lt (Nat.zero_le _) IH)
 #align pell.n_lt_a_pow Pell.n_lt_a_pow
 
@@ -406,7 +405,7 @@ theorem strictMono_y : StrictMono (yn a1)
     have : yn a1 m ≤ yn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_y hl)
         fun e => by rw [e]
-    simp; refine' lt_of_le_of_lt _ (Nat.lt_add_of_pos_left <| x_pos a1 n)
+    simp; refine lt_of_le_of_lt ?_ (Nat.lt_add_of_pos_left <| x_pos a1 n)
     rw [← mul_one (yn a1 m)]
     exact mul_le_mul this (le_of_lt a1) (Nat.zero_le _) (Nat.zero_le _)
 #align pell.strict_mono_y Pell.strictMono_y
@@ -417,7 +416,7 @@ theorem strictMono_x : StrictMono (xn a1)
     have : xn a1 m ≤ xn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_x hl)
         fun e => by rw [e]
-    simp; refine' lt_of_lt_of_le (lt_of_le_of_lt this _) (Nat.le_add_right _ _)
+    simp; refine lt_of_lt_of_le (lt_of_le_of_lt this ?_) (Nat.le_add_right _ _)
     have t := Nat.mul_lt_mul_of_pos_left a1 (x_pos a1 n)
     rwa [mul_one] at t
 #align pell.strict_mono_x Pell.strictMono_x
@@ -695,7 +694,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
           rw [lem2 (n + 1) (Nat.lt_succ_self _) j2n,
             show 2 * n - (n + 1) = n - 1 by
               rw [two_mul, tsub_add_eq_tsub_tsub, add_tsub_cancel_right]]
-          refine' lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt _)
+          refine lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt ?_)
           rcases lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin | ein
           · rw [Nat.mod_eq_of_lt (strictMono_x _ lin)]
             have ll : xn a1 (n - 1) + xn a1 (n - 1) ≤ xn a1 n := by
@@ -737,7 +736,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
         lem1 (_root_.ne_of_gt jn) <|
           Int.lt_of_ofNat_lt_ofNat <| by
             rw [lem2 j jn (le_of_lt j2n), lem2 (j + 1) (Nat.le_succ_of_le jn) j2n]
-            refine' sub_lt_sub_left (Int.ofNat_lt_ofNat_of_lt <| strictMono_x _ _) _
+            refine sub_lt_sub_left (Int.ofNat_lt_ofNat_of_lt <| strictMono_x _ ?_) _
             rw [Nat.sub_succ]
             exact Nat.pred_lt (_root_.ne_of_gt <| tsub_pos_of_lt j2n)
 #align pell.eq_of_xn_modeq_lem3 Pell.eq_of_xn_modEq_lem3
@@ -936,7 +935,7 @@ theorem eq_pow_of_pell_lem {a y k : ℕ} (hy0 : y ≠ 0) (hk0 : k ≠ 0) (hyk : 
       exact lt_of_le_of_lt (Nat.succ_le_of_lt (Nat.pos_of_ne_zero hy0)) hya
     _ ≤ (a : ℤ) ^ 2 - (a - y : ℤ) ^ 2 - 1 := by
       have := hya.le
-      mono * <;> norm_cast <;> simp [Nat.zero_le, Nat.succ_le_of_lt (Nat.pos_of_ne_zero hy0)]
+      gcongr <;> norm_cast <;> omega
     _ = 2 * a * y - y * y - 1 := by ring
 #align pell.eq_pow_of_pell_lem Pell.eq_pow_of_pell_lem
 

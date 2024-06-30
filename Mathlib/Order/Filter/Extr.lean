@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Order.Group.Defs
 
 #align_import order.filter.extr from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -290,15 +291,15 @@ theorem IsExtrOn.on_subset (hf : IsExtrOn f t a) (h : s ⊆ t) : IsExtrOn f s a 
 #align is_extr_on.on_subset IsExtrOn.on_subset
 
 theorem IsMinOn.inter (hf : IsMinOn f s a) (t) : IsMinOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_min_on.inter IsMinOn.inter
 
 theorem IsMaxOn.inter (hf : IsMaxOn f s a) (t) : IsMaxOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_max_on.inter IsMaxOn.inter
 
 theorem IsExtrOn.inter (hf : IsExtrOn f s a) (t) : IsExtrOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_extr_on.inter IsExtrOn.inter
 
 /-! ### Composition with (anti)monotone functions -/
