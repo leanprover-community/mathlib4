@@ -385,13 +385,27 @@ variable
 def pushforwardContinuousSheafificationCompatibility :
     (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
     presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
-  letI A1 : (whiskeringLeft _ _ A).obj G.op ⊣ _ := G.op.ranAdjunction _
-  letI A2 : presheafToSheaf J A ⊣ _ := sheafificationAdjunction _ _
-  letI B1 : presheafToSheaf K A ⊣ _ := sheafificationAdjunction _ _
-  letI B2 := G.sheafAdjunctionCocontinuous A J K
-  letI A12 := A1.comp A2
-  letI B12 := B1.comp B2
-  A12.leftAdjointUniq B12
+  ((G.op.ranAdjunction A).comp (sheafificationAdjunction J A)).leftAdjointUniq
+    ((sheafificationAdjunction K A).comp (G.sheafAdjunctionCocontinuous A J K))
+
+
+-- should be moved
+section
+
+variable {E : Type u₃} [ℰ : Category.{v₃} E] {F₁ : C ⥤ D} {F₂ : D ⥤ E}
+  {G₁ : D ⥤ C} {G₂ : E ⥤ D} (adj₁ : F₁ ⊣ G₁) (adj₂ : F₂ ⊣ G₂)
+
+@[simp, reassoc]
+lemma _root_.CategoryTheory.Adjunction.comp_unit_app (X : C) :
+    (adj₁.comp adj₂).unit.app X = adj₁.unit.app X ≫ G₁.map (adj₂.unit.app (F₁.obj X)) := by
+  simp [Adjunction.comp]
+
+@[simp, reassoc]
+lemma _root_.CategoryTheory.Adjunction.comp_counit_app (X : E) :
+    (adj₁.comp adj₂).counit.app X = F₂.map (adj₁.counit.app (G₂.obj X)) ≫ adj₂.counit.app X := by
+  simp [Adjunction.comp]
+
+end
 
 /- Implementation: This is primarily used to prove the lemma
 `pullbackSheafificationCompatibility_hom_app_val`. -/
@@ -399,27 +413,23 @@ lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
     toSheafify J (G.op ⋙ F) ≫
     ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
     whiskerLeft _ (toSheafify K _) := by
-  sorry
-  /-dsimp [pushforwardContinuousSheafificationCompatibility]
-  simp only [Adjunction.leftAdjointUniq, Iso.symm_hom, Adjunction.natIsoEquiv_apply_inv,
-    Iso.refl_inv, Adjunction.natTransEquiv_apply_app, comp_obj, whiskeringLeft_obj_obj,
-    sheafToPresheaf_obj, whiskerLeft_id', Category.comp_id, comp_map, whiskeringLeft_obj_map,
-    Sheaf.instCategorySheaf_comp_val]
-  apply Quiver.Hom.op_inj
-  apply coyoneda.map_injective
-  ext E : 2
-  dsimp [Functor.preimage, Coyoneda.preimage, coyoneda, Adjunction.comp]
-  simp only [Category.comp_id, map_id, whiskerLeft_id', map_comp, Sheaf.instCategorySheaf_comp_val,
-    sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift,
-    Category.id_comp, Category.assoc, toSheafify_sheafifyLift]
-  ext t s : 3
-  dsimp [sheafPushforwardContinuous]
-  congr 1
-  simp only [← Category.assoc]
-  convert Category.id_comp (obj := A) _
-  have := (Ran.adjunction A G.op).left_triangle
-  apply_fun (fun e => (e.app (sheafify K F)).app s) at this
-  exact this-/
+  let adj₁ := G.op.ranAdjunction A
+  let adj₂ := sheafificationAdjunction J A
+  let adj₃ := sheafificationAdjunction K A
+  let adj₄ := G.sheafAdjunctionCocontinuous A J K
+  change adj₂.unit.app (((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).obj F) ≫
+    (sheafToPresheaf J A).map (((adj₁.comp adj₂).leftAdjointUniq (adj₃.comp adj₄)).hom.app F) =
+      ((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).map (adj₃.unit.app F)
+  apply (adj₁.homEquiv _ _).injective
+  have eq := (adj₁.comp adj₂).unit_leftAdjointUniq_hom_app (adj₃.comp adj₄) F
+  rw [Adjunction.comp_unit_app, Adjunction.comp_unit_app, comp_map,
+    Category.assoc] at eq
+  rw [adj₁.homEquiv_unit, Functor.map_comp, eq]
+  apply (adj₁.homEquiv _ _).symm.injective
+  simp only [Adjunction.homEquiv_counit, map_comp, Category.assoc,
+    Adjunction.homEquiv_unit, Adjunction.unit_naturality]
+  congr 3
+  exact G.sheafAdjunctionCocontinuous_unit_app_val A J K ((presheafToSheaf K A).obj F)
 
 @[simp]
 lemma pushforwardContinuousSheafificationCompatibility_hom_app_val (F : Dᵒᵖ ⥤ A) :
