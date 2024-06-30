@@ -7,7 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!
-# Properties of (Shannon) q-ary entropy and binary entropy functions
+# Properties of Shannon q-ary entropy and binary entropy functions
 
 The [binary entropy function](https://en.wikipedia.org/wiki/Binary_entropy_function)
 `binaryEntropy p := - p * log p - (1 - p) * log (1 - p)`
