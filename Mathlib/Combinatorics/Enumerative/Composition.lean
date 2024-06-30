@@ -994,7 +994,7 @@ theorem Composition.toCompositionAsSet_blocks (c : Composition n) :
   intro i hi
   have i_lt : i < d.boundaries.card := by
     -- Porting note: relied on `convert` unfolding definitions, switched to using a `simpa`
-    simpa [CompositionAsSet.blocks, length_ofFn, Nat.succ_eq_add_one,
+    simpa [CompositionAsSet.blocks, length_ofFn,
       d.card_boundaries_eq_succ_length] using Nat.lt_succ_iff.2 hi
   have i_lt' : i < c.boundaries.card := i_lt
   have i_lt'' : i < c.length + 1 := by rwa [c.card_boundaries_eq_succ_length] at i_lt'
