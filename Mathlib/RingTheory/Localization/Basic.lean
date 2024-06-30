@@ -607,6 +607,18 @@ theorem lift_injective_iff :
   (toLocalizationMap M S).lift_injective_iff hg
 #align is_localization.lift_injective_iff IsLocalization.lift_injective_iff
 
+/-
+lemma lift_injective_iff' {S P} [CommRing S] [Algebra R S] [IsLocalization M S] [CommRing P] :
+    Injective (lift hg : S → P) ↔ ∀ x, algebraMap R S x = 0 ↔ g x = 0 := by
+  rw [lift_injective_iff]
+  constructor
+  · intro h x
+    rw [← map_zero (algebraMap R S), ← map_zero g]
+    exact h x 0
+  · intro h x y
+    rw [← sub_eq_zero]
+-/
+
 section Map
 
 variable {T : Submonoid P} {Q : Type*} [CommSemiring Q] (hy : M ≤ T.comap g)

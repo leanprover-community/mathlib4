@@ -228,15 +228,32 @@ variable {X : Scheme.{u}}
 
 open TopologicalSpace
 
-lemma eq_of_eq_cover (f g : Scheme.Γ.obj (op X)) (𝒰 : X.OpenCover)
+noncomputable
+def IsOpenImmersion.ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Scheme.Γ.obj (op X) ≅ Y.presheaf.obj (op (Scheme.Hom.opensRange f)) :=
+  Scheme.Γ.mapIso (IsOpenImmersion.isoOfRangeEq
+      (Scheme.ιOpens (Scheme.Hom.opensRange f)) _ Subtype.range_val).op ≪≫
+    Y.presheaf.mapIso (eqToIso (TopologicalSpace.Opens.openEmbedding_obj_top _).symm).op
+
+lemma IsOpenImmersion.map_ΓIso_inv
+    {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+  Y.presheaf.map (homOfLE le_top).op ≫ (IsOpenImmersion.ΓIso f).inv = Scheme.Γ.map f.op := by
+  conv_rhs => rw [← IsOpenImmersion.isoOfRangeEq_inv_fac
+      (Scheme.ιOpens (Scheme.Hom.opensRange f)) _ Subtype.range_val]
+  rw [IsOpenImmersion.ΓIso]
+  dsimp
+  rw [← Functor.map_comp_assoc]
+  rfl
+
+lemma eq_of_eq_cover {X : Scheme.{u}} (f g : Scheme.Γ.obj (op X)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, Scheme.Γ.map (𝒰.map i).op f = Scheme.Γ.map (𝒰.map i).op g) : f = g := by
-  sorry
-  --let ι : Type _ := sorry
-  --let U (i : ι) : Opens X := sorry
-  --apply TopCat.Sheaf.eq_of_locally_eq' X.sheaf U ⊤ (fun i ↦ (U i).leTop)
-  --· sorry
-  --· intro i
-  --  sorry
+  fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf
+    (fun i ↦ Scheme.Hom.opensRange (𝒰.map (𝒰.f i))) _ (fun _ ↦ homOfLE le_top)
+  · rintro x -; simpa using ⟨_, 𝒰.Covers x⟩
+  · intro x;
+    replace h := h (𝒰.f x)
+    rw [← IsOpenImmersion.map_ΓIso_inv] at h
+    exact (IsOpenImmersion.ΓIso (𝒰.map (𝒰.f x))).commRingCatIsoToRingEquiv.symm.injective h
 
 lemma zero_of_zero_cover (s : Scheme.Γ.obj (op X)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, Scheme.Γ.map (𝒰.map i).op s = 0) : s = 0 := by
@@ -260,8 +277,10 @@ lemma isNilpotent_of_isNilpotent_cover (s : Scheme.Γ.obj (op X)) (𝒰 : X.Open
 
 lemma ΓToStalk_stalkMap {X Y : Scheme} (f : X ⟶ Y) (x : X) :
     Y.ΓToStalk (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x =
-      Scheme.Γ.map f.op ≫ X.ΓToStalk x :=
-  sorry
+      Scheme.Γ.map f.op ≫ X.ΓToStalk x := by
+  dsimp only [LocallyRingedSpace.ΓToStalk]
+  rw [PresheafedSpace.stalkMap_germ']
+  simp
 
 noncomputable def _root_.AlgebraicGeometry.LocallyRingedSpace.ResidueField
     (X : LocallyRingedSpace) (x : X) : CommRingCat :=
@@ -309,48 +328,120 @@ lemma _root_.AlgebraicGeometry.LocallyRingedSpace.mem_basicOpen (X : LocallyRing
   rw [X.toRingedSpace.mem_basicOpen f x]
   exact (X.evaluation_ne_zero_iff_isUnit x f).symm
 
+lemma _root_.AlgebraicGeometry.LocallyRingedSpace.mem_basicOpenΓ (X : LocallyRingedSpace)
+    (f : X.presheaf.obj (op ⊤)) (x : X) :
+    x ∈ X.toRingedSpace.basicOpen f ↔ X.Γevaluation x f ≠ 0 :=
+  LocallyRingedSpace.mem_basicOpen X f ⟨x, trivial⟩
+
 lemma evaluation_evaluationMap {X Y : Scheme} (f : X ⟶ Y) (x : X) :
     Y.Γevaluation (f.val.base x) ≫ LocallyRingedSpace.evaluationMap f x =
-      Scheme.Γ.map f.op ≫ X.Γevaluation x :=
-  sorry
+      Scheme.Γ.map f.op ≫ X.Γevaluation x := by
+  dsimp [LocallyRingedSpace.Γevaluation, LocallyRingedSpace.evaluation,
+    LocallyRingedSpace.evaluationMap]
+  rw [Category.assoc]
+  ext a
+  simp only [comp_apply]
+  erw [LocalRing.ResidueField.map_residue, PresheafedSpace.stalkMap_germ'_apply]
+  rfl
 
 lemma evaluation_evaluationMap_apply {X Y : Scheme} (f : X ⟶ Y) (x : X) (a : Scheme.Γ.obj (op Y)) :
     LocallyRingedSpace.evaluationMap f x (Y.Γevaluation (f.val.base x) a) =
-      X.Γevaluation x (Scheme.Γ.map f.op a) :=
-  sorry
+      X.Γevaluation x (Scheme.Γ.map f.op a) := by
+  simpa using congrFun (congrArg DFunLike.coe <| evaluation_evaluationMap f x) a
 
 lemma ΓToStalk_stalkMap_apply {X Y : Scheme} (f : X ⟶ Y) (x : X) (a : Scheme.Γ.obj (op Y)) :
     PresheafedSpace.stalkMap f.val x (Y.ΓToStalk (f.val.base x) a) =
-      X.ΓToStalk x (Scheme.Γ.map f.op a) :=
-  sorry
+      X.ΓToStalk x (Scheme.Γ.map f.op a) := by
+  simpa using congrFun (congrArg DFunLike.coe <| ΓToStalk_stalkMap f x) a
 
 def _root_.AlgebraicGeometry.RingedSpace.zeroLocus {X : RingedSpace}
     (s : Set (X.presheaf.obj (op ⊤))) : Set X :=
-  sInf { (X.basicOpen f : Set X)ᶜ | (f ∈ s) }
+  ⋂ f ∈ s, (X.basicOpen f)ᶜ
 
-lemma _root_.AlgebraicGeometry.RingedSpace.mem_zeroLocus_iff {X : RingedSpace}
-    (s : Set (X.presheaf.obj (op ⊤))) : True :=
-  sorry
+lemma _root_.AlgebraicGeometry.RingedSpace.zeroLocus_singleton {X : RingedSpace}
+    (f : X.presheaf.obj (op ⊤)) : X.zeroLocus {f} = (X.basicOpen f).carrierᶜ := by
+  simp [RingedSpace.zeroLocus]
+
+lemma _root_.AlgebraicGeometry.LocallyRingedSpace.mem_zeroLocus_iff' {X : LocallyRingedSpace}
+    (s : Set (X.presheaf.obj (op ⊤))) (x : X) :
+      x ∈ X.toRingedSpace.zeroLocus s ↔ ∀ f ∈ s, x ∉ X.toRingedSpace.basicOpen f := by
+  simp [RingedSpace.zeroLocus]
+  rfl
+
+lemma _root_.AlgebraicGeometry.LocallyRingedSpace.mem_zeroLocus_iff {X : LocallyRingedSpace}
+    (s : Set (X.presheaf.obj (op ⊤))) (x : X) :
+      x ∈ X.toRingedSpace.zeroLocus s ↔ ∀ f ∈ s, X.Γevaluation x f = 0 := by
+  simp only [RingedSpace.zeroLocus, Set.mem_iInter, Set.mem_compl_iff, SetLike.mem_coe,
+    LocallyRingedSpace.Γ_obj]
+  simp only [LocallyRingedSpace.mem_basicOpenΓ, ne_eq, not_not]
+  rfl
+
+lemma Scheme.zeroLocus_primeSpectrum_zeroLocus' {X : Scheme} (s : Set (Scheme.Γ.obj (op X))) :
+    X.toΓSpecFun ⁻¹' PrimeSpectrum.zeroLocus s = RingedSpace.zeroLocus s := by
+  simp only [RingedSpace.zeroLocus]
+  have (i : Scheme.Γ.obj (op X)) (_ : i ∈ s) : (X.basicOpen i).carrierᶜ =
+        X.toΓSpecFun ⁻¹' (PrimeSpectrum.basicOpen i).carrierᶜ := by
+    symm
+    rw [Set.preimage_compl, X.toΓSpec_preim_basicOpen_eq i]
+    simp
+    rfl
+  erw [Set.iInter₂_congr this]
+  rw [← Set.preimage_iInter₂]
+  simp only [Scheme.Γ_obj, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl, compl_compl]
+  rw [← PrimeSpectrum.zeroLocus_iUnion₂]
+  simp
+
+example [IsAffine X] : X.toΓSpecFun = X.isoSpec.hom.val.base := rfl
 
 lemma Scheme.zeroLocus_primeSpectrum_zeroLocus {X : Scheme} [IsAffine X] (s : Set (Scheme.Γ.obj (op X))) :
-    X.isoSpec.hom.val.base '' RingedSpace.zeroLocus s = PrimeSpectrum.zeroLocus s :=
-  sorry
+    X.isoSpec.hom.val.base '' RingedSpace.zeroLocus s = PrimeSpectrum.zeroLocus s := by
+  rw [← Scheme.zeroLocus_primeSpectrum_zeroLocus']
+  show X.isoSpec.hom.val.base '' (X.isoSpec.hom.val.base ⁻¹' PrimeSpectrum.zeroLocus s) =
+    PrimeSpectrum.zeroLocus s
+  rw [Set.image_preimage_eq]
+  apply Function.Bijective.surjective
+  have : IsIso (X.isoSpec.hom.val.base) := inferInstance
+  exact ConcreteCategory.bijective_of_isIso (X.isoSpec.hom.val.base)
 
 lemma Scheme.zeroLocus_eq_top_iff {X : Scheme} [IsAffine X] (s : Set (Scheme.Γ.obj (op X))) :
-    RingedSpace.zeroLocus s = ⊤ ↔ s ⊆ nilradical (Scheme.Γ.obj (op X)) :=
-  sorry
+    RingedSpace.zeroLocus s = ⊤ ↔ s ⊆ nilradical (Scheme.Γ.obj (op X)) := by
+  rw [← Scheme.zeroLocus_primeSpectrum_zeroLocus']
+  simp only [Functor.op_obj, inducedFunctor_obj, LocallyRingedSpace.forgetToSheafedSpace_obj,
+    LocallyRingedSpace.Γ_obj, Set.top_eq_univ, Set.preimage_eq_univ_iff, Scheme.Γ_obj]
+  erw [← PrimeSpectrum.zeroLocus_eq_top_iff]
+  have hfsurj : Function.Surjective (X.toΓSpecFun) := by
+    apply Function.Bijective.surjective
+    apply ConcreteCategory.bijective_of_isIso X.isoSpec.hom.val.base
+  rw [hfsurj.range_eq]
+  simp
 
-lemma Scheme.zeroLocus_mem {X : Scheme} [IsAffine X] (s : Set (Scheme.Γ.obj (op X)))
+lemma Scheme.zeroLocus_mem {X : Scheme} (s : Set (Scheme.Γ.obj (op X)))
     (x : X) : x ∈ RingedSpace.zeroLocus s ↔ ∀ f ∈ s, X.Γevaluation x f = 0 :=
-  sorry
+  LocallyRingedSpace.mem_zeroLocus_iff s x
+
+lemma Scheme.basicOpen_eq_bot_iff {X : Scheme} [IsAffine X] (f : Scheme.Γ.obj (op X)) :
+    X.basicOpen f = ⊥ ↔ IsNilpotent f := by
+  rw [← mem_nilradical, ← Opens.coe_eq_empty, ← Set.compl_univ_iff]
+  erw [← RingedSpace.zeroLocus_singleton]
+  rw [← Set.top_eq_univ, Scheme.zeroLocus_eq_top_iff]
+  simp
 
 lemma Scheme.isNilpotent_iff {X : Scheme} [IsAffine X] (f : Scheme.Γ.obj (op X)) :
     IsNilpotent f ↔ ∀ x, X.Γevaluation x f = 0 := by
-  rw [nilpotent_iff_mem_prime]
+  rw [← Scheme.basicOpen_eq_bot_iff]
+  rw [← Opens.coe_eq_empty]
+  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [← not_iff_not]
+  simp only [Functor.op_obj, inducedFunctor_obj, LocallyRingedSpace.forgetToSheafedSpace_obj,
+    SheafedSpace.forgetToPresheafedSpace_obj, SetLike.mem_coe, not_forall, not_not, LocallyRingedSpace.Γ_obj]
+  simp_rw [← ne_eq]
   constructor
-  · intro h x
-    sorry
-  · sorry
+  · intro ⟨x, hx⟩
+    use x
+    apply (X.mem_basicOpenΓ f x).mp hx
+  · intro ⟨x, hx⟩
+    use x
+    apply (X.mem_basicOpenΓ f x).mpr hx
 
 theorem eq_zeroLocus_of_isClosed (X : Scheme) [IsAffine X] (s : Set X.carrier) (hs : IsClosed s) :
     ∃ I : Ideal (Scheme.Γ.obj (op X)), s = RingedSpace.zeroLocus (I : Set (Scheme.Γ.obj (op X))) := by
@@ -408,32 +499,263 @@ theorem surjective_of_closedInAffine_of_injective {X Y : Scheme} [IsAffine Y] [C
   apply isNilpotent_of_isNilpotent_cover _ 𝒰
   exact h3 s hs
 
+/-
+lemma injective_of_isLocalization {R S T : Type*} [CommRing R] (M : Submonoid R) [CommRing S]
+    [Algebra R S] [IsLocalization M S] [CommRing T] (f : R →+* T)
+    (hf : ∀ m : M, IsUnit (f m.val)) : IsLocalization.lift hf = 0 := sorry
+-/
+
+section
+
+variable {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) (x : U)
+
+#check (hU : IsAffine (X ∣_ᵤ U))
+#check ((@Scheme.isoSpec (X ∣_ᵤ U) hU).hom.val.base x : PrimeSpectrum ((X∣_ᵤ U).presheaf.obj (op ⊤)))
+
+#synth Algebra (X.presheaf.obj (op U)) (X.presheaf.stalk x)
+
+def _root_.AlgebraicGeometry.IsAffineOpen.toPrimeIdeal (hU : IsAffineOpen U) (x : U) :
+    PrimeSpectrum (X.presheaf.obj (op U)) :=
+  sorry
+
+lemma stalk_isLocalization_atPrime :
+    IsLocalization.AtPrime (X.presheaf.stalk x) (hU.toPrimeIdeal x).asIdeal :=
+  sorry
+
+end
+
+section
+
+variable (X : Scheme) [IsAffine X] (x : X)
+
+#check (X.isoSpec.hom.val.base x : PrimeSpectrum (X.presheaf.obj (op ⊤)))
+
+end
+
+noncomputable instance {X : Scheme} (x : X) : Algebra (X.presheaf.obj { unop := ⊤ }) (X.presheaf.stalk x) :=
+  TopCat.Presheaf.algebra_section_stalk X.presheaf (U := ⊤) ⟨x, trivial⟩
+
+noncomputable instance {X : Scheme} (x : X) : Algebra (X.presheaf.obj { unop := ⊤ }) (X.stalk x) :=
+  TopCat.Presheaf.algebra_section_stalk X.presheaf (U := ⊤) ⟨x, trivial⟩
+
+/-
+def stalkIsoOfAffine (X : Scheme) [IsAffine X] (x : X) :
+    X.stalk x ≅
+      (Spec.structureSheaf (X.presheaf.obj (op ⊤))).presheaf.stalk (X.isoSpec.hom.val.base x) :=
+  let F : Scheme ⥤ PresheafedSpace CommRingCat :=
+    Scheme.forgetToLocallyRingedSpace ⋙
+      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace
+  PresheafedSpace.stalkMap.stalkIso (F.mapIso X.isoSpec) x
+-/
+
+/-
+noncomputable
+def stalkIsoOfIso {X Y : Scheme} (e : X ≅ Y) (x : X) : Y.stalk (e.hom.val.base x) ≅ X.stalk x where
+  hom := X.stalkMap e.hom x
+  inv :=
+    let h : (e.inv.val.base (e.hom.val.base x)) = x := by
+      show (e.hom ≫ e.inv).val.base x = x
+      simp
+    let g : X.stalk x ⟶ X.stalk (e.inv.val.base (e.hom.val.base x)) :=
+      eqToHom (show X.stalk x = X.stalk (e.inv.val.base (e.hom.val.base x)) by rw [h])
+    let f := Y.stalkMap e.inv (e.hom.val.base x)
+    g ≫ f
+  hom_inv_id := by
+    let h : (e.inv.val.base (e.hom.val.base x)) = x := by
+      show (e.hom ≫ e.inv).val.base x = x
+      simp
+    dsimp
+    rw [← Category.assoc]
+    rw [AlgebraicGeometry.PresheafedSpace.stalkMap.congr_point
+      e.hom x ((e.hom ≫ e.inv).val.base x) h.symm]
+  inv_hom_id := sorry
+-/
+
+noncomputable
+def stalkIsoOfIso {X Y : Scheme} (e : X ≅ Y) (x : X) : Y.stalk (e.hom.val.base x) ≅ X.stalk x :=
+  letI F := Scheme.forgetToLocallyRingedSpace ⋙
+      LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace
+  PresheafedSpace.stalkMap.stalkIso (F.mapIso e) x
+
+@[simp]
+lemma stalkIsoOfIso_hom {X Y : Scheme} (e : X ≅ Y) (x : X) :
+    (stalkIsoOfIso e x).hom = X.stalkMap e.hom x :=
+  rfl
+
+/-
+lemma bar {X : Scheme} [IsAffine X] (x : X) (a : X.presheaf.obj (op ⊤)) :
+  (X.presheaf.germ ⟨x, show x ∈ ⊤ by trivial⟩) a = (stalkIsoOfIso X.isoSpec x).hom
+    ((StructureSheaf.toStalk (X.presheaf.obj (op ⊤))
+      (X.isoSpec.hom.val.base x : PrimeSpectrum (X.presheaf.obj (op ⊤)))) a) := sorry
+
+lemma bar' (X : Scheme) [IsAffine X] (x : X) (a : X.presheaf.obj (op ⊤)) :
+  (X.presheaf.germ ⟨x, show x ∈ ⊤ from trivial⟩) a =
+    (stalkIsoOfIso X.isoSpec x).hom ((StructureSheaf.toStalk
+      (X.presheaf.obj (op ⊤)) <| X.isoSpec.hom.val.base x) a) :=
+  sorry
+-/
+set_option maxHeartbeats 1000000
+
+lemma fooz {X : Scheme.{u}} [IsAffine X] (a : X.presheaf.obj (op ⊤)) :
+    (StructureSheaf.toOpen (X.presheaf.obj (op ⊤)) ⊤
+      ≫ X.isoSpec.hom.val.c.app { unop := ⊤ }) a = a := by
+  simp only [Scheme.isoSpec]
+  simp
+  --rw [ΓSpec.toOpen_unit_app_val_c_app]
+  sorry
+
+lemma barz {X : Scheme.{u}} [IsAffine X] (x : X) (a : X.presheaf.obj (op ⊤)) :
+    (X.presheaf.germ ⟨x, show x ∈ ⊤ from trivial⟩) a = (stalkIsoOfIso X.isoSpec x).hom
+      ((StructureSheaf.toStalk (X.presheaf.obj (op ⊤)) (X.isoSpec.hom.val.base x)) a) := by
+  let R := X.presheaf.obj (op ⊤)
+  rw [stalkIsoOfIso_hom]
+  simp [LocallyRingedSpace.stalkMap]
+  simp only [StructureSheaf.toStalk]
+  show (X.presheaf.germ ⟨x, show x ∈ ⊤ from trivial⟩) a =
+      ((StructureSheaf.toOpen ↑R ⊤ ≫ (Spec.structureSheaf ↑R).presheaf.germ
+        ⟨X.isoSpec.hom.val.base x, show X.isoSpec.hom.val.base x ∈ ⊤ from trivial⟩ ≫
+          PresheafedSpace.stalkMap X.isoSpec.hom.val x)) a
+  erw [PresheafedSpace.stalkMap_germ' X.isoSpec.hom.val ⊤]
+  show (X.presheaf.germ ⟨x, show x ∈ ⊤ from trivial⟩) a =
+    X.presheaf.germ ⟨x, show x ∈ ⊤ from trivial⟩
+      ((StructureSheaf.toOpen ↑R ⊤ ≫ X.isoSpec.hom.val.c.app (op ⊤)) a)
+  rw [fooz]
+
+lemma isLocalizationAtPrime [IsAffine X] (x : X) :
+    IsLocalization.AtPrime (R := X.presheaf.obj (op ⊤))
+      (X.stalk x) (X.isoSpec.hom.val.base x).asIdeal := by
+  let R := X.presheaf.obj (op ⊤)
+  let p : PrimeSpectrum R := X.isoSpec.hom.val.base x
+  have islocal := StructureSheaf.IsLocalization.to_stalk R p
+  let i := X.isoSpec
+  have (a : X.presheaf.obj (op ⊤)) :
+      (X.presheaf.germ ⟨x, show x ∈ ⊤ from trivial⟩) a =
+        (stalkIsoOfIso X.isoSpec x).hom ((StructureSheaf.toStalk R <| X.isoSpec.hom.val.base x) a) := by
+    rw [stalkIsoOfIso_hom]
+    simp [LocallyRingedSpace.stalkMap]
+    simp only [StructureSheaf.toStalk]
+    show (X.presheaf.germ ⟨x, show x ∈ ⊤ from trivial⟩) a =
+        ((StructureSheaf.toOpen ↑R ⊤ ≫ (Spec.structureSheaf ↑R).presheaf.germ
+          ⟨X.isoSpec.hom.val.base x, show X.isoSpec.hom.val.base x ∈ ⊤ from trivial⟩ ≫
+            PresheafedSpace.stalkMap X.isoSpec.hom.val x)) a
+    --erw [PresheafedSpace.stalkMap_germ X.isoSpec.hom.val ⊤]
+  have : (Scheme.Spec.obj (op <| R)).presheaf = (Spec.structureSheaf R).presheaf := rfl
+  let is : (Spec.structureSheaf R).presheaf.stalk p ≅ X.stalk x :=
+    stalkIsoOfIso i x
+  have iff := IsLocalization.isLocalization_iff_of_ringEquiv p.asIdeal.primeCompl
+    is.commRingCatIsoToRingEquiv
+  have := iff.mp islocal
+  show IsLocalization p.asIdeal.primeCompl ↑(X.stalk x)
+  convert this
+  ext a b
+  simp
+  let inst1 := (is.commRingCatIsoToRingEquiv.toRingHom.comp
+    (algebraMap R ((Spec.structureSheaf ↑R).presheaf.stalk p))).toAlgebra
+  let inst2 := (instAlgebraαCommRingObjOppositeOpensTopologicalSpaceCarrierCommRingCatPresheafOpTopStalk_1 x)
+  rw [@Algebra.smul_def _ _ _ _ inst1]
+  rw [@Algebra.smul_def (X.presheaf.obj { unop := ⊤ }) (X.stalk x) _ _ inst2 a b]
+  have : (algebraMap (X.presheaf.obj { unop := ⊤ }) (X.stalk x)) a =
+      (@algebraMap R (X.stalk x) _ _ (inst1) a) := by
+    show (algebraMap ↑(X.presheaf.obj { unop := ⊤ }) ↑(X.stalk x)) a =
+      (is.commRingCatIsoToRingEquiv.toRingHom.comp (algebraMap ↑R ↑((Spec.structureSheaf ↑R).presheaf.stalk p))) a
+    simp [is, i]
+    erw [TopCat.Presheaf.stalk_open_algebraMap]
+    exact this a
+  rw [this]
+
+lemma isLocalization [IsAffine X] (x : X) : ∃ (M : Submonoid (X.presheaf.obj (op ⊤))),
+    IsLocalization M (X.stalk x) := by
+  use (X.isoSpec.hom.val.base x).asIdeal.primeCompl
+  apply isLocalizationAtPrime
+
+lemma injective_of_isLocalization {R S T} [CommRing R] (M : Submonoid R) [CommRing S] [Algebra R S]
+    [IsLocalization M S] [CommRing T] (f : S →+* T) :
+    Function.Injective f ↔ ∀ (x y : R),
+      algebraMap R S x = algebraMap R S y ↔ f (algebraMap R S x) = f (algebraMap R S y) := by
+  rw [← IsLocalization.lift_of_comp (M := M) f, IsLocalization.lift_injective_iff]
+  simp
+
+lemma injective_iff_of_isLocalization' {R S T} [CommRing R] (M : Submonoid R) [CommRing S] [Algebra R S]
+    [IsLocalization M S] [CommRing T] (f : S →+* T) :
+    Function.Injective f ↔ ∀ (x : R), algebraMap R S x = 0 ↔ f (algebraMap R S x) = 0 := by
+  rw [injective_of_isLocalization M]
+  constructor
+  · intro h x
+    rw [← map_zero (algebraMap R S), ← map_zero f, ← map_zero (algebraMap R S)]
+    exact h x 0
+  · intro h x y
+    rw [← sub_eq_zero]
+    nth_rw 2 [← sub_eq_zero]
+    repeat rw [← map_sub]
+    exact h (x - y)
+
+lemma injective_of_isLocalization' {R S T} [CommRing R] (M : Submonoid R) [CommRing S] [Algebra R S]
+    [IsLocalization M S] [CommRing T] (f : S →+* T)
+    (h : ∀ (x : R), f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
+    Function.Injective f := by
+  rw [injective_iff_of_isLocalization' M]
+  exact fun x ↦ ⟨fun h ↦ by rw [h]; simp, h x⟩
+
 theorem stalkMap_injective_of {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] (x : X)
     (h : ∀ g,
       LocallyRingedSpace.stalkMap f x (Y.ΓToStalk (f.val.base x) g) = 0 → Y.ΓToStalk (f.val.base x) g = 0) :
     Function.Injective (LocallyRingedSpace.stalkMap f x) := by
-  --rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
-  sorry
+  obtain ⟨M, hM⟩ := isLocalization (f.val.base x)
+  apply injective_of_isLocalization' M
+  exact h
 
 lemma ΓToStalk_eq_zero_of {X : Scheme} (x : X) (f s : Scheme.Γ.obj (op X)) (hx : x ∈ X.basicOpen s)
     {n : ℕ} (hf : s ^ n * f = 0) : X.ΓToStalk x f = 0 :=
   sorry
 
 lemma pow_mul_eq_zero_of_le {R : Type*} [CommRing R] {a b : R} {m n : ℕ} (hmn : m ≤ n)
-    (h : a ^ m * b = 0) : a ^ n * b = 0 :=
-  sorry
+    (h : a ^ m * b = 0) : a ^ n * b = 0 := by
+  have : n = n - m + m := by
+    omega
+  rw [show n = n - m + m by omega, pow_add, mul_assoc, h]
+  simp
+
+lemma res_basicOpen_eq_iff_of_qcqs {X : Scheme} {U : TopologicalSpace.Opens X}
+    (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
+    (f g s : X.presheaf.obj (op U))
+    (hf : (f |_ X.basicOpen s : (forget CommRingCat).obj _) = (g |_ X.basicOpen s)) :
+    ∃ n, s ^ n * f = s ^ n * g := by
+  have hloc := is_localization_basicOpen_of_qcqs hU hU' s
+  obtain ⟨⟨_, n, rfl⟩, hc⟩ := hloc.exists_of_eq hf
+  use n
+
+lemma Γres_basicOpen_eq_iff_of_qcqs {X : Scheme} [CompactSpace X] [QuasiSeparatedSpace X]
+    (f g s : Scheme.Γ.obj (op X))
+    (hf : (f |_ X.basicOpen s : (forget CommRingCat).obj _) = (g |_ X.basicOpen s)) :
+    ∃ n, s ^ n * f = s ^ n * g := by
+  apply res_basicOpen_eq_iff_of_qcqs
+  · exact CompactSpace.isCompact_univ
+  · exact isQuasiSeparated_univ
+  · exact hf
+
+@[simp]
+lemma RingedSpace.res_zero {X : RingedSpace} {U V : TopologicalSpace.Opens X}
+    (hUV : U ≤ V) : ((0 : X.presheaf.obj (op V)) |_ U : (forget CommRingCat).obj _) = 0 :=
+  map_zero _
 
 lemma res_basicOpen_zero_iff_of_qcqs {X : Scheme} {U : TopologicalSpace.Opens X}
     (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
     (f s : X.presheaf.obj (op U)) (hf : (f |_ X.basicOpen s : (forget CommRingCat).obj _) = 0) :
     ∃ n, s ^ n * f = 0 := by
-  have := is_localization_basicOpen_of_qcqs hU hU' s
-  sorry
+  have := by
+    apply res_basicOpen_eq_iff_of_qcqs hU hU' f 0 s
+    simp only [RingedSpace.res_zero]
+    exact hf
+  simp at this
+  assumption
 
 lemma Γres_basicOpen_zero_iff_of_qcqs {X : Scheme} [CompactSpace X] [QuasiSeparatedSpace X]
     (f s : Scheme.Γ.obj (op X)) (hf : (f |_ X.basicOpen s : (forget CommRingCat).obj _) = 0) :
     ∃ n, s ^ n * f = 0 := by
-  sorry
+  apply res_basicOpen_zero_iff_of_qcqs
+  · exact CompactSpace.isCompact_univ
+  · exact isQuasiSeparated_univ
+  · exact hf
 
 section
 
@@ -448,7 +770,7 @@ lemma pullback_zero_of_zero {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (s : Sche
 
 lemma map_le {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y} (hUV : U ≤ V) :
     f⁻¹ᵁ U ≤ f⁻¹ᵁ V :=
-  sorry
+  leOfHom <| (Opens.map f.val.base).map (homOfLE hUV)
 
 theorem injective_on_stalks {X Y : Scheme} (f : X ⟶ Y) [CompactSpace X] [IsAffine Y]
     (hfopen : IsOpenMap f.val.base)
@@ -528,8 +850,11 @@ theorem injective_on_stalks {X Y : Scheme} (f : X ⟶ Y) [CompactSpace X] [IsAff
 
 theorem TopCat.isIso_of_bijective_of_isClosedMap {X Y : TopCat} (f : X ⟶ Y)
     (hfbij : Function.Bijective f) (hfcl : IsClosedMap f) : IsIso f := by
-  let e : X ≃ₜ Y := sorry
-  sorry
+  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousClosed
+    (Equiv.ofBijective f hfbij) f.continuous hfcl
+  let i : X ≅ Y := TopCat.isoOfHomeo e
+  show IsIso i.hom
+  infer_instance
 
 theorem closedImmersion_affine_target_iso {X Y : Scheme} [IsAffine Y]
     (f : X ⟶ Y) [IsClosedImmersion f] (hf : Function.Injective (Scheme.Γ.map f.op)) :
