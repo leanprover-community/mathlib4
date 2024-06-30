@@ -102,4 +102,3 @@ lemma exp_add (x y : EReal) : exp (x + y) = exp x * exp y := by
 end Morphism
 
 end ENNReal
-#minimize_imports

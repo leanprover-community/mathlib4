@@ -198,4 +198,3 @@ lemma log_inv {x : ℝ≥0∞} : log x⁻¹ = - log x := by
 end Morphism
 
 end ENNReal
-#minimize_imports

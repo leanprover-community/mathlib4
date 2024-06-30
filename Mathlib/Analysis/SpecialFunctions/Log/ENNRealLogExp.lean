@@ -168,4 +168,3 @@ end ENNReal
 
 instance : TopologicalSpace.MetrizableSpace EReal :=
   ENNReal.logOrderIso.symm.toHomeomorph.embedding.metrizableSpace
-#minimize_imports
