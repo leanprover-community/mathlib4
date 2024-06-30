@@ -9,6 +9,9 @@ import Mathlib.Tactic.ArithMult.Init
 import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Bound
+import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CC
 import Mathlib.Tactic.CC.Addition

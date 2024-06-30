@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Inv
+import Mathlib.Tactic.Bound.Attribute
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -172,7 +173,7 @@ theorem toReal_pos {a : ℝ≥0∞} (ha₀ : a ≠ 0) (ha_top : a ≠ ∞) : 0 <
   toReal_pos_iff.mpr ⟨bot_lt_iff_ne_bot.mpr ha₀, lt_top_iff_ne_top.mpr ha_top⟩
 #align ennreal.to_real_pos ENNReal.toReal_pos
 
-@[gcongr]
+@[gcongr, bound]
 theorem ofReal_le_ofReal {p q : ℝ} (h : p ≤ q) : ENNReal.ofReal p ≤ ENNReal.ofReal q := by
   simp [ENNReal.ofReal, Real.toNNReal_le_toNNReal h]
 #align ennreal.of_real_le_of_real ENNReal.ofReal_le_ofReal
@@ -214,6 +215,9 @@ theorem ofReal_lt_ofReal_iff_of_nonneg {p q : ℝ} (hp : 0 ≤ p) :
 @[simp]
 theorem ofReal_pos {p : ℝ} : 0 < ENNReal.ofReal p ↔ 0 < p := by simp [ENNReal.ofReal]
 #align ennreal.of_real_pos ENNReal.ofReal_pos
+
+@[bound]
+lemma ofReal_pos_of_pos {p : ℝ} : 0 < p → 0 < ENNReal.ofReal p := ofReal_pos.mpr
 
 @[simp]
 theorem ofReal_eq_zero {p : ℝ} : ENNReal.ofReal p = 0 ↔ p ≤ 0 := by simp [ENNReal.ofReal]

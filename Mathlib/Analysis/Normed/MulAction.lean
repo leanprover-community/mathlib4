@@ -26,10 +26,12 @@ section SeminormedAddGroup
 variable [SeminormedAddGroup α] [SeminormedAddGroup β] [SMulZeroClass α β]
 variable [BoundedSMul α β]
 
+@[bound]
 theorem norm_smul_le (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ := by
   simpa [smul_zero] using dist_smul_pair r 0 x
 #align norm_smul_le norm_smul_le
 
+@[bound]
 theorem nnnorm_smul_le (r : α) (x : β) : ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊ :=
   norm_smul_le _ _
 #align nnnorm_smul_le nnnorm_smul_le

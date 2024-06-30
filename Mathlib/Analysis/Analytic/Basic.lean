@@ -7,6 +7,7 @@ import Mathlib.Algebra.Star.Order
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 #align_import analysis.analytic.basic from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
@@ -393,6 +394,9 @@ a power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a neigh
 def HasFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) :=
   ∃ r, HasFPowerSeriesOnBall f p x r
 #align has_fpower_series_at HasFPowerSeriesAt
+
+-- Teach the `bound` tactic that power series have positive radius
+attribute [bound_forward] HasFPowerSeriesOnBall.r_pos
 
 variable (𝕜)
 
