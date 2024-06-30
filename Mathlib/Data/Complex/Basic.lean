@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Ring
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -624,8 +625,7 @@ theorem star_def : (Star.star : ℂ → ℂ) = conj :=
 
 
 /-- The norm squared function. -/
--- Porting note: `@[pp_nodot]` not found
--- @[pp_nodot]
+@[pp_nodot]
 def normSq : ℂ →*₀ ℝ where
   toFun z := z.re * z.re + z.im * z.im
   map_zero' := by simp
@@ -720,7 +720,7 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
 #adaptation_note /-- nightly-2024-04-01
 The simpNF linter now times out on this lemma.
 See https://github.com/leanprover-community/mathlib4/issues/12228 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 
