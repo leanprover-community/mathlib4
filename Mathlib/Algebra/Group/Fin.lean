@@ -126,19 +126,9 @@ lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
 lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
   cases' n with n
   · exact a.elim0
-  by_cases h: a < b
-  · simp only [h, iff_true]
-    rw [lt_iff_val_lt_val, sub_def]
-    simp only
-    obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
-    have : n + 1 - b = k + 1 := by
-      simp_rw [hk]
-      rw [Nat.add_assoc, Nat.add_sub_cancel_left]
-    rw [this, Nat.mod_eq_of_lt]
-    · simp
-    · refine' hk.ge.trans_lt' ?_
-      simp [Nat.add_assoc, h]
-  · simp only [h, iff_false]
+  constructor
+  · contrapose!
+    intro h
     simp only [Fin.not_lt] at h ⊢
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le h
     rw [le_iff_val_le_val, sub_def, hl]
@@ -147,6 +137,20 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
     · simp
     · refine a.is_lt.trans_le' ?_
       simp [hl]
+  · intro h
+    rw [lt_iff_val_lt_val, sub_def]
+    simp only
+    obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
+    have : n + 1 - b = k + 1 := by
+      simp_rw [hk] -- simp_rw because, otherwise, rw tries to rewrite inside `b : Fin (n + 1)`
+      rw [Nat.add_assoc, Nat.add_sub_cancel_left]
+    rw [this, Nat.mod_eq_of_lt]
+    · simp
+    · refine' hk.ge.trans_lt' ?_
+      simp [Nat.add_assoc, h]
+
+lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
+  rw [← not_iff_not, Fin.not_le, Fin.not_le, lt_sub_iff]
 
 @[simp]
 lemma lt_one_iff {n : ℕ} [hn : NeZero n] (x : Fin (n + 1)) : x < 1 ↔ x = 0 := by
