@@ -15,7 +15,7 @@ We prove that `log` and `exp` define an order isomorphism between `ℝ≥0∞` a
 ## Main Definitions
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
 and `exp`.
-- `ENNReal.log_homeomorph`: `log` as a homeomorphism.
+- `ENNReal.logHomeomorph`: `log` as a homeomorphism.
 - `EReal.exp_homeomorph`: `exp` as a homeomorphism.
 
 ## Main Results
@@ -127,9 +127,9 @@ end OrderIso
 section Continuity
 
 /-- `log` as a homeomorphism. -/
-noncomputable def log_homeomorph : ℝ≥0∞ ≃ₜ EReal := logOrderIso.toHomeomorph
+noncomputable def logHomeomorph : ℝ≥0∞ ≃ₜ EReal := logOrderIso.toHomeomorph
 
-@[simp] lemma log_homeomorph_apply (x : ℝ≥0∞) : log_homeomorph x = log x := rfl
+@[simp] lemma log_homeomorph_apply (x : ℝ≥0∞) : logHomeomorph x = log x := rfl
 
 /-- `exp` as a homeomorphism. -/
 noncomputable def exp_homeomorph : EReal ≃ₜ ℝ≥0∞ := logOrderIso.symm.toHomeomorph
