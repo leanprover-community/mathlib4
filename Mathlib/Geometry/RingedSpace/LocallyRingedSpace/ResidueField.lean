@@ -54,41 +54,27 @@ def evaluation (x : U) :
     X.presheaf.obj (op U) ⟶ X.residueField x :=
   X.presheaf.germ x ≫ LocalRing.residue _
 
-lemma evaluation_eq_zero_iff_mem_maximalIdeal (x : U) (f : X.presheaf.obj (op U)) :
-    X.evaluation x f = 0 ↔ (X.presheaf.germ x) f ∈ LocalRing.maximalIdeal (X.stalk x) :=
-  LocalRing.residue_eq_zero_iff _
-
-lemma evaluation_ne_zero_iff_isUnit {U : Opens X} (x : U) (f : X.presheaf.obj (op U)) :
-    X.evaluation x f ≠ 0 ↔ IsUnit ((X.presheaf.germ x) f) :=
-  LocalRing.residue_ne_zero_iff_isUnit _
-
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
 def Γevaluation (x : X) : LocallyRingedSpace.Γ.obj (op X) ⟶ X.residueField x :=
   X.evaluation ⟨x, show x ∈ ⊤ from trivial⟩
-
-lemma Γevaluation_eq_zero_iff_mem_maximalIdeal (x : X) (f : LocallyRingedSpace.Γ.obj (op X)) :
-    X.Γevaluation x f = 0 ↔
-      (X.presheaf.germ ⟨x, show x ∈ ⊤ by trivial⟩) f ∈ LocalRing.maximalIdeal (X.stalk x) :=
-  LocalRing.residue_eq_zero_iff _
-
-lemma Γevaluation_ne_zero_iff_isUnit (x : U) (f : X.presheaf.obj (op U)) :
-    X.evaluation x f ≠ 0 ↔ IsUnit ((X.presheaf.germ x) f) :=
-  LocalRing.residue_ne_zero_iff_isUnit _
 
 @[simp]
 lemma evaluation_eq_zero_iff_not_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
   rw [X.toRingedSpace.mem_basicOpen f x, ← not_iff_not, not_not]
-  exact (X.evaluation_ne_zero_iff_isUnit x f)
+  exact (LocalRing.residue_ne_zero_iff_isUnit _)
 
-lemma evaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op U)) (x : U) :
+lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
   simp
 
-@[simp]
-lemma Γevaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
+lemma Γevaluation_eq_zero_iff_not_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
+    X.Γevaluation x f = 0 ↔ x ∉ X.toRingedSpace.basicOpen f :=
+  evaluation_eq_zero_iff_not_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
+
+lemma Γevaluation_ne_zero_iff_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
-  evaluation_ne_zero_iff_mem_basicOpen X f ⟨x, trivial⟩
+  evaluation_ne_zero_iff_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
 
 variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y)
 
