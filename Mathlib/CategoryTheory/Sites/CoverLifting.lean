@@ -135,30 +135,33 @@ def _root_.CategoryTheory.Presheaf.IsSheaf.isLimitMultifork {C : Type*} [Categor
 section
 
 variable (s : Multifork (S.index R))
+variable {S}
 
-variable {S} in
 def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
   Multifork.IsLimit.lift (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩)
     (fun k ↦ s.ι (⟨_, G.map k.f ≫ f, k.hf⟩) ≫ α.app (op k.Y)) (by
       have := hR
       sorry)
 
-variable {S} in
-lemma liftAux_fac {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
+lemma liftAux_comp' {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
     (h : G.obj W ⟶ i.Y) (w : h ≫ i.f = G.map g ≫ f) :
     liftAux hF hR s f ≫ F.map g.op = s.ι i ≫ R.map h.op ≫ α.app _ := by
+  sorry
+
+lemma liftAux_comp {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C} (a : W ⟶ Y) (b : W ⟶ Y')
+    (w : G.map a ≫ f = G.map b ≫ f') :
+    liftAux hF hR s f ≫ F.map a.op = liftAux hF hR s f' ≫ F.map b.op := by
   sorry
 
 def lift : s.pt ⟶ R.obj (op X) :=
   (hR (op X)).lift (Cone.mk _
     { app := fun j ↦ liftAux hF hR s j.hom.unop
       naturality := fun j j' φ ↦ by
-        dsimp
-        simp only [Category.id_comp]
-        sorry })
+        simpa using liftAux_comp hF hR s j'.hom.unop j.hom.unop (𝟙 _) φ.right.unop
+          (Quiver.Hom.op_inj (by simpa using (StructuredArrow.w φ).symm)) })
 
 @[simp]
-lemma fac (i : S.Arrow) : lift S hF hR s ≫ R.map i.f.op = s.ι i := by
+lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   sorry
 
 variable (K) in
@@ -178,8 +181,8 @@ lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
 end
 
 def isLimitMultifork : IsLimit (S.multifork R) :=
-  Multifork.IsLimit.mk _ (lift S hF hR) (fac S hF hR)
-    (fun s _ hm ↦ hom_ext K S hF hR (fun i ↦ (hm i).trans (fac S hF hR s i).symm))
+  Multifork.IsLimit.mk _ (lift hF hR) (fac hF hR)
+    (fun s _ hm ↦ hom_ext K hF hR (fun i ↦ (hm i).trans (fac hF hR s i).symm))
 
 end RanIsSheafOfIsCocontinuous
 
