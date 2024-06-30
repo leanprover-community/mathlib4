@@ -251,4 +251,11 @@ def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
     apply ((whiskeringLeft _ _ _).obj F.op).map_comp
 #align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
+/-- `F.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A` is induced by
+the precomposition with `F.op` on presheaves. -/
+@[simps! hom inv]
+def Functor.sheafPushforwardContinuousCompSheafToPresheafIso [Functor.IsContinuous.{v₃} F J K] :
+    F.sheafPushforwardContinuous A J K ⋙ sheafToPresheaf J A ≅
+      sheafToPresheaf K A ⋙ (whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj F.op := Iso.refl _
+
 end CategoryTheory

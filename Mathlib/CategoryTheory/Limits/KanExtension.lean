@@ -27,7 +27,7 @@ A lot of boilerplate could be generalized by defining and working with pseudofun
 
 ## TODO
 
-* remove this file when #10425 is merged, so that `Lan` and `Ran` are defined
+* remove this file when #10425 and #14291is merged, so that `Lan` and `Ran` are defined
 in terms of the API in `CategoryTheory.Functor.KanExtension`.
 
 -/

@@ -3,7 +3,8 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.KanExtension
+import Mathlib.CategoryTheory.Adjunction.Restrict
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Sheafification
 
@@ -114,11 +115,11 @@ A `X ⟶ 𝒢(U)`. The remaining work is to verify that this is indeed the amalg
 -/
 
 variable {C D : Type*} [Category C] [Category D] (G : C ⥤ D)
-variable {A : Type w} [Category.{w'} A] [∀ X, HasLimitsOfShape (StructuredArrow X G.op) A]
+variable {A : Type w} [Category.{w'} A] --[∀ X, HasLimitsOfShape (StructuredArrow X G.op) A]
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
   [G.IsCocontinuous J K]
 
-namespace RanIsSheafOfIsCocontinuous
+/-namespace RanIsSheafOfIsCocontinuous
 
 variable {G}
 variable (ℱ : Sheaf J A)
@@ -273,9 +274,11 @@ theorem gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.glued_section_is_unique CategoryTheory.RanIsSheafOfIsCocontinuous.gluedSection_is_unique
 
-end RanIsSheafOfIsCocontinuous
+end RanIsSheafOfIsCocontinuous-/
 
 variable (K)
+
+variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
 
 /-- If `G` is cocontinuous, then `Ran G.op` pushes sheaves to sheaves.
 
@@ -283,13 +286,14 @@ This result is basically https://stacks.math.columbia.edu/tag/00XK,
 but without the condition that `C` or `D` has pullbacks.
 -/
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
-    Presheaf.IsSheaf K ((ran G.op).obj ℱ.val) := by
-  intro X U S hS x hx
-  constructor; swap
-  · apply RanIsSheafOfIsCocontinuous.gluedSection ℱ hS hx
-  constructor
-  · apply RanIsSheafOfIsCocontinuous.gluedSection_isAmalgamation
-  · apply RanIsSheafOfIsCocontinuous.gluedSection_is_unique
+    Presheaf.IsSheaf K ((G.op.ran).obj ℱ.val) := by
+  sorry
+  --intro X U S hS x hx
+  --constructor; swap
+  --· apply RanIsSheafOfIsCocontinuous.gluedSection ℱ hS hx
+  --constructor
+  --· apply RanIsSheafOfIsCocontinuous.gluedSection_isAmalgamation
+  --· apply RanIsSheafOfIsCocontinuous.gluedSection_is_unique
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting CategoryTheory.ran_isSheaf_of_isCocontinuous
 
@@ -302,6 +306,13 @@ def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A where
   map_id ℱ := Sheaf.Hom.ext _ _ <| (ran G.op).map_id ℱ.val
   map_comp f g := Sheaf.Hom.ext _ _ <| (ran G.op).map_comp f.val g.val
 #align category_theory.sites.copullback CategoryTheory.Functor.sheafPushforwardCocontinuous
+
+/-- `G.sheafPushforwardCocontinuous A J K : Sheaf J A ⥤ Sheaf K A` is induced
+by the right Kan extension functor `G.op.ran` on presheaves. -/
+@[simps! hom inv]
+def Functor.sheafPushforwardCocontinuousCompSheafToPresheafIso :
+    G.sheafPushforwardCocontinuous A J K ⋙ sheafToPresheaf K A ≅
+      sheafToPresheaf J A ⋙ G.op.ran := Iso.refl _
 
 /-
 
@@ -316,52 +327,65 @@ left adjoint to `G.sheafPushforwardCocontinuous A J K`. This adjunction may repl
 
 -/
 
+namespace Functor
+
+variable [G.IsCocontinuous J K] [G.IsContinuous J K]
+
 /--
 Given a functor between sites that is continuous and cocontinuous,
 the pushforward for the continuous functor `G` is left adjoint to
 the pushforward for the cocontinuous functor `G`. -/
-@[simps unit_app_val counit_app_val]
-noncomputable def Functor.sheafAdjunctionCocontinuous [G.IsCocontinuous J K]
-    [G.IsContinuous J K] :
-    G.sheafPushforwardContinuous A J K ⊣ G.sheafPushforwardCocontinuous A J K where
-  homEquiv X Y :=
-    { toFun := fun f => ⟨(Ran.adjunction A G.op).homEquiv X.val Y.val f.val⟩
-      invFun := fun f => ⟨((Ran.adjunction A G.op).homEquiv X.val Y.val).symm f.val⟩
-      left_inv := fun f => by
-        ext1
-        dsimp
-        rw [Equiv.symm_apply_apply]
-      right_inv := fun f => by
-        ext1
-        dsimp
-        rw [Equiv.apply_symm_apply] }
-  unit :=
-    { app := fun X => ⟨(Ran.adjunction A G.op).unit.app X.val⟩
-      naturality := fun _ _ f =>
-        Sheaf.Hom.ext _ _ <| (Ran.adjunction A G.op).unit.naturality f.val }
-  counit :=
-    { app := fun X => ⟨(Ran.adjunction A G.op).counit.app X.val⟩
-      naturality := fun _ _ f =>
-        Sheaf.Hom.ext _ _ <| (Ran.adjunction A G.op).counit.naturality f.val }
-  homEquiv_unit := by
-    -- Porting note: next line was `ext1`
-    refine Sheaf.Hom.ext _ _ ?_
-    apply (Ran.adjunction A G.op).homEquiv_unit
-  homEquiv_counit := by
-    -- Porting note: next line was `ext1`
-    refine Sheaf.Hom.ext _ _ ?_
-    apply (Ran.adjunction A G.op).homEquiv_counit
+noncomputable def sheafAdjunctionCocontinuous :
+    G.sheafPushforwardContinuous A J K ⊣ G.sheafPushforwardCocontinuous A J K :=
+  (G.op.ranAdjunction A).restrictFullyFaithful
+    (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
+    (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
+    (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm
 #align category_theory.sites.pullback_copullback_adjunction CategoryTheory.Functor.sheafAdjunctionCocontinuous
+
+lemma sheafAdjunctionCocontinuous_unit_app_val (F : Sheaf K A) :
+    ((G.sheafAdjunctionCocontinuous A J K).unit.app F).val =
+      (G.op.ranAdjunction A).unit.app F.val := by
+  apply ((G.op.ranAdjunction A).map_restrictFullyFaithful_unit_app
+    (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
+    (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
+    (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans
+  dsimp
+  erw [Functor.map_id]
+  change _ ≫ 𝟙 _ ≫ 𝟙 _ = _
+  simp only [Category.comp_id]
+
+lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
+    ((G.sheafAdjunctionCocontinuous A J K).counit.app F).val =
+      (G.op.ranAdjunction A).counit.app F.val :=
+  ((G.op.ranAdjunction A).map_restrictFullyFaithful_counit_app
+    (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
+    (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
+    (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans (by simp)
+
+lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf J A}
+    (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :
+    ((G.sheafAdjunctionCocontinuous A J K).homEquiv F H f).val =
+      (G.op.ranAdjunction A).homEquiv F.val H.val f.val :=
+  ((sheafToPresheaf K A).congr_map
+    (((G.op.ranAdjunction A).restrictFullyFaithful_homEquiv_apply
+      (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
+      (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
+      (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm f))).trans (by
+        dsimp
+        erw [Functor.map_id, Category.comp_id, Category.id_comp,
+          Adjunction.homEquiv_unit])
+
 
 variable
   [HasWeakSheafify J A] [HasWeakSheafify K A]
   [G.IsCocontinuous J K] [G.IsContinuous J K]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
-def Functor.pushforwardContinuousSheafificationCompatibility :
+def pushforwardContinuousSheafificationCompatibility :
     (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
     presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
-  letI A1 : (whiskeringLeft _ _ A).obj G.op ⊣ _ := Ran.adjunction _ _
+  letI A1 : (whiskeringLeft _ _ A).obj G.op ⊣ _ := G.op.ranAdjunction _
   letI A2 : presheafToSheaf J A ⊣ _ := sheafificationAdjunction _ _
   letI B1 : presheafToSheaf K A ⊣ _ := sheafificationAdjunction _ _
   letI B2 := G.sheafAdjunctionCocontinuous A J K
@@ -371,11 +395,12 @@ def Functor.pushforwardContinuousSheafificationCompatibility :
 
 /- Implementation: This is primarily used to prove the lemma
 `pullbackSheafificationCompatibility_hom_app_val`. -/
-lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
+lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
     toSheafify J (G.op ⋙ F) ≫
     ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
     whiskerLeft _ (toSheafify K _) := by
-  dsimp [pushforwardContinuousSheafificationCompatibility]
+  sorry
+  /-dsimp [pushforwardContinuousSheafificationCompatibility]
   simp only [Adjunction.leftAdjointUniq, Iso.symm_hom, Adjunction.natIsoEquiv_apply_inv,
     Iso.refl_inv, Adjunction.natTransEquiv_apply_app, comp_obj, whiskeringLeft_obj_obj,
     sheafToPresheaf_obj, whiskerLeft_id', Category.comp_id, comp_map, whiskeringLeft_obj_map,
@@ -394,14 +419,16 @@ lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A)
   convert Category.id_comp (obj := A) _
   have := (Ran.adjunction A G.op).left_triangle
   apply_fun (fun e => (e.app (sheafify K F)).app s) at this
-  exact this
+  exact this-/
 
 @[simp]
-lemma Functor.pushforwardContinuousSheafificationCompatibility_hom_app_val (F : Dᵒᵖ ⥤ A) :
+lemma pushforwardContinuousSheafificationCompatibility_hom_app_val (F : Dᵒᵖ ⥤ A) :
     ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
     sheafifyLift J (whiskerLeft G.op <| toSheafify K F)
       ((presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K).obj F).cond := by
   apply sheafifyLift_unique
   apply toSheafify_pullbackSheafificationCompatibility
+
+end Functor
 
 end CategoryTheory

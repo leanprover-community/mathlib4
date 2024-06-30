@@ -23,8 +23,8 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {C' : Type u₃} [Category.{v₃} C']
 variable {D' : Type u₄} [Category.{v₄} D']
-variable {iC : C ⥤ C'} {iD : D ⥤ D'} (hiC : iC.FullyFaithful) (hiD : iD.FullyFaithful)
-  {L' : C' ⥤ D'} {R' : D' ⥤ C'} (adj : L' ⊣ R')
+variable {iC : C ⥤ C'} {iD : D ⥤ D'}
+  {L' : C' ⥤ D'} {R' : D' ⥤ C'} (adj : L' ⊣ R') (hiC : iC.FullyFaithful) (hiD : iD.FullyFaithful)
   {L : C ⥤ D} {R : D ⥤ C} (comm1 : iC ⋙ L' ≅ L ⋙ iD) (comm2 : iD ⋙ R' ≅ R ⋙ iC)
 
 /-- If `C` is a full subcategory of `C'` and `D` is a full subcategory of `D'`, then we can restrict
@@ -55,19 +55,19 @@ noncomputable def restrictFullyFaithful : L ⊣ R :=
 
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_unit_app (X : C) :
-    iC.map ((restrictFullyFaithful hiC hiD adj comm1 comm2).unit.app X) =
+    iC.map ((adj.restrictFullyFaithful hiC hiD comm1 comm2).unit.app X) =
     adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫ comm2.hom.app (L.obj X) := by
   simp [restrictFullyFaithful]
 
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_counit_app (X : D) :
-    iD.map ((restrictFullyFaithful hiC hiD adj comm1 comm2).counit.app X) =
+    iD.map ((adj.restrictFullyFaithful hiC hiD comm1 comm2).counit.app X) =
     comm1.inv.app (R.obj X) ≫ L'.map (comm2.inv.app X) ≫ adj.counit.app (iD.obj X) := by
   dsimp [restrictFullyFaithful]
   simp
 
 lemma restrictFullyFaithful_homEquiv_apply {X : C} {Y : D} (f : L.obj X ⟶ Y) :
-    (restrictFullyFaithful hiC hiD adj comm1 comm2).homEquiv X Y f =
+    (adj.restrictFullyFaithful hiC hiD comm1 comm2).homEquiv X Y f =
       hiC.preimage (adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫
         R'.map (iD.map f) ≫ comm2.hom.app Y) := by
   simp [restrictFullyFaithful]
