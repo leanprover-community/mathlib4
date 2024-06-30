@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.AddConstMap.Basic
+import Mathlib.GroupTheory.Perm.Basic
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`
 
@@ -23,43 +24,32 @@ structure AddConstEquiv (G H : Type*) [Add G] [Add H] (a : G) (b : H)
 /-- Interpret an `AddConstEquiv` as an `Equiv`. -/
 add_decl_doc AddConstEquiv.toEquiv
 
-/-- Interpret an `AddConstEquiv` as an `AddConstMap. -/
+/-- Interpret an `AddConstEquiv` as an `AddConstMap`. -/
 add_decl_doc AddConstEquiv.toAddConstMap
 
 @[inherit_doc]
 scoped [AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
 
-/-- A typeclass saying that `F` is a type of bundled equivalences `G ≃ H`
-semiconjugating `(· + a)` to `(· + b)`. -/
-class AddConstEquivClass (F : Type*) (G H : outParam (Type*)) [Add G] [Add H]
-    (a : outParam G) (b : outParam H) extends EquivLike F G H where
-  /-- A map of `AddConstEquivClass` class semiconjugates shift by `a` to the shift by `b`:
-  `∀ x, f (x + a) = f x + b`. -/
-  map_add_const (f : F) (x : G) : f (x + a) = f x + b
-
-instance (priority := 100) {F : Type*} {G H : outParam Type*} [Add G] [Add H]
-    {a : outParam G} {b : outParam H} [h : AddConstEquivClass F G H a b] :
-    AddConstMapClass F G H a b where
-  toDFunLike := inferInstance
-  __ := h
-
-instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
-    AddConstEquivClass (G ≃+c[a, b] H) G H a b where
-  coe f := f.toEquiv
-  inv f := f.toEquiv.symm
-  left_inv f := f.left_inv
-  right_inv f := f.right_inv
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, h, _ => by congr; exact DFunLike.ext' h
-  map_add_const f x := f.map_add_const' x
-
 namespace AddConstEquiv
 
 variable {G H K : Type*} [Add G] [Add H] [Add K] {a : G} {b : H} {c : K}
 
-@[ext] lemma ext {e₁ e₂ : G ≃+c[a, b] H} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ := DFunLike.ext _ _ h
+lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H)
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
-lemma toEquiv_injective : Injective (toEquiv : (G ≃+c[a, b] H) → G ≃ H) :=
-  Injective.of_comp <| show Injective (DFunLike.coe ∘ _) from DFunLike.coe_injective
+instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
+    EquivLike (G ≃+c[a, b] H) G H where
+  coe f := f.toEquiv
+  inv f := f.toEquiv.symm
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
+
+instance {G H : Type*} [Add G] [Add H] {a : G} {b : H} :
+    AddConstMapClass (G ≃+c[a, b] H) G H a b where
+  map_add_const f x := f.map_add_const' x
+
+@[ext] lemma ext {e₁ e₂ : G ≃+c[a, b] H} (h : ∀ x, e₁ x = e₂ x) : e₁ = e₂ := DFunLike.ext _ _ h
 
 @[simp]
 lemma toEquiv_eq_iff {e₁ e₂ : G ≃+c[a, b] H} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
@@ -68,7 +58,6 @@ lemma toEquiv_eq_iff {e₁ e₂ : G ≃+c[a, b] H} : e₁.toEquiv = e₂.toEquiv
 @[simp] lemma coe_toEquiv (e : G ≃+c[a, b] H) : ⇑e.toEquiv = e := rfl
 
 /-- Inverse map of an `AddConstEquiv`, as an `AddConstEquiv`. -/
-@[pp_dot]
 def symm (e : G ≃+c[a, b] H) : H ≃+c[b, a] G where
   toEquiv := e.toEquiv.symm
   map_add_const' := (AddConstMapClass.semiconj e).inverse_left e.left_inv e.right_inv
@@ -76,7 +65,7 @@ def symm (e : G ≃+c[a, b] H) : H ≃+c[b, a] G where
 /-- A custom projection for `simps`. -/
 def Simps.symm_apply (e : G ≃+c[a, b] H) : H → G := e.symm
 
-initialize_simps_projections AddConstEquiv (toFun → apply, invFun → symm_apply, +toEquiv)
+initialize_simps_projections AddConstEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp] lemma symm_symm (e : G ≃+c[a, b] H) : e.symm.symm = e := rfl
 
@@ -89,7 +78,7 @@ def refl (a : G) : G ≃+c[a, a] G where
 @[simp] lemma symm_refl (a : G) : (refl a).symm = refl a := rfl
 
 /-- Composition of `AddConstEquiv`s, as an `AddConstEquiv`. -/
-@[simps! (config := { simpRhs := true }) toEquiv apply, pp_dot]
+@[simps! (config := { simpRhs := true }) toEquiv apply]
 def trans (e₁ : G ≃+c[a, b] H) (e₂ : H ≃+c[b, c] K) : G ≃+c[a, c] K where
   toEquiv := e₁.toEquiv.trans e₂.toEquiv
   map_add_const' := (AddConstMapClass.semiconj e₁).trans (AddConstMapClass.semiconj e₂)
@@ -104,5 +93,46 @@ lemma self_trans_symm (e : G ≃+c[a, b] H) : e.trans e.symm = .refl a :=
 @[simp]
 lemma symm_trans_self (e : G ≃+c[a, b] H) : e.symm.trans e = .refl b :=
   toEquiv_injective e.toEquiv.symm_trans_self
+
+instance instOne : One (G ≃+c[a, a] G) := ⟨.refl _⟩
+instance instMul : Mul (G ≃+c[a, a] G) := ⟨fun f g ↦ g.trans f⟩
+instance instInv : Inv (G ≃+c[a, a] G) := ⟨.symm⟩
+instance instDiv : Div (G ≃+c[a, a] G) := ⟨fun f g ↦ f * g⁻¹⟩
+
+instance instPowNat : Pow (G ≃+c[a, a] G) ℕ where
+  pow e n := ⟨e^n, (e.toAddConstMap^n).map_add_const'⟩
+
+instance instPowInt : Pow (G ≃+c[a, a] G) ℤ where
+  pow e n := ⟨e^n,
+    match n with
+    | .ofNat n => (e^n).map_add_const'
+    | .negSucc n => (e.symm^(n + 1)).map_add_const'⟩
+
+instance instGroup : Group (G ≃+c[a, a] G) :=
+  toEquiv_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
+
+/-- Projection from `G ≃+c[a, a] G` to permutations `G ≃ G`, as a monoid homomorphism. -/
+@[simps! apply]
+def toPerm : (G ≃+c[a, a] G) →* Equiv.Perm G :=
+  .mk' toEquiv fun _ _ ↦ rfl
+
+/-- Projection from `G ≃+c[a, a] G` to `G →+c[a, a] G`, as a monoid homomorphism. -/
+@[simps! apply]
+def toAddConstMapHom : (G ≃+c[a, a] G) →* (G →+c[a, a] G) where
+  toFun := toAddConstMap
+  map_mul' _ _ := rfl
+  map_one' := rfl
+
+/-- Group equivalence between `G ≃+c[a, a] G` and the units of `G →+c[a, a] G`. -/
+@[simps!]
+def equivUnits : (G ≃+c[a, a] G) ≃* (G →+c[a, a] G)ˣ where
+  toFun := toAddConstMapHom.toHomUnits
+  invFun u :=
+    { toEquiv := Equiv.Perm.equivUnitsEnd.symm <| Units.map AddConstMap.toEnd u
+      map_add_const' := u.1.2 }
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
 
 end AddConstEquiv
