@@ -21,7 +21,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-universe v w u t
+universe t v w u
 
 -- `u` is determined by the ring, so can come later
 noncomputable section
