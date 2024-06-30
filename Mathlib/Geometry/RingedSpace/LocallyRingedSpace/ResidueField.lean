@@ -76,11 +76,16 @@ lemma Γevaluation_ne_zero_iff_isUnit (x : U) (f : X.presheaf.obj (op U)) :
   LocalRing.residue_ne_zero_iff_isUnit _
 
 @[simp]
-lemma evaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op U)) (x : U) :
-    X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
-  rw [X.toRingedSpace.mem_basicOpen f x]
+lemma evaluation_eq_zero_iff_not_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
+    X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
+  rw [X.toRingedSpace.mem_basicOpen f x, ← not_iff_not, not_not]
   exact (X.evaluation_ne_zero_iff_isUnit x f)
 
+lemma evaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op U)) (x : U) :
+    X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
+  simp
+
+@[simp]
 lemma Γevaluation_ne_zero_iff_mem_basicOpen (f : X.presheaf.obj (op ⊤)) (x : X) :
     X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
   evaluation_ne_zero_iff_mem_basicOpen X f ⟨x, trivial⟩
