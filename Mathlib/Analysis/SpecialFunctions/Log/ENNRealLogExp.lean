@@ -16,7 +16,7 @@ We prove that `log` and `exp` define an order isomorphism between `ℝ≥0∞` a
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
 and `exp`.
 - `ENNReal.log_homeomorph`: `log` as a homeomorphism.
-- `ENNReal.exp_homeomorph`: `exp` as a homeomorphism.
+- `EReal.exp_homeomorph`: `exp` as a homeomorphism.
 
 ## Main Results
 - `ENNReal.log_exp`, `ENNReal.exp_log`: `log` and `exp` are inverses of each other.
