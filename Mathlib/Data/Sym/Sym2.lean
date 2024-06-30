@@ -273,7 +273,7 @@ theorem map_comp {g : β → γ} {f : α → β} : Sym2.map (g ∘ f) = Sym2.map
 #align sym2.map_comp Sym2.map_comp
 
 theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) = map (g ∘ f) x := by
-  revert x; apply Sym2.ind; aesop
+  induction x; aesop
 #align sym2.map_map Sym2.map_map
 
 @[simp]
