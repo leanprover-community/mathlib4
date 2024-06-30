@@ -38,7 +38,7 @@ Usual domain of definition is p ∈ [0,1], i.e., input is a probability.
 
 This is a generalization of the binary entropy function `binaryEntropy`. -/
 noncomputable def qaryEntropy (q : ℕ) (p : ℝ) : ℝ :=
-    p * log (q - 1) - p * log p - (1 - p) * log (1 - p)
+  p * log (q - 1) - p * log p - (1 - p) * log (1 - p)
 
 /-- The [binary entropy function](https://en.wikipedia.org/wiki/Binary_entropy_function)
 `binaryEntropy p := - p * log p - (1-p) * log (1 - p)`
