@@ -12,8 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 open CategoryTheory Category BraidedCategory MonoidalCategory
 
-universe u
-variable {C : Type u} [Category C] [MonoidalCategory C] [BraidedCategory C] {X Y : C}
+variable {C : Type*} [Category C] [MonoidalCategory C] [BraidedCategory C] {X Y : C}
 
 namespace CategoryTheory.BraidedCategory
 
@@ -65,16 +64,20 @@ private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
       rw [braiding_naturality_left, ← braiding_inv_naturality_left]
       simp [monoidalComp]
 
+/-- If `X` and `Y` forms an exact pairing in a braided category, then so does `Y` and `X`
+by composing the coevaluation and evaluation morphisms with associators. -/
 def exactPairing_swap (X Y : C) [ExactPairing X Y] : ExactPairing Y X where
   coevaluation' := η_ X Y ≫ (β_ Y X).inv
   evaluation' := (β_ X Y).hom ≫ ε_ X Y
   coevaluation_evaluation' := coevaluation_evaluation_braided'
   evaluation_coevaluation' := evaluation_coevaluation_braided'
 
+/-- If `X` has a right dual in a braided category, then it has a left dual. -/
 def hasLeftDualOfHasRightDual [HasRightDual X] : HasLeftDual X where
   leftDual := Xᘁ
   exact := exactPairing_swap X Xᘁ
 
+/-- If `X` has a left dual in a braided category, then it has a right dual. -/
 def hasRightDualOfHasLeftDual [HasLeftDual X] : HasRightDual X where
   rightDual := ᘁX
   exact := exactPairing_swap ᘁX X
@@ -85,10 +88,12 @@ instance leftRigidCategoryOfRightRigidCategory [RightRigidCategory C] : LeftRigi
 instance rightRigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RightRigidCategory C where
   rightDual X := hasRightDualOfHasLeftDual (X := X)
 
+/-- If `C` is a braided and right rigid category, then it is a rigid category. --/
 instance rigidCategoryOfRightRigidCategory [RightRigidCategory C] : RigidCategory C where
   rightDual := inferInstance
   leftDual := inferInstance
 
+/-- If `C` is a braided and left rigid category, then it is a rigid category. --/
 instance rigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RigidCategory C where
   rightDual := inferInstance
   leftDual := inferInstance
