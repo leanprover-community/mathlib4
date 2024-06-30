@@ -413,4 +413,7 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
       let this_output := "\n".intercalate
         (allUnexpectedErrors.map (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
       IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
+    if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
+    IO.println s!"error: found {numberErrorFiles} new style errors\n\
+      run `lake exe lint_style --update` to ignore all of them"
   return numberErrorFiles
