@@ -11,16 +11,21 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 /-!
 # Pseudofunctors
 
-A pseudofunctor is an oplax functor whose `mapId` and `mapComp` are isomorphisms. We provide
-several constructors for pseudofunctors:
+A pseudofunctor is an oplax (or lax) functor whose `mapId` and `mapComp` are isomorphisms.
+We provide several constructors for pseudofunctors:
 * `Pseudofunctor.mk` : the default constructor, which requires `map₂_whiskerLeft` and
   `map₂_whiskerRight` instead of naturality of `mapComp`.
+
 * `Pseudofunctor.mkOfOplax` : construct a pseudofunctor from an oplax functor whose
   `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
-* `pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe
-  isomorphisms.
+* `pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe isomorphisms.
+
+* `Pseudofunctor.mkOfLax` : construct a pseudofunctor from a lax functor whose
+  `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
+* `pseudofunctor.mkOfLax'` : similar to `mkOfLax`, but uses `IsIso` to describe isomorphisms.
 
 ## Main definitions
+
 * `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
 
