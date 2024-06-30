@@ -326,7 +326,7 @@ end Map
 
 theorem range_add_one' (n : ℕ) :
     range (n + 1) = insert 0 ((range n).map ⟨fun i => i + 1, fun i j => by simp⟩) := by
-  ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.succ_eq_add_one, Nat.zero_lt_succ n]
+  ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.zero_lt_succ n]
 #align finset.range_add_one' Finset.range_add_one'
 
 /-! ### image -/
