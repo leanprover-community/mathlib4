@@ -116,8 +116,72 @@ A `X ⟶ 𝒢(U)`. The remaining work is to verify that this is indeed the amalg
 
 variable {C D : Type*} [Category C] [Category D] (G : C ⥤ D)
 variable {A : Type w} [Category.{w'} A] --[∀ X, HasLimitsOfShape (StructuredArrow X G.op) A]
-variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
-  [G.IsCocontinuous J K]
+variable {J : GrothendieckTopology C} {K : GrothendieckTopology D} [G.IsCocontinuous J K]
+variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
+
+namespace RanIsSheafOfIsCocontinuous
+
+variable {G}
+variable {X : D} (S : K.Cover X) {F : Cᵒᵖ ⥤ A} (hF : Presheaf.IsSheaf J F)
+variable {R : Dᵒᵖ ⥤ A} {α : G.op ⋙ R ⟶ F}
+variable (hR : (Functor.RightExtension.mk _ α).IsPointwiseRightKanExtension)
+
+-- should be moved
+def _root_.CategoryTheory.Presheaf.IsSheaf.isLimitMultifork {C : Type*} [Category C] {J : GrothendieckTopology C}
+    {F : Cᵒᵖ ⥤ A} (hF : Presheaf.IsSheaf J F) {X : C} (S : J.Cover X) : IsLimit (S.multifork F) := by
+  rw [Presheaf.isSheaf_iff_multifork] at hF
+  exact (hF X S).some
+
+section
+
+variable (s : Multifork (S.index R))
+
+variable {S} in
+def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
+  Multifork.IsLimit.lift (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩)
+    (fun k ↦ s.ι (⟨_, G.map k.f ≫ f, k.hf⟩) ≫ α.app (op k.Y)) (by
+      have := hR
+      sorry)
+
+variable {S} in
+lemma liftAux_fac {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
+    (h : G.obj W ⟶ i.Y) (w : h ≫ i.f = G.map g ≫ f) :
+    liftAux hF hR s f ≫ F.map g.op = s.ι i ≫ R.map h.op ≫ α.app _ := by
+  sorry
+
+def lift : s.pt ⟶ R.obj (op X) :=
+  (hR (op X)).lift (Cone.mk _
+    { app := fun j ↦ liftAux hF hR s j.hom.unop
+      naturality := fun j j' φ ↦ by
+        dsimp
+        simp only [Category.id_comp]
+        sorry })
+
+@[simp]
+lemma fac (i : S.Arrow) : lift S hF hR s ≫ R.map i.f.op = s.ι i := by
+  sorry
+
+variable (K) in
+lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
+    (h : ∀ (i : S.Arrow), f ≫ R.map i.f.op = g ≫ R.map i.f.op) : f = g := by
+  have := hF
+  apply (hR (op X)).hom_ext
+  intro j
+  apply hF.hom_ext ⟨_, G.cover_lift J K (K.pullback_stable j.hom.unop S.2)⟩
+  intro ⟨W, i, hi⟩
+  have eq := h (GrothendieckTopology.Cover.Arrow.mk _ (G.map i ≫ j.hom.unop) hi)
+  dsimp at eq ⊢
+  simp only [Category.assoc, ← NatTrans.naturality, Functor.comp_map, ← Functor.map_comp_assoc,
+    Functor.op_map, Quiver.Hom.unop_op]
+  rw [reassoc_of% eq]
+
+end
+
+def isLimitMultifork : IsLimit (S.multifork R) :=
+  Multifork.IsLimit.mk _ (lift S hF hR) (fac S hF hR)
+    (fun s _ hm ↦ hom_ext K S hF hR (fun i ↦ (hm i).trans (fac S hF hR s i).symm))
+
+end RanIsSheafOfIsCocontinuous
 
 /-namespace RanIsSheafOfIsCocontinuous
 
@@ -278,22 +342,19 @@ end RanIsSheafOfIsCocontinuous-/
 
 variable (K)
 
-variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
+/-- If `G` is cocontinuous, then `G.op.ran` pushes sheaves to sheaves.
 
-/-- If `G` is cocontinuous, then `Ran G.op` pushes sheaves to sheaves.
-
-This result is basically https://stacks.math.columbia.edu/tag/00XK,
-but without the condition that `C` or `D` has pullbacks.
+This is SGA 4 III 2.2. An alternative reference is
+https://stacks.math.columbia.edu/tag/00XK (where results
+are obtained under the additional assumption that
+`C` and `D` have pullbacks.
 -/
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
     Presheaf.IsSheaf K ((G.op.ran).obj ℱ.val) := by
-  sorry
-  --intro X U S hS x hx
-  --constructor; swap
-  --· apply RanIsSheafOfIsCocontinuous.gluedSection ℱ hS hx
-  --constructor
-  --· apply RanIsSheafOfIsCocontinuous.gluedSection_isAmalgamation
-  --· apply RanIsSheafOfIsCocontinuous.gluedSection_is_unique
+  rw [Presheaf.isSheaf_iff_multifork]
+  intros X S
+  exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork S ℱ.2
+    (G.op.isPointwiseRightKanExtensionRanCounit ℱ.val)⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting CategoryTheory.ran_isSheaf_of_isCocontinuous
 
@@ -376,7 +437,6 @@ lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf 
         erw [Functor.map_id, Category.comp_id, Category.id_comp,
           Adjunction.homEquiv_unit])
 
-
 variable
   [HasWeakSheafify J A] [HasWeakSheafify K A]
   [G.IsCocontinuous J K] [G.IsContinuous J K]
@@ -387,7 +447,6 @@ def pushforwardContinuousSheafificationCompatibility :
     presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
   ((G.op.ranAdjunction A).comp (sheafificationAdjunction J A)).leftAdjointUniq
     ((sheafificationAdjunction K A).comp (G.sheafAdjunctionCocontinuous A J K))
-
 
 -- should be moved
 section
