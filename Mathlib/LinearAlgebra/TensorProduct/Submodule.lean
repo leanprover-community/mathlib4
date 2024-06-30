@@ -98,7 +98,7 @@ theorem mulMap_eq_mul'_comp_mapIncl : mulMap M N = .mul' R S ∘ₗ TensorProduc
 theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   refine le_antisymm ?_ (mul_le.2 fun m hm n hn ↦ ⟨⟨m, hm⟩ ⊗ₜ[R] ⟨n, hn⟩, rfl⟩)
   rintro _ ⟨x, rfl⟩
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => rw [_root_.map_zero]; exact zero_mem _
   | tmul a b => exact mul_mem_mul a.2 b.2
   | add a b ha hb => rw [_root_.map_add]; exact add_mem ha hb
