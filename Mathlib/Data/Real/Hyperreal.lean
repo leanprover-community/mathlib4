@@ -25,6 +25,9 @@ namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
+noncomputable instance : Field ℝ* :=
+  inferInstanceAs (Field (Germ _ _))
+
 noncomputable instance : LinearOrderedField ℝ* :=
   inferInstanceAs (LinearOrderedField (Germ _ _))
 

@@ -234,7 +234,7 @@ theorem mk_Ioi_real (a : ℝ) : #(Ioi a) = 𝔠 := by
   refine lt_of_le_of_lt (mk_union_le _ _) ?_
   refine lt_of_le_of_lt (add_le_add_right (mk_union_le _ _) _) ?_
   have h2 : (fun x => a + a - x) '' Ioi a = Iio a := by
-    convert @image_const_sub_Ioi ℝ _ _ _
+    convert @image_const_sub_Ioi ℝ _ _ _ _
     simp
   rw [← h2]
   refine add_lt_of_lt (cantor _).le ?_ h

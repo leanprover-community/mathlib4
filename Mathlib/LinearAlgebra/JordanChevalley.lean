@@ -60,7 +60,7 @@ theorem exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow {P : K[X]} {k : 
   refine ⟨f - s, ?_, s, mem, ⟨k, ?_⟩, ?_, (sub_add_cancel f s).symm⟩
   · exact sub_mem (self_mem_adjoin_singleton K f) mem
   · rw [Subtype.ext_iff] at hk
-    simpa using hk
+    simpa only [SubmonoidClass.coe_pow, AddSubgroupClass.coe_sub, ZeroMemClass.coe_zero] using hk
   · replace hss : aeval s P = 0 := by rwa [Subtype.ext_iff, coe_aeval_mk_apply] at hss
     exact isSemisimple_of_squarefree_aeval_eq_zero sep.squarefree hss
 

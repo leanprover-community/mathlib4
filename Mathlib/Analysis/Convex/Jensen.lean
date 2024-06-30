@@ -45,7 +45,8 @@ variable {𝕜 E F β ι : Type*}
 
 section Jensen
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [OrderedAddCommGroup β] [Module 𝕜 E] [Module 𝕜 β]
+variable [Field 𝕜] [LinearOrderedField 𝕜] [AddCommGroup E] [AddCommGroup β]
+  [OrderedAddCommGroup β] [Module 𝕜 E] [Module 𝕜 β]
   [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E} {v : 𝕜} {q : E}
 
 /-- Convex **Jensen's inequality**, `Finset.centerMass` version. -/
@@ -249,7 +250,8 @@ end Jensen
 
 section MaximumPrinciple
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [LinearOrderedAddCommGroup β] [Module 𝕜 E]
+variable [Field 𝕜] [LinearOrderedField 𝕜] [AddCommGroup E] [AddCommGroup β]
+  [LinearOrderedAddCommGroup β] [Module 𝕜 E]
   [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E}
   {x y z : E}
 

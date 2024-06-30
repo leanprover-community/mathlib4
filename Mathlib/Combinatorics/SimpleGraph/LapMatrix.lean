@@ -87,7 +87,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRing R]
+theorem posSemidef_lapMatrix [Field R] [LinearOrderedField R] [StarRing R] [StarOrderedRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
   constructor
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
@@ -95,7 +95,7 @@ theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRin
     rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
     positivity
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField R] (x : V → R) :
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [Field R] [LinearOrderedField R] (x : V → R) :
     Matrix.toLinearMap₂' (G.lapMatrix R) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   simp (disch := intros; positivity)
     [lapMatrix_toLinearMap₂', sum_eq_zero_iff_of_nonneg, sub_eq_zero]

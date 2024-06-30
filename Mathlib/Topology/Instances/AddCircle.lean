@@ -58,7 +58,8 @@ variable {𝕜 B : Type*}
 
 section Continuity
 
-variable [LinearOrderedAddCommGroup 𝕜] [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [AddCommGroup 𝕜] [LinearOrderedAddCommGroup 𝕜] [Archimedean 𝕜]
+  [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {p : 𝕜} (hp : 0 < p) (a x : 𝕜)
 
 theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x := by
@@ -119,7 +120,9 @@ end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
 @[nolint unusedArguments]
-abbrev AddCircle [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜) :=
+abbrev AddCircle
+    [AddCommGroup 𝕜] [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+    (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 #align add_circle AddCircle
 
@@ -127,7 +130,7 @@ namespace AddCircle
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜)
+variable [AddCommGroup 𝕜] [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜)
 
 theorem coe_nsmul {n : ℕ} {x : 𝕜} : (↑(n • x) : AddCircle p) = n • (x : AddCircle p) :=
   rfl
@@ -336,7 +339,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p q : 𝕜)
+variable [Field 𝕜] [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p q : 𝕜)
 
 /-- The rescaling equivalence between additive circles with different periods. -/
 def equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃+ AddCircle q :=
@@ -556,7 +559,7 @@ end AddCircle
 
 section UnitAddCircle
 
-instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
+instance instZeroLTOne [Semiring 𝕜] [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
 
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
@@ -574,7 +577,7 @@ by the equivalence relation identifying the endpoints. -/
 
 namespace AddCircle
 
-variable [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p a : 𝕜)
+variable [AddCommGroup 𝕜] [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p a : 𝕜)
   [hp : Fact (0 < p)]
 
 local notation "𝕋" => AddCircle p

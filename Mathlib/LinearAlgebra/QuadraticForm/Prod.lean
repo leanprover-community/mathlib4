@@ -134,7 +134,7 @@ def IsometryEquiv.prodProdProdComm
   map_app' _ := add_add_add_comm _ _ _ _
 
 /-- If a product is anisotropic then its components must be. The converse is not true. -/
-theorem anisotropic_of_prod {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+theorem anisotropic_of_prod {R} [CommRing R] [OrderedCommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (h : (Q₁.prod Q₂).Anisotropic) :
     Q₁.Anisotropic ∧ Q₂.Anisotropic := by
   simp_rw [Anisotropic, prod_apply, Prod.forall, Prod.mk_eq_zero] at h
@@ -147,7 +147,7 @@ theorem anisotropic_of_prod {R} [OrderedCommRing R] [Module R M₁] [Module R M�
     rw [hx, add_zero, map_zero]
 #align quadratic_form.anisotropic_of_prod QuadraticForm.anisotropic_of_prod
 
-theorem nonneg_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+theorem nonneg_prod_iff {R} [CommRing R] [OrderedCommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} :
     (∀ x, 0 ≤ (Q₁.prod Q₂) x) ↔ (∀ x, 0 ≤ Q₁ x) ∧ ∀ x, 0 ≤ Q₂ x := by
   simp_rw [Prod.forall, prod_apply]
@@ -160,7 +160,7 @@ theorem nonneg_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     exact add_nonneg (h₁ x₁) (h₂ x₂)
 #align quadratic_form.nonneg_prod_iff QuadraticForm.nonneg_prod_iff
 
-theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+theorem posDef_prod_iff {R} [CommRing R] [OrderedCommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} :
     (Q₁.prod Q₂).PosDef ↔ Q₁.PosDef ∧ Q₂.PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_prod_iff]
@@ -175,7 +175,7 @@ theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     rwa [Prod.mk_eq_zero]
 #align quadratic_form.pos_def_prod_iff QuadraticForm.posDef_prod_iff
 
-theorem PosDef.prod {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+theorem PosDef.prod {R} [CommRing R] [OrderedCommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (h₁ : Q₁.PosDef) (h₂ : Q₂.PosDef) :
     (Q₁.prod Q₂).PosDef :=
   posDef_prod_iff.mpr ⟨h₁, h₂⟩
@@ -310,7 +310,7 @@ theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
 #align quadratic_form.equivalent.pi QuadraticForm.Equivalent.pi
 
 /-- If a family is anisotropic then its components must be. The converse is not true. -/
-theorem anisotropic_of_pi [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
+theorem anisotropic_of_pi [Fintype ι] {R} [CommRing R] [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} (h : (pi Q).Anisotropic) : ∀ i, (Q i).Anisotropic := by
   simp_rw [Anisotropic, pi_apply, Function.funext_iff, Pi.zero_apply] at h
   intro i x hx
@@ -325,7 +325,7 @@ theorem anisotropic_of_pi [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R 
   · rw [Pi.single_eq_of_ne hji, map_zero]
 #align quadratic_form.anisotropic_of_pi QuadraticForm.anisotropic_of_pi
 
-theorem nonneg_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
+theorem nonneg_pi_iff [Fintype ι] {R} [CommRing R] [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (∀ x, 0 ≤ pi Q x) ↔ ∀ i x, 0 ≤ Q i x := by
   simp_rw [pi, sum_apply, comp_apply, LinearMap.proj_apply]
   constructor
@@ -339,7 +339,7 @@ theorem nonneg_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (M�
     exact Finset.sum_nonneg fun i _ => h i (x i)
 #align quadratic_form.nonneg_pi_iff QuadraticForm.nonneg_pi_iff
 
-theorem posDef_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
+theorem posDef_pi_iff [Fintype ι] {R} [CommRing R] [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (pi Q).PosDef ↔ ∀ i, (Q i).PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_pi_iff]
   constructor

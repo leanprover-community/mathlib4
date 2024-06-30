@@ -64,12 +64,12 @@ require balls of positive radius with center at the origin to be strictly convex
 then prove that any closed ball is strictly convex in `strictConvex_closedBall` below.
 
 See also `StrictConvexSpace.of_strictConvex_closed_unit_ball`. -/
-class StrictConvexSpace (𝕜 E : Type*) [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
+class StrictConvexSpace (𝕜 E : Type*) [Field 𝕜] [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] : Prop where
   strictConvex_closedBall : ∀ r : ℝ, 0 < r → StrictConvex 𝕜 (closedBall (0 : E) r)
 #align strict_convex_space StrictConvexSpace
 
-variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
+variable (𝕜 : Type*) {E : Type*} [Field 𝕜] [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
 
 /-- A closed ball in a strictly convex space is strictly convex. -/

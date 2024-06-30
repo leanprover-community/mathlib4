@@ -62,15 +62,14 @@ theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α
 
 /-- If `τ` is a `CanonicallyOrderedAddCommMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem IsFwInvariant.isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ : τ → α → α} {s : Set α}
-    (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
+theorem IsFwInvariant.isInvariant [AddCommMonoid τ] [CanonicallyOrderedAddCommMonoid τ]
+    {ϕ : τ → α → α} {s : Set α} (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
 #align is_fw_invariant.is_invariant IsFwInvariant.isInvariant
 
 /-- If `τ` is a `CanonicallyOrderedAddCommMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ : τ → α → α}
-    {s : Set α} :
-    IsFwInvariant ϕ s ↔ IsInvariant ϕ s :=
+theorem isFwInvariant_iff_isInvariant [AddCommMonoid τ] [CanonicallyOrderedAddCommMonoid τ]
+    {ϕ : τ → α → α} {s : Set α} : IsFwInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsFwInvariant.isInvariant, IsInvariant.isFwInvariant⟩
 #align is_fw_invariant_iff_is_invariant isFwInvariant_iff_isInvariant
 

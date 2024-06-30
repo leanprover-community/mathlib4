@@ -107,6 +107,8 @@ scoped[ENNReal] notation "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
 
+noncomputable instance : CommSemiring ℝ≥0∞ := inferInstanceAs (CommSemiring (WithTop ℝ≥0))
+
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
 instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
 instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))

@@ -56,13 +56,13 @@ open scoped Classical Pointwise
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
 -- @[protect_proj] -- Porting note: does not exist anymore
-class ConditionallyCompleteLinearOrderedField (α : Type*) extends
+class ConditionallyCompleteLinearOrderedField (α : Type*) [Field α] extends
     LinearOrderedField α, ConditionallyCompleteLinearOrder α
 #align conditionally_complete_linear_ordered_field ConditionallyCompleteLinearOrderedField
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
-instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
+instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean [Field α]
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
   archimedean_iff_nat_lt.2
     (by

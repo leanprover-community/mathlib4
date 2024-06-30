@@ -33,9 +33,10 @@ open Pointwise
 
 universe u u'
 
-variable {R R' E F ι ι' α : Type*} [LinearOrderedField R] [LinearOrderedField R'] [AddCommGroup E]
-  [AddCommGroup F] [LinearOrderedAddCommGroup α] [Module R E] [Module R F] [Module R α]
-  [OrderedSMul R α] {s : Set E}
+variable {R R' E F ι ι' α : Type*}
+  [Field R] [LinearOrderedField R] [Field R'] [LinearOrderedField R'] [AddCommGroup E]
+  [AddCommGroup F] [AddCommGroup α]  [LinearOrderedAddCommGroup α]
+  [Module R E] [Module R F] [Module R α] [OrderedSMul R α] {s : Set E}
 
 /-- Center of mass of a finite collection of points with prescribed weights.
 Note that we require neither `0 ≤ w i` nor `∑ w = 1`. -/
@@ -151,7 +152,7 @@ theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ 
 theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
     s.inf' (nonempty_of_ne_empty <| by rintro rfl; simp at hw₁) f ≤ s.centerMass w f :=
-  @centerMass_le_sup R _ αᵒᵈ _ _ _ _ _ _ _ hw₀ hw₁
+  @centerMass_le_sup R _ αᵒᵈ _ _ _ _ _ _ _ _ _ hw₀ hw₁
 #align finset.inf_le_center_mass Finset.inf_le_centerMass
 
 end Finset

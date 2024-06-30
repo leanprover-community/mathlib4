@@ -1042,7 +1042,7 @@ end Anisotropic
 
 section PosDef
 
-variable {R₂ : Type u} [OrderedCommRing R₂] [AddCommMonoid M] [Module R₂ M]
+variable {R₂ : Type u} [CommRing R₂] [OrderedCommRing R₂] [AddCommMonoid M] [Module R₂ M]
 variable {Q₂ : QuadraticForm R₂ M}
 
 /-- A positive definite quadratic form is positive on nonzero vectors. -/
@@ -1050,7 +1050,7 @@ def PosDef (Q₂ : QuadraticForm R₂ M) : Prop :=
   ∀ x, x ≠ 0 → 0 < Q₂ x
 #align quadratic_form.pos_def QuadraticForm.PosDef
 
-theorem PosDef.smul {R} [LinearOrderedCommRing R] [Module R M] {Q : QuadraticForm R M}
+theorem PosDef.smul {R} [CommRing R] [LinearOrderedCommRing R] [Module R M] {Q : QuadraticForm R M}
     (h : PosDef Q) {a : R} (a_pos : 0 < a) : PosDef (a • Q) := fun x hx => mul_pos a_pos (h x hx)
 #align quadratic_form.pos_def.smul QuadraticForm.PosDef.smul
 
@@ -1080,7 +1080,7 @@ theorem PosDef.add (Q Q' : QuadraticForm R₂ M) (hQ : PosDef Q) (hQ' : PosDef Q
     PosDef (Q + Q') := fun x hx => add_pos (hQ x hx) (hQ' x hx)
 #align quadratic_form.pos_def.add QuadraticForm.PosDef.add
 
-theorem linMulLinSelfPosDef {R} [LinearOrderedCommRing R] [Module R M] (f : M →ₗ[R] R)
+theorem linMulLinSelfPosDef {R} [CommRing R] [LinearOrderedCommRing R] [Module R M] (f : M →ₗ[R] R)
     (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin f f) := fun _x hx =>
   mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h
 #align quadratic_form.lin_mul_lin_self_pos_def QuadraticForm.linMulLinSelfPosDef

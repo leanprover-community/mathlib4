@@ -460,7 +460,7 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
+variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
   [OrderTopology γ]
 
 /-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
@@ -1029,7 +1029,7 @@ end
 
 section
 
-variable {ι : Type*} {γ : Type*} [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
+variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrderedAddCommMonoid γ] [TopologicalSpace γ]
   [OrderTopology γ]
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
@@ -1039,7 +1039,7 @@ theorem UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontin
     (hg : UpperSemicontinuousWithinAt g s x)
     (hcont : ContinuousAt (fun p : γ × γ => p.1 + p.2) (f x, g x)) :
     UpperSemicontinuousWithinAt (fun z => f z + g z) s x :=
-  @LowerSemicontinuousWithinAt.add' α _ x s γᵒᵈ _ _ _ _ _ hf hg hcont
+  @LowerSemicontinuousWithinAt.add' α _ x s γᵒᵈ _ _ _ _ _ _ hf hg hcont
 #align upper_semicontinuous_within_at.add' UpperSemicontinuousWithinAt.add'
 
 /-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
@@ -1110,7 +1110,7 @@ theorem UpperSemicontinuous.add {f g : α → γ} (hf : UpperSemicontinuous f)
 theorem upperSemicontinuousWithinAt_sum {f : ι → α → γ} {a : Finset ι}
     (ha : ∀ i ∈ a, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun z => ∑ i ∈ a, f i z) s x :=
-  @lowerSemicontinuousWithinAt_sum α _ x s ι γᵒᵈ _ _ _ _ f a ha
+  @lowerSemicontinuousWithinAt_sum α _ x s ι γᵒᵈ _ _ _ _ _ f a ha
 #align upper_semicontinuous_within_at_sum upperSemicontinuousWithinAt_sum
 
 theorem upperSemicontinuousAt_sum {f : ι → α → γ} {a : Finset ι}

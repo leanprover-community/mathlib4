@@ -116,13 +116,13 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
 /-! ### Powers -/
 
 
-theorem tendsto_add_one_pow_atTop_atTop_of_pos [LinearOrderedSemiring α] [Archimedean α] {r : α}
+theorem tendsto_add_one_pow_atTop_atTop_of_pos [Semiring α] [LinearOrderedSemiring α] [Archimedean α] {r : α}
     (h : 0 < r) : Tendsto (fun n : ℕ ↦ (r + 1) ^ n) atTop atTop :=
   tendsto_atTop_atTop_of_monotone' (fun _ _ ↦ pow_le_pow_right <| le_add_of_nonneg_left h.le) <|
     not_bddAbove_iff.2 fun _ ↦ Set.exists_range_iff.2 <| add_one_pow_unbounded_of_pos _ h
 #align tendsto_add_one_pow_at_top_at_top_of_pos tendsto_add_one_pow_atTop_atTop_of_pos
 
-theorem tendsto_pow_atTop_atTop_of_one_lt [LinearOrderedRing α] [Archimedean α] {r : α}
+theorem tendsto_pow_atTop_atTop_of_one_lt [Ring α] [LinearOrderedRing α] [Archimedean α] {r : α}
     (h : 1 < r) : Tendsto (fun n : ℕ ↦ r ^ n) atTop atTop :=
   sub_add_cancel r 1 ▸ tendsto_add_one_pow_atTop_atTop_of_pos (sub_pos.2 h)
 #align tendsto_pow_at_top_at_top_of_one_lt tendsto_pow_atTop_atTop_of_one_lt
@@ -132,7 +132,8 @@ theorem Nat.tendsto_pow_atTop_atTop_of_one_lt {m : ℕ} (h : 1 < m) :
   tsub_add_cancel_of_le (le_of_lt h) ▸ tendsto_add_one_pow_atTop_atTop_of_pos (tsub_pos_of_lt h)
 #align nat.tendsto_pow_at_top_at_top_of_one_lt Nat.tendsto_pow_atTop_atTop_of_one_lt
 
-theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+theorem tendsto_pow_atTop_nhds_zero_of_lt_one
+    {𝕜 : Type*} [Field 𝕜] [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   h₁.eq_or_lt.elim
@@ -145,7 +146,8 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhds_0_of_lt_1 := tendsto_pow_atTop_nhds_zero_of_lt_one
 
-@[simp] theorem tendsto_pow_atTop_nhds_zero_iff {𝕜 : Type*} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+@[simp] theorem tendsto_pow_atTop_nhds_zero_iff
+    {𝕜 : Type*} [Field 𝕜] [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) ↔ |r| < 1 := by
   rw [tendsto_zero_iff_abs_tendsto_zero]
@@ -165,7 +167,7 @@ alias tendsto_pow_atTop_nhds_0_of_lt_1 := tendsto_pow_atTop_nhds_zero_of_lt_one
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhds_0_iff := tendsto_pow_atTop_nhds_zero_iff
 
-theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField 𝕜]
+theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*} [Field 𝕜] [LinearOrderedField 𝕜]
     [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝[>] 0) :=
   tendsto_inf.2
@@ -655,22 +657,22 @@ theorem tendsto_factorial_div_pow_self_atTop :
 
 section
 
-theorem tendsto_nat_floor_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+theorem tendsto_nat_floor_atTop {α : Type*} [Semiring α] [LinearOrderedSemiring α] [FloorSemiring α] :
     Tendsto (fun x : α ↦ ⌊x⌋₊) atTop atTop :=
   Nat.floor_mono.tendsto_atTop_atTop fun x ↦ ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 #align tendsto_nat_floor_at_top tendsto_nat_floor_atTop
 
-lemma tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+lemma tendsto_nat_ceil_atTop {α : Type*} [Semiring α] [LinearOrderedSemiring α] [FloorSemiring α] :
     Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
   refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
   simp only [Nat.ceil_natCast, le_refl]
 
-lemma tendsto_nat_floor_mul_atTop {α : Type _} [LinearOrderedSemifield α] [FloorSemiring α]
+lemma tendsto_nat_floor_mul_atTop {α : Type _} [Semifield α] [LinearOrderedSemifield α] [FloorSemiring α]
     [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x:ℕ) => ⌊a * x⌋₊) atTop atTop :=
   Tendsto.comp tendsto_nat_floor_atTop
     <| Tendsto.const_mul_atTop ha tendsto_natCast_atTop_atTop
 
-variable {R : Type*} [TopologicalSpace R] [LinearOrderedField R] [OrderTopology R] [FloorRing R]
+variable {R : Type*} [TopologicalSpace R] [Field R] [LinearOrderedField R] [OrderTopology R] [FloorRing R]
 
 theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
     Tendsto (fun x ↦ (⌊a * x⌋₊ : R) / x) atTop (𝓝 a) := by

@@ -30,7 +30,7 @@ open Convex
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜] [TopologicalSpace E] [TopologicalSpace F]
+variable [Semiring 𝕜] [OrderedSemiring 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
 section AddCommMonoid
 
@@ -156,8 +156,8 @@ theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [TopologicalSpace β] [LinearOrderedCancelAddCommMonoid β] [OrderTopology β] [Module 𝕜 β]
-  [OrderedSMul 𝕜 β]
+variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrderedCancelAddCommMonoid β]
+  [OrderTopology β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
@@ -276,7 +276,7 @@ end continuous_add
 
 section ContinuousSMul
 
-variable [LinearOrderedField 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
+variable [Field 𝕝] [LinearOrderedField 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
   [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E} {x : E}
 
 theorem StrictConvex.smul (hs : StrictConvex 𝕜 s) (c : 𝕝) : StrictConvex 𝕜 (c • s) := by
@@ -298,7 +298,7 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [OrderedCommSemiring 𝕜] [TopologicalSpace E]
+variable [CommSemiring 𝕜] [OrderedCommSemiring 𝕜] [TopologicalSpace E]
 
 section AddCommGroup
 
@@ -324,7 +324,7 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [OrderedRing 𝕜] [TopologicalSpace E] [TopologicalSpace F]
+variable [Ring 𝕜] [OrderedRing 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
 section AddCommGroup
 
@@ -396,7 +396,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrderedField 𝕜] [TopologicalSpace E]
 
 section AddCommGroup
 
@@ -433,7 +433,7 @@ Relates `Convex` and `Set.OrdConnected`.
 
 section
 
-variable [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {s : Set 𝕜}
+variable [Field 𝕜] [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {s : Set 𝕜}
 
 /-- A set in a linear ordered field is strictly convex if and only if it is convex. -/
 @[simp]

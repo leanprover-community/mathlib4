@@ -33,7 +33,7 @@ open Submodule MeasureTheory FiniteDimensional MeasureTheory Module
 
 section General
 
-variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable (K : Type*) [Field K] [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] [MeasurableSpace E]
 variable (L : AddSubgroup E) [DiscreteTopology L] [IsZlattice K L]

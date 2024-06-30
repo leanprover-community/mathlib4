@@ -613,12 +613,13 @@ section Basic
 section Monoid
 
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
-instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
+instance (R) (Γ₀) [Ring R] [AddCommMonoid Γ₀] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
 
-variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
+variable [Ring R] [AddCommMonoid Γ₀] [LinearOrderedAddCommMonoidWithTop Γ₀]
+  [AddCommMonoid Γ'₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀) {x y z : R}
 
 section
@@ -776,7 +777,7 @@ end Monoid
 
 section Group
 
-variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y z : R}
+variable [AddCommGroup Γ₀] [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y z : R}
 
 @[simp]
 theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=

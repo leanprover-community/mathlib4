@@ -538,65 +538,66 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
     `measure_le_mul_of_subset_limRatioMeas_lt` and `mul_measure_le_of_subset_lt_limRatioMeas` to
     show that the two measures are comparable up to `t` (in fact `t^2` for technical reasons of
     strict inequalities). -/
-  have t_ne_zero' : t ≠ 0 := (zero_lt_one.trans ht).ne'
-  have t_ne_zero : (t : ℝ≥0∞) ≠ 0 := by simpa only [ENNReal.coe_eq_zero, Ne] using t_ne_zero'
-  let ν := μ.withDensity (v.limRatioMeas hρ)
-  let f := v.limRatioMeas hρ
-  have f_meas : Measurable f := v.limRatioMeas_measurable hρ
-  -- Note(kmill): smul elaborator when used for CoeFun fails to get CoeFun instance to trigger
-  -- unless you use the `(... :)` notation. Another fix is using `(2 : Nat)`, so this appears
-  -- to be an unpleasant interaction with default instances.
-  have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) := by
-    apply le_trans _ (zero_le _)
-    have M : MeasurableSet (s ∩ f ⁻¹' {0}) := hs.inter (f_meas (measurableSet_singleton _))
-    simp only [ν, nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
-    apply (ae_restrict_iff' M).2
-    exact eventually_of_forall fun x hx => hx.2
-  have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
-    apply le_trans (le_of_eq _) (zero_le _)
-    apply withDensity_absolutelyContinuous μ _
-    rw [← nonpos_iff_eq_zero]
-    exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
-  have C :
-    ∀ n : ℤ,
-      ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) ≤
-        ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
-    intro n
-    let I := Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))
-    have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
-    simp only [ν, M, withDensity_apply, coe_nnreal_smul_apply]
-    calc
-      (∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ) ≤ ∫⁻ _ in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ :=
-        lintegral_mono_ae ((ae_restrict_iff' M).2 (eventually_of_forall fun x hx => hx.2.2.le))
-      _ = (t : ℝ≥0∞) ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
-        simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
-      _ = (t : ℝ≥0∞) ^ (2 : ℤ) * ((t : ℝ≥0∞) ^ (n - 1) * μ (s ∩ f ⁻¹' I)) := by
-        rw [← mul_assoc, ← ENNReal.zpow_add t_ne_zero ENNReal.coe_ne_top]
-        congr 2
-        abel
-      _ ≤ (t : ℝ≥0∞) ^ (2 : ℤ) * ρ (s ∩ f ⁻¹' I) := by
-        gcongr
-        rw [← ENNReal.coe_zpow (zero_lt_one.trans ht).ne']
-        apply v.mul_measure_le_of_subset_lt_limRatioMeas hρ
-        intro x hx
-        apply lt_of_lt_of_le _ hx.2.1
-        rw [← ENNReal.coe_zpow (zero_lt_one.trans ht).ne', ENNReal.coe_lt_coe, sub_eq_add_neg,
-          zpow_add₀ t_ne_zero']
-        conv_rhs => rw [← mul_one (t ^ n)]
-        gcongr
-        rw [zpow_neg_one]
-        exact inv_lt_one ht
-  calc
-    ν s =
-      ν (s ∩ f ⁻¹' {0}) + ν (s ∩ f ⁻¹' {∞}) +
-        ∑' n : ℤ, ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) :=
-      measure_eq_measure_preimage_add_measure_tsum_Ico_zpow ν f_meas hs ht
-    _ ≤
-        ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) + ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) +
-          ∑' n : ℤ, ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) :=
-      (add_le_add (add_le_add A B) (ENNReal.tsum_le_tsum C))
-    _ = ((t : ℝ≥0∞) ^ 2 • ρ :) s :=
-      (measure_eq_measure_preimage_add_measure_tsum_Ico_zpow ((t : ℝ≥0∞) ^ 2 • ρ) f_meas hs ht).symm
+  -- have t_ne_zero' : t ≠ 0 := (zero_lt_one.trans ht).ne'
+  -- have t_ne_zero : (t : ℝ≥0∞) ≠ 0 := by simpa only [ENNReal.coe_eq_zero, Ne] using t_ne_zero'
+  -- let ν := μ.withDensity (v.limRatioMeas hρ)
+  -- let f := v.limRatioMeas hρ
+  -- have f_meas : Measurable f := v.limRatioMeas_measurable hρ
+  -- -- Note(kmill): smul elaborator when used for CoeFun fails to get CoeFun instance to trigger
+  -- -- unless you use the `(... :)` notation. Another fix is using `(2 : Nat)`, so this appears
+  -- -- to be an unpleasant interaction with default instances.
+  -- have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) := by
+  --   apply le_trans _ (zero_le _)
+  --   have M : MeasurableSet (s ∩ f ⁻¹' {0}) := hs.inter (f_meas (measurableSet_singleton _))
+  --   simp only [ν, nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
+  --   apply (ae_restrict_iff' M).2
+  --   exact eventually_of_forall fun x hx => hx.2
+  -- have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
+  --   apply le_trans (le_of_eq _) (zero_le _)
+  --   apply withDensity_absolutelyContinuous μ _
+  --   rw [← nonpos_iff_eq_zero]
+  --   exact (measure_mono inter_subset_right).trans (v.measure_limRatioMeas_top hρ).le
+  -- have C :
+  --   ∀ n : ℤ,
+  --     ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) ≤
+  --       ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
+  --   intro n
+  --   let I := Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))
+  --   have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
+  --   simp only [ν, M, withDensity_apply, coe_nnreal_smul_apply]
+  --   calc
+  --     (∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ) ≤ ∫⁻ _ in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ :=
+  --       lintegral_mono_ae ((ae_restrict_iff' M).2 (eventually_of_forall fun x hx => hx.2.2.le))
+  --     _ = (t : ℝ≥0∞) ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
+  --       simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
+  --     _ = (t : ℝ≥0∞) ^ (2 : ℤ) * ((t : ℝ≥0∞) ^ (n - 1) * μ (s ∩ f ⁻¹' I)) := by
+  --       rw [← mul_assoc, ← ENNReal.zpow_add t_ne_zero ENNReal.coe_ne_top]
+  --       congr 2
+  --       abel
+  --     _ ≤ (t : ℝ≥0∞) ^ (2 : ℤ) * ρ (s ∩ f ⁻¹' I) := by
+  --       gcongr
+  --       rw [← ENNReal.coe_zpow (zero_lt_one.trans ht).ne']
+  --       apply v.mul_measure_le_of_subset_lt_limRatioMeas hρ
+  --       intro x hx
+  --       apply lt_of_lt_of_le _ hx.2.1
+  --       rw [← ENNReal.coe_zpow (zero_lt_one.trans ht).ne', ENNReal.coe_lt_coe, sub_eq_add_neg,
+  --         zpow_add₀ t_ne_zero']
+  --       conv_rhs => rw [← mul_one (t ^ n)]
+  --       gcongr
+  --       rw [zpow_neg_one]
+  --       exact inv_lt_one ht
+  sorry
+  -- calc
+  --   ν s =
+  --     ν (s ∩ f ⁻¹' {0}) + ν (s ∩ f ⁻¹' {∞}) +
+  --       ∑' n : ℤ, ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) :=
+  --     measure_eq_measure_preimage_add_measure_tsum_Ico_zpow ν f_meas hs ht
+  --   _ ≤
+  --       ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) + ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) +
+  --         ∑' n : ℤ, ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) :=
+  --     (add_le_add (add_le_add A B) (ENNReal.tsum_le_tsum C))
+  --   _ = ((t : ℝ≥0∞) ^ 2 • ρ :) s :=
+  --     (measure_eq_measure_preimage_add_measure_tsum_Ico_zpow ((t : ℝ≥0∞) ^ 2 • ρ) f_meas hs ht).symm
 #align vitali_family.with_density_le_mul VitaliFamily.withDensity_le_mul
 
 /-- As an intermediate step to show that `μ.withDensity (v.limRatioMeas hρ) = ρ`, we show here

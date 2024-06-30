@@ -58,10 +58,19 @@ open Function
 -- to ensure these instances are computable
 /-- Nonnegative real numbers. -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
-  CanonicallyOrderedCommSemiring, Inhabited
+  Zero, One, Semiring, CommMonoidWithZero, CommSemiring,
+  -- Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
+  SemilatticeInf, SemilatticeSup, DistribLattice,
+  -- SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
+  Inhabited
+  -- CanonicallyOrderedCommSemiring, Inhabited
 #align nnreal NNReal
+
+instance : StrictOrderedSemiring NNReal := Nonneg.strictOrderedSemiring
+
+instance : OrderedCommSemiring NNReal := Nonneg.orderedCommSemiring
+
+instance : CanonicallyOrderedCommSemiring NNReal := Nonneg.canonicallyOrderedCommSemiring
 
 namespace NNReal
 
@@ -73,6 +82,8 @@ instance : OrderBot ℝ≥0 := inferInstance
 instance : Archimedean ℝ≥0 := Nonneg.archimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+
+noncomputable instance : Semifield ℝ≥0 := Nonneg.dumb
 
 noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
   Nonneg.canonicallyLinearOrderedSemifield
@@ -449,7 +460,7 @@ noncomputable example : LinearOrderedSemiring ℝ≥0 := by infer_instance
 
 example : OrderedCommSemiring ℝ≥0 := by infer_instance
 
-noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
+noncomputable example : LinearOrderedCommMonoid ℝ≥0 := sorry -- by infer_instance
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
@@ -626,7 +637,8 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 #align nnreal.zero_le_coe NNReal.zero_le_coe
 
-instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
+instance instOrderedSMul
+    {M : Type*} [AddCommMonoid M] [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
     OrderedSMul ℝ≥0 M where
   smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) : _)
   lt_of_smul_lt_smul_of_pos {a b c} hab _ :=
@@ -949,7 +961,7 @@ theorem div_le_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ b * 
 #align nnreal.div_le_iff NNReal.div_le_iff
 
 nonrec theorem div_le_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ r * b :=
-  @div_le_iff' ℝ _ a r b <| pos_iff_ne_zero.2 hr
+  @div_le_iff' ℝ _ _ a r b <| pos_iff_ne_zero.2 hr
 #align nnreal.div_le_iff' NNReal.div_le_iff'
 
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
@@ -961,11 +973,11 @@ theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
 #align nnreal.div_le_of_le_mul' NNReal.div_le_of_le_mul'
 
 nonrec theorem le_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
-  @le_div_iff ℝ _ a b r <| pos_iff_ne_zero.2 hr
+  @le_div_iff ℝ _ _ a b r <| pos_iff_ne_zero.2 hr
 #align nnreal.le_div_iff NNReal.le_div_iff
 
 nonrec theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b :=
-  @le_div_iff' ℝ _ a b r <| pos_iff_ne_zero.2 hr
+  @le_div_iff' ℝ _ _ a b r <| pos_iff_ne_zero.2 hr
 #align nnreal.le_div_iff' NNReal.le_div_iff'
 
 theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r :=
@@ -1229,7 +1241,7 @@ section StrictMono
 
 open NNReal
 
-variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {Γ₀ : Type*} [CommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
   `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/

@@ -982,7 +982,7 @@ protected theorem mul_pos (a b : ℤ√d) (a0 : 0 < a) (b0 : 0 < b) : 0 < a * b 
 #align zsqrtd.mul_pos Zsqrtd.mul_pos
 
 instance : LinearOrderedCommRing (ℤ√d) :=
-  { Zsqrtd.commRing, Zsqrtd.linearOrder, Zsqrtd.nontrivial with
+  { Zsqrtd.linearOrder, Zsqrtd.nontrivial with
     add_le_add_left := Zsqrtd.add_le_add_left
     mul_pos := Zsqrtd.mul_pos
     zero_le_one := by trivial }

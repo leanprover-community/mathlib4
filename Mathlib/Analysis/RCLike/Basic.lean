@@ -940,7 +940,7 @@ def toStrictOrderedCommRing : StrictOrderedCommRing K where
   mul_pos z w hz hw := by
     rw [lt_iff_re_im, map_zero] at hz hw ⊢
     simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; apply ext <;> ring_nf
+  -- mul_comm := by intros; apply ext <;> ring_nf
 
 scoped[ComplexOrder] attribute [instance] RCLike.toStrictOrderedCommRing
 

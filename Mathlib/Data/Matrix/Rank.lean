@@ -250,7 +250,7 @@ end StarOrderedField
 
 section LinearOrderedField
 
-variable [Fintype m] [LinearOrderedField R]
+variable [Fintype m] [Field R] [LinearOrderedField R]
 
 theorem ker_mulVecLin_transpose_mul_self (A : Matrix m n R) :
     LinearMap.ker (Aᵀ * A).mulVecLin = LinearMap.ker (mulVecLin A) := by
@@ -291,7 +291,7 @@ end LinearOrderedField
 /-- The rank of a matrix is the rank of the space spanned by its rows.
 
 TODO: prove this in a generality that works for `ℂ` too, not just `ℚ` and `ℝ`. -/
-theorem rank_eq_finrank_span_row [LinearOrderedField R] [Finite m] (A : Matrix m n R) :
+theorem rank_eq_finrank_span_row [Field R] [LinearOrderedField R] [Finite m] (A : Matrix m n R) :
     A.rank = finrank R (Submodule.span R (Set.range A)) := by
   cases nonempty_fintype m
   rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]

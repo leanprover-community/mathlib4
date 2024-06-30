@@ -1369,7 +1369,7 @@ variable {R : Type*}
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing R] {a : ℍ[R]}
+variable [CommRing R] [LinearOrderedCommRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
@@ -1419,7 +1419,7 @@ end LinearOrderedCommRing
 
 section Field
 
-variable [LinearOrderedField R] (a b : ℍ[R])
+variable [Field R] [LinearOrderedField R] (a b : ℍ[R])
 
 @[simps (config := .lemmasOnly)]
 instance instInv : Inv ℍ[R] :=

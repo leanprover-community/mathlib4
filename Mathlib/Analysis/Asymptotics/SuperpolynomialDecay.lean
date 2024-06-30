@@ -142,7 +142,7 @@ end CommSemiring
 
 section OrderedCommSemiring
 
-variable [TopologicalSpace β] [OrderedCommSemiring β] [OrderTopology β]
+variable [TopologicalSpace β] [CommSemiring β] [OrderedCommSemiring β] [OrderTopology β]
 
 theorem SuperpolynomialDecay.trans_eventuallyLE (hk : 0 ≤ᶠ[l] k) (hg : SuperpolynomialDecay l k g)
     (hg' : SuperpolynomialDecay l k g') (hfg : g ≤ᶠ[l] f) (hfg' : f ≤ᶠ[l] g') :
@@ -156,7 +156,7 @@ end OrderedCommSemiring
 
 section LinearOrderedCommRing
 
-variable [TopologicalSpace β] [LinearOrderedCommRing β] [OrderTopology β]
+variable [TopologicalSpace β] [CommRing β] [LinearOrderedCommRing β] [OrderTopology β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_abs_tendsto_zero :
@@ -214,7 +214,7 @@ end Field
 
 section LinearOrderedField
 
-variable [TopologicalSpace β] [LinearOrderedField β] [OrderTopology β]
+variable [TopologicalSpace β] [Field β] [LinearOrderedField β] [OrderTopology β]
 variable (f)
 
 theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
@@ -308,7 +308,7 @@ end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable [NormedLinearOrderedField β]
+variable [Field β] [NormedLinearOrderedField β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_norm_tendsto_zero :

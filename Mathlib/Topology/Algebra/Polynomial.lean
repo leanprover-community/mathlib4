@@ -102,7 +102,7 @@ protected theorem continuousOn_aeval {s} : ContinuousOn (fun x : A => aeval x p)
 
 end TopologicalAlgebra
 
-theorem tendsto_abv_eval₂_atTop {R S k α : Type*} [Semiring R] [Ring S] [LinearOrderedField k]
+theorem tendsto_abv_eval₂_atTop {R S k α : Type*} [Semiring R] [Ring S] [Field k] [LinearOrderedField k]
     (f : R →+* S) (abv : S → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (hf : f p.leadingCoeff ≠ 0) {l : Filter α} {z : α → S} (hz : Tendsto (abv ∘ z) l atTop) :
     Tendsto (fun x => abv (p.eval₂ f (z x))) l atTop := by
@@ -120,7 +120,7 @@ theorem tendsto_abv_eval₂_atTop {R S k α : Type*} [Semiring R] [Ring S] [Line
     simpa using ihp hf
 #align polynomial.tendsto_abv_eval₂_at_top Polynomial.tendsto_abv_eval₂_atTop
 
-theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [LinearOrderedField k] (abv : R → k)
+theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [Field k] [LinearOrderedField k] (abv : R → k)
     [IsAbsoluteValue abv] (p : R[X]) (h : 0 < degree p) {l : Filter α} {z : α → R}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (p.eval (z x))) l atTop := by
   apply tendsto_abv_eval₂_atTop _ _ _ h _ hz
@@ -128,7 +128,7 @@ theorem tendsto_abv_atTop {R k α : Type*} [Ring R] [LinearOrderedField k] (abv 
 #align polynomial.tendsto_abv_at_top Polynomial.tendsto_abv_atTop
 
 theorem tendsto_abv_aeval_atTop {R A k α : Type*} [CommSemiring R] [Ring A] [Algebra R A]
-    [LinearOrderedField k] (abv : A → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
+    [Field k] [LinearOrderedField k] (abv : A → k) [IsAbsoluteValue abv] (p : R[X]) (hd : 0 < degree p)
     (h₀ : algebraMap R A p.leadingCoeff ≠ 0) {l : Filter α} {z : α → A}
     (hz : Tendsto (abv ∘ z) l atTop) : Tendsto (fun x => abv (aeval (z x) p)) l atTop :=
   tendsto_abv_eval₂_atTop _ abv p hd h₀ hz

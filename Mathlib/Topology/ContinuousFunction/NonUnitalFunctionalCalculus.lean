@@ -483,7 +483,7 @@ section Order
 
 section Semiring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [OrderedCommSemiring R] [Nontrivial R]
 variable [StarRing R] [StarOrderedRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
@@ -543,7 +543,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommRing R] [OrderedCommRing R] [Nontrivial R]
 variable [StarRing R] [StarOrderedRing R] [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]

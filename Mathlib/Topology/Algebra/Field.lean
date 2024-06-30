@@ -105,7 +105,7 @@ end affineHomeomorph
 
 section LocalExtr
 
-variable {α β : Type*} [TopologicalSpace α] [LinearOrderedSemifield β] {a : α}
+variable {α β : Type*} [TopologicalSpace α] [Semifield β] [LinearOrderedSemifield β] {a : α}
 
 open Topology
 

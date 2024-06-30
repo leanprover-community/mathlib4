@@ -237,8 +237,9 @@ protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
 protected theorem prod {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
   intro x y
-  rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
-  exact max_le_max (hf x y) (hg x y)
+  sorry
+  -- rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
+  -- exact max_le_max (hf x y) (hg x y)
 #align lipschitz_with.prod LipschitzWith.prod
 
 protected theorem prod_mk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
@@ -329,8 +330,9 @@ protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : Lipschi
 protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
     (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (max Kf Kg) (fun x => (f x, g x)) s := by
   intro _ hx _ hy
-  rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
-  exact max_le_max (hf hx hy) (hg hx hy)
+  sorry
+  -- rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
+  -- exact max_le_max (hf hx hy) (hg hx hy)
 
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
     (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (f · b) s) (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :

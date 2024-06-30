@@ -311,7 +311,7 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
 #align is_primitive_root.norm_eq_one IsPrimitiveRoot.norm_eq_one
 
 /-- If `K` is linearly ordered, the norm of a primitive root is `1` if `n` is odd. -/
-theorem norm_eq_one_of_linearly_ordered {K : Type*} [LinearOrderedField K] [Algebra K L]
+theorem norm_eq_one_of_linearly_ordered {K : Type*} [Field K] [LinearOrderedField K] [Algebra K L]
     (hodd : Odd (n : ℕ)) : norm K ζ = 1 := by
   have hz := congr_arg (norm K) ((IsPrimitiveRoot.iff_def _ n).1 hζ).1
   rw [← (algebraMap K L).map_one, Algebra.norm_algebraMap, one_pow, map_pow, ← one_pow ↑n] at hz

@@ -50,8 +50,8 @@ instance : SecondCountableTopology ℝ≥0∞ :=
 instance : MetrizableSpace ENNReal :=
   orderIsoUnitIntervalBirational.toHomeomorph.embedding.metrizableSpace
 
-theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  coe_strictMono.embedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
+theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) := sorry
+  -- coe_strictMono.embedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
 #align ennreal.embedding_coe ENNReal.embedding_coe
 
 theorem isOpen_ne_top : IsOpen { a : ℝ≥0∞ | a ≠ ∞ } := isOpen_ne

@@ -55,7 +55,8 @@ noncomputable section
 
 /-- ereal : The type `[-∞, ∞]` -/
 def EReal := WithBot (WithTop ℝ)
-  deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder
+  deriving Bot, Zero, One, Nontrivial, PartialOrder, AddCommMonoid
+  -- deriving Bot, Zero, One, Nontrivial, AddMonoid, PartialOrder, AddCommMonoid
 #align ereal EReal
 
 instance : ZeroLEOneClass EReal := inferInstanceAs (ZeroLEOneClass (WithBot (WithTop ℝ)))

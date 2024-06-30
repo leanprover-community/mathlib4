@@ -218,7 +218,8 @@ lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by
   exact isClosed_singleton.preimage continuous_negPart
 #align is_closed_nonneg isClosed_nonneg
 
-theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]
+theorem isClosed_le_of_isClosed_nonneg
+    {G} [AddCommGroup G] [OrderedAddCommGroup G] [TopologicalSpace G]
     [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
     IsClosed { p : G × G | p.fst ≤ p.snd } := by
   have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G => p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } :=

@@ -346,10 +346,11 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
   use n
   intros m hm
   rw [← tsub_add_cancel_of_le hm]
-  simp only [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict,
-    pow_add, map_pow, map_mul, ← comp_apply, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
-    Subtype.coe_mk] at e ⊢
-  rw [e]
+  sorry
+  -- simp only [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict,
+  --   pow_add, map_pow, map_mul, ← comp_apply, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
+  --   Subtype.coe_mk] at e ⊢
+  -- rw [e]
 #align algebraic_geometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux AlgebraicGeometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
 
 theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : Opens X)

@@ -19,7 +19,7 @@ convex hull, radon, affine independence
 
 open Finset Set
 
-variable {ι 𝕜 E : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {f : ι → E}
+variable {ι 𝕜 E : Type*} [Field 𝕜] [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {f : ι → E}
 
 /-- **Radon theorem on convex sets**: Any family `f` of affine dependent vectors contains a set `I`
 with the property that convex hulls of `I` and `Iᶜ` intersect. -/

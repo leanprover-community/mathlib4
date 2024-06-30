@@ -59,7 +59,7 @@ instance instCovariantClassLE : CovariantClass (Lp E p μ) (Lp E p μ) (· + ·)
 #align measure_theory.Lp.has_le.le.covariant_class MeasureTheory.Lp.instCovariantClassLE
 
 instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
-  { Subtype.partialOrder _, AddSubgroup.toAddCommGroup _ with
+  { Subtype.partialOrder _ with --  AddSubgroup.toAddCommGroup _ with
     add_le_add_left := fun _ _ => add_le_add_left }
 #align measure_theory.Lp.ordered_add_comm_group MeasureTheory.Lp.instOrderedAddCommGroup
 

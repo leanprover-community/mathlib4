@@ -118,7 +118,8 @@ instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V)
 
 end
 
-variable {Γ R V : Type*} [OrderedCancelAddCommMonoid Γ] [AddCommMonoid V] [SMul R V]
+variable {Γ R V : Type*}
+  [AddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ] [AddCommMonoid V] [SMul R V]
 
 instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
   smul x y := {
@@ -175,7 +176,7 @@ theorem smul_coeff_left [SMulWithZero R W] {x : HahnSeries Γ R}
 
 end HahnModule
 
-variable [OrderedCancelAddCommMonoid Γ]
+variable [AddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ]
 
 namespace HahnSeries
 
@@ -319,7 +320,7 @@ theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : Hahn
   simp [hx, mul_coeff]
 #align hahn_series.support_mul_subset_add_support HahnSeries.support_mul_subset_add_support
 
-theorem mul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+theorem mul_coeff_order_add_order {Γ} [AddCommMonoid Γ] [LinearOrderedCancelAddCommMonoid Γ]
     [NonUnitalNonAssocSemiring R] (x y : HahnSeries Γ R) :
     (x * y).coeff (x.order + y.order) = x.coeff x.order * y.coeff y.order := by
   by_cases hx : x = 0; · simp [hx, mul_coeff]
@@ -401,8 +402,8 @@ instance [CommRing R] : CommRing (HahnSeries Γ R) :=
   { inferInstanceAs (CommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Ring (HahnSeries Γ R)) with }
 
-instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
-    NoZeroDivisors (HahnSeries Γ R) where
+instance {Γ} [AddCommMonoid Γ] [LinearOrderedCancelAddCommMonoid Γ]
+    [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] : NoZeroDivisors (HahnSeries Γ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
     contrapose! xy
     rw [Ne, HahnSeries.ext_iff, Function.funext_iff, not_forall]
@@ -410,12 +411,13 @@ instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R
     rw [mul_coeff_order_add_order x y, zero_coeff, mul_eq_zero]
     simp [coeff_order_ne_zero, xy]
 
-instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
+instance {Γ} [AddCommMonoid Γ] [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
     IsDomain (HahnSeries Γ R) :=
   NoZeroDivisors.to_isDomain _
 
 @[simp]
-theorem order_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R]
+theorem order_mul {Γ}
+    [AddCommMonoid Γ] [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R]
     [NoZeroDivisors R] {x y : HahnSeries Γ R} (hx : x ≠ 0) (hy : y ≠ 0) :
     (x * y).order = x.order + y.order := by
   apply le_antisymm
@@ -427,7 +429,8 @@ theorem order_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocS
 #align hahn_series.order_mul HahnSeries.order_mul
 
 @[simp]
-theorem order_pow {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Semiring R] [NoZeroDivisors R]
+theorem order_pow {Γ}
+    [AddCommMonoid Γ] [LinearOrderedCancelAddCommMonoid Γ] [Semiring R] [NoZeroDivisors R]
     (x : HahnSeries Γ R) (n : ℕ) : (x ^ n).order = n • x.order := by
   induction' n with h IH
   · simp
@@ -527,7 +530,7 @@ end Semiring
 
 section Domain
 
-variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ']
+variable {Γ' : Type*} [AddCommMonoid Γ'] [OrderedCancelAddCommMonoid Γ']
 
 theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
     (hf : ∀ x y, f (x + y) = f x + f y) (x y : HahnSeries Γ R) :
@@ -625,7 +628,7 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
 
 section Domain
 
-variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ']
+variable {Γ' : Type*} [AddCommMonoid Γ'] [OrderedCancelAddCommMonoid Γ']
 
 /-- Extending the domain of Hahn series is an algebra homomorphism. -/
 @[simps!]

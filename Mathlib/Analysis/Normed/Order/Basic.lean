@@ -25,7 +25,8 @@ variable {α : Type*}
 /-- A `NormedOrderedAddGroup` is an additive group that is both a `NormedAddCommGroup` and an
 `OrderedAddCommGroup`. This class is necessary to avoid diamonds caused by both classes
 carrying their own group structure. -/
-class NormedOrderedAddGroup (α : Type*) extends OrderedAddCommGroup α, Norm α, MetricSpace α where
+class NormedOrderedAddGroup (α : Type*) [AddCommGroup α]
+    extends OrderedAddCommGroup α, Norm α, MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 #align normed_ordered_add_group NormedOrderedAddGroup
@@ -34,7 +35,8 @@ class NormedOrderedAddGroup (α : Type*) extends OrderedAddCommGroup α, Norm α
 `OrderedCommGroup`. This class is necessary to avoid diamonds caused by both classes
 carrying their own group structure. -/
 @[to_additive]
-class NormedOrderedGroup (α : Type*) extends OrderedCommGroup α, Norm α, MetricSpace α where
+class NormedOrderedGroup (α : Type*) [CommGroup α]
+    extends OrderedCommGroup α, Norm α, MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 #align normed_ordered_group NormedOrderedGroup
@@ -42,7 +44,8 @@ class NormedOrderedGroup (α : Type*) extends OrderedCommGroup α, Norm α, Metr
 /-- A `NormedLinearOrderedAddGroup` is an additive group that is both a `NormedAddCommGroup`
 and a `LinearOrderedAddCommGroup`. This class is necessary to avoid diamonds caused by both
 classes carrying their own group structure. -/
-class NormedLinearOrderedAddGroup (α : Type*) extends LinearOrderedAddCommGroup α, Norm α,
+class NormedLinearOrderedAddGroup (α : Type*) [AddCommGroup α]
+    extends LinearOrderedAddCommGroup α, Norm α,
   MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -52,7 +55,7 @@ class NormedLinearOrderedAddGroup (α : Type*) extends LinearOrderedAddCommGroup
 `LinearOrderedCommGroup`. This class is necessary to avoid diamonds caused by both classes
 carrying their own group structure. -/
 @[to_additive]
-class NormedLinearOrderedGroup (α : Type*) extends LinearOrderedCommGroup α, Norm α,
+class NormedLinearOrderedGroup (α : Type*) [CommGroup α] extends LinearOrderedCommGroup α, Norm α,
   MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
@@ -60,7 +63,7 @@ class NormedLinearOrderedGroup (α : Type*) extends LinearOrderedCommGroup α, N
 
 /-- A `NormedLinearOrderedField` is a field that is both a `NormedField` and a
     `LinearOrderedField`. This class is necessary to avoid diamonds. -/
-class NormedLinearOrderedField (α : Type*) extends LinearOrderedField α, Norm α,
+class NormedLinearOrderedField (α : Type*) [Field α] extends LinearOrderedField α, Norm α,
   MetricSpace α where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
@@ -69,21 +72,21 @@ class NormedLinearOrderedField (α : Type*) extends LinearOrderedField α, Norm 
 #align normed_linear_ordered_field NormedLinearOrderedField
 
 @[to_additive]
-instance (priority := 100) NormedOrderedGroup.toNormedCommGroup [NormedOrderedGroup α] :
-    NormedCommGroup α :=
+instance (priority := 100) NormedOrderedGroup.toNormedCommGroup
+    [CommGroup α] [NormedOrderedGroup α] : NormedCommGroup α :=
   ⟨NormedOrderedGroup.dist_eq⟩
 #align normed_ordered_group.to_normed_comm_group NormedOrderedGroup.toNormedCommGroup
 #align normed_ordered_add_group.to_normed_add_comm_group NormedOrderedAddGroup.toNormedAddCommGroup
 
 @[to_additive]
 instance (priority := 100) NormedLinearOrderedGroup.toNormedOrderedGroup
-    [NormedLinearOrderedGroup α] : NormedOrderedGroup α :=
+    [CommGroup α] [NormedLinearOrderedGroup α] : NormedOrderedGroup α :=
   ⟨NormedLinearOrderedGroup.dist_eq⟩
 #align normed_linear_ordered_group.to_normed_ordered_group NormedLinearOrderedGroup.toNormedOrderedGroup
 #align normed_linear_ordered_add_group.to_normed_ordered_add_group NormedLinearOrderedAddGroup.toNormedOrderedAddGroup
 
 instance (priority := 100) NormedLinearOrderedField.toNormedField (α : Type*)
-    [NormedLinearOrderedField α] : NormedField α where
+    [Field α] [NormedLinearOrderedField α] : NormedField α where
   dist_eq := NormedLinearOrderedField.dist_eq
   norm_mul' := NormedLinearOrderedField.norm_mul'
 #align normed_linear_ordered_field.to_normed_field NormedLinearOrderedField.toNormedField
@@ -95,26 +98,26 @@ noncomputable instance Real.normedLinearOrderedField : NormedLinearOrderedField 
   ⟨dist_eq_norm, norm_mul⟩
 
 @[to_additive]
-instance OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGroup αᵒᵈ :=
-  { @NormedOrderedGroup.toNormedCommGroup α _, OrderDual.orderedCommGroup with }
+instance OrderDual.normedOrderedGroup [CommGroup α] [NormedOrderedGroup α] : NormedOrderedGroup αᵒᵈ :=
+  { @NormedOrderedGroup.toNormedCommGroup α _ _, OrderDual.orderedCommGroup with }
 
 @[to_additive]
-instance OrderDual.normedLinearOrderedGroup [NormedLinearOrderedGroup α] :
+instance OrderDual.normedLinearOrderedGroup [CommGroup α] [NormedLinearOrderedGroup α] :
     NormedLinearOrderedGroup αᵒᵈ :=
   { OrderDual.normedOrderedGroup, OrderDual.instLinearOrder _ with }
 
-instance Additive.normedOrderedAddGroup [NormedOrderedGroup α] :
+instance Additive.normedOrderedAddGroup [CommGroup α] [NormedOrderedGroup α] :
     NormedOrderedAddGroup (Additive α) :=
   { Additive.normedAddCommGroup, Additive.orderedAddCommGroup with }
 
-instance Multiplicative.normedOrderedGroup [NormedOrderedAddGroup α] :
+instance Multiplicative.normedOrderedGroup [AddCommGroup α] [NormedOrderedAddGroup α] :
     NormedOrderedGroup (Multiplicative α) :=
   { Multiplicative.normedCommGroup, Multiplicative.orderedCommGroup with }
 
-instance Additive.normedLinearOrderedAddGroup [NormedLinearOrderedGroup α] :
+instance Additive.normedLinearOrderedAddGroup [CommGroup α] [NormedLinearOrderedGroup α] :
     NormedLinearOrderedAddGroup (Additive α) :=
   { Additive.normedAddCommGroup, Additive.linearOrderedAddCommGroup with }
 
-instance Multiplicative.normedlinearOrderedGroup [NormedLinearOrderedAddGroup α] :
+instance Multiplicative.normedlinearOrderedGroup [AddCommGroup α] [NormedLinearOrderedAddGroup α] :
     NormedLinearOrderedGroup (Multiplicative α) :=
   { Multiplicative.normedCommGroup, Multiplicative.linearOrderedCommGroup with }

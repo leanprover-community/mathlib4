@@ -37,7 +37,7 @@ end NormedField
 
 section LinearOrderedField
 
-variable {𝕜 : Type*} [LinearOrderedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrderedField 𝕜]
 
 theorem pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atTop] fun x => x ^ ((p : ℤ) - q) := by
@@ -71,7 +71,7 @@ end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [NormedLinearOrderedField 𝕜]
 
 theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
     (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
