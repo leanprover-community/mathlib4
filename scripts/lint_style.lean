@@ -26,10 +26,9 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
     let n ← lintAllFiles (System.mkFilePath [s]) errorStyle
     numberErrorFiles := numberErrorFiles + n
-  -- Make sure this return value can be used further in shell scripts:
-  -- exit codes 125 and 126 are disallowed, as is any number higher than 128.
-  if numberErrorFiles == 128 then return 128
-  else return min numberErrorFiles 125
+  -- Make sure to return an exit code of at most 125, so this return value can be used further
+  -- in shell scripts.
+  return min numberErrorFiles 125
 
 /-- Setting up command line options and help text for `lake exe lint_style`. -/
 -- so far, no help options or so: perhaps that is fine?

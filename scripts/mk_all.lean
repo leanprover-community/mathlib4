@@ -68,10 +68,9 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
       updates := updates + 1
   if updates == 0 then
     IO.println "No update necessary"
-  -- Make sure this return value can be used further in shell scripts:
-  -- exit codes 125 and 126 are disallowed, as is any number higher than 128.
-  if updates == 128 then return 128
-  else return min updates 125
+  -- Make sure to return an exit code of at most 125, so this return value can be used further
+  -- in shell scripts.
+  return min updates 125
 
 open Cli in
 /-- Setting up command line options and help text for `lake exe mk_all`. -/
