@@ -61,7 +61,7 @@ register_option linter.unusedTactic : Bool := {
   descr := "enable the unused tactic linter"
 }
 
-namespace unusedTactic
+namespace UnusedTactic
 
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
 abbrev M := StateRefT (HashMap String.Range Syntax) IO
