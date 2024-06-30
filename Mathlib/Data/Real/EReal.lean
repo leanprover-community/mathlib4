@@ -900,6 +900,24 @@ theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤
   exact EReal.add_lt_add hx.lt_top hy.lt_top
 #align ereal.add_lt_top EReal.add_lt_top
 
+theorem add_le_add_right {x y z : EReal} (h : x ≤ y) : x + z ≤ y + z := by
+  rcases lt_or_eq_of_le h with (h | rfl)
+  swap; exact le_rfl
+  induction z with
+  | h_bot => simp
+  | h_real z => exact add_lt_add_right_coe h z |>.le
+  | h_top => exact (add_top_of_ne_bot h.ne_bot).symm ▸ le_top
+
+theorem add_le_add_left {x y z : EReal} (h : x ≤ y) : z + x ≤ z + y :=
+  add_comm z x ▸ add_comm z y ▸ add_le_add_right h
+
+theorem add_le_add {x y z t : EReal} (h1 : x ≤ y) (h2 : z ≤ t) : x + z ≤ y + t := by
+  rcases lt_or_eq_of_le h1 with (h1 | h1)
+  swap; exact h1 ▸ add_le_add_left h2
+  rcases lt_or_eq_of_le h2 with (h2 | h2)
+  swap; exact h2 ▸ add_le_add_right h1.le
+  exact (add_lt_add h1 h2).le
+
 /-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
 the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
 instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
