@@ -28,16 +28,16 @@ local notation "π₁" => prod.fst
 local notation "π₂" => prod.snd
 local notation "π(" a ", " b ")" => prod.lift a b
 
-@[simps]
-def tensorObj (X Y : Dial C) : Dial C where
+/-- The object `X ⊗ Y` in the `Dial C` category just tuples the left and right components. -/
+@[simps] def tensorObj (X Y : Dial C) : Dial C where
   src := X.src ⨯ Y.src
   tgt := X.tgt ⨯ Y.tgt
   rel :=
     (Subobject.pullback (prod.map π₁ π₁)).obj X.rel ⊓
     (Subobject.pullback (prod.map π₂ π₂)).obj Y.rel
 
-@[simps]
-def tensorHom {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
+/-- The functorial action of `X ⊗ Y` in `Dial C`. -/
+@[simps] def tensorHom {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     tensorObj X₁ Y₁ ⟶ tensorObj X₂ Y₂ where
   f := prod.map f.f g.f
   F := π(prod.map π₁ π₁ ≫ f.F, prod.map π₂ π₂ ≫ g.F)
@@ -53,8 +53,10 @@ def tensorHom {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
       rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at this
       convert this using 3 <;> simp
 
+/-- The unit for the tensor `X ⊗ Y` in `Dial C`. -/
 @[simps] def tensorUnit : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }
 
+/-- Left unit cancellation `1 ⊗ X ≅ X` in `Dial C`. -/
 @[simps] def leftUnitor (X : Dial C) : tensorObj tensorUnit X ≅ X where
   hom := {
     f := π₂
@@ -72,6 +74,7 @@ def tensorHom {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
       apply le_of_eq; congr 3; ext <;> simp
   }
 
+/-- Right unit cancellation `X ⊗ 1 ≅ X` in `Dial C`. -/
 @[simps] def rightUnitor (X : Dial C) : tensorObj X tensorUnit ≅ X where
   hom := {
     f := π₁
@@ -89,6 +92,7 @@ def tensorHom {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
       apply le_of_eq; congr 3; ext <;> simp
   }
 
+/-- The associator for tensor, `(X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)` in `Dial C`. -/
 @[simps!]
 def associator (X Y Z : Dial C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) where
   hom := {
@@ -159,14 +163,14 @@ instance : MonoidalCategory (Dial C) :=
     (pentagon := pentagon)
     (triangle := triangle)
 
-@[simps]
-def tensorSymm (X Y : Dial C) : tensorObj X Y ⟶ tensorObj Y X where
+/-- The braiding map `X ⊗ Y ⟶ Y ⊗ X` in `Dial C`. -/
+@[simps] def tensorSymm (X Y : Dial C) : tensorObj X Y ⟶ tensorObj Y X where
   f := (prod.braiding ..).hom
   F := π₂ ≫ (prod.braiding ..).hom
   le := by simp [Subobject.inf_pullback, ← Subobject.pullback_comp]
 
-@[simps]
-def braiding (X Y : Dial C) : tensorObj X Y ≅ tensorObj Y X where
+/-- The braiding isomorphism `X ⊗ Y ≅ Y ⊗ X` in `Dial C`. -/
+@[simps] def braiding (X Y : Dial C) : tensorObj X Y ≅ tensorObj Y X where
   hom := tensorSymm ..
   inv := tensorSymm ..
 

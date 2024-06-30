@@ -29,9 +29,12 @@ namespace Subobject
 variable {C} [Category C] [HasPullbacks C] {A : C}
 
 variable (C) in
+/-- If `Subobject.HasHImp C` then `Subobject (A : C)` has a Heyting implication. -/
 protected class HasHImp where
+  /-- The Heyting implication of `Subobject A`. -/
   himp {A : C} (X Y : Subobject A) : Subobject A
   le_himp_iff {A : C} {a b c : Subobject A} : a ≤ himp b c ↔ a ⊓ b ≤ c
+  /-- The Heyting implication is stable under pullbacks. -/
   himp_pullback_le {A B : C} (f : A ⟶ B) {a b : Subobject B} :
     himp ((pullback f).obj a) ((pullback f).obj b) ≤ (pullback f).obj (himp a b)
 
@@ -65,8 +68,8 @@ local notation "π(" a ", " b ")" => prod.lift a b
 
 open MonoidalCategory CartesianClosed
 
-@[simps]
-def ihomObj (X Y : Dial C) : Dial C where
+/-- The internal hom object in `Dial C`. -/
+@[simps] def ihomObj (X Y : Dial C) : Dial C where
   src := (X.src ⟹ Y.src) ⨯ ((X.src ⨯ Y.tgt) ⟹ X.tgt)
   tgt := X.src ⨯ Y.tgt
   rel :=
@@ -74,8 +77,8 @@ def ihomObj (X Y : Dial C) : Dial C where
     haveI F2 := π(π(π₂ ≫ π₁, π₁ ≫ π₁) ≫ (exp.ev _).app _, π₂ ≫ π₂)
     (Subobject.pullback F1).obj X.rel ⇨ (Subobject.pullback F2).obj Y.rel
 
-@[simps]
-def ihomMap {X Y₁ Y₂ : Dial C} (f : Y₁ ⟶ Y₂) : ihomObj X Y₁ ⟶ ihomObj X Y₂ where
+/-- The functorial action of `ihom X Y` in the second argument. -/
+@[simps] def ihomMap {X Y₁ Y₂ : Dial C} (f : Y₁ ⟶ Y₂) : ihomObj X Y₁ ⟶ ihomObj X Y₂ where
   f := π(π₁ ≫ (exp _).map f.f,
     CartesianClosed.curry
       (π(π(π₁ ≫ π₁, π(π(π₁ ≫ π₁, π₂ ≫ π₁) ≫ (exp.ev _).app _, π₁ ≫ π₂) ≫ f.F),
@@ -102,8 +105,8 @@ def ihomMap {X Y₁ Y₂ : Dial C} (f : Y₁ ⟶ Y₂) : ihomObj X Y₁ ⟶ ihom
           equals π(π₂ ≫ π₁, π₁ ≫ π₁) ≫ prod.map (𝟙 _) ((exp X.src).map f.f) => simp
         rw [Category.assoc, ev_natural]
 
-@[simps]
-def ihom (X : Dial C) : Dial C ⥤ Dial C where
+/-- `(ihom X -)` is a functor on `Dial C`. -/
+@[simps] def ihom (X : Dial C) : Dial C ⥤ Dial C where
   obj := ihomObj X
   map := ihomMap
   map_id Y := by
@@ -140,8 +143,8 @@ def ihom (X : Dial C) : Dial C ⥤ Dial C where
       · (slice_rhs 1 2 => rfl); congr 1; rw [← ev_natural]; simp; congr 1
         (slice_rhs 1 2 => rfl); congr 1; simp
 
-@[simps]
-def curry {X Y Z : Dial C} (f : tensorObj X Y ⟶ Z) : Y ⟶ ihomObj X Z where
+/-- `curry` maps `X ⊗ Y ⟶ Z` to `X ⟶ Y ⟹ Z`, in `Dial C`. -/
+@[simps] def curry {X Y Z : Dial C} (f : tensorObj X Y ⟶ Z) : Y ⟶ ihomObj X Z where
   f := π(
     CartesianClosed.curry f.f,
     CartesianClosed.curry (π(prod.map π₁ (𝟙 _), π₁ ≫ π₂) ≫ f.F ≫ π₁))
@@ -199,8 +202,8 @@ theorem curry_natural_right {X Y Z Z' : Dial C} (f : tensorObj X Y ⟶ Z) (g : Z
       equals π(π₂ ≫ π₁, π₁) ≫ prod.map (𝟙 _) (CartesianClosed.curry f.f) => simp
     rw [Category.assoc, ← uncurry_eq, uncurry_curry]
 
-@[simps]
-def uncurry {X Y Z : Dial C} (f : Y ⟶ ihomObj X Z) : tensorObj X Y ⟶ Z where
+/-- `uncurry` maps `X ⟶ Y ⟹ Z` to `X ⊗ Y ⟶ Z`, in `Dial C`. -/
+@[simps] def uncurry {X Y Z : Dial C} (f : Y ⟶ ihomObj X Z) : tensorObj X Y ⟶ Z where
   f := CartesianClosed.uncurry (f.f ≫ π₁)
   F := π(
     π(prod.map π₁ (𝟙 _), π₁ ≫ π₂) ≫ CartesianClosed.uncurry (f.f ≫ π₂),

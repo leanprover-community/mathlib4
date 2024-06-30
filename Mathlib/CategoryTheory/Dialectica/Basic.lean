@@ -29,9 +29,15 @@ universe v u
 variable {C : Type u} [Category.{v} C] [HasFiniteProducts C] [HasPullbacks C]
 
 variable (C) in
+/-- The Dialectica category. An object of the category is a triple `⟨U, X, α ⊆ U × X⟩`,
+and a morphism from `⟨U, X, α⟩` to `⟨V, Y, β⟩` is a pair `(f : U ⟶ V, F : U ⨯ Y ⟶ X)` such that
+`α(u, F(u, y)) ≤ β(f(u), y)`. -/
 structure Dial where
+  /-- The source object -/
   src : C
+  /-- The target object -/
   tgt : C
+  /-- A subobject of `src ⨯ tgt`, interpreted as a relation -/
   rel : Subobject (src ⨯ tgt)
 
 namespace Dial
@@ -40,10 +46,14 @@ local notation "π₁" => prod.fst
 local notation "π₂" => prod.snd
 local notation "π(" a ", " b ")" => prod.lift a b
 
-@[ext]
-structure Hom (X Y : Dial C) where
+/-- A morphism in the `Dial C` category from `⟨U, X, α⟩` to `⟨V, Y, β⟩` is a pair
+`(f : U ⟶ V, F : U ⨯ Y ⟶ X)` such that `α(u, F(u, y)) ≤ β(f(u), y)`. -/
+@[ext] structure Hom (X Y : Dial C) where
+  /-- Maps the sources -/
   f : X.src ⟶ Y.src
+  /-- Maps the targets (contravariantly) -/
   F : X.src ⨯ Y.tgt ⟶ X.tgt
+  /-- This says `α(u, F(u, y)) ≤ β(f(u), y)` using subobject pullbacks -/
   le :
     (Subobject.pullback π(π₁, F)).obj X.rel ≤
     (Subobject.pullback (prod.map f (𝟙 _))).obj Y.rel
