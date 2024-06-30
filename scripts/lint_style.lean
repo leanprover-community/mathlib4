@@ -18,14 +18,26 @@ open Cli
 
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  if args.hasFlag "update" && args.hasFlag "regenerate" then
+  -- FIXME: consolidate this validation logic, by incorporating it into the match below
+  let update := args.hasFlag "update"
+  let regenerate := args.hasFlag "regenerate"
+  let fix := args.hasFlag "fix"
+  if update && regenerate then
     IO.println "invalid options: the --update and --regenerate flags are mutually exclusive"
     return 2
+  else if update && fix then
+    IO.println "invalid options: the --update and --fix flags are mutually exclusive"
+  else if regenerate && fix then
+    IO.println "invalid options: the --regenerate and --fix flags are mutually exclusive"
   let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
-  let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "regenerate") with
-  | (true, _) => OutputSetting.append
-  | (_, true) => OutputSetting.regenerate
-  | _ => OutputSetting.print errorStyle
+  let mode : OutputSetting := match (update, regenerate, fix) with
+  | (true, _, _) => OutputSetting.append
+  | (false, true, _) => OutputSetting.regenerate
+  | (false, false, true) => OutputSetting.fix
+  | (false, false, false) => OutputSetting.print errorStyle
+  if !(mode matches OutputSetting.print _) && args.hasFlag "github" then
+    IO.println "warning: the --github option has no effect when updating the style exceptions file"
+    return 2
   let mut numberErrorFiles : UInt32 := 0
 
   -- When regenerating the exceptions, we have to be careful to not over-write one collection
@@ -46,11 +58,13 @@ def lint_style : Cmd := `[Cli|
 
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
-                 otherwise, produce human-readable output"
+                 otherwise, produce human-readable output\n\
+                 has no effect when updating the style exceptions file"
     update;     "Append all new errors to the current list of exceptions \
                  (leaving existing entries untouched)"
     regenerate; "Regenerate the file of style exceptions: \
                  add entries for all current errors and update or remove all obsolete ones"
+    fix;        "Where possible, fix style errors by rewriting the affected lines in-place"
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/

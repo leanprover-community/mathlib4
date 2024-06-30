@@ -336,6 +336,9 @@ def allLinters : Array TextbasedLinter := #[
 inductive OutputSetting : Type
   /-- Print any style error to standard output (the default) -/
   | print (style : ErrorFormat)
+  /-- Attempt to fix style errors where possible: rewrite the affected lines in place;
+    print information about all errors to standard output -/
+  | fix
   /-- Append all new errors to the style exceptions file (and print them),
   leaving existing ones intact -/
   | append
@@ -401,6 +404,8 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
       numberErrorFiles := numberErrorFiles + 1
     match mode with
     | OutputSetting.print style => formatErrors allUnexpectedErrors style
+    | OutputSetting.fix =>
+      IO.println "TODO: the --fix option is not implemented yet"
     | OutputSetting.append =>
         if allUnexpectedErrors.size > 0 then
           formatErrors allUnexpectedErrors ErrorFormat.humanReadable
