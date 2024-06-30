@@ -31,7 +31,7 @@ namespace Style.SetOption
 
 /-- Whether a syntax element is a `set_option` command, tactic or term:
 Return the name of the option being set, if any. -/
-def parse_set_option : Syntax → Option (Name)
+def parse_set_option : Syntax → Option Name
   -- This handles all four possibilities of `_val`: a string, number, `true` and `false`.
   | `(command|set_option $name:ident $_val) => some name.getId
   | `(set_option $name:ident $_val in $_x) => some name.getId
