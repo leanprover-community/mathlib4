@@ -57,8 +57,8 @@ protected theorem PosSemidef.diagonal [DecidableEq n] {d : n → R} (h : 0 ≤ d
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
 lemma posSemidef_diagonal_iff [DecidableEq n] {d : n → R} :
-    PosSemidef (diagonal d) ↔ (∀ i : n, 0 ≤ d i) := by
-  refine ⟨fun ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), .diagonal⟩
+    PosSemidef (diagonal d) ↔ (∀ i : n, 0 ≤ d i) :=
+  ⟨fun ⟨_, hP⟩ i ↦ by simpa using hP (Pi.single i 1), .diagonal⟩
 
 namespace PosSemidef
 

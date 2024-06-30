@@ -102,24 +102,24 @@ section StarOrderedRing
 
 variable [PartialOrder R] [NonUnitalRing R] [StarRing R] [StarOrderedRing R] [NoZeroDivisors R]
 
-/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
+/-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_star_self_nonneg (v : n → R) : 0 ≤ dotProduct (star v) v :=
   Fintype.sum_nonneg fun _ => star_mul_self_nonneg _
 
-/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
+/-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_self_star_nonneg (v : n → R) : 0 ≤ dotProduct v (star v) :=
   Fintype.sum_nonneg fun _ => mul_star_self_nonneg _
 
-/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
+/-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_star_self_eq_zero {v : n → R} : dotProduct (star v) v = 0 ↔ v = 0 :=
   (Fintype.sum_eq_zero_iff_of_nonneg fun i => star_mul_self_nonneg _).trans <|
     by simp [Function.funext_iff, mul_eq_zero]
 #align matrix.dot_product_star_self_eq_zero Matrix.dotProduct_star_self_eq_zero
 
-/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
+/-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 ↔ v = 0 :=
   (Fintype.sum_eq_zero_iff_of_nonneg fun i => mul_star_self_nonneg _).trans <|
@@ -176,7 +176,7 @@ lemma vecMul_self_mul_conjTranspose_eq_zero (A : Matrix m n R) (v : m → R) :
     v ᵥ* (A * Aᴴ) = 0 ↔ v ᵥ* A = 0 := by
   simpa only [conjTranspose_conjTranspose] using vecMul_conjTranspose_mul_self_eq_zero Aᴴ _
 
-/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
+/-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_star_self_pos_iff {v : n → R} :
     0 < dotProduct (star v) v ↔ v ≠ 0 := by
@@ -191,7 +191,7 @@ theorem dotProduct_star_self_pos_iff {v : n → R} :
     simp [hv] at h
   · exact (star_mul_self_pos <| isRegular_of_ne_zero ·)
 
-/-- Note that this applies to `ℂ` via `Complex.strictOrderedCommRing`. -/
+/-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]
 theorem dotProduct_self_star_pos_iff {v : n → R} : 0 < dotProduct v (star v) ↔ v ≠ 0 := by
   simpa using dotProduct_star_self_pos_iff (v := star v)
