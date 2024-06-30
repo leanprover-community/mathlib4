@@ -106,7 +106,7 @@ theorem completeSpace (h : RestrictGenTopology {s : Set (Π i, E i) | IsVonNBoun
     range_toUniformOnFun]
   simp only [setOf_and, setOf_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]
-  · exact UniformOnFun.isClosed_setOf_continuous _ h
+  · exact UniformOnFun.isClosed_setOf_continuous h
   · exact isClosed_iInter fun m ↦ isClosed_iInter fun i ↦
       isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq H (H.add H)
   · exact isClosed_iInter fun m ↦ isClosed_iInter fun i ↦
