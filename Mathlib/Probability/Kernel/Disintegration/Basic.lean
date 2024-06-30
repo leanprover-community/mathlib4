@@ -68,10 +68,10 @@ open scoped ENNReal MeasureTheory Topology ProbabilityTheory
 
 #noalign probability_theory.cond_kernel_real
 #noalign probability_theory.cond_kernel_real_Iic
-#noalign probability_theory.set_lintegral_cond_kernel_real_Iic
-#noalign probability_theory.set_lintegral_cond_kernel_real_univ
+#noalign probability_theory.setLIntegral_cond_kernel_real_Iic
+#noalign probability_theory.setLIntegral_cond_kernel_real_univ
 #noalign probability_theory.lintegral_cond_kernel_real_univ
-#noalign probability_theory.set_lintegral_cond_kernel_real_prod
+#noalign probability_theory.setLIntegral_cond_kernel_real_prod
 #noalign probability_theory.lintegral_cond_kernel_real_mem
 #noalign probability_theory.kernel.const_eq_comp_prod_real
 #noalign probability_theory.measure_eq_comp_prod_real

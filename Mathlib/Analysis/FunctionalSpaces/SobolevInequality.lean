@@ -195,8 +195,7 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
           ∏ j in s, (∫⋯∫⁻_{j}, (∫⋯∫⁻_{i}, f ∂μ) ∂μ) x ^ p := by
               -- identify the result with the RHS integrand
               congr! 2 with j hj
-              · push_cast
-                ring_nf
+              · ring_nf
               · congr! 1
                 rw [← lmarginal_union μ f hf]
                 · congr
@@ -263,11 +262,13 @@ theorem lintegral_mul_prod_lintegral_pow_le {p : ℝ} (hp₀ : 0 ≤ p)
 
 /-- Special case of the grid-lines lemma `lintegral_mul_prod_lintegral_pow_le`, taking the extremal
 exponent `p = (#ι - 1)⁻¹`. -/
-theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
+theorem lintegral_prod_lintegral_pow_le
     {p : ℝ} (hp : Real.IsConjExponent #ι p)
     {f} (hf : Measurable f) :
     ∫⁻ x, ∏ i, (∫⁻ xᵢ, f (update x i xᵢ) ∂μ i) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) ∂.pi μ
     ≤ (∫⁻ x, f x ∂.pi μ) ^ p := by
+  have : Nontrivial ι :=
+    Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.one_lt)
   have h0 : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
   have h1 : (0:ℝ) < #ι - 1 := by linarith
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
@@ -279,7 +280,7 @@ theorem lintegral_prod_lintegral_pow_le [Nontrivial ι]
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
@@ -299,8 +300,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
   By taking the product over these `n` factors, raising them to the power `(n-1)⁻¹` and integrating,
   we get the inequality `∫ |u| ^ (n/(n-1)) ≤ ∫ x, ∏ i, (∫ xᵢ, |Du(update x i xᵢ)|)^(n-1)⁻¹`.
   The result then follows from the grid-lines lemma. -/
-  have : Nontrivial ι :=
-    Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.one_lt)
   have : (1:ℝ) ≤ ↑#ι - 1 := by
     have hι : (2:ℝ) ≤ #ι := by exact_mod_cast hp.one_lt
     linarith
@@ -316,20 +315,18 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
         simp_rw [prod_const, card_univ]
         norm_cast
     _ ≤ ∫⁻ x, ∏ i, (∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖₊) ^ ((1 : ℝ) / (#ι - 1 : ℝ)) := ?_
-    _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p :=
+    _ ≤ (∫⁻ x, ‖fderiv ℝ u x‖₊) ^ p := by
         -- apply the grid-lines lemma
-        lintegral_prod_lintegral_pow_le _ hp (by fun_prop)
+        apply lintegral_prod_lintegral_pow_le _ hp
+        have : Continuous (fderiv ℝ u) := hu.continuous_fderiv le_rfl
+        fun_prop
   -- we estimate |u x| using the fundamental theorem of calculus.
   gcongr with x i
   calc (‖u x‖₊ : ℝ≥0∞)
-      = (‖∫ xᵢ in Iic (x i), deriv (u ∘ update x i) xᵢ‖₊ : ℝ≥0∞) := by
-        -- apply the half-infinite fundamental theorem of calculus
-        have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp (by convert contDiff_update 1 x i)
-        have h4u : HasCompactSupport (u ∘ update x i) :=
-          h2u.comp_closedEmbedding (closedEmbedding_update x i)
-        simp [HasCompactSupport.integral_Iic_deriv_eq h3u h4u (x i)]
-    _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖₊ :=
-        ennnorm_integral_le_lintegral_ennnorm _ -- apply the triangle inequality
+    _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖₊ := by
+        apply le_trans (by simp) (HasCompactSupport.ennnorm_le_lintegral_Ici_deriv _ _ _)
+        · exact hu.comp (by convert contDiff_update 1 x i)
+        · exact h2u.comp_closedEmbedding (closedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, (‖fderiv ℝ u (update x i xᵢ)‖₊ : ℝ≥0∞) := ?_
   gcongr with y; swap; exact Measure.restrict_le_self
   -- bound the derivative which appears
@@ -420,6 +417,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
         * (∫⁻ x, ‖fderiv ℝ u x‖₊ ∂(volume : Measure (ι → ℝ)).map e.symm) ^ p := by
         congr
         rw [lintegral_map _ e.symm.continuous.measurable]
+        have : Continuous (fderiv ℝ u) := hu.continuous_fderiv le_rfl
         fun_prop
   rw [← ENNReal.mul_le_mul_left h3c ENNReal.coe_ne_top, ← mul_assoc, ← ENNReal.coe_mul, ← hC,
     ENNReal.coe_mul] at this
@@ -675,7 +673,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
     · positivity
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
   let C := SNormLESNormFDerivOfEqConst F μ p
-  calc snorm u q μ = snorm u q (μ.restrict s) := by rw [snorm_restrict_eq h2u]
+  calc snorm u q μ = snorm u q (μ.restrict s) := by rw [snorm_restrict_eq_of_support_subset h2u]
     _ ≤ snorm u p' (μ.restrict s) * t := by
         convert snorm_le_snorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
         rw [← ENNReal.coe_rpow_of_nonneg]
@@ -684,7 +682,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
           norm_cast
           rw [hp']
           simpa using hpq
-    _ = snorm u p' μ * t := by rw [snorm_restrict_eq h2u]
+    _ = snorm u p' μ * t := by rw [snorm_restrict_eq_of_support_subset h2u]
     _ ≤ (C * snorm (fderiv ℝ u) p μ) * t := by
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
