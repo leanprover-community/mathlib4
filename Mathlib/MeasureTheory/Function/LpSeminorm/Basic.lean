@@ -629,6 +629,24 @@ lemma snorm_restrict_le (f : α → F) (p : ℝ≥0∞) (μ : Measure α) (s : S
     snorm f p (μ.restrict s) ≤ snorm f p μ :=
   snorm_mono_measure f Measure.restrict_le_self
 
+/-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
+`μ.restrict s` are the same. -/
+theorem snorm_restrict_eq_of_support_subset {s : Set α} {f : α → F} (hsf : f.support ⊆ s) :
+    snorm f p (μ.restrict s) = snorm f p μ := by
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  by_cases hp_top : p = ∞
+  · simp only [hp_top, snorm_exponent_top, snormEssSup]
+    apply ENNReal.essSup_restrict_eq_of_support_subset
+    apply Function.support_subset_iff.2 (fun x hx ↦ ?_)
+    simp only [ne_eq, ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
+    exact Function.support_subset_iff.1 hsf x hx
+  · simp_rw [snorm_eq_snorm' hp0 hp_top, snorm']
+    congr 1
+    apply setLIntegral_eq_of_support_subset
+    have : ¬(p.toReal ≤ 0) := by simpa only [not_le] using ENNReal.toReal_pos hp0 hp_top
+    simpa [this] using hsf
+
 theorem Memℒp.restrict (s : Set α) {f : α → E} (hf : Memℒp f p μ) : Memℒp f p (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 #align measure_theory.mem_ℒp.restrict MeasureTheory.Memℒp.restrict

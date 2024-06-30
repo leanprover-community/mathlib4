@@ -274,7 +274,7 @@ theorem prod_set :
         ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
   | x :: xs, 0, a => by simp [set]
   | x :: xs, i + 1, a => by
-    simp [set, prod_set xs i a, mul_assoc, Nat.succ_eq_add_one, Nat.add_lt_add_iff_right]
+    simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
   | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
 #align list.prod_update_nth List.prod_set
 #align list.sum_update_nth List.sum_set

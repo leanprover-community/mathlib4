@@ -787,6 +787,8 @@ instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
 #align pgame.setoid SetTheory.PGame.setoid
 
+theorem equiv_def {x y : PGame} : x ≈ y ↔ x ≤ y ∧ y ≤ x := Iff.rfl
+
 theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
   h.1
 #align pgame.equiv.le SetTheory.PGame.Equiv.le
@@ -889,15 +891,25 @@ theorem lf_of_lf_of_equiv {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≈ z) : x 
   lf_congr_imp equiv_rfl h₂ h₁
 #align pgame.lf_of_lf_of_equiv SetTheory.PGame.lf_of_lf_of_equiv
 
+instance : Trans (· ⧏ ·) (· ≈ ·) (· ⧏ ·) := ⟨lf_of_lf_of_equiv⟩
+
 @[trans]
 theorem lf_of_equiv_of_lf {x y z : PGame} (h₁ : x ≈ y) : y ⧏ z → x ⧏ z :=
   lf_congr_imp (Equiv.symm h₁) equiv_rfl
 #align pgame.lf_of_equiv_of_lf SetTheory.PGame.lf_of_equiv_of_lf
 
+instance : Trans (· ≈ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_equiv_of_lf⟩
+
 @[trans]
 theorem lt_of_lt_of_equiv {x y z : PGame} (h₁ : x < y) (h₂ : y ≈ z) : x < z :=
   h₁.trans_le h₂.1
 #align pgame.lt_of_lt_of_equiv SetTheory.PGame.lt_of_lt_of_equiv
+
+instance : Trans
+    ((· < ·) : PGame → PGame → Prop)
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· < ·) : PGame → PGame → Prop) where
+  trans := lt_of_lt_of_equiv
 
 @[trans]
 theorem lt_of_equiv_of_lt {x y z : PGame} (h₁ : x ≈ y) : y < z → x < z :=
