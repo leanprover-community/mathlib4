@@ -51,7 +51,7 @@ satisfying `ι ≫ f = ι ≫ g` together with morphisms
 satisfying `ι ≫ r = 𝟙 W`, `g ≫ t = 𝟙 X` and `f ≫ t = r ≫ ι`.
 
 The name "equalizer" is appropriate, since any split equalizer is a equalizer, see
-`Category_theory.IsSplitEqualizer.isEqualizer`.
+`CategoryTheory.IsSplitEqualizer.isEqualizer`.
 Split equalizers are also absolute, since a functor preserves all the structure above.
 -/
 structure IsSplitEqualizer {W : C} (ι : W ⟶ X) where
