@@ -45,6 +45,7 @@ Furthermore, we define:
 - `IsOfRelativeDimension n`: A standard smooth `R`-algebra `S` is of relative dimension `n`
   if `S` has a standard smooth submersive `R`-presentation of dimension `n`. Equivalently,
   that every standard smooth has dimension `n` (TODO, see below).
+- `IsStandardSmoothOfRelativeDimension n`: The combination of the first two.
 
 Finally, in the `RingHom` namespace we define
 
@@ -199,7 +200,13 @@ def IsStandardSmooth (f : R →+* S) : Prop :=
 
 /-- A standard smooth ring hom `R →+* S` is standard smooth of relative dimension `n`
 if `S` has relative dimension `n` as `R`-algebra. -/
-def IsOfRelativeDimension (n : ℕ) (f : R →+* S) (hf : f.IsStandardSmooth) : Prop :=
+def IsOfRelativeDimension (n : ℕ) (f : R →+* S) (hf : IsStandardSmooth.{t, w} f) : Prop :=
   @Algebra.IsOfRelativeDimension.{t, w} _ _ _ _ f.toAlgebra n hf
+
+/-- A ring hom `R →+* S` is standard smooth of relative dimension `n` if
+it is both standard smooth and is of relative dimension `n`. -/
+structure IsStandardSmoothOfRelativeDimension (n : ℕ) (f : R →+* S) : Prop where
+  isStandardSmooth : IsStandardSmooth.{t, w} f
+  isOfRelativeDimension : IsOfRelativeDimension.{t, w} n f isStandardSmooth
 
 end RingHom
