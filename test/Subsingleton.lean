@@ -41,7 +41,14 @@ error: tactic 'subsingleton' could not prove equality since it could not synthes
 #guard_msgs in
 example (α : Sort _) (x y : α) : x = y := by subsingleton
 
-example (α : Sort _) (x y : α) : x = y := by apply Subsingleton.elim
+instance (α : Sort _) (x y : α) : Decidable (x = y) := isTrue (Subsingleton.elim _ _)
+
+/--
+error: tactic 'subsingleton' could not prove equality since it could not synthesize
+  Subsingleton α
+-/
+#guard_msgs in
+instance (α : Sort _) (x y : α) : Decidable (x = y) := isTrue (by subsingleton)
 
 end AvoidSurprise
 
