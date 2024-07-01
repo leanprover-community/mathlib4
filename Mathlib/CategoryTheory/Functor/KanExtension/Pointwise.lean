@@ -172,7 +172,8 @@ end LeftExtension
 
 namespace RightExtension
 
-variable {F L} (E E' : RightExtension L F)
+variable {F L}
+variable (E E' : RightExtension L F)
 
 /-- The cone for `StructuredArrow.proj Y L ⋙ F` attached to `E : RightExtension L F`.
 The point of this cone is `E.left.obj Y` -/
