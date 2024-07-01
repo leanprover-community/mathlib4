@@ -51,7 +51,7 @@ local notation "π(" a ", " b ")" => prod.lift a b
   f : X.src ⟶ Y.src
   /-- Maps the targets (contravariantly) -/
   F : X.src ⨯ Y.tgt ⟶ X.tgt
-  /-- This says `α(u, F(u, y)) ≤ β(f(u), y)` using subobject pullbacks -/
+  /-- This says `{(u, y) | α(u, F(u, y))} ⊆ {(u, y) | β(f(u), y)}` using subobject pullbacks -/
   le :
     (Subobject.pullback π(π₁, F)).obj X.rel ≤
     (Subobject.pullback (prod.map f (𝟙 _))).obj Y.rel
