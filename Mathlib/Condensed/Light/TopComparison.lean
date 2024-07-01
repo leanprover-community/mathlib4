@@ -10,13 +10,13 @@ import Mathlib.Condensed.TopComparison
 
 # The functor from topological spaces to light condensed sets
 
-We define the functor `topCatToLightCondensed : TopCat.{u} ⥤ CondensedSet.{u}`.
+We define the functor `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`.
 
 ## Projects
 
-* Prove that `topCatToLightCondensed` is faithful.
+* Prove that `topCatToLightCondSet` is faithful.
 * Define sequential topological spaces.
-* Prove that `topCatToLightCondensed` restricted to sequential spaces is fully faithful.
+* Prove that `topCatToLightCondSet` restricted to sequential spaces is fully faithful.
 * Define the left adjoint of the restriction mentioned in the previous point.
 -/
 
@@ -29,7 +29,7 @@ Associate to a `u`-small topological space the corresponding light condensed set
 `yonedaPresheaf`.
 -/
 -- @[simps!]
-noncomputable def TopCat.toLightCondensed (X : TopCat.{u}) : LightCondSet.{u} :=
+noncomputable def TopCat.toLightCondSet (X : TopCat.{u}) : LightCondSet.{u} :=
   @LightCondSet.ofSheafLightProfinite (yonedaPresheaf LightProfinite.toTopCat.{u} X) _ (by
     apply equalizerCondition_yonedaPresheaf LightProfinite.toTopCat.{u} X
     intro Z B π he
@@ -37,8 +37,8 @@ noncomputable def TopCat.toLightCondensed (X : TopCat.{u}) : LightCondSet.{u} :=
     apply QuotientMap.of_surjective_continuous he π.continuous)
 
 /--
-`TopCat.toLightCondensed` yields a functor from `TopCat.{u}` to `LightCondSet.{u}`.
+`TopCat.toLightCondSet` yields a functor from `TopCat.{u}` to `LightCondSet.{u}`.
 -/
-noncomputable def topCatToLightCondensed : TopCat.{u} ⥤ LightCondSet.{u} where
-  obj X := X.toLightCondensed
+noncomputable def topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u} where
+  obj X := X.toLightCondSet
   map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
