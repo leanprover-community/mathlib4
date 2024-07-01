@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
+import Mathlib.Analysis.NormedSpace.Completion
 
 #align_import analysis.inner_product_space.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
