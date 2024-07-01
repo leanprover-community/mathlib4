@@ -3,6 +3,7 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
 -/
+import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Functor.Trifunctor
 
@@ -126,13 +127,13 @@ scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
 @[delab app.CategoryTheory.MonoidalCategoryStruct.tensorUnit]
-def delabTensorUnit : Delab := whenPPOption getPPNotation do
+def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
   let e ← getExpr
   guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
   let C ← withNaryArg 0 delab
   `(𝟙_ $C)
 
-/-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z) ≃ X ⊗ (Y ⊗ Z)` -/
+/-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
 scoped notation "α_" => MonoidalCategoryStruct.associator
 
 /-- Notation for the `leftUnitor`: `𝟙_C ⊗ X ≃ X` -/
@@ -340,7 +341,7 @@ def whiskerLeftIso (X : C) {Y Z : C} (f : Y ≅ Z) : X ⊗ Y ≅ X ⊗ Z where
   inv := X ◁ f.inv
 
 instance whiskerLeft_isIso (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] : IsIso (X ◁ f) :=
-  IsIso.of_iso (whiskerLeftIso X (asIso f))
+  (whiskerLeftIso X (asIso f)).isIso_hom
 
 @[simp]
 theorem inv_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
@@ -368,7 +369,7 @@ def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
   inv := f.inv ▷ Z
 
 instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) :=
-  IsIso.of_iso (whiskerRightIso (asIso f) Z)
+  (whiskerRightIso (asIso f) Z).isIso_hom
 
 @[simp]
 theorem inv_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] :
@@ -411,7 +412,7 @@ section
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
-  IsIso.of_iso (asIso f ⊗ asIso g)
+  (asIso f ⊗ asIso g).isIso_hom
 #align category_theory.monoidal_category.tensor_is_iso CategoryTheory.MonoidalCategory.tensor_isIso
 
 @[simp]
@@ -433,13 +434,13 @@ theorem dite_whiskerRight {P : Prop} [Decidable P]
   split_ifs <;> rfl
 
 theorem tensor_dite {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
-    (g' : ¬P → (Y ⟶ Z)) : (f ⊗ if h : P then g h else g' h) = if h : P then f ⊗ g h else f ⊗ g' h :=
-  by split_ifs <;> rfl
+    (g' : ¬P → (Y ⟶ Z)) : (f ⊗ if h : P then g h else g' h) =
+    if h : P then f ⊗ g h else f ⊗ g' h := by split_ifs <;> rfl
 #align category_theory.monoidal_category.tensor_dite CategoryTheory.MonoidalCategory.tensor_dite
 
 theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
-    (g' : ¬P → (Y ⟶ Z)) : (if h : P then g h else g' h) ⊗ f = if h : P then g h ⊗ f else g' h ⊗ f :=
-  by split_ifs <;> rfl
+    (g' : ¬P → (Y ⟶ Z)) : (if h : P then g h else g' h) ⊗ f =
+    if h : P then g h ⊗ f else g' h ⊗ f := by split_ifs <;> rfl
 #align category_theory.monoidal_category.dite_tensor CategoryTheory.MonoidalCategory.dite_tensor
 
 @[simp]
@@ -542,8 +543,8 @@ theorem pentagon_inv_hom_hom_hom_inv :
 @[reassoc (attr := simp)]
 theorem pentagon_hom_inv_inv_inv_inv :
     W ◁ (α_ X Y Z).hom ≫ (α_ W X (Y ⊗ Z)).inv ≫ (α_ (W ⊗ X) Y Z).inv =
-      (α_ W (X ⊗ Y) Z).inv ≫ (α_ W X Y).inv ▷ Z :=
-  by simp [← cancel_epi (W ◁ (α_ X Y Z).inv)]
+      (α_ W (X ⊗ Y) Z).inv ≫ (α_ W X Y).inv ▷ Z := by
+  simp [← cancel_epi (W ◁ (α_ X Y Z).inv)]
 
 @[reassoc (attr := simp)]
 theorem pentagon_hom_hom_inv_hom_hom :
@@ -567,8 +568,8 @@ theorem pentagon_hom_hom_inv_inv_hom :
 @[reassoc (attr := simp)]
 theorem pentagon_inv_hom_hom_hom_hom :
     (α_ W X Y).inv ▷ Z ≫ (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom =
-      (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom :=
-  by simp [← cancel_epi ((α_ W X Y).hom ▷ Z)]
+      (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom := by
+  simp [← cancel_epi ((α_ W X Y).hom ▷ Z)]
 
 @[reassoc (attr := simp)]
 theorem pentagon_inv_inv_hom_inv_inv :
@@ -801,7 +802,6 @@ end
 section
 
 variable (C)
-variable [MonoidalCategory C]
 
 attribute [local simp] whisker_exchange
 
@@ -813,8 +813,7 @@ def tensor : C × C ⥤ C where
 #align category_theory.monoidal_category.tensor CategoryTheory.MonoidalCategory.tensor
 
 /-- The left-associated triple tensor product as a functor. -/
-def leftAssocTensor : C × C × C ⥤ C
-    where
+def leftAssocTensor : C × C × C ⥤ C where
   obj X := (X.1 ⊗ X.2.1) ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := (f.1 ⊗ f.2.1) ⊗ f.2.2
 #align category_theory.monoidal_category.left_assoc_tensor CategoryTheory.MonoidalCategory.leftAssocTensor
@@ -830,8 +829,7 @@ theorem leftAssocTensor_map {X Y} (f : X ⟶ Y) : (leftAssocTensor C).map f = (f
 #align category_theory.monoidal_category.left_assoc_tensor_map CategoryTheory.MonoidalCategory.leftAssocTensor_map
 
 /-- The right-associated triple tensor product as a functor. -/
-def rightAssocTensor : C × C × C ⥤ C
-    where
+def rightAssocTensor : C × C × C ⥤ C where
   obj X := X.1 ⊗ X.2.1 ⊗ X.2.2
   map {X Y : C × C × C} (f : X ⟶ Y) := f.1 ⊗ f.2.1 ⊗ f.2.2
 #align category_theory.monoidal_category.right_assoc_tensor CategoryTheory.MonoidalCategory.rightAssocTensor
@@ -846,6 +844,7 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = 
   rfl
 #align category_theory.monoidal_category.right_assoc_tensor_map CategoryTheory.MonoidalCategory.rightAssocTensor_map
 
+/-- The tensor product bifunctor `C ⥤ C ⥤ C` of a monoidal category. -/
 @[simps]
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
@@ -889,16 +888,17 @@ def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
-  NatIso.ofComponents (fun _ => MonoidalCategory.leftUnitor _)
+  NatIso.ofComponents MonoidalCategory.leftUnitor
 #align category_theory.monoidal_category.left_unitor_nat_iso CategoryTheory.MonoidalCategory.leftUnitorNatIso
 
 -- Porting Note: same as above
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
-  NatIso.ofComponents (fun _ => MonoidalCategory.rightUnitor _)
+  NatIso.ofComponents MonoidalCategory.rightUnitor
 #align category_theory.monoidal_category.right_unitor_nat_iso CategoryTheory.MonoidalCategory.rightUnitorNatIso
 
+/-- The associator as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/
 @[simps!]
 def curriedAssociatorNatIso :
     bifunctorComp₁₂ (curriedTensor C) (curriedTensor C) ≅
@@ -937,7 +937,7 @@ TODO: show this is an op-monoidal functor.
 abbrev tensoringLeft : C ⥤ C ⥤ C := curriedTensor C
 #align category_theory.monoidal_category.tensoring_left CategoryTheory.MonoidalCategory.tensoringLeft
 
-instance : Faithful (tensoringLeft C) where
+instance : (tensoringLeft C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)
@@ -950,7 +950,7 @@ We later show this is a monoidal functor.
 abbrev tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 #align category_theory.monoidal_category.tensoring_right CategoryTheory.MonoidalCategory.tensoringRight
 
-instance : Faithful (tensoringRight C) where
+instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)

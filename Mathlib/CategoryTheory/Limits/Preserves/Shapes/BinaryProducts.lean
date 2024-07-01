@@ -59,7 +59,8 @@ def isLimitOfReflectsOfMapIsLimit [ReflectsLimit (pair X Y) G]
   ReflectsLimit.reflects ((isLimitMapConeBinaryFanEquiv G f g).symm l)
 #align category_theory.limits.is_limit_of_reflects_of_map_is_limit CategoryTheory.Limits.isLimitOfReflectsOfMapIsLimit
 
-variable (X Y) [HasBinaryProduct X Y]
+variable (X Y)
+variable [HasBinaryProduct X Y]
 
 /-- If `G` preserves binary products and `C` has them, then the binary fan constructed of the mapped
 morphisms of the binary product cone is a limit.
@@ -96,6 +97,18 @@ theorem PreservesLimitPair.iso_hom : (PreservesLimitPair.iso G X Y).hom = prodCo
   rfl
 #align category_theory.limits.preserves_limit_pair.iso_hom CategoryTheory.Limits.PreservesLimitPair.iso_hom
 
+@[simp]
+theorem PreservesLimitPair.iso_inv_fst :
+    (PreservesLimitPair.iso G X Y).inv ≫ G.map prod.fst = prod.fst := by
+  rw [← Iso.cancel_iso_hom_left (PreservesLimitPair.iso G X Y), ← Category.assoc, Iso.hom_inv_id]
+  simp
+
+@[simp]
+theorem PreservesLimitPair.iso_inv_snd :
+    (PreservesLimitPair.iso G X Y).inv ≫ G.map prod.snd = prod.snd := by
+  rw [← Iso.cancel_iso_hom_left (PreservesLimitPair.iso G X Y), ← Category.assoc, Iso.hom_inv_id]
+  simp
+
 instance : IsIso (prodComparison G X Y) := by
   rw [← PreservesLimitPair.iso_hom]
   infer_instance
@@ -131,7 +144,8 @@ def isColimitOfReflectsOfMapIsColimit [ReflectsColimit (pair X Y) G]
   ReflectsColimit.reflects ((isColimitMapCoconeBinaryCofanEquiv G f g).symm l)
 #align category_theory.limits.is_colimit_of_reflects_of_map_is_colimit CategoryTheory.Limits.isColimitOfReflectsOfMapIsColimit
 
-variable (X Y) [HasBinaryCoproduct X Y]
+variable (X Y)
+variable [HasBinaryCoproduct X Y]
 
 /--
 If `G` preserves binary coproducts and `C` has them, then the binary cofan constructed of the mapped

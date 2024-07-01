@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.CompleteBooleanAlgebra
 
 #align_import order.category.Preord from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
@@ -105,8 +106,8 @@ def preordToCat : Preord.{u} ⥤ Cat where
 set_option linter.uppercaseLean3 false in
 #align Preord_to_Cat preordToCat
 
-instance : Faithful preordToCat.{u} where
+instance : preordToCat.{u}.Faithful where
   map_injective h := by ext x; exact Functor.congr_obj h x
 
-instance : Full preordToCat.{u} where
-  preimage {X Y} f := ⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩
+instance : preordToCat.{u}.Full where
+  map_surjective {X Y} f := ⟨⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩, rfl⟩

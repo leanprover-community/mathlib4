@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.Tactic.TryThis
-import Std.Linter.UnreachableTactic
-import Std.Control.Nondet.Basic
+import Batteries.Linter.UnreachableTactic
+import Batteries.Control.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Mathport.Rename
 
@@ -50,7 +50,7 @@ elab (name := registerHintStx) "register_hint" tac:tactic : command => liftTermE
   addHint tac
 
 initialize
-  Std.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
+  Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
 
 /--
 Construct a suggestion for a tactic.

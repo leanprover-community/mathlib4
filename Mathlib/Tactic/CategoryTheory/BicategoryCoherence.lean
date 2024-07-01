@@ -125,8 +125,7 @@ attribute [instance] isIso
 -- Porting note: the field `BicategoricalCoherence.hom'` was named `hom` in mathlib3, but in Lean4
 -- `f` and `g` are not explicit parameters, so that we have to redefine `hom` as follows
 /-- The chosen structural isomorphism between to 1-morphisms. -/
-@[reducible]
-def hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f ⟶ g := hom'
+abbrev hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f ⟶ g := hom'
 
 attribute [simp] hom hom'
 

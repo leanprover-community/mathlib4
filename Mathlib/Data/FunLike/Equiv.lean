@@ -58,7 +58,7 @@ Continuing the example above:
 ```
 /-- `MyIsoClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyIso`. -/
-class MyIsoClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
+class MyIsoClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
     [EquivLike F A B]
     extends MyHomClass F A B
 
@@ -82,7 +82,7 @@ Typically, you can just declare a new class analogous to `MyIsoClass`:
 structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B] extends MyIso A B :=
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
-class CoolerIsoClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
+class CoolerIsoClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
     [EquivLike F A B]
     extends MyIsoClass F A B :=
   (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
@@ -233,7 +233,7 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
   (EquivLike.bijective e).of_comp_iff' f
 #align equiv_like.comp_bijective EquivLike.comp_bijective
 
-/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
+/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
 lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
   ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 #align equiv_like.subsingleton_dom EquivLike.subsingleton_dom

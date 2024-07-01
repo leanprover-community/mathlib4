@@ -18,14 +18,17 @@ two properties:
 - The embedding of `A` in `Unitization 𝕜 A` is an isometry. (i.e., `Isometry Unitization.inr`)
 
 One way to do this is to pull back the norm from `WithLp 1 (𝕜 × A)`, that is,
-`‖(k, a)‖ = ‖k‖ + ‖a‖` using `Unitization.addEquiv` (i.e., the identity map). However, when the norm
-on `A` is *regular* (i.e., `ContinuousLinearMap.mul` is an isometry), there is another natural
-choice: the pullback of the norm on `𝕜 × (A →L[𝕜] A)` under the map
+`‖(k, a)‖ = ‖k‖ + ‖a‖` using `Unitization.addEquiv` (i.e., the identity map).
+This is implemented for the type synonym `WithLp 1 (Unitization 𝕜 A)` in
+`WithLp.instUnitizationNormedAddCommGroup`, and it is shown there that this is a Banach algebra.
+However, when the norm on `A` is *regular* (i.e., `ContinuousLinearMap.mul` is an isometry), there
+is another natural choice: the pullback of the norm on `𝕜 × (A →L[𝕜] A)` under the map
 `(k, a) ↦ (k, k • 1 + ContinuousLinearMap.mul 𝕜 A a)`. It turns out that among all norms on the
 unitization satisfying the properties specified above, the norm inherited from
 `WithLp 1 (𝕜 × A)` is maximal, and the norm inherited from this pullback is minimal.
+Of course, this means that `WithLp.equiv : WithLp 1 (Unitization 𝕜 A) → Unitization 𝕜 A` can be
+upgraded to a continuous linear equivalence (when `𝕜` and `A` are complete).
 
-For possibly non-unital `RegularNormedAlgebra`s  `A` (over `𝕜`), we construct a `NormedAlgebra`
 structure on `Unitization 𝕜 A` using the pullback described above. The reason for choosing this norm
 is that for a C⋆-algebra `A` its norm is always regular, and the pullback norm on `Unitization 𝕜 A`
 is then also a C⋆-norm.
@@ -88,7 +91,7 @@ theorem splitMul_injective_of_clm_mul_injective
     Function.Injective (splitMul 𝕜 A) := by
   rw [injective_iff_map_eq_zero]
   intro x hx
-  induction x using Unitization.ind
+  induction x
   rw [map_add] at hx
   simp only [splitMul_apply, fst_inl, snd_inl, map_zero, add_zero, fst_inr, snd_inr,
     zero_add, Prod.mk_add_mk, Prod.mk_eq_zero] at hx
@@ -100,8 +103,8 @@ theorem splitMul_injective_of_clm_mul_injective
 variable [RegularNormedAlgebra 𝕜 A]
 variable (𝕜 A)
 
-/- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective. We will use this
-to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
+/-- In a `RegularNormedAlgebra`, the map `Unitization.splitMul 𝕜 A` is injective.
+We will use this to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
 theorem splitMul_injective : Function.Injective (splitMul 𝕜 A) :=
   splitMul_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
 
@@ -113,17 +116,15 @@ section Aux
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This does not give us the desired topology,
 uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Prod`), so we only use
 it as a local instance to build the real one. -/
-@[reducible]
-noncomputable def normedRingAux : NormedRing (Unitization 𝕜 A) :=
+noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) :=
   NormedRing.induced (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
 
 attribute [local instance] Unitization.normedRingAux
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
-`Unitization.normedRingAux`), so we only use it as a local instance to build the real one.-/
-@[reducible]
-noncomputable def normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
+`Unitization.normedRingAux`), so we only use it as a local instance to build the real one. -/
+noncomputable abbrev normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
   NormedAlgebra.induced 𝕜 (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A)
 
 attribute [local instance] Unitization.normedAlgebraAux
@@ -150,7 +151,7 @@ theorem lipschitzWith_addEquiv :
   rw [← Real.toNNReal_ofNat]
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
   rw [norm_eq_sup, Prod.norm_def]
-  refine' max_le ?_ ?_
+  refine max_le ?_ ?_
   · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A
@@ -199,6 +200,10 @@ end Aux
 instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
   instUniformSpaceProd.comap (addEquiv 𝕜 A)
 
+/-- The natural equivalence between `Unitization 𝕜 A` and `𝕜 × A` as a uniform equivalence. -/
+def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
+  Equiv.toUniformEquivOfUniformInducing (addEquiv 𝕜 A) ⟨rfl⟩
+
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
@@ -221,8 +226,7 @@ noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
-noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
-    where
+noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   dist_eq := normedRingAux.dist_eq
   norm_mul := normedRingAux.norm_mul
   norm := normedRingAux.norm

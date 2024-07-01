@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Tomáš Skřivan All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
@@ -354,7 +354,7 @@ def iterate (n : Nat) (f : α → α) (x : α) : α :=
   | n+1 => iterate n f (f x)
 
 theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) := by
-  induction n <;> (simp[iterate]; fun_prop)
+  induction n <;> (simp [iterate]; fun_prop)
 
 
 example : let f := fun x : α => x; Con f := by fun_prop

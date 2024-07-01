@@ -61,8 +61,7 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note (#10756): added an `ext` lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
@@ -78,7 +77,6 @@ def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
 set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
--- mathport name: standard_simplex
 @[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
@@ -173,7 +171,7 @@ def boundary (n : ℕ) : SSet.{u} where
 set_option linter.uppercaseLean3 false in
 #align sSet.boundary SSet.boundary
 
--- mathport name: sSet.boundary
+/-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
@@ -197,7 +195,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
 set_option linter.uppercaseLean3 false in
 #align sSet.horn SSet.horn
 
--- mathport name: sSet.horn
+/-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
@@ -288,7 +286,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     use Fin.last (n+3)
     simp only [hₙ.ne, not_false_eq_true, Fin.zero_eta, zero_add, true_and]
     intro j
-    fin_cases j <;> simp [Fin.ext_iff] <;> omega
+    fin_cases j <;> simp [Fin.ext_iff]
   · use 0
     simp only [h₀.ne', not_false_eq_true, true_and]
     intro j
@@ -357,8 +355,7 @@ instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
--- Porting note (#10756): added an `ext` lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=

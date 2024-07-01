@@ -23,7 +23,7 @@ commutative ring, field of fractions
 
 
 
-open Function BigOperators
+open Function
 
 namespace IsLocalization
 
@@ -61,7 +61,8 @@ theorem mem_localizationLocalizationSubmodule {x : R} :
     exact ⟨y, y.prop, _, ⟨z, z.prop, rfl⟩, e.symm⟩
 #align is_localization.mem_localization_localization_submodule IsLocalization.mem_localizationLocalizationSubmodule
 
-variable (M N) [IsLocalization M S]
+variable (M N)
+variable [IsLocalization M S]
 
 theorem localization_localization_map_units [IsLocalization N T]
     (y : localizationLocalizationSubmodule M N) : IsUnit (algebraMap R T y) := by
@@ -82,7 +83,7 @@ theorem localization_localization_surj [IsLocalization N T] (x : T) :
   dsimp only at eq₁ eq₂ eq₃
   refine ⟨⟨z * t', z' * t, ?_⟩, ?_⟩ -- x = y / s = (z * t') / (z' * t)
   · rw [mem_localizationLocalizationSubmodule]
-    refine' ⟨s, t * t', _⟩
+    refine ⟨s, t * t', ?_⟩
     rw [RingHom.map_mul, ← eq₃, mul_assoc, ← RingHom.map_mul, mul_comm t, Submonoid.coe_mul]
   · simp only [Subtype.coe_mk, RingHom.map_mul, IsScalarTower.algebraMap_apply R S T, ← eq₃, ← eq₂,
       ← eq₁]
@@ -268,7 +269,7 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
     obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M x
     use algebraMap R S s
     rw [mul_comm, Subtype.coe_mk, e]
-    refine' Set.mem_image_of_mem (algebraMap R S) _
+    refine Set.mem_image_of_mem (algebraMap R S) ?_
     intro z hz
     apply IsLocalization.injective S hM
     rw [map_zero]

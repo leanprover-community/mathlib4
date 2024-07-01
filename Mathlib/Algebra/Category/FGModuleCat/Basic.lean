@@ -37,7 +37,7 @@ noncomputable section
 
 open CategoryTheory ModuleCat.monoidalCategory
 
-open scoped Classical BigOperators
+open scoped Classical
 
 universe u
 
@@ -118,8 +118,8 @@ instance : HasForget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : Full (forget₂ (FGModuleCat R) (ModuleCat.{u} R)) where
-  preimage f := f
+instance : (forget₂ (FGModuleCat R) (ModuleCat.{u} R)).Full where
+  map_surjective f := ⟨f, rfl⟩
 
 variable {R}
 
@@ -183,19 +183,19 @@ def forget₂Monoidal : MonoidalFunctor (FGModuleCat R) (ModuleCat.{u} R) :=
   MonoidalCategory.fullMonoidalSubcategoryInclusion _
 #align fgModule.forget₂_monoidal FGModuleCat.forget₂Monoidal
 
-instance forget₂Monoidal_faithful : Faithful (forget₂Monoidal R).toFunctor := by
+instance forget₂Monoidal_faithful : (forget₂Monoidal R).Faithful := by
   dsimp [forget₂Monoidal]
   -- Porting note (#11187): was `infer_instance`
   exact FullSubcategory.faithful _
 #align fgModule.forget₂_monoidal_faithful FGModuleCat.forget₂Monoidal_faithful
 
-instance forget₂Monoidal_additive : (forget₂Monoidal R).toFunctor.Additive := by
+instance forget₂Monoidal_additive : (forget₂Monoidal R).Additive := by
   dsimp [forget₂Monoidal]
   -- Porting note (#11187): was `infer_instance`
   exact Functor.fullSubcategoryInclusion_additive _
 #align fgModule.forget₂_monoidal_additive FGModuleCat.forget₂Monoidal_additive
 
-instance forget₂Monoidal_linear : (forget₂Monoidal R).toFunctor.Linear R := by
+instance forget₂Monoidal_linear : (forget₂Monoidal R).Linear R := by
   dsimp [forget₂Monoidal]
   -- Porting note (#11187): was `infer_instance`
   exact Functor.fullSubcategoryInclusionLinear _ _
@@ -296,3 +296,16 @@ instance rightRigidCategory : RightRigidCategory (FGModuleCat K) where
 end Field
 
 end FGModuleCat
+
+/-!
+`@[simp]` lemmas for `LinearMap.comp` and categorical identities.
+-/
+
+@[simp] theorem LinearMap.comp_id_fgModuleCat
+    {R} [Ring R] {G : FGModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H]
+    (f : G →ₗ[R] H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (ModuleCat.ofHom f)
+@[simp] theorem LinearMap.id_fgModuleCat_comp
+    {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : FGModuleCat.{u} R}
+    (f : G →ₗ[R] H) : LinearMap.comp (𝟙 H) f = f :=
+  Category.comp_id (ModuleCat.ofHom f)

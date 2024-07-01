@@ -91,6 +91,7 @@ noncomputable def toBaseChange (Q : QuadraticForm R V) :
       rw [CliffordAlgebra.forall_mul_self_eq_iff (isUnit_of_invertible _)]
       refine TensorProduct.AlgebraTensorModule.curry_injective ?_
       ext v w
+      dsimp
       exact hpure_tensor v w
     intros v w
     rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
@@ -122,7 +123,7 @@ open MulOpposite
 
 /-- Auxiliary theorem used to prove `toBaseChange_reverse` without needing induction. -/
 theorem toBaseChange_comp_reverseOp (Q : QuadraticForm R V) :
-    (toBaseChange A Q).op.comp (reverseOp) =
+    (toBaseChange A Q).op.comp reverseOp =
       ((Algebra.TensorProduct.opAlgEquiv R A A (CliffordAlgebra Q)).toAlgHom.comp <|
         (Algebra.TensorProduct.map
           (AlgEquiv.toOpposite A A).toAlgHom (reverseOp (Q := Q))).comp

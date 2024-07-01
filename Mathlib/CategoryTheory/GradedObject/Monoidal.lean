@@ -3,6 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Scott Morrison
 -/
+import Mathlib.CategoryTheory.GradedObject.Bifunctor
+
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.GradedObject.Unitor
@@ -14,11 +16,19 @@ import Mathlib.Data.Fintype.Prod
 /-!
 # The monoidal category structures on graded objects
 
+Assuming that `C` is a monoidal category and that `I` is an additive monoid,
+we introduce a partially defined tensor product on the category `GradedObject I C`:
+given `X₁` and `X₂` two objects in `GradedObject I C`, we define
+`GradedObject.Monoidal.tensorObj X₁ X₂` under the assumption `HasTensor X₁ X₂`
+that the coproduct of `X₁ i ⊗ X₂ j` for `i + j = n` exists for any `n : I`.
+
 -/
 
 universe u v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
+
+open Limits MonoidalCategory Category
 
 namespace Limits
 
@@ -30,21 +40,20 @@ noncomputable instance (J : Type*) [hJ : Finite J] [PreservesFiniteCoproducts F]
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
   have : PreservesColimitsOfShape (Discrete (Fin n)) F := PreservesFiniteCoproducts.preserves _
   exact ⟨preservesColimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F⟩
-
 end Limits
-
-open Limits MonoidalCategory Category
 
 variable {I : Type u} [AddMonoid I] {C : Type*} [Category C] [MonoidalCategory C]
 
 namespace GradedObject
 
+/-- The tensor product of two graded objects `X₁` and `X₂` exists if for any `n`,
+the coproduct of the objects `X₁ i ⊗ X₂ j` for `i + j = n` exists. -/
 abbrev HasTensor (X₁ X₂ : GradedObject I C) : Prop :=
-  HasMap (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂)
-    (fun ⟨i, j⟩  => i + j)
+  HasMap (((mapBifunctor (curriedTensor C) I I).obj X₁).obj X₂) (fun ⟨i, j⟩ => i + j)
 
 namespace Monoidal
 
+/-- The tensor product of two graded objects. -/
 noncomputable abbrev tensorObj (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂] :
     GradedObject I C :=
   mapBifunctorMapObj (curriedTensor C) (fun ⟨i, j⟩ => i + j) X₁ X₂
@@ -53,6 +62,7 @@ section
 
 variable (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
 
+/-- The inclusion of a summand in a tensor product of two graded objects. -/
 noncomputable def ιTensorObj (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
   X₁ i₁ ⊗ X₂ i₂ ⟶ tensorObj X₁ X₂ i₁₂ :=
     ιMapBifunctorMapObj (curriedTensor C) _ _ _ _ _ _ h
@@ -67,9 +77,9 @@ lemma tensorObj_ext {A : C} {j : I} (f g : tensorObj X₁ X₂ j ⟶ A)
   rintro ⟨i₁, i₂⟩ hi
   exact h i₁ i₂ hi
 
+/-- Constructor for morphisms from a tensor product of two graded objects. -/
 noncomputable def tensorObjDesc {A : C} {k : I}
-    (f : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = k), X₁ i₁ ⊗ X₂ i₂ ⟶ A) :
-    tensorObj X₁ X₂ k ⟶ A :=
+    (f : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = k), X₁ i₁ ⊗ X₂ i₂ ⟶ A) : tensorObj X₁ X₂ k ⟶ A :=
   mapBifunctorMapObjDesc f
 
 @[reassoc (attr := simp)]
@@ -80,29 +90,32 @@ lemma ι_tensorObjDesc {A : C} {k : I}
 
 end
 
+/-- The morphism `tensorObj X₁ Y₁ ⟶ tensorObj X₂ Y₂` induced by morphisms of graded
+objects `f : X₁ ⟶ X₂` and `g : Y₁ ⟶ Y₂`. -/
 noncomputable def tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] :
     tensorObj X₁ Y₁ ⟶ tensorObj X₂ Y₂ :=
   mapBifunctorMapMap _ _ f g
 
 @[reassoc (attr := simp)]
-lemma ι_tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [HasTensor X₁ Y₁]
-    [HasTensor X₂ Y₂] (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
+lemma ι_tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
+    [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] (i₁ i₂ i₁₂ : I) (h : i₁ + i₂ = i₁₂) :
     ιTensorObj X₁ Y₁ i₁ i₂ i₁₂ h ≫ tensorHom f g i₁₂ =
       (f i₁ ⊗ g i₂) ≫ ιTensorObj X₂ Y₂ i₁ i₂ i₁₂ h := by
-  refine' (ι_mapBifunctorMapMap (curriedTensor C) (fun ⟨i, j⟩ => i + j : I × I → I) f g
-    i₁ i₂ i₁₂ h).trans _
-  rw [← assoc]
-  congr 1
-  simp [curryObj, MonoidalCategory.tensorHom_def]
+  rw [MonoidalCategory.tensorHom_def, assoc]
+  apply ι_mapBifunctorMapMap
 
+/-- The morphism `tensorObj X Y₁ ⟶ tensorObj X Y₂` induced by a morphism of graded objects
+`φ : Y₁ ⟶ Y₂`. -/
 noncomputable abbrev whiskerLeft (X : GradedObject I C) {Y₁ Y₂ : GradedObject I C} (φ : Y₁ ⟶ Y₂)
     [HasTensor X Y₁] [HasTensor X Y₂] : tensorObj X Y₁ ⟶ tensorObj X Y₂ :=
-      tensorHom (𝟙 X) φ
+  tensorHom (𝟙 X) φ
 
+/-- The morphism `tensorObj X₁ Y ⟶ tensorObj X₂ Y` induced by a morphism of graded objects
+`φ : X₁ ⟶ X₂`. -/
 noncomputable abbrev whiskerRight {X₁ X₂ : GradedObject I C} (φ : X₁ ⟶ X₂) (Y : GradedObject I C)
     [HasTensor X₁ Y] [HasTensor X₂ Y] : tensorObj X₁ Y ⟶ tensorObj X₂ Y :=
-      tensorHom φ (𝟙 Y)
+  tensorHom φ (𝟙 Y)
 
 @[simp]
 lemma tensor_id (X Y : GradedObject I C) [HasTensor X Y] :
@@ -110,14 +123,6 @@ lemma tensor_id (X Y : GradedObject I C) [HasTensor X Y] :
   dsimp [tensorHom, mapBifunctorMapMap]
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
   rfl
-
-lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [HasTensor X₁ Y₁]
-    [HasTensor X₂ Y₂] [HasTensor X₂ Y₁]:
-    tensorHom f g = whiskerRight f Y₁ ≫ whiskerLeft X₂ g := by
-  dsimp only [tensorHom, mapBifunctorMapMap, whiskerLeft, whiskerRight]
-  rw [← mapMap_comp]
-  apply congr_mapMap
-  simp
 
 @[reassoc]
 lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
@@ -127,6 +132,11 @@ lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X�
   rw [← mapMap_comp]
   apply congr_mapMap
   simp
+
+lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
+    [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₂ Y₁] :
+    tensorHom f g = whiskerRight f Y₁ ≫ whiskerLeft X₂ g := by
+  rw [← tensor_comp, id_comp, comp_id]
 
 def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
 
@@ -456,12 +466,7 @@ noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
 
 lemma leftUnitor_inv_apply (i : I) :
     (leftUnitor X).inv i = (λ_ (X i)).inv ≫ tensorUnit₀.inv ▷ (X i) ≫
-      ιTensorObj tensorUnit X 0 i i (zero_add i) := by
-  dsimp [leftUnitor, tensorUnit₀]
-  simp only [mapBifunctorLeftUnitor_inv_apply, Functor.id_obj, curryObj_obj_obj, tensor_obj,
-    leftUnitorNatIso_inv_app, curryObj_map_app, tensor_map, Iso.cancel_iso_inv_left,
-    curriedTensor_obj_obj, curriedTensor_map_app]
-  rfl
+      ιTensorObj tensorUnit X 0 i i (zero_add i) := rfl
 
 variable {X X'}
 
@@ -493,12 +498,7 @@ noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=
 
 lemma rightUnitor_inv_apply (i : I) :
     (rightUnitor X).inv i = (ρ_ (X i)).inv ≫ (X i) ◁ tensorUnit₀.inv ≫
-      ιTensorObj X tensorUnit i 0 i (add_zero i) := by
-  dsimp [rightUnitor, tensorUnit₀]
-  simp only [mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.flip_obj_obj,
-    curryObj_obj_obj, tensor_obj, rightUnitorNatIso_inv_app, curryObj_obj_map, tensor_map,
-    Iso.cancel_iso_inv_left, curriedTensor_obj_obj, curriedTensor_obj_map]
-  rfl
+      ιTensorObj X tensorUnit i 0 i (add_zero i) := rfl
 
 variable {X X'}
 
@@ -525,7 +525,6 @@ lemma triangle :
       tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
   convert mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
     (rightUnitorNatIso C) (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
-  all_goals assumption
 
 end Triangle
 

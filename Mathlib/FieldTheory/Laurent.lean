@@ -3,8 +3,8 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Polynomial.Taylor
-import Mathlib.FieldTheory.RatFunc
+import Mathlib.Algebra.Polynomial.Taylor
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 #align_import field_theory.laurent from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
