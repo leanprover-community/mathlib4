@@ -72,24 +72,10 @@ def funPropTac : Tactic
         msg := msg ++ "Issues:"
         msg := s.mainMsgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
 
-
+        -- todo enable only when an option is set
         msg := msg ++ "\n\nSecondary issues:"
         msg := s.secondaryMsgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
 
-        -- msg := msg ++ "\n\nFor more detailed information use \
-        --   `set_option trace.Meta.Tactic.fun_prop true`"
-
-        -- if d.isSome then
-        --   msg := msg ++ "Try running with a different discharger tactic like \
-        --   `aesop`, `assumption`, `linarith`, `omega` etc.\n"
-        -- else
-        --   msg := msg ++ "Try running with discharger `fun_prop (disch:=aesop)` or with a different \
-        --   discharger tactic like `assumption`, `linarith`, `omega`.\n"
-
-        -- msg := msg ++ "Sometimes it is useful to run `fun_prop (disch:=trace_state; sorry)` \
-        --   which will print all the necessary subgoals for `fun_prop` to succeed.\n"
-        -- msg := msg ++ "\n\nFor more detailed information use \
-        --   `set_option trace.Meta.Tactic.fun_prop true`"
         throwError msg
 
 
