@@ -318,7 +318,7 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
   by_cases is_x0 : x ≠ 0
   · constructor
     · assumption
-    . intro xis1
+    · intro xis1
       rw [xis1] at is_diff
       have as1 : DifferentiableAt ℝ (fun y ↦ -y * log y) 1 :=
         (hasDerivAt_negMulLog zero_ne_one.symm).differentiableAt
