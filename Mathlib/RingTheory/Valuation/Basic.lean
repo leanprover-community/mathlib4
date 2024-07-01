@@ -366,8 +366,7 @@ theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x = 1 �
 theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ ≤ 1 := by
   by_cases h : x = 0
   · simp only [h, _root_.map_zero, zero_le', inv_zero, or_self]
-  · rw [← one_le_val_iff v h]
-    exact le_total _ _
+  · simp only [← one_le_val_iff v h, le_total]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
