@@ -886,6 +886,8 @@ theorem real_inner_self_nonpos {x : F} : ⟪x, x⟫_ℝ ≤ 0 ↔ x = 0 :=
   @inner_self_nonpos ℝ F _ _ _ x
 #align real_inner_self_nonpos real_inner_self_nonpos
 
+variable {𝕜}
+
 /-- A family of vectors is linearly independent if they are nonzero
 and orthogonal. -/
 theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E} (hz : ∀ i, v i ≠ 0)
@@ -2074,6 +2076,8 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
     Finset.sum_div, mul_div_assoc, mul_assoc]
 #align inner_sum_smul_sum_smul_of_sum_eq_zero inner_sum_smul_sum_smul_of_sum_eq_zero
 
+variable (𝕜)
+
 /-- `innerSL` is an isometry. Note that the associated `LinearIsometry` is defined in
 `InnerProductSpace.Dual` as `toDualMap`.  -/
 @[simp]
@@ -2089,6 +2093,8 @@ theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
       _ ≤ ‖innerSL 𝕜 x‖ * ‖x‖ := (innerSL 𝕜 x).le_opNorm _
 set_option linter.uppercaseLean3 false in
 #align innerSL_apply_norm innerSL_apply_norm
+
+variable {𝕜}
 
 lemma norm_innerSL_le : ‖innerSL 𝕜 (E := E)‖ ≤ 1 :=
   ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
