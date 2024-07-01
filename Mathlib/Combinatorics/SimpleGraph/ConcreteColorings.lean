@@ -74,7 +74,7 @@ theorem ringGraph_adj (n : ℕ) (hn : 2 ≤ n) (u v : Fin n) :
     (ringGraph n).Adj u v ↔ v.val = (u.val + 1) % n ∨ u.val = (v.val + 1) % n := by
   simp [ringGraph]
   intro h
-  wlog hvu : ↑v = (↑u + 1) % n
+  wlog hvu : v.val = (u.val + 1) % n
   · rw [eq_comm]
     exact this n hn v u h.symm (h.resolve_left hvu)
   rw [Fin.ext_iff, hvu]
@@ -82,5 +82,18 @@ theorem ringGraph_adj (n : ℕ) (hn : 2 ≤ n) (u v : Fin n) :
   have : NeZero (1 : ZMod n) := @NeZero.one _ _ <| @ZMod.nontrivial n ⟨hn⟩
   simpa only [ZMod.natCast_mod, Nat.cast_add, Nat.cast_one, ne_eq, self_eq_add_right] using
     one_ne_zero
+
+/-- Bicoloring of a ring graph of even length -/
+def ringGraph.bicoloring (n : ℕ) (h : 2 ≤ n) (hn : Even n) : Coloring (ringGraph n) Bool :=
+  Coloring.mk (fun u ↦ u.val % 2 = 0) <| by
+    intro u v hAdj
+    rw [ringGraph_adj] at hAdj
+    simp only [ne_eq, decide_eq_decide]
+    wlog hvu : v.val = (u.val + 1) % n
+    · rw [iff_comm]
+      exact this n h hn hAdj.symm (hAdj.resolve_left hvu)
+    rw [hvu, Nat.mod_mod_of_dvd (u.val + 1) (even_iff_two_dvd.mp hn)]
+    omega
+    exact h
 
 end SimpleGraph
