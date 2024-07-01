@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Nilpotent.Basic
