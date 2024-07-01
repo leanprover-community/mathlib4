@@ -13,6 +13,7 @@ jobs:
       uses: actions/checkout@v4
       with: # checkout all history so that we can compare across commits
         fetch-depth: 0
+        ref: 'master'
 
     - name: Run script
       id: tech_debt
