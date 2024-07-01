@@ -320,8 +320,8 @@ def edgeSetIso (V : Type _) : Digraph V ≃o Set (V × V) where
   Set.setOf_subset_setOf, Prod.forall]; apply Iff.rfl
 
 @[simp]
-lemma edgeSetIso_symm_adj {s : Set (V × V)} : ((edgeSetIso V).symm s).Adj v w ↔
-  (v, w) ∈ s := Iff.rfl
+lemma edgeSetIso_symm_adj {s : Set (V × V)} :
+    ((edgeSetIso V).symm s).Adj v w ↔ (v, w) ∈ s := Iff.rfl
 
 /-- `G.edgeSet` is the edge set for `G`.
 This is an abbreviation for `edgeSetIso G` that permits dot notation. -/
@@ -542,11 +542,11 @@ theorem mk'_mem_incidenceSet_right_iff : (a, b) ∈ G.incidenceSet b ↔ G.Adj a
     · right
       rfl
 
-theorem edge_mem_incidenceSet_iff {e : G.edgeSet} : ↑e ∈ G.incidenceSet a ↔ a = (e : V × V).1 ∨ a
-  = (e : V × V).2 := and_iff_right e.2
+theorem edge_mem_incidenceSet_iff {e : G.edgeSet} :
+    ↑e ∈ G.incidenceSet a ↔ a = (e : V × V).1 ∨ a = (e : V × V).2 := and_iff_right e.2
 
 theorem adj_of_mem_incidenceSet (e : V × V) (h : a ≠ b) (ha : e ∈ G.incidenceSet a)
-  (hb : e ∈ G.incidenceSet b) : G.Adj a b ∨ G.Adj b a := by
+    (hb : e ∈ G.incidenceSet b) : G.Adj a b ∨ G.Adj b a := by
   rw [incidenceSet] at ha hb
   simp only [Set.sep_or, Set.mem_union, Set.mem_setOf_eq] at ha hb
   cases' ha with ha1 ha2
@@ -591,7 +591,7 @@ theorem mem_outNeighborSet (v w : V) : w ∈ G.outNeighborSet v ↔ G.Adj v w :=
 
 @[simp]
 theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔
-  w ∈ G.inNeighborSet v ∪ G.outNeighborSet v := Iff.rfl
+    w ∈ G.inNeighborSet v ∪ G.outNeighborSet v := Iff.rfl
 
 @[simp]
 theorem mem_incidenceSet (v w : V) : (v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
@@ -647,37 +647,37 @@ theorem commonNeighbors_eq (v w : V) : G.commonNeighbors v w = G.neighborSet v �
   rfl
 
 theorem mem_commonNeighbors {u v w : V} : u ∈ G.commonNeighbors v w ↔
-  (G.Adj v u ∨ G.Adj u v) ∧ (G.Adj w u ∨ G.Adj u w) := by
-    rw [commonNeighbors, neighborSet, neighborSet, inNeighborSet, outNeighborSet,
-    inNeighborSet, outNeighborSet]
-    simp only [Set.mem_inter_iff, Set.mem_union, Set.mem_setOf_eq]
+    (G.Adj v u ∨ G.Adj u v) ∧ (G.Adj w u ∨ G.Adj u w) := by
+  rw [commonNeighbors, neighborSet, neighborSet, inNeighborSet, outNeighborSet,
+  inNeighborSet, outNeighborSet]
+  simp only [Set.mem_inter_iff, Set.mem_union, Set.mem_setOf_eq]
+  constructor
+  · intro h
+    cases' h with h1 h2
     constructor
-    · intro h
-      cases' h with h1 h2
-      constructor
-      · cases' h1 with h11 h12
-        · right
-          exact h11
-        · left
-          exact h12
-      · cases' h2 with h21 h22
-        · right
-          exact h21
-        · left
-          exact h22
-    · intro h
-      cases' h with h1 h2
-      constructor
-      · cases' h1 with h11 h12
-        · right
-          exact h11
-        · left
-          exact h12
-      · cases' h2 with h21 h22
-        · right
-          exact h21
-        · left
-          exact h22
+    · cases' h1 with h11 h12
+      · right
+        exact h11
+      · left
+        exact h12
+    · cases' h2 with h21 h22
+      · right
+        exact h21
+      · left
+        exact h22
+  · intro h
+    cases' h with h1 h2
+    constructor
+    · cases' h1 with h11 h12
+      · right
+        exact h11
+      · left
+        exact h12
+    · cases' h2 with h21 h22
+      · right
+        exact h21
+      · left
+        exact h22
 
 theorem commonNeighbors_symm (v w : V) : G.commonNeighbors v w = G.commonNeighbors w v :=
   Set.inter_comm _ _
@@ -705,7 +705,7 @@ section Incidence
 variable [DecidableEq V]
 
 theorem edge_other_incident_set {e : V × V} : e ∈ G.incidenceSet e.1 ↔
-e ∈ G.incidenceSet e.2 := by
+    e ∈ G.incidenceSet e.2 := by
   rw [incidenceSet, incidenceSet]
   simp only [Set.sep_or, Set.mem_union, Set.mem_setOf_eq, and_true]
   rw [@Set.mem_def]
@@ -1018,7 +1018,7 @@ protected def comap (f : V ↪ W) (G : Digraph W) : G.comap f ↪g G :=
 
 @[simp]
 theorem comap_apply (f : V ↪ W) (G : Digraph W) (v : V) :
-  Digraph.Embedding.comap f G v = f v := rfl
+    Digraph.Embedding.comap f G v = f v := rfl
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
 -- porting note: @[simps] does not work here since `f` is not a constructor application.
@@ -1028,7 +1028,7 @@ protected def map (f : V ↪ W) (G : Digraph V) : G ↪g G.map f :=
 
 @[simp]
 theorem map_apply (f : V ↪ W) (G : Digraph V) (v : V) :
-  Digraph.Embedding.map f G v = f v := rfl
+    Digraph.Embedding.map f G v = f v := rfl
 
 /-- Induced graphs embed in the original graph.
 
@@ -1126,11 +1126,11 @@ protected def comap (f : V ≃ W) (G : Digraph W) : G.comap f.toEmbedding ≃g G
 
 @[simp]
 lemma comap_apply (f : V ≃ W) (G : Digraph W) (v : V) :
-  Digraph.Iso.comap f G v = f v := rfl
+    Digraph.Iso.comap f G v = f v := rfl
 
 @[simp]
 lemma comap_symm_apply (f : V ≃ W) (G : Digraph W) (w : W) :
-  (Digraph.Iso.comap f G).symm w = f.symm w := rfl
+    (Digraph.Iso.comap f G).symm w = f.symm w := rfl
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
 -- porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
@@ -1140,11 +1140,11 @@ protected def map (f : V ≃ W) (G : Digraph V) : G ≃g G.map f.toEmbedding :=
 
 @[simp]
 lemma map_apply (f : V ≃ W) (G : Digraph V) (v : V) :
-  Digraph.Iso.map f G v = f v := rfl
+    Digraph.Iso.map f G v = f v := rfl
 
 @[simp]
 lemma map_symm_apply (f : V ≃ W) (G : Digraph V) (w : W) :
-  (Digraph.Iso.map f G).symm w = f.symm w := rfl
+    (Digraph.Iso.map f G).symm w = f.symm w := rfl
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
 protected def completeGraph {α β : Type _} (f : α ≃ β) :
