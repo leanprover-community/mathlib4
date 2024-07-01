@@ -3320,28 +3320,27 @@ theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h 
   Filter.tendsto_principal_principal.2 h
 #align set.maps_to.tendsto Set.MapsTo.tendsto
 
-set_option autoImplicit true in
-theorem Filter.EventuallyEq.comp_tendsto {f' : α → β} (H : f =ᶠ[l] f') {g : γ → α} {lc : Filter γ}
-    (hg : Tendsto g lc l) : f ∘ g =ᶠ[lc] f' ∘ g :=
+theorem Filter.EventuallyEq.comp_tendsto {α β γ : Type*} {l : Filter α} {f : α → β} {f' : α → β}
+    (H : f =ᶠ[l] f') {g : γ → α} {lc : Filter γ} (hg : Tendsto g lc l) :
+    f ∘ g =ᶠ[lc] f' ∘ g :=
   hg.eventually H
 #align filter.eventually_eq.comp_tendsto Filter.EventuallyEq.comp_tendsto
 
-set_option autoImplicit true in
+variable {α β : Type*} {F : Filter α} {G : Filter β}
+
 theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
     MapsTo (map m) (Iic F) (Iic G) ↔ Tendsto m F G :=
   ⟨fun hm ↦ hm right_mem_Iic, fun hm _ ↦ hm.mono_left⟩
 
 alias ⟨_, Filter.Tendsto.map_mapsTo_Iic⟩ := Filter.map_mapsTo_Iic_iff_tendsto
 
-set_option autoImplicit true in
-theorem Filter.map_mapsTo_Iic_iff_mapsTo {m : α → β} :
+theorem Filter.map_mapsTo_Iic_iff_mapsTo {s : Set α} {t : Set β} {m : α → β} :
     MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ MapsTo m s t := by
   rw [map_mapsTo_Iic_iff_tendsto, tendsto_principal_principal, MapsTo]
 
 alias ⟨_, Set.MapsTo.filter_map_Iic⟩ := Filter.map_mapsTo_Iic_iff_mapsTo
 
 -- TODO(Anatole): unify with the global case
-set_option autoImplicit true
 theorem Filter.map_surjOn_Iic_iff_le_map {m : α → β} :
     SurjOn (map m) (Iic F) (Iic G) ↔ G ≤ map m F := by
   refine ⟨fun hm ↦ ?_, fun hm ↦ ?_⟩
@@ -3351,13 +3350,13 @@ theorem Filter.map_surjOn_Iic_iff_le_map {m : α → β} :
       fun H (hHG : H ≤ G) ↦ by simpa [Filter.push_pull] using hHG.trans hm
     exact this.surjOn fun H _ ↦ mem_Iic.mpr inf_le_left
 
-theorem Filter.map_surjOn_Iic_iff_surjOn {m : α → β} :
+theorem Filter.map_surjOn_Iic_iff_surjOn {s : Set α} {t : Set β} {m : α → β} :
     SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ SurjOn m s t := by
   rw [map_surjOn_Iic_iff_le_map, map_principal, principal_mono, SurjOn]
 
 alias ⟨_, Set.SurjOn.filter_map_Iic⟩ := Filter.map_surjOn_Iic_iff_surjOn
 
-theorem Filter.filter_injOn_Iic_iff_injOn {m : α → β} :
+theorem Filter.filter_injOn_Iic_iff_injOn {s : Set α} {m : α → β} :
     InjOn (map m) (Iic <| 𝓟 s) ↔ InjOn m s := by
   refine ⟨fun hm x hx y hy hxy ↦ ?_, fun hm F hF G hG ↦ ?_⟩
   · rwa [← pure_injective.eq_iff, ← map_pure, ← map_pure, hm.eq_iff, pure_injective.eq_iff]
