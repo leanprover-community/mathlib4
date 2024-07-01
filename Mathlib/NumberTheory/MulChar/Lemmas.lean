@@ -31,6 +31,19 @@ variable {R R' : Type*} [CommRing R] [CommRing R']
 def starComp [StarRing R'] (χ : MulChar R R') : MulChar R R' :=
   χ.ringHomComp (starRingEnd R')
 
+instance instStarMul [StarRing R'] : StarMul (MulChar R R') where
+  star := starComp
+  star_involutive χ := by
+    ext1
+    simp only [starComp_apply, RingHomCompTriple.comp_apply, RingHom.id_apply]
+  star_mul χ χ' := by
+    ext1
+    simp only [starComp_apply, starRingEnd, coeToFun_mul, Pi.mul_apply, map_mul, RingHom.coe_coe,
+      starRingAut_apply, mul_comm]
+
+@[simp]
+lemma star_apply [StarRing R'] (χ : MulChar R R') (a : R) : (star χ) a = star (χ a) :=
+  rfl
 
 variable [Fintype R] [DecidableEq R]
 
@@ -41,13 +54,13 @@ lemma apply_mem_rootsOfUnity (a : Rˣ) {χ : MulChar R R'} :
 
 open Complex in
 /-- The conjugate of a multiplicative character with values in `ℂ` is its inverse. -/
-lemma starComp_eq_inv (χ : MulChar R ℂ) : χ.starComp = χ⁻¹ := by
+lemma star_eq_inv (χ : MulChar R ℂ) : star χ = χ⁻¹ := by
   ext1 a
-  rw [starComp_apply, inv_apply_eq_inv']
+  simp only [inv_apply_eq_inv']
   exact (inv_eq_conj <| norm_eq_one_of_mem_rootsOfUnity <| χ.apply_mem_rootsOfUnity a).symm
 
-lemma starComp_apply' (χ : MulChar R ℂ) (a : R) : (starRingEnd ℂ) (χ a) = χ⁻¹ a := by
-  rw [← starComp_eq_inv, starComp, ringHomComp_apply]
+lemma starComp_apply' (χ : MulChar R ℂ) (a : R) : star (χ a) = χ⁻¹ a := by
+  simp only [RCLike.star_def, ← star_eq_inv, star_apply]
 
 end Ring
 
