@@ -987,7 +987,7 @@ theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
 
-theorem val_pos_of_ne_zero {n : ℕ} {a : ZMod n} [NeZero n] (h : a ≠ 0) : 0 < a.val := by
+theorem val_pos_of_ne_zero {n : ℕ} {a : ZMod n} (h : a ≠ 0) : 0 < a.val := by
   apply Nat.pos_of_ne_zero
   intro h
   rw [ZMod.val_eq_zero] at h
