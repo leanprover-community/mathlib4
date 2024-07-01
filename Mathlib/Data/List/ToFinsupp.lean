@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.List.GetD
 
 #align_import data.list.to_finsupp from "leanprover-community/mathlib"@"06a655b5fcfbda03502f9158bbf6c0f1400886f9"
 
@@ -94,13 +95,13 @@ theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
   ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
 #align list.to_finsupp_singleton List.toFinsupp_singleton
 
-@[simp]
+@[deprecated "This lemma is unused, and can be proved by `simp`." (since := "2024-06-12")]
 theorem toFinsupp_cons_apply_zero (x : M) (xs : List M)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] : (x::xs).toFinsupp 0 = x :=
   rfl
 #align list.to_finsupp_cons_apply_zero List.toFinsupp_cons_apply_zero
 
-@[simp]
+@[deprecated "This lemma is unused, and can be proved by `simp`." (since := "2024-06-12")]
 theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
     (x::xs).toFinsupp n.succ = xs.toFinsupp n :=

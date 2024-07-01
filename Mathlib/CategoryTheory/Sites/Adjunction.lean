@@ -159,7 +159,8 @@ theorem adjunctionToTypes_counit_app_val {G : Type max v₁ u₁ ⥤ D} (adj : G
     NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
   simp
 
-instance [(forget D).IsRightAdjoint] : (sheafForget (D := D) J).IsRightAdjoint :=
+instance [(forget D).IsRightAdjoint] :
+    (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint :=
   (adjunctionToTypes J (Adjunction.ofIsRightAdjoint (forget D))).isRightAdjoint
 
 end ForgetToType
