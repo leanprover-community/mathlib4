@@ -549,6 +549,7 @@ section norm_num_erase
 
 example : 3 ^ 3 + 4 = 31 := by norm_num1
 
+set_option linter.unusedTactic false in
 attribute [-norm_num] Mathlib.Meta.NormNum.evalPow in
 example : 3 ^ 3 + 4 = 31 := by
   norm_num1
@@ -663,6 +664,7 @@ example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) 
 
 example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
 
+set_option linter.unusedTactic false in
 -- Since https://github.com/leanprover/lean4/pull/4177
 -- `simp` will continue even if given invalid theorem names (but generates an error)
 -- and this felicitously applies to `norm_num` too.

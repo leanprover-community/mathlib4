@@ -182,6 +182,11 @@ lemma comp_isLocallySurjective_iff
     IsLocallySurjective J (f₁ ≫ f₂) ↔ IsLocallySurjective J f₂ :=
   isLocallySurjective_iff_of_fac J rfl
 
+variable {J} in
+lemma isLocallySurjective_of_le {K : GrothendieckTopology C} (hJK : J ≤ K) {F G : Cᵒᵖ ⥤ A}
+    (f : F ⟶ G) (h : IsLocallySurjective J f) : IsLocallySurjective K f where
+  imageSieve_mem s := by apply hJK; exact h.1 _
+
 lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
     [IsLocallyInjective J (f₁ ≫ f₂)] [IsLocallySurjective J f₁] :

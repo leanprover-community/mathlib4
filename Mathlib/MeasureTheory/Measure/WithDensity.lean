@@ -91,7 +91,7 @@ lemma withDensity_mono {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) :
     μ.withDensity f ≤ μ.withDensity g := by
   refine le_iff.2 fun s hs ↦ ?_
   rw [withDensity_apply _ hs, withDensity_apply _ hs]
-  refine set_lintegral_mono_ae' hs ?_
+  refine setLIntegral_mono_ae' hs ?_
   filter_upwards [hfg] with x h_le using fun _ ↦ h_le
 
 theorem withDensity_add_left {f : α → ℝ≥0∞} (hf : Measurable f) (g : α → ℝ≥0∞) :
@@ -139,7 +139,7 @@ theorem withDensity_smul_measure (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
     (r • μ).withDensity f = r • μ.withDensity f := by
   ext s hs
   rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
-    smul_eq_mul, set_lintegral_smul_measure]
+    smul_eq_mul, setLIntegral_smul_measure]
 
 theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
     IsFiniteMeasure (μ.withDensity f) :=
@@ -151,7 +151,7 @@ theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure 
     μ.withDensity f ≪ μ := by
   refine AbsolutelyContinuous.mk fun s hs₁ hs₂ => ?_
   rw [withDensity_apply _ hs₁]
-  exact set_lintegral_measure_zero _ _ hs₂
+  exact setLIntegral_measure_zero _ _ hs₂
 #align measure_theory.with_density_absolutely_continuous MeasureTheory.withDensity_absolutelyContinuous
 
 @[simp]
@@ -232,7 +232,7 @@ lemma Measure.MutuallySingular.withDensity {ν : Measure α} {f : α → ℝ≥0
 
 theorem withDensity_eq_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h : μ.withDensity f = 0) :
     f =ᵐ[μ] 0 := by
-  rw [← lintegral_eq_zero_iff' hf, ← set_lintegral_univ, ← withDensity_apply _ MeasurableSet.univ,
+  rw [← lintegral_eq_zero_iff' hf, ← setLIntegral_univ, ← withDensity_apply _ MeasurableSet.univ,
     h, Measure.coe_zero, Pi.zero_apply]
 #align measure_theory.with_density_eq_zero MeasureTheory.withDensity_eq_zero
 
@@ -381,11 +381,14 @@ theorem lintegral_withDensity_eq_lintegral_mul (μ : Measure α) {f : α → ℝ
     simp [lintegral_iSup, ENNReal.mul_iSup, h_mf.mul (h_mea_g _), *]
 #align measure_theory.lintegral_with_density_eq_lintegral_mul MeasureTheory.lintegral_withDensity_eq_lintegral_mul
 
-theorem set_lintegral_withDensity_eq_set_lintegral_mul (μ : Measure α) {f g : α → ℝ≥0∞}
+theorem setLIntegral_withDensity_eq_setLIntegral_mul (μ : Measure α) {f g : α → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ x in s, g x ∂μ.withDensity f = ∫⁻ x in s, (f * g) x ∂μ := by
   rw [restrict_withDensity hs, lintegral_withDensity_eq_lintegral_mul _ hf hg]
-#align measure_theory.set_lintegral_with_density_eq_set_lintegral_mul MeasureTheory.set_lintegral_withDensity_eq_set_lintegral_mul
+#align measure_theory.set_lintegral_with_density_eq_set_lintegral_mul MeasureTheory.setLIntegral_withDensity_eq_setLIntegral_mul
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_withDensity_eq_set_lintegral_mul := setLIntegral_withDensity_eq_setLIntegral_mul
 
 /-- The Lebesgue integral of `g` with respect to the measure `μ.withDensity f` coincides with
 the integral of `f * g`. This version assumes that `g` is almost everywhere measurable. For a
@@ -423,7 +426,7 @@ theorem lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α →
       simp only [hx, Pi.mul_apply]
 #align measure_theory.lintegral_with_density_eq_lintegral_mul₀' MeasureTheory.lintegral_withDensity_eq_lintegral_mul₀'
 
-lemma set_lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α → ℝ≥0∞}
+lemma setLIntegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g (μ.withDensity f))
     {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ := by
@@ -431,18 +434,24 @@ lemma set_lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α �
   rw [← restrict_withDensity hs]
   exact hg.restrict
 
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_withDensity_eq_lintegral_mul₀' := setLIntegral_withDensity_eq_lintegral_mul₀'
+
 theorem lintegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ) :
     ∫⁻ a, g a ∂μ.withDensity f = ∫⁻ a, (f * g) a ∂μ :=
   lintegral_withDensity_eq_lintegral_mul₀' hf (hg.mono' (withDensity_absolutelyContinuous μ f))
 #align measure_theory.lintegral_with_density_eq_lintegral_mul₀ MeasureTheory.lintegral_withDensity_eq_lintegral_mul₀
 
-lemma set_lintegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
+lemma setLIntegral_withDensity_eq_lintegral_mul₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) {g : α → ℝ≥0∞} (hg : AEMeasurable g μ)
     {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ :=
-  set_lintegral_withDensity_eq_lintegral_mul₀' hf
+  setLIntegral_withDensity_eq_lintegral_mul₀' hf
     (hg.mono' (MeasureTheory.withDensity_absolutelyContinuous μ f)) hs
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_withDensity_eq_lintegral_mul₀ := setLIntegral_withDensity_eq_lintegral_mul₀
 
 theorem lintegral_withDensity_le_lintegral_mul (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (g : α → ℝ≥0∞) : (∫⁻ a, g a ∂μ.withDensity f) ≤ ∫⁻ a, (f * g) a ∂μ := by
@@ -479,12 +488,16 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable (μ : Measure α) 
     rw [← mul_assoc, ENNReal.mul_inv_cancel hx h'x.ne, one_mul]
 #align measure_theory.lintegral_with_density_eq_lintegral_mul_non_measurable MeasureTheory.lintegral_withDensity_eq_lintegral_mul_non_measurable
 
-theorem set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable (μ : Measure α) {f : α → ℝ≥0∞}
+theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable (μ : Measure α) {f : α → ℝ≥0∞}
     (f_meas : Measurable f) (g : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s)
     (hf : ∀ᵐ x ∂μ.restrict s, f x < ∞) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ := by
   rw [restrict_withDensity hs, lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas hf]
-#align measure_theory.set_lintegral_with_density_eq_set_lintegral_mul_non_measurable MeasureTheory.set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable
+#align measure_theory.set_lintegral_with_density_eq_set_lintegral_mul_non_measurable MeasureTheory.setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable :=
+  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable
 
 theorem lintegral_withDensity_eq_lintegral_mul_non_measurable₀ (μ : Measure α) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (h'f : ∀ᵐ x ∂μ, f x < ∞) (g : α → ℝ≥0∞) :
@@ -505,18 +518,26 @@ theorem lintegral_withDensity_eq_lintegral_mul_non_measurable₀ (μ : Measure �
       simp only [hx, Pi.mul_apply]
 #align measure_theory.lintegral_with_density_eq_lintegral_mul_non_measurable₀ MeasureTheory.lintegral_withDensity_eq_lintegral_mul_non_measurable₀
 
-theorem set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀ (μ : Measure α)
+theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀ (μ : Measure α)
     {f : α → ℝ≥0∞} {s : Set α} (hf : AEMeasurable f (μ.restrict s)) (g : α → ℝ≥0∞)
     (hs : MeasurableSet s) (h'f : ∀ᵐ x ∂μ.restrict s, f x < ∞) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ := by
   rw [restrict_withDensity hs, lintegral_withDensity_eq_lintegral_mul_non_measurable₀ _ hf h'f]
-#align measure_theory.set_lintegral_with_density_eq_set_lintegral_mul_non_measurable₀ MeasureTheory.set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀
+#align measure_theory.set_lintegral_with_density_eq_set_lintegral_mul_non_measurable₀ MeasureTheory.setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀
 
-theorem set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀' (μ : Measure α) [SFinite μ]
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀ :=
+  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀
+
+theorem setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀' (μ : Measure α) [SFinite μ]
     {f : α → ℝ≥0∞} (s : Set α) (hf : AEMeasurable f (μ.restrict s)) (g : α → ℝ≥0∞)
     (h'f : ∀ᵐ x ∂μ.restrict s, f x < ∞) :
     ∫⁻ a in s, g a ∂μ.withDensity f = ∫⁻ a in s, (f * g) a ∂μ := by
   rw [restrict_withDensity' s, lintegral_withDensity_eq_lintegral_mul_non_measurable₀ _ hf h'f]
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀' :=
+  setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀'
 
 theorem withDensity_mul₀ {μ : Measure α} {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
@@ -613,11 +634,11 @@ lemma SigmaFinite.withDensity [SigmaFinite μ] {f : α → ℝ≥0} (hf : AEMeas
   rw [withDensity_apply _ (hs i).1]
   calc ∫⁻ a in s i, ((hf.mk f a : ℝ≥0) : ℝ≥0∞) ∂μ
     ≤ ∫⁻ _ in s i, i ∂μ := by
-        refine set_lintegral_mono hf.measurable_mk.coe_nnreal_ennreal
+        refine setLIntegral_mono hf.measurable_mk.coe_nnreal_ennreal
           measurable_const (fun x hxs ↦ ?_)
         norm_cast
         exact (hs i).2.2 x hxs
-  _ = i * μ (s i) := by rw [set_lintegral_const]
+  _ = i * μ (s i) := by rw [setLIntegral_const]
   _ < ∞ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
 
 lemma SigmaFinite.withDensity_of_ne_top' [SigmaFinite μ] {f : α → ℝ≥0∞}
@@ -694,7 +715,7 @@ lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuo
     (eventually_le_of_tendsto_lt (lt_add_one _) (hf.tendsto x))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
   refine ⟨U, hUx, ?_⟩
   rw [withDensity_apply _ hUo.measurableSet]
-  exact set_lintegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, forall_mem_image.2 hUf⟩
+  exact setLIntegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, forall_mem_image.2 hUf⟩
 
 lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
