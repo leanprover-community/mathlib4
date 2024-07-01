@@ -154,7 +154,6 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isAffine (X : Scheme) [IsAffine
     IsNilpotent f ↔ X.basicOpen f = ⊥ :=
   (isAffineOpen_top X).isNilpotent_iff_basicOpen_eq_bot f
 
-
 instance Scheme.ιOpens_appLE_isIso {X : Scheme.{u}} (U : Opens X) :
     IsIso ((Scheme.ιOpens U).appLE U ⊤ (by simp)) := by
   simp only [restrict_presheaf_obj, ofRestrict_appLE]
