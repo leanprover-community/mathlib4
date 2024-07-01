@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Tomas Skrivan
+-/
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.Core
 import Mathlib.Tactic.FunProp.Decl
