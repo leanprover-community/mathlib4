@@ -66,22 +66,8 @@ def WeirdNumber (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ (s : Finset ℕ), s ∈ powerset (properDivisors n)
       → ∑ i in s, i ≠ n := by
-    have hn : (¬ 0 < n) ↔ n = 0 := by simp only [not_lt, nonpos_iff_eq_zero]
-    dsimp only [Pseudoperfect]
-    rw [not_and_or, not_exists, hn]
-    constructor
-    · rintro (h1 | h2)
-      · tauto
-      · right
-        intro s
-        have hs : ¬(s ∈ powerset (properDivisors n) ∧ ∑ i in s, i = n) := h2 s
-        rw [not_and] at hs
-        exact hs
-    · rintro (h1 | h2)
-      · tauto
-      · right
-        simp_rw [not_and]
-        exact h2
+  rw [Pseudoperfect, not_and_or]
+  simp
 
 theorem one_deficient : Deficient 1 := le.refl
 
