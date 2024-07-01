@@ -37,12 +37,16 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
 #align positive.coe_zpow Positive.coe_zpow
 
 /-- sorry -/
-local instance : CommGroup { x : K // 0 < x } where
+def foo : CommGroup { x : K // 0 < x } where
   toInv := Positive.Subtype.inv
   __ := Subtype.coe_injective.commMonoid (Subtype.val) (by exact val_one) val_mul val_pow
   mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne'
 
-instance : LinearOrderedCommGroup { x : K // 0 < x } :=
-  { Positive.linearOrderedCancelCommMonoid with }
+-- set_option trace.Meta.isDefEq true in
+-- set_option trace.Meta.synthInstance true in
+attribute [local instance] foo in
+instance : LinearOrderedCommGroup { x : K // 0 < x } where
+  __ := Subtype.coe_injective.commMonoid (M₁ := { x : K // 0 < x }) (Subtype.val) (by exact val_one) val_mul val_pow
+  __ := Positive.linearOrderedCancelCommMonoid
 
 end Positive

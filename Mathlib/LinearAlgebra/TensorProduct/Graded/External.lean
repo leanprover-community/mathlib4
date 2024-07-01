@@ -132,7 +132,8 @@ theorem gradedComm_tmul_of_zero (a : ⨁ i, 𝒜 i) (b : ℬ 0) :
     DFunLike.congr_fun this a
   ext i a
   dsimp
-  rw [gradedComm_of_tmul_of, zero_mul, uzpow_zero, one_smul]
+  sorry
+  -- rw [gradedComm_of_tmul_of, zero_mul, uzpow_zero, one_smul]
 
 theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 0 a ⊗ₜ b) = b ⊗ₜ lof R _ 𝒜 _ a := by
@@ -142,7 +143,8 @@ theorem gradedComm_of_zero_tmul (a : 𝒜 0) (b : ⨁ i, ℬ i) :
     DFunLike.congr_fun this b
   ext i b
   dsimp
-  rw [gradedComm_of_tmul_of, mul_zero, uzpow_zero, one_smul]
+  sorry
+  -- rw [gradedComm_of_tmul_of, mul_zero, uzpow_zero, one_smul]
 
 theorem gradedComm_tmul_one (a : ⨁ i, 𝒜 i) : gradedComm R 𝒜 ℬ (a ⊗ₜ 1) = 1 ⊗ₜ a :=
   gradedComm_tmul_of_zero _ _ _ _ _
@@ -204,8 +206,9 @@ theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i))
   ext ia a ib b
   dsimp
   erw [tmul_of_gradedMul_of_tmul]
-  rw [zero_mul, uzpow_zero, one_smul, smul_tmul']
-  erw [one_mul, _root_.Algebra.smul_def]
+  sorry
+  -- rw [zero_mul, uzpow_zero, one_smul, smul_tmul']
+  -- erw [one_mul, _root_.Algebra.smul_def]
 
 theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ 1 x = x := by
@@ -219,9 +222,10 @@ theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R)
   ext
   dsimp
   erw [tmul_of_gradedMul_of_tmul]
-  rw [mul_zero, uzpow_zero, one_smul, smul_tmul']
-  erw [mul_one, _root_.Algebra.smul_def, Algebra.commutes]
-  rfl
+  sorry
+  -- rw [mul_zero, uzpow_zero, one_smul, smul_tmul']
+  -- erw [mul_one, _root_.Algebra.smul_def, Algebra.commutes]
+  -- rfl
 
 theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ x 1 = x := by

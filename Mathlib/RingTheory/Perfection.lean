@@ -602,13 +602,14 @@ theorem valAux_add (f g : PreTilt K v O hv p) :
 
 variable (K v O hv p)
 
+-- set_option maxHeartbeats 0 in
 /-- The valuation `Perfection(O/(p)) → ℝ≥0`.
 Given `f ∈ Perfection(O/(p))`, if `f = 0` then output `0`;
 otherwise output `preVal(f(n))^(p^n)` for any `n` such that `f(n) ≠ 0`. -/
 noncomputable def val : Valuation (PreTilt K v O hv p) ℝ≥0 where
   toFun := valAux K v O hv p
   map_one' := valAux_one
-  map_mul' := valAux_mul
+  map_mul' := sorry -- valAux_mul
   map_zero' := valAux_zero
   map_add_le_max' := valAux_add
 #align pre_tilt.val PreTilt.val

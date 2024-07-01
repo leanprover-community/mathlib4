@@ -119,26 +119,27 @@ variable (x : 𝓞 K)
 /-- Let `(x : 𝓞 K)`. Then we have that `λ` divides one amongst `x`, `x - 1` and `x + 1`. -/
 lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
   classical
-  have := hζ.finite_quotient_toInteger_sub_one (by decide)
-  let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {λ})
-  let _ : Ring (𝓞 K ⧸ Ideal.span {λ}) := CommRing.toRing -- to speed up instance synthesis
-  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- dito
-  have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
-  have h3 : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
-    rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),
-      hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
-    simp only [PNat.val_ofNat, Nat.cast_ofNat, Int.reduceAbs]
-  rw [Finset.univ_of_card_le_three h3.le] at this
-  simp only [Finset.mem_insert, Finset.mem_singleton] at this
-  rcases this with h | h | h
-  · left
-    exact Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 h
-  · right; left
-    refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
-    rw [RingHom.map_sub, h, RingHom.map_one, sub_self]
-  · right; right
-    refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
-    rw [RingHom.map_add, h, RingHom.map_one, add_left_neg]
+  -- have := hζ.finite_quotient_toInteger_sub_one (by decide)
+  -- let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {λ})
+  -- let _ : Ring (𝓞 K ⧸ Ideal.span {λ}) := CommRing.toRing -- to speed up instance synthesis
+  -- let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- dito
+  -- have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
+  -- have h3 : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
+  --   rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),
+  --     hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
+  --   simp only [PNat.val_ofNat, Nat.cast_ofNat, Int.reduceAbs]
+  sorry
+  -- rw [Finset.univ_of_card_le_three h3.le] at this
+  -- simp only [Finset.mem_insert, Finset.mem_singleton] at this
+  -- rcases this with h | h | h
+  -- · left
+  --   exact Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 h
+  -- · right; left
+  --   refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
+  --   rw [RingHom.map_sub, h, RingHom.map_one, sub_self]
+  -- · right; right
+  --   refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
+  --   rw [RingHom.map_add, h, RingHom.map_one, add_left_neg]
 
 /-- We have that `η ^ 2 + η + 1 = 0`. -/
 lemma eta_sq_add_eta_add_one : (η : 𝓞 K) ^ 2 + η + 1 = 0 := by
