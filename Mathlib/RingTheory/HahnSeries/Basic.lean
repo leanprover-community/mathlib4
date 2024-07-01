@@ -124,7 +124,7 @@ nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty �
 
 @[simp]
 theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :=
-  support_eq_empty_iff.trans coeff_fun_eq_zero_iff
+  Function.support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 #align hahn_series.support_eq_empty_iff HahnSeries.support_eq_empty_iff
 
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/

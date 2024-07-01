@@ -673,7 +673,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
     · positivity
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
   let C := SNormLESNormFDerivOfEqConst F μ p
-  calc snorm u q μ = snorm u q (μ.restrict s) := by rw [snorm_restrict_eq h2u]
+  calc snorm u q μ = snorm u q (μ.restrict s) := by rw [snorm_restrict_eq_of_support_subset h2u]
     _ ≤ snorm u p' (μ.restrict s) * t := by
         convert snorm_le_snorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
         rw [← ENNReal.coe_rpow_of_nonneg]
@@ -682,7 +682,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
           norm_cast
           rw [hp']
           simpa using hpq
-    _ = snorm u p' μ * t := by rw [snorm_restrict_eq h2u]
+    _ = snorm u p' μ * t := by rw [snorm_restrict_eq_of_support_subset h2u]
     _ ≤ (C * snorm (fderiv ℝ u) p μ) * t := by
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
