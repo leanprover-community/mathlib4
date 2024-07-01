@@ -279,7 +279,7 @@ theorem stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f :=
   ultrafilter_extend_extends f
 #align stone_cech_extend_extends stoneCechExtend_extends
 
-lemma eq_if_stoneCechUnit_eq {a b : α} {f : α → γ} (hcf : Continuous f) :
+lemma eq_of_stoneCechUnit_eq_stoneCechUnit {a b : α} {f : α → γ} (hcf : Continuous f) :
     stoneCechUnit a = stoneCechUnit b → f a = f b := by
   let e := ultrafilter_extend_extends f
   rw [Function.funext_iff] at e
