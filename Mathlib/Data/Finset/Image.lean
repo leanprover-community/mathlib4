@@ -89,7 +89,7 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
 -- The simpNF linter says that the LHS can be simplified via `Finset.mem_map`.
 -- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
   mem_map_of_injective f.2
 #align finset.mem_map' Finset.mem_map'
@@ -326,7 +326,7 @@ end Map
 
 theorem range_add_one' (n : ℕ) :
     range (n + 1) = insert 0 ((range n).map ⟨fun i => i + 1, fun i j => by simp⟩) := by
-  ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.succ_eq_add_one, Nat.zero_lt_succ n]
+  ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.zero_lt_succ n]
 #align finset.range_add_one' Finset.range_add_one'
 
 /-! ### image -/
