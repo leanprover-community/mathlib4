@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Partial HasAntidiagonal for functions with finite support
