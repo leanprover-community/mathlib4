@@ -252,8 +252,7 @@ theorem bernoulli_spec' (n : ℕ) :
   · simp
   rw [if_neg (succ_ne_zero _)]
   -- algebra facts
-  have h₁ : (1, n) ∈ antidiagonal n.succ := by
-    simp [mem_antidiagonal, add_comm, Nat.succ_eq_add_one]
+  have h₁ : (1, n) ∈ antidiagonal n.succ := by simp [mem_antidiagonal, add_comm]
   have h₂ : (n : ℚ) + 1 ≠ 0 := by norm_cast
   have h₃ : (1 + n).choose n = n + 1 := by simp [add_comm]
   -- key equation: the corresponding fact for `bernoulli'`
