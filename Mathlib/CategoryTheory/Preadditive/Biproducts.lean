@@ -947,7 +947,7 @@ def preservesBiproductOfMonoBiproductComparison {f : J → C} [HasBiproduct f]
       (F.mapIso (biproduct.isoProduct f)).inv ≫
         biproductComparison F f ≫ (biproduct.isoProduct _).hom := by
     ext j
-    convert piComparison_comp_π F f j; simp [← Functor.map_comp]
+    convert piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
   haveI : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
   haveI : IsIso (piComparison F f) := by
     rw [that]

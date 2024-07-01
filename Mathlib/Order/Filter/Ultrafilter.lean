@@ -300,7 +300,7 @@ theorem map_pure (m : α → β) (a : α) : map m (pure a) = pure (m a) :=
 theorem comap_pure {m : α → β} (a : α) (inj : Injective m) (large) :
     comap (pure <| m a) inj large = pure a :=
   coe_injective <|
-    comap_pure.trans <| by
+    Filter.comap_pure.trans <| by
       rw [coe_pure, ← principal_singleton, ← image_singleton, preimage_image_eq _ inj]
 #align ultrafilter.comap_pure Ultrafilter.comap_pure
 

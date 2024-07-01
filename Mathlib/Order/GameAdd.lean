@@ -29,10 +29,7 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 decreases at a time.
 -/
 
-set_option autoImplicit true
-
-
-variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop}
+variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop} {a : α} {b : β}
 
 /-! ### `Prod.GameAdd` -/
 
@@ -203,7 +200,7 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
   refine Acc.intro _ fun s => ?_
-  induction' s using Sym2.inductionOn with c d
+  induction' s with c d
   rw [Sym2.GameAdd]
   dsimp
   rintro ((rc | rd) | (rd | rc))

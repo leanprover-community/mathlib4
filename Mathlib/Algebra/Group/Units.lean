@@ -836,6 +836,10 @@ theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
 #align is_add_unit.add_unit_spec IsAddUnit.addUnit_spec
 
 @[to_additive (attr := simp)]
+theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
+  Units.eq_iff.1 rfl
+
+@[to_additive (attr := simp)]
 theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
   Units.mul_inv _
 #align is_unit.coe_inv_mul IsUnit.val_inv_mul
