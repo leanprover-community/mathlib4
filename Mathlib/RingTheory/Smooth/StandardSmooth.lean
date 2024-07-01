@@ -179,14 +179,14 @@ class IsStandardSmooth : Prop where
   out : ∃ (P : SubmersivePresentation.{t, w} R S), P.IsStandardSmooth
 
 /--
-A standard smooth `R`-algebra `S` is of relative dimension `n`, if there
-exists a standard smooth submersive presentation of dimension `n`.
+The relative dimension of a standard smooth `R`-algebra `S` is
+the dimension of an arbitrarily chosen standard smooth `R`-presentation of `S`.
 
-Note: The relative dimension of a standard smooth `R`-algebra `S` is independent of
-the choice of the presentation as it is equal to the `S`-rank of `Ω[S/R]` (TODO).
+Note: This number is independent of the choice of the presentation as it is equal to
+the `S`-rank of `Ω[S/R]` (TODO).
 -/
-class IsOfRelativeDimension (n : ℕ) [IsStandardSmooth R S] : Prop where
-  out : ∃ (P : SubmersivePresentation.{t, w} R S), P.IsStandardSmooth ∧ P.dimension = n
+noncomputable def IsStandardSmooth.relativeDimension [IsStandardSmooth R S] : ℕ :=
+  ‹IsStandardSmooth R S›.out.choose.dimension
 
 end Algebra
 
@@ -198,15 +198,11 @@ variable {R S}
 def IsStandardSmooth (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
 
-/-- A standard smooth ring hom `R →+* S` is standard smooth of relative dimension `n`
-if `S` has relative dimension `n` as `R`-algebra. -/
-def IsOfRelativeDimension (n : ℕ) (f : R →+* S) (hf : IsStandardSmooth.{t, w} f) : Prop :=
-  @Algebra.IsOfRelativeDimension.{t, w} _ _ _ _ f.toAlgebra n hf
-
 /-- A ring hom `R →+* S` is standard smooth of relative dimension `n` if
 it is both standard smooth and is of relative dimension `n`. -/
 structure IsStandardSmoothOfRelativeDimension (n : ℕ) (f : R →+* S) : Prop where
   isStandardSmooth : IsStandardSmooth.{t, w} f
-  isOfRelativeDimension : IsOfRelativeDimension.{t, w} n f isStandardSmooth
+  relativeDimension_eq :
+    @Algebra.IsStandardSmooth.relativeDimension R _ S _ f.toAlgebra isStandardSmooth = n
 
 end RingHom
