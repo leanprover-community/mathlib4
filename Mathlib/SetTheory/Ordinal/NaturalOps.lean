@@ -41,9 +41,6 @@ between both types, we attempt to prove and state most results on `Ordinal`.
   form.
 -/
 
-set_option autoImplicit true
-
-
 universe u v
 
 open Function Order
@@ -120,12 +117,12 @@ theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
 #align nat_ordinal.to_ordinal_eq_one NatOrdinal.toOrdinal_eq_one
 
 @[simp]
-theorem toOrdinal_max : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_max {a b : NatOrdinal} : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 #align nat_ordinal.to_ordinal_max NatOrdinal.toOrdinal_max
 
 @[simp]
-theorem toOrdinal_min : toOrdinal (min a b)= min (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_min {a b : NatOrdinal} : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 #align nat_ordinal.to_ordinal_min NatOrdinal.toOrdinal_min
 
@@ -133,7 +130,8 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
   rfl
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
-/-- A recursor for `NatOrdinal`. Use as `induction x using NatOrdinal.rec`. -/
+/-- A recursor for `NatOrdinal`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
   h (toOrdinal a)
 #align nat_ordinal.rec NatOrdinal.rec

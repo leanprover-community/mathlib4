@@ -58,7 +58,7 @@ theorem opNNNorm_le_bound (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, �
   opNorm_le_bound f (zero_le M) hM
 #align continuous_linear_map.op_nnnorm_le_bound ContinuousLinearMap.opNNNorm_le_bound
 
-@[deprecated] alias op_nnnorm_le_bound := opNNNorm_le_bound -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_nnnorm_le_bound := opNNNorm_le_bound
 
 /-- If one controls the norm of every `A x`, `‖x‖₊ ≠ 0`, then one controls the norm of `A`. -/
 theorem opNNNorm_le_bound' (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, ‖x‖₊ ≠ 0 → ‖f x‖₊ ≤ M * ‖x‖₊) :
@@ -66,7 +66,7 @@ theorem opNNNorm_le_bound' (f : E →SL[σ₁₂] F) (M : ℝ≥0) (hM : ∀ x, 
   opNorm_le_bound' f (zero_le M) fun x hx => hM x <| by rwa [← NNReal.coe_ne_zero]
 #align continuous_linear_map.op_nnnorm_le_bound' ContinuousLinearMap.opNNNorm_le_bound'
 
-@[deprecated] alias op_nnnorm_le_bound' := opNNNorm_le_bound' -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_nnnorm_le_bound' := opNNNorm_le_bound'
 
 /-- For a continuous real linear map `f`, if one controls the norm of every `f x`, `‖x‖₊ = 1`, then
 one controls the norm of `f`. -/
@@ -75,49 +75,50 @@ theorem opNNNorm_le_of_unit_nnnorm [NormedSpace ℝ E] [NormedSpace ℝ F] {f : 
   opNorm_le_of_unit_norm C.coe_nonneg fun x hx => hf x <| by rwa [← NNReal.coe_eq_one]
 #align continuous_linear_map.op_nnnorm_le_of_unit_nnnorm ContinuousLinearMap.opNNNorm_le_of_unit_nnnorm
 
-@[deprecated] alias op_nnnorm_le_of_unit_nnnorm := opNNNorm_le_of_unit_nnnorm -- 2024-02-02
+@[deprecated (since := "2024-02-02")]
+alias op_nnnorm_le_of_unit_nnnorm := opNNNorm_le_of_unit_nnnorm
 
 theorem opNNNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) :
     ‖f‖₊ ≤ K :=
   opNorm_le_of_lipschitz hf
 #align continuous_linear_map.op_nnnorm_le_of_lipschitz ContinuousLinearMap.opNNNorm_le_of_lipschitz
 
-@[deprecated] alias op_nnnorm_le_of_lipschitz := opNNNorm_le_of_lipschitz -- 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_nnnorm_le_of_lipschitz := opNNNorm_le_of_lipschitz
 
 theorem opNNNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} (M : ℝ≥0) (h_above : ∀ x, ‖φ x‖₊ ≤ M * ‖x‖₊)
     (h_below : ∀ N, (∀ x, ‖φ x‖₊ ≤ N * ‖x‖₊) → M ≤ N) : ‖φ‖₊ = M :=
   Subtype.ext <| opNorm_eq_of_bounds (zero_le M) h_above <| Subtype.forall'.mpr h_below
 #align continuous_linear_map.op_nnnorm_eq_of_bounds ContinuousLinearMap.opNNNorm_eq_of_bounds
 
-@[deprecated] alias op_nnnorm_eq_of_bounds := opNNNorm_eq_of_bounds -- 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_nnnorm_eq_of_bounds := opNNNorm_eq_of_bounds
 
 theorem opNNNorm_le_iff {f : E →SL[σ₁₂] F} {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊ :=
   opNorm_le_iff C.2
 
-@[deprecated] alias op_nnnorm_le_iff := opNNNorm_le_iff -- 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_nnnorm_le_iff := opNNNorm_le_iff
 
 theorem isLeast_opNNNorm : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using isLeast_Ici
 
-@[deprecated] alias isLeast_op_nnnorm := isLeast_opNNNorm -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias isLeast_op_nnnorm := isLeast_opNNNorm
 
 theorem opNNNorm_comp_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) : ‖h.comp f‖₊ ≤ ‖h‖₊ * ‖f‖₊ :=
   opNorm_comp_le h f
 #align continuous_linear_map.op_nnnorm_comp_le ContinuousLinearMap.opNNNorm_comp_le
 
-@[deprecated] alias op_nnnorm_comp_le := opNNNorm_comp_le -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias op_nnnorm_comp_le := opNNNorm_comp_le
 
 theorem le_opNNNorm : ‖f x‖₊ ≤ ‖f‖₊ * ‖x‖₊ :=
   f.le_opNorm x
 #align continuous_linear_map.le_op_nnnorm ContinuousLinearMap.le_opNNNorm
 
-@[deprecated] alias le_op_nnnorm := le_opNNNorm -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias le_op_nnnorm := le_opNNNorm
 
 theorem nndist_le_opNNNorm (x y : E) : nndist (f x) (f y) ≤ ‖f‖₊ * nndist x y :=
   dist_le_opNorm f x y
 #align continuous_linear_map.nndist_le_op_nnnorm ContinuousLinearMap.nndist_le_opNNNorm
 
-@[deprecated] alias nndist_le_op_nnnorm := nndist_le_opNNNorm -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")] alias nndist_le_op_nnnorm := nndist_le_opNNNorm
 
 /-- continuous linear maps are Lipschitz continuous. -/
 theorem lipschitz : LipschitzWith ‖f‖₊ f :=
@@ -142,7 +143,7 @@ theorem exists_mul_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥
       (OrderBot.bddBelow _)
 #align continuous_linear_map.exists_mul_lt_apply_of_lt_op_nnnorm ContinuousLinearMap.exists_mul_lt_apply_of_lt_opNNNorm
 
-@[deprecated] -- deprecated on 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias exists_mul_lt_apply_of_lt_op_nnnorm := exists_mul_lt_apply_of_lt_opNNNorm
 
 theorem exists_mul_lt_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 0 ≤ r) (hr : r < ‖f‖) :
@@ -151,7 +152,8 @@ theorem exists_mul_lt_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 
   exact f.exists_mul_lt_apply_of_lt_opNNNorm hr
 #align continuous_linear_map.exists_mul_lt_of_lt_op_norm ContinuousLinearMap.exists_mul_lt_of_lt_opNorm
 
-@[deprecated] alias exists_mul_lt_of_lt_op_norm := exists_mul_lt_of_lt_opNorm -- 2024-02-02
+@[deprecated (since := "2024-02-02")]
+alias exists_mul_lt_of_lt_op_norm := exists_mul_lt_of_lt_opNorm
 
 theorem exists_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
@@ -170,7 +172,8 @@ theorem exists_lt_apply_of_lt_opNNNorm {𝕜 𝕜₂ E F : Type*} [NormedAddComm
   rwa [map_smulₛₗ f, nnnorm_smul, ← NNReal.div_lt_iff hfy, div_eq_mul_inv, this]
 #align continuous_linear_map.exists_lt_apply_of_lt_op_nnnorm ContinuousLinearMap.exists_lt_apply_of_lt_opNNNorm
 
-@[deprecated] alias exists_lt_apply_of_lt_op_nnnorm := exists_lt_apply_of_lt_opNNNorm -- 2024-02-02
+@[deprecated (since := "2024-02-02")]
+alias exists_lt_apply_of_lt_op_nnnorm := exists_lt_apply_of_lt_opNNNorm
 
 theorem exists_lt_apply_of_lt_opNorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
@@ -182,7 +185,8 @@ theorem exists_lt_apply_of_lt_opNorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGr
     exact f.exists_lt_apply_of_lt_opNNNorm hr
 #align continuous_linear_map.exists_lt_apply_of_lt_op_norm ContinuousLinearMap.exists_lt_apply_of_lt_opNorm
 
-@[deprecated] alias exists_lt_apply_of_lt_op_norm := exists_lt_apply_of_lt_opNorm -- 2024-02-02
+@[deprecated (since := "2024-02-02")]
+alias exists_lt_apply_of_lt_op_norm := exists_lt_apply_of_lt_opNorm
 
 theorem sSup_unit_ball_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [SeminormedAddCommGroup F] [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}

@@ -52,7 +52,9 @@ class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
 
 section
 
-variable {G} (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
+variable {G}
+variable (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
+
 theorem DirectedSystem.map_self i x h : f i i h x = x :=
   DirectedSystem.map_self' i x h
 theorem DirectedSystem.map_map {i j k} (hij hjk x) :
@@ -64,7 +66,8 @@ end
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
+variable {G}
+variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
@@ -612,9 +615,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
               symm
               apply FreeCommRing.of_cons⟩)
         (fun s ⟨i, x, ih⟩ => ⟨i, -x, by
-          -- Porting note: Lean 3 was `of _ _ _`; Lean 4 is not as good at unification
-          -- here as Lean 3 is, for some reason.
-          rw [(of G f i).map_neg, ih]
+          rw [(of G _ _).map_neg, ih]
           rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j

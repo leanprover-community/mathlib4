@@ -67,13 +67,18 @@ end Module
 
 namespace FormalMultilinearSeries
 
-@[simp] -- Porting note (#10756): new theorem; was not needed in Lean 3
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+-/
+@[simp, nolint simpNF]
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
-@[simp] -- Porting note (#10756): new theorem; was not needed in Lean 3
+@[simp]
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
-@[ext] -- Porting note (#10756): new theorem
+@[ext]
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
 
@@ -361,6 +366,17 @@ theorem constFormalMultilinearSeries_apply [NontriviallyNormedField 𝕜] [Norme
     constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
 #align const_formal_multilinear_series_apply constFormalMultilinearSeries_apply
+
+@[simp]
+lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E ]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] :
+    constFormalMultilinearSeries 𝕜 E (0 : F) = 0 := by
+  ext n x
+  simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
+    constFormalMultilinearSeries]
+  induction n
+  · simp only [Nat.zero_eq, ContinuousMultilinearMap.curry0_apply]
+  · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
 
 end Const
 

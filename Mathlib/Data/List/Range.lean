@@ -84,6 +84,11 @@ theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
   Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
 #align list.pairwise_le_range List.pairwise_le_range
 
+theorem take_range (m n : ℕ) : take m (range n) = range (min m n) := by
+  apply List.ext_getElem
+  · simp
+  · simp (config := { contextual := true }) [← getElem_take, Nat.lt_min]
+
 theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp (config := {decide := true}) only [range_eq_range', nodup_range']
 #align list.nodup_range List.nodup_range
@@ -194,13 +199,16 @@ theorem nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i
   get_range i H
 #align list.nth_le_range List.nthLe_range
 
--- Porting note (#10756): new theorem
 @[simp]
+theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
+    (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
+  simp only [finRange, getElem_range, getElem_pmap]
+
+-- Porting note (#10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
-  simp only [finRange, get_range, get_pmap]
+  simp
 
--- Porting note (#10756): new theorem, corresponding theorem used to be in Data.List.FinRange
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
@@ -258,7 +266,7 @@ theorem ranges_length (l : List ℕ) :
   | cons a l hl => -- (a :: l)
     simp only [map, length_range, map_map, cons.injEq, true_and]
     conv_rhs => rw [← hl]
-    apply map_congr
+    apply map_congr_left
     intro s _
     simp only [Function.comp_apply, length_map]
 
