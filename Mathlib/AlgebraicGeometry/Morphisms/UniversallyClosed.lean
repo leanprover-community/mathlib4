@@ -85,19 +85,19 @@ instance universallyClosedSnd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf :
   universallyClosed_stableUnderBaseChange.snd f g hf
 #align algebraic_geometry.universally_closed_snd AlgebraicGeometry.universallyClosedSnd
 
-theorem universallyClosed_is_local_at_target : PropertyIsLocalAtTarget @UniversallyClosed := by
+theorem universallyClosed_isLocalAtTarget : PropertyIsLocalAtTarget @UniversallyClosed := by
   rw [universallyClosed_eq]
-  apply universallyIsLocalAtTargetOfMorphismRestrict
+  apply universally_isLocalAtTarget_of_morphismRestrict
   · exact topologically_isClosedMap_respectsIso
   · intro X Y f ι U hU H
     simp_rw [topologically, morphismRestrict_base] at H
     exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
-#align algebraic_geometry.universally_closed_is_local_at_target AlgebraicGeometry.universallyClosed_is_local_at_target
+#align algebraic_geometry.universally_closed_is_local_at_target AlgebraicGeometry.universallyClosed_isLocalAtTarget
 
 theorem UniversallyClosed.openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)
     (𝒰 : Scheme.OpenCover.{u} Y) :
     UniversallyClosed f ↔ ∀ i, UniversallyClosed (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
-  universallyClosed_is_local_at_target.openCover_iff f 𝒰
+  universallyClosed_isLocalAtTarget.openCover_iff f 𝒰
 #align algebraic_geometry.universally_closed.open_cover_iff AlgebraicGeometry.UniversallyClosed.openCover_iff
 
 end AlgebraicGeometry
