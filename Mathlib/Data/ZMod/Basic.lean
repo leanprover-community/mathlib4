@@ -741,7 +741,7 @@ theorem val_mul_of_lt {n : ℕ} {a b : ZMod n} (h : a.val * b.val < n) :
 theorem val_mul_iff_lt {n : ℕ} [NeZero n] (a b : ZMod n) :
     (a * b).val = a.val * b.val ↔ a.val * b.val < n := by
   constructor <;> intro h
-  · rw [←h]; apply ZMod.val_lt
+  · rw [← h]; apply ZMod.val_lt
   · apply ZMod.val_mul_of_lt h
 
 instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
