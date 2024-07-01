@@ -266,7 +266,7 @@ theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
 
 set_option autoImplicit true in
 @[simp]
-theorem coe_mk {h : ∀ {a b : α}, s (f a) (f b) ↔ r a b} : ⇑(⟨f, h⟩ : r ↪r s) = f :=
+theorem coe_mk {h} : ⇑(⟨f, h⟩ : r ↪r s) = f :=
   rfl
 #align rel_embedding.coe_fn_mk RelEmbedding.coe_mk
 
