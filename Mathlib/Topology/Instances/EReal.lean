@@ -245,8 +245,9 @@ instance : ContinuousNeg EReal := ⟨negOrderIso.continuous⟩
 #align ereal.neg_homeo Homeomorph.neg
 #align ereal.continuous_neg ContinuousNeg.continuous_neg
 
-/-! ### Continuity of multiplication
-Outside of indeterminacies `(0, ±∞)` and `(±∞, 0)`, the multiplication on `EReal` is continuous.
+/-! ### Continuity of multiplication -/
+
+/- Outside of indeterminacies `(0, ±∞)` and `(±∞, 0)`, the multiplication on `EReal` is continuous.
 There are many different cases to consider, so we first prove some special cases and leverage as
 much as possible the symmetries of the multiplication. -/
 
