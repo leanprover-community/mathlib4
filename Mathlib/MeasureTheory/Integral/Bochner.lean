@@ -662,8 +662,8 @@ def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
 
 -- Porting note: added `(E := E)` in several places below.
 /-- The Bochner integral in L1 space -/
-irreducible_def integral (f : α →₁[μ] E) : E :=
-  integralCLM (E := E) f
+irreducible_def integral : (α →₁[μ] E) → E :=
+  integralCLM (E := E)
 #align measure_theory.L1.integral MeasureTheory.L1.integral
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM (E := E) f := by
