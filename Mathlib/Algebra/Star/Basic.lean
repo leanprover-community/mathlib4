@@ -3,15 +3,12 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.SetLike.Basic
 import Mathlib.GroupTheory.GroupAction.Opposite
 
@@ -37,6 +34,7 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 
 assert_not_exists Finset
 assert_not_exists Subgroup
+assert_not_exists Rat.instField
 
 universe u v w
 
@@ -350,15 +348,6 @@ theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
 #align star_int_cast star_intCast
 
-@[simp, norm_cast]
-lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q : R) = q :=
-  (congr_arg unop <| map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q).trans (unop_nnratCast _)
-
-@[simp, norm_cast]
-theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
-  (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
-#align star_rat_cast star_ratCast
-
 end
 
 section CommSemiring
@@ -465,12 +454,8 @@ abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
 
 instance Nat.instStarRing : StarRing ℕ := starRingOfComm
 instance Int.instStarRing : StarRing ℤ := starRingOfComm
-instance Rat.instStarRing : StarRing ℚ := starRingOfComm
-instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
 instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
-instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
-instance NNRat.instTrivialStar : TrivialStar ℚ≥0 := ⟨fun _ ↦ rfl⟩
 
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense

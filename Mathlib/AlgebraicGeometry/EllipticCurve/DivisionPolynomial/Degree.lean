@@ -47,7 +47,7 @@ polynomials $\tilde{\Psi}_n$, $\Psi_n^{[2]}$, and $\Phi_n$ all have their expect
 elliptic curve, division polynomial, torsion point
 -/
 
-open Polynomial PolynomialPolynomial
+open Polynomial
 
 universe u
 

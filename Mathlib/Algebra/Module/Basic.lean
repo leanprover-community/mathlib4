@@ -5,7 +5,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Field.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
 
@@ -15,6 +16,8 @@ import Mathlib.GroupTheory.GroupAction.Pi
 # Further basic results about modules.
 
 -/
+
+assert_not_exists Nonneg.inv
 
 open Function Set
 
