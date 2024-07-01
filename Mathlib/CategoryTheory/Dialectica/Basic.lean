@@ -9,11 +9,12 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 /-!
 # Dialectica category
 
-We define the category `Dial` of the Dialectica interpretation, after:
+We define the category `Dial` of the Dialectica interpretation, after [dialectica1989].
 
-* Valeria de Paiva, The Dialectica Categories.
-  University of Cambridge, Computer Laboratory, PhD Thesis, Technical Report 213, 1991
-  ([pdf](https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-213.pdf)).
+## References
+
+* [Valeria de Paiva, The Dialectica Categories.][dialectica1989]
+  ([pdf](https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-213.pdf))
 -/
 
 noncomputable section
