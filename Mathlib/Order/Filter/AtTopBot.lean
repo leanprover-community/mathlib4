@@ -1543,9 +1543,9 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
 #align filter.prod_at_top_at_top_eq Filter.prod_atTop_atTop_eq
 
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`
-theorem prod_atBot_atBot_eq {β₁ β₂ : Type*} [Preorder β₁] [Preorder β₂] :
-    (atBot : Filter β₁) ×ˢ (atBot : Filter β₂) = (atBot : Filter (β₁ × β₂)) :=
-  @prod_atTop_atTop_eq β₁ᵒᵈ β₂ᵒᵈ _ _
+theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
+    (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
+  @prod_atTop_atTop_eq αᵒᵈ βᵒᵈ _ _
 #align filter.prod_at_bot_at_bot_eq Filter.prod_atBot_atBot_eq
 
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`

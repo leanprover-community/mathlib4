@@ -49,7 +49,7 @@ which are lattices with only two elements, and related ideas.
 
 -/
 
-variable {α β : Type*}
+variable {ι : Sort*} {α β : Type*}
 
 section Atoms
 
@@ -111,7 +111,7 @@ alias ⟨CovBy.is_atom, IsAtom.bot_covBy⟩ := bot_covBy_iff
 
 end PartialOrder
 
-theorem atom_le_iSup {ι : Sort*} {a : α} [Order.Frame α] (ha : IsAtom a) {f : ι → α} :
+theorem atom_le_iSup [Order.Frame α] {a : α} (ha : IsAtom a) {f : ι → α} :
     a ≤ iSup f ↔ ∃ i, a ≤ f i := by
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
   show (a ≤ ⨆ i, f i) → _
@@ -201,7 +201,7 @@ alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
 
 end PartialOrder
 
-theorem iInf_le_coatom  {a : α} {ι : Sort*} [Order.Coframe α] (ha : IsCoatom a) {f : ι → α} :
+theorem iInf_le_coatom [Order.Coframe α] {a : α} (ha : IsCoatom a) {f : ι → α} :
     iInf f ≤ a ↔ ∃ i, f i ≤ a :=
   atom_le_iSup (α := αᵒᵈ) ha
 

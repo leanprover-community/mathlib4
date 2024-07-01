@@ -27,7 +27,7 @@ Do we need a `Finset` version?
 
 open Function Set
 
-variable {α : Type*} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
+variable {α β : Type*} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
 
 /-- Turns a set into an antichain by keeping only the "maximal" elements. -/
 def maximals : Set α :=
@@ -313,7 +313,7 @@ theorem IsAntichain.maximals_lowerClosure (hs : IsAntichain (· ≤ ·) s) :
 
 section Image
 
-variable {β : Type*} {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
+variable {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
 
 section
 variable {x : Set α} (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) {a : α}
