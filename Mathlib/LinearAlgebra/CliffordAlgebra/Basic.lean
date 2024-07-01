@@ -232,14 +232,14 @@ theorem induction {C : CliffordAlgebra Q → Prop}
 
 theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :
-    f a * f b + f b * f a = algebraMap R _ (QuadraticForm.polar Q a b) :=
+    f a * f b + f b * f a = algebraMap R _ (QuadraticMap.polar Q a b) :=
   calc
     f a * f b + f b * f a = f (a + b) * f (a + b) - f a * f a - f b * f b := by
       rw [f.map_add, mul_add, add_mul, add_mul]; abel
     _ = algebraMap R _ (Q (a + b)) - algebraMap R _ (Q a) - algebraMap R _ (Q b) := by
       rw [hf, hf, hf]
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
-    _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
+    _ = algebraMap R _ (QuadraticMap.polar Q a b) := rfl
 
 /-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
 
@@ -252,18 +252,18 @@ theorem forall_mul_self_eq_iff {A : Type*} [Ring A] [Algebra R A] (h2 : IsUnit (
         Q.polarBilin.compr₂ (Algebra.linearMap R A) := by
   simp_rw [DFunLike.ext_iff]
   refine ⟨mul_add_swap_eq_polar_of_forall_mul_self_eq _, fun h x => ?_⟩
-  change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticForm.polar Q x y) at h
+  change ∀ x y : M, f x * f y + f y * f x = algebraMap R A (QuadraticMap.polar Q x y) at h
   apply h2.mul_left_cancel
-  rw [two_mul, two_mul, h x x, QuadraticForm.polar_self, two_mul, map_add]
+  rw [two_mul, two_mul, h x x, QuadraticMap.polar_self, two_smul, map_add]
 
 /-- The symmetric product of vectors is a scalar -/
 theorem ι_mul_ι_add_swap (a b : M) :
-    ι Q a * ι Q b + ι Q b * ι Q a = algebraMap R _ (QuadraticForm.polar Q a b) :=
+    ι Q a * ι Q b + ι Q b * ι Q a = algebraMap R _ (QuadraticMap.polar Q a b) :=
   mul_add_swap_eq_polar_of_forall_mul_self_eq _ (ι_sq_scalar _) _ _
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
 theorem ι_mul_ι_comm (a b : M) :
-    ι Q a * ι Q b = algebraMap R _ (QuadraticForm.polar Q a b) - ι Q b * ι Q a :=
+    ι Q a * ι Q b = algebraMap R _ (QuadraticMap.polar Q a b) - ι Q b * ι Q a :=
   eq_sub_of_add_eq (ι_mul_ι_add_swap a b)
 #align clifford_algebra.ι_mul_comm CliffordAlgebra.ι_mul_ι_comm
 
@@ -290,7 +290,7 @@ end isOrtho
 
 /-- $aba$ is a vector. -/
 theorem ι_mul_ι_mul_ι (a b : M) :
-    ι Q a * ι Q b * ι Q a = ι Q (QuadraticForm.polar Q a b • a - Q a • b) := by
+    ι Q a * ι Q b * ι Q a = ι Q (QuadraticMap.polar Q a b • a - Q a • b) := by
   rw [ι_mul_ι_comm, sub_mul, mul_assoc, ι_sq_scalar, ← Algebra.smul_def, ← Algebra.commutes, ←
     Algebra.smul_def, ← map_smul, ← map_smul, ← map_sub]
 #align clifford_algebra.ι_mul_ι_mul_ι CliffordAlgebra.ι_mul_ι_mul_ι

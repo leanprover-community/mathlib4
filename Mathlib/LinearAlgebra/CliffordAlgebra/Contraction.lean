@@ -42,6 +42,7 @@ Within this file, we use the local notation
 
 -/
 
+open LinearMap (BilinMap)
 open LinearMap (BilinForm)
 
 universe u1 u2 u3
@@ -255,39 +256,39 @@ theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlg
 
 variable {Q}
 variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
-variable (h : B.toQuadraticForm = Q' - Q) (h' : B'.toQuadraticForm = Q'' - Q')
+variable (h : B.toQuadraticMap = Q' - Q) (h' : B'.toQuadraticMap = Q'' - Q')
 
 /-- Convert between two algebras of different quadratic form, sending vector to vectors, scalars to
 scalars, and adjusting products by a contraction term.
 
 This is $\lambda_B$ from [bourbaki2007][] $9 Lemma 2. -/
-def changeForm (h : B.toQuadraticForm = Q' - Q) : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q' :=
+def changeForm (h : B.toQuadraticMap = Q' - Q) : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q' :=
   foldr Q (changeFormAux Q' B)
     (fun m x =>
       (changeFormAux_changeFormAux Q' B m x).trans <| by
-        dsimp only [← BilinForm.toQuadraticForm_apply]
-        rw [h, QuadraticForm.sub_apply, sub_sub_cancel])
+        dsimp only [← BilinMap.toQuadraticMap_apply]
+        rw [h, QuadraticMap.sub_apply, sub_sub_cancel])
     1
 #align clifford_algebra.change_form CliffordAlgebra.changeForm
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
-theorem changeForm.zero_proof : (0 : BilinForm R M).toQuadraticForm = Q - Q :=
+theorem changeForm.zero_proof : (0 : BilinForm R M).toQuadraticMap = Q - Q :=
   (sub_self _).symm
 #align clifford_algebra.change_form.zero_proof CliffordAlgebra.changeForm.zero_proof
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
-theorem changeForm.add_proof : (B + B').toQuadraticForm = Q'' - Q :=
+theorem changeForm.add_proof : (B + B').toQuadraticMap = Q'' - Q :=
   (congr_arg₂ (· + ·) h h').trans <| sub_add_sub_cancel' _ _ _
 #align clifford_algebra.change_form.add_proof CliffordAlgebra.changeForm.add_proof
 
 /-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
-theorem changeForm.neg_proof : (-B).toQuadraticForm = Q - Q' :=
+theorem changeForm.neg_proof : (-B).toQuadraticMap = Q - Q' :=
   (congr_arg Neg.neg h).trans <| neg_sub _ _
 #align clifford_algebra.change_form.neg_proof CliffordAlgebra.changeForm.neg_proof
 
 theorem changeForm.associated_neg_proof [Invertible (2 : R)] :
-    (QuadraticForm.associated (R := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
-  simp [QuadraticForm.toQuadraticForm_associated]
+    (QuadraticMap.associated (R := R) (M := M) (-Q)).toQuadraticMap = 0 - Q := by
+  simp [QuadraticMap.toQuadraticMap_associated]
 #align clifford_algebra.change_form.associated_neg_proof CliffordAlgebra.changeForm.associated_neg_proof
 
 @[simp]
