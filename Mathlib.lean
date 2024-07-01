@@ -1499,6 +1499,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.Constructions
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.HasPullback
+import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.Mono
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.PullbackCone
 import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
