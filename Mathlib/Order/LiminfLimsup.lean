@@ -313,10 +313,10 @@ lemma isBoundedUnder_ge_add [Add R]
 
 lemma isBoundedUnder_le_add [Add R]
     [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
-    {u v : α → R} (u_bdd_ge : f.IsBoundedUnder (· ≤ ·) u) (v_bdd_ge : f.IsBoundedUnder (· ≤ ·) v) :
+    {u v : α → R} (u_bdd_le : f.IsBoundedUnder (· ≤ ·) u) (v_bdd_le : f.IsBoundedUnder (· ≤ ·) v) :
     f.IsBoundedUnder (· ≤ ·) (u + v) := by
-  obtain ⟨U, hU⟩ := u_bdd_ge
-  obtain ⟨V, hV⟩ := v_bdd_ge
+  obtain ⟨U, hU⟩ := u_bdd_le
+  obtain ⟨V, hV⟩ := v_bdd_le
   use U + V
   simp only [eventually_map, Pi.add_apply] at hU hV ⊢
   filter_upwards [hU, hV] with a hu hv using add_le_add hu hv
