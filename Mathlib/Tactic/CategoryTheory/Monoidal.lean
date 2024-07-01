@@ -16,7 +16,7 @@ We say that the morphism `η` in a monoidal category is in normal form if
 3. `θ` is of the form `ι ▷ g₁ ▷ ... ▷ gₗ`
 
 Note that the structural morphisms `αᵢ` are not necessarily normalized, as the main purpose
-to be to get a list of the non-structural morphisms out.
+is to get a list of the non-structural morphisms out.
 
 ## Main definitions
 - `Tactic.Monoidal.eval`: Given a Lean expression `e` that represents a morphism in a monoidal
