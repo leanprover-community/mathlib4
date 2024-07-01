@@ -107,6 +107,10 @@ theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
 
+lemma homOfLE_isIso_of_eq {x y : X} (h : x ≤ y) (heq : x = y) :
+    IsIso (homOfLE h) :=
+  ⟨homOfLE (le_of_eq heq.symm), by simp⟩
+
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
 def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
   (homOfLE h).op

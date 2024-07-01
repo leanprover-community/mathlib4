@@ -86,6 +86,17 @@ lemma Scheme.map_basicOpen_map (X : Scheme.{u}) (U : Opens X) (r : Γ(X, U)) :
       X.presheaf.map (eqToHom U.openEmbedding_obj_top).op r) = X.basicOpen r := by
   rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq, Scheme.basicOpen_res_eq]
 
+@[simp]
+lemma Scheme.ιOpens_image_top {X : Scheme.{u}} (U : Opens X) : (Scheme.ιOpens U) ''ᵁ ⊤ = U := by
+  ext x
+  simp only [IsOpenMap.functor_obj_coe, ofRestrict_val_base, Opens.coe_top, Set.image_univ,
+    Set.mem_range, SetLike.mem_coe]
+  constructor
+  · rintro ⟨y, rfl⟩
+    exact y.property
+  · intro hx
+    use ⟨x, hx⟩
+    rfl
 
 -- Porting note: `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
@@ -468,5 +479,30 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
   exact PresheafedSpace.IsOpenImmersion.comp _ _
 
 end MorphismRestrict
+
+/-- If `f` is an open immersion `X ⟶ Y`, the global sections of `X`
+are naturally isomorphic to the sections of `Y` over the image of `f`. -/
+noncomputable
+def IsOpenImmersion.ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Scheme.Γ.obj (op X) ≅ Γ(Y, Scheme.Hom.opensRange f) :=
+  Scheme.Γ.mapIso (IsOpenImmersion.isoOfRangeEq
+      (Scheme.ιOpens (Scheme.Hom.opensRange f)) _ Subtype.range_val).op ≪≫
+    Y.presheaf.mapIso (eqToIso (TopologicalSpace.Opens.openEmbedding_obj_top _).symm).op
+
+@[reassoc, elementwise]
+lemma IsOpenImmersion.map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Y.presheaf.map (homOfLE le_top).op ≫ (IsOpenImmersion.ΓIso f).inv = Scheme.Γ.map f.op := by
+  conv_rhs => rw [← IsOpenImmersion.isoOfRangeEq_inv_fac
+      (Scheme.ιOpens (Scheme.Hom.opensRange f)) _ Subtype.range_val]
+  rw [IsOpenImmersion.ΓIso]
+  dsimp
+  rw [← Functor.map_comp_assoc]
+  rfl
+
+@[reassoc, elementwise]
+lemma IsOpenImmersion.ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Scheme.Γ.map f.op ≫ (IsOpenImmersion.ΓIso f).hom = Y.presheaf.map (homOfLE le_top).op := by
+  rw [← map_ΓIso_inv]
+  simp
 
 end AlgebraicGeometry
