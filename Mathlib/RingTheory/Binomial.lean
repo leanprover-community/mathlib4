@@ -182,6 +182,7 @@ noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R �
   factorial_nsmul_multichoose r n := by
     simp only [← smul_assoc]
     field_simp
+
 end Basic_Instances
 
 section Choose
