@@ -269,6 +269,7 @@ import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Conj
 import Mathlib.Algebra.GroupWithZero.Defs
@@ -299,6 +300,7 @@ import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.Embedding.Extend
@@ -420,6 +422,7 @@ import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LinearMap.Prod
@@ -745,6 +748,7 @@ import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
@@ -1654,6 +1658,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
@@ -1702,6 +1707,7 @@ import Mathlib.CategoryTheory.Sites.Types
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.SmallObject.Construction
+import Mathlib.CategoryTheory.SmallObject.Iteration
 import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Subobject.Comma
 import Mathlib.CategoryTheory.Subobject.FactorThru
@@ -2514,6 +2520,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.Metrizable
 import Mathlib.Geometry.Manifold.PartitionOfUnity
+import Mathlib.Geometry.Manifold.PoincareConjecture
 import Mathlib.Geometry.Manifold.Sheaf.Basic
 import Mathlib.Geometry.Manifold.Sheaf.LocallyRingedSpace
 import Mathlib.Geometry.Manifold.Sheaf.Smooth
@@ -3535,6 +3542,7 @@ import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RingTheory.AdicCompletion.Algebra
 import Mathlib.RingTheory.AdicCompletion.Basic
+import Mathlib.RingTheory.AdicCompletion.Exactness
 import Mathlib.RingTheory.AdicCompletion.Functoriality
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.FG
@@ -3723,6 +3731,7 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.WellKnown
+import Mathlib.RingTheory.Presentation
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotSMulTop
@@ -3854,7 +3863,7 @@ import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ComputeDegree
 import Mathlib.Tactic.Congr!
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Continuity.Init
@@ -3869,7 +3878,7 @@ import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Eval
-import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.Explode
 import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
@@ -4033,9 +4042,9 @@ import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Widget.Calc
 import Mathlib.Tactic.Widget.CommDiag
-import Mathlib.Tactic.Widget.Congrm
+import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
-import Mathlib.Tactic.Widget.Gcongr
+import Mathlib.Tactic.Widget.GCongr
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Zify
