@@ -82,8 +82,8 @@ lemma prod_map_add {s : Multiset ι} {f g : ι → α} :
   refine s.induction_on ?_ fun a s ih ↦ ?_
   · simp only [map_zero, prod_zero, antidiagonal_zero, map_singleton, mul_one, sum_singleton]
   · simp only [map_cons, prod_cons, ih, sum_map_mul_left.symm, add_mul, mul_left_comm (f a),
-      mul_left_comm (g a), sum_map_add, antidiagonal_cons, Prod.map_apply, id_eq, map_add, map_map,
-      Function.comp_apply, mul_assoc, sum_add]
+      mul_left_comm (g a), sum_map_add, antidiagonal_cons, Prod.map_fst, Prod.map_snd,
+      id_eq, map_add, map_map, Function.comp_apply, mul_assoc, sum_add]
     exact add_comm _ _
 #align multiset.prod_map_add Multiset.prod_map_add
 

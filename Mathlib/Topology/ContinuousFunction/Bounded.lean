@@ -1595,9 +1595,8 @@ instance instLattice : Lattice (α →ᵇ β) := DFunLike.coe_injective.lattice 
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
 @[simp, norm_cast] lemma coe_negPart (f : α →ᵇ β) : ⇑f⁻ = (⇑f)⁻ := rfl
 
--- 2024-02-21
-@[deprecated] alias coeFn_sup := coe_sup
-@[deprecated] alias coeFn_abs := coe_abs
+@[deprecated (since := "2024-02-21")] alias coeFn_sup := coe_sup
+@[deprecated (since := "2024-02-21")] alias coeFn_abs := coe_abs
 
 instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with
@@ -1669,13 +1668,15 @@ variable {α : Type*} [TopologicalSpace α]
 lemma add_norm_nonneg (f : α →ᵇ ℝ) :
     0 ≤ f + const _ ‖f‖ := by
   intro x
-  dsimp
+  simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_add,
+    const_toFun, Pi.add_apply]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
 
 lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
     0 ≤ const _ ‖f‖ - f := by
   intro x
-  dsimp
+  simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_sub,
+    const_toFun, Pi.sub_apply, sub_nonneg]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end

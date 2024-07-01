@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.QuotientNilpotent
@@ -28,10 +29,6 @@ under `R`-algebra homomorphisms and compositions.
 We show that unramified is stable under algebra isomorphisms, composition and
 localization at an element.
 
-# TODO
-
-- Show that unramified is stable under base change.
-
 -/
 
 -- Porting note: added to make the syntax work below.
@@ -47,7 +44,9 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R`-algebra `A` is formally unramified if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`. -/
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`.
+
+See <https://stacks.math.columbia.edu/tag/00UM>. -/
 @[mk_iff]
 class FormallyUnramified : Prop where
   comp_injective :
@@ -237,6 +236,10 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type.
+
+Note that the Stacks project has a different definition of unramified, and tag
+<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the
+same as this one.
 -/
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance
@@ -266,13 +269,16 @@ theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R 
 section Comp
 
 variable (R A B)
-variable [Algebra A B] [IsScalarTower R A B]
 
 /-- Unramified is stable under composition. -/
-theorem comp [Unramified R A] [Unramified A B] : Unramified R B where
+theorem comp [Algebra A B] [IsScalarTower R A B] [Unramified R A] [Unramified A B] :
+    Unramified R B where
   formallyUnramified := FormallyUnramified.comp R A B
   finiteType := FiniteType.trans (S := A) Unramified.finiteType
     Unramified.finiteType
+
+/-- Unramified is stable under base change. -/
+instance baseChange [Unramified R A] : Unramified B (B ⊗[R] A) where
 
 end Comp
 

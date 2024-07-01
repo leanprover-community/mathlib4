@@ -6,6 +6,7 @@ import Mathlib.Data.Real.Basic
 
 set_option autoImplicit true
 
+set_option linter.setOption false
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
 -- And this option to trace all candidate lemmas before application.
@@ -19,7 +20,7 @@ set_option pp.unicode.fun true
 
 noncomputable section
 
-/-- info: Try this: exact Nat.lt.base x -/
+/-- info: Try this: exact Nat.lt_add_one x -/
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
