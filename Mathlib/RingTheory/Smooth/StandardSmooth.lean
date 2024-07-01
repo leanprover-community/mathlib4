@@ -197,4 +197,9 @@ variable {R S}
 def IsStandardSmooth (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
 
+/-- A standard smooth ring hom `R →+* S` is standard smooth of relative dimension `n`
+if `S` has relative dimension `n` as `R`-algebra. -/
+def IsOfRelativeDimension (n : ℕ) (f : R →+* S) (hf : f.IsStandardSmooth) : Prop :=
+  @Algebra.IsOfRelativeDimension.{t, w} _ _ _ _ f.toAlgebra n hf
+
 end RingHom
