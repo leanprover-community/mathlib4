@@ -122,7 +122,7 @@ theorem toOrdinal_max {a b : NatOrdinal} : toOrdinal (max a b) = max (toOrdinal 
 #align nat_ordinal.to_ordinal_max NatOrdinal.toOrdinal_max
 
 @[simp]
-theorem toOrdinal_min {a b : NatOrdinal} : toOrdinal (min a b)= min (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_min {a b : NatOrdinal} : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 #align nat_ordinal.to_ordinal_min NatOrdinal.toOrdinal_min
 
