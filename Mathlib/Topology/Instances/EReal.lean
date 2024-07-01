@@ -298,15 +298,15 @@ private lemma continuousAt_mul_top_top :
   rw [_root_.eventually_nhds_iff]
   use (Set.Ioi ((max x 0) : EReal)) ×ˢ (Set.Ioi 1)
   split_ands
-  . intros p p_in_prod
+  · intros p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi, max_lt_iff] at p_in_prod
     rcases p_in_prod with ⟨⟨p1_gt_x, p1_pos⟩, p2_gt_1⟩
     have := mul_le_mul_of_nonneg_left (le_of_lt p2_gt_1) (le_of_lt p1_pos)
     rw [mul_one p.1] at this
     exact lt_of_lt_of_le p1_gt_x this
-  . exact IsOpen.prod isOpen_Ioi isOpen_Ioi
-  . simp
-  . rw [Set.mem_Ioi, ← EReal.coe_one]; exact EReal.coe_lt_top 1
+  · exact IsOpen.prod isOpen_Ioi isOpen_Ioi
+  · simp
+  · rw [Set.mem_Ioi, ← EReal.coe_one]; exact EReal.coe_lt_top 1
 
 private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (⊤, a) := by
@@ -315,7 +315,7 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
   rw [_root_.eventually_nhds_iff]
   use (Set.Ioi ((2*(max (x+1) 0)/a : ℝ) : EReal)) ×ˢ (Set.Ioi ((a/2 : ℝ) : EReal))
   split_ands
-  . intros p p_in_prod
+  · intros p p_in_prod
     simp only [Set.mem_prod, Set.mem_Ioi] at p_in_prod
     rcases p_in_prod with ⟨p1_gt, p2_gt⟩
     have p1_pos : 0 < p.1 := by
@@ -332,15 +332,15 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
       ← div_mul_div_comm, mul_div_right_comm]
     simp only [ne_eq, Ne.symm (ne_of_lt h), not_false_eq_true, _root_.div_self, OfNat.ofNat_ne_zero,
       one_mul, lt_max_iff, lt_add_iff_pos_right, zero_lt_one, true_or]
-  . exact IsOpen.prod isOpen_Ioi isOpen_Ioi
-  . simp
-  . simp [h]
+  · exact IsOpen.prod isOpen_Ioi isOpen_Ioi
+  · simp
+  · simp [h]
 
 private lemma continuousAt_mul_top_ne_zero {a : ℝ} (h : a ≠ 0) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (⊤, a) := by
   rcases lt_or_gt_of_ne h with a_neg | a_pos
-  . exact neg_neg a ▸ continuousAt_mul_symm2 (continuousAt_mul_top_pos (neg_pos.2 a_neg))
-  . exact continuousAt_mul_top_pos a_pos
+  · exact neg_neg a ▸ continuousAt_mul_symm2 (continuousAt_mul_top_pos (neg_pos.2 a_neg))
+  · exact continuousAt_mul_top_pos a_pos
 
 /-- The multiplication on `EReal` is continuous except at indeterminacies
 (i.e. whenever one value is zero and the other infinite). -/
@@ -349,18 +349,18 @@ theorem continuousAt_mul {p : EReal × EReal} (h₁ : p.1 ≠ 0 ∨ p.2 ≠ ⊥)
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) p := by
   rcases p with ⟨x, y⟩
   induction x <;> induction y
-  . exact continuousAt_mul_symm3 continuousAt_mul_top_top
-  . simp only [ne_eq, not_true_eq_false, EReal.coe_eq_zero, false_or] at h₃
+  · exact continuousAt_mul_symm3 continuousAt_mul_top_top
+  · simp only [ne_eq, not_true_eq_false, EReal.coe_eq_zero, false_or] at h₃
     exact continuousAt_mul_symm1 (continuousAt_mul_top_ne_zero h₃)
-  . exact EReal.neg_top ▸ continuousAt_mul_symm1 continuousAt_mul_top_top
-  . simp only [ne_eq, EReal.coe_eq_zero, not_true_eq_false, or_false] at h₁
+  · exact EReal.neg_top ▸ continuousAt_mul_symm1 continuousAt_mul_top_top
+  · simp only [ne_eq, EReal.coe_eq_zero, not_true_eq_false, or_false] at h₁
     exact continuousAt_mul_symm2 (continuousAt_mul_swap (continuousAt_mul_top_ne_zero h₁))
-  . exact continuousAt_mul_coe_coe _ _
-  . simp only [ne_eq, EReal.coe_eq_zero, not_true_eq_false, or_false] at h₂
+  · exact continuousAt_mul_coe_coe _ _
+  · simp only [ne_eq, EReal.coe_eq_zero, not_true_eq_false, or_false] at h₂
     exact continuousAt_mul_swap (continuousAt_mul_top_ne_zero h₂)
-  . exact continuousAt_mul_symm2 continuousAt_mul_top_top
-  . simp only [ne_eq, not_true_eq_false, EReal.coe_eq_zero, false_or] at h₄
+  · exact continuousAt_mul_symm2 continuousAt_mul_top_top
+  · simp only [ne_eq, not_true_eq_false, EReal.coe_eq_zero, false_or] at h₄
     exact continuousAt_mul_top_ne_zero h₄
-  . exact continuousAt_mul_top_top
+  · exact continuousAt_mul_top_top
 
 end EReal
