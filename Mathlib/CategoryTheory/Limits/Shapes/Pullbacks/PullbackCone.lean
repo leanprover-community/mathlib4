@@ -286,7 +286,7 @@ def isLimitOfFlip (ht : IsLimit t.flip) : IsLimit t :=
 
 end Flip
 
-section Monomorphisms
+/- section Monomorphisms
 
 /-- Monomorphisms are stable under pullback in the first argument. -/
 theorem mono_snd_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) [Mono f] :
@@ -368,7 +368,7 @@ def isLimitOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i] (s : Pu
 #align category_theory.limits.pullback_cone.is_limit_of_comp_mono CategoryTheory.Limits.PullbackCone.isLimitOfCompMono
 
 end Monomorphisms
-
+ -/
 end PullbackCone
 
 /-- This is a helper construction that can be useful when verifying that a category has all
@@ -602,79 +602,79 @@ def isColimitOfFlip (ht : IsColimit t.flip) : IsColimit t :=
 
 end Flip
 
-theorem epi_inr_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) [Epi f] :
-    Epi t.inr :=
-  ⟨fun {W} h k i => IsColimit.hom_ext ht (by simp [← cancel_epi f, t.condition_assoc, i]) i⟩
-#align category_theory.limits.pushout_cocone.epi_inr_of_is_pushout_of_epi CategoryTheory.Limits.PushoutCocone.epi_inr_of_is_pushout_of_epi
+-- theorem epi_inr_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) [Epi f] :
+--     Epi t.inr :=
+--   ⟨fun {W} h k i => IsColimit.hom_ext ht (by simp [← cancel_epi f, t.condition_assoc, i]) i⟩
+-- #align category_theory.limits.pushout_cocone.epi_inr_of_is_pushout_of_epi CategoryTheory.Limits.PushoutCocone.epi_inr_of_is_pushout_of_epi
 
-theorem epi_inl_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) [Epi g] :
-    Epi t.inl :=
-  ⟨fun {W} h k i => IsColimit.hom_ext ht i (by simp [← cancel_epi g, ← t.condition_assoc, i])⟩
-#align category_theory.limits.pushout_cocone.epi_inl_of_is_pushout_of_epi CategoryTheory.Limits.PushoutCocone.epi_inl_of_is_pushout_of_epi
+-- theorem epi_inl_of_is_pushout_of_epi {t : PushoutCocone f g} (ht : IsColimit t) [Epi g] :
+--     Epi t.inl :=
+--   ⟨fun {W} h k i => IsColimit.hom_ext ht i (by simp [← cancel_epi g, ← t.condition_assoc, i])⟩
+-- #align category_theory.limits.pushout_cocone.epi_inl_of_is_pushout_of_epi CategoryTheory.Limits.PushoutCocone.epi_inl_of_is_pushout_of_epi
 
-/--
-The pushout cocone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a colimit if `f` is an epi. The converse is
-shown in `epi_of_isColimit_mk_id_id`.
--/
-def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) :=
-  IsColimit.mk _ (fun s => s.inl) (fun s => Category.id_comp _)
-    (fun s => by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ => by
-    simpa using m₁
-#align category_theory.limits.pushout_cocone.is_colimit_mk_id_id CategoryTheory.Limits.PushoutCocone.isColimitMkIdId
+-- /--
+-- The pushout cocone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a colimit if `f` is an epi. The converse is
+-- shown in `epi_of_isColimit_mk_id_id`.
+-- -/
+-- def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) :=
+--   IsColimit.mk _ (fun s => s.inl) (fun s => Category.id_comp _)
+--     (fun s => by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ => by
+--     simpa using m₁
+-- #align category_theory.limits.pushout_cocone.is_colimit_mk_id_id CategoryTheory.Limits.PushoutCocone.isColimitMkIdId
 
-/-- `f` is an epi if the pushout cocone `(𝟙 X, 𝟙 X)` is a colimit for the pair `(f, f)`.
-The converse is given in `PushoutCocone.isColimitMkIdId`.
--/
-theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
-    (t : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f)) : Epi f :=
-  ⟨fun {Z} g h eq => by
-    rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨_, rfl, rfl⟩
-    rfl⟩
-#align category_theory.limits.pushout_cocone.epi_of_is_colimit_mk_id_id CategoryTheory.Limits.PushoutCocone.epi_of_isColimitMkIdId
+-- /-- `f` is an epi if the pushout cocone `(𝟙 X, 𝟙 X)` is a colimit for the pair `(f, f)`.
+-- The converse is given in `PushoutCocone.isColimitMkIdId`.
+-- -/
+-- theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
+--     (t : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f)) : Epi f :=
+--   ⟨fun {Z} g h eq => by
+--     rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨_, rfl, rfl⟩
+--     rfl⟩
+-- #align category_theory.limits.pushout_cocone.epi_of_is_colimit_mk_id_id CategoryTheory.Limits.PushoutCocone.epi_of_isColimitMkIdId
 
-/-- Suppose `f` and `g` are two morphisms with a common domain and `s` is a colimit cocone over the
-    diagram formed by `f` and `g`. Suppose `f` and `g` both factor through an epimorphism `h` via
-    `x` and `y`, respectively. Then `s` is also a colimit cocone over the diagram formed by `x` and
-    `y`.  -/
-def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W ⟶ Y) (y : W ⟶ Z)
-    (hhx : h ≫ x = f) (hhy : h ≫ y = g) (s : PushoutCocone f g) (hs : IsColimit s) :
-    have reassoc₁ : h ≫ x ≫ inl s = f ≫ inl s := by  -- Porting note: working around reassoc
-      rw [← Category.assoc]; apply congrArg (· ≫ inl s) hhx
-    have reassoc₂ : h ≫ y ≫ inr s = g ≫ inr s := by
-      rw [← Category.assoc]; apply congrArg (· ≫ inr s) hhy
-    IsColimit (PushoutCocone.mk _ _ (show x ≫ s.inl = y ≫ s.inr from
-          (cancel_epi h).1 <| by rw [reassoc₁, reassoc₂, s.condition])) :=
-  PushoutCocone.isColimitAux' _ fun t => ⟨hs.desc (PushoutCocone.mk t.inl t.inr <| by
-    rw [← hhx, ← hhy, Category.assoc, Category.assoc, t.condition]),
-      ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' => by
-        apply PushoutCocone.IsColimit.hom_ext hs;
-        · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
-          simp only [hr, hr']
-          symm
-          exact hs.fac _ WalkingSpan.left
-        · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
-          simp only [hr, hr']
-          symm
-          exact hs.fac _ WalkingSpan.right⟩⟩
-#align category_theory.limits.pushout_cocone.is_colimit_of_factors CategoryTheory.Limits.PushoutCocone.isColimitOfFactors
+-- /-- Suppose `f` and `g` are two morphisms with a common domain and `s` is a colimit cocone over the
+--     diagram formed by `f` and `g`. Suppose `f` and `g` both factor through an epimorphism `h` via
+--     `x` and `y`, respectively. Then `s` is also a colimit cocone over the diagram formed by `x` and
+--     `y`.  -/
+-- def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W ⟶ Y) (y : W ⟶ Z)
+--     (hhx : h ≫ x = f) (hhy : h ≫ y = g) (s : PushoutCocone f g) (hs : IsColimit s) :
+--     have reassoc₁ : h ≫ x ≫ inl s = f ≫ inl s := by  -- Porting note: working around reassoc
+--       rw [← Category.assoc]; apply congrArg (· ≫ inl s) hhx
+--     have reassoc₂ : h ≫ y ≫ inr s = g ≫ inr s := by
+--       rw [← Category.assoc]; apply congrArg (· ≫ inr s) hhy
+--     IsColimit (PushoutCocone.mk _ _ (show x ≫ s.inl = y ≫ s.inr from
+--           (cancel_epi h).1 <| by rw [reassoc₁, reassoc₂, s.condition])) :=
+--   PushoutCocone.isColimitAux' _ fun t => ⟨hs.desc (PushoutCocone.mk t.inl t.inr <| by
+--     rw [← hhx, ← hhy, Category.assoc, Category.assoc, t.condition]),
+--       ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' => by
+--         apply PushoutCocone.IsColimit.hom_ext hs;
+--         · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
+--           simp only [hr, hr']
+--           symm
+--           exact hs.fac _ WalkingSpan.left
+--         · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
+--           simp only [hr, hr']
+--           symm
+--           exact hs.fac _ WalkingSpan.right⟩⟩
+-- #align category_theory.limits.pushout_cocone.is_colimit_of_factors CategoryTheory.Limits.PushoutCocone.isColimitOfFactors
 
-/-- If `W` is the pushout of `f, g`,
-it is also the pushout of `h ≫ f, h ≫ g` for any epi `h`. -/
-def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : PushoutCocone f g)
-    (H : IsColimit s) :
-    IsColimit
-      (PushoutCocone.mk _ _
-        (show (h ≫ f) ≫ s.inl = (h ≫ g) ≫ s.inr by
-          rw [Category.assoc, Category.assoc, s.condition])) := by
-  apply PushoutCocone.isColimitAux'
-  intro s
-  rcases PushoutCocone.IsColimit.desc' H s.inl s.inr
-      ((cancel_epi h).mp (by simpa using s.condition)) with
-    ⟨l, h₁, h₂⟩
-  refine ⟨l, h₁, h₂, ?_⟩
-  intro m hm₁ hm₂
-  exact (PushoutCocone.IsColimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
-#align category_theory.limits.pushout_cocone.is_colimit_of_epi_comp CategoryTheory.Limits.PushoutCocone.isColimitOfEpiComp
+-- /-- If `W` is the pushout of `f, g`,
+-- it is also the pushout of `h ≫ f, h ≫ g` for any epi `h`. -/
+-- def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : PushoutCocone f g)
+--     (H : IsColimit s) :
+--     IsColimit
+--       (PushoutCocone.mk _ _
+--         (show (h ≫ f) ≫ s.inl = (h ≫ g) ≫ s.inr by
+--           rw [Category.assoc, Category.assoc, s.condition])) := by
+--   apply PushoutCocone.isColimitAux'
+--   intro s
+--   rcases PushoutCocone.IsColimit.desc' H s.inl s.inr
+--       ((cancel_epi h).mp (by simpa using s.condition)) with
+--     ⟨l, h₁, h₂⟩
+--   refine ⟨l, h₁, h₂, ?_⟩
+--   intro m hm₁ hm₂
+--   exact (PushoutCocone.IsColimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
+-- #align category_theory.limits.pushout_cocone.is_colimit_of_epi_comp CategoryTheory.Limits.PushoutCocone.isColimitOfEpiComp
 
 end PushoutCocone
 

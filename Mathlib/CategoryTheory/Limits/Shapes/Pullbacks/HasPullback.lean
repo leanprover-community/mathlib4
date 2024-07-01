@@ -18,6 +18,9 @@ This is useful when wanting to pick a pullback.
 * `HasPullback f g`: this is an abbreviation for `HasLimit (cospan f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pullback.
 
+* `HasPullbacks`: expresses the fact that `C` admits all pullbacks, it is implemented as an
+  abbrevation for
+
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
 ```
@@ -45,12 +48,20 @@ pullback.snd f g                       g
 
 # API
 We provide the following API for using the universal property of `pullback f g`:
--- lift, ext lift' lift_fst lift_snd
+* `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 
--- functoriality pullbackComparison? (TODO: another file for these kind of results?)
+* `pullback.map` is the induced map between pullbacks `W ×ₛ X ⟶ Y ×ₜ Z` given maps pointwise
+  between
 
--- symmetry
 
+* `pullbackIsPullback`...?
+
+
+* `pullbackComparison`: Given a functor `G`, this is the natural morphism
+          `G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g)`
+
+
+* `pullbackSymmetry` provides the natural isomorphism `pullback f g ≅ pullback g f`
 
 NOTE: golfed some proofs also
 
@@ -266,27 +277,27 @@ def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     (by aesop_cat)
 #align category_theory.limits.pullback_is_pullback CategoryTheory.Limits.pullbackIsPullback
 
-/-- The pullback of a monomorphism is a monomorphism -/
-instance pullback.fst_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] [Mono g] :
-    Mono (pullback.fst : pullback f g ⟶ X) :=
-  PullbackCone.mono_fst_of_is_pullback_of_mono (limit.isLimit _)
-#align category_theory.limits.pullback.fst_of_mono CategoryTheory.Limits.pullback.fst_of_mono
+-- /-- The pullback of a monomorphism is a monomorphism -/
+-- instance pullback.fst_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] [Mono g] :
+--     Mono (pullback.fst : pullback f g ⟶ X) :=
+--   PullbackCone.mono_fst_of_is_pullback_of_mono (limit.isLimit _)
+-- #align category_theory.limits.pullback.fst_of_mono CategoryTheory.Limits.pullback.fst_of_mono
 
-/-- The pullback of a monomorphism is a monomorphism -/
-instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] [Mono f] :
-    Mono (pullback.snd : pullback f g ⟶ Y) :=
-  PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
-#align category_theory.limits.pullback.snd_of_mono CategoryTheory.Limits.pullback.snd_of_mono
+-- /-- The pullback of a monomorphism is a monomorphism -/
+-- instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] [Mono f] :
+--     Mono (pullback.snd : pullback f g ⟶ Y) :=
+--   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
+-- #align category_theory.limits.pullback.snd_of_mono CategoryTheory.Limits.pullback.snd_of_mono
 
-/-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
-instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasPullback f g] [HasBinaryProduct X Y] :
-    Mono (prod.lift pullback.fst pullback.snd : pullback f g ⟶ _) :=
-  ⟨fun {W} i₁ i₂ h => by
-    ext
-    · simpa using congrArg (fun f => f ≫ prod.fst) h
-    · simpa using congrArg (fun f => f ≫ prod.snd) h⟩
-#align category_theory.limits.mono_pullback_to_prod CategoryTheory.Limits.mono_pullback_to_prod
+-- /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
+-- instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+--     [HasPullback f g] [HasBinaryProduct X Y] :
+--     Mono (prod.lift pullback.fst pullback.snd : pullback f g ⟶ _) :=
+--   ⟨fun {W} i₁ i₂ h => by
+--     ext
+--     · simpa using congrArg (fun f => f ≫ prod.fst) h
+--     · simpa using congrArg (fun f => f ≫ prod.snd) h⟩
+-- #align category_theory.limits.mono_pullback_to_prod CategoryTheory.Limits.mono_pullback_to_prod
 
 /-- Two morphisms out of a pushout are equal if their compositions with the pushout morphisms are
     equal -/
@@ -304,27 +315,27 @@ def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     (by aesop_cat)
 #align category_theory.limits.pushout_is_pushout CategoryTheory.Limits.pushoutIsPushout
 
-/-- The pushout of an epimorphism is an epimorphism -/
-instance pushout.inl_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi g] :
-    Epi (pushout.inl : Y ⟶ pushout f g) :=
-  PushoutCocone.epi_inl_of_is_pushout_of_epi (colimit.isColimit _)
-#align category_theory.limits.pushout.inl_of_epi CategoryTheory.Limits.pushout.inl_of_epi
+-- /-- The pushout of an epimorphism is an epimorphism -/
+-- instance pushout.inl_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi g] :
+--     Epi (pushout.inl : Y ⟶ pushout f g) :=
+--   PushoutCocone.epi_inl_of_is_pushout_of_epi (colimit.isColimit _)
+-- #align category_theory.limits.pushout.inl_of_epi CategoryTheory.Limits.pushout.inl_of_epi
 
-/-- The pushout of an epimorphism is an epimorphism -/
-instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi f] :
-    Epi (pushout.inr : Z ⟶ pushout f g) :=
-  PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
-#align category_theory.limits.pushout.inr_of_epi CategoryTheory.Limits.pushout.inr_of_epi
+-- /-- The pushout of an epimorphism is an epimorphism -/
+-- instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi f] :
+--     Epi (pushout.inr : Z ⟶ pushout f g) :=
+--   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
+-- #align category_theory.limits.pushout.inr_of_epi CategoryTheory.Limits.pushout.inr_of_epi
 
-/-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
-instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
-    [HasPushout f g] [HasBinaryCoproduct Y Z] :
-    Epi (coprod.desc pushout.inl pushout.inr : _ ⟶ pushout f g) :=
-  ⟨fun {W} i₁ i₂ h => by
-    ext
-    · simpa using congrArg (fun f => coprod.inl ≫ f) h
-    · simpa using congrArg (fun f => coprod.inr ≫ f) h⟩
-#align category_theory.limits.epi_coprod_to_pushout CategoryTheory.Limits.epi_coprod_to_pushout
+-- /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
+-- instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+--     [HasPushout f g] [HasBinaryCoproduct Y Z] :
+--     Epi (coprod.desc pushout.inl pushout.inr : _ ⟶ pushout f g) :=
+--   ⟨fun {W} i₁ i₂ h => by
+--     ext
+--     · simpa using congrArg (fun f => coprod.inl ≫ f) h
+--     · simpa using congrArg (fun f => coprod.inr ≫ f) h⟩
+-- #align category_theory.limits.epi_coprod_to_pushout CategoryTheory.Limits.epi_coprod_to_pushout
 
 instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂]
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)

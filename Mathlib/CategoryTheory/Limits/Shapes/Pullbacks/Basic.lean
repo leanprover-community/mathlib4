@@ -18,52 +18,12 @@ and `span f g` construct functors from the walking (co)span, hitting the given m
 We define `pullback f g` and `pushout f g` as limits and colimits of such functors.
 
 
-## Overview of pullbacks in mathlib
-
-Mathlib has an extensive API for pullbacks, with numerous different approaches available that are
-suitable in different situations. Here we give an overview of the available API.
-
-# PullbackCone (API for Cones, see `PullbackCone.lean`)
-`PullbackCone f g` is an abbrevation for `Cone (cospan f g)`, i.e., a cone on the cospan formed by
-two morphisms `f` and `g`. It provides basic API to access the different components of the Cone.
-For example,
-*
-*
-*
-
-
 # HasPullback (API for HasLimits, see `HasPullback.lean`)
 `HasPullback f g` and `pullback f g` provide API for ....
-
-
-
-
-# Diagrams
-The file `Pullbacks/Diagrams.lean` provides results for diagrams containing multiple pullback
-squares, and how these interact with one another.
-
-It contains the following results
-
-# IsPullback
-
-
 
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
--/
-
-
-/-
-Sections:
-
-1. span / cospan setup (first 500 lines). Goes in one file
-2. PullbackCone / PushoutCone basics (500-1122). Maybe some things goes elsewhere
-Mono / Epi should probably go into a separate `Mono.lean` file
-3. HasPullback / pullback interactions (1122-1620?). Goes in one file
-
-5. rest after bigSquare goes into `Constructions.lean`
-
 -/
 
 noncomputable section
