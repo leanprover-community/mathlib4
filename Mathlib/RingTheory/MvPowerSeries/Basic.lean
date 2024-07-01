@@ -5,7 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 
 import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Data.Finset.PiAntidiagonal
+import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Tactic.Linarith
 
@@ -135,7 +135,6 @@ theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
-  dsimp only
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LinearMap.stdBasis_apply, Function.update_apply, Pi.zero_apply]
 #align mv_power_series.coeff_monomial MvPowerSeries.coeff_monomial

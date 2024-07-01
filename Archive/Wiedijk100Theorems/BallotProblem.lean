@@ -241,7 +241,7 @@ theorem first_vote_pos :
       · norm_cast
         rw [mul_comm _ (p + 1), ← Nat.succ_eq_add_one p, Nat.succ_add, Nat.succ_mul_choose_eq,
           mul_comm]
-      all_goals simp [(Nat.choose_pos <| (le_add_iff_nonneg_right _).2 zero_le').ne.symm]
+      all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le').ne']
     · simp
 #align ballot.first_vote_pos Ballot.first_vote_pos
 
