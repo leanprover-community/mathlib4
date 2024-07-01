@@ -352,33 +352,17 @@ attribute [mono] edgeSet_mono edgeSet_strict_mono
 
 variable (G₁ G₂)
 
-@[simp]
-theorem edgeSet_bot : (⊥ : Digraph V).edgeSet = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
-  simp
 
--- JACK: This should work? I'm trying to say that the edgeset of the top digraph is all possible
--- edges between vertices V
-@[simp]
-theorem edgeSet_top : (⊤ : Digraph V).edgeSet = {e | (⊤ : Digraph V).Adj e.1 e.2} := by
-  ext ⟨x, y⟩
-  rfl
 
-@[simp]
-theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
-  ext ⟨x, y⟩
-  rfl
+theorem edgeSet_bot : (⊥ : Digraph V).edgeSet = ∅ := rfl
 
-@[simp]
-theorem edgeSet_inf : (G₁ ⊓ G₂).edgeSet = G₁.edgeSet ∩ G₂.edgeSet := by
-  ext ⟨x, y⟩
-  rfl
+theorem edgeSet_top : (⊤ : Digraph V).edgeSet = {e | (⊤ : Digraph V).Adj e.1 e.2} := rfl
 
-@[simp]
-theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := by
-  ext ⟨x, y⟩
-  rfl
+theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := rfl
 
+theorem edgeSet_inf : (G₁ ⊓ G₂).edgeSet = G₁.edgeSet ∩ G₂.edgeSet := rfl
+
+theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := rfl
 
 
 
@@ -386,10 +370,12 @@ variable {G G₁ G₂}
 
 
 @[simp] lemma disjoint_edgeSet : Disjoint G₁.edgeSet G₂.edgeSet ↔ Disjoint G₁ G₂ := by
-  rw [Set.disjoint_iff, disjoint_iff_inf_le, ← edgeSet_inf, ← edgeSet_bot, ← Set.le_iff_subset,
-    OrderIso.le_iff_le (edgeSetIso V)]
+  rw [@disjoint_map_orderIso_iff]
 
-@[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
+@[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by
+  rw [@OrderIso.apply_eq_iff_eq_symm_apply]
+  simp only [Set.le_eq_subset]
+  exact Iff.symm (Eq.congr_right rfl)
 
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
   rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
