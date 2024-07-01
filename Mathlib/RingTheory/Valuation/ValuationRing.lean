@@ -420,13 +420,7 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
     IsFractionRing 𝒪 K ↔
       (∀ (x : K), ∃ a : 𝒪, x = algebraMap 𝒪 K a ∨ x⁻¹ = algebraMap 𝒪 K a) ∧
         Function.Injective (algebraMap 𝒪 K) := by
-  constructor <;> intro h
-  · constructor
-    · intro x
-      obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
-      exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
-    · exact IsFractionRing.injective _ _
-  refine ⟨sorry, fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
   · obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
     exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
   · constructor
