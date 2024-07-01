@@ -61,6 +61,7 @@ Given these parameters, there are a few common structures for the model that ari
 
 assert_not_exists MonoidWithZero
 
+open Mathlib (Vector)
 open Relation
 
 open Nat (iterate)

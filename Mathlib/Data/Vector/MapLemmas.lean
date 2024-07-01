@@ -13,6 +13,8 @@ import Mathlib.Data.Vector.Snoc
 
 set_option autoImplicit true
 
+namespace Mathlib
+
 namespace Vector
 
 /-!
@@ -393,3 +395,5 @@ theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
 end Flip
 
 end Vector
+
+end Mathlib

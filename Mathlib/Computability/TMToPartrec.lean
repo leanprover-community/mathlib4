@@ -25,6 +25,7 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 * `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
 -/
 
+open Mathlib (Vector)
 
 open Function (update)
 
