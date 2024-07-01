@@ -426,6 +426,9 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
       obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
       exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
     · exact IsFractionRing.injective _ _
+  refine ⟨fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
+  · obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
+    exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
   · constructor
     · intro a
       simpa using h.2.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
@@ -438,7 +441,7 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
         cases ha with
         | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
         | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
-    · intro a b hab
+    · intro _ _ hab
       exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
 
 instance instIsFractionRingInteger: IsFractionRing v.integer K :=
