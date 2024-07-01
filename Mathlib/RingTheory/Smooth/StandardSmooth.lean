@@ -38,13 +38,18 @@ Let now `P` be a submersive presentation of `S` over `R`.
 - `SubmersivePresentation.IsStandardSmooth`: `P` is standard smooth, if it's jacobian
   is a unit in `S` and it is finite.
 
-Finally, we define:
+Furthermore, we define:
 
 - `IsStandardSmooth`: `S` is `R`-standard smooth if `S` has a standard smooth submersive
   `R`-presentation.
 - `IsOfRelativeDimension n`: A standard smooth `R`-algebra `S` is of relative dimension `n`
   if `S` has a standard smooth submersive `R`-presentation of dimension `n`. Equivalently,
   that every standard smooth has dimension `n` (TODO, see below).
+
+Finally, in the `RingHom` namespace we define
+
+- `IsStandardSmooth`: A ring hom `R →+* S` is standard smooth if `S` is standard smooth as
+  `R`-algebra.
 
 ## TODO
 
@@ -57,6 +62,21 @@ Finally, we define:
 - Show that the Kaehler differentials of a standard smooth `R`-algebra `S` of relative dimension `n`
   are `S`-free of rank `n`. In particular this shows that the relative dimension is independent
   of the choice of the standard smooth presentation.
+
+## Implementation details
+
+We don't bundle `IsStandardSmooth` and `IsOfRelativeDimension n` in one typeclass, because then
+`IsStandardSmooth` can't be inferred from `StandardSmoothOfRelativeDimension n` as Lean can't know
+which `n` to choose. Mathematically this is still correct, since the dimension
+does not depend on the choice of the standard smooth presentation.
+
+Standard smooth algebras and ring homs feature 4 universe levels: The universe levels of the rings
+involved and the universe levels of the types of the variables and relations.
+
+## Notes
+
+This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
+in June 2024.
 
 -/
 
@@ -118,6 +138,8 @@ of `P.linearMap` viewed as element of `S`. -/
 noncomputable def jacobian : S :=
   algebraMap P.Ring S <| LinearMap.det P.differential
 
+section Matrix
+
 variable [Fintype P.rels] [DecidableEq P.rels]
 
 /--
@@ -133,6 +155,8 @@ lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMa
 lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
   simp [jacobiMatrix, LinearMap.toMatrix, differential]
+
+end Matrix
 
 /--
 A `SubmersivePresentation` is standard smooth if its jacobian is a unit in `S`
@@ -162,3 +186,15 @@ the choice of the presentation as it is equal to the `S`-rank of `Ω[S/R]` (TODO
 -/
 class IsOfRelativeDimension (n : ℕ) [IsStandardSmooth R S] : Prop where
   out : ∃ (P : SubmersivePresentation.{t, w} R S), P.IsStandardSmooth ∧ P.dimension = n
+
+end Algebra
+
+namespace RingHom
+
+variable {R S}
+
+/-- A ring hom `R →+* S` is standard smooth if `S` is standard smooth as `S`-algebra. -/
+def IsStandardSmooth (f : R →+* S) : Prop :=
+  @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
+
+end RingHom
