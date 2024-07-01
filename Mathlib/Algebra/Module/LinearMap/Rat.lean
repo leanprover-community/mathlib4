@@ -13,9 +13,7 @@ import Mathlib.Algebra.Module.Rat
 
 open Function
 
-universe u u' v w x y z
-
-variable {R R₁ R₂ R₃ k S S₃ T M M₁ M₂ M₃ N₁ N₂ N₃ ι : Type*}
+variable {M M₂ : Type*}
 
 /-- Reinterpret an additive homomorphism as a `ℚ`-linear map. -/
 def AddMonoidHom.toRatLinearMap [AddCommGroup M] [Module ℚ M] [AddCommGroup M₂] [Module ℚ M₂]
