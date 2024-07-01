@@ -474,7 +474,7 @@ theorem monomial_mul_monomial (n m : ℕ) (r s : R) :
 theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (n * k) (r ^ k) := by
   induction' k with k ih
   · simp [pow_zero, monomial_zero_one]
-  · simp [pow_succ, ih, monomial_mul_monomial, Nat.succ_eq_add_one, mul_add, add_comm]
+  · simp [pow_succ, ih, monomial_mul_monomial, mul_add, add_comm]
 #align polynomial.monomial_pow Polynomial.monomial_pow
 
 theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
@@ -643,7 +643,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc, Nat.succ_eq_add_one]
+  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]

@@ -5,10 +5,12 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 #align_import data.dfinsupp.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
