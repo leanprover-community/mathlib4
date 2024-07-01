@@ -967,5 +967,3 @@ theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.e
 
 end deleteEdges
 end SimpleGraph
-
-#check @SimpleGraph.Adj
