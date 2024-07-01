@@ -54,22 +54,23 @@ variable [IsValExtension vR vA]
 
 -- @[simp] does not work because `vR` cannot be inferred from `R`.
 theorem val_map_le_iff (x y : R) : vA (algebraMap R A x) ≤ vA (algebraMap R A y) ↔ vR x ≤ vR y :=
-  (val_isEquiv_comap).symm
+  val_isEquiv_comap.symm x y
 
-theorem val_map_lt_iff (x y : R) : vA (algebraMap R A x) < vA (algebraMap R A y) ↔ vR x < vR y :=
-  (IsEquiv.val_lt val_isEquiv_comap).symm
+theorem val_map_lt_iff (x y : R) : vA (algebraMap R A x) < vA (algebraMap R A y) ↔ vR x < vR y := by
+  simpa only [not_le] using ((val_map_le_iff vR vA _ _).not)
 
 theorem val_map_eq_iff (x y : R) : vA (algebraMap R A x) = vA (algebraMap R A y) ↔ vR x = vR y :=
   (IsEquiv.val_eq val_isEquiv_comap).symm
 
-theorem val_map_le_one_iff (x : R) : vA (algebraMap R A x) ≤ 1 ↔ vR x ≤ 1 :=
-  (IsEquiv.val_le_one val_isEquiv_comap).symm
+theorem val_map_le_one_iff (x : R) : vA (algebraMap R A x) ≤ 1 ↔ vR x ≤ 1 := by
+  simpa only [_root_.map_one] using val_map_le_iff vR vA x 1
 
-theorem val_map_lt_one_iff (x : R) : vA (algebraMap R A x) < 1 ↔ vR x < 1 :=
-  (IsEquiv.val_lt_one val_isEquiv_comap).symm
+theorem val_map_lt_one_iff (x : R) : vA (algebraMap R A x) < 1 ↔ vR x < 1 := by
+  simpa only [_root_.map_one, not_le] using (val_map_le_iff vR vA 1 x).not
 
-theorem val_map_eq_one_iff (x : R) : vA (algebraMap R A x) = 1 ↔ vR x = 1 :=
-  (IsEquiv.val_eq_one val_isEquiv_comap).symm
+theorem val_map_eq_one_iff (x : R) : vA (algebraMap R A x) = 1 ↔ vR x = 1 := by
+  simpa only [le_antisymm_iff, _root_.map_one] using
+    and_congr (val_map_le_iff vR vA x 1) (val_map_le_iff vR vA 1 x)
 
 instance id : IsValExtension vR vR where
   val_isEquiv_comap := by
