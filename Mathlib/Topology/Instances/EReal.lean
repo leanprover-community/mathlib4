@@ -180,7 +180,7 @@ lemma limsup_le_limsup {α : Type*} {f : Filter α} {u v : α → EReal} (h : u 
 
 /-- This lemma is superseded by `limsup_add_le_of_le` (weaker hypothesis) and
 `limsup_add_lt_of_lt` (stronger thesis). -/
-lemma limsup_add_le_of_lt {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
+private lemma limsup_add_le_of_lt {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
     (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f ≤ a + b := by
   rcases eq_or_neBot f with (rfl | _); simp only [limsup_bot, bot_le]
   rw [← @limsup_const EReal α _ f _ (a + b)]
@@ -196,7 +196,8 @@ lemma limsup_add_lt_of_lt {α : Type*} {f : Filter α} {u v : α → EReal} {a b
   obtain ⟨d, hd, hdb⟩ := DenselyOrdered.dense _ _ hb
   exact (limsup_add_le_of_lt hc hd).trans_lt (add_lt_add hca hdb)
 
-lemma limsup_add_bot_of_ne_top {α : Type*} {f : Filter α} {u : α → EReal} {v : α → EReal}
+/-- This lemma is superseded by `limsup_add_le_add_limsup`. -/
+private lemma limsup_add_bot_of_ne_top {α : Type*} {f : Filter α} {u : α → EReal} {v : α → EReal}
     (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) : limsup (u + v) f = ⊥ := by
   apply le_bot_iff.1
   apply (le_iff_le_forall_real_gt ⊥ (limsup (u + v) f)).1
