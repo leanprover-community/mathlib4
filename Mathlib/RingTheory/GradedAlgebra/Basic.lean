@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
+Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Decomposition
@@ -41,7 +41,7 @@ graded algebra, graded ring, graded semiring, decomposition
 -/
 
 
-open DirectSum BigOperators
+open DirectSum
 
 variable {ι R A σ : Type*}
 
@@ -185,9 +185,7 @@ abbrev GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[
   left_inv := AlgHom.congr_fun right_inv
   right_inv := by
     suffices decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _ from AlgHom.congr_fun this
-    -- Porting note: was ext i x : 2
-    refine DirectSum.algHom_ext' _ _ fun i => ?_
-    ext x
+    ext i x : 2
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)
 #align graded_algebra.of_alg_hom GradedAlgebra.ofAlgHom
 
@@ -276,10 +274,10 @@ def GradedRing.projZeroRingHom : A →+* A where
     rw [decompose_add]
     rfl
   map_mul' := by
-    refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
+    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
-      refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _
+      refine DirectSum.Decomposition.inductionOn 𝒜 ?_ ?_ ?_
       · simp only [mul_zero, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
       · rintro j ⟨c', hc'⟩
         simp only [Subtype.coe_mk]
@@ -299,6 +297,27 @@ def GradedRing.projZeroRingHom : A →+* A where
       simp only at ha hb -- Porting note: added
       simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
 #align graded_ring.proj_zero_ring_hom GradedRing.projZeroRingHom
+
+section GradeZero
+
+/-- The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`. -/
+def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
+  A →+* SetLike.GradeZero.subsemiring 𝒜)
+
+@[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
+    (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
+
+@[simp] lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
+    GradedRing.projZeroRingHom' 𝒜 a = a := by
+  ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+
+/-- The ring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective. -/
+lemma GradedRing.projZeroRingHom'_surjective :
+    Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
+  Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
+
+end GradeZero
 
 variable {a b : A} {n i : ι}
 

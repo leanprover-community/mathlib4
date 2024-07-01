@@ -182,5 +182,5 @@ theorem exists_homeomorph_image_interior_closure_frontier_eq_unitBall {s : Set E
     ∃ h : E ≃ₜ E, h '' interior s = ball 0 1 ∧ h '' closure s = closedBall 0 1 ∧
       h '' frontier s = sphere 0 1 := by
   simpa [isOpen_ball.interior_eq, closure_ball, frontier_ball]
-    using exists_homeomorph_image_eq hc hne ((NormedSpace.isVonNBounded_iff _ _ _).2 hb)
+    using exists_homeomorph_image_eq hc hne (NormedSpace.isVonNBounded_of_isBounded _ hb)
     (convex_ball 0 1) (by simp [isOpen_ball.interior_eq]) (NormedSpace.isVonNBounded_ball _ _ _)

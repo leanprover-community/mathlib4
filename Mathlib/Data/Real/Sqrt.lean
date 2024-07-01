@@ -3,7 +3,6 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.Order.MonotoneContinuity
 
@@ -34,14 +33,16 @@ square root
 -/
 
 open Set Filter
-open scoped BigOperators Filter NNReal Topology
+open scoped Filter NNReal Topology
 
 namespace NNReal
 
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- Porting note: was @[pp_nodot]
+-- Porting note (kmill): `pp_nodot` has no affect here
+-- unless RFC lean4#1910 leads to dot notation for CoeFun
+@[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
@@ -73,12 +74,11 @@ lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnecti
 lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisConnection _ _).symm
 #align nnreal.le_sqrt_iff NNReal.le_sqrt_iff_sq_le
 
--- 2024-02-14
-@[deprecated] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
-@[deprecated] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
-@[deprecated] alias sqrt_le_iff := sqrt_le_iff_le_sq
-@[deprecated] alias le_sqrt_iff := le_sqrt_iff_sq_le
-@[deprecated] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
+@[deprecated (since := "2024-02-14")] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
+@[deprecated (since := "2024-02-14")] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
+@[deprecated (since := "2024-02-14")] alias sqrt_le_iff := sqrt_le_iff_le_sq
+@[deprecated (since := "2024-02-14")] alias le_sqrt_iff := le_sqrt_iff_sq_le
+@[deprecated (since := "2024-02-14")] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
 
 @[simp] lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 := by simp [sqrt_eq_iff_eq_sq]
 #align nnreal.sqrt_eq_zero NNReal.sqrt_eq_zero
@@ -471,27 +471,7 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
     _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
     _ = _ := by ring
 
-/-- Although the instance `RCLike.toStarOrderedRing` exists, it is locked behind the
-`ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
-want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
-In addition, providing this instance here makes it available earlier in the import
-hierarchy; otherwise in order to access it we would need to import `Mathlib.Analysis.RCLike.Basic`.
--/
-instance : StarOrderedRing ℝ :=
-  StarOrderedRing.of_nonneg_iff' add_le_add_left fun r => by
-    refine ⟨fun hr => ⟨√r, (mul_self_sqrt hr).symm⟩, ?_⟩
-    rintro ⟨s, rfl⟩
-    exact mul_self_nonneg s
-
 end Real
-
-instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
-  refine .of_le_iff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
-  · obtain ⟨d, rfl⟩ := exists_add_of_le h
-    refine ⟨sqrt d, ?_⟩
-    simp only [star_trivial, mul_self_sqrt]
-  · rintro ⟨p, -, rfl⟩
-    exact le_self_add
 
 open Real
 
@@ -530,12 +510,12 @@ open Finset
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ≥0) :
-    ∑ i in s, f i * g i ≤ sqrt (∑ i in s, f i ^ 2) * sqrt (∑ i in s, g i ^ 2) :=
+    ∑ i ∈ s, f i * g i ≤ sqrt (∑ i ∈ s, f i ^ 2) * sqrt (∑ i ∈ s, g i ^ 2) :=
   (le_sqrt_iff_sq_le.2 $ sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul _ _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ≥0`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (f g : ι → ℝ≥0) :
-    ∑ i in s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i in s, f i) * sqrt (∑ i in s, g i) := by
+    ∑ i ∈ s, sqrt (f i) * sqrt (g i) ≤ sqrt (∑ i ∈ s, f i) * sqrt (∑ i ∈ s, g i) := by
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ sqrt (f x)) (fun x ↦ sqrt (g x))
 
 end NNReal
@@ -546,13 +526,13 @@ open Finset
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
 lemma sum_mul_le_sqrt_mul_sqrt (s : Finset ι) (f g : ι → ℝ) :
-    ∑ i in s, f i * g i ≤ √(∑ i in s, f i ^ 2) * √(∑ i in s, g i ^ 2) :=
+    ∑ i ∈ s, f i * g i ≤ √(∑ i ∈ s, f i ^ 2) * √(∑ i ∈ s, g i ^ 2) :=
   (le_sqrt_of_sq_le <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul
     (sum_nonneg fun _ _ ↦ by positivity) _
 
 /-- **Cauchy-Schwarz inequality** for finsets using square roots in `ℝ`. -/
 lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i) :
-    ∑ i in s, √(f i) * √(g i) ≤ √(∑ i in s, f i) * √(∑ i in s, g i) := by
+    ∑ i ∈ s, √(f i) * √(g i) ≤ √(∑ i ∈ s, f i) * √(∑ i ∈ s, g i) := by
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ √(f x)) (fun x ↦ √(g x))
 
 end Real

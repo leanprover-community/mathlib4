@@ -339,7 +339,7 @@ section Div
 
 theorem mul_div_mul_cancel {a b c : R} (ha : a ≠ 0) (hcb : c ∣ b) : a * b / (a * c) = b / c := by
   by_cases hc : c = 0; · simp [hc]
-  refine' eq_div_of_mul_eq_right hc (mul_left_cancel₀ ha _)
+  refine eq_div_of_mul_eq_right hc (mul_left_cancel₀ ha ?_)
   rw [← mul_assoc, ← mul_div_assoc _ (mul_dvd_mul_left a hcb),
     mul_div_cancel_left₀ _ (mul_ne_zero ha hc)]
 #align euclidean_domain.mul_div_mul_cancel EuclideanDomain.mul_div_mul_cancel

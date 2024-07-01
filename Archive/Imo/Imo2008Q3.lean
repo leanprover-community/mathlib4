@@ -41,9 +41,9 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   let m := ZMod.valMinAbs y
   let n := Int.natAbs m
   have hnat₁ : p ∣ n ^ 2 + 1 := by
-    refine' Int.natCast_dvd_natCast.mp _
-    simp only [n, Int.natAbs_sq, Int.coe_nat_pow, Int.ofNat_succ, Int.natCast_dvd_natCast.mp]
-    refine' (ZMod.intCast_zmod_eq_zero_iff_dvd (m ^ 2 + 1) p).mp _
+    refine Int.natCast_dvd_natCast.mp ?_
+    simp only [n, Int.natAbs_sq, Int.natCast_pow, Int.ofNat_succ, Int.natCast_dvd_natCast.mp]
+    refine (ZMod.intCast_zmod_eq_zero_iff_dvd (m ^ 2 + 1) p).mp ?_
     simp only [m, Int.cast_pow, Int.cast_add, Int.cast_one, ZMod.coe_valMinAbs]
     rw [pow_two, ← hy]; exact add_left_neg 1
   have hnat₂ : n ≤ p / 2 := ZMod.natAbs_valMinAbs_le y
@@ -62,10 +62,10 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   have hreal₂ : (p : ℝ) > 20 := by assumption_mod_cast
   have hreal₃ : (k : ℝ) ^ 2 + 4 ≥ p := by assumption_mod_cast
   have hreal₅ : (k : ℝ) > 4 := by
-    refine' lt_of_pow_lt_pow_left 2 k.cast_nonneg _
+    refine lt_of_pow_lt_pow_left 2 k.cast_nonneg ?_
     linarith only [hreal₂, hreal₃]
   have hreal₆ : (k : ℝ) > sqrt (2 * n) := by
-    refine' lt_of_pow_lt_pow_left 2 k.cast_nonneg _
+    refine lt_of_pow_lt_pow_left 2 k.cast_nonneg ?_
     rw [sq_sqrt (mul_nonneg zero_le_two n.cast_nonneg)]
     linarith only [hreal₁, hreal₃, hreal₅]
   exact ⟨n, hnat₁, by linarith only [hreal₆, hreal₁]⟩

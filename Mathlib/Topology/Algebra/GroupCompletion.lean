@@ -280,7 +280,7 @@ theorem AddMonoidHom.completion_zero :
   ext x
   refine Completion.induction_on x ?_ ?_
   · apply isClosed_eq (AddMonoidHom.continuous_completion (0 : α →+ β) continuous_const)
-    simp [continuous_const]
+    exact continuous_const
   · intro a
     simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 #align add_monoid_hom.completion_zero AddMonoidHom.completion_zero

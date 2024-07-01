@@ -192,6 +192,8 @@ theorem coe_eq (p : FractionalIdeal S P) (s : Set P) (hs : s = ↑p) : p.copy s 
 
 end SetLike
 
+lemma zero_mem (I : FractionalIdeal S P) : 0 ∈ I := I.coeToSubmodule.zero_mem
+
 -- Porting note: this seems to be needed a lot more than in Lean 3
 @[simp]
 theorem val_eq_coe (I : FractionalIdeal S P) : I.val = I :=
@@ -205,7 +207,6 @@ theorem coe_mk (I : Submodule R P) (hI : IsFractional S I) :
   rfl
 #align fractional_ideal.coe_mk FractionalIdeal.coe_mk
 
--- Porting note (#10756): added lemma because Lean can't see through the composition of coercions.
 theorem coeToSet_coeToSubmodule (I : FractionalIdeal S P) :
     ((I : Submodule R P) : Set P) = I :=
   rfl
@@ -425,7 +426,7 @@ theorem zero_le (I : FractionalIdeal S P) : 0 ≤ I := by
   intro x hx
   -- Porting note: changed the proof from convert; simp into rw; exact
   rw [(mem_zero_iff _).mp hx]
-  exact zero_mem (I : Submodule R P)
+  exact zero_mem I
 #align fractional_ideal.zero_le FractionalIdeal.zero_le
 
 instance orderBot : OrderBot (FractionalIdeal S P) where
@@ -575,8 +576,8 @@ theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 #align fractional_ideal.mul_eq_mul FractionalIdeal.mul_eq_mul
 
-theorem mul_def (I J : FractionalIdeal S P) : I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ :=
-  by simp only [← mul_eq_mul, mul]
+theorem mul_def (I J : FractionalIdeal S P) :
+    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul]
 #align fractional_ideal.mul_def FractionalIdeal.mul_def
 
 @[simp, norm_cast]
@@ -637,6 +638,9 @@ theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n 
   by induction n <;> simp [*, Nat.unaryCast]
 #align fractional_ideal.coe_nat_cast FractionalIdeal.coe_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := coe_natCast
+
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
     (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
@@ -688,12 +692,12 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
     J ≤ (1 : FractionalIdeal S P) ↔ ∃ I : Ideal R, ↑I = J := by
   constructor
   · intro hJ
-    refine' ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, _⟩, _⟩, _⟩, _⟩
+    refine ⟨⟨⟨⟨{ x : R | algebraMap R P x ∈ J }, ?_⟩, ?_⟩, ?_⟩, ?_⟩
     · intro a b ha hb
       rw [mem_setOf, RingHom.map_add]
       exact J.val.add_mem ha hb
     · rw [mem_setOf, RingHom.map_zero]
-      exact J.val.zero_mem
+      exact J.zero_mem
     · intro c x hx
       rw [smul_eq_mul, mem_setOf, RingHom.map_mul, ← Algebra.smul_def]
       exact J.val.smul_mem c hx
@@ -730,8 +734,6 @@ theorem coeIdeal_pow (I : Ideal R) (n : ℕ) : ↑(I ^ n) = (I : FractionalIdeal
   (coeIdealHom S P).map_pow _ n
 #align fractional_ideal.coe_ideal_pow FractionalIdeal.coeIdeal_pow
 
-open BigOperators
-
 theorem coeIdeal_finprod [IsLocalization S P] {α : Sort*} {f : α → Ideal R}
     (hS : S ≤ nonZeroDivisors R) :
     ((∏ᶠ a : α, f a : Ideal R) : FractionalIdeal S P) = ∏ᶠ a : α, (f a : FractionalIdeal S P) :=
@@ -739,5 +741,19 @@ theorem coeIdeal_finprod [IsLocalization S P] {α : Sort*} {f : α → Ideal R}
 #align fractional_ideal.coe_ideal_finprod FractionalIdeal.coeIdeal_finprod
 
 end Order
+
+section FG
+
+variable {R : Type*} [CommRing R] [Nontrivial R] {S : Submonoid R}
+variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [NoZeroSMulDivisors R P]
+
+/-- The fractional ideals of a Noetherian ring are finitely generated. -/
+lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (hS : S ≤ R⁰) (I : FractionalIdeal S P) :
+    FG I.coeToSubmodule := by
+  have := hR.noetherian I.num
+  rw [← fg_top] at this ⊢
+  exact fg_of_linearEquiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩) this
+
+end FG
 
 end FractionalIdeal

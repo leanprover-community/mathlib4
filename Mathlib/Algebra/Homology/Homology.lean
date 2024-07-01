@@ -96,7 +96,7 @@ def boundariesIsoImage [HasEqualizers V] {i j : ι} (r : c.Rel i j) :
 
 theorem boundaries_eq_bot [HasZeroObject V] {j} (h : ¬c.Rel (c.prev j) j) : C.boundaries j = ⊥ := by
   rw [eq_bot_iff]
-  refine' imageSubobject_le _ 0 _
+  refine imageSubobject_le _ 0 ?_
   rw [C.dTo_eq_zero h, zero_comp]
 #align homological_complex.boundaries_eq_bot HomologicalComplex.boundaries_eq_bot
 

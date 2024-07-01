@@ -22,6 +22,8 @@ members.
 * `CommGroupWithZero`
 -/
 
+assert_not_exists DenselyOrdered
+
 universe u
 
 -- We have to fix the universe of `G₀` here, since the default argument to

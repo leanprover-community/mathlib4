@@ -245,9 +245,7 @@ theorem mem_edgeSet {G' : Subgraph G} {v w : V} : s(v, w) ∈ G'.edgeSet ↔ G'.
 
 theorem mem_verts_if_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
-  revert hv
-  refine Sym2.ind (fun v w he ↦ ?_) e he
-  intro hv
+  induction e
   rcases Sym2.mem_iff.mp hv with (rfl | rfl)
   · exact G'.edge_vert he
   · exact G'.edge_vert (G'.symm he)
@@ -549,7 +547,7 @@ theorem edgeSet_sup {H₁ H₂ : Subgraph G} : (H₁ ⊔ H₂).edgeSet = H₁.ed
 @[simp]
 theorem edgeSet_sSup (s : Set G.Subgraph) : (sSup s).edgeSet = ⋃ G' ∈ s, edgeSet G' := by
   ext e
-  induction e using Sym2.ind
+  induction e
   simp
 #align simple_graph.subgraph.edge_set_Sup SimpleGraph.Subgraph.edgeSet_sSup
 
@@ -557,7 +555,7 @@ theorem edgeSet_sSup (s : Set G.Subgraph) : (sSup s).edgeSet = ⋃ G' ∈ s, edg
 theorem edgeSet_sInf (s : Set G.Subgraph) :
     (sInf s).edgeSet = (⋂ G' ∈ s, edgeSet G') ∩ G.edgeSet := by
   ext e
-  induction e using Sym2.ind
+  induction e
   simp
 #align simple_graph.subgraph.edge_set_Inf SimpleGraph.Subgraph.edgeSet_sInf
 
@@ -697,7 +695,7 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
 
 theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) (H' : G'.Subgraph) :
     H.map f ≤ H' ↔ H ≤ H'.comap f := by
-  refine' ⟨fun h ↦ ⟨fun v hv ↦ _, fun v w hvw ↦ _⟩, fun h ↦ ⟨fun v ↦ _, fun v w ↦ _⟩⟩
+  refine ⟨fun h ↦ ⟨fun v hv ↦ ?_, fun v w hvw ↦ ?_⟩, fun h ↦ ⟨fun v ↦ ?_, fun v w ↦ ?_⟩⟩
   · simp only [comap_verts, Set.mem_preimage]
     exact h.1 ⟨v, hv, rfl⟩
   · simp only [H.adj_sub hvw, comap_adj, true_and_iff]
@@ -846,7 +844,7 @@ instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgrap
 @[simp]
 theorem singletonSubgraph_le_iff (v : V) (H : G.Subgraph) :
     G.singletonSubgraph v ≤ H ↔ v ∈ H.verts := by
-  refine' ⟨fun h ↦ h.1 (Set.mem_singleton v), _⟩
+  refine ⟨fun h ↦ h.1 (Set.mem_singleton v), ?_⟩
   intro h
   constructor
   · rwa [singletonSubgraph_verts, Set.singleton_subset_iff]
@@ -874,7 +872,7 @@ theorem edgeSet_singletonSubgraph (v : V) : (G.singletonSubgraph v).edgeSet = �
 
 theorem eq_singletonSubgraph_iff_verts_eq (H : G.Subgraph) {v : V} :
     H = G.singletonSubgraph v ↔ H.verts = {v} := by
-  refine' ⟨fun h ↦ by rw [h, singletonSubgraph_verts], fun h ↦ _⟩
+  refine ⟨fun h ↦ by rw [h, singletonSubgraph_verts], fun h ↦ ?_⟩
   ext
   · rw [h, singletonSubgraph_verts]
   · simp only [Prop.bot_eq_false, singletonSubgraph_adj, Pi.bot_apply, iff_false_iff]
@@ -964,8 +962,9 @@ theorem neighborSet_subgraphOfAdj_of_ne_of_ne {u v w : V} (hvw : G.Adj v w) (hv 
 #align simple_graph.neighbor_set_subgraph_of_adj_of_ne_of_ne SimpleGraph.neighborSet_subgraphOfAdj_of_ne_of_ne
 
 theorem neighborSet_subgraphOfAdj [DecidableEq V] {u v w : V} (hvw : G.Adj v w) :
-    (G.subgraphOfAdj hvw).neighborSet u = (if u = v then {w} else ∅) ∪ if u = w then {v} else ∅ :=
-  by split_ifs <;> subst_vars <;> simp [*, Set.singleton_def]
+    (G.subgraphOfAdj hvw).neighborSet u =
+    (if u = v then {w} else ∅) ∪ if u = w then {v} else ∅ := by
+  split_ifs <;> subst_vars <;> simp [*, Set.singleton_def]
 #align simple_graph.neighbor_set_subgraph_of_adj SimpleGraph.neighborSet_subgraphOfAdj
 
 theorem singletonSubgraph_fst_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
@@ -1216,8 +1215,9 @@ lemma le_induce_union_left : G'.induce s ≤ G'.induce (s ∪ s') := by
 lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
   exact (sup_le_iff.mp le_induce_union).2
 
-theorem singletonSubgraph_eq_induce {v : V} : G.singletonSubgraph v = (⊤ : G.Subgraph).induce {v} :=
-  by ext <;> simp (config := { contextual := true }) [-Set.bot_eq_empty, Prop.bot_eq_false]
+theorem singletonSubgraph_eq_induce {v : V} :
+    G.singletonSubgraph v = (⊤ : G.Subgraph).induce {v} := by
+  ext <;> simp (config := { contextual := true }) [-Set.bot_eq_empty, Prop.bot_eq_false]
 #align simple_graph.subgraph.singleton_subgraph_eq_induce SimpleGraph.Subgraph.singletonSubgraph_eq_induce
 
 theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
@@ -1286,8 +1286,9 @@ theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.d
 #align simple_graph.subgraph.delete_verts_inter_verts_left_eq SimpleGraph.Subgraph.deleteVerts_inter_verts_left_eq
 
 @[simp]
-theorem deleteVerts_inter_verts_set_right_eq : G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s :=
-  by ext <;> simp (config := { contextual := true }) [imp_false]
+theorem deleteVerts_inter_verts_set_right_eq :
+    G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
+  ext <;> simp (config := { contextual := true }) [imp_false]
 #align simple_graph.subgraph.delete_verts_inter_verts_set_right_eq SimpleGraph.Subgraph.deleteVerts_inter_verts_set_right_eq
 
 end DeleteVerts

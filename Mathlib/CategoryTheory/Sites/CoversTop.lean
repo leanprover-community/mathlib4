@@ -60,7 +60,7 @@ lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c
     (h : ∀ (i : I), f ≫ c.π.app (Opposite.op (Y i)) =
       g ≫ c.π.app (Opposite.op (Y i))) :
     f = g := by
-  refine' hc.hom_ext (fun Z => F.2.hom_ext (hY.cover Z.unop) _ _ _)
+  refine hc.hom_ext (fun Z => F.2.hom_ext (hY.cover Z.unop) _ _ ?_)
   rintro ⟨W, a, ⟨i, ⟨b⟩⟩⟩
   simpa using h i =≫ F.1.map b.op
 
@@ -87,7 +87,8 @@ def FamilyOfElementsOnObjects := ∀ (i : I), F.obj (Opposite.op (Y i))
 
 namespace FamilyOfElementsOnObjects
 
-variable {F Y} (x : FamilyOfElementsOnObjects F Y)
+variable {F Y}
+variable (x : FamilyOfElementsOnObjects F Y)
 
 /-- `x : FamilyOfElementsOnObjects F Y` is compatible if for any object `Z` such that
 there exists a morphism `f : Z → Y i`, then the pullback of `x i` by `f` is independent
@@ -105,7 +106,8 @@ noncomputable def familyOfElements (X : C) :
 
 namespace IsCompatible
 
-variable {x} (hx : x.IsCompatible)
+variable {x}
+variable (hx : x.IsCompatible)
 
 lemma familyOfElements_apply {X Z : C} (f : Z ⟶ X) (i : I) (φ : Z ⟶ Y i) :
     familyOfElements x X f ⟨i, ⟨φ⟩⟩ = F.map φ.op (x i) := by

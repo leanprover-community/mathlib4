@@ -21,16 +21,15 @@ This content had previously been in `Data.Fintype.Basic`, but was moved here to 
 requiring `Algebra.BigOperators` (and hence many other imports) as a
 dependency of `Fintype`.
 
-However many of the results here really belong in `Algebra.BigOperators.Basic`
+However many of the results here really belong in `Algebra.BigOperators.Group.Finset`
 and should be moved at some point.
 -/
 
+assert_not_exists MulAction
 
 universe u v
 
 variable {α : Type*} {β : Type*} {γ : Type*}
-
-open BigOperators
 
 namespace Fintype
 
@@ -51,7 +50,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 @[to_additive]
 theorem prod_extend_by_one [CommMonoid α] (s : Finset ι) (f : ι → α) :
-    ∏ i, (if i ∈ s then f i else 1) = ∏ i in s, f i := by
+    ∏ i, (if i ∈ s then f i else 1) = ∏ i ∈ s, f i := by
   rw [← prod_filter, filter_mem_eq_inter, univ_inter]
 #align fintype.prod_extend_by_one Fintype.prod_extend_by_one
 #align fintype.sum_extend_by_zero Fintype.sum_extend_by_zero
@@ -93,7 +92,7 @@ value, so do the terms in that product. -/
 @[to_additive "If a sum of a `Finset` of a subsingleton type has a given
   value, so do the terms in that sum."]
 theorem eq_of_subsingleton_of_prod_eq {ι : Type*} [Subsingleton ι] {s : Finset ι} {f : ι → M}
-    {b : M} (h : ∏ i in s, f i = b) : ∀ i ∈ s, f i = b :=
+    {b : M} (h : ∏ i ∈ s, f i = b) : ∀ i ∈ s, f i = b :=
   Finset.eq_of_card_le_one_of_prod_eq (Finset.card_le_one_of_subsingleton s) h
 #align fintype.eq_of_subsingleton_of_prod_eq Fintype.eq_of_subsingleton_of_prod_eq
 #align fintype.eq_of_subsingleton_of_sum_eq Fintype.eq_of_subsingleton_of_sum_eq
@@ -123,7 +122,7 @@ variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [DecidableEq κ] [
   [∀ i, DecidableEq (α i)]
 
 @[simp] lemma Finset.card_pi (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    (s.pi t).card = ∏ i in s, card (t i) := Multiset.card_pi _ _
+    (s.pi t).card = ∏ i ∈ s, card (t i) := Multiset.card_pi _ _
 #align finset.card_pi Finset.card_pi
 
 namespace Fintype
@@ -146,7 +145,7 @@ over all `j ≠ i` of `(s j).card`.
 Note that this is just a composition of easier lemmas, but there's some glue missing to make that
 smooth enough not to need this lemma. -/
 lemma card_filter_piFinset_eq_of_mem (s : ∀ i, Finset (α i)) (i : ι) {a : α i} (ha : a ∈ s i) :
-    ((piFinset s).filter fun f ↦ f i = a).card = ∏ j in univ.erase i, (s j).card := by
+    ((piFinset s).filter fun f ↦ f i = a).card = ∏ j ∈ univ.erase i, (s j).card := by
   calc
     _ = ∏ j, (Function.update s i {a} j).card := by
       rw [← piFinset_update_singleton_eq_filter_piFinset_eq _ _ ha, Fintype.card_piFinset]
@@ -161,7 +160,7 @@ lemma card_filter_piFinset_const_eq_of_mem (s : Finset κ) (i : ι) {x : κ} (hx
 
 lemma card_filter_piFinset_eq (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
     ((piFinset s).filter fun f ↦ f i = a).card =
-      if a ∈ s i then ∏ b in univ.erase i, (s b).card else 0 := by
+      if a ∈ s i then ∏ b ∈ univ.erase i, (s b).card else 0 := by
   split_ifs with h
   · rw [card_filter_piFinset_eq_of_mem _ _ h]
   · rw [filter_piFinset_of_not_mem _ _ _ h, Finset.card_empty]
@@ -190,17 +189,17 @@ theorem card_vector [Fintype α] (n : ℕ) : Fintype.card (Vector α n) = Fintyp
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive "It is equivalent to sum a function over `fin n` or `finset.range n`."]
 theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
-    ∏ i : Fin n, f i = ∏ i in range n, f i :=
+    ∏ i : Fin n, f i = ∏ i ∈ range n, f i :=
   calc
     ∏ i : Fin n, f i = ∏ i : { x // x ∈ range n }, f i :=
       Fintype.prod_equiv (Fin.equivSubtype.trans (Equiv.subtypeEquivRight (by simp))) _ _ (by simp)
-    _ = ∏ i in range n, f i := by rw [← attach_eq_univ, prod_attach]
+    _ = ∏ i ∈ range n, f i := by rw [← attach_eq_univ, prod_attach]
 #align fin.prod_univ_eq_prod_range Fin.prod_univ_eq_prod_range
 #align fin.sum_univ_eq_sum_range Fin.sum_univ_eq_sum_range
 
 @[to_additive]
 theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → β) :
-    ∏ i, c i = ∏ i in Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
+    ∏ i, c i = ∏ i ∈ Finset.range n, if h : i < n then c ⟨i, h⟩ else 1 := by
   rw [← Fin.prod_univ_eq_prod_range, Finset.prod_congr rfl]
   rintro ⟨i, hi⟩ _
   simp only [hi, dif_pos]
@@ -209,7 +208,7 @@ theorem Finset.prod_fin_eq_prod_range [CommMonoid β] {n : ℕ} (c : Fin n → �
 
 @[to_additive]
 theorem Finset.prod_toFinset_eq_subtype {M : Type*} [CommMonoid M] [Fintype α] (p : α → Prop)
-    [DecidablePred p] (f : α → M) : ∏ a in { x | p x }.toFinset, f a = ∏ a : Subtype p, f a := by
+    [DecidablePred p] (f : α → M) : ∏ a ∈ { x | p x }.toFinset, f a = ∏ a : Subtype p, f a := by
   rw [← Finset.prod_subtype]
   simp_rw [Set.mem_toFinset]; intro; rfl
 #align finset.prod_to_finset_eq_subtype Finset.prod_toFinset_eq_subtype

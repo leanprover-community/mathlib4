@@ -300,7 +300,7 @@ theorem map_pure (m : α → β) (a : α) : map m (pure a) = pure (m a) :=
 theorem comap_pure {m : α → β} (a : α) (inj : Injective m) (large) :
     comap (pure <| m a) inj large = pure a :=
   coe_injective <|
-    comap_pure.trans <| by
+    Filter.comap_pure.trans <| by
       rw [coe_pure, ← principal_singleton, ← image_singleton, preimage_image_eq _ inj]
 #align ultrafilter.comap_pure Ultrafilter.comap_pure
 
@@ -445,7 +445,7 @@ theorem Iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
 #align filter.Iic_pure Filter.Iic_pure
 
 theorem mem_iff_ultrafilter : s ∈ f ↔ ∀ g : Ultrafilter α, ↑g ≤ f → s ∈ g := by
-  refine' ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => _⟩
+  refine ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => ?_⟩
   set g : Filter (sᶜ : Set α) := comap (↑) f
   haveI : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf] )
   simpa using H ((of g).map (↑)) (map_le_iff_le_comap.mpr (of_le g))

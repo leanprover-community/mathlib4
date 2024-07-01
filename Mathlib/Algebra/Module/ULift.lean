@@ -3,8 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.GroupWithZero.ULift
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Module.Equiv
+import Mathlib.Data.ULift
 
 #align_import algebra.module.ulift from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 

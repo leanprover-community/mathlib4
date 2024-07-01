@@ -11,7 +11,10 @@ example : Foo where
 
 /--
 error: tactic 'aesop' failed, failed to prove the goal after exhaustive search.
-⊢ 35 = 37
+Initial goal:
+  ⊢ 35 = 37
+Remaining goals after safe rules:
+  ⊢ False
 -/
 #guard_msgs in
 example : Foo where

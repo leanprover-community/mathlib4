@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.Algebra.Module.LinearMap.Basic
 
 #align_import category_theory.linear.linear_functor from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 

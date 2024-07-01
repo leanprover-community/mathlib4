@@ -68,8 +68,8 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are equivariant with respect to `φ`.  -/
-class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} [Monoid R] [Monoid S]
-    (φ : outParam (R →* S)) (A B : outParam (Type*))
+class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
+    (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
@@ -79,7 +79,7 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} [Monoid R] [
 from `A` to `B` which are `R`-linear.
 
   This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
-abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam (Type*))
+abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
     [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B

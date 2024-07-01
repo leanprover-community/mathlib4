@@ -27,7 +27,7 @@ import Mathlib.Data.Matrix.Basic
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
 
-open BigOperators Matrix
+open Matrix
 
 namespace Matrix
 
@@ -40,7 +40,7 @@ section BlockMatrices
 
 /-- We can form a single large matrix by flattening smaller 'block' matrices of compatible
 dimensions. -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 def fromBlocks (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) :
     Matrix (Sum n o) (Sum l m) α :=
   of <| Sum.elim (fun i => Sum.elim (A i) (B i)) fun i => Sum.elim (C i) (D i)
@@ -141,8 +141,9 @@ theorem fromBlocks_inj {A : Matrix n l α} {B : Matrix n m α} {C : Matrix o l �
 #align matrix.from_blocks_inj Matrix.fromBlocks_inj
 
 theorem fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
-    (f : α → β) : (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
-  by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
+    (f : α → β) : (fromBlocks A B C D).map f =
+      fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) := by
+  ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
 #align matrix.from_blocks_map Matrix.fromBlocks_map
 
 theorem fromBlocks_transpose (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
@@ -238,9 +239,9 @@ theorem fromBlocks_zero [Zero α] : fromBlocks (0 : Matrix n l α) 0 0 (0 : Matr
 
 theorem fromBlocks_add [Add α] (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (A' : Matrix n l α) (B' : Matrix n m α) (C' : Matrix o l α)
-    (D' : Matrix o m α) :
-    fromBlocks A B C D + fromBlocks A' B' C' D' = fromBlocks (A + A') (B + B') (C + C') (D + D') :=
-  by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
+    (D' : Matrix o m α) : fromBlocks A B C D + fromBlocks A' B' C' D' =
+      fromBlocks (A + A') (B + B') (C + C') (D + D') := by
+  ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
 #align matrix.from_blocks_add Matrix.fromBlocks_add
 
 theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
@@ -693,11 +694,7 @@ theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
   ext ⟨ii, ix⟩ ⟨ji, jx⟩
   simp only [transpose_apply, blockDiagonal'_apply]
-  split_ifs with h -- Porting note: was split_ifs <;> cc
-  · subst h; rfl
-  · simp_all only [not_true]
-  · simp_all only [not_true]
-  · rfl
+  split_ifs <;> cc
 #align matrix.block_diagonal'_transpose Matrix.blockDiagonal'_transpose
 
 @[simp]
