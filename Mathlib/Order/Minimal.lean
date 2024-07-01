@@ -91,30 +91,32 @@ theorem eq_of_mem_minimals (ha : a ∈ minimals r s) (hb : b ∈ s) (h : r b a) 
   antisymm (ha.2 hb h) h
 #align eq_of_mem_minimals eq_of_mem_minimals
 
-set_option autoImplicit true
-
-theorem mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
+theorem mem_maximals_iff {x : α} : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
   simp only [maximals, Set.mem_sep_iff, and_congr_right_iff]
   refine fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ ?_⟩
   convert hxy <;> rw [h hys hxy]
 
-theorem mem_maximals_setOf_iff : x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
+theorem mem_maximals_setOf_iff {x : α} {P : α → Prop} :
+    x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
   mem_maximals_iff
 
-theorem mem_minimals_iff : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y :=
+theorem mem_minimals_iff {x : α} : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y :=
   @mem_maximals_iff _ _ _ (IsAntisymm.swap r) _
 
-theorem mem_minimals_setOf_iff : x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r y x → x = y :=
+theorem mem_minimals_setOf_iff {x : α} {P : α → Prop} :
+    x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r y x → x = y :=
   mem_minimals_iff
 
 /-- This theorem can't be used to rewrite without specifying `rlt`, since `rlt` would have to be
   guessed. See `mem_minimals_iff_forall_ssubset_not_mem` and `mem_minimals_iff_forall_lt_not_mem`
   for `⊆` and `≤` versions.  -/
-theorem mem_minimals_iff_forall_lt_not_mem' (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
+theorem mem_minimals_iff_forall_lt_not_mem' {x : α}
+    (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
     x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt y x → y ∉ s := by
   simp [minimals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
 
-theorem mem_maximals_iff_forall_lt_not_mem' (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
+theorem mem_maximals_iff_forall_lt_not_mem' {x : α}
+    (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
     x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt x y → y ∉ s := by
   simp [maximals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
 
