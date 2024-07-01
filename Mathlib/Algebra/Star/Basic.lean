@@ -3,6 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Aut
