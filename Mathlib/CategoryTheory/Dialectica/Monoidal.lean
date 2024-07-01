@@ -57,60 +57,18 @@ local notation "π(" a ", " b ")" => prod.lift a b
 @[simps] def tensorUnit : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }
 
 /-- Left unit cancellation `1 ⊗ X ≅ X` in `Dial C`. -/
-@[simps] def leftUnitor (X : Dial C) : tensorObj tensorUnit X ≅ X where
-  hom := {
-    f := π₂
-    F := prod.map π₁ (𝟙 _)
-    le := by
-      simp [Subobject.inf_pullback, ← Subobject.pullback_comp]
-      apply le_trans inf_le_right
-      apply le_of_eq; congr 3; ext <;> simp
-  }
-  inv := {
-    f := π(terminal.from _, 𝟙 _)
-    F := π₂ ≫ π₂
-    le := by
-      simp [Subobject.inf_pullback, ← Subobject.pullback_comp, Subobject.pullback_top]
-      apply le_of_eq; congr 3; ext <;> simp
-  }
+@[simps!] def leftUnitor (X : Dial C) : tensorObj tensorUnit X ≅ X :=
+  isoMk (prod.leftUnitor _) (prod.leftUnitor _) <| by simp [Subobject.pullback_top]
 
 /-- Right unit cancellation `X ⊗ 1 ≅ X` in `Dial C`. -/
-@[simps] def rightUnitor (X : Dial C) : tensorObj X tensorUnit ≅ X where
-  hom := {
-    f := π₁
-    F := π(π₂, terminal.from _)
-    le := by
-      simp [Subobject.inf_pullback, ← Subobject.pullback_comp]
-      apply le_trans inf_le_left
-      apply le_of_eq; congr 3; ext <;> simp
-  }
-  inv := {
-    f := π(𝟙 _, terminal.from _)
-    F := π₂ ≫ π₁
-    le := by
-      simp [Subobject.inf_pullback, ← Subobject.pullback_comp, Subobject.pullback_top]
-      apply le_of_eq; congr 3; ext <;> simp
-  }
+@[simps!] def rightUnitor (X : Dial C) : tensorObj X tensorUnit ≅ X :=
+  isoMk (prod.rightUnitor _) (prod.rightUnitor _) <| by simp [Subobject.pullback_top]
 
 /-- The associator for tensor, `(X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)` in `Dial C`. -/
 @[simps!]
-def associator (X Y Z : Dial C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) where
-  hom := {
-    f := (Limits.prod.associator ..).hom
-    F := π₂ ≫ (Limits.prod.associator ..).inv
-    le := by
-      simp only [Subobject.inf_pullback, ← Subobject.pullback_comp, tensorObj_rel, inf_assoc]
-      refine inf_le_inf ?_ (inf_le_inf ?_ ?_) <;> (apply le_of_eq; congr 3; ext <;> simp)
-  }
-  inv := {
-    f := (Limits.prod.associator ..).inv
-    F := π₂ ≫ (Limits.prod.associator ..).hom
-    le := by
-      simp only [Subobject.inf_pullback, ← Subobject.pullback_comp, tensorObj_rel, inf_assoc]
-      refine inf_le_inf ?_ (inf_le_inf ?_ ?_) <;> (apply le_of_eq; congr 3; ext <;> simp)
-  }
-  hom_inv_id := by ext <;> simp <;> ext <;> simp
-  inv_hom_id := by ext <;> simp <;> ext <;> simp
+def associator (X Y Z : Dial C) : tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z) :=
+  isoMk (prod.associator ..) (prod.associator ..) <| by
+    simp [Subobject.inf_pullback, ← Subobject.pullback_comp, inf_assoc]
 
 @[simps!]
 instance : MonoidalCategoryStruct (Dial C) where
@@ -163,35 +121,29 @@ instance : MonoidalCategory (Dial C) :=
     (pentagon := pentagon)
     (triangle := triangle)
 
-/-- The braiding map `X ⊗ Y ⟶ Y ⊗ X` in `Dial C`. -/
-@[simps] def tensorSymm (X Y : Dial C) : tensorObj X Y ⟶ tensorObj Y X where
-  f := (prod.braiding ..).hom
-  F := π₂ ≫ (prod.braiding ..).hom
-  le := by simp [Subobject.inf_pullback, ← Subobject.pullback_comp]
-
 /-- The braiding isomorphism `X ⊗ Y ≅ Y ⊗ X` in `Dial C`. -/
-@[simps] def braiding (X Y : Dial C) : tensorObj X Y ≅ tensorObj Y X where
-  hom := tensorSymm ..
-  inv := tensorSymm ..
+@[simps!] def braiding (X Y : Dial C) : tensorObj X Y ≅ tensorObj Y X :=
+  isoMk (prod.braiding ..) (prod.braiding ..) <| by
+    simp [Subobject.inf_pullback, ← Subobject.pullback_comp, inf_comm]
 
 theorem symmetry (X Y : Dial C) :
-    tensorSymm X Y ≫ tensorSymm Y X = 𝟙 (tensorObj X Y) := by aesop_cat
+    (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 (tensorObj X Y) := by aesop_cat
 
 theorem braiding_naturality_right (X : Dial C) {Y Z : Dial C} (f : Y ⟶ Z) :
-    tensorHom (𝟙 X) f ≫ tensorSymm X Z = tensorSymm X Y ≫ tensorHom f (𝟙 X) := by aesop_cat
+    tensorHom (𝟙 X) f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ tensorHom f (𝟙 X) := by aesop_cat
 
 theorem braiding_naturality_left {X Y : Dial C} (f : X ⟶ Y) (Z : Dial C) :
-    tensorHom f (𝟙 Z) ≫ tensorSymm Y Z = tensorSymm X Z ≫ tensorHom (𝟙 Z) f := by aesop_cat
+    tensorHom f (𝟙 Z) ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ tensorHom (𝟙 Z) f := by aesop_cat
 
 theorem hexagon_forward (X Y Z : Dial C) :
-    (associator X Y Z).hom ≫ tensorSymm X (Y ⊗ Z) ≫ (associator Y Z X).hom =
-      tensorHom (tensorSymm X Y) (𝟙 Z) ≫ (associator Y X Z).hom ≫
-      tensorHom (𝟙 Y) (tensorSymm X Z) := by aesop_cat
+    (associator X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (associator Y Z X).hom =
+      tensorHom (braiding X Y).hom (𝟙 Z) ≫ (associator Y X Z).hom ≫
+      tensorHom (𝟙 Y) (braiding X Z).hom := by aesop_cat
 
 theorem hexagon_reverse (X Y Z : Dial C) :
-    (associator X Y Z).inv ≫ tensorSymm (X ⊗ Y) Z ≫ (associator Z X Y).inv =
-      tensorHom (𝟙 X) (tensorSymm Y Z) ≫ (associator X Z Y).inv ≫
-      tensorHom (tensorSymm X Z) (𝟙 Y) := by aesop_cat
+    (associator X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (associator Z X Y).inv =
+      tensorHom (𝟙 X) (braiding Y Z).hom ≫ (associator X Z Y).inv ≫
+      tensorHom (braiding X Z).hom (𝟙 Y) := by aesop_cat
 
 instance : SymmetricCategory (Dial C) where
   braiding := braiding

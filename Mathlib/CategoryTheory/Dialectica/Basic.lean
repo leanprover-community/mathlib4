@@ -95,6 +95,20 @@ instance : Category (Dial C) where
 @[ext] theorem hom_ext {X Y : Dial C} {x y : X ⟶ Y} (hf : x.f = y.f) (hF : x.F = y.F) : x = y :=
    Hom.ext x y hf hF
 
+@[simps]
+def isoMk {X Y : Dial C} (e₁ : X.src ≅ Y.src) (e₂ : X.tgt ≅ Y.tgt)
+    (eq : X.rel = (Subobject.pullback (prod.map e₁.hom e₂.hom)).obj Y.rel) : X ≅ Y where
+  hom := {
+    f := e₁.hom
+    F := π₂ ≫ e₂.inv
+    le := by rw [eq, ← Subobject.pullback_comp]; apply le_of_eq; congr; ext <;> simp
+  }
+  inv := {
+    f := e₁.inv
+    F := π₂ ≫ e₂.hom
+    le := by rw [eq, ← Subobject.pullback_comp]; apply le_of_eq; congr; ext <;> simp
+  }
+
 end Dial
 
 end CategoryTheory
