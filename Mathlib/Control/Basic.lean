@@ -76,8 +76,6 @@ section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
-open List
-
 #align list.mpartition List.partitionM
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
