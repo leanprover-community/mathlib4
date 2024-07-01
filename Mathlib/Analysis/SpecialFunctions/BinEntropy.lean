@@ -291,16 +291,15 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
     · apply DifferentiableAt.mul
        (DifferentiableAt.neg differentiableAt_id') (DifferentiableAt.log differentiableAt_id' _)
       simp only [ne_eq, one_ne_zero, not_false_eq_true]
-    · have diff_of_aff := (differentiableAt_iff_differentiableAt_comp_mul_add
-        (a:=(0:ℝ)) (b:=(1 : ℝ)) (m:=(-1:ℝ)) (show (-1 : ℝ) ≠ 0 by norm_num) negMulLog).mpr
-      intro h
+    · intro h
       have : DifferentiableAt ℝ (fun (x : ℝ) ↦ (-1 * x + 1).negMulLog) ((-1)⁻¹ * (0 - 1)) := by
         convert h using 1
         · ext
           simp [negMulLog]
           ring_nf
         · ring
-      have := diff_of_aff this
+      have := (differentiableAt_iff_differentiableAt_comp_mul_add
+        (a:=(0:ℝ)) (b:=(1 : ℝ)) (m:=(-1:ℝ)) (show (-1 : ℝ) ≠ 0 by norm_num) negMulLog).mpr this
       have := differentiableAt_negMulLog_iff.mp this
       contradiction
   · have : x = 0 := by simp_all only [neg_mul, false_implies, ne_eq, Decidable.not_not]
@@ -631,17 +630,16 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
     suffices ∀ᶠ y in (𝓝 x),
         deriv (fun x ↦ (qaryEntropy q) x) y = log (q - 1) + log (1 - y) - log y by
       refine (Filter.EventuallyEq.deriv_eq this).trans ?_
-      rw [deriv_sub]
+      rw [deriv_sub ?_ (differentiableAt_log h)]
       · repeat rw [deriv_div_const]
-        repeat rw [deriv.log differentiableAt_id' h]
+        rw [deriv.log differentiableAt_id' h]
         simp only [deriv_one_minus, deriv_id'', one_div]
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
           field_simp [sub_ne_zero_of_ne hh.symm, this]
           ring
       · apply DifferentiableAt.add
-        simp_all only [ne_eq, differentiableAt_const]
+        simp only [ne_eq, differentiableAt_const]
         exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
-      · exact differentiableAt_log h
     filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh]
       with y h h2 using deriv_qaryEntropy h h2
   -- Pathological case where we use junk value (because function not differentiable)
