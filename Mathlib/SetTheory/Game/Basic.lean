@@ -3,6 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
 -/
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Ring.Int
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
@@ -846,20 +847,20 @@ theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
 #align pgame.mul_assoc_equiv SetTheory.PGame.mul_assoc_equiv
 
 /-- The left options of `x * y` of the first kind, i.e. of the form `xL * y + x * yL - xL * yL`. -/
-def mulOption (x y : PGame) (i: LeftMoves x) (j: LeftMoves y) : PGame :=
-    x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j
+def mulOption (x y : PGame) (i : LeftMoves x) (j : LeftMoves y) : PGame :=
+  x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j
 
 /-- Any left option of `x * y` of the first kind is also a left option of `x * -(-y)` of
   the first kind. -/
 lemma mulOption_neg_neg {x} (y) {i j} :
-    mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg $ toRightMovesNeg j) := by
+    mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
   dsimp only [mulOption]
   congr 2
   rw [neg_neg]
   iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
-lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧: Game) := by
+lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧ : Game) := by
   dsimp only [mulOption, quot_sub, quot_add]
   rw [add_comm]
   congr 1

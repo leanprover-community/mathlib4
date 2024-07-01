@@ -192,6 +192,8 @@ theorem coe_eq (p : FractionalIdeal S P) (s : Set P) (hs : s = ↑p) : p.copy s 
 
 end SetLike
 
+lemma zero_mem (I : FractionalIdeal S P) : 0 ∈ I := I.coeToSubmodule.zero_mem
+
 -- Porting note: this seems to be needed a lot more than in Lean 3
 @[simp]
 theorem val_eq_coe (I : FractionalIdeal S P) : I.val = I :=
@@ -424,7 +426,7 @@ theorem zero_le (I : FractionalIdeal S P) : 0 ≤ I := by
   intro x hx
   -- Porting note: changed the proof from convert; simp into rw; exact
   rw [(mem_zero_iff _).mp hx]
-  exact zero_mem (I : Submodule R P)
+  exact zero_mem I
 #align fractional_ideal.zero_le FractionalIdeal.zero_le
 
 instance orderBot : OrderBot (FractionalIdeal S P) where
@@ -695,7 +697,7 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
       rw [mem_setOf, RingHom.map_add]
       exact J.val.add_mem ha hb
     · rw [mem_setOf, RingHom.map_zero]
-      exact J.val.zero_mem
+      exact J.zero_mem
     · intro c x hx
       rw [smul_eq_mul, mem_setOf, RingHom.map_mul, ← Algebra.smul_def]
       exact J.val.smul_mem c hx
@@ -739,5 +741,19 @@ theorem coeIdeal_finprod [IsLocalization S P] {α : Sort*} {f : α → Ideal R}
 #align fractional_ideal.coe_ideal_finprod FractionalIdeal.coeIdeal_finprod
 
 end Order
+
+section FG
+
+variable {R : Type*} [CommRing R] [Nontrivial R] {S : Submonoid R}
+variable {P : Type*} [Nontrivial P] [CommRing P] [Algebra R P] [NoZeroSMulDivisors R P]
+
+/-- The fractional ideals of a Noetherian ring are finitely generated. -/
+lemma fg_of_isNoetherianRing [hR : IsNoetherianRing R] (hS : S ≤ R⁰) (I : FractionalIdeal S P) :
+    FG I.coeToSubmodule := by
+  have := hR.noetherian I.num
+  rw [← fg_top] at this ⊢
+  exact fg_of_linearEquiv (I.equivNum <| coe_ne_zero ⟨(I.den : R), hS (SetLike.coe_mem I.den)⟩) this
+
+end FG
 
 end FractionalIdeal
