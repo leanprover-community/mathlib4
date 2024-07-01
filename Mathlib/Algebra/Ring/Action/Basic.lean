@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
--- import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
