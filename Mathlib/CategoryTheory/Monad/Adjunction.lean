@@ -92,7 +92,7 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
 Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
 unit is an isomorphism.
 -/
-def unitAsIsoOfAbstractIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) :  𝟭 C ≅ L ⋙ R where
+def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) :  𝟭 C ≅ L ⋙ R where
   hom := adj.unit
   inv :=  i.hom ≫ (adj.toMonad.transport i).μ
   hom_inv_id := by
@@ -105,22 +105,22 @@ def unitAsIsoOfAbstractIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) :  𝟭 C �
     ext X
     exact (adj.toMonad.transport i).right_unit X
 
-lemma isIso_unit_of_abstract_iso  (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
-  (inferInstanceAs (IsIso (unitAsIsoOfAbstractIso adj i).hom))
+lemma isIso_unit_of_iso  (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
+  (inferInstanceAs (IsIso (unitAsIsoOfIso adj i).hom))
 
 /--
 Given an adjunction `L ⊣ R`, if `L ⋙ R` is isomorphic to the identity functor, then `L` is
 fully faithful.
 -/
 noncomputable def fullyFaithfulLOfCompIsoId (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : L.FullyFaithful :=
-  haveI := adj.isIso_unit_of_abstract_iso i
+  haveI := adj.isIso_unit_of_iso i
   adj.fullyFaithfulLOfIsIsoUnit
 
 /--
 Given an adjunction `L ⊣ R`, if `R ⋙ L` is abstractly isomorphic to the identity functor, then the
 counit is an isomorphism.
 -/
-def counitAsIsoOfAbstractIso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R ⋙ L ≅ 𝟭 D where
+def counitAsIsoOfIso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R ⋙ L ≅ 𝟭 D where
   hom := adj.counit
   inv := (adj.toComonad.transport j).δ ≫ j.inv
   hom_inv_id := by
@@ -133,15 +133,15 @@ def counitAsIsoOfAbstractIso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R ⋙ L 
     ext X
     exact (adj.toComonad.transport j).right_counit X
 
-lemma isIso_counit_of_abstract_iso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : IsIso adj.counit :=
-  inferInstanceAs (IsIso (counitAsIsoOfAbstractIso adj j).hom)
+lemma isIso_counit_of_iso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : IsIso adj.counit :=
+  inferInstanceAs (IsIso (counitAsIsoOfIso adj j).hom)
 
 /--
 Given an adjunction `L ⊣ R`, if `R ⋙ L` is isomorphic to the identity functor, then `R` is
 fully faithful.
 -/
 noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R.FullyFaithful :=
-  haveI := adj.isIso_counit_of_abstract_iso j
+  haveI := adj.isIso_counit_of_iso j
   adj.fullyFaithfulROfIsIsoCounit
 
 end Adjunction
