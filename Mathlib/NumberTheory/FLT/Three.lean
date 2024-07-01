@@ -483,7 +483,7 @@ private lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
 
 /-- We have that `λ ^ (3*S.multiplicity-2)` divides `S.a + S.b`. -/
 lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
-  have h : λ ^ S.multiplicity ∣ S.c  := multiplicity.pow_multiplicity_dvd _
+  have h : λ ^ S.multiplicity ∣ S.c := multiplicity.pow_multiplicity_dvd _
   replace h : (λ ^ multiplicity S) ^ 3 ∣ S.u * S.c ^ 3 := by simp [h]
   rw [← S.H, a_cube_add_b_cube_eq_mul, ← pow_mul, mul_comm, y_spec, z_spec] at h
   apply hζ.zeta_sub_one_prime'.pow_dvd_of_dvd_mul_left _ S.lambda_not_dvd_z
