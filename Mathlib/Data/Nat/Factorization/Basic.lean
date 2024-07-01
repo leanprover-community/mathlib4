@@ -74,7 +74,7 @@ theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := 
   apply _root_.le_antisymm
   · rw [le_padicValNat_iff_replicate_subperm_factors pp hn0.ne']
     exact List.le_count_iff_replicate_sublist.mp le_rfl |>.subperm
-  · rw [← lt_add_one_iff, lt_iff_not_ge, ge_iff_le,
+  · rw [← Nat.lt_add_one_iff, lt_iff_not_ge, ge_iff_le,
       le_padicValNat_iff_replicate_subperm_factors pp hn0.ne']
     intro h
     have := h.count_le p
