@@ -71,6 +71,14 @@ theorem Prime.one_lt {p : ℕ} : Prime p → 1 < p :=
 
 lemma Prime.one_le {p : ℕ} (hp : p.Prime) : 1 ≤ p := hp.one_lt.le
 
+instance Prime.one_lt' (p : ℕ) [hp : Fact p.Prime] : Fact (1 < p) :=
+  ⟨hp.1.one_lt⟩
+#align nat.prime.one_lt' Nat.Prime.one_lt'
+
+theorem Prime.ne_one {p : ℕ} (hp : p.Prime) : p ≠ 1 :=
+  hp.one_lt.ne'
+#align nat.prime.ne_one Nat.Prime.ne_one
+
 theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m ∣ p) :
     m = 1 ∨ m = p := by
   obtain ⟨n, hn⟩ := hm

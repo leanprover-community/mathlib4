@@ -28,14 +28,6 @@ open Nat
 namespace Nat
 variable {n : ℕ}
 
-instance Prime.one_lt' (p : ℕ) [hp : Fact p.Prime] : Fact (1 < p) :=
-  ⟨hp.1.one_lt⟩
-#align nat.prime.one_lt' Nat.Prime.one_lt'
-
-theorem Prime.ne_one {p : ℕ} (hp : p.Prime) : p ≠ 1 :=
-  hp.one_lt.ne'
-#align nat.prime.ne_one Nat.Prime.ne_one
-
 section
 
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
