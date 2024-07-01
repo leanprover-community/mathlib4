@@ -59,6 +59,11 @@ lemma Exact.comp_injective [Zero P] [Zero P'] (exact : Exact f g)
   intro H
   rw [Function.comp_apply, exact x |>.mpr H, h0]
 
+lemma Exact.of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
+    (hr : ∀ y, g y = 0 → y ∈ Set.range f) :
+    Exact f g :=
+  fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
+
 end Function
 
 section LinearMap
