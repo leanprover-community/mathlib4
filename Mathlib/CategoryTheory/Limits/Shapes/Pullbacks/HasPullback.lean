@@ -315,28 +315,6 @@ def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
     (by aesop_cat)
 #align category_theory.limits.pushout_is_pushout CategoryTheory.Limits.pushoutIsPushout
 
--- /-- The pushout of an epimorphism is an epimorphism -/
--- instance pushout.inl_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi g] :
---     Epi (pushout.inl : Y ⟶ pushout f g) :=
---   PushoutCocone.epi_inl_of_is_pushout_of_epi (colimit.isColimit _)
--- #align category_theory.limits.pushout.inl_of_epi CategoryTheory.Limits.pushout.inl_of_epi
-
--- /-- The pushout of an epimorphism is an epimorphism -/
--- instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi f] :
---     Epi (pushout.inr : Z ⟶ pushout f g) :=
---   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
--- #align category_theory.limits.pushout.inr_of_epi CategoryTheory.Limits.pushout.inr_of_epi
-
--- /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
--- instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
---     [HasPushout f g] [HasBinaryCoproduct Y Z] :
---     Epi (coprod.desc pushout.inl pushout.inr : _ ⟶ pushout f g) :=
---   ⟨fun {W} i₁ i₂ h => by
---     ext
---     · simpa using congrArg (fun f => coprod.inl ≫ f) h
---     · simpa using congrArg (fun f => coprod.inr ≫ f) h⟩
--- #align category_theory.limits.epi_coprod_to_pushout CategoryTheory.Limits.epi_coprod_to_pushout
-
 instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂]
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) [IsIso i₁] [IsIso i₂] [IsIso i₃] :
