@@ -905,12 +905,14 @@ abbrev Iso :=
   RelIso G.Adj G'.Adj
 
 -- mathport name: «expr →g »
+/-- Notation for Hom -/
 infixl:50 " →g " => Hom
 
 -- mathport name: «expr ↪g »
+/-- Notation for Embedding -/
 infixl:50 " ↪g " => Embedding
 
--- mathport name: «expr ≃g »
+/-- Notation for Iso -/
 infixl:50 " ≃g " => Iso
 
 namespace Hom
