@@ -847,7 +847,8 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         refine tendsto_of_tendsto_of_tendsto_of_le_of_le hg₂ tendsto_const_nhds ?_ ?_
         · intro n; rw [← hf₂ n]
           apply lintegral_mono
-          simp only [iSup_apply, iSup_le_le f n n le_rfl]
+          convert iSup_le_le f n n le_rfl
+          simp only [iSup_apply]
         · intro n
           exact le_sSup ⟨⨆ (k : ℕ) (_ : k ≤ n), f k, iSup_mem_measurableLE' _ hf₁ _, rfl⟩
       · intro n

@@ -235,7 +235,6 @@ lemma rnDeriv_add_right_of_mutuallySingular' {ν' : Measure α}
   have h₁ := rnDeriv_add' (μ.singularPart ν) (ν.withDensity (μ.rnDeriv ν)) (ν + ν')
   have h₂ := rnDeriv_add' (μ.singularPart ν) (ν.withDensity (μ.rnDeriv ν)) ν
   refine (Filter.EventuallyEq.trans (h_ac.ae_le h₁) ?_).trans h₂.symm
-  simp only [Pi.add_apply]
   have h₃ := rnDeriv_add_right_of_absolutelyContinuous_of_mutuallySingular
     (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) hνν'
   have h₄ : (μ.singularPart ν).rnDeriv (ν + ν') =ᵐ[ν] 0 := by
@@ -244,7 +243,8 @@ lemma rnDeriv_add_right_of_mutuallySingular' {ν' : Measure α}
     exact ⟨mutuallySingular_singularPart μ ν, hμν'.singularPart ν⟩
   have h₅ : (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := rnDeriv_singularPart μ ν
   filter_upwards [h₃, h₄, h₅] with x hx₃ hx₄ hx₅
-  rw [hx₃, hx₄, Pi.add_apply, hx₅]
+  simp only [Pi.add_apply]
+  rw [hx₃, hx₄, hx₅]
 
 lemma rnDeriv_add_right_of_mutuallySingular {ν' : Measure α}
     [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite ν'] (hνν' : ν ⟂ₘ ν') :

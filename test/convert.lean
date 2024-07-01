@@ -106,7 +106,11 @@ example : True := by
   · simp
   · simp
 
-example [Fintype α] [Fintype β] : Fintype.card α = Fintype.card β := by
+-- This test does not work unless we specify that `α` and `β` lie in the same universe.
+-- Prior to https://github.com/leanprover/lean4/pull/4493 it did,
+-- because previously bodies of `example`s were (confusingly!) allowed to
+-- affect the elaboration of the signature!
+example {α β : Type u} [Fintype α] [Fintype β] : Fintype.card α = Fintype.card β := by
   congr!
   guard_target = Fintype.card α = Fintype.card β
   congr! (config := {typeEqs := true})

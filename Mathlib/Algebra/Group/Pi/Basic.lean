@@ -54,7 +54,12 @@ instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
 #align pi.has_one Pi.instOne
 #align pi.has_zero Pi.instZero
 
-@[to_additive (attr := simp)]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+-/
+@[to_additive (attr := simp, nolint simpNF)]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
 #align pi.one_apply Pi.one_apply

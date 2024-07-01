@@ -42,7 +42,7 @@ def SolutionPredicate (n : ℕ) : Prop :=
 Proving that three digit numbers are the ones in [100, 1000).
 -/
 theorem not_zero {n : ℕ} (h1 : ProblemPredicate n) : n ≠ 0 :=
-  have h2 : Nat.digits 10 n ≠ List.nil := List.ne_nil_of_length_eq_succ h1.left
+  have h2 : Nat.digits 10 n ≠ List.nil := List.ne_nil_of_length_eq_add_one h1.left
   digits_ne_nil_iff_ne_zero.mp h2
 #align imo1960_q1.not_zero Imo1960Q1.not_zero
 

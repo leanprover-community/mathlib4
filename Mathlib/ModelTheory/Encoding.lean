@@ -70,7 +70,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
       listDecode (t.listEncode ++ l) = some t::listDecode l by
     induction' l with t l lih
     · rfl
-    · rw [cons_bind, h t (l.bind listEncode), lih, List.map]
+    · rw [bind_cons, h t (l.bind listEncode), lih, List.map]
   intro t
   induction' t with a n f ts ih <;> intro l
   · rw [listEncode, singleton_append, listDecode]
@@ -79,19 +79,19 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
         (finRange n).map (Option.some ∘ ts) ++ listDecode l := by
       induction' finRange n with i l' l'ih
       · rfl
-      · rw [cons_bind, List.append_assoc, ih, map_cons, l'ih, cons_append, Function.comp]
+      · rw [bind_cons, List.append_assoc, ih, map_cons, l'ih, cons_append, Function.comp]
     have h' : ∀ i : Fin n,
-        (listDecode (((finRange n).bind fun i : Fin n => (ts i).listEncode) ++ l)).get? ↑i =
+        (listDecode (((finRange n).bind fun i : Fin n => (ts i).listEncode) ++ l))[(i : Nat)]? =
           some (some (ts i)) := by
       intro i
-      rw [h, get?_append, get?_map]
-      · simp only [Option.map_eq_some', Function.comp_apply, get?_eq_some]
+      rw [h, getElem?_append, getElem?_map]
+      · simp only [Option.map_eq_some', Function.comp_apply, getElem?_eq_some]
         refine ⟨i, ⟨lt_of_lt_of_le i.2 (ge_of_eq (length_finRange _)), ?_⟩, rfl⟩
-        rw [get_finRange, Fin.eta]
+        rw [getElem_finRange, Fin.eta]
       · refine lt_of_lt_of_le i.2 ?_
         simp
     refine (dif_pos fun i => Option.isSome_iff_exists.2 ⟨ts i, ?_⟩).trans ?_
-    · rw [Option.join_eq_some, h']
+    · rw [get?_eq_getElem?, Option.join_eq_some, h']
     refine congr (congr rfl (congr rfl (congr rfl (funext fun i => Option.get_of_mem _ ?_)))) ?_
     · simp [h']
     · rw [h, drop_left']
@@ -231,6 +231,7 @@ def listDecode : ∀ l : List (Sum (Σk, L.Term (Sum α (Fin k))) (Sum (Σn, L.R
   | _ => ⟨default, [], le_max_left _ _⟩
 #align first_order.language.bounded_formula.list_decode FirstOrder.Language.BoundedFormula.listDecode
 
+set_option linter.deprecated false in
 @[simp]
 theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     (listDecode (l.bind fun φ => φ.2.listEncode)).1 = l.headI := by

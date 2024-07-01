@@ -179,14 +179,14 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
   ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h]
+    simp [Pso, indefiniteDiagonal, h, one_apply]
   · -- x : p, y : q
     simp [Pso, indefiniteDiagonal]
   · -- x : q, y : p
     simp [Pso, indefiniteDiagonal]
   · -- x y : q
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h, hi]
+    simp [Pso, indefiniteDiagonal, h, hi, one_apply]
 #align lie_algebra.orthogonal.Pso_inv LieAlgebra.Orthogonal.pso_inv
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
@@ -199,14 +199,14 @@ theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
   ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h]
+    simp [Pso, indefiniteDiagonal, h, one_apply]
   · -- x : p, y : q
     simp [Pso, indefiniteDiagonal]
   · -- x : q, y : p
     simp [Pso, indefiniteDiagonal]
   · -- x y : q
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h, hi]
+    simp [Pso, indefiniteDiagonal, h, hi, one_apply]
 #align lie_algebra.orthogonal.indefinite_diagonal_transform LieAlgebra.Orthogonal.indefiniteDiagonal_transform
 
 /-- An equivalence between the indefinite and definite orthogonal Lie algebras, over a ring

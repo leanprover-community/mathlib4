@@ -210,7 +210,7 @@ theorem mapEmbedding_apply : mapEmbedding f s = map f s :=
 
 theorem filter_map {p : β → Prop} [DecidablePred p] :
     (s.map f).filter p = (s.filter (p ∘ f)).map f :=
-  eq_of_veq (map_filter _ _ _)
+  eq_of_veq (Multiset.filter_map _ _ _)
 #align finset.filter_map Finset.filter_map
 
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)

@@ -52,7 +52,9 @@ class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
 
 section
 
-variable {G} (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
+variable {G}
+variable (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
+
 theorem DirectedSystem.map_self i x h : f i i h x = x :=
   DirectedSystem.map_self' i x h
 theorem DirectedSystem.map_map {i j k} (hij hjk x) :
@@ -64,7 +66,8 @@ end
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
+variable {G}
+variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/

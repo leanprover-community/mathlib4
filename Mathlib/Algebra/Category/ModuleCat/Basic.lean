@@ -362,7 +362,7 @@ def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
     { toFun := fun (m : M) => r • m
       map_zero' := by dsimp; rw [smul_zero]
       map_add' := fun x y => by dsimp; rw [smul_add] }
-  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul]; rfl)
+  map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul])
   map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul]; rfl)
   map_mul' r s := AddMonoidHom.ext (fun (x : M) => (smul_smul r s x).symm)
   map_add' r s := AddMonoidHom.ext (fun (x : M) => add_smul r s x)

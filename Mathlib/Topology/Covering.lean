@@ -156,7 +156,8 @@ theorem mk (F : X → Type*) [∀ x, TopologicalSpace (F x)] [∀ x, DiscreteTop
     (IsCoveringMapOn.mk f Set.univ F (fun x _ => e x) fun x _ => h x)
 #align is_covering_map.mk IsCoveringMap.mk
 
-variable {f} (hf : IsCoveringMap f)
+variable {f}
+variable (hf : IsCoveringMap f)
 
 protected theorem continuous : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isCoveringMapOn.continuousOn

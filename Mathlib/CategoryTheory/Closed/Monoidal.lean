@@ -232,7 +232,8 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
 
 section Pre
 
-variable {A B} [Closed B]
+variable {A B}
+variable [Closed B]
 
 /-- Pre-compose an internal hom with an external hom. -/
 def pre (f : B ⟶ A) : ihom A ⟶ ihom B :=

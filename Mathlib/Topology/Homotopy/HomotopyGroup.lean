@@ -323,14 +323,18 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]
     obtain rfl | h := eq_or_ne j i
-    · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
+    · simp only [Prod.map_apply, id_eq, toContinuousMap_apply, funSplitAt_apply,
+        Function.uncurry_apply_pair]
+      rw [H.eq_fst]
+      exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
     · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
   all_goals
     intro
     apply (homotopyFrom_apply _ _ _).trans
-    first
-    | rw [H.apply_zero]
-    | rw [H.apply_one]
+    simp only [Prod.map_apply, id_eq, toContinuousMap_apply, funSplitAt_apply,
+      Function.uncurry_apply_pair, ContinuousMap.HomotopyWith.apply_zero,
+      ContinuousMap.HomotopyWith.apply_one, ne_eq, Path.coe_toContinuousMap, toLoop_apply_coe,
+      ContinuousMap.curry_apply, ContinuousMap.comp_apply]
     first
     | apply congr_arg p
     | apply congr_arg q
