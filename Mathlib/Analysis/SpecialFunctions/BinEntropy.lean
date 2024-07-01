@@ -264,12 +264,6 @@ lemma differentiableAt_iff_differentiableAt_comp_mul_add
     exact h
     exact diff_affine
 
-@[simp]
-lemma fderiv_deriv' {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
-  rw [← deriv_fderiv]
-  simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, smul_eq_mul]
-  ring
-
 end general
 
 lemma differentiableAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
@@ -358,35 +352,20 @@ lemma deriv_binaryEntropy' {x : ℝ} :
     deriv (fun p ↦ -p * p.log - (1 - p) * (1 - p).log) x = log (1 - x) - log x := by
   by_cases is_x_where_nondiff : x ≠ 0 ∧ x ≠ 1
   · obtain ⟨h, hh⟩ := is_x_where_nondiff
-    rw [deriv_sub]
-    simp_rw [← neg_mul_eq_neg_mul]
-    rw [deriv.neg, deriv_mul_log h]
-    simp_rw [mul_sub_right_distrib]
-    simp only [one_mul]
-    rw [deriv_sub, deriv_log_one_sub]
-    · rw [deriv_mul, deriv_id'']
-      rw [deriv.log]
+    have : DifferentiableAt ℝ (fun p ↦ log (1 - p)) x :=
+      DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
+    rw [deriv_sub ?_ (by fun_prop)]
+    simp only [← neg_mul_eq_neg_mul]
+    rw [deriv.neg , deriv_mul_log h]
+    simp only [mul_sub_right_distrib, one_mul]
+    rw [deriv_sub this (by fun_prop), deriv_log_one_sub]
+    · rw [deriv_mul (by fun_prop) this, deriv_id'']
+      rw [deriv.log (by fun_prop) (sub_ne_zero_of_ne (hh.symm))]
       simp only [one_mul, deriv_one_minus]
-      field_simp
-      ring_nf
-      calc -1 + (-log x - x * (1 - x)⁻¹) + (1 - x)⁻¹ + log (1 - x)
-        _ = -log x + log (1 - x) := by
-          field_simp [sub_ne_zero.mpr hh.symm]
-          ring
-      fun_prop
-      exact sub_ne_zero.mpr hh.symm
-      apply differentiableAt_id'
-      exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
-    · exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
-    · apply DifferentiableAt.mul
-      apply differentiableAt_id'
-      apply DifferentiableAt.log
-      fun_prop
-      exact sub_ne_zero.mpr hh.symm
+      field_simp [sub_ne_zero.mpr hh.symm]
+      ring
     · exact (hasDerivAt_negMulLog h).differentiableAt
-    · apply DifferentiableAt.mul
-      fun_prop
-      exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
+  -- pathological case where `deriv = 0` since function is not differentiable there
   · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
     rw [← binaryEntropy_eq]
     rw [deriv_zero_of_not_differentiableAt]
@@ -396,7 +375,6 @@ lemma deriv_binaryEntropy' {x : ℝ} :
     · intro h
       have := (differentiableAt_binaryEntropy_iff_ne_zero_one x).mp h
       simp_all only [ne_eq, not_true_eq_false, zero_ne_one, not_false_eq_true, and_true]
-
 
 /-- Binary entropy has derivative `log (1 - p) - log p`.
 It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
@@ -415,10 +393,8 @@ lemma deriv_binaryEntropy''' {x : ℝ} :
         deriv_mul differentiableAt_id' diff_log_one_sub, deriv_id'',
         deriv.log (by fun_prop) (sub_ne_zero_of_ne hh.symm)]
       simp only [one_mul, deriv_one_minus]
-      calc -(log x + 1) - (-(1 - x)⁻¹ - (log (1 - x) + x * (-1 / (1 - x))))
-        _ = log (1 - x) - log x := by
-          field_simp [sub_ne_zero.mpr hh.symm]
-          ring
+      field_simp [sub_ne_zero.mpr hh.symm]
+      ring
     · apply DifferentiableAt.mul (DifferentiableAt.neg differentiableAt_id')
         (differentiableAt_log h)
     · fun_prop
@@ -645,8 +621,6 @@ lemma not_continuousAt_deriv_qaryEntropy_zero {q : ℕ} :
     · linarith
     · simp_all
       linarith [two_inv_lt_one (α:=ℝ)]
-
-
 
 /-- Second derivative of q-ary entropy. -/
 lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
