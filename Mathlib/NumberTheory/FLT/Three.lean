@@ -448,7 +448,7 @@ lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Pri
 is associated with `λ`. -/
 lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Prime p)
     (hpaetab : p ∣ S.a + η * S.b) (hpaetasqb : p ∣ S.a + η ^ 2 * S.b) : Associated p λ := by
-  suffices p_lam : (p ∣ λ) from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
+  suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
   by_contra p_lam
   refine hp.not_unit <| S.coprime.isUnit_of_dvd' ?_ ?_
   · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
