@@ -358,8 +358,7 @@ theorem val_lt_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x < 1 �
   simp only [inv_inv]
 
 theorem val_le_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x ≤ 1 ↔ 1 ≤ v x⁻¹ := by
-  convert (one_le_val_iff v (inv_ne_zero h)).symm
-  simp only [inv_inv]
+  simpa [inv_inv] using (one_le_val_iff v (inv_ne_zero h)).symm
 
 theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x = 1 ↔ v x⁻¹ = 1 := by
   simpa only [le_antisymm_iff, And.comm] using and_congr (one_le_val_iff v h) (val_le_one_iff v h)
