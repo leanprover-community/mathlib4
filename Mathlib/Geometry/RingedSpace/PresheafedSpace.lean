@@ -104,7 +104,7 @@ structure Hom (X Y : PresheafedSpace C) where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.hom AlgebraicGeometry.PresheafedSpace.Hom
 
--- Porting note: eventually, the ext lemma shall be applied to terms in `X ⟶ Y`
+-- Porting note (#11041): eventually, the `ext` lemma shall be applied to terms in `X ⟶ Y`
 -- rather than `Hom X Y`, this one was renamed `Hom.ext` instead of `ext`,
 -- and the more practical lemma `ext` is defined just after the definition
 -- of the `Category` instance
@@ -185,8 +185,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {C}
 
--- Porting note: adding an ext lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): adding an `ext` lemma.
 @[ext]
 theorem ext {X Y : PresheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=

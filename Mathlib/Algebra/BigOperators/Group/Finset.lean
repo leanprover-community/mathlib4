@@ -298,6 +298,7 @@ theorem map_prod [CommMonoid β] [CommMonoid γ] {G : Type*} [FunLike G β γ] [
   simp only [Finset.prod_eq_multiset_prod, map_multiset_prod, Multiset.map_map]; rfl
 #align map_prod map_prod
 #align map_sum map_sum
+#align linear_equiv.map_sum map_sumₓ
 
 @[to_additive]
 theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α) :
@@ -2417,7 +2418,7 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 @[simp]
 theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
     ∑ a in l.toFinset, l.count a = l.length := by
-  simpa using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
+  simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
 end List
 
