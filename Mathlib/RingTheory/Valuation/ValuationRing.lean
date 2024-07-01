@@ -426,7 +426,7 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
       obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
       exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
     · exact IsFractionRing.injective _ _
-  refine ⟨fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
+  refine ⟨sorry, fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
   · obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
     exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
   · constructor
