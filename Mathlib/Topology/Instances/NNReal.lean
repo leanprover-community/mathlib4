@@ -3,6 +3,7 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Instances.Real
@@ -154,8 +155,7 @@ theorem _root_.Real.comap_toNNReal_atTop : comap Real.toNNReal atTop = atTop := 
 @[simp]
 theorem _root_.Real.tendsto_toNNReal_atTop_iff {l : Filter α} {f : α → ℝ} :
     Tendsto (fun x ↦ (f x).toNNReal) l atTop ↔ Tendsto f l atTop := by
-  rw [← Real.comap_toNNReal_atTop, tendsto_comap_iff]
-  rfl
+  rw [← Real.comap_toNNReal_atTop, tendsto_comap_iff, Function.comp_def]
 
 theorem _root_.Real.tendsto_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :=
   Real.tendsto_toNNReal_atTop_iff.2 tendsto_id
