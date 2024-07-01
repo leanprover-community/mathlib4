@@ -6,7 +6,7 @@ Authors: Kyle Miller
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Logic.Basic
-import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.CongrExclamation
 
 /-! # `congr(...)` congruence quotations
 
