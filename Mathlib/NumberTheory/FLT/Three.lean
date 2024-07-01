@@ -422,7 +422,7 @@ lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b {p : 𝓞 K} (hp : Prime 
   · refine (hp.dvd_or_dvd ?_).resolve_left ‹_›
     rw [show λ * S.a = η * (S.a + S.b) - (S.a + η * S.b) by rw [coe_eta]; ring]
     exact dvd_sub (dvd_mul_of_dvd_right hpab _) hpaetab
-  · refine (Prime.dvd_or_dvd hp ?_).resolve_left ‹_›
+  · refine (hp.dvd_or_dvd ?_).resolve_left ‹_›
     rw [show λ * S.b = (S.a + η * S.b) - (S.a + S.b) by rw [coe_eta]; ring]
     exact dvd_sub hpaetab hpab
 
