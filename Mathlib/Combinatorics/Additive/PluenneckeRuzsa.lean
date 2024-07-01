@@ -148,14 +148,14 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hU
   refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
   push_cast
-  refine (le_div_iff <| cast_pos.2 hB.card_pos).1 ?_
+  refine (le_div_iff <| Nat.cast_pos.2 hB.card_pos).1 ?_
   rw [mul_div_right_comm, mul_comm _ B]
   refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
   rw [← mul_div_right_comm, ← mul_assoc]
-  refine (le_div_iff <| cast_pos.2 hU.1.card_pos).2 ?_
+  refine (le_div_iff <| Nat.cast_pos.2 hU.1.card_pos).2 ?_
   exact mod_cast mul_pluennecke_petridis C (mul_aux hU.1 hU.2 hUA)
 #align finset.card_mul_mul_card_le_card_mul_mul_card_mul Finset.card_mul_mul_card_le_card_mul_mul_card_mul
 #align finset.card_add_mul_card_le_card_add_mul_card_add Finset.card_add_mul_card_le_card_add_mul_card_add
@@ -229,7 +229,7 @@ theorem card_pow_div_pow_le (hA : A.Nonempty) (B : Finset α) (m n : ℕ) :
   obtain ⟨C, hC, hCA⟩ :=
     exists_min_image (A.powerset.erase ∅) (fun C ↦ (C * B).card / C.card : _ → ℚ≥0) ⟨A, hA'⟩
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hC
-  refine (mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
+  refine (_root_.mul_le_mul_right <| Nat.cast_pos.2 hC.1.card_pos).1 ?_
   norm_cast
   refine (Nat.cast_le.2 <| card_div_mul_le_card_mul_mul_card_mul _ _ _).trans ?_
   push_cast
