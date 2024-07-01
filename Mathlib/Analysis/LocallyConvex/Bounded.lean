@@ -92,10 +92,32 @@ theorem IsVonNBounded.subset {s₁ s₂ : Set E} (h : s₁ ⊆ s₂) (hs₂ : Is
     IsVonNBounded 𝕜 s₁ := fun _ hV => (hs₂ hV).mono_right h
 #align bornology.is_vonN_bounded.subset Bornology.IsVonNBounded.subset
 
+@[simp]
+theorem isVonNBounded_union {s t : Set E} :
+    IsVonNBounded 𝕜 (s ∪ t) ↔ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
+  simp only [IsVonNBounded, absorbs_union, forall_and]
+
 /-- The union of two bounded sets is bounded. -/
 theorem IsVonNBounded.union {s₁ s₂ : Set E} (hs₁ : IsVonNBounded 𝕜 s₁) (hs₂ : IsVonNBounded 𝕜 s₂) :
-    IsVonNBounded 𝕜 (s₁ ∪ s₂) := fun _ hV => (hs₁ hV).union (hs₂ hV)
+    IsVonNBounded 𝕜 (s₁ ∪ s₂) := isVonNBounded_union.2 ⟨hs₁, hs₂⟩
 #align bornology.is_vonN_bounded.union Bornology.IsVonNBounded.union
+
+theorem IsVonNBounded.of_boundedSpace [BoundedSpace 𝕜] {s : Set E} : IsVonNBounded 𝕜 s := fun _ _ ↦
+  .of_boundedSpace
+
+@[simp]
+theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
+    IsVonNBounded 𝕜 (⋃ i, s i) ↔ ∀ i, IsVonNBounded 𝕜 (s i) := by
+  simp only [IsVonNBounded, absorbs_iUnion, @forall_swap ι]
+
+theorem isVonNBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set E} :
+    IsVonNBounded 𝕜 (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, IsVonNBounded 𝕜 (s i) := by
+  have _ := hI.to_subtype
+  rw [biUnion_eq_iUnion, isVonNBounded_iUnion, Subtype.forall]
+
+theorem isVonNBounded_sUnion {S : Set (Set E)} (hS : S.Finite) :
+    IsVonNBounded 𝕜 (⋃₀ S) ↔ ∀ s ∈ S, IsVonNBounded 𝕜 s := by
+  rw [sUnion_eq_biUnion, isVonNBounded_biUnion hS]
 
 end Zero
 
@@ -236,6 +258,13 @@ variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fun _ hV =>
   (absorbent_nhds_zero hV).absorbs
 #align bornology.is_vonN_bounded_singleton Bornology.isVonNBounded_singleton
+
+@[simp]
+theorem isVonNBounded_insert (x : E) {s : Set E} :
+    IsVonNBounded 𝕜 (insert x s) ↔ IsVonNBounded 𝕜 s := by
+  simp only [← singleton_union, isVonNBounded_union, isVonNBounded_singleton, true_and]
+
+protected alias ⟨_, IsVonNBounded.insert⟩ := isVonNBounded_insert
 
 section ContinuousAdd
 

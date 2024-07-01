@@ -302,6 +302,9 @@
   "Mathlib.GroupTheory.MonoidLocalization": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
+  "Mathlib.Geometry.Manifold.PoincareConjecture":
+  ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
+   "Mathlib.Util.Superscript"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
@@ -322,12 +325,16 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
+  "Mathlib.Analysis.InnerProductSpace.Basic":
+  ["Mathlib.Algebra.Module.LinearMap.Basic"],
   "Mathlib.Analysis.NormedSpace.LinearIsometry": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
+  "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Algebra.Module.Equiv": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.LinearMap.Star":
   ["Mathlib.Algebra.Module.Equiv", "Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
