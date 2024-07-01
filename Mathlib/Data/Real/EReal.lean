@@ -900,7 +900,7 @@ theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤
   exact EReal.add_lt_add hx.lt_top hy.lt_top
 #align ereal.add_lt_top EReal.add_lt_top
 
-theorem add_le_add_right {x y z : EReal} (h : x ≤ y) : x + z ≤ y + z := by
+lemma add_le_add_right {x y z : EReal} (h : x ≤ y) : x + z ≤ y + z := by
   rcases lt_or_eq_of_le h with (h | rfl)
   swap; exact le_rfl
   induction z with
@@ -908,10 +908,10 @@ theorem add_le_add_right {x y z : EReal} (h : x ≤ y) : x + z ≤ y + z := by
   | h_real z => exact add_lt_add_right_coe h z |>.le
   | h_top => exact (add_top_of_ne_bot h.ne_bot).symm ▸ le_top
 
-theorem add_le_add_left {x y z : EReal} (h : x ≤ y) : z + x ≤ z + y :=
+lemma add_le_add_left {x y z : EReal} (h : x ≤ y) : z + x ≤ z + y :=
   add_comm z x ▸ add_comm z y ▸ add_le_add_right h
 
-theorem add_le_add {x y z t : EReal} (h1 : x ≤ y) (h2 : z ≤ t) : x + z ≤ y + t := by
+lemma add_le_add {x y z t : EReal} (h1 : x ≤ y) (h2 : z ≤ t) : x + z ≤ y + t := by
   rcases lt_or_eq_of_le h1 with (h1 | h1)
   swap; exact h1 ▸ add_le_add_left h2
   rcases lt_or_eq_of_le h2 with (h2 | h2)
@@ -1336,7 +1336,7 @@ theorem le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z
       exact not_le_of_lt (coe_lt_top (_ + 1)) h
   · exact le_top
 
-theorem ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
+lemma ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
   refine ⟨fun h ↦ ?_, fun h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h⟩
   induction x
   case h_bot =>
@@ -1522,10 +1522,10 @@ theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x :
 
 /-! ### Min and Max -/
 
-theorem min_neg_neg (x y : EReal) : min (-x) (-y) = -max x y := by
+lemma min_neg_neg (x y : EReal) : min (-x) (-y) = -max x y := by
   rcases le_total x y with (h | h) <;> simp_all
 
-theorem max_neg_neg (x y : EReal) : max (-x) (-y) = -min x y := by
+lemma max_neg_neg (x y : EReal) : max (-x) (-y) = -min x y := by
   rcases le_total x y with (h | h) <;> simp_all
 
 /-! ### Inverse -/
