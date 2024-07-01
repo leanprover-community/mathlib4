@@ -11,7 +11,7 @@ else
     brew update
 fi
 
-brew install elan-init
+curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
 elan toolchain install stable
 elan default stable
 

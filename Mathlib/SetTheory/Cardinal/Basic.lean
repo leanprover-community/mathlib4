@@ -543,12 +543,12 @@ instance commSemiring : CommSemiring Cardinal.{u} where
 section deprecated
 set_option linter.deprecated false
 
-@[deprecated]
+@[deprecated (since := "2023-02-11")]
 theorem power_bit0 (a b : Cardinal) : a ^ bit0 b = a ^ b * a ^ b :=
   power_add
 #align cardinal.power_bit0 Cardinal.power_bit0
 
-@[deprecated]
+@[deprecated (since := "2023-02-11")]
 theorem power_bit1 (a b : Cardinal) : a ^ bit1 b = a ^ b * a ^ b * a := by
   rw [bit1, ← power_bit0, power_add, power_one]
 #align cardinal.power_bit1 Cardinal.power_bit1
@@ -623,12 +623,12 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 section deprecated
 set_option linter.deprecated false
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-02-11")]
 theorem lift_bit0 (a : Cardinal) : lift.{v} (bit0 a) = bit0 (lift.{v} a) :=
   lift_add a a
 #align cardinal.lift_bit0 Cardinal.lift_bit0
 
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-02-11")]
 theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by simp [bit1]
 #align cardinal.lift_bit1 Cardinal.lift_bit1
 
@@ -956,8 +956,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
 theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
   ⟨_, by
     rintro a ⟨i, rfl⟩
-    -- Porting note: Added universe reference below
-    exact le_sum.{v,u} f i⟩
+    exact le_sum f i⟩
 #align cardinal.bdd_above_range Cardinal.bddAbove_range
 
 instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
@@ -990,25 +989,23 @@ theorem bddAbove_of_small (s : Set Cardinal.{u}) [h : Small.{u} s] : BddAbove s 
 theorem bddAbove_image (f : Cardinal.{u} → Cardinal.{max u v}) {s : Set Cardinal.{u}}
     (hs : BddAbove s) : BddAbove (f '' s) := by
   rw [bddAbove_iff_small] at hs ⊢
-  -- Porting note: added universes below
-  exact small_lift.{_,v,_} _
+  exact small_lift _
 #align cardinal.bdd_above_image Cardinal.bddAbove_image
 
 theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbove (range f))
     (g : Cardinal.{v} → Cardinal.{max v w}) : BddAbove (range (g ∘ f)) := by
   rw [range_comp]
-  exact bddAbove_image.{v,w} g hf
+  exact bddAbove_image g hf
 #align cardinal.bdd_above_range_comp Cardinal.bddAbove_range_comp
 
 theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
-  ciSup_le' <| le_sum.{u_2,u_1} _
+  ciSup_le' <| le_sum _
 #align cardinal.supr_le_sum Cardinal.iSup_le_sum
 
--- Porting note: Added universe hint .{v,_} below
 theorem sum_le_iSup_lift {ι : Type u}
-    (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift.{v,_} #ι * iSup f := by
+    (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
   rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_range.{u, v} f)
+  exact sum_le_sum _ _ (le_ciSup <| bddAbove_range f)
 #align cardinal.sum_le_supr_lift Cardinal.sum_le_iSup_lift
 
 theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
@@ -1053,8 +1050,7 @@ lemma exists_eq_of_iSup_eq_of_not_isLimit
 @[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
--- Porting note: Added .{v,u,w} universe hint below
-  lift_mk_eq.{v,u,w}.2 ⟨(equivShrink α).symm⟩
+  lift_mk_eq.2 ⟨(equivShrink α).symm⟩
 #align cardinal.lift_mk_shrink Cardinal.lift_mk_shrink
 
 @[simp]
@@ -1129,17 +1125,15 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
     simp only [lift_id]
 #align cardinal.prod_eq_of_fintype Cardinal.prod_eq_of_fintype
 
--- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_sInf (s : Set Cardinal) : lift.{u,v} (sInf s) = sInf (lift.{u,v} '' s) := by
+theorem lift_sInf (s : Set Cardinal) : lift.{u, v} (sInf s) = sInf (lift.{u, v} '' s) := by
   rcases eq_empty_or_nonempty s with (rfl | hs)
   · simp
   · exact lift_monotone.map_csInf hs
 #align cardinal.lift_Inf Cardinal.lift_sInf
 
--- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u,v} (iInf f) = ⨅ i, lift.{u,v} (f i) := by
+theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lift.{u, v} (f i) := by
   unfold iInf
   convert lift_sInf (range f)
   simp_rw [← comp_apply (f := lift), range_comp]
@@ -1156,27 +1150,24 @@ theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
               fun ⟨a, ⟨b, e⟩⟩ => ⟨b, Subtype.eq e⟩⟩⟩
 #align cardinal.lift_down Cardinal.lift_down
 
--- Porting note: Inserted .{u,v} below
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v,u} a ↔ ∃ a', lift.{v,u} a' = b ∧ a' ≤ a :=
+    b ≤ lift.{v, u} a ↔ ∃ a', lift.{v, u} a' = b ∧ a' ≤ a :=
   ⟨fun h =>
     let ⟨a', e⟩ := lift_down h
     ⟨a', e, lift_le.1 <| e.symm ▸ h⟩,
     fun ⟨_, e, h⟩ => e ▸ lift_le.2 h⟩
 #align cardinal.le_lift_iff Cardinal.le_lift_iff
 
--- Porting note: Inserted .{u,v} below
 theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b < lift.{v,u} a ↔ ∃ a', lift.{v,u} a' = b ∧ a' < a :=
+    b < lift.{v, u} a ↔ ∃ a', lift.{v, u} a' = b ∧ a' < a :=
   ⟨fun h =>
     let ⟨a', e⟩ := lift_down h.le
     ⟨a', e, lift_lt.1 <| e.symm ▸ h⟩,
     fun ⟨_, e, h⟩ => e ▸ lift_lt.2 h⟩
 #align cardinal.lt_lift_iff Cardinal.lt_lift_iff
 
--- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_succ (a) : lift.{v,u} (succ a) = succ (lift.{v,u} a) :=
+theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
   le_antisymm
     (le_of_not_gt fun h => by
       rcases lt_lift_iff.1 h with ⟨b, e, h⟩
@@ -1186,22 +1177,19 @@ theorem lift_succ (a) : lift.{v,u} (succ a) = succ (lift.{v,u} a) :=
 #align cardinal.lift_succ Cardinal.lift_succ
 
 -- Porting note: simpNF is not happy with universe levels.
--- Porting note: Inserted .{u,v} below
 @[simp, nolint simpNF]
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
   rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
 #align cardinal.lift_umax_eq Cardinal.lift_umax_eq
 
--- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_min {a b : Cardinal} : lift.{u,v} (min a b) = min (lift.{u,v} a) (lift.{u,v} b) :=
+theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_min
 #align cardinal.lift_min Cardinal.lift_min
 
--- Porting note: Inserted .{u,v} below
 @[simp]
-theorem lift_max {a b : Cardinal} : lift.{u,v} (max a b) = max (lift.{u,v} a) (lift.{u,v} b) :=
+theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
 #align cardinal.lift_max Cardinal.lift_max
 
@@ -1289,22 +1277,22 @@ theorem lift_aleph0 : lift ℵ₀ = ℵ₀ :=
 
 @[simp]
 theorem aleph0_le_lift {c : Cardinal.{u}} : ℵ₀ ≤ lift.{v} c ↔ ℵ₀ ≤ c := by
-  rw [← lift_aleph0.{u,v}, lift_le]
+  rw [← lift_aleph0.{v, u}, lift_le]
 #align cardinal.aleph_0_le_lift Cardinal.aleph0_le_lift
 
 @[simp]
 theorem lift_le_aleph0 {c : Cardinal.{u}} : lift.{v} c ≤ ℵ₀ ↔ c ≤ ℵ₀ := by
-  rw [← lift_aleph0.{u,v}, lift_le]
+  rw [← lift_aleph0.{v, u}, lift_le]
 #align cardinal.lift_le_aleph_0 Cardinal.lift_le_aleph0
 
 @[simp]
 theorem aleph0_lt_lift {c : Cardinal.{u}} : ℵ₀ < lift.{v} c ↔ ℵ₀ < c := by
-  rw [← lift_aleph0.{u,v}, lift_lt]
+  rw [← lift_aleph0.{v, u}, lift_lt]
 #align cardinal.aleph_0_lt_lift Cardinal.aleph0_lt_lift
 
 @[simp]
 theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ := by
-  rw [← lift_aleph0.{u,v}, lift_lt]
+  rw [← lift_aleph0.{v, u}, lift_lt]
 #align cardinal.lift_lt_aleph_0 Cardinal.lift_lt_aleph0
 
 /-! ### Properties about the cast from `ℕ` -/
