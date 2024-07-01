@@ -10,8 +10,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 /-!
 # Properties of the extended logarithm and exponential
 
-We prove that `log` and `exp` define an order isomorphism between `ℝ≥0∞` and `EReal`.
-
+We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and `EReal`.
 ## Main Definitions
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
 and `exp`.
@@ -132,9 +131,9 @@ noncomputable def logHomeomorph : ℝ≥0∞ ≃ₜ EReal := logOrderIso.toHomeo
 @[simp] lemma log_homeomorph_apply (x : ℝ≥0∞) : logHomeomorph x = log x := rfl
 
 /-- `exp` as a homeomorphism. -/
-noncomputable def exp_homeomorph : EReal ≃ₜ ℝ≥0∞ := logOrderIso.symm.toHomeomorph
+noncomputable def _root_.EReal.exp_homeomorph : EReal ≃ₜ ℝ≥0∞ := logOrderIso.symm.toHomeomorph
 
-@[simp] lemma exp_homeomorph_apply (x : EReal) : exp_homeomorph x = exp x := rfl
+@[simp] lemma _root_.EReal.exp_homeomorph_apply (x : EReal) : EReal.exp_homeomorph x = exp x := rfl
 
 @[continuity, fun_prop]
 lemma continuous_log : Continuous log := logOrderIso.continuous
