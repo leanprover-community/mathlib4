@@ -5,6 +5,8 @@ Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Concrete colorings of common graphs
@@ -63,5 +65,21 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     Odd p.length ↔ (¬c u ↔ c v) := by
   rw [Nat.odd_iff_not_even, c.even_length_iff_congr p]
   tauto
+
+def ringGraph (n : ℕ) : SimpleGraph (Fin n) :=
+  SimpleGraph.fromRel (fun u v ↦ v.val = (u.val + 1) % n)
+
+theorem ringGraph_adj (n : ℕ) (hn : 2 ≤ n) (u v : Fin n) :
+    (ringGraph n).Adj u v ↔ v.val = (u.val + 1) % n ∨ u.val = (v.val + 1) % n := by
+  simp [ringGraph]
+  intro h
+  wlog hvu : ↑v = (↑u + 1) % n
+  · rw [eq_comm]
+    exact this n hn v u h.symm (h.resolve_left hvu)
+  rw [Fin.ext_iff, hvu]
+  apply_fun ((↑) : _ →  ZMod n)
+  have : NeZero (1 : ZMod n) := @NeZero.one _ _ <| @ZMod.nontrivial n ⟨hn⟩
+  simpa only [ZMod.natCast_mod, Nat.cast_add, Nat.cast_one, ne_eq, self_eq_add_right] using
+    one_ne_zero
 
 end SimpleGraph
