@@ -53,7 +53,7 @@ satisfying `f ≫ π = g ≫ π` together with morphisms
 satisfying `s ≫ π = 𝟙 Z`, `t ≫ g = 𝟙 Y` and `t ≫ f = π ≫ s`.
 
 The name "coequalizer" is appropriate, since any split coequalizer is a coequalizer, see
-`Category_theory.IsSplitCoequalizer.isCoequalizer`.
+`CategoryTheory.IsSplitCoequalizer.isCoequalizer`.
 Split coequalizers are also absolute, since a functor preserves all the structure above.
 -/
 structure IsSplitCoequalizer {Z : C} (π : Y ⟶ Z) where
