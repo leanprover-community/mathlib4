@@ -112,6 +112,7 @@ import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
+import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 import Mathlib.Algebra.Category.ModuleCat.Simple
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
@@ -748,6 +749,7 @@ import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
@@ -2327,6 +2329,7 @@ import Mathlib.Data.Set.List
 import Mathlib.Data.Set.MemPartition
 import Mathlib.Data.Set.MulAntidiagonal
 import Mathlib.Data.Set.NAry
+import Mathlib.Data.Set.Notation
 import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
@@ -3541,6 +3544,7 @@ import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RingTheory.AdicCompletion.Algebra
 import Mathlib.RingTheory.AdicCompletion.Basic
+import Mathlib.RingTheory.AdicCompletion.Exactness
 import Mathlib.RingTheory.AdicCompletion.Functoriality
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.FG
