@@ -19,7 +19,7 @@ Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or t
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Constructor.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Existsi.lean : line 7 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/ExistsI.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PushNeg.lean : line 14 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Recover.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
@@ -65,7 +65,7 @@ Mathlib/Data/Multiset/Basic.lean : line 1 : ERR_NUM_LIN : 3400 file contains 321
 Mathlib/Data/Nat/Defs.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1934 lines, try to split it up
 Mathlib/Data/Num/Lemmas.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1791 lines, try to split it up
 Mathlib/Data/Ordmap/Ordset.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1799 lines, try to split it up
-Mathlib/Data/Real/EReal.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1528 lines, try to split it up
+Mathlib/Data/Real/EReal.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1778 lines, try to split it up
 Mathlib/Data/Seq/WSeq.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1832 lines, try to split it up
 Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2674 lines, try to split it up
 Mathlib/Data/Set/Finite.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1786 lines, try to split it up

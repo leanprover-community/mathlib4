@@ -111,7 +111,7 @@ variable (Q) {g}
 theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (lTensor Q g) := by
   intro z
-  induction z using TensorProduct.induction_on with
+  induction z with
   | zero => exact ⟨0, map_zero _⟩
   | tmul q p =>
     obtain ⟨n, rfl⟩ := hg p
@@ -136,7 +136,7 @@ theorem LinearMap.lTensor_range :
 theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
   intro z
-  induction z using TensorProduct.induction_on with
+  induction z with
   | zero => exact ⟨0, map_zero _⟩
   | tmul p q =>
     obtain ⟨n, rfl⟩ := hg p
@@ -532,12 +532,12 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       use x + y
       simp only [map_add]
     · rintro a x ⟨x, hx, rfl⟩
-      induction a using TensorProduct.induction_on with
+      induction a with
       | zero =>
         use 0
         simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
-        induction x using TensorProduct.induction_on with
+        induction x with
         | zero =>
           use 0
           simp only [map_zero, smul_eq_mul, mul_zero]
@@ -557,7 +557,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         simp only [map_add, ha', add_smul, hb']
 
   · rintro x ⟨y, rfl⟩
-    induction y using TensorProduct.induction_on with
+    induction y with
     | zero =>
         rw [map_zero]
         apply zero_mem
@@ -600,12 +600,12 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       use x + y
       simp only [map_add]
     · rintro a x ⟨x, hx, rfl⟩
-      induction a using TensorProduct.induction_on with
+      induction a with
       | zero =>
         use 0
         simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
-        induction x using TensorProduct.induction_on with
+        induction x with
         | zero =>
           use 0
           simp only [map_zero, smul_eq_mul, mul_zero]
@@ -625,7 +625,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [map_add, ha', add_smul, hb']
 
   · rintro x ⟨y, rfl⟩
-    induction y using TensorProduct.induction_on with
+    induction y with
     | zero =>
         rw [map_zero]
         apply zero_mem

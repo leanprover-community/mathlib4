@@ -236,4 +236,21 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
 
+/-- The isomorphism
+`DerivedCategory.singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh` given
+by the definition of `DerivedCategory.singleFunctors`. -/
+noncomputable def singleFunctorsPostcompQhIso :
+    singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh :=
+  Iso.refl _
+
+/-- The isomorphism
+`DerivedCategory.singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q`. -/
+noncomputable def singleFunctorsPostcompQIso :
+    singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q :=
+  (SingleFunctors.postcompFunctor C ℤ (Qh : _ ⥤ DerivedCategory C)).mapIso
+    (HomotopyCategory.singleFunctorsPostcompQuotientIso C) ≪≫
+      (CochainComplex.singleFunctors C).postcompPostcompIso (HomotopyCategory.quotient _ _) Qh ≪≫
+      SingleFunctors.postcompIsoOfIso
+        (CochainComplex.singleFunctors C) (quotientCompQhIso C)
+
 end DerivedCategory
