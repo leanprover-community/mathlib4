@@ -54,7 +54,7 @@ variable [IsValExtension vR vA]
 
 -- @[simp] does not work because `vR` cannot be inferred from `R`.
 theorem val_map_le_iff (x y : R) : vA (algebraMap R A x) ≤ vA (algebraMap R A y) ↔ vR x ≤ vR y :=
-  (IsEquiv.val_le val_isEquiv_comap).symm
+  (val_isEquiv_comap).symm
 
 theorem val_map_lt_iff (x y : R) : vA (algebraMap R A x) < vA (algebraMap R A y) ↔ vR x < vR y :=
   (IsEquiv.val_lt val_isEquiv_comap).symm
