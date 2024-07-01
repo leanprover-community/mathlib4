@@ -1191,7 +1191,7 @@ theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a 
   · exact iff_of_true rfl (not_mem_nil _)
   simp only [length, mem_cons, indexOf_cons, eq_comm]
   rw [cond_eq_if]
-  split_ifs with h <;> simp at h
+  split_ifs with h <;> simp only [beq_iff_eq] at h
   · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
   · simp only [Ne.symm h, false_or_iff]
     rw [← ih]
@@ -1721,7 +1721,7 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
   | [], b :: bs => rfl
   | a :: as, [] => rfl
   | a :: as, b :: bs => by
-    simp! [zipWith_flip]
+    simp! only [zipWith_flip, zipWith_cons_cons]
     rfl
 #align list.map₂_flip List.zipWith_flip
 
@@ -2365,7 +2365,7 @@ theorem splitOnP_nil : [].splitOnP p = [[]] :=
 #noalign list.split_on_p_aux_nil
 
 theorem splitOnP.go_ne_nil (xs acc : List α) : splitOnP.go p xs acc ≠ [] := by
-  induction xs generalizing acc <;> simp [go]; split <;> simp [*]
+  induction xs generalizing acc <;> simp only [go, ne_eq, not_false_eq_true]; split <;> simp [*]
 
 theorem splitOnP.go_acc (xs acc : List α) :
     splitOnP.go p xs acc = modifyHead (acc.reverse ++ ·) (splitOnP p xs) := by
@@ -2887,7 +2887,7 @@ theorem filter_singleton {a : α} : [a].filter p = bif p a then [a] else [] :=
 
 theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
-  induction l <;> simp [*, filter]; rfl
+  induction l <;> simp only [filter, foldr_cons, foldr_nil, *]; rfl
 #align list.filter_eq_foldr List.filter_eq_foldr
 
 #align list.filter_congr' List.filter_congr'
@@ -3056,7 +3056,7 @@ theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p
 #align list.take_while_eq_nil_iff List.takeWhile_eq_nil_iff
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
-  induction l with simp [takeWhile] at hx
+  induction l with simp only [takeWhile, not_mem_nil] at hx
   | cons hd tl IH =>
     cases hp : p hd
     · simp [hp] at hx

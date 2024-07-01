@@ -994,7 +994,9 @@ namespace «Prop»
   simp [IsAtom, show ⊥ = False from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]
 
 @[simp] theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by
-  simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
+  simp only [IsCoatom, show ⊤ = True from rfl, eq_iff_iff, fun q r : Prop =>
+    show q < r ↔ _ ∧ _ from .rfl, le_Prop_eq]
+  tauto
 
 instance : IsSimpleOrder Prop where
   eq_bot_or_eq_top p := by simp [em']
@@ -1071,7 +1073,7 @@ instance isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)]
     IsAtomistic (∀ i, π i) where
   eq_sSup_atoms s := by
     classical
-    refine ⟨{ f | IsAtom f ∧ f ≤ s }, ?_, by simp; tauto⟩
+    refine ⟨{ f | IsAtom f ∧ f ≤ s }, ?_, by simp only [Set.mem_setOf_eq]; tauto⟩
     ext i
     rw [← sSup_atoms_le_eq (s i)]
     simp_rw [isAtom_iff_eq_single]

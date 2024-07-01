@@ -136,11 +136,11 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   · simp only [length] at hi
     exact (Nat.not_succ_le_zero i hi).elim
   cases' i with i hi
-  · simp
-    rfl
-  have : i < tail.length := by simpa using hi
-  simp [*]
-  rfl
+  · aesop
+  have : i < tail.length := by
+    simp? at hi says simp only [length_cons] at hi
+    exact Nat.lt_of_succ_lt_succ hi
+  aesop
 #align list.drop_take_succ_eq_cons_nth_le List.drop_take_succ_eq_cons_nthLe
 
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the

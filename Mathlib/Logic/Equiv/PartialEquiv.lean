@@ -943,7 +943,10 @@ theorem refl_prod_refl :
 theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
     (e' : PartialEquiv δ η) (f' : PartialEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
-  ext ⟨x, y⟩ <;> simp [ext_iff]; tauto
+  ext ⟨x, y⟩ <;>
+    simp only [coe_trans, trans_source, prod_source, prod_coe, mem_inter_iff, mem_prod,
+      mem_preimage, coe_trans_symm, prod_symm, prod_coe, comp_apply]
+  tauto
 #align local_equiv.prod_trans PartialEquiv.prod_trans
 
 end Prod
