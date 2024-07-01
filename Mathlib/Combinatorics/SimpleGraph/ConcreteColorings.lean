@@ -5,7 +5,6 @@ Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Data.Fin.Basic
 import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -16,6 +15,7 @@ This file defines colorings for some common graphs
 ## Main declarations
 
 * `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph.
+* `SimpleGraph.ringGraph`: A graph forming exactly a ring.
 
 -/
 
@@ -66,6 +66,7 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
   rw [Nat.odd_iff_not_even, c.even_length_iff_congr p]
   tauto
 
+/-- Definition of ring graph -/
 def ringGraph (n : ℕ) : SimpleGraph (Fin n) :=
   SimpleGraph.fromRel (fun u v ↦ v.val = (u.val + 1) % n)
 
