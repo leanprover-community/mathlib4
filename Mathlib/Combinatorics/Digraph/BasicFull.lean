@@ -369,7 +369,7 @@ theorem edgeSet_sdiff : (G₁ \ G₂).edgeSet = G₁.edgeSet \ G₂.edgeSet := r
 variable {G G₁ G₂}
 
 
-@[simp] lemma disjoint_edgeSet : Disjoint G₁.edgeSet G₂.edgeSet ↔ Disjoint G₁ G₂ := by
+lemma disjoint_edgeSet : Disjoint G₁.edgeSet G₂.edgeSet ↔ Disjoint G₁ G₂ := by
   rw [@disjoint_map_orderIso_iff]
 
 @[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by
@@ -486,7 +486,7 @@ theorem fromEdgeSet_mono {s t : Set (V × V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
 
-instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
+instance [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   rw [edgeSet_fromEdgeSet s]
   infer_instance
 
@@ -734,7 +734,8 @@ theorem deleteEdges_adj (s : Set (V × V)) (v w : V) :
   Iff.rfl
 
 @[simp] lemma deleteEdges_edgeSet (G G' : Digraph V) : G.deleteEdges G'.edgeSet = G \ G' := by
-  ext; simp
+  ext
+  simp only [deleteEdges_adj, mem_edgeSet, sdiff_adj]
 
 @[simp] lemma deleteEdges_empty : G.deleteEdges ∅ = G := by simp [deleteEdges]
 @[simp] lemma deleteEdges_univ : G.deleteEdges Set.univ = ⊥ := by simp [deleteEdges]
@@ -752,11 +753,11 @@ lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := by
 
 theorem sdiff_eq_deleteEdges (G G' : Digraph V) : G \ G' = G.deleteEdges G'.edgeSet := by
   ext
-  simp
+  simp only [sdiff_adj, deleteEdges_edgeSet]
 
 theorem compl_eq_deleteEdges : Gᶜ = (⊤ : Digraph V).deleteEdges G.edgeSet := by
   ext
-  simp
+  simp only [compl_adj, deleteEdges_edgeSet, top_sdiff', hnot_eq_compl]
 
 @[simp]
 theorem deleteEdges_deleteEdges (s s' : Set (V × V)) :
@@ -764,20 +765,17 @@ theorem deleteEdges_deleteEdges (s s' : Set (V × V)) :
   ext
   simp [and_assoc, not_or]
 
-@[simp]
 theorem deleteEdges_empty_eq : G.deleteEdges ∅ = G := by
-  ext
-  simp
+  simp only [deleteEdges_empty]
 
-@[simp]
 theorem deleteEdges_univ_eq : G.deleteEdges Set.univ = ⊥ := by
-  ext
-  simp
+  simp only [deleteEdges_univ]
 
 theorem deleteEdges_le (s : Set (V × V)) : G.deleteEdges s ≤ G := by
-  intro
-  simp (config := { contextual := true })
-
+  intro v' w' h
+  rw [@deleteEdges_adj] at h
+  cases' h with h1 h2
+  exact h1
 
 theorem deleteEdges_le_of_le {s s' : Set (V × V)} (h : s ⊆ s') :
     G.deleteEdges s' ≤ G.deleteEdges s := fun v w => by
@@ -797,7 +795,7 @@ theorem deleteEdges_sdiff_eq_of_le {H : Digraph V} (h : H ≤ G) :
 theorem edgeSet_deleteEdges (s : Set (V × V)) : (G.deleteEdges s).edgeSet = G.edgeSet \ s := by
   ext e
   cases e
-  simp
+  simp only [mem_edgeSet, deleteEdges_adj, Set.mem_diff]
 
 
 /-! ## Map and comap -/
@@ -835,7 +833,8 @@ theorem comap_monotone (f : V → W) : Monotone (Digraph.comap f) := by
 @[simp]
 theorem comap_map_eq (f : V ↪ W) (G : Digraph V) : (G.map f).comap f = G := by
   ext
-  simp
+  simp only [comap_Adj, map_adj, EmbeddingLike.apply_eq_iff_eq, exists_eq_right_right,
+    exists_eq_right]
 
 theorem leftInverse_comap_map (f : V ↪ W) :
     Function.LeftInverse (Digraph.comap f) (Digraph.map f) :=
@@ -956,7 +955,7 @@ When the function is injective, this is an embedding (see `Digraph.Embedding.com
 @[simps]
 protected def comap (f : V → W) (G : Digraph W) : G.comap f →g G where
   toFun := f
-  map_rel' := by simp
+  map_rel' := by simp only [comap_Adj, imp_self, implies_true]
 
 variable {G'' : Digraph X}
 
@@ -1000,7 +999,7 @@ graph. -/
 -- porting note: @[simps] does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ↪ W) (G : Digraph W) : G.comap f ↪g G :=
-  { f with map_rel_iff' := by simp }
+  { f with map_rel_iff' := by simp only [comap_Adj, implies_true] }
 
 @[simp]
 theorem comap_apply (f : V ↪ W) (G : Digraph W) (v : V) :
@@ -1010,7 +1009,8 @@ theorem comap_apply (f : V ↪ W) (G : Digraph W) (v : V) :
 -- porting note: @[simps] does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ↪ W) (G : Digraph V) : G ↪g G.map f :=
-  { f with map_rel_iff' := by simp }
+  { f with map_rel_iff' := by simp only [map_adj, EmbeddingLike.apply_eq_iff_eq,
+    exists_eq_right_right, exists_eq_right, implies_true] }
 
 @[simp]
 theorem map_apply (f : V ↪ W) (G : Digraph V) (v : V) :
@@ -1032,7 +1032,7 @@ protected def spanningCoe {s : Set V} (G : Digraph s) : G ↪g G.spanningCoe :=
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
 protected def completeGraph {α β : Type _} (f : α ↪ β) :
     (⊤ : Digraph α) ↪g (⊤ : Digraph β) :=
-  { f with map_rel_iff' := by simp }
+  { f with map_rel_iff' := by simp only [top_adj, implies_true] }
 
 variable {G'' : Digraph X}
 
@@ -1108,7 +1108,7 @@ graph. -/
 -- porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
 protected def comap (f : V ≃ W) (G : Digraph W) : G.comap f.toEmbedding ≃g G :=
-  { f with map_rel_iff' := by simp }
+  { f with map_rel_iff' := by simp only [Equiv.coe_toEmbedding, comap_Adj, implies_true] }
 
 @[simp]
 lemma comap_apply (f : V ≃ W) (G : Digraph W) (v : V) :
@@ -1122,7 +1122,8 @@ lemma comap_symm_apply (f : V ≃ W) (G : Digraph W) (w : W) :
 -- porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 protected def map (f : V ≃ W) (G : Digraph V) : G ≃g G.map f.toEmbedding :=
-  { f with map_rel_iff' := by simp }
+  { f with map_rel_iff' := by simp only [Equiv.coe_toEmbedding, map_adj,
+    EmbeddingLike.apply_eq_iff_eq, exists_eq_right_right, exists_eq_right, implies_true] }
 
 @[simp]
 lemma map_apply (f : V ≃ W) (G : Digraph V) (v : V) :
@@ -1135,7 +1136,7 @@ lemma map_symm_apply (f : V ≃ W) (G : Digraph V) (w : W) :
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
 protected def completeGraph {α β : Type _} (f : α ≃ β) :
     (⊤ : Digraph α) ≃g (⊤ : Digraph β) :=
-  { f with map_rel_iff' := by simp }
+  { f with map_rel_iff' := by simp only [top_adj, implies_true] }
 
 theorem toEmbedding_completeGraph {α β : Type _} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
