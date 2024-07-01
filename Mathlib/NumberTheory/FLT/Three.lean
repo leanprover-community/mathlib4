@@ -392,7 +392,7 @@ lemma lambda_sq_not_dvd_a_add_eta_sq_mul_b : ¬ λ ^ 2 ∣ (S.a + η ^ 2 * S.b) 
     show λ ^ 2 * k' - S.b + η ^ 2 * S.b = λ * (S.b * (η +1) + λ * k') by rw [coe_eta]; ring,
     pow_two, mul_assoc] at hk
   simp only [mul_eq_mul_left_iff, hζ.zeta_sub_one_prime'.ne_zero, or_false] at hk
-  replace hk := congr_arg (fun x => x * (-(η : 𝓞 K))) hk
+  apply_fun (· * -↑η) at hk
   simp only at hk
   have := hζ.toInteger_isPrimitiveRoot.isRoot_cyclotomic (by decide)
   simp only [PNat.val_ofNat, Polynomial.cyclotomic_three, Polynomial.IsRoot.def,
