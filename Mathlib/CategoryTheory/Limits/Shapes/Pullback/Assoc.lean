@@ -9,17 +9,9 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 #align_import category_theory.limits.shapes.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
 
 /-!
-# Constructions with pullbacks
+# Associativity of pullbacks
 
-The file `Pullbacks/Diagrams.lean` provides results for some different constructions using
-pullbacks. The dual results for pushouts are also available in this file.
-
-## Main results
-* The pullback by an isomorphism.
-
-* Pasting laws
-
-* Associativity of pullbacks
+This file shows that pullbacks (and pushouts) are associative.
 
 -/
 
