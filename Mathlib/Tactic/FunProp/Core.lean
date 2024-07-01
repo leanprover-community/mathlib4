@@ -12,7 +12,9 @@ import Mathlib.Tactic.FunProp.Types
 import Mathlib.Lean.Expr.Basic
 
 /-!
-## `funProp` core tactic algorithm
+# Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
+
+
 -/
 
 namespace Mathlib
@@ -40,7 +42,7 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
     return false
 
 
-/-- Synthesize arguments `xs` either with typeclass synthesis, with funProp or with discharger. -/
+/-- Synthesize arguments `xs` either with typeclass synthesis, with `fun_prop` or with discharger.-/
 def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
@@ -49,8 +51,8 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
     let type ← inferType x
     if bi.isInstImplicit then
       unless (← synthesizeInstance thmId x type) do
-        logError s!"Failed to synthesize instance {← ppExpr type} \
-        when applying theorem {← ppOrigin' thmId}."
+        logError s!"Failed to synthesize instance `{← ppExpr type}` \
+        when applying theorem `{← ppOrigin' thmId}`."
         return false
     else if (← instantiateMVars x).isMVar then
 
@@ -70,9 +72,9 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
             return false
       else
         -- try user provided discharger
-        let cfg : Config ← read
+        let ctx : Context ← read
         if (← isProp type) then
-          if let .some proof ← cfg.disch type then
+          if let .some proof ← ctx.disch type then
             if (← isDefEq x proof) then
               continue
             else do
@@ -80,8 +82,8 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
                 "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
               return false
           else
-            logError s!"Failed to prove necessary assumption {← ppExpr type} \
-                        when applying theorem {← ppOrigin' thmId}."
+            logError s!"Failed to prove necessary assumption `{← ppExpr type}` \
+                        when applying theorem `{← ppOrigin' thmId}`."
 
       if ¬(← isProp type) then
         postponed := postponed.push x
@@ -94,7 +96,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
   for x in postponed do
     if (← instantiateMVars x).isMVar then
       logError s!"Failed to infer `({← ppExpr x} : {← ppExpr (← inferType x)})` \
-      when applying theorem {← ppOrigin' thmId}."
+      when applying theorem `{← ppOrigin' thmId}`."
 
       trace[Meta.Tactic.fun_prop]
         "{← ppOrigin thmId}, failed to infer `({← ppExpr x} : {← ppExpr (← inferType x)})`"
@@ -333,7 +335,8 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
 /-- Prove function property of using "transition theorems" e.g. continuity from linearity.  -/
 def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)) :
-    FunPropM (Option Result) := do
+    FunPropM (Option Result) :=
+  withSecondaryLoggingMode do
 
   let ext := transitionTheoremsExt.getState (← getEnv)
   let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
@@ -542,7 +545,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
         return r
 
     if thms.size = 0 then
-      logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove {← ppExpr e}"
+      logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove `{← ppExpr e}`"
 
     return none
 
@@ -570,6 +573,10 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   if let .some r ← tryTheorems funPropDecl e fData localThms funProp then
     return r
 
+  -- log error if no global or local theoresm were found
+  if globalThms.size = 0 && localThms.size = 0 then
+     logError s!"No theorems found for `{funName}` in order to prove `{← ppExpr e}`"
+
   if (← fData.isMorApplication) != .none then
     if let .some r ← applyMorRules funPropDecl e fData funProp then
       return r
@@ -581,9 +588,6 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let .some r ← applyTransitionRules e funProp then
       return r
 
-  if globalThms.size = 0 &&
-     localThms.size = 0 then
-     logError s!"No theorems found for `{funName}` in order to prove {← ppExpr e}"
 
   return none
 
@@ -632,8 +636,7 @@ mutual
     withTraceNode `Meta.Tactic.fun_prop
       (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
 
-    -- if function starts with let bindings move them the top of `e` and try
-    -- again
+    -- if function starts with let bindings move them the top of `e` and try again
     if f.isLet then
       return ← letTelescope f fun xs b => do
         let e' := e.setArg funPropDecl.funArgId b
