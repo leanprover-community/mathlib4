@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl
 -/
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks.HasPullback
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 #align_import category_theory.limits.shapes.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
 
