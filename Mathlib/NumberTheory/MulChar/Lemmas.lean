@@ -59,7 +59,7 @@ lemma star_eq_inv (χ : MulChar R ℂ) : star χ = χ⁻¹ := by
   simp only [inv_apply_eq_inv']
   exact (inv_eq_conj <| norm_eq_one_of_mem_rootsOfUnity <| χ.apply_mem_rootsOfUnity a).symm
 
-lemma starComp_apply' (χ : MulChar R ℂ) (a : R) : star (χ a) = χ⁻¹ a := by
+lemma star_apply' (χ : MulChar R ℂ) (a : R) : star (χ a) = χ⁻¹ a := by
   simp only [RCLike.star_def, ← star_eq_inv, star_apply]
 
 end Ring
