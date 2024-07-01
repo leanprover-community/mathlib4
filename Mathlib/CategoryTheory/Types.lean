@@ -217,6 +217,10 @@ def uliftFunctor : Type u ⥤ Type max u v where
 #align category_theory.ulift_functor CategoryTheory.uliftFunctor
 
 @[simp]
+theorem uliftFunctor_obj {X : Type u} : uliftFunctor.obj.{v} X = ULift.{v} X :=
+  rfl
+
+@[simp]
 theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
     uliftFunctor.map f x = ULift.up (f x.down) :=
   rfl

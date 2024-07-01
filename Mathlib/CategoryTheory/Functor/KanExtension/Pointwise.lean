@@ -61,7 +61,8 @@ abbrev HasPointwiseRightKanExtension := ∀ (Y : D), HasPointwiseRightKanExtensi
 
 namespace LeftExtension
 
-variable {F L} (E E' : LeftExtension L F)
+variable {F L}
+variable (E : LeftExtension L F)
 
 /-- The cocone for `CostructuredArrow.proj L Y ⋙ F` attached to `E : LeftExtension L F`.
 The point of this cocone is `E.right.obj Y` -/
