@@ -110,7 +110,7 @@ instance : HasForget₂ (FdRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
 
 /-- Lift `FdRep` to `Rep`. -/
-def toRep (V : FdRep k G) : Rep k G := (forget₂ (FdRep k G) (Rep k G)).obj V
+abbrev toRep (V : FdRep k G) : Rep k G := (forget₂ (FdRep k G) (Rep k G)).obj V
 
 theorem forget₂_ρ (V : FdRep k G) : V.toRep.ρ = V.ρ := by
   rfl
@@ -199,38 +199,44 @@ theorem dualTensorIsoLinHom_hom_hom : (dualTensorIsoLinHom ρV W).hom.hom = dual
 
 end FdRep
 
-section equivFullSubcategory
+noncomputable section equivFullSubcategory
+
+namespace FdRep
 
 variable {k G : Type u} [Field k] [Monoid G] {V W : FdRep k G}
 
-/- Can we agree on how to phrase theorems/lemmas? Use V? V.toRep? V.ρ.asModule? -/
-instance FdRep.toRep_finiteDimensional : FiniteDimensional k V.toRep :=
+/- TODO: Unify how to phrase lemmas/theorems - Use V? V.toRep? Or V.ρ.asModule? -/
+instance toRep_finiteDimensional : FiniteDimensional k V.toRep :=
   FGModuleCat.instFiniteCarrier k _
 
-instance FdRep.toRep_finiteDimensional' : FiniteDimensional k ((forget₂ _ (Rep k G)).obj V) :=
-  FGModuleCat.instFiniteCarrier k _
-
-noncomputable def FdRep.lift_hom (f : V ⟶ W) : V.toRep ⟶ W.toRep :=
+/-- Lift `FdRep` morphisms to `Rep` morphisms via the forgetful functor. -/
+def lift_hom (f : V ⟶ W) : V.toRep ⟶ W.toRep :=
   (forget₂ _ _).map f
 
-/- Bundles Rep with a FiniteDimensional into a FdRep -/
-noncomputable def FdRep.ofRep (V : Rep k G) [hV : FiniteDimensional k V] : FdRep k G :=
+/-- Bundles Rep with a FiniteDimensional into a FdRep. -/
+def ofRep (V : Rep k G) [hV : FiniteDimensional k V] : FdRep k G :=
   ⟨⟨V.V, hV⟩, V.ρ⟩
 
-noncomputable def FdRep.toFiniteDimensionalSubcategory :
+/-- Functor from `FdRep` to the full subcategory of finite dimensional `Rep`. Also see
+`equivalenceFiniteDimensionalSubcategory` for an equivalence of category. -/
+def toFiniteDimensionalSubcategory :
     FdRep k G ⥤ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) :=
   FullSubcategory.lift _ (forget₂ _ _) inferInstance
 
-noncomputable def FdRep.ofFiniteDimensionalSubcategory :
+/-- Functor from the full subcategory of finite dimensional `Rep` to `FdRep`. Also see
+`equivalenceFiniteDimensionalSubcategory` for an equivalence of category. -/
+def ofFiniteDimensionalSubcategory :
     FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) ⥤ FdRep k G where
   obj := fun ⟨V, _⟩ ↦ FdRep.ofRep V
   map := fun f ↦ ⟨f.hom, f.comm⟩
 
-noncomputable def FdRep.equivalenceFiniteDimensionalSubcategory :
+/-- Equivalence between `FdRep` and the full subcategory of finite dimensional `Rep`. -/
+def equivalenceFiniteDimensionalSubcategory :
     FdRep k G ≌ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) where
   functor := toFiniteDimensionalSubcategory
   inverse := ofFiniteDimensionalSubcategory
   unitIso := by aesop_cat
   counitIso := by aesop_cat
 
+end FdRep
 end equivFullSubcategory
