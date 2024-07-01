@@ -3,7 +3,6 @@ Copyright (c) 2024 Alex Keizer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Keizer
 -/
-
 import Mathlib.Data.TypeVec
 
 /-!
@@ -37,7 +36,7 @@ namespace TypeFun
 open TypeVec
 
 /-- A curried type function of `n` arguments, i.e., `Type u → Type u → ... → Type v`.
-This abbreviation should only be used to talke about such functions where `n` is arbitrary.
+This abbreviation should only be used to talk about such functions where `n` is arbitrary.
 For concrete arities, always prefer the fully written form. -/
 @[nolint checkUnivs] -- The universes do occur separately in the body of the definition
 protected abbrev CurriedTypeFun : Nat → Type ((max u v) + 1)
