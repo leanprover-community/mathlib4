@@ -512,7 +512,7 @@ lemma hasSum_nat_hurwitzZetaOdd_of_mem_Icc {a : ℝ} (ha : a ∈ Icc 0 1) {s : �
     HasSum (fun n : ℕ ↦ (1 / (n + a : ℂ) ^ s - 1 / (n + 1 - a : ℂ) ^ s) / 2)
     (hurwitzZetaOdd a s) := by
   refine (hasSum_nat_hurwitzZetaOdd a hs).congr_fun fun n ↦ ?_
-  suffices ∀ (b : ℝ) (_ : 0 ≤ b), SignType.sign (n + b) / (↑|n + b| : ℂ) ^ s = 1 / (n + b) ^ s by
+  suffices ∀ b : ℝ, 0 ≤ b → SignType.sign (n + b) / (↑|n + b| : ℂ) ^ s = 1 / (n + b) ^ s by
     simp only [add_sub_assoc, this a ha.1, this (1 - a) (sub_nonneg.mpr ha.2), push_cast]
   intro b hb
   rw [abs_of_nonneg (by positivity), (by simp : (n : ℂ) + b = ↑(n + b))]
