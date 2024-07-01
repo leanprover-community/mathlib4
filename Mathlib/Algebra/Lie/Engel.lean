@@ -166,8 +166,7 @@ theorem LieAlgebra.isEngelian_of_subsingleton [Subsingleton L] : LieAlgebra.IsEn
   intro M _i1 _i2 _i3 _i4 _h
   use 1
   suffices (⊤ : LieIdeal R L) = ⊥ by simp [this]
-  haveI := (LieSubmodule.subsingleton_iff R L L).mpr inferInstance
-  apply Subsingleton.elim
+  subsingleton [(LieSubmodule.subsingleton_iff R L L).mpr inferInstance]
 #align lie_algebra.is_engelian_of_subsingleton LieAlgebra.isEngelian_of_subsingleton
 
 theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function.Surjective f)
