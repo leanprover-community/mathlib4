@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
 
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.GroupCat.Injective
+import Mathlib.Algebra.Category.Grp.Injective
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
 import Mathlib.LinearAlgebra.Isomorphisms
