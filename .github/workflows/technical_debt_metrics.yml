@@ -1,6 +1,7 @@
 name: Weekly Technical Debt Counters
 
 on:
+  push:
   schedule:
     - cron: '0 4 * * 1'  # Run at 04:00 every Monday
 
@@ -13,19 +14,21 @@ jobs:
       uses: actions/checkout@v4
       with: # checkout all history so that we can compare across commits
         fetch-depth: 0
+        ref: 'master'
 
     - name: Run script
       id: tech_debt
       run: |
+        git rev-parse HEAD
         printf $'summary<<EOF\n%s\nEOF' "$(./scripts/technical-debt-metrics.sh)" >> "$GITHUB_OUTPUT"
 
-    - name: Post output to Zulip
-      uses: zulip/github-actions-zulip/send-message@v1
-      with:
-        api-key: ${{ secrets.ZULIP_API_KEY }}
-        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-        organization-url: 'https://leanprover.zulipchat.com'
-        to: 'mathlib4'
-        type: 'stream'
-        topic: Technical Debt Counters
-        content: ${{ steps.tech_debt.outputs.summary }}
+    #- name: Post output to Zulip
+    #  uses: zulip/github-actions-zulip/send-message@v1
+    #  with:
+    #    api-key: ${{ secrets.ZULIP_API_KEY }}
+    #    email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+    #    organization-url: 'https://leanprover.zulipchat.com'
+    #    to: 'mathlib4'
+    #    type: 'stream'
+    #    topic: Technical Debt Counters
+    #    content: ${{ steps.tech_debt.outputs.summary }}
