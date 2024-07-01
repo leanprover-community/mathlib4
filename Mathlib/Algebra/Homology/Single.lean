@@ -198,7 +198,7 @@ noncomputable abbrev single₀ : V ⥤ ChainComplex V ℕ :=
 
 variable {V}
 
-@[simp, nolint simpNF]
+@[simp]
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
@@ -267,7 +267,7 @@ noncomputable abbrev single₀ : V ⥤ CochainComplex V ℕ :=
 
 variable {V}
 
-@[simp, nolint simpNF]
+@[simp]
 lemma single₀_obj_zero (A : V) :
     ((single₀ V).obj A).X 0 = A := rfl
 
