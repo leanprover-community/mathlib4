@@ -6,7 +6,7 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 import Mathlib.CategoryTheory.MorphismProperty.Presheaf
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.OpenImmersion
-import Mathlib.AlgebraicGeometry.GluingHyperCover
+import Mathlib.AlgebraicGeometry.GluingOneHypercover
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 
