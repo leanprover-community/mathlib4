@@ -669,6 +669,54 @@ theorem of_affine_open_cover {X : Scheme} {P : X.affineOpens → Prop}
   exact ⟨_, hf₁ ⟨x, hx⟩⟩
 #align algebraic_geometry.of_affine_open_cover AlgebraicGeometry.of_affine_open_cover
 
+section ZeroLocus
+
+/-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
+of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
+lemma LocallyRingedSpace.toΓSpec_preim_zeroLocus_eq {X : LocallyRingedSpace}
+    (s : Set (X.presheaf.obj (op ⊤))) :
+    X.toΓSpec.val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.toRingedSpace.zeroLocus s := by
+  simp only [RingedSpace.zeroLocus]
+  have (i : LocallyRingedSpace.Γ.obj (op X)) (_ : i ∈ s) :
+      ((X.toRingedSpace.basicOpen i).carrier)ᶜ =
+        X.toΓSpec.val.base ⁻¹' (PrimeSpectrum.basicOpen i).carrierᶜ := by
+    symm
+    erw [Set.preimage_compl, X.toΓSpec_preim_basicOpen_eq i]
+  erw [Set.iInter₂_congr this]
+  simp_rw [← Set.preimage_iInter₂, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl,
+    compl_compl]
+  rw [← PrimeSpectrum.zeroLocus_iUnion₂]
+  simp
+
+/-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
+of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
+lemma Scheme.toΓSpec_preim_zeroLocus_eq {X : Scheme}
+    (s : Set (X.presheaf.obj (op ⊤))) :
+    (ΓSpec.adjunction.unit.app X).val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
+  LocallyRingedSpace.toΓSpec_preim_zeroLocus_eq s
+
+open ConcreteCategory
+
+/-- If `X` is affine, the image of the zero locus of global sections of `X` under `toΓSpecFun`
+is the zero locus in terms of the prime spectrum of `Γ(X, ⊤)`. -/
+lemma Scheme.toΓSpec_image_zeroLocus_eq_of_isAffine {X : Scheme} [IsAffine X] (s : Set Γ(X, ⊤)) :
+    X.isoSpec.hom.val.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
+  erw [← X.toΓSpec_preim_zeroLocus_eq, Set.image_preimage_eq]
+  exact (bijective_of_isIso X.isoSpec.hom.val.base).surjective
+
+/-- If `X` is an affine scheme, every closed set of `X` is the zero locus
+of a set of global sections. -/
+lemma Scheme.eq_zeroLocus_of_isClosed_of_isAffine (X : Scheme) [IsAffine X] (s : Set X)
+    (hs : IsClosed s) : ∃ I : Ideal (Γ(X, ⊤)), s = X.zeroLocus (I : Set Γ(X, ⊤)) := by
+  let Z : Set (Spec <| Γ(X, ⊤)) := X.toΓSpecFun '' s
+  have hZ : IsClosed Z := (X.isoSpec.hom.homeomorph).isClosedMap _ hs
+  obtain ⟨I, (hI : Z = _)⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal _).mp hZ
+  use I
+  simp only [← Scheme.toΓSpec_preim_zeroLocus_eq, ← hI, Z]
+  erw [Set.preimage_image_eq _ (bijective_of_isIso X.isoSpec.hom.val.base).injective]
+
+end ZeroLocus
+
 @[deprecated (since := "2024-06-21"), nolint defLemma]
 alias isAffineAffineScheme := isAffine_affineScheme
 @[deprecated (since := "2024-06-21"), nolint defLemma]

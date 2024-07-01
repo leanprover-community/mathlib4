@@ -75,6 +75,9 @@ scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
   (PresheafedSpace.presheaf (SheafedSpace.toPresheafedSpace
     (LocallyRingedSpace.toSheafedSpace (Scheme.toLocallyRingedSpace X)))).obj (op U)
 
+instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
+  CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
+
 @[continuity, fun_prop]
 lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
@@ -137,6 +140,10 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
     (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop) :
     P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by
   subst e₁; subst e₂; rfl
+
+/-- In isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
+noncomputable def homeomorph [IsIso f] : X ≃ₜ Y :=
+  TopCat.homeoOfIso (asIso <| f.val.base)
 
 end Hom
 
@@ -516,6 +523,40 @@ instance algebra_section_section_basicOpen {X : Scheme} {U : Opens X} (f : Γ(X,
   (X.presheaf.map (homOfLE <| X.basicOpen_le f : _ ⟶ U).op).toAlgebra
 
 end BasicOpen
+
+section ZeroLocus
+
+variable (X : Scheme.{u})
+
+/--
+The zero locus of a set of sections `s` over an open set `U` is the closed set consisting of
+the complement of `U` and of all points of `U`, where all elements of `f` vanish.
+-/
+def zeroLocus {U : Opens X} (s : Set Γ(X, U)) : Set X := X.toRingedSpace.zeroLocus s
+
+lemma zeroLocus_def {U : Opens X} (s : Set Γ(X, U)) :
+    X.zeroLocus s = ⋂ f ∈ s, (X.basicOpen f).carrierᶜ :=
+  rfl
+
+lemma zeroLocus_isClosed {U : Opens X} (s : Set Γ(X, U)) :
+    IsClosed (X.zeroLocus s) :=
+  X.toRingedSpace.zeroLocus_isClosed s
+
+lemma zeroLocus_singleton {U : Opens X} (f : Γ(X, U)) :
+    X.zeroLocus {f} = (X.basicOpen f).carrierᶜ :=
+  X.toRingedSpace.zeroLocus_singleton f
+
+@[simp]
+lemma zeroLocus_empty_eq_univ {U : Opens X} :
+    X.zeroLocus (∅ : Set Γ(X, U)) = Set.univ :=
+  X.toRingedSpace.zeroLocus_empty_eq_univ
+
+@[simp]
+lemma mem_zeroLocus_iff {U : Opens X} (s : Set Γ(X, U)) (x : X) :
+    x ∈ X.zeroLocus s ↔ ∀ f ∈ s, x ∉ X.basicOpen f :=
+  X.toRingedSpace.mem_zeroLocus_iff s x
+
+end ZeroLocus
 
 end Scheme
 

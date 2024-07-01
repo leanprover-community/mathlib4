@@ -94,6 +94,11 @@ abbrev opensFunctor : Opens X ⥤ Opens Y :=
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
 
+@[simp]
+lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
+  apply Opens.ext
+  simp
+
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
 def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
   LocallyRingedSpace.IsOpenImmersion.invApp f U
@@ -547,6 +552,26 @@ theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersi
   IsOpenImmersion.app_eq_invApp_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
 #align algebraic_geometry.IsOpenImmersion.lift_app AlgebraicGeometry.IsOpenImmersion.lift_app
 
+/-- If `f` is an open immersion `X ⟶ Y`, the global sections of `X`
+are naturally isomorphic to the sections of `Y` over the image of `f`. -/
+noncomputable
+def ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
+  asIso (Scheme.Hom.invApp f ⊤) ≪≫
+    Y.presheaf.mapIso (eqToIso <| f.image_top_eq_opensRange.symm).op
+
+@[reassoc, elementwise]
+lemma map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Y.presheaf.map (homOfLE le_top).op ≫ (IsOpenImmersion.ΓIso f).inv = f.app ⊤ := by
+  simp [ΓIso, Scheme.Hom.inv_invApp, ← Functor.map_comp_assoc, ← Functor.map_comp]
+  simp [eqToHom_map]
+
+@[reassoc, elementwise]
+lemma ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    f.app ⊤ ≫ (IsOpenImmersion.ΓIso f).hom = Y.presheaf.map (homOfLE le_top).op := by
+  rw [← map_ΓIso_inv]
+  simp
+
 end IsOpenImmersion
 
 namespace Scheme
@@ -570,6 +595,7 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
 #align algebraic_geometry.Scheme.image_basic_open AlgebraicGeometry.Scheme.image_basicOpen
+
 
 end Scheme
 
