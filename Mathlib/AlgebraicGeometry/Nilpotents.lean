@@ -17,8 +17,8 @@ to locally ringed spaces or schemes and characterise nilpotent sections in terms
 the associated basic open.
 
 In the case of affine schemes, the zero locus corresponds under the `Scheme.isoSpec` isomorphism
-to the zero locus in the sense of prime spectra. We provide API for reasoning about zero loci on affine
-schemes to avoid using the `Scheme.isoSpec` isomorphism in applications.
+to the zero locus in the sense of prime spectra. We provide API for reasoning about zero loci on
+affine schemes to avoid using the `Scheme.isoSpec` isomorphism in applications.
 
 ## Main results
 
@@ -57,7 +57,7 @@ section Cover
 
 /-- If two global sections agree after restriction to each member of a finite open cover, then
 they agree globally. -/
-lemma eq_of_eq_cover {X : Scheme.{u}} (f g : Γ(X, ⊤)) (𝒰 : X.OpenCover)
+lemma Scheme.eq_of_eq_cover {X : Scheme.{u}} (f g : Γ(X, ⊤)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, Scheme.Γ.map (𝒰.map i).op f = Scheme.Γ.map (𝒰.map i).op g) : f = g := by
   fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf
     (fun i ↦ Scheme.Hom.opensRange (𝒰.map (𝒰.f i))) _ (fun _ ↦ homOfLE le_top)
@@ -69,17 +69,17 @@ lemma eq_of_eq_cover {X : Scheme.{u}} (f g : Γ(X, ⊤)) (𝒰 : X.OpenCover)
 
 /-- If the restriction of a global section to each member of an open cover is zero, then it is
 globally zero. -/
-lemma zero_of_zero_cover {X : Scheme.{u}} (s : Γ(X, ⊤)) (𝒰 : X.OpenCover)
+lemma Scheme.zero_of_zero_cover {X : Scheme.{u}} (s : Γ(X, ⊤)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, Scheme.Γ.map (𝒰.map i).op s = 0) : s = 0 := by
   refine eq_of_eq_cover s 0 𝒰 (fun i ↦ by rw [map_zero]; exact h i)
-
-lemma Scheme.zeroLocus_def {X : Scheme.{u}} {U : Opens X} (s : Set Γ(X, U)) :
-    X.toRingedSpace.zeroLocus s = ⋂ f ∈ s, (X.basicOpen f).carrierᶜ :=
-  rfl
 
 end Cover
 
 section ZeroLocus
+
+lemma Scheme.zeroLocus_def {X : Scheme.{u}} {U : Opens X} (s : Set Γ(X, U)) :
+    X.toRingedSpace.zeroLocus s = ⋂ f ∈ s, (X.basicOpen f).carrierᶜ :=
+  rfl
 
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
 of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
@@ -121,7 +121,7 @@ section Nilpotents
 
 /-- If a global section is nilpotent on each member of a finite open cover, then `f` is
 nilpotent. -/
-lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} (s : Γ(X, ⊤)) (𝒰 : X.OpenCover)
+lemma Scheme.isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} (s : Γ(X, ⊤)) (𝒰 : X.OpenCover)
     [Finite 𝒰.J] (h : ∀ i : 𝒰.J, IsNilpotent (Scheme.Γ.map (𝒰.map i).op s)) : IsNilpotent s := by
   choose fn hfn using h
   have : Fintype 𝒰.J := Fintype.ofFinite 𝒰.J
