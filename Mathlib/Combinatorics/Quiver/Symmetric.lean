@@ -38,7 +38,7 @@ instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
 variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
 
 /-- A quiver `HasReverse` if we can reverse an arrow `p` from `a` to `b` to get an arrow
-    `p.reverse` from `b` to `a`.-/
+    `p.reverse` from `b` to `a`. -/
 class HasReverse where
   /-- the map which sends an arrow to its reverse -/
   reverse' : ∀ {a b : V}, (a ⟶ b) → (b ⟶ a)
@@ -221,8 +221,7 @@ theorem lift_unique [HasReverse V'] (φ : V ⥤q V') (Φ : Symmetrify V ⥤q V')
 
 /-- A prefunctor canonically defines a prefunctor of the symmetrifications. -/
 @[simps]
-def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V
-    where
+def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V where
   obj := φ.obj
   map := Sum.map φ.map φ.map
 #align prefunctor.symmetrify Prefunctor.symmetrify

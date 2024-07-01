@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
+import Mathlib.GroupTheory.Subgroup.Center
 
 #align_import group_theory.transfer from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -26,8 +27,6 @@ In this file we construct the transfer homomorphism.
   If `hP : N(P) ≤ C(P)`, then `(transfer P hP).ker` is a normal `p`-complement.
 -/
 
-
-open scoped BigOperators
 
 variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [CommGroup A] (ϕ : H →* A)
 
@@ -100,7 +99,9 @@ the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : leftTransversals (H : Set G) := Inhabited.default
   { toFun := fun g => diff ϕ T (g • T)
-    map_one' := by simp only; rw [one_smul, diff_self] -- Porting note: added `simp only`
+    -- Porting note(#12129): additional beta reduction needed
+    map_one' := by beta_reduce; rw [one_smul, diff_self]
+    -- Porting note: added `simp only` (not just beta reduction)
     map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 #align monoid_hom.transfer MonoidHom.transfer
 #align add_monoid_hom.transfer AddMonoidHom.transfer
@@ -126,9 +127,9 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
     calc
       transfer ϕ g = ∏ q : G ⧸ H, _ := transfer_def ϕ (transferTransversal H g) g
       _ = _ := ((quotientEquivSigmaZMod H g).symm.prod_comp _).symm
-      _ = _ := (Finset.prod_sigma _ _ _)
+      _ = _ := Finset.prod_sigma _ _ _
       _ = _ := by
-        refine' Fintype.prod_congr _ _ (fun q => _)
+        refine Fintype.prod_congr _ _ (fun q => ?_)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
         rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out')) _]
@@ -168,8 +169,8 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
     letI := H.fintypeQuotientOfFiniteIndex
     change ∀ (k g₀) (hk : g₀⁻¹ * g ^ k * g₀ ∈ H), ↑(⟨g₀⁻¹ * g ^ k * g₀, hk⟩ : H) = g ^ k at key
     rw [transfer_eq_prod_quotient_orbitRel_zpowers_quot, ← Finset.prod_to_list]
-    refine' (List.prod_map_hom _ _ _).trans _ -- Porting note: this used to be in the `rw`
-    refine' congrArg ϕ (Subtype.coe_injective _)
+    refine (List.prod_map_hom _ _ _).trans ?_ -- Porting note: this used to be in the `rw`
+    refine congrArg ϕ (Subtype.coe_injective ?_)
     simp only -- Porting note: added `simp only`
     rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow,
       index_eq_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),

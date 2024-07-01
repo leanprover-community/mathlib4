@@ -39,7 +39,8 @@ def Booleanisation (α : Type*) := α ⊕ α
 
 namespace Booleanisation
 
-instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := Sum.instDecidableEqSum
+instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) :=
+  inferInstanceAs <| DecidableEq (α ⊕ α)
 
 variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
 
@@ -131,12 +132,12 @@ instance instSDiff : SDiff (Booleanisation α) where
 @[simp] lemma lift_le_lift : lift a ≤ lift b ↔ a ≤ b := ⟨by rintro ⟨_⟩; assumption, LE.lift⟩
 @[simp] lemma comp_le_comp : comp a ≤ comp b ↔ b ≤ a := ⟨by rintro ⟨_⟩; assumption, LE.comp⟩
 @[simp] lemma lift_le_comp : lift a ≤ comp b ↔ Disjoint a b := ⟨by rintro ⟨_⟩; assumption, LE.sep⟩
-@[simp] lemma not_comp_le_lift : ¬ comp a ≤ lift b := λ h ↦ nomatch h
+@[simp] lemma not_comp_le_lift : ¬ comp a ≤ lift b := fun h ↦ nomatch h
 
 @[simp] lemma lift_lt_lift : lift a < lift b ↔ a < b := ⟨by rintro ⟨_⟩; assumption, LT.lift⟩
 @[simp] lemma comp_lt_comp : comp a < comp b ↔ b < a := ⟨by rintro ⟨_⟩; assumption, LT.comp⟩
 @[simp] lemma lift_lt_comp : lift a < comp b ↔ Disjoint a b := ⟨by rintro ⟨_⟩; assumption, LT.sep⟩
-@[simp] lemma not_comp_lt_lift : ¬ comp a < lift b := λ h ↦ nomatch h
+@[simp] lemma not_comp_lt_lift : ¬ comp a < lift b := fun h ↦ nomatch h
 
 @[simp] lemma lift_sup_lift (a b : α) : lift a ⊔ lift b = lift (a ⊔ b) := rfl
 @[simp] lemma lift_sup_comp (a b : α) : lift a ⊔ comp b = comp (b \ a) := rfl

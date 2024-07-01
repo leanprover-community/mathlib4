@@ -70,11 +70,11 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
         (α_ (F X) (F Y) (F Z)).hom ≫ F X ◁ μ Y Z ≫ μ X (Y ⊗ Z) := by
     aesop_cat
   /-- left unitality -/
-  left_unitality : ∀ X : C, (λ_ (F X)).hom = ε ▷ F X ≫ μ (𝟙_ C) X ≫ map F (λ_ X).hom :=
-    by aesop_cat
+  left_unitality : ∀ X : C, (λ_ (F X)).hom = ε ▷ F X ≫ μ (𝟙_ C) X ≫ map F (λ_ X).hom := by
+    aesop_cat
   /-- right unitality -/
-  right_unitality : ∀ X : C, (ρ_ (F X)).hom = F X ◁ ε ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom :=
-    by aesop_cat
+  right_unitality : ∀ X : C, (ρ_ (F X)).hom = F X ◁ ε ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom := by
+    aesop_cat
 #align category_theory.lax_monoidal CategoryTheory.LaxMonoidal
 
 /-- An unbundled description of lax monoidal functors. -/
@@ -103,11 +103,11 @@ abbrev LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F]
       LaxMonoidal.{v₁, v₂} F where
   ε := ε
   μ := μ
-  μ_natural_left f X := by intros; simpa using μ_natural f (𝟙 X)
-  μ_natural_right X f := by intros; simpa using μ_natural (𝟙 X) f
-  associativity X Y Z := by intros; simpa using associativity X Y Z
-  left_unitality X := by intros; simpa using left_unitality X
-  right_unitality X := by intros; simpa using right_unitality X
+  μ_natural_left f X := by simpa using μ_natural f (𝟙 X)
+  μ_natural_right X f := by simpa using μ_natural (𝟙 X) f
+  associativity X Y Z := by simpa using associativity X Y Z
+  left_unitality X := by simpa using left_unitality X
+  right_unitality X := by simpa using right_unitality X
 
 attribute [simp, nolint simpNF] LaxMonoidal.μ_natural_left LaxMonoidal.μ_natural_right
 
@@ -134,8 +134,7 @@ instance (F : LaxMonoidalFunctor.{v₁, v₂} C D) : LaxMonoidal.{v₁, v₂} F.
 
 section
 
-instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C)
-    where
+instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C) where
   ε := 𝟙 _
   μ X Y := 𝟙 _
 #align category_theory.lax_monoidal_id CategoryTheory.laxMonoidalId

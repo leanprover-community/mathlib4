@@ -155,9 +155,9 @@ Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
 
 
 theorem intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrinsicClosure 𝕜 t := by
-  refine' image_subset_iff.2 fun x hx => _
-  refine' ⟨Set.inclusion (affineSpan_mono _ h) x, _, rfl⟩
-  refine' (continuous_inclusion (affineSpan_mono _ h)).closure_preimage_subset _ (closure_mono _ hx)
+  refine image_subset_iff.2 fun x hx => ?_
+  refine ⟨Set.inclusion (affineSpan_mono _ h) x, ?_, rfl⟩
+  refine (continuous_inclusion (affineSpan_mono _ h)).closure_preimage_subset _ (closure_mono ?_ hx)
   exact fun y hy => h hy
 #align intrinsic_closure_mono intrinsicClosure_mono
 
@@ -230,7 +230,7 @@ protected theorem IsClosed.intrinsicClosure (hs : IsClosed ((↑) ⁻¹' s : Set
 @[simp]
 theorem intrinsicClosure_idem (s : Set P) :
     intrinsicClosure 𝕜 (intrinsicClosure 𝕜 s) = intrinsicClosure 𝕜 s := by
-  refine' IsClosed.intrinsicClosure _
+  refine IsClosed.intrinsicClosure ?_
   set t := affineSpan 𝕜 (intrinsicClosure 𝕜 s) with ht
   clear_value t
   obtain rfl := ht.trans (affineSpan_intrinsicClosure _)
@@ -302,7 +302,7 @@ variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCo
 theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
   ext x
   simp only [mem_closure_iff, mem_intrinsicClosure]
-  refine' ⟨_, fun h => ⟨⟨x, _⟩, _, Subtype.coe_mk _ _⟩⟩
+  refine ⟨?_, fun h => ⟨⟨x, _⟩, ?_, Subtype.coe_mk _ ?_⟩⟩
   · rintro ⟨x, h, rfl⟩ t ht hx
     obtain ⟨z, hz₁, hz₂⟩ := h _ (continuous_induced_dom.isOpen_preimage t ht) hx
     exact ⟨z, hz₁, hz₂⟩

@@ -38,9 +38,7 @@ namespace IsScalarTower
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-
 variable [Algebra R S] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 
@@ -64,7 +62,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
 
 end CommSemiring
@@ -74,9 +71,7 @@ end IsScalarTower
 section AlgebraMapCoeffs
 
 variable {R} {ι M : Type*} [CommSemiring R] [Semiring A] [AddCommMonoid M]
-
 variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
-
 variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
 /-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
@@ -103,14 +98,11 @@ section Semiring
 open Finsupp
 
 open scoped Classical
-open BigOperators
 
 universe v₁ w₁
 
 variable {R S A}
-
 variable [Semiring R] [Semiring S] [AddCommMonoid A]
-
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
@@ -118,7 +110,7 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
   by_cases hik : (i, k) ∈ s
-  · have h1 : ∑ i in s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
+  · have h1 : ∑ i ∈ s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
       rw [← hsg]
       exact
         (Finset.sum_subset Finset.subset_product fun p _ hp =>
@@ -156,8 +148,7 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
     (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
-  set_option tactic.skipAssignedInstances false in
-  simp [Basis.smul]; rfl
+  simp [Basis.smul]
 #align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
@@ -184,7 +175,6 @@ end Semiring
 section Ring
 
 variable {R S}
-
 variable [CommRing R] [Ring S] [Algebra R S]
 
 -- Porting note: Needed to add Algebra.toModule below
@@ -231,8 +221,8 @@ def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.
 variable {B}
 
 /-- `AlgHom`s from the top of a tower are equivalent to a pair of `AlgHom`s. -/
-def algHomEquivSigma : (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra
-    where
+def algHomEquivSigma :
+    (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ _ _ _ f.toRingHom.toAlgebra where
   toFun f := ⟨f.restrictDomain B, f.extendScalars B⟩
   invFun fg :=
     let _ := fg.1.toRingHom.toAlgebra

@@ -32,27 +32,25 @@ This file comes across as confusing to those who haven't yet used it, so here is
 walkthrough:
 1. Know what relation on which type/set you're looking for. See Variants above. You can discharge
   some conditions to Zorn's lemma directly using a `_nonempty` variant.
-2. Write down the definition of your type/set, put a `suffices : ∃ m, ∀ a, m ≺ a → a ≺ m, { ... },`
+2. Write down the definition of your type/set, put a `suffices ∃ m, ∀ a, m ≺ a → a ≺ m by ...`
   (or whatever you actually need) followed by an `apply some_version_of_zorn`.
 3. Fill in the details. This is where you start talking about chains.
 
-A typical proof using Zorn could look like this (TODO: update to mathlib4)
+A typical proof using Zorn could look like this
 ```lean
-lemma zorny_lemma : zorny_statement :=
-begin
-  let s : Set α := {x | whatever x},
-  suffices : ∃ x ∈ s, ∀ y ∈ s, y ⊆ x → y = x, -- or with another operator
-  { exact proof_post_zorn },
-  apply zorn_subset, -- or another variant
-  rintro c hcs hc,
-  obtain rfl | hcnemp := c.eq_empty_or_nonempty, -- you might need to disjunct on c empty or not
-  { exact ⟨edge_case_construction,
+lemma zorny_lemma : zorny_statement := by
+  let s : Set α := {x | whatever x}
+  suffices ∃ x ∈ s, ∀ y ∈ s, y ⊆ x → y = x by -- or with another operator xxx
+    proof_post_zorn
+  apply zorn_subset -- or another variant
+  rintro c hcs hc
+  obtain rfl | hcnemp := c.eq_empty_or_nonempty -- you might need to disjunct on c empty or not
+  · exact ⟨edge_case_construction,
       proof_that_edge_case_construction_respects_whatever,
-      proof_that_edge_case_construction_contains_all_stuff_in_c⟩ },
-  exact ⟨construction,
-    proof_that_construction_respects_whatever,
-    proof_that_construction_contains_all_stuff_in_c⟩,
-end
+      proof_that_edge_case_construction_contains_all_stuff_in_c⟩
+  · exact ⟨construction,
+      proof_that_construction_respects_whatever,
+      proof_that_construction_contains_all_stuff_in_c⟩
 ```
 
 ## Notes
@@ -220,8 +218,8 @@ theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M �
   · obtain ⟨M, ⟨_, hM₀⟩, hM₁, hM₂⟩ := H
     exact ⟨M, ⟨hM₀, fun d hd hMd => (hM₂ _ ⟨hM₁.trans hMd, hd⟩ hMd).symm⟩, hM₁⟩
   rintro cs hcs₀ hcs₁ ⟨s, hs⟩
-  refine'
-    ⟨⋃₀cs, ⟨fun _ ha => Set.mem_sUnion_of_mem ((hcs₀ hs).left ha) hs, _⟩, fun _ =>
+  refine
+    ⟨⋃₀cs, ⟨fun _ ha => Set.mem_sUnion_of_mem ((hcs₀ hs).left ha) hs, ?_⟩, fun _ =>
       Set.subset_sUnion_of_mem⟩
   rintro y ⟨sy, hsy, hysy⟩ z ⟨sz, hsz, hzsz⟩ hyz
   obtain rfl | hsseq := eq_or_ne sy sz

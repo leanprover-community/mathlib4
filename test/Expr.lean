@@ -10,7 +10,7 @@ section replaceRec
 /-- Reorder the last two arguments of every function in the expression.
   (The resulting term will generally not be a type-correct) -/
 def reorderLastArguments : Expr → Expr :=
-  Expr.replaceRec λ r e =>
+  Expr.replaceRec fun r e ↦
     let n := e.getAppNumArgs
     if n ≥ 2 then
       mkAppN e.getAppFn <| e.getAppArgs.map r |>.swap! (n - 1) (n - 2)

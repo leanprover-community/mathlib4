@@ -53,7 +53,7 @@ section
 /-- `PseudoEpimorphismClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
 You should extend this class when you extend `PseudoEpimorphism`. -/
-class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*)
+class PseudoEpimorphismClass (F : Type*) (α β : outParam Type*)
     [Preorder α] [Preorder β] [FunLike F α β]
     extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
@@ -62,7 +62,7 @@ class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*)
 /-- `EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `EsakiaHom`. -/
-class EsakiaHomClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α] [Preorder α]
+class EsakiaHomClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α] [Preorder α]
     [TopologicalSpace β] [Preorder β] [FunLike F α β]
     extends ContinuousOrderHomClass F α β : Prop where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b

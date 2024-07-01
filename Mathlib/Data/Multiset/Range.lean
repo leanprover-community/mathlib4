@@ -49,7 +49,7 @@ theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
   List.mem_range
 #align multiset.mem_range Multiset.mem_range
 
--- Porting note: removing @[simp], `simp` can prove it
+-- Porting note (#10618): removing @[simp], `simp` can prove it
 theorem not_mem_range_self {n : ℕ} : n ∉ range n :=
   List.not_mem_range_self
 #align multiset.not_mem_range_self Multiset.not_mem_range_self
@@ -67,7 +67,7 @@ theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
   intro x hxa hxb
   rw [range, mem_coe, List.mem_range] at hxa
   obtain ⟨c, _, rfl⟩ := mem_map.1 hxb
-  exact (self_le_add_right _ _).not_lt hxa
+  exact (Nat.le_add_right _ _).not_lt hxa
 #align multiset.range_disjoint_map_add Multiset.range_disjoint_map_add
 
 theorem range_add_eq_union (a b : ℕ) : range (a + b) = range a ∪ (range b).map (a + ·) := by

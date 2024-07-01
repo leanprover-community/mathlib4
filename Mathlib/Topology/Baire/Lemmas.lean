@@ -52,7 +52,7 @@ theorem dense_sInter_of_isOpen {S : Set (Set X)} (ho : ∀ s ∈ S, IsOpen s) (h
   rcases S.eq_empty_or_nonempty with h | h
   · simp [h]
   · rcases hS.exists_eq_range h with ⟨f, rfl⟩
-    exact dense_iInter_of_isOpen_nat (forall_range_iff.1 ho) (forall_range_iff.1 hd)
+    exact dense_iInter_of_isOpen_nat (forall_mem_range.1 ho) (forall_mem_range.1 hd)
 #align dense_sInter_of_open dense_sInter_of_isOpen
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
@@ -60,14 +60,14 @@ an index set which is a countable set in any type. -/
 theorem dense_biInter_of_isOpen {S : Set α} {f : α → Set X} (ho : ∀ s ∈ S, IsOpen (f s))
     (hS : S.Countable) (hd : ∀ s ∈ S, Dense (f s)) : Dense (⋂ s ∈ S, f s) := by
   rw [← sInter_image]
-  refine dense_sInter_of_isOpen ?_ (hS.image _) ?_ <;> rwa [ball_image_iff]
+  refine dense_sInter_of_isOpen ?_ (hS.image _) ?_ <;> rwa [forall_mem_image]
 #align dense_bInter_of_open dense_biInter_of_isOpen
 
 /-- Baire theorem: a countable intersection of dense open sets is dense. Formulated here with
 an index set which is a countable type. -/
 theorem dense_iInter_of_isOpen [Countable ι] {f : ι → Set X} (ho : ∀ i, IsOpen (f i))
     (hd : ∀ i, Dense (f i)) : Dense (⋂ s, f s) :=
-  dense_sInter_of_isOpen (forall_range_iff.2 ho) (countable_range _) (forall_range_iff.2 hd)
+  dense_sInter_of_isOpen (forall_mem_range.2 ho) (countable_range _) (forall_mem_range.2 hd)
 #align dense_Inter_of_open dense_iInter_of_isOpen
 
 /-- A set is residual (comeagre) if and only if it includes a dense `Gδ` set. -/
@@ -75,7 +75,7 @@ theorem mem_residual {s : Set X} : s ∈ residual X ↔ ∃ t ⊆ s, IsGδ t ∧
   constructor
   · rw [mem_residual_iff]
     rintro ⟨S, hSo, hSd, Sct, Ss⟩
-    refine' ⟨_, Ss, ⟨_, fun t ht => hSo _ ht, Sct, rfl⟩, _⟩
+    refine ⟨_, Ss, ⟨_, fun t ht => hSo _ ht, Sct, rfl⟩, ?_⟩
     exact dense_sInter_of_isOpen hSo Sct hSd
   rintro ⟨t, ts, ho, hd⟩
   exact mem_of_superset (residual_of_dense_Gδ ho hd) ts
@@ -105,7 +105,7 @@ set_option linter.uppercaseLean3 false in
 an index set which is a countable type. -/
 theorem dense_iInter_of_Gδ [Countable ι] {f : ι → Set X} (ho : ∀ s, IsGδ (f s))
     (hd : ∀ s, Dense (f s)) : Dense (⋂ s, f s) :=
-  dense_sInter_of_Gδ (forall_range_iff.2 ‹_›) (countable_range _) (forall_range_iff.2 ‹_›)
+  dense_sInter_of_Gδ (forall_mem_range.2 ‹_›) (countable_range _) (forall_mem_range.2 ‹_›)
 set_option linter.uppercaseLean3 false in
 #align dense_Inter_of_Gδ dense_iInter_of_Gδ
 
@@ -135,10 +135,10 @@ theorem IsGδ.dense_iUnion_interior_of_closed [Countable ι] {s : Set X} (hs : I
   let g i := (frontier (f i))ᶜ
   have hgo : ∀ i, IsOpen (g i) := fun i => isClosed_frontier.isOpen_compl
   have hgd : Dense (⋂ i, g i) := by
-    refine' dense_iInter_of_isOpen hgo fun i x => _
+    refine dense_iInter_of_isOpen hgo fun i x => ?_
     rw [closure_compl, interior_frontier (hc _)]
     exact id
-  refine' (hd.inter_of_Gδ hs (.iInter_of_isOpen fun i => (hgo i)) hgd).mono _
+  refine (hd.inter_of_Gδ hs (.iInter_of_isOpen fun i => (hgo i)) hgd).mono ?_
   rintro x ⟨hxs, hxg⟩
   rw [mem_iInter] at hxg
   rcases mem_iUnion.1 (hU hxs) with ⟨i, hi⟩

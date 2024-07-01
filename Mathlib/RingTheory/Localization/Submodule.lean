@@ -23,7 +23,6 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace IsLocalization
@@ -86,11 +85,8 @@ theorem coeSubmodule_span_singleton (x : R) :
 #align is_localization.coe_submodule_span_singleton IsLocalization.coeSubmodule_span_singleton
 
 variable {g : R →+* P}
-
 variable {T : Submonoid P} (hy : M ≤ T.comap g) {Q : Type*} [CommRing Q]
-
 variable [Algebra P Q] [IsLocalization T Q]
-
 variable [IsLocalization M S]
 
 section
@@ -131,9 +127,9 @@ theorem coeSubmodule_isPrincipal {I : Ideal R} (h : M ≤ nonZeroDivisors R) :
   constructor <;> rintro ⟨⟨x, hx⟩⟩
   · have x_mem : x ∈ coeSubmodule S I := hx.symm ▸ Submodule.mem_span_singleton_self x
     obtain ⟨x, _, rfl⟩ := (mem_coeSubmodule _ _).mp x_mem
-    refine' ⟨⟨x, coeSubmodule_injective S h _⟩⟩
+    refine ⟨⟨x, coeSubmodule_injective S h ?_⟩⟩
     rw [Ideal.submodule_span_eq, hx, coeSubmodule_span_singleton]
-  · refine' ⟨⟨algebraMap R S x, _⟩⟩
+  · refine ⟨⟨algebraMap R S x, ?_⟩⟩
     rw [hx, Ideal.submodule_span_eq, coeSubmodule_span_singleton]
 #align is_localization.coe_submodule_is_principal IsLocalization.coeSubmodule_isPrincipal
 
@@ -142,15 +138,16 @@ variable {S} (M)
 theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N]
     {x : N} {a : Set N} :
     x ∈ Submodule.span S a ↔ ∃ y ∈ Submodule.span R a, ∃ z : M, x = mk' S 1 z • y := by
-  constructor; intro h
-  · refine' Submodule.span_induction h _ _ _ _
+  constructor
+  · intro h
+    refine Submodule.span_induction h ?_ ?_ ?_ ?_
     · rintro x hx
       exact ⟨x, Submodule.subset_span hx, 1, by rw [mk'_one, _root_.map_one, one_smul]⟩
     · exact ⟨0, Submodule.zero_mem _, 1, by rw [mk'_one, _root_.map_one, one_smul]⟩
     · rintro _ _ ⟨y, hy, z, rfl⟩ ⟨y', hy', z', rfl⟩
-      refine'
+      refine
         ⟨(z' : R) • y + (z : R) • y',
-          Submodule.add_mem _ (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hy'), z * z', _⟩
+          Submodule.add_mem _ (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hy'), z * z', ?_⟩
       rw [smul_add, ← IsScalarTower.algebraMap_smul S (z : R), ←
         IsScalarTower.algebraMap_smul S (z' : R), smul_smul, smul_smul]
       congr 1
@@ -158,7 +155,7 @@ theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsS
       · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, _root_.map_one, mul_one, one_mul]
     · rintro a _ ⟨y, hy, z, rfl⟩
       obtain ⟨y', z', rfl⟩ := mk'_surjective M a
-      refine' ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, _⟩
+      refine ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, ?_⟩
       rw [← IsScalarTower.algebraMap_smul S y', smul_smul, ← mk'_mul, smul_smul,
         mul_comm (mk' S _ _), mul_mk'_eq_mk'_of_mul]
   · rintro ⟨y, hy, z, rfl⟩
@@ -167,14 +164,14 @@ theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsS
 
 theorem mem_span_map {x : S} {a : Set R} :
     x ∈ Ideal.span (algebraMap R S '' a) ↔ ∃ y ∈ Ideal.span a, ∃ z : M, x = mk' S y z := by
-  refine' (mem_span_iff M).trans _
+  refine (mem_span_iff M).trans ?_
   constructor
   · rw [← coeSubmodule_span]
     rintro ⟨_, ⟨y, hy, rfl⟩, z, hz⟩
-    refine' ⟨y, hy, z, _⟩
+    refine ⟨y, hy, z, ?_⟩
     rw [hz, Algebra.linearMap_apply, smul_eq_mul, mul_comm, mul_mk'_eq_mk'_of_mul, mul_one]
   · rintro ⟨y, hy, z, hz⟩
-    refine' ⟨algebraMap R S y, Submodule.map_mem_span_algebraMap_image _ _ hy, z, _⟩
+    refine ⟨algebraMap R S y, Submodule.map_mem_span_algebraMap_image _ _ hy, z, ?_⟩
     rw [hz, smul_eq_mul, mul_comm, mul_mk'_eq_mk'_of_mul, mul_one]
 #align is_localization.mem_span_map IsLocalization.mem_span_map
 

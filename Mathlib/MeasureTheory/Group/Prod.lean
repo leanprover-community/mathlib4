@@ -51,9 +51,7 @@ open Filter hiding map
 open scoped Classical ENNReal Pointwise MeasureTheory
 
 variable (G : Type*) [MeasurableSpace G]
-
 variable [Group G] [MeasurableMul₂ G]
-
 variable (μ ν : Measure G) [SigmaFinite ν] [SigmaFinite μ] {s : Set G}
 
 /-- The map `(x, y) ↦ (x, xy)` as a `MeasurableEquiv`. -/
@@ -161,7 +159,7 @@ theorem measurePreserving_mul_prod_inv [IsMulLeftInvariant ν] :
 
 @[to_additive]
 theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) μ μ := by
-  refine' ⟨measurable_inv, AbsolutelyContinuous.mk fun s hsm hμs => _⟩
+  refine ⟨measurable_inv, AbsolutelyContinuous.mk fun s hsm hμs => ?_⟩
   rw [map_apply measurable_inv hsm, inv_preimage]
   have hf : Measurable fun z : G × G => (z.2 * z.1, z.1⁻¹) :=
     (measurable_snd.mul measurable_fst).prod_mk measurable_fst.inv
@@ -170,14 +168,14 @@ theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) 
       or_self_iff] using this
   have hsm' : MeasurableSet (s⁻¹ ×ˢ s⁻¹) := hsm.inv.prod hsm.inv
   simp_rw [map_apply hf hsm', prod_apply_symm (μ := μ) (ν := μ) (hf hsm'), preimage_preimage,
-    mk_preimage_prod, inv_preimage, inv_inv, measure_mono_null (inter_subset_right _ _) hμs,
+    mk_preimage_prod, inv_preimage, inv_inv, measure_mono_null inter_subset_right hμs,
     lintegral_zero]
 #align measure_theory.quasi_measure_preserving_inv MeasureTheory.quasiMeasurePreserving_inv
 #align measure_theory.quasi_measure_preserving_neg MeasureTheory.quasiMeasurePreserving_neg
 
 @[to_additive]
 theorem measure_inv_null : μ s⁻¹ = 0 ↔ μ s = 0 := by
-  refine' ⟨fun hs => _, (quasiMeasurePreserving_inv μ).preimage_null⟩
+  refine ⟨fun hs => ?_, (quasiMeasurePreserving_inv μ).preimage_null⟩
   rw [← inv_inv s]
   exact (quasiMeasurePreserving_inv μ).preimage_null hs
 #align measure_theory.measure_inv_null MeasureTheory.measure_inv_null
@@ -191,7 +189,7 @@ theorem inv_absolutelyContinuous : μ.inv ≪ μ :=
 
 @[to_additive]
 theorem absolutelyContinuous_inv : μ ≪ μ.inv := by
-  refine' AbsolutelyContinuous.mk fun s _ => _
+  refine AbsolutelyContinuous.mk fun s _ => ?_
   simp_rw [inv_apply μ s, measure_inv_null, imp_self]
 #align measure_theory.absolutely_continuous_inv MeasureTheory.absolutelyContinuous_inv
 #align measure_theory.absolutely_continuous_neg MeasureTheory.absolutelyContinuous_neg
@@ -230,7 +228,7 @@ theorem measure_mul_right_ne_zero (h2s : μ s ≠ 0) (y : G) : μ ((fun x => x *
 
 @[to_additive]
 theorem absolutelyContinuous_map_mul_right (g : G) : μ ≪ map (· * g) μ := by
-  refine' AbsolutelyContinuous.mk fun s hs => _
+  refine AbsolutelyContinuous.mk fun s hs => ?_
   rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
 #align measure_theory.absolutely_continuous_map_mul_right MeasureTheory.absolutelyContinuous_map_mul_right
 #align measure_theory.absolutely_continuous_map_add_right MeasureTheory.absolutelyContinuous_map_add_right
@@ -248,7 +246,7 @@ theorem absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) 
 @[to_additive "This is the computation performed in the proof of [Halmos, §60 Th. A]."]
 theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) (f : G → ℝ≥0∞)
     (hf : Measurable f) : (μ s * ∫⁻ y, f y ∂ν) = ∫⁻ x, ν ((fun z => z * x) ⁻¹' s) * f x⁻¹ ∂μ := by
-  rw [← set_lintegral_one, ← lintegral_indicator _ sm,
+  rw [← setLIntegral_one, ← lintegral_indicator _ sm,
     ← lintegral_lintegral_mul (measurable_const.indicator sm).aemeasurable hf.aemeasurable,
     ← lintegral_lintegral_mul_inv μ ν]
   swap
@@ -261,7 +259,7 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
       ((fun z => z * x) ⁻¹' s).indicator (fun b : G => 1) y := by
     intro x y; symm; convert indicator_comp_right (M := ℝ≥0∞) fun y => y * x using 2; ext1; rfl
   simp_rw [this, lintegral_mul_const _ (ms _), lintegral_indicator _ (measurable_mul_const _ sm),
-    set_lintegral_one]
+    setLIntegral_one]
 #align measure_theory.measure_mul_lintegral_eq MeasureTheory.measure_mul_lintegral_eq
 #align measure_theory.measure_add_lintegral_eq MeasureTheory.measure_add_lintegral_eq
 
@@ -269,7 +267,7 @@ theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) 
 @[to_additive
 " Any two nonzero left-invariant measures are absolutely continuous w.r.t. each other. "]
 theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν : ν ≠ 0) : μ ≪ ν := by
-  refine' AbsolutelyContinuous.mk fun s sm hνs => _
+  refine AbsolutelyContinuous.mk fun s sm hνs => ?_
   have h1 := measure_mul_lintegral_eq μ ν sm 1 measurable_one
   simp_rw [Pi.one_apply, lintegral_one, mul_one, (measure_mul_right_null ν _).mpr hνs,
     lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false_iff] at h1
@@ -280,13 +278,13 @@ theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν 
 @[to_additive]
 theorem ae_measure_preimage_mul_right_lt_top [IsMulLeftInvariant ν] (sm : MeasurableSet s)
     (hμs : μ s ≠ ∞) : ∀ᵐ x ∂μ, ν ((fun y => y * x) ⁻¹' s) < ∞ := by
-  refine' ae_of_forall_measure_lt_top_ae_restrict' ν.inv _ _
+  refine ae_of_forall_measure_lt_top_ae_restrict' ν.inv _ ?_
   intro A hA _ h3A
   simp only [ν.inv_apply] at h3A
   apply ae_lt_top (measurable_measure_mul_right ν sm)
   have h1 := measure_mul_lintegral_eq μ ν sm (A⁻¹.indicator 1) (measurable_one.indicator hA.inv)
   rw [lintegral_indicator _ hA.inv] at h1
-  simp_rw [Pi.one_apply, set_lintegral_one, ← image_inv, indicator_image inv_injective, image_inv, ←
+  simp_rw [Pi.one_apply, setLIntegral_one, ← image_inv, indicator_image inv_injective, image_inv, ←
     indicator_mul_right _ fun x => ν ((fun y => y * x) ⁻¹' s), Function.comp, Pi.one_apply,
     mul_one] at h1
   rw [← lintegral_indicator _ hA, ← h1]
@@ -298,9 +296,9 @@ theorem ae_measure_preimage_mul_right_lt_top [IsMulLeftInvariant ν] (sm : Measu
 theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero [IsMulLeftInvariant ν]
     (sm : MeasurableSet s) (h2s : ν s ≠ 0) (h3s : ν s ≠ ∞) :
     ∀ᵐ x ∂μ, ν ((fun y => y * x) ⁻¹' s) < ∞ := by
-  refine' (ae_measure_preimage_mul_right_lt_top ν ν sm h3s).filter_mono _
-  refine' (absolutelyContinuous_of_isMulLeftInvariant μ ν _).ae_le
-  refine' mt _ h2s
+  refine (ae_measure_preimage_mul_right_lt_top ν ν sm h3s).filter_mono ?_
+  refine (absolutelyContinuous_of_isMulLeftInvariant μ ν ?_).ae_le
+  refine mt ?_ h2s
   intro hν
   rw [hν, Measure.coe_zero, Pi.zero_apply]
 #align measure_theory.ae_measure_preimage_mul_right_lt_top_of_ne_zero MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero
@@ -331,8 +329,8 @@ theorem measure_lintegral_div_measure [IsMulLeftInvariant ν] (sm : MeasurableSe
   have hg : Measurable g :=
     (hf.comp measurable_inv).div ((measurable_measure_mul_right ν sm).comp measurable_inv)
   simp_rw [measure_mul_lintegral_eq μ ν sm g hg, g, inv_inv]
-  refine' lintegral_congr_ae _
-  refine' (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ ν sm h2s h3s).mono fun x hx => _
+  refine lintegral_congr_ae ?_
+  refine (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ ν sm h2s h3s).mono fun x hx => ?_
   simp_rw [ENNReal.mul_div_cancel' (measure_mul_right_ne_zero ν h2s _) hx.ne]
 #align measure_theory.measure_lintegral_div_measure MeasureTheory.measure_lintegral_div_measure
 #align measure_theory.measure_lintegral_sub_measure MeasureTheory.measure_lintegral_sub_measure
@@ -346,7 +344,7 @@ theorem measure_mul_measure_eq [IsMulLeftInvariant ν] {s t : Set G} (hs : Measu
   have h2 :=
     measure_lintegral_div_measure μ ν hs h2s h3s (t.indicator fun _ => 1)
       (measurable_const.indicator ht)
-  rw [lintegral_indicator _ ht, set_lintegral_one] at h1 h2
+  rw [lintegral_indicator _ ht, setLIntegral_one] at h1 h2
   rw [← h1, mul_left_comm, h2]
 #align measure_theory.measure_mul_measure_eq MeasureTheory.measure_mul_measure_eq
 #align measure_theory.measure_add_measure_eq MeasureTheory.measure_add_measure_eq
@@ -470,7 +468,7 @@ theorem quasiMeasurePreserving_div_left_of_right_invariant [IsMulRightInvariant 
 @[to_additive]
 theorem quasiMeasurePreserving_div_of_right_invariant [IsMulRightInvariant μ] :
     QuasiMeasurePreserving (fun p : G × G => p.1 / p.2) (μ.prod ν) μ := by
-  refine' QuasiMeasurePreserving.prod_of_left measurable_div (eventually_of_forall fun y => _)
+  refine QuasiMeasurePreserving.prod_of_left measurable_div (eventually_of_forall fun y => ?_)
   exact (measurePreserving_div_right μ y).quasiMeasurePreserving
 #align measure_theory.quasi_measure_preserving_div_of_right_invariant MeasureTheory.quasiMeasurePreserving_div_of_right_invariant
 #align measure_theory.quasi_measure_preserving_sub_of_right_invariant MeasureTheory.quasiMeasurePreserving_sub_of_right_invariant
@@ -490,7 +488,7 @@ This should not be confused with `(measurePreserving_mul_right μ g).quasiMeasur
 This should not be confused with `(measurePreserving_add_right μ g).quasiMeasurePreserving`. "]
 theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
     QuasiMeasurePreserving (fun h : G => h * g) μ μ := by
-  refine' ⟨measurable_mul_const g, AbsolutelyContinuous.mk fun s hs => _⟩
+  refine ⟨measurable_mul_const g, AbsolutelyContinuous.mk fun s hs => ?_⟩
   rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
 #align measure_theory.quasi_measure_preserving_mul_right MeasureTheory.quasiMeasurePreserving_mul_right
 #align measure_theory.quasi_measure_preserving_add_right MeasureTheory.quasiMeasurePreserving_add_right

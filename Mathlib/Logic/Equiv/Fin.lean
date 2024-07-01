@@ -4,14 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Embedding.Set
 
 #align_import logic.equiv.fin from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
 # Equivalences for `Fin n`
 -/
+
+assert_not_exists MonoidWithZero
 
 universe u
 
@@ -43,8 +44,7 @@ def finTwoEquiv : Fin 2 ≃ Bool where
 /-- `Π i : Fin 2, α i` is equivalent to `α 0 × α 1`. See also `finTwoArrowEquiv` for a
 non-dependent version and `prodEquivPiFinTwo` for a version with inputs `α β : Type u`. -/
 @[simps (config := .asFn)]
-def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1
-    where
+def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
   toFun f := (f 0, f 1)
   invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
   left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
@@ -53,7 +53,6 @@ def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1
 #align pi_fin_two_equiv_symm_apply piFinTwoEquiv_symm_apply
 #align pi_fin_two_equiv_apply piFinTwoEquiv_apply
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t : Set (α 1)) :
     (fun f : ∀ i, α i => (f 0, f 1)) ⁻¹' s ×ˢ t =
       Set.pi Set.univ (Fin.cons s <| Fin.cons t finZeroElim) := by
@@ -61,7 +60,6 @@ theorem Fin.preimage_apply_01_prod {α : Fin 2 → Type u} (s : Set (α 0)) (t :
   simp [Fin.forall_fin_two]
 #align fin.preimage_apply_01_prod Fin.preimage_apply_01_prod
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem Fin.preimage_apply_01_prod' {α : Type u} (s t : Set α) :
     (fun f : Fin 2 → α => (f 0, f 1)) ⁻¹' s ×ˢ t = Set.pi Set.univ ![s, t] :=
   @Fin.preimage_apply_01_prod (fun _ => α) s t
@@ -88,8 +86,7 @@ def finTwoArrowEquiv (α : Type*) : (Fin 2 → α) ≃ α × α :=
 
 /-- `Π i : Fin 2, α i` is order equivalent to `α 0 × α 1`. See also `OrderIso.finTwoArrowEquiv`
 for a non-dependent version. -/
-def OrderIso.piFinTwoIso (α : Fin 2 → Type u) [∀ i, Preorder (α i)] : (∀ i, α i) ≃o α 0 × α 1
-    where
+def OrderIso.piFinTwoIso (α : Fin 2 → Type u) [∀ i, Preorder (α i)] : (∀ i, α i) ≃o α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   map_rel_iff' := Iff.symm Fin.forall_fin_two
 #align order_iso.pi_fin_two_iso OrderIso.piFinTwoIso
@@ -100,33 +97,10 @@ def OrderIso.finTwoArrowIso (α : Type*) [Preorder α] : (Fin 2 → α) ≃o α 
   { OrderIso.piFinTwoIso fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align order_iso.fin_two_arrow_iso OrderIso.finTwoArrowIso
 
-/-- The 'identity' equivalence between `Fin n` and `Fin m` when `n = m`. -/
-def finCongr (h : m = n) : Fin m ≃ Fin n :=
-  (Fin.castIso h).toEquiv
-#align fin_congr finCongr
-
-@[simp] theorem finCongr_apply_mk (h : m = n) (k : ℕ) (w : k < m) :
-    finCongr h ⟨k, w⟩ = ⟨k, h ▸ w⟩ :=
-  rfl
-#align fin_congr_apply_mk finCongr_apply_mk
-
-@[simp] theorem finCongr_symm (h : m = n) : (finCongr h).symm = finCongr h.symm :=
-  rfl
-#align fin_congr_symm finCongr_symm
-
-@[simp] theorem finCongr_apply_coe (h : m = n) (k : Fin m) : (finCongr h k : ℕ) = k :=
-  rfl
-#align fin_congr_apply_coe finCongr_apply_coe
-
-theorem finCongr_symm_apply_coe (h : m = n) (k : Fin n) : ((finCongr h).symm k : ℕ) = k :=
-  rfl
-#align fin_congr_symm_apply_coe finCongr_symm_apply_coe
-
 /-- An equivalence that removes `i` and maps it to `none`.
 This is a version of `Fin.predAbove` that produces `Option (Fin n)` instead of
 mapping both `i.cast_succ` and `i.succ` to `i`. -/
-def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n)
-    where
+def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   toFun := i.insertNth none some
   invFun x := x.casesOn' i (Fin.succAbove i)
   left_inv x := Fin.succAboveCases i (by simp) (fun j => by simp) x
@@ -239,7 +213,7 @@ theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) 
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } :=
   { Equiv.optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩ with
-    map_rel_iff' := p.succAboveEmb.map_rel_iff' }
+    map_rel_iff' := p.succAboveOrderEmb.map_rel_iff' }
 #align fin_succ_above_equiv finSuccAboveEquiv
 
 theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
@@ -290,9 +264,9 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 @[simps (config := .asFn)]
 def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
     (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
-  toFun f := (f i, fun j => f (i.succAbove j))
+  toFun f := i.extractNth f
   invFun f := i.insertNth f.1 f.2
-  left_inv f := by simp [Fin.insertNth_eq_iff]
+  left_inv f := by simp
   right_inv f := by simp
 #align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAbove
 #align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAbove_apply
@@ -314,6 +288,25 @@ def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fi
 #align equiv.pi_fin_succ_apply Equiv.piFinSucc_apply
 #align equiv.pi_fin_succ_symm_apply Equiv.piFinSucc_symm_apply
 
+/-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
+the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
+def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
+    (Fin (n+1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=
+  ((finSuccEquiv n).embeddingCongr (Equiv.refl ι)).trans
+    (Function.Embedding.optionEmbeddingEquiv (Fin n) ι)
+
+@[simp] lemma Equiv.embeddingFinSucc_fst {n : ℕ} {ι : Type*} (e : Fin (n+1) ↪ ι) :
+    ((Equiv.embeddingFinSucc n ι e).1 : Fin n → ι) = e ∘ Fin.succ := rfl
+
+@[simp] lemma Equiv.embeddingFinSucc_snd {n : ℕ} {ι : Type*} (e : Fin (n+1) ↪ ι) :
+    ((Equiv.embeddingFinSucc n ι e).2 : ι) = e 0 := rfl
+
+@[simp] lemma Equiv.coe_embeddingFinSucc_symm {n : ℕ} {ι : Type*}
+    (f : Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :
+    ((Equiv.embeddingFinSucc n ι).symm f : Fin (n + 1) → ι) = Fin.cons f.2.1 f.1 := by
+  ext i
+  exact Fin.cases rfl (fun j ↦ rfl) i
+
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)` which separates out the last
 element of the tuple. -/
 @[simps! (config := .asFn)]
@@ -321,12 +314,11 @@ def Equiv.piFinCastSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β ×
   Equiv.piFinSuccAbove (fun _ => β) (.last _)
 
 /-- Equivalence between `Fin m ⊕ Fin n` and `Fin (m + n)` -/
-def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n)
-    where
+def finSumFinEquiv : Sum (Fin m) (Fin n) ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Sum (Fin m) (Fin n)) Sum.inl Sum.inr i
   left_inv x := by cases' x with y y <;> dsimp <;> simp
-  right_inv x := by refine' Fin.addCases (fun i => _) (fun i => _) x <;> simp
+  right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 #align fin_sum_fin_equiv finSumFinEquiv
 
 @[simp]
@@ -375,38 +367,38 @@ theorem finAddFlip_apply_natAdd (k : Fin n) (m : ℕ) :
 
 @[simp]
 theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt_add_right n h)
-    (hnk : n + k < n + m := add_lt_add_left h n) :
+    (hnk : n + k < n + m := Nat.add_lt_add_left h n) :
     finAddFlip (⟨k, hk⟩ : Fin (m + n)) = ⟨n + k, hnk⟩ := by
   convert finAddFlip_apply_castAdd ⟨k, h⟩ n
 #align fin_add_flip_apply_mk_left finAddFlip_apply_mk_left
 
 @[simp]
 theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
-    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, tsub_le_self.trans_lt <| add_comm m n ▸ h₂⟩ := by
-  convert @finAddFlip_apply_natAdd n ⟨k - m, (tsub_lt_iff_right h₁).2 ?_⟩ m
-  · simp [add_tsub_cancel_of_le h₁]
-  · rwa [add_comm]
+    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by omega⟩ := by
+  convert @finAddFlip_apply_natAdd n ⟨k - m, by omega⟩ m
+  simp [Nat.add_sub_cancel' h₁]
 #align fin_add_flip_apply_mk_right finAddFlip_apply_mk_right
 
 /-- Rotate `Fin n` one step to the right. -/
 def finRotate : ∀ n, Equiv.Perm (Fin n)
   | 0 => Equiv.refl _
-  | n + 1 => finAddFlip.trans (finCongr (add_comm 1 n))
+  | n + 1 => finAddFlip.trans (finCongr (Nat.add_comm 1 n))
 #align fin_rotate finRotate
 
 @[simp] lemma finRotate_zero : finRotate 0 = Equiv.refl _ := rfl
 #align fin_rotate_zero finRotate_zero
 
-lemma finRotate_succ (n : ℕ) : finRotate (n + 1) = finAddFlip.trans (finCongr (add_comm 1 n)) := rfl
+lemma finRotate_succ (n : ℕ) :
+    finRotate (n + 1) = finAddFlip.trans (finCongr (Nat.add_comm 1 n)) := rfl
 
 theorem finRotate_of_lt {k : ℕ} (h : k < n) :
     finRotate (n + 1) ⟨k, h.trans_le n.le_succ⟩ = ⟨k + 1, Nat.succ_lt_succ h⟩ := by
   ext
   dsimp [finRotate_succ]
-  simp [finAddFlip_apply_mk_left h, add_comm]
+  simp [finAddFlip_apply_mk_left h, Nat.add_comm]
 #align fin_rotate_of_lt finRotate_of_lt
 
-theorem finRotate_last' : finRotate (n + 1) ⟨n, lt_add_one _⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
+theorem finRotate_last' : finRotate (n + 1) ⟨n, by omega⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
   dsimp [finRotate_succ]
   rw [finAddFlip_apply_mk_right le_rfl]
   simp
@@ -447,7 +439,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
 
 -- Porting note: was a @[simp]
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
-  rw [finRotate_succ_apply, zero_add]
+  rw [finRotate_succ_apply, Fin.zero_add]
 #align fin_rotate_apply_zero finRotate_apply_zero
 
 theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
@@ -464,8 +456,7 @@ theorem coe_finRotate (i : Fin n.succ) :
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
-def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n)
-    where
+def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
   toFun x :=
     ⟨x.2 + n * x.1,
       calc
@@ -504,36 +495,36 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   -- TODO: is there a canonical order of `*` and `+` here?
   left_inv a := Nat.div_add_mod' _ _
   right_inv p := by
-    refine' Prod.ext _ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
+    refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
     dsimp only
-    rw [add_comm, Nat.add_mul_div_right _ _ (NeZero.pos n), Nat.div_eq_of_lt p.2.is_lt, zero_add]
+    rw [Nat.add_comm, Nat.add_mul_div_right _ _ n.pos_of_neZero, Nat.div_eq_of_lt p.2.is_lt,
+      Nat.zero_add]
 #align nat.div_mod_equiv Nat.divModEquiv
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 See `Int.ediv_emod_unique` for a similar propositional statement. -/
 @[simps]
 def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
-  -- TODO: could cast from int directly if we import `data.zmod.defs`, though there are few lemmas
+  -- TODO: could cast from int directly if we import `Data.ZMod.Defs`, though there are few lemmas
   -- about that coercion.
   toFun a := (a / n, ↑(a.natMod n))
   invFun p := p.1 * n + ↑p.2
   left_inv a := by
-    simp_rw [Fin.coe_ofNat_eq_mod, Int.coe_nat_mod, Int.natMod,
-      Int.toNat_of_nonneg (Int.emod_nonneg _ <| NeZero.ne ↑n), Int.emod_emod,
-      Int.ediv_add_emod']
+    simp_rw [Fin.coe_ofNat_eq_mod, natCast_mod, natMod,
+      toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
+      ediv_add_emod']
   right_inv := fun ⟨q, r, hrn⟩ => by
     simp only [Fin.val_mk, Prod.mk.inj_iff, Fin.ext_iff]
-    obtain ⟨h1, h2⟩ := Int.coe_nat_nonneg r, Int.ofNat_lt.2 hrn
-    rw [add_comm, Int.add_mul_ediv_right _ _ (NeZero.ne ↑n), Int.ediv_eq_zero_of_lt h1 h2,
-      Int.natMod, Int.add_mul_emod_self, Int.emod_eq_of_lt h1 h2, Int.toNat_coe_nat]
-    exact ⟨zero_add q, Fin.val_cast_of_lt hrn⟩
+    obtain ⟨h1, h2⟩ := Int.natCast_nonneg r, Int.ofNat_lt.2 hrn
+    rw [Int.add_comm, add_mul_ediv_right _ _ (natCast_eq_zero.not.2 (NeZero.ne n)),
+      ediv_eq_zero_of_lt h1 h2, natMod, add_mul_emod_self, emod_eq_of_lt h1 h2, toNat_natCast]
+    exact ⟨q.zero_add, Fin.val_cast_of_lt hrn⟩
 #align int.div_mod_equiv Int.divModEquiv
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
 values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
 @[simps apply symm_apply]
-def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n }
-    where
+def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n } where
   toFun i := ⟨Fin.castLE h i, by simp⟩
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp

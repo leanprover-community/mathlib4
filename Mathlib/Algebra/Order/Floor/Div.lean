@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.GaloisConnection
 
 /-!
@@ -267,5 +266,5 @@ lemma support_ceilDiv_subset : (f ⌈/⌉ a).support ⊆ f.support := by
 end CeilDiv
 end Finsupp
 
-/-- This is the motivating example.-/
+/-- This is the motivating example. -/
 noncomputable example : FloorDiv ℕ (ℕ →₀ ℕ) := inferInstance

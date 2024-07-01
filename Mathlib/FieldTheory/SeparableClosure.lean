@@ -68,7 +68,6 @@ noncomputable section
 universe u v w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
 variable (K : Type w) [Field K] [Algebra F K]
 
 section separableClosure
@@ -139,8 +138,8 @@ alias AlgEquiv.separableClosure := separableClosure.algEquivOfAlgEquiv
 variable (F E K)
 
 /-- The separable closure of `F` in `E` is algebraic over `F`. -/
-theorem separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
-  fun x ↦ isAlgebraic_iff.2 x.2.isIntegral.isAlgebraic
+instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F E) :=
+  ⟨fun x ↦ isAlgebraic_iff.2 x.2.isIntegral.isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
 instance separableClosure.isSeparable : IsSeparable F (separableClosure F E) :=
@@ -325,12 +324,12 @@ namespace IntermediateField
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
   have := lift_sepDegree_eq_of_equiv _ _ _ (botEquiv F E)
-  rwa [sepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{u, v}, Cardinal.lift_inj] at this
+  rwa [sepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{v, u}, Cardinal.lift_inj] at this
 
 @[simp]
 theorem insepDegree_bot : insepDegree F (⊥ : IntermediateField F E) = 1 := by
   have := lift_insepDegree_eq_of_equiv _ _ _ (botEquiv F E)
-  rwa [insepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{u, v}, Cardinal.lift_inj] at this
+  rwa [insepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{v, u}, Cardinal.lift_inj] at this
 
 @[simp]
 theorem finInsepDegree_bot : finInsepDegree F (⊥ : IntermediateField F E) = 1 := by

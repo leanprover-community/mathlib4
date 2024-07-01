@@ -50,13 +50,11 @@ as this avoids us having to duplicate API.
 universe u1 u2 u3 u4 u5
 
 variable (R : Type u1) [CommRing R]
-
 variable (M : Type u2) [AddCommGroup M] [Module R M]
 
 /-- The exterior algebra of an `R`-module `M`.
 -/
-@[reducible]
-def ExteriorAlgebra :=
+abbrev ExteriorAlgebra :=
   CliffordAlgebra (0 : QuadraticForm R M)
 #align exterior_algebra ExteriorAlgebra
 
@@ -66,8 +64,7 @@ variable {M}
 
 /-- The canonical linear map `M →ₗ[R] ExteriorAlgebra R M`.
 -/
-@[reducible]
-def ι : M →ₗ[R] ExteriorAlgebra R M :=
+abbrev ι : M →ₗ[R] ExteriorAlgebra R M :=
   CliffordAlgebra.ι _
 #align exterior_algebra.ι ExteriorAlgebra.ι
 
@@ -242,7 +239,7 @@ theorem ι_eq_zero_iff (x : M) : ι R x = 0 ↔ x = 0 := by rw [← ι_inj R x 0
 
 @[simp]
 theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x = 0 ∧ r = 0 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
     haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
     have hf0 : toTrivSqZeroExt (ι R x) = (0, x) := toTrivSqZeroExt_ι _
@@ -255,7 +252,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
-  rw [← (algebraMap R (ExteriorAlgebra R M)).map_one, Ne.def, ι_eq_algebraMap_iff]
+  rw [← (algebraMap R (ExteriorAlgebra R M)).map_one, Ne, ι_eq_algebraMap_iff]
   exact one_ne_zero ∘ And.right
 #align exterior_algebra.ι_ne_one ExteriorAlgebra.ι_ne_one
 
@@ -285,7 +282,7 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
         congr_arg (ι R (f 0) * ·) <| hn (fun i => f <| Fin.succ i) (i.pred h)
       simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
-      refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
+      refine (eq_zero_iff_eq_zero_of_add_eq_zero ?_).mp hn
       rw [← add_mul, ι_add_mul_swap, zero_mul]
 #align exterior_algebra.ι_mul_prod_list ExteriorAlgebra.ι_mul_prod_list
 
@@ -314,10 +311,10 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
         · convert mul_zero (ι R (f 0))
-          refine'
+          refine
             hn
               (fun i => f <| Fin.succ i) (x.pred hx)
-              (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _
+              (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) ?_
               (Fin.pred_lt_pred_iff.mpr h)
           simp only [Fin.succ_pred]
           exact hfxy
@@ -337,8 +334,8 @@ theorem ιMulti_zero_apply (v : Fin 0 → M) : ιMulti R 0 v = 1 :=
 
 @[simp]
 theorem ιMulti_succ_apply {n : ℕ} (v : Fin n.succ → M) :
-    ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) :=
-  (congr_arg List.prod (List.ofFn_succ _)).trans List.prod_cons
+    ιMulti R _ v = ι R (v 0) * ιMulti R _ (Matrix.vecTail v) := by
+  simp [ιMulti, Matrix.vecTail]
 #align exterior_algebra.ι_multi_succ_apply ExteriorAlgebra.ιMulti_succ_apply
 
 theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
@@ -449,6 +446,7 @@ theorem ιInv_comp_map (f : M →ₗ[R] N) :
   unfold ιInv
   conv_lhs => rw [LinearMap.comp_assoc, ← AlgHom.comp_toLinearMap, toTrivSqZeroExt_comp_map,
                 AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, TrivSqZeroExt.sndHom_comp_map]
+  rfl
 
 open Function in
 /-- For a linear map `f` from `M` to `N`,

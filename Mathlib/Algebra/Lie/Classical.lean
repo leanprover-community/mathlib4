@@ -76,9 +76,7 @@ open Matrix
 open scoped Matrix
 
 variable (n p q l : Type*) (R : Type u₂)
-
 variable [DecidableEq n] [DecidableEq p] [DecidableEq q] [DecidableEq l]
-
 variable [CommRing R]
 
 @[simp]
@@ -181,14 +179,14 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
   ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h]
+    simp [Pso, indefiniteDiagonal, h, one_apply]
   · -- x : p, y : q
     simp [Pso, indefiniteDiagonal]
   · -- x : q, y : p
     simp [Pso, indefiniteDiagonal]
   · -- x y : q
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h, hi]
+    simp [Pso, indefiniteDiagonal, h, hi, one_apply]
 #align lie_algebra.orthogonal.Pso_inv LieAlgebra.Orthogonal.pso_inv
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
@@ -201,19 +199,19 @@ theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
   ext (x y); rcases x with ⟨x⟩|⟨x⟩ <;> rcases y with ⟨y⟩|⟨y⟩
   · -- x y : p
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h]
+    simp [Pso, indefiniteDiagonal, h, one_apply]
   · -- x : p, y : q
     simp [Pso, indefiniteDiagonal]
   · -- x : q, y : p
     simp [Pso, indefiniteDiagonal]
   · -- x y : q
     by_cases h : x = y <;>
-    simp [Pso, indefiniteDiagonal, h, hi]
+    simp [Pso, indefiniteDiagonal, h, hi, one_apply]
 #align lie_algebra.orthogonal.indefinite_diagonal_transform LieAlgebra.Orthogonal.indefiniteDiagonal_transform
 
 /-- An equivalence between the indefinite and definite orthogonal Lie algebras, over a ring
 containing a square root of -1. -/
-def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ⁅R⁆ so (Sum p q) R := by
+noncomputable def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ⁅R⁆ so (Sum p q) R := by
   apply
     (skewAdjointMatricesLieSubalgebraEquiv (indefiniteDiagonal p q R) (Pso p q R i)
         (invertiblePso p q R hi)).trans
@@ -272,7 +270,6 @@ theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S
   have h : (PD l R)ᵀ * JD l R = Matrix.fromBlocks 1 1 1 (-1) := by
     simp [PD, JD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_multiply]
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
-  congr
   simp [two_smul]
 #align lie_algebra.orthogonal.JD_transform LieAlgebra.Orthogonal.jd_transform
 
@@ -287,7 +284,7 @@ instance invertiblePD [Fintype l] [Invertible (2 : R)] : Invertible (PD l R) :=
 #align lie_algebra.orthogonal.invertible_PD LieAlgebra.Orthogonal.invertiblePD
 
 /-- An equivalence between two possible definitions of the classical Lie algebra of type D. -/
-def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃ₗ⁅R⁆ so' l l R := by
+noncomputable def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃ₗ⁅R⁆ so' l l R := by
   apply (skewAdjointMatricesLieSubalgebraEquiv (JD l R) (PD l R) (by infer_instance)).trans
   apply LieEquiv.ofEq
   ext A
@@ -372,7 +369,7 @@ theorem indefiniteDiagonal_assoc :
 #align lie_algebra.orthogonal.indefinite_diagonal_assoc LieAlgebra.Orthogonal.indefiniteDiagonal_assoc
 
 /-- An equivalence between two possible definitions of the classical Lie algebra of type B. -/
-def typeBEquivSo' [Invertible (2 : R)] : typeB l R ≃ₗ⁅R⁆ so' (Sum Unit l) l R := by
+noncomputable def typeBEquivSo' [Invertible (2 : R)] : typeB l R ≃ₗ⁅R⁆ so' (Sum Unit l) l R := by
   apply (skewAdjointMatricesLieSubalgebraEquiv (JB l R) (PB l R) (by infer_instance)).trans
   symm
   apply

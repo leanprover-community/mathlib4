@@ -34,13 +34,14 @@ family of measurable null sets `t i` such that `s i \ t i` are pairwise disjoint
 theorem exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}
     (hd : Pairwise (AEDisjoint μ on s)) : ∃ t : ι → Set α, (∀ i, MeasurableSet (t i)) ∧
     (∀ i, μ (t i) = 0) ∧ Pairwise (Disjoint on fun i => s i \ t i) := by
-  refine' ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
-    measurableSet_toMeasurable _ _, fun i => _, _⟩
+  refine ⟨fun i => toMeasurable μ (s i ∩ ⋃ j ∈ ({i}ᶜ : Set ι), s j), fun i =>
+    measurableSet_toMeasurable _ _, fun i => ?_, ?_⟩
   · simp only [measure_toMeasurable, inter_iUnion]
     exact (measure_biUnion_null_iff <| to_countable _).2 fun j hj => hd (Ne.symm hj)
   · simp only [Pairwise, disjoint_left, onFun, mem_diff, not_and, and_imp, Classical.not_not]
     intro i j hne x hi hU hj
-    replace hU : x ∉ s i ∩ iUnion λ j => iUnion λ _ => s j := λ h => hU (subset_toMeasurable _ _ h)
+    replace hU : x ∉ s i ∩ iUnion fun j ↦ iUnion fun _ ↦ s j :=
+      fun h ↦ hU (subset_toMeasurable _ _ h)
     simp only [mem_inter_iff, mem_iUnion, not_and, not_exists] at hU
     exact (hU hi j hne.symm hj).elim
 #align measure_theory.exists_null_pairwise_disjoint_diff MeasureTheory.exists_null_pairwise_disjoint_diff
@@ -145,7 +146,7 @@ theorem exists_disjoint_diff (h : AEDisjoint μ s t) :
 #align measure_theory.ae_disjoint.exists_disjoint_diff MeasureTheory.AEDisjoint.exists_disjoint_diff
 
 theorem of_null_right (h : μ t = 0) : AEDisjoint μ s t :=
-  measure_mono_null (inter_subset_right _ _) h
+  measure_mono_null inter_subset_right h
 #align measure_theory.ae_disjoint.of_null_right MeasureTheory.AEDisjoint.of_null_right
 
 theorem of_null_left (h : μ s = 0) : AEDisjoint μ s t :=

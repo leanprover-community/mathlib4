@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Logic.Function.Basic
 
 #align_import data.fin.fin2 from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -36,10 +37,10 @@ universe u
 
 /-- An alternate definition of `Fin n` defined as an inductive type instead of a subtype of `ℕ`. -/
 inductive Fin2 : ℕ → Type
-  /-- `0` as a member of `Fin (succ n)` (`Fin 0` is empty) -/
-  | fz {n} : Fin2 (succ n)
-  /-- `n` as a member of `Fin (succ n)` -/
-  | fs {n} : Fin2 n → Fin2 (succ n)
+  /-- `0` as a member of `Fin (n + 1)` (`Fin 0` is empty) -/
+  | fz {n} : Fin2 (n + 1)
+  /-- `n` as a member of `Fin (n + 1)` -/
+  | fs {n} : Fin2 n → Fin2 (n + 1)
 #align fin2 Fin2
 
 namespace Fin2
@@ -101,8 +102,8 @@ def insertPerm : ∀ {n}, Fin2 n → Fin2 n → Fin2 n
   on the right (that is, `remapLeft f k (m + i) = n + i`). -/
 def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + k)
   | 0, i => f i
-  | succ _, @fz _ => fz
-  | succ _, @fs _ i => fs (remapLeft f _ i)
+  | _k + 1, @fz _ => fz
+  | _k + 1, @fs _ i => fs (remapLeft f _ i)
 #align fin2.remap_left Fin2.remapLeft
 
 /-- This is a simple type class inference prover for proof obligations
@@ -125,6 +126,32 @@ def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
   | succ _, 0, _ => fz
   | succ n, succ m, h => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h.h⟩)
 #align fin2.of_nat' Fin2.ofNat'
+
+/-- `castSucc i` embeds `i : Fin2 n` in `Fin2 (n+1)`. -/
+def castSucc {n} : Fin2 n → Fin2 (n + 1)
+  | fz   => fz
+  | fs k => fs <| castSucc k
+
+/-- The greatest value of `Fin2 (n+1)`. -/
+def last : {n : Nat} → Fin2 (n+1)
+  | 0   => fz
+  | n+1 => fs (@last n)
+
+/-- Maps `0` to `n-1`, `1` to `n-2`, ..., `n-1` to `0`. -/
+def rev {n : Nat} : Fin2 n → Fin2 n
+  | .fz   => last
+  | .fs i => i.rev.castSucc
+
+@[simp] lemma rev_last {n} : rev (@last n) = fz := by
+  induction n <;> simp_all [rev, castSucc, last]
+
+@[simp] lemma rev_castSucc {n} (i : Fin2 n) : rev (castSucc i) = fs (rev i) := by
+  induction i <;> simp_all [rev, castSucc, last]
+
+@[simp] lemma rev_rev {n} (i : Fin2 n) : i.rev.rev = i := by
+  induction i <;> simp_all [rev]
+
+theorem rev_involutive {n} : Function.Involutive (@rev n) := rev_rev
 
 @[inherit_doc] local prefix:arg "&" => ofNat'
 
