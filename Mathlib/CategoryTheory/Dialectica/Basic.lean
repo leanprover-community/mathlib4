@@ -92,5 +92,9 @@ instance : Category (Dial C) where
     rw [← Category.assoc, ← Category.assoc]; congr 1
     ext <;> simp
 
-@[ext] theorem Hom.ext' {X Y : Dial C} :
-    ∀ (x y : X ⟶ Y), x.f = y.f → x.F = y.F → x = y := Hom.ext
+@[ext] theorem hom_ext {X Y : Dial C} {x y : X ⟶ Y} (hf : x.f = y.f) (hF : x.F = y.F) : x = y :=
+   Hom.ext x y hf hF
+
+end Dial
+
+end CategoryTheory
