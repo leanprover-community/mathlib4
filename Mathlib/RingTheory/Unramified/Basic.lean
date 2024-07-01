@@ -179,7 +179,7 @@ instance base_change [FormallyUnramified R A] :
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   ext : 1
-  · exact Subsingleton.elim _ _
+  · subsingleton
   · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
 #align algebra.formally_unramified.base_change Algebra.FormallyUnramified.base_change
 
