@@ -196,7 +196,7 @@ lemma exists_apply_eq_pow {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ 
   obtain ⟨k, hk₁, hk₂⟩ := hμ.eq_pow_of_pow_eq_one hζ' hn'
   exact ⟨k, hk₁, (hζ₂ ▸ hk₂).symm⟩
 
-/-- The applyues of a multiplicative character `χ` such that `χ^n = 1` are contained in `ℤ[μ]` when
+/-- The values of a multiplicative character `χ` such that `χ^n = 1` are contained in `ℤ[μ]` when
 `μ` is a primitive `n`th root of unity. -/
 lemma apply_mem_algebraAdjoin_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hn : n ≠ 0) (hχ : χ ^ n = 1)
     {μ : R} (hμ : IsPrimitiveRoot μ n) (a : F) :
