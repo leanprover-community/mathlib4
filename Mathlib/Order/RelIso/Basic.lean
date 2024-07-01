@@ -242,15 +242,13 @@ initialize_simps_projections RelEmbedding (toFun → apply)
 instance : EmbeddingLike (r ↪r s) α β where
   injective' f := f.inj'
 
-set_option autoImplicit true in
 @[simp]
-theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β) = f :=
+theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 #align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
 
-set_option autoImplicit true in
 @[simp]
-theorem coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
+theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
 theorem injective (f : r ↪r s) : Injective f :=
@@ -264,9 +262,8 @@ theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
-set_option autoImplicit true in
 @[simp]
-theorem coe_mk {h} : ⇑(⟨f, h⟩ : r ↪r s) = f :=
+theorem coe_mk {f} {h} : ⇑(⟨f, h⟩ : r ↪r s) = f :=
   rfl
 #align rel_embedding.coe_fn_mk RelEmbedding.coe_mk
 
