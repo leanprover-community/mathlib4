@@ -113,7 +113,8 @@ end DupNamespaceLinter
 /-!
 #  `oneLineAlign` linter
 
-The `oneLineAlign` linter checks that `#align` statements span a single line.
+The `oneLineAlign` linter checks that `#align` statements span a single line,
+which is desirable as it allows them to be parsed by dumb parsers.
 -/
 
 /--
