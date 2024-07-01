@@ -112,7 +112,7 @@ lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
   use f
   exact ⟨f_cont, by aesop⟩
 
-lemma separatesPoints_continuous_of_t35Space_compact_t2 (hX : T35Space X) :
+lemma separatesPoints_continuous_of_t35Space_compact_t2 [T35Space X] :
     ∃ (Z : Type u) (_ : TopologicalSpace Z) (_ : T2Space Z) (_ : CompactSpace Z),
       SeparatesPoints (Continuous : Set (X → Z)) := by
   let Z := ULift.{u} <| I
