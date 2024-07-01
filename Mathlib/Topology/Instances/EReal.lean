@@ -178,6 +178,8 @@ lemma liminf_le_liminf {α : Type*} {f : Filter α} {u v : α → EReal} (h : u 
 lemma limsup_le_limsup {α : Type*} {f : Filter α} {u v : α → EReal} (h : u ≤ᶠ[f] v) :
     limsup u f ≤ limsup v f := Filter.limsup_le_limsup h
 
+/-- This lemma is superseded by `limsup_add_le_of_le` (weaker hypothesis) and
+`limsup_add_lt_of_lt` (stronger thesis). -/
 lemma limsup_add_le_of_lt {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
     (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f ≤ a + b := by
   rcases eq_or_neBot f with (rfl | _); simp only [limsup_bot, bot_le]
