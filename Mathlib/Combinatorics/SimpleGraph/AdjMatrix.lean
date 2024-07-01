@@ -60,17 +60,14 @@ namespace IsAdjMatrix
 
 variable {A : Matrix V V α}
 
-@[simp]
 theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) :
     ¬A i i = 1 := by simp [h.apply_diag i]
 #align matrix.is_adj_matrix.apply_diag_ne Matrix.IsAdjMatrix.apply_diag_ne
 
-@[simp]
 theorem apply_ne_one_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 1 ↔ A i j = 0 := by obtain h | h := h.zero_or_one i j <;> simp [h]
 #align matrix.is_adj_matrix.apply_ne_one_iff Matrix.IsAdjMatrix.apply_ne_one_iff
 
-@[simp]
 theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i j : V) :
     ¬A i j = 0 ↔ A i j = 1 := by rw [← apply_ne_one_iff h, Classical.not_not]
 #align matrix.is_adj_matrix.apply_ne_zero_iff Matrix.IsAdjMatrix.apply_ne_zero_iff
@@ -81,7 +78,7 @@ theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix 
 def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V where
   Adj i j := A i j = 1
   symm i j hij := by simp only; rwa [h.symm.apply i j]
-  loopless i := by simp [h]
+  loopless i := apply_diag_ne h i
 #align matrix.is_adj_matrix.to_graph Matrix.IsAdjMatrix.toGraph
 
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
