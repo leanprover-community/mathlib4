@@ -37,11 +37,12 @@ section StateFieldMap
 
 open HVertexOperator
 
-/-- The state-field correspondence. -/
-abbrev stateFieldMap (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V] :=
+/-- A state-field correspondence is a linear map from a vector space `V` to the space of fields
+(or vertex operators) on `V`.  Equivalently, it is a bilinear map `V → V → V((z))`. -/
+abbrev StateFieldMap (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V] :=
   V →ₗ[R] VertexOperator R V
 
-
+-- Maybe move this to HVertexOperator, define things like order of a pair, creativity?
 
 end StateFieldMap
 
@@ -211,8 +212,8 @@ def state (A : VertexOperator R V) : V :=
 def T (R: Type*) [CommRing R] [AddCommGroupWithOne V] [NonAssocNonUnitalVertexAlgebra R V]
     (n : ℕ) : Module.End R V where
   toFun := fun (x : V) => coeff (Y R x) n 1
-  map_add' := by intros; funext; simp only [coeff_add_left_eq]
-  map_smul' := by intros; funext; simp only [coeff_smul_left_eq, RingHom.id_apply]
+  map_add' := by intros; simp only [coeff_add_left_eq]
+  map_smul' := by intros; simp only [coeff_smul_left_eq, RingHom.id_apply]
 
 /-- The skew-symmetry property for vertex algebras: `Y(u,z)v = exp(Tz)Y(v,-z)u`. -/
 def skew_symmetry (R : Type*) [CommRing R] [AddCommGroupWithOne V]
