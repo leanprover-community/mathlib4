@@ -403,7 +403,7 @@ lemma lambda_sq_not_dvd_a_add_eta_sq_mul_b : ¬ λ ^ 2 ∣ (S.a + η ^ 2 * S.b) 
   ring
 
 lemma eta_add_one_mul_neg_eta_eq_one : ((η : 𝓞 K) + 1) * (-η) = 1 :=
-  calc ((η : 𝓞 K) + 1) * -η = -(η ^ 2 + η + 1) + 1  := by ring
+  calc ((η : 𝓞 K) + 1) * -η = -(η ^ 2 + η + 1) + 1 := by ring
   _ = 1 := by
     ext
     have := hζ.isRoot_cyclotomic (by decide)
