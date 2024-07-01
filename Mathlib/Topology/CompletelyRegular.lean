@@ -109,5 +109,5 @@ lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
   intros a b hab
   contrapose hab
-  obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_icc hab
+  obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
