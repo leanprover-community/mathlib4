@@ -1691,19 +1691,5 @@ protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : IsSymmOp α α (�
 
 end MulLECancellable
 
-section Bit
-set_option linter.deprecated false
-variable [Add α] [Preorder α]
-
-@[deprecated (since := "2022-11-20")]
-theorem bit0_mono [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
-    Monotone (bit0 : α → α) := fun _ _ h => add_le_add h h
-#align bit0_mono bit0_mono
-
-@[deprecated (since := "2022-11-20")]
-theorem bit0_strictMono [CovariantClass α α (· + ·) (· < ·)]
-    [CovariantClass α α (swap (· + ·)) (· < ·)] :
-    StrictMono (bit0 : α → α) := fun _ _ h => add_lt_add h h
-#align bit0_strict_mono bit0_strictMono
-
-end Bit
+#noalign bit0_mono
+#noalign bit0_strict_mono

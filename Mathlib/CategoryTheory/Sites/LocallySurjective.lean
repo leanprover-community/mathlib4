@@ -183,7 +183,7 @@ lemma comp_isLocallySurjective_iff
   isLocallySurjective_iff_of_fac J rfl
 
 variable {J} in
-lemma isLocallySurjectiveMono {K : GrothendieckTopology C} (hJK : J ≤ K) {F G : Cᵒᵖ ⥤ A}
+lemma isLocallySurjective_of_le {K : GrothendieckTopology C} (hJK : J ≤ K) {F G : Cᵒᵖ ⥤ A}
     (f : F ⟶ G) (h : IsLocallySurjective J f) : IsLocallySurjective K f where
   imageSieve_mem s := by apply hJK; exact h.1 _
 
@@ -299,8 +299,8 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     rw [toPlus_eq_mk, res_mk_eq_mk_pullback, eq_mk_iff_exists]
     refine ⟨S.pullback f, homOfLE le_top, 𝟙 _, ?_⟩
     ext ⟨Z, g, hg⟩
-    simpa using x.2 (Cover.Relation.mk _ _ _ g (𝟙 Z) f (g ≫ f) hf
-      (S.1.downward_closed hf g) (by simp))
+    simpa using x.2 (Cover.Relation.mk { hf := hf }
+        { hf := S.1.downward_closed hf g } { g₁ := g, g₂ := 𝟙 Z })
 
 instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallySurjective J (J.toSheafify P) := by

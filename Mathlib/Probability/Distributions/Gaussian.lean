@@ -291,9 +291,8 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     exact fun _ ↦ HasDerivAt.const_mul _ (hasDerivAt_id _)
   change (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
   ext s' hs'
-  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
-  simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, ne_eq, mul_eq_zero]
-  rw [gaussianReal_apply_eq_integral _ _ s']
+  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs',
+    gaussianReal_apply_eq_integral _ _ s']
   swap
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_inj]

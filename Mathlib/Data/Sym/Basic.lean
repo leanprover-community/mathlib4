@@ -81,11 +81,9 @@ theorem coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = 
   coe_injective.eq_iff
 #align sym.coe_inj Sym.coe_inj
 
--- Porting note (#10756): new theorem
 @[ext] theorem ext {s₁ s₂ : Sym α n} (h : (s₁ : Multiset α) = ↑s₂) : s₁ = s₂ :=
   coe_injective h
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
   rfl
@@ -661,12 +659,10 @@ def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inr s => s.map Embedding.some
 #align sym_option_succ_equiv.decode SymOptionSuccEquiv.decode
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
   rfl
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
   rfl
