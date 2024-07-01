@@ -83,11 +83,9 @@ variable {P : Type u} [AddCommGroup P] [Module R P]
 
 section Injectivity
 
-variable [IsNoetherianRing R] [Module.Finite R N]
+variable [IsNoetherianRing R] [Module.Finite R N] (I)
 
 open LinearMap
-
-variable (I)
 
 /-- Adic completion preserves injectivity of finite modules over a Noetherian ring. -/
 theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
@@ -103,8 +101,7 @@ theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
   apply (smul_mono_right _ inf_le_right : I ^ n • (I ^ k • ⊤ ⊓ (range f)) ≤ _)
   nth_rw 2 [show n = n + k - k by omega]
   rw [← hk (n + k) (show n + k ≥ k by omega)]
-  refine ⟨?_, ⟨a (n + k), rfl⟩⟩
-  simpa using congrArg (fun x ↦ x.val (n + k)) hx
+  exact ⟨by simpa using congrArg (fun x ↦ x.val (n + k)) hx, ⟨a (n + k), rfl⟩⟩
 
 end Injectivity
 
@@ -176,7 +173,7 @@ private noncomputable def mapExactAux :
       d ∈ (I ^ (k + n) • ⊤ : Submodule R N) ∧ f y = x (k + n) - d := by
     obtain ⟨d, hdmem, hd⟩ := h1 n
     obtain ⟨y, hdy⟩ := (hfg (x (k + n) - d)).mp (by simp [hd])
-    refine ⟨d, y, hdmem, hdy⟩
+    exact ⟨d, y, hdmem, hdy⟩
 
 end
 
