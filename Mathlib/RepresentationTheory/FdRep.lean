@@ -29,7 +29,6 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 `FdRep k G` has all finite limits.
 
 ## TODO
-* `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
 * Upgrade the right rigid structure to a rigid structure
   (this just needs to be done for `FGModuleCat`).
 * `FdRep k G` has all finite colimits.
@@ -110,8 +109,11 @@ def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
 instance : HasForget₂ (FdRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
 
-theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
-  ext g v; rfl
+/-- Lift `FdRep` to `Rep`. -/
+def toRep (V : FdRep k G) : Rep k G := (forget₂ (FdRep k G) (Rep k G)).obj V
+
+theorem forget₂_ρ (V : FdRep k G) : V.toRep.ρ = V.ρ := by
+  rfl
 #align fdRep.forget₂_ρ FdRep.forget₂_ρ
 
 -- Verify that the monoidal structure is available.
@@ -197,3 +199,39 @@ theorem dualTensorIsoLinHom_hom_hom : (dualTensorIsoLinHom ρV W).hom.hom = dual
 #align fdRep.dual_tensor_iso_lin_hom_hom_hom FdRep.dualTensorIsoLinHom_hom_hom
 
 end FdRep
+
+section equivFullSubcategory
+
+variable {k G : Type u} [Field k] [Monoid G] {V W : FdRep k G}
+
+/- Can we agree on how to phrase theorems/lemmas? Use V? V.toRep? V.ρ.asModule? -/
+instance FdRep.toRep_finiteDimensional : FiniteDimensional k V.toRep :=
+  FGModuleCat.instFiniteCarrier k _
+
+instance FdRep.toRep_finiteDimensional' : FiniteDimensional k ((forget₂ _ (Rep k G)).obj V) :=
+  FGModuleCat.instFiniteCarrier k _
+
+noncomputable def FdRep.lift_hom (f : V ⟶ W) : V.toRep ⟶ W.toRep :=
+  (forget₂ _ _).map f
+
+/- Bundles Rep with a FiniteDimensional into a FdRep -/
+noncomputable def FdRep.ofRep (V : Rep k G) [hV : FiniteDimensional k V] : FdRep k G :=
+  ⟨⟨V.V, hV⟩, V.ρ⟩
+
+noncomputable def FdRep.toFiniteDimensionalSubcategory :
+    FdRep k G ⥤ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) :=
+  FullSubcategory.lift _ (forget₂ _ _) inferInstance
+
+noncomputable def FdRep.ofFiniteDimensionalSubcategory :
+    FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) ⥤ FdRep k G where
+  obj := fun ⟨V, _⟩ ↦ FdRep.ofRep V
+  map := fun f ↦ ⟨f.hom, f.comm⟩
+
+noncomputable def FdRep.equivalenceFiniteDimensionalSubcategory :
+    FdRep k G ≌ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) where
+  functor := toFiniteDimensionalSubcategory
+  inverse := ofFiniteDimensionalSubcategory
+  unitIso := by aesop_cat
+  counitIso := by aesop_cat
+
+end equivFullSubcategory
