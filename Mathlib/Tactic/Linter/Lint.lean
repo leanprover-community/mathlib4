@@ -141,7 +141,7 @@ def oneLineAlign : Linter where run := withSetOptionIn fun stx => do
         let lines := (fm.toPosition spos.stop).line - (fm.toPosition spos.start).line + 1
         if lines != 1 then
           Linter.logLint linter.oneLineAlign stx
-            m!"This align spans {lines} lines, instead of just one.\n\
+            m!"This `#align` spans {lines} lines, instead of just one.\n\
               Do not worry, the 100 character limit does not apply to `#align` statements!"
 
 initialize addLinter oneLineAlign
