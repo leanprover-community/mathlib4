@@ -147,8 +147,7 @@ theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) :
     IsUnit x := by
   apply isUnit_of_one hv _ hvx
   apply IsUnit.mk0
-  rw [← v.ne_zero_iff]
-  simp only [hvx, ne_eq, one_ne_zero, not_false_eq_true]
+  simp only [← v.ne_zero_iff, hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
 theorem eq_algebraMap_or_inv_eq_algebraMap (x : F) :
     ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
