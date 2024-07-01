@@ -3894,8 +3894,10 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.FunProp.Attr
+import Mathlib.Tactic.FunProp.ContDiff
 import Mathlib.Tactic.FunProp.Core
 import Mathlib.Tactic.FunProp.Decl
+import Mathlib.Tactic.FunProp.Differentiable
 import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.Mor
