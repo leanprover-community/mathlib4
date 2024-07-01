@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
@@ -256,7 +257,7 @@ theorem zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
     cases' Decidable.em <| g.TerminatedAt (n - 1) with terminated not_terminated
     · -- terminating case
       cases' n with n
-      · simp [succ_eq_add_one, zero_le_one]
+      · simp [zero_le_one]
       · have : g.continuantsAux (n + 2) = g.continuantsAux (n + 1) :=
           continuantsAux_stable_step_of_terminated terminated
         simp only [this, IH]
@@ -527,8 +528,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
     have : (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ :=
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
     have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
-    -- Porting note: was `mono`
-    refine mul_le_mul_of_nonneg_right ?_ ?_ <;> assumption
+    gcongr; exact this
 #align generalized_continued_fraction.abs_sub_convergents_le GeneralizedContinuedFraction.abs_sub_convergents_le
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in

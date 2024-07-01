@@ -3,8 +3,8 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Antidiagonal
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
 
@@ -60,7 +60,7 @@ theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
 -- nolint as this is for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem antidiagonal_zero : antidiagonal 0 = {(0, 0)} := rfl
 #align finset.nat.antidiagonal_zero Finset.Nat.antidiagonal_zero
 

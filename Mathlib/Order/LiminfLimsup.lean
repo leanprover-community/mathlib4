@@ -36,9 +36,6 @@ the definitions of Limsup and Liminf.
 In complete lattices, however, it coincides with the `Inf Sup` definition.
 -/
 
-set_option autoImplicit true
-
-
 open Filter Set Function
 
 variable {α β γ ι ι' : Type*}
@@ -123,6 +120,16 @@ theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
 theorem IsBoundedUnder.comp {l : Filter γ} {q : β → β → Prop} {u : γ → α} {v : α → β}
     (hv : ∀ a₀ a₁, r a₀ a₁ → q (v a₀) (v a₁)) : l.IsBoundedUnder r u → l.IsBoundedUnder q (v ∘ u)
   | ⟨a, h⟩ => ⟨v a, show ∀ᶠ x in map u l, q (v x) (v a) from h.mono fun x => hv x a⟩
+
+/-- A bounded above function `u` is in particular eventually bounded above. -/
+lemma _root_.BddAbove.isBoundedUnder [Preorder α] {f : Filter β} {u : β → α} :
+    BddAbove (Set.range u) → f.IsBoundedUnder (· ≤ ·) u
+  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_upperBounds] using hb⟩
+
+/-- A bounded below function `u` is in particular eventually bounded below. -/
+lemma _root_.BddBelow.isBoundedUnder [Preorder α] {f : Filter β} {u : β → α} :
+    BddBelow (Set.range u) → f.IsBoundedUnder (· ≥ ·) u
+  | ⟨b, hb⟩ => isBoundedUnder_of ⟨b, by simpa [mem_lowerBounds] using hb⟩
 
 theorem _root_.Monotone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
     {v : α → β} (hv : Monotone v) (hl : l.IsBoundedUnder (· ≤ ·) u) :
@@ -234,7 +241,7 @@ theorem IsBounded.isCobounded_le [Preorder α] [NeBot f] (h : f.IsBounded (· �
   h.isCobounded_flip
 #align filter.is_bounded.is_cobounded_le Filter.IsBounded.isCobounded_le
 
-theorem IsBoundedUnder.isCoboundedUnder_flip {l : Filter γ} [IsTrans α r] [NeBot l]
+theorem IsBoundedUnder.isCoboundedUnder_flip {u : γ → α} {l : Filter γ} [IsTrans α r] [NeBot l]
     (h : l.IsBoundedUnder r u) : l.IsCoboundedUnder (flip r) u :=
   h.isCobounded_flip
 

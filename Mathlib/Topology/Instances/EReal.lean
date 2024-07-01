@@ -154,7 +154,7 @@ theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_ : a ≠ ⊥), 𝓟 (Iio a) :=
 #align ereal.nhds_bot EReal.nhds_bot
 
 theorem nhds_bot_basis : (𝓝 (⊥ : EReal)).HasBasis (fun _ : ℝ ↦ True) (Iio ·) := by
-  refine nhds_bot_basis.to_hasBasis (fun x hx => ?_) fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
+  refine _root_.nhds_bot_basis.to_hasBasis (fun x hx => ?_) fun _ _ ↦ ⟨_, bot_lt_coe _, Subset.rfl⟩
   rcases exists_rat_btwn_of_lt hx with ⟨y, -, hxy⟩
   exact ⟨_, trivial, Iio_subset_Iio hxy.le⟩
 
@@ -242,15 +242,7 @@ theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) 
 
 instance : ContinuousNeg EReal := ⟨negOrderIso.continuous⟩
 
-/-- Negation on `EReal` as a homeomorphism -/
-@[deprecated Homeomorph.neg]
-def negHomeo : EReal ≃ₜ EReal :=
-  negOrderIso.toHomeomorph
-#align ereal.neg_homeo EReal.negHomeo
-
-@[deprecated continuous_neg]
-protected theorem continuous_neg : Continuous fun x : EReal => -x :=
-  continuous_neg
-#align ereal.continuous_neg EReal.continuous_neg
+#align ereal.neg_homeo Homeomorph.neg
+#align ereal.continuous_neg ContinuousNeg.continuous_neg
 
 end EReal

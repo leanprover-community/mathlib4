@@ -160,7 +160,7 @@ theorem deleteFar_iff :
       H ≤ G → p H → r ≤ G.edgeFinset.card - H.edgeFinset.card := by
   classical
   refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
-  · have := h (sdiff_subset G.edgeFinset H.edgeFinset)
+  · have := h (sdiff_subset (t := H.edgeFinset))
     simp only [deleteEdges_sdiff_eq_of_le hHG, edgeFinset_mono hHG, card_sdiff,
       card_le_card, coe_sdiff, coe_edgeFinset, Nat.cast_sub] at this
     exact this hH
@@ -279,7 +279,7 @@ theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
 theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v = G.edgeFinset.filter (Membership.mem v) := by
   ext e
-  refine Sym2.ind (fun x y => ?_) e
+  induction e
   simp [mk'_mem_incidenceSet_iff]
 #align simple_graph.incidence_finset_eq_filter SimpleGraph.incidenceFinset_eq_filter
 
@@ -449,7 +449,7 @@ theorem maxDegree_lt_card_verts [DecidableRel G.Adj] [Nonempty V] :
 theorem card_commonNeighbors_le_degree_left [DecidableRel G.Adj] (v w : V) :
     Fintype.card (G.commonNeighbors v w) ≤ G.degree v := by
   rw [← card_neighborSet_eq_degree]
-  exact Set.card_le_card (Set.inter_subset_left _ _)
+  exact Set.card_le_card Set.inter_subset_left
 #align simple_graph.card_common_neighbors_le_degree_left SimpleGraph.card_commonNeighbors_le_degree_left
 
 theorem card_commonNeighbors_le_degree_right [DecidableRel G.Adj] (v w : V) :

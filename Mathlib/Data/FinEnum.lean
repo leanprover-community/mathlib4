@@ -50,7 +50,7 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
   card := xs.length
   equiv :=
     ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, xs.get, fun x => by simp,
-      fun i => by ext; simp [List.get_indexOf h']⟩
+      fun i => by ext; simp [List.indexOf_getElem h']⟩
 #align fin_enum.of_nodup_list FinEnum.ofNodupList
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
@@ -169,7 +169,7 @@ instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
 
 instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinEnum { x // p x } :=
   ofList ((toList α).filterMap fun x => if h : p x then some ⟨_, h⟩ else none)
-    (by rintro ⟨x, h⟩; simp; exists x; simp [*])
+    (by rintro ⟨x, h⟩; simpa)
 #align fin_enum.subtype.fin_enum FinEnum.Subtype.finEnum
 
 instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Sigma β) :=

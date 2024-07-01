@@ -20,13 +20,13 @@ import Mathlib.SetTheory.Cardinal.PartENat
   (using `Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
-set_option autoImplicit true
-
 open Cardinal Function
 
 noncomputable section
 
 variable {α β : Type*}
+
+universe u v
 
 namespace Nat
 
@@ -105,10 +105,10 @@ variable {s t : Set α}
 lemma card_mono (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
   toNat_le_toNat (mk_le_mk_of_subset h) ht.lt_aleph0
 
-lemma card_image_le (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
+lemma card_image_le {f : α → β} (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
   have := hs.to_subtype; card_le_card_of_surjective (imageFactorization f s) surjective_onto_image
 
-lemma card_image_of_injOn (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := by
+lemma card_image_of_injOn {f : α → β} (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := by
   classical
   obtain hs | hs := s.finite_or_infinite
   · have := hs.fintype
@@ -118,18 +118,18 @@ lemma card_image_of_injOn (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := b
     have := (hs.image hf).to_subtype
     simp [Nat.card_eq_zero_of_infinite]
 
-lemma card_image_of_injective (hf : Injective f) (s : Set α) :
-    Nat.card (f '' s) = Nat.card s := card_image_of_injOn <| hf.injOn _
+lemma card_image_of_injective {f : α → β} (hf : Injective f) (s : Set α) :
+    Nat.card (f '' s) = Nat.card s := card_image_of_injOn hf.injOn
 
 lemma card_image_equiv (e : α ≃ β) : Nat.card (e '' s) = Nat.card s :=
     Nat.card_congr (e.image s).symm
 
-lemma card_preimage_of_injOn {s : Set β} (hf : (f ⁻¹' s).InjOn f) (hsf : s ⊆ range f) :
+lemma card_preimage_of_injOn {f : α → β} {s : Set β} (hf : (f ⁻¹' s).InjOn f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := by
   rw [← Nat.card_image_of_injOn hf, image_preimage_eq_iff.2 hsf]
 
-lemma card_preimage_of_injective {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
-    Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn (hf.injOn _) hsf
+lemma card_preimage_of_injective {f : α → β} {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
+    Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
 
 end Set
 
@@ -251,8 +251,7 @@ theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set
 #align part_enat.card_image_of_inj_on PartENat.card_image_of_injOn
 
 theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
-    (h : Function.Injective f) : card (f '' s) = card s :=
-  card_image_of_injOn (Set.injOn_of_injective h s)
+    (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 #align part_enat.card_image_of_injective PartENat.card_image_of_injective
 
 -- Should I keep the 6 following lemmas ?

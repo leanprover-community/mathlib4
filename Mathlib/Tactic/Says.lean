@@ -66,7 +66,7 @@ def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool
   let mut msgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
   try
     evalTactic tac
-    let (capture, leave) := (← getThe Core.State).messages.msgs.toList.partition only
+    let (capture, leave) := (← getThe Core.State).messages.toList.partition only
     msgs := leave.foldl (·.add) msgs
     return capture
   catch e =>
@@ -132,4 +132,4 @@ elab_rules : tactic
   | some result, false =>
     evalTactic result
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says

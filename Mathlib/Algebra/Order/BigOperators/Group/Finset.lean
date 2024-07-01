@@ -243,7 +243,7 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
   calc
     (∏ y ∈ t, ∏ x ∈ s.filter fun x ↦ g x = y, f x) ≤
         ∏ y ∈ t ∪ s.image g, ∏ x ∈ s.filter fun x ↦ g x = y, f x :=
-      prod_le_prod_of_subset_of_one_le' (subset_union_left _ _) fun y _ ↦ h y
+      prod_le_prod_of_subset_of_one_le' subset_union_left fun y _ ↦ h y
     _ = ∏ x ∈ s, f x :=
       prod_fiberwise_of_maps_to (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
 #align finset.prod_fiberwise_le_prod_of_one_le_prod_fiber' Finset.prod_fiberwise_le_prod_of_one_le_prod_fiber'

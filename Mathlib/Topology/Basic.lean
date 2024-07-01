@@ -168,7 +168,6 @@ theorem TopologicalSpace.ext_iff_isClosed {t₁ t₂ : TopologicalSpace X} :
 
 alias ⟨_, TopologicalSpace.ext_isClosed⟩ := TopologicalSpace.ext_iff_isClosed
 
--- Porting note (#10756): new lemma
 theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (p := ¬p)⟩
 
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
@@ -339,6 +338,16 @@ theorem interior_iInter_of_finite [Finite ι] (f : ι → Set X) :
   rw [← sInter_range, (finite_range f).interior_sInter, biInter_range]
 #align interior_Inter interior_iInter_of_finite
 
+@[simp]
+theorem interior_iInter₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m < n, f m) = ⋂ m < n, interior (f m) :=
+  (finite_lt_nat n).interior_biInter f
+
+@[simp]
+theorem interior_iInter₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    interior (⋂ m ≤ n, f m) = ⋂ m ≤ n, interior (f m) :=
+  (finite_le_nat n).interior_biInter f
+
 theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
     (h₂ : interior t = ∅) : interior (s ∪ t) = interior s :=
   have : interior (s ∪ t) ⊆ s := fun x ⟨u, ⟨(hu₁ : IsOpen u), (hu₂ : u ⊆ s ∪ t)⟩, (hx₁ : x ∈ u)⟩ =>
@@ -347,7 +356,7 @@ theorem interior_union_isClosed_of_interior_empty (h₁ : IsClosed s)
       have : u \ s ⊆ interior t := by rwa [(IsOpen.sdiff hu₁ h₁).subset_interior_iff]
       have : u \ s ⊆ ∅ := by rwa [h₂] at this
       this ⟨hx₁, hx₂⟩
-  Subset.antisymm (interior_maximal this isOpen_interior) (interior_mono <| subset_union_left _ _)
+  Subset.antisymm (interior_maximal this isOpen_interior) (interior_mono subset_union_left)
 #align interior_union_is_closed_of_interior_empty interior_union_isClosed_of_interior_empty
 
 theorem isOpen_iff_forall_mem_open : IsOpen s ↔ ∀ x ∈ s, ∃ t, t ⊆ s ∧ IsOpen t ∧ x ∈ t := by
@@ -519,6 +528,16 @@ theorem closure_iUnion_of_finite [Finite ι] (f : ι → Set X) :
   rw [← sUnion_range, (finite_range _).closure_sUnion, biUnion_range]
 #align closure_Union closure_iUnion_of_finite
 
+@[simp]
+theorem closure_iUnion₂_lt_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m < n, f m) = ⋃ m < n, closure (f m) :=
+  (finite_lt_nat n).closure_biUnion f
+
+@[simp]
+theorem closure_iUnion₂_le_nat {n : ℕ} (f : ℕ → Set X) :
+    closure (⋃ m ≤ n, f m) = ⋃ m ≤ n, closure (f m) :=
+  (finite_le_nat n).closure_biUnion f
+
 theorem interior_subset_closure : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
 #align interior_subset_closure interior_subset_closure
@@ -679,7 +698,7 @@ theorem frontier_eq_closure_inter_closure : frontier s = closure s ∩ closure s
 #align frontier_eq_closure_inter_closure frontier_eq_closure_inter_closure
 
 theorem frontier_subset_closure : frontier s ⊆ closure s :=
-  diff_subset _ _
+  diff_subset
 #align frontier_subset_closure frontier_subset_closure
 
 theorem IsClosed.frontier_subset (hs : IsClosed s) : frontier s ⊆ s :=
@@ -741,7 +760,7 @@ theorem isClosed_frontier : IsClosed (frontier s) := by
 /-- The frontier of a closed set has no interior point. -/
 theorem interior_frontier (h : IsClosed s) : interior (frontier s) = ∅ := by
   have A : frontier s = s \ interior s := h.frontier_eq
-  have B : interior (frontier s) ⊆ interior s := by rw [A]; exact interior_mono (diff_subset _ _)
+  have B : interior (frontier s) ⊆ interior s := by rw [A]; exact interior_mono diff_subset
   have C : interior (frontier s) ⊆ frontier s := interior_subset
   have : interior (frontier s) ⊆ interior s ∩ (s \ interior s) :=
     subset_inter B (by simpa [A] using C)
@@ -791,7 +810,7 @@ theorem nhds_basis_opens (x : X) :
   rw [nhds_def]
   exact hasBasis_biInf_principal
     (fun s ⟨has, hs⟩ t ⟨hat, ht⟩ =>
-      ⟨s ∩ t, ⟨⟨has, hat⟩, IsOpen.inter hs ht⟩, ⟨inter_subset_left _ _, inter_subset_right _ _⟩⟩)
+      ⟨s ∩ t, ⟨⟨has, hat⟩, IsOpen.inter hs ht⟩, ⟨inter_subset_left, inter_subset_right⟩⟩)
     ⟨univ, ⟨mem_univ x, isOpen_univ⟩⟩
 #align nhds_basis_opens nhds_basis_opens
 
@@ -1241,12 +1260,22 @@ theorem mem_closure_iff_nhds_ne_bot : x ∈ closure s ↔ 𝓝 x ⊓ 𝓟 s ≠ 
   mem_closure_iff_clusterPt.trans neBot_iff
 #align mem_closure_iff_nhds_ne_bot mem_closure_iff_nhds_ne_bot
 
-@[deprecated] -- 28 January 2024
+@[deprecated (since := "2024-01-28")]
 alias mem_closure_iff_nhds_neBot := mem_closure_iff_nhds_ne_bot
 
 theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x) :=
   mem_closure_iff_clusterPt
 #align mem_closure_iff_nhds_within_ne_bot mem_closure_iff_nhdsWithin_neBot
+
+lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t ∩ s).Nonempty := by
+  rw [nhdsWithin, inf_neBot_iff]
+  exact forall₂_congr fun U _ ↦
+    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
+
+@[gcongr]
+theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
+  inf_le_inf_left _ (principal_mono.mpr h)
+#align nhds_within_mono nhdsWithin_mono
 
 lemma not_mem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
@@ -1559,7 +1588,7 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
   hf hs
 
 /-- Deprecated, please use `not_mem_tsupport_iff_eventuallyEq` instead. -/
-@[deprecated] -- 15 January 2024
+@[deprecated (since := "2024-01-15")]
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {f : X → M₀} :
     f =ᶠ[𝓝 x] 0 ↔ x ∉ closure (Function.support f) := by
   rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support,
@@ -1719,7 +1748,6 @@ theorem image_closure_subset_closure_image (h : Continuous f) :
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
 
--- Porting note (#10756): new lemma
 theorem closure_image_closure (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm

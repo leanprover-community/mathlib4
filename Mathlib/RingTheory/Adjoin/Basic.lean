@@ -248,11 +248,11 @@ theorem mem_adjoin_of_map_mul {s} {x : A} {f : A →ₗ[R] B} (hf : ∀ a₁ a�
     (h : x ∈ adjoin R s) : f x ∈ adjoin R (f '' (s ∪ {1})) := by
   refine
     @adjoin_induction R A _ _ _ _ (fun a => f a ∈ adjoin R (f '' (s ∪ {1}))) x h
-      (fun a ha => subset_adjoin ⟨a, ⟨Set.subset_union_left _ _ ha, rfl⟩⟩) (fun r => ?_)
+      (fun a ha => subset_adjoin ⟨a, ⟨Set.subset_union_left ha, rfl⟩⟩) (fun r => ?_)
       (fun y z hy hz => by simpa [hy, hz] using Subalgebra.add_mem _ hy hz) fun y z hy hz => by
       simpa [hy, hz, hf y z] using Subalgebra.mul_mem _ hy hz
   have : f 1 ∈ adjoin R (f '' (s ∪ {1})) :=
-    subset_adjoin ⟨1, ⟨Set.subset_union_right _ _ <| Set.mem_singleton 1, rfl⟩⟩
+    subset_adjoin ⟨1, ⟨Set.subset_union_right <| Set.mem_singleton 1, rfl⟩⟩
   convert Subalgebra.smul_mem (adjoin R (f '' (s ∪ {1}))) this r
   rw [algebraMap_eq_smul_one]
   exact f.map_smul _ _
@@ -274,8 +274,8 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
       mem_adjoin_of_map_mul R LinearMap.inl_map_mul ha
     have Hb : ((0 : A), b) ∈ adjoin R (LinearMap.inr R A B '' (t ∪ {1})) :=
       mem_adjoin_of_map_mul R LinearMap.inr_map_mul hb
-    replace Ha : (a, (0 : B)) ∈ P := adjoin_mono (Set.subset_union_left _ _) Ha
-    replace Hb : ((0 : A), b) ∈ P := adjoin_mono (Set.subset_union_right _ _) Hb
+    replace Ha : (a, (0 : B)) ∈ P := adjoin_mono Set.subset_union_left Ha
+    replace Hb : ((0 : A), b) ∈ P := adjoin_mono Set.subset_union_right Hb
     simpa [P] using Subalgebra.add_mem _ Ha Hb
 #align algebra.adjoin_inl_union_inr_eq_prod Algebra.adjoin_inl_union_inr_eq_prod
 
@@ -336,9 +336,9 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
         (IsScalarTower.algebraMap_apply _ _ _ _).symm⟩)
         (Set.union_subset_union_left _ fun _ ⟨_x, hx, hxs⟩ => hxs ▸ ⟨⟨_, subset_adjoin hx⟩, rfl⟩))
     (closure_le.2 <|
-      Set.union_subset (Set.range_subset_iff.2 fun x => adjoin_mono (Set.subset_union_left _ _) <|
+      Set.union_subset (Set.range_subset_iff.2 fun x => adjoin_mono Set.subset_union_left <|
         Algebra.adjoin_algebraMap R A s ▸ ⟨x, x.prop, rfl⟩)
-        (Set.Subset.trans (Set.subset_union_right _ _) subset_adjoin))
+        (Set.Subset.trans Set.subset_union_right subset_adjoin))
 
 theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adjoin S s := by
   apply le_antisymm (adjoin_le _)

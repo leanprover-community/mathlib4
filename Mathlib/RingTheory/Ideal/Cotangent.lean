@@ -128,7 +128,6 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   · intro x y hx hy; exact add_mem hx hy
 #align ideal.cotangent_ideal_square Ideal.cotangentIdeal_square
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem to_quotient_square_range :
     LinearMap.range I.cotangentToQuotientSquare = I.cotangentIdeal.restrictScalars R := by
   trans LinearMap.range (I.cotangentToQuotientSquare.comp I.toCotangent)
@@ -136,7 +135,6 @@ theorem to_quotient_square_range :
   · rw [to_quotient_square_comp_toCotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
 #align ideal.to_quotient_square_range Ideal.to_quotient_square_range
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
@@ -195,6 +193,26 @@ def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
   refine (DoubleQuot.quotQuotEquivQuotSup _ _).trans ?_
   exact Ideal.quotEquivOfEq (sup_eq_right.mpr <| Ideal.pow_le_self two_ne_zero)
 #align ideal.quot_cotangent Ideal.quotCotangent
+
+/-- The map `I/I² → J/J²` if `I ≤ f⁻¹(J)`. -/
+def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) :
+    I₁.Cotangent →ₗ[R] I₂.Cotangent := by
+  refine Submodule.mapQ ((I₁ • ⊤ : Submodule A I₁).restrictScalars R)
+    ((I₂ • ⊤ : Submodule B I₂).restrictScalars R) ?_ ?_
+  · exact f.toLinearMap.restrict (p := I₁.restrictScalars R) (q := I₂.restrictScalars R) h
+  · intro x hx
+    refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
+    rintro a ha ⟨b, hb⟩ -
+    simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
+    convert (Submodule.smul_mem_smul (M := I₂) (r := f a)
+      (n := ⟨f b, h hb⟩) (h ha) (Submodule.mem_top)) using 1
+    ext
+    exact f.map_mul a b
+
+@[simp]
+lemma mapCotangent_toCotangent
+    (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁ ≤ I₂.comap f) (x : I₁) :
+    Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
 
 end Ideal
 

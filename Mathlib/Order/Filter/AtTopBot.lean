@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import order.filter.at_top_bot from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -26,8 +27,6 @@ In this file we define the filters
 
 Then we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
-
-set_option autoImplicit true
 
 variable {ι ι' α β γ : Type*}
 
@@ -262,12 +261,12 @@ theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
     (∀ᶠ x in atBot, ∀ y, y ≤ x → p y) ↔ ∀ᶠ x in atBot, p x :=
   eventually_forall_ge_atTop (α := αᵒᵈ)
 
-theorem Tendsto.eventually_forall_ge_atTop {α β : Type*} [Preorder β] {l : Filter α}
+theorem Tendsto.eventually_forall_ge_atTop [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atTop) (h_evtl : ∀ᶠ x in atTop, p x) :
     ∀ᶠ x in l, ∀ y, f x ≤ y → p y := by
   rw [← Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
 
-theorem Tendsto.eventually_forall_le_atBot {α β : Type*} [Preorder β] {l : Filter α}
+theorem Tendsto.eventually_forall_le_atBot [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atBot) (h_evtl : ∀ᶠ x in atBot, p x) :
     ∀ᶠ x in l, ∀ y, y ≤ f x → p y := by
   rw [← Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
@@ -650,7 +649,7 @@ theorem frequently_low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β}
   @frequently_high_scores βᵒᵈ _ _ _ hu
 #align filter.frequently_low_scores Filter.frequently_low_scores
 
-theorem strictMono_subseq_of_tendsto_atTop {β : Type*} [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
+theorem strictMono_subseq_of_tendsto_atTop [LinearOrder β] [NoMaxOrder β] {u : ℕ → β}
     (hu : Tendsto u atTop atTop) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ StrictMono (u ∘ φ) :=
   let ⟨φ, h, h'⟩ := extraction_of_frequently_atTop (frequently_high_scores hu)
   ⟨φ, h, fun _ m hnm => h' m _ (h hnm)⟩
@@ -735,15 +734,8 @@ theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
   @Tendsto.nsmul_atTop α βᵒᵈ _ l f hf n hn
 #align filter.tendsto.nsmul_at_bot Filter.Tendsto.nsmul_atBot
 
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit0_atTop : Tendsto bit0 (atTop : Filter β) atTop :=
-  tendsto_atTop_add tendsto_id tendsto_id
-#align filter.tendsto_bit0_at_top Filter.tendsto_bit0_atTop
-
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit0_atBot : Tendsto bit0 (atBot : Filter β) atBot :=
-  tendsto_atBot_add tendsto_id tendsto_id
-#align filter.tendsto_bit0_at_bot Filter.tendsto_bit0_atBot
+#noalign filter.tendsto_bit0_at_top
+#noalign filter.tendsto_bit0_at_bot
 
 end OrderedAddCommMonoid
 
@@ -931,10 +923,7 @@ section OrderedSemiring
 
 variable [OrderedSemiring α] {l : Filter β} {f g : β → α}
 
-set_option linter.deprecated false in
-@[deprecated] theorem tendsto_bit1_atTop : Tendsto bit1 (atTop : Filter α) atTop :=
-  tendsto_atTop_add_nonneg_right tendsto_bit0_atTop fun _ => zero_le_one
-#align filter.tendsto_bit1_at_top Filter.tendsto_bit1_atTop
+#noalign filter.tendsto_bit1_at_top
 
 theorem Tendsto.atTop_mul_atTop (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atTop := by
@@ -1036,14 +1025,6 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 
 end LinearOrderedSemiring
 
--- Porting note (#11215): TODO: make `Odd` and `Even` available here, drop `bit1`
-set_option linter.deprecated false in
-theorem nonneg_of_eventually_pow_nonneg [LinearOrderedRing α] {a : α}
-    (h : ∀ᶠ n in atTop, 0 ≤ a ^ (n : ℕ)) : 0 ≤ a :=
-  let ⟨_n, hn⟩ := (tendsto_bit1_atTop.eventually h).exists
-  pow_bit1_nonneg_iff.1 hn
-#align filter.nonneg_of_eventually_pow_nonneg Filter.nonneg_of_eventually_pow_nonneg
-
 theorem not_tendsto_pow_atTop_atBot [LinearOrderedRing α] :
     ∀ {n : ℕ}, ¬Tendsto (fun x : α => x ^ n) atTop atBot
   | 0 => by simp [not_tendsto_const_atBot]
@@ -1104,7 +1085,7 @@ lemma tendsto_div_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
 
 /-- If `f` tends to infinity along a filter, then `f` multiplied by a positive
 constant (on the left) also tends to infinity. For a version working in `ℕ` or `ℤ`, use
-`filter.tendsto.const_mul_atTop'` instead. -/
+`Filter.Tendsto.const_mul_atTop'` instead. -/
 theorem Tendsto.const_mul_atTop (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop :=
   (tendsto_const_mul_atTop_of_pos hr).2 hf
@@ -1112,7 +1093,7 @@ theorem Tendsto.const_mul_atTop (hr : 0 < r) (hf : Tendsto f l atTop) :
 
 /-- If a function `f` tends to infinity along a filter, then `f` multiplied by a positive
 constant (on the right) also tends to infinity. For a version working in `ℕ` or `ℤ`, use
-`filter.tendsto.atTop_mul_const'` instead. -/
+`Filter.Tendsto.atTop_mul_const'` instead. -/
 theorem Tendsto.atTop_mul_const (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop :=
   (tendsto_mul_const_atTop_of_pos hr).2 hf
@@ -1546,7 +1527,7 @@ theorem tendsto_finset_image_atTop_atTop [DecidableEq β] {i : β → γ} {j : �
 #align filter.tendsto_finset_image_at_top_at_top Filter.tendsto_finset_image_atTop_atTop
 
 theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injective f) :
-    Tendsto (fun s : Finset β => s.preimage f (hf.injOn _)) atTop atTop :=
+    Tendsto (fun s : Finset β => s.preimage f (hf.injOn)) atTop atTop :=
   (Finset.monotone_preimage hf).tendsto_atTop_finset fun x =>
     ⟨{f x}, Finset.mem_preimage.2 <| Finset.mem_singleton_self _⟩
 #align filter.tendsto_finset_preimage_at_top_at_top Filter.tendsto_finset_preimage_atTop_atTop
@@ -1562,9 +1543,9 @@ theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
 #align filter.prod_at_top_at_top_eq Filter.prod_atTop_atTop_eq
 
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`
-theorem prod_atBot_atBot_eq [Preorder β₁] [Preorder β₂] :
-    (atBot : Filter β₁) ×ˢ (atBot : Filter β₂) = (atBot : Filter (β₁ × β₂)) :=
-  @prod_atTop_atTop_eq β₁ᵒᵈ β₂ᵒᵈ _ _
+theorem prod_atBot_atBot_eq [Preorder α] [Preorder β] :
+    (atBot : Filter α) ×ˢ (atBot : Filter β) = (atBot : Filter (α × β)) :=
+  @prod_atTop_atTop_eq αᵒᵈ βᵒᵈ _ _
 #align filter.prod_at_bot_at_bot_eq Filter.prod_atBot_atBot_eq
 
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`
@@ -2040,7 +2021,7 @@ lemma frequently_iff_seq_forall {ι : Type*} {l : Filter ι} {p : ι → Prop}
     hnsl.frequently <| frequently_of_forall hpns⟩
 
 /-- A sequence converges if every subsequence has a convergent subsequence. -/
-theorem tendsto_of_subseq_tendsto {α ι : Type*} {x : ι → α} {f : Filter α} {l : Filter ι}
+theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {l : Filter ι}
     [l.IsCountablyGenerated]
     (hxy : ∀ ns : ℕ → ι, Tendsto ns atTop l →
       ∃ ms : ℕ → ℕ, Tendsto (fun n => x (ns <| ms n)) atTop f) :
@@ -2117,16 +2098,16 @@ theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → 
     map (fun s => ∏ i ∈ s, f (g i)) atTop = map (fun s => ∏ i ∈ s, f i) atTop := by
   haveI := Classical.decEq β
   apply le_antisymm <;> refine map_atTop_finset_prod_le_of_prod_eq fun s => ?_
-  · refine ⟨s.preimage g (hg.injOn _), fun t ht => ?_⟩
-    refine ⟨t.image g ∪ s, Finset.subset_union_right _ _, ?_⟩
-    rw [← Finset.prod_image (hg.injOn _)]
-    refine (prod_subset (subset_union_left _ _) ?_).symm
+  · refine ⟨s.preimage g hg.injOn, fun t ht => ?_⟩
+    refine ⟨t.image g ∪ s, Finset.subset_union_right, ?_⟩
+    rw [← Finset.prod_image hg.injOn]
+    refine (prod_subset subset_union_left ?_).symm
     simp only [Finset.mem_union, Finset.mem_image]
     refine fun y hy hyt => hf y (mt ?_ hyt)
     rintro ⟨x, rfl⟩
     exact ⟨x, ht (Finset.mem_preimage.2 <| hy.resolve_left hyt), rfl⟩
   · refine ⟨s.image g, fun t ht => ?_⟩
-    simp only [← prod_preimage _ _ (hg.injOn _) _ fun x _ => hf x]
+    simp only [← prod_preimage _ _ hg.injOn _ fun x _ => hf x]
     exact ⟨_, (image_subset_iff_subset_preimage _).1 ht, rfl⟩
 #align function.injective.map_at_top_finset_prod_eq Function.Injective.map_atTop_finset_prod_eq
 #align function.injective.map_at_top_finset_sum_eq Function.Injective.map_atTop_finset_sum_eq

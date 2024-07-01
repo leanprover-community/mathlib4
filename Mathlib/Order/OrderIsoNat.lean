@@ -69,7 +69,7 @@ theorem acc_iff_no_decreasing_seq {x} :
   · refine fun h => h.recOn fun x _ IH => ?_
     constructor
     rintro ⟨f, k, hf⟩
-    exact IsEmpty.elim' (IH (f (k + 1)) (hf ▸ f.map_rel_iff.2 (lt_add_one k))) ⟨f, _, rfl⟩
+    exact IsEmpty.elim' (IH (f (k + 1)) (hf ▸ f.map_rel_iff.2 (Nat.lt_succ_self _))) ⟨f, _, rfl⟩
   · have : ∀ x : { a // ¬Acc r a }, ∃ y : { a // ¬Acc r a }, r y.1 x.1 := by
       rintro ⟨x, hx⟩
       cases exists_not_acc_lt_of_not_acc hx with
@@ -185,13 +185,12 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         · exact ⟨0, fun n _ nbad => he ⟨n, hbad.mem_toFinset.2 nbad⟩⟩
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) := by
         intro n
-        have h := hm _ (le_add_of_nonneg_left n.zero_le)
+        have h := hm _ (Nat.le_add_left m n)
         simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
-        obtain ⟨x, hpos, rfl⟩ := exists_pos_add_of_lt hn1
-        refine ⟨n + x, add_lt_add_left hpos n, ?_⟩
-        rw [add_assoc, add_comm x m, ← add_assoc]
-        exact hn2
+        refine ⟨n + n' - n - m, by omega, ?_⟩
+        convert hn2
+        omega
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
         ⟨(RelEmbedding.natLT (fun n => g' n + m) fun n =>
@@ -206,7 +205,7 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
       (∀ m n : ℕ, m < n → r (f (g m)) (f (g n))) ∨ ∀ m n : ℕ, m < n → ¬r (f (g m)) (f (g n)) := by
   obtain ⟨g, hr | hnr⟩ := exists_increasing_or_nonincreasing_subseq' r f
   · refine ⟨g, Or.intro_left _ fun m n mn => ?_⟩
-    obtain ⟨x, rfl⟩ := exists_add_of_le (Nat.succ_le_iff.2 mn)
+    obtain ⟨x, rfl⟩ := Nat.exists_eq_add_of_le (Nat.succ_le_iff.2 mn)
     induction' x with x ih
     · apply hr
     · apply IsTrans.trans _ _ _ _ (hr _)

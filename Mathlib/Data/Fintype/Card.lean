@@ -481,7 +481,7 @@ namespace Fintype
 variable [Fintype α] [Fintype β]
 
 theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card α ≤ card β :=
-  Finset.card_le_card_of_inj_on f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
+  Finset.card_le_card_of_injOn f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
 #align fintype.card_le_of_injective Fintype.card_le_of_injective
 
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
@@ -638,7 +638,6 @@ namespace Finite
 
 variable [Finite α]
 
--- Porting note (#10756): new theorem
 theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
   intro x
   have := Classical.propDecidable
@@ -781,6 +780,11 @@ noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.ca
 
 theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
   (card_eq_of_equiv_fintype i).trans (Fintype.card_coe _)
+
+/-- We can inflate a set `s` to any bigger size. -/
+lemma Finset.exists_superset_card_eq [Fintype α] {n : ℕ} {s : Finset α} (hsn : s.card ≤ n)
+    (hnα : n ≤ Fintype.card α) :
+    ∃ t, s ⊆ t ∧ t.card = n := by simpa using exists_subsuperset_card_eq s.subset_univ hsn hnα
 
 @[simp]
 theorem Fintype.card_prop : Fintype.card Prop = 2 :=

@@ -49,6 +49,8 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
+open Category
+
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
@@ -59,6 +61,9 @@ top/left/right/bottom sides of a square of categories. -/
 def TwoSquare := T ⋙ R ⟶ L ⋙ B
 
 namespace TwoSquare
+
+/-- Constructor for `TwoSquare`. -/
+abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
 
 variable {T L R B}
 
@@ -118,9 +123,29 @@ abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
-abbrev CoStructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
+abbrev CostructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
+
+variable {w g}
+
+lemma StructuredArrowRightwards.mk_surjective
+    (f : w.StructuredArrowRightwards g) :
+    ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
+      (comm : R.map a ≫ w.app X₁ ≫ B.map b = g), f = mk w g X₁ a b comm := by
+  obtain ⟨g, φ, rfl⟩ := StructuredArrow.mk_surjective f
+  obtain ⟨X₁, b, rfl⟩ := g.mk_surjective
+  obtain ⟨a, ha, rfl⟩ := CostructuredArrow.homMk_surjective φ
+  exact ⟨X₁, a, b, by simpa using ha, rfl⟩
+
+lemma CostructuredArrowDownwards.mk_surjective
+    (f : w.CostructuredArrowDownwards g) :
+    ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
+      (comm : R.map a ≫ w.app X₁ ≫ B.map b = g), f = mk w g X₁ a b comm := by
+  obtain ⟨g, φ, rfl⟩ := CostructuredArrow.mk_surjective f
+  obtain ⟨X₁, a, rfl⟩ := g.mk_surjective
+  obtain ⟨b, hb, rfl⟩ := StructuredArrow.homMk_surjective φ
+  exact ⟨X₁, a, b, by simpa using hb, rfl⟩
 
 end
 
@@ -167,6 +192,29 @@ def equivalenceJ : w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownward
 lemma isConnected_rightwards_iff_downwards :
     IsConnected (w.StructuredArrowRightwards g) ↔ IsConnected (w.CostructuredArrowDownwards g) :=
   isConnected_iff_of_equivalence (w.equivalenceJ g)
+
+end
+
+section
+
+/-- The functor `w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g'` induced
+by a morphism `γ` such that `R.map γ ≫ g = g'`. -/
+@[simps]
+def costructuredArrowDownwardsPrecomp
+    {X₂ X₂' : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃) (g' : R.obj X₂' ⟶ B.obj X₃)
+    (γ : X₂' ⟶ X₂) (hγ : R.map γ ≫ g = g') :
+    w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g' where
+  obj A := CostructuredArrowDownwards.mk _ _ A.left.right (γ ≫ A.left.hom) A.hom.right
+    (by simpa [← hγ] using R.map γ ≫= StructuredArrow.w A.hom)
+  map {A A'} φ := CostructuredArrow.homMk (StructuredArrow.homMk φ.left.right (by
+      dsimp
+      rw [assoc, StructuredArrow.w])) (by
+    ext
+    dsimp
+    rw [← CostructuredArrow.w φ, structuredArrowDownwards_map]
+    rfl)
+  map_id A := rfl
+  map_comp φ φ' := rfl
 
 end
 
@@ -222,6 +270,33 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
     (w.structuredArrowDownwards X₂).Initial := by
   rw [guitartExact_iff_initial] at hw
   apply hw
+
+/-- When the left and right functors of a 2-square are equivalences, and the natural
+transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
+instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
+    [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
+  rw [guitartExact_iff_initial]
+  intro X₂
+  have := StructuredArrow.isEquivalence_post X₂ T R
+  have : (Comma.mapRight _ w : StructuredArrow (R.obj X₂) _ ⥤ _).IsEquivalence :=
+    (Comma.mapRightIso _ (asIso w)).isEquivalence_functor
+  have := StructuredArrow.isEquivalence_pre (R.obj X₂) L B
+  dsimp only [structuredArrowDownwards]
+  infer_instance
+
+instance guitartExact_id (F : C₁ ⥤ C₂) :
+    GuitartExact (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) := by
+  rw [guitartExact_iff_isConnected_rightwards]
+  intro X₂ X₃ (g : F.obj X₂ ⟶ X₃)
+  let Z := StructuredArrowRightwards (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) g
+  let X₀ : Z := StructuredArrow.mk (Y := CostructuredArrow.mk g) (CostructuredArrow.homMk (𝟙 _))
+  have φ : ∀ (X : Z), X₀ ⟶ X := fun X =>
+    StructuredArrow.homMk (CostructuredArrow.homMk X.hom.left
+      (by simpa using CostructuredArrow.w X.hom))
+  have : Nonempty Z := ⟨X₀⟩
+  apply zigzag_isConnected
+  intro X Y
+  exact Zigzag.of_inv_hom (φ X) (φ Y)
 
 end TwoSquare
 
