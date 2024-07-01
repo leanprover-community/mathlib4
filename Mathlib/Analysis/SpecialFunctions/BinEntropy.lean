@@ -69,11 +69,17 @@ lemma binaryEntropy_eq' {p : ℝ} : binaryEntropy p = -p * log p - (1 - p) * log
   simp only [this, log_inv]
   field_simp
 
-/-- `binaryEntropy` is symmetric about 1/2, i.e., `binaryEntropy (1 - p) = binaryEntropy p` -/
+/-- `binaryEntropy` is symmetric about 1/2. -/
 @[simp] lemma binaryEntropy_one_sub (p : ℝ) :
     binaryEntropy (1 - p) = binaryEntropy p := by
   simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
   ring
+
+/-- `binaryEntropy` is symmetric about 1/2. -/
+lemma binaryEntropy_add_onehalf (p : ℝ) :
+    binaryEntropy (2⁻¹ + p) = binaryEntropy (2⁻¹ - p) := by
+  simp only [binaryEntropy_eq', neg_sub, sub_sub_cancel, neg_mul]
+  ring_nf
 
 lemma qaryEntropy_eq_log_mul_add_binaryEntropy {q : ℕ} {p : ℝ} :
     qaryEntropy q p = p * log (q - 1) + binaryEntropy p := by
@@ -110,23 +116,63 @@ lemma qaryEntropy_pos {q : ℕ} {p : ℝ} (pgt0 : 0 < p) (ple1 : p < 1) : 0 < qa
   have rest_is_pos : 0 < -(p * p.log) - (1 - p) * (1 - p).log := by
     simp only [← neg_mul, ← binaryEntropy_eq']
     exact binaryEntropy_pos pgt0 ple1
-  have (a b c : ℝ) (ha : 0 ≤ a) (hb : 0 < -b - c) : 0 < a - b - c := by linarith
-  exact this (p * ((q : ℝ) - 1).log) (p * p.log) ((1 - p) * (1 - p).log) p_q_log_nonneg rest_is_pos
+  linarith
 
--- TODO assumptions not needed?
-lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
+@[gcongr]
+lemma log_le_log_of_neg {x y : ℝ} (hx : x < 0) (hxy : y ≤ x) : log x ≤ log y := by
+  rw [← log_neg_eq_log x, ← log_neg_eq_log y]
+  have hx : 0 < -x := by linarith
+  have hxy : -x ≤ -y := by linarith
+  exact (log_le_log_iff hx (hx.trans_le hxy)).2 hxy
+
+@[gcongr]
+theorem log_lt_log_of_neg {x y : ℝ} (hx : x < 0) (h : y < x) : log x < log y := by
+  rw [← log_neg_eq_log x, ← log_neg_eq_log y]
+  have hx : 0 < -x := by linarith
+  rw [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx (by linarith))]
+  linarith
+
+/- Outside usual range of `binaryEntropy`. This is due to `log x = log |x|` -/
+lemma binaryEntropy_neg_of_neg {p : ℝ} (hp : p < 0) : binaryEntropy p < 0 := by
+  simp only [binaryEntropy_eq']
+  suffices -p * log p < (1-p) * log (1-p) by linarith
+  by_cases hp' : p < -1
+  · have : log p < log (1 - p) := by
+      rw [← log_neg_eq_log]
+      exact log_lt_log (Left.neg_pos_iff.mpr hp) (by linarith)
+    nlinarith [log_pos_of_lt_neg_one hp']
+  · have : -p * log p ≤ 0 := by
+      wlog h : -1 < p
+      · simp only [show p = -1 by linarith, log_neg_eq_log, log_one, le_refl, mul_zero]
+      · nlinarith [log_neg_of_lt_zero hp h]
+    have : 0 < -(p - 1) * log (1 - p) := by
+      nlinarith [(log_pos (by linarith) : 0 < log (1 - p))]
+    linarith
+
+/- Outside usual range of `binaryEntropy`. This is due to `log x = log |x|` -/
+lemma binaryEntropy_neg_of_gt_one {p : ℝ} (hp : 1 < p) : binaryEntropy p < 0 := by
+  let x := p - 2⁻¹
+  rw [show p = 2⁻¹ + x by ring, binaryEntropy_add_onehalf]
+  have : 2⁻¹ - x < 0 := calc 2⁻¹ - x
+    _ = -p + 1 := by ring
+    _ < 0 := by linarith
+  exact binaryEntropy_neg_of_neg this
+
+lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} :
     binaryEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
   constructor <;> intro h
-  · by_cases pz : p = 0
-    · left; assumption
-    · by_cases p_is_one : p = 1
-      · right; assumption
-      · have : 0 < binaryEntropy p := by
-          apply binaryEntropy_pos (Ne.lt_of_le ?_ domun)
-          refine Ne.lt_of_le ?_ ?_
-          repeat assumption
-          exact Iff.mp ne_comm pz
-        simp_all only [lt_self_iff_false]
+  · by_cases plt0 : p < 0
+    · linarith [binaryEntropy_neg_of_neg plt0]
+    · by_cases pgt1 : p > 1
+      · linarith [binaryEntropy_neg_of_gt_one pgt1]
+      · by_cases pz : p = 0
+        · left; assumption
+        · by_cases pone : p = 1
+          · right; assumption
+          · have : 0 < binaryEntropy p := by
+              apply binaryEntropy_pos (Ne.lt_of_le (fun a ↦ pz a.symm) (le_of_not_lt plt0))
+              exact Ne.lt_of_le pone (le_of_not_lt pgt1)
+            linarith
   · rw [binaryEntropy_eq']
     cases h <;> simp [*]
 
@@ -141,7 +187,7 @@ lemma binaryEntropy_lt_log2_of_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p <
   rw [binaryEntropy_eq']
   rw [show -p * p.log = -(p * p.log) by ring]
   by_cases pz : p = 0
-  · simp [*]; exact zero_lt_log_two
+  · simp only [log_zero, mul_zero, neg_zero, sub_zero, log_one, sub_self, pz, zero_lt_log_two]
   · have invppos : 0 < 1/p := by positivity
     have : 0 < 1 - p := by norm_num; linarith -- used implicitly by tactics.
     have sub1pinvpos : 0 < 1 / (1 - p) := by positivity
@@ -205,8 +251,7 @@ This is due to definition of `Real.log` for negative numbers. -/
 
 @[simp] lemma deriv_one_minus (x : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) x = -1 := by
   have onem (y : ℝ) : 1 - y = -(y + -1) := by ring
-  simp_rw [onem]
-  simp only [neg_add_rev, neg_neg, differentiableAt_const, deriv_const_add', deriv_neg'']
+  simp only [onem, neg_add_rev, neg_neg, differentiableAt_const, deriv_const_add', deriv_neg'']
 
 section general
 
@@ -216,53 +261,40 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f f₀ f₁ g : E → F}
 variable {x : E}
 
--- TODO clean up, put somewhere else?
-lemma not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_
-    (hf : ¬ DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
-    ¬ DifferentiableAt 𝕜 (fun y => f y + g y) x := by
-  have f_eq_sum_sub_g: f = (fun y => f y + g y) - g := by
-    ext
-    simp only [Pi.sub_apply, add_sub_cancel_right]
-  by_contra
-  have : DifferentiableAt 𝕜 f x := by
+lemma DifferentiableAt.add_iff_left (hg : DifferentiableAt 𝕜 g x) :
+    DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 f x := by
+  constructor <;> intro h
+  · have f_eq_sum_sub_g: f = (fun y => f y + g y) - g := by
+      ext
+      simp only [Pi.sub_apply, add_sub_cancel_right]
     rw [f_eq_sum_sub_g]
-    apply DifferentiableAt.sub
-    · simp
-      assumption
-    · assumption
-  contradiction
+    exact DifferentiableAt.sub h hg
+  · simp_all only [DifferentiableAt.add]
 
--- TODO clean up, put somewhere else?
-lemma not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt
-    (hf : DifferentiableAt 𝕜 f x) (hg : ¬ DifferentiableAt 𝕜 g x) :
-     ¬ DifferentiableAt 𝕜 (fun y => f y + g y) x := by
+lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
+    DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 g x := by
   rw [show (fun y ↦ f y + g y) = (fun y ↦ g y + f y) by ext; rw [add_comm]]
-  exact not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_ hg hf
+  exact hg.add_iff_left
 
 lemma differentiableAt_iff_differentiableAt_comp_mul_add
     {a b m : 𝕜} (hm : m ≠ 0) (f : 𝕜 → E) :
     DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x => f (m * x + b)) (m⁻¹ * (a - b)):= by
   constructor <;> intro h
   · apply DifferentiableAt.comp
-    have : (m * (m⁻¹ * (a - b)) + b) = a := by
-      simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.mul_inv_cancel_left,
-        sub_add_cancel]
-    rw [this]
-    exact h
-    apply DifferentiableAt.add
-    · exact DifferentiableAt.mul (differentiableAt_const m) differentiableAt_id'
-    · exact differentiableAt_const b
-  · have diff_affine : DifferentiableAt 𝕜 (fun x => m⁻¹ * (x - b)) a := by
-      apply DifferentiableAt.mul (differentiableAt_const m⁻¹)
-      apply DifferentiableAt.sub_const differentiableAt_id'
-    have : f = (fun x ↦ f (m * x + b)) ∘ (fun x => m⁻¹ * (x - b)) := by
-        ext
-        simp only [Function.comp_apply]
-        field_simp
+    · have : (m * (m⁻¹ * (a - b)) + b) = a := by
+        simp_all only [ne_eq, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.mul_inv_cancel_left,
+          sub_add_cancel]
+      rw [this]
+      exact h
+    · fun_prop
+  · have : f = (fun x ↦ f (m * x + b)) ∘ (fun x => m⁻¹ * (x - b)) := by
+      ext
+      simp only [Function.comp_apply]
+      field_simp
     rw [this]
     apply DifferentiableAt.comp
     exact h
-    exact diff_affine
+    fun_prop
 
 end general
 
@@ -281,38 +313,48 @@ lemma differentiableAt_binaryEntropy' {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1)
 lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
     DifferentiableAt ℝ binaryEntropy x ↔ x ≠ 0 ∧ x ≠ 1 := by
   refine ⟨?_, fun ne0Ne1 ↦ differentiableAt_binaryEntropy' ne0Ne1.1 ne0Ne1.2⟩
-  by_contra h
-  simp_all
-  obtain ⟨is_diff, hx⟩ := h
+  intro is_diff
   rw [binaryEntropy_eq] at is_diff
   by_cases is_x0 : x ≠ 0
-  · rw[hx is_x0] at is_diff
-    apply not_DifferentiableAt_of_DifferentiableAt_add_not_DifferentiableAt _ _ is_diff
-    · apply DifferentiableAt.mul
-       (DifferentiableAt.neg differentiableAt_id') (DifferentiableAt.log differentiableAt_id' _)
-      simp only [ne_eq, one_ne_zero, not_false_eq_true]
-    · intro h
-      have : DifferentiableAt ℝ (fun (x : ℝ) ↦ (-1 * x + 1).negMulLog) ((-1)⁻¹ * (0 - 1)) := by
-        convert h using 1
-        · ext
-          simp [negMulLog]
-          ring_nf
-        · ring
-      have := (differentiableAt_iff_differentiableAt_comp_mul_add
-        (a:=(0:ℝ)) (b:=(1 : ℝ)) (m:=(-1:ℝ)) (show (-1 : ℝ) ≠ 0 by norm_num) negMulLog).mpr this
-      have := differentiableAt_negMulLog_iff.mp this
+  · constructor
+    · assumption
+    . intro xis1
+      rw [xis1] at is_diff
+      have as1 : DifferentiableAt ℝ (fun y ↦ -y * log y) 1 :=
+        (hasDerivAt_negMulLog zero_ne_one.symm).differentiableAt
+      have notTrue : DifferentiableAt ℝ (fun p ↦ -(1 - p) * log (1 - p)) 1 := by
+        convert as1.add_iff_right.mp is_diff using 2
+        ring
+      have : ¬ DifferentiableAt ℝ (fun p ↦ -(1 - p) * log (1 - p)) 1 := by
+        intro h
+        have : DifferentiableAt ℝ (fun (x : ℝ) ↦ (-1 * x + 1).negMulLog) ((-1)⁻¹ * (0 - 1)) := by
+          convert h using 1
+          · ext
+            simp [negMulLog]
+            ring_nf
+          · ring
+        have := (differentiableAt_iff_differentiableAt_comp_mul_add
+          (a:=(0:ℝ)) (b:=(1 : ℝ)) (m:=(-1:ℝ)) (show (-1 : ℝ) ≠ 0 by norm_num) negMulLog).mpr this
+        unfold negMulLog at this
+        have := differentiableAt_neg_iff.mpr this
+        simp only [neg_mul, neg_neg, differentiableAt_id'] at this
+        have := not_DifferentiableAt_log_mul_zero
+        contradiction
       contradiction
   · have : x = 0 := by simp_all only [neg_mul, false_implies, ne_eq, Decidable.not_not]
     rw [this] at is_diff
-    apply not_DifferentiableAt_of_not_DifferentiableAt_add_DifferentiableAt_ _ _ is_diff
-    · simp only [neg_mul, differentiableAt_neg_iff, not_DifferentiableAt_log_mul_zero,
-        not_false_eq_true]
-    · apply DifferentiableAt.neg
-      apply DifferentiableAt.mul
-      fun_prop
-      apply DifferentiableAt.log
-      fun_prop
-      simp only [sub_zero, ne_eq, one_ne_zero, not_false_eq_true]
+    have : DifferentiableAt ℝ (fun p ↦ -(1 - p) * log (1 - p)) 0 := by
+      have : (1 : ℝ) - 0 ≠ 0 := by norm_num
+      have := differentiableAt_negMulLog_iff.mpr this
+      apply DifferentiableAt.comp (0 : ℝ) this (by fun_prop)
+    have : DifferentiableAt ℝ (fun p ↦ -p * log p) 0 := by
+       apply this.add_iff_left.mp
+       convert is_diff using 2
+       ring
+    have := differentiableAt_neg_iff.mpr this
+    simp only [neg_mul, neg_neg, differentiableAt_id'] at this
+    have := not_DifferentiableAt_log_mul_zero
+    contradiction
 
 open Filter Real Topology Asymptotics
 
@@ -553,14 +595,14 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
       simp only [neg_le_neg_iff]
       suffices log (1 - 2⁻¹) < y.log by linarith
       apply strictMonoOn_log
-      simp
+      simp only [mem_Ioi, sub_pos]
       · norm_num
       · by_cases abspos : 0 ≤ y - 1
         · simp [abs_eq_self.mpr abspos] at hy
           have : 0 < y := by
             linarith
           exact this
-        · have :  y - 1 ≤ 0 := by linarith
+        · have : y - 1 ≤ 0 := by linarith
           simp [abs_eq_neg_self.mpr this] at hy
           have : 0 < y := by
             have : (1:ℝ) = 2⁻¹ + 2⁻¹ := by norm_num

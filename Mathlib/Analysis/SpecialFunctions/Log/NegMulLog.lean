@@ -37,7 +37,7 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   refine ⟨⟨tendsto_log_mul_self_nhds_zero_left, ?_⟩, ?_⟩
   · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
-    simp
+    simp only [log_zero, mul_zero]
 
 lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
   differentiable_id'.differentiableOn.mul differentiableOn_log
@@ -52,6 +52,7 @@ lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * lo
   refine DifferentiableOn.differentiableAt differentiableOn_mul_log ?_
   simp [hx]
 
+-- TODO inline or find home
 lemma abs_min_lt_of_nonneg {α : Type} [LinearOrderedAddCommGroup α] {L R x : α}
     (hL : 0 ≤ L) (hR : 0 ≤ R) (Llx : L < x) :
     |min L R| < x := by
@@ -95,6 +96,7 @@ lemma not_eventually_bounded_derivative_zero_mul_log (D : ℝ) :
     · simp only [min_eq_right (le_of_not_lt min_l), log_exp, sub_sub_cancel_left, abs_neg,
         Nat.abs_ofNat, Nat.one_lt_ofNat]
 
+-- TODO inline or refactor or find home
 /- In the hypothesis, D stands for a hypothetical derivative `deriv f x0`. -/
 lemma not_DifferentiableAt_of_not_eventuallly_bounded_derivative (f : ℝ → ℝ) (x0 : ℝ)
     (hf : ∀ D, ¬ ∀ᶠ (x : ℝ) in 𝓝 0, |f (x0 + x) - f x0 - x * D| ≤ |x|) :
@@ -130,31 +132,32 @@ lemma tendsto_deriv_mul_log_nhdsWithin_zero :
     exact ne_of_gt hx
   simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
 
+section NotContinuousAtOfTendstoNhdsWithin
 -- TODO put elsewhere, generalize, maybe add other nhdsWithin variants?
-open Filter in
+
+open Filter
+
 lemma not_continuousAt_of_tendsto_nhdsWithin_Ioi_atTop {f : ℝ → ℝ} {x : ℝ}
     (hf : Tendsto f (𝓝[>] x) atTop) :
     ¬ ContinuousAt f x := fun h ↦
   not_tendsto_nhds_of_tendsto_atTop hf _ (h.tendsto.mono_left inf_le_left)
 
--- TODO put elsewhere, generalize?
-open Filter in
 lemma not_continuousAt_of_tendsto_nhdsWithin_Ioi_atBot {f : ℝ → ℝ} {x : ℝ}
     (hf : Filter.Tendsto f (𝓝[>] x) Filter.atBot) :
     ¬ ContinuousAt f x := fun h ↦
   not_tendsto_nhds_of_tendsto_atBot hf _ (h.tendsto.mono_left inf_le_left)
 
-open Filter in
 lemma not_continuousAt_of_tendsto_nhdsWithin_Iio_atTop {f : ℝ → ℝ} {x : ℝ}
     (hf : Filter.Tendsto f (𝓝[<] x) Filter.atTop) :
     ¬ ContinuousAt f x := fun h ↦
   not_tendsto_nhds_of_tendsto_atTop hf _ (h.tendsto.mono_left inf_le_left)
 
-open Filter in
 lemma not_continuousAt_of_tendsto_nhdsWithin_Iio_atBot {f : ℝ → ℝ} {x : ℝ}
     (hf : Filter.Tendsto f (𝓝[<] x) Filter.atBot) :
     ¬ ContinuousAt f x := fun h ↦
   not_tendsto_nhds_of_tendsto_atBot hf _ (h.tendsto.mono_left inf_le_left)
+
+end NotContinuousAtOfTendstoNhdsWithin
 
 lemma not_continuousAt_deriv_mul_log_zero :
     ¬ ContinuousAt (deriv (fun (x : ℝ) ↦ x * log x)) 0 :=
@@ -169,7 +172,7 @@ lemma deriv2_mul_log {x : ℝ} : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := b
     filter_upwards [eventually_ne_nhds hx] with y hy using deriv_mul_log hy
   · rw [show x = 0 by simp_all only [ne_eq, Decidable.not_not], inv_zero]
     exact deriv_zero_of_not_differentiableAt
-      (fun h ↦ not_continuousAt_deriv_mul_log_zero (DifferentiableAt.continuousAt h))
+      (fun h ↦ not_continuousAt_deriv_mul_log_zero h.continuousAt)
 
 lemma strictConvexOn_mul_log : StrictConvexOn ℝ (Set.Ici (0 : ℝ)) (fun x ↦ x * log x) := by
   refine strictConvexOn_of_deriv2_pos (convex_Ici 0) (continuous_mul_log.continuousOn) ?_
