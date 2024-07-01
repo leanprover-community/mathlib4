@@ -15,12 +15,6 @@ We define a category `WalkingCospan` (resp. `WalkingSpan`), which is the index c
 for the given data for a pullback (resp. pushout) diagram. Convenience methods `cospan f g`
 and `span f g` construct functors from the walking (co)span, hitting the given morphisms.
 
-We define `pullback f g` and `pushout f g` as limits and colimits of such functors.
-
-
-# HasPullback (API for HasLimits, see `HasPullback.lean`)
-`HasPullback f g` and `pullback f g` provide API for ....
-
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
