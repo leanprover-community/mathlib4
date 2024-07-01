@@ -1,4 +1,4 @@
-/-
+not/-
 Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
@@ -2001,7 +2001,7 @@ theorem reachable_iff_nonempty_univ {u v : V} :
   Set.nonempty_iff_univ_nonempty
 #align simple_graph.reachable_iff_nonempty_univ SimpleGraph.reachable_iff_nonempty_univ
 
-lemma not_reachable_iff_Walk_isEmpty {u v : V} : ¬G.Reachable u v ↔ IsEmpty (G.Walk u v) := by
+lemma not_reachable_iff_isEmpty_walk {u v : V} : ¬G.Reachable u v ↔ IsEmpty (G.Walk u v) := by
    rw [reachable_iff_nonempty_univ, ← Set.nonempty_iff_univ_nonempty, not_nonempty_iff]
 
 protected theorem Reachable.elim {p : Prop} {u v : V} (h : G.Reachable u v)
