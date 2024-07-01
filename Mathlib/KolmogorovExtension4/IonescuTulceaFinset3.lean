@@ -8,7 +8,7 @@ import Mathlib.Data.PNat.Interval
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 
-open MeasureTheory ProbabilityTheory Finset ENNReal Filter Topology Function
+open MeasureTheory ProbabilityTheory Finset ENNReal Filter Topology Function Measure
 
 variable {X : ℕ → Type*} [Nonempty (X 0)] [∀ n, MeasurableSpace (X n)]
 variable (κ : (k : ℕ) → kernel ((i : Iic k) → X i) (X (k + 1)))
@@ -672,21 +672,28 @@ theorem indicator_eq {α : Type*} (f : α → E) (s : Set α) (a : α) :
     s.indicator f a = (s.indicator (fun _ ↦ 1 : α → ℝ) a) • (f a) := by
   by_cases h : a ∈ s <;> simp [h]
 
-theorem kernel.integral_comp (η : kernel Z T) [IsFiniteKernel η] (κ : kernel Y Z)
-    (y : Y) {g : T → E} (hg1 : Integrable g ((η ∘ₖ κ) y))
-    (hg2 : ∀ z, Integrable g (η z)) (hg3 : ∀ y, Integrable (fun z ↦ ∫ t, g t ∂η z) (κ y)) :
-    ∫ t, g t ∂(η ∘ₖ κ) y = ∫ z, ∫ t, g t ∂η z ∂κ y := by sorry
-  -- revert hg3 hg2
-  -- refine Integrable.induction ?_ ?_ ?_ ?_ hg1
-  -- · intro e s ms hs h1 h2
-  --   simp_rw [integral_indicator_const e ms]
-  --   rw [integral_smul_const, kernel.comp_apply' _ _ _ ms, integral_toReal]
-  --   · exact (kernel.measurable_coe _ ms).aemeasurable
-  --   · exact eventually_of_forall fun _ ↦ (measure_ne_top _ _).lt_top
-  -- · rintro f g - f_int g_int hf hg h1 h2
-  --   rw [integral_add' f_int g_int, hf, hg, ← integral_add]
-  --   · congr with z
-  --     rw [integral_add' f_int g_int]
+theorem kernel.integral_prod (κ : kernel Y Z) [IsFiniteKernel κ]
+    (η : kernel Y T) [IsFiniteKernel η] {f : (Z × T) → E}
+    (y : Y) (hf : Integrable f ((κ ×ₖ η) y)) :
+    ∫ p, f p ∂(κ ×ₖ η) y = ∫ z, ∫ t, f (z, t) ∂η y ∂κ y := by
+  rw [kernel.prod_apply, MeasureTheory.integral_prod]
+  convert hf
+  rw [kernel.prod_apply]
+
+theorem kernel.integral_comp (η : kernel Z T) [IsFiniteKernel η]
+    (κ : kernel Y Z) [IsFiniteKernel κ]
+    (y : Y) {g : T → E} (hg1 : Integrable g ((η ∘ₖ κ) y)) :
+    ∫ t, g t ∂(η ∘ₖ κ) y = ∫ z, ∫ t, g t ∂η z ∂κ y := by
+  rw [kernel.comp_eq_snd_compProd, kernel.snd_apply, integral_map,
+    ProbabilityTheory.integral_compProd]
+  · simp_rw [kernel.prodMkLeft_apply η]
+  · apply Integrable.comp_measurable
+    · convert hg1
+      rw [kernel.comp_eq_snd_compProd, kernel.snd_apply]
+    · exact measurable_snd
+  · exact measurable_snd.aemeasurable
+  · convert hg1.aestronglyMeasurable
+    rw [kernel.comp_eq_snd_compProd, kernel.snd_apply]
 
 theorem composition_comp_noyau {a b : ℕ} (hab : a ≤ b) :
     (ionescu_tulcea_kernel κ b) ∘ₖ (composition κ a b) = ionescu_tulcea_kernel κ a := by
@@ -847,8 +854,6 @@ theorem composition_comp_noyau_apply [CompleteSpace E] (n : ℕ)
     · exact (el' n).measurable.aemeasurable
     · refine (hf.comp_measurable (g := fun p ↦ (proj n p, p)) ?_).aestronglyMeasurable
       exact Measurable.prod_mk (meas_proj n) measurable_id
-  · sorry
-  · sorry
   · sorry
 
 theorem condExp_ionescu [CompleteSpace E]
