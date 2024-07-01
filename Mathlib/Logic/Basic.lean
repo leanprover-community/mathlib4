@@ -1048,12 +1048,12 @@ def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) :
 
 end Classical
 
-set_option autoImplicit true in
 /-- This function has the same type as `Exists.recOn`, and can be used to case on an equality,
 but `Exists.recOn` can only eliminate into Prop, while this version eliminates into any universe
 using the axiom of choice. -/
 -- @[elab_as_elim] -- FIXME
-noncomputable def Exists.classicalRecOn {p : α → Prop} (h : ∃ a, p a) {C} (H : ∀ a, p a → C) : C :=
+noncomputable def Exists.classicalRecOn {α : Sort*} {p : α → Prop} (h : ∃ a, p a)
+    {C : Sort*} (H : ∀ a, p a → C) : C :=
   H (Classical.choose h) (Classical.choose_spec h)
 #align exists.classical_rec_on Exists.classicalRecOn
 
