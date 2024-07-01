@@ -104,8 +104,8 @@ lake build Mathlib:docs
 
 The HTML files can then be found in `build/doc`.
 
-(Note that these commands will make a change to `lake-manifest.json`
-which should *not* be committed to Mathlib)
+Warning: these commands will make a change to `lake-manifest.json`
+which should *not* be committed to Mathlib.
 
 ### Dependencies
 
