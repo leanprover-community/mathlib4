@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Product of convex functions

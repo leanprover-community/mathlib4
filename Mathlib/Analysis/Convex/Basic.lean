@@ -3,10 +3,10 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudriashov, Yaël Dillies
 -/
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Analysis.Convex.Star
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 #align_import analysis.convex.basic from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 
