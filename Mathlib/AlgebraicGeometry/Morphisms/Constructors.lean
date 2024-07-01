@@ -16,14 +16,14 @@ properties:
 - `AffineTargetMorphismProperty.diagonal` : Given an affine target morphism property `P`,
   `P.diagonal f` holds if `P (pullback.mapDesc f₁ f₂ f)` holds for two affine open
   immersions `f₁` and `f₂`.
+- `AffineTargetMorphismProperty.of`: Given a morphism property `P` of schemes,
+  this is the restriction of `P` to morphisms with affine target. If `P` is local at the
+  target, we have `(toAffineTargetMorphismProperty P).targetAffineLocally = P`
+  (see `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isLocalAtTarget`).
 - `MorphismProperty.topologically`: Given a property `P` of maps of topological spaces,
   `(topologically P) f` holds if `P` holds for the underlying continuous map of `f`.
 - `MorphismProperty.stalkwise`: Given a property `P` of ring homs,
   `(stalkwise P) f` holds if `P` holds for all stalk maps.
-- `MorphismProperty.toAffineTargetMorphismProperty`: Given a morphism property `P` of schemes,
-  this is the restriction of `P` to morphisms with affine target. If `P` is local at the
-  target, we have `(toAffineTargetMorphismProperty P).targetAffineLocally = P`
-  (see `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isLocalAtTarget`).
 
 Also provides API for showing the standard locality and stability properties for these
 types of properties.
@@ -290,19 +290,23 @@ lemma stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
 
 end Stalkwise
 
+end MorphismProperty
+
 section Restriction
 
 /-- If `P` is a property of scheme morphisms, we may restrict `P` to morphisms with affine target
 to obtain an `AffineTargetMorphismProperty`. -/
-def toAffineTargetMorphismProperty (P : MorphismProperty Scheme) :
+def AffineTargetMorphismProperty.of (P : MorphismProperty Scheme) :
     AffineTargetMorphismProperty := fun _ _ f ↦ P f
+
+namespace AffineTargetMorphismProperty
 
 /-- Restricting a local at the target morphism property of schemes `P` to morphisms with affine
 target and extending to a global property with `targetAffineLocally` yields `P` again,
 if `P` is local at the target. -/
-lemma targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isLocalAtTarget
+lemma targetAffineLocally_of_eq_of_isLocalAtTarget
     (P : MorphismProperty Scheme) (hP : PropertyIsLocalAtTarget P) :
-    targetAffineLocally (toAffineTargetMorphismProperty P) = P := by
+    targetAffineLocally (of P) = P := by
   ext X Y f
   constructor
   · intro hf
@@ -319,9 +323,8 @@ lemma targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isLocalAtTarget
 
 /-- The restriction of a morphism property of schemes that is local at the target to morphisms
 with affine target, is local. -/
-lemma toAffineTargetMorphismProperty_isLocal_of_isLocalAtTarget (P : MorphismProperty Scheme)
-    (hP : PropertyIsLocalAtTarget P) :
-    (toAffineTargetMorphismProperty P).IsLocal where
+lemma of_isLocal_of_isLocalAtTarget (P : MorphismProperty Scheme)
+    (hP : PropertyIsLocalAtTarget P) : (of P).IsLocal where
   RespectsIso := by
     apply AffineTargetMorphismProperty.respectsIso_mk
     · intro X Y Z e f _ hf
@@ -339,13 +342,18 @@ lemma toAffineTargetMorphismProperty_isLocal_of_isLocalAtTarget (P : MorphismPro
     use s, U, hU, hf
 
 lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
-    (P : MorphismProperty Scheme)
-    (hP₁ : PropertyIsLocalAtTarget P)
-    (hP₂ : (toAffineTargetMorphismProperty P).StableUnderBaseChange) :
+    (P : MorphismProperty Scheme) (hP₁ : PropertyIsLocalAtTarget P)
+    (hP₂ : (of P).StableUnderBaseChange) :
     P.StableUnderBaseChange := by
-  rw [← targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isLocalAtTarget P hP₁]
-  apply (toAffineTargetMorphismProperty_isLocal_of_isLocalAtTarget P hP₁).stableUnderBaseChange
+  rw [← targetAffineLocally_of_eq_of_isLocalAtTarget P hP₁]
+  apply (of_isLocal_of_isLocalAtTarget P hP₁).stableUnderBaseChange
   exact hP₂
+
+end AffineTargetMorphismProperty
+
+namespace MorphismProperty
+
+open AffineTargetMorphismProperty
 
 /-- A morphism property of schemes is `StableUnderAffineBaseChange` if
 the base change along a morphism of affine schemes of a morphism with affine target is affine. -/
@@ -375,9 +383,9 @@ lemma stableUnderBaseChange_of_isLocalAtTarget_of_stableUnderAffineBaseChange
     apply IsPullback.of_hasPullback
   · exact hg
 
-end Restriction
-
 end MorphismProperty
+
+end Restriction
 
 @[deprecated (since := "2024-06-22")]
 alias diagonalTargetAffineLocallyOfOpenCover := diagonal_targetAffineLocally_of_openCover
