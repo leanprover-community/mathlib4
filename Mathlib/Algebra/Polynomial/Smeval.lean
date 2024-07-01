@@ -161,7 +161,7 @@ theorem smeval_neg : (-p).smeval x = - p.smeval x := by
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
   rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
 
-theorem smeval_at_neg_nat (S : Type*) [NonAssocRing S]  [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
+theorem smeval_neg_nat (S : Type*) [NonAssocRing S]  [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
     (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
     rw [smeval_eq_sum, smeval_eq_sum]
     simp only [Polynomial.smul_pow, sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
