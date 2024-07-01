@@ -158,11 +158,7 @@ theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := LinearMap.IsAlt.isRefl H
 #align bilin_form.is_alt.is_refl LinearMap.BilinForm.IsAlt.isRefl
 
 theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : a + b + c = 0) :
-    B a b = B b c := by
-  have : B a a + B a b + B a c = B a c + B b c + B c c := by
-    simp_rw [← map_add, ← map_add₂, hAdd, map_zero, LinearMap.zero_apply]
-  rw [H, H, zero_add, add_zero, add_comm] at this
-  exact add_left_cancel this
+    B a b = B b c := LinearMap.eq_of_add_add_eq_zero H hAdd
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
   fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
