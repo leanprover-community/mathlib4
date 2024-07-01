@@ -273,6 +273,107 @@ lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ 
 
 end
 
+section TensorUnit
+
+variable [DecidableEq I] [HasInitial C]
+
+/-- The unit of the tensor product on graded objects is `(single₀ I).obj (𝟙_ C)`. -/
+noncomputable def tensorUnit : GradedObject I C := (single₀ I).obj (𝟙_ C)
+
+/-- The canonical isomorphism `tensorUnit 0 ≅ 𝟙_ C` -/
+noncomputable def tensorUnit₀ : (tensorUnit : GradedObject I C) 0 ≅ 𝟙_ C :=
+  singleObjApplyIso (0 : I) (𝟙_ C)
+
+/-- `tensorUnit i` is an initial object when `i ≠ 0`. -/
+noncomputable def isInitialTensorUnitApply (i : I) (hi : i ≠ 0) :
+    IsInitial ((tensorUnit : GradedObject I C) i) :=
+  isInitialSingleObjApply _ _ _ hi
+
+end TensorUnit
+
+section LeftUnitor
+
+variable [DecidableEq I] [HasInitial C]
+  [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
+  (X X' : GradedObject I C)
+
+instance : HasTensor tensorUnit X :=
+  mapBifunctorLeftUnitor_hasMap _ _ (leftUnitorNatIso C) _ zero_add _
+
+instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj
+    ((single₀ I).obj (𝟙_ C))).obj X) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
+  (inferInstance : HasTensor tensorUnit X)
+
+/-- The left unitor isomorphism for graded objects. -/
+noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
+    mapBifunctorLeftUnitor (curriedTensor C) (𝟙_ C)
+      (leftUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) zero_add X
+
+lemma leftUnitor_inv_apply (i : I) :
+    (leftUnitor X).inv i = (λ_ (X i)).inv ≫ tensorUnit₀.inv ▷ (X i) ≫
+      ιTensorObj tensorUnit X 0 i i (zero_add i) := rfl
+
+variable {X X'}
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_naturality (φ : X ⟶ X') :
+    tensorHom (𝟙 (tensorUnit)) φ ≫ (leftUnitor X').hom =
+      (leftUnitor X).hom ≫ φ := by
+  apply mapBifunctorLeftUnitor_naturality
+
+end LeftUnitor
+
+section RightUnitor
+
+variable [DecidableEq I] [HasInitial C]
+  [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
+  (X X' : GradedObject I C)
+
+instance : HasTensor X tensorUnit :=
+  mapBifunctorRightUnitor_hasMap (curriedTensor C) _
+    (rightUnitorNatIso C) _ add_zero _
+
+instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj X).obj
+    ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
+  (inferInstance : HasTensor X tensorUnit)
+
+/-- The right unitor isomorphism for graded objects. -/
+noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=
+    mapBifunctorRightUnitor (curriedTensor C) (𝟙_ C)
+      (rightUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) add_zero X
+
+lemma rightUnitor_inv_apply (i : I) :
+    (rightUnitor X).inv i = (ρ_ (X i)).inv ≫ (X i) ◁ tensorUnit₀.inv ≫
+      ιTensorObj X tensorUnit i 0 i (add_zero i) := rfl
+
+variable {X X'}
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_naturality (φ : X ⟶ X') :
+    tensorHom φ (𝟙 (tensorUnit)) ≫ (rightUnitor X').hom =
+      (rightUnitor X).hom ≫ φ := by
+  apply mapBifunctorRightUnitor_naturality
+
+end RightUnitor
+
+section Triangle
+
+variable [DecidableEq I] [HasInitial C]
+  [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
+  [∀ X₂, PreservesColimit (Functor.empty.{0} C)
+    ((curriedTensor C).flip.obj X₂)]
+  (X₁ X₃ : GradedObject I C) [HasTensor X₁ X₃]
+  [HasTensor (tensorObj X₁ tensorUnit) X₃] [HasTensor X₁ (tensorObj tensorUnit X₃)]
+  [HasGoodTensor₁₂Tensor X₁ tensorUnit X₃] [HasGoodTensorTensor₂₃ X₁ tensorUnit X₃]
+
+lemma triangle :
+    (associator X₁ tensorUnit X₃).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₃).hom =
+      tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
+  convert mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
+    (rightUnitorNatIso C) (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
+
+end Triangle
+
 end Monoidal
 
 end GradedObject
