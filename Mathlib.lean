@@ -736,6 +736,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
+import Mathlib.AlgebraicGeometry.EllipticCurve.Scheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.FunctionField
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
@@ -751,6 +752,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
+import Mathlib.AlgebraicGeometry.Morphisms.StandardSmooth
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
@@ -3723,6 +3725,7 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.WellKnown
+import Mathlib.RingTheory.Presentation
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotSMulTop
@@ -3734,6 +3737,7 @@ import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
+import Mathlib.RingTheory.RingHom.StandardSmooth
 import Mathlib.RingTheory.RingHom.Surjective
 import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
@@ -3743,6 +3747,7 @@ import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Smooth.Basic
+import Mathlib.RingTheory.Smooth.StandardSmooth
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.Trace
