@@ -38,12 +38,13 @@ halting problem. Instead, this requirement is limited to only functions that are
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
 class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
-  fix_eq : ∀ {f : α →o α}, Continuous f → Fix.fix f = f (Fix.fix f)
+  fix_eq : ∀ {f : α →o α}, ωScottContinuous f →
+    Fix.fix f = f (Fix.fix f)
 #align lawful_fix LawfulFix
 
 theorem LawfulFix.fix_eq' {α} [OmegaCompletePartialOrder α] [LawfulFix α] {f : α → α}
-    (hf : Continuous' f) : Fix.fix f = f (Fix.fix f) :=
-  LawfulFix.fix_eq (hf.to_bundled _)
+    (hf : ωScottContinuous f) : Fix.fix f = f (Fix.fix f) :=
+  LawfulFix.fix_eq (f := ⟨f,(ωScottContinuous_iff_monotone_map_ωSup.mp hf).1⟩) hf
 #align lawful_fix.fix_eq' LawfulFix.fix_eq'
 
 namespace Part
@@ -172,10 +173,10 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
     · apply hX
 #align part.fix_le Part.fix_le
 
-variable {f} (hc : Continuous f)
+variable {f} (hc : ωScottContinuous f)
 
 theorem fix_eq : Part.fix f = f (Part.fix f) := by
-  rw [fix_eq_ωSup f, hc]
+  rw [fix_eq_ωSup f, (ωScottContinuous_iff_monotone_map_ωSup.mp hc).2]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _
     intro i
@@ -199,11 +200,12 @@ def toUnitMono (f : Part α →o Part α) : (Unit → Part α) →o Unit → Par
   monotone' x y (h : x ≤ y) u := f.monotone <| h u
 #align part.to_unit_mono Part.toUnitMono
 
-theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous (toUnitMono f)
-  | _ => by
+theorem to_unit_cont (f : Part α →o Part α) (hc : ωScottContinuous f) :
+    ωScottContinuous (toUnitMono f) := ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨
+  OrderHom.monotone (toUnitMono f), fun _ => by
     ext ⟨⟩ : 1
     dsimp [OmegaCompletePartialOrder.ωSup]
-    erw [hc, Chain.map_comp]; rfl
+    erw [(ωScottContinuous_iff_monotone_map_ωSup.mp hc).2, Chain.map_comp]; rfl⟩
 #align part.to_unit_cont Part.to_unit_cont
 
 instance lawfulFix : LawfulFix (Part α) :=
@@ -247,18 +249,20 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 
 open OmegaCompletePartialOrder.Chain
 
-theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
-  ext x y
-  dsimp [curry, ωSup]
-  rw [map_comp, map_comp]
-  rfl
+theorem continuous_curry : ωScottContinuous <| monotoneCurry α β γ :=
+  ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨OrderHom.monotone (monotoneCurry α β γ), fun c ↦ by
+    ext x y
+    dsimp [curry, ωSup]
+    rw [map_comp, map_comp]
+    rfl⟩
 #align pi.continuous_curry Pi.continuous_curry
 
-theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
-  ext ⟨x, y⟩
-  dsimp [uncurry, ωSup]
-  rw [map_comp, map_comp]
-  rfl
+theorem continuous_uncurry : ωScottContinuous <| monotoneUncurry α β γ :=
+  ωScottContinuous_iff_monotone_map_ωSup.mpr ⟨fun ⦃a b⦄ a i ↦ a i.fst i.snd, fun c ↦ by
+      ext ⟨x, y⟩
+      dsimp [uncurry, ωSup]
+      rw [map_comp, map_comp]
+      rfl⟩
 #align pi.continuous_uncurry Pi.continuous_uncurry
 
 end Monotone
@@ -274,11 +278,12 @@ variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 section Curry
 
 variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
-variable (hc : Continuous f)
+variable (hc : ωScottContinuous f)
 
 theorem uncurry_curry_continuous :
-    Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
-  continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
+    ωScottContinuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ := by
+  apply ωScottContinuous.comp (continuous_uncurry _ _ _)
+    (ωScottContinuous.comp hc (continuous_curry _ _ _))
 #align pi.uncurry_curry_continuous Pi.uncurry_curry_continuous
 
 end Curry

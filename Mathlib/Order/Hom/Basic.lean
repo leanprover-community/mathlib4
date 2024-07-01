@@ -344,6 +344,9 @@ theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂
     g₁.comp f₁ ≤ g₂.comp f₂ := fun _ => (hg _).trans (g₂.mono <| hf _)
 #align order_hom.comp_mono OrderHom.comp_mono
 
+@[simp] lemma mk_comp_mk (g : β → γ) (f : α → β) (hg hf) :
+    comp ⟨g, hg⟩ ⟨f, hf⟩ = ⟨g ∘ f, hg.comp hf⟩ := rfl
+
 /-- The composition of two bundled monotone functions, a fully bundled version. -/
 @[simps! (config := .asFn)]
 def compₘ : (β →o γ) →o (α →o β) →o α →o γ :=
