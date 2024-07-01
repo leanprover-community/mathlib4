@@ -3,10 +3,11 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.RepresentationTheory.Rep
 import Mathlib.Algebra.Category.FGModuleCat.Limits
+import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Rep
 
 #align_import representation_theory.fdRep from "leanprover-community/mathlib"@"19a70dceb9dff0994b92d2dd049de7d84d28112b"
 
@@ -30,8 +31,6 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 ## TODO
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
-* Upgrade the right rigid structure to a rigid structure
-  (this just needs to be done for `FGModuleCat`).
 * `FdRep k G` has all finite colimits.
 * `FdRep k G` is abelian.
 * `FdRep k G ≌ FGModuleCat (MonoidAlgebra k G)`.
@@ -157,6 +156,8 @@ variable {k G : Type u} [Field k] [Group G]
 -- Verify that the right rigid structure is available when the monoid is a group.
 noncomputable instance : RightRigidCategory (FdRep k G) := by
   change RightRigidCategory (Action (FGModuleCat k) (Grp.of G)); infer_instance
+
+example : RigidCategory (FdRep k G) := by infer_instance
 
 end FdRep
 
