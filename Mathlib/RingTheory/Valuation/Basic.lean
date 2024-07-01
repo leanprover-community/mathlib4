@@ -359,10 +359,19 @@ theorem val_lt_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x < 1 �
 theorem val_le_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x ≤ 1 ↔ 1 ≤ v x⁻¹ := by
   simpa [inv_inv] using (one_le_val_iff v (inv_ne_zero h)).symm
 
-theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x = 1 ↔ v x⁻¹ = 1 := by
-  simpa only [le_antisymm_iff, And.comm] using and_congr (one_le_val_iff v h) (val_le_one_iff v h)
+theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 1 := by
+  by_cases h : x = 0
+  · simp only [map_inv₀, inv_eq_one]
+  · simpa only [le_antisymm_iff, And.comm] using and_congr (one_le_val_iff v h) (val_le_one_iff v h)
 
--- This theorem is not stated in the strongest form but is very useful.
+theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
+  by_cases h : x = 0
+  · simp only [h, _root_.map_zero, zero_le', inv_zero, zero_lt_one, or_self]
+  · simp only [← one_lt_val_iff v h, le_or_lt]
+
+/--
+This theorem is a weaker version of `Valuation.val_le_one_or_val_inv_lt_one`, but more symmetric in `x` and `x⁻¹`.
+-/
 theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ ≤ 1 := by
   by_cases h : x = 0
   · simp only [h, _root_.map_zero, zero_le', inv_zero, or_self]
@@ -417,25 +426,9 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 #align valuation.is_equiv.comap Valuation.IsEquiv.comap
 
-/-- Restate the definition of `Valuation.IsEquiv` into a theorem. -/
-theorem val_le (h : v₁.IsEquiv v₂) {r s : R} : v₁ r ≤ v₁ s ↔ v₂ r ≤ v₂ s :=
-  h r s
-
-theorem val_lt (h : v₁.IsEquiv v₂) {r s : R} : v₁ r < v₁ s ↔ v₂ r < v₂ s := by
-  simpa only [not_le] using (h s r).not
-
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
 #align valuation.is_equiv.val_eq Valuation.IsEquiv.val_eq
-
-theorem val_le_one (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≤ 1 ↔ v₂ r ≤ 1 := by
-  simpa only [_root_.map_one] using h r 1
-
-theorem val_lt_one (h : v₁.IsEquiv v₂) {r : R} : v₁ r < 1 ↔ v₂ r < 1 := by
-  simpa only [_root_.map_one, not_le] using (h 1 r).not
-
-theorem val_eq_one (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 1 ↔ v₂ r = 1 := by
-  simpa only [le_antisymm_iff, _root_.map_one] using and_congr (h r 1) (h 1 r)
 
 theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
   have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
