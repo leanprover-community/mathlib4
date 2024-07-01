@@ -591,7 +591,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   have hf : Function.Surjective f := by
     rw [← MonoidHom.range_top_iff_surjective, eq_top_iff, ← hS2, closure_le]
     exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
-  replace hf := nat_card_dvd_of_surjective f hf
+  replace hf := card_dvd_of_surjective f hf
   rw [Nat.card_pi] at hf
   refine hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => ?_)
   rw [Nat.card_zpowers]
