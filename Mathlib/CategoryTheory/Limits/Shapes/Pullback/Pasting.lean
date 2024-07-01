@@ -17,8 +17,8 @@ i₁  |        | i₂      | i₃
     v        v         v
    Y₁ --g₁--> Y₂ --g₂--> Y₃
 ```
-if the right square is a pullback and the left square is a pullback, then the big square is a pullback.
-... (TODO ABOVE WAS AI GENERATED)
+if the right square is a pullback and the left square is a pullback, then the big square is a
+pullback. ... (TODO ABOVE WAS AI GENERATED)
 
 ## Main results
 
