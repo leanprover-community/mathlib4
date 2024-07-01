@@ -34,7 +34,7 @@ For each of these results, we also provide a lemma about the equality of one fun
 example, `Lp.ae_eq_zero_of_forall_setIntegral_eq_zero`.
 
 We also register the corresponding lemma for integrals of `ℝ≥0∞`-valued functions, in
-`ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite`.
+`ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite`.
 
 Generally useful lemmas which are not related to integrals:
 * `ae_eq_zero_of_forall_inner`: if for all constants `c`, `fun x => inner c (f x) =ᵐ[μ] 0` then
@@ -162,7 +162,7 @@ section ENNReal
 
 open scoped Topology
 
-theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
+theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → (∫⁻ x in s, f x ∂μ) ≤ ∫⁻ x in s, g x ∂μ) : f ≤ᵐ[μ] g := by
   have A :
@@ -181,13 +181,13 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
           simp only [lintegral_const, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
         _ = ∫⁻ x in s, g x + ε ∂μ := (lintegral_add_right _ measurable_const).symm
         _ ≤ ∫⁻ x in s, f x ∂μ :=
-          (set_lintegral_mono (hg.add measurable_const) hf fun x hx => hx.1.1)
+          (setLIntegral_mono (hg.add measurable_const) hf fun x hx => hx.1.1)
         _ ≤ (∫⁻ x in s, g x ∂μ) + 0 := by rw [add_zero]; exact h s s_meas s_lt_top
     have B : (∫⁻ x in s, g x ∂μ) ≠ ∞ := by
       apply ne_of_lt
       calc
         (∫⁻ x in s, g x ∂μ) ≤ ∫⁻ _ in s, N ∂μ :=
-          set_lintegral_mono hg measurable_const fun x hx => hx.1.2
+          setLIntegral_mono hg measurable_const fun x hx => hx.1.2
         _ = N * μ s := by
           simp only [lintegral_const, Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply]
         _ < ∞ := by
@@ -220,36 +220,52 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
     μ {x : α | (fun x : α => f x ≤ g x) x}ᶜ ≤ μ (⋃ n, s n) := measure_mono B
     _ ≤ ∑' n, μ (s n) := measure_iUnion_le _
     _ = 0 := by simp only [μs, tsum_zero]
-#align measure_theory.ae_le_of_forall_set_lintegral_le_of_sigma_finite MeasureTheory.ae_le_of_forall_set_lintegral_le_of_sigmaFinite
+#align measure_theory.ae_le_of_forall_set_lintegral_le_of_sigma_finite MeasureTheory.ae_le_of_forall_setLIntegral_le_of_sigmaFinite
 
-theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ [SigmaFinite μ]
+@[deprecated (since := "2024-06-29")]
+alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite :=
+  ae_le_of_forall_setLIntegral_le_of_sigmaFinite
+
+theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ) :
     f ≤ᵐ[μ] g := by
   have h' : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, hf.mk f x ∂μ ≤ ∫⁻ x in s, hg.mk g x ∂μ := by
-    refine fun s hs hμs ↦ (set_lintegral_congr_fun hs ?_).trans_le
-      ((h s hs hμs).trans_eq (set_lintegral_congr_fun hs ?_))
+    refine fun s hs hμs ↦ (setLIntegral_congr_fun hs ?_).trans_le
+      ((h s hs hμs).trans_eq (setLIntegral_congr_fun hs ?_))
     · filter_upwards [hf.ae_eq_mk] with a ha using fun _ ↦ ha.symm
     · filter_upwards [hg.ae_eq_mk] with a ha using fun _ ↦ ha
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk,
-    ae_le_of_forall_set_lintegral_le_of_sigmaFinite hf.measurable_mk hg.measurable_mk h']
+    ae_le_of_forall_setLIntegral_le_of_sigmaFinite hf.measurable_mk hg.measurable_mk h']
     with a haf hag ha
   rwa [haf, hag]
 
-theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
+@[deprecated (since := "2024-06-29")]
+alias ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ :=
+  ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀
+
+theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g := by
   have A : f ≤ᵐ[μ] g :=
-    ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ hf hg fun s hs h's => le_of_eq (h s hs h's)
+    ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hf hg fun s hs h's => le_of_eq (h s hs h's)
   have B : g ≤ᵐ[μ] f :=
-    ae_le_of_forall_set_lintegral_le_of_sigmaFinite₀ hg hf fun s hs h's => ge_of_eq (h s hs h's)
+    ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ hg hf fun s hs h's => ge_of_eq (h s hs h's)
   filter_upwards [A, B] with x using le_antisymm
 
-theorem ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
+@[deprecated (since := "2024-06-29")]
+alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ :=
+  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀
+
+theorem ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞}
     (hf : Measurable f) (hg : Measurable g)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) : f =ᵐ[μ] g :=
-  ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf.aemeasurable hg.aemeasurable h
-#align measure_theory.ae_eq_of_forall_set_lintegral_eq_of_sigma_finite MeasureTheory.ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite
+  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hf.aemeasurable hg.aemeasurable h
+#align measure_theory.ae_eq_of_forall_set_lintegral_eq_of_sigma_finite MeasureTheory.ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
+
+@[deprecated (since := "2024-06-29")]
+alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite :=
+  ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
 
 end ENNReal
 
@@ -688,7 +704,7 @@ end AeEqOfForallSetIntegralEq
 
 section Lintegral
 
-theorem AEMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
+theorem AEMeasurable.ae_eq_of_forall_setLIntegral_eq {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (hgi : ∫⁻ x, g x ∂μ ≠ ∞)
     (hfg : ∀ ⦃s⦄, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ) :
     f =ᵐ[μ] g := by
@@ -703,14 +719,17 @@ theorem AEMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} 
     rw [lintegral_congr_ae (ofReal_toReal_ae_eq _), lintegral_congr_ae (ofReal_toReal_ae_eq _)]
     · exact hfg hs hs'
     · refine ae_lt_top' hg.restrict (ne_of_lt (lt_of_le_of_lt ?_ hgi.lt_top))
-      exact @set_lintegral_univ α _ μ g ▸ lintegral_mono_set (Set.subset_univ _)
+      exact @setLIntegral_univ α _ μ g ▸ lintegral_mono_set (Set.subset_univ _)
     · refine ae_lt_top' hf.restrict (ne_of_lt (lt_of_le_of_lt ?_ hfi.lt_top))
-      exact @set_lintegral_univ α _ μ f ▸ lintegral_mono_set (Set.subset_univ _)
+      exact @setLIntegral_univ α _ μ f ▸ lintegral_mono_set (Set.subset_univ _)
   -- putting the proofs where they are used is extremely slow
   exacts [ae_of_all _ fun x => ENNReal.toReal_nonneg,
     hg.ennreal_toReal.restrict.aestronglyMeasurable, ae_of_all _ fun x => ENNReal.toReal_nonneg,
     hf.ennreal_toReal.restrict.aestronglyMeasurable]
-#align measure_theory.ae_measurable.ae_eq_of_forall_set_lintegral_eq MeasureTheory.AEMeasurable.ae_eq_of_forall_set_lintegral_eq
+#align measure_theory.ae_measurable.ae_eq_of_forall_set_lintegral_eq MeasureTheory.AEMeasurable.ae_eq_of_forall_setLIntegral_eq
+
+@[deprecated (since := "2024-06-29")]
+alias AEMeasurable.ae_eq_of_forall_set_lintegral_eq := AEMeasurable.ae_eq_of_forall_setLIntegral_eq
 
 end Lintegral
 
@@ -721,16 +740,16 @@ variable {m : MeasurableSpace α} {μ : Measure α}
 theorem withDensity_eq_iff_of_sigmaFinite [SigmaFinite μ] {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : μ.withDensity f = μ.withDensity g ↔ f =ᵐ[μ] g :=
   ⟨fun hfg ↦ by
-    refine ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite₀ hf hg fun s hs _ ↦ ?_
+    refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hf hg fun s hs _ ↦ ?_
     rw [← withDensity_apply f hs, ← withDensity_apply g hs, ← hfg], withDensity_congr_ae⟩
 
 theorem withDensity_eq_iff {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) (hfi : ∫⁻ x, f x ∂μ ≠ ∞) :
     μ.withDensity f = μ.withDensity g ↔ f =ᵐ[μ] g :=
   ⟨fun hfg ↦ by
-    refine AEMeasurable.ae_eq_of_forall_set_lintegral_eq hf hg hfi ?_ fun s hs _ ↦ ?_
-    · rwa [← set_lintegral_univ, ← withDensity_apply g MeasurableSet.univ, ← hfg,
-        withDensity_apply f MeasurableSet.univ, set_lintegral_univ]
+    refine AEMeasurable.ae_eq_of_forall_setLIntegral_eq hf hg hfi ?_ fun s hs _ ↦ ?_
+    · rwa [← setLIntegral_univ, ← withDensity_apply g MeasurableSet.univ, ← hfg,
+        withDensity_apply f MeasurableSet.univ, setLIntegral_univ]
     · rw [← withDensity_apply f hs, ← withDensity_apply g hs, ← hfg], withDensity_congr_ae⟩
 
 end WithDensity

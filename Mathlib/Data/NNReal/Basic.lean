@@ -53,6 +53,8 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
+assert_not_exists Star
+
 open Function
 
 -- to ensure these instances are computable
@@ -270,14 +272,6 @@ instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
-
-instance : StarRing ℝ≥0 := starRingOfComm
-
-instance : TrivialStar ℝ≥0 where
-  star_trivial _ := rfl
-
-instance : StarModule ℝ≥0 ℝ where
-  star_smul := by simp only [star_trivial, eq_self_iff_true, forall_const]
 
 -- verify that the above produces instances we might care about
 example : Algebra ℝ≥0 ℝ := by infer_instance
@@ -1231,7 +1225,7 @@ open NNReal
 
 variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
-/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
   `r : ℝ≥0`, there exists `d : Γ₀ˣ` with `f d < r`. -/
 theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
     {r : ℝ≥0} (hr : 0 < r) : ∃ d : Γ₀ˣ, f d < r := by
@@ -1250,7 +1244,7 @@ theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*�
   use u ^ n
   rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
 
-/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is a strict monomorphism, then for any positive
+/-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
   real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/
 theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀ ℝ≥0} (hf : StrictMono f)
     {r : ℝ} (hr : 0 < r) : ∃ d : Γ₀ˣ, (f d : ℝ) < r := by
