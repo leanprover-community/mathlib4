@@ -105,6 +105,20 @@ theorem IsVonNBounded.union {s₁ s₂ : Set E} (hs₁ : IsVonNBounded 𝕜 s₁
 theorem IsVonNBounded.of_boundedSpace [BoundedSpace 𝕜] {s : Set E} : IsVonNBounded 𝕜 s := fun _ _ ↦
   .of_boundedSpace
 
+@[simp]
+theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
+    IsVonNBounded 𝕜 (⋃ i, s i) ↔ ∀ i, IsVonNBounded 𝕜 (s i) := by
+  simp only [IsVonNBounded, absorbs_iUnion, @forall_swap ι]
+
+theorem isVonNBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set E} :
+    IsVonNBounded 𝕜 (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, IsVonNBounded 𝕜 (s i) := by
+  have _ := hI.to_subtype
+  rw [biUnion_eq_iUnion, isVonNBounded_iUnion, Subtype.forall]
+
+theorem isVonNBounded_sUnion {S : Set (Set E)} (hS : S.Finite) :
+    IsVonNBounded 𝕜 (⋃₀ S) ↔ ∀ s ∈ S, IsVonNBounded 𝕜 s := by
+  rw [sUnion_eq_biUnion, isVonNBounded_biUnion hS]
+
 end Zero
 
 section ContinuousAdd
