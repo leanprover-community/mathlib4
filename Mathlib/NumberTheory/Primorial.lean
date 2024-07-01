@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Dvd
