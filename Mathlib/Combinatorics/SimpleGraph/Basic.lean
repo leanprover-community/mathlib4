@@ -311,6 +311,7 @@ theorem sInf_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
     (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b :=
   sInf_adj.trans <|
     and_iff_left_of_imp <| by
+
       obtain ⟨G, hG⟩ := hs
       exact fun h => (h _ hG).ne
 #align simple_graph.Inf_adj_of_nonempty SimpleGraph.sInf_adj_of_nonempty
@@ -966,3 +967,5 @@ theorem edgeSet_deleteEdges (s : Set (Sym2 V)) : (G.deleteEdges s).edgeSet = G.e
 
 end deleteEdges
 end SimpleGraph
+
+#check @SimpleGraph.Adj
