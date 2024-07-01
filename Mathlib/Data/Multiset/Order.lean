@@ -22,7 +22,8 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
 ## References
 
-* [Wikipedia, Dershowitz–Manna ordering*](https://en.wikipedia.org/wiki/Dershowitz%E2%80%93Manna_ordering)
+* [Wikipedia, Dershowitz–Manna ordering*]
+(https://en.wikipedia.org/wiki/Dershowitz%E2%80%93Manna_ordering)
 
 * [CoLoR](https://github.com/fblanqui/color), a Coq library on rewriting theory and termination.
   Our code here is inspired by their version of called `mOrd_wf` in the file
@@ -525,23 +526,22 @@ lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
                   have x_notin_Xfy : x ∉ X - f y := by
                     by_contra
                     let neg_f : α → Multiset α := fun y' => X.filter (fun x => ¬ x < y')
-                    sorry
-                    -- have : X - f y = neg_f y := by
-                    --   have fy_negfy_X : f y + neg_f y = X := by
-                    --     rw [Multiset.filter_add_not]
-                    --   have fy_le_X : f y ≤ X := Multiset.filter_le _ X
-                    --   have : X - f y + f y = neg_f y + f y := by
-                    --     have : X = X - f y + f y := by
-                    --       apply mem_leq_diff
-                    --       exact fy_le_X
-                    --     rw [← this]
-                    --     rw [← fy_negfy_X]
-                    --     apply add_comm
-                    --   rw [← fy_negfy_X]; simp
-                    -- have x_in_neg_fy : x ∈ neg_f y := by rw [this] at x_in; exact x_in
-                    -- subst_eqs
-                    -- unfold_let neg_f at *
-                    -- simp_all
+                    have : X - f y = neg_f y := by
+                      have fy_negfy_X : f y + neg_f y = X := by
+                        rw [Multiset.filter_add_not]
+                      have fy_le_X : f y ≤ X := Multiset.filter_le _ X
+                      have : X - f y + f y = neg_f y + f y := by
+                        have : X = X - f y + f y := by
+                          apply mem_leq_diff
+                          exact fy_le_X
+                        rw [← this]
+                        rw [← fy_negfy_X]
+                        apply add_comm
+                      rw [← fy_negfy_X]; simp
+                    have x_in_neg_fy : x ∈ neg_f y := by rw [this] at x_in; exact x_in
+                    subst_eqs
+                    unfold_let neg_f at *
+                    simp_all only [Multiset.mem_filter]
                   exact x_notin_Xfy x_in
             · exact x_lt_t
         -- single step N to N'
