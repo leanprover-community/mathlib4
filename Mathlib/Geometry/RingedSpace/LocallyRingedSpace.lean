@@ -317,7 +317,6 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.preimage_basic_open AlgebraicGeometry.LocallyRingedSpace.preimage_basicOpen
 
 -- This actually holds for all ringed spaces with nontrivial stalks.
-@[simp]
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
@@ -338,10 +337,10 @@ lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.
   obtain ⟨n, hn⟩ := hf
   by_cases h : 0 < n
   · rw [←  X.toRingedSpace.basicOpen_pow f n h, hn]
-    simp
+    simp [basicOpen_zero]
   · rw [not_lt, nonpos_iff_eq_zero] at h
     rw [h, pow_zero] at hn
-    simp [eq_zero_of_zero_eq_one hn.symm f]
+    simp [eq_zero_of_zero_eq_one hn.symm f, basicOpen_zero]
 
 instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) [hU : Nonempty U] :
     Nontrivial (X.presheaf.obj <| op U) :=
