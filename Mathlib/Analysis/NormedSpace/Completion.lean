@@ -46,7 +46,7 @@ variable {𝕜 E}
 
 /-- Embedding of a normed space to its completion as a linear isometry. -/
 def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
-  { toCompl with
+  { toComplAddHom with
     toFun := (↑)
     map_smul' := coe_smul
     norm_map' := norm_coe }
