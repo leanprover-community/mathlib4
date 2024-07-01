@@ -8,7 +8,6 @@ import Mathlib.Data.Fintype.Pi
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Sym.Sym2
 
 /-!
 # Digraphs
