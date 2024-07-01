@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon
+Authors: Simon Hudon, Ira Fesefeldt
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Iterate
+import Mathlib.Dynamics.FixedPoints.Basic
 
 #align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -917,5 +918,68 @@ noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α
 #align omega_complete_partial_order.continuous_hom.seq_apply OmegaCompletePartialOrder.ContinuousHom.seq_apply
 
 end ContinuousHom
+
+namespace fixedPoints
+
+open Function
+
+/-- Iteration of a function on an initial element interpreted as a chain. -/
+def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
+  ⟨fun n => f^[n] x, Monotone.monotone_iterate_of_le_map f.monotone h⟩
+
+variable (f : α →𝒄 α) (x : α)
+
+/-- The supremum of iterating a function on x arbitrary often is a fixed point -/
+theorem ωSup_repeat_mem_fixedPoint (h : x ≤ f x) :
+    ωSup (iterateChain f x h) ∈ fixedPoints f := by
+  rw [mem_fixedPoints, IsFixedPt, f.continuous]
+  apply le_antisymm
+  · apply ωSup_le
+    intro n
+    simp only [Chain.map_coe, OrderHomClass.coe_coe, comp_apply]
+    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) := by {
+      apply Function.iterate_succ_apply'
+    }
+    rw [← this]
+    apply le_ωSup
+  · apply ωSup_le
+    intro n
+    cases n
+    case a.a.zero =>
+      apply le_trans h
+      have : f x = ((iterateChain f x h).map f) 0 := rfl
+      rw [this]
+      apply le_ωSup
+    case a.a.succ n =>
+      have : iterateChain f x h (n.succ) = (iterateChain f x h).map f n := by {
+        apply Function.iterate_succ_apply'
+      }
+      rw [this]
+      apply le_ωSup
+
+/-- The supremum of iterating a function on x arbitrary often is smaller than any prefixed point-/
+theorem ωSup_repeat_le_prefixedPoint (h : x ≤ f x) {a : α}
+    (h_a : f a ≤ a) (h_x_le_a : x ≤ a) :
+    ωSup (iterateChain f x h) ≤ a := by
+  apply ωSup_le
+  intro n
+  induction n with
+  | zero => exact h_x_le_a
+  | succ n h_ind =>
+    have : iterateChain f x h (n.succ) = f (iterateChain f x h n) := by {
+      apply Function.iterate_succ_apply'
+    }
+    rw [this]
+    exact le_trans (f.monotone h_ind) h_a
+
+/-- The supremum of iterating a function on x arbitrary often is smaller than any fixed point-/
+theorem ωSup_repeat_le_fixedPoint (h : x ≤ f x) {a : α}
+    (h_a : a ∈ fixedPoints f) (h_x_le_a : x ≤ a) :
+    ωSup (iterateChain f x h) ≤ a := by
+  rw [mem_fixedPoints] at h_a
+  obtain h_a := Eq.le h_a
+  exact ωSup_repeat_le_prefixedPoint f x h h_a h_x_le_a
+
+end fixedPoints
 
 end OmegaCompletePartialOrder
