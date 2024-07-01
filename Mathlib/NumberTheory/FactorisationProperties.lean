@@ -67,8 +67,8 @@ def WeirdNumber (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ (s : Finset ℕ), s ∈ powerset (properDivisors n)
       → ∑ i in s, i ≠ n := by
-    rw [Pseudoperfect, not_and_or]
-    simp only [not_lt, nonpos_iff_eq_zero, mem_powerset, not_exists, not_and, ne_eq]
+  rw [Pseudoperfect, not_and_or]
+  simp only [not_lt, nonpos_iff_eq_zero, mem_powerset, not_exists, not_and, ne_eq]
 
 theorem one_deficient : Deficient 1 := le.refl
 
