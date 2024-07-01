@@ -35,8 +35,6 @@ the main constructions deal with continuous ring morphisms.
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
 
-
-open scoped Classical
 open Set Filter TopologicalSpace AddCommGroup
 
 open scoped Classical
@@ -48,45 +46,26 @@ namespace UniformSpace.Completion
 
 open DenseInducing UniformSpace Function
 
-section one_and_mul
-variable (α : Type*) [Ring α] [UniformSpace α]
-
-instance one : One (Completion α) :=
-  ⟨(1 : α)⟩
-
-instance mul : Mul (Completion α) :=
-  ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
-
-@[norm_cast]
-theorem coe_one : ((1 : α) : Completion α) = 1 :=
-  rfl
-#align uniform_space.completion.coe_one UniformSpace.Completion.coe_one
-
-end one_and_mul
-
 variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
-
-@[norm_cast]
-theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
-  ((denseInducing_coe.prod denseInducing_coe).extend_eq
-      ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
-#align uniform_space.completion.coe_mul UniformSpace.Completion.coe_mul
 
 variable [UniformAddGroup α]
 
-theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 := by
-  let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toCompl
+instance : ContinuousMul (Completion α) := ⟨by
+  let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toComplAddHom
   have : Continuous fun p : α × α => m p.1 p.2 := by
     apply (continuous_coe α).comp _
     simp only [AddMonoidHom.coe_mul, AddMonoidHom.coe_mulLeft]
     exact _root_.continuous_mul
-  have di : DenseInducing (toCompl : α → Completion α) := denseInducing_coe
-  convert di.extend_Z_bilin di this
+  have di : DenseInducing (toComplAddHom : α → Completion α) := denseInducing_coe
+  convert di.extend_Z_bilin di this⟩
+
+theorem continuous_mul : Continuous fun p : Completion α × Completion α => p.1 * p.2 :=
+  ContinuousMul.continuous_mul
 #align uniform_space.completion.continuous_mul UniformSpace.Completion.continuous_mul
 
 theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completion α}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => f b * g b :=
-  Continuous.comp continuous_mul (Continuous.prod_mk hf hg : _)
+  hf.mul hg
 #align uniform_space.completion.continuous.mul UniformSpace.Completion.Continuous.mul
 
 instance ring : Ring (Completion α) :=
@@ -140,7 +119,7 @@ instance ring : Ring (Completion α) :=
 def coeRingHom : α →+* Completion α where
   toFun := (↑)
   map_one' := coe_one α
-  map_zero' := coe_zero
+  map_zero' := coe_zero α
   map_add' := coe_add
   map_mul' := coe_mul
 #align uniform_space.completion.coe_ring_hom UniformSpace.Completion.coeRingHom
