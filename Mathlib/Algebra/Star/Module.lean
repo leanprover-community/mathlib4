@@ -5,6 +5,7 @@ Authors: Eric Wieser, Frédéric Dupuis
 -/
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Module.LinearMap.Star
+import Mathlib.Algebra.Module.Rat
 import Mathlib.LinearAlgebra.Prod
 
 #align_import algebra.star.module from "leanprover-community/mathlib"@"aa6669832974f87406a3d9d70fc5707a60546207"
