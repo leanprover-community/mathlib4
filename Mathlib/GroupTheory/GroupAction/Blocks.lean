@@ -257,8 +257,8 @@ theorem IsBlock.iff_top (B : Set X) :
     IsBlock G B ↔ IsBlock (⊤ : Subgroup G) B := by
   simp only [IsBlock.def_one]
   constructor
-  intro h g; exact h g
-  intro h g; exact h ⟨g, Subgroup.mem_top g⟩
+  · intro h g; exact h g
+  · intro h g; exact h ⟨g, Subgroup.mem_top g⟩
 
 /-- The intersection of two blocks is a block -/
 theorem IsBlock.inter {B₁ B₂ : Set X} (h₁ : IsBlock G B₁) (h₂ : IsBlock G B₂) :

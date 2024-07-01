@@ -263,6 +263,10 @@ theorem rpow_sub' {x : ℝ} (hx : 0 ≤ x) {y z : ℝ} (h : y - z ≠ 0) : x ^ (
   simp only [rpow_add' hx h, rpow_neg hx, div_eq_mul_inv]
 #align real.rpow_sub' Real.rpow_sub'
 
+protected theorem _root_.HasCompactSupport.rpow_const {α : Type*} [TopologicalSpace α] {f : α → ℝ}
+    (hf : HasCompactSupport f) {r : ℝ} (hr : r ≠ 0) : HasCompactSupport (fun x ↦ f x ^ r) :=
+  hf.comp_left (g := (· ^ r)) (Real.zero_rpow hr)
+
 end Real
 
 /-!
