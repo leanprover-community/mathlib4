@@ -5,10 +5,10 @@ Authors: Patrick Massot
 -/
 
 import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrM
 
 
-/-! # Congrm widget
+/-! # CongrM widget
 
 This file defines a `congrm?` tactic that displays a widget panel allowing to generate
 a `congrm` call with holes specified by selecting subexpressions in the goal.
@@ -17,11 +17,11 @@ a `congrm` call with holes specified by selecting subexpressions in the goal.
 open Lean Meta Server ProofWidgets
 
 
-/-! # Gcongr widget -/
+/-! # CongrM widget -/
 
 /-- Return the link text and inserted text above and below of the congrm widget. -/
 @[nolint unusedArguments]
-def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
+def makeCongrMString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
     (_ : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
   let subexprPos := getGoalLocations pos
   unless goalType.isAppOf `Eq || goalType.isAppOf `Iff do
@@ -37,19 +37,19 @@ def makeCongrmString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
 
 /-- Rpc function for the congrm widget. -/
 @[server_rpc_method]
-def CongrmSelectionPanel.rpc := mkSelectionPanelRPC makeCongrmString
+def CongrMSelectionPanel.rpc := mkSelectionPanelRPC makeCongrMString
   "Use shift-click to select sub-expressions in the goal that should become holes in congrm."
-  "Congrm 🔍"
+  "CongrM 🔍"
 
 /-- The congrm widget. -/
 @[widget_module]
-def CongrmSelectionPanel : Component SelectInsertParams :=
-  mk_rpc_widget% CongrmSelectionPanel.rpc
+def CongrMSelectionPanel : Component SelectInsertParams :=
+  mk_rpc_widget% CongrMSelectionPanel.rpc
 
 open scoped Json in
 /-- Display a widget panel allowing to generate a `congrm` call with holes specified by selecting
 subexpressions in the goal. -/
 elab stx:"congrm?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  Widget.savePanelWidgetInfo CongrmSelectionPanel.javascriptHash
+  Widget.savePanelWidgetInfo CongrMSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

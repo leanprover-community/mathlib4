@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.MetricSpace.Sequences
 
