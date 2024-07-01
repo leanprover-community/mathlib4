@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Logic.Equiv.Nat
-import Mathlib.Data.PNat.Basic
+import Mathlib.Data.PNat.Equiv
 import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
@@ -35,7 +35,6 @@ The difference with `Denumerable` is that finite types are encodable. For infini
 The point of asking for an explicit partial inverse `decode : ℕ → Option α` to `encode : α → ℕ` is
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
-
 
 open Option List Nat Function
 
@@ -191,7 +190,8 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simpa [decode₂] using ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  simpa [decode₂, bind_eq_some] using
+    ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
 #align encodable.mem_decode₂' Encodable.mem_decode₂'
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=

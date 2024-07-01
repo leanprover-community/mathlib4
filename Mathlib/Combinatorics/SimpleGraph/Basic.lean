@@ -847,12 +847,12 @@ theorem not_mem_commonNeighbors_right (v w : V) : w ∉ G.commonNeighbors v w :=
 
 theorem commonNeighbors_subset_neighborSet_left (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet v :=
-  Set.inter_subset_left _ _
+  Set.inter_subset_left
 #align simple_graph.common_neighbors_subset_neighbor_set_left SimpleGraph.commonNeighbors_subset_neighborSet_left
 
 theorem commonNeighbors_subset_neighborSet_right (v w : V) :
     G.commonNeighbors v w ⊆ G.neighborSet w :=
-  Set.inter_subset_right _ _
+  Set.inter_subset_right
 #align simple_graph.common_neighbors_subset_neighbor_set_right SimpleGraph.commonNeighbors_subset_neighborSet_right
 
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
@@ -948,6 +948,10 @@ lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdge
 #align simple_graph.delete_edges_le_of_le SimpleGraph.deleteEdges_anti
 
 lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
+
+@[simp] lemma deleteEdges_eq_self : G.deleteEdges s = G ↔ Disjoint G.edgeSet s := by
+  rw [deleteEdges, sdiff_eq_left, disjoint_fromEdgeSet]
+#align simple_graph.delete_edges_eq SimpleGraph.deleteEdges_eq_self
 
 theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
     G.deleteEdges s = G.deleteEdges (s ∩ G.edgeSet) := by

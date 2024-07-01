@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Slope
+import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
@@ -170,8 +171,8 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
   refine ⟨r, this, fun y hy z hz => ?_⟩
   calc
     ‖f z - f y - (fderiv 𝕜 f x) (z - y)‖ =
-        ‖f z - f x - (fderiv 𝕜 f x) (z - x) - (f y - f x - (fderiv 𝕜 f x) (y - x))‖ :=
-      by simp only [map_sub]; abel_nf
+        ‖f z - f x - (fderiv 𝕜 f x) (z - x) - (f y - f x - (fderiv 𝕜 f x) (y - x))‖ := by
+      simp only [map_sub]; abel_nf
     _ ≤ ‖f z - f x - (fderiv 𝕜 f x) (z - x)‖ + ‖f y - f x - (fderiv 𝕜 f x) (y - x)‖ :=
       norm_sub_le _ _
     _ ≤ δ * ‖z - x‖ + δ * ‖y - x‖ :=
@@ -269,8 +270,8 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       exact norm_sub_le_of_mem_A hc P P (A_mono _ _ I I1) (A_mono _ _ I I2)
     calc
       ‖L e p q - L e' p' q'‖ =
-          ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ :=
-        by congr 1; abel
+          ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ := by
+        congr 1; abel
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
         norm_add₃_le _ _ _
       _ ≤ 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e + 4 * ‖c‖ * (1 / 2) ^ e := by gcongr
@@ -391,7 +392,7 @@ theorem measurableSet_of_differentiableAt : MeasurableSet { x | DifferentiableAt
   simp
 #align measurable_set_of_differentiable_at measurableSet_of_differentiableAt
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
   refine measurable_of_isClosed fun s hs => ?_
   have :
@@ -405,7 +406,7 @@ theorem measurable_fderiv : Measurable (fderiv 𝕜 f) := by
       ((measurableSet_of_differentiableAt _ _).compl.inter (MeasurableSet.const _))
 #align measurable_fderiv measurable_fderiv
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_fderiv_apply_const [MeasurableSpace F] [BorelSpace F] (y : E) :
     Measurable fun x => fderiv 𝕜 f x y :=
   (ContinuousLinearMap.measurable_apply y).comp (measurable_fderiv 𝕜 f)
@@ -413,7 +414,7 @@ theorem measurable_fderiv_apply_const [MeasurableSpace F] [BorelSpace F] (y : E)
 
 variable {𝕜}
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] (f : 𝕜 → F) : Measurable (deriv f) := by
   simpa only [fderiv_deriv] using measurable_fderiv_apply_const 𝕜 f 1
@@ -522,8 +523,8 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : ℝ}
   calc
     ‖f z - f y - (z - y) • derivWithin f (Ici x) x‖ =
         ‖f z - f x - (z - x) • derivWithin f (Ici x) x -
-            (f y - f x - (y - x) • derivWithin f (Ici x) x)‖ :=
-      by congr 1; simp only [sub_smul]; abel
+            (f y - f x - (y - x) • derivWithin f (Ici x) x)‖ := by
+      congr 1; simp only [sub_smul]; abel
     _ ≤
         ‖f z - f x - (z - x) • derivWithin f (Ici x) x‖ +
           ‖f y - f x - (y - x) • derivWithin f (Ici x) x‖ :=
@@ -545,8 +546,8 @@ theorem norm_sub_le_of_mem_A {r x : ℝ} (hr : 0 < r) (ε : ℝ) {L₁ L₂ : F}
   calc
     ‖(r / 2) • (L₁ - L₂)‖ =
         ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂ -
-            (f (x + r / 2) - f x - (x + r / 2 - x) • L₁)‖ :=
-      by simp [smul_sub]
+            (f (x + r / 2) - f x - (x + r / 2 - x) • L₁)‖ := by
+      simp [smul_sub]
     _ ≤ ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₂‖ +
           ‖f (x + r / 2) - f x - (x + r / 2 - x) • L₁‖ :=
       norm_sub_le _ _
@@ -621,8 +622,8 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       exact norm_sub_le_of_mem_A P _ (A_mono _ _ I I1) (A_mono _ _ I I2)
     calc
       ‖L e p q - L e' p' q'‖ =
-          ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ :=
-        by congr 1; abel
+          ‖L e p q - L e p r + (L e p r - L e' p' r) + (L e' p' r - L e' p' q')‖ := by
+        congr 1; abel
       _ ≤ ‖L e p q - L e p r‖ + ‖L e p r - L e' p' r‖ + ‖L e' p' r - L e' p' q'‖ :=
         (le_trans (norm_add_le _ _) (add_le_add_right (norm_add_le _ _) _))
       _ ≤ 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e + 4 * (1 / 2) ^ e := by gcongr
@@ -701,8 +702,8 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
     calc
       ‖f y - f x - (y - x) • f'‖ =
-          ‖f y - f x - (y - x) • L e (n e) m + (y - x) • (L e (n e) m - f')‖ :=
-        by simp only [smul_sub, sub_add_sub_cancel]
+          ‖f y - f x - (y - x) • L e (n e) m + (y - x) • (L e (n e) m - f')‖ := by
+        simp only [smul_sub, sub_add_sub_cancel]
       _ ≤ 4 * (1 / 2) ^ e * ‖y - x‖ + ‖y - x‖ * (12 * (1 / 2) ^ e) :=
         norm_add_le_of_le J <| by rw [norm_smul]; gcongr; exact Lf' _ _ m_ge
       _ = 16 * ‖y - x‖ * (1 / 2) ^ e := by ring
@@ -746,7 +747,7 @@ theorem measurableSet_of_differentiableWithinAt_Ici :
   simp
 #align measurable_set_of_differentiable_within_at_Ici measurableSet_of_differentiableWithinAt_Ici
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_derivWithin_Ici [MeasurableSpace F] [BorelSpace F] :
     Measurable fun x => derivWithin f (Ici x) x := by
   refine measurable_of_isClosed fun s hs => ?_
@@ -799,7 +800,7 @@ theorem measurableSet_of_differentiableWithinAt_Ioi :
   simpa [differentiableWithinAt_Ioi_iff_Ici] using measurableSet_of_differentiableWithinAt_Ici f
 #align measurable_set_of_differentiable_within_at_Ioi measurableSet_of_differentiableWithinAt_Ioi
 
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_derivWithin_Ioi [MeasurableSpace F] [BorelSpace F] :
     Measurable fun x => derivWithin f (Ioi x) x := by
   simpa [derivWithin_Ioi_eq_Ici] using measurable_derivWithin_Ici f
@@ -853,11 +854,7 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   rcases exists_between hrt with ⟨t', hrt', ht't⟩
   obtain ⟨b, b_lt, hb⟩ : ∃ b, b < s * r ∧ ∀ y ∈ closedBall x t, ∀ z ∈ closedBall x t,
       ‖f a z - f a y - (L z - L y)‖ ≤ b := by
-    have B : Continuous (fun (p : E × E) ↦ ‖f a p.2 - f a p.1 - (L p.2 - L p.1)‖) := by
-      -- `continuity` took several seconds to solve this.
-      refine continuous_norm.comp' <| Continuous.sub ?_ ?_
-      · exact ha.comp' continuous_snd |>.sub <| ha.comp' continuous_fst
-      · exact L.continuous.comp' continuous_snd |>.sub <| L.continuous.comp' continuous_fst
+    have B : Continuous (fun (p : E × E) ↦ ‖f a p.2 - f a p.1 - (L p.2 - L p.1)‖) := by fun_prop
     have C : (closedBall x t ×ˢ closedBall x t).Nonempty := by simp; linarith
     rcases ((isCompact_closedBall x t).prod (isCompact_closedBall x t)).exists_isMaxOn
       C B.continuousOn with ⟨p, pt, hp⟩
@@ -870,9 +867,7 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
     ⟨(s * r - b) / 3, by linarith, by linarith⟩
   obtain ⟨u, u_open, au, hu⟩ : ∃ u, IsOpen u ∧ a ∈ u ∧ ∀ (p : α × E),
       p.1 ∈ u → p.2 ∈ closedBall x t → dist (f.uncurry p) (f.uncurry (a, p.2)) < ε := by
-    have C : Continuous (fun (p : α × E) ↦ f a p.2) :=
-      -- `continuity` took several seconds to solve this.
-      ha.comp' continuous_snd
+    have C : Continuous (fun (p : α × E) ↦ f a p.2) := by fun_prop
     have D : ({a} ×ˢ closedBall x t).EqOn f.uncurry (fun p ↦ f a p.2) := by
       rintro ⟨b, y⟩ ⟨hb, -⟩
       simp only [mem_singleton_iff] at hb

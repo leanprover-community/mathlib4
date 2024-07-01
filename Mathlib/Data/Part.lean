@@ -69,9 +69,11 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
   by_cases h : o.Dom <;> simp [h, toOption]
 #align part.to_option_is_some Part.toOption_isSome
 
-@[simp] lemma toOption_isNone (o : Part α) [Decidable o.Dom] : o.toOption.isNone ↔ ¬o.Dom := by
+@[simp] lemma toOption_eq_none (o : Part α) [Decidable o.Dom] : o.toOption = none ↔ ¬o.Dom := by
   by_cases h : o.Dom <;> simp [h, toOption]
-#align part.to_option_is_none Part.toOption_isNone
+#align part.to_option_is_none Part.toOption_eq_none
+
+@[deprecated (since := "2024-06-20")] alias toOption_isNone := toOption_eq_none
 
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
@@ -294,7 +296,6 @@ theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o
   · exact mt Exists.fst h
 #align part.mem_to_option Part.mem_toOption
 
--- Porting note (#10756): new theorem, like `mem_toOption` but with LHS in `simp` normal form
 @[simp]
 theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
     toOption o = Option.some a ↔ a ∈ o := by
@@ -498,7 +499,7 @@ theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔
 protected theorem Dom.bind {o : Part α} (h : o.Dom) (f : α → Part β) : o.bind f = f (o.get h) := by
   ext b
   simp only [Part.mem_bind_iff, exists_prop]
-  refine' ⟨_, fun hb => ⟨o.get h, Part.get_mem _, hb⟩⟩
+  refine ⟨?_, fun hb => ⟨o.get h, Part.get_mem _, hb⟩⟩
   rintro ⟨a, ha, hb⟩
   rwa [Part.get_eq_of_mem ha]
 #align part.dom.bind Part.Dom.bind
@@ -695,7 +696,7 @@ instance [Union α] : Union (Part α) where union a b := (· ∪ ·) <$> a <*> b
 instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
--- Porting note (#10756): new theorems to unfold definitions
+
 theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
 theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl

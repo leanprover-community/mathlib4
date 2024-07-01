@@ -60,11 +60,6 @@ theorem one_mem_centralizer [MulOneClass M] : (1 : M) ∈ centralizer S := by
 #align set.one_mem_centralizer Set.one_mem_centralizer
 #align set.zero_mem_add_centralizer Set.zero_mem_addCentralizer
 
-@[simp]
-theorem zero_mem_centralizer [MulZeroClass M] : (0 : M) ∈ centralizer S := by
-  simp [mem_centralizer_iff]
-#align set.zero_mem_centralizer Set.zero_mem_centralizer
-
 variable {S} {a b : M}
 
 @[to_additive (attr := simp) add_mem_addCentralizer]
@@ -80,16 +75,6 @@ theorem inv_mem_centralizer [Group M] (ha : a ∈ centralizer S) : a⁻¹ ∈ ce
 #align set.inv_mem_centralizer Set.inv_mem_centralizer
 #align set.neg_mem_add_centralizer Set.neg_mem_addCentralizer
 
-@[simp]
-theorem inv_mem_centralizer₀ [GroupWithZero M] (ha : a ∈ centralizer S) : a⁻¹ ∈ centralizer S :=
-  (eq_or_ne a 0).elim
-    (fun h => by
-      rw [h, inv_zero]
-      exact zero_mem_centralizer S)
-    fun ha0 c hc => by
-    rw [mul_inv_eq_iff_eq_mul₀ ha0, mul_assoc, eq_inv_mul_iff_mul_eq₀ ha0, ha c hc]
-#align set.inv_mem_centralizer₀ Set.inv_mem_centralizer₀
-
 @[to_additive (attr := simp) sub_mem_addCentralizer]
 theorem div_mem_centralizer [Group M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
     a / b ∈ centralizer S := by
@@ -97,13 +82,6 @@ theorem div_mem_centralizer [Group M] (ha : a ∈ centralizer S) (hb : b ∈ cen
   exact mul_mem_centralizer ha (inv_mem_centralizer hb)
 #align set.div_mem_centralizer Set.div_mem_centralizer
 #align set.sub_mem_add_centralizer Set.sub_mem_addCentralizer
-
-@[simp]
-theorem div_mem_centralizer₀ [GroupWithZero M] (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) :
-    a / b ∈ centralizer S := by
-  rw [div_eq_mul_inv]
-  exact mul_mem_centralizer ha (inv_mem_centralizer₀ hb)
-#align set.div_mem_centralizer₀ Set.div_mem_centralizer₀
 
 @[to_additive addCentralizer_subset]
 theorem centralizer_subset [Mul M] (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun _ ht s hs =>
@@ -142,6 +120,22 @@ theorem centralizer_eq_univ [CommSemigroup M] : centralizer S = univ :=
   (Subset.antisymm (subset_univ _)) fun x _ y _ => mul_comm y x
 #align set.centralizer_eq_univ Set.centralizer_eq_univ
 #align set.add_centralizer_eq_univ Set.addCentralizer_eq_univ
+
+@[to_additive subset_addCentralizer_addCentralizer]
+lemma subset_centralizer_centralizer [Mul M] {s : Set M} : s ⊆ s.centralizer.centralizer := by
+  intro x hx
+  simp only [Set.mem_centralizer_iff]
+  exact fun y hy => (hy x hx).symm
+
+@[to_additive (attr := simp) addCentralizer_addCentralizer_addCentralizer]
+lemma centralizer_centralizer_centralizer [Mul M] {s : Set M} :
+    s.centralizer.centralizer.centralizer = s.centralizer := by
+  refine Set.Subset.antisymm ?_ Set.subset_centralizer_centralizer
+  intro x hx
+  rw [Set.mem_centralizer_iff]
+  intro y hy
+  rw [Set.mem_centralizer_iff] at hx
+  exact hx y <| Set.subset_centralizer_centralizer hy
 
 end Set
 

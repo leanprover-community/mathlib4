@@ -201,13 +201,10 @@ instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd]
 #align pgame.list_short.cons SetTheory.PGame.ListShort.cons
 
 instance listShortGet :
-    ∀ (L : List PGame.{u}) [ListShort L] (i : Fin (List.length L)), Short (List.get L i)
-  | [], _, n => by
-    exfalso
-    rcases n with ⟨_, ⟨⟩⟩;
-  | _::_, ListShort.cons' S _, ⟨0, _⟩ => S
-  | hd::tl, ListShort.cons' _ S, ⟨n + 1, h⟩ =>
-    @listShortGet tl S ⟨n, (add_lt_add_iff_right 1).mp h⟩
+    ∀ (L : List PGame.{u}) [ListShort L] (i : Nat) (h : i < List.length L), Short L[i]
+  | _::_, ListShort.cons' S _, 0, _ => S
+  | _::tl, ListShort.cons' _ S, n + 1, h =>
+    @listShortGet tl S n ((add_lt_add_iff_right 1).mp h)
 #align pgame.list_short_nth_le SetTheory.PGame.listShortGet
 
 instance shortOfLists : ∀ (L R : List PGame) [ListShort L] [ListShort R], Short (PGame.ofLists L R)
@@ -266,7 +263,7 @@ Instances for the two projections separately are provided below.
 def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     constructor
-    · refine' @decidable_of_iff' _ _ mk_le_mk (id _)
+    · refine @decidable_of_iff' _ _ mk_le_mk (id ?_)
       apply @And.decidable _ _ ?_ ?_
       · apply @Fintype.decidableForallFintype xl _ ?_ _
         intro i
@@ -274,7 +271,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
       · apply @Fintype.decidableForallFintype yr _ ?_ _
         intro i
         apply (leLFDecidable _ _).2
-    · refine' @decidable_of_iff' _ _ mk_lf_mk (id _)
+    · refine @decidable_of_iff' _ _ mk_lf_mk (id ?_)
       apply @Or.decidable _ _ ?_ ?_
       · apply @Fintype.decidableExistsFintype yl _ ?_ _
         intro i

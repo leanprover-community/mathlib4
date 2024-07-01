@@ -200,13 +200,15 @@ theorem Equiv.uniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace �
 theorem uniformEmbedding_inl : UniformEmbedding (Sum.inl : α → α ⊕ β) :=
   uniformEmbedding_iff'.2 ⟨Sum.inl_injective, uniformContinuous_inl, fun s hs =>
     ⟨Prod.map Sum.inl Sum.inl '' s ∪ range (Prod.map Sum.inr Sum.inr),
-      union_mem_sup (image_mem_map hs) range_mem_map, fun x h => by simpa using h⟩⟩
+      union_mem_sup (image_mem_map hs) range_mem_map,
+      fun x h => by simpa [Prod.map_apply'] using h⟩⟩
 #align uniform_embedding_inl uniformEmbedding_inl
 
 theorem uniformEmbedding_inr : UniformEmbedding (Sum.inr : β → α ⊕ β) :=
   uniformEmbedding_iff'.2 ⟨Sum.inr_injective, uniformContinuous_inr, fun s hs =>
     ⟨range (Prod.map Sum.inl Sum.inl) ∪ Prod.map Sum.inr Sum.inr '' s,
-      union_mem_sup range_mem_map (image_mem_map hs), fun x h => by simpa using h⟩⟩
+      union_mem_sup range_mem_map (image_mem_map hs),
+      fun x h => by simpa [Prod.map_apply'] using h⟩⟩
 #align uniform_embedding_inr uniformEmbedding_inr
 
 /-- If the domain of a `UniformInducing` map `f` is a T₀ space, then `f` is injective,
@@ -288,7 +290,7 @@ theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : Unif
 theorem UniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformEmbedding e₁) (h₂ : UniformEmbedding e₂) :
     UniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.Prod_map h₂.inj }
+  { h₁.toUniformInducing.prod h₂.toUniformInducing with inj := h₁.inj.prodMap h₂.inj }
 #align uniform_embedding.prod UniformEmbedding.prod
 
 /-- A set is complete iff its image under a uniform inducing map is complete. -/
@@ -401,7 +403,7 @@ theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformEmbedd
   rcases mem_comap.2 ht with ⟨t', ht', ts⟩
   rcases totallyBounded_iff_subset.1 (totallyBounded_subset (image_preimage_subset f s) hs) _ ht'
     with ⟨c, cs, hfc, hct⟩
-  refine ⟨f ⁻¹' c, hfc.preimage (hf.inj.injOn _), fun x h => ?_⟩
+  refine ⟨f ⁻¹' c, hfc.preimage hf.inj.injOn, fun x h => ?_⟩
   have := hct (mem_image_of_mem f h); simp at this ⊢
   rcases this with ⟨z, zc, zt⟩
   rcases cs zc with ⟨y, -, rfl⟩
@@ -463,7 +465,7 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
   have : b ∈ closure (e '' { x | p x }) :=
     (closure_mono <| monotone_image <| hp) (mem_of_mem_nhds hb)
   let ⟨c, hc⟩ := uniformly_extend_exists ue'.toUniformInducing de'.dense hf ⟨b, this⟩
-  replace hc : Tendsto (f ∘ Subtype.val) (((𝓝 b).comap e).comap Subtype.val) (𝓝 c) := by
+  replace hc : Tendsto (f ∘ Subtype.val (p := p)) (((𝓝 b).comap e).comap Subtype.val) (𝓝 c) := by
     simpa only [nhds_subtype_eq_comap, comap_comap, DenseEmbedding.subtypeEmb_coe] using hc
   refine ⟨c, (tendsto_comap'_iff ?_).1 hc⟩
   rw [Subtype.range_coe_subtype]

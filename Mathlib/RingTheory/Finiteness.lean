@@ -250,7 +250,6 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
   classical
     simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
-    -- Porting note: `refine'` doesn't work here
     refine
       ⟨⋃ i, (LinearMap.single i : _ →ₗ[R] _) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
     -- Note: #8386 changed `span_image` into `span_image _`
@@ -423,7 +422,7 @@ theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommG
     [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
       ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
         x = rTensor M (J.inclusion hle) y := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
   | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
       (span_singleton_le_iff_mem _ _).mpr i.property,
@@ -591,8 +590,10 @@ instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] 
   Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
-instance range [Finite R M] (f : M →ₗ[R] N) : Finite R (LinearMap.range f) :=
-  of_surjective f.rangeRestrict fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
+instance range {F : Type*} [FunLike F M N] [SemilinearMapClass F (RingHom.id R) M N] [Finite R M]
+    (f : F) : Finite R (LinearMap.range f) :=
+  of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
+    fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 #align module.finite.range Module.Finite.range
 
 /-- Pushforwards of finite submodules are finite. -/
@@ -732,7 +733,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     obtain ⟨s, hs⟩ := h.out
     refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
     rintro x -
-    induction x using TensorProduct.induction_on with
+    induction x with
     | zero => exact zero_mem _
     | tmul x y =>
       -- Porting note: new TC reminder

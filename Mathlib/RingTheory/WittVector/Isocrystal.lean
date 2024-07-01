@@ -52,9 +52,6 @@ This file introduces notation in the locale `Isocrystal`.
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open FiniteDimensional
@@ -167,9 +164,9 @@ def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section Deriving
 
-instance : AddCommGroup (StandardOneDimIsocrystal p k m) :=
+instance {m : ℤ} : AddCommGroup (StandardOneDimIsocrystal p k m) :=
   inferInstanceAs (AddCommGroup K(p, k))
-instance : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
+instance {m : ℤ} : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
   inferInstanceAs (Module K(p, k) K(p, k))
 
 end Deriving
@@ -217,11 +214,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
-  -- Porting note: `refine'` below gets confused when this is inlined.
-  let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
-  refine ⟨⟨E, ?_⟩⟩
-  simp only [E]
-  intro c
+  refine ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, fun c ↦ ?_⟩⟩
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
     LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
   -- Porting note: was

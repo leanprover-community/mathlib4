@@ -3,11 +3,11 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
@@ -62,8 +62,7 @@ namespace Nat
 implementation.
 -/
 
--- Porting note: Lean cannot find pp_nodot at the time of this port.
--- @[pp_nodot]
+@[pp_nodot]
 def fib (n : ℕ) : ℕ :=
   ((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n] (0, 1)).fst
 #align nat.fib Nat.fib

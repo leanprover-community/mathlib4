@@ -3,10 +3,9 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Atoms
-import Mathlib.Data.Fintype.Powerset
 
 #align_import order.partition.finpartition from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -219,7 +218,7 @@ abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a
     have h : ∀ b ∈ P.parts, b = a := fun _ hb ↦
       (ha.le_iff.mp <| P.le hb).resolve_left (P.ne_bot hb)
     ext b
-    refine' Iff.trans ⟨h b, _⟩ mem_singleton.symm
+    refine Iff.trans ⟨h b, ?_⟩ mem_singleton.symm
     rintro rfl
     obtain ⟨c, hc⟩ := P.parts_nonempty ha.1
     simp_rw [← h c hc]
@@ -359,7 +358,7 @@ theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : Q.parts.card �
     have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
     choose f hP hf using this
     rw [← card_attach]
-    refine card_le_card_of_inj_on (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ ?_
+    refine card_le_card_of_injOn (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ ?_
     exact
       Subtype.coe_injective
         (Q.disjoint.elim b.2 c.2 fun H ↦
@@ -499,19 +498,43 @@ theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := b
 /-- The part of the finpartition that `a` lies in. -/
 def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUnique_mem ha) else ∅
 
-theorem part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
+lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
-theorem mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
+lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
+
+lemma part_eq_of_mem (ht : t ∈ P.parts) (hat : a ∈ t) : P.part a = t := by
+  apply P.eq_of_mem_parts (P.part_mem _) ht (P.mem_part _) hat <;> exact mem_of_subset (P.le ht) hat
+
+lemma mem_part_iff_part_eq_part {b : α} (ha : a ∈ s) (hb : b ∈ s) :
+    a ∈ P.part b ↔ P.part a = P.part b :=
+  ⟨fun c ↦ (P.part_eq_of_mem (P.part_mem hb) c), fun c ↦ c ▸ P.mem_part ha⟩
 
 theorem part_surjOn : Set.SurjOn P.part s P.parts := fun p hp ↦ by
   obtain ⟨x, hx⟩ := P.nonempty_of_mem_parts hp
-  have hx' := mem_of_subset ((le_sup hp).trans P.sup_parts.le) hx
+  have hx' := mem_of_subset (P.le hp) hx
   use x, hx', (P.existsUnique_mem hx').unique ⟨P.part_mem hx', P.mem_part hx'⟩ ⟨hp, hx⟩
 
 theorem exists_subset_part_bijOn : ∃ r ⊆ s, Set.BijOn P.part r P.parts := by
   obtain ⟨r, hrs, hr⟩ := P.part_surjOn.exists_bijOn_subset
   lift r to Finset α using s.finite_toSet.subset hrs
   exact ⟨r, mod_cast hrs, hr⟩
+
+/-- Equivalence between a finpartition's parts as a dependent sum and the partitioned set. -/
+def equivSigmaParts : s ≃ Σ t : P.parts, t.1 where
+  toFun x := ⟨⟨P.part x.1, P.part_mem x.2⟩, ⟨x, P.mem_part x.2⟩⟩
+  invFun x := ⟨x.2, mem_of_subset (P.le x.1.2) x.2.2⟩
+  left_inv x := by simp
+  right_inv x := by
+    ext e
+    · obtain ⟨⟨p, mp⟩, ⟨f, mf⟩⟩ := x
+      dsimp only at mf ⊢
+      rw [P.part_eq_of_mem mp mf]
+    · simp
+
+lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin t.1.card,
+    ∀ a b : s, P.part a = P.part b ↔ (f a).1 = (f b).1 := by
+  use P.equivSigmaParts.trans ((Equiv.refl _).sigmaCongr (fun t ↦ t.1.equivFin))
+  simp [equivSigmaParts, Equiv.sigmaCongr, Equiv.sigmaCongrLeft]
 
 theorem sum_card_parts : ∑ i ∈ P.parts, i.card = s.card := by
   convert congr_arg Finset.card P.biUnion_parts
@@ -552,10 +575,17 @@ instance (s : Finset α) : OrderBot (Finpartition s) :=
       obtain ⟨t, ht, hat⟩ := P.exists_mem ha
       exact ⟨t, ht, singleton_subset_iff.2 hat⟩ }
 
-theorem card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
+theorem card_parts_le_card : P.parts.card ≤ s.card := by
   rw [← card_bot s]
   exact card_mono bot_le
 #align finpartition.card_parts_le_card Finpartition.card_parts_le_card
+
+lemma card_mod_card_parts_le : s.card % P.parts.card ≤ P.parts.card := by
+  rcases P.parts.card.eq_zero_or_pos with h | h
+  · have h' := h
+    rw [Finset.card_eq_zero, parts_eq_empty_iff, bot_eq_empty, ← Finset.card_eq_zero] at h'
+    rw [h, h']
+  · exact (Nat.mod_lt _ h).le
 
 variable [Fintype α]
 
@@ -588,7 +618,7 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
 
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part a ↔ s.r a b := by
-  simp_rw [part, ofSetoid, mem_univ, reduceDite]
+  simp_rw [part, ofSetoid, mem_univ, reduceDIte]
   generalize_proofs H
   have := choose_spec _ _ H
   simp only [mem_univ, mem_image, true_and] at this

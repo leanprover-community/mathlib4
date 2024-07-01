@@ -67,6 +67,11 @@ theorem Iio_eq_range : Iio = range := by
 theorem Ico_zero_eq_range : Ico 0 = range := by rw [← Nat.bot_eq_zero, ← Iio_eq_Ico, Iio_eq_range]
 #align nat.Ico_zero_eq_range Nat.Ico_zero_eq_range
 
+lemma range_eq_Icc_zero_sub_one (n : ℕ) (hn : n ≠ 0): range n = Icc 0 (n - 1) := by
+  ext b
+  simp_all only [mem_Icc, zero_le, true_and, mem_range]
+  exact lt_iff_le_pred (zero_lt_of_ne_zero hn)
+
 theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
   Ico_zero_eq_range.symm
 #align finset.range_eq_Ico Finset.range_eq_Ico

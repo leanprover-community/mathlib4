@@ -390,7 +390,7 @@ theorem det_trans (f g : M ≃ₗ[R] M) :
   map_mul _ g f
 #align linear_equiv.det_trans LinearEquiv.det_trans
 
-@[simp, nolint simpNF]
+@[simp]
 theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det f⁻¹ :=
   map_inv _ f
 #align linear_equiv.det_symm LinearEquiv.det_symm
@@ -448,15 +448,14 @@ def LinearEquiv.ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' : Basis 
   map_smul' := f.map_smul
   invFun := toLin v' v (toMatrix v v' f)⁻¹
   left_inv x :=
-    calc
-      toLin v' v (toMatrix v v' f)⁻¹ (f x) = toLin v v ((toMatrix v v' f)⁻¹ * toMatrix v v' f) x :=
-        by rw [toLin_mul v v' v, toLin_toMatrix, LinearMap.comp_apply]
+    calc toLin v' v (toMatrix v v' f)⁻¹ (f x)
+      _ = toLin v v ((toMatrix v v' f)⁻¹ * toMatrix v v' f) x := by
+        rw [toLin_mul v v' v, toLin_toMatrix, LinearMap.comp_apply]
       _ = x := by simp [h]
   right_inv x :=
-    calc
-      f (toLin v' v (toMatrix v v' f)⁻¹ x) =
-          toLin v' v' (toMatrix v v' f * (toMatrix v v' f)⁻¹) x :=
-        by rw [toLin_mul v' v v', LinearMap.comp_apply, toLin_toMatrix v v']
+    calc f (toLin v' v (toMatrix v v' f)⁻¹ x)
+      _ = toLin v' v' (toMatrix v v' f * (toMatrix v v' f)⁻¹) x := by
+        rw [toLin_mul v' v v', LinearMap.comp_apply, toLin_toMatrix v v']
       _ = x := by simp [h]
 #align linear_equiv.of_is_unit_det LinearEquiv.ofIsUnitDet
 

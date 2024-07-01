@@ -169,7 +169,7 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       edist_dist := fun x y ↦ rfl } _
 #align uniform_space.completion.metric_space UniformSpace.Completion.instMetricSpace
 
-@[deprecated eq_of_dist_eq_zero]
+@[deprecated eq_of_dist_eq_zero (since := "2024-03-10")]
 protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
   eq_of_dist_eq_zero h
 #align uniform_space.completion.eq_of_dist_eq_zero UniformSpace.Completion.eq_of_dist_eq_zero
@@ -191,7 +191,7 @@ open UniformSpace Completion NNReal
 theorem LipschitzWith.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     {K : ℝ≥0} (h : LipschitzWith K f) : LipschitzWith K (Completion.extension f) :=
   LipschitzWith.of_dist_le_mul fun x y => induction_on₂ x y
-    (isClosed_le (by continuity) (by continuity)) <| by
+    (isClosed_le (by fun_prop) (by fun_prop)) <| by
       simpa only [extension_coe h.uniformContinuous, Completion.dist_eq] using h.dist_le_mul
 
 theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K : ℝ≥0}
@@ -201,7 +201,7 @@ theorem LipschitzWith.completion_map [PseudoMetricSpace β] {f : α → β} {K :
 theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.extension f) :=
   Isometry.of_dist_eq fun x y => induction_on₂ x y
-    (isClosed_eq (by continuity) (by continuity)) fun _ _ ↦ by
+    (isClosed_eq (by fun_prop) (by fun_prop)) fun _ _ ↦ by
       simp only [extension_coe h.uniformContinuous, Completion.dist_eq, h.dist_eq]
 
 theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}

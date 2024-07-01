@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -214,8 +215,8 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     sup_le := fun _ _ _ h₁ h₂ ↦ sInf_le' ⟨h₁, h₂⟩
     inf := (· ⊓ ·)
     le_inf := fun _ _ _ ↦ Set.subset_inter
-    inf_le_left := fun _ _ ↦ Set.inter_subset_left _ _
-    inf_le_right := fun _ _ ↦ Set.inter_subset_right _ _
+    inf_le_left := fun _ _ ↦ Set.inter_subset_left
+    inf_le_right := fun _ _ ↦ Set.inter_subset_right
     le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
     sSup_le := fun _ _ hs ↦ sInf_le' hs
     le_sInf := fun _ _ ↦ le_sInf'
