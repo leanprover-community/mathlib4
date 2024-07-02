@@ -168,19 +168,19 @@ attribute [local instance] specializationOrder
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
 noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     TopologicalSpace.IrreducibleCloseds α ≃o α where
-  toFun s := s.2.1.genericPoint
+  toFun s := s.2.genericPoint
   invFun x := ⟨closure ({x} : Set α), isIrreducible_singleton.closure, isClosed_closure⟩
   left_inv s := by
     refine TopologicalSpace.IrreducibleCloseds.ext ?_
     simp only [IsIrreducible.genericPoint_closure_eq, TopologicalSpace.IrreducibleCloseds.coe_mk,
-      closure_eq_iff_isClosed.mpr s.2.2]
+      closure_eq_iff_isClosed.mpr s.3]
     rfl
   right_inv x := isIrreducible_singleton.closure.genericPoint_spec.eq
       (by rw [closure_closure]; exact isGenericPoint_closure)
   map_rel_iff' := by
-    rintro ⟨s, hs⟩ ⟨t, ht⟩
+    rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
-    simp [hs.2.closure_eq, ht.2.closure_eq]
+    simp [hs'.closure_eq, ht'.closure_eq]
     rfl
 #align irreducible_set_equiv_points irreducibleSetEquivPoints
 

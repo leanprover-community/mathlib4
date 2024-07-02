@@ -558,12 +558,12 @@ lemma vanishingIdeal_isIrreducible :
     fun h ↦ ⟨zeroLocus I, (isIrreducible_zeroLocus_iff_of_radical _ h.isRadical).mpr h,
       (vanishingIdeal_zeroLocus_eq_radical I).trans h.radical⟩⟩
 
-lemma vanishingIdeal_isIrreducibleClosed :
-    vanishingIdeal (R := R) '' {s | IsIrreducibleClosed s} = {P | P.IsPrime} := by
+lemma vanishingIdeal_isClosed_isIrreducible :
+    vanishingIdeal (R := R) '' {s | IsClosed s ∧ IsIrreducible s} = {P | P.IsPrime} := by
   refine (subset_antisymm ?_ ?_).trans vanishingIdeal_isIrreducible
-  · exact Set.image_subset _ fun _ ↦ fun a ↦ Set.mem_of_mem_inter_left a
+  · exact Set.image_subset _ fun _ ↦ And.right
   rintro _ ⟨s, hs, rfl⟩
-  exact ⟨closure s, ⟨hs.closure, isClosed_closure⟩, vanishingIdeal_closure s⟩
+  exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
@@ -1003,18 +1003,18 @@ protected def minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
-  rw [irreducibleComponents_eq_maximals_irreducibleClosed]
+  rw [irreducibleComponents_eq_maximals_closed]
   exact OrderIso.minimalsIsoMaximals (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
-     (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype (PrimeSpectrum R)).dual))
+    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))
 
 namespace PrimeSpectrum
 
 lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
     minimalPrimes R := by
-  rw [irreducibleComponents_eq_maximals_irreducibleClosed, minimalPrimes_eq_minimals,
-    ← minimals_swap, ← vanishingIdeal_isIrreducibleClosed, image_minimals_of_rel_iff_rel]
-  exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.2
+  rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals,
+    ← minimals_swap, ← vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
+  exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.1
 
 lemma zeroLocus_minimalPrimes :
     zeroLocus ∘ (↑) '' minimalPrimes R =
