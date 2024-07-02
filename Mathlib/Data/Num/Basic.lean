@@ -191,19 +191,16 @@ section
 
 variable {α : Type*} [One α] [Add α]
 
-section deprecated
-set_option linter.deprecated false
-
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
-@[deprecated (since := "2022-11-18"), coe]
+@[coe]
 def castPosNum : PosNum → α
   | 1 => 1
-  | PosNum.bit0 a => bit0 (castPosNum a)
-  | PosNum.bit1 a => bit1 (castPosNum a)
+  | PosNum.bit0 a => let b := castPosNum a; b + b
+  | PosNum.bit1 a => let b := castPosNum a; b + b + 1
 #align cast_pos_num castPosNum
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
-@[deprecated (since := "2022-11-18"), coe]
+@[coe]
 def castNum [Zero α] : Num → α
   | 0 => 0
   | Num.pos p => castPosNum p
@@ -219,8 +216,6 @@ def castNum [Zero α] : Num → α
 instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
   ⟨castNum⟩
 #align num_nat_coe numNatCoe
-
-end deprecated
 
 instance : Repr PosNum :=
   ⟨fun n _ => repr (n : ℕ)⟩
