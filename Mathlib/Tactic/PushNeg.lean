@@ -170,12 +170,25 @@ syntax (name := pushNegConv) "push_neg" : conv
   Conv.applySimpResult (← pushNegCore (← instantiateMVars (← Conv.getLhs)))
 
 /--
+The syntax `push_neg% e`, where `e` is an expression,
+will elaborate to the `push_neg` form of `e`.
+
+`push_neg%` understands local variables, so you can use them to introduce parameters.
+
+`push_neg%?` will show the resulting expression using `show_term`.
+-/
+macro (name := pushNegTerm) tk:"push_neg% " e:term : term => `(term| conv%%$tk $e => push_neg)
+
+@[inherit_doc pushNegTerm]
+macro tk:"push_neg%? " e:term : term => `(term| conv%?%$tk $e => push_neg)
+
+/--
 The syntax is `#push_neg e`, where `e` is an expression,
 which will print the `push_neg` form of `e`.
 
 `#push_neg` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk push_neg => $e)
+macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk $e => push_neg)
 
 /-- Execute main loop of `push_neg` at the main goal. -/
 def pushNegTarget : TacticM Unit := withMainContext do

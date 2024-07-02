@@ -340,21 +340,55 @@ open Lean Elab Tactic
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := true))
 
 /--
+`norm_num% e`, where `e` is an expression, will elaborate to the normalized form of `e`.
+
+Syntax: `norm_num%` (config)? (`only`)? (`[` simp lemma list `]`)? ` on`? expression
+
+`norm_num1% e` runs `norm_num1` on `e`, and does not use (or accept) any simp lemmas.
+
+`norm_num%?` (and `norm_num1%?`) displays the normalized value using `show_term`.
+
+This accepts the same options as the `simp%` elaborator.
+You can specify additional simp lemmas as usual, for example using `norm_num% [f, g] on e`.
+(The `on` is optional but helpful for the parser.)
+The `only` restricts `norm_num` to using only the provided lemmas, and so
+`norm_num% only on e` behaves similarly to `norm_num1`.
+
+Unlike `norm_num`, this elaborator does not fail when no simplifications are made.
+
+`norm_num%` understands local variables, so you can use them to introduce parameters.
+-/
+macro (name := normNumTerm) "norm_num%" cfg:(config)? o:(&" only")?
+    args:(Parser.Tactic.simpArgs)? " on"? ppSpace e:term : term =>
+  `(term| conv% $e:term => norm_num $(cfg)? $[only%$o]? $(args)? )
+
+@[inherit_doc normNumTerm]
+macro "norm_num%?" cfg:(config)? o:(&" only")?
+    args:(Parser.Tactic.simpArgs)? " on"? ppSpace e:term : term =>
+  `(term| conv%? $e:term => norm_num $(cfg)? $[only%$o]? $(args)? )
+
+@[inherit_doc normNumTerm] macro "norm_num1% "  e:term : term => `(term|conv%  $e => norm_num1)
+@[inherit_doc normNumTerm] macro "norm_num1%? " e:term : term => `(term|conv%? $e => norm_num1)
+
+/--
 The basic usage is `#norm_num e`, where `e` is an expression,
 which will print the `norm_num` form of `e`.
 
-Syntax: `#norm_num` (`only`)? (`[` simp lemma list `]`)? `:`? expression
+Syntax: `#norm_num` (config)? (`only`)? (`[` simp lemma list `]`)? ` on`? expression
 
 This accepts the same options as the `#simp` command.
-You can specify additional simp lemmas as usual, for example using `#norm_num [f, g] : e`.
-(The colon is optional but helpful for the parser.)
+You can specify additional simp lemmas as usual, for example using `#norm_num [f, g] on e`.
+(The `on` is optional but helpful for the parser.)
 The `only` restricts `norm_num` to using only the provided lemmas, and so
-`#norm_num only : e` behaves similarly to `norm_num1`.
+`#norm_num1 only on e` behaves similarly to `norm_num1`.
 
 Unlike `norm_num`, this command does not fail when no simplifications are made.
 
 `#norm_num` understands local variables, so you can use them to introduce parameters.
 -/
 macro (name := normNumCmd) "#norm_num" cfg:(config)? o:(&" only")?
-    args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
-  `(command| #conv norm_num $(cfg)? $[only%$o]? $(args)? => $e)
+    args:(Parser.Tactic.simpArgs)? " on"? ppSpace e:term : command =>
+  `(command| #conv $e => norm_num $(cfg)? $[only%$o]? $(args)?)
+
+@[inherit_doc normNumCmd]
+macro "#norm_num1 " e:term : command => `(command| #conv $e => norm_num1)
