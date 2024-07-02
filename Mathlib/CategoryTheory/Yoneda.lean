@@ -369,9 +369,8 @@ def yonedaPairing : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   Functor.prod yoneda.op (𝟭 (Cᵒᵖ ⥤ Type v₁)) ⋙ Functor.hom (Cᵒᵖ ⥤ Type v₁)
 #align category_theory.yoneda_pairing CategoryTheory.yonedaPairing
 
--- Porting note: we need to provide this `@[ext]` lemma separately,
+-- Porting note (#5229): we need to provide this `@[ext]` lemma separately,
 -- as `ext` will not look through the definition.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma yonedaPairingExt {X : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)} {x y : (yonedaPairing C).obj X}
     (w : ∀ Y, x.app Y = y.app Y) : x = y :=
@@ -431,6 +430,29 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     dsimp [yonedaEquiv]
     simp [← FunctorToTypes.naturality])
 #align category_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
+
+/-- The curried version of the Yoneda lemma. -/
+def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
+    yoneda.op ⋙ coyoneda ≅
+      evaluation Cᵒᵖ (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+  NatIso.ofComponents
+    (fun X => NatIso.ofComponents
+      (fun Y => Equiv.toIso <| yonedaEquiv.trans Equiv.ulift.symm)
+      (by
+        intros Y Z f
+        ext g
+        rw [← ULift.down_inj]
+        simpa using yonedaEquiv_comp _ _))
+    (by
+      intros Y Z f
+      ext F g
+      rw [← ULift.down_inj]
+      simpa using (yonedaEquiv_naturality _ _).symm)
+
+/-- Version of the Yoneda lemma where the presheaf is fixed but the argument varies. -/
+def yonedaOpCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁) :
+    yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
+  isoWhiskerRight largeCurriedYonedaLemma ((evaluation _ _).obj P)
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
@@ -518,9 +540,8 @@ to `coyoneda.rightOp.obj X ⟶ F`, functorially in both `X` and `F`.
 def coyonedaPairing : C × (C ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   Functor.prod coyoneda.rightOp (𝟭 (C ⥤ Type v₁)) ⋙ Functor.hom (C ⥤ Type v₁)
 
--- Porting note: we need to provide this `@[ext]` lemma separately,
+-- Porting note (#5229): we need to provide this `@[ext]` lemma separately,
 -- as `ext` will not look through the definition.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma coyonedaPairingExt {X : C × (C ⥤ Type v₁)} {x y : (coyonedaPairing C).obj X}
     (w : ∀ Y, x.app Y = y.app Y) : x = y :=
@@ -570,11 +591,34 @@ variable {C}
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma {C : Type u₁} [SmallCategory C] :
-    (coyoneda.rightOp ⋙ coyoneda : C ⥤ (C ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation C (Type u₁) :=
+    coyoneda.rightOp ⋙ coyoneda ≅ evaluation C (Type u₁) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun F ↦ Equiv.toIso coyonedaEquiv)) (by
     intro X Y f
     ext a b
     simp [coyonedaEquiv, ← FunctorToTypes.naturality])
+
+/-- The curried version of the Coyoneda lemma. -/
+def largeCurriedCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
+    (coyoneda.rightOp ⋙ coyoneda) ≅
+      evaluation C (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+  NatIso.ofComponents
+    (fun X => NatIso.ofComponents
+      (fun Y => Equiv.toIso <| coyonedaEquiv.trans Equiv.ulift.symm)
+      (by
+        intros Y Z f
+        ext g
+        rw [← ULift.down_inj]
+        simpa using coyonedaEquiv_comp _ _))
+    (by
+      intro Y Z f
+      ext F g
+      rw [← ULift.down_inj]
+      simpa using (coyonedaEquiv_naturality _ _).symm)
+
+/-- Version of the Coyoneda lemma where the presheaf is fixed but the argument varies. -/
+def coyonedaCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : C ⥤ Type v₁) :
+    coyoneda.rightOp ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
+  isoWhiskerRight largeCurriedCoyonedaLemma ((evaluation _ _).obj P)
 
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma' {C : Type u₁} [SmallCategory C] :
