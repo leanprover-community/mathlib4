@@ -320,6 +320,19 @@ theorem vanishingIdeal_eq_top_iff {s : Set (PrimeSpectrum R)} : vanishingIdeal s
     Set.subset_empty_iff]
 #align prime_spectrum.vanishing_ideal_eq_top_iff PrimeSpectrum.vanishingIdeal_eq_top_iff
 
+theorem zeroLocus_eq_top_iff (s : Set R) :
+    zeroLocus s = ⊤ ↔ s ⊆ nilradical R := by
+  constructor
+  · intro h x hx
+    refine nilpotent_iff_mem_prime.mpr (fun J hJ ↦ ?_)
+    have hJz : ⟨J, hJ⟩ ∈ zeroLocus s := by
+      rw [h]
+      trivial
+    exact (mem_zeroLocus _ _).mpr hJz hx
+  · rw [eq_top_iff]
+    intro h p _
+    apply Set.Subset.trans h (nilradical_le_prime p.asIdeal)
+
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=
   (gc R).l_sup
@@ -343,6 +356,10 @@ theorem zeroLocus_iUnion {ι : Sort*} (s : ι → Set R) :
     zeroLocus (⋃ i, s i) = ⋂ i, zeroLocus (s i) :=
   (gc_set R).l_iSup
 #align prime_spectrum.zero_locus_Union PrimeSpectrum.zeroLocus_iUnion
+
+theorem zeroLocus_iUnion₂ {ι : Sort*} {κ : (i : ι) → Sort*} (s : ∀ i, κ i → Set R) :
+    zeroLocus (⋃ (i) (j), s i j) = ⋂ (i) (j), zeroLocus (s i j) :=
+  (gc_set R).l_iSup₂
 
 theorem zeroLocus_bUnion (s : Set (Set R)) :
     zeroLocus (⋃ s' ∈ s, s' : Set R) = ⋂ s' ∈ s, zeroLocus s' := by simp only [zeroLocus_iUnion]

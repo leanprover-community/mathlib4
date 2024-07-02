@@ -75,6 +75,9 @@ scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
   (PresheafedSpace.presheaf (SheafedSpace.toPresheafedSpace
     (LocallyRingedSpace.toSheafedSpace (Scheme.toLocallyRingedSpace X)))).obj (op U)
 
+instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
+  CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
+
 @[continuity, fun_prop]
 lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
@@ -105,6 +108,11 @@ this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
 def appLE (U : Opens Y) (V : Opens X) (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ(X, V) :=
   f.app U ≫ X.presheaf.map (homOfLE e).op
 #align algebraic_geometry.Scheme.hom.app_le AlgebraicGeometry.Scheme.Hom.appLE
+
+@[simp]
+lemma Scheme.Hom.appLE_eq_app {U : Opens Y} :
+    Scheme.Hom.appLE f U (f ⁻¹ᵁ U) le_rfl = Scheme.Hom.app f U := by
+  simp [Scheme.Hom.appLE]
 
 @[reassoc (attr := simp)]
 lemma appLE_map (e : V ≤ f ⁻¹ᵁ U) (i : op V ⟶ op V') :
@@ -137,6 +145,10 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
     (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop) :
     P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by
   subst e₁; subst e₂; rfl
+
+/-- In isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
+noncomputable def homeomorph [IsIso f] : X ≃ₜ Y :=
+  TopCat.homeoOfIso (asIso <| f.val.base)
 
 end Hom
 
@@ -486,10 +498,16 @@ lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
   (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
 
 @[simp]
-theorem preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y} (r : Γ(Y, U)) :
+theorem preimage_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (r : Γ(Y, U)) :
     f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.app U r) :=
   LocallyRingedSpace.preimage_basicOpen f r
 #align algebraic_geometry.Scheme.preimage_basic_open AlgebraicGeometry.Scheme.preimage_basicOpen
+
+lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens X) (V : Opens Y) (e : U ≤ f ⁻¹ᵁ V)
+    (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by
+  simp only [preimage_basicOpen, Hom.appLE, CommRingCat.coe_comp_of, RingHom.coe_comp,
+    Function.comp_apply]
+  rw [basicOpen_res]
 
 @[simp]
 theorem basicOpen_zero (U : Opens X) : X.basicOpen (0 : Γ(X, U)) = ⊥ :=
@@ -510,6 +528,40 @@ instance algebra_section_section_basicOpen {X : Scheme} {U : Opens X} (f : Γ(X,
   (X.presheaf.map (homOfLE <| X.basicOpen_le f : _ ⟶ U).op).toAlgebra
 
 end BasicOpen
+
+section ZeroLocus
+
+variable (X : Scheme.{u})
+
+/--
+The zero locus of a set of sections `s` over an open set `U` is the closed set consisting of
+the complement of `U` and of all points of `U`, where all elements of `f` vanish.
+-/
+def zeroLocus {U : Opens X} (s : Set Γ(X, U)) : Set X := X.toRingedSpace.zeroLocus s
+
+lemma zeroLocus_def {U : Opens X} (s : Set Γ(X, U)) :
+    X.zeroLocus s = ⋂ f ∈ s, (X.basicOpen f).carrierᶜ :=
+  rfl
+
+lemma zeroLocus_isClosed {U : Opens X} (s : Set Γ(X, U)) :
+    IsClosed (X.zeroLocus s) :=
+  X.toRingedSpace.zeroLocus_isClosed s
+
+lemma zeroLocus_singleton {U : Opens X} (f : Γ(X, U)) :
+    X.zeroLocus {f} = (X.basicOpen f).carrierᶜ :=
+  X.toRingedSpace.zeroLocus_singleton f
+
+@[simp]
+lemma zeroLocus_empty_eq_univ {U : Opens X} :
+    X.zeroLocus (∅ : Set Γ(X, U)) = Set.univ :=
+  X.toRingedSpace.zeroLocus_empty_eq_univ
+
+@[simp]
+lemma mem_zeroLocus_iff {U : Opens X} (s : Set Γ(X, U)) (x : X) :
+    x ∈ X.zeroLocus s ↔ ∀ f ∈ s, x ∉ X.basicOpen f :=
+  X.toRingedSpace.mem_zeroLocus_iff s x
+
+end ZeroLocus
 
 end Scheme
 
