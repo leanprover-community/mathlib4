@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.Analysis.InnerProductSpace.Projection
 
 #align_import analysis.inner_product_space.spectrum from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -269,6 +270,116 @@ theorem eigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
 
 end Version2
 
+section Simultaneous
+
+variable {A B : E →ₗ[𝕜] E}  {α β : 𝕜} (hA : A.IsSymmetric) (hB : B.IsSymmetric) [FiniteDimensional 𝕜 E] (hAB : A ∘ₗ B = B ∘ₗ A)
+
+theorem eigenspace_invariant  (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
+  intro v hv
+  simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply] at *
+  rw [← comp_apply A B v, hAB, comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero]
+
+theorem restrict_exhaust1 : (⨆ γ , (eigenspace (LinearMap.restrict B
+    (eigenspace_invariant hAB α)) γ))ᗮ = ⊥ := by
+  have H := LinearMap.IsSymmetric.restrict_invariant hB (eigenspace_invariant hAB α)
+  have H1 := FiniteDimensional.finiteDimensional_submodule (eigenspace A α)
+  exact H.orthogonalComplement_iSup_eigenspaces_eq_bot
+
+theorem restrict_exhaust2 : (⨆ γ , (eigenspace (LinearMap.restrict B
+    (eigenspace_invariant hAB α)) γ)) = ⊤ := by
+  rw [← Submodule.orthogonal_eq_bot_iff]
+  apply restrict_exhaust1 hB
+  exact hAB
+
+theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtype (eigenspace A α))
+    (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ) → x ∈ eigenspace B γ := by
+  intro h
+  dsimp [eigenspace] at *
+  simp only [mem_ker, sub_apply, Module.algebraMap_end_apply]
+  simp only [Submodule.mem_map, mem_ker, sub_apply, Module.algebraMap_end_apply,
+    Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk, exists_and_right, exists_eq_right] at h
+  obtain ⟨y, hy⟩ := h
+  exact
+    (AddSubmonoid.mk_eq_zero
+          (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp
+      hy
+
+theorem matching (γ : 𝕜) : Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
+       = (eigenspace B γ ⊓ eigenspace A α) := by
+  ext x
+  simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+      exists_eq_right] at *
+  constructor
+  · intro h
+    obtain ⟨x1, _⟩ := h
+    constructor
+    · simp only [SetLike.mem_coe]
+      apply eigen_extend hAB γ x
+      simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
+        exists_eq_right]
+      use x1
+    · simp only [SetLike.mem_coe, x1]
+  · rintro ⟨h1, h2⟩
+    use h2
+    refine mem_eigenspace_iff.mpr ?h.a
+    refine SetCoe.ext ?h.a.a
+    simp only [restrict_coe_apply]
+    exact mem_eigenspace_iff.mp h1
+
+theorem function_version : (fun (γ : 𝕜) ↦ Submodule.map (Submodule.subtype (eigenspace A α))
+    (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)) = (fun (γ : 𝕜) ↦
+    (eigenspace B γ ⊓ eigenspace A α)) := by
+  funext
+  exact matching hAB _
+
+theorem submod_subtype_commute : Submodule.map (Submodule.subtype (eigenspace A α)) (⨆ γ , (eigenspace (LinearMap.restrict B
+    (eigenspace_invariant hAB α)) γ)) = (⨆ γ , Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (LinearMap.restrict B
+    (eigenspace_invariant hAB α)) γ)) := Submodule.map_iSup (eigenspace A α).subtype fun i ↦
+      eigenspace (B.restrict (eigenspace_invariant hAB α)) i
+
+theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) = eigenspace A α := by
+   rw [← function_version hAB, ← submod_subtype_commute hAB, restrict_exhaust2 hB hAB] at *
+   simp only [Submodule.map_top, Submodule.range_subtype]
+
+theorem semi_final_exhaust' : (fun (x : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) )= (fun( x : 𝕜 ) ↦  ( (eigenspace A α) )) := by
+  funext
+  exact semi_final_exhaust hB hAB
+
+#check Submodule.orthogonal_eq_bot_iff
+#check orthogonalComplement_iSup_eigenspaces_eq_bot'
+#check semi_final_exhaust hB hAB (α := α)
+
+theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
+  exact Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
+
+
+#check (⨆ (γ : 𝕜), eigenspace A γ)
+#check Submodule.subtype(E)
+
+#check Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
+theorem pre_pre_exhaust: (fun (α : 𝕜 ) ↦  eigenspace A α)  = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
+funext
+exact Eq.symm (semi_final_exhaust hB hAB)
+
+theorem exhaust : (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
+  conv =>
+    rhs
+    rw [← hA.pre_exhaust]
+    rhs
+    rw [pre_pre_exhaust hB hAB]
+
+theorem post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)))ᗮ = ⊥ := by
+  rw [Submodule.orthogonal_eq_bot_iff]
+  apply exhaust hA hB hAB
+
+theorem post_post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)))ᗮ = DirectSumInternal E :=
+
+end Simultaneous
+
+
+
+
+
 end IsSymmetric
 
 end LinearMap
@@ -304,5 +415,6 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
     exact mod_cast this
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_pos_of_pos eigenvalue_pos_of_pos
+
 
 end Nonneg
