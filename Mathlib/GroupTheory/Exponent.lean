@@ -465,12 +465,12 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   obtain ⟨t, ht⟩ := hne.csSup_mem hfin
   use t
   apply Nat.dvd_antisymm (order_dvd_exponent _)
-  refine Nat.dvd_of_factors_subperm he ?_
+  refine Nat.dvd_of_primeFactorsList_subperm he ?_
   rw [List.subperm_ext_iff]
   by_contra! h
   obtain ⟨p, hp, hpe⟩ := h
-  replace hp := Nat.prime_of_mem_factors hp
-  simp only [Nat.factors_count_eq] at hpe
+  replace hp := Nat.prime_of_mem_primeFactorsList hp
+  simp only [Nat.primeFactorsList_count_eq] at hpe
   set k := (orderOf t).factorization p with hk
   obtain ⟨g, hg⟩ := hp.exists_orderOf_eq_pow_factorization_exponent G
   suffices orderOf t < orderOf (t ^ p ^ k * g) by

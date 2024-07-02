@@ -377,7 +377,7 @@ theorem sub_one_norm_isPrimePow (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtensi
     exists_eq_succ_of_ne_zero
       (((n : ℕ).factorization.mem_support_toFun (n : ℕ).minFac).1 <|
         mem_primeFactors_iff_mem_factors.2 <|
-          (mem_factors (IsPrimePow.ne_zero hn)).2 ⟨hprime.out, minFac_dvd _⟩)
+          (mem_primeFactorsList (IsPrimePow.ne_zero hn)).2 ⟨hprime.out, minFac_dvd _⟩)
   simp [hk, sub_one_norm_eq_eval_cyclotomic hζ this hirr]
 #align is_primitive_root.sub_one_norm_is_prime_pow IsPrimitiveRoot.sub_one_norm_isPrimePow
 
