@@ -36,7 +36,7 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
-universe v₁ v₂ v₃ u₁ u₂ u₃ w
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ w
 
 namespace CategoryTheory
 
@@ -262,10 +262,13 @@ theorem hasSheafCompose : J.HasSheafCompose F where
       e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
 
+variable [ConcreteCategory.{w} A]
+variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
+
 end Equivalence
 
 variable [EssentiallySmall.{w} C]
-variable (B : Type*) [Category B] (F : A ⥤ B)
+variable (B : Type u₄) [Category.{v₄} B] (F : A ⥤ B)
 variable [HasSheafify ((equivSmallModel C).locallyCoverDense J).inducedTopology A]
 variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose F]
 
@@ -303,8 +306,8 @@ instance hasColimitsEssentiallySmallSite
 namespace GrothendieckTopology
 
 variable {A}
-variable [G.IsCoverDense J] [Functor.IsContinuous G K J] [G.Full]
-  [(G.sheafPushforwardContinuous A K J).EssSurj]
+variable [G.IsCoverDense J] [Functor.IsContinuous.{v₃} G K J]
+  [G.Full][(G.sheafPushforwardContinuous A K J).EssSurj]
 
 open Localization
 
@@ -344,6 +347,16 @@ lemma W_whiskerLeft_iff {P Q : Cᵒᵖ ⥤ A} (f : P ⟶ Q) :
   rw [← W_inverseImage_whiskeringLeft J K G]
   rfl
 
+variable [Functor.IsContinuous.{v₄} G K J] [Functor.IsContinuous.{v₃} G K J]
+
+lemma PreservesSheafification.transport [(G.sheafPushforwardContinuous B K J).EssSurj]
+    [K.PreservesSheafification F] : J.PreservesSheafification F where
+  le P Q f hf := by
+    rw [← J.W_whiskerLeft_iff (G := G) (K := K)] at hf
+    have := K.W_of_preservesSheafification F (whiskerLeft G.op f) hf
+    rwa [whiskerRight_left,
+      K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
+
 variable [G.IsCocontinuous K J] (hG : CoverPreserving K J G) [ConcreteCategory A]
   [K.WEqualsLocallyBijective A]
 
@@ -351,6 +364,21 @@ lemma WEqualsLocallyBijective.transport : J.WEqualsLocallyBijective A where
   iff f := by
     rw [← W_whiskerLeft_iff J K G f, ← Presheaf.isLocallyInjective_whisker_iff K J G f hG,
       ← Presheaf.isLocallySurjective_whisker_iff K J G f hG, W_iff_isLocallyBijective]
+
+variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
+
+instance [((equivSmallModel C).locallyCoverDense J).inducedTopology.WEqualsLocallyBijective A] :
+    J.WEqualsLocallyBijective A :=
+  WEqualsLocallyBijective.transport J ((equivSmallModel C).locallyCoverDense J).inducedTopology
+    (equivSmallModel C).inverse ((equivSmallModel C).coverPreserving_symm J
+      ((equivSmallModel C).locallyCoverDense J).inducedTopology)
+
+variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) B]
+variable [PreservesSheafification ((equivSmallModel C).locallyCoverDense J).inducedTopology F]
+
+instance : PreservesSheafification J F :=
+  PreservesSheafification.transport (A := A) J
+    ((equivSmallModel C).locallyCoverDense J).inducedTopology (equivSmallModel C).inverse B F
 
 end GrothendieckTopology
 

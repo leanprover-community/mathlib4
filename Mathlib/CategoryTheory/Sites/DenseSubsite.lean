@@ -552,6 +552,10 @@ noncomputable def sheafEquivOfCoverPreservingCoverLifting : Sheaf J A ≌ Sheaf 
 set_option linter.uppercaseLean3 false in
 #align category_theory.cover_dense.Sheaf_equiv_of_cover_preserving_cover_lifting CategoryTheory.Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting
 
+instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
+  inferInstanceAs (Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting
+      G _ _ _).inverse.IsEquivalence
+
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
 /-- The natural isomorphism exhibiting the compatibility of
