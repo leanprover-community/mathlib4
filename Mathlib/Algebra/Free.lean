@@ -168,7 +168,6 @@ protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure 
   FreeMagma.recOnMul x ih1 ih2
 #align free_magma.rec_on_pure FreeMagma.recOnPure
 
--- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
 #align free_magma.map_pure FreeMagma.map_pure
@@ -177,7 +176,6 @@ theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x
 theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y := rfl
 #align free_magma.map_mul' FreeMagma.map_mul'
 
--- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp)]
 theorem pure_bind (f : α → FreeMagma β) (x) : pure x >>= f = f x := rfl
 #align free_magma.pure_bind FreeMagma.pure_bind
@@ -604,7 +602,6 @@ def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
   FreeSemigroup.recOnMul x ih1 ih2
 #align free_semigroup.rec_on_pure FreeSemigroup.recOnPure
 
--- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp)]
 theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeSemigroup β) = pure (f x) := rfl
 #align free_semigroup.map_pure FreeSemigroup.map_pure
@@ -614,7 +611,6 @@ theorem map_mul' (f : α → β) (x y : FreeSemigroup α) : f <$> (x * y) = f <$
   map_mul (map f) _ _
 #align free_semigroup.map_mul' FreeSemigroup.map_mul'
 
--- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp)]
 theorem pure_bind (f : α → FreeSemigroup β) (x) : pure x >>= f = f x := rfl
 #align free_semigroup.pure_bind FreeSemigroup.pure_bind

@@ -569,6 +569,7 @@ import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
@@ -3642,6 +3643,7 @@ import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Norm
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
