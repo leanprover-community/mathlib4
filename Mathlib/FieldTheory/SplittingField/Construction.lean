@@ -287,7 +287,8 @@ instance instField : Field (SplittingField f) where
   nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
     ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
   qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
-    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
+    ext; simp only [MvPolynomial.coeff_smul, Rat.smul_def, MvPolynomial.algebraMap_eq,
+      MvPolynomial.coeff_C_mul]
 
 instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
