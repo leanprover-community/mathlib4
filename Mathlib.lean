@@ -53,8 +53,14 @@ import Mathlib.Algebra.Category.AlgebraCat.Monoidal
 import Mathlib.Algebra.Category.AlgebraCat.Symmetric
 import Mathlib.Algebra.Category.BialgebraCat.Basic
 import Mathlib.Algebra.Category.BoolRing
+<<<<<<< HEAD
+import Mathlib.Algebra.Category.FGModuleCat.Abelian
+=======
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
+>>>>>>> origin/master
 import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.FGModuleCat.EpiMono
+import Mathlib.Algebra.Category.FGModuleCat.Kernels
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.Adjunctions
@@ -290,6 +296,10 @@ import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.HierarchyDesign
+import Mathlib.Algebra.HilbertSerre.AdditiveFunction
+import Mathlib.Algebra.HilbertSerre.FiniteInstances
+import Mathlib.Algebra.HilbertSerre.HilbertPolynomial
+import Mathlib.Algebra.HilbertSerre.Theorem
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.Bifunctor
@@ -419,6 +429,7 @@ import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.Algebra.Module.GradeZeroModule
 import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
@@ -3622,6 +3633,7 @@ import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.Radical
+import Mathlib.RingTheory.GradedAlgebra.Subgrading
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.Multiplication
@@ -3722,6 +3734,7 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
+import Mathlib.RingTheory.Polynomial.Hilbert
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.IrreducibleRing
 import Mathlib.RingTheory.Polynomial.Nilpotent
