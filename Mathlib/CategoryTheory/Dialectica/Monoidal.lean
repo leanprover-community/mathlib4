@@ -152,3 +152,7 @@ instance : SymmetricCategory (Dial C) where
   hexagon_forward := hexagon_forward
   hexagon_reverse := hexagon_reverse
   symmetry := symmetry
+
+end Dial
+
+end CategoryTheory

@@ -58,20 +58,12 @@ local notation "π(" a ", " b ")" => prod.lift a b
     (Subobject.pullback (prod.map f (𝟙 _))).obj Y.rel
 
 theorem comp_le_lemma {X Y Z : Dial C} (F : Dial.Hom X Y) (G : Dial.Hom Y Z) :
-    let F1 := π(π₁, prod.map F.f (𝟙 _) ≫ G.F)
-    (Subobject.pullback π(π₁, F1 ≫ F.F)).obj X.rel ≤
+    (Subobject.pullback π(π₁, π(π₁, prod.map F.f (𝟙 _) ≫ G.F) ≫ F.F)).obj X.rel ≤
     (Subobject.pullback (prod.map (F.f ≫ G.f) (𝟙 Z.tgt))).obj Z.rel := by
-  intro F1
-  let F2 := prod.map F.f (𝟙 Z.tgt)
-  have h1 := (Subobject.pullback F1).monotone F.le
-  have h2 := (Subobject.pullback F2).monotone G.le
-  rw [← Subobject.pullback_comp, ← Subobject.pullback_comp] at h1 h2
-  rw [(_ : F1 ≫ _ = _)] at h1
-  rw [(_ : F2 ≫ _ = _), (_ : F2 ≫ _ = _)] at h2
-  · exact le_trans h1 h2
-  · simp [F2]
-  · simp [F1, F2]
-  · simp [F1]
+  refine
+    le_trans ?_ <| ((Subobject.pullback (π(π₁, prod.map F.f (𝟙 _) ≫ G.F))).monotone F.le).trans <|
+    le_trans ?_ <| ((Subobject.pullback (prod.map F.f (𝟙 Z.tgt))).monotone G.le).trans ?_
+    <;> simp [← Subobject.pullback_comp]
 
 @[simps]
 instance : Category (Dial C) where
