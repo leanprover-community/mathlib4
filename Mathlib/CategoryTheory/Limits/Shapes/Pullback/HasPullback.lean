@@ -138,7 +138,6 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
   colimit.desc _ (PushoutCocone.mk h k w)
 #align category_theory.limits.pushout.desc CategoryTheory.Limits.pushout.desc
 
--- TODO: typo has been fixed here and in the next
 @[simp]
 theorem PullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (cospan f g)] :
     PullbackCone.fst (limit.cone (cospan f g)) = pullback.fst := rfl
@@ -315,7 +314,15 @@ theorem pullback.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y �
     (h₂ : g₁ = g₂) [HasPullback f₁ g₁] [HasPullback f₂ g₂] :
     (pullback.congrHom h₁ h₂).inv =
       pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  ext <;> simp [Iso.inv_comp_eq]
+  ext
+  · erw [pullback.lift_fst]
+    rw [Iso.inv_comp_eq]
+    erw [pullback.lift_fst_assoc]
+    rw [Category.comp_id, Category.comp_id]
+  · erw [pullback.lift_snd]
+    rw [Iso.inv_comp_eq]
+    erw [pullback.lift_snd_assoc]
+    rw [Category.comp_id, Category.comp_id]
 #align category_theory.limits.pullback.congr_hom_inv CategoryTheory.Limits.pullback.congrHom_inv
 
 instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂]
@@ -350,7 +357,15 @@ theorem pushout.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X �
     (h₂ : g₁ = g₂) [HasPushout f₁ g₁] [HasPushout f₂ g₂] :
     (pushout.congrHom h₁ h₂).inv =
       pushout.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
-  ext <;> simp [Iso.comp_inv_eq]
+  ext
+  · erw [pushout.inl_desc]
+    rw [Iso.comp_inv_eq, Category.id_comp]
+    erw [pushout.inl_desc]
+    rw [Category.id_comp]
+  · erw [pushout.inr_desc]
+    rw [Iso.comp_inv_eq, Category.id_comp]
+    erw [pushout.inr_desc]
+    rw [Category.id_comp]
 #align category_theory.limits.pushout.congr_hom_inv CategoryTheory.Limits.pushout.congrHom_inv
 
 theorem pushout.mapLift_comp {X Y S T S' : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) (i' : S' ⟶ S)

@@ -166,12 +166,10 @@ instance hasPullback_of_comp_mono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mon
 
 section
 
--- TODO: remove
 attribute [local instance] hasPullback_of_left_iso
 
 variable (f : X ⟶ Z) (i : Z ⟶ W) [Mono i]
 
--- TODO: can golf this easily w/ nth_rw + exact (or just simpa only!)
 instance hasPullback_of_right_factors_mono : HasPullback i (f ≫ i) := by
   conv =>
     congr
@@ -200,7 +198,6 @@ instance hasPullback_of_left_factors_mono : HasPullback (f ≫ i) i := by
   infer_instance
 #align category_theory.limits.has_pullback_of_left_factors_mono CategoryTheory.Limits.hasPullback_of_left_factors_mono
 
--- TODO: rename and you can save a line?
 instance pullback_snd_iso_of_left_factors_mono :
     IsIso (pullback.fst : pullback (f ≫ i) i ⟶ _) := by
   #adaptation_note /-- nightly-testing 2024-04-01

@@ -62,10 +62,6 @@ Interaction with `IsLimit`:
 * `PullbackCone.IsLimit.hom_ext` provides a convenient way to show that two morphisms to the point
   of a limit `PullbackCone` are equal.
 
-TODO:
-1. pullbackcone iso API
- (constructor?)
-
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
