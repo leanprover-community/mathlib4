@@ -7,6 +7,7 @@ import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PUnitInstances
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
