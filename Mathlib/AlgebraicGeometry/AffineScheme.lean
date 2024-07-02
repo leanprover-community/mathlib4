@@ -668,9 +668,9 @@ section ZeroLocus
 
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
 of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
-lemma Scheme.toΓSpec_preim_zeroLocus_eq {X : Scheme.{u}} (s : Set Γ(X, ⊤)) :
+lemma Scheme.toΓSpec_preimage_zeroLocus_eq {X : Scheme.{u}} (s : Set Γ(X, ⊤)) :
     (ΓSpec.adjunction.unit.app X).val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
-  LocallyRingedSpace.toΓSpec_preim_zeroLocus_eq s
+  LocallyRingedSpace.toΓSpec_preimage_zeroLocus_eq s
 
 open ConcreteCategory
 
@@ -678,7 +678,7 @@ open ConcreteCategory
 is the zero locus in terms of the prime spectrum of `Γ(X, ⊤)`. -/
 lemma Scheme.toΓSpec_image_zeroLocus_eq_of_isAffine {X : Scheme.{u}} [IsAffine X] (s : Set Γ(X, ⊤)) :
     X.isoSpec.hom.val.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
-  erw [← X.toΓSpec_preim_zeroLocus_eq, Set.image_preimage_eq]
+  erw [← X.toΓSpec_preimage_zeroLocus_eq, Set.image_preimage_eq]
   exact (bijective_of_isIso X.isoSpec.hom.val.base).surjective
 
 /-- If `X` is an affine scheme, every closed set of `X` is the zero locus
@@ -690,7 +690,7 @@ lemma Scheme.eq_zeroLocus_of_isClosed_of_isAffine (X : Scheme.{u}) [IsAffine X] 
     have hZ : IsClosed Z := (X.isoSpec.hom.homeomorph).isClosedMap _ hs
     obtain ⟨I, (hI : Z = _)⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal _).mp hZ
     use I
-    simp only [← Scheme.toΓSpec_preim_zeroLocus_eq, ← hI, Z]
+    simp only [← Scheme.toΓSpec_preimage_zeroLocus_eq, ← hI, Z]
     erw [Set.preimage_image_eq _ (bijective_of_isIso X.isoSpec.hom.val.base).injective]
   · rintro ⟨I, rfl⟩
     exact zeroLocus_isClosed X I.carrier

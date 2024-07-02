@@ -600,7 +600,7 @@ lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens 
 @[reassoc, elementwise]
 lemma map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
     Y.presheaf.map (homOfLE inf_le_right).op ≫ (ΓIso f U).inv = f.app U := by
-  simp
+  simp [Scheme.Hom.appLE_eq_app]
 
 @[reassoc, elementwise]
 lemma ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
