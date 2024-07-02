@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Lean
-import Std.Lean.Position
-import Std.Lean.Name
+import Batteries.Lean.Position
+import Batteries.Lean.Name
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Meta.KAbstractPositions
@@ -54,28 +54,27 @@ partial def unfolds (e : Expr) : MetaM (Array Expr) := do
   go e' (if e == e' then #[] else #[e'])
 where
   /-- Append the unfoldings of `e` to `acc`. Assume `e` is in `whnfCore` form. -/
-  go (e : Expr) (acc : Array Expr) : MetaM (Array Expr) := do
-    withCatchingRuntimeEx do
-    try
-      withoutCatchingRuntimeEx do withIncRecDepth do
-      if let some e := e.etaExpandedStrict? then
-        let e ← whnfCore e
-        return ← go e (acc.push e)
-      if let some e ← reduceNat? e then
-        return acc.push e
-      if let some e ← reduceNative? e then
-        return acc.push e
-      if let some e ← unfoldProjDefaultInst? e then
-        -- when unfolding a default instance, don't add it to the array of unfolds.
-        let e ← whnfCore e
-        return ← go e acc
-      if let some e ← unfold? e then
-        -- Note: whnfCore can give a recursion depth error
-        let e ← whnfCore e
-        return ← go e (acc.push e)
-      return acc
-    catch _ =>
-      return acc
+  go (e : Expr) (acc : Array Expr) : MetaM (Array Expr) :=
+    tryCatchRuntimeEx
+      (withIncRecDepth do
+        if let some e := e.etaExpandedStrict? then
+          let e ← whnfCore e
+          return ← go e (acc.push e)
+        if let some e ← reduceNat? e then
+          return acc.push e
+        if let some e ← reduceNative? e then
+          return acc.push e
+        if let some e ← unfoldProjDefaultInst? e then
+          -- when unfolding a default instance, don't add it to the array of unfolds.
+          let e ← whnfCore e
+          return ← go e acc
+        if let some e ← unfold? e then
+          -- Note: whnfCore can give a recursion depth error
+          let e ← whnfCore e
+          return ← go e (acc.push e)
+        return acc)
+      fun _ =>
+        return acc
 
 /-- Determine whether `e` contains no internal names. -/
 def isUserFriendly (e : Expr) : Bool :=
