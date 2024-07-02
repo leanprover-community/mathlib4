@@ -35,12 +35,6 @@ which `c` is multiplicative.
 SeminormFromConst, Seminorm, Nonarchimedean
 -/
 
---TODO: move to different file
-/-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
-  `f (r ^ n) = (f r) ^ n`. -/
-def IsPowMul {R : Type _} [Ring R] (f : R → ℝ) :=
-  ∀ (a : R) {n : ℕ} (_ : 1 ≤ n), f (a ^ n) = f a ^ n
-
 noncomputable section
 
 open Filter
