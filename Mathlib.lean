@@ -2382,6 +2382,7 @@ import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.Tree.Basic
 import Mathlib.Data.Tree.Get
 import Mathlib.Data.TwoPointing
+import Mathlib.Data.TypeFun
 import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
 import Mathlib.Data.UInt
