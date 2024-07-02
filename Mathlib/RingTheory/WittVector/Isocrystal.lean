@@ -5,9 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 import Mathlib.Algebra.Module.Rat
-import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Ring.Action.Field
 
 #align_import ring_theory.witt_vector.isocrystal from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
