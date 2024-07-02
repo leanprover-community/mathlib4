@@ -36,7 +36,7 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
-universe v₁ v₂ v₃ u₁ u₂ u₃ w
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ w
 
 namespace CategoryTheory
 
@@ -302,7 +302,7 @@ instance hasColimitsEssentiallySmallSite
 
 namespace GrothendieckTopology
 
-variable {A}
+-- variable {A}
 
 section
 
@@ -375,22 +375,25 @@ variable [G.IsCocontinuous K J] (hG : CoverPreserving K J G) [ConcreteCategory A
 
 lemma WEqualsLocallyBijective.transport : J.WEqualsLocallyBijective A where
   iff f := by
-    rw [← W_whiskerLeft_iff J K G f, ← Presheaf.isLocallyInjective_whisker_iff K J G f hG,
+    rw [← W_whiskerLeft_iff J K G A f, ← Presheaf.isLocallyInjective_whisker_iff K J G f hG,
       ← Presheaf.isLocallySurjective_whisker_iff K J G f hG, W_iff_isLocallyBijective]
 
 variable [EssentiallySmall C]
+variable [Category.{v₃} B] (F : A ⥤ B)
 variable [PreservesSheafification ((equivSmallModel C).locallyCoverDense J).inducedTopology F]
 variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
 variable [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) B]
 
+
+
 instance : PreservesSheafification J F :=
-  transportPreservesSheafification J
-    ((equivSmallModel C).locallyCoverDense J).inducedTopology (equivSmallModel C).inverse _ F
+  transportPreservesSheafification (A := A) J
+    ((equivSmallModel C).locallyCoverDense J).inducedTopology (equivSmallModel C).inverse B F
 
 instance [((equivSmallModel C).locallyCoverDense J).inducedTopology.WEqualsLocallyBijective A] :
     J.WEqualsLocallyBijective A :=
   WEqualsLocallyBijective.transport J ((equivSmallModel C).locallyCoverDense J).inducedTopology
-    (equivSmallModel C).inverse ((equivSmallModel C).coverPreserving_symm J
+    (equivSmallModel C).inverse A ((equivSmallModel C).coverPreserving_symm J
       ((equivSmallModel C).locallyCoverDense J).inducedTopology)
 
 end GrothendieckTopology
