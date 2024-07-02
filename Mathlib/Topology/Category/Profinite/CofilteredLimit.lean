@@ -102,14 +102,14 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine ⟨s, hs, ?_⟩
-      rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w]
+      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, ← Functor.map_comp, C.w]
     · intro hx
       simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine ⟨s.1, s.2, ?_⟩
       rw [(hV s).2]
-      rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w] at hx
+      rwa [dif_pos hs, ← Set.preimage_comp, ← CompHausLike.coe_comp, ← Functor.map_comp, C.w] at hx
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_clopen_of_cofiltered Profinite.exists_isClopen_of_cofiltered
 

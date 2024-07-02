@@ -116,9 +116,9 @@ Limits.IsLimit.conePointUniqueUpToIso (pullback.isLimit f g) (Limits.limit.isLim
 
 /-- The homeomorphism from the explicit pullback to the abstract pullback. -/
 noncomputable
-def pullbackHomeoPullback : (Profinite.pullback f g).toCompHaus ≃ₜ
-    (Limits.pullback f g).toCompHaus :=
-Profinite.homeoOfIso (pullbackIsoPullback f g)
+def pullbackHomeoPullback : (Profinite.pullback f g).toTop ≃ₜ
+    (Limits.pullback f g).toTop :=
+  CompHausLike.homeoOfIso (pullbackIsoPullback f g)
 
 theorem pullback_fst_eq :
     Profinite.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
@@ -199,7 +199,7 @@ theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
 /-- The homeomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
 def coproductHomeoCoproduct : finiteCoproduct X ≃ₜ (∐ X : _) :=
-  Profinite.homeoOfIso (coproductIsoCoproduct X)
+  CompHausLike.homeoOfIso (coproductIsoCoproduct X)
 
 end Iso
 
@@ -221,7 +221,8 @@ instance : PreservesFiniteCoproducts profiniteToCompHaus := by
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) profiniteToCompHaus from
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Profinite.finiteCoproduct.isColimit _)
-  exact CompHaus.finiteCoproduct.isColimit _
+  exact IsColimit.ofIsoColimit (CompHaus.finiteCoproduct.isColimit
+    (fun j ↦ profiniteToCompHaus.obj (F.obj ⟨j⟩))) (Iso.refl _)
 
 noncomputable instance : PreservesFiniteCoproducts Profinite.toTopCat.{u} where
   preserves _ _:= (inferInstance :
