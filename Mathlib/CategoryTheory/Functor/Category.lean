@@ -85,7 +85,7 @@ theorem app_naturality {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (X : C) {Y Z : D} (f 
   (T.app X).naturality f
 #align category_theory.nat_trans.app_naturality CategoryTheory.NatTrans.app_naturality
 
-@[reassoc]
+@[reassoc (attr:=simp)]
 theorem naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f : X ⟶ Y) :
     (F.map f).app Z ≫ (T.app Y).app Z = (T.app X).app Z ≫ (G.map f).app Z :=
   congr_fun (congr_arg app (T.naturality f)) Z
