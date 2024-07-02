@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group

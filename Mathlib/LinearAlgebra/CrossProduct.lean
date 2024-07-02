@@ -68,9 +68,6 @@ theorem cross_apply (a b : Fin 3 → R) :
 
 section ProductsProperties
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma,
-likely due to https://github.com/leanprover/lean4/pull/3807 -/
 @[simp]
 theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
   simp [cross_apply, mul_comm]
@@ -79,25 +76,16 @@ theorem cross_anticomm (v w : Fin 3 → R) : -(v ×₃ w) = w ×₃ v := by
 alias neg_cross := cross_anticomm
 #align neg_cross neg_cross
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma,
-likely due to https://github.com/leanprover/lean4/pull/3807 -/
 @[simp]
 theorem cross_anticomm' (v w : Fin 3 → R) : v ×₃ w + w ×₃ v = 0 := by
   rw [add_eq_zero_iff_eq_neg, cross_anticomm]
 #align cross_anticomm' cross_anticomm'
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma,
-likely due to https://github.com/leanprover/lean4/pull/3807 -/
 @[simp]
 theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
   simp [cross_apply, mul_comm]
 #align cross_self cross_self
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma,
-likely due to https://github.com/leanprover/lean4/pull/3807 -/
 /-- The cross product of two vectors is perpendicular to the first vector. -/
 @[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
@@ -106,9 +94,6 @@ theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
   ring
 #align dot_self_cross dot_self_cross
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma,
-likely due to https://github.com/leanprover/lean4/pull/3807 -/
 /-- The cross product of two vectors is perpendicular to the second vector. -/
 @[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by

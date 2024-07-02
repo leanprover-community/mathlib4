@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Fin
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.ULift
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
