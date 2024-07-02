@@ -74,6 +74,7 @@ def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
 /-- A bundled version of `S.asLimitCone` and `S.asLimit`. -/
 def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩
 
+/-- The projection from `S` to the `n`th component of `S.diagram`. -/
 abbrev proj (n : ℕ) : S ⟶ S.diagram.obj ⟨n⟩ := S.asLimitCone.π.app ⟨n⟩
 
 lemma map_liftedLimit {C D J : Type*} [Category C] [Category D] [Category J] {K : J ⥤ C}
@@ -98,29 +99,29 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
   rw [lightToProfinite_map_proj_eq]
   exact DiscreteQuotient.proj_surjective _
 
+/-- An abbreviation for the `n`th component of `S.diagram`. -/
 abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
+/-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
 abbrev transitionMap (n : ℕ) :  S.component (n+1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
+/-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/
 abbrev transitionMapLE {n m : ℕ} (h : n ≤ m) : S.component m ⟶ S.component n :=
   S.diagram.map ⟨homOfLE h⟩
 
-@[simp, reassoc]
-lemma proj_comp_transitionMap (n : ℕ) : S.proj (n + 1) ≫ S.transitionMap n = S.proj n :=
+lemma proj_comp_transitionMap (n : ℕ) :
+    S.proj (n + 1) ≫ S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩ = S.proj n :=
   S.asLimitCone.w (homOfLE (Nat.le_succ n)).op
 
-@[simp]
 lemma proj_comp_transitionMap' (n : ℕ) : S.transitionMap n ∘ S.proj (n + 1) = S.proj n := by
   rw [← S.proj_comp_transitionMap n]
   rfl
 
-@[simp, reassoc]
 lemma proj_comp_transitionMapLE {n m : ℕ} (h : n ≤ m) :
-    S.proj m ≫ S.transitionMapLE h = S.proj n :=
+    S.proj m ≫ S.diagram.map ⟨homOfLE h⟩ = S.proj n :=
   S.asLimitCone.w (homOfLE h).op
 
-@[simp]
 lemma proj_comp_transitionMapLE' {n m : ℕ} (h : n ≤ m) :
     S.transitionMapLE h ∘ S.proj m  = S.proj n := by
   rw [← S.proj_comp_transitionMapLE h]
