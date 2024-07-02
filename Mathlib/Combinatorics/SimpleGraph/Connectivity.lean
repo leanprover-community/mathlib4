@@ -2559,8 +2559,8 @@ def finsetWalkLengthLt (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   (Finset.range n).disjiUnion
     (fun l ↦ G.finsetWalkLength l u v)
     (fun l _ l' _ hne _ hsl hsl' p hp ↦
-      have hl : p.length = l := (Walk.mem_finsetWalkLength_iff_length_eq p).mp (hsl hp)
-      have hl' : p.length = l' := (Walk.mem_finsetWalkLength_iff_length_eq p).mp (hsl' hp)
+      have hl : p.length = l := p.mem_finsetWalkLength_iff_length_eq.mp (hsl hp)
+      have hl' : p.length = l' := p.mem_finsetWalkLength_iff_length_eq.mp (hsl' hp)
       False.elim <| hne <| hl.symm.trans hl')
 
 open Finset in
