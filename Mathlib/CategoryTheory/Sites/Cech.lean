@@ -41,10 +41,8 @@ variable (C)
     { app := fun F ↦ Pi.map' π.unop.f (fun i ↦ F.map (π.unop.φ i).op) }
 
 noncomputable def evalFunctor' : (Jᵒᵖ ⥤ FormalCoproduct.{w} C)ᵒᵖ ⥤ (Cᵒᵖ ⥤ A) ⥤ (J ⥤ A) :=
-  ((whiskeringRight Jᵒᵖ _ _).obj ((evalFunctor C A).rightOp)).op ⋙ (by
-    let φ : (Jᵒᵖ ⥤ ((Cᵒᵖ ⥤ A) ⥤ A)ᵒᵖ)ᵒᵖ ⥤ (J ⥤ ((Cᵒᵖ ⥤ A) ⥤ A)) := sorry
-    let ψ : (J ⥤ (Cᵒᵖ ⥤ A) ⥤ A) ⥤ (Cᵒᵖ ⥤ A) ⥤ J ⥤ A := sorry -- Functor.flip as a functor...
-    exact φ ⋙ ψ)
+  ((evalFunctor C A).flip ⋙ whiskeringRight J (FormalCoproduct C)ᵒᵖ A ⋙
+    (whiskeringLeft _ _ _).obj ((Functor.leftOpRightOpEquiv _ _).functor)).flip
 
 noncomputable abbrev simplicialEvalFunctor : (SimplicialObject (FormalCoproduct.{w} C))ᵒᵖ ⥤
     (Cᵒᵖ ⥤ A) ⥤ CosimplicialObject A :=
