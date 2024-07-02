@@ -71,6 +71,7 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
+set_option maxHeartbeats 400000 in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 @[simps!]
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
@@ -89,7 +90,7 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 800000 in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
