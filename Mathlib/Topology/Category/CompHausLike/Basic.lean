@@ -31,12 +31,9 @@ structure CompHausLike where
   /-- The underlying topological space satisfies P. -/
   prop : P toTop
 
--- Porting note (#10754): Adding instance
-attribute [instance] CompHausLike.is_compact
--- Porting note (#10754): Adding instance
-attribute [instance] CompHausLike.is_hausdorff
-
 namespace CompHausLike
+
+attribute [instance] is_compact is_hausdorff
 
 instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
@@ -52,7 +49,7 @@ instance hasForget₂ : HasForget₂ (CompHausLike P) TopCat :=
 
 variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
-/-- This wraps the predicate `P` in a typeclass. -/
+/-- This wraps the predicate `P : TopCat → Prop` in a typeclass. -/
 class HasProp : Prop where
   hasProp : P (TopCat.of X)
 
@@ -80,17 +77,17 @@ theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
   rfl
 
--- "Porting" note (#10754): Adding instance
+-- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
-  show TopologicalSpace X.toTop from inferInstance
+  inferInstanceAs (TopologicalSpace X.toTop)
 
--- "Porting" note (#10754): Adding instance
+-- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
-  show CompactSpace X.toTop from inferInstance
+  inferInstanceAs (CompactSpace X.toTop)
 
--- "Porting" note (#10754): Adding instance
+-- Note (#10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
-  show T2Space X.toTop from inferInstance
+  inferInstanceAs (T2Space X.toTop)
 
 variable {P}
 
@@ -103,17 +100,20 @@ def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.t
     CompHausLike.of _ X
   map f := f
 
+section
+
+variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop)
+
 /-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
-def fullyFaithfulToCompHausLike {P P' : TopCat → Prop}
-    (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) : (toCompHausLike h).FullyFaithful :=
+def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
-    (toCompHausLike h).Full := (fullyFaithfulToCompHausLike h).full
+instance : (toCompHausLike h).Full := (fullyFaithfulToCompHausLike h).full
 
-instance {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
-    (toCompHausLike h).Faithful := (fullyFaithfulToCompHausLike h).faithful
+instance : (toCompHausLike h).Faithful := (fullyFaithfulToCompHausLike h).faithful
+
+end
 
 variable (P)
 
@@ -130,16 +130,16 @@ def fullyFaithfulCompHausLikeToTop : (compHausLikeToTop P).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
 instance : (compHausLikeToTop P).Full  :=
-  show (inducedFunctor _).Full from inferInstance
+  inferInstanceAs (inducedFunctor _).Full
 
 instance : (compHausLikeToTop P).Faithful :=
-  show (inducedFunctor _).Faithful from inferInstance
+  inferInstanceAs (inducedFunctor _).Faithful
 
 instance (X : CompHausLike P) : CompactSpace ((compHausLikeToTop P).obj X) :=
-  show CompactSpace X.toTop from inferInstance
+  inferInstanceAs (CompactSpace X.toTop)
 
 instance (X : CompHausLike P) : T2Space ((compHausLikeToTop P).obj X) :=
-  show T2Space X.toTop from inferInstance
+  inferInstanceAs (T2Space X.toTop)
 
 variable {P}
 
@@ -206,3 +206,6 @@ def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   invFun := isoOfHomeo
   left_inv _ := rfl
   right_inv _ := rfl
+
+end CompHausLike
+

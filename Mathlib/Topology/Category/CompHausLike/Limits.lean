@@ -109,8 +109,7 @@ A typeclass describing the property that forming all finite disjoint unions is s
 property `P`.
 -/
 class HasExplicitFiniteCoproducts : Prop where
-  hasProp {α : Type w} [Finite α] (X : α → CompHausLike.{max u w} P) :
-    HasExplicitFiniteCoproduct X
+  hasProp {α : Type w} [Finite α] (X : α → CompHausLike.{max u w} P) : HasExplicitFiniteCoproduct X
 
 /-
 This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
@@ -164,7 +163,7 @@ noncomputable instance {P' : TopCat.{u} → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesFiniteCoproducts (toCompHausLike h) := by
   have : PreservesFiniteCoproducts (toCompHausLike h ⋙ compHausLikeToTop P') :=
-    show PreservesFiniteCoproducts (compHausLikeToTop _) from inferInstance
+    inferInstanceAs (PreservesFiniteCoproducts (compHausLikeToTop _))
   exact preservesFiniteCoproductsOfReflectsOfPreserves (toCompHausLike h) (compHausLikeToTop P')
 
 end FiniteCoproducts
@@ -277,7 +276,7 @@ noncomputable instance {P' : TopCat → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesLimit (cospan f g) (toCompHausLike h) := by
   have : PreservesLimit (cospan f g) (toCompHausLike h ⋙ compHausLikeToTop P') :=
-    show PreservesLimit _ (compHausLikeToTop _) from inferInstance
+    inferInstanceAs (PreservesLimit _ (compHausLikeToTop _))
   exact preservesLimitOfReflectsOfPreserves (toCompHausLike h) (compHausLikeToTop P')
 
 variable (P) in
@@ -286,14 +285,12 @@ A typeclass describing the property that forming all explicit pullbacks is stabl
 property `P`.
 -/
 class HasExplicitPullbacks : Prop where
-  hasExplicitPullbacks {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y ⟶ B) :
-    HasExplicitPullback f g
+  hasProp {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y ⟶ B) : HasExplicitPullback f g
 
-attribute [instance] HasExplicitPullbacks.hasExplicitPullbacks
+attribute [instance] HasExplicitPullbacks.hasProp
 
 instance [HasExplicitPullbacks P] : HasPullbacks (CompHausLike P) where
-  has_limit F :=
-    hasLimitOfIso (diagramIsoCospan F).symm
+  has_limit F := hasLimitOfIso (diagramIsoCospan F).symm
 
 variable (P) in
 /--
@@ -301,13 +298,13 @@ A typeclass describing the property that explicit pullbacks along inclusion maps
 unions is stable under the property `P`.
 -/
 class HasExplicitPullbacksOfInclusions [HasExplicitFiniteCoproducts.{0} P] : Prop where
-  hasPullbackInl : ∀ {X Y Z : CompHausLike P} (f : Z ⟶ X ⨿ Y), HasExplicitPullback coprod.inl f
+  hasProp : ∀ {X Y Z : CompHausLike P} (f : Z ⟶ X ⨿ Y), HasExplicitPullback coprod.inl f
 
-attribute [instance] HasExplicitPullbacksOfInclusions.hasPullbackInl
+attribute [instance] HasExplicitPullbacksOfInclusions.hasProp
 
 instance [HasExplicitPullbacks P] [HasExplicitFiniteCoproducts.{0} P] :
     HasExplicitPullbacksOfInclusions P where
-  hasPullbackInl _ := inferInstance
+  hasProp _ := inferInstance
 
 end Pullbacks
 
@@ -322,12 +319,12 @@ theorem hasPullbacksOfInclusions
     (hP' : ∀ ⦃X Y B : CompHausLike.{u} P⦄ (f : X ⟶ B) (g : Y ⟶ B)
       (_ : OpenEmbedding f), HasExplicitPullback f g) :
     HasExplicitPullbacksOfInclusions P :=
-  { hasPullbackInl := by
+  { hasProp := by
       intro _ _ _ f
       apply hP'
       exact Sigma.openEmbedding_ι _ _ }
 
-/-- The functor to `TopCat` creates pullbacks of inclusions if they exist. -/
+/-- The functor to `TopCat` preserves pullbacks of inclusions if they exist. -/
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
     PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
   { preservesPullbackInl := by
