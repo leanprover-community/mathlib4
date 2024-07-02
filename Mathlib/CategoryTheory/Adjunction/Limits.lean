@@ -98,6 +98,11 @@ def leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F where
                 ((adj.functorialityAdjunction _).homEquiv _ _) } }
 #align category_theory.adjunction.left_adjoint_preserves_colimits CategoryTheory.Adjunction.leftAdjointPreservesColimits
 
+noncomputable
+instance colimPreservesColimits [HasColimitsOfShape J C] :
+    PreservesColimits (colim (J := J) (C := C)) :=
+  colimConstAdj.leftAdjointPreservesColimits
+
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100) isEquivalencePreservesColimits
     (E : C ⥤ D) [E.IsEquivalence] :
@@ -213,6 +218,11 @@ def rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G where
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
                 ((adj.functorialityAdjunction' _).homEquiv _ _).symm } }
 #align category_theory.adjunction.right_adjoint_preserves_limits CategoryTheory.Adjunction.rightAdjointPreservesLimits
+
+noncomputable
+instance limPreservesLimits [HasLimitsOfShape J C] :
+    PreservesLimits (lim (J := J) (C := C)) :=
+  constLimAdj.rightAdjointPreservesLimits
 
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100) isEquivalencePreservesLimits
