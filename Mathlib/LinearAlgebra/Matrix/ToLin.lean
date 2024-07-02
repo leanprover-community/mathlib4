@@ -546,7 +546,8 @@ variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 /-- Given bases of two modules `M₁` and `M₂` over a commutative ring `R`, we get a linear
 equivalence between linear maps `M₁ →ₗ M₂` and matrices over `R` indexed by the bases. -/
 def LinearMap.toMatrix : (M₁ →ₗ[R] M₂) ≃ₗ[R] Matrix m n R :=
-  LinearEquiv.trans (LinearEquiv.arrowCongr v₁.equivFun v₂.equivFun) LinearMap.toMatrix'
+  LinearEquiv.trans (LinearEquiv.arrowCongr v₁.equivFun v₂.equivFun (map_smul _))
+    LinearMap.toMatrix'
 #align linear_map.to_matrix LinearMap.toMatrix
 
 /-- `LinearMap.toMatrix'` is a particular case of `LinearMap.toMatrix`, for the standard basis

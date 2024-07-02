@@ -657,12 +657,14 @@ theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ 
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
+  [AddCommMonoid M]
 
-variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
+variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂'] [Module R M]
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
-    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft := by
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M) (map_smul _))
+      (map_smul _) B).SeparatingLeft := by
   intro x hx
   rw [← e₁.symm.map_eq_zero_iff]
   refine h (e₁.symm x) fun y ↦ ?_
@@ -674,7 +676,8 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
 
 @[simp]
 theorem separatingLeft_congr_iff :
-    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M) (map_smul _))
+      (map_smul _) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
     convert h.congr e₁.symm e₂.symm
     ext x y
