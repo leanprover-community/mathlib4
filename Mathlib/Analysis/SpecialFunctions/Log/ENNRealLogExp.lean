@@ -234,7 +234,8 @@ instance : EMetricSpace EReal where
 noncomputable
 instance : UniformSpace EReal := by exact PseudoEMetricSpace.toUniformSpace
 
-instance : (uniformity EReal).IsCountablyGenerated := EMetric.instIsCountablyGeneratedUniformity (α := EReal)
+instance : (uniformity EReal).IsCountablyGenerated :=
+  EMetric.instIsCountablyGeneratedUniformity (α := EReal)
 
 instance : UniformSpace EReal := uniformSpaceOfCompactT2
 
