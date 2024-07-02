@@ -169,6 +169,37 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
   exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
 #align matrix.is_hermitian.exists_eigenvector_of_ne_zero Matrix.IsHermitian.exists_eigenvector_of_ne_zero
 
+/-- # Reduced Spectral Theorem
+For A hermitian matrix A with rank A.rank ≤ n, we can eliminate the zero eigenvalues and their
+corresponding eigenvectors from the (alternate) spectral theroem. As such the matrix A can be written as:
+$$A = V₁ D V₁ᴴ$$
+where
+V₁ : n × r is the matrix of eigenvector with non-zero associated eigenvalues.
+D is r × r is the diagonal matrix containing only non-zero eigenvalues.
+with r = A.rank being the rank of the matrix -/
+noncomputable def fin_rank_equiv_eigs_ne_zero : {i // hA.eigenvalues i ≠ 0} ≃ Fin (A.rank) :=
+  Fintype.equivFinOfCardEq (rank_eq_card_non_zero_eigs _).symm
+
+noncomputable def fin_size_sub_rank_equiv_eigs_eq_zero :
+    {i // ¬ hA.eigenvalues i ≠ 0} ≃ Fin (Fintype.card n - A.rank) := by
+  apply Fintype.equivFinOfCardEq
+  rw [Fintype.card_subtype_compl, rank_eq_card_non_zero_eigs]
+
+noncomputable def fin_size_equiv_eigs :
+    {i // hA.eigenvalues i ≠ 0} ⊕ {i // ¬hA.eigenvalues i ≠ 0}  ≃ n := by
+  apply  Fintype.equivOfCardEq
+  rw [Fintype.card_sum, ← rank_eq_card_non_zero_eigs, Fintype.card_subtype_compl, ←
+    rank_eq_card_non_zero_eigs, ← Nat.add_sub_assoc, Nat.add_sub_cancel_left]
+  exact Matrix.rank_le_card_width _
+
+noncomputable def fin_size_equiv_rank_sum_compl :
+    Fin (A.rank) ⊕ Fin (Fintype.card n - A.rank) ≃ n := by
+  let s1 : {i // hA.eigenvalues i ≠ 0} ⊕ {i // ¬hA.eigenvalues i ≠ 0} ≃
+      Fin (A.rank) ⊕ Fin (Fintype.card n - A.rank) :=
+    Equiv.sumCongr (fin_rank_equiv_eigs_ne_zero _) (fin_size_sub_rank_equiv_eigs_eq_zero _)
+  apply Equiv.trans s1.symm (fin_size_equiv_eigs _)
+
+
 end IsHermitian
 
 end Matrix
