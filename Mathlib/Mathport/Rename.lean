@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Selsam
 -/
 import Lean.Elab.Command
-import Lean.Linter.Util
+-- import Lean.Linter.Util
 
 namespace Mathlib.Prelude.Rename
 
@@ -150,8 +150,9 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
 
 /-- Elaborate an `#align` command. -/
 @[command_elab align] def elabAlign : CommandElab
-  | `(#align $id3:ident $id4:ident) => do
-    if (← getInfoState).enabled then
+  | `(#align $_id3:ident $_id4:ident) => do
+    pure PUnit.unit
+    /- if (← getInfoState).enabled then
       addCompletionInfo <| CompletionInfo.id id4 id4.getId (danglingDot := false) {} none
       let c := removeX id4.getId
       if (← getEnv).contains c then
@@ -174,7 +175,7 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
              If the Lean 3 name is correct, then above this line, add:\n\
              set_option linter.uppercaseLean3 false in\n"
     withRef id3 <| ensureUnused id3.getId
-    liftCoreM <| addNameAlignment id3.getId id4.getId
+    liftCoreM <| addNameAlignment id3.getId id4.getId -/
   | _ => throwUnsupportedSyntax
 
 /--
@@ -187,9 +188,10 @@ syntax (name := noalign) "#noalign " ident : command
 
 /-- Elaborate a `#noalign` command. -/
 @[command_elab noalign] def elabNoAlign : CommandElab
-  | `(#noalign $id3:ident) => do
-    withRef id3 <| ensureUnused id3.getId
-    liftCoreM <| addNameAlignment id3.getId .anonymous
+  | `(#noalign $_id3:ident) => do
+    pure PUnit.unit
+    /- withRef id3 <| ensureUnused id3.getId
+    liftCoreM <| addNameAlignment id3.getId .anonymous -/
   | _ => throwUnsupportedSyntax
 
 /-- Show information about the alignment status of a lean 3 definition. -/
@@ -251,8 +253,9 @@ syntax (name := alignImport) "#align_import " ident (" from " str "@" str)? : co
 
 /-- Elaborate a `#align_import` command. -/
 @[command_elab alignImport] def elabAlignImport : CommandElab
-  | `(#align_import $mod3 $[from $repo @ $sha]?) => do
-    let origin ← repo.mapM fun repo => do
+  | `(#align_import $_mod3 $[from $repo @ $sha]?) => do
+    pure PUnit.unit
+    /- let origin ← repo.mapM fun repo => do
       let sha := sha.get!
       let shaStr := sha.getString
       if !shaStr.all ("abcdef0123456789".contains) then
@@ -262,5 +265,5 @@ syntax (name := alignImport) "#align_import " ident (" from " str "@" str)? : co
       else
         pure (repo.getString, shaStr)
     modifyEnv fun env =>
-      renameImportExtension.addEntry env (env.header.mainModule, { mod3 := mod3.getId, origin })
+      renameImportExtension.addEntry env (env.header.mainModule, { mod3 := mod3.getId, origin }) -/
   | _ => throwUnsupportedSyntax
