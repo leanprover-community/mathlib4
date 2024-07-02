@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
 import Mathlib.Data.Finset.Order
-import Mathlib.Order.Atoms.Finite
+import Mathlib.Order.Atoms
+import Mathlib.Data.Set.Finite
 
 #align_import data.fintype.order from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
