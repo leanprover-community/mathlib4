@@ -118,6 +118,13 @@ theorem forall_mem_of_forall_mem_union_right (h : ∀ x ∈ l₁ ∪ l₂, p x) 
   (forall_mem_union.1 h).2
 #align list.forall_mem_of_forall_mem_union_right List.forall_mem_of_forall_mem_union_right
 
+theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) : xs ∪ ys = ys := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [cons_union, insert_of_mem <| mem_union_right _ <| h <| mem_cons_self _ _,
+      ih <| subset_of_cons_subset h]
+
 end Union
 
 /-! ### `inter` -/
@@ -139,6 +146,12 @@ theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l�
 theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
   simp [Inter.inter, List.inter, h]
 #align list.inter_cons_of_not_mem List.inter_cons_of_not_mem
+
+@[simp]
+theorem inter_nil' (l : List α) : l ∩ [] = [] := by
+  induction l with
+  | nil => rfl
+  | cons x xs ih => by_cases x ∈ xs <;> simp [ih]
 
 theorem mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=
   mem_of_mem_filter
@@ -169,6 +182,8 @@ theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ :=
   rfl
 #align list.inter_eq_nil_iff_disjoint List.inter_eq_nil_iff_disjoint
 
+alias ⟨_, Disjoint.inter_eq_nil⟩ := inter_eq_nil_iff_disjoint
+
 theorem forall_mem_inter_of_forall_left (h : ∀ x ∈ l₁, p x) (l₂ : List α) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
   BAll.imp_left (fun _ => mem_of_mem_inter_left) h
@@ -183,6 +198,12 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
 theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
   simp only [List.inter, elem_eq_mem, mem_reverse]
 #align list.inter_reverse List.inter_reverse
+
+theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [inter_cons_of_mem _ <| h <| mem_cons_self _ _, ih (subset_of_cons_subset h)]
 
 end Inter
 

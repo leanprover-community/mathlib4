@@ -117,6 +117,11 @@ theorem dedup_ext {s t : Multiset α} : dedup s = dedup t ↔ ∀ a, a ∈ s ↔
   simp [Nodup.ext]
 #align multiset.dedup_ext Multiset.dedup_ext
 
+theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
+    (s : Multiset α) :
+    (s.map f).dedup = s.dedup.map f :=
+  Quot.induction_on s fun l => by simp [List.dedup_map_of_injective hf l]
+
 theorem dedup_map_dedup_eq [DecidableEq β] (f : α → β) (s : Multiset α) :
     dedup (map f (dedup s)) = dedup (map f s) := by
   simp [dedup_ext]
@@ -131,6 +136,16 @@ theorem dedup_nsmul {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : (n • s).dedup
 theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedup ↔ s ≤ t := by
   simp [le_dedup, hno]
 #align multiset.nodup.le_dedup_iff_le Multiset.Nodup.le_dedup_iff_le
+
+theorem Subset.dedup_add {s t : Multiset α} (h : s ⊆ t) :
+    dedup (s + t) = dedup t := by
+  induction s, t using Quot.induction_on₂
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Subset.dedup_append h
+
+theorem Disjoint.dedup_add {s t : Multiset α} (h : Disjoint s t) :
+    dedup (s + t) = dedup s + dedup t := by
+  induction s, t using Quot.induction_on₂
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.dedup_append h
 
 end Multiset
 
