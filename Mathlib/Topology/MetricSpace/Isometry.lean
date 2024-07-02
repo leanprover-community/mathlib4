@@ -96,7 +96,7 @@ theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
 
 theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
-  simp only [Prod.edist_eq, hf.edist_eq, hg.edist_eq, Prod.map_apply]
+  simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
 #align isometry.prod_map Isometry.prod_map
 
 theorem _root_.isometry_dcomp {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]

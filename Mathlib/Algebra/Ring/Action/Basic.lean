@@ -3,10 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -29,6 +27,8 @@ group action, invariant subring
 
 -/
 
+assert_not_exists Equiv.Perm.equivUnitsEnd
+assert_not_exists Prod.fst_mul
 
 universe u v
 
@@ -89,14 +89,6 @@ instance RingHom.applyFaithfulSMul : FaithfulSMul (R →+* R) R :=
   ⟨fun {_ _} h => RingHom.ext h⟩
 #align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
 
-/-- Each element of the group defines a semiring isomorphism. -/
-@[simps!]
-def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
-  { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
-#align mul_semiring_action.to_ring_equiv MulSemiringAction.toRingEquiv
-#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symm_apply
-#align mul_semiring_action.to_ring_equiv_apply MulSemiringAction.toRingEquiv_apply
-
 section
 
 variable {M N}
@@ -114,15 +106,6 @@ section SimpLemmas
 variable {M G A R F}
 
 attribute [simp] smul_one smul_mul' smul_zero smul_add
-
-variable [DivisionRing F]
-
-/-- Note that `smul_inv'` refers to the group case, and `smul_inv` has an additional inverse
-on `x`. -/
-@[simp]
-theorem smul_inv'' [MulSemiringAction M F] (x : M) (m : F) : x • m⁻¹ = (x • m)⁻¹ :=
-  map_inv₀ (MulSemiringAction.toRingHom M F x) _
-#align smul_inv'' smul_inv''
 
 end SimpLemmas
 

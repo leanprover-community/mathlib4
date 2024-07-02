@@ -48,7 +48,7 @@ Roughly speaking, saying that `F` is a quotient of a polynomial functor means th
 elements of `F α` are represented by pairs `⟨a, f⟩`, where `a` is the shape of the object and
 `f` indexes the relevant elements of `α`, in a suitably natural manner.
 -/
-class QPF (F : Type u → Type u) [Functor F] where
+class QPF (F : Type u → Type u) extends Functor F where
   P : PFunctor.{u}
   abs : ∀ {α}, P α → F α
   repr : ∀ {α}, F α → P α
@@ -58,7 +58,7 @@ class QPF (F : Type u → Type u) [Functor F] where
 
 namespace QPF
 
-variable {F : Type u → Type u} [Functor F] [q : QPF F]
+variable {F : Type u → Type u} [q : QPF F]
 
 open Functor (Liftp Liftr)
 
@@ -87,8 +87,8 @@ theorem lawfulFunctor
     (h : ∀ α β : Type u, @Functor.mapConst F _ α _ = Functor.map ∘ Function.const β) :
     LawfulFunctor F :=
   { map_const := @h
-    id_map := @id_map F _ _
-    comp_map := @comp_map F _ _ }
+    id_map := @id_map F _
+    comp_map := @comp_map F _ }
 #align qpf.is_lawful_functor QPF.lawfulFunctor
 
 /-
@@ -242,7 +242,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- Define the fixed point as the quotient of trees under the equivalence relation `Wequiv`. -/
 def Wsetoid : Setoid q.P.W :=
-  ⟨Wequiv, @Wequiv.refl _ _ _, @Wequiv.symm _ _ _, @Wequiv.trans _ _ _⟩
+  ⟨Wequiv, @Wequiv.refl _ _, @Wequiv.symm _ _, @Wequiv.trans _ _⟩
 set_option linter.uppercaseLean3 false in
 #align qpf.W_setoid QPF.Wsetoid
 
@@ -251,7 +251,7 @@ attribute [local instance] Wsetoid
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
 -- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
-def Fix (F : Type u → Type u) [Functor F] [q : QPF F] :=
+def Fix (F : Type u → Type u) [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 #align qpf.fix QPF.Fix
 
@@ -364,7 +364,7 @@ Construct the final coalgebra to a qpf.
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [Functor F] [q : QPF F]
+variable {F : Type u → Type u} [q : QPF F]
 
 open Functor (Liftp Liftr)
 
@@ -393,8 +393,8 @@ set_option linter.uppercaseLean3 false in
 #align qpf.Mcongr QPF.Mcongr
 
 /-- coinductive type defined as the final coalgebra of a qpf -/
-def Cofix (F : Type u → Type u) [Functor F] [q : QPF F] :=
-  Quot (@Mcongr F _ q)
+def Cofix (F : Type u → Type u) [q : QPF F] :=
+  Quot (@Mcongr F q)
 #align qpf.cofix QPF.Cofix
 
 instance [Inhabited q.P.A] : Inhabited (Cofix F) :=
@@ -481,7 +481,7 @@ theorem Cofix.bisim_rel (r : Cofix F → Cofix F → Prop)
     have : ∀ x y, r x y → r' x y := fun x y h => Or.inr h
     rw [← Quot.factor_mk_eq _ _ this]
     dsimp [r']
-    rw [@comp_map _ _ q _ _ _ (Quot.mk r), @comp_map _ _ q _ _ _ (Quot.mk r)]
+    rw [@comp_map _ q _ _ _ (Quot.mk r), @comp_map _ q _ _ _ (Quot.mk r)]
     rw [h _ _ r'xy]
   right; exact rxy
 #align qpf.cofix.bisim_rel QPF.Cofix.bisim_rel
@@ -517,8 +517,8 @@ Composition of qpfs.
 -/
 namespace QPF
 
-variable {F₂ : Type u → Type u} [Functor F₂] [q₂ : QPF F₂]
-variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : QPF F₁]
+variable {F₂ : Type u → Type u} [q₂ : QPF F₂]
+variable {F₁ : Type u → Type u} [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
 def comp : QPF (Functor.Comp F₂ F₁) where
@@ -572,7 +572,7 @@ We show that if `F` is a qpf and `G` is a suitable quotient of `F`, then `G` is 
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [Functor F] [q : QPF F]
+variable {F : Type u → Type u} [q : QPF F]
 variable {G : Type u → Type u} [Functor G]
 variable {FG_abs : ∀ {α}, F α → G α}
 variable {FG_repr : ∀ {α}, G α → F α}
@@ -597,7 +597,7 @@ Support.
 -/
 namespace QPF
 
-variable {F : Type u → Type u} [Functor F] [q : QPF F]
+variable {F : Type u → Type u} [q : QPF F]
 
 open Functor (Liftp Liftr supp)
 
