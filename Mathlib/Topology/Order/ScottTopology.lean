@@ -236,6 +236,9 @@ lemma isUpperSet_of_isOpen : IsOpen s → IsUpperSet s := fun h ↦
 lemma isLowerSet_of_isClosed : IsClosed s → IsLowerSet s := fun h ↦
   (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).left
 
+lemma DirSupClosed_of_isClosed : IsClosed s → DirSupClosed s := fun h ↦
+  (isClosed_iff_isLowerSet_and_dirSupClosed.mp h).right
+
 lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
   convert closure.mono (@upperSet_le_scott α _)
   · rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
@@ -291,6 +294,34 @@ instance (priority := 90) : T0Space α :=
     simpa only [inseparable_iff_closure_eq, IsScott.closure_singleton] using h
 
 end PartialOrder
+
+section CompleteLinearOrder
+
+variable [CompleteLinearOrder α] [TopologicalSpace α] [Topology.IsScott α]
+
+lemma isOpen_iff_Iic_compl_or_univ (U : Set α) :
+    IsOpen U ↔ (∃ (a : α), U = (Iic a)ᶜ) ∨ U = univ := by
+  constructor
+  · intro hU
+    rcases eq_empty_or_nonempty Uᶜ with eUc | neUc
+    · exact Or.inr (compl_empty_iff.mp eUc)
+    · apply Or.inl
+      let b := sSup Uᶜ
+      use b
+      rw [eq_compl_comm, le_antisymm_iff]
+      exact ⟨IsLowerSet.Iic_subset (isLowerSet_of_isClosed (isClosed_compl_iff.mpr hU))
+        ((dirSupClosed_iff_forall_sSup.mp (DirSupClosed_of_isClosed (isClosed_compl_iff.mpr hU)))
+        neUc (IsChain.directedOn (isChain_of_trichotomous Uᶜ)) (le_refl Uᶜ)),
+        fun  _ ha ↦ CompleteLattice.le_sSup Uᶜ _ ha⟩
+  · intro H
+    rcases H with ⟨a,ha⟩ | hU
+    · rw [← isClosed_compl_iff, ha, compl_compl]
+      exact isClosed_Iic
+    · rw [hU]
+      exact isOpen_univ
+
+end CompleteLinearOrder
+
 end IsScott
 
 /--
