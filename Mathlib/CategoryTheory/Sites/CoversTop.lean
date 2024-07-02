@@ -87,7 +87,8 @@ def FamilyOfElementsOnObjects := ∀ (i : I), F.obj (Opposite.op (Y i))
 
 namespace FamilyOfElementsOnObjects
 
-variable {F Y} (x : FamilyOfElementsOnObjects F Y)
+variable {F Y}
+variable (x : FamilyOfElementsOnObjects F Y)
 
 /-- `x : FamilyOfElementsOnObjects F Y` is compatible if for any object `Z` such that
 there exists a morphism `f : Z → Y i`, then the pullback of `x i` by `f` is independent
@@ -105,7 +106,8 @@ noncomputable def familyOfElements (X : C) :
 
 namespace IsCompatible
 
-variable {x} (hx : x.IsCompatible)
+variable {x}
+variable (hx : x.IsCompatible)
 
 lemma familyOfElements_apply {X Z : C} (f : Z ⟶ X) (i : I) (φ : Z ⟶ Y i) :
     familyOfElements x X f ⟨i, ⟨φ⟩⟩ = F.map φ.op (x i) := by

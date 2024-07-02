@@ -2324,7 +2324,7 @@ theorem prod_empty {α β : Type*} [CommMonoid β] [IsEmpty α] [Fintype α] (f 
 @[to_additive]
 theorem prod_subsingleton {α β : Type*} [CommMonoid β] [Subsingleton α] [Fintype α] (f : α → β)
     (a : α) : ∏ x : α, f x = f a := by
-  haveI : Unique α := uniqueOfSubsingleton a
+  have : Unique α := uniqueOfSubsingleton a
   rw [prod_unique f, Subsingleton.elim default a]
 #align fintype.prod_subsingleton Fintype.prod_subsingleton
 #align fintype.sum_subsingleton Fintype.sum_subsingleton
@@ -2418,7 +2418,7 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 @[simp]
 theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
     ∑ a in l.toFinset, l.count a = l.length := by
-  simpa using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
+  simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
 end List
 
