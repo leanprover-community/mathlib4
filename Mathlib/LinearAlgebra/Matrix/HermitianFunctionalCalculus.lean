@@ -29,16 +29,6 @@ RCLike field 𝕜.
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
 
-section Prereq
-
-@[simp, norm_cast]
-lemma SemilinearMapClass.coe_coe {R S M M₃ F : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
-    [AddCommMonoid M₃] [Module R M] [Module S M₃] {σ : R →+* S} (f : F) [FunLike F M M₃]
-    [SemilinearMapClass F σ M M₃] :
-    ⇑(f : M →ₛₗ[σ] M₃) = f :=
-  rfl
-
-end Prereq
 namespace Matrix
 
 variable {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜}
@@ -91,6 +81,13 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
     congr!
     ext
     simp
+
+@[simp, norm_cast]
+lemma SemilinearMapClass.coe_coe {R S M M₃ F : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
+    [AddCommMonoid M₃] [Module R M] [Module S M₃] {σ : R →+* S} (f : F) [FunLike F M M₃]
+    [SemilinearMapClass F σ M M₃] :
+    ⇑(f : M →ₛₗ[σ] M₃) = f :=
+  rfl
 
 lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
   have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) :=
