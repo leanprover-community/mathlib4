@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Algebra.Order.Monoid.OrderDual
 
 /-!
 # Big operators on a multiset in ordered groups
