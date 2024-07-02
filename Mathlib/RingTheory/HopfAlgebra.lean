@@ -28,6 +28,9 @@ agree then the antipodes must also agree).
 * If `A` is commutative then `antipode` is necessarily a bijection and its square is
   the identity.
 
+(Note that all three facts have been proved for Hopf bimonoids in an arbitrary braided category,
+so we could deduce the facts here from an equivalence `HopfAlgebraCat R ≌ Hopf_ (ModuleCat R)`.)
+
 ## References
 
 * <https://en.wikipedia.org/wiki/Hopf_algebra>

@@ -171,10 +171,11 @@ def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one := b
       simp }
 #align Mon_.iso_of_iso Mon_.mkIso
 
+@[simps]
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
   { hom := A.one
-    mul_hom := by dsimp; simp [A.one_mul, unitors_equal] }
+    mul_hom := by simp [A.one_mul, unitors_equal] }
   uniq f := by
     ext
     simp only [trivial_X]
