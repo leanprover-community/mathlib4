@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 
 import Mathlib.Init.Order.Defs
 import Mathlib.Init.Data.Int.Basic
+import Batteries.Tactic.OpenPrivate
 
 /-! # The order relation on the integers -/
 

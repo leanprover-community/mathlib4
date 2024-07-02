@@ -8,6 +8,8 @@ import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
+import Lean.Meta.Tactic.Symm
+import Lean.Meta.Tactic.Rfl
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
