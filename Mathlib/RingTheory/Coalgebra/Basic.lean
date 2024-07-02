@@ -80,7 +80,21 @@ theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] 
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
+open BigOperators
+
+lemma sum_counit_tmul_eq_one_tmul (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
+    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
+    ∑ i in s, counit (R := R) (x i) ⊗ₜ y i = 1 ⊗ₜ[R] a := by
+  simpa [repr, map_sum] using congr($(rTensor_counit_comp_comul (R := R) (A := A)) a)
+
+lemma sum_tmul_counit_eq_tmul_one (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
+    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
+    ∑ i in s, (x i) ⊗ₜ counit (R := R) (y i) = a ⊗ₜ[R] 1 := by
+  simpa [repr, map_sum] using congr($(lTensor_counit_comp_comul (R := R) (A := A)) a)
+
+
 end Coalgebra
+
 section CommSemiring
 
 open Coalgebra

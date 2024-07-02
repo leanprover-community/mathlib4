@@ -3,6 +3,7 @@ Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Kevin Buzzard
 -/
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -15,6 +16,8 @@ In this file we define `Bialgebra`s.
 
 * `Bialgebra R A`: the structure of a bialgebra on the `R`-algebra `A`;
 * `CommSemiring.toBialgebra`: a commutative semiring is a bialgebra over itself.
+* `(Add)MonoidAlgebra.instBialgebra`: the bialgebra structure on the monoid algebra `A[X]`
+when `A` is a bialgebra and `X` is a monoid.
 
 ## Implementation notes
 
@@ -41,7 +44,7 @@ bialgebra
 
 suppress_compilation
 
-universe u v
+universe u v w
 
 open scoped TensorProduct
 
@@ -141,6 +144,92 @@ variable {R A}
   (comulAlgHom R A).map_pow a n
 
 end Bialgebra
+
+namespace MonoidAlgebra
+
+open Bialgebra
+
+variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] [Bialgebra R A]
+variable {X : Type w}
+
+variable (R A X) in
+instance instCoalgebra : Coalgebra R (MonoidAlgebra A X) := Finsupp.instCoalgebra R X A
+
+@[simp]
+lemma counit_single (x : X) (a : A) :
+    Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
+  Finsupp.counit_single _ _ _ _ _
+
+@[simp]
+lemma comul_single (x : X) (a : A) :
+    Coalgebra.comul (single x a)
+      = (TensorProduct.map (lsingle R A x) (lsingle R A x) : _ →ₗ[R] _) (Coalgebra.comul a) :=
+  Finsupp.comul_single _ _ _ _ _
+
+variable [Monoid X]
+
+variable (R A X) in
+instance instBialgebra : Bialgebra R (MonoidAlgebra A X) :=
+  { instCoalgebra R A X with
+    counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
+    mul_compr₂_counit := lhom_ext fun a b => lhom_ext fun c d => by
+      simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, counit_single,
+        Bialgebra.counit_mul, LinearMap.compl₁₂_apply]
+    comul_one := by
+      simp only [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
+        TensorProduct.map_tmul, lsingle_apply]
+    mul_compr₂_comul := lhom_ext fun a b => lhom_ext fun c d => by
+      rcases TensorProduct.exists_finset (R := R) (Coalgebra.comul b) with ⟨s, hs⟩
+      rcases TensorProduct.exists_finset (R := R) (Coalgebra.comul d) with ⟨t, ht⟩
+      simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, comul_single,
+        Bialgebra.comul_mul, hs, ht, Finset.sum_mul_sum, Algebra.TensorProduct.tmul_mul_tmul,
+        map_sum, TensorProduct.map_tmul, lsingle_apply, LinearMap.compl₁₂_apply,
+        LinearMap.coeFn_sum, Finset.sum_apply, Finset.sum_comm (s := s)] }
+
+end MonoidAlgebra
+
+namespace AddMonoidAlgebra
+
+open Bialgebra
+
+variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] [Bialgebra R A]
+variable {X : Type w}
+
+variable (R A X) in
+instance instCoalgebra : Coalgebra R A[X] := Finsupp.instCoalgebra R X A
+
+@[simp]
+lemma counit_single (x : X) (a : A) :
+    Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
+  Finsupp.counit_single _ _ _ _ _
+
+@[simp]
+lemma comul_single (x : X) (a : A) :
+    Coalgebra.comul (single x a)
+      = (TensorProduct.map (lsingle R A x) (lsingle R A x) : _ →ₗ[R] _) (Coalgebra.comul a) :=
+  Finsupp.comul_single _ _ _ _ _
+
+variable [AddMonoid X]
+
+variable (R A X) in
+instance instBialgebra : Bialgebra R A[X] :=
+  { instCoalgebra R A X with
+    counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
+    mul_compr₂_counit := lhom_ext fun a b => lhom_ext fun c d => by
+      simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, counit_single,
+        Bialgebra.counit_mul, LinearMap.compl₁₂_apply]
+    comul_one := by
+      simp only [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
+        TensorProduct.map_tmul, lsingle_apply]
+    mul_compr₂_comul := lhom_ext fun a b => lhom_ext fun c d => by
+      rcases TensorProduct.exists_finset (R := R) (Coalgebra.comul b) with ⟨s, hs⟩
+      rcases TensorProduct.exists_finset (R := R) (Coalgebra.comul d) with ⟨t, ht⟩
+      simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, comul_single,
+        Bialgebra.comul_mul, hs, ht, Finset.sum_mul_sum, Algebra.TensorProduct.tmul_mul_tmul,
+        map_sum, TensorProduct.map_tmul, lsingle_apply, LinearMap.compl₁₂_apply,
+        LinearMap.coeFn_sum, Finset.sum_apply, Finset.sum_comm (s := s)] }
+
+end AddMonoidAlgebra
 
 section CommSemiring
 variable (R : Type u) [CommSemiring R]
