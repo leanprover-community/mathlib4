@@ -678,6 +678,8 @@ theorem rightUnitor_monoidal (X₁ X₂ : C) :
   coherence
 #align category_theory.right_unitor_monoidal CategoryTheory.rightUnitor_monoidal
 
+set_option maxHeartbeats 400000 in
+@[reassoc]
 theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     tensor_μ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
         (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
@@ -690,9 +692,6 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
         (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by simp; coherence
     _ = _ := by rw [whisker_exchange]; simp; coherence
 #align category_theory.associator_monoidal CategoryTheory.associator_monoidal
-
--- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
-attribute [reassoc] associator_monoidal
 
 end Tensor
 
