@@ -65,7 +65,7 @@ set_option linter.uppercaseLean3 false in
 #align Profinite.as_limit_cone Profinite.asLimitCone
 
 instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) :=
-  isIso_of_bijective _
+  CompHausLike.isIso_of_bijective _
     (by
       refine ⟨fun a b h => ?_, fun a => ?_⟩
       · refine DiscreteQuotient.eq_of_forall_proj_eq fun S => ?_
