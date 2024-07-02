@@ -21,7 +21,7 @@ computation progresses.
 
 -/
 
-set_option autoImplicit true
+universe u v
 
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
@@ -35,7 +35,7 @@ class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
 
 export MonadWriter (tell listen pass)
 
-variable {M : Type u → Type v} [Monad M]
+variable {M : Type u → Type v} [Monad M] {α ω ρ σ : Type u}
 
 instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
   tell w := (tell w : M _)
@@ -99,7 +99,7 @@ instance : MonadWriter ω (WriterT ω M) where
   listen := fun cmd ↦ WriterT.mk <| (fun (a,w) ↦ ((a,w), w)) <$> cmd
   pass := fun cmd ↦ WriterT.mk <| (fun ((a,f), w) ↦ (a, f w)) <$> cmd
 
-instance [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
+instance {ε : Type*} [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
   throw := fun e ↦ WriterT.mk <| throw e
   tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd fun e ↦ (c e).run
 
@@ -128,6 +128,7 @@ class MonadWriterAdapter (ω : outParam (Type u)) (m : Type u → Type v) where
 
 export MonadWriterAdapter (adaptWriter)
 
+variable {m : Type u → Type*}
 /-- Transitivity.
 
 see Note [lower instance priority] -/
@@ -138,6 +139,7 @@ instance (priority := 100) monadWriterAdapterTrans {n : Type u → Type v}
 instance [Monad m] : MonadWriterAdapter ω (WriterT ω m) where
   adaptWriter := WriterT.adapt
 
+universe u₀ u₁ v₀ v₁ in
 /-- reduce the equivalence between two writer monads to the equivalence between
 their underlying monad -/
 def WriterT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁}
