@@ -10,12 +10,10 @@ import Batteries.Data.List.Basic
 Definitions for `List` not (yet) in `Batteries`
 -/
 
-set_option autoImplicit true
-
-
 open Decidable List
 
 universe u v w
+variable {α : Type u}
 
 namespace List
 
