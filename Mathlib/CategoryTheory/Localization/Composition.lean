@@ -71,8 +71,7 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   let Φ : LocalizerMorphism W₂ W₂' :=
     { functor := E₂.functor
       map := by
-        have eq := W₂.isoClosure.inverseImage_map_eq_of_isEquivalence
-          W₂.isoClosure_respectsIso E₂.functor
+        have eq := W₂.isoClosure.inverseImage_map_eq_of_isEquivalence E₂.functor
         rw [MorphismProperty.map_isoClosure] at eq
         rw [eq]
         apply W₂.le_isoClosure }
