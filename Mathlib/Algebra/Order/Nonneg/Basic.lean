@@ -6,7 +6,6 @@ Authors: Floris van Doorn
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.Nat.Cast.Order.Basic
@@ -197,146 +196,6 @@ theorem mk_mul_mk {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
 end Mul
 
 
-section AddMonoid
-
-variable [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
-
-instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
-
-def coeAddMonoidHom : { x : α // 0 ≤ x } →+ α :=
-  { toFun := ((↑) : { x : α // 0 ≤ x } → α)
-    map_zero' := Nonneg.coe_zero
-    map_add' := Nonneg.coe_add }
-#align nonneg.coe_add_monoid_hom Nonneg.coeAddMonoidHom
-
-@[norm_cast]
-theorem nsmul_coe (n : ℕ) (r : { x : α // 0 ≤ x }) :
-    ↑(n • r) = n • (r : α) :=
-  Nonneg.coeAddMonoidHom.map_nsmul _ _
-#align nonneg.nsmul_coe Nonneg.nsmul_coe
-
-end AddMonoid
-
-section AddCommMonoid
-
-variable [AddCommMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
-
-instance addCommMonoid : AddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
-
-end AddCommMonoid
-
-section AddMonoidWithOne
-
-variable [AddMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
-
-instance natCast : NatCast { x : α // 0 ≤ x } :=
-  ⟨fun n => ⟨n, Nat.cast_nonneg' n⟩⟩
-
-@[simp, norm_cast]
-protected theorem coe_natCast (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
-  rfl
-#align nonneg.coe_nat_cast Nonneg.coe_natCast
-
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := Nonneg.coe_natCast
-
-@[simp]
-theorem mk_natCast (n : ℕ) : (⟨n, n.cast_nonneg'⟩ : { x : α // 0 ≤ x }) = n :=
-  rfl
-#align nonneg.mk_nat_cast Nonneg.mk_natCast
-
-@[deprecated (since := "2024-04-17")]
-alias mk_nat_cast := mk_natCast
-
-instance addMonoidWithOne : AddMonoidWithOne { x : α // 0 ≤ x } :=
-  { Nonneg.one (α := α) with
-    toNatCast := Nonneg.natCast
-    natCast_zero := by ext; simp
-    natCast_succ := fun _ => by ext; simp }
-#align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
-
-end AddMonoidWithOne
-
-section Pow
-
-variable [MonoidWithZero α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
-
-@[simp]
-theorem pow_nonneg {a : α} (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
-  | 0 => by
-    rw [pow_zero]
-    exact zero_le_one
-  | n + 1 => by
-    rw [pow_succ]
-    exact mul_nonneg (pow_nonneg H _) H
-#align pow_nonneg Nonneg.pow_nonneg
-
-instance pow : Pow { x : α // 0 ≤ x } ℕ where
-  pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
-#align nonneg.has_pow Nonneg.pow
-
-@[simp, norm_cast]
-protected theorem coe_pow (a : { x : α // 0 ≤ x }) (n : ℕ) :
-    (↑(a ^ n) : α) = (a : α) ^ n :=
-  rfl
-#align nonneg.coe_pow Nonneg.coe_pow
-
-@[simp]
-theorem mk_pow {x : α} (hx : 0 ≤ x) (n : ℕ) :
-    (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
-  rfl
-#align nonneg.mk_pow Nonneg.mk_pow
-
-end Pow
-
-section Semiring
-
-variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
-  [CovariantClass α α (· + ·) (· ≤ ·)] [PosMulMono α]
-
-instance semiring : Semiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
-#align nonneg.semiring Nonneg.semiring
-
-/-- Coercion `{x : α // 0 ≤ x} → α` as a `RingHom`. -/
-def coeRingHom : { x : α // 0 ≤ x } →+* α :=
-  { toFun := ((↑) : { x : α // 0 ≤ x } → α)
-    map_one' := Nonneg.coe_one
-    map_mul' := Nonneg.coe_mul
-    map_zero' := Nonneg.coe_zero,
-    map_add' := Nonneg.coe_add }
-#align nonneg.coe_ring_hom Nonneg.coeRingHom
-
-end Semiring
-
-section Nontrivial
-
-variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α] [NeZero 1]
-  [CovariantClass α α (· + ·) (· ≤ ·)] [PosMulMono α]
-
-end Nontrivial
-
-section CommSemiring
-
-variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
-  [CovariantClass α α (· + ·) (· ≤ ·)] [PosMulMono α]
-
-instance commSemiring : CommSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
-#align nonneg.comm_semiring Nonneg.commSemiring
-
-instance commMonoidWithZero : CommMonoidWithZero { x : α // 0 ≤ x } := inferInstance
-#align nonneg.comm_monoid_with_zero Nonneg.commMonoidWithZero
-
-end CommSemiring
-
 section LinearOrder
 
 variable [Zero α] [LinearOrder α]
@@ -384,4 +243,3 @@ theorem mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
 
 end LinearOrder
 
-end Nonneg
