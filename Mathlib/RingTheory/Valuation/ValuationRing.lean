@@ -373,7 +373,7 @@ theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
 #align valuation_ring.iff_local_bezout_domain ValuationRing.iff_local_bezout_domain
 
-protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
+protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
@@ -383,7 +383,7 @@ protected theorem tFAE (R : Type u) [CommRing R] [IsDomain R] :
   tfae_have 1 ↔ 4; · exact iff_ideal_total
   tfae_have 1 ↔ 5; · exact iff_local_bezout_domain
   tfae_finish
-#align valuation_ring.tfae ValuationRing.tFAE
+#align valuation_ring.tfae ValuationRing.TFAE
 
 end
 
@@ -412,6 +412,36 @@ theorem of_integers : ValuationRing 𝒪 := by
   · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
     use c; exact Or.inl hc.symm
 #align valuation_ring.of_integers ValuationRing.of_integers
+
+instance instValuationRingInteger : ValuationRing v.integer :=
+  of_integers (v := v) (Valuation.integer.integers v)
+
+theorem isFractionRing_iff [ValuationRing 𝒪] :
+    IsFractionRing 𝒪 K ↔
+      (∀ (x : K), ∃ a : 𝒪, x = algebraMap 𝒪 K a ∨ x⁻¹ = algebraMap 𝒪 K a) ∧
+        Function.Injective (algebraMap 𝒪 K) := by
+  refine ⟨fun h ↦ ⟨fun x ↦ ?_, IsFractionRing.injective _ _⟩, fun h ↦ ?_⟩
+  · obtain (⟨a, e⟩ | ⟨a, e⟩) := isInteger_or_isInteger 𝒪 x
+    exacts [⟨a, .inl e.symm⟩, ⟨a, .inr e.symm⟩]
+  · constructor
+    · intro a
+      simpa using h.2.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
+    · intro x
+      obtain ⟨a, ha⟩ := h.1 x
+      by_cases h0 : a = 0
+      · exact ⟨⟨0, 1⟩, by simpa [h0] using ha⟩
+      · have : algebraMap 𝒪 K a ≠ 0 := by simpa using h.2.ne_iff.mpr h0
+        rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
+        cases ha with
+        | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
+        | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
+    · intro _ _ hab
+      exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
+
+instance instIsFractionRingInteger: IsFractionRing v.integer K :=
+  ValuationRing.isFractionRing_iff.mpr
+    ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap (Valuation.integer.integers v),
+    Subtype.coe_injective⟩
 
 end
 
