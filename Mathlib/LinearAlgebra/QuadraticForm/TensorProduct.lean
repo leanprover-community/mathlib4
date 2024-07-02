@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.Data.Finset.Sym
 
 /-!
 # The quadratic form on a tensor product

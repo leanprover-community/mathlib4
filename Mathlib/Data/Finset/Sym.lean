@@ -53,6 +53,15 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   simp only [mem_val]
 #align finset.mem_sym2_iff Finset.mem_sym2_iff
 
+theorem sym2_cons (a : α) (s : Finset α) (ha : a ∉ s) :
+    (s.cons a ha).sym2 = ((s.cons a ha).map <| Sym2.mkEmbedding a).disjUnion s.sym2 (by
+      simp [Finset.disjoint_left, ha]) :=
+  Finset.val_injective <| Multiset.sym2_cons _ _
+
+theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) (ha : a ∉ s) :
+    (insert a s).sym2 = ((insert a s).image fun b => s(a, b)) ∪ s.sym2 := by
+  simpa [map_eq_image] using sym2_cons a s ha
+
 instance _root_.Sym2.instFintype [Fintype α] : Fintype (Sym2 α) where
   elems := Finset.univ.sym2
   complete := fun x ↦ by rw [mem_sym2_iff]; exact (fun a _ ↦ mem_univ a)

@@ -287,6 +287,14 @@ theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) :
   simp [hinj.eq_iff]
 #align sym2.map.injective Sym2.map.injective
 
+/-- `mk a` as an embedding. This is the symmetric version of `Function.Embedding.sectl`. -/
+@[simps]
+def mkEmbedding (a : α) : α ↪ Sym2 α where
+  toFun b := s(a, b)
+  inj' b₁ b₁ h := by
+    simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, true_and, Prod.swap_prod_mk] at h
+    obtain rfl | ⟨rfl, rfl⟩ := h <;> rfl
+
 section Membership
 
 /-! ### Membership and set coercion -/
