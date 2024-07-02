@@ -128,8 +128,9 @@ theorem seminormFromConst_is_norm_one_class : seminormFromConst' hf1 hc hpm 1 = 
   exact ⟨1, seminormFromConst_seq_one hc hpm⟩
 
 /-- `seminormFromConst' hf1 hc hpm` is submultiplicative. -/
-theorem seminormFromConst_mul (x y : R) : seminormFromConst' hf1 hc hpm (x * y) ≤
-    seminormFromConst' hf1 hc hpm x * seminormFromConst' hf1 hc hpm y := by
+theorem seminormFromConst_mul (x y : R) :
+    seminormFromConst' hf1 hc hpm (x * y) ≤
+      seminormFromConst' hf1 hc hpm x * seminormFromConst' hf1 hc hpm y := by
   have hlim : Tendsto (fun n => seminormFromConst_seq c f (x * y) (2 * n)) atTop
       (𝓝 (seminormFromConst' hf1 hc hpm (x * y))) := by
     apply Tendsto.comp (seminormFromConst_isLimit hf1 hc hpm (x * y))
@@ -155,8 +156,9 @@ theorem seminormFromConst_neg (x : R) :
   simp only [seminormFromConst_seq, neg_mul, map_neg_eq_map, zero_le, implies_true]
 
 /-- `seminormFromConst' hf1 hc hpm` satisfies the triangle inequality. -/
-theorem seminormFromConst_add (x y : R) : seminormFromConst' hf1 hc hpm (x + y) ≤
-    seminormFromConst' hf1 hc hpm x + seminormFromConst' hf1 hc hpm y := by
+theorem seminormFromConst_add (x y : R) :
+    seminormFromConst' hf1 hc hpm (x + y) ≤
+      seminormFromConst' hf1 hc hpm x + seminormFromConst' hf1 hc hpm y := by
   apply le_of_tendsto_of_tendsto' (seminormFromConst_isLimit hf1 hc hpm (x + y))
     (Tendsto.add (seminormFromConst_isLimit hf1 hc hpm x) (seminormFromConst_isLimit hf1 hc hpm y))
   intro n
