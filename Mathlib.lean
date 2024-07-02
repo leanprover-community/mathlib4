@@ -2526,6 +2526,8 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.WhitneyEmbedding
 import Mathlib.Geometry.RingedSpace.Basic
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.CanonicalMorphism.HomFromFieldSpec
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.CanonicalMorphism.UnusedDeclarations
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.Geometry.RingedSpace.PresheafedSpace
