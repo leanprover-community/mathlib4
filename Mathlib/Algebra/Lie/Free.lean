@@ -59,11 +59,11 @@ variable (R : Type u) (X : Type v) [CommRing R]
 
 /- We save characters by using Bourbaki's name `lib` (as in «libre») for
 `FreeNonUnitalNonAssocAlgebra` in this file. -/
-local notation "lib" => FreeNonUnitalNonAssocAlgebra
+@[inherit_doc] local notation "lib" => FreeNonUnitalNonAssocAlgebra
 
-local notation "lib.lift" => FreeNonUnitalNonAssocAlgebra.lift
+@[inherit_doc] local notation "lib.lift" => FreeNonUnitalNonAssocAlgebra.lift
 
-local notation "lib.of" => FreeNonUnitalNonAssocAlgebra.of
+@[inherit_doc] local notation "lib.of" => FreeNonUnitalNonAssocAlgebra.of
 
 local notation "lib.lift_of_apply" => FreeNonUnitalNonAssocAlgebra.lift_of_apply
 

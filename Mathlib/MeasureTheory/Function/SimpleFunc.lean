@@ -49,7 +49,7 @@ structure SimpleFunc.{u, v} (α : Type u) [MeasurableSpace α] (β : Type v) whe
 #align measure_theory.simple_func.measurable_set_fiber' MeasureTheory.SimpleFunc.measurableSet_fiber'
 #align measure_theory.simple_func.finite_range' MeasureTheory.SimpleFunc.finite_range'
 
-local infixr:25 " →ₛ " => SimpleFunc
+@[inherit_doc] local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
 

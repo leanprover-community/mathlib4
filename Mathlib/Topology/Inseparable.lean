@@ -238,7 +238,7 @@ theorem Continuous.specialization_monotone (hf : Continuous f) :
 ### `Inseparable` relation
 -/
 
-local infixl:0 " ~ᵢ " => Inseparable
+@[inherit_doc] local infixl:0 " ~ᵢ " => Inseparable
 
 theorem inseparable_def : (x ~ᵢ y) ↔ 𝓝 x = 𝓝 y :=
   Iff.rfl

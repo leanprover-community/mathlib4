@@ -51,7 +51,7 @@ abbrev FinsubgraphHom (G' : G.Finsubgraph) (F : SimpleGraph W) :=
   G'.val.coe →g F
 #align simple_graph.finsubgraph_hom SimpleGraph.FinsubgraphHom
 
-local infixl:50 " →fg " => FinsubgraphHom
+@[inherit_doc] local infixl:50 " →fg " => FinsubgraphHom
 
 instance : OrderBot G.Finsubgraph where
   bot := ⟨⊥, finite_empty⟩

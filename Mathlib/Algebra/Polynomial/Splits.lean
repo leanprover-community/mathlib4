@@ -382,7 +382,7 @@ section UFD
 
 attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
 
-local infixl:50 " ~ᵤ " => Associated
+@[inherit_doc] local infixl:50 " ~ᵤ " => Associated
 
 open UniqueFactorizationMonoid Associates
 

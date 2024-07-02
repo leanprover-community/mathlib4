@@ -137,7 +137,7 @@ open Relator
 
 variable {γ : Type*} {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
-local infixr:80 " ∘r " => Relation.Comp
+@[inherit_doc] local infixr:80 " ∘r " => Relation.Comp
 
 theorem perm_comp_perm : (Perm ∘r Perm : List α → List α → Prop) = Perm := by
   funext a c; apply propext

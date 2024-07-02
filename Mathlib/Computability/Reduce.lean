@@ -287,7 +287,7 @@ theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (
   ManyOneEquiv.of_equiv ULower.down_computable.symm
 #align many_one_equiv_up manyOneEquiv_up
 
-local infixl:1001 " ⊕' " => Sum.elim
+@[inherit_doc] local infixl:1001 " ⊕' " => Sum.elim
 
 open Nat.Primrec
 
