@@ -1,4 +1,5 @@
 import Archive.Arithcc
+import Archive.EulerFermat
 import Archive.Examples.IfNormalization.Result
 import Archive.Examples.IfNormalization.Statement
 import Archive.Examples.IfNormalization.WithoutAesop
