@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
 
+ : <<'BASH_MODULE_DOCS'
+`scripts/import_trans_difference.sh <opt_commit1> <opt_commit2>` outputs a full diff of the
+change of transitive imports in all the files between `<opt_commit1>` and `<opt_commit2>`.
+
+If the commits are not provided, then it uses the current commit as `commit1` and
+current `master` as `commit2`.
+
+The output is of the form
+
+|Files     |Import difference|
+|-         |-                |
+|Mathlib...| -34             |
+  ...
+|Mathlib...| 579             |
+
+with collapsible tabs for file entries with at least 3 files.
+BASH_MODULE_DOCS
+
 if [ -n "${1}" ]
 then
   commit1="${1}"
