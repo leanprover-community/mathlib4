@@ -61,7 +61,7 @@ instance subsingleton_iso {X Y : C} : Subsingleton (X ≅ Y) :=
   ⟨by
     intro i₁ i₂
     ext1
-    apply Subsingleton.elim⟩
+    subsingleton⟩
 #align category_theory.subsingleton_iso CategoryTheory.subsingleton_iso
 
 end CategoryTheory
