@@ -13,10 +13,13 @@ import Mathlib.RingTheory.TensorProduct.Basic
 # Generators of algebras
 
 ## Main definition
+
 - `Algebra.Generators`: A family of generators of a `R`-algebra `S` consists of
   1. `vars`: The type of variables.
   2. `val : vars → S`: The assignment of each variable to a value.
-  3. `σ`: A section of `R[X] → S`.
+  3. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
+     write `R[X]` for `R[vars]`.
+
 - `Algebra.Generators.Hom`: Given a commuting square
   ```
   R --→ P = R[X] ---→ S
@@ -25,6 +28,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
   R' -→ P' = R'[X'] → S
   ```
   A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
+
 - `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
