@@ -393,7 +393,6 @@ instance [IsStronglyAtomic α] : IsStronglyCoatomic αᵒᵈ := by
 instance [IsStronglyCoatomic α] : IsStronglyAtomic αᵒᵈ := by
   rwa [isStronglyAtomic_dual_iff_is_stronglyCoatomic]
 
-/-- If this were an instance, it would loop in some cases. -/
 instance IsStronglyAtomic.isAtomic (α : Type*) [PartialOrder α] [OrderBot α] [IsStronglyAtomic α] :
     IsAtomic α where
   eq_bot_or_exists_atom_le a := by
@@ -1041,6 +1040,8 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
+/-- A complete upper-modular lattice that is atomistic is strongly atomic.
+Not an instance to prevent loops. -/
 theorem CompleteLattice.isStronglyAtomic [IsUpperModularLattice α] [IsAtomistic α] :
     IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
@@ -1053,6 +1054,8 @@ theorem CompleteLattice.isStronglyAtomic [IsUpperModularLattice α] [IsAtomistic
         (hbot ▸ IsUpperModularLattice.covBy_sup_of_inf_covBy) (h x hx).bot_covBy
     rwa [inf_eq_left] at h_inf
 
+/-- A complete lower-modular lattice that is coatomistic is strongly coatomic.
+Not an instance to prevent loops. -/
 instance [IsLowerModularLattice α] [IsCoatomistic α] : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
   exact CompleteLattice.isStronglyAtomic
@@ -1104,8 +1107,9 @@ theorem isAtomic_iff_isCoatomic : IsAtomic α ↔ IsCoatomic α :=
     @isAtomic_of_isCoatomic_of_complementedLattice_of_isModular _ _ _ _ _ h⟩
 #align is_atomic_iff_is_coatomic isAtomic_iff_isCoatomic
 
-/-- A complemented modular atomic lattice is strongly atomic. -/
-instance [IsAtomic α] : IsStronglyAtomic α where
+/-- A complemented modular atomic lattice is strongly atomic.
+Not an instance to prevent loops. -/
+theorem ComplementedLattice.isStronglyAtomic [IsAtomic α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
     obtain ⟨⟨a', ha'b : a' ≤ b⟩, ha'⟩ := exists_isCompl (α := Set.Iic b) ⟨a, hab.le⟩
     obtain (rfl | ⟨d, hd⟩) := eq_bot_or_exists_atom_le a'
@@ -1116,17 +1120,22 @@ instance [IsAtomic α] : IsStronglyAtomic α where
     rw [← le_bot_iff, ← show a ⊓ a' = ⊥ by simpa using Subtype.coe_inj.2 ha'.inf_eq_bot, inf_comm]
     exact inf_le_inf_left _ hd.2
 
-/-- A complemented modular coatomic lattice is strongly coatomic. -/
-instance [IsCoatomic α] : IsStronglyCoatomic α :=
-  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| by infer_instance
+/-- A complemented modular coatomic lattice is strongly coatomic.
+Not an instance to prevent loops. -/
+theorem ComplementedLattice.isStronglyCoatomic [IsCoatomic α] : IsStronglyCoatomic α :=
+  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| ComplementedLattice.isStronglyAtomic
 
-/-- A complemented modular atomic lattice is strongly coatomic. -/
-instance [h : IsAtomic α] : IsStronglyCoatomic α := by
-  rw [isAtomic_iff_isCoatomic] at h; infer_instance
+/-- A complemented modular atomic lattice is strongly coatomic.
+Not an instance to prevent loops. -/
+theorem ComplementedLattice.isStronglyAtomic' [h : IsAtomic α] : IsStronglyCoatomic α := by
+  rw [isAtomic_iff_isCoatomic] at h
+  exact isStronglyCoatomic
 
-/-- A complemented modular coatomic lattice is strongly atomic. -/
-instance [h : IsCoatomic α] : IsStronglyAtomic α := by
-  rw [← isAtomic_iff_isCoatomic] at h; infer_instance
+/-- A complemented modular coatomic lattice is strongly atomic.
+Not an instance to prevent loops. -/
+theorem ComplementedLattice.isStronglyCoatomic' [h : IsCoatomic α] : IsStronglyAtomic α := by
+  rw [← isAtomic_iff_isCoatomic] at h
+  exact isStronglyAtomic
 
 end IsModularLattice
 
