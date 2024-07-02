@@ -284,7 +284,7 @@ lemma Frob_Q : Frob Q isGalois P • Q = Q := by
   simp only [sub_sub_cancel] at this
   apply y_not_in_Q A Q <| Ideal.IsPrime.mem_of_pow_mem (show Q.IsPrime by infer_instance) _ this
 
-lemma Frob_Q_eq_pow_card (x : B) : Frob Q isGalois P x - x ^ (Fintype.card (A⧸P)) ∈ Q := by
+lemma Frob_eq_pow_card (x : B) : Frob Q isGalois P x - x ^ (Fintype.card (A⧸P)) ∈ Q := by
   by_cases hx : x ∈ Q
   · refine Q.sub_mem ?_ (Q.pow_mem_of_mem hx _ Fintype.card_pos)
     nth_rw 2 [← Frob_Q Q isGalois P]
