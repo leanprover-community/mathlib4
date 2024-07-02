@@ -1832,6 +1832,11 @@ import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 import Mathlib.Combinatorics.SimpleGraph.Turan
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
+import Mathlib.Command.SyntaxRules
+import Mathlib.Command.SyntaxRules.Attr
+import Mathlib.Command.SyntaxRules.Elab
+import Mathlib.Command.SyntaxRules.Header
+import Mathlib.Command.SyntaxRules.Util
 import Mathlib.Computability.Ackermann
 import Mathlib.Computability.AkraBazzi.AkraBazzi
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
