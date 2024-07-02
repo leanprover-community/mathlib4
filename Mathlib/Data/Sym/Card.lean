@@ -189,9 +189,26 @@ theorem card_subtype_not_diag [Fintype α] :
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 #align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
-/-- Type **stars and bars** for the case `n = 2`. -/
+/-- **Stars and bars** for the case `n = 2`. -/
 protected theorem card [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=
   Finset.card_sym2 _
 #align sym2.card Sym2.card
+
+variable {a b : α}
+
+theorem univ_singleton : @univ (Sym2 ({a} : Finset α)) _ = {s(⟨a, by simp⟩, ⟨a, by simp⟩)} := by
+  ext p
+  simp_rw [mem_univ, mem_singleton, true_iff]
+  refine p.inductionOn fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_
+  rw [mem_singleton] at hx hy
+  simp [hx, hy]
+
+theorem univ_pair : @univ (Sym2 ({a, b} : Finset α)) _ = {s(⟨a, by simp⟩, ⟨a, by simp⟩),
+    s(⟨a, by simp⟩, ⟨b, by simp⟩), s(⟨b, by simp⟩, ⟨b, by simp⟩)} := by
+  ext p
+  simp_rw [mem_univ, mem_insert, mem_singleton, true_iff]
+  refine p.inductionOn fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_
+  rw [mem_insert, mem_singleton] at hx hy
+  rcases hx with hx | hx <;> rcases hy with hy | hy <;> simp [hx, hy]
 
 end Sym2
