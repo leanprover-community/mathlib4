@@ -15,7 +15,7 @@ This file defines colorings for some common graphs
 ## Main declarations
 
 * `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph.
-* `SimpleGraph.ringGraph`: A graph forming exactly a ring.
+* `SimpleGraph.cycleGraph`: A graph forming exactly a cycle.
 
 -/
 
@@ -66,13 +66,13 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
   rw [Nat.odd_iff_not_even, c.even_length_iff_congr p]
   tauto
 
-/-- Definition of ring graph -/
-def ringGraph (n : ℕ) : SimpleGraph (Fin n) :=
+/-- Definition of cycle graph -/
+def cycleGraph (n : ℕ) : SimpleGraph (Fin n) :=
   SimpleGraph.fromRel (fun u v ↦ v.val = (u.val + 1) % n)
 
-theorem ringGraph_adj (n : ℕ) (hn : 2 ≤ n) (u v : Fin n) :
-    (ringGraph n).Adj u v ↔ v.val = (u.val + 1) % n ∨ u.val = (v.val + 1) % n := by
-  simp [ringGraph]
+theorem cycleGraph_adj (n : ℕ) (hn : 2 ≤ n) (u v : Fin n) :
+    (cycleGraph n).Adj u v ↔ v.val = (u.val + 1) % n ∨ u.val = (v.val + 1) % n := by
+  simp [cycleGraph]
   intro h
   wlog hvu : v.val = (u.val + 1) % n
   · rw [eq_comm]
@@ -83,11 +83,11 @@ theorem ringGraph_adj (n : ℕ) (hn : 2 ≤ n) (u v : Fin n) :
   simpa only [ZMod.natCast_mod, Nat.cast_add, Nat.cast_one, ne_eq, self_eq_add_right] using
     one_ne_zero
 
-/-- Bicoloring of a ring graph of even length -/
-def ringGraph.bicoloring (n : ℕ) (h : 2 ≤ n) (hn : Even n) : Coloring (ringGraph n) Bool :=
+/-- Bicoloring of a cycle graph of even length -/
+def cycleGraph.bicoloring (n : ℕ) (h : 2 ≤ n) (hn : Even n) : Coloring (cycleGraph n) Bool :=
   Coloring.mk (fun u ↦ u.val % 2 = 0) <| by
     intro u v hAdj
-    rw [ringGraph_adj] at hAdj
+    rw [cycleGraph_adj] at hAdj
     simp only [ne_eq, decide_eq_decide]
     wlog hvu : v.val = (u.val + 1) % n
     · rw [iff_comm]
@@ -96,11 +96,11 @@ def ringGraph.bicoloring (n : ℕ) (h : 2 ≤ n) (hn : Even n) : Coloring (ringG
     omega
     exact h
 
-/-- Tricoloring of a ring graph -/
-def ringGraph.tricoloring  (n : ℕ) (h : 2 ≤ n) : Coloring (ringGraph n) (Fin 3) :=
+/-- Tricoloring of a cycle graph -/
+def cycleGraph.tricoloring  (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n) (Fin 3) :=
   Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by omega⟩) <| by
     intro u v hAdj
-    rw [ringGraph_adj n h] at hAdj
+    rw [cycleGraph_adj n h] at hAdj
     simp only [ne_eq]
     wlog hvu : v.val = (u.val + 1) % n
     · rw [eq_comm]
