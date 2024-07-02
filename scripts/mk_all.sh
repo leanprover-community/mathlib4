@@ -33,5 +33,7 @@ fi
 ## Note: *no* quotes around `${targets}`, since we want the spaces to matter
 for gp in ${targets}
 do
-  git ls-files "$gp/*.lean" | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > "$gp.lean"
+  ## show all the files and remove the ones that are locally `-d`eleted
+  comm -23 <(git ls-files "$gp/*.lean" | sort) <(git ls-files -d "$gp/*.lean" | sort) |
+    LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > "$gp.lean"
 done
