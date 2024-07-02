@@ -34,7 +34,7 @@ open Pointwise
 
 noncomputable section
 
-variable {Γ Γ' R : Type*}
+variable {Γ Γ' R V : Type*}
 
 section Multiplication
 
@@ -80,25 +80,30 @@ def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
 
 namespace HahnModule
 
-section
-
-variable {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
-
 /-- The casting function to the type synonym. -/
-def of {Γ : Type*} (R : Type*) {V : Type*} [PartialOrder Γ] [Zero V] [SMul R V] :
+def of (R : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :
     HahnSeries Γ V ≃ HahnModule Γ R V := Equiv.refl _
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
 @[elab_as_elim]
-def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
-    ∀ x, motive x :=
+def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → Sort*}
+    (h : ∀ x : HahnSeries Γ V, motive (of R x)) : ∀ x, motive x :=
   fun x => h <| (of R).symm x
 
 @[ext]
-theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
+theorem ext [PartialOrder Γ] [Zero V] [SMul R V] (x y : HahnModule Γ R V)
+    (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
-variable {V : Type*} [AddCommMonoid V] [SMul R V]
+theorem ext_iff [PartialOrder Γ] [Zero V] [SMul R V] (x y : HahnModule Γ R V) :
+    ((of R).symm x).coeff = ((of R).symm y).coeff ↔ x = y := by
+  simp_all only [HahnSeries.coeff_inj, EmbeddingLike.apply_eq_iff_eq]
+
+section SMul
+
+section
+
+variable [PartialOrder Γ] [AddCommMonoid V] [SMul R V]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
@@ -118,10 +123,10 @@ instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ R V)
 
 end
 
-variable {Γ R V : Type*} [OrderedCancelAddCommMonoid Γ] [AddCommMonoid V] [SMul R V]
+variable [OrderedCancelAddCommMonoid Γ] [AddCommMonoid V] [SMul R V]
 
 instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
-  smul x y := {
+  smul x y := (of R) ({
     coeff := fun a =>
       ∑ ij ∈ addAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd
@@ -134,7 +139,7 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
           intro a ha
           contrapose! ha
           simp [not_nonempty_iff_eq_empty.1 ha]
-        isPWO_support_addAntidiagonal.mono h }
+        isPWO_support_addAntidiagonal.mono h } )
 
 theorem smul_coeff [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ R V) (a : Γ) :
     ((of R).symm <| x • y).coeff a =
@@ -144,14 +149,35 @@ theorem smul_coeff [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ R V) (a : �
 
 variable {W : Type*} [Zero R] [AddCommMonoid W]
 
-instance instSMulZeroClass [SMulZeroClass R W] :
-    SMulZeroClass (HahnSeries Γ R) (HahnModule Γ R W) where
+end SMul
+
+section SMulZeroClass
+
+section
+
+variable [PartialOrder Γ] [Zero R] [AddCommMonoid V] [SMulZeroClass R V]
+
+instance instBaseSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
+    SMulZeroClass R (HahnModule Γ R V) :=
+  inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
+
+@[simp] theorem of_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
+  (of R) (r • x) = r • (of R) x := rfl
+@[simp] theorem of_symm_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
+  (of R).symm (r • x) = r • (of R).symm x := rfl
+
+end
+
+variable [OrderedCancelAddCommMonoid Γ] [Zero R] [AddCommMonoid V]
+
+instance instSMulZeroClass [SMulZeroClass R V] :
+    SMulZeroClass (HahnSeries Γ R) (HahnModule Γ R V) where
   smul_zero x := by
     ext
     simp [smul_coeff]
 
-theorem smul_coeff_right [SMulZeroClass R W] {x : HahnSeries Γ R}
-    {y : HahnModule Γ R W} {a : Γ} {s : Set Γ} (hs : s.IsPWO) (hys : ((of R).symm y).support ⊆ s) :
+theorem smul_coeff_right [SMulZeroClass R V] {x : HahnSeries Γ R}
+    {y : HahnModule Γ R V} {a : Γ} {s : Set Γ} (hs : s.IsPWO) (hys : ((of R).symm y).support ⊆ s) :
     ((of R).symm <| x • y).coeff a =
       ∑ ij ∈ addAntidiagonal x.isPWO_support hs a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd := by
@@ -161,8 +187,8 @@ theorem smul_coeff_right [SMulZeroClass R W] {x : HahnSeries Γ R}
   simp only [not_and, mem_sdiff, mem_addAntidiagonal, HahnSeries.mem_support, not_imp_not] at hb
   rw [hb.2 hb.1.1 hb.1.2.2, smul_zero]
 
-theorem smul_coeff_left [SMulWithZero R W] {x : HahnSeries Γ R}
-    {y : HahnModule Γ R W} {a : Γ} {s : Set Γ}
+theorem smul_coeff_left [SMulWithZero R V] {x : HahnSeries Γ R}
+    {y : HahnModule Γ R V} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hxs : x.support ⊆ s) :
     ((of R).symm <| x • y).coeff a =
       ∑ ij ∈ addAntidiagonal hs ((of R).symm y).isPWO_support a,
@@ -172,6 +198,8 @@ theorem smul_coeff_left [SMulWithZero R W] {x : HahnSeries Γ R}
   intro b hb
   simp only [not_and', mem_sdiff, mem_addAntidiagonal, HahnSeries.mem_support, not_ne_iff] at hb
   rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, zero_smul]
+
+end SMulZeroClass
 
 end HahnModule
 
