@@ -118,9 +118,8 @@ theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻
   induction' i
   · change (a * b * a⁻¹) ^ (_ : ℤ) = a * b ^ (_ : ℤ) * a⁻¹
     simp [zpow_natCast]
-  · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]
-    rw [mul_assoc]
--- Porting note: Added `change`, `zpow_natCast`, and `rw`.
+  · simp [zpow_negSucc, conj_pow, ← mul_assoc]
+-- Porting note: Added `change` and `zpow_natCast`.
 #align conj_zpow conj_zpow
 
 theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
