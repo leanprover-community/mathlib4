@@ -3,6 +3,7 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Ring.Defs
 
@@ -42,6 +43,8 @@ instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ where
 
 instance instMulDivCancelClass : MulDivCancelClass ℕ where
   mul_div_cancel _ _b hb := Nat.mul_div_cancel _ (Nat.pos_iff_ne_zero.2 hb)
+
+instance instCharZero : CharZero ℕ where cast_injective := Function.injective_id
 
 /-!
 ### Extra instances to short-circuit type class resolution

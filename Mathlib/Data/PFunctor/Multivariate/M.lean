@@ -245,8 +245,8 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
   cases' y with a₂ f₂
   dsimp [mp] at *
   have : a₁ = a₂ := by
-    refine'
-      PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) _ _ _
+    refine
+      PFunctor.M.bisim (fun a₁ a₂ => ∃ x y, R x y ∧ x.1 = a₁ ∧ y.1 = a₂) ?_ _ _
         ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
     rintro _ _ ⟨⟨a₁, f₁⟩, ⟨a₂, f₂⟩, r, rfl, rfl⟩
     rcases h _ _ r with ⟨a', f', f₁', f₂', e₁, e₂, h'⟩
@@ -293,8 +293,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   simp only [true_and]
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
-  simp? [(· ⊚ ·), appendFun, splitFun] at h₁ says
-    simp only [TypeVec.comp, appendFun, splitFun] at h₁
+  simp only [TypeVec.comp, appendFun, splitFun] at h₁
   replace h₁ := Quot.exact _ h₁
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
@@ -312,7 +311,6 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     induction Hr
     · rw [← Quot.factor_mk_eq R (EqvGen R) this]
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
-    -- Porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
     all_goals aesop
 #align mvpfunctor.M.bisim' MvPFunctor.M.bisim'
 

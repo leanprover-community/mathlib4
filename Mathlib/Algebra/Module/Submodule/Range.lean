@@ -402,7 +402,7 @@ def submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule 
 theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yO : y ∈ O), y ∈ N ∧ ϕ ⟨y, yO⟩ = x := by
-  refine' Submodule.mem_map.trans ⟨_, _⟩ <;> simp_rw [Submodule.mem_comap]
+  refine Submodule.mem_map.trans ⟨?_, ?_⟩ <;> simp_rw [Submodule.mem_comap]
   · rintro ⟨⟨y, yO⟩, yN : y ∈ N, h⟩
     exact ⟨y, yO, yN, h⟩
   · rintro ⟨y, yO, yN, h⟩
@@ -412,7 +412,7 @@ theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Su
 theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} (hNO : N ≤ O) {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
-  refine' mem_submoduleImage.trans ⟨_, _⟩
+  refine mem_submoduleImage.trans ⟨?_, ?_⟩
   · rintro ⟨y, yO, yN, h⟩
     exact ⟨y, yN, h⟩
   · rintro ⟨y, yN, h⟩

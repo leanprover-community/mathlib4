@@ -81,8 +81,8 @@ theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPri
   of_unique_max_ideal
     (by
       rcases h with ⟨P, ⟨hPnonzero, hPnot_top, _⟩, hPunique⟩
-      refine' ⟨P, ⟨⟨hPnot_top, _⟩⟩, fun M hM => hPunique _ ⟨_, Ideal.IsMaximal.isPrime hM⟩⟩
-      · refine' Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM _
+      refine ⟨P, ⟨⟨hPnot_top, ?_⟩⟩, fun M hM => hPunique _ ⟨?_, Ideal.IsMaximal.isPrime hM⟩⟩
+      · refine Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM ?_
         exact (hPunique _ ⟨ne_bot_of_gt hPM, Ideal.IsMaximal.isPrime hM⟩).symm
       · rintro rfl
         exact hPnot_top (hM.1.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))

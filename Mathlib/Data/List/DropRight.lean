@@ -148,10 +148,10 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
     by_contra
     rwa [length_nil, lt_self_iff_false] at h
   · rw [dropWhile]
-    refine' ⟨fun h => _, fun h => _⟩
+    refine ⟨fun h => ?_, fun h => ?_⟩
     · intro _ H
       rw [get] at H
-      refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
+      refine (cons_ne_self hd tl) (Sublist.antisymm ?_ (sublist_cons _ _))
       rw [← h]
       simp only [H]
       exact List.IsSuffix.sublist (dropWhile_suffix p)
@@ -165,7 +165,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
 @[simp]
 theorem rdropWhile_eq_self_iff : rdropWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
   simp only [rdropWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_get]
-  refine' ⟨fun h hl => _, fun h hl => _⟩
+  refine ⟨fun h hl => ?_, fun h hl => ?_⟩
   · rw [← length_pos, ← length_reverse] at hl
     have := h hl
     rwa [get_reverse'] at this
@@ -231,7 +231,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
     intro f; contradiction
   · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil_iff, getLast_append, ne_eq,
       append_eq_nil, and_false, not_false_eq_true, forall_true_left]
-    refine' ⟨fun h => _ , fun h => _⟩
+    refine ⟨fun h => ?_ , fun h => ?_⟩
     · intro pa; simp [pa] at h
     · simp [h]
 #align list.rtake_while_eq_nil_iff List.rtakeWhile_eq_nil_iff

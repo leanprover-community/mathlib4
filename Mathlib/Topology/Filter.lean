@@ -106,7 +106,8 @@ theorem HasBasis.nhds' {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h 
     HasBasis (𝓝 l) p fun i => { l' | s i ∈ l' } := by simpa only [Iic_principal] using h.nhds
 #align filter.has_basis.nhds' Filter.HasBasis.nhds'
 
-theorem mem_nhds_iff {l : Filter α} {S : Set (Filter α)} : S ∈ 𝓝 l ↔ ∃ t ∈ l, Iic (𝓟 t) ⊆ S :=
+protected theorem mem_nhds_iff {l : Filter α} {S : Set (Filter α)} :
+    S ∈ 𝓝 l ↔ ∃ t ∈ l, Iic (𝓟 t) ⊆ S :=
   l.basis_sets.nhds.mem_iff
 #align filter.mem_nhds_iff Filter.mem_nhds_iff
 
@@ -156,13 +157,14 @@ theorem sInter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
 
 @[simp]
 theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
-  refine' ⟨fun h => _, fun h => monotone_nhds h⟩
+  refine ⟨fun h => ?_, fun h => monotone_nhds h⟩
   rw [← Iic_subset_Iic, ← sInter_nhds, ← sInter_nhds]
   exact sInter_subset_sInter h
 #align filter.nhds_mono Filter.nhds_mono
 
 protected theorem mem_interior {s : Set (Filter α)} {l : Filter α} :
-    l ∈ interior s ↔ ∃ t ∈ l, Iic (𝓟 t) ⊆ s := by rw [mem_interior_iff_mem_nhds, mem_nhds_iff]
+    l ∈ interior s ↔ ∃ t ∈ l, Iic (𝓟 t) ⊆ s := by
+  rw [mem_interior_iff_mem_nhds, Filter.mem_nhds_iff]
 #align filter.mem_interior Filter.mem_interior
 
 protected theorem mem_closure {s : Set (Filter α)} {l : Filter α} :

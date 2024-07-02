@@ -219,7 +219,7 @@ set_option linter.uppercaseLean3 false in
 theorem functorCategoryMonoidalEquivalence.μIso_inv_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μIso A B).inv.app PUnit.unit = 𝟙 _ := by
   rw [← NatIso.app_inv, ← IsIso.Iso.inv_hom]
-  refine' IsIso.inv_eq_of_hom_inv_id _
+  refine IsIso.inv_eq_of_hom_inv_id ?_
   rw [Category.comp_id, NatIso.app_hom, MonoidalFunctor.μIso_hom,
     functorCategoryMonoidalEquivalence.μ_app]
 set_option linter.uppercaseLean3 false in
@@ -263,7 +263,7 @@ theorem functorCategoryMonoidalEquivalence.inverse_map {A B : SingleObj G ⥤ V}
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inverse_map Action.functorCategoryMonoidalEquivalence.inverse_map
 
-variable (H : GroupCat.{u})
+variable (H : Grp.{u})
 
 instance [RightRigidCategory V] : RightRigidCategory (SingleObj (H : MonCat.{u}) ⥤ V) := by
   change RightRigidCategory (SingleObj H ⥤ V); infer_instance

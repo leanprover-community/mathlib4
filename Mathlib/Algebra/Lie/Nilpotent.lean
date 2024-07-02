@@ -11,7 +11,6 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Tactic.Monotonicity
 
 #align_import algebra.lie.nilpotent from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -180,7 +179,7 @@ theorem iterate_toEnd_mem_lowerCentralSeries₂ (x y : L) (m : M) (k : ℕ) :
   have hk : 2 * k.succ = (2 * k + 1) + 1 := rfl
   simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ', hk,
       toEnd_apply_apply, LinearMap.coe_comp, toEnd_apply_apply]
-  refine' LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top x) _
+  refine LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top x) ?_
   exact LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top y) ih
 
 variable {R L M}
@@ -241,7 +240,7 @@ variable {R L M}
 theorem _root_.LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot (N : LieSubmodule R L M) :
     LieModule.IsNilpotent R L N ↔ ∃ k, N.lcs k = ⊥ := by
   rw [isNilpotent_iff]
-  refine' exists_congr fun k => _
+  refine exists_congr fun k => ?_
   rw [N.lowerCentralSeries_eq_lcs_comap k, LieSubmodule.comap_incl_eq_bot,
     inf_eq_right.mpr (N.lcs_le_self k)]
 #align lie_submodule.is_nilpotent_iff_exists_lcs_eq_bot LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot
@@ -333,7 +332,7 @@ theorem nilpotencyLength_eq_zero_iff [IsNilpotent R L M] :
   change sInf s = 0 ↔ _
   rw [← LieSubmodule.subsingleton_iff R L M, ← subsingleton_iff_bot_eq_top, ←
     lowerCentralSeries_zero, @eq_comm (LieSubmodule R L M)]
-  refine' ⟨fun h => h ▸ Nat.sInf_mem hs, fun h => _⟩
+  refine ⟨fun h => h ▸ Nat.sInf_mem hs, fun h => ?_⟩
   rw [Nat.sInf_eq_zero]
   exact Or.inl h
 #align lie_module.nilpotency_length_eq_zero_iff LieModule.nilpotencyLength_eq_zero_iff
@@ -481,13 +480,12 @@ theorem ucs_add (k l : ℕ) : N.ucs (k + l) = (N.ucs l).ucs k :=
   Function.iterate_add_apply normalizer k l N
 #align lie_submodule.ucs_add LieSubmodule.ucs_add
 
-@[mono]
+@[gcongr, mono]
 theorem ucs_mono (k : ℕ) (h : N₁ ≤ N₂) : N₁.ucs k ≤ N₂.ucs k := by
   induction' k with k ih
   · simpa
   simp only [ucs_succ]
-  -- Porting note: `mono` makes no progress
-  apply monotone_normalizer ih
+  gcongr
 #align lie_submodule.ucs_mono LieSubmodule.ucs_mono
 
 theorem ucs_eq_self_of_normalizer_eq_self (h : N₁.normalizer = N₁) (k : ℕ) : N₁.ucs k = N₁ := by
@@ -504,7 +502,7 @@ An important instance of this situation arises from a Cartan subalgebra `H ⊆ L
 theorem ucs_le_of_normalizer_eq_self (h : N₁.normalizer = N₁) (k : ℕ) :
     (⊥ : LieSubmodule R L M).ucs k ≤ N₁ := by
   rw [← ucs_eq_self_of_normalizer_eq_self h k]
-  mono
+  gcongr
   simp
 #align lie_submodule.ucs_le_of_normalizer_eq_self LieSubmodule.ucs_le_of_normalizer_eq_self
 
@@ -755,7 +753,7 @@ theorem LieHom.isNilpotent_range [IsNilpotent R L] (f : L →ₗ⁅R⁆ L') : Is
 `(ad R L).range`. -/
 @[simp]
 theorem LieAlgebra.isNilpotent_range_ad_iff : IsNilpotent R (ad R L).range ↔ IsNilpotent R L := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · have : (ad R L).ker = center R L := by simp
     exact
       LieAlgebra.nilpotent_of_nilpotent_quotient (le_of_eq this)

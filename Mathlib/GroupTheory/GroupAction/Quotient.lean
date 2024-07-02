@@ -29,8 +29,6 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Function
 
-open BigOperators
-
 namespace MulAction
 
 variable [Group α]
@@ -258,7 +256,6 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
 #align mul_action.self_equiv_sigma_orbits_quotient_stabilizer' MulAction.selfEquivSigmaOrbitsQuotientStabilizer'
 #align add_action.self_equiv_sigma_orbits_quotient_stabilizer' AddAction.selfEquivSigmaOrbitsQuotientStabilizer'
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- **Class formula** for a finite group acting on a finite type. See
 `MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
 `Quotient.out'`. -/
@@ -351,7 +348,6 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 
 end MulAction
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem ConjClasses.card_carrier {G : Type*} [Group G] [Fintype G] (g : G)
     [Fintype (ConjClasses.mk g).carrier] [Fintype <| MulAction.stabilizer (ConjAct G) g] :
     Fintype.card (ConjClasses.mk g).carrier =
@@ -370,11 +366,11 @@ theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker
   apply le_antisymm
   · intro g hg
     apply Equiv.Perm.ext
-    refine' fun q ↦ QuotientGroup.induction_on q _
-    refine' fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr _)
+    refine fun q ↦ QuotientGroup.induction_on q ?_
+    refine fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr ?_)
     rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
     exact H.normalCore.inv_mem hg g'⁻¹
-  · refine' (Subgroup.normal_le_normalCore.mpr fun g hg => _)
+  · refine (Subgroup.normal_le_normalCore.mpr fun g hg => ?_)
     rw [← H.inv_mem_iff, ← mul_one g⁻¹, ← QuotientGroup.eq, ← mul_one g]
     exact (MulAction.Quotient.smul_mk H g 1).symm.trans (Equiv.Perm.ext_iff.mp hg (1 : G))
 #align subgroup.normal_core_eq_ker Subgroup.normalCore_eq_ker

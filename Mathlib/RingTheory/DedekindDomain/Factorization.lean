@@ -47,7 +47,7 @@ dedekind domain, fractional ideal, ideal, factorization
 
 noncomputable section
 
-open scoped BigOperators Classical nonZeroDivisors
+open scoped Classical nonZeroDivisors
 
 open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
   Classical
@@ -69,8 +69,8 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     {v : HeightOneSpectrum R | v.asIdeal ∣ I}.Finite := by
   rw [← Set.finite_coe_iff, Set.coe_setOf]
   haveI h_fin := fintypeSubtypeDvd I hI
-  refine'
-    Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) _
+  refine
+    Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
   intro v w hvw
   simp? at hvw says simp only [Subtype.mk.injEq] at hvw
   exact Subtype.coe_injective ((HeightOneSpectrum.ext_iff (R := R) ↑v ↑w).mpr hvw)
@@ -368,11 +368,11 @@ theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
   rw [count_well_defined K v one_ne_zero h1, Ideal.span_singleton_one, Ideal.one_eq_top, sub_self]
 
 theorem count_prod {ι} (s : Finset ι) (I : ι → FractionalIdeal R⁰ K) (hS : ∀ i ∈ s, I i ≠ 0) :
-    count K v (∏ i in s, I i) = ∑ i in s, count K v (I i) := by
+    count K v (∏ i ∈ s, I i) = ∑ i ∈ s, count K v (I i) := by
   induction' s using Finset.induction with i s hi hrec
   · rw [Finset.prod_empty, Finset.sum_empty, count_one]
   · have hS' : ∀ i ∈ s, I i ≠ 0 := fun j hj => hS j (Finset.mem_insert_of_mem hj)
-    have hS0 : ∏ i in s, I i ≠ 0 := Finset.prod_ne_zero_iff.mpr hS'
+    have hS0 : ∏ i ∈ s, I i ≠ 0 := Finset.prod_ne_zero_iff.mpr hS'
     have hi0 : I i ≠ 0 := hS i (Finset.mem_insert_self i s)
     rw [Finset.prod_insert hi, Finset.sum_insert hi, count_mul K v hi0 hS0, hrec hS']
 

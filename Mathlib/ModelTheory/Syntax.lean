@@ -475,14 +475,14 @@ def restrictFreeVar [DecidableEq α] :
     ∀ {n : ℕ} (φ : L.BoundedFormula α n) (_f : φ.freeVarFinset → β), L.BoundedFormula β n
   | _n, falsum, _f => falsum
   | _n, equal t₁ t₂, f =>
-    equal (t₁.restrictVarLeft (f ∘ Set.inclusion (subset_union_left _ _)))
-      (t₂.restrictVarLeft (f ∘ Set.inclusion (subset_union_right _ _)))
+    equal (t₁.restrictVarLeft (f ∘ Set.inclusion subset_union_left))
+      (t₂.restrictVarLeft (f ∘ Set.inclusion subset_union_right))
   | _n, rel R ts, f =>
     rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
       (subset_biUnion_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
   | _n, imp φ₁ φ₂, f =>
-    (φ₁.restrictFreeVar (f ∘ Set.inclusion (subset_union_left _ _))).imp
-      (φ₂.restrictFreeVar (f ∘ Set.inclusion (subset_union_right _ _)))
+    (φ₁.restrictFreeVar (f ∘ Set.inclusion subset_union_left)).imp
+      (φ₂.restrictFreeVar (f ∘ Set.inclusion subset_union_right))
   | _n, all φ, f => (φ.restrictFreeVar f).all
 #align first_order.language.bounded_formula.restrict_free_var FirstOrder.Language.BoundedFormula.restrictFreeVar
 
@@ -1163,7 +1163,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     ext ⟨i, j⟩
     simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
-    refine' ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, _⟩, ⟨h.2, _⟩⟩, _⟩
+    refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp
     · simp
     · rintro ⟨t, ⟨is, _⟩, ⟨js, _⟩⟩

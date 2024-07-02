@@ -36,8 +36,6 @@ are quadratic forms that cannot be expressed via even non-symmetric bilinear for
 
 noncomputable section
 
-open scoped BigOperators
-
 open LinearMap (BilinForm)
 
 namespace Q60596
@@ -161,8 +159,6 @@ theorem sq_map_sub_char_two {ι R : Type*} [CommRing R] [CharP R 2] (i : ι) (a 
     sq i (a - b) = sq i a - sq i b := by
   haveI : Nonempty ι := ⟨i⟩
   rw [CharTwo.sub_eq_add, CharTwo.sub_eq_add, sq_map_add_char_two]
-
-open scoped BigOperators
 
 /-- The quadratic form (metric) is just euclidean -/
 def Q' : QuadraticForm K (Fin 3 → K) :=

@@ -207,7 +207,7 @@ theorem imageBasicOpen_image_preimage :
       SheafedSpace.congr_app (coequalizer.condition f.1 g.1), comp_apply,
       X.toRingedSpace.basicOpen_res]
     apply inf_eq_right.mpr
-    refine' (RingedSpace.basicOpen_le _ _).trans _
+    refine (RingedSpace.basicOpen_le _ _).trans ?_
     rw [coequalizer.condition f.1 g.1]
 #align algebraic_geometry.LocallyRingedSpace.has_coequalizer.image_basic_open_image_preimage AlgebraicGeometry.LocallyRingedSpace.HasCoequalizer.imageBasicOpen_image_preimage
 
@@ -215,7 +215,7 @@ theorem imageBasicOpen_image_open :
     IsOpen ((coequalizer.π f.1 g.1).base '' (imageBasicOpen f g U s).1) := by
   rw [← (TopCat.homeoOfIso (PreservesCoequalizer.iso (SheafedSpace.forget _) f.1
     g.1)).isOpen_preimage, TopCat.coequalizer_isOpen_iff, ← Set.preimage_comp]
-  erw [← coe_comp]
+  erw [← TopCat.coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
   -- Porting note (#11224): change `rw` to `erw`

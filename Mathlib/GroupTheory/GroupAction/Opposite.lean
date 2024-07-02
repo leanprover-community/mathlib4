@@ -60,7 +60,7 @@ instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N
   smul_assoc _ _ _ := unop_injective <| smul_assoc _ _ _
 
 @[to_additive]
-instance instSmulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :
+instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass M N αᵐᵒᵖ where
   smul_comm _ _ _ := unop_injective <| smul_comm _ _ _
 
@@ -229,7 +229,7 @@ instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N 
 instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N N] :
     SMulCommClass M Nᵐᵒᵖ N :=
   ⟨fun x y z => by
-    induction y using MulOpposite.rec'
+    induction y
     simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]⟩
 #align smul_comm_class.opposite_mid SMulCommClass.opposite_mid
 #align vadd_comm_class.opposite_mid VAddCommClass.opposite_mid

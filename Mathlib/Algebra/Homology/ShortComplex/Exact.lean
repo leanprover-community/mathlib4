@@ -358,7 +358,7 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
   wπ := comp_zero
   hπ := CokernelCofork.IsColimit.ofEpiOfIsZero _ (by
     have := hS.hasHomology
-    refine' ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff _).1
+    refine ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff ?_).1
       hS.epi_toCycles
     refine Arrow.isoMk (Iso.refl _)
       (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf) ?_
@@ -380,10 +380,10 @@ noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
   wι := zero_comp
   hι := KernelFork.IsLimit.ofMonoOfIsZero _ (by
     have := hS.hasHomology
-    refine' ((MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff _).2
+    refine ((MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff ?_).2
       hS.mono_fromOpcycles
-    refine' Arrow.isoMk (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel)
-      (Iso.refl _) _
+    refine Arrow.isoMk (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel)
+      (Iso.refl _) ?_
     apply Cofork.IsColimit.hom_ext hcc
     simp [IsColimit.coconePointUniqueUpToIso]) (isZero_zero C)
 
@@ -404,7 +404,7 @@ lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
   rw [exact_iff_mono_fromOpcycles]
-  refine' (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm _)
+  refine (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm ?_)
   exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by aesop_cat)
 
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
@@ -860,7 +860,7 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     exact IsLimit.ofIsoLimit S₂.cyclesIsKernel
       (Fork.ext (asIso (S₂.liftCycles φ.τ₂ w)).symm (by simp))
   · rintro ⟨h₁, h₂⟩
-    refine' ⟨⟨h₁.lift S₂.iCycles (by simp), _, _⟩⟩
+    refine ⟨⟨h₁.lift S₂.iCycles (by simp), ?_, ?_⟩⟩
     · rw [← cancel_mono φ.τ₂, assoc, h₁.lift_f, liftCycles_i, id_comp]
     · rw [← cancel_mono S₂.iCycles, assoc, liftCycles_i, h₁.lift_f, id_comp]
 
@@ -934,12 +934,6 @@ instance : F.PreservesMonomorphisms where
     exact ((S.map F).exact_iff_mono (by simp)).1
       (((S.exact_iff_mono rfl).2 hf).map F)
 
-instance [Faithful F] [CategoryWithHomology C] : F.ReflectsMonomorphisms where
-  reflects {X Y} f hf := by
-    let S := ShortComplex.mk (0 : X ⟶ X) f zero_comp
-    exact (S.exact_iff_mono rfl).1
-      ((ShortComplex.exact_map_iff_of_faithful S F).1
-      (((S.map F).exact_iff_mono (by simp)).2 hf))
 
 instance : F.PreservesEpimorphisms where
   preserves {X Y} f hf := by
@@ -947,12 +941,6 @@ instance : F.PreservesEpimorphisms where
     exact ((S.map F).exact_iff_epi (by simp)).1
       (((S.exact_iff_epi rfl).2 hf).map F)
 
-instance [Faithful F] [CategoryWithHomology C] : F.ReflectsEpimorphisms where
-  reflects {X Y} f hf := by
-    let S := ShortComplex.mk f (0 : Y ⟶ Y) comp_zero
-    exact (S.exact_iff_epi rfl).1
-      ((ShortComplex.exact_map_iff_of_faithful S F).1
-      (((S.map F).exact_iff_epi (by simp)).2 hf))
 
 end Functor
 

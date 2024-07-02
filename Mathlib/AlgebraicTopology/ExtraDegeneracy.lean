@@ -198,7 +198,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp
-    apply Subsingleton.elim
+    subsingleton
   s₀_comp_δ₁ := by
     dsimp
     ext1 x
@@ -226,7 +226,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
     · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero <| h
       simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply,
-        Fin.succAboveEmb_apply]
+        Fin.succAboveOrderEmb_apply]
   s_comp_σ n i := by
     ext1 φ
     apply (objEquiv _ _).injective

@@ -145,8 +145,9 @@ theorem mul_cancel_right_coe_nonZeroDivisors {x y : R} {c : R⁰} : x * c = y * 
 #align mul_cancel_right_coe_non_zero_divisor mul_cancel_right_coe_nonZeroDivisors
 
 @[simp]
-theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) : r * x = r * y ↔ x = y :=
-  by simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
+theorem mul_cancel_left_mem_nonZeroDivisors {x y r : R'} (hr : r ∈ R'⁰) :
+    r * x = r * y ↔ x = y := by
+  simp_rw [mul_comm r, mul_cancel_right_mem_nonZeroDivisors hr]
 #align mul_cancel_left_mem_non_zero_divisor mul_cancel_left_mem_nonZeroDivisors
 
 theorem mul_cancel_left_coe_nonZeroDivisors {x y : R'} {c : R'⁰} : (c : R') * x = c * y ↔ x = y :=

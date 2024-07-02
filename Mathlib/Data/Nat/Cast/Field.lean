@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Tactic.Common
 
@@ -69,13 +68,13 @@ theorem one_div_pos_of_nat {n : ℕ} : 0 < 1 / ((n : α) + 1) := by
 #align nat.one_div_pos_of_nat Nat.one_div_pos_of_nat
 
 theorem one_div_le_one_div {n m : ℕ} (h : n ≤ m) : 1 / ((m : α) + 1) ≤ 1 / ((n : α) + 1) := by
-  refine' one_div_le_one_div_of_le _ _
+  refine one_div_le_one_div_of_le ?_ ?_
   · exact Nat.cast_add_one_pos _
   · simpa
 #align nat.one_div_le_one_div Nat.one_div_le_one_div
 
 theorem one_div_lt_one_div {n m : ℕ} (h : n < m) : 1 / ((m : α) + 1) < 1 / ((n : α) + 1) := by
-  refine' one_div_lt_one_div_of_lt _ _
+  refine one_div_lt_one_div_of_lt ?_ ?_
   · exact Nat.cast_add_one_pos _
   · simpa
 #align nat.one_div_lt_one_div Nat.one_div_lt_one_div

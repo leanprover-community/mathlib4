@@ -50,7 +50,7 @@ separable closure, separably closed
 
 universe u v w
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 open Polynomial
 
@@ -121,7 +121,7 @@ theorem exists_eq_mul_self [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : ∃ z
 
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
+  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
   rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep

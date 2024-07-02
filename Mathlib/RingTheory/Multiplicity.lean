@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Tactic.Linarith
@@ -30,7 +29,6 @@ several basic results on it.
 variable {α β : Type*}
 
 open Nat Part
-open scoped BigOperators
 
 /-- `multiplicity a b` returns the largest natural number `n` such that
   `a ^ n ∣ b`, as a `PartENat` or natural with infinity. If `∀ n, a ^ n ∣ b`,
@@ -75,8 +73,7 @@ theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) 
         simp
 #align multiplicity.int.coe_nat_multiplicity multiplicity.Int.natCast_multiplicity
 
--- 2024-04-05
-@[deprecated] alias Int.coe_nat_multiplicity := Int.natCast_multiplicity
+@[deprecated (since := "2024-04-05")] alias Int.coe_nat_multiplicity := Int.natCast_multiplicity
 
 theorem not_finite_iff_forall {a b : α} : ¬Finite a b ↔ ∀ n : ℕ, a ^ n ∣ b :=
   ⟨fun h n =>
@@ -125,7 +122,7 @@ theorem is_greatest' {a b : α} {m : ℕ} (h : Finite a b) (hm : get (multiplici
 
 theorem pos_of_dvd {a b : α} (hfin : Finite a b) (hdiv : a ∣ b) :
     0 < (multiplicity a b).get hfin := by
-  refine' zero_lt_iff.2 fun h => _
+  refine zero_lt_iff.2 fun h => ?_
   simpa [hdiv] using is_greatest' hfin (lt_one_iff.mpr h)
 #align multiplicity.pos_of_dvd multiplicity.pos_of_dvd
 
@@ -386,9 +383,9 @@ theorem multiplicity_mk_eq_multiplicity
     multiplicity (Associates.mk a) (Associates.mk b) = multiplicity a b := by
   by_cases h : Finite a b
   · rw [← PartENat.natCast_get (finite_iff_dom.mp h)]
-    refine'
+    refine
         (multiplicity.unique
-            (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from _) _).symm <;>
+            (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from ?_) ?_).symm <;>
       rw [← Associates.mk_pow, Associates.mk_dvd_mk]
     · exact pow_multiplicity_dvd h
     · exact is_greatest
@@ -396,7 +393,7 @@ theorem multiplicity_mk_eq_multiplicity
   · suffices ¬Finite (Associates.mk a) (Associates.mk b) by
       rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
       rw [h, this]
-    refine'
+    refine
       not_finite_iff_forall.mpr fun n => by
         rw [← Associates.mk_pow, Associates.mk_dvd_mk]
         exact not_finite_iff_forall.mp h n
@@ -559,13 +556,13 @@ protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b))
     p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
           get (multiplicity p b) ((finite_mul_iff hp).1 h).2) =
       p ^ get (multiplicity p a) ((finite_mul_iff hp).1 h).1 *
-        p ^ get (multiplicity p b) ((finite_mul_iff hp).1 h).2 :=
-    by simp [pow_add]
+        p ^ get (multiplicity p b) ((finite_mul_iff hp).1 h).2 := by
+    simp [pow_add]
   have hdiv :
     p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
           get (multiplicity p b) ((finite_mul_iff hp).1 h).2) ∣
-      a * b :=
-    by rw [hpoweq]; apply mul_dvd_mul <;> assumption
+      a * b := by
+    rw [hpoweq]; apply mul_dvd_mul <;> assumption
   have hsucc :
     ¬p ^ (get (multiplicity p a) ((finite_mul_iff hp).1 h).1 +
               get (multiplicity p b) ((finite_mul_iff hp).1 h).2 +
@@ -592,7 +589,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
 #align multiplicity.mul multiplicity.mul
 
 theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
-    multiplicity p (∏ x in s, f x) = ∑ x in s, multiplicity p (f x) := by
+    multiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, multiplicity p (f x) := by
   classical
     induction' s using Finset.induction with a s has ih h
     · simp only [Finset.sum_empty, Finset.prod_empty]

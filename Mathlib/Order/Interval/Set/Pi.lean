@@ -114,7 +114,7 @@ theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]
   rintro z h₁ h₂
-  refine' (h₁ i₀ (mem_univ _)).2.not_lt _
+  refine (h₁ i₀ (mem_univ _)).2.not_lt ?_
   simpa only [Function.update_same] using (h₂ i₀ (mem_univ _)).1
 #align set.disjoint_pi_univ_Ioc_update_left_right Set.disjoint_pi_univ_Ioc_update_left_right
 
@@ -129,7 +129,7 @@ theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Icc a b = Icc (update f i a) (update f i b) := by
   ext x
   rw [← Set.pi_univ_Icc]
-  refine' ⟨_, fun h => ⟨x i, _, _⟩⟩
+  refine ⟨?_, fun h => ⟨x i, ?_, ?_⟩⟩
   · rintro ⟨c, hc, rfl⟩
     simpa [update_le_update_iff]
   · simpa only [Function.update_same] using h i (mem_univ i)

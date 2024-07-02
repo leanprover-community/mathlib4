@@ -125,7 +125,7 @@ theorem isSuccLimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccLimit a := fun 
 
 theorem not_isSuccLimit_iff : ¬IsSuccLimit a ↔ ∃ b, ¬IsMax b ∧ succ b = a := by
   rw [not_isSuccLimit_iff_exists_covBy]
-  refine' exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, _⟩
+  refine exists_congr fun b => ⟨fun hba => ⟨hba.lt.not_isMax, (CovBy.succ_eq hba)⟩, ?_⟩
   rintro ⟨h, rfl⟩
   exact covBy_succ_of_not_isMax h
 #align order.not_is_succ_limit_iff Order.not_isSuccLimit_iff
@@ -247,7 +247,7 @@ variable [IsSuccArchimedean α]
 
 protected theorem IsSuccLimit.isMin (h : IsSuccLimit a) : IsMin a := fun b hb => by
   revert h
-  refine' Succ.rec (fun _ => le_rfl) (fun c _ H hc => _) hb
+  refine Succ.rec (fun _ => le_rfl) (fun c _ H hc => ?_) hb
   have := hc.isMax.succ_eq
   rw [this] at hc ⊢
   exact H hc

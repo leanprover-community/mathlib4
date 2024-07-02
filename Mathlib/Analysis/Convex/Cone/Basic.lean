@@ -632,7 +632,7 @@ def toCone (s : Set E) (hs : Convex 𝕜 s) : ConvexCone 𝕜 E := by
     exact ⟨c * c', mul_pos c_pos c'_pos, x, hx, (smul_smul _ _ _).symm⟩
   · rintro _ ⟨cx, cx_pos, x, hx, rfl⟩ _ ⟨cy, cy_pos, y, hy, rfl⟩
     have : 0 < cx + cy := add_pos cx_pos cy_pos
-    refine' ⟨_, this, _, convex_iff_div.1 hs hx hy cx_pos.le cy_pos.le this, _⟩
+    refine ⟨_, this, _, convex_iff_div.1 hs hx hy cx_pos.le cy_pos.le this, ?_⟩
     simp only [smul_add, smul_smul, mul_div_assoc', mul_div_cancel_left₀ _ this.ne']
 #align convex.to_cone Convex.toCone
 
@@ -643,7 +643,7 @@ theorem mem_toCone : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ ∃ y ∈ s, 
 #align convex.mem_to_cone Convex.mem_toCone
 
 theorem mem_toCone' : x ∈ hs.toCone s ↔ ∃ c : 𝕜, 0 < c ∧ c • x ∈ s := by
-  refine' hs.mem_toCone.trans ⟨_, _⟩
+  refine hs.mem_toCone.trans ⟨?_, ?_⟩
   · rintro ⟨c, hc, y, hy, rfl⟩
     exact ⟨c⁻¹, inv_pos.2 hc, by rwa [smul_smul, inv_mul_cancel hc.ne', one_smul]⟩
   · rintro ⟨c, hc, hcx⟩
@@ -656,7 +656,7 @@ theorem subset_toCone : s ⊆ hs.toCone s := fun x hx =>
 
 /-- `hs.toCone s` is the least cone that includes `s`. -/
 theorem toCone_isLeast : IsLeast { t : ConvexCone 𝕜 E | s ⊆ t } (hs.toCone s) := by
-  refine' ⟨hs.subset_toCone, fun t ht x hx => _⟩
+  refine ⟨hs.subset_toCone, fun t ht x hx => ?_⟩
   rcases hs.mem_toCone.1 hx with ⟨c, hc, y, hy, rfl⟩
   exact t.smul_mem hc (ht hy)
 #align convex.to_cone_is_least Convex.toCone_isLeast
