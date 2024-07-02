@@ -118,6 +118,15 @@ theorem forall_mem_of_forall_mem_union_right (h : ∀ x ∈ l₁ ∪ l₂, p x) 
   (forall_mem_union.1 h).2
 #align list.forall_mem_of_forall_mem_union_right List.forall_mem_of_forall_mem_union_right
 
+theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) :
+    xs ∪ ys = ys := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [cons_union]
+    have : x ∈ xs ∪ ys := mem_union_iff.mpr <| .inr <| h (mem_cons_self _ _)
+    rw [insert_of_mem this, ih (subset_of_cons_subset h)]
+
 end Union
 
 /-! ### `inter` -/
