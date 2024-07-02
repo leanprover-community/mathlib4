@@ -85,8 +85,8 @@ variable (σ R)
 def symmetricSubalgebra [CommSemiring R] : Subalgebra R (MvPolynomial σ R) where
   carrier := setOf IsSymmetric
   algebraMap_mem' r e := rename_C e r
-  mul_mem' ha hb e := by rw [AlgHom.map_mul, ha, hb]
-  add_mem' ha hb e := by rw [AlgHom.map_add, ha, hb]
+  mul_mem' ha hb e := by rw [map_mul, ha, hb]
+  add_mem' ha hb e := by rw [map_add, ha, hb]
 #align mv_polynomial.symmetric_subalgebra MvPolynomial.symmetricSubalgebra
 
 variable {σ R}

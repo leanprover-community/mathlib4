@@ -207,7 +207,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   obtain ⟨p, rfl⟩ := (AlgHom.mem_range _).mp (this ha)
   refine isSemisimple_of_squarefree_aeval_eq_zero
     ((minpoly.isRadical K p).squarefree <| minpoly.ne_zero <| .of_finite K p) ?_
-  rw [aeval_algHom, φ.comp_apply, minpoly.aeval, φ.map_zero]
+  rw [aeval_algHom, φ.comp_apply, minpoly.aeval, map_zero]
 
 theorem IsSemisimple.add_of_commute : (f + g).IsSemisimple := .of_mem_adjoin_pair
   comm hf hg <| add_mem (Algebra.subset_adjoin <| .inl rfl) (Algebra.subset_adjoin <| .inr rfl)

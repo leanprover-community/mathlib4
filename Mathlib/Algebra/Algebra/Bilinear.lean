@@ -234,7 +234,7 @@ theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := by
 
 @[simp]
 theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) := by
-  simpa only [mulLeft, ← Algebra.coe_lmul_eq_mul] using ((Algebra.lmul R A).map_pow a n).symm
+  simpa only [mulLeft, ← Algebra.coe_lmul_eq_mul] using (map_pow (Algebra.lmul R A) a n).symm
 #align linear_map.pow_mul_left LinearMap.pow_mulLeft
 
 @[simp]

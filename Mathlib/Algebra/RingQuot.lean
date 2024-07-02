@@ -614,14 +614,14 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
               | mul_left _ r' => simp only [map_mul, r']
               | mul_right _ r' => simp only [map_mul, r'])
             x.toQuot
-  map_zero' := by simp only [← zero_quot, f.map_zero]
+  map_zero' := by simp only [← zero_quot, map_zero]
   map_add' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [add_quot, f.map_add x y]
-  map_one' := by simp only [← one_quot, f.map_one]
+    simp only [add_quot, map_add _ x y]
+  map_one' := by simp only [← one_quot, map_one]
   map_mul' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [mul_quot, f.map_mul x y]
+    simp only [mul_quot, map_mul _ x y]
   commutes' := by
     rintro x
     simp [← one_quot, smul_quot, Algebra.algebraMap_eq_smul_one] }

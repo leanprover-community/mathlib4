@@ -462,7 +462,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y' • Submodule.span R (s : Set S') := Set.smul_mem_smul_set hx
   rw [hx₁] at hx
-  erw [← g.map_smul, ← Submodule.map_span (g : S →ₗ[R] S')] at hx
+  erw [← _root_.map_smul g, ← Submodule.map_span (g : S →ₗ[R] S')] at hx
   -- Since `x` falls in the span of `s` in `S'`, `y' • x : S` falls in the span of `s'` in `S'`.
   -- That is, there exists some `x' : S` in the span of `s'` in `S` and `x' = y' • x` in `S'`.
   -- Thus `a • (y' • x) = a • x' ∈ span s'` in `S` for some `a ∈ M`.

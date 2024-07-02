@@ -207,7 +207,7 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     convert (Submodule.smul_mem_smul (M := I₂) (r := f a)
       (n := ⟨f b, h hb⟩) (h ha) (Submodule.mem_top)) using 1
     ext
-    exact f.map_mul a b
+    exact _root_.map_mul f a b
 
 @[simp]
 lemma mapCotangent_toCotangent

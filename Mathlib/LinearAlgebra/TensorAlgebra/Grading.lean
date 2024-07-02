@@ -60,11 +60,11 @@ instance gradedAlgebra :
     | add x y i hx hy ihx ihy =>
       -- Note: #8386 had to specialize `map_add` to avoid a timeout
       -- (the extra typeclass search seems to have pushed this already slow proof over the edge)
-      rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
-      rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.of_mul_of]
+      rw [map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)
 #align tensor_algebra.graded_algebra TensorAlgebra.gradedAlgebra
 

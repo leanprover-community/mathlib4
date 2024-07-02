@@ -119,13 +119,13 @@ theorem reverse.commutes (r : R) :
 
 @[simp]
 theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
-  op_injective reverseOp.map_one
+  op_injective (_root_.map_one reverseOp)
 #align clifford_algebra.reverse.map_one CliffordAlgebra.reverse.map_one
 
 @[simp]
 theorem reverse.map_mul (a b : CliffordAlgebra Q) :
     reverse (a * b) = reverse b * reverse a :=
-  op_injective (reverseOp.map_mul a b)
+  op_injective (_root_.map_mul reverseOp a b)
 #align clifford_algebra.reverse.map_mul CliffordAlgebra.reverse.map_mul
 
 @[simp]
@@ -157,8 +157,8 @@ theorem reverse_comp_involute :
   induction x using CliffordAlgebra.induction with
   | algebraMap => simp
   | ι => simp
-  | mul a b ha hb => simp only [ha, hb, reverse.map_mul, AlgHom.map_mul]
-  | add a b ha hb => simp only [ha, hb, reverse.map_add, AlgHom.map_add]
+  | mul a b ha hb => simp only [ha, hb, reverse.map_mul, map_mul]
+  | add a b ha hb => simp only [ha, hb, reverse.map_add, map_add]
 #align clifford_algebra.reverse_comp_involute CliffordAlgebra.reverse_comp_involute
 
 /-- `CliffordAlgebra.reverse` and `CliffordAlgebra.involute` commute. Note that the composition

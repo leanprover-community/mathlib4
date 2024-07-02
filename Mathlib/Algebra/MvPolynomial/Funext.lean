@@ -51,7 +51,7 @@ theorem funext {σ : Type*} {p q : MvPolynomial σ R} (h : ∀ x : σ → R, eva
   clear h p q
   intro p h
   obtain ⟨n, f, hf, p, rfl⟩ := exists_fin_rename p
-  suffices p = 0 by rw [this, AlgHom.map_zero]
+  suffices p = 0 by rw [this, map_zero]
   apply funext_fin
   intro x
   classical

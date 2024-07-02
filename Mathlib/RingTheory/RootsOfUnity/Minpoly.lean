@@ -55,7 +55,7 @@ theorem minpoly_dvd_x_pow_sub_one : minpoly ℤ μ ∣ X ^ n - 1 := by
   · simp
   apply minpoly.isIntegrallyClosed_dvd (isIntegral h h0)
   simp only [((IsPrimitiveRoot.iff_def μ n).mp h).left, aeval_X_pow, eq_intCast, Int.cast_one,
-    aeval_one, AlgHom.map_sub, sub_self]
+    aeval_one, map_sub, sub_self]
 set_option linter.uppercaseLean3 false in
 #align is_primitive_root.minpoly_dvd_X_pow_sub_one IsPrimitiveRoot.minpoly_dvd_x_pow_sub_one
 

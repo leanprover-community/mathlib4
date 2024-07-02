@@ -131,14 +131,14 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
     intro hn
     exact Nat.not_lt_zero 1 (pow_eq_zero hn.symm ▸ hp)
   · simp [g_poly]
-  · simp only [g_poly, aeval_X_pow, aeval_X, AlgHom.map_sub, add_pow_char_pow, sub_eq_zero]
+  · simp only [g_poly, aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
     intro x y hx hy
     rw [hx, hy]
   · intro x hx
-    simp only [g_poly, sub_eq_zero, aeval_X_pow, aeval_X, AlgHom.map_sub, sub_neg_eq_add] at *
+    simp only [g_poly, sub_eq_zero, aeval_X_pow, aeval_X, map_sub, sub_neg_eq_add] at *
     rw [neg_pow, hx, CharP.neg_one_pow_char_pow]
     simp
-  · simp only [g_poly, aeval_X_pow, aeval_X, AlgHom.map_sub, mul_pow, sub_eq_zero]
+  · simp only [g_poly, aeval_X_pow, aeval_X, map_sub, mul_pow, sub_eq_zero]
     intro x y hx hy
     rw [hx, hy]
 #align galois_field.finrank GaloisField.finrank
