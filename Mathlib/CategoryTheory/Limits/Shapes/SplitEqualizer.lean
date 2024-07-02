@@ -51,7 +51,7 @@ satisfying `ι ≫ f = ι ≫ g` together with morphisms
 satisfying `ι ≫ r = 𝟙 W`, `g ≫ t = 𝟙 X` and `f ≫ t = r ≫ ι`.
 
 The name "equalizer" is appropriate, since any split equalizer is a equalizer, see
-`Category_theory.IsSplitEqualizer.isEqualizer`.
+`CategoryTheory.IsSplitEqualizer.isEqualizer`.
 Split equalizers are also absolute, since a functor preserves all the structure above.
 -/
 structure IsSplitEqualizer {W : C} (ι : W ⟶ X) where
@@ -133,18 +133,18 @@ abbrev Functor.IsCosplitPair : Prop :=
   HasSplitEqualizer (G.map f) (G.map g)
 
 /-- Get the equalizer object from the typeclass `IsCosplitPair`. -/
-noncomputable def HasSplitEqualizer.equalizerOfCosplit [HasSplitEqualizer f g] : C :=
-  (@splittable _ _ _ _ f g).choose
+noncomputable def HasSplitEqualizer.equalizerOfSplit [HasSplitEqualizer f g] : C :=
+  (splittable (f := f) (g := g)).choose
 
 /-- Get the equalizer morphism from the typeclass `IsCosplitPair`. -/
 noncomputable def HasSplitEqualizer.equalizerι [HasSplitEqualizer f g] :
-    HasSplitEqualizer.equalizerOfCosplit f g ⟶ X :=
-  (@splittable _ _ _ _ f g).choose_spec.choose
+    HasSplitEqualizer.equalizerOfSplit f g ⟶ X :=
+  (splittable (f := f) (g := g)).choose_spec.choose
 
 /-- The equalizer morphism `equalizerι` gives a split equalizer on `f,g`. -/
 noncomputable def HasSplitEqualizer.isSplitEqualizer [HasSplitEqualizer f g] :
     IsSplitEqualizer f g (HasSplitEqualizer.equalizerι f g) :=
-  Classical.choice (@splittable _ _ _ _ f g).choose_spec.choose_spec
+  Classical.choice (splittable (f := f) (g := g)).choose_spec.choose_spec
 
 /-- If `f, g` is cosplit, then `G f, G g` is cosplit. -/
 instance map_is_cosplit_pair [HasSplitEqualizer f g] : HasSplitEqualizer (G.map f) (G.map g) where
