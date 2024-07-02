@@ -773,9 +773,61 @@ instance instInv : Inv (tsze R M) :=
 
 end Inv
 
+/-! This section is heavily inspired by analogous results about matrices. -/
+section Invertible
+variable {R : Type u} {M : Type v}
+variable [AddCommGroup M] [Semiring R] [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass R Rᵐᵒᵖ M]
+
+/-- `x : tzre R M` is invertible when `x.fst : R` is. -/
+abbrev invertibleOfInvertibleFst (x : tsze R M) [Invertible x.fst] : Invertible x where
+  invOf := (⅟x.fst, -(⅟x.fst •> x.snd <• ⅟x.fst))
+  invOf_mul_self := by
+    ext <;> dsimp
+    · rw [invOf_mul_self]
+    · rw [smul_neg, op_smul_op_smul, invOf_mul_self, op_one, one_smul, add_right_neg]
+  mul_invOf_self := by
+    ext <;> dsimp
+    · rw [mul_invOf_self]
+    · rw [smul_neg, smul_comm, smul_smul, mul_invOf_self, one_smul, add_left_neg]
+
+/-- `x.fst : R` is invertible when `x : tzre R M` is. -/
+abbrev invertibleFstOfInvertible (x : tsze R M) [Invertible x] : Invertible x.fst where
+  invOf := (⅟x).fst
+  invOf_mul_self := by rw [← fst_mul, invOf_mul_self, fst_one]
+  mul_invOf_self := by rw [← fst_mul, mul_invOf_self, fst_one]
+
+theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst = ⅟(x.fst) := by
+  letI := invertibleFstOfInvertible x
+  convert (rfl : _ = ⅟ x.fst)
+
+theorem snd_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] :
+    (⅟x).snd = -(⅟x.fst •> x.snd <• ⅟x.fst) := by
+  letI := invertibleOfInvertibleFst x
+  convert congr_arg (TrivSqZeroExt.snd (R := R) (M := M)) (_ : _ = ⅟ x)
+  convert rfl
+
+/-- Together `TrivSqZeroExt.detInvertibleOfInvertible` and `TrivSqZeroExt.invertibleOfDetInvertible`
+form an equivalence, although both sides of the equiv are subsingleton anyway. -/
+@[simps]
+def invertibleEquivInvertibleFst (x : tsze R M) : Invertible x ≃ Invertible x.fst where
+  toFun _ := invertibleFstOfInvertible x
+  invFun _ := invertibleOfInvertibleFst x
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
+
+/-- When lowered to a prop, `Matrix.invertibleEquivInvertibleFst` forms an `iff`. -/
+theorem isUnit_iff_isUnit_fst (x : tsze R M) : IsUnit x ↔ IsUnit x.fst := by
+  simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivInvertibleFst x).nonempty_congr]
+
+end Invertible
+
 section DivisionSemiring
 variable {R : Type u} {M : Type v}
 variable [DivisionSemiring R] [AddCommGroup M] [Module Rᵐᵒᵖ M] [Module R M] [SMulCommClass R Rᵐᵒᵖ M]
+
+@[simp] theorem invOf_eq_inv (x : tsze R M) [Invertible x] : ⅟x = x⁻¹ := by
+  letI := invertibleFstOfInvertible x
+  ext <;> simp [fst_invOf, snd_invOf]
 
 protected theorem inv_inl (r : R) :
     (inl r)⁻¹ = (inl (r⁻¹ : R) : tsze R M) := by
@@ -798,16 +850,14 @@ protected theorem inv_one : (1 : tsze R M)⁻¹ = (1 : tsze R M) := by
   rw [← inl_one, TrivSqZeroExt.inv_inl, inv_one]
 
 protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
-  ext
-  · rw [fst_mul, fst_inv, fst_one, mul_inv_cancel hx]
-  · rw [snd_mul, snd_inv, snd_one, smul_neg, smul_comm, smul_smul, mul_inv_cancel hx, one_smul,
-      fst_inv, add_left_neg]
+  have : Invertible x.fst := Units.invertible (.mk0 _ hx)
+  have := invertibleOfInvertibleFst x
+  rw [← invOf_eq_inv, mul_invOf_self]
 
 protected theorem inv_mul_cancel {x : tsze R M} (hx : fst x ≠ 0) : x⁻¹ * x = 1 := by
-  ext
-  · rw [fst_mul, fst_inv, inv_mul_cancel hx, fst_one]
-  · rw [snd_mul, snd_inv, snd_one, smul_neg, op_smul_op_smul, inv_mul_cancel hx, op_one, one_smul,
-      fst_inv, add_right_neg]
+  have : Invertible x.fst := Units.invertible (.mk0 _ hx)
+  have := invertibleOfInvertibleFst x
+  rw [← invOf_eq_inv, invOf_mul_self]
 
 protected theorem mul_inv_rev (a b : tsze R M) :
     (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
