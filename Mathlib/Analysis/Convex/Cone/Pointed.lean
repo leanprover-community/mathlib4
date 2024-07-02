@@ -25,6 +25,14 @@ local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 abbrev PointedCone (𝕜 E) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
   Submodule {c : 𝕜 // 0 ≤ c} E
 
+/-- Give a set `s` in `E`, `toPointedCone 𝕜 s` is the cone consisting of linear combinations of
+elements in `s` with non-negative coefficients. -/
+abbrev Set.toPointedCone (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+    (s : Set E) :=
+  Submodule.span {c : 𝕜 // 0 ≤ c} s
+
+-- TODO: add more API for `Set.toPointedCone`
+
 namespace PointedCone
 
 open Function
