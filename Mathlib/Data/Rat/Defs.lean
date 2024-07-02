@@ -253,7 +253,7 @@ lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) :
 -- TODO: Rename `divInt_eq_iff` in Batteries to `divInt_eq_divInt`
 alias divInt_eq_divInt := divInt_eq_iff
 
-@[deprecated] alias mul_num_den := mul_eq_mkRat
+@[deprecated (since := "2024-04-29")] alias mul_num_den := mul_eq_mkRat
 #align rat.mul_num_denom Rat.mul_eq_mkRat
 
 instance instPowNat : Pow ℚ ℕ where

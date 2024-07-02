@@ -5,6 +5,7 @@ Authors: Anatole Dedecker, Sébastien Gouëzel, Yury G. Kudryashov, Dylan MacKen
 -/
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Order.Filter.ModEq
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
@@ -299,35 +300,45 @@ theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ
   · simpa [geom_sum_eq, xi_ne_one, neg_inv, div_eq_mul_inv] using A
   · simp [norm_pow, summable_geometric_of_lt_one (norm_nonneg _) h]
 #align has_sum_geometric_of_norm_lt_1 hasSum_geometric_of_norm_lt_one
-@[deprecated] alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one
 
 theorem summable_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : Summable fun n : ℕ ↦ ξ ^ n :=
   ⟨_, hasSum_geometric_of_norm_lt_one h⟩
 #align summable_geometric_of_norm_lt_1 summable_geometric_of_norm_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
 
 theorem tsum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
   (hasSum_geometric_of_norm_lt_one h).tsum_eq
 #align tsum_geometric_of_norm_lt_1 tsum_geometric_of_norm_lt_one
-@[deprecated] alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one
 
 theorem hasSum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ :=
   hasSum_geometric_of_norm_lt_one h
 #align has_sum_geometric_of_abs_lt_1 hasSum_geometric_of_abs_lt_one
-@[deprecated] alias hasSum_geometric_of_abs_lt_1 := hasSum_geometric_of_abs_lt_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias hasSum_geometric_of_abs_lt_1 := hasSum_geometric_of_abs_lt_one
 
 theorem summable_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : Summable fun n : ℕ ↦ r ^ n :=
   summable_geometric_of_norm_lt_one h
 #align summable_geometric_of_abs_lt_1 summable_geometric_of_abs_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias summable_geometric_of_abs_lt_1 := summable_geometric_of_abs_lt_one
 
 theorem tsum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   tsum_geometric_of_norm_lt_one h
 #align tsum_geometric_of_abs_lt_1 tsum_geometric_of_abs_lt_one
-@[deprecated] alias tsum_geometric_of_abs_lt_1 := tsum_geometric_of_abs_lt_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias tsum_geometric_of_abs_lt_1 := tsum_geometric_of_abs_lt_one
 
 /-- A geometric series in a normed field is summable iff the norm of the common ratio is less than
 one. -/
@@ -340,6 +351,7 @@ theorem summable_geometric_iff_norm_lt_one : (Summable fun n : ℕ ↦ ξ ^ n) �
   rw [← one_pow k] at hk
   exact lt_of_pow_lt_pow_left _ zero_le_one hk
 #align summable_geometric_iff_norm_lt_1 summable_geometric_iff_norm_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias summable_geometric_iff_norm_lt_1 := summable_geometric_iff_norm_lt_one
 
@@ -353,6 +365,7 @@ theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R
   exact summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h)
     (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt _ hrr').isBigO.norm_left
 #align summable_norm_pow_mul_geometric_of_norm_lt_1 summable_norm_pow_mul_geometric_of_norm_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geometric_of_norm_lt_one
 
@@ -360,6 +373,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] [Co
     (k : ℕ) {r : R} (hr : ‖r‖ < 1) : Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) :=
   .of_norm <| summable_norm_pow_mul_geometric_of_norm_lt_one _ hr
 #align summable_pow_mul_geometric_of_norm_lt_1 summable_pow_mul_geometric_of_norm_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias summable_pow_mul_geometric_of_norm_lt_1 := summable_pow_mul_geometric_of_norm_lt_one
 
@@ -390,6 +404,7 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedDivisionRi
       simp [add_mul, tsum_add A B.summable, mul_add, B.tsum_eq, ← div_eq_mul_inv, sq,
         div_mul_eq_div_div_swap]
 #align has_sum_coe_mul_geometric_of_norm_lt_1 hasSum_coe_mul_geometric_of_norm_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias hasSum_coe_mul_geometric_of_norm_lt_1 := hasSum_coe_mul_geometric_of_norm_lt_one
 
@@ -398,6 +413,7 @@ theorem tsum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedDivisionRing
     {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
 #align tsum_coe_mul_geometric_of_norm_lt_1 tsum_coe_mul_geometric_of_norm_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias tsum_coe_mul_geometric_of_norm_lt_1 := tsum_coe_mul_geometric_of_norm_lt_one
 
@@ -517,6 +533,7 @@ theorem NormedRing.tsum_geometric_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     simp
   linarith
 #align normed_ring.tsum_geometric_of_norm_lt_1 NormedRing.tsum_geometric_of_norm_lt_one
+
 @[deprecated (since := "2024-01-31")]
 alias NormedRing.tsum_geometric_of_norm_lt_1 := NormedRing.tsum_geometric_of_norm_lt_one
 
@@ -686,7 +703,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
 
 theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i ∈ range n, (-1 : ℝ) ^ i‖ ≤ 1 := by
   rw [neg_one_geom_sum]
-  split_ifs <;> set_option tactic.skipAssignedInstances false in norm_num
+  split_ifs <;> norm_num
 #align norm_sum_neg_one_pow_le norm_sum_neg_one_pow_le
 
 /-- The **alternating series test** for monotone sequences.
@@ -807,12 +824,7 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
     ‖x ^ (n + 1) / (n + 1)!‖ = ‖x‖ / (n + 1) * ‖x ^ n / (n !)‖ := by
       rw [_root_.pow_succ', Nat.factorial_succ, Nat.cast_mul, ← _root_.div_mul_div_comm, norm_mul,
         norm_div, Real.norm_natCast, Nat.cast_succ]
-    _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ :=
-      -- Porting note: this was `by mono* with 0 ≤ ‖x ^ n / (n !)‖, 0 ≤ ‖x‖ <;> apply norm_nonneg`
-      -- but we can't wait on `mono`.
-      mul_le_mul_of_nonneg_right
-        (div_le_div (norm_nonneg x) (le_refl ‖x‖) A (add_le_add (mono_cast hn) (le_refl 1)))
-        (norm_nonneg (x ^ n / n !))
+    _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ := by gcongr
 #align real.summable_pow_div_factorial Real.summable_pow_div_factorial
 
 theorem Real.tendsto_pow_div_factorial_atTop (x : ℝ) :

@@ -40,8 +40,6 @@ the lower bound: `a(b-1)^2/2 ≤ |A|`.
 Rearranging gives the result.
 -/
 
-
--- Porting note: `A` already upper case
 set_option linter.uppercaseLean3 false
 
 open scoped Classical

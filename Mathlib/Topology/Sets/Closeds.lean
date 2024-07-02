@@ -121,7 +121,7 @@ theorem coe_top : (↑(⊤ : Closeds α) : Set α) = univ :=
   rfl
 #align topological_space.closeds.coe_top TopologicalSpace.Closeds.coe_top
 
-@[simp, norm_cast] -- Porting note (#10756): new theorem
+@[simp, norm_cast]
 theorem coe_eq_univ {s : Closeds α} : (s : Set α) = univ ↔ s = ⊤ :=
   SetLike.coe_injective.eq_iff' rfl
 
@@ -130,7 +130,7 @@ theorem coe_bot : (↑(⊥ : Closeds α) : Set α) = ∅ :=
   rfl
 #align topological_space.closeds.coe_bot TopologicalSpace.Closeds.coe_bot
 
-@[simp, norm_cast] -- Porting note (#10756): new theorem
+@[simp, norm_cast]
 theorem coe_eq_empty {s : Closeds α} : (s : Set α) = ∅ ↔ s = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
