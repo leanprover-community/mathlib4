@@ -101,9 +101,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     (∫⁻ x : E, ENNReal.ofReal ((1 + ‖x‖) ^ (-r)) ∂μ) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   -- We start by applying the layer cake formula
-  have h_meas : Measurable fun ω : E => (1 + ‖ω‖) ^ (-r) :=
-    -- Porting note: was `by measurability`
-    (measurable_norm.const_add _).pow_const _
+  have h_meas : Measurable fun ω : E => (1 + ‖ω‖) ^ (-r) := by fun_prop
   have h_pos : ∀ x : E, 0 ≤ (1 + ‖x‖) ^ (-r) := fun x ↦ by positivity
   rw [lintegral_eq_lintegral_meas_le μ (eventually_of_forall h_pos) h_meas.aemeasurable]
   have h_int : ∀ t, 0 < t → μ {a : E | t ≤ (1 + ‖a‖) ^ (-r)} =
@@ -142,7 +140,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
 theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     Integrable (fun x ↦ (1 + ‖x‖) ^ (-r)) μ := by
   constructor
-  · measurability
+  · apply Measurable.aestronglyMeasurable (by fun_prop)
   -- Lower Lebesgue integral
   have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖₊ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
     lintegral_nnnorm_eq_of_nonneg fun _ => rpow_nonneg (by positivity) _
@@ -155,9 +153,7 @@ theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : �
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
     ?_ (eventually_of_forall fun x => ?_)
-  · -- Note: `measurability` proves this, but very slowly.
-    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
-    exact measurable_norm.pow_const 2 |>.const_add 1 |>.pow_const (-r / 2) |>.aestronglyMeasurable
+  · apply Measurable.aestronglyMeasurable (by fun_prop)
   refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq

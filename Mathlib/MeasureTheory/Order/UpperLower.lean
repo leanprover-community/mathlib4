@@ -94,8 +94,7 @@ private lemma aux₁
   choose f hf₀ hf₁ using h
   intro H
   obtain ⟨ε, -, hε', hε₀⟩ := exists_seq_strictAnti_tendsto_nhdsWithin (0 : ℝ)
-  refine
-    not_eventually.2
+  refine not_eventually.2
       (frequently_of_forall fun _ ↦ lt_irrefl $ 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι))
       ((Filter.Tendsto.eventually_lt tendsto_const_nhds (H.comp hε₀) $
             ENNReal.sub_lt_self ENNReal.one_ne_top one_ne_zero ?_).mono
@@ -111,16 +110,15 @@ private lemma aux₁
       rw [subset_compl_comm, ← interior_compl]
       exact hf₁ _ _
     _ = 1 - ENNReal.ofReal (4⁻¹ ^ Fintype.card ι) := ?_
-  dsimp
+  dsimp only
   have := hε' n
   rw [measure_diff (hf₀ _ _) _ ((Real.volume_pi_closedBall _ _).trans_ne ENNReal.ofReal_ne_top),
     Real.volume_pi_closedBall, Real.volume_pi_closedBall, ENNReal.sub_div fun _ _ ↦ _,
     ENNReal.div_self _ ENNReal.ofReal_ne_top, ← ENNReal.ofReal_div_of_pos, ← div_pow,
     mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
-  all_goals
-    first
-    | positivity
-    | measurability
+  all_goals try positivity
+  · simp_all
+  · measurability
 
 theorem IsUpperSet.null_frontier (hs : IsUpperSet s) : volume (frontier s) = 0 := by
   refine measure_mono_null (fun x hx ↦ ?_)
