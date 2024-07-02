@@ -511,17 +511,15 @@ lemma centroid_eq_centralizer_mulLeftRight :
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
   toFun z :=
     { L (z : α) with
-      map_mul_left' := ((Set.mem_center_iff _).mp z.prop).left_comm
-      map_mul_right' := ((Set.mem_center_iff _).mp z.prop).left_assoc }
+      map_mul_left' := z.prop.left_comm
+      map_mul_right' := z.prop.left_assoc }
   map_zero' := by
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
   map_add' := fun _ _ => by
     simp only [AddSubmonoid.coe_add, NonUnitalSubsemiring.coe_toAddSubmonoid, map_add]
     exact rfl
-  map_mul' := fun z₁ z₂ => by
-    ext a
-    exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
+  map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
 
 lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
