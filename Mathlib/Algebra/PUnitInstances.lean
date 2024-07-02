@@ -55,14 +55,12 @@ theorem mul_eq {x y : PUnit} : x * y = unit :=
 #align punit.mul_eq PUnit.mul_eq
 #align punit.add_eq PUnit.add_eq
 
--- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp)]
 theorem div_eq {x y : PUnit} : x / y = unit :=
   rfl
 #align punit.div_eq PUnit.div_eq
 #align punit.sub_eq PUnit.sub_eq
 
--- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp)]
 theorem inv_eq {x : PUnit} : x⁻¹ = unit :=
   rfl
@@ -87,10 +85,10 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   normUnit_zero := rfl
   normUnit_mul := by intros; rfl
   normUnit_coe_units := by intros; rfl
-  gcd_dvd_left _ _ := ⟨unit, Subsingleton.elim _ _⟩
-  gcd_dvd_right _ _ := ⟨unit, Subsingleton.elim _ _⟩
-  dvd_gcd {_ _} _ _ _ := ⟨unit, Subsingleton.elim _ _⟩
-  gcd_mul_lcm _ _ := ⟨1, Subsingleton.elim _ _⟩
+  gcd_dvd_left _ _ := ⟨unit, by subsingleton⟩
+  gcd_dvd_right _ _ := ⟨unit, by subsingleton⟩
+  dvd_gcd {_ _} _ _ _ := ⟨unit, by subsingleton⟩
+  gcd_mul_lcm _ _ := ⟨1, by subsingleton⟩
   lcm_zero_left := by intros; rfl
   lcm_zero_right := by intros; rfl
   normalize_gcd := by intros; rfl
@@ -112,7 +110,7 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
 instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit where
-  exists_add_of_le {_ _} _ := ⟨unit, Subsingleton.elim _ _⟩
+  exists_add_of_le {_ _} _ := ⟨unit, by subsingleton⟩
   add_le_add_left _ _ _ _ := trivial
   le_self_add _ _ := trivial
 
@@ -150,23 +148,23 @@ instance instIsScalarTowerOfSMul [SMul R S] : IsScalarTower R S PUnit :=
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit where
   __ := PUnit.smul
-  smul_zero _ := Subsingleton.elim _ _
-  zero_smul _ := Subsingleton.elim _ _
+  smul_zero := by subsingleton
+  zero_smul := by subsingleton
 
 instance mulAction [Monoid R] : MulAction R PUnit where
   __ := PUnit.smul
-  one_smul _ := Subsingleton.elim _ _
-  mul_smul _ _ _ := Subsingleton.elim _ _
+  one_smul := by subsingleton
+  mul_smul := by subsingleton
 
 instance distribMulAction [Monoid R] : DistribMulAction R PUnit where
   __ := PUnit.mulAction
-  smul_zero _ := Subsingleton.elim _ _
-  smul_add _ _ _ := Subsingleton.elim _ _
+  smul_zero := by subsingleton
+  smul_add := by subsingleton
 
 instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit where
   __ := PUnit.mulAction
-  smul_mul _ _ _ := Subsingleton.elim _ _
-  smul_one _ := Subsingleton.elim _ _
+  smul_mul := by subsingleton
+  smul_one := by subsingleton
 
 instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
@@ -176,7 +174,7 @@ instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
 
 instance module [Semiring R] : Module R PUnit where
   __ := PUnit.distribMulAction
-  add_smul _ _ _ := Subsingleton.elim _ _
-  zero_smul _ := Subsingleton.elim _ _
+  add_smul := by subsingleton
+  zero_smul := by subsingleton
 
 end PUnit

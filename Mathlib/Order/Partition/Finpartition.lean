@@ -618,7 +618,7 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
 
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part a ↔ s.r a b := by
-  simp_rw [part, ofSetoid, mem_univ, reduceDite]
+  simp_rw [part, ofSetoid, mem_univ, reduceDIte]
   generalize_proofs H
   have := choose_spec _ _ H
   simp only [mem_univ, mem_image, true_and] at this

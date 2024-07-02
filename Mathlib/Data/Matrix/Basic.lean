@@ -8,7 +8,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
@@ -254,7 +253,12 @@ instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix
 
 section
 
-@[simp]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+-/
+@[simp, nolint simpNF]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]
@@ -580,7 +584,10 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
 
 lemma zero_le_one_elem [Preorder α] [ZeroLEOneClass α] (i j : n) :
     0 ≤ (1 : Matrix n n α) i j := by
-  by_cases hi : i = j <;> simp [hi]
+  by_cases hi : i = j
+  · subst hi
+    simp
+  · simp [hi]
 
 lemma zero_le_one_row [Preorder α] [ZeroLEOneClass α] (i : n) :
     0 ≤ (1 : Matrix n n α) i :=
@@ -627,8 +634,10 @@ variable [AddZeroClass α] [One α]
 theorem bit1_apply (M : Matrix n n α) (i : n) (j : n) :
     (bit1 M) i j = if i = j then bit1 (M i j) else bit0 (M i j) := by
   dsimp [bit1]
-  by_cases h : i = j <;>
-  simp [h]
+  by_cases h : i = j
+  · subst h
+    simp
+  · simp [h]
 #align matrix.bit1_apply Matrix.bit1_apply
 
 @[deprecated (since := "2023-04-02"), simp]
@@ -2438,9 +2447,6 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
   Matrix.ext <| by simp
 #align matrix.conj_transpose_rat_cast_smul Matrix.conjTranspose_ratCast_smul
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12231 -/
 @[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=

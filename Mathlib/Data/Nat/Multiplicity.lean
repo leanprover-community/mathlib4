@@ -8,7 +8,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Digits
 import Mathlib.RingTheory.Multiplicity
 
@@ -305,8 +305,8 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
     cases b
     · simpa [bit0_eq_two_mul n]
     · suffices multiplicity 2 (2 * n + 1) + multiplicity 2 (2 * n)! < ↑(2 * n) + 1 by
-        simpa [succ_eq_add_one, multiplicity.mul, h2, prime_two, Nat.bit1_eq_succ_bit0,
-          bit0_eq_two_mul n, factorial]
+        simpa [multiplicity.mul, h2, prime_two, Nat.bit1_eq_succ_bit0, bit0_eq_two_mul n,
+          factorial]
       rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
       refine this.trans ?_
       exact mod_cast lt_succ_self _
