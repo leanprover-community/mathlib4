@@ -53,7 +53,7 @@ noncomputable abbrev simplicialEvalFunctor : (SimplicialObject (FormalCoproduct.
 noncomputable abbrev cochainComplexFunctor [Preadditive A] :
     (SimplicialObject (FormalCoproduct.{w} C))ᵒᵖ ⥤
       (Cᵒᵖ ⥤ A) ⥤ CochainComplex A ℕ :=
-  simplicialEvalFunctor C A ⋙ ((whiskeringRight _ _ _).obj (alternatingCofaceMapComplex A))
+  simplicialEvalFunctor C A ⋙ (whiskeringRight _ _ _).obj (alternatingCofaceMapComplex A)
 
 -- this is a variant of `cechNerve`
 variable {C} in
