@@ -278,19 +278,19 @@ lemma Frob_Q : Frob A Q isGalois P • Q = Q := by
   by_contra h
   have hy : y A Q ∈ (Frob A Q isGalois P)⁻¹ • Q := (y_spec A Q).2 _ ⟨_, rfl⟩ (Ne.symm h)
   have hy2 : (Frob A Q isGalois P) • (y A Q) ∈ Q := by
-    rwa [Ideal.map_eq_comap_symm] at hy
+    rwa [Ideal.pointwise_smul_eq_comap] at hy
   have this := Q.sub_mem hy2 <| Frob_spec A Q isGalois P
   simp only [sub_sub_cancel] at this
   apply y_not_in_Q A Q <| Ideal.IsPrime.mem_of_pow_mem (show Q.IsPrime by infer_instance) _ this
 
-lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x^(Fintype.card (A⧸P)) ∈ Q := by
+lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x ^ (Fintype.card (A⧸P)) ∈ Q := by
   by_cases hx : x ∈ Q
   · refine Q.sub_mem ?_ (Q.pow_mem_of_mem hx _ Fintype.card_pos)
     nth_rw 2 [← Frob_Q A Q isGalois P]
     change (Frob A Q isGalois P) • x ∈ _
-    rw [Ideal.map_eq_comap_symm, Ideal.mem_comap]
+    rw [Ideal.pointwise_smul_eq_comap, Ideal.mem_comap]
     convert hx
-    exact inv_smul_smul _ _
+    exact inv_smul_smul (Frob A Q isGalois P) _
   · letI : Field (B ⧸ Q) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient Q).mp ‹_›).toField
     let xbar : (B ⧸ Q)ˣ := Units.mk0 (x : B ⧸ Q) <|
       mt (fun h ↦ (Submodule.Quotient.mk_eq_zero Q).mp h) hx
