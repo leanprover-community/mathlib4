@@ -22,100 +22,6 @@ universe w u
 
 open CategoryTheory LocallyConstant CompHausLike Functor Category Functor Opposite
 
-namespace CategoryTheory
-
-variable {C D : Type*} [Category C] [Category D]
-
-open Iso
-
-namespace Monad
-
-def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C where
-  toFunctor := F
-  η' := T.η ≫ i.hom
-  μ' := (i.inv ◫ i.inv) ≫ T.μ ≫ i.hom
-  left_unit' X := by
-    simp only [Functor.id_obj, NatTrans.comp_app, comp_obj, NatTrans.hcomp_app, Category.assoc,
-      hom_inv_id_app_assoc]
-    slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
-    simp
-  right_unit' X := by
-    simp only [id_obj, NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
-      Category.assoc, NatTrans.naturality_assoc]
-    slice_lhs 2 4 =>
-      simp only [← T.map_comp]
-    simp
-  assoc' X := by
-    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Category.assoc, Functor.map_comp,
-      NatTrans.naturality_assoc, hom_inv_id_app_assoc, NatIso.cancel_natIso_inv_left]
-    slice_lhs 4 5 => rw [← T.map_comp]
-    simp only [hom_inv_id_app, Functor.map_id, id_comp]
-    slice_lhs 1 2 => rw [← T.map_comp]
-    simp only [Functor.map_comp, Category.assoc]
-    congr 1
-    simp only [← Category.assoc, NatIso.cancel_natIso_hom_right]
-    rw [← T.μ.naturality]
-    simp [T.assoc X]
-
-end Monad
-
-namespace Comonad
-
-def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad C where
-  toFunctor := F
-  ε' := i.inv ≫ T.ε
-  δ' := i.inv ≫ T.δ ≫ (i.hom ◫ i.hom)
-  right_counit' X := by
-    simp only [id_obj, comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
-    slice_lhs 4 5 => rw [← F.map_comp]
-    simp only [hom_inv_id_app, Functor.map_id, id_comp, ← i.hom.naturality]
-    slice_lhs 2 3 => rw [T.right_counit]
-    simp
-  coassoc' X := by
-    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc,
-      NatTrans.naturality_assoc, Functor.comp_map, hom_inv_id_app_assoc,
-      NatIso.cancel_natIso_inv_left]
-    slice_lhs 3 4 => rw [← F.map_comp]
-    simp only [hom_inv_id_app, Functor.map_id, id_comp, assoc]
-    rw [← i.hom.naturality_assoc, ← T.coassoc_assoc]
-    simp only [NatTrans.naturality_assoc]
-    congr 3
-    simp only [← Functor.map_comp, i.hom.naturality]
-
-end Comonad
-
-lemma NatTrans.id_comm (α β : 𝟭 C ⟶ 𝟭 C) : α ≫ β = β ≫ α := by
-  ext X
-  exact (α.naturality (β.app X)).symm
-
-namespace Adjunction
-
-variable {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C)
-
-lemma isIso_unit_of_abstract_iso : IsIso adj.unit := by
-  suffices IsIso (adj.unit ≫ i.hom) from IsIso.of_isIso_comp_right adj.unit i.hom
-  refine ⟨(adj.toMonad.transport i).μ, ?_, ?_⟩
-  · ext X; exact (adj.toMonad.transport i).right_unit X
-  · rw [NatTrans.id_comm]; ext X; exact (adj.toMonad.transport i).right_unit X
-
-noncomputable def fullyFaithfulLOfCompIsoId : L.FullyFaithful :=
-  haveI := adj.isIso_unit_of_abstract_iso i
-  adj.fullyFaithfulLOfIsIsoUnit
-
-variable (j : R ⋙ L ≅ 𝟭 D)
-
-lemma isIso_counit_of_abstract_iso : IsIso adj.counit := by
-  suffices IsIso (j.inv ≫ adj.counit) from IsIso.of_isIso_comp_left j.inv adj.counit
-  refine ⟨(adj.toComonad.transport j).δ, ?_, ?_⟩
-  · rw [NatTrans.id_comm]; ext X; exact (adj.toComonad.transport j).right_counit X
-  · ext X; exact (adj.toComonad.transport j).right_counit X
-
-noncomputable def fullyFaithfulROfCompIsoId : R.FullyFaithful :=
-  haveI := adj.isIso_counit_of_abstract_iso j
-  adj.fullyFaithfulROfIsIsoCounit
-
-end CategoryTheory.Adjunction
-
 attribute [local instance] ConcreteCategory.instFunLike
 
 variable {P : TopCat.{u} → Prop}
@@ -291,17 +197,17 @@ noncomputable def functorIsoDiscreteAux (M : ModuleCat R) :
       (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) :=
   (LightCondensed.discrete _).mapIso (functorIsoDiscreteAux' R M)
 
-instance : HasSheafify (coherentTopology LightProfinite) (ModuleCat R) :=
+instance : HasSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
   haveI : ∀ (J : GrothendieckTopology (SmallModel LightProfinite.{u})),
       HasSheafify J (ModuleCat R) :=
     inferInstance
   inferInstance
 
-instance : HasWeakSheafify (coherentTopology LightProfinite) (ModuleCat R) :=
+instance : HasWeakSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
   HasSheafify.isRightAdjoint
 
-instance : (coherentTopology LightProfinite).PreservesSheafification
-    (CategoryTheory.forget (ModuleCat R)) := inferInstance
+instance : (coherentTopology LightProfinite.{u}).PreservesSheafification
+    (CategoryTheory.forget (ModuleCat.{u} R)) := inferInstance
 
 instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
     ((LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app
@@ -361,17 +267,17 @@ instance : (functor R).Faithful := (fullyFaithfulFunctor R).faithful
 
 instance : (functor R).Full := (fullyFaithfulFunctor R).full
 
-instance : (LightCondensed.discrete (ModuleCat R)).Faithful :=
+instance : (LightCondensed.discrete.{u} (ModuleCat R)).Faithful :=
   Functor.Faithful.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology LightProfinite) (ModuleCat R)).Faithful :=
-  inferInstanceAs (LightCondensed.discrete (ModuleCat R)).Faithful
+instance : (constantSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Faithful :=
+  inferInstanceAs (LightCondensed.discrete.{u} (ModuleCat R)).Faithful
 
-instance : (LightCondensed.discrete (ModuleCat R)).Full :=
+instance : (LightCondensed.discrete (ModuleCat.{u} R)).Full :=
   Functor.Full.of_iso (functorIsoDiscrete R)
 
-instance : (constantSheaf (coherentTopology LightProfinite) (ModuleCat R)).Full :=
-  inferInstanceAs (LightCondensed.discrete (ModuleCat R)).Full
+instance : (constantSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Full :=
+  inferInstanceAs (LightCondensed.discrete.{u} (ModuleCat.{u} R)).Full
 
 instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
   inferInstanceAs (LightCondensed.discrete (Type u)).Faithful
