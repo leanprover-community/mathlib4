@@ -5,7 +5,7 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Nonneg.OrderedRing
 
 /-!
 # Modules over nonnegative elements
@@ -75,7 +75,7 @@ variable [AddCommMonoid E] [Module 𝕜 E]
 
 /-- A module over an ordered semiring is also a module over just the non-negative scalars. -/
 instance instModule : Module 𝕜≥0 E :=
-  Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
+  Module.compHom E Nonneg.coeRingHom
 
 end Module
 

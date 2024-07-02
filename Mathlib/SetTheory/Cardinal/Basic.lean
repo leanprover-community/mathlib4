@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
 import Mathlib.Order.SuccPred.CompleteLinearOrder
