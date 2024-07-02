@@ -10,6 +10,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Topology.Bornology.BoundedOperation
+import Mathlib.RingTheory.Congruence.Basic
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -1678,6 +1679,36 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
   simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_sub,
     const_toFun, Pi.sub_apply, sub_nonneg]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
+
+end
+
+section
+
+variable (α γ : Type*) [TopologicalSpace α] [NormedRing γ]
+
+/-- The ideal of compactly supported functions as `RingCon`. -/
+def CompactlySupportedBoundedContinuousFunction : RingCon (α →ᵇ γ) where
+  r x y := ∃ (z : α →ᵇ γ), (HasCompactSupport z ∧ x = y + z)
+  iseqv := {
+    refl := fun _ ↦ ⟨0, HasCompactSupport.zero, by simp⟩
+    symm := by
+      rintro x y ⟨z, hz, rfl⟩
+      exact ⟨-z, HasCompactSupport.neg' hz, by simp⟩
+    trans := by
+      rintro x y z ⟨w1, hw1, rfl⟩ ⟨w2, hw2, rfl⟩
+      exact ⟨w1 + w2, HasCompactSupport.add hw1 hw2, by rw [add_assoc, add_comm w2]⟩ }
+  add' := by
+    rintro w x y z ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    exact ⟨a + b, HasCompactSupport.add ha hb, add_add_add_comm ..⟩
+  mul' := by
+    rintro w x y z ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    refine ⟨a * z + a * b + x * b, ?_, by noncomm_ring⟩
+    refine HasCompactSupport.add (HasCompactSupport.add ?_ ?_) <| HasCompactSupport.mul_left hb
+    all_goals exact HasCompactSupport.mul_right ha
+
+@[inherit_doc]
+scoped[BoundedContinuousFunction] notation
+  "C_cb(" α ", " γ ")" => CompactlySupportedBoundedContinuousFunction α γ
 
 end
 
