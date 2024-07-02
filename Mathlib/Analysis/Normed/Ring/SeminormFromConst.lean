@@ -56,7 +56,7 @@ variable {R : Type _} [CommRing R] (c : R) (f : RingSeminorm R) (hf1 : f 1 ≤ 1
 def seminormFromConst_seq (x : R) : ℕ → ℝ := fun n => f (x * c ^ n) / f c ^ n
 
 lemma seminormFromConst_seq_def (x : R) :
-  seminormFromConst_seq c f x = fun n => f (x * c ^ n) / f c ^ n := rfl
+    seminormFromConst_seq c f x = fun n => f (x * c ^ n) / f c ^ n := rfl
 
 /-- The terms in the sequence `seminormFromConst_seq c f x` are nonnegative. -/
 theorem seminormFromConst_seq_nonneg (x : R) : 0 ≤ seminormFromConst_seq c f x :=
@@ -261,7 +261,8 @@ theorem seminormFromConst_apply_c : seminormFromConst' hf1 hc hpm c = f c :=
 
 /-- For every `x : R`, `seminormFromConst' hf1 hc hpm (c * x)` equals the product
   `seminormFromConst' hf1 hc hpm c * SeminormFromConst' hf1 hc hpm x`. -/
-theorem seminormFromConst_const_mul (x : R) : seminormFromConst' hf1 hc hpm (c * x) =
+theorem seminormFromConst_const_mul (x : R) :
+    seminormFromConst' hf1 hc hpm (c * x) =
       seminormFromConst' hf1 hc hpm c * seminormFromConst' hf1 hc hpm x := by
   have hlim : Tendsto (fun n => seminormFromConst_seq c f x (n + 1)) atTop
       (𝓝 (seminormFromConst' hf1 hc hpm x)) := by
