@@ -114,6 +114,12 @@ theorem toCotangent_to_quotient_square (x : I) :
     I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x := rfl
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
 
+lemma Cotangent.smul_eq_zero_of_mem {R} [CommRing R] {I : Ideal R}
+    {x} (hx : x ∈ I) (m : I.Cotangent) : x • m = 0 := by
+  obtain ⟨m, rfl⟩ := Ideal.toCotangent_surjective _ m
+  rw [← map_smul, Ideal.toCotangent_eq_zero, pow_two]
+  exact Ideal.mul_mem_mul hx m.2
+
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
 def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
   Submodule.map (Quotient.mk (I ^ 2)|>.toSemilinearMap) I
@@ -186,6 +192,14 @@ theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx
 #align alg_hom.ker_ker_sqare_lift AlgHom.ker_kerSquareLift
+
+instance Algebra.kerSquareLift : Algebra (R ⧸ (RingHom.ker (algebraMap R A) ^ 2)) A :=
+  (Algebra.ofId R A).kerSquareLift.toAlgebra
+
+instance [Algebra A B] [IsScalarTower R A B] :
+    IsScalarTower R (A ⧸ (RingHom.ker (algebraMap A B) ^ 2)) B :=
+  IsScalarTower.of_algebraMap_eq'
+    (IsScalarTower.toAlgHom R A B).kerSquareLift.comp_algebraMap.symm
 
 /-- The quotient ring of `I ⧸ I ^ 2` is `R ⧸ I`. -/
 def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
