@@ -10,7 +10,44 @@ import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Meta.KAbstractPositions
 
-/-! # Interactive unfolding -/
+/-!
+
+# Interactive unfolding
+
+This file defines the interactive tactic `unfold?`.
+It allows you to click on an expression in the goal, and then it suggests rewrites to replace
+the expression with an unfolded version.
+
+For example, if the goal contains `1+1`, then it will suggest rewriting this into one of
+- `Nat.add 1 1`
+- `2`
+
+Clicking on a suggestion pastes a rewrite into the editor, which will be of the form
+- `rw [show 1+1 = Nat.add 1 1 from rfl]`
+- `rw [show 1+1 = 2 from rfl]`
+It also takes into account the position of the selected expression if it appears in multiple places,
+and whether the rewrite is in the goal or a local hypothesis.
+The rewrite string is created using `mkRewrite`.
+
+## Reduction rules
+
+The basic idea is to repeatedly apply `unfoldDefinition?` followed by `whnfCore`, which gives
+the list of all suggested unfoldings.
+
+Additionally, eta-reduction is tried, and basic natural number reduction is tried.
+
+## Filtering
+
+`HAdd.hAdd` in `1+1` actually first unfolds into `Add.add`, but this is not very usefull,
+because this is just unfolding a notational type class. Therefore, unfoldings of default instances
+are not presented in the list of suggested rewrites.
+This is implemented with `unfoldProjDefaultInst?`.
+
+Additionally, we don't want to unfold into expressions involving `match` terms or other
+constants marked as `Name.isInternalDetail`. So all such results are filtered out.
+This is implemented with `isUserFriendly`.
+
+-/
 
 open Lean Meta Server Widget ProofWidgets Jsx
 
@@ -75,8 +112,7 @@ def filteredUnfolds (e : Expr) : MetaM (Array Expr) :=
 end InteractiveUnfold
 
 /-- Return the rewrite tactic string `rw (config := ..) [← ..] at ..` -/
-def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : String)
-    (loc : Option Name) : String :=
+def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : String) (loc : Option Name) : String :=
   let cfg := match occ with
     | some n => s! " (config := \{ occs := .pos [{n}]})"
     | none => ""
