@@ -43,26 +43,26 @@ namespace RingOfIntegers
 variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 /-- `Algebra.norm` as a morphism betwen the rings of integers. -/
-noncomputable def norm [IsSeparable K L] : 𝓞 L →* 𝓞 K :=
+noncomputable def norm [Algebra.IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   RingOfIntegers.restrict_monoidHom
     ((Algebra.norm K).comp (algebraMap (𝓞 L) L : (𝓞 L) →* L))
     fun x => isIntegral_norm K x.2
 #align ring_of_integers.norm RingOfIntegers.norm
 
-@[simp] lemma coe_norm [IsSeparable K L] (x : 𝓞 L) :
+@[simp] lemma coe_norm [Algebra.IsSeparable K L] (x : 𝓞 L) :
   norm K x = Algebra.norm K (x : L) := rfl
 
-theorem coe_algebraMap_norm [IsSeparable K L] (x : 𝓞 L) :
+theorem coe_algebraMap_norm [Algebra.IsSeparable K L] (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=
   rfl
 #align ring_of_integers.coe_algebra_map_norm RingOfIntegers.coe_algebraMap_norm
 
-theorem algebraMap_norm_algebraMap [IsSeparable K L] (x : 𝓞 K) :
+theorem algebraMap_norm_algebraMap [Algebra.IsSeparable K L] (x : 𝓞 K) :
     algebraMap _ K (norm K (algebraMap (𝓞 K) (𝓞 L) x)) =
       Algebra.norm K (algebraMap K L (algebraMap _ _ x)) := rfl
 #align ring_of_integers.coe_norm_algebra_map RingOfIntegers.algebraMap_norm_algebraMap
 
-theorem norm_algebraMap [IsSeparable K L] (x : 𝓞 K) :
+theorem norm_algebraMap [Algebra.IsSeparable K L] (x : 𝓞 K) :
     norm K (algebraMap (𝓞 K) (𝓞 L) x) = x ^ finrank K L := by
   rw [RingOfIntegers.ext_iff, RingOfIntegers.coe_eq_algebraMap,
     RingOfIntegers.algebraMap_norm_algebraMap, Algebra.norm_algebraMap,
@@ -99,10 +99,10 @@ theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L
   simp [← Finset.mul_prod_erase _ _ (mem_univ AlgEquiv.refl)]
 #align ring_of_integers.dvd_norm RingOfIntegers.dvd_norm
 
-variable (F : Type*) [Field F] [Algebra K F] [IsSeparable K F] [FiniteDimensional K F]
+variable (F : Type*) [Field F] [Algebra K F] [Algebra.IsSeparable K F] [FiniteDimensional K F]
 
-theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimensional F L]
-    [IsScalarTower K F L] (x : 𝓞 L) : norm K (norm F x) = norm K x := by
+theorem norm_norm [Algebra.IsSeparable K L] [Algebra F L] [Algebra.IsSeparable F L]
+    [FiniteDimensional F L] [IsScalarTower K F L] (x : 𝓞 L) : norm K (norm F x) = norm K x := by
   rw [RingOfIntegers.ext_iff, coe_norm, coe_norm, coe_norm, Algebra.norm_norm]
 #align ring_of_integers.norm_norm RingOfIntegers.norm_norm
 

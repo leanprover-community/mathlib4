@@ -34,7 +34,7 @@ section EuclideanDomain
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
 variable [Field K] [Field L]
 variable [Algebra R K] [IsFractionRing R K]
-variable [Algebra K L] [FiniteDimensional K L] [IsSeparable K L]
+variable [Algebra K L] [FiniteDimensional K L] [Algebra.IsSeparable K L]
 variable [algRL : Algebra R L] [IsScalarTower R K L]
 variable [Algebra R S] [Algebra S L]
 variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]

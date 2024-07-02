@@ -166,13 +166,13 @@ theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
 variable (K)
 
 theorem algebraMap_surjective
-    [IsSepClosed k] [Algebra k K] [IsSeparable k K] :
+    [IsSepClosed k] [Algebra k K] [Algebra.IsSeparable k K] :
     Function.Surjective (algebraMap k K) := by
   refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
-  have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (IsSeparable.isIntegral k x)
-  have hsep : (minpoly k x).Separable := IsSeparable.separable k x
+  have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (Algebra.IsSeparable.isIntegral k x)
+  have hsep : IsSeparable k x := Algebra.IsSeparable.isSeparable k x
   have h : (minpoly k x).degree = 1 :=
-    degree_eq_one_of_irreducible k (minpoly.irreducible (IsSeparable.isIntegral k x)) hsep
+    degree_eq_one_of_irreducible k (minpoly.irreducible (Algebra.IsSeparable.isIntegral k x)) hsep
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x
   rw [eq_X_add_C_of_degree_eq_one h, hq, C_1, one_mul, aeval_add, aeval_X, aeval_C,
     add_eq_zero_iff_eq_neg] at this
@@ -183,7 +183,7 @@ end IsSepClosed
 /-- If `k` is separably closed, `K / k` is a field extension, `L / k` is an intermediate field
 which is separable, then `L` is equal to `k`. A corollary of `IsSepClosed.algebraMap_surjective`. -/
 theorem IntermediateField.eq_bot_of_isSepClosed_of_isSeparable [IsSepClosed k] [Algebra k K]
-    (L : IntermediateField k K) [IsSeparable k L] : L = ⊥ := bot_unique fun x hx ↦ by
+    (L : IntermediateField k K) [Algebra.IsSeparable k L] : L = ⊥ := bot_unique fun x hx ↦ by
   obtain ⟨y, hy⟩ := IsSepClosed.algebraMap_surjective k L ⟨x, hx⟩
   exact ⟨y, congr_arg (algebraMap L K) hy⟩
 
@@ -192,11 +192,11 @@ variable (k) (K)
 /-- Typeclass for an extension being a separable closure. -/
 class IsSepClosure [Algebra k K] : Prop where
   sep_closed : IsSepClosed K
-  separable : IsSeparable k K
+  separable : Algebra.IsSeparable k K
 
 /-- A separably closed field is its separable closure. -/
 instance IsSepClosure.self_of_isSepClosed [IsSepClosed k] : IsSepClosure k k :=
-  ⟨by assumption, isSeparable_self k⟩
+  ⟨by assumption, Algebra.isSeparable_self k⟩
 
 /-- If `K` is perfect and is a separable closure of `k`,
 then it is also an algebraic closure of `k`. -/
@@ -222,18 +222,19 @@ instance (priority := 100) IsSepClosure.of_isAlgClosure_of_perfectField
 variable {k} {K}
 
 theorem isSepClosure_iff [Algebra k K] :
-    IsSepClosure k K ↔ IsSepClosed K ∧ IsSeparable k K :=
+    IsSepClosure k K ↔ IsSepClosed K ∧ Algebra.IsSeparable k K :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 namespace IsSepClosure
 
-instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
+instance isSeparable [Algebra k K] [IsSepClosure k K] : Algebra.IsSeparable k K :=
   IsSepClosure.separable
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
   to_normal.toIsAlgebraic :=  inferInstance
-  to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)
+  to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _
+    (Algebra.IsSeparable.isSeparable k x)
 
 end IsSepClosure
 
@@ -243,18 +244,20 @@ variable {K : Type u} (L : Type v) {M : Type w} [Field K] [Field L] [Algebra K L
   [Algebra K M] [IsSepClosed M]
 
 theorem surjective_comp_algebraMap_of_isSeparable {E : Type*}
-    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [IsSeparable L E] :
+    [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsSeparable L E] :
     Function.Surjective fun φ : E →ₐ[K] M ↦ φ.comp (IsScalarTower.toAlgHom K L E) :=
   fun f ↦ IntermediateField.exists_algHom_of_splits' (E := E) f
-    fun s ↦ ⟨IsSeparable.isIntegral L s, IsSepClosed.splits_codomain _ <| IsSeparable.separable L s⟩
+    fun s ↦ ⟨Algebra.IsSeparable.isIntegral L s,
+      IsSepClosed.splits_codomain _ <| Algebra.IsSeparable.isSeparable L s⟩
 
-variable [IsSeparable K L] {L}
+variable [Algebra.IsSeparable K L] {L}
 
 /-- A (random) homomorphism from a separable extension L of K into a separably
   closed extension M of K. -/
 noncomputable irreducible_def lift : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
-    (fun x _ ↦ ⟨IsSeparable.isIntegral K x, splits_codomain _ (IsSeparable.separable K x)⟩)
+    (fun x _ ↦ ⟨Algebra.IsSeparable.isIntegral K x,
+      splits_codomain _ (Algebra.IsSeparable.isSeparable K x)⟩)
     (IntermediateField.adjoin_univ K L)
 
 end IsSepClosed
