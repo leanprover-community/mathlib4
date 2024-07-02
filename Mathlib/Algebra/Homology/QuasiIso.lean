@@ -504,3 +504,5 @@ lemma homotopyEquivalences_le_quasiIso [CategoryWithHomology C] :
   infer_instance
 
 end
+
+end

@@ -185,3 +185,5 @@ instance count.isFiniteMeasure [Finite α] :
 #align measure_theory.measure.count.is_finite_measure MeasureTheory.Measure.count.isFiniteMeasure
 
 end Measure
+
+end MeasureTheory

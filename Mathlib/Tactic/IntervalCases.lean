@@ -400,3 +400,5 @@ elab_rules : tactic
     | _, _, _ => throwUnsupportedSyntax
 
 end Tactic
+
+end Mathlib

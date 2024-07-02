@@ -235,3 +235,5 @@ elab_rules : tactic
   | `(tactic| linear_combination2 $[(norm := $tac)]? $(e)?) => elabLinearCombination tac none e true
 
 end LinearCombination
+
+end Tactic

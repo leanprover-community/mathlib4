@@ -223,3 +223,5 @@ def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
 #align Top.initial_iso_pempty TopCat.initialIsoPEmpty
 
 end TopCat
+
+end

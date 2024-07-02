@@ -316,3 +316,5 @@ instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, Top
   · continuity
 
 end
+
+end

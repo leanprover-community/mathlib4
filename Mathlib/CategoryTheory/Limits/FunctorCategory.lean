@@ -443,3 +443,5 @@ def colimitIsoSwapCompColim [HasColimitsOfShape J C] (G : J ⥤ K ⥤ C) :
 end
 
 end Limits
+
+end CategoryTheory

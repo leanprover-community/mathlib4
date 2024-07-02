@@ -328,3 +328,5 @@ theorem Memℒp.smul_of_top_left {p : ℝ≥0∞} {f : α → E} {φ : α → �
 #align measure_theory.mem_ℒp.smul_of_top_left MeasureTheory.Memℒp.smul_of_top_left
 
 end BoundedSMul
+
+end MeasureTheory

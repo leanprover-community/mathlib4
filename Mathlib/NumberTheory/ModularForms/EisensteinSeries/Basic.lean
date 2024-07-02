@@ -122,3 +122,5 @@ def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
       (Gamma_mem' N A).mp A.2, SpecialLinearGroup.coe_one, vecMul_one]
 
 end EisensteinSeries
+
+end

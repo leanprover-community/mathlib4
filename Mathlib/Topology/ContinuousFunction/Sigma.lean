@@ -81,3 +81,5 @@ def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
     embedding_sigmaMk_comp.toInducing
 
 end ConnectedSpace
+
+end ContinuousMap

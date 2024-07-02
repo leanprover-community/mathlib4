@@ -110,3 +110,5 @@ theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (ra
   exact abs_det_eq_abs_det K (fun i ↦ fundSystem K i) e' e
 
 end Units
+
+end NumberField

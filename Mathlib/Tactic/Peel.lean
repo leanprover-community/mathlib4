@@ -245,3 +245,5 @@ macro_rules
     `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]?; exact $u)
 
 end Peel
+
+end Tactic

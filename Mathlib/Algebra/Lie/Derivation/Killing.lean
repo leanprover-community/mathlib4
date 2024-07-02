@@ -105,3 +105,5 @@ lemma exists_eq_ad (D : 𝔻) : ∃ x, ad R L x = D := by
 end
 
 end IsKilling
+
+end LieDerivation

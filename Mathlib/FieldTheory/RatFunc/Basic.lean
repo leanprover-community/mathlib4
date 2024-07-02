@@ -1148,3 +1148,5 @@ theorem num_mul_denom_add_denom_mul_num_ne_zero {x y : RatFunc K} (hxy : x + y â
 end NumDenom
 
 end RatFunc
+
+end

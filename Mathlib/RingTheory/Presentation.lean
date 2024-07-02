@@ -233,3 +233,5 @@ def baseChange : Presentation T (T ⊗[R] S) where
 end Construction
 
 end Presentation
+
+end Algebra

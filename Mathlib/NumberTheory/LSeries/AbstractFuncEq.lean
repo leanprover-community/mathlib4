@@ -463,3 +463,5 @@ theorem Λ_residue_zero :
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
 
 end WeakFEPair
+
+end

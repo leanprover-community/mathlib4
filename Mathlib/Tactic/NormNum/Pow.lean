@@ -284,3 +284,5 @@ def evalZPow : NormNumExt where eval {u α} e := do
       return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')
 
 end NormNum
+
+end Meta

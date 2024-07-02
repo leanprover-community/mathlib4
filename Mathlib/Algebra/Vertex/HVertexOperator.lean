@@ -80,3 +80,5 @@ def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
     exact rfl
 
 end VertexAlg
+
+end

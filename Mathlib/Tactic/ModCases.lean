@@ -194,3 +194,5 @@ elab_rules : tactic
     | _ => throwError "mod_cases only works with Int and Nat"
 
 end ModCases
+
+end Tactic

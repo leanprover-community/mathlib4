@@ -397,3 +397,5 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
 #align Top.binary_cofan_is_colimit_iff TopCat.binaryCofan_isColimit_iff
 
 end TopCat
+
+end

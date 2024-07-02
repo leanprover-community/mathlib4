@@ -296,3 +296,5 @@ theorem innerRegularWRT_preimage_one_hasCompactSupport_measure_ne_top_of_group :
       K_comp.measure_lt_top.ne
 
 end TopologicalGroup
+
+end Measure

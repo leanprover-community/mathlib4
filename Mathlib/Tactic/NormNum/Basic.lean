@@ -595,3 +595,5 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     return .isFalse q(isNat_dvd_false $pa $pb $this)
 
 end NormNum
+
+end Meta

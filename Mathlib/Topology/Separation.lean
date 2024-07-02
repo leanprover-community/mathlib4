@@ -2768,3 +2768,5 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
 #align connected_components.t2 ConnectedComponents.t2
 
 end T25
+
+end T25

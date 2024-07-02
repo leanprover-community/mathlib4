@@ -672,3 +672,5 @@ instance [M.RkPos] : (M.restrictSubtype M.E).RkPos := by
 end restrictSubtype
 
 end mapSetEquiv
+
+end Matroid

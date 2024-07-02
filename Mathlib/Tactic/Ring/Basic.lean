@@ -1175,3 +1175,5 @@ elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
 @[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)
 
 end Ring
+
+end Tactic

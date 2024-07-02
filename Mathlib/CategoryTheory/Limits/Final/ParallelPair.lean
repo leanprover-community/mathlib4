@@ -52,3 +52,5 @@ lemma parallelPair_initial_mk {X Y : C} (f g : X ⟶ Y)
     exact Zigzag.of_hom_inv f₁ f₂)
 
 end Limits
+
+end CategoryTheory

@@ -87,3 +87,5 @@ alias rat_cast_ne := ratCast_ne
     ((no_index (OfNat.ofNat a : ℚ)) : ℝ) = (OfNat.ofNat a : ℝ) := rfl
 
 end Rify
+
+end Tactic

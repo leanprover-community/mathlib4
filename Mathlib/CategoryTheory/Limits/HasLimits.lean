@@ -1314,3 +1314,5 @@ def isColimitEquivIsLimitOp {t : Cocone F} : IsColimit t ≃ IsLimit t.op :=
 end Opposite
 
 end Limits
+
+end CategoryTheory

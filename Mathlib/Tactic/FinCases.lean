@@ -125,3 +125,5 @@ produces three goals with hypotheses
       allGoals <| liftMetaTactic (finCasesAt · (← getFVarId h))
 
 end Tactic
+
+end Elab

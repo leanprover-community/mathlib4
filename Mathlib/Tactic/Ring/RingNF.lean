@@ -270,3 +270,5 @@ macro (name := ringConv) "ring" : conv =>
   `(conv| first | discharge => ring1! | try_this ring_nf!)
 
 end RingNF
+
+end Tactic

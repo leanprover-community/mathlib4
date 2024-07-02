@@ -1048,3 +1048,5 @@ theorem inv_one_equiv : (1⁻¹ : PGame) ≈ 1 :=
 end PGame
 
 end SetTheory
+
+end

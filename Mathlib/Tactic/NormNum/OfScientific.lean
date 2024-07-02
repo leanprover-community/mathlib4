@@ -63,3 +63,5 @@ to rat casts if the scientific notation is inherited from the one for rationals.
     return .isNat _ n q(isNat_ofScientific_of_false $pm $pe (.refl $n))
 
 end NormNum
+
+end Meta

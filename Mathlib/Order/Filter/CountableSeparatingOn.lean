@@ -255,3 +255,5 @@ theorem of_forall_separating_preimage (p : Set β → Prop) [HasCountableSeparat
   of_eventually_mem_of_forall_separating_preimage p (s := univ) univ_mem univ_mem h
 
 end EventuallyEq
+
+end Filter

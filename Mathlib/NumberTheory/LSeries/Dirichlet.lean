@@ -403,3 +403,5 @@ lemma LSeries_vonMangoldt_eq_deriv_riemannZeta_div {s : ℂ} (hs : 1 < s.re) :
     fun _ ↦ LSeries_one_eq_riemannZeta⟩
 
 end ArithmeticFunction
+
+end vonMangoldt

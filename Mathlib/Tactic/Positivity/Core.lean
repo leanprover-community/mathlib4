@@ -413,3 +413,5 @@ elab (name := positivity) "positivity" : tactic => do
   liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
 
 end Positivity
+
+end Tactic

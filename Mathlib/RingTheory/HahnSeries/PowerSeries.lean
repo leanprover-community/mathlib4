@@ -246,3 +246,5 @@ theorem _root_.Polynomial.algebraMap_hahnSeries_injective :
 end Algebra
 
 end HahnSeries
+
+end

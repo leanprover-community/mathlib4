@@ -125,3 +125,5 @@ theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime
 end Generation
 
 end Perm
+
+end Equiv

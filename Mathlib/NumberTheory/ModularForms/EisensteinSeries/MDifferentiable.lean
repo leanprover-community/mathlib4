@@ -65,3 +65,5 @@ theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) 
         (isOpen_lt continuous_const continuous_im)
 
 end EisensteinSeries
+
+end

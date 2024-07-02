@@ -147,3 +147,5 @@ theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
   of_localizationSpan' t ht f H
 
 end Finite
+
+end Module

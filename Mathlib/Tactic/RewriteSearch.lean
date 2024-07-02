@@ -328,3 +328,5 @@ elab_rules : tactic |
     type? (origSpan? := ← getRef)
 
 end RewriteSearch
+
+end Tactic

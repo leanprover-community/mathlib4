@@ -130,3 +130,5 @@ def forget : Factorisation f ⥤ C where
   map f := f.h
 
 end Factorisation
+
+end CategoryTheory

@@ -159,3 +159,5 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
 end torsion
 
 end Units
+
+end NumberField

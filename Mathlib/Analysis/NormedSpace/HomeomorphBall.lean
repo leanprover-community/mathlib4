@@ -153,3 +153,5 @@ theorem continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c 
   (univBall c r).symm.continuousOn.mono <| ball_subset_univBall_target c r
 
 end PartialHomeomorph
+
+end

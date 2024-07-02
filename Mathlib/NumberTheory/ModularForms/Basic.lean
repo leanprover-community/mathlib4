@@ -482,3 +482,5 @@ open scoped DirectSum in
 example (Γ : Subgroup SL(2, ℤ)) : Algebra ℂ (⨁ i, ModularForm Γ i) := inferInstance
 
 end GradedRing
+
+end ModularForm

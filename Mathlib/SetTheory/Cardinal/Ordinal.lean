@@ -1670,3 +1670,5 @@ end Cardinal
 end OrdinalIndices
 
 end Ordinal
+
+end Initial

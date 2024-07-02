@@ -137,3 +137,5 @@ lemma dualSubmodule_dualSubmodule_of_basis
     dualBasis_dualBasis B hB hB']
 
 end BilinForm
+
+end LinearMap

@@ -196,3 +196,5 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
 end summability
 
 end EisensteinSeries
+
+end

@@ -297,3 +297,5 @@ elab_rules : tactic
   coherence_loop
 
 end Coherence
+
+end Tactic

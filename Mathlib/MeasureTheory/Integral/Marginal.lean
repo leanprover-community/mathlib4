@@ -250,3 +250,5 @@ theorem lintegral_le_of_lmarginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i,
 end LMarginal
 
 end MeasureTheory
+
+end

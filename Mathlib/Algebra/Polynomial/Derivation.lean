@@ -149,3 +149,5 @@ theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
     _ = _ := by simp [-compAEval_apply, compAEval_eq]
 
 end Derivation
+
+end

@@ -412,3 +412,5 @@ theorem grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ} (h
 end PGame
 
 end SetTheory
+
+end

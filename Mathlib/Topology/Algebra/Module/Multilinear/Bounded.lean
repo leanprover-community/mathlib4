@@ -96,3 +96,5 @@ theorem image_multilinear [ContinuousSMul 𝕜 F] {s : Set (∀ i, E i)} (hs : I
   | inr h => exact hs.image_multilinear' f
 
 end IsVonNBounded
+
+end Bornology

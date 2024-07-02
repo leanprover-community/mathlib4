@@ -228,3 +228,5 @@ lemma injective_dirac [SeparatesPoints α] :
 end dirac_injective
 
 end MeasureTheory
+
+end

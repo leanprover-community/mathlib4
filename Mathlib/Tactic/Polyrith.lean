@@ -429,3 +429,5 @@ elab_rules : tactic
     | .error g => replaceMainGoal [g]
 
 end Polyrith
+
+end Tactic

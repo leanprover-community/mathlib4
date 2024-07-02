@@ -241,3 +241,5 @@ theorem dirac_caratheodory (a : α) : (dirac a).caratheodory = ⊤ :=
 end OuterMeasure
 
 end MeasureTheory
+
+end

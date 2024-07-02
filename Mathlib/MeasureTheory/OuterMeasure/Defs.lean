@@ -80,3 +80,5 @@ instance : OuterMeasureClass (OuterMeasure α) α where
   measure_iUnion_nat_le f := f.iUnion_nat
 
 end OuterMeasure
+
+end MeasureTheory

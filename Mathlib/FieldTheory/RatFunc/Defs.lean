@@ -251,3 +251,5 @@ end IsDomain
 end Rec
 
 end CommRing
+
+end RatFunc
