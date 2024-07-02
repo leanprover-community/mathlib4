@@ -184,7 +184,7 @@ theorem dropLast_sublist (l : List α) : l.dropLast <+ l :=
 
 @[gcongr]
 theorem drop_sublist_drop_left (l : List α) {m n : ℕ} (h : m ≤ n) : drop n l <+ drop m l := by
-  rw [← Nat.sub_add_cancel h, drop_add]
+  rw [← Nat.sub_add_cancel h, ← drop_drop]
   apply drop_sublist
 
 theorem dropLast_subset (l : List α) : l.dropLast ⊆ l :=
@@ -325,7 +325,7 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
       exact hl h.right
 #align list.is_prefix.filter_map List.IsPrefix.filterMap
 
-@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap -- 2024-03-26
+@[deprecated (since := "2024-03-26")] alias IsPrefix.filter_map := IsPrefix.filterMap
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
@@ -419,7 +419,7 @@ theorem tails_append :
 -- the lemma names `inits_eq_tails` and `tails_eq_inits` are like `sublists_eq_sublists'`
 theorem inits_eq_tails : ∀ l : List α, l.inits = (reverse <| map reverse <| tails <| reverse l)
   | [] => by simp
-  | a :: l => by simp [inits_eq_tails l, map_eq_map_iff, reverse_map]
+  | a :: l => by simp [inits_eq_tails l, map_inj_left, ← map_reverse]
 #align list.inits_eq_tails List.inits_eq_tails
 
 theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| inits <| reverse l)
@@ -429,22 +429,22 @@ theorem tails_eq_inits : ∀ l : List α, l.tails = (reverse <| map reverse <| i
 
 theorem inits_reverse (l : List α) : inits (reverse l) = reverse (map reverse l.tails) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, reverse_map]
+  simp [reverse_involutive.comp_self, ← map_reverse]
 #align list.inits_reverse List.inits_reverse
 
 theorem tails_reverse (l : List α) : tails (reverse l) = reverse (map reverse l.inits) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, reverse_map]
+  simp [reverse_involutive.comp_self, ← map_reverse]
 #align list.tails_reverse List.tails_reverse
 
 theorem map_reverse_inits (l : List α) : map reverse l.inits = (reverse <| tails <| reverse l) := by
   rw [inits_eq_tails l]
-  simp [reverse_involutive.comp_self, reverse_map]
+  simp [reverse_involutive.comp_self, ← map_reverse]
 #align list.map_reverse_inits List.map_reverse_inits
 
 theorem map_reverse_tails (l : List α) : map reverse l.tails = (reverse <| inits <| reverse l) := by
   rw [tails_eq_inits l]
-  simp [reverse_involutive.comp_self, reverse_map]
+  simp [reverse_involutive.comp_self, ← map_reverse]
 #align list.map_reverse_tails List.map_reverse_tails
 
 @[simp]
@@ -459,34 +459,42 @@ theorem length_inits (l : List α) : length (inits l) = length l + 1 := by simp 
 #align list.length_inits List.length_inits
 
 @[simp]
-theorem get_tails (l : List α) (n : Fin (length (tails l))) : (tails l).get n = l.drop n := by
-  induction l with
+theorem getElem_tails (l : List α) (n : Nat) (h : n < (tails l).length) :
+    (tails l)[n] = l.drop n := by
+  induction l generalizing n with
   | nil => simp
   | cons a l ihl =>
-    cases n using Fin.cases with
+    cases n with
     | zero => simp
     | succ n => simp [ihl]
+
+theorem get_tails (l : List α) (n : Fin (length (tails l))) : (tails l).get n = l.drop n := by
+  simp
 #align list.nth_le_tails List.get_tails
 
 @[simp]
-theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n = l.take n := by
-  induction l with
+theorem getElem_inits (l : List α) (n : Nat) (h : n < length (inits l)) :
+    (inits l)[n] = l.take n := by
+  induction l generalizing n with
   | nil => simp
   | cons a l ihl =>
-    cases n using Fin.cases with
+    cases n with
     | zero => simp
     | succ n => simp [ihl]
+
+theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n = l.take n := by
+  simp
 #align list.nth_le_inits List.get_inits
 
 section deprecated
 set_option linter.deprecated false
 
-@[simp, deprecated get_tails] -- 2024-04-16
+@[simp, deprecated get_tails (since := "2024-04-16")]
 theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
     nthLe (tails l) n hn = l.drop n :=
   get_tails l _
 
-@[simp, deprecated get_inits] -- 2024-04-16
+@[simp, deprecated get_inits (since := "2024-04-16")]
 theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
     nthLe (inits l) n hn = l.take n :=
   get_inits l _
@@ -501,9 +509,6 @@ section Insert
 
 variable [DecidableEq α]
 
-@[simp]
-theorem insert_nil (a : α) : insert a nil = [a] :=
-  rfl
 #align list.insert_nil List.insert_nil
 
 theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l else a :: l := by
@@ -549,10 +554,14 @@ theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
 theorem IsPrefix.ne_nil {x y : List α} (h : x <+: y) (hx : x ≠ []) : y ≠ [] := by
   rintro rfl; exact hx <| List.prefix_nil.mp h
 
+theorem IsPrefix.getElem {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
+    x[n] = y[n]'(hn.trans_le h.length_le) := by
+  obtain ⟨_, rfl⟩ := h
+  exact (List.getElem_append n hn).symm
+
 theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
     x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
-  obtain ⟨_, rfl⟩ := h
-  exact (List.get_append n hn).symm
+  simp only [get_eq_getElem, IsPrefix.getElem h hn]
 
 theorem IsPrefix.head_eq {x y : List α} (h : x <+: y) (hx : x ≠ []) :
     x.head hx = y.head (h.ne_nil hx) := by

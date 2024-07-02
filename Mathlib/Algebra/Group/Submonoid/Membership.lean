@@ -419,7 +419,7 @@ theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → 
     p x h := by
   simp_rw [closure_eq_mrange] at h
   obtain ⟨l, rfl⟩ := h
-  induction' l using FreeMonoid.recOn with x y ih
+  induction' l with x y ih
   · exact one
   · simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)

@@ -141,7 +141,6 @@ lemma thickening_compl_thickening_self_subset_compl (δ : ℝ) (E : Set α) :
 
 variable {X : Type u} [PseudoMetricSpace X]
 
--- Porting note (#10756): new lemma
 theorem mem_thickening_iff_infDist_lt {E : Set X} {x : X} (h : E.Nonempty) :
     x ∈ thickening δ E ↔ infDist x E < δ :=
   lt_ofReal_iff_toReal_lt (infEdist_ne_top h)

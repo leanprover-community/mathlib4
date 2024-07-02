@@ -21,7 +21,7 @@ in the applications it would usually be more convenient to use individual
 lemmas expressing the exactness at a particular object.
 
 This implementation is a refactor of `exact_seq` with appeared in the
-Liquid Tensor Experiement as a property of lists in `Arrow C`.
+Liquid Tensor Experiment as a property of lists in `Arrow C`.
 
 -/
 
@@ -179,11 +179,11 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
     S.IsComplex :=
   S.isComplex₂_iff.2 w
 
--- Adaptation note: nightly-2024-03-11
--- We turn off simprocs here.
--- Ideally someone will investigate whether `simp` lemmas can be rearranged
--- so that this works without the `set_option`,
--- *or* come up with a proposal regarding finer control of disabling simprocs.
+#adaptation_note /-- nightly-2024-03-11
+We turn off simprocs here.
+Ideally someone will investigate whether `simp` lemmas can be rearranged
+so that this works without the `set_option`,
+*or* come up with a proposal regarding finer control of disabling simprocs. -/
 set_option simprocs false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
