@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
 import Mathlib.Condensed.Light.Module
 /-!
@@ -17,7 +18,7 @@ of light profinite sets.
 
 universe v u w u' v'
 
-open CategoryTheory Sheaf Limits ConcreteCategory
+open CategoryTheory Sheaf Limits ConcreteCategory GrothendieckTopology
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
@@ -46,7 +47,7 @@ lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
     ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
-  rw [← isLocallySurjective_iff_epi_of_site_essentiallySmall]
+  rw [← isLocallySurjective_iff_epi']
   exact LightCondensed.isLocallySurjective_iff_locallySurjective_on_lightProfinite _ f
 
 end LightCondSet
@@ -59,7 +60,7 @@ lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
     ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
-  rw [← isLocallySurjective_iff_epi_of_site_essentiallySmall]
+  rw [← isLocallySurjective_iff_epi']
   exact LightCondensed.isLocallySurjective_iff_locallySurjective_on_lightProfinite _ f
 
 end LightCondMod
