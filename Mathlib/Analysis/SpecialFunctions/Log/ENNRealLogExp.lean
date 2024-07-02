@@ -246,4 +246,3 @@ instance : PolishSpace EReal := by
   · convert EMetric.instIsCountablyGeneratedUniformity (α := EReal)
     sorry
   · infer_instance
-#lint
