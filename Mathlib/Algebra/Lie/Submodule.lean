@@ -681,7 +681,8 @@ theorem incl_eq_val : (N.incl : N → M) = Subtype.val :=
 
 theorem injective_incl : Function.Injective N.incl := Subtype.coe_injective
 
-variable {N N'} (h : N ≤ N')
+variable {N N'}
+variable (h : N ≤ N')
 
 /-- Given two nested Lie submodules `N ⊆ N'`,
 the inclusion `N ↪ N'` is a morphism of Lie modules. -/

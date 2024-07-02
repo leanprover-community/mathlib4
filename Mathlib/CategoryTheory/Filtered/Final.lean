@@ -182,7 +182,7 @@ theorem Functor.final_iff_of_isFiltered [IsFilteredOrEmpty C] :
   · intro d c s s'
     have : colimit.ι (F ⋙ coyoneda.obj (op d)) c s = colimit.ι (F ⋙ coyoneda.obj (op d)) c s' := by
       apply (Final.colimitCompCoyonedaIso F d).toEquiv.injective
-      exact Subsingleton.elim _ _
+      subsingleton
     obtain ⟨c', t₁, t₂, h⟩ := (Types.FilteredColimit.colimit_eq_iff.{v₁, v₁, v₁} _).mp this
     refine ⟨IsFiltered.coeq t₁ t₂, t₁ ≫ IsFiltered.coeqHom t₁ t₂, ?_⟩
     conv_rhs => rw [IsFiltered.coeq_condition t₁ t₂]
