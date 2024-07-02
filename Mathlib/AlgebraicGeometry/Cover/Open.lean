@@ -399,15 +399,19 @@ def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
 
 /-- If two global sections agree after restriction to each member of a finite open cover, then
 they agree globally. -/
-lemma OpenCover.ext_elem {X : Scheme.{u}} (f g : Γ(X, ⊤)) (𝒰 : X.OpenCover)
-    (h : ∀ i : 𝒰.J, (𝒰.map i).app ⊤ f = (𝒰.map i).app ⊤ g) : f = g := by
+lemma OpenCover.ext_elem {X : Scheme.{u}} {U : Opens X} (f g : Γ(X, U)) (𝒰 : X.OpenCover)
+    (h : ∀ i : 𝒰.J, (𝒰.map i).app U f = (𝒰.map i).app U g) : f = g := by
   fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf
-    (fun i ↦ Scheme.Hom.opensRange (𝒰.map (𝒰.f i))) _ (fun _ ↦ homOfLE le_top)
-  · rintro x -; simpa using ⟨_, 𝒰.covers x⟩
+    (fun i ↦ (𝒰.map (𝒰.f i)).opensRange ⊓ U) _ (fun _ ↦ homOfLE inf_le_right)
+  · intro x hx
+    simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Hom.opensRange_coe, Opens.coe_mk,
+      Set.mem_iUnion, Set.mem_inter_iff, Set.mem_range, SetLike.mem_coe, exists_and_right]
+    refine ⟨?_, hx⟩
+    simpa using ⟨_, 𝒰.covers x⟩
   · intro x;
     replace h := h (𝒰.f x)
     rw [← IsOpenImmersion.map_ΓIso_inv] at h
-    exact (IsOpenImmersion.ΓIso (𝒰.map (𝒰.f x))).commRingCatIsoToRingEquiv.symm.injective h
+    exact (IsOpenImmersion.ΓIso (𝒰.map (𝒰.f x)) U).commRingCatIsoToRingEquiv.symm.injective h
 
 /-- If the restriction of a global section to each member of an open cover is zero, then it is
 globally zero. -/

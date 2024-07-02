@@ -94,10 +94,28 @@ abbrev opensFunctor : Opens X ⥤ Opens Y :=
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
 
+lemma image_le_image_of_le {U V : Opens X} (e : U ≤ V) : f ''ᵁ U ≤ f ''ᵁ V := by
+  rintro a ⟨u, hu, rfl⟩
+  exact Set.mem_image_of_mem (⇑f.val.base) (e hu)
+
+@[simp]
+lemma opensFunctor_map_homOfLE {U V : Opens X} (e : U ≤ V) :
+    (Scheme.Hom.opensFunctor f).map (homOfLE e) = homOfLE (f.image_le_image_of_le e) :=
+  rfl
+
 @[simp]
 lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
   apply Opens.ext
   simp
+
+@[simp]
+lemma preimage_image_eq (U : Opens X) : f ⁻¹ᵁ f ''ᵁ U = U := by
+  apply Opens.ext
+  simp [Set.preimage_image_eq _ f.openEmbedding.inj]
+
+lemma image_preimage_eq_opensRange_inter (U : Opens Y) : f ''ᵁ f ⁻¹ᵁ U = f.opensRange ⊓ U := by
+  apply Opens.ext
+  simp [Set.image_preimage_eq_range_inter]
 
 /-- The isomorphism `Γ(X, U) ⟶ Γ(Y, f(U))` induced by an open immersion `f : X ⟶ Y`. -/
 def invApp (U) : Γ(X, U) ⟶ Γ(Y, f ''ᵁ U) :=
@@ -135,6 +153,17 @@ theorem invApp_app (U) :
     f.invApp U ≫ f.app (f ''ᵁ U) = X.presheaf.map
       (eqToHom (Opens.ext <| by exact Set.preimage_image_eq U.1 H.base_open.inj)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
+
+@[reassoc (attr := simp), elementwise]
+lemma appLE_invApp {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Opens Y}
+    {V : Opens X} (e : V ≤ f ⁻¹ᵁ U) :
+    Scheme.Hom.appLE f U V e ≫ Scheme.Hom.invApp f V =
+        Y.presheaf.map (homOfLE <| (f.image_le_image_of_le e).trans
+          (f.image_preimage_eq_opensRange_inter U ▸ inf_le_right)).op := by
+  simp only [Scheme.Hom.appLE, Category.assoc, Scheme.Hom.invApp_naturality, Functor.op_obj,
+    Functor.op_map, Quiver.Hom.unop_op, Scheme.Hom.opensFunctor_map_homOfLE,
+    Scheme.Hom.app_invApp_assoc, Opens.carrier_eq_coe]
+  erw [← Functor.map_comp, ← op_comp, homOfLE_comp]
 
 end Scheme.Hom
 
@@ -555,22 +584,29 @@ theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersi
 /-- If `f` is an open immersion `X ⟶ Y`, the global sections of `X`
 are naturally isomorphic to the sections of `Y` over the image of `f`. -/
 noncomputable
-def ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
-    Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
-  asIso (Scheme.Hom.invApp f ⊤) ≪≫
-    Y.presheaf.mapIso (eqToIso <| f.image_top_eq_opensRange.symm).op
+def ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
+    Γ(X, f⁻¹ᵁ U) ≅ Γ(Y, f.opensRange ⊓ U) :=
+  asIso (Scheme.Hom.invApp f <| f⁻¹ᵁ U) ≪≫
+    Y.presheaf.mapIso (eqToIso <| (f.image_preimage_eq_opensRange_inter U).symm).op
+
+@[simp]
+lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
+    (ΓIso f U).inv = f.appLE (f.opensRange ⊓ U) (f⁻¹ᵁ U)
+      (by rw [← f.image_preimage_eq_opensRange_inter, f.preimage_image_eq]) := by
+  simp only [ΓIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op,
+    asIso_inv, IsIso.comp_inv_eq, Scheme.Hom.appLE_invApp]
+  rfl
 
 @[reassoc, elementwise]
-lemma map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
-    Y.presheaf.map (homOfLE le_top).op ≫ (IsOpenImmersion.ΓIso f).inv = f.app ⊤ := by
-  simp [ΓIso, Scheme.Hom.inv_invApp, ← Functor.map_comp_assoc, ← Functor.map_comp]
-  simp [eqToHom_map]
-
-@[reassoc, elementwise]
-lemma ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
-    f.app ⊤ ≫ (IsOpenImmersion.ΓIso f).hom = Y.presheaf.map (homOfLE le_top).op := by
-  rw [← map_ΓIso_inv]
+lemma map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
+    Y.presheaf.map (homOfLE inf_le_right).op ≫ (ΓIso f U).inv = f.app U := by
   simp
+
+@[reassoc, elementwise]
+lemma ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Opens Y) :
+    f.app U ≫ (ΓIso f U).hom = Y.presheaf.map (homOfLE inf_le_right).op := by
+  rw [← map_ΓIso_inv]
+  simp [-ΓIso_inv]
 
 end IsOpenImmersion
 
@@ -595,7 +631,6 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
 #align algebraic_geometry.Scheme.image_basic_open AlgebraicGeometry.Scheme.image_basicOpen
-
 
 end Scheme
 

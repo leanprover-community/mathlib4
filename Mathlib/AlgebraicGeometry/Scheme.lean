@@ -109,6 +109,11 @@ def appLE (U : Opens Y) (V : Opens X) (e : V ≤ f ⁻¹ᵁ U) : Γ(Y, U) ⟶ Γ
   f.app U ≫ X.presheaf.map (homOfLE e).op
 #align algebraic_geometry.Scheme.hom.app_le AlgebraicGeometry.Scheme.Hom.appLE
 
+@[simp]
+lemma Scheme.Hom.appLE_eq_app {U : Opens Y} :
+    Scheme.Hom.appLE f U (f ⁻¹ᵁ U) le_rfl = Scheme.Hom.app f U := by
+  simp [Scheme.Hom.appLE]
+
 @[reassoc (attr := simp)]
 lemma appLE_map (e : V ≤ f ⁻¹ᵁ U) (i : op V ⟶ op V') :
     f.appLE U V e ≫ X.presheaf.map i = f.appLE U V' (i.unop.le.trans e) := by

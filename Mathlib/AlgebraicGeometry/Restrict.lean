@@ -44,7 +44,6 @@ notation3:60 X:60 " ∣_ᵤ " U:61 => Scheme.restrict X (U : Opens X).openEmbedd
 /-- The restriction of a scheme to an open subset. -/
 abbrev Scheme.ιOpens {X : Scheme.{u}} (U : Opens X) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
 
-@[simp]
 lemma Scheme.ιOpens_image_top {X : Scheme.{u}} (U : Opens X) : (Scheme.ιOpens U) ''ᵁ ⊤ = U :=
   U.openEmbedding_obj_top
 
