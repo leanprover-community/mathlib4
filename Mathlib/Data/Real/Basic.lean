@@ -639,3 +639,8 @@ end Real
   `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
 def IsNonarchimedean {A : Type _} [Add A] (f : A → ℝ) : Prop :=
   ∀ r s, f (r + s) ≤ max (f r) (f s)
+
+/-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
+`f (r ^ n) = (f r) ^ n`. -/
+def IsPowMul {R : Type _} [Semiring R] (f : R → ℝ) :=
+  ∀ (a : R) {n : ℕ} (_ : 1 ≤ n), f (a ^ n) = f a ^ n
