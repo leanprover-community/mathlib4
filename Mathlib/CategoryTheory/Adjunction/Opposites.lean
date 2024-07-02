@@ -94,10 +94,9 @@ def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.
     homEquiv_naturality_right := by
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_counit, homEquiv_counit]
+      show ((h.homEquiv Y.unop X'.unop).symm (g.unop ≫ f.unop)).op =
+        ((h.homEquiv X.unop X'.unop).symm f.unop).op ≫ (G.map g.unop).op
+      rw [homEquiv_counit, homEquiv_counit]
       simp }
 #align category_theory.adjunction.op_adjoint_op_of_adjoint CategoryTheory.Adjunction.opAdjointOpOfAdjoint
 
