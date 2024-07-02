@@ -20,7 +20,11 @@ section
 
 open scoped Classical
 
-instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
+-- TODO(timotree3): lower the priority on this instance?
+-- This instance applies to every synthesis problem of the form `Small ↥s` for some set `s`,
+-- but we have lots of instances of `Small` for specific set constructions.
+instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) :
+    Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
 #align small_subtype small_subtype
 
