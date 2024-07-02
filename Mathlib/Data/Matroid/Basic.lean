@@ -160,8 +160,6 @@ There are a few design decisions worth discussing.
   Proc. Amer. Math. Soc. 144 (2016), 459-471]
 -/
 
-set_option autoImplicit true
-
 open Set
 
 /-- A predicate `P` on sets satisfies the **exchange property** if,
@@ -258,14 +256,14 @@ theorem rkPos_iff_empty_not_base : M.RkPos ↔ ¬M.Base ∅ :=
 section exchange
 namespace ExchangeProperty
 
-variable {Base : Set α → Prop} (exch : ExchangeProperty Base)
+variable {Base : Set α → Prop} (exch : ExchangeProperty Base) {B B' : Set α}
 
 /-- A family of sets with the exchange property is an antichain. -/
 theorem antichain (hB : Base B) (hB' : Base B') (h : B ⊆ B') : B = B' :=
   h.antisymm (fun x hx ↦ by_contra
     (fun hxB ↦ let ⟨_, hy, _⟩ := exch B' B hB' hB x ⟨hx, hxB⟩; hy.2 <| h hy.1))
 
-theorem encard_diff_le_aux (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
+theorem encard_diff_le_aux {B₁ B₂ : Set α} (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
     (B₁ \ B₂).encard ≤ (B₂ \ B₁).encard := by
   obtain (he | hinf | ⟨e, he, hcard⟩) :=
     (B₂ \ B₁).eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt
@@ -284,6 +282,8 @@ theorem encard_diff_le_aux (exch : ExchangeProperty Base) (hB₁ : Base B₁) (h
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
   exact add_le_add_right hencard 1
 termination_by (B₂ \ B₁).encard
+
+variable {B₁ B₂ : Set α}
 
 /-- For any two sets `B₁`, `B₂` in a family with the exchange property, the differences `B₁ \ B₂`
 and `B₂ \ B₁` have the same `ℕ∞`-cardinality. -/
@@ -312,6 +312,7 @@ macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
 /- We add a number of trivial lemmas (deliberately specialized to statements in terms of the
   ground set of a matroid) to the ruleset `Matroid` for `aesop`. -/
 
+set_option autoImplicit true
 @[aesop unsafe 5% (rule_sets := [Matroid])]
 private theorem inter_right_subset_ground (hX : X ⊆ M.E) :
     X ∩ Y ⊆ M.E := inter_subset_left.trans hX
@@ -352,6 +353,9 @@ private theorem ground_subset_ground {M : Matroid α} : M.E ⊆ M.E :=
 attribute [aesop safe (rule_sets := [Matroid])] empty_subset union_subset iUnion_subset
 
 end aesop
+
+set_option autoImplicit true
+
 section Base
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
