@@ -53,23 +53,22 @@ git checkout master scripts/count-trans-deps.py
 getTransImports - > transImports2.txt
 git checkout "${currCommit}"
 
-printf '\n\n<details><summary>All import changes</summary>%s</details>\n' "$(
+printf '\n\n<details><summary>All import changes</summary>\n\n%s</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
   (awk -F, '{ diff[$1]+=$2 } END {
+    con=0
     for(fil in diff) {
       if(!(diff[fil] == 0)) {
+        con++
         nums[diff[fil]]++
         reds[diff[fil]]=reds[diff[fil]]" `"fil"`"
       }
     }
-    for(x in reds) {
-      if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
-      else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
+    if (200 <= con) { printf("Too many changes (%s)!\n", con) } else {
+      for(x in reds) {
+        if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
+        else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
+      }
     }
-  #  for(fil in diff) {
-  #    if (!(diff[fil] == 0)) {
-  #      printf("|%s|%s|\n", fil, diff[fil])
-  #    }
-  #  }
   }' transImports*.txt | sort -t'|' -n -k3
   ))"
