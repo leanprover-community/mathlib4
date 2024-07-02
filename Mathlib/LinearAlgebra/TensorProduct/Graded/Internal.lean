@@ -93,11 +93,9 @@ theorem of_one : of R 𝒜 ℬ 1 = 1 := rfl
 @[simp]
 theorem of_symm_one : (of R 𝒜 ℬ).symm 1 = 1 := rfl
 
--- for dsimp
 @[simp]
 theorem of_symm_of (x : A ⊗[R] B) : (of R 𝒜 ℬ).symm (of R 𝒜 ℬ x) = x := rfl
 
--- for dsimp
 @[simp]
 theorem symm_of_of (x : 𝒜 ᵍ⊗[R] ℬ) : of R 𝒜 ℬ ((of R 𝒜 ℬ).symm x) = x := rfl
 
@@ -307,12 +305,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] A ⊗[R] B))
     (by
       dsimp [Algebra.TensorProduct.one_def]
-      #adaptation_note /-- nightly-2024-03-11.
-      No longer works with dsimp, even though it is a rfl lemma.
-      This may be a Lean bug.
-      It would be great if someone could try to minimize this to an no imports example. -/
-      rw [Algebra.TensorProduct.one_def]
-      dsimp; simp only [_root_.map_one, mul_one])
+      simp only [_root_.map_one, mul_one])
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3

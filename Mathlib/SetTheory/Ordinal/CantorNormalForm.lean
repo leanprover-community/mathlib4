@@ -65,13 +65,13 @@ theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o �
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec_pos Ordinal.CNFRec_pos
 
--- Porting note: unknown attribute @[pp_nodot]
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
 
 We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 
 `CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]` -/
+@[pp_nodot]
 def CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
   CNFRec b [] (fun o _ho IH ↦ (log b o, o / b ^ log b o)::IH) o
 set_option linter.uppercaseLean3 false in

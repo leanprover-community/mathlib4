@@ -107,7 +107,7 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
   refine int_prod_range_pos (by decide) fun hm => ?_
   rw [← Finset.coe_Ico] at hm
   norm_cast at hm
-  fin_cases hm <;> simp_all -- Porting note: `simp_all` was `cc`
+  fin_cases hm <;> simp_all
 #align strict_convex_on_zpow strictConvexOn_zpow
 
 section SqrtMulLog
