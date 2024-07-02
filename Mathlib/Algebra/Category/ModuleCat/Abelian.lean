@@ -86,7 +86,7 @@ section ReflectsLimits
 
 -- Porting note: added to make the following definitions work
 instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
-  ModuleCat.hasLimitsOfSize.{v, max v w, _, v}
+  ModuleCat.hasLimitsOfSize.{v, v, max v w}
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
