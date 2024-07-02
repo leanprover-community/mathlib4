@@ -11,9 +11,10 @@ import Mathlib.Mathport.Rename
 These are ported from the Lean 3 standard library file `init/data/quot.lean`.
 -/
 
-set_option autoImplicit true
+universe u
 
 section
+
 variable {α : Type u}
 variable (r : α → α → Prop)
 

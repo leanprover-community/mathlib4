@@ -8,8 +8,6 @@ import Mathlib.Mathport.Rename
 
 /-! ## Classes for `Zero` and `One` -/
 
-set_option autoImplicit true
-
 class Zero.{u} (α : Type u) where
   zero : α
 #align has_zero Zero
@@ -20,6 +18,7 @@ instance (priority := 300) Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) w
 instance (priority := 200) Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
   zero := 0
 
+universe u
 
 @[to_additive]
 class One (α : Type u) where

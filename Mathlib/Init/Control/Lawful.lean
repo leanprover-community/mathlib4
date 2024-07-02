@@ -11,8 +11,6 @@ import Mathlib.Tactic.Basic
 
 /-! ## Functor Laws, applicative laws, and monad Laws -/
 
-set_option autoImplicit true
-
 universe u v
 
 #align is_lawful_functor LawfulFunctor
@@ -140,7 +138,7 @@ section
 
 variable {ρ : Type u}
 variable {m : Type u → Type v}
-variable {α : Type u}
+variable {α σ : Type u}
 
 /-
 Porting note:
@@ -256,6 +254,7 @@ These are not in Batteries because Batteries does not want to deal with the chur
 refactor.
 -/
 
+variable {ε σ : Type}
 instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
 instance : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
 instance : LawfulMonad IO := inferInstance
