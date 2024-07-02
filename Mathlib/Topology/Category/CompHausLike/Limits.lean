@@ -324,7 +324,7 @@ theorem hasPullbacksOfInclusions
       apply hP'
       exact Sigma.openEmbedding_ι _ _ }
 
-/-- The functor to `TopCat` creates pullbacks of inclusions if they exist. -/
+/-- The functor to `TopCat` preserves pullbacks of inclusions if they exist. -/
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
     PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
   { preservesPullbackInl := by
