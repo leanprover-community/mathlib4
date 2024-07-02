@@ -141,3 +141,5 @@ theorem comp_add (f : X ⟶ Y) (g h : Y ⟶ Z) : f ≫ (g + h) = f ≫ g + f ≫
 end
 
 end CategoryTheory.SemiadditiveOfBinaryBiproducts
+
+end

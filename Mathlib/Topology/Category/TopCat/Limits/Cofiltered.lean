@@ -124,3 +124,5 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
 end CofilteredLimit
 
 end TopCat
+
+end

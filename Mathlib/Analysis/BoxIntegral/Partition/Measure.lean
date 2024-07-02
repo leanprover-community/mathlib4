@@ -155,3 +155,5 @@ theorem volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I :
 end BoxAdditiveMap
 
 end BoxIntegral
+
+end

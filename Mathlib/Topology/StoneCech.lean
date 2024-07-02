@@ -392,3 +392,5 @@ theorem stoneCech_hom_ext {g₁ g₂ : StoneCech α → β} (h₁ : Continuous g
 end Extension
 
 end StoneCech
+
+end

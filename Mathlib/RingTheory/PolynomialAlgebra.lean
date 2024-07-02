@@ -313,3 +313,5 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   rw [← matPolyEquiv_coeff_apply, hk]
   rfl
 #align support_subset_support_mat_poly_equiv support_subset_support_matPolyEquiv
+
+end

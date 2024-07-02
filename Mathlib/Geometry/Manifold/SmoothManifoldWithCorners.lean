@@ -1493,3 +1493,5 @@ lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
   exact ChartedSpace.locallyCompactSpace H M
 
 end Topology
+
+end

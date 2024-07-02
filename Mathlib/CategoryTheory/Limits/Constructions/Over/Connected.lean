@@ -93,3 +93,5 @@ instance has_connected_limits {B : C} [IsConnected J] [HasLimitsOfShape J C] :
 #align category_theory.over.has_connected_limits CategoryTheory.Over.has_connected_limits
 
 end CategoryTheory.Over
+
+end

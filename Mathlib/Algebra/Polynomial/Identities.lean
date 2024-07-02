@@ -113,3 +113,5 @@ def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x
 end Identities
 
 end Polynomial
+
+end

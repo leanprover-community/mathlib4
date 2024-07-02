@@ -617,3 +617,5 @@ theorem Gamma_mul_Gamma_add_half (s : ℝ) :
 end Real
 
 end Doubling
+
+end

@@ -62,3 +62,5 @@ to the category itself, via the forgetful functor.
   inverse := cartesianComon_ C
   unitIso := NatIso.ofComponents (fun A => iso_cartesianComon_ A)
   counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+
+end

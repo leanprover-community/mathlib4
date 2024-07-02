@@ -997,3 +997,5 @@ theorem norm_map_le (hf : ψ.comp f₁ = f₂.comp φ) (hg : ψ.comp g₁ = g₂
 end Equalizer
 
 end NormedAddGroupHom
+
+end

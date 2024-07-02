@@ -88,3 +88,5 @@ abbrev fromPath {X : TopCat} {x : X} (p : Path.Homotopic.Quotient x x) : Fundame
 #align fundamental_group.from_path FundamentalGroup.fromPath
 
 end FundamentalGroup
+
+end

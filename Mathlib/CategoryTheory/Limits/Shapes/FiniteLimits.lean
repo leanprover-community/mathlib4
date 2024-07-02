@@ -285,3 +285,5 @@ example [HasFiniteWidePullbacks C] : HasPullbacks C := by infer_instance
 example [HasFiniteWidePushouts C] : HasPushouts C := by infer_instance
 
 end CategoryTheory.Limits
+
+end

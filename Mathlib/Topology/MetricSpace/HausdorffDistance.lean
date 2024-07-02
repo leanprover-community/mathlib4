@@ -905,3 +905,5 @@ theorem _root_.IsClosed.hausdorffDist_zero_iff_eq (hs : IsClosed s) (ht : IsClos
 end
 
 end Metric
+
+end

@@ -217,3 +217,5 @@ end FiniteColimits
 end Functor
 
 end CategoryTheory
+
+end

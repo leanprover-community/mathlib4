@@ -390,3 +390,5 @@ theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInject
 end Equivalence
 
 end CategoryTheory
+
+end

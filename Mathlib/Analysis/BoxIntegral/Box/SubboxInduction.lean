@@ -173,3 +173,5 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
 end Box
 
 end BoxIntegral
+
+end

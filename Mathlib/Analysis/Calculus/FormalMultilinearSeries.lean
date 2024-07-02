@@ -415,3 +415,5 @@ attribute [simp] fpowerSeries
 end ContinuousLinearMap
 
 end Linear
+
+end

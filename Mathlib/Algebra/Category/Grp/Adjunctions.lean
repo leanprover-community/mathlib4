@@ -220,3 +220,5 @@ def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.un
 
 instance : CommMonCat.units.{u}.IsRightAdjoint :=
   ⟨_, ⟨CommGrp.forget₂CommMonAdj⟩⟩
+
+end

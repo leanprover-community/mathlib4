@@ -269,3 +269,5 @@ instance IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set
 #align ideal.is_maximal.is_closed Ideal.IsMaximal.isClosed
 
 end Ideal
+
+end

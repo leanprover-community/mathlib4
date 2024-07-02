@@ -180,3 +180,5 @@ theorem cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F)
 #align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts
 
 end CategoryTheory
+
+end

@@ -93,3 +93,5 @@ instance SmoothVectorBundle.continuousLinearMap :
     SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).smoothVectorBundle IB
 #align smooth_vector_bundle.continuous_linear_map SmoothVectorBundle.continuousLinearMap
+
+end

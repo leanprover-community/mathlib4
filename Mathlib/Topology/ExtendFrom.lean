@@ -88,3 +88,5 @@ theorem continuous_extendFrom [RegularSpace Y] {f : X → Y} {A : Set X} (hA : D
   rw [continuous_iff_continuousOn_univ]
   exact continuousOn_extendFrom (fun x _ ↦ hA x) (by simpa using hf)
 #align continuous_extend_from continuous_extendFrom
+
+end

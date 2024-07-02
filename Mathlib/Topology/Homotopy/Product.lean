@@ -256,3 +256,5 @@ theorem prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂,
 end Prod
 
 end Path.Homotopic
+
+end

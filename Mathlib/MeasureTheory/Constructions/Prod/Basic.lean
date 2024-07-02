@@ -1138,3 +1138,5 @@ theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : 
 end Measure
 
 end MeasureTheory
+
+end

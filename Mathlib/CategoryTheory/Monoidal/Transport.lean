@@ -224,3 +224,5 @@ def transportedMonoidalCounitIso (e : C ≌ D) :
 #align category_theory.monoidal.transported_monoidal_counit_iso CategoryTheory.Monoidal.transportedMonoidalCounitIso
 
 end CategoryTheory.Monoidal
+
+end

@@ -441,3 +441,5 @@ def freeRingPemptyEquivInt : FreeRing PEmpty.{u + 1} ≃+* ℤ :=
 def freeRingPunitEquivPolynomialInt : FreeRing PUnit.{u + 1} ≃+* ℤ[X] :=
   RingEquiv.trans (subsingletonEquivFreeCommRing _) freeCommRingPunitEquivPolynomialInt
 #align free_ring_punit_equiv_polynomial_int freeRingPunitEquivPolynomialInt
+
+end

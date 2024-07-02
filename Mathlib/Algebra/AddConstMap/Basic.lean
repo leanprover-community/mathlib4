@@ -457,3 +457,5 @@ def mkFract : (Ico (0 : R) 1 → G) ≃ (R →+c[1, a] G) where
   right_inv f := by ext x; simp [map_fract]
 
 end FloorRing
+
+end AddConstMap

@@ -1070,3 +1070,5 @@ theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColim
 end Functor
 
 end CategoryTheory
+
+end

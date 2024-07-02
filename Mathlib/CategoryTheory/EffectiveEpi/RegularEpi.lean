@@ -59,3 +59,5 @@ noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPull
       | zero => simp [this]
       | one => simp [this]
     uniq := fun _ _ h ↦ EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one) }
+
+end CategoryTheory

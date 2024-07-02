@@ -2173,3 +2173,5 @@ theorem ContDiff.restrict_scalars (h : ContDiff 𝕜' n f) : ContDiff 𝕜 n f :
 #align cont_diff.restrict_scalars ContDiff.restrict_scalars
 
 end RestrictScalars
+
+end

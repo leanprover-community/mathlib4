@@ -543,3 +543,5 @@ theorem lineDeriv_neg : lineDeriv 𝕜 f x (-v) = - lineDeriv 𝕜 f x v := by
   rw [← neg_one_smul (R := 𝕜) v, lineDeriv_smul, neg_one_smul]
 
 end SMul
+
+end

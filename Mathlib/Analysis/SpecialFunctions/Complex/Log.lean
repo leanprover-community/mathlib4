@@ -287,3 +287,5 @@ theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
 #align continuous.clog Continuous.clog
 
 end LogDeriv
+
+end

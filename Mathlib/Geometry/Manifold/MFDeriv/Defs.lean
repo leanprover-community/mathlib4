@@ -344,3 +344,5 @@ def tangentMap (f : M → M') : TangentBundle I M → TangentBundle I' M' := fun
 #align tangent_map tangentMap
 
 end DerivativesDefinitions
+
+end

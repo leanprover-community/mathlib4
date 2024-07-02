@@ -660,3 +660,5 @@ lemma Isometry.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [Pse
     [PseudoEMetricSpace γ] {f : α → β} {g : β → γ} (K : ℝ≥0) (h : Isometry g) :
     LipschitzWith K (g ∘ f) ↔ LipschitzWith K f := by
   simp [LipschitzWith, h.edist_eq]
+
+end

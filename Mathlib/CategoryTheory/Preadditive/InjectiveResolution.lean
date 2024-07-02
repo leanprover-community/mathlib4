@@ -154,3 +154,5 @@ set_option linter.uppercaseLean3 false in
 end InjectiveResolution
 
 end CategoryTheory
+
+end

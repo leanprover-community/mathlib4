@@ -1704,3 +1704,5 @@ theorem leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
 end NoZeroDivisors
 
 end Polynomial
+
+end

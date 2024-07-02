@@ -2639,3 +2639,5 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
 #align well_founded.rank_strict_anti WellFounded.rank_strictAnti
 
 end WellFounded
+
+end

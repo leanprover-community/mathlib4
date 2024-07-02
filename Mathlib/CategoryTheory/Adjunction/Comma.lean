@@ -175,3 +175,5 @@ theorem isLeftAdjoint_iff_hasTerminal_costructuredArrow {F : C ⥤ D} :
 #align category_theory.nonempty_is_left_adjoint_iff_has_terminal_costructured_arrow CategoryTheory.isLeftAdjoint_iff_hasTerminal_costructuredArrow
 
 end CategoryTheory
+
+end

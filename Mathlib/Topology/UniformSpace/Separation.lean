@@ -347,3 +347,5 @@ end SeparationQuotient
 
 #align uniform_space.separation_prod inseparable_prod
 #align uniform_space.separated.prod Prod.instT0Space
+
+end

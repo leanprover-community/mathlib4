@@ -678,3 +678,5 @@ instance : Preadditive (Mat R) where
 end Mat
 
 end CategoryTheory
+
+end

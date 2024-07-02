@@ -238,3 +238,5 @@ theorem join_dirac (μ : Measure α) : join (dirac μ) = μ :=
 end Measure
 
 end MeasureTheory
+
+end

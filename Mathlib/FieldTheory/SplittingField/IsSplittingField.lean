@@ -163,3 +163,5 @@ theorem IntermediateField.splits_of_splits (h : p.Splits (algebraMap K L))
 theorem IsIntegral.mem_intermediateField_of_minpoly_splits {x : L} (int : IsIntegral K x)
     {F : IntermediateField K L} (h : Splits (algebraMap K F) (minpoly K x)) : x ∈ F := by
   rw [← F.fieldRange_val]; exact int.mem_range_algebraMap_of_minpoly_splits h
+
+end

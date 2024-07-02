@@ -172,3 +172,5 @@ instance [AddCommGroup α] [Small α] : AddCommGroup (Shrink α) :=
 @[to_additive existing]
 instance [CommGroup α] [Small α] : CommGroup (Shrink α) :=
   (equivShrink _).symm.commGroup
+
+end

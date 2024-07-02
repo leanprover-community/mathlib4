@@ -171,3 +171,5 @@ instance biconeFinCategory [FinCategory J] : FinCategory (Bicone J) where
 end SmallCategory
 
 end CategoryTheory
+
+end

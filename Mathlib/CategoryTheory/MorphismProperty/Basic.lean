@@ -398,3 +398,5 @@ lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y
 end NatTrans
 
 end CategoryTheory
+
+end

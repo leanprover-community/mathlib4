@@ -518,3 +518,5 @@ theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
 end Doubling
 
 end Real
+
+end

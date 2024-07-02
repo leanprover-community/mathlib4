@@ -155,3 +155,5 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
 #align matrix.aeval_self_charpoly Matrix.aeval_self_charpoly
 
 end Matrix
+
+end

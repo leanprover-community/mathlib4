@@ -128,3 +128,5 @@ def toNormedField : NormedField L :=
             lt_of_lt_of_le hab (min_le_right _ _)⟩ }
 
 end Valued
+
+end

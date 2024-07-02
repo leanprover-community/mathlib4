@@ -136,3 +136,5 @@ theorem Real.tsum_exp_neg_mul_int_sq {a : ℝ} (ha : 0 < a) :
 #align real.tsum_exp_neg_mul_int_sq Real.tsum_exp_neg_mul_int_sq
 
 end GaussianPoisson
+
+end

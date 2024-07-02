@@ -414,3 +414,5 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
 end Field
 
 end iff
+
+end

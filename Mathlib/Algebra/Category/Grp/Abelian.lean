@@ -78,3 +78,5 @@ instance {J : Type u} [SmallCategory J] [IsFiltered J] :
     exact colimit.w_apply G e₁ y
 
 end AddCommGrp
+
+end

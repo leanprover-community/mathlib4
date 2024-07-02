@@ -1447,3 +1447,5 @@ def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A w
 #align category_theory.over.coprod CategoryTheory.Over.coprod
 
 end CategoryTheory
+
+end

@@ -241,3 +241,5 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
 #align finite_dimensional.basis_unique.repr_eq_zero_iff FiniteDimensional.basisUnique_repr_eq_zero_iff
 
 end FiniteDimensional
+
+end

@@ -327,3 +327,5 @@ noncomputable def DenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ
 #align dense_inducing.extend_ring_hom DenseInducing.extendRingHom
 
 end UniformExtension
+
+end

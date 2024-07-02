@@ -339,3 +339,5 @@ theorem coe_tanPartialHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
 #align real.coe_tan_local_homeomorph_symm Real.coe_tanPartialHomeomorph_symm
 
 end Real
+
+end

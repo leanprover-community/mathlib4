@@ -461,3 +461,7 @@ theorem Λ_residue_zero :
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
+
+end WeakFEPair
+
+end

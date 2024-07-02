@@ -468,3 +468,5 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X} (hU : IsCom
 #align algebraic_geometry.is_localization_basic_open_of_qcqs AlgebraicGeometry.is_localization_basicOpen_of_qcqs
 
 end AlgebraicGeometry
+
+end

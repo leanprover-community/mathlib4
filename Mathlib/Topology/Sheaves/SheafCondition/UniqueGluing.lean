@@ -300,3 +300,5 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
 end Sheaf
 
 end TopCat
+
+end

@@ -1259,3 +1259,5 @@ theorem LipschitzWith.coordinate [PseudoMetricSpace α] {f : α → ℓ^∞(ι)}
   apply LipschitzOnWith.coordinate
 
 end Lipschitz
+
+end

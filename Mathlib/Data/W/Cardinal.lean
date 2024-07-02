@@ -99,3 +99,5 @@ theorem cardinal_mk_le_max_aleph0_of_finite [∀ a, Finite (β a)] : #(WType β)
   cardinal_mk_le_max_aleph0_of_finite'.trans_eq <| by rw [lift_id]
 
 end WType
+
+end

@@ -712,3 +712,5 @@ theorem frontier_cthickening_disjoint (A : Set α) :
 end Cthickening
 
 end Metric
+
+end

@@ -176,3 +176,5 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex_obj_d AlgebraicTopology.normalizedMooreComplex_objD
 
 end AlgebraicTopology
+
+end

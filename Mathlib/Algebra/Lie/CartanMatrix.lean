@@ -308,3 +308,5 @@ abbrev g₂ :=
 #align lie_algebra.g₂ LieAlgebra.g₂
 
 end LieAlgebra
+
+end

@@ -119,3 +119,5 @@ lemma Subalgebra.adjoin_rank_le {F : Type*} (E : Type*) {K : Type*}
   rw [← rank_toSubmodule, Module.Free.rank_eq_card_chooseBasisIndex F L,
     L.adjoin_eq_span_basis E (Module.Free.chooseBasis F L)]
   exact rank_span_le _ |>.trans Cardinal.mk_range_le
+
+end

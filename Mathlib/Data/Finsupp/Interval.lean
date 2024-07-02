@@ -154,3 +154,5 @@ theorem card_Iio : (Iio f).card = (∏ i ∈ f.support, (Iic (f i)).card) - 1 :=
 end CanonicallyOrdered
 
 end Finsupp
+
+end

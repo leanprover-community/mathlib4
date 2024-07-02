@@ -352,3 +352,5 @@ instance [Nontrivial R] : Nontrivial (𝕎 R) :=
   constantCoeff.domain_nontrivial
 
 end WittVector
+
+end

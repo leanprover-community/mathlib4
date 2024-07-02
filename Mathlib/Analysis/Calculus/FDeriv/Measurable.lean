@@ -1009,3 +1009,5 @@ theorem aestronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [Measur
   (stronglyMeasurable_deriv_with_param hf).aestronglyMeasurable
 
 end WithParam
+
+end

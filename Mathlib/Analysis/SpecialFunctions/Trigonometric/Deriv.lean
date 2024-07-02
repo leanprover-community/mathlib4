@@ -1216,3 +1216,5 @@ example (x : ℝ) (hx : 0 ≤ x) : 0 ≤ x.sinh := by positivity
 example (x : ℝ) (hx : x ≠ 0) : x.sinh ≠ 0 := by positivity
 
 end Mathlib.Meta.Positivity
+
+end

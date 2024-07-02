@@ -233,3 +233,5 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
         (hy <| Icc_subset_uIcc ⟨hxb, hby.le⟩)
   exact ⟨sol1, sol2⟩
 #align set.disjoint_ord_t5_nhd Set.disjoint_ordT5Nhd
+
+end Set

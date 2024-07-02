@@ -1325,3 +1325,5 @@ theorem IsOpen.isConnected_iff_isPathConnected [LocPathConnectedSpace X] {U : Se
   haveI := locPathConnected_of_isOpen U_op
   exact pathConnectedSpace_iff_connectedSpace
 #align is_open.is_connected_iff_is_path_connected IsOpen.isConnected_iff_isPathConnected
+
+end

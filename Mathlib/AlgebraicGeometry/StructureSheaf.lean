@@ -1232,3 +1232,5 @@ end Comap
 end StructureSheaf
 
 end AlgebraicGeometry
+
+end

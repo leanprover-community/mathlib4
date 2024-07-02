@@ -822,3 +822,5 @@ end map -- section
 end FiniteMeasure -- namespace
 
 end MeasureTheory -- namespace
+
+end

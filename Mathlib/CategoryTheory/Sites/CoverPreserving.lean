@@ -252,3 +252,5 @@ def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
 #align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
 end CategoryTheory
+
+end

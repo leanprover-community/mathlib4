@@ -552,3 +552,5 @@ lemma comap_cobounded : Filter.comap f (cobounded β) = cobounded α :=
 end PseudoMetricDilation
 
 end Dilation
+
+end

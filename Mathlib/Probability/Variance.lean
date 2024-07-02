@@ -370,3 +370,5 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
 #align probability_theory.indep_fun.variance_sum ProbabilityTheory.IndepFun.variance_sum
 
 end ProbabilityTheory
+
+end

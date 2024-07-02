@@ -494,3 +494,5 @@ end Ordinal
 -- #align tactic.positivity_opow Tactic.positivity_opow
 
 -- end Tactic
+
+end

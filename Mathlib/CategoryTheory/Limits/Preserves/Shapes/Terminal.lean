@@ -238,3 +238,5 @@ instance : IsIso (initialComparison G) := by
 end Initial
 
 end CategoryTheory.Limits
+
+end

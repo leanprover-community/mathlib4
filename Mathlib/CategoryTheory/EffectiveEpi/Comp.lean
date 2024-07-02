@@ -134,3 +134,5 @@ example : EffectiveEpiFamily Y (fun a ↦ i a ≫ π a) :=
   inferInstance
 
 end IsoComp
+
+end CategoryTheory

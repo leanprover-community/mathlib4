@@ -101,3 +101,5 @@ theorem isOpenImmersion_stableUnderBaseChange :
 #align algebraic_geometry.is_open_immersion_stable_under_base_change AlgebraicGeometry.isOpenImmersion_stableUnderBaseChange
 
 end AlgebraicGeometry
+
+end

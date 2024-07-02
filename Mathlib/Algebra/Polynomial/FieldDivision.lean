@@ -692,3 +692,5 @@ theorem Irreducible.natDegree_pos {F : Type*} [Field F] {f : F[X]} (h : Irreduci
   by_cases hx : x = 0
   · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
   exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))
+
+end

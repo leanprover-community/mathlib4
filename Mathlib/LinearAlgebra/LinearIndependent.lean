@@ -1557,3 +1557,5 @@ theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Fin
 #align exists_finite_card_le_of_finite_of_linear_independent_of_span exists_finite_card_le_of_finite_of_linearIndependent_of_span
 
 end Module
+
+end

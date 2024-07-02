@@ -111,3 +111,5 @@ instance : (pushforward A f).IsRightAdjoint := (pullbackPushforwardAdjunction A 
 end Sheaf
 
 end TopCat
+
+end

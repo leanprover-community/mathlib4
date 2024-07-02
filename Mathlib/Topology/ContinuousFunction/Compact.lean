@@ -548,3 +548,5 @@ instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
 end CstarRing
 
 end ContinuousMap
+
+end

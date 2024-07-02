@@ -674,3 +674,5 @@ theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G
 end
 
 end ContinuousMultilinearMap
+
+end

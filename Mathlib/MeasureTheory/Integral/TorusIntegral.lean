@@ -259,3 +259,5 @@ theorem torusIntegral_succ {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ
       ∮ x in C(c 0, R 0), ∯ y in T(c ∘ Fin.succ, R ∘ Fin.succ), f (Fin.cons x y) := by
   simpa using torusIntegral_succAbove hf 0
 #align torus_integral_succ torusIntegral_succ
+
+end

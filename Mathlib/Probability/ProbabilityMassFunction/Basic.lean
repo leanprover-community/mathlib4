@@ -405,3 +405,5 @@ theorem toPMF_eq_iff_toMeasure_eq (μ : Measure α) [IsProbabilityMeasure μ] :
 #align pmf.to_pmf_eq_iff_to_measure_eq PMF.toPMF_eq_iff_toMeasure_eq
 
 end PMF
+
+end

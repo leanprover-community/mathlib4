@@ -330,3 +330,5 @@ instance [F.IsEquivalence] : F.toMonoidalFunctorOfHasFiniteProducts.IsEquivalenc
 end
 
 end CategoryTheory
+
+end

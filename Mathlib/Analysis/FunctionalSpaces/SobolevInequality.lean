@@ -709,3 +709,5 @@ theorem snorm_le_snorm_fderiv [FiniteDimensional ℝ F]
   positivity
 
 end MeasureTheory
+
+end

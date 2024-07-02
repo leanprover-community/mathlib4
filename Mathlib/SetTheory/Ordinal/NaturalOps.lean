@@ -828,3 +828,5 @@ theorem mul_le_nmul (a b : Ordinal.{u}) : a * b ≤ a ⨳ b := by
 #align nat_ordinal.mul_le_nmul NatOrdinal.mul_le_nmul
 
 end NatOrdinal
+
+end

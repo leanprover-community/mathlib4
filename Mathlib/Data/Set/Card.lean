@@ -1128,3 +1128,5 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
 end ncard
 
 @[deprecated (since := "2023-12-27")] alias ncard_le_of_subset := ncard_le_ncard
+
+end Set

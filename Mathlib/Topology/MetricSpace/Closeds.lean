@@ -432,3 +432,5 @@ theorem uniformContinuous_infDist_Hausdorff_dist :
 end --section
 
 end Metric --namespace
+
+end

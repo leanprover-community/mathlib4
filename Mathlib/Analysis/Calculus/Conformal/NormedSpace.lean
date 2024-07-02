@@ -146,3 +146,5 @@ theorem const_smul {f : X → Y} (hf : Conformal f) {c : ℝ} (hc : c ≠ 0) : C
 end Conformal
 
 end GlobalConformality
+
+end

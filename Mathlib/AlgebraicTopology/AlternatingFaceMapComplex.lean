@@ -356,3 +356,5 @@ def alternatingCofaceMapComplex : CosimplicialObject C ⥤ CochainComplex C ℕ 
 #align algebraic_topology.alternating_coface_map_complex AlgebraicTopology.alternatingCofaceMapComplex
 
 end AlgebraicTopology
+
+end

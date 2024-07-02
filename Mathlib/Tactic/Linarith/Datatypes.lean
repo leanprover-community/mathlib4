@@ -368,3 +368,5 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
+
+end Linarith

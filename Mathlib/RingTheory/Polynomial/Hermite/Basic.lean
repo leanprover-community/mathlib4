@@ -217,3 +217,5 @@ theorem coeff_hermite (n k : ℕ) :
 end CoeffExplicit
 
 end Polynomial
+
+end

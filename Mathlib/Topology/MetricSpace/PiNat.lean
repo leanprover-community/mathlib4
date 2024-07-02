@@ -937,3 +937,5 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
 #align pi_countable.metric_space PiCountable.metricSpace
 
 end PiCountable
+
+end

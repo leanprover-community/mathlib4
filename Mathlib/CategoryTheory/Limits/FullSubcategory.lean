@@ -151,3 +151,5 @@ alias hasColimitsOfShape_of_closed_under_colimits := hasColimitsOfShape_of_close
 end
 
 end CategoryTheory.Limits
+
+end

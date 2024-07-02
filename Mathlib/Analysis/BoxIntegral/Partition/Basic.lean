@@ -795,3 +795,5 @@ theorem isPartitionDisjUnionOfEqDiff (h : π₂.iUnion = ↑I \ π₁.iUnion) :
 end Prepartition
 
 end BoxIntegral
+
+end

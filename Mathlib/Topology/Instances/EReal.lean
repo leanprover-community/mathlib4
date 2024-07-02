@@ -246,3 +246,5 @@ instance : ContinuousNeg EReal := ⟨negOrderIso.continuous⟩
 #align ereal.continuous_neg ContinuousNeg.continuous_neg
 
 end EReal
+
+end

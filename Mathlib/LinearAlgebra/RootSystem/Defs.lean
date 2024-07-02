@@ -304,3 +304,5 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   abel
 
 end RootPairing
+
+end

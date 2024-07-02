@@ -220,3 +220,5 @@ Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)
     (AdicCompletion I R) _ _ (Algebra.id _) := by
   with_reducible_and_instances rfl
+
+end AdicCompletion

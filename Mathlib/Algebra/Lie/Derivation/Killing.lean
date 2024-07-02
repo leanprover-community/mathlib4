@@ -103,3 +103,7 @@ lemma exists_eq_ad (D : 𝔻) : ∃ x, ad R L x = D := by
   exact Submodule.mem_top
 
 end
+
+end IsKilling
+
+end LieDerivation

@@ -631,3 +631,5 @@ instance instCountable_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E
   infer_instance
 
 end Zlattice
+
+end

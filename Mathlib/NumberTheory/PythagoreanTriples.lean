@@ -704,3 +704,5 @@ theorem classification :
 #align pythagorean_triple.classification PythagoreanTriple.classification
 
 end PythagoreanTriple
+
+end

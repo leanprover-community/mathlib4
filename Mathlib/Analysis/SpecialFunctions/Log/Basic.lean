@@ -608,3 +608,5 @@ def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
   | _, _, _ => throwError "not Real.log"
 
 end Mathlib.Meta.Positivity
+
+end

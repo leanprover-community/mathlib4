@@ -77,3 +77,5 @@ instance : LieGroup 𝓘(𝕜, R) Rˣ where
     exact contDiffAt_ring_inverse _ _
 
 end Units
+
+end

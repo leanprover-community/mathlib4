@@ -237,3 +237,5 @@ instance normedSpace : NormedSpace 𝕜 e.finiteSubspace where
   norm_smul_le c x := le_of_eq <| by simp [finite_norm_eq, ENNReal.toReal_mul]
 
 end ENorm
+
+end

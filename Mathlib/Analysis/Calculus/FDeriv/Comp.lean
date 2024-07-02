@@ -265,3 +265,5 @@ protected theorem DifferentiableWithinAt.iterate {f : E → E} (hf : Differentia
 end Composition
 
 end
+
+end

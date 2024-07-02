@@ -51,3 +51,5 @@ set_option linter.uppercaseLean3 false in
 end Abelian
 
 end CategoryTheory
+
+end

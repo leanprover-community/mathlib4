@@ -189,3 +189,7 @@ lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
   ring_nf
 
 namespace HurwitzZeta
+
+end HurwitzZeta
+
+end HurwitzZeta

@@ -78,3 +78,5 @@ lemma isZero_Tor'_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
 end CategoryTheory
 
 assert_not_exists Module.abelian
+
+end

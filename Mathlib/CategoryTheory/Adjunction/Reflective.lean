@@ -282,3 +282,5 @@ instance Coreflective.comp (F : C ⥤ D) (G : D ⥤ E) [Coreflective F] [Corefle
   adj := (coreflectorAdjunction F).comp (coreflectorAdjunction G)
 
 end CategoryTheory
+
+end

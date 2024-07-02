@@ -693,3 +693,5 @@ lemma IsColimit.isZero_pt {c : Cocone F} (hc : IsColimit c) (hF : IsZero F) : Is
 end
 
 end CategoryTheory.Limits
+
+end

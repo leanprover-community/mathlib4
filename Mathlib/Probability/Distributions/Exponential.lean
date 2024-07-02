@@ -172,3 +172,5 @@ lemma exponentialCDFReal_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
   · exact le_rfl
 
 end ExponentialCDF
+
+end ProbabilityTheory

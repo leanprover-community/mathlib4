@@ -1395,3 +1395,5 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
 
 end HasGroupoid
+
+end

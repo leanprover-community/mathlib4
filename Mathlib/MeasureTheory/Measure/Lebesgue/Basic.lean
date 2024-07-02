@@ -685,3 +685,5 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Se
     apply h'x p pA ⟨xs, xp⟩
   · exact False.elim (hx ⟨xs, Hx⟩)
 #align ae_of_mem_of_ae_of_mem_inter_Ioo ae_of_mem_of_ae_of_mem_inter_Ioo
+
+end

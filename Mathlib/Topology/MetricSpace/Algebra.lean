@@ -236,3 +236,5 @@ instance Prod.instBoundedSMul {α β γ : Type*} [PseudoMetricSpace α] [PseudoM
 
 -- We don't have the `SMul α γ → SMul β δ → SMul (α × β) (γ × δ)` instance, but if we did, then
 -- `BoundedSMul α γ → BoundedSMul β δ → BoundedSMul (α × β) (γ × δ)` would hold
+
+end

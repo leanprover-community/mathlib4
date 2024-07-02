@@ -354,3 +354,5 @@ set_option linter.uppercaseLean3 false in
 end Lan
 
 end CategoryTheory
+
+end

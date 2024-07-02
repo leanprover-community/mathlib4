@@ -190,3 +190,5 @@ protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup 
   rfl
 
 end Complex
+
+end Complex

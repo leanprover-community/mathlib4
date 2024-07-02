@@ -75,3 +75,5 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
 end TopCat.Presheaf
+
+end

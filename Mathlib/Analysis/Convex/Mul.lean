@@ -182,3 +182,5 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
         _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring
     all_goals positivity
 #align convex_on_zpow convexOn_zpow
+
+end LinearOrderedField

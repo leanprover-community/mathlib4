@@ -170,3 +170,5 @@ theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (
 #align measure_theory.integral_vadd_eq_self MeasureTheory.integral_vadd_eq_self
 
 end SMul
+
+end MeasureTheory

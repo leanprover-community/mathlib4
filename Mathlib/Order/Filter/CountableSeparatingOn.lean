@@ -253,3 +253,7 @@ theorem of_eventually_mem_of_forall_separating_preimage (p : Set β → Prop) {s
 theorem of_forall_separating_preimage (p : Set β → Prop) [HasCountableSeparatingOn β p univ]
     (h : ∀ U : Set β, p U → f ⁻¹' U =ᶠ[l] g ⁻¹' U) : f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_preimage p (s := univ) univ_mem univ_mem h
+
+end EventuallyEq
+
+end Filter

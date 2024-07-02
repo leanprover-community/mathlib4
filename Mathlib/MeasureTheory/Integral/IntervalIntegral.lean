@@ -1241,3 +1241,5 @@ theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int (hf
 end HasSum
 
 end intervalIntegral
+
+end

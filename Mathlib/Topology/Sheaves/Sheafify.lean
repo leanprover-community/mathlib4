@@ -129,3 +129,5 @@ def sheafifyStalkIso (x : X) : F.sheafify.presheaf.stalk x ≅ F.stalk x :=
 
 -- PROJECT functoriality, and that sheafification is the left adjoint of the forgetful functor.
 end TopCat.Presheaf
+
+end

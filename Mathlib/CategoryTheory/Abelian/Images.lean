@@ -124,3 +124,5 @@ theorem coimage_image_factorisation : coimage.π f ≫ coimageImageComparison f 
 #align category_theory.abelian.coimage_image_factorisation CategoryTheory.Abelian.coimage_image_factorisation
 
 end CategoryTheory.Abelian
+
+end

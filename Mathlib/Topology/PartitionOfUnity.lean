@@ -612,3 +612,5 @@ theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed
 #align partition_of_unity.exists_is_subordinate PartitionOfUnity.exists_isSubordinate
 
 end PartitionOfUnity
+
+end

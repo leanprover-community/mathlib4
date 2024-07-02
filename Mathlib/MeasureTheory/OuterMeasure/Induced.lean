@@ -502,3 +502,7 @@ theorem restrict_trim {μ : OuterMeasure α} {s : Set α} (hs : MeasurableSet s)
 #align measure_theory.outer_measure.restrict_trim MeasureTheory.OuterMeasure.restrict_trim
 
 end OuterMeasure
+
+end MeasureTheory
+
+end

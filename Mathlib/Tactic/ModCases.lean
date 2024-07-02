@@ -192,3 +192,9 @@ elab_rules : tactic
     | ~q(ℤ) => IntMod.modCases h e n
     | ~q(ℕ) => NatMod.modCases h e n
     | _ => throwError "mod_cases only works with Int and Nat"
+
+end ModCases
+
+end Tactic
+
+end Mathlib

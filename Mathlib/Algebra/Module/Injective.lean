@@ -525,3 +525,5 @@ lemma Module.Injective.extension_property
   (Module.Baer.of_injective inj).extension_property f hf g
 
 end lifting_property
+
+end

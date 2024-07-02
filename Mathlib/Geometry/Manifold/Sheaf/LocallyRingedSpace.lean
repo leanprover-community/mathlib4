@@ -122,3 +122,5 @@ def SmoothManifoldWithCorners.locallyRingedSpace : LocallyRingedSpace where
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
   localRing x := smoothSheafCommRing.instLocalRing_stalk IM x
+
+end

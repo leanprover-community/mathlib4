@@ -366,3 +366,5 @@ instance (priority := 100) : HasInjectiveResolutions C where out _ := inferInsta
 end InjectiveResolution
 
 end CategoryTheory
+
+end

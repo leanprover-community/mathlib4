@@ -100,3 +100,5 @@ lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb
   simpa [Finsupp.mem_support_iff] using hi
 
 end Finsupp
+
+end

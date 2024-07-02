@@ -158,3 +158,5 @@ instance faithful_preadditiveCoyoneda :
 #align category_theory.preadditive_coyoneda_faithful CategoryTheory.faithful_preadditiveCoyoneda
 
 end CategoryTheory
+
+end

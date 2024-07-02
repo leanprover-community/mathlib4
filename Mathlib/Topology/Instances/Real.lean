@@ -249,3 +249,5 @@ theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
 end AddSubgroup
 
 end Subgroups
+
+end

@@ -1112,3 +1112,5 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
 #align inner_matrix_col_col inner_matrix_col_col
 
 end Matrix
+
+end

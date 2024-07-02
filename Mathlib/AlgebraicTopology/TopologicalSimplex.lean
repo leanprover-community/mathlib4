@@ -94,3 +94,5 @@ def toTop : SimplexCategory ⥤ TopCat where
 #align simplex_category.to_Top SimplexCategory.toTop
 
 end SimplexCategory
+
+end

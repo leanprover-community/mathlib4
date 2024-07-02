@@ -132,3 +132,5 @@ instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} :=
 abbrev Borel : TopCat.{u} ⥤ MeasCat.{u} :=
   forget₂ TopCat.{u} MeasCat.{u}
 #align Borel Borel
+
+end

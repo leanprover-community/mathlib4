@@ -1177,3 +1177,5 @@ instance {α β : Type*} [UniformSpace β] [CompleteSpace β] : CompleteSpace (�
   (UniformOnFun.uniformEquivUniformFun β {univ} (mem_singleton _)).completeSpace_iff.1 inferInstance
 
 end UniformFun
+
+end

@@ -585,3 +585,5 @@ theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensiona
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
 #align continuous_linear_map.exists_right_inverse_of_surjective ContinuousLinearMap.exists_right_inverse_of_surjective
+
+end

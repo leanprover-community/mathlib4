@@ -180,3 +180,5 @@ theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l =
 
 @[simp]
 theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := enumFrom_eq_nil
+
+end List

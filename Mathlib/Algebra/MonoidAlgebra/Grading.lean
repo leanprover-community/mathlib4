@@ -231,3 +231,5 @@ theorem grade.isInternal : DirectSum.IsInternal (grade R : ι → Submodule R _)
 #align add_monoid_algebra.grade.is_internal AddMonoidAlgebra.grade.isInternal
 
 end AddMonoidAlgebra
+
+end

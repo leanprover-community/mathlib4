@@ -150,3 +150,5 @@ theorem analyticOn_fst {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ 
 /-- `snd` is entire -/
 theorem analyticOn_snd {s : Set (E × F)} : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) s :=
   fun _ _ ↦ analyticAt_snd _
+
+end

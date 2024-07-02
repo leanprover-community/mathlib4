@@ -144,3 +144,5 @@ theorem ClosedComplemented.of_quotient_finiteDimensional [CompleteSpace 𝕜]
 #align subspace.closed_complemented_of_quotient_finite_dimensional Submodule.ClosedComplemented.of_quotient_finiteDimensional
 
 end Submodule
+
+end

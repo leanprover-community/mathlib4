@@ -479,3 +479,5 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
 end
 
 end CategoryTheory
+
+end

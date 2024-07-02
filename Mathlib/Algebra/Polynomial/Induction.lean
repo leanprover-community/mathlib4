@@ -103,3 +103,5 @@ set_option linter.uppercaseLean3 false in
 end Semiring
 
 end Polynomial
+
+end

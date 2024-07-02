@@ -179,3 +179,5 @@ theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.
   rw [G.edgeFinset_sup_edge hn h, card_cons]
 
 end AddEdge
+
+end SimpleGraph

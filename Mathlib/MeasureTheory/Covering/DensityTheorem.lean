@@ -175,3 +175,5 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E]
 end Applications
 
 end IsUnifLocDoublingMeasure
+
+end

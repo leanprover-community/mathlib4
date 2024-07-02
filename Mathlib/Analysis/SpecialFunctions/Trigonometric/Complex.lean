@@ -295,3 +295,5 @@ theorem mul_le_sin {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ π / 2) : 2 / π * x �
 #align real.mul_le_sin Real.mul_le_sin
 
 end Real
+
+end

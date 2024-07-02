@@ -236,3 +236,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
       exact fun x xw => Set.mem_iUnion₂.mpr ⟨w,wt,xw⟩
     · simp only [Set.mem_setOf_eq, Walk.start_mem_support, exists_true_left]
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
+
+end induced_subgraphs
+
+end SimpleGraph

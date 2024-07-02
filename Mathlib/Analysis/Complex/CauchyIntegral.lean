@@ -651,3 +651,5 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
     exact h _ m
 
 end Complex
+
+end

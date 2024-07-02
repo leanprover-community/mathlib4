@@ -82,3 +82,5 @@ theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2
     | inr hy =>
       have : 2 ≤ x + y := le_add_left hy
       simp [tsub_eq_zero_of_le, *]
+
+end Imo1986Q5

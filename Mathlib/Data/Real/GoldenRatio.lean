@@ -253,3 +253,5 @@ theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n +
           Nat.cast_add, gold_sq]; ring
       _ = φ * ((Nat.fib n) + φ * (Nat.fib (n + 1))) := by ring
       _ = φ ^ (n + 2) := by rw [add_comm, ih]; ring
+
+end

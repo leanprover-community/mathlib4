@@ -807,3 +807,5 @@ Version using `deriv`. -/
 theorem norm_deriv_le_of_lipschitz {f : 𝕜 → F} {x₀ : 𝕜}
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖deriv f x₀‖ ≤ C := by
   simpa [norm_deriv_eq_norm_fderiv] using norm_fderiv_le_of_lipschitz 𝕜 hlip
+
+end

@@ -304,3 +304,5 @@ theorem nthRemainder_spec (n : ℕ) (x y : 𝕎 k) : (x * y).coeff (n + 1) =
 #align witt_vector.nth_remainder_spec WittVector.nthRemainder_spec
 
 end WittVector
+
+end

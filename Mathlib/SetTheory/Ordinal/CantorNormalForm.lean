@@ -176,3 +176,5 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_sorted Ordinal.CNF_sorted
 
 end Ordinal
+
+end

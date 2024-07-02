@@ -256,3 +256,5 @@ end MonoCoprod
 end Limits
 
 end CategoryTheory
+
+end

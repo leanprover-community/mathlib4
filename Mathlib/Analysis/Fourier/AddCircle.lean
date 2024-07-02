@@ -561,3 +561,5 @@ theorem fourierCoeffOn_of_hasDerivAt {a b : ℝ} (hab : a < b) {f f' : ℝ → �
 #align fourier_coeff_on_of_has_deriv_at fourierCoeffOn_of_hasDerivAt
 
 end deriv
+
+end

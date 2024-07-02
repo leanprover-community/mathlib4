@@ -304,3 +304,5 @@ nonrec def homology'Unop (C : HomologicalComplex Vᵒᵖ c) :
 #align homological_complex.homology_unop HomologicalComplex.homology'Unop
 
 end HomologicalComplex
+
+end

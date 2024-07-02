@@ -313,3 +313,5 @@ instance SheafOfTypes.balanced [HasSheafify J (Type w)] :
   inferInstance
 
 end CategoryTheory
+
+end

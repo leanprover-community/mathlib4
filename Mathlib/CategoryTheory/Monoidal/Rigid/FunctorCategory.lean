@@ -77,3 +77,5 @@ instance rigidFunctorCategory [RigidCategory D] : RigidCategory (C ⥤ D) where
 #align category_theory.monoidal.rigid_functor_category CategoryTheory.Monoidal.rigidFunctorCategory
 
 end CategoryTheory.Monoidal
+
+end

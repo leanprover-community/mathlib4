@@ -151,3 +151,5 @@ theorem UniqueMDiffOn.tangentBundle_proj_preimage (hs : UniqueMDiffOn I s) :
 #align unique_mdiff_on.tangent_bundle_proj_preimage UniqueMDiffOn.tangentBundle_proj_preimage
 
 end UniqueMDiff
+
+end

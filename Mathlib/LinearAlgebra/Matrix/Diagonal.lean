@@ -97,3 +97,5 @@ theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
 end Field
 
 end LinearMap
+
+end

@@ -573,3 +573,5 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
 end le_liminf_open_implies_convergence
 
 end MeasureTheory --namespace
+
+end

@@ -2385,3 +2385,5 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
       fun a b => by simp only [← coe_smul c a, inner_coe, inner_smul_left]
 
 end UniformSpace.Completion
+
+end

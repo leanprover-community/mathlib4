@@ -231,3 +231,5 @@ theorem NormedAddGroupHom.extension_unique (f : NormedAddGroupHom G H)
 #align normed_add_group_hom.extension_unique NormedAddGroupHom.extension_unique
 
 end Extension
+
+end

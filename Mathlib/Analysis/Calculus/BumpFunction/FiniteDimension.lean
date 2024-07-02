@@ -565,3 +565,5 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
 end ExistsContDiffBumpBase
 
 end
+
+end

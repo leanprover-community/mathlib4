@@ -51,3 +51,5 @@ theorem finsuppLEquivDirectSum_symm_lof (i : ι) (m : M) :
 #align finsupp_lequiv_direct_sum_symm_lof finsuppLEquivDirectSum_symm_lof
 
 end finsuppLequivDirectSum
+
+end

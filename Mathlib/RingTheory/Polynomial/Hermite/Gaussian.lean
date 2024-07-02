@@ -71,3 +71,5 @@ theorem hermite_eq_deriv_gaussian' (n : ℕ) (x : ℝ) : aeval x (hermite n) =
 #align polynomial.hermite_eq_deriv_gaussian' Polynomial.hermite_eq_deriv_gaussian'
 
 end Polynomial
+
+end

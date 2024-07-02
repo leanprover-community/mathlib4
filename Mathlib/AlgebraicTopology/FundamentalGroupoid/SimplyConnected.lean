@@ -97,3 +97,5 @@ theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :
   convert simply_connected_iff_paths_homotopic (Y := Y)
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
 #align simply_connected_iff_paths_homotopic' simply_connected_iff_paths_homotopic'
+
+end

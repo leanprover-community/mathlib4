@@ -994,3 +994,5 @@ theorem centroid_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex k P n}
 end Simplex
 
 end Affine
+
+end

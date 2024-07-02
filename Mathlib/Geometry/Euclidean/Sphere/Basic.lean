@@ -394,3 +394,5 @@ theorem sbtw_of_collinear_of_dist_center_lt_radius {s : Sphere P} {p₁ p₂ p�
 end EuclideanSpace
 
 end EuclideanGeometry
+
+end

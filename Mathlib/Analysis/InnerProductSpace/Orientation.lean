@@ -346,3 +346,5 @@ theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
 end VolumeForm
 
 end Orientation
+
+end

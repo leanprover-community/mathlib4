@@ -473,3 +473,5 @@ theorem natDegree_mul_leadingCoeff_self_inv (p : K[X]) :
 end DivisionRing
 
 end Polynomial
+
+end

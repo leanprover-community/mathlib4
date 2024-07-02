@@ -402,3 +402,5 @@ end Construction
 end Localization
 
 end CategoryTheory
+
+end

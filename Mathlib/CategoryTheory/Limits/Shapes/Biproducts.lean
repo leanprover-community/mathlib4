@@ -2240,3 +2240,5 @@ theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z
 #align category_theory.is_iso_right_of_is_iso_biprod_map CategoryTheory.isIso_right_of_isIso_biprod_map
 
 end CategoryTheory
+
+end

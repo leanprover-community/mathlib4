@@ -436,3 +436,5 @@ end Gal
 end Polynomial
 
 assert_not_exists Real
+
+end

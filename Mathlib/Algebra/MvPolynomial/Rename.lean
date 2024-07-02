@@ -353,3 +353,5 @@ theorem support_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} [Dec
 end Support
 
 end MvPolynomial
+
+end

@@ -54,3 +54,5 @@ def starRing {R : Type u} [Semiring R] [StarRing R] (r : R → R → Prop)
 #align ring_quot.star_ring RingQuot.starRing
 
 end StarRing
+
+end RingQuot

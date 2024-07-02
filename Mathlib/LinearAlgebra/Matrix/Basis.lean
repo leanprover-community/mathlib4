@@ -292,3 +292,5 @@ theorem Basis.toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N)
 end MulLinearMapToMatrix
 
 end BasisToMatrix
+
+end

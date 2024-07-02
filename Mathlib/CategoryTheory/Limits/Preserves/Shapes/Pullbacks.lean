@@ -305,3 +305,5 @@ end Pushout
 end
 
 end CategoryTheory.Limits
+
+end

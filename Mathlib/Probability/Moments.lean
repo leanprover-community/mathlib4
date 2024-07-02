@@ -378,3 +378,5 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 end MomentGeneratingFunction
 
 end ProbabilityTheory
+
+end

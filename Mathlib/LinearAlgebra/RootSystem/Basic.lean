@@ -260,3 +260,5 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M]
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec]
 
 end RootSystem
+
+end

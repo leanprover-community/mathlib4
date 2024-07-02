@@ -164,3 +164,5 @@ theorem ContinuousLinearMap.fderiv_of_bilinear {f : G' → E} {g : G' → F} {x 
 end BilinearMap
 
 end
+
+end

@@ -87,3 +87,5 @@ theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by
 #align int.cofinite_eq Int.cofinite_eq
 
 end Int
+
+end

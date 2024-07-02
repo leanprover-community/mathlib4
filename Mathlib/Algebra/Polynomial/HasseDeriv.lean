@@ -267,3 +267,5 @@ theorem hasseDeriv_mul (f g : R[X]) :
 end
 
 end Polynomial
+
+end

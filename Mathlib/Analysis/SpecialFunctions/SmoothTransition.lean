@@ -228,3 +228,5 @@ protected theorem continuousAt : ContinuousAt smoothTransition x :=
 end smoothTransition
 
 end Real
+
+end

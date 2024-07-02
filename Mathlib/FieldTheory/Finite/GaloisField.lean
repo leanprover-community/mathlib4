@@ -237,3 +237,5 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
 #align finite_field.ring_equiv_of_card_eq FiniteField.ringEquivOfCardEq
 
 end FiniteField
+
+end

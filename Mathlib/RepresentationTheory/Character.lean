@@ -145,3 +145,5 @@ theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
 end Orthogonality
 
 end FdRep
+
+end

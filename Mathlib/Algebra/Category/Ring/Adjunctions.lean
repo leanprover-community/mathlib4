@@ -64,3 +64,5 @@ instance : (forget CommRingCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 end CommRingCat
+
+end

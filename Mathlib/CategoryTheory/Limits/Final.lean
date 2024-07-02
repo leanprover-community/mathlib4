@@ -857,3 +857,5 @@ theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsC
 end Filtered
 
 end CategoryTheory
+
+end

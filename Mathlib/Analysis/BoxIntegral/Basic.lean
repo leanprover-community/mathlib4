@@ -847,3 +847,5 @@ set_option linter.uppercaseLean3 false in
 #align box_integral.has_integral_McShane_of_forall_is_o BoxIntegral.HasIntegral.mcShane_of_forall_isLittleO
 
 end BoxIntegral
+
+end

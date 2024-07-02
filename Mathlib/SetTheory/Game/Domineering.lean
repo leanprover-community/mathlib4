@@ -204,3 +204,5 @@ set_option linter.uppercaseLean3 false in
 --   (4,0), (4,1), (4,2), (4,3), (4,4)
 --   ].toFinset) ≈ 0)
 end PGame
+
+end SetTheory

@@ -233,3 +233,5 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 #guard_msgs in
 example (_h : List.range 10000 = List.range 10000) (n m : Nat) : n + m = m + n := by
   with_reducible exact?
+
+end

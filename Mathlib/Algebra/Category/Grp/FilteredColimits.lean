@@ -262,3 +262,5 @@ noncomputable instance forgetPreservesFilteredColimits :
 end
 
 end CommGrp.FilteredColimits
+
+end

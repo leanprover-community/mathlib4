@@ -70,3 +70,5 @@ instance [IsEquivalence F] : EffectivelyEnough F where
   presentation X := ⟨equivalenceEffectivePresentation F.asEquivalence X⟩
 
 end Functor
+
+end CategoryTheory

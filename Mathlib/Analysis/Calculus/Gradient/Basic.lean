@@ -339,3 +339,5 @@ protected theorem HasGradientAt.continuousOn {f' : F → F} (h : ∀ x ∈ s, Ha
   fun x hx => (h x hx).continuousAt.continuousWithinAt
 
 end Continuous
+
+end

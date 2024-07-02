@@ -511,3 +511,5 @@ theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
 #align orientation.inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two Orientation.inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two
 
 end Orientation
+
+end

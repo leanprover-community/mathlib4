@@ -194,3 +194,5 @@ theorem contDiffAt_arccos_iff {x : ℝ} {n : ℕ∞} :
 end Arccos
 
 end Real
+
+end

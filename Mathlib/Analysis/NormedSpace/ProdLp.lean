@@ -772,3 +772,5 @@ instance instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpa
 end NormedSpace
 
 end WithLp
+
+end

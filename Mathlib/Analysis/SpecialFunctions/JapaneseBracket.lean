@@ -161,3 +161,5 @@ theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : �
   refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq
+
+end

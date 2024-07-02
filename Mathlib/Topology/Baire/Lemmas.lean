@@ -195,3 +195,5 @@ theorem nonempty_interior_of_iUnion_of_closed [Nonempty X] [Countable Î¹] {f : Î
 #align nonempty_interior_of_Union_of_closed nonempty_interior_of_iUnion_of_closed
 
 end BaireTheorem
+
+end

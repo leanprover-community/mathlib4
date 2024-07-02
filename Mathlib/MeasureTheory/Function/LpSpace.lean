@@ -1998,3 +1998,5 @@ theorem meas_ge_le_mul_pow_norm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_to
 end Lp
 
 end MeasureTheory
+
+end

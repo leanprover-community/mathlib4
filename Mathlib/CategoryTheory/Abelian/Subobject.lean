@@ -67,3 +67,5 @@ instance wellPowered_opposite [Abelian C] [WellPowered C] : WellPowered Cᵒᵖ 
 #align category_theory.abelian.well_powered_opposite CategoryTheory.Abelian.wellPowered_opposite
 
 end CategoryTheory.Abelian
+
+end

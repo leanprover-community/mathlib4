@@ -1365,3 +1365,5 @@ alias mul_X_sub_int_cast_comp := mul_X_sub_intCast_comp
 end Ring
 
 end Polynomial
+
+end

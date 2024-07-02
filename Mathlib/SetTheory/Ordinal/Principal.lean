@@ -432,3 +432,5 @@ theorem opow_omega {a : Ordinal} (a1 : 1 < a) (h : a < omega) : (a^omega) = omeg
 #align ordinal.opow_omega Ordinal.opow_omega
 
 end Ordinal
+
+end

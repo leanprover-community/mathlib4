@@ -383,3 +383,5 @@ theorem map₂_coe_coe (a : α) (b : β) (f : α → β → γ) (hf : UniformCon
 end Map₂
 
 end AbstractCompletion
+
+end

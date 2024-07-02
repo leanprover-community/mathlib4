@@ -104,3 +104,5 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
 end Enumerate
 
 end Set
+
+end

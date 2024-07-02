@@ -1443,3 +1443,5 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal ùï
 #align maximal_orthonormal_iff_basis_of_finite_dimensional maximal_orthonormal_iff_basis_of_finiteDimensional
 
 end OrthonormalBasis
+
+end

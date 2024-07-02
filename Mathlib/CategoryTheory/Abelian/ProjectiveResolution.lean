@@ -351,3 +351,5 @@ instance (priority := 100) : HasProjectiveResolutions C where out _ := inferInst
 end ProjectiveResolution
 
 end CategoryTheory
+
+end

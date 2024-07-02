@@ -1027,3 +1027,5 @@ nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
 #align pi_Lp.basis_to_matrix_basis_fun_mul PiLp.basis_toMatrix_basisFun_mul
 
 end PiLp
+
+end

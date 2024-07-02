@@ -71,3 +71,5 @@ abbrev toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
   mul_comm := mul_comm
   mul_nonneg _ _ := let _ := toOrderedCommSemiring R; mul_nonneg
+
+end StarOrderedRing

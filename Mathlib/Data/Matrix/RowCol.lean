@@ -363,3 +363,5 @@ theorem reindex_updateColumn [DecidableEq o] [DecidableEq n] (A : Matrix m n α)
     reindex e f (A.updateColumn j c) = updateColumn (reindex e f A) (f j) fun i => c (e.symm i) :=
   submatrix_updateColumn_equiv _ _ _ _ _
 #align matrix.reindex_update_column Matrix.reindex_updateColumn
+
+end Matrix

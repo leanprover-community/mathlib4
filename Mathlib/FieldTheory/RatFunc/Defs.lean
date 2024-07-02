@@ -249,3 +249,9 @@ protected theorem induction_on' {P : RatFunc K → Prop} :
 end IsDomain
 
 end Rec
+
+end CommRing
+
+end RatFunc
+
+end

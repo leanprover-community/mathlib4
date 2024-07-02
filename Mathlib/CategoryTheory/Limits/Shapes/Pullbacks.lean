@@ -2732,3 +2732,5 @@ instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Cate
 end Limits
 
 end CategoryTheory
+
+end

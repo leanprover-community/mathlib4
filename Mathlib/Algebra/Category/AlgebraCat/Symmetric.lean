@@ -42,3 +42,5 @@ instance instSymmetricCategory : SymmetricCategory (AlgebraCat.{u} R) :=
   symmetricCategoryOfFaithful (toModuleCatBraidedFunctor R)
 
 end AlgebraCat
+
+end

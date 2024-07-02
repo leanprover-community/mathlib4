@@ -428,3 +428,5 @@ def ajoin [algebra R S] : mv_polynomial (mv_polynomial σ R) S →ₐ[S] mv_poly
 
 -/
 end MvPolynomial
+
+end

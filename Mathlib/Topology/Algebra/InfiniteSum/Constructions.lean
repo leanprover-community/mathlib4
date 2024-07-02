@@ -333,3 +333,5 @@ theorem tsum_star [T2Space α] : star (∑' b, f b) = ∑' b, star (f b) := by
 #align tsum_star tsum_star
 
 end ContinuousStar
+
+end

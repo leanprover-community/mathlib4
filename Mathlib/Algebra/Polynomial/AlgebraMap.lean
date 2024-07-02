@@ -576,3 +576,5 @@ lemma aeval_apply_smul_mem_of_le_comap (f : Module.End R M) (hq : q ≤ q.comap 
 end StableSubmodule
 
 end Polynomial
+
+end

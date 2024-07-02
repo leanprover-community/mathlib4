@@ -266,3 +266,5 @@ theorem subobject_simple_iff_isAtom {X : C} (Y : Subobject X) : Simple (Y : C) â
 end Subobject
 
 end CategoryTheory
+
+end

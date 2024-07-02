@@ -381,3 +381,5 @@ instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
 end ModuleOverContinuousFunctions
 
 end SmoothMap
+
+end

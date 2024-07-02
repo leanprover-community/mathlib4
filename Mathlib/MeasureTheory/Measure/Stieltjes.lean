@@ -550,3 +550,5 @@ lemma measure_smul (c : ℝ≥0) (f : StieltjesFunction) : (c • f).measure = c
   rfl
 
 end StieltjesFunction
+
+end

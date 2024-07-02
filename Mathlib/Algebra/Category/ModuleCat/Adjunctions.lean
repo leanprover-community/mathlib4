@@ -423,3 +423,5 @@ def liftUnique (F : C ⥤ D) (L : Free R C ⥤ D) [L.Additive] [L.Linear R]
 
 end Free
 end CategoryTheory
+
+end

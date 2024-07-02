@@ -321,3 +321,5 @@ instance instProperSpace : ProperSpace ℝ≥0 where
     exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 end NNReal
+
+end

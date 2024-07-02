@@ -87,3 +87,5 @@ theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : AddSubgr
 end Real
 
 end Zlattice
+
+end

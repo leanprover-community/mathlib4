@@ -104,3 +104,5 @@ theorem card_pi (f : ι →₀ Finset α) : f.pi.card = f.prod fun i => (f i).ca
 #align finsupp.card_pi Finsupp.card_pi
 
 end Finsupp
+
+end

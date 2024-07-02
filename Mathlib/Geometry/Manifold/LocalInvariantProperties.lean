@@ -725,3 +725,5 @@ theorem HasGroupoid.comp
 end LocalStructomorph
 
 end StructureGroupoid
+
+end

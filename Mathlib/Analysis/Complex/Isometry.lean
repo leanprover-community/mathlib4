@@ -174,3 +174,5 @@ theorem det_rotation (a : circle) : LinearMap.det ((rotation a).toLinearEquiv : 
 theorem linearEquiv_det_rotation (a : circle) : LinearEquiv.det (rotation a).toLinearEquiv = 1 := by
   rw [← Units.eq_iff, LinearEquiv.coe_det, det_rotation, Units.val_one]
 #align linear_equiv_det_rotation linearEquiv_det_rotation
+
+end

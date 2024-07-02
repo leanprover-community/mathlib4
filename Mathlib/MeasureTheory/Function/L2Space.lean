@@ -328,3 +328,5 @@ theorem ContinuousMap.inner_toLp (f g : C(α, 𝕜)) :
 end InnerContinuous
 
 end MeasureTheory
+
+end

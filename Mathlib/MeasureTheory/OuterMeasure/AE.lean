@@ -276,3 +276,5 @@ alias _root_.Filter.EventuallyEq.measure_eq := measure_congr
 theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
   nonpos_iff_eq_zero.1 <| ht ▸ H.measure_le
 #align measure_theory.measure_mono_null_ae MeasureTheory.measure_mono_null_ae
+
+end MeasureTheory

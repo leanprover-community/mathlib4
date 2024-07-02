@@ -302,3 +302,5 @@ derivative. -/
 theorem iteratedDeriv_succ' : iteratedDeriv (n + 1) f = iteratedDeriv n (deriv f) := by
   rw [iteratedDeriv_eq_iterate, iteratedDeriv_eq_iterate]; rfl
 #align iterated_deriv_succ' iteratedDeriv_succ'
+
+end

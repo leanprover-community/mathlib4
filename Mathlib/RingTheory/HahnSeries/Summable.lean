@@ -591,3 +591,5 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
 end Inversion
 
 end HahnSeries
+
+end

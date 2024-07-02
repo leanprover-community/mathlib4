@@ -55,3 +55,5 @@ instance PreservesLimitsPreadditiveCoyoneda.obj (X : Cᵒᵖ) :
 #align category_theory.preserves_limits_preadditive_coyoneda.obj CategoryTheory.PreservesLimitsPreadditiveCoyoneda.obj
 
 end CategoryTheory
+
+end

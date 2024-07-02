@@ -153,3 +153,5 @@ theorem circleTransformDeriv_bound {R : ℝ} (hR : 0 < R) {z x : ℂ} {f : ℂ �
 #align complex.circle_transform_deriv_bound Complex.circleTransformDeriv_bound
 
 end Complex
+
+end

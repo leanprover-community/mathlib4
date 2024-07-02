@@ -391,3 +391,5 @@ theorem IsSeparable.insepDegree_eq [IsSeparable F E] : insepDegree F E = 1 := by
 /-- A separable extension has finite inseparable degree one. -/
 theorem IsSeparable.finInsepDegree_eq [IsSeparable F E] : finInsepDegree F E = 1 :=
   Cardinal.one_toNat ▸ congr(Cardinal.toNat $(insepDegree_eq F E))
+
+end

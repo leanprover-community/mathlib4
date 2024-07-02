@@ -150,3 +150,5 @@ theorem sum_taylor_eq {R} [CommRing R] (f : R[X]) (r : R) :
 #align polynomial.sum_taylor_eq Polynomial.sum_taylor_eq
 
 end Polynomial
+
+end

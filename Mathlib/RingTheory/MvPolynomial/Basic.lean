@@ -208,3 +208,5 @@ theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomi
 #align polynomial.coe_basis_monomials Polynomial.coe_basisMonomials
 
 end Polynomial
+
+end

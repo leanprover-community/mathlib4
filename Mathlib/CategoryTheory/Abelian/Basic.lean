@@ -843,3 +843,5 @@ def abelian : Abelian C :=
 #align category_theory.non_preadditive_abelian.abelian CategoryTheory.NonPreadditiveAbelian.abelian
 
 end CategoryTheory.NonPreadditiveAbelian
+
+end

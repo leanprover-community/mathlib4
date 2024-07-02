@@ -473,3 +473,5 @@ def homology'IsoCokernelLift (w : f ≫ g = 0) : homology' f g w ≅ cokernel (k
 #align homology_iso_cokernel_lift homology'IsoCokernelLift
 
 end imageToKernel'
+
+end

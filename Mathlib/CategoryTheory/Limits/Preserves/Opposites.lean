@@ -260,3 +260,5 @@ def preservesFiniteColimitsUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) [PreservesFiniteLimits
 end
 
 end CategoryTheory.Limits
+
+end

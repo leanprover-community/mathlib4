@@ -169,3 +169,5 @@ instance : PreservesLimits Cat.objects.{v, v} where
 end Cat
 
 end CategoryTheory
+
+end

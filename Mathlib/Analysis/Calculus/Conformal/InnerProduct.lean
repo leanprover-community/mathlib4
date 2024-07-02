@@ -58,3 +58,5 @@ theorem conformalFactorAt_inner_eq_mul_inner {f : E → F} {x : E} {f' : E →L[
     ⟪f' u, f' v⟫ = (conformalFactorAt H : ℝ) * ⟪u, v⟫ :=
   H.differentiableAt.hasFDerivAt.unique h ▸ conformalFactorAt_inner_eq_mul_inner' H u v
 #align conformal_factor_at_inner_eq_mul_inner conformalFactorAt_inner_eq_mul_inner
+
+end

@@ -321,3 +321,5 @@ theorem hom_trivializationAt_target (x₀ : B) :
       ((trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet) ×ˢ Set.univ :=
   rfl
 #align hom_trivialization_at_target hom_trivializationAt_target
+
+end

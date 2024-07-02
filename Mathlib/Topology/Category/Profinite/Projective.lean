@@ -69,3 +69,5 @@ def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
 instance : EnoughProjectives Profinite.{u} where presentation X := ⟨projectivePresentation X⟩
 
 end Profinite
+
+end

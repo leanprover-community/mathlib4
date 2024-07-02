@@ -803,3 +803,5 @@ theorem dist_div_tan_oangle_left_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P}
 #align euclidean_geometry.dist_div_tan_oangle_left_of_oangle_eq_pi_div_two EuclideanGeometry.dist_div_tan_oangle_left_of_oangle_eq_pi_div_two
 
 end EuclideanGeometry
+
+end

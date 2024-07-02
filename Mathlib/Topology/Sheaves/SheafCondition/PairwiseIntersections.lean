@@ -500,3 +500,5 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf.obj_sup_iso_prod_eq_locus_inv_snd TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd
 
 end TopCat.Sheaf
+
+end

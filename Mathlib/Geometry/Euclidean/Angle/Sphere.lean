@@ -423,3 +423,5 @@ theorem concyclic_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P}
 #align euclidean_geometry.concyclic_or_collinear_of_two_zsmul_oangle_eq EuclideanGeometry.concyclic_or_collinear_of_two_zsmul_oangle_eq
 
 end EuclideanGeometry
+
+end

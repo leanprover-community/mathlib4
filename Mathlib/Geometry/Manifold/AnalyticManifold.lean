@@ -190,3 +190,5 @@ theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
     · exact he
 
 end analyticGroupoid
+
+end

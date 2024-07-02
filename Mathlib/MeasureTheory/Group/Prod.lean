@@ -515,3 +515,5 @@ theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
 end QuasiMeasurePreserving
 
 end MeasureTheory
+
+end

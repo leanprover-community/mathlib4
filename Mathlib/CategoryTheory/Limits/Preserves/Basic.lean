@@ -830,3 +830,5 @@ instance fullyFaithfulReflectsColimits [F.Full] [F.Faithful] :
 #align category_theory.limits.fully_faithful_reflects_colimits CategoryTheory.Limits.fullyFaithfulReflectsColimits
 
 end CategoryTheory.Limits
+
+end

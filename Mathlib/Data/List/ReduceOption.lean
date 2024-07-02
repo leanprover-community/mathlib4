@@ -98,3 +98,5 @@ theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
     (∃ i, l.get? i = some (some x)) ↔ ∃ i, l.reduceOption.get? i = some x := by
   rw [← mem_iff_get?, ← mem_iff_get?, reduceOption_mem_iff]
 #align list.reduce_option_nth_iff List.reduceOption_get?_iff
+
+end List

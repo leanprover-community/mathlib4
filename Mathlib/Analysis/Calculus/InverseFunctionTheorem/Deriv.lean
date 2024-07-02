@@ -55,3 +55,5 @@ theorem isOpenMap_of_hasStrictDerivAt {f' : 𝕜 → 𝕜}
 #align open_map_of_strict_deriv isOpenMap_of_hasStrictDerivAt
 @[deprecated (since := "2024-03-23")]
 alias open_map_of_strict_deriv := isOpenMap_of_hasStrictDerivAt
+
+end

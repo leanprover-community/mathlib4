@@ -559,3 +559,5 @@ theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank
 #align finrank_le_one finrank_le_one
 
 end RankOne
+
+end

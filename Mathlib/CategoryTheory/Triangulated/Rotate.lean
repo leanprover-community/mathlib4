@@ -157,3 +157,5 @@ instance : (invRotate C).IsEquivalence := by
   infer_instance
 
 end CategoryTheory.Pretriangulated
+
+end

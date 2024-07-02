@@ -125,3 +125,5 @@ theorem differentiableAt_iff_restrictScalars (hf : DifferentiableAt 𝕜 f x) :
 #align differentiable_at_iff_restrict_scalars differentiableAt_iff_restrictScalars
 
 end RestrictScalars
+
+end

@@ -1088,3 +1088,5 @@ theorem autToPow_spec (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val
 end Automorphisms
 
 end IsPrimitiveRoot
+
+end

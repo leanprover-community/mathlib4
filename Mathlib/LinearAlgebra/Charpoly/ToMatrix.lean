@@ -107,3 +107,5 @@ lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M�
   congr 1
   ext i j : 1
   simp [Matrix.charmatrix, LinearMap.toMatrix, Matrix.diagonal, LinearEquiv.conj_apply]
+
+end

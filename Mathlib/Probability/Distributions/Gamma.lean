@@ -151,3 +151,5 @@ lemma gammaCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) 
   simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF]
 
 end GammaCDF
+
+end ProbabilityTheory

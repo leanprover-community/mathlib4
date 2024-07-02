@@ -459,3 +459,5 @@ def natTransCofanInj {Δ : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) :
 end Split
 
 end SimplicialObject
+
+end

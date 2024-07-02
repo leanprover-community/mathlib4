@@ -1071,3 +1071,5 @@ theorem Polynomial.Separable.map_irreducible_of_isPurelyInseparable {f : F[X]} (
   exact minpoly.irreducible (Algebra.IsIntegral.isIntegral x)
 
 end TowerLaw
+
+end

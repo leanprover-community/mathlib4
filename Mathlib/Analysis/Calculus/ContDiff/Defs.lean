@@ -1770,3 +1770,5 @@ theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) 
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B
 #align cont_diff.continuous_fderiv_apply ContDiff.continuous_fderiv_apply
+
+end

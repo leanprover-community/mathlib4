@@ -1051,3 +1051,5 @@ protected theorem _root_.VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorB
 end ContinuousLinearMap
 
 end
+
+end

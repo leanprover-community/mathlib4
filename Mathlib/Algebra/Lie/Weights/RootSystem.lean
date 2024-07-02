@@ -406,3 +406,5 @@ theorem isReduced_rootSystem : (rootSystem H).IsReduced := by
   · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
 end LieAlgebra.IsKilling
+
+end

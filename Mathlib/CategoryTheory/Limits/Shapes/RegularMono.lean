@@ -330,3 +330,5 @@ instance (priority := 100) strongEpiCategory_of_regularEpiCategory [RegularEpiCa
 #align category_theory.strong_epi_category_of_regular_epi_category CategoryTheory.strongEpiCategory_of_regularEpiCategory
 
 end CategoryTheory
+
+end

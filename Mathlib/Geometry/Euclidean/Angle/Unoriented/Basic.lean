@@ -375,3 +375,5 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
 #align inner_product_geometry.sin_eq_one_iff_angle_eq_pi_div_two InnerProductGeometry.sin_eq_one_iff_angle_eq_pi_div_two
 
 end InnerProductGeometry
+
+end

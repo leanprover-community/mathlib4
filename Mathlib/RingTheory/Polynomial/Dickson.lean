@@ -272,3 +272,5 @@ theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (
 end Dickson
 
 end Polynomial
+
+end

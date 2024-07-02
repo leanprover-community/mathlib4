@@ -402,3 +402,5 @@ theorem ι_jointly_surjective (F : C ⥤ Type v) [PreservesColimit D.diagram.mul
 end GlueData
 
 end CategoryTheory
+
+end

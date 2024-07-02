@@ -44,3 +44,5 @@ instance [UnivLE.{max u v, v}] : UnivLE.witness.{u, v}.Faithful :=
 
 instance [UnivLE.{max u v, v}] : UnivLE.witness.{u, v}.Full :=
   inferInstanceAs <| Functor.Full (_ ⋙ _)
+
+end

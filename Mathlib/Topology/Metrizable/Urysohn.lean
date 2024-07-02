@@ -129,3 +129,5 @@ instance (priority := 90) metrizableSpace_of_t3_second_countable : MetrizableSpa
   let ⟨_, hf⟩ := exists_embedding_l_infty X
   hf.metrizableSpace
 #align topological_space.metrizable_space_of_t3_second_countable TopologicalSpace.metrizableSpace_of_t3_second_countable
+
+end TopologicalSpace

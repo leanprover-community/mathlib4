@@ -278,3 +278,5 @@ def universalEnvelopingEquivFreeAlgebra :
 #align free_lie_algebra.universal_enveloping_equiv_free_algebra FreeLieAlgebra.universalEnvelopingEquivFreeAlgebra
 
 end FreeLieAlgebra
+
+end

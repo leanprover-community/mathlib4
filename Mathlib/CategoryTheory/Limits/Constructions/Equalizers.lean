@@ -230,3 +230,5 @@ def preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts [HasBinaryCoprod
 #align category_theory.limits.preserves_coequalizers_of_preserves_pushouts_and_binary_coproducts CategoryTheory.Limits.preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts
 
 end CategoryTheory.Limits
+
+end

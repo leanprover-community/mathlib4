@@ -76,3 +76,5 @@ theorem contDiffOn_succ_iff_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f
 #align cont_diff_on_succ_iff_fderiv_apply contDiffOn_succ_iff_fderiv_apply
 
 end FiniteDimensional
+
+end

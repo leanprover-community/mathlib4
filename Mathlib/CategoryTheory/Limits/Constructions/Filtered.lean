@@ -100,3 +100,5 @@ theorem has_limits_of_finite_and_cofiltered [HasFiniteLimits C]
 #align category_theory.limits.has_limits_of_finite_and_cofiltered CategoryTheory.Limits.has_limits_of_finite_and_cofiltered
 
 end CategoryTheory.Limits
+
+end

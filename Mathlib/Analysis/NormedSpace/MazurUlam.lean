@@ -162,3 +162,5 @@ theorem coe_toRealAffineIsometryEquiv (f : PE ≃ᵢ PF) :
 #align isometry_equiv.coe_to_real_affine_isometry_equiv IsometryEquiv.coe_toRealAffineIsometryEquiv
 
 end IsometryEquiv
+
+end

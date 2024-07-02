@@ -72,3 +72,5 @@ instance : NoncompactSpace ℕ :=
   noncompactSpace_of_neBot <| by simp [Filter.atTop_neBot]
 
 end Nat
+
+end

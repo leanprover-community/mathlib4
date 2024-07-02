@@ -309,3 +309,5 @@ end FGModuleCat
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : FGModuleCat.{u} R}
     (f : G →ₗ[R] H) : LinearMap.comp (𝟙 H) f = f :=
   Category.comp_id (ModuleCat.ofHom f)
+
+end

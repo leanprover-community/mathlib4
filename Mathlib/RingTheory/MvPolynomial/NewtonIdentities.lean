@@ -269,3 +269,5 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
   exact sub_both_sides.symm
 
 end MvPolynomial
+
+end

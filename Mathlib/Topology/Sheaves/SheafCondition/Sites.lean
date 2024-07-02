@@ -266,3 +266,5 @@ theorem hom_ext {α β : F ⟶ F'.1} (he : ∀ i, α.app (op (B i)) = β.app (op
 #align Top.sheaf.hom_ext TopCat.Sheaf.hom_ext
 
 end TopCat.Sheaf
+
+end

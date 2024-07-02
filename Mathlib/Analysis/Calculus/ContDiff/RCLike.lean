@@ -157,3 +157,5 @@ theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'} {n : ℕ∞}
   simp [← NNReal.coe_le_coe, hC x]
 
 end Real
+
+end

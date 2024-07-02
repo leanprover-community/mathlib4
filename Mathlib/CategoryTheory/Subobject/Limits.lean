@@ -488,3 +488,5 @@ end Image
 end Limits
 
 end CategoryTheory
+
+end

@@ -188,3 +188,5 @@ theorem Multipliable.hasProd_iff (h : Multipliable f) : HasProd f a ↔ ∏' b, 
 #align summable.has_sum_iff Summable.hasSum_iff
 
 end HasProd
+
+end

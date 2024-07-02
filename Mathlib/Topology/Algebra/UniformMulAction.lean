@@ -205,3 +205,5 @@ noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M 
 end Completion
 
 end UniformSpace
+
+end

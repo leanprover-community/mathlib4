@@ -371,3 +371,5 @@ theorem finsuppTensorFinsuppRid_self :
     finsuppTensorFinsuppRid R R ι κ = finsuppTensorFinsupp' R ι κ := by
   rw [finsuppTensorFinsupp', finsuppTensorFinsuppLid, finsuppTensorFinsuppRid,
     TensorProduct.lid_eq_rid]
+
+end

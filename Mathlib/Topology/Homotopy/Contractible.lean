@@ -122,3 +122,5 @@ instance (priority := 100) [ContractibleSpace X] : PathConnectedSpace X := by
   rw [pathConnectedSpace_iff_eq]; use p; ext; tauto
 
 end ContractibleSpace
+
+end

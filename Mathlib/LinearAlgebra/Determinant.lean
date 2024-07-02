@@ -681,3 +681,5 @@ theorem Basis.det_isUnitSMul {w : ι → R} (hw : ∀ i, IsUnit (w i)) :
     e.det (e.isUnitSMul hw) = ∏ i, w i :=
   e.det_unitsSMul_self _
 #align basis.det_is_unit_smul Basis.det_isUnitSMul
+
+end

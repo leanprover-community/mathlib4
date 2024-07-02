@@ -139,3 +139,5 @@ theorem iInf_localization_eq_bot : ⨅ v : PrimeSpectrum R,
 #align prime_spectrum.infi_localization_eq_bot PrimeSpectrum.iInf_localization_eq_bot
 
 end PrimeSpectrum
+
+end

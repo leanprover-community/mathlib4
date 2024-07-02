@@ -478,3 +478,5 @@ theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
 #align Top.coequalizer_is_open_iff TopCat.coequalizer_isOpen_iff
 
 end TopCat
+
+end

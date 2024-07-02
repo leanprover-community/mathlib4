@@ -453,3 +453,5 @@ theorem closedBall_subset_target (hf : ApproximatesLinearOn f (f' : E →L[𝕜]
 #align approximates_linear_on.closed_ball_subset_target ApproximatesLinearOn.closedBall_subset_target
 
 end ApproximatesLinearOn
+
+end

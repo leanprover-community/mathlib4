@@ -231,3 +231,5 @@ theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.na
 end Semiring
 
 end Polynomial
+
+end

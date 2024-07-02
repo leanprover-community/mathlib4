@@ -1504,3 +1504,5 @@ theorem mulLeftMap_eq_mulRightMap {S : Type*} [CommSemiring S] [Module R S] [SMu
   mulLeftMap_eq_mulRightMap_of_commute N m fun _ _ ↦ mul_comm _ _
 
 end Submodule
+
+end

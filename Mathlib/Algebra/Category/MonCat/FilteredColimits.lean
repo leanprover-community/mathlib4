@@ -438,3 +438,5 @@ noncomputable instance forgetPreservesFilteredColimits :
 end
 
 end CommMonCat.FilteredColimits
+
+end

@@ -516,3 +516,5 @@ theorem dist_div_tan_angle_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∠ 
 #align euclidean_geometry.dist_div_tan_angle_of_angle_eq_pi_div_two EuclideanGeometry.dist_div_tan_angle_of_angle_eq_pi_div_two
 
 end EuclideanGeometry
+
+end
