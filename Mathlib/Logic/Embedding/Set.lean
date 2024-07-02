@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.Set.Subset
+import Mathlib.Data.Set.Notation
+import Mathlib.Order.SetNotation
 import Mathlib.Logic.Embedding.Basic
 
 
@@ -157,9 +158,9 @@ variable {α ι : Type*} {s t r : Set α}
 
 /-- For disjoint `s t : Set α`, the natural injection from `↑s ⊕ ↑t` to `α`. -/
 @[simps] def Disjoint.sumSubtypeEmbedding (h : Disjoint s t) : s ⊕ t ↪ α where
-  toFun := Sum.elim Subtype.val Subtype.val
+  toFun := Sum.elim (↑) (↑)
   inj' := by
-    rintro (⟨a,ha⟩ | ⟨a,ha⟩) (⟨b,hb⟩ | ⟨b,hb⟩)
+    rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
     · simp [Subtype.val_inj]
     · simpa using h.ne_of_mem ha hb
     · simpa using h.symm.ne_of_mem ha hb
@@ -182,24 +183,22 @@ variable {α ι : Type*} {s t r : Set α}
 
 /-- For an indexed family `s : ι → Set α` of disjoint sets,
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
-@[simps] def Set.PairwiseDisjoint.sigmaSubtypeEmbedding {s : ι → Set α}
-    (h : univ.PairwiseDisjoint s) : ((i : ι) × s i) ↪ α where
-  toFun := fun ⟨i, x⟩ ↦ x.1
+@[simps] def Pairwise.disjointSigmaSubtypeEmbedding {s : ι → Set α} (h : Pairwise (Disjoint on s)) :
+    (i : ι) × s i ↪ α where
+  toFun x := x.2.1
   inj' := by
-    rintro ⟨i,x⟩ ⟨j,y⟩ (hxy : x.1 = y.1)
-    obtain rfl : i = j := h.elim (mem_univ i) (mem_univ j)
-      (not_disjoint_iff.2 ⟨x.1, x.2, by rw [hxy]; exact y.2⟩)
-    rw [Subtype.val_inj] at hxy
-    rw [hxy]
+    rintro ⟨i,⟨x,hx⟩⟩ ⟨j,⟨-,hx'⟩⟩ rfl
+    obtain rfl : i = j := h.eq (not_disjoint_iff.2 ⟨_, hx, hx'⟩)
+    rfl
 
-@[simp] theorem Set.PairwiseDisjoint.sigmaSubtypeEmbedding_preimage {s : ι → Set α}
-    (h : univ.PairwiseDisjoint s) (i : ι) (r : Set α) :
-    Sigma.mk i ⁻¹' (h.sigmaSubtypeEmbedding ⁻¹' r) = r ∩ (s i) := by
+@[simp] theorem Pairwise.disjointSigmaSubtypeEmbedding_preimage {s : ι → Set α}
+    (h : Pairwise (Disjoint on s)) (i : ι) (r : Set α) :
+    Sigma.mk i ⁻¹' (h.disjointSigmaSubtypeEmbedding ⁻¹' r) = r ∩ s i := by
   ext
   simp
 
-@[simp] theorem Set.PairwiseDisjoint.sigmaSubtypeEmbedding_range {s : ι → Set α}
-    (h : univ.PairwiseDisjoint s) : Set.range h.sigmaSubtypeEmbedding = ⋃ i : ι, s i := by
+@[simp] theorem Pairwise.dijsointSigmaSubtypeEmbedding_range {s : ι → Set α}
+    (h : Pairwise (Disjoint on s)) : Set.range h.disjointSigmaSubtypeEmbedding = ⋃ i, s i := by
   ext
   simp
 
