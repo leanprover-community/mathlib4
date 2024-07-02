@@ -74,6 +74,9 @@ end LightProfinite
 abbrev lightToProfinite : LightProfinite ⥤ Profinite :=
   CompHausLike.toCompHausLike (fun _ ↦ inferInstance)
 
+abbrev lightToProfiniteFullyFaithful : lightToProfinite.FullyFaithful :=
+  CompHausLike.fullyFaithfulToCompHausLike _
+
 /-- The fully faithful embedding of `LightProfinite` in `CompHaus`. -/
 abbrev lightProfiniteToCompHaus : LightProfinite ⥤ CompHaus :=
   compHausLikeToCompHaus _

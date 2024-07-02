@@ -43,7 +43,8 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
       (h : fi.comap (c.π.app i) = fj.comap (c.π.app j))
     obtain ⟨k, ki, kj, _⟩ := IsCofilteredOrEmpty.cone_objs i j
     refine ⟨⟨k⟩, ki.op, kj.op, ?_⟩
-    dsimp?
+    dsimp only [comp_obj, op_obj, toProfinite_obj, functorToPresheaves_obj_obj, CompHausLike.coe_of,
+      Functor.comp_map, op_map, Quiver.Hom.unop_op, functorToPresheaves_obj_map]
     apply DFunLike.ext
     intro x'
     obtain ⟨x, hx⟩ := ((Profinite.epi_iff_surjective (c.π.app k)).mp inferInstance) x'
