@@ -143,10 +143,8 @@ This is the special case of `Valuation.Integers.isUnit_of_one` when the valuatio
 over a field. Let `v` be a valuation on some field `F` and `O` be its integers. For every element
 `x` in `O`, `x` is a unit in `O` if and only if the image of `x` in `F` has valuation 1.
 -/
-theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) :
-    IsUnit x := by
-  apply isUnit_of_one hv _ hvx
-  apply IsUnit.mk0
+theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) : IsUnit x := by
+  refine isUnit_of_one hv (IsUnit.mk0 _ ?_) hvx
   simp only [← v.ne_zero_iff, hvx, ne_eq, one_ne_zero, not_false_eq_true]
 
 theorem eq_algebraMap_or_inv_eq_algebraMap (x : F) :
