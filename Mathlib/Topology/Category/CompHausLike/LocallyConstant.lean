@@ -143,7 +143,6 @@ def sigmaInclIncl {X : Type w} (g : Y → X) (a : α (f'.map g))
       ContinuousMap.coe_mk, Function.comp_apply] at this
     rw [this]
     exact (α.map_preimage_eq_image _ _).symm⟩
-  continuous_toFun := Continuous.subtype_mk (continuous_induced_dom.comp continuous_induced_dom) _
 
 lemma sigmaIncl_comp_sigmaIncl {X : Type w} (g : Y → X) (a : α (f'.map g))
     (b : α (f'.comap (sigmaIncl (f'.map g) a))) :
@@ -345,7 +344,9 @@ def component_hom (a : α (f.comap g)) :
     simp only [α.mk, Set.mem_preimage, Set.mem_singleton_iff]
     erw [α.map_eq_image_comap, α.map_preimage_eq_image_comap]
     ⟩
-  continuous_toFun := Continuous.subtype_mk (Continuous.comp g.continuous continuous_subtype_val) _
+  continuous_toFun := by
+    exact Continuous.subtype_mk (Continuous.comp g.continuous continuous_subtype_val) _
+    -- term mode gives "unknown free variable" error.
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
     (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u+1}))))
