@@ -415,14 +415,15 @@ lemma OpenCover.ext_elem {X : Scheme.{u}} {U : Opens X} (f g : Γ(X, U)) (𝒰 :
 
 /-- If the restriction of a global section to each member of an open cover is zero, then it is
 globally zero. -/
-lemma zero_of_zero_cover {X : Scheme.{u}} (s : Γ(X, ⊤)) (𝒰 : X.OpenCover)
-    (h : ∀ i : 𝒰.J, (𝒰.map i).app ⊤ s = 0) : s = 0 :=
+lemma zero_of_zero_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X, U)) (𝒰 : X.OpenCover)
+    (h : ∀ i : 𝒰.J, (𝒰.map i).app U s = 0) : s = 0 :=
   𝒰.ext_elem s 0 (fun i ↦ by rw [map_zero]; exact h i)
 
 /-- If a global section is nilpotent on each member of a finite open cover, then `f` is
 nilpotent. -/
-lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} (s : Γ(X, ⊤)) (𝒰 : X.OpenCover)
-    [Finite 𝒰.J] (h : ∀ i : 𝒰.J, IsNilpotent (Scheme.Γ.map (𝒰.map i).op s)) : IsNilpotent s := by
+lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X, U))
+    (𝒰 : X.OpenCover) [Finite 𝒰.J] (h : ∀ i : 𝒰.J, IsNilpotent ((𝒰.map i).app U s)) :
+    IsNilpotent s := by
   choose fn hfn using h
   have : Fintype 𝒰.J := Fintype.ofFinite 𝒰.J
   /- the maximum of all `fn i` (exists, because `𝒰.J` is finite) -/

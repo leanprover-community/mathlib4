@@ -146,7 +146,7 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
     P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by
   subst e₁; subst e₂; rfl
 
-/-- In isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
+/-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
 noncomputable def homeomorph [IsIso f] : X ≃ₜ Y :=
   TopCat.homeoOfIso (asIso <| f.val.base)
 
@@ -518,6 +518,9 @@ theorem basicOpen_zero (U : Opens X) : X.basicOpen (0 : Γ(X, U)) = ⊥ :=
 theorem basicOpen_mul : X.basicOpen (f * g) = X.basicOpen f ⊓ X.basicOpen g :=
   RingedSpace.basicOpen_mul _ _ _
 #align algebraic_geometry.Scheme.basic_open_mul AlgebraicGeometry.Scheme.basicOpen_mul
+
+lemma basicOpen_pow {n : ℕ} (h : 0 < n) : X.basicOpen (f ^ n) = X.basicOpen f :=
+  RingedSpace.basicOpen_pow _ _ _ h
 
 theorem basicOpen_of_isUnit {f : Γ(X, U)} (hf : IsUnit f) : X.basicOpen f = U :=
   RingedSpace.basicOpen_of_isUnit _ hf

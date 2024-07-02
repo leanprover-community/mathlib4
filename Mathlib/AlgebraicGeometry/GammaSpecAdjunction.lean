@@ -256,7 +256,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toΓSpec
 
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
-of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
+of `Γ(X, ⊤)` under `toΓSpec` agrees with the associated zero locus on `X`. -/
 lemma toΓSpec_preim_zeroLocus_eq {X : LocallyRingedSpace.{u}}
     (s : Set (X.presheaf.obj (op ⊤))) :
     X.toΓSpec.val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.toRingedSpace.zeroLocus s := by
