@@ -83,3 +83,5 @@ def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
 end ConnectedSpace
 
 end ContinuousMap
+
+end

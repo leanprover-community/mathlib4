@@ -317,3 +317,5 @@ theorem ext_nonempty {μ₁ μ₂ : OuterMeasure α} (h : ∀ s : Set α, s.None
 end OuterMeasure
 
 end MeasureTheory
+
+end

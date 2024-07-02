@@ -406,3 +406,5 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
 end NormNum
 
 end Meta
+
+end Mathlib

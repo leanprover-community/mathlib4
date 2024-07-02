@@ -484,3 +484,5 @@ example (Γ : Subgroup SL(2, ℤ)) : Algebra ℂ (⨁ i, ModularForm Γ i) := in
 end GradedRing
 
 end ModularForm
+
+end

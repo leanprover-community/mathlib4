@@ -65,3 +65,5 @@ to rat casts if the scientific notation is inherited from the one for rationals.
 end NormNum
 
 end Meta
+
+end Mathlib

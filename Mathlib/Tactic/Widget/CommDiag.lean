@@ -136,3 +136,5 @@ def commutativeSquarePresenter : ExprPresenter where
     throwError "Couldn't find a commutative square."
 
 end Widget
+
+end Tactic

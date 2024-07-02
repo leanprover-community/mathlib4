@@ -321,3 +321,5 @@ theorem assoc_liftHom₂ {f g h i : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h]
 end BicategoryCoherence
 
 end Tactic
+
+end Mathlib

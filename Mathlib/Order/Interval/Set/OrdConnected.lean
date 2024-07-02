@@ -356,3 +356,5 @@ theorem ordConnected_iff_uIcc_subset_right (hx : x ∈ s) :
 #align set.ord_connected_iff_uIcc_subset_right Set.ordConnected_iff_uIcc_subset_right
 
 end LinearOrder
+
+end Set

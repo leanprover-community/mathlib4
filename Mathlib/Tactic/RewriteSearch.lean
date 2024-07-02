@@ -330,3 +330,5 @@ elab_rules : tactic |
 end RewriteSearch
 
 end Tactic
+
+end Mathlib

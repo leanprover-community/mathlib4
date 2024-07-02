@@ -237,3 +237,5 @@ elab_rules : tactic
 end LinearCombination
 
 end Tactic
+
+end Mathlib

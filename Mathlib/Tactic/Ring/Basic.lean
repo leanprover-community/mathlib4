@@ -1177,3 +1177,5 @@ elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
 end Ring
 
 end Tactic
+
+end Mathlib

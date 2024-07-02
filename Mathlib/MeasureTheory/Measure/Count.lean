@@ -187,3 +187,5 @@ instance count.isFiniteMeasure [Finite α] :
 end Measure
 
 end MeasureTheory
+
+end

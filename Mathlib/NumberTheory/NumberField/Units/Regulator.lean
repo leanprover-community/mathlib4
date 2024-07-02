@@ -112,3 +112,5 @@ theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (ra
 end Units
 
 end NumberField
+
+end

@@ -597,3 +597,5 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 end NormNum
 
 end Meta
+
+end Mathlib

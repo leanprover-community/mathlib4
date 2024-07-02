@@ -127,3 +127,5 @@ produces three goals with hypotheses
 end Tactic
 
 end Elab
+
+end Lean

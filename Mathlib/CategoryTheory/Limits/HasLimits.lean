@@ -1316,3 +1316,5 @@ end Opposite
 end Limits
 
 end CategoryTheory
+
+end
