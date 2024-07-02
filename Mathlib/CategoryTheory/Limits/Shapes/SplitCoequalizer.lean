@@ -24,9 +24,9 @@ A pair `f g : X ⟶ Y` has a `G`-split coequalizer if `G f, G g` has a split coe
 
 These definitions and constructions are useful in particular for the monadicity theorems.
 
-## TODO
+This file has been adapted to `Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer`. Please try
+to keep them in sync.
 
-Dualise to split equalizers.
 -/
 
 
@@ -62,13 +62,13 @@ structure IsSplitCoequalizer {Z : C} (π : Y ⟶ Z) where
   /-- A map in the opposite direction to `f` and `g` -/
   leftSection : Y ⟶ X
   /-- Composition of `π` with `f` and with `g` agree -/
-  condition : f ≫ π = g ≫ π
+  condition : f ≫ π = g ≫ π := by aesop_cat
   /-- `rightSection` splits `π` -/
-  rightSection_π : rightSection ≫ π = 𝟙 Z
+  rightSection_π : rightSection ≫ π = 𝟙 Z := by aesop_cat
   /-- `leftSection` splits `g` -/
-  leftSection_bottom : leftSection ≫ g = 𝟙 Y
+  leftSection_bottom : leftSection ≫ g = 𝟙 Y := by aesop_cat
   /-- `leftSection` composed with `f` is `pi` composed with `rightSection` -/
-  leftSection_top : leftSection ≫ f = π ≫ rightSection
+  leftSection_top : leftSection ≫ f = π ≫ rightSection := by aesop_cat
 #align category_theory.is_split_coequalizer CategoryTheory.IsSplitCoequalizer
 #align category_theory.is_split_coequalizer.right_section CategoryTheory.IsSplitCoequalizer.rightSection
 #align category_theory.is_split_coequalizer.left_section CategoryTheory.IsSplitCoequalizer.leftSection
@@ -77,7 +77,7 @@ structure IsSplitCoequalizer {Z : C} (π : Y ⟶ Z) where
 #align category_theory.is_split_coequalizer.left_section_top CategoryTheory.IsSplitCoequalizer.leftSection_top
 
 instance {X : C} : Inhabited (IsSplitCoequalizer (𝟙 X) (𝟙 X) (𝟙 X)) where
-  default := ⟨𝟙 X, 𝟙 X, rfl, Category.id_comp _, Category.id_comp _, rfl⟩
+  default := { rightSection := 𝟙 X, leftSection := 𝟙 X }
 
 open IsSplitCoequalizer
 
