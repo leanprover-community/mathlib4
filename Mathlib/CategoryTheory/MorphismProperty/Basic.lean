@@ -143,13 +143,13 @@ theorem cancel_right_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P
   ⟨fun h => by simpa using hP.2 (asIso g).symm (f ≫ g) h, hP.2 (asIso g) f⟩
 #align category_theory.morphism_property.respects_iso.cancel_right_is_iso CategoryTheory.MorphismProperty.cancel_right_of_respectsIso
 
-theorem arrow_iso_iff {P : MorphismProperty C} [RespectsIso P] {f g : Arrow C}
+theorem arrow_iso_iff (P : MorphismProperty C) [RespectsIso P] {f g : Arrow C}
     (e : f ≅ g) : P f.hom ↔ P g.hom := by
   simp [← Arrow.inv_left_hom_right e.hom, cancel_left_of_respectsIso,
     cancel_right_of_respectsIso]
 #align category_theory.morphism_property.respects_iso.arrow_iso_iff CategoryTheory.MorphismProperty.arrow_iso_iff
 
-theorem arrow_mk_iso_iff {P : MorphismProperty C} [RespectsIso P] {W X Y Z : C}
+theorem arrow_mk_iso_iff (P : MorphismProperty C) [RespectsIso P] {W X Y Z : C}
     {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) : P f ↔ P g :=
   P.arrow_iso_iff e
 #align category_theory.morphism_property.respects_iso.arrow_mk_iso_iff CategoryTheory.MorphismProperty.arrow_mk_iso_iff
