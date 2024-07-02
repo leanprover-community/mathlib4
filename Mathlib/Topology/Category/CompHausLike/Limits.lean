@@ -286,10 +286,10 @@ A typeclass describing the property that forming all explicit pullbacks is stabl
 property `P`.
 -/
 class HasExplicitPullbacks : Prop where
-  hasExplicitPullbacks {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y ⟶ B) :
+  hasProp {X Y B : CompHausLike P} (f : X ⟶ B) (g : Y ⟶ B) :
     HasExplicitPullback f g
 
-attribute [instance] HasExplicitPullbacks.hasExplicitPullbacks
+attribute [instance] HasExplicitPullbacks.hasProp
 
 instance [HasExplicitPullbacks P] : HasPullbacks (CompHausLike P) where
   has_limit F :=
