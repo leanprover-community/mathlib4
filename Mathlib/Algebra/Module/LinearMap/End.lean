@@ -6,7 +6,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Endomorphisms of a module
@@ -204,7 +203,7 @@ theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
     Surjective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by omega), pow_succ', coe_mul] at h
+  rw [← Nat.succ_pred_eq_of_pos (Nat.pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
   exact Surjective.of_comp h
 #align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
 
