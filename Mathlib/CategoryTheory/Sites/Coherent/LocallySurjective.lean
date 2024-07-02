@@ -27,7 +27,7 @@ and extensive topologies.
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
 
-universe v w
+universe w
 
 open CategoryTheory Sheaf Limits Opposite
 
