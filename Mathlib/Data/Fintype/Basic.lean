@@ -155,13 +155,72 @@ theorem codisjoint_right : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ t → a ∈ s :
   Codisjoint_comm.trans codisjoint_left
 #align finset.codisjoint_right Finset.codisjoint_right
 
-section BooleanAlgebra
-
-variable [DecidableEq α] {a : α}
-
-instance booleanAlgebra : BooleanAlgebra (Finset α) :=
+instance booleanAlgebra [DecidableEq α] : BooleanAlgebra (Finset α) :=
   GeneralizedBooleanAlgebra.toBooleanAlgebra
 #align finset.boolean_algebra Finset.booleanAlgebra
+
+end Finset
+
+namespace Mathlib.Meta
+open Lean Elab Term Meta Batteries.ExtendedBinder
+
+/-- Elaborate set builder notation for `Finset`.
+
+* `{x | p x}` is elaborated as `Finset.filter (fun x ↦ p x) Finset.univ` if the expected type is
+  `Finset ?α`.
+* `{x : α | p x}` is elaborated as `Finset.filter (fun x : α ↦ p x) Finset.univ` if the expected
+  type is `Finset ?β`.
+* `{x ∉ s | p x}` is elaborated as `Finset.filter (fun x ↦ p x) sᶜ` if either the expected type is
+  `Finset ?α` or the expected type is not `Set ?α` and `s` has expected type `Finset ?α`.
+* `{x ≠ a | p x}` is elaborated as `Finset.filter (fun x ↦ p x) {a}ᶜ` if the expected type is
+  `Finset ?α`.
+
+See also
+* `Init.Set` for the `Set` builder notation elaborator that this elaborator partly overrides.
+* `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
+  syntax of the form `{x ∈ s | p x}`.
+* `Data.Fintype.Basic` for the `Finset` builder notation elaborator handling syntax of the form
+  `{x | p x}`, `{x : α | p x}`, `{x ∉ s | p x}`, `{x ≠ a | p x}`.
+* `Order.LocallyFinite.Basic` for the `Finset` builder notation elaborator handling syntax of the
+  form `{x ≤ a | p x}`, `{x ≥ a | p x}`, `{x < a | p x}`, `{x > a | p x}`.
+
+TODO: Write a delaborator
+-/
+@[term_elab setBuilder]
+def elabFinsetBuilderSetOf : TermElab
+  | `({ $x:ident | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) Finset.univ)) expectedType?
+  | `({ $x:ident : $t | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident : $t ↦ $p) Finset.univ)) expectedType?
+  | `({ $x:ident ∉ $s:term | $p }), expectedType? => do
+    -- If the expected type is known to be `Set ?α`, give up. If it is not known to be `Set ?α` or
+    -- `Finset ?α`, check the expected type of `s`.
+    unless ← knownToBeFinsetNotSet expectedType? do
+      let ty ← try whnfR (← inferType (← elabTerm s none)) catch _ => throwUnsupportedSyntax
+      -- If the expected type of `s` is not known to be `Finset ?α`, give up.
+      match_expr ty with
+      | Finset _ => pure ()
+      | _ => throwUnsupportedSyntax
+    -- Finally, we can elaborate the syntax as a finset.
+    -- TODO: Seems a bit wasteful to have computed the expected type but still use `expectedType?`.
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) $sᶜ)) expectedType?
+  | `({ $x:ident ≠ $a | $p }), expectedType? => do
+    -- If the expected type is not known to be `Finset ?α`, give up.
+    unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) (singleton $a)ᶜ)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+end Mathlib.Meta
+
+namespace Finset
+variable [Fintype α] {s t : Finset α}
+
+section BooleanAlgebra
+variable [DecidableEq α] {a : α}
 
 theorem sdiff_eq_inter_compl (s t : Finset α) : s \ t = s ∩ tᶜ :=
   sdiff_eq
@@ -761,7 +820,7 @@ theorem toFinset_eq_univ [Fintype α] [Fintype s] : s.toFinset = Finset.univ ↔
 
 @[simp]
 theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype { x | p x }] :
-    { x | p x }.toFinset = Finset.univ.filter p := by
+    Set.toFinset {x | p x} = Finset.univ.filter p := by
   ext
   simp
 #align set.to_finset_set_of Set.toFinset_setOf

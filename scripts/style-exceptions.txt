@@ -99,6 +99,7 @@ Mathlib/Order/ConditionallyCompleteLattice/Basic.lean : line 1 : ERR_NUM_LIN : 1
 Mathlib/Order/Filter/AtTopBot.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2122 lines, try to split it up
 Mathlib/Order/Filter/Basic.lean : line 1 : ERR_NUM_LIN : 3600 file contains 3406 lines, try to split it up
 Mathlib/Order/Hom/Lattice.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1890 lines, try to split it up
+Mathlib/Order/Interval/Finset/Defs.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1970 lines, try to split it up
 Mathlib/Order/Interval/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2006 lines, try to split it up
 Mathlib/Order/LiminfLimsup.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1538 lines, try to split it up
 Mathlib/Order/SuccPred/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1599 lines, try to split it up
