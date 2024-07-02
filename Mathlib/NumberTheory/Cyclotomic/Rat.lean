@@ -467,7 +467,6 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
       exact htwo.symm.lt_of_le hp.1.two_le
     · exact one_lt_mul_of_lt_of_le (one_lt_pow hp.1.one_lt hk)
         (have := Nat.Prime.two_le hp.out; by omega)
-
   rw [sub_eq_iff_eq_add] at h
   -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
   -- coordinates in the base `pB`, we obtain that `1` is a multiple of `p`, contradiction.
@@ -519,6 +518,7 @@ theorem finite_quotient_span_sub_one' [hcycl : IsCyclotomicExtension {p} ℚ K]
   have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by simpa using hcycl
   replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
   exact hζ.finite_quotient_span_sub_one
+
 /-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`, we have that
   `ζ - 1` divides `p` in `𝓞 K`. -/
 lemma toInteger_sub_one_dvd_prime [hcycl : IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -550,6 +550,19 @@ lemma toInteger_sub_one_dvd_prime' [hcycl : IsCyclotomicExtension {p} ℚ K]
   replace hζ : IsPrimitiveRoot ζ (p ^ (0 + 1)) := by simpa using hζ
   exact toInteger_sub_one_dvd_prime hζ
 
+/-- We have that `hζ.toInteger - 1` does not divide `2`. -/
+lemma toInteger_sub_one_not_dvd_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hodd : p ≠ 2) : ¬ hζ.toInteger - 1 ∣ 2 := fun h ↦ by
+  have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
+  replace h : hζ.toInteger - 1 ∣ ↑(2 : ℤ) := by simp [h]
+  rw [← Ideal.norm_dvd_iff, hζ.norm_toInteger_sub_one_of_prime_ne_two hodd] at h
+  · refine hodd <| PNat.coe_inj.1 <| (prime_dvd_prime_iff_eq ?_ ?_).1 ?_
+    · exact Nat.prime_iff.1 hp.1
+    · exact Nat.prime_iff.1 Nat.prime_two
+    · exact Int.ofNat_dvd.mp h
+  · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two hodd]
+    exact Nat.prime_iff_prime_int.1 hp.1
+
 end IsPrimitiveRoot
 
 section absdiscr
@@ -563,10 +576,12 @@ variable (K p k)
 /-- We compute the absolute discriminant of a `p ^ k`-th cyclotomic field.
   Beware that in the cases `p ^ k = 1` and `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`.
   See also the results below. -/
-theorem absdiscr_prime_pow [NumberField K] [IsCyclotomicExtension {p ^ k} ℚ K] :
+theorem absdiscr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
+    haveI : NumberField K := IsCyclotomicExtension.numberField {p ^ k} ℚ K
     NumberField.discr K =
     (-1) ^ ((p ^ k : ℕ).totient / 2) * p ^ ((p : ℕ) ^ (k - 1) * ((p - 1) * k - 1)) := by
   have hζ := IsCyclotomicExtension.zeta_spec (p ^ k) ℚ K
+  have : NumberField K := IsCyclotomicExtension.numberField {p ^ k} ℚ K
   let pB₁ := integralPowerBasis hζ
   apply (algebraMap ℤ ℚ).injective_int
   rw [← NumberField.discr_eq_discr _ pB₁.basis, ← Algebra.discr_localizationLocalization ℤ ℤ⁰ K]
@@ -585,13 +600,15 @@ theorem absdiscr_prime_pow [NumberField K] [IsCyclotomicExtension {p ^ k} ℚ K]
 open Nat in
 /-- We compute the absolute discriminant of a `p ^ (k + 1)`-th cyclotomic field.
   Beware that in the case `p ^ k = 2` the formula uses `1 / 2 = 0`. See also the results below. -/
-theorem absdiscr_prime_pow_succ [NumberField K] [IsCyclotomicExtension {p ^ (k + 1)} ℚ K] :
+theorem absdiscr_prime_pow_succ [IsCyclotomicExtension {p ^ (k + 1)} ℚ K] :
+    haveI : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
     NumberField.discr K =
     (-1) ^ ((p : ℕ) ^ k * (p - 1) / 2) * p ^ ((p : ℕ) ^ k * ((p - 1) * (k + 1) - 1)) := by
   simpa [totient_prime_pow hp.out (succ_pos k)] using absdiscr_prime_pow p (k + 1) K
 
 /-- We compute the absolute discriminant of a `p`-th cyclotomic field where `p` is prime. -/
-theorem absdiscr_prime [NumberField K] [IsCyclotomicExtension {p} ℚ K] :
+theorem absdiscr_prime [IsCyclotomicExtension {p} ℚ K] :
+    haveI : NumberField K := IsCyclotomicExtension.numberField {p} ℚ K
     NumberField.discr K = (-1) ^ (((p : ℕ) - 1) / 2) * p ^ ((p : ℕ) - 2) := by
   have : IsCyclotomicExtension {p ^ (0 + 1)} ℚ K := by
     rw [zero_add, pow_one]

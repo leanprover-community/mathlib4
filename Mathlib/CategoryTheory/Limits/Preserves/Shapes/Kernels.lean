@@ -97,7 +97,8 @@ def isLimitForkMapOfIsLimit' [PreservesLimit (parallelPair f 0) G]
   isLimitMapConeForkEquiv' G w (PreservesLimit.preserves l)
 #align category_theory.limits.is_limit_fork_map_of_is_limit' CategoryTheory.Limits.isLimitForkMapOfIsLimit'
 
-variable (f) [HasKernel f]
+variable (f)
+variable [HasKernel f]
 
 /-- If `G` preserves kernels and `C` has them, then the fork constructed of the mapped morphisms of
 a kernel fork is a limit.
@@ -224,7 +225,8 @@ def isColimitCoforkMapOfIsColimit' [PreservesColimit (parallelPair f 0) G]
   isColimitMapCoconeCoforkEquiv' G w (PreservesColimit.preserves l)
 #align category_theory.limits.is_colimit_cofork_map_of_is_colimit' CategoryTheory.Limits.isColimitCoforkMapOfIsColimit'
 
-variable (f) [HasCokernel f]
+variable (f)
+variable [HasCokernel f]
 
 /--
 If `G` preserves cokernels and `C` has them, then the cofork constructed of the mapped morphisms of

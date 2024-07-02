@@ -14,8 +14,8 @@ In this file we establish functorial properties of the adic completion.
 
 ## Main definitions
 
-- `LinearMap.adicCauchy I f`: the linear map on `I`-adic cauchy sequences induced by `f`
-- `LinearMap.adicCompletion I f`: the linear map on `I`-adic completions induced by `f`
+- `AdicCauchySequence.map I f`: the linear map on `I`-adic cauchy sequences induced by `f`
+- `AdicCompletion.map I f`: the linear map on `I`-adic completions induced by `f`
 
 ## Main results
 
@@ -104,6 +104,10 @@ theorem map_comp_apply (f : M →ₗ[R] N) (g : N →ₗ[R] P) (a : AdicCauchySe
     map I g (map I f a) = map I (g ∘ₗ f) a :=
   rfl
 
+@[simp]
+theorem map_zero : map I (0 : M →ₗ[R] N) = 0 :=
+  rfl
+
 end AdicCauchySequence
 
 /-- `R`-linear version of `adicCompletion`. -/
@@ -181,6 +185,11 @@ theorem map_mk (f : M →ₗ[R] N) (a : AdicCauchySequence I M) :
     map I f (AdicCompletion.mk I M a) =
       AdicCompletion.mk I N (AdicCauchySequence.map I f a) :=
   rfl
+
+@[simp]
+theorem map_zero : map I (0 : M →ₗ[R] N) = 0 := by
+  ext
+  simp
 
 @[simp]
 theorem val_sum {α : Type*} (s : Finset α) (f : α → AdicCompletion I M) (n : ℕ) :

@@ -39,9 +39,6 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
-set_option autoImplicit true
-
-
 variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
@@ -89,7 +86,7 @@ theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :
   f.init' _ _
 #align initial_seg.init InitialSeg.init
 
-theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
+theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 

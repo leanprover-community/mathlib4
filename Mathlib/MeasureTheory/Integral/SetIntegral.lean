@@ -210,7 +210,7 @@ theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpac
     _ = ∫⁻ _ in s, 1 ∂μ := by
       rw [ofReal_integral_norm_eq_lintegral_nnnorm (integrableOn_const.2 (Or.inr hs.lt_top))]
       simp only [nnnorm_one, ENNReal.coe_one]
-    _ = μ s := set_lintegral_one _
+    _ = μ s := setLIntegral_one _
 #align measure_theory.of_real_set_integral_one_of_measure_ne_top MeasureTheory.ofReal_setIntegral_one_of_measure_ne_top
 
 @[deprecated (since := "2024-04-17")]
@@ -694,7 +694,7 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R) (hfm : Measur
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
     refine
-      set_lintegral_mono (Measurable.nnnorm ?_).coe_nnreal_ennreal hfm.nnnorm.coe_nnreal_ennreal
+      setLIntegral_mono (Measurable.nnnorm ?_).coe_nnreal_ennreal hfm.nnnorm.coe_nnreal_ennreal
         fun x hx => ?_
     · exact measurable_const
     · simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR,

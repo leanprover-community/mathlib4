@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Algebra.GroupWithZero.Divisibility
 
 #align_import set_theory.ordinal.arithmetic from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
@@ -611,7 +612,7 @@ theorem sub_isLimit {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem one_add_omega : 1 + ω = ω := by
   refine le_antisymm ?_ (le_add_left _ _)
-  rw [omega, ← lift_one.{_, 0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
+  rw [omega, ← lift_one.{0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
   refine ⟨RelEmbedding.collapse (RelEmbedding.ofMonotone ?_ ?_)⟩
   · apply Sum.rec
     · exact fun _ => 0

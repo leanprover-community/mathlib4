@@ -101,7 +101,7 @@ lemma finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
 
 theorem finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
     finsuppLeft R M N ι t i = rTensor N (Finsupp.lapply i) t := by
-  induction t using TensorProduct.induction_on with
+  induction t with
   | zero => simp
   | tmul f n => simp only [finsuppLeft_apply_tmul_apply, rTensor_tmul, Finsupp.lapply_apply]
   | add x y hx hy => simp [map_add, hx, hy]
@@ -136,7 +136,7 @@ lemma finsuppRight_apply_tmul_apply (m : M) (p : ι →₀ N) (i : ι) :
 
 theorem finsuppRight_apply (t : M ⊗[R] (ι →₀ N)) (i : ι) :
     finsuppRight R M N ι t i = lTensor M (Finsupp.lapply i) t := by
-  induction t using TensorProduct.induction_on with
+  induction t with
   | zero => simp
   | tmul m f => simp [finsuppRight_apply_tmul_apply]
   | add x y hx hy => simp [map_add, hx, hy]
@@ -152,7 +152,7 @@ variable {S : Type*} [CommSemiring S] [Algebra R S]
 
 lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
     finsuppLeft R M N ι (s • t) = s • finsuppLeft R M N ι t := by
-  induction t using TensorProduct.induction_on with
+  induction t with
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | tmul p n => ext; simp [smul_tmul', finsuppLeft_apply_tmul_apply]

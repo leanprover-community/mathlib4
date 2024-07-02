@@ -231,8 +231,7 @@ lemma Algebra.intTrace_eq_of_isLocalization
     (x : B) :
     algebraMap A Aₘ (Algebra.intTrace A B x) = Algebra.intTrace Aₘ Bₘ (algebraMap B Bₘ x) := by
   by_cases hM : 0 ∈ M
-  · have := IsLocalization.uniqueOfZeroMem (S := Aₘ) hM
-    exact Subsingleton.elim _ _
+  · subsingleton [IsLocalization.uniqueOfZeroMem (S := Aₘ) hM]
   replace hM : M ≤ A⁰ := fun x hx ↦ mem_nonZeroDivisors_iff_ne_zero.mpr (fun e ↦ hM (e ▸ hx))
   let K := FractionRing A
   let L := FractionRing B
@@ -387,8 +386,7 @@ variable [IsSeparable (FractionRing Aₘ) (FractionRing Bₘ)]
 lemma Algebra.intNorm_eq_of_isLocalization (x : B) :
     algebraMap A Aₘ (Algebra.intNorm A B x) = Algebra.intNorm Aₘ Bₘ (algebraMap B Bₘ x) := by
   by_cases hM : 0 ∈ M
-  · have := IsLocalization.uniqueOfZeroMem (S := Aₘ) hM
-    exact Subsingleton.elim _ _
+  · subsingleton [IsLocalization.uniqueOfZeroMem (S := Aₘ) hM]
   replace hM : M ≤ A⁰ := fun x hx ↦ mem_nonZeroDivisors_iff_ne_zero.mpr (fun e ↦ hM (e ▸ hx))
   let K := FractionRing A
   let L := FractionRing B

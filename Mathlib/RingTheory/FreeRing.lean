@@ -56,7 +56,7 @@ theorem of_injective : Function.Injective (of : α → FreeRing α) :=
   FreeAbelianGroup.of_injective.comp FreeMonoid.of_injective
 #align free_ring.of_injective FreeRing.of_injective
 
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
     C z :=

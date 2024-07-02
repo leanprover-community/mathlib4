@@ -18,7 +18,7 @@ pullbacks where one of the maps is an open embedding
 
 -/
 
-set_option autoImplicit true
+universe u
 
 open CategoryTheory
 

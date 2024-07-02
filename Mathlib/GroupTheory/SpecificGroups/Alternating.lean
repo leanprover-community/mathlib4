@@ -82,7 +82,7 @@ theorem prod_list_swap_mem_alternatingGroup_iff_even_length {l : List (Perm α)}
 
 theorem IsThreeCycle.mem_alternatingGroup {f : Perm α} (h : IsThreeCycle f) :
     f ∈ alternatingGroup α :=
-  mem_alternatingGroup.mpr h.sign
+  Perm.mem_alternatingGroup.mpr h.sign
 #align equiv.perm.is_three_cycle.mem_alternating_group Equiv.Perm.IsThreeCycle.mem_alternatingGroup
 
 set_option linter.deprecated false in

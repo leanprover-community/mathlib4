@@ -350,7 +350,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁]; simp [m, List.get?_map, List.get?_range, hm, m1, m2]
+  simp [G₁]; simp [m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -463,7 +463,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp [G₁]; simp [m, List.get?_map, List.get?_range, hm, m1, m2]
+  simp [G₁]; simp [m, List.getElem?_map, List.getElem?_range, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -723,7 +723,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
         cases' i with i
         · exact ⟨m, by simpa using hf _ _ h₁, m0⟩
         · rcases hy₂ (Nat.lt_of_succ_lt_succ im) with ⟨z, hz, z0⟩
-          exact ⟨z, by simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using hz, z0⟩
+          exact ⟨z, by simpa [add_comm, add_left_comm] using hz, z0⟩
 #align nat.partrec.code.evaln_sound Nat.Partrec.Code.evaln_sound
 
 theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := by
@@ -944,10 +944,10 @@ private theorem hG : Primrec G := by
       Primrec.fst
 
 private theorem evaln_map (k c n) :
-    ((((List.range k).get? n).map (evaln k c)).bind fun b => b) = evaln k c n := by
+    ((((List.range k)[n]?).map (evaln k c)).bind fun b => b) = evaln k c n := by
   by_cases kn : n < k
-  · simp [List.get?_range kn]
-  · rw [List.get?_len_le]
+  · simp [List.getElem?_range kn]
+  · rw [List.getElem?_len_le]
     · cases e : evaln k c n
       · rfl
       exact kn.elim (evaln_bound e)
@@ -962,7 +962,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
     Primrec.nat_strong_rec _ (hG.comp Primrec.snd).to₂ fun _ p => by
       simp only [G, prod_ofNat_val, ofNat_nat, List.length_map, List.length_range,
         Nat.pair_unpair, Option.some_inj]
-      refine List.map_congr fun n => ?_
+      refine List.map_congr_left fun n => ?_
       have : List.range p = List.range (Nat.pair p.unpair.1 (encode (ofNat Code p.unpair.2))) := by
         simp
       rw [this]
@@ -981,7 +981,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
               (List.range n.unpair.1).map (evaln n.unpair.1 (ofNat Code n.unpair.2))) (k', c') n =
             evaln k' c' n := by
         intro k₁ c₁ n₁ hl
-        simp [lup, List.get?_range hl, evaln_map, Bind.bind]
+        simp [lup, List.getElem?_range hl, evaln_map, Bind.bind]
       cases' c with cf cg cf cg cf cg cf <;>
         simp [evaln, nk, Bind.bind, Functor.map, Seq.seq, pure]
       · cases' encode_lt_pair cf cg with lf lg

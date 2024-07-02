@@ -317,7 +317,8 @@ lemma toScott_inj {a b : α} : toScott a = toScott b ↔ a = b := Iff.rfl
 @[simp, nolint simpNF]
 lemma ofScott_inj {a b : WithScott α} : ofScott a = ofScott b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithScott`. Use as `induction x using WithScott.rec`. -/
+/-- A recursor for `WithScott`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithScott α → Sort _}
     (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a ↦ h (ofScott a)
 

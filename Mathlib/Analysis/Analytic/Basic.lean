@@ -3,6 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
+import Mathlib.Algebra.Star.Order
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin
@@ -1023,9 +1024,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
 /-- A one-dimensional formal multilinear series representing the zero function is zero. -/
 theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x : 𝕜}
     (h : HasFPowerSeriesAt 0 p x) : p = 0 := by
-  -- Porting note: `funext; ext` was `ext (n x)`
-  funext n
-  ext x
+  ext n x
   rw [← mkPiRing_apply_one_eq_self (p n)]
   simp [h.apply_eq_zero n 1]
 #align has_fpower_series_at.eq_zero HasFPowerSeriesAt.eq_zero

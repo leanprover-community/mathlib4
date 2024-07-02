@@ -174,11 +174,14 @@ theorem withDensity_pdf_le_map {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Me
     (μ : Measure E := by volume_tac) : μ.withDensity (pdf X ℙ μ) ≤ map X ℙ :=
   withDensity_rnDeriv_le _ _
 
-theorem set_lintegral_pdf_le_map {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
+theorem setLIntegral_pdf_le_map {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) (s : Set E) :
     ∫⁻ x in s, pdf X ℙ μ x ∂μ ≤ map X ℙ s := by
   apply (withDensity_apply_le _ s).trans
   exact withDensity_pdf_le_map _ _ _ s
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_pdf_le_map := setLIntegral_pdf_le_map
 
 theorem map_eq_withDensity_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] :
@@ -186,11 +189,14 @@ theorem map_eq_withDensity_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Me
   rw [pdf_def, withDensity_rnDeriv_eq _ _ hX.absolutelyContinuous]
 #align measure_theory.map_eq_with_density_pdf MeasureTheory.map_eq_withDensity_pdf
 
-theorem map_eq_set_lintegral_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
+theorem map_eq_setLIntegral_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] {s : Set E}
     (hs : MeasurableSet s) : map X ℙ s = ∫⁻ x in s, pdf X ℙ μ x ∂μ := by
   rw [← withDensity_apply _ hs, map_eq_withDensity_pdf X ℙ μ]
-#align measure_theory.map_eq_set_lintegral_pdf MeasureTheory.map_eq_set_lintegral_pdf
+#align measure_theory.map_eq_set_lintegral_pdf MeasureTheory.map_eq_setLIntegral_pdf
+
+@[deprecated (since := "2024-06-29")]
+alias map_eq_set_lintegral_pdf := map_eq_setLIntegral_pdf
 
 namespace pdf
 
@@ -201,7 +207,7 @@ protected theorem congr {X Y : Ω → E} (hXY : X =ᵐ[ℙ] Y) : pdf X ℙ μ = 
 
 theorem lintegral_eq_measure_univ {X : Ω → E} [HasPDF X ℙ μ] :
     ∫⁻ x, pdf X ℙ μ x ∂μ = ℙ Set.univ := by
-  rw [← set_lintegral_univ, ← map_eq_set_lintegral_pdf X ℙ μ MeasurableSet.univ,
+  rw [← setLIntegral_univ, ← map_eq_setLIntegral_pdf X ℙ μ MeasurableSet.univ,
     map_apply_of_aemeasurable (HasPDF.aemeasurable X ℙ μ) MeasurableSet.univ, Set.preimage_univ]
 #align measure_theory.pdf.lintegral_eq_measure_univ MeasureTheory.pdf.lintegral_eq_measure_univ
 
@@ -246,7 +252,6 @@ theorem integrable_pdf_smul_iff [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X �
   erw [← integrable_map_measure (hf.mono_ac HasPDF.absolutelyContinuous)
     (HasPDF.aemeasurable X ℙ μ),
     map_eq_withDensity_pdf X ℙ μ, pdf_def, integrable_rnDeriv_smul_iff HasPDF.absolutelyContinuous]
-  eta_reduce
   rw [withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
 #align measure_theory.pdf.integrable_iff_integrable_mul_pdf MeasureTheory.pdf.integrable_pdf_smul_iff
 
@@ -286,7 +291,7 @@ theorem quasiMeasurePreserving_hasPDF {X : Ω → E} [HasPDF X ℙ μ] (hX : AEM
   rw [map_apply hg.measurable hsm, withDensity_apply _ (hg.measurable hsm)]
   have := hg.absolutelyContinuous hs
   rw [map_apply hg.measurable hsm] at this
-  exact set_lintegral_measure_zero _ _ this
+  exact setLIntegral_measure_zero _ _ this
 #align measure_theory.pdf.quasi_measure_preserving_has_pdf MeasureTheory.pdf.quasiMeasurePreserving_hasPDF
 
 theorem quasiMeasurePreserving_hasPDF' [IsFiniteMeasure ℙ] [SigmaFinite ν] {X : Ω → E}
@@ -358,7 +363,7 @@ theorem indepFun_iff_pdf_prod_eq_pdf_mul_pdf
       (μ.prod ν).withDensity fun z ↦ pdf X ℙ μ z.1 * pdf Y ℙ ν z.2 :=
     prod_eq fun s t hs ht ↦ by rw [withDensity_apply _ (hs.prod ht), ← prod_restrict,
       lintegral_prod_mul (measurable_pdf X ℙ μ).aemeasurable (measurable_pdf Y ℙ ν).aemeasurable,
-      map_eq_set_lintegral_pdf X ℙ μ hs, map_eq_set_lintegral_pdf Y ℙ ν ht]
+      map_eq_setLIntegral_pdf X ℙ μ hs, map_eq_setLIntegral_pdf Y ℙ ν ht]
   rw [indepFun_iff_map_prod_eq_prod_map_map (HasPDF.aemeasurable X ℙ μ) (HasPDF.aemeasurable Y ℙ ν),
     ← eq_of_map_eq_withDensity, h₀]
   exact (((measurable_pdf X ℙ μ).comp measurable_fst).mul

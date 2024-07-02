@@ -3,6 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.List.GetD
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Function.Iterate
 
@@ -782,7 +784,7 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
     refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
-    rw [List.get?_map, List.indexOf_get? (m a), Option.map_some']
+    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_indexOf  (m a), Option.map_some']
 #align primrec.dom_fintype Primrec.dom_fintype
 
 -- Porting note: These are new lemmas
@@ -1148,7 +1150,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
   suffices Primrec₂ fun a n => (List.range n).map (f a) from
     Primrec₂.option_some_iff.1 <|
       (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a n => by
-        simp [List.get?_range (Nat.lt_succ_self n)]
+        simp [List.getElem?_range (Nat.lt_succ_self n)]
   Primrec₂.option_some_iff.1 <|
     (nat_rec (const (some []))
           (to₂ <|
@@ -1224,8 +1226,8 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
       have bindList_succ : ∀ i, bindList b (i + 1) = (bindList b i).bind l := fun _ => rfl
       induction' i with i ih
       · symm; simpa [graph] using bindList_eq_nil
-      · simp [Nat.succ_eq_add_one, graph_succ, bindList_succ, ih (Nat.le_of_lt hi),
-          Nat.succ_sub (Nat.lt_succ.mp hi)]
+      · simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.lt_succ.mp hi),
+          Nat.succ_eq_add_one, bindList_succ, Nat.reduceSubDiff]
         apply List.filterMap_eq_map_iff_forall_eq_some.mpr
         intro b' ha'; simp; rw [mapGraph_graph]
         · exact H b'

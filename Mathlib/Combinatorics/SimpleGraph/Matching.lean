@@ -70,7 +70,7 @@ theorem IsMatching.toEdge_eq_of_adj {M : Subgraph G} (h : M.IsMatching) {v w : V
 theorem IsMatching.toEdge.surjective {M : Subgraph G} (h : M.IsMatching) :
     Function.Surjective h.toEdge := by
   rintro ⟨e, he⟩
-  refine Sym2.ind (fun x y he => ?_) e he
+  induction' e with x y
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
 #align simple_graph.subgraph.is_matching.to_edge.surjective SimpleGraph.Subgraph.IsMatching.toEdge.surjective
 

@@ -17,6 +17,8 @@ Of course, one could generalize to maps between pointed topological spaces, but 
 the purpose of this type.
 -/
 
+assert_not_exists StarOrderedRing
+
 open Set Function
 
 /-- The type of continuous maps which map zero to zero.

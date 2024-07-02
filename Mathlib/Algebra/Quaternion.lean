@@ -1557,6 +1557,15 @@ theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
     #(Set.univ : Set ℍ[R,c₁,c₂]) = #R := by rw [mk_univ_quaternionAlgebra, pow_four]
 #align cardinal.mk_univ_quaternion_algebra_of_infinite Cardinal.mk_univ_quaternionAlgebra_of_infinite
 
+/-- Show the quaternion ⟨w, x, y, z⟩ as a string "{ re := w, imI := x, imJ := y, imK := z }".
+
+For the typical case of quaternions over ℝ, each component will show as a Cauchy sequence due to
+the way Real numbers are represented.
+-/
+instance [Repr R] {a b : R} : Repr ℍ[R, a, b] where
+  reprPrec q _ :=
+    s!"\{ re := {repr q.re}, imI := {repr q.imI}, imJ := {repr q.imJ}, imK := {repr q.imK} }"
+
 end QuaternionAlgebra
 
 section Quaternion

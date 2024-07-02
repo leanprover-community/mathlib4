@@ -141,6 +141,18 @@ instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
 
 end Decidable
 
+lemma monotone_inclusion_le_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.trans hkj⟩ : { i // i ≤ k } → { i // i ≤ j}) :=
+  fun _ _ h => h
+
+lemma monotone_inclusion_lt_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.le.trans hkj⟩ : { i // i < k } → { i // i ≤ j}) :=
+  fun _ _ h => h
+
+lemma monotone_inclusion_lt_lt_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, lt_of_lt_of_le hi hkj⟩ : { i // i < k } → { i // i < j}) :=
+  fun _ _ h => h
+
 /-! ### Monotonicity on the dual order
 
 Strictly, many of the `*On.dual` lemmas in this section should use `ofDual ⁻¹' s` instead of `s`,

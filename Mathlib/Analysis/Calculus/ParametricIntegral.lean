@@ -110,7 +110,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       convert hasFDerivAt_of_subsingleton _ x₀
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         simpa [SeparatingDual.completeSpace_continuousLinearMap_iff] using hE
-      simp only [integral, hE, ↓reduceDite, this]
+      simp only [integral, hE, ↓reduceDIte, this]
       exact hasFDerivAt_const 0 x₀
   have h_ball : ball x₀ ε ∈ 𝓝 x₀ := ball_mem_nhds x₀ ε_pos
   have : ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖⁻¹ * ‖((∫ a, F x a ∂μ) - ∫ a, F x₀ a ∂μ) - (∫ a, F' a ∂μ) (x - x₀)‖ =

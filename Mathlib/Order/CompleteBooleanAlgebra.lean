@@ -50,12 +50,9 @@ distributive lattice.
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
 
-set_option autoImplicit true
-
-
 open Function Set
 
-universe u v w
+universe u v w w'
 
 variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
@@ -137,7 +134,7 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
   inf_sSup_le_iSup_inf a s := calc
     _ = ⨅ x : Bool, ⨆ y : cond x PUnit s, match x with | true => a | false => y.1 := by
       simp_rw [iInf_bool_eq, cond, iSup_const, iSup_subtype, sSup_eq_iSup]
-    _ = _ := iInf_iSup_eq
+    _ = _ := by exact iInf_iSup_eq
     _ ≤ _ := by
       simp_rw [iInf_bool_eq]
       refine iSup_le fun g => le_trans ?_ (le_iSup _ (g false).1)

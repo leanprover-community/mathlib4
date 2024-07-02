@@ -47,7 +47,7 @@ instance should be obtained at the beginning of the proof, using the term
 ## TODO (@joelriou)
 
 - construct the distinguished triangle associated to a short exact sequence
-of cochain complexes, and compare the associated connecting homomorphism
+of cochain complexes (done), and compare the associated connecting homomorphism
 with the one defined in `Algebra.Homology.HomologySequence`.
 - refactor the definition of Ext groups using morphisms in the derived category
 (which may be shrunk to the universe `v` at least when `C` has enough projectives
@@ -61,7 +61,7 @@ or enough injectives).
 
 universe w v u
 
-open CategoryTheory Limits
+open CategoryTheory Limits Pretriangulated
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
 
@@ -131,6 +131,11 @@ instance : (Q (C := C)).IsLocalization
   dsimp only [Q, DerivedCategory]
   infer_instance
 
+instance {K L : CochainComplex C ℤ} (f : K ⟶ L) [QuasiIso f] :
+    IsIso (Q.map f) :=
+  Localization.inverts Q (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) _
+    (inferInstanceAs (QuasiIso f))
+
 /-- The localization functor `HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C`. -/
 def Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C :=
   HomologicalComplexUpToQuasiIso.Qh
@@ -167,6 +172,12 @@ noncomputable instance : HasShift (DerivedCategory C) ℤ :=
 noncomputable instance : (Qh (C := C)).CommShift ℤ :=
   Functor.CommShift.localized Qh (HomotopyCategory.subcategoryAcyclic C).W ℤ
 
+noncomputable instance : (Q (C := C)).CommShift ℤ :=
+  Functor.CommShift.ofIso (quotientCompQhIso C) ℤ
+
+instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
+  Functor.CommShift.ofIso_compatibility (quotientCompQhIso C) ℤ
+
 instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
   rw [Localization.functor_additive_iff
     Qh (HomotopyCategory.subcategoryAcyclic C).W]
@@ -194,5 +205,22 @@ instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).F
 instance {D : Type*} [Category D] : ((whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
+
+variable {C}
+
+lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
+    (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
+      Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle f)) := by
+  constructor
+  · rintro ⟨T', e, ⟨X, Y, f, ⟨e'⟩⟩⟩
+    refine ⟨_, _, f, ⟨?_⟩⟩
+    exact e ≪≫ Qh.mapTriangle.mapIso e' ≪≫
+      (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).symm.app _ ≪≫
+      (Functor.mapTriangleIso (quotientCompQhIso C)).app _
+  · rintro ⟨X, Y, f, ⟨e⟩⟩
+    refine isomorphic_distinguished _ (Qh.map_distinguished _ ?_) _
+      (e ≪≫ (Functor.mapTriangleIso (quotientCompQhIso C)).symm.app _ ≪≫
+      (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
+    exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
 
 end DerivedCategory

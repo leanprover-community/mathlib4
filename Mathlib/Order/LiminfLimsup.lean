@@ -36,9 +36,6 @@ the definitions of Limsup and Liminf.
 In complete lattices, however, it coincides with the `Inf Sup` definition.
 -/
 
-set_option autoImplicit true
-
-
 open Filter Set Function
 
 variable {α β γ ι ι' : Type*}
@@ -244,7 +241,7 @@ theorem IsBounded.isCobounded_le [Preorder α] [NeBot f] (h : f.IsBounded (· �
   h.isCobounded_flip
 #align filter.is_bounded.is_cobounded_le Filter.IsBounded.isCobounded_le
 
-theorem IsBoundedUnder.isCoboundedUnder_flip {l : Filter γ} [IsTrans α r] [NeBot l]
+theorem IsBoundedUnder.isCoboundedUnder_flip {u : γ → α} {l : Filter γ} [IsTrans α r] [NeBot l]
     (h : l.IsBoundedUnder r u) : l.IsCoboundedUnder (flip r) u :=
   h.isCobounded_flip
 

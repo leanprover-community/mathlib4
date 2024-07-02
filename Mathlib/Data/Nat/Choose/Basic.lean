@@ -116,7 +116,7 @@ theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
 theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k
   | 0, 0 => by decide
   | 0, k + 1 => by simp [choose]
-  | n + 1, 0 => by simp [choose, mul_succ, succ_eq_add_one, Nat.add_comm]
+  | n + 1, 0 => by simp [choose, mul_succ, Nat.add_comm]
   | n + 1, k + 1 => by
     rw [choose_succ_succ (succ n) (succ k), Nat.add_mul, ← succ_mul_choose_eq n, mul_succ, ←
       succ_mul_choose_eq n, Nat.add_right_comm, ← Nat.mul_add, ← choose_succ_succ, ← succ_mul]
@@ -397,7 +397,7 @@ theorem multichoose_one (k : ℕ) : multichoose 1 k = 1 := by
 theorem multichoose_two (k : ℕ) : multichoose 2 k = k + 1 := by
   induction' k with k IH; · simp
   rw [multichoose, IH]
-  simp [Nat.add_comm, succ_eq_add_one]
+  simp [Nat.add_comm]
 #align nat.multichoose_two Nat.multichoose_two
 
 @[simp]

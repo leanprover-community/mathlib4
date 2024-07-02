@@ -219,9 +219,8 @@ theorem filter_lt_of_succ_bot {n m : ℕ} (hnm : n < m) :
 @[simp]
 theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => x ≤ n) = [n] := by
   rw [← filter_lt_of_succ_bot hnm]
-  exact filter_congr' fun _ _ => by
-    rw [decide_eq_true_eq, decide_eq_true_eq]
-    exact Nat.lt_succ_iff.symm
+  exact filter_congr fun _ _ => by
+    simpa using Nat.lt_succ_iff.symm
 #align list.Ico.filter_le_of_bot List.Ico.filter_le_of_bot
 
 /-- For any natural numbers n, a, and b, one of the following holds:

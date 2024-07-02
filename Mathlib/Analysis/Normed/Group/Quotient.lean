@@ -5,7 +5,6 @@ Authors: Patrick Massot, Riccardo Brasca
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Data.Real.Sqrt
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 

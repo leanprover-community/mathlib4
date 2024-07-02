@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -29,6 +28,8 @@ group action, invariant subring
 
 -/
 
+assert_not_exists Equiv.Perm.equivUnitsEnd
+assert_not_exists Prod.fst_mul
 
 universe u v
 
@@ -88,14 +89,6 @@ protected theorem RingHom.smul_def (f : R →+* R) (a : R) : f • a = f a :=
 instance RingHom.applyFaithfulSMul : FaithfulSMul (R →+* R) R :=
   ⟨fun {_ _} h => RingHom.ext h⟩
 #align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
-
-/-- Each element of the group defines a semiring isomorphism. -/
-@[simps!]
-def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
-  { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
-#align mul_semiring_action.to_ring_equiv MulSemiringAction.toRingEquiv
-#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symm_apply
-#align mul_semiring_action.to_ring_equiv_apply MulSemiringAction.toRingEquiv_apply
 
 section
 

@@ -74,7 +74,7 @@ theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := 
   apply _root_.le_antisymm
   · rw [le_padicValNat_iff_replicate_subperm_factors pp hn0.ne']
     exact List.le_count_iff_replicate_sublist.mp le_rfl |>.subperm
-  · rw [← lt_add_one_iff, lt_iff_not_ge, ge_iff_le,
+  · rw [← Nat.lt_add_one_iff, lt_iff_not_ge, ge_iff_le,
       le_padicValNat_iff_replicate_subperm_factors pp hn0.ne']
     intro h
     have := h.count_le p
@@ -534,6 +534,13 @@ theorem exists_eq_pow_mul_and_not_dvd {n : ℕ} (hn : n ≠ 0) (p : ℕ) (hp : p
   ⟨_, a', h₂, h₁⟩
 #align nat.exists_eq_pow_mul_and_not_dvd Nat.exists_eq_pow_mul_and_not_dvd
 
+/-- Any nonzero natural number is the product of an odd part `m` and a power of
+two `2 ^ k`. -/
+theorem exists_eq_two_pow_mul_odd {n : ℕ} (hn : n ≠ 0) :
+    ∃ k m : ℕ, Odd m ∧ n = 2 ^ k * m :=
+  let ⟨k, m, hm, hn⟩ := exists_eq_pow_mul_and_not_dvd hn 2 (succ_ne_self 1)
+  ⟨k, m, odd_iff_not_even.mpr (mt Even.two_dvd hm), hn⟩
+
 theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d ≤ n) :
     d ∣ n ↔ (n / d).factorization = n.factorization - d.factorization := by
   refine ⟨factorization_div, ?_⟩
@@ -984,7 +991,7 @@ theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filter fun x => p �
     · simp
     simp_rw [← Ico_succ_succ, Ico_insert_right (succ_le_succ hn.le), Ico_succ_right]
   simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, card_insert_eq_ite, IH,
-    Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n), Nat.succ_eq_add_one]
+    Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
 #align nat.Ioc_filter_dvd_card_eq_div Nat.Ioc_filter_dvd_card_eq_div
 
 /-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.

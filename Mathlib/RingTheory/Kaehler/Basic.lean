@@ -157,9 +157,8 @@ def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
 #align kaehler_differential KaehlerDifferential
 
-instance : AddCommGroup (KaehlerDifferential R S) := by
-  unfold KaehlerDifferential
-  infer_instance
+instance : AddCommGroup (KaehlerDifferential R S) := inferInstanceAs <|
+  AddCommGroup (KaehlerDifferential.ideal R S).Cotangent
 
 instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
   Ideal.Cotangent.moduleOfTower _
@@ -762,7 +761,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
     LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
-    induction' x using TensorProduct.induction_on with r s
+    induction' x with r s
     · simp
     · obtain ⟨x, rfl⟩ := total_surjective _ _ s
       simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]

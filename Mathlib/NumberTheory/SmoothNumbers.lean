@@ -239,11 +239,11 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p
     rw [← factors_count_eq, ← prod_replicate, ← prod_append]
     nth_rewrite 3 [← prod_factors hm₀]
     have : m.factors.filter (· = p) = m.factors.filter (¬ · ∈ s) := by
-      refine (filter_congr' fun q hq ↦ ?_).symm
+      refine (filter_congr fun q hq ↦ ?_).symm
       simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, decide_eq_true_eq]
       rcases Finset.mem_insert.mp <| hm _ hq with h | h
-      · simp only [h, hs, not_false_eq_true]
-      · simp only [h, not_true_eq_false, false_iff]
+      · simp only [h, hs, decide_False, Bool.not_false, decide_True]
+      · simp only [h, decide_True, Bool.not_true, false_eq_decide_iff]
         exact fun H ↦ hs <| H ▸ h
     refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
     simp only [decide_not]

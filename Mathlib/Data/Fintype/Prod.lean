@@ -76,7 +76,7 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
   exact H'.false
 #align infinite_prod infinite_prod
 
-instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivial <| π i] [Infinite ι] :
+instance Pi.infinite_of_left {ι : Sort*} {π : ι → Type*} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
   choose m n hm using fun i => exists_pair_ne (π i)
   refine Infinite.of_injective (fun i => update m i (n i)) fun x y h => of_not_not fun hne => ?_
@@ -85,25 +85,27 @@ instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivia
 #align pi.infinite_of_left Pi.infinite_of_left
 
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/
-theorem Pi.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite <| π i]
+theorem Pi.infinite_of_exists_right {ι : Sort*} {π : ι → Sort*} (i : ι) [Infinite <| π i]
     [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) :=
   let ⟨m⟩ := @Pi.instNonempty ι π _
   Infinite.of_injective _ (update_injective m i)
 #align pi.infinite_of_exists_right Pi.infinite_of_exists_right
 
 /-- See `Pi.infinite_of_exists_right` for the case that only one `π i` is infinite. -/
-instance Pi.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, Infinite <| π i] [Nonempty ι] :
+instance Pi.infinite_of_right {ι : Sort*} {π : ι → Type*} [∀ i, Infinite <| π i] [Nonempty ι] :
     Infinite (∀ i : ι, π i) :=
   Pi.infinite_of_exists_right (Classical.arbitrary ι)
 #align pi.infinite_of_right Pi.infinite_of_right
 
 /-- Non-dependent version of `Pi.infinite_of_left`. -/
-instance Function.infinite_of_left {ι π : Sort _} [Nontrivial π] [Infinite ι] : Infinite (ι → π) :=
+instance Function.infinite_of_left {ι : Sort*} {π : Type*} [Nontrivial π] [Infinite ι] :
+    Infinite (ι → π) :=
   Pi.infinite_of_left
 #align function.infinite_of_left Function.infinite_of_left
 
 /-- Non-dependent version of `Pi.infinite_of_exists_right` and `Pi.infinite_of_right`. -/
-instance Function.infinite_of_right {ι π : Sort _} [Infinite π] [Nonempty ι] : Infinite (ι → π) :=
+instance Function.infinite_of_right {ι : Sort*} {π : Type*} [Infinite π] [Nonempty ι] :
+    Infinite (ι → π) :=
   Pi.infinite_of_right
 #align function.infinite_of_right Function.infinite_of_right
 

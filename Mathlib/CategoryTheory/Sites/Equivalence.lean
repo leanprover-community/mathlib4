@@ -36,15 +36,15 @@ sufficiently small limits in the sheaf category on the essentially small site.
 
 -/
 
-universe u
+universe v₁ v₂ v₃ u₁ u₂ u₃ w
 
 namespace CategoryTheory
 
 open Functor Limits GrothendieckTopology
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-variable {D : Type*} [Category D] (K : GrothendieckTopology D) (e : C ≌ D) (G : D ⥤ C)
-variable (A : Type*) [Category A]
+variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
+variable {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D) (e : C ≌ D) (G : D ⥤ C)
+variable (A : Type u₃) [Category.{v₃} A]
 
 namespace Equivalence
 
@@ -213,7 +213,7 @@ theorem hasSheafCompose : J.HasSheafCompose F where
 
 end Equivalence
 
-variable [EssentiallySmall C]
+variable [EssentiallySmall.{w} C]
 variable (B : Type*) [Category B] (F : A ⥤ B)
 variable [HasSheafify ((equivSmallModel C).locallyCoverDense J).inducedTopology A]
 variable [((equivSmallModel C).locallyCoverDense J).inducedTopology.HasSheafCompose F]
@@ -239,13 +239,13 @@ instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
 
 instance hasLimitsEssentiallySmallSite
     [HasLimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
-    HasLimitsOfSize <| Sheaf J A :=
+    HasLimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J
     ((equivSmallModel C).locallyCoverDense J).inducedTopology A).functor
 
 instance hasColimitsEssentiallySmallSite
     [HasColimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
-    HasColimitsOfSize <| Sheaf J A :=
+    HasColimitsOfSize.{max v₃ w, max v₃ w} <| Sheaf J A :=
   Adjunction.has_colimits_of_equivalence ((equivSmallModel C).sheafCongr J
     ((equivSmallModel C).locallyCoverDense J).inducedTopology A).functor
 

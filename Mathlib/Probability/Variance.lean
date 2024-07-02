@@ -335,7 +335,7 @@ theorem IndepFun.variance_sum [@IsProbabilityMeasure Ω _ ℙ] {ι : Type*} {X :
           exact memℒp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi)
       · rw [mul_assoc]
         apply Integrable.const_mul _ (2 : ℝ)
-        simp only [mul_sum, sum_apply, Pi.mul_apply]
+        rw [mul_sum, sum_fn]
         apply integrable_finset_sum _ fun i hi => ?_
         apply IndepFun.integrable_mul _ (Memℒp.integrable one_le_two (hs _ (mem_insert_self _ _)))
           (Memℒp.integrable one_le_two (hs _ (mem_insert_of_mem hi)))

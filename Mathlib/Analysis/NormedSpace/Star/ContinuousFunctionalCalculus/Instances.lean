@@ -522,7 +522,7 @@ definitional properties. However, it can be useful to invoke this as an instance
 def CstarRing.spectralOrder : PartialOrder A where
   le x y := IsSelfAdjoint (y - x) ∧ SpectrumRestricts (y - x) ContinuousMap.realToNNReal
   le_refl := by
-    simp only [sub_self, isSelfAdjoint_zero, true_and, forall_const]
+    simp only [sub_self, IsSelfAdjoint.zero, true_and, forall_const]
     rw [SpectrumRestricts.nnreal_iff]
     nontriviality A
     simp

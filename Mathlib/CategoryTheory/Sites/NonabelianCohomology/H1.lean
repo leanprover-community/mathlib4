@@ -57,7 +57,12 @@ instance : Group (ZeroCochain G U) := Pi.group
 
 namespace Cochain₀
 
-@[simp]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+-/
+@[simp, nolint simpNF]
 lemma one_apply (i : I) : (1 : ZeroCochain G U) i = 1 := rfl
 
 @[simp]

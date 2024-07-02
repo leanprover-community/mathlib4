@@ -3,7 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.Topology.LocalAtTarget
 
 #align_import algebraic_geometry.morphisms.universally_closed from "leanprover-community/mathlib"@"a8ae1b3f7979249a0af6bc7cf20c1f6bf656ca73"
@@ -90,7 +90,7 @@ theorem universallyClosed_isLocalAtTarget : PropertyIsLocalAtTarget @Universally
   apply universally_isLocalAtTarget_of_morphismRestrict
   · exact topologically_isClosedMap_respectsIso
   · intro X Y f ι U hU H
-    simp_rw [topologically, morphismRestrict_base] at H
+    simp_rw [topologically, morphismRestrict_val_base] at H
     exact (isClosedMap_iff_isClosedMap_of_iSup_eq_top hU).mpr H
 #align algebraic_geometry.universally_closed_is_local_at_target AlgebraicGeometry.universallyClosed_isLocalAtTarget
 

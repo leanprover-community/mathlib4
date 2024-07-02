@@ -493,10 +493,10 @@ instance : LightDiagram'.toLightFunctor.IsEquivalence where
 def LightDiagram.equivSmall : LightDiagram.{u} ≌ LightDiagram'.{u} :=
   LightDiagram'.toLightFunctor.asEquivalence.symm
 
-instance : EssentiallySmall LightDiagram.{u} where
+instance : EssentiallySmall.{u} LightDiagram.{u} where
   equiv_smallCategory := ⟨LightDiagram', inferInstance, ⟨LightDiagram.equivSmall⟩⟩
 
-instance : EssentiallySmall LightProfinite.{u} where
+instance : EssentiallySmall.{u} LightProfinite.{u} where
   equiv_smallCategory := ⟨LightDiagram', inferInstance,
     ⟨LightProfinite.equivDiagram.trans LightDiagram.equivSmall⟩⟩
 

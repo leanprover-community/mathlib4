@@ -30,7 +30,7 @@ namespace Complex
 
 lemma continuousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     ContinuousOn (fun t : ℝ ↦ (1 + t • z)⁻¹) (Set.Icc 0 1) :=
-  ContinuousOn.inv₀ (Continuous.continuousOn (by continuity))
+  ContinuousOn.inv₀ (by fun_prop)
     (fun t ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
 
 open intervalIntegral in
@@ -125,8 +125,7 @@ lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ 
     IntervalIntegrable (fun t : ℝ ↦ t ^ n * ‖(1 + t * z)⁻¹‖) MeasureTheory.volume 0 1 := by
   have := continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   rw [← Set.uIcc_of_le zero_le_one] at this
-  exact ContinuousOn.intervalIntegrable <|
-    Continuous.continuousOn (by continuity) |>.mul <| ContinuousOn.norm this
+  exact ContinuousOn.intervalIntegrable (by fun_prop)
 
 open intervalIntegral in
 /-- The difference of `log (1+z)` and its `(n+1)`st Taylor polynomial can be bounded in
@@ -134,7 +133,7 @@ terms of `‖z‖`. -/
 lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z) - logTaylor (n + 1) z‖ ≤ ‖z‖ ^ (n + 1) * (1 - ‖z‖)⁻¹ / (n + 1) := by
   have help : IntervalIntegrable (fun t : ℝ ↦ t ^ n * (1 - ‖z‖)⁻¹) MeasureTheory.volume 0 1 :=
-    IntervalIntegrable.mul_const (Continuous.intervalIntegrable (by continuity) 0 1) (1 - ‖z‖)⁻¹
+    IntervalIntegrable.mul_const (Continuous.intervalIntegrable (by fun_prop) 0 1) (1 - ‖z‖)⁻¹
   let f (z : ℂ) : ℂ := log (1 + z) - logTaylor (n + 1) z
   let f' (z : ℂ) : ℂ := (-z) ^ n * (1 + z)⁻¹
   have hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (0 + t * z)) (0 + t * z) := by
@@ -144,7 +143,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
       StarConvex.add_smul_mem starConvex_one_slitPlane (mem_slitPlane_of_norm_lt_one hz) ht.1 ht.2
   have hcont : ContinuousOn (fun t : ℝ ↦ f' (0 + t * z)) (Set.Icc 0 1) := by
     simp only [zero_add, zero_le_one, not_true_eq_false]
-    exact (Continuous.continuousOn (by continuity)).mul <|
+    exact (Continuous.continuousOn (by fun_prop)).mul <|
       continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
     convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1

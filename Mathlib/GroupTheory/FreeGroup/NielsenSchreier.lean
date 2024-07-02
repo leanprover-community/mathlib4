@@ -296,8 +296,9 @@ instance generators_connected (G) [Groupoid.{u, u} G] [IsConnected G] [IsFreeGro
 
 /-- A vertex group in a free connected groupoid is free. With some work one could drop the
 connectedness assumption, by looking at connected components. -/
-instance endIsFreeOfConnectedFree {G} [Groupoid G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
-    IsFreeGroup (End r) :=
+instance endIsFreeOfConnectedFree
+    {G : Type u} [Groupoid G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
+    IsFreeGroup.{u} (End r) :=
   SpanningTree.endIsFree <| geodesicSubtree (symgen r)
 #align is_free_groupoid.End_is_free_of_connected_free IsFreeGroupoid.endIsFreeOfConnectedFree
 

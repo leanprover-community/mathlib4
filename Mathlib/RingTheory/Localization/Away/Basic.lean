@@ -61,6 +61,18 @@ theorem mul_invSelf : algebraMap R S x * invSelf x = 1 := by
   apply IsLocalization.mk'_one
 #align is_localization.away.mul_inv_self IsLocalization.Away.mul_invSelf
 
+/-- For `s : S` with `S` being the localization of `R` away from `x`,
+this is a choice of `(r, n) : R × ℕ` such that `s * algebraMap R S (x ^ n) = algebraMap R S r`. -/
+noncomputable def sec (s : S) : R × ℕ :=
+  ⟨(IsLocalization.sec (Submonoid.powers x) s).1,
+   (IsLocalization.sec (Submonoid.powers x) s).2.property.choose⟩
+
+lemma sec_spec (s : S) : s * (algebraMap R S) (x ^ (IsLocalization.Away.sec x s).2) =
+    algebraMap R S (IsLocalization.Away.sec x s).1 := by
+  simp only [IsLocalization.Away.sec, ← IsLocalization.sec_spec]
+  congr
+  exact (IsLocalization.sec (Submonoid.powers x) s).2.property.choose_spec
+
 variable {g : R →+* P}
 
 /-- Given `x : R`, a localization map `F : R →+* S` away from `x`, and a map of `CommSemiring`s

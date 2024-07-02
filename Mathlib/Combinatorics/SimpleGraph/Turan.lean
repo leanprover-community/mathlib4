@@ -18,6 +18,9 @@ constructively that non-adjacency is an equivalence relation in a maximal graph,
 complete multipartite with the parts being the equivalence classes. Then basic manipulations
 show that the graph is isomorphic to the Turán graph for the given parameters.
 
+For the reverse direction we first show that a Turán-maximal graph exists, then transfer
+the property through `turanGraph n r` using the isomorphism provided by the forward direction.
+
 ## Main declarations
 
 * `SimpleGraph.IsTuranMaximal`: `G.IsTuranMaximal r` means that `G` has the most number of edges for
@@ -27,33 +30,30 @@ show that the graph is isomorphic to the Turán graph for the given parameters.
   the vertices such that two vertices are in the same part iff they are non-adjacent.
 * `SimpleGraph.IsTuranMaximal.nonempty_iso_turanGraph`: The forward direction, an isomorphism
   between `G` satisfying `G.IsTuranMaximal r` and `turanGraph n r`.
+* `isTuranMaximal_of_iso`: the reverse direction, `G.IsTuranMaximal r` given the isomorphism.
+* `isTuranMaximal_iff_nonempty_iso_turanGraph`: Turán's theorem in full.
 
 ## References
 
 * https://en.wikipedia.org/wiki/Turán%27s_theorem
-
-## TODO
-
-* Prove the reverse direction of Turán's theorem at
-  https://github.com/leanprover-community/mathlib4/pull/9317
 -/
 
 open Finset
 
 namespace SimpleGraph
 
-variable {V : Type*} [Fintype V] [DecidableEq V] (G H : SimpleGraph V) [DecidableRel G.Adj]
-  {n r : ℕ}
+variable {V : Type*} [Fintype V] [DecidableEq V] {G : SimpleGraph V} [DecidableRel G.Adj] {n r : ℕ}
 
-section Defs
-
+variable (G) in
 /-- An `r + 1`-cliquefree graph is `r`-Turán-maximal if any other `r + 1`-cliquefree graph on
 the same vertex set has the same or fewer number of edges. -/
 def IsTuranMaximal (r : ℕ) : Prop :=
   G.CliqueFree (r + 1) ∧ ∀ (H : SimpleGraph V) [DecidableRel H.Adj],
     H.CliqueFree (r + 1) → H.edgeFinset.card ≤ G.edgeFinset.card
 
-variable {G H}
+section Defs
+
+variable {H : SimpleGraph V}
 
 lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r + 1)) :
     G ≤ H ↔ G = H := by
@@ -94,11 +94,6 @@ theorem turanGraph_cliqueFree : (turanGraph n r).CliqueFree (r + 1) := by
   simp only [Fin.mk.injEq] at c
   exact absurd c ((@ha x y).mpr d)
 
-/-- For `n ≤ r` and `0 < r`, `turanGraph n r` is Turán-maximal. -/
-theorem isTuranMaximal_turanGraph (h : n ≤ r) : (turanGraph n r).IsTuranMaximal r :=
-  ⟨turanGraph_cliqueFree hr, fun _ _ _ ↦
-    card_le_card (edgeFinset_mono ((turanGraph_eq_top.mpr (Or.inr h)).symm ▸ le_top))⟩
-
 /-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
 if it can accommodate such a clique. -/
 theorem not_cliqueFree_of_isTuranMaximal (hn : r ≤ Fintype.card V) (hG : G.IsTuranMaximal r) :
@@ -121,8 +116,7 @@ lemma exists_isTuranMaximal :
   obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (·.edgeFinset.card) cn
   use S, inferInstance
   rw [Set.mem_toFinset] at Sm
-  refine ⟨Sm, ?_⟩
-  intro I _ cf
+  refine ⟨Sm, fun I _ cf ↦ ?_⟩
   by_cases Im : I ∈ c.toFinset
   · convert Sl I Im
   · rw [Set.mem_toFinset] at Im
@@ -130,11 +124,9 @@ lemma exists_isTuranMaximal :
 
 end Defs
 
-section Forward
-
-variable {G} {s t u : V} (h : G.IsTuranMaximal r)
-
 namespace IsTuranMaximal
+
+variable {s t u : V} (h : G.IsTuranMaximal r)
 
 /-- In a Turán-maximal graph, non-adjacent vertices have the same degree. -/
 lemma degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
@@ -147,7 +139,8 @@ lemma degree_eq_of_not_adj (hn : ¬G.Adj s t) : G.degree s = G.degree t := by
   omega
 
 /-- In a Turán-maximal graph, non-adjacency is transitive. -/
-lemma not_adj_trans (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
+lemma not_adj_trans (hts : ¬G.Adj t s) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
+  have hst : ¬G.Adj s t := fun a ↦ hts a.symm
   have dst := h.degree_eq_of_not_adj hst
   have dsu := h.degree_eq_of_not_adj hsu
   rw [IsTuranMaximal] at h; contrapose! h; intro cf
@@ -173,19 +166,17 @@ lemma not_adj_trans (hst : ¬G.Adj s t) (hsu : ¬G.Adj s u) : ¬G.Adj t u := by
   omega
 
 /-- In a Turán-maximal graph, non-adjacency is an equivalence relation. -/
-theorem equivalence_not_adj : Equivalence fun x y ↦ ¬G.Adj x y where
-  refl x := by simp
-  symm xy := by simp [xy, adj_comm]
-  trans xy yz := by
-    rw [adj_comm] at xy
-    exact h.not_adj_trans xy yz
+theorem equivalence_not_adj : Equivalence (¬G.Adj · ·) where
+  refl := by simp
+  symm := by simp [adj_comm]
+  trans := h.not_adj_trans
 
 /-- The non-adjacency setoid over the vertices of a Turán-maximal graph
 induced by `equivalence_not_adj`. -/
 def setoid : Setoid V := ⟨_, h.equivalence_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=
-  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w
+  inferInstanceAs <| DecidableRel (¬G.Adj · ·)
 
 /-- The finpartition derived from `h.setoid`. -/
 def finpartition : Finpartition (univ : Finset V) := Finpartition.ofSetoid h.setoid
@@ -199,9 +190,9 @@ lemma not_adj_iff_part_eq : ¬G.Adj s t ↔ h.finpartition.part s = h.finpartiti
 
 lemma degree_eq_card_sub_part_card : G.degree s = Fintype.card V - (h.finpartition.part s).card :=
   calc
-    _ = (univ.filter fun b ↦ G.Adj s b).card := by
+    _ = (univ.filter (G.Adj s)).card := by
       simp [← card_neighborFinset_eq_degree, neighborFinset]
-    _ = Fintype.card V - (univ.filter fun b ↦ ¬G.Adj s b).card :=
+    _ = Fintype.card V - (univ.filter (¬G.Adj s ·)).card :=
       eq_tsub_of_add_eq (filter_card_add_filter_neg_card_eq_card _)
     _ = _ := by
       congr; ext; rw [mem_filter]
@@ -280,6 +271,29 @@ theorem nonempty_iso_turanGraph : Nonempty (G ≃g turanGraph (Fintype.card V) r
 
 end IsTuranMaximal
 
-end Forward
+/-- **Turán's theorem**, reverse direction.
+
+Any graph isomorphic to `turanGraph n r` is itself Turán-maximal if `0 < r`. -/
+theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTuranMaximal r := by
+  obtain ⟨J, _, j⟩ := exists_isTuranMaximal (V := V) hr
+  obtain ⟨g⟩ := j.nonempty_iso_turanGraph
+  rw [f.card_eq, Fintype.card_fin] at g
+  use (turanGraph_cliqueFree (n := n) hr).comap f,
+    fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 H cf
+
+/-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/
+theorem IsTuranMaximal.iso {W : Type*} [Fintype W] [DecidableEq W] {H : SimpleGraph W}
+    [DecidableRel H.Adj] (h : G.IsTuranMaximal r) (f : G ≃g H) (hr : 0 < r) : H.IsTuranMaximal r :=
+  isTuranMaximal_of_iso (h.nonempty_iso_turanGraph.some.comp f.symm) hr
+
+/-- For `0 < r`, `turanGraph n r` is Turán-maximal. -/
+theorem isTuranMaximal_turanGraph (hr : 0 < r) : (turanGraph n r).IsTuranMaximal r :=
+  isTuranMaximal_of_iso Iso.refl hr
+
+/-- **Turán's theorem**. `turanGraph n r` is, up to isomorphism, the unique
+`r + 1`-cliquefree Turán-maximal graph on `n` vertices. -/
+theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
+    G.IsTuranMaximal r ↔ Nonempty (G ≃g turanGraph (Fintype.card V) r) :=
+  ⟨fun h ↦ h.nonempty_iso_turanGraph, fun h ↦ isTuranMaximal_of_iso h.some hr⟩
 
 end SimpleGraph

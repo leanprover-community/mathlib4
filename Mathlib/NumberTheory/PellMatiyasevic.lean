@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Star.Unitary
 import Mathlib.Data.Nat.ModEq
 import Mathlib.NumberTheory.Zsqrtd.Basic
 

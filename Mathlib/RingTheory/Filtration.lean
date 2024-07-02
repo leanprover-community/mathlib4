@@ -211,7 +211,8 @@ theorem _root_.Ideal.stableFiltration_stable (I : Ideal R) (N : Submodule R M) :
   rw [add_comm, pow_add, mul_smul, pow_one]
 #align ideal.stable_filtration_stable Ideal.stableFiltration_stable
 
-variable {F F'} (h : F.Stable)
+variable {F F'}
+variable (h : F.Stable)
 
 theorem Stable.exists_pow_smul_eq : ∃ n₀, ∀ k, F.N (n₀ + k) = I ^ k • F.N n₀ := by
   obtain ⟨n₀, hn⟩ := h

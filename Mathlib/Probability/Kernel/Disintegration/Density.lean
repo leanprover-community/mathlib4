@@ -220,7 +220,7 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   congr
   have : ∫⁻ x in u, κ a (countablePartitionSet n x ×ˢ s) / ν a (countablePartitionSet n x) ∂(ν a)
       = ∫⁻ _ in u, κ a (u ×ˢ s) / ν a u ∂(ν a) := by
-    refine set_lintegral_congr_fun hu_meas (ae_of_all _ (fun t ht ↦ ?_))
+    refine setLIntegral_congr_fun hu_meas (ae_of_all _ (fun t ht ↦ ?_))
     rw [countablePartitionSet_of_mem hu ht]
   rw [this]
   simp only [MeasureTheory.lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
@@ -607,7 +607,7 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
 @[deprecated (since := "2024-04-17")]
 alias set_integral_density := setIntegral_density
 
-lemma set_lintegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
+lemma setLIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
     ∫⁻ x in A, ENNReal.ofReal (density κ ν a x s) ∂(ν a) = κ a (A ×ˢ s) := by
   have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
@@ -617,11 +617,14 @@ lemma set_lintegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   · exact (integrable_density hκν a hs).restrict
   · exact ae_of_all _ (fun _ ↦ density_nonneg hκν _ _ _)
 
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_density := setLIntegral_density
+
 lemma lintegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ x, ENNReal.ofReal (density κ ν a x s) ∂(ν a) = κ a (univ ×ˢ s) := by
-  rw [← set_lintegral_univ]
-  exact set_lintegral_density hκν a hs MeasurableSet.univ
+  rw [← setLIntegral_univ]
+  exact setLIntegral_density hκν a hs MeasurableSet.univ
 
 end Integral
 

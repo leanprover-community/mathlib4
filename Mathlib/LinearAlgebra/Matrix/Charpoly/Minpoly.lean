@@ -82,7 +82,7 @@ field norm resp. trace of `x` is the product resp. sum of `x`'s conjugates.
 -/
 theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [Algebra R S] (h : PowerBasis R S) :
     (leftMulMatrix h.basis h.gen).charpoly = minpoly R h.gen := by
-  cases subsingleton_or_nontrivial R; · apply Subsingleton.elim
+  cases subsingleton_or_nontrivial R; · subsingleton
   apply minpoly.unique' R h.gen (charpoly_monic _)
   · apply (injective_iff_map_eq_zero (G := S) (leftMulMatrix _)).mp
       (leftMulMatrix_injective h.basis)

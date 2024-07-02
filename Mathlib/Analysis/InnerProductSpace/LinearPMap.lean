@@ -172,8 +172,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
     y ∈ T†.domain := by
   cases' h with w hw
   rw [T.mem_adjoint_domain_iff]
-  -- Porting note: was `by continuity`
-  have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := ContinuousLinearMap.continuous _
+  have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1
   exact funext fun x => (hw x).symm
 #align linear_pmap.mem_adjoint_domain_of_exists LinearPMap.mem_adjoint_domain_of_exists
@@ -257,7 +256,8 @@ theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.doma
     intro x
     rw [mem_adjoint_domain_iff, ← hA]
     refine (innerSL 𝕜 x).cont.comp ?_
-    simp [adjoint, h, continuous_const]
+    simp only [adjoint, h]
+    exact continuous_const
   simp [h'] at h
 
 end LinearPMap

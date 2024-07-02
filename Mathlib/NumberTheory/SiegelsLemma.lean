@@ -38,8 +38,7 @@ open Matrix Finset
 
 namespace Int.Matrix
 
-variable (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) (v : Fin n → ℤ) (hn : m < n)
-(hm : 0 < m)
+variable (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) (v : Fin n → ℤ) (hn : m < n) (hm : 0 < m)
 
 --Some definitions and relative properties
 
@@ -56,24 +55,22 @@ local notation3 "S" => Finset.Icc N P
 
 section preparation
 
-/- In order to apply Pigeohole we need:
+/- In order to apply Pigeonhole we need:
 # Step 1: ∀ v ∈  T, A *ᵥ v ∈  S
 and
 # Step 2: S.card < T.card
-Pigeohole will give different x and y in T with A.mulVec x = A.mulVec y in S
+Pigeonhole will give different x and y in T with A.mulVec x = A.mulVec y in S
 Their difference is the solution we are looking for
 -/
 
---# Step 1: ∀ v ∈  T, A *ᵥ v ∈  S
+--# Step 1: ∀ v ∈ T, A *ᵥ v ∈  S
 
-private lemma image_T_subset_S : ∀ v ∈ T, A *ᵥ v ∈ S := by
-  intro v hv
-  rw [mem_Icc] at hv
-  rw [mem_Icc]
+private lemma image_T_subset_S (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
+  rw [mem_Icc] at hv ⊢
   have mulVec_def : A.mulVec v =
-      fun i ↦ Finset.sum univ fun j : Fin n ↦ A i j * v j := by rfl
-  rw [mulVec_def] --unfold def of MulVec
-  refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩ --2 goals
+      fun i ↦ Finset.sum univ fun j : Fin n ↦ A i j * v j := rfl
+  rw [mulVec_def]
+  refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩
   all_goals
     simp only [mul_neg]
     gcongr ∑ _ : Fin n, ?_ with j _ --get rid of sums
@@ -188,9 +185,8 @@ theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0) : ∃ t : Fin n �
   refine le_trans ?_ (Nat.floor_le n_mul_norm_A_pow_e_nonneg)
   norm_cast
   rw [abs_le]
-  rw [Finset.mem_Icc] at hyT
-  rw [Finset.mem_Icc] at hxT
-  constructor --two goals
+  rw [Finset.mem_Icc] at hxT hyT
+  constructor
   · simp only [neg_le_sub_iff_le_add]
     apply le_trans (hyT.2 i)
     norm_cast

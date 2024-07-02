@@ -7,6 +7,7 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 #align_import imo.imo2005_q3 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 

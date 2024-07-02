@@ -3,24 +3,34 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 
-# Localization of multivariate polynomial rings
+# Localization and multivariate polynomial rings
 
-If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
-is the localization of `MvPolynomial σ R` at the image of `M` in `MvPolynomial σ R`.
+In this file we show some results connecting multivariate polynomial rings and localization.
+
+## Main results
+
+- `MvPolynomial.isLocalization`: If `S` is the localization of `R` at a submonoid `M`, then
+  `MvPolynomial σ S` is the localization of `MvPolynomial σ R` at the image of `M` in
+  `MvPolynomial σ R`.
 
 -/
 
 open Classical
 
+variable {σ R : Type*} [CommRing R] (M : Submonoid R)
+variable (S : Type*) [CommRing S] [Algebra R S]
+
 namespace MvPolynomial
 
-variable {σ R : Type*} [CommRing R] (M : Submonoid R)
-variable (S : Type*) [CommRing S] [Algebra R S] [IsLocalization M S]
+variable [IsLocalization M S]
 
 attribute [local instance] algebraMvPolynomial
 
@@ -69,3 +79,78 @@ lemma isLocalization_C_mk' (a : R) (m : M) :
     IsLocalization.mk'_spec]
 
 end MvPolynomial
+
+namespace IsLocalization.Away
+
+open MvPolynomial
+
+variable (r : R) [IsLocalization.Away r S]
+
+/-- The canonical algebra map from `MvPolynomial Unit R` quotiented by
+`C r * X () - 1` to the localization of `R` away from `r`. -/
+private noncomputable
+def auxHom : (MvPolynomial Unit R) ⧸ (Ideal.span { C r * X () - 1 }) →ₐ[R] S :=
+  Ideal.Quotient.liftₐ (Ideal.span { C r * X () - 1}) (aeval (fun _ ↦ invSelf r)) <| by
+    intro p hp
+    refine Submodule.span_induction hp ?_ ?_ ?_ ?_
+    · rintro p ⟨q, rfl⟩
+      simp
+    · simp
+    · intro p q hp hq
+      simp [hp, hq]
+    · intro a x hx
+      simp [hx]
+
+@[simp]
+private lemma auxHom_mk (p : MvPolynomial Unit R) :
+    auxHom S r p = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
+  rfl
+
+private noncomputable
+def auxInv : S →+* (MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 } :=
+  letI g : R →+* MvPolynomial Unit R ⧸ (Ideal.span { C r * X () - 1 }) :=
+    (Ideal.Quotient.mk _).comp C
+  IsLocalization.Away.lift (S := S) (g := g) r <| by
+    simp only [RingHom.coe_comp, Function.comp_apply, g]
+    rw [isUnit_iff_exists_inv]
+    use (Ideal.Quotient.mk _ <| X ())
+    rw [← _root_.map_mul, ← map_one (Ideal.Quotient.mk _), Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    exact Ideal.mem_span_singleton_self (C r * X () - 1)
+
+private lemma auxHom_auxInv : (auxHom S r).toRingHom.comp (auxInv S r) = RingHom.id S := by
+  apply IsLocalization.ringHom_ext (Submonoid.powers r)
+  ext x
+  simp [auxInv]
+
+private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = RingHom.id _ := by
+  rw [← RingHom.cancel_right (Ideal.Quotient.mk_surjective)]
+  ext x
+  · simp [auxInv]
+  · simp only [auxInv, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+      Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq]
+    erw [IsLocalization.lift_mk'_spec]
+    simp only [map_one, RingHom.coe_comp, Function.comp_apply]
+    rw [← _root_.map_one (Ideal.Quotient.mk _)]
+    rw [← _root_.map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← Ideal.neg_mem_iff, neg_sub]
+    exact Ideal.mem_span_singleton_self (C r * X x - 1)
+
+/-- The canonical algebra isomorphism from `MvPolynomial Unit R` quotiented by
+`C r * X () - 1` to the localization of `R` away from `r`. -/
+noncomputable def mvPolynomialQuotientEquiv :
+    ((MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 }) ≃ₐ[R] S where
+  toFun := auxHom S r
+  invFun := auxInv S r
+  left_inv x := by
+    simpa using congrFun (congrArg DFunLike.coe <| auxInv_auxHom S r) x
+  right_inv s := by
+    simpa using congrFun (congrArg DFunLike.coe <| auxHom_auxInv S r) s
+  map_mul' := by simp
+  map_add' := by simp
+  commutes' := by simp
+
+@[simp]
+lemma mvPolynomialQuotientEquiv_apply (p : MvPolynomial Unit R) :
+    mvPolynomialQuotientEquiv S r (Ideal.Quotient.mk _ p) = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
+  rfl
+
+end IsLocalization.Away
