@@ -343,7 +343,3 @@ instance inhabitedTM2Computable :
 instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
 #align turing.inhabited_tm2_computable_aux Turing.inhabitedTM2ComputableAux
-
-end
-
-end Turing
