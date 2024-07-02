@@ -349,6 +349,35 @@ theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x �
   simpa using (inv_lt_inv₀ (v.ne_zero_iff.2 h) one_ne_zero).symm
 #align valuation.one_lt_val_iff Valuation.one_lt_val_iff
 
+theorem one_le_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 ≤ v x ↔ v x⁻¹ ≤ 1 := by
+  convert (one_lt_val_iff v (inv_ne_zero h)).symm.not <;>
+  push_neg <;> simp only [inv_inv]
+
+theorem val_lt_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x < 1 ↔ 1 < v x⁻¹ := by
+  simpa only [inv_inv] using (one_lt_val_iff v (inv_ne_zero h)).symm
+
+theorem val_le_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x ≤ 1 ↔ 1 ≤ v x⁻¹ := by
+  simpa [inv_inv] using (one_le_val_iff v (inv_ne_zero h)).symm
+
+theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 1 := by
+  by_cases h : x = 0
+  · simp only [map_inv₀, inv_eq_one]
+  · simpa only [le_antisymm_iff, And.comm] using and_congr (one_le_val_iff v h) (val_le_one_iff v h)
+
+theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
+  by_cases h : x = 0
+  · simp only [h, _root_.map_zero, zero_le', inv_zero, zero_lt_one, or_self]
+  · simp only [← one_lt_val_iff v h, le_or_lt]
+
+/--
+This theorem is a weaker version of `Valuation.val_le_one_or_val_inv_lt_one`, but more symmetric
+in `x` and `x⁻¹`.
+-/
+theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ ≤ 1 := by
+  by_cases h : x = 0
+  · simp only [h, _root_.map_zero, zero_le', inv_zero, or_self]
+  · simp only [← one_le_val_iff v h, le_total]
+
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
