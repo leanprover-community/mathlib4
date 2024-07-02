@@ -162,11 +162,11 @@ def restrictScalarsId'App (M : ModuleCat R) : (restrictScalars f).obj M ≅ M :=
     @AddEquiv.toLinearEquiv _ _ _ _ _ _ (((restrictScalars f).obj M).isModule) _
       (by rfl) (fun r x ↦ by subst hf; rfl)
 
-lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
+@[simp] lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId'App f hf M).hom x = x :=
   rfl
 
-lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
+@[simp]lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId'App f hf M).inv x = x :=
   rfl
 
@@ -207,11 +207,11 @@ def restrictScalarsComp'App (M : ModuleCat R₃) :
     (restrictScalars gf).obj M ≅ (restrictScalars f).obj ((restrictScalars g).obj M) :=
   (AddEquiv.toLinearEquiv (by rfl) (fun r x ↦ by subst hgf; rfl)).toModuleIso'
 
-lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
+@[simp] lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp'App f g gf hgf M).hom x = x :=
   rfl
 
-lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
+@[simp] lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp'App f g gf hgf M).inv x = x :=
   rfl
 
