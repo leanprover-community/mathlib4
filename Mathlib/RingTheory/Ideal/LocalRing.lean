@@ -346,9 +346,9 @@ theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R �
 
 -- see Note [lower instance priority]
 /-- Every ring hom `f : K →+* R` from a field `K` to a nontrivial ring `R` is a local ring hom. -/
-instance (priority := 100) {K R} [Field K] [CommRing R] [Nontrivial R]
+instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
     (f : K →+* R) : IsLocalRingHom f where
-  map_nonunit r hr := by simpa using hr.ne_zero
+  map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
 
 section
 
