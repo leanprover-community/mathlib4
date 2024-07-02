@@ -119,7 +119,7 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
--- Adaptation note: otherwise there is a spurious warning on `contrapose!` below.
+#adaptation_note /-- otherwise there is a spurious warning on `contrapose!` below. -/
 set_option linter.unusedVariables false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.

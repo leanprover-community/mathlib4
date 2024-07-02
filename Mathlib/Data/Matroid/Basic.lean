@@ -222,6 +222,9 @@ protected class Nonempty (M : Matroid α) : Prop where
 theorem ground_nonempty (M : Matroid α) [M.Nonempty] : M.E.Nonempty :=
   Nonempty.ground_nonempty
 
+theorem ground_nonempty_iff (M : Matroid α) : M.E.Nonempty ↔ M.Nonempty :=
+  ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
+
 theorem ground_finite (M : Matroid α) [M.Finite] : M.E.Finite :=
   Finite.ground_finite
 
@@ -630,6 +633,13 @@ theorem Indep.exists_insert_of_not_mem_maximals (M : Matroid α) ⦃I B : Set α
   · obtain ⟨I', hII', hI', hne⟩ := hInotmax
     exact hne <| hIb.eq_of_subset_indep hII' hI'
   exact hB.1.base_of_maximal fun J hJ hBJ ↦ hB.2 hJ hBJ
+
+theorem Indep.base_of_forall_insert {M : Matroid α} {B : Set α} (hB : M.Indep B)
+    (hBmax : ∀ e ∈ M.E \ B, ¬ M.Indep (insert e B)) : M.Base B := by
+  refine by_contra fun hnb ↦ ?_
+  obtain ⟨B', hB'⟩ := M.exists_base
+  obtain ⟨e, he, h⟩ := hB.exists_insert_of_not_base hnb hB'
+  exact hBmax e ⟨hB'.subset_ground he.1, he.2⟩ h
 
 theorem ground_indep_iff_base : M.Indep M.E ↔ M.Base M.E :=
   ⟨fun h ↦ h.base_of_maximal (fun _ hJ hEJ ↦ hEJ.antisymm hJ.subset_ground), Base.indep⟩

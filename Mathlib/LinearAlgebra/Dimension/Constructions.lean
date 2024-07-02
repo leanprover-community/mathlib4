@@ -348,32 +348,33 @@ section TensorProduct
 
 open TensorProduct
 
-variable [StrongRankCondition S]
+variable [StrongRankCondition R] [StrongRankCondition S]
 variable [Module S M] [Module.Free S M] [Module S M'] [Module.Free S M']
 variable [Module S M₁] [Module.Free S M₁]
+variable [Algebra S R] [Module R M] [IsScalarTower S R M] [Module.Free R M]
 
 open Module.Free
 
-/-- The rank of `M ⊗[R] M'` is `(Module.rank R M).lift * (Module.rank R M').lift`. -/
+/-- The `S`-rank of `M ⊗[R] M'` is `(Module.rank S M).lift * (Module.rank R M').lift`. -/
 @[simp]
 theorem rank_tensorProduct :
-    Module.rank S (M ⊗[S] M') =
-      Cardinal.lift.{v'} (Module.rank S M) * Cardinal.lift.{v} (Module.rank S M') := by
-  obtain ⟨⟨_, bM⟩⟩ := Module.Free.exists_basis (R := S) (M := M)
+    Module.rank R (M ⊗[S] M') =
+      Cardinal.lift.{v'} (Module.rank R M) * Cardinal.lift.{v} (Module.rank S M') := by
+  obtain ⟨⟨_, bM⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   obtain ⟨⟨_, bN⟩⟩ := Module.Free.exists_basis (R := S) (M := M')
   rw [← bM.mk_eq_rank'', ← bN.mk_eq_rank'', ← (bM.tensorProduct bN).mk_eq_rank'', Cardinal.mk_prod]
 #align rank_tensor_product rank_tensorProduct
 
-/-- If `M` and `M'` lie in the same universe, the rank of `M ⊗[R] M'` is
-  `(Module.rank R M) * (Module.rank R M')`. -/
+/-- If `M` and `M'` lie in the same universe, the `S`-rank of `M ⊗[R] M'` is
+  `(Module.rank S M) * (Module.rank R M')`. -/
 theorem rank_tensorProduct' :
-    Module.rank S (M ⊗[S] M₁) = Module.rank S M * Module.rank S M₁ := by simp
+    Module.rank R (M ⊗[S] M₁) = Module.rank R M * Module.rank S M₁ := by simp
 #align rank_tensor_product' rank_tensorProduct'
 
-/-- The finrank of `M ⊗[R] M'` is `(finrank R M) * (finrank R M')`. -/
+/-- The `S`-finrank of `M ⊗[R] M'` is `(finrank S M) * (finrank R M')`. -/
 @[simp]
 theorem FiniteDimensional.finrank_tensorProduct :
-    finrank S (M ⊗[S] M') = finrank S M * finrank S M' := by simp [finrank]
+    finrank R (M ⊗[S] M') = finrank R M * finrank S M' := by simp [finrank]
 #align finite_dimensional.finrank_tensor_product FiniteDimensional.finrank_tensorProduct
 
 end TensorProduct

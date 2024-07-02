@@ -145,7 +145,7 @@ theorem reindexAlgEquiv_refl : reindexAlgEquiv R (Equiv.refl m) = AlgEquiv.refl 
 
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m R) (N : Matrix m m R) :
     reindexAlgEquiv R e (M * N) = reindexAlgEquiv R e M * reindexAlgEquiv R e N :=
-  (reindexAlgEquiv R e).map_mul M N
+  _root_.map_mul ..
 #align matrix.reindex_alg_equiv_mul Matrix.reindexAlgEquiv_mul
 
 end Algebra
