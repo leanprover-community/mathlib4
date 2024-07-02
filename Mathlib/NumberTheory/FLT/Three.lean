@@ -1,9 +1,11 @@
 /-
 Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca
+Authors: Riccardo Brasca, Sanyam Gupta, Omar Haddad, David Lowry-Duda,
+  Lorenzo Luccioli, Pietro Monticone, Alexis Saurin, Florent Schaffhauser
 -/
 import Mathlib.NumberTheory.FLT.Basic
+import Mathlib.NumberTheory.Cyclotomic.PID
 import Mathlib.NumberTheory.Cyclotomic.Three
 
 /-!
@@ -16,6 +18,26 @@ The goal of this file is to prove Fermat Last theorem in the case `n = 3`.
 
 ## TODO
 Prove case 2.
+
+## Implementation details
+We follow the proof in https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf, page 43. The
+strategy is the following:
+* Case 1 is completely elementary and is proved using congruences modulo `9`.
+* To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
+  and `c` are in the cyclotomic ring `ℤ[ζ₃]` (where `ζ₃` is a primitive cube root of unity) and `u`
+  is a unit of `ℤ[ζ₃]`. `FermatLastTheoremForThree_of_FermatLastTheoremThreeGen` (whose proof is
+  rather elementary on paper) says that to prove Fermat's last theorem for exponent `3`, it is
+  enough to prove that this equation has no  solutions such that `c ≠ 0`, `¬ λ ∣ a`, `¬ λ ∣ b`,
+  `λ ∣ c` and `IsCoprime a b`. We call such a tuple a `Solution'`. A `Solution` is the same as a
+  `Solution'` with the additional assumption that `λ ^ 2 ∣ a + b`. We then prove that, given
+  `S' : Solution'`, there is `S : Solution` such that the multiplicity of `λ = ζ₃ - 1` in `c` is
+  the same in `S'` and `S`. In particular it is enough to prove that no `Solution` exists.
+  The key point is a descent argument on the multiplicity of `λ` in `c`: starting with
+  `S : Solution` we can find `S₁ : Solution` with multiplicity strictly smaller and this finishes
+  the proof. To construct `S₁` we go through a `Solution'` and then back to a `Solution`. More
+  importantly, we cannot control the unit `u`, and this is the reason why we need to consider
+  the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`.
+
 -/
 
 section case1
@@ -342,6 +364,292 @@ lemma exists_Solution_of_Solution' : ∃ (S₁ : Solution hζ), S₁.multiplicit
     hcdvd := S'.hcdvd
     H := H
     hab := hab }, rfl⟩
+
+namespace Solution
+
+lemma a_add_eta_mul_b : S.a + η * S.b = (S.a + S.b) + λ * S.b := by rw [coe_eta]; ring
+
+/-- Given `(S : Solution)`, we have that `λ ∣ (S.a + η * S.b)`. -/
+lemma lambda_dvd_a_add_eta_mul_b : λ ∣ (S.a + η * S.b) :=
+  a_add_eta_mul_b S ▸ dvd_add (dvd_trans (dvd_pow_self _ (by decide)) S.hab) ⟨S.b, by rw [mul_comm]⟩
+
+/-- Given `(S : Solution)`, we have that `λ ∣ (S.a + η ^ 2 * S.b)`. -/
+lemma lambda_dvd_a_add_eta_sq_mul_b : λ ∣ (S.a + η ^ 2 * S.b) := by
+  rw [show S.a + η ^ 2 * S.b = (S.a + S.b) + λ ^ 2 * S.b + 2 * λ * S.b by rw [coe_eta]; ring]
+  exact dvd_add (dvd_add (dvd_trans (dvd_pow_self _ (by decide)) S.hab) ⟨λ * S.b, by ring⟩)
+    ⟨2 * S.b, by ring⟩
+
+/-- Given `(S : Solution)`, we have that `λ ^ 2` does not divide `S.a + η * S.b`. -/
+lemma lambda_sq_not_a_add_eta_mul_b : ¬ λ ^ 2 ∣ (S.a + η * S.b) := by
+  simp_rw [a_add_eta_mul_b, dvd_add_right S.hab, pow_two, mul_dvd_mul_iff_left
+    hζ.zeta_sub_one_prime'.ne_zero, S.hb, not_false_eq_true]
+
+/-- Given `(S : Solution)`, we have that `λ ^ 2` does not divide `S.a + η ^ 2 * S.b`. -/
+lemma lambda_sq_not_dvd_a_add_eta_sq_mul_b : ¬ λ ^ 2 ∣ (S.a + η ^ 2 * S.b) := by
+  intro ⟨k, hk⟩
+  rcases S.hab with ⟨k', hk'⟩
+  refine S.hb ⟨(k - k') * (-η), ?_⟩
+  rw [show S.a + η ^ 2 * S.b = S.a + S.b - S.b + η ^ 2 * S.b by ring, hk',
+    show λ ^ 2 * k' - S.b + η ^ 2 * S.b = λ * (S.b * (η +1) + λ * k') by rw [coe_eta]; ring,
+    pow_two, mul_assoc] at hk
+  simp only [mul_eq_mul_left_iff, hζ.zeta_sub_one_prime'.ne_zero, or_false] at hk
+  apply_fun (· * -↑η) at hk
+  simp only at hk
+  have := hζ.toInteger_isPrimitiveRoot.isRoot_cyclotomic (by decide)
+  simp only [PNat.val_ofNat, Polynomial.cyclotomic_three, Polynomial.IsRoot.def,
+    Polynomial.eval_add, Polynomial.eval_pow, Polynomial.eval_X, Polynomial.eval_one] at this
+  rw [show (S.b * (η + 1) + λ * k') * -η = (- S.b) * (η ^ 2 + η + 1 - 1) - η * λ * k' by ring,
+    coe_eta, this, zero_sub, mul_neg, mul_one, neg_neg, sub_eq_iff_eq_add] at hk
+  rw [hk, coe_eta]
+  ring
+
+lemma eta_add_one_mul_neg_eta_eq_one : ((η : 𝓞 K) + 1) * (-η) = 1 :=
+  calc ((η : 𝓞 K) + 1) * -η = -(η ^ 2 + η + 1) + 1 := by ring
+  _ = 1 := by
+    ext
+    have := hζ.isRoot_cyclotomic (by decide)
+    simp only [PNat.val_ofNat, Polynomial.cyclotomic_three, Polynomial.IsRoot.def,
+      Polynomial.eval_add, Polynomial.eval_pow, Polynomial.eval_X, Polynomial.eval_one] at this
+    simp only [IsUnit.unit_spec, RingOfIntegers.neg_mk, neg_add_cancel_comm, map_add,
+      RingOfIntegers.map_mk, map_neg, map_pow, map_one, this, neg_zero, zero_add]
+
+/-- If `p : 𝓞 K` is a prime that divides both `S.a + S.b` and `S.a + η * S.b`, then `p`
+is associated with `λ`. -/
+lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b {p : 𝓞 K} (hp : Prime p)
+    (hpab : p ∣ S.a + S.b) (hpaetab : p ∣ S.a + η * S.b) : Associated p λ := by
+  suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
+  by_contra p_lam
+  refine hp.not_unit <| IsCoprime.isUnit_of_dvd' S.coprime ?_ ?_
+  · refine (hp.dvd_or_dvd ?_).resolve_left ‹_›
+    rw [show λ * S.a = η * (S.a + S.b) - (S.a + η * S.b) by rw [coe_eta]; ring]
+    exact dvd_sub (dvd_mul_of_dvd_right hpab _) hpaetab
+  · refine (hp.dvd_or_dvd ?_).resolve_left ‹_›
+    rw [show λ * S.b = (S.a + η * S.b) - (S.a + S.b) by rw [coe_eta]; ring]
+    exact dvd_sub hpaetab hpab
+
+/-- If `p : 𝓞 K` is a prime that divides both `S.a + S.b` and `S.a + η ^ 2 * S.b`, then `p`
+is associated with `λ`. -/
+lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Prime p)
+    (hpab : p ∣ (S.a + S.b)) (hpaetasqb : p ∣ (S.a + η ^ 2 * S.b)) : Associated p λ := by
+  suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
+  by_contra p_lam
+  refine hp.not_unit <| S.coprime.isUnit_of_dvd' ?_ ?_
+  · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
+    rw [show λ * S.a = - (1 - η) * S.a by rw [coe_eta]; ring, ← hζ.toInteger_cube_eq_one]
+    rw [show - (hζ.toInteger ^ 3 - η) * S.a = η * ((S.a + η ^ 2 * S.b) - η ^ 2 * (S.a + S.b))
+      by rw [coe_eta]; ring, (Units.isUnit η).dvd_mul_left]
+    exact hpaetasqb.sub (dvd_mul_of_dvd_right hpab _)
+  · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
+    rw [show λ * S.b = - (1 - η) * S.b by rw [coe_eta]; ring, ← hζ.toInteger_cube_eq_one]
+    rw [show - (hζ.toInteger ^ 3 - η) * S.b = η * ((S.a + S.b) - (S.a + η ^ 2 * S.b))
+      by rw [coe_eta]; ring, (Units.isUnit η).dvd_mul_left]
+    exact hpab.sub hpaetasqb
+
+/-- If `p : 𝓞 K` is a prime that divides both `S.a + η * S.b` and `S.a + η ^ 2 * S.b`, then `p`
+is associated with `λ`. -/
+lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Prime p)
+    (hpaetab : p ∣ S.a + η * S.b) (hpaetasqb : p ∣ S.a + η ^ 2 * S.b) : Associated p λ := by
+  suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
+  by_contra p_lam
+  refine hp.not_unit <| S.coprime.isUnit_of_dvd' ?_ ?_
+  · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
+    rw [show λ * S.a = η * (S.a + η * S.b) - (S.a + η ^ 2 * S.b) by rw [coe_eta]; ring]
+    exact dvd_mul_of_dvd_right hpaetab _ |>.sub hpaetasqb
+  · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
+    rw [← (Units.isUnit η).dvd_mul_left, show η * (λ * S.b) = (S.a + η ^ 2 * S.b) - (S.a + η * S.b)
+      by rw [coe_eta]; ring]
+    exact hpaetasqb.sub hpaetab
+
+/-- Given `S : Solution`, we let `S.y` be any element such that `S.a + η * S.b = λ * S.y` -/
+private noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
+
+private lemma y_spec : S.a + η * S.b = λ * S.y :=
+  (lambda_dvd_a_add_eta_mul_b S).choose_spec
+
+/-- Given `S : Solution`, we let `S.z` be any element such that `S.a + η ^ 2 * S.b = λ * S.z` -/
+private noncomputable def z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
+
+private lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z :=
+  (lambda_dvd_a_add_eta_sq_mul_b S).choose_spec
+
+private lemma lambda_not_dvd_y : ¬ λ ∣ S.y := fun h ↦ by
+  replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
+  rw [coe_eta, ← y_spec, ← pow_two] at h
+  exact lambda_sq_not_a_add_eta_mul_b _ h
+
+private lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
+  replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
+  rw [coe_eta, ← z_spec, ← pow_two] at h
+  exact lambda_sq_not_dvd_a_add_eta_sq_mul_b _ h
+
+/-- We have that `λ ^ (3*S.multiplicity-2)` divides `S.a + S.b`. -/
+lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
+  have h : λ ^ S.multiplicity ∣ S.c := multiplicity.pow_multiplicity_dvd _
+  replace h : (λ ^ multiplicity S) ^ 3 ∣ S.u * S.c ^ 3 := by simp [h]
+  rw [← S.H, a_cube_add_b_cube_eq_mul, ← pow_mul, mul_comm, y_spec, z_spec] at h
+  apply hζ.zeta_sub_one_prime'.pow_dvd_of_dvd_mul_left _ S.lambda_not_dvd_z
+  apply hζ.zeta_sub_one_prime'.pow_dvd_of_dvd_mul_left _ S.lambda_not_dvd_y
+  have := S.two_le_multiplicity
+  rw [show 3 * multiplicity S = 3 * multiplicity S - 2 + 1 + 1 by omega, pow_succ, pow_succ,
+    show (S.a + S.b) * (λ * y S) * (λ * z S) = (S.a + S.b) * y S * z S * λ * λ by ring,] at h
+  simp only [mul_dvd_mul_iff_right hζ.zeta_sub_one_prime'.ne_zero] at h
+  rwa [show (S.a + S.b) * y S * z S = y S * (z S * (S.a + S.b)) by ring] at h
+
+/-- Given `S : Solution`, we let `S.x` be any element such that
+`S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x` -/
+private noncomputable def x := (lambda_pow_dvd_a_add_b S).choose
+
+private lemma x_spec : S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x :=
+  (lambda_pow_dvd_a_add_b S).choose_spec
+
+/-- Given `S : Solution`, we let `S.w` be any element such that `S.c = λ ^ S.multiplicity * S.w` -/
+private noncomputable def w :=
+  (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose
+
+private lemma w_spec : S.c = λ ^ S.multiplicity * S.w :=
+(multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose_spec
+
+private lemma lambda_not_dvd_w : ¬ λ ∣ S.w := by
+  intro h
+  replace h := mul_dvd_mul_left (λ ^ S.multiplicity) h
+  rw [← w_spec] at h
+  have hh : _ := multiplicity.is_greatest' S.toSolution'.multiplicity_lambda_c_finite
+    (lt_add_one S.multiplicity)
+  rw [pow_succ', mul_comm] at hh
+  exact hh h
+
+private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
+  replace h := mul_dvd_mul_left (λ ^ (3 * S.multiplicity - 2)) h
+  rw [mul_comm, ← x_spec] at h
+  replace h :=
+    mul_dvd_mul (mul_dvd_mul h S.lambda_dvd_a_add_eta_mul_b) S.lambda_dvd_a_add_eta_sq_mul_b
+  simp only [← a_cube_add_b_cube_eq_mul, S.H, w_spec, Units.isUnit, IsUnit.dvd_mul_left] at h
+  rw [← pow_succ', mul_comm, ← mul_assoc, ← pow_succ'] at h
+  have := S.two_le_multiplicity
+  rw [show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by omega, mul_pow, ← pow_mul,
+    mul_comm _ 3, mul_dvd_mul_iff_left _] at h
+  · exact lambda_not_dvd_w _ <| hζ.zeta_sub_one_prime'.dvd_of_dvd_pow h
+  · simp [hζ.zeta_sub_one_prime'.ne_zero]
+
+attribute [local instance] IsCyclotomicExtension.Rat.three_pid
+
+private lemma isCoprime_x_y : IsCoprime S.x S.y := by
+  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hy ↦ lambda_not_dvd_y S (by simp [hy]))) ?_
+  intro p hp p_dvd_x p_dvd_y
+  refine lambda_not_dvd_x S ?_
+  rw [← Associated.dvd_iff_dvd_left <| associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b S hp ?_ ?_]
+  · exact p_dvd_x
+  · rw [x_spec]
+    exact dvd_mul_of_dvd_right p_dvd_x (λ ^ (3 * S.multiplicity - 2))
+  · convert dvd_mul_of_dvd_right p_dvd_y (η -1) using 1
+    rw [y_spec, coe_eta]
+
+private lemma isCoprime_x_z : IsCoprime S.x S.z := by
+  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
+  intro p hp p_dvd_x p_dvd_z
+  refine lambda_not_dvd_x S ?_
+  rw [← Associated.dvd_iff_dvd_left <|
+    associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b S hp ?_ ?_]
+  · exact p_dvd_x
+  · rw [x_spec]
+    exact dvd_mul_of_dvd_right p_dvd_x (λ ^ (3 * S.multiplicity - 2))
+  · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
+    rw [z_spec, coe_eta]
+
+private lemma isCoprime_y_z : IsCoprime S.y S.z := by
+  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
+  intro p hp p_dvd_y p_dvd_z
+  refine lambda_not_dvd_y S ?_
+  rw [← Associated.dvd_iff_dvd_left <|
+    associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b S hp ?_ ?_]
+  · exact p_dvd_y
+  · rw [y_spec]
+    exact dvd_mul_of_dvd_right p_dvd_y (η - 1)
+  · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
+    rw [z_spec, coe_eta]
+
+private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
+  suffices hh : λ ^ (3 * S.multiplicity - 2) * S.x * λ * S.y * λ * S.z =
+      S.u * λ ^ (3 * S.multiplicity) * S.w ^ 3 by
+    rw [show λ ^ (3 * multiplicity S - 2) * x S * λ * y S * λ * z S =
+      λ ^ (3 * multiplicity S - 2) * λ * λ * x S * y S * z S by ring] at hh
+    have := S.two_le_multiplicity
+    rw [mul_comm _ (λ ^ (3 * multiplicity S)), ← pow_succ, ← pow_succ,
+      show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by omega, mul_assoc, mul_assoc,
+      mul_assoc] at hh
+    simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', hζ.zeta_sub_one_prime'.ne_zero, ne_eq,
+      mul_eq_zero, OfNat.ofNat_ne_zero, false_or, false_and, or_false] at hh
+    convert hh using 1
+    ring
+  simp only [← x_spec, mul_assoc, ← y_spec, ← z_spec]
+  simp only [mul_comm 3, pow_mul, ← mul_pow, ← w_spec]
+  rw [← S.H, a_cube_add_b_cube_eq_mul]
+  ring
+
+private lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X ^ 3 := by
+  have h1 : S.x * (S.y * S.z * S.u⁻¹) = S.w ^ 3 := by
+    simp [← mul_assoc, x_mul_y_mul_z_eq_u_mul_w_cube, mul_comm _ (S.w ^ 3)]
+  have h2 : IsCoprime S.x (S.y * S.z * S.u⁻¹) :=
+    (isCoprime_mul_unit_right_right (Units.isUnit _) S.x _).2 <|
+      IsCoprime.mul_right S.isCoprime_x_y S.isCoprime_x_z
+  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨X, ⟨u₁, hX⟩⟩
+  exact ⟨u₁, X, by simp [← hX, mul_comm]⟩
+
+private lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y ^ 3 := by
+  have h1 : S.y * (S.x * S.z * S.u⁻¹) = S.w ^ 3 := by
+    rw [← mul_assoc, ← mul_assoc S.y, mul_comm S.y, x_mul_y_mul_z_eq_u_mul_w_cube]
+    simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
+  have h2 : IsCoprime S.y (S.x * S.z * S.u⁻¹) :=
+    (isCoprime_mul_unit_right_right (Units.isUnit _) S.y _).2 <|
+      IsCoprime.mul_right S.isCoprime_x_y.symm S.isCoprime_y_z
+  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Y, ⟨u₂, hY⟩⟩
+  exact ⟨u₂, Y, by simp [← hY, mul_comm]⟩
+
+private lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z ^ 3 := by
+  have h1 : S.z * (S.x * S.y * S.u⁻¹) = S.w ^ 3 := by
+    rw [← mul_assoc, ← mul_assoc S.z, mul_comm S.z, mul_assoc S.x, mul_comm S.z, ← mul_assoc,
+      x_mul_y_mul_z_eq_u_mul_w_cube]
+    simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
+  have h2 : IsCoprime S.z (S.x * S.y * S.u⁻¹) :=
+    (isCoprime_mul_unit_right_right (Units.isUnit _) S.z _).2 <|
+      IsCoprime.mul_right S.isCoprime_x_z.symm S.isCoprime_y_z.symm
+  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Z, ⟨u₃, hZ⟩⟩
+  exact ⟨u₃, Z, by simp [← hZ, mul_comm]⟩
+
+/-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
+`S.x = S.u₁ * S.X ^ 3` -/
+private noncomputable def u₁ := (x_eq_unit_mul_cube S).choose
+
+/-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
+`S.x = S.u₁ * S.X ^ 3` -/
+private noncomputable def X := (x_eq_unit_mul_cube S).choose_spec.choose
+
+private lemma u₁_X_spec : S.x = S.u₁ * S.X ^ 3 := by
+  exact (x_eq_unit_mul_cube S).choose_spec.choose_spec
+
+/-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
+`S.y = S.u₂ * S.Y ^ 3` -/
+private noncomputable def u₂ := (y_eq_unit_mul_cube S).choose
+
+/-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
+`S.y = S.u₂ * S.Y ^ 3` -/
+private noncomputable def Y := (y_eq_unit_mul_cube S).choose_spec.choose
+
+private lemma u₂_Y_spec : S.y = S.u₂ * S.Y ^ 3 := by
+  exact (y_eq_unit_mul_cube S).choose_spec.choose_spec
+
+/-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
+`S.z = S.u₃ * S.Z ^ 3` -/
+private noncomputable def u₃ := (z_eq_unit_mul_cube S).choose
+
+/-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
+`S.z = S.u₃ * S.Z ^ 3` -/
+private noncomputable def Z := (z_eq_unit_mul_cube S).choose_spec.choose
+
+private lemma u₃_Z_spec : S.z = S.u₃ * S.Z ^ 3 := by
+  exact (z_eq_unit_mul_cube S).choose_spec.choose_spec
+
+end Solution
 
 end FermatLastTheoremForThreeGen
 
