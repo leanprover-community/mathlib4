@@ -618,39 +618,42 @@ theorem filter_card_add_filter_neg_card_eq_card
   rw [← card_union_of_disjoint (disjoint_filter_filter_neg _ _ _), filter_union_filter_neg_eq]
 #align finset.filter_card_add_filter_neg_card_eq_card Finset.filter_card_add_filter_neg_card_eq_card
 
+/-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
+set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
+lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : s.card ≤ n) (hnt : n ≤ t.card) :
+    ∃ u, s ⊆ u ∧ u ⊆ t ∧ card u = n := by
+  classical
+  obtain ⟨k, hk⟩ := Nat.le.dest hnt
+  clear hnt
+  induction' k with k ih generalizing t
+  · exact ⟨t, hst, Subset.rfl, hk.symm⟩
+  obtain ⟨a, ha⟩ : (t \ s).Nonempty := by rw [← card_pos, card_sdiff hst]; omega
+  replace hst : s ⊆ t.erase a := subset_erase.2 ⟨hst, (mem_sdiff.1 ha).2⟩
+  replace hk : n + k = card (erase t a) := by rw [card_erase_of_mem (mem_sdiff.1 ha).1]; omega
+  obtain ⟨u, hsu, hut, hu⟩ := ih hst hk
+  exact ⟨u, hsu, hut.trans (erase_subset ..), hu⟩
+
+/-- We can shrink a set to any smaller size. -/
+lemma exists_subset_card_eq (hns : n ≤ s.card) : ∃ t ⊆ s, t.card = n := by
+  simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
+
 /-- Given a set `A` and a set `B` inside it, we can shrink `A` to any appropriate size, and keep `B`
 inside it. -/
+@[deprecated exists_subsuperset_card_eq (since := "2024-06-23")]
 theorem exists_intermediate_set {A B : Finset α} (i : ℕ) (h₁ : i + card B ≤ card A) (h₂ : B ⊆ A) :
-    ∃ C : Finset α, B ⊆ C ∧ C ⊆ A ∧ card C = i + card B := by
-  classical
-    rcases Nat.le.dest h₁ with ⟨k, h⟩
-    clear h₁
-    induction' k with k ih generalizing A
-    · exact ⟨A, h₂, Subset.refl _, h.symm⟩
-    obtain ⟨a, ha⟩ : (A \ B).Nonempty := by rw [← card_pos, card_sdiff h₂]; omega
-    have z : i + card B + k = card (erase A a) := by
-      rw [card_erase_of_mem (mem_sdiff.1 ha).1, ← h,
-        Nat.add_sub_assoc (Nat.one_le_iff_ne_zero.mpr k.succ_ne_zero), ← pred_eq_sub_one,
-        k.pred_succ]
-    have : B ⊆ A.erase a := by
-      rintro t th
-      apply mem_erase_of_ne_of_mem _ (h₂ th)
-      rintro rfl
-      exact not_mem_sdiff_of_mem_right th ha
-    rcases ih this z with ⟨B', hB', B'subA', cards⟩
-    exact ⟨B', hB', B'subA'.trans (erase_subset _ _), cards⟩
+    ∃ C : Finset α, B ⊆ C ∧ C ⊆ A ∧ card C = i + card B :=
+  exists_subsuperset_card_eq h₂ (Nat.le_add_left ..) h₁
 #align finset.exists_intermediate_set Finset.exists_intermediate_set
 
 /-- We can shrink `A` to any smaller size. -/
+@[deprecated exists_subset_card_eq (since := "2024-06-23")]
 theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ card A) :
-    ∃ B : Finset α, B ⊆ A ∧ card B = i :=
-  let ⟨B, _, x₁, x₂⟩ := exists_intermediate_set i (by simpa) (empty_subset A)
-  ⟨B, x₁, x₂⟩
+    ∃ B : Finset α, B ⊆ A ∧ card B = i := exists_subset_card_eq h₁
 #align finset.exists_smaller_set Finset.exists_smaller_set
 
 theorem le_card_iff_exists_subset_card : n ≤ s.card ↔ ∃ t ⊆ s, t.card = n := by
   refine ⟨fun h => ?_, fun ⟨t, hst, ht⟩ => ht ▸ card_le_card hst⟩
-  exact exists_smaller_set s n h
+  exact exists_subset_card_eq h
 
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
     (hXY : 2 * n < (X ∪ Y).card) : ∃ C : Finset α, n < C.card ∧ (C ⊆ X ∨ C ⊆ Y) := by
