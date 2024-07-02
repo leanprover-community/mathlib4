@@ -79,6 +79,6 @@ noncomputable def cechComplexFunctor {I : Type w} (U : I → C)
 -- a Grothendieck topology, or if `X : C` and we have a covering family of arrows
 --  `f i : U i ⟶ X` identified as a family of objects in `Over X`.
 
--- next step: show that if `V` refines `U`, then the induced maps are homotopic
+-- next step: show that if `V` refines `U`, then two refinements induce homotopic maps
 
 end CategoryTheory
