@@ -44,7 +44,7 @@ acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
 `-ᵥ` operation. In the case of a vector space, it is an affine
 space. -/
-class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] extends AddAction G P,
+class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction G P,
   VSub G P where
   [nonempty : Nonempty P]
   /-- Torsor subtraction and addition with the same element cancels out. -/

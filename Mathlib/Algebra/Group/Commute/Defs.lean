@@ -120,15 +120,15 @@ theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 @[to_additive]
-protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b :=
-  by simp only [mul_assoc, h.eq]
+protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b := by
+  simp only [mul_assoc, h.eq]
 #align commute.right_comm Commute.right_commₓ
 #align add_commute.right_comm AddCommute.right_commₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 @[to_additive]
-protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) :=
-  by simp only [← mul_assoc, h.eq]
+protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) := by
+  simp only [← mul_assoc, h.eq]
 #align commute.left_comm Commute.left_commₓ
 #align add_commute.left_comm AddCommute.left_commₓ
 -- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction

@@ -141,7 +141,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
       interval_cases p
       · simp [Classical.em]
       · dsimp [padicValNat, maxPowDiv]
-        rw [go, if_neg, dif_neg] <;> simp
+        rw [go, if_neg]; simp
     · intro h
       simp [h]
 
@@ -368,8 +368,9 @@ protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
 #align padic_val_rat.mul padicValRat.mul
 
 /-- A rewrite lemma for `padicValRat p (q^k)` with condition `q ≠ 0`. -/
-protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} : padicValRat p (q ^ k) = k * padicValRat p q :=
-  by induction k <;>
+protected theorem pow {q : ℚ} (hq : q ≠ 0) {k : ℕ} :
+    padicValRat p (q ^ k) = k * padicValRat p q := by
+  induction k <;>
     simp [*, padicValRat.mul hq (pow_ne_zero _ hq), _root_.pow_succ', add_mul, add_comm]
 #align padic_val_rat.pow padicValRat.pow
 
@@ -629,7 +630,7 @@ lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
-  rw [← lt_add_one_iff, ← mul_one (2 ^ _)] at h1
+  rw [← Nat.lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, Nat.pow_succ] at h2
   refine not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?

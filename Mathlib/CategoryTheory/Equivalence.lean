@@ -423,8 +423,8 @@ theorem cancel_unit_right_assoc' {W X X' Y Y' Z : C} (f : W ⟶ X) (g : X ⟶ Y)
 @[simp]
 theorem cancel_counitInv_right_assoc' {W X X' Y Y' Z : D} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z)
     (f' : W ⟶ X') (g' : X' ⟶ Y') (h' : Y' ⟶ Z) :
-    f ≫ g ≫ h ≫ e.counitInv.app Z = f' ≫ g' ≫ h' ≫ e.counitInv.app Z ↔ f ≫ g ≫ h = f' ≫ g' ≫ h' :=
-  by simp only [← Category.assoc, cancel_mono]
+    f ≫ g ≫ h ≫ e.counitInv.app Z = f' ≫ g' ≫ h' ≫ e.counitInv.app Z ↔
+    f ≫ g ≫ h = f' ≫ g' ≫ h' := by simp only [← Category.assoc, cancel_mono]
 #align category_theory.equivalence.cancel_counit_inv_right_assoc' CategoryTheory.Equivalence.cancel_counitInv_right_assoc'
 
 end CancellationLemmas
@@ -480,29 +480,33 @@ instance essSurj_functor (e : C ≌ E) : e.functor.EssSurj :=
 instance essSurj_inverse (e : C ≌ E) : e.inverse.EssSurj :=
   e.symm.essSurj_functor
 
+/-- The functor of an equivalence of categories is fully faithful. -/
+def fullyFaithfulFunctor (e : C ≌ E) : e.functor.FullyFaithful where
+  preimage {X Y} f := e.unitIso.hom.app X ≫ e.inverse.map f ≫ e.unitIso.inv.app Y
+
+/-- The inverse of an equivalence of categories is fully faithful. -/
+def fullyFaithfulInverse (e : C ≌ E) : e.inverse.FullyFaithful where
+  preimage {X Y} f := e.counitIso.inv.app X ≫ e.functor.map f ≫ e.counitIso.hom.app Y
+
 /-- The functor of an equivalence of categories is faithful.
 
 See <https://stacks.math.columbia.edu/tag/02C3>.
 -/
-instance faithful_functor (e : C ≌ E) : e.functor.Faithful where
-  map_injective {X Y f g} h := by
-    rw [← cancel_mono (e.unit.app Y), ← cancel_epi (e.unitInv.app X),
-      ← e.inv_fun_map _ _ f, ← e.inv_fun_map _ _ g, h]
+instance faithful_functor (e : C ≌ E) : e.functor.Faithful :=
+  e.fullyFaithfulFunctor.faithful
 
 instance faithful_inverse (e : C ≌ E) : e.inverse.Faithful :=
-  e.symm.faithful_functor
+  e.fullyFaithfulInverse.faithful
 
 /-- The functor of an equivalence of categories is full.
 
 See <https://stacks.math.columbia.edu/tag/02C3>.
 -/
-instance full_functor (e : C ≌ E) : e.functor.Full where
-  map_surjective {X Y} f :=
-    ⟨e.unitIso.hom.app X ≫ e.inverse.map f ≫ e.unitIso.inv.app Y,
-      e.inverse.map_injective (by simp)⟩
+instance full_functor (e : C ≌ E) : e.functor.Full :=
+  e.fullyFaithfulFunctor.full
 
 instance full_inverse (e : C ≌ E) : e.inverse.Full :=
-  e.symm.full_functor
+  e.fullyFaithfulInverse.full
 
 /-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
 an isomorphism, then there is an equivalence of categories whose functor is `G`. -/

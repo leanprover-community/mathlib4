@@ -13,7 +13,7 @@ import Mathlib.Data.Set.Basic
 
 The distinction between this file and `Mathlib.Algebra.Order.Ring.Nat` is not particularly clear.
 They are separated for now to minimize the porting requirements for tactics during the transition to
-mathlib4. After `Mathlib.Data.Rat.Order` has been ported,
+mathlib4. After `Mathlib.Algebra.Order.Ring.Rat` has been ported,
 please feel free to reorganize these two files.
 -/
 

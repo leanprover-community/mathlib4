@@ -207,7 +207,7 @@ protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
       have H : 0 < (2 : ℝ≥0∞).toReal := by norm_num
       suffices ‖∑' i : ι, V i (f i)‖ ^ (2 : ℝ≥0∞).toReal = ‖f‖ ^ (2 : ℝ≥0∞).toReal by
         exact Real.rpow_left_injOn H.ne' (norm_nonneg _) (norm_nonneg _) this
-      refine' tendsto_nhds_unique _ (lp.hasSum_norm H f)
+      refine tendsto_nhds_unique ?_ (lp.hasSum_norm H f)
       convert (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
       ext s
       exact mod_cast (hV.norm_sum f s).symm

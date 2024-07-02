@@ -281,8 +281,8 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     simpa [← discr_def] using discr_isUnit_of_basis _ B.basis
   have H :
     (traceMatrix K B.basis).det • (traceMatrix K B.basis) *ᵥ (B.basis.equivFun z) =
-      (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) :=
-    by congr; exact traceMatrix_of_basis_mulVec _ _
+      (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) := by
+    congr; exact traceMatrix_of_basis_mulVec _ _
   have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
   suffices ∀ i, ((traceMatrix K B.basis).det • B.basis.equivFun z) i ∈ (⊥ : Subalgebra R K) by
     rw [← B.basis.sum_repr z, Finset.smul_sum]

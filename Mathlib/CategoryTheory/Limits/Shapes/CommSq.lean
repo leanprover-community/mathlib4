@@ -271,7 +271,7 @@ open ZeroObject
 theorem of_hasBinaryProduct [HasBinaryProduct X Y] [HasZeroObject C] [HasZeroMorphisms C] :
     IsPullback Limits.prod.fst Limits.prod.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
   convert @of_is_product _ _ X Y 0 _ (limit.isLimit _) HasZeroObject.zeroIsTerminal
-    <;> apply Subsingleton.elim
+    <;> subsingleton
 #align category_theory.is_pullback.of_has_binary_product CategoryTheory.IsPullback.of_hasBinaryProduct
 
 variable {X Y}
@@ -404,7 +404,7 @@ open ZeroObject
 theorem of_hasBinaryCoproduct [HasBinaryCoproduct X Y] [HasZeroObject C] [HasZeroMorphisms C] :
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) coprod.inl coprod.inr := by
   convert @of_is_coproduct _ _ 0 X Y _ (colimit.isColimit _) HasZeroObject.zeroIsInitial
-    <;> apply Subsingleton.elim
+    <;> subsingleton
 #align category_theory.is_pushout.of_has_binary_coproduct CategoryTheory.IsPushout.of_hasBinaryCoproduct
 
 variable {X Y}
@@ -559,7 +559,7 @@ open ZeroObject
 theorem of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPullback b.fst b.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
   convert IsPullback.of_is_product' h.isLimit HasZeroObject.zeroIsTerminal
-    <;> apply Subsingleton.elim
+    <;> subsingleton
 #align category_theory.is_pullback.of_is_bilimit CategoryTheory.IsPullback.of_isBilimit
 
 @[simp]
@@ -772,7 +772,7 @@ open ZeroObject
 theorem of_isBilimit {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout (0 : 0 ⟶ X) (0 : 0 ⟶ Y) b.inl b.inr := by
   convert IsPushout.of_is_coproduct' h.isColimit HasZeroObject.zeroIsInitial
-    <;> apply Subsingleton.elim
+    <;> subsingleton
 #align category_theory.is_pushout.of_is_bilimit CategoryTheory.IsPushout.of_isBilimit
 
 @[simp]
@@ -891,7 +891,7 @@ noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fo
   · exact fun s => H.isLimit.lift (PullbackCone.mk s.ι s.ι s.condition)
   · exact fun s => H.isLimit.fac _ WalkingCospan.left
   · intro s m e
-    apply PullbackCone.IsLimit.hom_ext H.isLimit <;> refine' e.trans _ <;> symm <;>
+    apply PullbackCone.IsLimit.hom_ext H.isLimit <;> refine e.trans ?_ <;> symm <;>
       exact H.isLimit.fac _ _
 #align category_theory.is_pullback.is_limit_fork CategoryTheory.IsPullback.isLimitFork
 
@@ -903,7 +903,7 @@ noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) :
   · exact fun s => H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
   · exact fun s => H.isColimit.fac _ WalkingSpan.left
   · intro s m e
-    apply PushoutCocone.IsColimit.hom_ext H.isColimit <;> refine' e.trans _ <;> symm <;>
+    apply PushoutCocone.IsColimit.hom_ext H.isColimit <;> refine e.trans ?_ <;> symm <;>
       exact H.isColimit.fac _ _
 #align category_theory.is_pushout.is_limit_fork CategoryTheory.IsPushout.isLimitFork
 

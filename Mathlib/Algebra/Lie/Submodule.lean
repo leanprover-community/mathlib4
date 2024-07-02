@@ -64,7 +64,7 @@ instance : AddSubgroupClass (LieSubmodule R L M) M where
   zero_mem N := N.zero_mem'
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx
 
-instance instSmulMemClass : SMulMemClass (LieSubmodule R L M) R M where
+instance instSMulMemClass : SMulMemClass (LieSubmodule R L M) R M where
   smul_mem {s} c _ h := s.smul_mem'  c h
 
 /-- The zero module is a Lie submodule of any Lie module. -/
@@ -554,6 +554,10 @@ theorem codisjoint_iff_coe_toSubmodule :
   rw [codisjoint_iff, codisjoint_iff, ← coe_toSubmodule_eq_iff, sup_coe_toSubmodule,
     top_coeSubmodule, ← codisjoint_iff]
 
+theorem isCompl_iff_coe_toSubmodule :
+    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := by
+  simp only [isCompl_iff, disjoint_iff_coe_toSubmodule, codisjoint_iff_coe_toSubmodule]
+
 theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
     CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
   simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
@@ -621,6 +625,9 @@ theorem wellFounded_of_isArtinian [IsArtinian R M] :
   RelHomClass.wellFounded (toSubmodule_orderEmbedding R L M).ltEmbedding <|
     IsArtinian.wellFounded_submodule_lt R M
 
+instance [IsArtinian R M] : IsAtomic (LieSubmodule R L M) :=
+  isAtomic_of_orderBot_wellFounded_lt <| wellFounded_of_isArtinian R L M
+
 @[simp]
 theorem subsingleton_iff : Subsingleton (LieSubmodule R L M) ↔ Subsingleton M :=
   have h : Subsingleton (LieSubmodule R L M) ↔ Subsingleton (Submodule R M) := by
@@ -674,7 +681,8 @@ theorem incl_eq_val : (N.incl : N → M) = Subtype.val :=
 
 theorem injective_incl : Function.Injective N.incl := Subtype.coe_injective
 
-variable {N N'} (h : N ≤ N')
+variable {N N'}
+variable (h : N ≤ N')
 
 /-- Given two nested Lie submodules `N ⊆ N'`,
 the inclusion `N ↪ N'` is a morphism of Lie modules. -/

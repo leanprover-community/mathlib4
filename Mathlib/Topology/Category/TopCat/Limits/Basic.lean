@@ -5,6 +5,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 #align_import topology.category.Top.limits.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -15,7 +16,6 @@ Further, these limits and colimits are preserved by the forgetful functor --- th
 underlying types are just the limits in the category of types.
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
@@ -110,7 +110,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{
   · rfl
 #align Top.limit_cone_infi_is_limit TopCat.limitConeInfiIsLimit
 
-instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCat.{max v u} where
+instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v, v} TopCat.{max v u} where
   has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk

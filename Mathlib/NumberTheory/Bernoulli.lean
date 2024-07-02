@@ -252,8 +252,7 @@ theorem bernoulli_spec' (n : ℕ) :
   · simp
   rw [if_neg (succ_ne_zero _)]
   -- algebra facts
-  have h₁ : (1, n) ∈ antidiagonal n.succ := by
-    simp [mem_antidiagonal, add_comm, Nat.succ_eq_add_one]
+  have h₁ : (1, n) ∈ antidiagonal n.succ := by simp [mem_antidiagonal, add_comm]
   have h₂ : (n : ℚ) + 1 ≠ 0 := by norm_cast
   have h₃ : (1 + n).choose n = n + 1 := by simp [add_comm]
   -- key equation: the corresponding fact for `bernoulli'`
@@ -294,10 +293,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   rw [mem_antidiagonal] at h
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
   field_simp [hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc]
-  -- Porting note: was `cc`, which was not yet ported
-  left
-  left
-  ring
+  left; left; ring
 #align bernoulli_power_series_mul_exp_sub_one bernoulliPowerSeries_mul_exp_sub_one
 
 section Faulhaber
@@ -400,25 +396,22 @@ theorem sum_Ico_pow (n p : ℕ) :
     sum_congr rfl fun i _ => by rw [bernoulli_eq_bernoulli'_of_ne_one (succ_succ_ne_one i)]
   calc
     (-- replace sum over `Ico` with sum over `range` and simplify
-        ∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ) = ∑ k ∈ range n.succ, (k : ℚ) ^ p.succ :=
-      by simp [sum_Ico_eq_sub _ hle, succ_ne_zero]
+        ∑ k ∈ Ico 1 n.succ, (k : ℚ) ^ p.succ)
+    _ = ∑ k ∈ range n.succ, (k : ℚ) ^ p.succ := by simp [sum_Ico_eq_sub _ hle, succ_ne_zero]
     -- extract the last term of the sum
-        _ = (∑ k ∈ range n, (k : ℚ) ^ p.succ) + (n : ℚ) ^ p.succ :=
-      by rw [sum_range_succ]
+    _ = (∑ k ∈ range n, (k : ℚ) ^ p.succ) + (n : ℚ) ^ p.succ := by rw [sum_range_succ]
     -- apply the key lemma, `sum_range_pow`
-        _ = (∑ i ∈ range p.succ.succ, f i) + (n : ℚ) ^ p.succ :=
-      by simp [f, sum_range_pow]
+    _ = (∑ i ∈ range p.succ.succ, f i) + (n : ℚ) ^ p.succ := by simp [f, sum_range_pow]
     -- extract the first two terms of the sum
-        _ = (∑ i ∈ range p, f i.succ.succ) + f 1 + f 0 + (n : ℚ) ^ p.succ :=
-      by simp_rw [sum_range_succ']
-        _ = (∑ i ∈ range p, f i.succ.succ) + (f 1 + (n : ℚ) ^ p.succ) + f 0 := by ring
-        _ = (∑ i ∈ range p, f i.succ.succ) + 1 / 2 * (n : ℚ) ^ p.succ + f 0 := by rw [h2]
+    _ = (∑ i ∈ range p, f i.succ.succ) + f 1 + f 0 + (n : ℚ) ^ p.succ := by
+      simp_rw [sum_range_succ']
+    _ = (∑ i ∈ range p, f i.succ.succ) + (f 1 + (n : ℚ) ^ p.succ) + f 0 := by ring
+    _ = (∑ i ∈ range p, f i.succ.succ) + 1 / 2 * (n : ℚ) ^ p.succ + f 0 := by rw [h2]
     -- convert from `bernoulli` to `bernoulli'`
-        _ = (∑ i ∈ range p, f' i.succ.succ) + f' 1 + f' 0 :=
-      by simpa [f, f', h1, fun i => show i + 2 = i + 1 + 1 from rfl]
+    _ = (∑ i ∈ range p, f' i.succ.succ) + f' 1 + f' 0 := by
+      simpa [f, f', h1, fun i => show i + 2 = i + 1 + 1 from rfl]
     -- rejoin the first two terms of the sum
-        _ = ∑ i ∈ range p.succ.succ, f' i :=
-      by simp_rw [sum_range_succ']
+    _ = ∑ i ∈ range p.succ.succ, f' i := by simp_rw [sum_range_succ']
 #align sum_Ico_pow sum_Ico_pow
 
 end Faulhaber

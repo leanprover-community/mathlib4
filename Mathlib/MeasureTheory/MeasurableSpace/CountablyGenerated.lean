@@ -3,7 +3,7 @@ Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher, Yury G. Kudryashov, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 import Mathlib.Data.Set.MemPartition
 import Mathlib.Order.Filter.CountableSeparatingOn
 
@@ -333,7 +333,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
       classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
-        exact diff_subset _ _
+        exact diff_subset
       · simp only [Finset.coe_sdiff, coe_toFinset]
         refine (IsCompl.eq_compl ⟨?_, ?_⟩).symm
         · refine Set.disjoint_sUnion_right.mpr fun u huS => ?_

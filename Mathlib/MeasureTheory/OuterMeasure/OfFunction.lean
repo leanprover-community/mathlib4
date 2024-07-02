@@ -64,7 +64,7 @@ protected def ofFunction : OuterMeasure α :=
       ENNReal.le_of_forall_pos_le_add <| by
         intro ε hε (hb : (∑' i, μ (s i)) < ∞)
         rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 hε).ne' ℕ with ⟨ε', hε', hl⟩
-        refine' le_trans _ (add_le_add_left (le_of_lt hl) _)
+        refine le_trans ?_ (add_le_add_left (le_of_lt hl) _)
         rw [← ENNReal.tsum_add]
         choose f hf using
           show ∀ i, ∃ f : ℕ → Set α, (s i ⊆ ⋃ i, f i) ∧ (∑' i, m (f i)) < μ (s i) + ε' i by
@@ -76,9 +76,9 @@ protected def ofFunction : OuterMeasure α :=
             exists t
             contrapose! ht
             exact le_iInf ht
-        refine' le_trans _ (ENNReal.tsum_le_tsum fun i => le_of_lt (hf i).2)
+        refine le_trans ?_ (ENNReal.tsum_le_tsum fun i => le_of_lt (hf i).2)
         rw [← ENNReal.tsum_prod, ← Nat.pairEquiv.symm.tsum_eq]
-        refine' iInf_le_of_le _ (iInf_le _ _)
+        refine iInf_le_of_le _ (iInf_le _ ?_)
         apply iUnion_subset
         intro i
         apply Subset.trans (hf i).1
@@ -160,7 +160,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
 
   calc
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
-      add_le_add (hI _ <| subset_union_left _ _) (hI _ <| subset_union_right _ _)
+      add_le_add (hI _ subset_union_left) (hI _ subset_union_right)
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
       (tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
@@ -321,7 +321,7 @@ theorem boundedBy_union_of_top_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → m u = ∞) :
     boundedBy m (s ∪ t) = boundedBy m s + boundedBy m t :=
   ofFunction_union_of_top_of_nonempty_inter fun u hs ht =>
-    top_unique <| (h u hs ht).ge.trans <| le_iSup (fun _ => m u) (hs.mono <| inter_subset_right s u)
+    top_unique <| (h u hs ht).ge.trans <| le_iSup (fun _ => m u) (hs.mono inter_subset_right)
 #align measure_theory.outer_measure.bounded_by_union_of_top_of_nonempty_inter MeasureTheory.OuterMeasure.boundedBy_union_of_top_of_nonempty_inter
 
 end BoundedBy
@@ -365,8 +365,8 @@ the minimum value of a measure on that set: it is the infimum sum of measures of
 sets that covers that set, where a different measure can be used for each set in the cover. -/
 theorem sInf_apply {m : Set (OuterMeasure α)} {s : Set α} (h : m.Nonempty) :
     sInf m s =
-      ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ (t n) :=
-  by simp_rw [sInf_eq_boundedBy_sInfGen, boundedBy_apply, iSup_sInfGen_nonempty h]
+      ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ (t n) := by
+  simp_rw [sInf_eq_boundedBy_sInfGen, boundedBy_apply, iSup_sInfGen_nonempty h]
 #align measure_theory.outer_measure.Inf_apply MeasureTheory.OuterMeasure.sInf_apply
 
 /-- The value of the Infimum of a set of outer measures on a nonempty set is not simply
@@ -457,9 +457,8 @@ theorem map_biInf_comap {ι β} {I : Set ι} (hI : I.Nonempty) {f : α → β} (
 
 theorem restrict_iInf_restrict {ι} (s : Set α) (m : ι → OuterMeasure α) :
     restrict s (⨅ i, restrict s (m i)) = restrict s (⨅ i, m i) :=
-  calc
-    restrict s (⨅ i, restrict s (m i)) = restrict (range ((↑) : s → α)) (⨅ i, restrict s (m i)) :=
-      by rw [Subtype.range_coe]
+  calc restrict s (⨅ i, restrict s (m i))
+    _ = restrict (range ((↑) : s → α)) (⨅ i, restrict s (m i)) := by rw [Subtype.range_coe]
     _ = map ((↑) : s → α) (⨅ i, comap (↑) (m i)) := (map_iInf Subtype.coe_injective _).symm
     _ = restrict s (⨅ i, m i) := congr_arg (map ((↑) : s → α)) (comap_iInf _ _).symm
 

@@ -140,10 +140,12 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
       ⟨k, jk, ik, h.symm⟩,
       @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
-        refine' ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, _⟩
+        refine ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, ?_⟩
         rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
         · symm
-          rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map] <;> assumption⟩
+          rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map]
+          assumption
+        assumption⟩
 #align first_order.language.direct_limit.setoid FirstOrder.Language.DirectLimit.setoid
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
@@ -238,14 +240,14 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
   toStructure := sigmaStructure G f
   fun_equiv {n} {F} x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
-    refine'
+    refine
       Setoid.trans (funMap_equiv_unify G f F x i hx)
-        (Setoid.trans _ (Setoid.symm (funMap_equiv_unify G f F y i hy)))
+        (Setoid.trans ?_ (Setoid.symm (funMap_equiv_unify G f F y i hy)))
     rw [h]
   rel_equiv {n} {R} x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
-    refine' _root_.trans (relMap_equiv_unify G f R x i hx)
-      (_root_.trans _ (symm (relMap_equiv_unify G f R y i hy)))
+    refine _root_.trans (relMap_equiv_unify G f R x i hx)
+      (_root_.trans ?_ (symm (relMap_equiv_unify G f R y i hy)))
     rw [h]
 #align first_order.language.direct_limit.prestructure FirstOrder.Language.DirectLimit.prestructure
 

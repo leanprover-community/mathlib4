@@ -231,7 +231,7 @@ theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
 
 theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) : mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
-  have A : Continuous fun x : ℝ => exp (t * x) := by continuity
+  have A : Continuous fun x : ℝ => exp (t * x) := by fun_prop
   have h'X : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ :=
     A.aestronglyMeasurable.comp_aemeasurable hX.aemeasurable
   have h'Y : AEStronglyMeasurable (fun ω => exp (t * Y ω)) μ :=

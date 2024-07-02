@@ -9,6 +9,7 @@ import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrd
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.Data.Set.Subsingleton
 
 #align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"
@@ -218,7 +219,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       exact Nonempty.intro ⟨(hf y).choose, (hf y).choose_spec⟩
     let φ : Y → X := fun y => (H y).some.1
     have hφ : ∀ y : Y, f (φ y) = y := fun y => (H y).some.2
-    refine' IsSplitEpi.mk' ⟨⟨φ, _⟩, _⟩
+    refine IsSplitEpi.mk' ⟨⟨φ, ?_⟩, ?_⟩
     swap
     · ext b
       apply hφ

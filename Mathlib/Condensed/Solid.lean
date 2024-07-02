@@ -16,7 +16,7 @@ groups were introduced in [scholze2019condensed], Definition 5.1.
 
 ## Main definition
 
-* `CondensedMod.IsSolid R`: the predicate on condensed abelian groups describing the property of
+* `CondensedMod.IsSolid R`: the predicate on condensed `R`-modules describing the property of
   being solid.
 
 TODO (hard): prove that `((profiniteSolid ℤ).obj S).IsSolid` for `S : Profinite`.

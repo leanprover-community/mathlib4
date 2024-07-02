@@ -45,12 +45,12 @@ theorem tprod_pi_single [DecidableEq β] (b : β) (a : α) : ∏' b', Pi.mulSing
 @[to_additive tsum_setProd_singleton_left]
 lemma tprod_setProd_singleton_left (b : β) (t : Set γ) (f : β × γ → α) :
     (∏' x : {b} ×ˢ t, f x) = ∏' c : t, f (b, c) := by
-  rw [tprod_congr_set_coe _ Set.singleton_prod, tprod_image _ ((Prod.mk.inj_left b).injOn _)]
+  rw [tprod_congr_set_coe _ Set.singleton_prod, tprod_image _ (Prod.mk.inj_left b).injOn]
 
 @[to_additive tsum_setProd_singleton_right]
 lemma tprod_setProd_singleton_right (s : Set β) (c : γ) (f : β × γ → α) :
     (∏' x : s ×ˢ {c}, f x) = ∏' b : s, f (b, c) := by
-  rw [tprod_congr_set_coe _ Set.prod_singleton, tprod_image _ ((Prod.mk.inj_right c).injOn _)]
+  rw [tprod_congr_set_coe _ Set.prod_singleton, tprod_image _ (Prod.mk.inj_right c).injOn]
 
 @[to_additive Summable.prod_symm]
 theorem Multipliable.prod_symm {f : β × γ → α} (hf : Multipliable f) :

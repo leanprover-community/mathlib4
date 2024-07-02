@@ -36,7 +36,7 @@ variable {α β γ : Sort*} {p q : α → Prop}
 
 #noalign subtype.tag_irrelevant
 #noalign subtype.exists_of_subtype
-#align subtype.inhabited Subtype.instInhabited
+#noalign subtype.inhabited
 
 attribute [coe] Subtype.val
 
@@ -142,7 +142,7 @@ theorem val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
 
 lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective.ne_iff
 
-@[deprecated] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe -- 2024-04-04
+@[deprecated (since := "2024-04-04")] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe
 #align subtype.ne_of_val_ne Subtype.ne_of_val_ne
 
 -- Porting note: it is unclear why the linter doesn't like this.

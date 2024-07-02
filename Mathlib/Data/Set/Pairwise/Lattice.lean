@@ -149,7 +149,7 @@ theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).
   rintro i hi
   obtain ⟨a, hai⟩ := h₁ i hi
   obtain ⟨j, hj, haj⟩ := mem_iUnion₂.1 (h <| mem_iUnion₂_of_mem hi hai)
-  rwa [h₀.eq (subset_union_left _ _ hi) (subset_union_right _ _ hj)
+  rwa [h₀.eq (subset_union_left hi) (subset_union_right hj)
       (not_disjoint_iff.2 ⟨a, hai, haj⟩)]
 #align set.pairwise_disjoint.subset_of_bUnion_subset_bUnion Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion
 

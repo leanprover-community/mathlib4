@@ -314,7 +314,7 @@ protected def measurableSpace (hτ : IsStoppingTime f τ) : MeasurableSpace Ω w
   measurableSet_empty i := (Set.empty_inter {ω | τ ω ≤ i}).symm ▸ @MeasurableSet.empty _ (f i)
   measurableSet_compl s hs i := by
     rw [(_ : sᶜ ∩ {ω | τ ω ≤ i} = (sᶜ ∪ {ω | τ ω ≤ i}ᶜ) ∩ {ω | τ ω ≤ i})]
-    · refine' MeasurableSet.inter _ _
+    · refine MeasurableSet.inter ?_ ?_
       · rw [← Set.compl_inter]
         exact (hs i).compl
       · exact hτ i
