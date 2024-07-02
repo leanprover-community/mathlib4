@@ -11,14 +11,14 @@ import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.Hom.Basic
 import Mathlib.Tactic.Monotonicity.Basic
 
-assert_not_exists OrderedCommMonoid
-
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
 /-!
 # Cast of natural numbers: lemmas about order
 
 -/
+
+assert_not_exists OrderedCommMonoid
 
 variable {α β : Type*}
 

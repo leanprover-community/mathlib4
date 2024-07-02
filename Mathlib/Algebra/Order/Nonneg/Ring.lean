@@ -13,8 +13,6 @@ import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
 
-assert_not_exists OrderedCommMonoid
-
 #align_import algebra.order.nonneg.ring from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
@@ -41,6 +39,8 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
+
+assert_not_exists OrderedCommMonoid
 
 open Set
 
