@@ -25,7 +25,7 @@ theorem isIntegral_stableUnderComposition : StableUnderComposition fun f => f.Is
   introv R hf hg; exact hf.trans _ _ hg
 #align ring_hom.is_integral_stable_under_composition RingHom.isIntegral_stableUnderComposition
 
-instance isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
+theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
   apply isIntegral_stableUnderComposition.respectsIso
   introv x
   rw [← e.apply_symm_apply x]
@@ -33,7 +33,7 @@ instance isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
 #align ring_hom.is_integral_respects_iso RingHom.isIntegral_respectsIso
 
 theorem isIntegral_stableUnderBaseChange : StableUnderBaseChange fun f => f.IsIntegral := by
-  refine StableUnderBaseChange.mk _ ?_
+  refine StableUnderBaseChange.mk _ isIntegral_respectsIso ?_
   introv h x
   refine TensorProduct.induction_on x ?_ ?_ ?_
   · apply isIntegral_zero

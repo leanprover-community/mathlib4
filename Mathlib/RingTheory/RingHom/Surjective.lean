@@ -27,14 +27,14 @@ theorem surjective_stableUnderComposition : StableUnderComposition surjective :=
   introv R hf hg; exact hg.comp hf
 #align ring_hom.surjective_stable_under_composition RingHom.surjective_stableUnderComposition
 
-instance surjective_respectsIso : RespectsIso surjective := by
+theorem surjective_respectsIso : RespectsIso surjective := by
   apply surjective_stableUnderComposition.respectsIso
   intros _ _ _ _ e
   exact e.surjective
 #align ring_hom.surjective_respects_iso RingHom.surjective_respectsIso
 
 theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
-  refine StableUnderBaseChange.mk _ ?_
+  refine StableUnderBaseChange.mk _ surjective_respectsIso ?_
   classical
   introv h x
   induction x with

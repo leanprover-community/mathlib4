@@ -97,17 +97,18 @@ theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
     finiteType_holdsForLocalizationAway⟩
 #align ring_hom.finite_type_is_local RingHom.finiteType_is_local
 
-instance finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
+theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
   RingHom.finiteType_is_local.respectsIso
 #align ring_hom.finite_type_respects_iso RingHom.finiteType_respectsIso
 
 theorem finiteType_stableUnderBaseChange : StableUnderBaseChange @FiniteType := by
   apply StableUnderBaseChange.mk
-  introv h
-  replace h : Algebra.FiniteType R T := by
-    rw [RingHom.FiniteType] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
-  suffices Algebra.FiniteType S (S ⊗[R] T) by
-    rw [RingHom.FiniteType]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
-  infer_instance
+  · exact finiteType_respectsIso
+  · introv h
+    replace h : Algebra.FiniteType R T := by
+      rw [RingHom.FiniteType] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
+    suffices Algebra.FiniteType S (S ⊗[R] T) by
+      rw [RingHom.FiniteType]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
+    infer_instance
 
 end RingHom
