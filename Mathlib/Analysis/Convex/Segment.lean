@@ -388,7 +388,7 @@ theorem mem_openSegment_iff_div : x ∈ openSegment 𝕜 y z ↔
     use a, b, ha, hb
     rw [hab, div_one, div_one]
   · rintro ⟨a, b, ha, hb, rfl⟩
-    have hab : 0 < a + b := by positivity
+    have hab : 0 < a + b := add_pos' ha hb
     refine ⟨a / (a + b), b / (a + b), by positivity, by positivity, ?_, rfl⟩
     rw [← add_div, div_self hab.ne']
 #align mem_open_segment_iff_div mem_openSegment_iff_div

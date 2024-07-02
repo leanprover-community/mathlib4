@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adrian Wüthrich
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
@@ -88,7 +87,7 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R] [StarOrderedRing R]
+theorem posSemidef_lapMatrix [LinearOrderedField R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
   constructor
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
