@@ -557,4 +557,8 @@ theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal 
     _ = ↑g := inf_of_le_left (le_principal_iff.mpr h)
 #align ultrafilter.of_comap_inf_principal_eq_of_map Ultrafilter.ofComapInfPrincipal_eq_of_map
 
+theorem eq_of_le_pure {X : Type _} {α : Filter X} (hα : α.NeBot) {x y : X}
+    (hx : α ≤ pure x) (hy : α ≤ pure y) : x = y :=
+  Filter.pure_injective (hα.le_pure_iff.mp hx ▸ hα.le_pure_iff.mp hy)
+
 end Ultrafilter
