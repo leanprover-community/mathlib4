@@ -3,13 +3,18 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Lemmas about the interaction of power operations with order in terms of `CovariantClass`
 -/
+
+assert_not_exists OrderedCommMonoid
 
 open Function
 
@@ -48,7 +53,11 @@ theorem one_le_pow_of_one_le' {a : M} (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
 
 @[to_additive nsmul_nonpos]
 theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
-  @one_le_pow_of_one_le' Mᵒᵈ _ _ _ _ H n
+  match n with
+  | 0 => by simp
+  | k + 1 => by
+    rw [pow_succ]
+    exact mul_le_one' (pow_le_one' H k) H
 #align pow_le_one' pow_le_one'
 #align nsmul_nonpos nsmul_nonpos
 
@@ -62,8 +71,11 @@ theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^
 #align nsmul_le_nsmul nsmul_le_nsmul_left
 
 @[to_additive nsmul_le_nsmul_left_of_nonpos]
-theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
-  pow_le_pow_right' (M := Mᵒᵈ) ha h
+theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n := by
+  let ⟨k, hk⟩ := Nat.le.dest h
+  calc
+    a ^ m = a ^ n * a ^ k := by rw [← hk, pow_add]
+    _ ≤ a ^ n := mul_le_of_mul_le_left (le_of_eq <| mul_one _) (pow_le_one' ha _)
 #align pow_le_pow_of_le_one' pow_le_pow_right_of_le_one'
 #align nsmul_le_nsmul_of_nonpos nsmul_le_nsmul_left_of_nonpos
 
@@ -79,8 +91,13 @@ theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
 #align nsmul_pos nsmul_pos
 
 @[to_additive nsmul_neg]
-theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
-  @one_lt_pow' Mᵒᵈ _ _ _ _ ha k hk
+theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 := by
+  rcases Nat.exists_eq_succ_of_ne_zero hk with ⟨l, rfl⟩
+  clear hk
+  induction' l with l IH
+  · rw [pow_succ]; simpa using ha
+  · rw [pow_succ]
+    exact mul_lt_one' IH ha
 #align pow_lt_one' pow_lt_one'
 #align nsmul_neg nsmul_neg
 
@@ -231,7 +248,7 @@ theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ 
 
 @[to_additive]
 theorem pow_le_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n ≤ 1 ↔ x ≤ 1 :=
-  @one_le_pow_iff Mᵒᵈ _ _ _ _ _ hn
+  ⟨le_imp_le_of_lt_imp_lt fun h => one_lt_pow' h hn, fun h => pow_le_one' h n⟩
 #align pow_le_one_iff pow_le_one_iff
 #align nsmul_nonpos_iff nsmul_nonpos_iff
 
