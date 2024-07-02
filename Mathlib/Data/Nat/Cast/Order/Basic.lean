@@ -9,7 +9,6 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Monotonicity.Basic
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
