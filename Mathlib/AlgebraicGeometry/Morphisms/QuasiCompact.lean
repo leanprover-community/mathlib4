@@ -343,7 +343,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
 
 /-- A section over a compact open of a scheme is nilpotent if and only if its associated
 basic open is empty. -/
-lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme}
+lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
     {U : Opens X} (hU : IsCompact U.carrier) (f : Γ(X, U)) :
     IsNilpotent f ↔ X.basicOpen f = ⊥ := by
   refine ⟨X.basicOpen_eq_bot_of_isNilpotent U f, fun hf ↦ ?_⟩

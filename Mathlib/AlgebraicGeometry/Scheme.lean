@@ -498,12 +498,12 @@ lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
   (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
 
 @[simp]
-theorem preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y} (r : Γ(Y, U)) :
+theorem preimage_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Opens Y} (r : Γ(Y, U)) :
     f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.app U r) :=
   LocallyRingedSpace.preimage_basicOpen f r
 #align algebraic_geometry.Scheme.preimage_basic_open AlgebraicGeometry.Scheme.preimage_basicOpen
 
-lemma basicOpen_appLE {X Y : Scheme} (f : X ⟶ Y) (U : Opens X) (V : Opens Y) (e : U ≤ f ⁻¹ᵁ V)
+lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens X) (V : Opens Y) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by
   simp only [preimage_basicOpen, Hom.appLE, CommRingCat.coe_comp_of, RingHom.coe_comp,
     Function.comp_apply]
