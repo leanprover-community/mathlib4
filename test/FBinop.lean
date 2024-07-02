@@ -85,3 +85,5 @@ instance [DecidableEq X] : SetLike (DecSubObj X) X where
 -- Note: this is testing instance arguments after the type.
 def DecSubObj.prod [DecidableEq X] [DecidableEq Y] (s : DecSubObj X) (t : DecSubObj Y) : DecSubObj (X × Y) where
   carrier := s ×ˢ' t
+
+end FBinopTests

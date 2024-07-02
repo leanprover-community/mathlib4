@@ -28,3 +28,5 @@ example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) 
   simp [MonoidalCategory.tensorHom_def, monoidalComp]
 
 end CategoryTheory
+
+end
