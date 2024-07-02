@@ -627,7 +627,9 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   have : ‖y‖ ≠ 0 := by simpa using hy
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    field_simp
+    -- was `field_simp` before, taking 130ms; now takes 30ms
+    simp (disch := field_simp_discharge) only [mul_zero, I_im, mul_one, sub_self, add_zero,
+      mul_div_assoc', mul_div_cancel_left₀]
   · exact o.kahler_ne_zero hx hy
 #align orientation.inner_eq_norm_mul_norm_mul_cos_oangle Orientation.inner_eq_norm_mul_norm_mul_cos_oangle
 

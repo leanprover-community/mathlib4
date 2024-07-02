@@ -123,7 +123,11 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
-        field_simp [ycc₂, hy0]
+        -- squeezed from field_simp [ycc₂, hy0] (took 1,5 before, now <0,1s)
+        -- even `field_simp only [div_div, sub_div', one_mul, mul_div_assoc',
+        --  div_mul_eq_mul_div, add_div', eq_div_iff, div_eq_iff, ycc₂] takes 280ms
+        simp (disch := field_simp_discharge) only [div_div, sub_div', one_mul, mul_div_assoc',
+          div_mul_eq_mul_div, add_div', eq_div_iff, div_eq_iff, ycc₂]
         ring
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,

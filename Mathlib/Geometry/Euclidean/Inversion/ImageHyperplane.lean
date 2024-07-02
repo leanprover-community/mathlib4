@@ -39,6 +39,7 @@ theorem inversion_mem_perpBisector_inversion_iff (hR : R ≠ 0) (hx : x ≠ c) (
   rw [mem_perpBisector_iff_dist_eq, dist_inversion_inversion hx hy, dist_inversion_center]
   have hx' := dist_ne_zero.2 hx
   have hy' := dist_ne_zero.2 hy
+  -- takes 306ms, but not easily replaced by equivalent simp call
   field_simp [mul_assoc, mul_comm, hx, hx.symm, eq_comm]
 
 /-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a

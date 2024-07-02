@@ -202,7 +202,8 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
       rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
       rw [hy, inner_zero_right, zero_mul, neg_zero]
-  · field_simp [h]
+  · -- takes 500ms, but equivalent simp call doesn't recurse as much
+    field_simp [h]
     ring_nf
 #align inner_product_geometry.sin_angle_mul_norm_mul_norm InnerProductGeometry.sin_angle_mul_norm_mul_norm
 
