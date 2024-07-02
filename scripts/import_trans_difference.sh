@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
 
-commit1="$(git rev-parse HEAD)"
-commit2="$(git merge-base master ${commit1})"
-echo "$commit1 $commit2"
+if [ -n "${1}" ]
+then
+  commit1="${1}"
+else
+  commit1="$(git rev-parse HEAD)"
+fi
 
-currCommit=star_real
+if [ -n "${2}" ]
+then
+  commit2="${2}"
+else
+  commit2="$(git merge-base master ${commit1})"
+fi
+
+#printf 'commit1: %s\ncommit2: %s\n' "$commit1" "$commit2"
+
+currCommit="$(git rev-parse HEAD)"
 
 getTransImports () {
   python3 scripts/count-trans-deps.py Mathlib |
