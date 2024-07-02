@@ -726,6 +726,8 @@ def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) 
   mem_support_toFun := by classical simpa
 #align finsupp.on_finset Finsupp.onFinset
 
+@[simp, norm_cast] lemma coe_onFinset (s : Finset α) (f : α → M) (hf) : onFinset s f hf = f := rfl
+
 @[simp]
 theorem onFinset_apply {s : Finset α} {f : α → M} {hf a} : (onFinset s f hf : α →₀ M) a = f a :=
   rfl
