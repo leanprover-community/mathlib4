@@ -227,6 +227,27 @@ theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (
   exact (right_inverse_eq _ I (spanSingleton _ (generator (I : Submodule R₁ K))⁻¹) hI).symm
 #align fractional_ideal.is_principal_inv FractionalIdeal.isPrincipal_inv
 
+variable {K}
+
+lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
+    (algebraMap R₁ K) (I.den : R₁) ∈ I⁻¹ := by
+  rw [mem_inv_iff hI]
+  intro i hi
+  rw [← Algebra.smul_def (I.den : R₁) i, ← mem_coe, coe_one]
+  suffices Submodule.map (Algebra.linearMap R₁ K) I.num ≤ 1 from
+    this <| (den_mul_self_eq_num I).symm ▸ smul_mem_pointwise_smul i I.den I.coeToSubmodule hi
+  apply le_trans <| map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top, bot_eq_zero])
+  rw [Ideal.one_eq_top, Submodule.map_top, one_eq_range]
+
+lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := by
+  by_cases hI : I = 0
+  · rw [hI, num_zero_eq <| NoZeroSMulDivisors.algebraMap_injective R₁ K, zero_mul]
+    rfl
+  · rw [mul_comm, ← den_mul_self_eq_num']
+    exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
+
+lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ :=
+  lt_of_lt_of_le (coeIdeal_ne_zero.2 (hI ∘ num_eq_zero_iff.1)).bot_lt I.num_le_mul_inv
 
 noncomputable instance : InvOneClass (FractionalIdeal R₁⁰ K) := { inv_one := div_one }
 
@@ -388,7 +409,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
       rwa [Ne, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
     -- By maximality of `P` and `M`, we have that `P ≤ M` implies `P = M`.
-    have hPM' := (P.IsPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
+    have hPM' := (P.isPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
     subst hPM'
     -- By minimality of `Z`, erasing `P` from `Z` is exactly what we need.
     refine ⟨Z.erase P, ?_, ?_⟩
@@ -881,10 +902,6 @@ theorem gcd_eq_sup (I J : Ideal A) : gcd I J = I ⊔ J := rfl
 theorem lcm_eq_inf (I J : Ideal A) : lcm I J = I ⊓ J := rfl
 #align ideal.lcm_eq_inf Ideal.lcm_eq_inf
 
-theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : IsCoprime I J) : I ⊓ J = I * J := by
-  rw [← associated_iff_eq.mp (gcd_mul_lcm I J), lcm_eq_inf I J, gcd_eq_sup, coprime.sup_eq, top_mul]
-#align ideal.inf_eq_mul_of_coprime Ideal.inf_eq_mul_of_coprime
-
 theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
   rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff, one_eq_top, gcd_eq_sup]
 
@@ -1364,13 +1381,6 @@ theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥
     IsDedekindDomain.quotientEquivPiFactors hI (Ideal.Quotient.mk I x) = fun _P =>
       Ideal.Quotient.mk _ x := rfl
 #align is_dedekind_domain.quotient_equiv_pi_factors_mk IsDedekindDomain.quotientEquivPiFactors_mk
-
-/-- **Chinese remainder theorem**, specialized to two ideals. -/
-noncomputable def Ideal.quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
-    R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
-  Ideal.quotEquivOfEq (inf_eq_mul_of_coprime coprime).symm |>.trans <|
-    Ideal.quotientInfEquivQuotientProd I J coprime
-#align ideal.quotient_mul_equiv_quotient_prod Ideal.quotientMulEquivQuotientProd
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i ∈ s, P i ^ e i`, then `R ⧸ I` factors as `Π (i : s), R ⧸ (P i ^ e i)`.

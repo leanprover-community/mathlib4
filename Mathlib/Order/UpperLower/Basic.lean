@@ -1027,19 +1027,17 @@ instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t =
 instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
 #align lower_set.is_total_le LowerSet.isTotal_le
 
-noncomputable instance : CompleteLinearOrder (UpperSet α) :=
-  { UpperSet.completelyDistribLattice with
-    le_total := IsTotal.total
-    decidableLE := Classical.decRel _
-    decidableEq := Classical.decRel _
-    decidableLT := Classical.decRel _ }
+noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := by
+  classical exact Lattice.toLinearOrder _
 
-noncomputable instance : CompleteLinearOrder (LowerSet α) :=
-  { LowerSet.completelyDistribLattice with
-    le_total := IsTotal.total
-    decidableLE := Classical.decRel _
-    decidableEq := Classical.decRel _
-    decidableLT := Classical.decRel _ }
+noncomputable instance LowerSet.instLinearOrder : LinearOrder (LowerSet α) := by
+  classical exact Lattice.toLinearOrder _
+
+noncomputable instance UpperSet.instCompleteLinearOrder : CompleteLinearOrder (UpperSet α) :=
+  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
+
+noncomputable instance LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) :=
+  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
 
 end LinearOrder
 
@@ -1684,8 +1682,8 @@ lemma coe_erase (s : LowerSet α) (a : α) : s.erase a = (s : Set α) \ UpperSet
 @[simp] lemma sdiff_singleton (s : LowerSet α) (a : α) : s.sdiff {a} = s.erase a := by
   simp [sdiff, erase]
 
-lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset _ _
-lemma erase_le : s.erase a ≤ s := diff_subset _ _
+lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset
+lemma erase_le : s.erase a ≤ s := diff_subset
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
@@ -1707,8 +1705,8 @@ lemma sdiff_sup_lowerClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c 
     s.sdiff t ⊔ lowerClosure t = s := by
   refine le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
-  · exact subset_union_right _ _ (subset_lowerClosure hat)
-  · refine subset_union_left _ _ ⟨ha, ?_⟩
+  · exact subset_union_right (subset_lowerClosure hat)
+  · refine subset_union_left ⟨ha, ?_⟩
     rintro ⟨b, hb, hba⟩
     exact hat <| hst _ ha _ hb hba
 
@@ -1745,8 +1743,8 @@ lemma coe_erase (s : UpperSet α) (a : α) : s.erase a = (s : Set α) \ LowerSet
 @[simp] lemma sdiff_singleton (s : UpperSet α) (a : α) : s.sdiff {a} = s.erase a := by
   simp [sdiff, erase]
 
-lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset _ _
-lemma le_erase : s ≤ s.erase a := diff_subset _ _
+lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset
+lemma le_erase : s ≤ s.erase a := diff_subset
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
@@ -1768,8 +1766,8 @@ lemma sdiff_inf_upperClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b 
     s.sdiff t ⊓ upperClosure t = s := by
   refine ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
-  · exact subset_union_right _ _ (subset_upperClosure hat)
-  · refine subset_union_left _ _ ⟨ha, ?_⟩
+  · exact subset_union_right (subset_upperClosure hat)
+  · refine subset_union_left ⟨ha, ?_⟩
     rintro ⟨b, hb, hab⟩
     exact hat <| hst _ ha _ hb hab
 

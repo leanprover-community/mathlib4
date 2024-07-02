@@ -347,7 +347,8 @@ variable [LinearOrderedCommGroup α] {a b : α}
   obtain ha | ha := le_or_lt 1 a <;> obtain hb | hb := le_or_lt 1 b
   · simp [ha, hb, mabs_of_one_le, one_le_mul ha hb]
   · exact (lt_irrefl (1 : α) <| ha.trans_lt <| hab.trans_lt hb).elim
-  any_goals simp [ha.le, hb.le, mabs_of_le_one, mul_le_one', mul_comm]
+  swap
+  · simp [ha.le, hb.le, mabs_of_le_one, mul_le_one', mul_comm]
   have : (|a * b|ₘ = a⁻¹ * b ↔ b ≤ 1) ↔
     (|a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1) := by
     simp [ha.le, ha.not_le, hb, mabs_of_le_one, mabs_of_one_le]
@@ -594,5 +595,5 @@ lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
 
 end Pi
 
-@[deprecated] alias neg_le_abs_self := neg_le_abs
-@[deprecated] alias neg_abs_le_self := neg_abs_le
+@[deprecated (since := "2024-01-13")] alias neg_le_abs_self := neg_le_abs
+@[deprecated (since := "2024-01-13")] alias neg_abs_le_self := neg_abs_le

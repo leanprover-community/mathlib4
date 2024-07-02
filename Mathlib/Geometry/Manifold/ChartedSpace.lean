@@ -313,7 +313,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
         have : e.toPartialEquiv.source ∩ interior s = univ := this
         have : univ ⊆ interior s := by
           rw [← this]
-          exact inter_subset_right _ _
+          exact inter_subset_right
         have : s = univ := by rwa [open_s.interior_eq, univ_subset_iff] at this
         simpa only [this, restr_univ] using hs
       · exfalso
@@ -648,7 +648,7 @@ theorem iUnion_source_chartAt : (⋃ x : M, (chartAt H x).source) = (univ : Set 
 theorem ChartedSpace.isOpen_iff (s : Set M) :
     IsOpen s ↔ ∀ x : M, IsOpen <| chartAt H x '' ((chartAt H x).source ∩ s) := by
   rw [isOpen_iff_of_cover (fun i ↦ (chartAt H i).open_source) (iUnion_source_chartAt H M)]
-  simp only [(chartAt H _).isOpen_image_iff_of_subset_source (inter_subset_left _ _)]
+  simp only [(chartAt H _).isOpen_image_iff_of_subset_source inter_subset_left]
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
 Especially useful for working with `BasicSmoothVectorBundleCore`. -/
@@ -904,7 +904,7 @@ theorem open_source' (he : e ∈ c.atlas) : IsOpen[c.toTopologicalSpace] e.sourc
 
 theorem open_target (he : e ∈ c.atlas) : IsOpen e.target := by
   have E : e.target ∩ e.symm ⁻¹' e.source = e.target :=
-    Subset.antisymm (inter_subset_left _ _) fun x hx ↦
+    Subset.antisymm inter_subset_left fun x hx ↦
       ⟨hx, PartialEquiv.target_subset_preimage_source _ hx⟩
   simpa [PartialEquiv.trans_source, E] using c.open_source e e he he
 #align charted_space_core.open_target ChartedSpaceCore.open_target

@@ -418,7 +418,6 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
   rw [dif_pos]
 #align ratfunc.map_apply_of_fraction_ring_mk RatFunc.map_apply_ofFractionRing_mk
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
   rintro ⟨x⟩ ⟨y⟩ h

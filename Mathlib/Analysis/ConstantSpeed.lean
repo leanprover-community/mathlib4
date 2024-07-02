@@ -170,7 +170,7 @@ theorem hasConstantSpeedOnWith_zero_iff :
   · rintro h x _ y _
     refine le_antisymm ?_ zero_le'
     rw [← h]
-    exact eVariationOn.mono f (inter_subset_left s (Icc x y))
+    exact eVariationOn.mono f inter_subset_left
 #align has_constant_speed_on_with_zero_iff hasConstantSpeedOnWith_zero_iff
 
 theorem HasConstantSpeedOnWith.ratio {l' : ℝ≥0} (hl' : l' ≠ 0) {φ : ℝ → ℝ} (φm : MonotoneOn φ s)

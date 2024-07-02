@@ -788,7 +788,8 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
 theorem prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) :
     IsMultiplicative (prodPrimeFactors f) := by
   rw [iff_ne_zero]
-  refine ⟨prodPrimeFactors_apply one_ne_zero, ?_⟩
+  simp only [ne_eq, one_ne_zero, not_false_eq_true, prodPrimeFactors_apply, primeFactors_one,
+    prod_empty, true_and]
   intro x y hx hy hxy
   have hxy₀ : x * y ≠ 0 := mul_ne_zero hx hy
   rw [prodPrimeFactors_apply hxy₀, prodPrimeFactors_apply hx, prodPrimeFactors_apply hy,
@@ -807,7 +808,7 @@ theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFun
   rw [t.prod_val, Function.id_def,
     ← prod_primeFactors_sdiff_of_squarefree hn (Finset.mem_powerset.mp ht),
     hf.map_prod_of_subset_primeFactors n t (Finset.mem_powerset.mp ht),
-    ← hg.map_prod_of_subset_primeFactors n (_ \ t) (Finset.sdiff_subset _ t)]
+    ← hg.map_prod_of_subset_primeFactors n (_ \ t) Finset.sdiff_subset]
 
 theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) {x y : ℕ} :

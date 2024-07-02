@@ -42,7 +42,7 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
     (iUnion_of_singleton α)
 #align discrete_topology.second_countable_topology_of_encodable DiscreteTopology.secondCountableTopology_of_countable
 
-@[deprecated DiscreteTopology.secondCountableTopology_of_countable] -- 2024-03-11
+@[deprecated DiscreteTopology.secondCountableTopology_of_countable (since := "2024-03-11")]
 theorem DiscreteTopology.secondCountableTopology_of_encodable {α : Type*}
     [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
   DiscreteTopology.secondCountableTopology_of_countable

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Init.Data.Ordering.Lemmas
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.Tactic.NormNum
+import Mathlib.Data.PNat.Basic
 
 #align_import set_theory.ordinal.notation from "leanprover-community/mathlib"@"b67044ba53af18680e1dd246861d9584e968495d"
 
@@ -222,7 +223,7 @@ theorem NFBelow.oadd {e n a b} : NF e → NFBelow a (repr e) → repr e < b → 
 #align onote.NF_below.oadd ONote.NFBelow.oadd
 
 theorem NFBelow.fst {e n a b} (h : NFBelow (ONote.oadd e n a) b) : NF e := by
-  (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact ⟨⟨_, h₁⟩⟩)
+  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact ⟨⟨_, h₁⟩⟩
 #align onote.NF_below.fst ONote.NFBelow.fst
 
 theorem NF.fst {e n a} : NF (oadd e n a) → NF e
@@ -230,7 +231,7 @@ theorem NF.fst {e n a} : NF (oadd e n a) → NF e
 #align onote.NF.fst ONote.NF.fst
 
 theorem NFBelow.snd {e n a b} (h : NFBelow (ONote.oadd e n a) b) : NFBelow a (repr e) := by
-  (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₂)
+  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₂
 #align onote.NF_below.snd ONote.NFBelow.snd
 
 theorem NF.snd' {e n a} : NF (oadd e n a) → NFBelow a (repr e)
@@ -250,7 +251,7 @@ instance NF.oadd_zero (e n) [h : NF e] : NF (ONote.oadd e n 0) :=
 #align onote.NF.oadd_zero ONote.NF.oadd_zero
 
 theorem NFBelow.lt {e n a b} (h : NFBelow (ONote.oadd e n a) b) : repr e < b := by
-  (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₃)
+  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₃
 #align onote.NF_below.lt ONote.NFBelow.lt
 
 theorem NFBelow_zero : ∀ {o}, NFBelow o 0 ↔ o = 0
@@ -276,7 +277,7 @@ theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
 
 theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : NFBelow o b₂ := by
   induction' h with _ e n a eb b h₁ h₂ h₃ _ _ <;> constructor
-  exacts[h₁, h₂, lt_of_lt_of_le h₃ bb]
+  exacts [h₁, h₂, lt_of_lt_of_le h₃ bb]
 #align onote.NF_below.mono ONote.NFBelow.mono
 
 theorem NF.below_of_lt {e n a b} (H : repr e < b) :
@@ -300,7 +301,7 @@ instance nf_ofNat (n) : NF (ofNat n) :=
   ⟨⟨_, nfBelow_ofNat n⟩⟩
 #align onote.NF_of_nat ONote.nf_ofNat
 
-instance nf_one : NF 1 := by (rw [← ofNat_one]; infer_instance)
+instance nf_one : NF 1 := by rw [← ofNat_one]; infer_instance
 #align onote.NF_one ONote.nf_one
 
 theorem oadd_lt_oadd_1 {e₁ n₁ o₁ e₂ n₂ o₂} (h₁ : NF (oadd e₁ n₁ o₁)) (h : e₁ < e₂) :
@@ -1322,7 +1323,7 @@ theorem cmp_compares : ∀ a b : NONote, (cmp a b).Compares a b
   | ⟨a, ha⟩, ⟨b, hb⟩ => by
     dsimp [cmp]
     have := ONote.cmp_compares a b
-    cases h: ONote.cmp a b <;> simp only [h] at this <;> try exact this
+    cases h : ONote.cmp a b <;> simp only [h] at this <;> try exact this
     exact Subtype.mk_eq_mk.2 this
 #align nonote.cmp_compares NONote.cmp_compares
 
