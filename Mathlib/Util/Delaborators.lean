@@ -76,7 +76,7 @@ def delabPi : Delab := whenPPOption Lean.getPPNotation do
 cute binders such as `∀ ε > 0`.
 Note that this takes advantage of the fact that `(x : α) → p x` notation is
 never used for propositions, so we can match on this result and rewrite it. -/
-@[scoped delab forallE]
+@[delab forallE]
 def delabPi' : Delab := whenPPOption Lean.getPPNotation do
   let stx ← delabPi
   -- Replacements
