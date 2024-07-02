@@ -493,6 +493,11 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
 
 namespace NNReal
 
+instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
+  measurable_smul :=
+    measurable_mul.comp <|
+      Measurable.prod_mk (ENNReal.continuous_coe.measurable.comp measurable_fst) measurable_snd
+
 /-- A limit (over a general filter) of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ≥0} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :

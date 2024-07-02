@@ -688,5 +688,13 @@ protected theorem zpow_add {x : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (m 
   simp only [← coe_zpow hx, zpow_add₀ hx, coe_mul]
 #align ennreal.zpow_add ENNReal.zpow_add
 
+protected theorem zpow_neg {x : ℝ≥0∞} (x_ne_zero : x ≠ 0) (x_ne_top : x ≠ ⊤) (m : ℤ) :
+    x^(-m) = (x^m)⁻¹ :=
+  ENNReal.eq_inv_of_mul_eq_one_left (by simp [← ENNReal.zpow_add x_ne_zero x_ne_top])
+
+protected theorem zpow_sub {x : ℝ≥0∞} (x_ne_zero : x ≠ 0) (x_ne_top : x ≠ ⊤) (m n : ℤ) :
+    x^(m-n) = (x^m) * (x^n)⁻¹ := by
+  rw [sub_eq_add_neg, ENNReal.zpow_add x_ne_zero x_ne_top, ENNReal.zpow_neg x_ne_zero x_ne_top n]
+
 end Inv
 end ENNReal
