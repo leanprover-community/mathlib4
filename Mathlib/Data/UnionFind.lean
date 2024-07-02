@@ -6,8 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Init.Order.Defs
 
-set_option autoImplicit true
-
 structure UFModel (n) where
   parent : Fin n → Fin n
   rank : Nat → Nat
@@ -64,6 +62,8 @@ structure UFNode (α : Type*) where
   parent : Nat
   value : α
   rank : Nat
+
+variable {α : Type*} {β : Sort*} {f : α → β} {n : ℕ}
 
 inductive UFModel.Agrees (arr : Array α) (f : α → β) : ∀ {n}, (Fin n → β) → Prop
   | mk : Agrees arr f fun i ↦ f (arr.get i)

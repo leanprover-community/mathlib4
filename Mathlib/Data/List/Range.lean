@@ -22,9 +22,6 @@ tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties ab
 Actual maths should use `List.Ico` instead.
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 open Nat
@@ -33,7 +30,7 @@ namespace List
 
 variable {α : Type u}
 
-@[simp] theorem range'_one {step} : range' s 1 step = [s] := rfl
+@[simp] theorem range'_one {s step : ℕ} : range' s 1 step = [s] := rfl
 
 #align list.length_range' List.length_range'
 #align list.range'_eq_nil List.range'_eq_nil
@@ -221,7 +218,7 @@ theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
   get_finRange h
 #align list.nth_le_fin_range List.nthLe_finRange
 
-@[simp] theorem indexOf_finRange (i : Fin k) : (finRange k).indexOf i = i := by
+@[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
   have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
   have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
   have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
