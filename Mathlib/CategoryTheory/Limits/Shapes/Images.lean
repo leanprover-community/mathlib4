@@ -477,7 +477,8 @@ end
 
 section
 
-variable {f} {f' : X ⟶ Y} [HasImage f] [HasImage f']
+variable {f}
+variable {f' : X ⟶ Y} [HasImage f] [HasImage f']
 
 /-- An equation between morphisms gives a comparison map between the images
 (which momentarily we prove is an iso).
