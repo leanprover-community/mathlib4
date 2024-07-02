@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.Dual
-import Mathlib.Analysis.NormedSpace.Star.Basic
 
 #align_import analysis.inner_product_space.dual from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 

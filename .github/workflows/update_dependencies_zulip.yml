@@ -4,7 +4,7 @@ name: Monitor Dependency Update Failures
 
 on:
   workflow_run:
-    workflows: ["Update Mathlib Dependencies"]
+    workflows: ["continuous integration"]
     types:
       - completed
 
@@ -20,10 +20,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.NIGHTLY_TESTING }}
 
+      - name: Set GH_TOKEN
+        run: echo "GH_TOKEN=${{ secrets.NIGHTLY_TESTING }}" >> "$GITHUB_ENV"
+
       - name: Get PR number
         id: get_pr
         run: |
-          pr_number=$(gh pr list --state open --head "${{ github.repository }}:${{ github.event.workflow_run.head_branch }}" --json number -q '.[0].number')
+          pr_number=$(gh pr list --state open --head "leanprover-community/mathlib4:${{ github.event.workflow_run.head_branch }}" --json number -q '.[0].number')
           echo "pr_number=$pr_number" >> "$GITHUB_ENV"
 
       - name: Update PR labels
