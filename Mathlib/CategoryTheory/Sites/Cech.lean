@@ -70,7 +70,7 @@ noncomputable def cechComplexFunctor {I : Type w} (U : I → C)
   (FormalCoproduct.cochainComplexFunctor.{w} C A).obj (op (FormalCoproduct.cechSimplicial U))
 
 -- apply this to a family of objects `U : I → C` which satisfies `J.CoversTop U` for
--- a Grothendieck topology, or if `X : Over X` and we have a covering family of arrows
+-- a Grothendieck topology, or if `X : C` and we have a covering family of arrows
 --  `f i : U i ⟶ X` identified as a family of objects in `Over X`.
 
 -- next step: show that if `V` refines `U`, then the induced maps are homotopic
