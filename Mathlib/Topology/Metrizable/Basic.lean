@@ -136,4 +136,10 @@ theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X
   have := hs.separableSpace
   exact UniformSpace.secondCountable_of_separable s
 
+instance (X : Type*) [TopologicalSpace X] [c : CompactSpace X] [MetrizableSpace X] :
+    SecondCountableTopology X := by
+  obtain ⟨_, h⟩ := MetrizableSpace.exists_metric (X := X)
+  rw [← h] at c ⊢
+  infer_instance
+
 end TopologicalSpace
