@@ -28,6 +28,25 @@ RCLike field 𝕜.
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
 
+section Prereq
+
+@[simp, norm_cast]
+lemma SemilinearMapClass.coe_coe {R S M M₃ F : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
+    [AddCommMonoid M₃] [Module R M] [Module S M₃] {σ : R →+* S} (f : F) [FunLike F M M₃]
+    [SemilinearMapClass F σ M M₃] :
+    ⇑(f : M →ₛₗ[σ] M₃) = f :=
+  rfl
+
+instance Finite.instDiscreteTopology {α : Type*} [TopologicalSpace α] [T1Space α] [Finite α] :
+    DiscreteTopology α := by
+  rw [discreteTopology_iff_forall_isClosed]
+  intro s
+  let _ := Fintype.ofFinite s
+  rw [show s = ⋃ x ∈ s.toFinset, {x} by simp]
+  apply isClosed_biUnion_finset fun _ _ => isClosed_singleton
+
+end Prereq
+
 section SpectrumDiagonal
 
 variable {R : Type*} [Field R] {n : Type*} [DecidableEq n][Fintype n]
@@ -122,7 +141,7 @@ theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectru
 
 /--Definition of the StarAlgHom for the functional calculus of a Hermitian matrix. -/
 @[simps]
-noncomputable def cfc : StarAlgHom ℝ (spectrum ℝ A → ℝ) (Matrix n n 𝕜) where
+noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
     diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩))
     * star (eigenvectorUnitary hA : Matrix n n 𝕜)
@@ -151,99 +170,76 @@ noncomputable def cfc : StarAlgHom ℝ (spectrum ℝ A → ℝ) (Matrix n n 𝕜
     ext
     simp
 
+lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
+  have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) :=
+    FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ)) DFunLike.coe_injective
+  refine LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ A, ℝ))
+    (F := Matrix n n 𝕜) (f := hA.cfcAux) <| LinearMap.ker_eq_bot'.mpr fun f hf ↦ ?_
+  have h2 :
+      diagonal (RCLike.ofReal ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩)
+        = (0 : Matrix n n 𝕜) := by
+    simp only [SemilinearMapClass.coe_coe, cfcAux_apply] at hf
+    replace hf := congr($(hf) * (eigenvectorUnitary hA : Matrix n n 𝕜))
+    simp only [mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one, zero_mul] at hf
+    simpa [← mul_assoc] using congr((star hA.eigenvectorUnitary : Matrix n n 𝕜) * $(hf))
+  ext x
+  simp only [ContinuousMap.zero_apply]
+  obtain ⟨x, hx⟩ := x
+  obtain ⟨i, rfl⟩ := hA.eigenvalues_eq_spectrum ▸ hx
+  rw [← diagonal_zero] at h2
+  have := (diagonal_eq_diagonal_iff).mp h2
+  refine RCLike.ofReal_eq_zero.mp (this i)
 
-/--Definition of the StarAlgHom for the functional calculus of a Hermitian matrix. -/
-@[simps]
-noncomputable def cfc' : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
-  toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-    diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩))
-    * star (eigenvectorUnitary hA : Matrix n n 𝕜)
-  map_one' := by simp [Pi.one_def (f := fun _ : n ↦ 𝕜)]
-  map_mul' f g := by
-    have {a b c d e f : Matrix n n 𝕜} : (a * b * c) * (d * e * f) = a * (b * (c * d) * e) * f := by
-      simp only [mul_assoc]
-    simp only [this, ContinuousMap.coe_mul, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one,
-      diagonal_mul_diagonal, Function.comp_apply]
-    congr! with i
-    simp
-  map_zero' := by simp [Pi.zero_def (f := fun _ : n ↦ 𝕜)]
-  map_add' f g := by
-    simp only [ContinuousMap.coe_add, ← add_mul, ← mul_add, diagonal_add, Function.comp_apply]
-    congr! with i
-    simp
-  commutes' r := by
-    simp only [Function.comp, algebraMap_apply, smul_eq_mul, mul_one]
-    rw [← mul_one (algebraMap _ _ _), ← unitary.coe_mul_star_self hA.eigenvectorUnitary,
-      ← Algebra.left_comm, unitary.coe_star, mul_assoc]
-    congr!
-  map_star' f := by
-    simp only [star_trivial, StarMul.star_mul, star_star, star_eq_conjTranspose (diagonal _),
-      diagonal_conjTranspose, mul_assoc]
-    congr!
-    ext
-    simp
+lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
+  conv_rhs => rw [hA.spectral_theorem]
+  congr!
 
-#exit
-/-- Instance of the Continuous Functional Calculus for a Hermitian Matrix over an RCLike field.-/
+/-- Instance of the continuous functional calculus for a Hermitian matrix over `𝕜` with
+`RCLike 𝕜`. -/
 instance instContinuousFunctionalCalculus :
-    ContinuousFunctionalCalculus ℝ (IsHermitian : Matrix n n 𝕜 → Prop) where
+    ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : Matrix n n 𝕜 → Prop) where
   exists_cfc_of_predicate a ha := by
-    refine ⟨cfc ha, ?closedEmbedding, ?mapId, ?map_spec, ?hermitian⟩
-    case closedEmbedding =>
-      have h0 : FiniteDimensional ℝ C(spectrum ℝ a, ℝ) := by
-        apply FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ))
-        exact DFunLike.coe_injective
-      have hcfc : LinearMap.ker ha.cfc = ⊥ := by
-        refine LinearMap.ker_eq_bot'.mpr ?_
-        intro f hf
-        have h2 : diagonal
-             (RCLike.ofReal ∘ ⇑f ∘ fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalues_mem_spectrum_real i⟩)
-             = (0 : Matrix n n 𝕜) := by
-           rw [cfc_apply] at hf
-           have hlr : (star ha.eigenvectorUnitary : Matrix n n 𝕜) *
-              ((eigenvectorUnitary ha : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ f ∘
-                (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalues_mem_spectrum_real i⟩)) *
-                star (eigenvectorUnitary ha : Matrix n n 𝕜)) *
-                (ha.eigenvectorUnitary : Matrix n n 𝕜) =
-                (star ha.eigenvectorUnitary : Matrix n n 𝕜) *
-                (0 : Matrix n n 𝕜) * (ha.eigenvectorUnitary : Matrix n n 𝕜) := by congr
-           simp only [← mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, one_mul,
-                    mul_zero, zero_mul] at hlr
-           simp only [mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one] at hlr
-           exact hlr
-        ext x
-        simp only [ContinuousMap.zero_apply]
-        obtain ⟨x, hx⟩ := x
-        obtain ⟨i, rfl⟩ := ha.eigenvalues_eq_spectrum ▸ hx
-        rw [← diagonal_zero] at h2
-        have := (diagonal_eq_diagonal_iff).mp h2
-        exact RCLike.ofReal_eq_zero.mp (this i)
-      apply LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ a, ℝ))
-        (F := Matrix n n 𝕜) (f := ha.cfc) hcfc
-    case mapId =>
-      conv_rhs => rw [ha.spectral_theorem]
-      congr!
+    replace ha : IsHermitian a := ha
+    refine ⟨ha.cfcAux, ha.closedEmbedding_cfcAux, ha.cfcAux_id, fun f ↦ ?map_spec,
+      fun f ↦ ?hermitian⟩
     case map_spec =>
-      intro f
       apply Set.eq_of_subset_of_subset
       · rw [← ContinuousMap.spectrum_eq_range f]
         apply AlgHom.spectrum_apply_subset
-      · rw [cfc_apply, unitary.spectrum.unitary_conjugate]
+      · rw [cfcAux_apply, unitary.spectrum.unitary_conjugate]
         rintro - ⟨x , rfl⟩
-        apply spectrum.of_algebraMap_mem (R := ℝ) (S := 𝕜)
-        simp only [spectrum_diagonal (R := 𝕜)
-            (RCLike.ofReal ∘ f ∘ (fun i ↦ ⟨ha.eigenvalues i, ha.eigenvalues_mem_spectrum_real i⟩))
-            , Function.comp_apply, Set.mem_range]
+        apply spectrum.of_algebraMap_mem 𝕜
+        simp only [Function.comp_apply, Set.mem_range, spectrum_diagonal]
         obtain ⟨x, hx⟩ := x
         obtain ⟨i, rfl⟩ := ha.eigenvalues_eq_spectrum ▸ hx
         exact ⟨i, rfl⟩
     case hermitian =>
-      intro f
-      simp only [cfc_apply, mul_assoc, IsHermitian, ← star_eq_conjTranspose, star_mul, star_star]
-      congr!
+      simp only [isSelfAdjoint_iff, cfcAux_apply, mul_assoc, star_mul, star_star]
       rw [star_eq_conjTranspose, diagonal_conjTranspose]
       congr!
-      simp only [Pi.star_def, Function.comp_apply, RCLike.star_def, RCLike.conj_ofReal]
-      rfl
+      simp [Pi.star_def, Function.comp]
+
+instance instUniqueContinuousFunctionalCalculus :
+    UniqueContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) :=
+  let _ : NormedRing (Matrix n n 𝕜) := Matrix.linftyOpNormedRing
+  let _ : NormedAlgebra ℝ (Matrix n n 𝕜) := Matrix.linftyOpNormedAlgebra
+  inferInstance
+
+/-- The continuous functional calculus of a Hermitian matrix as a triple product using the
+spectral theorem. Note that this actually operates on bare functions since every function is
+continuous on the spectrum of a matrix, since the spectrum is finite. This is shown to be equal to
+the generic continuous functional calculus API in `Matrix.IsHermitian.cfc_eq`. In general, users
+should prefer the generic API, especially because it will make rewriting easier. -/
+protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
+  (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ f ∘ hA.eigenvalues)
+    * star (eigenvectorUnitary hA : Matrix n n 𝕜)
+
+lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
+  have hA' : IsSelfAdjoint A := hA
+  have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.closedEmbedding_cfcAux.continuous
+    hA.cfcAux_id
+  rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]
+  rfl
+
 end IsHermitian
 end Matrix
