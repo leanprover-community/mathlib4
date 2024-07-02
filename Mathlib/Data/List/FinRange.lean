@@ -14,6 +14,7 @@ import Mathlib.Data.List.Range
 This file develops some results on `finRange n`.
 -/
 
+assert_not_exists Monoid
 
 universe u
 

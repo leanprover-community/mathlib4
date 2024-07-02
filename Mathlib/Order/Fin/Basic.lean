@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Fin.Basic
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.Order.Hom.Set
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
@@ -339,3 +340,63 @@ lemma orderEmbedding_eq {f g : Fin n ↪o α} (h : range f = range g) : f = g :=
 #align fin.order_embedding_eq Fin.orderEmbedding_eq
 
 end Fin
+
+variable {n : ℕ}
+
+/-- `Π i : Fin 2, α i` is order equivalent to `α 0 × α 1`. See also `OrderIso.finTwoArrowEquiv`
+for a non-dependent version. -/
+def OrderIso.piFinTwoIso (α : Fin 2 → Type*) [∀ i, Preorder (α i)] : (∀ i, α i) ≃o α 0 × α 1 where
+  toEquiv := piFinTwoEquiv α
+  map_rel_iff' := Iff.symm Fin.forall_fin_two
+#align order_iso.pi_fin_two_iso OrderIso.piFinTwoIso
+
+/-- The space of functions `Fin 2 → α` is order equivalent to `α × α`. See also
+`OrderIso.piFinTwoIso`. -/
+def OrderIso.finTwoArrowIso (α : Type*) [Preorder α] : (Fin 2 → α) ≃o α × α :=
+  { OrderIso.piFinTwoIso fun _ => α with toEquiv := finTwoArrowEquiv α }
+#align order_iso.fin_two_arrow_iso OrderIso.finTwoArrowIso
+
+/-- Order isomorphism between `Π j : Fin (n + 1), α j` and
+`α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
+def OrderIso.piFinSuccAboveIso (α : Fin (n + 1) → Type*) [∀ i, LE (α i)]
+    (i : Fin (n + 1)) : (∀ j, α j) ≃o α i × ∀ j, α (i.succAbove j) where
+  toEquiv := Equiv.piFinSuccAbove α i
+  map_rel_iff' := Iff.symm i.forall_iff_succAbove
+#align order_iso.pi_fin_succ_above_iso OrderIso.piFinSuccAboveIso
+
+/-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
+def finSuccAboveOrderIso (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } where
+  __ := finSuccAboveEquiv p
+  map_rel_iff' := p.succAboveOrderEmb.map_rel_iff'
+#align fin_succ_above_equiv finSuccAboveOrderIso
+
+lemma finSuccAboveOrderIso_apply (p : Fin (n + 1)) (i : Fin n) :
+    finSuccAboveOrderIso p i = ⟨p.succAbove i, p.succAbove_ne i⟩ := rfl
+#align fin_succ_above_equiv_apply finSuccAboveOrderIso_apply
+
+lemma finSuccAboveOrderIso_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
+    (finSuccAboveOrderIso (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
+  rw [← Option.some_inj]
+  simpa [finSuccAboveOrderIso, finSuccAboveEquiv, OrderIso.symm]
+    using finSuccEquiv'_last_apply x.property
+#align fin_succ_above_equiv_symm_apply_last finSuccAboveEquiv_symm_apply_last
+
+lemma finSuccAboveOrderIso_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
+    (x : { x : Fin (n + 1) // x ≠ p }) :
+    (finSuccAboveEquiv p).symm x = (p.castLT (Fin.val_lt_last h)).predAbove x := by
+  rw [← Option.some_inj]
+  simpa [finSuccAboveEquiv, OrderIso.symm] using finSuccEquiv'_ne_last_apply h x.property
+#align fin_succ_above_equiv_symm_apply_ne_last finSuccAboveEquiv_symm_apply_ne_last
+
+/-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying
+values are retained. This is the `OrderIso` version of `Fin.castLE`. -/
+@[simps apply symm_apply]
+def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i : ℕ) < n } where
+  toFun i := ⟨Fin.castLE h i, by simp⟩
+  invFun i := ⟨i, i.prop⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_rel_iff' := by simp [(strictMono_castLE h).le_iff_le]
+#align fin.cast_le_order_iso Fin.castLEOrderIso
+#align fin.cast_le_order_iso_apply Fin.castLEOrderIso_apply
+#align fin.cast_le_order_iso_symm_apply Fin.castLEOrderIso_symm_apply
