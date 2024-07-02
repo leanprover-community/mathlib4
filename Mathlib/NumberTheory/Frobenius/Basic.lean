@@ -234,6 +234,7 @@ lemma m_spec' : (m A Q isGalois).map (algebraMap A B) = F A Q := by
 
 -- Amelia's trick to insert "let P be the ideal under Q" into the typeclass system
 variable (P : Ideal A) [P.IsMaximal] [Algebra (A ⧸ P) (B ⧸ Q)] [IsScalarTower A (A⧸P) (B⧸Q)]
+variable {A} -- now can be implicit because `P`
 
 lemma m.y_mod_P_eq_zero : Polynomial.aeval (↑(y A Q) : B ⧸ Q) (m A Q isGalois) = 0 := by
   rw [← aeval_map_algebraMap B, m_spec', algebraMap.coe_def, aeval_algebraMap_apply,
@@ -258,7 +259,7 @@ lemma _root_.Polynomial.aeval_finset_prod.{u, v, y} {R : Type u} {S : Type v} {�
   aeval x (∏ i ∈ s, g i) = (∏ i ∈ s, aeval x (g i)) := eval₂_finset_prod (algebraMap R S) s g x
 
 lemma exists_Frob : ∃ σ : B ≃ₐ[A] B, σ (y A Q) - (y A Q) ^ (Fintype.card (A⧸P)) ∈ Q := by
-  have := F.mod_Q_y_pow_q_eq_zero' A Q isGalois P
+  have := F.mod_Q_y_pow_q_eq_zero' Q isGalois P
   rw [F_spec, aeval_finset_prod, Finset.prod_eq_zero_iff] at this
   obtain ⟨σ, -, hσ⟩ := this
   use σ
@@ -268,29 +269,29 @@ lemma exists_Frob : ∃ σ : B ≃ₐ[A] B, σ (y A Q) - (y A Q) ^ (Fintype.card
 
 /-- An auxiliary arithmetic Frobenius element, in the automorphism group of the integer ring
 rather than the global field itself. -/
-noncomputable abbrev Frob := (exists_Frob A Q isGalois P).choose
+noncomputable abbrev Frob := (exists_Frob Q isGalois P).choose
 
-lemma Frob_spec : (Frob A Q isGalois P) • (y A Q) - (y A Q) ^ (Fintype.card (A⧸P)) ∈ Q :=
-  (exists_Frob A Q isGalois P).choose_spec
+lemma Frob_spec : (Frob Q isGalois P) • (y A Q) - (y A Q) ^ (Fintype.card (A⧸P)) ∈ Q :=
+  (exists_Frob Q isGalois P).choose_spec
 
-lemma Frob_Q : Frob A Q isGalois P • Q = Q := by
+lemma Frob_Q : Frob Q isGalois P • Q = Q := by
   rw [smul_eq_iff_eq_inv_smul]
   by_contra h
-  have hy : y A Q ∈ (Frob A Q isGalois P)⁻¹ • Q := (y_spec A Q).2 _ ⟨_, rfl⟩ (Ne.symm h)
-  have hy2 : (Frob A Q isGalois P) • (y A Q) ∈ Q := by
+  have hy : y A Q ∈ (Frob Q isGalois P)⁻¹ • Q := (y_spec A Q).2 _ ⟨_, rfl⟩ (Ne.symm h)
+  have hy2 : (Frob Q isGalois P) • (y A Q) ∈ Q := by
     rwa [Ideal.pointwise_smul_eq_comap] at hy
-  have this := Q.sub_mem hy2 <| Frob_spec A Q isGalois P
+  have this := Q.sub_mem hy2 <| Frob_spec Q isGalois P
   simp only [sub_sub_cancel] at this
   apply y_not_in_Q A Q <| Ideal.IsPrime.mem_of_pow_mem (show Q.IsPrime by infer_instance) _ this
 
-lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x ^ (Fintype.card (A⧸P)) ∈ Q := by
+lemma Frob_Q_eq_pow_card (x : B) : Frob Q isGalois P x - x ^ (Fintype.card (A⧸P)) ∈ Q := by
   by_cases hx : x ∈ Q
   · refine Q.sub_mem ?_ (Q.pow_mem_of_mem hx _ Fintype.card_pos)
-    nth_rw 2 [← Frob_Q A Q isGalois P]
-    change (Frob A Q isGalois P) • x ∈ _
+    nth_rw 2 [← Frob_Q Q isGalois P]
+    change (Frob Q isGalois P) • x ∈ _
     rw [Ideal.pointwise_smul_eq_comap, Ideal.mem_comap]
     convert hx
-    exact inv_smul_smul (Frob A Q isGalois P) _
+    exact inv_smul_smul (Frob Q isGalois P) _
   · letI : Field (B ⧸ Q) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient Q).mp ‹_›).toField
     let xbar : (B ⧸ Q)ˣ := Units.mk0 (x : B ⧸ Q) <|
       mt (fun h ↦ (Submodule.Quotient.mk_eq_zero Q).mp h) hx
@@ -300,15 +301,15 @@ lemma Frob_Q_eq_pow_card (x : B) : Frob A Q isGalois P x - x ^ (Fintype.card (A�
     rw [← Ideal.Quotient.cast_eq_cast_iff_sub_mem]
     push_cast
     rw [← hn2]
-    have := Frob_spec A Q isGalois P
+    have := Frob_spec Q isGalois P
     rw [← Ideal.Quotient.cast_eq_cast_iff_sub_mem] at this
     push_cast at this
     rw [← y_mod_Q' A Q, pow_right_comm, ← this]
     norm_cast
     rw [Ideal.Quotient.cast_eq_cast_iff_sub_mem, ← smul_pow']
-    change (Frob A Q isGalois P) • x - _ ∈ _
+    change (Frob Q isGalois P) • x - _ ∈ _
     rw [← smul_sub]
-    nth_rw 3 [ ← Frob_Q A Q isGalois P]
+    nth_rw 3 [ ← Frob_Q Q isGalois P]
     rw [Ideal.smul_mem_pointwise_smul_iff, ← Ideal.Quotient.cast_eq_cast_iff_sub_mem,
       ← hn2, ← y_mod_Q A Q]
     norm_cast
