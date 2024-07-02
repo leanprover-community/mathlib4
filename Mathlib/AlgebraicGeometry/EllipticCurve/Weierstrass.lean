@@ -84,25 +84,20 @@ universe s u v w
 /-- A Weierstrass curve $Y^2 + a_1XY + a_3Y = X^3 + a_2X^2 + a_4X + a_6$ with parameters $a_i$. -/
 @[ext]
 structure WeierstrassCurve (R : Type u) where
-  (a₁ a₂ a₃ a₄ a₆ : R)
+  /-- The `a₁` coefficient of a Weierstrass curve. -/
+  a₁ : R
+  /-- The `a₂` coefficient of a Weierstrass curve. -/
+  a₂ : R
+  /-- The `a₃` coefficient of a Weierstrass curve. -/
+  a₃ : R
+  /-- The `a₄` coefficient of a Weierstrass curve. -/
+  a₄ : R
+  /-- The `a₆` coefficient of a Weierstrass curve. -/
+  a₆ : R
 #align weierstrass_curve WeierstrassCurve
 
 namespace WeierstrassCurve
 
-/-- The `a₁` coefficient of a Weierstrass curve. -/
-add_decl_doc a₁
-
-/-- The `a₂` coefficient of a Weierstrass curve. -/
-add_decl_doc a₂
-
-/-- The `a₃` coefficient of a Weierstrass curve. -/
-add_decl_doc a₃
-
-/-- The `a₄` coefficient of a Weierstrass curve. -/
-add_decl_doc a₄
-
-/-- The `a₆` coefficient of a Weierstrass curve. -/
-add_decl_doc a₆
 
 instance instInhabited {R : Type u} [Inhabited R] :
     Inhabited <| WeierstrassCurve R :=
@@ -181,22 +176,16 @@ a tuple $(u, r, s, t)$ for some $u \in R^\times$ and some $r, s, t \in R$. As a 
 $\begin{pmatrix} u^2 & 0 & r \cr u^2s & u^3 & t \cr 0 & 0 & 1 \end{pmatrix}$. -/
 @[ext]
 structure VariableChange (R : Type u) [CommRing R] where
-  (u : Rˣ)
-  (r s t : R)
+  /-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
+  u : Rˣ
+  /-- The `r` coefficient of an admissible linear change of variables. -/
+  r : R
+  /-- The `s` coefficient of an admissible linear change of variables. -/
+  s : R
+  /-- The `t` coefficient of an admissible linear change of variables. -/
+  t : R
 
 namespace VariableChange
-
-/-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
-add_decl_doc u
-
-/-- The `r` coefficient of an admissible linear change of variables. -/
-add_decl_doc r
-
-/-- The `s` coefficient of an admissible linear change of variables. -/
-add_decl_doc s
-
-/-- The `t` coefficient of an admissible linear change of variables. -/
-add_decl_doc t
 
 variable (C C' C'' : VariableChange R)
 
@@ -574,17 +563,13 @@ end WeierstrassCurve
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
 @[ext]
 structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R where
+  /-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
   Δ' : Rˣ
+  /-- The discriminant of `E` is equal to the discriminant of `E` as a Weierstrass curve. -/
   coe_Δ' : Δ' = toWeierstrassCurve.Δ
 #align elliptic_curve EllipticCurve
 
 namespace EllipticCurve
-
-/-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
-add_decl_doc Δ'
-
-/-- The discriminant of `E` is equal to the discriminant of `E` as a Weierstrass curve. -/
-add_decl_doc coe_Δ'
 
 variable {R : Type u} [CommRing R] (E : EllipticCurve R)
 

@@ -112,7 +112,7 @@ theorem zero_le_contsAux_b : 0 ≤ ((↑r : GCF K).contsAux n).b := by
     cases' Decidable.em <| g.TerminatedAt (n - 1) with terminated not_terminated
     · -- terminating case
       cases' n with n
-      · simp [succ_eq_add_one, zero_le_one]
+      · simp [zero_le_one]
       · have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
           contsAux_stable_step_of_terminated terminated
         simp only [this, IH]

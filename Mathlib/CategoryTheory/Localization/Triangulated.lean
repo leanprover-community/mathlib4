@@ -224,4 +224,23 @@ end Localization
 
 end Triangulated
 
+namespace Functor
+
+variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+  [Pretriangulated D] [L.mapArrow.EssSurj] [L.IsTriangulated]
+
+lemma distTriang_iff (T : Triangle D) :
+    (T ∈ distTriang D) ↔ T ∈ L.essImageDistTriang := by
+  constructor
+  · intro hT
+    let f := L.mapArrow.objPreimage T.mor₁
+    obtain ⟨Z, g : f.right ⟶ Z, h : Z ⟶ f.left⟦(1 : ℤ)⟧, mem⟩ :=
+      Pretriangulated.distinguished_cocone_triangle f.hom
+    exact ⟨_, (exists_iso_of_arrow_iso T _ hT (L.map_distinguished _ mem)
+      (L.mapArrow.objObjPreimageIso T.mor₁).symm).choose, mem⟩
+  · rintro ⟨T₀, e, hT₀⟩
+    exact isomorphic_distinguished _ (L.map_distinguished _ hT₀) _ e
+
+end Functor
+
 end CategoryTheory

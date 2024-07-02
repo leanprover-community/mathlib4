@@ -118,7 +118,7 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
 /-- A finite bounded linear order is complete. -/
 noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
-  { toCompleteLattice α, ‹LinearOrder α› with }
+  { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
 #align fintype.to_complete_linear_order Fintype.toCompleteLinearOrder
 
 -- See note [reducible non-instances]
@@ -151,8 +151,9 @@ noncomputable abbrev toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice 
 /-- A nonempty finite linear order is complete. If the linear order is already a `BoundedOrder`,
 then use `Fintype.toCompleteLinearOrder` instead, as this gives definitional equality for `⊥` and
 `⊤`. -/
-noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α :=
-  { toCompleteLatticeOfNonempty α, ‹LinearOrder α› with }
+noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α := by
+  let _ := toBoundedOrder α
+  exact { toCompleteLatticeOfNonempty α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
 #align fintype.to_complete_linear_order_of_nonempty Fintype.toCompleteLinearOrderOfNonempty
 
 end Nonempty
