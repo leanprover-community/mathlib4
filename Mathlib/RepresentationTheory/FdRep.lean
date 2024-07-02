@@ -29,7 +29,6 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 `FdRep k G` has all finite limits.
 
 ## TODO
-* `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
 * Upgrade the right rigid structure to a rigid structure
   (this just needs to be done for `FGModuleCat`).
 * `FdRep k G` has all finite colimits.
@@ -110,8 +109,11 @@ def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
 instance : HasForget₂ (FdRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
 
-theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
-  ext g v; rfl
+/-- Lift `FdRep` to `Rep`. -/
+abbrev toRep (V : FdRep k G) : Rep k G := (forget₂ (FdRep k G) (Rep k G)).obj V
+
+theorem forget₂_ρ (V : FdRep k G) : V.toRep.ρ = V.ρ := by
+  rfl
 #align fdRep.forget₂_ρ FdRep.forget₂_ρ
 
 -- Verify that the monoidal structure is available.
@@ -138,12 +140,11 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [
 
 /-- The forgetful functor to `Rep k G` preserves hom-sets and their vector space structure. -/
 def forget₂HomLinearEquiv (X Y : FdRep k G) :
-    ((forget₂ (FdRep k G) (Rep k G)).obj X ⟶
-      (forget₂ (FdRep k G) (Rep k G)).obj Y) ≃ₗ[k] X ⟶ Y where
+    (X.toRep ⟶ Y.toRep) ≃ₗ[k] X ⟶ Y where
   toFun f := ⟨f.hom, f.comm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨(forget₂ (FGModuleCat k) (ModuleCat k)).map f.hom, f.comm⟩
+  invFun f := ⟨_, f.comm⟩
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
 #align fdRep.forget₂_hom_linear_equiv FdRep.forget₂HomLinearEquiv
@@ -197,3 +198,45 @@ theorem dualTensorIsoLinHom_hom_hom : (dualTensorIsoLinHom ρV W).hom.hom = dual
 #align fdRep.dual_tensor_iso_lin_hom_hom_hom FdRep.dualTensorIsoLinHom_hom_hom
 
 end FdRep
+
+noncomputable section equivFullSubcategory
+
+namespace FdRep
+
+variable {k G : Type u} [Field k] [Monoid G] {V W : FdRep k G}
+
+/- TODO: Unify how to phrase lemmas/theorems - Use V? V.toRep? Or V.ρ.asModule? -/
+instance toRep_finiteDimensional : FiniteDimensional k V.toRep :=
+  FGModuleCat.instFiniteCarrier k _
+
+/-- Lift `FdRep` morphisms to `Rep` morphisms via the forgetful functor. -/
+def lift_hom (f : V ⟶ W) : V.toRep ⟶ W.toRep :=
+  (forget₂ _ _).map f
+
+/-- Bundles Rep with a FiniteDimensional into a FdRep. -/
+def ofRep (V : Rep k G) [hV : FiniteDimensional k V] : FdRep k G :=
+  ⟨⟨V.V, hV⟩, V.ρ⟩
+
+/-- Functor from `FdRep` to the full subcategory of finite dimensional `Rep`. Also see
+`equivalenceFiniteDimensionalSubcategory` for an equivalence of category. -/
+def toFiniteDimensionalSubcategory :
+    FdRep k G ⥤ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) :=
+  FullSubcategory.lift _ (forget₂ _ _) inferInstance
+
+/-- Functor from the full subcategory of finite dimensional `Rep` to `FdRep`. Also see
+`equivalenceFiniteDimensionalSubcategory` for an equivalence of category. -/
+def ofFiniteDimensionalSubcategory :
+    FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) ⥤ FdRep k G where
+  obj := fun ⟨V, _⟩ ↦ FdRep.ofRep V
+  map := fun f ↦ ⟨f.hom, f.comm⟩
+
+/-- Equivalence between `FdRep` and the full subcategory of finite dimensional `Rep`. -/
+def equivalenceFiniteDimensionalSubcategory :
+    FdRep k G ≌ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) where
+  functor := toFiniteDimensionalSubcategory
+  inverse := ofFiniteDimensionalSubcategory
+  unitIso := by aesop_cat
+  counitIso := by aesop_cat
+
+end FdRep
+end equivFullSubcategory
