@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.DualNumber
+import Mathlib.Algebra.DualQuaternion
 import Mathlib.Algebra.QuaternionBasis
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
@@ -57,6 +58,14 @@ and vice-versa:
 * `CliffordAlgebraDualNumber.equiv`: `R[ε]` is equivalent as an `R`-algebra to a clifford
   algebra over `R` where `Q = 0`.
 
+## Dual quaternions
+
+* `CliffordAlgebraDualQuaternion.equiv`: the dual numbers over a `QuaternionAlgebra` over `R` are
+  equivalent as an `R`-algebra to a clifford algebra over `(R × R) × R`, sending `i` to
+  `((0, 1), 0)`, `j` to `((1, 0), 0)`, and `-kε` to `((0, 0), 1)` (see
+  `CliffordAlgebraDualQuaternion.e_eq`).
+* `CliffordAlgebraDualQuaternion.toDualQuaternion`: the forward direction of this equiv
+* `CliffordAlgebraDualQuaternion.ofDualQuaternion`: the reverse direction of this equiv
 -/
 
 
@@ -289,16 +298,30 @@ def quaternionBasis : QuaternionAlgebra.Basis (CliffordAlgebra (Q c₁ c₂)) c�
 
 variable {c₁ c₂}
 
+/-- The embedding of the vector space into the quaternions. -/
+@[simps]
+def mkQuaternion : R × R →ₗ[R] ℍ[R,c₁,c₂] where
+  toFun v := (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
+  map_add' v₁ v₂ := by simp
+  map_smul' r v := by dsimp; rw [mul_zero]
+
+theorem quaternionBasis_lift_mkQuaternion (v) :
+    (quaternionBasis c₁ c₂).lift (mkQuaternion v : ℍ[R,c₁,c₂]) = ι _ v := by
+  dsimp [quaternionBasis, Basis.lift]
+  rw [map_zero, zero_add, zero_smul, add_zero, ← map_smul, ← map_smul, ← map_add,
+    Prod.smul_mk, Prod.smul_mk, Prod.mk_add_mk, smul_zero, smul_zero, add_zero, zero_add,
+    smul_eq_mul, smul_eq_mul, mul_one, mul_one]
+
+theorem mkQuaternion_mul_mkQuaternion (v : R × R) :
+    mkQuaternion v * mkQuaternion v = algebraMap _ ℍ[R,c₁,c₂] (Q c₁ c₂ v) := by
+  dsimp
+  ext
+  all_goals dsimp; ring
+
 /-- Intermediate result of `CliffordAlgebraQuaternion.equiv`: clifford algebras over
 `CliffordAlgebraQuaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
 def toQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,c₂] :=
-  CliffordAlgebra.lift (Q c₁ c₂)
-    ⟨{  toFun := fun v => (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
-        map_add' := fun v₁ v₂ => by simp
-        map_smul' := fun r v => by dsimp; rw [mul_zero] }, fun v => by
-      dsimp
-      ext
-      all_goals dsimp; ring⟩
+  CliffordAlgebra.lift (Q c₁ c₂) ⟨mkQuaternion, mkQuaternion_mul_mkQuaternion⟩
 #align clifford_algebra_quaternion.to_quaternion CliffordAlgebraQuaternion.toQuaternion
 
 @[simp]
@@ -441,3 +464,241 @@ theorem equiv_symm_eps :
 #align clifford_algebra_dual_number.equiv_symm_eps CliffordAlgebraDualNumber.equiv_symm_eps
 
 end CliffordAlgebraDualNumber
+
+/-! ### The clifford algebra isomorphic to the dual quaternions
+
+We use a basis of `((i, j), e)` where $e = -kε$ (and so $ε = ke$)
+-/
+
+namespace CliffordAlgebraDualQuaternion
+open scoped Quaternion
+open scoped DualNumber
+open QuaternionAlgebra.Basis
+
+variable {R : Type*} [CommRing R] (c₁ c₂ : R)
+
+/-- `Q R` is a quadratic form over `(R × R) × R` such that `CliffordAlgebra (Q R)` is isomorphic
+as an `R`-algebra to `R[ℍ[R]]`. -/
+def Q : QuadraticForm R ((R × R) × R) :=
+  (CliffordAlgebraQuaternion.Q c₁ c₂).prod 0
+
+@[simp]
+theorem Q_apply (v : (R × R) × R) : Q c₁ c₂ v = CliffordAlgebraQuaternion.Q c₁ c₂ v.1 := by
+  simp [Q]
+
+/-- The quaternion basis vectors within the algebra. -/
+@[simps! (config := {isSimp := false}) i j k]
+def quaternionBasis : QuaternionAlgebra.Basis (CliffordAlgebra (Q c₁ c₂)) c₁ c₂ :=
+  letI q : QuaternionAlgebra.Basis (CliffordAlgebra (Q c₁ c₂)) c₁ c₂ :=
+    ((CliffordAlgebraQuaternion.quaternionBasis c₁ c₂).compHom <|
+      CliffordAlgebra.map (QuadraticForm.Isometry.inl _ _))
+  q.copy
+    (i := ι (Q c₁ c₂) ((1, 0), 0)) (j := ι (Q c₁ c₂) ((0, 1), 0)) _
+    (by simp; rfl) (by simp; rfl) (Or.inl rfl)
+
+theorem quaternionBasis_liftHom_eq :
+    (quaternionBasis c₁ c₂).liftHom =
+      (CliffordAlgebra.map (QuadraticForm.Isometry.inl _ _)).comp
+        (CliffordAlgebraQuaternion.quaternionBasis c₁ c₂).liftHom := by
+  rw [quaternionBasis, copy_eq, liftHom_compHom]
+
+-- set_option quotPrecheck false in
+local notation3 "i" => QuaternionAlgebra.Basis.i (quaternionBasis c₁ c₂)
+local notation3 "j" => QuaternionAlgebra.Basis.j (quaternionBasis c₁ c₂)
+local notation3 "k" => QuaternionAlgebra.Basis.k (quaternionBasis c₁ c₂)
+local notation3 "e" => ι (Q c₁ c₂) (0, 1)
+
+theorem e_mul_i : e * i = -(i * e) := by
+  rw [quaternionBasis_i, ι_mul_ι_comm_of_isOrtho (.inr_inl _ _)]
+
+theorem e_mul_j : e * j = -(j * e) := by
+  rw [quaternionBasis_j, ι_mul_ι_comm_of_isOrtho (.inr_inl _ _)]
+
+theorem e_mul_k : e * k = k * e := by
+  rw [← i_mul_j, ← mul_assoc, e_mul_i, neg_mul, mul_assoc, e_mul_j, mul_neg,
+    neg_neg, ← mul_assoc]
+
+/-- The element of the Clifford algebra corresponding to `DualNumber.eps`. -/
+def eps [Invertible c₁] [Invertible c₂] : CliffordAlgebra (Q c₁ c₂) := (⅟c₁ * ⅟c₂) • (k * e)
+
+lemma e_eq [Invertible c₁] [Invertible c₂] : e = -(k * eps c₁ c₂) := by
+  rw [eps, mul_smul_comm, ← mul_assoc, k_mul_k, neg_mul, smul_neg, smul_one_mul, smul_smul, neg_neg,
+    mul_mul_mul_comm, invOf_mul_self, invOf_mul_self, one_mul, one_smul]
+
+theorem commute_eps_i [Invertible c₁] [Invertible c₂] : Commute (eps c₁ c₂) i := by
+  show _ = _
+  dsimp only [eps]
+  rw [smul_mul_assoc, mul_smul_comm, ← mul_assoc, i_mul_k, smul_mul_assoc, mul_assoc, e_mul_i,
+    mul_neg, ← mul_assoc, k_mul_i, smul_mul_assoc, neg_smul, neg_neg]
+
+theorem commute_eps_j [Invertible c₁] [Invertible c₂] : Commute (eps c₁ c₂) j := by
+  show _ = _
+  rw [eps, smul_mul_assoc, mul_smul_comm, ← mul_assoc, j_mul_k, smul_mul_assoc, mul_assoc, e_mul_j,
+    mul_neg, ← mul_assoc, k_mul_j, smul_mul_assoc, neg_smul]
+
+theorem commute_eps_k [Invertible c₁] [Invertible c₂] : Commute (eps c₁ c₂) k :=
+  (commute_eps_i c₁ c₂).mul_right (commute_eps_j c₁ c₂)
+
+theorem eps_mul_eps [Invertible c₁] [Invertible c₂] : eps c₁ c₂ * eps c₁ c₂ = 0 := by
+  rw [eps]
+  conv_lhs => enter [2]; rw [← e_mul_k]
+  rw [smul_mul_smul, mul_assoc k, ← mul_assoc _ _ k, ι_sq_scalar, Q_apply,
+    map_zero, map_zero, zero_mul, mul_zero, smul_zero]
+
+/-- Build a quaternion from the vector space that we built `CliffordAlgebraDualQuaternion.Q` upon.
+-/
+def mkDualQuaternion : (R × R) × R →ₗ[R] ℍ[R,c₁,c₂][ε] :=
+  LinearMap.prodMap CliffordAlgebraQuaternion.mkQuaternion
+  { toFun := fun er => ⟨0, 0, 0, -er⟩
+    map_add' := fun x y => by ext <;> simp [add_comm]
+    map_smul' := fun x y => by ext <;> simp }
+
+@[simp]
+lemma mkDualQuaternion_fst (v : (R × R) × R) :
+    (mkDualQuaternion c₁ c₂ v).fst = CliffordAlgebraQuaternion.mkQuaternion v.1 := rfl
+
+@[simp]
+lemma mkDualQuaternion_snd (v : (R × R) × R) :
+    (mkDualQuaternion c₁ c₂ v).snd = ⟨0, 0, 0, -v.2⟩ := rfl
+
+@[simp]
+lemma mkDualQuaternion_inl (v : R × R) :
+    mkDualQuaternion c₁ c₂ (v, 0) =
+      TrivSqZeroExt.inl (CliffordAlgebraQuaternion.mkQuaternion v) := by
+  ext <;> simp
+
+@[simp]
+lemma mkDualQuaternion_inr (r : R) :
+    mkDualQuaternion c₁ c₂ (0, r) = (⟨0, 0, 0, -r⟩ : ℍ[R,c₁,c₂]) • (ε : ℍ[R,c₁,c₂][ε]) := by
+  ext <;> simp
+
+theorem mkDualQuaternion_mul_mkDualQuaternion (v : (R × R) × R) :
+    mkDualQuaternion c₁ c₂  v * mkDualQuaternion c₁ c₂ v = algebraMap _ _ (Q c₁ c₂ v) := by
+  ext : 1
+  · simp [-CliffordAlgebraQuaternion.Q_apply]
+    rw [CliffordAlgebraQuaternion.mkQuaternion_mul_mkQuaternion]
+    rfl
+  · simp [-CliffordAlgebraQuaternion.Q_apply, TrivSqZeroExt.algebraMap_eq_inl']
+    ext <;> simp [mul_right_comm]
+
+/-- Intermediate result of `CliffordAlgebraQuaternion.equiv`: clifford algebras over
+`CliffordAlgebraQuaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
+def toDualQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,c₂][ε] :=
+  CliffordAlgebra.lift (Q c₁ c₂)
+    ⟨mkDualQuaternion c₁ c₂, mkDualQuaternion_mul_mkDualQuaternion c₁ c₂⟩
+
+theorem toDualQuaternion_ι (v : (R × R) × R) :
+    toDualQuaternion c₁ c₂ (ι _ v) = mkDualQuaternion c₁ c₂ v := lift_ι_apply _ _ _
+
+@[simp] theorem toDualQuaternion_i :
+    toDualQuaternion c₁ c₂ i = TrivSqZeroExt.inl (QuaternionAlgebra.Basis.self R).i := by
+  rw [quaternionBasis_i, toDualQuaternion_ι]
+  ext <;> simp
+
+@[simp] theorem toDualQuaternion_j :
+    toDualQuaternion c₁ c₂ j = TrivSqZeroExt.inl (QuaternionAlgebra.Basis.self R).j := by
+  rw [quaternionBasis_j, toDualQuaternion_ι]
+  ext <;> simp
+
+@[simp] theorem toDualQuaternion_k :
+    toDualQuaternion c₁ c₂ k = TrivSqZeroExt.inl (QuaternionAlgebra.Basis.self R).k := by
+  rw [← i_mul_j, map_mul, toDualQuaternion_i, toDualQuaternion_j]
+  ext <;> simp
+
+@[simp] theorem toDualQuaternion_e :
+    toDualQuaternion c₁ c₂ e = -TrivSqZeroExt.inr (QuaternionAlgebra.Basis.self R).k := by
+  rw [toDualQuaternion_ι]
+  ext <;> simp
+
+variable [Invertible c₁] [Invertible c₂]
+
+@[simp]
+theorem toDualQuaternion_eps : toDualQuaternion c₁ c₂ (eps c₁ c₂) = ε := by
+  rw [eps, map_smul, map_mul, toDualQuaternion_k, toDualQuaternion_e, mul_neg,
+    TrivSqZeroExt.inl_mul_inr, smul_eq_mul, k_mul_k, TrivSqZeroExt.inr_neg, neg_neg,
+    TrivSqZeroExt.inr_smul, smul_smul, mul_mul_mul_comm, invOf_mul_self, invOf_mul_self, one_mul,
+    one_smul, DualNumber.eps]
+
+theorem commute_eps_liftHom (x) : Commute (eps c₁ c₂) ((quaternionBasis c₁ c₂).liftHom x) := by
+  simp only [QuaternionAlgebra.Basis.liftHom_apply, QuaternionAlgebra.Basis.lift, quaternionBasis_i,
+    quaternionBasis_j]
+  refine Commute.add_right ?r ?hi |>.add_right ?hj |>.add_right ?hk
+  · exact (Algebra.commutes _ _).symm
+  · exact (commute_eps_i c₁ c₂).smul_right _
+  · exact (commute_eps_j c₁ c₂).smul_right _
+  · exact (commute_eps_k c₁ c₂).smul_right _
+
+/-- Map a dual quaternion into the clifford algebra. -/
+def ofDualQuaternion : ℍ[R,c₁,c₂][ε] →ₐ[R] CliffordAlgebra (Q c₁ c₂) :=
+  DualNumber.lift ⟨((quaternionBasis c₁ c₂).liftHom, eps c₁ c₂),
+    eps_mul_eps c₁ c₂, commute_eps_liftHom c₁ c₂⟩
+
+theorem ofDualQuaternion_inl (q : ℍ[R,c₁,c₂]) :
+    ofDualQuaternion c₁ c₂ (.inl q) = (quaternionBasis c₁ c₂).lift q := by
+  rw [ofDualQuaternion]
+  erw [DualNumber.lift_apply_apply]
+  simp only [TrivSqZeroExt.fst_inl, QuaternionAlgebra.Basis.liftHom_apply, TrivSqZeroExt.snd_inl,
+    map_zero, zero_mul, add_zero]
+
+theorem ofDualQuaternion_smul_eps (q : ℍ[R,c₁,c₂]) :
+    ofDualQuaternion c₁ c₂ (q • ε) = (quaternionBasis c₁ c₂).lift q * eps c₁ c₂ := by
+  rw [ofDualQuaternion]
+  erw [DualNumber.lift_apply_apply]
+  simp only [TrivSqZeroExt.fst_inl, TrivSqZeroExt.snd_inl,
+    map_zero, zero_mul, add_zero]
+  rw [TrivSqZeroExt.snd_smul, TrivSqZeroExt.fst_smul, DualNumber.fst_eps, smul_zero, map_zero,
+    zero_add, DualNumber.snd_eps, smul_eq_mul, mul_one, QuaternionAlgebra.Basis.liftHom_apply]
+
+theorem toDualQuaternion_comp_ofDualQuaternion :
+    (toDualQuaternion c₁ c₂).comp (ofDualQuaternion c₁ c₂) = AlgHom.id R ℍ[R,c₁,c₂][ε] := by
+  ext : 1
+  · ext : 1
+      <;> dsimp
+      <;> rw [ofDualQuaternion_inl, QuaternionAlgebra.Basis.lift]
+      <;> dsimp
+    · simp only [one_smul, zero_smul, map_zero, add_zero, zero_add, toDualQuaternion_i, self_i]
+    · simp only [one_smul, zero_smul, map_zero, add_zero, zero_add, toDualQuaternion_j, self_j]
+  · ext : 1
+    dsimp
+    rw [ofDualQuaternion_smul_eps, map_mul, toDualQuaternion_eps, QuaternionAlgebra.Basis.lift]
+    simp_rw [map_add, map_smul _ (_ : R), AlgHom.commutes,
+      toDualQuaternion_i, toDualQuaternion_j, toDualQuaternion_k,
+      TrivSqZeroExt.algebraMap_eq_inl', ← TrivSqZeroExt.inl_smul, ← TrivSqZeroExt.inl_add,
+      DualNumber.inl_mul_eps]
+    congr
+    ext <;> simp
+
+theorem ofDualQuaternion_comp_toDualQuaternion :
+    (ofDualQuaternion c₁ c₂).comp (toDualQuaternion c₁ c₂) =
+      AlgHom.id R (CliffordAlgebra (Q c₁ c₂)) := by
+  ext : 2
+  · refine LinearMap.ext fun v => ?_
+    dsimp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, LinearMap.coe_inl, Function.comp_apply,
+      AlgHom.toLinearMap_apply, AlgHom.coe_id, id_eq]
+    rw [toDualQuaternion_ι, mkDualQuaternion_inl, ofDualQuaternion_inl,
+      ← QuaternionAlgebra.Basis.liftHom_apply, quaternionBasis_liftHom_eq]
+    dsimp
+    rw [CliffordAlgebraQuaternion.quaternionBasis_lift_mkQuaternion, map_apply_ι,
+      QuadraticForm.Isometry.inl_apply]
+  · ext : 1
+    dsimp
+    rw [toDualQuaternion_e, map_neg]
+    simp [ofDualQuaternion_smul_eps, QuaternionAlgebra.Basis.lift, e_eq]
+
+/-- The clifford algebra over a 3-dimensional vector space whose basis elements correspond to
+$i$, $j$ and $-kε$ with a suitable quadratic form is isomorphic to the dual quaternions. -/
+@[simps!]
+protected def equiv : CliffordAlgebra (Q c₁ c₂) ≃ₐ[R] ℍ[R,c₁,c₂][ε] :=
+  AlgEquiv.ofAlgHom
+    (toDualQuaternion c₁ c₂)
+    (ofDualQuaternion c₁ c₂)
+    (toDualQuaternion_comp_ofDualQuaternion c₁ c₂)
+    (ofDualQuaternion_comp_toDualQuaternion c₁ c₂)
+
+/-- A simplified version of `CliffordAlgebraDualQuaternion.equiv` for *the* dual quaternions, with
+the `Invertible` assumptions eliminated. -/
+protected abbrev equiv' : CliffordAlgebra (Q (-1 : R) (-1)) ≃ₐ[R] ℍ[R][ε] :=
+  letI : Invertible (-1 : R) := ⟨-1, by simp, by simp⟩
+  CliffordAlgebraDualQuaternion.equiv _ _
+
+end CliffordAlgebraDualQuaternion
