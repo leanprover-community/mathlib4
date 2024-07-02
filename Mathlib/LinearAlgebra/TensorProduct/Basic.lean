@@ -465,7 +465,7 @@ section
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
     (∑ a ∈ s, m a) ⊗ₜ[R] n = ∑ a ∈ s, m a ⊗ₜ[R] n := by
   classical
-    induction' s using Finset.induction with a s has ih h
+    induction' s with a s has ih h
     · simp
     · simp [Finset.sum_insert has, add_tmul, ih]
 #align tensor_product.sum_tmul TensorProduct.sum_tmul
@@ -473,7 +473,7 @@ theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
-    induction' s using Finset.induction with a s has ih h
+    induction' s with a s has ih h
     · simp
     · simp [Finset.sum_insert has, tmul_add, ih]
 #align tensor_product.tmul_sum TensorProduct.tmul_sum

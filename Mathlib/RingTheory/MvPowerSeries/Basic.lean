@@ -689,7 +689,7 @@ theorem coeff_prod [DecidableEq σ]
     coeff R d (∏ j ∈ s, f j) =
       ∑ l ∈ finsuppAntidiag s d,
         ∏ i ∈ s, coeff R (l i) (f i) := by
-  induction s using Finset.induction_on generalizing d with
+  induction s generalizing d with
   | empty =>
     simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, finsuppAntidiag_empty]
     split_ifs

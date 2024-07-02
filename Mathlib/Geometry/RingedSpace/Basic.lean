@@ -182,8 +182,8 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj U) :
     @basicOpen X (unop V) (X.presheaf.map i f) = unop V ⊓ @basicOpen X (unop U) f := by
-  induction U using Opposite.rec'
-  induction V using Opposite.rec'
+  induction U
+  induction V
   let g := i.unop; have : i = g.op := rfl; clear_value g; subst this
   ext; constructor
   · rintro ⟨x, hx : IsUnit _, rfl⟩

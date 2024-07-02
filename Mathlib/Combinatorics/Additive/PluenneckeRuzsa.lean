@@ -91,7 +91,7 @@ theorem card_mul_mul_le_card_mul_mul_card_div (A B C : Finset α) :
 theorem mul_pluennecke_petridis (C : Finset α)
     (hA : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B).card * A.card) :
     (A * B * C).card * A.card ≤ (A * B).card * (A * C).card := by
-  induction' C using Finset.induction_on with x C _ ih
+  induction' C with x C _ ih
   · simp
   set A' := A ∩ (A * C / {x}) with hA'
   set C' := insert x C with hC'

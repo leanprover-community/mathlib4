@@ -273,7 +273,7 @@ theorem iUnion_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : (splitMany I s)
 
 theorem inf_splitMany {I : Box ι} (π : Prepartition I) (s : Finset (ι × ℝ)) :
     π ⊓ splitMany I s = π.biUnion fun J => splitMany J s := by
-  induction' s using Finset.induction_on with p s _ ihp
+  induction' s with p s _ ihp
   · simp
   · simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
 #align box_integral.prepartition.inf_split_many BoxIntegral.Prepartition.inf_splitMany

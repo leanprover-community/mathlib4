@@ -80,7 +80,7 @@ theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t :
     (hαt : Fintype.card α = t.card) {s : Finset α} {f : α → β} (hfst : Finset.image f s ⊆ t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
-    induction' s using Finset.induction with a s has H generalizing f
+    induction' s with a s has H generalizing f
     · obtain ⟨e⟩ : Nonempty (α ≃ ↥t) := by rwa [← Fintype.card_eq, Fintype.card_coe]
       use e
       simp

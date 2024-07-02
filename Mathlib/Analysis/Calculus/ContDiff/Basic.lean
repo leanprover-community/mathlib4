@@ -1422,7 +1422,7 @@ theorem ContDiffWithinAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {
     (h : ∀ i ∈ s, ContDiffWithinAt 𝕜 n (fun x => f i x) t x) :
     ContDiffWithinAt 𝕜 n (fun x => ∑ i ∈ s, f i x) t x := by
   classical
-    induction' s using Finset.induction_on with i s is IH
+    induction' s with i s is IH
     · simp [contDiffWithinAt_const]
     · simp only [is, Finset.sum_insert, not_false_iff]
       exact (h _ (Finset.mem_insert_self i s)).add

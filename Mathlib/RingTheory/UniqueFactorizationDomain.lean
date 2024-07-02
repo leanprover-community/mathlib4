@@ -249,7 +249,7 @@ theorem prime_factors_unique [CancelCommMonoidWithZero α] :
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
   classical
   intro f
-  induction' f using Multiset.induction_on with p f ih
+  induction' f with p f ih
   · intros g _ hg h
     exact Multiset.rel_zero_left.2 <|
       Multiset.eq_zero_of_forall_not_mem fun x hx =>
@@ -739,7 +739,7 @@ theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (
 
 theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducible a) :
     normalizedFactors s.prod = s.map normalize := by
-  induction' s using Multiset.induction with a s ih
+  induction' s with a s ih
   · rw [Multiset.prod_zero, normalizedFactors_one, Multiset.map_zero]
   · have ia := hs a (Multiset.mem_cons_self a _)
     have ib := fun b h => hs b (Multiset.mem_cons_of_mem h)
@@ -854,7 +854,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
       intro _
       convert hs
     simp
-  induction s using Multiset.induction with
+  induction s with
   | empty => simp
   | cons _ _ IH =>
     rw [Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons, normalizedFactors_mul, IH]
@@ -1102,7 +1102,7 @@ theorem induction_on_prime_power {P : α → Prop} (s : Finset α) (i : α → �
     (hcp : ∀ {x y}, IsRelPrime x y → P x → P y → P (x * y)) :
     P (∏ p ∈ s, p ^ i p) := by
   letI := Classical.decEq α
-  induction' s using Finset.induction_on with p f' hpf' ih
+  induction' s with p f' hpf' ih
   · simpa using h1 isUnit_one
   rw [Finset.prod_insert hpf']
   exact
@@ -1144,7 +1144,7 @@ theorem multiplicative_prime_power {f : α → β} (s : Finset α) (i j : α →
     (hcp : ∀ {x y}, IsRelPrime x y → f (x * y) = f x * f y) :
     f (∏ p ∈ s, p ^ (i p + j p)) = f (∏ p ∈ s, p ^ i p) * f (∏ p ∈ s, p ^ j p) := by
   letI := Classical.decEq α
-  induction' s using Finset.induction_on with p s hps ih
+  induction' s with p s hps ih
   · simpa using h1 isUnit_one
   have hpr_p := is_prime _ (Finset.mem_insert_self _ _)
   have hpr_s : ∀ p ∈ s, Prime p := fun p hp => is_prime _ (Finset.mem_insert_of_mem hp)

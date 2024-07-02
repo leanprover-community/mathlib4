@@ -144,7 +144,7 @@ where this condition is automatically satisfied.
 -/
 theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
-  induction' t using Multiset.induction_on with a t ih; · simp
+  induction' t with a t ih; · simp
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
   rw [Polynomial.leadingCoeff_mul']
   · rw [ih]

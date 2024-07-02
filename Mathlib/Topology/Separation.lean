@@ -887,7 +887,7 @@ theorem Dense.diff_singleton [T1Space X] {s : Set X} (hs : Dense s) (x : X) [NeB
 obtains a dense set. -/
 theorem Dense.diff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     (t : Finset X) : Dense (s \ t) := by
-  induction t using Finset.induction_on with
+  induction t with
   | empty => simpa using hs
   | insert _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
@@ -1238,7 +1238,7 @@ theorem IsCompact.binary_compact_cover {K U V : Set X}
 theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type*}
     (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
     ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
-  induction' t using Finset.induction with x t hx ih generalizing U s
+  induction' t with x t hx ih generalizing U s
   · refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
     simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
   simp only [Finset.set_biUnion_insert] at hsC

@@ -59,7 +59,7 @@ protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C
 it suffices to show the condition is closed under taking sums,
 and it holds for monomials.
 -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on' {M : R[X] → Prop} (p : R[X]) (h_add : ∀ p q, M p → M q → M (p + q))
     (h_monomial : ∀ (n : ℕ) (a : R), M (monomial n a)) : M p :=
   Polynomial.induction_on p (h_monomial 0) h_add fun n a _h =>

@@ -236,7 +236,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
           k.1.1.multinomial *
             (k.1.1.map <| x).noncommProd
               (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
-  induction' s using Finset.induction with a s ha ih
+  induction' s with a s ha ih
   · rw [sum_empty]
     rintro (_ | n)
       -- Porting note: Lean cannot infer this instance by itself
