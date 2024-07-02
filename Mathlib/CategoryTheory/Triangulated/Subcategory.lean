@@ -151,14 +151,14 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, le_isoClosure _ _ hZ⟩
 
-lemma respectsIso_W : S.W.RespectsIso where
-  left := by
+instance respectsIso_W : S.W.RespectsIso where
+  precomp := by
     rintro X' X Y e f ⟨Z, g, h, mem, mem'⟩
     refine' ⟨Z, g, h ≫ e.inv⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ _, mem'⟩
     refine' Triangle.isoMk _ _ e (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) _
     dsimp
     simp only [assoc, ← Functor.map_comp, e.inv_hom_id, Functor.map_id, comp_id, id_comp]
-  right := by
+  postcomp := by
     rintro X Y Y' e f ⟨Z, g, h, mem, mem'⟩
     refine' ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ _, mem'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
@@ -168,12 +168,12 @@ instance : S.W.ContainsIdentities := by
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, zero _⟩⟩
 
 lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
-  refine (S.respectsIso_W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
+  refine (S.W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
 lemma smul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     S.W (n • f) ↔ S.W f :=
-  S.respectsIso_W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
+  S.W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
 
 variable {S}
 
@@ -183,7 +183,7 @@ lemma W.shift {X₁ X₂ : C} {f : X₁ ⟶ X₂} (hf : S.W f) (n : ℤ) : S.W (
   exact ⟨_, _, _, Pretriangulated.Triangle.shift_distinguished _ hT n, S.shift _ _ mem⟩
 
 lemma W.unshift {X₁ X₂ : C} {f : X₁ ⟶ X₂} {n : ℤ} (hf : S.W (f⟦n⟧')) : S.W f :=
-  (S.respectsIso_W.arrow_mk_iso_iff
+  (S.W.arrow_mk_iso_iff
      (Arrow.isoOfNatIso (shiftEquiv C n).unitIso (Arrow.mk f))).2 (hf.shift (-n))
 
 instance : S.W.IsCompatibleWithShift ℤ where

@@ -80,17 +80,17 @@ instance : (MorphismProperty.bijective C).IsMultiplicative where
     rw [coe_comp]
     exact hg.comp hf
 
-theorem injective_respectsIso : (MorphismProperty.injective C).RespectsIso :=
+instance injective_respectsIso : (MorphismProperty.injective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.injective)
 #align category_theory.morphism_property.injective_respects_iso CategoryTheory.MorphismProperty.injective_respectsIso
 
-theorem surjective_respectsIso : (MorphismProperty.surjective C).RespectsIso :=
+instance surjective_respectsIso : (MorphismProperty.surjective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.surjective)
 #align category_theory.morphism_property.surjective_respects_iso CategoryTheory.MorphismProperty.surjective_respectsIso
 
-theorem bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
+instance bijective_respectsIso : (MorphismProperty.bijective C).RespectsIso :=
   respectsIso_of_isStableUnderComposition
     (fun _ _ f (_ : IsIso f) => ((forget C).mapIso (asIso f)).toEquiv.bijective)
 #align category_theory.morphism_property.bijective_respects_iso CategoryTheory.MorphismProperty.bijective_respectsIso
