@@ -360,44 +360,41 @@ variable {α : Type*} {a b : α} [Preorder α]
 contains an element covering `a`. -/
 @[mk_iff]
 class IsStronglyAtomic (α : Type*) [Preorder α] : Prop where
-  exists_covBy_le_of_lt' : ∀ (a b : α), a < b → ∃ x, a ⋖ x ∧ x ≤ b
-
-theorem LT.lt.exists_covby_le [IsStronglyAtomic α] (h : a < b) : ∃ x, a ⋖ x ∧ x ≤ b :=
-  IsStronglyAtomic.exists_covBy_le_of_lt' a b h
+  exists_covBy_le_of_lt : ∀ (a b : α), a < b → ∃ x, a ⋖ x ∧ x ≤ b
 
 theorem exists_covBy_le_of_lt [IsStronglyAtomic α] (h : a < b) : ∃ x, a ⋖ x ∧ x ≤ b :=
-  h.exists_covby_le
+  IsStronglyAtomic.exists_covBy_le_of_lt a b h
 
-/-- An order is strongly coatomic if every nontrivial interval `[a,b]`
+alias LT.lt.exists_covby_le := exists_covBy_le_of_lt
+
+/-- An order is strongly coatomic if every nontrivial interval `[a, b]`
 contains an element covered by `b`. -/
 @[mk_iff]
 class IsStronglyCoatomic (α : Type*) [Preorder α] : Prop where
-  (exists_le_covBy_of_lt' : ∀ (a b : α), a < b → ∃ x, a ≤ x ∧ x ⋖ b)
-
-theorem LT.lt.exists_le_covby [IsStronglyCoatomic α] (h : a < b) : ∃ x, a ≤ x ∧ x ⋖ b :=
-  IsStronglyCoatomic.exists_le_covBy_of_lt' a b h
+  (exists_le_covBy_of_lt : ∀ (a b : α), a < b → ∃ x, a ≤ x ∧ x ⋖ b)
 
 theorem exists_le_covBy_of_lt [IsStronglyCoatomic α] (h : a < b) : ∃ x, a ≤ x ∧ x ⋖ b :=
-  h.exists_le_covby
+  IsStronglyCoatomic.exists_le_covBy_of_lt a b h
 
-@[simp] theorem isStronglyAtomic_dual_iff_is_stronglyCoatomic :
+alias LT.lt.exists_le_covby := exists_le_covBy_of_lt
+
+theorem isStronglyAtomic_dual_iff_is_stronglyCoatomic :
     IsStronglyAtomic αᵒᵈ ↔ IsStronglyCoatomic α := by
-  refine ⟨fun ⟨h⟩ ↦ ⟨fun a b hab ↦ ?_⟩, fun ⟨h⟩ ↦ ⟨fun a b hab ↦ ?_⟩⟩
-  · obtain ⟨x, hbx, hax⟩ := h b a hab
-    exact ⟨x, hax, hbx.toDual⟩
-  obtain ⟨x, hbx, hax⟩ := h b a hab
-  exact ⟨x, hax.toDual, hbx⟩
+  simpa [isStronglyAtomic_iff, OrderDual.exists, OrderDual.forall,
+    OrderDual.toDual_le_toDual, and_comm, isStronglyCoatomic_iff] using forall_comm
 
-@[simp] theorem isStronglyCoatomic_dual_iff_is_stronglyCoatomic :
+@[simp] theorem isStronglyCoatomic_dual_iff_is_stronglyAtomic :
     IsStronglyCoatomic αᵒᵈ ↔ IsStronglyAtomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; rfl
 
-instance [IsStronglyAtomic α] : IsStronglyCoatomic αᵒᵈ := by simpa
+instance [IsStronglyAtomic α] : IsStronglyCoatomic αᵒᵈ := by
+  rwa [isStronglyCoatomic_dual_iff_is_stronglyAtomic]
 
-instance [IsStronglyCoatomic α] : IsStronglyAtomic αᵒᵈ := by simpa
+instance [IsStronglyCoatomic α] : IsStronglyAtomic αᵒᵈ := by
+  rwa [isStronglyAtomic_dual_iff_is_stronglyCoatomic]
 
 /-- If this were an instance, it would loop in some cases. -/
-theorem IsStronglyAtomic.isAtomic (α : Type*) [PartialOrder α] [OrderBot α] [IsStronglyAtomic α] :
+instance IsStronglyAtomic.isAtomic (α : Type*) [PartialOrder α] [OrderBot α] [IsStronglyAtomic α] :
     IsAtomic α where
   eq_bot_or_exists_atom_le a := by
     rw [or_iff_not_imp_left, ← Ne, ← bot_lt_iff_ne_bot]
@@ -405,13 +402,13 @@ theorem IsStronglyAtomic.isAtomic (α : Type*) [PartialOrder α] [OrderBot α] [
     obtain ⟨x, hx, hxa⟩ := hlt.exists_covby_le
     exact ⟨x, bot_covBy_iff.1 hx, hxa⟩
 
-theorem IsStronglyCoatomic.isCoatomic (α : Type*) [PartialOrder α] [OrderTop α]
+instance IsStronglyCoatomic.isCoatomic (α : Type*) [PartialOrder α] [OrderTop α]
     [IsStronglyCoatomic α] : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 <| IsStronglyAtomic.isAtomic (α := αᵒᵈ)
 
 theorem Set.OrdConnected.isStronglyAtomic [IsStronglyAtomic α] {s : Set α}
     (h : Set.OrdConnected s) : IsStronglyAtomic s where
-  exists_covBy_le_of_lt' := by
+  exists_covBy_le_of_lt := by
     rintro ⟨c, hc⟩ ⟨d, hd⟩ hcd
     obtain ⟨x, hcx, hxd⟩ := (Subtype.mk_lt_mk.1 hcd).exists_covby_le
     exact ⟨⟨x, h.out' hc hd ⟨hcx.le, hxd⟩⟩,
@@ -428,7 +425,7 @@ instance [IsStronglyCoatomic α] {s : Set α} [h : Set.OrdConnected s] : IsStron
   Set.OrdConnected.isStronglyCoatomic <| by assumption
 
 instance [SuccOrder α] : IsStronglyAtomic α where
-  exists_covBy_le_of_lt' a _ hab :=
+  exists_covBy_le_of_lt a _ hab :=
     ⟨SuccOrder.succ a, Order.covBy_succ_of_not_isMax fun ha ↦ ha.not_lt hab,
       SuccOrder.succ_le_of_lt hab⟩
 
@@ -441,7 +438,7 @@ section WellFounded
 
 theorem isStronglyAtomic_of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α where
-  exists_covBy_le_of_lt' a b hab := by
+  exists_covBy_le_of_lt a b hab := by
     refine ⟨WellFounded.min h (Set.Ioc a b) ⟨b, hab,rfl.le⟩, ?_⟩
     have hmem := (WellFounded.min_mem h (Set.Ioc a b) ⟨b, hab,rfl.le⟩)
     exact ⟨⟨hmem.1,fun c hac hlt ↦ WellFounded.not_lt_min h
@@ -1044,19 +1041,21 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-instance [IsUpperModularLattice α] [IsAtomistic α] : IsStronglyAtomic α where
-  exists_covBy_le_of_lt' a b hab := by
+theorem CompleteLattice.isStronglyAtomic [IsUpperModularLattice α] [IsAtomistic α] :
+    IsStronglyAtomic α where
+  exists_covBy_le_of_lt a b hab := by
     obtain ⟨s, rfl, h⟩ := eq_sSup_atoms b
     refine by_contra fun hcon ↦ hab.not_le <| sSup_le_iff.2 fun x hx ↦ ?_
     simp_rw [not_exists, and_comm (b := _ ≤ _), not_and] at hcon
-    specialize hcon (x ⊔ a) (sup_le (le_sSup hx) hab.le)
+    specialize hcon (x ⊔ a) (sup_le (le_sSup _ _ hx) hab.le)
     obtain (hbot | h_inf) := (h x hx).bot_covBy.eq_or_eq (c := x ⊓ a) (by simp) (by simp)
     · exact False.elim <| hcon <|
         (hbot ▸ IsUpperModularLattice.covBy_sup_of_inf_covBy) (h x hx).bot_covBy
     rwa [inf_eq_left] at h_inf
 
 instance [IsLowerModularLattice α] [IsCoatomistic α] : IsStronglyCoatomic α := by
-  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance
+  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
+  exact CompleteLattice.isStronglyAtomic
 
 end CompleteLattice
 
@@ -1107,7 +1106,7 @@ theorem isAtomic_iff_isCoatomic : IsAtomic α ↔ IsCoatomic α :=
 
 /-- A complemented modular atomic lattice is strongly atomic. -/
 instance [IsAtomic α] : IsStronglyAtomic α where
-  exists_covBy_le_of_lt' a b hab := by
+  exists_covBy_le_of_lt a b hab := by
     obtain ⟨⟨a', ha'b : a' ≤ b⟩, ha'⟩ := exists_isCompl (α := Set.Iic b) ⟨a, hab.le⟩
     obtain (rfl | ⟨d, hd⟩) := eq_bot_or_exists_atom_le a'
     · obtain rfl : a = b := by simpa [codisjoint_bot, ← Subtype.coe_inj] using ha'.codisjoint
