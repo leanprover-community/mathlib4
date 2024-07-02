@@ -377,6 +377,8 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
 set_option linter.uppercaseLean3 false in
 #align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
 
+attribute [-instance] Finite.instDiscreteTopology
+
 theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro hf x₁ x₂ h
