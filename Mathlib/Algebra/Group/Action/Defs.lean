@@ -258,7 +258,8 @@ lemma smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N α]
 #align vadd_assoc vadd_assoc
 
 @[to_additive]
-instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α := ⟨mul_assoc⟩
+instance (priority := high+1) Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α :=
+  ⟨mul_assoc⟩
 #align semigroup.is_scalar_tower Semigroup.isScalarTower
 #align add_semigroup.vadd_assoc_class AddSemigroup.isScalarTower
 
@@ -527,7 +528,7 @@ instance (priority := 910) Monoid.toMulAction : MulAction M M where
 #align add_monoid.to_add_action AddMonoid.toAddAction
 
 @[to_additive]
-instance IsScalarTower.left : IsScalarTower M M α where
+instance (priority := high) IsScalarTower.left : IsScalarTower M M α where
   smul_assoc x y z := mul_smul x y z
 #align is_scalar_tower.left IsScalarTower.left
 #align vadd_assoc_class.left VAddAssocClass.left
