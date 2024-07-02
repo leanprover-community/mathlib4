@@ -305,6 +305,23 @@ instance (priority := 90) t0Space : T0Space α :=
 
 end PartialOrder
 
+section LinearOrder
+
+variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
+
+lemma isTopologicalBasis_insert_univ_subbasis :
+    IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) := by
+  exact isTopologicalBasis_of_subbasis_of_inter (by
+      rw [topology_eq α]; exact rfl)
+    (fun _ hs _ ht => by
+      simp at *
+      rcases hs with ⟨b, hb⟩
+      rcases ht with ⟨c, hc⟩
+      use b ⊓ c
+      rw [← hc, ← hb, Iio_inter_Iio])
+
+end LinearOrder
+
 end IsLower
 
 
@@ -388,6 +405,16 @@ instance (priority := 90) t0Space : T0Space α :=
   IsLower.t0Space (α := αᵒᵈ)
 
 end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder α] [TopologicalSpace α] [IsUpper α]
+
+lemma isTopologicalBasis_insert_univ_subbasis :
+    IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Iic a)ᶜ = s}) :=
+  IsLower.isTopologicalBasis_insert_univ_subbasis (α := αᵒᵈ)
+
+end LinearOrder
 
 end IsUpper
 
