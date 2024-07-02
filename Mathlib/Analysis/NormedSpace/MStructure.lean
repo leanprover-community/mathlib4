@@ -333,20 +333,6 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
             sub_zero])).le
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
-variable [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P })
-
-#check P ⊓ Q
-
-#check P ⊓ Q
-
-#check Set.range (smulAddHom M X P)
-
-lemma range1 (P Q : { P : M // IsLprojection X P }) :
-    Set.range (smulAddHom M X P) ∩ Set.range (smulAddHom M X Q) =
-      Set.range (smulAddHom M X (P * Q)) := sorry
-
-
-
 end IsLprojection
 
 section experiment1
@@ -379,11 +365,6 @@ variable {𝕜 A F : Type*}
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup A] --[NormedAddCommGroup X]
 variable [Module 𝕜 A] [Module 𝕜 X] [NormedSpace 𝕜 A]
-
-variable (P : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
-    (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P })
-
-#check _root_.Function.Commute.set_image
 
 lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)}
     (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
@@ -426,7 +407,10 @@ lemma IsLprojection.range_inter (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜
     P.prop.1 Q.prop.1]
   rfl
 
--- Want M = bipolar M i.e. that M is a norm closed subspace, not mearly a generating space.
+/--
+A closed subspace of a Banach space is said to be an M-ideal if the topological annihilator is the
+range of an L-projection.
+-/
 structure IsMideal (m : Submodule 𝕜 A) : Prop where
   Closed: IsClosed (m : Set A)
   Lproj:  ∃ (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)),
