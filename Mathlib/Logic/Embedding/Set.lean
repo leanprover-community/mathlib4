@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Notation
 import Mathlib.Order.SetNotation
 import Mathlib.Logic.Embedding.Basic
+import Mathlib.Logic.Pairwise
+import Mathlib.Data.Set.Image
 
 
 #align_import logic.embedding.set from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
