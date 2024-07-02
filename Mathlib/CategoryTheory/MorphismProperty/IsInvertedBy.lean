@@ -160,7 +160,7 @@ lemma IsInvertedBy.iff_le_inverseImage_isomorphisms (W : MorphismProperty C) (F 
 
 lemma IsInvertedBy.iff_map_le_isomorphisms (W : MorphismProperty C) (F : C ⥤ D) :
     W.IsInvertedBy F ↔ W.map F ≤ isomorphisms D := by
-  rw [iff_le_inverseImage_isomorphisms, map_le_iff (RespectsIso.isomorphisms D)]
+  rw [iff_le_inverseImage_isomorphisms, map_le_iff]
 
 lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :
