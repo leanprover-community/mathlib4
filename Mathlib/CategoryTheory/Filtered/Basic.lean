@@ -97,9 +97,7 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
     IsFilteredOrEmpty α where
   cocone_objs X Y := ⟨X ⊔ Y, homOfLE le_sup_left, homOfLE le_sup_right, trivial⟩
-  cocone_maps X Y f g := ⟨Y, 𝟙 _, by
-    apply ULift.ext
-    apply Subsingleton.elim⟩
+  cocone_maps X Y f g := ⟨Y, 𝟙 _, by subsingleton⟩
 #align category_theory.is_filtered_or_empty_of_semilattice_sup CategoryTheory.isFilteredOrEmpty_of_semilatticeSup
 
 instance (priority := 100) isFiltered_of_semilatticeSup_nonempty (α : Type u) [SemilatticeSup α]
@@ -111,9 +109,7 @@ instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preor
   cocone_objs X Y :=
     let ⟨Z, h1, h2⟩ := exists_ge_ge X Y
     ⟨Z, homOfLE h1, homOfLE h2, trivial⟩
-  cocone_maps X Y f g := ⟨Y, 𝟙 _, by
-    apply ULift.ext
-    apply Subsingleton.elim⟩
+  cocone_maps X Y f g := ⟨Y, 𝟙 _, by subsingleton⟩
 #align category_theory.is_filtered_or_empty_of_directed_le CategoryTheory.isFilteredOrEmpty_of_directed_le
 
 instance (priority := 100) isFiltered_of_directed_le_nonempty (α : Type u) [Preorder α]
@@ -126,10 +122,8 @@ example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by in
 example (α : Type u) [SemilatticeSup α] [OrderTop α] : IsFiltered α := by infer_instance
 
 instance : IsFiltered (Discrete PUnit) where
-  cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨Subsingleton.elim _ _⟩⟩, trivial⟩
-  cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
-    apply ULift.ext
-    apply Subsingleton.elim⟩
+  cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨by subsingleton⟩⟩, trivial⟩
+  cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by subsingleton⟩
 
 namespace IsFiltered
 
@@ -568,7 +562,7 @@ instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [
   cone_objs X Y := ⟨X ⊓ Y, homOfLE inf_le_left, homOfLE inf_le_right, trivial⟩
   cone_maps X Y f g := ⟨X, 𝟙 _, by
     apply ULift.ext
-    apply Subsingleton.elim⟩
+    subsingleton⟩
 #align category_theory.is_cofiltered_or_empty_of_semilattice_inf CategoryTheory.isCofilteredOrEmpty_of_semilatticeInf
 
 instance (priority := 100) isCofiltered_of_semilatticeInf_nonempty (α : Type u) [SemilatticeInf α]
@@ -582,7 +576,7 @@ instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Pre
     ⟨Z, homOfLE hX, homOfLE hY, trivial⟩
   cone_maps X Y f g := ⟨X, 𝟙 _, by
     apply ULift.ext
-    apply Subsingleton.elim⟩
+    subsingleton⟩
 #align category_theory.is_cofiltered_or_empty_of_directed_ge CategoryTheory.isCofilteredOrEmpty_of_directed_ge
 
 instance (priority := 100) isCofiltered_of_directed_ge_nonempty (α : Type u) [Preorder α]
@@ -595,10 +589,10 @@ example (α : Type u) [SemilatticeInf α] [OrderBot α] : IsCofiltered α := by 
 example (α : Type u) [SemilatticeInf α] [OrderTop α] : IsCofiltered α := by infer_instance
 
 instance : IsCofiltered (Discrete PUnit) where
-  cone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨Subsingleton.elim _ _⟩⟩, trivial⟩
+  cone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨by subsingleton⟩⟩, trivial⟩
   cone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
     apply ULift.ext
-    apply Subsingleton.elim⟩
+    subsingleton⟩
 
 namespace IsCofiltered
 

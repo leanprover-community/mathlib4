@@ -297,6 +297,10 @@ theorem mk'_add_eq_iff_add_mul_eq_mul {x} {y : M} {z₁ z₂} :
   rw [← mk'_spec S x y, ← IsUnit.mul_left_inj (IsLocalization.map_units S y), right_distrib]
 #align is_localization.mk'_add_eq_iff_add_mul_eq_mul IsLocalization.mk'_add_eq_iff_add_mul_eq_mul
 
+theorem mk'_pow (x : R) (y : M) (n : ℕ) : mk' S (x ^ n) (y ^ n) = mk' S x y ^ n := by
+  simp_rw [IsLocalization.mk'_eq_iff_eq_mul, SubmonoidClass.coe_pow, map_pow, ← mul_pow]
+  simp
+
 variable (M)
 
 theorem mk'_surjective (z : S) : ∃ (x : _) (y : M), mk' S x y = z :=
@@ -907,8 +911,7 @@ section
 
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := show a = mk 1 1 from
-    Localization.induction_on a fun _ => by
-      congr <;> apply Subsingleton.elim
+    Localization.induction_on a fun _ => by congr <;> subsingleton
 
 /-- Addition in a ring localization is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨b * c + d * a, b * d⟩`.
 

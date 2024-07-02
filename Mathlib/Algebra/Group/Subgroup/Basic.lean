@@ -7,9 +7,7 @@ import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Set.Image
-import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
 
 #align_import group_theory.subgroup.basic from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
@@ -85,6 +83,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
+assert_not_exists OrderedAddCommMonoid
 
 open Function
 open Int
@@ -131,10 +130,6 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
   ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
 #align inv_mem_iff inv_mem_iff
 #align neg_mem_iff neg_mem_iff
-
-@[simp] theorem abs_mem_iff {S G} [AddGroup G] [LinearOrder G] {_ : SetLike S G}
-    [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
-  cases abs_choice x <;> simp [*]
 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
@@ -2199,12 +2194,6 @@ theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
 
 variable (H)
 
-/-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
-theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
-    H.Normal :=
-  normalizer_eq_top.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
-#align subgroup.normalizer_condition.normal_of_coatom Subgroup.NormalizerCondition.normal_of_coatom
-
 end Normalizer
 
 /-- Commutativity of a subgroup -/
@@ -2295,16 +2284,6 @@ def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup 
   map_rel_iff' {sg1 sg2} :=
     ⟨fun h => by simpa [Subgroup.map_map] using
       Subgroup.map_mono (f := (f.symm : H →* G)) h, Subgroup.map_mono⟩
-
-@[simp]
-theorem isCoatom_comap {H : Type*} [Group H] (f : G ≃* H) {K : Subgroup H} :
-    IsCoatom (Subgroup.comap (f : G →* H) K) ↔ IsCoatom K :=
-  OrderIso.isCoatom_iff (f.comapSubgroup) K
-
-@[simp]
-theorem isCoatom_map (f : G ≃* H) {K : Subgroup G} :
-    IsCoatom (Subgroup.map (f : G →* H) K) ↔ IsCoatom K :=
-  OrderIso.isCoatom_iff (f.mapSubgroup) K
 
 end MulEquiv
 
@@ -3210,17 +3189,6 @@ theorem map_normalizer_eq_of_bijective (H : Subgroup G) {f : G →* N} (hf : Fun
 #align subgroup.map_normalizer_eq_of_bijective Subgroup.map_normalizer_eq_of_bijective
 #align add_subgroup.map_normalizer_eq_of_bijective AddSubgroup.map_normalizer_eq_of_bijective
 
-lemma isCoatom_comap_of_surjective
-    {H : Type*} [Group H] {φ : G →* H} (hφ : Function.Surjective φ)
-    {M : Subgroup H} (hM : IsCoatom M) : IsCoatom (M.comap φ) := by
-  refine And.imp (fun hM ↦ ?_) (fun hM ↦ ?_) hM
-  · rwa [← (comap_injective hφ).ne_iff, comap_top] at hM
-  · intro K hK
-    specialize hM (K.map φ)
-    rw [← comap_lt_comap_of_surjective hφ, ← (comap_injective hφ).eq_iff] at hM
-    rw [comap_map_eq_self ((M.ker_le_comap φ).trans hK.le), comap_top] at hM
-    exact hM hK
-
 end Subgroup
 
 namespace MonoidHom
@@ -3513,14 +3481,6 @@ theorem mem_closure_pair {x y z : C} :
   simp_rw [mem_closure_singleton, exists_exists_eq_and]
 #align subgroup.mem_closure_pair Subgroup.mem_closure_pair
 #align add_subgroup.mem_closure_pair AddSubgroup.mem_closure_pair
-
-@[to_additive]
-instance : IsModularLattice (Subgroup C) :=
-  ⟨fun {x} y z xz a ha => by
-    rw [mem_inf, mem_sup] at ha
-    rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
-    rw [mem_sup]
-    exact ⟨b, hb, c, mem_inf.2 ⟨hc, (mul_mem_cancel_left (xz hb)).1 haz⟩, rfl⟩⟩
 
 end Subgroup
 
