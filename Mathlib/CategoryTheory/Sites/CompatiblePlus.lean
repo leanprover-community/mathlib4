@@ -45,7 +45,6 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
         (isLimitOfPreserves F (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _))
     (by
       intro A B f
-      -- Porting note (#11041): this used to work with `ext`
       dsimp
       ext g
       simp [← F.map_comp])
@@ -133,12 +132,7 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
     NatTrans.naturality_assoc, GrothendieckTopology.diagramNatTrans_app]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note (#11041): this used to work with `ext`
-  apply Multiequalizer.hom_ext
-  intro a
-  dsimp
-  simp
-  -- Porting note: in mathlib3 `simp` managed to apply this.
+  aesop_cat
 #align category_theory.grothendieck_topology.plus_comp_iso_whisker_left CategoryTheory.GrothendieckTopology.plusCompIso_whiskerLeft
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `F`. -/
