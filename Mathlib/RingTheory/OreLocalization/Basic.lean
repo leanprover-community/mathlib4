@@ -840,12 +840,12 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
 @[irreducible]
 private def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
 
-unseal nsmul in
 instance : AddMonoid X[S⁻¹] where
     add_assoc := OreLocalization.add_assoc
     zero_add := OreLocalization.zero_add
     add_zero := OreLocalization.add_zero
     nsmul := nsmul
+    nsmul_zero := fun _ => by with_unfolding_all rfl
 
 protected theorem smul_zero (x : R[S⁻¹]) : x • (0 : X[S⁻¹]) = 0 := by
   induction' x with r s
