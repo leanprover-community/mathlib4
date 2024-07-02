@@ -167,3 +167,67 @@ end ENNReal
 
 instance : TopologicalSpace.MetrizableSpace EReal :=
   ENNReal.logOrderIso.symm.toHomeomorph.embedding.metrizableSpace
+
+noncomputable
+instance : EDist EReal where
+  edist
+    | ⊥, ⊥ | ⊤, ⊤ => 0
+    | ⊥, ⊤ | ⊤, ⊥ => ⊤
+    | ⊥, (y : ℝ) | ⊤, (y : ℝ) | (x : ℝ), ⊤ | (x : ℝ), ⊥ => ⊤
+    | (x : ℝ), (y : ℝ) => ENNReal.ofReal (dist x y)
+
+@[simp]
+lemma EReal.eDist_self (x : EReal) : edist x x = 0 := by
+  induction x with
+  | h_top | h_bot => rfl
+  | h_real x =>
+    change ENNReal.ofReal (dist x x) = 0
+    exact dist_self x ▸ ENNReal.ofReal_zero
+
+lemma EReal.eDist_comm (x y : EReal) : edist x y = edist y x := by
+  induction x <;> induction y <;>
+    try { rfl }
+  change ENNReal.ofReal (dist _ _) = ENNReal.ofReal (dist _ _)
+  rw [dist_comm]
+
+@[simp]
+lemma EReal.eDist_coe_top (x : ℝ) : edist (x : EReal) ⊤ = ⊤ := rfl
+
+@[simp]
+lemma EReal.eDist_top_coe (x : ℝ) : edist ⊤ (x : EReal) = ⊤ := rfl
+
+@[simp]
+lemma EReal.eDist_bot_coe (x : ℝ) : edist ⊥ (x : EReal) = ⊤ := rfl
+
+@[simp]
+lemma EReal.eDist_coe_bot (x : ℝ) : edist (x : EReal) ⊥ = ⊤ := rfl
+
+@[simp]
+lemma EReal.eDist_coe_coe (x y : ℝ) :
+  edist (x : EReal) (y : EReal) = ENNReal.ofReal (dist x y) := rfl
+
+@[simp]
+lemma EReal.eDist_top_bot : edist (⊤ : EReal) ⊥  = ⊤ := rfl
+
+@[simp]
+lemma EReal.eDist_bot_top : edist (⊥ : EReal) ⊤ = ⊤ := rfl
+
+noncomputable
+instance : PseudoEMetricSpace EReal where
+  edist := EDist.edist
+  edist_self := EReal.eDist_self
+  edist_comm := EReal.eDist_comm
+  edist_triangle x y z := by
+    induction x <;> induction y <;> induction z <;>
+      try { simp [EReal.eDist_self, EReal.eDist_coe_top, EReal.eDist_coe_bot, EReal.eDist_top_coe,
+        EReal.eDist_bot_coe] }
+    simp_rw [EReal.eDist_coe_coe, ← ENNReal.ofReal_add dist_nonneg dist_nonneg]
+    exact ENNReal.ofReal_le_ofReal (dist_triangle _ _ _)
+
+noncomputable
+instance : EMetricSpace EReal where
+  __ := instPseudoEMetricSpaceEReal
+  eq_of_edist_eq_zero h := by
+    rename_i x y
+    induction x <;> induction y <;> simp_all
+
