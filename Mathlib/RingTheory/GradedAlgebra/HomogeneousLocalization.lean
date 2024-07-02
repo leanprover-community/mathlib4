@@ -476,9 +476,12 @@ instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜
     val_sub (val_smul x · ·) (val_smul x · ·) val_pow val_natCast val_intCast
 #align homogeneous_localization.homogenous_localization_comm_ring HomogeneousLocalization.homogenousLocalizationCommRing
 
+instance homogenousLocalizationSMul :
+    SMul (HomogeneousLocalization 𝒜 x) (Localization x) where
+  smul p q := p.val * q
+
 instance homogeneousLocalizationAlgebra :
     Algebra (HomogeneousLocalization 𝒜 x) (Localization x) where
-  smul p q := p.val * q
   toFun := val
   map_one' := val_one
   map_mul' := val_mul
