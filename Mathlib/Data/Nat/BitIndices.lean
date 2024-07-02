@@ -92,7 +92,7 @@ theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
       exact fun x y hx _ ↦ by rw [tsub_lt_tsub_iff_right (haL _ hx)]
     have h' : ∀ x ∈ L, ((fun x ↦ x + a + 1) ∘ (fun x ↦ x - (a + 1))) x = x := fun x hx ↦ by
       simp only [add_assoc, Function.comp_apply]; rw [tsub_add_cancel_of_le (haL _ hx)]
-    simp [List.map_congr h']
+    simp [List.map_congr_left h']
   obtain ⟨L₀, hL₀, rfl⟩ := h'
   have _ : L₀.length < (a :: (L₀.map (· + a + 1))).length := by simp
   have hrw : (fun i ↦ 2 ^ i) ∘ (fun x ↦ x + a + 1) = fun i ↦ 2 ^ a * (2 * 2 ^ i) := by
