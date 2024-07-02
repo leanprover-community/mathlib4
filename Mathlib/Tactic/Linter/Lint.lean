@@ -147,7 +147,7 @@ def endOfLinter : Linter where
     set s
     let insScopes := "error: invalid 'end', insufficient scopes\n"
     match ← msgs.toArray.mapM (·.toString) with
-      | #[] => logWarning "Expected 'end'"
+      | #[] => Linter.logLint linter.endOf stx "Expected 'end'"
       | #[msg] =>
         if msg.takeRight insScopes.length != insScopes then
           Linter.logLint linter.endOf stx m!"Expected: \
