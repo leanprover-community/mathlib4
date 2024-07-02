@@ -477,8 +477,8 @@ lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.i
 lemma eq_none_or_eq_some (a : Option α) : a = none ∨ ∃ x, a = some x :=
   Option.exists.mp exists_eq'
 
-lemma eq_none_iff_forall {o : Option α} : o = none ↔ ∀ (x : α), some x ≠ o := by
+lemma eq_none_iff_forall {o : Option α} : (∀ (x : α), some x ≠ o) ↔ o = none := by
   apply not_iff_not.1
-  simpa only [not_forall, not_not] using Option.ne_none_iff_exists
+  simpa only [not_forall, not_not] using Option.ne_none_iff_exists.symm
 
 end Option
