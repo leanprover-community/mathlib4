@@ -9,11 +9,8 @@ import Mathlib.Algebra.Homology.DerivedCategory.Basic
 # An exact functor induces a functor on derived categories
 
 In this file, we show that if `F : C₁ ⥤ C₂` is an exact functor between
-abelian categories, then there is an induced functor
+abelian categories, then there is an induced triangulated functor
 `F.mapDerivedCategory : DerivedCategory C₁ ⥤ DerivedCategory C₂`.
-
-## TODO
-* show that `F.mapDerivedCategory` is a triangulated functor
 
 -/
 
@@ -57,5 +54,20 @@ noncomputable instance :
       (HomotopyCategory.quasiIso C₁ (ComplexShape.up ℤ))
       (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh) F.mapDerivedCategory :=
   ⟨F.mapDerivedCategoryFactorsh⟩
+
+noncomputable instance : F.mapDerivedCategory.CommShift ℤ :=
+  Functor.commShiftOfLocalization DerivedCategory.Qh
+    (HomotopyCategory.quasiIso C₁ (ComplexShape.up ℤ)) ℤ
+    (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh)
+    F.mapDerivedCategory
+
+instance : NatTrans.CommShift F.mapDerivedCategoryFactorsh.hom ℤ :=
+  inferInstanceAs (NatTrans.CommShift (Localization.Lifting.iso
+      DerivedCategory.Qh (HomotopyCategory.quasiIso C₁ (ComplexShape.up ℤ))
+        (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh)
+          F.mapDerivedCategory).hom ℤ)
+
+instance : F.mapDerivedCategory.IsTriangulated :=
+  Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
 end CategoryTheory.Functor
