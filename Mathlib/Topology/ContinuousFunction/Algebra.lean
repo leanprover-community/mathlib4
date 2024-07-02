@@ -521,8 +521,8 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
   coe_injective.nonAssocRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_natCast coe_intCast
 
-instance instRingContinuousMap {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    [Ring β] [TopologicalRing β] : Ring C(α, β) :=
+instance instRing {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [Ring β]
+    [TopologicalRing β] : Ring C(α, β) :=
   coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul coe_pow
     coe_natCast coe_intCast
 
@@ -542,6 +542,12 @@ instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [
     [TopologicalRing β] : CommRing C(α, β) :=
   coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub coe_nsmul coe_zsmul
     coe_pow coe_natCast coe_intCast
+
+instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
+    [NonUnitalSemiring β] [TopologicalSemiring β] : TopologicalSemiring C(α, β) where
+
+instance {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β] [LocallyCompactSpace α]
+    [NonUnitalRing β] [TopologicalRing β] : TopologicalRing C(α, β) where
 
 /-- Composition on the left by a (continuous) homomorphism of topological semirings, as a
 `RingHom`.  Similar to `RingHom.compLeft`. -/
@@ -846,8 +852,8 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
     Subsingleton (Subalgebra R C(α, R)) :=
   ⟨fun s₁ s₂ => by
     cases isEmpty_or_nonempty α
-    · haveI : Subsingleton C(α, R) := DFunLike.coe_injective.subsingleton
-      exact Subsingleton.elim _ _
+    · have : Subsingleton C(α, R) := DFunLike.coe_injective.subsingleton
+      subsingleton
     · inhabit α
       ext f
       have h : f = algebraMap R C(α, R) (f default) := by

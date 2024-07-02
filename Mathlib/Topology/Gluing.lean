@@ -369,8 +369,8 @@ theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i)
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
     · convert Subtype.eq this
-    rw [h.V_id]
-    trivial
+  rw [h.V_id]
+  trivial
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
@@ -389,7 +389,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
   -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
   have : Continuous (h.t i j) := map_continuous (self := ContinuousMap.toContinuousMapClass) _
   set_option tactic.skipAssignedInstances false in
-  exact ((Continuous.subtype_mk (by continuity) _).prod_mk (by continuity)).subtype_mk _
+  exact ((Continuous.subtype_mk (by fun_prop) _).prod_mk (by fun_prop)).subtype_mk _
 
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
