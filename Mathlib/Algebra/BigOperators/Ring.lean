@@ -310,6 +310,10 @@ lemma sum_pow (f : ι → α) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → �
 lemma sum_mul_sum (f : ι → α) (g : κ → α) : (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
   Finset.sum_mul_sum _ _ _ _
 
+/-- A product of sums can be written as a sum of products. -/
+lemma prod_sum {κ : ι → Type*} [Fintype ι] [∀ i, Fintype (κ i)] (f : ∀ i, κ i → α) :
+    ∏ i, ∑ j, f i j = ∑ x : ∀ i, κ i, ∏ i, f i (x i) := Finset.prod_univ_sum _ _
+
 lemma prod_add (f g : ι → α) : ∏ a, (f a + g a) = ∑ t, (∏ a ∈ t, f a) * ∏ a ∈ tᶜ, g a := by
   simpa [compl_eq_univ_sdiff] using Finset.prod_add f g univ
 
