@@ -157,6 +157,7 @@ variable {B : Type*} [Category B] (U : A ⥤ B)
 
 open Limits
 
+/-- The constant sheaf functor commutes with `sheafCompose` up to isomorphism. -/
 @[simps!]
 noncomputable def constantCommuteCompose :
     constantSheaf J A ⋙ sheafCompose J U ≅ U ⋙ constantSheaf J B :=
@@ -164,12 +165,12 @@ noncomputable def constantCommuteCompose :
     (sheafComposeNatIso J U (sheafificationAdjunction J A) (sheafificationAdjunction J B)).symm) ≪≫
       isoWhiskerRight (compConstIso _ _).symm _
 
+/-- The components of the isomorphism `constantCommuteCompose`. -/
 @[simps!]
 noncomputable def constantCommuteComposeApp (M : A) :
     (sheafCompose J U).obj ((constantSheaf J A).obj M) ≅ (constantSheaf J B).obj (U.obj M) :=
   (constantCommuteCompose J U).app M
 
-@[reassoc (attr := simp)]
 lemma sheafComposeNatIso_app_counit (P : Sheaf J A) :
     (sheafComposeNatIso J U (sheafificationAdjunction J A)
       (sheafificationAdjunction J B)).hom.app _ ≫ (sheafCompose J U).map
