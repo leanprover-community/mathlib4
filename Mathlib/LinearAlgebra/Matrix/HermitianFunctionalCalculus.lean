@@ -19,10 +19,14 @@ RCLike field 𝕜.
 
 ## Main Results
 
-- definition of φ : the real StarAlgHom from C(spectrum ℝ A, ℝ) to (Matrix n n 𝕜) appearing in the
-                    instance.
-- instContinuousFunctionalCalculus : Instance of the Continuous functional Calculus for a hermitian
-                                     matrix A over 𝕜.
+- `Matrix.IsHermitian.cfc` : Realization of the functional calculus for a Hermitian matrix
+  as the triple product `U * diagonal (RCLike.ofReal ∘ f ∘ hA.eigenvalues) * star U` with
+  `U = eigenvectorUnitary hA`.
+
+- `cfc_eq` : Proof that the above agrees with the continuous functional calculus.
+
+- `instContinuousFunctionalCalculus` : Instance of the continuous functional calculus for a
+  Hermitian matrix `A` over `𝕜`.
 
 ## Tags
 
