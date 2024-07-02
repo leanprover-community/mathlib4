@@ -574,3 +574,5 @@ instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
 #align homotopy_group.comm_group HomotopyGroup.commGroup
 
 end HomotopyGroup
+
+end

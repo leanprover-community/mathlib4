@@ -280,3 +280,5 @@ set_option linter.uppercaseLean3 false in
 #align box_integral.has_integral_GP_divergence_of_forall_has_deriv_within_at BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
 
 end BoxIntegral
+
+end

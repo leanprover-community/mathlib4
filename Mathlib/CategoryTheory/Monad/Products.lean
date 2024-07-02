@@ -138,3 +138,5 @@ def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X where
 end
 
 end CategoryTheory
+
+end

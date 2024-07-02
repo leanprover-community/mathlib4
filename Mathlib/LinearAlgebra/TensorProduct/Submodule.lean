@@ -256,3 +256,5 @@ theorem mulMap_comm : mulMap N M = (mulMap M N).comp (TensorProduct.comm R N M).
 end CommSemiring
 
 end Submodule
+
+end

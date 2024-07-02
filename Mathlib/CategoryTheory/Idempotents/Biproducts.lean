@@ -153,3 +153,5 @@ end Karoubi
 end Idempotents
 
 end CategoryTheory
+
+end

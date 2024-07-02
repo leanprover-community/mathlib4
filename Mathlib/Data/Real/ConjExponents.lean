@@ -232,3 +232,5 @@ protected lemma Real.IsConjExponent.toNNReal {p q : ℝ} (hpq : p.IsConjExponent
   one_lt := by simpa using hpq.one_lt
   inv_add_inv_conj := by rw [← toNNReal_inv, ← toNNReal_inv, ← toNNReal_add hpq.inv_nonneg
     hpq.symm.inv_nonneg, hpq.inv_add_inv_conj, toNNReal_one]
+
+end

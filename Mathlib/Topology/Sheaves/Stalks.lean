@@ -645,3 +645,5 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_open_algebra_map TopCat.Presheaf.stalk_open_algebraMap
 
 end TopCat.Presheaf
+
+end

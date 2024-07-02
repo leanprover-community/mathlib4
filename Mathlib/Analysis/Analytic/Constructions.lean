@@ -334,3 +334,5 @@ theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [NormedAlgebra �
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
     AnalyticOn 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)
+
+end

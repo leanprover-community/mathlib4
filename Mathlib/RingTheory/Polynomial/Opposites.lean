@@ -121,3 +121,5 @@ theorem leadingCoeff_opRingEquiv (p : R[X]ᵐᵒᵖ) :
 #align polynomial.leading_coeff_op_ring_equiv Polynomial.leadingCoeff_opRingEquiv
 
 end Polynomial
+
+end

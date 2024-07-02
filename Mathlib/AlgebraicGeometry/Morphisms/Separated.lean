@@ -64,3 +64,5 @@ instance (priority := 900) [IsSeparated f] : QuasiSeparated f where
 end IsSeparated
 
 end AlgebraicGeometry
+
+end

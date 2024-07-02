@@ -300,3 +300,5 @@ theorem setIntegral_compProd_univ_left (f : β × γ → E) {t : Set γ} (ht : M
 alias set_integral_compProd_univ_left := setIntegral_compProd_univ_left
 
 end ProbabilityTheory
+
+end

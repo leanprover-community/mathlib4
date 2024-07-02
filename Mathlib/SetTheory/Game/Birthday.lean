@@ -202,3 +202,5 @@ theorem birthday_nat_add (n : ℕ) : (↑n + a).birthday = a.birthday + n := by 
 #align pgame.birthday_nat_add SetTheory.PGame.birthday_nat_add
 
 end PGame
+
+end SetTheory

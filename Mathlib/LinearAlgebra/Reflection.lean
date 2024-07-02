@@ -217,3 +217,5 @@ lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [NoZeroSMulDivisors �
   simpa using LinearMap.congr_fun hij ⟨r k, Submodule.subset_span (mem_range_self k)⟩
 
 end Module
+
+end

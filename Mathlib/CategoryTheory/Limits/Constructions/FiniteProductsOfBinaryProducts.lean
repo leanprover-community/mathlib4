@@ -312,3 +312,5 @@ def preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type) [Fintype J] 
 end Preserves
 
 end CategoryTheory
+
+end

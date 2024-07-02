@@ -233,3 +233,5 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
 #align witt_vector.isocrystal_classification WittVector.isocrystal_classification
 
 end WittVector
+
+end

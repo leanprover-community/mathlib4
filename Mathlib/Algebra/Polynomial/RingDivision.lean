@@ -879,3 +879,5 @@ theorem Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
 end
 
 end Polynomial
+
+end

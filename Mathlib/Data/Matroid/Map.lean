@@ -670,3 +670,5 @@ instance [M.RkPos] : (M.restrictSubtype M.E).RkPos := by
   exact hB.rkPos_of_nonempty <| by simpa using hB'.nonempty
 
 end restrictSubtype
+
+end mapSetEquiv

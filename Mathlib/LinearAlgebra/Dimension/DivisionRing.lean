@@ -344,3 +344,5 @@ theorem rank_lt_rank_dual {K V : Type u} [Field K] [AddCommGroup V] [Module K V]
   convert lift_rank_lt_rank_dual h; rw [lift_id]
 
 end Cardinal
+
+end

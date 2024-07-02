@@ -539,3 +539,5 @@ instance IsPurelyInseparable.isPRadical [IsPurelyInseparable K L] :
 end Field
 
 end IsPerfectClosure
+
+end

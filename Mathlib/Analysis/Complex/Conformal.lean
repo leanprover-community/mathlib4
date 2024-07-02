@@ -116,3 +116,5 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
 #align is_conformal_map_iff_is_complex_or_conj_linear isConformalMap_iff_is_complex_or_conj_linear
 
 end ConformalIntoComplexPlane
+
+end

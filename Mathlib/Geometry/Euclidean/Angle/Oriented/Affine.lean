@@ -846,3 +846,5 @@ theorem _root_.AffineSubspace.SOppSide.oangle_sign_eq_neg {s : AffineSubspace â„
 #align affine_subspace.s_opp_side.oangle_sign_eq_neg AffineSubspace.SOppSide.oangle_sign_eq_neg
 
 end EuclideanGeometry
+
+end

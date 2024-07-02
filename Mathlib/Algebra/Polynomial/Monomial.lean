@@ -87,3 +87,5 @@ theorem ringHom_ext' {S} [Semiring S] {f g : R[X] →+* S} (h₁ : f.comp C = g.
 #align polynomial.ring_hom_ext' Polynomial.ringHom_ext'
 
 end Polynomial
+
+end

@@ -361,3 +361,5 @@ lemma ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : s ≠ 0 :=
 
 lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
   ne_iff_lt_or_gt.mpr <| Or.inl <| neg_re s ▸ by linarith
+
+end Complex

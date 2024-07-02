@@ -1682,3 +1682,5 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
+
+end

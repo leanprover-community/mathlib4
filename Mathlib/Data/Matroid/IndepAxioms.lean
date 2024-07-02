@@ -516,3 +516,5 @@ instance ofBaseOfFinite_finite {E : Set α} (hE : E.Finite) Base exists_base
 end Matroid
 
 end Base
+
+end IndepMatroid

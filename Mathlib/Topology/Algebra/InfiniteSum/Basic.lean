@@ -672,3 +672,5 @@ theorem tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
 end ContinuousMul
 
 end tprod
+
+end

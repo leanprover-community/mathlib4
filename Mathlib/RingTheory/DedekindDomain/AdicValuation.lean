@@ -473,3 +473,5 @@ instance AdicCompletion.instIsScalarTower' :
 end AlgebraInstances
 
 end IsDedekindDomain.HeightOneSpectrum
+
+end

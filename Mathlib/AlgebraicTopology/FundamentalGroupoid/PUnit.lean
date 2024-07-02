@@ -45,3 +45,5 @@ def punitEquivDiscretePUnit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUn
 #align fundamental_groupoid.punit_equiv_discrete_punit FundamentalGroupoid.punitEquivDiscretePUnit
 
 end FundamentalGroupoid
+
+end

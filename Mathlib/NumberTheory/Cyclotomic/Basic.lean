@@ -740,3 +740,5 @@ instance IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :
 #align is_alg_closed_of_char_zero.is_cyclotomic_extension IsAlgClosedOfCharZero.isCyclotomicExtension
 
 end IsAlgClosed
+
+end

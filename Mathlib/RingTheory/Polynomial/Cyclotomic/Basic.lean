@@ -653,3 +653,5 @@ theorem orderOf_root_cyclotomic_dvd {n : ℕ} (hpos : 0 < n) {p : ℕ} [Fact p.P
 end Order
 
 end Polynomial
+
+end

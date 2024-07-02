@@ -743,3 +743,5 @@ theorem exists_nonneg_right_iff_sameRay (hy : y ≠ 0) :
 #align exists_nonneg_right_iff_same_ray exists_nonneg_right_iff_sameRay
 
 end LinearOrderedField
+
+end

@@ -673,3 +673,5 @@ theorem kahler_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
 #align orientation.kahler_map_complex Orientation.kahler_map_complex
 
 end Orientation
+
+end

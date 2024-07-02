@@ -238,3 +238,5 @@ instance (priority := 90) t0Space : T0Space α :=
 end PartialOrder
 
 end IsLawson
+
+end Topology

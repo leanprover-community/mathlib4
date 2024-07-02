@@ -292,3 +292,5 @@ theorem smul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts (algebraMap R S)) :
 end Algebra
 
 end Polynomial
+
+end

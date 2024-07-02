@@ -470,3 +470,5 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
 end MorphismRestrict
 
 end AlgebraicGeometry
+
+end

@@ -247,3 +247,5 @@ lemma ofMulEquiv (e : G ≃* H) : IsFreeGroup H :=
   ((basis G).map e).isFreeGroup
 
 end IsFreeGroup
+
+end

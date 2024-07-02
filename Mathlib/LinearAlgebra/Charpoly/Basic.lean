@@ -120,3 +120,5 @@ theorem minpoly_coeff_zero_of_injective (hf : Function.Injective f) :
 end CayleyHamilton
 
 end LinearMap
+
+end

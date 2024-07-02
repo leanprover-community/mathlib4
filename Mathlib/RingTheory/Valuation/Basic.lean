@@ -893,3 +893,5 @@ scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
 scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
 end ValuationNotation
+
+end

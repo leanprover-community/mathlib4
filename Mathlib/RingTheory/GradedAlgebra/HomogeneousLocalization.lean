@@ -662,3 +662,5 @@ lemma map_mk (g : A →+* B)
 end
 
 end HomogeneousLocalization
+
+end

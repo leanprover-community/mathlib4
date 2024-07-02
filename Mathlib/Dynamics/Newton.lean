@@ -126,3 +126,5 @@ theorem exists_unique_nilpotent_sub_and_aeval_eq_zero
     exact (Commute.all _ _).isNilpotent_mul_right <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
 
 end Polynomial
+
+end

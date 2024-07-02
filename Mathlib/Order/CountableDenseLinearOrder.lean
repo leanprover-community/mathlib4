@@ -236,3 +236,5 @@ theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α
 #align order.iso_of_countable_dense Order.iso_of_countable_dense
 
 end Order
+
+end

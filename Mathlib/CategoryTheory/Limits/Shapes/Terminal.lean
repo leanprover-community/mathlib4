@@ -806,3 +806,5 @@ instance isIso_ι_initial [HasInitial J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶
 end
 
 end CategoryTheory.Limits
+
+end

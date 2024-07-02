@@ -260,3 +260,5 @@ theorem bernoulli_generating_function (t : A) :
 #align polynomial.bernoulli_generating_function Polynomial.bernoulli_generating_function
 
 end Polynomial
+
+end

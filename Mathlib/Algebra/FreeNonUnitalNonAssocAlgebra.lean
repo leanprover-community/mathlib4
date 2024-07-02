@@ -101,3 +101,5 @@ theorem hom_ext {F₁ F₂ : FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A}
 #align free_non_unital_non_assoc_algebra.hom_ext FreeNonUnitalNonAssocAlgebra.hom_ext
 
 end FreeNonUnitalNonAssocAlgebra
+
+end

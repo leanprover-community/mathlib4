@@ -810,3 +810,5 @@ theorem fourierIntegral_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf
   simp [← coe_smul, smul_smul, ← mul_pow]
 
 end Real
+
+end

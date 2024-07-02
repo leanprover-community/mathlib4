@@ -370,3 +370,5 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
 end FiniteAdeleRing
 
 end DedekindDomain
+
+end

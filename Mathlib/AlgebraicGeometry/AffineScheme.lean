@@ -703,3 +703,5 @@ alias IsAffineOpen.basicOpenIsAffine := IsAffineOpen.basicOpen
 alias IsAffineOpen.mapRestrictBasicOpen := IsAffineOpen.ιOpens_basicOpen_preimage
 
 end AlgebraicGeometry
+
+end

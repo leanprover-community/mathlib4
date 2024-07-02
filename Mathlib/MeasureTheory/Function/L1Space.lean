@@ -1638,3 +1638,5 @@ lemma integrable_prod {f : α → E × F} :
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
 
 end MeasureTheory
+
+end

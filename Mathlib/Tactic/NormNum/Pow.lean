@@ -282,3 +282,5 @@ def evalZPow : NormNumExt where eval {u α} e := do
       h.check
       assumeInstancesCommute
       return .isRat sα' qe' nume' dene' q(isRat_zpow_neg $pb $pe')
+
+end NormNum

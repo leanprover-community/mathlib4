@@ -701,3 +701,5 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
 end LagrangeBarycentric
 
 end Lagrange
+
+end

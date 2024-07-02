@@ -761,3 +761,5 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZero
 end Algebra
 
 end CommRing
+
+end

@@ -79,3 +79,5 @@ instance : PreservesFiniteLimits (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) w
   preservesFiniteLimits _ _ _ := inferInstance
 
 end FGModuleCat
+
+end

@@ -1056,3 +1056,5 @@ theorem Integrable.induction (P : (α → E) → Prop)
 end Integrable
 
 end MeasureTheory
+
+end

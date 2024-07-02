@@ -851,3 +851,5 @@ theorem mem_stabilizer_of_finite_iff_le_smul (s : Set α) (hs : s.Finite) (g : G
     g ∈ stabilizer G s ↔ s ⊆ g • s := by
   rw [← @inv_mem_iff, mem_stabilizer_of_finite_iff_smul_le s hs]
   exact Set.subset_set_smul_iff.symm
+
+end MulAction

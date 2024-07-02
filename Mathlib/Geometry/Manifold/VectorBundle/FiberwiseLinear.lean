@@ -300,3 +300,5 @@ theorem mem_smoothFiberwiseLinear_iff (e : PartialHomeomorph (B × F) (B × F)) 
         e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) :=
   mem_aux
 #align mem_smooth_fiberwise_linear_iff mem_smoothFiberwiseLinear_iff
+
+end

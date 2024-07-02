@@ -1384,3 +1384,5 @@ theorem update_eq_sub_add_single [AddGroup G] (f : α →₀ G) (a : α) (b : G)
 #align finsupp.update_eq_sub_add_single Finsupp.update_eq_sub_add_single
 
 end Finsupp
+
+end

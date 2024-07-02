@@ -67,3 +67,5 @@ instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
 #align category_theory.fin_category_ulift CategoryTheory.finCategoryUlift
 
 end CategoryTheory
+
+end

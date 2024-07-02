@@ -281,3 +281,5 @@ lemma isBigO_atTop_F_int_one (a : UnitAddCircle) : ∃ p, 0 < p ∧
 end int
 
 end HurwitzKernelBounds
+
+end

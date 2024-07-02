@@ -219,3 +219,5 @@ instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
 end Reflects
 
 end Functor
+
+end CategoryTheory

@@ -76,3 +76,5 @@ theorem to_localInverse {n : ℕ∞} (hf : ContDiffAt 𝕂 n f a)
 #align cont_diff_at.to_local_inverse ContDiffAt.to_localInverse
 
 end ContDiffAt
+
+end

@@ -436,3 +436,5 @@ instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := nat
 #align polynomial.char_zero Polynomial.charZero
 
 end Polynomial
+
+end

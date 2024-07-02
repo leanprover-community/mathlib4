@@ -612,3 +612,5 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
   infer_instance
 
 end AlgebraicGeometry
+
+end

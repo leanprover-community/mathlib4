@@ -38,3 +38,5 @@ instance : NoncompactSpace ℕ+ :=
   noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
 
 end PNat
+
+end

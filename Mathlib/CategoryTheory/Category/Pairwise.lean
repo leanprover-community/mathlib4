@@ -172,3 +172,5 @@ end
 end Pairwise
 
 end CategoryTheory
+
+end

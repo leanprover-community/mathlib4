@@ -219,3 +219,5 @@ theorem isOpenMap_of_hasStrictFDerivAt_equiv [CompleteSpace E] {f : E → F} {f'
 #align open_map_of_strict_fderiv_equiv isOpenMap_of_hasStrictFDerivAt_equiv
 @[deprecated (since := "2024-03-23")]
 alias open_map_of_strict_fderiv_equiv := isOpenMap_of_hasStrictFDerivAt_equiv
+
+end

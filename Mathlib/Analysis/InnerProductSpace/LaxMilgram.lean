@@ -123,3 +123,5 @@ theorem unique_continuousLinearEquivOfBilin (coercive : IsCoercive B) {v f : V}
 #align is_coercive.unique_continuous_linear_equiv_of_bilin IsCoercive.unique_continuousLinearEquivOfBilin
 
 end IsCoercive
+
+end

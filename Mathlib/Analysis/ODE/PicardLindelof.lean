@@ -436,3 +436,5 @@ theorem exists_forall_hasDerivAt_Ioo_eq_of_contDiff (hv : ContDiff ℝ 1 v) :
     exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀ hv.contDiffAt
   ⟨f, hf1, ε, hε, fun _ h => hf2 _ h⟩
 #align exists_forall_deriv_at_Ioo_eq_of_cont_diff exists_forall_hasDerivAt_Ioo_eq_of_contDiff
+
+end

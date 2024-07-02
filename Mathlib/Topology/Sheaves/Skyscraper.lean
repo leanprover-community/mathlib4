@@ -415,3 +415,5 @@ instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRig
 end
 
 end
+
+end

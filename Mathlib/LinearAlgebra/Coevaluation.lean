@@ -96,3 +96,5 @@ theorem contractLeft_assoc_coevaluation' :
 #align contract_left_assoc_coevaluation' contractLeft_assoc_coevaluation'
 
 end coevaluation
+
+end

@@ -398,3 +398,5 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
       simpa [multipliable_const_iff] using ha
 
 end TopologicalGroup
+
+end

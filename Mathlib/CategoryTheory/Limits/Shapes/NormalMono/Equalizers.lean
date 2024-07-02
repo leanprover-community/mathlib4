@@ -343,3 +343,5 @@ theorem mono_of_cancel_zero {X Y : C} (f : X ⟶ Y)
 end
 
 end CategoryTheory.NormalEpiCategory
+
+end

@@ -1394,3 +1394,5 @@ theorem Measurable.ennreal_induction {α} [MeasurableSpace α] {P : (α → ℝ�
       SimpleFunc.induction (fun c s hs => h_ind c hs)
         (fun f g hfg hf hg => h_add hfg f.measurable g.measurable hf hg) (eapprox f n)
 #align measurable.ennreal_induction Measurable.ennreal_induction
+
+end

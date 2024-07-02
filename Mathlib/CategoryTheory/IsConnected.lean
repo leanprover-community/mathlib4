@@ -469,3 +469,5 @@ attribute [instance] nonempty_hom_of_preconnected_groupoid
 alias nonempty_hom_of_connected_groupoid := nonempty_hom_of_preconnected_groupoid
 
 end CategoryTheory
+
+end

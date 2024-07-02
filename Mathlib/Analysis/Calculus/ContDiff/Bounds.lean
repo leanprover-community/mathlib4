@@ -579,3 +579,5 @@ theorem norm_iteratedFDeriv_clm_apply_const {f : E → F →L[𝕜] G} {c : F} {
 #align norm_iterated_fderiv_clm_apply_const norm_iteratedFDeriv_clm_apply_const
 
 end Apply
+
+end

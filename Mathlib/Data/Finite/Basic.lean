@@ -150,3 +150,5 @@ instance Equiv.finite_left {α β : Sort*} [Finite α] : Finite (α ≃ β) :=
 instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
   haveI := Fintype.ofFinite α
   infer_instance
+
+end

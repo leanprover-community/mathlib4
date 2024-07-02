@@ -60,3 +60,5 @@ instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op :=
 end Functor
 
 end CategoryTheory
+
+end

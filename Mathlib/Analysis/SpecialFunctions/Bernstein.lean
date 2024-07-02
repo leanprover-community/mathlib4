@@ -299,3 +299,5 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       _ ≤ 2 * ‖f‖ * δ ^ (-2 : ℤ) * 1 * 1 / n := by gcongr <;> unit_interval
       _ < ε / 2 := by simp only [mul_one]; exact nh
 #align bernstein_approximation_uniform bernsteinApproximation_uniform
+
+end

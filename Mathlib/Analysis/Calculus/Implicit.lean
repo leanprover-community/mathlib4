@@ -485,3 +485,5 @@ theorem to_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ‚ä
 end FiniteDimensional
 
 end HasStrictFDerivAt
+
+end

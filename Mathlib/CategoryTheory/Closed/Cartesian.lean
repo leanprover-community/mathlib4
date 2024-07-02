@@ -420,3 +420,5 @@ end Functor
 attribute [nolint simpNF] CategoryTheory.CartesianClosed.homEquiv_apply_eq
   CategoryTheory.CartesianClosed.homEquiv_symm_apply_eq
 end CategoryTheory
+
+end

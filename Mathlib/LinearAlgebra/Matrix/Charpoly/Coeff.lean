@@ -398,3 +398,5 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
 end reverse
 
 end Matrix
+
+end

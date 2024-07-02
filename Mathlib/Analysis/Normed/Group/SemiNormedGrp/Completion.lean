@@ -143,3 +143,5 @@ theorem completion.lift_unique {V W : SemiNormedGrp} [CompleteSpace W] [T0Space 
 #align SemiNormedGroup.Completion.lift_unique SemiNormedGrp.completion.lift_unique
 
 end SemiNormedGrp
+
+end

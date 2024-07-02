@@ -305,3 +305,5 @@ instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [NormalEpiCateg
 #align category_theory.regular_epi_category_of_normal_epi_category CategoryTheory.regularEpiCategoryOfNormalEpiCategory
 
 end CategoryTheory
+
+end

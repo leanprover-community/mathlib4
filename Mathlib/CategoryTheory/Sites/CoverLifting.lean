@@ -405,3 +405,5 @@ lemma Functor.pushforwardContinuousSheafificationCompatibility_hom_app_val (F : 
   apply toSheafify_pullbackSheafificationCompatibility
 
 end CategoryTheory
+
+end

@@ -311,3 +311,5 @@ theorem HasDerivWithinAt.arsinh (hf : HasDerivWithinAt f f' s a) :
 #align has_deriv_within_at.arsinh HasDerivWithinAt.arsinh
 
 end deriv
+
+end

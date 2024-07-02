@@ -668,3 +668,5 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.forget_preserves_limits CommRingCat.forgetPreservesLimits
 
 end CommRingCat
+
+end

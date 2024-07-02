@@ -116,3 +116,5 @@ end Algebra
 end Completion
 
 end UniformSpace
+
+end

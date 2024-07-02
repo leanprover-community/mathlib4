@@ -315,3 +315,5 @@ theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
 end Nat
 
 end Finsupp
+
+end

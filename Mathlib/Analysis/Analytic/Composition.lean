@@ -1207,3 +1207,5 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
 #align formal_multilinear_series.comp_assoc FormalMultilinearSeries.comp_assoc
 
 end FormalMultilinearSeries
+
+end

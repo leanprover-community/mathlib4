@@ -573,3 +573,5 @@ theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=
 end
 
 end SubalgebraRank
+
+end

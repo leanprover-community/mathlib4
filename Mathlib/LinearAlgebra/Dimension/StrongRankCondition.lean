@@ -497,3 +497,5 @@ theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
 #align linear_map.finrank_range_le LinearMap.finrank_range_le
 
 end StrongRankCondition
+
+end

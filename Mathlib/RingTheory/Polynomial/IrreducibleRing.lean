@@ -59,3 +59,5 @@ theorem Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical
   rw [← add_sub_cancel_left 1 (-(_ * _)), ← sub_eq_add_neg, hc]
   exact IsNilpotent.isUnit_sub_one <| show _ ∈ nilradical R from sum_mem fun i hi ↦
     Ideal.mul_mem_left _ _ <| hn _ <| Nat.sub_ne_zero_of_lt (List.mem_range.1 hi)
+
+end

@@ -721,3 +721,5 @@ set_option linter.uppercaseLean3 false in
 
 -- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
 end
+
+end Rep

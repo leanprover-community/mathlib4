@@ -340,3 +340,5 @@ theorem rpow_add_le_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 0 ≤ p) (hp1 : 
 #align ennreal.rpow_add_le_add_rpow ENNReal.rpow_add_le_add_rpow
 
 end ENNReal
+
+end

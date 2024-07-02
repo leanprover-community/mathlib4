@@ -150,3 +150,5 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
       · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 
 end MeasureTheory
+
+end

@@ -1243,3 +1243,5 @@ instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] :
 #align category_theory.limits.has_cokernels_of_has_coequalizers CategoryTheory.Limits.hasCokernels_of_hasCoequalizers
 
 end CategoryTheory.Limits
+
+end

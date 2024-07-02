@@ -230,3 +230,5 @@ theorem geom_sol_iff_root_charPoly (q : α) :
 end CommRing
 
 end LinearRecurrence
+
+end

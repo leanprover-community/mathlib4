@@ -73,3 +73,5 @@ set_option linter.uppercaseLean3 false in
 instance : EnoughProjectives CompHaus where presentation X := ⟨projectivePresentation X⟩
 
 end CompHaus
+
+end

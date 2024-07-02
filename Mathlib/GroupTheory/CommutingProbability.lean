@@ -220,3 +220,5 @@ theorem commProb_reciprocal (n : ℕ) :
       positivity
 
 end DihedralGroup
+
+end

@@ -614,3 +614,5 @@ theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCir
 #align cont_mdiff_exp_map_circle contMDiff_expMapCircle
 
 end circle
+
+end

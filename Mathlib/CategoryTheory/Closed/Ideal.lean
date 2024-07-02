@@ -273,3 +273,5 @@ noncomputable def preservesFiniteProductsOfExponentialIdeal (J : Type) [Fintype 
 end
 
 end CategoryTheory
+
+end

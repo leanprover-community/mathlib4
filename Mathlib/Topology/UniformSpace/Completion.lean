@@ -674,3 +674,5 @@ end Map₂
 end Completion
 
 end UniformSpace
+
+end

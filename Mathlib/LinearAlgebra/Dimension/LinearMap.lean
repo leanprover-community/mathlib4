@@ -140,3 +140,5 @@ theorem le_rank_iff_exists_linearIndependent_finset {n : ℕ} {f : V →ₗ[K] V
 end DivisionRing
 
 end LinearMap
+
+end

@@ -528,3 +528,5 @@ theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ]
 end ComplexMeasure
 
 end MeasureTheory
+
+end

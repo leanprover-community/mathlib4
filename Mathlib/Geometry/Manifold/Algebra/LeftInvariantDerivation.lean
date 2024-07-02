@@ -299,3 +299,5 @@ instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where
     simp only [commutator_apply, map_smul, smul_sub, coe_smul, Pi.smul_apply]
 
 end LeftInvariantDerivation
+
+end

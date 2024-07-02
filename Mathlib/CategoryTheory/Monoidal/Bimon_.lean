@@ -109,3 +109,5 @@ def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
   counitIso := NatIso.ofComponents (fun _ => Mon_.mkIso (Comon_.mkIso (Iso.refl _)))
 
 end Bimon_
+
+end

@@ -93,3 +93,5 @@ def rigidCategoryOfEquivalence [RigidCategory D] : RigidCategory C where
 #align category_theory.rigid_category_of_equivalence CategoryTheory.rigidCategoryOfEquivalence
 
 end CategoryTheory
+
+end

@@ -135,3 +135,5 @@ lemma dualSubmodule_dualSubmodule_of_basis
   letI := FiniteDimensional.of_fintype_basis b
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis B hB hB']
+
+end BilinForm

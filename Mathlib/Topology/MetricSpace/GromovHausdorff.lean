@@ -1095,3 +1095,5 @@ end Complete
 end GromovHausdorff
 
 --namespace
+
+end

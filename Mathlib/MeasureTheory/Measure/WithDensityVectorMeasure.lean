@@ -226,3 +226,5 @@ theorem Integrable.withDensityᵥ_trim_absolutelyContinuous {m m0 : MeasurableSp
 end SignedMeasure
 
 end MeasureTheory
+
+end

@@ -263,3 +263,5 @@ theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.doma
 end LinearPMap
 
 end Star
+
+end

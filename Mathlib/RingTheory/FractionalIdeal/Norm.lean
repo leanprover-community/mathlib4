@@ -147,3 +147,5 @@ theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
       smul_comm (d : R)]
 
 end IsLocalization
+
+end FractionalIdeal

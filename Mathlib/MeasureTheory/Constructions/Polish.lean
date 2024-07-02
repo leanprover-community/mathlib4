@@ -1110,3 +1110,5 @@ lemma measurableEmbedding_embeddingReal (Ω : Type*) [MeasurableSpace Ω] [Stand
   (exists_measurableEmbedding_real Ω).choose_spec
 
 end MeasureTheory
+
+end

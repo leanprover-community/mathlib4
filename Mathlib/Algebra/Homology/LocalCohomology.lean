@@ -303,3 +303,5 @@ def isoOfSameRadical [IsNoetherian R R] (hJK : J.radical = K.radical) (i : ℕ) 
 end LocalCohomologyEquiv
 
 end localCohomology
+
+end

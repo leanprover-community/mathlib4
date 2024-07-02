@@ -994,3 +994,5 @@ instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G
 #align quotient_add_group.complete_space QuotientAddGroup.completeSpace
 
 end CompleteQuotient
+
+end

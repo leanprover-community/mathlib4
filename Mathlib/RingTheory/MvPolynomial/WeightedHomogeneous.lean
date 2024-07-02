@@ -565,3 +565,5 @@ theorem weightedTotalDegree_eq_zero_iff (hw : NonTorsionWeight w) (p : MvPolynom
 end CanonicallyLinearOrderedMonoid
 
 end MvPolynomial
+
+end

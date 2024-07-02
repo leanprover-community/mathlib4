@@ -60,3 +60,5 @@ theorem meas_ge_le_mul_pow_snorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
   exact mul_meas_ge_le_pow_snorm' μ hp_ne_zero hp_ne_top hf ε
 #align measure_theory.meas_ge_le_mul_pow_snorm MeasureTheory.meas_ge_le_mul_pow_snorm
+
+end MeasureTheory

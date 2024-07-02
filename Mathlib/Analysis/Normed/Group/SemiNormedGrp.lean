@@ -268,3 +268,5 @@ theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := 
 #align SemiNormedGroup₁.iso_isometry SemiNormedGrp₁.iso_isometry
 
 end SemiNormedGrp₁
+
+end

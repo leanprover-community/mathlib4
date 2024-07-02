@@ -289,3 +289,5 @@ theorem mk_Ioc_real {a b : ℝ} (h : a < b) : #(Ioc a b) = 𝔠 :=
 #align cardinal.mk_Ioc_real Cardinal.mk_Ioc_real
 
 end Cardinal
+
+end

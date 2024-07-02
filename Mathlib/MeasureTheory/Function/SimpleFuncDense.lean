@@ -265,3 +265,5 @@ lemma HasCompactSupport.measurable_of_prod
   apply measurable_of_tendsto_metrizable (fun n ↦ (g n).measurable) (tendsto_pi_nhds.2 A)
 
 end CompactSupport
+
+end

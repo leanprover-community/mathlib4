@@ -161,3 +161,5 @@ theorem measure_mul_le_scalingConstantOf_mul {K : ℝ} {x : α} {t r : ℝ} (ht 
 #align is_unif_loc_doubling_measure.measure_mul_le_scaling_constant_of_mul IsUnifLocDoublingMeasure.measure_mul_le_scalingConstantOf_mul
 
 end IsUnifLocDoublingMeasure
+
+end

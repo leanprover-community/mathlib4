@@ -184,3 +184,5 @@ theorem Sphere.sbtw_secondInter {s : Sphere P} {p p' : P} (hp : p ∈ s)
 #align euclidean_geometry.sphere.sbtw_second_inter EuclideanGeometry.Sphere.sbtw_secondInter
 
 end EuclideanGeometry
+
+end

@@ -176,3 +176,5 @@ instance : IsIso (sigmaComparison G f) := by
 end
 
 end CategoryTheory.Limits
+
+end

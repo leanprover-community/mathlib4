@@ -395,3 +395,5 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         change m x = dite _ _ _
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 #align Top.binary_cofan_is_colimit_iff TopCat.binaryCofan_isColimit_iff
+
+end TopCat

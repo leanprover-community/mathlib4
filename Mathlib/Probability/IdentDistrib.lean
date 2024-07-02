@@ -383,3 +383,5 @@ lemma indepFun_of_identDistrib_pair
   · exact measurable_snd.aemeasurable.comp_aemeasurable h_ident.aemeasurable_snd
 
 end ProbabilityTheory
+
+end

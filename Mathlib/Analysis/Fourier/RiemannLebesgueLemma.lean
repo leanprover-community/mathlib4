@@ -330,3 +330,5 @@ theorem Real.zero_at_infty_vector_fourierIntegral (μ : Measure V) [μ.IsAddHaar
 #align real.zero_at_infty_vector_fourier_integral Real.zero_at_infty_vector_fourierIntegral
 
 end NoInnerProduct
+
+end

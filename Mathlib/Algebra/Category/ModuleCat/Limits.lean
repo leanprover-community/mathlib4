@@ -279,3 +279,5 @@ def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCoc
 end DirectLimit
 
 end ModuleCat
+
+end

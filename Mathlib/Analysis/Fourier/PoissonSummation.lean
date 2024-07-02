@@ -239,3 +239,5 @@ theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hf
 #align schwartz_map.tsum_eq_tsum_fourier_integral SchwartzMap.tsum_eq_tsum_fourierIntegral
 
 end Schwartz
+
+end

@@ -375,3 +375,5 @@ theorem Complex.Gamma_one_half_eq : Complex.Gamma (1 / 2) = (π : ℂ) ^ (1 / 2 
   · rw [sqrt_eq_rpow, ofReal_cpow pi_pos.le, ofReal_div, ofReal_ofNat, ofReal_one]
 set_option linter.uppercaseLean3 false in
 #align complex.Gamma_one_half_eq Complex.Gamma_one_half_eq
+
+end

@@ -848,3 +848,5 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
     exact ⟨y, by rwa [← eval, eval_sub, eval_pow, eval_X, eval_C, sub_eq_zero] at hy⟩
   exact PerfectRing.toPerfectField F p
+
+end

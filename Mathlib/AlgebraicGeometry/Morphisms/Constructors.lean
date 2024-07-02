@@ -257,3 +257,5 @@ alias universallyIsLocalAtTargetOfMorphismRestrict :=
   universally_isLocalAtTarget_of_morphismRestrict
 
 end AlgebraicGeometry
+
+end

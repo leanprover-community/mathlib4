@@ -138,3 +138,5 @@ lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z := by
   rw [Function.comp_apply, ofComplex_apply]
 
 end UpperHalfPlane
+
+end

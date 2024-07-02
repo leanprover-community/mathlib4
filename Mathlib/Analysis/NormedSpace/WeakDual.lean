@@ -252,3 +252,5 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : Dual 𝕜 E) (r : ℝ) :
 #align weak_dual.is_compact_closed_ball WeakDual.isCompact_closedBall
 
 end WeakDual
+
+end

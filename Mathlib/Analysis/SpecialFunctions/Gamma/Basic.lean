@@ -650,3 +650,5 @@ theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Differen
 #align real.differentiable_at_Gamma Real.differentiableAt_Gamma
 
 end Real
+
+end

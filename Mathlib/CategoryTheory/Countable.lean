@@ -96,3 +96,5 @@ instance countableCategoryUlift {J : Type v} [Category J] [CountableCategory J] 
     instCountableULift
 
 end CategoryTheory
+
+end

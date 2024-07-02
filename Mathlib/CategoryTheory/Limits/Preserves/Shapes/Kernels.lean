@@ -322,3 +322,5 @@ noncomputable def preservesCokernelZero' (f : X ⟶ Y) (hf : f = 0) :
   infer_instance
 
 end CategoryTheory.Limits
+
+end

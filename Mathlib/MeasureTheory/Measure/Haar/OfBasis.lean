@@ -352,3 +352,5 @@ theorem coe_measurableEquiv_symm :
     ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
 
 end EuclideanSpace
+
+end

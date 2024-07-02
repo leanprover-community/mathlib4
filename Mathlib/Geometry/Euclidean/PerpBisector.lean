@@ -144,3 +144,5 @@ theorem Isometry.preimage_perpBisector {f : P → P'} (h : Isometry f) (p₁ p�
 theorem Isometry.mapsTo_perpBisector {f : P → P'} (h : Isometry f) (p₁ p₂ : P) :
     MapsTo f (perpBisector p₁ p₂) (perpBisector (f p₁) (f p₂)) :=
   (h.preimage_perpBisector p₁ p₂).ge
+
+end

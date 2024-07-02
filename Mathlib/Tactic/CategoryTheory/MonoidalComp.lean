@@ -142,3 +142,5 @@ end MonoidalCoherence
 @[simp] lemma monoidalComp_refl {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ⊗≫ g = f ≫ g := by
   simp [monoidalComp]
+
+end CategoryTheory

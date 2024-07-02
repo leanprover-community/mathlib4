@@ -369,3 +369,5 @@ def toAlgHomEquiv (G : Type u) (F : Type v) [Group G] [Field F] [Finite G] [MulS
 #align fixed_points.to_alg_hom_equiv FixedPoints.toAlgHomEquiv
 
 end FixedPoints
+
+end

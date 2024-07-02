@@ -309,3 +309,5 @@ instance subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subg
     IsFreeGroup H :=
   IsFreeGroup.ofMulEquiv (endMulEquivSubgroup H)
 #align subgroup_is_free_of_is_free subgroupIsFreeOfIsFree
+
+end

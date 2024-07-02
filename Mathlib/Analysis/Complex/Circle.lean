@@ -162,3 +162,5 @@ lemma norm_circle_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E
     (u : circle) (v : E) :
     ‖u • v‖ = ‖v‖ := by
   rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
+
+end

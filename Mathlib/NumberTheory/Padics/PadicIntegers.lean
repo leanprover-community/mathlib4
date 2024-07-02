@@ -704,3 +704,5 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
 end FractionRing
 
 end PadicInt
+
+end

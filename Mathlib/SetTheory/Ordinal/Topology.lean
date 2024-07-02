@@ -235,3 +235,5 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
 #align ordinal.enum_ord_is_normal_iff_is_closed Ordinal.enumOrd_isNormal_iff_isClosed
 
 end Ordinal
+
+end

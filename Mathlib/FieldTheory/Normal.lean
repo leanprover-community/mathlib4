@@ -429,3 +429,5 @@ theorem exists_algEquiv_of_root' [Normal K L]{x y : L} (hy : IsAlgebraic K y)
   rw [← hσ, symm_apply_apply]
 
 end minpoly
+
+end

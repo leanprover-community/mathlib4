@@ -597,3 +597,5 @@ instance Spec.reflective : Reflective Scheme.Spec where
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 
 end AlgebraicGeometry
+
+end

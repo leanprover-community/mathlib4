@@ -75,3 +75,5 @@ theorem contDiffAt_tan {x : ℂ} {n : ℕ∞} : ContDiffAt ℂ n tan x ↔ cos x
 #align complex.cont_diff_at_tan Complex.contDiffAt_tan
 
 end Complex
+
+end

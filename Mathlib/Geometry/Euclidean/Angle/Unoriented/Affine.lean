@@ -542,3 +542,5 @@ theorem collinear_of_sin_eq_zero {p₁ p₂ p₃ : P} (h : Real.sin (∠ p₁ p�
 #align euclidean_geometry.collinear_of_sin_eq_zero EuclideanGeometry.collinear_of_sin_eq_zero
 
 end EuclideanGeometry
+
+end

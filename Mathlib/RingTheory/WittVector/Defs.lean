@@ -423,3 +423,5 @@ theorem wittPow_vars (m : ℕ) (n : ℕ) : (wittPow p m n).vars ⊆ Finset.univ 
 #align witt_vector.witt_pow_vars WittVector.wittPow_vars
 
 end WittVector
+
+end

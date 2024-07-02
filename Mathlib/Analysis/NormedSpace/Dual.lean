@@ -263,3 +263,5 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
 end PolarSets
 
 end NormedSpace
+
+end

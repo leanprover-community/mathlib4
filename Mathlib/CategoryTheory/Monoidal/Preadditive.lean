@@ -367,3 +367,5 @@ theorem rightDistributor_ext₂_right {J : Type} [Fintype J]
   simp [w]
 
 end CategoryTheory
+
+end

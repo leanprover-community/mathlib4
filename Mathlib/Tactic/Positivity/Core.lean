@@ -411,3 +411,5 @@ example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
 -/
 elab (name := positivity) "positivity" : tactic => do
   liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+
+end Positivity

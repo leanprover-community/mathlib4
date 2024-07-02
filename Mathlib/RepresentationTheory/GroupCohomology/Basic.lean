@@ -256,3 +256,5 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     (extIso k G A n).symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology_iso_Ext groupCohomologyIsoExt
+
+end

@@ -315,3 +315,5 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
 #align part_enat.one_lt_card_iff_nontrivial PartENat.one_lt_card_iff_nontrivial
 
 end PartENat
+
+end

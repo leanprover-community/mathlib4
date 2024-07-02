@@ -502,3 +502,5 @@ lemma homotopyEquivalences_le_quasiIso [CategoryWithHomology C] :
   rintro K L _ ⟨e, rfl⟩
   simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance
+
+end

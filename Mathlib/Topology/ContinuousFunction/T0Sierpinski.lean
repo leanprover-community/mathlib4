@@ -63,3 +63,5 @@ theorem productOfMemOpens_embedding [T0Space X] : Embedding (productOfMemOpens X
 #align topological_space.product_of_mem_opens_embedding TopologicalSpace.productOfMemOpens_embedding
 
 end TopologicalSpace
+
+end

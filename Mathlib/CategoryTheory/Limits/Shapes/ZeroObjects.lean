@@ -327,3 +327,5 @@ theorem Functor.isZero_iff [HasZeroObject D] (F : C ⥤ D) : IsZero F ↔ ∀ X,
 #align category_theory.functor.is_zero_iff CategoryTheory.Functor.isZero_iff
 
 end CategoryTheory
+
+end

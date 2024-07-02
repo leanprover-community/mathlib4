@@ -1245,3 +1245,5 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V where
 #align affine_map.weighted_vsub_of_point AffineMap.weightedVSubOfPoint
 
 end AffineMap
+
+end

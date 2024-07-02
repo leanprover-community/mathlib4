@@ -1616,3 +1616,5 @@ theorem infinite_basis_le_maximal_linearIndependent {ι : Type w} (b : Basis ι 
 #align infinite_basis_le_maximal_linear_independent infinite_basis_le_maximal_linearIndependent
 
 end Finite
+
+end

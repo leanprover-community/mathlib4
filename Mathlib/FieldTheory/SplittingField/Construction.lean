@@ -365,3 +365,5 @@ def algEquiv (f : K[X]) [h : IsSplittingField K L f] : L ≃ₐ[K] SplittingFiel
 end IsSplittingField
 
 end Polynomial
+
+end

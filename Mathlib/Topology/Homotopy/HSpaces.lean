@@ -288,3 +288,5 @@ instance (x : X) : HSpace (Path x x) where
       prop' := by rintro t _ rfl; exact refl_trans_refl.symm }
 
 end Path
+
+end

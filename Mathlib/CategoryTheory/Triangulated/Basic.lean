@@ -371,3 +371,5 @@ end
 end Triangle
 
 end CategoryTheory.Pretriangulated
+
+end

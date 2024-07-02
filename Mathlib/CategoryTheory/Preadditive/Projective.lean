@@ -298,3 +298,5 @@ theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R)
 end
 
 end CategoryTheory
+
+end

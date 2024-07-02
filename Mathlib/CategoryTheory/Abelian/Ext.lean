@@ -99,3 +99,5 @@ lemma isZero_Ext_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
   obtain rfl : x = 0 := (HomologicalComplex.isZero_single_obj_X
     (ComplexShape.down ℕ) 0 X (n + 1) (by simp)).eq_of_src _ _
   rfl
+
+end

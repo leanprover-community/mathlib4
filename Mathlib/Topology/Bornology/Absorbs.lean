@@ -268,3 +268,5 @@ lemma Absorbent.zero_mem [NeBot (cobounded G₀)] [AddMonoid E] [DistribMulActio
     {s : Set E} (hs : Absorbent G₀ s) : (0 : E) ∈ s :=
   absorbs_zero_iff.1 (hs 0)
 #align absorbent.zero_mem Absorbent.zero_mem
+
+end GroupWithZero

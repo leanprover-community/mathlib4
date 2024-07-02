@@ -336,3 +336,5 @@ noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommMonCa
 #align CommMon.forget_preserves_limits CommMonCat.forgetPreservesLimits
 
 end CommMonCat
+
+end

@@ -1317,3 +1317,5 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
 end repr
 
 end Polynomial
+
+end

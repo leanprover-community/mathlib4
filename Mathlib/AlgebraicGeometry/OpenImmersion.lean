@@ -574,3 +574,5 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
 end Scheme
 
 end AlgebraicGeometry
+
+end

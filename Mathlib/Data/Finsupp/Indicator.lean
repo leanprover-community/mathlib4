@@ -77,3 +77,5 @@ lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) :
 #align finsupp.single_eq_indicator Finsupp.single_eq_indicator
 
 end Finsupp
+
+end

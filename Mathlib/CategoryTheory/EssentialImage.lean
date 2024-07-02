@@ -188,3 +188,5 @@ end Functor
 @[deprecated (since := "2024-04-06")] alias Iso.map_essSurj := Functor.essSurj_of_iso
 
 end CategoryTheory
+
+end

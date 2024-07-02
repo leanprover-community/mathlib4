@@ -194,3 +194,5 @@ elab_rules : tactic
       pure { ctx, simprocs := {} }
 
   _ ← simpLocation r.ctx {} dis loc
+
+end FieldSimp

@@ -37,3 +37,5 @@ theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Ga
   simpa only [Int.cast_mul, Int.cast_natCast] using vAdd_width_periodic N k n f z
 
 end SlashInvariantForm
+
+end

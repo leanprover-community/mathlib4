@@ -226,3 +226,5 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
 end BoxAdditiveMap
 
 end BoxIntegral
+
+end

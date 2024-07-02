@@ -78,3 +78,5 @@ lemma toKaroubiCompN₂IsoN₁_inv_app (X : SimplicialObject C) :
 end DoldKan
 
 end AlgebraicTopology
+
+end

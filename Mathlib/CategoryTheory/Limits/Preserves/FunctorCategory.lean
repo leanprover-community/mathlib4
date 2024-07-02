@@ -113,3 +113,5 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_limit_of_Lan_preserves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
 
 end CategoryTheory
+
+end

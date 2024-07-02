@@ -806,3 +806,5 @@ lemma cosZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
   ring_nf
 
 end HurwitzZeta
+
+end

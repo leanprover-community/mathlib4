@@ -476,3 +476,5 @@ end
 end Functor
 
 end CategoryTheory
+
+end

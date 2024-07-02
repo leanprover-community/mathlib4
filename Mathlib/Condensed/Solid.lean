@@ -55,3 +55,5 @@ end Condensed
 class CondensedMod.IsSolid (A : CondensedMod.{u} R) : Prop where
   isIso_solidification_map : ∀ X : Profinite.{u}, IsIso ((yoneda.obj A).map
     ((profiniteSolidification R).app X).op)
+
+end

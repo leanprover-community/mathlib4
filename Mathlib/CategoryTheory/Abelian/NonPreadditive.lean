@@ -461,3 +461,5 @@ def preadditive : Preadditive C where
 end
 
 end CategoryTheory.NonPreadditiveAbelian
+
+end

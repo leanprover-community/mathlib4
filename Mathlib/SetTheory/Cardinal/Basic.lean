@@ -2346,3 +2346,5 @@ end Cardinal
 -- #align tactic.positivity_cardinal_pow tactic.positivity_cardinal_pow
 
 -- end Tactic
+
+end

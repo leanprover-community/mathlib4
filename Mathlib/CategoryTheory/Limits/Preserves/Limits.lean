@@ -183,3 +183,5 @@ def preservesColimitOfIsIsoPost [IsIso (colimit.post F G)] : PreservesColimit F 
 end
 
 end CategoryTheory
+
+end

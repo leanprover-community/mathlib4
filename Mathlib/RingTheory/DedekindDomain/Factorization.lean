@@ -565,3 +565,5 @@ theorem finite_factors (I : FractionalIdeal R⁰ K) :
     rw [count_ne_zero K _ hI]
 
 end FractionalIdeal
+
+end

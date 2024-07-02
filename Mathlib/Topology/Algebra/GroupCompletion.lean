@@ -299,3 +299,5 @@ theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace
 #align add_monoid_hom.completion_add AddMonoidHom.completion_add
 
 end AddMonoidHom
+
+end

@@ -545,3 +545,5 @@ lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
 end UniformGroup
 
 end Int
+
+end

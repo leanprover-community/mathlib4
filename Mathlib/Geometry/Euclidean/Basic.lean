@@ -649,3 +649,5 @@ theorem reflection_vadd_smul_vsub_orthogonalProjection {s : AffineSubspace ℝ P
 #align euclidean_geometry.reflection_vadd_smul_vsub_orthogonal_projection EuclideanGeometry.reflection_vadd_smul_vsub_orthogonalProjection
 
 end EuclideanGeometry
+
+end

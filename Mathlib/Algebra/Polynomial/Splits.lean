@@ -503,3 +503,5 @@ theorem sum_roots_eq_nextCoeff_of_monic_of_split {P : K[X]} (hmo : P.Monic)
 end Splits
 
 end Polynomial
+
+end

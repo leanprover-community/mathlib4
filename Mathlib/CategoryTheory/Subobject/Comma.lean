@@ -246,3 +246,5 @@ instance well_copowered_costructuredArrow [WellPowered Cᵒᵖ] [HasColimits C] 
 end CostructuredArrow
 
 end CategoryTheory
+
+end

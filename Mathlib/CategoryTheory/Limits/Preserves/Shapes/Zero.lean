@@ -208,3 +208,5 @@ def preservesColimitsOfSizeOfIsZero : PreservesColimitsOfSize.{v, u} G where
 end
 
 end CategoryTheory.Functor
+
+end

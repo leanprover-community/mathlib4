@@ -369,3 +369,5 @@ theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α �
 #align tendsto_iff_forall_eval_tendsto_top_dual_pairing tendsto_iff_forall_eval_tendsto_topDualPairing
 
 end WeakStarTopology
+
+end

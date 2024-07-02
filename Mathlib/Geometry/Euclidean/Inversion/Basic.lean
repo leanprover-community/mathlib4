@@ -238,3 +238,5 @@ protected theorem Continuous.inversion (hc : Continuous c) (hR : Continuous R) (
     (hne : ∀ a, x a ≠ c a) : Continuous (fun a ↦ inversion (c a) (R a) (x a)) :=
   continuous_iff_continuousAt.2 fun _ ↦
     hc.continuousAt.inversion hR.continuousAt hx.continuousAt (hne _)
+
+end

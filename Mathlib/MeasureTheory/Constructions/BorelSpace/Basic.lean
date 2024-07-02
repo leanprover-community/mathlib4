@@ -767,3 +767,5 @@ instance EReal.borelSpace : BorelSpace EReal :=
 #align ereal.borel_space EReal.borelSpace
 
 end BorelSpace
+
+end

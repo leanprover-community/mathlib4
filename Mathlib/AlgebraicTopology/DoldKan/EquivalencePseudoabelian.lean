@@ -161,3 +161,5 @@ end DoldKan
 end Idempotents
 
 end CategoryTheory
+
+end

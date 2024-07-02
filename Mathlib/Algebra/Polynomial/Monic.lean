@@ -564,3 +564,5 @@ theorem isUnit_leadingCoeff_mul_left_eq_zero_iff (h : IsUnit p.leadingCoeff) {q 
 end NotZeroDivisor
 
 end Polynomial
+
+end

@@ -1969,3 +1969,5 @@ theorem zero_lf_one : (0 : PGame) ⧏ 1 :=
 #align pgame.zero_lf_one SetTheory.PGame.zero_lf_one
 
 end PGame
+
+end SetTheory

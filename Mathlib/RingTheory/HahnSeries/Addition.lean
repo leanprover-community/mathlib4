@@ -292,3 +292,5 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
 end Domain
 
 end Module
+
+end HahnSeries

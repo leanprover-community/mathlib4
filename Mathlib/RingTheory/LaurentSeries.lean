@@ -429,3 +429,5 @@ instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
 end RatFunc
 
 end RatFunc
+
+end

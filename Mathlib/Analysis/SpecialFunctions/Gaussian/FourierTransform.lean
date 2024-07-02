@@ -387,3 +387,5 @@ theorem _root_.fourierIntegral_gaussian_innerProductSpace (hb : 0 < b.re) (w : V
 end InnerProductSpace
 
 end GaussianFourier
+
+end

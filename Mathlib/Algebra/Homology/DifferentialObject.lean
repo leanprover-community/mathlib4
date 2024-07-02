@@ -153,3 +153,5 @@ def dgoEquivHomologicalComplex :
 #align homological_complex.dgo_equiv_homological_complex HomologicalComplex.dgoEquivHomologicalComplex
 
 end HomologicalComplex
+
+end

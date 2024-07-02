@@ -977,3 +977,5 @@ theorem TendstoUniformly.tendsto_comp (h : TendstoUniformly F f p) (hf : Continu
     (hg : Tendsto g p (𝓝 x)) : Tendsto (fun n => F n (g n)) p (𝓝 (f x)) :=
   h.tendstoLocallyUniformly.tendsto_comp hf hg
 #align tendsto_uniformly.tendsto_comp TendstoUniformly.tendsto_comp
+
+end

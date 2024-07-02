@@ -129,3 +129,5 @@ set_option linter.uppercaseLean3 false in
 #align Module.exact_iff ModuleCat.exact_iff
 
 end ModuleCat
+
+end

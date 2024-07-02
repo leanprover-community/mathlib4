@@ -1447,3 +1447,5 @@ theorem bound_of_shell {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : 
 end MultilinearMap
 
 end Norm
+
+end

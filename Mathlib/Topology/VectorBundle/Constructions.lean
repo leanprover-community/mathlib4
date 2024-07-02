@@ -199,3 +199,5 @@ instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 #align vector_bundle.pullback VectorBundle.pullback
 
 end
+
+end

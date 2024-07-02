@@ -192,3 +192,5 @@ instance : IsIso (coprodComparison G X Y) := by
 end
 
 end CategoryTheory.Limits
+
+end

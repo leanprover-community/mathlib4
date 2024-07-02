@@ -334,3 +334,5 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
   exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).symm
 
 end Pointwise
+
+end

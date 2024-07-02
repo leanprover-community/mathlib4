@@ -653,3 +653,5 @@ theorem le_gauge_of_subset_closedBall (hs : Absorbent ℝ s) (hr : 0 ≤ r) (hsr
   exact gauge_mono hs hsr _
 
 end Normed
+
+end

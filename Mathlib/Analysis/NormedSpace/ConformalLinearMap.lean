@@ -101,3 +101,5 @@ theorem ne_zero [Nontrivial M'] {f' : M' →L[R] N} (hf' : IsConformalMap f') : 
 #align is_conformal_map.ne_zero IsConformalMap.ne_zero
 
 end IsConformalMap
+
+end

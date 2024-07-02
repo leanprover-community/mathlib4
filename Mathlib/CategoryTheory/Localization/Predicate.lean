@@ -523,3 +523,5 @@ end AreEqualizedByLocalization
 end
 
 end CategoryTheory
+
+end

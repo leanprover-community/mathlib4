@@ -56,3 +56,5 @@ theorem rank_mvPolynomial : Module.rank K (MvPolynomial σ K) = Cardinal.mk (σ 
 #align mv_polynomial.rank_mv_polynomial MvPolynomial.rank_mvPolynomial
 
 end MvPolynomial
+
+end

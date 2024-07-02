@@ -395,3 +395,5 @@ def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
 #align cochain_complex.from_single₀_as_complex CochainComplex.fromSingle₀AsComplex
 
 end CochainComplex
+
+end

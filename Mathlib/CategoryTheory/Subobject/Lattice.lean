@@ -774,3 +774,5 @@ end SubobjectSubobject
 end Subobject
 
 end CategoryTheory
+
+end

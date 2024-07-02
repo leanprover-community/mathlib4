@@ -826,3 +826,5 @@ theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p
 end
 
 end Polynomial
+
+end

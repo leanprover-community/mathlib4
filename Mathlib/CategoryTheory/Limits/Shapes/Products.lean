@@ -779,3 +779,5 @@ end
 end Reindex
 
 end CategoryTheory.Limits
+
+end

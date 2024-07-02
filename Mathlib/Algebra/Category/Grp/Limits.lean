@@ -571,3 +571,5 @@ attribute [nolint simpNF] AddCommGrp.kernelIsoKerOver_inv_left_apply
   AddCommGrp.kernelIsoKerOver_hom_left_apply_coe
 
 end AddCommGrp
+
+end

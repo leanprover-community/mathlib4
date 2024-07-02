@@ -149,3 +149,5 @@ theorem IsSeparableContraction.degree_eq [hF : ExpChar F q] (g : F[X])
 end Field
 
 end Polynomial
+
+end

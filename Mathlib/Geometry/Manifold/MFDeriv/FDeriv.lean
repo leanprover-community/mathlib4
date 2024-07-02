@@ -134,3 +134,5 @@ theorem mfderiv_eq_fderiv : mfderiv 𝓘(𝕜, E) 𝓘(𝕜, E') f x = fderiv �
 #align mfderiv_eq_fderiv mfderiv_eq_fderiv
 
 end MFDerivFderiv
+
+end

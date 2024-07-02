@@ -721,3 +721,5 @@ lemma mul_self_modByMonic (hq : q.Monic) : (p * q) %ₘ q = 0 := by
 end CommRing
 
 end Polynomial
+
+end

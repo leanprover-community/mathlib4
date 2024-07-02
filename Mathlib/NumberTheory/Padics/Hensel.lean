@@ -485,3 +485,5 @@ theorem hensels_lemma :
     exact ⟨soln_gen hnorm, eval_soln hnorm,
       soln_dist_to_a_lt_deriv hnorm ha, soln_deriv_norm hnorm, fun z => soln_unique hnorm ha z⟩
 #align hensels_lemma hensels_lemma
+
+end

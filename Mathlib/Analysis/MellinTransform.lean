@@ -486,3 +486,5 @@ theorem hasMellin_cpow_Ioc (a : ℂ) {s : ℂ} (hs : 0 < re s + re a) :
 #align has_mellin_cpow_Ioc hasMellin_cpow_Ioc
 
 end MellinIoc
+
+end

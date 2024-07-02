@@ -1089,3 +1089,5 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
 #align local_ring.prime_spectrum.comap_residue LocalRing.PrimeSpectrum.comap_residue
 
 end LocalRing
+
+end

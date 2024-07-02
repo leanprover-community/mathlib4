@@ -397,3 +397,5 @@ theorem isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aev
 end solvableByRad
 
 end AbelRuffini
+
+end

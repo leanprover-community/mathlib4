@@ -994,3 +994,5 @@ theorem Differentiable.inv' (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0)
 end DivisionRingInverse
 
 end
+
+end

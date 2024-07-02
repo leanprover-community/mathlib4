@@ -1291,3 +1291,5 @@ lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ 
 end Ordinal
 
 end Omega1
+
+end

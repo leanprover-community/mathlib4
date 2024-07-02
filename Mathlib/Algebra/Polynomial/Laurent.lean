@@ -648,3 +648,5 @@ lemma toLaurent_reverse (p : R[X]) :
 end Inversion
 
 end LaurentPolynomial
+
+end

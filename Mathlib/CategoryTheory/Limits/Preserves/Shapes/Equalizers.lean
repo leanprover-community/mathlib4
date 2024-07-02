@@ -257,3 +257,5 @@ instance (priority := 1) preservesSplitCoequalizers (f g : X ⟶ Y) [HasSplitCoe
 end Coequalizers
 
 end CategoryTheory.Limits
+
+end

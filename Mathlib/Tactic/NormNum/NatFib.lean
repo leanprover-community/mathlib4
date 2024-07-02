@@ -112,3 +112,5 @@ def evalNatFib : NormNumExt where eval {u α} e := do
   return .isNat sℕ ey pf'
 
 end NormNum
+
+end Meta

@@ -1900,3 +1900,5 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 #align tensor_product.dual_distrib_equiv TensorProduct.dualDistribEquiv
 
 end TensorProduct
+
+end

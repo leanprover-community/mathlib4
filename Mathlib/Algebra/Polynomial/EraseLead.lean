@@ -459,3 +459,5 @@ theorem card_support_eq_three :
 #align polynomial.card_support_eq_three Polynomial.card_support_eq_three
 
 end Polynomial
+
+end

@@ -217,3 +217,5 @@ theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
 end Pretopology
 
 end CategoryTheory
+
+end

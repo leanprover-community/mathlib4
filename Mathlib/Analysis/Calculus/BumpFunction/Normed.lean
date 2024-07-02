@@ -161,3 +161,5 @@ theorem normed_le_div_measure_closedBall_rOut [IsAddHaarMeasure μ] (K : ℝ) (h
       measure_closedBall_lt_top.ne
 
 end ContDiffBump
+
+end

@@ -119,3 +119,5 @@ noncomputable def prodPreservesConnectedLimits [IsConnected J] (X : C) :
 #align category_theory.prod_preserves_connected_limits CategoryTheory.prodPreservesConnectedLimits
 
 end CategoryTheory
+
+end

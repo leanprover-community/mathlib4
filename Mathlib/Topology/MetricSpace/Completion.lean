@@ -207,3 +207,5 @@ theorem Isometry.completion_extension [MetricSpace β] [CompleteSpace β] {f : �
 theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.map f) :=
   (coe_isometry.comp h).completion_extension
+
+end

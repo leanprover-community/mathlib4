@@ -534,3 +534,5 @@ theorem hom_ext (g₁ g₂ : S →+* 𝕎 R) (h : ∀ k, (truncate k).comp g₁ 
 end lift
 
 end WittVector
+
+end

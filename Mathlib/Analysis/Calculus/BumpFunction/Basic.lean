@@ -246,3 +246,5 @@ protected theorem continuous : Continuous f :=
 #align cont_diff_bump.continuous ContDiffBump.continuous
 
 end ContDiffBump
+
+end

@@ -61,3 +61,5 @@ instance [DivisionRing α] [Small α] : DivisionRing (Shrink α) :=
 
 instance [Field α] [Small α] : Field (Shrink α) :=
   (equivShrink _).symm.field
+
+end

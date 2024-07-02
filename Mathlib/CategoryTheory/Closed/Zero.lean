@@ -70,3 +70,5 @@ def equivPUnit [HasZeroObject C] : C ≌ Discrete PUnit.{w + 1} :=
 #align category_theory.equiv_punit CategoryTheory.equivPUnit
 
 end CategoryTheory
+
+end

@@ -249,3 +249,5 @@ theorem HasDerivWithinAt.liminf_right_slope_norm_le (hf : HasDerivWithinAt f f' 
 #align has_deriv_within_at.liminf_right_slope_norm_le HasDerivWithinAt.liminf_right_slope_norm_le
 
 end RealSpace
+
+end

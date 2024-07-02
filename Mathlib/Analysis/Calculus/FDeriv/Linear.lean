@@ -152,3 +152,5 @@ theorem IsBoundedLinearMap.differentiableOn (h : IsBoundedLinearMap 𝕜 f) : Di
 end ContinuousLinearMap
 
 end
+
+end

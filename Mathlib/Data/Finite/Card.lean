@@ -236,3 +236,5 @@ theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s �
 end Finite
 
 end Set
+
+end

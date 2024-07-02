@@ -72,3 +72,5 @@ macro_rules
 
 @[deprecated (since := "2024-04-17")]
 alias int_cast_ne := intCast_ne
+
+end Qify

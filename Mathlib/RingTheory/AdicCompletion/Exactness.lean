@@ -200,3 +200,5 @@ theorem map_exact : Function.Exact (map I f) (map I g) := by
       exact hle (a n).property
 
 end
+
+end AdicCompletion

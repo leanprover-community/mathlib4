@@ -94,3 +94,5 @@ theorem locallyOfFiniteType_respectsIso : MorphismProperty.RespectsIso @LocallyO
 #align algebraic_geometry.locally_of_finite_type_respects_iso AlgebraicGeometry.locallyOfFiniteType_respectsIso
 
 end AlgebraicGeometry
+
+end

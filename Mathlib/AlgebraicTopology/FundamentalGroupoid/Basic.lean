@@ -424,3 +424,5 @@ abbrev fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x
 #align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
 
 end FundamentalGroupoid
+
+end

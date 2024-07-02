@@ -136,3 +136,5 @@ alias ⟨_, finset_iUnion_right⟩ := finset_iUnion_right_iff
 #align is_metric_separated.finset_Union_right IsMetricSeparated.finset_iUnion_right
 
 end IsMetricSeparated
+
+end

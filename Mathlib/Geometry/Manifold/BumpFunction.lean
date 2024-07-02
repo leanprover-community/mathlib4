@@ -345,3 +345,5 @@ theorem smooth_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
 #align smooth_bump_function.smooth_smul SmoothBumpFunction.smooth_smul
 
 end SmoothBumpFunction
+
+end

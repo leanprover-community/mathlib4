@@ -29,3 +29,5 @@ instance [CommSemiring α] [Semiring β] [Algebra α β] [Small β] : Algebra α
 def algEquivShrink (α β) [CommSemiring α] [Semiring β] [Algebra α β] [Small β] :
     β ≃ₐ[α] Shrink β :=
   ((equivShrink β).symm.algEquiv α).symm
+
+end

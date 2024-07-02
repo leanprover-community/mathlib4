@@ -148,3 +148,5 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
 end TopologicalKonig
 
 end TopCat
+
+end

@@ -656,3 +656,5 @@ class RigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] exten
 #align category_theory.rigid_category CategoryTheory.RigidCategory
 
 end CategoryTheory
+
+end

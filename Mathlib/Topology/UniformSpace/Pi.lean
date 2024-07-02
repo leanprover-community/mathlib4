@@ -145,3 +145,5 @@ protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
   refine IsClosed.isComplete <| .mono ?_ this
   exact isClosed_iInter fun i ↦ isClosed_iInter fun j ↦
     isClosed_eq (continuous_apply _) (continuous_apply _)
+
+end

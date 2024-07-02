@@ -228,3 +228,5 @@ theorem ContDiffOn.arctan (h : ContDiffOn ℝ n f s) : ContDiffOn ℝ n (fun x =
 end fderiv
 
 end
+
+end

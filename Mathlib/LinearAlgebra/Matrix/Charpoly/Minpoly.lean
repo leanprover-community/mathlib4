@@ -93,3 +93,5 @@ theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [Algebra R S] (h : PowerBasi
 #align charpoly_left_mul_matrix charpoly_leftMulMatrix
 
 end PowerBasis
+
+end

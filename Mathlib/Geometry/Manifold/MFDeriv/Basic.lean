@@ -776,3 +776,5 @@ theorem tangentMap_comp (hg : MDifferentiable I' I'' g) (hf : MDifferentiable I 
 #align tangent_map_comp tangentMap_comp
 
 end DerivativesProperties
+
+end

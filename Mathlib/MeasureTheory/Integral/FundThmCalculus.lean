@@ -1645,3 +1645,5 @@ theorem integral_deriv_comp_mul_deriv {f f' g g' : ℝ → ℝ}
 end Mul
 
 end intervalIntegral
+
+end

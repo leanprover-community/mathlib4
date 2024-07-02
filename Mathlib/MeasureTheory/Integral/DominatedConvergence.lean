@@ -521,3 +521,5 @@ nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Int
 end ContinuousPrimitive
 
 end intervalIntegral
+
+end DominatedConvergenceTheorem

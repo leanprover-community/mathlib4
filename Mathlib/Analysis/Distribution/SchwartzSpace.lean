@@ -1322,3 +1322,5 @@ def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
 end ZeroAtInfty
 
 end SchwartzMap
+
+end

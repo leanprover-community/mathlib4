@@ -87,3 +87,5 @@ noncomputable def equivAsType : AsType α ≌ α :=
 end FinCategory
 
 end CategoryTheory
+
+end

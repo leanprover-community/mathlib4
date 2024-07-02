@@ -1927,3 +1927,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
+
+end

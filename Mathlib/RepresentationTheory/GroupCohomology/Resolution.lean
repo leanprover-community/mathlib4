@@ -717,3 +717,5 @@ def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
   (groupCohomology.projectiveResolution k G).isoExt n V
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso groupCohomology.extIso
+
+end

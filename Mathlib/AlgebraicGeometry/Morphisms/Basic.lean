@@ -484,3 +484,5 @@ alias targetAffineLocallyPullbackFstOfRightOfStableUnderBaseChange :=
 end AffineTargetMorphismProperty.IsLocal
 
 end AlgebraicGeometry
+
+end

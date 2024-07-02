@@ -184,3 +184,5 @@ theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
   integer_isOpen K
 
 end Valued
+
+end

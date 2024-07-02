@@ -381,3 +381,5 @@ theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [Topolog
     replace h := (h (s i)).mpr ⟨i, hi, Subset.rfl⟩
     exact hf.closure_image_mem_nhds h
 #align filter.has_basis.has_basis_of_dense_inducing Filter.HasBasis.hasBasis_of_denseInducing
+
+end

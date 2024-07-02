@@ -114,3 +114,5 @@ theorem det_basisOfFractionalIdeal_eq_absNorm  (I : (FractionalIdeal (𝓞 K)⁰
   simpa using basisOfFractionalIdeal_apply K I _
 
 end Norm
+
+end NumberField

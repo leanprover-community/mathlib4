@@ -122,3 +122,5 @@ instance instIsDomain [CharP R p] [IsDomain R] : IsDomain (𝕎 R) :=
   NoZeroDivisors.to_isDomain _
 
 end WittVector
+
+end

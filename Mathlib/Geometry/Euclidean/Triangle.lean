@@ -363,3 +363,5 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
 #align euclidean_geometry.dist_mul_of_eq_angle_of_dist_mul EuclideanGeometry.dist_mul_of_eq_angle_of_dist_mul
 
 end EuclideanGeometry
+
+end

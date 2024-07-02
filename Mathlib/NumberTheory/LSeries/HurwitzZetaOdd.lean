@@ -580,3 +580,5 @@ lemma sinZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -
     mul_comm]
 
 end HurwitzZeta
+
+end

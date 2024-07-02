@@ -46,3 +46,5 @@ theorem exists_homeomorph_extension {E : Type*} [NormedAddCommGroup E] [NormedSp
   haveI : FiniteDimensional ℝ E := f'.symm.finiteDimensional
   exact ⟨hg.toHomeomorph g hc, fg⟩
 #align approximates_linear_on.exists_homeomorph_extension ApproximatesLinearOn.exists_homeomorph_extension
+
+end ApproximatesLinearOn

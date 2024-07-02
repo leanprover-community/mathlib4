@@ -1890,3 +1890,5 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
 #align affine_subspace.affine_span_pair_parallel_iff_vector_span_eq AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq
 
 end AffineSubspace
+
+end

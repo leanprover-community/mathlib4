@@ -192,3 +192,5 @@ theorem monoOver_terminal_to_subterminals_comp [HasTerminal C] :
 #align category_theory.mono_over_terminal_to_subterminals_comp CategoryTheory.monoOver_terminal_to_subterminals_comp
 
 end CategoryTheory
+
+end

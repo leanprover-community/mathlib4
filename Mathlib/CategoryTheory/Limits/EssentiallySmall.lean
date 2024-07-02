@@ -49,3 +49,5 @@ theorem hasCoproductsOfShape_of_small (β : Type w₂) [Small.{w₁} β] [HasCop
 #align category_theory.limits.has_coproducts_of_shape_of_small CategoryTheory.Limits.hasCoproductsOfShape_of_small
 
 end CategoryTheory.Limits
+
+end

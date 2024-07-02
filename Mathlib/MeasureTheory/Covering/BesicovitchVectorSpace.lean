@@ -521,3 +521,5 @@ instance (priority := 100) instHasBesicovitchCovering : HasBesicovitchCovering E
 #align besicovitch.has_besicovitch_covering Besicovitch.instHasBesicovitchCovering
 
 end Besicovitch
+
+end

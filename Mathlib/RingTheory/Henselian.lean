@@ -269,3 +269,5 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         rw [SModEq.zero, Ideal.neg_mem_iff]
         exact Ideal.mul_mem_right _ _ h₁
 #align is_adic_complete.henselian_ring IsAdicComplete.henselianRing
+
+end

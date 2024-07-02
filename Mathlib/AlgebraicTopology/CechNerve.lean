@@ -444,3 +444,5 @@ def iso (X : C) : (Arrow.mk (terminal.from X)).cechNerve ≅ cechNerveTerminalFr
 end CechNerveTerminalFrom
 
 end CategoryTheory
+
+end

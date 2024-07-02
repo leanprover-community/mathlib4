@@ -474,3 +474,5 @@ theorem arcsin_eq_arccos {x : ℝ} (h : 0 ≤ x) : arcsin x = arccos (√(1 - x 
 #align real.arcsin_eq_arccos Real.arcsin_eq_arccos
 
 end Real
+
+end

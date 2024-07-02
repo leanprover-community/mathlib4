@@ -1186,3 +1186,5 @@ theorem norm_le_one_iff_val_nonneg (x : ℚ_[p]) : ‖x‖ ≤ 1 ↔ 0 ≤ x.val
 end NormLEIff
 
 end Padic
+
+end

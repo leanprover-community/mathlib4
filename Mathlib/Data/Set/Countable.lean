@@ -348,3 +348,5 @@ end Set
 theorem Finset.countable_toSet (s : Finset α) : Set.Countable (↑s : Set α) :=
   s.finite_toSet.countable
 #align finset.countable_to_set Finset.countable_toSet
+
+end

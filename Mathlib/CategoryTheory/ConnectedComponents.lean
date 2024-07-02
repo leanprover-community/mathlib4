@@ -154,3 +154,5 @@ def decomposedEquiv : Decomposed J ≌ J :=
 #align category_theory.decomposed_equiv CategoryTheory.decomposedEquiv
 
 end CategoryTheory
+
+end

@@ -831,3 +831,5 @@ theorem Real.tendsto_pow_div_factorial_atTop (x : ℝ) :
     Tendsto (fun n ↦ x ^ n / n ! : ℕ → ℝ) atTop (𝓝 0) :=
   (Real.summable_pow_div_factorial x).tendsto_atTop_zero
 #align real.tendsto_pow_div_factorial_at_top Real.tendsto_pow_div_factorial_atTop
+
+end

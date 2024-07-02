@@ -379,3 +379,5 @@ variable {IM I M R}
   smoothSheafCommRing.evalHom_germ IM I M R U x f
 
 end SmoothCommRing
+
+end

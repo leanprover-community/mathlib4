@@ -194,3 +194,5 @@ theorem support_add (a b : FreeAbelianGroup X) : support (a + b) âŠ† a.support â
 #align free_abelian_group.support_add FreeAbelianGroup.support_add
 
 end FreeAbelianGroup
+
+end

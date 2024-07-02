@@ -326,3 +326,5 @@ elab_rules : tactic |
   let type? ← if min.rfl? = some true then pure none else do pure <| some (← min.goal.getType)
   addRewriteSuggestion tk (min.history.toList.map (·.2))
     type? (origSpan? := ← getRef)
+
+end RewriteSearch

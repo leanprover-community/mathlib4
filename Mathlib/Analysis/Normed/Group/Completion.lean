@@ -50,3 +50,5 @@ theorem nnnorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E
 end Completion
 
 end UniformSpace
+
+end

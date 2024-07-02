@@ -66,3 +66,5 @@ theorem inv_comp_image_ι_map {X Y : A} (f : X ⟶ Y) :
 end PreservesImage
 
 end CategoryTheory
+
+end

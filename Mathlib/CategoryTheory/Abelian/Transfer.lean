@@ -184,3 +184,5 @@ def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFi
 #align category_theory.abelian_of_equivalence CategoryTheory.abelianOfEquivalence
 
 end CategoryTheory
+
+end

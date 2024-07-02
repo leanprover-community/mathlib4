@@ -221,3 +221,5 @@ def equiv : 𝕎 (ZMod p) ≃+* ℤ_[p] where
 #align witt_vector.equiv WittVector.equiv
 
 end WittVector
+
+end

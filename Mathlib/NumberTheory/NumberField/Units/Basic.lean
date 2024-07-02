@@ -157,3 +157,5 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
 
 end torsion
+
+end Units

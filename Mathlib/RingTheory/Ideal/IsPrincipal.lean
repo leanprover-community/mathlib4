@@ -91,3 +91,5 @@ noncomputable def associatesMulEquivIsPrincipal :
   map_mul' _ _ := by
     erw [Subtype.ext_iff, associatesEquivIsPrincipal_mul]
     rfl
+
+end Ideal

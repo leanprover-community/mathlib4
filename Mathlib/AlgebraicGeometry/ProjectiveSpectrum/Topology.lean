@@ -500,3 +500,5 @@ theorem le_iff_mem_closure (x y : ProjectiveSpectrum 𝒜) :
 end Order
 
 end ProjectiveSpectrum
+
+end

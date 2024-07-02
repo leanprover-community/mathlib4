@@ -210,3 +210,5 @@ theorem transcendental_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) :
     Transcendental ℤ (liouvilleNumber m) :=
   (liouville_liouvilleNumber hm).transcendental
 #align transcendental_liouville_number transcendental_liouvilleNumber
+
+end

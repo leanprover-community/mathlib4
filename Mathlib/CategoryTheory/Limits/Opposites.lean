@@ -903,3 +903,5 @@ def KernelFork.IsLimit.ofιUnop {K X Y : Cᵒᵖ} (i : K ⟶ X) {f : X ⟶ Y}
 end HasZeroMorphisms
 
 end CategoryTheory.Limits
+
+end

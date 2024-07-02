@@ -65,3 +65,5 @@ theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] 
     use fun i => w i
     simpa only [Subtype.ext_iff, funext_iff] using hw
 #align ax_grothendieck_of_locally_finite ax_grothendieck_of_locally_finite
+
+end

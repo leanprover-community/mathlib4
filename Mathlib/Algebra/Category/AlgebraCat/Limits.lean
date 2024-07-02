@@ -214,3 +214,5 @@ instance forgetPreservesLimits : PreservesLimits (forget (AlgebraCat.{w} R)) :=
 #align Algebra.forget_preserves_limits AlgebraCat.forgetPreservesLimits
 
 end AlgebraCat
+
+end

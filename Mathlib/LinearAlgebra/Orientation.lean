@@ -441,3 +441,5 @@ theorem someBasis_orientation [Nonempty ι] [DecidableEq ι] (x : Orientation R 
 end Orientation
 
 end LinearOrderedField
+
+end

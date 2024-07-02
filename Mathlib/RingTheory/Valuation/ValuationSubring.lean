@@ -911,3 +911,5 @@ theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
 #align valuation.mem_unit_group_iff Valuation.mem_unitGroup_iff
 
 end Valuation
+
+end

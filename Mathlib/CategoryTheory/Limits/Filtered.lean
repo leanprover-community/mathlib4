@@ -98,3 +98,5 @@ instance (priority := 100) hasColimitsOfShape_of_has_filtered_colimits
 end Limits
 
 end CategoryTheory
+
+end

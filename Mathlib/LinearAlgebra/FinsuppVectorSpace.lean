@@ -171,3 +171,5 @@ theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
 #align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
 
 end Basis
+
+end

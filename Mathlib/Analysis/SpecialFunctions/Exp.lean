@@ -525,3 +525,5 @@ open Complex in
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
 lemma HasSum.cexp {ι : Type*} {f : ι → ℂ} {a : ℂ} (h : HasSum f a) : HasProd (cexp ∘ f) (cexp a) :=
   Filter.Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.cexp h
+
+end

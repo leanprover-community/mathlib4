@@ -303,3 +303,5 @@ lemma isMeagre_iff_countable_union_isNowhereDense {s : Set X} :
       (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
 
 end meagre
+
+end

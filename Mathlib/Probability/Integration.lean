@@ -321,3 +321,5 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
 #align probability_theory.indep_fun_iff_integral_comp_mul ProbabilityTheory.indepFun_iff_integral_comp_mul
 
 end ProbabilityTheory
+
+end

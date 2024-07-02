@@ -411,3 +411,5 @@ theorem variance (n : ℕ) :
 #align bernstein_polynomial.variance bernsteinPolynomial.variance
 
 end bernsteinPolynomial
+
+end

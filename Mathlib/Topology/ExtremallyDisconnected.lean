@@ -314,3 +314,5 @@ instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, Top
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
   · continuity
+
+end

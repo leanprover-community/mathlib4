@@ -596,3 +596,5 @@ end ProbabilityMeasure -- namespace
 end map -- section
 
 end MeasureTheory -- namespace
+
+end

@@ -699,3 +699,5 @@ theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R â†’+* â„
 #align padic_int.to_zmod_pow_eq_iff_ext PadicInt.toZModPow_eq_iff_ext
 
 end PadicInt
+
+end

@@ -572,3 +572,5 @@ protected theorem nhds [CompleteSpace E] (e : E ≃L[𝕜] F) :
 #align continuous_linear_equiv.nhds ContinuousLinearEquiv.nhds
 
 end ContinuousLinearEquiv
+
+end

@@ -526,3 +526,5 @@ instance Ideal.Quotient.normedAlgebra [NormedAlgebra ğ•œ R] : NormedAlgebra ğ•
 #align ideal.quotient.normed_algebra Ideal.Quotient.normedAlgebra
 
 end Ideal
+
+end

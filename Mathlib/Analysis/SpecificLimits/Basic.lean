@@ -714,3 +714,5 @@ lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) at
   rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end
+
+end

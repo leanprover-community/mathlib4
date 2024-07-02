@@ -89,3 +89,5 @@ theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x |
 #align real.log_div_sqrt_antitone_on Real.log_div_sqrt_antitoneOn
 
 end Real
+
+end

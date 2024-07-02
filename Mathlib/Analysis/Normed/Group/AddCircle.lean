@@ -279,3 +279,5 @@ theorem norm_eq {x : ℝ} : ‖(x : UnitAddCircle)‖ = |x - round x| := by simp
 #align unit_add_circle.norm_eq UnitAddCircle.norm_eq
 
 end UnitAddCircle
+
+end

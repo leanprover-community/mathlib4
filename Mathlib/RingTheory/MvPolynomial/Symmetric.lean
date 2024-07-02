@@ -327,3 +327,5 @@ theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := rename_psum _ 
 end PowerSum
 
 end MvPolynomial
+
+end

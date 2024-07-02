@@ -188,3 +188,5 @@ noncomputable def homology'IsoHomology :
   homology'IsoCokernelLift S.f S.g S.zero ≪≫ S.homologyIsoCokernelLift.symm
 
 end ShortComplex
+
+end CategoryTheory

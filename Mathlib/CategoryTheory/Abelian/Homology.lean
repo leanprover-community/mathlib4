@@ -361,3 +361,5 @@ noncomputable def homology'FunctorIso (i : ι) :
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homology'FunctorIso
 
 end CategoryTheory.Functor
+
+end

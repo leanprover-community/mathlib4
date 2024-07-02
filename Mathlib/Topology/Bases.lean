@@ -1052,3 +1052,5 @@ protected theorem Embedding.separableSpace [TopologicalSpace α]
     TopologicalSpace.SeparableSpace α := by
   have := hf.secondCountableTopology
   exact SecondCountableTopology.to_separableSpace
+
+end

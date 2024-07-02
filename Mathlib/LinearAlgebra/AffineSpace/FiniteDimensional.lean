@@ -859,3 +859,5 @@ theorem exists_affineBasis_of_finiteDimensional [Fintype ι] [FiniteDimensional 
 end DivisionRing
 
 end AffineBasis
+
+end

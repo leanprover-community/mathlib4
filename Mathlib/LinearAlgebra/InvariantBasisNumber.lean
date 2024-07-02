@@ -355,3 +355,5 @@ instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : T
 #align invariant_basis_number_of_nontrivial_of_comm_ring invariantBasisNumber_of_nontrivial_of_commRing
 
 end
+
+end

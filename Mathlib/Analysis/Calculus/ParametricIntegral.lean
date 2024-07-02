@@ -310,3 +310,5 @@ theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le (ε_pos : 0 < ε)
 #align has_deriv_at_integral_of_dominated_loc_of_deriv_le hasDerivAt_integral_of_dominated_loc_of_deriv_le
 
 end
+
+end

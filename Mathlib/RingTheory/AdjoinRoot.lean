@@ -935,3 +935,5 @@ theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
   have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
+
+end

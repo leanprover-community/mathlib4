@@ -119,3 +119,5 @@ instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
 #align finsupp.pointwise_module Finsupp.pointwiseModule
 
 end Finsupp
+
+end

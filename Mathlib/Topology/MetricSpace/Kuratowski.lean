@@ -162,3 +162,5 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {ι 
     · intro a hyp
       ext i
       exact (hgeq i) hyp
+
+end

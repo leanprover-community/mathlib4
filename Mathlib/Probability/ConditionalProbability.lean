@@ -245,3 +245,5 @@ lemma sum_meas_smul_cond_fiber {X : Ω → α} (hX : Measurable X) (μ : Measure
       aesop (add simp [PairwiseDisjoint, Set.Pairwise, Function.onFun, disjoint_left])
 
 end ProbabilityTheory
+
+end

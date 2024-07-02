@@ -2188,3 +2188,5 @@ def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :
     MonoidAlgebra k G ≃ₐ[R] AddMonoidAlgebra k (Additive G) :=
   { MonoidAlgebra.toAdditive k G with commutes' := fun r => by simp [MonoidAlgebra.toAdditive] }
 #align monoid_algebra.to_additive_alg_equiv MonoidAlgebra.toAdditiveAlgEquiv
+
+end

@@ -123,3 +123,5 @@ produces three goals with hypotheses
   | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext <| focus do
     for h in hyps do
       allGoals <| liftMetaTactic (finCasesAt · (← getFVarId h))
+
+end Tactic

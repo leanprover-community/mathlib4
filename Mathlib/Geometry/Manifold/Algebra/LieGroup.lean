@@ -372,3 +372,5 @@ theorem Smooth.div₀ (hf : Smooth I' I f) (hg : Smooth I' I g) (h₀ : ∀ x, g
   ContMDiff.div₀ hf hg h₀
 
 end Div
+
+end

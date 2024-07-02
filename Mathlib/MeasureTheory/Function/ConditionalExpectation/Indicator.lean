@@ -184,3 +184,5 @@ theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
 #align measure_theory.condexp_ae_eq_restrict_of_measurable_space_eq_on MeasureTheory.condexp_ae_eq_restrict_of_measurableSpace_eq_on
 
 end MeasureTheory
+
+end

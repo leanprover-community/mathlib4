@@ -137,3 +137,5 @@ theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R}
 end PDeriv
 
 end MvPolynomial
+
+end

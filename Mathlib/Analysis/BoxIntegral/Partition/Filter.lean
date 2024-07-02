@@ -572,3 +572,5 @@ theorem eventually_isPartition (l : IntegrationParams) (I : Box ι) :
 end IntegrationParams
 
 end BoxIntegral
+
+end

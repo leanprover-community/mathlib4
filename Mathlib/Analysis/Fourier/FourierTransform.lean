@@ -483,3 +483,5 @@ theorem fourierIntegral_continuousMultilinearMap_apply {ι : Type*} [Fintype ι]
   fourierIntegral_continuousMultilinearMap_apply' (L := innerSL ℝ) hf
 
 end Real
+
+end

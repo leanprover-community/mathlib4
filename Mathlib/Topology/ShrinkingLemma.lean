@@ -261,3 +261,5 @@ theorem exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, {
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closed_subset isClosed_univ uo (fun x _ => uf x) uU.ge
   ⟨v, univ_subset_iff.1 vU, hv⟩
 #align exists_Union_eq_closed_subset exists_iUnion_eq_closed_subset
+
+end

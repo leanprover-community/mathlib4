@@ -1090,3 +1090,5 @@ theorem abs_oangle_sub_right_toReal_lt_pi_div_two {x y : V} (h : ‖x‖ = ‖y�
 #align orientation.abs_oangle_sub_right_to_real_lt_pi_div_two Orientation.abs_oangle_sub_right_toReal_lt_pi_div_two
 
 end Orientation
+
+end

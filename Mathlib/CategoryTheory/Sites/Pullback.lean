@@ -72,3 +72,5 @@ def Functor.sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] :
 #align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Functor.sheafAdjunctionContinuous
 
 end CategoryTheory
+
+end

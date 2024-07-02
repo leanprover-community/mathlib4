@@ -259,3 +259,5 @@ theorem Coindep.exists_subset_compl_base (h : M.Coindep X) : ∃ B, M.Base B ∧
   coindep_iff_subset_compl_base.1 h
 
 end dual
+
+end Matroid

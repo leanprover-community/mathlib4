@@ -49,3 +49,5 @@ theorem injective_of_preservesFiniteColimits_preadditiveYonedaObj (J : C)
 #align category_theory.injective_of_preserves_finite_colimits_preadditive_yoneda_obj CategoryTheory.injective_of_preservesFiniteColimits_preadditiveYonedaObj
 
 end CategoryTheory
+
+end

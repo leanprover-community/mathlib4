@@ -733,3 +733,5 @@ instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X
     LindelofSpace {x // p x} := by
   apply isLindelof_iff_LindelofSpace.mp
   exact HereditarilyLindelof_LindelofSets fun x ↦ p x
+
+end Lindelof

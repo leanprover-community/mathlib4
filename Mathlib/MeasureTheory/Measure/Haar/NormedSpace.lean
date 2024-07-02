@@ -233,3 +233,5 @@ theorem integral_comp (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y
 end InnerProductSpace
 
 end MeasureTheory
+
+end

@@ -720,3 +720,5 @@ end HomotopicRel
   ⟨fun h ↦ h.homotopic, fun ⟨F⟩ ↦ ⟨⟨F, fun _ _ ↦ False.elim⟩⟩⟩
 
 end ContinuousMap
+
+end
