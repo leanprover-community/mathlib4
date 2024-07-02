@@ -29,6 +29,11 @@ structure Hom (X Y : FormalCoproduct.{w} C) where
   id X := { f := id, φ := fun _ ↦ 𝟙 _ }
   comp α β := { f := β.f ∘ α.f, φ := fun _ ↦ α.φ _ ≫ β.φ _ }
 
+@[ext]
+lemma hom_ext {X Y : FormalCoproduct.{w} C} {f g : X ⟶ Y} (h₁ : f.f = g.f)
+    (h₂ : ∀ (i : X.I), f.φ i ≫ eqToHom (by rw [h₁]) = g.φ i): f = g := by
+  sorry
+
 @[simps] noncomputable def eval (X : FormalCoproduct.{w} C) : (Cᵒᵖ ⥤ A) ⥤ A where
   obj F := ∏ᶜ (fun (i : X.I) ↦ F.obj (op (X.obj i)))
   map α := Pi.map (fun _ ↦ α.app _)
@@ -63,8 +68,8 @@ noncomputable def cechSimplicial {I : Type w} (U : I → C) [HasFiniteProducts C
   map {Δ Δ'} f :=
     { f := fun a x ↦ a (f.unop.toOrderHom x)
       φ := fun a ↦ Pi.map' (fun x ↦ f.unop.toOrderHom x) (fun x ↦ 𝟙 _) }
-  map_id _ := by dsimp; congr; ext; simp
-  map_comp _ _ := by dsimp; congr; ext; simp
+  map_id _ := by ext <;> simp
+  map_comp _ _ := by ext <;> simp
 
 end FormalCoproduct
 
