@@ -479,7 +479,6 @@ lemma eq_none_or_eq_some (a : Option α) : a = none ∨ ∃ x, a = some x :=
 
 lemma eq_none_iff_forall {o : Option α} : o = none ↔ ∀ (x : α), some x ≠ o := by
   apply not_iff_not.1
-  simp only [not_forall, not_not]
-  exact Option.ne_none_iff_exists
+  simpa only [not_forall, not_not] using Option.ne_none_iff_exists
 
 end Option
