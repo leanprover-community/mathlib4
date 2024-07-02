@@ -32,18 +32,29 @@ However, we restate some lemmas specifically for `ae`.
 outer measure, measure, almost everywhere
 -/
 
-open Filter Set
+open Filter Set MeasureTheory
 open scoped ENNReal
-
-namespace MeasureTheory
 
 variable {α β F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F α] {μ : F} {s t : Set α}
 
 /-- The “almost everywhere” filter of co-null sets. -/
-def ae (μ : F) : Filter α :=
+def MeasureTheory.ae (μ : F) : Filter α :=
   .ofCountableUnion (μ · = 0) (fun _S hSc ↦ (measure_sUnion_null_iff hSc).2) fun _t ht _s hs ↦
     measure_mono_null hs ht
 #align measure_theory.measure.ae MeasureTheory.ae
+
+namespace Mathlib.Meta
+open Lean Elab Term Meta Qq
+
+/-- Try to elaborate `μ` as a term of type `T` where `OuterMeasure T`. If that fails, try to
+elaborate `μ` as `Measure ?Ω`. -/
+def elabMeasure (μ : TSyntax `term) : TermElabM Expr := do
+  try
+    -- let (T : Q(Type)) ← try whnfR (← inferType (← elabTerm μ none)) catch _ => throwUnsupportedSyntax
+    -- let trtr ← synthInstanceQ q(OuterMeasureClass $T $T)
+    sorry
+  catch _ =>
+    elabTerm μ (.some (← `(Measure _)))
 
 /-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
@@ -60,7 +71,21 @@ notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measur
 i.e. `f=g` away from a null set.
 
 This is notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
-notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (MeasureTheory.ae μ) f g
+syntax:50 (name := aeeq) term:50 " =ᵐ[" term:50 "] " term:50 : term
+
+/-- Elaborate almost every equal notation.
+
+We elabore `f =ᵐ[μ] g` as `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
+@[term_elab aeeq]
+def elabAEEq : TermElab
+  | `($f =ᵐ[$μ] $g), expectedType? => do
+    let μ' ← elabMeasure μ
+    elabTerm (← `(Filter.EventuallyEq (MeasureTheory.ae $μ') $f $g)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
+end Mathlib.Meta
+
+namespace MeasureTheory
 
 /-- `f ≤ᵐ[μ] g` means `f` is eventually less than `g` along the a.e. filter,
 i.e. `f ≤ g` away from a null set.
