@@ -16,7 +16,7 @@ import Mathlib.RingTheory.OreLocalization.Basic
 # Module and Ring instances of Ore Localizations
 
 The `Monoid` and `DistribMulAction` instances and additive versions are provided in
-`RingTheory/OreLocalization/Basic.lean`.
+`Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
 
@@ -110,12 +110,11 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
   exact congr($(AddCommMonoid.natModule.unique.2 inst).smul n x)
 
-unseal OreLocalization.zero in
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
 def numeratorRingHom : R →+* R[S⁻¹] where
   __ := numeratorHom
-  map_zero' := OreLocalization.zero_def
+  map_zero' := by with_unfolding_all OreLocalization.zero_def
   map_add' _ _ := add_oreDiv.symm
 
 instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
@@ -140,19 +139,13 @@ variable (hf : ∀ s : S, f s = fS s)
 units of `T`, to a ring homomorphism `R[S⁻¹] →+* T`. This extends the construction on
 monoids. -/
 def universalHom : R[S⁻¹] →+* T :=
-  {
-    universalMulHom f.toMonoidHom fS
-      hf with
+  { universalMulHom f.toMonoidHom fS hf with
     map_zero' := by
-      -- Porting note: `change` required because of new `Coe`
-      change (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) 0 = 0
+      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       rw [OreLocalization.zero_def, universalMulHom_apply]
       simp
     map_add' := fun x y => by
-      -- Porting note: `change` required because of new `Coe`
-      change (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) (x + y)
-        = (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) x
-        + (universalMulHom f.toMonoidHom fS hf : R[S⁻¹] → T) y
+      simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
       induction' x with r₁ s₁
       induction' y with r₂ s₂
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩

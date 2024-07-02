@@ -378,12 +378,11 @@ def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
             cases f
             · cases i
               all_goals dsimp; simp
-            · dsimp
-              simp only [terminal.comp_from]
-              exact Subsingleton.elim _ _ } }
+            · simp only [Functor.const_obj_obj, Functor.const_obj_map, terminal.comp_from]
+              subsingleton } }
   isLimit :=
     { lift := fun s => Limits.Pi.lift fun j => s.π.app (some j)
-      fac := fun s j => Option.casesOn j (Subsingleton.elim _ _) fun j => limit.lift_π _ _
+      fac := fun s j => Option.casesOn j (by subsingleton) fun j => limit.lift_π _ _
       uniq := fun s f h => by
         dsimp
         ext j

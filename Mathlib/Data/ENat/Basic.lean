@@ -170,6 +170,9 @@ theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
 theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a : ℕ∞)) :=
   nofun
 
+@[simp] lemma top_ne_zero : (⊤ : ℕ∞) ≠ 0 := nofun
+@[simp] lemma top_ne_one : (⊤ : ℕ∞) ≠ 1 := nofun
+
 @[simp]
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
@@ -178,6 +181,9 @@ theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
 @[simp]
 theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℕ∞)) ≠ ⊤ :=
   nofun
+
+@[simp] lemma zero_ne_top : 0 ≠ (⊤ : ℕ∞) := nofun
+@[simp] lemma one_ne_top : 1 ≠ (⊤ : ℕ∞) := nofun
 
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
@@ -227,6 +233,14 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
 #align enat.to_nat_eq_iff ENat.toNat_eq_iff
+
+lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
+  lift m to ℕ using ne_top_of_le_ne_top (coe_ne_top n) h
+  simpa using h
+
+@[gcongr]
+lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
+  toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
 @[simp]
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 := by cases m <;> rfl

@@ -44,7 +44,9 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R`-algebra `A` is formally unramified if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`. -/
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`.
+
+See <https://stacks.math.columbia.edu/tag/00UM>. -/
 @[mk_iff]
 class FormallyUnramified : Prop where
   comp_injective :
@@ -177,7 +179,7 @@ instance base_change [FormallyUnramified R A] :
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   ext : 1
-  · exact Subsingleton.elim _ _
+  · subsingleton
   · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
 #align algebra.formally_unramified.base_change Algebra.FormallyUnramified.base_change
 
@@ -234,6 +236,10 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type.
+
+Note that the Stacks project has a different definition of unramified, and tag
+<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the
+same as this one.
 -/
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance
