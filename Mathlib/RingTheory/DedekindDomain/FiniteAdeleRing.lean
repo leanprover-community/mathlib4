@@ -346,6 +346,9 @@ instance : Algebra K (FiniteAdeleRing R K) :=
 instance : Algebra R (FiniteAdeleRing R K) :=
   ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K)).toAlgebra
 
+instance : IsScalarTower R K (FiniteAdeleRing R K) :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
   coe := fun x ↦ x.1
 
@@ -372,8 +375,7 @@ instance : CoeFun (FiniteAdeleRing R K)
   coe a v := a.1 v
 
 open scoped algebraMap in
--- move to nearer definition
-lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : FiniteIntegralAdeles R K,
+lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat R K,
     a = c) ↔ ∀ (v : HeightOneSpectrum R), a v ∈ adicCompletionIntegers K v :=
   ⟨by rintro ⟨c, rfl⟩ v; exact (c v).2, fun h ↦ ⟨fun v ↦ ⟨a v, h v⟩, rfl⟩⟩
 
@@ -472,15 +474,15 @@ theorem submodulesRingBasis : SubmodulesRingBasis
     use m * n * (r : R)
     simp only [Algebra.smul_def', map_mul]
     rw [mul_mul_mul_comm, mul_assoc]
-    rfl
-  ⟩
+    rfl⟩
 
 instance : Nonempty (R⁰) := ⟨1, Submonoid.one_mem R⁰⟩
 
 instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
---#synth TopologicalRing (FiniteAdeleRing R K) -- works
+-- the point of the above: this now works
+example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
 
 end Topology
 
