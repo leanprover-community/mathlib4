@@ -60,7 +60,8 @@ protected theorem hasStrictDerivAt (x : 𝕜) :
     HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x := by
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq => simpa using hp.add hq
-  | h_monomial n a => simpa [mul_assoc] using (hasStrictDerivAt_pow n x).const_mul a
+  | h_monomial n a => simpa [mul_assoc, derivative_monomial]
+                        using (hasStrictDerivAt_pow n x).const_mul a
 #align polynomial.has_strict_deriv_at Polynomial.hasStrictDerivAt
 
 protected theorem hasStrictDerivAt_aeval (x : 𝕜) :
