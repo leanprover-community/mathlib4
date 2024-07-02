@@ -55,6 +55,7 @@ assert_not_exists Star
 assert_not_exists DomMulAct
 assert_not_exists Pi.module
 assert_not_exists WCovBy
+assert_not_exists Field
 
 open Function
 
