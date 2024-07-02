@@ -18,7 +18,8 @@ This is used for creating a `rw` tactic call that rewrites a selected expression
 the sub-expression together with an optional occurrence number that would be required to find
 the sub-expression using `kabstract` (which is what `rw` uses to find the position of the rewrite)
 
-`rw` can fail if the motive is not type correct. `kabstractIsTypeCorrect` checks whether this is the case.
+`rw` can fail if the motive is not type correct. `kabstractIsTypeCorrect` checks
+whether this is the case.
 
 -/
 
