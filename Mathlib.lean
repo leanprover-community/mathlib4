@@ -1960,6 +1960,7 @@ import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Density
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Finsupp
 import Mathlib.Data.Finset.Fold
