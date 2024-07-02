@@ -113,6 +113,9 @@ theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
   · simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
   · rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
 
+@[deprecated (since := "2024-04-17")]
+alias smeval_nat_cast := smeval_natCast
+
 @[simp]
 theorem smeval_smul (r : R) : (r • p).smeval x = r • p.smeval x := by
   induction p using Polynomial.induction_on' with
@@ -152,9 +155,7 @@ variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R
 
 @[simp]
 theorem smeval_neg : (-p).smeval x = - p.smeval x := by
-  have h : (p + -p).smeval x = 0 := by rw [add_neg_self, smeval_zero]
-  rw [smeval_add, add_eq_zero_iff_neg_eq] at h
-  exact id h.symm
+  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, add_left_neg, smeval_zero]
 
 @[simp]
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
@@ -184,6 +185,9 @@ theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeva
   | h_monomial n a =>
     intro n
     rw [smeval_monomial, smeval_monomial, nsmul_eq_mul, smul_eq_mul, Nat.cast_mul, Nat.cast_npow]
+
+@[deprecated (since := "2024-04-17")]
+alias smeval_at_nat_cast := smeval_at_natCast
 
 theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
   induction p using Polynomial.induction_on' with

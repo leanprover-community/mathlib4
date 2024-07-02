@@ -250,12 +250,12 @@ abbrev elementaryDiagram : L[[M]].Theory :=
 def ElementaryEmbedding.ofModelsElementaryDiagram (N : Type*) [L.Structure N] [L[[M]].Structure N]
     [(lhomWithConstants L M).IsExpansionOn N] [N ⊨ L.elementaryDiagram M] : M ↪ₑ[L] N :=
   ⟨((↑) : L[[M]].Constants → N) ∘ Sum.inr, fun n φ x => by
-    refine'
-      _root_.trans _
+    refine
+      _root_.trans ?_
         ((realize_iff_of_model_completeTheory M N
               (((L.lhomWithConstants M).onBoundedFormula φ).subst
                   (Constants.term ∘ Sum.inr ∘ x)).alls).trans
-          _)
+          ?_)
     · simp_rw [Sentence.Realize, BoundedFormula.realize_alls, BoundedFormula.realize_subst,
         LHom.realize_onBoundedFormula, Formula.Realize, Unique.forall_iff, Function.comp,
         Term.realize_constants]

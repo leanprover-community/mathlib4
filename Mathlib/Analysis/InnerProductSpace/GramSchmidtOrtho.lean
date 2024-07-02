@@ -37,8 +37,6 @@ and outputs a set of orthogonal vectors which have the same span.
 -/
 
 
-open scoped BigOperators
-
 open Finset Submodule FiniteDimensional
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]

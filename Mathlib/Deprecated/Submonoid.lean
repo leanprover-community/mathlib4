@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Deprecated.Group
 
@@ -30,8 +30,6 @@ of `M`. The bundled variant `Submonoid M` should be used in preference to this.
 Submonoid, Submonoids, IsSubmonoid
 -/
 
-
-open BigOperators
 
 variable {M : Type*} [Monoid M] {s : Set M}
 variable {A : Type*} [AddMonoid A] {t : Set A}
@@ -222,7 +220,7 @@ theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : p
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
 #align is_submonoid.power_subset IsSubmonoid.powers_subset
 #align is_add_submonoid.multiples_subset IsAddSubmonoid.multiples_subset
-@[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 
@@ -410,8 +408,8 @@ theorem mem_closure_union_iff {M : Type*} [CommMonoid M] {s t : Set M} {x : M} :
         HL1,
     fun ⟨y, hy, z, hz, hyzx⟩ =>
     hyzx ▸
-      (closure.isSubmonoid _).mul_mem (closure_mono (Set.subset_union_left _ _) hy)
-        (closure_mono (Set.subset_union_right _ _) hz)⟩
+      (closure.isSubmonoid _).mul_mem (closure_mono Set.subset_union_left hy)
+        (closure_mono Set.subset_union_right hz)⟩
 #align monoid.mem_closure_union_iff Monoid.mem_closure_union_iff
 #align add_monoid.mem_closure_union_iff AddMonoid.mem_closure_union_iff
 

@@ -60,8 +60,9 @@ theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x 
 #align mv_polynomial.aeval_algebra_map_eq_zero_iff MvPolynomial.aeval_algebraMap_eq_zero_iff
 
 theorem aeval_algebraMap_eq_zero_iff_of_injective {x : σ → A} {p : MvPolynomial σ R}
-    (h : Function.Injective (algebraMap A B)) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 :=
-  by rw [aeval_algebraMap_apply, ← (algebraMap A B).map_zero, h.eq_iff]
+    (h : Function.Injective (algebraMap A B)) :
+    aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 := by
+  rw [aeval_algebraMap_apply, ← (algebraMap A B).map_zero, h.eq_iff]
 #align mv_polynomial.aeval_algebra_map_eq_zero_iff_of_injective MvPolynomial.aeval_algebraMap_eq_zero_iff_of_injective
 
 end CommSemiring

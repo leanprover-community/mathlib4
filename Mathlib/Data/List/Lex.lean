@@ -129,7 +129,7 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
   | [], b :: l₂ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
     haveI := decidableRel r l₁ l₂
-    refine' decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => _, fun h => _⟩
+    refine decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => ?_, fun h => ?_⟩
     · rcases h with (h | ⟨rfl, h⟩)
       · exact Lex.rel h
       · exact Lex.cons h
@@ -218,13 +218,13 @@ theorem nil_le {α} [LinearOrder α] {l : List α} : [] ≤ l :=
   | [] => le_rfl
   | _ :: _ => le_of_lt <| nil_lt_cons _ _
 
-theorem head_le_of_lt [LinearOrder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
-    a' ≤ a := by
-  by_contra hh
-  simp only [not_le] at hh
-  exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hh) h
+theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
+    a' ≤ a :=
+  match h with
+  | .cons _ => le_rfl
+  | .rel h => h.le
 
-theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
+theorem head!_le_of_lt [Preorder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
     l'.head! ≤ l.head! := by
   replace h : List.Lex (· < ·) l' l := h
   by_cases hl : l = []
@@ -235,10 +235,6 @@ theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : l' 
 theorem cons_le_cons [LinearOrder α] (a : α) {l l' : List α} (h : l' ≤ l) :
     a :: l' ≤ a :: l := by
   rw [le_iff_lt_or_eq] at h ⊢
-  refine h.imp ?_ (congr_arg _)
-  intro h
-  have haa := lt_irrefl a
-  exact (List.lt_iff_lex_lt _ _).mp
-    (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr h))
+  exact h.imp .cons (congr_arg _)
 
 end List

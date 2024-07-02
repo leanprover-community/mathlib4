@@ -36,7 +36,6 @@ Together, these four statements say that any two of the following properties imp
 
 
 open Finset
-open scoped BigOperators
 
 namespace Configuration
 

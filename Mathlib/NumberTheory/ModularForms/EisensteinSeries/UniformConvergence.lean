@@ -31,7 +31,8 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset
 
-open scoped BigOperators
+open scoped UpperHalfPlane
+
 
 variable (z : ℍ)
 
@@ -179,15 +180,13 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : �
   simpa only [eisSummand, one_div, ← zpow_neg, norm_eq_abs, abs_zpow, ← Real.rpow_intCast,
     Int.cast_neg] using summand_bound_of_mem_verticalStrip (by positivity) p hB hz
 
-/-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
-local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm (openEmbedding_coe.toPartialHomeomorph _))
-
 /-- Variant of `eisensteinSeries_tendstoLocallyUniformly` formulated with maps `ℂ → ℂ`, which is
 nice to have for holomorphicity later. -/
 lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤ k)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) ↦
-      ↑ₕ(fun (z : ℍ) ↦ ∑ x ∈ s, eisSummand k x z )) (↑ₕ(eisensteinSeries_SIF a k).toFun)
-          Filter.atTop (UpperHalfPlane.coe '' ⊤) := by
+      ↑ₕ(fun (z : ℍ) ↦ ∑ x in s, eisSummand k x z )) (↑ₕ(eisensteinSeries_SIF a k).toFun)
+          Filter.atTop {z : ℂ | 0 < z.im} := by
+  rw [← Subtype.coe_image_univ {z : ℂ | 0 < z.im}]
   apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (PartialHomeomorph.continuousOn_symm _)
   · simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
     apply eisensteinSeries_tendstoLocallyUniformly hk

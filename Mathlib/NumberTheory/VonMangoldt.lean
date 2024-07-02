@@ -108,8 +108,6 @@ theorem vonMangoldt_eq_zero_iff {n : ℕ} : Λ n = 0 ↔ ¬IsPrimePow n :=
   vonMangoldt_ne_zero_iff.not_right
 #align nat.arithmetic_function.von_mangoldt_eq_zero_iff ArithmeticFunction.vonMangoldt_eq_zero_iff
 
-open scoped BigOperators
-
 theorem vonMangoldt_sum {n : ℕ} : ∑ i ∈ n.divisors, Λ i = Real.log n := by
   refine recOnPrimeCoprime ?_ ?_ ?_ n
   · simp

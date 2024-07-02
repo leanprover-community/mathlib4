@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 
 universe u v w
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset
 

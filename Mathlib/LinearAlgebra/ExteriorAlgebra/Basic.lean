@@ -311,10 +311,10 @@ def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
         · convert mul_zero (ι R (f 0))
-          refine'
+          refine
             hn
               (fun i => f <| Fin.succ i) (x.pred hx)
-              (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) _
+              (y.pred (ne_of_lt <| lt_of_le_of_lt x.zero_le h).symm) ?_
               (Fin.pred_lt_pred_iff.mpr h)
           simp only [Fin.succ_pred]
           exact hfxy

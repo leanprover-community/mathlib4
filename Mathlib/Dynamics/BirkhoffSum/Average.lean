@@ -24,7 +24,6 @@ see `birkhoffAverage_congr_ring`.
 -/
 
 open Finset
-open scoped BigOperators
 
 section birkhoffAverage
 

@@ -490,7 +490,7 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
   simp_rw [fourier_coe_apply]
   refine (?_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
   rw [(fun α β => by ring : ∀ α β : ℂ, α * exp β = exp β * α)]
-  refine' (hasDerivAt_exp _).comp ↑x _
+  refine (hasDerivAt_exp _).comp (x : ℂ) ?_
   convert hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1
   ext1 y; ring
 #align has_deriv_at_fourier hasDerivAt_fourier

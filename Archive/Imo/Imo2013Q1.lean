@@ -28,8 +28,6 @@ We prove a slightly more general version where k does not need to be strictly po
 -/
 
 
-open scoped BigOperators
-
 namespace Imo2013Q1
 
 -- Porting note: simplified proof using `positivity`

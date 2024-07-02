@@ -69,7 +69,7 @@ lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
 def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 1 ⟶ I.cocomplex.X 1 :=
   J.exact₀.descToInjective (descFZero f I J ≫ I.cocomplex.d 0 1)
-    (by dsimp; simp [← assoc, descFZero])
+    (by dsimp; simp [← assoc, assoc, descFZero])
 #align category_theory.InjectiveResolution.desc_f_one CategoryTheory.InjectiveResolution.descFOne
 
 @[simp]
@@ -348,7 +348,7 @@ irreducible_def of : InjectiveResolution Z where
   quasiIso := ⟨fun n => by
     cases n
     · rw [CochainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros]
-      · refine' (ShortComplex.exact_and_mono_f_iff_of_iso _).2
+      · refine (ShortComplex.exact_and_mono_f_iff_of_iso ?_).2
           ⟨exact_f_d (Injective.ι Z), by dsimp; infer_instance⟩
         exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
           (by simp [ofCocomplex])

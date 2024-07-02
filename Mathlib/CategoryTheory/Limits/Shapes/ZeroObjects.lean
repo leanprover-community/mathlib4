@@ -144,7 +144,7 @@ theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
 #align category_theory.iso.is_zero_iff CategoryTheory.Iso.isZero_iff
 
 theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
-  constructor <;> intro G <;> refine' ⟨⟨⟨_⟩, _⟩⟩
+  constructor <;> intro G <;> refine ⟨⟨⟨?_⟩, ?_⟩⟩
   · refine
       { app := fun X => (hF _).to_ _
         naturality := ?_ }
@@ -177,10 +177,10 @@ instance hasZeroObject_pUnit : HasZeroObject (Discrete PUnit) where zero :=
   ⟨⟨⟨⟩⟩,
     { unique_to := fun ⟨⟨⟩⟩ =>
       ⟨{ default := 𝟙 _,
-          uniq := fun _ => Subsingleton.elim _ _ }⟩
+          uniq := by subsingleton }⟩
       unique_from := fun ⟨⟨⟩⟩ =>
       ⟨{ default := 𝟙 _,
-          uniq := fun _ => Subsingleton.elim _ _ }⟩}⟩
+          uniq := by subsingleton }⟩}⟩
 #align category_theory.limits.has_zero_object_punit CategoryTheory.Limits.hasZeroObject_pUnit
 
 section
@@ -267,7 +267,7 @@ instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
   convert show IsIso (𝟙 (0 : C)) by infer_instance
-  apply Subsingleton.elim
+  subsingleton
 #align category_theory.limits.has_zero_object.zero_to_zero_is_iso CategoryTheory.Limits.HasZeroObject.zero_to_zero_isIso
 
 /-- A zero object is in particular initial. -/

@@ -50,8 +50,9 @@ theorem part_denom_none_iff_s_none : g.partialDenominators.get? n = none ↔ g.s
   cases s_nth_eq : g.s.get? n <;> simp [partialDenominators, s_nth_eq]
 #align generalized_continued_fraction.part_denom_none_iff_s_none GeneralizedContinuedFraction.part_denom_none_iff_s_none
 
-theorem terminatedAt_iff_part_denom_none : g.TerminatedAt n ↔ g.partialDenominators.get? n = none :=
-  by rw [terminatedAt_iff_s_none, part_denom_none_iff_s_none]
+theorem terminatedAt_iff_part_denom_none :
+    g.TerminatedAt n ↔ g.partialDenominators.get? n = none := by
+  rw [terminatedAt_iff_s_none, part_denom_none_iff_s_none]
 #align generalized_continued_fraction.terminated_at_iff_part_denom_none GeneralizedContinuedFraction.terminatedAt_iff_part_denom_none
 
 theorem part_num_eq_s_a {gp : Pair α} (s_nth_eq : g.s.get? n = some gp) :

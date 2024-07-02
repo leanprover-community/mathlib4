@@ -95,8 +95,6 @@ theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
 #align category_theory.functor.map_zsmul CategoryTheory.Functor.map_zsmul
 
-open BigOperators
-
 @[simp]
 nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
     F.map (∑ a ∈ s, f a) = ∑ a ∈ s, F.map (f a) :=
@@ -132,6 +130,11 @@ lemma additive_of_comp_faithful
     F.Additive where
   map_add {_ _ f₁ f₂} := G.map_injective (by
     rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map])
+
+open ZeroObject Limits in
+lemma hasZeroObject_of_additive [HasZeroObject C] :
+    HasZeroObject D where
+  zero := ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
 
 end
 

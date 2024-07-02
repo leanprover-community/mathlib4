@@ -3,10 +3,11 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.RingTheory.Ideal.LocalRing
 
 #align_import field_theory.tower from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
@@ -35,7 +36,7 @@ tower law
 
 universe u v w u₁ v₁ w₁
 
-open BigOperators Cardinal Submodule
+open Cardinal Submodule
 
 variable (F : Type u) (K : Type v) (A : Type w)
 

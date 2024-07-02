@@ -48,6 +48,8 @@ noncomputable section
 
 open Complex Filter Topology Asymptotics Real Set Classical MeasureTheory
 
+namespace HurwitzZeta
+
 section kernel_defs
 /-!
 ## Definitions and elementary properties of kernels
@@ -544,7 +546,8 @@ lemma hasSum_nat_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℤ ↦ Gammaℝ s / (↑|n + a| : ℂ) ^ s / 2) (completedHurwitzZetaEven a s) := by
   have hF (t : ℝ) (ht : 0 < t) : HasSum (fun n : ℤ ↦ if n + a = 0 then 0
-      else (1 / 2 : ℂ) * rexp (-π * (n + a) ^ 2 * t)) ((evenKernel a t - _) / 2) := by
+      else (1 / 2 : ℂ) * rexp (-π * (n + a) ^ 2 * t))
+      ((evenKernel a t - (if (a : UnitAddCircle) = 0 then 1 else 0 : ℝ)) / 2) := by
     refine (ofReal_sub .. ▸ (hasSum_ofReal.mpr (hasSum_int_evenKernel₀ a ht)).div_const
       2).congr_fun fun n ↦ ?_
     split_ifs
@@ -801,3 +804,5 @@ lemma cosZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1
     hurwitzZetaEven_def_of_ne_or_ne (Or.inr (by simpa using hs 1))]
   generalize Gammaℂ s * cos (π * s / 2) = A -- speeds up ring_nf call
   ring_nf
+
+end HurwitzZeta

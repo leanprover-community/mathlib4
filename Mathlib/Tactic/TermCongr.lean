@@ -621,7 +621,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
         unless ← isDefEq expRhs rhs do
           throwError "Right-hand side of elaborated pattern{indentD rhs}\n\
             is not definitionally equal to right-hand side of expected type{indentD expectedType}"
-        Term.synthesizeSyntheticMVars (mayPostpone := true)
+        Term.synthesizeSyntheticMVars (postpone := .yes)
         let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
         let expectedType' ← whnf expectedType
         let pf ← if expectedType'.iff?.isSome then res.iff
@@ -632,7 +632,7 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     -- Case 2: No expected type or it's not obviously Iff/Eq/HEq. We generate an Eq.
     let lhs ← elaboratePattern t none true
     let rhs ← elaboratePattern t none false
-    Term.synthesizeSyntheticMVars (mayPostpone := true)
+    Term.synthesizeSyntheticMVars (postpone := .yes)
     let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
     let pf ← res.eq
     let ty ← mkEq res.lhs res.rhs

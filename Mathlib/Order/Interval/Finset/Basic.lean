@@ -34,6 +34,7 @@ https://github.com/leanprover-community/mathlib/pull/14448#discussion_r906109235
 for some ideas.
 -/
 
+assert_not_exists MonoidWithZero
 assert_not_exists Finset.sum
 
 open Function OrderDual
@@ -652,7 +653,7 @@ theorem card_Ico_eq_card_Icc_sub_one (a b : α) : (Ico a b).card = (Icc a b).car
     by_cases h : a ≤ b
     · rw [Icc_eq_cons_Ico h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
-    · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, zero_tsub]
+    · rw [Ico_eq_empty fun h' => h h'.le, Icc_eq_empty h, card_empty, Nat.zero_sub]
 #align finset.card_Ico_eq_card_Icc_sub_one Finset.card_Ico_eq_card_Icc_sub_one
 
 theorem card_Ioc_eq_card_Icc_sub_one (a b : α) : (Ioc a b).card = (Icc a b).card - 1 :=
@@ -664,7 +665,7 @@ theorem card_Ioo_eq_card_Ico_sub_one (a b : α) : (Ioo a b).card = (Ico a b).car
     by_cases h : a < b
     · rw [Ico_eq_cons_Ioo h, card_cons]
       exact (Nat.add_sub_cancel _ _).symm
-    · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, zero_tsub]
+    · rw [Ioo_eq_empty h, Ico_eq_empty h, card_empty, Nat.zero_sub]
 #align finset.card_Ioo_eq_card_Ico_sub_one Finset.card_Ioo_eq_card_Ico_sub_one
 
 theorem card_Ioo_eq_card_Ioc_sub_one (a b : α) : (Ioo a b).card = (Ioc a b).card - 1 :=
@@ -710,7 +711,7 @@ theorem Ici_eq_cons_Ioi (a : α) : Ici a = (Ioi a).cons a not_mem_Ioi_self := by
 #align finset.Ici_eq_cons_Ioi Finset.Ici_eq_cons_Ioi
 
 theorem card_Ioi_eq_card_Ici_sub_one (a : α) : (Ioi a).card = (Ici a).card - 1 := by
-  rw [Ici_eq_cons_Ioi, card_cons, add_tsub_cancel_right]
+  rw [Ici_eq_cons_Ioi, card_cons, Nat.add_sub_cancel_right]
 #align finset.card_Ioi_eq_card_Ici_sub_one Finset.card_Ioi_eq_card_Ici_sub_one
 
 end OrderTop
@@ -743,7 +744,7 @@ theorem Iic_eq_cons_Iio (b : α) : Iic b = (Iio b).cons b not_mem_Iio_self := by
 #align finset.Iic_eq_cons_Iio Finset.Iic_eq_cons_Iio
 
 theorem card_Iio_eq_card_Iic_sub_one (a : α) : (Iio a).card = (Iic a).card - 1 := by
-  rw [Iic_eq_cons_Iio, card_cons, add_tsub_cancel_right]
+  rw [Iic_eq_cons_Iio, card_cons, Nat.add_sub_cancel_right]
 #align finset.card_Iio_eq_card_Iic_sub_one Finset.card_Iio_eq_card_Iic_sub_one
 
 end OrderBot

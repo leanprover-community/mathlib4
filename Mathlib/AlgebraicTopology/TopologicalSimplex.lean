@@ -23,7 +23,7 @@ noncomputable section
 
 namespace SimplexCategory
 
-open Simplicial NNReal BigOperators Classical CategoryTheory
+open Simplicial NNReal Classical CategoryTheory
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 

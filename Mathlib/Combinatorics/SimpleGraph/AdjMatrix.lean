@@ -38,7 +38,7 @@ properties to computational properties of the matrix.
 -/
 
 
-open BigOperators Matrix
+open Matrix
 
 open Finset Matrix SimpleGraph
 
@@ -61,8 +61,8 @@ namespace IsAdjMatrix
 variable {A : Matrix V V α}
 
 @[simp]
-theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) : ¬A i i = 1 :=
-  by simp [h.apply_diag i]
+theorem apply_diag_ne [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) (i : V) :
+    ¬A i i = 1 := by simp [h.apply_diag i]
 #align matrix.is_adj_matrix.apply_diag_ne Matrix.IsAdjMatrix.apply_diag_ne
 
 @[simp]
@@ -253,8 +253,8 @@ theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
 
 theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} {a : α}
-    (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a :=
-  by simp [hd v]
+    (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a := by
+  simp [hd v]
 #align simple_graph.adj_matrix_mul_vec_const_apply_of_regular SimpleGraph.adjMatrix_mulVec_const_apply_of_regular
 
 theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
@@ -290,9 +290,8 @@ theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [Decida
     · repeat rw [if_pos heq, add_zero]
     · rw [if_neg heq, if_neg heq, zero_add, zero_add, if_pos (refl 0)]
 
-theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (vec : V → α) :
-    vec ⬝ᵥ (G.adjMatrix α).mulVec vec =
-    ∑ i : V, ∑ j : V, if G.Adj i j then vec i * vec j else 0 := by
+theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
+    x ⬝ᵥ (G.adjMatrix α).mulVec y = ∑ i : V, ∑ j : V, if G.Adj i j then x i * y j else 0 := by
   simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
     mul_zero]
 

@@ -308,7 +308,6 @@ end Monoid
 section CommMonoid
 
 open Function
-open scoped BigOperators
 
 variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}

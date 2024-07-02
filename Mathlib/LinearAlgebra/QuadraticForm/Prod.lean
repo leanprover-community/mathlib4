@@ -238,8 +238,6 @@ end Prod
 
 section Pi
 
-open scoped BigOperators
-
 section Semiring
 variable [CommSemiring R]
 variable [∀ i, AddCommMonoid (Mᵢ i)] [∀ i, AddCommMonoid (Nᵢ i)]

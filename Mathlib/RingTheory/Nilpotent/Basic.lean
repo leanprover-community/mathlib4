@@ -33,7 +33,7 @@ For the definition of `nilradical`, see `Mathlib.RingTheory.Nilpotent.Lemmas`.
 
 universe u v
 
-open BigOperators Function Set
+open Function Set
 
 variable {R S : Type*} {x y : R}
 

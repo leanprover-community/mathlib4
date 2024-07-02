@@ -22,8 +22,6 @@ variable {α β γ δ : Type*}
 -- the same local notation used in `Algebra.Associated`
 local infixl:50 " ~ᵤ " => Associated
 
-open BigOperators
-
 namespace Prime
 
 variable [CommMonoidWithZero α] {p : α} (hp : Prime p)

@@ -13,6 +13,8 @@ For every monoid `M`, we construct an equivalence between submonoids of `M` and 
 
 -/
 
+assert_not_exists MonoidWithZero
+
 variable {ι : Sort*} {M : Type*} [MulOneClass M]
 
 namespace Submonoid

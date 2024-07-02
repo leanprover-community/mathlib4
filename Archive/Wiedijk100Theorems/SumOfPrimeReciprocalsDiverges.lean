@@ -43,8 +43,6 @@ https://en.wikipedia.org/wiki/Divergence_of_the_sum_of_the_reciprocals_of_the_pr
 
 set_option linter.uppercaseLean3 false
 
-open scoped BigOperators
-
 open scoped Classical
 
 open Filter Finset

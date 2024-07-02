@@ -50,7 +50,7 @@ theorem superFactorial_one : sf 1 = 1 :=
 theorem superFactorial_two : sf 2 = 2 :=
   rfl
 
-open BigOperators Finset
+open Finset
 
 @[simp]
 theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x ∈ Icc 1 n, x ! = sf n

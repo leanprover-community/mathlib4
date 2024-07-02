@@ -377,10 +377,10 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
         sup_sdiff_mem_of_mem_compression (by rwa [hxy.eq]) ?_
           (disjoint_of_subset_left (erase_subset _ _) disjoint_sdiff)
       rw [union_sdiff_distrib, ‹v \ u = v›]
-      exact (erase_subset _ _).trans (subset_union_right _ _)
+      exact (erase_subset _ _).trans subset_union_right
     -- and then arguing that it's the same
     convert this using 1
-    rw [sdiff_union_erase_cancel (hus.trans <| subset_union_left _ _) ‹x ∈ u›, erase_union_distrib,
+    rw [sdiff_union_erase_cancel (hus.trans subset_union_left) ‹x ∈ u›, erase_union_distrib,
       erase_insert ‹x ∉ s›, erase_eq_of_not_mem ‹x ∉ v›, sdiff_erase (mem_union_right _ hyv),
       union_sdiff_cancel_right hsv]
   -- Now that this is done, it's immediate that `u ⊆ s`
@@ -395,7 +395,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
   -- For (s ∪ v) \ u ∉ ∂ 𝒜', we split up based on w ∈ u
   rintro ⟨w, hwB, hw𝒜'⟩
   have : v ⊆ insert w ((s ∪ v) \ u) :=
-    (subset_sdiff.2 ⟨subset_union_right _ _, hvu⟩).trans (subset_insert _ _)
+    (subset_sdiff.2 ⟨subset_union_right, hvu⟩).trans (subset_insert _ _)
   by_cases hwu : w ∈ u
   -- If `w ∈ u`, we find `z ∈ v`, and contradict `m` again
   · obtain ⟨z, hz, hxy⟩ := huv w hwu
@@ -407,7 +407,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       exact disjoint_sdiff
     convert this using 1
     rw [insert_union_comm, insert_erase ‹w ∈ u›,
-      sdiff_union_of_subset (hus.trans <| subset_union_left _ _),
+      sdiff_union_of_subset (hus.trans subset_union_left),
       sdiff_erase (mem_union_right _ ‹z ∈ v›), union_sdiff_cancel_right hsv]
   -- If `w ∉ u`, we contradict `m` again
   rw [mem_sdiff, ← Classical.not_imp, Classical.not_not] at hwB
@@ -416,7 +416,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
     sup_sdiff_mem_of_mem_compression ‹insert w ((s ∪ v) \ u) ∈ 𝒜'› ‹_›
       (disjoint_insert_right.2 ⟨‹_›, disjoint_sdiff⟩)
   convert this using 1
-  rw [insert_union, sdiff_union_of_subset (hus.trans <| subset_union_left _ _),
+  rw [insert_union, sdiff_union_of_subset (hus.trans subset_union_left),
     insert_sdiff_of_not_mem _ (hwu ∘ hwB ∘ mem_union_right _), union_sdiff_cancel_right hsv]
 #align uv.shadow_compression_subset_compression_shadow UV.shadow_compression_subset_compression_shadow
 

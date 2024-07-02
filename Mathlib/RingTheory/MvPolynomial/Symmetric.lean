@@ -49,8 +49,6 @@ As in other polynomial files, we typically use the notation:
 
 open Equiv (Perm)
 
-open BigOperators
-
 noncomputable section
 
 namespace Multiset

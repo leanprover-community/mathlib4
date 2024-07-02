@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Divisibility.Basic
 
@@ -21,8 +21,6 @@ section CancelCommMonoidWithZero
 variable {R : Type*} [CancelCommMonoidWithZero R]
 
 open Finset
-
-open BigOperators
 
 /-- If `x * y = a * ∏ i ∈ s, p i` where `p i` is always prime, then
   `x` and `y` can both be written as a divisor of `a` multiplied by

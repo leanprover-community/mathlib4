@@ -44,7 +44,7 @@ See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
 
 open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
 
-open scoped BigOperators NNReal ENNReal Topology
+open scoped NNReal ENNReal Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]

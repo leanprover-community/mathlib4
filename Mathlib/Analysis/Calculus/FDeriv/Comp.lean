@@ -113,7 +113,7 @@ theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
 theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp x (hf.mono (inter_subset_left _ _)) (inter_subset_right _ _)
+  hg.comp x (hf.mono inter_subset_left) inter_subset_right
 #align differentiable_within_at.comp' DifferentiableWithinAt.comp'
 
 @[fun_prop]

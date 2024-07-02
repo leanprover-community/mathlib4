@@ -20,8 +20,6 @@ measure-theoretic result.
 
 open Filter Topology
 
-open scoped BigOperators
-
 /-- **Tannery's theorem**: topological sums commute with termwise limits, when the norms of the
 summands are eventually uniformly bounded by a summable function.
 

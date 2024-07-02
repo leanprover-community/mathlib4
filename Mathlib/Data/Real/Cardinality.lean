@@ -75,8 +75,8 @@ theorem cantorFunctionAux_nonneg (h : 0 ≤ c) : 0 ≤ cantorFunctionAux c f n :
   apply pow_nonneg h
 #align cardinal.cantor_function_aux_nonneg Cardinal.cantorFunctionAux_nonneg
 
-theorem cantorFunctionAux_eq (h : f n = g n) : cantorFunctionAux c f n = cantorFunctionAux c g n :=
-  by simp [cantorFunctionAux, h]
+theorem cantorFunctionAux_eq (h : f n = g n) :
+    cantorFunctionAux c f n = cantorFunctionAux c g n := by simp [cantorFunctionAux, h]
 #align cardinal.cantor_function_aux_eq Cardinal.cantorFunctionAux_eq
 
 theorem cantorFunctionAux_zero (f : ℕ → Bool) : cantorFunctionAux c f 0 = cond (f 0) 1 0 := by

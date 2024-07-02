@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Membership
+import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Equiv
@@ -23,8 +24,6 @@ We define bundled non-unital subsemirings and some standard constructions:
 `map`, `comap` and range (`srange`) of a `NonUnitalRingHom` etc.
 -/
 
-
-open BigOperators
 
 universe u v w
 
@@ -517,8 +516,8 @@ section NonUnitalSemiring
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
     (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) :=
-  by with_reducible_and_instances rfl
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) := by
+  with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]

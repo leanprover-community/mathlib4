@@ -249,15 +249,13 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟ D * C)] :
     Invertible (fromBlocks A B C D) := by
   -- factor `fromBlocks` via `fromBlocks_eq_of_invertible₂₂`, and state the inverse we expect
-  refine'
-    Invertible.copy' _ _
-      (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
-        (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+  convert Invertible.copy' _ _ (fromBlocks (⅟ (A - B * ⅟ D * C)) (-(⅟ (A - B * ⅟ D * C) * B * ⅟ D))
+    (-(⅟ D * C * ⅟ (A - B * ⅟ D * C))) (⅟ D + ⅟ D * C * ⅟ (A - B * ⅟ D * C) * B * ⅟ D))
       (fromBlocks_eq_of_invertible₂₂ _ _ _ _) _
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
     letI : Invertible (1 : Matrix m m α) := invertibleOne
-    refine' Invertible.mul _ (fromBlocksZero₁₂Invertible _ _ _)
+    refine Invertible.mul ?_ (fromBlocksZero₁₂Invertible _ _ _)
     exact
       Invertible.mul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
@@ -324,7 +322,7 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
   letI iBD : Invertible (fromBlocks 1 (B * ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
     fromBlocksZero₂₁Invertible _ _ _
   letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
-  refine' (iBD.mulLeft _).symm _
+  refine (iBD.mulLeft _).symm ?_
   exact (iDC.mulRight _).symm iBDC
 #align matrix.invertible_of_from_blocks₂₂_invertible Matrix.invertibleOfFromBlocks₂₂Invertible
 
@@ -443,7 +441,8 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
 #align matrix.det_one_sub_mul_comm Matrix.det_one_sub_mul_comm
 
 /-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
-theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 + v ⬝ᵥ u := by
+theorem det_one_add_col_mul_row {ι : Type*} [Unique ι] (u v : m → α) :
+    det (1 + col ι u * row ι v) = 1 + v ⬝ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
     Matrix.row_mul_col_apply]
 #align matrix.det_one_add_col_mul_row Matrix.det_one_add_col_mul_row
@@ -453,10 +452,11 @@ theorem det_one_add_col_mul_row (u v : m → α) : det (1 + col u * row v) = 1 +
 TODO: show the more general version without `hA : IsUnit A.det` as
 `(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
 -/
-theorem det_add_col_mul_row {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
-    (A + col u * row v).det = A.det * (1 + row v * A⁻¹ * col u).det := by
+theorem det_add_col_mul_row {ι : Type*} [Unique ι]
+    {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
+    (A + col ι u * row ι v).det = A.det * (1 + row ι v * A⁻¹ * col ι u).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
-  rwa [← Matrix.mul_nonsing_inv_cancel_left A (col u * row v),
+  rwa [← Matrix.mul_nonsing_inv_cancel_left A (col ι u * row ι v),
     ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm,
     ← Matrix.mul_assoc]
 

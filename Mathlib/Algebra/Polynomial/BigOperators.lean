@@ -30,7 +30,7 @@ open Finset
 
 open Multiset
 
-open BigOperators Polynomial
+open Polynomial
 
 universe u w
 

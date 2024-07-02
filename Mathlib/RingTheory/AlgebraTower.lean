@@ -98,7 +98,6 @@ section Semiring
 open Finsupp
 
 open scoped Classical
-open BigOperators
 
 universe v₁ w₁
 

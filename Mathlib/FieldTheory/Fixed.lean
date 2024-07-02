@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.GroupRingAction
+import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
@@ -31,7 +32,7 @@ element of `G`, where `G` is a group that acts on `F`.
 
 noncomputable section
 
-open scoped Classical BigOperators
+open scoped Classical
 
 open MulAction Finset FiniteDimensional
 

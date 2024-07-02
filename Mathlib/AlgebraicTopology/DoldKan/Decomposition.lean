@@ -33,7 +33,7 @@ reflects isomorphisms.
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive
-  Opposite BigOperators Simplicial
+  Opposite Simplicial
 
 noncomputable section
 

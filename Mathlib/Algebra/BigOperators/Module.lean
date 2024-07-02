@@ -5,12 +5,11 @@ Authors: Dylan MacKenzie
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Tactic.Abel
 
 /-!
 # Summation by parts
 -/
-
-open scoped BigOperators
 
 namespace Finset
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (f : ℕ → R) (g : ℕ → M) {m n : ℕ}

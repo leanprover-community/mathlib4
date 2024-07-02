@@ -52,7 +52,7 @@ noncomputable section
 
 open Filter Function
 
-open scoped BigOperators Topology
+open scoped Topology
 
 variable {α β γ : Type*}
 

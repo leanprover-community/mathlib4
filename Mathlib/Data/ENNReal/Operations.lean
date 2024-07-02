@@ -20,7 +20,7 @@ definitions and properties of which can be found in `Data.ENNReal.Inv`.
 Note: the definitions of the operations included in this file can be found in `Data.ENNReal.Basic`.
 -/
 
-open Set BigOperators NNReal ENNReal
+open Set NNReal ENNReal
 
 namespace ENNReal
 
@@ -96,7 +96,7 @@ theorem mul_eq_mul_right : c ≠ 0 → c ≠ ∞ → (a * c = b * c ↔ a = b) :
 #align ennreal.mul_eq_mul_right ENNReal.mul_eq_mul_right
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
-theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b ≤ a * c ↔ b ≤ c) :=
+theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
   (mul_left_strictMono h0 hinf).le_iff_le
 #align ennreal.mul_le_mul_left ENNReal.mul_le_mul_left
 
@@ -106,7 +106,7 @@ theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ 
 #align ennreal.mul_le_mul_right ENNReal.mul_le_mul_right
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
-theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b < a * c ↔ b < c) :=
+theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b < c :=
   (mul_left_strictMono h0 hinf).lt_iff_lt
 #align ennreal.mul_lt_mul_left ENNReal.mul_lt_mul_left
 
@@ -219,10 +219,7 @@ theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 #align ennreal.top_mul_top ENNReal.top_mul_top
 
 -- Porting note (#11215): TODO: assume `n ≠ 0` instead of `0 < n`
--- Porting note (#11215): TODO: generalize to `WithTop`
-theorem top_pow {n : ℕ} (h : 0 < n) : ∞ ^ n = ∞ :=
-  Nat.le_induction (pow_one _) (fun m _ hm => by rw [pow_succ, hm, top_mul_top]) _
-    (Nat.succ_le_of_lt h)
+theorem top_pow {n : ℕ} (n_pos : 0 < n) : (∞ : ℝ≥0∞) ^ n = ∞ := WithTop.top_pow n_pos
 #align ennreal.top_pow ENNReal.top_pow
 
 theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
@@ -270,7 +267,7 @@ theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
 @[simp] theorem pow_eq_top_iff {n : ℕ} : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := by
   rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
   · simp
-  · induction a using recTopCoe
+  · induction a
     · simp only [Ne, hn.ne', top_pow hn, not_false_eq_true, and_self]
     · simp only [← coe_pow, coe_ne_top, false_and]
 #align ennreal.pow_eq_top_iff ENNReal.pow_eq_top_iff
@@ -382,6 +379,9 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
   rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
 #align ennreal.nat_cast_sub ENNReal.natCast_sub
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_sub := natCast_sub
 
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add
@@ -531,12 +531,11 @@ theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
     (Hlt : ∀ i ∈ s, f i < g i) : ∑ i ∈ s, f i < ∑ i ∈ s, g i := by
-  induction' hs using Finset.Nonempty.cons_induction with a a s as _ IH
-  · simp [Hlt _ (Finset.mem_singleton_self _)]
-  · simp only [as, Finset.sum_cons, not_false_iff]
-    exact
-      ENNReal.add_lt_add (Hlt _ (Finset.mem_cons_self _ _))
-        (IH fun i hi => Hlt _ (Finset.mem_cons.2 <| Or.inr hi))
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton => simp [Hlt _ (Finset.mem_singleton_self _)]
+  | cons _ _ _ _ ih =>
+    simp only [Finset.sum_cons, forall_mem_cons] at Hlt ⊢
+    exact ENNReal.add_lt_add Hlt.1 (ih Hlt.2)
 #align ennreal.sum_lt_sum_of_nonempty ENNReal.sum_lt_sum_of_nonempty
 
 theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}

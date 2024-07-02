@@ -3,9 +3,9 @@ Copyright (c) 2021 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Order.Antichain
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.finset.slice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -31,8 +31,6 @@ the set family made of its `r`-sets.
 
 open Finset Nat
 
-open BigOperators
-
 variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 namespace Set
@@ -54,7 +52,7 @@ theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB
 @[simp] lemma sized_singleton : ({s} : Set (Finset α)).Sized r ↔ s.card = r := by simp [Sized]
 
 theorem sized_union : (A ∪ B).Sized r ↔ A.Sized r ∧ B.Sized r :=
-  ⟨fun hA => ⟨hA.mono <| subset_union_left _ _, hA.mono <| subset_union_right _ _⟩, fun hA _x hx =>
+  ⟨fun hA => ⟨hA.mono subset_union_left, hA.mono subset_union_right⟩, fun hA _x hx =>
     hx.elim (fun h => hA.1 h) fun h => hA.2 h⟩
 #align set.sized_union Set.sized_union
 
@@ -70,8 +68,8 @@ theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀
 
 -- @[simp] -- Porting note: left hand side is not simp-normal form.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
-    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r :=
- by simp only [Set.sized_iUnion]
+    (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r := by
+ simp only [Set.sized_iUnion]
 #align set.sized_Union₂ Set.sized_iUnion₂
 
 protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=

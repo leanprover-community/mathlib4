@@ -28,7 +28,7 @@ proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries
 -/
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 

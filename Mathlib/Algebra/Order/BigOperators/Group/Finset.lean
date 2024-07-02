@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.Positivity.Core
@@ -18,8 +18,6 @@ groups/monoids.
 -/
 
 open Function
-
-open BigOperators
 
 variable {ι α β M N G k R : Type*}
 
@@ -245,7 +243,7 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
   calc
     (∏ y ∈ t, ∏ x ∈ s.filter fun x ↦ g x = y, f x) ≤
         ∏ y ∈ t ∪ s.image g, ∏ x ∈ s.filter fun x ↦ g x = y, f x :=
-      prod_le_prod_of_subset_of_one_le' (subset_union_left _ _) fun y _ ↦ h y
+      prod_le_prod_of_subset_of_one_le' subset_union_left fun y _ ↦ h y
     _ = ∏ x ∈ s, f x :=
       prod_fiberwise_of_maps_to (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
 #align finset.prod_fiberwise_le_prod_of_one_le_prod_fiber' Finset.prod_fiberwise_le_prod_of_one_le_prod_fiber'

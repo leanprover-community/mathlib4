@@ -162,7 +162,7 @@ instance : OrderClosedTopology ℝₗ :=
   ⟨isClosed_le_prod.preimage (continuous_toReal.prod_map continuous_toReal)⟩
 
 instance : ContinuousAdd ℝₗ := by
-  refine' ⟨continuous_iff_continuousAt.2 _⟩
+  refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨x, y⟩
   rw [ContinuousAt, nhds_prod_eq, nhds_eq_comap (x + y), tendsto_comap_iff,
     nhds_eq_map, nhds_eq_map, prod_map_map_eq, ← nhdsWithin_prod_eq, Ici_prod_Ici]
@@ -198,12 +198,12 @@ instance : CompletelyNormalSpace ℝₗ := by
   Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
   disjoint open sets that include `s` and `t`.
   -/
-  refine' ⟨fun s t hd₁ hd₂ => _⟩
+  refine ⟨fun s t hd₁ hd₂ => ?_⟩
   choose! X hX hXd using fun x (hx : x ∈ s) =>
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
   choose! Y hY hYd using fun y (hy : y ∈ t) =>
     exists_Ico_disjoint_closed isClosed_closure (disjoint_right.1 hd₁ hy)
-  refine' disjoint_of_disjoint_of_mem _
+  refine disjoint_of_disjoint_of_mem ?_
     (bUnion_mem_nhdsSet fun x hx => (isOpen_Ico x (X x)).mem_nhds <| left_mem_Ico.2 (hX x hx))
     (bUnion_mem_nhdsSet fun y hy => (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
   simp only [disjoint_iUnion_left, disjoint_iUnion_right, Ico_disjoint_Ico]

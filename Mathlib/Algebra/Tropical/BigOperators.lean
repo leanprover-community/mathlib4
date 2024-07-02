@@ -3,7 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.MinMax
 import Mathlib.Algebra.Tropical.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
@@ -32,8 +32,6 @@ Minima over `List α` are defined as producing a value in `WithTop α` so proofs
 directly transfer to minima over multisets or finsets.
 
 -/
-
-open BigOperators
 
 variable {R S : Type*}
 

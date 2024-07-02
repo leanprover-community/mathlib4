@@ -23,8 +23,6 @@ so that `m < n` means that `m ≠ n` and `m s ≤ n s` for all `s : σ`.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 namespace MvPowerSeries

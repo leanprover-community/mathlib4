@@ -81,7 +81,7 @@ universe u v
 open Function Set Filter
 
 open scoped Classical
-open BigOperators Topology
+open Topology
 
 noncomputable section
 
@@ -217,7 +217,7 @@ theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M
   have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
     funext fun _ => (Pi.smul_apply' _ _ _).symm
   rw [ρ.coe_finsupport x₀, this, support_smul]
-  exact inter_subset_left _ _
+  exact inter_subset_left
 
 end finsupport
 
@@ -350,7 +350,7 @@ example for `Inhabited` instance. -/
 protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
   toFun := Pi.single i 1
   locallyFinite' x := by
-    refine' ⟨univ, univ_mem, (finite_singleton i).subset _⟩
+    refine ⟨univ, univ_mem, (finite_singleton i).subset ?_⟩
     rintro j ⟨x, hx, -⟩
     contrapose! hx
     rw [mem_singleton_iff] at hx

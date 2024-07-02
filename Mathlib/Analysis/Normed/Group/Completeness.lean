@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
@@ -29,7 +29,7 @@ complete if any absolutely convergent series converges in the space.
 CompleteSpace, CauchySeq
 -/
 
-open scoped BigOperators Topology
+open scoped Topology
 open Filter Finset
 
 section Metric

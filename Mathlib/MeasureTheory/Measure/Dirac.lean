@@ -114,7 +114,7 @@ end Measure
 
 open Measure
 
-theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ (dirac a).ae ↔ a ∈ s := by
+theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) ↔ a ∈ s := by
   by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, indicator_apply, *]
 #align measure_theory.mem_ae_dirac_iff MeasureTheory.mem_ae_dirac_iff
 
@@ -124,7 +124,7 @@ theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x })
 #align measure_theory.ae_dirac_iff MeasureTheory.ae_dirac_iff
 
 @[simp]
-theorem ae_dirac_eq [MeasurableSingletonClass α] (a : α) : (dirac a).ae = pure a := by
+theorem ae_dirac_eq [MeasurableSingletonClass α] (a : α) : ae (dirac a) = pure a := by
   ext s
   simp [mem_ae_iff, imp_false]
 #align measure_theory.ae_dirac_eq MeasureTheory.ae_dirac_eq

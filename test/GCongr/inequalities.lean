@@ -13,7 +13,7 @@ import Mathlib.Tactic.NormNum.OfScientific
 private axiom test_sorry : ∀ {α}, α
 /-! # Inequality tests for the `gcongr` tactic -/
 
-open Nat Finset BigOperators
+open Nat Finset
 
 -- We deliberately mock `ℝ` here so that we don't have to import the dependencies
 axiom Real : Type

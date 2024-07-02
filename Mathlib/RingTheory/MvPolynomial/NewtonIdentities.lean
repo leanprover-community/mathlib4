@@ -42,7 +42,7 @@ See [zeilberger1984] for the combinatorial proof of Newton's identities.
 
 open Equiv (Perm)
 
-open BigOperators MvPolynomial
+open MvPolynomial
 
 noncomputable section
 

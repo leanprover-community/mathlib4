@@ -64,7 +64,7 @@ where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem
 
 -/
 
-open Finset Real Filter Asymptotics BigOperators
+open Finset Real Filter Asymptotics
 open scoped Topology
 
 /-!

@@ -161,7 +161,7 @@ variable [TopologicalSpace β] [LinearOrderedCancelAddCommMonoid β] [OrderTopol
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
-  refine' strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => _
+  refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => ?_
   cases' hxy.lt_or_lt with hlt hlt <;> [skip; rw [openSegment_symm]] <;>
     exact
       (openSegment_subset_Ioo hlt).trans
@@ -346,8 +346,8 @@ theorem StrictConvex.add_smul_mem (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy
   have h : x + t • y = (1 - t) • x + t • (x + y) := by
     rw [smul_add, ← add_assoc, ← _root_.add_smul, sub_add_cancel, one_smul]
   rw [h]
-  refine' hs hx hxy (fun h => hy <| add_left_cancel _) (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel _ _)
-  rw [← h, add_zero]
+  exact hs hx hxy (fun h => hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
+    (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel 1 t)
 #align strict_convex.add_smul_mem StrictConvex.add_smul_mem
 
 theorem StrictConvex.smul_mem_of_zero_mem (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)

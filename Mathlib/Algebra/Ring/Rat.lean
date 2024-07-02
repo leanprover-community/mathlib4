@@ -17,6 +17,7 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
+assert_not_exists OrderedCommMonoid
 assert_not_exists Field
 assert_not_exists PNat
 assert_not_exists Nat.dvd_mul
@@ -51,6 +52,7 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     zero_mul := zero_mul }
 
 instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
+instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr_arg num hab
 
 /-!
 ### Extra instances to short-circuit type class resolution
@@ -99,6 +101,6 @@ lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast
 
 @[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 
-@[deprecated] alias coe_nat_eq_divInt := natCast_eq_divInt
+@[deprecated (since := "2024-04-07")] alias coe_nat_eq_divInt := natCast_eq_divInt
 
 end Rat

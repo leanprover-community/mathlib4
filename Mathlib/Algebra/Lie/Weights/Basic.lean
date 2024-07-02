@@ -53,7 +53,7 @@ variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra
 namespace LieModule
 
 open Set Function LieAlgebra TensorProduct TensorProduct.LieModule
-open scoped BigOperators TensorProduct
+open scoped TensorProduct
 
 section notation_weightSpaceOf
 
@@ -210,9 +210,22 @@ variable {M}
 @[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
   cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
 
+lemma ext_iff {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by aesop
+
 lemma exists_ne_zero (χ : Weight R L M) :
     ∃ x ∈ weightSpace M χ, x ≠ 0 := by
   simpa [LieSubmodule.eq_bot_iff] using χ.weightSpace_ne_bot
+
+instance [Subsingleton M] : IsEmpty (Weight R L M) :=
+  ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
+
+instance [Nontrivial (weightSpace M (0 : L → R))] : Zero (Weight R L M) :=
+  ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
+
+@[simp]
+lemma coe_zero [Nontrivial (weightSpace M (0 : L → R))] : ((0 : Weight R L M) : L → R) = 0 := rfl
+
+lemma zero_apply [Nontrivial (weightSpace M (0 : L → R))] (x) : (0 : Weight R L M) x = 0 := rfl
 
 /-- The proposition that a weight of a Lie module is zero.
 
@@ -224,8 +237,16 @@ def IsZero (χ : Weight R L M) := (χ : L → R) = 0
 
 @[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
 
+lemma isZero_iff_eq_zero [Nontrivial (weightSpace M (0 : L → R))] {χ : Weight R L M} :
+    χ.IsZero ↔ χ = 0 := ext_iff (χ₂ := 0)
+
+lemma isZero_zero [Nontrivial (weightSpace M (0 : L → R))] : IsZero (0 : Weight R L M) := rfl
+
 /-- The proposition that a weight of a Lie module is non-zero. -/
 abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
+
+lemma isNonZero_iff_ne_zero [Nontrivial (weightSpace M (0 : L → R))] {χ : Weight R L M} :
+    χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not
 
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
