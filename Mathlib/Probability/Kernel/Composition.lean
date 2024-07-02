@@ -465,27 +465,36 @@ theorem lintegral_compProd₀ (κ : kernel α β) [IsSFiniteKernel κ] (η : ker
   exact hf.measurable_mk
 #align probability_theory.kernel.lintegral_comp_prod₀ ProbabilityTheory.kernel.lintegral_compProd₀
 
-theorem set_lintegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
+theorem setLIntegral_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : Measurable f) {s : Set β} {t : Set γ}
     (hs : MeasurableSet s) (ht : MeasurableSet t) :
     ∫⁻ z in s ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫⁻ x in s, ∫⁻ y in t, f (x, y) ∂η (a, x) ∂κ a := by
   simp_rw [← kernel.restrict_apply (κ ⊗ₖ η) (hs.prod ht), ← compProd_restrict hs ht,
     lintegral_compProd _ _ _ hf, kernel.restrict_apply]
-#align probability_theory.kernel.set_lintegral_comp_prod ProbabilityTheory.kernel.set_lintegral_compProd
+#align probability_theory.kernel.set_lintegral_comp_prod ProbabilityTheory.kernel.setLIntegral_compProd
 
-theorem set_lintegral_compProd_univ_right (κ : kernel α β) [IsSFiniteKernel κ]
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_compProd := setLIntegral_compProd
+
+theorem setLIntegral_compProd_univ_right (κ : kernel α β) [IsSFiniteKernel κ]
     (η : kernel (α × β) γ) [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : Measurable f)
     {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ z in s ×ˢ Set.univ, f z ∂(κ ⊗ₖ η) a = ∫⁻ x in s, ∫⁻ y, f (x, y) ∂η (a, x) ∂κ a := by
-  simp_rw [set_lintegral_compProd κ η a hf hs MeasurableSet.univ, Measure.restrict_univ]
-#align probability_theory.kernel.set_lintegral_comp_prod_univ_right ProbabilityTheory.kernel.set_lintegral_compProd_univ_right
+  simp_rw [setLIntegral_compProd κ η a hf hs MeasurableSet.univ, Measure.restrict_univ]
+#align probability_theory.kernel.set_lintegral_comp_prod_univ_right ProbabilityTheory.kernel.setLIntegral_compProd_univ_right
 
-theorem set_lintegral_compProd_univ_left (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_compProd_univ_right := setLIntegral_compProd_univ_right
+
+theorem setLIntegral_compProd_univ_left (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (a : α) {f : β × γ → ℝ≥0∞} (hf : Measurable f) {t : Set γ}
     (ht : MeasurableSet t) :
     ∫⁻ z in Set.univ ×ˢ t, f z ∂(κ ⊗ₖ η) a = ∫⁻ x, ∫⁻ y in t, f (x, y) ∂η (a, x) ∂κ a := by
-  simp_rw [set_lintegral_compProd κ η a hf MeasurableSet.univ ht, Measure.restrict_univ]
-#align probability_theory.kernel.set_lintegral_comp_prod_univ_left ProbabilityTheory.kernel.set_lintegral_compProd_univ_left
+  simp_rw [setLIntegral_compProd κ η a hf MeasurableSet.univ ht, Measure.restrict_univ]
+#align probability_theory.kernel.set_lintegral_comp_prod_univ_left ProbabilityTheory.kernel.setLIntegral_compProd_univ_left
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_compProd_univ_left := setLIntegral_compProd_univ_left
 
 end Lintegral
 
