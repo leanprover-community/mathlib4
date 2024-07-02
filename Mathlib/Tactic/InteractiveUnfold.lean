@@ -16,18 +16,6 @@ open Lean Meta Server Widget ProofWidgets Jsx
 
 namespace Mathlib.Tactic.InteractiveUnfold
 
-/-- Same as `unfoldDefinition?`, except it handles well founded recursive definitions better. -/
-def unfold? (e : Expr) : MetaM (Option Expr) := do
-  let .const n lvls := e.getAppFn | return none
-  /- unfolding a constant defined with well founded recursion -/
-  if let some info := Elab.WF.eqnInfoExt.find? (← getEnv) n then
-    if info.levelParams.length != lvls.length then
-      return none
-    else
-      return (info.value.instantiateLevelParams info.levelParams lvls).betaRev e.getAppRevArgs
-  /- unfolding any other constant -/
-  unfoldDefinition? e
-
 /-- Unfold a class projection if the instance is tagged with `@[default_instance]`.
 This is used in the `unfold?` tactic in order to not show these unfolds to the user.
 Similar to `Lean.Meta.unfoldProjInst?`. -/
@@ -68,7 +56,7 @@ where
           -- when unfolding a default instance, don't add it to the array of unfolds.
           let e ← whnfCore e
           return ← go e acc
-        if let some e ← unfold? e then
+        if let some e ← unfoldDefinition? e then
           -- Note: whnfCore can give a recursion depth error
           let e ← whnfCore e
           return ← go e (acc.push e)
