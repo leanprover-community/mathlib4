@@ -2080,6 +2080,7 @@ import Mathlib.Data.List.EditDistance.Bounds
 import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.List.Enum
+import Mathlib.Data.List.EraseIdx
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.GetD
@@ -2097,6 +2098,7 @@ import Mathlib.Data.List.NatAntidiagonal
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.OffDiag
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm
