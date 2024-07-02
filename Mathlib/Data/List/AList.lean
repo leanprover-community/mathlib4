@@ -362,8 +362,8 @@ theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).Nod
   simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupKeys_cons h).symm
 #align alist.mk_cons_eq_insert AList.mk_cons_eq_insert
 
-/-- Recursion on an `AList`, using `insert`. Use as `induction l using AList.insertRec`. -/
-@[elab_as_elim]
+/-- Recursion on an `AList`, using `insert`. Use as `induction l`. -/
+@[elab_as_elim, induction_eliminator]
 def insertRec {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     ∀ l : AList β, C l
@@ -374,8 +374,8 @@ def insertRec {C : AList β → Sort*} (H0 : C ∅)
     exact not_mem_keys_of_nodupKeys_cons h
 #align alist.insert_rec AList.insertRec
 
--- Test that the `induction` tactic works on `insert_rec`.
-example (l : AList β) : True := by induction l using AList.insertRec <;> trivial
+-- Test that the `induction` tactic works on `insertRec`.
+example (l : AList β) : True := by induction l <;> trivial
 
 @[simp]
 theorem insertRec_empty {C : AList β → Sort*} (H0 : C ∅)

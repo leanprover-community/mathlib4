@@ -113,7 +113,7 @@ namespace Functor
 
 variable {J : Type u} [Category.{v} J]
 
-/-- The sections of a functor `J ⥤ Type` are
+/-- The sections of a functor `F : J ⥤ Type` are
 the choices of a point `u j : F.obj j` for each `j`,
 such that `F.map f (u j) = u j'` for every morphism `f : j ⟶ j'`.
 
@@ -215,6 +215,10 @@ def uliftFunctor : Type u ⥤ Type max u v where
   obj X := ULift.{v} X
   map {X} {Y} f := fun x : ULift.{v} X => ULift.up (f x.down)
 #align category_theory.ulift_functor CategoryTheory.uliftFunctor
+
+@[simp]
+theorem uliftFunctor_obj {X : Type u} : uliftFunctor.obj.{v} X = ULift.{v} X :=
+  rfl
 
 @[simp]
 theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
