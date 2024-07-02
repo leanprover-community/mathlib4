@@ -9,9 +9,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 /-!
 # HasPullback
-`HasPullback f g` and `pullback f g` provides API for `HasLimit`...  `HasLimit (cospan f g)`.
-
-This is useful when wanting to pick a pullback.
+`HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
+pullacks.
 
 # Main definitions
 
@@ -19,7 +18,7 @@ This is useful when wanting to pick a pullback.
   express the fact that a given pair of morphisms has a pullback.
 
 * `HasPullbacks`: expresses the fact that `C` admits all pullbacks, it is implemented as an
-  abbrevation for
+  abbrevation for `HasLimitsOfShape WalkingCospan C`
 
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
@@ -35,6 +34,8 @@ pullback.snd f g                       g
 
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
   express the fact that a given pair of morphisms has a pushout.
+* `HasPushouts`: expresses the fact that `C` admits all pushouts, it is implemented as an
+abbrevation for `HasColimitsOfShape WalkingSpan C`
 * `pushout f g`: Given a `HasPushout f g` instance, this function returns the choice of a colimit
   object corresponding to the pushout of `f` and `g`. It fits into the following diagram:
 ```
@@ -46,22 +47,19 @@ pullback.snd f g                       g
       Z ---pushout.inl f g---> pushout f g
 ```
 
-# API
-We provide the following API for using the universal property of `pullback f g`:
-* `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
+# Main results & API
+* The following API is available for using the universal property of `pullback f g`:
+`lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 
-* `pullback.map` is the induced map between pullbacks `W ×ₛ X ⟶ Y ×ₜ Z` given maps pointwise
-  between
-
-
-* `pullbackIsPullback`...?
-
+* `pullback.map` is the induced map between pullbacks `W ×ₛ X ⟶ Y ×ₜ Z` given pointwise
+(compatible) maps `W ⟶ Y`, `X ⟶ Z` and `S ⟶ T`.
 
 * `pullbackComparison`: Given a functor `G`, this is the natural morphism
-          `G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g)`
-
+`G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g)`
 
 * `pullbackSymmetry` provides the natural isomorphism `pullback f g ≅ pullback g f`
+
+(The dual results for pushouts are also available)
 
 NOTE: golfed some proofs also
 
@@ -276,28 +274,6 @@ def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
   PullbackCone.IsLimit.mk _ (fun s => pullback.lift s.fst s.snd s.condition) (by simp) (by simp)
     (by aesop_cat)
 #align category_theory.limits.pullback_is_pullback CategoryTheory.Limits.pullbackIsPullback
-
--- /-- The pullback of a monomorphism is a monomorphism -/
--- instance pullback.fst_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] [Mono g] :
---     Mono (pullback.fst : pullback f g ⟶ X) :=
---   PullbackCone.mono_fst_of_is_pullback_of_mono (limit.isLimit _)
--- #align category_theory.limits.pullback.fst_of_mono CategoryTheory.Limits.pullback.fst_of_mono
-
--- /-- The pullback of a monomorphism is a monomorphism -/
--- instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] [Mono f] :
---     Mono (pullback.snd : pullback f g ⟶ Y) :=
---   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
--- #align category_theory.limits.pullback.snd_of_mono CategoryTheory.Limits.pullback.snd_of_mono
-
--- /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
--- instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
---     [HasPullback f g] [HasBinaryProduct X Y] :
---     Mono (prod.lift pullback.fst pullback.snd : pullback f g ⟶ _) :=
---   ⟨fun {W} i₁ i₂ h => by
---     ext
---     · simpa using congrArg (fun f => f ≫ prod.fst) h
---     · simpa using congrArg (fun f => f ≫ prod.snd) h⟩
--- #align category_theory.limits.mono_pullback_to_prod CategoryTheory.Limits.mono_pullback_to_prod
 
 /-- Two morphisms out of a pushout are equal if their compositions with the pushout morphisms are
     equal -/
