@@ -237,7 +237,7 @@ theorem Continuous.specialization_monotone (hf : Continuous f) : Monotone f :=
 #align continuous.specialization_monotone Continuous.specialization_monotone
 
 lemma closure_singleton_eq_Iic (x : X) : closure {x} = Iic x :=
-  ext fun _ ↦ specializes_iff_mem_closure.symm
+  Set.ext fun _ ↦ specializes_iff_mem_closure.symm
 
 /-- A subset `S` of a topological space is stable under specialization
 if `x ∈ S → y ∈ S` for all `x ⤳ y`. -/
