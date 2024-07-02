@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yael Dillies
 -/
 import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Star.Basic
+import Mathlib.Algebra.Star.Lemmas
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Cast.Defs
 
