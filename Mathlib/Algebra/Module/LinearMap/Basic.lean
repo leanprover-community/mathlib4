@@ -4,58 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
+import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.GroupTheory.GroupAction.Hom
 
 #align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
 
 /-!
-# (Semi)linear maps
-
-In this file we define
-
-* `LinearMap σ M M₂`, `M →ₛₗ[σ] M₂` : a semilinear map between two `Module`s. Here,
-  `σ` is a `RingHom` from `R` to `R₂` and an `f : M →ₛₗ[σ] M₂` satisfies
-  `f (c • x) = (σ c) • (f x)`. We recover plain linear maps by choosing `σ` to be `RingHom.id R`.
-  This is denoted by `M →ₗ[R] M₂`. We also add the notation `M →ₗ⋆[R] M₂` for star-linear maps.
-
-* `IsLinearMap R f` : predicate saying that `f : M → M₂` is a linear map. (Note that this
-  was not generalized to semilinear maps.)
-
-We then provide `LinearMap` with the following instances:
-
-* `LinearMap.addCommMonoid` and `LinearMap.addCommGroup`: the elementwise addition structures
-  corresponding to addition in the codomain
-* `LinearMap.distribMulAction` and `LinearMap.module`: the elementwise scalar action structures
-  corresponding to applying the action in the codomain.
-
-## Implementation notes
-
-To ensure that composition works smoothly for semilinear maps, we use the typeclasses
-`RingHomCompTriple`, `RingHomInvPair` and `RingHomSurjective` from
-`Mathlib.Algebra.Ring.CompTypeclasses`.
-
-## Notation
-
-* Throughout the file, we denote regular linear maps by `fₗ`, `gₗ`, etc, and semilinear maps
-  by `f`, `g`, etc.
-
-## TODO
-
-* Parts of this file have not yet been generalized to semilinear maps (i.e. `CompatibleSMul`)
-
-## Tags
-
-linear map
+# Further results on (semi)linear maps
 -/
 
 
 assert_not_exists Submonoid
 assert_not_exists Finset
+assert_not_exists Star
 
 open Function
 
@@ -831,40 +794,10 @@ namespace LinearMap
 
 section SMul
 
-variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
-variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
-variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
-
-instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
-  ⟨fun a f ↦
-    { toFun := a • (f : M → M₂)
-      map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
-      map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
-
-@[simp]
-theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
-  rfl
-#align linear_map.smul_apply LinearMap.smul_apply
-
-theorem coe_smul (a : S) (f : M →ₛₗ[σ₁₂] M₂) : (a • f : M →ₛₗ[σ₁₂] M₂) = a • (f : M → M₂) :=
-  rfl
-#align linear_map.coe_smul LinearMap.coe_smul
-
-instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M₂) :=
-  ⟨fun _ _ _ ↦ ext fun _ ↦ smul_comm _ _ _⟩
-
--- example application of this instance: if S -> T -> R are homomorphisms of commutative rings and
--- M and M₂ are R-modules then the S-module and T-module structures on Hom_R(M,M₂) are compatible.
-instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
-  smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
-
-instance [DistribMulAction Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
-    IsCentralScalar S (M →ₛₗ[σ₁₂] M₂) where
-  op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
+variable [Semiring R] [Semiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Module R M] [Module R₂ M₂]
+variable {σ₁₂ : R →+* R₂}
 
 variable {S' T' : Type*}
 variable [Monoid S'] [DistribMulAction S' M] [SMulCommClass R S' M]
@@ -894,147 +827,6 @@ instance [SMulCommClass S' T' M] : SMulCommClass S'ᵈᵐᵃ T'ᵈᵐᵃ (M →�
 
 end SMul
 
-/-! ### Arithmetic on the codomain -/
-
-section Arithmetic
-
-variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [AddCommGroup N₁] [AddCommGroup N₂] [AddCommGroup N₃]
-variable [Module R₁ M] [Module R₂ M₂] [Module R₃ M₃]
-variable [Module R₁ N₁] [Module R₂ N₂] [Module R₃ N₃]
-variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
-/-- The constant 0 map is linear. -/
-instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
-  ⟨{  toFun := 0
-      map_add' := by simp
-      map_smul' := by simp }⟩
-
-@[simp]
-theorem zero_apply (x : M) : (0 : M →ₛₗ[σ₁₂] M₂) x = 0 :=
-  rfl
-#align linear_map.zero_apply LinearMap.zero_apply
-
-@[simp]
-theorem comp_zero (g : M₂ →ₛₗ[σ₂₃] M₃) : (g.comp (0 : M →ₛₗ[σ₁₂] M₂) : M →ₛₗ[σ₁₃] M₃) = 0 :=
-  ext fun c ↦ by rw [comp_apply, zero_apply, zero_apply, g.map_zero]
-#align linear_map.comp_zero LinearMap.comp_zero
-
-@[simp]
-theorem zero_comp (f : M →ₛₗ[σ₁₂] M₂) : ((0 : M₂ →ₛₗ[σ₂₃] M₃).comp f : M →ₛₗ[σ₁₃] M₃) = 0 :=
-  rfl
-#align linear_map.zero_comp LinearMap.zero_comp
-
-instance : Inhabited (M →ₛₗ[σ₁₂] M₂) :=
-  ⟨0⟩
-
-@[simp]
-theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
-  rfl
-#align linear_map.default_def LinearMap.default_def
-
-instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
-    uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
-#align linear_map.unique_of_left LinearMap.uniqueOfLeft
-
-instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  coe_injective.unique
-#align linear_map.unique_of_right LinearMap.uniqueOfRight
-
-/-- The sum of two linear maps is linear. -/
-instance : Add (M →ₛₗ[σ₁₂] M₂) :=
-  ⟨fun f g ↦
-    { toFun := f + g
-      map_add' := by simp [add_comm, add_left_comm]
-      map_smul' := by simp [smul_add] }⟩
-
-@[simp]
-theorem add_apply (f g : M →ₛₗ[σ₁₂] M₂) (x : M) : (f + g) x = f x + g x :=
-  rfl
-#align linear_map.add_apply LinearMap.add_apply
-
-theorem add_comp (f : M →ₛₗ[σ₁₂] M₂) (g h : M₂ →ₛₗ[σ₂₃] M₃) :
-    ((h + g).comp f : M →ₛₗ[σ₁₃] M₃) = h.comp f + g.comp f :=
-  rfl
-#align linear_map.add_comp LinearMap.add_comp
-
-theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃] M₃) :
-    (h.comp (f + g) : M →ₛₗ[σ₁₃] M₃) = h.comp f + h.comp g :=
-  ext fun _ ↦ h.map_add _ _
-#align linear_map.comp_add LinearMap.comp_add
-
-/-- The type of linear maps is an additive monoid. -/
-instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
-  DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
-
-/-- The negation of a linear map is linear. -/
-instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
-  ⟨fun f ↦
-    { toFun := -f
-      map_add' := by simp [add_comm]
-      map_smul' := by simp }⟩
-
-@[simp]
-theorem neg_apply (f : M →ₛₗ[σ₁₂] N₂) (x : M) : (-f) x = -f x :=
-  rfl
-#align linear_map.neg_apply LinearMap.neg_apply
-
-@[simp]
-theorem neg_comp (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] N₃) : (-g).comp f = -g.comp f :=
-  rfl
-#align linear_map.neg_comp LinearMap.neg_comp
-
-@[simp]
-theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] N₃) : g.comp (-f) = -g.comp f :=
-  ext fun _ ↦ g.map_neg _
-#align linear_map.comp_neg LinearMap.comp_neg
-
-/-- The subtraction of two linear maps is linear. -/
-instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
-  ⟨fun f g ↦
-    { toFun := f - g
-      map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
-      map_smul' := fun r x ↦ by simp [Pi.sub_apply, map_smul, smul_sub] }⟩
-
-@[simp]
-theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=
-  rfl
-#align linear_map.sub_apply LinearMap.sub_apply
-
-theorem sub_comp (f : M →ₛₗ[σ₁₂] M₂) (g h : M₂ →ₛₗ[σ₂₃] N₃) :
-    (g - h).comp f = g.comp f - h.comp f :=
-  rfl
-#align linear_map.sub_comp LinearMap.sub_comp
-
-theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃] N₃) :
-    h.comp (g - f) = h.comp g - h.comp f :=
-  ext fun _ ↦ h.map_sub _ _
-#align linear_map.comp_sub LinearMap.comp_sub
-
-/-- The type of linear maps is an additive group. -/
-instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) fun _ _ ↦ rfl
-
-/-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
-@[simps]
-def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
-  toFun f := f a
-  map_add' f g := LinearMap.add_apply f g a
-  map_zero' := rfl
-#align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
-
-/-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
-@[simps]
-def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
-  toFun := toAddMonoidHom
-  map_zero' := by ext; rfl
-  map_add' := by intros; ext; rfl
-#align linear_map.to_add_monoid_hom' LinearMap.toAddMonoidHom'
-
-end Arithmetic
 
 section Actions
 
@@ -1049,24 +841,6 @@ variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
 variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
 variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
-instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂) where
-  one_smul _ := ext fun _ ↦ one_smul _ _
-  mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
-  smul_add _ _ _ := ext fun _ ↦ smul_add _ _ _
-  smul_zero _ := ext fun _ ↦ smul_zero _
-
-theorem smul_comp (a : S₃) (g : M₂ →ₛₗ[σ₂₃] M₃) (f : M →ₛₗ[σ₁₂] M₂) :
-    (a • g).comp f = a • g.comp f :=
-  rfl
-#align linear_map.smul_comp LinearMap.smul_comp
-
--- TODO: generalize this to semilinear maps
-theorem comp_smul [Module R M₂] [Module R M₃] [SMulCommClass R S M₂] [DistribMulAction S M₃]
-    [SMulCommClass R S M₃] [CompatibleSMul M₃ M₂ S R] (g : M₃ →ₗ[R] M₂) (a : S) (f : M →ₗ[R] M₃) :
-    g.comp (a • f) = a • g.comp f :=
-  ext fun _ ↦ g.map_smul_of_tower _ _
-#align linear_map.comp_smul LinearMap.comp_smul
-
 instance {S'} [Monoid S'] [DistribMulAction S' M] [SMulCommClass R S' M] :
     DistribMulAction S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
   one_smul _ := ext fun _ ↦ congr_arg _ (one_smul _ _)
@@ -1079,10 +853,6 @@ end SMul
 section Module
 
 variable [Semiring S] [Module S M] [Module S M₂] [SMulCommClass R₂ S M₂]
-
-instance module : Module S (M →ₛₗ[σ₁₂] M₂) where
-  add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
-  zero_smul _ := ext fun _ ↦ zero_smul _ _
 
 instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul

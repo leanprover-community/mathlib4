@@ -723,7 +723,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
         cases' i with i
         · exact ⟨m, by simpa using hf _ _ h₁, m0⟩
         · rcases hy₂ (Nat.lt_of_succ_lt_succ im) with ⟨z, hz, z0⟩
-          exact ⟨z, by simpa [Nat.succ_eq_add_one, add_comm, add_left_comm] using hz, z0⟩
+          exact ⟨z, by simpa [add_comm, add_left_comm] using hz, z0⟩
 #align nat.partrec.code.evaln_sound Nat.Partrec.Code.evaln_sound
 
 theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := by

@@ -61,9 +61,8 @@ theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b
   rfl
 #align prod.map_mk Prod.map_mk
 
--- I'm skeptical about having this as a `simp` lemma, despite it having been in the past
--- as it destructures the pair. See `map_app`, `map_fst`, and `map_snd` for slightly weaker
--- lemmas in the `simp` set.
+-- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.
+--  See `map_apply`, `map_fst`, and `map_snd` for slightly weaker lemmas in the `simp` set.
 theorem map_apply' (f : α → γ) (g : β → δ) (p : α × β) : map f g p = (f p.1, g p.2) :=
   rfl
 
@@ -99,7 +98,6 @@ theorem map_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε)
   rfl
 #align prod.map_map Prod.map_map
 
--- Porting note: mathlib3 proof uses `by cc` for the mpr direction
 -- Porting note: `@[simp]` tag removed because auto-generated `mk.injEq` simplifies LHS
 -- @[simp]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=
@@ -130,7 +128,7 @@ theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
 #align prod.ext Prod.ext
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
-  funext fun _ ↦ ext map_fst map_snd
+  funext fun p ↦ ext (map_fst f g p) (map_snd f g p)
 #align prod.map_def Prod.map_def
 
 theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
@@ -213,6 +211,11 @@ theorem swap_bijective : Function.Bijective (@swap α β) :=
 theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
   swap_injective.eq_iff
 #align prod.swap_inj Prod.swap_inj
+
+/--For two functions `f` and `g`, the composition of `Prod.map f g` with `Prod.swap`
+is equal to the composition of `Prod.swap` with `Prod.map g f`.-/
+theorem map_comp_swap (f : α → β) (g : γ → δ) :
+    Prod.map f g ∘ Prod.swap = Prod.swap ∘ Prod.map g f := rfl
 
 theorem eq_iff_fst_eq_snd_eq : ∀ {p q : α × β}, p = q ↔ p.1 = q.1 ∧ p.2 = q.2
   | ⟨p₁, p₂⟩, ⟨q₁, q₂⟩ => by simp

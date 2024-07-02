@@ -466,14 +466,6 @@ theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip 
     · exact (IH _ _ h).cons _
 #align list.revzip_sublists' List.revzip_sublists'
 
-#adaptation_note
-/--
-After nightly-2024-06-22, `List.bind_map`s arguments are explicit again,
-and we can change the line
-`← List.bind_map (g := fun n => sublistsLen n tl) (f := Nat.succ),`
-below to
-`← List.bind_map Nat.succ (fun n => sublistsLen n tl),`
--/
 theorem range_bind_sublistsLen_perm (l : List α) :
     ((List.range (l.length + 1)).bind fun n => sublistsLen n l) ~ sublists' l := by
   induction' l with h tl l_ih
@@ -486,7 +478,7 @@ theorem range_bind_sublistsLen_perm (l : List α) :
     refine Perm.append ?_ (l_ih.map _)
     rw [List.range_succ, append_bind, bind_singleton,
       sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil,
-      ← List.bind_map (g := fun n => sublistsLen n tl) (f := Nat.succ),
+      ← List.bind_map Nat.succ fun n => sublistsLen n tl,
       ← bind_cons 0 _ fun n => sublistsLen n tl, ← range_succ_eq_map]
     exact l_ih
 #align list.range_bind_sublists_len_perm List.range_bind_sublistsLen_perm
