@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.ENat.Basic
+import Mathlib.Order.CompletePartialOrder
 
 #align_import data.enat.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -44,5 +45,14 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 
 @[norm_cast] lemma coe_iInf [Nonempty ι] : ↑(⨅ i, f i) = ⨅ i, (f i : ℕ∞) :=
   WithTop.coe_iInf (OrderBot.bddBelow _)
+
+variable {s : Set ℕ∞}
+
+lemma sSup_eq_zero : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
+  sSup_eq_bot'
+
+lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s :=
+  ⟨fun h ↦ have ⟨_, h₁, h₂⟩  := (sInf_eq_bot.mp h) 1 (by decide)
+  lt_one_iff_eq_zero.mp h₂ ▸ h₁, inf_eq_bot_of_bot_mem⟩
 
 end ENat
