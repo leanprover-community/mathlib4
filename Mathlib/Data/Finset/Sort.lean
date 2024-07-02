@@ -81,6 +81,76 @@ theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   simp only [coe_toList, sort_eq]
 #align finset.sort_perm_to_list Finset.sort_perm_toList
 
+theorem filter_sort_commute [DecidableEq α](f : α → Prop) [DecidablePred f] (s : Finset α) :
+    sort r (filter (f .) s) = List.filter f (sort r s) := by
+  have h₁: List.Sorted r (sort r (filter (f .) s)) := by simp
+  have h₂: List.Sorted r (List.filter f (sort r s)) := by
+    apply List.Sorted.filter
+    exact sort_sorted r s
+  apply List.eq_of_perm_of_sorted _ h₁ h₂
+  apply List.perm_of_nodup_nodup_toFinset_eq
+  exact sort_nodup r (Finset.filter f s)
+  apply List.Nodup.filter
+  exact sort_nodup r s
+  rw [sort_toFinset]
+  rw [List.toFinset_filter]
+  simp
+
+theorem sort_monotone_map [DecidableEq α] [DecidableEq β]
+    (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
+    (f : α ↪ β) (preserve_le : {x : α} → {y : α} → (h : r x y) → (r' (f x) (f y)))
+    (s : Finset α): sort r' (map f s) = List.map f (sort r s) := by
+  have LHS_sorted : List.Sorted r' (sort r' (map f s)) :=
+    sort_sorted r' (map f s)
+  let lst := sort r s
+  have lst_sorted : List.Sorted r lst := sort_sorted r s
+  have RHS_sorted : List.Sorted r' (List.map f lst) := by
+    apply List.pairwise_map.mpr
+    unfold List.Sorted at lst_sorted
+    exact List.Pairwise.imp preserve_le lst_sorted
+  have LHS_nodup :
+  List.Nodup (sort r' (map f s)) := sort_nodup r' (map f s)
+  have RHS_nodup : List.Nodup (List.map f (sort r s)) := by
+    apply List.Nodup.map
+    exact Function.Embedding.injective f
+    exact sort_nodup r s
+  have h :
+      (sort r' (map f s)).toFinset = (List.map f (sort r s)).toFinset := by
+    simp
+    rw [← list_map_toFinset]
+    simp
+  rw [List.toFinset_eq_iff_perm_dedup,List.Nodup.dedup LHS_nodup,List.Nodup.dedup RHS_nodup] at h
+  exact List.eq_of_perm_of_sorted h LHS_sorted RHS_sorted
+
+theorem sort_insert_largest [DecidableEq α](s : Finset α)
+    (x : α) (h : ∀ y ∈ s, r y x) (hx : x ∉ s) :
+    sort r (insert x s) = sort r s ++ [x] := by
+  rw [← cons_eq_insert]
+  swap; exact hx
+  have LHS_sorted : List.Sorted r (sort r (cons x s hx)) := sort_sorted r (cons x s hx)
+  have RHS_sorted : List.Sorted r (sort r s ++ [x]) := by
+    rw [List.Sorted.append_largest]
+    simpa [h]
+  apply List.eq_of_perm_of_sorted _ LHS_sorted RHS_sorted
+  apply (sort_perm_toList _ _).trans
+  apply (toList_cons hx).trans
+  apply List.Perm.trans _ (List.perm_append_singleton _ _).symm
+  rw [List.perm_cons]
+  apply (sort_perm_toList _ _).symm
+
+theorem sort_range {k : ℕ} :
+    (sort (. ≤ .) (range k)) = List.range k := by
+  induction k with
+  | zero => simp
+  | succ n ih =>
+  rw [@range_succ]
+  rw [List.range_succ]
+  rw [← ih]
+  rw [sort_insert_largest]
+  intro y
+  simpa using le_of_lt
+  simp
+
 end sort
 
 section SortLinearOrder
