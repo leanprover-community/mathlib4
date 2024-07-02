@@ -795,15 +795,11 @@ lemma functorPushforward_ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i �
   ext Z g
   constructor
   · rintro ⟨T, a, b, ⟨U, c, d, hd, rfl⟩, rfl⟩
-    obtain ⟨i, rfl, hi⟩ := hd.exists
-    simp only [eqToHom_refl, id_comp] at hi
-    subst hi
+    cases' hd with i
     rw [F.map_comp, ← assoc]
     exact downward_closed _ (ofArrows_mk _ _ i) _
   · rintro ⟨T, a, b, hb, rfl⟩
-    obtain ⟨i, rfl, hi⟩ := hb.exists
-    simp only [eqToHom_refl, id_comp] at hi
-    subst hi
+    cases' hb with i
     exact downward_closed _ (image_mem_functorPushforward _ _ (ofArrows_mk _ _ i)) _
 
 /-- When `F` is essentially surjective and full, the galois connection is a galois insertion. -/
