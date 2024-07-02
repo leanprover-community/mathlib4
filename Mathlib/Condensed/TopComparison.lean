@@ -16,13 +16,13 @@ nice properties, like preserving pullbacks and finite coproducts, then this Yone
 satisfies the sheaf condition for the regular and extensive topologies respectively.
 
 We apply this API to `CompHaus` and define the functor
-`topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u}`.
+`topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`.
 
 ## Projects
 
-* Prove that `topCatToCondensed` is faithful.
+* Prove that `topCatToCondensedSet` is faithful.
 * Define compactly generated topological spaces.
-* Prove that `topCatToCondensed` restricted to compactly generated spaces is fully faithful.
+* Prove that `topCatToCondensedSet` restricted to compactly generated spaces is fully faithful.
 * Define the left adjoint of the restriction mentioned in the previous point.
 -/
 
@@ -109,7 +109,7 @@ Associate to a `(u+1)`-small topological space the corresponding condensed set, 
 `yonedaPresheaf`.
 -/
 -- @[simps!]
-noncomputable def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
+noncomputable def TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
   @CondensedSet.ofSheafCompHaus (yonedaPresheaf.{u, u+1, u, u+1} compHausToTop.{u} X) _ (by
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       compHausToTop.{u} X
@@ -119,8 +119,8 @@ noncomputable def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
 
 
 /--
-`TopCat.toCondensed` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
+`TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
-noncomputable def topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u} where
-  obj X := X.toCondensed
+noncomputable def topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} where
+  obj X := X.toCondensedSet
   map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩

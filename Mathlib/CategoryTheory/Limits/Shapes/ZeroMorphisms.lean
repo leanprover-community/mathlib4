@@ -548,7 +548,7 @@ theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
   refine ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm
-    _ = f ≫ 0 := by congr!; apply Subsingleton.elim
+    _ = f ≫ 0 := by congr!; subsingleton
     _ = 0 := HasZeroMorphisms.comp_zero _ _
 #align category_theory.limits.has_zero_object_of_has_initial_object CategoryTheory.Limits.hasZeroObject_of_hasInitial_object
 
@@ -558,7 +558,7 @@ theorem hasZeroObject_of_hasTerminal_object [HasZeroMorphisms C] [HasTerminal C]
   refine ⟨⟨⊤_ C, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩⟩⟩
   calc
     f = 𝟙 _ ≫ f := (Category.id_comp _).symm
-    _ = 0 ≫ f := by congr!; apply Subsingleton.elim
+    _ = 0 ≫ f := by congr!; subsingleton
     _ = 0 := zero_comp
 #align category_theory.limits.has_zero_object_of_has_terminal_object CategoryTheory.Limits.hasZeroObject_of_hasTerminal_object
 
@@ -664,5 +664,32 @@ instance isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)
     IsSplitEpi (prod.snd : X ⨯ Y ⟶ Y) :=
   IsSplitEpi.mk' { section_ := prod.lift 0 (𝟙 Y) }
 #align category_theory.limits.is_split_epi_prod_snd CategoryTheory.Limits.isSplitEpi_prod_snd
+
+
+section
+
+variable [HasZeroMorphisms C] [HasZeroObject C] {F : D ⥤ C}
+
+/-- If a functor `F` is zero, then any cone for `F` with a zero point is limit. -/
+def IsLimit.ofIsZero (c : Cone F) (hF : IsZero F) (hc : IsZero c.pt) : IsLimit c where
+  lift _ := 0
+  fac _ j := (F.isZero_iff.1 hF j).eq_of_tgt _ _
+  uniq _ _ _ := hc.eq_of_tgt _ _
+
+/-- If a functor `F` is zero, then any cocone for `F` with a zero point is colimit. -/
+def IsColimit.ofIsZero (c : Cocone F) (hF : IsZero F) (hc : IsZero c.pt) : IsColimit c where
+  desc _ := 0
+  fac _ j := (F.isZero_iff.1 hF j).eq_of_src _ _
+  uniq _ _ _ := hc.eq_of_src _ _
+
+lemma IsLimit.isZero_pt {c : Cone F} (hc : IsLimit c) (hF : IsZero F) : IsZero c.pt :=
+  (isZero_zero C).of_iso (IsLimit.conePointUniqueUpToIso hc
+    (IsLimit.ofIsZero (Cone.mk 0 0) hF (isZero_zero C)))
+
+lemma IsColimit.isZero_pt {c : Cocone F} (hc : IsColimit c) (hF : IsZero F) : IsZero c.pt :=
+  (isZero_zero C).of_iso (IsColimit.coconePointUniqueUpToIso hc
+    (IsColimit.ofIsZero (Cocone.mk 0 0) hF (isZero_zero C)))
+
+end
 
 end CategoryTheory.Limits

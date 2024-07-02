@@ -916,6 +916,18 @@ theorem eval_image_pi (hs : i ∈ s) (ht : (s.pi t).Nonempty) : eval i '' s.pi t
   (eval_image_pi_subset hs).antisymm (subset_eval_image_pi ht i)
 #align set.eval_image_pi Set.eval_image_pi
 
+lemma eval_image_pi_of_not_mem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
+    eval i '' s.pi t = if (s.pi t).Nonempty then univ else ∅ := by
+  classical
+  ext xᵢ
+  simp only [eval, mem_image, mem_pi, Set.Nonempty, mem_ite_empty_right, mem_univ, and_true]
+  constructor
+  · rintro ⟨x, hx, rfl⟩
+    exact ⟨x, hx⟩
+  · rintro ⟨x, hx⟩
+    refine ⟨Function.update x i xᵢ, ?_⟩
+    simpa (config := { contextual := true }) [(ne_of_mem_of_not_mem · hi)]
+
 @[simp]
 theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
@@ -959,6 +971,11 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
       exact hf j hj h
 #align set.update_preimage_pi Set.update_preimage_pi
 
+theorem update_image [DecidableEq ι] (x : (i : ι) → β i) (i : ι) (s : Set (β i)) :
+    update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
+  ext y
+  simp [update_eq_iff, and_left_comm (a := _ ∈ s), forall_update_iff, eq_comm (a := y _)]
+
 theorem update_preimage_univ_pi [DecidableEq ι] {f : ∀ i, α i} (hf : ∀ j ≠ i, f j ∈ t j) :
     update f i ⁻¹' pi univ t = t i :=
   update_preimage_pi (mem_univ i) fun j _ => hf j
@@ -996,7 +1013,7 @@ theorem piCongrLeft_symm_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i
 theorem piCongrLeft_preimage_pi (f : ι' ≃ ι) (s : Set ι') (t : ∀ i, Set (α i)) :
     f.piCongrLeft α ⁻¹' (f '' s).pi t = s.pi fun i => t (f i) := by
   apply Set.ext;
-  rw [← (f.piCongrLeft α).symm.forall_congr_left]
+  rw [← (f.piCongrLeft α).symm.forall_congr_right]
   simp
 
 theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :

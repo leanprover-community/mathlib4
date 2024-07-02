@@ -58,7 +58,8 @@ def isLimitOfIsLimitForkMap [ReflectsLimit (parallelPair f g) G]
   ReflectsLimit.reflects ((isLimitMapConeForkEquiv G w).symm l)
 #align category_theory.limits.is_limit_of_is_limit_fork_map CategoryTheory.Limits.isLimitOfIsLimitForkMap
 
-variable (f g) [HasEqualizer f g]
+variable (f g)
+variable [HasEqualizer f g]
 
 /--
 If `G` preserves equalizers and `C` has them, then the fork constructed of the mapped morphisms of
@@ -148,7 +149,8 @@ def isColimitOfIsColimitCoforkMap [ReflectsColimit (parallelPair f g) G]
   ReflectsColimit.reflects ((isColimitMapCoconeCoforkEquiv G w).symm l)
 #align category_theory.limits.is_colimit_of_is_colimit_cofork_map CategoryTheory.Limits.isColimitOfIsColimitCoforkMap
 
-variable (f g) [HasCoequalizer f g]
+variable (f g)
+variable [HasCoequalizer f g]
 
 /--
 If `G` preserves coequalizers and `C` has them, then the cofork constructed of the mapped morphisms
