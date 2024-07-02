@@ -32,7 +32,7 @@ gh_api() {
     "https://api.github.com/$url" "$@"
 }
 
-git push "${remote_name}" "HEAD:$branch_name"
+git push -v "${remote_name}" "HEAD:$branch_name"
 
 pr_id=$(gh_api "repos/${owner_name}/mathlib/pulls" -X POST -d @- <<EOF | jq -r .number
 {
