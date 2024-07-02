@@ -53,7 +53,7 @@ git checkout master scripts/count-trans-deps.py
 getTransImports - > transImports2.txt
 git checkout "${currCommit}"
 
-printf '\n\n<details><summary>All import changes</summary>\n\n%s</details>\n' "$(
+printf '\n\n<details><summary>All import changes</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
   (awk -F, '{ diff[$1]+=$2 } END {
     con=0
