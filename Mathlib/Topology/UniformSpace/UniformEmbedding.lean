@@ -397,17 +397,18 @@ theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense 
         ⟩⟩
 #align complete_space_extension completeSpace_extension
 
-theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformEmbedding f)
-    (hs : TotallyBounded s) : TotallyBounded (f ⁻¹' s) := fun t ht => by
-  rw [← hf.comap_uniformity] at ht
-  rcases mem_comap.2 ht with ⟨t', ht', ts⟩
-  rcases totallyBounded_iff_subset.1 (totallyBounded_subset (image_preimage_subset f s) hs) _ ht'
-    with ⟨c, cs, hfc, hct⟩
-  refine ⟨f ⁻¹' c, hfc.preimage hf.inj.injOn, fun x h => ?_⟩
-  have := hct (mem_image_of_mem f h); simp at this ⊢
-  rcases this with ⟨z, zc, zt⟩
-  rcases cs zc with ⟨y, -, rfl⟩
-  exact ⟨y, zc, ts zt⟩
+lemma totallyBounded_image_iff {f : α → β} {s : Set α} (hf : UniformInducing f) :
+    TotallyBounded (f '' s) ↔ TotallyBounded s := by
+  refine ⟨fun hs ↦ ?_, fun h ↦ h.image hf.uniformContinuous⟩
+  simp_rw [(hf.basis_uniformity (basis_sets _)).totallyBounded_iff]
+  intro t ht
+  rcases exists_subset_image_finite_and.1 (hs.exists_subset ht) with ⟨u, -, hfin, h⟩
+  use u, hfin
+  rwa [biUnion_image, image_subset_iff, preimage_iUnion₂] at h
+
+theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformInducing f)
+    (hs : TotallyBounded s) : TotallyBounded (f ⁻¹' s) :=
+  (totallyBounded_image_iff hf).1 <| hs.subset <| image_preimage_subset ..
 #align totally_bounded_preimage totallyBounded_preimage
 
 instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace (Sum α β) := by
