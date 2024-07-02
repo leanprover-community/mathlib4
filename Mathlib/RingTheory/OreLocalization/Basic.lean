@@ -845,7 +845,8 @@ instance : AddMonoid X[S⁻¹] where
     zero_add := OreLocalization.zero_add
     add_zero := OreLocalization.add_zero
     nsmul := nsmul
-    nsmul_zero := fun _ => by with_unfolding_all rfl
+    nsmul_zero _ := by with_unfolding_all rfl
+    nsmul_succ _ _ := by with_unfolding_all rfl
 
 protected theorem smul_zero (x : R[S⁻¹]) : x • (0 : X[S⁻¹]) = 0 := by
   induction' x with r s
