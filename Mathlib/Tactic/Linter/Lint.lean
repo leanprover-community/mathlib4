@@ -108,4 +108,55 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter dupNamespace
 
-end Mathlib.Linter.DupNamespaceLinter
+end DupNamespaceLinter
+
+/-!
+#  The "EndOf" linter
+
+The "EndOf" linter emits a warning somewhere.
+-/
+
+open Lean Elab Command
+
+namespace Mathlib.Linter
+
+/-- The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s. -/
+register_option linter.endOf : Bool := {
+  defValue := true
+  descr := "enable the EndOf linter"
+}
+
+namespace EndOf
+
+open Lean Elab Command
+
+/-- Gets the value of the `linter.endOf` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.endOf o
+
+@[inherit_doc Mathlib.Linter.linter.endOf]
+def endOfLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    let s ← get
+    elabCommand (Lean.mkNode ``Lean.Parser.Command.end #[Lean.mkAtom "end", Lean.mkNullNode])
+    let msgs := (← get).messages.unreported
+    set s
+    let insScopes := "error: invalid 'end', insufficient scopes\n"
+    match ← msgs.toArray.mapM (·.toString) with
+      | #[] => logWarning "Expected 'end'"
+      | #[msg] =>
+        if msg.takeRight insScopes.length != insScopes then
+          Linter.logLint linter.endOf stx m!"Expected: 'end {(msg.splitOn "expected ")[1]!.dropRightWhile (!·.isAlphanum)}'"
+      | _ => return
+
+initialize addLinter endOfLinter
+
+end EndOf
+
+end Mathlib.Linter
+
+end Mathlib.Linter
