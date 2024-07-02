@@ -21,7 +21,7 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
-variable {C : Type u} [Category.{v} C] {W X Y Z : C}
+variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 section PullbackLeftIso
 
@@ -77,7 +77,6 @@ instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd : pullback f g ⟶ _
   · simp [← pullback.condition_assoc]
   · simp [pullback.condition_assoc]
 #align category_theory.limits.pullback_snd_iso_of_left_iso CategoryTheory.Limits.pullback_snd_iso_of_left_iso
-
 
 end PullbackLeftIso
 

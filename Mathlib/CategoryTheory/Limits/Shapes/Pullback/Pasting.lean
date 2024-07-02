@@ -11,16 +11,20 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 This file proves the pasting lemma for pullbacks. That is, given the following diagram:
 ```
-   X₁ --f₁--> X₂ --f₂--> X₃
-    |        |         |
-i₁  |        | i₂      | i₃
-    v        v         v
-   Y₁ --g₁--> Y₂ --g₂--> Y₃
+  X₁ - f₁ -> X₂ - f₂ -> X₃
+  |          |          |
+  i₁         i₂         i₃
+  ∨          ∨          ∨
+  Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
-if the right square is a pullback and the left square is a pullback, then the big square is a
-pullback. ... (TODO ABOVE WAS AI GENERATED)
+if the right square is a pullback, then the left square is a pullback iff the big square is a
+pullback.
 
 ## Main results
+* `bigSquareIsPullback` shows that the big square is a pullback if both the small squares are.
+* `leftSquareIsPullback` shows that the left square is a pullback if the other two are.
+* `pullbackRightPullbackFstIso` shows, using the `pullback` API, that
+`W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y`.
 
 -/
 
@@ -32,8 +36,7 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
--- TODO: need wxyz here?
-variable {C : Type u} [Category.{v} C] {W X Y Z : C}
+variable {C : Type u} [Category.{v} C]
 
 section PasteLemma
 
@@ -191,7 +194,7 @@ end PasteLemma
 
 section
 
-variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : W ⟶ X)
+variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (f' : W ⟶ X)
 variable [HasPullback f g] [HasPullback f' (pullback.fst : pullback f g ⟶ _)]
 variable [HasPullback (f' ≫ f) g]
 
@@ -240,7 +243,7 @@ end
 
 section
 
-variable (f : X ⟶ Y) (g : X ⟶ Z) (g' : Z ⟶ W)
+variable {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (g' : Z ⟶ W)
 variable [HasPushout f g] [HasPushout (pushout.inr : _ ⟶ pushout f g) g']
 variable [HasPushout f (g ≫ g')]
 
