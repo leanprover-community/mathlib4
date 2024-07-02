@@ -127,7 +127,7 @@ lemma exists_y :
   have hmax (I : O) : Ideal.IsMaximal (I : Ideal B) := by
     rcases I with ⟨_, σ, rfl⟩
     convert Ideal.comap_isMaximal_of_surjective (K := Q) _ (AlgEquiv.surjective σ.symm)
-    apply Ideal.map_eq_comap_symm
+    apply Ideal.pointwise_smul_eq_comap
   have hPairwise : Pairwise fun (I : O) (J : O) ↦ IsCoprime (I : Ideal B) J := fun x y h ↦ ⟨1, 1, by
     simp only [Ideal.one_eq_top, Ideal.top_mul]
     exact Ideal.IsMaximal.coprime_of_ne (hmax x) (hmax y) <| mt Subtype.ext h⟩
