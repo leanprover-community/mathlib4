@@ -114,7 +114,7 @@ theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f) :
     IsLindelof (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
 /-- A filter with the countable intersection property that is finer than the principal filter on
-a Lindelöf set `s` contains any open set that contains all clusterpoints of `s`. -/
+a Lindelöf set `s` contains any open set that contains all clusterpoints of `f` in `s`. -/
 theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs : IsLindelof s)
     (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   (eq_or_neBot _).casesOn mem_of_eq_bot fun _ ↦
@@ -250,7 +250,6 @@ theorem IsLindelof.elim_countable_subcover_image {b : Set ι} {c : ι → Set X}
   refine ⟨Subtype.val '' d, by simp, Countable.image hd.1 Subtype.val, ?_⟩
   rw [biUnion_image]
   exact hd.2
-
 
 /-- A set `s` is Lindelöf if for every open cover of `s`, there exists a countable subcover. -/
 theorem isLindelof_of_countable_subcover
