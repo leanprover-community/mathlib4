@@ -2227,6 +2227,19 @@ theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.P
   ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
 #align simple_graph.preconnected.subsingleton_connected_component SimpleGraph.Preconnected.subsingleton_connectedComponent
 
+/-- This is `Quot.recOn` specialized to connected components.
+For convenience, it strengthens the assumptions in the hypothesis
+to provide a path between the vertices. -/
+@[elab_as_elim]
+def recOn
+    {motive : G.ConnectedComponent → Sort*}
+    (c : G.ConnectedComponent)
+    (f : (v : V) → motive (G.connectedComponentMk v))
+    (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
+      ConnectedComponent.sound p.reachable ▸ f u = f v) :
+    motive c :=
+  Quot.recOn c f (fun u v r => r.elim_path fun p => h u v p p.2)
+
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
   C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
@@ -2355,6 +2368,14 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   left_inv v := Subtype.ext_val (φ.toEquiv.left_inv ↑v)
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
+
+lemma mem_coe_supp_of_adj {H : Subgraph G} {c : ConnectedComponent H.coe}
+    (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
+    (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
+  obtain ⟨_, h⟩ := hv
+  use ⟨w, hw⟩
+  rw [← (mem_supp_iff _ _).mp h.1]
+  exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
 end ConnectedComponent
 

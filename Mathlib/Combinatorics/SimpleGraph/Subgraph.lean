@@ -158,6 +158,8 @@ theorem isSpanning_iff {G' : Subgraph G} : G'.IsSpanning ↔ G'.verts = Set.univ
   Set.eq_univ_iff_forall.symm
 #align simple_graph.subgraph.is_spanning_iff SimpleGraph.Subgraph.isSpanning_iff
 
+protected alias ⟨IsSpanning.verts_eq_univ, _⟩ := isSpanning_iff
+
 /-- Coercion from `Subgraph G` to `SimpleGraph V`.  If `G'` is a spanning
 subgraph, then `G'.spanningCoe` yields an isomorphic graph.
 In general, this adds in all vertices from `V` as isolated vertices. -/
@@ -977,6 +979,15 @@ theorem singletonSubgraph_snd_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
   simp
 #align simple_graph.singleton_subgraph_snd_le_subgraph_of_adj SimpleGraph.singletonSubgraph_snd_le_subgraphOfAdj
 
+lemma subgraphOfAdj_support {u v : V} (h : G.Adj u v) :
+    (G.subgraphOfAdj h).support = {u , v} := by
+  ext
+  rw [Subgraph.mem_support]
+  simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+  refine ⟨?_, fun h ↦ h.elim (fun hl ↦ ⟨v, .inl ⟨hl.symm, rfl⟩⟩) fun hr ↦ ⟨u, .inr ⟨rfl, hr.symm⟩⟩⟩
+  rintro ⟨_, hw⟩
+  exact hw.elim (fun h1 ↦ .inl h1.1.symm) fun hr ↦ .inr hr.2.symm
+
 end MkProperties
 
 namespace Subgraph
@@ -996,6 +1007,9 @@ taking the portion of `G` that intersects `G'`. -/
 protected abbrev restrict {G' : G.Subgraph} : G.Subgraph → G'.coe.Subgraph :=
   Subgraph.comap G'.hom
 #align simple_graph.subgraph.restrict SimpleGraph.Subgraph.restrict
+
+lemma coeSubgraph_verts {G' : Subgraph G} (G'' : Subgraph G'.coe) :
+    G''.coeSubgraph.verts = (G''.verts : Set V) := rfl
 
 lemma coeSubgraph_adj {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (v w : V) :
     (G'.coeSubgraph G'').Adj v w ↔
