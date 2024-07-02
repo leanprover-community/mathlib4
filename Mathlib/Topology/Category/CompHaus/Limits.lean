@@ -33,7 +33,7 @@ universe u w
 open CategoryTheory Limits CompHausLike
 
 instance : HasExplicitPullbacks (fun _ ↦ True) where
-  hasExplicitPullbacks _ _ := inferInstance
+  hasProp _ _ := inferInstance
 
 instance : HasExplicitFiniteCoproducts (fun _ ↦ True) where
   hasProp _ := inferInstance
