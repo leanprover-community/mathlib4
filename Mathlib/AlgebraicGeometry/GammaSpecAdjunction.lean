@@ -69,6 +69,18 @@ def ΓToStalk (x : X) : Γ.obj (op X) ⟶ X.presheaf.stalk x :=
   X.presheaf.germ (⟨x, trivial⟩ : (⊤ : Opens X))
 #align algebraic_geometry.LocallyRingedSpace.Γ_to_stalk AlgebraicGeometry.LocallyRingedSpace.ΓToStalk
 
+lemma ΓToStalk_stalkMap {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
+    Y.ΓToStalk (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x =
+      f.val.c.app (op ⊤) ≫ X.ΓToStalk x := by
+  dsimp only [LocallyRingedSpace.ΓToStalk]
+  rw [PresheafedSpace.stalkMap_germ']
+
+lemma ΓToStalk_stalkMap_apply {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X)
+    (a : Y.presheaf.obj (op ⊤)) :
+    PresheafedSpace.stalkMap f.val x (Y.ΓToStalk (f.val.base x) a) =
+      X.ΓToStalk x (f.val.c.app (op ⊤) a) := by
+  simpa using congrFun (congrArg DFunLike.coe <| ΓToStalk_stalkMap f x) a
+
 /-- The canonical map from the underlying set to the prime spectrum of `Γ(X)`. -/
 def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
   comap (X.ΓToStalk x) (LocalRing.closedPoint (X.presheaf.stalk x))
