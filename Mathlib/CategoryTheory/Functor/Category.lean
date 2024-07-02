@@ -105,6 +105,11 @@ theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
     rw [← cancel_epi (α.app X), ← comp_app, eq, comp_app]⟩
 #align category_theory.nat_trans.epi_of_epi_app CategoryTheory.NatTrans.epi_of_epi_app
 
+/-- The monoid of natural transformations of the identity is commutative.-/
+lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
+  ext X
+  exact (α.naturality (β.app X)).symm
+
 /-- `hcomp α β` is the horizontal composition of natural transformations. -/
 @[simps]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
@@ -157,7 +162,7 @@ end Functor
 namespace Iso
 
 @[reassoc (attr := simp)]
-theorem map_hom_inv_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E)  (Z : D) :
+theorem map_hom_inv_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
     (F.map e.hom).app Z ≫ (F.map e.inv).app Z = 𝟙 _ := by
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 #align category_theory.map_hom_inv_app CategoryTheory.Iso.map_hom_inv_id_app

@@ -332,6 +332,21 @@ theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :
 @[simp] lemma subtype_univ [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
     univ.subtype p = univ := by simp
 
+lemma univ_map_subtype [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+    univ.map (Function.Embedding.subtype p) = univ.filter p := by
+  rw [← subtype_map, subtype_univ]
+
+lemma univ_val_map_subtype_val [Fintype α] (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+    univ.val.map ((↑) : { a // p a } → α) = (univ.filter p).val := by
+  apply (map_val (Function.Embedding.subtype p) univ).symm.trans
+  apply congr_arg
+  apply univ_map_subtype
+
+lemma univ_val_map_subtype_restrict [Fintype α] (f : α → β)
+    (p : α → Prop) [DecidablePred p] [Fintype {a // p a}] :
+    univ.val.map (Subtype.restrict p f) = (univ.filter p).val.map f := by
+  rw [← univ_val_map_subtype_val, Multiset.map_map, Subtype.restrict_def]
+
 end Finset
 
 open Finset Function
@@ -477,7 +492,7 @@ This function computes by checking all terms `a : α` to find the `f a = b`, so 
 -/
 def invOfMemRange : Set.range f → α := fun b =>
   Finset.choose (fun a => f a = b) Finset.univ
-    ((exists_unique_congr (by simp)).mp (hf.exists_unique_of_mem_range b.property))
+    ((existsUnique_congr (by simp)).mp (hf.exists_unique_of_mem_range b.property))
 #align function.injective.inv_of_mem_range Function.Injective.invOfMemRange
 
 theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b :=
@@ -599,7 +614,7 @@ def toFinset (s : Set α) [Fintype s] : Finset α :=
 
 @[congr]
 theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
-    toFinset s = toFinset t := by subst h; congr; exact Subsingleton.elim _ _
+    toFinset s = toFinset t := by subst h; congr!
 #align set.to_finset_congr Set.toFinset_congr
 
 @[simp]
@@ -862,9 +877,13 @@ theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
     Finset.univ.image l.get = l.toFinset := by
   simp [univ_image_def]
 
-@[simp] theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
+@[simp] theorem Fin.univ_image_getElem' [DecidableEq β] (l : List α) (f : α → β) :
+    Finset.univ.image (fun i : Fin l.length => f <| l[(i : Nat)]) = (l.map f).toFinset := by
+  simp only [univ_image_def, List.ofFn_getElem_eq_map]
+
+theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
-  simp [univ_image_def]
+  simp
 
 @[instance]
 def Unique.fintype {α : Type*} [Unique α] : Fintype α :=

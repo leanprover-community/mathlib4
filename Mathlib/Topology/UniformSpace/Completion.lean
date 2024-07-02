@@ -194,9 +194,7 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
   refine (lift'_neBot_iff ?_).mpr (fun s hs => ?_)
-  · refine monotone_const.inter ?_
-    simp_rw [UniformSpace.ball]
-    exact monotone_preimage
+  · exact monotone_const.inter monotone_preimage
   · let ⟨y, hy⟩ := h_ex s hs
     have : pureCauchy y ∈ range pureCauchy ∩ { y : CauchyFilter α | (f, y) ∈ s } :=
       ⟨mem_range_self y, hy⟩
@@ -500,7 +498,7 @@ theorem uniformContinuous_extension : UniformContinuous (Completion.extension f)
   cPkg.uniformContinuous_extend
 #align uniform_space.completion.uniform_continuous_extension UniformSpace.Completion.uniformContinuous_extension
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_extension : Continuous (Completion.extension f) :=
   cPkg.continuous_extend
 #align uniform_space.completion.continuous_extension UniformSpace.Completion.continuous_extension

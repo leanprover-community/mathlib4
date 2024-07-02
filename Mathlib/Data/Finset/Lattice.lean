@@ -11,6 +11,7 @@ import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Minimal
 import Mathlib.Order.Nat
 
 #align_import data.finset.lattice from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
@@ -707,6 +708,17 @@ protected theorem le_sup_iff (ha : ⊥ < a) : a ≤ s.sup f ↔ ∃ b ∈ s, a �
   · exact fun ⟨b, hb, hle⟩ => le_trans hle (le_sup hb)
 #align finset.le_sup_iff Finset.le_sup_iff
 
+protected theorem sup_eq_top_iff {α : Type*} [LinearOrder α] [BoundedOrder α] [Nontrivial α]
+    {s : Finset ι} {f : ι → α} : s.sup f = ⊤ ↔ ∃ b ∈ s, f b = ⊤ := by
+  simp only [← top_le_iff]
+  exact Finset.le_sup_iff bot_lt_top
+
+protected theorem Nonempty.sup_eq_top_iff {α : Type*} [LinearOrder α] [BoundedOrder α]
+    {s : Finset ι} {f : ι → α} (hs : s.Nonempty) : s.sup f = ⊤ ↔ ∃ b ∈ s, f b = ⊤ := by
+  cases subsingleton_or_nontrivial α
+  · simpa [Subsingleton.elim _ (⊤ : α)]
+  · exact Finset.sup_eq_top_iff
+
 @[simp]
 protected theorem lt_sup_iff : a < s.sup f ↔ ∃ b ∈ s, a < f b := by
   apply Iff.intro
@@ -742,6 +754,14 @@ theorem comp_inf_eq_inf_comp_of_is_total [SemilatticeInf β] [OrderTop β] (g : 
 protected theorem inf_le_iff (ha : a < ⊤) : s.inf f ≤ a ↔ ∃ b ∈ s, f b ≤ a :=
   @Finset.le_sup_iff αᵒᵈ _ _ _ _ _ _ ha
 #align finset.inf_le_iff Finset.inf_le_iff
+
+protected theorem inf_eq_bot_iff {α : Type*} [LinearOrder α] [BoundedOrder α] [Nontrivial α]
+    {s : Finset ι} {f : ι → α} : s.inf f = ⊥ ↔ ∃ b ∈ s, f b = ⊥ :=
+  Finset.sup_eq_top_iff (α := αᵒᵈ)
+
+protected theorem Nonempty.inf_eq_bot_iff {α : Type*} [LinearOrder α] [BoundedOrder α]
+    {s : Finset ι} {f : ι → α} (h : s.Nonempty) : s.inf f = ⊥ ↔ ∃ b ∈ s, f b = ⊥ :=
+  h.sup_eq_top_iff (α := αᵒᵈ)
 
 @[simp]
 protected theorem inf_lt_iff : s.inf f < a ↔ ∃ b ∈ s, f b < a :=
@@ -1432,6 +1452,14 @@ protected theorem max_le {M : WithBot α} {s : Finset α} (st : ∀ a ∈ s, (a 
   Finset.sup_le st
 #align finset.max_le Finset.max_le
 
+@[simp]
+protected lemma max_le_iff {m : WithBot α} {s : Finset α} : s.max ≤ m ↔ ∀ a ∈ s, a ≤ m :=
+  Finset.sup_le_iff
+
+@[simp]
+protected lemma max_eq_top [OrderTop α] {s : Finset α} : s.max = ⊤ ↔ ⊤ ∈ s :=
+  Finset.sup_eq_top_iff.trans <| by simp
+
 /-- Let `s` be a finset in a linear order. Then `s.min` is the minimum of `s` if `s` is not empty,
 and `⊤` otherwise. It belongs to `WithTop α`. If you want to get an element of `α`, see
 `s.min'`. -/
@@ -1469,12 +1497,9 @@ theorem min_of_nonempty {s : Finset α} (h : s.Nonempty) : ∃ a : α, s.min = a
   min_of_mem h
 #align finset.min_of_nonempty Finset.min_of_nonempty
 
-theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ :=
-  ⟨fun h =>
-    s.eq_empty_or_nonempty.elim id fun H => by
-      let ⟨a, ha⟩ := min_of_nonempty H
-      rw [h] at ha; cases ha; , -- Porting note: error without `done`
-    fun h => h.symm ▸ min_empty⟩
+@[simp]
+theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ := by
+  simp [Finset.min, eq_empty_iff_forall_not_mem]
 #align finset.min_eq_top Finset.min_eq_top
 
 theorem mem_of_min {s : Finset α} : ∀ {a : α}, s.min = a → a ∈ s :=
@@ -1505,6 +1530,14 @@ theorem min_mono {s t : Finset α} (st : s ⊆ t) : t.min ≤ s.min :=
 protected theorem le_min {m : WithTop α} {s : Finset α} (st : ∀ a : α, a ∈ s → m ≤ a) : m ≤ s.min :=
   Finset.le_inf st
 #align finset.le_min Finset.le_min
+
+@[simp]
+protected theorem le_min_iff {m : WithTop α} {s : Finset α} : m ≤ s.min ↔ ∀ a ∈ s, m ≤ a :=
+  Finset.le_inf_iff
+
+@[simp]
+protected theorem min_eq_bot [OrderBot α] {s : Finset α} : s.min = ⊥ ↔ ⊥ ∈ s :=
+  Finset.max_eq_top (α := αᵒᵈ)
 
 /-- Given a nonempty finset `s` in a linear order `α`, then `s.min' h` is its minimum, as an
 element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
@@ -1579,12 +1612,10 @@ theorem lt_min'_iff : x < s.min' H ↔ ∀ y ∈ s, x < y :=
   @max'_lt_iff αᵒᵈ _ _ H _
 #align finset.lt_min'_iff Finset.lt_min'_iff
 
-theorem max'_eq_sup' : s.max' H = s.sup' H id :=
-  eq_of_forall_ge_iff fun _ => (max'_le_iff _ _).trans (sup'_le_iff _ _).symm
+theorem max'_eq_sup' : s.max' H = s.sup' H id := rfl
 #align finset.max'_eq_sup' Finset.max'_eq_sup'
 
-theorem min'_eq_inf' : s.min' H = s.inf' H id :=
-  @max'_eq_sup' αᵒᵈ _ s H
+theorem min'_eq_inf' : s.min' H = s.inf' H id := rfl
 #align finset.min'_eq_inf' Finset.min'_eq_inf'
 
 /-- `{a}.max' _` is `a`. -/
@@ -2075,8 +2106,27 @@ end Set
 
 namespace Finset
 
-/-! ### Interaction with big lattice/set operations -/
+section minimal
 
+variable [DecidableEq α] {P : Finset α → Prop} {s : Finset α}
+
+theorem mem_maximals_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
+    s ∈ maximals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
+  simp only [mem_maximals_iff, and_congr_right_iff, Set.mem_setOf_eq]
+  refine fun _ ↦ ⟨fun h x hx hxs ↦ hx ?_, fun h t ht hst ↦ hst.antisymm fun x hxt ↦ ?_⟩
+  · rw [h hxs (subset_insert _ _)]; exact mem_insert_self x s
+  exact by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))
+
+theorem mem_minimals_iff_forall_erase (hP : ∀ ⦃s t⦄, P s → s ⊆ t → P t) :
+    s ∈ minimals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) := by
+  simp only [mem_minimals_iff, Set.mem_setOf_eq, and_congr_right_iff]
+  refine fun _ ↦ ⟨fun h x hx hxs ↦ ?_, fun h t ht hst ↦ Eq.symm <| hst.antisymm (fun x hxs ↦ ?_)⟩
+  · rw [(h hxs (erase_subset x s))] at hx; simp at hx
+  exact by_contra fun hxt ↦ h x hxs (hP ht <| subset_erase.2 ⟨hst, hxt⟩)
+
+end minimal
+
+/-! ### Interaction with big lattice/set operations -/
 
 section Lattice
 

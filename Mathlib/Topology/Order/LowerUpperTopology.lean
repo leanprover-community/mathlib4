@@ -103,7 +103,8 @@ theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 #align with_lower_topology.of_lower_inj Topology.WithLower.ofLower_inj
 
-/-- A recursor for `WithLower`. Use as `induction x using WithLower.rec`. -/
+/-- A recursor for `WithLower`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLower α → Sort*} (h : ∀ a, β (toLower a)) : ∀ a, β a := fun a =>
   h (ofLower a)
 #align with_lower_topology.rec Topology.WithLower.rec
@@ -142,7 +143,8 @@ namespace WithUpper
 lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b := Iff.rfl
 lemma ofUpper_inj {a b : WithUpper α} : ofUpper a = ofUpper b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithUpper`. Use as `induction x using WithUpper.rec`. -/
+/-- A recursor for `WithUpper`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithUpper α → Sort*} (h : ∀ a, β (toUpper a)) : ∀ a, β a := fun a =>
   h (ofUpper a)
 
@@ -287,7 +289,7 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
 
 /-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
 preimage of every interval `Set.Ici a` is a closed set. -/
-@[deprecated] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
+@[deprecated (since := "2023-12-24")] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
 
 end Preorder
 
@@ -368,7 +370,7 @@ lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous
 provided that the preimage of every interval `Set.Iic a` is a closed set. -/
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
     Continuous f :=
   continuous_iff_Iic.2 h

@@ -59,22 +59,33 @@ used implications are:
   * `SMulPosStrictMono → SMulPosMono`
   * `PosSMulReflectLE → PosSMulReflectLT`
   * `SMulPosReflectLE → SMulPosReflectLT`
-* When `β` is a linear order: `PosSMulStrictMono → PosSMulReflectLE`
-* When `α` is a linear order: `SMulPosStrictMono → SMulPosReflectLE`
+* When `β` is a linear order:
+  * `PosSMulStrictMono → PosSMulReflectLE`
+  * `PosSMulReflectLT → PosSMulMono` (not registered as instance)
+  * `SMulPosReflectLT → SMulPosMono` (not registered as instance)
+  * `PosSMulReflectLE → PosSMulStrictMono` (not registered as instance)
+  * `SMulPosReflectLE → SMulPosStrictMono` (not registered as instance)
+* When `α` is a linear order:
+  * `SMulPosStrictMono → SMulPosReflectLE`
 * When `α` is an ordered ring, `β` an ordered group and also an `α`-module:
   * `PosSMulMono → SMulPosMono`
   * `PosSMulStrictMono → SMulPosStrictMono`
-* When `α` is an ordered semifield, `β` is an `α`-module:
+* When `α` is an linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
+* When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+  * `PosSMulMono → PosSMulStrictMono` (not registered as instance)
+* When `α` is a ring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+  * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
 * `OrderedSMul → PosSMulStrictMono`
 * `OrderedSMul → PosSMulReflectLT`
 
-All these are registered as instances, which means that in practice you should not worry about these
-implications. However, if you encounter a case where you think a statement is true but not covered
-by the current implications, please bring it up on Zulip!
+Unless otherwise stated, all these implications are registered as instances,
+which means that in practice you should not worry about these implications.
+However, if you encounter a case where you think a statement is true but
+not covered by the current implications, please bring it up on Zulip!
 
 ## Implementation notes
 
@@ -893,7 +904,7 @@ lemma smul_neg_iff_of_neg_left (ha : a < 0) : a • b < 0 ↔ 0 < b := by
 end PosSMulStrictMono
 
 /-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)]
+lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β]
     {b₁ b₂ : α} {a d : β} (hab : b₁ ≤ b₂) (hcd : a ≤ d) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
   obtain ⟨b₂, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd
@@ -903,15 +914,15 @@ lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β] [ContravariantClass β 
 #align smul_add_smul_le_smul_add_smul smul_add_smul_le_smul_add_smul
 
 /-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β] [ContravariantClass β β (· + ·) (· ≤ ·)]
+lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β]
     {b₁ b₂ : α} {a d : β} (hba : b₂ ≤ b₁) (hdc : d ≤ a) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
   rw [add_comm (b₁ • d), add_comm (b₁ • a)]
   exact smul_add_smul_le_smul_add_smul hba hdc
 #align smul_add_smul_le_smul_add_smul' smul_add_smul_le_smul_add_smul'
 
 /-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
-    [ContravariantClass β β (· + ·) (· < ·)] {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
+lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β]
+    {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
     b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
   obtain ⟨b₂, rfl⟩ := exists_add_of_le hab.le
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
@@ -921,8 +932,8 @@ lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β] [CovariantClass �
 #align smul_add_smul_lt_smul_add_smul smul_add_smul_lt_smul_add_smul
 
 /-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β] [CovariantClass β β (· + ·) (· < ·)]
-    [ContravariantClass β β (· + ·) (· < ·)] {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
+lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β]
+    {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
     b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
   rw [add_comm (b₁ • d), add_comm (b₁ • a)]
   exact smul_add_smul_lt_smul_add_smul hba hdc

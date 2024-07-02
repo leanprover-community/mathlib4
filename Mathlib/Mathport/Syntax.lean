@@ -31,7 +31,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
@@ -39,7 +39,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
@@ -47,6 +47,7 @@ import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Hint
+import Mathlib.Tactic.ITauto
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
@@ -185,10 +186,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 /- S -/ syntax (name := induction'') "induction''" casesTarget
   (fixingClause <|> generalizingClause)? (" with" (ppSpace colGt withPattern)+)? : tactic
 
-syntax termList := " [" term,* "]"
-/- B -/ syntax (name := itauto) "itauto" (" *" <|> termList)? : tactic
-/- B -/ syntax (name := itauto!) "itauto!" (" *" <|> termList)? : tactic
-
 /- B -/ syntax (name := obviously) "obviously" : tactic
 
 /- S -/ syntax (name := prettyCases) "pretty_cases" : tactic
@@ -221,8 +218,8 @@ syntax termList := " [" term,* "]"
 
 /- M -/ syntax (name := unfoldCases) "unfold_cases " tacticSeq : tactic
 
-/- B -/ syntax (name := equivRw) "equiv_rw" (config)? (termList <|> (ppSpace term)) (location)? :
-  tactic
+/- B -/ syntax (name := equivRw) "equiv_rw" (config)?
+  ((" [" term,* "]") <|> (ppSpace term)) (location)? : tactic
 /- B -/ syntax (name := equivRwType) "equiv_rw_type" (config)? ppSpace term : tactic
 
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (location)? : tactic
@@ -273,8 +270,6 @@ macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
 /- S -/ syntax (name := protectProj) "protect_proj" (&" without" (ppSpace ident)+)? : attr
 
 /- M -/ syntax (name := notationClass) "notation_class" "*"? (ppSpace ident)? : attr
-
-/- N -/ syntax (name := pp_nodot) "pp_nodot" : attr
 
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 

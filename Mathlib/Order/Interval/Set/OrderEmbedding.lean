@@ -45,6 +45,6 @@ variable [LinearOrder α]
 
 @[simp] theorem preimage_uIoc [LinearOrder β] (e : α ↪o β) (x y : α) :
     e ⁻¹' (uIoc (e x) (e y)) = uIoc x y := by
-  cases le_or_lt x y <;> simp [*]
+  cases le_total x y <;> simp [*]
 
 end OrderEmbedding

@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.affine_space.affine_map from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 
@@ -165,8 +166,7 @@ theorem ext_linear {f g : P1 →ᵃ[k] P2} (h₁ : f.linear = g.linear) {p : P1}
   have hgl : g.linear (q -ᵥ p) = toFun g ((q -ᵥ p) +ᵥ q) -ᵥ toFun g q := by simp
   have := f.map_vadd' q (q -ᵥ p)
   rw [h₁, hgl, toFun_eq_coe, map_vadd, linearMap_vsub, h₂] at this
-  simp at this
-  exact this
+  simpa
 
 /-- Two affine maps are equal if they have equal linear maps and are equal at some point. -/
 theorem ext_linear_iff {f g : P1 →ᵃ[k] P2} : f = g ↔ (f.linear = g.linear) ∧ (∃ p, f p = g p) :=
@@ -189,7 +189,6 @@ theorem coe_const (p : P2) : ⇑(const k P1 p) = Function.const P1 p :=
   rfl
 #align affine_map.coe_const AffineMap.coe_const
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem const_apply (p : P2) (q : P1) : (const k P1 p) q = p := rfl
 
@@ -815,18 +814,16 @@ variable [Finite ι] [DecidableEq ι] {f g : ((i : ι) → φv i) →ᵃ[k] P2}
 theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ : f 0 = g 0) :
     f = g := by
   apply ext_linear
-  next =>
-    apply LinearMap.pi_ext
+  · apply LinearMap.pi_ext
     intro i x
     have s₁ := h i x
     have s₂ := f.map_vadd 0 (Pi.single i x)
     have s₃ := g.map_vadd 0 (Pi.single i x)
     rw [vadd_eq_add, add_zero] at s₂ s₃
     replace h₂ := h i 0
-    simp at h₂
+    simp only [Pi.single_zero] at h₂
     rwa [s₂, s₃, h₂, vadd_right_cancel_iff] at s₁
-  next =>
-    exact h₂
+  · exact h₂
 
 /-- Two affine maps from a Pi-tyoe of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
@@ -834,10 +831,9 @@ theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ :
 theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
     f = g := by
   apply pi_ext_zero h
-  rw [← Pi.single_zero]
-  apply h
   inhabit ι
-  exact default
+  rw [← Pi.single_zero default]
+  apply h
 
 /-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
 note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
