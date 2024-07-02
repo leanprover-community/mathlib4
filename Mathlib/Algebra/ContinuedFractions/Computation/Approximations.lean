@@ -285,7 +285,7 @@ theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
     cases' Decidable.em <| g.TerminatedAt (n - 1) with terminated not_terminated
     · -- terminating case
       cases' n with n
-      · simp [succ_eq_add_one, zero_le_one]
+      · simp [zero_le_one]
       · have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
           contsAux_stable_step_of_terminated terminated
         simp only [this, IH]
@@ -499,8 +499,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
     have : (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ :=
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
     have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
-    -- Porting note: was `mono`
-    refine mul_le_mul_of_nonneg_right ?_ ?_ <;> assumption
+    gcongr; exact this
 #align generalized_continued_fraction.abs_sub_convergents_le GCF.abs_sub_convs_le
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in

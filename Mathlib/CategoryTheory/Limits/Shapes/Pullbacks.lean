@@ -1695,8 +1695,8 @@ instance hasPullback_of_right_factors_mono (f : X ⟶ Z) : HasPullback i (f ≫ 
 
 instance pullback_snd_iso_of_right_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.snd : pullback i (f ≫ i) ⟶ _) := by
-  -- Adaptation note: nightly-testing 2024-04-01
-  -- this could not be placed directly in the `show from` without `dsimp`
+  #adaptation_note /-- nightly-testing 2024-04-01
+  this could not be placed directly in the `show from` without `dsimp` -/
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right
   dsimp only [cospan_right, id_eq, eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app,
     Functor.const_obj_obj, cospan_one] at this
@@ -1774,8 +1774,8 @@ instance hasPullback_of_left_factors_mono (f : X ⟶ Z) : HasPullback (f ≫ i) 
 
 instance pullback_snd_iso_of_left_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.fst : pullback (f ≫ i) i ⟶ _) := by
-  -- Adaptation note: nightly-testing 2024-04-01
-  -- this could not be placed directly in the `show from` without `dsimp`
+  #adaptation_note /-- nightly-testing 2024-04-01
+  this could not be placed directly in the `show from` without `dsimp` -/
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left
   dsimp only [cospan_left, id_eq, eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app,
     Functor.const_obj_obj, cospan_one] at this
