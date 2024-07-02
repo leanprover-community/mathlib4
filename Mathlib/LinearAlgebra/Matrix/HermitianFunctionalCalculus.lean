@@ -82,13 +82,6 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
     ext
     simp
 
-@[simp, norm_cast]
-lemma SemilinearMapClass.coe_coe {R S M M₃ F : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
-    [AddCommMonoid M₃] [Module R M] [Module S M₃] {σ : R →+* S} (f : F) [FunLike F M M₃]
-    [SemilinearMapClass F σ M M₃] :
-    ⇑(f : M →ₛₗ[σ] M₃) = f :=
-  rfl
-
 lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
   have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) :=
     FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ)) DFunLike.coe_injective
@@ -97,7 +90,7 @@ lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
   have h2 :
       diagonal (RCLike.ofReal ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩)
         = (0 : Matrix n n 𝕜) := by
-    simp only [SemilinearMapClass.coe_coe, cfcAux_apply] at hf
+    simp only [LinearMap.coe_coe, cfcAux_apply] at hf
     replace hf := congr($(hf) * (eigenvectorUnitary hA : Matrix n n 𝕜))
     simp only [mul_assoc, SetLike.coe_mem, unitary.star_mul_self_of_mem, mul_one, zero_mul] at hf
     simpa [← mul_assoc] using congr((star hA.eigenvectorUnitary : Matrix n n 𝕜) * $(hf))
