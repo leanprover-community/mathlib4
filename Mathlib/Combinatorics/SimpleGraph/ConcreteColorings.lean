@@ -98,10 +98,7 @@ def ringGraph.bicoloring (n : ℕ) (h : 2 ≤ n) (hn : Even n) : Coloring (ringG
 
 /-- Tricoloring of a ring graph -/
 def ringGraph.tricoloring  (n : ℕ) (h : 2 ≤ n) : Coloring (ringGraph n) (Fin 3) :=
-  Coloring.mk (fun u ↦
-    if u.val = n - 1
-      then 2
-      else ⟨u.val % 2, Nat.lt_succ_of_lt (u.val.mod_lt Nat.zero_lt_two)⟩) <| by
+  Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by omega⟩) <| by
     intro u v hAdj
     rw [ringGraph_adj n h] at hAdj
     simp only [ne_eq]
@@ -113,18 +110,19 @@ def ringGraph.tricoloring  (n : ℕ) (h : 2 ≤ n) : Coloring (ringGraph n) (Fin
     match hu with
     | Or.inl hu =>
       simp only [hu, reduceIte, Nat.sub_add_cancel (Nat.one_le_of_lt h), Nat.mod_self,
-        (Nat.sub_ne_zero_of_lt h).symm, Nat.zero_mod, Fin.zero_eta, Fin.reduceEq,
-        not_false_eq_true]
+        (Nat.sub_ne_zero_of_lt h).symm, Fin.ext_iff]
+      omega
     | Or.inr hu =>
+      simp only [hu.ne]
       have hu' : u.val = n - 2 ∨ u.val < n - 2 := (Nat.le_sub_one_of_lt hu).eq_or_lt
       match hu' with
       | Or.inl hu =>
-        simp only [hu, (n.sub_succ_lt_self 1 h).ne,
+        simp only [hu, reduceIte,
           (Nat.pred_eq_succ_iff.mpr (((Nat.sub_eq_iff_eq_add h).mp) rfl)).symm,
           Nat.mod_eq_of_lt (Nat.sub_one_lt_of_lt h), Fin.ext_iff]
-        exact ((n - 2).mod_lt Nat.zero_lt_two).ne
+        omega
       | Or.inr hu =>
-        simp only [@Nat.ne_of_lt u.val (n - 1) (Nat.lt_of_lt_pred hu), reduceIte,
+        simp only [reduceIte,
           (u.val + 1).mod_eq_of_lt (Nat.add_lt_of_lt_sub (Nat.lt_of_lt_pred hu)),
           (@Nat.add_lt_of_lt_sub u.val 1 (n - 1) hu).ne, Fin.ext_iff]
         omega
