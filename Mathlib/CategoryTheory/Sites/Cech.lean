@@ -18,7 +18,7 @@ structure FormalCoproduct where
 
 namespace FormalCoproduct
 
-@[ext] structure Hom (X Y : FormalCoproduct.{w} C) where
+structure Hom (X Y : FormalCoproduct.{w} C) where
   f : X.I → Y.I
   φ (i : X.I) : X.obj i ⟶ Y.obj (f i)
 
@@ -65,8 +65,8 @@ noncomputable def cechSimplicial {I : Type w} (U : I → C) [HasFiniteProducts C
   map {Δ Δ'} f :=
     { f := fun a x ↦ a (f.unop.toOrderHom x)
       φ := fun a ↦ Pi.map' (fun x ↦ f.unop.toOrderHom x) (fun x ↦ 𝟙 _) }
-  map_id := sorry
-  map_comp f g := sorry
+  map_id _ := by dsimp; congr; ext; simp
+  map_comp _ _ := by dsimp; congr; ext; simp
 
 end FormalCoproduct
 
