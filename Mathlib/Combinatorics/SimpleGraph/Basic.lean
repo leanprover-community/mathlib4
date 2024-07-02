@@ -949,6 +949,10 @@ lemma deleteEdges_anti (h : s₁ ⊆ s₂) : G.deleteEdges s₂ ≤ G.deleteEdge
 
 lemma deleteEdges_mono (h : G ≤ H) : G.deleteEdges s ≤ H.deleteEdges s := sdiff_le_sdiff_right h
 
+@[simp] lemma deleteEdges_eq_self : G.deleteEdges s = G ↔ Disjoint G.edgeSet s := by
+  rw [deleteEdges, sdiff_eq_left, disjoint_fromEdgeSet]
+#align simple_graph.delete_edges_eq SimpleGraph.deleteEdges_eq_self
+
 theorem deleteEdges_eq_inter_edgeSet (s : Set (Sym2 V)) :
     G.deleteEdges s = G.deleteEdges (s ∩ G.edgeSet) := by
   ext

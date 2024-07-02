@@ -48,11 +48,17 @@ instance instLinearOrder : LinearOrder (Fin n) :=
     ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-instance instBoundedOrder : BoundedOrder (Fin (n + 1)) where
-  top := last n
-  le_top := le_last
+instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
+  top := rev 0
+  le_top i := Nat.le_pred_of_lt i.is_lt
   bot := 0
-  bot_le := zero_le
+  bot_le := Fin.zero_le'
+
+/- There is a slight asymmetry here, in the sense that `0` is of type `Fin n` when we have
+`[NeZero n]` whereas `last n` is of type `Fin (n + 1)`. To address this properly would
+require a change to std4, defining `NeZero n` and thus re-defining `last n`
+(and possibly make its argument implicit) as `rev 0`, of type `Fin n`. As we can see from these
+lemmas, this would be equivalent to the existing definition. -/
 
 /-!
 ### Extra instances to short-circuit type class resolution
@@ -70,6 +76,12 @@ lemma top_eq_last (n : ℕ) : ⊤ = Fin.last n := rfl
 
 lemma bot_eq_zero (n : ℕ) : ⊥ = (0 : Fin (n + 1)) := rfl
 #align fin.bot_eq_zero Fin.bot_eq_zero
+
+@[simp] theorem rev_bot [NeZero n] : rev (⊥ : Fin n) = ⊤ := rfl
+@[simp] theorem rev_top [NeZero n] : rev (⊤ : Fin n) = ⊥ := rev_rev _
+
+theorem rev_zero_eq_top (n : ℕ) [NeZero n] : rev (0 : Fin n) = ⊤ := rfl
+theorem rev_last_eq_bot (n : ℕ) : rev (last n) = ⊥ := by rw [rev_last, bot_eq_zero]
 
 section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}

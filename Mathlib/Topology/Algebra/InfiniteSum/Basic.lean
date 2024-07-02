@@ -133,6 +133,10 @@ theorem multipliable_of_finite_mulSupport (h : (mulSupport f).Finite) : Multipli
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
 
 @[to_additive]
+lemma Multipliable.of_finite [Finite β] {f : β → α} : Multipliable f :=
+  multipliable_of_finite_mulSupport <| Set.finite_univ.subset (Set.subset_univ _)
+
+@[to_additive]
 theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1) : HasProd f (f b) :=
   suffices HasProd f (∏ b' ∈ {b}, f b') by simpa using this
   hasProd_prod_of_ne_finset_one <| by simpa [hf]
@@ -499,7 +503,7 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
   · have hf_fin' : ¬ Set.Finite (mulSupport (f ∘ g)) := by
       rwa [this, Set.finite_image_iff hg.injOn] at hf_fin
     simp_rw [tprod_def, if_neg hf_fin, if_neg hf_fin', Multipliable,
-      hg.hasProd_iff (mulSupport_subset_iff'.1 hf)]
+      funext fun a => propext <| hg.hasProd_iff (mulSupport_subset_iff'.1 hf) (a := a)]
 
 @[to_additive]
 theorem Equiv.tprod_eq (e : γ ≃ β) (f : β → α) : ∏' c, f (e c) = ∏' b, f b :=

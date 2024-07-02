@@ -174,6 +174,17 @@ lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
     exact h
   exact IsLocalizedEquivalence.of_isLocalization_of_isLocalization Φ W₂.Q
 
+instance IsLocalizedEquivalence.isLocalization [Φ.IsLocalizedEquivalence] :
+    (Φ.functor ⋙ L₂).IsLocalization W₁ :=
+  Functor.IsLocalization.of_iso _ ((Φ.catCommSq W₁.Q L₂).iso).symm
+
+/-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
+`Φ : LocalizerMorphism W₁ W₂`. -/
+@[simps]
+def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
+  functor := Φ.functor.mapArrow
+  map _ _ _ hf := ⟨Φ.map _ hf.1, Φ.map _ hf.2⟩
+
 end LocalizerMorphism
 
 end CategoryTheory

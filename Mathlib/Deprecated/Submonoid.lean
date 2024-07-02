@@ -220,7 +220,7 @@ theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : p
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
 #align is_submonoid.power_subset IsSubmonoid.powers_subset
 #align is_add_submonoid.multiples_subset IsAddSubmonoid.multiples_subset
-@[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 

@@ -57,11 +57,14 @@ def getLastI [Inhabited α] : List α → α
 #align list.init List.dropLast
 
 /-- List with a single given element. -/
-@[inline, deprecated List.pure] protected def ret {α : Type u} (a : α) : List α := [a] -- 2024-03-24
+@[inline, deprecated List.pure (since := "2024-03-24")]
+protected def ret {α : Type u} (a : α) : List α := [a]
 #align list.ret List.pure
 
 /-- `≤` implies not `>` for lists. -/
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt
+
+@[deprecated (since := "2024-06-07")] alias toArray_data := Array.data_toArray
 
 end List

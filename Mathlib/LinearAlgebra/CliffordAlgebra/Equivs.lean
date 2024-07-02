@@ -216,7 +216,7 @@ instance : CommRing (CliffordAlgebra Q) :=
   { CliffordAlgebra.instRing _ with
     mul_comm := fun x y =>
       CliffordAlgebraComplex.equiv.injective <| by
-        rw [AlgEquiv.map_mul, mul_comm, AlgEquiv.map_mul] }
+        rw [map_mul, mul_comm, map_mul] }
 
 -- Porting note: Changed `x.reverse` to `reverse (R := ℝ) x`
 /-- `reverse` is a no-op over `CliffordAlgebraComplex.Q`. -/

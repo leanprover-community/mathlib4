@@ -237,37 +237,12 @@ theorem map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
 #align map_finsupp_prod map_finsupp_prod
 #align map_finsupp_sum map_finsupp_sum
 
-/-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[to_additive (attr := deprecated (since := "2021-12-30"))
-  "Deprecated, use `_root_.map_finsupp_sum` instead."]
-protected theorem MulEquiv.map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] (h : N ≃* P)
-    (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  map_finsupp_prod h f g
-#align mul_equiv.map_finsupp_prod MulEquiv.map_finsupp_prod
-#align add_equiv.map_finsupp_sum AddEquiv.map_finsupp_sum
-
-/-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[to_additive (attr := deprecated (since := "2021-12-30"))
-  "Deprecated, use `_root_.map_finsupp_sum` instead."]
-protected theorem MonoidHom.map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] (h : N →* P)
-    (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  map_finsupp_prod h f g
-#align monoid_hom.map_finsupp_prod MonoidHom.map_finsupp_prod
-#align add_monoid_hom.map_finsupp_sum AddMonoidHom.map_finsupp_sum
-
-/-- Deprecated, use `_root_.map_finsupp_sum` instead. -/
-@[deprecated map_finsupp_sum (since := "2021-12-30")]
-protected theorem RingHom.map_finsupp_sum [Zero M] [Semiring R] [Semiring S] (h : R →+* S)
-    (f : α →₀ M) (g : α → M → R) : h (f.sum g) = f.sum fun a b => h (g a b) :=
-  map_finsupp_sum h f g
-#align ring_hom.map_finsupp_sum RingHom.map_finsupp_sum
-
-/-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[deprecated map_finsupp_prod (since := "2021-12-30")]
-protected theorem RingHom.map_finsupp_prod [Zero M] [CommSemiring R] [CommSemiring S] (h : R →+* S)
-    (f : α →₀ M) (g : α → M → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  map_finsupp_prod h f g
-#align ring_hom.map_finsupp_prod RingHom.map_finsupp_prod
+#align mul_equiv.map_finsupp_prod map_finsupp_prod
+#align add_equiv.map_finsupp_sum map_finsupp_sum
+#align monoid_hom.map_finsupp_prod map_finsupp_prod
+#align add_monoid_hom.map_finsupp_sum map_finsupp_sum
+#align ring_hom.map_finsupp_sum map_finsupp_sum
+#align ring_hom.map_finsupp_prod map_finsupp_prod
 
 -- Porting note: inserted ⇑ on the rhs
 @[to_additive]
@@ -668,6 +643,14 @@ lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀
   rw [sum_fintype _ _ (fun _ => by apply h), sum_fintype _ _ (fun _ => by apply h)]
   simp_rw [Fin.sum_univ_succ, cons_zero, cons_succ]
   congr
+
+@[to_additive]
+lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] [Zero M] [CommMonoid N]
+    {f : α →₀ M} {g : α → M → N} {n₁ n₂ : N}
+    (a : α) (ha : a ∈ f.support)
+    (h : g a (f a) * n₁ = g a (f a) * n₂) :
+    f.prod g * n₁ = f.prod g * n₂ :=
+  Finset.prod_mul_eq_prod_mul_of_exists a ha h
 
 end Finsupp
 

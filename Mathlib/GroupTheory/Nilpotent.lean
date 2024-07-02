@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Sylow
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.TFAE
+import Mathlib.Algebra.Group.Subgroup.Order
 
 #align_import group_theory.nilpotent from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
@@ -858,7 +859,9 @@ theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h :
       infer_instance
     · intro G _ _ ih _ h
       have hcq : Fintype.card (G ⧸ center G) < Fintype.card G := by
+        simp only [← Nat.card_eq_fintype_card]
         rw [card_eq_card_quotient_mul_card_subgroup (center G)]
+        simp only [Nat.card_eq_fintype_card]
         apply lt_mul_of_one_lt_right
         · exact Fintype.card_pos_iff.mpr One.instNonempty
         · simp only [← Nat.card_eq_fintype_card]
