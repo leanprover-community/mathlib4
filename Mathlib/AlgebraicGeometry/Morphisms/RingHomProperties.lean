@@ -66,7 +66,8 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAf
     _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
   change Y.presheaf.map _ ≫ _ = _ ≫ X.presheaf.map _
   rw [f.val.c.naturality_assoc]
-  simp only [TopCat.Presheaf.pushforwardObj_map, ← X.presheaf.map_comp]
+  dsimp
+  simp only [← X.presheaf.map_comp]
   congr 1
 #align ring_hom.respects_iso.basic_open_iff RingHom.RespectsIso.basicOpen_iff
 
