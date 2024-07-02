@@ -185,8 +185,8 @@ theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
   · rw [pulledbackFamily_apply, pulledbackFamily_apply]
     · congr 2
       simp [eq]
-    · change S (G.map _ ≫ Y.hom.unop)
-      simpa only [Functor.map_comp, Category.assoc] using hV'
+  · change S (G.map _ ≫ Y.hom.unop)
+    simpa only [Functor.map_comp, Category.assoc] using hV'
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.get_section_commute CategoryTheory.RanIsSheafOfIsCocontinuous.getSection_commute
 
