@@ -40,10 +40,9 @@ lemma summable_norm_eisSummand (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
   apply ((summable_one_div_norm_rpow hk').mul_left <| r z ^ (-k : ℝ)).of_nonneg_of_le
     (fun _ => Complex.abs.nonneg _)
   intro b
-  simp only [eisSummand, Fin.isValue, one_div, map_inv₀, map_zpow₀]
-  rw [← inv_zpow, inv_zpow', ← Real.rpow_intCast, Int.cast_neg]
-  have hk0 : 0 ≤ (k : ℝ) := by norm_cast; omega
-  exact summand_bound z hk0 b
+  simp only [eisSummand, map_zpow₀]
+  have hk0 : 0 ≤ (k : ℝ) := by positivity
+  exact_mod_cast summand_bound z hk0 b
 
 /-- The absolute value of the restricted sum is less than the full sum of the absolute values. -/
 lemma abs_le_tsum_abs (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
@@ -66,12 +65,9 @@ theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ+} (a : Fin 2 → ZMod N
   apply le_trans (abs_le_tsum_abs N (a ᵥ* A) k hk Z)
   apply tsum_le_tsum _ (summable_norm_eisSummand k hk _)
   · have hk' : (2 : ℝ) < k := by norm_cast
-    have := (summable_one_div_norm_rpow hk').mul_left <| r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k)
-    simp_rw [← Int.cast_neg, Real.rpow_intCast] at this
-    exact this
+    exact_mod_cast (summable_one_div_norm_rpow hk').mul_left <| r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k)
   · intro x
-    have hk0 : 0 ≤ (k : ℝ) := by norm_cast; omega
-    have := summand_bound_of_mem_verticalStrip hk0 x two_pos (verticalStrip_anti_right N hz hn)
-    simp_rw [eisSummand, Fin.isValue, one_div, norm_eq_abs, map_inv₀, map_zpow₀, ge_iff_le,
-      ← inv_zpow, inv_zpow', ← Real.rpow_intCast, Int.cast_neg]
-    exact this
+    have hk0 : 0 ≤ (k : ℝ) := by positivity
+    simp_rw [eisSummand, norm_zpow]
+    exact_mod_cast
+      summand_bound_of_mem_verticalStrip hk0 x two_pos (verticalStrip_anti_right N hz hn)
