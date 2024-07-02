@@ -262,22 +262,21 @@ end CommMonoidWithZero
 
 /-! ### Equivalences -/
 
-namespace MulEquivClass
+namespace MulHomClass
 variable {F α β : Type*} [EquivLike F α β]
 
 -- See note [lower instance priority]
-instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
+instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulHomClass F α β] :
     ZeroHomClass F α β where
-  map_zero f :=
-    calc
-      f 0 = f 0 * f (EquivLike.inv f 0) := by rw [← map_mul, zero_mul]
-        _ = 0 := by simp
+  map_zero f := calc
+    f 0 = f 0 * f (EquivLike.inv f 0) := by rw [← map_mul, zero_mul]
+      _ = 0 := by simp
 
 -- See note [lower instance priority]
 instance (priority := 100) toMonoidWithZeroHomClass
-    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
+    [MulZeroOneClass α] [MulZeroOneClass β] [MulHomClass F α β] :
     MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass with }
-#align mul_equiv_class.to_monoid_with_zero_hom_class MulEquivClass.toMonoidWithZeroHomClass
+  { }
+#align mul_equiv_class.to_monoid_with_zero_hom_class MulHomClass.toMonoidWithZeroHomClass
 
-end MulEquivClass
+end MulHomClass

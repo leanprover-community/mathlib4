@@ -81,20 +81,13 @@ add_decl_doc RingEquiv.toMulEquiv
 /-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
 You should extend this class when you extend `RingEquiv`. -/
 class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S]
-  extends MulEquivClass F R S : Prop where
-  /-- By definition, a ring isomorphism preserves the additive structure. -/
-  map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
+  extends MulHomClass F R S, AddHomClass F R S : Prop
 #align ring_equiv_class RingEquivClass
+#align ring_equiv_class.to_add_equiv_class RingEquivClass.toAddHomClass
 
 namespace RingEquivClass
 
 variable [EquivLike F R S]
-
--- See note [lower instance priority]
-instance (priority := 100) toAddEquivClass [Mul R] [Add R]
-    [Mul S] [Add S] [h : RingEquivClass F R S] : AddEquivClass F R S :=
-  { h with }
-#align ring_equiv_class.to_add_equiv_class RingEquivClass.toAddEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
@@ -448,11 +441,11 @@ protected theorem map_zero : f 0 = 0 :=
 variable {x}
 
 protected theorem map_eq_zero_iff : f x = 0 ↔ x = 0 :=
-  AddEquivClass.map_eq_zero_iff f
+  AddHomClass.map_eq_zero_iff f
 #align ring_equiv.map_eq_zero_iff RingEquiv.map_eq_zero_iff
 
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x ≠ 0 :=
-  AddEquivClass.map_ne_zero_iff f
+  AddHomClass.map_ne_zero_iff f
 #align ring_equiv.map_ne_zero_iff RingEquiv.map_ne_zero_iff
 
 variable [FunLike F R S]
@@ -527,11 +520,11 @@ protected theorem map_one : f 1 = 1 :=
 variable {x}
 
 protected theorem map_eq_one_iff : f x = 1 ↔ x = 1 :=
-  MulEquivClass.map_eq_one_iff f
+  MulHomClass.map_eq_one_iff f
 #align ring_equiv.map_eq_one_iff RingEquiv.map_eq_one_iff
 
 theorem map_ne_one_iff : f x ≠ 1 ↔ x ≠ 1 :=
-  MulEquivClass.map_ne_one_iff f
+  MulHomClass.map_ne_one_iff f
 #align ring_equiv.map_ne_one_iff RingEquiv.map_ne_one_iff
 
 theorem coe_monoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
@@ -848,9 +841,9 @@ end RingEquiv
 
 namespace MulEquiv
 
-/-- Gives a `RingEquiv` from an element of a `MulEquivClass` preserving addition. -/
+/-- Gives a `RingEquiv` from an element of a `MulHomClass` preserving addition. -/
 def toRingEquiv {R S F : Type*} [Add R] [Add S] [Mul R] [Mul S] [EquivLike F R S]
-    [MulEquivClass F R S] (f : F)
+    [MulHomClass F R S] (f : F)
     (H : ∀ x y : R, f (x + y) = f x + f y) : R ≃+* S :=
   { (f : R ≃* S).toEquiv, (f : R ≃* S), AddEquiv.mk' (f : R ≃* S).toEquiv H with }
 #align mul_equiv.to_ring_equiv MulEquiv.toRingEquiv
@@ -859,9 +852,10 @@ end MulEquiv
 
 namespace AddEquiv
 
-/-- Gives a `RingEquiv` from an element of an `AddEquivClass` preserving addition. -/
+/-- Gives a `RingEquiv` from an element of an `EquivLike` `AddHomClass`
+preserving multiplication. -/
 def toRingEquiv {R S F : Type*} [Add R] [Add S] [Mul R] [Mul S] [EquivLike F R S]
-    [AddEquivClass F R S] (f : F)
+    [AddHomClass F R S] (f : F)
     (H : ∀ x y : R, f (x * y) = f x * f y) : R ≃+* S :=
   { (f : R ≃+ S).toEquiv, (f : R ≃+ S), MulEquiv.mk' (f : R ≃+ S).toEquiv H with }
 #align add_equiv.to_ring_equiv AddEquiv.toRingEquiv

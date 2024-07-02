@@ -133,7 +133,7 @@ Note that this does not directly extend `FunLike`, nor take `FunLike` as a param
 so we can state `coe_injective'` in a nicer way.
 
 This typeclass is used in the definition of the isomorphism (or equivalence) typeclasses,
-such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, ....
+such as `ZeroEquivClass`, `MonoidEquivClass`, ....
 -/
 class EquivLike (E : Sort*) (α β : outParam (Sort*)) where
   /-- The coercion to a function in the forward direction. -/
