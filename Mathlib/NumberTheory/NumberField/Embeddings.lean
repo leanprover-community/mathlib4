@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm
 import Mathlib.Topology.Instances.Complex
 import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.Topology.Algebra.UniformField
 
 #align_import number_theory.number_field.embeddings from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
@@ -1003,6 +1005,79 @@ lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
       Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k)) * finrank k K +
       Finset.card (Finset.univ.filter <| IsUnramifiedIn K (k := k))ᶜ * (finrank k K / 2) := by
   rw [← card_isUnramified, ← card_isUnramified_compl, Finset.card_add_card_compl]
+
+noncomputable section InfiniteCompletion
+
+variable {K : Type*} [Field K] [NumberField K] (v : InfinitePlace K)
+
+/-- The normed field structure of a number field coming from the norm asociated to
+an infinite place. -/
+abbrev normedField : NormedField K :=
+  NormedField.induced _ _ v.embedding v.embedding.injective
+
+/-- The embedding associated to an infinite place is a uniform embedding. -/
+theorem uniformEmbedding : letI := v.normedField; UniformEmbedding v.embedding :=
+  letI := v.normedField; ⟨uniformInducing_iff_uniformSpace.2 rfl, v.embedding.injective⟩
+
+/-- The completion of a number field at an infinite place. -/
+def completion :=
+  letI := v.normedField; UniformSpace.Completion K
+
+namespace Completion
+
+instance : NormedField v.completion :=
+  letI := v.normedField
+  UniformSpace.Completion.instNormedField K
+
+instance : CompleteSpace v.completion :=
+  letI := v.normedField; UniformSpace.Completion.completeSpace K
+
+instance : Inhabited v.completion := ⟨0⟩
+
+instance : Coe K v.completion :=
+  letI := v.normedField; inferInstanceAs (Coe K (UniformSpace.Completion K))
+
+instance : Algebra K v.completion :=
+  letI := v.normedField; UniformSpace.Completion.algebra K _
+
+/-- The embedding associated to an infinite place extended to `v.completion →+* ℂ`. -/
+def extensionEmbedding : v.completion →+* ℂ :=
+  letI := v.normedField
+  UniformSpace.Completion.extensionHom _ v.uniformEmbedding.uniformContinuous.continuous
+
+variable {v}
+
+/-- The embedding `v.completion → ℂ` preserves distances. -/
+theorem extensionEmbedding_dist_eq (x y : v.completion) :
+    dist (extensionEmbedding v x) (extensionEmbedding v y) =
+      dist x y := by
+  letI := v.normedField
+  refine (UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_))
+  · refine isClosed_eq ?_ continuous_dist
+    · exact (continuous_iff_continuous_dist.1 (UniformSpace.Completion.continuous_extension))
+  · rw [extensionEmbedding, UniformSpace.Completion.extensionHom, RingHom.coe_mk,
+      MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.dist_eq]
+    simp only [UniformSpace.Completion.extension_coe v.uniformEmbedding.uniformContinuous]
+    exact Isometry.dist_eq v.uniformEmbedding.to_isometry _ _
+
+variable (v)
+
+/-- The embedding `v.completion → ℂ` is an isometry. -/
+theorem isometry_extensionEmbedding :
+    Isometry (extensionEmbedding v) :=
+  Isometry.of_dist_eq extensionEmbedding_dist_eq
+
+/-- The embedding `v.completion → ℂ` is a closed embedding. -/
+theorem closed_extensionEmbedding: ClosedEmbedding (extensionEmbedding v) :=
+  (isometry_extensionEmbedding v).closedEmbedding
+
+/-- The completion of a number field at an infinite place is locally compact. -/
+instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
+  (closed_extensionEmbedding v).locallyCompactSpace
+
+end Completion
+
+end InfiniteCompletion
 
 end NumberField.InfinitePlace
 
