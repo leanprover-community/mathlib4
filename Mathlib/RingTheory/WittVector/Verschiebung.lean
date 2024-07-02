@@ -190,8 +190,8 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     calc
       _ = ghostComponent (n + 1) (verschiebung <| mk p x) := by
        apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-       simp only [← aeval_verschiebungPoly, coeff_mk]
        funext k
+       simp only [← aeval_verschiebungPoly]
        exact eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
       _ = _ := by rw [ghostComponent_verschiebung]; rfl
 #align witt_vector.bind₁_verschiebung_poly_witt_polynomial WittVector.bind₁_verschiebungPoly_wittPolynomial

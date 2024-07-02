@@ -64,6 +64,13 @@ theorem eventually_curry_iff {f : Filter α} {g : Filter β} {p : α × β → P
   Iff.rfl
 #align filter.eventually_curry_iff Filter.eventually_curry_iff
 
+theorem frequently_curry_iff {α β : Type*} {l : Filter α} {m : Filter β}
+    (p : (α × β) → Prop) : (∃ᶠ x in l.curry m, p x) ↔ ∃ᶠ x in l, ∃ᶠ y in m, p (x, y) := by
+  simp_rw [Filter.Frequently, not_iff_not, not_not, eventually_curry_iff]
+
+theorem mem_curry_iff {f : Filter α} {g : Filter β} {s : Set (α × β)} :
+    s ∈ f.curry g ↔ ∀ᶠ x : α in f, ∀ᶠ y : β in g, (x, y) ∈ s := Iff.rfl
+
 theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.prod g :=
   fun _ => Eventually.curry
 #align filter.curry_le_prod Filter.curry_le_prod
@@ -72,5 +79,27 @@ theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {
     (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto (↿f) (la.curry lb) lc :=
   fun _s hs => h.mono fun _a ha => ha hs
 #align filter.tendsto.curry Filter.Tendsto.curry
+
+theorem frequently_curry_prod_iff {α β : Type*} {l : Filter α} {m : Filter β}
+    (s : Set α) (t : Set β) : (∃ᶠ x in l.curry m, x ∈ s ×ˢ t) ↔ sᶜ ∉ l ∧ tᶜ ∉ m := by
+  refine ⟨fun h => ?_, fun ⟨hs, ht⟩ => ?_⟩
+  · exact frequently_prod_and.mp (Frequently.filter_mono h curry_le_prod)
+  rw [frequently_curry_iff]
+  exact Frequently.mono hs $ fun x hx => Frequently.mono ht (by simp[hx])
+
+theorem prod_mem_curry {α β : Type*} {l : Filter α} {m : Filter β} {s : Set α} {t : Set β}
+    (hs : s ∈ l) (ht : t ∈ m) : s ×ˢ t ∈ l.curry m :=
+  curry_le_prod $ prod_mem_prod hs ht
+
+theorem eventually_curry_prod_iff {α β : Type*} {l : Filter α} {m : Filter β}
+    [NeBot l] [NeBot m] (s : Set α) (t : Set β) :
+    (∀ᶠ x in l.curry m, x ∈ s ×ˢ t) ↔ s ∈ l ∧ t ∈ m := by
+  refine ⟨fun h => ⟨?_, ?_⟩, fun ⟨hs, ht⟩ => prod_mem_curry hs ht⟩ <;>
+    rw [eventually_curry_iff] at h
+  · apply mem_of_superset h
+    simp
+  rcases h.exists with ⟨_, hx⟩
+  apply mem_of_superset hx
+  exact fun _ hy => hy.2
 
 end Filter

@@ -142,9 +142,11 @@ variable {F G : LaxMonoidalFunctor C D}
 /-- Construct a monoidal natural isomorphism from object level isomorphisms,
 and the monoidal naturality in the forward direction. -/
 def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
-    (naturality' : ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f)
-    (unit' : F.ε ≫ (app (𝟙_ C)).hom = G.ε)
-    (tensor' : ∀ X Y, F.μ X Y ≫ (app (X ⊗ Y)).hom = ((app X).hom ⊗ (app Y).hom) ≫ G.μ X Y) :
+    (naturality' :
+      ∀ {X Y : C} (f : X ⟶ Y), F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by aesop_cat)
+    (unit' : F.ε ≫ (app (𝟙_ C)).hom = G.ε := by aesop_cat)
+    (tensor' :
+      ∀ X Y, F.μ X Y ≫ (app (X ⊗ Y)).hom = ((app X).hom ⊗ (app Y).hom) ≫ G.μ X Y := by aesop_cat) :
     F ≅ G where
   hom := { app := fun X => (app X).hom }
   inv := {
