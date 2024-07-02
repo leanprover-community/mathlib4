@@ -309,7 +309,7 @@ lemma limsup_le_iff {u : α → EReal} {b : EReal} :
     · specialize h c b_lt_c
       exact @Filter.limsup_const EReal α _ f _ (c : EReal) ▸ limsup_le_limsup h
 
-lemma limsup_le_const_forall {u : α → EReal} {b : EReal} (h : ∀ a : α, u a ≤ b) :
+lemma limsup_le_const_forall_le {u : α → EReal} {b : EReal} (h : ∀ a : α, u a ≤ b) :
     limsup u f ≤ b :=
   limsup_le_iff.2 fun _ b_lt_c ↦ eventually_of_forall (fun a : α ↦ le_trans (h a) (le_of_lt b_lt_c))
 
