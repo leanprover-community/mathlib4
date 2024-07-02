@@ -3,6 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
 -/
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Ring.Int
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
@@ -519,6 +520,8 @@ theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
   Quot.sound (mulNegRelabelling x y).equiv
 #align pgame.quot_mul_neg SetTheory.PGame.quot_mul_neg
 
+theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧: Game) := by simp
+
 @[simp]
 theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * y⟧ + ⟦x * z⟧ :=
   match x, y, z with
@@ -842,6 +845,72 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
 theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
   Quotient.exact <| quot_mul_assoc _ _ _
 #align pgame.mul_assoc_equiv SetTheory.PGame.mul_assoc_equiv
+
+/-- The left options of `x * y` of the first kind, i.e. of the form `xL * y + x * yL - xL * yL`. -/
+def mulOption (x y : PGame) (i : LeftMoves x) (j : LeftMoves y) : PGame :=
+  x.moveLeft i * y + x * y.moveLeft j - x.moveLeft i * y.moveLeft j
+
+/-- Any left option of `x * y` of the first kind is also a left option of `x * -(-y)` of
+  the first kind. -/
+lemma mulOption_neg_neg {x} (y) {i j} :
+    mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
+  dsimp only [mulOption]
+  congr 2
+  rw [neg_neg]
+  iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
+
+/-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
+lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧ : Game) := by
+  dsimp only [mulOption, quot_sub, quot_add]
+  rw [add_comm]
+  congr 1
+  on_goal 1 => congr 1
+  all_goals rw [quot_mul_comm]
+
+/-- The left options of `x * y` of the second kind are the left options of `(-x) * (-y)` of the
+  first kind, up to equivalence. -/
+lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
+    (∀ k, P ⟦(x * y).moveLeft k⟧) ↔
+    (∀ i j, P ⟦mulOption x y i j⟧) ∧ (∀ i j, P ⟦mulOption (-x) (-y) i j⟧) := by
+  cases x; cases y
+  constructor <;> intro h
+  on_goal 1 =>
+    constructor <;> intros i j
+    · exact h (Sum.inl (i, j))
+    convert h (Sum.inr (i, j)) using 1
+  on_goal 2 =>
+    rintro (⟨i, j⟩ | ⟨i, j⟩)
+    exact h.1 i j
+    convert h.2 i j using 1
+  all_goals
+    dsimp only [mk_mul_moveLeft_inr, quot_sub, quot_add, neg_def, mulOption, moveLeft_mk]
+    rw [← neg_def, ← neg_def]
+    congr 1
+    on_goal 1 => congr 1
+    all_goals rw [quot_neg_mul_neg]
+
+/-- The right options of `x * y` are the left options of `x * (-y)` and of `(-x) * y` of the first
+  kind, up to equivalence. -/
+lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
+    (∀ k, P ⟦(x * y).moveRight k⟧) ↔
+    (∀ i j, P (-⟦mulOption x (-y) i j⟧)) ∧ (∀ i j, P (-⟦mulOption (-x) y i j⟧)) := by
+  cases x; cases y
+  constructor <;> intro h
+  on_goal 1 =>
+    constructor <;> intros i j
+    convert h (Sum.inl (i, j))
+  on_goal 2 => convert h (Sum.inr (i, j))
+  on_goal 3 =>
+    rintro (⟨i, j⟩ | ⟨i, j⟩)
+    convert h.1 i j using 1
+    on_goal 2 => convert h.2 i j using 1
+  all_goals
+    dsimp [mulOption]
+    rw [neg_sub', neg_add, ← neg_def]
+    congr 1
+    on_goal 1 => congr 1
+  any_goals rw [quot_neg_mul, neg_neg]
+  iterate 6 rw [quot_mul_neg, neg_neg]
 
 /-- Because the two halves of the definition of `inv` produce more elements
 on each side, we have to define the two families inductively.

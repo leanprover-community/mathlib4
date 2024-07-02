@@ -89,7 +89,7 @@ namespace OneHypercover
 
 variable {J : GrothendieckTopology C} {X : C} (E : J.OneHypercover X)
 
-/-- A 1-hypercover in `C` is preserved by a functor `F : C ⥤ D` is the mapped 1-pre-hypercover
+/-- A 1-hypercover in `C` is preserved by a functor `F : C ⥤ D` if the mapped 1-pre-hypercover
 in `D` is a 1-hypercover for the given topology on `D`. -/
 class IsPreservedBy (F : C ⥤ D) (K : GrothendieckTopology D) : Prop where
   mem₀ : (E.toPreOneHypercover.map F).sieve₀ ∈ K (F.obj X)

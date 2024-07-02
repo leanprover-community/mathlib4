@@ -59,7 +59,6 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
         simp [mul_add, pow_succ, mul_comm, mul_assoc, mul_left_comm]
 #align int.sq_add_sq_of_two_mul_sq_add_sq Int.sq_add_sq_of_two_mul_sq_add_sq
 
--- Porting note (#10756): new theorem
 theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = k * m)
     (ha : 2 * a < m) (hb : 2 * b < m) (hc : 2 * c < m) (hd : 2 * d < m) :
@@ -74,7 +73,6 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
       fin_cases i <;> assumption
     _ = 2 ^ 2 * (m * m) := by simp; ring
 
--- Porting note (#10756): new theorem
 theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
     ∃ (a b k : ℕ), 0 < k ∧ k < p ∧ a ^ 2 + b ^ 2 + 1 = k * p := by
   rcases hp.1.eq_two_or_odd' with (rfl | hodd)
@@ -94,13 +92,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   · exact (mul_le_mul' le_rfl hb).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
   · exact lt_of_le_of_ne hp.1.two_le (hodd.ne_two_of_dvd_nat (dvd_refl _)).symm
   · exact hp.1.pos
-
-@[deprecated exists_sq_add_sq_add_one_eq_mul]
-theorem exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
-    ∃ (a b : ℤ) (k : ℕ), a ^ 2 + b ^ 2 + 1 = k * p ∧ k < p :=
-  let ⟨a, b, k, _, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
-  ⟨a, b, k, mod_cast hk, hkp⟩
-#align int.exists_sq_add_sq_add_one_eq_k Int.exists_sq_add_sq_add_one_eq_k
+#align int.exists_sq_add_sq_add_one_eq_k Int.exists_sq_add_sq_add_one_eq_mul
 
 end Int
 

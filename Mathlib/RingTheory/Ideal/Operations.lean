@@ -402,7 +402,9 @@ theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
   rfl
 #align ideal.add_eq_sup Ideal.add_eq_sup
 
-@[simp]
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+@[simp, nolint simpNF]
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 #align ideal.zero_eq_bot Ideal.zero_eq_bot
@@ -817,7 +819,7 @@ lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (
   Multiset.prod_eq_zero_iff
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
-@[deprecated multiset_prod_eq_bot] -- since 26 Dec 2023
+@[deprecated multiset_prod_eq_bot (since := "2023-12-26")]
 theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ∃ I ∈ s, I = ⊥ := by
   simp

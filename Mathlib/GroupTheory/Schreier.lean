@@ -28,6 +28,40 @@ In this file we prove Schreier's lemma.
 
 open scoped Pointwise
 
+section CommGroup
+
+open Subgroup
+
+open scoped Classical
+
+variable (G : Type*) [CommGroup G] [Group.FG G]
+
+@[to_additive]
+theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.rank G := by
+  obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
+  rw [← hS1, ← Fintype.card_coe, ← Finset.card_univ, ← Finset.prod_const]
+  let f : (∀ g : S, zpowers (g : G)) →* G := noncommPiCoprod fun s t _ x y _ _ => mul_comm x _
+  have hf : Function.Surjective f := by
+    rw [← MonoidHom.range_top_iff_surjective, eq_top_iff, ← hS2, closure_le]
+    exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
+  replace hf := nat_card_dvd_of_surjective f hf
+  rw [Nat.card_pi] at hf
+  refine hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => ?_)
+  rw [Nat.card_zpowers]
+  exact Monoid.order_dvd_exponent (g : G)
+#align card_dvd_exponent_pow_rank card_dvd_exponent_pow_rank
+#align card_dvd_exponent_nsmul_rank card_dvd_exponent_nsmul_rank
+
+@[to_additive]
+theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
+    Nat.card G ∣ n ^ Group.rank G :=
+  (card_dvd_exponent_pow_rank G).trans
+    (pow_dvd_pow_of_dvd (Monoid.exponent_dvd_of_forall_pow_eq_one hG) (Group.rank G))
+#align card_dvd_exponent_pow_rank' card_dvd_exponent_pow_rank'
+#align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
+
+end CommGroup
+
 namespace Subgroup
 
 open MemRightTransversals

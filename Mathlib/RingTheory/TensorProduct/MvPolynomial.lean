@@ -186,6 +186,44 @@ noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
 
+variable (R)
+variable (A : Type*) [CommSemiring A] [Algebra R A]
+
+/-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
+equivalent to `M̀vPolynomial σ A`. -/
+noncomputable def algebraTensorAlgEquiv :
+    A ⊗[R] MvPolynomial σ R ≃ₐ[A] MvPolynomial σ A := AlgEquiv.ofAlgHom
+  (Algebra.TensorProduct.lift
+    (Algebra.ofId A (MvPolynomial σ A))
+    (MvPolynomial.mapAlgHom <| Algebra.ofId R A) (fun _ _ ↦ Commute.all _ _))
+  (aeval (fun s ↦ 1 ⊗ₜ X s))
+  (by ext s; simp)
+  (by ext s; simp)
+
+@[simp]
+lemma algebraTensorAlgEquiv_tmul (a : A) (p : MvPolynomial σ R) :
+    algebraTensorAlgEquiv R A (a ⊗ₜ p) = a • MvPolynomial.map (algebraMap R A) p := by
+  simp [algebraTensorAlgEquiv]
+  rw [Algebra.smul_def]
+  rfl
+
+@[simp]
+lemma algebraTensorAlgEquiv_symm_X (s : σ) :
+    (algebraTensorAlgEquiv R A).symm (X s) = 1 ⊗ₜ X s := by
+  simp [algebraTensorAlgEquiv]
+
+@[simp]
+lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
+    (algebraTensorAlgEquiv R A).symm (monomial m a) = a ⊗ₜ monomial m 1 := by
+  apply @Finsupp.induction σ ℕ _ _ m
+  · simp [algebraTensorAlgEquiv]
+  · intro i n f _ _ hfa
+    simp only [algebraTensorAlgEquiv, AlgEquiv.ofAlgHom_symm_apply] at hfa ⊢
+    simp only [add_comm, monomial_add_single, _root_.map_mul, map_pow, aeval_X,
+      Algebra.TensorProduct.tmul_pow, one_pow, hfa]
+    nth_rw 2 [← mul_one a]
+    rw [Algebra.TensorProduct.tmul_mul_tmul]
+
 end Algebra
 
 end MvPolynomial

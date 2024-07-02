@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
@@ -192,5 +192,29 @@ def preservesColimitsOfShapeOfEval {D : Type*} [Category D]
     PreservesColimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hs ↦ isColimitOfEval _ _
     (fun i => isColimitOfPreserves (G ⋙ eval C c i) hs)⟩⟩
+
+section
+
+variable [HasZeroObject C] [DecidableEq ι] (i : ι)
+
+noncomputable instance : PreservesLimitsOfShape J (single C c i) :=
+  preservesLimitsOfShapeOfEval _ (fun j => by
+    by_cases h : j = i
+    · subst h
+      exact preservesLimitsOfShapeOfNatIso (singleCompEvalIsoSelf C c j).symm
+    · exact Functor.preservesLimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h) _)
+
+noncomputable instance : PreservesColimitsOfShape J (single C c i) :=
+  preservesColimitsOfShapeOfEval _ (fun j => by
+    by_cases h : j = i
+    · subst h
+      exact preservesColimitsOfShapeOfNatIso (singleCompEvalIsoSelf C c j).symm
+    · exact Functor.preservesColimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h) _)
+
+noncomputable instance : PreservesFiniteLimits (single C c i) := ⟨by intros; infer_instance⟩
+
+noncomputable instance : PreservesFiniteColimits (single C c i) := ⟨by intros; infer_instance⟩
+
+end
 
 end HomologicalComplex

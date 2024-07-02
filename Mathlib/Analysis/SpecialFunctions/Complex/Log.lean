@@ -25,7 +25,7 @@ open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0`-/
--- Porting note: @[pp_nodot] does not exist in mathlib4
+@[pp_nodot]
 noncomputable def log (x : ℂ) : ℂ :=
   x.abs.log + arg x * I
 #align complex.log Complex.log
@@ -231,7 +231,7 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
 #adaptation_note /-- nightly-2024-04-01
 The simpNF linter now times out on this lemma.
 See https://github.com/leanprover-community/mathlib4/issues/12226 -/
-@[simp, nolint simpNF]
+@[simp]
 theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
   rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
   exact eventually_ne_cobounded _
