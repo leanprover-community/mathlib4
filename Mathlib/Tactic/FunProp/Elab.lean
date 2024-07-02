@@ -51,25 +51,31 @@ def funPropTac : Tactic
     goal.withContext do
       let goalType ← goal.getType
 
-      let cfg : Config := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
-      let (r?, s) ← funProp goalType cfg |>.run {}
+      -- the whnf and telscope is here because the goal can be
+      -- `∀ y, let f := fun x => x + y; Continuous fun x => x + f x`
+      -- However it is still not complete solution. How should we deal with mix of let and forall?
+      withReducible <| forallTelescopeReducing (← whnfR goalType) fun _ type => do
+        unless (← getFunProp? type).isSome do
+          let hint :=
+            if let .some n := type.getAppFn.constName?
+            then s!" Maybe you forgot marking `{n}` with `@[fun_prop]`."
+            else ""
+          throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
+
+      let ctx : Context := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
+      let (r?, s) ← funProp goalType ctx |>.run {}
       if let .some r := r? then
         goal.assign r.proof
       else
         let mut msg := s!"`fun_prop` was unable to prove `{← Meta.ppExpr goalType}`\n\n"
-        if d.isSome then
-          msg := msg ++ "Try running with a different discharger tactic like \
-          `aesop`, `assumption`, `linarith`, `omega` etc.\n"
-        else
-          msg := msg ++ "Try running with discharger `fun_prop (disch:=aesop)` or with a different \
-          discharger tactic like `assumption`, `linarith`, `omega`.\n"
 
-        msg := msg ++ "Sometimes it is useful to run `fun_prop (disch:=trace_state; sorry)` \
-          which will print all the necessary subgoals for `fun_prop` to succeed.\n"
-        msg := msg ++ "\nPotential issues to fix:"
-        msg := s.msgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
-        msg := msg ++ "\n\nFor more detailed information use \
-          `set_option trace.Meta.Tactic.fun_prop true`"
+        msg := msg ++ "Issues:"
+        msg := s.mainMsgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
+
+        -- todo enable only when an option is set
+        msg := msg ++ "\n\nSecondary issues:"
+        msg := s.secondaryMsgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
+
         throwError msg
 
 
