@@ -35,7 +35,7 @@ open CategoryTheory Limits CompHausLike
 
 set_option linter.unusedVariables false in
 instance : HasExplicitPullbacks (fun Y ↦ TotallyDisconnectedSpace Y) where
-  hasExplicitPullbacks _ _ := { hasProp :=
+  hasProp _ _ := { hasProp :=
     show TotallyDisconnectedSpace {xy : _ | _} from inferInstance}
 
 set_option linter.unusedVariables false in
