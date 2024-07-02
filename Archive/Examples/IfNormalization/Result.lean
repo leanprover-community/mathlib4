@@ -106,3 +106,5 @@ recall IfNormalization :=
 
 example : IfNormalization :=
   ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).2.2.1, by simp [(IfExpr.normalize ∅ e).2.1]⟩⟩
+
+end IfExpr

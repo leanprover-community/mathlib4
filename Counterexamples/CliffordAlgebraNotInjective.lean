@@ -301,3 +301,5 @@ theorem QuadraticForm.not_forall_mem_range_toQuadraticForm.{v} :
     refine ⟨x.compl₁₂ uU.symm uU.symm, ?_⟩
     ext
     simp [BilinForm.toQuadraticForm_comp_same, hx]
+
+end
