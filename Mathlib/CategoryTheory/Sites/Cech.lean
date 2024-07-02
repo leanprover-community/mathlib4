@@ -55,12 +55,18 @@ noncomputable abbrev cochainComplexFunctor [Preadditive A] :
       (Cᵒᵖ ⥤ A) ⥤ CochainComplex A ℕ :=
   simplicialEvalFunctor C A ⋙ ((whiskeringRight _ _ _).obj (alternatingCofaceMapComplex A))
 
+-- this is a variant of `cechNerve`
 variable {C} in
-def cechSimplicial {I : Type w} (U : I → C) [HasFiniteProducts C] :
-    SimplicialObject (FormalCoproduct C) := by
-  -- variant of `cechNerve` where in degree `n` we take the formal coproduct
-  -- over maps `a : {0,...,n} → I` of the finite product of the `U (a i)`.
-  sorry
+noncomputable def cechSimplicial {I : Type w} (U : I → C) [HasFiniteProducts C] :
+    SimplicialObject (FormalCoproduct C) where
+  obj := fun Δ ↦
+    { I := Fin (Δ.unop.len + 1) → I
+      obj := fun a ↦ ∏ᶜ (fun x ↦ U (a x)) }
+  map {Δ Δ'} f :=
+    { f := fun a x ↦ a (f.unop.toOrderHom x)
+      φ := fun a ↦ Pi.map' (fun x ↦ f.unop.toOrderHom x) (fun x ↦ 𝟙 _) }
+  map_id := sorry
+  map_comp f g := sorry
 
 end FormalCoproduct
 
