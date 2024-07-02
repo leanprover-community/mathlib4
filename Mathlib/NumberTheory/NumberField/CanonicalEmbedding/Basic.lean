@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Algebra.Module.Zlattice.Basic
-import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
+import Mathlib.NumberTheory.NumberField.Units.Basic
 
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
@@ -190,6 +190,16 @@ local notation "E" K =>
 noncomputable def _root_.NumberField.mixedEmbedding : K →+* (E K) :=
   RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
     (Pi.ringHom fun w => w.val.embedding)
+
+@[simp]
+theorem mixedEmbedding_apply_ofIsReal (x : K) (w : {w // IsReal w}) :
+    (mixedEmbedding K x).1 w = embedding_of_isReal w.prop x := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+
+@[simp]
+theorem mixedEmbedding_apply_ofIsComplex (x : K) (w : {w // IsComplex w}) :
+    (mixedEmbedding K x).2 w = w.val.embedding x := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
 
 instance [NumberField K] : Nontrivial (E K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
@@ -398,6 +408,16 @@ theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
   obtain ⟨a, rfl⟩ := hx
   rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
     map_eq_zero]
+
+theorem norm_unit (u : (𝓞 K)ˣ) :
+    mixedEmbedding.norm (mixedEmbedding K u) = 1 := by
+  rw [norm_eq_norm, Units.norm, Rat.cast_one]
+
+variable (K) in
+protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (E K) → ℝ) := by
+  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
+  split_ifs <;> fun_prop
 
 end norm
 
