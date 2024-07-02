@@ -168,6 +168,7 @@ protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
 
 lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   have hA' : IsSelfAdjoint A := hA
+  have hA'' := (discrete_of_t1_of_finite (X := spectrum ℝ A))
   have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.closedEmbedding_cfcAux.continuous
     hA.cfcAux_id
   rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]
