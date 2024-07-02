@@ -336,11 +336,10 @@ theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   cases' n with n
   · exact Int.cast_one
   show ((1 % (n + 1) : ℕ) : R) = 1
-  cases n;
+  cases n
   · rw [Nat.dvd_one] at h
     subst m
-    have : Subsingleton R := CharP.CharOne.subsingleton
-    apply Subsingleton.elim
+    subsingleton [CharP.CharOne.subsingleton]
   rw [Nat.mod_eq_of_lt]
   · exact Nat.cast_one
   exact Nat.lt_of_sub_eq_succ rfl
