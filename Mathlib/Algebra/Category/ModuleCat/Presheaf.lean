@@ -188,12 +188,22 @@ instance : Preadditive (PresheafOfModules R) where
   add_comp := by intros; ext1; simp only [comp_app, add_app, comp_add]
   comp_add := by intros; ext1; simp only [comp_app, add_app, add_comp]
 
+-- There are unfortunately two ways to express the coercion to a function,
+-- and we set a simp normal form here.
+-- Ideally this decision would just be made at the `ModuleCat` level,
+-- but that will require more work.
+-- If that is done, the `simpNF` linter should tell us we can remove this.
+@[simp] theorem coe_eq_coe {X : Cᵒᵖ} (f : P.obj X ⟶ Q.obj X) :
+    @DFunLike.coe ((P.obj X) ⟶ (Q.obj X)) ↑(P.obj X) _ _ f =
+      @DFunLike.coe (↑(P.obj X) →ₗ[↑(R.obj X)] ↑(Q.obj X)) ↑(P.obj X) _ _ f := rfl
+
 end Hom
 
-lemma naturality_apply {P Q : PresheafOfModules R} (f : P ⟶ Q)
+@[simp] lemma naturality_apply {P Q : PresheafOfModules R} (f : P ⟶ Q)
     {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : P.obj X) :
     f.app Y (P.map g x) = Q.map g (f.app X x) :=
   congr_fun ((forget _).congr_map (f.hom.naturality g)) x
+
 
 variable (R)
 
@@ -233,6 +243,16 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
 instance (X : Cᵒᵖ) : (evaluation R X).Additive where
 
 variable {R}
+
+abbrev obj' (F : PresheafOfModules.{v} R) (X : Cᵒᵖ) := (evaluation _ X).obj F
+
+abbrev Hom.app' {F G : PresheafOfModules.{v} R} (f : F ⟶ G) (X : Cᵒᵖ) :
+    F.obj' X ⟶ G.obj' X := (evaluation _ X).map f
+
+lemma evaluation_jointly_faithful {F G : PresheafOfModules.{v} R} {f g : F ⟶ G}
+    (h : ∀ (X : Cᵒᵖ), Hom.app' f X = Hom.app' g X) : f = g := by
+  ext1 X
+  exact h _
 
 /-- Given a presheaf of modules `M` on a category `C` and `f : X ⟶ Y` in `Cᵒᵖ`, this
 is the restriction map `M.obj X ⟶ M.obj Y`, considered as a linear map to
@@ -311,6 +331,38 @@ abbrev mk''
   mk' app (fun _ _ f x => congr_hom (naturality f) x)
 
 end Hom
+
+section Iso
+
+variable {P Q : PresheafOfModules R} (app : ∀ X, P.obj X ≅ Q.obj X)
+
+variable (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y) (x : P.obj X),
+  (app Y).hom (P.map f x) = Q.map f ((app X).hom x))
+
+/-- A constructor for isomorphisms in `PresheafOfModules R` that is based on the data
+of a family of isomorphisms in the various `ModuleCat (R.obj X)`. -/
+@[simps]
+def isoMk' : P ≅ Q where
+  hom := Hom.mk' (fun X ↦ (app X).hom) naturality
+  inv := Hom.mk' (fun X ↦ (app X).inv) (by
+    intros X Y f x
+    specialize naturality f ((app X).inv x)
+    simp only [ModuleCat.inv_hom_id_apply] at naturality
+    simp [← naturality])
+  hom_inv_id := evaluation_jointly_faithful (fun X ↦ (app X).hom_inv_id)
+  inv_hom_id := evaluation_jointly_faithful (fun X ↦ (app X).inv_hom_id)
+
+/-- A constructor for isomorphisms in `PresheafOfModules R` that is based on the data
+of a family of isomorphisms in the various `ModuleCat (R.obj X)`, and for which the
+naturality condition is stated using the restriction of scalars. -/
+abbrev isoMk''
+    (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
+      restrictionApp f P ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y).hom =
+        ModuleCat.ofHom (app X).hom ≫ restrictionApp f Q) :
+    P ≅ Q :=
+  isoMk' app (fun _ _ f x => congr_hom (naturality f) x)
+
+end Iso
 
 end PresheafOfModules
 
