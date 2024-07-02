@@ -322,6 +322,37 @@ theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) : IsPullb
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 #align category_theory.is_pullback.of_horiz_is_iso CategoryTheory.IsPullback.of_horiz_isIso
 
+section
+
+variable {P': C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
+
+/-- Any object at the top left of a pullback square is isomorphic to the object at the top left
+of another pullback square with the same cospan. -/
+noncomputable def isoIsPullback (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    P ≅ P' :=
+  -- TODO: want PullbackCone.IsLimit.conePointUniqueUpToIso API...
+  IsLimit.conePointUniqueUpToIso h.isLimit h'.isLimit
+
+@[simp]
+theorem isoIsPullback_hom_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    (h.isoIsPullback h').hom ≫ fst' = fst :=
+  IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.left
+
+@[simp]
+theorem isoIsPullback_hom_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    (h.isoIsPullback h').hom ≫ snd' = snd :=
+  IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.right
+
+@[simp]
+theorem isoIsPullback_inv_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    (h.isoIsPullback h').inv ≫ fst = fst' := by simp [Iso.inv_comp_eq]
+
+@[simp]
+theorem isoIsPullback_inv_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
+    (h.isoIsPullback h').inv ≫ snd = snd' := by simp [Iso.inv_comp_eq]
+
+end
+
 end IsPullback
 
 namespace IsPushout

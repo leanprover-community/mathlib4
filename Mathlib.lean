@@ -749,6 +749,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.FunctionField
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Gluing
+import Mathlib.AlgebraicGeometry.GluingOneHypercover
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
@@ -775,6 +776,7 @@ import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
+import Mathlib.AlgebraicGeometry.Sites.Representability
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
@@ -1601,6 +1603,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Concrete
 import Mathlib.CategoryTheory.MorphismProperty.Factorization
 import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.MorphismProperty.Presheaf
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Noetherian
