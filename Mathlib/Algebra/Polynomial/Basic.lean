@@ -294,21 +294,14 @@ instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 #align polynomial.has_nat_cast Polynomial.instNatCast
 
 instance semiring : Semiring R[X] :=
-  --TODO: add reference to library note in PR #7432
-  { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
-      toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
-    toAdd := Polynomial.add'
-    toMul := Polynomial.mul'
-    toZero := Polynomial.zero
-    toOne := Polynomial.one
-    nsmul := (· • ·)
-    npow := fun n x => (x ^ n) }
+  delta% Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
+    toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl
 #align polynomial.semiring Polynomial.semiring
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
   --TODO: add reference to library note in PR #7432
-  { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
-      toFinsupp_smul with
+  { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
+      toFinsupp_injective toFinsupp_smul with
     toSMulZeroClass := Polynomial.smulZeroClass }
 #align polynomial.distrib_smul Polynomial.distribSMul
 
