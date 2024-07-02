@@ -50,7 +50,7 @@ theorem span_eq_top_of_isLocalizedModule {v : Set M} (hv : span R v = ⊤) :
   rw [Submonoid.smul_def, ← algebraMap_smul Rₛ, ← Units.smul_isUnit (IsLocalization.map_units Rₛ s),
     eq_comm, ← inv_smul_eq_iff] at h
   refine h ▸ smul_mem _ _  (span_subset_span R Rₛ _ ?_)
-  rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span, hv]
+  rw [← LinearMap.coe_restrictScalars R, ← LinearMap.map_span (R := R), hv]
   exact mem_map_of_mem mem_top
 
 theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}

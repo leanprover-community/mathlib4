@@ -130,7 +130,7 @@ theorem LinearMap.lTensor_range :
   apply range_comp_of_range_eq_top
   rw [range_eq_top]
   apply lTensor_surjective
-  rw [← range_eq_top, range_rangeRestrict]
+  rw  [← range_eq_top (R := R), range_rangeRestrict]
 
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
 theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
@@ -155,7 +155,7 @@ theorem LinearMap.rTensor_range :
   apply range_comp_of_range_eq_top
   rw [range_eq_top]
   apply rTensor_surjective
-  rw [← range_eq_top, range_rangeRestrict]
+  rw [← range_eq_top (R := R), range_rangeRestrict]
 
 end Semiring
 

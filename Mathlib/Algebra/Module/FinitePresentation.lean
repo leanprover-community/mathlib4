@@ -152,7 +152,7 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   choose σ hσ using (show _ from H)
   have : Finsupp.total s M R Subtype.val '' (σ '' t) = t := by
     simp only [Set.image_image, hσ, Set.image_id']
-  rw [LinearMap.ker_comp, ← ht, ← this, ← Submodule.map_span, Submodule.comap_map_eq,
+  rw [LinearMap.ker_comp, ← ht, ← this, ← Submodule.map_span (R := R), Submodule.comap_map_eq,
     ← Finset.coe_image]
   exact Submodule.FG.sup ⟨_, rfl⟩ hs'
 
@@ -202,7 +202,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   let f : LinearMap.ker (l ∘ₗ π) →ₗ[R] LinearMap.ker l := LinearMap.restrict π (fun x ↦ id)
   have e : π ∘ₗ Submodule.subtype _ = Submodule.subtype _ ∘ₗ f := by ext; rfl
   have hf : Function.Surjective f := by
-    rw [← LinearMap.range_eq_top]
+    rw [← LinearMap.range_eq_top (R := R)]
     apply Submodule.map_injective_of_injective (Submodule.injective_subtype _)
     rw [Submodule.map_top, Submodule.range_subtype, ← LinearMap.range_comp, ← e,
       LinearMap.range_comp, Submodule.range_subtype, LinearMap.ker_comp,
@@ -248,7 +248,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     apply IsLocalizedModule.exists_of_eq (S := S) (f := f)
     rw [← LinearMap.comp_apply, map_zero, hi, LinearMap.comp_apply]
     convert map_zero (s₀ • g)
-    rw [← LinearMap.mem_ker, ← hτ]
+    rw [← LinearMap.mem_ker (R := R), ← hτ]
     exact Submodule.subset_span x.prop
   choose s' hs' using this
   let s₁ := ∏ i : τ, s' i

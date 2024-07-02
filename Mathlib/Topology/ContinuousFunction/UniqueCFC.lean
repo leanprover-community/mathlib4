@@ -211,7 +211,7 @@ theorem RCLike.uniqueNonUnitalContinuousFunctionalCalculus_of_compactSpace_quasi
   eq_of_continuous_of_map_id s hs _inst h0 φ ψ hφ hψ h := by
     rw [DFunLike.ext'_iff, ← Set.eqOn_univ, ← (ContinuousMapZero.adjoin_id_dense h0).closure_eq]
     refine Set.EqOn.closure (fun f hf ↦ ?_) hφ hψ
-    rw [← NonUnitalStarAlgHom.mem_equalizer]
+    rw [← NonUnitalStarAlgHom.mem_equalizer (R := 𝕜)]
     apply adjoin_le ?_ hf
     rw [Set.singleton_subset_iff]
     exact h

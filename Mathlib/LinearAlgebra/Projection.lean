@@ -73,7 +73,7 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
   LinearEquiv.symm <|
     LinearEquiv.ofBijective (p.mkQ.comp q.subtype)
       ⟨by rw [← ker_eq_bot, ker_comp, ker_mkQ, disjoint_iff_comap_eq_bot.1 h.symm.disjoint], by
-        rw [← range_eq_top, range_comp, range_subtype, map_mkQ_eq_top, h.sup_eq_top]⟩
+        rw [← range_eq_top (R := R), range_comp, range_subtype, map_mkQ_eq_top, h.sup_eq_top]⟩
 #align submodule.quotient_equiv_of_is_compl Submodule.quotientEquivOfIsCompl
 
 @[simp]
@@ -102,7 +102,7 @@ def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   · rw [← ker_eq_bot, ker_coprod_of_disjoint_range, ker_subtype, ker_subtype, prod_bot]
     rw [range_subtype, range_subtype]
     exact h.1
-  · rw [← range_eq_top, ← sup_eq_range, h.sup_eq_top]
+  · rw [← range_eq_top (R := R), ← sup_eq_range, h.sup_eq_top]
 #align submodule.prod_equiv_of_is_compl Submodule.prodEquivOfIsCompl
 
 @[simp]
@@ -320,7 +320,7 @@ def equivProdOfSurjectiveOfIsCompl (f : E →ₗ[R] F) (g : E →ₗ[R] G) (hf :
     (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) : E ≃ₗ[R] F × G :=
   LinearEquiv.ofBijective (f.prod g)
     ⟨by simp [← ker_eq_bot, hfg.inf_eq_bot], by
-      rw [← range_eq_top]
+      rw [← range_eq_top (R := R)]
       simp [range_prod_eq hfg.sup_eq_top, *]⟩
 #align linear_map.equiv_prod_of_surjective_of_is_compl LinearMap.equivProdOfSurjectiveOfIsCompl
 

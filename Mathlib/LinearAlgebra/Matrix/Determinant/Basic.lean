@@ -517,7 +517,6 @@ theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Fin
       split_ifs with hi'i
       · rfl
       · exact hs i' fun h => hi' ((Finset.mem_insert.mp h).resolve_left hi'i)
-    · exact k
     · exact fun h => hk (Finset.mem_insert_of_mem h)
     · intro i' j'
       rw [updateRow_apply, Function.update_apply]

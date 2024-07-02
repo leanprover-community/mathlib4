@@ -399,7 +399,8 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
     obtain ⟨s, hs⟩ := hF' i
     have : Submodule.span (reesAlgebra I) (s.image (lsingle R i) : Set (PolynomialModule R M)) =
         Submodule.span _ (single R i '' (F.N i : Set M)) := by
-      rw [Finset.coe_image, ← Submodule.span_span_of_tower R, ← Submodule.map_span, hs]; rfl
+      rw [Finset.coe_image, ← Submodule.span_span_of_tower R, ← Submodule.map_span (R := R), hs]
+      rfl
     rw [Subtype.coe_mk, ← this]
     exact ⟨_, rfl⟩
 #align ideal.filtration.submodule_fg_iff_stable Ideal.Filtration.submodule_fg_iff_stable

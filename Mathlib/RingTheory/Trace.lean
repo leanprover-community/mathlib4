@@ -375,11 +375,10 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
-  -- Porting note: the following goal does not exist in mathlib3.
-  · exact (fun x => x.1)
   · intro x; rfl
   · intro σ
     rw [PowerBasis.liftEquiv'_apply_coe]
+    rfl
 #align trace_eq_sum_embeddings_gen trace_eq_sum_embeddings_gen
 
 variable [IsAlgClosed E]
@@ -640,7 +639,7 @@ theorem Algebra.trace_ne_zero [FiniteDimensional K L] [IsSeparable K L] :
 
 theorem Algebra.trace_surjective [FiniteDimensional K L] [IsSeparable K L] :
     Function.Surjective (Algebra.trace K L) := by
-  rw [← LinearMap.range_eq_top]
+  rw [← LinearMap.range_eq_top (R := K)]
   apply (IsSimpleOrder.eq_bot_or_eq_top (α := Ideal K) _).resolve_left
   rw [LinearMap.range_eq_bot]
   exact Algebra.trace_ne_zero K L

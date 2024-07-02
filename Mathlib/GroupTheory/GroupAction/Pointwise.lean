@@ -64,7 +64,7 @@ theorem image_smul_setₛₗ :
 theorem smul_preimage_set_leₛₗ :
     c • h ⁻¹' t ⊆ h ⁻¹' (σ c • t) := by
   rintro x ⟨y, hy, rfl⟩
-  exact ⟨h y, hy, by rw [map_smulₛₗ]⟩
+  exact ⟨h y, hy, by rw [map_smulₛₗ (N := S)]⟩
 
 variable {c}
 
@@ -78,7 +78,7 @@ theorem preimage_smul_setₛₗ'
     obtain ⟨m', rfl⟩ := hc m
     rintro ⟨n, hn, hn'⟩
     refine ⟨m', ?_, rfl⟩
-    rw [map_smulₛₗ] at hn'
+    rw [map_smulₛₗ (N := S)] at hn'
     rw [mem_preimage, ← hc' hn']
     exact hn
   · exact smul_preimage_set_leₛₗ M N σ h c t
