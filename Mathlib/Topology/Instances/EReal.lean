@@ -313,15 +313,15 @@ lemma limsup_le_const_forall_le {u : α → EReal} {b : EReal} (h : ∀ a : α, 
     limsup u f ≤ b :=
   limsup_le_iff.2 fun _ b_lt_c ↦ eventually_of_forall (fun a : α ↦ le_trans (h a) (le_of_lt b_lt_c))
 
-lemma const_le_limsup_forall [NeBot f] {u : α → EReal} {b : EReal} (h : ∀ a : α, b ≤ u a) :
+lemma const_le_limsup_forall_le [NeBot f] {u : α → EReal} {b : EReal} (h : ∀ a : α, b ≤ u a) :
     b ≤ limsup u f :=
   @Filter.limsup_const EReal α _ f _ b ▸ limsup_le_limsup (eventually_of_forall h)
 
-lemma liminf_le_const_forall [NeBot f] {u : α → EReal} {b : EReal} (h : ∀ a : α, u a ≤ b) :
+lemma liminf_le_const_forall_le [NeBot f] {u : α → EReal} {b : EReal} (h : ∀ a : α, u a ≤ b) :
     liminf u f ≤ b :=
   @Filter.liminf_const EReal α _ f _ b ▸ liminf_le_liminf (eventually_of_forall h)
 
-lemma const_le_liminf_forall {u : α → EReal} {b : EReal} (h : ∀ a : α, b ≤ u a) :
+lemma const_le_liminf_forall_le {u : α → EReal} {b : EReal} (h : ∀ a : α, b ≤ u a) :
     b ≤ liminf u f := by
   rcases eq_or_neBot f with (rfl | _)
   · simp only [liminf_bot, le_top]
