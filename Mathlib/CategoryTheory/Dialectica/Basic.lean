@@ -96,8 +96,11 @@ instance : Category (Dial C) where
 @[ext] theorem hom_ext {X Y : Dial C} {x y : X ⟶ Y} (hf : x.f = y.f) (hF : x.F = y.F) : x = y :=
    Hom.ext x y hf hF
 
-@[simps]
-def isoMk {X Y : Dial C} (e₁ : X.src ≅ Y.src) (e₂ : X.tgt ≅ Y.tgt)
+/--
+An isomorphism in `Dial C` can be induced by isomorphisms on the source and target,
+which respect the respective relations on `X` and `Y`.
+-/
+@[simps] def isoMk {X Y : Dial C} (e₁ : X.src ≅ Y.src) (e₂ : X.tgt ≅ Y.tgt)
     (eq : X.rel = (Subobject.pullback (prod.map e₁.hom e₂.hom)).obj Y.rel) : X ≅ Y where
   hom := {
     f := e₁.hom
