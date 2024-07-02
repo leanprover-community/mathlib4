@@ -93,6 +93,7 @@ import Mathlib.Tactic.Hint
 import Mathlib.Tactic.ITauto
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.InteractiveUnfold
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
