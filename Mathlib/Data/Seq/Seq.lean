@@ -1001,7 +1001,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp only [bind, map, ret.eq_1, map_nil]
   cases' f a with a s
-  cases s <;> intros <;> simp
+  cases s <;> simp
 #align stream.seq1.ret_bind Seq1.ret_bind
 
 @[simp]
