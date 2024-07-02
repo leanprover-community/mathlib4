@@ -157,6 +157,15 @@ noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [F
   classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
 
+instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
+    {s : β → β → Prop} [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
+  Fintype.ofEquiv {f : α → β // ∀ {x y}, r x y → s (f x) (f y)} <| Equiv.mk
+    (fun f ↦ ⟨f.1, f.2⟩) (fun f ↦ ⟨f.1, f.2⟩) (fun _ ↦ rfl) (fun _ ↦ rfl)
+
+noncomputable instance RelEmbedding.instFintype {α β} [Fintype α] [Fintype β]
+    {r : α → α → Prop} {s : β → β → Prop} : Fintype (r ↪r s) :=
+  Fintype.ofInjective _ RelEmbedding.toEmbedding_injective
+
 @[simp]
 theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
