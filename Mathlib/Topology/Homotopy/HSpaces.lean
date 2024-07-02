@@ -79,12 +79,7 @@ open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
-  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
-    -- Porting note: was `continuity`
-    exact ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
-        (continuous_fst.comp continuous_snd))).prod_mk ((map_continuous HSpace.hmul).comp
-        ((continuous_snd.comp continuous_fst).prod_mk (continuous_snd.comp continuous_snd)))
-  ⟩
+  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by fun_prop⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
     simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]

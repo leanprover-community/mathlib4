@@ -99,6 +99,8 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
     simp only [add_sub_cancel_right]
     exact mul_div_cancel_left₀ x h
   right_inv y := by simp [mul_div_cancel₀ _ h]
+  continuous_toFun := by continuity
+  continuous_invFun := by continuity
 #align affine_homeomorph affineHomeomorph
 
 end affineHomeomorph

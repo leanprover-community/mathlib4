@@ -136,7 +136,7 @@ protected theorem continuous (f : C(α, β)) : Continuous f :=
   f.continuous_toFun
 #align continuous_map.continuous ContinuousMap.continuous
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_set_coe (s : Set C(α, β)) (f : s) : Continuous (f : α → β) :=
   f.1.continuous
 #align continuous_map.continuous_set_coe ContinuousMap.continuous_set_coe

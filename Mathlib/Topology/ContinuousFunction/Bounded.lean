@@ -1199,6 +1199,7 @@ variable (𝕜)
 /-- The evaluation at a point, as a continuous linear map from `α →ᵇ β` to `β`. -/
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
   toFun f := f x
+  cont := by continuity
   map_add' f g := add_apply _ _
   map_smul' c f := smul_apply _ _ _
 #align bounded_continuous_function.eval_clm BoundedContinuousFunction.evalCLM

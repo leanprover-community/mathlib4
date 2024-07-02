@@ -348,13 +348,8 @@ theorem isClosed_setOf_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M
 theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     IsClosed { f : M₁ → M₂ | ∀ x y, f (x * y) = f x * f y } := by
   simp only [setOf_forall]
-  exact
-    isClosed_iInter fun x =>
-      isClosed_iInter fun y =>
-        isClosed_eq (continuous_apply _)
-          -- Porting note: proof was:
-          -- `((continuous_apply _).mul (continuous_apply _))`
-          (by continuity)
+  exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦
+      isClosed_eq (continuous_apply _) (by fun_prop)
 #align is_closed_set_of_map_mul isClosed_setOf_map_mul
 #align is_closed_set_of_map_add isClosed_setOf_map_add
 

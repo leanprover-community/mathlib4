@@ -142,7 +142,9 @@ theorem continuous_symm : Continuous σ := by
 @[simps]
 def symmHomeomorph : I ≃ₜ I where
   toFun := symm
+  continuous_toFun := by continuity
   invFun := symm
+  continuous_invFun := by continuity
   left_inv := symm_symm
   right_inv := symm_symm
 

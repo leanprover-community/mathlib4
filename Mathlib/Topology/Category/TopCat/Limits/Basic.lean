@@ -39,7 +39,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
   π :=
     { app := fun j =>
         { toFun := fun u => u.val j
-          -- Porting note: `continuity` from the original mathlib3 proof failed here.
+          -- Porting note: was `by continuity`
           continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
       naturality := fun X Y f => by
         -- Automation fails in various ways in this proof. Why?!
