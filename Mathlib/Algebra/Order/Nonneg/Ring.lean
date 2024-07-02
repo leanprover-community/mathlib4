@@ -6,7 +6,6 @@ Authors: Floris van Doorn
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Data.Nat.Cast.Order.Basic
@@ -196,7 +195,6 @@ theorem mk_mul_mk {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
 
 end Mul
 
-
 section AddMonoid
 
 variable [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
@@ -204,6 +202,7 @@ variable [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·
 instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
+/-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
 def coeAddMonoidHom : { x : α // 0 ≤ x } →+ α :=
   { toFun := ((↑) : { x : α // 0 ≤ x } → α)
     map_zero' := Nonneg.coe_zero
