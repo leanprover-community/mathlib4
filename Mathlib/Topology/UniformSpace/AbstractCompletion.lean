@@ -282,6 +282,42 @@ theorem uniformContinuous_compareEquiv_symm : UniformContinuous (pkg.compareEqui
   pkg'.uniformContinuous_compare pkg
 #align abstract_completion.uniform_continuous_compare_equiv_symm AbstractCompletion.uniformContinuous_compareEquiv_symm
 
+
+open scoped Topology
+
+/-Let `f : α → γ` be a continuous function between a uniform space `α` and a regular topological
+space `γ`, and let `pkg, pkg'` be two abstract completions of `α`. Then
+if for every point `a : pkg` the filter `f.map (coe⁻¹ (𝓝 a))` obtained by pushing forward with `f`
+the preimage in `α` of `𝓝 a` tends to `𝓝 (f.extend a : β)`, then the comparison map
+between `pkg` and `pkg'` composed with the extension of `f` to `pkg`` coincides with the
+extension of `f` to `pkg'`. The situation is described in the following diagram, where the
+two diagonal arrows are the extensions of `f` to the two different completions `pkg` and `pkg'`;
+the statement of `compare_comp_eq_compare` is the commutativity of the right triangle.
+
+`α^`=`pkg` ≅ `α^'`=`pkg'`   *here `≅` is `compare`*
+  ∧     \        /
+  |      \      /
+  |       \    /
+  |        V  ∨
+ α ---f---> γ
+ -/
+theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
+    [T3Space γ] {f : α → γ} (cont_f : Continuous f) :
+    letI := pkg.uniformStruct.toTopologicalSpace
+    letI := pkg'.uniformStruct.toTopologicalSpace
+    (∀ a : pkg.space,
+      Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.denseInducing.extend f) a))) →
+      pkg.denseInducing.extend f ∘ pkg'.compare pkg = pkg'.denseInducing.extend f := by
+  let _ := pkg'.uniformStruct
+  let _ := pkg.uniformStruct
+  intro h
+  have (x : α) : (pkg.denseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
+    simp only [Function.comp_apply, compare_coe, DenseInducing.extend_eq _ cont_f, implies_true]
+  apply (DenseInducing.extend_unique (AbstractCompletion.denseInducing _) this
+    (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous )).symm
+  apply DenseInducing.continuous_extend
+  exact fun a => ⟨(pkg.denseInducing.extend f) a, h a⟩
+
 end Compare
 
 section Prod
