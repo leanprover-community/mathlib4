@@ -180,7 +180,7 @@ theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circl
   (hasDerivAt_circleMap c R θ).differentiableAt
 #align differentiable_circle_map differentiable_circleMap
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
   (differentiable_circleMap c R).continuous
 #align continuous_circle_map continuous_circleMap
@@ -215,7 +215,7 @@ theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
     simp_rw [sub_ne_zero]
     exact fun θ => circleMap_ne_mem_ball hw θ
   -- Porting note: was `continuity`
-  exact Continuous.inv₀ (by continuity) this
+  exact Continuous.inv₀ (by fun_prop) this
 #align continuous_circle_map_inv continuous_circleMap_inv
 
 /-!

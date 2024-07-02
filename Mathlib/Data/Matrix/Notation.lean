@@ -179,24 +179,27 @@ end DotProduct
 
 section ColRow
 
+variable {ι : Type*}
+
 @[simp]
-theorem col_empty (v : Fin 0 → α) : col v = vecEmpty :=
+theorem col_empty (v : Fin 0 → α) : col ι v = vecEmpty :=
   empty_eq _
 #align matrix.col_empty Matrix.col_empty
 
 @[simp]
 theorem col_cons (x : α) (u : Fin m → α) :
-    col (vecCons x u) = of (vecCons (fun _ => x) (col u)) := by
+    col ι (vecCons x u) = of (vecCons (fun _ => x) (col ι u)) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
 #align matrix.col_cons Matrix.col_cons
 
 @[simp]
-theorem row_empty : row (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+theorem row_empty : row ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
 #align matrix.row_empty Matrix.row_empty
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row (vecCons x u) = of fun _ => vecCons x u := rfl
+theorem row_cons (x : α) (u : Fin m → α) : row ι (vecCons x u) = of fun _ => vecCons x u :=
+  rfl
 #align matrix.row_cons Matrix.row_cons
 
 end ColRow
