@@ -150,7 +150,8 @@ def endOfLinter : Linter where
       | #[] => logWarning "Expected 'end'"
       | #[msg] =>
         if msg.takeRight insScopes.length != insScopes then
-          Linter.logLint linter.endOf stx m!"Expected: 'end {(msg.splitOn "expected ")[1]!.dropRightWhile (!·.isAlphanum)}'"
+          Linter.logLint linter.endOf stx m!"Expected: \
+                              'end {(msg.splitOn "expected ")[1]!.dropRightWhile (!·.isAlphanum)}'"
       | _ => return
 
 initialize addLinter endOfLinter
