@@ -7,6 +7,9 @@ import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
+import Mathlib.Analysis.LocallyConvex.Polar
+import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Order.Sublattice
 
 #align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
@@ -330,4 +333,116 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
             sub_zero])).le
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
+variable [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P })
+
+#check P ⊓ Q
+
+#check P ⊓ Q
+
+#check Set.range (smulAddHom M X P)
+
+lemma range1 (P Q : { P : M // IsLprojection X P }) :
+    Set.range (smulAddHom M X P) ∩ Set.range (smulAddHom M X Q) =
+      Set.range (smulAddHom M X (P * Q)) := sorry
+
+
+
 end IsLprojection
+
+section experiment1
+
+variable {𝕜 A F : Type*}
+
+variable [NormedCommRing 𝕜] [AddCommMonoid A] --[NormedAddCommGroup X]
+variable [Module 𝕜 A] [Module 𝕜 X]
+
+variable (B : A →ₗ[𝕜] X →ₗ[𝕜] 𝕜)
+
+structure IsMideal' (S : Set A) where
+  Lproj:  ∃ (P : M), IsLprojection X P ∧ (Set.range (smulAddHom M X P)) = LinearMap.polar B S
+
+structure IsMideal'' (S : Set A) where
+  Lproj:  ∃ (P : X →L[𝕜] X), IsLprojection X P ∧ (Set.range P) = LinearMap.polar B S
+
+end experiment1
+
+
+-- Subspace of a normed space is a normed space (NormedSpace/Basic)
+/-
+instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
+    (s : Submodule R E) : NormedSpace 𝕜 s where norm_smul_le c x := norm_smul_le c (x : E)
+-/
+
+
+variable {𝕜 A F : Type*}
+
+variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup A] --[NormedAddCommGroup X]
+variable [Module 𝕜 A] [Module 𝕜 X] [NormedSpace 𝕜 A]
+
+variable (P : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
+    (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P })
+
+#check _root_.Function.Commute.set_image
+
+lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)}
+    (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
+  · simp only [Set.le_eq_subset, Set.subset_inter_iff]
+    constructor
+    · exact Set.range_comp_subset_range ⇑Q ⇑P
+    · rw [commute_iff_eq] at h
+      rw [h]
+      exact Set.range_comp_subset_range ⇑P ⇑Q
+
+lemma proj_apply (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)) (hP : IsIdempotentElem P)
+    (a : (NormedSpace.Dual 𝕜 A)) (ha: a ∈ Set.range P) : P a = a := by
+  cases' ha with c hc
+  rw [← hc]
+  have e2 : P (P c) = (P * P) c := rfl
+  rw [e2]
+  rw [hP.eq]
+
+lemma IsIdempotentElem.range_prod__of_commute
+    {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)} (hPQ : Commute P Q)
+    (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q) :
+    Set.range (P * Q) = Set.range P ∩ Set.range Q := by
+  rw [le_antisymm_iff]
+  constructor
+  · simp only [Set.le_eq_subset]
+    exact range_prod_of_commute hPQ
+  · intro a ha
+    simp only [ContinuousLinearMap.coe_mul, Set.mem_range, Function.comp_apply]
+    use a
+    rw [proj_apply Q hQ]
+    rw [proj_apply P hP]
+    apply ha.1
+    apply ha.2
+
+lemma IsLprojection.range_inter (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
+    (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P }) :
+    Set.range P.val ∩ Set.range Q.val =
+      Set.range (P ⊓ Q).val := by
+  rw [← IsIdempotentElem.range_prod__of_commute (IsLprojection.commute P.prop Q.prop)
+    P.prop.1 Q.prop.1]
+  rfl
+
+-- Want M = bipolar M i.e. that M is a norm closed subspace, not mearly a generating space.
+structure IsMideal (m : Submodule 𝕜 A) : Prop where
+  Closed: IsClosed (m : Set A)
+  Lproj:  ∃ (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)),
+    IsLprojection (NormedSpace.Dual 𝕜 A) P ∧ (Set.range P) = NormedSpace.polar (E := A) 𝕜 m
+
+/- The M-ideals are a sub-lattice of the lattice of submodules -/
+/-
+lemma IsMideal.isSublattice : IsSublattice {m : Submodule 𝕜 A | IsMideal m } where
+  supClosed m₁ hm₁ m₂ hm₂ := by
+    rw [Set.mem_setOf_eq] at *
+    constructor
+    · sorry
+    · sorry
+  infClosed m₁ hm₁ m₂ hm₂ := by
+    rw [Set.mem_setOf_eq] at *
+    constructor
+    · sorry
+    · sorry
+-/
