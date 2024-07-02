@@ -3,8 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Data.Set.Notation
+import Mathlib.Order.SetNotation
 import Mathlib.Logic.Embedding.Basic
-import Mathlib.Data.Set.Image
+
 
 #align_import logic.embedding.set from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
@@ -13,8 +16,9 @@ import Mathlib.Data.Set.Image
 
 -/
 
-
 universe u v w x
+
+open Set Set.Notation
 
 section Equiv
 
@@ -147,3 +151,55 @@ theorem subtypeOrEquiv_symm_inr (p q : α → Prop) [DecidablePred p] (h : Disjo
 #align subtype_or_equiv_symm_inr subtypeOrEquiv_symm_inr
 
 end Subtype
+
+section Disjoint
+
+variable {α ι : Type*} {s t r : Set α}
+
+/-- For disjoint `s t : Set α`, the natural injection from `↑s ⊕ ↑t` to `α`. -/
+@[simps] def Disjoint.sumSubtypeEmbedding (h : Disjoint s t) : s ⊕ t ↪ α where
+  toFun := Sum.elim (↑) (↑)
+  inj' := by
+    rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
+    · simp [Subtype.val_inj]
+    · simpa using h.ne_of_mem ha hb
+    · simpa using h.symm.ne_of_mem ha hb
+    simp [Subtype.val_inj]
+
+@[simp] theorem Disjoint.sumSubtypeEmbedding_preimage_inl (h : Disjoint s t) :
+    .inl ⁻¹' (h.sumSubtypeEmbedding ⁻¹' r) = r ∩ s := by
+  ext
+  simp
+
+@[simp] theorem Disjoint.sumSubtypeEmbedding_preimage_inr {s t r : Set α} (h : Disjoint s t) :
+    .inr ⁻¹' (h.sumSubtypeEmbedding ⁻¹' r) = r ∩ t := by
+  ext
+  simp
+
+@[simp] theorem Disjoint.sumSubtypeEmbedding_range {s t : Set α} (h : Disjoint s t) :
+    range h.sumSubtypeEmbedding = s ∪ t := by
+  ext
+  simp
+
+/-- For an indexed family `s : ι → Set α` of disjoint sets,
+the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/
+@[simps] def Pairwise.disjointSigmaSubtypeEmbedding {s : ι → Set α} (h : Pairwise (Disjoint on s)) :
+    (i : ι) × s i ↪ α where
+  toFun x := x.2.1
+  inj' := by
+    rintro ⟨i,⟨x,hx⟩⟩ ⟨j,⟨-,hx'⟩⟩ rfl
+    obtain rfl : i = j := h.eq (not_disjoint_iff.2 ⟨_, hx, hx'⟩)
+    rfl
+
+@[simp] theorem Pairwise.disjointSigmaSubtypeEmbedding_preimage {s : ι → Set α}
+    (h : Pairwise (Disjoint on s)) (i : ι) (r : Set α) :
+    Sigma.mk i ⁻¹' (h.disjointSigmaSubtypeEmbedding ⁻¹' r) = r ∩ s i := by
+  ext
+  simp
+
+@[simp] theorem Pairwise.dijsointSigmaSubtypeEmbedding_range {s : ι → Set α}
+    (h : Pairwise (Disjoint on s)) : Set.range h.disjointSigmaSubtypeEmbedding = ⋃ i, s i := by
+  ext
+  simp
+
+end Disjoint
