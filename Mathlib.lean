@@ -1679,6 +1679,7 @@ import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
 import Mathlib.CategoryTheory.Sites.CoversTop
 import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.Discrete
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
@@ -1851,6 +1852,9 @@ import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
+import Mathlib.Condensed.Dev.Colimit
+import Mathlib.Condensed.Dev.Discrete
+import Mathlib.Condensed.Dev.Extend
 import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
@@ -1862,6 +1866,8 @@ import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Light.TopComparison
 import Mathlib.Condensed.Limits
+import Mathlib.Condensed.LocallyConstant
+import Mathlib.Condensed.LocallyConstantModule
 import Mathlib.Condensed.Module
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
@@ -4158,7 +4164,9 @@ import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.CompHaus.Limits
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.CompHausLike.Basic
+import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 import Mathlib.Topology.Category.CompHausLike.Limits
+import Mathlib.Topology.Category.CompHausLike.LocallyConstant
 import Mathlib.Topology.Category.Compactum
 import Mathlib.Topology.Category.FinTopCat
 import Mathlib.Topology.Category.LightProfinite.Basic

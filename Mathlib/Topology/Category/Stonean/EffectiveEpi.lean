@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour, Nim
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.Limits
-import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
 # Effective epimorphic families in `Stonean`
@@ -32,31 +31,11 @@ As a consequence, we obtain instances that `Stonean` is precoherent and preregul
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
+
+attribute [local instance] ConcreteCategory.instFunLike
 
 namespace Stonean
-
-/--
-Implementation: If `π` is a surjective morphism in `Stonean`, then it is an effective epi.
-The theorem `Stonean.effectiveEpi_tfae` should be used instead.
--/
-noncomputable
-def struct {B X : Stonean.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) : EffectiveEpiStruct π where
-  desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
-    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a
-  fac e h := ((QuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
-    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a)
-  uniq e h g hm := by
-    suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun
-        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
-        a⟩ by assumption
-    rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
-    ext
-    simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
-    rfl
 
 open List in
 theorem effectiveEpi_tfae
@@ -75,12 +54,12 @@ theorem effectiveEpi_tfae
   tfae_finish
 
 instance : Stonean.toCompHaus.PreservesEffectiveEpis where
-  preserves f h :=
-    ((CompHaus.effectiveEpi_tfae f).out 0 2).mpr (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
+  preserves f h := ((CompHaus.effectiveEpi_tfae (toCompHaus.map f)).out 0 2).mpr
+    (((Stonean.effectiveEpi_tfae f).out 0 2).mp h)
 
 instance : Stonean.toCompHaus.ReflectsEffectiveEpis where
-  reflects f h :=
-    ((Stonean.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae f).out 0 2).mp h)
+  reflects f h := ((Stonean.effectiveEpi_tfae f).out 0 2).mpr
+    (((CompHaus.effectiveEpi_tfae (toCompHaus.map f)).out 0 2).mp h)
 
 /--
 An effective presentation of an `X : CompHaus` with respect to the inclusion functor from `Stonean`

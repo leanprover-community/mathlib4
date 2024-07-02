@@ -5,6 +5,7 @@ Authors: Adam Topaz, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.Topology.Category.CompHaus.Limits
+import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 /-!
 
 # Effective epimorphisms and finite effective epimorphic families in `CompHaus`
@@ -41,32 +42,9 @@ and we now turn it on locally when convenient.
 -/
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
-open CategoryTheory Limits
+open CategoryTheory Limits CompHausLike
 
 namespace CompHaus
-
-/--
-Implementation: If `π` is a surjective morphism in `CompHaus`, then it is an effective epi.
-The theorem `CompHaus.effectiveEpi_tfae` should be used instead.
--/
-noncomputable
-def struct {B X : CompHaus.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
-    EffectiveEpiStruct π where
-  desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
-    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a
-  fac e h := ((QuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
-    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-    (by ext; exact hab)) a)
-  uniq e h g hm := by
-    suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ DFunLike.congr_fun
-        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
-        a⟩ by assumption
-    rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
-    ext
-    simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
-    rfl
 
 open List in
 theorem effectiveEpi_tfae
@@ -84,15 +62,8 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
-instance : Preregular CompHaus where
-  exists_fac := by
-    intro X Y Z f π hπ
-    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
-    have := fun X Y (f : X ⟶ Y) ↦ (effectiveEpi_tfae f).out 0 2
-    rw [this] at hπ ⊢
-    intro y
-    obtain ⟨z,hz⟩ := hπ (f y)
-    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
+instance : Preregular CompHaus :=
+  preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp
 
 -- Was an `example`, but that made the linter complain about unused imports
 instance : Precoherent CompHaus.{u} := inferInstance
