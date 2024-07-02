@@ -1035,6 +1035,9 @@ theorem Finite.finite_subsets {α : Type u} {a : Set α} (h : a.Finite) : { b | 
     ← and_assoc, Finset.coeEmb] using h.subset
 #align set.finite.finite_subsets Set.Finite.finite_subsets
 
+protected theorem Finite.powerset {s : Set α} (h : s.Finite) : (𝒫 s).Finite :=
+  h.finite_subsets
+
 section Pi
 variable {ι : Type*} [Finite ι] {κ : ι → Type*} {t : ∀ i, Set (κ i)}
 
@@ -1263,7 +1266,7 @@ theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ 
 @[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
     {d : Fintype.{u} (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
-  rw [← card_fintypeInsertOfNotMem s h]; congr; exact Subsingleton.elim _ _
+  rw [← card_fintypeInsertOfNotMem s h]; congr!
 #align set.card_insert Set.card_insert
 
 theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (f '' s)]

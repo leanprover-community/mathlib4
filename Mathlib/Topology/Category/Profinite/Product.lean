@@ -76,7 +76,9 @@ theorem eq_of_forall_π_app_eq (a b : C)
 
 end IndexFunctor
 
-variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)] {C} (hC : IsCompact C)
+variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
+variable {C}
+variable (hC : IsCompact C)
 
 open CategoryTheory Limits Opposite IndexFunctor
 

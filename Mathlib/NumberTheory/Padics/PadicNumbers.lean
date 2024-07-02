@@ -124,7 +124,6 @@ theorem norm_zero_iff (f : PadicSeq p) : f.norm = 0 ↔ f ≈ 0 := by
     by_contra hf
     unfold norm at h
     split_ifs at h
-    · contradiction
     apply hf
     intro ε hε
     exists stationaryPoint hf
@@ -609,7 +608,6 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge
-  · exact not_le_of_gt hε hge
   apply not_le_of_gt _ hge
   cases' _root_.em (N ≤ stationaryPoint hne) with hgen hngen
   · apply hN _ hgen _ hi
@@ -897,7 +895,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
   | ⟨n, d, hn, hd⟩ => fun hq : ¬p ∣ d ↦
     if hnz : n = 0 then by
       have : (⟨n, d, hn, hd⟩ : ℚ) = 0 := Rat.zero_iff_num_zero.mpr hnz
-      set_option tactic.skipAssignedInstances false in norm_num [this]
+      norm_num [this]
     else by
       have hnz' : (⟨n, d, hn, hd⟩ : ℚ) ≠ 0 := mt Rat.zero_iff_num_zero.1 hnz
       rw [padicNormE.eq_padicNorm]
