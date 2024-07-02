@@ -234,7 +234,8 @@ theorem diagonal_isStableUnderComposition [P.IsStableUnderComposition] [Respects
     (hP'' : StableUnderBaseChange P) : P.diagonal.IsStableUnderComposition where
   comp_mem _ _ h₁ h₂ := by
     rw [diagonal_iff, pullback.diagonal_comp]
-    exact P.comp_mem _ _ h₁ (by simpa using hP''.snd _ _ h₂)
+    exact P.comp_mem _ _ h₁
+      (by simpa only [cancel_left_of_respectsIso] using hP''.snd _ _ h₂)
 #align category_theory.morphism_property.stable_under_composition.diagonal CategoryTheory.MorphismProperty.diagonal_isStableUnderComposition
 
 theorem StableUnderBaseChange.diagonal (hP : StableUnderBaseChange P) [P.RespectsIso] :
