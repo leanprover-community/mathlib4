@@ -6,6 +6,7 @@ Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealExp
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Properties of the extended logarithm and exponential
@@ -231,3 +232,18 @@ instance : EMetricSpace EReal where
     rename_i x y
     induction x <;> induction y <;> simp_all
 
+noncomputable
+instance : UniformSpace EReal := by exact PseudoEMetricSpace.toUniformSpace
+
+instance : (uniformity EReal).IsCountablyGenerated := EMetric.instIsCountablyGeneratedUniformity (α := EReal)
+
+instance : UniformSpace EReal := uniformSpaceOfCompactT2
+
+instance : PolishSpace EReal := by
+  --after solving the last sorry this can probably be replaced with a proof term
+  convert PolishSpace.of_separableSpace_completeSpace_metrizable
+  · infer_instance
+  · infer_instance
+  · convert EMetric.instIsCountablyGeneratedUniformity (α := EReal)
+    sorry
+  · infer_instance
