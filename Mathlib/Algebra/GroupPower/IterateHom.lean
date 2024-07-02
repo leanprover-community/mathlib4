@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Int
-import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Tactic.Common
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 
@@ -26,8 +28,8 @@ We also prove formulas for iterates of add/mul left/right.
 homomorphism, iterate
 -/
 
+assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
-assert_not_exists Ring
 
 open Function
 
