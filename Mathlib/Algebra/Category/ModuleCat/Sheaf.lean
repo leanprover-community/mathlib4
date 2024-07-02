@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
+import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.Whiskering
 
@@ -22,7 +23,7 @@ where `P` is a presheaf of rings and `R` a sheaf of rings such that `α` identif
 
 -/
 
-universe v v₁ u₁ u
+universe v v₁ u₁ u w
 
 open CategoryTheory
 
@@ -91,6 +92,21 @@ def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj
 def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrp.{v} where
   obj M := ⟨_, M.isSheaf⟩
   map f := { val := f.val.hom }
+
+/--
+The forgetful functor from sheaves of modules over sheaf of ring `R` to sheaves of `R(X)`-module
+when `X` is initial.
+-/
+@[simps]
+noncomputable def forgetToSheafModuleCat [UnivLE.{max v₁ u₁, w}]
+      (X : Cᵒᵖ) (hX : Limits.IsInitial X)  :
+    SheafOfModules R ⥤ Sheaf J (ModuleCat (R.1.obj X)) where
+  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1, by
+    have := ModuleCat.hasLimitsOfSize.{max v₁ u₁, w} (R := R.1.obj X)
+    exact CategoryTheory.Presheaf.isSheaf_iff_isSheaf_comp J
+      ((PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1)
+      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w}) |>.2 M.isSheaf⟩
+  map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
 `SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrp.{v}`
