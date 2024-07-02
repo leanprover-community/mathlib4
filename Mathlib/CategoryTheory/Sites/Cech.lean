@@ -31,8 +31,12 @@ structure Hom (X Y : FormalCoproduct.{w} C) where
 
 @[ext]
 lemma hom_ext {X Y : FormalCoproduct.{w} C} {f g : X ⟶ Y} (h₁ : f.f = g.f)
-    (h₂ : ∀ (i : X.I), f.φ i ≫ eqToHom (by rw [h₁]) = g.φ i): f = g := by
-  sorry
+    (h₂ : ∀ (i : X.I), f.φ i ≫ eqToHom (by rw [h₁]) = g.φ i) : f = g := by
+  obtain ⟨f, F⟩ := f
+  obtain ⟨g, G⟩ := g
+  obtain rfl : f = g := h₁
+  obtain rfl : F = G := by ext i; simpa using h₂ i
+  rfl
 
 @[simps] noncomputable def eval (X : FormalCoproduct.{w} C) : (Cᵒᵖ ⥤ A) ⥤ A where
   obj F := ∏ᶜ (fun (i : X.I) ↦ F.obj (op (X.obj i)))
