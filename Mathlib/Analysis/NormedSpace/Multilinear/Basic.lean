@@ -82,8 +82,8 @@ theorem ContinuousMultilinearMap.continuous_eval {𝕜 ι : Type*} {E : ι → T
     [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F] :
     Continuous fun p : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i => p.1 p.2 := by
   cases nonempty_fintype ι
-  letI := TopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  let _ := TopologicalAddGroup.toUniformSpace F
+  have := comm_topologicalAddGroup_is_uniform (G := F)
   refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
     (embedding_toUniformOnFun.continuous.prod_map continuous_id) fun (f, x) ↦ f.cont.continuousAt
   exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
