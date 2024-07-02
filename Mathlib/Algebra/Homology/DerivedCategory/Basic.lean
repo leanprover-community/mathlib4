@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.Localization
 
@@ -222,5 +223,37 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
       (e ≪≫ (Functor.mapTriangleIso (quotientCompQhIso C)).symm.app _ ≪≫
       (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
     exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+variable (C)
+
+/-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
+their compatibilities with shifts. -/
+noncomputable def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
+  (HomotopyCategory.singleFunctors C).postcomp Qh
+
+/-- The shift functor `C ⥤ DerivedCategory C` which sends `X : C` to the
+single cochain complex with `X` sitting in degree `n : ℤ`. -/
+noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+instance (n : ℤ) : (singleFunctor C n).Additive := by
+  dsimp [singleFunctor, singleFunctors]
+  infer_instance
+
+/-- The isomorphism
+`DerivedCategory.singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh` given
+by the definition of `DerivedCategory.singleFunctors`. -/
+noncomputable def singleFunctorsPostcompQhIso :
+    singleFunctors C ≅ (HomotopyCategory.singleFunctors C).postcomp Qh :=
+  Iso.refl _
+
+/-- The isomorphism
+`DerivedCategory.singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q`. -/
+noncomputable def singleFunctorsPostcompQIso :
+    singleFunctors C ≅ (CochainComplex.singleFunctors C).postcomp Q :=
+  (SingleFunctors.postcompFunctor C ℤ (Qh : _ ⥤ DerivedCategory C)).mapIso
+    (HomotopyCategory.singleFunctorsPostcompQuotientIso C) ≪≫
+      (CochainComplex.singleFunctors C).postcompPostcompIso (HomotopyCategory.quotient _ _) Qh ≪≫
+      SingleFunctors.postcompIsoOfIso
+        (CochainComplex.singleFunctors C) (quotientCompQhIso C)
 
 end DerivedCategory
