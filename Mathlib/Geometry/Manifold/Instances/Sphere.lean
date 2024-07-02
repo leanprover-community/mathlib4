@@ -78,6 +78,30 @@ variable (v : E)
 
 /-! ### Construction of the stereographic projection -/
 
+-- Shortcut instances to speed up typeclass search.
+
+@[local instance] lemma instFiniteDimensional : FiniteDimensional ℝ (Submodule.span ℝ {v}) :=
+  span_singleton ℝ v
+
+@[local instance] lemma instProperSpace : ProperSpace (Submodule.span ℝ {v}) :=
+  RCLike.properSpace_submodule ℝ (Submodule.span ℝ {v})
+
+@[local instance] lemma instCompleteSpace : CompleteSpace (Submodule.span ℝ {v}) :=
+  complete_of_proper
+
+@[local instance] lemma instFoo : HasOrthogonalProjection (Submodule.span ℝ {v}) :=
+  HasOrthogonalProjection.ofCompleteSpace (Submodule.span ℝ {v})
+
+@[local instance] lemma instOrthogonalProjection :
+    HasOrthogonalProjection (Submodule.span ℝ {v})ᗮ :=
+  instHasOrthogonalProjectionOrthogonal (Submodule.span ℝ {v})
+
+/-- Shortcut instance to speed up typeclass search. -/
+@[local instance] def instAddMonoid : AddMonoid (E →L[ℝ] ℝ) := SubNegMonoid.toAddMonoid
+
+/-- Shortcut instance to speed up typeclass search. -/
+@[local instance] lemma instZeroHomClass : ZeroHomClass (E →L⋆[ℝ] E →L[ℝ] ℝ) E (E →L[ℝ] ℝ) :=
+  AddMonoidHomClass.toZeroHomClass
 
 /-- Stereographic projection, forward direction. This is a map from an inner product space `E` to
 the orthogonal complement of an element `v` of `E`. It is smooth away from the affine hyperplane
@@ -135,10 +159,12 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
     simp only [mem_sphere_zero_iff_norm, norm_smul, Real.norm_eq_abs, abs_inv, this,
       abs_of_pos h₁, stereoInvFunAux_apply, inv_mul_cancel h₁.ne']
   suffices ‖(4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v‖ ^ 2 = (‖w‖ ^ 2 + 4) ^ 2 by
-    simpa [sq_eq_sq_iff_abs_eq_abs, abs_of_pos h₁] using this
+    simpa only [sq_eq_sq_iff_abs_eq_abs, abs_norm, abs_of_pos h₁] using this
   rw [Submodule.mem_orthogonal_singleton_iff_inner_left] at hw
-  simp [norm_add_sq_real, norm_smul, inner_smul_left, inner_smul_right, hw, mul_pow,
-    Real.norm_eq_abs, hv]
+  simp? [norm_add_sq_real, norm_smul, inner_smul_left, inner_smul_right, hw, mul_pow,
+      Real.norm_eq_abs, hv] says
+    simp only [norm_add_sq_real, norm_smul, RCLike.norm_ofNat, mul_pow, inner_smul_right,
+      inner_smul_left, map_ofNat, hw, mul_zero, add_zero, Real.norm_eq_abs, hv, mul_one, sq_abs]
   ring
 #align stereo_inv_fun_aux_mem stereoInvFunAux_mem
 
@@ -146,25 +172,26 @@ theorem hasFDerivAt_stereoInvFunAux (v : E) :
     HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) 0 := by
   have h₀ : HasFDerivAt (fun w : E => ‖w‖ ^ 2) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasStrictFDerivAt_norm_sq (0 : E)).hasFDerivAt
-    simp
+    simp only [map_zero, smul_zero]
   have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : E →L[ℝ] ℝ) 0 := by
+    -- convert takes 320ms
     convert (hasFDerivAt_inv _).comp _ (h₀.add (hasFDerivAt_const 4 0)) <;> simp
   have h₂ : HasFDerivAt (fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
       ((4 : ℝ) • ContinuousLinearMap.id ℝ E) 0 := by
     convert ((hasFDerivAt_const (4 : ℝ) 0).smul (hasFDerivAt_id 0)).add
       ((h₀.sub (hasFDerivAt_const (4 : ℝ) 0)).smul (hasFDerivAt_const v 0)) using 1
     ext w
-    simp
+    simp -- 150ms; squeezing uglifies
   convert h₁.smul h₂ using 1
   ext w
-  simp
+  simp -- squeezing uglifies, brings 130->100ms -/
 #align has_fderiv_at_stereo_inv_fun_aux hasFDerivAt_stereoInvFunAux
 
 theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
     HasFDerivAt (stereoInvFunAux v ∘ ((↑) : (ℝ ∙ v)ᗮ → E)) (ℝ ∙ v)ᗮ.subtypeL 0 := by
   have : HasFDerivAt (stereoInvFunAux v) (ContinuousLinearMap.id ℝ E) ((ℝ ∙ v)ᗮ.subtypeL 0) :=
     hasFDerivAt_stereoInvFunAux v
-  convert this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
+  refine this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 #align has_fderiv_at_stereo_inv_fun_aux_comp_coe hasFDerivAt_stereoInvFunAux_comp_coe
 
 theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
@@ -200,8 +227,11 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
       refine (inv_mul_lt_iff' ?_).mpr ?_
       · nlinarith
       linarith
-    simpa [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm, hw,
-      hv] using hw'
+    simpa? [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm,
+      hw, hv] using hw' says
+      simpa only [stereoInvFun_apply, Submodule.coe_norm, smul_add, real_inner_comm,
+        inner_add_right, inner_smul_right, hw, mul_zero, real_inner_self_eq_norm_mul_norm, hv,
+        mul_one, zero_add, gt_iff_lt] using hw'
   · simpa using stereoInvFunAux_mem hv w.2
 #align stereo_inv_fun_ne_north_pole stereoInvFun_ne_north_pole
 
@@ -232,31 +262,40 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     linarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
-    field_simp; simp only [Submodule.coe_norm] at *; nlinarith
+    -- unsqueezed `field_simp` call took 0,7s, now is 60ms; nlinarith is still slow (0,5s)
+    simp (disch := field_simp_discharge) only [Submodule.coe_norm, div_mul_eq_mul_div, div_add',
+      inv_div, mul_div_assoc', div_div, div_eq_iff, one_mul]
+    simp only [Submodule.coe_norm] at *; nlinarith only [pythag]
   have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
-    field_simp
+    -- unsqueezed `field_simp` took 0,7s, now takes 50ms; nlinarith is still slow (0,5s)
+    simp (disch := field_simp_discharge) only [Submodule.coe_norm, div_mul_eq_mul_div, div_add',
+      inv_div, div_sub', mul_div_assoc', div_div, div_eq_iff]
     transitivity (1 - a) ^ 2 * (a * (2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2))
     · congr
       simp only [Submodule.coe_norm] at *
-      nlinarith
+      nlinarith only [pythag]
     ring!
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  · simp [a, inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
-      mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
+  · simp only [innerSL_apply, norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs,
+    Submodule.coe_norm, mul_pow, div_pow, sq_abs, SetLike.val_smul, mul_smul, a]
     -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
     rw [split, add_comm]
     ac_rfl
   -- Porting note: this branch did not exit in ml3
   · rw [split, add_comm]
-    congr!
+    congr
     dsimp
     rw [one_smul]
 #align stereo_left_inv stereo_left_inv
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   have : 2 / (1 - (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4)) * (‖(w : E)‖ ^ 2 + 4)⁻¹ * 4 = 1 := by
-    field_simp; ring
+    -- unsqueezed field_simp call took 830, now takes 30ms
+    simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
+      sub_div', add_sub_sub_cancel, div_div_eq_mul_div, mul_div_assoc', mul_one, div_div,
+      div_eq_iff]
+    ring
   convert congr_arg (· • w) this
   · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v
@@ -264,7 +303,10 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
     have h₃ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     -- Porting note: was innerSL _ and now just inner
     have h₄ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
-    simp [h₁, h₃, h₄, ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, mul_smul]
+    simp? [h₁, h₃, h₄, ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, mul_smul] says
+      simp only [stereoInvFun_apply, Submodule.coe_norm, smul_add, stereoToFun_apply, map_add,
+        LinearMapClass.map_smul, innerSL_apply, h₃, smul_eq_mul, mul_zero, h₄, mul_one, zero_add,
+        orthogonalProjection_mem_subspace_eq_self, h₁, smul_zero, add_zero, mul_smul]
   · simp
 #align stereo_right_inv stereo_right_inv
 
@@ -275,7 +317,9 @@ def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ
   invFun := stereoInvFun hv
   source := {⟨v, by simp [hv]⟩}ᶜ
   target := Set.univ
-  map_source' := by simp
+  -- squeezing 240 -> 60ms
+  map_source' := by simp? says simp only [Set.mem_compl_iff, Set.mem_singleton_iff, comp_apply,
+      stereoToFun_apply, innerSL_apply, Set.mem_univ, implies_true]
   map_target' {w} _ := fun h => (stereoInvFun_ne_north_pole hv w) (Set.eq_of_mem_singleton h)
   left_inv' x hx := stereo_left_inv hv fun h => hx (by
     rw [← h] at hv
@@ -311,7 +355,9 @@ theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Se
 @[simp]
 theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by
-  simp [stereographic_apply, orthogonalProjection_orthogonalComplement_singleton_eq_zero]
+  simp? [stereographic_apply, orthogonalProjection_orthogonalComplement_singleton_eq_zero] says
+    simp only [stereographic_apply, coe_neg_sphere, inner_neg_right, sub_neg_eq_add, map_neg,
+    orthogonalProjection_orthogonalComplement_singleton_eq_zero, neg_zero, smul_zero]
 #align stereographic_apply_neg stereographic_apply_neg
 
 @[simp]
@@ -366,7 +412,13 @@ theorem stereographic'_source {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphe
 
 @[simp]
 theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    (stereographic' n v).target = Set.univ := by simp [stereographic']
+    (stereographic' n v).target = Set.univ := by -- squeezing yields 330 -> 150ms
+      simp? [stereographic'] says simp only [stereographic',
+        PartialHomeomorph.trans_toPartialEquiv, PartialEquiv.trans_target,
+        Homeomorph.toPartialHomeomorph_target, PartialHomeomorph.coe_coe_symm,
+        Homeomorph.toPartialHomeomorph_symm_apply, LinearIsometryEquiv.toHomeomorph_symm,
+        LinearIsometryEquiv.coe_toHomeomorph, stereographic_target, Set.preimage_univ,
+        Set.inter_self]
 #align stereographic'_target stereographic'_target
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a charted space
@@ -398,7 +450,13 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
         (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr
       (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (4 : ℝ) • (U.symm x : E) +
         (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (‖(U.symm x : E)‖ ^ 2 - 4) • v.val := by
-  simp [real_inner_comm, stereographic, stereographic', ← Submodule.coe_norm]
+  -- squeezing brings 800 -> 270ms
+  simp? [real_inner_comm, stereographic, stereographic', ← Submodule.coe_norm] says
+    simp only [stereographic', stereographic, Subtype.coe_eta, PartialHomeomorph.coe_trans_symm,
+    PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
+    Homeomorph.toPartialHomeomorph_symm_apply, LinearIsometryEquiv.toHomeomorph_symm,
+    LinearIsometryEquiv.coe_toHomeomorph, comp_apply, stereoInvFun_apply,
+    LinearIsometryEquiv.norm_map, smul_add, ← Submodule.coe_norm]
 #align stereographic'_symm_apply stereographic'_symm_apply
 
 /-! ### Smooth manifold structure on the sphere -/
@@ -483,7 +541,12 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
     exact norm_eq_of_mem_sphere (-v)
   -- Porting note: unfold more
   dsimp [chartAt, Set.codRestrict, ChartedSpace.chartAt]
-  simp [not_iff_not, Subtype.ext_iff, hfxv, real_inner_comm]
+  -- squeezing brings 165ms -> 35ms
+  simp? [not_iff_not, Subtype.ext_iff, hfxv, real_inner_comm] says
+     simp only [stereographic'_source, Set.preimage_compl, Set.inter_univ, Set.mem_compl_iff,
+     Set.mem_preimage, Set.mem_singleton_iff, Subtype.ext_iff, Set.val_codRestrict_apply,
+     coe_neg_sphere, hfxv, inner_neg_right, real_inner_comm, inner_neg_left, Set.univ_inter,
+     Set.mem_setOf_eq]
 #align cont_mdiff.cod_restrict_sphere ContMDiff.codRestrict_sphere
 
 /-- The antipodal map is smooth. -/
@@ -494,6 +557,12 @@ theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
   apply contDiff_neg.contMDiff.comp _
   exact contMDiff_coe_sphere
 #align cont_mdiff_neg_sphere contMDiff_neg_sphere
+
+private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
+  stereographic' n (-v) v = 0 := by
+    dsimp [stereographic']
+    simp only [AddEquivClass.map_eq_zero_iff]
+    apply stereographic_neg_apply
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
@@ -517,19 +586,17 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   -- Porting note: this `suffices` was a `change`
   suffices
       LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ by
-    convert this using 3
-    show stereographic' n (-v) v = 0
-    dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    convert this using 3 -- slow, 800ms
+    apply stereographic'_neg v
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
-    convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
-    simp
+    simp only [coe_neg_sphere, map_zero]
+    apply hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
+  -- slow, 330ms
   convert congrArg LinearMap.range (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   symm
-  convert
+  convert -- 150ms
     (U.symm : EuclideanSpace ℝ (Fin n) ≃ₗᵢ[ℝ] (ℝ ∙ (↑(-v) : E))ᗮ).range_comp
       (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
@@ -555,19 +622,18 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton
       (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) by
-    convert this using 3
-    show stereographic' n (-v) v = 0
-    dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
-    apply stereographic_neg_apply
+    convert this using 3 -- slow, takes 380ms
+    apply stereographic'_neg
   have : HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
-    convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
-    simp
+    simp only [coe_neg_sphere, map_zero]
+    apply hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
   have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
   rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
-  simpa using Subtype.coe_injective
+  simpa only [coe_neg_sphere, Submodule.coe_subtypeL', Submodule.coeSubtype,
+    LinearIsometryEquiv.coe_toContinuousLinearEquiv, EquivLike.injective_comp] using
+    Subtype.coe_injective
 #align mfderiv_coe_sphere_injective mfderiv_coe_sphere_injective
 
 end SmoothManifold
