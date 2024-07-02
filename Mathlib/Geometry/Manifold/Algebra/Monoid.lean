@@ -17,7 +17,6 @@ additive counterpart `SmoothAdd`. These structures are general enough to also ta
 semigroups.
 -/
 
-
 open scoped Manifold
 
 library_note "Design choices about smooth algebraic structures"/--

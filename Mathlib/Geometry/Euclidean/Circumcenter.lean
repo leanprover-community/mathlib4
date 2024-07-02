@@ -53,7 +53,7 @@ theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Non
     mul_self_inj_of_nonneg dist_nonneg dist_nonneg,
     dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p3 hp1,
     dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p3 hp2]
-  simp
+  simp only [add_left_inj] -- 62 -> 12ms
 #align euclidean_geometry.dist_eq_iff_dist_orthogonal_projection_eq EuclideanGeometry.dist_eq_iff_dist_orthogonalProjection_eq
 
 /-- `p` is equidistant from a set of points in `s` if and only if its
@@ -123,7 +123,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
-        field_simp [ycc₂, hy0]
+        field_simp [ycc₂, hy0] -- slow!
         ring
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp1),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
