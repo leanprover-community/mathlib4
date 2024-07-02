@@ -65,8 +65,6 @@ ordered map, ordered set, data structure
 
 universe u
 
-/- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
-  nil {} -/
 /-- An `Ordnode α` is a finite set of values, represented as a tree.
   The operations on this type maintain that the tree is balanced
   and correctly stores subtree sizes at each level. -/
@@ -212,7 +210,7 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
                 (node (size lrr + 1) lrr x nil)
   · cases' id l with ls ll lx lr
     · exact node (rs + 1) nil x r
-    · refine' if ls > delta * rs then _ else node (ls + rs + 1) l x r
+    · refine if ls > delta * rs then ?_ else node (ls + rs + 1) l x r
       cases' id ll with lls
       · exact nil
       --should not happen
@@ -248,7 +246,7 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
                 (node (size rlr + rrs + 1) rlr rx rr)
   · cases' id r with rs rl rx rr
     · exact node (ls + 1) l x nil
-    · refine' if rs > delta * ls then _ else node (ls + rs + 1) l x r
+    · refine if rs > delta * ls then ?_ else node (ls + rs + 1) l x r
       cases' id rr with rrs
       · exact nil
       --should not happen
@@ -294,8 +292,8 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
             else
               node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
                 (node (size lrr + 1) lrr x nil)
-    · refine'
-        if delta * ls < rs then _ else if delta * rs < ls then _ else node (ls + rs + 1) l x r
+    · refine
+        if delta * ls < rs then ?_ else if delta * rs < ls then ?_ else node (ls + rs + 1) l x r
       · cases' id rl with rls rll rlx rlr
         · exact nil
         --should not happen

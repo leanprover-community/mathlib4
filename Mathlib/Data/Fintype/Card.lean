@@ -126,8 +126,7 @@ theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s 
 theorem card_of_subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x)
     [Fintype { x // p x }] : card { x // p x } = s.card := by
   rw [← subtype_card s H]
-  congr
-  apply Subsingleton.elim
+  congr!
 #align fintype.card_of_subtype Fintype.card_of_subtype
 
 @[simp]
@@ -137,7 +136,7 @@ theorem card_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈
 #align fintype.card_of_finset Fintype.card_ofFinset
 
 theorem card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
-    Fintype.card p = s.card := by rw [← card_ofFinset s H]; congr; apply Subsingleton.elim
+    Fintype.card p = s.card := by rw [← card_ofFinset s H]; congr!
 #align fintype.card_of_finset' Fintype.card_of_finset'
 
 end Fintype
@@ -149,7 +148,7 @@ theorem ofEquiv_card [Fintype α] (f : α ≃ β) : @card β (ofEquiv α f) = ca
 #align fintype.of_equiv_card Fintype.ofEquiv_card
 
 theorem card_congr {α β} [Fintype α] [Fintype β] (f : α ≃ β) : card α = card β := by
-  rw [← ofEquiv_card f]; congr; apply Subsingleton.elim
+  rw [← ofEquiv_card f]; congr!
 #align fintype.card_congr Fintype.card_congr
 
 @[congr]
@@ -481,7 +480,7 @@ namespace Fintype
 variable [Fintype α] [Fintype β]
 
 theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card α ≤ card β :=
-  Finset.card_le_card_of_inj_on f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
+  Finset.card_le_card_of_injOn f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
 #align fintype.card_le_of_injective Fintype.card_le_of_injective
 
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
@@ -638,7 +637,6 @@ namespace Finite
 
 variable [Finite α]
 
--- Porting note (#10756): new theorem
 theorem surjective_of_injective {f : α → α} (hinj : Injective f) : Surjective f := by
   intro x
   have := Classical.propDecidable
@@ -781,6 +779,11 @@ noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.ca
 
 theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
   (card_eq_of_equiv_fintype i).trans (Fintype.card_coe _)
+
+/-- We can inflate a set `s` to any bigger size. -/
+lemma Finset.exists_superset_card_eq [Fintype α] {n : ℕ} {s : Finset α} (hsn : s.card ≤ n)
+    (hnα : n ≤ Fintype.card α) :
+    ∃ t, s ⊆ t ∧ t.card = n := by simpa using exists_subsuperset_card_eq s.subset_univ hsn hnα
 
 @[simp]
 theorem Fintype.card_prop : Fintype.card Prop = 2 :=

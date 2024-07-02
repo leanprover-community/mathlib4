@@ -283,13 +283,13 @@ noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presie
     ext s
     apply (h _ ((Subpresheaf.sheafify J G).toPresheaf.map i s).prop).isSeparatedFor.ext
     intro W j hj
-    refine' (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
-      ((G.family_of_elements_compatible _).compPresheafMap _) _ hj).trans _
+    refine (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
+      ((G.family_of_elements_compatible _).compPresheafMap _) _ hj).trans ?_
     dsimp
     conv_rhs => rw [← FunctorToTypes.map_comp_apply]
     change _ = F'.map (j ≫ i.unop).op _
-    refine' Eq.trans _ (Presieve.IsSheafFor.valid_glue (h _ s.2)
-      ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) _).symm
+    refine Eq.trans ?_ (Presieve.IsSheafFor.valid_glue (h _ s.2)
+      ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) ?_).symm
     swap -- Porting note: need to swap two goals otherwise the first goal needs to be proven
     -- inside the second goal any way
     · dsimp [Presieve.FamilyOfElements.compPresheafMap] at hj ⊢

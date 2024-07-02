@@ -241,8 +241,7 @@ theorem mem_trivial {g : G} : g ∈ trivial G ↔ g = 1 :=
 #align is_add_subgroup.mem_trivial IsAddSubgroup.mem_trivial
 
 @[to_additive]
-theorem trivial_normal : IsNormalSubgroup (trivial G) := by
-  refine' { .. } <;> simp (config := { contextual := true }) [trivial]
+theorem trivial_normal : IsNormalSubgroup (trivial G) := by refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩ <;> simp
 #align is_subgroup.trivial_normal IsSubgroup.trivial_normal
 #align is_add_subgroup.trivial_normal IsAddSubgroup.trivial_normal
 
@@ -254,7 +253,7 @@ theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x
 #align is_add_subgroup.eq_trivial_iff IsAddSubgroup.eq_trivial_iff
 
 @[to_additive]
-theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine' { .. } <;> simp
+theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩ <;> simp
 #align is_subgroup.univ_subgroup IsSubgroup.univ_subgroup
 #align is_add_subgroup.univ_add_subgroup IsAddSubgroup.univ_addSubgroup
 
@@ -420,10 +419,10 @@ attribute [local simp] IsSubmonoid.one_mem IsSubgroup.inv_mem
 
 @[to_additive]
 theorem preimage {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsSubgroup s) :
-    IsSubgroup (f ⁻¹' s) := by
-  refine' { .. } <;>
-    simp (config := { contextual := true }) [hs.one_mem, hs.mul_mem, hs.inv_mem, hf.map_mul,
-      hf.map_one, hf.map_inv, InvMemClass.inv_mem]
+    IsSubgroup (f ⁻¹' s) where
+  one_mem := by simp [hf.map_one, hs.one_mem]
+  mul_mem := by simp_all [hf.map_mul, hs.mul_mem]
+  inv_mem := by simp_all [hf.map_inv]
 #align is_group_hom.preimage IsGroupHom.preimage
 #align is_add_group_hom.preimage IsAddGroupHom.preimage
 
@@ -637,7 +636,7 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
             ((@inv_one G _).symm ▸ IsSubmonoid.one_mem (Monoid.closure.isSubmonoid _))
             fun {x y} _ _ ihx ihy =>
             (mul_inv_rev x y).symm ▸ IsSubmonoid.mul_mem (Monoid.closure.isSubmonoid _) ihy ihx }
-      (Set.Subset.trans (Set.subset_union_left _ _) Monoid.subset_closure))
+      (Set.Subset.trans Set.subset_union_left Monoid.subset_closure))
     (Monoid.closure_subset (closure.isSubgroup _).toIsSubmonoid <|
       Set.union_subset subset_closure fun x hx =>
         inv_inv x ▸ (IsSubgroup.inv_mem (closure.isSubgroup _) <| subset_closure hx))

@@ -6,6 +6,7 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.Algebra.Ring.Subring.Pointwise
+import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 #align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -723,7 +724,6 @@ def unitGroupToResidueFieldUnits : A.unitGroup →* (LocalRing.ResidueField A)ˣ
   MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 #align valuation_subring.unit_group_to_residue_field_units ValuationSubring.unitGroupToResidueFieldUnits
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
     (A.unitGroupToResidueFieldUnits x : LocalRing.ResidueField A) =
@@ -782,8 +782,8 @@ the action is by a group. Notably this provides an instances when `G` is `K ≃+
 
 These instances are in the `Pointwise` locale.
 
-The lemmas in this section are copied from `RingTheory/Subring/Pointwise.lean`; try to keep these
-in sync.
+The lemmas in this section are copied from the file `Mathlib.Algebra.Ring.Subring.Pointwise`; try
+to keep these in sync.
 -/
 
 

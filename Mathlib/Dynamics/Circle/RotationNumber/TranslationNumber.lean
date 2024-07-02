@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
-import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.Order.MonotoneContinuity
 
 #align_import dynamics.circle.rotation_number.translation_number from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -691,7 +690,7 @@ theorem dist_map_zero_translationNumber_le : dist (f 0) (τ f) ≤ 1 :=
 theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ)
     (H : ∀ n : ℕ, dist ((f ^ n) 0) (x n) ≤ C) :
     Tendsto (fun n : ℕ => x (2 ^ n) / 2 ^ n) atTop (𝓝 <| τ f) := by
-  refine' f.tendsto_translationNumber_aux.congr_dist (squeeze_zero (fun _ => dist_nonneg) _ _)
+  apply f.tendsto_translationNumber_aux.congr_dist (squeeze_zero (fun _ => dist_nonneg) _ _)
   · exact fun n => C / 2 ^ n
   · intro n
     have : 0 < (2 ^ n : ℝ) := pow_pos zero_lt_two _
@@ -916,9 +915,8 @@ theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz 
 
 theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz : ∀ x, x + z < f x) :
     z < τ f := by
-  obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f x - x ≤ f y - y
-  · exact isCompact_Icc.exists_isMinOn (nonempty_Icc.2 zero_le_one)
-      (hf.sub continuous_id).continuousOn
+  obtain ⟨x, -, hx⟩ : ∃ x ∈ Icc (0 : ℝ) 1, ∀ y ∈ Icc (0 : ℝ) 1, f x - x ≤ f y - y :=
+    isCompact_Icc.exists_isMinOn (nonempty_Icc.2 zero_le_one) (hf.sub continuous_id).continuousOn
   refine lt_of_lt_of_le (lt_sub_iff_add_lt'.2 <| hz x) ?_
   apply le_translationNumber_of_add_le
   simp only [← le_sub_iff_add_le']

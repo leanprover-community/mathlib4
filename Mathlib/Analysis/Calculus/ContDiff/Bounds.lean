@@ -158,8 +158,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
     simp [hBu, hBu₀, hfu, hgu]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
-    refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => ?_
-    refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => ?_
+    refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg B) fun y => _
+    refine' ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
     simp only [hBu, hBu₀, compL_apply, coe_comp', Function.comp_apply,
       ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
       LinearIsometryEquiv.norm_map]
@@ -390,8 +390,8 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     · apply hf.of_le (Nat.cast_le.2 (hi.trans n.le_succ))
     · intro j hj
       have : ‖iteratedFDerivWithin 𝕜 j (fderivWithin 𝕜 g t) t (f x)‖ =
-          ‖iteratedFDerivWithin 𝕜 (j + 1) g t (f x)‖ :=
-        by rw [iteratedFDerivWithin_succ_eq_comp_right ht (hst hx), comp_apply,
+          ‖iteratedFDerivWithin 𝕜 (j + 1) g t (f x)‖ := by
+        rw [iteratedFDerivWithin_succ_eq_comp_right ht (hst hx), comp_apply,
           LinearIsometryEquiv.norm_map]
       rw [this]
       exact hC (j + 1) (add_le_add (hj.trans hi) le_rfl)
@@ -439,8 +439,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     -- assumption for `g' ∘ f`).
     _ ≤ ∑ i ∈ Finset.range (n + 1), (n.choose i : ℝ) * (i ! * C * D ^ i) * D ^ (n - i + 1) := by
       gcongr with i hi
-      · simp only [mul_assoc (n.choose i : ℝ)]
-        exact I i hi
+      · exact I i hi
       · exact J i
     -- We are left with trivial algebraic manipulations to see that this is smaller than
     -- the claimed bound.

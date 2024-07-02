@@ -70,9 +70,9 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   cases' l with x l
-  · set_option tactic.skipAssignedInstances false in norm_num at hn
+  · norm_num at hn
   induction' l with y l generalizing x
-  · set_option tactic.skipAssignedInstances false in norm_num at hn
+  · norm_num at hn
   · use x
     constructor
     · rwa [formPerm_apply_mem_ne_self_iff _ hl _ (mem_cons_self _ _)]
@@ -296,7 +296,7 @@ theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   have hm' : ¬orderOf (p.cycleOf x) ∣ m.succ := Nat.not_dvd_of_pos_of_lt m.zero_lt_succ hm
   rw [← hc.support_pow_eq_iff] at hn' hm'
   rw [← Nat.mod_eq_of_lt hn, ← Nat.mod_eq_of_lt hm, ← pow_inj_mod]
-  refine' support_congr _ _
+  refine support_congr ?_ ?_
   · rw [hm', hn']
   · rw [hm']
     intro y hy
@@ -520,6 +520,8 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
     right_inv := Fintype.leftInverse_bijInv _ }
 #align equiv.perm.iso_cycle' Equiv.Perm.isoCycle'
 
+-- mutes `'decide' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 

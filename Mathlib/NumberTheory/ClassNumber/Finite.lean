@@ -137,7 +137,8 @@ theorem exists_min (I : (Ideal S)⁰) :
 
 section IsAdmissible
 
-variable {abv} (adm : abv.IsAdmissible)
+variable {abv}
+variable (adm : abv.IsAdmissible)
 
 /-- If we have a large enough set of elements in `R^ι`, then there will be a pair
 whose remainders are close together. We'll show that all sets of cardinality
@@ -301,7 +302,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R L] (I : (I
     · rw [ClassGroup.mk0_eq_mk0_iff]
       exact ⟨algebraMap _ _ M, b, hM, b_ne_zero, hJ⟩
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ← Ideal.dvd_iff_le]
-    refine' (mul_dvd_mul_iff_left _).mp _
+    apply (mul_dvd_mul_iff_left _).mp _
     swap; · exact mt Ideal.span_singleton_eq_bot.mp b_ne_zero
     rw [Subtype.coe_mk, Ideal.dvd_iff_le, ← hJ, mul_comm]
     apply Ideal.mul_mono le_rfl

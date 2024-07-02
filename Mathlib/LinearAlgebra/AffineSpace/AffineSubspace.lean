@@ -585,15 +585,15 @@ instance : CompleteLattice (AffineSubspace k P) :=
       coe_injective with
     sup := fun s1 s2 => affineSpan k (s1 ∪ s2)
     le_sup_left := fun s1 s2 =>
-      Set.Subset.trans (Set.subset_union_left (s1 : Set P) s2) (subset_spanPoints k _)
+      Set.Subset.trans Set.subset_union_left (subset_spanPoints k _)
     le_sup_right := fun s1 s2 =>
-      Set.Subset.trans (Set.subset_union_right (s1 : Set P) s2) (subset_spanPoints k _)
+      Set.Subset.trans Set.subset_union_right (subset_spanPoints k _)
     sup_le := fun s1 s2 s3 hs1 hs2 => spanPoints_subset_coe_of_subset_coe (Set.union_subset hs1 hs2)
     inf := fun s1 s2 =>
       mk (s1 ∩ s2) fun c p1 p2 p3 hp1 hp2 hp3 =>
         ⟨s1.smul_vsub_vadd_mem c hp1.1 hp2.1 hp3.1, s2.smul_vsub_vadd_mem c hp1.2 hp2.2 hp3.2⟩
-    inf_le_left := fun _ _ => Set.inter_subset_left _ _
-    inf_le_right := fun _ _ => Set.inter_subset_right _ _
+    inf_le_left := fun _ _ => Set.inter_subset_left
+    inf_le_right := fun _ _ => Set.inter_subset_right
     le_sInf := fun S s1 hs1 => by
       -- Porting note: surely there is an easier way?
       refine Set.subset_sInter (t := (s1 : Set P)) ?_
@@ -914,8 +914,8 @@ theorem direction_inf (s1 s2 : AffineSubspace k P) :
     (s1 ⊓ s2).direction ≤ s1.direction ⊓ s2.direction := by
   simp only [direction_eq_vectorSpan, vectorSpan_def]
   exact
-    le_inf (sInf_le_sInf fun p hp => trans (vsub_self_mono (inter_subset_left _ _)) hp)
-      (sInf_le_sInf fun p hp => trans (vsub_self_mono (inter_subset_right _ _)) hp)
+    le_inf (sInf_le_sInf fun p hp => trans (vsub_self_mono inter_subset_left) hp)
+      (sInf_le_sInf fun p hp => trans (vsub_self_mono inter_subset_right) hp)
 #align affine_subspace.direction_inf AffineSubspace.direction_inf
 
 /-- If two affine subspaces have a point in common, the direction of their inf equals the inf of

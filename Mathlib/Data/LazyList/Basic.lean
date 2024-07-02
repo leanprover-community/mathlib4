@@ -6,7 +6,6 @@ Authors: Simon Hudon
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 import Batteries.Data.LazyList
-import Mathlib.Lean.Thunk
 
 #align_import data.lazy_list.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

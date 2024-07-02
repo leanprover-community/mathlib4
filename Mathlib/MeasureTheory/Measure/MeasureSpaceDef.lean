@@ -199,10 +199,10 @@ theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = 
 #align measure_theory.measure_mono_top MeasureTheory.measure_mono_top
 
 @[simp, mono]
-theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono <| subset_union_left s t
+theorem measure_le_measure_union_left : μ s ≤ μ (s ∪ t) := μ.mono subset_union_left
 
 @[simp, mono]
-theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono <| subset_union_right s t
+theorem measure_le_measure_union_right : μ t ≤ μ (s ∪ t) := μ.mono subset_union_right
 
 /-- For every set there exists a measurable superset of the same measure. -/
 theorem exists_measurable_superset (μ : Measure α) (s : Set α) :
@@ -253,8 +253,8 @@ theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) 
 @[simp]
 theorem measure_union_lt_top_iff : μ (s ∪ t) < ∞ ↔ μ s < ∞ ∧ μ t < ∞ := by
   refine ⟨fun h => ⟨?_, ?_⟩, fun h => measure_union_lt_top h.1 h.2⟩
-  · exact (measure_mono (Set.subset_union_left s t)).trans_lt h
-  · exact (measure_mono (Set.subset_union_right s t)).trans_lt h
+  · exact (measure_mono Set.subset_union_left).trans_lt h
+  · exact (measure_mono Set.subset_union_right).trans_lt h
 #align measure_theory.measure_union_lt_top_iff MeasureTheory.measure_union_lt_top_iff
 
 theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪ t) ≠ ∞ :=
@@ -280,19 +280,19 @@ theorem measure_lt_top_of_subset (hst : t ⊆ s) (hs : μ s ≠ ∞) : μ t < �
   lt_of_le_of_lt (μ.mono hst) hs.lt_top
 
 theorem measure_inter_lt_top_of_left_ne_top (hs_finite : μ s ≠ ∞) : μ (s ∩ t) < ∞ :=
-  measure_lt_top_of_subset (inter_subset_left s t) hs_finite
+  measure_lt_top_of_subset inter_subset_left hs_finite
 #align measure_theory.measure_inter_lt_top_of_left_ne_top MeasureTheory.measure_inter_lt_top_of_left_ne_top
 
 theorem measure_inter_lt_top_of_right_ne_top (ht_finite : μ t ≠ ∞) : μ (s ∩ t) < ∞ :=
-  measure_lt_top_of_subset (inter_subset_right s t) ht_finite
+  measure_lt_top_of_subset inter_subset_right ht_finite
 #align measure_theory.measure_inter_lt_top_of_right_ne_top MeasureTheory.measure_inter_lt_top_of_right_ne_top
 
 theorem measure_inter_null_of_null_right (S : Set α) {T : Set α} (h : μ T = 0) : μ (S ∩ T) = 0 :=
-  measure_mono_null (inter_subset_right S T) h
+  measure_mono_null inter_subset_right h
 #align measure_theory.measure_inter_null_of_null_right MeasureTheory.measure_inter_null_of_null_right
 
 theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0) : μ (S ∩ T) = 0 :=
-  measure_mono_null (inter_subset_left S T) h
+  measure_mono_null inter_subset_left h
 #align measure_theory.measure_inter_null_of_null_left MeasureTheory.measure_inter_null_of_null_left
 
 /-! ### The almost everywhere filter -/
@@ -414,11 +414,12 @@ variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν 
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function. -/
+@[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 #align ae_measurable AEMeasurable
 
-@[aesop unsafe 30% apply (rule_sets := [Measurable])]
+@[fun_prop, aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
 #align measurable.ae_measurable Measurable.aemeasurable
@@ -451,7 +452,7 @@ theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurab
   ⟨fun hf => AEMeasurable.congr hf h, fun hg => AEMeasurable.congr hg h.symm⟩
 #align ae_measurable_congr aemeasurable_congr
 
-@[simp, measurability]
+@[simp, fun_prop, measurability]
 theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
   measurable_const.aemeasurable
 #align ae_measurable_const aemeasurable_const
@@ -471,9 +472,9 @@ theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : �
   ⟨g ∘ hf.mk f, hg.comp hf.measurable_mk, EventuallyEq.fun_comp hf.ae_eq_mk _⟩
 #align measurable.comp_ae_measurable Measurable.comp_aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : δ → β}
-    (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x => g (f x)) μ :=
+    (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf
 
 end

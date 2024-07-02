@@ -256,7 +256,6 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond, _root_.bit1]
-    -- Porting note: `cc` was not ported yet so `exact Nat.add_left_comm n 1 1` is used.
     · erw [show n.bit true + 1 = (n + 1).bit false by
         simpa [Nat.bit, _root_.bit1, _root_.bit0] using Nat.add_left_comm n 1 1,
         ofNat'_bit, ofNat'_bit, ih]
@@ -409,15 +408,20 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
     natCast_succ := fun _ => ofNat'_succ }
 #align num.add_monoid_with_one Num.addMonoidWithOne
 
-instance commSemiring : CommSemiring Num := by
-  refine'
-    { Num.addMonoid,
-      Num.addMonoidWithOne with
-      mul := (· * ·)
-      npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩, .. } <;>
-    try { intros; rfl } <;>
-    transfer <;>
-    simp [add_comm, mul_add, add_mul, mul_assoc, mul_comm, mul_left_comm]
+instance commSemiring : CommSemiring Num where
+  __ := Num.addMonoid
+  __ := Num.addMonoidWithOne
+  mul := (· * ·)
+  npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩
+  mul_zero _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, mul_zero]
+  zero_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_zero, zero_mul]
+  mul_one _ := by rw [← to_nat_inj, mul_to_nat, cast_one, mul_one]
+  one_mul _ := by rw [← to_nat_inj, mul_to_nat, cast_one, one_mul]
+  add_comm _ _ := by simp_rw [← to_nat_inj, add_to_nat, add_comm]
+  mul_comm _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_comm]
+  mul_assoc _ _ _ := by simp_rw [← to_nat_inj, mul_to_nat, mul_assoc]
+  left_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, mul_add]
+  right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
 #align num.comm_semiring Num.commSemiring
 
 instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
@@ -592,25 +596,27 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
-instance addCommSemigroup : AddCommSemigroup PosNum := by
-  refine' { add := (· + ·).. } <;> transfer
+instance addCommSemigroup : AddCommSemigroup PosNum where
+  add := (· + ·)
+  add_assoc := by transfer
+  add_comm := by transfer
 #align pos_num.add_comm_semigroup PosNum.addCommSemigroup
 
-instance commMonoid : CommMonoid PosNum := by
-  refine'
-    { mul := (· * ·)
-      one := (1 : PosNum)
-      npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩,.. } <;>
-  try { intros; rfl } <;>
-  transfer
+instance commMonoid : CommMonoid PosNum where
+  mul := (· * ·)
+  one := (1 : PosNum)
+  npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩
+  mul_assoc := by transfer
+  one_mul := by transfer
+  mul_one := by transfer
+  mul_comm := by transfer
 #align pos_num.comm_monoid PosNum.commMonoid
 
-instance distrib : Distrib PosNum := by
-  refine'
-    { add := (· + ·)
-      mul := (· * ·).. } <;>
-  (transfer
-   simp [mul_add, mul_comm])
+instance distrib : Distrib PosNum where
+  add := (· + ·)
+  mul := (· * ·)
+  left_distrib := by transfer; simp [mul_add]
+  right_distrib := by transfer; simp [mul_add, mul_comm]
 #align pos_num.distrib PosNum.distrib
 
 instance linearOrder : LinearOrder PosNum where

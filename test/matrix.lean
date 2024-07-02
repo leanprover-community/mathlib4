@@ -4,7 +4,7 @@ https://github.com/leanprover-community/mathlib/blob/4f4a1c875d0baa92ab5d92f3fb1
 -/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Qq
 
 open Qq
@@ -164,5 +164,22 @@ example {R : Type*} [Semiring R] {a b c d : R} :
   fin_cases i
   fin_cases j
   simp [Matrix.vecHead, Matrix.vecTail]
+
+/- Check that matrix notation works with `row` and `col` -/
+example : Matrix.row _ ![1, 1] = !![1, 1] := by
+  ext i j
+  simp
+
+example : Matrix.col _ ![1, 1] = !![1; 1] := by
+  ext i j
+  fin_cases i <;> simp
+
+example (ι : Type*) [Inhabited ι] : Matrix.row ι (fun (n : Fin 3) => 0) = 0 := by
+  simp_all
+  rfl
+
+example (ι : Type*) [Inhabited ι] : Matrix.col ι (fun (n : Fin 3) => 0) = 0 := by
+  simp_all
+  rfl
 
 end Matrix

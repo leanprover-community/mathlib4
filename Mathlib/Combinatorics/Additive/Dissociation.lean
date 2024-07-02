@@ -3,7 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Pointwise.Basic
 
@@ -69,11 +70,11 @@ lemma not_mulDissociated_iff_exists_disjoint :
     ⟨?_, fun ⟨t, u, ht, hu, _, htune, htusum⟩ ↦ ⟨t, ht, u, hu, htune, htusum⟩⟩
   rintro ⟨t, ht, u, hu, htu, h⟩
   refine ⟨t \ u, u \ t, ?_, ?_, disjoint_sdiff_sdiff, sdiff_ne_sdiff_iff.2 htu,
-    Finset.prod_sdiff_eq_prod_sdiff_iff.2 h⟩ <;> push_cast <;> exact (diff_subset _ _).trans ‹_›
+    Finset.prod_sdiff_eq_prod_sdiff_iff.2 h⟩ <;> push_cast <;> exact diff_subset.trans ‹_›
 
 @[to_additive (attr := simp)] lemma MulEquiv.mulDissociated_preimage (e : β ≃* α) :
     MulDissociated (e ⁻¹' s) ↔ MulDissociated s := by
-  simp [MulDissociated, InjOn, ← e.finsetCongr.forall_congr_left, ← e.apply_eq_iff_eq,
+  simp [MulDissociated, InjOn, ← e.finsetCongr.forall_congr_right, ← e.apply_eq_iff_eq,
     (Finset.map_injective _).eq_iff]
 
 @[to_additive (attr := simp)] lemma mulDissociated_inv : MulDissociated s⁻¹ ↔ MulDissociated s :=
@@ -134,7 +135,7 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
     exists_maximal (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α))
       ⟨∅, mem_filter.2 ⟨empty_mem_powerset _, by simp⟩⟩
   simp only [mem_filter, mem_powerset, lt_eq_subset, and_imp] at hs' hs'max
-  refine' ⟨s', hs'.1, hs _ hs'.1 hs'.2, fun a ha ↦ _⟩
+  refine ⟨s', hs'.1, hs _ hs'.1 hs'.2, fun a ha ↦ ?_⟩
   by_cases ha' : a ∈ s'
   · exact subset_mulSpan ha'
   obtain ⟨t, u, ht, hu, htu⟩ := not_mulDissociated_iff_exists_disjoint.1 fun h ↦

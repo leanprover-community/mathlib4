@@ -97,17 +97,13 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
-set_option autoImplicit true
-
 namespace SetTheory
 
 open Function Relation
 
--- We'd like to be able to use multi-character auto-implicits in this file.
-set_option relaxedAutoImplicit true
-
 /-! ### Pre-game moves -/
 
+universe u
 
 /-- The type of pre-games, before we have quotiented
   by equivalence (`PGame.Setoid`). In ZFC, a combinatorial game is constructed from
@@ -167,7 +163,7 @@ theorem moveRight_mk {xl xr xL xR} : (⟨xl, xr, xL, xR⟩ : PGame).moveRight = 
 /-- Construct a pre-game from list of pre-games describing the available moves for Left and Right.
 -/
 def ofLists (L R : List PGame.{u}) : PGame.{u} :=
-  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L.get i.down) fun j ↦ R.get j.down
+  mk (ULift (Fin L.length)) (ULift (Fin R.length)) (fun i => L[i.down.1]) fun j ↦ R[j.down.1]
 #align pgame.of_lists SetTheory.PGame.ofLists
 
 theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (Fin L.length) :=
@@ -301,6 +297,8 @@ macro "pgame_wf_tac" : tactic =>
 -- Register some consequences of pgame_wf_tac as simp-lemmas for convenience
 -- (which are applied by default for WF goals)
 
+variable {xl xr : Type u}
+
 -- This is different from mk_right from the POV of the simplifier,
 -- because the unifier can't solve `xr =?= RightMoves (mk xl xr xL xR)` at reducible transparency.
 @[simp]
@@ -308,19 +306,19 @@ theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightM
     Subsequent (xR j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveRight_mk_left (xL : xl → PGame) (j) :
+@[simp] theorem Subsequent.moveRight_mk_left {xR : xr → PGame} {i : xl} (xL : xl → PGame) (j) :
     Subsequent ((xL i).moveRight j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveRight_mk_right (xR : xr → PGame) (j) :
+@[simp] theorem Subsequent.moveRight_mk_right {xL : xl → PGame} {i : xr} (xR : xr → PGame) (j) :
     Subsequent ((xR i).moveRight j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveLeft_mk_left (xL : xl → PGame) (j) :
+@[simp] theorem Subsequent.moveLeft_mk_left {xR : xr → PGame} {i : xl} (xL : xl → PGame) (j) :
     Subsequent ((xL i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveLeft_mk_right (xR : xr → PGame) (j) :
+@[simp] theorem Subsequent.moveLeft_mk_right {xL : xl → PGame} {i : xr} (xR : xr → PGame) (j) :
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
@@ -735,7 +733,8 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
 #noalign pgame.upper_bound_mem_upper_bounds
 
 /-- A small family of pre-games is bounded above. -/
-lemma bddAbove_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (Set.range f) := by
+lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
+    BddAbove (Set.range f) := by
   let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
@@ -753,7 +752,8 @@ lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
 #noalign pgame.lower_bound_mem_lower_bounds
 
 /-- A small family of pre-games is bounded below. -/
-lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (Set.range f) := by
+lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
+    BddBelow (Set.range f) := by
   let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
     fun x ↦ moveRight _ x.2⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
@@ -786,6 +786,8 @@ instance : IsEquiv _ PGame.Equiv where
 instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
 #align pgame.setoid SetTheory.PGame.setoid
+
+theorem equiv_def {x y : PGame} : x ≈ y ↔ x ≤ y ∧ y ≤ x := Iff.rfl
 
 theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
   h.1
@@ -889,15 +891,25 @@ theorem lf_of_lf_of_equiv {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≈ z) : x 
   lf_congr_imp equiv_rfl h₂ h₁
 #align pgame.lf_of_lf_of_equiv SetTheory.PGame.lf_of_lf_of_equiv
 
+instance : Trans (· ⧏ ·) (· ≈ ·) (· ⧏ ·) := ⟨lf_of_lf_of_equiv⟩
+
 @[trans]
 theorem lf_of_equiv_of_lf {x y z : PGame} (h₁ : x ≈ y) : y ⧏ z → x ⧏ z :=
   lf_congr_imp (Equiv.symm h₁) equiv_rfl
 #align pgame.lf_of_equiv_of_lf SetTheory.PGame.lf_of_equiv_of_lf
 
+instance : Trans (· ≈ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_equiv_of_lf⟩
+
 @[trans]
 theorem lt_of_lt_of_equiv {x y z : PGame} (h₁ : x < y) (h₂ : y ≈ z) : x < z :=
   h₁.trans_le h₂.1
 #align pgame.lt_of_lt_of_equiv SetTheory.PGame.lt_of_lt_of_equiv
+
+instance : Trans
+    ((· < ·) : PGame → PGame → Prop)
+    ((· ≈ ·) : PGame → PGame → Prop)
+    ((· < ·) : PGame → PGame → Prop) where
+  trans := lt_of_lt_of_equiv
 
 @[trans]
 theorem lt_of_equiv_of_lt {x y z : PGame} (h₁ : x ≈ y) : y < z → x < z :=
@@ -1270,7 +1282,7 @@ instance : NegZeroClass PGame :=
 @[simp]
 theorem neg_ofLists (L R : List PGame) :
     -ofLists L R = ofLists (R.map fun x => -x) (L.map fun x => -x) := by
-  simp only [ofLists, neg_def, List.get_map, mk.injEq, List.length_map, true_and]
+  simp only [ofLists, neg_def, List.getElem_map, mk.injEq, List.length_map, true_and]
   constructor
   all_goals
     apply hfunext
@@ -1283,6 +1295,7 @@ theorem neg_ofLists (L R : List PGame) :
         simp only [heq_eq_eq]
         rintro rfl
         rfl
+      simp only [heq_eq_eq]
       congr 5
       exact this (List.length_map _ _).symm h
 #align pgame.neg_of_lists SetTheory.PGame.neg_ofLists
@@ -1515,7 +1528,7 @@ instance isEmpty_rightMoves_add (x y : PGame.{u}) [IsEmpty x.RightMoves] [IsEmpt
 /-- `x + 0` has exactly the same moves as `x`. -/
 def addZeroRelabelling : ∀ x : PGame.{u}, x + 0 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
-    refine' ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, _, _⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
+    refine ⟨Equiv.sumEmpty xl PEmpty, Equiv.sumEmpty xr PEmpty, ?_, ?_⟩ <;> rintro (⟨i⟩ | ⟨⟨⟩⟩) <;>
       apply addZeroRelabelling
 termination_by x => x
 #align pgame.add_zero_relabelling SetTheory.PGame.addZeroRelabelling
@@ -1654,7 +1667,7 @@ def Relabelling.addCongr : ∀ {w x y z : PGame.{u}}, w ≡r x → y ≡r z → 
     ⟨L₂, R₂, hL₂, hR₂⟩ => by
     let Hwx : ⟨wl, wr, wL, wR⟩ ≡r ⟨xl, xr, xL, xR⟩ := ⟨L₁, R₁, hL₁, hR₁⟩
     let Hyz : ⟨yl, yr, yL, yR⟩ ≡r ⟨zl, zr, zL, zR⟩ := ⟨L₂, R₂, hL₂, hR₂⟩
-    refine' ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, _, _⟩ <;> rintro (i | j)
+    refine ⟨Equiv.sumCongr L₁ L₂, Equiv.sumCongr R₁ R₂, ?_, ?_⟩ <;> rintro (i | j)
     · exact (hL₁ i).addCongr Hyz
     · exact Hwx.addCongr (hL₂ j)
     · exact (hR₁ i).addCongr Hyz
@@ -1679,7 +1692,7 @@ def Relabelling.subCongr {w x y z : PGame} (h₁ : w ≡r x) (h₂ : y ≡r z) :
 /-- `-(x + y)` has exactly the same moves as `-x + -y`. -/
 def negAddRelabelling : ∀ x y : PGame, -(x + y) ≡r -x + -y
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    refine' ⟨Equiv.refl _, Equiv.refl _, _, _⟩
+    refine ⟨Equiv.refl _, Equiv.refl _, ?_, ?_⟩
     all_goals
       exact fun j =>
         Sum.casesOn j (fun j => negAddRelabelling _ _) fun j =>
@@ -1694,7 +1707,7 @@ theorem neg_add_le {x y : PGame} : -(x + y) ≤ -x + -y :=
 /-- `x + y` has exactly the same moves as `y + x`. -/
 def addCommRelabelling : ∀ x y : PGame.{u}, x + y ≡r y + x
   | mk xl xr xL xR, mk yl yr yL yR => by
-    refine' ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, _, _⟩ <;> rintro (_ | _) <;>
+    refine ⟨Equiv.sumComm _ _, Equiv.sumComm _ _, ?_, ?_⟩ <;> rintro (_ | _) <;>
       · dsimp
         apply addCommRelabelling
 termination_by x y => (x, y)
@@ -1711,7 +1724,7 @@ theorem add_comm_equiv {x y : PGame} : x + y ≈ y + x :=
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 def addAssocRelabelling : ∀ x y z : PGame.{u}, x + y + z ≡r x + (y + z)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ⟨zl, zr, zL, zR⟩ => by
-    refine' ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, _, _⟩
+    refine ⟨Equiv.sumAssoc _ _ _, Equiv.sumAssoc _ _ _, ?_, ?_⟩
     · rintro (⟨i | i⟩ | i)
       · apply addAssocRelabelling
       · apply addAssocRelabelling ⟨xl, xr, xL, xR⟩ (yL i)

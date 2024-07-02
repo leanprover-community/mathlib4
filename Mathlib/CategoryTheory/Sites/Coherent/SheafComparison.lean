@@ -241,11 +241,37 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
   exact and_congr (isSheaf_iff_preservesFiniteProducts _)
     (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
 
+noncomputable instance [Preregular C] [FinitaryExtensive C]
+    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.val :=
+  ((Presheaf.isSheaf_iff_preservesFiniteProducts F.val).1
+    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.val).mp F.cond).1).some
+
 theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X] :
     IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by
   rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left (isSheaf_of_projective F),
     isSheaf_iff_preservesFiniteProducts]
+
+theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensive C]
+    [∀ (X : C), Projective X] :
+    IsSheaf (coherentTopology C) F ↔ IsSheaf (extensiveTopology C) F := by
+  rw [isSheaf_iff_preservesFiniteProducts_of_projective, isSheaf_iff_preservesFiniteProducts]
+
+/--
+The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is
+preregular, finitary extensive, and every object is projective.
+-/
+@[simps]
+def coherentExtensiveEquivalence [Preregular C] [FinitaryExtensive C] [∀ (X : C), Projective X] :
+    Sheaf (coherentTopology C) A ≌ Sheaf (extensiveTopology C) A where
+  functor := {
+    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mp F.cond⟩
+    map := fun f ↦ ⟨f.val⟩ }
+  inverse := {
+    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mpr F.cond⟩
+    map := fun f ↦ ⟨f.val⟩ }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 variable {B : Type u₄} [Category.{v₄} B]
 variable (s : A ⥤ B)

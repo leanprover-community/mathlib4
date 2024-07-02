@@ -276,7 +276,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     refine ⟨q.den, Set.mem_Ioc.mpr ⟨q.pos, hd⟩, ?_⟩
     simp only [prod_singleton, mem_image, mem_Icc, (congr_arg Prod.snd (Eq.symm hq₂)).trans rfl]
     exact ⟨q.num, hn, hq₂⟩
-  refine Finite.of_finite_image (Finite.subset ?_ H) (injOn_of_injective hinj s)
+  refine (Finite.subset ?_ H).of_finite_image hinj.injOn
   exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
 #align rat.finite_rat_abs_sub_lt_one_div_denom_sq Rat.finite_rat_abs_sub_lt_one_div_den_sq
 
@@ -494,8 +494,8 @@ private theorem aux₃ :
     refine LE.le.trans ?_ h.le
     rw [sub_le_sub_iff_left, div_le_one Hv, add_comm]
     exact mod_cast huv
-  have help₁ : ∀ {a b c : ℝ}, a ≠ 0 → b ≠ 0 → c ≠ 0 → |a⁻¹ - b / c| = |(a - c / b) * (b / c / a)| :=
-    by intros; rw [abs_sub_comm]; congr 1; field_simp; ring
+  have help₁ {a b c : ℝ} : a ≠ 0 → b ≠ 0 → c ≠ 0 → |a⁻¹ - b / c| = |(a - c / b) * (b / c / a)| := by
+    intros; rw [abs_sub_comm]; congr 1; field_simp; ring
   have help₂ :
     ∀ {a b c d : ℝ}, a ≠ 0 → b ≠ 0 → c ≠ 0 → d ≠ 0 → (b * c)⁻¹ * (b / d / a) = (d * c * a)⁻¹ := by
     intros; field_simp; ring

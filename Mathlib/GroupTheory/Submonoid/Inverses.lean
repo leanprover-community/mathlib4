@@ -16,8 +16,8 @@ left inverses of `N`. When `M` is commutative, we may define `fromCommLeftInv : 
 since the inverses are unique. When `N ≤ IsUnit.Submonoid M`, this is precisely
 the pointwise inverse of `N`, and we may define `leftInvEquiv : S.leftInv ≃* S`.
 
-For the pointwise inverse of submonoids of groups, please refer to
-`Mathlib.GroupTheory.Submonoid.Pointwise`.
+For the pointwise inverse of submonoids of groups, please refer to the file
+`Mathlib.Algebra.Group.Submonoid.Pointwise`.
 
 `N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that are
 in `N`. See the implementation notes of `Mathlib.GroupTheory.Submonoid.Units` for more details on

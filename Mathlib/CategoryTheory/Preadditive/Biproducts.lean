@@ -669,11 +669,11 @@ instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.
   allEq := fun a b => by
     apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g
     have h₁ := @biprod.add_eq_lift_id_desc _ _ a _ _ f g
-      (by convert (inferInstance : HasBinaryBiproduct X X); apply Subsingleton.elim)
+      (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g
-      (by convert (inferInstance : HasBinaryBiproduct X X); apply Subsingleton.elim)
+      (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
     refine h₁.trans (Eq.trans ?_ h₂.symm)
-    congr! 2 <;> apply Subsingleton.elim
+    congr! 2 <;> subsingleton
 #align category_theory.subsingleton_preadditive_of_has_binary_biproducts CategoryTheory.subsingleton_preadditive_of_hasBinaryBiproducts
 
 end
@@ -947,7 +947,7 @@ def preservesBiproductOfMonoBiproductComparison {f : J → C} [HasBiproduct f]
       (F.mapIso (biproduct.isoProduct f)).inv ≫
         biproductComparison F f ≫ (biproduct.isoProduct _).hom := by
     ext j
-    convert piComparison_comp_π F f j; simp [← Functor.map_comp]
+    convert piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
   haveI : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
   haveI : IsIso (piComparison F f) := by
     rw [that]
@@ -1061,8 +1061,8 @@ def preservesBinaryBiproductOfMonoBiprodComparison {X Y : C} [HasBinaryBiproduct
     PreservesBinaryBiproduct X Y F := by
   have that :
     prodComparison F X Y =
-      (F.mapIso (biprod.isoProd X Y)).inv ≫ biprodComparison F X Y ≫ (biprod.isoProd _ _).hom :=
-    by ext <;> simp [← Functor.map_comp]
+      (F.mapIso (biprod.isoProd X Y)).inv ≫ biprodComparison F X Y ≫ (biprod.isoProd _ _).hom := by
+    ext <;> simp [← Functor.map_comp]
   haveI : IsIso (biprodComparison F X Y) := isIso_of_mono_of_isSplitEpi _
   haveI : IsIso (prodComparison F X Y) := by
     rw [that]

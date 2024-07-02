@@ -222,7 +222,7 @@ theorem ppred : Partrec fun n => ppred n :=
     · exact
         eq_none_iff.2 fun a ⟨⟨m, h, _⟩, _⟩ => by
           simp [show 0 ≠ m.succ by intro h; injection h] at h
-    · refine' eq_some_iff.2 _
+    · refine eq_some_iff.2 ?_
       simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_True, mem_some_iff,
         false_eq_decide_iff, true_and]
       intro m h
@@ -725,7 +725,7 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
   suffices Computable₂ fun a n => (List.range n).map (f a) from
     option_some_iff.1 <|
       (list_get?.comp (this.comp fst (succ.comp snd)) snd).to₂.of_eq fun a => by
-        simp [List.get?_range (Nat.lt_succ_self a.2)]
+        simp [List.getElem?_range (Nat.lt_succ_self a.2)]
   option_some_iff.1 <|
     (nat_rec snd (const (Option.some []))
           (to₂ <|

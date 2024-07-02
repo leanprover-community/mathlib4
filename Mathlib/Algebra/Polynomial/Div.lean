@@ -409,10 +409,10 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     have hlc : leadingCoeff q * leadingCoeff (r - p /ₘ q) ≠ 0 := by rwa [Monic.def.1 hq, one_mul]
     rw [degree_mul' hlc, degree_eq_natDegree hq.ne_zero,
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
-    exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.some_lt_some.1 this)⟩
+    exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 #align polynomial.dvd_iff_mod_by_monic_eq_zero Polynomial.modByMonic_eq_zero_iff_dvd
 
-@[deprecated] alias dvd_iff_modByMonic_eq_zero := modByMonic_eq_zero_iff_dvd -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias dvd_iff_modByMonic_eq_zero := modByMonic_eq_zero_iff_dvd
 
 /-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/
@@ -448,13 +448,16 @@ theorem sum_modByMonic_coeff (hq : q.Monic) {n : ℕ} (hn : q.degree ≤ n) :
       (sum_monomial_eq _)
 #align polynomial.sum_mod_by_monic_coeff Polynomial.sum_modByMonic_coeff
 
-theorem mul_div_mod_by_monic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
+theorem mul_divByMonic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
     q * p /ₘ q = p := by
   nontriviality R
   refine (div_modByMonic_unique _ 0 hmo ⟨by rw [zero_add], ?_⟩).1
   rw [degree_zero]
   exact Ne.bot_lt fun h => hmo.ne_zero (degree_eq_bot.1 h)
-#align polynomial.mul_div_mod_by_monic_cancel_left Polynomial.mul_div_mod_by_monic_cancel_left
+#align polynomial.mul_div_mod_by_monic_cancel_left Polynomial.mul_divByMonic_cancel_left
+
+@[deprecated (since := "2024-06-30")]
+alias mul_div_mod_by_monic_cancel_left := mul_divByMonic_cancel_left
 
 lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
     (p /ₘ (X - C a)).coeff n = coeff p (n + 1) + a * (p /ₘ (X - C a)).coeff (n + 1) := by
@@ -607,7 +610,7 @@ theorem modByMonic_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p %ₘ (X - C a) = C (
     revert this
     cases degree (p %ₘ (X - C a))
     · exact fun _ => bot_le
-    · exact fun h => WithBot.some_le_some.2 (Nat.le_of_lt_succ (WithBot.some_lt_some.1 h))
+    · exact fun h => WithBot.coe_le_coe.2 (Nat.le_of_lt_succ (WithBot.coe_lt_coe.1 h))
   rw [eq_C_of_degree_le_zero this, eval_C] at h
   rw [eq_C_of_degree_le_zero this, h]
 set_option linter.uppercaseLean3 false in

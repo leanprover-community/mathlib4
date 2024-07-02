@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
@@ -53,7 +53,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- When a group acts, we can lift the action to the group of automorphisms. -/
 @[simps]
-def ρAut {G : GroupCat.{u}} (A : Action V (MonCat.of G)) : G ⟶ GroupCat.of (Aut A.V) where
+def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) where
   toFun g :=
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
@@ -77,13 +77,13 @@ set_option linter.uppercaseLean3 false in
 #align Action.inhabited' Action.inhabited'
 
 /-- The trivial representation of a group. -/
-def trivial : Action AddCommGroupCat G where
-  V := AddCommGroupCat.of PUnit
+def trivial : Action AddCommGrp G where
+  V := AddCommGrp.of PUnit
   ρ := 1
 set_option linter.uppercaseLean3 false in
 #align Action.trivial Action.trivial
 
-instance : Inhabited (Action AddCommGroupCat G) :=
+instance : Inhabited (Action AddCommGrp G) :=
   ⟨trivial G⟩
 
 end
@@ -302,8 +302,8 @@ noncomputable instance instPreservesColimitsForget [HasColimits V] :
 end Forget
 
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
-    N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) :=
-      by rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
+    N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
+      rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 set_option linter.uppercaseLean3 false in
 #align Action.iso.conj_ρ Action.Iso.conj_ρ
 
