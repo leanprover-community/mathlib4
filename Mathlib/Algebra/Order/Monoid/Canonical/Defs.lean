@@ -3,10 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.MinMax
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Order.Monoid.Defs
 
 #align_import algebra.order.monoid.canonical.defs from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -18,14 +19,6 @@ universe u
 
 variable {α : Type u}
 
-/-- An `OrderedCommMonoid` with one-sided 'division' in the sense that
-if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
-of the condition on canonical orderings defined by `CanonicallyOrderedCommMonoid`. -/
-class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
-  /-- For `a ≤ b`, `a` left divides `b` -/
-  exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
-#align has_exists_mul_of_le ExistsMulOfLE
-
 /-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedAddCommMonoid`. -/
@@ -34,11 +27,53 @@ class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
   exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a + c
 #align has_exists_add_of_le ExistsAddOfLE
 
-attribute [to_additive] ExistsMulOfLE
+/-- An `OrderedCommMonoid` with one-sided 'division' in the sense that
+if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
+of the condition on canonical orderings defined by `CanonicallyOrderedCommMonoid`. -/
+@[to_additive]
+class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
+  /-- For `a ≤ b`, `a` left divides `b` -/
+  exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
+#align has_exists_mul_of_le ExistsMulOfLE
+
+/-- Prop-valued mixin for the condition that either `α` or `αᵒᵈ` respects `ExistsAddOfLE`.
+
+This is useful to dualise results. -/
+class ExistsAddOfLEOrGE (α : Type u) [Add α] [LE α] : Prop where
+  exists_add_of_le_or_ge :
+    (∀ {a b : α}, a ≤ b → ∃ c, b = a + c) ∨ ∀ {a b : α}, b ≤ a → ∃ c, b = a + c
+
+/-- Prop-valued mixin for the condition that either `α` or `αᵒᵈ` respects `ExistsMulOfLE`.
+
+This is useful to dualise results. -/
+@[to_additive]
+class ExistsMulOfLEOrGE (α : Type u) [Mul α] [LE α] : Prop where
+  exists_mul_of_le_or_ge :
+    (∀ {a b : α}, a ≤ b → ∃ c, b = a * c) ∨ ∀ {a b : α}, b ≤ a → ∃ c, b = a * c
 
 export ExistsMulOfLE (exists_mul_of_le)
-
 export ExistsAddOfLE (exists_add_of_le)
+export ExistsMulOfLEOrGE (exists_mul_of_le_or_ge)
+export ExistsAddOfLEOrGE (exists_add_of_le_or_ge)
+
+section Mul
+variable [Mul α] [LE α]
+
+-- See note [lower instance priority]
+@[to_additive]
+instance (priority := 100) ExistsMulOfLE.toExistsMulOfLEOrGE [ExistsMulOfLE α] :
+    ExistsMulOfLEOrGE α where
+  exists_mul_of_le_or_ge := .inl exists_mul_of_le
+
+@[to_additive] instance OrderDual.instExistsMulOfLEOrGE [ExistsMulOfLEOrGE α] :
+    ExistsMulOfLEOrGE αᵒᵈ where
+  exists_mul_of_le_or_ge := (exists_mul_of_le_or_ge (α := α)).symm
+
+variable (α) in
+@[to_additive] lemma existsMulOfLE_or_existsMulOfLE_orderDual [ExistsMulOfLEOrGE α] :
+    ExistsMulOfLE α ∨ ExistsMulOfLE αᵒᵈ := exists_mul_of_le_or_ge.imp (⟨·⟩) (⟨·⟩)
+
+end Mul
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -48,16 +83,24 @@ instance (priority := 100) Group.existsMulOfLE (α : Type u) [Group α] [LE α] 
 #align add_group.has_exists_add_of_le AddGroup.existsAddOfLE
 
 section MulOneClass
+variable [MulOneClass α] [Preorder α] [ExistsMulOfLE α] {a b : α}
+  [CovariantClass α α (· * ·) (· ≤ ·)] [ContravariantClass α α (· * ·) (· ≤ ·)]
+  [CovariantClass α α (· * ·) (· < ·)] [ContravariantClass α α (· * ·) (· < ·)]
 
-variable [MulOneClass α] [Preorder α] [ContravariantClass α α (· * ·) (· < ·)] [ExistsMulOfLE α]
-  {a b : α}
+@[to_additive] lemma exists_one_le_mul_of_le (h : a ≤ b) : ∃ c, 1 ≤ c ∧ a * c = b := by
+  obtain ⟨c, rfl⟩ := exists_mul_of_le h; exact ⟨c, one_le_of_le_mul_right h, rfl⟩
 
-@[to_additive]
-theorem exists_one_lt_mul_of_lt' (h : a < b) : ∃ c, 1 < c ∧ a * c = b := by
-  obtain ⟨c, rfl⟩ := exists_mul_of_le h.le
-  exact ⟨c, one_lt_of_lt_mul_right h, rfl⟩
+@[to_additive] lemma exists_one_lt_mul_of_lt' (h : a < b) : ∃ c, 1 < c ∧ a * c = b := by
+  obtain ⟨c, rfl⟩ := exists_mul_of_le h.le; exact ⟨c, one_lt_of_lt_mul_right h, rfl⟩
 #align exists_one_lt_mul_of_lt' exists_one_lt_mul_of_lt'
 #align exists_pos_add_of_lt' exists_pos_add_of_lt'
+
+@[to_additive] lemma le_iff_exists_one_le_mul : a ≤ b ↔ ∃ c, 1 ≤ c ∧ a * c = b :=
+  ⟨exists_one_le_mul_of_le, by rintro ⟨c, hc, rfl⟩; exact le_mul_of_one_le_right' hc⟩
+#align le_iff_exists_nonneg_add le_iff_exists_nonneg_add
+
+@[to_additive] lemma lt_iff_exists_one_lt_mul : a < b ↔ ∃ c, 1 < c ∧ a * c = b :=
+  ⟨exists_one_lt_mul_of_lt', by rintro ⟨c, hc, rfl⟩; exact lt_mul_of_one_lt_right' _ hc⟩
 
 end MulOneClass
 
@@ -189,7 +232,7 @@ theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
 
 @[to_additive]
 theorem le_iff_exists_mul : a ≤ b ↔ ∃ c, b = a * c :=
-  ⟨exists_mul_of_le, by
+  ⟨fun h ↦ exists_mul_of_le h, by
     rintro ⟨c, rfl⟩
     exact le_self_mul⟩
 #align le_iff_exists_mul le_iff_exists_mul
