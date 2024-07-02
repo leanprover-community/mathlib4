@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Basic
 
 #align_import data.nat.choose.dvd from "leanprover-community/mathlib"@"966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2"
 

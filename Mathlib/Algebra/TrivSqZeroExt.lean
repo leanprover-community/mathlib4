@@ -671,7 +671,7 @@ theorem snd_pow [CommMonoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulA
 @[simp]
 theorem inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] (r : R)
     (n : ℕ) : (inl r ^ n : tsze R M) = inl (r ^ n) :=
-  ext rfl <| by simp [snd_pow_eq_sum]
+  ext rfl <| by simp [snd_pow_eq_sum, List.map_const']
 #align triv_sq_zero_ext.inl_pow TrivSqZeroExt.inl_pow
 
 instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]

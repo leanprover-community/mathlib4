@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Order.Group.Defs
 
 #align_import order.filter.extr from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

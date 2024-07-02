@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Num.Lemmas
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Ring
 
 #align_import data.num.prime from "leanprover-community/mathlib"@"58581d0fe523063f5651df0619be2bf65012a94a"
@@ -95,7 +95,7 @@ instance decidablePrime : DecidablePred PosNum.Prime
     decidable_of_iff' (n = 1)
       (by
         refine Nat.prime_def_minFac.trans ((and_iff_right ?_).trans <| eq_comm.trans ?_)
-        · exact bit0_le_bit0.2 (Nat.succ_le_of_lt (to_nat_pos _))
+        · exact add_le_add (Nat.succ_le_of_lt (to_nat_pos _)) (Nat.succ_le_of_lt (to_nat_pos _))
         rw [← minFac_to_nat, to_nat_inj]
         exact ⟨bit0.inj, congr_arg _⟩)
   | bit1 n =>
