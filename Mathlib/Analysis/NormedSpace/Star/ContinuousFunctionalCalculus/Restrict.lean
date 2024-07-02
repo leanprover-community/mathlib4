@@ -93,9 +93,10 @@ lemma starAlgHom_id {a : A} {φ : C(spectrum S a, S) →⋆ₐ[S] A} {f : C(S, R
 characterized by: `q a` and the spectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
 `ContinuousFunctionalCalculus R p`. -/
-protected theorem cfc (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S))
+protected theorem cfc (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ SpectrumRestricts a f) (h_cpct : ∀ a, q a → CompactSpace (spectrum S a)) :
     ContinuousFunctionalCalculus R p where
+  predicate_zero := h0
   exists_cfc_of_predicate a ha := by
     refine ⟨((h a).mp ha).2.starAlgHom (cfcHom ((h a).mp ha).1 (R := S)),
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
@@ -229,9 +230,10 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 characterized by: `q a` and the quasispectrum of `a` restricts to the scalar subring `R` via
 `f : C(S, R)`, then we can get a restricted functional calculus
 `NonUnitalContinuousFunctionalCalculus R p`. -/
-protected theorem cfc (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S))
+protected theorem cfc (f : C(S, R)) (halg : UniformEmbedding (algebraMap R S)) (h0 : p 0)
     (h : ∀ a, p a ↔ q a ∧ QuasispectrumRestricts a f) (h_cpct : ∀ a, q a → CompactSpace (σₙ S a)) :
     NonUnitalContinuousFunctionalCalculus R p where
+  predicate_zero := h0
   exists_cfc_of_predicate a ha := by
     refine ⟨((h a).mp ha).2.nonUnitalStarAlgHom (cfcₙHom ((h a).mp ha).1 (R := S)),
       ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
