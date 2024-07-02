@@ -27,7 +27,6 @@ We endow `EReal` with the order topology, and prove basic properties of this top
 Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 -/
 
-
 noncomputable section
 
 open scoped Classical
@@ -170,6 +169,147 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
     Tendsto m f (𝓝 ⊥) ↔ ∀ x : ℝ, ∀ᶠ a in f, m a < x :=
   nhds_bot_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Iio]
 #align ereal.tendsto_nhds_bot_iff_real EReal.tendsto_nhds_bot_iff_real
+
+/-! ### Liminfs and Limsups -/
+
+section LimInfSup
+
+variable {α : Type*} {f : Filter α} {u v : α → EReal}
+
+lemma liminf_le_liminf (h : u ≤ᶠ[f] v) :
+    liminf u f ≤ liminf v f := Filter.liminf_le_liminf h
+
+lemma limsup_le_limsup (h : u ≤ᶠ[f] v) :
+    limsup u f ≤ limsup v f := Filter.limsup_le_limsup h
+
+/-- This lemma is superseded by `limsup_add_le_of_le` (weaker hypothesis) and
+`limsup_add_lt_of_lt` (stronger thesis). -/
+private lemma limsup_add_le_of_lt {a b : EReal}
+    (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f ≤ a + b := by
+  rcases eq_or_neBot f with (rfl | _); simp only [limsup_bot, bot_le]
+  rw [← @limsup_const EReal α _ f _ (a + b)]
+  apply limsup_le_limsup (Eventually.mp (Eventually.and (eventually_lt_of_limsup_lt ha)
+    (eventually_lt_of_limsup_lt hb)) (eventually_of_forall _))
+  simp only [Pi.add_apply, and_imp]
+  intro x
+  exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
+
+lemma limsup_add_lt_of_lt {a b : EReal}
+    (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f < a + b := by
+  obtain ⟨c, hc, hca⟩ := DenselyOrdered.dense _ _ ha
+  obtain ⟨d, hd, hdb⟩ := DenselyOrdered.dense _ _ hb
+  exact (limsup_add_le_of_lt hc hd).trans_lt (add_lt_add hca hdb)
+
+lemma limsup_add_bot_of_ne_top {u : α → EReal} {v : α → EReal}
+    (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) : limsup (u + v) f = ⊥ := by
+  apply le_bot_iff.1
+  apply (le_iff_le_forall_real_gt ⊥ (limsup (u + v) f)).1
+  intro x
+  rcases exists_between_coe_real (h'.lt_top) with ⟨y, ⟨hy, _⟩⟩
+  rw [← sub_add_cancel x y, coe_add (x - y) y, coe_sub x y]
+  intro _
+  apply @limsup_add_le_of_lt α f u v (x - y) y _ hy
+  rw [h, ← coe_sub x y]
+  exact bot_lt_coe (x - y)
+
+lemma limsup_add_le_add_limsup {u v : α → EReal}
+    (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
+    limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
+  rcases eq_bot_or_bot_lt (limsup u f) with (u_bot | u_nbot)
+  · rcases h with (u_nbot | v_ntop)
+    · exfalso; exact u_nbot u_bot
+    · rw [limsup_add_bot_of_ne_top u_bot v_ntop]; exact bot_le
+  rcases eq_bot_or_bot_lt (limsup v f) with (v_bot | v_nbot)
+  · rcases h' with (u_ntop | v_nbot)
+    · rw [add_comm, limsup_add_bot_of_ne_top v_bot u_ntop]; exact bot_le
+    · exfalso; exact v_nbot v_bot
+  rcases eq_top_or_lt_top (limsup v f) with (v_top | v_ntop)
+  · rw [v_top, add_top_of_ne_bot (ne_of_gt u_nbot)]; exact le_top
+  have limsup_v_real := coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
+  apply (le_iff_le_forall_real_gt _ _).1
+  intros x hx
+  rcases lt_iff_exists_real_btwn.1 hx with ⟨y, ⟨sum_lt_y, y_lt_x⟩⟩
+  have key₁ : limsup u f < (y - limsup v f) := by
+    apply lt_of_eq_of_lt _ (sub_lt_sub_of_lt_of_le sum_lt_y (le_of_eq (Eq.refl (limsup v f)))
+      (ne_of_gt v_nbot) (ne_of_lt v_ntop))
+    rw [← limsup_v_real, add_sub_cancel_right]
+  have key₂ : limsup v f < limsup v f + x - y := by
+    rw [← limsup_v_real]; norm_cast; norm_cast at y_lt_x; linarith
+  apply le_of_le_of_eq (limsup_add_le_of_lt key₁ key₂)
+  rw [← limsup_v_real]; norm_cast; linarith
+
+lemma limsup_add_le_of_le {a b : EReal}
+    (ha : limsup u f < a) (hb : limsup v f ≤ b) : limsup (u + v) f ≤ a + b := by
+  rcases lt_or_eq_of_le hb with (hb | hb)
+  · exact limsup_add_le_of_lt ha hb
+  by_cases hb' : b = ⊤
+  · convert le_top
+    rw [hb']
+    exact add_top_of_ne_bot ha.ne_bot
+  exact (limsup_add_le_add_limsup (hb ▸ Or.inr hb') (Or.inl ha.ne_top)).trans
+    (add_le_add ha.le hb.le)
+
+lemma liminf_neg {v : α → EReal} : liminf (- v) f = - limsup v f :=
+  EReal.negOrderIso.limsup_apply.symm
+
+lemma limsup_neg {v : α → EReal} : limsup (- v) f = - liminf v f :=
+  EReal.negOrderIso.liminf_apply.symm
+
+lemma liminf_add_gt_of_gt {a b : EReal} (ha : a < liminf u f) (hb : b < liminf v f) :
+    a + b < liminf (u + v) f := by
+  have ha' : a ≠ ⊤ := ha.ne_top
+  have hb' : b ≠ ⊤ := hb.ne_top
+  have h : limsup (-(u + v)) f = limsup (-u + -v) f := by
+    apply limsup_congr
+    filter_upwards [eventually_lt_of_lt_liminf ha, eventually_lt_of_lt_liminf hb] with x hax hbx
+    dsimp
+    rw [neg_add (Or.inl hax.ne_bot) (Or.inr hbx.ne_bot), sub_eq_add_neg]
+  rw [← neg_lt_neg_iff, ← limsup_neg] at ha hb ⊢
+  rw [neg_add (Or.inr hb') (Or.inl ha'), h]
+  exact limsup_add_lt_of_lt ha hb
+
+lemma liminf_add_top_of_ne_bot {u : α → EReal} {v : α → EReal}
+    (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) : liminf (u + v) f = ⊤ := by
+  apply top_le_iff.1 ((ge_iff_le_forall_real_lt (liminf (u + v) f) ⊤).1 _)
+  intro x
+  rcases exists_between_coe_real (Ne.bot_lt h') with ⟨y, ⟨_, hy⟩⟩
+  intro _
+  rw [← sub_add_cancel x y, coe_add (x - y) y]
+  exact coe_sub x y ▸ @liminf_add_gt_of_gt α f u v (x - y) y
+    (h ▸ coe_sub x y ▸ coe_lt_top (x-y)) hy |>.le
+
+lemma add_liminf_le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) f := by
+  by_cases hu : liminf u f = ⊥
+  · simp_all
+  by_cases hv : liminf v f = ⊥
+  · simp_all
+  have h' : limsup (-(u + v)) f = limsup (-u + -v) f := by
+    apply limsup_congr
+    filter_upwards [eventually_lt_of_lt_liminf (bot_lt_iff_ne_bot.mpr hu),
+      eventually_lt_of_lt_liminf (bot_lt_iff_ne_bot.mpr hv)] with x hux hvx
+    dsimp
+    rw [neg_add (Or.inl hux.ne_bot) (Or.inr hvx.ne_bot), sub_eq_add_neg]
+  rw [← neg_le_neg_iff, neg_add (Or.inl hu) (Or.inr hv), sub_eq_add_neg]
+  rw [← neg_inj, neg_bot] at hu hv
+  simp_rw [← limsup_neg] at hu hv ⊢
+  exact h' ▸ limsup_add_le_add_limsup (Or.inr hv) (Or.inl hu)
+
+lemma limsup_le_iff {u : α → EReal} {b : EReal} :
+    limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
+  rw [← le_iff_le_forall_real_gt]
+  refine ⟨?_, ?_⟩ <;> intro h c b_lt_c
+  · rcases exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
+    specialize h d b_lt_d
+    have key := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt h d_lt_c)
+    apply Filter.mem_of_superset key
+    rw [Set.setOf_subset_setOf]
+    exact fun a h' ↦ le_of_lt h'
+  · rcases eq_or_neBot f with (rfl | _)
+    · simp only [limsup_bot, bot_le]
+    · specialize h c b_lt_c
+      exact @Filter.limsup_const EReal α _ f _ (c : EReal) ▸ limsup_le_limsup h
+
+end LimInfSup
 
 /-! ### Continuity of addition -/
 
