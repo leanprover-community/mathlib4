@@ -133,13 +133,11 @@ lemma monotone_isoClosure : Monotone (isoClosure (C := C)) := by
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
 
-@[simp]
 theorem cancel_left_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : P (f ≫ g) ↔ P g :=
   ⟨fun h => by simpa using hP.1 (asIso f).symm (f ≫ g) h, hP.1 (asIso f) g⟩
 #align category_theory.morphism_property.respects_iso.cancel_left_is_iso CategoryTheory.MorphismProperty.cancel_left_of_respectsIso
 
-@[simp]
 theorem cancel_right_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] : P (f ≫ g) ↔ P f :=
   ⟨fun h => by simpa using hP.2 (asIso g).symm (f ≫ g) h, hP.2 (asIso g) f⟩
@@ -147,7 +145,8 @@ theorem cancel_right_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P
 
 theorem arrow_iso_iff {P : MorphismProperty C} [RespectsIso P] {f g : Arrow C}
     (e : f ≅ g) : P f.hom ↔ P g.hom := by
-  simp [← Arrow.inv_left_hom_right e.hom]
+  simp [← Arrow.inv_left_hom_right e.hom, cancel_left_of_respectsIso,
+    cancel_right_of_respectsIso]
 #align category_theory.morphism_property.respects_iso.arrow_iso_iff CategoryTheory.MorphismProperty.arrow_iso_iff
 
 theorem arrow_mk_iso_iff {P : MorphismProperty C} [RespectsIso P] {W X Y Z : C}
@@ -242,7 +241,8 @@ instance RespectsIso.inverseImage (P : MorphismProperty D) [RespectsIso P] (F : 
   constructor
   all_goals
     intro X Y Z e f hf
-    simpa [MorphismProperty.inverseImage] using hf
+    simpa [MorphismProperty.inverseImage, cancel_left_of_respectsIso,
+      cancel_right_of_respectsIso] using hf
 #align category_theory.morphism_property.respects_iso.inverse_image CategoryTheory.MorphismProperty.RespectsIso.inverseImage
 
 lemma map_eq_of_iso (P : MorphismProperty C) {F G : C ⥤ D} (e : F ≅ G) :
