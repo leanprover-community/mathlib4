@@ -425,14 +425,14 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
   rwa [le_antisymm_iff, geomSum_le_geomSum_iff_toColex_le_toColex hn,
     geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
 
-theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n^i :=
+theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n ^ i :=
   (Nat.lt_pow_self hn a).trans_le <| single_le_sum (by simp) hi
 
-@[simp] theorem bitIndices_twoPowSum_toFinset (s : Finset ℕ) :
-    (∑ i in s, 2^i).bitIndices.toFinset = s := by
+@[simp] theorem toFinset_bitIndices_twoPowSum (s : Finset ℕ) :
+    (∑ i in s, 2 ^ i).bitIndices.toFinset = s := by
   simp [← (geomSum_injective rfl.le).eq_iff, List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
 
-@[simp] theorem twoPowSum_bitIndices_toFinset (n : ℕ) :
+@[simp] theorem twoPowSum_toFinset_bitIndices (n : ℕ) :
     ∑ i in n.bitIndices.toFinset, 2 ^ i = n := by
   simp [List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
 
@@ -440,8 +440,8 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
   invFun s := ∑ i in s, 2^i
-  left_inv := twoPowSum_bitIndices_toFinset
-  right_inv := bitIndices_twoPowSum_toFinset
+  left_inv := twoPowSum_toFinset_bitIndices
+  right_inv := toFinset_bitIndices_twoPowSum
 
 /-- The equivalence `Nat.equivBitIndices` enumerates `Finset ℕ` in colexicographic order. -/
 @[simps] def orderIsoColex : ℕ ≃o Colex ℕ where
@@ -450,7 +450,7 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in
   left_inv n := equivBitIndices.symm_apply_apply n
   right_inv s :=  Finset.toColex_inj.2 (equivBitIndices.apply_symm_apply s.ofColex)
   map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le),
-    twoPowSum_bitIndices_toFinset]
+    toFinset_bitIndices_twoPowSum]
 
 end Nat
 end Finset
