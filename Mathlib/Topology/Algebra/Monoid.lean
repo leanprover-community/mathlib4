@@ -66,7 +66,7 @@ variable [TopologicalSpace M] [Mul M] [ContinuousMul M]
 instance : ContinuousMul Mᵒᵈ :=
   ‹ContinuousMul M›
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
   ContinuousMul.continuous_mul
 #align continuous_mul continuous_mul
@@ -92,6 +92,15 @@ instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
         continuous_swap.comp <| Continuous.prod_map MulOpposite.continuous_unop continuous_id⟩
 #align has_continuous_mul.to_has_continuous_smul_op ContinuousMul.to_continuousSMul_op
 #align has_continuous_add.to_has_continuous_vadd_op ContinuousAdd.to_continuousVAdd_op
+
+@[to_additive]
+theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [MulOneClass α]
+    [MulOneClass β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousMul β] (f : F) :
+    @ContinuousMul α (tβ.induced f) _ := by
+  let tα := tβ.induced f
+  refine ⟨continuous_induced_rng.2 ?_⟩
+  simp only [Function.comp, map_mul]
+  fun_prop
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
