@@ -38,16 +38,6 @@ lemma SemilinearMapClass.coe_coe {R S M M₃ F : Type*} [Semiring R] [Semiring S
     ⇑(f : M →ₛₗ[σ] M₃) = f :=
   rfl
 
-/-
-instance Finite.instDiscreteTopology {α : Type*} [TopologicalSpace α] [T1Space α] [Finite α] :
-    DiscreteTopology α := by
-  rw [discreteTopology_iff_forall_isClosed]
-  intro s
-  let _ := Fintype.ofFinite s
-  rw [show s = ⋃ x ∈ s.toFinset, {x} by simp]
-  apply isClosed_biUnion_finset fun _ _ => isClosed_singleton
--/
-
 end Prereq
 namespace Matrix
 
