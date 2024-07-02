@@ -38,6 +38,7 @@ lemma SemilinearMapClass.coe_coe {R S M M₃ F : Type*} [Semiring R] [Semiring S
     ⇑(f : M →ₛₗ[σ] M₃) = f :=
   rfl
 
+/-
 instance Finite.instDiscreteTopology {α : Type*} [TopologicalSpace α] [T1Space α] [Finite α] :
     DiscreteTopology α := by
   rw [discreteTopology_iff_forall_isClosed]
@@ -45,6 +46,7 @@ instance Finite.instDiscreteTopology {α : Type*} [TopologicalSpace α] [T1Space
   let _ := Fintype.ofFinite s
   rw [show s = ⋃ x ∈ s.toFinset, {x} by simp]
   apply isClosed_biUnion_finset fun _ _ => isClosed_singleton
+-/
 
 end Prereq
 namespace Matrix
@@ -115,7 +117,7 @@ lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
   ext x
   simp only [ContinuousMap.zero_apply]
   obtain ⟨x, hx⟩ := x
-  obtain ⟨i, rfl⟩ := hA.eigenvalues_eq_spectrum ▸ hx
+  obtain ⟨i, rfl⟩ := hA.eigenvalues_eq_spectrum_real ▸ hx
   rw [← diagonal_zero] at h2
   have := (diagonal_eq_diagonal_iff).mp h2
   refine RCLike.ofReal_eq_zero.mp (this i)
@@ -141,7 +143,7 @@ instance instContinuousFunctionalCalculus :
         apply spectrum.of_algebraMap_mem 𝕜
         simp only [Function.comp_apply, Set.mem_range, spectrum_diagonal]
         obtain ⟨x, hx⟩ := x
-        obtain ⟨i, rfl⟩ := ha.eigenvalues_eq_spectrum ▸ hx
+        obtain ⟨i, rfl⟩ := ha.eigenvalues_eq_spectrum_real ▸ hx
         exact ⟨i, rfl⟩
     case hermitian =>
       simp only [isSelfAdjoint_iff, cfcAux_apply, mul_assoc, star_mul, star_star]
