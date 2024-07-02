@@ -14,6 +14,7 @@ import Mathlib.RingTheory.Congruence.Basic
 In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-ideal of a ring.
 
 ## Main definitions and results
+
 * `TwoSidedIdeal`: For any `NonUnitalNonAssocRing R`, `TwoSidedIdeal R` is the exactly `RingCon R`.
 * `TwoSidedIdeal.setLike`: Every `I : TwoSidedIdeal R` can be interpreted as a set of `R` where
   `x ∈ I` if and only if `I x 0`.
