@@ -799,6 +799,11 @@ theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M
     Function.Injective (map Q g M.le_comap_map : S → Q) :=
   (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
 
+/-- Surjectivity of a map descends to the map induced on localizations. -/
+theorem map_surjective_of_surjective (h : Function.Surjective g) [IsLocalization (M.map g) Q] :
+    Function.Surjective (map Q g M.le_comap_map : S → Q) :=
+  (toLocalizationMap M S).map_surjective_of_surjective h (toLocalizationMap (M.map g) Q)
+
 end
 
 end IsLocalization
