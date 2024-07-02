@@ -4324,6 +4324,7 @@ import Mathlib.Topology.MetricSpace.Pseudo.Defs
 import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.MetricSpace.Sequences
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
+import Mathlib.Topology.MetricSpace.Similarity
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.Metrizable.Basic
