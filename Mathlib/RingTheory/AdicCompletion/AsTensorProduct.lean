@@ -19,7 +19,6 @@ We show
 
 - it is an isomorphism if `M = R^n`.
 - it is surjective, if `M` is a finite `R`-module.
-- it is an isomorphism if `M` is a finite `R`-module and `R` is Noetherian.
 
 ## TODO
 
