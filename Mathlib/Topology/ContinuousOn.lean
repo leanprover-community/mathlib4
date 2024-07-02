@@ -72,7 +72,7 @@ theorem nhdsWithin_eq (a : α) (s : Set α) :
   ((nhds_basis_opens a).inf_principal s).eq_biInf
 #align nhds_within_eq nhdsWithin_eq
 
-theorem nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
+@[simp] lemma nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
   rw [nhdsWithin, principal_univ, inf_top_eq]
 #align nhds_within_univ nhdsWithin_univ
 
@@ -738,11 +738,6 @@ theorem nhdsWithin_le_comap {x : α} {s : Set α} {f : α → β} (ctsf : Contin
     𝓝[s] x ≤ comap f (𝓝[f '' s] f x) :=
   ctsf.tendsto_nhdsWithin_image.le_comap
 #align nhds_within_le_comap nhdsWithin_le_comap
-
-@[simp]
-theorem comap_nhdsWithin_range {α} (f : α → β) (y : β) : comap f (𝓝[range f] y) = comap f (𝓝 y) :=
-  comap_inf_principal_range
-#align comap_nhds_within_range comap_nhdsWithin_range
 
 theorem ContinuousWithinAt.mono {f : α → β} {s t : Set α} {x : α} (h : ContinuousWithinAt f t x)
     (hs : s ⊆ t) : ContinuousWithinAt f s x :=
