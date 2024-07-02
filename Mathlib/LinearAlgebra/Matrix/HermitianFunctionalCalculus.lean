@@ -62,7 +62,7 @@ namespace IsHermitian
 variable (hA : IsHermitian A)
 
 /-- The ℝ-spectrum of a Hermitian Matrix over RCLike field is the range of the eigenvalue function-/
-theorem eigenvalues_eq_spectrum {a : Matrix n n 𝕜} (ha : IsHermitian a) :
+theorem eigenvalues_eq_spectrum_real {a : Matrix n n 𝕜} (ha : IsHermitian a) :
     (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
   ext x
   conv_lhs => rw [ha.spectral_theorem, unitary.spectrum.unitary_conjugate,
