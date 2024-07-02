@@ -182,9 +182,10 @@ lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f
 @[simp] lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
     map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
 
-theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
-  Option.ne_none_iff_exists
+lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
 #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
+
+lemma eq_bot_iff_forall {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x := Option.eq_none_iff_forall
 
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
@@ -837,9 +838,10 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
   rfl
 #align with_top.of_dual_map WithTop.ofDual_map
 
-theorem ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x :=
-  Option.ne_none_iff_exists
+lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
 #align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
+
+lemma eq_top_iff_forall {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x := Option.eq_none_iff_forall
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
