@@ -201,8 +201,7 @@ lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
       (Algebra.norm ℤ (hζ.toInteger - 1)).natAbs := by
   have := hζ.finite_quotient_toInteger_sub_one hk
   let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1})
-  rw [Nat.card_eq_fintype_card, ← Submodule.cardQuot_apply, ← Ideal.absNorm_apply,
-    Ideal.absNorm_span_singleton]
+  rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
 
 lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
     IsPrimitiveRoot hζ.toInteger k :=
