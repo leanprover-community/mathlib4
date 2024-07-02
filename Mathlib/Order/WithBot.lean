@@ -1070,12 +1070,8 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
 #align with_bot.of_dual_map WithBot.ofDual_map
 
 lemma forall_lt_iff_eq_bot [Preorder α] {x : WithBot α} :
-    (∀ y : α, x < y) ↔ x = ⊥ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ fun y ↦ WithBot.bot_lt_coe y⟩
-  by_contra h'
-  rcases WithBot.ne_bot_iff_exists.1 h' with ⟨y, hy⟩
-  specialize h y
-  exact ne_of_lt h (Eq.symm hy)
+    (∀ y : α, x < y) ↔ x = ⊥ :=
+  ⟨fun h ↦ eq_bot_iff_forall.mpr (fun x ↦ (h x).ne'), fun h ↦ h ▸ fun y ↦ bot_lt_coe y⟩
 
 section LE
 
@@ -1274,12 +1270,8 @@ theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=
 theorem coe_top_lt [OrderTop α] {x : WithTop α} : (⊤ : α) < x ↔ x = ⊤ :=
   WithBot.lt_coe_bot (α := αᵒᵈ)
 
-lemma forall_lt_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ fun y ↦ coe_lt_top y⟩
-  by_contra h'
-  rcases ne_top_iff_exists.1 h' with ⟨y, hy⟩
-  specialize h y
-  exact ne_of_lt h hy
+lemma forall_lt_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ :=
+  ⟨fun h ↦ eq_top_iff_forall.mpr (fun x ↦ (h x).ne), fun h ↦ h ▸ fun y ↦ coe_lt_top y⟩
 
 end Preorder
 
