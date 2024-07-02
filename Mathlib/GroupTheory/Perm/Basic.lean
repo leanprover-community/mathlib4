@@ -52,10 +52,8 @@ theorem default_eq : (default : Perm α) = 1 :=
 type. -/
 @[simps]
 def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
-  -- Porting note: needed to add `.toFun`.
-  toFun e := ⟨e.toFun, e.symm.toFun, e.self_comp_symm, e.symm_comp_self⟩
-  invFun u :=
-    ⟨(u : Function.End α), (↑u⁻¹ : Function.End α), congr_fun u.inv_val, congr_fun u.val_inv⟩
+  toFun e := ⟨⟨e⟩, ⟨e.symm⟩, DFunLike.ext' e.self_comp_symm, DFunLike.ext' e.symm_comp_self⟩
+  invFun u := ⟨u, u.inv, congrFun (congrArg (⇑) u.inv_val), congrFun (congrArg (⇑) u.val_inv)⟩
   left_inv _ := ext fun _ => rfl
   right_inv _ := Units.ext rfl
   map_mul' _ _ := rfl
