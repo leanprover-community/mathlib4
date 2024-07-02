@@ -74,13 +74,6 @@ theorem ofReal_eigenvalue_mem_spectrum_toEuclideanLin (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
-/--Spectrum of a Hermitian matrix equals the spectrum as a EuclideanLin. -/
-theorem spec_toEuclideanLin_eq_spec : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
-  AlgEquiv.spectrum_eq ((AlgEquiv.trans ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜]
-  EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) : Matrix n n 𝕜 ≃ₐ[𝕜]
-  EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
-  (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm) _
-
 /--Definition of the StarAlgHom for the functional calculus of a Hermitian matrix. -/
 @[simps]
 noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n 𝕜) where
