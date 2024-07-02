@@ -38,6 +38,7 @@
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
   "Mathlib.CategoryTheory.Category.Init",
   "Mathlib.Combinatorics.SimpleGraph.Init",
+  "Mathlib.Command.SyntaxRules",
   "Mathlib.Control.Traversable.Lemmas",
   "Mathlib.Data.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
@@ -324,6 +325,7 @@
   ["Mathlib.Tactic.Positivity.Finset"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.Command.SyntaxRules.Header": ["Mathlib.Command.SyntaxRules.Elab"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.Analysis.InnerProductSpace.Basic":
