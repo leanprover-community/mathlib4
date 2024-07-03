@@ -256,7 +256,7 @@ private def smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
     rw [mul_assoc (s₄' : R), h₃, ← mul_assoc]
 
 /-- The scalar multiplication on the Ore localization of monoids. -/
-@[to_additive (attr := irreducible)
+@[to_additive
   "the vector addition on the Ore localization of additive monoids."]
 protected def smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
   liftExpand (fun r s ↦ smul'' r s x) (fun r₁ r₂ s hs => by
@@ -335,7 +335,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
 @[to_additive (attr := irreducible) "`0` in the additive localization, defined as `0 -ₒ 0`."]
-protected def one : R[S⁻¹] := 1 /ₒ 1
+protected def one [One X] : X[S⁻¹] := 1 /ₒ 1
 
 @[to_additive]
 instance : One R[S⁻¹] :=
