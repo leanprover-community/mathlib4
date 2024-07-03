@@ -32,6 +32,8 @@ class CountableCategory (J : Type*) [Category J] : Prop where
 
 attribute [instance] CountableCategory.countableObj CountableCategory.countableHom
 
+instance : CountableCategory ℕ where
+
 instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
 
