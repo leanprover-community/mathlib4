@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Algebra.NeZero
 
 #align_import algebra.order.monoid.canonical.defs from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
