@@ -341,4 +341,30 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   apply Finset.le_sup (Finset.mem_univ i)
 #align algebraic_geometry.exists_pow_mul_eq_zero_of_res_basic_open_eq_zero_of_is_compact AlgebraicGeometry.exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact
 
+/-- A section over a compact open of a scheme is nilpotent if and only if its associated
+basic open is empty. -/
+lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
+    {U : Opens X} (hU : IsCompact U.carrier) (f : Γ(X, U)) :
+    IsNilpotent f ↔ X.basicOpen f = ⊥ := by
+  refine ⟨X.basicOpen_eq_bot_of_isNilpotent U f, fun hf ↦ ?_⟩
+  have h : (1 : Γ(X, U)) |_ X.basicOpen f = (0 : Γ(X, X.basicOpen f)) := by
+    have e : X.basicOpen f ≤ ⊥ := by rw [hf]
+    rw [← X.presheaf.restrict_restrict e bot_le]
+    have : Subsingleton Γ(X, ⊥) :=
+      CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
+    rw [Subsingleton.eq_zero (1 |_ ⊥)]
+    show X.presheaf.map _ 0 = 0
+    rw [map_zero]
+  obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU 1 f h
+  rw [mul_one] at hn
+  use n
+
+/-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
+`s` is contained in the nilradical of `Γ(X, U)`. -/
+lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : Opens X}
+    (hU : IsCompact U.carrier) (s : Set Γ(X, U)) :
+    X.zeroLocus s = ⊤ ↔ s ⊆ (nilradical Γ(X, U)).carrier := by
+  simp [Scheme.zeroLocus_def, ← Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact hU,
+    ← mem_nilradical, Set.subset_def]
+
 end AlgebraicGeometry
