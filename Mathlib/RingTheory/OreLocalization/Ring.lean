@@ -5,7 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
 import Mathlib.RingTheory.OreLocalization.Basic
 
