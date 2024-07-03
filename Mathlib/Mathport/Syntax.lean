@@ -114,6 +114,8 @@ estimated difficulty of writing the tactic. The key is as follows:
 namespace Mathlib.Tactic
 open Lean Parser.Tactic
 
+set_option linter.noInitialWhitespace false
+
 /- N -/ elab (name := include) "include" (ppSpace ident)+ : command => pure ()
 /- N -/ elab (name := omit) "omit" (ppSpace ident)+ : command => pure ()
 /- N -/ syntax (name := parameter) "parameter" (ppSpace bracketedBinder)+ : command
