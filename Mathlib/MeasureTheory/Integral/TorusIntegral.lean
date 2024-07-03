@@ -140,7 +140,7 @@ theorem function_integrable [NormedSpace ℂ E] (hf : TorusIntegrable f c R) :
     IntegrableOn (fun θ : ℝⁿ => (∏ i, R i * exp (θ i * I) * I : ℂ) • f (torusMap c R θ))
       (Icc (0 : ℝⁿ) fun _ => 2 * π) volume := by
   refine (hf.norm.const_mul (∏ i, |R i|)).mono' ?_ ?_
-  · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; continuity
+  · refine (Continuous.aestronglyMeasurable ?_).smul hf.1; fun_prop
   simp [norm_smul, map_prod]
 #align torus_integrable.function_integrable TorusIntegrable.function_integrable
 

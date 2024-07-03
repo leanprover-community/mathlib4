@@ -156,10 +156,6 @@ theorem inter_mem_nhdsWithin (s : Set α) {t : Set α} {a : α} (h : t ∈ 𝓝 
   inter_mem self_mem_nhdsWithin (mem_inf_of_left h)
 #align inter_mem_nhds_within inter_mem_nhdsWithin
 
-theorem nhdsWithin_mono (a : α) {s t : Set α} (h : s ⊆ t) : 𝓝[s] a ≤ 𝓝[t] a :=
-  inf_le_inf_left _ (principal_mono.mpr h)
-#align nhds_within_mono nhdsWithin_mono
-
 theorem pure_le_nhdsWithin {a : α} {s : Set α} (ha : a ∈ s) : pure a ≤ 𝓝[s] a :=
   le_inf (pure_le_nhds a) (le_principal_iff.2 ha)
 #align pure_le_nhds_within pure_le_nhdsWithin
@@ -307,15 +303,17 @@ theorem nhdsWithin_prod {α : Type*} [TopologicalSpace α] {β : Type*} [Topolog
   exact prod_mem_prod hu hv
 #align nhds_within_prod nhdsWithin_prod
 
-theorem nhdsWithin_pi_eq' {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {I : Set ι}
-    (hI : I.Finite) (s : ∀ i, Set (α i)) (x : ∀ i, α i) :
+section Pi
+
+variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+
+theorem nhdsWithin_pi_eq' {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
     𝓝[pi I s] x = ⨅ i, comap (fun x => x i) (𝓝 (x i) ⊓ ⨅ (_ : i ∈ I), 𝓟 (s i)) := by
   simp only [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_iInf, pi_def, comap_principal, ←
     iInf_principal_finite hI, ← iInf_inf_eq]
 #align nhds_within_pi_eq' nhdsWithin_pi_eq'
 
-theorem nhdsWithin_pi_eq {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {I : Set ι}
-    (hI : I.Finite) (s : ∀ i, Set (α i)) (x : ∀ i, α i) :
+theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
     𝓝[pi I s] x =
       (⨅ i ∈ I, comap (fun x => x i) (𝓝[s i] x i)) ⊓
         ⨅ (i) (_ : i ∉ I), comap (fun x => x i) (𝓝 (x i)) := by
@@ -325,21 +323,33 @@ theorem nhdsWithin_pi_eq {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpa
   simp only [iInf_inf_eq]
 #align nhds_within_pi_eq nhdsWithin_pi_eq
 
-theorem nhdsWithin_pi_univ_eq {ι : Type*} {α : ι → Type*} [Finite ι] [∀ i, TopologicalSpace (α i)]
-    (s : ∀ i, Set (α i)) (x : ∀ i, α i) :
+theorem nhdsWithin_pi_univ_eq [Finite ι] (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
     𝓝[pi univ s] x = ⨅ i, comap (fun x => x i) (𝓝[s i] x i) := by
   simpa [nhdsWithin] using nhdsWithin_pi_eq finite_univ s x
 #align nhds_within_pi_univ_eq nhdsWithin_pi_univ_eq
 
-theorem nhdsWithin_pi_eq_bot {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {I : Set ι}
-    {s : ∀ i, Set (α i)} {x : ∀ i, α i} : 𝓝[pi I s] x = ⊥ ↔ ∃ i ∈ I, 𝓝[s i] x i = ⊥ := by
+theorem nhdsWithin_pi_eq_bot {I : Set ι} {s : ∀ i, Set (π i)} {x : ∀ i, π i} :
+    𝓝[pi I s] x = ⊥ ↔ ∃ i ∈ I, 𝓝[s i] x i = ⊥ := by
   simp only [nhdsWithin, nhds_pi, pi_inf_principal_pi_eq_bot]
 #align nhds_within_pi_eq_bot nhdsWithin_pi_eq_bot
 
-theorem nhdsWithin_pi_neBot {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {I : Set ι}
-    {s : ∀ i, Set (α i)} {x : ∀ i, α i} : (𝓝[pi I s] x).NeBot ↔ ∀ i ∈ I, (𝓝[s i] x i).NeBot := by
+theorem nhdsWithin_pi_neBot {I : Set ι} {s : ∀ i, Set (π i)} {x : ∀ i, π i} :
+    (𝓝[pi I s] x).NeBot ↔ ∀ i ∈ I, (𝓝[s i] x i).NeBot := by
   simp [neBot_iff, nhdsWithin_pi_eq_bot]
 #align nhds_within_pi_ne_bot nhdsWithin_pi_neBot
+
+instance instNeBotNhdsWithinUnivPi {s : ∀ i, Set (π i)} {x : ∀ i, π i}
+    [∀ i, (𝓝[s i] x i).NeBot] : (𝓝[pi univ s] x).NeBot := by
+  simpa [nhdsWithin_pi_neBot]
+
+instance Pi.instNeBotNhdsWithinIio [Nonempty ι] [∀ i, Preorder (π i)] {x : ∀ i, π i}
+    [∀ i, (𝓝[<] x i).NeBot] : (𝓝[<] x).NeBot :=
+  have : (𝓝[pi univ fun i ↦ Iio (x i)] x).NeBot := inferInstance
+  this.mono <| nhdsWithin_mono _ fun _y hy ↦ lt_of_strongLT fun i ↦ hy i trivial
+
+instance Pi.instNeBotNhdsWithinIoi [Nonempty ι] [∀ i, Preorder (π i)] {x : ∀ i, π i}
+    [∀ i, (𝓝[>] x i).NeBot] : (𝓝[>] x).NeBot :=
+  Pi.instNeBotNhdsWithinIio (π := fun i ↦ (π i)ᵒᵈ) (x := fun i ↦ OrderDual.toDual (x i))
 
 theorem Filter.Tendsto.piecewise_nhdsWithin {f g : α → β} {t : Set α} [∀ x, Decidable (x ∈ t)]
     {a : α} {s : Set α} {l : Filter β} (h₀ : Tendsto f (𝓝[s ∩ t] a) l)
@@ -1115,7 +1125,6 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
   rwa [ContinuousWithinAt, ← nhdsWithin_restrict _ xt open_t] at this
 #align continuous_on_of_locally_continuous_on continuousOn_of_locally_continuousOn
 
--- Porting note (#10756): new lemma
 theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
