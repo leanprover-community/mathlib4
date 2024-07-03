@@ -346,8 +346,8 @@ theorem morphismRestrict_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) (V :
   simp only [comp_coeBase, Opens.map_comp_obj, restrict_presheaf_obj,
     Hom.app_eq_appLE, comp_appLE, ofRestrict_appLE, Hom.appLE_map, eqToHom_op,
     restrict_presheaf_map, eqToHom_unop] at this
-  have e : ιOpens U ⁻¹ᵁ (ιOpens U ''ᵁ V) = V := by
-    exact Opens.ext (Set.preimage_image_eq _ Subtype.coe_injective)
+  have e : ιOpens U ⁻¹ᵁ (ιOpens U ''ᵁ V) = V :=
+    Opens.ext (Set.preimage_image_eq _ Subtype.coe_injective)
   have e' : (f ∣_ U) ⁻¹ᵁ V = (f ∣_ U) ⁻¹ᵁ ιOpens U ⁻¹ᵁ ιOpens U ''ᵁ V := by rw [e]
   rw [← (f ∣_ U).appLE_map' _ e', ← (f ∣_ U).map_appLE' _ e, Scheme.restrict_presheaf_map,
     Scheme.restrict_presheaf_map, this, Hom.appLE_map]

@@ -592,9 +592,7 @@ theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 #align trivialization.coe_mem_source Trivialization.coe_mem_source
 
-@[deprecated PartialHomeomorph.open_target (since := "2023-03-10")]
-theorem open_target' : IsOpen e'.target := e'.open_target
-#align trivialization.open_target Trivialization.open_target'
+#align trivialization.open_target PartialHomeomorph.open_target
 
 @[simp, mfld_simps]
 theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
