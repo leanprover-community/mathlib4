@@ -220,7 +220,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K[X] where
 theorem idealX_span : (idealX K).asIdeal = Ideal.span {Polynomial.X} := rfl
 
 @[simp]
-theorem val_X_eq_neg_one :
+theorem valuation_X_eq_neg_one :
     (idealX K).valuation (RatFunc.X : RatFunc K) = Multiplicative.ofAdd (-1 : ℤ) := by
   rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton]
   · exact Polynomial.X_ne_zero
@@ -235,6 +235,7 @@ open Polynomial
 
 instance : Valued (RatFunc K) ℤₘ₀ := Valued.mk' (idealX K).valuation
 
+@[simp]
 theorem WithZero.valued_def {x : RatFunc K} :
     @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation x := rfl
 

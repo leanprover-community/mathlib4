@@ -477,8 +477,8 @@ theorem intValuation_eq_of_coe (P : K[X]) :
 
 /-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`-/
 @[simp]
-theorem intValuation_of_X : (idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
-  rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
+theorem intValuation_of_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
+  rw [← Polynomial.coe_X, ← intValuation_apply, ← intValuation_eq_of_coe]
   apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
 
 end PowerSeries
