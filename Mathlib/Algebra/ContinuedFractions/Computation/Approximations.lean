@@ -15,8 +15,8 @@ import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 ## Summary
 
 This file contains useful approximations for the values involved in the continued fractions
-computation `GenContFract.of`. In particular, we show that the gcf given by
-`GenContFract.of` in fact is a (regular) continued fraction.
+computation `GenContFract.of`. In particular, we show that the generalized continued fraction given
+by `GenContFract.of` in fact is a (regular) continued fraction.
 
 Moreover, we derive some upper bounds for the error term when computing a continued fraction up a
 given position, i.e. bounds for the term

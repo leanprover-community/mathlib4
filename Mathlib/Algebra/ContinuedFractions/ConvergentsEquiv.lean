@@ -11,12 +11,13 @@ import Mathlib.Tactic.Ring
 #align_import algebra.continued_fractions.convergents_equiv from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
-# Equivalence of Recursive and Direct Computations of `GenContFract` Convergents
+# Equivalence of Recursive and Direct Computations of Convergents of Generalized Continued Fractions
 
 ## Summary
 
 We show the equivalence of two computations of convergents (recurrence relation (`convs`) vs.
-direct evaluation (`convs'`)) for `GenContFract`s on linear ordered fields. We follow the proof from
+direct evaluation (`convs'`)) for generalized continued fractions
+(`GenContFract`s) on linear ordered fields. We follow the proof from
 [hardy2008introduction], Chapter 10. Here's a sketch:
 
 Let `c` be a continued fraction `[h; (a₀, b₀), (a₁, b₁), (a₂, b₂),...]`, visually:
@@ -329,7 +330,8 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
 end Squash
 
 /-- Shows that the recurrence relation (`convs`) and direct evaluation (`convs'`) of the
-gcf coincide at position `n` if the sequence of fractions contains strictly positive values only.
+generalized continued fraction coincide at position `n` if the sequence of fractions contains
+strictly positive values only.
 Requiring positivity of all values is just one possible condition to obtain this result.
 For example, the dual - sequences with strictly negative values only - would also work.
 

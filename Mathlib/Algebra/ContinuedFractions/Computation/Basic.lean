@@ -38,7 +38,7 @@ For an example, refer to `IntFractPair.stream`.
 ## Implementation Notes
 
 There is an intermediate definition `GenContFract.IntFractPair.seq1` between
-`GenContFract.IntFractPair.stream` and `GenContFract.of` to wire up things. User should not
+`GenContFract.IntFractPair.stream` and `GenContFract.of` to wire up things. Users should not
 (need to) directly interact with it.
 
 The computation of the integer and fractional pairs of a value can elegantly be
@@ -180,7 +180,7 @@ protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
 
 end IntFractPair
 
-/-- Returns the `GenContFract` of a value. In fact, the returned gcf is also an `ContFract` that
+/-- Returns the `GenContFract` of a value. In fact, the returned gcf is also a `ContFract` that
 terminates if and only if `v` is rational
 (see `Algebra.ContinuedFractions.Computation.TerminatesIffRat`).
 
