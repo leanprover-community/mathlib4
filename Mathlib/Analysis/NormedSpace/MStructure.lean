@@ -335,31 +335,12 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
 
 end IsLprojection
 
-section experiment1
-
-variable {𝕜 A F : Type*}
-
-variable [NormedCommRing 𝕜] [AddCommMonoid A] --[NormedAddCommGroup X]
-variable [Module 𝕜 A] [Module 𝕜 X]
-
-variable (B : A →ₗ[𝕜] X →ₗ[𝕜] 𝕜)
-
-structure IsMideal' (S : Set A) where
-  Lproj:  ∃ (P : M), IsLprojection X P ∧ (Set.range (smulAddHom M X P)) = LinearMap.polar B S
-
-structure IsMideal'' (S : Set A) where
-  Lproj:  ∃ (P : X →L[𝕜] X), IsLprojection X P ∧ (Set.range P) = LinearMap.polar B S
-
-end experiment1
-
-
 -- Subspace of a normed space is a normed space (NormedSpace/Basic)
 /-
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
     (s : Submodule R E) : NormedSpace 𝕜 s where norm_smul_le c x := norm_smul_le c (x : E)
 -/
-
 
 variable {𝕜 A F : Type*}
 
