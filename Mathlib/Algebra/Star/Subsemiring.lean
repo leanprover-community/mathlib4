@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Subsemiring.Basic
 A *-subring is a subring of a *-ring which is closed under *.
 -/
 
-universe v w
+universe v
 
 /-- A (unital) star subsemiring is a non-associative ring which is closed under the `star`
 operation. -/
@@ -68,19 +68,29 @@ lemma coe_mk (S : Subsemiring R) (h) : ((⟨S, h⟩ : StarSubsemiring R) : Set R
 theorem mem_toSubsemiring {S : StarSubsemiring R} {x} : x ∈ S.toSubsemiring ↔ x ∈ S :=
   Iff.rfl
 
-/-- Copy of a non-unital star subalgebra with a new `carrier` equal to the old one.
-Useful to fix definitional equalities. -/
-protected def copy (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) :
-    StarSubsemiring R :=
-  { S.toSubsemiring.copy s hs with
-    star_mem' := @fun x (hx : x ∈ s) => by
-      show star x ∈ s
-      rw [hs] at hx ⊢
-      exact S.star_mem' hx }
+@[simp]
+theorem coe_toSubsemiring (S : StarSubsemiring R) : (S.toSubsemiring : Set R) = S :=
+  rfl
+
+theorem toSubsemiring_injective :
+    Function.Injective (toSubsemiring : StarSubsemiring R → Subsemiring R) := fun S T h =>
+  ext fun x => by rw [← mem_toSubsemiring, ← mem_toSubsemiring, h]
+
+theorem toSubsemiring_inj {S U : StarSubsemiring R} : S.toSubsemiring = U.toSubsemiring ↔ S = U :=
+  toSubsemiring_injective.eq_iff
+
+theorem toSubsemiring_le_iff {S₁ S₂ : StarSubsemiring R} :
+    S₁.toSubsemiring ≤ S₂.toSubsemiring ↔ S₁ ≤ S₂ :=
+  Iff.rfl
+
+/-- Copy of a non-unital star subalgebra with a new `carrier` equal to the old one. Useful to fix
+definitional equalities. -/
+protected def copy (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) : StarSubsemiring R where
+  toSubsemiring := Subsemiring.copy S.toSubsemiring s hs
+  star_mem' := @fun a ha => hs ▸ (S.star_mem' (by simpa [hs] using ha) : star a ∈ (S : Set R))
 
 @[simp]
-theorem coe_copy (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) :
-    (S.copy s hs : Set R) = s :=
+theorem coe_copy (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) : (S.copy s hs : Set R) = s :=
   rfl
 
 theorem copy_eq (S : StarSubsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=

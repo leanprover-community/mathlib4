@@ -11,6 +11,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subsemiring
+import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -382,7 +383,6 @@ instance : AddCommMonoid (CentroidHom α) :=
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
@@ -627,7 +627,6 @@ instance : Sub (CentroidHom α) :=
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl

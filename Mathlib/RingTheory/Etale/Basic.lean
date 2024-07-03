@@ -40,7 +40,9 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally étale if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`. -/
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`.
+
+See <https://stacks.math.columbia.edu/tag/00UQ> -/
 @[mk_iff]
 class FormallyEtale : Prop where
   comp_bijective :
@@ -122,10 +124,28 @@ end BaseChange
 
 section Localization
 
+/-!
+
+We now consider a commutative square of commutative rings
+
+R -----> S
+|        |
+|        |
+v        v
+Rₘ ----> Sₘ
+
+where `Rₘ` and `Sₘ` are the localisations of `R` and `S` at a multiplicatively closed
+subset `M` of `R`.
+-/
+
+/-! Let R, S, Rₘ, Sₘ be commutative rings -/
 variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [CommRing Sₘ]
+/-! Let M be a multiplicatively closed subset of `R` -/
 variable (M : Submonoid R)
+/-! Assume that the rings are in a commutative diagram as above. -/
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
+/-! and that Rₘ and Sₘ are localizations of R and S at M. -/
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 
 -- Porting note: no longer supported
@@ -141,6 +161,7 @@ theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
     ⟨FormallyUnramified.localization_base M, FormallySmooth.localization_base M⟩
 #align algebra.formally_etale.localization_base Algebra.FormallyEtale.localization_base
 
+/-- The localization of a formally étale map is formally étale. -/
 theorem localization_map [FormallyEtale R S] : FormallyEtale Rₘ Sₘ := by
   haveI : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
   haveI : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
@@ -156,7 +177,11 @@ section
 variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
-/-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
+/-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation.
+
+Note that the definition <https://stacks.math.columbia.edu/tag/00U1> in the stacks project is
+different, but <https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent
+to the definition here. -/
 class Etale : Prop where
   formallyEtale : FormallyEtale R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance

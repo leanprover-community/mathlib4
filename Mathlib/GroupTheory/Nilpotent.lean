@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Sylow
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.TFAE
+import Mathlib.Algebra.Group.Subgroup.Order
 
 #align_import group_theory.nilpotent from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
