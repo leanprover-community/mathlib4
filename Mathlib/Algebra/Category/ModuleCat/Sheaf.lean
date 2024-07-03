@@ -98,14 +98,14 @@ The forgetful functor from sheaves of modules over sheaf of ring `R` to sheaves 
 when `X` is initial.
 -/
 @[simps]
-noncomputable def forgetToSheafModuleCat [UnivLE.{max v₁ u₁, w}]
-      (X : Cᵒᵖ) (hX : Limits.IsInitial X)  :
-    SheafOfModules R ⥤ Sheaf J (ModuleCat (R.1.obj X)) where
-  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1, by
-    have := ModuleCat.hasLimitsOfSize.{max v₁ u₁, w} (R := R.1.obj X)
-    exact CategoryTheory.Presheaf.isSheaf_iff_isSheaf_comp J
+noncomputable def forgetToSheafModuleCat
+      (X : Cᵒᵖ) (hX : Limits.IsInitial X) [UnivLE.{max v₁ u₁, w}] :
+    SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
+  obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
+    have := ModuleCat.hasLimitsOfSize (R := R.1.obj X)
+    CategoryTheory.Presheaf.isSheaf_iff_isSheaf_comp J
       ((PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1)
-      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w}) |>.2 M.isSheaf⟩
+      (forget₂ (ModuleCat (R.1.obj X)) AddCommGrp) |>.2 M.isSheaf⟩
   map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
