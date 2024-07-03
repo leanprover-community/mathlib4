@@ -20,6 +20,4 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 ### alignments from lean 3 `init.data.prod`
 -/
 
-set_option autoImplicit true
-
 compile_inductive% Prod

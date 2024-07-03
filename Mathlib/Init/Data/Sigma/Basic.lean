@@ -19,15 +19,15 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 # Lemmas about `Sigma` from Lean 3 core.
 -/
 
-set_option autoImplicit true
+universe u v
 
-theorem ex_of_psig {p : α → Prop} : (Σ' x, p x) → ∃ x, p x
+theorem ex_of_psig {α : Sort u} {p : α → Prop} : (Σ' x, p x) → ∃ x, p x
   | ⟨x, hx⟩ => ⟨x, hx⟩
 
-protected theorem Sigma.eq {β : α → Type v} : ∀ {p₁ p₂ : Σ a, β a} (h₁ : p₁.1 = p₂.1),
+protected theorem Sigma.eq {α : Type u} {β : α → Type v} : ∀ {p₁ p₂ : Σ a, β a} (h₁ : p₁.1 = p₂.1),
     (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
   | ⟨_, _⟩, _, rfl, rfl => rfl
 
-protected theorem PSigma.eq {β : α → Sort v} : ∀ {p₁ p₂ : Σ' a, β a} (h₁ : p₁.1 = p₂.1),
+protected theorem PSigma.eq {α : Sort u} {β : α → Sort v} : ∀ {p₁ p₂ : Σ' a, β a} (h₁ : p₁.1 = p₂.1),
     (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
   | ⟨_, _⟩, _, rfl, rfl => rfl
