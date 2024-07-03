@@ -389,14 +389,14 @@ theorem Orthogonality : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
   have thing1 := hx.1
   have thing2 := hy.1
   have hat := hB.orthogonalFamily_eigenspaces'
-  have HK (p q : 𝕜) : p ≠ q → ∀ v, (∀ w,  (v ∈ eigenspace B p) ∧ (w ∈ eigenspace B q) → ⟪ v , w ⟫ = 0) := by sorry
+  have HK (p q : 𝕜) : p ≠ q → ∀ v, (∀ w,  (v ∈ eigenspace B p) ∧ (w ∈ eigenspace B q) → ⟪ v , w ⟫ = 0) := by
+    intro h v w hvw
+    sorry --this probably needs the operators to be symmetric. Should be a global way to do this.
   have Shtick := HK i.2 j.2 Hhc x y
   apply Shtick
   constructor
   apply hy.2 --Involves A and not B. This needs cleanup.
-
-
-
+  sorry
 
 --orthogonalFamily_eigenspaces
 
