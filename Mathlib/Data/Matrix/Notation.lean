@@ -112,6 +112,7 @@ macro_rules
     `(@Matrix.of (Fin $(quote semicolons.size)) (Fin 0) _ ![$emptyVecs,*])
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
 
+/-- Delaborator for the `!![]` notation. -/
 @[delab app.DFunLike.coe]
 def delabMatrixNotation : Delab := whenPPOption getPPNotation <| withOverApp 6 do
   let em ← withAppFn <| withAppArg getExpr
