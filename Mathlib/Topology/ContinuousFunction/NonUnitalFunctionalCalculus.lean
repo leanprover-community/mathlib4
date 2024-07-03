@@ -434,11 +434,11 @@ lemma cfcₙ_comp_star (hf : ContinuousOn f (star '' (σₙ R a)) := by cfc_cont
     cfcₙ (f <| star ·) a = cfcₙ f (star a) := by
   rw [cfcₙ_comp' f star a, cfcₙ_star_id a]
 
-lemma eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a := by cfc_tac) :
+lemma CFC.eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a := by cfc_tac) :
     a = 0 := by
   simpa [cfcₙ_id R a] using cfcₙ_congr (a := a) (f := id) (g := fun _ : R ↦ 0) fun x ↦ by simp_all
 
-lemma quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
+lemma CFC.quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
   refine Set.eq_singleton_iff_unique_mem.mpr ⟨quasispectrum.zero_mem R 0, fun x hx ↦ ?_⟩
   rw [← cfcₙ_zero R (0 : A),
     cfcₙ_map_quasispectrum _ _ (by cfc_cont_tac) (by cfc_zero_tac) (cfcₙ_predicate_zero R)] at hx
