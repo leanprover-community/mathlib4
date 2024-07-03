@@ -351,8 +351,6 @@ lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
 
 end AffineTargetMorphismProperty
 
-namespace MorphismProperty
-
 open AffineTargetMorphismProperty
 
 /-- A morphism property of schemes is `StableUnderAffineBaseChange` if
@@ -361,8 +359,9 @@ def StableUnderAffineBaseChange (P : MorphismProperty Scheme) : Prop :=
   ∀ {X Y Y' S : Scheme} [IsAffine X] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S) (f' : Y' ⟶ Y)
     (g' : Y' ⟶ X) (_ : IsPullback f' g' g f) (_ : P g), P g'
 
-lemma StableUnderAffineBaseChange.mk {P : MorphismProperty Scheme}
-    (hP₁ : P.RespectsIso)
+namespace StableUnderAffineBaseChange
+
+lemma mk {P : MorphismProperty Scheme} (hP₁ : P.RespectsIso)
     (hP₂ : ∀ (X Y S : Scheme) [IsAffine X] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S),
       P g → P (pullback.fst : pullback f g ⟶ X)) :
     StableUnderAffineBaseChange P := fun {X Y Y' S} _ _ f g f' g' sq hg ↦ by
@@ -372,8 +371,7 @@ lemma StableUnderAffineBaseChange.mk {P : MorphismProperty Scheme}
 
 /-- If `P` is local at the target, to show that `P` is stable under base change, it suffices to
 check this for base change along a morphism of affine schemes. -/
-lemma stableUnderBaseChange_of_isLocalAtTarget_of_stableUnderAffineBaseChange
-    {P : MorphismProperty Scheme} (hP₁ : PropertyIsLocalAtTarget P)
+lemma stableUnderBaseChange {P : MorphismProperty Scheme} (hP₁ : PropertyIsLocalAtTarget P)
     (hP₂ : StableUnderAffineBaseChange P) :
     MorphismProperty.StableUnderBaseChange P := by
   apply stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget P hP₁
@@ -383,7 +381,7 @@ lemma stableUnderBaseChange_of_isLocalAtTarget_of_stableUnderAffineBaseChange
     apply IsPullback.of_hasPullback
   · exact hg
 
-end MorphismProperty
+end StableUnderAffineBaseChange
 
 end Restriction
 
