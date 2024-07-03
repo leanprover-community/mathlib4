@@ -113,14 +113,17 @@ end DupNamespaceLinter
 /-!
 #  The "EndOf" linter
 
-The "EndOf" linter emits a warning somewhere.
+The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 
 open Lean Elab Command
 
 namespace Mathlib.Linter
 
-/-- The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s. -/
+/-- The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
+-/
 register_option linter.endOf : Bool := {
   defValue := true
   descr := "enable the EndOf linter"
@@ -141,18 +144,16 @@ def endOfLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    let s ← get
-    elabCommand (Lean.mkNode ``Lean.Parser.Command.end #[Lean.mkAtom "end", Lean.mkNullNode])
-    let msgs := (← get).messages.unreported
-    set s
-    let insScopes := "error: invalid 'end', insufficient scopes\n"
-    match ← msgs.toArray.mapM (·.toString) with
-      | #[] => Linter.logLint linter.endOf stx "Expected 'end'"
-      | #[msg] =>
-        if msg.takeRight insScopes.length != insScopes then
-          Linter.logLint linter.endOf stx m!"Expected: \
-                              'end {(msg.splitOn "expected ")[1]!.dropRightWhile (!·.isAlphanum)}'"
-      | _ => return
+    let sc ← getScopes
+    -- a single scope means that there is no active `section`/`namespace`
+    if sc.length == 1 then return
+    let ends := sc.dropLast.map fun s => (s.header, s.isNoncomputable)
+    -- if the "outermost" scope corresponds to a `noncomputable section`, then we exclude it
+    let ends := if ends.getLast!.2 then ends.dropLast else ends
+    if !ends.isEmpty then
+      let ending := (ends.map Prod.fst).foldl (init := "") fun a b =>
+        a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+      Linter.logLint linter.endOf stx m!"Expected: '{ending}'"
 
 initialize addLinter endOfLinter
 
