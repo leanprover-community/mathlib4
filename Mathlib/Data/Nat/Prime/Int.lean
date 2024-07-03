@@ -7,8 +7,14 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Prime.Defs
 
+/-!
+# Integer interface to `Nat.Prime`
+-/
 
-theorem Nat.prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
+open Nat
+namespace Nat
+
+theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
   ⟨fun hp =>
     ⟨Int.natCast_ne_zero_iff_pos.2 hp.pos, mt Int.isUnit_iff_natAbs_eq.1 hp.ne_one, fun a b h => by
       rw [← Int.dvd_natAbs, Int.natCast_dvd_natCast, Int.natAbs_mul, hp.dvd_mul] at h
@@ -18,6 +24,8 @@ theorem Nat.prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :
       ⟨Int.natCast_ne_zero.1 hp.1,
         (mt Nat.isUnit_iff.1) fun h => by simp [h, not_prime_one] at hp, fun a b => by
         simpa only [Int.natCast_dvd_natCast, (Int.ofNat_mul _ _).symm] using hp.2.2 a b⟩⟩
+
+end Nat
 
 namespace Int
 
