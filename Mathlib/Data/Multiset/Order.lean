@@ -64,10 +64,6 @@ lemma not_MultisetRedLt_0 [DecidableEq α] [LT α] (M: Multiset α) : ¬ Multise
       simp_all only [Multiset.mem_add, Multiset.mem_singleton, or_true]
     contradiction
 
-lemma meq_union_meq_reverse [DecidableEq α] [Preorder α] {M N P : Multiset α}
-    (_ : M = N) : M + P = N + P := by
-  simp_all only
-
 lemma mul_singleton_erase [DecidableEq α] {a : α} {M : Multiset α} :
     M - {a} = M.erase a := by
   ext
@@ -87,11 +83,6 @@ lemma mem_erase_cons [DecidableEq α] {a0: α} {M : Multiset α} (_ : a0 ∈ M) 
     M = M - {a0} + {a0} := by
   rw [add_comm]
   simp_all [Multiset.singleton_add, mul_singleton_erase]
-
-lemma neq_erase [DecidableEq α] {a a0: α} (M : Multiset α)(_ : a0 ≠ a) :
-    (M.erase a).count a0 = M.count a0 := by
-  have : (a ::ₘ (M.erase a)).count a0 = (a ::ₘ M).count a0 := by simp_all
-  simp_all
 
 lemma cons_erase [DecidableEq α] {a a0: α} {M X : Multiset α}
     (H : a ::ₘ M = X + {a0}) : M = X + {a0} - {a} := by
@@ -176,7 +167,7 @@ lemma red_insert [DecidableEq α] [LT α] {a : α} {M N : Multiset α} (H : Mult
         · exact a0M
       exact H2
 
-lemma mord_wf_1 {_ : Multiset α} [DecidableEq α] [Preorder α] (a : α) (M0 : Multiset α)
+lemma mord_wf_1 [DecidableEq α] [Preorder α] (a : α) (M0 : Multiset α)
     (H1 : ∀ b M , LT.lt b a → AccM_1 M → AccM_1 (b ::ₘ M))
     (H2 : AccM_1 M0)
     (H3 : ∀ M, MultisetRedLt M M0 → AccM_1 (a ::ₘ M)) :
@@ -207,15 +198,11 @@ lemma mord_wf_2 [DecidableEq α] [Preorder α] (a : α)
   | intro x wfH wfH2 =>
     apply mord_wf_1
     · simpa
-    · intros b x a
-      unfold AccM_1
-      apply H
-      assumption
     · constructor
       simpa
     · simpa
 
-lemma mord_wf_3 {_ : Multiset α} [DecidableEq α] [Preorder α] :
+lemma mord_wf_3[DecidableEq α] [Preorder α] :
     ∀ (a:α), Acc LT.lt a → ∀ M, AccM_1 M → AccM_1 (a ::ₘ M) := by
   intro w w_a
   induction w_a with
@@ -237,7 +224,6 @@ lemma mred_acc [DecidableEq α] [Preorder α] :
     apply not_MultisetRedLt_0
   | cons _ _ ih =>
     apply mord_wf_3
-    · assumption
     · apply wf_el
       simp_all
     · apply ih
@@ -356,7 +342,6 @@ lemma LT_trans {α} [pre : Preorder α] [dec : DecidableEq α]:
       rw [this]
       rw [add_assoc]
     rw [this]
-    apply meq_union_meq_reverse
     have : Z1 ∩ Z2 + (Y1 - X2) = Z2 ∩ Z1 + (Y1 - X2) := by
       rw [Multiset.inter_comm]
     rw [this]
@@ -370,8 +355,7 @@ lemma LT_trans {α} [pre : Preorder α] [dec : DecidableEq α]:
       have : (X1 + (X2 - Y1)) = (X2 - Y1) + X1 := by rw [add_comm]
       rw [this]
       rw [add_assoc]
-    rw [this]
-    apply meq_union_meq_reverse
+    rw [this, add_left_inj]
     apply double_split
     rw [add_comm]
     rw [← N1_def]
@@ -522,7 +506,8 @@ lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
             apply MultisetRedLt.RedLt (Z + newY) (f y) y
             · rfl
             · have newY_y_Y: newY + {y} = Y := by
-                unfold_let newY; rw [add_comm, Multiset.singleton_add]; apply Multiset.cons_erase claim
+                unfold_let newY; rw [add_comm, Multiset.singleton_add]
+                apply Multiset.cons_erase claim
               have : Z + newY + {y} = Z + (newY + {y}) := by apply add_assoc
               rw [this]
               rw [newY_y_Y]
