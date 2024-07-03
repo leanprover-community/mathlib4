@@ -119,7 +119,7 @@ instance : Semigroup { x : R // 0 < x } :=
 instance : Distrib { x : R // 0 < x } :=
   Subtype.coe_injective.distrib _ coe_add val_mul
 
-instance [Nontrivial R] : One { x : R // 0 < x } :=
+instance : One { x : R // 0 < x } :=
   ⟨⟨1, one_pos⟩⟩
 
 @[simp]

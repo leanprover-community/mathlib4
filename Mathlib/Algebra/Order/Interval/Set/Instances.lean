@@ -249,7 +249,7 @@ variable [StrictOrderedSemiring α]
 
 namespace Set.Ioc
 
-instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
+instance one : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
 #align set.Ioc.has_one Set.Ioc.one
 
 @[simp, norm_cast]
