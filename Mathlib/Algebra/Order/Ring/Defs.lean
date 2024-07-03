@@ -235,9 +235,7 @@ instance (priority := 200) OrderedSemiring.toMulPosMono : MulPosMono α :=
   ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
 #align ordered_semiring.to_mul_pos_mono OrderedSemiring.toMulPosMono
 
-set_option linter.deprecated false in
-theorem bit1_mono : Monotone (bit1 : α → α) := fun _ _ h => add_le_add_right (bit0_mono h) _
-#align bit1_mono bit1_mono
+#noalign bit1_mono
 
 @[simp]
 theorem pow_nonneg (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
@@ -309,19 +307,8 @@ theorem Monotone.mul (hf : Monotone f) (hg : Monotone g) (hf₀ : ∀ x, 0 ≤ f
 
 end Monotone
 
-section
-set_option linter.deprecated false
-
-theorem bit1_pos [Nontrivial α] (h : 0 ≤ a) : 0 < bit1 a :=
-  zero_lt_one.trans_le <| bit1_zero.symm.trans_le <| bit1_mono h
-#align bit1_pos bit1_pos
-
-theorem bit1_pos' (h : 0 < a) : 0 < bit1 a := by
-  nontriviality
-  exact bit1_pos h.le
-#align bit1_pos' bit1_pos'
-
-end
+#noalign bit1_pos
+#noalign bit1_pos'
 
 theorem mul_le_one (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
   one_mul (1 : α) ▸ mul_le_mul ha hb hb' zero_le_one
@@ -944,50 +931,14 @@ theorem add_le_mul' (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ b * a :=
   (le_of_eq (add_comm _ _)).trans (add_le_mul b2 a2)
 #align add_le_mul' add_le_mul'
 
-set_option linter.deprecated false in
-section
-
-@[simp]
-theorem bit0_le_bit0 : bit0 a ≤ bit0 b ↔ a ≤ b := by
-  rw [bit0, bit0, ← two_mul, ← two_mul, mul_le_mul_left (zero_lt_two : 0 < (2 : α))]
-#align bit0_le_bit0 bit0_le_bit0
-
-@[simp]
-theorem bit0_lt_bit0 : bit0 a < bit0 b ↔ a < b := by
-  rw [bit0, bit0, ← two_mul, ← two_mul, mul_lt_mul_left (zero_lt_two : 0 < (2 : α))]
-#align bit0_lt_bit0 bit0_lt_bit0
-
-@[simp]
-theorem bit1_le_bit1 : bit1 a ≤ bit1 b ↔ a ≤ b :=
-  (add_le_add_iff_right 1).trans bit0_le_bit0
-#align bit1_le_bit1 bit1_le_bit1
-
-@[simp]
-theorem bit1_lt_bit1 : bit1 a < bit1 b ↔ a < b :=
-  (add_lt_add_iff_right 1).trans bit0_lt_bit0
-#align bit1_lt_bit1 bit1_lt_bit1
-
-@[simp]
-theorem one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
-  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two' α)]
-#align one_le_bit1 one_le_bit1
-
-@[simp]
-theorem one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
-  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two' α)]
-#align one_lt_bit1 one_lt_bit1
-
-@[simp]
-theorem zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
-  rw [bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
-#align zero_le_bit0 zero_le_bit0
-
-@[simp]
-theorem zero_lt_bit0 : (0 : α) < bit0 a ↔ 0 < a := by
-  rw [bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
-#align zero_lt_bit0 zero_lt_bit0
-
-end
+#noalign bit0_le_bit0
+#noalign bit0_lt_bit0
+#noalign bit1_le_bit1
+#noalign bit1_lt_bit1
+#noalign one_le_bit1
+#noalign one_lt_bit1
+#noalign zero_le_bit0
+#noalign zero_lt_bit0
 
 theorem mul_nonneg_iff_right_nonneg_of_pos (ha : 0 < a) : 0 ≤ a * b ↔ 0 ≤ b :=
   ⟨fun h => nonneg_of_mul_nonneg_right h ha, mul_nonneg ha.le⟩

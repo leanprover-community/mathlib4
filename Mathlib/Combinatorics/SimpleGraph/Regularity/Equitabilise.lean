@@ -80,7 +80,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     of `u` of size `n`). The rest of each branch is just tedious calculations to satisfy the
     induction hypothesis. -/
   by_cases h : ∀ u ∈ P.parts, card u < m + 1
-  · obtain ⟨t, hts, htn⟩ := exists_smaller_set s n (hn₂.trans_eq hs)
+  · obtain ⟨t, hts, htn⟩ := exists_subset_card_eq (hn₂.trans_eq hs)
     have ht : t.Nonempty := by rwa [← card_pos, htn]
     have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = (s \ t).card := by
       rw [card_sdiff ‹t ⊆ s›, htn, hn₃]
@@ -99,7 +99,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     · intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
   push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
-  obtain ⟨t, htu, htn⟩ := exists_smaller_set _ _ (hn₁.trans hu₂)
+  obtain ⟨t, htu, htn⟩ := exists_subset_card_eq (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]
   have hcard : ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = (s \ t).card := by
     rw [card_sdiff (htu.trans <| P.le hu₁), htn, hn₃]

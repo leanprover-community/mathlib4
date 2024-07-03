@@ -133,7 +133,6 @@ theorem specializes_iff_closure_subset : x ⤳ y ↔ closure ({y} : Set X) ⊆ c
 alias ⟨Specializes.closure_subset, _⟩ := specializes_iff_closure_subset
 #align specializes.closure_subset Specializes.closure_subset
 
--- Porting note (#10756): new lemma
 theorem specializes_iff_clusterPt : x ⤳ y ↔ ClusterPt y (pure x) :=
   (specializes_TFAE x y).out 0 6
 
