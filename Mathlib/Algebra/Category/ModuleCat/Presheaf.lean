@@ -536,7 +536,7 @@ noncomputable def forgetToPresheafModuleCatObj
   map_comp := fun {c₁ c₂ c₃} f g => by
       ext x
       change M.presheaf.map _ x = (M.presheaf.map _ ≫ M.presheaf.map _) x
-      rw [← M.presheaf.map_comp] }
+      rw [← M.presheaf.map_comp]
 
 /--
 Implementation of the functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ ModuleCat (R.obj X)`

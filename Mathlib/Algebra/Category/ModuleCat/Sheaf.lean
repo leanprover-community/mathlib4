@@ -99,13 +99,11 @@ when `X` is initial.
 -/
 @[simps]
 noncomputable def forgetToSheafModuleCat
-      (X : Cᵒᵖ) (hX : Limits.IsInitial X) [UnivLE.{max v₁ u₁, w}] :
+      (X : Cᵒᵖ) (hX : Limits.IsInitial X)  :
     SheafOfModules.{w} R ⥤ Sheaf J (ModuleCat.{w} (R.1.obj X)) where
   obj M := ⟨(PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1,
-    have := ModuleCat.hasLimitsOfSize (R := R.1.obj X)
-    CategoryTheory.Presheaf.isSheaf_iff_isSheaf_comp J
-      ((PresheafOfModules.forgetToPresheafModuleCat X hX).obj M.1)
-      (forget₂ (ModuleCat (R.1.obj X)) AddCommGrp) |>.2 M.isSheaf⟩
+    Presheaf.isSheaf_of_isSheaf_comp _ _
+      (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrp.{w}) M.isSheaf⟩
   map f := { val := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
 /-- The canonical isomorphism between
