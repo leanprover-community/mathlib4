@@ -38,6 +38,10 @@ variable {I J : Ideal R} {K L : Ideal S}
 def map (I : Ideal R) : Ideal S :=
   span (f '' I)
 
+lemma map_congr {G : Type*} [FunLike G R S] (g : G) (h : ⇑f = ⇑g) :
+    I.map f = I.map g := by
+  simp [map, h]
+
 /-- `I.comap f` is the preimage of `I` under `f`. -/
 def comap [RingHomClass F R S] (I : Ideal S) : Ideal R where
   carrier := f ⁻¹' I
