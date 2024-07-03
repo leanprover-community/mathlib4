@@ -805,7 +805,7 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
 lemma ωScottContinuous.bind {β γ} {f : α → Part β} {g : α → β → Part γ} (hf : ωScottContinuous f)
     (hg : ωScottContinuous g) : ωScottContinuous fun x ↦ f x >>= g x :=
   ωScottContinuous.of_monotone_map_ωSup
-    ⟨hf.monotone.bind hg.monotone, fun c ↦ by rw [hf.map_ωSup, hg.map_ωSup, ← ωSup_bind]; rfl⟩
+    ⟨hf.monotone.partBind hg.monotone, fun c ↦ by rw [hf.map_ωSup, hg.map_ωSup, ← ωSup_bind]; rfl⟩
 
 lemma ωScottContinuous.map {β γ} {f : β → γ} {g : α → Part β} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ f <$> g x := by

@@ -174,7 +174,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
 #align part.fix_le Part.fix_le
 
 variable {f}
-variable (hc : Continuous f)
+variable (hc : ωScottContinuous f)
 
 theorem fix_eq : Part.fix f = f (Part.fix f) := by
   rw [fix_eq_ωSup f, (ωScottContinuous_iff_monotone_map_ωSup.mp hc).2]
