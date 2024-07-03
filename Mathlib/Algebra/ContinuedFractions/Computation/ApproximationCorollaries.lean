@@ -16,7 +16,7 @@ import Mathlib.Topology.Order.LeftRightNhds
 
 ## Summary
 
-We show that the gcf given by `GenContFract.of` in fact is a regular continued
+We show that the gcf given by `GenContFract.of` in fact is a (regular) continued
 fraction. Using the equivalence of the convergents computations
 (`GenContFract.convs` and `GenContFract.convs'`) for
 continued fractions (see `Algebra.ContinuedFractions.ConvergentsEquiv`), it follows that the
