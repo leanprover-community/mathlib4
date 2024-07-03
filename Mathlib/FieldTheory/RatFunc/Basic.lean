@@ -385,8 +385,8 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
         congr 1 -- Porting note: this was a `rw [ofFractionRing.inj_eq]` which was overkill anyway
         rw [Localization.mk_eq_mk_iff]
       rotate_left
-      · exact hφ hq
       · exact hφ hq'
+      · exact hφ hq
       refine Localization.r_of_eq ?_
       simpa only [map_mul] using congr_arg φ h
   map_one' := by

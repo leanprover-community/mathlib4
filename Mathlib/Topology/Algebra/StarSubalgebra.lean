@@ -173,7 +173,7 @@ theorem _root_.StarAlgHomClass.ext_topologicalClosure [T2Space B] {F : Type*}
   have : (φ : S.topologicalClosure →⋆ₐ[R] B) = (ψ : S.topologicalClosure →⋆ₐ[R] B) := by
     refine StarAlgHom.ext_topologicalClosure (R := R) (A := A) (B := B) hφ hψ (StarAlgHom.ext ?_)
     simpa only [StarAlgHom.coe_comp, StarAlgHom.coe_coe] using h
-  rw [DFunLike.ext'_iff, ← StarAlgHom.coe_coe]
+  rw [DFunLike.ext'_iff, ← StarAlgHom.coe_coe (R := R)]
   apply congrArg _ this
 #align star_alg_hom_class.ext_topological_closure StarAlgHomClass.ext_topologicalClosure
 

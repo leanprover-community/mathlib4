@@ -147,7 +147,7 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
-  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  rw [← Submodule.map_span (R := ℤ), ← SetLike.mem_coe, Submodule.map_coe]
   rw [← RingHom.map_range, Subring.mem_map, Set.mem_image]
   simp only [SetLike.mem_coe, mem_span_integralBasis K]
   rfl
@@ -579,7 +579,7 @@ theorem mem_span_latticeBasis (x : (E K)) :
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
-  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  rw [← Submodule.map_span (R := ℤ), ← SetLike.mem_coe, Submodule.map_coe]
   simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
     RingHom.mem_range, exists_exists_eq_and]
   rfl
@@ -659,7 +659,7 @@ theorem mem_span_fractionalIdealLatticeBasis (x : (E K)) :
         (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (basisOfFractionalIdeal K I)) by
       rw [← Set.range_comp]
       exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
-  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  rw [← Submodule.map_span (R := ℤ), ← SetLike.mem_coe, Submodule.map_coe]
   rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
         ext; erw [mem_span_basisOfFractionalIdeal]]
   rfl

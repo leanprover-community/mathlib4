@@ -72,7 +72,7 @@ theorem le_eqLocus {f g : F} {S : Submodule R M} : S ≤ eqLocus f g ↔ Set.EqO
 
 theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
     Set.EqOn f g ↑(S ⊔ T) := by
-  rw [← le_eqLocus] at hS hT ⊢
+  rw [← le_eqLocus (R := R)] at hS hT ⊢
   exact sup_le hS hT
 
 theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)

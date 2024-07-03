@@ -256,8 +256,6 @@ theorem colimitLimitToLimitColimit_surjective :
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
       intros j₁ j₂ j₃ j₄ f f'
       rw [s', s']
-      -- Porting note: the three goals here in Lean 3 were in a different order
-      · exact k'O
       · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,
           Finset.mem_biUnion.mpr ⟨j₄, Finset.mem_univ _,
             Finset.mem_biUnion.mpr ⟨f', Finset.mem_univ _, by

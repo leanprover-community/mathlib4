@@ -787,7 +787,7 @@ theorem basis_iff_mem_maximals_Prop (hX : X ⊆ M.E := by aesop_mat):
 theorem Indep.basis_of_maximal_subset (hI : M.Indep I) (hIX : I ⊆ X)
     (hmax : ∀ ⦃J⦄, M.Indep J → I ⊆ J → J ⊆ X → J ⊆ I) (hX : X ⊆ M.E := by aesop_mat) :
     M.Basis I X := by
-  rw [basis_iff (by aesop_mat : X ⊆ M.E), and_iff_right hI, and_iff_right hIX]
+  rw [basis_iff .., and_iff_right hI, and_iff_right hIX]
   exact fun J hJ hIJ hJX ↦ hIJ.antisymm (hmax hJ hIJ hJX)
 
 theorem Basis.basis_subset (hI : M.Basis I X) (hIY : I ⊆ Y) (hYX : Y ⊆ X) : M.Basis I Y := by
@@ -806,7 +806,7 @@ theorem Indep.basis_self (h : M.Indep I) : M.Basis I I :=
 
 theorem Basis.dep_of_ssubset (hI : M.Basis I X) (hIY : I ⊂ Y) (hYX : Y ⊆ X) : M.Dep Y := by
   have : X ⊆ M.E := hI.subset_ground
-  rw [← not_indep_iff]
+  rw [← not_indep_iff ..]
   exact fun hY ↦ hIY.ne (hI.eq_of_subset_indep hY hIY.subset hYX)
 
 theorem Basis.insert_dep (hI : M.Basis I X) (he : e ∈ X \ I) : M.Dep (insert e I) :=
@@ -827,7 +827,7 @@ theorem Indep.subset_basis_of_subset (hI : M.Indep I) (hIX : I ⊆ X) (hX : X �
     ∃ J, M.Basis J X ∧ I ⊆ J := by
   obtain ⟨J, ⟨(hJ : M.Indep J),hIJ,hJX⟩, hJmax⟩ := M.maximality X hX I hI hIX
   use J
-  rw [and_iff_left hIJ, basis_iff, and_iff_right hJ, and_iff_right hJX]
+  rw [and_iff_left hIJ, basis_iff .., and_iff_right hJ, and_iff_right hJX]
   exact fun K hK hJK hKX ↦ hJK.antisymm (hJmax ⟨hK, hIJ.trans hJK, hKX⟩ hJK)
 
 theorem Indep.subset_basis'_of_subset (hI : M.Indep I) (hIX : I ⊆ X) :
@@ -973,7 +973,7 @@ theorem Basis'.inter_eq_of_subset_indep (hI : M.Basis' I X) (hIJ : I ⊆ J) (hJ 
 
 theorem Base.basis_of_subset (hX : X ⊆ M.E := by aesop_mat) (hB : M.Base B) (hBX : B ⊆ X) :
     M.Basis B X := by
-  rw [basis_iff, and_iff_right hB.indep, and_iff_right hBX]
+  rw [basis_iff .., and_iff_right hB.indep, and_iff_right hBX]
   exact fun J hJ hBJ _ ↦ hB.eq_of_subset_indep hJ hBJ
 
 theorem exists_basis_disjoint_basis_of_subset (M : Matroid α) {X Y : Set α} (hXY : X ⊆ Y)

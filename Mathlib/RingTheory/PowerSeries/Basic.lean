@@ -665,13 +665,14 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
   simp only [coeff]
   convert MvPowerSeries.coeff_prod _ _ _
   rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq, sum_map, sum_congr rfl]
-  intro x _
-  apply prod_congr rfl
-  intro i _
-  congr 2
-  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
-    Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
-    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+  · intro x _
+    apply prod_congr rfl
+    intro i _
+    congr 2
+    simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
+      Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
+      Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+  · infer_instance
 
 end CommSemiring
 

@@ -71,8 +71,8 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   rw [cycleType_eq' l.toFinset]
   · simp [List.dedup_eq_self.mpr hl, (· ∘ ·)]
   · simpa using h1
-  · simpa [hl] using h2
   · simp [hl, h0]
+  · simpa [hl] using h2
 #align equiv.perm.cycle_type_eq Equiv.Perm.cycleType_eq
 
 @[simp] -- Porting note: new attr
