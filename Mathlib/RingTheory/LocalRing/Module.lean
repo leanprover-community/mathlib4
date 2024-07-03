@@ -58,7 +58,8 @@ theorem LocalRing.map_mkQ_eq {N₁ N₂ : Submodule R M} (h : N₁ ≤ N₂) (h'
     N₁.map (Submodule.mkQ (𝔪 • N₂)) = N₂.map (Submodule.mkQ (𝔪 • N₂)) ↔ N₁ = N₂ := by
   constructor
   · intro hN
-    have : N₂ ≤ 𝔪 • N₂ ⊔ N₁ := by simpa using Submodule.comap_mono (f := Submodule.mkQ (𝔪 • N₂)) hN.ge
+    have : N₂ ≤ 𝔪 • N₂ ⊔ N₁ := by
+      simpa using Submodule.comap_mono (f := Submodule.mkQ (𝔪 • N₂)) hN.ge
     rw [sup_comm] at this
     exact h.antisymm (Submodule.le_of_le_smul_of_le_jacobson_bot h'
       (by rw [jacobson_eq_maximalIdeal]; exact bot_ne_top) this)
