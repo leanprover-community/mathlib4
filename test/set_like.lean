@@ -9,13 +9,16 @@ section Delab
 variable {M : Type u} [Monoid M] (S S' : Submonoid M)
 
 /-- info: ↥S → ↥S' : Type u -/
-#guard_msgs in #check S → S'
+#guard_msgs in
+#check S → S'
 
 /-- info: ↥S : Type u -/
-#guard_msgs in #check {x // x ∈ S}
+#guard_msgs in
+#check {x // x ∈ S}
 
 /-- info: { x // 1 * x ∈ S } : Type u -/
-#guard_msgs in #check {x // 1 * x ∈ S}
+#guard_msgs in
+#check {x // 1 * x ∈ S}
 
 end Delab
 

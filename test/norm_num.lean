@@ -428,6 +428,8 @@ noncomputable def foo : ℝ := 1
 
 example : foo = 1 := by norm_num [foo]
 
+set_option linter.noInitialWhitespace false
+
 section
   variable [AddMonoidWithOne α]
   example : (1 + 0 : α) = (0 + 1 : α) := by norm_num1

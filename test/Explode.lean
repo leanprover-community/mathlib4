@@ -22,7 +22,8 @@ info: true_iff : ∀ (p : Prop), (True ↔ p) = p
 13│12  │ propext   │ (True ↔ p) = p
 14│0,13│ ∀I        │ ∀ (p : Prop), (True ↔ p) = p
 -/
-#guard_msgs in #explode true_iff
+#guard_msgs in
+#explode true_iff
 
 set_option linter.setOption false
 -- On command line, tests format functions with => rather than ↦ without this.
@@ -37,7 +38,8 @@ info: lambda : True → True
 0│   │ a  ├ True
 1│0,0│ ∀I │ True → True
 -/
-#guard_msgs in #explode lambda
+#guard_msgs in
+#explode lambda
 
 theorem application : True ∧ True :=
   And.intro True.intro True.intro
@@ -48,7 +50,8 @@ info: application : True ∧ True
 0│   │ True.intro │ True
 1│0,0│ And.intro  │ True ∧ True
 -/
-#guard_msgs in #explode application
+#guard_msgs in
+#explode application
 
 theorem theorem_1 : ∀ (p : Prop), p → p :=
   fun (p : Prop) ↦ (fun hP : p ↦ hP)
@@ -59,7 +62,8 @@ info: theorem_1 : ∀ (p : Prop), p → p
 1│     │ hP ├ p
 2│0,1,1│ ∀I │ ∀ (p : Prop), p → p
 -/
-#guard_msgs in #explode theorem_1
+#guard_msgs in
+#explode theorem_1
 
 theorem theorem_2 : ∀ (p : Prop) (q : Prop), p → q → p ∧ q :=
   fun p ↦ fun q ↦ fun hP ↦ fun hQ ↦ And.intro hP hQ
@@ -74,7 +78,8 @@ info: theorem_2 : ∀ (p q : Prop), p → q → p ∧ q
 4│2,3      │ And.intro │ p ∧ q
 5│0,1,2,3,4│ ∀I        │ ∀ (p q : Prop), p → q → p ∧ q
 -/
-#guard_msgs in #explode theorem_2
+#guard_msgs in
+#explode theorem_2
 
 theorem theorem_3 (a : Prop) (h : a) : a ↔ True :=
   Iff.intro
@@ -94,7 +99,8 @@ info: theorem_3 : ∀ (a : Prop), a → (a ↔ True)
 7│4,6  │ Iff.intro │ a ↔ True
 8│0,1,7│ ∀I        │ ∀ (a : Prop), a → (a ↔ True)
 -/
-#guard_msgs in #explode theorem_3
+#guard_msgs in
+#explode theorem_3
 
 
 theorem theorem_4 : ∀ p q : Prop, (p → q) → (¬q → ¬p) :=
@@ -113,7 +119,8 @@ info: theorem_4 : ∀ (p q : Prop), (p → q) → ¬q → ¬p
 7│6          │ False.elim │ False
 8│0,1,2,3,4,7│ ∀I         │ ∀ (U W : Prop), (U → W) → ¬W → U → False
 -/
-#guard_msgs in #explode theorem_4
+#guard_msgs in
+#explode theorem_4
 
 lemma lemma_5 : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
   fun p ↦ fun q ↦
@@ -143,7 +150,8 @@ info: lemma_5 : ∀ (p q : Prop), (¬q → ¬p) → p → q
 13│4,6,12    │ Or.elim      │ q
 14│0,1,2,3,13│ ∀I           │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
-#guard_msgs in #explode lemma_5
+#guard_msgs in
+#explode lemma_5
 
 
 lemma lemma_6 : ∀ p q : Prop, (p → q) → p → q :=
@@ -159,7 +167,8 @@ info: lemma_6 : ∀ (p q : Prop), (p → q) → p → q
 4│2,3      │ ∀E  │ h
 5│0,1,2,3,4│ ∀I  │ ∀ (p h : Prop), (p → h) → p → h
 -/
-#guard_msgs in #explode lemma_6
+#guard_msgs in
+#explode lemma_6
 
 lemma lemma_7 : ∀ p q r : Prop, (p → q) → (p → q → r) → (p → r) :=
   fun p q r hq hqr hp ↦
@@ -181,7 +190,8 @@ info: lemma_7 : ∀ (p q r : Prop), (p → q) → (p → q → r) → p → r
 10│8,6           │ ∀E  │ r
 11│0,1,2,3,4,5,10│ ∀I  │ ∀ (p q r : Prop), (p → q) → (p → q → r) → p → r
 -/
-#guard_msgs in #explode lemma_7
+#guard_msgs in
+#explode lemma_7
 
 lemma lemma_5' : ∀ p q : Prop, (¬q → ¬p) → (p → q) :=
   fun p ↦ fun q ↦
@@ -211,7 +221,8 @@ info: lemma_5' : ∀ (p q : Prop), (¬q → ¬p) → p → q
 14│3,6,13  │ Or.elim      │ p → q
 15│0,1,2,14│ ∀I           │ ∀ (p q : Prop), (¬q → ¬p) → p → q
 -/
-#guard_msgs in #explode lemma_5'
+#guard_msgs in
+#explode lemma_5'
 
 section
 variable (p q : Prop)
@@ -224,7 +235,8 @@ info: fun hp hnp ↦ hnp hp : p → (p → q) → q
 2│1,0  │ ∀E  │ q
 3│0,1,2│ ∀I  │ p → (p → q) → q
 -/
-#guard_msgs in #explode fun (hp : p) (hnp : p → q) ↦ hnp hp
+#guard_msgs in
+#explode fun (hp : p) (hnp : p → q) ↦ hnp hp
 
 /--
 info: fun hNQNP ↦
@@ -246,7 +258,8 @@ info: fun hNQNP ↦
 12│1,4,11│ Or.elim      │ p → q
 13│0,12  │ ∀I           │ (¬q → ¬p) → p → q
 -/
-#guard_msgs in #explode fun (hNQNP : ¬q → ¬p) ↦
+#guard_msgs in
+#explode fun (hNQNP : ¬q → ¬p) ↦
   Or.elim (Classical.em q)
     (fun hQ hP ↦ hQ)
     (fun hNQ hP ↦
