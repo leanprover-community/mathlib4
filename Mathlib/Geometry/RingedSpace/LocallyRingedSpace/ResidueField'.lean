@@ -3,7 +3,10 @@ Copyright (c) 2024 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li
 -/
+import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.CategoryTheory.Iso
 
 /-!
 # The Residue Field of a Point in a Locally Ringed Space and the Canonical Morphism
@@ -80,5 +83,41 @@ noncomputable def HomFromResidueFieldSpec {X : Scheme} (x : X) :
     (HomFromStalkSpec x)
 
 end Scheme
+
+lemma mapFromSpec {X : Scheme} {U V : TopologicalSpace.Opens X.carrier}
+    (h : Opposite.op U ⟶ Opposite.op V) (hU : IsAffineOpen U) (hV : IsAffineOpen V) :
+  CategoryTheory.CategoryStruct.comp (Scheme.Spec.map (X.presheaf.map h).op) hU.fromSpec = hV.fromSpec := by
+  delta IsAffineOpen.fromSpec Scheme.isoSpec
+  rw [← CategoryTheory.IsIso.inv_comp_eq]
+  rw [CategoryTheory.Iso.eq_inv_comp]
+  simp only [← CategoryTheory.Functor.map_inv, ← CategoryTheory.op_inv, CategoryTheory.eqToHom_op,
+    CategoryTheory.inv_eqToHom,
+    ← CategoryTheory.Functor.map_comp_assoc, ← CategoryTheory.op_comp,
+    ← CategoryTheory.Functor.map_comp]
+  rw [CategoryTheory.asIso_hom, CategoryTheory.asIso_inv, ← CategoryTheory.Category.assoc]
+  have e := (ΓSpec.adjunction_unit_naturality (X.restrict_functor.map h.unop).1)
+  -- rw [functor.id_map, category_theory.functor.comp_map, functor.right_op_map,
+  --   Scheme.Γ_map_op, X.restrict_functor_map_app] at e,
+  -- dsimp only [Scheme.restrict_functor, unop_op, over.mk, costructured_arrow.mk] at e,
+  -- erw ← e,
+  -- rw [category.assoc, is_iso.hom_inv_id_assoc, over.hom_mk_left, is_open_immersion.lift_fac]
+
+noncomputable def FromSpecStalk {X : Scheme} {U : TopologicalSpace.Opens X.carrier}
+    (hU : IsAffineOpen U) {x : X.carrier} (hxU : x ∈ U) :
+    Scheme.Spec.obj (Opposite.op $ X.stalk x) ⟶ X :=
+  CategoryTheory.CategoryStruct.comp (Scheme.Spec.map (X.presheaf.germ ⟨x, hxU⟩).op) hU.fromSpec
+
+lemma fromSpecStalk_eq {X : Scheme} (x : X.carrier) {U V : TopologicalSpace.Opens X.carrier}
+  (hU : IsAffineOpen U) (hV : IsAffineOpen V) (hxU : x ∈ U) (hxV : x ∈ V) :
+    FromSpecStalk hU hxU = FromSpecStalk hV hxV := by
+  obtain ⟨U', h₁, h₂, h₃ : U' ≤ U ⊓ V⟩ :=
+    TopologicalSpace.Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X) (show x ∈ U ⊓ V from ⟨hxU, hxV⟩)
+  transitivity FromSpecStalk h₁ h₂; delta FromSpecStalk
+  · sorry
+  · sorry
+  -- { rw [← hU.map_from_Spec (hom_of_le $ h₃.trans inf_le_left).op h₁, ← functor.map_comp_assoc,
+  --     ← op_comp, Top.presheaf.germ_res], refl }
+  -- { rw [← hV.map_from_Spec (hom_of_le $ h₃.trans inf_le_right).op h₁, ← functor.map_comp_assoc,
+  --     ← op_comp, Top.presheaf.germ_res], refl },
 
 end AlgebraicGeometry
