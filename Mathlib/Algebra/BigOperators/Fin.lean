@@ -94,12 +94,12 @@ theorem prod_univ_castSucc [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
 #align fin.sum_univ_cast_succ Fin.sum_univ_castSucc
 
 @[to_additive (attr := simp)]
-theorem prod_univ_get [CommMonoid α] (l : List α) : ∏ i, l.get i = l.prod := by
+theorem prod_univ_get [CommMonoid α] (l : List α) : ∏ i : Fin l.length, l[i.1] = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive (attr := simp)]
 theorem prod_univ_get' [CommMonoid β] (l : List α) (f : α → β) :
-    ∏ i, f (l.get i) = (l.map f).prod := by
+    ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive]
@@ -506,7 +506,7 @@ theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
         congr_arg _ (alternatingProd_eq_finset_prod _)
     _ = ∏ i : Fin (L.length + 2), List.get (g::h::L) i ^ (-1 : ℤ) ^ (i : ℕ) := by
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
-          simp [Nat.succ_eq_add_one, pow_add]}
+          simp [pow_add]}
 #align list.alternating_prod_eq_finset_prod List.alternatingProd_eq_finset_prod
 #align list.alternating_sum_eq_finset_sum List.alternatingSum_eq_finset_sum
 

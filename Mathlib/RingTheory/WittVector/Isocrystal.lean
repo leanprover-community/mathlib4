@@ -52,9 +52,6 @@ This file introduces notation in the locale `Isocrystal`.
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 open FiniteDimensional
@@ -167,9 +164,9 @@ def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section Deriving
 
-instance : AddCommGroup (StandardOneDimIsocrystal p k m) :=
+instance {m : ℤ} : AddCommGroup (StandardOneDimIsocrystal p k m) :=
   inferInstanceAs (AddCommGroup K(p, k))
-instance : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
+instance {m : ℤ} : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
   inferInstanceAs (Module K(p, k) K(p, k))
 
 end Deriving

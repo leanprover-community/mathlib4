@@ -81,7 +81,8 @@ def toConjAct : G ≃* ConjAct G :=
   ofConjAct.symm
 #align conj_act.to_conj_act ConjAct.toConjAct
 
-/-- A recursor for `ConjAct`, for use as `induction x using ConjAct.rec` when `x : ConjAct G`. -/
+/-- A recursor for `ConjAct`, for use as `induction x` when `x : ConjAct G`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {C : ConjAct G → Sort*} (h : ∀ g, C (toConjAct g)) : ∀ g, C g :=
   h
 #align conj_act.rec ConjAct.rec

@@ -7,6 +7,7 @@ import Mathlib.Algebra.PUnitInstances
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.ring.boolean_ring from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

@@ -44,7 +44,9 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R`-algebra `A` is formally unramified if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`. -/
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`.
+
+See <https://stacks.math.columbia.edu/tag/00UM>. -/
 @[mk_iff]
 class FormallyUnramified : Prop where
   comp_injective :
@@ -234,6 +236,10 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type.
+
+Note that the Stacks project has a different definition of unramified, and tag
+<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the
+same as this one.
 -/
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance

@@ -266,7 +266,7 @@ theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o
   · refine le_cof_type.2 fun S H => ?_
     have : Cardinal.lift.{u, v} #(ULift.up ⁻¹' S) ≤ #(S : Type (max u v)) := by
       rw [← Cardinal.lift_umax.{v, u}, ← Cardinal.lift_id'.{v, u} #S]
-      exact mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{u, v})
+      exact mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{v, u})
     refine (Cardinal.lift_le.2 <| cof_type_le ?_).trans this
     exact fun a =>
       let ⟨⟨b⟩, bs, br⟩ := H ⟨a⟩
@@ -327,7 +327,7 @@ theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
 theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
     (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : lsub.{u, v} f < c :=
-  lt_of_le_of_ne (lsub_le.{v, u} hf) fun h => by
+  lt_of_le_of_ne (lsub_le hf) fun h => by
     subst h
     exact (cof_lsub_le_lift.{u, v} f).not_lt hι
 #align ordinal.lsub_lt_ord_lift Ordinal.lsub_lt_ord_lift
@@ -1244,7 +1244,7 @@ theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃
 theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
   IsInaccessible.mk (by simpa using lift_lt_univ' ℵ₀) (by simp) fun c h => by
     rcases lt_univ'.1 h with ⟨c, rfl⟩
-    rw [← lift_two_power.{u, max (u + 1) v}]
+    rw [← lift_two_power]
     apply lift_lt_univ'
 #align cardinal.univ_inaccessible Cardinal.univ_inaccessible
 
