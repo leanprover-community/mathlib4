@@ -3,10 +3,14 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.Gluing
+import Mathlib.AlgebraicGeometry.Scheme
 
 /-!
 -/
+
+universe u
 
 variable (R A A') [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 
@@ -45,3 +49,49 @@ def CategoryTheory.Functor.FullyFaithful.mapOver (ff : F.FullyFaithful) (c : C) 
 noncomputable def AlgHom.equivSchemeOver :
     (A →ₐ[R] A') ≃ (Algebra.schemeSpecOver R A' ⟶ Algebra.schemeSpecOver R A) :=
   (AlgHom.equivHomOver R A A').trans (Spec.fullyFaithful.mapOver _).homEquiv
+
+/-! ### The coordinate ring at infinity -/
+
+namespace WeierstrassCurve.Projective
+
+noncomputable section
+
+open scoped PolynomialPolynomial
+open Polynomial AlgebraicGeometry
+
+variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
+
+/-- The equation of the Weierstrass curve at infinity. -/
+def polynomialInf : R[X][Y] :=
+  letI x : R[X][Y] := Polynomial.C X;
+  -x ^ 3 + Y * (1 + CC W.a₁ * x - CC W.a₂ * x ^ 2 + CC W.a₃ * Y - CC W.a₄ * x * Y - CC W.a₆ * Y ^ 2)
+
+/-- The coordinate ring at infinity. -/
+def CoordinateRingInf : Type u := AdjoinRoot (polynomialInf W)
+
+inductive Chart : Type u | XY : Chart | XZ : Chart
+#check AlgebraicGeometry.Spec
+/-- Glue data for the projective Weierstrass curve. -/
+def glueData : Scheme.GlueData where
+  J := Chart
+  U := Chart.rec (Spec <| Affine.CoordinateRing W) (CoordinateRingInf W)
+  V := _
+  f := _
+  t := _
+  t_id := _
+  t' := _
+  t_fac := _
+  cocycle := _
+  f_open := _
+
+
+/- AlgebraicGeometry.Scheme.GlueData -/
+/- AlgebraicGeometry.Scheme.GlueData.glued -/
+/- AlgebraicGeometry.Scheme.GlueData.openCover -/
+/- AlgebraicGeometry.Scheme.OpenCover.glueMorphisms -/
+/- AlgebraicGeometry.Scheme.OpenCover -/
+/- AlgebraicGeometry.Scheme.AffineOpenCover -/
+
+end
+
+end WeierstrassCurve.Projective
