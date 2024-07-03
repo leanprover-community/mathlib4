@@ -3,13 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
@@ -19,11 +18,12 @@ import Mathlib.Tactic.Tauto
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
 /-!
-# Ordered rings and semirings
+# Basic facts for ordered rings and semirings
 
-This file develops the basics of ordered (semi)rings.
+This file develops the basics of ordered (semi)rings in an unbundled fashion for later use with
+the bundled classes from `Algebra.Order.Ring.Defs`.
 
-Each typeclass here comprises
+The set of typeclass variables here comprises
 * an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)
 * an order class (`PartialOrder`, `LinearOrder`)
 * assumptions on how both interact ((strict) monotonicity, canonicity)
@@ -34,7 +34,7 @@ For short,
 * "`*` respects `≤`" means "monotonicity of multiplication by a nonnegative number".
 * "`*` respects `<`" means "strict monotonicity of multiplication by a positive number".
 
-## Typeclasses
+## Typeclasses found in `Algebra.Order.Ring.Defs`
 
 * `OrderedSemiring`: Semiring with a partial order such that `+` and `*` respect `≤`.
 * `StrictOrderedSemiring`: Nontrivial semiring with a partial order such that `+` and `*` respects
@@ -106,7 +106,19 @@ immediate predecessors and what conditions are added to each of them.
   - `LinearOrderedRing` & commutativity of multiplication
   - `LinearOrderedCommSemiring` & additive inverses
   - `CommRing` & `IsDomain` & linear order structure
+
+## Generality
+
+Each section is labelled with a corresponding bundled ordered ring typeclass in mind. Mixin's for
+relating the order structures and ring structures are added as needed.
+
+TODO: the mixin assumptiosn can be relaxed in most cases
+
 -/
+
+
+assert_not_exists OrderedCommMonoid
+assert_not_exists MonoidHom
 
 open Function
 
@@ -983,4 +995,3 @@ end LinearOrderedRing
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
 
-assert_not_exists MonoidHom

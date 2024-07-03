@@ -4,17 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
--- import Mathlib.Algebra.CharZero.Defs
--- import Mathlib.Algebra.Group.Pi.Basic
--- import Mathlib.Algebra.Group.Units
--- import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Order.Group.Defs
--- import Mathlib.Algebra.Order.GroupWithZero.Unbundled
--- import Mathlib.Algebra.Order.Monoid.Canonical.Defs
--- import Mathlib.Algebra.Order.Monoid.NatCast
--- import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
--- import Mathlib.Algebra.Ring.Defs
--- import Mathlib.Tactic.Tauto
 
 #align_import algebra.order.ring.char_zero from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
@@ -305,6 +296,11 @@ instance (priority := 100) StrictOrderedSemiring.toCharZero [StrictOrderedSemiri
   cast_injective :=
     (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
 #align strict_ordered_semiring.to_char_zero StrictOrderedSemiring.toCharZero
+
+-- see Note [lower instance priority]
+instance (priority := 100) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
+  ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
+#align strict_ordered_semiring.to_no_max_order StrictOrderedSemiring.toNoMaxOrder
 
 end StrictOrderedSemiring
 
