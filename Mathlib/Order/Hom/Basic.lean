@@ -989,7 +989,7 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
   map_rel_iff' {p q} := by
     simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_coe,
                OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
-    exact Iff.symm f.forall_congr_left'
+    exact Iff.symm f.forall_congr_left
 
 /-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
 from `α` and `β` to themselves are order-isomorphic. -/

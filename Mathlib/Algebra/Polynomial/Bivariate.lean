@@ -11,54 +11,74 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 # Bivariate polynomials
 
 This file introduces the notation `R[X][Y]` for the polynomial ring `R[X][X]` in two variables,
-and the notation `Y` for the second variable, in the `PolynomialPolynomial` scope.
+and the notation `Y` for the second variable, in the `Polynomial` scope.
 
 It also defines `Polynomial.evalEval` for the evaluation of a bivariate polynomial at a point
 on the affine plane, which is a ring homomorphism (`Polynomial.evalEvalRingHom`), as well as
 the abbreviation `CC` to view a constant in the base ring `R` as a bivariate polynomial.
 -/
 
-/-- The notation `Y` for `X` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation3:max "Y" => Polynomial.X (R := Polynomial _)
+/-- The notation `Y` for `X` in the `Polynomial` scope. -/
+scoped[Polynomial] notation3:max "Y" => Polynomial.X (R := Polynomial _)
 
-/-- The notation `R[X][Y]` for `R[X][X]` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
+/-- The notation `R[X][Y]` for `R[X][X]` in the `Polynomial` scope. -/
+scoped[Polynomial] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
 
 namespace Polynomial
 
 noncomputable section
-
-open scoped PolynomialPolynomial
-
 variable {R S : Type*}
 
-/-- `evalEval x y p` is the evaluation `p(x,y)` of a two-variable polynomial `p : R[X][Y]`. -/
-abbrev evalEval [Semiring R] (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
+section Semiring
 
-/-- `evalEval x y` as a ring homomorphism. -/
-@[simps!] abbrev evalEvalRingHom [CommSemiring R] (x y : R) : R[X][Y] →+* R :=
-  (evalRingHom x).comp (evalRingHom <| C y)
+variable [Semiring R]
+
+/-- `evalEval x y p` is the evaluation `p(x,y)` of a two-variable polynomial `p : R[X][Y]`. -/
+abbrev evalEval (x y : R) (p : R[X][Y]) : R := eval x (eval (C y) p)
 
 /-- A constant viewed as a polynomial in two variables. -/
-abbrev CC [Semiring R] (r : R) : R[X][Y] := C (C r)
+abbrev CC (r : R) : R[X][Y] := C (C r)
 
-lemma coe_algebraMap_eq_CC [CommSemiring R] : algebraMap R R[X][Y] = CC (R := R) := rfl
-lemma coe_evalEvalRingHom [CommSemiring R] (x y : R) : evalEvalRingHom x y = evalEval x y := rfl
+lemma evalEval_C (x y : R) (p : R[X]) : (C p).evalEval x y = p.eval x := by
+  rw [evalEval, eval_C]
 
-lemma evalEval_CC [Semiring R] (x y z : R) : evalEval x y (CC z) = z := by
+lemma evalEval_X (x y : R) : X.evalEval x y = y := by
+  rw [evalEval, eval_X, eval_C]
+
+lemma evalEval_CC (x y z : R) : (CC z).evalEval x y = z := by
   rw [evalEval, CC, eval_C, eval_C]
 
-lemma evalEvalRingHom_comp_algebraMap [CommSemiring R] (x y : R) :
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R]
+
+lemma coe_algebraMap_eq_CC : algebraMap R R[X][Y] = CC (R := R) := rfl
+
+/-- `evalEval x y` as a ring homomorphism. -/
+@[simps!] abbrev evalEvalRingHom (x y : R) : R[X][Y] →+* R :=
+  (evalRingHom x).comp (evalRingHom <| C y)
+
+lemma coe_evalEvalRingHom (x y : R) : evalEvalRingHom x y = evalEval x y := rfl
+
+lemma evalEvalRingHom_comp_algebraMap (x y : R) :
     (evalEvalRingHom x y).comp (algebraMap R R[X][Y]) = .id _ := by
   ext; apply evalEval_CC
 
-lemma evalEvalRingHom_eq [CommSemiring R] (x : R) :
+lemma evalEvalRingHom_eq (x : R) :
     evalEvalRingHom x = eval₂RingHom (evalRingHom x) := by
   ext <;> simp
 
-lemma eval₂_evalRingHom [CommSemiring R] (x y : R) (p : R[X][Y]) :
-    eval₂ (evalRingHom x) y p = evalEval x y p := by
-  rw [← coe_evalEvalRingHom, evalEvalRingHom_eq]; rfl
+lemma eval₂_evalRingHom (x : R) :
+    eval₂ (evalRingHom x) = evalEval x := by
+  ext1; rw [← coe_evalEvalRingHom, evalEvalRingHom_eq, coe_eval₂RingHom]
+
+lemma map_evalRingHom_eval (x y : R) (p : R[X][Y]) :
+    (p.map <| evalRingHom x).eval y = p.evalEval x y := by
+  rw [eval_map, eval₂_evalRingHom]
+
+end CommSemiring
 
 section
 
@@ -146,3 +166,20 @@ lemma evalEval_map_mapRingHom_algebraMap (x y : A) (p : R[X][Y]) :
 end
 
 end Polynomial
+
+open Polynomial
+
+namespace AdjoinRoot
+
+variable {R : Type*} [CommRing R] {x y : R} {p : R[X][Y]} (h : p.evalEval x y = 0)
+
+/-- If the evaluation (`evalEval`) of a bivariate polynomial `p : R[X][Y]` at a point (x,y)
+is zero, then `Polynomial.evalEval x y` factors through `AdjoinRoot.evalEval`, a ring homomorphism
+from `AdjoinRoot p` to `R`. -/
+@[simps!] def evalEval : AdjoinRoot p →+* R :=
+  lift (evalRingHom x) y <| eval₂_evalRingHom x ▸ h
+
+lemma evalEval_mk (g : R[X][Y]) : evalEval h (mk p g) = g.evalEval x y := by
+  rw [evalEval, lift_mk, eval₂_evalRingHom]
+
+end AdjoinRoot

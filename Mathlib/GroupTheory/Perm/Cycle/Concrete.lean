@@ -72,9 +72,9 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   cases' l with x l
-  · set_option tactic.skipAssignedInstances false in norm_num at hn
+  · norm_num at hn
   induction' l with y l generalizing x
-  · set_option tactic.skipAssignedInstances false in norm_num at hn
+  · norm_num at hn
   · use x
     constructor
     · rwa [formPerm_apply_mem_ne_self_iff _ hl _ (mem_cons_self _ _)]
@@ -363,9 +363,9 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
     rintro _ rfl
     simp [Nat.succ_le_succ_iff] at hl
   rw [toList, hc.cycleOf_eq (mem_support.mp _), hs, card_toFinset, dedup_eq_self.mpr hn]
-  · refine ext_get (by simp) fun k hk hk' => ?_
-    simp only [Nat.zero_eq, get_map, get_range, formPerm_pow_apply_get _ hn, zero_add,
-      Nat.mod_eq_of_lt hk']
+  · refine ext_getElem (by simp) fun k hk hk' => ?_
+    simp only [get_eq_getElem, formPerm_pow_apply_getElem _ hn, zero_add, getElem_map,
+      getElem_range, Nat.mod_eq_of_lt hk']
   · simpa [hs] using get_mem _ _ _
 #align equiv.perm.to_list_form_perm_nontrivial Equiv.Perm.toList_formPerm_nontrivial
 
@@ -525,6 +525,8 @@ def isoCycle' : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s
     right_inv := Fintype.leftInverse_bijInv _ }
 #align equiv.perm.iso_cycle' Equiv.Perm.isoCycle'
 
+-- mutes `'decide' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 

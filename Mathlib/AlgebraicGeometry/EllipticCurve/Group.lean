@@ -61,7 +61,7 @@ https://drops.dagstuhl.de/storage/00lipics/lipics-vol268-itp2023/LIPIcs.ITP.2023
 elliptic curve, group law, class group
 -/
 
-open Ideal nonZeroDivisors Polynomial PolynomialPolynomial
+open Ideal nonZeroDivisors Polynomial
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
@@ -100,9 +100,17 @@ section Algebra
 
 /-! ### The coordinate ring as an `R[X]`-algebra -/
 
-#noalign weierstrass_curve.coordinate_ring.algebra'
-#noalign weierstrass_curve.coordinate_ring.algebra
-#noalign weierstrass_curve.coordinate_ring.is_scalar_tower
+noncomputable instance : Algebra R W.CoordinateRing :=
+  Quotient.algebra R
+#align weierstrass_curve.coordinate_ring.algebra' WeierstrassCurve.Affine.CoordinateRing.instAlgebra
+
+noncomputable instance : Algebra R[X] W.CoordinateRing :=
+  Quotient.algebra R[X]
+#align weierstrass_curve.coordinate_ring.algebra WeierstrassCurve.Affine.CoordinateRing.instAlgebraPolynomial
+
+instance : IsScalarTower R R[X] W.CoordinateRing :=
+  Quotient.isScalarTower R R[X] _
+#align weierstrass_curve.coordinate_ring.is_scalar_tower WeierstrassCurve.Affine.CoordinateRing.instIsScalarTowerPolynomial
 
 instance [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
@@ -265,7 +273,7 @@ set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.smul_basis_mul_Y WeierstrassCurve.Affine.CoordinateRing.smul_basis_mul_Y
 
 variable {f} in
-lemma map_injective (hf : Function.Injective f) : Function.Injective (map W f) :=
+lemma map_injective (hf : Function.Injective f) : Function.Injective <| map W f :=
   (injective_iff_map_eq_zero _).mpr fun y hy => by
     obtain ⟨p, q, rfl⟩ := exists_smul_basis_eq y
     simp_rw [map_add, CoordinateRing.map_smul, map_one, map_mk, map_X] at hy

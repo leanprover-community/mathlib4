@@ -81,7 +81,7 @@ The group law on this set is then uniquely determined by these constructions.
 elliptic curve, rational point, affine coordinates
 -/
 
-open Polynomial PolynomialPolynomial
+open Polynomial
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
@@ -122,7 +122,7 @@ section Equation
 /-- The polynomial $W(X, Y) := Y^2 + a_1XY + a_3Y - (X^3 + a_2X^2 + a_4X + a_6)$ associated to a
 Weierstrass curve `W` over `R`. For ease of polynomial manipulation, this is represented as a term
 of type `R[X][X]`, where the inner variable represents $X$ and the outer variable represents $Y$.
-For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `PolynomialPolynomial`
+For clarity, the alternative notations `Y` and `R[X][Y]` are provided in the `Polynomial`
 scope to represent the outer variable and the bivariate polynomial ring `R[X][X]` respectively. -/
 noncomputable def polynomial : R[X][Y] :=
   Y ^ 2 + C (C W.a₁ * X + C W.a₃) * Y - C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆)
@@ -173,17 +173,17 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
 #align weierstrass_curve.irreducible_polynomial WeierstrassCurve.Affine.irreducible_polynomial
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma eval_polynomial (x y : R) : W.polynomial.evalEval x y =
+lemma evalEval_polynomial (x y : R) : W.polynomial.evalEval x y =
     y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) := by
   simp only [polynomial]
   eval_simp
   rw [add_mul, ← add_assoc]
-#align weierstrass_curve.eval_polynomial WeierstrassCurve.Affine.eval_polynomial
+#align weierstrass_curve.eval_polynomial WeierstrassCurve.Affine.evalEval_polynomial
 
 @[simp]
-lemma eval_polynomial_zero : (W.polynomial.eval 0).eval 0 = -W.a₆ := by
-  simp only [← C_0, eval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
-#align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.Affine.eval_polynomial_zero
+lemma evalEval_polynomial_zero : W.polynomial.evalEval 0 0 = -W.a₆ := by
+  simp only [evalEval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
+#align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.Affine.evalEval_polynomial_zero
 
 /-- The proposition that an affine point $(x, y)$ lies in `W`. In other words, $W(x, y) = 0$. -/
 def Equation (x y : R) : Prop :=
@@ -192,7 +192,7 @@ def Equation (x y : R) : Prop :=
 
 lemma equation_iff' (x y : R) : W.Equation x y ↔
     y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) = 0 := by
-  rw [Equation, eval_polynomial]
+  rw [Equation, evalEval_polynomial]
 #align weierstrass_curve.equation_iff' WeierstrassCurve.Affine.equation_iff'
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
@@ -203,7 +203,7 @@ lemma equation_iff (x y : R) :
 
 @[simp]
 lemma equation_zero : W.Equation 0 0 ↔ W.a₆ = 0 := by
-  rw [Equation, evalEval, C_0, eval_polynomial_zero, neg_eq_zero]
+  rw [Equation, evalEval_polynomial_zero, neg_eq_zero]
 #align weierstrass_curve.equation_zero WeierstrassCurve.Affine.equation_zero
 
 lemma equation_iff_variableChange (x y : R) :
@@ -228,18 +228,18 @@ set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_X WeierstrassCurve.Affine.polynomialX
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma eval_polynomialX (x y : R) :
+lemma evalEval_polynomialX (x y : R) :
     W.polynomialX.evalEval x y = W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) := by
   simp only [polynomialX]
   eval_simp
 set_option linter.uppercaseLean3 false in
-#align weierstrass_curve.eval_polynomial_X WeierstrassCurve.Affine.eval_polynomialX
+#align weierstrass_curve.eval_polynomial_X WeierstrassCurve.Affine.evalEval_polynomialX
 
 @[simp]
-lemma eval_polynomialX_zero : (W.polynomialX.eval 0).eval 0 = -W.a₄ := by
-  simp only [← C_0, eval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow two_ne_zero]
+lemma evalEval_polynomialX_zero : W.polynomialX.evalEval 0 0 = -W.a₄ := by
+  simp only [evalEval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow <| Nat.succ_ne_zero _]
 set_option linter.uppercaseLean3 false in
-#align weierstrass_curve.eval_polynomial_X_zero WeierstrassCurve.Affine.eval_polynomialX_zero
+#align weierstrass_curve.eval_polynomial_X_zero WeierstrassCurve.Affine.evalEval_polynomialX_zero
 
 /-- The partial derivative $W_Y(X, Y)$ of $W(X, Y)$ with respect to $Y$.
 
@@ -250,19 +250,26 @@ set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_Y WeierstrassCurve.Affine.polynomialY
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma eval_polynomialY (x y : R) :
+lemma evalEval_polynomialY (x y : R) :
     W.polynomialY.evalEval x y = 2 * y + W.a₁ * x + W.a₃ := by
   simp only [polynomialY]
   eval_simp
   rw [← add_assoc]
 set_option linter.uppercaseLean3 false in
-#align weierstrass_curve.eval_polynomial_Y WeierstrassCurve.Affine.eval_polynomialY
+#align weierstrass_curve.eval_polynomial_Y WeierstrassCurve.Affine.evalEval_polynomialY
 
 @[simp]
-lemma eval_polynomialY_zero : (W.polynomialY.eval 0).eval 0 = W.a₃ := by
-  simp only [← C_0, eval_polynomialY, zero_add, mul_zero]
+lemma evalEval_polynomialY_zero : W.polynomialY.evalEval 0 0 = W.a₃ := by
+  simp only [evalEval_polynomialY, zero_add, mul_zero]
 set_option linter.uppercaseLean3 false in
-#align weierstrass_curve.eval_polynomial_Y_zero WeierstrassCurve.Affine.eval_polynomialY_zero
+#align weierstrass_curve.eval_polynomial_Y_zero WeierstrassCurve.Affine.evalEval_polynomialY_zero
+
+@[deprecated (since := "2024-06-19")] alias eval_polynomial := evalEval_polynomial
+@[deprecated (since := "2024-06-19")] alias eval_polynomial_zero := evalEval_polynomial_zero
+@[deprecated (since := "2024-06-19")] alias eval_polynomialX := evalEval_polynomialX
+@[deprecated (since := "2024-06-19")] alias eval_polynomialX_zero := evalEval_polynomialX_zero
+@[deprecated (since := "2024-06-19")] alias eval_polynomialY := evalEval_polynomialY
+@[deprecated (since := "2024-06-19")] alias eval_polynomialY_zero := evalEval_polynomialY_zero
 
 /-- The proposition that an affine point $(x, y)$ in `W` is nonsingular.
 In other words, either $W_X(x, y) \ne 0$ or $W_Y(x, y) \ne 0$.
@@ -275,7 +282,7 @@ def Nonsingular (x y : R) : Prop :=
 
 lemma nonsingular_iff' (x y : R) : W.Nonsingular x y ↔ W.Equation x y ∧
     (W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) ≠ 0 ∨ 2 * y + W.a₁ * x + W.a₃ ≠ 0) := by
-  rw [Nonsingular, equation_iff', eval_polynomialX, eval_polynomialY]
+  rw [Nonsingular, equation_iff', evalEval_polynomialX, evalEval_polynomialY]
 #align weierstrass_curve.nonsingular_iff' WeierstrassCurve.Affine.nonsingular_iff'
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
@@ -288,8 +295,8 @@ lemma nonsingular_iff (x y : R) : W.Nonsingular x y ↔
 
 @[simp]
 lemma nonsingular_zero : W.Nonsingular 0 0 ↔ W.a₆ = 0 ∧ (W.a₃ ≠ 0 ∨ W.a₄ ≠ 0) := by
-  rw [Nonsingular, equation_zero, evalEval, evalEval, C_0, eval_polynomialX_zero, neg_ne_zero,
-    eval_polynomialY_zero, or_comm]
+  rw [Nonsingular, equation_zero, evalEval_polynomialX_zero, neg_ne_zero, evalEval_polynomialY_zero,
+    or_comm]
 #align weierstrass_curve.nonsingular_zero WeierstrassCurve.Affine.nonsingular_zero
 
 lemma nonsingular_iff_variableChange (x y : R) :
@@ -522,9 +529,9 @@ set_option linter.uppercaseLean3 false in
 
 lemma slope_of_Y_ne_eq_eval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
     W.slope x₁ x₂ y₁ y₂ = -W.polynomialX.evalEval x₁ y₁ / W.polynomialY.evalEval x₁ y₁ := by
-  rw [slope_of_Y_ne hx hy, eval_polynomialX, neg_sub]
+  rw [slope_of_Y_ne hx hy, evalEval_polynomialX, neg_sub]
   congr 1
-  rw [negY, eval_polynomialY]
+  rw [negY, evalEval_polynomialY]
   ring1
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.slope_of_Yne_eq_eval WeierstrassCurve.Affine.slope_of_Y_ne_eq_eval
@@ -626,32 +633,34 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
 
 variable {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
 
-/-- The formula $x(P_1 + P_2) = x(P_1 - P_2) - \psi(P_1)\psi(P_2) / (x(P_2) - x(P_1)) ^ 2$,
-where $\psi(x,y) = 2y + a_1 x + a_3$. -/
-lemma addX_eq_subX_sub :
+/-- The formula x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²,
+where ψ(x,y) = 2y + a₁x + a₃. -/
+lemma addX_eq_addX_negY_sub :
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ (W.negY x₂ y₂))
       - (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
-  simp_rw [slope, if_neg hx, addX, negY, ← neg_sub x₁, neg_sq]
-  field_simp [sub_ne_zero.mpr hx]; ring
+  simp_rw [slope_of_X_ne hx, addX, negY, ← neg_sub x₁, neg_sq]
+  field_simp [sub_ne_zero.mpr hx]
+  ring1
 
-/-- The formula $y(P_1)(x(P_2)-x(P_3)) + y(P_2)(x(P_3)-x(P_1)) + y(P_3)(x(P_1)-x(P_2)) = 0$,
-assuming that $P_1 + P_2 + P_3 = O$. -/
+/-- The formula y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0,
+assuming that P₁ + P₂ + P₃ = O. -/
 lemma cyclic_sum_Y_mul_X_sub_X :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
-  simp_rw [slope, if_neg hx, negAddY, addX]
-  field_simp [sub_ne_zero.mpr hx]; ring
+  simp_rw [slope_of_X_ne hx, negAddY, addX]
+  field_simp [sub_ne_zero.mpr hx]
+  ring1
 
 /-- The formula
-$\psi(P_1+P_2) = (\psi(P_2)(x(P_1)-x(P_3))-\psi_2(P_1)(x(P_2)-x(P_3))) / (x(P_2)-x(P_1))$,
-where $\psi(x,y) = 2y + a_1 x + a_3$. -/
-lemma addY_sub_negY :
+ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁)),
+where ψ(x,y) = 2y + a₁x + a₃. -/
+lemma addY_sub_negY_addY :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     letI y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
     y₃ - W.negY x₃ y₃ =
       ((y₂ - W.negY x₂ y₂) * (x₁ - x₃) - (y₁ - W.negY x₁ y₁) * (x₂ - x₃)) / (x₂ - x₁) := by
   simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
-  linear_combination 2 * W.cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
+  linear_combination 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
 
 end Field
 
@@ -686,10 +695,6 @@ lemma zero_def : (zero : W.Point) = 0 :=
 #align weierstrass_curve.point.zero_def WeierstrassCurve.Affine.Point.zero_def
 
 lemma some_ne_zero {x y : R} (h : W.Nonsingular x y) : some h ≠ 0 := by rintro (_|_)
-
-lemma some_eq_some_iff {x₁ x₂ y₁ y₂ : R} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂) :
-    some h₁ = some h₂ ↔ x₁ = x₂ ∧ y₁ = y₂ :=
-  ⟨by rintro (_|_); trivial, by rintro ⟨rfl, rfl⟩; rfl⟩
 
 /-- The negation of a nonsingular rational point on `W`.
 
@@ -829,7 +834,7 @@ lemma map_polynomial : (W.map f).toAffine.polynomial = W.polynomial.map (mapRing
   simp only [polynomial]
   map_simp
 
-lemma baseChange_polynomial_evalEval_X_Y :
+lemma evalEval_baseChange_polynomial_X_Y :
     (W.baseChange R[X][Y]).toAffine.polynomial.evalEval (C X) Y = W.polynomial := by
   rw [baseChange, toAffine, map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
 

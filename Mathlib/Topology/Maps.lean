@@ -108,7 +108,6 @@ theorem map_nhds_of_mem (hf : Inducing f) (x : X) (h : range f ∈ 𝓝 (f x)) :
   hf.induced.symm ▸ map_nhds_induced_of_mem h
 #align inducing.map_nhds_of_mem Inducing.map_nhds_of_mem
 
--- Porting note (#10756): new lemma
 theorem mapClusterPt_iff (hf : Inducing f) {x : X} {l : Filter X} :
     MapClusterPt (f x) l f ↔ ClusterPt x l := by
   delta MapClusterPt ClusterPt
