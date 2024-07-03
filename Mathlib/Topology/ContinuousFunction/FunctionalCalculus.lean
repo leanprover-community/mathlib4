@@ -364,9 +364,6 @@ variable (R) in
 lemma cfc_predicate_one : p 1 :=
   map_one (algebraMap R A) ▸ cfc_predicate_algebraMap (1 : R)
 
-lemma cfc_predicate_of_cfc_nontriv (hp : p 0 := by cfc_tac) : p (cfc f a) :=
-  cfc_cases p _ _ hp fun _ _ => cfcHom_predicate _ _
-
 lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     cfc f a = cfc g a := by
   by_cases h : p a ∧ ContinuousOn g (spectrum R a)
@@ -585,41 +582,44 @@ lemma eq_one_of_spectrum_subset_one (h_spec : spectrum R a ⊆ {1}) (ha : p a :=
     a = 1 := by
   simpa using eq_algebraMap_of_spectrum_subset_singleton a 1 h_spec
 
-lemma spectrum_algebraMap_eq_of_cfc_nontriv [Nontrivial A] (r : R) (hp : p 0 := by cfc_tac) :
+lemma spectrum_algebraMap_subset (r : R) : spectrum R (algebraMap R A r) ⊆ {r} := by
+  rw [← cfc_const r 0 (cfc_predicate_zero R),
+    cfc_map_spectrum (fun _ ↦ r) 0 (cfc_predicate_zero R)]
+  rintro - ⟨x, -, rfl⟩
+  simp
+
+lemma spectrum_algebraMap_eq [Nontrivial A] (r : R) :
     spectrum R (algebraMap R A r) = {r} := by
+  have hp : p 0 := cfc_predicate_zero R
   rw [← cfc_const r 0 hp, cfc_map_spectrum (fun _ => r) 0 hp]
   exact Set.Nonempty.image_const (⟨0, spectrum.zero_mem (R := R) not_isUnit_zero⟩) _
 
-lemma spectrum_zero_eq_of_cfc_nontriv [Nontrivial A] (hp : p 0 := by cfc_tac) :
+lemma spectrum_zero_eq [Nontrivial A] :
     spectrum R (0 : A) = {0} := by
   have : (0 : A) = algebraMap R A 0 := Eq.symm (RingHom.map_zero (algebraMap R A))
-  rw [this, spectrum_algebraMap_eq_of_cfc_nontriv]
+  rw [this, spectrum_algebraMap_eq]
 
-lemma spectrum_one_eq_of_cfc_nontriv [Nontrivial A] (hp : p 0 := by cfc_tac) :
+lemma spectrum_one_eq [Nontrivial A] :
     spectrum R (1 : A) = {1} := by
   have : (1 : A) = algebraMap R A 1 := Eq.symm (RingHom.map_one (algebraMap R A))
-  rw [this, spectrum_algebraMap_eq_of_cfc_nontriv]
+  rw [this, spectrum_algebraMap_eq]
 
-lemma cfc_algebraMap_of_cfc_nontriv [Nontrivial A] (r : R) {f : R → R} (hp : p 0 := by cfc_tac) :
-    cfc f (algebraMap R A r) = algebraMap R A (f r) := by
-  have h₁ : ContinuousOn f ((fun _ ↦ r) '' spectrum R (0 : A)) := by
-    rw [spectrum_zero_eq_of_cfc_nontriv]
-    simp only [Set.image_singleton, continuousOn_singleton]
-  rw [← cfc_const r 0 hp, ← cfc_comp f (fun _ => r) 0 hp h₁]
-  have h₂ : (f ∘ (fun (_ : R) => r)) = fun _ => f r := by ext; simp
-  rw [h₂, cfc_const (f r) 0 hp]
+@[simp]
+lemma cfc_algebraMap (r : R) (f : R → R) : cfc f (algebraMap R A r) = algebraMap R A (f r) := by
+  have h₁ : ContinuousOn f (spectrum R (algebraMap R A r)) :=
+  continuousOn_singleton _ _ |>.mono <| spectrum_algebraMap_subset r
+  rw [cfc_apply f (algebraMap R A r) (cfc_predicate_algebraMap r),
+    ← AlgHomClass.commutes (cfcHom (p := p) (cfc_predicate_algebraMap r)) (f r)]
+  congr
+  ext ⟨x, hx⟩
+  apply spectrum_algebraMap_subset r at hx
+  simp_all
 
-lemma cfc_apply_zero_of_cfc_nontriv [Nontrivial A] {f : R → R} (hp : p 0 := by cfc_tac) :
-    cfc f (0 : A) = algebraMap R A (f 0) := by
-  have h₁ : (0 : A) = algebraMap R A 0 := by simp
-  conv_lhs => rw [h₁]
-  rw [cfc_algebraMap_of_cfc_nontriv]
+@[simp] lemma cfc_apply_zero {f : R → R} : cfc f (0 : A) = algebraMap R A (f 0) := by
+  simpa using cfc_algebraMap (A := A) 0 f
 
-lemma cfc_apply_one_of_cfc_nontriv [Nontrivial A] {f : R → R} (hp : p 0 := by cfc_tac) :
-    cfc f (1 : A) = algebraMap R A (f 1) := by
-  have h₁ : (1 : A) = algebraMap R A 1 := by simp
-  conv_lhs => rw [h₁]
-  rw [cfc_algebraMap_of_cfc_nontriv]
+@[simp] lemma cfc_apply_one {f : R → R} : cfc f (1 : A) = algebraMap R A (f 1) := by
+  simpa using cfc_algebraMap (A := A) 1 f
 
 end CFC
 
