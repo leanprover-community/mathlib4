@@ -13,7 +13,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 In this file we examine properties of the natural map
 
-`AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I M`.
+`(AdicCompletion I R) ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I M`.
 
 We show
 
