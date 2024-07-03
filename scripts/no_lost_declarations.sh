@@ -16,6 +16,9 @@ full_output=$(if [ -n "${1}" ]; then
 else
   git diff origin/master...HEAD
 fi |
+  ## the first sed "splits" `[+-]alias ⟨d1, d2⟩ := d` into
+  ## `[+-]alias d1 := d` and `[+-]alias d2 := d`
+  sed 's=^\([+-]\)alias ⟨\([^,]*\), *\([^⟩]*\)⟩\(.*\)=\1alias \2\4\n\1alias \3\4=' |
   ## purge `@[...]`, to attempt to catch declaration names
   sed 's=@\[[^]]*\] ==; s=noncomputable ==; s=nonrec ==; s=protected ==' |
   ## extract lines that begin with '[+-]' followed by the input `theorem`, `lemma`,...
