@@ -108,4 +108,46 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter dupNamespace
 
-end Mathlib.Linter.DupNamespaceLinter
+end DupNamespaceLinter
+
+/-!
+#  The "noInitialWhitespace" linter
+
+The "noInitialWhitespace" linter emits a warning somewhere.
+-/
+
+open Lean Elab
+
+namespace Mathlib.Linter
+
+/-- The "noInitialWhitespace" linter emits a warning when a command does not begin on the
+first column. -/
+register_option linter.noInitialWhitespace : Bool := {
+  defValue := true
+  descr := "enable the noInitialWhitespace linter"
+}
+
+namespace NoInitialWhitespace
+
+/-- Gets the value of the `linter.noInitialWhitespace` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.noInitialWhitespace o
+
+@[inherit_doc Mathlib.Linter.linter.noInitialWhitespace]
+def noInitialWhitespaceLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    if let some rg := stx.getRange? then
+      let fm ← getFileMap
+      let pos := fm.toPosition rg.start
+      if pos.column != 0 then
+        Linter.logLint linter.noInitialWhitespace stx (m!"'{stx}' starts on column {pos.column}.\
+          Please, do not leave any whitespace before this command!")
+
+initialize addLinter noInitialWhitespaceLinter
+
+end NoInitialWhitespace
+
+end Mathlib.Linter
