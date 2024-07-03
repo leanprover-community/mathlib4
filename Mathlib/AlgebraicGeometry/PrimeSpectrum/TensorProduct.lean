@@ -21,6 +21,7 @@ variable [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 open TensorProduct
 
+/-- The canonical map `Spec(S ⊗[R] T) → Spec S × Spec T`. -/
 noncomputable
 def PrimeSpectrum.tensorProductTo (x : PrimeSpectrum (S ⊗[R] T)) :
     PrimeSpectrum S × PrimeSpectrum T :=
