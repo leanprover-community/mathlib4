@@ -34,7 +34,7 @@ attribute [local instance] Fintype.ofFinite in
 open Fintype in
 /-- The cardinal of the set of linearly independent vectors over a finite dimensional vector space
 over a finite field. -/
-theorem card_linearInependent {k : ℕ} (hk : k ≤ n) :
+theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
     Nat.card { s : Fin k → V // LinearIndependent K s } =
       ∏ i : Fin k, (q ^ n - q ^ i.val) := by
   rw [Nat.card_eq_fintype_card]
@@ -92,7 +92,7 @@ theorem card_GL_divisionRing :
     Nat.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ n - q ^ ( i : ℕ )) := by
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [Nat.card_eq_fintype_card]
-  · rw [Nat.card_congr (equiv_GL_linearindependent n hn), card_linearInependent,
+  · rw [Nat.card_congr (equiv_GL_linearindependent n hn), card_linearIndependent,
     FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin]
     simp only [FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
 
