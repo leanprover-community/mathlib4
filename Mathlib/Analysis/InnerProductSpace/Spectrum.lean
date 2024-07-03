@@ -341,22 +341,13 @@ theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A
    rw [← function_version hAB, ← submod_subtype_commute hAB, restrict_exhaust2 hB hAB] at *
    simp only [Submodule.map_top, Submodule.range_subtype]
 
-theorem semi_final_exhaust' : (fun (x : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) )= (fun( x : 𝕜 ) ↦  ( (eigenspace A α) )) := by
+theorem semi_final_exhaust' : (fun (α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) )= (fun( α : 𝕜 ) ↦  ( (eigenspace A α) )) := by
   funext
   exact semi_final_exhaust hB hAB
-
-#check Submodule.orthogonal_eq_bot_iff
-#check orthogonalComplement_iSup_eigenspaces_eq_bot'
-#check semi_final_exhaust hB hAB (α := α)
 
 theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
   exact Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-
-#check (⨆ (γ : 𝕜), eigenspace A γ)
-#check Submodule.subtype(E)
-
-#check Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
 theorem pre_pre_exhaust: (fun (α : 𝕜 ) ↦  eigenspace A α)  = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
 funext
 exact Eq.symm (semi_final_exhaust hB hAB)
@@ -372,7 +363,57 @@ theorem post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ e
   rw [Submodule.orthogonal_eq_bot_iff]
   apply exhaust hA hB hAB
 
-theorem post_post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)))ᗮ = DirectSumInternal E :=
+/-The following needs to be dispensed with...it's surely in the library-/
+theorem ext_neg {i j : 𝕜 × 𝕜} : (i ≠ j) ↔ ¬ ((i.1 = j.1) ∧ (i.2 = j.2)) := by
+  constructor
+  contrapose!
+  exact Prod.ext_iff.mpr
+  contrapose
+  intro h
+  simp only [ne_eq, Decidable.not_not] at *
+  apply Prod.ext_iff.mp
+  exact h
+
+theorem Orthogonality : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
+    (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
+    (fun i => (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by
+  refine orthogonalFamily_iff_pairwise.mpr ?_
+  intro i j hij x hx
+  simp only [Submodule.mem_inf] at hx
+  rw [@Submodule.mem_orthogonal']
+  intro y hy
+  have H := ext_neg.mp hij
+  push_neg at H
+  by_cases hc : i.1 = j.1
+  have Hhc := H hc
+  have thing1 := hx.1
+  have thing2 := hy.1
+  have hat := hB.orthogonalFamily_eigenspaces'
+  have HK (p q : 𝕜) : p ≠ q → ∀ v, (∀ w,  (v ∈ eigenspace B p) ∧ (w ∈ eigenspace B q) → ⟪ v , w ⟫ = 0) := by sorry
+  have Shtick := HK i.2 j.2 Hhc x y
+  apply Shtick
+  constructor
+  apply hy.2 --Involves A and not B. This needs cleanup.
+
+
+
+
+--orthogonalFamily_eigenspaces
+
+theorem post_post_exhaust: DirectSum.IsInternal
+    (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
+  have One : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => _) (fun i =>
+    (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by sorry
+  have Two : ⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) =
+      ⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2) := by
+    simp only [iSup_prod]
+    exact iSup_comm
+  have Three : ⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2) = ⊤ := by
+    rw [← Two]
+    exact exhaust hA hB hAB
+  have Four : (⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2))ᗮ = ⊥ := by
+    simp only [Submodule.orthogonal_eq_bot_iff, Three]
+  exact (OrthogonalFamily.isInternal_iff One).mpr Four
 
 end Simultaneous
 
