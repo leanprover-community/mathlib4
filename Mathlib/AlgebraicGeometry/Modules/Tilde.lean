@@ -18,8 +18,8 @@ such that `M^~(U)` is the set of dependent functions that are locally fractions.
 
 ## Main definitions
 
-* `AlgebraicGeometry.TildeInAddCommGrp` : `M^~` as a sheaf of abelian groups.
-* `AlgebraicGeometry.TildeInModules` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
+* `ModuleCat.tildeInAddCommGrp` : `M^~` as a sheaf of abelian groups.
+* `ModuleCat.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 
 -/
 
@@ -27,9 +27,9 @@ universe u
 
 open TopCat AlgebraicGeometry TopologicalSpace CategoryTheory Opposite
 
-variable (R : Type u) [CommRing R] (M : Type u) [AddCommGroup M] [Module R M]
+variable {R : Type u} [CommRing R] (M : ModuleCat.{u} R)
 
-namespace AlgebraicGeometry
+namespace ModuleCat
 
 namespace Tilde
 
@@ -41,15 +41,15 @@ LocalizedModule P.asIdeal.primeCompl M
 /-- For any open subset `U ⊆ Spec R`, `IsFraction` is the predicate expressing that a function
 `f : ∏_{x ∈ U}, Mₓ` is such that for any `𝔭 ∈ U`, `f 𝔭 = m / s` for some `m : M` and `s ∉ 𝔭`.
 In short `f` is a fraction on `U`. -/
-def IsFraction {U : Opens (PrimeSpectrum R)} (f : ∀ 𝔭 : U, Localizations R M 𝔭.1) : Prop :=
+def isFraction {U : Opens (PrimeSpectrum R)} (f : ∀ 𝔭 : U, Localizations M 𝔭.1) : Prop :=
   ∃ (m : M) (s : R),
     ∀ x : U, ¬s ∈ x.1.asIdeal ∧ s • f x = LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m
 
 /--
 The property of a function `f : ∏_{x ∈ U}, Mₓ` being a fraction is stable under restriction.
 -/
-def isFractionPrelocal : PrelocalPredicate (Localizations R M) where
-  pred {U} f := IsFraction R M f
+def isFractionPrelocal : PrelocalPredicate (Localizations M) where
+  pred {U} f := isFraction M f
   res := by rintro V U i f ⟨m, s, w⟩; exact ⟨m, s, fun x => w (i x)⟩
 
 /--
@@ -58,53 +58,40 @@ For any open subset `U ⊆ Spec R`, `IsLocallyFraction` is the predicate express
 that for any `𝔮 ∈ V`, `f 𝔮 = m / s` for some `m : M` and `s ∉ 𝔮`.
 In short `f` is locally a fraction on `U`.
 -/
-def isLocallyFraction : LocalPredicate (Localizations R M) := (isFractionPrelocal R M).sheafify
-
-end Tilde
-
-/--
-For any `R`-module `M`, `TildeInType R M` is the sheaf of set on `Spec R` whose sections on `U` are
-the dependent functions that are locally fractions. This is often denoted by `M^~`.
-
-See also `Tilde.isLocallyFraction`.
--/
-def tildeInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
-  subsheafToTypes (Tilde.isLocallyFraction R M)
-
-namespace Tilde
+def isLocallyFraction : LocalPredicate (Localizations M) := (isFractionPrelocal M).sheafify
 
 @[simp]
 theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
-    (f : ∀ x : U, Localizations R M x) :
-    (isLocallyFraction R M).pred f =
+    (f : ∀ x : U, Localizations M x) :
+    (isLocallyFraction M).pred f =
       ∀ y : U,
         ∃ (V : _) (_ : y.1 ∈ V) (i : V ⟶ U),
-          ∃ (m: M) (s: R), ∀ x : V, ¬s ∈ x.1.asIdeal ∧ s• f (i x) =
+          ∃ (m : M) (s: R), ∀ x : V, ¬s ∈ x.1.asIdeal ∧ s • f (i x) =
             LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m :=
   rfl
 
 /- M_x is an O_SpecR(U)-module when x is in U -/
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop):
-    Module ((Spec.structureSheaf R).val.obj U) (Localizations R M ↑x):=
+    Module ((Spec.structureSheaf R).val.obj U) (Localizations M x):=
   Module.compHom (R := (Localization.AtPrime x.1.asIdeal)) _
     (StructureSheaf.openToLocalization R U.unop x x.2 :
       (Spec.structureSheaf R).val.obj U →+* Localization.AtPrime x.1.asIdeal)
 
-lemma sections_smul_localizations_def (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop)
+@[simp]
+lemma sections_smul_localizations_def
+    {U : (Opens (PrimeSpectrum.Top R))ᵒᵖ} (x : U.unop)
     (r : (Spec.structureSheaf R).val.obj U)
-    (m : Localizations R M ↑x) :
+    (m : Localizations M ↑x) :
   r • m = r.1 x • m := rfl
 
 /--
 For any `R`-module `M` and any open subset `U ⊆ Spec R`, `M^~(U)` is an `𝒪_{Spec R}(U)`-submodule
 of `∏_{𝔭 ∈ U} M_𝔭`. -/
 def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
-    Submodule ((Spec.structureSheaf R).1.obj U) (∀ x : U.unop, Localizations R M x.1) where
-  carrier := { f | (isLocallyFraction R M).pred f }
-  zero_mem' := by
-    refine fun x => ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨?_, ?_⟩⟩
-    · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
-    · simp
+    Submodule ((Spec.structureSheaf R).1.obj U) (∀ x : U.unop, Localizations M x.1) where
+  carrier := { f | (isLocallyFraction M).pred f }
+  zero_mem' x := ⟨unop U, x.2, 𝟙 _, 0, 1, fun y =>
+    ⟨Ideal.ne_top_iff_one _ |>.1 y.1.isPrime.1, by simp⟩⟩
   add_mem' := by
     intro a b ha hb x
     rcases ha x with ⟨Va, ma, ia, ra, sa, wa⟩
@@ -115,8 +102,8 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     rcases wb (Opens.infLERight _ _ y : Vb) with ⟨nmb, wb⟩
     fconstructor
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Opens.coe_inf, Pi.add_apply, smul_add, map_add, LinearMapClass.map_smul]
-      dsimp at wa wb ⊢
+    · simp only [Opens.coe_inf, Pi.add_apply, smul_add, map_add,
+        LinearMapClass.map_smul] at wa wb ⊢
       rw [← wa, ← wb, ← mul_smul, ← mul_smul]
       congr 2
       simp [mul_comm]
@@ -130,60 +117,58 @@ def sectionsSubmodule (U : (Opens (PrimeSpectrum R))ᵒᵖ) :
     rcases wr (Opens.infLERight _ _ y) with ⟨nmr, wr⟩
     fconstructor
     · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
-    · simp only [Opens.coe_inf, Pi.smul_apply, LinearMapClass.map_smul]
-      dsimp at wa wr ⊢
+    · simp only [Opens.coe_inf, Pi.smul_apply, LinearMapClass.map_smul] at wa wr ⊢
       rw [mul_comm, ← Algebra.smul_def] at wr
-      rw [sections_smul_localizations_def, ← wa, ← mul_smul, ← smul_assoc, mul_comm sr,
-        mul_smul, wr, mul_comm rr, Algebra.smul_def, ← map_mul]
+      rw [sections_smul_localizations_def, ← wa, ← mul_smul, ← smul_assoc, mul_comm sr, mul_smul,
+        wr, mul_comm rr, Algebra.smul_def, ← map_mul]
       rfl
 
+end Tilde
+
+/--
+For any `R`-module `M`, `TildeInType R M` is the sheaf of set on `Spec R` whose sections on `U` are
+the dependent functions that are locally fractions. This is often denoted by `M^~`.
+
+See also `Tilde.isLocallyFraction`.
+-/
+def tildeInType : Sheaf (Type u) (PrimeSpectrum.Top R) :=
+  subsheafToTypes (Tilde.isLocallyFraction M)
+
 instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    AddCommGroup ((tildeInType R M).1.obj U) :=
-  inferInstanceAs $ AddCommGroup (sectionsSubmodule R M U)
+    AddCommGroup (M.tildeInType.1.obj U) :=
+  inferInstanceAs $ AddCommGroup (Tilde.sectionsSubmodule M U)
 
 /--
 `M^~` as a presheaf of abelian groups over `Spec R`
 -/
-def presheafInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
-  obj U := AddCommGrp.of ((tildeInType R M).1.obj U)
+def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
+  obj U := .of ((M.tildeInType).1.obj U)
   map {U V} i :=
-    { toFun := (tildeInType R M).1.map i
+    { toFun := M.tildeInType.1.map i
       map_zero' := rfl
       map_add' := fun x y => rfl}
-
-/--
-Implementation details:
-checking that after forgeting the abelian group structure of `M^~` as sheaf of abelian groups, we
-get the original sheaf of sets.
--/
-def presheafCompForget :
-    presheafInAddCommGrp R M ⋙ forget AddCommGrp ≅ (tildeInType R M).1 :=
-  NatIso.ofComponents fun U => Iso.refl _
-
-end Tilde
 
 /--
 `M^~` as a sheaf of abelian groups over `Spec R`
 -/
 def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
-  ⟨Tilde.presheafInAddCommGrp R M,
-    (TopCat.Presheaf.isSheaf_iff_isSheaf_comp _ _).mpr
-      (TopCat.Presheaf.isSheaf_of_iso (Tilde.presheafCompForget R M).symm (tildeInType R M).cond)⟩
+  ⟨M.preTildeInAddCommGrp,
+    TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ |>.mpr
+      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ => Iso.refl _) fun _ => rfl)
+        M.tildeInType.2)⟩
 
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module ((Spec (CommRingCat.of R)).ringCatSheaf.1.obj U)
-      ((Tilde.presheafInAddCommGrp R M).obj U) :=
-  inferInstanceAs $ Module _ (Tilde.sectionsSubmodule R M U)
+    Module ((Spec (.of R)).ringCatSheaf.1.obj U) (M.tildeInAddCommGrp.1.obj U) :=
+  inferInstanceAs $ Module _ (Tilde.sectionsSubmodule M U)
 
-open Tilde in
 /--
 `M^~` as a sheaf of `𝒪_{Spec R}`-modules
 -/
 noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
   val :=
-  { presheaf := (presheafInAddCommGrp R M)
+  { presheaf := M.tildeInAddCommGrp.1
     module := inferInstance
     map_smul := fun _ _ _ => rfl }
-  isSheaf := (tildeInAddCommGrp R M).2
+  isSheaf := M.tildeInAddCommGrp.2
 
-end AlgebraicGeometry
+end ModuleCat
