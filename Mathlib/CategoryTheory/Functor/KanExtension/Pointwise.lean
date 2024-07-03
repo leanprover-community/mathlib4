@@ -220,7 +220,7 @@ abbrev IsPointwiseRightKanExtension := ∀ (Y : D), E.IsPointwiseRightKanExtensi
 variable {E E'}
 
 /-- If two right extensions `E` and `E'` are isomorphic, `E` is a pointwise
-left Kan extension at `Y` iff `E'` is. -/
+right Kan extension at `Y` iff `E'` is. -/
 def isPointwiseRightKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
     E.IsPointwiseRightKanExtensionAt Y ≃ E'.IsPointwiseRightKanExtensionAt Y :=
   IsLimit.equivIsoLimit ((coneAtFunctor L F Y).mapIso e)
