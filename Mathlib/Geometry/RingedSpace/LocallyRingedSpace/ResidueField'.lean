@@ -43,7 +43,7 @@ namespace Scheme
 The canonical morphism from the spectrum of the stalk at `x` to `X`.
 -/
 noncomputable def HomFromStalkSpec {X : Scheme} (x : X) :
-    (specObj (X.stalk x)) ⟶ X :=
+    (Scheme.Spec.obj (Opposite.op (X.stalk x))) ⟶ X :=
 -- Because `X` is a scheme, `x` has an affine open neighbourhood `U`.
   let U := (X.local_affine x).choose
 -- The ring `R` such that `U` is isomorphic to Spec(`R`).
@@ -74,33 +74,28 @@ noncomputable def HomFromStalkSpec {X : Scheme} (x : X) :
     hUX
   this
 
-/--
-The canonical scheme morphism from the spectrum of the residue field of `x` to `X`.
--/
-noncomputable def HomFromResidueFieldSpec {X : Scheme} (x : X) :
-    (specObj (LocallyRingedSpace.ResidueField x)) ⟶ X :=
-  CategoryTheory.CategoryStruct.comp (specMap (CommRingCat.ofHom (LocalRing.residue (X.stalk x))))
-    (HomFromStalkSpec x)
-
 end Scheme
 
-lemma mapFromSpec {X : Scheme} {U V : TopologicalSpace.Opens X.carrier}
+open CategoryTheory
+
+@[reassoc]
+lemma isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
+    Spec.map (f.app ⊤) ≫ Y.isoSpec.inv = X.isoSpec.inv ≫ f := by
+  rw [Iso.eq_inv_comp, Scheme.isoSpec, asIso_hom, ← ΓSpec.adjunction_unit_naturality_assoc,
+    Scheme.isoSpec, asIso_inv, IsIso.hom_inv_id, Category.comp_id]
+
+@[reassoc]
+lemma IsAffineOpen.map_fromSpec {X : Scheme} {U V : TopologicalSpace.Opens X.carrier}
     (h : Opposite.op U ⟶ Opposite.op V) (hU : IsAffineOpen U) (hV : IsAffineOpen V) :
-  CategoryTheory.CategoryStruct.comp (Scheme.Spec.map (X.presheaf.map h).op) hU.fromSpec = hV.fromSpec := by
-  delta IsAffineOpen.fromSpec Scheme.isoSpec
-  rw [← CategoryTheory.IsIso.inv_comp_eq]
-  rw [CategoryTheory.Iso.eq_inv_comp]
-  simp only [← CategoryTheory.Functor.map_inv, ← CategoryTheory.op_inv, CategoryTheory.eqToHom_op,
-    CategoryTheory.inv_eqToHom,
-    ← CategoryTheory.Functor.map_comp_assoc, ← CategoryTheory.op_comp,
-    ← CategoryTheory.Functor.map_comp]
-  rw [CategoryTheory.asIso_hom, CategoryTheory.asIso_inv, ← CategoryTheory.Category.assoc]
-  have e := (ΓSpec.adjunction_unit_naturality (X.restrict_functor.map h.unop).1)
-  -- rw [functor.id_map, category_theory.functor.comp_map, functor.right_op_map,
-  --   Scheme.Γ_map_op, X.restrict_functor_map_app] at e,
-  -- dsimp only [Scheme.restrict_functor, unop_op, over.mk, costructured_arrow.mk] at e,
-  -- erw ← e,
-  -- rw [category.assoc, is_iso.hom_inv_id_assoc, over.hom_mk_left, is_open_immersion.lift_fac]
+    Spec.map (X.presheaf.map h) ≫ hU.fromSpec = hV.fromSpec := by
+  have : IsAffine (X.restrictFunctor.obj U).left := hU
+  have : IsAffine _ := hV
+  conv_rhs =>
+    rw [IsAffineOpen.fromSpec, ← X.restrictFunctor_map_ofRestrict h.unop,
+      ← isoSpec_inv_naturality_assoc, ← Spec.map_comp_assoc,
+      Scheme.restrictFunctor_map_app, ← Functor.map_comp]
+  rw [IsAffineOpen.fromSpec, ← Spec.map_comp_assoc, ← Functor.map_comp]
+  congr 1
 
 noncomputable def FromSpecStalk {X : Scheme} {U : TopologicalSpace.Opens X.carrier}
     (hU : IsAffineOpen U) {x : X.carrier} (hxU : x ∈ U) :
@@ -113,11 +108,17 @@ lemma fromSpecStalk_eq {X : Scheme} (x : X.carrier) {U V : TopologicalSpace.Open
   obtain ⟨U', h₁, h₂, h₃ : U' ≤ U ⊓ V⟩ :=
     TopologicalSpace.Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X) (show x ∈ U ⊓ V from ⟨hxU, hxV⟩)
   transitivity FromSpecStalk h₁ h₂; delta FromSpecStalk
-  · sorry
-  · sorry
-  -- { rw [← hU.map_from_Spec (hom_of_le $ h₃.trans inf_le_left).op h₁, ← functor.map_comp_assoc,
-  --     ← op_comp, Top.presheaf.germ_res], refl }
-  -- { rw [← hV.map_from_Spec (hom_of_le $ h₃.trans inf_le_right).op h₁, ← functor.map_comp_assoc,
-  --     ← op_comp, Top.presheaf.germ_res], refl },
+  · rw [← hU.map_fromSpec (homOfLE $ h₃.trans inf_le_left).op h₁]
+    have : Spec.map (X.presheaf.map (homOfLE (LE.le.trans h₃ inf_le_left)).op) =
+        Scheme.Spec.map (X.presheaf.map (homOfLE (LE.le.trans h₃ inf_le_left)).op).op := by
+      simp only [Scheme.Spec_map, Quiver.Hom.unop_op]
+    rw [this]
+    rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res]
+  · delta FromSpecStalk
+    rw [← hV.map_fromSpec (homOfLE $ h₃.trans inf_le_right).op h₁]
+    have : Spec.map (X.presheaf.map (homOfLE (LE.le.trans h₃ inf_le_right)).op) =
+        Scheme.Spec.map (X.presheaf.map (homOfLE (LE.le.trans h₃ inf_le_right)).op).op := by
+      simp only [Scheme.Spec_map, Quiver.Hom.unop_op]
+    rw [this, ← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res]
 
 end AlgebraicGeometry
