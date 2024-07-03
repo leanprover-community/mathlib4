@@ -82,6 +82,7 @@ def intValuationDef (r : R) : ℤₘ₀ :=
       (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ))
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def IsDedekindDomain.HeightOneSpectrum.intValuationDef
 
+
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
   if_pos hr
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def_if_pos IsDedekindDomain.HeightOneSpectrum.intValuationDef_if_pos
@@ -229,6 +230,10 @@ def intValuation : Valuation R ℤₘ₀ where
   map_add_le_max' := IntValuation.map_add_le_max' v
 #align is_dedekind_domain.height_one_spectrum.int_valuation IsDedekindDomain.HeightOneSpectrum.intValuation
 
+theorem intValuation_apply {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R]
+    (v : IsDedekindDomain.HeightOneSpectrum R) {r : R} : intValuation v r = intValuationDef v r :=
+  refl _
+
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem int_valuation_exists_uniformizer :
     ∃ π : R, v.intValuationDef π = Multiplicative.ofAdd (-1 : ℤ) := by
@@ -253,6 +258,14 @@ theorem int_valuation_exists_uniformizer :
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
   exact Nat.eq_of_le_of_lt_succ mem nmem
 #align is_dedekind_domain.height_one_spectrum.int_valuation_exists_uniformizer IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer
+
+/-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
+theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
+    v.intValuation r = Multiplicative.ofAdd (-1 : ℤ) := by
+  have h : v.intValuation r = v.intValuationDef r := rfl
+  rw [h, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one, ofAdd_neg,
+    WithZero.coe_inv]
+  apply v.associates_irreducible
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
