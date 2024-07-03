@@ -44,12 +44,6 @@ def struct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) 
     simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl
 
-/- This is not hard, but unnecessary for now because in all the relevant examples (`CompHaus`,
-`Profinite`, `LightProfinite` and `Stonean`), `Epi` already implies surjective. -/
-proof_wanted surjective_of_effectiveEpi {X Y : CompHausLike P} (f : X ⟶ Y) [EffectiveEpi f]
-    (_ : P <| TopCat.of <| Set.range f) :
-    Function.Surjective f
-
 theorem preregular [HasExplicitPullbacks P]
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f) :
     Preregular (CompHausLike P) where
