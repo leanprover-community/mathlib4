@@ -3,7 +3,6 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Algebra.NeZero
 
@@ -15,7 +14,7 @@ open Nat
 
 namespace NeZero
 
-theorem one_le {n : ℕ} [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)
+theorem one_le {n : ℕ} [NeZero n] : 1 ≤ n := by have := NeZero.ne n; omega
 
 lemma natCast_ne (n : ℕ) (R) [AddMonoidWithOne R] [h : NeZero (n : R)] : (n : R) ≠ 0 := h.out
 #align ne_zero.nat_cast_ne NeZero.natCast_ne
