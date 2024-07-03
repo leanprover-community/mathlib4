@@ -120,8 +120,8 @@ variable [Fintype (B ≃ₐ[A] B)] [DecidableEq (Ideal B)]
 /-- An element `y` of `B` exists, which is congruent to `b` mod `Q`
 and to `0` mod all other Galois conjugates of `Q` (if any).-/
 lemma exists_y :
-    ∃ y : B, (y : B ⧸ Q) = g Q ∧ ∀ Q' :
-    Ideal B, Q' ∈ MulAction.orbit (B ≃ₐ[A] B) Q → Q' ≠ Q → y ∈ Q' := by
+    ∃ y : B, (y : B ⧸ Q) = g Q ∧
+    ∀ Q' : Ideal B, Q' ∈ MulAction.orbit (B ≃ₐ[A] B) Q → Q' ≠ Q → y ∈ Q' := by
   let O : Set (Ideal B) := MulAction.orbit (B ≃ₐ[A] B) Q
   have hO' : Finite (O : Type _) := Set.finite_range _
   have hmax (I : O) : Ideal.IsMaximal (I : Ideal B) := by
@@ -135,7 +135,7 @@ lemma exists_y :
     (fun J ↦ if J = ⟨Q, 1, by simp⟩ then (Ideal.Quotient.mk_surjective (g Q : B ⧸ Q)).choose else 0)
   refine ⟨y, ?_, ?_⟩
   · specialize hy ⟨Q, 1, by simp⟩
-    simp at hy
+    rw [if_pos rfl] at hy
     rw [← (Ideal.Quotient.mk_surjective (g Q : B ⧸ Q)).choose_spec]
     exact
       (Ideal.Quotient.mk_eq_mk_iff_sub_mem y
@@ -176,7 +176,7 @@ lemma F_spec : F A Q = ∏ τ : B ≃ₐ[A] B, (X - C (τ • (y A Q))) := rfl
 
 variable {A Q} in
 open Finset in
-lemma F.smul_eq_self (σ :  B ≃ₐ[A] B)  : σ • (F A Q) = F A Q := calc
+lemma F.smul_eq_self (σ : B ≃ₐ[A] B)  : σ • (F A Q) = F A Q := calc
   σ • F A Q = σ • ∏ τ : B ≃ₐ[A] B, (X - C (τ • (y A Q))) := by rw [F_spec]
   _         = ∏ τ : B ≃ₐ[A] B, σ • (X - C (τ • (y A Q))) := smul_prod
   _         = ∏ τ : B ≃ₐ[A] B, (X - C ((σ * τ) • (y A Q))) := by simp [smul_sub]
@@ -246,17 +246,13 @@ variable [Fintype (A⧸P)]
 
 lemma m.mod_P_y_pow_q_eq_zero' :
     aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P)))  (m A Q isGalois) = 0 := by
-  let foobar : Field (A⧸P) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient P).mp ‹_›).toField
+  let field : Field (A⧸P) := ((Ideal.Quotient.maximal_ideal_iff_isField_quotient P).mp ‹_›).toField
   rw [← aeval_map_algebraMap (A⧸P), FiniteField.aeval_pow_card, ← algebraMap.coe_def,
     aeval_map_algebraMap, m.y_mod_P_eq_zero, zero_pow Fintype.card_ne_zero]
 
 lemma F.mod_Q_y_pow_q_eq_zero' :
     aeval ((algebraMap B (B⧸Q) (y A Q)) ^ (Fintype.card (A⧸P))) (F A Q) = 0 := by
   rw [← m_spec' A Q isGalois, aeval_map_algebraMap, m.mod_P_y_pow_q_eq_zero']
-
-lemma _root_.Polynomial.aeval_finset_prod.{u, v, y} {R : Type u} {S : Type v} {ι : Type y}
-    [CommSemiring R] [CommSemiring S] [Algebra R S] (s : Finset ι) (g : ι → R[X]) (x : S) :
-  aeval x (∏ i ∈ s, g i) = (∏ i ∈ s, aeval x (g i)) := eval₂_finset_prod (algebraMap R S) s g x
 
 lemma exists_Frob : ∃ σ : B ≃ₐ[A] B, σ (y A Q) - (y A Q) ^ (Fintype.card (A⧸P)) ∈ Q := by
   have := F.mod_Q_y_pow_q_eq_zero' Q isGalois P
