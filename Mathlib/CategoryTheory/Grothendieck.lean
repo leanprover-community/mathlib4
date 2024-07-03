@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Scott Morrison, Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Elements
+import Mathlib.CategoryTheory.Comma.Over
 
 #align_import category_theory.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -15,6 +16,9 @@ Given a functor `F : C ⥤ Cat`, the objects of `Grothendieck F`
 consist of dependent pairs `(b, f)`, where `b : C` and `f : F.obj c`,
 and a morphism `(b, f) ⟶ (b', f')` is a pair `β : b ⟶ b'` in `C`, and
 `φ : (F.map β).obj f ⟶ f'`
+
+`Grothendieck.functor` makes the Grothendieck construction into a functor from the functor category
+`C ⥤ Cat` to the over category `Over C` in the category of categories.
 
 Categories such as `PresheafedSpace` are in fact examples of this construction,
 and it may be interesting to try to generalize some of the development there.
@@ -148,6 +152,104 @@ def forget : Grothendieck F ⥤ C where
 #align category_theory.grothendieck.forget CategoryTheory.Grothendieck.forget
 
 end
+
+section
+
+variable {G : C ⥤ Cat}
+
+/-- The Grothendieck construction is functorial: a natural transformation `α : F ⟶ G` induces
+a functor `Grothendieck.map : Grothendieck F ⥤ Grothendieck G`.
+-/
+@[simps!]
+def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
+  obj X := {
+    base := X.base
+    fiber := (α.app X.base).obj X.fiber
+  }
+  map {X Y} f := {
+    base := f.base
+    fiber := (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber
+  }
+  map_id := by
+    intro X
+    dsimp
+    simp [eqToHom_map]
+    congr 1
+    · rw [eqToHom_app, eqToHom_trans]
+  map_comp := by
+    intro X Y Z f g
+    dsimp
+    congr 1
+    erw [comp_fiber f g]
+    simp [Functor.comp_map, ← Category.assoc]
+    apply congrFun (congrArg (. ≫ .) ?_) ((α.app Z.base).map g.fiber)
+    slice_rhs 3 3 =>
+      rw [← Functor.comp_map _ _]
+    have H :=  Functor.congr_hom (α.naturality g.base).symm f.fiber
+    erw [H, eqToHom_app, eqToHom_app]
+    simp [Functor.comp_map]
+    erw [eqToHom_app]
+    simp only [Cat.comp_obj, eqToHom_trans, eqToHom_refl, Category.comp_id]
+
+theorem map_obj {α : F ⟶ G} (X : Grothendieck F) :
+    (Grothendieck.map α).obj X = ⟨X.base, (α.app X.base).obj X.fiber⟩ := by
+  rfl
+
+theorem map_map {α : F ⟶ G} {X Y : Grothendieck F} {f : X ⟶ Y} :
+    (Grothendieck.map α).map f =
+    ⟨f.base, (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber⟩ := by
+  rfl
+
+/-- The functor `Grothendieck.map α : Grothendieck F ⥤ Grothendieck G` lies over `C`.-/
+theorem functor_comp_forget {α : F ⟶ G} :
+    Grothendieck.map α ⋙ Grothendieck.forget G = Grothendieck.forget F := by
+  rfl
+
+theorem map_id_eq : map (𝟙 F) = 𝟙 (Cat.of <| Grothendieck <| F) := by
+  fapply Functor.ext
+  · intro X
+    rfl
+  · intro X Y f
+    simp [map_map]
+    congr
+    erw [NatTrans.id_app]
+    simp
+
+def map_id_iso : map (𝟙 F) ≅ 𝟙 (Cat.of <| Grothendieck <| F) := eqToIso map_id_eq
+
+variable {H : C ⥤ Cat}
+
+theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
+    map (α ≫ β) = map α ⋙ map β := by
+  fapply Functor.ext
+  · intro X
+    rfl
+  · intro X Y f
+    simp [map_map]
+    fapply Grothendieck.ext
+    · rfl
+    · simp
+      erw [eqToHom_app, eqToHom_app, eqToHom_app, eqToHom_map]
+      simp [eqToHom_trans]
+
+def map_comp_iso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β := eqToIso (map_comp_eq α β)
+
+end
+
+universe v
+
+/-- The Grothendieck construction as a functor from the functor category `E ⥤ Cat` to the
+over category `Over E`. -/
+def functor {E : Cat.{v,u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T:= Cat.{v,u}) E where
+  obj F := Over.mk (X:= E) (Y := Cat.of (Grothendieck F))  (Grothendieck.forget F)
+  map {F G} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
+  map_id F := by
+    ext
+    exact Grothendieck.map_id_eq (F:= F)
+  map_comp := by
+    intro F G H α β
+    simp [Grothendieck.map_comp_eq α β]
+    rfl
 
 universe w
 
