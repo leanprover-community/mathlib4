@@ -3,7 +3,8 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Monotonicity.Attr
 
@@ -364,29 +365,32 @@ end DivInvMonoid
 Those lemmas have been deprecated on 2023-12-23.
 -/
 
-@[deprecated] alias pow_le_pow_of_le_left' := pow_le_pow_left'
-@[deprecated] alias nsmul_le_nsmul_of_le_right := nsmul_le_nsmul_right
-@[deprecated] alias pow_lt_pow' := pow_lt_pow_right'
-@[deprecated] alias nsmul_lt_nsmul := nsmul_lt_nsmul_left
-@[deprecated] alias pow_strictMono_left := pow_right_strictMono'
-@[deprecated] alias nsmul_strictMono_right := nsmul_left_strictMono
-@[deprecated] alias StrictMono.pow_right' := StrictMono.pow_const
-@[deprecated] alias StrictMono.nsmul_left := StrictMono.const_nsmul
-@[deprecated] alias pow_strictMono_right' := pow_left_strictMono
-@[deprecated] alias nsmul_strictMono_left := nsmul_right_strictMono
-@[deprecated] alias Monotone.pow_right := Monotone.pow_const
-@[deprecated] alias Monotone.nsmul_left := Monotone.const_nsmul
-@[deprecated] alias lt_of_pow_lt_pow' := lt_of_pow_lt_pow_left'
-@[deprecated] alias lt_of_nsmul_lt_nsmul := lt_of_nsmul_lt_nsmul_right
-@[deprecated] alias pow_le_pow' := pow_le_pow_right'
-@[deprecated] alias nsmul_le_nsmul := nsmul_le_nsmul_left
-@[deprecated] alias pow_le_pow_of_le_one' := pow_le_pow_right_of_le_one'
-@[deprecated] alias nsmul_le_nsmul_of_nonpos := nsmul_le_nsmul_left_of_nonpos
-@[deprecated] alias le_of_pow_le_pow' := le_of_pow_le_pow_left'
-@[deprecated] alias le_of_nsmul_le_nsmul := le_of_nsmul_le_nsmul_right
-@[deprecated] alias pow_le_pow_iff' := pow_le_pow_iff_right'
-@[deprecated] alias nsmul_le_nsmul_iff := nsmul_le_nsmul_iff_left
-@[deprecated] alias pow_lt_pow_iff' := pow_lt_pow_iff_right'
-@[deprecated] alias nsmul_lt_nsmul_iff := nsmul_lt_nsmul_iff_left
-@[deprecated] alias pow_mono_right := pow_left_mono
-@[deprecated] alias nsmul_mono_left := nsmul_right_mono
+@[deprecated (since := "2023-12-23")] alias pow_le_pow_of_le_left' := pow_le_pow_left'
+@[deprecated (since := "2023-12-23")] alias nsmul_le_nsmul_of_le_right := nsmul_le_nsmul_right
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow' := pow_lt_pow_right'
+@[deprecated (since := "2023-12-23")] alias nsmul_lt_nsmul := nsmul_lt_nsmul_left
+@[deprecated (since := "2023-12-23")] alias pow_strictMono_left := pow_right_strictMono'
+@[deprecated (since := "2023-12-23")] alias nsmul_strictMono_right := nsmul_left_strictMono
+@[deprecated (since := "2023-12-23")] alias StrictMono.pow_right' := StrictMono.pow_const
+@[deprecated (since := "2023-12-23")] alias StrictMono.nsmul_left := StrictMono.const_nsmul
+@[deprecated (since := "2023-12-23")] alias pow_strictMono_right' := pow_left_strictMono
+@[deprecated (since := "2023-12-23")] alias nsmul_strictMono_left := nsmul_right_strictMono
+@[deprecated (since := "2023-12-23")] alias Monotone.pow_right := Monotone.pow_const
+@[deprecated (since := "2023-12-23")] alias Monotone.nsmul_left := Monotone.const_nsmul
+@[deprecated (since := "2023-12-23")] alias lt_of_pow_lt_pow' := lt_of_pow_lt_pow_left'
+@[deprecated (since := "2023-12-23")] alias lt_of_nsmul_lt_nsmul := lt_of_nsmul_lt_nsmul_right
+@[deprecated (since := "2023-12-23")] alias pow_le_pow' := pow_le_pow_right'
+@[deprecated (since := "2023-12-23")] alias nsmul_le_nsmul := nsmul_le_nsmul_left
+@[deprecated (since := "2023-12-23")] alias pow_le_pow_of_le_one' := pow_le_pow_right_of_le_one'
+
+@[deprecated (since := "2023-12-23")]
+alias nsmul_le_nsmul_of_nonpos := nsmul_le_nsmul_left_of_nonpos
+
+@[deprecated (since := "2023-12-23")] alias le_of_pow_le_pow' := le_of_pow_le_pow_left'
+@[deprecated (since := "2023-12-23")] alias le_of_nsmul_le_nsmul := le_of_nsmul_le_nsmul_right
+@[deprecated (since := "2023-12-23")] alias pow_le_pow_iff' := pow_le_pow_iff_right'
+@[deprecated (since := "2023-12-23")] alias nsmul_le_nsmul_iff := nsmul_le_nsmul_iff_left
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow_iff' := pow_lt_pow_iff_right'
+@[deprecated (since := "2023-12-23")] alias nsmul_lt_nsmul_iff := nsmul_lt_nsmul_iff_left
+@[deprecated (since := "2023-12-23")] alias pow_mono_right := pow_left_mono
+@[deprecated (since := "2023-12-23")] alias nsmul_mono_left := nsmul_right_mono

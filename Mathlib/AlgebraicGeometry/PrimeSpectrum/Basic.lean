@@ -61,10 +61,12 @@ It is a fundamental building block in algebraic geometry. -/
 @[ext]
 structure PrimeSpectrum [CommSemiring R] where
   asIdeal : Ideal R
-  IsPrime : asIdeal.IsPrime
+  isPrime : asIdeal.IsPrime
 #align prime_spectrum PrimeSpectrum
 
-attribute [instance] PrimeSpectrum.IsPrime
+@[deprecated (since := "2024-06-22")] alias PrimeSpectrum.IsPrime := PrimeSpectrum.isPrime
+
+attribute [instance] PrimeSpectrum.isPrime
 
 namespace PrimeSpectrum
 
@@ -79,7 +81,7 @@ instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
 
 /-- The prime spectrum of the zero ring is empty. -/
 instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
-  ⟨fun x ↦ x.IsPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
+  ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
 #noalign prime_spectrum.punit
 
 variable (R S)
@@ -158,11 +160,11 @@ At a point `x` (a prime ideal) the function (i.e., element) `f` takes values in 
 consisting of all "functions" that vanish on all of `t`.
 -/
 def vanishingIdeal (t : Set (PrimeSpectrum R)) : Ideal R :=
-  ⨅ (x : PrimeSpectrum R) (_ : x ∈ t), x.asIdeal
+  ⨅ x ∈ t, x.asIdeal
 #align prime_spectrum.vanishing_ideal PrimeSpectrum.vanishingIdeal
 
 theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :
-    (vanishingIdeal t : Set R) = { f : R | ∀ x : PrimeSpectrum R, x ∈ t → f ∈ x.asIdeal } := by
+    (vanishingIdeal t : Set R) = { f : R | ∀ x ∈ t, f ∈ x.asIdeal } := by
   ext f
   rw [vanishingIdeal, SetLike.mem_coe, Submodule.mem_iInf]
   apply forall_congr'; intro x
@@ -170,7 +172,7 @@ theorem coe_vanishingIdeal (t : Set (PrimeSpectrum R)) :
 #align prime_spectrum.coe_vanishing_ideal PrimeSpectrum.coe_vanishingIdeal
 
 theorem mem_vanishingIdeal (t : Set (PrimeSpectrum R)) (f : R) :
-    f ∈ vanishingIdeal t ↔ ∀ x : PrimeSpectrum R, x ∈ t → f ∈ x.asIdeal := by
+    f ∈ vanishingIdeal t ↔ ∀ x ∈ t, f ∈ x.asIdeal := by
   rw [← SetLike.mem_coe, coe_vanishingIdeal, Set.mem_setOf_eq]
 #align prime_spectrum.mem_vanishing_ideal PrimeSpectrum.mem_vanishingIdeal
 
@@ -277,9 +279,9 @@ theorem zeroLocus_empty : zeroLocus (∅ : Set R) = Set.univ :=
 #align prime_spectrum.zero_locus_empty PrimeSpectrum.zeroLocus_empty
 
 @[simp]
-theorem vanishingIdeal_univ : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = ⊤ := by
+theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (PrimeSpectrum R)) = ⊤ := by
   simpa using (gc R).u_top
-#align prime_spectrum.vanishing_ideal_univ PrimeSpectrum.vanishingIdeal_univ
+#align prime_spectrum.vanishing_ideal_univ PrimeSpectrum.vanishingIdeal_empty
 
 theorem zeroLocus_empty_of_one_mem {s : Set R} (h : (1 : R) ∈ s) : zeroLocus s = ∅ := by
   rw [Set.eq_empty_iff_forall_not_mem]
