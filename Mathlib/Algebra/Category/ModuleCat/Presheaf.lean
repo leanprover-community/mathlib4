@@ -517,8 +517,8 @@ morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
 @[simps]
 noncomputable def forgetToPresheafModuleCatObj
     (X : Cᵒᵖ) (hX : Limits.IsInitial X) (M : PresheafOfModules.{v} R) :
-    Cᵒᵖ ⥤ ModuleCat (R.1.obj X) :=
-{ obj := fun c =>
+    Cᵒᵖ ⥤ ModuleCat (R.1.obj X) where
+  obj c :=
     ModuleCat.restrictScalars (R.1.map (hX.to c)) |>.obj <| M.obj c
   map := fun {c₁ c₂} f =>
     { toFun := fun x => M.presheaf.map f x
