@@ -15,11 +15,14 @@ category).
 ## Main definitions
 
 * `Functor.IsContinuous`: a functor between sites is continuous if the
-precomposition with this functor preserves sheaves.
+precomposition with this functor preserves sheaves with values in
+the category `Type t` for a certain auxiliary universe `t`.
 * `Functor.sheafPushforwardContinuous`: the induced functor
 `Sheaf K A ⥤ Sheaf J A` for a continuous functor `G : (C, J) ⥤ (D, K)`. In case this is
 part of a morphism of sites, this would be understood as the pushforward functor
-even though it goes in the opposite direction as the functor `G`.
+even though it goes in the opposite direction as the functor `G`. (Here, the auxiliary
+universe `t` in the assumption that `G` is continuous is the one such that morphisms
+in the category `A` are in `Type t`.)
 * `Functor.PreservesOneHypercovers`: a type-class expressing that a functor preserves
 1-hypercovers of a certain size
 
@@ -27,8 +30,8 @@ even though it goes in the opposite direction as the functor `G`.
 
 - `Functor.isContinuous_of_preservesOneHypercovers`: if the topology on `C` is generated
 by 1-hypercovers of size `w` and that `F : C ⥤ D` preserves 1-hypercovers of size `w`,
-then `F` is continuous. This is an instance for `w = max u₁ v₂`
-when `C : Type u` and `[Category.{v₁} u₁]`
+then `F` is continuous (for any auxiliary universe parameter `t`).
+This is an instance for `w = max u₁ v₁` when `C : Type u₁` and `[Category.{v₁} C]`
 
 ## References
 * https://stacks.math.columbia.edu/tag/00WU
