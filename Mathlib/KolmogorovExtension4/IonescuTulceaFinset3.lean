@@ -918,6 +918,17 @@ theorem composition_comp_ionescu_apply {a b : ℕ} (hab : a ≤ b)
   · exact (hf.comp_measurable <| (meas_proj b).prod_mk measurable_id).aestronglyMeasurable
   · rwa [composition_comp_ionescu _ hab]
 
+theorem integrable_ionescu {a b : ℕ} (hab : a ≤ b) {f : ((n : ℕ) → X n) → E}
+    (x₀ : (i : Iic a) → X i)
+    (i_f : Integrable f (ionescu_tulcea_kernel κ a x₀)) :
+    ∀ᵐ x ∂ionescu_tulcea_kernel κ a x₀, Integrable f (ionescu_tulcea_kernel κ b (proj b x)) := by
+  rw [← composition_comp_ionescu _ hab, kernel.integrable_comp] at i_f
+  · apply ae_of_ae_map (p := fun x ↦ Integrable f (ionescu_tulcea_kernel κ b x))
+    · exact (meas_proj b).aemeasurable
+    · convert i_f.1
+      rw [← ionescu_tulcea_proj, kernel.map_apply]
+  · exact i_f.aestronglyMeasurable
+
 theorem condExp_ionescu
     {a b : ℕ} (hab : a ≤ b) (x₀ : (i : Iic a) → X i) {f : ((n : ℕ) → X n) → E}
     (i_f : Integrable f (ionescu_tulcea_kernel κ a x₀)) (mf : StronglyMeasurable f) :
@@ -933,15 +944,12 @@ theorem condExp_ionescu
     · rw [← integrable_map_measure, ← kernel.map_apply, ionescu_tulcea_proj, ← integrable_norm_iff]
       · apply i_f.2.mono'
         · apply AEStronglyMeasurable.norm
-          exact (StronglyMeasurable.integral_kernel_prod_right' <|
-            mf.comp_measurable measurable_snd).aestronglyMeasurable
+          exact (mf.comp_measurable measurable_snd).integral_kernel_prod_right'.aestronglyMeasurable
         · refine eventually_of_forall fun x ↦ ?_
           rw [norm_norm]
           exact norm_integral_le_integral_norm _
-      · exact (StronglyMeasurable.integral_kernel_prod_right' <|
-          mf.comp_measurable measurable_snd).aestronglyMeasurable
-      · exact (StronglyMeasurable.integral_kernel_prod_right' <|
-          mf.comp_measurable measurable_snd).aestronglyMeasurable
+      · exact (mf.comp_measurable measurable_snd).integral_kernel_prod_right'.aestronglyMeasurable
+      · exact (mf.comp_measurable measurable_snd).integral_kernel_prod_right'.aestronglyMeasurable
       · exact (meas_proj b).aemeasurable
     · exact mf.aestronglyMeasurable
   · intro s ms hs
@@ -960,18 +968,36 @@ theorem condExp_ionescu
         · exact meas_proj b mt
         · rw [uncurry_def]
           apply StronglyMeasurable.smul
-          · refine (StronglyMeasurable.indicator ?_ mt).comp_measurable measurable_fst
-            exact stronglyMeasurable_const
+          · exact (stronglyMeasurable_const.indicator mt).comp_measurable measurable_fst
           · exact mf.comp_measurable measurable_snd
         · simp_rw [← preimage_indicator, ← indicator_eq]
           exact i_f.indicator (meas_proj b mt)
       · exact (meas_proj b).aemeasurable
-      · apply StronglyMeasurable.aestronglyMeasurable
-        apply StronglyMeasurable.indicator _ mt
-        exact StronglyMeasurable.integral_kernel_prod_right' <| mf.comp_measurable measurable_snd
+      · refine (StronglyMeasurable.indicator ?_ mt).aestronglyMeasurable
+        exact (mf.comp_measurable measurable_snd).integral_kernel_prod_right'
     · exact meas_proj b mt
   · conv => enter [2]; change (fun x ↦ ∫ y, f y ∂ionescu_tulcea_kernel κ b x) ∘ (proj b)
     apply AEStronglyMeasurable.comp_ae_measurable'
-    · exact (StronglyMeasurable.integral_kernel_prod_right' <|
-        mf.comp_measurable measurable_snd).aestronglyMeasurable
+    · exact (mf.comp_measurable measurable_snd).integral_kernel_prod_right'.aestronglyMeasurable
     · exact (meas_proj b).aemeasurable
+
+theorem condexp_ionescu' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) (x₀ : (i : Iic a) → X i)
+    {f : ((n : ℕ) → X n) → E} (i_f : Integrable f (ionescu_tulcea_kernel κ a x₀))
+    (mf : StronglyMeasurable f) :
+    condexp (ff b) (ionescu_tulcea_kernel κ a x₀) f =ᵐ[ionescu_tulcea_kernel κ a x₀]
+      fun x ↦ ∫ y, condexp (ff c) (ionescu_tulcea_kernel κ a x₀) f (updateFinset x _ y)
+        ∂composition κ b c (proj b x) := by
+    filter_upwards [condExp_ionescu κ hab x₀ i_f mf]
+    intro x h
+    rw [h, ← composition_comp_ionescu _ hbc, kernel.integral_comp]
+    · apply integral_congr_ae
+      have aux a : proj c (updateFinset x _ a) = a := sorry
+      have aux' : (fun a ↦ ∫ z, f z ∂ionescu_tulcea_kernel κ c a) =
+          (fun a ↦ ∫ z, f z ∂ionescu_tulcea_kernel κ c (proj c (updateFinset x _ a))) := by
+        ext a
+        rw [aux a]
+      rw [aux']
+      apply ae_of_ae_map (p := fun y ↦ ∫ z, f z ∂ionescu_tulcea_kernel κ c (proj c y) =
+        (condexp (ff c) (ionescu_tulcea_kernel κ a x₀) f) y)
+      · sorry
+      ·
