@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 /-!
 # Finite modules over local rings
 
-This file gathers various results of finite modules over a local ring `(R, 𝔪, k)`.
+This file gathers various results about finite modules over a local ring `(R, 𝔪, k)`.
 
 ## Main results
 - `LocalRing.subsingleton_tensorProduct`: If `M` is finitely generated, `k ⊗ M = 0 ↔ M = 0`.
@@ -21,10 +21,10 @@ This file gathers various results of finite modules over a local ring `(R, 𝔪,
   If `M` is a finitely presented module such that `m ⊗ M → M` is injective
   (for example when `M` is flat), then `M` is free.
 - `Module.free_of_lTensor_residueField_injective`: If `N → M → P → 0` is a presentation of `P` with
-  `N` finite and `M` finite free, then `k ⊗ N → k ⊗ M` is injective implies `P` is free.
+  `N` finite and `M` finite free, then injectivity of `k ⊗ N → k ⊗ M` implies that `P` is free.
 - `LocalRing.split_injective_iff_lTensor_residueField_injective`:
   Given an `R`-linear map `l : M → N` with `M` finite and `N` is finite free,
-  `l` is a split injection iff `k ⊗ l` is a (split) injection.
+  `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
 
@@ -89,7 +89,7 @@ theorem LocalRing.subsingleton_tensorProduct [Module.Finite R M] :
     Subsingleton (k ⊗[R] M) ↔ Subsingleton M := by
   rw [← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top,
     ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top,
-    ← LocalRing.map_mk_eq_top (M := M), Submodule.map_bot]
+    ← map_mk_eq_top (M := M), Submodule.map_bot]
 
 theorem LocalRing.span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
     (f : ι → M) (b : Basis ι k (k ⊗[R] M))
@@ -101,8 +101,8 @@ theorem LocalRing.span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
 
 open Function in
 /--
-Given `M₁ → M₂ → M₃ → 0` and `N₁ → N₂ → N₃ → 0`.
-If `M₁ ⊗ N₃ → M₂ ⊗ N₃` and `M₂ ⊗ N₁ → M₂ ⊗ N₂` are both injective,
+Given `M₁ → M₂ → M₃ → 0` and `N₁ → N₂ → N₃ → 0`,
+if `M₁ ⊗ N₃ → M₂ ⊗ N₃` and `M₂ ⊗ N₁ → M₂ ⊗ N₂` are both injective,
 then `M₃ ⊗ N₁ → M₃ ⊗ N₂` is also injective.
 -/
 theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
@@ -118,10 +118,8 @@ theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
   intro x hx
   obtain ⟨x, rfl⟩ := f₂.rTensor_surjective N₁ hfsurj x
   have : f₂.rTensor _ (g₁.lTensor _ x) = 0 := by
-    rw [← hx, ← LinearMap.comp_apply, ← LinearMap.comp_apply]
-    congr 1
-    ext x y
-    simp
+    simp only [← hx, ← LinearMap.comp_apply, ← LinearMap.comp_apply, LinearMap.rTensor_comp_lTensor,
+      LinearMap.lTensor_comp_rTensor]
   obtain ⟨y, hy⟩ := (rTensor_exact N₂ hfexact hfsurj _).mp this
   have : g₂.lTensor _ y = 0 := by
     apply hfinj
@@ -135,10 +133,8 @@ theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
   obtain ⟨z, rfl⟩ := (lTensor_exact _ hgexact hgsurj _).mp this
   obtain rfl : f₁.rTensor N₁ z = x := by
     apply hginj
-    rw [← hy, ← LinearMap.comp_apply, ← LinearMap.comp_apply]
-    congr 1
-    ext x y
-    simp
+    simp only [← hy, ← LinearMap.comp_apply, ← LinearMap.comp_apply, LinearMap.lTensor_comp_rTensor,
+      LinearMap.rTensor_comp_lTensor]
   rw [← LinearMap.comp_apply, ← LinearMap.rTensor_comp, hfexact.linearMap_comp_eq_zero]
   simp
 
