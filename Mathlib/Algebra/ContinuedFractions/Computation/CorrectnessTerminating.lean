@@ -13,39 +13,40 @@ import Mathlib.Tactic.Ring
 #align_import algebra.continued_fractions.computation.correctness_terminating from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
-# Correctness of Terminating Continued Fraction Computations (`GCF.of`)
+# Correctness of Terminating Continued Fraction Computations (`GenContFract.of`)
 
 ## Summary
 
-We show the correctness of the
-algorithm computing continued fractions (`GCF.of`) in case of termination in the following sense:
+We show the correctness of the algorithm computing continued fractions (`GenContFract.of`)
+in case of termination in the following sense:
 
 At every step `n : ℕ`, we can obtain the value `v` by adding a specific residual term to the last
-denominator of the fraction described by `(GCF.of v).convs' n`.
+denominator of the fraction described by `(GenContFract.of v).convs' n`.
 The residual term will be zero exactly when the continued fraction terminated; otherwise, the
-residual term will be given by the fractional part stored in `GCF.IntFractPair.stream v n`.
+residual term will be given by the fractional part stored in `GenContFract.IntFractPair.stream v n`.
 
 For an example, refer to
-`GCF.compExactValue_correctness_of_stream_eq_some` and for more
+`GenContFract.compExactValue_correctness_of_stream_eq_some` and for more
 information about the computation process, refer to `Algebra.ContinuedFractions.Computation.Basic`.
 
 ## Main definitions
 
-- `GCF.compExactValue` can be used to compute the exact value approximated by the continued fraction
-  `GCF.of v` by adding a residual term as described in the summary.
+- `GenContFract.compExactValue` can be used to compute the exact value approximated by the
+  continued fraction `GenContFract.of v` by adding a residual term as described in the summary.
 
 ## Main Theorems
 
-- `GCF.compExactValue_correctness_of_stream_eq_some` shows that `GCF.compExactValue` indeed returns
-  the value `v` when given the convergent and fractional part as described in the summary.
-- `GCF.of_correctness_of_terminatedAt` shows the equality `v = (GCF.of v).convs n` if `GCF.of v`
-  terminated at position `n`.
+- `GenContFract.compExactValue_correctness_of_stream_eq_some` shows that
+  `GenContFract.compExactValue` indeed returns the value `v` when given the convergent and
+  fractional part as described in the summary.
+- `GenContFract.of_correctness_of_terminatedAt` shows the equality
+  `v = (GenContFract.of v).convs n` if `GenContFract.of v` terminated at position `n`.
 -/
 
 
-namespace GCF
+namespace GenContFract
 
-open GCF (of)
+open GenContFract (of)
 
 variable {K : Type*} [LinearOrderedField K] {v : K} {n : ℕ}
 
@@ -55,7 +56,7 @@ variable {K : Type*} [LinearOrderedField K] {v : K} {n : ℕ}
   otherwise.
 
 This function can be used to compute the exact value approximated by a continued fraction
-`GCF.of v` as described in lemma `compExactValue_correctness_of_stream_eq_some`.
+`GenContFract.of v` as described in lemma `compExactValue_correctness_of_stream_eq_some`.
 -/
 protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
   -- if the fractional part is zero, we exactly approximated the value by the last continuants
@@ -64,7 +65,7 @@ protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
   else -- otherwise, we have to include the fractional part in a final continuants step.
     let exactConts := nextConts 1 fr⁻¹ pconts conts
     exactConts.a / exactConts.b
-#align generalized_continued_fraction.comp_exact_value GCF.compExactValue
+#align generalized_continued_fraction.comp_exact_value GenContFract.compExactValue
 
 variable [FloorRing K]
 
@@ -75,13 +76,13 @@ protected theorem compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} 
   field_simp [fract_a_ne_zero]
   rw [Int.fract]
   ring
-#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp GCF.compExactValue_correctness_of_stream_eq_some_aux_comp
+#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp GenContFract.compExactValue_correctness_of_stream_eq_some_aux_comp
 
-open GCF
+open GenContFract
   (compExactValue compExactValue_correctness_of_stream_eq_some_aux_comp)
 
 /-- Shows the correctness of `compExactValue` in case the continued fraction
-`GCF.of v` did not terminate at position `n`. That is, we obtain the
+`GenContFract.of v` did not terminate at position `n`. That is, we obtain the
 value `v` if we pass the two successive (auxiliary) continuants at positions `n` and `n + 1` as well
 as the fractional part at `IntFractPair.stream n` to `compExactValue`.
 
@@ -89,11 +90,11 @@ The correctness might be seen more readily if one uses `convs'` to evaluate the 
 fraction. Here is an example to illustrate the idea:
 
 Let `(v : ℚ) := 3.4`. We have
-- `GCF.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
-- `GCF.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
-Now `(GCF.of v).convs' 1 = 3 + 1/2`, and our fractional term at position `2` is `0.5`. We hence have
-`v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`. This computation corresponds exactly to the one using the
-recurrence equation in `compExactValue`.
+- `GenContFract.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
+- `GenContFract.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
+Now `(GenContFract.of v).convs' 1 = 3 + 1/2`, and our fractional term at position `2` is `0.5`.
+We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`.
+This computation corresponds exactly to the one using the recurrence equation in `compExactValue`.
 -/
 theorem compExactValue_correctness_of_stream_eq_some :
     ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n →
@@ -202,12 +203,12 @@ theorem compExactValue_correctness_of_stream_eq_some :
       · field_simp [hA, hB]
         ac_rfl
       · rwa [inv_eq_one_div, hfr]
-#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some GCF.compExactValue_correctness_of_stream_eq_some
+#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some GenContFract.compExactValue_correctness_of_stream_eq_some
 
-open GCF (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
+open GenContFract (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
 
-/-- The convergent of `GCF.of v` at step `n - 1` is exactly `v` if the `IntFractPair.stream` of the
-corresponding continued fraction terminated at step `n`. -/
+/-- The convergent of `GenContFract.of v` at step `n - 1` is exactly `v` if the
+`IntFractPair.stream` of the corresponding continued fraction terminated at step `n`. -/
 theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.stream v n = none) :
     v = (of v).convs (n - 1) := by
   induction n with
@@ -232,28 +233,28 @@ theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.
         exact IH nth_stream_eq_none
     · simpa [nth_stream_fr_eq_zero, compExactValue] using
         compExactValue_correctness_of_stream_eq_some nth_stream_eq
-#align generalized_continued_fraction.of_correctness_of_nth_stream_eq_none GCF.of_correctness_of_nth_stream_eq_none
+#align generalized_continued_fraction.of_correctness_of_nth_stream_eq_none GenContFract.of_correctness_of_nth_stream_eq_none
 
-/-- If `GCF.of v` terminated at step `n`, then the `n`th convergent is exactly `v`. -/
+/-- If `GenContFract.of v` terminated at step `n`, then the `n`th convergent is exactly `v`. -/
 theorem of_correctness_of_terminatedAt (terminatedAt_n : (of v).TerminatedAt n) :
     v = (of v).convs n :=
   have : IntFractPair.stream v (n + 1) = none :=
     of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none.1 terminatedAt_n
   of_correctness_of_nth_stream_eq_none this
-#align generalized_continued_fraction.of_correctness_of_terminated_at GCF.of_correctness_of_terminatedAt
+#align generalized_continued_fraction.of_correctness_of_terminated_at GenContFract.of_correctness_of_terminatedAt
 
-/-- If `GCF.of v` terminates, then there is `n : ℕ` such that the `n`th convergent is
+/-- If `GenContFract.of v` terminates, then there is `n : ℕ` such that the `n`th convergent is
 exactly `v`.
 -/
 theorem of_correctness_of_terminates (terminates : (of v).Terminates) :
     ∃ n : ℕ, v = (of v).convs n :=
   Exists.elim terminates fun n terminatedAt_n =>
     Exists.intro n (of_correctness_of_terminatedAt terminatedAt_n)
-#align generalized_continued_fraction.of_correctness_of_terminates GCF.of_correctness_of_terminates
+#align generalized_continued_fraction.of_correctness_of_terminates GenContFract.of_correctness_of_terminates
 
 open Filter
 
-/-- If `GCF.of v` terminates, then its convergents will eventually always be `v`. -/
+/-- If `GenContFract.of v` terminates, then its convergents will eventually always be `v`. -/
 theorem of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
     ∀ᶠ n in atTop, v = (of v).convs n := by
   rw [eventually_atTop]
@@ -262,6 +263,6 @@ theorem of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
   intro m m_geq_n
   rw [convs_stable_of_terminated m_geq_n terminatedAt_n]
   exact of_correctness_of_terminatedAt terminatedAt_n
-#align generalized_continued_fraction.of_correctness_at_top_of_terminates GCF.of_correctness_atTop_of_terminates
+#align generalized_continued_fraction.of_correctness_at_top_of_terminates GenContFract.of_correctness_atTop_of_terminates
 
-end GCF
+end GenContFract

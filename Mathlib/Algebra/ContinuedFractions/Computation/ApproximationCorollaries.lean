@@ -16,22 +16,24 @@ import Mathlib.Topology.Order.LeftRightNhds
 
 ## Summary
 
-We show that the generalized_continued_fraction given by `GCF.of` in fact is a regular continued
-fraction. Using the equivalence of the convergents computations (`GCF.convs` and `GCF.convs'`) for
+We show that the gcf given by `GenContFract.of` in fact is a regular continued
+fraction. Using the equivalence of the convergents computations
+(`GenContFract.convs` and `GenContFract.convs'`) for
 continued fractions (see `Algebra.ContinuedFractions.ConvergentsEquiv`), it follows that the
-convergents computations for `GCF.of` are equivalent.
+convergents computations for `GenContFract.of` are equivalent.
 
 Moreover, we show the convergence of the continued fractions computations, that is
-`(GCF.of v).convs` indeed computes `v` in the limit.
+`(GenContFract.of v).convs` indeed computes `v` in the limit.
 
 ## Main Definitions
 
-- `RCF.of` returns the regular continued fraction of a value.
+- `ContFract.of` returns the (regular) continued fraction of a value.
 
 ## Main Theorems
 
-- `GCF.of_convs_eq_convs'` shows that the convergents computations for `GCF.of` are equivalent.
-- `GCF.of_convergence` shows that `(GCF.of v).convs` converges to `v`.
+- `GenContFract.of_convs_eq_convs'` shows that the convergents computations for
+  `GenContFract.of` are equivalent.
+- `GenContFract.of_convergence` shows that `(GenContFract.of v).convs` converges to `v`.
 
 ## Tags
 
@@ -41,35 +43,35 @@ convergence, fractions
 
 variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
-open GCF (of)
-open GCF
+open GenContFract (of)
+open GenContFract
 open scoped Topology
 
-theorem GCF.of_isSCF :
-    (of v).IsSCF := fun _ _ nth_partNum_eq =>
+theorem GenContFract.of_isSimpContFract :
+    (of v).IsSimpContFract := fun _ _ nth_partNum_eq =>
   of_partNum_eq_one nth_partNum_eq
-#align generalized_continued_fraction.of_is_simple_continued_fraction GCF.of_isSCF
+#align generalized_continued_fraction.of_is_simple_continued_fraction GenContFract.of_isSimpContFract
 
 /-- Creates the simple continued fraction of a value. -/
-nonrec def SCF.of : SCF K :=
-  ⟨of v, GCF.of_isSCF v⟩
-#align simple_continued_fraction.of SCF.of
+nonrec def SimpContFract.of : SimpContFract K :=
+  ⟨of v, GenContFract.of_isSimpContFract v⟩
+#align simple_continued_fraction.of SimpContFract.of
 
-theorem SCF.of_isRCF :
-    (SCF.of v).IsRCF := fun _ _ nth_partDen_eq =>
+theorem SimpContFract.of_isContFract :
+    (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
   lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
-#align simple_continued_fraction.of_is_continued_fraction SCF.of_isRCF
+#align simple_continued_fraction.of_is_continued_fraction SimpContFract.of_isContFract
 
 /-- Creates the continued fraction of a value. -/
-def RCF.of : RCF K :=
-  ⟨SCF.of v, SCF.of_isRCF v⟩
-#align continued_fraction.of RCF.of
+def ContFract.of : ContFract K :=
+  ⟨SimpContFract.of v, SimpContFract.of_isContFract v⟩
+#align continued_fraction.of ContFract.of
 
-namespace GCF
+namespace GenContFract
 
 theorem of_convs_eq_convs' : (of v).convs = (of v).convs' :=
-  @RCF.convs_eq_convs' _ _ (RCF.of v)
-#align generalized_continued_fraction.of_convergents_eq_convergents' GCF.of_convs_eq_convs'
+  @ContFract.convs_eq_convs' _ _ (ContFract.of v)
+#align generalized_continued_fraction.of_convergents_eq_convergents' GenContFract.of_convs_eq_convs'
 
 /-- The recurrence relation for the `convs` of the continued fraction expansion
 of an element `v` of `K` in terms of the convergents of the inverse of its fractional part.
@@ -77,14 +79,14 @@ of an element `v` of `K` in terms of the convergents of the inverse of its fract
 theorem convs_succ (n : ℕ) :
     (of v).convs (n + 1) = ⌊v⌋ + 1 / (of (Int.fract v)⁻¹).convs n := by
   rw [of_convs_eq_convs', convs'_succ, of_convs_eq_convs']
-#align generalized_continued_fraction.convergents_succ GCF.convs_succ
+#align generalized_continued_fraction.convergents_succ GenContFract.convs_succ
 
 section Convergence
 
 /-!
 ### Convergence
 
-We next show that `(GCF.of v).convs v` converges to `v`.
+We next show that `(GenContFract.of v).convs v` converges to `v`.
 -/
 
 
@@ -136,13 +138,13 @@ theorem of_convergence_epsilon :
       _ ≤ fib (n + 1) * fib (n + 1) := by exact_mod_cast (fib (n + 1)).le_mul_self
       _ ≤ fib (n + 1) * fib (n + 2) := by gcongr; exact_mod_cast fib_le_fib_succ
       _ ≤ B * nB := by gcongr
-#align generalized_continued_fraction.of_convergence_epsilon GCF.of_convergence_epsilon
+#align generalized_continued_fraction.of_convergence_epsilon GenContFract.of_convergence_epsilon
 
 theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
     Filter.Tendsto (of v).convs Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
-#align generalized_continued_fraction.of_convergence GCF.of_convergence
+#align generalized_continued_fraction.of_convergence GenContFract.of_convergence
 
 end Convergence
 
-end GCF
+end GenContFract
