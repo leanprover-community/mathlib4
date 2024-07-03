@@ -65,16 +65,6 @@ theorem LocalRing.map_mkQ_eq {N₁ N₂ : Submodule R M} (h : N₁ ≤ N₂) (h'
       (by rw [jacobson_eq_maximalIdeal]; exact bot_ne_top) this)
   · rintro rfl; simp
 
-variable (R S M) in
-theorem TensorProduct.mk_surjective (S) [CommRing S] [Algebra R S]
-    (h : Surjective (algebraMap R S)) :
-    Surjective (TensorProduct.mk R S M 1) := by
-  rw [← LinearMap.range_eq_top, ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
-  rintro _ ⟨x, y, rfl⟩
-  obtain ⟨x, rfl⟩ := h x
-  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
-  exact ⟨x • y, rfl⟩
-
 theorem LocalRing.map_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
   constructor
