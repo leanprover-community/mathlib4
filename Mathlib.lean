@@ -1865,7 +1865,6 @@ import Mathlib.Condensed.Discrete.Colimit
 import Mathlib.Condensed.Discrete.Characterization
 import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Discrete.Module
-import Mathlib.Condensed.Dev.Extend
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
