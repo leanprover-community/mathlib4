@@ -2554,6 +2554,7 @@ import Mathlib.Geometry.Manifold.WhitneyEmbedding
 import Mathlib.Geometry.RingedSpace.Basic
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.Geometry.RingedSpace.PresheafedSpace
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
