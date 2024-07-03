@@ -203,7 +203,7 @@ end Polynomial
 
 end Pochhammer
 
-section Nat_Int
+section Basic_Instances
 
 open Polynomial
 
@@ -236,7 +236,16 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial,
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
 
-end Nat_Int
+noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
+  nsmul_right_injective n hn r s hrs := by
+    rw [← one_smul ℚ≥0 r, ← one_smul ℚ≥0 s, show 1 = (n : ℚ≥0)⁻¹ • (n : ℚ≥0) by simp_all]
+    simp_all only [smul_assoc, ← nsmul_eq_smul_cast]
+  multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
+  factorial_nsmul_multichoose r n := by
+    simp only [← smul_assoc]
+    field_simp
+
+end Basic_Instances
 
 section Choose
 

@@ -200,7 +200,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
     · cases hl
     · next ih _ _ =>
       congr
-      · exact Subsingleton.elim _ _
+      · subsingleton
       · apply ih; simpa using hl
 #align list.length_injective_iff List.length_injective_iff
 
@@ -902,11 +902,6 @@ theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
 
 end deprecated
 
--- Porting note: List.modifyHead has @[simp], and Lean 4 treats this as
--- an invitation to unfold modifyHead in any context,
--- not just use the equational lemmas.
-
--- @[simp]
 @[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp

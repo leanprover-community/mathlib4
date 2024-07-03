@@ -8,7 +8,6 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
@@ -2448,9 +2447,6 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
   Matrix.ext <| by simp
 #align matrix.conj_transpose_rat_cast_smul Matrix.conjTranspose_ratCast_smul
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12231 -/
 @[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=

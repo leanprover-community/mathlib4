@@ -19,7 +19,7 @@ Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or t
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Constructor.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Existsi.lean : line 7 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/ExistsI.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/PushNeg.lean : line 14 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Recover.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Rename.lean : line 8 : ERR_MOD : Module docstring missing, or too late
