@@ -112,7 +112,7 @@ theorem ContinuousMap.exists_extension_forall_mem {Y : Type v} [TopologicalSpace
   exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
 
 instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
-    [∀ i, TietzeExtension (Y i)] : TietzeExtension (∀ i, Y i) where
+    [∀ i, TietzeExtension.{u} (Y i)] : TietzeExtension.{u} (∀ i, Y i) where
   exists_restrict_eq' s hs f := by
     obtain ⟨g', hg'⟩ := Classical.skolem.mp <| fun i ↦
       ContinuousMap.exists_restrict_eq hs (ContinuousMap.piEquiv _ _ |>.symm f i)
@@ -120,7 +120,7 @@ instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, Topolog
 
 instance Prod.instTietzeExtension {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TietzeExtension.{u, v} Y] [TopologicalSpace Z] [TietzeExtension.{u, w} Z] :
-    TietzeExtension (Y × Z) where
+    TietzeExtension.{u, max w v} (Y × Z) where
   exists_restrict_eq' s hs f := by
     obtain ⟨g₁, hg₁⟩ := (ContinuousMap.fst.comp f).exists_restrict_eq hs
     obtain ⟨g₂, hg₂⟩ := (ContinuousMap.snd.comp f).exists_restrict_eq hs
@@ -128,7 +128,7 @@ instance Prod.instTietzeExtension {Y : Type v} {Z : Type w} [TopologicalSpace Y]
 
 instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y] :
     TietzeExtension.{u, v} Y where
-  exists_restrict_eq' _ _ f := ⟨.const _ default, by ext x; exact Subsingleton.elim _ _⟩
+  exists_restrict_eq' _ _ f := ⟨.const _ default, by ext; subsingleton⟩
 
 /-- Any retract of a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y]
@@ -365,7 +365,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         calc
           0 < c - g y := sub_pos.2 hac
           _ = dg y := (dga rfl).symm
-      · exact hlt.trans_le ((le_add_iff_nonneg_right _).2 <| (dgmem y).1)
+      · exact hlt.trans_le (le_add_of_nonneg_right (dgmem y).1)
     rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
     refine ⟨x, hxy.le, ?_⟩
     rcases le_total c (g y) with hc | hc

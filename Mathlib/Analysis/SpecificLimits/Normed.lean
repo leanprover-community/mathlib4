@@ -703,7 +703,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
 
 theorem norm_sum_neg_one_pow_le (n : ℕ) : ‖∑ i ∈ range n, (-1 : ℝ) ^ i‖ ≤ 1 := by
   rw [neg_one_geom_sum]
-  split_ifs <;> set_option tactic.skipAssignedInstances false in norm_num
+  split_ifs <;> norm_num
 #align norm_sum_neg_one_pow_le norm_sum_neg_one_pow_le
 
 /-- The **alternating series test** for monotone sequences.
@@ -824,12 +824,7 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
     ‖x ^ (n + 1) / (n + 1)!‖ = ‖x‖ / (n + 1) * ‖x ^ n / (n !)‖ := by
       rw [_root_.pow_succ', Nat.factorial_succ, Nat.cast_mul, ← _root_.div_mul_div_comm, norm_mul,
         norm_div, Real.norm_natCast, Nat.cast_succ]
-    _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ :=
-      -- Porting note: this was `by mono* with 0 ≤ ‖x ^ n / (n !)‖, 0 ≤ ‖x‖ <;> apply norm_nonneg`
-      -- but we can't wait on `mono`.
-      mul_le_mul_of_nonneg_right
-        (div_le_div (norm_nonneg x) (le_refl ‖x‖) A (add_le_add (mono_cast hn) (le_refl 1)))
-        (norm_nonneg (x ^ n / n !))
+    _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ := by gcongr
 #align real.summable_pow_div_factorial Real.summable_pow_div_factorial
 
 theorem Real.tendsto_pow_div_factorial_atTop (x : ℝ) :

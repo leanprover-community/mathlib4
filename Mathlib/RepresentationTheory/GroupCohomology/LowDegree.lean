@@ -699,7 +699,6 @@ lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
   exact hx
 
 /-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
-@[simps!]
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   ShortComplex.moduleCatMk _ _ (dZero_comp_H0_subtype A)
 

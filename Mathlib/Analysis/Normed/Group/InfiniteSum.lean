@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Topology.Instances.NNReal
 
 #align_import analysis.normed.group.infinite_sum from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"

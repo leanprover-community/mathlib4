@@ -87,7 +87,7 @@ section Coeff
 private theorem coeffs : (∀ n > 3, P.toPoly.coeff n = 0) ∧ P.toPoly.coeff 3 = P.a ∧
     P.toPoly.coeff 2 = P.b ∧ P.toPoly.coeff 1 = P.c ∧ P.toPoly.coeff 0 = P.d := by
   simp only [toPoly, coeff_add, coeff_C, coeff_C_mul_X, coeff_C_mul_X_pow]
-  set_option tactic.skipAssignedInstances false in norm_num
+  norm_num
   intro n hn
   repeat' rw [if_neg]
   any_goals linarith only [hn]
