@@ -467,6 +467,34 @@ theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨
     Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
 #align nat.prime.dvd_mul Nat.Prime.dvd_mul
 
+theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬Coprime m n ↔ ∃ p, Prime p ∧ p ∣ m ∧ p ∣ n := by
+  apply Iff.intro
+  · intro h
+    exact
+      ⟨minFac (gcd m n), minFac_prime h, (minFac_dvd (gcd m n)).trans (gcd_dvd_left m n),
+        (minFac_dvd (gcd m n)).trans (gcd_dvd_right m n)⟩
+  · intro h
+    cases' h with p hp
+    apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
+#align nat.prime.not_coprime_iff_dvd Nat.Prime.not_coprime_iff_dvd
+
+theorem Prime.dvd_iff_not_coprime {p n : ℕ} (pp : Prime p) : p ∣ n ↔ ¬Coprime p n :=
+  iff_not_comm.2 pp.coprime_iff_not_dvd
+#align nat.prime.dvd_iff_not_coprime Nat.Prime.dvd_iff_not_coprime
+
+theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : Coprime p i ∨ p ∣ i := by
+  rw [pp.dvd_iff_not_coprime]; apply em
+#align nat.coprime_or_dvd_of_prime Nat.coprime_or_dvd_of_prime
+
+theorem coprime_primes {p q : ℕ} (pp : Prime p) (pq : Prime q) : Coprime p q ↔ p ≠ q :=
+  pp.coprime_iff_not_dvd.trans <| not_congr <| dvd_prime_two_le pq pp.two_le
+#align nat.coprime_primes Nat.coprime_primes
+
+theorem coprime_pow_primes {p q : ℕ} (n m : ℕ) (pp : Prime p) (pq : Prime q) (h : p ≠ q) :
+    Coprime (p ^ n) (q ^ m) :=
+  ((coprime_primes pp pq).2 h).pow _ _
+#align nat.coprime_pow_primes Nat.coprime_pow_primes
+
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
   ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
 #align nat.prime_iff Nat.prime_iff
@@ -524,5 +552,13 @@ instance fact_prime_two : Fact (Prime 2) :=
 instance fact_prime_three : Fact (Prime 3) :=
   ⟨prime_three⟩
 #align nat.fact_prime_three Nat.fact_prime_three
+
+theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p ∣ m :=
+  pp.prime.dvd_of_dvd_pow h
+#align nat.prime.dvd_of_dvd_pow Nat.Prime.dvd_of_dvd_pow
+
+theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
+  simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
+#align nat.dvd_prime_pow Nat.dvd_prime_pow
 
 end Nat

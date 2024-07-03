@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.NumberTheory.Zsqrtd.Basic
 
 #align_import number_theory.pell_matiyasevic from "leanprover-community/mathlib"@"795b501869b9fa7aa716d5fdadd00c03f983a605"

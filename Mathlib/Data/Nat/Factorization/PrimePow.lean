@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Prime.Basic
 
 #align_import data.nat.factorization.prime_pow from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
