@@ -344,7 +344,7 @@ theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A
 theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
   exact Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-theorem pre_pre_exhaust: (fun (α : 𝕜 ) ↦  eigenspace A α)  = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
+theorem pre_pre_exhaust: (fun (α : 𝕜) ↦  eigenspace A α) = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
 funext
 exact Eq.symm (semi_final_exhaust hB hAB)
 
@@ -386,9 +386,7 @@ theorem Orthogonality : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
 
 theorem post_post_exhaust: DirectSum.IsInternal
     (fun (i : 𝕜 × 𝕜) ↦ (eigenspace B i.1 ⊓ eigenspace A i.2)):= by
-  have One : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
-    (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E)) (fun i =>
-    (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := Orthogonality hA hB
+  have One := Orthogonality hA hB
   have Two : ⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) =
       ⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2) := by
     simp only [iSup_prod]
@@ -399,6 +397,24 @@ theorem post_post_exhaust: DirectSum.IsInternal
   have Four : (⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2))ᗮ = ⊥ := by
     simp only [Submodule.orthogonal_eq_bot_iff, Three]
   exact (OrthogonalFamily.isInternal_iff One).mpr Four
+
+variable {n : Type*} [Fintype n] [DecidableEq n] (T : n → (E →ₗ[𝕜] E))
+  (hT : ∀ (i : n), (IsSymmetric (T i)))
+
+theorem ind_exhaust : (⨆ (α : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (α j))))ᗮ = ⊥ := by sorry
+
+theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (i : n → 𝕜) =>
+    (⨅ (j : n), (eigenspace (T j) (i j)) : Submodule 𝕜 E))
+    (fun (i : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (i j))).subtypeₗᵢ) := by sorry
+
+theorem ind_Two : ⨆ (α : n → 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) =
+      ⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2) := by ?????
+
+theorem post_ind_exhaust : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
+    ⨅ (j : n), (eigenspace (T j) (α j))) := by
+    have One := ind_Orthogonality T
+    sorry
+    --roughly, analogues of One, Two, Three and Four...each indexed.
 
 end Simultaneous
 
