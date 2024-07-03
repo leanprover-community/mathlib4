@@ -33,19 +33,6 @@ A. Matsuo, K. Nagatomo `On axioms for a vertex algebra and locality of quantum f
 arXiv:hep-th/9706118
 -/
 
-section StateFieldMap
-
-open HVertexOperator
-
-/-- A state-field correspondence is a linear map from a vector space `V` to the space of fields
-(or vertex operators) on `V`.  Equivalently, it is a bilinear map `V → V → V((z))`. -/
-abbrev StateFieldMap (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V] :=
-  V →ₗ[R] VertexOperator R V
-
--- Maybe move this to HVertexOperator, define things like order of a pair, creativity?
-
-end StateFieldMap
-
 section NonAssocNonUnitalVertexAlgebra
 
 /-- A non-associative non-unital vertex algebra over a commutative ring `R` is an `R`-module `V`

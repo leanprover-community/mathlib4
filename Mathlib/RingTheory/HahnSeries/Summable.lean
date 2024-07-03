@@ -1024,8 +1024,8 @@ theorem isUnit_of_isUnit_leadingCoeff_order_add_unit {x : HahnSeries Γ R}
     rw [leadingCoeff_mul_of_nonzero, leadingCoeff_of_single]
     exact iu
     rw [leadingCoeff_of_single]
-    by_cases hz : 0 = (1 : R)
-    ·
+    --by_cases hz : 0 = (1 : R)
+    sorry
 -/
 
 end PowerSeriesSubst

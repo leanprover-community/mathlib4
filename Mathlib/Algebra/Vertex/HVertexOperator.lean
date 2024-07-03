@@ -196,10 +196,7 @@ def CompHahnSeries {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperato
   isPWO_support' := by
     refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
     simp_all only [coeff_apply, Function.support_subset_iff, ne_eq, Function.mem_support]
-    intro g' hg' hAB
-    apply hg'
-    simp_rw [hAB]
-    simp_all only [map_zero, HahnSeries.zero_coeff, not_true_eq_false]
+    exact fun g' hg' hAB => hg' (by simp [hAB])
 
 @[simp]
 theorem CompHahnSeries.add {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
@@ -214,12 +211,12 @@ theorem CompHahnSeries.sMul {U : Type*} [AddCommGroup U] [Module R U]
     (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ' R U V) (r : R) (u : U) :
     CompHahnSeries A B (r • u) = r • CompHahnSeries A B u := by
   ext
-  simp only [CompHahnSeries_coeff, map_smul, coeff_apply, HahnSeries.smul_coeff]
-  exact rfl
+  rw [HahnSeries.smul_coeff]
+  simp only [CompHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
 @[simps]
-def hetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
+def HComp {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
     (B : HVertexOperator Γ' R U V) : HVertexOperator (Γ' ×ₗ Γ) R U W where
   toFun u := HahnModule.of R (HahnSeries.ofIterate (CompHahnSeries A B u))
   map_add' := by
@@ -235,9 +232,9 @@ def hetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R 
     exact rfl
 
 @[simp]
-theorem coeff_hetComp {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
+theorem coeff_HComp {U : Type*} [AddCommGroup U] [Module R U] (A : HVertexOperator Γ R V W)
     (B : HVertexOperator Γ' R U V) (g : Γ' ×ₗ Γ) :
-    (hetComp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
+    (HComp A B).coeff g = A.coeff (ofLex g).2 ∘ₗ B.coeff (ofLex g).1 := by
   rfl
 
 -- TODO: comp_assoc
@@ -373,5 +370,63 @@ theorem subLeft_smul_eq_subRight_smul (A B : HVertexOperator (ℤ ×ₗ ℤ) R V
   rw [subLeft_smul_coeff, subRight_smul_coeff, h k (l-1), h (k-1) l]
 
 end Binomial
+
+section StateFieldMap
+
+/-- A heterogeneous state-field map is a linear map from a vector space `U` to the space of
+heterogeneous fields (or vertex operators) from `V` to `W`.  Equivalently, it is a bilinear map
+`U →ₗ[R] V →ₗ[R] HahnModule Γ R W`.  When `Γ = ℤ` and `U = V = W`, then the multiplication map in a
+vertex algebra has this form, but in other cases, we use this for module structures and intertwining
+operators. -/
+abbrev HStateFieldMap (Γ R U V W : Type*) [PartialOrder Γ] [CommRing R] [AddCommGroup U] [Module R U]
+    [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
+  U →ₗ[R] HVertexOperator Γ R V W
+
+-- Can I just use `curry` to say this is a HVertexOperator Γ R (U ⊗ V) W?
+-- Then composition is easier.
+
+namespace VertexAlg
+
+variable {U} (R) {X Y : Type*} [CommRing R] [AddCommGroup U] [Module R U] [AddCommGroup V] [Module R V]
+  [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+
+/-- The coefficient function of a heterogeneous state-field map. -/
+@[simps]
+def coeff (A : HStateFieldMap Γ R U V W) (g : Γ) : U →ₗ[R] V →ₗ[R] W where
+  toFun u := (A u).coeff g
+  map_add' a b := by simp
+  map_smul' r a := by simp
+
+open TensorProduct
+
+/-- The standard equivalence between heterogeneous state field maps and heterogeneous vertex
+operators on the tensor product. -/
+def uncurry : HStateFieldMap Γ R U V W ≃ₗ[R] HVertexOperator Γ R (U ⊗[R] V) W :=
+  lift.equiv R U V (HahnModule Γ R W)
+
+@[simp]
+theorem uncurry_apply (A : HStateFieldMap Γ R U V W) (u : U) (v : V) :
+    uncurry R A (u ⊗ₜ v) = A u v :=
+  rfl
+
+@[simp]
+theorem uncurry_symm_apply (A : HVertexOperator Γ R (U ⊗[R] V) W) (u : U) (v : V) :
+    (uncurry R).symm A u v = A (u ⊗ₜ v) :=
+  rfl
+
+/-! Iterate starting with `Y_{UV}^W : U ⊗ V → W((z))` and `Y_{WX}^Y : W ⊗ X → Y((w))`, make
+`Y_{UVX}^Y (t_1, t_2) : U ⊗ V ⊗ X → W((z)) ⊗ X → Y((w))((z))`.
+I need an operator on tensor products giving Lex Hahn series from Hahn Series inputs.
+So, define `W((z)) ⊗ X → (W ⊗ X)((z))` by coefficient-wise maps, then extend the `HVertexOperator`
+`Y_{WX}^Y` to `(W ⊗ X)((z)) → Y((w))((z))` coefficient-wise.
+-/
+-- Right composition: `Y_{XW}^Y (x, t_0) Y_{UV}^W (u, t_1) v`
+
+-- Define things like order of a pair, creativity?
+
+end VertexAlg
+
+end StateFieldMap
+
 
 end HVertexOperator

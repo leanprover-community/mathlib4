@@ -76,7 +76,7 @@ section
 variable {α m n : Type*}
 
 open Matrix in
-set_option synthInstance.maxHeartbeats 2000 in
+set_option synthInstance.maxHeartbeats 3000 in
 example [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ := by simp
 

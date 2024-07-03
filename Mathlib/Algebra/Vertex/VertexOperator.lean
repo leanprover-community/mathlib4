@@ -261,8 +261,8 @@ vanishing of the `x^k y^l` term, for all integers `k` and `l`, but we have to sw
 since `BA` takes values in the opposite-order Hahn series. -/
 def IsLocalToOrderLeq (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) (n : ℕ) : Prop :=
-  ∀ (k l : ℤ), ((subLeft R)^n • (hetComp A B)).coeff (toLex (k, l)) =
-    ((subRight R)^n • (hetComp B A)).coeff (toLex (l, k))
+  ∀ (k l : ℤ), ((subLeft R)^n • (HComp A B)).coeff (toLex (k, l)) =
+    ((subRight R)^n • (HComp B A)).coeff (toLex (l, k))
 
 theorem isLocalToOrderLeqAdd (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) (m n : ℕ) (h : IsLocalToOrderLeq R V A B n) :
@@ -446,20 +446,20 @@ open HVertexOperator
 /-- The left side of the `m`-th residue product, given by the residue of `(x-y)^m A(x)B(y)` at
 `x=0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` in `R((x))((y))` using binomials. -/
 noncomputable def res_prod_left (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  ResRight ((subLeft R) ^ m • hetComp A B) (-1 : ℤ)
+  ResRight ((subLeft R) ^ m • HComp A B) (-1 : ℤ)
 
 /-- The right side of the `m`-th residue product, given by the residue of `(x-y)^m B(x)A(y)` at
 `x=0`, where we formally expand `(x-y)^m` as `(-y)^m(1-x/y)^m` using binomials (i.e., in the domain
 where `x` is big). -/
 noncomputable def res_prod_right (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  ResRight ((subRight R) ^ m • hetComp B A) (-1 : ℤ)
+  ResRight ((subRight R) ^ m • HComp B A) (-1 : ℤ)
 
 /-- The the `m`-th residue product of vertex operators -/
 noncomputable def res_prod (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
   res_prod_left A B m + res_prod_right A B m
 
-theorem subLeft_smul_hetComp_one_left_eq (A : VertexOperator R V) {m : ℤ} {k n : ℕ} :
-    coeff ((subLeft R ^ k) • hetComp (1 : VertexOperator R V) A)
+theorem subLeft_smul_HComp_one_left_eq (A : VertexOperator R V) {m : ℤ} {k n : ℕ} :
+    coeff ((subLeft R ^ k) • HComp (1 : VertexOperator R V) A)
       (toLex (m, Int.negSucc n)) = 0 := by
   induction k generalizing m n with
   | zero => simp
@@ -474,7 +474,7 @@ theorem res_prod_left_one_nat (A : VertexOperator R V) (m : ℕ) : res_prod_left
   ext1
   simp only [res_prod_left, ResRight, zpow_natCast, coeff_of_coeff, zero_coeff]
   funext
-  rw [show -1 = Int.negSucc 0 by exact rfl, subLeft_smul_hetComp_one_left_eq]
+  rw [show -1 = Int.negSucc 0 by exact rfl, subLeft_smul_HComp_one_left_eq]
   exact rfl
 
 /-!
