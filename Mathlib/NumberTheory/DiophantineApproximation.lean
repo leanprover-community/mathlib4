@@ -47,9 +47,9 @@ We also show a converse,
 Both statements are combined to give an equivalence,
 `Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational`.
 
-There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
-`Real.convergent`, a simple recursive definition of the convergents that is also defined
-in this file, whereas the other, `Real.exists_continued_fraction_convergent_eq_rat`, uses
+There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convs`, uses
+`Real.convs`, a simple recursive definition of the convergents that is also defined
+in this file, whereas the other, `Real.exists_genContFract_convs_eq_rat`, uses
 `GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
@@ -324,64 +324,63 @@ open Int
 expansion of a real number `ξ`. The main reason for that is that we want to have the
 convergents as rational numbers; the versions `(GenContFract.of ξ).convs` and
 `(GenContFract.of ξ).convs'` always give something of the same type as `ξ`.
-We can then also use dot notation `ξ.convergent n`.
+We can then also use dot notation `ξ.convs n`.
 Another minor reason is that this demonstrates that the proof
 of Legendre's theorem does not need anything beyond this definition.
 We provide a proof that this definition agrees with the other one;
-see `Real.continued_fraction_convergent_eq_convergent`.
+see `Real.genContFract_convs_eq_convs`.
 (Note that we use the fact that `1/0 = 0` here to make it work for rational `ξ`.) -/
-noncomputable def convergent : ℝ → ℕ → ℚ
+noncomputable def convs : ℝ → ℕ → ℚ
   | ξ, 0 => ⌊ξ⌋
-  | ξ, n + 1 => ⌊ξ⌋ + (convergent (fract ξ)⁻¹ n)⁻¹
-#align real.convergent Real.convergent
+  | ξ, n + 1 => ⌊ξ⌋ + (convs (fract ξ)⁻¹ n)⁻¹
+#align real.convergent Real.convs
 
 /-- The zeroth convergent of `ξ` is `⌊ξ⌋`. -/
 @[simp]
-theorem convergent_zero (ξ : ℝ) : ξ.convergent 0 = ⌊ξ⌋ :=
+theorem convs_zero (ξ : ℝ) : ξ.convs 0 = ⌊ξ⌋ :=
   rfl
-#align real.convergent_zero Real.convergent_zero
+#align real.convergent_zero Real.convs_zero
 
 /-- The `(n+1)`th convergent of `ξ` is the `n`th convergent of `1/(fract ξ)`. -/
 @[simp]
-theorem convergent_succ (ξ : ℝ) (n : ℕ) :
-    ξ.convergent (n + 1) = ⌊ξ⌋ + ((fract ξ)⁻¹.convergent n)⁻¹ :=
+theorem convs_succ (ξ : ℝ) (n : ℕ) :
+    ξ.convs (n + 1) = ⌊ξ⌋ + ((fract ξ)⁻¹.convs n)⁻¹ :=
   -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026): was
-  -- by simp only [convergent]
+  -- by simp only [convs]
   rfl
-#align real.convergent_succ Real.convergent_succ
+#align real.convergent_succ Real.convs_succ
 
 /-- All convergents of `0` are zero. -/
 @[simp]
-theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
+theorem convs_of_zero (n : ℕ) : convs 0 n = 0 := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, convergent_zero, floor_zero, cast_zero]
-  · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
-#align real.convergent_of_zero Real.convergent_of_zero
+  · simp only [Nat.zero_eq, convs_zero, floor_zero, cast_zero]
+  · simp only [ih, convs_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
+#align real.convergent_of_zero Real.convs_of_zero
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
-theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
+theorem convs_of_int {ξ : ℤ} (n : ℕ) : convs ξ n = ξ := by
   cases n
-  · simp only [Nat.zero_eq, convergent_zero, floor_intCast]
-  · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
-      inv_zero]
-#align real.convergent_of_int Real.convergent_of_int
+  · simp only [Nat.zero_eq, convs_zero, floor_intCast]
+  · simp only [convs_succ, floor_intCast, fract_intCast, convs_of_zero, add_zero, inv_zero]
+#align real.convergent_of_int Real.convs_of_int
 
 /-!
-Our `convergent`s agree with `GenContFract.convs`.
+Our `convs` agree with `GenContFract.convs`.
 -/
 
 
 open GenContFract
 
-/-- The `n`th convergent of the `GenContFract.of ξ` agrees with `ξ.convergent n`. -/
-theorem continued_fraction_conv_eq_convergent (ξ : ℝ) (n : ℕ) :
-    (GenContFract.of ξ).convs n = ξ.convergent n := by
+/-- The `n`th convergent of the `GenContFract.of ξ` agrees with `ξ.convs n`. -/
+theorem genContFract_convs_eq_convs (ξ : ℝ) (n : ℕ) :
+    (GenContFract.of ξ).convs n = ξ.convs n := by
   induction' n with n ih generalizing ξ
-  · simp only [Nat.zero_eq, zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
-  · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
+  · simp only [Nat.zero_eq, zeroth_conv_eq_h, of_h_eq_floor, convs_zero, Rat.cast_intCast]
+  · rw [GenContFract.convs_succ, ih (fract ξ)⁻¹, convs_succ, one_div]
     norm_cast
-#align real.continued_fraction_convergent_eq_convergent Real.continued_fraction_conv_eq_convergent
+#align real.continued_fraction_convergent_eq_convergent Real.genContFract_convs_eq_convs
 
 end Real
 
@@ -396,7 +395,7 @@ namespace Real
 
 open Int
 
--- this is not `private`, as it is used in the public `exists_rat_eq_convergent'` below.
+-- this is not `private`, as it is used in the public `exists_rat_eq_convs'` below.
 /-- Define the technical condition to be used as assumption in the inductive proof. -/
 def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
   IsCoprime u v ∧ (v = 1 → (-(1 / 2) : ℝ) < ξ - u) ∧
@@ -527,8 +526,8 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
 
 
 /-- The technical version of *Legendre's Theorem*. -/
-theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
-    ∃ n, (u / v : ℚ) = ξ.convergent n := by
+theorem exists_rat_eq_convs' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
+    ∃ n, (u / v : ℚ) = ξ.convs n := by
   -- Porting note: `induction` got in trouble because of the irrelevant hypothesis `h`
   clear h; have h := h'; clear h'
   induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
@@ -541,7 +540,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     obtain ⟨_, h₁, h₂⟩ := h
     rcases le_or_lt (u : ℝ) ξ with ht | ht
     · use 0
-      rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
+      rw [convs_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
       convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num
     · replace h₁ := lt_sub_iff_add_lt'.mp (h₁ rfl)
       have hξ₁ : ⌊ξ⌋ = u - 1 := by
@@ -560,7 +559,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
           rw [sub_eq_add_neg]
           norm_num
         use 1
-        simp [convergent, hξ₁, hξ₂, cast_sub, cast_one]
+        simp [convs, hξ₁, hξ₂, cast_sub, cast_one]
   · obtain ⟨huv₀, huv₁⟩ := aux₂ (Nat.cast_le.mpr ht) h
     have Hv : (v : ℚ) ≠ 0 := (Nat.cast_pos.mpr (zero_lt_one.trans ht)).ne'
     have huv₁' : (u - ⌊ξ⌋ * v).toNat < v := by zify; rwa [toNat_of_nonneg huv₀.le]
@@ -568,18 +567,18 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
       (toNat_of_nonneg huv₀.le).symm ▸ invariant (Nat.cast_le.mpr ht) h
     obtain ⟨n, hn⟩ := ih (u - ⌊ξ⌋ * v).toNat huv₁' inv
     use n + 1
-    rw [convergent_succ, ← hn,
+    rw [convs_succ, ← hn,
       (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
       cast_natCast, inv_div, sub_div, mul_div_cancel_right₀ _ Hv, add_sub_cancel]
-#align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
+#align real.exists_rat_eq_convergent' Real.exists_rat_eq_convs'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
-This version uses `Real.convergent`. -/
-theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
-    ∃ n, q = ξ.convergent n := by
-  refine q.num_div_den ▸ exists_rat_eq_convergent' ⟨?_, fun hd => ?_, ?_⟩
+This version uses `Real.convs`. -/
+theorem exists_rat_eq_convs {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
+    ∃ n, q = ξ.convs n := by
+  refine q.num_div_den ▸ exists_rat_eq_convs' ⟨?_, fun hd => ?_, ?_⟩
   · exact coprime_iff_nat_coprime.mpr (natAbs_ofNat q.den ▸ q.reduced)
   · rw [← q.den_eq_one_iff.mp (Nat.cast_eq_one.mp hd)] at h
     simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
@@ -589,16 +588,16 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
     rw [cast_natCast] at *
     rw [(by norm_cast : (q.num / q.den : ℝ) = (q.num / q.den : ℚ)), Rat.num_div_den]
     exact h.trans (by rw [← one_div, sq, one_div_lt_one_div hq₂ hq₁, ← sub_pos]; ring_nf; exact hq₀)
-#align real.exists_rat_eq_convergent Real.exists_rat_eq_convergent
+#align real.exists_rat_eq_convergent Real.exists_rat_eq_convs
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This is the version using `GenContFract.convs`. -/
-theorem exists_continued_fraction_conv_eq_rat {q : ℚ}
+theorem exists_genContFract_convs_eq_rat {q : ℚ}
     (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) : ∃ n, (GenContFract.of ξ).convs n = q := by
-  obtain ⟨n, hn⟩ := exists_rat_eq_convergent h
-  exact ⟨n, hn.symm ▸ continued_fraction_conv_eq_convergent ξ n⟩
-#align real.exists_continued_fraction_convergent_eq_rat Real.exists_continued_fraction_conv_eq_rat
+  obtain ⟨n, hn⟩ := exists_rat_eq_convs h
+  exact ⟨n, hn.symm ▸ genContFract_convs_eq_convs ξ n⟩
+#align real.exists_continued_fraction_convergent_eq_rat Real.exists_genContFract_convs_eq_rat
 
 end Real

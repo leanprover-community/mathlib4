@@ -52,7 +52,7 @@ theorem of_convs_eq_convs' : (of v).convs = (of v).convs' :=
   @ContFract.convs_eq_convs' _ _ (ContFract.of v)
 #align generalized_continued_fraction.of_convergents_eq_convergents' GenContFract.of_convs_eq_convs'
 
-/-- The recurrence relation for the `convs` of the continued fraction expansion
+/-- The recurrence relation for the convergents of the continued fraction expansion
 of an element `v` of `K` in terms of the convergents of the inverse of its fractional part.
 -/
 theorem convs_succ (n : ℕ) :

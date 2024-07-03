@@ -8,11 +8,11 @@ import Mathlib.Algebra.ContinuedFractions.Translations
 #align_import algebra.continued_fractions.continuants_recurrence from "leanprover-community/mathlib"@"5f11361a98ae4acd77f5c1837686f6f0102cdc25"
 
 /-!
-# Recurrence Lemmas for the `conts` Function of Continued Fractions.
+# Recurrence Lemmas for the Continuants (`conts`) Function of Continued Fractions
 
 ## Summary
 
-Given a generalized continued fraction `g`, for all `n ≥ 1`, we prove that the `conts`
+Given a generalized continued fraction `g`, for all `n ≥ 1`, we prove that the continuants (`conts`)
 function indeed satisfies the following recurrences:
 - `Aₙ = bₙ * Aₙ₋₁ + aₙ * Aₙ₋₂`, and
 - `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`.
