@@ -108,4 +108,57 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter dupNamespace
 
-end Mathlib.Linter.DupNamespaceLinter
+end DupNamespaceLinter
+
+/-!
+#  The "EndOf" linter
+
+The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
+-/
+
+open Lean Elab Command
+
+namespace Mathlib.Linter
+
+/-- The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
+-/
+register_option linter.endOf : Bool := {
+  defValue := true
+  descr := "enable the EndOf linter"
+}
+
+namespace EndOf
+
+open Lean Elab Command
+
+/-- Gets the value of the `linter.endOf` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.endOf o
+
+@[inherit_doc Mathlib.Linter.linter.endOf]
+def endOfLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    let sc ← getScopes
+    -- a single scope means that there is no active `section`/`namespace`
+    if sc.length == 1 then return
+    let ends := sc.dropLast.map fun s => (s.header, s.isNoncomputable)
+    -- if the "outermost" scope corresponds to a `noncomputable section`, then we exclude it
+    let ends := if ends.getLast!.2 then ends.dropLast else ends
+    if !ends.isEmpty then
+      let ending := (ends.map Prod.fst).foldl (init := "") fun a b =>
+        a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+      Linter.logLint linter.endOf stx m!"Expected: '{ending}'"
+
+initialize addLinter endOfLinter
+
+end EndOf
+
+end Mathlib.Linter
+
+end Mathlib.Linter
