@@ -381,8 +381,7 @@ lemma IsIdempotentElem.range_prod__of_commute
 
 lemma IsLprojection.range_inter (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
     (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P }) :
-    Set.range P.val ∩ Set.range Q.val =
-      Set.range (P ⊓ Q).val := by
+    Set.range P.val ∩ Set.range Q.val = Set.range (P ⊓ Q).val := by
   rw [← IsIdempotentElem.range_prod__of_commute (IsLprojection.commute P.prop Q.prop)
     P.prop.1 Q.prop.1]
   rfl
