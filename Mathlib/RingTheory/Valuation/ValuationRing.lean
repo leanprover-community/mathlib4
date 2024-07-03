@@ -25,13 +25,15 @@ Namely, given the following instances:
 there is a natural valuation `Valuation A K` on `K` with values in `value_group A K` where
 the image of `A` under `algebraMap A K` agrees with `(Valuation A K).integer`.
 
-We also provide the equivalence of the following notions for a domain `R` in `ValuationRing.tFAE`.
+We also provide the equivalence of the following notions for a domain `R` in `ValuationRing.TFAE`.
 1. `R` is a valuation ring.
 2. For each `x : FractionRing K`, either `x` or `x⁻¹` is in `R`.
 3. "divides" is a total relation on the elements of `R`.
 4. "contains" is a total relation on the ideals of `R`.
 5. `R` is a local bezout domain.
 
+We also show that, given a valuation `v` on a field `K`, the ring of valuation integers is a
+valuation ring and `K` is the fraction field of this ring.
 -/
 
 

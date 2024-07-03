@@ -107,15 +107,6 @@ theorem not_bddAbove_setOf_prime : ¬BddAbove { p | Prime p } := by
   exact ⟨p, hp, hi⟩
 #align nat.not_bdd_above_set_of_prime Nat.not_bddAbove_setOf_prime
 
-theorem Prime.eq_two_or_odd {p : ℕ} (hp : Prime p) : p = 2 ∨ p % 2 = 1 :=
-  p.mod_two_eq_zero_or_one.imp_left fun h =>
-    ((hp.eq_one_or_self_of_dvd 2 (dvd_of_mod_eq_zero h)).resolve_left (by decide)).symm
-#align nat.prime.eq_two_or_odd Nat.Prime.eq_two_or_odd
-
-theorem Prime.eq_two_or_odd' {p : ℕ} (hp : Prime p) : p = 2 ∨ Odd p :=
-  Or.imp_right (fun h => ⟨p / 2, (div_add_mod p 2).symm.trans (congr_arg _ h)⟩) hp.eq_two_or_odd
-#align nat.prime.eq_two_or_odd' Nat.Prime.eq_two_or_odd'
-
 theorem Prime.even_iff {p : ℕ} (hp : Prime p) : Even p ↔ p = 2 := by
   rw [even_iff_two_dvd, prime_dvd_prime_iff_eq prime_two hp, eq_comm]
 #align nat.prime.even_iff Nat.Prime.even_iff
@@ -138,14 +129,6 @@ theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔
 theorem coprime_of_dvd' {m n : ℕ} (H : ∀ k, Prime k → k ∣ m → k ∣ n → k ∣ 1) : Coprime m n :=
   coprime_of_dvd fun k kp km kn => not_le_of_gt kp.one_lt <| le_of_dvd zero_lt_one <| H k kp km kn
 #align nat.coprime_of_dvd' Nat.coprime_of_dvd'
-
-theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
-  div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
-      apply Nat.ne_of_gt
-      apply Nat.succ_lt_succ
-      apply Nat.zero_lt_succ
-      )).one_lt
-#align nat.factors_lemma Nat.factors_lemma
 
 theorem Prime.dvd_iff_not_coprime {p n : ℕ} (pp : Prime p) : p ∣ n ↔ ¬Coprime p n :=
   iff_not_comm.2 pp.coprime_iff_not_dvd
@@ -175,10 +158,6 @@ alias ⟨Coprime.odd_of_left, _root_.Odd.coprime_two_left⟩ := coprime_two_left
 alias ⟨Coprime.odd_of_right, _root_.Odd.coprime_two_right⟩ := coprime_two_right
 
 -- Porting note: attributes `protected`, `nolint dup_namespace` removed
-
-theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
-  prime_iff
-#align nat.irreducible_iff_prime Nat.irreducible_iff_prime
 
 theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p ∣ m :=
   pp.prime.dvd_of_dvd_pow h
