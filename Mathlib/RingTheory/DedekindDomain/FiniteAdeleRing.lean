@@ -476,8 +476,6 @@ theorem submodulesRingBasis : SubmodulesRingBasis
     rw [mul_mul_mul_comm, mul_assoc]
     rfl⟩
 
-instance : Nonempty (R⁰) := ⟨1, Submonoid.one_mem R⁰⟩
-
 instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
