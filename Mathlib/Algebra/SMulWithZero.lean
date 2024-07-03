@@ -176,6 +176,10 @@ lemma ite_zero_smul (a : R) (b : M) : (if p then a else 0 : R) • b = if p then
 
 lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 := by simp
 
+lemma Pi.single_apply_smul {ι : Type*} [DecidableEq ι] (x : M) (i j : ι) :
+    (Pi.single i 1 : ι → R) j • x = (Pi.single i x : ι → M) j := by
+  rw [single_apply, ite_smul, one_smul, zero_smul, single_apply]
+
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
