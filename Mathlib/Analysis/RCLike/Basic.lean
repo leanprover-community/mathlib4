@@ -3,10 +3,11 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Algebra.Star.Order
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Data.Real.Sqrt
 
 #align_import data.is_R_or_C.basic from "leanprover-community/mathlib"@"baa88307f3e699fa7054ef04ec79fa4f056169cb"
 
@@ -910,8 +911,7 @@ protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
 
 protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
   refine ⟨fun h => ?_, fun h => RCLike.inv_pos_of_pos h⟩
-  have : z = z⁻¹⁻¹ := by simp
-  rw [this]
+  rw [← inv_inv z]
   exact RCLike.inv_pos_of_pos h
 
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
@@ -957,11 +957,11 @@ scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
     OrderedSMul K A where
-  smul_lt_smul_of_pos {x} {y} {c} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
-  lt_of_smul_lt_smul_of_pos {x} {y} {c} hxy hc := by
-    have : c⁻¹ • c • x < c⁻¹ • c • y := StarModule.smul_lt_smul_of_pos hxy
-      (RCLike.inv_pos_of_pos hc)
-    simpa [smul_smul, inv_mul_cancel ((ne_of_lt hc).symm)] using this
+  smul_lt_smul_of_pos {x y c} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
+  lt_of_smul_lt_smul_of_pos {x y c} hxy hc := by
+    have : c⁻¹ • c • x < c⁻¹ • c • y :=
+      StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
+    simpa [smul_smul, inv_mul_cancel hc.ne'] using this
 
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
 

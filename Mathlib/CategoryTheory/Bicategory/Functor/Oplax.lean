@@ -229,6 +229,36 @@ def mapFunctor (a b : B) : (a ⟶ b) ⥤ (F.obj a ⟶ F.obj b) where
   map η := F.map₂ η
 #align category_theory.oplax_functor.map_functor CategoryTheory.OplaxFunctor.mapFunctor
 
+section
+
+variable (F : OplaxFunctor B C) {a b : B}
+
+/-- An oplax functor `F : B ⥤ C` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms
+`F.map f ≅ F.map g` -/
+@[simps!]
+abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
+  (F.mapFunctor a b).mapIso η
+
+instance map₂_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : IsIso (F.map₂ η) :=
+  (F.map₂Iso (asIso η)).isIso_hom
+
+@[simp]
+lemma map₂_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : F.map₂ (inv η) = inv (F.map₂ η) := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  simp [← F.map₂_comp η (inv η)]
+
+@[reassoc]
+lemma map₂_hom_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
+    F.map₂ η ≫ F.map₂ (inv η) = 𝟙 (F.map f) := by
+  simp
+
+@[reassoc]
+lemma map₂_inv_hom {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
+    F.map₂ (inv η) ≫ F.map₂ η = 𝟙 (F.map g) := by
+  simp
+
+end
+
 /-- The identity oplax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B :=

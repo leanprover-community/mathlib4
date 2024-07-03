@@ -38,6 +38,9 @@ local notation3 "λ" => hζ.toInteger - 1
 
 lemma coe_eta : (η : 𝓞 K) = hζ.toInteger := rfl
 
+lemma _root_.IsPrimitiveRoot.toInteger_cube_eq_one : hζ.toInteger ^ 3 = 1 :=
+  hζ.toInteger_isPrimitiveRoot.pow_eq_one
+
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ [1, -1, η, -η, η^2, -η^2]`. -/
 -- Here `List` is more convenient than `Finset`, even if further from the informal statement.
 -- For example, `fin_cases` below does not work with a `Finset`.
@@ -150,7 +153,7 @@ lemma cube_sub_one_eq_mul : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
   symm
   calc _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + η ^ 3) - η ^ 3 := by ring
   _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + 1) - 1 := by
-    simp [show hζ.toInteger ^ 3 = 1 from hζ.toInteger_isPrimitiveRoot.pow_eq_one]
+    simp [hζ.toInteger_cube_eq_one]
   _ = x ^ 3 - 1 := by rw [eta_sq_add_eta_add_one hζ]; ring
 
 /-- We have that `λ` divides `x * (x - 1) * (x - (η + 1))`. -/

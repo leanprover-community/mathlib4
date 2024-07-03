@@ -182,9 +182,6 @@ def mkFinite (X : Type*) [Finite X] [TopologicalSpace X] [DiscreteTopology X] : 
 
 /--
 A morphism in `Stonean` is an epi iff it is surjective.
-
-TODO: prove that `forget Stonean` preserves pushouts (in fact it preserves all finite colimits)
-and deduce this from general lemmas about concrete categories.
 -/
 lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
