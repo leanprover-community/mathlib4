@@ -27,6 +27,9 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 
 set_option autoImplicit true
 
+universe u v
+variable {α : Sort u}
+
 #align opt_param_eq optParam_eq
 
 #align non_contradictory_intro not_not_intro
@@ -35,7 +38,7 @@ set_option autoImplicit true
 
 theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
 
-theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
+theorem cast_proof_irrel {β : Sort u} (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
 attribute [symm] Eq.symm
 
@@ -339,7 +342,8 @@ alias decidableFalse := instDecidableFalse
 #align not.decidable Not.decidable
 #align iff.decidable Iff.decidable
 
-instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
+instance {q : Prop} [Decidable p] [Decidable q] : Decidable (Xor' p q) :=
+    inferInstanceAs (Decidable (Or ..))
 
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
 def IsDecRefl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true

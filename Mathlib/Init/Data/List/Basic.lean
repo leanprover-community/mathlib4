@@ -22,12 +22,10 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 ## Definitions for `List` not (yet) in `Batteries`
 -/
 
-set_option autoImplicit true
-
-
 open Decidable List
 
 universe u v w
+variable {α : Type u}
 
 namespace List
 
