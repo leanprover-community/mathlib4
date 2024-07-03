@@ -50,7 +50,7 @@ Both statements are combined to give an equivalence,
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
 in this file, whereas the other, `Real.exists_continued_fraction_convergent_eq_rat`, uses
-`GCF.convs` of `GCF.of ξ`.
+`GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
 
@@ -322,8 +322,9 @@ open Int
 
 /-- We give a direct recursive definition of the convergents of the continued fraction
 expansion of a real number `ξ`. The main reason for that is that we want to have the
-convergents as rational numbers; the versions `(GCF.of ξ).convs` and `(GCF.of ξ).convs'` always give
-something of the same type as `ξ`. We can then also use dot notation `ξ.convergent n`.
+convergents as rational numbers; the versions `(GenContFract.of ξ).convs` and
+`(GenContFract.of ξ).convs'` always give something of the same type as `ξ`.
+We can then also use dot notation `ξ.convergent n`.
 Another minor reason is that this demonstrates that the proof
 of Legendre's theorem does not need anything beyond this definition.
 We provide a proof that this definition agrees with the other one;
@@ -367,15 +368,15 @@ theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
 #align real.convergent_of_int Real.convergent_of_int
 
 /-!
-Our `convergent`s agree with `GCF.convs`.
+Our `convergent`s agree with `GenContFract.convs`.
 -/
 
 
-open GCF
+open GenContFract
 
-/-- The `n`th convergent of the `GCF.of ξ` agrees with `ξ.convergent n`. -/
+/-- The `n`th convergent of the `GenContFract.of ξ` agrees with `ξ.convergent n`. -/
 theorem continued_fraction_conv_eq_convergent (ξ : ℝ) (n : ℕ) :
-    (GCF.of ξ).convs n = ξ.convergent n := by
+    (GenContFract.of ξ).convs n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
   · simp only [Nat.zero_eq, zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
   · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
@@ -593,9 +594,9 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
-This is the version using `GCF.convs`. -/
+This is the version using `GenContFract.convs`. -/
 theorem exists_continued_fraction_conv_eq_rat {q : ℚ}
-    (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) : ∃ n, (GCF.of ξ).convs n = q := by
+    (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) : ∃ n, (GenContFract.of ξ).convs n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h
   exact ⟨n, hn.symm ▸ continued_fraction_conv_eq_convergent ξ n⟩
 #align real.exists_continued_fraction_convergent_eq_rat Real.exists_continued_fraction_conv_eq_rat
