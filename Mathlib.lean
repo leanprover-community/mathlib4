@@ -1861,8 +1861,8 @@ import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Discrete.Basic
-import Mathlib.Condensed.Discrete.Colimit
 import Mathlib.Condensed.Discrete.Characterization
+import Mathlib.Condensed.Discrete.Colimit
 import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Discrete.Module
 import Mathlib.Condensed.Equivalence
@@ -1874,8 +1874,6 @@ import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Light.TopComparison
 import Mathlib.Condensed.Limits
-import Mathlib.Condensed.LocallyConstant
-import Mathlib.Condensed.LocallyConstantModule
 import Mathlib.Condensed.Module
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
