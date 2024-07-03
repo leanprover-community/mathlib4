@@ -6,7 +6,7 @@ Authors: María Inés de Frutos-Fernández
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
-import Mathlib.Topology.Algebra.ValuedField
+import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Algebra.Order.Group.TypeTags
 
 #align_import ring_theory.dedekind_domain.adic_valuation from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"

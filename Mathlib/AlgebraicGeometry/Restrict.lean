@@ -44,6 +44,16 @@ notation3:60 X:60 " ∣_ᵤ " U:61 => Scheme.restrict X (U : Opens X).openEmbedd
 /-- The restriction of a scheme to an open subset. -/
 abbrev Scheme.ιOpens {X : Scheme.{u}} (U : Opens X) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
 
+lemma Scheme.ιOpens_image_top {X : Scheme.{u}} (U : Opens X) : (Scheme.ιOpens U) ''ᵁ ⊤ = U :=
+  U.openEmbedding_obj_top
+
+instance Scheme.ιOpens_appLE_isIso {X : Scheme.{u}} (U : Opens X) :
+    IsIso ((Scheme.ιOpens U).appLE U ⊤ (by simp)) := by
+  simp only [restrict_presheaf_obj, ofRestrict_appLE]
+  have : IsIso (homOfLE <| le_of_eq (ιOpens_image_top U)) :=
+    homOfLE_isIso_of_eq _ <| ιOpens_image_top U
+  infer_instance
+
 lemma Scheme.ofRestrict_app_self {X : Scheme.{u}} (U : Opens X) :
     (ιOpens U).app U = X.presheaf.map (eqToHom (by simp)).op := rfl
 
@@ -85,7 +95,6 @@ lemma Scheme.map_basicOpen_map (X : Scheme.{u}) (U : Opens X) (r : Γ(X, U)) :
     ιOpens U ''ᵁ ((X ∣_ᵤ U).basicOpen <|
       X.presheaf.map (eqToHom U.openEmbedding_obj_top).op r) = X.basicOpen r := by
   rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq, Scheme.basicOpen_res_eq]
-
 
 -- Porting note: `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
