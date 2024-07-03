@@ -33,23 +33,23 @@ def kabstractPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
   let pHeadIdx := p.toHeadIndex
   let pNumArgs := p.headNumArgs
   let rec
-  /-- The main loop that loops though all subexpressions -/
+  /-- The main loop that loops through all subexpressions -/
   visit (e : Expr) (pos : SubExpr.Pos) (positions : Array SubExpr.Pos) :
       MetaM (Array SubExpr.Pos) := do
     let visitChildren : Array SubExpr.Pos → MetaM (Array SubExpr.Pos) :=
       match e with
-      | .app f a         => visit f pos.pushAppFn
-                        >=> visit a pos.pushAppArg
-      | .mdata _ b       => visit b pos
-      | .proj _ _ b      => visit b pos.pushProj
-      | .letE _ t v b _  => visit t pos.pushLetVarType
-                        >=> visit v pos.pushLetValue
-                        >=> visit b pos.pushLetBody
-      | .lam _ d b _     => visit d pos.pushBindingDomain
-                        >=> visit b pos.pushBindingBody
-      | .forallE _ d b _ => visit d pos.pushBindingDomain
-                        >=> visit b pos.pushBindingBody
-      | _                => pure
+      | .app fn arg                  => visit fn pos.pushAppFn
+                                    >=> visit arg pos.pushAppArg
+      | .mdata _ expr                => visit expr pos
+      | .proj _ _ struct             => visit struct pos.pushProj
+      | .letE _ type value body _    => visit type pos.pushLetVarType
+                                    >=> visit value pos.pushLetValue
+                                    >=> visit body pos.pushLetBody
+      | .lam _ binderType body _     => visit binderType pos.pushBindingDomain
+                                    >=> visit body pos.pushBindingBody
+      | .forallE _ binderType body _ => visit binderType pos.pushBindingDomain
+                                    >=> visit body pos.pushBindingBody
+      | _                            => pure
     if e.hasLooseBVars then
       visitChildren positions
     else if e.toHeadIndex != pHeadIdx || e.headNumArgs != pNumArgs then
