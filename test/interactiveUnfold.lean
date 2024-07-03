@@ -17,7 +17,7 @@ info: Unfolds for 0:
 · Rat.ofInt ↑0
 -/
 #guard_msgs in
-#unfold? (0:Rat)
+#unfold? (0 : Rat)
 
 /--
 info: Unfolds for -42:
@@ -35,7 +35,7 @@ info: Unfolds for 42:
 · Rat.ofInt ↑42
 -/
 #guard_msgs in
-#unfold? (42 : ℚ )
+#unfold? (42 : ℚ)
 
 /--
 info: Unfolds for 1 + 1:
@@ -43,7 +43,7 @@ info: Unfolds for 1 + 1:
 · 2
 -/
 #guard_msgs in
-#unfold? 1+1
+#unfold? 1 + 1
 
 /--
 info: Unfolds for 5 / 3:
@@ -51,7 +51,7 @@ info: Unfolds for 5 / 3:
 · 1
 -/
 #guard_msgs in
-#unfold? 5/3
+#unfold? 5 / 3
 
 /--
 info: Unfolds for 1 + 1:
@@ -71,7 +71,7 @@ info: Unfolds for 3 ∈ {1, 2, 3}:
 · 3 = 1 ∨ 3 ∈ {2, 3}
 -/
 #guard_msgs in
-#unfold? 3 ∈ ({1,2,3} : Set ℕ)
+#unfold? 3 ∈ ({1, 2, 3} : Set ℕ)
 
 /--
 info: Unfolds for Function.Injective fun x => x:
@@ -101,7 +101,7 @@ info: Unfolds for (fun x => x) (1 + 1):
 · 2
 -/
 #guard_msgs in
-#unfold? (fun x => x) (1+1)
+#unfold? (fun x => x) (1 + 1)
 
 /--
 info: Unfolds for fun x => id x:

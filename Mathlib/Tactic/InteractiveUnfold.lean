@@ -3,7 +3,6 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Lean
 import Batteries.Lean.Position
 import Batteries.Lean.Name
 import Mathlib.Tactic.Widget.SelectPanelUtils
@@ -15,7 +14,7 @@ import Mathlib.Lean.Meta.KAbstractPositions
 # Interactive unfolding
 
 This file defines the interactive tactic `unfold?`.
-It allows you to click on an expression in the goal, and then it suggests rewrites to replace
+It allows you to shift-click on an expression in the goal, and then it suggests rewrites to replace
 the expression with an unfolded version.
 
 For example, if the goal contains `1+1`, then it will suggest rewriting this into one of
@@ -38,7 +37,7 @@ Additionally, eta-reduction is tried, and basic natural number reduction is trie
 
 ## Filtering
 
-`HAdd.hAdd` in `1+1` actually first unfolds into `Add.add`, but this is not very usefull,
+`HAdd.hAdd` in `1+1` actually first unfolds into `Add.add`, but this is not very useful,
 because this is just unfolding a notational type class. Therefore, unfoldings of default instances
 are not presented in the list of suggested rewrites.
 This is implemented with `unfoldProjDefaultInst?`.
@@ -186,7 +185,6 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
-
       let rootExpr ← loc.rootExpr
       let some (subExpr, occ) ← viewKAbstractSubExpr rootExpr loc.pos |
         return .text "expressions with bound variables are not supported"
