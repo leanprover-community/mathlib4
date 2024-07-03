@@ -7,9 +7,6 @@ import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Data.Matrix.Rank
-import Mathlib.RingTheory.LittleWedderburn
 
 #align_import linear_algebra.matrix.general_linear_group from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
@@ -331,85 +328,5 @@ def planeConformalMatrix {R} [Field R] (a b : R) (hab : a ^ 2 + b ^ 2 ≠ 0) :
   `k_θ=!![cos θ, sin θ; -sin θ, cos θ]`
 -/
 end Examples
-
-
-section LinearIndependant
-
-variable {K : Type*} {V : Type*} [DivisionRing K] [AddCommGroup V]
-variable [Module K V]
-
-/-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
-vector in the complement of their span.
--/
-def inductiveStepEquiv {k : ℕ} :
-    { s : Fin (k + 1) → V // LinearIndependent K s } ≃
-      Σ s : { s : Fin k → V // LinearIndependent K s },
-        ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set V) where
-  toFun s := ⟨⟨Fin.tail s.val, (linearIndependent_fin_succ.mp s.property).left⟩,
-    ⟨s.val 0, (linearIndependent_fin_succ.mp s.property).right⟩⟩
-  invFun s := ⟨Fin.cons s.2.val s.1.val,
-    linearIndependent_fin_cons.mpr ⟨s.1.property, s.2.property⟩⟩
-  left_inv _ := by simp only [Fin.cons_self_tail, Subtype.coe_eta]
-  right_inv := fun ⟨_, _⟩ => by simp only [Fin.cons_zero, Subtype.coe_eta, Sigma.mk.inj_iff,
-    Fin.tail_cons, heq_eq_eq, and_self]
-
-variable [Fintype K] [Fintype V]
-
-local notation "q" => Fintype.card K
-local notation "n" => FiniteDimensional.finrank K V
-
-attribute [local instance] Fintype.ofFinite in
-open Fintype in
-lemma card_LinearInependent_subtype {k : ℕ} (hk : k ≤ n) :
-    Nat.card { s : Fin k → V // LinearIndependent K s } =
-      ∏ i : Fin k, ((q) ^ n - (q) ^ i.val) := by
-  rw [Nat.card_eq_fintype_card]
-  induction k with
-  | zero => simp only [LinearIndependent, Finsupp.total_fin_zero, ker_zero, card_ofSubsingleton,
-      Finset.univ_eq_empty, Finset.prod_empty]
-  | succ k ih =>
-      have (s : { s : Fin k → V // LinearIndependent K s }) :
-          card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set (V)) =
-          (q) ^ n - (q) ^ k := by
-            rw [card_compl_set, card_eq_pow_finrank (K := K)
-            (V:=((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
-            simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
-            rw [card_eq_pow_finrank (K := K)]
-      simp [card_congr (inductiveStepEquiv), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
-        mul_comm, Fin.prod_univ_succAbove _ k]
-
-end LinearIndependant
-
-section cardinal
-
-variable (n : ℕ) {𝔽 : Type*} [DivisionRing 𝔽] [Fintype 𝔽]
-
-local notation "q" => Fintype.card 𝔽
-
-/-- Equivalence between `GL n F` and `n` vectors of length `n` that are linearly independent. Given
-by sending a matrix to its coloumns. -/
-noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
-    GL (Fin n) 𝔽 ≃ { s : Fin n → (Fin n → 𝔽) // LinearIndependent 𝔽 s } where
-  toFun M := ⟨transpose M, by
-    apply linearIndependent_iff_card_eq_finrank_span.2
-    rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
-  invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
-    have : Nonempty (Fin n) := Fin.pos_iff_nonempty.1 hn
-    rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
-      ← coe_basisOfLinearIndependentOfCardEqFinrank M.2]
-    let b := basisOfLinearIndependentOfCardEqFinrank M.2 (by simp)
-    have := (Pi.basisFun 𝔽 (Fin n)).invertibleToMatrix b
-    exact isUnit_det_of_invertible _
-  left_inv := fun x ↦ Units.ext (ext fun i j ↦ rfl)
-  right_inv := by exact congrFun rfl
-
-theorem card_GL : Nat.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ (n) - q ^ ( i : ℕ )) := by
-  rcases Nat.eq_zero_or_pos n with rfl | hn
-  · simp [Nat.card_eq_fintype_card]
-  · rw [Nat.card_congr (equiv_GL_linearindependent n hn), card_LinearInependent_subtype,
-    FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin]
-    simp only [FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
-
-end cardinal
 
 end Matrix
