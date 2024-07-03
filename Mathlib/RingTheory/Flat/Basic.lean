@@ -322,8 +322,7 @@ lemma iff_lTensor_exact [Small.{v} R] :
   refine ⟨fun _ => lTensor_exact M, fun H => iff_lTensor_preserves_injective_linearMap R M |>.mpr
     fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) => ?_⟩
-  simpa [Eq.comm] using
-    @H PUnit N' N'' _ _ _ _ _ _ 0 L (by intro x; simpa [hL] using Eq.comm) x |>.mp hx
+  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x => by aesop) x |>.mp hx
 
 /--
 M is flat if and only if `- ⊗ M` is a left exact functor.
@@ -336,8 +335,7 @@ lemma iff_rTensor_exact [Small.{v} R] :
   refine ⟨fun _ => rTensor_exact M, fun H => iff_rTensor_preserves_injective_linearMap R M |>.mpr
     fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) => ?_⟩
-  simpa [Eq.comm] using
-    @H PUnit N' N'' _ _ _ _ _ _ 0 L (by intro x; simpa [hL] using Eq.comm) x |>.mp hx
+  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x => by aesop) x |>.mp hx
 
 end Flat
 
