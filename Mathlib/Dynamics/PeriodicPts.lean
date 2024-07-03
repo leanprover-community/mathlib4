@@ -591,8 +591,6 @@ namespace Function
 
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
-@[deprecated (since := "2024-07-02")] alias iterate_prod_map := Prod.map_iterate
-
 @[simp]
 theorem isFixedPt_prod_map (x : α × β) :
     IsFixedPt (Prod.map f g) x ↔ IsFixedPt f x.1 ∧ IsFixedPt g x.2 :=
