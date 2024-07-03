@@ -44,7 +44,7 @@ Show that any coalgebra is an equalizer of cofree coalgebras.
 def CofreeEqualizer.topMap :  (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) :=
   (Comonad.cofree T).map X.a
 
-/-- The bottom map in the coequalizer diagram we will construct. -/
+/-- The bottom map in the equalizer diagram we will construct. -/
 @[simps]
 def CofreeEqualizer.bottomMap : (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) where
   f := T.δ.app X.A
