@@ -59,12 +59,24 @@ variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 variable (μ : (n : ℕ) → Measure (X n)) [hμ : ∀ n, IsProbabilityMeasure (μ n)]
 
 noncomputable def prod_meas : Measure ((n : ℕ) → X n) :=
-  Measure.snd ((μ 0) ⊗ₘ
+  ((μ 0).map zer).bind
     (@ionescu_tulcea_kernel _ (ProbabilityMeasure.nonempty ⟨μ 0, hμ 0⟩) _
-      (fun n ↦ kernel.const _ (μ (n + 1))) _))
+      (fun n ↦ kernel.const _ (μ (n + 1))) _ 0)
+
+instance {X Y : Type*} [MeasurableSpace X] [MeasurableSpace Y] {μ : Measure X} {κ : kernel X Y}
+    [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (μ.bind κ) := by
+  constructor
+  rw [Measure.bind_apply]
+  simp
+  · exact MeasurableSet.univ
+  · exact kernel.measurable _
 
 instance : IsProbabilityMeasure (prod_meas μ) := by
   rw [prod_meas]
+  have : IsProbabilityMeasure ((μ 0).map zer) := by
+    constructor
+    rw [Measure.map_apply zer.measurable MeasurableSet.univ]
+    simp
   infer_instance
 
 theorem er_succ_preimage_pi {n : ℕ} (hn : 0 < n) (s : (i : Ioc 0 (n + 1)) → Set (X i)) :
@@ -160,6 +172,26 @@ theorem el_preimage {n : ℕ} (s : (i : Iic n) → Set (X i)) :
       convert hx1
     · exact h i ⟨Nat.pos_of_ne_zero hi', hi⟩
 
+theorem Measure.map_bind {X Y Z : Type*} [MeasurableSpace X] [MeasurableSpace Y]
+    [MeasurableSpace Z]
+    (μ : Measure X) (κ : kernel X Y) (f : Y → Z) (mf : Measurable f) :
+    (μ.bind κ).map f = μ.bind (kernel.map κ f mf) := by
+  ext s ms
+  rw [Measure.map_apply mf ms, Measure.bind_apply ms (kernel.measurable _),
+    Measure.bind_apply (mf ms) (kernel.measurable _)]
+  simp_rw [kernel.map_apply' _ _ _ ms]
+
+theorem map_bind_eq_bind_comap {X Y Z : Type*} [MeasurableSpace X] [MeasurableSpace Y]
+    [MeasurableSpace Z]
+    (μ : Measure X) (κ : kernel Y Z) (f : X → Y) (mf : Measurable f) :
+    (μ.map f).bind κ = μ.bind (kernel.comap κ f mf) := by
+  ext s ms
+  rw [Measure.bind_apply ms (kernel.measurable _), lintegral_map, Measure.bind_apply ms]
+  · rfl
+  · exact kernel.measurable _
+  · exact kernel.measurable_coe _ ms
+  · exact mf
+
 theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
     (fun I : Finset ℕ ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   have := ProbabilityMeasure.nonempty ⟨μ 0, hμ 0⟩
@@ -172,12 +204,11 @@ theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
     simp
   rw [this, ← Measure.map_map (measurable_proj₂' _ _ sub) (measurable_proj' _)]
   congr
-  rw [prod_meas, Measure.map_snd_compProd, ionescu_tulcea_proj, prod_noyau_proj]
+  rw [prod_meas, Measure.map_bind, map_bind_eq_bind_comap, ionescu_tulcea_proj, prod_noyau_proj]
   refine (Measure.pi_eq fun s ms ↦ ?_).symm
   have mpis := MeasurableSet.univ_pi ms
-  rw [Measure.snd_apply mpis, ← Set.univ_prod,
-    Measure.compProd_apply_prod MeasurableSet.univ mpis, ← prod_Iic,
-    ← set_lintegral_const, set_lintegral_univ, ← lintegral_indicator _ (ms _)]
+  rw [Measure.bind_apply mpis (kernel.measurable _), ← prod_Iic,
+    ← set_lintegral_const, ← lintegral_indicator _ (ms _)]
   congr with x₀
   rw [kernel.comap_apply, kernel.map_apply', kernel.prod_apply, el_preimage, Measure.prod_prod,
     kernel.deterministic_apply', kernel.const_apply, indicator_one_mul_const',
@@ -186,6 +217,7 @@ theorem projectiveLimit_prod_meas : IsProjectiveLimit (prod_meas μ)
   · rw [zer.image_eq_preimage]
     exact zer.measurable_invFun (ms _)
   · exact mpis
+  · exact zer.measurable
 
 theorem kolContent_eq_prod_meas {A : Set ((n : ℕ) → X n)} (hA : A ∈ cylinders X) :
     kolContent (isProjectiveMeasureFamily_pi μ) A = prod_meas μ A := by

@@ -515,6 +515,25 @@ end compProd
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 variable (κ : (n : ℕ) → kernel ((i : Iic n) → X i) (X (n + 1)))
 
+abbrev proj : (n : ℕ) → ((n : ℕ) → X n) → (i : Iic n) → X i := fun _ x i ↦ x i
+
+theorem meas_proj (n : ℕ) : Measurable (@proj X n) := measurable_proj _
+
+lemma Finset.sub_Iic (I : Finset ℕ) : I ⊆ (Iic (I.sup id)) :=
+  fun _ hi ↦ mem_Iic.2 <| le_sup (f := id) hi
+
+abbrev projection {I J : Finset ℕ} (hIJ : I ⊆ J) : ((i : J) → X i) → (i : I) → X i :=
+  fun x i ↦ x ⟨i.1, hIJ i.2⟩
+
+theorem projection_comp_projection {I J K : Finset ℕ} (hIJ : I ⊆ J) (hJK : J ⊆ K) :
+    (projection (X := X) hIJ) ∘ (projection hJK) = projection (hIJ.trans hJK) := by
+  ext x i
+  simp
+
+theorem measurable_projection {I J : Finset ℕ} (hIJ : I ⊆ J) :
+    Measurable (projection (X := X) hIJ) :=
+  measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
+
 noncomputable def composition (a b : ℕ) : kernel ((i : Iic a) → X i) ((i : Iic b) → X i) :=
   if hab : a < b
     then kernel.map ((kernel.deterministic id measurable_id) ×ₖ kerNat κ a b)
@@ -522,6 +541,17 @@ noncomputable def composition (a b : ℕ) : kernel ((i : Iic a) → X i) ((i : I
     else kernel.deterministic
       (fun (x : (i : Iic a) → X i) (i : Iic b) ↦ x ⟨i.1, Iic_subset_Iic.2 (not_lt.1 hab) i.2⟩)
       (measurable_proj₂' ..)
+
+theorem composition_lt {a b : ℕ} (hab : a < b) :
+    composition κ a b =
+      kernel.map ((kernel.deterministic id measurable_id) ×ₖ kerNat κ a b)
+        (el a b hab.le) (el a b hab.le).measurable := by
+  rw [composition, dif_pos hab]
+
+theorem composition_le {a b : ℕ} (hab : b ≤ a) :
+    composition κ a b =
+      kernel.deterministic (projection (Iic_subset_Iic.2 hab)) (measurable_projection _) := by
+  rw [composition, dif_neg (not_lt.2 hab)]
 
 variable [∀ n, IsMarkovKernel (κ n)]
 
@@ -533,32 +563,26 @@ instance (a b : ℕ) : IsMarkovKernel (composition κ a b) := by
   · infer_instance
 
 theorem compo_proj (a : ℕ) {b c : ℕ} (hbc : b ≤ c) :
-    kernel.map (composition κ a c)
-      (fun (x : (i : Iic c) → X i) (i : Iic b) ↦ x ⟨i.1, Iic_subset_Iic.2 hbc i.2⟩)
-      (measurable_proj₂' ..) =
+    kernel.map (composition κ a c) (projection (Iic_subset_Iic.2 hbc)) (measurable_projection _) =
     composition κ a b := by
   unfold composition
   split_ifs with h1 h2 h3
-  · have : (fun (x : (i : Iic c) → X i) (i : Iic b) ↦ x ⟨i.1, Iic_subset_Iic.2 hbc i.2⟩) ∘
-        (el a c h1.le) =
-          (el a b h2.le) ∘
-          (Prod.map id (fun x i ↦ x ⟨i.1, Ioc_subset_Ioc_right hbc i.2⟩)) := by
+  · have : (projection (X := X) (Iic_subset_Iic.2 hbc)) ∘ (el a c h1.le) =
+        (el a b h2.le) ∘ (Prod.map id (projection (Ioc_subset_Ioc_right hbc))) := by
       ext x i
       simp [el]
     rw [kernel.map_map, kernel.map_eq _ _ this, ← kernel.map_map, kernel.map_prod, kernel.map_id,
       proj_kerNat _ h2 hbc]
-  · have : (fun (x : (i : Iic c) → X i) (i : Iic b) ↦ x ⟨i.1, Iic_subset_Iic.2 hbc i.2⟩) ∘
-        (el a c h1.le) =
-          (fun x (i : Iic b) ↦ x ⟨i.1, Iic_subset_Iic.2 (not_lt.1 h2) i.2⟩) ∘
-          Prod.fst := by
+  · have : (projection (X := X) (Iic_subset_Iic.2 hbc)) ∘ (el a c h1.le) =
+          (projection (Iic_subset_Iic.2 (not_lt.1 h2))) ∘ Prod.fst := by
       ext x i
-      simp [el, (mem_Iic.1 i.2).trans (not_lt.1 h2)]
+      simp [el, projection, (mem_Iic.1 i.2).trans (not_lt.1 h2)]
     have _ := isMarkovKernel_kerNat κ h1
     rw [kernel.map_map, kernel.map_eq _ _ this, ← kernel.map_map, kernel.map_prod_fst,
       kernel.map_deterministic]
     rfl
-    exact measurable_proj₂' ..
-  · exfalso; linarith
+    exact measurable_projection _
+  · omega
   · rw [kernel.map_deterministic]
     congr
 
@@ -568,10 +592,10 @@ theorem composition_comp (c : ℕ) {a b : ℕ} (h : a ≤ b) :
     (composition κ b c) ∘ₖ (composition κ a b) = composition κ a c := by
   by_cases hab : a < b <;> by_cases hbc : b < c <;> by_cases hac : a < c <;> try omega
   · ext x s ms
-    simp only [composition, hbc, ↓reduceDite, hab, hac]
-    rw [kernel.comp_apply', kernel.lintegral_map, kernel.lintegral_prod, kernel.map_apply',
-      kernel.prod_apply', kernel.lintegral_deterministic', kernel.lintegral_deterministic',
-      ← compProd_kerNat κ hab hbc, compProd_apply']
+    rw [composition_lt κ hab, composition_lt κ hbc, composition_lt κ hac,
+      kernel.comp_apply' _ _ _ ms, kernel.lintegral_map, kernel.lintegral_prod,
+      kernel.map_apply' _ _ _ ms, kernel.prod_apply', kernel.lintegral_deterministic',
+      kernel.lintegral_deterministic', ← compProd_kerNat κ hab hbc, compProd_apply' _ _ hab hbc]
     · congr with y
       rw [kernel.map_apply', kernel.prod_apply', kernel.lintegral_deterministic']
       · congr with z
@@ -582,8 +606,6 @@ theorem composition_comp (c : ℕ) {a b : ℕ} (h : a ≤ b) :
         split_ifs <;> try rfl
         omega
       · exact measurable_measure_prod_mk_left ((el b c hbc.le).measurable ms)
-      · exact hab
-      · exact hbc
       · exact (el b c hbc.le).measurable ms
       · exact ms
     · exact measurable_prod_mk_left ((el a c hac.le).measurable ms)
@@ -592,22 +614,25 @@ theorem composition_comp (c : ℕ) {a b : ℕ} (h : a ≤ b) :
         (f := fun x ↦ (kernel.map _ _ _) _ _)
       exact (kernel.measurable_coe _ ms).comp (el a b hab.le).measurable
     · exact (el a c hac.le).measurable ms
-    · exact ms
     · exact (kernel.measurable_coe _ ms).comp (el a b hab.le).measurable
     · exact kernel.measurable_coe _ ms
-    · exact ms
-  · rw [composition, dif_neg hbc, kernel.deterministic_comp_eq_map, compo_proj κ a (not_lt.1 hbc)]
-  · rw [composition, dif_neg hbc, kernel.deterministic_comp_eq_map, compo_proj κ a (not_lt.1 hbc)]
+  · rw [composition_le κ (not_lt.1 hbc), kernel.deterministic_comp_eq_map,
+      compo_proj κ a (not_lt.1 hbc)]
+  · rw [composition_le κ (not_lt.1 hbc), kernel.deterministic_comp_eq_map,
+      compo_proj κ a (not_lt.1 hbc)]
   · have : a = b := by omega
     cases this
-    nth_rw 2 [composition]
-    rw [dif_neg (lt_irrefl a), kernel.comp_deterministic_eq_comap]
+    rw [composition_le κ (le_refl a), kernel.comp_deterministic_eq_comap]
     convert kernel.comap_id (composition κ a c)
-  · rw [composition, dif_neg hbc, kernel.deterministic_comp_eq_map, compo_proj κ a (not_lt.1 hbc)]
+  · rw [composition_le κ (not_lt.1 hbc), kernel.deterministic_comp_eq_map,
+      compo_proj κ a (not_lt.1 hbc)]
 
 theorem composition_comp' (a : ℕ) {b c : ℕ} (h : c ≤ b) :
     (composition κ b c) ∘ₖ (composition κ a b) = composition κ a c := by
   by_cases hab : a < b <;> by_cases hbc : b < c <;> by_cases hac : a < c <;> try omega
-  · rw [composition, dif_neg hbc, kernel.deterministic_comp_eq_map, compo_proj κ a (not_lt.1 hbc)]
-  · rw [composition, dif_neg hbc, kernel.deterministic_comp_eq_map, compo_proj κ a (not_lt.1 hbc)]
-  · rw [composition, dif_neg hbc, kernel.deterministic_comp_eq_map, compo_proj κ a (not_lt.1 hbc)]
+  · rw [composition_le κ (not_lt.1 hbc), kernel.deterministic_comp_eq_map,
+      compo_proj κ a (not_lt.1 hbc)]
+  · rw [composition_le κ (not_lt.1 hbc), kernel.deterministic_comp_eq_map,
+      compo_proj κ a (not_lt.1 hbc)]
+  · rw [composition_le κ (not_lt.1 hbc), kernel.deterministic_comp_eq_map,
+      compo_proj κ a (not_lt.1 hbc)]
