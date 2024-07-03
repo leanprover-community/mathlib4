@@ -438,6 +438,7 @@ section AdicValuation
 namespace PowerSeries
 
 variable (K : Type*) [Field K]
+
 /-- The prime ideal `(X)` of `PowerSeries K`, when `K` is a field, as a term of the
 `HeightOneSpectrum`. -/
 def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
@@ -445,8 +446,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   isPrime := PowerSeries.span_X_isPrime
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
-open multiplicity UniqueFactorizationMonoid RatFunc Classical Polynomial
-  IsDedekindDomain.HeightOneSpectrum IsDedekindDomain /- Ideal Ring -/
+open RatFunc IsDedekindDomain.HeightOneSpectrum
 
 variable {K}
 
@@ -475,10 +475,11 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
+/-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`-/
+@[simp]
 theorem intValuation_of_X : (idealX K).intValuation X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
   rw [← Polynomial.coe_X, ← intValuation_eq_of_coe]
   apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
-
 
 end PowerSeries
 

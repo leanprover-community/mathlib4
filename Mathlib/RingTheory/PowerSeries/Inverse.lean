@@ -114,7 +114,7 @@ set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_shift_mul_X PowerSeries.sub_const_eq_shift_mul_X
 
 theorem sub_const_eq_X_mul_shift (φ : R⟦X⟧) :
-    φ - C R (constantCoeff R φ) = X * mk fun p => coeff R (p + 1) φ :=
+    φ - C R (constantCoeff R φ) = X * mk fun p ↦ coeff R (p + 1) φ :=
   sub_eq_iff_eq_add.mpr (eq_X_mul_shift_add_const φ)
 set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_X_mul_shift PowerSeries.sub_const_eq_X_mul_shift
@@ -281,7 +281,7 @@ theorem Unit_of_divided_by_X_pow_order_zero : Unit_of_divided_by_X_pow_order (0 
 
 theorem eq_divided_by_X_pow_order_Iff_Unit {f : k⟦X⟧} (hf : f ≠ 0) :
     f = divided_by_X_pow_order hf ↔ IsUnit f :=
-  ⟨fun h => by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h => by
+  ⟨fun h ↦ by rw [h]; exact isUnit_divided_by_X_pow_order hf, fun h ↦ by
     have : f.order.get (order_finite_iff_ne_zero.mpr hf) = 0 := by
       simp only [order_zero_of_unit h, PartENat.get_zero]
     convert (self_eq_X_pow_order_mul_divided_by_X_pow_order hf).symm
@@ -354,7 +354,7 @@ theorem maximalIdeal_eq_span_X : LocalRing.maximalIdeal (k⟦X⟧) = Ideal.span 
 instance : NormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
   normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]
-  normUnit_mul  := fun hf hg => by
+  normUnit_mul  := fun hf hg ↦ by
     simp only [← mul_inv, inv_inj]
     simp only [Unit_of_divided_by_X_pow_order_nonzero (mul_ne_zero hf hg),
       Unit_of_divided_by_X_pow_order_nonzero hf, Unit_of_divided_by_X_pow_order_nonzero hg,
@@ -388,7 +388,7 @@ theorem normalized_count_X_eq_of_coe {P : k[X]} (hP : P ≠ 0) :
 open LocalRing
 
 theorem ker_coeff_eq_max_ideal : RingHom.ker (constantCoeff k) = maximalIdeal _ :=
-  Ideal.ext fun _ => by
+  Ideal.ext fun _ ↦ by
     rw [RingHom.mem_ker, maximalIdeal_eq_span_X, Ideal.mem_span_singleton, X_dvd_iff]
 
 /-- The ring isomorphism between the residue field of the ring of power series valued in a field `K`

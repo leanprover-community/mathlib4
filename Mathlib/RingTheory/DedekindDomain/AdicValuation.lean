@@ -263,9 +263,8 @@ theorem int_valuation_exists_uniformizer :
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = Multiplicative.ofAdd (-1 : ℤ) := by
-  have h : v.intValuation r = v.intValuationDef r := rfl
-  rw [h, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one, ofAdd_neg,
-    WithZero.coe_inv]
+  rw [intValuation_apply, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
+    ofAdd_neg, WithZero.coe_inv]
   apply v.associates_irreducible
 
 /-! ### Adic valuations on the field of fractions `K` -/
