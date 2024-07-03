@@ -118,8 +118,7 @@ lemma op_comp_isSheafOfTypes [Functor.IsContinuous.{t} F J K] (G : SheafOfTypes.
     Presieve.IsSheaf J (F.op ⋙ G.val) :=
   Functor.IsContinuous.op_comp_isSheafOfTypes _
 
-lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K]
-    (G : Sheaf K A) :
+lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=
   fun T => F.op_comp_isSheafOfTypes J K ⟨_, G.cond T⟩
 
