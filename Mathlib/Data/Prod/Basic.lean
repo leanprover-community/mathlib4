@@ -145,6 +145,8 @@ theorem map_iterate (f : α → α) (g : β → β) (n : ℕ) :
     (Prod.map f g)^[n] = Prod.map f^[n] g^[n] := by induction n <;> simp [*, Prod.map_comp_map]
 #align function.iterate_prod_map Prod.map_iterate
 
+@[deprecated (since := "2024-07-03")] alias iterate_prod_map := Prod.map_iterate
+
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
   fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
 #align prod.fst_surjective Prod.fst_surjective
