@@ -193,7 +193,7 @@ variable {α' σ' : Type*}
 before passing it to `M`.
 -/
 @[simps]
-def comap (f : α' → α) : DFA α' σ where
+def comap (f : α' → α) (M : DFA α σ) : DFA α' σ where
   step s a := M.step s (f a)
   start := M.start
   accept := M.accept
