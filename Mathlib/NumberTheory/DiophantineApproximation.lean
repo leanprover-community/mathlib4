@@ -49,7 +49,7 @@ Both statements are combined to give an equivalence,
 
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
-in this file, whereas the other, `Real.exists_genContFract_conv_eq_rat`, uses
+in this file, whereas the other, `Real.exists_genContFract_convs_eq_rat`, uses
 `GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
@@ -328,7 +328,7 @@ We can then also use dot notation `ξ.convergent n`.
 Another minor reason is that this demonstrates that the proof
 of Legendre's theorem does not need anything beyond this definition.
 We provide a proof that this definition agrees with the other one;
-see `Real.genContFract_conv_eq_convergent`.
+see `Real.genContFract_convs_eq_convergent`.
 (Note that we use the fact that `1/0 = 0` here to make it work for rational `ξ`.) -/
 noncomputable def convergent : ℝ → ℕ → ℚ
   | ξ, 0 => ⌊ξ⌋
@@ -375,13 +375,13 @@ Our `convergent`s agree with `GenContFract.convs`.
 open GenContFract
 
 /-- The `n`th convergent of the `GenContFract.of ξ` agrees with `ξ.convergent n`. -/
-theorem genContFract_conv_eq_convergent (ξ : ℝ) (n : ℕ) :
+theorem genContFract_convs_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GenContFract.of ξ).convs n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
   · simp only [Nat.zero_eq, zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
   · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
     norm_cast
-#align real.continued_fraction_convergent_eq_convergent Real.genContFract_conv_eq_convergent
+#align real.continued_fraction_convergent_eq_convergent Real.genContFract_convs_eq_convergent
 
 end Real
 
@@ -595,10 +595,10 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This is the version using `GenContFract.convs`. -/
-theorem exists_genContFract_conv_eq_rat {q : ℚ}
+theorem exists_genContFract_convs_eq_rat {q : ℚ}
     (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) : ∃ n, (GenContFract.of ξ).convs n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h
-  exact ⟨n, hn.symm ▸ genContFract_conv_eq_convergent ξ n⟩
-#align real.exists_continued_fraction_convergent_eq_rat Real.exists_genContFract_conv_eq_rat
+  exact ⟨n, hn.symm ▸ genContFract_convs_eq_convergent ξ n⟩
+#align real.exists_continued_fraction_convergent_eq_rat Real.exists_genContFract_convs_eq_rat
 
 end Real
