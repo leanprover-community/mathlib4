@@ -81,12 +81,11 @@ variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
 /-- Given `f : SmallHom W X Y` and `a : M`, this is the element
 in `SmallHom W (X⟦a⟧) (Y⟦a⟧)` obtained by shifting by `a`. -/
 noncomputable def shift : SmallHom.{w} W (X⟦a⟧) (Y⟦a⟧) :=
-  (LocalizerMorphism.mk (shiftFunctor C a)
-    (by rw [MorphismProperty.IsCompatibleWithShift.condition])).smallHomMap f
+  (W.shiftLocalizerMorphism a).smallHomMap f
 
 lemma equiv_shift : equiv W L (f.shift a) =
     (L.commShiftIso a).hom.app X ≫ (equiv W L f)⟦a⟧' ≫ (L.commShiftIso a).inv.app Y :=
-  (LocalizerMorphism.mk (shiftFunctor C a) _).equiv_smallHomMap _ _ _ (L.commShiftIso a) f
+  (W.shiftLocalizerMorphism a).equiv_smallHomMap _ _ _ (L.commShiftIso a) f
 
 end SmallHom
 
