@@ -14,9 +14,11 @@ section
 
 -- `antidiagonalTuple` is faster than `finAntidiagonal` by a small constant factor
 /-- info: 23426 -/
-#guard_msgs in #eval (finAntidiagonal 4 50).card
+#guard_msgs in
+#eval (finAntidiagonal 4 50).card
 /-- info: 23426 -/
-#guard_msgs in #eval (Finset.Nat.antidiagonalTuple 4 50).card
+#guard_msgs in
+#eval (Finset.Nat.antidiagonalTuple 4 50).card
 
 end
 
