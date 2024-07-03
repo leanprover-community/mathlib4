@@ -135,9 +135,7 @@ Warning: Do not use this `Core` structure if the space you are interested in alr
 instance defined on it, otherwise this will create a second non-defeq norm instance!
 -/
 
-/-- A structure requiring that a scalar product is positive semidefinite and symmetric. (**TODO** By
-quotienting the kernel of the scalar product, one can construct an instance of
-`InnerProductSpace.Core`.) -/
+/-- A structure requiring that a scalar product is positive semidefinite and symmetric. -/
 structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends Inner 𝕜 F where
   /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
@@ -151,8 +149,8 @@ structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [Ad
 
 attribute [class] PreInnerProductSpace.Core
 
-/-- A structure requiring that a scalar product is positive definite and symmetric, from which one
-can construct an `InnerProductSpace` instance in `InnerProductSpace.ofCore`. -/
+/-- A structure requiring that a scalar product is positive definite. Some theorems that
+require this assumptions are put under section `InnerProductSpace.Core`. -/
 -- @[nolint HasNonemptyInstance] porting note: I don't think we have this linter anymore
 structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends PreInnerProductSpace.Core 𝕜 F where
@@ -377,7 +375,8 @@ theorem cauchy_schwarz_aux (x y : F) : seminormSqF (⟪x, y⟫ • x - ⟪x, x�
 #align inner_product_space.core.cauchy_schwarz_aux InnerProductSpace.Core.cauchy_schwarz_aux
 
 /-- **Cauchy–Schwarz inequality**.
-We need this for the `PreInnerProductSpace.Core` structure to take the quotient.
+We need this for the `PreInnerProductSpace.Core` structure to prove the triangle inequality below
+when showing the core is a normed group and to take the quotient.
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by
   have hdiscrim : ∀ (t : ℝ), 0 ≤ seminormSqF x * t * t  + 2 * ‖⟪x, y⟫‖ * t + seminormSqF y := by
@@ -2211,13 +2210,14 @@ local postfix:90 "†" => starRingEnd _
 /-! ### Inner product space structure on subspaces -/
 
 /-- Induced inner product on a submodule. -/
-instance Submodule.preInnerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
+instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
   { Submodule.normedSpace W with
     inner := fun x y => ⟪(x : E), (y : E)⟫
     conj_symm := fun _ _ => inner_conj_symm _ _
     norm_sq_eq_inner := fun x => norm_sq_eq_inner (x : E)
     add_left := fun _ _ _ => inner_add_left _ _ _
     smul_left := fun _ _ _ => inner_smul_left _ _ _ }
+#align submodule.inner_product_space Submodule.innerProductSpace
 
 /-- The inner product on submodules is the same as on the ambient space. -/
 @[simp]
@@ -2238,32 +2238,6 @@ theorem orthonormal_span {ι : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) :
 #align orthonormal_span orthonormal_span
 
 end PreSubmodule
-
-section Submodule
-
-section Submodule
-
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
-local notation "IK" => @RCLike.I 𝕜 _
-
-local postfix:90 "†" => starRingEnd _
-
-/-! ### Inner product space structure on subspaces -/
-
-/-- Induced inner product on a submodule. -/
-instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
-  { Submodule.normedSpace W with
-    inner := fun x y => ⟪(x : E), (y : E)⟫
-    conj_symm := fun _ _ => inner_conj_symm _ _
-    norm_sq_eq_inner := fun x => norm_sq_eq_inner (x : E)
-    add_left := fun _ _ _ => inner_add_left _ _ _
-    smul_left := fun _ _ _ => inner_smul_left _ _ _ }
-#align submodule.inner_product_space Submodule.innerProductSpace
-
-end Submodule
 
 /-! ### Families of mutually-orthogonal subspaces of an inner product space -/
 
@@ -2519,76 +2493,6 @@ local postfix:90 "†" => starRingEnd _
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
 since it creates problems with the case `𝕜 = ℝ`. -/
-def PreInner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
-
-/-- A general inner product space structure implies a real inner product structure. This is not
-registered as an instance since it creates problems with the case `𝕜 = ℝ`, but in can be used in a
-proof to obtain a real inner product space structure from a given `𝕜`-inner product space
-structure. -/
-def PreInnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
-  { PreInner.rclikeToReal 𝕜 E,
-    NormedSpace.restrictScalars ℝ 𝕜
-      E with
-    norm_sq_eq_inner := norm_sq_eq_inner
-    conj_symm := fun x y => inner_re_symm _ _
-    add_left := fun x y z => by
-      change re ⟪x + y, z⟫ = re ⟪x, z⟫ + re ⟪y, z⟫
-      simp only [inner_add_left, map_add]
-    smul_left := fun x y r => by
-      change re ⟪(r : 𝕜) • x, y⟫ = r * re ⟪x, y⟫
-      simp only [inner_smul_left, conj_ofReal, re_ofReal_mul] }
-
-variable {E}
-
-theorem real_inner_eq_re_inner (x y : E) :
-    @Inner.inner ℝ E (PreInner.rclikeToReal 𝕜 E) x y = re ⟪x, y⟫ :=
-  rfl
-#align real_inner_eq_re_inner real_inner_eq_re_inner
-
-theorem real_inner_I_smul_self (x : E) :
-    @Inner.inner ℝ E (PreInner.rclikeToReal 𝕜 E) x ((I : 𝕜) • x) = 0 := by
-  simp [real_inner_eq_re_inner 𝕜, inner_smul_right]
-set_option linter.uppercaseLean3 false in
-#align real_inner_I_smul_self real_inner_I_smul_self
-
-/-- A complex inner product implies a real inner product. This cannot be an instance since it
-creates a diamond with `PiLp.innerProductSpace` because `re (sum i, inner (x i) (y i))` and
-`sum i, re (inner (x i) (y i))` are not defeq. -/
-def PreInnerProductSpace.complexToReal [NormedAddCommGroup G] [InnerProductSpace ℂ G] :
-    InnerProductSpace ℝ G :=
-  PreInnerProductSpace.rclikeToReal ℂ G
-
-instance : InnerProductSpace ℝ ℂ := PreInnerProductSpace.complexToReal
-
-@[simp]
-protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (conj w * z).re :=
-  rfl
-#align complex.inner Complex.inner
-
-/-- The inner product on an inner product space of dimension 2 can be evaluated in terms
-of a complex-number representation of the space. -/
-theorem inner_map_complex [NormedAddCommGroup G] [InnerProductSpace ℝ G] (f : G ≃ₗᵢ[ℝ] ℂ)
-    (x y : G) : ⟪x, y⟫_ℝ = (conj (f x) * f y).re := by rw [← Complex.inner, f.inner_map_map]
-#align inner_map_complex inner_map_complex
-
-end PreRCLikeToReal
-
-section RCLikeToReal
-
-
-variable {G : Type*}
-variable (𝕜 E)
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
-local notation "IK" => @RCLike.I 𝕜 _
-
-local postfix:90 "†" => starRingEnd _
-
-
-/-- A general inner product implies a real inner product. This is not registered as an instance
-since it creates problems with the case `𝕜 = ℝ`. -/
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 #align has_inner.is_R_or_C_to_real Inner.rclikeToReal
 
@@ -2612,18 +2516,41 @@ def InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
 
 variable {E}
 
+theorem real_inner_eq_re_inner (x y : E) :
+    @Inner.inner ℝ E (Inner.rclikeToReal 𝕜 E) x y = re ⟪x, y⟫ :=
+  rfl
+#align real_inner_eq_re_inner real_inner_eq_re_inner
+
+theorem real_inner_I_smul_self (x : E) :
+    @Inner.inner ℝ E (Inner.rclikeToReal 𝕜 E) x ((I : 𝕜) • x) = 0 := by
+  simp [real_inner_eq_re_inner 𝕜, inner_smul_right]
+set_option linter.uppercaseLean3 false in
+#align real_inner_I_smul_self real_inner_I_smul_self
 
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, inner (x i) (y i))` and
 `sum i, re (inner (x i) (y i))` are not defeq. -/
-def InnerProductSpace.complexToReal [NormedAddCommGroup G] [InnerProductSpace ℂ G] :
+def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
 #align inner_product_space.complex_to_real InnerProductSpace.complexToReal
 
 instance : InnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
 
-end RCLikeToReal
+@[simp]
+protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (conj w * z).re :=
+  rfl
+#align complex.inner Complex.inner
+
+/-- The inner product on an inner product space of dimension 2 can be evaluated in terms
+of a complex-number representation of the space. -/
+theorem inner_map_complex [SeminormedAddCommGroup G] [InnerProductSpace ℝ G] (f : G ≃ₗᵢ[ℝ] ℂ)
+    (x y : G) : ⟪x, y⟫_ℝ = (conj (f x) * f y).re := by rw [← Complex.inner, f.inner_map_map]
+#align inner_map_complex inner_map_complex
+
+instance : InnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
+
+end PreRCLikeToReal
 
 section Continuous
 
