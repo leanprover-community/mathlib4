@@ -294,8 +294,8 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
 lemma Cofan.isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
     IsIso (Sigma.desc c.inj) ↔ Nonempty (IsColimit c) := by
   refine ⟨fun h ↦ ⟨isColimitOfIsIsoSigmaDesc c⟩, fun ⟨hc⟩ ↦ ?_⟩
-  have : IsIso (((coproductIsCoproduct f).coconePointUniqueUpToIso hc).hom ≫ hc.desc c) :=
-    by simp; infer_instance
+  have : IsIso (((coproductIsCoproduct f).coconePointUniqueUpToIso hc).hom ≫ hc.desc c) := by
+    simp; infer_instance
   convert this
   ext
   simp only [colimit.ι_desc, mk_pt, mk_ι_app, IsColimit.coconePointUniqueUpToIso,
@@ -663,7 +663,7 @@ def limitConeOfUnique : LimitCone (Discrete.functor f) where
       π := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
         dsimp
         congr
-        apply Subsingleton.elim)) }
+        subsingleton)) }
   isLimit :=
     { lift := fun s => s.π.app default
       fac := fun s j => by
@@ -693,7 +693,7 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f) where
       ι := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
         dsimp
         congr
-        apply Subsingleton.elim)) }
+        subsingleton)) }
   isColimit :=
     { desc := fun s => s.ι.app default
       fac := fun s j => by

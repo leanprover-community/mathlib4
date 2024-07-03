@@ -49,7 +49,7 @@ namespace Real
 variable {x y : ℝ}
 
 /-- `arsinh` is defined using a logarithm, `arsinh x = log (x + sqrt(1 + x^2))`. -/
--- @[pp_nodot] is no longer needed
+@[pp_nodot]
 def arsinh (x : ℝ) :=
   log (x + √(1 + x ^ 2))
 #align real.arsinh Real.arsinh

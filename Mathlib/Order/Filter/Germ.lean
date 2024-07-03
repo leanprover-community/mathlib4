@@ -51,6 +51,7 @@ For each of the following structures we prove that if `β` has this structure, t
 filter, germ
 -/
 
+assert_not_exists OrderedSemiring
 
 namespace Filter
 
@@ -843,11 +844,6 @@ instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid β] :
     fun _x ↦ le_of_mul_le_mul_left'
 
 @[to_additive]
-instance instOrderedCommGroup [OrderedCommGroup β] : OrderedCommGroup (Germ l β) where
-  __ := instOrderedCancelCommMonoid
-  __ := instCommGroup
-
-@[to_additive]
 instance instExistsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ l β) where
   exists_mul_of_le {x y} := inductionOn₂ x y fun f g (h : f ≤ᶠ[l] g) ↦ by
     classical
@@ -861,29 +857,6 @@ instance instCanonicallyOrderedCommMonoid [CanonicallyOrderedCommMonoid β] :
     CanonicallyOrderedCommMonoid (Germ l β) where
   __ := instExistsMulOfLE
   le_self_mul x y := inductionOn₂ x y fun _ _ ↦ eventually_of_forall fun _ ↦ le_self_mul
-
-instance instOrderedSemiring [OrderedSemiring β] : OrderedSemiring (Germ l β) where
-  __ := instSemiring
-  __ := instOrderedAddCommMonoid
-  zero_le_one := const_le zero_le_one
-  mul_le_mul_of_nonneg_left x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦ hh.mp <| hfg.mono
-    fun _a ↦ mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦ hh.mp <| hfg.mono
-    fun _a ↦ mul_le_mul_of_nonneg_right
-
-instance instOrderedCommSemiring [OrderedCommSemiring β] : OrderedCommSemiring (Germ l β) where
-  __ := instOrderedSemiring
-  __ := instCommSemiring
-
-instance instOrderedRing [OrderedRing β] : OrderedRing (Germ l β) where
-  __ := instRing
-  __ := instOrderedAddCommGroup
-  __ := instOrderedSemiring
-  mul_nonneg x y := inductionOn₂ x y fun _f _g hf hg ↦ hg.mp <| hf.mono fun _a ↦ mul_nonneg
-
-instance instOrderedCommRing [OrderedCommRing β] : OrderedCommRing (Germ l β) where
-  __ := instOrderedRing
-  __ := instOrderedCommSemiring
 
 end Germ
 

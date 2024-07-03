@@ -27,10 +27,7 @@ We provide a coercion to a function `R → Rᵐᵒᵖ`.
 Ring involution
 -/
 
-set_option autoImplicit true
-
-
-variable (R : Type*)
+variable {F : Type*} (R : Type*)
 
 /-- A ring involution -/
 structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
