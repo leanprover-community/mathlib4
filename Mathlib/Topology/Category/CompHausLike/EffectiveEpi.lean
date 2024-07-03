@@ -16,7 +16,7 @@ universe u
 
 open CategoryTheory Limits
 
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 namespace CompHausLike
 
