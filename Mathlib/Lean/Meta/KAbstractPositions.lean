@@ -55,8 +55,8 @@ def kabstractPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
     else if e.toHeadIndex != pHeadIdx || e.headNumArgs != pNumArgs then
       visitChildren positions
     else
-      if (← isDefEq e p) then
-        setMCtx mctx
+      if ← isDefEq e p then
+        setMCtx mctx -- reset the `MetavarContext` because `isDefEq` can modify it if it succeeds
         visitChildren (positions.push pos)
       else
         visitChildren positions
