@@ -27,6 +27,7 @@ import Mathlib.RingTheory.Localization.FractionRing
   `HahnSeries.ofPowerSeries`.
 * Embedding of rational functions into Laurent series, provided as a coercion, utilizing
 the underlying `RatFunc.coeAlgHom`.
+* Study of the X-Adic valuation on the ring of Laurent series over a field
 
 ## Main Results
 * Basic properties of Hasse derivatives
@@ -432,9 +433,9 @@ end RatFunc
 
 end RatFunc
 
-namespace PowerSeries
+section AdicValuation
 
-section HeightOneSpectrum
+namespace PowerSeries
 
 variable (K : Type*) [Field K]
 /-- The prime ideal `(X)` of `PowerSeries K`, when `K` is a field, as a term of the
@@ -479,6 +480,6 @@ theorem intValuation_of_X : (idealX K).intValuation X = ↑(Multiplicative.ofAdd
   apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
 
 
-end HeightOneSpectrum
-
 end PowerSeries
+
+end AdicValuation

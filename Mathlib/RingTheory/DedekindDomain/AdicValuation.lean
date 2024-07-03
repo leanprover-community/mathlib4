@@ -230,9 +230,10 @@ def intValuation : Valuation R ℤₘ₀ where
   map_add_le_max' := IntValuation.map_add_le_max' v
 #align is_dedekind_domain.height_one_spectrum.int_valuation IsDedekindDomain.HeightOneSpectrum.intValuation
 
+
 theorem intValuation_apply {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R]
     (v : IsDedekindDomain.HeightOneSpectrum R) {r : R} : intValuation v r = intValuationDef v r :=
-  refl _
+  rfl
 
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem int_valuation_exists_uniformizer :
