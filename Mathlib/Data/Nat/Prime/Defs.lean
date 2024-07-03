@@ -207,6 +207,15 @@ theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔
   · exact (a1 rfl).elim
 #align nat.prime.dvd_iff_eq Nat.Prime.dvd_iff_eq
 
+theorem Prime.eq_two_or_odd {p : ℕ} (hp : Prime p) : p = 2 ∨ p % 2 = 1 :=
+  p.mod_two_eq_zero_or_one.imp_left fun h =>
+    ((hp.eq_one_or_self_of_dvd 2 (dvd_of_mod_eq_zero h)).resolve_left (by decide)).symm
+#align nat.prime.eq_two_or_odd Nat.Prime.eq_two_or_odd
+
+theorem Prime.eq_two_or_odd' {p : ℕ} (hp : Prime p) : p = 2 ∨ Odd p :=
+  Or.imp_right (fun h => ⟨p / 2, (div_add_mod p 2).symm.trans (congr_arg _ h)⟩) hp.eq_two_or_odd
+#align nat.prime.eq_two_or_odd' Nat.Prime.eq_two_or_odd'
+
 section MinFac
 
 theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k :=
@@ -425,6 +434,14 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     exact not_lt_of_le (le_of_dvd zero_lt_one h) one_lt_two
 #align nat.min_fac_eq_two_iff Nat.minFac_eq_two_iff
 
+theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
+  div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by
+      apply Nat.ne_of_gt
+      apply Nat.succ_lt_succ
+      apply Nat.zero_lt_succ
+      )).one_lt
+#align nat.factors_lemma Nat.factors_lemma
+
 end MinFac
 
 theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) : ∃ p, Prime p ∧ p ∣ n :=
@@ -457,6 +474,10 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
 alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 #align nat.prime.prime Nat.Prime.prime
 #align prime.nat_prime Prime.nat_prime
+
+theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
+  prime_iff
+#align nat.irreducible_iff_prime Nat.irreducible_iff_prime
 
 /-- The type of prime numbers -/
 def Primes :=
