@@ -104,7 +104,7 @@ lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ 
 
 variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
 
- /-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
+/-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
 lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
   rw [← Nat.irreducible_iff_nat_prime]
   constructor -- Two goals: p is not a unit and any product giving p must contain a unit.

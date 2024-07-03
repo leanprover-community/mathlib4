@@ -205,6 +205,8 @@ theorem affineLocally_iff_affineOpens_le
     · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
 #align algebraic_geometry.affine_locally_iff_affine_opens_le AlgebraicGeometry.affineLocally_iff_affineOpens_le
 
+-- The `IsLocalization` is not necessary, but Lean errors if it is omitted.
+@[nolint unusedHavesSuffices]
 theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.RespectsIso @P)
     (h₂ : RingHom.LocalizationPreserves @P) {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y)
     (r : Y.presheaf.obj (op ⊤)) (H : sourceAffineLocally (@P) f)
@@ -212,7 +214,9 @@ theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.Respe
     P (Scheme.Γ.map ((X.restrict ((Opens.map f.1.base).obj <|
       Y.basicOpen r).openEmbedding).ofRestrict U.1.openEmbedding ≫ f ∣_ Y.basicOpen r).op) := by
   specialize H ⟨_, U.2.image_of_isOpenImmersion (X.ofRestrict _)⟩
-  letI i1 : Algebra (Y.presheaf.obj <| Opposite.op ⊤) (Localization.Away r) := Localization.algebra
+  letI i1 : Algebra (Y.presheaf.obj <| Opposite.op ⊤) (Localization.Away r) :=
+    OreLocalization.instAlgebra
+  haveI : IsLocalization.Away r (Localization.Away r) := inferInstance
   exact (h₁.ofRestrict_morphismRestrict_iff f r
     ((Scheme.Hom.opensFunctor
       (X.ofRestrict ((Opens.map f.1.base).obj <| Y.basicOpen r).openEmbedding)).obj U.1)
