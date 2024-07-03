@@ -2567,7 +2567,7 @@ open Finset in
 theorem coe_finsetWalkLengthLt_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLt n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp[finsetWalkLengthLt, mem_coe, mem_disjiUnion, Walk.mem_finsetWalkLength_iff_length_eq]
+  simp [finsetWalkLengthLt, mem_coe, mem_disjiUnion, Walk.mem_finsetWalkLength_iff_length_eq]
 
 variable {G}
 
@@ -2601,7 +2601,7 @@ theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
 
 instance fintypeSetWalkLengthLt (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length < n} :=
   Fintype.ofFinset (G.finsetWalkLengthLt n u v) fun p ↦ by
-    rw[← Finset.mem_coe, coe_finsetWalkLengthLt_eq]
+    rw [← Finset.mem_coe, coe_finsetWalkLengthLt_eq]
 
 instance fintypeSubtypeWalkLengthLt (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length < n} :=
   fintypeSetWalkLengthLt G u v n
