@@ -136,4 +136,5 @@ def testingLongDiff1 im a def
 def testingLongDiff2 im a def
 def testingLongDiff3 im a def
 @[trying to fool you] instance. the messing dot
+alias ⟨d1, d2⟩ := d  check the "split an iff alias"
 ReferenceTest
