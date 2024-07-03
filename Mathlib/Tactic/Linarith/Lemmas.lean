@@ -7,7 +7,7 @@ import Batteries.Tactic.Lint.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Init.Data.Int.Order
 
 /-!
