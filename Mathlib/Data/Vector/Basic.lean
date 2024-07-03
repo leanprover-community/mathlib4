@@ -785,10 +785,10 @@ theorem replicate_succ (val : α) :
 section Append
 variable (ys : Vector α m)
 
-@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by omega⟩ = x := rfl
+@[simp] lemma get_append_cons_zero {x : α} : get (append (x ::ᵥ xs) ys) ⟨0, by omega⟩ = x := rfl
 
 @[simp]
-theorem get_append_cons_succ {i : Fin (n + m)} {h} :
+theorem get_append_cons_succ {x : α} {i : Fin (n + m)} {h} :
     get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
   rfl
 
@@ -798,10 +798,11 @@ theorem append_nil : append xs nil = xs := by
 
 end Append
 
-variable (ys : Vector β n)
+set_option autoImplicit false
+variable {α β γ : Type*}
 
 @[simp]
-theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
+theorem get_map₂ (ys : Vector β n) (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
   clear * - v₁ v₂
   induction v₁, v₂ using inductionOn₂ with
@@ -813,16 +814,18 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     · simp only [get_zero, head_cons]
     · simp only [get_cons_succ, ih]
 
+set_option autoImplicit true in
 @[simp]
-theorem mapAccumr_cons :
+theorem mapAccumr_cons {n : ℕ} (xs : Vector α n) :
     mapAccumr f (x ::ᵥ xs) s
     = let r := mapAccumr f xs s
       let q := f x r.1
       (q.1, q.2 ::ᵥ r.2) :=
   rfl
 
+set_option autoImplicit true in
 @[simp]
-theorem mapAccumr₂_cons :
+theorem mapAccumr₂_cons (ys) :
     mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
     = let r := mapAccumr₂ f xs ys s
       let q := f x y r.1
