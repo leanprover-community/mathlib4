@@ -448,7 +448,7 @@ lemma CFC.quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
   by_cases hf0 : f 0 = 0
   · nth_rw 2 [← cfcₙ_zero R 0]
     apply cfcₙ_congr
-    simpa [quasispectrum_zero_eq]
+    simpa [CFC.quasispectrum_zero_eq]
   · exact cfcₙ_apply_of_not_map_zero _ hf0
 
 end CFCn
