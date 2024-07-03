@@ -50,7 +50,8 @@ The corresponding lemma in this file is `succ_nth_conv_eq_squashGCF_nth_conv`.
 
 ## Main Theorems
 
-- `GenContFract.convs_eq_convs'` shows the equivalence under a strict positivity restriction on the sequence.
+- `GenContFract.convs_eq_convs'` shows the equivalence under a strict positivity restriction
+  on the sequence.
 - `ContFract.convs_eq_convs'` shows the equivalence for regular continued fractions.
 
 ## References

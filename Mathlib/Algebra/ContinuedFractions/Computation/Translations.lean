@@ -92,7 +92,8 @@ theorem succ_nth_stream_eq_some_iff {ifp_succ_n : IntFractPair K} :
   simp [IntFractPair.stream, ite_eq_iff, Option.bind_eq_some]
 #align generalized_continued_fraction.int_fract_pair.succ_nth_stream_eq_some_iff GenContFract.IntFractPair.succ_nth_stream_eq_some_iff
 
-/-- An easier to use version of one direction of `GenContFract.IntFractPair.succ_nth_stream_eq_some_iff`. -/
+/-- An easier to use version of one direction of
+`GenContFract.IntFractPair.succ_nth_stream_eq_some_iff`. -/
 theorem stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = some p)
     (h' : p.fr ≠ 0) : IntFractPair.stream v (n + 1) = some (IntFractPair.of p.fr⁻¹) :=
   succ_nth_stream_eq_some_iff.mpr ⟨p, h, h', rfl⟩
