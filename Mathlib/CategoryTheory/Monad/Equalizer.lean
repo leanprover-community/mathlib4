@@ -77,8 +77,8 @@ equalizer.
 def beckCoalgebraFork : Fork (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) :=
   Fork.ofι _ (CofreeEqualizer.condition X)
 
-/-- The cofork constructed is a colimit. This shows that any algebra is a (reflexive) coequalizer of
-free algebras.
+/-- The fork constructed is a limit. This shows that any coalgebra is a (coreflexive) equalizer of
+cofree coalgebras.
 -/
 def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
   Fork.IsLimit.mk' _ fun s => by
