@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 import Mathlib.Topology.Category.LightProfinite.AsLimit
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.CategoryTheory.Filtered.Final
 /-!
 

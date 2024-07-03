@@ -17,6 +17,8 @@ corresponding "discrete" condensed object (see `Condensed.discrete`).
 
 In `Condensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the forgetful
 functor from `Condensed C` to `C`.
+
+We also give the variant `LightCondensed.discreteUnderlyingAdj` for light condensed objects.
 -/
 
 universe u v w

@@ -18,21 +18,6 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 namespace CondensedSet
 
-section Terminal
-
-/--
-A one-element space is terminal in `Profinite`
-
-TODO: PR if not already done
--/
-def _root_.Profinite.isTerminalPUnit :
-    IsTerminal (FintypeCat.toProfinite.obj (FintypeCat.of PUnit.{u + 1})) :=
-  haveI : ∀ X, Unique (X ⟶ (FintypeCat.toProfinite.obj (FintypeCat.of PUnit.{u + 1}))) := fun X =>
-    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
-  Limits.IsTerminal.ofUnique _
-
-end Terminal
-
 noncomputable
 def constantSheafProfiniteCompHausIso : constantSheaf (coherentTopology Profinite) (Type (u+1)) ≅
     constantSheaf (coherentTopology CompHaus) (Type (u+1)) ⋙
