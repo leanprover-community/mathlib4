@@ -112,10 +112,10 @@ If `R → T` is surjective on stalks, and `J` is some prime of `T`,
 then every element `x` in `S ⊗[R] T` satisfies `(1 ⊗ rt)x = a ⊗ t` for some `r : R` and `rt ∉ J`.
 -/
 lemma exists_mul_eq_tmul_of_surjectiveOnStalks
-  (hf₂ : (algebraMap R T).SurjectiveOnStalks)
-  (x : S ⊗[R] T) (J : Ideal T) (hJ : J.IsPrime) :
-  ∃ (t : T) (r : R) (a : S), (r • t ∉ J) ∧
-    (1 : S) ⊗ₜ[R] (r • t) * x = a ⊗ₜ[R] t := by
+    (hf₂ : (algebraMap R T).SurjectiveOnStalks)
+    (x : S ⊗[R] T) (J : Ideal T) (hJ : J.IsPrime) :
+    ∃ (t : T) (r : R) (a : S), (r • t ∉ J) ∧
+      (1 : S) ⊗ₜ[R] (r • t) * x = a ⊗ₜ[R] t := by
   induction' x using TensorProduct.induction_on with x₁ x₂ x₁ x₂ hx₁ hx₂
   · exact ⟨1, 1, 0, by rw [one_smul]; exact J.primeCompl.one_mem,
       by rw [mul_zero, TensorProduct.zero_tmul]⟩
@@ -136,8 +136,8 @@ lemma exists_mul_eq_tmul_of_surjectiveOnStalks
       TensorProduct.add_tmul, mul_comm t₁ t₂]
 
 lemma SurjectiveOnStalks.baseChange
-  (hf : (algebraMap R T).SurjectiveOnStalks) :
-  (algebraMap S (S ⊗[R] T)).SurjectiveOnStalks := by
+    (hf : (algebraMap R T).SurjectiveOnStalks) :
+    (algebraMap S (S ⊗[R] T)).SurjectiveOnStalks := by
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
   intros J hJ
   rw [surjective_localRingHom_iff]
