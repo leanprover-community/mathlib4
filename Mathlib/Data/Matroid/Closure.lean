@@ -28,9 +28,9 @@ it is used in the definition of `Matroid.cl`.
 ## Implementation details
 
 If `X : Set α` satisfies `X ⊆ M.E`, then it is clear how `M.cl X` should be defined.
-But `M.cl X` needs to be defined for all `X : Set α`, so a decision is needed for how `M.cl`
-handles sets containing junk elements outside `M.E`. Ideally, such a choice should minimize
-the amount of keeping track of which sets are actually contained in the ground set.
+But `M.cl X` needs to be defined for all `X : Set α`, so a convention is needed for how `M.cl`
+handles sets containing junk elements outside `M.E`. Ideally, this convention should minimize
+the need to keep track of which sets are actually contained in the ground set.
 
 All such choices come with tradeoffs; the definition we opt for satisfies `M.cl X = M.cl (X ∩ M.E)`.
 The drawback here is that the statement `X ⊆ M.cl X` requires the assumption `X ⊆ M.E`.
@@ -41,7 +41,7 @@ closure is monotone, idempotent, and `M.cl X ⊆ M.E` for all `X`.
 open Set
 namespace Matroid
 
-variable {α ι : Type*} {M : Matroid α} {F I J X Y B C R : Set α} {e f x y : α}
+variable {ι α : Type*} {M : Matroid α} {F X Y R : Set α} {e : α}
 
 /-- A flat is a maximal set having a given basis  -/
 def Flat (M : Matroid α) (F : Set α) : Prop :=
@@ -54,16 +54,15 @@ lemma Flat.subset_ground (hF : M.Flat F) : F ⊆ M.E :=
 @[simp] lemma ground_flat (M : Matroid α) : M.Flat M.E :=
   ⟨fun _ _ _ ↦ Basis.subset_ground, Subset.rfl⟩
 
-/-- The closure of a subset of the ground set is the intersection of the flats containing it.
-  A set `X` that doesn't satisfy `X ⊆ M.E` has the junk value `M.cl X := M.cl (X ∩ M.E)`. -/
+/-- The closure of `X ⊆ M.E` is the intersection of all the flats of `M` containing `X`.
+A set `X` that doesn't satisfy `X ⊆ M.E` has the junk value `M.cl X := M.cl (X ∩ M.E)`. -/
 def cl (M : Matroid α) (X : Set α) : Set α := ⋂₀ {F | M.Flat F ∧ X ∩ M.E ⊆ F}
 
 lemma cl_def (M : Matroid α) (X : Set α) : M.cl X = ⋂₀ {F | M.Flat F ∧ X ∩ M.E ⊆ F} := rfl
 
 lemma cl_def' (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     M.cl X = ⋂₀ {F | M.Flat F ∧ X ⊆ F} := by
-  nth_rw 2 [← inter_eq_self_of_subset_left hX]
-  rfl
+  rw [cl, inter_eq_self_of_subset_left hX]
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 lemma cl_subset_ground (M : Matroid α) (X : Set α) : M.cl X ⊆ M.E :=
@@ -71,10 +70,6 @@ lemma cl_subset_ground (M : Matroid α) (X : Set α) : M.cl X ⊆ M.E :=
 
 lemma ground_subset_cl_iff : M.E ⊆ M.cl X ↔ M.cl X = M.E := by
   simp [M.cl_subset_ground X, subset_antisymm_iff]
-
-lemma cl_eq_sInter_of_subset (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
-    M.cl X = ⋂₀ {F : Set α | M.Flat F ∧ X ⊆ F} := by
-  rw [cl, inter_eq_self_of_subset_left hX]
 
 @[simp] lemma cl_inter_ground (M : Matroid α) (X : Set α) : M.cl (X ∩ M.E) = M.cl X := by
   simp_rw [cl_def, inter_assoc, inter_self]
@@ -84,16 +79,15 @@ lemma inter_ground_subset_cl (M : Matroid α) (X : Set α) : X ∩ M.E ⊆ M.cl 
 
 lemma mem_cl_iff_forall_mem_flat (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     e ∈ M.cl X ↔ ∀ F, M.Flat F → X ⊆ F → e ∈ F := by
-  simp_rw [cl_eq_sInter_of_subset X, mem_sInter, mem_setOf, and_imp]
+  simp_rw [M.cl_def' X, mem_sInter, mem_setOf, and_imp]
 
 lemma subset_cl_iff_forall_subset_flat (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     Y ⊆ M.cl X ↔ ∀ F, M.Flat F → X ⊆ F → Y ⊆ F := by
-  simp_rw [cl_eq_sInter_of_subset X, subset_sInter_iff, mem_setOf, and_imp]
+  simp_rw [M.cl_def' X, subset_sInter_iff, mem_setOf, and_imp]
 
 lemma subset_cl (M : Matroid α) (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     X ⊆ M.cl X := by
-  rw [cl_eq_sInter_of_subset X, subset_sInter_iff]
-  simp
+  simp [M.cl_def' X, subset_sInter_iff]
 
 lemma Flat.cl (hF : M.Flat F) : M.cl F = F :=
   (sInter_subset_of_mem (by simpa)).antisymm (M.subset_cl F)
@@ -105,8 +99,8 @@ lemma Flat.cl (hF : M.Flat F) : M.cl F = F :=
   rw [← cl_inter_ground, univ_inter, cl_ground]
 
 lemma cl_subset_cl (M : Matroid α) (h : X ⊆ Y) : M.cl X ⊆ M.cl Y :=
-  subset_sInter (fun _ ⟨hF, hssF⟩ ↦
-    sInter_subset_of_mem ⟨hF, subset_trans (inter_subset_inter_left _ h) hssF⟩)
+  subset_sInter (fun _ h' ↦ sInter_subset_of_mem
+    ⟨h'.1, subset_trans (inter_subset_inter_left _ h) h'.2⟩)
 
 lemma cl_mono (M : Matroid α) : Monotone M.cl :=
   fun _ _ ↦ M.cl_subset_cl
@@ -134,33 +128,32 @@ lemma exists_of_cl_ssubset (hXY : M.cl X ⊂ M.cl Y) : ∃ e ∈ Y, e ∉ M.cl X
   by_contra! hcon
   exact hXY.not_subset (M.cl_subset_cl_of_subset_cl hcon)
 
-lemma mem_cl_of_mem (M : Matroid α) (h : e ∈ X) (hX : X ⊆ M.E := by aesop_mat) :
-    e ∈ M.cl X :=
+lemma mem_cl_of_mem (M : Matroid α) (h : e ∈ X) (hX : X ⊆ M.E := by aesop_mat) : e ∈ M.cl X :=
   (M.subset_cl X) h
 
-lemma mem_cl_of_mem' (M : Matroid α) (heX : e ∈ X) (h : e ∈ M.E := by aesop_mat) :
-    e ∈ M.cl X := by
-  rw [← cl_inter_ground]; exact M.mem_cl_of_mem ⟨heX, h⟩
+lemma mem_cl_of_mem' (M : Matroid α) (heX : e ∈ X) (h : e ∈ M.E := by aesop_mat) : e ∈ M.cl X := by
+  rw [← cl_inter_ground]
+  exact M.mem_cl_of_mem ⟨heX, h⟩
 
 lemma not_mem_of_mem_diff_cl (he : e ∈ M.E \ M.cl X) : e ∉ X :=
   fun heX ↦ he.2 <| M.mem_cl_of_mem' heX he.1
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
-lemma mem_ground_of_mem_cl (he : e ∈ M.cl X) : e ∈ M.E := (M.cl_subset_ground _) he
+lemma mem_ground_of_mem_cl (he : e ∈ M.cl X) : e ∈ M.E :=
+  (M.cl_subset_ground _) he
 
 lemma cl_iUnion_cl_eq_cl_iUnion (M : Matroid α) (Xs : ι → Set α) :
     M.cl (⋃ i, M.cl (Xs i)) = M.cl (⋃ i, Xs i) := by
   refine (M.cl_subset_cl_of_subset_cl
     (iUnion_subset (fun i ↦ M.cl_subset_cl (subset_iUnion _ _)))).antisymm ?_
   rw [← cl_inter_ground, iUnion_inter]
-  refine' M.cl_subset_cl (iUnion_subset (fun i ↦ (M.subset_cl _).trans _))
+  refine M.cl_subset_cl (iUnion_subset (fun i ↦ (M.subset_cl _).trans ?_))
   rw [cl_inter_ground]
   exact subset_iUnion (fun i ↦ M.cl (Xs i)) i
 
-lemma cl_iUnion_congr {ι : Type*} (Xs Ys : ι → Set α) (h : ∀ i, M.cl (Xs i) = M.cl (Ys i)) :
+lemma cl_iUnion_congr (Xs Ys : ι → Set α) (h : ∀ i, M.cl (Xs i) = M.cl (Ys i)) :
     M.cl (⋃ i, Xs i) = M.cl (⋃ i, Ys i) := by
-  rw [← M.cl_iUnion_cl_eq_cl_iUnion]
-  simp [h, M.cl_iUnion_cl_eq_cl_iUnion]
+  simp [h, ← M.cl_iUnion_cl_eq_cl_iUnion]
 
 lemma cl_biUnion_cl_eq_cl_sUnion (M : Matroid α) (Xs : Set (Set α)) :
     M.cl (⋃ X ∈ Xs, M.cl X) = M.cl (⋃₀ Xs) := by
@@ -171,8 +164,7 @@ lemma cl_biUnion_cl_eq_cl_biUnion (M : Matroid α) (Xs : ι → Set α) (A : Set
   rw [biUnion_eq_iUnion, M.cl_iUnion_cl_eq_cl_iUnion, biUnion_eq_iUnion]
 
 lemma cl_biUnion_congr (M : Matroid α) (Xs Ys : ι → Set α) (A : Set ι)
-    (h : ∀ i ∈ A, M.cl (Xs i) = M.cl (Ys i)) :
-    M.cl (⋃ i ∈ A, Xs i) = M.cl (⋃ i ∈ A, Ys i) := by
+    (h : ∀ i ∈ A, M.cl (Xs i) = M.cl (Ys i)) : M.cl (⋃ i ∈ A, Xs i) = M.cl (⋃ i ∈ A, Ys i) := by
   rw [← cl_biUnion_cl_eq_cl_biUnion, iUnion₂_congr h, cl_biUnion_cl_eq_cl_biUnion]
 
 lemma cl_cl_union_cl_eq_cl_union (M : Matroid α) (X Y : Set α) :
@@ -204,4 +196,4 @@ lemma cl_insert_eq_of_mem_cl (he : e ∈ M.cl X) : M.cl (insert e X) = M.cl X :=
   rw [← cl_insert_cl_eq_cl_insert, insert_eq_of_mem he, cl_cl]
 
 lemma mem_cl_self (M : Matroid α) (e : α) (he : e ∈ M.E := by aesop_mat) : e ∈ M.cl {e} :=
-  mem_cl_of_mem' _ rfl
+  mem_cl_of_mem' M rfl
