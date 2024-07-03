@@ -13,7 +13,7 @@ import Mathlib.Util.AssertExists
 /-!
 # Ordered groups
 
-This file develops the basics of ordered groups.
+This file defines bundled ordered groups and develops a few basic results.
 
 ## Implementation details
 
