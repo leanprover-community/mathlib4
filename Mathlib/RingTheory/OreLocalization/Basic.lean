@@ -338,7 +338,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
 protected def one [One X] : X[S⁻¹] := 1 /ₒ 1
 
 @[to_additive]
-instance : One R[S⁻¹] :=
+instance [One X] : One X[S⁻¹] :=
   ⟨OreLocalization.one⟩
 
 @[to_additive]
