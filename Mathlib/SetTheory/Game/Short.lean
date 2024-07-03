@@ -318,3 +318,5 @@ example : Decidable ((1 : PGame) ≤ 1) := by infer_instance
 -- example : (0 : PGame.{u}) ≤ 0 := by decide
 -- example : (1 : PGame.{u}) ≤ 1 := by decide
 end PGame
+
+end SetTheory

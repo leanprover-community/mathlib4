@@ -724,3 +724,5 @@ def punitCoprod : AddMonoid.Coprod PUnit M ≃+ M :=
     (AddMonoid.Coprod.hom_ext (Subsingleton.elim _ _) rfl) AddMonoid.Coprod.snd_comp_inr
 
 end AddEquiv
+
+end Monoid

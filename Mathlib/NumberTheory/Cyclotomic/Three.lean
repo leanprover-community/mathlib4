@@ -194,3 +194,9 @@ lemma lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd {x : 𝓞 K}
     exact lambda_pow_four_dvd_cube_sub_one_of_dvd_sub_one hζ H
   · right
     exact lambda_pow_four_dvd_cube_add_one_of_dvd_add_one hζ H
+
+end Three
+
+end Rat
+
+end IsCyclotomicExtension

@@ -326,3 +326,7 @@ theorem Memℒp.smul_of_top_left {p : ℝ≥0∞} {f : α → E} {φ : α → �
   apply hf.smul hφ
   simp only [ENNReal.div_top, add_zero]
 #align measure_theory.mem_ℒp.smul_of_top_left MeasureTheory.Memℒp.smul_of_top_left
+
+end BoundedSMul
+
+end MeasureTheory

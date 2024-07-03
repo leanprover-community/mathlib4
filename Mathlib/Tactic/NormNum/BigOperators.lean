@@ -402,3 +402,9 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)
     s
+
+end NormNum
+
+end Meta
+
+end Mathlib

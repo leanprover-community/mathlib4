@@ -108,3 +108,5 @@ noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
     (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := by
   ext x
   exact (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
+
+end SchwartzMap

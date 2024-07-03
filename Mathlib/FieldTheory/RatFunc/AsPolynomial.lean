@@ -193,3 +193,5 @@ theorem eval_mul {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
 end Field
 
 end Eval
+
+end RatFunc

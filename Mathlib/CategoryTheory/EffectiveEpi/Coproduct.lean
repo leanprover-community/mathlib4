@@ -115,3 +115,5 @@ def effectiveEpiFamilyStructOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → 
     apply EffectiveEpi.uniq (Sigma.desc π)
     ext
     simpa using hm _
+
+end CategoryTheory

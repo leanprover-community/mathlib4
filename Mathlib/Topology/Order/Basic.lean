@@ -794,3 +794,7 @@ theorem pi_Ioo_mem_nhds' (ha : ∀ i, a' i < x' i) (hb : ∀ i, x' i < b' i) : I
 end Pi
 
 end OrderTopology
+
+end LinearOrder
+
+end OrderTopology

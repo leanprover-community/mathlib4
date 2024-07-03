@@ -78,3 +78,5 @@ def HetVertexOperator.of_coeff (f : Γ → V →ₗ[R] W)
   map_smul' r x := by
     simp only [map_smul, RingHom.id_apply]
     exact rfl
+
+end VertexAlg
