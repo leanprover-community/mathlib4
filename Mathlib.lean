@@ -2231,6 +2231,8 @@ import Mathlib.Data.Nat.PartENat
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.Prime.Infinitude
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.Data.Nat.Set
