@@ -266,7 +266,7 @@ open Extend
 
 section LightProfiniteAsLimit
 
-variable (S : LightProfinite)
+variable (S : LightProfinite.{u})
 
 abbrev diagram' : StructuredArrow S toLightProfinite ⥤ LightProfinite :=
   StructuredArrow.proj S toLightProfinite ⋙ toLightProfinite
