@@ -702,6 +702,27 @@ theorem liminf_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter 
   limsup_const (β := βᵒᵈ) b
 #align filter.liminf_const Filter.liminf_const
 
+theorem limsup_max {α β : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
+    {u v : α → β}
+    (h₁ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
+    (h₃ : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault)
+    (h₄ : f.IsBoundedUnder (· ≥ ·) v := by isBoundedDefault):
+    limsup (fun a ↦ max (u a) (v a)) f = max (limsup u f) (limsup v f) := by
+  apply le_antisymm
+  · apply limsup_le_iff.2
+    intro b hb
+    have hu := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_left _ _) hb)
+    have hv := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb); clear hb
+    apply Filter.mem_of_superset (Filter.inter_mem hu hv); clear hu hv
+    intro a
+    simp only [Set.mem_inter_iff, Set.mem_setOf_eq, max_le_iff, and_imp]
+    exact fun hua hva ↦ ⟨le_of_lt hua, le_of_lt hva⟩
+  · apply @max_le β _ (limsup u f) (limsup v f) (limsup (fun a ↦ max (u a) (v a)) f)
+    apply max_le
+    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a)))
+    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a)))
+
 theorem HasBasis.liminf_eq_sSup_iUnion_iInter {ι ι' : Type*} {f : ι → α} {v : Filter ι}
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) :
     liminf f v = sSup (⋃ (j : Subtype p), ⋂ (i : s j), Iic (f i)) := by
