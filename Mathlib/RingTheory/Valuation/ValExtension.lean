@@ -9,14 +9,27 @@ import Mathlib.RingTheory.Ideal.LocalRing
 /-!
 # Extension of Valuation
 
-In this file, we define the typeclass for valuation extensions and prove basic facts about
-extension of valuations. Let `A` be an `R` algebra, equipped with valuation `vA` and `vR`
-respectively. Here, extension of valuation means that the pullback of valuation `vA` to `R` is
-equivalent to the valuation `vR` on `R`. We only require equivalence, not equality of valuations
-here.
+In this file, we define the typeclass for valuation extensions and prove basic facts about the
+extension of valuations. Let `A` be an `R` algebra, equipped with valuations `vA` and `vR`
+respectively. Here, the extension of a valuation means that the pullback of valuation `vA` to `R`
+is equivalent to the valuation `vR` on `R`. We only require equivalence, not equality, of
+valuations here.
 
-Note that we do not require the ring map from `R` to `A` to be injective. It holds automatically
+Note that we do not require the ring map from `R` to `A` to be injective. This holds automatically
 when `R` is a division ring and `A` is nontrivial.
+
+A motivation for choosing the more flexible `Valuation.Equiv` rather than strict equality here is
+to allow for possible normalization. As an example, consider a finite extension `K` of `ℚ_[p]`,
+which is a discretly valued field. We may choose the valuation on `K` from:
+
+1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤₘ₀`) or
+
+2. the valuation where `p` is mapped to one.
+
+For the algebraic closure of `ℚ_[p]`, if we choose the valuation of `p` to be one, then the
+restriction of this valuation to `K` equals the second valuation, but is only equivalent to the
+first valuation. The flexibility of equivalence here allows us to develop theory for both cases
+without first determining the normalizations once and for all.
 
 ## Main Definition
 
@@ -28,7 +41,7 @@ when `R` is a division ring and `A` is nontrivial.
 * <https://en.wikipedia.org/wiki/Valuation_(algebra)#Extension_of_valuations>
 
 ## Tags
-Valuation, Extension of Valuation
+Valuation, Extension of Valuations
 
 -/
 open Valuation
