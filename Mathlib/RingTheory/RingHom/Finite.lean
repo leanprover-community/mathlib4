@@ -25,7 +25,7 @@ theorem finite_stableUnderComposition : StableUnderComposition @Finite := by
   exact hg.comp hf
 #align ring_hom.finite_stable_under_composition RingHom.finite_stableUnderComposition
 
-instance finite_respectsIso : RespectsIso @Finite := by
+theorem finite_respectsIso : RespectsIso @Finite := by
   apply finite_stableUnderComposition.respectsIso
   intros
   exact Finite.of_surjective _ (RingEquiv.toEquiv _).surjective
