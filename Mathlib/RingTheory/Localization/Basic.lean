@@ -947,8 +947,8 @@ theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a => mk a b).
   map_list_sum (mkAddMonoidHom b) l
 #align localization.mk_list_sum Localization.mk_list_sum
 
-theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum := by
-  convert (mkAddMonoidHom b).map_multiset_sum l
+theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
+  (mkAddMonoidHom b).map_multiset_sum l
 #align localization.mk_multiset_sum Localization.mk_multiset_sum
 
 instance isLocalization : IsLocalization M (Localization M) where
