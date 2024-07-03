@@ -1120,6 +1120,14 @@ nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : �
   hg.comp hf
 #align uniform_continuous.comp UniformContinuous.comp
 
+/--If a function `T` is uniformly continuous in a uniform space `β`,
+then its `n`-th iterate `T^[n]` is also uniformly continuous.-/
+theorem UniformContinuous.iterate [UniformSpace β] (T : β → β) (n : ℕ) (h : UniformContinuous T) :
+    UniformContinuous T^[n] := by
+  induction n with
+  | zero => exact uniformContinuous_id
+  | succ n hn => exact Function.iterate_succ _ _ ▸ UniformContinuous.comp hn h
+
 theorem Filter.HasBasis.uniformContinuous_iff {ι'} [UniformSpace β] {p : ι → Prop}
     {s : ι → Set (α × α)} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} :
@@ -1165,6 +1173,8 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
+-- TODO: Replace `.ofNhdsEqComap` with `.mk`.
+set_option linter.deprecated false in
 instance : Top (UniformSpace α) :=
   ⟨@UniformSpace.mk α ⊤ ⊤ le_top le_top fun x ↦ by simp only [nhds_top, comap_top]⟩
 

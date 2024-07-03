@@ -48,12 +48,14 @@ structure OpenCover (X : Scheme.{u}) where
   /-- the embedding of subschemes to `X` -/
   map : ∀ j : J, obj j ⟶ X
   /-- given a point of `x : X`, `f x` is the index of the subscheme which contains `x`  -/
-  f : X.carrier → J
+  f : X → J
   /-- the subschemes covers `X` -/
-  Covers : ∀ x, x ∈ Set.range (map (f x)).1.base
+  covers : ∀ x, x ∈ Set.range (map (f x)).1.base
   /-- the embedding of subschemes are open immersions -/
   IsOpen : ∀ x, IsOpenImmersion (map x) := by infer_instance
 #align algebraic_geometry.Scheme.open_cover AlgebraicGeometry.Scheme.OpenCover
+
+@[deprecated (since := "2024-06-23")] alias OpenCover.Covers := OpenCover.covers
 
 attribute [instance] OpenCover.IsOpen
 
@@ -62,12 +64,12 @@ variable [∀ x, HasPullback (𝒰.map x ≫ f) g]
 
 /-- The affine cover of a scheme. -/
 def affineCover (X : Scheme.{u}) : OpenCover X where
-  J := X.carrier
-  obj x := Spec.obj <| Opposite.op (X.local_affine x).choose_spec.choose
+  J := X
+  obj x := Spec (X.local_affine x).choose_spec.choose
   map x :=
     ((X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _ : _)
   f x := x
-  Covers := by
+  covers := by
     intro x
     erw [TopCat.coe_comp] -- now `erw` after #13170
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
@@ -86,11 +88,11 @@ theorem OpenCover.iUnion_range {X : Scheme.{u}} (𝒰 : X.OpenCover) :
   rw [Set.eq_univ_iff_forall]
   intro x
   rw [Set.mem_iUnion]
-  exact ⟨𝒰.f x, 𝒰.Covers x⟩
+  exact ⟨𝒰.f x, 𝒰.covers x⟩
 #align algebraic_geometry.Scheme.open_cover.Union_range AlgebraicGeometry.Scheme.OpenCover.iUnion_range
 
 theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
-    ⨆ i, Scheme.Hom.opensRange (𝒰.map i) = ⊤ :=
+    ⨆ i, (𝒰.map i).opensRange = ⊤ :=
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
 #align algebraic_geometry.Scheme.open_cover.supr_opens_range AlgebraicGeometry.Scheme.OpenCover.iSup_opensRange
 
@@ -101,11 +103,11 @@ def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X wh
   J := Σ i : 𝒰.J, (f i).J
   obj x := (f x.1).obj x.2
   map x := (f x.1).map x.2 ≫ 𝒰.map x.1
-  f x := ⟨_, (f _).f (𝒰.Covers x).choose⟩
-  Covers x := by
-    let y := (𝒰.Covers x).choose
-    have hy : (𝒰.map (𝒰.f x)).val.base y = x := (𝒰.Covers x).choose_spec
-    rcases (f (𝒰.f x)).Covers y with ⟨z, hz⟩
+  f x := ⟨_, (f _).f (𝒰.covers x).choose⟩
+  covers x := by
+    let y := (𝒰.covers x).choose
+    have hy : (𝒰.map (𝒰.f x)).val.base y = x := (𝒰.covers x).choose_spec
+    rcases (f (𝒰.f x)).covers y with ⟨z, hz⟩
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).1.base
     use z
     erw [comp_apply]
@@ -122,7 +124,7 @@ def openCoverOfIsIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : OpenCover.{v} 
   obj _ := X
   map _ := f
   f _ := PUnit.unit
-  Covers x := by
+  covers x := by
     rw [Set.range_iff_surjective.mpr]
     all_goals try trivial
     rw [← TopCat.epi_iff_surjective]
@@ -137,10 +139,10 @@ def OpenCover.copy {X : Scheme.{u}} (𝒰 : OpenCover X) (J : Type*) (obj : J �
     (e₂ : ∀ i, map i = (e₂ i).hom ≫ 𝒰.map (e₁ i)) : OpenCover X :=
   { J, obj, map
     f := fun x => e₁.symm (𝒰.f x)
-    Covers := fun x => by
+    covers := fun x => by
       rw [e₂, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
         Set.image_univ, e₁.rightInverse_symm]
-      · exact 𝒰.Covers x
+      · exact 𝒰.covers x
       · erw [← TopCat.epi_iff_surjective]; infer_instance -- now `erw` after #13170
     -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
     -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
@@ -165,7 +167,7 @@ def OpenCover.add {X Y : Scheme.{u}} (𝒰 : X.OpenCover) (f : Y ⟶ X) [IsOpenI
   obj i := Option.rec Y 𝒰.obj i
   map i := Option.rec f 𝒰.map i
   f x := some (𝒰.f x)
-  Covers := 𝒰.Covers
+  covers := 𝒰.covers
   IsOpen := by rintro (_ | _) <;> dsimp <;> infer_instance
 #align algebraic_geometry.Scheme.open_cover.add AlgebraicGeometry.Scheme.OpenCover.add
 
@@ -178,14 +180,14 @@ def OpenCover.pullbackCover {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X
   obj x := pullback f (𝒰.map x)
   map x := pullback.fst
   f x := 𝒰.f (f.1.base x)
-  Covers x := by
+  covers x := by
     rw [←
       show _ = (pullback.fst : pullback f (𝒰.map (𝒰.f (f.1.base x))) ⟶ _).1.base from
         PreservesPullback.iso_hom_fst Scheme.forgetToTop f (𝒰.map (𝒰.f (f.1.base x)))]
     -- Porting note: `rw` to `erw` on this single lemma
     rw [TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
       TopCat.pullback_fst_range]
-    · obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
+    · obtain ⟨y, h⟩ := 𝒰.covers (f.1.base x)
       exact ⟨y, h.symm⟩
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 #align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
@@ -200,14 +202,14 @@ def OpenCover.pullbackCover' {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ 
   obj x := pullback (𝒰.map x) f
   map x := pullback.snd
   f x := 𝒰.f (f.1.base x)
-  Covers x := by
+  covers x := by
     rw [←
       show _ = (pullback.snd : pullback (𝒰.map (𝒰.f (f.1.base x))) f ⟶ _).1.base from
         PreservesPullback.iso_hom_snd Scheme.forgetToTop (𝒰.map (𝒰.f (f.1.base x))) f]
     -- Porting note: `rw` to `erw` on this single lemma
     rw [TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
       TopCat.pullback_snd_range]
-    · obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
+    · obtain ⟨y, h⟩ := 𝒰.covers (f.1.base x)
       exact ⟨y, h⟩
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 
@@ -218,7 +220,7 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactS
     OpenCover X := by
   have :=
     @CompactSpace.elim_nhds_subcover _ _ H (fun x : X => Set.range (𝒰.map (𝒰.f x)).1.base)
-      fun x => (IsOpenImmersion.isOpen_range (𝒰.map (𝒰.f x))).mem_nhds (𝒰.Covers x)
+      fun x => (IsOpenImmersion.isOpen_range (𝒰.map (𝒰.f x))).mem_nhds (𝒰.covers x)
   let t := this.choose
   have h : ∀ x : X, ∃ y : t, x ∈ Set.range (𝒰.map (𝒰.f y)).1.base := by
     intro x
@@ -231,7 +233,7 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactS
       obj := fun x => 𝒰.obj (𝒰.f x.1)
       map := fun x => 𝒰.map (𝒰.f x.1)
       f := fun x => (h x).choose
-      Covers := fun x => (h x).choose_spec }
+      covers := fun x => (h x).choose_spec }
 #align algebraic_geometry.Scheme.open_cover.finite_subcover AlgebraicGeometry.Scheme.OpenCover.finiteSubcover
 
 instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.J := by
@@ -260,11 +262,10 @@ def OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X)
   obj ij := pullback (𝒰₁.map ij.1) (𝒰₂.map ij.2)
   map ij := pullback.fst ≫ 𝒰₁.map ij.1
   f x := ⟨𝒰₁.f x, 𝒰₂.f x⟩
-  Covers x := by
+  covers x := by
     rw [IsOpenImmersion.range_pullback_to_base_of_left]
-    exact ⟨𝒰₁.Covers x, 𝒰₂.Covers x⟩
-  -- Porting note: was automatic
-  IsOpen x := PresheafedSpace.IsOpenImmersion.comp (hf := inferInstance) (hg := (𝒰₁.IsOpen _))
+    exact ⟨𝒰₁.covers x, 𝒰₂.covers x⟩
+  IsOpen x := inferInstance
 #align algebraic_geometry.Scheme.open_cover.inter AlgebraicGeometry.Scheme.OpenCover.inter
 
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
@@ -277,7 +278,7 @@ def openCoverOfSuprEqTop {s : Type*} (X : Scheme.{u}) (U : s → Opens X)
   f x :=
     haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
     (Opens.mem_iSup.mp this).choose
-  Covers x := by
+  covers x := by
     erw [Subtype.range_coe]
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
@@ -293,11 +294,11 @@ structure AffineOpenCover (X : Scheme.{u}) where
   /-- the ring associated to a component of an affine open cover -/
   obj : J → CommRingCat.{u}
   /-- the embedding of subschemes to `X` -/
-  map : ∀ j : J, Spec.obj (.op <| obj j) ⟶ X
+  map : ∀ j : J, Spec (obj j) ⟶ X
   /-- given a point of `x : X`, `f x` is the index of the subscheme which contains `x`  -/
-  f : X.carrier → J
+  f : X → J
   /-- the subschemes covers `X` -/
-  Covers : ∀ x, x ∈ Set.range (map (f x)).1.base
+  covers : ∀ x, x ∈ Set.range (map (f x)).1.base
   /-- the embedding of subschemes are open immersions -/
   IsOpen : ∀ x, IsOpenImmersion (map x) := by infer_instance
 
@@ -311,7 +312,7 @@ def openCover {X : Scheme.{u}} (𝓤 : X.AffineOpenCover) : X.OpenCover where
   J := 𝓤.J
   map := 𝓤.map
   f := 𝓤.f
-  Covers := 𝓤.Covers
+  covers := 𝓤.covers
 
 end AffineOpenCover
 
@@ -320,7 +321,7 @@ def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
   J := X.affineCover.J
   map := X.affineCover.map
   f := X.affineCover.f
-  Covers := X.affineCover.Covers
+  covers := X.affineCover.covers
 
 @[simp]
 lemma openCover_affineOpenCover (X : Scheme.{u}) : X.affineOpenCover.openCover = X.affineCover :=
@@ -334,7 +335,7 @@ def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineO
   J := (𝓤.bind fun j => (𝓤.obj j).affineCover).J
   map := (𝓤.bind fun j => (𝓤.obj j).affineCover).map
   f := (𝓤.bind fun j => (𝓤.obj j).affineCover).f
-  Covers := (𝓤.bind fun j => (𝓤.obj j).affineCover).Covers
+  covers := (𝓤.bind fun j => (𝓤.obj j).affineCover).covers
 
 section category
 
@@ -399,17 +400,17 @@ def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
 section deprecated
 
 /-- The basic open sets form an affine open cover of `Spec R`. -/
-def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec.obj (Opposite.op R)) where
+def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   J := R
-  obj r := Spec.obj (Opposite.op <| CommRingCat.of <| Localization.Away r)
-  map r := Spec.map (Quiver.Hom.op (algebraMap R (Localization.Away r) : _))
+  obj r := Spec (CommRingCat.of <| Localization.Away r)
+  map r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
   f _ := 1
-  Covers r := by
+  covers r := by
     rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
     · -- Porting note: need more hand holding here because Lean knows that
       -- `CommRing.ofHom ...` is iso, but without `ofHom` Lean does not know what to do
-      change Epi (Spec.map (CommRingCat.ofHom (algebraMap _ _)).op).1.base
+      change Epi (Spec.map (CommRingCat.ofHom (algebraMap _ _))).1.base
       infer_instance
   IsOpen x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
 #align algebraic_geometry.Scheme.affine_basis_cover_of_affine AlgebraicGeometry.Scheme.affineBasisCoverOfAffine
@@ -426,7 +427,7 @@ def affineBasisCoverRing (X : Scheme.{u}) (i : X.affineBasisCover.J) : CommRingC
 #align algebraic_geometry.Scheme.affine_basis_cover_ring AlgebraicGeometry.Scheme.affineBasisCoverRing
 
 theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.J) :
-    X.affineBasisCover.obj i = Spec.obj (op <| X.affineBasisCoverRing i) :=
+    X.affineBasisCover.obj i = Spec (X.affineBasisCoverRing i) :=
   rfl
 #align algebraic_geometry.Scheme.affine_basis_cover_obj AlgebraicGeometry.Scheme.affineBasisCover_obj
 
@@ -448,7 +449,7 @@ theorem affineBasisCover_is_basis (X : Scheme.{u}) :
   · rintro _ ⟨a, rfl⟩
     exact IsOpenImmersion.isOpen_range (X.affineBasisCover.map a)
   · rintro a U haU hU
-    rcases X.affineCover.Covers a with ⟨x, e⟩
+    rcases X.affineCover.covers a with ⟨x, e⟩
     let U' := (X.affineCover.map (X.affineCover.f a)).1.base ⁻¹' U
     have hxU' : x ∈ U' := by rw [← e] at haU; exact haU
     rcases PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU'

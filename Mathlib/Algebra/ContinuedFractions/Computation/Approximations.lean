@@ -257,7 +257,7 @@ theorem zero_le_of_continuantsAux_b : 0 ≤ ((of v).continuantsAux n).b := by
     cases' Decidable.em <| g.TerminatedAt (n - 1) with terminated not_terminated
     · -- terminating case
       cases' n with n
-      · simp [succ_eq_add_one, zero_le_one]
+      · simp [zero_le_one]
       · have : g.continuantsAux (n + 2) = g.continuantsAux (n + 1) :=
           continuantsAux_stable_step_of_terminated terminated
         simp only [this, IH]
