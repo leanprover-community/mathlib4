@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Gluing
-import Mathlib.AlgebraicGeometry.Scheme
 
 /-!
 -/
@@ -56,7 +56,6 @@ namespace WeierstrassCurve.Projective
 
 noncomputable section
 
-open scoped PolynomialPolynomial
 open Polynomial AlgebraicGeometry
 
 variable {R : Type u} [CommRing R] (W : WeierstrassCurve R)
@@ -70,8 +69,8 @@ def polynomialInf : R[X][Y] :=
 def CoordinateRingInf : Type u := AdjoinRoot (polynomialInf W)
 
 inductive Chart : Type u | XY : Chart | XZ : Chart
-#check AlgebraicGeometry.Spec
-/-- Glue data for the projective Weierstrass curve. -/
+
+/- Glue data for the projective Weierstrass curve.
 def glueData : Scheme.GlueData where
   J := Chart
   U := Chart.rec (Spec <| Affine.CoordinateRing W) (CoordinateRingInf W)
@@ -82,7 +81,7 @@ def glueData : Scheme.GlueData where
   t' := _
   t_fac := _
   cocycle := _
-  f_open := _
+  f_open := _ -/
 
 
 /- AlgebraicGeometry.Scheme.GlueData -/
