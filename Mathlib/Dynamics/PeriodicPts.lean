@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
@@ -547,7 +547,7 @@ theorem periodicOrbit_apply_iterate_eq (hx : x ∈ periodicPts f) (n : ℕ) :
     periodicOrbit f (f^[n] x) = periodicOrbit f x :=
   Eq.symm <| Cycle.coe_eq_coe.2 <| .intro n <|
     List.ext_get (by simp [minimalPeriod_apply_iterate hx]) fun m _ _ ↦ by
-      simp [List.get_rotate, iterate_add_apply]
+      simp [List.getElem_rotate, iterate_add_apply]
 #align function.periodic_orbit_apply_iterate_eq Function.periodicOrbit_apply_iterate_eq
 
 theorem periodicOrbit_apply_eq (hx : x ∈ periodicPts f) :

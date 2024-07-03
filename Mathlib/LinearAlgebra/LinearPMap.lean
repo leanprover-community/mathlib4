@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Module.Basic
 
 #align_import linear_algebra.linear_pmap from "leanprover-community/mathlib"@"8b981918a93bc45a8600de608cde7944a80d92b9"
 
@@ -587,7 +588,7 @@ theorem domain_supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉
   rfl
 #align linear_pmap.domain_sup_span_singleton LinearPMap.domain_supSpanSingleton
 
-@[simp] -- Porting note: Left-hand side does not simplify.
+@[simp]
 theorem supSpanSingleton_apply_mk (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) (x' : E)
     (hx' : x' ∈ f.domain) (c : K) :
     f.supSpanSingleton x y hx

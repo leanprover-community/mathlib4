@@ -233,7 +233,7 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
 
 @[aesop 10% apply]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
-  (isSelfAdjoint_zero R).mono hx
+  .mono hx <| .zero R
 
 theorem conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
     star c * a * c < star c * b * c := by
