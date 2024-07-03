@@ -377,7 +377,15 @@ theorem ext_neg {i j : 𝕜 × 𝕜} : (i ≠ j) ↔ ¬ ((i.1 = j.1) ∧ (i.2 = 
 theorem Orthogonality : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
     (eigenspace B i.1 ⊓ eigenspace A i.2 : Submodule 𝕜 E))
     (fun i => (eigenspace B i.1 ⊓ eigenspace A i.2).subtypeₗᵢ) := by
-  refine orthogonalFamily_iff_pairwise.mpr ?_
+  apply orthogonalFamily_iff_pairwise.mpr ?_
+  intro i j hij v hv
+  have e:= ext_neg.mp hij
+  push_neg at e
+  by_cases case : i.1=j.1
+  have J := e case
+  have := orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces J
+
+  /-
   intro i j hij x hx
   simp only [Submodule.mem_inf] at hx
   rw [@Submodule.mem_orthogonal']
@@ -386,9 +394,12 @@ theorem Orthogonality : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
   push_neg at H
   by_cases hc : i.1 = j.1
   have Hhc := H hc
+  have hat := orthogonalFamily_iff_pairwise.mp hA.orthogonalFamily_eigenspaces'
+  apply hat
+
   have thing1 := hx.1
   have thing2 := hy.1
-  have hat := hB.orthogonalFamily_eigenspaces'
+
   have HK (p q : 𝕜) : p ≠ q → ∀ v, (∀ w,  (v ∈ eigenspace B p) ∧ (w ∈ eigenspace B q) → ⟪ v , w ⟫ = 0) := by
     intro h v w hvw
     sorry --this probably needs the operators to be symmetric. Should be a global way to do this.
@@ -397,7 +408,7 @@ theorem Orthogonality : OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) =>
   constructor
   apply hy.2 --Involves A and not B. This needs cleanup.
   sorry
-
+  -/
 --orthogonalFamily_eigenspaces
 
 theorem post_post_exhaust: DirectSum.IsInternal
