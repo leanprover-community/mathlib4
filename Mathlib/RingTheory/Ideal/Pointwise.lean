@@ -117,8 +117,11 @@ open Pointwise
 theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
     a • S = S.comap (MulSemiringAction.toRingAut _ _ a).symm := by
   ext
-  simp [pointwise_smul_def]
-  rfl
+  rw [pointwise_smul_def,
+    map_congr (MulSemiringAction.toRingHom M R a) (MulSemiringAction.toRingEquiv M R a)]
+  · simp
+  ext
+  simp
 
 @[simp]
 theorem smul_mem_pointwise_smul_iff {a : M} {S : Ideal R} {x : R} : a • x ∈ a • S ↔ x ∈ S :=
