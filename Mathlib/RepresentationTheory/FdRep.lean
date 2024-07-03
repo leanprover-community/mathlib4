@@ -235,8 +235,8 @@ def equivalenceFiniteDimensionalSubcategory :
     FdRep k G ≌ FullSubcategory (fun V : Rep k G ↦ FiniteDimensional k V) where
   functor := toFiniteDimensionalSubcategory
   inverse := ofFiniteDimensionalSubcategory
-  unitIso := by aesop_cat
-  counitIso := by aesop_cat
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end FdRep
 end equivFullSubcategory
