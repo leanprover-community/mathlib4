@@ -378,6 +378,11 @@ instance EuclideanSpace.instChartedSpaceSphere {n : ℕ} [Fact (finrank ℝ E = 
   mem_chart_source v := by simpa using ne_neg_of_mem_unit_sphere ℝ v
   chart_mem_atlas v := ⟨-v, rfl⟩
 
+instance (n : ℕ) :
+    ChartedSpace (EuclideanSpace ℝ (Fin n)) (sphere (0 : EuclideanSpace ℝ (Fin (n + 1))) 1) :=
+  have := Fact.mk (@finrank_euclideanSpace_fin ℝ _ (n + 1))
+  EuclideanSpace.instChartedSpaceSphere
+
 end ChartedSpace
 
 section SmoothManifold
@@ -427,6 +432,11 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
       simp only [id, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
         innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
+
+instance (n : ℕ) :
+    SmoothManifoldWithCorners (𝓡 n) (sphere (0 :  EuclideanSpace ℝ (Fin (n + 1))) 1) :=
+  haveI := Fact.mk (@finrank_euclideanSpace_fin ℝ _ (n + 1))
+  EuclideanSpace.instSmoothManifoldWithCornersSphere
 
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :

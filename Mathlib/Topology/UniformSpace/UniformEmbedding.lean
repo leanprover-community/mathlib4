@@ -200,13 +200,15 @@ theorem Equiv.uniformEmbedding {α β : Type*} [UniformSpace α] [UniformSpace �
 theorem uniformEmbedding_inl : UniformEmbedding (Sum.inl : α → α ⊕ β) :=
   uniformEmbedding_iff'.2 ⟨Sum.inl_injective, uniformContinuous_inl, fun s hs =>
     ⟨Prod.map Sum.inl Sum.inl '' s ∪ range (Prod.map Sum.inr Sum.inr),
-      union_mem_sup (image_mem_map hs) range_mem_map, fun x h => by simpa using h⟩⟩
+      union_mem_sup (image_mem_map hs) range_mem_map,
+      fun x h => by simpa [Prod.map_apply'] using h⟩⟩
 #align uniform_embedding_inl uniformEmbedding_inl
 
 theorem uniformEmbedding_inr : UniformEmbedding (Sum.inr : β → α ⊕ β) :=
   uniformEmbedding_iff'.2 ⟨Sum.inr_injective, uniformContinuous_inr, fun s hs =>
     ⟨range (Prod.map Sum.inl Sum.inl) ∪ Prod.map Sum.inr Sum.inr '' s,
-      union_mem_sup range_mem_map (image_mem_map hs), fun x h => by simpa using h⟩⟩
+      union_mem_sup range_mem_map (image_mem_map hs),
+      fun x h => by simpa [Prod.map_apply'] using h⟩⟩
 #align uniform_embedding_inr uniformEmbedding_inr
 
 /-- If the domain of a `UniformInducing` map `f` is a T₀ space, then `f` is injective,

@@ -146,6 +146,7 @@ property `p : A → Prop` if
   `cfcHom : C(spectrum R a, R) →⋆ₐ[R] A` sending the (restriction of) the identity map to `a`.
 + `cfcHom` is a closed embedding for which the spectrum of the image of function `f` is its range.
 + `cfcHom` preserves the property `p`.
++ `p 0` is true, which ensures among other things that `p ≠ fun _ ↦ False`.
 
 The property `p` is marked as an `outParam` so that the user need not specify it. In practice,
 
@@ -159,6 +160,7 @@ prevents diamonds or problems arising from multiple instances. -/
 class ContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
     [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] : Prop where
+  predicate_zero : p 0
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(spectrum R a, R) →⋆ₐ[R] A,
     ClosedEmbedding φ ∧ φ ((ContinuousMap.id R).restrict <| spectrum R a) = a ∧
       (∀ f, spectrum R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
@@ -343,8 +345,24 @@ lemma cfc_id' : cfc (fun x : R ↦ x) a = a := cfc_id R a
 lemma cfc_map_spectrum : spectrum R (cfc f a) = f '' spectrum R a := by
   simp [cfc_apply f a, cfcHom_map_spectrum (p := p)]
 
-lemma cfc_predicate : p (cfc f a) :=
-  cfc_apply f a ▸ cfcHom_predicate (A := A) ha _
+lemma cfc_const (r : R) (a : A) (ha : p a := by cfc_tac) :
+    cfc (fun _ ↦ r) a = algebraMap R A r := by
+  rw [cfc_apply (fun _ : R ↦ r) a, ← AlgHomClass.commutes (cfcHom ha (p := p)) r]
+  congr
+
+variable (R) in
+lemma cfc_predicate_zero : p 0 :=
+  ContinuousFunctionalCalculus.predicate_zero (R := R)
+
+lemma cfc_predicate (f : R → R) (a : A) : p (cfc f a) :=
+  cfc_cases p a f (cfc_predicate_zero R) fun _ _ ↦ cfcHom_predicate ..
+
+lemma cfc_predicate_algebraMap (r : R) : p (algebraMap R A r) :=
+  cfc_const r (0 : A) (cfc_predicate_zero R) ▸ cfc_predicate (fun _ ↦ r) 0
+
+variable (R) in
+lemma cfc_predicate_one : p 1 :=
+  map_one (algebraMap R A) ▸ cfc_predicate_algebraMap (1 : R)
 
 lemma cfc_congr {f g : R → R} {a : A} (hfg : (spectrum R a).EqOn f g) :
     cfc f a = cfc g a := by
@@ -369,11 +387,6 @@ lemma eqOn_of_cfc_eq_cfc {f g : R → R} {a : A} (h : cfc f a = cfc g a)
 variable {a f g} in
 lemma cfc_eq_cfc_iff_eqOn : cfc f a = cfc g a ↔ (spectrum R a).EqOn f g :=
   ⟨eqOn_of_cfc_eq_cfc, cfc_congr⟩
-
-lemma cfc_const (r : R) (a : A) (ha : p a := by cfc_tac) :
-    cfc (fun _ ↦ r) a = algebraMap R A r := by
-  rw [cfc_apply (fun _ : R ↦ r) a, ← AlgHomClass.commutes (cfcHom ha (p := p)) r]
-  congr
 
 variable (R)
 
