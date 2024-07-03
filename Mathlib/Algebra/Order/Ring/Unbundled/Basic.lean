@@ -926,7 +926,7 @@ variable [ExistsAddOfLE α]
 /-- Binary **arithmetic mean-geometric mean inequality** (aka AM-GM inequality) for linearly ordered
 commutative semirings. -/
 lemma two_mul_le_add_sq [MulPosStrictMono α] [ContravariantClass α α (· + ·) (· ≤ ·)]
-  [CovariantClass α α (· + ·) (· ≤ ·)] (a b : α) : 2 * a * b ≤ a ^ 2 + b ^ 2 := by
+    [CovariantClass α α (· + ·) (· ≤ ·)] (a b : α) : 2 * a * b ≤ a ^ 2 + b ^ 2 := by
   simpa [fn_min_add_fn_max (fun x ↦ x * x), sq, two_mul, add_mul]
     using mul_add_mul_le_mul_add_mul (@min_le_max _ _ a b) (@min_le_max _ _ a b)
 #align two_mul_le_add_sq two_mul_le_add_sq
