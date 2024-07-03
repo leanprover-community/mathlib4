@@ -4,12 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Discrete
-import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
-import Mathlib.Condensed.LocallyConstant
-import Mathlib.Condensed.Module
+import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Light.Module
 import Mathlib.Topology.LocallyConstant.Algebra
-import Mathlib.CategoryTheory.Monad.EquivMon
 /-!
 
 # Discrete condensed `R`-modules
@@ -197,17 +194,9 @@ noncomputable def functorIsoDiscreteAux (M : ModuleCat R) :
       (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) :=
   (LightCondensed.discrete _).mapIso (functorIsoDiscreteAux' R M)
 
+-- Not stating this explicitly causes timeouts below.
 instance : HasSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
-  haveI : ∀ (J : GrothendieckTopology (SmallModel LightProfinite.{u})),
-      HasSheafify J (ModuleCat R) :=
-    inferInstance
   inferInstance
-
-instance : HasWeakSheafify (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R) :=
-  HasSheafify.isRightAdjoint
-
-instance : (coherentTopology LightProfinite.{u}).PreservesSheafification
-    (CategoryTheory.forget (ModuleCat.{u} R)) := inferInstance
 
 instance (M : ModuleCat R) : IsIso ((LightCondensed.forget R).map
     ((LightCondensed.discreteUnderlyingAdj (ModuleCat R)).counit.app

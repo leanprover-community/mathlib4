@@ -3,8 +3,8 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Dev.Extend
-import Mathlib.Condensed.LocallyConstant
+import Mathlib.Condensed.Discrete.LocallyConstant
+import Mathlib.Topology.Category.Profinite.Extend
 /-!
 
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.

@@ -5,24 +5,52 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
 import Mathlib.CategoryTheory.Sites.Equivalence
-import Mathlib.CategoryTheory.Sites.LeftExact
+import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Light.Basic
-
 /-!
 
 # Discrete-underlying adjunction
 
-Given a category `C` with sheafification with respect to the coherent topology on light profinite
-sets, we define a functor `C ⥤ LightCondensed C` which associates to an object of `C` the
-corresponding "discrete" light condensed object (see `LightCondensed.discrete`).
+Given a category `C` with sheafification with respect to the coherent topology on compact Hausdorff
+spaces, we define a functor `C ⥤ Condensed C` which associates to an object of `C` the
+corresponding "discrete" condensed object (see `Condensed.discrete`).
 
-In `LightCondensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the
-forgetful functor from `Condensed C` to `C`.
+In `Condensed.discreteUnderlyingAdj` we prove that this functor is left adjoint to the forgetful
+functor from `Condensed C` to `C`.
 -/
 
 universe u v w
 
 open CategoryTheory Limits Opposite GrothendieckTopology
+
+namespace Condensed
+
+variable (C : Type w) [Category.{u+1} C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
+
+/--
+The discrete condensed object associated to an object of `C` is the constant sheaf at that object.
+-/
+@[simps!]
+noncomputable def discrete : C ⥤ Condensed.{u} C := constantSheaf _ C
+
+/--
+The underlying object of a condensed object in `C` is the condensed object evaluated at a point.
+This can be viewed as a sort of forgetful functor from `Condensed C` to `C`
+-/
+@[simps!]
+noncomputable def underlying : Condensed.{u} C ⥤ C :=
+  (sheafSections _ _).obj ⟨CompHaus.of PUnit.{u+1}⟩
+
+/--
+Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to
+`TopCat.adj₁ : TopCat.discrete ⊣ forget TopCat`.  
+-/
+noncomputable def discreteUnderlyingAdj : discrete C ⊣ underlying C :=
+  constantSheafAdj _ _ CompHaus.isTerminalPUnit
+
+end Condensed
+
+namespace LightCondensed
 
 variable (C : Type w) [Category.{u} C] [HasSheafify (coherentTopology LightProfinite.{u}) C]
 
@@ -30,22 +58,24 @@ variable (C : Type w) [Category.{u} C] [HasSheafify (coherentTopology LightProfi
 The discrete condensed object associated to an object of `C` is the constant sheaf at that object.
 -/
 @[simps!]
-noncomputable def LightCondensed.discrete : C ⥤ LightCondensed.{u} C := constantSheaf _ C
+noncomputable def discrete : C ⥤ LightCondensed.{u} C := constantSheaf _ C
 
 /--
 The underlying object of a condensed object in `C` is the condensed object evaluated at a point.
 This can be viewed as a sort of forgetful functor from `Condensed C` to `C`
 -/
 @[simps!]
-noncomputable def LightCondensed.underlying : LightCondensed.{u} C ⥤ C :=
+noncomputable def underlying : LightCondensed.{u} C ⥤ C :=
   (sheafSections _ _).obj (op (LightProfinite.of PUnit))
 
 /--
 Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to
 `TopCat.adj₁ : TopCat.discrete ⊣ forget TopCat`.  
 -/
-noncomputable def LightCondensed.discreteUnderlyingAdj : discrete C ⊣ underlying C :=
+noncomputable def discreteUnderlyingAdj : discrete C ⊣ underlying C :=
   constantSheafAdj _ _ CompHausLike.isTerminalPUnit
+
+end LightCondensed
 
 /-- A version of `LightCondensed.discrete` in the `LightCondSet` namespace -/
 noncomputable abbrev LightCondSet.discrete := LightCondensed.discrete (Type u)
