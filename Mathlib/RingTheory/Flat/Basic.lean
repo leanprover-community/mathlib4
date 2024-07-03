@@ -271,81 +271,69 @@ lemma iff_lTensor_preserves_injective_linearMap [Small.{v} R] :
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.lTensor M) := by
   simp_rw [iff_rTensor_preserves_injective_linearMap, LinearMap.lTensor_inj_iff_rTensor_inj]
 
-variable (R M) in
+variable (M) in
 lemma lTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
     [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
-    (f : N →ₗ[R] N') (g : N' →ₗ[R] N'') (exact : Function.Exact f g) :
+    ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.Exact f g) :
     Function.Exact (f.lTensor M) (g.lTensor M) := by
   let π : N' →ₗ[R] N' ⧸ LinearMap.range f := Submodule.mkQ _
-  have exact0 : Function.Exact f π := by intro x; simp [π]
-  have surj0 : Function.Surjective π := Quotient.surjective_Quotient_mk''
-
   let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
     Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
       Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
         (LinearMap.exact_iff.mp exact).symm
-  have inj0 : Function.Injective ι := by simpa [ι] using Subtype.val_injective
-  have eq0 : g = ι.comp π := by aesop
 
   suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
-    rw [eq0, lTensor_comp]
-    apply Function.Exact.comp_injective (exact := exact1)
-      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ inj0)
+    rw [show g = ι.comp π by aesop, lTensor_comp]
+    exact exact1.comp_injective
+      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ $ by
+        simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 
-  exact _root_.lTensor_exact _ exact0 surj0
+  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
 
-variable (R M) in
+variable (M) in
 lemma rTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
     [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
-    (f : N →ₗ[R] N') (g : N' →ₗ[R] N'') (exact : Function.Exact f g) :
+    ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.Exact f g) :
     Function.Exact (f.rTensor M) (g.rTensor M) := by
   let π : N' →ₗ[R] N' ⧸ LinearMap.range f := Submodule.mkQ _
-  have exact0 : Function.Exact f π := by intro x; simp [π]
-  have surj0 : Function.Surjective π := Quotient.surjective_Quotient_mk''
-
   let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
     Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
       Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
         (LinearMap.exact_iff.mp exact).symm
-  have inj0 : Function.Injective ι := by simpa [ι] using Subtype.val_injective
-  have eq0 : g = ι.comp π := by aesop
 
   suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
-    rw [eq0, rTensor_comp]
-    apply Function.Exact.comp_injective (exact := exact1)
-      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ inj0)
+    rw [show g = ι.comp π by aesop, rTensor_comp]
+    exact exact1.comp_injective
+      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ $ by
+        simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 
-  exact _root_.rTensor_exact _ exact0 surj0
+  exact _root_.rTensor_exact _ (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
 
-variable (R M) in
 /--
 M is flat if and only if `M ⊗ -` is a left exact functor.
 -/
 lemma iff_lTensor_exact [Small.{v} R] :
     Flat R M ↔
     ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
-      [Module R N] [Module R N'] [Module R N'']
-      (f : N →ₗ[R] N') (g : N' →ₗ[R] N''),
+      [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) := by
-  refine ⟨fun _ => lTensor_exact R M, fun H => iff_lTensor_preserves_injective_linearMap R M |>.mpr
+  refine ⟨fun _ => lTensor_exact M, fun H => iff_lTensor_preserves_injective_linearMap R M |>.mpr
     fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) => ?_⟩
   simpa [Eq.comm] using
     @H PUnit N' N'' _ _ _ _ _ _ 0 L (by intro x; simpa [hL] using Eq.comm) x |>.mp hx
 
-variable (R M) in
 /--
 M is flat if and only if `- ⊗ M` is a left exact functor.
 -/
 lemma iff_rTensor_exact [Small.{v} R] :
     Flat R M ↔
     ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
-      [Module R N] [Module R N'] [Module R N'']
-      (f : N →ₗ[R] N') (g : N' →ₗ[R] N''),
+      [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
         Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) := by
-  refine ⟨fun _ => rTensor_exact R M, fun H => iff_rTensor_preserves_injective_linearMap R M |>.mpr
+  refine ⟨fun _ => rTensor_exact M, fun H => iff_rTensor_preserves_injective_linearMap R M |>.mpr
     fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
       fun x (hx : _ = 0) => ?_⟩
   simpa [Eq.comm] using
