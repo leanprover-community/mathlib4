@@ -8,6 +8,7 @@ import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 
 #align_import topology.metric_space.polish from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
@@ -232,6 +233,10 @@ theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : Topologica
 instance : PolishSpace ENNReal :=
   ClosedEmbedding.polishSpace ⟨ENNReal.orderIsoUnitIntervalBirational.toHomeomorph.embedding,
     ENNReal.orderIsoUnitIntervalBirational.range_eq ▸ isClosed_univ⟩
+
+    instance : PolishSpace EReal :=
+  ClosedEmbedding.polishSpace ⟨ENNReal.logOrderIso.symm.toHomeomorph.embedding,
+    ENNReal.logOrderIso.symm.toHomeomorph.range_coe ▸ isClosed_univ⟩
 
 end PolishSpace
 
