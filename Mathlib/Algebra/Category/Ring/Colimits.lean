@@ -28,16 +28,16 @@ open CategoryTheory.Limits
 namespace RingCat.Colimits
 
 /-!
-We build the colimit of a diagram in `CommRingCat` by constructing the
-free commutative ring on the disjoint union of all the commutative rings in the diagram,
-then taking the quotient by the commutative ring laws within each commutative ring,
+We build the colimit of a diagram in `RingCat` by constructing the
+free ring on the disjoint union of all the rings in the diagram,
+then taking the quotient by the ring laws within each ring,
 and the identifications given by the morphisms in the diagram.
 -/
 
 
 variable {J : Type v} [SmallCategory J] (F : J ⥤ RingCat.{v})
 
-/-- An inductive type representing all commutative ring expressions (without Relations)
+/-- An inductive type representing all ring expressions (without Relations)
 on a collection of types indexed by the objects of `J`.
 -/
 inductive Prequotient -- There's always `of`
@@ -55,7 +55,7 @@ instance : Inhabited (Prequotient F) :=
 open Prequotient
 
 /-- The Relation on `Prequotient` saying when two expressions are equal
-because of the commutative ring laws, or
+because of the ring laws, or
 because one element is mapped to another by a morphism in the diagram.
 -/
 inductive Relation : Prequotient F → Prequotient F → Prop -- Make it an equivalence Relation:
@@ -183,15 +183,15 @@ theorem quot_mul (x y) :
       (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
   rfl
 
-/-- The bundled commutative ring giving the colimit of a diagram. -/
+/-- The bundled ring giving the colimit of a diagram. -/
 def colimit : RingCat :=
   RingCat.of (ColimitType F)
 
-/-- The function from a given commutative ring in the diagram to the colimit commutative ring. -/
+/-- The function from a given ring in the diagram to the colimit ring. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
   Quot.mk _ (Prequotient.of j x)
 
-/-- The ring homomorphism from a given commutative ring in the diagram to the colimit commutative
+/-- The ring homomorphism from a given ring in the diagram to the colimit
 ring. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
@@ -212,12 +212,12 @@ theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f, comp_apply]
 
-/-- The cocone over the proposed colimit commutative ring. -/
+/-- The cocone over the proposed colimit ring. -/
 def colimitCocone : Cocone F where
   pt := colimit F
   ι := { app := coconeMorphism F }
 
-/-- The function from the free commutative ring on the diagram to the cone point of any other
+/-- The function from the free ring on the diagram to the cone point of any other
 cocone. -/
 @[simp]
 def descFunLift (s : Cocone F) : Prequotient F → s.pt
@@ -228,7 +228,7 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
   | add x y => descFunLift s x + descFunLift s y
   | mul x y => descFunLift s x * descFunLift s y
 
-/-- The function from the colimit commutative ring to the cone point of any other cocone. -/
+/-- The function from the colimit ring to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
   fapply Quot.lift
   · exact descFunLift F s
@@ -261,7 +261,7 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | zero_mul x => dsimp; rw [zero_mul]
     | mul_zero x => dsimp; rw [mul_zero]
 
-/-- The ring homomorphism from the colimit commutative ring to the cone point of any other
+/-- The ring homomorphism from the colimit ring to the cone point of any other
 cocone. -/
 def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
