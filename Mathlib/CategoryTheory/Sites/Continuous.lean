@@ -78,7 +78,7 @@ lemma le_map_sieve₁ {W' : C} {W : D} (e : F.obj W' ≅ W) {i₁ i₂ : E.I₀}
     (fac₁ : e.hom ≫ p₁ = F.map q₁) (fac₂ : e.hom ≫ p₂ = F.map q₂) :
     ((E.sieve₁ q₁ q₂).functorPushforward F).pullback e.inv ≤ (E.map F).sieve₁ p₁ p₂ := by
   rintro T g ⟨U, a, b, ⟨j, c, fac₃, fac₄⟩, fac₅⟩
-  refine' ⟨j, b ≫ F.map c, _, _⟩
+  refine ⟨j, b ≫ F.map c, ?_, ?_⟩
   · rw [assoc, map_p₁, ← F.map_comp, ← fac₃, F.map_comp, ← reassoc_of% fac₅, ← fac₁,
       Iso.inv_hom_id_assoc]
   · rw [assoc, map_p₂, ← F.map_comp, ← fac₄, F.map_comp, ← reassoc_of% fac₅, ← fac₂,
