@@ -15,11 +15,14 @@ category).
 ## Main definitions
 
 * `Functor.IsContinuous`: a functor between sites is continuous if the
-precomposition with this functor preserves sheaves.
+precomposition with this functor preserves sheaves with values in
+the category `Type t` for a certain auxiliary universe `t`.
 * `Functor.sheafPushforwardContinuous`: the induced functor
 `Sheaf K A ⥤ Sheaf J A` for a continuous functor `G : (C, J) ⥤ (D, K)`. In case this is
 part of a morphism of sites, this would be understood as the pushforward functor
-even though it goes in the opposite direction as the functor `G`.
+even though it goes in the opposite direction as the functor `G`. (Here, the auxiliary
+universe `t` in the assumption that `G` is continuous is the one such that morphisms
+in the category `A` are in `Type t`.)
 * `Functor.PreservesOneHypercovers`: a type-class expressing that a functor preserves
 1-hypercovers of a certain size
 
@@ -27,8 +30,8 @@ even though it goes in the opposite direction as the functor `G`.
 
 - `Functor.isContinuous_of_preservesOneHypercovers`: if the topology on `C` is generated
 by 1-hypercovers of size `w` and that `F : C ⥤ D` preserves 1-hypercovers of size `w`,
-then `F` is continuous. This is an instance for `w = max u₁ v₂`
-when `C : Type u` and `[Category.{v₁} u₁]`
+then `F` is continuous (for any auxiliary universe parameter `t`).
+This is an instance for `w = max u₁ v₁` when `C : Type u₁` and `[Category.{v₁} C]`
 
 ## References
 * https://stacks.math.columbia.edu/tag/00WU
@@ -39,7 +42,7 @@ universe w t v₁ v₂ v₃ u₁ u₂ u₃ u
 
 namespace CategoryTheory
 
-open Category Limits
+open Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
@@ -61,7 +64,7 @@ def map : PreOneHypercover (F.obj X) where
   w _ _ j := by simpa using F.congr_map (E.w j)
 
 /-- If `F : C ⥤ D`, `P : Dᵒᵖ ⥤ A` and `E` is a 1-pre-hypercover of an object of `X`,
-then `(E.map F).multifork P` is limit iff `E.multifork (F.op ⋙ P)`. -/
+then `(E.map F).multifork P` is a limit iff `E.multifork (F.op ⋙ P)` is a limit. -/
 def isLimitMapMultiforkEquiv {A : Type u} [Category.{t} A] (P : Dᵒᵖ ⥤ A) :
     IsLimit ((E.map F).multifork P) ≃ IsLimit (E.multifork (F.op ⋙ P)) := by rfl
 
@@ -99,7 +102,7 @@ class IsPreservedBy (F : C ⥤ D) (K : GrothendieckTopology D) : Prop where
 
 /-- Given a 1-hypercover `E : J.OneHypercover X` of an object of `C`, a functor `F : C ⥤ D`
 such that `E.IsPreversedBy F K` for a Grothendieck topology `K` on `D`, this is
-the image of `E` by `F`, as 1-hypercover of `F.obj X` for `K`. -/
+the image of `E` by `F`, as a 1-hypercover of `F.obj X` for `K`. -/
 @[simps toPreOneHypercover]
 def map (F : C ⥤ D) (K : GrothendieckTopology D) [E.IsPreservedBy F K] :
     K.OneHypercover (F.obj X) where
@@ -134,8 +137,7 @@ lemma op_comp_isSheafOfTypes [Functor.IsContinuous.{t} F J K] (G : SheafOfTypes.
     Presieve.IsSheaf J (F.op ⋙ G.val) :=
   Functor.IsContinuous.op_comp_isSheafOfTypes _
 
-lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K]
-    (G : Sheaf K A) :
+lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=
   fun T => F.op_comp_isSheafOfTypes J K ⟨_, G.cond T⟩
 

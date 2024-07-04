@@ -1264,7 +1264,7 @@ theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : �
     [DecidableEq (Ideal R)] (hlt : ¬x ≤ p ^ (n + 1)) : (normalizedFactors x).count p = n :=
   count_normalizedFactors_eq' ((Ideal.isPrime_iff_bot_or_prime.mp hp).imp_right Prime.irreducible)
     (normalize_eq _) (Ideal.dvd_iff_le.mpr hle) (mt Ideal.le_of_dvd hlt)
-  #align ideal.count_normalized_factors_eq Ideal.count_normalizedFactors_eq
+#align ideal.count_normalized_factors_eq Ideal.count_normalizedFactors_eq
 
 end
 
