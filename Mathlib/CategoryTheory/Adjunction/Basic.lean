@@ -490,7 +490,7 @@ def comp : F ⋙ H ⊣ I ⋙ G where
 #align category_theory.adjunction.comp CategoryTheory.Adjunction.comp
 
 @[simp, reassoc]
-lemma comp_unit_app (X) :
+lemma comp_unit_app (X : C) :
     (adj₁.comp adj₂).unit.app X = adj₁.unit.app X ≫ G.map (adj₂.unit.app (F.obj X)) := by
   simp [Adjunction.comp]
 
