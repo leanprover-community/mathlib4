@@ -229,7 +229,7 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) : IsColimit (
   apply PushoutCocone.IsColimit.hom_ext H' _ (by simpa [hl₂'] using hm₂)
   simp only [PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, Category.assoc] at hm₁ hm₂
   apply PushoutCocone.IsColimit.hom_ext H
-  · rw [hm₁, ←hl₁, hl₂]
+  · rw [hm₁, ← hl₁, hl₂]
   · rw [reassoc_of% t₂.condition, reassoc_of% t₂.condition, hm₂, hl₂']
 
 -- TODO: afternew name should have few enough characters
