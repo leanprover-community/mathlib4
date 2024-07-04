@@ -60,7 +60,7 @@ def AccM_1 [DecidableEq α][Preorder α] : Multiset α → Prop := Acc MultisetR
 
 /- MultisetRedLt is a special case of MultisetLT. -/
 theorem redLt_LT [DecidableEq α] [Preorder α] (M N : Multiset α) :
-        MultisetRedLt M N → MultisetLT M N := by
+    MultisetRedLt M N → MultisetLT M N := by
   intro hyp
   rcases hyp with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
   apply MultisetLT.MLT Y {a} X _ M_def N_def
