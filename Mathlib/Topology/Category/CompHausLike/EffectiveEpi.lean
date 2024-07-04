@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Adam Topaz. All rights reserved.
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
@@ -16,7 +16,7 @@ universe u
 
 open CategoryTheory Limits
 
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 namespace CompHausLike
 
@@ -26,7 +26,7 @@ variable {P : TopCat.{u} → Prop}
 If `π` is a surjective morphism in `CompHausLike P`, then it is an effective epi.
 -/
 noncomputable
-def struct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) :
+def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
   desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
     DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
@@ -44,18 +44,12 @@ def struct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) 
     simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl
 
-/- This is not hard, but unnecessary for now because in all the relevant examples (`CompHaus`,
-`Profinite`, `LightProfinite` and `Stonean`), `Epi` already implies surjective. -/
-proof_wanted surjective_of_effectiveEpi {X Y : CompHausLike P} (f : X ⟶ Y) [EffectiveEpi f]
-    (_ : P <| TopCat.of <| Set.range f) :
-    Function.Surjective f
-
 theorem preregular [HasExplicitPullbacks P]
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f) :
     Preregular (CompHausLike P) where
   exists_fac := by
     intro X Y Z f π hπ
-    refine ⟨pullback f π, pullback.fst f π, ⟨⟨struct _ ?_⟩⟩, pullback.snd f π,
+    refine ⟨pullback f π, pullback.fst f π, ⟨⟨effectiveEpiStruct _ ?_⟩⟩, pullback.snd f π,
       (pullback.condition _ _).symm⟩
     intro y
     obtain ⟨z, hz⟩ := hs π hπ (f y)
