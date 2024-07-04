@@ -785,6 +785,39 @@ theorem closedEmbedding_comap_of_surjective (hf : Surjective f) : ClosedEmbeddin
 
 end SpecOfSurjective
 
+section SpecProd
+
+variable {R S} [CommRing R] [CommRing S]
+
+lemma primeSpectrumProd_symm_inl (x) :
+    (primeSpectrumProd R S).symm (.inl x) = comap (RingHom.fst R S) x := by
+  ext; simp [Ideal.prod]
+
+lemma primeSpectrumProd_symm_inr (x) :
+    (primeSpectrumProd R S).symm (.inr x) = comap (RingHom.snd R S) x := by
+  ext; simp [Ideal.prod]
+
+/-- The prime spectrum of `R × S` is homeomorphic
+to the disjoint union of `PrimeSpectrum R` and `PrimeSpectrum S`. -/
+noncomputable
+def primeSpectrumProdHomeo :
+    PrimeSpectrum (R × S) ≃ₜ PrimeSpectrum R ⊕ PrimeSpectrum S := by
+  refine ((primeSpectrumProd R S).symm.toHomeomorphOfInducing ?_).symm
+  refine (closedEmbedding_of_continuous_injective_closed ?_ (Equiv.injective _) ?_).toInducing
+  · rw [continuous_sum_dom]
+    simp only [Function.comp, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
+    exact ⟨(comap _).2, (comap _).2⟩
+  · rw [isClosedMap_sum]
+    constructor
+    · simp_rw [primeSpectrumProd_symm_inl]
+      refine (closedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
+      exact Prod.fst_surjective
+    · simp_rw [primeSpectrumProd_symm_inr]
+      refine (closedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
+      exact Prod.snd_surjective
+
+end SpecProd
+
 section CommSemiRing
 
 variable [CommSemiring R] [CommSemiring S]

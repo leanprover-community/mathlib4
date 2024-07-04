@@ -155,6 +155,58 @@ theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommRing R] [CommRi
 
 end AtUnits
 
+section Prod
+
+lemma away_of_isIdempotentElem {R S} [CommRing R] [CommRing S] [Algebra R S]
+    {e : R} (he : IsIdempotentElem e)
+    (H : RingHom.ker (algebraMap R S) = Ideal.span {1 - e})
+    (H' : Function.Surjective (algebraMap R S)) :
+    IsLocalization.Away e S where
+  map_units' r := by
+    have : algebraMap R S e = 1 := by
+      rw [← (algebraMap R S).map_one, eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker,
+        H, Ideal.mem_span_singleton]
+    obtain ⟨r, n, rfl⟩ := r
+    simp [this]
+  surj' z := by
+    obtain ⟨z, rfl⟩ := H' z
+    exact ⟨⟨z, 1⟩, by simp⟩
+  exists_of_eq {x y} h := by
+    rw [← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, H, Ideal.mem_span_singleton] at h
+    obtain ⟨k, hk⟩ := h
+    refine ⟨⟨e, Submonoid.mem_powers e⟩, ?_⟩
+    rw [← sub_eq_zero, ← mul_sub, hk, ← mul_assoc, mul_sub, mul_one, he.eq, sub_self, zero_mul]
+
+instance away_fst {R S} [CommRing R] [CommRing S] [Algebra R S] :
+    letI := (RingHom.fst R S).toAlgebra
+    IsLocalization.Away (R := R × S) (1, 0) R := by
+  letI := (RingHom.fst R S).toAlgebra
+  apply away_of_isIdempotentElem
+  · ext <;> simp
+  · ext x
+    simp only [RingHom.algebraMap_toAlgebra, RingHom.mem_ker, RingHom.coe_fst,
+      Ideal.mem_span_singleton, Prod.one_eq_mk, Prod.mk_sub_mk, sub_self, sub_zero]
+    constructor
+    · intro e; use x; ext <;> simp [e]
+    · rintro ⟨⟨i, j⟩, rfl⟩; simp
+  · exact Prod.fst_surjective
+
+instance away_snd {R S} [CommRing R] [CommRing S] [Algebra R S] :
+    letI := (RingHom.snd R S).toAlgebra
+    IsLocalization.Away (R := R × S) (0, 1) S := by
+  letI := (RingHom.snd R S).toAlgebra
+  apply away_of_isIdempotentElem
+  · ext <;> simp
+  · ext x
+    simp only [RingHom.algebraMap_toAlgebra, RingHom.mem_ker, RingHom.coe_snd,
+      Ideal.mem_span_singleton, Prod.one_eq_mk, Prod.mk_sub_mk, sub_self, sub_zero]
+    constructor
+    · intro e; use x; ext <;> simp [e]
+    · rintro ⟨⟨i, j⟩, rfl⟩; simp
+  · exact Prod.snd_surjective
+
+end Prod
+
 end IsLocalization
 
 namespace Localization
