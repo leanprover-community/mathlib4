@@ -489,6 +489,15 @@ theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {
   exact exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 #align exists_associated_pow_of_mul_eq_pow' exists_associated_pow_of_mul_eq_pow'
 
+theorem exists_associated_pow_of_associated_mul_pow {a b c : R} (hab : IsCoprime a b) {k : ℕ}
+    (h : Associated (a * b) (c ^ k)) : ∃ d : R, Associated (d ^ k) a := by
+  classical
+  letI := IsBezout.toGCDDomain R
+  obtain ⟨u, hu⟩ := h
+  rw [mul_assoc] at hu
+  exact exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr <|
+    (isCoprime_mul_unit_right_right u.isUnit _ _).2 hab) hu
+
 end Bezout
 
 variable [IsPrincipalIdealRing R]
