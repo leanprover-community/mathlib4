@@ -19,8 +19,8 @@ This corresponds to the following two pairs of declarations:
    codomain are.
  * `DFunLike.finite` is a lemma stating all `DFunLike`s are finite if their domain and
    codomain are.
- * `DFunLike.fintype'` is a non-dependent version of `DFunLike.fintype` and
- * `DFunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
+ * `FunLike.fintype` is a non-dependent version of `DFunLike.fintype` and
+ * `FunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
    are harder to infer.
 
 You can use these to produce instances for specific `DFunLike` types.
@@ -28,7 +28,7 @@ You can use these to produce instances for specific `DFunLike` types.
 They can't be instances themselves since they can cause loops.
 -/
 
--- porting notes: `Type` is a reserved word, switched to `Type'`
+-- Porting note: `Type` is a reserved word, switched to `Type'`
 section Type'
 
 variable (F G : Type*) {α γ : Type*} {β : α → Type*} [DFunLike F α β] [FunLike G α γ]
@@ -54,7 +54,7 @@ noncomputable def FunLike.fintype [DecidableEq α] [Fintype α] [Fintype γ] : F
 
 end Type'
 
--- porting notes: `Sort` is a reserved word, switched to `Sort'`
+-- Porting note: `Sort` is a reserved word, switched to `Sort'`
 section Sort'
 
 variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [DFunLike F α β] [FunLike G α γ]
@@ -77,3 +77,16 @@ theorem FunLike.finite [Finite α] [Finite γ] : Finite G :=
 #align fun_like.finite' FunLike.finite
 
 end Sort'
+
+-- See note [lower instance priority]
+instance (priority := 100) FunLike.toDecidableEq {F α β : Type*}
+    [DecidableEq β] [Fintype α] [FunLike F α β] : DecidableEq F :=
+  fun a b ↦ decidable_of_iff ((a : α → β) = b) DFunLike.coe_injective.eq_iff
+#align fintype.decidable_eq_one_hom_fintype FunLike.toDecidableEq
+#align fintype.decidable_eq_zero_hom_fintype FunLike.toDecidableEq
+#align fintype.decidable_eq_mul_hom_fintype FunLike.toDecidableEq
+#align fintype.decidable_eq_add_hom_fintype FunLike.toDecidableEq
+#align fintype.decidable_eq_monoid_hom_fintype FunLike.toDecidableEq
+#align fintype.decidable_eq_add_monoid_hom_fintype FunLike.toDecidableEq
+#align fintype.decidable_eq_monoid_with_zero_hom_fintype FunLike.toDecidableEq
+#align fintype.decidable_eq_ring_hom_fintype FunLike.toDecidableEq

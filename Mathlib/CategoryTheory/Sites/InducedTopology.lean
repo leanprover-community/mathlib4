@@ -41,9 +41,7 @@ open Limits Opposite Presieve
 section
 
 variable {C : Type*} [Category C] {D : Type*} [Category D] {G : C ⥤ D}
-
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
-
 variable (A : Type v) [Category.{u} A]
 
 -- variables (A) [full G] [faithful G]
@@ -56,7 +54,7 @@ def LocallyCoverDense (K : GrothendieckTopology D) (G : C ⥤ D) : Prop :=
 
 namespace LocallyCoverDense
 
-variable [Full G] [Faithful G] (Hld : LocallyCoverDense K G)
+variable [G.Full] [G.Faithful] (Hld : LocallyCoverDense K G)
 
 theorem pushforward_cover_iff_cover_pullback {X : C} (S : Sieve X) :
     K _ (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S := by
@@ -91,9 +89,9 @@ def inducedTopology : GrothendieckTopology C where
     rintro Y _ ⟨Z, g, i, hg, rfl⟩
     rw [Sieve.pullback_comp]
     apply K.pullback_stable i
-    refine' K.superset_covering _ (H' hg)
+    refine K.superset_covering ?_ (H' hg)
     rintro W _ ⟨Z', g', i', hg, rfl⟩
-    refine' ⟨Z', g' ≫ g , i', hg, _⟩
+    refine ⟨Z', g' ≫ g , i', hg, ?_⟩
     simp
 #align category_theory.locally_cover_dense.induced_topology CategoryTheory.LocallyCoverDense.inducedTopology
 
@@ -114,13 +112,13 @@ variable (G K)
 theorem Functor.locallyCoverDense_of_isCoverDense [Full G] [G.IsCoverDense K] :
     LocallyCoverDense K G := by
   intro X T
-  refine' K.superset_covering _ (K.bind_covering T.property
+  refine K.superset_covering ?_ (K.bind_covering T.property
     fun Y f _ => G.is_cover_of_isCoverDense _ Y)
   rintro Y _ ⟨Z, _, f, hf, ⟨W, g, f', rfl : _ = _⟩, rfl⟩
   use W; use G.preimage (f' ≫ f); use g
   constructor
-  simpa using T.val.downward_closed hf f'
-  simp
+  · simpa using T.val.downward_closed hf f'
+  · simp
 #align category_theory.cover_dense.locally_cover_dense CategoryTheory.Functor.locallyCoverDense_of_isCoverDense
 
 /-- Given a fully faithful cover-dense functor `G : C ⥤ (D, K)`, we may induce a topology on `C`.
@@ -148,17 +146,15 @@ end
 section SmallSite
 
 variable {C : Type v} [SmallCategory C] {D : Type v} [SmallCategory D] {G : C ⥤ D}
-
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
-
 variable (A : Type u) [Category.{v} A]
 
-instance [Full G] [Faithful G] [G.IsCoverDense K]  :
+instance [G.Full] [G.Faithful] [G.IsCoverDense K]  :
     Functor.IsContinuous G (G.inducedTopologyOfIsCoverDense K) K := by
   apply Functor.IsCoverDense.isContinuous
   exact (G.locallyCoverDense_of_isCoverDense K).inducedTopology_coverPreserving
 
-instance [Full G] [Faithful G] [G.IsCoverDense K]  :
+instance [G.Full] [G.Faithful] [G.IsCoverDense K]  :
     Functor.IsCocontinuous G (G.inducedTopologyOfIsCoverDense K) K :=
   (G.locallyCoverDense_of_isCoverDense K).inducedTopology_isCocontinuous
 

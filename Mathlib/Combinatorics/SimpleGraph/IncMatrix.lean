@@ -3,7 +3,7 @@ Copyright (c) 2021 Gabriel Moise. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Matrix.Basic
 
@@ -46,7 +46,7 @@ incidence matrix for each `SimpleGraph α` has the same type.
 
 open Finset Matrix SimpleGraph Sym2
 
-open BigOperators Matrix
+open Matrix
 
 namespace SimpleGraph
 
@@ -116,24 +116,25 @@ end MulZeroOneClass
 
 section NonAssocSemiring
 
-variable [Fintype α] [NonAssocSemiring R] {a b : α} {e : Sym2 α}
+variable [Fintype (Sym2 α)] [NonAssocSemiring R] {a b : α} {e : Sym2 α}
 
-theorem sum_incMatrix_apply [DecidableEq α] [DecidableRel G.Adj] :
+theorem sum_incMatrix_apply [Fintype (neighborSet G a)] :
     ∑ e, G.incMatrix R a e = G.degree a := by
-  simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
+  classical simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
 #align simple_graph.sum_inc_matrix_apply SimpleGraph.sum_incMatrix_apply
 
-theorem incMatrix_mul_transpose_diag [DecidableEq α] [DecidableRel G.Adj] :
+theorem incMatrix_mul_transpose_diag [Fintype (neighborSet G a)] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
+  classical
   rw [← sum_incMatrix_apply]
   simp only [mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
   simp_all only [ite_true, sum_boole]
 #align simple_graph.inc_matrix_mul_transpose_diag SimpleGraph.incMatrix_mul_transpose_diag
 
-theorem sum_incMatrix_apply_of_mem_edgeSet :
+theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
     e ∈ G.edgeSet → ∑ a, G.incMatrix R a e = 2 := by
   classical
-    refine' e.ind _
+    refine e.ind ?_
     intro a b h
     rw [mem_edgeSet] at h
     rw [← Nat.cast_two, ← card_pair h.ne]
@@ -143,19 +144,19 @@ theorem sum_incMatrix_apply_of_mem_edgeSet :
     simp only [mem_filter, mem_univ, true_and_iff, mem_insert, mem_singleton]
 #align simple_graph.sum_inc_matrix_apply_of_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_mem_edgeSet
 
-theorem sum_incMatrix_apply_of_not_mem_edgeSet (h : e ∉ G.edgeSet) :
+theorem sum_incMatrix_apply_of_not_mem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
   sum_eq_zero fun _ _ => G.incMatrix_of_not_mem_incidenceSet fun he => h he.1
 #align simple_graph.sum_inc_matrix_apply_of_not_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_not_mem_edgeSet
 
-theorem incMatrix_transpose_mul_diag [DecidableRel G.Adj] :
+theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] :
     ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by
   classical
     simp only [Matrix.mul_apply, incMatrix_apply', transpose_apply, ite_zero_mul_ite_zero, one_mul,
       sum_boole, and_self_iff]
     split_ifs with h
     · revert h
-      refine' e.ind _
+      refine e.ind ?_
       intro v w h
       rw [← Nat.cast_two, ← card_pair (G.ne_of_adj h)]
       simp only [mk'_mem_incidenceSet_iff, G.mem_edgeSet.mp h, true_and, mem_univ, forall_true_left,
@@ -164,7 +165,7 @@ theorem incMatrix_transpose_mul_diag [DecidableRel G.Adj] :
       ext u
       simp
     · revert h
-      refine' e.ind _
+      refine e.ind ?_
       intro v w h
       simp [mk'_mem_incidenceSet_iff, G.mem_edgeSet.not.mp h]
 #align simple_graph.inc_matrix_transpose_mul_diag SimpleGraph.incMatrix_transpose_mul_diag
@@ -186,14 +187,14 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
     exact G.incidenceSet_inter_incidenceSet_of_adj h
 #align simple_graph.inc_matrix_mul_transpose_apply_of_adj SimpleGraph.incMatrix_mul_transpose_apply_of_adj
 
-theorem incMatrix_mul_transpose [Fintype α] [DecidableEq α] [DecidableRel G.Adj] :
+theorem incMatrix_mul_transpose
+    [∀ a, Fintype (neighborSet G a)] [DecidableEq α] [DecidableRel G.Adj] :
     G.incMatrix R * (G.incMatrix R)ᵀ = fun a b =>
       if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
   ext a b
   split_ifs with h h'
   · subst b
-    rename Semiring R => sr
-    convert @incMatrix_mul_transpose_diag _ _ _ _ sr.toNonAssocSemiring _ _ _
+    exact incMatrix_mul_transpose_diag (R := R) G
   · exact G.incMatrix_mul_transpose_apply_of_adj h'
   · simp only [Matrix.mul_apply, Matrix.transpose_apply,
       G.incMatrix_apply_mul_incMatrix_apply_of_not_adj h h', sum_const_zero]

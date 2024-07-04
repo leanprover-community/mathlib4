@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Init.Algebra.Classes
 
 #align_import group_theory.eckmann_hilton from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 
@@ -46,9 +45,7 @@ theorem MulOneClass.isUnital [_G : MulOneClass X] : IsUnital (· * ·) (1 : X) :
 #align eckmann_hilton.add_zero_class.is_unital EckmannHilton.AddZeroClass.IsUnital
 
 variable {m₁ m₂ : X → X → X} {e₁ e₂ : X}
-
 variable (h₁ : IsUnital m₁ e₁) (h₂ : IsUnital m₂ e₂)
-
 variable (distrib : ∀ a b c d, ((a <m₂> b) <m₁> c <m₂> d) = (a <m₁> c) <m₂> b <m₁> d)
 
 /-- If a type carries two unital binary operations that distribute over each other,

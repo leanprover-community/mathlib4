@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Data.Polynomial.Reverse
+import Mathlib.Algebra.Order.Group.PiLex
+import Mathlib.Algebra.Polynomial.Reverse
 
 #align_import map_floor from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -66,15 +66,15 @@ instance linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (toLex ∘ coeff) coeff_injective
 
 instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
-  refine' (toLex.injective.comp coeff_injective).orderedAddCommGroup _ _ _ _ _ _ _ <;>
+  refine (toLex.injective.comp coeff_injective).orderedAddCommGroup _ ?_ ?_ ?_ ?_ ?_ ?_ <;>
   (first | rfl | intros) <;> funext <;>
   (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
     ← nsmul_eq_mul, ← zsmul_eq_mul]; rfl)
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
-  refine'
-    ⟨_, fun h =>
+  refine
+    ⟨?_, fun h =>
       ⟨p.natTrailingDegree, fun m hm => (coeff_eq_zero_of_lt_natTrailingDegree hm).symm, h⟩⟩
   rintro ⟨n, hn⟩
   convert hn.2
@@ -95,16 +95,16 @@ instance : FloorRing ℤ[ε] :=
     constructor
     · split_ifs with h
       · rintro ⟨_ | n, hn⟩
-        · refine' (sub_one_lt _).trans _
+        · apply (sub_one_lt _).trans _
           simp at hn
-          rwa [int_cast_coeff_zero] at hn
+          rwa [intCast_coeff_zero] at hn
         · dsimp at hn
           simp [hn.1 _ n.zero_lt_succ]
-          rw [int_cast_coeff_zero]; simp
+          rw [intCast_coeff_zero]; simp
       · exact fun h' => cast_lt.1 ((not_lt.1 h).trans_lt h')
     · split_ifs with h
       · exact fun h' => h.trans_le (cast_le.2 <| sub_one_lt_iff.1 h')
-      · exact fun h' => ⟨0, by simp; rwa [int_cast_coeff_zero]⟩
+      · exact fun h' => ⟨0, by simp; rwa [intCast_coeff_zero]⟩
 
 /-- The ordered ring homomorphisms from `ℤ[ε]` to `ℤ` that "forgets" the `ε`s. -/
 def forgetEpsilons : ℤ[ε] →+*o ℤ where
@@ -131,8 +131,8 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
     forgetEpsilons ⌊(n - ↑ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ↑ε)⌋ := by
   suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
-  exact (if_neg <| by rw [coeff_sub, int_cast_coeff_zero]; simp [this]).trans (by
-    rw [coeff_sub, int_cast_coeff_zero]; simp)
+  exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
+    rw [coeff_sub, intCast_coeff_zero]; simp)
 #align counterexample.int_with_epsilon.forget_epsilons_floor_lt Counterexample.IntWithEpsilon.forgetEpsilons_floor_lt
 
 /-- The ceil of `n + ε` is `n + 1` but its image under `forgetEpsilons` is `n`, whose ceil is

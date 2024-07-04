@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.CategoryTheory.Idempotents.SimplicialObject
+import Mathlib.Tactic.SuppressCompilation
 
 #align_import algebraic_topology.dold_kan.equivalence_pseudoabelian from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
@@ -35,6 +36,7 @@ the composition of `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 -/
 
 
+suppress_compilation
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Idempotents
@@ -111,7 +113,7 @@ theorem hη :
         (N₁Γ₀ : Γ ⋙ N₁ ≅ (toKaroubiEquivalence (ChainComplex C ℕ)).functor) := by
   ext K : 3
   simp only [Compatibility.τ₀_hom_app, Compatibility.τ₁_hom_app]
-  refine' (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp )
+  exact (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp )
 #align category_theory.idempotents.dold_kan.hη CategoryTheory.Idempotents.DoldKan.hη
 
 /-- The counit isomorphism induced by `N₁Γ₀` -/

@@ -71,17 +71,9 @@ theorem mapBicone_whisker {K : Type w₂} {g : K ≃ J} {f : J → C} (c : Bicon
 end Bicone
 
 /-- The image of a binary bicone under a functor. -/
-@[simps]
-def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F.obj Y) where
-  pt := F.obj b.pt
-  fst := F.map b.fst
-  snd := F.map b.snd
-  inl := F.map b.inl
-  inr := F.map b.inr
-  inl_fst := by rw [← F.map_comp, b.inl_fst, F.map_id]
-  inl_snd := by rw [← F.map_comp, b.inl_snd, F.map_zero]
-  inr_fst := by rw [← F.map_comp, b.inr_fst, F.map_zero]
-  inr_snd := by rw [← F.map_comp, b.inr_snd, F.map_id]
+@[simps!]
+def mapBinaryBicone {X Y : C} (b : BinaryBicone X Y) : BinaryBicone (F.obj X) (F.obj Y) :=
+  (BinaryBicones.functoriality _ _ F).obj b
 #align category_theory.functor.map_binary_bicone CategoryTheory.Functor.mapBinaryBicone
 
 end Map

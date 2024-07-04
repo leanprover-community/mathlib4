@@ -13,10 +13,12 @@ import Mathlib.Algebra.Group.Hom.Defs
 # Multiplicative homomorphisms respect semiconjugation and commutation.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 section Commute
 
-variable {F M N : Type*} [Mul M] [Mul N] {a x y : M}
+variable {F M N : Type*} [Mul M] [Mul N] {a x y : M} [FunLike F M N]
 
 @[to_additive (attr := simp)]
 protected theorem SemiconjBy.map [MulHomClass F M N] (h : SemiconjBy a x y) (f : F) :

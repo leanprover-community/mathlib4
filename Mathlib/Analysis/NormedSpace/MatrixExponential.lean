@@ -16,8 +16,9 @@ import Mathlib.Topology.UniformSpace.Matrix
 # Lemmas about the matrix exponential
 
 In this file, we provide results about `exp` on `Matrix`s over a topological or normed algebra.
-Note that generic results over all topological spaces such as `exp_zero` can be used on matrices
-without issue, so are not repeated here. The topological results specific to matrices are:
+Note that generic results over all topological spaces such as `NormedSpace.exp_zero`
+can be used on matrices without issue, so are not repeated here.
+The topological results specific to matrices are:
 
 * `Matrix.exp_transpose`
 * `Matrix.exp_conjTranspose`
@@ -25,15 +26,15 @@ without issue, so are not repeated here. The topological results specific to mat
 * `Matrix.exp_blockDiagonal`
 * `Matrix.exp_blockDiagonal'`
 
-Lemmas like `exp_add_of_commute` require a canonical norm on the type; while there are multiple
-sensible choices for the norm of a `Matrix` (`Matrix.normedAddCommGroup`,
+Lemmas like `NormedSpace.exp_add_of_commute` require a canonical norm on the type;
+while there are multiple sensible choices for the norm of a `Matrix` (`Matrix.normedAddCommGroup`,
 `Matrix.frobeniusNormedAddCommGroup`, `Matrix.linftyOpNormedAddCommGroup`), none of them
 are canonical. In an application where a particular norm is chosen using
-`local attribute [instance]`, then the usual lemmas about `exp` are fine. When choosing a norm is
-undesirable, the results in this file can be used.
+`attribute [local instance]`, then the usual lemmas about `NormedSpace.exp` are fine.
+When choosing a norm is undesirable, the results in this file can be used.
 
-In this file, we copy across the lemmas about `exp`, but hide the requirement for a norm inside the
-proof.
+In this file, we copy across the lemmas about `NormedSpace.exp`,
+but hide the requirement for a norm inside the proof.
 
 * `Matrix.exp_add_of_commute`
 * `Matrix.exp_sum_of_commute`
@@ -60,7 +61,7 @@ results for general rings are instead stated about `Ring.inverse`:
 -/
 
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 open NormedSpace -- For `exp`.
 
@@ -121,7 +122,7 @@ end Topological
 
 section Normed
 
-variable [IsROrC 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
+variable [RCLike 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
   [∀ i, DecidableEq (n' i)] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
@@ -134,7 +135,7 @@ nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
 
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
-    exp 𝕂 (∑ i in s, f i) =
+    exp 𝕂 (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp 𝕂 := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
@@ -175,7 +176,7 @@ end Normed
 
 section NormedComm
 
-variable [IsROrC 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
+variable [RCLike 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
   [∀ i, DecidableEq (n' i)] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
@@ -188,9 +189,9 @@ theorem exp_neg (A : Matrix m m 𝔸) : exp 𝕂 (-A) = (exp 𝕂 A)⁻¹ := by
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp 𝕂 (z • A) = exp 𝕂 A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · rw [zpow_ofNat, coe_nat_zsmul, exp_nsmul]
+  · rw [zpow_natCast, natCast_zsmul, exp_nsmul]
   · have : IsUnit (exp 𝕂 A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp _ _)
-    rw [Matrix.zpow_neg this, zpow_ofNat, neg_smul, exp_neg, coe_nat_zsmul, exp_nsmul]
+    rw [Matrix.zpow_neg this, zpow_natCast, neg_smul, exp_neg, natCast_zsmul, exp_nsmul]
 #align matrix.exp_zsmul Matrix.exp_zsmul
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :

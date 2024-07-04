@@ -56,7 +56,7 @@ theorem of_injective : Function.Injective (of : α → FreeRing α) :=
   FreeAbelianGroup.of_injective.comp FreeMonoid.of_injective
 #align free_ring.of_injective FreeRing.of_injective
 
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
     C z :=
@@ -64,7 +64,7 @@ protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1
   have h1 : C 1 := neg_neg (1 : FreeRing α) ▸ hn _ hn1
   FreeAbelianGroup.induction_on z (add_left_neg (1 : FreeRing α) ▸ ha _ _ hn1 h1)
     (fun m => List.recOn m h1 fun a m ih => by
-      -- porting note: in mathlib, convert was not necessary, `exact hm _ _ (hb a) ih` worked fine
+      -- Porting note: in mathlib, convert was not necessary, `exact hm _ _ (hb a) ih` worked fine
       convert hm _ _ (hb a) ih
       rw [of, ← FreeAbelianGroup.of_mul]
       rfl)

@@ -308,7 +308,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
         let z := lo+i
         let rhs ← m.mkNumeral z
         let ty ← mkArrow (← mkEq e rhs) tgt
-        let goal ← mkFreshExprMVar ty .syntheticOpaque (appendTag tag (toString z))
+        let goal ← mkFreshExprMVar ty .syntheticOpaque (appendTag tag (.mkSimple (toString z)))
         goals := goals.push { rhs, value := z, goal := goal.mvarId! }
       m.bisect g goals.toSubarray z1 z2 e1 e2 p1 p2 e
       pure goals

@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Algebra.Classes
+import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 
 #align_import data.option.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
@@ -15,8 +16,6 @@ This file defines more operations involving `Option α`. Lemmas about them are l
 files under `Mathlib.Data.Option`.
 Other basic operations on `Option` are defined in the core library.
 -/
-
-set_option autoImplicit true
 
 namespace Option
 
@@ -34,11 +33,7 @@ protected def traverse.{u, v}
 
 #align option.mmap Option.mapM
 #align option.melim Option.elimM
-
-@[deprecated getDM]
-protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
-  (← x).getDM y
-#align option.mget_or_else Option.getDM'
+#align option.mget_or_else Option.getDM
 
 variable {α : Type*} {β : Type*}
 
@@ -54,9 +49,9 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 @[simp]
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
 @[simp]
-theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
+theorem elim'_some {a : α} (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
--- porting note: this lemma was introduced because it is necessary
+-- Porting note: this lemma was introduced because it is necessary
 -- in `CategoryTheory.Category.PartialFun`
 lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
     Option.elim' b f a = Option.elim a b f := by
@@ -88,8 +83,7 @@ instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
   | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ ↦ h hn
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
-@[reducible]
-def iget [Inhabited α] : Option α → α
+abbrev iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 #align option.iget Option.iget

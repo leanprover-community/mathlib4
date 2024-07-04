@@ -11,7 +11,7 @@ import Mathlib.Topology.ContinuousOn
 /-!
 # Inseparable points in a topological space
 
-In this file we define
+In this file we prove basic properties of the following notions defined elsewhere.
 
 * `Specializes` (notation: `x ⤳ y`) : a relation saying that `𝓝 x ≤ 𝓝 y`;
 
@@ -45,25 +45,6 @@ variable {X Y Z α ι : Type*} {π : ι → Type*} [TopologicalSpace X] [Topolog
 ### `Specializes` relation
 -/
 
-/-- `x` specializes to `y` (notation: `x ⤳ y`) if either of the following equivalent properties
-hold:
-
-* `𝓝 x ≤ 𝓝 y`; this property is used as the definition;
-* `pure x ≤ 𝓝 y`; in other words, any neighbourhood of `y` contains `x`;
-* `y ∈ closure {x}`;
-* `closure {y} ⊆ closure {x}`;
-* for any closed set `s` we have `x ∈ s → y ∈ s`;
-* for any open set `s` we have `y ∈ s → x ∈ s`;
-* `y` is a cluster point of the filter `pure x = 𝓟 {x}`.
-
-This relation defines a `Preorder` on `X`. If `X` is a T₀ space, then this preorder is a partial
-order. If `X` is a T₁ space, then this partial order is trivial : `x ⤳ y ↔ x = y`. -/
-def Specializes (x y : X) : Prop := 𝓝 x ≤ 𝓝 y
-#align specializes Specializes
-
-@[inherit_doc]
-infixl:300 " ⤳ " => Specializes
-
 /-- A collection of equivalent definitions of `x ⤳ y`. The public API is given by `iff` lemmas
 below. -/
 theorem specializes_TFAE (x y : X) :
@@ -87,7 +68,7 @@ theorem specializes_TFAE (x y : X) :
   tfae_have 5 ↔ 7
   · rw [mem_closure_iff_clusterPt, principal_singleton]
   tfae_have 5 → 1
-  · refine' fun h => (nhds_basis_opens _).ge_iff.2 _
+  · refine fun h => (nhds_basis_opens _).ge_iff.2 ?_
     rintro s ⟨hy, ho⟩
     rcases mem_closure_iff.1 h s ho hy with ⟨z, hxs, rfl : z = x⟩
     exact ho.mem_nhds hxs
@@ -152,7 +133,6 @@ theorem specializes_iff_closure_subset : x ⤳ y ↔ closure ({y} : Set X) ⊆ c
 alias ⟨Specializes.closure_subset, _⟩ := specializes_iff_closure_subset
 #align specializes.closure_subset Specializes.closure_subset
 
--- porting note: new lemma
 theorem specializes_iff_clusterPt : x ⤳ y ↔ ClusterPt y (pure x) :=
   (specializes_TFAE x y).out 0 6
 
@@ -214,6 +194,9 @@ theorem Specializes.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ⤳ x₂) (h
   specializes_prod.2 ⟨hx, hy⟩
 #align specializes.prod Specializes.prod
 
+theorem Specializes.fst {a b : X × Y} (h : a ⤳ b) : a.1 ⤳ b.1 := (specializes_prod.1 h).1
+theorem Specializes.snd {a b : X × Y} (h : a ⤳ b) : a.2 ⤳ b.2 := (specializes_prod.1 h).2
+
 @[simp]
 theorem specializes_pi {f g : ∀ i, π i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
   simp only [Specializes, nhds_pi, pi_le_pi]
@@ -245,39 +228,208 @@ theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] 
     Continuous (s.piecewise f g) := by
   simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
 
-variable (X)
-
-/-- Specialization forms a preorder on the topological space. -/
-def specializationPreorder : Preorder X :=
-  { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
-    le := fun x y => y ⤳ x
-    lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
-#align specialization_preorder specializationPreorder
-
-variable {X}
+attribute [local instance] specializationPreorder
 
 /-- A continuous function is monotone with respect to the specialization preorders on the domain and
 the codomain. -/
-theorem Continuous.specialization_monotone (hf : Continuous f) :
-    @Monotone _ _ (specializationPreorder X) (specializationPreorder Y) f := fun _ _ h => h.map hf
+theorem Continuous.specialization_monotone (hf : Continuous f) : Monotone f :=
+  fun _ _ h => h.map hf
 #align continuous.specialization_monotone Continuous.specialization_monotone
+
+lemma closure_singleton_eq_Iic (x : X) : closure {x} = Iic x :=
+  Set.ext fun _ ↦ specializes_iff_mem_closure.symm
+
+/-- A subset `S` of a topological space is stable under specialization
+if `x ∈ S → y ∈ S` for all `x ⤳ y`. -/
+def StableUnderSpecialization (s : Set X) : Prop :=
+  ∀ ⦃x y⦄, x ⤳ y → x ∈ s → y ∈ s
+
+/-- A subset `S` of a topological space is stable under specialization
+if `x ∈ S → y ∈ S` for all `y ⤳ x`. -/
+def StableUnderGeneralization (s : Set X) : Prop :=
+  ∀ ⦃x y⦄, y ⤳ x → x ∈ s → y ∈ s
+
+example {s : Set X} : StableUnderSpecialization s ↔ IsLowerSet s := Iff.rfl
+example {s : Set X} : StableUnderGeneralization s ↔ IsUpperSet s := Iff.rfl
+
+lemma IsClosed.stableUnderSpecialization {s : Set X} (hs : IsClosed s) :
+    StableUnderSpecialization s :=
+  fun _ _ e ↦ e.mem_closed hs
+
+lemma IsOpen.stableUnderGeneralization {s : Set X} (hs : IsOpen s) :
+    StableUnderGeneralization s :=
+  fun _ _ e ↦ e.mem_open hs
+
+@[simp]
+lemma stableUnderSpecialization_compl_iff {s : Set X} :
+    StableUnderSpecialization sᶜ ↔ StableUnderGeneralization s :=
+  isLowerSet_compl
+
+@[simp]
+lemma stableUnderGeneralization_compl_iff {s : Set X} :
+    StableUnderGeneralization sᶜ ↔ StableUnderSpecialization s :=
+  isUpperSet_compl
+
+alias ⟨_, StableUnderGeneralization.compl⟩ := stableUnderSpecialization_compl_iff
+alias ⟨_, StableUnderSpecialization.compl⟩ := stableUnderGeneralization_compl_iff
+
+lemma stableUnderSpecialization_univ : StableUnderSpecialization (univ : Set X) := isLowerSet_univ
+lemma stableUnderSpecialization_empty : StableUnderSpecialization (∅ : Set X) := isLowerSet_empty
+lemma stableUnderGeneralization_univ : StableUnderGeneralization (univ : Set X) := isUpperSet_univ
+lemma stableUnderGeneralization_empty : StableUnderGeneralization (∅ : Set X) := isUpperSet_empty
+
+lemma stableUnderSpecialization_sUnion (S : Set (Set X))
+    (H : ∀ s ∈ S, StableUnderSpecialization s) : StableUnderSpecialization (⋃₀ S) :=
+  isLowerSet_sUnion H
+
+lemma stableUnderSpecialization_sInter (S : Set (Set X))
+    (H : ∀ s ∈ S, StableUnderSpecialization s) : StableUnderSpecialization (⋂₀ S) :=
+  isLowerSet_sInter H
+
+lemma stableUnderGeneralization_sUnion (S : Set (Set X))
+    (H : ∀ s ∈ S, StableUnderGeneralization s) : StableUnderGeneralization (⋃₀ S) :=
+  isUpperSet_sUnion H
+
+lemma stableUnderGeneralization_sInter (S : Set (Set X))
+    (H : ∀ s ∈ S, StableUnderGeneralization s) : StableUnderGeneralization (⋂₀ S) :=
+  isUpperSet_sInter H
+
+lemma stableUnderSpecialization_iUnion {ι : Sort*} (S : ι → Set X)
+    (H : ∀ i, StableUnderSpecialization (S i)) : StableUnderSpecialization (⋃ i, S i) :=
+  isLowerSet_iUnion H
+
+lemma stableUnderSpecialization_iInter {ι : Sort*} (S : ι → Set X)
+    (H : ∀ i, StableUnderSpecialization (S i)) : StableUnderSpecialization (⋂ i, S i) :=
+  isLowerSet_iInter H
+
+lemma stableUnderGeneralization_iUnion {ι : Sort*} (S : ι → Set X)
+    (H : ∀ i, StableUnderGeneralization (S i)) : StableUnderGeneralization (⋃ i, S i) :=
+  isUpperSet_iUnion H
+
+lemma stableUnderGeneralization_iInter {ι : Sort*} (S : ι → Set X)
+    (H : ∀ i, StableUnderGeneralization (S i)) : StableUnderGeneralization (⋂ i, S i) :=
+  isUpperSet_iInter H
+
+lemma Union_closure_singleton_eq_iff {s : Set X} :
+    (⋃ x ∈ s, closure {x}) = s ↔ StableUnderSpecialization s :=
+  show _ ↔ IsLowerSet s by simp only [closure_singleton_eq_Iic, ← lowerClosure_eq, coe_lowerClosure]
+
+lemma stableUnderSpecialization_iff_Union_eq {s : Set X} :
+    StableUnderSpecialization s ↔ (⋃ x ∈ s, closure {x}) = s :=
+  Union_closure_singleton_eq_iff.symm
+
+alias ⟨StableUnderSpecialization.Union_eq, _⟩ := stableUnderSpecialization_iff_Union_eq
+
+/-- A set is stable under specialization iff it is a union of closed sets. -/
+lemma stableUnderSpecialization_iff_exists_sUnion_eq {s : Set X} :
+    StableUnderSpecialization s ↔ ∃ (S : Set (Set X)), (∀ s ∈ S, IsClosed s) ∧ ⋃₀ S = s := by
+  refine ⟨fun H ↦ ⟨(fun x : X ↦ closure {x}) '' s, ?_, ?_⟩, fun ⟨S, hS, e⟩ ↦ e ▸
+    stableUnderSpecialization_sUnion S (fun x hx ↦ (hS x hx).stableUnderSpecialization)⟩
+  · rintro _ ⟨_, _, rfl⟩; exact isClosed_closure
+  · conv_rhs => rw [← H.Union_eq]
+    simp
+
+/-- A set is stable under generalization iff it is an intersection of open sets. -/
+lemma stableUnderGeneralization_iff_exists_sInter_eq {s : Set X} :
+    StableUnderGeneralization s ↔ ∃ (S : Set (Set X)), (∀ s ∈ S, IsOpen s) ∧ ⋂₀ S = s := by
+  refine ⟨?_, fun ⟨S, hS, e⟩ ↦ e ▸
+    stableUnderGeneralization_sInter S (fun x hx ↦ (hS x hx).stableUnderGeneralization)⟩
+  rw [← stableUnderSpecialization_compl_iff, stableUnderSpecialization_iff_exists_sUnion_eq]
+  exact fun ⟨S, h₁, h₂⟩ ↦ ⟨(·ᶜ) '' S, fun s ⟨t, ht, e⟩ ↦ e ▸ (h₁ t ht).isOpen_compl,
+    compl_injective ((sUnion_eq_compl_sInter_compl S).symm.trans h₂)⟩
+
+lemma StableUnderSpecialization.preimage {s : Set Y}
+    (hs : StableUnderSpecialization s) (hf : Continuous f) :
+    StableUnderSpecialization (f ⁻¹' s) :=
+  IsLowerSet.preimage hs hf.specialization_monotone
+
+lemma StableUnderGeneralization.preimage {s : Set Y}
+    (hs : StableUnderGeneralization s) (hf : Continuous f) :
+    StableUnderGeneralization (f ⁻¹' s) :=
+  IsUpperSet.preimage hs hf.specialization_monotone
+
+/-- A map `f` between topological spaces is specializing if specializations lifts along `f`,
+i.e. for each `f x' ⤳ y` there is some `x` with `x' ⤳ x` whose image is `y`. -/
+def SpecializingMap (f : X → Y) : Prop :=
+  Relation.Fibration (flip (· ⤳ ·)) (flip (· ⤳ ·)) f
+
+/-- A map `f` between topological spaces is generalizing if generalizations lifts along `f`,
+i.e. for each `y ⤳ f x'` there is some `x ⤳ x'` whose image is `y`. -/
+def GeneralizingMap (f : X → Y) : Prop :=
+  Relation.Fibration (· ⤳ ·) (· ⤳ ·) f
+
+lemma specializingMap_iff_closure_singleton_subset :
+    SpecializingMap f ↔ ∀ x, closure {f x} ⊆ f '' closure {x} := by
+  simp only [SpecializingMap, Relation.Fibration, flip, specializes_iff_mem_closure]; rfl
+
+alias ⟨SpecializingMap.closure_singleton_subset, _⟩ := specializingMap_iff_closure_singleton_subset
+
+lemma SpecializingMap.stableUnderSpecialization_image (hf : SpecializingMap f)
+    {s : Set X} (hs : StableUnderSpecialization s) : StableUnderSpecialization (f '' s) :=
+  IsLowerSet.image_fibration hf hs
+
+alias StableUnderSpecialization.image := SpecializingMap.stableUnderSpecialization_image
+
+lemma specializingMap_iff_stableUnderSpecialization_image_singleton :
+    SpecializingMap f ↔ ∀ x, StableUnderSpecialization (f '' closure {x}) := by
+  simpa only [closure_singleton_eq_Iic] using Relation.fibration_iff_isLowerSet_image_Iic
+
+lemma specializingMap_iff_stableUnderSpecialization_image :
+    SpecializingMap f ↔ ∀ s, StableUnderSpecialization s → StableUnderSpecialization (f '' s) :=
+  Relation.fibration_iff_isLowerSet_image
+
+lemma specializingMap_iff_closure_singleton (hf : Continuous f) :
+    SpecializingMap f ↔ ∀ x, f '' closure {x} = closure {f x} := by
+  simpa only [closure_singleton_eq_Iic] using
+    Relation.fibration_iff_image_Iic hf.specialization_monotone
+
+lemma specializingMap_iff_isClosed_image_closure_singleton (hf : Continuous f) :
+    SpecializingMap f ↔ ∀ x, IsClosed (f '' closure {x}) := by
+  refine ⟨fun h x ↦ ?_, fun h ↦ specializingMap_iff_stableUnderSpecialization_image_singleton.mpr
+    (fun x ↦ (h x).stableUnderSpecialization)⟩
+  rw [(specializingMap_iff_closure_singleton hf).mp h x]
+  exact isClosed_closure
+
+lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
+  specializingMap_iff_stableUnderSpecialization_image_singleton.mpr $
+    fun _ ↦ (hf _ isClosed_closure).stableUnderSpecialization
+
+lemma Inducing.specializingMap (hf : Inducing f) (h : StableUnderSpecialization (range f)) :
+    SpecializingMap f := by
+  intros x y e
+  obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
+  exact ⟨_, hf.specializes_iff.mp e, rfl⟩
+
+lemma Inducing.generalizingMap (hf : Inducing f) (h : StableUnderGeneralization (range f)) :
+    GeneralizingMap f := by
+  intros x y e
+  obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
+  exact ⟨_, hf.specializes_iff.mp e, rfl⟩
+
+lemma OpenEmbedding.generalizingMap (hf : OpenEmbedding f) : GeneralizingMap f :=
+  hf.toInducing.generalizingMap hf.isOpen_range.stableUnderGeneralization
+
+lemma SpecializingMap.stableUnderSpecialization_range (h : SpecializingMap f) :
+    StableUnderSpecialization (range f) :=
+  @image_univ _ _ f ▸ stableUnderSpecialization_univ.image h
+
+lemma GeneralizingMap.stableUnderGeneralization_image (hf : GeneralizingMap f) {s : Set X}
+    (hs : StableUnderGeneralization s) : StableUnderGeneralization (f '' s) :=
+  IsUpperSet.image_fibration hf hs
+
+lemma GeneralizingMap_iff_stableUnderGeneralization_image :
+    GeneralizingMap f ↔ ∀ s, StableUnderGeneralization s → StableUnderGeneralization (f '' s) :=
+  Relation.fibration_iff_isUpperSet_image
+
+alias StableUnderGeneralization.image := GeneralizingMap.stableUnderGeneralization_image
+
+lemma GeneralizingMap.stableUnderGeneralization_range (h : GeneralizingMap f) :
+    StableUnderGeneralization (range f) :=
+  @image_univ _ _ f ▸ stableUnderGeneralization_univ.image h
 
 /-!
 ### `Inseparable` relation
 -/
-
-/-- Two points `x` and `y` in a topological space are `Inseparable` if any of the following
-equivalent properties hold:
-
-- `𝓝 x = 𝓝 y`; we use this property as the definition;
-- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_open`;
-- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_closed`;
-- `x ∈ closure {y}` and `y ∈ closure {x}`, see `inseparable_iff_mem_closure`;
-- `closure {x} = closure {y}`, see `inseparable_iff_closure_eq`.
--/
-def Inseparable (x y : X) : Prop :=
-  𝓝 x = 𝓝 y
-#align inseparable Inseparable
 
 local infixl:0 " ~ᵢ " => Inseparable
 
@@ -413,15 +565,6 @@ In this section we define the quotient of a topological space by the `Inseparabl
 
 variable (X)
 
-/-- A `setoid` version of `Inseparable`, used to define the `SeparationQuotient`. -/
-def inseparableSetoid : Setoid X := { Setoid.comap 𝓝 ⊥ with r := Inseparable }
-#align inseparable_setoid inseparableSetoid
-
-/-- The quotient of a topological space by its `inseparableSetoid`. This quotient is guaranteed to
-be a T₀ space. -/
-def SeparationQuotient := Quotient (inseparableSetoid X)
-#align separation_quotient SeparationQuotient
-
 instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
 
 variable {X}
@@ -465,7 +608,7 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
 theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
-  refine' Subset.antisymm _ (subset_preimage_image _ _)
+  refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
 #align separation_quotient.preimage_image_mk_open SeparationQuotient.preimage_image_mk_open
@@ -475,7 +618,7 @@ theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =
 #align separation_quotient.is_open_map_mk SeparationQuotient.isOpenMap_mk
 
 theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
-  refine' Subset.antisymm _ (subset_preimage_image _ _)
+  refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys
 #align separation_quotient.preimage_image_mk_closed SeparationQuotient.preimage_image_mk_closed
@@ -537,6 +680,16 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
     map mk (𝓝[mk ⁻¹' s] x) = 𝓝[s] mk x := by
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 #align separation_quotient.map_mk_nhds_within_preimage SeparationQuotient.map_mk_nhdsWithin_preimage
+
+/-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
+theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := by
+  have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.prodMap surjective_mk
+  refine quotientMap_iff.2 ⟨hsurj, fun s ↦ ?_⟩
+  refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ ?_⟩
+  refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ ?_
+  rw [Prod.map_mk, nhds_prod_eq, ← map_mk_nhds, ← map_mk_nhds, Filter.prod_map_map_eq',
+    ← nhds_prod_eq, Filter.mem_map]
+  exact hs.mem_nhds h
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/
@@ -640,7 +793,7 @@ theorem continuousAt_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) �
 theorem continuousOn_lift₂ {f : X → Y → Z} {hf : ∀ a b c d, (a ~ᵢ c) → (b ~ᵢ d) → f a b = f c d}
     {s : Set (SeparationQuotient X × SeparationQuotient Y)} :
     ContinuousOn (uncurry <| lift₂ f hf) s ↔ ContinuousOn (uncurry f) (Prod.map mk mk ⁻¹' s) := by
-  simp_rw [ContinuousOn, (surjective_mk.Prod_map surjective_mk).forall, Prod.forall, Prod.map,
+  simp_rw [ContinuousOn, (surjective_mk.prodMap surjective_mk).forall, Prod.forall, Prod.map,
     continuousWithinAt_lift₂]
   rfl
 #align separation_quotient.continuous_on_lift₂ SeparationQuotient.continuousOn_lift₂

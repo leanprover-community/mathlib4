@@ -16,8 +16,8 @@ Let `k` be a commutative ring and `G` a group. This file defines the group cohom
 `A : Rep k G` to be the cohomology of the complex
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 with differential $d^n$ sending $f: G^n \to A$ to the function mapping $(g_0, \dots, g_n)$ to
-$$\rho(g_0)(f(g_1, \dots, g_n))
-+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
+$$\rho(g_0)(f(g_1, \dots, g_n))$$
+$$+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
 $$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
 
 We have a `k`-linear isomorphism $\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(k[G^{n + 1}], A)$, where
@@ -130,7 +130,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
         (linearYonedaObjResolution A).d n (n + 1) ≫
           (diagonalHomEquiv (n + 1) A).toModuleIso.hom := by
   ext f g
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
   simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.toModuleIso_inv, linearYonedaObjResolution_d_apply, LinearEquiv.toModuleIso_hom,
     diagonalHomEquiv_apply, Action.comp_hom, Resolution.d_eq k G n,
@@ -183,7 +183,7 @@ which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d n A) fun n => by
-/- Porting note: broken proof was
+/- Porting note (#11039): broken proof was
     ext x y
     have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
     simp only [ModuleCat.coe_comp, Function.comp_apply] at this
@@ -211,9 +211,8 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by
-/- Porting note: just needs a `refine'` now, instead of term mode -/
-  refine' HomologicalComplex.Hom.isoOfComponents (fun i =>
-    (Rep.diagonalHomEquiv i A).toModuleIso.symm) _
+  refine HomologicalComplex.Hom.isoOfComponents (fun i =>
+    (Rep.diagonalHomEquiv i A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
   simp only [CochainComplex.of_d, d_eq, Category.assoc, Iso.symm_hom, Iso.hom_inv_id,

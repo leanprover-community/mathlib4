@@ -90,13 +90,13 @@ theorem divp_sub (a b : α) (u : αˣ) : a /ₚ u - b = (a - b * u) /ₚ u := by
 #align units.divp_sub Units.divp_sub
 
 @[simp]
-protected theorem map_neg {F : Type*} [Ring β] [RingHomClass F α β] (f : F) (u : αˣ) :
-    map (f : α →* β) (-u) = -map (f : α →* β) u :=
+protected theorem map_neg {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
+    (f : F) (u : αˣ) : map (f : α →* β) (-u) = -map (f : α →* β) u :=
   ext (by simp only [coe_map, Units.val_neg, MonoidHom.coe_coe, map_neg])
 
-protected theorem map_neg_one {F : Type*} [Ring β] [RingHomClass F α β] (f : F) :
-    map (f : α →* β) (-1) = -1 :=
-  by simp only [Units.map_neg, map_one]
+protected theorem map_neg_one {F : Type*} [Ring β] [FunLike F α β] [RingHomClass F α β]
+    (f : F) : map (f : α →* β) (-1) = -1 := by
+  simp only [Units.map_neg, map_one]
 
 end Ring
 
@@ -126,7 +126,7 @@ theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
   rw [mul_comm (↑u₁ * b), mul_comm b]
   rw [← mul_assoc, ← mul_assoc, mul_assoc a, mul_assoc (↑u₂⁻¹ : α), mul_inv, inv_mul, mul_one,
     mul_one]
-  -- porting note: `assoc_rw` not ported: `assoc_rw [mul_inv, mul_inv, mul_one, mul_one]`
+  -- Porting note: `assoc_rw` not ported: `assoc_rw [mul_inv, mul_inv, mul_one, mul_one]`
 #align units.divp_add_divp Units.divp_add_divp
 
 @[field_simps]

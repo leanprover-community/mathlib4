@@ -3,6 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.GroupTheory.GroupAction.Ring
@@ -44,7 +45,7 @@ lemma pow_dvd_add_pow_of_pow_eq_zero_right (hy : y ^ n = 0) :
   apply dvd_nsmul_of_dvd
   rcases le_or_lt m i with (hi : m ≤ i) | (hi : i + 1 ≤ m)
   · exact dvd_mul_of_dvd_left (pow_dvd_pow x hi) _
-  · simp [pow_eq_zero_of_le (by linarith : n ≤ j) hy]
+  · simp [pow_eq_zero_of_le (by omega : n ≤ j) hy]
 
 lemma pow_dvd_add_pow_of_pow_eq_zero_left (hx : x ^ n = 0) :
     y ^ m ∣ (x + y) ^ p :=

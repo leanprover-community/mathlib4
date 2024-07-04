@@ -39,9 +39,6 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
-set_option autoImplicit true
-
-
 variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
@@ -55,7 +52,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   init' : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
 
--- Porting notes: Deleted `scoped[InitialSeg]`
+-- Porting note: Deleted `scoped[InitialSeg]`
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
 embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
 range of `f`. -/
@@ -66,13 +63,15 @@ namespace InitialSeg
 instance : Coe (r ≼i s) (r ↪r s) :=
   ⟨InitialSeg.toRelEmbedding⟩
 
-instance : EmbeddingLike (r ≼i s) α β :=
-  { coe := fun f => f.toFun
-    coe_injective' := by
-      rintro ⟨f, hf⟩ ⟨g, hg⟩ h
-      congr with x
-      exact congr_fun h x,
-    injective' := fun f => f.inj' }
+instance : FunLike (r ≼i s) α β where
+  coe f := f.toFun
+  coe_injective' := by
+    rintro ⟨f, hf⟩ ⟨g, hg⟩ h
+    congr with x
+    exact congr_fun h x
+
+instance : EmbeddingLike (r ≼i s) α β where
+  injective' f := f.inj'
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -87,7 +86,7 @@ theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :
   f.init' _ _
 #align initial_seg.init InitialSeg.init
 
-theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
+theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 
@@ -116,7 +115,7 @@ instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
 @[trans]
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
   ⟨f.1.trans g.1, fun a c h => by
-    simp at h ⊢
+    simp only [RelEmbedding.coe_trans, coe_coe_fn, comp_apply] at h ⊢
     rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
     rcases f.2 _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
 #align initial_seg.trans InitialSeg.trans
@@ -135,8 +134,8 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
     [IsWellFounded α r] : Subsingleton (r ≼i s) :=
   ⟨fun f g => by
     ext a
-    refine' IsWellFounded.induction r a fun b IH =>
-      extensional_of_trichotomous_of_irrefl s fun x => _
+    refine IsWellFounded.induction r a fun b IH =>
+      extensional_of_trichotomous_of_irrefl s fun x => ?_
     rw [f.init_iff, g.init_iff]
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
 #align initial_seg.subsingleton_of_trichotomous_of_irrefl InitialSeg.subsingleton_of_trichotomous_of_irrefl
@@ -214,7 +213,7 @@ theorem leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAd
 
 protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   ⟨by
-    refine' fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => _
+    refine fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => ?_
     obtain ⟨a', rfl⟩ := f.init hb
     exact ha _ (f.map_rel_iff.mp hb), f.toRelEmbedding.acc a⟩
 #align initial_seg.acc InitialSeg.acc
@@ -241,7 +240,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   down' : ∀ b, s b top ↔ ∃ a, toRelEmbedding a = b
 #align principal_seg PrincipalSeg
 
--- Porting notes: deleted `scoped[InitialSeg]`
+-- Porting note: deleted `scoped[InitialSeg]`
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an order
 embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
 embeddings are called principal segments -/
@@ -361,7 +360,7 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
       show ((f : r ≼i s) : α → β) = (g : r ≼i s)
       rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
     have et : f.top = g.top := by
-      refine' extensional_of_trichotomous_of_irrefl s fun x => _
+      refine extensional_of_trichotomous_of_irrefl s fun x => ?_
       simp only [PrincipalSeg.down, ef]
     cases f
     cases g
@@ -447,8 +446,7 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
 #align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top
 
 /-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
-@[reducible]
-def pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
+abbrev pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
   (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false
 #align principal_seg.pempty_to_punit PrincipalSeg.pemptyToPunit
 
@@ -465,9 +463,9 @@ convenient to use.
 -/
 theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ b, WellFounded (Subrel s { b' | s b' b }) := by
-  refine'
+  refine
     ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
-      ⟨fun b => Acc.intro _ fun b' hb' => _⟩⟩
+      ⟨fun b => Acc.intro _ fun b' hb' => ?_⟩⟩
   let f := PrincipalSeg.ofElement s b
   obtain ⟨b', rfl⟩ := f.down.mp ((PrincipalSeg.ofElement_top s b).symm ▸ hb' : s b' f.top)
   exact (f.acc b').mp ((wf b).apply b')
@@ -561,8 +559,8 @@ noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
       (fun b _ _ a h => by
         rcases (@IsWellFounded.wf _ r).has_min { a | ¬s (collapseF f a).1 b }
           ⟨_, asymm h⟩ with ⟨m, hm, hm'⟩
-        refine' ⟨m, ((@trichotomous _ s _ _ _).resolve_left hm).resolve_right
-          (collapseF.not_lt f _ fun a' h' => _)⟩
+        refine ⟨m, ((@trichotomous _ s _ _ _).resolve_left hm).resolve_right
+          (collapseF.not_lt f _ fun a' h' => ?_)⟩
         by_contra hn
         exact hm' _ hn h')
       a⟩

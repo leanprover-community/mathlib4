@@ -64,7 +64,8 @@ Vitali families are provided by covering theorems such as the Besicovitch coveri
 Vitali covering theorem. They make it possible to formulate general versions of theorems on
 differentiations of measure that apply in both contexts.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure VitaliFamily {m : MeasurableSpace α} (μ : Measure α) where
   /-- Sets of the family "centered" at a given point. -/
   setsAt :  α → Set (Set α)
@@ -115,7 +116,7 @@ theorem exists_disjoint_covering_ae :
       (t.PairwiseDisjoint fun p => p.2) ∧
       (∀ p : α × Set α, p ∈ t → p.2 ∈ v.setsAt p.1 ∩ f p.1) ∧
       μ (s \ ⋃ (p : α × Set α) (_ : p ∈ t), p.2) = 0 :=
-  v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left _ _) h
+  v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left) h
 #align vitali_family.fine_subfamily_on.exists_disjoint_covering_ae VitaliFamily.FineSubfamilyOn.exists_disjoint_covering_ae
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
@@ -204,13 +205,13 @@ def enlarge (v : VitaliFamily μ) (δ : ℝ) (δpos : 0 < δ) : VitaliFamily μ 
     let g : α → Set (Set α) := fun x => f x ∩ v.setsAt x
     have : ∀ x ∈ s, ∀ ε : ℝ, ε > 0 → ∃ (a : Set α), a ∈ g x ∧ a ⊆ closedBall x ε := by
       intro x hx ε εpos
-      obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closedBall x (min ε δ)
-      exact ffine x hx (min ε δ) (lt_min εpos δpos)
+      obtain ⟨a, af, ha⟩ : ∃ a ∈ f x, a ⊆ closedBall x (min ε δ) :=
+        ffine x hx (min ε δ) (lt_min εpos δpos)
       rcases fset x hx af with (h'a | h'a)
       · exact ⟨a, ⟨af, h'a⟩, ha.trans (closedBall_subset_closedBall (min_le_left _ _))⟩
-      · refine' False.elim (h'a.2.2 _)
+      · refine False.elim (h'a.2.2 ?_)
         exact ha.trans (closedBall_subset_closedBall (min_le_right _ _))
-    rcases v.covering s g (fun x _ => inter_subset_right _ _) this with ⟨t, ts, tdisj, tg, μt⟩
+    rcases v.covering s g (fun x _ => inter_subset_right) this with ⟨t, ts, tdisj, tg, μt⟩
     exact ⟨t, ts, tdisj, fun p hp => (tg p hp).1, μt⟩
 #align vitali_family.enlarge VitaliFamily.enlarge
 
@@ -232,7 +233,7 @@ theorem filterAt_basis_closedBall (x : α) :
 
 theorem mem_filterAt_iff {x : α} {s : Set (Set α)} :
     s ∈ v.filterAt x ↔ ∃ ε > (0 : ℝ), ∀ a ∈ v.setsAt x, a ⊆ closedBall x ε → a ∈ s := by
-  simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp]; rfl
+  simp only [(v.filterAt_basis_closedBall x).mem_iff, ← and_imp, subset_def, mem_setOf]
 #align vitali_family.mem_filter_at_iff VitaliFamily.mem_filterAt_iff
 
 instance filterAt_neBot (x : α) : (v.filterAt x).NeBot :=
@@ -266,7 +267,7 @@ theorem eventually_filterAt_measurableSet (x : α) : ∀ᶠ a in v.filterAt x, M
 
 theorem frequently_filterAt_iff {x : α} {P : Set α → Prop} :
     (∃ᶠ a in v.filterAt x, P a) ↔ ∀ ε > (0 : ℝ), ∃ a ∈ v.setsAt x, a ⊆ closedBall x ε ∧ P a := by
-  simp only [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc]; rfl
+  simp only [(v.filterAt_basis_closedBall x).frequently_iff, ← and_assoc, subset_def, mem_setOf]
 #align vitali_family.frequently_filter_at_iff VitaliFamily.frequently_filterAt_iff
 
 theorem eventually_filterAt_subset_of_nhds {x : α} {o : Set α} (hx : o ∈ 𝓝 x) :

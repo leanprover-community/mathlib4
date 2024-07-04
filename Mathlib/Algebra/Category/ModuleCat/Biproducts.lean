@@ -3,7 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
@@ -18,8 +18,6 @@ import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 open CategoryTheory
 
 open CategoryTheory.Limits
-
-open BigOperators
 
 universe w v u
 
@@ -136,7 +134,7 @@ variable {J : Type} (f : J → ModuleCat.{v} R)
 on the dependent function type.
 -/
 @[simps! hom_apply]
-noncomputable def biproductIsoPi [Fintype J] (f : J → ModuleCat.{v} R) :
+noncomputable def biproductIsoPi [Finite J] (f : J → ModuleCat.{v} R) :
     ((⨁ f) : ModuleCat.{v} R) ≅ ModuleCat.of R (∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 #align Module.biproduct_iso_pi ModuleCat.biproductIsoPi
@@ -145,7 +143,7 @@ noncomputable def biproductIsoPi [Fintype J] (f : J → ModuleCat.{v} R) :
 attribute [nolint simpNF] ModuleCat.biproductIsoPi_hom_apply
 
 @[simp, elementwise]
-theorem biproductIsoPi_inv_comp_π [Fintype J] (f : J → ModuleCat.{v} R) (j : J) :
+theorem biproductIsoPi_inv_comp_π [Finite J] (f : J → ModuleCat.{v} R) (j : J) :
     (biproductIsoPi f).inv ≫ biproduct.π f j = (LinearMap.proj j : (∀ j, f j) →ₗ[R] f j) :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk j)
 #align Module.biproduct_iso_pi_inv_comp_π ModuleCat.biproductIsoPi_inv_comp_π
@@ -163,7 +161,7 @@ open ModuleCat
 
 
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a right split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
-of modules.-/
+of modules. -/
 noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfSection _
@@ -173,7 +171,7 @@ noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function
     biprodIsoProd _ _ ).symm.toLinearEquiv
 
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a left split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
-of modules.-/
+of modules. -/
 noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfRetraction _

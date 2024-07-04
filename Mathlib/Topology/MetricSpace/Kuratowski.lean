@@ -51,7 +51,7 @@ theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x
 /-- The embedding map is always a semi-contraction. -/
 theorem embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
-  refine' lp.norm_le_of_forall_le dist_nonneg fun n => _
+  refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
   simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe, Real.dist_eq]
   convert abs_dist_sub_le a b (x n) using 2
   ring
@@ -59,8 +59,8 @@ theorem embeddingOfSubset_dist_le (a b : α) :
 
 /-- When the reference set is dense, the embedding map is an isometry on its image. -/
 theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSubset x) := by
-  refine' Isometry.of_dist_eq fun a b => _
-  refine' (embeddingOfSubset_dist_le x a b).antisymm (le_of_forall_pos_le_add fun e epos => _)
+  refine Isometry.of_dist_eq fun a b => ?_
+  refine (embeddingOfSubset_dist_le x a b).antisymm (le_of_forall_pos_le_add fun e epos => ?_)
   -- First step: find n with dist a (x n) < e
   rcases Metric.mem_closure_range_iff.1 (H a) (e / 2) (half_pos epos) with ⟨n, hn⟩
   -- Second step: use the norm control at index n to conclude
@@ -142,7 +142,7 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {ι 
     ∃ g : α → ℓ^∞(ι), LipschitzWith K g ∧ EqOn f g s := by
   -- Construct the coordinate-wise extensions
   rw [LipschitzOnWith.coordinate] at hfl
-  have (i: ι) : ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s :=
+  have (i : ι) : ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s :=
     LipschitzOnWith.extend_real (hfl i) -- use the nonlinear Hahn-Banach theorem here!
   choose g hgl hgeq using this
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩

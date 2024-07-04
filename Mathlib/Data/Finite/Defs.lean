@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Cases
 
 #align_import data.finite.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -91,9 +90,8 @@ theorem Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, None
   finite_iff_exists_equiv_fin.mp h
 #align finite.exists_equiv_fin Finite.exists_equiv_fin
 
-theorem Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β := by
-  cases' h with n e
-  exact Finite.intro (f.symm.trans e)
+theorem Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β :=
+  let ⟨e⟩ := h; ⟨f.symm.trans e⟩
 #align finite.of_equiv Finite.of_equiv
 
 theorem Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=

@@ -29,7 +29,7 @@ With `open scoped RightActions`, this provides:
 -/
 
 
-variable (α : Type*)
+variable {R M N α : Type*}
 
 /-! ### Actions _on_ the opposite type
 
@@ -40,42 +40,41 @@ Actions on the opposite type just act on the underlying type.
 namespace MulOpposite
 
 @[to_additive]
-instance mulAction (R : Type*) [Monoid R] [MulAction R α] : MulAction R αᵐᵒᵖ :=
-  { one_smul := fun x => unop_injective <| one_smul R (unop x)
-    mul_smul := fun r₁ r₂ x => unop_injective <| mul_smul r₁ r₂ (unop x) }
+instance instMulAction [Monoid M] [MulAction M α] : MulAction M αᵐᵒᵖ where
+  one_smul _ := unop_injective <| one_smul _ _
+  mul_smul _ _ _ := unop_injective <| mul_smul _ _ _
 
-instance distribMulAction (R : Type*) [Monoid R] [AddMonoid α] [DistribMulAction R α] :
-    DistribMulAction R αᵐᵒᵖ :=
-  { smul_add := fun r x₁ x₂ => unop_injective <| smul_add r (unop x₁) (unop x₂)
-    smul_zero := fun r => unop_injective <| smul_zero r }
+instance instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] :
+    DistribMulAction M αᵐᵒᵖ where
+  smul_add _ _ _ := unop_injective <| smul_add _ _ _
+  smul_zero _ := unop_injective <| smul_zero _
 
-instance mulDistribMulAction (R : Type*) [Monoid R] [Monoid α] [MulDistribMulAction R α] :
-    MulDistribMulAction R αᵐᵒᵖ :=
-  { smul_mul := fun r x₁ x₂ => unop_injective <| smul_mul' r (unop x₂) (unop x₁)
-    smul_one := fun r => unop_injective <| smul_one r }
-
-@[to_additive]
-instance isScalarTower {M N} [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower M N αᵐᵒᵖ :=
-  ⟨fun _ _ _ => unop_injective <| smul_assoc _ _ _⟩
+instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M α] :
+    MulDistribMulAction M αᵐᵒᵖ where
+  smul_mul _ _ _ := unop_injective <| smul_mul' _ _ _
+  smul_one _ := unop_injective <| smul_one _
 
 @[to_additive]
-instance smulCommClass {M N} [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass M N αᵐᵒᵖ :=
-  ⟨fun _ _ _ => unop_injective <| smul_comm _ _ _⟩
+instance instIsScalarTower [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
+    IsScalarTower M N αᵐᵒᵖ where
+  smul_assoc _ _ _ := unop_injective <| smul_assoc _ _ _
 
 @[to_additive]
-instance isCentralScalar (R : Type*) [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
-    IsCentralScalar R αᵐᵒᵖ :=
-  ⟨fun _ _ => unop_injective <| op_smul_eq_smul _ _⟩
+instance instSMulCommClass [SMul M α] [SMul N α] [SMulCommClass M N α] :
+    SMulCommClass M N αᵐᵒᵖ where
+  smul_comm _ _ _ := unop_injective <| smul_comm _ _ _
 
-theorem op_smul_eq_op_smul_op {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α]
-    (r : R) (a : α) : op (r • a) = op r • op a :=
-  (op_smul_eq_smul r (op a)).symm
+@[to_additive]
+instance instIsCentralScalar [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
+    IsCentralScalar M αᵐᵒᵖ where
+  op_smul_eq_smul _ _ := unop_injective <| op_smul_eq_smul _ _
+
+theorem op_smul_eq_op_smul_op [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] (r : M) (a : α) :
+    op (r • a) = op r • op a := (op_smul_eq_smul r (op a)).symm
 #align mul_opposite.op_smul_eq_op_smul_op MulOpposite.op_smul_eq_op_smul_op
 
-theorem unop_smul_eq_unop_smul_unop {R : Type*} [SMul R α] [SMul Rᵐᵒᵖ α]
-    [IsCentralScalar R α] (r : Rᵐᵒᵖ) (a : αᵐᵒᵖ) : unop (r • a) = unop r • unop a :=
-  (unop_smul_eq_smul r (unop a)).symm
+theorem unop_smul_eq_unop_smul_unop [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] (r : Mᵐᵒᵖ)
+    (a : αᵐᵒᵖ) : unop (r • a) = unop r • unop a := (unop_smul_eq_smul r (unop a)).symm
 #align mul_opposite.unop_smul_eq_unop_smul_unop MulOpposite.unop_smul_eq_unop_smul_unop
 
 end MulOpposite
@@ -149,7 +148,7 @@ theorem op_smul_op_smul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a�
 theorem op_smul_mul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
     b <• (a₁ * a₂) = b <• a₁ <• a₂ := mul_smul _ _ _
 
-end section
+end
 
 /-! ### Actions _by_ the opposite type (right actions)
 
@@ -230,15 +229,15 @@ instance IsScalarTower.opposite_mid {M N} [Mul N] [SMul M N] [SMulCommClass M N 
 instance SMulCommClass.opposite_mid {M N} [Mul N] [SMul M N] [IsScalarTower M N N] :
     SMulCommClass M Nᵐᵒᵖ N :=
   ⟨fun x y z => by
-    induction y using MulOpposite.rec'
+    induction y
     simp only [smul_mul_assoc, MulOpposite.smul_eq_mul_unop]⟩
 #align smul_comm_class.opposite_mid SMulCommClass.opposite_mid
 #align vadd_comm_class.opposite_mid VAddCommClass.opposite_mid
 
 -- The above instance does not create an unwanted diamond, the two paths to
 -- `MulAction αᵐᵒᵖ αᵐᵒᵖ` are defeq.
-example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.mulAction α αᵐᵒᵖ :=
-  rfl
+example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.instMulAction := by
+  with_reducible_and_instances rfl
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
 @[to_additive "`AddMonoid.toOppositeAddAction` is faithful on cancellative monoids."]

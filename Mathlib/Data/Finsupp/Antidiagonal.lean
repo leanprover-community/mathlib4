@@ -16,8 +16,6 @@ The antidiagonal of `s : α →₀ ℕ` consists of
 all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 -/
 
-open BigOperators
-
 namespace Finsupp
 
 open Finset
@@ -46,15 +44,14 @@ instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
 #align finsupp.antidiagonal_filter_fst_eq Finset.filter_fst_eq_antidiagonal
 #align finsupp.antidiagonal_filter_snd_eq Finset.filter_snd_eq_antidiagonal
 
--- nolint as this is for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
 #align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 
 @[to_additive]
 theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
     (f : (α →₀ ℕ) → (α →₀ ℕ) → M) :
-    ∏ p in antidiagonal n, f p.1 p.2 = ∏ p in antidiagonal n, f p.2 p.1 :=
+    ∏ p ∈ antidiagonal n, f p.1 p.2 = ∏ p ∈ antidiagonal n, f p.2 p.1 :=
   prod_equiv (Equiv.prodComm _ _) (by simp [add_comm]) (by simp)
 #align finsupp.prod_antidiagonal_swap Finsupp.prod_antidiagonal_swap
 #align finsupp.sum_antidiagonal_swap Finsupp.sum_antidiagonal_swap
@@ -65,7 +62,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
       (Function.Embedding.prodMap ⟨_, single_injective a⟩ ⟨_, single_injective a⟩) := by
   ext ⟨x, y⟩
   simp only [mem_antidiagonal, mem_map, mem_antidiagonal, Function.Embedding.coe_prodMap,
-    Function.Embedding.coeFn_mk, Prod_map, Prod.mk.injEq, Prod.exists]
+    Function.Embedding.coeFn_mk, Prod.map_apply, Prod.mk.injEq, Prod.exists]
   constructor
   · intro h
     refine ⟨x a, y a, DFunLike.congr_fun h a |>.trans single_eq_same, ?_⟩

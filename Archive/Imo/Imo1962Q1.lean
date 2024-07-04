@@ -119,7 +119,7 @@ theorem case_more_digits {c n : ℕ} (h1 : (digits 10 c).length ≥ 6) (h2 : Pro
     exact case_0_digit h5 h2
   calc
     n ≥ 10 * c := le.intro h2.left.symm
-    _ ≥ 10 ^ (digits 10 c).length := (base_pow_length_digits_le 10 c (by decide) h3)
+    _ ≥ 10 ^ (digits 10 c).length := base_pow_length_digits_le 10 c (by decide) h3
     _ ≥ 10 ^ 6 := pow_le_pow_right (by decide) h1
     _ ≥ 153846 := by norm_num
 #align imo1962_q1.case_more_digits Imo1962Q1.case_more_digits
@@ -130,17 +130,7 @@ Now we combine these cases to show that 153846 is the smallest solution.
 
 
 theorem satisfied_by_153846 : ProblemPredicate 153846 := by
-  -- This proof used to be the single line `norm_num [ProblemPredicate]`.
-  -- After leanprover/lean4#2790, that triggers a max recursion depth exception.
-  -- As a workaround, we manually apply `Nat.digits_of_two_le_of_pos` a few times
-  -- before invoking `norm_num`.
-  unfold ProblemPredicate
-  have two_le_ten : 2 ≤ 10 := by norm_num
-  rw [Nat.digits_of_two_le_of_pos two_le_ten (by norm_num)]
-  rw [Nat.digits_of_two_le_of_pos two_le_ten (by norm_num)]
-  rw [Nat.digits_of_two_le_of_pos two_le_ten (by norm_num)]
-  rw [Nat.digits_of_two_le_of_pos two_le_ten (by norm_num)]
-  norm_num
+  norm_num [ProblemPredicate]
   decide
 #align imo1962_q1.satisfied_by_153846 Imo1962Q1.satisfied_by_153846
 

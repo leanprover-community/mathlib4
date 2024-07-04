@@ -41,8 +41,6 @@ convex hull, caratheodory
 
 open Set Finset
 
-open BigOperators
-
 universe u
 
 variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
@@ -69,15 +67,15 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     exact mem.2
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
   let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
-  have hk : k i₀ = 0 := by field_simp [ne_of_gt hg]
-  have ksum : ∑ e in t.erase i₀, k e = 1 := by
+  have hk : k i₀ = 0 := by field_simp [k, ne_of_gt hg]
+  have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc
-      ∑ e in t.erase i₀, k e = ∑ e in t, k e := by
+      ∑ e ∈ t.erase i₀, k e = ∑ e ∈ t, k e := by
         conv_rhs => rw [← insert_erase hi₀, sum_insert (not_mem_erase i₀ t), hk, zero_add]
-      _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) := rfl
+      _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
-  refine' ⟨⟨i₀, hi₀⟩, k, _, by convert ksum, _⟩
-  · simp only [and_imp, sub_nonneg, mem_erase, Ne.def, Subtype.coe_mk]
+  refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert ksum, ?_⟩
+  · simp only [k, and_imp, sub_nonneg, mem_erase, Ne, Subtype.coe_mk]
     intro e _ het
     by_cases hes : e ∈ s
     · have hge : 0 < g e := by
@@ -89,15 +87,15 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
         _ ≤ 0 := by
           apply mul_nonpos_of_nonneg_of_nonpos
           · apply div_nonneg (fpos i₀ (mem_of_subset (filter_subset _ t) mem)) (le_of_lt hg)
-          · simpa only [mem_filter, het, true_and_iff, not_lt] using hes
+          · simpa only [s, mem_filter, het, true_and_iff, not_lt] using hes
         _ ≤ f e := fpos e het
   · rw [Subtype.coe_mk, centerMass_eq_of_sum_1 _ id ksum]
     calc
-      ∑ e in t.erase i₀, k e • e = ∑ e in t, k e • e := sum_erase _ (by rw [hk, zero_smul])
-      _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) • e := rfl
+      ∑ e ∈ t.erase i₀, k e • e = ∑ e ∈ t, k e • e := sum_erase _ (by rw [hk, zero_smul])
+      _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) • e := rfl
       _ = t.centerMass f id := by
         simp only [sub_smul, mul_smul, sum_sub_distrib, ← smul_sum, gcombo, smul_zero, sub_zero,
-          centerMass, fsum, inv_one, one_smul, id.def]
+          centerMass, fsum, inv_one, one_smul, id]
 #align caratheodory.mem_convex_hull_erase Caratheodory.mem_convexHull_erase
 
 variable {s : Set E} {x : E} (hx : x ∈ convexHull 𝕜 s)
@@ -174,14 +172,14 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   simp only [t.convexHull_eq, exists_prop, Set.mem_setOf_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
   let t' := t.filter fun i => w i ≠ 0
-  refine' ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), _, _, _, _, _⟩
+  refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩
   · rw [Subtype.range_coe_subtype]
     exact Subset.trans (Finset.filter_subset _ t) ht₁
   · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
   · exact fun i =>
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
   · erw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
-  · change (∑ i : t' in t'.attach, (fun e => w e • e) ↑i) = x
+  · change (∑ i ∈ t'.attach, (fun e => w e • e) ↑i) = x
     erw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
     · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃
       exact hw₃

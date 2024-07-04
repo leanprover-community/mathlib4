@@ -63,8 +63,7 @@ theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
       haveI : Mono (f ≫ i.hom) := mono_comp _ _
       constructor
       · intro h w
-        have j : IsIso (f ≫ i.hom)
-        infer_instance
+        have j : IsIso (f ≫ i.hom) := by infer_instance
         rw [Simple.mono_isIso_iff_nonzero] at j
         subst w
         simp at j
@@ -205,7 +204,7 @@ theorem Biprod.isIso_inl_iff_isZero (X Y : C) : IsIso (biprod.inl : X ⟶ X ⊞ 
 /-- Any simple object in a preadditive category is indecomposable. -/
 theorem indecomposable_of_simple (X : C) [Simple X] : Indecomposable X :=
   ⟨Simple.not_isZero X, fun Y Z i => by
-    refine' or_iff_not_imp_left.mpr fun h => _
+    refine or_iff_not_imp_left.mpr fun h => ?_
     rw [IsZero.iff_isSplitMono_eq_zero (biprod.inl : Y ⟶ Y ⊞ Z)] at h
     change biprod.inl ≠ 0 at h
     have : Simple (Y ⊞ Z) := Simple.of_iso i.symm -- Porting note: this instance is needed
@@ -232,7 +231,7 @@ instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
     change mk f = ⊥ ∨ mk f = ⊤
     by_cases h : f = 0
     · exact Or.inl (mk_eq_bot_iff_zero.mpr h)
-    · refine' Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
+    · refine Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
 theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by

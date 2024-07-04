@@ -32,9 +32,7 @@ namespace CategoryTheory.Pretriangulated
 open CategoryTheory.Category
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
-
 variable [HasShift C ℤ]
-
 variable (X : C)
 
 /-- If you rotate a triangle, you get another triangle.
@@ -86,8 +84,7 @@ variable (C)
 /-- Rotating triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]
-def rotate : Triangle C ⥤ Triangle C
-    where
+def rotate : Triangle C ⥤ Triangle C where
   obj := Triangle.rotate
   map f :=
   { hom₁ := f.hom₂
@@ -101,8 +98,7 @@ def rotate : Triangle C ⥤ Triangle C
 /-- The inverse rotation of triangles gives an endofunctor on the category of triangles in `C`.
 -/
 @[simps]
-def invRotate : Triangle C ⥤ Triangle C
-    where
+def invRotate : Triangle C ⥤ Triangle C where
   obj := Triangle.invRotate
   map f :=
   { hom₁ := f.hom₃⟦-1⟧'
@@ -120,7 +116,6 @@ def invRotate : Triangle C ⥤ Triangle C
 #align category_theory.pretriangulated.inv_rotate CategoryTheory.Pretriangulated.invRotate
 
 variable {C}
-
 variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
 
 /-- The unit isomorphism of the auto-equivalence of categories `triangleRotation C` of
@@ -144,8 +139,7 @@ variable (C)
 /-- Rotating triangles gives an auto-equivalence on the category of triangles in `C`.
 -/
 @[simps]
-def triangleRotation : Equivalence (Triangle C) (Triangle C)
-    where
+def triangleRotation : Equivalence (Triangle C) (Triangle C) where
   functor := rotate C
   inverse := invRotate C
   unitIso := rotCompInvRot
@@ -154,12 +148,12 @@ def triangleRotation : Equivalence (Triangle C) (Triangle C)
 
 variable {C}
 
-instance : IsEquivalence (rotate C) := by
-  change IsEquivalence (triangleRotation C).functor
+instance : (rotate C).IsEquivalence := by
+  change (triangleRotation C).functor.IsEquivalence
   infer_instance
 
-instance : IsEquivalence (invRotate C) := by
-  change IsEquivalence (triangleRotation C).inverse
+instance : (invRotate C).IsEquivalence := by
+  change (triangleRotation C).inverse.IsEquivalence
   infer_instance
 
 end CategoryTheory.Pretriangulated
