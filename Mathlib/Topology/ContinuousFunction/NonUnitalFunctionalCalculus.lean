@@ -71,6 +71,7 @@ class NonUnitalContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outPara
     [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
+  predicate_zero : p 0
   exists_cfc_of_predicate : ∀ a, p a → ∃ φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A,
     ClosedEmbedding φ ∧ φ ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a ∧
       (∀ f, σₙ R (φ f) = Set.range f) ∧ ∀ f, p (φ f)
@@ -259,8 +260,12 @@ lemma cfcₙ_id' : cfcₙ (fun x : R ↦ x) a = a := cfcₙ_id R a
 lemma cfcₙ_map_quasispectrum : σₙ R (cfcₙ f a) = f '' σₙ R a := by
   simp [cfcₙ_apply f a, cfcₙHom_map_quasispectrum (p := p)]
 
-lemma cfcₙ_predicate : p (cfcₙ f a) :=
-  cfcₙ_apply f a ▸ cfcₙHom_predicate (A := A) ha _
+variable (R) in
+lemma cfcₙ_predicate_zero : p 0 :=
+  NonUnitalContinuousFunctionalCalculus.predicate_zero (R := R)
+
+lemma cfcₙ_predicate (f : R → R) (a : A) : p (cfcₙ f a) :=
+  cfcₙ_cases p a f (cfcₙ_predicate_zero R) fun _ _ _ ↦ cfcₙHom_predicate ..
 
 lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
     cfcₙ f a = cfcₙ g a := by
@@ -429,9 +434,22 @@ lemma cfcₙ_comp_star (hf : ContinuousOn f (star '' (σₙ R a)) := by cfc_cont
     cfcₙ (f <| star ·) a = cfcₙ f (star a) := by
   rw [cfcₙ_comp' f star a, cfcₙ_star_id a]
 
-lemma eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a := by cfc_tac) :
+lemma CFC.eq_zero_of_quasispectrum_eq_zero (h_spec : σₙ R a ⊆ {0}) (ha : p a := by cfc_tac) :
     a = 0 := by
   simpa [cfcₙ_id R a] using cfcₙ_congr (a := a) (f := id) (g := fun _ : R ↦ 0) fun x ↦ by simp_all
+
+lemma CFC.quasispectrum_zero_eq : σₙ R (0 : A) = {0} := by
+  refine Set.eq_singleton_iff_unique_mem.mpr ⟨quasispectrum.zero_mem R 0, fun x hx ↦ ?_⟩
+  rw [← cfcₙ_zero R (0 : A),
+    cfcₙ_map_quasispectrum _ _ (by cfc_cont_tac) (by cfc_zero_tac) (cfcₙ_predicate_zero R)] at hx
+  simp_all
+
+@[simp] lemma cfcₙ_apply_zero {f : R → R} : cfcₙ f (0 : A) = 0 := by
+  by_cases hf0 : f 0 = 0
+  · nth_rw 2 [← cfcₙ_zero R 0]
+    apply cfcₙ_congr
+    simpa [CFC.quasispectrum_zero_eq]
+  · exact cfcₙ_apply_of_not_map_zero _ hf0
 
 end CFCn
 
@@ -583,6 +601,7 @@ variable [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable [h_cpct : ∀ a : A, CompactSpace (spectrum R a)]
 
 instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctionalCalculus R p where
+  predicate_zero := cfc_predicate_zero R
   exists_cfc_of_predicate a ha := by
     have h_cpct' : CompactSpace (quasispectrum R a) := by
       specialize h_cpct a
