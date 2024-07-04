@@ -6,6 +6,7 @@ Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Properties of the extended logarithm and exponential
@@ -175,3 +176,7 @@ lemma _root_.Measurable.ereal_exp {α : Type*} {_ : MeasurableSpace α}
 end Measurability
 
 end ENNReal
+
+instance : PolishSpace EReal :=
+  ClosedEmbedding.polishSpace ⟨ENNReal.logOrderIso.symm.toHomeomorph.embedding,
+    ENNReal.logOrderIso.symm.toHomeomorph.range_coe ▸ isClosed_univ⟩
