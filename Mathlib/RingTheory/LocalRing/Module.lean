@@ -132,11 +132,13 @@ theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
   rw [← LinearMap.comp_apply, ← LinearMap.rTensor_comp, hfexact.linearMap_comp_eq_zero]
   simp
 
+namespace Module
+
 /--
 If `M` is a finitely presented module over a local ring `(R, 𝔪)` such that `m ⊗ M → M` is
 injective, then `M` is free.
 -/
-theorem Module.free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
+theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     (H : Function.Injective ((𝔪).subtype.rTensor M)) :
     Module.Free R M := by
   let I := Module.Free.ChooseBasisIndex k (k ⊗[R] M)
@@ -188,7 +190,7 @@ theorem Module.free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation
   rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
   simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
 
-theorem Module.free_of_flat_of_localRing [Module.FinitePresentation R P] [Module.Flat R P] :
+theorem free_of_flat_of_localRing [Module.FinitePresentation R P] [Module.Flat R P] :
     Module.Free R P :=
   free_of_maximalIdeal_rTensor_injective
     (Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective)
@@ -197,7 +199,7 @@ theorem Module.free_of_flat_of_localRing [Module.FinitePresentation R P] [Module
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
 `M` finite and `N` finite free, then `k ⊗ M → k ⊗ N` is injective implies `P` is free.
 -/
-theorem Module.free_of_lTensor_residueField_injective
+theorem free_of_lTensor_residueField_injective
     [Module.Finite R M] [Module.Finite R N] [Module.Free R N]
     (hf : Function.Injective (f.lTensor k)) :
     Module.Free R P := by
@@ -209,6 +211,8 @@ theorem Module.free_of_lTensor_residueField_injective
     h hg (LinearMap.exact_subtype_mkQ 𝔪) (Submodule.mkQ_surjective _)
     ((LinearMap.lTensor_inj_iff_rTensor_inj _ _).mp hf)
     (Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective)
+
+end Module
 
 /--
 Given a linear map `l : M → N` over a local ring `(R, 𝔪, k)`
