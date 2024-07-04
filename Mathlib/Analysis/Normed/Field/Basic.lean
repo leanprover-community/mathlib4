@@ -8,6 +8,9 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Group.Rat
+import Mathlib.Analysis.Normed.Group.Submodule
+import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.MetricSpace.DilationEquiv

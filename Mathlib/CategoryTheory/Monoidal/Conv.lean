@@ -28,17 +28,16 @@ variable {M : Comon_ C} {N : Mon_ C}
 instance : One (Conv M N) where
   one := M.counit ≫ N.one
 
-@[simp, nolint simpNF] -- This simpNF incorrectly claims this simp lemma can not be applied.
 theorem one_eq : (1 : Conv M N) = M.counit ≫ N.one := rfl
 
 instance : Mul (Conv M N) where
   mul := fun f g => M.comul ≫ f ▷ M.X ≫ N.X ◁ g ≫ N.mul
 
-@[simp] theorem mul_eq (f g : Conv M N) : f * g = M.comul ≫ f ▷ M.X ≫ N.X ◁ g ≫ N.mul := rfl
+theorem mul_eq (f g : Conv M N) : f * g = M.comul ≫ f ▷ M.X ≫ N.X ◁ g ≫ N.mul := rfl
 
 instance : Monoid (Conv M N) where
-  one_mul f := by simp [← whisker_exchange_assoc]
-  mul_one f := by simp [← whisker_exchange_assoc]
+  one_mul f := by simp [one_eq, mul_eq, ← whisker_exchange_assoc]
+  mul_one f := by simp [one_eq, mul_eq, ← whisker_exchange_assoc]
   mul_assoc f g h := by
     simp only [mul_eq]
     simp only [comp_whiskerRight, whisker_assoc, Category.assoc,

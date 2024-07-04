@@ -11,6 +11,7 @@ import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Minimal
 import Mathlib.Order.Nat
 
 #align_import data.finset.lattice from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
@@ -1611,12 +1612,10 @@ theorem lt_min'_iff : x < s.min' H ↔ ∀ y ∈ s, x < y :=
   @max'_lt_iff αᵒᵈ _ _ H _
 #align finset.lt_min'_iff Finset.lt_min'_iff
 
-theorem max'_eq_sup' : s.max' H = s.sup' H id :=
-  eq_of_forall_ge_iff fun _ => (max'_le_iff _ _).trans (sup'_le_iff _ _).symm
+theorem max'_eq_sup' : s.max' H = s.sup' H id := rfl
 #align finset.max'_eq_sup' Finset.max'_eq_sup'
 
-theorem min'_eq_inf' : s.min' H = s.inf' H id :=
-  @max'_eq_sup' αᵒᵈ _ s H
+theorem min'_eq_inf' : s.min' H = s.inf' H id := rfl
 #align finset.min'_eq_inf' Finset.min'_eq_inf'
 
 /-- `{a}.max' _` is `a`. -/
@@ -2107,8 +2106,27 @@ end Set
 
 namespace Finset
 
-/-! ### Interaction with big lattice/set operations -/
+section minimal
 
+variable [DecidableEq α] {P : Finset α → Prop} {s : Finset α}
+
+theorem mem_maximals_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
+    s ∈ maximals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
+  simp only [mem_maximals_iff, and_congr_right_iff, Set.mem_setOf_eq]
+  refine fun _ ↦ ⟨fun h x hx hxs ↦ hx ?_, fun h t ht hst ↦ hst.antisymm fun x hxt ↦ ?_⟩
+  · rw [h hxs (subset_insert _ _)]; exact mem_insert_self x s
+  exact by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))
+
+theorem mem_minimals_iff_forall_erase (hP : ∀ ⦃s t⦄, P s → s ⊆ t → P t) :
+    s ∈ minimals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) := by
+  simp only [mem_minimals_iff, Set.mem_setOf_eq, and_congr_right_iff]
+  refine fun _ ↦ ⟨fun h x hx hxs ↦ ?_, fun h t ht hst ↦ Eq.symm <| hst.antisymm (fun x hxs ↦ ?_)⟩
+  · rw [(h hxs (erase_subset x s))] at hx; simp at hx
+  exact by_contra fun hxt ↦ h x hxs (hP ht <| subset_erase.2 ⟨hst, hxt⟩)
+
+end minimal
+
+/-! ### Interaction with big lattice/set operations -/
 
 section Lattice
 
