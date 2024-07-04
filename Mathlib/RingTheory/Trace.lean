@@ -365,7 +365,7 @@ open Algebra IntermediateField
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
 theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
-    (hE : (minpoly K pb.gen).Splits (algebraMap K E)) (hfx : (minpoly K pb.gen).Separable) :
+    (hE : (minpoly K pb.gen).Splits (algebraMap K E)) (hfx : IsSeparable K pb.gen) :
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
@@ -384,13 +384,13 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
 
 variable [IsAlgClosed E]
 
-theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
+theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparable K F]
     (pb : PowerBasis K L) :
     ∑ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
       finrank L F •
         (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ : L →ₐ[K] E => σ pb.gen := by
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
-  haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
+  haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
   · rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
@@ -407,9 +407,9 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
         IsScalarTower.coe_toAlgHom']
 #align sum_embeddings_eq_finrank_mul sum_embeddings_eq_finrank_mul
 
-theorem trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L} :
+theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
-  have hx := IsSeparable.isIntegral K x
+  have hx := Algebra.IsSeparable.isIntegral K x
   let pb := adjoin.powerBasis hx
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← adjoin.powerBasis_gen hx,
     trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _)]
@@ -418,8 +418,8 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L
   · convert (sum_embeddings_eq_finrank_mul L E pb).symm
     ext
     simp
-  · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
-    exact IsSeparable.separable K _
+  · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
+    exact Algebra.IsSeparable.isSeparable K _
 #align trace_eq_sum_embeddings trace_eq_sum_embeddings
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
@@ -560,7 +560,7 @@ section Field
 
 variable (K) (E : Type z) [Field E]
 variable [Algebra K E]
-variable [Module.Finite K L] [IsSeparable K L] [IsAlgClosed E]
+variable [Module.Finite K L] [Algebra.IsSeparable K L] [IsAlgClosed E]
 variable (b : κ → L) (pb : PowerBasis K L)
 
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans : (traceMatrix K b).map (algebraMap K E) =
@@ -583,7 +583,7 @@ open Algebra
 
 variable (pb : PowerBasis K L)
 
-theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis) ≠ 0 := by
+theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K pb.basis) ≠ 0 := by
   suffices algebraMap K (AlgebraicClosure L) (det (traceMatrix K pb.basis)) ≠ 0 by
     refine mt (fun ht => ?_) this
     rw [ht, RingHom.map_zero]
@@ -599,7 +599,7 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
   · rw [AlgHom.card, pb.finrank]
 #align det_trace_matrix_ne_zero' det_traceMatrix_ne_zero'
 
-theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K L) :
+theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [DecidableEq ι] (b : Basis ι K L) :
     det (BilinForm.toMatrix b (traceForm K L)) ≠ 0 := by
   haveI : FiniteDimensional K L := FiniteDimensional.of_fintype_basis b
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
@@ -623,13 +623,13 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
 
 variable (K L)
 
-theorem traceForm_nondegenerate [FiniteDimensional K L] [IsSeparable K L] :
+theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
     (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
 #align trace_form_nondegenerate traceForm_nondegenerate
 
-theorem Algebra.trace_ne_zero [FiniteDimensional K L] [IsSeparable K L] :
+theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Algebra.trace K L ≠ 0 := by
   intro e
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
@@ -638,7 +638,7 @@ theorem Algebra.trace_ne_zero [FiniteDimensional K L] [IsSeparable K L] :
   rw [← pb.finrank, ← Fin.pos_iff_nonempty]
   exact finrank_pos
 
-theorem Algebra.trace_surjective [FiniteDimensional K L] [IsSeparable K L] :
+theorem Algebra.trace_surjective [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Function.Surjective (Algebra.trace K L) := by
   rw [← LinearMap.range_eq_top]
   apply (IsSimpleOrder.eq_bot_or_eq_top (α := Ideal K) _).resolve_left
@@ -651,7 +651,7 @@ variable {K L}
 The dual basis of a powerbasis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
 with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 -/
-lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L]
+lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSeparable K L]
     (pb : PowerBasis K L) (i) :
     (Algebra.traceForm K L).dualBasis (traceForm_nondegenerate K L) pb.basis i =
       (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
