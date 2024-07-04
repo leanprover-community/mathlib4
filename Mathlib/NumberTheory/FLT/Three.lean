@@ -556,68 +556,46 @@ private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 :=
   rw [← S.H, a_cube_add_b_cube_eq_mul]
   ring
 
-private lemma x_eq_unit_mul_cube : ∃ (u₁ : (𝓞 K)ˣ) (X : 𝓞 K), S.x = u₁ * X ^ 3 := by
-  have h1 : S.x * (S.y * S.z * S.u⁻¹) = S.w ^ 3 := by
-    simp [← mul_assoc, x_mul_y_mul_z_eq_u_mul_w_cube, mul_comm _ (S.w ^ 3)]
-  have h2 : IsCoprime S.x (S.y * S.z * S.u⁻¹) :=
-    (isCoprime_mul_unit_right_right (Units.isUnit _) S.x _).2 <|
-      IsCoprime.mul_right S.isCoprime_x_y S.isCoprime_x_z
-  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨X, ⟨u₁, hX⟩⟩
-  exact ⟨u₁, X, by simp [← hX, mul_comm]⟩
+private lemma exists_cube_associated_x : ∃ (X : 𝓞 K), Associated (X ^ 3) S.x := by
+  refine exists_associated_pow_of_associated_mul_pow (c := S.w)
+    (IsCoprime.mul_right S.isCoprime_x_y S.isCoprime_x_z) ⟨S.u⁻¹, (Units.mul_right_inj S.u).1 ?_⟩
+  rw [← x_mul_y_mul_z_eq_u_mul_w_cube S, mul_comm _ S.u⁻¹.1, ← mul_assoc, Units.mul_inv, one_mul,
+    mul_assoc]
 
-private lemma y_eq_unit_mul_cube : ∃ (u₂ : (𝓞 K)ˣ) (Y : 𝓞 K), S.y = u₂ * Y ^ 3 := by
-  have h1 : S.y * (S.x * S.z * S.u⁻¹) = S.w ^ 3 := by
-    rw [← mul_assoc, ← mul_assoc S.y, mul_comm S.y, x_mul_y_mul_z_eq_u_mul_w_cube]
-    simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
-  have h2 : IsCoprime S.y (S.x * S.z * S.u⁻¹) :=
-    (isCoprime_mul_unit_right_right (Units.isUnit _) S.y _).2 <|
-      IsCoprime.mul_right S.isCoprime_x_y.symm S.isCoprime_y_z
-  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Y, ⟨u₂, hY⟩⟩
-  exact ⟨u₂, Y, by simp [← hY, mul_comm]⟩
+private lemma exists_cube_associated_y : ∃ (Y : 𝓞 K), Associated (Y ^ 3) S.y := by
+  refine exists_associated_pow_of_associated_mul_pow (c := S.w)
+    (IsCoprime.mul_right S.isCoprime_x_y.symm S.isCoprime_y_z)
+    ⟨S.u⁻¹, (Units.mul_right_inj S.u).1 ?_⟩
+  rw [← x_mul_y_mul_z_eq_u_mul_w_cube S, mul_comm _ S.u⁻¹.1, ← mul_assoc, Units.mul_inv, one_mul,
+    mul_comm S.x S.y, mul_assoc]
 
-private lemma z_eq_unit_mul_cube : ∃ (u₃ : (𝓞 K)ˣ) (Z : 𝓞 K), S.z = u₃ * Z ^ 3 := by
-  have h1 : S.z * (S.x * S.y * S.u⁻¹) = S.w ^ 3 := by
-    rw [← mul_assoc, ← mul_assoc S.z, mul_comm S.z, mul_assoc S.x, mul_comm S.z, ← mul_assoc,
-      x_mul_y_mul_z_eq_u_mul_w_cube]
-    simp only [mul_comm _ (S.w ^ 3), mul_assoc, mul_right_inv, Units.mul_inv, mul_one]
-  have h2 : IsCoprime S.z (S.x * S.y * S.u⁻¹) :=
-    (isCoprime_mul_unit_right_right (Units.isUnit _) S.z _).2 <|
-      IsCoprime.mul_right S.isCoprime_x_z.symm S.isCoprime_y_z.symm
-  rcases exists_associated_pow_of_mul_eq_pow' h2 h1 with ⟨Z, ⟨u₃, hZ⟩⟩
-  exact ⟨u₃, Z, by simp [← hZ, mul_comm]⟩
+private lemma exists_cube_associated_z : ∃ (Z : 𝓞 K), Associated (Z ^ 3) S.z := by
+  refine exists_associated_pow_of_associated_mul_pow (c := S.w)
+    (IsCoprime.mul_right S.isCoprime_x_z.symm S.isCoprime_y_z.symm)
+    ⟨S.u⁻¹, (Units.mul_right_inj S.u).1 ?_⟩
+  rw [← x_mul_y_mul_z_eq_u_mul_w_cube S, mul_comm _ S.u⁻¹.1, ← mul_assoc, Units.mul_inv, one_mul,
+    mul_assoc, mul_comm S.z, mul_assoc]
 
 /-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
-`S.x = S.u₁ * S.X ^ 3` -/
-private noncomputable def u₁ := (x_eq_unit_mul_cube S).choose
-
-/-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
-`S.x = S.u₁ * S.X ^ 3` -/
-private noncomputable def X := (x_eq_unit_mul_cube S).choose_spec.choose
-
-private lemma u₁_X_spec : S.x = S.u₁ * S.X ^ 3 := by
-  exact (x_eq_unit_mul_cube S).choose_spec.choose_spec
+`S.X ^ 3 * S.u₁ = S.x` -/
+private noncomputable def X := (exists_cube_associated_x S).choose
+private noncomputable def u₁ := (exists_cube_associated_x S).choose_spec.choose
+private lemma X_u₁_spec : S.X ^ 3 * S.u₁ = S.x :=
+  (exists_cube_associated_x S).choose_spec.choose_spec
 
 /-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
-`S.y = S.u₂ * S.Y ^ 3` -/
-private noncomputable def u₂ := (y_eq_unit_mul_cube S).choose
-
-/-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
-`S.y = S.u₂ * S.Y ^ 3` -/
-private noncomputable def Y := (y_eq_unit_mul_cube S).choose_spec.choose
-
-private lemma u₂_Y_spec : S.y = S.u₂ * S.Y ^ 3 := by
-  exact (y_eq_unit_mul_cube S).choose_spec.choose_spec
+`S.Y ^ 3 * S.u₂ = S.y` -/
+private noncomputable def Y := (exists_cube_associated_y S).choose
+private noncomputable def u₂ := (exists_cube_associated_y S).choose_spec.choose
+private lemma Y_u₂_spec : S.Y ^ 3 * S.u₂ = S.y :=
+  (exists_cube_associated_y S).choose_spec.choose_spec
 
 /-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
-`S.z = S.u₃ * S.Z ^ 3` -/
-private noncomputable def u₃ := (z_eq_unit_mul_cube S).choose
-
-/-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
-`S.z = S.u₃ * S.Z ^ 3` -/
-private noncomputable def Z := (z_eq_unit_mul_cube S).choose_spec.choose
-
-private lemma u₃_Z_spec : S.z = S.u₃ * S.Z ^ 3 := by
-  exact (z_eq_unit_mul_cube S).choose_spec.choose_spec
+`S.Z ^ 3 * S.u₃ = S.z` -/
+private noncomputable def Z := (exists_cube_associated_z S).choose
+private noncomputable def u₃ :=(exists_cube_associated_z S).choose_spec.choose
+private lemma Z_u₃_spec : S.Z ^ 3 * S.u₃ = S.z :=
+  (exists_cube_associated_z S).choose_spec.choose_spec
 
 end Solution
 
