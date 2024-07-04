@@ -484,7 +484,7 @@ lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
   apply hζ.zeta_sub_one_prime'.pow_dvd_of_dvd_mul_left _ S.lambda_not_dvd_y
   have := S.two_le_multiplicity
   rw [show 3 * multiplicity S = 3 * multiplicity S - 2 + 1 + 1 by omega, pow_succ, pow_succ,
-    show (S.a + S.b) * (λ * y S) * (λ * z S) = (S.a + S.b) * y S * z S * λ * λ by ring,] at h
+    show (S.a + S.b) * (λ * y S) * (λ * z S) = (S.a + S.b) * y S * z S * λ * λ by ring] at h
   simp only [mul_dvd_mul_iff_right hζ.zeta_sub_one_prime'.ne_zero] at h
   rwa [show (S.a + S.b) * y S * z S = y S * (z S * (S.a + S.b)) by ring] at h
 
