@@ -567,21 +567,21 @@ private lemma exists_cube_associated :
     exists_associated_pow_of_associated_mul_pow S.isCoprime_x_y.symm (mul_comm _ S.x ▸ h₃),
     exists_associated_pow_of_associated_mul_pow h₁.symm (mul_comm _ S.z ▸ h₂)⟩
 
-/-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
+/-- Given `S : Solution`, we let `S.u₁` and `S.X` be any element such that
 `S.X ^ 3 * S.u₁ = S.x` -/
 private noncomputable def X := (exists_cube_associated S).1.choose
 private noncomputable def u₁ := (exists_cube_associated S).1.choose_spec.choose
 private lemma X_u₁_spec : S.X ^ 3 * S.u₁ = S.x :=
   (exists_cube_associated S).1.choose_spec.choose_spec
 
-/-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
+/-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any element such that
 `S.Y ^ 3 * S.u₂ = S.y` -/
 private noncomputable def Y := (exists_cube_associated S).2.1.choose
 private noncomputable def u₂ := (exists_cube_associated S).2.1.choose_spec.choose
 private lemma Y_u₂_spec : S.Y ^ 3 * S.u₂ = S.y :=
   (exists_cube_associated S).2.1.choose_spec.choose_spec
 
-/-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
+/-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any element such that
 `S.Z ^ 3 * S.u₃ = S.z` -/
 private noncomputable def Z := (exists_cube_associated S).2.2.choose
 private noncomputable def u₃ :=(exists_cube_associated S).2.2.choose_spec.choose
