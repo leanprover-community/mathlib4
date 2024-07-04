@@ -44,7 +44,7 @@ variable {C D}
 
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
-private def functor_obj' (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D where
+def functor_obj' (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D where
   obj X :=
   { X := A.X.obj X
     one := A.one.app X
@@ -63,7 +63,7 @@ private def functor_obj' (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D where
 to a functor into the category of monoid objects.
 -/
 @[simps]
-private def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
+def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
   obj := functor_obj'
   map f :=
   { app := fun X =>
@@ -74,7 +74,7 @@ private def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
 /-- A functor to the category of monoid objects can be translated as a monoid object
 in the functor category. -/
 @[simps]
-private def inverse_obj' (F : C ⥤ Mon_ D) : Mon_ (C ⥤ D) where
+def inverse_obj' (F : C ⥤ Mon_ D) : Mon_ (C ⥤ D) where
   X := F ⋙ Mon_.forget D
   one := { app := fun X => (F.obj X).one }
   mul := { app := fun X => (F.obj X).mul }
@@ -83,7 +83,7 @@ private def inverse_obj' (F : C ⥤ Mon_ D) : Mon_ (C ⥤ D) where
 to a monoid object in the functor category
 -/
 @[simps]
-private def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
+def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
   obj := inverse_obj'
   map α :=
   { hom :=
@@ -93,7 +93,7 @@ private def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
 /-- The unit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
 @[simps!]
-private def unitIso : 𝟭 (Mon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
+def unitIso : 𝟭 (Mon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A =>
   { hom := { hom := { app := fun _ => 𝟙 _ } }
     inv := { hom := { app := fun _ => 𝟙 _ } } })
@@ -101,7 +101,7 @@ private def unitIso : 𝟭 (Mon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
 /-- The counit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
 @[simps!]
-private def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ Mon_ D) :=
+def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ Mon_ D) :=
   NatIso.ofComponents (fun A =>
     NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }))
 
