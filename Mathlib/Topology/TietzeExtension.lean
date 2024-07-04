@@ -128,7 +128,7 @@ instance Prod.instTietzeExtension {Y : Type v} {Z : Type w} [TopologicalSpace Y]
 
 instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y] :
     TietzeExtension.{u, v} Y where
-  exists_restrict_eq' _ _ f := ⟨.const _ default, by ext x; exact Subsingleton.elim _ _⟩
+  exists_restrict_eq' _ _ f := ⟨.const _ default, by ext; subsingleton⟩
 
 /-- Any retract of a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y]

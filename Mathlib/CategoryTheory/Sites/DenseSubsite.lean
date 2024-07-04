@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.CoverLifting
+import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 #align_import category_theory.sites.dense_subsite from "leanprover-community/mathlib"@"1d650c2e131f500f3c17f33b4d19d2ea15987f2c"

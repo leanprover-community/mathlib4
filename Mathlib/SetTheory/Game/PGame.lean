@@ -97,17 +97,13 @@ An interested reader may like to formalise some of the material from
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1997]
 -/
 
-set_option autoImplicit true
-
 namespace SetTheory
 
 open Function Relation
 
--- We'd like to be able to use multi-character auto-implicits in this file.
-set_option relaxedAutoImplicit true
-
 /-! ### Pre-game moves -/
 
+universe u
 
 /-- The type of pre-games, before we have quotiented
   by equivalence (`PGame.Setoid`). In ZFC, a combinatorial game is constructed from
@@ -301,6 +297,8 @@ macro "pgame_wf_tac" : tactic =>
 -- Register some consequences of pgame_wf_tac as simp-lemmas for convenience
 -- (which are applied by default for WF goals)
 
+variable {xl xr : Type u}
+
 -- This is different from mk_right from the POV of the simplifier,
 -- because the unifier can't solve `xr =?= RightMoves (mk xl xr xL xR)` at reducible transparency.
 @[simp]
@@ -308,19 +306,19 @@ theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightM
     Subsequent (xR j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveRight_mk_left (xL : xl → PGame) (j) :
+@[simp] theorem Subsequent.moveRight_mk_left {xR : xr → PGame} {i : xl} (xL : xl → PGame) (j) :
     Subsequent ((xL i).moveRight j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveRight_mk_right (xR : xr → PGame) (j) :
+@[simp] theorem Subsequent.moveRight_mk_right {xL : xl → PGame} {i : xr} (xR : xr → PGame) (j) :
     Subsequent ((xR i).moveRight j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveLeft_mk_left (xL : xl → PGame) (j) :
+@[simp] theorem Subsequent.moveLeft_mk_left {xR : xr → PGame} {i : xl} (xL : xl → PGame) (j) :
     Subsequent ((xL i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
-@[simp] theorem Subsequent.moveLeft_mk_right (xR : xr → PGame) (j) :
+@[simp] theorem Subsequent.moveLeft_mk_right {xL : xl → PGame} {i : xr} (xR : xr → PGame) (j) :
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
@@ -735,7 +733,8 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
 #noalign pgame.upper_bound_mem_upper_bounds
 
 /-- A small family of pre-games is bounded above. -/
-lemma bddAbove_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (Set.range f) := by
+lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
+    BddAbove (Set.range f) := by
   let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
@@ -753,7 +752,8 @@ lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
 #noalign pgame.lower_bound_mem_lower_bounds
 
 /-- A small family of pre-games is bounded below. -/
-lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (Set.range f) := by
+lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
+    BddBelow (Set.range f) := by
   let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
     fun x ↦ moveRight _ x.2⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩

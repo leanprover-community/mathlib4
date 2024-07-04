@@ -29,9 +29,6 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
  - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
 
-set_option autoImplicit true
-
-
 open FiniteDimensional Polynomial
 
 open scoped Classical Polynomial
@@ -551,9 +548,8 @@ written, and it gives true `{x₁, x₂, ..., xₙ}` sets in the `adjoin` term. 
 
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/
-private partial def mkInsertTerm [Monad m] [MonadQuotation m] (xs : TSyntaxArray `term) : m Term :=
-  run 0
-where
+private partial def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
+    (xs : TSyntaxArray `term) : m Term := run 0 where
   run (i : Nat) : m Term := do
     if i + 1 == xs.size then
       ``(singleton $(xs[i]!))
