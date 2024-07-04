@@ -551,12 +551,11 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
   let Xᵢ := pullback f (𝒰.map i)
   let Yᵢ := pullback g (𝒰.map i)
   let W := pullback (pullback.snd : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
-  have this : IsLimit (PullbackCone.mk pullback.snd (pullback.fst ≫ pullback.fst) _) :=
+  have this :=
     pasteHorizMkIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback g (𝒰.map i))
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback (pullback.snd : pullback g (𝒰.map i) ⟶ _)
-        (pullback.snd : pullback f (𝒰.map i) ⟶ _))
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
   refine
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
