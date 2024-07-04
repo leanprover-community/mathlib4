@@ -458,9 +458,8 @@ theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
   rfl
 #align pi.coe_int Pi.intCast_def
 
--- 2024-04-05
-@[deprecated] alias int_apply := intCast_apply
-@[deprecated] alias coe_int := intCast_def
+@[deprecated (since := "2024-04-05")] alias int_apply := intCast_apply
+@[deprecated (since := "2024-04-05")] alias coe_int := intCast_def
 
 end Pi
 

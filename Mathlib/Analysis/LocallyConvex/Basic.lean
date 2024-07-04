@@ -258,7 +258,7 @@ theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
     exact ((isOpenMap_smul₀ h).mapsTo_interior <| hA.smul_mem ha).image_subset
 #align balanced_zero_union_interior Balanced.zero_insert_interior
 
-@[deprecated Balanced.zero_insert_interior]
+@[deprecated Balanced.zero_insert_interior (since := "2024-02-03")]
 theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) : Balanced 𝕜 ((0 : Set E) ∪ interior A) :=
   hA.zero_insert_interior
 

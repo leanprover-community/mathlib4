@@ -92,10 +92,32 @@ theorem IsVonNBounded.subset {s₁ s₂ : Set E} (h : s₁ ⊆ s₂) (hs₂ : Is
     IsVonNBounded 𝕜 s₁ := fun _ hV => (hs₂ hV).mono_right h
 #align bornology.is_vonN_bounded.subset Bornology.IsVonNBounded.subset
 
+@[simp]
+theorem isVonNBounded_union {s t : Set E} :
+    IsVonNBounded 𝕜 (s ∪ t) ↔ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
+  simp only [IsVonNBounded, absorbs_union, forall_and]
+
 /-- The union of two bounded sets is bounded. -/
 theorem IsVonNBounded.union {s₁ s₂ : Set E} (hs₁ : IsVonNBounded 𝕜 s₁) (hs₂ : IsVonNBounded 𝕜 s₂) :
-    IsVonNBounded 𝕜 (s₁ ∪ s₂) := fun _ hV => (hs₁ hV).union (hs₂ hV)
+    IsVonNBounded 𝕜 (s₁ ∪ s₂) := isVonNBounded_union.2 ⟨hs₁, hs₂⟩
 #align bornology.is_vonN_bounded.union Bornology.IsVonNBounded.union
+
+theorem IsVonNBounded.of_boundedSpace [BoundedSpace 𝕜] {s : Set E} : IsVonNBounded 𝕜 s := fun _ _ ↦
+  .of_boundedSpace
+
+@[simp]
+theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
+    IsVonNBounded 𝕜 (⋃ i, s i) ↔ ∀ i, IsVonNBounded 𝕜 (s i) := by
+  simp only [IsVonNBounded, absorbs_iUnion, @forall_swap ι]
+
+theorem isVonNBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set E} :
+    IsVonNBounded 𝕜 (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, IsVonNBounded 𝕜 (s i) := by
+  have _ := hI.to_subtype
+  rw [biUnion_eq_iUnion, isVonNBounded_iUnion, Subtype.forall]
+
+theorem isVonNBounded_sUnion {S : Set (Set E)} (hS : S.Finite) :
+    IsVonNBounded 𝕜 (⋃₀ S) ↔ ∀ s ∈ S, IsVonNBounded 𝕜 s := by
+  rw [sUnion_eq_biUnion, isVonNBounded_biUnion hS]
 
 end Zero
 
@@ -162,7 +184,7 @@ lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionR
     {S : Set (∀ i, E i)} : IsVonNBounded 𝕜 S ↔ ∀ i, IsVonNBounded 𝕜 (eval i '' S) := by
   simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
     smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff, Function.comp,
-    ← image_smul, image_image]; rfl
+    ← image_smul, image_image, eval, Pi.smul_apply, Pi.zero_apply]
 
 section Image
 
@@ -236,6 +258,13 @@ variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fun _ hV =>
   (absorbent_nhds_zero hV).absorbs
 #align bornology.is_vonN_bounded_singleton Bornology.isVonNBounded_singleton
+
+@[simp]
+theorem isVonNBounded_insert (x : E) {s : Set E} :
+    IsVonNBounded 𝕜 (insert x s) ↔ IsVonNBounded 𝕜 s := by
+  simp only [← singleton_union, isVonNBounded_union, isVonNBounded_singleton, true_and]
+
+protected alias ⟨_, IsVonNBounded.insert⟩ := isVonNBounded_insert
 
 section ContinuousAdd
 
@@ -330,30 +359,42 @@ end Bornology
 
 section UniformAddGroup
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable (𝕜) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
-  rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
-  intro U hU
-  have h : Filter.Tendsto (fun x : E × E => x.fst + x.snd) (𝓝 (0, 0)) (𝓝 ((0 : E) + (0 : E))) :=
-    tendsto_add
-  rw [add_zero] at h
-  have h' := (nhds_basis_balanced 𝕜 E).prod (nhds_basis_balanced 𝕜 E)
-  simp_rw [← nhds_prod_eq, id] at h'
-  rcases h.basis_left h' U hU with ⟨x, hx, h''⟩
-  rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
-  refine Absorbs.mono_right ?_ hs
-  rw [ht.absorbs_biUnion]
-  have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
-    h'' <| mk_mem_prod hz1 hz2
-  refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
-  -- TODO: with dot notation, Lean timeouts on the next line. Why?
-  exact Absorbent.vadd_absorbs (absorbent_nhds_zero hx.1.1) hx.2.2.absorbs_self
+  if h : ∃ x : 𝕜, 1 < ‖x‖ then
+    letI : NontriviallyNormedField 𝕜 := ⟨h⟩
+    rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
+    intro U hU
+    have h : Filter.Tendsto (fun x : E × E => x.fst + x.snd) (𝓝 0) (𝓝 0) :=
+      continuous_add.tendsto' _ _ (zero_add _)
+    have h' := (nhds_basis_balanced 𝕜 E).prod (nhds_basis_balanced 𝕜 E)
+    simp_rw [← nhds_prod_eq, id] at h'
+    rcases h.basis_left h' U hU with ⟨x, hx, h''⟩
+    rcases hs x.snd hx.2.1 with ⟨t, ht, hs⟩
+    refine Absorbs.mono_right ?_ hs
+    rw [ht.absorbs_biUnion]
+    have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
+      h'' <| mk_mem_prod hz1 hz2
+    refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
+    -- TODO: with dot notation, Lean timeouts on the next line. Why?
+    exact Absorbent.vadd_absorbs (absorbent_nhds_zero hx.1.1) hx.2.2.absorbs_self
+  else
+    haveI : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
+    exact Bornology.IsVonNBounded.of_boundedSpace
 #align totally_bounded.is_vonN_bounded TotallyBounded.isVonNBounded
 
 end UniformAddGroup
+
+variable (𝕜) in
+theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+    {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
+  letI := TopologicalAddGroup.toUniformSpace E
+  haveI := comm_topologicalAddGroup_is_uniform (G := E)
+  hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
 section VonNBornologyEqMetric
 

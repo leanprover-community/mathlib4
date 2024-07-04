@@ -119,6 +119,18 @@ lemma induced_shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
         (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X := by
   apply induced.shiftIso_hom_app_obj
 
+@[reassoc]
+lemma induced_shiftMap {n : M} {X Y : C} (f : X ⟶ Y⟦n⟧) (a a' : M) (h : n + a = a') :
+    letI := induced e M F' e'
+    F.shiftMap (L.map f ≫ (L.commShiftIso n).hom.app _) a a' h =
+      (e' a).hom.app X ≫ G.shiftMap f a a' h ≫ (e' a').inv.app Y := by
+  dsimp [shiftMap]
+  rw [Functor.map_comp, induced_shiftIso_hom_app_obj, assoc, assoc]
+  nth_rw 2 [← Functor.map_comp_assoc]
+  simp only [comp_obj, Iso.hom_inv_id_app, map_id, id_comp]
+  rw [← NatTrans.naturality_assoc]
+  rfl
+
 end ShiftSequence
 
 end Functor
