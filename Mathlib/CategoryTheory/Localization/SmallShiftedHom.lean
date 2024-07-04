@@ -22,15 +22,16 @@ any localization functor for `W`.
 
 -/
 
-universe w w' v₁ v₂ u₁ u₂
+universe w t w' v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
 open Category
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-  (W : MorphismProperty C) {M : Type w'} [AddMonoid M] [HasShift C M] [HasShift D M]
-  [W.IsCompatibleWithShift M]
+  (W : MorphismProperty C) (W' : MorphismProperty D)
+  {M : Type w'} [AddMonoid M] [HasShift C M] [HasShift D M]
+  [W.IsCompatibleWithShift M] [W'.IsCompatibleWithShift M]
 
 namespace Localization
 
@@ -111,8 +112,13 @@ namespace SmallShiftedHom
 
 section
 
-variable {W}
 variable {X Y Z : C}
+
+noncomputable def mk [HasSmallLocalizedShiftedHom.{w} W M X Y] {a : M}
+    (α : ShiftedHom X Y a) : SmallShiftedHom.{w} W X Y a :=
+  SmallHom.mk _ α
+
+variable {W}
 
 /-- Given `f : SmallShiftedHom.{w} W X Y a`, this is the element in
 `SmallHom.{w} W (X⟦n⟧) (Y⟦a'⟧)` that is obtained by shifting by `n`
@@ -195,5 +201,33 @@ lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
 end SmallShiftedHom
 
 end Localization
+
+namespace LocalizerMorphism
+
+open Localization
+
+variable (Φ : LocalizerMorphism W W')
+  {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
+  [HasSmallLocalizedShiftedHom.{t} W' M (Φ.functor.obj X) (Φ.functor.obj Y)]
+  [HasSmallLocalizedShiftedHom.{t} W' M (Φ.functor.obj Y) (Φ.functor.obj Y)]
+  [Φ.functor.CommShift M]
+
+instance (b : M): HasSmallLocalizedHom.{t} W' (Φ.functor.obj X)
+    (Φ.functor.obj (Y⟦b⟧)) :=
+  (hasSmallLocalizedHom_iff_of_isos W' (Iso.refl _)
+    ((Φ.functor.commShiftIso b).app Y)).2 (by dsimp; infer_instance)
+
+instance (a b : M) : HasSmallLocalizedHom.{t} W' (Φ.functor.obj (X⟦a⟧))
+    ((Φ.functor.obj Y)⟦b⟧) :=
+  (hasSmallLocalizedHom_iff_of_isos W'
+    ((Φ.functor.commShiftIso a).app X) (Iso.refl _)).2 (by dsimp; infer_instance)
+
+variable {a : M} (α : SmallShiftedHom.{w} W X Y a)
+
+noncomputable def mapSmallShiftedHom :
+    SmallShiftedHom.{t} W' (Φ.functor.obj X) (Φ.functor.obj Y) a :=
+  (Φ.smallHomMap α).comp (SmallHom.mk W' ((Φ.functor.commShiftIso a).hom.app Y))
+
+end LocalizerMorphism
 
 end CategoryTheory

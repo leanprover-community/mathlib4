@@ -42,11 +42,12 @@ sheaves over `X` shall be in `Type u`.
 
 -/
 
-universe w' w v u
+universe w' t' w t v v' u u'
 
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
+  {D : Type u'} [Category.{v'} D] [Abelian D]
 
 open Localization
 
@@ -80,6 +81,26 @@ lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := 
 variable {C}
 
 variable [HasExt.{w} C]
+
+section
+
+variable {ι : Type*} {c : ComplexShape ι} [DecidableEq ι]
+
+class _root_.HomologicalComplex.IsSingle (K : HomologicalComplex C c) : Prop where
+  nonempty : ∃ (X : C) (i : ι), Nonempty (K ≅ (HomologicalComplex.single C c i).obj X)
+
+instance (X : C) (i : ι) : ((HomologicalComplex.single C c i).obj X).IsSingle where
+  nonempty := ⟨X, i, ⟨Iso.refl _⟩⟩
+
+instance (X : C) (n : ℤ) : ((CochainComplex.singleFunctor C n).obj X).IsSingle where
+  nonempty := ⟨X, n, ⟨Iso.refl _⟩⟩
+
+instance (K L : CochainComplex C ℤ) [K.IsSingle] [L.IsSingle] :
+    HasSmallLocalizedShiftedHom.{w}
+      (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ K L := by
+  sorry
+
+end
 
 namespace Abelian
 
@@ -137,6 +158,35 @@ end
 noncomputable instance {n : ℕ} : AddCommGroup (Ext X Y n) :=
   letI := HasDerivedCategory.standard C
   homEquiv.addCommGroup
+
+section
+
+variable {n : ℕ} (α : Ext.{w} X Y n)
+  [HasExt.{w'} D] (F : C ⥤ D) [F.Additive] [F.PreservesHomology]
+
+instance (K : CochainComplex C ℤ) [K.IsSingle] :
+    ((F.mapHomologicalComplex _).obj K).IsSingle := sorry
+
+instance (X : C) :
+  ((F ⋙ HomologicalComplex.single D (ComplexShape.up ℤ) 0).obj X).IsSingle := sorry
+
+instance (X : C) : ((HomologicalComplex.single C
+    (ComplexShape.up ℤ) 0 ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ)).obj X).IsSingle := by
+  dsimp
+  sorry
+
+noncomputable def map : Ext.{w'} (F.obj X) (F.obj Y) n :=
+  (SmallShiftedHom.mk.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+    (ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp)
+      ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) 0).app X).inv)).comp
+    (((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
+      (ComplexShape.up ℤ)).mapSmallShiftedHom α).comp
+      (SmallShiftedHom.mk.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+        (ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp)
+    ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) 0).app Y).hom)) (zero_add _))
+      (add_zero _)
+
+end
 
 end Ext
 

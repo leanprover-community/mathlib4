@@ -25,8 +25,9 @@ open Category Limits Pretriangulated Preadditive
 
 namespace Functor
 
-variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D ℤ]
-  (F : C ⥤ D) [F.CommShift ℤ]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  [HasShift C ℤ] [HasShift D ℤ] [HasShift E ℤ]
+  (F : C ⥤ D) [F.CommShift ℤ] (G : D ⥤ E) [G.CommShift ℤ]
 
 /-- The functor `Triangle C ⥤ Triangle D` that is induced by a functor `F : C ⥤ D`
 which commutes with shift by `ℤ`. -/
@@ -85,7 +86,7 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
         ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
 
 attribute [local simp] commShiftIso_zero commShiftIso_add
-  shiftFunctorAdd'_eq_shiftFunctorAdd
+  shiftFunctorAdd'_eq_shiftFunctorAdd commShiftIso_comp_hom_app
 
 set_option maxHeartbeats 400000 in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]

@@ -307,7 +307,7 @@ variable [Preadditive C] [Preadditive D]
 
 /-- The localizer morphism which expresses that `F.mapHomologicalComplex c` preserves
 quasi-isomorphisms. -/
-@[simps]
+@[reducible]
 def mapHomologicalComplexUpToQuasiIsoLocalizerMorphism :
     LocalizerMorphism (HomologicalComplex.quasiIso C c) (HomologicalComplex.quasiIso D c) where
   functor := F.mapHomologicalComplex c

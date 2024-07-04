@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! Shifted morphisms
@@ -24,8 +24,8 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C]
-  {M : Type*} [AddMonoid M] [HasShift C M]
+variable {C D : Type*} [Category C] [Category D]
+  {M : Type*} [AddMonoid M] [HasShift C M] [HasShift D M]
 
 /-- In a category `C` equipped with a shift by an additive monoid,
 this is the type of morphisms `X ⟶ (Y⟦n⟧)` for `m : M`.  -/
@@ -92,9 +92,31 @@ lemma comp_mk₀_id {a : M} (f : ShiftedHom X Y a) (m₀ : M) (hm₀ : m₀ = 0)
     f.comp (mk₀ m₀ hm₀ (𝟙 Y)) (by rw [hm₀, zero_add]) = f := by
   simp [comp_mk₀]
 
+section
+
+variable {a b : M} (α : ShiftedHom X Y a) (β : ShiftedHom Y Z b) {c : M}
+  (h : b + a = c) (F : C ⥤ D) [F.CommShift M]
+
+def map : ShiftedHom (F.obj X) (F.obj Y) a :=
+  F.map α ≫ (F.commShiftIso a).hom.app Y
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_hom_app_comp_map :
+    α.map F ≫ (F.commShiftIso a).inv.app Y = F.map α := by simp [map]
+
+lemma comp_map : (α.comp β h).map F = (α.map F).comp (β.map F) h := by
+  dsimp [map, comp]
+  rw [F.commShiftIso_add' h]
+  simp only [F.commShiftIso_add' h, Functor.map_comp, Functor.CommShift.isoAdd'_hom_app, assoc]
+  simp only [← Functor.map_comp_assoc]
+  simp only [Iso.inv_hom_id_app, Functor.comp_obj, comp_id, Functor.map_comp, assoc,
+    Functor.commShiftIso_hom_naturality_assoc]
+
+end
+
 section Preadditive
 
-variable [Preadditive C]
+variable [Preadditive C] [Preadditive D]
 
 @[simp]
 lemma comp_add [∀ (a : M), (shiftFunctor C a).Additive]
@@ -118,6 +140,17 @@ variable (X) in
 lemma zero_comp (a : M) {b c : M} (β : ShiftedHom Y Z b) (h : b + a = c) :
     (0 : ShiftedHom X Y a).comp β h = 0 := by
   rw [comp, Limits.zero_comp]
+
+lemma map_add {a : M} (α β : ShiftedHom X Y a)
+    (F : C ⥤ D) [F.CommShift M] [F.Additive] :
+  (α + β).map F = α.map F + β.map F := by
+  dsimp [map]
+  rw [F.map_add, Preadditive.add_comp]
+
+variable (X Y) in
+lemma map_zero (a : M) (F : C ⥤ D) [F.CommShift M] [F.Additive] :
+    (0 : ShiftedHom X Y a).map F = 0 := by
+  simp [map]
 
 end Preadditive
 
