@@ -628,6 +628,8 @@ instance : LT (CauSeq α abs) :=
 instance : LE (CauSeq α abs) :=
   ⟨fun f g => f < g ∨ f ≈ g⟩
 
+protected lemma le_def {f g : CauSeq α abs} : f ≤ g ↔ f < g ∨ f ≈ g := .rfl
+
 theorem lt_of_lt_of_eq {f g h : CauSeq α abs} (fg : f < g) (gh : g ≈ h) : f < h :=
   show Pos (h - f) by
     convert pos_add_limZero fg (neg_limZero gh) using 1
