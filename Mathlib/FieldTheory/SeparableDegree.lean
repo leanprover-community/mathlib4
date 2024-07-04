@@ -669,7 +669,7 @@ of `F⟮α⟯ / F` if and only if `α` is a separable element. -/
 theorem finSepDegree_adjoin_simple_eq_finrank_iff (α : E) (halg : IsAlgebraic F α) :
     finSepDegree F F⟮α⟯ = finrank F F⟮α⟯ ↔ IsSeparable F α := by
   rw [finSepDegree_adjoin_simple_eq_natSepDegree F E halg, adjoin.finrank halg.isIntegral,
-    natSepDegree_eq_natDegree_iff _ (minpoly.ne_zero halg.isIntegral)]
+    natSepDegree_eq_natDegree_iff _ (minpoly.ne_zero halg.isIntegral), IsSeparable]
 
 end IntermediateField
 
@@ -741,7 +741,7 @@ end Field
 
 lemma IntermediateField.isSeparable_of_mem_isSeparable {L : IntermediateField F E}
     [Algebra.IsSeparable F L] {x : E} (h : x ∈ L) : IsSeparable F x := by
-  simpa only [minpoly_eq] using Algebra.IsSeparable.isSeparable F (K := L) ⟨x, h⟩
+  simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (K := L) ⟨x, h⟩
 
 /-- `F⟮x⟯ / F` is a separable extension if and only if `x` is a separable element.
 As a consequence, any rational function of `x` is also a separable element. -/
@@ -771,8 +771,8 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
     simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=
     isIntegral_trans (R := F) (A := E) _ (IsSeparable.isIntegral hsep) |>.tower_top
-  simp_rw [← h, separable_map] at hsep
-  replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
+  simp only [IsSeparable, ← hf, ← h, separable_map] at hsep
+  replace hsep := hsep.of_dvd <| minpoly.dvd E' x hzero
   haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := adjoin.finiteDimensional halg
@@ -808,7 +808,7 @@ variable {F}
 
 /-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
 theorem isSeparable_algebraMap (x : F) : IsSeparable F ((algebraMap F E) x) := by
-  rw [minpoly.algebraMap_eq (algebraMap F E).injective]
+  rw [IsSeparable, minpoly.algebraMap_eq (algebraMap F E).injective]
   exact Algebra.IsSeparable.isSeparable F x
 
 variable {E}
