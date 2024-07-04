@@ -115,7 +115,7 @@ def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁)
   refine ⟨l, hl, ?_, ?_⟩
   -- Check that ....
   · apply PullbackCone.IsLimit.hom_ext H
-    · rw [← s.condition, ← hl, Category.assoc, ←t₁.condition, Category.assoc]
+    · rw [← s.condition, ← hl, Category.assoc, ← t₁.condition, Category.assoc]
       rfl
     · simpa using hl'
   -- Uniqueness
