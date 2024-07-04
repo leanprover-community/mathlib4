@@ -168,6 +168,10 @@ def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t
   WalkingCospan.ext i w₁ w₂
 #align category_theory.limits.pullback_cone.ext CategoryTheory.Limits.PullbackCone.ext
 
+@[simps!]
+def isoMkSelf (t : PullbackCone f g) : mk t.fst t.snd t.condition ≅ t :=
+  PullbackCone.ext (Iso.refl _) (by simp) (by simp)
+
 /-- This is a slightly more convenient method to verify that a pullback cone is a limit cone. It
     only asks for a proof of facts that carry any mathematical content -/
 def isLimitAux (t : PullbackCone f g) (lift : ∀ s : PullbackCone f g, s.pt ⟶ t.pt)
@@ -242,6 +246,10 @@ def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) 
     (w : h ≫ f = k ≫ g) : { l : W ⟶ t.pt // l ≫ fst t = h ∧ l ≫ snd t = k } :=
   ⟨IsLimit.lift ht h k w, by simp⟩
 #align category_theory.limits.pullback_cone.is_limit.lift' CategoryTheory.Limits.PullbackCone.IsLimit.lift'
+
+def mkSelfIsLimit {t : PullbackCone f g} (ht : IsLimit t) : IsLimit (mk t.fst t.snd t.condition) :=
+  IsLimit.ofIsoLimit ht (isoMkSelf t).symm
+
 section Flip
 
 variable (t : PullbackCone f g)
@@ -261,8 +269,7 @@ variable {t}
 /-- The flip of a pullback square is a pullback square. -/
 def flipIsLimit (ht : IsLimit t) : IsLimit t.flip :=
   IsLimit.mk _ (fun s => ht.lift s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
-    apply IsLimit.hom_ext ht
-    all_goals aesop_cat)
+    apply IsLimit.hom_ext ht <;> simp [h₁, h₂])
 
 /-- A square is a pullback square if its flip is. -/
 def isLimitOfFlip (ht : IsLimit t.flip) : IsLimit t :=
@@ -494,8 +501,7 @@ variable {t}
 /-- The flip of a pushout square is a pushout square. -/
 def flipIsColimit (ht : IsColimit t) : IsColimit t.flip :=
   IsColimit.mk _ (fun s => ht.desc s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
-    apply IsColimit.hom_ext ht
-    all_goals aesop_cat)
+    apply IsColimit.hom_ext ht <;> simp [h₁, h₂])
 
 /-- A square is a pushout square if its flip is. -/
 def isColimitOfFlip (ht : IsColimit t.flip) : IsColimit t :=
