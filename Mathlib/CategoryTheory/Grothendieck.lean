@@ -164,32 +164,26 @@ a functor `Grothendieck.map : Grothendieck F ⥤ Grothendieck G`.
 def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
   obj X := {
     base := X.base
-    fiber := (α.app X.base).obj X.fiber
-  }
+    fiber := (α.app X.base).obj X.fiber }
   map {X Y} f := {
     base := f.base
-    fiber := (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber
-  }
-  map_id := by
-    intro X
-    dsimp
-    simp [eqToHom_map]
+    fiber := (eqToHom (α.naturality f.base).symm).app X.fiber ≫ (α.app Y.base).map f.fiber }
+  map_id X := by
+    simp only [Cat.comp_obj, id_fiber', eqToHom_map]
     congr 1
-    · rw [eqToHom_app, eqToHom_trans]
-  map_comp := by
-    intro X Y Z f g
+    rw [eqToHom_app, eqToHom_trans]
+  map_comp {X Y Z} f g := by
     dsimp
     congr 1
     erw [comp_fiber f g]
-    simp [Functor.comp_map, ← Category.assoc]
+    simp only [← Category.assoc, Functor.map_comp, eqToHom_map]
     apply congrFun (congrArg (. ≫ .) ?_) ((α.app Z.base).map g.fiber)
-    slice_rhs 3 3 =>
-      rw [← Functor.comp_map _ _]
-    have H :=  Functor.congr_hom (α.naturality g.base).symm f.fiber
+    have H := Functor.congr_hom (α.naturality g.base).symm f.fiber
     erw [H, eqToHom_app, eqToHom_app]
-    simp [Functor.comp_map]
+    simp only [Cat.comp_obj, eqToHom_trans, eqToHom_map, Cat.comp_map, eqToHom_trans_assoc,
+      Category.assoc]
     erw [eqToHom_app]
-    simp only [Cat.comp_obj, eqToHom_trans, eqToHom_refl, Category.comp_id]
+    simp
 
 theorem map_obj {α : F ⟶ G} (X : Grothendieck F) :
     (Grothendieck.map α).obj X = ⟨X.base, (α.app X.base).obj X.fiber⟩ := by
