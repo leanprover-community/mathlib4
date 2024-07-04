@@ -20,7 +20,7 @@ The goal of this file is to prove Fermat Last theorem in the case `n = 3`.
 Prove case 2.
 
 ## Implementation details
-We follow the proof in https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf, page 43. The
+We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43. The
 strategy is the following:
 * Case 1 is completely elementary and is proved using congruences modulo `9`.
 * To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
