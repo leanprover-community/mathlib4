@@ -25,6 +25,78 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
+section temp
+
+/-
+The objects and morphisms are as follows:
+
+           Z₂ - g₄ -> X₃
+           |          |
+           g₃         f₄
+           ∨          ∨
+Z₁ - g₂ -> X₂ - f₃ -> Y₂
+|          |
+g₁         f₂
+∨          ∨
+X₁ - f₁ -> Y₁
+
+where the two squares are pullbacks.
+
+We can then construct the pullback squares
+
+W  - l₂ -> Z₂ - g₄ -> X₃
+|                     |
+l₁                    f₄
+∨                     ∨
+Z₁ - g₂ -> X₂ - f₃ -> Y₂
+
+and
+
+W' - l₂' -> Z₂
+|           |
+l₁'         g₃
+∨           ∨
+Z₁          X₂
+|           |
+g₁          f₂
+∨           ∨
+X₁ -  f₁ -> Y₁
+
+We will show that both `W` and `W'` are pullbacks over `g₁, g₂`, and thus we may construct a
+canonical isomorphism between them. -/
+variable {X₁ X₂ X₃ Y₁ Y₂ : C} {f₁ : X₁ ⟶ Y₁ } {f₂ : X₂ ⟶ Y₁} {f₃ : X₂ ⟶ Y₂}
+variable {f₄ : X₃ ⟶ Y₂} (t₁ : PullbackCone f₁ f₂) (t₂ : PullbackCone f₃ f₄)
+variable (ht₁ : IsLimit t₁) (ht₂ : IsLimit t₂)
+
+local notation "Z₁" => t₁.pt
+local notation "Z₂" => t₂.pt
+local notation "g₁" => t₁.fst
+local notation "g₂" => t₁.snd
+local notation "g₃" => t₂.fst
+local notation "g₄" => t₂.snd
+local notation "W" => pullback (g₂ ≫ f₃) f₄
+local notation "t₂" => pullback.cone (g₂ ≫ f₃) f₄
+
+local notation "W'" => pullback f₁ (g₃ ≫ f₂)
+
+local notation "l₁" => (pullback.fst : W ⟶ Z₁)
+
+local notation "l₂" =>
+  (pullback.lift (pullback.fst ≫ g₂) pullback.snd
+      (Eq.trans (Category.assoc _ _ _) pullback.condition) :
+    W ⟶ Z₂)
+
+local notation "l₁'" =>
+  (pullback.lift pullback.fst (pullback.snd ≫ g₃)
+      (pullback.condition.trans (Eq.symm (Category.assoc _ _ _))) :
+    W' ⟶ Z₁)
+
+local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
+
+
+
+end temp
+
 section PullbackAssoc
 
 /-
@@ -102,7 +174,7 @@ local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
-  apply leftSquareMkIsPullback' (pullbackIsPullback f₃ f₄)
+  apply leftSquareIsPullback (pullbackIsPullback f₃ f₄)
   convert pullbackIsPullback (g₂ ≫ f₃) f₄
   simp
 #align category_theory.limits.pullback_pullback_left_is_pullback CategoryTheory.Limits.pullbackPullbackLeftIsPullback
