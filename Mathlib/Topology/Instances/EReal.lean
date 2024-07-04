@@ -213,7 +213,7 @@ lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) 
   exact bot_lt_coe (x - y)
 
 lemma limsup_add_le_add_limsup
-(h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
+    (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
   rcases eq_bot_or_bot_lt (limsup u f) with (u_bot | u_nbot)
   · rcases h with (u_nbot | v_ntop)
