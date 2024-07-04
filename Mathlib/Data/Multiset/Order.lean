@@ -41,18 +41,31 @@ inductive MultisetLT [DecidableEq α] [Preorder α] (M N : Multiset α) : Prop :
     N = Z + Y →
     (∀ x ∈ X, ∃ y ∈ Y, x < y) → MultisetLT M N
 
-/-- Another equivalent (proved later) version of the ordering defined using transitive closure: -/
+/-- MultisetRedLt is a special case of MultisetLT. The transitive closure of it is used to define
+an equivalent (proved later) version of the ordering. -/
 inductive MultisetRedLt [DecidableEq α][LT α] (M N : Multiset α) : Prop :=
   | RedLt : ∀ (X Y:Multiset α) (a : α) ,
     (M = X + Y) →
     (N = X + {a}) →
     (∀ y, y ∈ Y → y < a) → MultisetRedLt M N
 
-/-- MultisetLt is the transitive closure of MultisetRedLt. -/
-def MultisetLt [DecidableEq α][LT α] : Multiset α → Multiset α → Prop := TC MultisetRedLt
+open Relation
+
+/-- MultisetLt is the transitive closure of MultisetRedLt and is equivalent to MultisetLT
+    (proved later). -/
+def MultisetLt [DecidableEq α][LT α] : Multiset α → Multiset α → Prop := TransGen MultisetRedLt
 
 /-- AccM_1 defines the accessibility relation given MultisetRedLt. -/
 def AccM_1 [DecidableEq α][Preorder α] : Multiset α → Prop := Acc MultisetRedLt
+
+/- MultisetRedLt is a special case of MultisetLT. -/
+theorem redLt_LT [DecidableEq α] [Preorder α] (M N : Multiset α) :
+        MultisetRedLt M N → MultisetLT M N := by
+  intro hyp
+  rcases hyp with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
+  apply MultisetLT.MLT Y {a} X _ M_def N_def
+  · simp; assumption
+  · simp
 
 /- Some useful lemmas about Multisets and the defined relations: -/
 lemma not_MultisetRedLt_0 [DecidableEq α] [LT α] (M: Multiset α) : ¬ MultisetRedLt M 0 := by
@@ -249,7 +262,7 @@ lemma Lt_wf [DecidableEq α] [LT α]
     (h : WellFounded (MultisetRedLt : Multiset α → Multiset α → Prop)) :
     WellFounded (MultisetLt : Multiset α → Multiset α → Prop) := by
   unfold MultisetLt
-  apply TC.wf
+  apply WellFounded.transGen
   assumption
 
 lemma mul_geq_zero : ∀ (M : Multiset α), M ≥ 0 := by
@@ -422,7 +435,7 @@ lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
       case inl hyp' hyp=>
         rw [Multiset.card_eq_one] at hyp
         rcases hyp with ⟨y,Y'_def⟩
-        apply TC.base
+        apply TransGen.single
         rw [Y'_def] at N_def
         apply @MultisetRedLt.RedLt α _ _ M N Z X y M_def N_def
         simp [Y'_def] at X_lt_Y
@@ -443,8 +456,7 @@ lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
         have newY_sub_Y : newY < Y := by simp (config := {zetaDelta := true}); exact claim
         let f : α → Multiset α := fun y' => X.filter (fun x => x < y') -- DecidableRel
         let N' := Z + newY + f y
-        apply TC.trans
-        case intro.b => exact N'
+        apply @transitive_transGen _ _ _ N'
         -- step from N' to M
         · apply IH newY newY_sub_Y newY_nonEmpty
           change M = (Z + f y) + (X - f y)
@@ -513,7 +525,7 @@ lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
               rw [newY_y_Y]
               exact N_def
             · unfold_let f; intro z z_in; simp at z_in; exact z_in.2
-          apply TC.base
+          apply TransGen.single
           exact this
 
 /- MultisetLt and MultisetLT are equivalent. -/
@@ -526,14 +538,17 @@ lemma Lt_LT_equiv [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y:
   · -- Lt → LT:
     intros hLt
     induction hLt with
-    | base a b hLt =>
+    | single hLt =>
       rcases hLt with ⟨Z, X, y, a_def, b_def, X_lt_y⟩
       use X
       · simp
       · simp only [Multiset.mem_singleton, exists_eq_left]
         assumption
-    | trans Z W A _ _ aih bih => -- it suffices to show MultisetLT is transitive
-      exact LT_trans _ _ _ bih aih
+    | tail _ aih bih => -- it suffices to show MultisetLT is transitive
+      apply LT_trans _ _ _ _ bih
+      apply redLt_LT
+      assumption
+
   · -- LT → Lt:
     apply direct_subset_red
 
