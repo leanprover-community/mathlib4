@@ -472,7 +472,7 @@ theorem _root_.Setoid.IsPartition.ncard_eq_finsum
     simp only [Set.singleton_subset_iff, Set.mem_empty_iff_false, not_false_eq_true, and_true]
     exact ⟨hx.2, hy.2⟩
   · rintro ⟨x, hx⟩
-    obtain ⟨t, ⟨ht, hx', _⟩, _⟩ := hP.2 x
+    obtain ⟨t, ⟨ht, hx'⟩, _⟩ := hP.2 x
     use ⟨⟨t, ht⟩, ⟨x, ⟨hx, hx'⟩⟩⟩
 
 /-- The target of an equivariant map of large image is preprimitive if the source is -/
