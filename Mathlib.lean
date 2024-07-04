@@ -1684,6 +1684,7 @@ import Mathlib.CategoryTheory.Sites.CompatiblePlus
 import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
+import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
