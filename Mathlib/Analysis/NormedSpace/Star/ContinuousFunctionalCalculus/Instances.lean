@@ -415,7 +415,7 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
     a = 0 := by
   nontriviality A
   rw [SpectrumRestricts.nnreal_iff] at ha₁ ha₂
-  apply eq_zero_of_spectrum_subset_zero (R := ℝ) a
+  apply CFC.eq_zero_of_spectrum_subset_zero (R := ℝ) a
   rw [Set.subset_singleton_iff]
   simp only [← spectrum.neg_eq, Set.mem_neg] at ha₂
   peel ha₁ with x hx _

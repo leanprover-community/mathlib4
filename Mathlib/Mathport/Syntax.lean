@@ -253,12 +253,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
-/- M -/ syntax (name := moveOp) "move_op " term:max ppSpace rwRule,+ (location)? : tactic
-macro (name := moveMul) "move_mul " pats:rwRule,+ loc:(location)? : tactic =>
-  `(tactic| move_op (·*·) $pats,* $(loc)?)
-macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
-  `(tactic| move_op (·+·) $pats,* $(loc)?)
-
 /- S -/ syntax (name := intro) "intro" : attr
 /- S -/ syntax (name := intro!) "intro!" : attr
 

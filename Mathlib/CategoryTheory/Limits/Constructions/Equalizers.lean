@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
