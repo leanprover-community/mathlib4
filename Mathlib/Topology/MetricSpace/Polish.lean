@@ -3,11 +3,9 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Gluing
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 
 #align_import topology.metric_space.polish from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
@@ -229,6 +227,14 @@ theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : Topologica
     .iInf ⟨none, Option.forall.2 ⟨le_rfl, hm⟩⟩ <| Option.forall.2 ⟨p, h'm⟩⟩
 #align polish_space.exists_polish_space_forall_le PolishSpace.exists_polishSpace_forall_le
 
+instance : PolishSpace ENNReal :=
+  ClosedEmbedding.polishSpace ⟨ENNReal.orderIsoUnitIntervalBirational.toHomeomorph.embedding,
+    ENNReal.orderIsoUnitIntervalBirational.range_eq ▸ isClosed_univ⟩
+
+instance : PolishSpace EReal :=
+  ClosedEmbedding.polishSpace ⟨ENNReal.logOrderIso.symm.toHomeomorph.embedding,
+    ENNReal.logOrderIso.symm.toHomeomorph.range_coe ▸ isClosed_univ⟩
+
 end PolishSpace
 
 /-!
@@ -423,3 +429,4 @@ theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ 
 #align polish_space.is_clopenable.Union PolishSpace.IsClopenable.iUnion
 
 end PolishSpace
+#minimize_imports
