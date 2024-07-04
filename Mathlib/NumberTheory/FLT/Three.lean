@@ -7,6 +7,7 @@ Authors: Riccardo Brasca, Sanyam Gupta, Omar Haddad, David Lowry-Duda,
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.Cyclotomic.PID
 import Mathlib.NumberTheory.Cyclotomic.Three
+import Mathlib.Algebra.Ring.Divisibility.Lemmas
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
@@ -403,37 +404,31 @@ lemma eta_add_one_mul_neg_eta_eq_one : ((η : 𝓞 K) + 1) * (-η) = 1 :=
   calc ((η : 𝓞 K) + 1) * -η = -(η ^ 2 + η + 1) + 1 := by ring
   _ = 1 := by rw [eta_sq]; ring
 
+attribute [local instance] IsCyclotomicExtension.Rat.three_pid
+attribute [local instance] UniqueFactorizationMonoid.toGCDMonoid
+
 /-- If `p : 𝓞 K` is a prime that divides both `S.a + S.b` and `S.a + η * S.b`, then `p`
 is associated with `λ`. -/
 lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b {p : 𝓞 K} (hp : Prime p)
     (hpab : p ∣ S.a + S.b) (hpaηb : p ∣ S.a + η * S.b) : Associated p λ := by
   suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
-  by_contra p_lam
-  refine hp.not_unit <| IsCoprime.isUnit_of_dvd' S.coprime ?_ ?_
-  · refine (hp.dvd_or_dvd ?_).resolve_left ‹_›
-    rw [show λ * S.a = η * (S.a + S.b) - (S.a + η * S.b) by rw [coe_eta]; ring]
-    exact dvd_sub (dvd_mul_of_dvd_right hpab _) hpaηb
-  · refine (hp.dvd_or_dvd ?_).resolve_left ‹_›
-    rw [show λ * S.b = (S.a + η * S.b) - (S.a + S.b) by rw [coe_eta]; ring]
-    exact dvd_sub hpaηb hpab
+  rw [← one_mul S.a, ← one_mul S.b] at hpab
+  rw [← one_mul S.a] at hpaηb
+  have := dvd_mul_sub_mul_mul_gcd_of_dvd hpab hpaηb
+  rwa [one_mul, one_mul, coe_eta, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime] at this
 
 /-- If `p : 𝓞 K` is a prime that divides both `S.a + S.b` and `S.a + η ^ 2 * S.b`, then `p`
 is associated with `λ`. -/
 lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Prime p)
     (hpab : p ∣ (S.a + S.b)) (hpaηsqb : p ∣ (S.a + η ^ 2 * S.b)) : Associated p λ := by
   suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
-  by_contra p_lam
-  refine hp.not_unit <| S.coprime.isUnit_of_dvd' ?_ ?_
-  · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
-    rw [show λ * S.a = - (1 - η) * S.a by rw [coe_eta]; ring, ← hζ.toInteger_cube_eq_one]
-    rw [show - (hζ.toInteger ^ 3 - η) * S.a = η * ((S.a + η ^ 2 * S.b) - η ^ 2 * (S.a + S.b))
-      by rw [coe_eta]; ring, (Units.isUnit η).dvd_mul_left]
-    exact hpaηsqb.sub (dvd_mul_of_dvd_right hpab _)
-  · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
-    rw [show λ * S.b = - (1 - η) * S.b by rw [coe_eta]; ring, ← hζ.toInteger_cube_eq_one]
-    rw [show - (hζ.toInteger ^ 3 - η) * S.b = η * ((S.a + S.b) - (S.a + η ^ 2 * S.b))
-      by rw [coe_eta]; ring, (Units.isUnit η).dvd_mul_left]
-    exact hpab.sub hpaηsqb
+  rw [← one_mul S.a, ← one_mul S.b] at hpab
+  rw [← one_mul S.a] at hpaηsqb
+  have := dvd_mul_sub_mul_mul_gcd_of_dvd hpab hpaηsqb
+  rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime, ← dvd_neg] at this
+  convert dvd_mul_of_dvd_left this η using 1
+  rw [eta_sq, neg_sub, sub_mul, sub_mul, neg_mul, ← pow_two, eta_sq, coe_eta]
+  ring
 
 /-- If `p : 𝓞 K` is a prime that divides both `S.a + η * S.b` and `S.a + η ^ 2 * S.b`, then `p`
 is associated with `λ`. -/
@@ -520,8 +515,6 @@ private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
     mul_comm _ 3, mul_dvd_mul_iff_left _] at h
   · exact lambda_not_dvd_w _ <| hζ.zeta_sub_one_prime'.dvd_of_dvd_pow h
   · simp [hζ.zeta_sub_one_prime'.ne_zero]
-
-attribute [local instance] IsCyclotomicExtension.Rat.three_pid
 
 private lemma isCoprime_x_y : IsCoprime S.x S.y := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hy ↦ lambda_not_dvd_y S (by simp [hy]))) ?_
