@@ -447,13 +447,11 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
 
 /-- Given `S : Solution`, we let `S.y` be any element such that `S.a + η * S.b = λ * S.y` -/
 private noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
-
 private lemma y_spec : S.a + η * S.b = λ * S.y :=
   (lambda_dvd_a_add_eta_mul_b S).choose_spec
 
 /-- Given `S : Solution`, we let `S.z` be any element such that `S.a + η ^ 2 * S.b = λ * S.z` -/
 private noncomputable def z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
-
 private lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z :=
   (lambda_dvd_a_add_eta_sq_mul_b S).choose_spec
 
@@ -483,7 +481,6 @@ lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
 /-- Given `S : Solution`, we let `S.x` be any element such that
 `S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x` -/
 private noncomputable def x := (lambda_pow_dvd_a_add_b S).choose
-
 private lemma x_spec : S.a + S.b = λ ^ (3 * S.multiplicity - 2) * S.x :=
   (lambda_pow_dvd_a_add_b S).choose_spec
 
