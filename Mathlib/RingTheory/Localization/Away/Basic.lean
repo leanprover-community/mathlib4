@@ -177,7 +177,7 @@ lemma away_of_isIdempotentElem {R S} [CommRing R] [CommRing S] [Algebra R S]
     refine ⟨⟨e, Submonoid.mem_powers e⟩, ?_⟩
     rw [← sub_eq_zero, ← mul_sub, hk, ← mul_assoc, mul_sub, mul_one, he.eq, sub_self, zero_mul]
 
-instance away_fst {R S} [CommRing R] [CommRing S] [Algebra R S] :
+instance away_fst {R S} [CommRing R] [CommRing S] :
     letI := (RingHom.fst R S).toAlgebra
     IsLocalization.Away (R := R × S) (1, 0) R := by
   letI := (RingHom.fst R S).toAlgebra
@@ -191,7 +191,7 @@ instance away_fst {R S} [CommRing R] [CommRing S] [Algebra R S] :
     · rintro ⟨⟨i, j⟩, rfl⟩; simp
   · exact Prod.fst_surjective
 
-instance away_snd {R S} [CommRing R] [CommRing S] [Algebra R S] :
+instance away_snd {R S} [CommRing R] [CommRing S] :
     letI := (RingHom.snd R S).toAlgebra
     IsLocalization.Away (R := R × S) (0, 1) S := by
   letI := (RingHom.snd R S).toAlgebra
