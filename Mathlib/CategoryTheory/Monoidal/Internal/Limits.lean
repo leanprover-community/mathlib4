@@ -86,14 +86,14 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
 set_option linter.uppercaseLean3 false in
 #align Mon_.limit_cone_is_limit Mon_.limitConeIsLimit
 
-instance hasLimits [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) where
+instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) where
   has_limit := fun F => HasLimit.mk
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 set_option linter.uppercaseLean3 false in
 #align Mon_.has_limits Mon_.hasLimits
 
-instance forgetPreservesLimits : PreservesLimitsOfShape J (Mon_.forget C) where
+instance forgetPreservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
   preservesLimit := fun {F} =>
     preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)
