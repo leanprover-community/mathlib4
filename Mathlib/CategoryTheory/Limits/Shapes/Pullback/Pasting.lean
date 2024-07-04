@@ -39,7 +39,7 @@ namespace CategoryTheory.Limits
 variable {C : Type u} [Category.{v} C]
 
 section PasteLemma
-section temp
+section PastePullback
 
 /- Consider the following diagram
 
@@ -65,7 +65,7 @@ local notation "f₁" => t₁.snd
 abbrev PullbackCone.paste : PullbackCone (g₁ ≫ g₂) i₃ :=
   PullbackCone.mk i₁ (f₁ ≫ f₂) (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition])
 
-variable {t₂} {t₁}
+variable {t₁} {t₂}
 
 /-- Given
 
@@ -112,7 +112,75 @@ def leftSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit (t₂.paste t₁)) : 
     dsimp at hl' ⊢
     rw [reassoc_of% hm₂, hl']
 
-end temp
+end PastePullback
+
+section PastePushout
+
+/- Consider the following diagram
+
+X₁ - f₁ -> X₂ - f₂ -> X₃
+|          |          |
+i₁         i₂         i₃
+∨          ∨          ∨
+Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+
+
+-/
+
+variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₁ ⟶ X₂} {f₂ : X₂ ⟶ X₃} {i₁ : X₁ ⟶ Y₁}
+variable (t₁ : PushoutCocone i₁ f₁) (t₂ : PushoutCocone t₁.inr f₂)
+
+local notation "Y₂" => t₁.pt
+local notation "g₁" => t₁.inl
+local notation "i₂" => t₁.inr
+local notation "Y₃" => t₂.pt
+local notation "g₂" => t₂.inl
+local notation "i₃" => t₂.inr
+
+abbrev PushoutCocone.paste : PushoutCocone i₁ (f₁ ≫ f₂) :=
+  PushoutCocone.mk (g₁ ≫ g₂) i₃ (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition])
+
+variable {t₁} {t₂}
+
+def bigSquareIsPushout' (H : IsColimit t₁) (H' : IsColimit t₂) : IsColimit (t₁.paste t₂) := by
+  apply PushoutCocone.isColimitAux'
+  intro s
+  -- obtain both descs
+  obtain ⟨l₁, hl₁, hl₁'⟩ := PushoutCocone.IsColimit.desc' H s.inl (f₂ ≫ s.inr)
+    (by rw [s.condition, Category.assoc])
+  obtain ⟨l₂, hl₂, hl₂'⟩ := PushoutCocone.IsColimit.desc' H' l₁ s.inr hl₁'
+  --
+  refine ⟨l₂, by simp [hl₂, hl₁], hl₂', ?_⟩
+  -- Uniqueness
+  intro m hm₁ hm₂
+  apply PushoutCocone.IsColimit.hom_ext H' _ (by simpa [hl₂'] using hm₂)
+  simp only [PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, Category.assoc] at hm₁ hm₂
+  apply PushoutCocone.IsColimit.hom_ext H
+  · rw [hm₁, ←hl₁, hl₂]
+  · rw [reassoc_of% t₂.condition, reassoc_of% t₂.condition, hm₂, hl₂']
+
+def rightSquareIsPushout' (H : IsColimit t₁) (H' : IsColimit (t₁.paste t₂)) : IsColimit t₂ := by
+  apply PushoutCocone.isColimitAux'
+  intro s
+  -- Obtain the induced morphism from the universal property of the big square
+  obtain ⟨l, hl, hl'⟩ := PushoutCocone.IsColimit.desc' H' (g₁ ≫ s.inl) s.inr
+    (by rw [reassoc_of% t₁.condition, s.condition, Category.assoc])
+  refine ⟨l, ?_, hl', ?_⟩
+  -- Check that ....
+  · simp at hl hl'
+    apply PushoutCocone.IsColimit.hom_ext H hl
+    rw [←Category.assoc, t₂.condition, s.condition, Category.assoc, hl']
+  -- Uniqueness (TODO GOLF THIS)
+  · intro m hm₁ hm₂
+    apply PushoutCocone.IsColimit.hom_ext H'
+    simp at hl ⊢
+    rw [hl, hm₁]
+    simp at hl hl' ⊢
+    rw [hm₂, ←hl']
+
+end PastePushout
+
+
 
 variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃)
 variable (i₁ : X₁ ⟶ Y₁) (i₂ : X₂ ⟶ Y₂) (i₃ : X₃ ⟶ Y₃)
@@ -150,26 +218,8 @@ def bigSquareIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₂))
     IsColimit
       (PushoutCocone.mk _ _
         (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
-          rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc])) := by
-  fapply PushoutCocone.isColimitAux'
-  intro s
-  have : i₁ ≫ s.inl = f₁ ≫ f₂ ≫ s.inr := by rw [s.condition, Category.assoc]
-  rcases PushoutCocone.IsColimit.desc' H' s.inl (f₂ ≫ s.inr) this with ⟨l₁, hl₁, hl₁'⟩
-  rcases PushoutCocone.IsColimit.desc' H l₁ s.inr hl₁' with ⟨l₂, hl₂, hl₂'⟩
-  use l₂
-  use
-    show (g₁ ≫ g₂) ≫ l₂ = s.inl by
-      rw [← hl₁, ← hl₂, Category.assoc]
-      rfl
-  use hl₂'
-  intro m hm₁ hm₂
-  apply PushoutCocone.IsColimit.hom_ext H
-  · apply PushoutCocone.IsColimit.hom_ext H'
-    · erw [← Category.assoc, hm₁, hl₂, hl₁]
-    · erw [← Category.assoc, h₂, Category.assoc, hm₂, ← hl₂', ← Category.assoc, ← Category.assoc, ←
-        h₂]
-      rfl
-  · erw [hm₂, hl₂']
+          rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc])) :=
+  bigSquareIsPushout' H' H
 #align category_theory.limits.big_square_is_pushout CategoryTheory.Limits.bigSquareIsPushout
 
 /-- Given
@@ -208,24 +258,8 @@ def rightSquareIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₁))
         (PushoutCocone.mk _ _
           (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
             rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc]))) :
-    IsColimit (PushoutCocone.mk _ _ h₂) := by
-  fapply PushoutCocone.isColimitAux'
-  intro s
-  have : i₁ ≫ g₁ ≫ s.inl = (f₁ ≫ f₂) ≫ s.inr := by
-    rw [Category.assoc, ← s.condition, ← Category.assoc, ← Category.assoc, h₁]
-  rcases PushoutCocone.IsColimit.desc' H' (g₁ ≫ s.inl) s.inr this with ⟨l₁, hl₁, hl₁'⟩
-  dsimp at *
-  use l₁
-  refine ⟨?_, ?_, ?_⟩
-  · apply PushoutCocone.IsColimit.hom_ext H
-    · erw [← Category.assoc, hl₁]
-      rfl
-    · erw [← Category.assoc, h₂, Category.assoc, hl₁', s.condition]
-  · exact hl₁'
-  · intro m hm₁ hm₂
-    apply PushoutCocone.IsColimit.hom_ext H'
-    · erw [hl₁, Category.assoc, hm₁]
-    · erw [hm₂, hl₁']
+    IsColimit (PushoutCocone.mk _ _ h₂) :=
+  rightSquareIsPushout' H H'
 #align category_theory.limits.right_square_is_pushout CategoryTheory.Limits.rightSquareIsPushout
 
 end PasteLemma
