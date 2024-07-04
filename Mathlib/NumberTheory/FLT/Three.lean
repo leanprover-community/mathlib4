@@ -435,15 +435,15 @@ is associated with `λ`. -/
 lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Prime p)
     (hpaηb : p ∣ S.a + η * S.b) (hpaηsqb : p ∣ S.a + η ^ 2 * S.b) : Associated p λ := by
   suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
-  by_contra p_lam
-  refine hp.not_unit <| S.coprime.isUnit_of_dvd' ?_ ?_
-  · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
-    rw [show λ * S.a = η * (S.a + η * S.b) - (S.a + η ^ 2 * S.b) by rw [coe_eta]; ring]
-    exact dvd_mul_of_dvd_right hpaηb _ |>.sub hpaηsqb
-  · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
-    rw [← (Units.isUnit η).dvd_mul_left, show η * (λ * S.b) = (S.a + η ^ 2 * S.b) - (S.a + η * S.b)
-      by rw [coe_eta]; ring]
-    exact hpaηsqb.sub hpaηb
+  rw [← one_mul S.a] at hpaηb
+  rw [← one_mul S.a] at hpaηsqb
+  have := dvd_mul_sub_mul_mul_gcd_of_dvd hpaηb hpaηsqb
+  rw [one_mul, mul_one, IsUnit.dvd_mul_right <| (gcd_isUnit_iff _ _).2 S.coprime] at this
+  convert (dvd_mul_of_dvd_left (dvd_mul_of_dvd_left this η) η) using 1
+  symm
+  calc _ = (-↑η - 1 - ↑η) * (-↑η - 1) := by rw [eta_sq, mul_assoc, ← pow_two, eta_sq]
+  _ = 2 *η.1 ^ 2 + 3 * η + 1 := by ring
+  _ = λ := by rw [eta_sq, coe_eta]; ring
 
 /-- Given `S : Solution`, we let `S.y` be any element such that `S.a + η * S.b = λ * S.y` -/
 private noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
