@@ -8,7 +8,7 @@ Francesco Veneziano
 
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.NumberTheory.Padics.PadicNorm
 
@@ -27,6 +27,51 @@ absolute values on a number field up to equivalence. (TODO)
 ## Tags
 ring_norm, ostrowski
 -/
+
+namespace Filter
+
+-- ## Preliminary lemmas on limits
+
+/-- If `a : ℝ` is bounded above by a function `g : ℕ → ℝ` for every `0 < k` then it is less or equal than the limit `lim_{k → ∞} g(k)`-/
+lemma le_of_limit_le {a : ℝ} {g : ℕ → ℝ} {l : ℝ} (ha : ∀ (k : ℕ) (_ : 0 < k), a ≤ g k)
+  (hg : Filter.Tendsto g Filter.atTop (nhds l)) : a ≤ l := by
+  apply le_of_tendsto_of_tendsto tendsto_const_nhds hg
+  rw [Filter.EventuallyLE, Filter.eventually_atTop]
+  exact ⟨1, ha⟩
+
+/-- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`. -/
+lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) : Filter.Tendsto
+    (fun k : ℕ ↦ C ^ (k : ℝ)⁻¹) Filter.atTop (nhds 1) := by
+  rw [← Real.exp_log hC]
+  simp_rw [← Real.exp_mul]
+  apply Real.tendsto_exp_nhds_zero_nhds_one.comp
+  exact tendsto_const_div_atTop_nhds_zero_nat (Real.log C)
+
+open Filter
+
+/-extends the lemma `tendsto_rpow_div` when the function has natural input-/
+lemma tendsto_nat_rpow_div : Filter.Tendsto (fun k : ℕ ↦ (k : ℝ) ^ (k : ℝ)⁻¹)
+    Filter.atTop (nhds 1) := by
+  simp only [Filter.tendsto_def, Filter.mem_atTop_sets]
+  intro N hN
+  let h := tendsto_rpow_div
+  simp only [Filter.tendsto_def, one_div, Filter.mem_atTop_sets] at h
+  rcases h N hN with ⟨a, ha⟩
+  use (Nat.floor a) + 1
+  intro b hb
+  exact ha b (le_trans (le_of_lt (Nat.lt_floor_add_one a)) (mod_cast hb))
+
+end Filter
+
+namespace Real
+
+/-- `Nat.log` is less than or equal to `Real.log`. -/
+lemma nat_log_le_real_log {a b : ℕ} (_ : 0 < a) (hb : 1 < b) : Nat.log b a ≤ Real.logb b a := by
+  apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
+  simp only [Real.floor_logb_natCast hb (Nat.cast_nonneg a), Int.log_natCast, Int.cast_natCast,
+    le_refl]
+
+end Real
 
 namespace Rat.MulRingNorm
 open Int
@@ -222,5 +267,101 @@ theorem mulRingNorm_equiv_padic_of_bounded :
     norm_cast at h_eq'
 
 end Non_archimedean
+
+section Archimedean
+
+-- ## Archimedean case
+
+-- ## Preliminary result
+
+/-- Given an two integers `n, m` with `m > 1` the mulRingNorm of `n` is bounded by
+    `m + m * f m + m * (f m) ^ 2 + ... + m * (f m) ^ d` where `d` is the number of digits of the
+    expansion of `n` in base `m`. -/
+lemma MulRingNorm_n_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m):
+    f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * (f m) ^ i).sum := by
+  set L := Nat.digits m n
+  set L' : List ℚ := List.map Nat.cast (L.mapIdx fun i a ↦ (a * m ^ i)) with hL'
+  -- If `c` is a digit in the expansion of `n` in base `m`, then `f c` is less than `m`.
+  have hcoef {c : ℕ} (hc : c ∈ Nat.digits m n) : f c < m :=
+    lt_of_le_of_lt (MulRingNorm_nat_le_nat c f) (mod_cast Nat.digits_lt_base hm hc)
+  calc
+  f n = f ((Nat.ofDigits m L : ℕ) : ℚ) := by rw [Nat.ofDigits_digits m n]
+    _ = f (L'.sum) := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
+    _ ≤ (L'.map f).sum := mulRingNorm_sum_le_sum_mulRingNorm L' f
+    _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := by
+      simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
+      apply List.sum_le_sum
+      rintro ⟨i,a⟩ hia
+      dsimp [Function.uncurry]
+      replace hia := List.mem_enumFrom L hia
+      push_cast
+      rw [map_mul, map_pow]
+      exact mul_le_mul_of_nonneg_right (le_of_lt (hcoef hia.2.2))
+        (pow_nonneg (apply_nonneg f ↑m) i)
+
+open Real Nat
+
+-- ## Step 1: if f is a MulRingNorm and f n > 1 for some natural n, then f n > 1 for all n ≥ 2
+
+/-- If `f n > 1` for some `n` then `f n > 1` for all `n ≥ 2`.-/
+lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} (hn₀ : 1 < n₀) : 1 < f n₀ := by
+  contrapose! notbdd with h
+  intro n
+  have h_ineq1 {m : ℕ} (hm : 1 ≤ m) : f m ≤ n₀ * (Real.logb n₀ m + 1) := by
+    /- L is the string of digits of `n` in the base `n₀`-/
+    set L := Nat.digits n₀ m
+    calc
+    f m ≤ (L.mapIdx fun i _ ↦ n₀ * (f n₀) ^ i).sum := MulRingNorm_n_le_sum_digits m hn₀
+    _ ≤ (L.mapIdx fun _ _ ↦ (n₀ : ℝ)).sum := by
+      simp only [List.mapIdx_eq_enum_map, List.map_map]
+      apply List.sum_le_sum
+      rintro ⟨i,a⟩ _
+      simp only [Function.comp_apply, Function.uncurry_apply_pair]
+      exact mul_le_of_le_of_le_one' (mod_cast le_refl n₀) (pow_le_one i (apply_nonneg f ↑n₀) h)
+        (pow_nonneg (apply_nonneg f ↑n₀) i) (Nat.cast_nonneg n₀)
+    _ ≤ n₀ * (Real.logb n₀ m + 1) := by
+      rw [List.mapIdx_eq_enum_map, List.eq_replicate_of_mem (a:=(n₀ : ℝ))
+        (l := List.map (Function.uncurry fun _ _ ↦ n₀) (List.enum L)),
+        List.sum_replicate, List.length_map, List.enum_length, nsmul_eq_mul, mul_comm]
+      · rw [Nat.digits_len n₀ m hn₀ (not_eq_zero_of_lt hm)]
+        apply mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg n₀)
+        push_cast
+        simp only [add_le_add_iff_right]
+        exact nat_log_le_real_log hm hn₀
+      · simp_all only [List.mem_map, Prod.exists, Function.uncurry_apply_pair, exists_and_right,
+          and_imp, implies_true, forall_exists_index, forall_const]
+  -- For h_ineq2 we need to exclude the case n = 0.
+  rcases eq_or_ne n 0 with rfl | h₀; simp only [CharP.cast_eq_zero, map_zero, zero_le_one]
+  -- h_ineq2 needs to be in this form because it is applied in le_of_limit_le above
+  have h_ineq2 : ∀ (k : ℕ), 0 < k →
+      f n ≤ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
+    intro k hk
+    have h_exp : (f n ^ (k : ℝ)) ^ (k : ℝ)⁻¹ = f n := by
+      apply Real.rpow_rpow_inv (apply_nonneg f ↑n)
+      simp only [ne_eq, Nat.cast_eq_zero]
+      exact Nat.pos_iff_ne_zero.mp hk
+    rw [← Real.mul_rpow (mul_nonneg (Nat.cast_nonneg n₀) (add_nonneg (Real.logb_nonneg
+      (one_lt_cast.mpr hn₀) (mod_cast Nat.one_le_of_lt (zero_lt_of_ne_zero h₀))) (zero_le_one' ℝ)))
+      (Nat.cast_nonneg k), ← h_exp, Real.rpow_natCast, ← map_pow, ← Nat.cast_pow]
+    gcongr
+    apply le_trans (h_ineq1 (one_le_pow k n (zero_lt_of_ne_zero h₀)))
+    rw [mul_assoc, Nat.cast_pow, Real.logb_pow (mod_cast zero_lt_of_ne_zero h₀), mul_comm _ (k : ℝ),
+      mul_add (k : ℝ), mul_one]
+    gcongr
+    exact one_le_cast.mpr hk
+-- For prod_limit below we also need to exclude n = 1.
+  rcases eq_or_ne n 1 with rfl | h₁; simp only [Nat.cast_one, map_one, le_refl]
+  have prod_limit : Filter.Tendsto
+      (fun k : ℕ ↦ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * (k ^ (k : ℝ)⁻¹))
+      Filter.atTop (nhds 1) := by
+    nth_rw 2 [← mul_one 1]
+    have hnlim : Filter.Tendsto (fun k : ℕ ↦ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹)
+        Filter.atTop (nhds 1) := Filter.tendsto_root_atTop_nhds_one
+        (mul_pos (mod_cast (lt_trans zero_lt_one hn₀))
+        (add_pos (Real.logb_pos (mod_cast hn₀) (by norm_cast; omega)) Real.zero_lt_one))
+    exact Filter.Tendsto.mul hnlim Filter.tendsto_nat_rpow_div
+  exact Filter.le_of_limit_le h_ineq2 prod_limit
+
+end Archimedean
 
 end Rat.MulRingNorm
