@@ -3,7 +3,6 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Real.EReal
 
@@ -102,3 +101,5 @@ lemma exp_add (x y : EReal) : exp (x + y) = exp x * exp y := by
 end Morphism
 
 end EReal
+
+#minimize_imports
