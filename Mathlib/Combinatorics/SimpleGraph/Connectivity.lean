@@ -2002,7 +2002,7 @@ theorem reachable_iff_nonempty_univ {u v : V} :
 #align simple_graph.reachable_iff_nonempty_univ SimpleGraph.reachable_iff_nonempty_univ
 
 lemma not_reachable_iff_isEmpty_walk {u v : V} : ¬G.Reachable u v ↔ IsEmpty (G.Walk u v) := by
-   rw [reachable_iff_nonempty_univ, ← Set.nonempty_iff_univ_nonempty, not_nonempty_iff]
+  rw [Reachable, not_nonempty_iff]
 
 protected theorem Reachable.elim {p : Prop} {u v : V} (h : G.Reachable u v)
     (hp : G.Walk u v → p) : p :=
