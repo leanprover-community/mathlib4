@@ -613,9 +613,11 @@ theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F
   simp only [IsSeparable, minpoly.algEquiv_eq e x]
 
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
+theorem AlgEquiv.Algrebra.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
+  ⟨fun _ ↦ e.symm.isSeparable_iff.mp (Algebra.IsSeparable.isSeparable _ _)⟩
+
 theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
-  ⟨fun h ↦ ⟨fun _ ↦ e.symm.isSeparable_iff.mp (h.isSeparable _)⟩,
-    fun h ↦ ⟨fun _ ↦ e.isSeparable_iff.mp (h.isSeparable _)⟩⟩
+  ⟨fun _ ↦ AlgEquiv.Algrebra.isSeparable e, fun _ ↦ AlgEquiv.Algrebra.isSeparable e.symm⟩
 
 variable (F K)
 
