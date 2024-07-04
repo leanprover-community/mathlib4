@@ -94,7 +94,7 @@ section CommRing
 
 variable [CommRing R]
 
-lemma dvd_mul_sub_mul_mul_left_of_dvd {p a b c d x y : ℤ}
+lemma dvd_mul_sub_mul_mul_left_of_dvd {p a b c d x y : R}
     (h1 : p ∣ a * x + b * y) (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * x := by
   obtain ⟨k1, hk1⟩ := h1
   obtain ⟨k2, hk2⟩ := h2
@@ -103,7 +103,7 @@ lemma dvd_mul_sub_mul_mul_left_of_dvd {p a b c d x y : ℤ}
     eq_sub_of_add_eq hk2]
   ring
 
-lemma dvd_mul_sub_mul_mul_right_of_dvd {p a b c d x y : ℤ}
+lemma dvd_mul_sub_mul_mul_right_of_dvd {p a b c d x y : R}
     (h1 : p ∣ a * x + b * y) (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * y := by
   obtain ⟨k1, hk1⟩ := h1
   obtain ⟨k2, hk2⟩ := h2
