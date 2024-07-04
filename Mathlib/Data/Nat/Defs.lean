@@ -986,19 +986,23 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
 Also works for functions to `Sort*`. For m version assuming only the assumption for `k < n`, see
 `decreasing_induction'`. -/
 @[elab_as_elim]
-def decreasingInduction {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) (mn : m ≤ n) (hP : P n) : P m :=
-  leRecOn mn (fun {k} ih hsk ↦ ih <| h k hsk) (fun h ↦ h) hP
+def decreasingInduction {n} {motive : (m : ℕ) → m ≤ n → Sort*}
+    (of_succ : ∀ n h, motive (n + 1) h → motive n (le_of_succ_le h))
+    (self : motive n le_rfl) {m} (mn : m ≤ n) : motive m mn := by
+  induction mn using leRecOn' with
+  | self => exact self
+  | @next k _ ih =>
+    apply ih (fun i hi => of_succ i (le_succ_of_le hi)) (of_succ k le_rfl self)
 #align nat.decreasing_induction Nat.decreasingInduction
 
 @[simp]
-lemma decreasingInduction_self {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) (nn : n ≤ n)
-    (hP : P n) :
-    (decreasingInduction h nn hP : P n) = hP := by
+lemma decreasingInduction_self {n} {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self) :
+    (decreasingInduction (motive := motive) of_succ self le_rfl) = self := by
   dsimp only [decreasingInduction]
-  rw [leRecOn_self]
+  rw [leRecOn'_self]
 #align nat.decreasing_induction_self Nat.decreasingInduction_self
 
-lemma decreasingInduction_succ {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) (mn : m ≤ n)
+lemma decreasingInduction_succ {n} {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self) (mn : m ≤ n)
     (msn : m ≤ n + 1) (hP : P (n + 1)) :
     (decreasingInduction h msn hP : P m) = decreasingInduction h mn (h n hP) := by
   dsimp only [decreasingInduction]; rw [leRecOn_succ]
