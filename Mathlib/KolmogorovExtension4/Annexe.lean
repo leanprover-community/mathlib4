@@ -88,6 +88,13 @@ theorem kernel.map_deterministic {f : X → Y} (hf : Measurable f)
     kernel.deterministic_apply' _ _ ms, preimage_indicator]
   rfl
 
+theorem kernel.deterministic_prod_apply' {f : X → Y} (mf : Measurable f)
+    (η : kernel X Z) [IsSFiniteKernel η] (x : X)
+    {s : Set (Y × Z)} (ms : MeasurableSet s) :
+    ((kernel.deterministic f mf) ×ₖ η) x s = η x {z | (f x, z) ∈ s} := by
+  rw [kernel.prod_apply' _ _ _ ms, kernel.lintegral_deterministic']
+  exact measurable_measure_prod_mk_left ms
+
 theorem Measure.map_snd_compProd (μ : Measure X) [IsProbabilityMeasure μ] (κ : kernel X Y)
     [IsSFiniteKernel κ] {f : Y → Z} (hf : Measurable f) :
     (μ ⊗ₘ κ).snd.map f = Measure.snd (μ ⊗ₘ (kernel.map κ f hf)) := by
@@ -125,14 +132,20 @@ theorem Finset.Iic_subset_Iic {α : Type*} [Preorder α] [LocallyFiniteOrderBot 
     {a b : α} : Iic a ⊆ Iic b ↔ a ≤ b := by
   rw [← coe_subset, coe_Iic, coe_Iic, Set.Iic_subset_Iic]
 
-theorem Finset.Iic_sdiff_Ioc_same {α : Type*} [DecidableEq α] [LinearOrder α] [OrderBot α]
-    [LocallyFiniteOrder α]
-    {a b : α} (hab : a ≤ b) : (Iic b) \ (Ioc a b) = Iic a := by
+theorem Set.Iic_diff_Ioc_same {α : Type*} [LinearOrder α]
+    {a b : α} (hab : a ≤ b) : (Set.Iic b) \ (Set.Ioc a b) = Set.Iic a := by
   ext x
-  simp only [mem_sdiff, mem_Iic, mem_Ioc, not_and]
+  simp only [mem_diff, mem_Iic, mem_Ioc, not_and, not_le]
   refine ⟨fun ⟨h1, h2⟩ ↦ ?_, fun h ↦ ⟨h.trans hab, fun h' ↦ (not_le.2 h' h).elim⟩⟩
   · by_contra h3
-    exact h2 (not_le.1 h3) h1
+    exact (not_le.2 (h2 (not_le.1 h3))) h1
+
+theorem Finset.Iic_sdiff_Ioc_same {α : Type*} [LinearOrder α] [OrderBot α] [LocallyFiniteOrder α]
+    {a b : α} (hab : a ≤ b) : (Iic b) \ (Ioc a b) = Iic a := by
+  rw [← coe_inj, coe_sdiff, coe_Iic, coe_Ioc, coe_Iic, Set.Iic_diff_Ioc_same hab]
+
+theorem Finset.right_mem_Iic {α : Type*} [Preorder α] [LocallyFiniteOrderBot α] (a : α) :
+    a ∈ Iic a := mem_Iic.2 <| le_refl a
 
 end Finset
 

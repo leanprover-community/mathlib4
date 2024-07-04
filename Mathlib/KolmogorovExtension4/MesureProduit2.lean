@@ -58,6 +58,24 @@ section Nat
 variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 variable (μ : (n : ℕ) → Measure (X n)) [hμ : ∀ n, IsProbabilityMeasure (μ n)]
 
+lemma mem_Iic_zero {i : ℕ} (hi : i ∈ Iic 0) : i = 0 := by simpa using hi
+
+def zer : (X 0) ≃ᵐ ((i : Iic 0) → X i) where
+  toFun := fun x₀ i ↦ (mem_Iic_zero i.2).symm ▸ x₀
+  invFun := fun x ↦ x ⟨0, mem_Iic.2 <| le_refl 0⟩
+  left_inv := fun x₀ ↦ by simp
+  right_inv := fun x ↦ by
+    ext i
+    have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by simp [(mem_Iic_zero i.2).symm]
+    cases this; rfl
+  measurable_toFun := by
+    refine measurable_pi_lambda _ (fun i ↦ ?_)
+    simp_rw [eqRec_eq_cast]
+    apply measurable_cast
+    have : ⟨0, mem_Iic.2 <| le_refl 0⟩ = i := by simp [(mem_Iic_zero i.2).symm]
+    cases this; rfl
+  measurable_invFun := measurable_pi_apply _
+
 noncomputable def prod_meas : Measure ((n : ℕ) → X n) :=
   ((μ 0).map zer).bind
     (@ionescu_tulcea_kernel _ (ProbabilityMeasure.nonempty ⟨μ 0, hμ 0⟩) _
