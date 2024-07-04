@@ -9,16 +9,14 @@ structure MyStruct (α : Type) where
   y : ℤ
   deriving LawfulTraversable
 
-#guard_msgs (drop info) in
-#synth LawfulTraversable MyStruct
+#guard_msgs (drop info) in #synth LawfulTraversable MyStruct
 
 inductive Either (α : Type u)
   | left : α → ℤ → Either α
   | right : α → Either α
   deriving LawfulTraversable
 
-#guard_msgs (drop info) in
-#synth LawfulTraversable Either
+#guard_msgs (drop info) in #synth LawfulTraversable Either
 
 structure MyStruct2 (α : Type u) : Type u where
   x : α
@@ -27,16 +25,14 @@ structure MyStruct2 (α : Type u) : Type u where
   k : List (List α)
   deriving LawfulTraversable
 
-#guard_msgs (drop info) in
-#synth LawfulTraversable MyStruct2
+#guard_msgs (drop info) in #synth LawfulTraversable MyStruct2
 
 inductive RecData (α : Type u) : Type u
   | nil : RecData α
   | cons : ℕ → α → RecData α → RecData α → RecData α
   deriving LawfulTraversable
 
-#guard_msgs (drop info) in
-#synth LawfulTraversable RecData
+#guard_msgs (drop info) in #synth LawfulTraversable RecData
 
 unsafe structure MetaStruct (α : Type u) : Type u :=
   x : α
@@ -46,24 +42,21 @@ unsafe structure MetaStruct (α : Type u) : Type u :=
   w : Lean.Expr
   deriving Traversable
 
-#guard_msgs (drop info) in
-#synth Traversable MetaStruct
+#guard_msgs (drop info) in #synth Traversable MetaStruct
 
 inductive MyTree (α : Type)
   | leaf : MyTree α
   | node : MyTree α → MyTree α → α → MyTree α
   deriving LawfulTraversable
 
-#guard_msgs (drop info) in
-#synth LawfulTraversable MyTree
+#guard_msgs (drop info) in #synth LawfulTraversable MyTree
 
 inductive MyTree' (α : Type)
   | leaf : MyTree' α
   | node : MyTree' α → α → MyTree' α → MyTree' α
   deriving LawfulTraversable
 
-#guard_msgs (drop info) in
-#synth LawfulTraversable MyTree'
+#guard_msgs (drop info) in #synth LawfulTraversable MyTree'
 
 section
 open MyTree hiding traverse

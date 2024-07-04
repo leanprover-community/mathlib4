@@ -142,7 +142,9 @@ def noInitialWhitespaceLinter : Linter where
     if let some rg := stx.getRange? then
       let fm ← getFileMap
       let pos := fm.toPosition rg.start
-      if pos.column != 0 then
+      let relevantLine := ((← IO.FS.lines (← getFileName)))[pos.line - 1]!
+      if pos.column != 0 && !"#guard_msgs".isPrefixOf relevantLine
+      then
         Linter.logLint linter.noInitialWhitespace stx (m!"'{stx}' starts on column {pos.column}.\
           Please, do not leave any whitespace before this command!")
 
