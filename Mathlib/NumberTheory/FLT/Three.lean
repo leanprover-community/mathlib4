@@ -552,8 +552,7 @@ private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 :=
     convert hh using 1
     ring
   simp only [← x_spec, mul_assoc, ← y_spec, ← z_spec]
-  simp only [mul_comm 3, pow_mul, ← mul_pow, ← w_spec]
-  rw [← S.H, a_cube_add_b_cube_eq_mul]
+  rw [mul_comm 3, pow_mul, ← mul_pow, ← w_spec, ← S.H, a_cube_add_b_cube_eq_mul]
   ring
 
 private lemma exists_cube_associated :
