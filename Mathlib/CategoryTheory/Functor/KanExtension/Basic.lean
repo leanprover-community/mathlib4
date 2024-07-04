@@ -122,7 +122,7 @@ lemma isRightKanExtension_iff_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'') {L : C 
     refine isRightKanExtension_of_iso e.symm α' α ?_
     rw [← comm, ← whiskerLeft_comp_assoc, Iso.symm_hom, e.inv_hom_id, whiskerLeft_id', id_comp]
 
-/-- Left Kan extensions of isomorphic functors are isomorphic. -/
+/-- Right Kan extensions of isomorphic functors are isomorphic. -/
 @[simps]
 noncomputable def rightKanExtensionUniqueOfIso {G : C ⥤ H} (i : F ≅ G) (G' : D ⥤ H)
     (β : L ⋙ G' ⟶ G) [G'.IsRightKanExtension β] : F' ≅ G' where
