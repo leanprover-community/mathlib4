@@ -411,28 +411,35 @@ theorem cracker0 [Subsingleton n] : (∀ (i j : n), T n j  = T n i) := by
 open Classical
 
 /-Note the need for the Axiom of Choice below! This is the reason for `Classical` above. -/
-theorem cracker1 [Subsingleton n] (h : Nonempty n) : ∃ (S : E →ₗ[𝕜] E), (∀ (i : n), T n i = S)
+theorem cracker1 [Subsingleton n] (h : Nonempty n) : ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (i : n), T n i = S)
     := by
     have i := choice h
     use (T n i)
-    exact fun i_1 ↦ cracker0 i i_1
+    constructor
+    · exact hT i
+    · exact fun i_1 ↦ cracker0 i i_1
 
 theorem cracker2 [Subsingleton n] (S : E →ₗ[𝕜] E) :
     (∀ (i : n), T n i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
     (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
   exact fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
 
-theorem cracker3 [Subsingleton n] (h : Nonempty n) :  ∃ (S : E →ₗ[𝕜] E), (∀ (γ : n → 𝕜), (∀ (i : n),
+theorem cracker3 [Subsingleton n] (h : Nonempty n) :  ∃ (S : E →ₗ[𝕜] E),(∀ (γ : n → 𝕜), (∀ (i : n),
     (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
-  have h1 := cracker1 h (T := T)
+  have h1 := cracker1 hT h (T := T)
   obtain ⟨S , hS⟩ := h1
+  have := hS.1
   use S
-  exact cracker2 S hS
+  refine cracker2 S (n := n) (𝕜 := 𝕜) (T := T) hS.2
 
 theorem base [h1 : Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   by_cases case : Nonempty n
-  · sorry -- something like simp [cracker3, orthogonalComplement_iSup_eigenspaces_eq_bot]
+  · have h2 := cracker3 case (T := T)
+    obtain ⟨S, hS⟩ := h2
+    simp only [hS]
+    --have hSS : S.IsSymmetric
+    refine orthogonalComplement_iSup_eigenspaces_eq_bot
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
