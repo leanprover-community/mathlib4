@@ -178,7 +178,7 @@ partial def loadModules (imports : Array Import) : StateT State IO (Array USize 
         deps := s.deps.push deps
         transDeps := s.transDeps.push transDeps
         needs := s.needs
-        constToIdx := mod.constNames.foldl (·.insert · n) s.constToIdx
+        constToIdx := mod.constNames.foldl (·.insertIfNew · n |>.1) s.constToIdx
       }
   return (imps, transImps)
 
