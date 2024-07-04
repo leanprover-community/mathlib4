@@ -519,7 +519,12 @@ section
 
 variable {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (g' : Z ⟶ W)
 variable [HasPushout f g] [HasPushout (pushout.inr : _ ⟶ pushout f g) g']
-variable [HasPushout f (g ≫ g')]
+
+instance : HasPushout f (g ≫ g') :=
+  HasColimit.mk {
+    cocone := (pushout.cocone f g).pasteHoriz (pushout.cocone pushout.inr g')
+    isColimit := pasteHorizIsPushout (pushout.isColimit f g) (pushout.isColimit pushout.inr g')
+  }
 
 /-- The canonical isomorphism `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ×[X] W` -/
 noncomputable def pushoutLeftPushoutInrIso :

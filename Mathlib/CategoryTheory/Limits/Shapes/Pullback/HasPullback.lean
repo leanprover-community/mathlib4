@@ -108,6 +108,10 @@ abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 #align category_theory.limits.pushout CategoryTheory.Limits.pushout
 
+/-- The cocone associated to the pullback of `f` and `g` -/
+abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
+  colimit.cocone (span f g)
+
 /-- The first projection of the pullback of `f` and `g`. -/
 abbrev pullback.fst {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] : pullback f g ⟶ X :=
   limit.π (cospan f g) WalkingCospan.left
@@ -142,9 +146,15 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
   colimit.desc _ (PushoutCocone.mk h k w)
 #align category_theory.limits.pushout.desc CategoryTheory.Limits.pushout.desc
 
+/-- The cone associated to a pullback is a limit cone. -/
 abbrev pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsLimit (pullback.cone f g) :=
   limit.isLimit (cospan f g)
+
+/-- The cocone associated to a pushout is a colimit cone. -/
+abbrev pushout.isColimit {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
+    IsColimit (pushout.cocone f g) :=
+  colimit.isColimit (span f g)
 
 @[simp]
 theorem PullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (cospan f g)] :
