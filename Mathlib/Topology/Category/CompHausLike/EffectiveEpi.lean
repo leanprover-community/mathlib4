@@ -26,7 +26,7 @@ variable {P : TopCat.{u} → Prop}
 If `π` is a surjective morphism in `CompHausLike P`, then it is an effective epi.
 -/
 noncomputable
-def struct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) :
+def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
   desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
     DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
