@@ -200,8 +200,8 @@ lemma limsup_add_lt_of_lt {a b : EReal}
   obtain ⟨d, hd, hdb⟩ := DenselyOrdered.dense _ _ hb
   exact (limsup_add_le_of_lt hc hd).trans_lt (add_lt_add hca hdb)
 
-lemma limsup_add_bot_of_ne_top {u : α → EReal} {v : α → EReal}
-    (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) : limsup (u + v) f = ⊥ := by
+lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
+    limsup (u + v) f = ⊥ := by
   apply le_bot_iff.1
   apply (le_iff_le_forall_real_gt ⊥ (limsup (u + v) f)).1
   intro x
@@ -212,8 +212,8 @@ lemma limsup_add_bot_of_ne_top {u : α → EReal} {v : α → EReal}
   rw [h, ← coe_sub x y]
   exact bot_lt_coe (x - y)
 
-lemma limsup_add_le_add_limsup {u v : α → EReal}
-    (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
+lemma limsup_add_le_add_limsup
+(h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
   rcases eq_bot_or_bot_lt (limsup u f) with (u_bot | u_nbot)
   · rcases h with (u_nbot | v_ntop)
@@ -249,10 +249,10 @@ lemma limsup_add_le_of_le {a b : EReal}
   exact (limsup_add_le_add_limsup (hb ▸ Or.inr hb') (Or.inl ha.ne_top)).trans
     (add_le_add ha.le hb.le)
 
-lemma liminf_neg {v : α → EReal} : liminf (- v) f = - limsup v f :=
+lemma liminf_neg : liminf (- v) f = - limsup v f :=
   EReal.negOrderIso.limsup_apply.symm
 
-lemma limsup_neg {v : α → EReal} : limsup (- v) f = - liminf v f :=
+lemma limsup_neg : limsup (- v) f = - liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
 lemma liminf_add_gt_of_gt {a b : EReal} (ha : a < liminf u f) (hb : b < liminf v f) :
@@ -268,8 +268,8 @@ lemma liminf_add_gt_of_gt {a b : EReal} (ha : a < liminf u f) (hb : b < liminf v
   rw [neg_add (Or.inr hb') (Or.inl ha'), h]
   exact limsup_add_lt_of_lt ha hb
 
-lemma liminf_add_top_of_ne_bot {u : α → EReal} {v : α → EReal}
-    (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) : liminf (u + v) f = ⊤ := by
+lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) :
+    liminf (u + v) f = ⊤ := by
   apply top_le_iff.1 ((ge_iff_le_forall_real_lt (liminf (u + v) f) ⊤).1 _)
   intro x
   rcases exists_between_coe_real (Ne.bot_lt h') with ⟨y, ⟨_, hy⟩⟩
@@ -294,8 +294,7 @@ lemma add_liminf_le_liminf_add : (liminf u f) + (liminf v f) ≤ liminf (u + v) 
   simp_rw [← limsup_neg] at hu hv ⊢
   exact h' ▸ limsup_add_le_add_limsup (Or.inr hv) (Or.inl hu)
 
-lemma limsup_le_iff {u : α → EReal} {b : EReal} :
-    limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
+lemma limsup_le_iff {b : EReal} : limsup u f ≤ b ↔ ∀ c : ℝ, b < c → ∀ᶠ a : α in f, u a ≤ c := by
   rw [← le_iff_le_forall_real_gt]
   refine ⟨?_, ?_⟩ <;> intro h c b_lt_c
   · rcases exists_between_coe_real b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
