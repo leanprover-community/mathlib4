@@ -623,15 +623,11 @@ set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
 lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : s.card ≤ n) (hnt : n ≤ t.card) :
     ∃ u, s ⊆ u ∧ u ⊆ t ∧ card u = n := by
   classical
-  obtain ⟨k, hk⟩ := Nat.le.dest hnt
-  clear hnt
-  induction' k with k ih generalizing t
-  · exact ⟨t, hst, Subset.rfl, hk.symm⟩
-  obtain ⟨a, ha⟩ : (t \ s).Nonempty := by rw [← card_pos, card_sdiff hst]; omega
-  replace hst : s ⊆ t.erase a := subset_erase.2 ⟨hst, (mem_sdiff.1 ha).2⟩
-  replace hk : n + k = card (erase t a) := by rw [card_erase_of_mem (mem_sdiff.1 ha).1]; omega
-  obtain ⟨u, hsu, hut, hu⟩ := ih hst hk
-  exact ⟨u, hsu, hut.trans (erase_subset ..), hu⟩
+  refine Nat.decreasingInduction' ?_ hnt ⟨t, by simp [hst]⟩
+  intro k _ hnk ⟨u, hu₁, hu₂, hu₃⟩
+  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [←card_pos, card_sdiff hu₁]; omega
+  simp only [mem_sdiff] at ha
+  exact ⟨u.erase a, by simp [subset_erase, erase_subset_iff_of_mem (hu₂ _), *]⟩
 
 /-- We can shrink a set to any smaller size. -/
 lemma exists_subset_card_eq (hns : n ≤ s.card) : ∃ t ⊆ s, t.card = n := by
