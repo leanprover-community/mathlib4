@@ -990,12 +990,12 @@ Also works for functions to `Sort*`. For m version assuming only the assumption 
 `decreasing_induction'`. -/
 @[elab_as_elim]
 def decreasingInduction {n} {motive : (m : ℕ) → m ≤ n → Sort*}
-    (of_succ : ∀ n h, motive (n + 1) h → motive n (le_of_succ_le h))
+    (of_succ : ∀ k (h : k < n), motive (k + 1) h → motive k (le_of_succ_le h))
     (self : motive n le_rfl) {m} (mn : m ≤ n) : motive m mn := by
   induction mn using leRecOn' with
   | self => exact self
   | @next k _ ih =>
-    apply ih (fun i hi => of_succ i (le_succ_of_le hi)) (of_succ k le_rfl self)
+    apply ih (fun i hi => of_succ i (le_succ_of_le hi)) (of_succ k (lt_succ_self _) self)
 #align nat.decreasing_induction Nat.decreasingInduction
 
 @[simp]
