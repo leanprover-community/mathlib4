@@ -155,15 +155,10 @@ theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [F
 namespace Finset
 variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
 
-/-- The diagonal of a finset `s : Finset α` as a finset of functions `ι → α`. -/
-def piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι → α) := s.image (const ι)
-
-@[simp] lemma mem_piDiag : f ∈ s.piDiag ι ↔ ∃ a ∈ s, const ι a = f := mem_image
+lemma piFinset_filter_const [DecidableEq ι] [Fintype ι] :
+    (Fintype.piFinset fun _ ↦ s).filter (∃ a ∈ s, const ι a = ·) = s.piDiag ι := by aesop
 
 lemma piDiag_subset_piFinset [DecidableEq ι] [Fintype ι] :
-    s.piDiag ι ⊆ Fintype.piFinset fun _ ↦ s := by aesop (add simp [subset_iff])
-
-@[simp] lemma card_piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] [Nonempty ι] :
-    (s.piDiag ι).card = s.card := by rw [piDiag, card_image_of_injective _ const_injective]
+    s.piDiag ι ⊆ Fintype.piFinset fun _ ↦ s := by simp [← piFinset_filter_const]
 
 end Finset
