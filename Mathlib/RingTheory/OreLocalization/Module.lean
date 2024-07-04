@@ -178,7 +178,7 @@ theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-
 The multiplication on the localized module. Note that this gives a diamond with the instance on
 `R[S⁻¹]` (which does not require commutativity), but is defeq to it under `with_unfolding_all`.
 -/
-protected def mul  {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
+protected def mul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
     (m₁ m₂ : LocalizedModule S A) : LocalizedModule S A :=
   liftOn₂ m₁ m₂ (fun x₁ x₂ => LocalizedModule.mk (x₁.1 * x₂.1) (x₂.2 * x₁.2)) (by
     rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
@@ -196,8 +196,8 @@ protected def mul  {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
 
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Monoid (LocalizedModule S A) where
+  __ := inferInstanceAs (One (LocalizedModule S A))
   mul := LocalizedModule.mul
-  one := mk 1 (1 : S)
   one_mul := by
     rintro ⟨a, s⟩
     with_unfolding_all exact mk_eq.mpr ⟨1, by simp only [one_mul, mul_one, one_smul]⟩
