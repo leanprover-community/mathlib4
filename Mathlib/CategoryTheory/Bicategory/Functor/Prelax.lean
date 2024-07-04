@@ -88,7 +88,8 @@ variable (F : PrelaxFunctorStruct B C)
 
 /-- The identity lax prefunctor. -/
 @[simps]
-def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] : PrelaxFunctorStruct B B :=
+def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] :
+    PrelaxFunctorStruct B B :=
   { Prefunctor.id B with map₂ := fun η => η }
 #align category_theory.prelax_functor.id CategoryTheory.PrelaxFunctorStruct.id
 
