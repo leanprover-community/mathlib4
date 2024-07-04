@@ -22,11 +22,10 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 Some induction principles tagged with `elab_as_elim`, since the attribute is missing in core.
 -/
 
-set_option autoImplicit true
-
 #align quotient.induction_on Quotient.inductionOn
 #align quot.induction_on Quot.inductionOn
 
+universe u v
 variable {α : Sort u} {r : α → α → Prop} {motive : Quot r → Sort v}
 
 @[inherit_doc Quot.rec, elab_as_elim] -- Porting note: adding `elab_as_elim`

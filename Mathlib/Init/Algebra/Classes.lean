@@ -73,8 +73,6 @@ Mario made the following analysis of uses in mathlib3:
 * `is_strict_total_order`: looks like the only usage is in `rbmap` again
 -/
 
-set_option autoImplicit true
-
 universe u v
 
 -- Porting note: removed `outParam`

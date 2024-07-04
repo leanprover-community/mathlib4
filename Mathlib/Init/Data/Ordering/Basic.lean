@@ -21,7 +21,7 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 # Helper definitions and instances for `Ordering`
 -/
 
-set_option autoImplicit true
+universe u
 
 deriving instance Repr for Ordering
 
@@ -35,7 +35,7 @@ def orElse : Ordering → Ordering → Ordering
   | gt, _ => gt
 
 /-- The relation corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
-def toRel [LT α] : Ordering → α → α → Prop
+def toRel {α : Type u} [LT α] : Ordering → α → α → Prop
   | .lt => (· < ·)
   | .eq => Eq
   | .gt => (· > ·)
