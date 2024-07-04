@@ -827,19 +827,6 @@ theorem isSeparable_add {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) 
   isSeparable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (.inl rfl))
     (subset_adjoin F _ (.inr rfl))
 
-/-- If `x` is a separable elements, then `-x` is also a separable element. -/
-theorem isSeparable_neg {x : E} (hx : IsSeparable F x) :
-    IsSeparable F (-x) :=
-  haveI := (isSeparable_adjoin_simple_iff_isSeparable F E).2 hx
-  isSeparable_of_mem_isSeparable F E <| F⟮x⟯.neg_mem <| mem_adjoin_simple_self F x
-
-/-- If `x` and `y` are both separable elements, then `x - y` is also a separable element. -/
-theorem isSeparable_sub {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) :
-    IsSeparable F (x - y) :=
-  haveI := isSeparable_adjoin_pair_of_isSeparable F E hx hy
-  isSeparable_of_mem_isSeparable F E <| F⟮x, y⟯.sub_mem (subset_adjoin F _ (.inl rfl))
-    (subset_adjoin F _ (.inr rfl))
-
 /-- If `x` is a separable element, then `x⁻¹` is also a separable element. -/
 theorem isSeparable_inv {x : E} (hx : IsSeparable F x) : IsSeparable F x⁻¹ :=
   haveI := (isSeparable_adjoin_simple_iff_isSeparable F E).2 hx
