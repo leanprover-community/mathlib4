@@ -404,13 +404,7 @@ lemma lambda_sq_not_dvd_a_add_eta_sq_mul_b : ¬ λ ^ 2 ∣ (S.a + η ^ 2 * S.b) 
 
 lemma eta_add_one_mul_neg_eta_eq_one : ((η : 𝓞 K) + 1) * (-η) = 1 :=
   calc ((η : 𝓞 K) + 1) * -η = -(η ^ 2 + η + 1) + 1 := by ring
-  _ = 1 := by
-    ext
-    have := hζ.isRoot_cyclotomic (by decide)
-    simp only [PNat.val_ofNat, Polynomial.cyclotomic_three, Polynomial.IsRoot.def,
-      Polynomial.eval_add, Polynomial.eval_pow, Polynomial.eval_X, Polynomial.eval_one] at this
-    simp only [IsUnit.unit_spec, RingOfIntegers.neg_mk, neg_add_cancel_comm, map_add,
-      RingOfIntegers.map_mk, map_neg, map_pow, map_one, this, neg_zero, zero_add]
+  _ = 1 := by rw [eta_sq]; ring
 
 /-- If `p : 𝓞 K` is a prime that divides both `S.a + S.b` and `S.a + η * S.b`, then `p`
 is associated with `λ`. -/
