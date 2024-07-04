@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
+import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.Analysis.InnerProductSpace.Projection
 
@@ -404,8 +405,31 @@ variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
     (hT : ∀(i : n), (T n i).IsSymmetric)
     (hC : ∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i))
 
-theorem base [Subsingleton n]:
-  (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥  := by sorry
+theorem cracker0 [Subsingleton n] : (∀ (i j : n), T n j  = T n i) := by
+  intro i _ ; rw [Subsingleton.allEq i _]
+
+open Classical
+
+/-Note the need for the Axiom of Choice below! This is the reason for `Classical` above. -/
+theorem cracker1 [h1 : Subsingleton n] [h2 : Nonempty n] : ∃ (S : E →ₗ[𝕜] E), (∀ (i : n), T n i = S)
+    := by
+    have i := choice h2
+    use (T n i)
+    exact fun i_1 ↦ cracker0 i i_1
+
+/-Something like the following may be needed.-/
+theorem cracker2 [h1 : Subsingleton n] [h2 : Nonempty n] :
+    ∃ (S : E →ₗ[𝕜] E), (∀ (γ : n → 𝕜), (∀ (i : n),
+    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by sorry
+
+theorem base [h1 : Subsingleton n]:
+    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+  by_cases case : Nonempty n
+  · sorry
+  · simp only [not_nonempty_iff] at case
+    simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
+
+--`orthogonalComplement_iSup_eigenspaces_eq_bot` may be useful above.
 
 theorem induction_step [Nontrivial n] :
     (∀ (m : Type u) [Fintype m], Fintype.card m < Fintype.card n →
@@ -420,12 +444,14 @@ theorem ind_exhaust : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) 
     exact induction_step
 
 theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
-    (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
-    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by sorry
+    (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))
+    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T n j) (γ j))).subtypeₗᵢ) := by sorry
 
 theorem post_ind_exhaust : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
-    ⨅ (j : n), (eigenspace (T j) (α j))) :=
-  (OrthogonalFamily.isInternal_iff <| ind_Orthogonality T).mpr <| ind_exhaust T
+    ⨅ (j : n), (eigenspace (T n j) (α j))) := by
+    rw [OrthogonalFamily.isInternal_iff]
+    · exact ind_exhaust
+    · exact ind_Orthogonality
 
 end Simultaneous
 
