@@ -147,18 +147,16 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   letI : IsNoetherian k (k ⊗[R] (I →₀ R)) :=
     isNoetherian_of_isNoetherianRing_of_finite k (k ⊗[R] (I →₀ R))
   choose f hf using TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective
-  letI inst (M) [AddCommGroup M] [Module R M] : AddGroup (k ⊗[R] M) := inferInstance
   -- By choosing an abitrary lift of `b` to `I → M`, we get a surjection `i : Rᴵ → M`.
   let i := Finsupp.total I M R (f ∘ b)
-  letI := inst (LinearMap.ker i)
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_total]
     exact LocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := f ∘ b) b (fun _ ↦ hf _)
   have : Module.Finite R (LinearMap.ker i) := by
     constructor
-    -- rw [Submodule.fg_top]
     exact (Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker i hi)
-  -- We claim that `i` is actually a bijection.
+  -- We claim that `i` is actually a bijection,
+  -- hence an isomorphism exhibing `M` as the free module `Rᴵ`
   refine Module.Free.of_equiv (LinearEquiv.ofBijective i ⟨?_, hi⟩)
   -- By Nakayama's lemma, it suffices to show that `k ⊗ ker(i) = 0`.
   rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot,
@@ -197,7 +195,7 @@ theorem free_of_flat_of_localRing [Module.FinitePresentation R P] [Module.Flat R
 
 /--
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
-`M` finite and `N` finite free, then `k ⊗ M → k ⊗ N` is injective implies `P` is free.
+`M` finite and `N` finite free, then injectivity of `k ⊗ M → k ⊗ N` implies that `P` is free.
 -/
 theorem free_of_lTensor_residueField_injective
     [Module.Finite R M] [Module.Finite R N] [Module.Free R N]
@@ -216,8 +214,8 @@ end Module
 
 /--
 Given a linear map `l : M → N` over a local ring `(R, 𝔪, k)`
-with `M` finite and `N` is finite free,
-`l` is a split injection iff `k ⊗ l` is a (split) injection.
+with `M` finite and `N` finite free,
+`l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 theorem LocalRing.split_injective_iff_lTensor_residueField_injective
     [Module.Finite R M] [Module.Finite R N] [Module.Free R N] (l : M →ₗ[R] N) :
@@ -228,15 +226,15 @@ theorem LocalRing.split_injective_iff_lTensor_residueField_injective
       rw [← LinearMap.lTensor_comp, hl, LinearMap.lTensor_id]
     exact Function.HasLeftInverse.injective ⟨_, LinearMap.congr_fun this⟩
   · intro h
-    -- By the lemma above, `k ⊗ l` injective => `N ⧸ l(M)` free.
+    -- By the a previously proved lemma, `k ⊗ l` injective => `N ⧸ l(M)` free.
     have := Module.free_of_lTensor_residueField_injective l (LinearMap.range l).mkQ
       (Submodule.mkQ_surjective _) l.exact_map_mkQ_range h
-    -- Hence `0 → l(M) → N → N ⧸ l(M) → 0` splits and `l(M)` is projective.
+    -- Hence `l(M)` is projective because `0 → l(M) → N → N ⧸ l(M) → 0` splits.
     have : Module.Projective R (LinearMap.range l) := by
       have := (Exact.split_tfae (LinearMap.exact_subtype_mkQ (LinearMap.range l))
         Subtype.val_injective (Submodule.mkQ_surjective _)).out 0 1
       obtain ⟨l', hl'⟩ := this.mp
-          (Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _))
+         (Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _))
       exact Module.Projective.of_split _ _ hl'
     -- Then `0 → ker l → M → l(M) → 0` splits.
     obtain ⟨l', hl'⟩ : ∃ l', l' ∘ₗ (LinearMap.ker l).subtype = LinearMap.id := by
@@ -249,7 +247,8 @@ theorem LocalRing.split_injective_iff_lTensor_residueField_injective
     have : Module.Finite R (LinearMap.ker l) := by
       refine Module.Finite.of_surjective l' ?_
       exact Function.HasRightInverse.surjective ⟨_, DFunLike.congr_fun hl'⟩
-    -- And `0 → k ⊗ ker l → k ⊗ M → k ⊗ l(M) → 0` also splits.
+    -- And tensoring with `k` preserves the injectivity of the first arrow.
+    -- That is, `k ⊗ ker l → k ⊗ M` is also injective.
     have H : Function.Injective ((LinearMap.ker l).subtype.lTensor k) := by
       apply_fun (LinearMap.lTensor k) at hl'
       rw [LinearMap.lTensor_comp, LinearMap.lTensor_id] at hl'
