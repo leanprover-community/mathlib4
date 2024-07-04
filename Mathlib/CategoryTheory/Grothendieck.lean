@@ -244,8 +244,7 @@ def functor {E : Cat.{v,u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T:= Cat.{v,u}) E where
   map_id F := by
     ext
     exact Grothendieck.map_id_eq (F:= F)
-  map_comp := by
-    intro F G H α β
+  map_comp α β := by
     simp [Grothendieck.map_comp_eq α β]
     rfl
 
