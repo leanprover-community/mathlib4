@@ -38,11 +38,11 @@ theorem eq_topologicalKrullDim (R : Type _) [CommRing R] :
   Eq.symm $ krullDim_orderDual.symm.trans $ krullDim_eq_of_orderIso $ OrderIso.symm {
     toFun := fun p ↦ ⟨zeroLocus p.asIdeal, isIrreducible_zeroLocus_iff _ |>.mpr <| by
       simpa only [p.isPrime.radical] using p.isPrime, isClosed_zeroLocus p.asIdeal⟩
-    invFun := fun s ↦ ⟨vanishingIdeal s.1, isIrreducible_iff_vanishingIdeal_isPrime.mp s.2.1⟩
+    invFun := fun s ↦ ⟨vanishingIdeal s.1, isIrreducible_iff_vanishingIdeal_isPrime.mp s.2⟩
     left_inv := fun p ↦ PrimeSpectrum.ext _ _ <| by
       simp_rw [vanishingIdeal_zeroLocus_eq_radical, p.isPrime.radical]
-    right_inv := fun s ↦ Subtype.ext <| by
-      simpa [zeroLocus_vanishingIdeal_eq_closure] using s.2.2.closure_eq
+    right_inv := fun s ↦ by
+      simp only [zeroLocus_vanishingIdeal_eq_closure, s.3.closure_eq]; rfl
     map_rel_iff' := by
       intro p q
       change zeroLocus _ ≤ zeroLocus _ ↔ _
