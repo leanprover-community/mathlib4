@@ -148,7 +148,7 @@ theorem op_smul_op_smul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a�
 theorem op_smul_mul [Monoid α] [MulAction αᵐᵒᵖ β] (b : β) (a₁ a₂ : α) :
     b <• (a₁ * a₂) = b <• a₁ <• a₂ := mul_smul _ _ _
 
-end section
+end
 
 /-! ### Actions _by_ the opposite type (right actions)
 

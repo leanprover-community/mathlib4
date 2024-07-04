@@ -105,7 +105,7 @@ theorem nth_injOn (hf : (setOf p).Finite) : (Set.Iio hf.toFinset.card).InjOn (nt
 #align nat.nth_inj_on Nat.nth_injOn
 
 theorem range_nth_of_finite (hf : (setOf p).Finite) : Set.range (nth p) = insert 0 (setOf p) := by
-  simpa only [← nth_eq_getD_sort hf, mem_sort, Set.Finite.mem_toFinset]
+  simpa only [← List.getD_eq_getElem?, ← nth_eq_getD_sort hf, mem_sort, Set.Finite.mem_toFinset]
     using Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
 #align nat.range_nth_of_finite Nat.range_nth_of_finite
 

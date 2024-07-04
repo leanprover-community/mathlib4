@@ -299,14 +299,14 @@ def raise : List ℕ → ℕ → List ℕ
 
 theorem lower_raise : ∀ l n, lower (raise l n) n = l
   | [], n => rfl
-  | m :: l, n => by rw [raise, lower, add_tsub_cancel_right, lower_raise l]
+  | m :: l, n => by rw [raise, lower, Nat.add_sub_cancel_right, lower_raise l]
 #align denumerable.lower_raise Denumerable.lower_raise
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
   | [], n, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
-    simp [raise, lower, tsub_add_cancel_of_le this, raise_lower h.of_cons]
+    simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.of_cons]
 #align denumerable.raise_lower Denumerable.raise_lower
 
 theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
@@ -363,7 +363,7 @@ theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < �
   | [], n, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ (l.mem_cons_self _)
-    simp [raise', lower', tsub_add_cancel_of_le this,
+    simp [raise', lower', Nat.sub_add_cancel this,
       raise_lower' (List.rel_of_sorted_cons h₂ : ∀ a ∈ l, m < a) h₂.of_cons]
 #align denumerable.raise_lower' Denumerable.raise_lower'
 

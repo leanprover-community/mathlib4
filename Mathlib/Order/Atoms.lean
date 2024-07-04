@@ -49,10 +49,7 @@ which are lattices with only two elements, and related ideas.
 
 -/
 
-set_option autoImplicit true
-
-
-variable {α β : Type*}
+variable {ι : Sort*} {α β : Type*}
 
 section Atoms
 
@@ -114,7 +111,7 @@ alias ⟨CovBy.is_atom, IsAtom.bot_covBy⟩ := bot_covBy_iff
 
 end PartialOrder
 
-theorem atom_le_iSup [Order.Frame α] (ha : IsAtom a) {f : ι → α} :
+theorem atom_le_iSup [Order.Frame α] {a : α} (ha : IsAtom a) {f : ι → α} :
     a ≤ iSup f ↔ ∃ i, a ≤ f i := by
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
   show (a ≤ ⨆ i, f i) → _
@@ -204,7 +201,7 @@ alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
 
 end PartialOrder
 
-theorem iInf_le_coatom [Order.Coframe α] (ha : IsCoatom a) {f : ι → α} :
+theorem iInf_le_coatom [Order.Coframe α] {a : α} (ha : IsCoatom a) {f : ι → α} :
     iInf f ≤ a ↔ ∃ i, f i ≤ a :=
   atom_le_iSup (α := αᵒᵈ) ha
 
@@ -1003,7 +1000,8 @@ end «Prop»
 
 namespace Pi
 
-variable {π : ι → Type u}
+universe u
+variable {ι : Type*} {π : ι → Type u}
 
 protected theorem eq_bot_iff [∀ i, Bot (π i)] {f : ∀ i, π i} : f = ⊥ ↔ ∀ i, f i = ⊥ :=
   ⟨(· ▸ by simp), fun h => funext fun i => by simp [h]⟩
@@ -1037,8 +1035,8 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
       simpa using this (fun k => by by_cases h : k = j; { subst h; simp }; simp [h]) i
         (by rwa [Function.update_noteq (Ne.symm hj), bot_apply, bot_lt_iff_ne_bot]) j
 
-theorem isAtom_single [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] {a : π i}
-    (h : IsAtom a) : IsAtom (Function.update (⊥ : ∀ i, π i) i a) :=
+theorem isAtom_single {i : ι} [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)]
+    {a : π i} (h : IsAtom a) : IsAtom (Function.update (⊥ : ∀ i, π i) i a) :=
   isAtom_iff.2 ⟨i, by simpa, fun j hji => Function.update_noteq hji _ _⟩
 
 theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]

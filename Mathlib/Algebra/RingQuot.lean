@@ -23,6 +23,8 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
+assert_not_exists Star.star
+
 universe uR uS uT uA u₄
 
 variable {R : Type uR} [Semiring R]
@@ -561,45 +563,6 @@ def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ I
 #align ring_quot.ring_quot_equiv_ideal_quotient RingQuot.ringQuotEquivIdealQuotient
 
 end CommRing
-
-section StarRing
-
-variable [StarRing R] (hr : ∀ a b, r a b → r (star a) (star b))
-
-theorem Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
-  induction h with
-  | of h          => exact Rel.of (hr _ _ h)
-  | add_left _ h  => rw [star_add, star_add]
-                     exact Rel.add_left h
-  | mul_left _ h  => rw [star_mul, star_mul]
-                     exact Rel.mul_right h
-  | mul_right _ h => rw [star_mul, star_mul]
-                     exact Rel.mul_left h
-#align ring_quot.rel.star RingQuot.Rel.star
-
-private irreducible_def star' : RingQuot r → RingQuot r
-  | ⟨a⟩ => ⟨Quot.map (star : R → R) (Rel.star r hr) a⟩
-
-theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
-    (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
-#align ring_quot.star'_quot RingQuot.star'_quot
-
-/-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/
-def starRing {R : Type uR} [Semiring R] [StarRing R] (r : R → R → Prop)
-    (hr : ∀ a b, r a b → r (star a) (star b)) : StarRing (RingQuot r) where
-  star := star' r hr
-  star_involutive := by
-    rintro ⟨⟨⟩⟩
-    simp [star'_quot]
-  star_mul := by
-    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp [star'_quot, mul_quot, star_mul]
-  star_add := by
-    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp [star'_quot, add_quot, star_add]
-#align ring_quot.star_ring RingQuot.starRing
-
-end StarRing
 
 section Algebra
 
