@@ -231,8 +231,8 @@ def intValuation : Valuation R ℤₘ₀ where
 #align is_dedekind_domain.height_one_spectrum.int_valuation IsDedekindDomain.HeightOneSpectrum.intValuation
 
 
-theorem intValuation_apply {R : Type _} [CommRing R] [IsDedekindDomain R] {r : R}
-    (v : IsDedekindDomain.HeightOneSpectrum R) : intValuation v r = intValuationDef v r := rfl
+theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
+    intValuation v r = intValuationDef v r := rfl
 
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem int_valuation_exists_uniformizer :
