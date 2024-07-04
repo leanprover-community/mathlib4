@@ -415,16 +415,16 @@ lemma eta_add_one_mul_neg_eta_eq_one : ((η : 𝓞 K) + 1) * (-η) = 1 :=
 /-- If `p : 𝓞 K` is a prime that divides both `S.a + S.b` and `S.a + η * S.b`, then `p`
 is associated with `λ`. -/
 lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b {p : 𝓞 K} (hp : Prime p)
-    (hpab : p ∣ S.a + S.b) (hpaetab : p ∣ S.a + η * S.b) : Associated p λ := by
+    (hpab : p ∣ S.a + S.b) (hpaηb : p ∣ S.a + η * S.b) : Associated p λ := by
   suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
   by_contra p_lam
   refine hp.not_unit <| IsCoprime.isUnit_of_dvd' S.coprime ?_ ?_
   · refine (hp.dvd_or_dvd ?_).resolve_left ‹_›
     rw [show λ * S.a = η * (S.a + S.b) - (S.a + η * S.b) by rw [coe_eta]; ring]
-    exact dvd_sub (dvd_mul_of_dvd_right hpab _) hpaetab
+    exact dvd_sub (dvd_mul_of_dvd_right hpab _) hpaηb
   · refine (hp.dvd_or_dvd ?_).resolve_left ‹_›
     rw [show λ * S.b = (S.a + η * S.b) - (S.a + S.b) by rw [coe_eta]; ring]
-    exact dvd_sub hpaetab hpab
+    exact dvd_sub hpaηb hpab
 
 /-- If `p : 𝓞 K` is a prime that divides both `S.a + S.b` and `S.a + η ^ 2 * S.b`, then `p`
 is associated with `λ`. -/
@@ -447,17 +447,17 @@ lemma associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Pri
 /-- If `p : 𝓞 K` is a prime that divides both `S.a + η * S.b` and `S.a + η ^ 2 * S.b`, then `p`
 is associated with `λ`. -/
 lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (hp : Prime p)
-    (hpaetab : p ∣ S.a + η * S.b) (hpaetasqb : p ∣ S.a + η ^ 2 * S.b) : Associated p λ := by
+    (hpaηb : p ∣ S.a + η * S.b) (hpaetasqb : p ∣ S.a + η ^ 2 * S.b) : Associated p λ := by
   suffices p_lam : p ∣ λ from hp.associated_of_dvd hζ.zeta_sub_one_prime' p_lam
   by_contra p_lam
   refine hp.not_unit <| S.coprime.isUnit_of_dvd' ?_ ?_
   · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
     rw [show λ * S.a = η * (S.a + η * S.b) - (S.a + η ^ 2 * S.b) by rw [coe_eta]; ring]
-    exact dvd_mul_of_dvd_right hpaetab _ |>.sub hpaetasqb
+    exact dvd_mul_of_dvd_right hpaηb _ |>.sub hpaetasqb
   · refine (hp.dvd_or_dvd ?_).resolve_left p_lam
     rw [← (Units.isUnit η).dvd_mul_left, show η * (λ * S.b) = (S.a + η ^ 2 * S.b) - (S.a + η * S.b)
       by rw [coe_eta]; ring]
-    exact hpaetasqb.sub hpaetab
+    exact hpaetasqb.sub hpaηb
 
 /-- Given `S : Solution`, we let `S.y` be any element such that `S.a + η * S.b = λ * S.y` -/
 private noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
