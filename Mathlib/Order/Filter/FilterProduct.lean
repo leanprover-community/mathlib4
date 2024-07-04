@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Ultrafilter
-import Mathlib.Order.Filter.Germ
+import Mathlib.Order.Filter.Ring
 
 #align_import order.filter.filter_product from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
