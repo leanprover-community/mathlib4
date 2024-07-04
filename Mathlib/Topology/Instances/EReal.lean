@@ -174,7 +174,7 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
 
 section LimInfSup
 
-variable {α : Type*} {f : Filter α} {u v : α → EReal}
+variable {α : Type*} {f : Filter α} {u v : α → EReal} {a b : EReal}
 
 lemma liminf_le_liminf (h : u ≤ᶠ[f] v) :
     liminf u f ≤ liminf v f := Filter.liminf_le_liminf h
@@ -184,8 +184,8 @@ lemma limsup_le_limsup (h : u ≤ᶠ[f] v) :
 
 /-- This lemma is superseded by `limsup_add_le_of_le` (weaker hypothesis) and
 `limsup_add_lt_of_lt` (stronger thesis). -/
-private lemma limsup_add_le_of_lt {a b : EReal}
-    (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f ≤ a + b := by
+private lemma limsup_add_le_of_lt (ha : limsup u f < a) (hb : limsup v f < b) :
+    limsup (u + v) f ≤ a + b := by
   rcases eq_or_neBot f with (rfl | _); simp only [limsup_bot, bot_le]
   rw [← @limsup_const EReal α _ f _ (a + b)]
   apply limsup_le_limsup (Eventually.mp (Eventually.and (eventually_lt_of_limsup_lt ha)
@@ -194,8 +194,8 @@ private lemma limsup_add_le_of_lt {a b : EReal}
   intro x
   exact fun ux_lt_a vx_lt_b ↦ add_le_add (le_of_lt ux_lt_a) (le_of_lt vx_lt_b)
 
-lemma limsup_add_lt_of_lt {a b : EReal}
-    (ha : limsup u f < a) (hb : limsup v f < b) : limsup (u + v) f < a + b := by
+lemma limsup_add_lt_of_lt (ha : limsup u f < a) (hb : limsup v f < b) :
+    limsup (u + v) f < a + b := by
   obtain ⟨c, hc, hca⟩ := DenselyOrdered.dense _ _ ha
   obtain ⟨d, hd, hdb⟩ := DenselyOrdered.dense _ _ hb
   exact (limsup_add_le_of_lt hc hd).trans_lt (add_lt_add hca hdb)
@@ -238,8 +238,8 @@ lemma limsup_add_le_add_limsup
   apply le_of_le_of_eq (limsup_add_le_of_lt key₁ key₂)
   rw [← limsup_v_real]; norm_cast; linarith
 
-lemma limsup_add_le_of_le {a b : EReal}
-    (ha : limsup u f < a) (hb : limsup v f ≤ b) : limsup (u + v) f ≤ a + b := by
+lemma limsup_add_le_of_le (ha : limsup u f < a) (hb : limsup v f ≤ b) :
+    limsup (u + v) f ≤ a + b := by
   rcases lt_or_eq_of_le hb with (hb | hb)
   · exact limsup_add_le_of_lt ha hb
   by_cases hb' : b = ⊤
@@ -255,7 +255,7 @@ lemma liminf_neg : liminf (- v) f = - limsup v f :=
 lemma limsup_neg : limsup (- v) f = - liminf v f :=
   EReal.negOrderIso.liminf_apply.symm
 
-lemma liminf_add_gt_of_gt {a b : EReal} (ha : a < liminf u f) (hb : b < liminf v f) :
+lemma liminf_add_gt_of_gt (ha : a < liminf u f) (hb : b < liminf v f) :
     a + b < liminf (u + v) f := by
   have ha' : a ≠ ⊤ := ha.ne_top
   have hb' : b ≠ ⊤ := hb.ne_top
