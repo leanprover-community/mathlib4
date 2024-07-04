@@ -601,6 +601,8 @@ variable [Algebra R A] [ContinuousFunctionalCalculus R p]
 variable [h_cpct : ∀ a : A, CompactSpace (spectrum R a)]
 
 variable (R) in
+/-- The non-unital functional calculus obtained by restricting a unital calculus to functions
+that map zero to zero. -/
 noncomputable def cfcₙHom_of_cfcHom {a : A} (ha : p a) : C(σₙ R a, R)₀ →⋆ₙₐ[R] A :=
   let e := ContinuousMapZero.toContinuousMapHom (X := σₙ R a) (R := R)
   let f : C(spectrum R a, quasispectrum R a) :=
@@ -611,8 +613,9 @@ noncomputable def cfcₙHom_of_cfcHom {a : A} (ha : p a) : C(σₙ R a, R)₀ �
 
 lemma cfcₙHom_of_cfcHom_map_id {a : A} (ha : p a) :
     cfcₙHom_of_cfcHom R ha (⟨.restrict (σₙ R a) <| .id R, by simp⟩) = a := by
-  simp [cfcₙHom_of_cfcHom]
-  sorry
+  simp only [cfcₙHom_of_cfcHom, NonUnitalStarAlgHom.comp_apply, toContinuousMapHom_apply,
+    NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
+  exact cfcHom_id ha
 
 lemma closedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
     ClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
@@ -682,6 +685,8 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueNonUnitalContinuousFunctionalCalcu
   · exact (closedEmbedding_cfcₙHom_of_cfcHom ha).continuous
   · simp only [cfcₙHom_id, cfcₙHom_of_cfcHom_map_id]
 
+/-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
+`cfcₙ`. -/
 lemma cfcₙ_eq_cfc [UniqueNonUnitalContinuousFunctionalCalculus R A] {f : R → R} {a : A}
     (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f a := by
