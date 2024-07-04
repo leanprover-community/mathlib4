@@ -854,12 +854,18 @@ lemma rec_add_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) 
     Nat.rec (motive := C) h0 h 1 = h 0 h0 := rfl
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
-there is a map from `C n` to each `C m`, `n ≤ m`. -/
+there is a map from `C n` to each `C m`, `n ≤ m`.
+
+This is a version of `Nat.le.rec` that works for `Sort`. -/
 @[elab_as_elim]
-def leRecOn' {C : ℕ → Sort*} : ∀ {m}, n ≤ m → (∀ ⦃k⦄, n ≤ k → C k → C (k + 1)) → C n → C m
-  | 0, H, _, x => Eq.recOn (Nat.eq_zero_of_le_zero H) x
-  | m + 1, H, next, x => (le_succ_iff.1 H).by_cases (fun h : n ≤ m ↦ next h <| leRecOn' h next x)
-      fun h : n = m + 1 ↦ Eq.recOn h x
+def leRecOn' {n} {C : (m : ℕ) → n ≤ m → Sort*}
+   (next : ∀ ⦃k⦄ (h : n ≤ k), C k h → C (k + 1) (le_succ_of_le h))
+   (self : C n le_rfl) : ∀ {m} (h : n ≤ m), C m h
+  | 0, H => Nat.eq_zero_of_le_zero H ▸ self
+  | m + 1, H =>
+    (le_succ_iff.1 H).by_cases
+      (fun h : n ≤ m ↦ next h <| leRecOn' next self h)
+      (fun h : n = m + 1 ↦ h ▸ self)
 #align nat.le_rec_on' Nat.leRecOn'
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k + 1)` for each `k`,
