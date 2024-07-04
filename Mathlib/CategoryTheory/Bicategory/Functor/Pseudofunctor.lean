@@ -171,6 +171,7 @@ theorem to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
 @[simp]
 theorem to_oplax_map {a b : B} (f : a ⟶ b) : (F : OplaxFunctor B C).map f = F.map f :=
   rfl
+#align category_theory.pseudofunctor.to_oplax_map CategoryTheory.Pseudofunctor.to_oplax_map
 
 @[simp]
 theorem to_oplax_map₂ {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
