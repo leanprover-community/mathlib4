@@ -33,7 +33,7 @@ def prod : C ⥤ Type w where
 
 variable {F G}
 
-  /-- The first projection of `prod F G`, onto `F`. -/
+/-- The first projection of `prod F G`, onto `F`. -/
 @[simps]
 def prod.fst : prod F G ⟶ F where
   app _ a := a.1
@@ -174,7 +174,7 @@ variable {F G}
 def coprod.inl : F ⟶ coprod F G where
   app _ x := .inl x
 
-  /-- The right inclusion of `G` into `coprod F G`. -/
+/-- The right inclusion of `G` into `coprod F G`. -/
 @[simps]
 def coprod.inr : G ⟶ coprod F G where
   app _ x := .inr x

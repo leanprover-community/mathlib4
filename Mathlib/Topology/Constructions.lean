@@ -44,10 +44,6 @@ variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
 
 section Constructions
 
-instance instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
-    TopologicalSpace (Subtype p) :=
-  induced (↑) t
-
 instance {r : X → X → Prop} [t : TopologicalSpace X] : TopologicalSpace (Quot r) :=
   coinduced (Quot.mk r) t
 

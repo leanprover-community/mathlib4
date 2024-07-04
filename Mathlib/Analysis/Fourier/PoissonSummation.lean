@@ -176,7 +176,7 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   refine (le_of_eq ?_).trans (ContinuousMap.norm_coe_le_norm _ ⟨-x, ?_⟩)
   · rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
       ContinuousMap.coe_mk, neg_neg]
-    exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
+  · exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
