@@ -428,7 +428,7 @@ variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (f' : W ⟶ X)
 variable [HasPullback f g] [HasPullback f' (pullback.fst : pullback f g ⟶ _)]
 
 -- TODO: can this be an instance? Or needs to be a them?
-instance : HasPullback (f' ≫ f) g :=
+instance hasPullbackHorizPaste : HasPullback (f' ≫ f) g :=
   HasLimit.mk {
     cone := (pullback.cone f g).pasteHoriz (pullback.cone f' pullback.fst)
     isLimit := pasteHorizIsPullback (pullback.isLimit f g) (pullback.isLimit f' pullback.fst)

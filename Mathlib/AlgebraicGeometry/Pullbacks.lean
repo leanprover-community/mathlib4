@@ -480,17 +480,8 @@ instance base_affine_hasPullback {C : CommRingCat} {X Y : Scheme} (f : X ⟶ Spe
 
 instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
     (i : Z.affineCover.J) : HasPullback ((Z.affineCover.pullbackCover f).map i ≫ f) g := by
-  let Xᵢ := pullback f (Z.affineCover.map i)
-  let Yᵢ := pullback g (Z.affineCover.map i)
-  let W := pullback (pullback.snd : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
-  have : IsLimit (PullbackCone.mk pullback.snd (pullback.fst ≫ pullback.fst) _) :=
-    bigSquareIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
-      (Z.affineCover.map i) pullback.snd pullback.snd g pullback.condition.symm
-      pullback.condition.symm (PullbackCone.isLimitOfFlip <| pullbackIsPullback g (Z.affineCover.map i))
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback pullback.snd pullback.snd)
-  have : HasPullback (pullback.snd ≫ Z.affineCover.map i : Xᵢ ⟶ _) g := ⟨⟨⟨_, this⟩⟩⟩
-  rw [← pullback.condition] at this
-  exact this
+  simp only [OpenCover.pullbackCover_obj, OpenCover.pullbackCover_map, pullback.condition]
+  exact hasPullback_assoc_symm f (Z.affineCover.map i) (Z.affineCover.map i) g
 #align algebraic_geometry.Scheme.pullback.left_affine_comp_pullback_HasPullback AlgebraicGeometry.Scheme.Pullback.left_affine_comp_pullback_hasPullback
 
 instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
@@ -560,11 +551,12 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
   let Xᵢ := pullback f (𝒰.map i)
   let Yᵢ := pullback g (𝒰.map i)
   let W := pullback (pullback.snd : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
-  have :=
+  have this : IsLimit (PullbackCone.mk pullback.snd (pullback.fst ≫ pullback.fst) _) :=
     bigSquareIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback g (𝒰.map i))
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback (pullback.snd : pullback g (𝒰.map i) ⟶ _)
+        (pullback.snd : pullback f (𝒰.map i) ⟶ _))
   refine
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
