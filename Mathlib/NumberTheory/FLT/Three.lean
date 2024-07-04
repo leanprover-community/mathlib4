@@ -516,40 +516,27 @@ private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   · exact lambda_not_dvd_w _ <| hζ.zeta_sub_one_prime'.dvd_of_dvd_pow h
   · simp [hζ.zeta_sub_one_prime'.ne_zero]
 
-private lemma isCoprime_x_y : IsCoprime S.x S.y := by
-  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hy ↦ lambda_not_dvd_y S (by simp [hy]))) ?_
-  intro p hp p_dvd_x p_dvd_y
-  refine lambda_not_dvd_x S ?_
-  rw [← Associated.dvd_iff_dvd_left <| associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b S hp ?_ ?_]
-  · exact p_dvd_x
-  · rw [x_spec]
-    exact dvd_mul_of_dvd_right p_dvd_x (λ ^ (3 * S.multiplicity - 2))
-  · convert dvd_mul_of_dvd_right p_dvd_y (η -1) using 1
-    rw [y_spec, coe_eta]
+private lemma isCoprime_helper {r s t w : 𝓞 K} (hr : ¬ λ ∣ r) (hs : ¬ λ ∣ s)
+    (Hp : ∀ {p : 𝓞 K}, Prime p → p ∣ t → p ∣ w → Associated p λ) (H₁ : ∀ {q}, q ∣ r → q ∣ t)
+    (H₂ : ∀ {q}, q ∣ s → q ∣ w) : IsCoprime r s := by
+  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ hs (by simp [hz])))
+    (fun p hp p_dvd_r p_dvd_s ↦ hr ?_)
+  rwa [← Associated.dvd_iff_dvd_left <| Hp hp (H₁ p_dvd_r) (H₂ p_dvd_s)]
 
-private lemma isCoprime_x_z : IsCoprime S.x S.z := by
-  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
-  intro p hp p_dvd_x p_dvd_z
-  refine lambda_not_dvd_x S ?_
-  rw [← Associated.dvd_iff_dvd_left <|
-    associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b S hp ?_ ?_]
-  · exact p_dvd_x
-  · rw [x_spec]
-    exact dvd_mul_of_dvd_right p_dvd_x (λ ^ (3 * S.multiplicity - 2))
-  · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
-    rw [z_spec, coe_eta]
+private lemma isCoprime_x_y : IsCoprime S.x S.y :=
+  isCoprime_helper (lambda_not_dvd_x S) (lambda_not_dvd_y S)
+    (associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b S) (fun hq ↦ x_spec S ▸ hq.mul_left _)
+      (fun hq ↦ y_spec S ▸ hq.mul_left _)
 
-private lemma isCoprime_y_z : IsCoprime S.y S.z := by
-  refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ lambda_not_dvd_z S (by simp [hz]))) ?_
-  intro p hp p_dvd_y p_dvd_z
-  refine lambda_not_dvd_y S ?_
-  rw [← Associated.dvd_iff_dvd_left <|
-    associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b S hp ?_ ?_]
-  · exact p_dvd_y
-  · rw [y_spec]
-    exact dvd_mul_of_dvd_right p_dvd_y (η - 1)
-  · convert dvd_mul_of_dvd_right p_dvd_z (η - 1) using 1
-    rw [z_spec, coe_eta]
+private lemma isCoprime_x_z : IsCoprime S.x S.z :=
+  isCoprime_helper (lambda_not_dvd_x S) (lambda_not_dvd_z S)
+    (associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b S) (fun hq ↦ x_spec S ▸ hq.mul_left _)
+      (fun hq ↦ z_spec S ▸ hq.mul_left _)
+
+private lemma isCoprime_y_z : IsCoprime S.y S.z :=
+  isCoprime_helper (lambda_not_dvd_y S) (lambda_not_dvd_z S)
+    (associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b S)
+    (fun hq ↦ y_spec S ▸ hq.mul_left _) (fun hq ↦ z_spec S ▸ hq.mul_left _)
 
 private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
   suffices hh : λ ^ (3 * S.multiplicity - 2) * S.x * λ * S.y * λ * S.z =
