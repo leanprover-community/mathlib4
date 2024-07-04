@@ -55,7 +55,7 @@ theorem effectiveEpi_tfae
   tfae_have 2 ↔ 3
   · exact epi_iff_surjective π
   tfae_have 3 → 1
-  · exact fun hπ ↦ ⟨⟨CompHausLike.struct π hπ⟩⟩
+  · exact fun hπ ↦ ⟨⟨CompHausLike.effectiveEpiStruct π hπ⟩⟩
   tfae_finish
 
 instance : profiniteToCompHaus.PreservesEffectiveEpis where
