@@ -30,18 +30,14 @@ ENNReal, EReal, logarithm, exponential
 
 open EReal ENNReal
 section LogExp
-namespace EReal
 
-@[simp] lemma log_exp (x : EReal) : log (exp x) = x := by
+@[simp] lemma EReal.log_exp (x : EReal) : log (exp x) = x := by
   induction x
   · simp
   · rw [exp_coe, log_ofReal, if_neg (not_le.mpr (Real.exp_pos _)), Real.log_exp]
   · simp
 
-end EReal
-
-namespace ENNReal
-@[simp] lemma exp_log (x : ℝ≥0∞) : exp (log x) = x := by
+@[simp] lemma ENNReal.exp_log (x : ℝ≥0∞) : exp (log x) = x := by
   by_cases hx_top : x = ∞
   · simp [hx_top]
   by_cases hx_zero : x = 0
@@ -49,7 +45,6 @@ namespace ENNReal
   have hx_pos : 0 < x.toReal := ENNReal.toReal_pos hx_zero hx_top
   rw [← ENNReal.ofReal_toReal hx_top, log_ofReal_of_pos hx_pos, exp_coe, Real.exp_log hx_pos]
 
-end ENNReal
 end LogExp
 
 section Log
@@ -116,7 +111,7 @@ end Exp
 namespace ENNReal
 section OrderIso
 
-/-- `ENNReal.log` and its inverse `ENNReal.exp` are an order isomorphism between `ℝ≥0∞` and
+/-- `ENNReal.log` and its inverse `EReal.exp` are an order isomorphism between `ℝ≥0∞` and
 `EReal`. -/
 noncomputable
 def logOrderIso : ℝ≥0∞ ≃o EReal where
@@ -161,7 +156,7 @@ section Measurability
 lemma measurable_log : Measurable log := continuous_log.measurable
 
 @[measurability, fun_prop]
-lemma measurable_exp : Measurable exp := continuous_exp.measurable
+lemma _root_.EReal.measurable_exp : Measurable exp := continuous_exp.measurable
 
 @[measurability, fun_prop]
 lemma _root_.Measurable.ereal_log {α : Type*} {_ : MeasurableSpace α}
