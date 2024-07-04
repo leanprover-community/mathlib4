@@ -15,19 +15,19 @@ to the extended reals `EReal`. The function takes values
 in the extended nonnegative reals `ℝ≥0∞`, with `exp ⊥ = 0` and `exp ⊤ = ⊤`.
 
 ## Main Definitions
-- `ENNReal.exp`: The extension of the real exponential to `EReal`.
+- `EReal.exp`: The extension of the real exponential to `EReal`.
 
 ## Main Results
-- `ENNReal.exp_strictMono`: `exp` is increasing;
-- `ENNReal.exp_neg`, `ENNReal.exp_add`: `exp` satisfies
+- `EReal.exp_strictMono`: `exp` is increasing;
+- `EReal.exp_neg`, `EReal.exp_add`: `exp` satisfies
 the identities `exp (-x) = (exp x)⁻¹` and `exp (x + y) = exp x * exp y`.
 
 ## Tags
 ENNReal, EReal, exponential
 -/
-namespace ENNReal
+namespace EReal
 
-open scoped NNReal
+open scoped ENNReal
 
 /-! ### Definition -/
 section Definition
@@ -60,10 +60,10 @@ lemma exp_strictMono : StrictMono exp := by
   induction x
   · rw [exp_bot, pos_iff_ne_zero, ne_eq, exp_eq_zero_iff]
     exact h.ne'
-  · induction' y with y
+  · induction y
     · simp at h
     · simp_rw [exp_coe]
-      exact ENNReal.ofReal_lt_ofReal_iff'.mpr ⟨Real.exp_lt_exp_of_lt (mod_cast h), Real.exp_pos y⟩
+      exact ENNReal.ofReal_lt_ofReal_iff'.mpr ⟨Real.exp_lt_exp_of_lt (mod_cast h), Real.exp_pos _⟩
     · simp
   · exact (not_top_lt h).elim
 
@@ -101,4 +101,4 @@ lemma exp_add (x y : EReal) : exp (x + y) = exp x * exp y := by
 
 end Morphism
 
-end ENNReal
+end EReal
