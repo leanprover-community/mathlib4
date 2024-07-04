@@ -32,7 +32,7 @@ variable {x y : ℝ}
 
 /-- Inverse of the `sin` function, returns values in the range `-π / 2 ≤ arcsin x ≤ π / 2`.
 It defaults to `-π / 2` on `(-∞, -1)` and to `π / 2` to `(1, ∞)`. -/
--- @[pp_nodot] Porting note: not implemented
+@[pp_nodot]
 noncomputable def arcsin : ℝ → ℝ :=
   Subtype.val ∘ IccExtend (neg_le_self zero_le_one) sinOrderIso.symm
 #align real.arcsin Real.arcsin
@@ -334,7 +334,7 @@ theorem tan_arcsin (x : ℝ) : tan (arcsin x) = x / √(1 - x ^ 2) := by
 
 /-- Inverse of the `cos` function, returns values in the range `0 ≤ arccos x` and `arccos x ≤ π`.
   It defaults to `π` on `(-∞, -1)` and to `0` to `(1, ∞)`. -/
--- @[pp_nodot] Porting note: not implemented
+@[pp_nodot]
 noncomputable def arccos (x : ℝ) : ℝ :=
   π / 2 - arcsin x
 #align real.arccos Real.arccos

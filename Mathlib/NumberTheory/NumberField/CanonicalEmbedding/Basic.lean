@@ -152,6 +152,30 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
   simp only [SetLike.mem_coe, mem_span_integralBasis K]
   rfl
 
+theorem mem_rat_span_latticeBasis [NumberField K] (x : K) :
+    canonicalEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
+  rw [← Basis.sum_repr (integralBasis K) x, map_sum]
+  simp_rw [map_rat_smul]
+  refine Submodule.sum_smul_mem _ _ (fun i _ ↦ Submodule.subset_span ?_)
+  rw [← latticeBasis_apply]
+  exact Set.mem_range_self i
+
+theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+    (latticeBasis K).repr (canonicalEmbedding K x) i = (integralBasis K).repr x i := by
+  rw [← Basis.restrictScalars_repr_apply ℚ _ ⟨_, mem_rat_span_latticeBasis K x⟩, eq_ratCast,
+    Rat.cast_inj]
+  let f := (canonicalEmbedding K).toRatAlgHom.toLinearMap.codRestrict _
+    (fun x ↦ mem_rat_span_latticeBasis K x)
+  suffices ((latticeBasis K).restrictScalars ℚ).repr.toLinearMap ∘ₗ f =
+    (integralBasis K).repr.toLinearMap from DFunLike.congr_fun (LinearMap.congr_fun this x) i
+  refine Basis.ext (integralBasis K) (fun i ↦ ?_)
+  have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
+    apply Subtype.val_injective
+    rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
+      latticeBasis_apply]
+    rfl
+  simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
+
 end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
@@ -311,10 +335,12 @@ variable [NumberField K]
 
 theorem nnnorm_eq_sup_normAtPlace (x : E K) :
     ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
-  rw [show (univ : Finset (InfinitePlace K)) = (univ.image
-    (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
-    (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1))
-    by ext; simp [isReal_or_isComplex], sup_union, univ.sup_image, univ.sup_image, sup_eq_max,
+  have :
+      (univ : Finset (InfinitePlace K)) =
+      (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
+      (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1)) := by
+    ext; simp [isReal_or_isComplex]
+  rw [this, sup_union, univ.sup_image, univ.sup_image, sup_eq_max,
     Prod.nnnorm_def', Pi.nnnorm_def, Pi.nnnorm_def]
   congr
   · ext w
@@ -326,7 +352,7 @@ theorem norm_eq_sup'_normAtPlace (x : E K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
-  rfl
+  simp only [Function.comp_apply]
 
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,

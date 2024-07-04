@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.LazyList
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
 
@@ -950,7 +949,6 @@ def map (f : α → β) : Seq1 α → Seq1 β
   | (a, s) => (f a, Seq'.map f s)
 #align stream.seq1.map Seq1.map
 
--- Porting note (#10756): new theorem.
 theorem map_pair {f : α → β} {a s} : map f (a, s) = (f a, Seq'.map f s) := rfl
 
 theorem map_id : ∀ s : Seq1 α, map id s = s
@@ -1011,7 +1009,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
   simp only [bind, map, ret.eq_1, map_nil]
   cases' f a with a s
-  cases s <;> intros <;> simp
+  cases s <;> simp
 #align stream.seq1.ret_bind Seq1.ret_bind
 
 @[simp]

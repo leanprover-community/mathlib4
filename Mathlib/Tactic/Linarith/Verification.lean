@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
--- import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Util.Qq
 
@@ -170,9 +168,7 @@ def proveEqZeroUsing (tac : TacticM Unit) (e : Expr) : MetaM Expr := do
 Given a list `l` of proofs of `tᵢ Rᵢ 0`,
 it tries to derive a contradiction from `l` and use this to produce a proof of `False`.
 
-An oracle is used to search for a certificate of unsatisfiability.
-In the current implementation, this is the Fourier Motzkin elimination routine in
-`Elimination.lean`, but other oracles could easily be swapped in.
+`oracle : CertificateOracle` is used to search for a certificate of unsatisfiability.
 
 The returned certificate is a map `m` from hypothesis indices to natural number coefficients.
 If our set of hypotheses has the form `{tᵢ Rᵢ 0}`,
@@ -185,11 +181,13 @@ We have also that
 since for each `i`, `(m i)*tᵢ ≤ 0` and at least one is strictly negative.
 So we conclude a contradiction `0 < 0`.
 
-It remains to produce proofs of (1) and (2). (1) is verified by calling the `discharger` tactic
-of the `LinarithConfig` object, which is typically `ring`. We prove (2) by folding over the
-set of hypotheses.
+It remains to produce proofs of (1) and (2). (1) is verified by calling the provided `discharger`
+tactic, which is typically `ring`. We prove (2) by folding over the set of hypotheses.
+
+`transparency : TransparencyMode` controls the transparency level with which atoms are identified.
 -/
-def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM Expr
+def proveFalseByLinarith (transparency : TransparencyMode) (oracle : CertificateOracle)
+    (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
       trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
@@ -200,10 +198,9 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
       trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
       trace[linarith.detail] (← inputs.mapM inferType)
-      let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
+      let (comps, max_var) ← linearFormsAndMaxVar transparency inputs
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
-      let oracle := cfg.oracle.getD (.simplexAlgorithm)
       -- perform the elimination and fail if no contradiction is found.
       let certificate : Batteries.HashMap Nat Nat ← try
         oracle.produceCertificate comps max_var
@@ -220,7 +217,7 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       -- let sm ← instantiateMVars sm
       trace[linarith] "The expression\n  {sm}\nshould be both 0 and negative"
       -- we prove that `sm = 0`, typically with `ring`.
-      let sm_eq_zero ← proveEqZeroUsing cfg.discharger sm
+      let sm_eq_zero ← proveEqZeroUsing discharger sm
       -- we also prove that `sm < 0`
       let sm_lt_zero ← mkLTZeroProof zip
       -- this is a contradiction.
