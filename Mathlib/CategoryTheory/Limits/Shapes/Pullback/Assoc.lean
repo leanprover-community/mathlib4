@@ -68,6 +68,7 @@ variable {X₁ X₂ X₃ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ 
 variable (f₄ : X₃ ⟶ Y₂) [HasPullback f₁ f₂] [HasPullback f₃ f₄]
 
 local notation "Z₁" => pullback f₁ f₂
+local notation "t₁" => pullback.cone f₁ f₂
 
 local notation "Z₂" => pullback f₃ f₄
 
@@ -80,6 +81,7 @@ local notation "g₃" => (pullback.fst : Z₂ ⟶ X₂)
 local notation "g₄" => (pullback.snd : Z₂ ⟶ X₃)
 
 local notation "W" => pullback (g₂ ≫ f₃) f₄
+local notation "t₂" => pullback.cone (g₂ ≫ f₃) f₄
 
 local notation "W'" => pullback f₁ (g₃ ≫ f₂)
 
@@ -100,8 +102,7 @@ local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
-  apply leftSquareIsPullback' (pullbackIsPullback f₃ f₄)
-  --apply pasteHorizIsPullback (pullbackIsPullback _ _)
+  apply leftSquareMkIsPullback' (pullbackIsPullback f₃ f₄)
   convert pullbackIsPullback (g₂ ≫ f₃) f₄
   simp
 #align category_theory.limits.pullback_pullback_left_is_pullback CategoryTheory.Limits.pullbackPullbackLeftIsPullback
@@ -113,7 +114,7 @@ def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
         (show (l₁ ≫ g₁) ≫ f₁ = l₂ ≫ g₃ ≫ f₂ by
           rw [pullback.lift_fst_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
   apply PullbackCone.isLimitOfFlip
-  apply bigSquareIsPullback
+  apply pasteHorizMkIsPullback
   · apply PullbackCone.isLimitOfFlip
     exact pullbackIsPullback f₁ f₂
   · apply PullbackCone.isLimitOfFlip
@@ -130,7 +131,7 @@ theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ 
 def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit (PullbackCone.mk l₁' l₂' (show l₁' ≫ g₂ = l₂' ≫ g₃ from pullback.lift_snd _ _ _)) := by
   apply PullbackCone.isLimitOfFlip
-  apply leftSquareIsPullback
+  apply leftSquareMkIsPullback
   · apply PullbackCone.isLimitOfFlip
     exact pullbackIsPullback f₁ f₂
   · apply PullbackCone.isLimitOfFlip
@@ -145,7 +146,7 @@ def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
       (PullbackCone.mk l₁' (l₂' ≫ g₄)
         (show l₁' ≫ g₂ ≫ f₃ = (l₂' ≫ g₄) ≫ f₄ by
           rw [pullback.lift_snd_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
-  apply bigSquareIsPullback
+  apply pasteHorizMkIsPullback
   · exact pullbackIsPullback f₃ f₄
   · apply pullbackPullbackRightIsPullback
 #align category_theory.limits.pullback_assoc_symm_is_pullback CategoryTheory.Limits.pullbackAssocSymmIsPullback
@@ -299,7 +300,7 @@ def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     IsColimit
       (PushoutCocone.mk l₁' l₂' (show f₂ ≫ l₁' = f₃ ≫ l₂' from (pushout.inl_desc _ _ _).symm)) := by
   apply PushoutCocone.isColimitOfFlip
-  apply rightSquareIsPushout
+  apply rightSquareMkIsPushout
   · apply PushoutCocone.isColimitOfFlip
     exact pushoutIsPushout g₃ g₄
   · exact IsColimit.ofIsoColimit (PushoutCocone.flipIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄))
@@ -313,7 +314,7 @@ def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
       (PushoutCocone.mk (f₁ ≫ l₁') l₂'
         (show g₁ ≫ f₁ ≫ l₁' = (g₂ ≫ f₃) ≫ l₂' by
           rw [Category.assoc, pushout.inl_desc, pushout.condition_assoc])) := by
-  apply bigSquareIsPushout
+  apply pasteHorizMkIsPushout
   · apply pushoutPushoutLeftIsPushout
   · exact pushoutIsPushout _ _
 #align category_theory.limits.pushout_assoc_is_pushout CategoryTheory.Limits.pushoutAssocIsPushout
@@ -325,7 +326,7 @@ theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g�
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ×[X₂] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutPushoutRightIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
     IsColimit (PushoutCocone.mk l₁ l₂ (show f₂ ≫ l₁ = f₃ ≫ l₂ from pushout.inr_desc _ _ _)) := by
-  apply rightSquareIsPushout
+  apply rightSquareMkIsPushout
   · exact pushoutIsPushout _ _
   · convert pushoutIsPushout g₁ (g₂ ≫ f₃)
     rw [pushout.inl_desc]
@@ -338,7 +339,7 @@ def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
         (show (g₃ ≫ f₂) ≫ l₁ = g₄ ≫ f₄ ≫ l₂ by
           rw [Category.assoc, pushout.inr_desc, pushout.condition_assoc])) := by
   apply PushoutCocone.isColimitOfFlip
-  apply bigSquareIsPushout
+  apply pasteHorizMkIsPushout
   · apply PushoutCocone.isColimitOfFlip
     apply pushoutPushoutRightIsPushout
   · apply PushoutCocone.isColimitOfFlip
