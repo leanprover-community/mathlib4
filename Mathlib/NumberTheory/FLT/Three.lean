@@ -500,7 +500,7 @@ private noncomputable def w :=
   (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose
 
 private lemma w_spec : S.c = λ ^ S.multiplicity * S.w :=
-(multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose_spec
+  (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose_spec
 
 private lemma lambda_not_dvd_w : ¬ λ ∣ S.w := by
   intro h
