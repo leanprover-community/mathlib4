@@ -10,14 +10,20 @@ import Mathlib.Data.Finsupp.Basic
 /-!
 # Antidiagonal of finitely supported functions as finsets
 
-This file provides the finset of finitely functions summing to a specific value on a finset. Such
+This file defines the finset of finitely functions summing to a specific value on a finset. Such
 finsets should be thought of as the "antidiagonals" in the space of finitely supported functions.
 
-Precisely, for a commutative monoid `μ` with antidiagonals, `Finset.finsuppAntidiag s n` is the
-finset of all finitely supported functions `f : ι →₀ μ` with support contained in `s` and such that
-the sum of its values equals `n : μ`.
+Precisely, for a commutative monoid `μ` with antidiagonals (see `Finset.HasAntidiagonal`),
+`Finset.finsuppAntidiag s n` is the finset of all finitely supported functions `f : ι →₀ μ` with
+support contained in `s` and such that the sum of its values equals `n : μ`.
 
 We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `ι → μ`.
+
+## Main declarations
+
+* `Finset.finsuppAntidiag s n`: Finset of all finitely supported functions `f : ι →₀ μ` with support
+  contained in `s` and such that the sum of its values equals `n : μ`.
+
 -/
 
 open Finsupp Function
@@ -29,7 +35,7 @@ section AddCommMonoid
 variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {s : Finset ι}
   {n : μ} {f : ι →₀ μ}
 
-/-- The finset of functions `ι →₀ μ` with support contained in `s` and sum `n`. -/
+/-- The finset of functions `ι →₀ μ` with support contained in `s` and sum equal to `n`. -/
 def finsuppAntidiag (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
   (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
     simpa using (mem_piAntidiag.1 f.2).2⟩, fun f g hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
@@ -44,11 +50,11 @@ lemma mem_finsuppAntidiag' :
   rw [sum_of_support_subset (N := μ) f hf (fun _ x ↦ x) fun _ _ ↦ rfl]
 
 @[simp] lemma finsuppAntidiag_empty_zero : finsuppAntidiag (∅ : Finset ι) (0 : μ) = {0} := by
-  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), -mem_piAntidiag, eq_comm]
+  ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), eq_comm]
 
 @[simp] lemma finsuppAntidiag_empty_of_ne_zero (hn : n ≠ 0) :
     finsuppAntidiag (∅ : Finset ι) n = ∅ :=
-  eq_empty_of_forall_not_mem fun x ↦ by simp [@eq_comm _ 0, hn.symm]
+  eq_empty_of_forall_not_mem (by simp [@eq_comm _ 0, hn.symm])
 
 lemma finsuppAntidiag_empty (n : μ) :
     finsuppAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by split_ifs with hn <;> simp [*]

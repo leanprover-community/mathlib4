@@ -14,18 +14,29 @@ import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 This file provides the finset of functions summing to a specific value on a finset. Such finsets
 should be thought of as the "antidiagonals" in the space of functions.
 
-Precisely, for a commutative monoid `μ` with antidiagonals, `Finset.piAntidiag s n` is the finset of
-all functions `f : ι → μ` with support contained in `s` and such that the sum of its values equals
-`n : μ`.
+Precisely, for a commutative monoid `μ` with antidiagonals (see `Finset.HasAntidiagonal`),
+`Finset.piAntidiag s n` is the finset of all functions `f : ι → μ` with support contained in `s` and
+such that the sum of its values equals `n : μ`.
 
 We define it recursively on `s` using `Finset.HasAntidiagonal.antidiagonal : μ → Finset (μ × μ)`.
 Technically, we non-canonically identify `s` with `Fin n` where `n = s.card`, recurse on `n` using
 that `(Fin (n + 1) → μ) ≃ (Fin n → μ) × μ`, and show the end result doesn't depend on our
 identification. See `Finset.finAntidiag` for the details.
 
+## Main declarations
+
+* `Finset.piAntidiag s n`: Finset of all functions `f : ι → μ` with support contained in `s` and
+  such that the sum of its values equals `n : μ`.
+* `Finset.finAntidiagonal d n`: Computationally efficient special case of `Finset.piAntidiag` when
+  `ι := Fin d`.
+
 ## TODO
 
 `Finset.finAntidiagonal` is strictly more general than `Finset.Nat.antidiagonalTuple`. Deduplicate.
+
+## See also
+
+`Finset.finsuppAntidiag` for the `Finset (ι →₀ μ)`-valued version of `Finset.piAntidiag`.
 -/
 
 open Function
@@ -89,7 +100,7 @@ where
 ### `ι → μ`
 
 In this section, we transfer the antidiagonals in `Fin s.card → μ` to antidiagonals in `ι → s` by
-choosing an identification `s ≃ Fin s.card` and proving the end result does not depend on that
+choosing an identification `s ≃ Fin s.card` and proving that the end result does not depend on that
 choice.
 -/
 
@@ -126,12 +137,12 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
   ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
 
 @[simp] lemma piAntidiag_empty_of_ne_zero (hn : n ≠ 0) : piAntidiag (∅ : Finset ι) n = ∅ :=
-  eq_empty_of_forall_not_mem fun x ↦ by simp [@eq_comm _ 0, hn.symm]
+  eq_empty_of_forall_not_mem (by simp [@eq_comm _ 0, hn.symm])
 
 lemma piAntidiag_empty (n : μ) : piAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   split_ifs with hn <;> simp [*]
 
-lemma piAntidiag_equiv_antidiag (n : μ) :
+lemma finsetCongr_piAntidiag_eq_antidiag (n : μ) :
     Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiag univ n) = antidiagonal n := by
   ext ⟨x₁, x₂⟩
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk,
@@ -187,6 +198,8 @@ end CanonicallyOrderedAddCommMonoid
 section Nat
 variable [DecidableEq ι]
 
+/-- Local notation for the pointwise operation `n • s := {n • a | a ∈ s}` to avoid conflict with the
+pointwise operation `n • s := s + ... + s` (`n` times). -/
 local infixr:73 "•ℕ" => @SMul.smul _ _ Finset.smulFinset
 
 lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :

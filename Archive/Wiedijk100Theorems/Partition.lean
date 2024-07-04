@@ -214,7 +214,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         simp only [Multiset.mem_toFinset, not_not, mem_filter]
         apply ha.2
     · simp only [ne_eq, Multiset.mem_toFinset, not_not, mem_filter, and_imp]
-      exact fun hi _ => ha.2 i hi
+      exact fun hi _ ↦ ha.2 i hi
   · dsimp only
     intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
