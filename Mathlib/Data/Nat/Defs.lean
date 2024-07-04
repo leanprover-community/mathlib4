@@ -858,15 +858,33 @@ there is a map from `C n` to each `C m`, `n ≤ m`.
 
 This is a version of `Nat.le.rec` that works for `Sort`. -/
 @[elab_as_elim]
-def leRecOn' {n} {C : (m : ℕ) → n ≤ m → Sort*}
-   (next : ∀ ⦃k⦄ (h : n ≤ k), C k h → C (k + 1) (le_succ_of_le h))
-   (self : C n le_rfl) : ∀ {m} (h : n ≤ m), C m h
+def leRecOn' {n} {motive : (m : ℕ) → n ≤ m → Sort*}
+   (next : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h))
+   (self : motive n le_rfl) : ∀ {m} (h : n ≤ m), motive m h
   | 0, H => Nat.eq_zero_of_le_zero H ▸ self
   | m + 1, H =>
     (le_succ_iff.1 H).by_cases
       (fun h : n ≤ m ↦ next h <| leRecOn' next self h)
       (fun h : n = m + 1 ↦ h ▸ self)
 #align nat.le_rec_on' Nat.leRecOn'
+
+@[simp]
+lemma leRecOn'_self {n} {motive : (m : ℕ) → n ≤ m → Sort*}
+    (next : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h))
+    (self : motive n le_rfl) :
+    (leRecOn' (motive := motive) next self le_rfl : motive n le_rfl) = self := by
+  cases n <;> simp [leRecOn', Or.by_cases, dif_neg]
+
+@[simp]
+lemma leRecOn'_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
+    (next : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h))
+    (self : motive n le_rfl)
+    (h1 : n ≤ m) {h2 : n ≤ m + 1} :
+    (leRecOn' (motive := motive) next self h2) =
+      next h1 (leRecOn' (motive := motive) next self h1) := by
+  conv =>
+    lhs
+    rw [leRecOn', Or.by_cases, dif_pos h1]
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k + 1)` for each `k`,
 there is a map from `C n` to each `C m`, `n ≤ m`. For a version where the assumption is only made
