@@ -115,7 +115,7 @@ namespace RanIsSheafOfIsCocontinuous
 
 variable {G}
 variable {F : Cᵒᵖ ⥤ A} (hF : Presheaf.IsSheaf J F)
-variable {R : Dᵒᵖ ⥤ A} {α : G.op ⋙ R ⟶ F}
+variable {R : Dᵒᵖ ⥤ A} (α : G.op ⋙ R ⟶ F)
 variable (hR : (Functor.RightExtension.mk _ α).IsPointwiseRightKanExtension)
 variable {X : D} {S : K.Cover X} (s : Multifork (S.index R))
 
@@ -124,7 +124,6 @@ def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
   Multifork.IsLimit.lift (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩)
     (fun k ↦ s.ι (⟨_, G.map k.f ≫ f, k.hf⟩) ≫ α.app (op k.Y)) (by
       rintro ⟨⟨Y₁, p₁, hp₁⟩, ⟨Y₂, p₂, hp₂⟩, W, g₁, g₂, w⟩
-      have := hR
       dsimp at g₁ g₂ w ⊢
       simp only [Category.assoc, ← α.naturality, Functor.comp_map,
         Functor.op_map, Quiver.Hom.unop_op]
@@ -138,7 +137,7 @@ def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
 
 lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow)
     (h : G.obj W ⟶ i.Y) (w : h ≫ i.f = G.map g ≫ f) :
-    liftAux hF hR s f ≫ F.map g.op = s.ι i ≫ R.map h.op ≫ α.app _ :=
+    liftAux hF α s f ≫ F.map g.op = s.ι i ≫ R.map h.op ≫ α.app _ :=
   (Multifork.IsLimit.fac
     (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩) _ _
       ⟨W, g, by simpa only [GrothendieckTopology.Cover.sieve,
@@ -158,26 +157,28 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
 
 lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
     (a : W ⟶ Y) (b : W ⟶ Y') (w : G.map a ≫ f = G.map b ≫ f') :
-    liftAux hF hR s f ≫ F.map a.op = liftAux hF hR s f' ≫ F.map b.op := by
+    liftAux hF α s f ≫ F.map a.op = liftAux hF α s f' ≫ F.map b.op := by
   apply hF.hom_ext ⟨_, G.cover_lift J K (K.pullback_stable (G.map a ≫ f) S.2)⟩
   rintro ⟨T, g, hg⟩
   dsimp
-  have eq₁ := liftAux_map hF hR s f (g ≫ a) ⟨_, _, hg⟩ (𝟙 _) (by simp)
-  have eq₂ := liftAux_map hF hR s f' (g ≫ b) ⟨_, _, hg⟩ (𝟙 _) (by simp [w])
+  have eq₁ := liftAux_map hF α s f (g ≫ a) ⟨_, _, hg⟩ (𝟙 _) (by simp)
+  have eq₂ := liftAux_map hF α s f' (g ≫ b) ⟨_, _, hg⟩ (𝟙 _) (by simp [w])
   dsimp at eq₁ eq₂
   simp only [Functor.map_comp, Functor.map_id, Category.id_comp] at eq₁ eq₂
   simp only [Category.assoc, eq₁, eq₂]
 
+variable {α}
+
 /-- Auxiliary definition for `isLimitMultifork` -/
 def lift : s.pt ⟶ R.obj (op X) :=
   (hR (op X)).lift (Cone.mk _
-    { app := fun j ↦ liftAux hF hR s j.hom.unop
+    { app := fun j ↦ liftAux hF α s j.hom.unop
       naturality := fun j j' φ ↦ by
-        simpa using liftAux_map' hF hR s j'.hom.unop j.hom.unop (𝟙 _) φ.right.unop
+        simpa using liftAux_map' hF α s j'.hom.unop j.hom.unop (𝟙 _) φ.right.unop
           (Quiver.Hom.op_inj (by simpa using (StructuredArrow.w φ).symm)) })
 
 lemma fac' (j : StructuredArrow (op X) G.op) :
-    lift hF hR s ≫ R.map j.hom ≫ α.app j.right = liftAux hF hR s j.hom.unop := by
+    lift hF hR s ≫ R.map j.hom ≫ α.app j.right = liftAux hF α s j.hom.unop := by
   apply IsLimit.fac
 
 @[reassoc (attr := simp)]
@@ -188,7 +189,7 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   dsimp at eq ⊢
   simp only [Functor.map_comp, Category.assoc] at eq
   rw [Category.assoc, eq]
-  simpa using liftAux_map hF hR s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
+  simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
 variable (K) in
 lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
