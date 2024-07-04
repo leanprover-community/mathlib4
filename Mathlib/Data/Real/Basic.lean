@@ -292,7 +292,7 @@ private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
 
 @[simp]
 theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
-  simp only [le_def', mk_lt, mk_eq]; rfl
+  simp_rw [le_def', mk_lt, mk_eq, CauSeq.le_def]
 
 @[elab_as_elim]
 protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
