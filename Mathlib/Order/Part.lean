@@ -65,4 +65,6 @@ def partBind (f : α →o Part β) (g : α →o β → Part γ) : α →o Part �
 #align order_hom.bind OrderHom.partBind
 #align order_hom.bind_coe OrderHom.partBind
 
+@[deprecated (since := "2024-07-04")] alias bind := partBind
+
 end OrderHom
