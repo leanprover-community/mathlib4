@@ -398,29 +398,50 @@ theorem post_post_exhaust: DirectSum.IsInternal
     simp only [Submodule.orthogonal_eq_bot_iff, Three]
   exact (OrthogonalFamily.isInternal_iff One).mpr Four
 
-variable {n : Type*} [Fintype n] [DecidableEq n] (T : n → (E →ₗ[𝕜] E))
-  (hT : ∀ (i : n), (IsSymmetric (T i)))
 
-theorem ind_exhaust : (⨆ (α : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (α j))))ᗮ = ⊥ := by sorry
+#check ∀ {n : Type*} [Fintype n], (∀ (T : n → (E →ₗ[𝕜] E)),
+    (∀(i : n), (T i).IsSymmetric) ∧ (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i)) ∧
+    ((⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥))
 
-theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (i : n → 𝕜) =>
-    (⨅ (j : n), (eigenspace (T j) (i j)) : Submodule 𝕜 E))
-    (fun (i : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (i j))).subtypeₗᵢ) := by sorry
+variable {𝕜 : Type*} [RCLike 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-theorem ind_Two : ⨆ (α : n → 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) =
-      ⨆ (i : 𝕜 × 𝕜), (eigenspace B i.1 ⊓ eigenspace A i.2) := by ?????
+def P (𝕜 : Type*) [RCLike 𝕜](E : Type*) [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] (n : Type*) [Fintype n] [DecidableEq n] := (∀ (T : n → (E →ₗ[𝕜] E)),
+    (∀(i : n), (T i).IsSymmetric) ∧ (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i)) ∧
+    ((⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥))
+
+--For some reason the above def won't eval because Lean can't infer an inner product space instance
+--on the E that appears within the def.
+variable (n : Type*) [Fintype n]
+
+
+
+theorem base {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] :
+    ∀ {n : Type*} [Fintype n] [Subsingleton n], P n  := by sorry
+
+theorem induction_step : ∀ {n : Type u} [Fintype n] [Nontrivial n], (∀ {m : Type u} [Fintype m],
+    Fintype.card m < Fintype.card n → (∀ {T : m → (E →ₗ[𝕜] E)},
+    (∀(i : m), (T i).IsSymmetric) ∧ (∀ (i j : m), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i)) ∧
+    ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥))) →
+    (∀ {T : n → (E →ₗ[𝕜] E)}, (∀(i : n), (T i).IsSymmetric) ∧
+    (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i)) ∧
+    ((⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) := by sorry
+
+theorem ind_exhaust : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+  refine Fintype.induction_subsingleton_or_nontrivial n
+      (∀ (n) [Fintype n] [Subsingleton n], ((⨆ γ , (⨅ j, (eigenspace (T j) (γ _)) : Submodule 𝕜 E))ᗮ = ⊥)) --need a proof of this, not this!!!
+      (∀ (n) [Fintype n] [Nontrivial n],
+       (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥) := by sorry
+
+theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
+    (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
+    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by sorry
 
 theorem post_ind_exhaust : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
-    ⨅ (j : n), (eigenspace (T j) (α j))) := by
-    have One := ind_Orthogonality T
-    sorry
-    --roughly, analogues of One, Two, Three and Four...each indexed.
+    ⨅ (j : n), (eigenspace (T j) (α j))) :=
+  (OrthogonalFamily.isInternal_iff <| ind_Orthogonality T).mpr <| ind_exhaust T
 
 end Simultaneous
-
-
-
-
 
 end IsSymmetric
 
