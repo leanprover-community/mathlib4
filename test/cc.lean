@@ -1,6 +1,8 @@
-import Mathlib.Tactic.CC
-import Mathlib.Data.Vector
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.Vector.Defs
+import Mathlib.Tactic.CC
 
 set_option linter.unusedVariables false
 
@@ -525,6 +527,13 @@ example (a b : String) : a = "hello" → b = "world" → a = b → False := by
 example (a b c : String) : a = c → a = "hello" → c = "world" → c = b → False := by
   cc
 
+local instance instOfNatNat' (n : ℕ) : OfNat ℕ n where
+  ofNat := n
+
+example : @OfNat.ofNat ℕ (nat_lit 0) (instOfNatNat _) =
+    @OfNat.ofNat ℕ (nat_lit 0) (instOfNatNat' _) := by
+  cc
+
 end CCValue
 
 section Config
@@ -566,3 +575,13 @@ example {α : Type} {a b : α} (h : ¬ (a = b)) : ¬ (b = a) := by
   cc
 
 end Lean3Issue1608
+
+section lit
+
+example : nat_lit 0 = nat_lit 0 := by
+  cc
+
+example : "Miyahara Kō" = "Miyahara Kō" := by
+  cc
+
+end lit

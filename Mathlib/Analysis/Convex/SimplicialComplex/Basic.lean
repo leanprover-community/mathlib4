@@ -100,8 +100,8 @@ protected theorem subset_space (hs : s ∈ K.faces) : (s : Set E) ⊆ K.space :=
 theorem convexHull_inter_convexHull (hs : s ∈ K.faces) (ht : t ∈ K.faces) :
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t = convexHull 𝕜 (s ∩ t : Set E) :=
   (K.inter_subset_convexHull hs ht).antisymm <|
-    subset_inter (convexHull_mono <| Set.inter_subset_left _ _) <|
-      convexHull_mono <| Set.inter_subset_right _ _
+    subset_inter (convexHull_mono Set.inter_subset_left) <|
+      convexHull_mono Set.inter_subset_right
 #align geometry.simplicial_complex.convex_hull_inter_convex_hull Geometry.SimplicialComplex.convexHull_inter_convexHull
 
 /-- The conclusion is the usual meaning of "glue nicely" in textbooks. It turns out to be quite
@@ -112,7 +112,7 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
       ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u := by
   classical
   by_contra! h
-  refine h.2 (s ∩ t) (K.down_closed hs (inter_subset_left _ _) fun hst => h.1 <|
+  refine h.2 (s ∩ t) (K.down_closed hs inter_subset_left fun hst => h.1 <|
     disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans ?_) ?_
   · rw [← coe_inter, hst, coe_empty, convexHull_empty]
     rfl
@@ -226,7 +226,7 @@ variable (𝕜 E)
 instance : Inf (SimplicialComplex 𝕜 E) :=
   ⟨fun K L =>
     { faces := K.faces ∩ L.faces
-      not_empty_mem := fun h => K.not_empty_mem (Set.inter_subset_left _ _ h)
+      not_empty_mem := fun h => K.not_empty_mem (Set.inter_subset_left h)
       indep := fun hs => K.indep hs.1
       down_closed := fun hs hst ht => ⟨K.down_closed hs.1 hst ht, L.down_closed hs.2 hst ht⟩
       inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩

@@ -28,7 +28,7 @@ noncomputable section
 
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
 
-open scoped NNReal ENNReal Topology BigOperators MeasureTheory
+open scoped NNReal ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 

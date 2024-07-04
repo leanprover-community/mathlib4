@@ -6,10 +6,8 @@ Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
 import Lean.Meta.Tactic.Rewrite
 import Batteries.Lean.Expr
-import Batteries.Lean.Name
 import Batteries.Data.Rat.Basic
 import Batteries.Data.List.Basic
-import Batteries.Lean.Name
 import Batteries.Logic
 
 /-!

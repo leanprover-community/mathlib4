@@ -48,7 +48,7 @@ set_option linter.uppercaseLean3 false
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
-open scoped Classical Topology ENNReal MeasureTheory BigOperators
+open scoped Classical Topology ENNReal MeasureTheory
 
 variable {α β ι E F 𝕜 : Type*}
 
@@ -287,7 +287,7 @@ theorem memℒp_top (f : α →ₛ E) (μ : Measure α) : Memℒp f ∞ μ :=
 #align measure_theory.simple_func.mem_ℒp_top MeasureTheory.SimpleFunc.memℒp_top
 
 protected theorem snorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
-    snorm' f p μ = (∑ y in f.range, (‖y‖₊ : ℝ≥0∞) ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
+    snorm' f p μ = (∑ y ∈ f.range, (‖y‖₊ : ℝ≥0∞) ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
   have h_map : (fun a => (‖f a‖₊ : ℝ≥0∞) ^ p) = f.map fun a : F => (‖a‖₊ : ℝ≥0∞) ^ p := by
     simp; rfl
   rw [snorm', h_map, lintegral_eq_lintegral, map_lintegral]
@@ -846,7 +846,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
       mem_setOf_eq, le_refl, and_self_iff]
   have : SeparableSpace ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y } : Set G) := by
     apply IsSeparable.separableSpace
-    apply IsSeparable.mono _ (Set.inter_subset_left _ _)
+    apply IsSeparable.mono _ Set.inter_subset_left
     exact
       (Lp.stronglyMeasurable (g : Lp G p μ)).isSeparable_range.union
         (finite_singleton _).isSeparable
@@ -856,7 +856,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
     intro n a
     change x n a ∈ { y : G | 0 ≤ y }
     have A : (range (g : α → G) ∪ {0} : Set G) ∩ { y | 0 ≤ y } ⊆ { y | 0 ≤ y } :=
-      inter_subset_right _ _
+      inter_subset_right
     apply A
     exact SimpleFunc.approxOn_mem g_meas _ n a
   have hx_memℒp : ∀ n, Memℒp (x n) p μ :=

@@ -37,15 +37,13 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := b
   refine StableUnderBaseChange.mk _ surjective_respectsIso ?_
   classical
   introv h x
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => exact ⟨0, map_zero _⟩
   | tmul x y =>
     obtain ⟨y, rfl⟩ := h y; use y • x; dsimp
     rw [TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one]
   | add x y ex ey => obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := ex, ey; exact ⟨x + y, map_add _ x y⟩
 #align ring_hom.surjective_stable_under_base_change RingHom.surjective_stableUnderBaseChange
-
-open scoped BigOperators
 
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H

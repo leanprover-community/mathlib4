@@ -8,7 +8,7 @@ import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
@@ -48,8 +48,6 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
 -/
 
 
-open BigOperators
-
 open Finset
 
 open Finset.antidiagonal (fst_le snd_le)
@@ -72,7 +70,7 @@ theorem catalan_succ (n : ℕ) : catalan (n + 1) = ∑ i : Fin n.succ, catalan i
 #align catalan_succ catalan_succ
 
 theorem catalan_succ' (n : ℕ) :
-    catalan (n + 1) = ∑ ij in antidiagonal n, catalan ij.1 * catalan ij.2 := by
+    catalan (n + 1) = ∑ ij ∈ antidiagonal n, catalan ij.1 * catalan ij.2 := by
   rw [catalan_succ, Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => catalan x * catalan y) n,
     sum_range]
 #align catalan_succ' catalan_succ'
@@ -193,7 +191,7 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
 theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
   induction x using Tree.unitRecOn generalizing n <;> cases n <;>
-    simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]
+    simp [treesOfNumNodesEq_succ, *]
 #align tree.mem_trees_of_nodes_eq Tree.mem_treesOfNumNodesEq
 
 theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=

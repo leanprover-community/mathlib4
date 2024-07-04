@@ -34,6 +34,11 @@ open Function Nat
 
 namespace Int
 
+theorem natCast_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
+#align int.coe_nat_strict_mono Int.natCast_strictMono
+
+@[deprecated (since := "2024-05-25")] alias coe_nat_strictMono := natCast_strictMono
+
 instance linearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
   __ := instLinearOrder
   __ := instAddCommGroup

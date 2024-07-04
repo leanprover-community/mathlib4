@@ -169,12 +169,12 @@ theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty
   constructor <;> rw [← and_assoc]
   · refine ⟨hC.closure_nhds_inter x xC xU Uop, ?_⟩
     rw [hC.closed.closure_subset_iff]
-    exact inter_subset_right _ _
+    exact inter_subset_right
   constructor
   · refine ⟨hC.closure_nhds_inter y yC yV Vop, ?_⟩
     rw [hC.closed.closure_subset_iff]
-    exact inter_subset_right _ _
-  apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left _ _
+    exact inter_subset_right
+  apply Disjoint.mono _ _ hUV <;> apply closure_mono <;> exact inter_subset_left
 #align perfect.splitting Perfect.splitting
 
 end Preperfect
@@ -192,8 +192,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   have Vct : (V ∩ C).Countable := by
     simp only [V, iUnion_inter, mem_sep_iff]
     apply Countable.biUnion
-    · exact Countable.mono (inter_subset_left _ _) bct
-    · exact inter_subset_right _ _
+    · exact Countable.mono inter_subset_left bct
+    · exact inter_subset_right
   refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
   · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
@@ -230,7 +230,7 @@ theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTop
     rw [VD] at hunc
     contradiction
   rw [VD]
-  exact subset_union_right _ _
+  exact subset_union_right
 #align exists_perfect_nonempty_of_is_closed_of_not_countable exists_perfect_nonempty_of_isClosed_of_not_countable
 
 end Kernel

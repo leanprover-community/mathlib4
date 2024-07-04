@@ -28,8 +28,6 @@ In this file we construct the transfer homomorphism.
 -/
 
 
-open scoped BigOperators
-
 variable {G : Type*} [Group G] {H : Subgroup G} {A : Type*} [CommGroup A] (ϕ : H →* A)
 
 namespace Subgroup

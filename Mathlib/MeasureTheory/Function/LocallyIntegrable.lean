@@ -26,7 +26,7 @@ on compact sets.
 
 open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Bornology
 
-open scoped Topology Interval ENNReal BigOperators
+open scoped Topology Interval ENNReal
 
 variable {X Y E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable [MeasurableSpace Y] [TopologicalSpace Y]
@@ -148,8 +148,8 @@ theorem locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClos
     exact
       let ⟨K, hK, h2K⟩ := exists_compact_mem_nhds x
       ⟨_, inter_mem_nhdsWithin s h2K,
-        hf _ (inter_subset_left _ _)
-          (hK.of_isClosed_subset (hs.inter hK.isClosed) (inter_subset_right _ _))⟩
+        hf _ inter_subset_left
+          (hK.of_isClosed_subset (hs.inter hK.isClosed) inter_subset_right)⟩
   | inr hs =>
     obtain ⟨K, hK, h2K, h3K⟩ := exists_compact_subset hs hx
     refine ⟨K, ?_, hf K h3K hK⟩
@@ -241,7 +241,7 @@ compact set. -/
 theorem LocallyIntegrable.integrableOn_nhds_isCompact (hf : LocallyIntegrable f μ) {k : Set X}
     (hk : IsCompact k) : ∃ u, IsOpen u ∧ k ⊆ u ∧ IntegrableOn f u μ := by
   refine IsCompact.induction_on hk ?_ ?_ ?_ ?_
-  · refine' ⟨∅, isOpen_empty, Subset.rfl, integrableOn_empty⟩
+  · refine ⟨∅, isOpen_empty, Subset.rfl, integrableOn_empty⟩
   · rintro s t hst ⟨u, u_open, tu, hu⟩
     exact ⟨u, u_open, hst.trans tu, hu⟩
   · rintro s t ⟨u, u_open, su, hu⟩ ⟨v, v_open, tv, hv⟩
@@ -334,12 +334,12 @@ protected theorem LocallyIntegrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 
 theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → E}
-    (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i in s, f i) μ :=
+    (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i ∈ s, f i) μ :=
   Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
     locallyIntegrable_zero hf
 
 theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → E}
-    (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i in s, f i a) μ := by
+    (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using locallyIntegrable_finset_sum' s hf
 
 /-- If `f` is locally integrable and `g` is continuous with compact support,

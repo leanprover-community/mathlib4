@@ -12,6 +12,9 @@ import Mathlib.Algebra.Group.Units.Hom
 # Multiplicative and additive equivalence acting on units.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 variable {F α β A B M N P Q G H : Type*}
 
 /-- A group is isomorphic to its group of units. -/

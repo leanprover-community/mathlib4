@@ -202,7 +202,7 @@ def normalMonoCategory : NormalMonoCategory C where
         have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
           ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
             = Fork.ι s := ?_
-        · refine' isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux _
+        · refine isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux ?_
           intro A g hg
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
@@ -228,8 +228,8 @@ def normalEpiCategory : NormalEpiCategory C where
         have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
           inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
           colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
-        · refine' isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
-                  inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux _
+        · refine isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
+                  inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux ?_
           intro A g hg
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
@@ -395,7 +395,7 @@ See `CategoryTheory.Abelian.ofCoimageImageComparisonIsIso` for the converse.
 -/
 instance : IsIso (coimageImageComparison f) := by
   convert
-    IsIso.of_iso
+    Iso.isIso_hom
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
   ext
@@ -513,9 +513,9 @@ noncomputable def isLimitMapConeOfKernelForkOfι
     IsLimit (F.mapCone (KernelFork.ofι i (cokernel.condition i))) := by
   let e : parallelPair (cokernel.π (F.map i)) 0 ≅ parallelPair (cokernel.π i) 0 ⋙ F :=
     parallelPair.ext (Iso.refl _) (asIso (cokernelComparison i F)) (by simp) (by simp)
-  refine' IsLimit.postcomposeInvEquiv e _ _
+  refine IsLimit.postcomposeInvEquiv e _ ?_
   let hi := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel (F.map i))
-  refine' IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) _)
+  refine IsLimit.ofIsoLimit hi (Fork.ext (Iso.refl _) ?_)
   change 𝟙 _ ≫ F.map i ≫ 𝟙 _ = F.map i
   rw [Category.comp_id, Category.id_comp]
 
@@ -529,9 +529,9 @@ noncomputable def isColimitMapCoconeOfCokernelCoforkOfπ
     IsColimit (F.mapCocone (CokernelCofork.ofπ p (kernel.condition p))) := by
   let e : parallelPair (kernel.ι p) 0 ⋙ F ≅ parallelPair (kernel.ι (F.map p)) 0 :=
     parallelPair.ext (asIso (kernelComparison p F)) (Iso.refl _) (by simp) (by simp)
-  refine' IsColimit.precomposeInvEquiv e _ _
+  refine IsColimit.precomposeInvEquiv e _ ?_
   let hp := Abelian.epiIsCokernelOfKernel _ (kernelIsKernel (F.map p))
-  refine' IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) _)
+  refine IsColimit.ofIsoColimit hp (Cofork.ext (Iso.refl _) ?_)
   change F.map p ≫ 𝟙 _ = 𝟙 _ ≫ F.map p
   rw [Category.comp_id, Category.id_comp]
 

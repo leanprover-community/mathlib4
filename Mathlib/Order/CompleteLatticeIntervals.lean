@@ -187,7 +187,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
   __ := Set.Icc.boundedOrder h
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine' ⟨_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
+    refine ⟨?_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
     obtain ⟨c, hc⟩ := hS
     exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
   le_sSup S c hc := by
@@ -201,7 +201,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
   sInf S := if hS : S = ∅ then ⟨b, h, le_rfl⟩ else ⟨sInf ((↑) '' S), by
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
-    refine' ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), _⟩
+    refine ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), ?_⟩
     obtain ⟨c, hc⟩ := hS
     exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
   sInf_le S c hc := by
@@ -216,8 +216,9 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
 
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable def Set.Icc.completeLinearOrder [ConditionallyCompleteLinearOrder α]
-    {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) :=
-  { Set.Icc.completeLattice h, Subtype.instLinearOrder _ with }
+    {a b : α} (h : a ≤ b) : CompleteLinearOrder (Set.Icc a b) := by
+  let _ := completeLattice h
+  exact { completeLattice h, Subtype.instLinearOrder _, LinearOrder.toBiheytingAlgebra with }
 
 lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : letI := Set.Icc.completeLattice h

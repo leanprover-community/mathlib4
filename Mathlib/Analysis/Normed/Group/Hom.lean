@@ -3,7 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Int
+import Mathlib.Analysis.Normed.Group.Uniform
 
 #align_import analysis.normed.group.hom from "leanprover-community/mathlib"@"3c4225288b55380a90df078ebae0991080b12393"
 
@@ -28,7 +29,7 @@ theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when 
 
 noncomputable section
 
-open NNReal BigOperators
+open NNReal
 
 -- TODO: migrate to the new morphism / morphism_class style
 /-- A morphism of seminormed abelian groups is a bounded group homomorphism. -/
@@ -616,12 +617,12 @@ def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
 
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) :
-    ⇑(∑ i in s, f i) = ∑ i in s, (f i : V₁ → V₂) :=
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : V₁ → V₂) :=
   map_sum coeAddHom f s
 #align normed_add_group_hom.coe_sum NormedAddGroupHom.coe_sum
 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) (v : V₁) :
-    (∑ i in s, f i) v = ∑ i in s, f i v := by simp only [coe_sum, Finset.sum_apply]
+    (∑ i ∈ s, f i) v = ∑ i ∈ s, f i v := by simp only [coe_sum, Finset.sum_apply]
 #align normed_add_group_hom.sum_apply NormedAddGroupHom.sum_apply
 
 /-! ### Module structure on normed group homs -/

@@ -41,7 +41,7 @@ Henstock-Kurzweil integral, integral, Stokes theorem, divergence theorem
 -/
 
 
-open scoped Classical BigOperators NNReal ENNReal Topology BoxIntegral
+open scoped Classical NNReal ENNReal Topology BoxIntegral
 
 open ContinuousLinearMap (lsmul)
 

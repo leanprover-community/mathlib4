@@ -1,5 +1,5 @@
 /-
-Copyright © 2023 Heather Macbeth. All rights reserved.
+Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
@@ -117,8 +117,8 @@ instance instAdd : Add Cₛ^n⟮I; F, V⟯ := by
   have ht := t.contMDiff x₀
   rw [contMDiffAt_section] at hs ht ⊢
   set e := trivializationAt F V x₀
-  refine' (hs.add ht).congr_of_eventuallyEq _
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine (hs.add ht).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).1
 #align cont_mdiff_section.has_add ContMDiffSection.instAdd
@@ -135,8 +135,8 @@ instance instSub : Sub Cₛ^n⟮I; F, V⟯ := by
   have ht := t.contMDiff x₀
   rw [contMDiffAt_section] at hs ht ⊢
   set e := trivializationAt F V x₀
-  refine' (hs.sub ht).congr_of_eventuallyEq _
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine (hs.sub ht).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).map_sub
 #align cont_mdiff_section.has_sub ContMDiffSection.instSub
@@ -165,9 +165,8 @@ instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢
   set e := trivializationAt F V x₀
-  refine' (contMDiffAt_const.smul hs).congr_of_eventuallyEq _
-  · exact c
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine ((contMDiffAt_const (c := c)).smul hs).congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).2
 #align cont_mdiff_section.has_smul ContMDiffSection.instSMul
@@ -183,8 +182,8 @@ instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢
   set e := trivializationAt F V x₀
-  refine' hs.neg.congr_of_eventuallyEq _
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine hs.neg.congr_of_eventuallyEq ?_
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).map_neg
 #align cont_mdiff_section.has_neg ContMDiffSection.instNeg

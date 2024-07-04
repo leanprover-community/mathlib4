@@ -33,7 +33,7 @@ theory.
 `Analysis.Convex.Mul` for convexity of `x ↦ x ^ n`
 -/
 
-open Real Set BigOperators NNReal
+open Real Set NNReal
 
 /-- `Real.exp` is strictly convex on the whole real line. -/
 theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by

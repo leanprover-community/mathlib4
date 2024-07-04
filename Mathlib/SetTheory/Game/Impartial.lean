@@ -93,8 +93,8 @@ termination_by G H => (G, H)
 instance impartial_add : ∀ (G H : PGame) [G.Impartial] [H.Impartial], (G + H).Impartial
   | G, H, _, _ => by
     rw [impartial_def]
-    refine' ⟨Equiv.trans (add_congr (neg_equiv_self G) (neg_equiv_self _))
-        (Equiv.symm (negAddRelabelling _ _).equiv), fun k => _, fun k => _⟩
+    refine ⟨Equiv.trans (add_congr (neg_equiv_self G) (neg_equiv_self _))
+        (Equiv.symm (negAddRelabelling _ _).equiv), fun k => ?_, fun k => ?_⟩
     · apply leftMoves_add_cases k
       all_goals
         intro i; simp only [add_moveLeft_inl, add_moveLeft_inr]
@@ -109,7 +109,7 @@ termination_by G H => (G, H)
 instance impartial_neg : ∀ (G : PGame) [G.Impartial], (-G).Impartial
   | G, _ => by
     rw [impartial_def]
-    refine' ⟨_, fun i => _, fun i => _⟩
+    refine ⟨?_, fun i => ?_, fun i => ?_⟩
     · rw [neg_neg]
       exact Equiv.symm (neg_equiv_self G)
     · rw [moveLeft_neg']

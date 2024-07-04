@@ -135,7 +135,7 @@ nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N 
   { map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) with
     map_lie' := fun {x t} => by
       simp only [LinearMap.toFun_eq_coe]
-      refine' t.induction_on _ _ _
+      refine t.induction_on ?_ ?_ ?_
       · simp only [LinearMap.map_zero, lie_zero]
       · intro m n
         simp only [LieModuleHom.coe_toLinearMap, lie_tmul_right, LieModuleHom.map_lie, map_tmul,

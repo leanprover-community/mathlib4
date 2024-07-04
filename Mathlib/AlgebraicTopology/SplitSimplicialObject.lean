@@ -99,7 +99,7 @@ instance : Fintype (IndexSet Δ) :=
         ext1
         simpa only [Fin.mk_eq_mk] using h₁.1
       subst h₂
-      refine' ext _ _ rfl _
+      refine ext _ _ rfl ?_
       ext : 2
       exact eq_of_heq h₁.2)
 

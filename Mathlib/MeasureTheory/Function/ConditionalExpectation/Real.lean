@@ -31,7 +31,7 @@ noncomputable section
 
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
 
-open scoped NNReal ENNReal Topology BigOperators MeasureTheory
+open scoped NNReal ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
@@ -79,7 +79,7 @@ theorem snorm_one_condexp_le_snorm (f : α → ℝ) : snorm (μ[f|m]) 1 μ ≤ s
           (stronglyMeasurable_condexp.mono hm).aestronglyMeasurable,
         ← integral_norm_eq_lintegral_nnnorm hf.1]
       simp_rw [Real.norm_eq_abs]
-      rw [← integral_condexp hm hf.abs]
+      rw (config := {occs := .pos [2]}) [← integral_condexp hm]
       refine integral_congr_ae ?_
       have : 0 ≤ᵐ[μ] μ[(|f|)|m] := by
         rw [← condexp_zero]
@@ -138,9 +138,8 @@ theorem setIntegral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
   simp_rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
 #align measure_theory.set_integral_abs_condexp_le MeasureTheory.setIntegral_abs_condexp_le
 
-@[deprecated]
-alias set_integral_abs_condexp_le :=
-  setIntegral_abs_condexp_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_abs_condexp_le := setIntegral_abs_condexp_le
 
 /-- If the real valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/
@@ -174,7 +173,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   refine setIntegral_mono_ae hfint.abs.integrableOn ?_ hbdd
   refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
     (integrable_condexp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
-  refine set_lintegral_mono measurable_const.nnnorm.coe_nnreal_ennreal
+  refine setLIntegral_mono measurable_const.nnnorm.coe_nnreal_ennreal
     (stronglyMeasurable_condexp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => ?_
   rw [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
   exact Subtype.mk_le_mk.2 (le_of_lt hx)
@@ -265,7 +264,7 @@ theorem condexp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
     hf.tendsto_approxBounded_ae hf_bound
   by_cases hμ : μ = 0
   · simp only [hμ, ae_zero]; norm_cast
-  have : μ.ae.NeBot := by simp only [hμ, ae_neBot, Ne, not_false_iff]
+  have : (ae μ).NeBot := ae_neBot.2 hμ
   have hc : 0 ≤ c := by
     rcases hf_bound.exists with ⟨_x, hx⟩
     exact (norm_nonneg _).trans hx
