@@ -250,7 +250,7 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
     simp at hl ⊢
     rw [hl, hm₁]
     simp at hl hl' ⊢
-    rw [hm₂, ←hl']
+    rw [hm₂, ← hl']
 
 end PastePushout
 
