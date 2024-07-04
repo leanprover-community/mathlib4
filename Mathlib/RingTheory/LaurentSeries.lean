@@ -453,7 +453,7 @@ variable {K}
 
 /- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of its coercion to `K⟦X⟧`-/
 theorem intValuation_eq_of_coe (P : K[X]) :
-    (Polynomial.idealX K).intValuation P = (idealX K).intValuation (↑P : K⟦X⟧) := by
+    (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
   by_cases hP : P = 0
   · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
   simp only [intValuation_apply]
