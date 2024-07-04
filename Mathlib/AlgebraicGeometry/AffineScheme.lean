@@ -72,15 +72,15 @@ def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
 #align algebraic_geometry.Scheme.iso_Spec AlgebraicGeometry.Scheme.isoSpec
 
 @[reassoc]
+lemma Scheme.isoSpec_hom_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
+    X.isoSpec.hom ≫ Spec.map (f.app ⊤) = f ≫ Y.isoSpec.hom := by
+  simp only [isoSpec, asIso_hom, ΓSpec.adjunction_unit_naturality]
+
+@[reassoc]
 lemma Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     Spec.map (f.app ⊤) ≫ Y.isoSpec.inv = X.isoSpec.inv ≫ f := by
   rw [Iso.eq_inv_comp, isoSpec, asIso_hom, ← ΓSpec.adjunction_unit_naturality_assoc, isoSpec,
     asIso_inv, IsIso.hom_inv_id, Category.comp_id]
-
-@[reassoc]
-lemma Scheme.isoSpec_hom_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
-    X.isoSpec.hom ≫ Spec.map (f.app ⊤) = f ≫ Y.isoSpec.hom := by
-  simp only [isoSpec, asIso_hom, ΓSpec.adjunction_unit_naturality]
 
 /-- Construct an affine scheme from a scheme and the information that it is affine.
 Also see `AffineScheme.of` for a typeclass version. -/
@@ -268,17 +268,6 @@ def fromSpec :
     (X ∣_ᵤ U).isoSpec.inv ≫ Scheme.ιOpens U
 #align algebraic_geometry.is_affine_open.from_Spec AlgebraicGeometry.IsAffineOpen.fromSpec
 
-@[reassoc, simp]
-lemma map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (h : op U ⟶ op V):
-    Spec.map (X.presheaf.map h) ≫ hU.fromSpec = hV.fromSpec := by
-  have : IsAffine (X.restrictFunctor.obj U).left := hU
-  haveI : IsAffine _ := hV
-  conv_rhs =>
-    rw [fromSpec, ← X.restrictFunctor_map_ofRestrict h.unop, ← Scheme.isoSpec_inv_naturality_assoc,
-      ← Spec.map_comp_assoc, Scheme.restrictFunctor_map_app, ← Functor.map_comp]
-  rw [fromSpec, ← Spec.map_comp_assoc, ← Functor.map_comp]
-  congr 1
-
 instance isOpenImmersion_fromSpec :
     IsOpenImmersion hU.fromSpec := by
   delta fromSpec
@@ -297,6 +286,17 @@ theorem range_fromSpec :
 
 @[simp]
 theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (range_fromSpec hU)
+
+@[reassoc, simp]
+lemma map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (h : op U ⟶ op V):
+    Spec.map (X.presheaf.map h) ≫ hU.fromSpec = hV.fromSpec := by
+  have : IsAffine (X.restrictFunctor.obj U).left := hU
+  haveI : IsAffine _ := hV
+  conv_rhs =>
+    rw [fromSpec, ← X.restrictFunctor_map_ofRestrict h.unop, ← Scheme.isoSpec_inv_naturality_assoc,
+      ← Spec.map_comp_assoc, Scheme.restrictFunctor_map_app, ← Functor.map_comp]
+  rw [fromSpec, ← Spec.map_comp_assoc, ← Functor.map_comp]
+  congr 1
 
 protected theorem isCompact :
     IsCompact (U : Set X) := by
