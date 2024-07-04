@@ -49,7 +49,7 @@ theorem preregular [HasExplicitPullbacks P]
     Preregular (CompHausLike P) where
   exists_fac := by
     intro X Y Z f π hπ
-    refine ⟨pullback f π, pullback.fst f π, ⟨⟨struct _ ?_⟩⟩, pullback.snd f π,
+    refine ⟨pullback f π, pullback.fst f π, ⟨⟨effectiveEpiStruct _ ?_⟩⟩, pullback.snd f π,
       (pullback.condition _ _).symm⟩
     intro y
     obtain ⟨z, hz⟩ := hs π hπ (f y)
