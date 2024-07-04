@@ -141,6 +141,8 @@ section Coproduct
 
 variable {ι : Type u} (f : ι → Scheme.{u})
 
+open scoped Classical
+
 /-- (Implementation Detail) The glue data associated to a disjoint union. -/
 @[simps]
 noncomputable
