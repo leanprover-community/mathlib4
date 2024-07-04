@@ -81,24 +81,8 @@ instance (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) :
 
 variable {F G : Profinite.{u}ᵒᵖ ⥤ Type (u+1)} (i : toProfinite.op ⋙ F ≅ toProfinite.op ⋙ G)
 
--- TODO: generalise and PR
-def lanPresheafIso : lanPresheaf F ≅ lanPresheaf G where
-  hom := descOfIsLeftKanExtension _ (lanPresheafUnit F) (lanPresheaf G) (i.hom ≫ lanPresheafUnit G)
-  inv := descOfIsLeftKanExtension _ (lanPresheafUnit G) (lanPresheaf F) (i.inv ≫ lanPresheafUnit F)
-  hom_inv_id := by
-    apply hom_ext_of_isLeftKanExtension (F' := lanPresheaf F) (α := lanPresheafUnit F)
-    simp only [whiskerLeft_comp, whiskerLeft_id', Category.comp_id]
-    rw [← Category.assoc, descOfIsLeftKanExtension_fac (α := lanPresheafUnit F)
-      (G := lanPresheaf G) (β := i.hom ≫ lanPresheafUnit G), Category.assoc,
-      descOfIsLeftKanExtension_fac (α := lanPresheafUnit G)]
-    simp
-  inv_hom_id := by
-    apply hom_ext_of_isLeftKanExtension (F' := lanPresheaf G) (α := lanPresheafUnit G)
-    simp only [whiskerLeft_comp, whiskerLeft_id', Category.comp_id]
-    rw [← Category.assoc, descOfIsLeftKanExtension_fac (α := lanPresheafUnit G)
-      (G := lanPresheaf F) (β := i.inv ≫ lanPresheafUnit F), Category.assoc,
-      descOfIsLeftKanExtension_fac (α := lanPresheafUnit F)]
-    simp
+abbrev lanPresheafIso : lanPresheaf F ≅ lanPresheaf G :=
+  leftKanExtensionUniqueOfIso _ (lanPresheafUnit F) i _ (lanPresheafUnit G)
 
 end LanPresheaf
 
@@ -320,24 +304,8 @@ instance (F : LightProfinite.{u}ᵒᵖ ⥤ Type u) :
 variable {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u}
   (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G)
 
--- TODO: generalise and PR
-def lanPresheafIso : lanPresheaf F ≅ lanPresheaf G where
-  hom := descOfIsLeftKanExtension _ (lanPresheafUnit F) (lanPresheaf G) (i.hom ≫ lanPresheafUnit G)
-  inv := descOfIsLeftKanExtension _ (lanPresheafUnit G) (lanPresheaf F) (i.inv ≫ lanPresheafUnit F)
-  hom_inv_id := by
-    apply hom_ext_of_isLeftKanExtension (F' := lanPresheaf F) (α := lanPresheafUnit F)
-    simp only [whiskerLeft_comp, whiskerLeft_id', Category.comp_id]
-    rw [← Category.assoc, descOfIsLeftKanExtension_fac (α := lanPresheafUnit F)
-      (G := lanPresheaf G) (β := i.hom ≫ lanPresheafUnit G), Category.assoc,
-      descOfIsLeftKanExtension_fac (α := lanPresheafUnit G)]
-    simp
-  inv_hom_id := by
-    apply hom_ext_of_isLeftKanExtension (F' := lanPresheaf G) (α := lanPresheafUnit G)
-    simp only [whiskerLeft_comp, whiskerLeft_id', Category.comp_id]
-    rw [← Category.assoc, descOfIsLeftKanExtension_fac (α := lanPresheafUnit G)
-      (G := lanPresheaf F) (β := i.inv ≫ lanPresheafUnit F), Category.assoc,
-      descOfIsLeftKanExtension_fac (α := lanPresheafUnit F)]
-    simp
+abbrev lanPresheafIso : lanPresheaf F ≅ lanPresheaf G :=
+  leftKanExtensionUniqueOfIso _ (lanPresheafUnit F) i _ (lanPresheafUnit G)
 
 end LanPresheaf
 
