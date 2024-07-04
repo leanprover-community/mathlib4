@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Function
-import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Inhabit
 
 #align_import data.prod.basic from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
@@ -139,6 +139,13 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
 theorem map_id : Prod.map (@id α) (@id β) = id :=
   id_prod
 #align prod.map_id Prod.map_id
+
+@[simp]
+theorem map_iterate (f : α → α) (g : β → β) (n : ℕ) :
+    (Prod.map f g)^[n] = Prod.map f^[n] g^[n] := by induction n <;> simp [*, Prod.map_comp_map]
+#align function.iterate_prod_map Prod.map_iterate
+
+@[deprecated (since := "2024-07-03")] alias iterate_prod_map := Prod.map_iterate
 
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
   fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
