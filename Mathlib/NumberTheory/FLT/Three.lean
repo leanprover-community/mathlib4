@@ -517,7 +517,7 @@ private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   · simp [hζ.zeta_sub_one_prime'.ne_zero]
 
 private lemma isCoprime_helper {r s t w : 𝓞 K} (hr : ¬ λ ∣ r) (hs : ¬ λ ∣ s)
-    (Hp : ∀ {p : 𝓞 K}, Prime p → p ∣ t → p ∣ w → Associated p λ) (H₁ : ∀ {q}, q ∣ r → q ∣ t)
+    (Hp : ∀ {p}, Prime p → p ∣ t → p ∣ w → Associated p λ) (H₁ : ∀ {q}, q ∣ r → q ∣ t)
     (H₂ : ∀ {q}, q ∣ s → q ∣ w) : IsCoprime r s := by
   refine isCoprime_of_prime_dvd (not_and.2 (fun _ hz ↦ hs (by simp [hz])))
     (fun p hp p_dvd_r p_dvd_s ↦ hr ?_)
