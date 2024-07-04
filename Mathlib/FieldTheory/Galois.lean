@@ -407,7 +407,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   apply IntermediateField.induction_on_adjoin_finset _ P
   · have key := IntermediateField.card_algHom_adjoin_integral F (K := E)
       (show IsIntegral F (0 : E) from isIntegral_zero)
-    rw [minpoly.zero, Polynomial.natDegree_X] at key
+    rw [IsSeparable, minpoly.zero, Polynomial.natDegree_X] at key
     specialize key Polynomial.separable_X (Polynomial.splits_X (algebraMap F E))
     rw [← @Subalgebra.finrank_bot F E _ _ _, ← IntermediateField.bot_toSubalgebra] at key
     refine Eq.trans ?_ key
