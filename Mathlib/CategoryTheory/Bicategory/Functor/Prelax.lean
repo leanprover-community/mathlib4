@@ -16,19 +16,19 @@ oplax functors.
 
 ## Main definitions
 
-`LaxPreFunctor B C`:
+`PrelaxFunctorStruct B C`:
 
-A lax prefunctor `F` between quivers `B` and `C`, equipped with quiver structures on the hom-types,
-consists of
+A PrelaxFunctorStruct `F` between quivers `B` and `C`, such that both have been equipped with quiver
+structures on the hom-types, consists of
 * a function between objects `F.obj : B ⟶ C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 
 `PrelaxFunctor B C`:
 
-A prelax functor `F` between bicategories `B` and `C` is a lax prefunctor such that the associated
-prefunctors between the hom types are all functors. In other words, it is a `LaxPreFunctor` that
-satisfies
+A prelax functor `F` between bicategories `B` and `C` is a `PrelaxFunctorStruct` such that the
+associated prefunctors between the hom types are all functors. In other words, it is a
+`PrelaxFunctorStruct` that satisfies
 * `F.map₂ (𝟙 f) = 𝟙 (F.map f)`,
 * `F.map₂ (η ≫ θ) = F.map₂ η ≫ F.map₂ θ`.
 
@@ -47,37 +47,37 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 section
 
-variable {B : Type u₁} [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
-variable {C : Type u₂} [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)]
+variable (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
+variable (C : Type u₂) [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)]
 variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (a ⟶ b)]
 
-/-- A lax prefunctor between bicategories consists of functions between objects,
+/-- A `PrelaxFunctorStruct` between bicategories consists of functions between objects,
 1-morphisms, and 2-morphisms. This structure will be extended to define `PrelaxFunctor`.
 -/
-structure LaxPreFunctor (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
-  (C : Type u₂) [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)] extends
-  Prefunctor B C where
+structure PrelaxFunctorStruct extends Prefunctor B C where
   /-- The action of a lax prefunctor on 2-morphisms. -/
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
-#align category_theory.prelax_functor CategoryTheory.LaxPreFunctor
+#align category_theory.prelax_functor CategoryTheory.PrelaxFunctorStruct
 
-initialize_simps_projections LaxPreFunctor (+toPrefunctor, -obj, -map)
+initialize_simps_projections PrelaxFunctorStruct (+toPrefunctor, -obj, -map)
 
 /-- The prefunctor between the underlying quivers. -/
-add_decl_doc LaxPreFunctor.toPrefunctor
+add_decl_doc PrelaxFunctorStruct.toPrefunctor
 
-namespace LaxPreFunctor
+variable {B} {C}
+
+namespace PrelaxFunctorStruct
 
 /-- Construct a lax prefunctor from a map on objects, and prefunctors between the corresponding
 hom types. -/
 @[simps]
 def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a ⟶ b) (F a ⟶ F b)) :
-    LaxPreFunctor B C where
+    PrelaxFunctorStruct B C where
   obj := F
   map {a b} := (F' a b).obj
   map₂ {a b} := (F' a b).map
 
-variable (F : LaxPreFunctor B C)
+variable (F : PrelaxFunctorStruct B C)
 
 -- Porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
 -- and `to_prefunctor_obj : (F : Prefunctor B C).obj = F.obj`
@@ -88,21 +88,21 @@ variable (F : LaxPreFunctor B C)
 
 /-- The identity lax prefunctor. -/
 @[simps]
-def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] : LaxPreFunctor B B :=
+def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] : PrelaxFunctorStruct B B :=
   { Prefunctor.id B with map₂ := fun η => η }
-#align category_theory.prelax_functor.id CategoryTheory.LaxPreFunctor.id
+#align category_theory.prelax_functor.id CategoryTheory.PrelaxFunctorStruct.id
 
-instance : Inhabited (LaxPreFunctor B B) :=
-  ⟨LaxPreFunctor.id B⟩
+instance : Inhabited (PrelaxFunctorStruct B B) :=
+  ⟨PrelaxFunctorStruct.id B⟩
 
 /-- Composition of lax prefunctors. -/
 @[simps]
-def comp (F : LaxPreFunctor B C) (G : LaxPreFunctor C D) : LaxPreFunctor B D where
+def comp (F : PrelaxFunctorStruct B C) (G : PrelaxFunctorStruct C D) : PrelaxFunctorStruct B D where
   toPrefunctor := F.toPrefunctor.comp G.toPrefunctor
   map₂ := fun η => G.map₂ (F.map₂ η)
-#align category_theory.prelax_functor.comp CategoryTheory.LaxPreFunctor.comp
+#align category_theory.prelax_functor.comp CategoryTheory.PrelaxFunctorStruct.comp
 
-end LaxPreFunctor
+end PrelaxFunctorStruct
 
 end
 
@@ -110,7 +110,7 @@ end
 This structure will be extended to define `LaxFunctor` and `OplaxFunctor`.
 -/
 structure PrelaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
-    extends LaxPreFunctor B C where
+    extends PrelaxFunctorStruct B C where
   /-- Prelax functors preserves identity 2-morphisms. -/
   map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not aesop_cat?
   /-- Prelax functors preserves compositions of 2-morphisms. -/
@@ -119,14 +119,14 @@ structure PrelaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 
 namespace PrelaxFunctor
 
-initialize_simps_projections PrelaxFunctor (+toLaxPreFunctor, -obj, -map, -map₂)
+initialize_simps_projections PrelaxFunctor (+toPrelaxFunctorStruct, -obj, -map, -map₂)
 
 attribute [simp] map₂_id
 attribute [reassoc] map₂_comp
 attribute [simp] map₂_comp
 
 /-- The underlying lax prefunctor. -/
-add_decl_doc PrelaxFunctor.toLaxPreFunctor
+add_decl_doc PrelaxFunctor.toPrelaxFunctorStruct
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
@@ -136,24 +136,24 @@ hom types. -/
 @[simps]
 def mkOfHomFunctors (F : B → C) (F' : (a : B) → (b : B) → (a ⟶ b) ⥤ (F a ⟶ F b)) :
     PrelaxFunctor B C where
-  toLaxPreFunctor := LaxPreFunctor.mkOfHomPrefunctors F fun a b => (F' a b).toPrefunctor
+  toPrelaxFunctorStruct := PrelaxFunctorStruct.mkOfHomPrefunctors F fun a b => (F' a b).toPrefunctor
   map₂_id {a b} := (F' a b).map_id
   map₂_comp {a b} := (F' a b).map_comp
 
 /-- The identity prelax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : PrelaxFunctor B B where
-  toLaxPreFunctor := LaxPreFunctor.id B
+  toPrelaxFunctorStruct := PrelaxFunctorStruct.id B
 
-instance : Inhabited (LaxPreFunctor B B) :=
-  ⟨LaxPreFunctor.id B⟩
+instance : Inhabited (PrelaxFunctorStruct B B) :=
+  ⟨PrelaxFunctorStruct.id B⟩
 
 variable (F : PrelaxFunctor B C)
 
 /-- Composition of prelax functors. -/
 @[simps]
 def comp (G : PrelaxFunctor C D) : PrelaxFunctor B D where
-  toLaxPreFunctor := LaxPreFunctor.comp F.toLaxPreFunctor G.toLaxPreFunctor
+  toPrelaxFunctorStruct := PrelaxFunctorStruct.comp F.toPrelaxFunctorStruct G.toPrelaxFunctorStruct
 
 /-- Function between 1-morphisms as a functor. -/
 @[simps]
