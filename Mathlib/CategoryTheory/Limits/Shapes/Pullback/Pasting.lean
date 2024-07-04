@@ -243,7 +243,7 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
   -- Check that ....
   · simp at hl hl'
     apply PushoutCocone.IsColimit.hom_ext H hl
-    rw [←Category.assoc, t₂.condition, s.condition, Category.assoc, hl']
+    rw [← Category.assoc, t₂.condition, s.condition, Category.assoc, hl']
   -- Uniqueness (TODO GOLF THIS)
   · intro m hm₁ hm₂
     apply PushoutCocone.IsColimit.hom_ext H'
