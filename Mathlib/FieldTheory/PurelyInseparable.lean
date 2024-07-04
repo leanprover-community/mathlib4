@@ -941,9 +941,10 @@ lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
   rw [separableClosure.adjoin_eq_of_isAlgebraic_of_isSeparable K, rank_top'] at h
   obtain ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
   exact h.antisymm' (b.mk_eq_rank'' ▸ (b.linearIndependent.map' S.val.toLinearMap
-    (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_isSeparable
-      E (fun i ↦ by simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i))
-      |>.cardinal_le_rank))
+    (LinearMap.ker_eq_bot_of_injective S.val.injective)
+    |>.map_of_isPurelyInseparable_of_isSeparable E (fun i ↦
+      by simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i))
+    |>.cardinal_le_rank))
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
 then $[E:F] [K:E]_s = [K:F]_s$.
