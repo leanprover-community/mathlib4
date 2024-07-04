@@ -90,6 +90,7 @@ lemma add_pow_dvd_pow_of_pow_eq_zero_left (hy : y ^ n = 0) :
 
 end Ring
 
+end Commute
 section CommRing
 
 variable [CommRing R]
@@ -113,5 +114,3 @@ lemma dvd_mul_sub_mul_mul_right_of_dvd {p a b c d x y : R}
   ring
 
 end CommRing
-
-end Commute
