@@ -241,9 +241,6 @@ instance : CreatesColimitsOfShape (Discrete ι) Scheme.forgetToLocallyRingedSpac
   exact createsColimitOfIsoDiagram _ (Discrete.natIsoFunctor (F := K)).symm
 
 noncomputable
-instance : ReflectsColimitsOfShape (Discrete ι) Scheme.forgetToLocallyRingedSpace := inferInstance
-
-noncomputable
 instance : PreservesColimitsOfShape (Discrete ι) Scheme.forgetToTop :=
   inferInstanceAs (PreservesColimitsOfShape (Discrete ι) (Scheme.forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
