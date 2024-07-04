@@ -295,7 +295,8 @@ lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
   ((G.op.ranAdjunction A).map_restrictFullyFaithful_counit_app
     (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
     (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
-    (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans (by simp)
+    (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans
+      (by aesop_cat)
 
 lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :
@@ -310,8 +311,7 @@ lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf 
         erw [Functor.map_id, Category.comp_id, Category.id_comp,
           Adjunction.homEquiv_unit])
 
-variable
-  [HasWeakSheafify J A] [HasWeakSheafify K A]
+variable [HasWeakSheafify J A] [HasWeakSheafify K A]
   [G.IsCocontinuous J K] [G.IsContinuous J K]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
