@@ -174,7 +174,7 @@ section
 
 variable {n}
 variable
-  (α : Ext.{w} X Y n)
+  (α β : Ext.{w} X Y n)
   [HasExt.{t} D] (F : C ⥤ D) [F.Additive] [F.PreservesHomology]
 
 instance (K : CochainComplex C ℤ) [K.IsSingle] :
@@ -212,6 +212,15 @@ lemma map_eq : homEquiv (α.map F) =
   sorry
 
 lemma map_id : α.map (𝟭 C) = α := by
+  sorry
+
+set_option pp.universes true
+
+lemma homEquiv_add : homEquiv (α + β) = homEquiv α + homEquiv β := by
+  letI := HasDerivedCategory.standard C
+  rw [← (α + β).map_id]
+  conv_rhs => rw [← α.map_id, ← β.map_id]
+  apply (map_eq.{max u v, w', w, w} (α + β) (𝟭 C)).trans
   sorry
 
 end
