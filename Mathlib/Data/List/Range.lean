@@ -281,7 +281,7 @@ lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
   rw [← mem_range, ← ranges_join', mem_join]
 
- /-- The members of `l.ranges` have no duplicate -/
+/-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
   (List.pairwise_join.mp $ by rw [ranges_join']; exact nodup_range _).1 s hs
 
