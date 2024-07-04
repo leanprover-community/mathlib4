@@ -886,6 +886,9 @@ lemma leRecOn'_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
     lhs
     rw [leRecOn', Or.by_cases, dif_pos h1]
 
+lemma leRecOn'_succ' {n} {motive : (m : ℕ) → n ≤ m → Sort*} (next self) :
+    (leRecOn' (motive := motive) next self (le_succ _)) = next _ self := by
+  rw [leRecOn'_succ, leRecOn'_self]
 /-- Recursion starting at a non-zero number: given a map `C k → C (k + 1)` for each `k`,
 there is a map from `C n` to each `C m`, `n ≤ m`. For a version where the assumption is only made
 when `k ≥ n`, see `Nat.leRecOn'`. -/
@@ -1002,16 +1005,18 @@ lemma decreasingInduction_self {n} {motive : (m : ℕ) → m ≤ n → Sort*} (o
   rw [leRecOn'_self]
 #align nat.decreasing_induction_self Nat.decreasingInduction_self
 
-lemma decreasingInduction_succ {n} {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self) (mn : m ≤ n)
-    (msn : m ≤ n + 1) (hP : P (n + 1)) :
-    (decreasingInduction h msn hP : P m) = decreasingInduction h mn (h n hP) := by
-  dsimp only [decreasingInduction]; rw [leRecOn_succ]
+lemma decreasingInduction_succ {n} {motive : (m : ℕ) → m ≤ n + 1 → Sort*} (of_succ self)
+    (mn : m ≤ n) (msn : m ≤ n + 1) :
+    (decreasingInduction (motive := motive) of_succ self msn : motive m msn) =
+      decreasingInduction (motive := fun m h => motive m (le_succ_of_le h))
+        (fun i hi => of_succ _ _) (of_succ _ _ self) mn := by
+  dsimp only [decreasingInduction]; rw [leRecOn'_succ]
 #align nat.decreasing_induction_succ Nat.decreasingInduction_succ
 
 @[simp]
-lemma decreasingInduction_succ' {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n) {m : ℕ}
-    (msm : m ≤ m + 1) (hP : P (m + 1)) : decreasingInduction h msm hP = h m hP := by
-  dsimp only [decreasingInduction]; rw [leRecOn_succ']
+lemma decreasingInduction_succ' {n} {motive : (m : ℕ) → m ≤ n + 1 → Sort*} (of_succ self) :
+    decreasingInduction (motive := motive) of_succ self n.le_succ = of_succ _ _ self := by
+  dsimp only [decreasingInduction]; rw [leRecOn'_succ']
 #align nat.decreasing_induction_succ' Nat.decreasingInduction_succ'
 
 lemma decreasingInduction_trans {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n)
