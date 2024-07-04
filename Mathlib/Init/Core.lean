@@ -23,8 +23,6 @@ These will be deleted soon so will not significantly delay deleting otherwise em
 This file contains alignments from lean 3 `init.core`.
 -/
 
-set_option autoImplicit true
-
 #align id id -- align this first so idDelta doesn't take priority
 #align id_delta id
 
@@ -73,6 +71,8 @@ attribute [symm] Eq.symm
 #align eq.refl Eq.refl
 #align eq.symm Eq.symm
 #align eq.trans Eq.trans
+
+universe u v w
 
 def Prod.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort w⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
@@ -173,6 +173,7 @@ attribute [simp] insert_emptyc_eq
 -- Combinator calculus
 namespace Combinator
 
+variable {α : Sort u} {β : Sort v} {γ : Sort w}
 def I (a : α) := a
 def K (a : α) (_b : β) := a
 def S (x : α → β → γ) (y : α → β) (z : α) := x z (y z)
