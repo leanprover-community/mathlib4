@@ -213,7 +213,7 @@ theorem map_id_eq : map (𝟙 F) = 𝟙 (Cat.of <| Grothendieck <| F) := by
   · intro X Y f
     simp [map_map]
     congr
-    erw [NatTrans.id_app]
+    rw [NatTrans.id_app]
     simp
 
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
