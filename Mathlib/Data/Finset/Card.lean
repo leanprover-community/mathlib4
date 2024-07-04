@@ -625,7 +625,7 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : s.card ≤ n) (hnt : n �
   classical
   refine Nat.decreasingInduction' ?_ hnt ⟨t, by simp [hst]⟩
   intro k _ hnk ⟨u, hu₁, hu₂, hu₃⟩
-  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [←card_pos, card_sdiff hu₁]; omega
+  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [← card_pos, card_sdiff hu₁]; omega
   simp only [mem_sdiff] at ha
   exact ⟨u.erase a, by simp [subset_erase, erase_subset_iff_of_mem (hu₂ _), *]⟩
 
