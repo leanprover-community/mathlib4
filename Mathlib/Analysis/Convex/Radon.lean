@@ -19,7 +19,7 @@ intersection of convex sets. Let `X₁, ⋯, Xₙ` be a finite family of convex 
 `n ≥ d + 1`. The theorem states that if any `d + 1` sets from this family intersect nontrivially,
 then the whole family intersect nontrivially. For the infinite family of sets it is not true, as
 example of `Set.Ioo 0 (1 / n)` for `n : ℕ` shows. But the statement is true, if we assume
-compactness of sets (see `Convex.helly_theorem_compact`)
+compactness of sets (see `helly_theorem_compact`)
 
 ## Tags
 
@@ -51,7 +51,7 @@ theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
       with ⟨pos_w_index, h1', h2'⟩
     exact sum_pos' (fun _i hi ↦ (mem_filter.1 hi).2)
       ⟨pos_w_index, by simp only [I, mem_filter, h1', h2'.le, and_self, h2']⟩
-  have hp : centerMass J w f = p := Finset.centerMass_of_sum_add_sum_eq_zero hJI <| by
+  have hp : centerMass J w f = p := centerMass_of_sum_add_sum_eq_zero hJI <| by
     simpa only [← h_vsum, not_lt] using sum_filter_add_sum_filter_not s (fun i ↦ w i < 0) _
   refine ⟨I, p, ?_, ?_⟩
   · exact centerMass_mem_convexHull _ (fun _i hi ↦ (mem_filter.mp hi).2) hI
@@ -93,8 +93,6 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     apply hk (s := s')
     · exact fun i hi ↦h_convex i (mem_of_mem_erase hi)
     · intro J hJ_ss hJ_card
-      -- rw [show ⋂ i ∈ J, F' i = ⋂ i ∈ Finset.image Subtype.val J, F i by
-      --   simp [iInter_subtype]]
       apply h_inter J <| subset_trans hJ_ss (erase_subset i.val s)
       assumption
     · simp only [coe_mem, card_erase_of_mem, s']; omega
@@ -104,26 +102,26 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     rw [← finrank_vectorSpan_le_iff_not_affineIndependent 𝕜 a (n := (k - 1))]
     · exact (Submodule.finrank_le (vectorSpan 𝕜 (range a))).trans (Nat.le_pred_of_lt h_card)
     · simp only [card_coe]; omega
-  /- Use `Convex.radon_partition` to conclude there is a subset `I` of `s` and a point `p : E` which
+  /- Use `radon_partition` to conclude there is a subset `I` of `s` and a point `p : E` which
   lies in the convex hull of either `a '' I` or `a '' Iᶜ`. We claim that `p ∈ ⋂ i ∈ s, F i`. -/
-  obtain ⟨I, p, hp_I, hp_Ic⟩ := Convex.radon_partition h_ind
+  obtain ⟨I, p, hp_I, hp_Ic⟩ := radon_partition h_ind
   use p
-  apply Set.mem_biInter
+  apply mem_biInter
   intro i hi
   let i : s := ⟨i, hi⟩
-  /- It suffices to show that for any set `F i` in a subcollection `I` of `s`, the convex
-  hull of `a '' (s \ I)` is contained in `F i`. -/
+  /- It suffices to show that for any subcollection `J` of `s` containing `i`, the convex
+  hull of `a '' (s \ J)` is contained in `F i`. -/
   suffices ∀ J : Set s, (i ∈ J) → (convexHull 𝕜) (a '' Jᶜ) ⊆ F i by
     by_cases h : i ∈ I
     · exact this I h hp_Ic
     · apply this Iᶜ h; rwa [compl_compl]
-  /- Given any subcollection `I` of `ι` containing `i`, because `F i` is convex, we need only
-  show that `a j ∈ F i` for each `j ∈ Iᶜ`. -/
+  /- Given any subcollection `J` of `ι` containing `i`, because `F i` is convex, we need only
+  show that `a j ∈ F i` for each `j ∈ s \ J`. -/
   intro J hi
-  rw [Convex.convexHull_subset_iff (h_convex i.1 i.2)]
+  rw [convexHull_subset_iff (h_convex i.1 i.2)]
   rintro v ⟨j, hj, hj_v⟩
   rw [← hj_v]
-  /- Since `j ∈ Iᶜ` and `i ∈ I`, we conclude that `i ≠ j`, and hence by the definition of `a`:
+  /- Since `j ∈ Jᶜ` and `i ∈ J`, we conclude that `i ≠ j`, and hence by the definition of `a`:
   `a j ∈ ⋂ F '' (Set.univ \ {j}) ⊆ F i`. -/
   apply mem_of_subset_of_mem (s₁ := ⋂ k ∈ (s.erase j), F k)
   · apply biInter_subset_of_mem
@@ -133,7 +131,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     constructor
     · exact fun h' ↦ hj ((show i = j from SetCoe.ext h') ▸ hi)
     · assumption
-  · apply Set.Nonempty.some_mem
+  · apply Nonempty.some_mem
 
 /-- **Helly's theorem** for finite families of convex sets in its classical form.
 
@@ -146,7 +144,7 @@ theorem helly_theorem {F : ι → Set E} {s : Finset ι}
     (⋂ i ∈ s, F i).Nonempty := by
   apply helly_theorem' h_convex
   intro I hI_ss hI_card
-  obtain ⟨J, hI_ss_J, hJ_ss, hJ_card⟩ := Finset.exists_subsuperset_card_eq hI_ss hI_card h_card
+  obtain ⟨J, hI_ss_J, hJ_ss, hJ_card⟩ := exists_subsuperset_card_eq hI_ss hI_card h_card
   apply Set.Nonempty.mono <| biInter_mono hI_ss_J (by intro _ _; rfl)
   exact h_inter J hJ_ss hJ_card
 
@@ -160,7 +158,7 @@ theorem helly_theorem_set' {F : Finset (Set E)}
     (⋂₀ (F : Set (Set E))).Nonempty := by
   classical -- for DecidableEq, required for the family version
   rw [show ⋂₀ F = ⋂ X ∈ F, (X : Set E) by ext; simp]
-  apply Convex.helly_theorem' h_convex
+  apply helly_theorem' h_convex
   intro G hG_ss hG_card
   rw [show ⋂ X ∈ G, X = ⋂₀ G by ext; simp]
   exact h_inter G hG_ss hG_card
@@ -195,7 +193,7 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
   simp only [iInter_of_empty, Set.univ_nonempty]
   /- By the finite version of theorem, every finite subfamily has an intersection. -/
   have h_fin (I : Finset ι) : (⋂ i ∈ I, F i).Nonempty := by
-    apply Convex.helly_theorem' (s := I) (𝕜 := 𝕜) (by simp [h_convex])
+    apply helly_theorem' (s := I) (𝕜 := 𝕜) (by simp [h_convex])
     exact fun J _ hJ_card ↦ h_inter J hJ_card
   /- The following is a clumsy proof that family of compact sets with the finite intersection
   property has a nonempty intersection. -/
@@ -225,7 +223,7 @@ theorem helly_theorem_compact [TopologicalSpace E] [T2Space E] {F : ι → Set E
     · exact Infinite.exists_superset_card_eq _ _ hI_card
     · have : Finite ι := Finite.of_not_infinite h
       have : Fintype ι := Fintype.ofFinite ι
-      apply Finset.exists_superset_card_eq hI_card
+      apply exists_superset_card_eq hI_card
       simp only [PartENat.card_eq_coe_fintype_card] at h_card
       rwa [← Nat.cast_one, ← Nat.cast_add, Nat.cast_le] at h_card
   obtain ⟨J, hJ_ss, hJ_card⟩ := hJ
@@ -243,14 +241,14 @@ theorem helly_theorem_set_compact' [TopologicalSpace E] [T2Space E] {F : Set (Se
     (⋂₀ (F : Set (Set E))).Nonempty := by
   classical -- for DecidableEq, required for the family version
   rw [show ⋂₀ F = ⋂ X : F, (X : Set E) by ext; simp]
-  refine Convex.helly_theorem_compact' (F := fun x : F ↦ x.val)
+  refine helly_theorem_compact' (F := fun x : F ↦ x.val)
     (fun X ↦ h_convex X (by simp)) (fun X ↦ h_compact X (by simp)) ?_
   intro G _
-  let G' : Finset (Set E) := Finset.image Subtype.val G
+  let G' : Finset (Set E) := image Subtype.val G
   rw [show ⋂ i ∈ G, ↑i = ⋂₀ (G' : Set (Set E)) by simp [G']]
   apply h_inter G'
   · simp [G']
-  · apply le_trans Finset.card_image_le
+  · apply le_trans card_image_le
     assumption
 
 /-- **Helly's theorem** for sets of compact convex sets in its classical version.
@@ -269,7 +267,7 @@ theorem helly_theorem_set_compact [TopologicalSpace E] [T2Space E] {F : Set (Set
   obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_superset_subset_encard_eq hI_ss (hkt := h_card)
     (by simpa only [encard_coe_eq_coe_finsetCard, ← ENat.coe_one, ← ENat.coe_add, Nat.cast_le])
   apply Set.Nonempty.mono <| sInter_mono (by simpa [hI_ss])
-  have hJ_fin : Fintype J := Set.Finite.fintype <| Set.finite_of_encard_eq_coe hJ_card
+  have hJ_fin : Fintype J := Finite.fintype <| finite_of_encard_eq_coe hJ_card
   let J' := J.toFinset
   rw [← coe_toFinset J]
   apply h_inter J'
