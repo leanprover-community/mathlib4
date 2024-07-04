@@ -140,13 +140,12 @@ def noInitialWhitespaceLinter : Linter where
     if (← MonadState.get).messages.hasErrors then
       return
     if let some rg := stx.getRange? then
-      let fm ← getFileMap
-      let pos := fm.toPosition rg.start
+      let pos := (← getFileMap).toPosition rg.start
       let relevantLine := (← IO.FS.lines (← getFileName))[pos.line - 1]!
       if pos.column != 0 && !"#guard_msgs".isPrefixOf relevantLine
       then
         Linter.logLint linter.noInitialWhitespace stx
-          m!"'{relevantLine}' starts on column {pos.column}.  \
+          m!"'{stx}' starts on column {pos.column}.\n\
              Please, do not leave any whitespace before this command!"
 
 initialize addLinter noInitialWhitespaceLinter
