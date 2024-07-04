@@ -93,7 +93,7 @@ theorem mem_separableClosure_iff {x : E} :
 `separableClosure F K` if and only if `x` is contained in `separableClosure F E`. -/
 theorem map_mem_separableClosure_iff (i : E →ₐ[F] K) {x : E} :
     i x ∈ separableClosure F K ↔ x ∈ separableClosure F E := by
-  simp_rw [mem_separableClosure_iff, minpoly.algHom_eq i i.injective]
+  simp_rw [mem_separableClosure_iff, IsSeparable, minpoly.algHom_eq i i.injective]
 
 /-- If `i` is an `F`-algebra homomorphism from `E` to `K`, then the preimage of
 `separableClosure F K` under the map `i` is equal to `separableClosure F E`. -/
@@ -143,12 +143,12 @@ instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure 
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
-  ⟨fun x ↦ by simpa only [minpoly_eq] using x.2⟩
+  ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if all of its elements are separable over `F`. -/
 theorem le_separableClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsSeparable F x) :
-    L ≤ separableClosure F E := fun x h ↦ by simpa only [minpoly_eq] using hs ⟨x, h⟩
+    L ≤ separableClosure F E := fun x h ↦ by simpa only [IsSeparable, minpoly_eq] using hs ⟨x, h⟩
 
 /-- An intermediate field of `E / F` is contained in the separable closure of `F` in `E`
 if it is separable over `F`. -/
@@ -159,7 +159,8 @@ theorem le_separableClosure (L : IntermediateField F E) [Algebra.IsSeparable F L
 if and only if it is separable over `F`. -/
 theorem le_separableClosure_iff (L : IntermediateField F E) :
     L ≤ separableClosure F E ↔ Algebra.IsSeparable F L :=
-  ⟨fun h ↦ ⟨fun x ↦ by simpa only [minpoly_eq] using h x.2⟩, fun _ ↦ le_separableClosure _ _ _⟩
+  ⟨fun h ↦ ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using h x.2⟩,
+    fun _ ↦ le_separableClosure _ _ _⟩
 
 /-- The separable closure in `E` of the separable closure of `F` in `E` is equal to itself. -/
 theorem separableClosure.separableClosure_eq_bot :
