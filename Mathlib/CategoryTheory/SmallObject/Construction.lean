@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Construction for the small object argument

@@ -79,9 +79,6 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 
 assert_not_exists OrderedSemiring
 
-set_option autoImplicit true
-
-
 open Function Set Order
 open scoped Classical
 
@@ -1333,10 +1330,11 @@ theorem Eventually.exists {p : α → Prop} {f : Filter α} [NeBot f] (hp : ∀�
   hp.frequently.exists
 #align filter.eventually.exists Filter.Eventually.exists
 
-lemma frequently_iff_neBot {p : α → Prop} : (∃ᶠ x in l, p x) ↔ NeBot (l ⊓ 𝓟 {x | p x}) := by
+lemma frequently_iff_neBot {l : Filter α} {p : α → Prop} :
+    (∃ᶠ x in l, p x) ↔ NeBot (l ⊓ 𝓟 {x | p x}) := by
   rw [neBot_iff, Ne, inf_principal_eq_bot]; rfl
 
-lemma frequently_mem_iff_neBot {s : Set α} : (∃ᶠ x in l, x ∈ s) ↔ NeBot (l ⊓ 𝓟 s) :=
+lemma frequently_mem_iff_neBot {l : Filter α} {s : Set α} : (∃ᶠ x in l, x ∈ s) ↔ NeBot (l ⊓ 𝓟 s) :=
   frequently_iff_neBot
 
 theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filter α} :
@@ -1539,7 +1537,8 @@ theorem EventuallyEq.trans {l : Filter α} {f g h : α → β} (H₁ : f =ᶠ[l]
   H₂.rw (fun x y => f x = y) H₁
 #align filter.eventually_eq.trans Filter.EventuallyEq.trans
 
-instance : Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· =ᶠ[l] ·) where
+instance {l : Filter α} :
+    Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· =ᶠ[l] ·) where
   trans := EventuallyEq.trans
 
 theorem EventuallyEq.prod_mk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
@@ -1733,6 +1732,8 @@ instance : Trans ((· ≤ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· 
   trans := EventuallyLE.trans_eq
 
 end Preorder
+
+variable {l : Filter α}
 
 theorem EventuallyLE.antisymm [PartialOrder β] {l : Filter α} {f g : α → β} (h₁ : f ≤ᶠ[l] g)
     (h₂ : g ≤ᶠ[l] f) : f =ᶠ[l] g :=
@@ -2139,7 +2140,7 @@ theorem map_pure (f : α → β) (a : α) : map f (pure a) = pure (f a) :=
   rfl
 #align filter.map_pure Filter.map_pure
 
-theorem pure_le_principal (a : α) : pure a ≤ 𝓟 s ↔ a ∈ s := by
+theorem pure_le_principal {s : Set α} (a : α) : pure a ≤ 𝓟 s ↔ a ∈ s := by
   simp
 
 @[simp] theorem join_pure (f : Filter α) : join (pure f) = f := rfl
@@ -2367,11 +2368,13 @@ theorem comap_mono : Monotone (comap m) :=
 #align filter.comap_mono Filter.comap_mono
 
 /-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr] theorem _root_.GCongr.Filter.map_le_map (h : F ≤ G) : map m F ≤ map m G := map_mono h
+@[gcongr] theorem _root_.GCongr.Filter.map_le_map {F G : Filter α} (h : F ≤ G) :
+    map m F ≤ map m G := map_mono h
 
 /-- Temporary lemma that we can tag with `gcongr` -/
 @[gcongr]
-theorem _root_.GCongr.Filter.comap_le_comap (h : F ≤ G) : comap m F ≤ comap m G := comap_mono h
+theorem _root_.GCongr.Filter.comap_le_comap {F G : Filter β} (h : F ≤ G) :
+    comap m F ≤ comap m G := comap_mono h
 
 @[simp] theorem map_bot : map m ⊥ = ⊥ := (gc_map_comap m).l_bot
 #align filter.map_bot Filter.map_bot
@@ -3317,10 +3320,13 @@ theorem Set.MapsTo.tendsto {α β} {s : Set α} {t : Set β} {f : α → β} (h 
   Filter.tendsto_principal_principal.2 h
 #align set.maps_to.tendsto Set.MapsTo.tendsto
 
-theorem Filter.EventuallyEq.comp_tendsto {f' : α → β} (H : f =ᶠ[l] f') {g : γ → α} {lc : Filter γ}
-    (hg : Tendsto g lc l) : f ∘ g =ᶠ[lc] f' ∘ g :=
+theorem Filter.EventuallyEq.comp_tendsto {α β γ : Type*} {l : Filter α} {f : α → β} {f' : α → β}
+    (H : f =ᶠ[l] f') {g : γ → α} {lc : Filter γ} (hg : Tendsto g lc l) :
+    f ∘ g =ᶠ[lc] f' ∘ g :=
   hg.eventually H
 #align filter.eventually_eq.comp_tendsto Filter.EventuallyEq.comp_tendsto
+
+variable {α β : Type*} {F : Filter α} {G : Filter β}
 
 theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
     MapsTo (map m) (Iic F) (Iic G) ↔ Tendsto m F G :=
@@ -3328,14 +3334,13 @@ theorem Filter.map_mapsTo_Iic_iff_tendsto {m : α → β} :
 
 alias ⟨_, Filter.Tendsto.map_mapsTo_Iic⟩ := Filter.map_mapsTo_Iic_iff_tendsto
 
-theorem Filter.map_mapsTo_Iic_iff_mapsTo {m : α → β} :
+theorem Filter.map_mapsTo_Iic_iff_mapsTo {s : Set α} {t : Set β} {m : α → β} :
     MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ MapsTo m s t := by
   rw [map_mapsTo_Iic_iff_tendsto, tendsto_principal_principal, MapsTo]
 
 alias ⟨_, Set.MapsTo.filter_map_Iic⟩ := Filter.map_mapsTo_Iic_iff_mapsTo
 
 -- TODO(Anatole): unify with the global case
-
 theorem Filter.map_surjOn_Iic_iff_le_map {m : α → β} :
     SurjOn (map m) (Iic F) (Iic G) ↔ G ≤ map m F := by
   refine ⟨fun hm ↦ ?_, fun hm ↦ ?_⟩
@@ -3345,13 +3350,13 @@ theorem Filter.map_surjOn_Iic_iff_le_map {m : α → β} :
       fun H (hHG : H ≤ G) ↦ by simpa [Filter.push_pull] using hHG.trans hm
     exact this.surjOn fun H _ ↦ mem_Iic.mpr inf_le_left
 
-theorem Filter.map_surjOn_Iic_iff_surjOn {m : α → β} :
+theorem Filter.map_surjOn_Iic_iff_surjOn {s : Set α} {t : Set β} {m : α → β} :
     SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ SurjOn m s t := by
   rw [map_surjOn_Iic_iff_le_map, map_principal, principal_mono, SurjOn]
 
 alias ⟨_, Set.SurjOn.filter_map_Iic⟩ := Filter.map_surjOn_Iic_iff_surjOn
 
-theorem Filter.filter_injOn_Iic_iff_injOn {m : α → β} :
+theorem Filter.filter_injOn_Iic_iff_injOn {s : Set α} {m : α → β} :
     InjOn (map m) (Iic <| 𝓟 s) ↔ InjOn m s := by
   refine ⟨fun hm x hx y hy hxy ↦ ?_, fun hm F hF G hG ↦ ?_⟩
   · rwa [← pure_injective.eq_iff, ← map_pure, ← map_pure, hm.eq_iff, pure_injective.eq_iff]

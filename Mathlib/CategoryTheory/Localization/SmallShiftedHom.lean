@@ -51,8 +51,8 @@ lemma hasSmallLocalizedShiftedHom_iff
     HasSmallLocalizedShiftedHom.{w} W M X Y ↔
       ∀ (a b : M), Small.{w} ((L.obj X)⟦a⟧ ⟶ (L.obj Y)⟦b⟧) := by
   dsimp [HasSmallLocalizedShiftedHom]
-  have eq := fun (a b : M) ↦ small_congr.{_, _, w}
-    (Iso.homEquiv ((L.commShiftIso a).app X) ((L.commShiftIso b).app Y))
+  have eq := fun (a b : M) ↦ small_congr.{w}
+    (Iso.homCongr ((L.commShiftIso a).app X) ((L.commShiftIso b).app Y))
   dsimp at eq
   simp only [hasSmallLocalizedHom_iff _ L, eq]
 
