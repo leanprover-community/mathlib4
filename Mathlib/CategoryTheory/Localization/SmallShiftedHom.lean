@@ -81,6 +81,14 @@ instance (m n n' : M) : HasSmallLocalizedHom.{w} W (X⟦m⟧) (Y⟦n⟧⟦n'⟧)
   (hasSmallLocalizedHom_iff_of_isos W
     (Iso.refl (X⟦m⟧)) ((shiftFunctorAdd C n n').app Y)).1 inferInstance
 
+variable {X Y} (M)
+variable {X' Y' : C}
+
+lemma hasSmallLocalizedShiftedHom_of_isos
+    (e₁ : X' ≅ X) (e₂ : Y' ≅ Y) : HasSmallLocalizedShiftedHom.{w} W M X' Y' := fun a b ↦
+  (hasSmallLocalizedHom_iff_of_isos W ((shiftFunctor _ a).mapIso e₁)
+    ((shiftFunctor _ b).mapIso e₂)).2 inferInstance
+
 end
 
 namespace SmallHom

@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
 /-!
@@ -49,7 +49,7 @@ namespace CategoryTheory
 variable (C : Type u) [Category.{v} C] [Abelian C]
   {D : Type u'} [Category.{v'} D] [Abelian D]
 
-open Localization
+open Localization Limits
 
 /-- The property that morphisms between single complexes in arbitrary degrees are `w`-small
 in the derived category. -/
@@ -95,10 +95,21 @@ instance (X : C) (i : ι) : ((HomologicalComplex.single C c i).obj X).IsSingle w
 instance (X : C) (n : ℤ) : ((CochainComplex.singleFunctor C n).obj X).IsSingle where
   nonempty := ⟨X, n, ⟨Iso.refl _⟩⟩
 
-instance (K L : CochainComplex C ℤ) [K.IsSingle] [L.IsSingle] :
+instance (a b i j : ℤ)  (X Y : C) :
+    HasSmallLocalizedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
+      ((shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) a).obj
+        ((HomologicalComplex.single C (ComplexShape.up ℤ) i).obj X))
+      ((shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) b).obj
+        ((HomologicalComplex.single C (ComplexShape.up ℤ) j).obj Y)) := by
+  have : HasExt.{w} C := inferInstance
+  sorry
+
+instance (K L : CochainComplex C ℤ) [hK : K.IsSingle] [hL : L.IsSingle] :
     HasSmallLocalizedShiftedHom.{w}
       (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) ℤ K L := by
-  sorry
+  obtain ⟨X, i, ⟨e₁⟩⟩ := hK
+  obtain ⟨Y, j, ⟨e₂⟩⟩ := hL
+  exact hasSmallLocalizedShiftedHom_of_isos _ ℤ e₁ e₂
 
 end
 
@@ -161,30 +172,49 @@ noncomputable instance {n : ℕ} : AddCommGroup (Ext X Y n) :=
 
 section
 
-variable {n : ℕ} (α : Ext.{w} X Y n)
-  [HasExt.{w'} D] (F : C ⥤ D) [F.Additive] [F.PreservesHomology]
+variable {n}
+variable
+  (α : Ext.{w} X Y n)
+  [HasExt.{t} D] (F : C ⥤ D) [F.Additive] [F.PreservesHomology]
 
 instance (K : CochainComplex C ℤ) [K.IsSingle] :
     ((F.mapHomologicalComplex _).obj K).IsSingle := sorry
 
 instance (X : C) :
-  ((F ⋙ HomologicalComplex.single D (ComplexShape.up ℤ) 0).obj X).IsSingle := sorry
-
-instance (X : C) : ((HomologicalComplex.single C
-    (ComplexShape.up ℤ) 0 ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ)).obj X).IsSingle := by
+    ((F ⋙ HomologicalComplex.single D (ComplexShape.up ℤ) 0).obj X).IsSingle := by
   dsimp
-  sorry
+  infer_instance
 
-noncomputable def map : Ext.{w'} (F.obj X) (F.obj Y) n :=
-  (SmallShiftedHom.mk.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+instance (X : C) (n : ℤ) : ((HomologicalComplex.single C
+    (ComplexShape.up ℤ) n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ)).obj X).IsSingle :=
+  ⟨F.obj X, n, ⟨(HomologicalComplex.singleMapHomologicalComplex F _ n).app X⟩⟩
+
+noncomputable def map : Ext.{t} (F.obj X) (F.obj Y) n :=
+  (SmallShiftedHom.mk (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
     (ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp)
       ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) 0).app X).inv)).comp
     (((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
       (ComplexShape.up ℤ)).mapSmallShiftedHom α).comp
-      (SmallShiftedHom.mk.{w'} (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
+      (SmallShiftedHom.mk (HomologicalComplex.quasiIso D (ComplexShape.up ℤ))
         (ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp)
     ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) 0).app Y).hom)) (zero_add _))
       (add_zero _)
+
+section
+
+variable [HasDerivedCategory.{w'} C] [HasDerivedCategory.{t'} D]
+  [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+
+lemma map_eq : homEquiv (α.map F) =
+    (ShiftedHom.mk₀ 0 (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).inv.app X)).comp
+      (((homEquiv α).map F.mapDerivedCategory).comp (ShiftedHom.mk₀ 0 (by simp)
+        ((F.singleFunctorCompMapDerivedCategoryIso 0).hom.app Y)) (zero_add _)) (add_zero _) := by
+  sorry
+
+lemma map_id : α.map (𝟭 C) = α := by
+  sorry
+
+end
 
 end
 

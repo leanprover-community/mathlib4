@@ -88,4 +88,13 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
 instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
+open DerivedCategory
+#check (singleFunctors C₁).postcomp F.mapDerivedCategory
+
+-- TODO: promote this as an isomorphism
+-- from `(singleFunctors C₁).postcomp F.mapDerivedCategory`
+def singleFunctorCompMapDerivedCategoryIso (n : ℤ ) :
+    DerivedCategory.singleFunctor C₁ n ⋙ F.mapDerivedCategory ≅
+      F ⋙ DerivedCategory.singleFunctor C₂ n := sorry
+
 end CategoryTheory.Functor
