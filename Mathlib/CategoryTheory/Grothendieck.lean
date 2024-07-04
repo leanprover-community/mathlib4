@@ -133,6 +133,14 @@ theorem id_fiber' (X : Grothendieck F) :
   id_fiber X
 #align category_theory.grothendieck.id_fiber' CategoryTheory.Grothendieck.id_fiber'
 
+@[simp]
+theorem comp_fiber' {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    Hom.fiber (f ≫ g) =
+    eqToHom (by erw [Functor.map_comp, Functor.comp_obj]) ≫
+    (F.map g.base).map f.fiber ≫ g.fiber :=
+  comp_fiber f g
+
+
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
   subst h
@@ -175,8 +183,7 @@ def map (α : F ⟶ G) : Grothendieck F ⥤ Grothendieck G where
   map_comp {X Y Z} f g := by
     dsimp
     congr 1
-    erw [comp_fiber f g]
-    simp only [← Category.assoc, Functor.map_comp, eqToHom_map]
+    simp only [comp_fiber' f g, ← Category.assoc, Functor.map_comp, eqToHom_map]
     apply congrFun (congrArg (. ≫ .) ?_) ((α.app Z.base).map g.fiber)
     have H := Functor.congr_hom (α.naturality g.base).symm f.fiber
     erw [H, eqToHom_app, eqToHom_app]
@@ -206,7 +213,8 @@ theorem map_id_eq : map (𝟙 F) = 𝟙 (Cat.of <| Grothendieck <| F) := by
   · intro X Y f
     simp [map_map]
     congr
-    simp [NatTrans.id_app]
+    erw [NatTrans.id_app]
+    simp
 
 /-- Making the equality of functors into an isomorphism. Note: we should avoid equality of functors
 if possible, and we should prefer `map_id_iso` to `map_id_eq` whenever we can. -/
