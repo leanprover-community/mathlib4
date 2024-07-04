@@ -77,7 +77,7 @@ lemma respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
 `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a
 closed immersion. -/
 theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surjective f) :
-    IsClosedImmersion (Scheme.specMap f) where
+    IsClosedImmersion (Spec.map f) where
   base_closed := PrimeSpectrum.closedEmbedding_comap_of_surjective _ _ h
   surj_on_stalks x := by
     erw [← localRingHom_comp_stalkIso, CommRingCat.coe_comp, CommRingCat.coe_comp]
@@ -91,7 +91,7 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/
 instance spec_of_quotient_mk {R : CommRingCat.{u}} (I : Ideal R) :
-    IsClosedImmersion (Scheme.specMap (CommRingCat.ofHom (Ideal.Quotient.mk I))) :=
+    IsClosedImmersion (Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I))) :=
   spec_of_surjective _ Ideal.Quotient.mk_surjective
 
 /-- If `f ≫ g` is a closed immersion, then `f` is a closed immersion. -/
