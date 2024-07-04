@@ -254,14 +254,8 @@ much as possible the symmetries of the multiplication. -/
 private lemma continuousAt_mul_swap {a b : EReal}
     (h : ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (a, b)) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (b, a) := by
-  have : (fun p : EReal × EReal ↦ p.1 * p.2) = (fun p : EReal × EReal ↦ p.1 * p.2)
-      ∘ Prod.swap := by
-    ext p
-    simp only [Function.comp_apply, Prod.fst_swap, Prod.snd_swap]
-    exact mul_comm p.1 p.2
-  rw [this]
-  apply ContinuousAt.comp _ (Continuous.continuousAt continuous_swap)
-  simp [h]
+  convert h.comp continuous_swap.continuousAt (x := (b, a))
+  simp [mul_comm]
 
 private lemma continuousAt_mul_symm1 {a b : EReal}
     (h : ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (a, b)) :
