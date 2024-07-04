@@ -612,7 +612,8 @@ variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
 
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
-  ⟨fun _ ↦ by rw [← minpoly.algEquiv_eq e.symm]; exact Algebra.IsSeparable.isSeparable F _⟩
+  ⟨fun _ ↦
+    by rw [IsSeparable, ← minpoly.algEquiv_eq e.symm]; exact Algebra.IsSeparable.isSeparable F _⟩
 
 theorem AlgEquiv.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
   ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
