@@ -79,7 +79,8 @@ def age (M : Type w) [L.Structure M] : Set (Bundled.{w} L.Structure) :=
   {N | Structure.FG L N ∧ Nonempty (N ↪[L] M)}
 #align first_order.language.age FirstOrder.Language.age
 
-variable {L} (K : Set (Bundled.{w} L.Structure))
+variable {L}
+variable (K : Set (Bundled.{w} L.Structure))
 
 /-- A class `K` has the hereditary property when all finitely-generated structures that embed into
   structures in `K` are also in `K`.  -/

@@ -122,13 +122,13 @@ theorem get_eq_get (v : Vector α n) (i : Fin n) :
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
-  apply List.get_replicate
+  apply List.getElem_replicate
 #align vector.nth_repeat Vector.get_replicate
 
 @[simp]
 theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
-  cases v; simp [Vector.map, get_eq_get]; rfl
+  cases v; simp [Vector.map, get_eq_get]
 #align vector.nth_map Vector.get_map
 
 @[simp]
@@ -295,8 +295,8 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [toList_reverse]
-  rw [← Option.some_inj, Fin.cast, Fin.cast, ← List.get?_eq_get, ← List.get?_eq_get,
-    List.get?_reverse]
+  rw [List.get_eq_getElem, List.get_eq_getElem, ← Option.some_inj, Fin.cast, Fin.cast,
+    ← List.getElem?_eq_getElem, ← List.getElem?_eq_getElem, List.getElem?_reverse]
   · congr
     simp
   · simp
@@ -637,8 +637,8 @@ theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
     (v.set i a).get j = v.get j := by
   cases v; cases i; cases j
-  simp only [set, get_eq_get, toList_mk, Fin.cast_mk, ne_eq]
-  rw [List.get_set_of_ne]
+  simp only [get_eq_get, toList_set, toList_mk, Fin.cast_mk, List.get_eq_getElem]
+  rw [List.getElem_set_of_ne]
   · simpa using h
 #align vector.nth_update_nth_of_ne Vector.get_set_of_ne
 
@@ -658,7 +658,7 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
-  simp [get_eq_get, mul_assoc]; rfl
+  simp [get_eq_get, mul_assoc]
 #align vector.prod_update_nth' Vector.prod_set'
 
 end ModifyNth
