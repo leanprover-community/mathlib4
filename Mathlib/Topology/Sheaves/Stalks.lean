@@ -451,6 +451,22 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) 
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_exist TopCat.Presheaf.germ_exist
 
+/-- For any stalk `t`, choose an arbitrary open set such that some sections on the said open set
+representing `t`.-/
+def openOfStalk {F : X.Presheaf C} {x : X} (t : F.stalk x) : Opens X :=
+  (germ_exist F x t).choose
+
+lemma mem_openOfStalk {F : X.Presheaf C} {x : X} (t : F.stalk x) : x ∈ openOfStalk t :=
+  (germ_exist F x t).choose_spec.choose
+
+/-- For any stalk `t`, choose a section representing `t`.-/
+def sectionOfStalk {F : X.Presheaf C} {x : X} (t : F.stalk x) : F.obj (op (openOfStalk t)) :=
+  (germ_exist F x t).choose_spec.choose_spec.choose
+
+lemma germ_sectionOfStalk {F : X.Presheaf C} {x : X} (t : F.stalk x) :
+    F.germ ⟨x, mem_openOfStalk t⟩ (sectionOfStalk t) = t :=
+  (germ_exist F x t).choose_spec.choose_spec.choose_spec
+
 theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
     (s : F.obj (op U)) (t : F.obj (op V)) (h : germ F ⟨x, mU⟩ s = germ F ⟨x, mV⟩ t) :
     ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
