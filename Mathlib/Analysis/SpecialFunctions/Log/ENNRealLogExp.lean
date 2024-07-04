@@ -16,7 +16,7 @@ We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
 and `exp`.
 - `ENNReal.logHomeomorph`: `log` as a homeomorphism.
-- `EReal.exp_homeomorph`: `exp` as a homeomorphism.
+- `EReal.expHomeomorph`: `exp` as a homeomorphism.
 
 ## Main Results
 - `ENNReal.log_exp`, `ENNReal.exp_log`: `log` and `exp` are inverses of each other.
@@ -27,11 +27,10 @@ and `exp (x * y) = (exp x) ^ y`.
 ## Tags
 ENNReal, EReal, logarithm, exponential
 -/
-namespace ENNReal
 
-open scoped NNReal
-
+open EReal ENNReal
 section LogExp
+namespace EReal
 
 @[simp] lemma log_exp (x : EReal) : log (exp x) = x := by
   induction x
@@ -39,6 +38,9 @@ section LogExp
   · rw [exp_coe, log_ofReal, if_neg (not_le.mpr (Real.exp_pos _)), Real.log_exp]
   · simp
 
+end EReal
+
+namespace ENNReal
 @[simp] lemma exp_log (x : ℝ≥0∞) : exp (log x) = x := by
   by_cases hx_top : x = ∞
   · simp [hx_top]
@@ -47,9 +49,11 @@ section LogExp
   have hx_pos : 0 < x.toReal := ENNReal.toReal_pos hx_zero hx_top
   rw [← ENNReal.ofReal_toReal hx_top, log_ofReal_of_pos hx_pos, exp_coe, Real.exp_log hx_pos]
 
+end ENNReal
 end LogExp
 
 section Log
+namespace ENNReal
 
 @[simp]
 lemma log_lt_log_iff {x y : ℝ≥0∞} : log x < log y ↔ x < y := by
@@ -75,10 +79,11 @@ lemma log_le_log_iff {x y : ℝ≥0∞} : log x ≤ log y ↔ x ≤ y := by
 
 @[simp] lemma zero_le_log_iff {x : ℝ≥0∞} : 0 ≤ log x ↔ 1 ≤ x := log_one ▸ @log_le_log_iff 1 x
 
+end ENNReal
 end Log
 
 section Exp
-
+namespace EReal
 @[simp]
 lemma exp_lt_exp_iff {a b : EReal} : exp a < exp b ↔ a < b := by
   conv_rhs => rw [← log_exp a, ← log_exp b, log_lt_log_iff]
@@ -105,8 +110,10 @@ lemma exp_nmul (x : EReal) (n : ℕ) : exp (n * x) = (exp x) ^ n := by
 lemma exp_mul (x : EReal) (y : ℝ) : exp (x * y) = (exp x) ^ y := by
   rw [← log_eq_iff, log_rpow, log_exp, log_exp, mul_comm]
 
+end EReal
 end Exp
 
+namespace ENNReal
 section OrderIso
 
 /-- `ENNReal.log` and its inverse `ENNReal.exp` are an order isomorphism between `ℝ≥0∞` and
@@ -129,12 +136,16 @@ section Continuity
 /-- `log` as a homeomorphism. -/
 noncomputable def logHomeomorph : ℝ≥0∞ ≃ₜ EReal := logOrderIso.toHomeomorph
 
-@[simp] lemma log_homeomorph_apply (x : ℝ≥0∞) : logHomeomorph x = log x := rfl
+@[simp] lemma logHomeomorph_apply (x : ℝ≥0∞) : logHomeomorph x = log x := rfl
 
 /-- `exp` as a homeomorphism. -/
-noncomputable def _root_.EReal.exp_homeomorph : EReal ≃ₜ ℝ≥0∞ := logOrderIso.symm.toHomeomorph
+noncomputable def _root_.EReal.expHomeomorph : EReal ≃ₜ ℝ≥0∞ := logOrderIso.symm.toHomeomorph
 
-@[simp] lemma _root_.EReal.exp_homeomorph_apply (x : EReal) : EReal.exp_homeomorph x = exp x := rfl
+@[simp] lemma _root_.EReal.expHomeomorph_apply (x : EReal) : expHomeomorph x = exp x := rfl
+
+@[simp] lemma logHomeomorph_symm : logHomeomorph.symm = expHomeomorph := rfl
+
+@[simp] lemma _root_.EReal.expHomeomorph_symm : expHomeomorph.symm = logHomeomorph := rfl
 
 @[continuity, fun_prop]
 lemma continuous_log : Continuous log := logOrderIso.continuous
