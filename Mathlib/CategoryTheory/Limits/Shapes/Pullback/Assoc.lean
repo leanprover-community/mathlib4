@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
+Authors: Andrew Yang, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
@@ -100,10 +100,10 @@ local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
-  apply leftSquareIsPullback
-  · exact pullbackIsPullback f₃ f₄
+  apply leftSquareIsPullback' (pullbackIsPullback f₃ f₄)
+  --apply pasteHorizIsPullback (pullbackIsPullback _ _)
   convert pullbackIsPullback (g₂ ≫ f₃) f₄
-  rw [pullback.lift_snd]
+  simp
 #align category_theory.limits.pullback_pullback_left_is_pullback CategoryTheory.Limits.pullbackPullbackLeftIsPullback
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
