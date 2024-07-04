@@ -115,7 +115,7 @@ def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁)
   refine ⟨l, hl, ?_, ?_⟩
   -- Check that ....
   · apply PullbackCone.IsLimit.hom_ext H
-    · rw [← s.condition, ← hl, Category.assoc, ←t₁.condition, Category.assoc]
+    · rw [← s.condition, ← hl, Category.assoc, ← t₁.condition, Category.assoc]
       rfl
     · simpa using hl'
   -- Uniqueness
@@ -229,7 +229,7 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) : IsColimit (
   apply PushoutCocone.IsColimit.hom_ext H' _ (by simpa [hl₂'] using hm₂)
   simp only [PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, Category.assoc] at hm₁ hm₂
   apply PushoutCocone.IsColimit.hom_ext H
-  · rw [hm₁, ←hl₁, hl₂]
+  · rw [hm₁, ← hl₁, hl₂]
   · rw [reassoc_of% t₂.condition, reassoc_of% t₂.condition, hm₂, hl₂']
 
 -- TODO: afternew name should have few enough characters
@@ -243,14 +243,14 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
   -- Check that ....
   · simp at hl hl'
     apply PushoutCocone.IsColimit.hom_ext H hl
-    rw [←Category.assoc, t₂.condition, s.condition, Category.assoc, hl']
+    rw [← Category.assoc, t₂.condition, s.condition, Category.assoc, hl']
   -- Uniqueness (TODO GOLF THIS)
   · intro m hm₁ hm₂
     apply PushoutCocone.IsColimit.hom_ext H'
     simp at hl ⊢
     rw [hl, hm₁]
     simp at hl hl' ⊢
-    rw [hm₂, ←hl']
+    rw [hm₂, ← hl']
 
 end PastePushout
 
