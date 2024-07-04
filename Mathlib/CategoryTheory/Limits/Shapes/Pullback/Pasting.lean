@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
+Authors: Andrew Yang, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
@@ -39,10 +39,85 @@ namespace CategoryTheory.Limits
 variable {C : Type u} [Category.{v} C]
 
 section PasteLemma
+section temp
+
+/- Consider the following diagram
+
+X₁ - f₁ -> X₂ - f₂ -> X₃
+|          |          |
+i₁         i₂         i₃
+∨          ∨          ∨
+Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+
+
+-/
+
+variable {X₃ Y₁ Y₂ Y₃ : C} {g₁ : Y₁ ⟶ Y₂} {g₂ : Y₂ ⟶ Y₃} {i₃ : X₃ ⟶ Y₃} (t₂ : PullbackCone g₂ i₃)
+variable (t₁ : PullbackCone g₁ t₂.fst)
+
+local notation "X₂" => t₂.pt
+local notation "i₂" => t₂.fst
+local notation "f₂" => t₂.snd
+local notation "X₁" => t₁.pt
+local notation "i₁" => t₁.fst
+local notation "f₁" => t₁.snd
+
+abbrev PullbackCone.paste : PullbackCone (g₁ ≫ g₂) i₃ :=
+  PullbackCone.mk i₁ (f₁ ≫ f₂) (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition])
+
+variable {t₂} {t₁}
+
+/-- Given
+
+X₁ - f₁ -> X₂ - f₂ -> X₃
+|          |          |
+i₁         i₂         i₃
+∨          ∨          ∨
+Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+
+Then the big square is a pullback if both the small squares are.
+-/
+def bigSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.paste t₁) := by
+  apply PullbackCone.isLimitAux'
+  intro s
+  -- obtain both limits
+  obtain ⟨l₂, hl₂, hl₂'⟩ := PullbackCone.IsLimit.lift' H (s.fst ≫ g₁) s.snd
+    (by rw [← s.condition, Category.assoc])
+  obtain ⟨l₁, hl₁, hl₁'⟩ := PullbackCone.IsLimit.lift' H' s.fst l₂ hl₂.symm
+  --
+  refine ⟨l₁, hl₁, by simp [reassoc_of% hl₁', hl₂'], ?_⟩
+  -- Uniqueness
+  intro m hm₁ hm₂
+  apply PullbackCone.IsLimit.hom_ext H' (by simpa [hl₁] using hm₁)
+  apply PullbackCone.IsLimit.hom_ext H
+  · dsimp at hm₁
+    rw [Category.assoc, ← t₁.condition, reassoc_of% hm₁, hl₁', hl₂]
+  · simpa [hl₁', hl₂'] using hm₂
+
+def leftSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit (t₂.paste t₁)) : IsLimit t₁ := by
+  apply PullbackCone.isLimitAux'
+  intro s
+  -- Obtain the induced morphism from the universal property of the big square
+  obtain ⟨l, hl, hl'⟩ := PullbackCone.IsLimit.lift' H' s.fst (s.snd ≫ f₂)
+    (by rw [Category.assoc, ← t₂.condition, reassoc_of% s.condition])
+  refine ⟨l, hl, ?_, ?_⟩
+  -- Check that ....
+  · apply PullbackCone.IsLimit.hom_ext H
+    · rw [← s.condition, ← hl, Category.assoc, ←t₁.condition, Category.assoc]
+      rfl
+    · simpa using hl'
+  -- Uniqueness
+  · intro m hm₁ hm₂
+    apply PullbackCone.IsLimit.hom_ext H' (by simpa [hm₁] using hl.symm)
+    dsimp at hl' ⊢
+    rw [reassoc_of% hm₂, hl']
+
+end temp
 
 variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃)
 variable (i₁ : X₁ ⟶ Y₁) (i₂ : X₂ ⟶ Y₂) (i₃ : X₃ ⟶ Y₃)
 variable (h₁ : i₁ ≫ g₁ = f₁ ≫ i₂) (h₂ : i₂ ≫ g₂ = f₂ ≫ i₃)
+
 
 /-- Given
 
@@ -56,28 +131,8 @@ Then the big square is a pullback if both the small squares are.
 -/
 def bigSquareIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
     (H' : IsLimit (PullbackCone.mk _ _ h₁)) :
-    IsLimit
-      (PullbackCone.mk _ _
-        (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
-          rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc])) := by
-  fapply PullbackCone.isLimitAux'
-  intro s
-  have : (s.fst ≫ g₁) ≫ g₂ = s.snd ≫ i₃ := by rw [← s.condition, Category.assoc]
-  rcases PullbackCone.IsLimit.lift' H (s.fst ≫ g₁) s.snd this with ⟨l₁, hl₁, hl₁'⟩
-  rcases PullbackCone.IsLimit.lift' H' s.fst l₁ hl₁.symm with ⟨l₂, hl₂, hl₂'⟩
-  use l₂
-  use hl₂
-  use
-    show l₂ ≫ f₁ ≫ f₂ = s.snd by
-      rw [← hl₁', ← hl₂', Category.assoc]
-      rfl
-  intro m hm₁ hm₂
-  apply PullbackCone.IsLimit.hom_ext H'
-  · erw [hm₁, hl₂]
-  · apply PullbackCone.IsLimit.hom_ext H
-    · erw [Category.assoc, ← h₁, ← Category.assoc, hm₁, ← hl₂, Category.assoc, Category.assoc, h₁]
-      rfl
-    · erw [Category.assoc, hm₂, ← hl₁', ← hl₂']
+    IsLimit (PullbackCone.mk i₁ (f₁ ≫ f₂) (by rw [reassoc_of% h₁, Category.assoc, h₂])) :=
+  bigSquareIsPullback' H H'
 #align category_theory.limits.big_square_is_pullback CategoryTheory.Limits.bigSquareIsPullback
 
 /-- Given
@@ -133,25 +188,8 @@ def leftSquareIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
         (PullbackCone.mk _ _
           (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
             rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc]))) :
-    IsLimit (PullbackCone.mk _ _ h₁) := by
-  fapply PullbackCone.isLimitAux'
-  intro s
-  have : s.fst ≫ g₁ ≫ g₂ = (s.snd ≫ f₂) ≫ i₃ := by
-    rw [← Category.assoc, s.condition, Category.assoc, Category.assoc, h₂]
-  rcases PullbackCone.IsLimit.lift' H' s.fst (s.snd ≫ f₂) this with ⟨l₁, hl₁, hl₁'⟩
-  use l₁
-  use hl₁
-  constructor
-  · apply PullbackCone.IsLimit.hom_ext H
-    · erw [Category.assoc, ← h₁, ← Category.assoc, hl₁, s.condition]
-      rfl
-    · erw [Category.assoc, hl₁']
-      rfl
-  · intro m hm₁ hm₂
-    apply PullbackCone.IsLimit.hom_ext H'
-    · erw [hm₁, hl₁]
-    · erw [hl₁', ← hm₂]
-      exact (Category.assoc _ _ _).symm
+    IsLimit (PullbackCone.mk _ _ h₁) :=
+  leftSquareIsPullback' H H'
 #align category_theory.limits.left_square_is_pullback CategoryTheory.Limits.leftSquareIsPullback
 
 /-- Given
