@@ -492,7 +492,7 @@ lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
 `S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x` -/
 private noncomputable def x := (lambda_pow_dvd_a_add_b S).choose
 
-private lemma x_spec : S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x :=
+private lemma x_spec : S.a + S.b = λ ^ (3 * S.multiplicity - 2) * S.x :=
   (lambda_pow_dvd_a_add_b S).choose_spec
 
 /-- Given `S : Solution`, we let `S.w` be any element such that `S.c = λ ^ S.multiplicity * S.w` -/
