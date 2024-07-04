@@ -29,7 +29,7 @@ def getSyntaxNodeKinds : Syntax → NameSet
 /--`getSyntaxImports cmd` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by the `SyntaxNodeKinds` and the identifiers contained in `cmd`. -/
 def getSyntaxImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m]
-    [MonadQuotation m] (cmd : Syntax) (dbg? : Bool := false) :
+    (cmd : Syntax) (dbg? : Bool := false) :
     m NameSet := do
   let env ← getEnv
   let ts := getSyntaxNodeKinds cmd
