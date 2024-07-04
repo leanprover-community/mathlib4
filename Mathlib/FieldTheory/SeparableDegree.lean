@@ -716,7 +716,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      IsSeparable.of_isScalarTower L (Algebra.IsSeparable.isSeparable F x)
+      IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)
   set M := L⟮x⟯
   have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
@@ -798,7 +798,7 @@ theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
     (hx : IsSeparable F x) (hy : IsSeparable F y) :
     Algebra.IsSeparable F F⟮x, y⟯ := by
   rw [← adjoin_simple_adjoin_simple]
-  replace hy := IsSeparable.of_isScalarTower F⟮x⟯ hy
+  replace hy := IsSeparable.tower_top F⟮x⟯ hy
   rw [← isSeparable_adjoin_simple_iff_isSeparable] at hx hy
   exact Algebra.IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 
