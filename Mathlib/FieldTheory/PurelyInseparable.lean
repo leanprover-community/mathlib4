@@ -170,7 +170,7 @@ theorem AlgEquiv.isPurelyInseparable (e : K ≃ₐ[F] E) [IsPurelyInseparable F 
     IsPurelyInseparable F E := by
   refine ⟨⟨fun _ ↦ by rw [← isIntegral_algEquiv e.symm]; exact IsPurelyInseparable.isIntegral' F _⟩,
     fun x h ↦ ?_⟩
-  rw [← minpoly.algEquiv_eq e.symm] at h
+  rw [IsSeparable, ← minpoly.algEquiv_eq e.symm] at h
   simpa only [RingHom.mem_range, algebraMap_eq_apply] using IsPurelyInseparable.inseparable F _ h
 
 theorem AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
@@ -406,7 +406,7 @@ then `E / F` is also purely inseparable. -/
 theorem IsPurelyInseparable.tower_bot [Algebra E K] [IsScalarTower F E K]
     [IsPurelyInseparable F K] : IsPurelyInseparable F E := by
   refine ⟨⟨fun x ↦ (isIntegral' F (algebraMap E K x)).tower_bot_of_field⟩, fun x h ↦ ?_⟩
-  rw [← minpoly.algebraMap_eq (algebraMap E K).injective] at h
+  rw [IsSeparable, ← minpoly.algebraMap_eq (algebraMap E K).injective] at h
   obtain ⟨y, h⟩ := inseparable F _ h
   exact ⟨y, (algebraMap E K).injective (h.symm ▸ (IsScalarTower.algebraMap_apply F E K y).symm)⟩
 
@@ -942,7 +942,7 @@ lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
   obtain ⟨ι, ⟨b⟩⟩ := Basis.exists_basis F S
   exact h.antisymm' (b.mk_eq_rank'' ▸ (b.linearIndependent.map' S.val.toLinearMap
     (LinearMap.ker_eq_bot_of_injective S.val.injective) |>.map_of_isPurelyInseparable_of_isSeparable
-      E (fun i ↦ by simpa only [minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i))
+      E (fun i ↦ by simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (b i))
       |>.cardinal_le_rank))
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
