@@ -474,7 +474,7 @@ private lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z :=
 private lemma lambda_not_dvd_y : ¬ λ ∣ S.y := fun h ↦ by
   replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
   rw [coe_eta, ← y_spec, ← pow_two] at h
-  exact lambda_sq_not_a_add_eta_mul_b _ h
+  exact lambda_sq_not_dvd_a_add_eta_mul_b _ h
 
 private lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
   replace h := mul_dvd_mul_left ((η : 𝓞 K) - 1) h
