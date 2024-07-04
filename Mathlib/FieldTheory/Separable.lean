@@ -646,7 +646,8 @@ variable (F K : Type*) [Field F] [Field K]
     [Algebra F K] [FiniteDimensional F K] [CharZero F]
 
 variable {K} in
-theorem IsSeparable.of_finite (x : K) : IsSeparable F x := (minpoly.irreducible <| .of_finite F x).separable
+theorem IsSeparable.of_finite (x : K) : IsSeparable F x :=
+  (minpoly.irreducible <| .of_finite F x).separable
 
 -- See note [lower instance priority]
 /-- A finite field extension in characteristic 0 is separable. -/
@@ -661,8 +662,8 @@ section IsSeparableTower
 
 section
 
-variable (F K E : Type*) [CommRing F] [Field K] [CommRing E] [Algebra F K] [Algebra F E] [Algebra K E]
-  [IsScalarTower F K E]
+variable (F K E : Type*) [CommRing F] [Field K] [CommRing E] [Algebra F K]
+    [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
 variable {F E} in
 /-- If `E / K / F` is an extension tower, `x : E` is separable over `F`, then it's also separable
@@ -684,8 +685,8 @@ variable (F K E : Type*) [Field F] [Field K] [Ring E] [Algebra F K] [Algebra F E
   [Nontrivial E] [IsScalarTower F K E]
 
 variable {F K E} in
-/-- If `E / K / F` is an extension tower, `algebraMap K E x` is separable over `F`, then `x` is also separable
-over `F`. -/
+/-- If `E / K / F` is an extension tower, `algebraMap K E x` is separable over `F`, then `x` is
+also separable over `F`. -/
 theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : IsSeparable F x :=
     have ⟨_q, hq⟩ :=
       minpoly.dvd F x
