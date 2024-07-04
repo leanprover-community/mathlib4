@@ -41,7 +41,7 @@ variable {C : Type u} [Category.{v} C]
 section PasteLemma
 section PastePullback
 
-/- Consider the following diagram
+/- Let's consider the following diagram
 
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
@@ -49,7 +49,8 @@ i₁         i₂         i₃
 ∨          ∨          ∨
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 
-
+where `t₁` denotes the cone corresponding to the left square, and `t₂` denotes the cone
+corresponding to the right square.
 -/
 
 variable {X₃ Y₁ Y₂ Y₃ : C} {g₁ : Y₁ ⟶ Y₂} {g₂ : Y₂ ⟶ Y₃} {i₃ : X₃ ⟶ Y₃} (t₂ : PullbackCone g₂ i₃)
@@ -62,7 +63,8 @@ local notation "X₁" => t₁.pt
 local notation "i₁" => t₁.fst
 local notation "f₁" => t₁.snd
 
-abbrev PullbackCone.paste : PullbackCone (g₁ ≫ g₂) i₃ :=
+/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s horizontally -/
+abbrev PullbackCone.paste_horiz : PullbackCone (g₁ ≫ g₂) i₃ :=
   PullbackCone.mk i₁ (f₁ ≫ f₂) (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition])
 
 variable {t₁} {t₂}
@@ -77,7 +79,7 @@ Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 
 Then the big square is a pullback if both the small squares are.
 -/
-def bigSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.paste t₁) := by
+def bigSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.paste_horiz t₁) := by
   apply PullbackCone.isLimitAux'
   intro s
   -- obtain both limits
@@ -94,7 +96,17 @@ def bigSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.
     rw [Category.assoc, ← t₁.condition, reassoc_of% hm₁, hl₁', hl₂]
   · simpa [hl₁', hl₂'] using hm₂
 
-def leftSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit (t₂.paste t₁)) : IsLimit t₁ := by
+/-- Given
+
+X₁ - f₁ -> X₂ - f₂ -> X₃
+|          |          |
+i₁         i₂         i₃
+∨          ∨          ∨
+Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+
+Then the left square is a pullback if the right square and the big square are.
+-/
+def leftSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit (t₂.paste_horiz t₁)) : IsLimit t₁ := by
   apply PullbackCone.isLimitAux'
   intro s
   -- Obtain the induced morphism from the universal property of the big square
@@ -113,6 +125,72 @@ def leftSquareIsPullback' (H : IsLimit t₂) (H' : IsLimit (t₂.paste t₁)) : 
     rw [reassoc_of% hm₂, hl']
 
 end PastePullback
+
+section PastePullbackVert
+
+/- Let's consider the following diagram
+
+Y₃ - i₃ -> X₃
+|          |
+g₂         f₂
+∨          ∨
+Y₂ - i₂ -> X₂
+|          |
+g₁         f₁
+∨          ∨
+Y₁ - i₁ -> X₁
+
+Let `t₁` denote the cone corresponding to the bottom square, and `t₂` denote the cone corresponding
+to the top square.
+
+-/
+variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₂ ⟶ X₁} {f₂ : X₃ ⟶ X₂} {i₁ : Y₁ ⟶ X₁}
+variable (t₁ : PullbackCone i₁ f₁) (t₂ : PullbackCone t₁.snd f₂)
+
+local notation "Y₂" => t₁.pt
+local notation "g₁" => t₁.fst
+local notation "i₂" => t₁.snd
+local notation "Y₃" => t₂.pt
+local notation "g₂" => t₂.fst
+local notation "i₃" => t₂.snd
+
+/-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
+abbrev PullbackCone.pasteVert : PullbackCone i₁ (f₂ ≫ f₁) :=
+  PullbackCone.mk (g₂ ≫ g₁) i₃ (by rw [← reassoc_of% t₂.condition, ← t₁.condition, Category.assoc])
+
+def PullbackCone.pasteVertFlip : (t₁.pasteVert t₂).flip ≅ (t₁.flip.paste_horiz t₂.flip) :=
+  PullbackCone.ext (Iso.refl _) (by simp) (by simp)
+
+variable {t₁} {t₂}
+
+/-- Given
+
+Y₃ - i₃ -> X₃
+|          |
+g₂         f₂
+∨          ∨
+Y₂ - i₂ -> X₂
+|          |
+g₁         f₁
+∨          ∨
+Y₁ - i₁ -> X₁
+
+The big square is a pullback if both the small squares are.
+-/
+def pasteVertIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit t₂) : IsLimit (t₁.pasteVert t₂) := by
+  apply PullbackCone.isLimitOfFlip <| IsLimit.ofIsoLimit _ (t₁.pasteVertFlip t₂).symm
+  exact bigSquareIsPullback' (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂)
+
+def topSquareIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit (t₁.pasteVert t₂)) : IsLimit t₂ := by
+  apply PullbackCone.isLimitOfFlip
+  apply IsLimit.ofIsoLimit
+  --apply leftSquareIsPullback' (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂)
+  sorry
+  sorry
+  sorry
+
+
+end PastePullbackVert
 
 section PastePushout
 
@@ -179,8 +257,6 @@ def rightSquareIsPushout' (H : IsColimit t₁) (H' : IsColimit (t₁.paste t₂)
     rw [hm₂, ←hl']
 
 end PastePushout
-
-
 
 variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃)
 variable (i₁ : X₁ ⟶ Y₁) (i₂ : X₂ ⟶ Y₂) (i₃ : X₃ ⟶ Y₃)
@@ -268,16 +344,21 @@ section
 
 variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (f' : W ⟶ X)
 variable [HasPullback f g] [HasPullback f' (pullback.fst : pullback f g ⟶ _)]
-variable [HasPullback (f' ≫ f) g]
+
+-- TODO: can this be an instance? Or needs to be a them?
+instance : HasPullback (f' ≫ f) g :=
+  HasLimit.mk {
+    cone := (pullback.cone f g).paste_horiz (pullback.cone f' pullback.fst)
+    isLimit := bigSquareIsPullback' (pullback.isLimit f g) (pullback.isLimit f' pullback.fst)
+  }
 
 /-- The canonical isomorphism `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y` -/
 noncomputable def pullbackRightPullbackFstIso :
-    pullback f' (pullback.fst : pullback f g ⟶ _) ≅ pullback (f' ≫ f) g := by
-  let this :=
-    bigSquareIsPullback (pullback.snd : pullback f' (pullback.fst : pullback f g ⟶ _) ⟶ _)
-      pullback.snd f' f pullback.fst pullback.fst g pullback.condition pullback.condition
-      (pullbackIsPullback _ _) (pullbackIsPullback _ _)
-  exact (this.conePointUniqueUpToIso (pullbackIsPullback _ _) : _)
+    pullback f' (pullback.fst : pullback f g ⟶ _) ≅ pullback (f' ≫ f) g :=
+  -- TODO: iso of cone iso! isoLimitCone API?
+  IsLimit.conePointUniqueUpToIso
+    (bigSquareIsPullback' (pullback.isLimit f g) (pullback.isLimit f' pullback.fst))
+    (pullback.isLimit (f' ≫ f) g)
 #align category_theory.limits.pullback_right_pullback_fst_iso CategoryTheory.Limits.pullbackRightPullbackFstIso
 
 @[reassoc (attr := simp)]
@@ -308,8 +389,57 @@ theorem pullbackRightPullbackFstIso_inv_snd_snd :
 theorem pullbackRightPullbackFstIso_inv_snd_fst :
     (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd ≫ pullback.fst = pullback.fst ≫ f' := by
   rw [← pullback.condition]
-  exact pullbackRightPullbackFstIso_inv_fst_assoc _ _ _ _
+  exact pullbackRightPullbackFstIso_inv_fst_assoc f g f' _
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_snd_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_snd_fst
+
+end
+
+section
+
+variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (g' : W ⟶ Y)
+-- TODO: these two variables should imply the third!
+variable [HasPullback f g] [HasPullback (pullback.snd : pullback f g ⟶ _) g']
+
+-- TODO: can this be an instance? Or needs to be a them?
+instance : HasPullback f (g' ≫ g) :=
+  HasLimit.mk {
+    cone := (pullback.cone f g).pasteVert (pullback.cone pullback.snd g')
+    isLimit := pasteVertIsPullback (pullback.isLimit f g) (pullback.isLimit pullback.snd g')
+  }
+
+/-- The canonical isomorphism `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W` -/
+def pullbackRightPullbackSndIso :
+    pullback (pullback.snd : pullback f g ⟶ _) g' ≅ pullback f (g' ≫ g) := by
+  -- TODO: term mode doesn't work here?
+  apply IsLimit.conePointUniqueUpToIso
+      (pasteVertIsPullback (pullback.isLimit f g) (pullback.isLimit pullback.snd g'))
+      (pullback.isLimit f (g' ≫ g))
+
+@[reassoc (attr := simp)]
+theorem pullbackRightPullbackSndIso_hom_fst :
+    (pullbackRightPullbackSndIso f g g').hom ≫ pullback.fst = pullback.fst ≫ pullback.fst :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left
+
+@[reassoc (attr := simp)]
+theorem pullbackRightPullbackSndIso_hom_snd :
+    (pullbackRightPullbackSndIso f g g').hom ≫ pullback.snd = pullback.snd :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
+
+@[reassoc (attr := simp)]
+theorem pullbackRightPullbackSndIso_inv_fst :
+    (pullbackRightPullbackSndIso f g g').inv ≫ pullback.fst ≫ pullback.fst = pullback.fst :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
+
+@[reassoc (attr := simp)]
+theorem pullbackRightPullbackSndIso_inv_snd_snd :
+    (pullbackRightPullbackSndIso f g g').inv ≫ pullback.snd = pullback.snd :=
+  IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.right
+
+@[reassoc (attr := simp)]
+theorem pullbackRightPullbackSndIso_inv_fst_snd :
+    (pullbackRightPullbackSndIso f g g').inv ≫ pullback.fst ≫ pullback.snd = pullback.snd ≫ g' := by
+  rw [pullback.condition]
+  exact pullbackRightPullbackSndIso_inv_snd_snd_assoc f g g' g'
 
 end
 

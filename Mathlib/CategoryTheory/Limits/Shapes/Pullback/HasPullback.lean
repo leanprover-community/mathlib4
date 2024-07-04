@@ -100,7 +100,7 @@ abbrev pullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :=
 #align category_theory.limits.pullback CategoryTheory.Limits.pullback
 
 /-- The cone associated to the pullback of `f` and `g`-/
-abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :=
+abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : PullbackCone f g :=
   limit.cone (cospan f g)
 
 /-- `pushout f g` computes the pushout of a pair of morphisms with the same source. -/
