@@ -1019,22 +1019,22 @@ lemma decreasingInduction_succ' {n} {motive : (m : ℕ) → m ≤ n + 1 → Sort
   dsimp only [decreasingInduction]; rw [leRecOn'_succ']
 #align nat.decreasing_induction_succ' Nat.decreasingInduction_succ'
 
-lemma decreasingInduction_trans {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n)
-    (hmn : m ≤ n) (hnk : n ≤ k) (hP : P k) :
-    (decreasingInduction h (Nat.le_trans hmn hnk) hP : P m) =
-    decreasingInduction h hmn (decreasingInduction h hnk hP) := by
+lemma decreasingInduction_trans {motive : (m : ℕ) → m ≤ k → Sort*} (hmn : m ≤ n) (hnk : n ≤ k)
+    (of_succ self) :
+    (decreasingInduction (motive := motive) of_succ self (Nat.le_trans hmn hnk) : motive m _) =
+    decreasingInduction (fun n ih => of_succ _ _) (decreasingInduction of_succ self hnk) hmn := by
   induction hnk with
   | refl => rw [decreasingInduction_self]
   | step hnk ih =>
-      rw [decreasingInduction_succ h (Nat.le_trans hmn hnk), ih, decreasingInduction_succ]
+      rw [decreasingInduction_succ _ _ (Nat.le_trans hmn hnk), ih, decreasingInduction_succ]
 #align nat.decreasing_induction_trans Nat.decreasingInduction_trans
 
-lemma decreasingInduction_succ_left {P : ℕ → Sort*} (h : ∀ n, P (n + 1) → P n)
-    (smn : m + 1 ≤ n) (mn : m ≤ n) (hP : P n) :
-    decreasingInduction h mn hP = h m (decreasingInduction h smn hP) := by
+lemma decreasingInduction_succ_left  {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
+    (smn : m + 1 ≤ n) (mn : m ≤ n) :
+    decreasingInduction (motive := motive) of_succ self mn =
+      of_succ m smn (decreasingInduction of_succ self smn) := by
   rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn), decreasingInduction_trans,
     decreasingInduction_succ']
-  apply Nat.le_succ
 #align nat.decreasing_induction_succ_left Nat.decreasingInduction_succ_left
 
 /-- Given `P : ℕ → ℕ → Sort*`, if for all `m n : ℕ` we can extend `P` from the rectangle
@@ -1066,14 +1066,11 @@ Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_indu
 @[elab_as_elim]
 def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) : P m := by
-  revert h hP
-  refine leRecOn' mn ?_ ?_
-  · intro n mn ih h hP
-    apply ih
-    · exact fun k hk ↦ h k (Nat.lt.step hk)
-    · exact h n (lt_succ_self n) mn hP
-  · intro _ hP
-    exact hP
+  induction mn using decreasingInduction with
+  | self => exact hP
+  | of_succ k hk ih =>
+    exact h _ (lt_of_succ_le hk) le_rfl (ih fun k' hk' h'' => h _ hk' <| le_of_succ_le h'')
+
 #align nat.decreasing_induction' Nat.decreasingInduction'
 
 /-- Given a predicate on two naturals `P : ℕ → ℕ → Prop`, `P a b` is true for all `a < b` if
