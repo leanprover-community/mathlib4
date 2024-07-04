@@ -153,33 +153,20 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
 theorem polar_submodule (m : Submodule 𝕜 E) : B.polar m = { y | ∀ x ∈ m, B x y = 0 } := by
   rw [le_antisymm_iff]
   constructor
-  · rw [polar]
-    intro y hy
-    simp only [SetLike.mem_coe, Set.mem_setOf_eq] at hy
+  · intro y hy
     simp only [Set.mem_setOf_eq]
     by_contra hc
-    simp at hc
+    simp only [not_forall, Classical.not_imp] at hc
     cases' hc with x hx
     cases' (NormedField.exists_lt_norm 𝕜 ‖(B x) y‖⁻¹ ) with r hr
-    have eg1 : r • x ∈ m := SubMulAction.smul_mem m.toSubMulAction r hx.1
-    let he := hy _ eg1
+    let he := hy _ (SubMulAction.smul_mem m.toSubMulAction r hx.1)
     simp only [LinearMapClass.map_smul, smul_apply, smul_eq_mul, norm_mul, norm_inv] at he
-    have e2 : ‖(B x) y‖⁻¹ * ‖(B x) y‖ < 1 := by
-      apply lt_of_le_of_lt' he
-      apply mul_lt_mul_of_pos_right hr
-      apply norm_pos_iff.mpr hx.2
-    have e3 : ‖(B x) y‖⁻¹ * ‖(B x) y‖ = 1 := by
-      rename_i inst inst_1 inst_2 inst_3 inst_4
-      simp_all only [isUnit_iff_ne_zero, ne_eq, norm_eq_zero, not_false_eq_true,
-        IsUnit.inv_mul_cancel, lt_self_iff_false]
+    have e2 : ‖(B x) y‖⁻¹ * ‖(B x) y‖ < 1 := lt_of_le_of_lt' he
+      (mul_lt_mul_of_pos_right hr (norm_pos_iff.mpr hx.2))
+    have e3 : ‖(B x) y‖⁻¹ * ‖(B x) y‖ = 1 := inv_mul_cancel (norm_ne_zero_iff.mpr hx.2)
     rw [e3] at e2
     exact (lt_self_iff_false 1).mp e2
-  · intro y
-    rw [Set.mem_setOf_eq]
-    intro h
-    rw [polar]
-    simp only [SetLike.mem_coe, Set.mem_setOf_eq]
-    intro x hx
+  · intro _ h x hx
     rw [h x hx, norm_zero]
     exact zero_le_one
 
