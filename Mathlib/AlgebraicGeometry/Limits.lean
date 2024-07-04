@@ -139,6 +139,8 @@ end Initial
 
 section Coproduct
 
+variable {ι : Type u} (f : ι → Scheme.{u})
+
 /-- (Implementation Detail) The glue data associated to a disjoint union. -/
 @[simps]
 noncomputable
