@@ -72,7 +72,8 @@ theorem IsPartition.of_orbits :
     exact Set.Nonempty.ne_empty (MulAction.orbit_nonempty a) ha
   intro a; use orbit G a
   constructor
-  · simp only [Set.mem_range_self, mem_orbit_self, exists_unique_iff_exists, exists_true_left]
+  · simp only [Set.mem_range_self, mem_orbit_self, exists_unique_iff_exists,
+      exists_true_left, and_self]
   · simp only [Set.mem_range, exists_unique_iff_exists, exists_prop, and_imp, forall_exists_index,
       forall_apply_eq_imp_iff']
     rintro B b ⟨rfl⟩ ha
@@ -289,12 +290,6 @@ theorem IsBlock.subtype_val_preimage {C : SubMulAction G X} {B : Set X} (hB : Is
     IsBlock G (Subtype.val ⁻¹' B : Set C) :=
   hB.preimage C.inclusion
 
-/-
-theorem IsBlock.smul_coe_eq_coe_smul {C : SubMulAction G X} {B : Set C} {g : G} :
-    g • (Subtype.val '' B : Set X) = Subtype.val '' (g • B) :=
-  (image_smul_set G _ X C.inclusion g B).symm
--/
-
 theorem IsBlock.iff_of_subtype_val {C : SubMulAction G X} {B : Set C} :
     IsBlock G B ↔ IsBlock G (Subtype.val '' B : Set X) := by
   simp only [IsBlock.def_one]
@@ -303,8 +298,7 @@ theorem IsBlock.iff_of_subtype_val {C : SubMulAction G X} {B : Set C} :
   erw [← image_smul_set _ _ _ C.inclusion g B]
   apply or_congr (Set.image_eq_image Subtype.coe_injective).symm
   simp only [Set.disjoint_iff, Set.subset_empty_iff]
-  erw [←
-    Set.InjOn.image_inter (Set.injOn_of_injective Subtype.coe_injective _)
+  erw [← Set.InjOn.image_inter (Set.injOn_of_injective Subtype.coe_injective)
       (Set.subset_univ _) (Set.subset_univ _)]
   simp only [Set.image_eq_empty]
 
@@ -415,13 +409,11 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
       use b
     use g • B
     constructor
-    · simp only [Set.mem_range, exists_apply_eq_apply, exists_unique_iff_exists, exists_true_left]
-      exact hg
+    · simp only [Set.mem_range, exists_apply_eq_apply, true_and, hg]
     · simp only [Set.mem_range, exists_unique_iff_exists, exists_prop, and_imp, forall_exists_index,
         forall_apply_eq_imp_iff']
       intro B' g' hg' ha
-      rw [← hg']
-      apply symm
+      rw [← hg', eq_comm]
       apply Or.resolve_right (IsBlock.def.mp hB g g')
       rw [Set.not_disjoint_iff]
       use a
@@ -607,14 +599,12 @@ theorem Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid
   rw [Sigma.subtype_ext_iff]
   simp only [Subtype.mk_eq_mk, Subtype.coe_mk]
   apply And.intro _ hab
-  refine' ExistsUnique.unique (hc.2 b) _ _
-  simp only [exists_unique_iff_exists, exists_prop]
-  exact ⟨hx, ha⟩
-  simp only [exists_unique_iff_exists, exists_prop]
-  exact ⟨hy, hb⟩
+  refine' ExistsUnique.unique (hc.2 b)
+    ⟨hx, ha⟩
+    ⟨hy, hb⟩
   -- surjectivity
   intro a
-  obtain ⟨x, ⟨hx, ha : a ∈ x, _⟩, _⟩ := hc.2 a
+  obtain ⟨x, ⟨hx, ha : a ∈ x⟩, _⟩ := hc.2 a
   use ⟨⟨x, hx⟩, ⟨a, ha⟩⟩
 
 theorem Set.ncard_coe {α : Type*} (s : Set α) :
