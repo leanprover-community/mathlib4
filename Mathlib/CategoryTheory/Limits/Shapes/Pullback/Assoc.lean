@@ -74,17 +74,25 @@ local notation "g₁" => t₁.fst
 local notation "g₂" => t₁.snd
 local notation "g₃" => t₂.fst
 local notation "g₄" => t₂.snd
-local notation "W" => pullback (g₂ ≫ f₃) f₄
-local notation "t₂" => pullback.cone (g₂ ≫ f₃) f₄
 
-local notation "W'" => pullback f₁ (g₃ ≫ f₂)
+variable (s : PullbackCone (g₂ ≫ f₃) f₄) (hs : IsLimit s)
+variable (s' : PullbackCone f₁ (g₃ ≫ f₂)) (hs' : IsLimit s')
 
-local notation "l₁" => (pullback.fst : W ⟶ Z₁)
+local notation "W" => s.pt
+
+local notation "W'" => s'.pt
+
+local notation "l₁" => s.fst
 
 local notation "l₂" =>
-  (pullback.lift (pullback.fst ≫ g₂) pullback.snd
-      (Eq.trans (Category.assoc _ _ _) pullback.condition) :
-    W ⟶ Z₂)
+  ( t₂.lift (s.fst ≫ g₂) s.snd (by simp)
+
+  )
+
+
+--  (pullback.lift (pullback.fst ≫ g₂) pullback.snd
+--       (Eq.trans (Category.assoc _ _ _) pullback.condition) :
+--     W ⟶ Z₂)
 
 local notation "l₁'" =>
   (pullback.lift pullback.fst (pullback.snd ≫ g₃)
