@@ -42,9 +42,8 @@ instance : HasExplicitFiniteCoproducts (fun Y ↦ TotallyDisconnectedSpace Y) wh
   hasProp _ := { hasProp :=
     show TotallyDisconnectedSpace (Σ (a : _), _) from inferInstance}
 
-abbrev isTerminalPUnit :
-    IsTerminal (FintypeCat.toProfinite.obj (FintypeCat.of PUnit.{u + 1})) :=
-  CompHausLike.isTerminalPUnit
+/-- A one-element space is terminal in `Profinite` -/
+abbrev isTerminalPUnit : IsTerminal (Profinite.of PUnit.{u + 1}) := CompHausLike.isTerminalPUnit
 
 example : FinitaryExtensive Profinite := inferInstance
 

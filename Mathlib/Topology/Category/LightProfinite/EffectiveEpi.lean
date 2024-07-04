@@ -31,7 +31,7 @@ namespace LightProfinite
 
 theorem effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨struct f h⟩⟩⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨effectiveEpiStruct f h⟩⟩⟩
   rw [← epi_iff_surjective]
   infer_instance
 
