@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Tactic.Common
+import Mathlib.Algebra.Ring.Divisibility.Lemmas
 
 #align_import algebra.gcd_monoid.basic from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
@@ -1024,6 +1024,12 @@ theorem gcd_eq_of_dvd_sub_right {a b c : α} (h : a ∣ b - c) : gcd a b = gcd a
 theorem gcd_eq_of_dvd_sub_left {a b c : α} (h : a ∣ b - c) : gcd b a = gcd c a := by
   rw [gcd_comm _ a, gcd_comm _ a, gcd_eq_of_dvd_sub_right h]
 #align gcd_eq_of_dvd_sub_left gcd_eq_of_dvd_sub_left
+
+lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : α} (h1 : p ∣ a * x + b * y)
+    (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * gcd x y := by
+  rw [← (gcd_mul_left' (a*d - b*c) x y).dvd_iff_dvd_right]
+  exact (dvd_gcd_iff _ _ _).2 ⟨dvd_mul_sub_mul_mul_left_of_dvd h1 h2,
+    dvd_mul_sub_mul_mul_right_of_dvd h1 h2⟩
 
 end IsDomain
 
