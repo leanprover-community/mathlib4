@@ -265,10 +265,6 @@ lemma Lt_wf [DecidableEq α] [LT α]
   apply WellFounded.transGen
   assumption
 
-lemma mul_geq_zero : ∀ (M : Multiset α), M ≥ 0 := by
-  intro M
-  simp_all only [Multiset.quot_mk_to_coe'', ge_iff_le, zero_le]
-
 lemma mem_leq_diff [DecidableEq α] : ∀ (M N: Multiset α), N ≤ M → M = M - N + N := by
   intros M N h
   rw [← Multiset.union_def]
@@ -407,17 +403,6 @@ lemma LT_trans {α} [pre : Preorder α] [dec : DecidableEq α]:
         let _ := h y_in_Y1
         aesop
 
-lemma nat_not_0_not_1 : ∀ (n : ℕ), n ≠ 0 → n ≠ 1 → n ≥ 2 := by
-  intros n h0 h1
-  cases n
-  case zero => contradiction
-  case succ m =>
-    cases m
-    case zero => contradiction
-    case succ n=>
-      apply Nat.succ_le_succ
-      simp_all only [le_add_iff_nonneg_left, zero_le]
-
 lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
     [DecidableRel (fun (x : α) (y: α) => x < y)] (M N : Multiset α) (LTMN : MultisetLT M N) :
     MultisetLt M N := by
@@ -449,7 +434,16 @@ lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
         rcases this with ⟨y,claim⟩
         let newY := Y.erase y
         have newY_nonEmpty : newY ≠ ∅ := by
-          have card_Y_ge_2 : Multiset.card Y ≥ 2 := nat_not_0_not_1 _ hyp' hyp
+          have : ∀ (n : ℕ), n ≠ 0 → n ≠ 1 → n ≥ 2 := by
+            intros n h0 h1
+            cases n
+            case zero => contradiction
+            case succ m =>
+              cases m
+              case zero => contradiction
+              case succ n=>
+                apply Nat.succ_le_succ
+                simp_all only [le_add_iff_nonneg_left, zero_le]
           have : 0 < Multiset.card (Multiset.erase Y y) := by aesop
           rw [Multiset.card_pos] at this
           simp_all only [Multiset.empty_eq_zero, ne_eq, not_false_eq_true]
@@ -548,7 +542,6 @@ lemma Lt_LT_equiv [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y:
       apply LT_trans _ _ _ _ bih
       apply redLt_LT
       assumption
-
   · -- LT → Lt:
     apply direct_subset_red
 
