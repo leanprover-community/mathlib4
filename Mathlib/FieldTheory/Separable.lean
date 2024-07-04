@@ -609,6 +609,7 @@ theorem Algebra.isSeparable_iff :
 
 variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
 
+/-- Transfer `IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F x := by
   simp only [IsSeparable, minpoly.algEquiv_eq e x]
 
