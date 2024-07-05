@@ -98,12 +98,6 @@ def StrictMono (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f a < f b
 #align strict_mono StrictMono
 
-/--
-A function `f : α → β` is said to be strictly comonotonic (dual to strictly monotonic)
-if and only if `a < b` is implied by `f a < f b` for all `a, b : β`.
--/
-def StrictComono (f : α → β) : Prop := ∀ ⦃a b⦄, f a < f b → a < b
-
 /-- A function `f` is strictly antitone if `a < b` implies `f b < f a`. -/
 def StrictAnti (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f b < f a
