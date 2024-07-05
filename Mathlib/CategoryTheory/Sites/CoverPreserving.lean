@@ -4,16 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Functor.Flat
-import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.Tactic.ApplyFun
 
 #align_import category_theory.sites.cover_preserving from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 /-!
-# Cover-preserving and continuous functors between sites.
-
-We define the notion of continuous functor between sites: these are functors `G` such that
-the precomposition with `G.op` preserves sheaves of types (and actually sheaves in any
-category).
+# Cover-preserving functors between sites.
 
 In order to show that a functor is continuous, we define cover-preserving functors
 between sites as functors that push covering sieves to covering sieves.
@@ -21,16 +17,10 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 
 ## Main definitions
 
-* `CategoryTheory.Functor.IsContinuous`: a functor between sites is continuous if the
-precomposition with this functor preserves sheaves.
 * `CategoryTheory.CoverPreserving`: a functor between sites is cover-preserving if it
 pushes covering sieves to covering sieves
 * `CategoryTheory.CompatiblePreserving`: a functor between sites is compatible-preserving
 if it pushes compatible families of elements to compatible families.
-* `CategoryTheory.Functor.sheafPushforwardContinuous`: the induced functor
-`Sheaf K A ⥤ Sheaf J A` for a continuous functor `G : (C, J) ⥤ (D, K)`. In case this is
-part of a morphism of sites, this would be understood as the pushforward functor
-even though it goes in the opposite direction as the functor `G`.
 
 ## Main results
 
@@ -172,43 +162,6 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful
 
 variable (J K)
 
-/-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of `Type w`
-to sheaves. -/
-class Functor.IsContinuous : Prop where
-  op_comp_isSheafOfTypes (G : SheafOfTypes.{w} K) : Presieve.IsSheaf J (F.op ⋙ G.val)
-
-lemma Functor.op_comp_isSheafOfTypes [Functor.IsContinuous.{w} F J K]
-    (G : SheafOfTypes.{w} K) :
-    Presieve.IsSheaf J (F.op ⋙ G.val) :=
-  Functor.IsContinuous.op_comp_isSheafOfTypes _
-
-lemma Functor.isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
-    (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-    [Functor.IsContinuous.{w} F₁ J K] : Functor.IsContinuous.{w} F₂ J K where
-  op_comp_isSheafOfTypes G :=
-    Presieve.isSheaf_iso J (isoWhiskerRight (NatIso.op e.symm) _)
-      (F₁.op_comp_isSheafOfTypes J K G)
-
-instance Functor.isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
-  op_comp_isSheafOfTypes G := G.2
-
-lemma Functor.isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ A) (J : GrothendieckTopology C)
-    (K : GrothendieckTopology D) (L : GrothendieckTopology A)
-    [Functor.IsContinuous.{w} F₁ J K] [Functor.IsContinuous.{w} F₂ K L] :
-    Functor.IsContinuous.{w} (F₁ ⋙ F₂) J L where
-  op_comp_isSheafOfTypes G := F₁.op_comp_isSheafOfTypes J K ⟨_, F₂.op_comp_isSheafOfTypes K L G⟩
-
-lemma Functor.isContinuous_comp' {F₁ : C ⥤ D} {F₂ : D ⥤ A} {F₁₂ : C ⥤ A}
-    (e : F₁ ⋙ F₂ ≅ F₁₂) (J : GrothendieckTopology C)
-    (K : GrothendieckTopology D) (L : GrothendieckTopology A)
-    [Functor.IsContinuous.{w} F₁ J K] [Functor.IsContinuous.{w} F₂ K L] :
-    Functor.IsContinuous.{w} F₁₂ J L := by
-  have := Functor.isContinuous_comp F₁ F₂ J K L
-  apply Functor.isContinuous_of_iso e
-
-lemma Functor.op_comp_isSheaf [Functor.IsContinuous.{v₃} F J K] (G : Sheaf K A) :
-    Presheaf.IsSheaf J (F.op ⋙ G.val) :=
-  fun T => F.op_comp_isSheafOfTypes J K ⟨_, G.cond T⟩
 
 variable {F J K}
 
@@ -233,22 +186,5 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} 
       have H := (hy₁ g hg).trans (hy₂ g hg).symm
       dsimp at H
       rw [H]
-
-variable (F J K A)
-
-/-- The induced functor `Sheaf K A ⥤ Sheaf J A` given by `G.op ⋙ _`
-if `G` is a continuous functor.
--/
-def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
-    Sheaf K A ⥤ Sheaf J A where
-  obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
-  map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
-  map_id ℱ := by
-    ext1
-    apply ((whiskeringLeft _ _ _).obj F.op).map_id
-  map_comp f g := by
-    ext1
-    apply ((whiskeringLeft _ _ _).obj F.op).map_comp
-#align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
 end CategoryTheory
