@@ -220,7 +220,7 @@ variable (K)
 This is SGA 4 III 2.2. An alternative reference is
 https://stacks.math.columbia.edu/tag/00XK (where results
 are obtained under the additional assumption that
-`C` and `D` have pullbacks.
+`C` and `D` have pullbacks).
 -/
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
     Presheaf.IsSheaf K ((G.op.ran).obj ℱ.val) := by
