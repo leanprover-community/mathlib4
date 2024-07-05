@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.GradedObject.Trifunctor
+
 /-!
 # The associator for actions of bifunctors on graded objects
 
@@ -24,6 +25,7 @@ This construction shall be used in the definition of the monoidal category struc
 on graded objects indexed by an additive monoid.
 
 -/
+
 namespace CategoryTheory
 
 open Category
