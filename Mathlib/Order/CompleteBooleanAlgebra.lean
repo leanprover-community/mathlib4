@@ -50,12 +50,9 @@ distributive lattice.
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
 
-set_option autoImplicit true
-
-
 open Function Set
 
-universe u v w
+universe u v w w'
 
 variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
@@ -137,7 +134,7 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
   inf_sSup_le_iSup_inf a s := calc
     _ = ⨅ x : Bool, ⨆ y : cond x PUnit s, match x with | true => a | false => y.1 := by
       simp_rw [iInf_bool_eq, cond, iSup_const, iSup_subtype, sSup_eq_iSup]
-    _ = _ := iInf_iSup_eq
+    _ = _ := by exact iInf_iSup_eq
     _ ≤ _ := by
       simp_rw [iInf_bool_eq]
       refine iSup_le fun g => le_trans ?_ (le_iSup _ (g false).1)
@@ -250,9 +247,9 @@ theorem disjoint_sSup_iff {s : Set α} : Disjoint a (sSup s) ↔ ∀ b ∈ s, Di
 
 theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by
-  refine' (le_iSup_inf_iSup f g).antisymm _
+  refine (le_iSup_inf_iSup f g).antisymm ?_
   rw [iSup_inf_iSup]
-  refine' iSup_mono' fun i => _
+  refine iSup_mono' fun i => ?_
   rcases directed_of (· ≤ ·) i.1 i.2 with ⟨j, h₁, h₂⟩
   exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 #align supr_inf_of_monotone iSup_inf_of_monotone
@@ -589,18 +586,17 @@ namespace PUnit
 
 variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
-instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
-  refine'
-    { PUnit.instBooleanAlgebra with
-      sSup := fun _ => unit
-      sInf := fun _ => unit
-      .. } <;>
-  (intros; trivial)
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit where
+  __ := PUnit.instBooleanAlgebra
+  sSup _ := unit
+  sInf _ := unit
+  le_sSup _ _ _ := trivial
+  sSup_le _ _ _ := trivial
+  sInf_le _ _ _ := trivial
+  le_sInf _ _ _ := trivial
+  iInf_iSup_eq _ := rfl
 
 instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
-
-instance instCompleteLinearOrder : CompleteLinearOrder PUnit :=
-  { PUnit.instCompleteBooleanAlgebra, PUnit.instLinearOrder with }
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=

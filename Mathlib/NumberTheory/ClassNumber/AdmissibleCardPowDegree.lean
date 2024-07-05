@@ -139,7 +139,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
       mul_div_cancel_right₀ _ (log_pos one_lt_q').ne']
   -- And that result follows from manipulating the result from `exists_approx_polynomial_aux`
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.
-  refine' lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
+  apply lt_of_lt_of_le (Nat.cast_lt.mpr (WithBot.coe_lt_coe.mp _)) _
   swap
   · convert deg_lt
     rw [degree_eq_natDegree h']; rfl

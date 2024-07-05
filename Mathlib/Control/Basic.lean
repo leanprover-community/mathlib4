@@ -76,8 +76,6 @@ section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
-open List
-
 #align list.mpartition List.partitionM
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
@@ -208,7 +206,7 @@ instance : Monad (Sum.{v, u} e) where
   bind := @Sum.bind e
 
 instance : LawfulFunctor (Sum.{v, u} e) := by
-  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
+  constructor <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by

@@ -229,7 +229,7 @@ theorem coe_eq_of_mem_split_of_lt_mem {y : ι → ℝ} (h₁ : J ∈ split I i x
 theorem restrict_split (h : I ≤ J) (i : ι) (x : ℝ) : (split J i x).restrict I = split I i x := by
   refine ((isPartitionSplit J i x).restrict h).eq_of_boxes_subset ?_
   simp only [Finset.subset_iff, mem_boxes, mem_restrict', exists_prop, mem_split_iff']
-  have : ∀ s, (I ∩ s : Set (ι → ℝ)) ⊆ J := fun s => (inter_subset_left _ _).trans h
+  have : ∀ s, (I ∩ s : Set (ι → ℝ)) ⊆ J := fun s => inter_subset_left.trans h
   rintro J₁ ⟨J₂, H₂ | H₂, H₁⟩ <;> [left; right] <;>
     simp [H₁, H₂, inter_left_comm (I : Set (ι → ℝ)), this]
 #align box_integral.prepartition.restrict_split BoxIntegral.Prepartition.restrict_split

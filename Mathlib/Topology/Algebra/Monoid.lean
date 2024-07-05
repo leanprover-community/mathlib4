@@ -494,7 +494,6 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
 #align submonoid.topological_closure Submonoid.topologicalClosure
 #align add_submonoid.topological_closure AddSubmonoid.topologicalClosure
 
--- Porting note (#10756): new lemma
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
     (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
@@ -663,13 +662,9 @@ inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left {a b : M} (ha : b * a = 1) :
     Filter.Tendsto (fun x : M => a * x) (Filter.cocompact M) (Filter.cocompact M) := by
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_mul_left b))
-  simp only [comp_mul_left, ha, one_mul]
-  exact Filter.tendsto_id
-  -- Porting note: changed proof, original proof was:
-  /- refine' Filter.Tendsto.of_tendsto_comp _ (Filter.comap_cocompact_le (continuous_mul_left b))
   convert Filter.tendsto_id
   ext x
-  simp [ha]-/
+  simp [← mul_assoc, ha]
 #align filter.tendsto_cocompact_mul_left Filter.tendsto_cocompact_mul_left
 
 /-- Right-multiplication by a right-invertible element of a topological monoid is proper, i.e.,
@@ -797,7 +792,7 @@ theorem continuousOn_multiset_prod {f : ι → X → M} (s : Multiset ι) {t : S
 #align continuous_on_multiset_prod continuousOn_multiset_prod
 #align continuous_on_multiset_sum continuousOn_multiset_sum
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_finset_prod {f : ι → X → M} (s : Finset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => ∏ i ∈ s, f i a :=
   continuous_multiset_prod _

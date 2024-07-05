@@ -176,11 +176,10 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
     show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
 #align is_fraction_ring.is_unit_map_of_injective IsFractionRing.isUnit_map_of_injective
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  refine' ⟨fun hxy => _, fun h => by rw [h, mk'_zero]⟩
+  refine ⟨fun hxy => ?_, fun h => by rw [h, mk'_zero]⟩
   simp_rw [mk'_eq_zero_iff, mul_left_coe_nonZeroDivisors_eq_zero_iff] at hxy
   exact (exists_const _).mp hxy
 #align is_fraction_ring.mk'_eq_zero_iff_eq_zero IsFractionRing.mk'_eq_zero_iff_eq_zero
@@ -293,17 +292,14 @@ abbrev FractionRing :=
 
 namespace FractionRing
 
-instance unique [Subsingleton R] : Unique (FractionRing R) :=
-  Localization.instUniqueLocalization
+instance unique [Subsingleton R] : Unique (FractionRing R) := inferInstance
 #align fraction_ring.unique FractionRing.unique
 
-instance [Nontrivial R] : Nontrivial (FractionRing R) :=
-  ⟨⟨(algebraMap R _) 0, (algebraMap _ _) 1, fun H =>
-      zero_ne_one (IsLocalization.injective _ le_rfl H)⟩⟩
+instance [Nontrivial R] : Nontrivial (FractionRing R) := inferInstance
 
 /-- Porting note: if the fields of this instance are explicitly defined as they were
 in mathlib3, the last instance in this file suffers a TC timeout -/
-noncomputable instance field : Field (FractionRing A) := IsFractionRing.toField A
+noncomputable instance field : Field (FractionRing A) := inferInstance
 
 @[simp]
 theorem mk_eq_div {r s} :

@@ -134,27 +134,13 @@ theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 #align finsupp.ext Finsupp.ext
 
-@[deprecated DFunLike.ext_iff]
-theorem ext_iff {f g : α →₀ M} : f = g ↔ ∀ a, f a = g a :=
-  DFunLike.ext_iff
-#align finsupp.ext_iff Finsupp.ext_iff
+#align finsupp.ext_iff DFunLike.ext_iff
 
 lemma ne_iff {f g : α →₀ M} : f ≠ g ↔ ∃ a, f a ≠ g a := DFunLike.ne_iff
 
-@[deprecated DFunLike.coe_fn_eq]
-theorem coeFn_inj {f g : α →₀ M} : (f : α → M) = g ↔ f = g :=
-  DFunLike.coe_fn_eq
-#align finsupp.coe_fn_inj Finsupp.coeFn_inj
-
-@[deprecated DFunLike.coe_injective]
-theorem coeFn_injective : @Function.Injective (α →₀ M) (α → M) (⇑) :=
-  DFunLike.coe_injective
-#align finsupp.coe_fn_injective Finsupp.coeFn_injective
-
-@[deprecated DFunLike.congr_fun]
-theorem congr_fun {f g : α →₀ M} (h : f = g) (a : α) : f a = g a :=
-  DFunLike.congr_fun h _
-#align finsupp.congr_fun Finsupp.congr_fun
+#align finsupp.coe_fn_inj DFunLike.coe_fn_eq
+#align finsupp.coe_fn_injective DFunLike.coe_injective
+#align finsupp.congr_fun DFunLike.congr_fun
 
 @[simp, norm_cast]
 theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0) : ⇑(⟨s, f, h⟩ : α →₀ M) = f :=
@@ -452,6 +438,16 @@ theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' �
   rw [unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same, single_eq_same]
 #align finsupp.unique_single_eq_iff Finsupp.unique_single_eq_iff
 
+lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
+    {F : Type*} [FunLike F N P] [AddMonoidHomClass F N P] (e : F)
+    (a : α) (n : N) (b : α) :
+    e ((single a n) b) = single a (e n) b := by
+  classical
+  simp only [single_apply]
+  split_ifs
+  · rfl
+  · exact map_zero e
+
 theorem support_eq_singleton {f : α →₀ M} {a : α} :
     f.support = {a} ↔ f a ≠ 0 ∧ f = single a (f a) :=
   ⟨fun h =>
@@ -573,14 +569,15 @@ theorem zero_update : update 0 a b = single a b := by
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
   classical
-  dsimp [update]; congr <;> apply Subsingleton.elim
+  dsimp only [update]
+  congr!
 #align finsupp.support_update Finsupp.support_update
 
 @[simp]
 theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.support.erase a := by
   classical
   simp only [update, ite_true, mem_support_iff, ne_eq, not_not]
-  congr; apply Subsingleton.elim
+  congr!
 #align finsupp.support_update_zero Finsupp.support_update_zero
 
 variable {b}
@@ -589,7 +586,7 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
     support (f.update a b) = insert a f.support := by
   classical
   simp only [update, h, ite_false, mem_support_iff, ne_eq]
-  congr; apply Subsingleton.elim
+  congr!
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
 
 theorem support_update_subset [DecidableEq α] [DecidableEq M] :
@@ -641,8 +638,8 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
 theorem support_erase [DecidableEq α] {a : α} {f : α →₀ M} :
     (f.erase a).support = f.support.erase a := by
   classical
-  dsimp [erase]
-  congr; apply Subsingleton.elim
+  dsimp only [erase]
+  congr!
 #align finsupp.support_erase Finsupp.support_erase
 
 @[simp]
@@ -987,7 +984,7 @@ theorem zipWith_apply {f : M → N → P} {hf : f 0 0 = 0} {g₁ : α →₀ M} 
 
 theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0} {g₁ : α →₀ M}
     {g₂ : α →₀ N} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
-  rw [Subsingleton.elim D] <;> exact support_onFinset_subset
+  convert support_onFinset_subset
 #align finsupp.support_zip_with Finsupp.support_zipWith
 
 @[simp]

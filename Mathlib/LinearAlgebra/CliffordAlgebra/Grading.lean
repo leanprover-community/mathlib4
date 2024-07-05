@@ -213,7 +213,7 @@ theorem even_induction {motive : ∀ x, x ∈ evenOdd Q 0 → Prop}
           motive (ι Q m₁ * ι Q m₂ * x)
             (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : motive x hx := by
-  refine' evenOdd_induction Q 0 (fun rx => _) (@add) ι_mul_ι_mul x hx
+  refine evenOdd_induction (motive := motive) (fun rx => ?_) add ι_mul_ι_mul x hx
   rintro ⟨r, rfl⟩
   exact algebraMap r
 #align clifford_algebra.even_induction CliffordAlgebra.even_induction
@@ -230,7 +230,7 @@ theorem odd_induction {P : ∀ x, x ∈ evenOdd Q 1 → Prop}
           P (CliffordAlgebra.ι Q m₁ * CliffordAlgebra.ι Q m₂ * x)
             (zero_add (1 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 1) : P x hx := by
-  refine' evenOdd_induction Q 1 (fun ιv => _) (@add) ι_mul_ι_mul x hx
+  refine evenOdd_induction (motive := P) (fun ιv => ?_) add ι_mul_ι_mul x hx
   -- Porting note: was `simp_rw [ZMod.val_one, pow_one]`, lean4#1926
   intro h; rw [ZMod.val_one, pow_one] at h; revert h
   rintro ⟨v, rfl⟩

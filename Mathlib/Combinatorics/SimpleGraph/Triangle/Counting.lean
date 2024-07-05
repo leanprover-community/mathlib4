@@ -107,8 +107,8 @@ lemma triangle_counting'
   have h₁ : (badVertices G ε s t).card ≤ s.card * ε := G.card_badVertices_le dst hst
   have h₂ : (badVertices G ε s u).card ≤ s.card * ε := G.card_badVertices_le dsu usu
   let X' := s \ (badVertices G ε s t ∪ badVertices G ε s u)
-  have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
-    apply triangle_split_helper
+  have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c :=
+    triangle_split_helper _
   refine le_trans ?_ (Nat.cast_le.2 $ card_le_card this)
   rw [card_biUnion, Nat.cast_sum]
   · apply le_trans _ (card_nsmul_le_sum X' _ _ $ G.good_vertices_triangle_card dst dsu dtu utu)
@@ -158,12 +158,12 @@ lemma triangle_counting
     (1 - 2 * ε) * ε ^ 3 * s.card * t.card * u.card ≤ (G.cliqueFinset 3).card := by
   apply (G.triangle_counting' dst ust dsu usu dtu utu).trans _
   rw [Nat.cast_le]
-  refine card_le_card_of_inj_on (fun (x, y, z) ↦ {x, y, z}) ?_ ?_
+  refine card_le_card_of_injOn (fun (x, y, z) ↦ {x, y, z}) ?_ ?_
   · rintro ⟨x, y, z⟩
     simp only [and_imp, mem_filter, mem_product, mem_cliqueFinset_iff, is3Clique_triple_iff]
     exact fun _ _ _ hxy hxz hyz ↦ ⟨hxy, hxz, hyz⟩
   rintro ⟨x₁, y₁, z₁⟩ h₁ ⟨x₂, y₂, z₂⟩ h₂ t
-  simp only [mem_filter, mem_product] at h₁ h₂
+  simp only [mem_coe, mem_filter, mem_product] at h₁ h₂
   apply triple_eq_triple_of_mem hst hsu htu t <;> tauto
 
 end SimpleGraph
