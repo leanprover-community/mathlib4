@@ -484,17 +484,10 @@ theorem base [Subsingleton n]:
     simp only [hS]
     have B := orthogonalComplement_iSup_eigenspaces_eq_bot hS.1
     rw [← B]
-    simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      Submodule.orthogonal_eq_bot_iff]
     apply ortho_eq.mpr
     simp only [Submodule.orthogonal_orthogonal, Submodule.mk.injEq, AddSubmonoid.mk.injEq,
       AddSubsemigroup.mk.injEq]
-    ext K
-    constructor
-    · intro H
-      sorry
-    · intro H
-      sorry
+    exact pre_base S
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
