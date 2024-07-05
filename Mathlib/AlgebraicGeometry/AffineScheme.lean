@@ -287,7 +287,7 @@ theorem range_fromSpec :
 @[simp]
 theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (range_fromSpec hU)
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (f : op U ⟶ op V):
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
   have : IsAffine (X.restrictFunctor.obj U).left := hU
