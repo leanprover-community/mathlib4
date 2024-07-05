@@ -435,9 +435,23 @@ theorem cracker3 [Subsingleton n] (h : Nonempty n) :  ∃ (S : E →ₗ[𝕜] E)
   · refine cracker2 S (n := n) (𝕜 := 𝕜) (T := T) hS.2
 
 /-I don't like the following theorem, because the proof feels like it will need to be messy.-/
-theorem disjointness (S : E →ₗ[𝕜] E) : ∃ (γ : n → 𝕜), (⨅ j, eigenspace S (γ j)) = ⊥ := by sorry
+theorem disjointness (S : E →ₗ[𝕜] E) : ∃ (γ : n → 𝕜), (⨅ j, eigenspace S (γ j)) = ⊥ := by
+  sorry
 
---maybe orthogonalFamily_eigenspaces can get us something like the above for less...
+theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
+   constructor
+   · intro H
+     exact congrArg Submodule.orthogonal H
+   · intro H
+     have A : HasOrthogonalProjection K := by exact HasOrthogonalProjection.ofCompleteSpace K
+     have B : HasOrthogonalProjection L := by exact HasOrthogonalProjection.ofCompleteSpace L
+     rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
+     exact congrArg Submodule.orthogonal H
+
+--Is the following theorem `base` even true? I don't think it is, since the intersection of all of the
+--different eigenspaces for a single operator will be zero...since these eigenspaces are an
+--orthogonal family. One needs the operators T_i to pairwise commute, but to be distinct operators.
+-- It may be true. One is taking the supremum of a bunch of infima. Must unpack...
 
 theorem base [Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
@@ -445,6 +459,28 @@ theorem base [Subsingleton n]:
   · have h2 := cracker3 hT case (n := n) (𝕜 := 𝕜) (T := T)
     obtain ⟨S, hS⟩ := h2
     simp only [hS]
+    have B := orthogonalComplement_iSup_eigenspaces_eq_bot hS.1
+    rw [← B]
+    simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+      Submodule.orthogonal_eq_bot_iff]
+    apply ortho_eq.mpr
+    simp only [Submodule.orthogonal_orthogonal, Submodule.mk.injEq, AddSubmonoid.mk.injEq,
+      AddSubsemigroup.mk.injEq]
+
+
+    --Submodule.sInf_orthogonal may be useful
+
+      --simp only [Submodule.orthogonal_eq_bot_iff] at B
+      --intro H
+      --simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      --  SetLike.mem_coe]
+      --intro K hK
+      --have A : ∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K := by sorry
+
+      --simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at B
+
+    --the supremum must contain all of the eigenspaces...but these exhaust
+    --everything, so the perp should be ⊥. This will probably work.
     --apply orthogonalComplement_iSup_eigenspaces_eq_bot hS.1
     sorry
   · simp only [not_nonempty_iff] at case
