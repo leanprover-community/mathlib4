@@ -3786,7 +3786,7 @@ import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
-import Mathlib.RingTheory.Trace
+import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Unramified.Derivations

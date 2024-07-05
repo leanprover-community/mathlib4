@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.RingTheory.IntegrallyClosed
-import Mathlib.RingTheory.Trace
+import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.Norm
 
 #align_import ring_theory.discriminant from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
