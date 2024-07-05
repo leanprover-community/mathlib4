@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta, Jack McKoen
+Authors: Scott Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Monad.Algebra
@@ -396,7 +396,8 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
   eqv := { full := Reflective.comparison_full _ }
 #align category_theory.monadic_of_reflective CategoryTheory.monadicOfReflective
 
-/-- Any coreflective inclusion has a comonadic left adjoint. -/
+/-- Any coreflective inclusion has a comonadic left adjoint.
+    cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
   adj := coreflectorAdjunction R

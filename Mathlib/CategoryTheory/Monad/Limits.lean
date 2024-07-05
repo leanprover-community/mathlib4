@@ -132,17 +132,17 @@ namespace ForgetCreatesColimits
 variable {D : J ⥤ Algebra T} (c : Cocone (D ⋙ forget T)) (t : IsColimit c)
 
 -- We have a diagram D of shape J in the category of algebras, and we assume that we are given a
--- colimit for its image D ⋙ forget T under the forgetful functor, say its apex is L.
+-- colimit for its image D ⋙ forget T under the forgetful functor, say its point is L.
 -- We'll construct a colimiting coalgebra for D, whose carrier will also be L.
 -- To do this, we must find a map TL ⟶ L. Since T preserves colimits, TL is also a colimit.
 -- In particular, it is a colimit for the diagram `(D ⋙ forget T) ⋙ T`
--- so to construct a map TL ⟶ L it suffices to show that L is the apex of a cocone for this diagram.
--- In other words, we need a natural transformation from const L to `(D ⋙ forget T) ⋙ T`.
--- But we already know that L is the apex of a cocone for the diagram `D ⋙ forget T`, so it
+-- so to construct a map TL ⟶ L it suffices to show that L is the point of a cocone for this
+-- diagram. In other words, we need a natural transformation from const L to `(D ⋙ forget T) ⋙ T`.
+-- But we already know that L is the point of a cocone for the diagram `D ⋙ forget T`, so it
 -- suffices to give a natural transformation `((D ⋙ forget T) ⋙ T) ⟶ (D ⋙ forget T)`:
 /-- (Impl)
 The natural transformation given by the algebra structure maps, used to construct a cocone `c` with
-apex `colimit (D ⋙ forget T)`.
+point `colimit (D ⋙ forget T)`.
  -/
 @[simps]
 def γ : (D ⋙ forget T) ⋙ ↑T ⟶ D ⋙ forget T where app j := (D.obj j).a
@@ -427,7 +427,7 @@ def newCocone : Cocone (D ⋙ forget T) where
   pt := T.obj c.pt
   ι := γ D ≫ whiskerRight c.ι (T : C ⥤ C) ≫ (Functor.constComp J _ (T : C ⥤ C)).hom
 
-/-- The coalgebra structure which will be the apex of the new colimit cone for `D`. -/
+/-- The coalgebra structure which will be the point of the new colimit cone for `D`. -/
 @[simps]
 def coconePoint : Coalgebra T where
   A := c.pt
@@ -473,7 +473,7 @@ def liftedCoconeIsColimit : IsColimit (liftedCocone D c t) where
 
 end ForgetCreatesColimits'
 
--- Theorem 5.6.5 from [Riehl][riehl2017]
+-- Dual to theorem 5.6.5 from [Riehl][riehl2017]
 /-- The forgetful functor from the Eilenberg-Moore category creates colimits. -/
 noncomputable instance forgetCreatesColimit : CreatesColimitsOfSize (forget T) where
   CreatesColimitsOfShape := {
@@ -495,7 +495,7 @@ variable {D : J ⥤ Coalgebra T} (c : Cone (D ⋙ forget T)) (t : IsLimit c)
 
 /-- (Impl)
 The natural transformation given by the coalgebra structure maps, used to construct a cone `c` with
-apex `limit (D ⋙ forget T)`.
+point `limit (D ⋙ forget T)`.
  -/
 @[simps]
 def γ : D ⋙ forget T ⟶ (D ⋙ forget T) ⋙ ↑T where app j := (D.obj j).a
@@ -617,9 +617,6 @@ theorem forget_creates_limits_of_comonad_preserves [PreservesLimitsOfShape J (T 
 
 end Comonad
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-variable {J : Type u} [Category.{v} J]
-
 instance comp_comparison_forget_hasColimit (F : J ⥤ D) (R : D ⥤ C) [ComonadicLeftAdjoint R]
     [HasColimit (F ⋙ R)] :
     HasColimit ((F ⋙ Comonad.comparison (comonadicAdjunction R)) ⋙ Comonad.forget _) :=
@@ -712,10 +709,10 @@ theorem hasLimits_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimitsOfSiz
     HasLimitsOfSize.{v, u} D :=
   ⟨fun _ => hasLimitsOfShape_of_coreflective R⟩
 
-/-- The coreflector always preserves terminal objects. Note this in general doesn't apply to any
+/-- The coreflector always preserves initial objects. Note this in general doesn't apply to any
 other colimit.
 -/
-noncomputable def rightAdjointPreservesTerminalOfCoreflective (R : D ⥤ C) [Coreflective R] :
+noncomputable def rightAdjointPreservesInitialOfCoreflective (R : D ⥤ C) [Coreflective R] :
     PreservesColimitsOfShape (Discrete.{v} PEmpty) (comonadicRightAdjoint R) where
   preservesColimit {K} := by
     let F := Functor.empty.{v} D
