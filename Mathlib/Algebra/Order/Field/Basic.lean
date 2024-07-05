@@ -252,7 +252,8 @@ theorem inv_lt_one_iff : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
 #align inv_lt_one_iff inv_lt_one_iff
 
 theorem one_lt_inv_iff : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 :=
-  ⟨fun h => ⟨inv_pos (α := α) |>.1 (zero_lt_one.trans h), inv_inv a ▸ inv_lt_one h⟩, and_imp.2 one_lt_inv⟩
+  ⟨fun h => ⟨inv_pos (α := α) |>.1 (zero_lt_one.trans h),
+    inv_inv a ▸ inv_lt_one h⟩, and_imp.2 one_lt_inv⟩
 #align one_lt_inv_iff one_lt_inv_iff
 
 theorem inv_le_one_iff : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
@@ -262,7 +263,8 @@ theorem inv_le_one_iff : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
 #align inv_le_one_iff inv_le_one_iff
 
 theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
-  ⟨fun h => ⟨inv_pos (α := α) |>.1 (zero_lt_one.trans_le h), inv_inv a ▸ inv_le_one h⟩, and_imp.2 one_le_inv⟩
+  ⟨fun h => ⟨inv_pos (α := α) |>.1 (zero_lt_one.trans_le h),
+    inv_inv a ▸ inv_le_one h⟩, and_imp.2 one_le_inv⟩
 #align one_le_inv_iff one_le_inv_iff
 
 /-!

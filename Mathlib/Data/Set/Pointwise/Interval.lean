@@ -849,7 +849,8 @@ theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   exact
     ⟨fun h => inv_inv x ▸ (inv_lt_inv ha h.1).2 h.2, fun h =>
       ⟨inv_pos (α := α) |>.2 <| (inv_pos (α := α) |>.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv ((inv_pos (α := α) |>.2 ha).trans h) (inv_pos (α := α) |>.2 ha)).2 h⟩⟩
+        inv_inv a ▸ (inv_lt_inv ((inv_pos (α := α) |>.2 ha).trans h)
+          (inv_pos (α := α) |>.2 ha)).2 h⟩⟩
 #align set.inv_Ioo_0_left Set.inv_Ioo_0_left
 
 theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
