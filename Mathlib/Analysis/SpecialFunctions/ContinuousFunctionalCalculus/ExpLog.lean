@@ -153,9 +153,8 @@ lemma log_smul {r : ℝ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
     rw [Set.mem_compl_singleton_iff]
     rw [Set.mem_image] at hx
     obtain ⟨z, hz⟩ := hx
-    specialize ha₂ z hz.1
     rw [← hz.2]
-    have : 0 < r • z := by exact (smul_pos_iff_of_pos_left hr).mpr ha₂
+    have : 0 < r • z := (smul_pos_iff_of_pos_left hr).mpr (ha₂ z hz.1)
     exact ne_of_gt this
   rw [log, ← cfc_smul_id (S := ℝ) (R := ℝ) r a ha₁, ← cfc_comp Real.log (r • ·) a ha₁ ha₂'', log]
   have hmain : Set.EqOn (Real.log ∘ (r • ·)) (fun z => Real.log r + Real.log z) (spectrum ℝ a) := by
@@ -176,9 +175,8 @@ lemma log_pow {n : ℕ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
     rw [Set.mem_compl_singleton_iff]
     rw [Set.mem_image] at hx
     obtain ⟨z, hz⟩ := hx
-    specialize ha₂ z hz.1
     rw [← hz.2]
-    exact ne_of_gt (pow_pos ha₂ n)
+    exact ne_of_gt (pow_pos (ha₂ z hz.1) n)
   rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp Real.log (· ^ n) a ha₁ ha₂'', log]
   have hmain : Real.log ∘ (· ^ n) = fun z => n • Real.log z := by ext; simp
   rw [hmain, cfc_smul n Real.log a ha₂']
