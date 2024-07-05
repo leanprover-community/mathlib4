@@ -44,10 +44,6 @@ variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
 
 section Constructions
 
-instance instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
-    TopologicalSpace (Subtype p) :=
-  induced (↑) t
-
 instance {r : X → X → Prop} [t : TopologicalSpace X] : TopologicalSpace (Quot r) :=
   coinduced (Quot.mk r) t
 
@@ -978,7 +974,6 @@ theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) 
   Iff.rfl
 #align is_open_sum_iff isOpen_sum_iff
 
--- Porting note (#10756): new theorem
 theorem isClosed_sum_iff {s : Set (X ⊕ Y)} :
     IsClosed s ↔ IsClosed (inl ⁻¹' s) ∧ IsClosed (inr ⁻¹' s) := by
   simp only [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
@@ -1148,7 +1143,6 @@ theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((
   rfl
 #align subtype.dense_iff Subtype.dense_iff
 
--- Porting note (#10756): new lemma
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [inducing_subtype_val.map_nhds_eq, Subtype.range_val]
 
