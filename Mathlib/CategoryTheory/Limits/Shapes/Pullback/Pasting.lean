@@ -290,6 +290,7 @@ local notation "X₁" => t₂.pt
 local notation "f₁" => t₂.inr
 local notation "i₁" => t₂.inl
 
+-- TODO: this should probably just be notation!
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
 abbrev PushoutCocone.pasteVert : PushoutCocone (g₂ ≫ g₁) i₃ :=
   PushoutCocone.mk i₁ (f₂ ≫ f₁)
