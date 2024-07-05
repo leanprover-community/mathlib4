@@ -1013,6 +1013,23 @@ theorem isOpen_ball : IsOpen (ball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 #align metric.is_open_ball Metric.isOpen_ball
 
+lemma isClosed_closedBall (x : α) (r : ℝ) :
+    IsClosed (closedBall x r) := by
+  rw [← isOpen_compl_iff, isOpen_iff]
+  simp only [Set.mem_compl_iff, mem_closedBall, not_le]
+  intro y hy
+  use (dist y x - r) / 2
+  simp only [gt_iff_lt, sub_pos, hy, div_pos_iff_of_pos_left, Nat.ofNat_pos, true_and]
+  intro z
+  simp only [mem_ball, Set.mem_compl_iff, mem_closedBall]
+  intro hz H
+  rw [lt_div_iff zero_lt_two, mul_two, lt_sub_iff_add_lt] at hz
+  have := dist_triangle y z x
+  refine lt_irrefl (dist y x) (hz.trans_le' (this.trans ?_))
+  rw [dist_comm, add_assoc, add_le_add_iff_left]
+  refine H.trans ?_
+  simp [dist_nonneg]
+
 theorem ball_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
   isOpen_ball.mem_nhds (mem_ball_self ε0)
 #align metric.ball_mem_nhds Metric.ball_mem_nhds

@@ -36,27 +36,6 @@ of `dist(x, z) ≤ max (dist(x,y)) (dist(y,z))`. -/
 class IsUltrametricDist (X : Type*) [Dist X] : Prop where
   dist_triangle_max : ∀ x y z : X, dist x z ≤ max (dist x y) (dist y z)
 
-section TODO
-
-lemma Metric.isClosed_closedBall [PseudoMetricSpace X] (x : X) (r : ℝ) :
-    IsClosed (closedBall x r) := by
-  rw [← isOpen_compl_iff, isOpen_iff]
-  simp only [Set.mem_compl_iff, mem_closedBall, not_le]
-  intro y hy
-  use (dist y x - r) / 2
-  simp only [gt_iff_lt, sub_pos, hy, div_pos_iff_of_pos_left, Nat.ofNat_pos, true_and]
-  intro z
-  simp only [mem_ball, Set.mem_compl_iff, mem_closedBall]
-  intro hz H
-  rw [lt_div_iff zero_lt_two, mul_two, lt_sub_iff_add_lt] at hz
-  have := dist_triangle y z x
-  refine lt_irrefl (dist y x) (hz.trans_le' (this.trans ?_))
-  rw [dist_comm, add_assoc, add_le_add_iff_left]
-  refine H.trans ?_
-  simp [dist_nonneg]
-
-end TODO
-
 open Metric
 
 variable [PseudoMetricSpace X] [IsUltrametricDist X] (x y z : X) (r s : ℝ)
