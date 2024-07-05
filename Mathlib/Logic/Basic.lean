@@ -1031,7 +1031,11 @@ theorem some_spec₂ {α : Sort*} {p : α → Prop} {h : ∃ a, p a} (q : α →
     (hpq : ∀ a, p a → q a) : q (choose h) := hpq _ <| choose_spec _
 #align classical.some_spec2 Classical.some_spec₂
 
-/-- A version of `Classical.indefiniteDescription` which is definitionally equal to a pair -/
+/-- A version of `Classical.indefiniteDescription` which is definitionally equal to a pair.
+
+In Lean 4, this definition is defeq to `Classical.indefiniteDescription`,
+so it is deprecated. -/
+@[deprecated Classical.indefiniteDescription (since := "2024-07-04")]
 noncomputable def subtype_of_exists {α : Type*} {P : α → Prop} (h : ∃ x, P x) : { x // P x } :=
   ⟨Classical.choose h, Classical.choose_spec h⟩
 #align classical.subtype_of_exists Classical.subtype_of_exists
@@ -1041,7 +1045,7 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
   Classical.choice <| (peirce _ False) fun h ↦ (H fun a ↦ h ⟨a⟩).elim
 #align classical.by_contradiction' Classical.byContradiction'
 
-/-- `classical.byContradiction'` is equivalent to lean's axiom `classical.choice`. -/
+/-- `Classical.byContradiction'` is equivalent to lean's axiom `Classical.choice`. -/
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 #align classical.choice_of_by_contradiction' Classical.choice_of_byContradiction'

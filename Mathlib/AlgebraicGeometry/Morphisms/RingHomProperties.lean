@@ -66,7 +66,8 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAf
     _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
   change Y.presheaf.map _ ≫ _ = _ ≫ X.presheaf.map _
   rw [f.val.c.naturality_assoc]
-  simp only [TopCat.Presheaf.pushforwardObj_map, ← X.presheaf.map_comp]
+  dsimp
+  simp only [← X.presheaf.map_comp]
   congr 1
 #align ring_hom.respects_iso.basic_open_iff RingHom.RespectsIso.basicOpen_iff
 
@@ -156,8 +157,9 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso @P) :
     exact H U
 #align algebraic_geometry.source_affine_locally_respects_iso AlgebraicGeometry.sourceAffineLocally_respectsIso
 
-theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally @P).RespectsIso :=
-  targetAffineLocally_respectsIso (sourceAffineLocally_respectsIso h)
+theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally @P).RespectsIso := by
+  have := sourceAffineLocally_respectsIso h
+  apply targetAffineLocally_respectsIso
 #align algebraic_geometry.affine_locally_respects_iso AlgebraicGeometry.affineLocally_respectsIso
 
 theorem affineLocally_iff_affineOpens_le
@@ -471,8 +473,8 @@ theorem source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.Ope
     rw [morphismRestrict_comp] at H
     delta morphismRestrict at H
     have := sourceAffineLocally_respectsIso hP.respectsIso
-    rw [Category.assoc, affine_cancel_left_isIso this, ←
-      affine_cancel_left_isIso this (pullbackSymmetry _ _).hom,
+    rw [Category.assoc, (sourceAffineLocally P).cancel_left_of_respectsIso,
+      ← (sourceAffineLocally P).cancel_left_of_respectsIso (pullbackSymmetry _ _).hom,
       pullbackSymmetry_hom_comp_snd_assoc] at H
     exact H
 #align ring_hom.property_is_local.source_open_cover_iff RingHom.PropertyIsLocal.source_openCover_iff
