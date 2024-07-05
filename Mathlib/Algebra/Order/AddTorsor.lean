@@ -3,24 +3,27 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.AddTorsor
+import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
 
 /-!
-# Ordered AddTorsors
+# Ordered vector addition
 This file defines ordered vector addition and proves some properties.  A motivating example is given
 by the additive action of `ℤ` on subsets of reals that are closed under integer translation.  The
 order compatibility allows for a treatment of the `R((z))`-module structure on `(z ^ s) V((z))` for
 an `R`-module `V`, using the formalism of Hahn series.
 
 ## Implementation notes
-We write our conditions as `Prop`-valued mixins.
+* Beause these classes mix the algebra and order hierarchies, we write them as `Prop`-valued mixins.
+* Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
+  combine `[AddTorsor G P]` with `[OrderedCancelVAdd G P]`
 
 ## Definitions
 * OrderedVAdd : inequalities are preserved by translation.
 * CancelVAdd : the vector addition version of cancellative addition
 * OrderedCancelVAdd : inequalities are preserved and reflected by translation.
-* OrderedAddTorsor : An additive torsor over an additive commutative group with compatible order.
+* VAdd.antidiagonal : Set-valued antidiagonal for VAdd.
+* Finset.vAddAntidiagonal : Finset antidiagonal for PWO inputs.
 
 ## Instances
 * OrderedAddCommMonoid.toOrderedVAdd
@@ -30,6 +33,7 @@ We write our conditions as `Prop`-valued mixins.
 * OrderedCancelVAdd.toContravariantClassLeft
 
 ## TODO
+* Multiplicativize
 * (lex) prod instances
 * Pi instances
 
@@ -192,39 +196,6 @@ theorem Set.mem_vAdd [VAdd G P] {s : Set G} {t : Set P} {b : P} :
 theorem Set.vAdd_mem_vAdd [VAdd G P] {s : Set G} {t : Set P} {a : G} {b : P} :
     a ∈ s → b ∈ t → a +ᵥ b ∈ s +ᵥ t :=
   Set.mem_image2_of_mem
-
-/-- An add action is ordered and cancellative if the underlying vector addition is. -/
-class OrderedCancelAddAction (G P : Type*) [OrderedAddCommMonoid G] [LE P] [VAdd G P] extends
-    OrderedCancelVAdd G P : Prop where
-  /-- Zero is a neutral element for `+ᵥ` -/
-  protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
-  /-- Associativity of `+` and `+ᵥ` -/
-  add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
-
-instance OrderedCancelAddCommMonoid.toOrderedCancelAddAction [OrderedCancelAddCommMonoid G] :
-    OrderedCancelAddAction G G where
-  le_of_vadd_le_vadd_left _ _ _ := le_of_add_le_add_left
-  le_of_vadd_le_vadd_right _ _ _ := le_of_add_le_add_right
-  zero_vadd p := by rw [zero_vadd]
-  add_vadd g g' p := by rw [add_vadd]
-
-instance OrderedCancelAddAction.toAddAction [OrderedAddCommMonoid G] [LE P] [VAdd G P]
-    [OrderedCancelAddAction G P] : AddAction G P where
-  zero_vadd := OrderedCancelAddAction.zero_vadd
-  add_vadd := OrderedCancelAddAction.add_vadd
-
-/-- An AddTorsor is ordered if vector addition preserves and reflects order. -/
-class OrderedAddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| OrderedAddCommGroup G] [LE P]
-    extends AddTorsor G P where
-  protected le_of_vadd_left_iff : ∀ (a : G) (b c : P), a +ᵥ b ≤ a +ᵥ c ↔ b ≤ c
-  protected vadd_le_vadd_right_iff : ∀ (c d : G) (a : P), c ≤ d ↔ c +ᵥ a ≤ d +ᵥ a
-
-instance instOrderedAddTorsor.toOrderedCancelVAdd {G : outParam (Type*)} {P : Type*}
-    [outParam <| OrderedAddCommGroup G] [LE P] [OrderedAddTorsor G P] : OrderedCancelVAdd G P where
-  vadd_le_vadd_left x y h g := (OrderedAddTorsor.le_of_vadd_left_iff g x y).mpr h
-  vadd_le_vadd_right g g' h a := (OrderedAddTorsor.vadd_le_vadd_right_iff g g' a).mp h
-  le_of_vadd_le_vadd_left g x y h := (OrderedAddTorsor.le_of_vadd_left_iff g x y).mp h
-  le_of_vadd_le_vadd_right g g' a h := (OrderedAddTorsor.vadd_le_vadd_right_iff g g' a).mpr h
 
 namespace VAdd
 
