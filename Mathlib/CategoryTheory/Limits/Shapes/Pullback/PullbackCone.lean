@@ -168,6 +168,8 @@ def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t
   WalkingCospan.ext i w₁ w₂
 #align category_theory.limits.pullback_cone.ext CategoryTheory.Limits.PullbackCone.ext
 
+/-- The natural isomorphism between a pullback cone and the corresponding pullback cone
+reconstructed using `PullbackCone.mk`. -/
 @[simps!]
 def isoMkSelf (t : PullbackCone f g) : mk t.fst t.snd t.condition ≅ t :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
@@ -247,6 +249,8 @@ def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) 
   ⟨IsLimit.lift ht h k w, by simp⟩
 #align category_theory.limits.pullback_cone.is_limit.lift' CategoryTheory.Limits.PullbackCone.IsLimit.lift'
 
+/-- The pullback cone reconstructed using `PullbackCone.mk` from a pullback cone that is a
+limit, is also a limit. -/
 def mkSelfIsLimit {t : PullbackCone f g} (ht : IsLimit t) : IsLimit (mk t.fst t.snd t.condition) :=
   IsLimit.ofIsoLimit ht (isoMkSelf t).symm
 
@@ -407,6 +411,12 @@ def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = 
   WalkingSpan.ext i w₁ w₂
 #align category_theory.limits.pushout_cocone.ext CategoryTheory.Limits.PushoutCocone.ext
 
+/-- The natural isomorphism between a pushout cocone and the corresponding pushout cocone
+reconstructed using `PushoutCocone.mk`. -/
+@[simps!]
+def isoMkSelf (t : PushoutCocone f g) : mk t.inl t.inr t.condition ≅ t :=
+  PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
+
 /-- This is a slightly more convenient method to verify that a pushout cocone is a colimit cocone.
     It only asks for a proof of facts that carry any mathematical content -/
 def isColimitAux (t : PushoutCocone f g) (desc : ∀ s : PushoutCocone f g, t.pt ⟶ s.pt)
@@ -481,6 +491,12 @@ def IsColimit.mk {W : C} {inl : Y ⟶ W} {inr : Z ⟶ W} (eq : f ≫ inl = g ≫
   isColimitAux _ desc fac_left fac_right fun s m w =>
     uniq s m (w WalkingCospan.left) (w WalkingCospan.right)
 #align category_theory.limits.pushout_cocone.is_colimit.mk CategoryTheory.Limits.PushoutCocone.IsColimit.mk
+
+/-- The pushout cocone reconstructed using `PushoutCocone.mk` from a pushout cocone that is a
+colimit, is also a colimit. -/
+def mkSelfIsColimit {t : PushoutCocone f g} (ht : IsColimit t) :
+    IsColimit (mk t.inl t.inr t.condition) :=
+  IsColimit.ofIsoColimit ht (isoMkSelf t).symm
 
 section Flip
 
