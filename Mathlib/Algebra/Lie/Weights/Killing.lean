@@ -260,13 +260,14 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
   replace h_der (y z : L) : S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
     have hy : y ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_weightSpace_eq_top]
     have hz : z ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_weightSpace_eq_top]
-    induction hy using LieSubmodule.iSup_induction'
-    · induction hz using LieSubmodule.iSup_induction'
-      · next α y hy β z hz => exact h_der y z α β hy hz
-      · simp
-      · next h h' => simp only [lie_add, map_add, h, h']; abel
-    · simp
-    · next h h' => simp only [add_lie, map_add, h, h']; abel
+    induction hy using LieSubmodule.iSup_induction' with
+    | hN α y hy =>
+      induction hz using LieSubmodule.iSup_induction' with
+      | hN β z hz => exact h_der y z α β hy hz
+      | h0 => simp
+      | hadd _ _ _ _ h h' => simp only [lie_add, map_add, h, h']; abel
+    | h0 => simp
+    | hadd _ _ _ _ h h' => simp only [add_lie, map_add, h, h']; abel
   /- An equivalent form of the derivation axiom used in `LieDerivation`. -/
   replace h_der : ∀ y z : L, S ⁅y, z⁆ = ⁅y, S z⁆ - ⁅z, S y⁆ := by
     simp_rw [← lie_skew (S _) _, add_comm, ← sub_eq_add_neg] at h_der; assumption
@@ -419,16 +420,16 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     (hx : x ∈ α.ker) (hy : y ∈ K ∙ coroot α) :
     traceForm K H L x y = 0 := by
   rw [← coe_corootSpace_eq_span_singleton, LieSubmodule.mem_coeSubmodule, mem_corootSpace'] at hy
-  induction hy using Submodule.span_induction'
-  · next z hz =>
+  induction hy using Submodule.span_induction' with
+  | mem z hz =>
     obtain ⟨u, hu, v, -, huv⟩ := hz
     change killingForm K L (x : L) (z : L) = 0
     replace hx : α x = 0 := by simpa using hx
     rw [← huv, ← traceForm_apply_lie_apply, ← LieSubalgebra.coe_bracket_of_module,
       lie_eq_smul_of_mem_rootSpace hu, hx, zero_smul, map_zero, LinearMap.zero_apply]
-  · simp
-  · next hx hy => simp [hx, hy]
-  · next hz => simp [hz]
+  | zero => simp
+  | add _ _ _ _ hx hy => simp [hx, hy]
+  | smul _ _ _ hz => simp [hz]
 
 @[simp] lemma orthogonal_span_coroot_eq_ker (α : Weight K H L) :
     (traceForm K H L).orthogonal (K ∙ coroot α) = α.ker := by

@@ -344,6 +344,13 @@ theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R �
   exact hb
 #align local_ring.surjective_units_map_of_local_ring_hom LocalRing.surjective_units_map_of_local_ringHom
 
+-- see Note [lower instance priority]
+/-- Every ring hom `f : K →+* R` from a division ring `K` to a nontrivial ring `R` is a
+local ring hom. -/
+instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
+    (f : K →+* R) : IsLocalRingHom f where
+  map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
+
 section
 
 variable (R) [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
@@ -368,6 +375,20 @@ noncomputable instance ResidueField.field : Field (ResidueField R) :=
 def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 #align local_ring.residue LocalRing.residue
+
+variable {R}
+
+lemma ker_residue : RingHom.ker (residue R) = maximalIdeal R :=
+  Ideal.mk_ker
+
+@[simp]
+lemma residue_eq_zero_iff (x : R) : residue R x = 0 ↔ x ∈ maximalIdeal R := by
+  rw [← RingHom.mem_ker, ker_residue]
+
+lemma residue_ne_zero_iff_isUnit (x : R) : residue R x ≠ 0 ↔ IsUnit x := by
+  simp
+
+variable (R)
 
 instance ResidueField.algebra : Algebra R (ResidueField R) :=
   Ideal.Quotient.algebra _

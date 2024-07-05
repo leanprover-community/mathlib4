@@ -54,7 +54,7 @@ morphism `C⁺ : Spec R[x] → Spec R`. -/
 theorem imageOfDf_eq_comap_C_compl_zeroLocus :
     imageOfDf f = PrimeSpectrum.comap (C : R →+* R[X]) '' (zeroLocus {f})ᶜ := by
   ext x
-  refine ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.IsPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
+  refine ⟨fun hx => ⟨⟨map C x.asIdeal, isPrime_map_C_of_isPrime x.isPrime⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rw [mem_compl_iff, mem_zeroLocus, singleton_subset_iff]
     cases' hx with i hi
     exact fun a => hi (mem_map_C_iff.mp a i)
