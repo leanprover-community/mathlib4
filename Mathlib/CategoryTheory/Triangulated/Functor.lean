@@ -188,8 +188,6 @@ noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
     (by dsimp; infer_instance) (by dsimp; infer_instance)
 
 instance (priority := 100) : F.Additive := F.additive_of_preserves_binary_products
-
-
 end IsTriangulated
 
 end Functor
