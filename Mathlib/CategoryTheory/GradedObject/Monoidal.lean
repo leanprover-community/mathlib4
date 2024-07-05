@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou, Scott Morrison
+Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
+import Mathlib.CategoryTheory.GradedObject.Unitor
 
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
@@ -138,14 +138,17 @@ lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂)
     tensorHom f g = whiskerRight f Y₁ ≫ whiskerLeft X₂ g := by
   rw [← tensor_comp, id_comp, comp_id]
 
+/-- This is the addition map `I × I × I → I` for an additive monoid `I`. -/
 def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
 
+/-- Auxiliary definition for `associator`. -/
 @[reducible] def ρ₁₂ : BifunctorComp₁₂IndexData (r₁₂₃ : _ → I) where
   I₁₂ := I
   p := fun ⟨i₁, i₂⟩ => i₁ + i₂
   q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
   hpq := fun _ => rfl
 
+/-- Auxiliary definition for `associator`. -/
 @[reducible] def ρ₂₃ : BifunctorComp₂₃IndexData (r₁₂₃ : _ → I) where
   I₂₃ := I
   p := fun ⟨i₂, i₃⟩ => i₂ + i₃
@@ -153,6 +156,7 @@ def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
   hpq _ := (add_assoc _ _ _).symm
 
 variable (I) in
+/-- Auxiliary definition for `associator`. -/
 @[reducible]
 def triangleIndexData : TriangleIndexData (r₁₂₃ : _ → I) (fun ⟨i₁, i₃⟩ => i₁ + i₃) where
   p₁₂ := fun ⟨i₁, i₂⟩ => i₁ + i₂
@@ -162,9 +166,15 @@ def triangleIndexData : TriangleIndexData (r₁₂₃ : _ → I) (fun ⟨i₁, i
   h₁ := add_zero
   h₃ := zero_add
 
+/-- Given three graded objects `X₁`, `X₂`, `X₃` in `GradedObject I C`, this is the
+assumption that for all `i₁₂ : I` and `i₃ : I`, the tensor product functor `- ⊗ X₃ i₃`
+commutes with the coproduct of the objects `X₁ i₁ ⊗ X₂ i₂` such that `i₁ + i₂ = i₁₂`. -/
 abbrev _root_.CategoryTheory.GradedObject.HasGoodTensor₁₂Tensor (X₁ X₂ X₃ : GradedObject I C) :=
   HasGoodTrifunctor₁₂Obj (curriedTensor C) (curriedTensor C) ρ₁₂ X₁ X₂ X₃
 
+/-- Given three graded objects `X₁`, `X₂`, `X₃` in `GradedObject I C`, this is the
+assumption that for all `i₁ : I` and `i₂₃ : I`, the tensor product functor `X₁ i₁ ⊗ -`
+commutes with the coproduct of the objects `X₂ i₂ ⊗ X₃ i₃` such that `i₂ + i₃ = i₂₃`. -/
 abbrev _root_.CategoryTheory.GradedObject.HasGoodTensorTensor₂₃ (X₁ X₂ X₃ : GradedObject I C) :=
   HasGoodTrifunctor₂₃Obj (curriedTensor C) (curriedTensor C) ρ₂₃ X₁ X₂ X₃
 
@@ -175,10 +185,13 @@ variable (Z : C) (X₁ X₂ X₃ : GradedObject I C) [HasTensor X₁ X₂] [HasT
   {Y₁ Y₂ Y₃ : GradedObject I C} [HasTensor Y₁ Y₂] [HasTensor Y₂ Y₃]
   [HasTensor (tensorObj Y₁ Y₂) Y₃] [HasTensor Y₁ (tensorObj Y₂ Y₃)]
 
+/-- The associator isomorphism for graded objects. -/
 noncomputable def associator [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃] :
   tensorObj (tensorObj X₁ X₂) X₃ ≅ tensorObj X₁ (tensorObj X₂ X₃) :=
     mapBifunctorAssociator (MonoidalCategory.curriedAssociatorNatIso C) ρ₁₂ ρ₂₃ X₁ X₂ X₃
 
+/-- The inclusion `X₁ i₁ ⊗ X₂ i₂ ⊗ X₃ i₃ ⟶ tensorObj X₁ (tensorObj X₂ X₃) j`
+when `i₁ + i₂ + i₃ = j`. -/
 noncomputable def ιTensorObj₃ (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     X₁ i₁ ⊗ X₂ i₂ ⊗ X₃ i₃ ⟶ tensorObj X₁ (tensorObj X₂ X₃) j :=
   X₁ i₁ ◁ ιTensorObj X₂ X₃ i₂ i₃ _ rfl ≫ ιTensorObj X₁ (tensorObj X₂ X₃) i₁ (i₂ + i₃) j
@@ -192,6 +205,8 @@ lemma ιTensorObj₃_eq (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) (i�
   subst h'
   rfl
 
+/-- The inclusion `X₁ i₁ ⊗ X₂ i₂ ⊗ X₃ i₃ ⟶ tensorObj (tensorObj X₁ X₂) X₃ j`
+when `i₁ + i₂ + i₃ = j`. -/
 noncomputable def ιTensorObj₃' (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     (X₁ i₁ ⊗ X₂ i₂) ⊗ X₃ i₃ ⟶ tensorObj (tensorObj X₁ X₂) X₃ j :=
   (ιTensorObj X₁ X₂ i₁ i₂ (i₁ + i₂) rfl ▷ X₃ i₃) ≫
@@ -228,8 +243,6 @@ lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f
     ← tensorHom_id, ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, id_comp,
     ι_tensorHom, ← MonoidalCategory.tensor_comp_assoc, comp_id]
 
-section
-
 @[ext]
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
@@ -249,31 +262,6 @@ lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X
   apply mapBifunctor₁₂BifunctorMapObj_ext (H := H)
   intro i₁ i₂ i₃ hi
   exact h i₁ i₂ i₃ hi
-
-variable (X₁ X₂ X₃)
-
-abbrev HasLeftTensor₃ObjExt (j : I) := PreservesColimit
-  (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
-    (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
-      (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
-   ((curriedTensor C).obj Z)
-
-variable {X₁ X₂ X₃}
-
-@[ext]
-lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C)
-    (f g : Z ⊗ tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
-    [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
-    [hZ : HasLeftTensor₃ObjExt Z X₁ X₂ X₃ j]
-    (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
-      (_ ◁ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ f =
-        (_ ◁ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ g) : f = g := by
-    refine' (@isColimitOfPreserves C _ C _ _ _ _ ((curriedTensor C).obj Z) _
-      (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (H := H) j) hZ).hom_ext _
-    intro ⟨⟨i₁, i₂, i₃⟩, hi⟩
-    exact h _ _ _ hi
-
-end
 
 variable (X₁ X₂ X₃)
 
@@ -302,6 +290,29 @@ lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ 
     [HasGoodTensor₁₂Tensor Y₁ Y₂ Y₃] [HasGoodTensorTensor₂₃ Y₁ Y₂ Y₃] :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
       (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by aesop_cat
+
+variable (X₁ X₂ X₃)
+
+abbrev HasLeftTensor₃ObjExt (j : I) := PreservesColimit
+  (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
+    (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
+      (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
+   ((curriedTensor C).obj Z)
+
+variable {X₁ X₂ X₃}
+
+@[ext]
+lemma left_tensor_tensorObj₃_ext {j : I} {A : C} (Z : C)
+    (f g : Z ⊗ tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
+    [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+    [hZ : HasLeftTensor₃ObjExt Z X₁ X₂ X₃ j]
+    (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),
+      (_ ◁ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ f =
+        (_ ◁ ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h) ≫ g) : f = g := by
+    refine (@isColimitOfPreserves C _ C _ _ _ _ ((curriedTensor C).obj Z) _
+      (isColimitCofan₃MapBifunctorBifunctor₂₃MapObj (H := H) j) hZ).hom_ext ?_
+    intro ⟨⟨i₁, i₂, i₃⟩, hi⟩
+    exact h _ _ _ hi
 
 end
 

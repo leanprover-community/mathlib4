@@ -82,11 +82,11 @@ theorem IsLindelof.inter_right (hs : IsLindelof s) (ht : IsClosed t) : IsLindelo
   have hxt : x ∈ t := ht.mem_of_nhdsWithin_neBot <| hx.mono hstf.2
   exact ⟨x, ⟨hsx, hxt⟩, hx⟩
 
-  /-- The intersection of a closed set and a Lindelöf set is a Lindelöf set. -/
+/-- The intersection of a closed set and a Lindelöf set is a Lindelöf set. -/
 theorem IsLindelof.inter_left (ht : IsLindelof t) (hs : IsClosed s) : IsLindelof (s ∩ t) :=
   inter_comm t s ▸ ht.inter_right hs
 
-  /-- The set difference of a Lindelöf set and an open set is a Lindelöf set. -/
+/-- The set difference of a Lindelöf set and an open set is a Lindelöf set. -/
 theorem IsLindelof.diff (hs : IsLindelof s) (ht : IsOpen t) : IsLindelof (s \ t) :=
   hs.inter_right (isClosed_compl_iff.mpr ht)
 
