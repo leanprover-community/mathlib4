@@ -43,6 +43,9 @@ section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] (I : TwoSidedIdeal R)
 
+lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
+  rintro ⟨x⟩ ⟨y⟩ rfl; rfl
+
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
   coe_injective'  := by
