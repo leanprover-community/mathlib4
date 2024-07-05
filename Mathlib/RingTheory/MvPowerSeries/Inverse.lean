@@ -7,7 +7,7 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.RingTheory.MvPowerSeries.NonZeroDivisors
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -138,6 +138,13 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         exact Nat.eq_zero_of_le_zero (H s)
 #align mv_power_series.mul_inv_of_unit MvPowerSeries.mul_invOfUnit
 
+theorem invOfUnit_mul (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
+    invOfUnit φ u * φ = 1 := by
+  rw [← mul_cancel_right_mem_nonZeroDivisors (r := φ.invOfUnit u)]
+  rw [mul_assoc, one_mul, mul_invOfUnit _ _ h, mul_one]
+  apply mem_nonZeroDivisors_of_constantCoeff
+  simp only [constantCoeff_invOfUnit, IsUnit.mem_nonZeroDivisors (Units.isUnit u⁻¹)]
+
 theorem isUnit_iff_constantCoeff (φ : MvPowerSeries σ R) :
     IsUnit φ ↔ IsUnit (constantCoeff σ R φ) := by
   constructor
@@ -145,11 +152,7 @@ theorem isUnit_iff_constantCoeff (φ : MvPowerSeries σ R) :
   · rintro ⟨u, hu⟩
     rw [isUnit_iff_exists]
     use φ.invOfUnit u
-    simp only [mul_invOfUnit φ u hu.symm, true_and]
-    rw [← mul_cancel_right_mem_nonZeroDivisors (r := φ.invOfUnit u)]
-    rw [mul_assoc, one_mul, mul_invOfUnit _  _ hu.symm, mul_one]
-    apply mem_nonZeroDivisors_of_constantCoeff
-    simp only [constantCoeff_invOfUnit, IsUnit.mem_nonZeroDivisors (Units.isUnit u⁻¹)]
+    simp only [mul_invOfUnit φ u hu.symm, invOfUnit_mul φ u hu.symm, true_and]
 
 end Ring
 
