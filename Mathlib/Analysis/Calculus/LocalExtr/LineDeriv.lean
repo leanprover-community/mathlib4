@@ -78,7 +78,6 @@ theorem IsMaxOn.hasLineDerivWithinAt_eq_zero (h : IsMaxOn f s a)
 theorem IsMaxOn.lineDerivWithin_eq_zero (h : IsMaxOn f s a)
     (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : lineDerivWithin ℝ f s a b = 0 :=
   h.isExtr.lineDerivWithin_eq_zero h'
-  
 end Module
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
