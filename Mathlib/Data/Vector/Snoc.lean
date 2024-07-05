@@ -28,7 +28,7 @@ def snoc : Vector α n → α → Vector α (n+1) :=
 ## Simplification lemmas
 -/
 section Simp
-  variable (xs : Vector α n)
+variable (xs : Vector α n)
 
 @[simp]
 theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
