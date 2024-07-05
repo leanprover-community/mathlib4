@@ -429,6 +429,12 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
     congr
   · simp [cfc_apply_of_not_predicate a ha]
 
+lemma cfc_const_add (r : R) (a : A) (f : R → R) (ha : p a)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
+    cfc (fun x => r + f x) a = algebraMap R A r + cfc f a := by
+  have : (fun z => r + f z) = (fun z => (fun _ => r) z + f z) := by ext; simp
+  rw [this, cfc_add a _ _ (continuousOn_const (c := r)) hf, cfc_const r a ha]
+
 open Finset in
 lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :

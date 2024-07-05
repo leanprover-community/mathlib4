@@ -140,13 +140,6 @@ lemma exp_log {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac) (ha₂ : ∀ x ∈
 lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Real.log r) := by
   simp [log]
 
---MOVEME
-lemma cfc_const_add (r : ℝ) (a : A) (f : ℝ → ℝ) (ha : IsSelfAdjoint a)
-    (hf : ContinuousOn f (spectrum ℝ a)) :
-    cfc (R := ℝ) (fun z => r + f z) a = algebraMap ℝ A r + cfc (R := ℝ) f a := by
-  have : (fun z => r + f z) = (fun z => (fun _ => r) z + f z) := by ext; simp
-  rw [this, cfc_add a _ _ (continuousOn_const (c := r)) hf, cfc_const r a ha]
-
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma log_smul {r : ℝ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
     (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr : 0 < r) :
@@ -171,9 +164,6 @@ lemma log_smul {r : ℝ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
     exact Real.log_mul (ne_of_gt hr) <| ne_of_gt (ha₂ x hx)
   rw [cfc_congr hmain, cfc_const_add _ a _ ha₁ ha₂']
 
--- MOVEME
-lemma cfc_pow_id (n : ℕ) (a : A) (ha : IsSelfAdjoint a) : cfc (R := ℝ) (· ^ n) a = a ^ n := by sorry
-
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma log_pow {n : ℕ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
     (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) : log (a ^ n) = n • log a := by
@@ -189,7 +179,7 @@ lemma log_pow {n : ℕ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
     specialize ha₂ z hz.1
     rw [← hz.2]
     exact ne_of_gt (pow_pos ha₂ n)
-  simp only [log, ← cfc_pow_id n a ha₁, ← cfc_comp Real.log (· ^ n) a ha₁ ha₂'']
+  rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp Real.log (· ^ n) a ha₁ ha₂'', log]
   have hmain : Real.log ∘ (· ^ n) = fun z => n • Real.log z := by ext; simp
   rw [hmain, cfc_smul n Real.log a ha₂']
 
