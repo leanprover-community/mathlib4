@@ -95,6 +95,11 @@ def polar (f : M → R) (x y : M) :=
   f (x + y) - f x - f y
 #align quadratic_form.polar QuadraticForm.polar
 
+theorem map_add_eq_polar (f : M → R) (x y : M) :
+    f (x + y) = f x + f y + polar f x y := by
+  rw [polar]
+  abel
+
 theorem polar_add (f g : M → R) (x y : M) : polar (f + g) x y = polar f x y + polar g x y := by
   simp only [polar, Pi.add_apply]
   abel
