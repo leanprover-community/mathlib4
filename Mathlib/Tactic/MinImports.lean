@@ -7,8 +7,10 @@ import ImportGraph.Imports
 
 /-! # `#min_imps` a command to find minimal imports
 
-`#min_imps cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
-to find a collection of minimal imports that should be sufficient for `cmd` to work.
+`#min_imps stx` scans the syntax `stx` to find a collection of minimal imports that should be
+sufficient for `stx` to make sense.
+If `stx` is a command, then it also elaborates `stx` and, in case it is a declaration, then
+it also finds the imports implied by the declaration.
 
 Unlike the related `#find_home`, this command takes into account notation and tactic information.
 -/
@@ -33,18 +35,18 @@ def getVisited (env : Environment) (decl : Name) : NameSet :=
   let (_, { visited, .. }) := CollectAxioms.collect decl |>.run env |>.run {}
   visited
 
-def getDeclId (stx : Syntax) : Syntax :=
-  (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD default
-
+/-- `getId stx` takes as input a `Syntax` `stx`.
+If `stx` contains a `declId`, then it returns the `ident`-syntax for the `declId`.
+Otherwise it returns `stx` itself. -/
 def getId (stx : Syntax) : Syntax :=
   match stx.find? (·.isOfKind ``Lean.Parser.Command.declId) with
     | some declId => declId[0]
     | none => stx
 
-/--`getSyntaxImports cmd` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/--`getAllImports cmd` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by the `SyntaxNodeKinds` and the identifiers contained in `cmd`. -/
-def getSyntaxImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m]
-    [MonadQuotation m] (cmd : Syntax) (dbg? : Bool := false) :
+def getAllImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m]
+    (cmd : Syntax) (dbg? : Bool := false) :
     m NameSet := do
   let env ← getEnv
   --let nm ← liftCoreM do realizeGlobalConstNoOverloadWithInfo (getId cmd)
@@ -63,16 +65,28 @@ def getSyntaxImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEn
         if !fins.contains new then fins := fins.insert new
   return fins
 
-def getAllImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m] [MonadQuotation m]
+/-- `getIrredundantImports cmd` takes a `Syntax` input `cmd`.
+It returns the `NameSet` consisting of a minimal collection of module names whose transitive
+closure is enough to parse (and elaborate) `cmd`. -/
+def getIrredundantImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m]
     (stx : Syntax) : m NameSet := do
   let env ← getEnv
-  let fins ← getSyntaxImports stx --true
+  let fins ← getAllImports stx --true
   let mut tot := fins.erase default
   let redundant := env.findRedundantImports tot.toArray
   return tot.diff redundant
 
+/-- `minImpsCore stx` is the internal function to elaborate the `#min_imps` command.
+It collects the irredundant imports to parse and elaborate `stx` and logs
+```lean
+import A
+import B
+...
+import Z
+```
+ -/
 def minImpsCore (stx : Syntax) : CommandElabM Unit := do
-    let tot ← getAllImports stx
+    let tot ← getIrredundantImports stx
     let fileNames := tot.toArray.qsort Name.lt
     --let fileNames := if tk.isSome then (fileNames).filter (`Mathlib).isPrefixOf else fileNames
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
