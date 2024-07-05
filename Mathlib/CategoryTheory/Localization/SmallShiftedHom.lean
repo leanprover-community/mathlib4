@@ -92,12 +92,11 @@ variable (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M]
 /-- Given `f : SmallHom W X Y` and `a : M`, this is the element
 in `SmallHom W (X⟦a⟧) (Y⟦a⟧)` obtained by shifting by `a`. -/
 noncomputable def shift : SmallHom.{w} W (X⟦a⟧) (Y⟦a⟧) :=
-  (LocalizerMorphism.mk (shiftFunctor C a)
-    (by rw [MorphismProperty.IsCompatibleWithShift.condition])).smallHomMap f
+  (W.shiftLocalizerMorphism a).smallHomMap f
 
 lemma equiv_shift : equiv W L (f.shift a) =
     (L.commShiftIso a).hom.app X ≫ (equiv W L f)⟦a⟧' ≫ (L.commShiftIso a).inv.app Y :=
-  (LocalizerMorphism.mk (shiftFunctor C a) _).equiv_smallHomMap _ _ _ (L.commShiftIso a) f
+  (W.shiftLocalizerMorphism a).equiv_smallHomMap _ _ _ (L.commShiftIso a) f
 
 end SmallHom
 
@@ -139,7 +138,7 @@ variable (L : C ⥤ D) [L.IsLocalization W] [HasShift D M] [L.CommShift M]
   {X Y Z T : C}
 
 /-- The bijection `SmallShiftedHom.{w} W X Y m ≃ ShiftedHom (L.obj X) (L.obj Y) m`
-for all `m : M`, and `X` and `Y` in `C`m when `L : C ⥤ D` is a localization functor for
+for all `m : M`, and `X` and `Y` in `C` when `L : C ⥤ D` is a localization functor for
 `W : MorphismProperty C` such that the category `D` is equipped with a shift by `M`
 and `L` commutes with the shifts. -/
 noncomputable def equiv [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} :

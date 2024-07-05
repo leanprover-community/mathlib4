@@ -223,6 +223,11 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
       (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
     exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
 
+<<<<<<< HEAD
+=======
+variable (C)
+
+>>>>>>> origin
 /-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
 their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (DerivedCategory C) ℤ :=
