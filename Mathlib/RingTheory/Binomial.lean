@@ -312,7 +312,7 @@ theorem multichoose_succ_neg_natCast [NatPowAssoc R] (n : ℕ) :
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_neg_nat,
     smeval_ascPochhammer_succ_neg n, Int.cast_zero]
 
-theorem smeval_ascPochhammer_int_ofNat [NatPowAssoc R] (r : R) : ∀ (n : ℕ),
+theorem smeval_ascPochhammer_int_ofNat [NatPowAssoc R] (r : R) : ∀ n : ℕ,
     smeval (ascPochhammer ℤ n) r = smeval (ascPochhammer ℕ n) r
   | 0 => by
     simp only [ascPochhammer_zero, smeval_one]
