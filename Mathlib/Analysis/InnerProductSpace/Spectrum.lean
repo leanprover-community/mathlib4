@@ -459,7 +459,7 @@ theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
       Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
       SetLike.mem_coe] at *
     intro i hi
-    sorry
+    sorry --somehow have to recast this infimum over functions...but this may be ugly
   · sorry
 
 theorem base [Subsingleton n]:
