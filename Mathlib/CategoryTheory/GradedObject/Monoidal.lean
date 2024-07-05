@@ -22,6 +22,12 @@ given `X₁` and `X₂` two objects in `GradedObject I C`, we define
 `GradedObject.Monoidal.tensorObj X₁ X₂` under the assumption `HasTensor X₁ X₂`
 that the coproduct of `X₁ i ⊗ X₂ j` for `i + j = n` exists for any `n : I`.
 
+Under suitable assumptions about the existence of coproducts and the
+preservation of certain coproducts by the tensor products in `C`, we
+obtain a monoidal category structure on `GradedObject I C`.
+In particular, if `C` has finite coproducts to which the tensor
+product commutes, we obtain a monoidal category structure on `GradedObject I ℕ`.
+
 -/
 
 universe u v₁ v₂ u₁ u₂
@@ -381,53 +387,46 @@ variable (X₁ X₂ X₃ X₄ : GradedObject I C)
   [HasTensor₄ObjExt X₁ X₂ X₃ X₄]
 
 @[reassoc]
+lemma whiskerLeft_whiskerLeft_associator_inv
+    (X Y : C) {Z₁ Z₂ : C} (f : Z₁ ⟶ Z₂) :
+    X ◁ Y ◁ f ≫ (α_ _ _ _).inv = (α_ _ _ _).inv ≫ _ ◁ f := by simp
+
+@[reassoc]
 lemma pentagon_inv :
     tensorHom (𝟙 X₁) (associator X₂ X₃ X₄).inv ≫ (associator X₁ (tensorObj X₂ X₃) X₄).inv ≫
         tensorHom (associator X₁ X₂ X₃).inv (𝟙 X₄) =
     (associator X₁ X₂ (tensorObj X₃ X₄)).inv ≫ (associator (tensorObj X₁ X₂) X₃ X₄).inv := by
   ext j i₁ i₂ i₃ i₄ h
   dsimp
-  -- this proof needs some cleaning up because it uses
-  -- lemmas id_tensorHom/tensorHom_id back and forth...
-  -- working on the LHS
-  conv_lhs => rw [ιTensorObj₄_eq X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ j h _ rfl, assoc, ι_tensorHom_assoc,
-    categoryOfGradedObjects_id, ← id_tensorHom,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp,
-    ιTensorObj₃_associator_inv, ιTensorObj₃'_eq X₂ X₃ X₄ i₂ i₃ i₄ _ rfl _ rfl,
-    id_tensor_comp, id_tensor_comp, assoc, assoc,
-    id_tensorHom, id_tensorHom, id_tensorHom,
-    ← ιTensorObj₃_eq_assoc X₁ (tensorObj X₂ X₃) X₄ i₁ (i₂ + i₃) i₄ j
-      (by simp only [← add_assoc, h]) _ rfl, ιTensorObj₃_associator_inv_assoc,
-    ιTensorObj₃'_eq X₁ (tensorObj X₂ X₃) X₄ i₁ (i₂ + i₃) i₄ j
-      (by simp only [← add_assoc, h]) (i₁ + i₂ + i₃) (by rw [add_assoc]),
-    assoc, ι_tensorHom, categoryOfGradedObjects_id,
-    ← id_tensorHom, ← id_tensorHom, ← tensorHom_id, associator_inv_naturality_assoc,
-    ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, id_comp,
-    ← MonoidalCategory.tensor_comp_assoc, id_comp, assoc, id_tensorHom, id_tensorHom,
-    ← ιTensorObj₃_eq_assoc X₁ X₂ X₃ i₁ i₂ i₃ _ rfl _ rfl,
-    ιTensorObj₃_associator_inv, comp_tensor_id, assoc, tensorHom_id, pentagon_inv_assoc,
-    tensorHom_id]
-  -- working on the RHS
-  have H := (ιTensorObj X₁ X₂ i₁ i₂ _ rfl ⊗ 𝟙 _) ≫=
-    ιTensorObj₃_associator_inv (tensorObj X₁ X₂) X₃ X₄ (i₁ + i₂) i₃ i₄ j h
-  rw [ιTensorObj₃_eq (tensorObj X₁ X₂) X₃ X₄ (i₁ + i₂) i₃ i₄ j h _ rfl, assoc,
-    ← id_tensorHom,
-    ← MonoidalCategory.tensor_comp_assoc, comp_id, id_comp] at H
-  conv_rhs => rw [ιTensorObj₄_eq X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ _ _ _ rfl,
-    ιTensorObj₃_eq X₂ X₃ X₄ i₂ i₃ i₄ _ rfl _ rfl, ← id_tensorHom, id_tensor_comp, assoc,
-    id_tensorHom, id_tensorHom, assoc,
-    ← ιTensorObj₃_eq_assoc X₁ X₂ (tensorObj X₃ X₄) i₁ i₂ (i₃ + i₄) j
-      (by rw [← add_assoc, h]) (i₂ + i₃ + i₄) (by rw [add_assoc]),
-    ιTensorObj₃_associator_inv_assoc, ← id_tensorHom, ← id_tensorHom,
-    associator_inv_naturality_assoc,
-    ιTensorObj₃'_eq X₁ X₂ (tensorObj X₃ X₄) i₁ i₂ (i₃ + i₄) j (by rw [← add_assoc, h]) _ rfl,
-    assoc,
-    ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, comp_id, tensorHom_id,
-    id_whiskerRight, id_comp, H,
-    ← MonoidalCategory.tensor_id, MonoidalCategory.associator_inv_naturality_assoc,
-    ιTensorObj₃'_eq (tensorObj X₁ X₂) X₃ X₄ (i₁ + i₂) i₃ i₄ j h _ rfl,
-    tensorHom_id, tensorHom_id, ← MonoidalCategory.comp_whiskerRight_assoc,
-    ← ιTensorObj₃'_eq X₁ X₂ X₃ i₁ i₂ i₃ _ rfl _ rfl]
+  conv_lhs =>
+    rw [ιTensorObj₄_eq X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ j h _ rfl, assoc, ι_tensorHom_assoc]
+    dsimp
+    rw [id_tensorHom, ← MonoidalCategory.whiskerLeft_comp_assoc, ιTensorObj₃_associator_inv,
+      ιTensorObj₃'_eq X₂ X₃ X₄ i₂ i₃ i₄ _ rfl _ rfl, MonoidalCategory.whiskerLeft_comp_assoc,
+      MonoidalCategory.whiskerLeft_comp_assoc,
+      ← ιTensorObj₃_eq_assoc X₁ (tensorObj X₂ X₃) X₄ i₁ (i₂ + i₃) i₄ j
+        (by simp only [← add_assoc, h]) _ rfl, ιTensorObj₃_associator_inv_assoc,
+      ιTensorObj₃'_eq_assoc X₁ (tensorObj X₂ X₃) X₄ i₁ (i₂ + i₃) i₄ j
+        (by simp only [← add_assoc, h]) (i₁ + i₂ + i₃) (by rw [add_assoc]), ι_tensorHom]
+    dsimp
+    rw [tensorHom_id, whisker_assoc_symm_assoc, Iso.hom_inv_id_assoc,
+      ← MonoidalCategory.comp_whiskerRight_assoc, ← MonoidalCategory.comp_whiskerRight_assoc,
+      ← ιTensorObj₃_eq X₁ X₂ X₃ i₁ i₂ i₃ _ rfl _ rfl, ιTensorObj₃_associator_inv,
+      MonoidalCategory.comp_whiskerRight_assoc, MonoidalCategory.pentagon_inv_assoc]
+  conv_rhs =>
+    rw [ιTensorObj₄_eq X₁ X₂ X₃ X₄ i₁ i₂ i₃ i₄ _ _ _ rfl,
+      ιTensorObj₃_eq X₂ X₃ X₄ i₂ i₃ i₄ _ rfl _ rfl, assoc,
+      MonoidalCategory.whiskerLeft_comp_assoc,
+      ← ιTensorObj₃_eq_assoc X₁ X₂ (tensorObj X₃ X₄) i₁ i₂ (i₃ + i₄) j
+        (by rw [← add_assoc, h]) (i₂ + i₃ + i₄) (by rw [add_assoc]),
+      ιTensorObj₃_associator_inv_assoc, whiskerLeft_whiskerLeft_associator_inv_assoc,
+      ιTensorObj₃'_eq_assoc X₁ X₂ (tensorObj X₃ X₄) i₁ i₂ (i₃ + i₄) j
+        (by rw [← add_assoc, h]) _ rfl, whisker_exchange_assoc,
+      ← ιTensorObj₃_eq_assoc (tensorObj X₁ X₂) X₃ X₄ (i₁ + i₂) i₃ i₄ j h _ rfl,
+      ιTensorObj₃_associator_inv, whiskerRight_tensor_assoc, Iso.hom_inv_id_assoc,
+      ιTensorObj₃'_eq (tensorObj X₁ X₂) X₃ X₄ (i₁ + i₂) i₃ i₄ j h _ rfl,
+      ← MonoidalCategory.comp_whiskerRight_assoc,
+      ← ιTensorObj₃'_eq X₁ X₂ X₃ i₁ i₂ i₃ _ rfl _ rfl]
 
 lemma pentagon : tensorHom (associator X₁ X₂ X₃).hom (𝟙 X₄) ≫
     (associator X₁ (tensorObj X₂ X₃) X₄).hom ≫ tensorHom (𝟙 X₁) (associator X₂ X₃ X₄).hom =
@@ -571,7 +570,7 @@ noncomputable instance monoidalCategory : MonoidalCategory (GradedObject I C) wh
   pentagon X₁ X₂ X₃ X₄ := Monoidal.pentagon X₁ X₂ X₃ X₄
   triangle X₁ X₂ := Monoidal.triangle X₁ X₂
 
-variable {A : C} (X₁ X₂ X₃ X₄ Y₁ Y₂ : GradedObject I C)
+/-variable {A : C} (X₁ X₂ X₃ X₄ Y₁ Y₂ : GradedObject I C)
 
 noncomputable def tensorObjIso :
     X₁ ⊗ X₂ ≅ mapBifunctorMapObj (curriedTensor C) (fun ⟨i, j⟩ => i + j) X₁ X₂ := Iso.refl _
@@ -617,7 +616,7 @@ lemma ι_descTensor (j : I) (f : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = j), X₁
 lemma tensorObj_ext {j : I} (f g : (X₁ ⊗ X₂) j ⟶ A)
     (h : ∀ (i₁ i₂ : I) (hi : i₁ + i₂ = j),
       ιTensorObj X₁ X₂ i₁ i₂ j hi ≫ f = ιTensorObj X₁ X₂ i₁ i₂ j hi ≫ g) : f = g :=
-  Monoidal.tensorObj_ext f g h
+  Monoidal.tensorObj_ext f g h-/
 
 end
 
