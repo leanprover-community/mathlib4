@@ -151,10 +151,13 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X} (hU : IsCompact (U : Set 
     exact Set.Subset.rfl
 #align algebraic_geometry.is_compact_basic_open AlgebraicGeometry.isCompact_basicOpen
 
+instance : QuasiCompact.affineProperty.toProperty.RespectsIso := by
+  apply AffineTargetMorphismProperty.respectsIso_mk <;> rintro X Y Z e _ _ H
+  exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.1.base)), H]
+
 theorem QuasiCompact.affineProperty_isLocal : (QuasiCompact.affineProperty : _).IsLocal := by
   constructor
-  · apply AffineTargetMorphismProperty.respectsIso_mk <;> rintro X Y Z e _ _ H
-    exacts [@Homeomorph.compactSpace _ _ _ _ H (TopCat.homeoOfIso (asIso e.inv.1.base)), H]
+  · infer_instance
   · introv H
     dsimp [affineProperty] at H ⊢
     change CompactSpace ((Opens.map f.val.base).obj (Y.basicOpen r))
@@ -231,9 +234,9 @@ theorem QuasiCompact.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{
     QuasiCompact.affineProperty_isLocal.targetAffineLocally_isLocal.openCover_iff f 𝒰
 #align algebraic_geometry.quasi_compact.open_cover_iff AlgebraicGeometry.QuasiCompact.openCover_iff
 
-theorem quasiCompact_respectsIso : MorphismProperty.RespectsIso @QuasiCompact :=
-  quasiCompact_eq_affineProperty.symm ▸
-    targetAffineLocally_respectsIso QuasiCompact.affineProperty_isLocal.1
+instance quasiCompact_respectsIso : MorphismProperty.RespectsIso @QuasiCompact := by
+  rw [quasiCompact_eq_affineProperty]
+  infer_instance
 #align algebraic_geometry.quasi_compact_respects_iso AlgebraicGeometry.quasiCompact_respectsIso
 
 instance quasiCompact_isStableUnderComposition :
