@@ -41,36 +41,43 @@ variable [CommRing K] [IsDomain K]
 
 /-- `RatFunc.C a` is the constant rational function `a`. -/
 def C : K →+* RatFunc K := algebraMap _ _
-set_option linter.uppercaseLean3 false in #align ratfunc.C RatFunc.C
+set_option linter.uppercaseLean3 false in
+#align ratfunc.C RatFunc.C
 
 @[simp]
 theorem algebraMap_eq_C : algebraMap K (RatFunc K) = C :=
   rfl
-set_option linter.uppercaseLean3 false in #align ratfunc.algebra_map_eq_C RatFunc.algebraMap_eq_C
+set_option linter.uppercaseLean3 false in
+#align ratfunc.algebra_map_eq_C RatFunc.algebraMap_eq_C
 
 @[simp]
 theorem algebraMap_C (a : K) : algebraMap K[X] (RatFunc K) (Polynomial.C a) = C a :=
   rfl
-set_option linter.uppercaseLean3 false in #align ratfunc.algebra_map_C RatFunc.algebraMap_C
+set_option linter.uppercaseLean3 false in
+#align ratfunc.algebra_map_C RatFunc.algebraMap_C
 
 @[simp]
 theorem algebraMap_comp_C : (algebraMap K[X] (RatFunc K)).comp Polynomial.C = C :=
   rfl
-set_option linter.uppercaseLean3 false in #align ratfunc.algebra_map_comp_C RatFunc.algebraMap_comp_C
+set_option linter.uppercaseLean3 false in
+#align ratfunc.algebra_map_comp_C RatFunc.algebraMap_comp_C
 
 theorem smul_eq_C_mul (r : K) (x : RatFunc K) : r • x = C r * x := by
   rw [Algebra.smul_def, algebraMap_eq_C]
-set_option linter.uppercaseLean3 false in #align ratfunc.smul_eq_C_mul RatFunc.smul_eq_C_mul
+set_option linter.uppercaseLean3 false in
+#align ratfunc.smul_eq_C_mul RatFunc.smul_eq_C_mul
 
 /-- `RatFunc.X` is the polynomial variable (aka indeterminate). -/
 def X : RatFunc K :=
   algebraMap K[X] (RatFunc K) Polynomial.X
-set_option linter.uppercaseLean3 false in #align ratfunc.X RatFunc.X
+set_option linter.uppercaseLean3 false in
+#align ratfunc.X RatFunc.X
 
 @[simp]
 theorem algebraMap_X : algebraMap K[X] (RatFunc K) Polynomial.X = X :=
   rfl
-set_option linter.uppercaseLean3 false in #align ratfunc.algebra_map_X RatFunc.algebraMap_X
+set_option linter.uppercaseLean3 false in
+#align ratfunc.algebra_map_X RatFunc.algebraMap_X
 
 end Domain
 
@@ -81,26 +88,31 @@ variable [Field K]
 @[simp]
 theorem num_C (c : K) : num (C c) = Polynomial.C c :=
   num_algebraMap _
-set_option linter.uppercaseLean3 false in #align ratfunc.num_C RatFunc.num_C
+set_option linter.uppercaseLean3 false in
+#align ratfunc.num_C RatFunc.num_C
 
 @[simp]
 theorem denom_C (c : K) : denom (C c) = 1 :=
   denom_algebraMap _
-set_option linter.uppercaseLean3 false in #align ratfunc.denom_C RatFunc.denom_C
+set_option linter.uppercaseLean3 false in
+#align ratfunc.denom_C RatFunc.denom_C
 
 @[simp]
 theorem num_X : num (X : RatFunc K) = Polynomial.X :=
   num_algebraMap _
-set_option linter.uppercaseLean3 false in #align ratfunc.num_X RatFunc.num_X
+set_option linter.uppercaseLean3 false in
+#align ratfunc.num_X RatFunc.num_X
 
 @[simp]
 theorem denom_X : denom (X : RatFunc K) = 1 :=
   denom_algebraMap _
-set_option linter.uppercaseLean3 false in #align ratfunc.denom_X RatFunc.denom_X
+set_option linter.uppercaseLean3 false in
+#align ratfunc.denom_X RatFunc.denom_X
 
 theorem X_ne_zero : (X : RatFunc K) ≠ 0 :=
   RatFunc.algebraMap_ne_zero Polynomial.X_ne_zero
-set_option linter.uppercaseLean3 false in #align ratfunc.X_ne_zero RatFunc.X_ne_zero
+set_option linter.uppercaseLean3 false in
+#align ratfunc.X_ne_zero RatFunc.X_ne_zero
 
 variable {L : Type u} [Field L]
 
@@ -129,11 +141,13 @@ variable (f a)
 
 @[simp]
 theorem eval_C {c : K} : eval f a (C c) = f c := by simp [eval]
-set_option linter.uppercaseLean3 false in #align ratfunc.eval_C RatFunc.eval_C
+set_option linter.uppercaseLean3 false in
+#align ratfunc.eval_C RatFunc.eval_C
 
 @[simp]
 theorem eval_X : eval f a X = a := by simp [eval]
-set_option linter.uppercaseLean3 false in #align ratfunc.eval_X RatFunc.eval_X
+set_option linter.uppercaseLean3 false in
+#align ratfunc.eval_X RatFunc.eval_X
 
 @[simp]
 theorem eval_zero : eval f a 0 = 0 := by simp [eval]

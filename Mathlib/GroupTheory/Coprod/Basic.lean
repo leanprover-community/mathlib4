@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.PUnitInstances
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
 # Coproduct (free product) of two monoids or groups
@@ -191,7 +191,7 @@ theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
     (inl_mul : ∀ m x, C x → C (inl m * x))
     (inr_mul : ∀ n x, C x → C (inr n * x)) : C m := by
   rcases mk_surjective m with ⟨x, rfl⟩
-  induction x using FreeMonoid.recOn with
+  induction x with
   | h0 => exact one
   | ih x xs ih =>
     cases x with
@@ -573,7 +573,7 @@ theorem mk_of_inv_mul : ∀ x : G ⊕ H, mk (of (x.map Inv.inv Inv.inv)) * mk (o
 theorem con_mul_left_inv (x : FreeMonoid (G ⊕ H)) :
     coprodCon G H (ofList (x.toList.map (Sum.map Inv.inv Inv.inv)).reverse * x) 1 := by
   rw [← mk_eq_mk, map_mul, map_one]
-  induction x using FreeMonoid.recOn with
+  induction x with
   | h0 => simp [map_one mk] -- TODO: fails without `[map_one mk]`
   | ih x xs ihx =>
     simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ihx, ofList_singleton]

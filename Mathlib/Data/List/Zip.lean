@@ -259,44 +259,63 @@ theorem reverse_revzip (l : List α) : reverse l.revzip = revzip l.reverse := by
 theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse := by simp [revzip]
 #align list.revzip_swap List.revzip_swap
 
-theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
-    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
+theorem getElem?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
+    (zipWith f l₁ l₂)[i]? = (l₁[i]?.map f).bind fun g => l₂[i]?.map g := by
   induction' l₁ with head tail generalizing l₂ i
   · rw [zipWith] <;> simp
   · cases l₂
-    · simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
-      cases (head :: tail).get? i <;> rfl
-    · cases i <;> simp only [Option.map_some', get?, Option.some_bind', *]
+    · simp
+    · cases i <;> simp_all
+
+theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
+    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
+  simp [getElem?_zip_with]
 #align list.nth_zip_with List.get?_zip_with
 
-theorem get?_zip_with_eq_some {α β γ} (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+theorem getElem?_zip_with_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+    (zipWith f l₁ l₂)[i]? = some z ↔
+      ∃ x y, l₁[i]? = some x ∧ l₂[i]? = some y ∧ f x y = z := by
+  induction l₁ generalizing l₂ i
+  · simp
+  · cases l₂ <;> cases i <;> simp_all
+
+theorem get?_zip_with_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂).get? i = some z ↔
       ∃ x y, l₁.get? i = some x ∧ l₂.get? i = some y ∧ f x y = z := by
-  induction l₁ generalizing l₂ i
-  · simp [zipWith]
-  · cases l₂ <;> simp only [zipWith, get?, exists_false, and_false_iff, false_and_iff]
-    cases i <;> simp [*]
+  simp [getElem?_zip_with_eq_some]
 #align list.nth_zip_with_eq_some List.get?_zip_with_eq_some
 
-theorem get?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
-    (zip l₁ l₂).get? i = some z ↔ l₁.get? i = some z.1 ∧ l₂.get? i = some z.2 := by
+theorem getElem?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
+    (zip l₁ l₂)[i]? = some z ↔ l₁[i]? = some z.1 ∧ l₂[i]? = some z.2 := by
   cases z
-  rw [zip, get?_zip_with_eq_some]; constructor
+  rw [zip, getElem?_zip_with_eq_some]; constructor
   · rintro ⟨x, y, h₀, h₁, h₂⟩
     simpa [h₀, h₁] using h₂
   · rintro ⟨h₀, h₁⟩
     exact ⟨_, _, h₀, h₁, rfl⟩
+
+theorem get?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
+    (zip l₁ l₂).get? i = some z ↔ l₁.get? i = some z.1 ∧ l₂.get? i = some z.2 := by
+  simp [getElem?_zip_eq_some]
 #align list.nth_zip_eq_some List.get?_zip_eq_some
 
 @[simp]
+theorem getElem_zipWith {f : α → β → γ} {l : List α} {l' : List β}
+    {i : Nat} {h : i < (zipWith f l l').length} :
+    (zipWith f l l')[i] =
+      f (l[i]'(lt_length_left_of_zipWith h))
+        (l'[i]'(lt_length_right_of_zipWith h)) := by
+  rw [← Option.some_inj, ← getElem?_eq_getElem, getElem?_zip_with_eq_some]
+  exact
+    ⟨l[i]'(lt_length_left_of_zipWith h), l'[i]'(lt_length_right_of_zipWith h),
+      by rw [getElem?_eq_getElem], by rw [getElem?_eq_getElem]; exact ⟨rfl, rfl⟩⟩
+
+@[deprecated getElem_zipWith (since := "2024-06-12")]
 theorem get_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : Fin (zipWith f l l').length} :
     (zipWith f l l').get i =
       f (l.get ⟨i, lt_length_left_of_zipWith i.isLt⟩)
         (l'.get ⟨i, lt_length_right_of_zipWith i.isLt⟩) := by
-  rw [← Option.some_inj, ← get?_eq_get, get?_zip_with_eq_some]
-  exact
-    ⟨l.get ⟨i, lt_length_left_of_zipWith i.isLt⟩, l'.get ⟨i, lt_length_right_of_zipWith i.isLt⟩,
-      by rw [get?_eq_get], by rw [get?_eq_get]; exact ⟨rfl, rfl⟩⟩
+  simp
 
 set_option linter.deprecated false in
 @[simp, deprecated get_zipWith (since := "2024-05-09")]
@@ -308,10 +327,16 @@ theorem nthLe_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : �
 #align list.nth_le_zip_with List.nthLe_zipWith
 
 @[simp]
+theorem getElem_zip {l : List α} {l' : List β} {i : Nat} {h : i < (zip l l').length} :
+    (zip l l')[i] =
+      (l[i]'(lt_length_left_of_zip h), l'[i]'(lt_length_right_of_zip h)) :=
+  getElem_zipWith
+
+@[deprecated getElem_zip (since := "2024-06-12")]
 theorem get_zip {l : List α} {l' : List β} {i : Fin (zip l l').length} :
     (zip l l').get i =
-      (l.get ⟨i, lt_length_left_of_zip i.isLt⟩, l'.get ⟨i, lt_length_right_of_zip i.isLt⟩) :=
-  get_zipWith
+      (l.get ⟨i, lt_length_left_of_zip i.isLt⟩, l'.get ⟨i, lt_length_right_of_zip i.isLt⟩) := by
+  simp
 
 set_option linter.deprecated false in
 @[simp, deprecated get_zip (since := "2024-05-09")]

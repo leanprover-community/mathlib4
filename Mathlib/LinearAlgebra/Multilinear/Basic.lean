@@ -10,6 +10,7 @@ import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.Logic.Equiv.Fintype
+import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -1301,7 +1302,6 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
   ⟨fun f g =>
     ⟨fun m => f m - g m, fun m i x y => by
       simp only [MultilinearMap.map_add, sub_eq_add_neg, neg_add]
-      -- Porting note: used to be `cc`
       abel,
       fun m i c x => by simp only [MultilinearMap.map_smul, smul_sub]⟩⟩
 

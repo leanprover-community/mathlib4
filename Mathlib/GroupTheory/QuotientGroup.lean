@@ -7,7 +7,7 @@ This file is to a certain extent based on `quotient_module.lean` by Johannes Hö
 -/
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Coset
 
 #align_import group_theory.quotient_group from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"

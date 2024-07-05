@@ -105,8 +105,7 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
   · by_cases hn : n = 0
     · rwa [hn, pow_zero, pow_one] at h
     rw [hp, zero_pow hn, pow_zero] at h
-    haveI := subsingleton_of_zero_eq_one h.symm
-    exact Subsingleton.elim _ _
+    subsingleton [subsingleton_of_zero_eq_one h.symm]
   rwa [hp, one_pow, pow_one] at h
 
 theorem sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [CommRing R] {p : ℕ} [ExpChar R p]
