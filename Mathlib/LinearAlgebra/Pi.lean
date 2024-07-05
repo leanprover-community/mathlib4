@@ -8,6 +8,7 @@ import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.Module.Equiv.Basic
 
 #align_import linear_algebra.pi from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
