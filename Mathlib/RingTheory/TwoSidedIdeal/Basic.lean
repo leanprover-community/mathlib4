@@ -15,9 +15,10 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 
 ## Main definitions and results
 
-* `TwoSidedIdeal`: For any `NonUnitalNonAssocRing R`, `TwoSidedIdeal R` is the exactly `RingCon R`.
+* `TwoSidedIdeal`: For any `NonUnitalNonAssocRing R`, `TwoSidedIdeal R` is a wrapper around
+  `RingCon R`.
 * `TwoSidedIdeal.setLike`: Every `I : TwoSidedIdeal R` can be interpreted as a set of `R` where
-  `x ∈ I` if and only if `I x 0`.
+  `x ∈ I` if and only if `I.ringCon x 0`.
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
 
 
@@ -90,6 +91,11 @@ lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa usin
 
 lemma neg_mem {x} (hx : x ∈ I) : -x ∈ I := by simpa using I.ringCon.neg hx
 
+instance : AddSubgroupClass (TwoSidedIdeal R) R where
+  zero_mem := zero_mem
+  add_mem := @add_mem _ _
+  neg_mem := @neg_mem _ _
+
 lemma sub_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x - y ∈ I := by simpa using I.ringCon.sub hx hy
 
 lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
@@ -141,11 +147,6 @@ lemma mem_mk' (carrier : Set R)
     x ∈ mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right ↔ x ∈ carrier := by
   rw [mem_iff]
   simp [mk']
-
-instance : AddSubgroupClass (TwoSidedIdeal R) R where
-  zero_mem := zero_mem
-  add_mem := @add_mem _ _
-  neg_mem := @neg_mem _ _
 
 instance : SMulMemClass (TwoSidedIdeal R) R R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h
