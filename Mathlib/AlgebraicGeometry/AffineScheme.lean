@@ -296,7 +296,7 @@ lemma map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (h : op U ⟶ op V):
     rw [fromSpec, ← X.restrictFunctor_map_ofRestrict h.unop, ← Scheme.isoSpec_inv_naturality_assoc,
       ← Spec.map_comp_assoc, Scheme.restrictFunctor_map_app, ← Functor.map_comp]
   rw [fromSpec, ← Spec.map_comp_assoc, ← Functor.map_comp]
-  congr 1
+  rfl
 
 protected theorem isCompact :
     IsCompact (U : Set X) := by

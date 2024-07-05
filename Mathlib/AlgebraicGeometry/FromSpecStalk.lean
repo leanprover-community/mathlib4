@@ -8,9 +8,8 @@ import Mathlib.AlgebraicGeometry.AffineScheme
 /-!
 # The Canonical Map from the Spectrum of a Stalk to the Original Scheme
 
-In this file, we define:
 Given a scheme `X` and a point `x : X`, `AlgebraicGeometry.Scheme.fromSpecStalk X x` is the
-canonical scheme morphism from Spec(O_`x`) to `X`.
+canonical scheme morphism from `Spec(O_x)` to `X`.
 
 This is helpful for constructing the canonical map from the spectrum of the residue field of a point
 to the original scheme.
@@ -21,16 +20,15 @@ namespace AlgebraicGeometry
 open CategoryTheory Opposite TopologicalSpace
 
 /--
-A morphism from Spec(O_`x`) to `X`, which is defined with the help of an affine open
+A morphism from `Spec(O_x)` to `X`, which is defined with the help of an affine open
 neighborhood `U` of `x`.
-`IsAffineOpen.fromSpecStalk hU hxU = Spec.map (X.presheaf.germ ⟨x, hxU⟩) ≫ hU.fromSpec`.
 -/
 noncomputable def IsAffineOpen.fromSpecStalk {X : Scheme} {U : TopologicalSpace.Opens X}
     (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) : Spec (X.stalk x) ⟶ X :=
   Spec.map (X.presheaf.germ ⟨x, hxU⟩) ≫ hU.fromSpec
 
 /--
-The morphism from Spec(O_`x`) to `X` given by `IsAffineOpen.fromSpec` does not depend on the affine
+The morphism from `Spec(O_x)` to `X` given by `IsAffineOpen.fromSpec` does not depend on the affine
 open neighborhood of `x` we choose.
 -/
 lemma IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : TopologicalSpace.Opens X}
@@ -51,11 +49,9 @@ lemma IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : TopologicalSpace
       Quiver.Hom.unop_op]
 
 /--
-The canonical scheme morphism from Spec(O_`x`) to `X`.
-`Scheme.fromSpecStalk X x` is defined as:
-`(isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)`
+If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`.
 -/
-noncomputable def Scheme.FromSpecStalk (X : Scheme) (x : X) :
+noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
     Scheme.Spec.obj (op (X.stalk x)) ⟶ X :=
   (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
 
