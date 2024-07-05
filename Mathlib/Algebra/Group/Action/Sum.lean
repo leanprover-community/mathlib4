@@ -14,12 +14,13 @@ This file defines instances for additive and multiplicative actions on the binar
 
 ## See also
 
-* `GroupTheory.GroupAction.Option`
-* `GroupTheory.GroupAction.Pi`
-* `GroupTheory.GroupAction.Prod`
-* `GroupTheory.GroupAction.Sigma`
+* `Mathlib.Algebra.Group.Action.Option`
+* `Mathlib.Algebra.Group.Action.Pi`
+* `Mathlib.Algebra.Group.Action.Prod`
+* `Mathlib.Algebra.Group.Action.Sigma`
 -/
 
+assert_not_exists MonoidWithZero
 
 variable {M N P α β γ : Type*}
 
