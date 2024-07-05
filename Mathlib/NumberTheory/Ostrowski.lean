@@ -67,7 +67,7 @@ end Filter
 namespace Real
 
 /-- `Nat.log` is less than or equal to `Real.log`. -/
-lemma nat_log_le_real_log {a b : ℕ} (_ : 0 < a) (hb : 1 < b) : Nat.log b a ≤ Real.logb b a := by
+lemma nat_log_le_real_log {a b : ℕ}  (hb : 1 < b) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
   simp only [Real.floor_logb_natCast hb (Nat.cast_nonneg a), Int.log_natCast, Int.cast_natCast,
     le_refl]
@@ -328,7 +328,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} 
         apply mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg n₀)
         push_cast
         simp only [add_le_add_iff_right]
-        exact nat_log_le_real_log hm hn₀
+        exact nat_log_le_real_log hn₀
       · simp_all only [List.mem_map, Prod.exists, Function.uncurry_apply_pair, exists_and_right,
           and_imp, implies_true, forall_exists_index, forall_const]
   -- For h_ineq2 we need to exclude the case n = 0.
