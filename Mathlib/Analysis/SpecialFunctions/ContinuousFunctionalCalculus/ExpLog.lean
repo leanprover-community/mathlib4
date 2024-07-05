@@ -32,18 +32,12 @@ Since `cfc Real.exp` and `cfc Complex.exp` are strictly less general than `Norme
 definitions for them.
 -/
 
-namespace CFC
+open NormedSpace
 
-section RCLikeNormed
+section general_exponential
+variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [CompactSpace α]
 
-variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [PartialOrder A] [NormedRing A]
-  [StarRing A] [StarOrderedRing A] [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 p]
-  [UniqueContinuousFunctionalCalculus 𝕜 A]
-
--- MOVEME to `Mathlib.Analysis.NormedSpace.Spectrum`
-open NormedSpace in
-lemma exp_continuousMap_eq {α : Type*} [TopologicalSpace α] [CompactSpace α] (f : C(α, 𝕜)) :
+lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
     exp 𝕜 f = (⟨exp 𝕜 ∘ f, Continuous.comp exp_continuous f.continuous⟩ : C(α, 𝕜)) := by
   ext a
   simp only [Function.comp_apply, NormedSpace.exp, FormalMultilinearSeries.sum]
@@ -51,7 +45,16 @@ lemma exp_continuousMap_eq {α : Type*} [TopologicalSpace α] [CompactSpace α] 
   simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
   simp [NormedSpace.exp_eq_tsum]
 
-open NormedSpace in
+end general_exponential
+
+namespace CFC
+section RCLikeNormed
+
+variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [PartialOrder A] [NormedRing A]
+  [StarRing A] [StarOrderedRing A] [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+  [ContinuousFunctionalCalculus 𝕜 p]
+  [UniqueContinuousFunctionalCalculus 𝕜 A]
+
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a) :
     cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
   have h₁ : a = cfc (R := 𝕜) id a := (cfc_id 𝕜 a ha).symm
@@ -73,7 +76,6 @@ variable {A : Type*} {p : A → Prop} [PartialOrder A] [NormedRing A] [StarRing 
   [ContinuousFunctionalCalculus ℝ p]
   [UniqueContinuousFunctionalCalculus ℝ A]
 
-open NormedSpace in
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : p a) :
     cfc Real.exp a = exp ℝ a := by rw [Real.exp_eq_exp_ℝ]; exact exp_eq_normedSpace_exp ha
 
@@ -86,7 +88,6 @@ variable {A : Type*} {p : A → Prop} [PartialOrder A] [NormedRing A] [StarRing 
   [ContinuousFunctionalCalculus ℂ p]
   [UniqueContinuousFunctionalCalculus ℂ A]
 
-open NormedSpace in
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a) :
     cfc Complex.exp a = exp ℂ a := by rw [Complex.exp_eq_exp_ℂ]; exact exp_eq_normedSpace_exp ha
 
@@ -182,5 +183,4 @@ lemma log_pow {n : ℕ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
   rw [hmain, cfc_smul n Real.log a ha₂']
 
 end real_log
-
 end CFC
