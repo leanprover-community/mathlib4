@@ -293,7 +293,7 @@ lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ 
 
 variable (X₁ X₂ X₃)
 
-abbrev HasLeftTensor₃ObjExt (j : I) := PreservesColimit
+abbrev _root_.CategoryTheory.GradedObject.HasLeftTensor₃ObjExt (j : I) := PreservesColimit
   (Discrete.functor fun (i : { i : (I × I × I) | i.1 + i.2.1 + i.2.2 = j }) ↦
     (((mapTrifunctor (bifunctorComp₂₃ (curriedTensor C)
       (curriedTensor C)) I I I).obj X₁).obj X₂).obj X₃ i)
@@ -370,12 +370,10 @@ variable (X₁ X₂ X₃ X₄ : GradedObject I C)
   [HasTensor X₁ (tensorObj (tensorObj X₂ X₃) X₄)]
   [HasTensor X₁ (tensorObj X₂ (tensorObj X₃ X₄))]
   [HasTensor (tensorObj X₁ X₂) (tensorObj X₃ X₄)]
-  [HasGoodTensor₁₂Tensor X₁ X₂ X₃]
-  [HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+  [HasGoodTensor₁₂Tensor X₁ X₂ X₃] [HasGoodTensorTensor₂₃ X₁ X₂ X₃]
   [HasGoodTensor₁₂Tensor X₁ (tensorObj X₂ X₃) X₄]
   [HasGoodTensorTensor₂₃ X₁ (tensorObj X₂ X₃) X₄]
-  [HasGoodTensor₁₂Tensor X₂ X₃ X₄]
-  [HasGoodTensorTensor₂₃ X₂ X₃ X₄]
+  [HasGoodTensor₁₂Tensor X₂ X₃ X₄] [HasGoodTensorTensor₂₃ X₂ X₃ X₄]
   [HasGoodTensor₁₂Tensor (tensorObj X₁ X₂) X₃ X₄]
   [HasGoodTensorTensor₂₃ (tensorObj X₁ X₂) X₃ X₄]
   [HasGoodTensor₁₂Tensor X₁ X₂ (tensorObj X₃ X₄)]
@@ -446,11 +444,14 @@ section TensorUnit
 
 variable [DecidableEq I] [HasInitial C]
 
+/-- The unit of the tensor product on graded objects is `(single₀ I).obj (𝟙_ C)`. -/
 noncomputable def tensorUnit : GradedObject I C := (single₀ I).obj (𝟙_ C)
 
+/-- The canonical isomorphism `tensorUnit 0 ≅ 𝟙_ C` -/
 noncomputable def tensorUnit₀ : (tensorUnit : GradedObject I C) 0 ≅ 𝟙_ C :=
   singleObjApplyIso (0 : I) (𝟙_ C)
 
+/-- `tensorUnit i` is an initial object when `i ≠ 0`. -/
 noncomputable def isInitialTensorUnitApply (i : I) (hi : i ≠ 0) :
     IsInitial ((tensorUnit : GradedObject I C) i) :=
   isInitialSingleObjApply _ _ _ hi
@@ -460,8 +461,7 @@ end TensorUnit
 section LeftUnitor
 
 variable [DecidableEq I] [HasInitial C]
-  [∀ X₂, PreservesColimit (Functor.empty.{0} C)
-    ((curriedTensor C).flip.obj X₂)]
+  [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
   (X X' : GradedObject I C)
 
 instance : HasTensor tensorUnit X :=
@@ -471,6 +471,7 @@ instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj
     ((single₀ I).obj (𝟙_ C))).obj X) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
   (inferInstance : HasTensor tensorUnit X)
 
+/-- The left unitor isomorphism for graded objects. -/
 noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
     mapBifunctorLeftUnitor (curriedTensor C) (𝟙_ C)
       (leftUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) zero_add X
@@ -503,6 +504,7 @@ instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj X).obj
     ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
   (inferInstance : HasTensor X tensorUnit)
 
+/-- The right unitor isomorphism for graded objects. -/
 noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=
     mapBifunctorRightUnitor (curriedTensor C) (𝟙_ C)
       (rightUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) add_zero X
