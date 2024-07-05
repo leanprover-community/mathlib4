@@ -80,7 +80,8 @@ def Polarization (P : RootPairing ι R M N) [Finite ι] : M →ₗ[R] N where
 
 theorem Polarization_self (P : RootPairing ι R M N) [Finite ι] (j : ι) :
     haveI := Fintype.ofFinite ι
-    P.toLin (P.root j) (P.Polarization (P.root j)) = ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
+    P.toLin (P.root j) (P.Polarization (P.root j)) =
+      ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
   simp [Polarization]
 
 -- reflections taken to coreflections.  polarization_self = sum of squares
