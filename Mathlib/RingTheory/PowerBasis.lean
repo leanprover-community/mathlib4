@@ -146,7 +146,7 @@ theorem algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R 
 
 open Ideal Finset Submodule in
 theorem exists_sModEq (pb : PowerBasis A B) (b : B) :
-    ∃ (a : A), SModEq (Ideal.span ({pb.gen})) b (algebraMap A B a) := by
+    ∃ a, SModEq (Ideal.span ({pb.gen})) b (algebraMap A B a) := by
   rcases subsingleton_or_nontrivial B
   · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, _root_.map_zero]⟩
   refine ⟨pb.basis.repr b ⟨0, pb.dim_pos⟩, ?_⟩
@@ -163,6 +163,12 @@ theorem exists_sModEq (pb : PowerBasis A B) (b : B) :
     refine Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|
       Nat.pos_of_ne_zero <| fun h ↦ not_mem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
 
+open Submodule in
+theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) :
+    ∃ a, pb.gen ∣ b - algebraMap A B a := by
+  obtain ⟨a, ha⟩ := pb.exists_sModEq b
+  refine ⟨a, ?_⟩
+  rwa [← Ideal.mem_span_singleton, ← Quotient.mk_eq_zero, Quotient.mk_sub, sub_eq_zero]
 section minpoly
 
 variable [Algebra A S]
