@@ -1698,7 +1698,7 @@ theorem eventuallyLE_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =
 #align filter.eventually_le_congr Filter.eventuallyLE_congr
 
 theorem eventuallyLE_iff_all_subsets {f g : α → β} {l : Filter α} :
-    f ≤ᶠ[l] g ↔ ∀ (s : Set α), ∀ᶠ x in l, x ∈ s → f x ≤ g x :=
+    f ≤ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x ≤ g x :=
   eventually_iff_all_subsets
 
 end LE
