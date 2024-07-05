@@ -341,7 +341,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
       dsimp
-      simp only [Finset.sum_singleton]
+      erw [Finset.sum_singleton]
       rw [dif_neg hb.symm, zero_comp]
     · intro h
       simp at h
