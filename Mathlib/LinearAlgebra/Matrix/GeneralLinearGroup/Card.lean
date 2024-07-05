@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Thomas Lanard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Lanard
+Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran Wu
 -/
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.Data.Matrix.Rank
