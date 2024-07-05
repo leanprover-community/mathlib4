@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Category.GroupCat.Abelian
+import Mathlib.Algebra.Category.Grp.Abelian
 
 /-!
 # Homology and exactness of short complexes of abelian groups
@@ -47,20 +47,20 @@ def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g :=
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 @[simps]
 def abLeftHomologyData : S.LeftHomologyData where
-  K := AddCommGroupCat.of (AddMonoidHom.ker S.g)
-  H := AddCommGroupCat.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles)
+  K := AddCommGrp.of (AddMonoidHom.ker S.g)
+  H := AddCommGrp.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles)
   i := (AddMonoidHom.ker S.g).subtype
   π := QuotientAddGroup.mk' _
   wi := by
     ext ⟨_, hx⟩
     exact hx
-  hi := AddCommGroupCat.kernelIsLimit _
+  hi := AddCommGrp.kernelIsLimit _
   wπ := by
     ext (x : S.X₁)
     erw [QuotientAddGroup.eq_zero_iff]
     rw [AddMonoidHom.mem_range]
     apply exists_apply_eq_apply
-  hπ := AddCommGroupCat.cokernelIsColimit (AddCommGroupCat.ofHom S.abToCycles)
+  hπ := AddCommGrp.cokernelIsColimit (AddCommGrp.ofHom S.abToCycles)
 
 @[simp]
 lemma abLeftHomologyData_f' : S.abLeftHomologyData.f' = S.abToCycles := rfl
@@ -68,10 +68,10 @@ lemma abLeftHomologyData_f' : S.abLeftHomologyData.f' = S.abToCycles := rfl
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
 the abstract `S.cycles` of the homology API and the more concrete description as
 `AddMonoidHom.ker S.g`. -/
-noncomputable def abCyclesIso : S.cycles ≅ AddCommGroupCat.of (AddMonoidHom.ker S.g) :=
+noncomputable def abCyclesIso : S.cycles ≅ AddCommGrp.of (AddMonoidHom.ker S.g) :=
   S.abLeftHomologyData.cyclesIso
 
--- This was a simp lemma until we made `AddCommGroupCat.coe_of` a simp lemma,
+-- This was a simp lemma until we made `AddCommGrp.coe_of` a simp lemma,
 -- after which the simp normal form linter complains.
 -- It was not used a simp lemma in Mathlib.
 -- Possible solution: higher priority function coercions that remove the `of`?
@@ -87,13 +87,13 @@ the abstract `S.homology` of the homology API and the more explicit
 quotient of `AddMonoidHom.ker S.g` by the image of
 `S.abToCycles : S.X₁ →+ AddMonoidHom.ker S.g`. -/
 noncomputable def abHomologyIso : S.homology ≅
-    AddCommGroupCat.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles) :=
+    AddCommGrp.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles) :=
   S.abLeftHomologyData.homologyIso
 
 lemma exact_iff_surjective_abToCycles :
     S.Exact ↔ Function.Surjective S.abToCycles := by
   rw [S.abLeftHomologyData.exact_iff_epi_f', abLeftHomologyData_f',
-    AddCommGroupCat.epi_iff_surjective]
+    AddCommGrp.epi_iff_surjective]
   rfl
 
 lemma ab_exact_iff :
@@ -122,11 +122,11 @@ lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
 
 lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
     Function.Injective S.f :=
-  (AddCommGroupCat.mono_iff_injective _).1 hS.mono_f
+  (AddCommGrp.mono_iff_injective _).1 hS.mono_f
 
 lemma ShortExact.ab_surjective_g (hS : S.ShortExact) :
     Function.Surjective S.g :=
-  (AddCommGroupCat.epi_iff_surjective _).1 hS.epi_g
+  (AddCommGrp.epi_iff_surjective _).1 hS.epi_g
 
 end ShortComplex
 

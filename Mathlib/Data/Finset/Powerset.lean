@@ -159,15 +159,16 @@ theorem empty_mem_ssubsets {s : Finset α} (h : s.Nonempty) : ∅ ∈ s.ssubsets
   rw [mem_ssubsets, ssubset_iff_subset_ne]
   exact ⟨empty_subset s, h.ne_empty.symm⟩
 #align finset.empty_mem_ssubsets Finset.empty_mem_ssubsets
+
 /-- For predicate `p` decidable on ssubsets, it is decidable whether `p` holds for any ssubset. -/
-instance decidableExistsOfDecidableSSubsets {s : Finset α} {p : ∀ t ⊂ s, Prop}
+def decidableExistsOfDecidableSSubsets {s : Finset α} {p : ∀ t ⊂ s, Prop}
     [∀ t h, Decidable (p t h)] : Decidable (∃ t h, p t h) :=
   decidable_of_iff (∃ (t : _) (hs : t ∈ s.ssubsets), p t (mem_ssubsets.1 hs))
     ⟨fun ⟨t, _, hp⟩ => ⟨t, _, hp⟩, fun ⟨t, hs, hp⟩ => ⟨t, mem_ssubsets.2 hs, hp⟩⟩
 #align finset.decidable_exists_of_decidable_ssubsets Finset.decidableExistsOfDecidableSSubsets
 
 /-- For predicate `p` decidable on ssubsets, it is decidable whether `p` holds for every ssubset. -/
-instance decidableForallOfDecidableSSubsets {s : Finset α} {p : ∀ t ⊂ s, Prop}
+def decidableForallOfDecidableSSubsets {s : Finset α} {p : ∀ t ⊂ s, Prop}
     [∀ t h, Decidable (p t h)] : Decidable (∀ t h, p t h) :=
   decidable_of_iff (∀ (t) (h : t ∈ s.ssubsets), p t (mem_ssubsets.1 h))
     ⟨fun h t hs => h t (mem_ssubsets.2 hs), fun h _ _ => h _ _⟩
@@ -243,7 +244,7 @@ theorem powersetCard_one (s : Finset α) :
 lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
   refine ⟨?_, fun h ↦ card_eq_zero.1 $ by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
   contrapose!
-  exact fun h ↦ nonempty_iff_ne_empty.1 $ (exists_smaller_set _ _ h).imp $ by simp
+  exact fun h ↦ nonempty_iff_ne_empty.1 $ (exists_subset_card_eq h).imp $ by simp
 #align finset.powerset_len_empty Finset.powersetCard_eq_empty
 
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
@@ -272,7 +273,7 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
-  aesop (add simp [Finset.Nonempty, exists_smaller_set, card_le_card])
+  aesop (add simp [Finset.Nonempty, exists_subset_card_eq, card_le_card])
 #align finset.powerset_len_nonempty Finset.powersetCard_nonempty
 
 @[simp]

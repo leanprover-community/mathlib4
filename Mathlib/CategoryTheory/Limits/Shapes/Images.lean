@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
@@ -477,7 +477,8 @@ end
 
 section
 
-variable {f} {f' : X ⟶ Y} [HasImage f] [HasImage f']
+variable {f}
+variable {f' : X ⟶ Y} [HasImage f] [HasImage f']
 
 /-- An equation between morphisms gives a comparison map between the images
 (which momentarily we prove is an iso).

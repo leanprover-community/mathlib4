@@ -99,11 +99,9 @@ protected theorem eventually_eq {f : X → Y} (hf : IsLocallyConstant f) (x : X)
   (iff_eventually_eq f).1 hf x
 #align is_locally_constant.eventually_eq IsLocallyConstant.eventually_eq
 
--- Porting note (#10756): new lemma
 theorem iff_isOpen_fiber_apply {f : X → Y} : IsLocallyConstant f ↔ ∀ x, IsOpen (f ⁻¹' {f x}) :=
   (IsLocallyConstant.tfae f).out 0 2
 
--- Porting note (#10756): new lemma
 theorem iff_isOpen_fiber {f : X → Y} : IsLocallyConstant f ↔ ∀ y, IsOpen (f ⁻¹' {y}) :=
   (IsLocallyConstant.tfae f).out 0 3
 
@@ -557,10 +555,11 @@ end Indicator
 
 section Equiv
 
-/-- The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
-    homeomorphism `X ≃ₜ Y` -/
+/--
+The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
+homeomorphism `X ≃ₜ Y`
+-/
 @[simps]
-noncomputable
 def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ LocallyConstant Y Z where
   toFun := comap e.symm
   invFun := comap e
@@ -570,6 +569,17 @@ def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ Lo
   right_inv := by
     intro
     simp [comap_comap]
+
+/--
+The equivalence between `LocallyConstant X Y` and `LocallyConstant X Z` given an
+equivalence `Y ≃ Z`
+-/
+@[simps]
+def congrRight (e : Y ≃ Z) : LocallyConstant X Y ≃ LocallyConstant X Z where
+  toFun := map e
+  invFun := map e.symm
+  left_inv := by intro; ext; simp
+  right_inv := by intro; ext; simp
 
 variable (X) in
 /--
@@ -640,7 +650,7 @@ lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : I
 /-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
 
 TODO: Generalise this construction to `ContinuousMap`. -/
-noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
+def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
     LocallyConstant C₀ Z :=
