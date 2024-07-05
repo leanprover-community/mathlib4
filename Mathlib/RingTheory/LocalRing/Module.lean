@@ -226,7 +226,7 @@ theorem LocalRing.split_injective_iff_lTensor_residueField_injective
       rw [← LinearMap.lTensor_comp, hl, LinearMap.lTensor_id]
     exact Function.HasLeftInverse.injective ⟨_, LinearMap.congr_fun this⟩
   · intro h
-    -- By the a previously proved lemma, `k ⊗ l` injective => `N ⧸ l(M)` free.
+    -- By `Module.free_of_lTensor_residueField_injective`, `k ⊗ l` injective => `N ⧸ l(M)` free.
     have := Module.free_of_lTensor_residueField_injective l (LinearMap.range l).mkQ
       (Submodule.mkQ_surjective _) l.exact_map_mkQ_range h
     -- Hence `l(M)` is projective because `0 → l(M) → N → N ⧸ l(M) → 0` splits.
