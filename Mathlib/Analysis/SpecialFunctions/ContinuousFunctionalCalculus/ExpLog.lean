@@ -36,8 +36,8 @@ namespace CFC
 
 section RCLikeNormed
 
-variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRing A]
-  [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [PartialOrder A] [NormedRing A]
+  [StarRing A] [StarOrderedRing A] [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 p]
   [UniqueContinuousFunctionalCalculus 𝕜 A]
 
@@ -95,6 +95,8 @@ end ComplexNormed
 
 section real_log
 
+open scoped ComplexOrder
+
 variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRing A]
   [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
@@ -115,21 +117,20 @@ lemma log_exp {a : A} (ha : IsSelfAdjoint a) : log (NormedSpace.exp ℝ a) = a :
   rw [log, ← real_exp_eq_normedSpace_exp ha, ← cfc_comp Real.log Real.exp a ha hcont]
   rw [hcomp, cfc_id (R := ℝ) a ha]
 
-lemma exp_log {a : A} (ha₁ : ∀ x ∈ spectrum ℝ a, 0 < x) : NormedSpace.exp ℝ (log a) = a := by
-  have ha₁' : IsSelfAdjoint a := by
-    -- I don't think it follows from ha₁. We need `IsPositiveDefinite`.
-    sorry
-  have ha₂ : ContinuousOn Real.log (spectrum ℝ a) := by
+-- TODO: Relate the hypothesis to a notion of strict positivity
+lemma exp_log {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) :
+    NormedSpace.exp ℝ (log a) = a := by
+  have ha₃ : ContinuousOn Real.log (spectrum ℝ a) := by
     refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
     rw [Set.mem_compl_singleton_iff]
-    exact ne_of_gt <| ha₁ x hx
+    exact ne_of_gt <| ha₂ x hx
   have hcont : ContinuousOn Real.exp (Real.log '' spectrum ℝ a) := by fun_prop
   rw [← real_exp_eq_normedSpace_exp isSelfAdjoint_log,
-      log, ← cfc_comp Real.exp Real.log a ha₁' hcont ha₂]
-  conv_rhs => rw [← cfc_id (R := ℝ) a ha₁']
+      log, ← cfc_comp Real.exp Real.log a ha₁ hcont ha₃]
+  conv_rhs => rw [← cfc_id (R := ℝ) a ha₁]
   refine cfc_congr ?_
   intro x hx
-  simp only [Function.comp_apply, Real.exp_log (ha₁ x hx), id_eq]
+  simp only [Function.comp_apply, Real.exp_log (ha₂ x hx), id_eq]
 
 @[simp] lemma log_zero : log (0 : A) = 0 := by simp [log]
 
@@ -138,6 +139,59 @@ lemma exp_log {a : A} (ha₁ : ∀ x ∈ spectrum ℝ a, 0 < x) : NormedSpace.ex
 @[simp]
 lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Real.log r) := by
   simp [log]
+
+--MOVEME
+lemma cfc_const_add (r : ℝ) (a : A) (f : ℝ → ℝ) (ha : IsSelfAdjoint a)
+    (hf : ContinuousOn f (spectrum ℝ a)) :
+    cfc (R := ℝ) (fun z => r + f z) a = algebraMap ℝ A r + cfc (R := ℝ) f a := by
+  have : (fun z => r + f z) = (fun z => (fun _ => r) z + f z) := by ext; simp
+  rw [this, cfc_add a _ _ (continuousOn_const (c := r)) hf, cfc_const r a ha]
+
+-- TODO: Relate the hypothesis to a notion of strict positivity
+lemma log_smul {r : ℝ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
+    (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr : 0 < r) :
+    log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
+  have ha₂' : ContinuousOn Real.log (spectrum ℝ a)  := by
+    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
+    rw [Set.mem_compl_singleton_iff]
+    exact ne_of_gt (ha₂ x hx)
+  have ha₂'' : ContinuousOn Real.log ((r • ·) '' spectrum ℝ a)  := by
+    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
+    rw [Set.mem_compl_singleton_iff]
+    rw [Set.mem_image] at hx
+    obtain ⟨z, hz⟩ := hx
+    specialize ha₂ z hz.1
+    rw [← hz.2]
+    have : 0 < r • z := by exact (smul_pos_iff_of_pos_left hr).mpr ha₂
+    exact ne_of_gt this
+  rw [log, ← cfc_smul_id (S := ℝ) (R := ℝ) r a ha₁, ← cfc_comp Real.log (r • ·) a ha₁ ha₂'', log]
+  have hmain : Set.EqOn (Real.log ∘ (r • ·)) (fun z => Real.log r + Real.log z) (spectrum ℝ a) := by
+    intro x hx
+    simp only [smul_eq_mul, Function.comp_apply]
+    exact Real.log_mul (ne_of_gt hr) <| ne_of_gt (ha₂ x hx)
+  rw [cfc_congr hmain, cfc_const_add _ a _ ha₁ ha₂']
+
+-- MOVEME
+lemma cfc_pow_id (n : ℕ) (a : A) (ha : IsSelfAdjoint a) : cfc (R := ℝ) (· ^ n) a = a ^ n := by sorry
+
+-- TODO: Relate the hypothesis to a notion of strict positivity
+lemma log_pow {n : ℕ} {a : A} (ha₁ : IsSelfAdjoint a := by cfc_tac)
+    (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) : log (a ^ n) = n • log a := by
+  have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by
+    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
+    rw [Set.mem_compl_singleton_iff]
+    exact ne_of_gt (ha₂ x hx)
+  have ha₂'' : ContinuousOn Real.log ((· ^ n) '' spectrum ℝ a)  := by
+    refine ContinuousOn.mono Real.continuousOn_log fun x hx => ?_
+    rw [Set.mem_compl_singleton_iff]
+    rw [Set.mem_image] at hx
+    obtain ⟨z, hz⟩ := hx
+    specialize ha₂ z hz.1
+    rw [← hz.2]
+    exact ne_of_gt (pow_pos ha₂ n)
+  simp only [log, ← cfc_pow_id n a ha₁, ← cfc_comp Real.log (· ^ n) a ha₁ ha₂'']
+  have hmain : Real.log ∘ (· ^ n) = fun z => n • Real.log z := by ext; simp
+  rw [hmain, cfc_smul n Real.log a ha₂']
 
 end real_log
 
