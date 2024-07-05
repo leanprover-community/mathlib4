@@ -13,7 +13,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 ## Main result
 - `PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks`:
   If `R →+* T` is surjective on stalks,
-  then `Spec(S ⊗[R] T) → Spec S × Spec T` is an topological embedding.
+  then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding.
 -/
 
 variable (R S T) [CommRing R] [CommRing S] [Algebra R S]
