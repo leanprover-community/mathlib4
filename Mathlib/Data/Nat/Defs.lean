@@ -1008,9 +1008,11 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
   @Nat.leRec (motive := P) base succ
 #align nat.le_induction Nat.le_induction
 
-/-- Decreasing induction: if `P (k+1)` implies `P k`, then `P n` implies `P m` for all `m ≤ n`.
-Also works for functions to `Sort*`. For m version assuming only the assumption for `k < n`, see
-`decreasing_induction'`. -/
+/-- Decreasing induction: if `P (k+1)` implies `P k` for all `k < n`, then `P n` implies `P m` for
+all `m ≤ n`.
+Also works for functions to `Sort*`.
+
+For a version also assuming `m ≤ k`, see `Nat.decreasingInduction'`. -/
 @[elab_as_elim]
 def decreasingInduction {n} {motive : (m : ℕ) → m ≤ n → Sort*}
     (of_succ : ∀ k (h : k < n), motive (k + 1) h → motive k (le_of_succ_le h))
@@ -1085,15 +1087,16 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ m : ℕ, P m 0) (H0b 
 #align nat.pincer_recursion Nat.pincerRecursion
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.
-Also works for functions to `Sort*`. Weakens the assumptions of `decreasing_induction`. -/
+Also works for functions to `Sort*`.
+
+Weakens the assumptions of `Nat.decreasingInduction`. -/
 @[elab_as_elim]
 def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 1) → P k)
     (mn : m ≤ n) (hP : P n) : P m := by
   induction mn using decreasingInduction with
   | self => exact hP
   | of_succ k hk ih =>
-    exact h _ (lt_of_succ_le hk) le_rfl (ih fun k' hk' h'' => h _ hk' <| le_of_succ_le h'')
-
+    exact h _ (lt_of_succ_le hk) le_rfl (ih fun k' hk' h'' => h k' hk' <| le_of_succ_le h'')
 #align nat.decreasing_induction' Nat.decreasingInduction'
 
 /-- Given a predicate on two naturals `P : ℕ → ℕ → Prop`, `P a b` is true for all `a < b` if
