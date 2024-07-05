@@ -133,9 +133,9 @@ theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
 #align unit_interval.coe_symm_eq unitInterval.coe_symm_eq
 
 -- Porting note: Proof used to be `by continuity!`
-@[continuity]
-theorem continuous_symm : Continuous σ :=
-  (continuous_const.add continuous_induced_dom.neg).subtype_mk _
+@[continuity, fun_prop]
+theorem continuous_symm : Continuous σ := by
+  apply Continuous.subtype_mk (by fun_prop)
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
 /-- `unitInterval.symm` as a `Homeomorph`. -/
