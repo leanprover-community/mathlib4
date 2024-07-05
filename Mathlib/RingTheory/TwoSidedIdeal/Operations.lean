@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Order.GaloisConnection
 
 
 /-!
@@ -58,6 +59,11 @@ lemma mem_span_iff {s : Set R} {x} :
   specialize hI hxy
   rwa [SetLike.mem_coe, ← rel_iff] at hI
 
+lemma span_mono {s t : Set R} (h : s ⊆ t) : span s ≤ span t := by
+  intro x hx
+  rw [mem_span_iff] at hx ⊢
+  exact fun I hI => hx I $ h.trans hI
+
 end NonUnitalNonAssocRing
 
 section NonAssocRing
@@ -82,14 +88,8 @@ def map (I : TwoSidedIdeal R) : TwoSidedIdeal S :=
   span (f '' I)
 
 lemma map_mono {I J : TwoSidedIdeal R} (h : I ≤ J) :
-    map f I ≤ map f J := by
-  intro x hx
-  delta map at hx ⊢
-  rw [mem_span_iff] at hx ⊢
-  intro K hK
-  refine hx K ?_
-  rintro _ ⟨z, hz, rfl⟩
-  exact hK ⟨z, h hz, rfl⟩
+    map f I ≤ map f J :=
+  span_mono $ Set.image_mono h
 
 /--
 kernel of a ring homomorphism as a two-sided-ideal.
@@ -156,6 +156,13 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
     zero_mem' := I.zero_mem
     smul_mem' := fun r x hx => I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
+
+/--Given an ideal `I`, `span I` is the smallest two-sided-ideal containing `I`.-/
+def fromIdeal : Ideal R →o TwoSidedIdeal R where
+  toFun I := span I
+  monotone' _ _ := span_mono
+
+lemma : GaloisConnection
 
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ TwoSidedIdeal.asIdeal I ↔ x ∈ I := by simp [asIdeal]
