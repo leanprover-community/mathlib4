@@ -446,9 +446,6 @@ theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
-/-The proof of the following is definitely needed, but seems annoying.
-  Probably going to have to define the actual function one needs to use. This should be easy
-  since n is a subsingleton. May actually have to refer to the eigenvalues of S directly.-/
 theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : Submodule 𝕜 E) :
     (∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔ (∀ (b : 𝕜), eigenspace S b ≤ K) := by
   constructor
@@ -461,10 +458,10 @@ theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : S
   intro h
   by_cases case : Nonempty n
   · intro f
-    have A : ∃ (c : 𝕜), f = Function.const n c := by sorry
-    obtain ⟨c , hC⟩ := A
-    have := h c
-    rw [hC]
+    have c := choice case
+    have A := eq_const_of_subsingleton f c
+    have := h (f c)
+    rw [A]
     simpa only [Function.const_apply, ciInf_const, ge_iff_le]
   · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
 
