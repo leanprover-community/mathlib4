@@ -37,7 +37,6 @@ the roots of the minimal polynomial of `s` over `R`.
 
 -/
 
-
 universe u v w z
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
