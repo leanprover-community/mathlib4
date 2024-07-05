@@ -573,10 +573,13 @@ instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n
   rintro ⟨⟨_, _, _⟩, _⟩ ⟨⟨_, _, _⟩, _⟩ h
   simpa using h
 
-noncomputable example [HasFiniteCoproducts C]
+-- Note: this is stated as a lemma instead of an example, because otherwise
+-- CI would complain that importing `Mathlib.CategoryTheory.Limits.Preserves.Finite`
+-- is unnecessary.
+lemma exists_monoidalCategory [HasFiniteCoproducts C]
     [∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).obj X)]
     [∀ (X : C), PreservesFiniteCoproducts ((curriedTensor C).flip.obj X)] :
-    MonoidalCategory (GradedObject ℕ C) := inferInstance
+    Nonempty (MonoidalCategory (GradedObject ℕ C)) := ⟨inferInstance⟩
 
 end
 
