@@ -31,6 +31,8 @@ ultrametric, nonarchimedean
 
 variable {X : Type*}
 
+/-- The `dist : X → X → ℝ` respects the ultrametric inequality
+of `dist(x, z) ≤ max (dist(x,y)) (dist(y,z))`. -/
 class IsUltrametricDist (X : Type*) [Dist X] : Prop where
   dist_triangle_max : ∀ x y z : X, dist x z ≤ max (dist x y) (dist y z)
 
