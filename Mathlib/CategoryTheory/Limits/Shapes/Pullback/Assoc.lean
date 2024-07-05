@@ -27,6 +27,8 @@ variable {C : Type u} [Category.{v} C] {W X Y Z : C}
 
 section temp
 
+open PullbackCone
+
 /-
 The objects and morphisms are as follows:
 
@@ -75,8 +77,8 @@ local notation "g₂" => t₁.snd
 local notation "g₃" => t₂.fst
 local notation "g₄" => t₂.snd
 
-variable (s : PullbackCone (g₂ ≫ f₃) f₄) (hs : IsLimit s)
-variable (s' : PullbackCone f₁ (g₃ ≫ f₂)) (hs' : IsLimit s')
+variable (s : PullbackCone (t₁.snd ≫ f₃) f₄) (hs : IsLimit s)
+variable (s' : PullbackCone f₁ (t₂.fst ≫ f₂)) (hs' : IsLimit s')
 
 local notation "W" => s.pt
 
@@ -85,23 +87,29 @@ local notation "W'" => s'.pt
 local notation "l₁" => s.fst
 
 local notation "l₂" =>
-  ( t₂.lift (s.fst ≫ g₂) s.snd (by simp)
-
-  )
-
-
---  (pullback.lift (pullback.fst ≫ g₂) pullback.snd
---       (Eq.trans (Category.assoc _ _ _) pullback.condition) :
---     W ⟶ Z₂)
+  (PullbackCone.IsLimit.lift ht₂ (s.fst ≫ g₂) s.snd (Eq.trans (Category.assoc _ _ _) s.condition))
 
 local notation "l₁'" =>
-  (pullback.lift pullback.fst (pullback.snd ≫ g₃)
-      (pullback.condition.trans (Eq.symm (Category.assoc _ _ _))) :
-    W' ⟶ Z₁)
+  (PullbackCone.IsLimit.lift ht₁ s'.fst (s'.snd ≫ g₃)
+    (s'.condition.trans <| Eq.symm (Category.assoc _ _ _)))
 
-local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
+local notation "l₂'" => s'.snd
 
+/-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
+def pullbackPullbackLeftIsPullback' :
+    IsLimit (mk l₁ l₂ (show l₁ ≫ g₂ = l₂ ≫ g₃ by simp)) := by
+  apply leftSquareIsPullback ht₂
+  simp [pasteHoriz]
+  apply mkSelfIsLimit hs
 
+-- TODO: make pullbackCone have more explicit arguments.
+
+/-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
+def pullbackAssocIsPullback' :
+    IsLimit
+      (PullbackCone.mk (l₁ ≫ g₁) l₂
+        (show (l₁ ≫ g₁) ≫ f₁ = l₂ ≫ g₃ ≫ f₂ by simp [IsLimit.lift_fst_assoc, condition])) := by
+  simpa using pasteVertIsPullback ht₁ (pullbackPullbackLeftIsPullback' _ _ ht₂ _ hs)
 
 end temp
 
@@ -183,8 +191,7 @@ local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
   apply leftSquareIsPullback (pullbackIsPullback f₃ f₄)
-  convert pullbackIsPullback (g₂ ≫ f₃) f₄
-  simp
+  simpa [PullbackCone.pasteHoriz] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ _)
 #align category_theory.limits.pullback_pullback_left_is_pullback CategoryTheory.Limits.pullbackPullbackLeftIsPullback
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
@@ -193,14 +200,8 @@ def pullbackAssocIsPullback [HasPullback (g₂ ≫ f₃) f₄] :
       (PullbackCone.mk (l₁ ≫ g₁) l₂
         (show (l₁ ≫ g₁) ≫ f₁ = l₂ ≫ g₃ ≫ f₂ by
           rw [pullback.lift_fst_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
-  apply PullbackCone.isLimitOfFlip
-  apply pasteHorizMkIsPullback
-  · apply PullbackCone.isLimitOfFlip
-    exact pullbackIsPullback f₁ f₂
-  · apply PullbackCone.isLimitOfFlip
-    apply pullbackPullbackLeftIsPullback
-  · exact pullback.lift_fst _ _ _
-  · exact pullback.condition.symm
+  simpa using pasteVertIsPullback (pullbackIsPullback _ _)
+    (pullbackPullbackLeftIsPullback f₁ f₂ f₃ f₄)
 #align category_theory.limits.pullback_assoc_is_pullback CategoryTheory.Limits.pullbackAssocIsPullback
 
 theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ (g₃ ≫ f₂) :=
@@ -210,14 +211,8 @@ theorem hasPullback_assoc [HasPullback (g₂ ≫ f₃) f₄] : HasPullback f₁ 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackRightIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
     IsLimit (PullbackCone.mk l₁' l₂' (show l₁' ≫ g₂ = l₂' ≫ g₃ from pullback.lift_snd _ _ _)) := by
-  apply PullbackCone.isLimitOfFlip
-  apply leftSquareMkIsPullback
-  · apply PullbackCone.isLimitOfFlip
-    exact pullbackIsPullback f₁ f₂
-  · apply PullbackCone.isLimitOfFlip
-    exact IsLimit.ofIsoLimit (pullbackIsPullback f₁ (g₃ ≫ f₂))
-      (PullbackCone.ext (Iso.refl _) (by simp) (by simp))
-  · exact pullback.condition.symm
+  apply topSquareIsPullback (pullbackIsPullback f₁ f₂)
+  simpa [PullbackCone.pasteVert] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ _)
 #align category_theory.limits.pullback_pullback_right_is_pullback CategoryTheory.Limits.pullbackPullbackRightIsPullback
 
 /-- `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)` is the pullback `(X₁ ×[Y₁] X₂) ×[Y₂] X₃`. -/
@@ -226,9 +221,8 @@ def pullbackAssocSymmIsPullback [HasPullback f₁ (g₃ ≫ f₂)] :
       (PullbackCone.mk l₁' (l₂' ≫ g₄)
         (show l₁' ≫ g₂ ≫ f₃ = (l₂' ≫ g₄) ≫ f₄ by
           rw [pullback.lift_snd_assoc, Category.assoc, Category.assoc, pullback.condition])) := by
-  apply pasteHorizMkIsPullback
-  · exact pullbackIsPullback f₃ f₄
-  · apply pullbackPullbackRightIsPullback
+  simpa [PullbackCone.pasteHoriz] using pasteHorizIsPullback
+    (pullbackIsPullback f₃ f₄) (pullbackPullbackRightIsPullback _ _ _ _)
 #align category_theory.limits.pullback_assoc_symm_is_pullback CategoryTheory.Limits.pullbackAssocSymmIsPullback
 
 theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback (g₂ ≫ f₃) f₄ :=
