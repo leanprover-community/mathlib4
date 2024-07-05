@@ -424,22 +424,29 @@ theorem cracker2 [Subsingleton n] (S : E →ₗ[𝕜] E) :
     (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
   exact fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
 
-theorem cracker3 [Subsingleton n] (h : Nonempty n) :  ∃ (S : E →ₗ[𝕜] E),(∀ (γ : n → 𝕜), (∀ (i : n),
+theorem cracker3 [Subsingleton n] (h : Nonempty n) :  ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (γ : n → 𝕜), (∀ (i : n),
     (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
   have h1 := cracker1 hT h (T := T)
   obtain ⟨S , hS⟩ := h1
   have := hS.1
   use S
-  refine cracker2 S (n := n) (𝕜 := 𝕜) (T := T) hS.2
+  constructor
+  · exact this
+  · refine cracker2 S (n := n) (𝕜 := 𝕜) (T := T) hS.2
+
+/-I don't like the following theorem, because the proof feels like it will need to be messy.-/
+theorem disjointness (S : E →ₗ[𝕜] E) : ∃ (γ : n → 𝕜), (⨅ j, eigenspace S (γ j)) = ⊥ := by sorry
+
+--maybe orthogonalFamily_eigenspaces can get us something like the above for less...
 
 theorem base [h1 : Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   by_cases case : Nonempty n
-  · have h2 := cracker3 case (T := T)
+  · have h2 := cracker3 hT case (n := n) (𝕜 := 𝕜) (T := T)
     obtain ⟨S, hS⟩ := h2
     simp only [hS]
-    --have hSS : S.IsSymmetric
-    refine orthogonalComplement_iSup_eigenspaces_eq_bot
+    --apply orthogonalComplement_iSup_eigenspaces_eq_bot hS.1
+    sorry
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
@@ -452,8 +459,8 @@ theorem induction_step [Nontrivial n] :
 
 theorem ind_exhaust : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
-  · intro p
-    exact base
+  · intro p hp hpp
+    apply base --something is wacky with n versus p...this used to work.
   · intro p hp
     exact induction_step
 
