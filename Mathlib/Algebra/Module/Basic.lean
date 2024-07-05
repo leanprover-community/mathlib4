@@ -3,11 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Field.Basic
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
