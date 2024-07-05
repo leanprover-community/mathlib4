@@ -2168,15 +2168,9 @@ theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β
 
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : s ⊆ range f) : lift.{u} #s ≤ lift.{v} #(f ⁻¹' s) := by
-  rw [lift_mk_le.{0}]
-  refine ⟨⟨?_, ?_⟩⟩
-  · rintro ⟨y, hy⟩
-    rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
-    exact ⟨x, hy⟩
-  rintro ⟨y, hy⟩ ⟨y', hy'⟩; dsimp
-  rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
-  rcases Classical.subtype_of_exists (h hy') with ⟨x', rfl⟩
-  simp; intro hxx'; rw [hxx']
+  rw [← image_preimage_eq_iff] at h
+  nth_rewrite 1 [← h]
+  apply mk_image_le_lift
 #align cardinal.mk_preimage_of_subset_range_lift Cardinal.mk_preimage_of_subset_range_lift
 
 theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → β) (s : Set β)
