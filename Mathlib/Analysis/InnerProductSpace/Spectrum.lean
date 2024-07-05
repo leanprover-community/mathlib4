@@ -450,6 +450,18 @@ theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
+theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
+  (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E)) = (⨆ t, eigenspace S t) := by
+  ext F
+  constructor
+  · intro hF
+    simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe] at *
+    intro i hi
+    sorry
+  · sorry
+
 theorem base [Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   by_cases case : Nonempty n
