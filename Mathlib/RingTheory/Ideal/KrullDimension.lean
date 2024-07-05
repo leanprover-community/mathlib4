@@ -21,7 +21,9 @@ Key results in this file include:
 3. the Krull dimension of any quotient ring of a commutative ring must be less than or equal to
    the Krull dimension of that commutative ring;
 4. two isomorphic commutative rings have the same Krull dimension;
-5. the Krull dimension of a field is zero.
+5. for a commutative ring whose Krull dimension is zero, any prime ideal is maximal;
+6. for a commutative ring whose Krull dimension is zero, any prime ideal is minimal;
+7. the Krull dimension of a field is zero.
 -/
 
 /--
@@ -32,35 +34,65 @@ noncomputable abbrev ringKrullDim (R : Type*) [CommRing R] : WithBot (WithTop �
 
 namespace ringKrullDim
 
-open OrderDual in
 theorem eq_topologicalKrullDim (R : Type*) [CommRing R] :
     ringKrullDim R = topologicalKrullDim (PrimeSpectrum R) :=
   Eq.symm $ krullDim_orderDual.symm.trans $ krullDim_eq_of_orderIso
   (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
 
 /-- If `f : R →+* S` is surjective, then `ringKrullDim S ≤ ringKrullDim R`. -/
-theorem le_of_surjective (R S : Type*) [CommRing R] [CommRing S] (f : R →+* S)
+theorem le_of_surjective {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
     (hf : Function.Surjective f) : ringKrullDim S ≤ ringKrullDim R :=
   krullDim_le_of_strictMono (PrimeSpectrum.comap f) (Monotone.strictMono_of_injective
     (fun _ _ hab ↦ Ideal.comap_mono hab) (PrimeSpectrum.comap_injective_of_surjective f hf))
 
 /-- If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`. -/
-theorem quotient_le (R : Type*) [CommRing R] (I : Ideal R) :
+theorem quotient_le {R : Type*} [CommRing R] (I : Ideal R) :
     ringKrullDim (R ⧸ I) ≤ ringKrullDim R :=
-  le_of_surjective _ _ (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  le_of_surjective _ Ideal.Quotient.mk_surjective
 
 /-- If `R` and `S` are isomorphic, then `ringKrullDim R = ringKrullDim S`. -/
-theorem eq_of_ringEquiv (R S : Type*) [CommRing R] [CommRing S] (e : R ≃+* S) :
+theorem eq_of_ringEquiv {R S : Type*} [CommRing R] [CommRing S] (e : R ≃+* S) :
     ringKrullDim R = ringKrullDim S :=
-  le_antisymm (le_of_surjective S R (RingEquiv.symm e) (EquivLike.surjective (RingEquiv.symm e)))
-    (le_of_surjective R S e (EquivLike.surjective e))
+  le_antisymm (le_of_surjective e.symm e.symm.surjective) (le_of_surjective e e.surjective)
+
+section DimensionZero
+
+variable {R : Type _} [CommRing R]
+
+theorem _root_.Ideal.IsPrime.isMaximal_of_ringKrullDim_eq_zero
+    {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
+    I.IsMaximal := by
+  obtain ⟨J, hJ1, hJ2⟩ := I.exists_le_maximal hI.1
+  by_cases hIJ : I = J
+  · subst hIJ; exact hJ1
+  · let x : LTSeries (PrimeSpectrum R) := ⟨1, ![⟨I, hI⟩, ⟨J, hJ1.isPrime⟩],
+      fun i ↦ by fin_cases i; exact ⟨hJ2, fun r ↦ hIJ <| Eq.symm <| hJ1.eq_of_le hI.1 r⟩⟩
+    have : 1 ≤ ringKrullDim R :=
+      le_iSup (α := WithBot (WithTop ℕ)) (f := fun x : LTSeries _ ↦ x.length) x
+    rw [hdim] at this
+    norm_num at this
+
+theorem _root_.Ideal.IsPrime.mem_minimalPrimes_of_ringKrullDim_eq_zero
+    {I : Ideal R} (hI : I.IsPrime) (hdim : ringKrullDim R = 0) :
+    I ∈ minimalPrimes R := by
+  obtain ⟨p, hp, le⟩ := Ideal.exists_minimalPrimes_le (I := ⊥) (J := I) bot_le
+  by_cases hIp : I = p
+  · subst hIp; exact hp
+  · let x : LTSeries (PrimeSpectrum R) := ⟨1, ![⟨p, hp.1.1⟩, ⟨I, hI⟩],
+      fun i ↦ by fin_cases i; exact ⟨le, by contrapose! hIp; exact le_antisymm hIp le⟩⟩
+    have : 1 ≤ ringKrullDim R :=
+      le_iSup (α := WithBot (WithTop ℕ)) (f := fun x : LTSeries _ ↦ x.length) x
+    rw [hdim] at this
+    norm_num at this
+
+end DimensionZero
 
 section Field
 
 theorem eq_zero_of_field (F : Type*) [Field F] : ringKrullDim F = 0 :=
   krullDim_eq_zero_of_unique
 
-theorem eq_zero_of_isField (F : Type*) [CommRing F] (hF : IsField F) : ringKrullDim F = 0 :=
+theorem eq_zero_of_isField {F : Type*} [CommRing F] (hF : IsField F) : ringKrullDim F = 0 :=
   @krullDim_eq_zero_of_unique _ _ <| @PrimeSpectrum.instUnique _ hF.toField
 
 end Field
