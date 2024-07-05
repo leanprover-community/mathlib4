@@ -92,7 +92,7 @@ theorem min_orderTop_le_orderTop_add {Γ} [LinearOrder Γ] {x y : HahnSeries Γ 
   by_cases hx : x = 0; · simp [hx]
   by_cases hy : y = 0; · simp [hy]
   by_cases hxy : x + y = 0; · simp [hxy]
-  rw [orderTop_of_ne hx, orderTop_of_ne hy, orderTop_of_ne hxy, ← @WithTop.coe_min,
+  rw [orderTop_of_ne hx, orderTop_of_ne hy, orderTop_of_ne hxy, ← WithTop.coe_min,
     WithTop.coe_le_coe]
   exact HahnSeries.min_le_min_add hx hy hxy
 
@@ -104,11 +104,11 @@ theorem min_order_le_order_add {Γ} [Zero Γ] [LinearOrder Γ] {x y : HahnSeries
   exact HahnSeries.min_le_min_add hx hy hxy
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
-theorem orderTop_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
+theorem orderTop_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x + y).orderTop = x.orderTop := by
-  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr <| LT.lt.ne_top hxy
+  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
   let g : Γ := Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx)
-  have hcxyne : (x+y).coeff g ≠ 0 := by
+  have hcxyne : (x + y).coeff g ≠ 0 := by
     rw [add_coeff, coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy),
       add_zero]
     exact coeff_orderTop_ne (orderTop_of_ne hx)
@@ -117,16 +117,40 @@ theorem orderTop_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     exact orderTop_le_of_coeff_ne_zero hcxyne
   exact le_antisymm hxyx (le_of_eq_of_le (min_eq_left_of_lt hxy).symm min_orderTop_le_orderTop_add)
 
-theorem leadingCoeff_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
+theorem orderTop_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
+    (hxy : x.orderTop < y.orderTop) : (y + x).orderTop = x.orderTop := by
+  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
+  let g : Γ := Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx)
+  have hcxyne : (y + x).coeff g ≠ 0 := by
+    rw [add_coeff, coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy),
+      zero_add]
+    exact coeff_orderTop_ne (orderTop_of_ne hx)
+  have hxyx : (y + x).orderTop ≤ x.orderTop := by
+    rw [orderTop_of_ne hx]
+    exact orderTop_le_of_coeff_ne_zero hcxyne
+  exact le_antisymm hxyx (le_of_eq_of_le (min_eq_right_of_lt hxy).symm min_orderTop_le_orderTop_add)
+
+theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x + y).leadingCoeff = x.leadingCoeff := by
-  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr <| LT.lt.ne_top hxy
-  have ho : (x + y).orderTop = x.orderTop := orderTop_add_eq hxy
+  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
+  have ho : (x + y).orderTop = x.orderTop := orderTop_add_eq_left hxy
   by_cases h : x + y = 0
   · rw [h, orderTop_zero] at ho
     rw [h, orderTop_eq_top_iff.mp ho.symm]
   · rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
     rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, add_coeff,
       coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
+
+theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
+    (hxy : x.orderTop < y.orderTop) : (y + x).leadingCoeff = x.leadingCoeff := by
+  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
+  have ho : (y + x).orderTop = x.orderTop := orderTop_add_eq_right hxy
+  by_cases h : y + x = 0
+  · rw [h, orderTop_zero] at ho
+    rw [h, orderTop_eq_top_iff.mp ho.symm]
+  · rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
+    rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, add_coeff,
+      coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), zero_add]
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
@@ -230,13 +254,13 @@ theorem orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x - y).orderTop = x.orderTop := by
   rw [sub_eq_add_neg]
   rw [← orderTop_neg (x := y)] at hxy
-  exact orderTop_add_eq hxy
+  exact orderTop_add_eq_left hxy
 
 theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x - y).leadingCoeff = x.leadingCoeff := by
   rw [sub_eq_add_neg]
   rw [← orderTop_neg (x := y)] at hxy
-  exact leadingCoeff_add_eq hxy
+  exact leadingCoeff_add_eq_left hxy
 
 end AddGroup
 

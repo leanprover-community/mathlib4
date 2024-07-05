@@ -310,15 +310,13 @@ theorem leadingCoeff_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     x.leadingCoeff = x.coeff (x.isWF_support.min (support_nonempty_iff.2 hx)) :=
   dif_neg hx
 
-theorem leadingCoeff_ne_iff {x : HahnSeries Γ R} : x.leadingCoeff ≠ 0 ↔ x ≠ 0 := by
-  constructor
-  · contrapose!
-    intro hx
-    rw [hx]
-    exact leadingCoeff_zero
-  · intro hx
-    rw [leadingCoeff_of_ne hx]
-    exact coeff_orderTop_ne (orderTop_of_ne hx)
+theorem leadingCoeff_eq_iff {x : HahnSeries Γ R} : x.leadingCoeff = 0 ↔ x = 0 := by
+  refine { mp := ?_, mpr := fun hx => hx ▸ leadingCoeff_zero }
+  contrapose!
+  exact fun hx => (leadingCoeff_of_ne hx) ▸ coeff_orderTop_ne (orderTop_of_ne hx)
+
+theorem leadingCoeff_ne_iff {x : HahnSeries Γ R} : x.leadingCoeff ≠ 0 ↔ x ≠ 0 :=
+  leadingCoeff_eq_iff.not
 
 theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r := by
   simp only [leadingCoeff, single_eq_zero_iff]
