@@ -3,8 +3,8 @@ Copyright (c) 2024 Thomas Lanard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran Wu
 -/
-import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.Data.Matrix.Rank
+import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
@@ -16,7 +16,7 @@ This file computes the cardinal of the general linear group over finite rings.
 
 * `card_linearInependent` gives the cardinal of the set of linearly independent vectors over a
   finite dimensional vector space over a finite field.
-* `Matrix.card_GL_divisionRing` gives the cardinal of the general linear group over a finite field.
+* `Matrix.card_GL_field` gives the cardinal of the general linear group over a finite field.
 -/
 
 open LinearMap
@@ -48,16 +48,16 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
             (V:=((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
             rw [card_eq_pow_finrank (K := K)]
-      simp [card_congr (equiv_linearIndependent), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
+      simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
         mul_comm, Fin.prod_univ_succAbove _ k]
 
 end LinearIndependent
 
 namespace Matrix
 
-section divisionRing
+section field
 
-variable {𝔽 : Type*} [DivisionRing 𝔽] [Fintype 𝔽]
+variable {𝔽 : Type*} [Field 𝔽] [Fintype 𝔽]
 
 local notation "q" => Fintype.card 𝔽
 
@@ -81,7 +81,7 @@ noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
   right_inv := by exact congrFun rfl
 
 /-- The cardinal of the general linear group over a finite field. -/
-theorem card_GL_divisionRing :
+theorem card_GL_field :
     Nat.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ n - q ^ ( i : ℕ )) := by
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [Nat.card_eq_fintype_card]
@@ -89,6 +89,6 @@ theorem card_GL_divisionRing :
     FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin]
     simp only [FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
 
-end divisionRing
+end field
 
 end Matrix

@@ -1416,7 +1416,7 @@ theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndepend
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
 vector in the complement of their span.
 -/
-def equiv_linearIndependent {n} :
+def equiv_linearIndependent (n : ℕ) :
     { s : Fin (n + 1) → V // LinearIndependent K s } ≃
       Σ s : { s : Fin n → V // LinearIndependent K s },
         ((Submodule.span K (Set.range (s : Fin n → V)))ᶜ : Set V) where
