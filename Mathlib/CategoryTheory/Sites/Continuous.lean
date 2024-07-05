@@ -42,7 +42,7 @@ universe w t v₁ v₂ v₃ u₁ u₂ u₃ u
 
 namespace CategoryTheory
 
-open Limits
+open Category Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
