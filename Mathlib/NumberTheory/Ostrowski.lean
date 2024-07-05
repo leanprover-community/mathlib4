@@ -32,7 +32,8 @@ namespace Filter
 
 -- ## Preliminary lemmas on limits
 
-/-- If `a : ℝ` is bounded above by a function `g : ℕ → ℝ` for every `0 < k` then it is less or equal than the limit `lim_{k → ∞} g(k)`-/
+/-- If `a : ℝ` is bounded above by a function `g : ℕ → ℝ` for every `0 < k`
+then it is less or equal than the limit `lim_{k → ∞} g(k)`-/
 lemma le_of_limit_le {a : ℝ} {g : ℕ → ℝ} {l : ℝ} (ha : ∀ (k : ℕ) (_ : 0 < k), a ≤ g k)
     (hg : Filter.Tendsto g Filter.atTop (nhds l)) : a ≤ l := by
   apply le_of_tendsto_of_tendsto tendsto_const_nhds hg
