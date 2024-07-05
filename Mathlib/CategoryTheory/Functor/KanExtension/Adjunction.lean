@@ -170,7 +170,7 @@ noncomputable def isPointwiseRightKanExtensionRanCounit
   isPointwiseRightKanExtensionOfIsRightKanExtension (F := F) _ (L.ranCounit.app F)
 
 variable (H) in
-/-- The right Kan extension functor `L.ran` is left adjoint to the
+/-- The right Kan extension functor `L.ran` is right adjoint to the
 precomposition by `L`. -/
 noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
   Adjunction.mkOfHomEquiv
