@@ -33,6 +33,7 @@ variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*}
 
 namespace GradedObject
 
+/-- Auxiliary definition for `mapTrifunctor`. -/
 @[simps]
 def mapTrifunctorObj {I₁ : Type*} (X₁ : GradedObject I₁ C₁) (I₂ I₃ : Type*) :
     GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject (I₁ × I₂ × I₃) C₄ where
@@ -194,21 +195,20 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
     { app := fun X₃ => mapTrifunctorMapMap F p (𝟙 X₁) φ (𝟙 X₃)
       naturality := fun {X₃ Y₃} ψ => by
         ext j i₁ i₂ i₃ h
-        simp only [categoryOfGradedObjects_id, NatTrans.id_app, id_eq,
-          categoryOfGradedObjects_comp,
-          ι_mapTrifunctorMapMap_assoc, Functor.map_id, ι_mapTrifunctorMapMap, id_comp,
-          NatTrans.naturality_assoc] }
+        dsimp
+        simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
+          NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_assoc] }
   map_id X₂ := by
     dsimp
     ext X₃ j i₁ i₂ i₃ h
-    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id, NatTrans.id_app,
-      id_comp, comp_id]
+    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+      NatTrans.id_app, id_comp, comp_id]
   map_comp {X₂ Y₂ Z₂} φ ψ := by
     dsimp
-    ext X₃ j i₁ i₂ i₃ h
-    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id, NatTrans.id_app,
-      categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app, id_comp, assoc,
-      ι_mapTrifunctorMapMap_assoc]
+    ext X₃ j i₁ i₂ i₃
+    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+      NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
+      id_comp, assoc, ι_mapTrifunctorMapMap_assoc]
 
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` and a map `p : I₁ × I₂ × I₃ → J`,
 this is the functor
