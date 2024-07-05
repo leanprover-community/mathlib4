@@ -30,6 +30,12 @@ Since `cfc Real.exp` and `cfc Complex.exp` are strictly less general than `Norme
 (defined via power series), we only give minimal API for these here in order to relate
 `NormedSpace.exp` to functions defined via the CFC. In particular, we don't give separate
 definitions for them.
+
+## TODO
+
++ Show that `log (a * b) = log a + log b` whenever `a` and `b` commute (and the same for indexed
+  products).
++ Relate `CFC.log` to `rpow`, `zpow`, `sqrt`, `inv`.
 -/
 
 open NormedSpace
