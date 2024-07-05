@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Opposites
 import Mathlib.Logic.Embedding.Basic
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Common
 
 #align_import group_theory.group_action.defs from "leanprover-community/mathlib"@"dad7ecf9a1feae63e6e49f07619b7087403fb8d4"
@@ -281,7 +282,7 @@ class IsCentralScalar (M α : Type*) [SMul M α] [SMul Mᵐᵒᵖ α] : Prop whe
 @[to_additive]
 lemma IsCentralScalar.unop_smul_eq_smul {M α : Type*} [SMul M α] [SMul Mᵐᵒᵖ α]
     [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a := by
-  induction m using MulOpposite.rec'; exact (IsCentralScalar.op_smul_eq_smul _ a).symm
+  induction m; exact (IsCentralScalar.op_smul_eq_smul _ a).symm
 #align is_central_scalar.unop_smul_eq_smul IsCentralScalar.unop_smul_eq_smul
 #align is_central_vadd.unop_vadd_eq_vadd IsCentralVAdd.unop_vadd_eq_vadd
 
@@ -553,6 +554,14 @@ lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
 end Monoid
 end
 
+lemma SMulCommClass.of_commMonoid
+    (A B G : Type*) [CommMonoid G] [SMul A G] [SMul B G]
+    [IsScalarTower A G G] [IsScalarTower B G G] :
+    SMulCommClass A B G where
+  smul_comm r s x := by
+    rw [← one_smul G (s • x), ← smul_assoc, ← one_smul G x, ← smul_assoc s 1 x,
+      smul_comm, smul_assoc, one_smul, smul_assoc, one_smul]
+
 namespace MulAction
 
 variable (M α) in
@@ -706,6 +715,8 @@ instance : Monoid (Function.End α) where
   mul_assoc f g h := rfl
   mul_one f := rfl
   one_mul f := rfl
+  npow n f := f^[n]
+  npow_succ n f := Function.iterate_succ _ _
 
 instance : Inhabited (Function.End α) := ⟨1⟩
 

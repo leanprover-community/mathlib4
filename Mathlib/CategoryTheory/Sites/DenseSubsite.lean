@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.CoverLifting
+import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 #align_import category_theory.sites.dense_subsite from "leanprover-community/mathlib"@"1d650c2e131f500f3c17f33b4d19d2ea15987f2c"
@@ -113,7 +114,9 @@ attribute [nolint docBlame] CategoryTheory.Functor.IsCoverDense.is_cover
 
 open Presieve Opposite
 
-namespace Functor.IsCoverDense
+namespace Functor
+
+namespace IsCoverDense
 
 variable {K}
 variable {A : Type*} [Category A] (G : C ⥤ D) [G.IsCoverDense K]
@@ -508,7 +511,17 @@ instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     rw [← sheafHom_eq G α.val, ← sheafHom_eq G β.val, e]
 #align category_theory.cover_dense.sites.pullback.faithful CategoryTheory.Functor.IsCoverDense.faithful_sheafPushforwardContinuous
 
-end Functor.IsCoverDense
+end IsCoverDense
+
+/-- If `G : C ⥤ D` is cover dense and full, then the
+map `(P ⟶ Q) → (G.op ⋙ P ⟶ G.op ⋙ Q)` is bijective when `Q` is a sheaf`. -/
+lemma whiskerLeft_obj_map_bijective_of_isCoverDense (G : C ⥤ D)
+    [G.IsCoverDense K] [G.Full] {A : Type*} [Category A]
+    (P Q : Dᵒᵖ ⥤ A) (hQ : Presheaf.IsSheaf K Q) :
+    Function.Bijective (((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).map : (P ⟶ Q) → _) :=
+  (IsCoverDense.restrictHomEquivHom (ℱ' := ⟨Q, hQ⟩)).symm.bijective
+
+end Functor
 
 end CategoryTheory
 

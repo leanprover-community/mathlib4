@@ -121,9 +121,6 @@ theorem reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
     · exact hM_max
     · cases CharP.exists (R ⧸ M) with
       | intro r hr =>
-        -- Porting note: This is odd. Added `have hr := hr`.
-        -- Without this it seems that lean does not find `hr` as an instance.
-        have hr := hr
         convert hr
         have r_dvd_p : r ∣ p := by
           rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
@@ -366,7 +363,7 @@ theorem split_by_characteristic_domain [IsDomain R] (h_pos : ∀ p : ℕ, Nat.Pr
   exact h_pos p p_prime p_char
 #align split_by_characteristic_domain split_by_characteristic_domain
 
- /--
+/--
 In a `LocalRing R`, split any `Prop` over `R` into the three cases:
 - *prime power* characteristic.
 - equal characteristic zero.

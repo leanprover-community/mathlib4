@@ -165,10 +165,10 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases ht : ∀ a ∈ t, r a < 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
-      -- Adaptation note: nightly-2024-03-16
-      -- Previously `Function.onFun` unfolded in the following `simp only`,
-      -- but now needs a separate `rw`.
-      -- This may be a bug: a no import minimization may be required.
+      #adaptation_note /-- nightly-2024-03-16
+      Previously `Function.onFun` unfolded in the following `simp only`,
+      but now needs a separate `rw`.
+      This may be a bug: a no import minimization may be required. -/
       rw [Function.onFun]
       simp only [Function.onFun, closedBall_eq_empty.2 (ht a ha), empty_disjoint],
       fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
@@ -343,7 +343,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
     have ax : B a ⊆ ball x (R x) := by
       refine (hB a hat).trans ?_
-      refine Subset.trans ?_ (hd.trans (diff_subset (ball x (R x)) k))
+      refine Subset.trans ?_ (hd.trans Set.diff_subset)
       exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
     -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
     obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b :=

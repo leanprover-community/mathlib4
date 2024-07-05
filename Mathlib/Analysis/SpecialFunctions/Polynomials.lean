@@ -200,7 +200,7 @@ theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
     exact hneg.false
   rw [← natDegree_lt_natDegree_iff hQ] at hdeg
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atBot ?_
-  apply Tendsto.neg_const_mul_atTop hneg
+  apply Tendsto.const_mul_atTop_of_neg hneg
   apply tendsto_zpow_atTop_atTop
   omega
 #align polynomial.div_tendsto_at_bot_of_degree_gt' Polynomial.div_tendsto_atBot_of_degree_gt'

@@ -400,7 +400,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • f c :=
   circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto h0 hs
-    (hc.mono <| diff_subset _ _) (fun z hz => hd z ⟨hz.1.1, hz.2⟩)
+    (hc.mono diff_subset) (fun z hz => hd z ⟨hz.1.1, hz.2⟩)
     (hc.continuousAt <| closedBall_mem_nhds _ h0).continuousWithinAt
 #align complex.circle_integral_sub_center_inv_smul_of_differentiable_on_off_countable Complex.circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable
 

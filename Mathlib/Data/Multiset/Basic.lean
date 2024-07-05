@@ -58,6 +58,12 @@ theorem quot_mk_to_coe'' (l : List α) : @Eq (Multiset α) (Quot.mk Setoid.r l) 
 #align multiset.quot_mk_to_coe'' Multiset.quot_mk_to_coe''
 
 @[simp]
+theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
+    (h : ∀ a b : List α, a ≈ b → f a = f b) : Quotient.lift f h (x : Multiset α) = f x :=
+  Quotient.lift_mk _ _ _
+#align multiset.lift_coe Multiset.lift_coe
+
+@[simp]
 theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ ~ l₂ :=
   Quotient.eq
 #align multiset.coe_eq_coe Multiset.coe_eq_coe
@@ -329,7 +335,7 @@ end Mem
 instance : Singleton α (Multiset α) :=
   ⟨fun a => a ::ₘ 0⟩
 
-instance : IsLawfulSingleton α (Multiset α) :=
+instance : LawfulSingleton α (Multiset α) :=
   ⟨fun _ => rfl⟩
 
 @[simp]
@@ -765,7 +771,7 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
   rw [← coe_card, coe_toList]
 #align multiset.length_to_list Multiset.length_toList
 
-@[simp, nolint simpNF] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
+@[simp]
 theorem card_zero : @card α 0 = 0 :=
   rfl
 #align multiset.card_zero Multiset.card_zero
@@ -1043,7 +1049,7 @@ theorem coe_erase (l : List α) (a : α) : erase (l : Multiset α) a = l.erase a
   rfl
 #align multiset.coe_erase Multiset.coe_erase
 
-@[simp, nolint simpNF] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
+@[simp]
 theorem erase_zero (a : α) : (0 : Multiset α).erase a = 0 :=
   rfl
 #align multiset.erase_zero Multiset.erase_zero
@@ -1193,7 +1199,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
     s = t → (∀ x ∈ t, f x = g x) → map f s = map g t := by
   rintro rfl h
   induction s using Quot.inductionOn
-  exact congr_arg _ (List.map_congr h)
+  exact congr_arg _ (List.map_congr_left h)
 #align multiset.map_congr Multiset.map_congr
 
 theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
@@ -1783,11 +1789,9 @@ theorem map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f)
     congr_arg ofList (by rw [List.map_append f, List.map_diff finj])
 #align multiset.map_union Multiset.map_union
 
--- Porting note (#10756): new theorem
 @[simp] theorem zero_union : 0 ∪ s = s := by
   simp [union_def]
 
--- Porting note (#10756): new theorem
 @[simp] theorem union_zero : s ∪ 0 = s := by
   simp [union_def]
 
@@ -1980,6 +1984,11 @@ theorem filter_zero : filter p 0 = 0 :=
   rfl
 #align multiset.filter_zero Multiset.filter_zero
 
+#adaptation_note
+/--
+Please re-enable the linter once we moved to `nightly-2024-06-22` or later.
+-/
+set_option linter.deprecated false in
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
   Quot.inductionOn s fun _l h => congr_arg ofList <| filter_congr' <| by simpa using h
@@ -2143,14 +2152,17 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
       decide_True, implies_true, Decidable.em]
 #align multiset.filter_add_not Multiset.filter_add_not
 
-theorem map_filter (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
-  Quot.inductionOn s fun l => by simp [List.map_filter]; rfl
-#align multiset.map_filter Multiset.map_filter
+theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
+  Quot.inductionOn s fun l => by simp [List.filter_map]; rfl
+#align multiset.map_filter Multiset.filter_map
 
+@[deprecated (since := "2024-06-16")] alias map_filter := filter_map
+
+-- TODO: rename to `map_filter` when the deprecated alias above is removed.
 lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [(· ∘ ·), map_filter, hf.eq_iff]
+  simp [(· ∘ ·), filter_map, hf.eq_iff]
 #align multiset.map_filter' Multiset.map_filter'
 
 lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
@@ -2434,7 +2446,7 @@ theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a := by
   rfl
 #align multiset.coe_count Multiset.coe_count
 
-@[simp, nolint simpNF] -- Porting note (#10618): simp can prove this at EOF, but not right now
+@[simp]
 theorem count_zero (a : α) : count a 0 = 0 :=
   rfl
 #align multiset.count_zero Multiset.count_zero
@@ -2627,8 +2639,6 @@ theorem count_map {α β : Type*} (f : α → β) (s : Multiset α) [DecidableEq
   simp [Bool.beq_eq_decide_eq, eq_comm, count, countP_map]
 #align multiset.count_map Multiset.count_map
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning:
-  expanding binder collection (x «expr ∈ » s) -/
 /-- `Multiset.map f` preserves `count` if `f` is injective on the set of elements contained in
 the multiset -/
 theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
@@ -2645,7 +2655,7 @@ theorem count_map_eq_count [DecidableEq β] (f : α → β) (s : Multiset α)
 theorem count_map_eq_count' [DecidableEq β] (f : α → β) (s : Multiset α) (hf : Function.Injective f)
     (x : α) : (s.map f).count (f x) = s.count x := by
   by_cases H : x ∈ s
-  · exact count_map_eq_count f _ (Set.injOn_of_injective hf _) _ H
+  · exact count_map_eq_count f _ hf.injOn _ H
   · rw [count_eq_zero_of_not_mem H, count_eq_zero, mem_map]
     rintro ⟨k, hks, hkx⟩
     rw [hf hkx] at hks
@@ -2737,7 +2747,7 @@ for more discussion.
 @[simp]
 theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p] :
     (s.map p).count True = card (s.filter p) := by
-  simp only [count_eq_card_filter_eq, map_filter, card_map, Function.id_comp,
+  simp only [count_eq_card_filter_eq, filter_map, card_map, Function.id_comp,
     eq_true_eq_id, Function.comp_apply]
 #align multiset.map_count_true_eq_filter_card Multiset.map_count_True_eq_filter_card
 
@@ -3210,7 +3220,7 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
   rfl
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingletonEquiv
 
-@[deprecated] alias card_le_of_le := card_le_card -- 2023-12-27
-@[deprecated] alias card_lt_of_lt := card_lt_card -- 2023-12-27
+@[deprecated (since := "2023-12-27")] alias card_le_of_le := card_le_card
+@[deprecated (since := "2023-12-27")] alias card_lt_of_lt := card_lt_card
 
 end Multiset

@@ -405,7 +405,7 @@ theorem exists_list_of_mem_closure {s : Set M} {x : M} (hx : x ∈ closure s) :
 
 @[to_additive]
 theorem exists_multiset_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
-    (hx : x ∈ closure s) : ∃ (l : Multiset M) (_ : ∀ y ∈ l, y ∈ s), l.prod = x := by
+    (hx : x ∈ closure s) : ∃ l : Multiset M, (∀ y ∈ l, y ∈ s) ∧ l.prod = x := by
   obtain ⟨l, h1, h2⟩ := exists_list_of_mem_closure hx
   exact ⟨l, h1, (Multiset.prod_coe l).trans h2⟩
 #align submonoid.exists_multiset_of_mem_closure Submonoid.exists_multiset_of_mem_closure
@@ -419,7 +419,7 @@ theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → 
     p x h := by
   simp_rw [closure_eq_mrange] at h
   obtain ⟨l, rfl⟩ := h
-  induction' l using FreeMonoid.recOn with x y ih
+  induction' l with x y ih
   · exact one
   · simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)

@@ -161,12 +161,22 @@ instance {α} [One α] [Mul α] : Applicative (Const α) where
 -- Porting note: `(· <*> ·)` needed to change to `Seq.seq` in the `simp`.
 -- Also, `simp` didn't close `refl` goals.
 
-instance {α} [Monoid α] : LawfulApplicative (Const α) := by
-  refine' { .. } <;> intros <;> simp [mul_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
+instance {α} [Monoid α] : LawfulApplicative (Const α) where
+  map_pure _ _ := rfl
+  seq_pure _ _ := by simp only [Seq.seq, pure, mul_one]; rfl
+  pure_seq _ _ := by simp only [Seq.seq, pure, one_mul]; rfl
+  seqLeft_eq _ _ := by simp only [Seq.seq]; rfl
+  seqRight_eq _ _ := by simp only [Seq.seq]; rfl
+  seq_assoc _ _ _ := by simp only [Seq.seq, mul_assoc]; rfl
 
 instance {α} [Zero α] [Add α] : Applicative (AddConst α) where
   pure _ := (0 : α)
   seq f x := (show α from f) + (show α from x Unit.unit)
 
-instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) := by
-  refine' { .. } <;> intros <;> simp [add_assoc, (· <$> ·), Seq.seq, pure] <;> rfl
+instance {α} [AddMonoid α] : LawfulApplicative (AddConst α) where
+  map_pure _ _ := rfl
+  seq_pure _ _ := by simp only [Seq.seq, pure, add_zero]; rfl
+  pure_seq _ _ := by simp only [Seq.seq, pure, zero_add]; rfl
+  seqLeft_eq _ _ := by simp only [Seq.seq]; rfl
+  seqRight_eq _ _ := by simp only [Seq.seq]; rfl
+  seq_assoc _ _ _ := by simp only [Seq.seq, add_assoc]; rfl

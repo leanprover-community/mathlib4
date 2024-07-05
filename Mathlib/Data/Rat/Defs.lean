@@ -102,7 +102,7 @@ lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 #align rat.zero_mk_nat Rat.zero_mkRat
 #align rat.zero_mk Rat.zero_divInt
 
-@[simp] lemma mk'_zero (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
+@[simp] lemma mk'_zero (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr; simp_all
 
 @[simp]
 lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
@@ -253,7 +253,7 @@ lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) :
 -- TODO: Rename `divInt_eq_iff` in Batteries to `divInt_eq_divInt`
 alias divInt_eq_divInt := divInt_eq_iff
 
-@[deprecated] alias mul_num_den := mul_eq_mkRat
+@[deprecated (since := "2024-04-29")] alias mul_num_den := mul_eq_mkRat
 #align rat.mul_num_denom Rat.mul_eq_mkRat
 
 instance instPowNat : Pow ℚ ℕ where

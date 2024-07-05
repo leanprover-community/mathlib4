@@ -196,7 +196,7 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
       map_zero' := funext fun _ => cast_zero
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
   refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
-    (cast_injective.comp_left.injOn _) (Set.subset_univ _) ?_
+    cast_injective.comp_left.injOn (Set.subset_univ _) ?_
   refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => ?_)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
@@ -287,7 +287,7 @@ theorem exists_large_sphere (n d : ℕ) :
   apply one_le_mul_of_one_le_of_one_le
   · rwa [one_le_cast]
   rw [_root_.le_sub_iff_add_le]
-  set_option tactic.skipAssignedInstances false in norm_num
+  norm_num
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere
 
@@ -452,7 +452,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
   · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
     · rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
-      · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
+      · norm_num; exact le_sqrt_log hN
       · norm_num1
     · apply log_nonneg
       rw [one_le_cast]

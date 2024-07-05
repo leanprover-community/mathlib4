@@ -309,25 +309,31 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
 private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
-    ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' := by
-  refine'
-    { toFun := induced_map I e
-      invFun := induced_map I e.symm.. }
-  all_goals
-    first |rintro ⟨a⟩ ⟨b⟩|rintro ⟨a⟩
-  -- Porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
-  -- and `(I.pi ι')` on its own.
-  pick_goal 3
-  · convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr
-    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
-  all_goals
+    ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' where
+  -- Porting note: Lean couldn't correctly infer `(I.pi ι)` and `(I.pi ι')` on their own
+  toFun := induced_map I e
+  invFun := induced_map I e.symm
+  map_add' := by
+    rintro ⟨a⟩ ⟨b⟩
     convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
     congr
-    simp only [map_add, LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply,
-      LinearEquiv.apply_symm_apply]
-#noalign induced_equiv
--- Porting note: `#noalign` since this is marked `private`
+    simp only [map_add]
+  map_smul' := by
+    rintro ⟨a⟩ ⟨b⟩
+    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
+    congr
+    simp only [LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply]
+  left_inv := by
+    rintro ⟨a⟩
+    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
+    congr
+    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  right_inv := by
+    rintro ⟨a⟩
+    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
+    congr
+    simp only [LinearEquiv.coe_coe,  LinearEquiv.apply_symm_apply]
+#noalign induced_equiv -- Porting note: `#noalign` since this is marked `private`
 
 end
 

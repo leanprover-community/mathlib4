@@ -330,9 +330,25 @@ theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
   ⟨@isBounded_of_compactSpace α _ _, fun hb => ⟨isCompact_of_isClosed_isBounded isClosed_univ hb⟩⟩
 #align metric.compact_space_iff_bounded_univ Metric.compactSpace_iff_isBounded_univ
 
-section ConditionallyCompleteLinearOrder
+section CompactIccSpace
 
 variable [Preorder α] [CompactIccSpace α]
+
+theorem _root_.totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
+  isCompact_Icc.totallyBounded
+#align totally_bounded_Icc totallyBounded_Icc
+
+theorem _root_.totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
+  totallyBounded_subset Ico_subset_Icc_self (totallyBounded_Icc a b)
+#align totally_bounded_Ico totallyBounded_Ico
+
+theorem _root_.totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
+  totallyBounded_subset Ioc_subset_Icc_self (totallyBounded_Icc a b)
+#align totally_bounded_Ioc totallyBounded_Ioc
+
+theorem _root_.totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
+  totallyBounded_subset Ioo_subset_Icc_self (totallyBounded_Icc a b)
+#align totally_bounded_Ioo totallyBounded_Ioo
 
 theorem isBounded_Icc (a b : α) : IsBounded (Icc a b) :=
   (totallyBounded_Icc a b).isBounded
@@ -359,7 +375,7 @@ theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂
   (isBounded_Icc l u).subset (fun _x hx => mem_Icc.mpr ⟨hl hx, hu hx⟩)
 #align metric.bounded_of_bdd_above_of_bdd_below Metric.isBounded_of_bddAbove_of_bddBelow
 
-end ConditionallyCompleteLinearOrder
+end CompactIccSpace
 
 end Bounded
 
@@ -502,8 +518,8 @@ theorem diam_union {t : Set α} (xs : x ∈ s) (yt : y ∈ t) :
   refine (ENNReal.toReal_le_add' (EMetric.diam_union xs yt) ?_ ?_).trans
     (add_le_add_right ENNReal.toReal_add_le _)
   · simp only [ENNReal.add_eq_top, edist_ne_top, or_false]
-    exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (subset_union_left _ _)
-  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono (subset_union_right _ _)
+    exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_left
+  · exact fun h ↦ top_unique <| h ▸ EMetric.diam_mono subset_union_right
 #align metric.diam_union Metric.diam_union
 
 /-- If two sets intersect, the diameter of the union is bounded by the sum of the diameters. -/
@@ -614,4 +630,4 @@ theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [
     (hK : IsBounded K) (hs : IsClosed s) : Set.Finite (K ∩ s) := by
   refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
   · exact hK.isCompact_closure.inter_right hs
-  · exact DiscreteTopology.of_subset inferInstance (Set.inter_subset_right _ s)
+  · exact DiscreteTopology.of_subset inferInstance Set.inter_subset_right

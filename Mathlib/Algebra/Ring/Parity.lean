@@ -161,6 +161,9 @@ lemma Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd a → Odd (
   rintro ⟨a, rfl⟩; exact ⟨f a, by simp [two_mul]⟩
 #align odd.map Odd.map
 
+lemma Odd.natCast {R : Type*} [Semiring R] {n : ℕ} (hn : Odd n) : Odd (n : R) :=
+  hn.map <| Nat.castRingHom R
+
 @[simp] lemma Odd.mul : Odd a → Odd b → Odd (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   refine ⟨2 * a * b + b + a, ?_⟩

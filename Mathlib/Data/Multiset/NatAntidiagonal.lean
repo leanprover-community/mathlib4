@@ -70,7 +70,7 @@ theorem antidiagonal_succ' {n : ℕ} :
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
       (0, n + 2) ::ₘ (n + 2, 0) ::ₘ (antidiagonal n).map (Prod.map Nat.succ Nat.succ) := by
-  rw [antidiagonal_succ, antidiagonal_succ', map_cons, map_map, Prod_map]
+  rw [antidiagonal_succ, antidiagonal_succ', map_cons, map_map, Prod.map_apply]
   rfl
 #align multiset.nat.antidiagonal_succ_succ' Multiset.Nat.antidiagonal_succ_succ'
 
