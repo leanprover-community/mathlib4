@@ -4,16 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
-import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.LinearAlgebra.Trace
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.FieldTheory.Galois
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 
 #align_import ring_theory.trace from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -194,11 +186,6 @@ theorem traceForm_toMatrix [DecidableEq ι] (i j) :
     BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by
   rw [BilinForm.toMatrix_apply, traceForm_apply]
 #align algebra.trace_form_to_matrix Algebra.traceForm_toMatrix
-
-theorem traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    BilinForm.toMatrix h.basis (traceForm R S) = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
-  ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
-#align algebra.trace_form_to_matrix_power_basis Algebra.traceForm_toMatrix_powerBasis
 
 end TraceForm
 
