@@ -434,10 +434,6 @@ theorem cracker3 [Subsingleton n] (h : Nonempty n) :  ∃ (S : E →ₗ[𝕜] E)
   · exact this
   · refine cracker2 S (n := n) (𝕜 := 𝕜) (T := T) hS.2
 
-/-I don't like the following theorem, because the proof feels like it will need to be messy.-/
-theorem disjointness (S : E →ₗ[𝕜] E) : ∃ (γ : n → 𝕜), (⨅ j, eigenspace S (γ j)) = ⊥ := by
-  sorry
-
 /-I find it hard to believe that the following doesn't appear in the library already. We should
   track it down. -/
 theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
@@ -451,7 +447,8 @@ theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
      exact congrArg Submodule.orthogonal H
 
 /-The proof of the following is definitely needed, but seems annoying like the `disjointness` claim
-  above. -/
+  above. Probably going to have to define the actual function one needs to use. Maybe this itself
+  needs to be done by induction. May actually have to refer to the eigenvalues of S directly.-/
 theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : Submodule 𝕜 E) :
     (∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔ (∀ (b : 𝕜), eigenspace S b ≤ K) := by sorry
 
@@ -493,6 +490,8 @@ theorem base [Subsingleton n]:
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
+/-This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
+  some lemmas. -/
 theorem induction_step [Nontrivial n] :
     (∀ (m : Type u) [Fintype m], Fintype.card m < Fintype.card n →
     ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T m j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) →
