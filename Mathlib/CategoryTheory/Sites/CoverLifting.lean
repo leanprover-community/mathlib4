@@ -233,7 +233,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (A J)
 
-/-- A cover-lifting functor induces a pushforward functor on categories of sheaves. -/
+/-- A cocontinuous functor induces a pushforward functor on categories of sheaves. -/
 def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A where
   obj ℱ := ⟨G.op.ran.obj ℱ.val, ran_isSheaf_of_isCocontinuous _ K ℱ⟩
   map f := ⟨G.op.ran.map f.val⟩
