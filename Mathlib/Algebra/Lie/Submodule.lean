@@ -1337,6 +1337,9 @@ theorem incl_coe : (I.incl.toLinearMap : I →ₗ[R] L) = (I : Submodule R L).su
   rfl
 #align lie_ideal.incl_coe LieIdeal.incl_coe
 
+lemma incl_injective (I : LieIdeal R L) : Function.Injective I.incl :=
+  Subtype.val_injective
+
 @[simp]
 theorem comap_incl_self : comap I.incl I = ⊤ := by ext; simp
   --  porting note: `ext; simp` works also in mathlib3, though the proof used to be

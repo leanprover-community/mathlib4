@@ -192,6 +192,12 @@ theorem derivedSeries_map_eq (k : ℕ) (h : Function.Surjective f) :
   · simp only [derivedSeries_def, map_bracket_eq f h, ih, derivedSeriesOfIdeal_succ]
 #align lie_ideal.derived_series_map_eq LieIdeal.derivedSeries_map_eq
 
+theorem derivedSeries_eq_top (n : ℕ) (h : derivedSeries R L 1 = ⊤) : derivedSeries R L n = ⊤ := by
+  rw [derivedSeries_def]
+  induction' n with n ih
+  · simp only [Nat.zero_eq, derivedSeriesOfIdeal_zero]
+  · rwa [derivedSeriesOfIdeal_succ, ih]
+
 end LieIdeal
 
 namespace LieAlgebra
@@ -210,6 +216,13 @@ instance isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvab
   obtain ⟨k, hk⟩ := id hI; obtain ⟨l, hl⟩ := id hJ
   exact ⟨⟨k + l, LieIdeal.derivedSeries_add_eq_bot hk hl⟩⟩
 #align lie_algebra.is_solvable_add LieAlgebra.isSolvableAdd
+
+theorem derivedSeries_ne_top_of_solvable [IsSolvable R L] [Nontrivial L] :
+    derivedSeries R L 1 ≠ ⊤ := by
+  obtain ⟨n, hn⟩ := IsSolvable.solvable (R := R) (L := L)
+  intro contra
+  rw [LieIdeal.derivedSeries_eq_top n contra] at hn
+  exact top_ne_bot hn
 
 end LieAlgebra
 

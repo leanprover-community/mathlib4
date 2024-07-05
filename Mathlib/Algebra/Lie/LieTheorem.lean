@@ -212,28 +212,7 @@ def altWeightSpace : LieSubmodule k L V where
       rw [leibniz_lie, hv a, lie_smul, aux, hv, map_neg,
         chi_za_zero A χ z hv a hv', neg_zero, zero_smul, zero_add]
 
--- move this
-instance : IsCoatomic (Submodule k V) :=
-  isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
-
 end
-
--- move this
-lemma derivedSeries_eq_top (n : ℕ) (h : derivedSeries k L 1 = ⊤) : derivedSeries k L n = ⊤ := by
-  rw [derivedSeries_def]
-  induction' n with n ih
-  · simp only [Nat.zero_eq, derivedSeriesOfIdeal_zero]
-  · rw [derivedSeriesOfIdeal_succ, ih]
-    assumption
-
--- move this
-variable (k) (L) in
-theorem derivedSeries_ne_top_of_solvable [IsSolvable k L] [Nontrivial L] :
-    derivedSeries k L 1 ≠ ⊤ := by
-  by_contra!
-  rcases LieAlgebra.IsSolvable.solvable (R := k) (L := L) with ⟨n, hn⟩
-  apply derivedSeries_eq_top n at this
-  aesop
 
 -- move this
 theorem exists_lieIdeal_of_derivedSeries_le (A : Submodule k L) (h : derivedSeries k L 1 ≤ A) :
@@ -285,10 +264,6 @@ theorem extend_weight [LieModule.IsTriangularizable k L V] (A : LieIdeal k L) (z
     rw [LinearEquiv.eq_symm_apply]
     ext
     exact hd
-
--- move this
-lemma LieIdeal.incl_injective (I : LieIdeal k L) : Function.Injective I.incl :=
-  Subtype.val_injective
 
 theorem LieModule.exists_forall_lie_eq_smul_finrank :
     ∀ (L : Type*) [LieRing L] [LieAlgebra k L] [FiniteDimensional k L] [IsSolvable k L]
