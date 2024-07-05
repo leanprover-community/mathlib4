@@ -141,6 +141,7 @@ lemma zero_comp (a : M) {b c : M} (β : ShiftedHom Y Z b) (h : b + a = c) :
     (0 : ShiftedHom X Y a).comp β h = 0 := by
   rw [comp, Limits.zero_comp]
 
+@[simp]
 lemma map_add {a : M} (α β : ShiftedHom X Y a)
     (F : C ⥤ D) [F.CommShift M] [F.Additive] :
   (α + β).map F = α.map F + β.map F := by

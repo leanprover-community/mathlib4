@@ -175,7 +175,8 @@ section
 variable {n}
 variable
   (α β : Ext.{w} X Y n)
-  [HasExt.{t} D] (F : C ⥤ D) [F.Additive] [F.PreservesHomology]
+  [HasExt.{t} D] (F : C ⥤ D) [F.Additive]
+  [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 instance (K : CochainComplex C ℤ) [K.IsSingle] :
     ((F.mapHomologicalComplex _).obj K).IsSingle := sorry
@@ -205,7 +206,7 @@ section
 variable [HasDerivedCategory.{w'} C] [HasDerivedCategory.{t'} D]
   [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
-lemma map_eq : homEquiv (α.map F) =
+lemma homEquiv_map : homEquiv (α.map F) =
     (ShiftedHom.mk₀ 0 (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).inv.app X)).comp
       (((homEquiv α).map F.mapDerivedCategory).comp (ShiftedHom.mk₀ 0 (by simp)
         ((F.singleFunctorCompMapDerivedCategoryIso 0).hom.app Y)) (zero_add _)) (add_zero _) := by
@@ -214,16 +215,23 @@ lemma map_eq : homEquiv (α.map F) =
 lemma map_id : α.map (𝟭 C) = α := by
   sorry
 
-set_option pp.universes true
-
+@[simp]
 lemma homEquiv_add : homEquiv (α + β) = homEquiv α + homEquiv β := by
-  letI := HasDerivedCategory.standard C
-  rw [← (α + β).map_id]
-  conv_rhs => rw [← α.map_id, ← β.map_id]
-  apply (map_eq.{max u v, w', w, w} (α + β) (𝟭 C)).trans
+  --letI := HasDerivedCategory.standard C
+  --rw [← (α + β).map_id]
+  --conv_rhs => rw [← α.map_id, ← β.map_id]
+  --apply (homEquiv_map.{max u v, w', w, w} (α + β) (𝟭 C)).trans
   sorry
 
 end
+
+lemma map_add : (α + β).map F = α.map F + β.map F := by
+  letI := HasDerivedCategory.standard C
+  letI := HasDerivedCategory.standard D
+  have : F.mapDerivedCategory.Additive := sorry -- needs IsTriangulated -> Additive
+  apply homEquiv.injective
+  simp only [homEquiv_map, homEquiv_add, ShiftedHom.map_add, ShiftedHom.add_comp,
+    ShiftedHom.comp_add]
 
 end
 
