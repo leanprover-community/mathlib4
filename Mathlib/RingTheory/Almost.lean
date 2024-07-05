@@ -11,8 +11,8 @@ open scoped TensorProduct
 
 open Module
 
-variable (V : Type*) [CommRing V] (m : Ideal V)
+variable {V : Type*} [CommRing V] (m : Ideal V)
 
-class AlmostPair : Prop where
+class AlmostIdeal : Prop where
   isIdempotent : IsIdempotentElem m
   flat_tensor : Flat V (m ⊗[V] m)
