@@ -61,12 +61,13 @@ variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [PartialOrder
   [ContinuousFunctionalCalculus 𝕜 p]
   [UniqueContinuousFunctionalCalculus 𝕜 A]
 
-lemma exp_eq_normedSpace_exp {a : A} (ha : p a) :
+lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
   have h₁ : a = cfc (R := 𝕜) id a := (cfc_id 𝕜 a ha).symm
+  have ha' : p a := ha    -- Shouldn't be needed but I get a weird autoparam bug without it
   conv_rhs => rw [h₁, cfc_apply id a ha]
-  let φ := cfcHom (R := 𝕜) ha
-  have h₂ : Continuous φ := (cfcHom_closedEmbedding ha).continuous
+  let φ := cfcHom (R := 𝕜) ha'
+  have h₂ : Continuous φ := (cfcHom_closedEmbedding ha').continuous
   have _ : ContinuousOn (exp 𝕜) (spectrum 𝕜 a) := Continuous.continuousOn exp_continuous
   simp_rw [← map_exp 𝕜 φ h₂, cfc_apply (exp 𝕜) a ha, φ]
   congr 1
@@ -82,7 +83,7 @@ variable {A : Type*} {p : A → Prop} [PartialOrder A] [NormedRing A] [StarRing 
   [ContinuousFunctionalCalculus ℝ p]
   [UniqueContinuousFunctionalCalculus ℝ A]
 
-lemma real_exp_eq_normedSpace_exp {a : A} (ha : p a) :
+lemma real_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Real.exp a = exp ℝ a := by rw [Real.exp_eq_exp_ℝ]; exact exp_eq_normedSpace_exp ha
 
 end RealNormed
@@ -94,7 +95,7 @@ variable {A : Type*} {p : A → Prop} [PartialOrder A] [NormedRing A] [StarRing 
   [ContinuousFunctionalCalculus ℂ p]
   [UniqueContinuousFunctionalCalculus ℂ A]
 
-lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a) :
+lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Complex.exp a = exp ℂ a := by rw [Complex.exp_eq_exp_ℂ]; exact exp_eq_normedSpace_exp ha
 
 end ComplexNormed
@@ -113,9 +114,9 @@ variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRi
 matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/
 noncomputable def log (a : A) : A := cfc Real.log a
 
-lemma isSelfAdjoint_log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
+@[simp] lemma isSelfAdjoint_log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
 
-lemma log_exp {a : A} (ha : IsSelfAdjoint a) : log (NormedSpace.exp ℝ a) = a := by
+lemma log_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by
     refine ContinuousOn.log (continuousOn_id' _) fun x hx => ?_
     rw [Set.mem_image] at hx
@@ -123,7 +124,7 @@ lemma log_exp {a : A} (ha : IsSelfAdjoint a) : log (NormedSpace.exp ℝ a) = a :
     rw [← hz.2]
     exact Real.exp_ne_zero z
   have hcomp : Real.log ∘ Real.exp = id := by ext; simp
-  rw [log, ← real_exp_eq_normedSpace_exp ha, ← cfc_comp Real.log Real.exp a ha hcont]
+  rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp Real.log Real.exp a ha hcont]
   rw [hcomp, cfc_id (R := ℝ) a ha]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
