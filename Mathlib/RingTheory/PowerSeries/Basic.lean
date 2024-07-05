@@ -517,6 +517,20 @@ theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
 set_option linter.uppercaseLean3 false in
 #align power_series.eq_X_mul_shift_add_const PowerSeries.eq_X_mul_shift_add_const
 
+@[simp]
+lemma constantCoeff_mul (φ ψ : R⟦X⟧) :
+    constantCoeff R (φ * ψ) = constantCoeff R φ * constantCoeff R ψ :=
+  RingHom.map_mul (constantCoeff R) φ ψ
+
+/-- For any `n`, the `n`-th power of a power series with constant coefficient 1
+    also has constant coefficient 1. -/
+@[simp]
+lemma constantCoeff_pow (n : ℕ) (φ : R⟦X⟧) (hC : constantCoeff R φ = 1) :
+    constantCoeff R (φ ^ n) = 1 := by
+  induction n
+  . exact rfl
+  . simp_all only [map_pow, one_pow]
+
 section Map
 
 variable {S : Type*} {T : Type*} [Semiring S] [Semiring T]
