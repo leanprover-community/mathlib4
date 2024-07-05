@@ -270,7 +270,7 @@ instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiri
 #align mv_polynomial.infinite_of_nonempty MvPolynomial.infinite_of_nonempty
 
 theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
-  induction n <;> simp [Nat.succ_eq_add_one, *]
+  induction n <;> simp [*]
 #align mv_polynomial.C_eq_coe_nat MvPolynomial.C_eq_coe_nat
 
 theorem C_mul' : MvPolynomial.C a * p = a • p :=
