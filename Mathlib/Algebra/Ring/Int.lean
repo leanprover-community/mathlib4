@@ -144,6 +144,9 @@ set_option linter.deprecated false in
 lemma not_even_bit1 (n : ℤ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
 #align int.not_even_bit1 Int.not_even_bit1
 
+lemma not_even_two_mul_add_one (n : ℤ) : ¬ Even (2 * n + 1) :=
+  odd_iff_not_even.1 <| odd_two_mul_add_one n
+
 lemma even_sub' : Even (m - n) ↔ (Odd m ↔ Odd n) := by
   rw [even_sub, even_iff_not_odd, even_iff_not_odd, not_iff_not]
 #align int.even_sub' Int.even_sub'

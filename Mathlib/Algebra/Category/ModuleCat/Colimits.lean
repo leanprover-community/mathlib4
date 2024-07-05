@@ -5,16 +5,16 @@ Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.Algebra.Category.GroupCat.Colimits
+import Mathlib.Algebra.Category.Grp.Colimits
 
 #align_import algebra.category.Module.colimits from "leanprover-community/mathlib"@"5a684ce82399d820475609907c6ef8dba5b1b97c"
 
 /-!
 # The category of R-modules has all colimits.
 
-From the existence of colimits in `AddCommGroupCat`, we deduce the existence of colimits
+From the existence of colimits in `AddCommGrp`, we deduce the existence of colimits
 in `ModuleCat R`. This way, we get for free that the functor
-`forget₂ (ModuleCat R) AddCommGroupCat` commutes with colimits.
+`forget₂ (ModuleCat R) AddCommGrp` commutes with colimits.
 
 Note that finite colimits can already be obtained from the instance `Abelian (Module R)`.
 
@@ -35,13 +35,13 @@ variable {J : Type u} [Category.{v} J] (F : J ⥤ ModuleCat.{w'} R)
 
 namespace HasColimit
 
-variable [HasColimit (F ⋙ forget₂ _ AddCommGroupCat)]
+variable [HasColimit (F ⋙ forget₂ _ AddCommGrp)]
 
 /-- The induced scalar multiplication on
-`colimit (F ⋙ forget₂ _ AddCommGroupCat)`. -/
+`colimit (F ⋙ forget₂ _ AddCommGrp)`. -/
 @[simps]
 noncomputable def coconePointSMul :
-    R →+* End (colimit (F ⋙ forget₂ _ AddCommGroupCat)) where
+    R →+* End (colimit (F ⋙ forget₂ _ AddCommGrp)) where
   toFun r := colimMap
     { app := fun j => (F.obj j).smul r
       naturality := fun X Y f => smul_naturality _ _ }
@@ -54,26 +54,26 @@ noncomputable def coconePointSMul :
   map_mul' r s := colimit.hom_ext (fun j => by simp)
 
 /-- The cocone for `F` constructed from the colimit of
-`(F ⋙ forget₂ (ModuleCat R) AddCommGroupCat)`. -/
+`(F ⋙ forget₂ (ModuleCat R) AddCommGrp)`. -/
 @[simps]
 noncomputable def colimitCocone : Cocone F where
   pt := mkOfSMul (coconePointSMul F)
   ι :=
-    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGroupCat)  j) (fun r => by
+    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrp)  j) (fun r => by
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [mkOfSMul_smul]
         simp)
       naturality := fun i j f => by
-        apply (forget₂ _ AddCommGroupCat).map_injective
+        apply (forget₂ _ AddCommGrp).map_injective
         simp only [Functor.map_comp, forget₂_map_homMk]
         dsimp
-        erw [colimit.w (F ⋙ forget₂ _ AddCommGroupCat), comp_id] }
+        erw [colimit.w (F ⋙ forget₂ _ AddCommGrp), comp_id] }
 
 /-- The cocone for `F` constructed from the colimit of
-`(F ⋙ forget₂ (ModuleCat R) AddCommGroupCat)` is a colimit cocone. -/
+`(F ⋙ forget₂ (ModuleCat R) AddCommGrp)` is a colimit cocone. -/
 noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
-  desc s := homMk (colimit.desc _ ((forget₂ _ AddCommGroupCat).mapCocone s)) (fun r => by
+  desc s := homMk (colimit.desc _ ((forget₂ _ AddCommGrp).mapCocone s)) (fun r => by
     apply colimit.hom_ext
     intro j
     dsimp
@@ -85,50 +85,50 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
       Functor.mapCocone_pt, Functor.mapCocone_ι_app, forget₂_map]
     exact smul_naturality (s.ι.app j) r)
   fac s j := by
-    apply (forget₂ _ AddCommGroupCat).map_injective
-    exact colimit.ι_desc ((forget₂ _ AddCommGroupCat).mapCocone s) j
+    apply (forget₂ _ AddCommGrp).map_injective
+    exact colimit.ι_desc ((forget₂ _ AddCommGrp).mapCocone s) j
   uniq s m hm := by
-    apply (forget₂ _ AddCommGroupCat).map_injective
+    apply (forget₂ _ AddCommGrp).map_injective
     apply colimit.hom_ext
     intro j
-    erw [colimit.ι_desc ((forget₂ _ AddCommGroupCat).mapCocone s) j]
+    erw [colimit.ι_desc ((forget₂ _ AddCommGrp).mapCocone s) j]
     dsimp
     rw [← hm]
     rfl
 
 instance : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 
-noncomputable instance : PreservesColimit F (forget₂ _ AddCommGroupCat) :=
+noncomputable instance : PreservesColimit F (forget₂ _ AddCommGrp) :=
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 noncomputable instance reflectsColimit :
-    ReflectsColimit F (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) :=
+    ReflectsColimit F (forget₂ (ModuleCat.{w'} R) AddCommGrp) :=
   reflectsColimitOfReflectsIsomorphisms _ _
 
 end HasColimit
 
 variable (J R)
 
-instance hasColimitsOfShape [HasColimitsOfShape J AddCommGroupCat.{w'}] :
+instance hasColimitsOfShape [HasColimitsOfShape J AddCommGrp.{w'}] :
     HasColimitsOfShape J (ModuleCat.{w'} R) where
 
-noncomputable instance reflectsColimitsOfShape [HasColimitsOfShape J AddCommGroupCat.{w'}] :
-    ReflectsColimitsOfShape J (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
+noncomputable instance reflectsColimitsOfShape [HasColimitsOfShape J AddCommGrp.{w'}] :
+    ReflectsColimitsOfShape J (forget₂ (ModuleCat.{w'} R) AddCommGrp) where
 
-instance hasColimitsOfSize [HasColimitsOfSize.{v, u} AddCommGroupCat.{w'}] :
+instance hasColimitsOfSize [HasColimitsOfSize.{v, u} AddCommGrp.{w'}] :
     HasColimitsOfSize.{v, u} (ModuleCat.{w'} R) where
 
 noncomputable instance forget₂PreservesColimitsOfShape
-    [HasColimitsOfShape J AddCommGroupCat.{w'}] :
-    PreservesColimitsOfShape J (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
+    [HasColimitsOfShape J AddCommGrp.{w'}] :
+    PreservesColimitsOfShape J (forget₂ (ModuleCat.{w'} R) AddCommGrp) where
 
 noncomputable instance forget₂PreservesColimitsOfSize
-    [HasColimitsOfSize.{u, v} AddCommGroupCat.{w'}] :
-    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
+    [HasColimitsOfSize.{u, v} AddCommGrp.{w'}] :
+    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCat.{w'} R) AddCommGrp) where
 
 noncomputable instance
-    [HasColimitsOfSize.{u, v} AddCommGroupCatMax.{w, w'}] :
-    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGroupCat) where
+    [HasColimitsOfSize.{u, v} AddCommGrpMax.{w, w'}] :
+    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGrp) where
 
 instance : HasFiniteColimits (ModuleCat.{w'} R) := inferInstance
 
@@ -149,6 +149,6 @@ example (R : Type u) [Ring R] : HasCoequalizers (ModuleCat.{u} R) := by
 instance : HasCoequalizers (ModuleCat.{v} R) where
 
 noncomputable example (R : Type u) [Ring R] :
-  PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGroupCat) := inferInstance
+  PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGrp) := inferInstance
 
 end ModuleCat

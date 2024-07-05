@@ -59,9 +59,8 @@ def liftAlternating : (∀ i, M [⋀^Fin i]→ₗ[R] N) →ₗ[R] ExteriorAlgebr
   · -- when applied twice with the same `m`, this recursive step produces 0
     intro m x
     dsimp only [LinearMap.mk₂_apply, QuadraticForm.coeFn_zero, Pi.zero_apply]
-    simp_rw [zero_smul]
-    ext i : 1
-    exact AlternatingMap.curryLeft_same _ _
+    simp only [Nat.succ_eq_add_one, AlternatingMap.curryLeft_same, Pi.zero_apply, zero_smul]
+    rfl
 #align exterior_algebra.lift_alternating ExteriorAlgebra.liftAlternating
 
 @[simp]

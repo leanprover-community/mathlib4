@@ -13,12 +13,10 @@ as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
 
-set_option autoImplicit true
-
 open Set
 open scoped ENNReal Classical
 
-variable [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
+variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α}
 
 noncomputable section
 

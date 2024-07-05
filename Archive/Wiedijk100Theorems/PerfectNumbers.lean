@@ -41,7 +41,7 @@ open ArithmeticFunction Finset
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
-  set_option tactic.skipAssignedInstances false in norm_num
+  norm_num
 #align theorems_100.nat.sigma_two_pow_eq_mersenne_succ Theorems100.Nat.sigma_two_pow_eq_mersenne_succ
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/

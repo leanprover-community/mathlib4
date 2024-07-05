@@ -42,12 +42,10 @@ instance OrderedCommMonoid.toCovariantClassLeft : CovariantClass α α (· * ·)
 #align ordered_comm_monoid.to_covariant_class_left OrderedCommMonoid.toCovariantClassLeft
 #align ordered_add_comm_monoid.to_covariant_class_left OrderedAddCommMonoid.toCovariantClassLeft
 
-/- This instance can be proven with `by infer_instance`.  However, `WithBot ℕ` does not
-pick up a `CovariantClass M M (Function.swap (*)) (≤)` instance without it (see PR mathlib#7940). -/
 @[to_additive]
-instance OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
+theorem OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
     CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
-  covariant_swap_mul_of_covariant_mul M _
+  inferInstance
 #align ordered_comm_monoid.to_covariant_class_right OrderedCommMonoid.toCovariantClassRight
 #align ordered_add_comm_monoid.to_covariant_class_right OrderedAddCommMonoid.toCovariantClassRight
 
@@ -90,14 +88,10 @@ instance OrderedCancelCommMonoid.toContravariantClassLeft :
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.toContravariantClassLeft
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.toContravariantClassLeft
 
-/- This instance can be proven with `by infer_instance`.  However, by analogy with the
-instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
-this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
-instance. -/
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClassRight :
+theorem OrderedCancelCommMonoid.toContravariantClassRight :
     ContravariantClass α α (swap (· * ·)) (· < ·) :=
-  contravariant_swap_mul_of_contravariant_mul α _
+  inferInstance
 #align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.toContravariantClassRight
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.toContravariantClassRight
 
@@ -117,10 +111,7 @@ instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCo
 
 end OrderedCancelCommMonoid
 
-set_option linter.deprecated false in
-@[deprecated (since := "2022-11-28")]
-theorem bit0_pos [OrderedAddCommMonoid α] {a : α} (h : 0 < a) : 0 < bit0 a := add_pos' h h
-#align bit0_pos bit0_pos
+#noalign bit0_pos
 
 /-- A linearly ordered additive commutative monoid. -/
 class LinearOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, LinearOrder α
