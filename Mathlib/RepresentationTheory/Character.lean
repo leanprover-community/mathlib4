@@ -113,7 +113,7 @@ end Group
 
 section Orthogonality
 
-variable {G : GroupCat.{u}} [IsAlgClosed k]
+variable {G : Grp.{u}} [IsAlgClosed k]
 
 open scoped Classical
 

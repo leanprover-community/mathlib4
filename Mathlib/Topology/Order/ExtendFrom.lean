@@ -12,13 +12,9 @@ import Mathlib.Topology.Order.DenselyOrdered
 # Lemmas about `extendFrom` in an order topology.
 -/
 
-set_option autoImplicit true
+open Filter Set Topology
 
-
-open Filter Set TopologicalSpace
-
-open scoped Classical
-open Topology
+variable {α β : Type*}
 
 theorem continuousOn_Icc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
     [OrderTopology α] [TopologicalSpace β] [RegularSpace β] {f : α → β} {a b : α} {la lb : β}

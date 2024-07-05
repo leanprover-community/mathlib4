@@ -72,7 +72,8 @@ def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 variable (K)
 
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
-def logEmbedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+def _root_.NumberField.Units.logEmbedding :
+    Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
 { toFun := fun x w => mult w.val * Real.log (w.val ↑(Additive.toMul x))
   map_zero' := by simp; rfl
   map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
@@ -86,8 +87,7 @@ theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w �
 theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
     ∑ w, logEmbedding K x w = - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
   have h := congr_arg Real.log (prod_eq_abs_norm (x : K))
-  rw [show |(Algebra.norm ℚ) (x : K)| = 1 from isUnit_iff_norm.mp x.isUnit, Rat.cast_one,
-    Real.log_one, Real.log_prod] at h
+  rw [Units.norm, Rat.cast_one, Real.log_one, Real.log_prod] at h
   · simp_rw [Real.log_pow] at h
     rw [← insert_erase (mem_univ w₀), sum_insert (not_mem_erase w₀ univ), add_comm,
       add_eq_zero_iff_eq_neg] at h
@@ -374,6 +374,29 @@ theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
   rw [← Units.finrank_eq_rank, Zlattice.rank ℝ]
 
+/-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
+def logEmbeddingQuot :
+    Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+  MonoidHom.toAdditive' <|
+    (QuotientGroup.kerLift (AddMonoidHom.toMultiplicative' (logEmbedding K))).comp
+      (QuotientGroup.quotientMulEquivOfEq (by
+        ext
+        rw [MonoidHom.mem_ker, AddMonoidHom.toMultiplicative'_apply_apply, ofAdd_eq_one,
+          ← logEmbedding_eq_zero_iff]
+        rfl)).toMonoidHom
+
+@[simp]
+theorem logEmbeddingQuot_apply (x : (𝓞 K)ˣ) :
+    logEmbeddingQuot K ⟦x⟧ = logEmbedding K x := rfl
+
+theorem logEmbeddingQuot_injective :
+    Function.Injective (logEmbeddingQuot K) := by
+  unfold logEmbeddingQuot
+  intro _ _ h
+  simp_rw [MonoidHom.toAdditive'_apply_apply, MonoidHom.coe_comp, MulEquiv.coe_toMonoidHom,
+    Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
+  exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
+
 #adaptation_note
 /--
 After https://github.com/leanprover/lean4/pull/4119
@@ -386,36 +409,25 @@ local instance : CommGroup (𝓞 K)ˣ := inferInstance
 -/
 set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
 
-private theorem unitLatticeEquiv_aux1 :
-    (logEmbedding K).ker = (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))).ker := by
-  ext
-  rw [MonoidHom.coe_toAdditive_ker, QuotientGroup.ker_mk', AddMonoidHom.mem_ker,
-    logEmbedding_eq_zero_iff]
-  rfl
+/-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
+`unitLattice` . -/
+def logEmbeddingEquiv :
+    Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) :=
+  (AddEquiv.ofBijective (AddMonoidHom.codRestrict (logEmbeddingQuot K) _
+  (Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸ AddSubgroup.mem_map_of_mem _ trivial))
+  ⟨fun _ _ ↦ by
+    rw [AddMonoidHom.codRestrict_apply, AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
+    apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simp [ha]⟩⟩).toIntLinearEquiv
 
-private theorem unitLatticeEquiv_aux2 :
-    Function.Surjective (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) := by
-  intro x
-  refine ⟨Additive.ofMul x.out', ?_⟩
-  simp only [MonoidHom.toAdditive_apply_apply, toMul_ofMul, QuotientGroup.mk'_apply,
-      QuotientGroup.out_eq']
-  rfl
-
-/-- The linear equivalence between `unitLattice` and `(𝓞 K)ˣ ⧸ (torsion K)` as an additive
-`ℤ`-module. -/
-def unitLatticeEquiv : (unitLattice K) ≃ₗ[ℤ] Additive ((𝓞 K)ˣ ⧸ (torsion K)) :=
-  AddEquiv.toIntLinearEquiv <|
-    (AddEquiv.addSubgroupCongr (AddMonoidHom.range_eq_map (logEmbedding K)).symm).trans <|
-      (QuotientAddGroup.quotientKerEquivRange (logEmbedding K)).symm.trans <|
-          (QuotientAddGroup.quotientAddEquivOfEq (unitLatticeEquiv_aux1  K)).trans <|
-            QuotientAddGroup.quotientKerEquivOfSurjective
-              (MonoidHom.toAdditive (QuotientGroup.mk' (torsion K))) (unitLatticeEquiv_aux2 K)
+@[simp]
+theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :
+    logEmbeddingEquiv K ⟦x⟧ = logEmbedding K x := rfl
 
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
-  Module.Free.of_equiv (unitLatticeEquiv K)
+  Module.Free.of_equiv (logEmbeddingEquiv K).symm
 
 instance : Module.Finite ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
-  Module.Finite.equiv (unitLatticeEquiv K)
+  Module.Finite.equiv (logEmbeddingEquiv K).symm
 
 -- Note that we prove this instance first and then deduce from it the instance
 -- `Monoid.FG (𝓞 K)ˣ`, and not the other way around, due to no `Subgroup` version
@@ -439,7 +451,7 @@ instance : Monoid.FG (𝓞 K)ˣ := by
 
 theorem rank_modTorsion :
     FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
-  rw [← LinearEquiv.finrank_eq (unitLatticeEquiv K), unitLattice_rank]
+  rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
@@ -451,6 +463,12 @@ units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
   fun i => Quotient.out' (Additive.toMul (basisModTorsion K i) :)
+
+theorem fundSystem_mk (i : Fin (rank K)) :
+    Additive.ofMul ⟦fundSystem K i⟧ = (basisModTorsion K i) := by
+  rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, @Quotient.mk_eq_iff_out,
+    Quotient.out', Quotient.out_equiv_out]
+  rfl
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
@@ -487,5 +505,6 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin
     rw [_root_.mul_inv_cancel_right]
 
 end statements
+
 
 end NumberField.Units

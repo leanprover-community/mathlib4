@@ -671,6 +671,7 @@ example (a b c d e : ℚ)
     e = 3 := by
   linarith (config := { oracle := .fourierMotzkin })
 
+set_option linter.unusedTactic false in
 -- TODO: still broken with Fourier-Motzkin
 /--
 error: linarith failed to find a contradiction
