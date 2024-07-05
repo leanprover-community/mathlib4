@@ -16,7 +16,8 @@ info: import Mathlib.Init.Data.Int.Basic
 #min_imps ℤ
 
 /--
-info: import Batteries.Tactic.Init
+info:
+import Batteries.Tactic.Init
 import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.ExtractGoal
 -/
