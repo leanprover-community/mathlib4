@@ -121,10 +121,7 @@ theorem unit_mateEquiv (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (c : C) :
   dsimp [mateEquiv]
   rw [← adj₂.unit_naturality_assoc]
   slice_lhs 2 3 =>
-    {
-      rw [← R₂.map_comp, ← Functor.comp_map G L₂]
-      rw [α.naturality]
-    }
+    rw [← R₂.map_comp, ← Functor.comp_map G L₂, α.naturality]
   rw [R₂.map_comp]
   slice_lhs 3 4 =>
     {
