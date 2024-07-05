@@ -162,6 +162,34 @@ instance (priority := 100) : PreservesZeroMorphisms F where
       infer_instance
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
+noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
+  suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
+    have := fun (X₁ X₃ : C) => PreservesLimitPair.ofIsoProdComparison F X₁ X₃
+    exact ⟨fun {K} => preservesLimitOfIsoDiagram F (diagramIsoPair K).symm⟩
+  intro X₁ X₃
+  let φ : F.mapTriangle.obj (binaryProductTriangle X₁ X₃) ⟶
+      binaryProductTriangle (F.obj X₁) (F.obj X₃) :=
+    { hom₁ := 𝟙 _
+      hom₂ := prodComparison F X₁ X₃
+      hom₃ := 𝟙 _
+      comm₁ := by
+        dsimp
+        ext
+        · simp only [assoc, prodComparison_fst, prod.comp_lift, comp_id, comp_zero,
+            limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_left, BinaryFan.mk_fst,
+            ← F.map_comp, F.map_id]
+        · simp only [assoc, prodComparison_snd, prod.comp_lift, comp_id, comp_zero,
+            limit.lift_π, BinaryFan.mk_pt, BinaryFan.π_app_right, BinaryFan.mk_snd,
+            ← F.map_comp, F.map_zero]
+      comm₂ := by simp
+      comm₃ := by simp }
+  exact isIso₂_of_isIso₁₃ φ (F.map_distinguished _ (binaryProductTriangle_distinguished X₁ X₃))
+    (binaryProductTriangle_distinguished _ _)
+    (by dsimp; infer_instance) (by dsimp; infer_instance)
+
+instance (priority := 100) : F.Additive := F.additive_of_preserves_binary_products
+
+
 end IsTriangulated
 
 end Functor
