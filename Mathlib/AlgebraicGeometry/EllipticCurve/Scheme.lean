@@ -198,8 +198,10 @@ lemma coordinateRingToLoc_Z : coordinateRingInfToLoc W (.mk W Y) = .mk 1 ⟨_, 1
   exact (AdjoinRoot.lift_mk _ _).trans (eval₂_X _ _)
 
 def locRingEquiv : LocalizationZ W ≃+* LocalizationY W :=
-  .ofHomInv (Localization.awayLift (coordinateRingInfToLoc W) _ <| by sorry)
-    (Localization.awayLift (coordinateRingToLoc W) _ <| by sorry)
+  .ofHomInv (Localization.awayLift (coordinateRingInfToLoc W) _ <|
+      by erw [coordinateRingToLoc_Z]; apply Localization.isUnit_mk_one)
+    (Localization.awayLift (coordinateRingToLoc W) _ <|
+      by erw [coordinateRingInfToLoc_Y]; apply Localization.isUnit_mk_one)
     (IsLocalization.ringHom_ext (.powers <| CoordinateRingInf.mk W Y) <| by sorry)
     (IsLocalization.ringHom_ext (.powers <| Affine.CoordinateRing.mk W Y) <| by sorry)
     -- need a version of AdjoinRoot.algHom_ext that takes an R-AlgHom rather than R[X]-AlgHom
