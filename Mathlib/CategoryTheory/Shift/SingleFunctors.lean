@@ -150,7 +150,8 @@ level-wise isomorphisms and checking compatibility only in the forward direction
 @[simps]
 def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
     (comm : ∀ (n a a' : A) (ha' : n + a = a'), (F.shiftIso n a a' ha').hom ≫ (iso a).hom =
-      whiskerRight (iso a').hom (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom) :
+      whiskerRight (iso a').hom (shiftFunctor D n) ≫
+        (G.shiftIso n a a' ha').hom := by aesop_cat) :
     F ≅ G where
   hom :=
     { hom := fun a => (iso a).hom
@@ -251,6 +252,29 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
     ext X
     dsimp
     simp [NatTrans.CommShift.shift_app e.hom n])
+
+/-- Given `F : SingleFunctors C D A`, and a functor `G : E ⥤ C`,
+this is the "composition" of `G` and `F` in `SingleFunctors E D A`. -/
+@[simps! functor shiftIso_hom_app shiftIso_inv_app]
+def precomp (G : E ⥤ C) :
+    SingleFunctors E D A where
+  functor a := G ⋙ F.functor a
+  shiftIso n a a' h := Functor.associator _ _ _ ≪≫
+      isoWhiskerLeft G (F.shiftIso n a a' h)
+  shiftIso_zero _ := by ext; dsimp; simp
+  shiftIso_add n m a a' a'' ha' ha'' := by
+    ext X
+    dsimp
+    rw [F.shiftIso_add n m a a' a'' ha' ha'']
+    simp
+
+/-- The associator isomorphism `(F.precomp G).postcomp H ≅ (F.postcomp H).precomp G`
+when `F : SingleFunctor C D A`, `G` is a functor to the category `C`, and `H` is a functor
+from the category `D` which commutes with the shift by `A`. -/
+@[simps!]
+def precompPostcompIso (G : E' ⥤ C) (H : D ⥤ E) [H.CommShift A] :
+     (F.precomp G).postcomp H ≅ (F.postcomp H).precomp G :=
+  isoMk (fun _ ↦ Functor.associator _ _ _)
 
 end SingleFunctors
 
