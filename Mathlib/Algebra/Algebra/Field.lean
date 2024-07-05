@@ -6,6 +6,10 @@ Authors: Kenny Lau, Yury Kudryashov
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Data.Rat.Cast.Defs
 
+/-!
+# Facts about `algebraMap` when the coefficient ring is a field.
+-/
+
 namespace algebraMap
 
 universe u v w u₁ v₁
