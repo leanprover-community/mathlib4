@@ -63,34 +63,13 @@ def getSyntaxImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEn
         if !fins.contains new then fins := fins.insert new
   return fins
 
-/-
-def importTips (ns : NameSet) : CommandElabM NameSet := do
-  let all := (← getEnv).allImportedModuleNames
-  dbg_trace ← getBuildDir
-  dbg_trace ← getLibDir ""
-  let allFileNames := all.map (modToFilePath "." · "lean")
-  dbg_trace allFileNames
-  let importDatas ← allFileNames.mapM fun n => return (← readModuleData n).1
-  dbg_trace importDatas.map fun i => i.imports
-  return ns
-
-run_cmd
-  let _ ← importTips <| (NameSet.empty).insert `Mathlib.Init.Data.Nat.Basic
--/
-
 def getAllImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m] [MonadQuotation m]
     (stx : Syntax) : m NameSet := do
   let env ← getEnv
-  let exprImports := {} --← match cmd.raw.find? (·.isOfKind ``Lean.Parser.Command.declId) with
-                     -- | none => return .empty
-                     -- | some declId => liftCoreM do
-                     --   (← realizeGlobalConstNoOverloadWithInfo declId[0]).findHome (some env)
   let fins ← getSyntaxImports stx --true
-  let mut tot := (fins.append exprImports).erase default
+  let mut tot := fins.erase default
   let redundant := env.findRedundantImports tot.toArray
-  for n in redundant do
-    tot := tot.erase n
-  return tot
+  return tot.diff redundant
 
 def minImpsCore (stx : Syntax) : CommandElabM Unit := do
     let tot ← getAllImports stx
