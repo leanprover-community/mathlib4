@@ -236,6 +236,15 @@ noncomputable def mapSmallShiftedHom :
     SmallShiftedHom.{t} W' (Φ.functor.obj X) (Φ.functor.obj Y) a :=
   (Φ.smallHomMap α).comp (SmallHom.mk W' ((Φ.functor.commShiftIso a).hom.app Y))
 
+instance : HasSmallLocalizedShiftedHom.{w} W M
+    ((id W).functor.obj X) ((id W).functor.obj Y) :=
+  inferInstanceAs (HasSmallLocalizedShiftedHom.{w} W M X Y)
+
+@[simp]
+lemma id_mapSmallShiftedHom [HasSmallLocalizedShiftedHom.{w} W M Y Y] :
+    (id W).mapSmallShiftedHom α = α := by
+  simp [mapSmallShiftedHom]
+
 end LocalizerMorphism
 
 end CategoryTheory

@@ -95,14 +95,18 @@ instance (X : C) (i : ι) : ((HomologicalComplex.single C c i).obj X).IsSingle w
 instance (X : C) (n : ℤ) : ((CochainComplex.singleFunctor C n).obj X).IsSingle where
   nonempty := ⟨X, n, ⟨Iso.refl _⟩⟩
 
-instance (a b i j : ℤ)  (X Y : C) :
+instance (a b i j : ℤ) (X Y : C) :
     HasSmallLocalizedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
       ((shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) a).obj
         ((HomologicalComplex.single C (ComplexShape.up ℤ) i).obj X))
       ((shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) b).obj
         ((HomologicalComplex.single C (ComplexShape.up ℤ) j).obj Y)) := by
-  have : HasExt.{w} C := inferInstance
-  sorry
+  apply hasSmallLocalizedShiftedHom_of_isos (M := ℤ)
+    (W := (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)))
+    (X := ((CochainComplex.singleFunctor C 0).obj X)⟦-i⟧)
+    (Y := ((CochainComplex.singleFunctor C 0).obj Y)⟦-j⟧)
+    (e₁ := ((CochainComplex.singleFunctors C).shiftIso _ _ _ (add_left_neg i)).symm.app X)
+    (e₂ := ((CochainComplex.singleFunctors C).shiftIso _ _ _ (add_left_neg j)).symm.app Y)
 
 instance (K L : CochainComplex C ℤ) [hK : K.IsSingle] [hL : L.IsSingle] :
     HasSmallLocalizedShiftedHom.{w}
@@ -201,10 +205,24 @@ noncomputable def map : Ext.{t} (F.obj X) (F.obj Y) n :=
     ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) 0).app Y).hom)) (zero_add _))
       (add_zero _)
 
+lemma homEquiv_symm_add' :
+    letI := HasDerivedCategory.standard C
+    ∀ (a b : ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
+      ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ)),
+        homEquiv.symm (a + b) = homEquiv.symm a + homEquiv.symm b := by
+  letI := HasDerivedCategory.standard C
+  intros a b
+  obtain ⟨α, rfl⟩ := homEquiv.surjective a
+  obtain ⟨β, rfl⟩ := homEquiv.surjective b
+  simp only [Equiv.symm_apply_apply]
+  rfl
+
 section
+
 
 variable [HasDerivedCategory.{w'} C] [HasDerivedCategory.{t'} D]
   [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+
 
 lemma homEquiv_map : homEquiv (α.map F) =
     (ShiftedHom.mk₀ 0 (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).inv.app X)).comp
@@ -212,12 +230,43 @@ lemma homEquiv_map : homEquiv (α.map F) =
         ((F.singleFunctorCompMapDerivedCategoryIso 0).hom.app Y)) (zero_add _)) (add_zero _) := by
   sorry
 
+lemma homEquiv_symm_map
+    (a : ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
+        ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ)) :
+    (homEquiv.symm a).map F = homEquiv.symm
+      ((ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).inv.app X)).comp
+        ((a.map F.mapDerivedCategory).comp
+          (ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).hom.app Y)) (zero_add _))
+          (add_zero _)) :=
+  homEquiv.injective (by simp [homEquiv_map])
+
+--set_option pp.universes true
+
 lemma map_id : α.map (𝟭 C) = α := by
+  dsimp only [map]
+  have eq := LocalizerMorphism.id_mapSmallShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) α
+  conv_lhs =>
+    congr
+    · skip
+    · congr
+      · skip
+      · skip
   sorry
+
+lemma homEquiv_add' :
+    letI := HasDerivedCategory.standard C
+    homEquiv.{max u v, w} (α + β) = homEquiv α + homEquiv β :=  by
+  letI := HasDerivedCategory.standard C
+  apply homEquiv.{max u v, w}.symm.injective
+  simp only [Equiv.symm_apply_apply]
+  rfl
+
 
 @[simp]
 lemma homEquiv_add : homEquiv (α + β) = homEquiv α + homEquiv β := by
-  --letI := HasDerivedCategory.standard C
+  apply homEquiv.symm.injective
+  letI := HasDerivedCategory.standard C
+  simp only [Equiv.symm_apply_apply]
   --rw [← (α + β).map_id]
   --conv_rhs => rw [← α.map_id, ← β.map_id]
   --apply (homEquiv_map.{max u v, w', w, w} (α + β) (𝟭 C)).trans

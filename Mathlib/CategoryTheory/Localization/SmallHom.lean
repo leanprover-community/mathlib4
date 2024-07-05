@@ -255,6 +255,7 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
 instance : HasSmallLocalizedHom.{w} W₁ ((𝟭 _).obj X) ((𝟭 _).obj Y) :=
   inferInstanceAs (HasSmallLocalizedHom.{w} W₁ X Y)
 
+@[simp]
 lemma id_smallHomMap (f : SmallHom.{w} W₁ X Y) :
     (LocalizerMorphism.id W₁).smallHomMap f = f := by
   apply (SmallHom.equiv W₁ W₁.Q).injective
