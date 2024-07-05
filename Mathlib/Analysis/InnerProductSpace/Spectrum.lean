@@ -450,6 +450,9 @@ theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
+theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : Submodule 𝕜 E) :
+    (∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔ (∀ (b : 𝕜), eigenspace S b ≤ K) := by sorry
+
 theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
   (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E)) = (⨆ t, eigenspace S t) := by
   ext F
@@ -459,8 +462,19 @@ theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
       Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
       SetLike.mem_coe] at *
     intro i hi
-    sorry --somehow have to recast this infimum over functions...but this may be ugly
-  · sorry
+    have I : ∀ (a : 𝕜), eigenspace S a ≤ i := fun a ↦ hi a
+    rw [← pre_pre_base (n := n) S i] at I
+    apply hF
+    exact I
+  · intro hF
+    simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe] at *
+    intro i hi
+    have I : ∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ i := fun a ↦ hi fun j ↦ a j
+    rw [pre_pre_base (n := n) S i] at I
+    apply hF
+    exact I
 
 theorem base [Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
