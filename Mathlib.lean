@@ -175,7 +175,8 @@ import Mathlib.Algebra.DualNumber
 import Mathlib.Algebra.DualQuaternion
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Defs
-import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Expr
 import Mathlib.Algebra.Field.Basic
