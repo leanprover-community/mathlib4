@@ -223,7 +223,7 @@ are obtained under the additional assumption that
 `C` and `D` have pullbacks).
 -/
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
-    Presheaf.IsSheaf K ((G.op.ran).obj ℱ.val) := by
+    Presheaf.IsSheaf K (G.op.ran.obj ℱ.val) := by
   rw [Presheaf.isSheaf_iff_multifork]
   intros X S
   exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.2
@@ -235,8 +235,8 @@ variable (A J)
 
 /-- A cover-lifting functor induces a pushforward functor on categories of sheaves. -/
 def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A where
-  obj ℱ := ⟨(ran G.op).obj ℱ.val, ran_isSheaf_of_isCocontinuous _ K ℱ⟩
-  map f := ⟨(ran G.op).map f.val⟩
+  obj ℱ := ⟨G.op.ran.obj ℱ.val, ran_isSheaf_of_isCocontinuous _ K ℱ⟩
+  map f := ⟨G.op.ran.map f.val⟩
   map_id ℱ := Sheaf.Hom.ext _ _ <| (ran G.op).map_id ℱ.val
   map_comp f g := Sheaf.Hom.ext _ _ <| (ran G.op).map_comp f.val g.val
 #align category_theory.sites.copullback CategoryTheory.Functor.sheafPushforwardCocontinuous
