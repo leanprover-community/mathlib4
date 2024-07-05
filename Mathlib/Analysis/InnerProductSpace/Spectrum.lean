@@ -446,11 +446,22 @@ theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
-/-The proof of the following is definitely needed, but seems annoying like the `disjointness` claim
-  above. Probably going to have to define the actual function one needs to use. Maybe this itself
-  needs to be done by induction. May actually have to refer to the eigenvalues of S directly.-/
+/-The proof of the following is definitely needed, but seems annoying.
+  Probably going to have to define the actual function one needs to use. This should be easy
+  since n is a subsingleton. May actually have to refer to the eigenvalues of S directly.-/
 theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : Submodule 𝕜 E) :
-    (∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔ (∀ (b : 𝕜), eigenspace S b ≤ K) := by sorry
+    (∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔ (∀ (b : 𝕜), eigenspace S b ≤ K) := by
+  constructor
+  intro H
+  intro b
+  by_cases case : Nonempty n
+  · have := H (Function.const n b)
+    simpa only [ge_iff_le, Function.const_apply, ciInf_const]
+  · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
+
+
+
+
 
 theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
   (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E)) = (⨆ t, eigenspace S t) := by
