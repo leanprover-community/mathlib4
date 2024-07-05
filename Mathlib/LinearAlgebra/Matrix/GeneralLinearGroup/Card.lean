@@ -5,18 +5,17 @@ Authors: Thomas Lanard
 -/
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.Data.Matrix.Rank
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
-# Cardinals of subgroups of matrices
+# Cardinal of the general linear group over finite rings
 
-This file computes the cardinal of different subgroups of matrices.
+This file computes the cardinal of the general linear group over finite rings.
 
 ## Main statements
 
 * `card_linearInependent` gives the cardinal of the set of linearly independent vectors over a
   finite dimensional vector space over a finite field.
-* `Matrix.card_matrix_divisionRing` gives the cardinal of the set of matrices over a finite field.
 * `Matrix.card_GL_divisionRing` gives the cardinal of the general linear group over a finite field.
 -/
 
@@ -61,12 +60,6 @@ section divisionRing
 variable {𝔽 : Type*} [DivisionRing 𝔽] [Fintype 𝔽]
 
 local notation "q" => Fintype.card 𝔽
-
-/-- The cardinal of the set of matrices over a finite field. -/
-theorem card_matrix_divisionRing {n m : ℕ} :
-    Nat.card (Matrix (Fin n) (Fin m) 𝔽) = q ^ (m * n) := by
-  simp only [Matrix, Nat.card_eq_fintype_card, Fintype.card_pi, Finset.prod_const, Finset.card_univ,
-    Fintype.card_fin, pow_mul]
 
 variable (n : ℕ)
 
