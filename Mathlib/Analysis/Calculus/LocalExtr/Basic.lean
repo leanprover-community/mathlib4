@@ -83,24 +83,30 @@ theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
   exact ⟨c, d, mem_of_superset hd fun h hn => hst hn, hc, hcd⟩
 #align pos_tangent_cone_at_mono posTangentConeAt_mono
 
-theorem mem_posTangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segment ℝ x y ⊆ s) :
-    y - x ∈ posTangentConeAt s x := by
-  let c := fun n : ℕ => (2 : ℝ) ^ n
-  let d := fun n : ℕ => (c n)⁻¹ • (y - x)
-  refine ⟨c, d, Filter.univ_mem' fun n => h ?_, tendsto_pow_atTop_atTop_of_one_lt one_lt_two, ?_⟩
-  · show x + d n ∈ segment ℝ x y
-    rw [segment_eq_image']
-    refine ⟨(c n)⁻¹, ⟨?_, ?_⟩, rfl⟩
-    exacts [inv_nonneg.2 (pow_nonneg zero_le_two _), inv_le_one (one_le_pow_of_one_le one_le_two _)]
-  · show Tendsto (fun n => c n • d n) atTop (𝓝 (y - x))
-    exact tendsto_const_nhds.congr fun n ↦ (smul_inv_smul₀ (pow_ne_zero _ two_ne_zero) _).symm
-#align mem_pos_tangent_cone_at_of_segment_subset mem_posTangentConeAt_of_segment_subset
+theorem mem_posTangentConeAt_of_frequently_mem {s : Set E} {x y : E}
+    (h : ∃ᶠ t : ℝ in 𝓝[>] 0, x + t • y ∈ s) : y ∈ posTangentConeAt s x := by
+  obtain ⟨a, ha, has⟩ := Filter.exists_seq_forall_of_frequently h
+  refine ⟨a⁻¹, (a · • y), eventually_of_forall has, tendsto_inv_zero_atTop.comp ha, ?_⟩
+  refine tendsto_const_nhds.congr' ?_
+  filter_upwards [(tendsto_nhdsWithin_iff.1 ha).2] with n (hn : 0 < a n)
+  simp [ne_of_gt hn]
 
 theorem mem_posTangentConeAt_of_segment_subset' {s : Set E} {x y : E}
     (h : segment ℝ x (x + y) ⊆ s) : y ∈ posTangentConeAt s x := by
-  simpa only [add_sub_cancel_left] using mem_posTangentConeAt_of_segment_subset h
+  refine mem_posTangentConeAt_of_frequently_mem (Eventually.frequently ?_)
+  rw [eventually_nhdsWithin_iff]
+  filter_upwards [ge_mem_nhds one_pos] with t ht₁ ht₀
+  apply h
+  rw [segment_eq_image', add_sub_cancel_left]
+  exact mem_image_of_mem _ ⟨le_of_lt ht₀, ht₁⟩
 #align mem_pos_tangent_cone_at_of_segment_subset' mem_posTangentConeAt_of_segment_subset'
 
+theorem mem_posTangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segment ℝ x y ⊆ s) :
+    y - x ∈ posTangentConeAt s x :=
+  mem_posTangentConeAt_of_segment_subset' <| by rwa [add_sub_cancel]
+#align mem_pos_tangent_cone_at_of_segment_subset mem_posTangentConeAt_of_segment_subset
+
+@[simp]
 theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
   eq_univ_of_forall fun _ => mem_posTangentConeAt_of_segment_subset' (subset_univ _)
 #align pos_tangent_cone_at_univ posTangentConeAt_univ
@@ -226,7 +232,29 @@ end Module
 
 section Real
 
-variable {f : ℝ → ℝ} {f' : ℝ} {a b : ℝ}
+variable {f : ℝ → ℝ} {f' : ℝ} {s : Set ℝ} {a b : ℝ}
+
+lemma one_mem_posTangentConeAt_iff_mem_closure :
+    1 ∈ posTangentConeAt s a ↔ a ∈ closure (Ioi a ∩ s) := by
+  constructor
+  · rintro ⟨c, d, hs, hc, hcd⟩
+    have : Tendsto (a + d ·) atTop (𝓝 a) := by
+      simpa only [add_zero] using tendsto_const_nhds.add
+        (tangentConeAt.lim_zero _ (tendsto_abs_atTop_atTop.comp hc) hcd)
+    apply mem_closure_of_tendsto this
+    filter_upwards [hc.eventually_gt_atTop 0, hcd.eventually (lt_mem_nhds one_pos), hs]
+      with n hcn hcdn hdn
+    simp_all
+  · intro h
+    apply mem_posTangentConeAt_of_frequently_mem
+    rw [mem_closure_iff_frequently, ← map_add_left_nhds_zero, frequently_map] at h
+    simpa [nhdsWithin, frequently_inf_principal] using h
+
+lemma one_mem_posTangentConeAt_iff_frequently :
+    1 ∈ posTangentConeAt s a ↔ ∃ᶠ x in 𝓝[>] a, x ∈ s := by
+  rw [one_mem_posTangentConeAt_iff_mem_closure, mem_closure_iff_frequently,
+    frequently_nhdsWithin_iff, inter_comm]
+  rfl
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.hasDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasDerivAt f f' a) : f' = 0 := by
