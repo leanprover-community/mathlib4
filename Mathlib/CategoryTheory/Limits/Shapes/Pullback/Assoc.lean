@@ -191,7 +191,7 @@ local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
   apply leftSquareIsPullback (pullbackIsPullback f₃ f₄)
-  simpa [PullbackCone.pasteHoriz] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ _)
+  simpa [PullbackCone.pasteHoriz] using PullbackCone.mkSelfIsLimit (pullbackIsPullback _ f₄)
 #align category_theory.limits.pullback_pullback_left_is_pullback CategoryTheory.Limits.pullbackPullbackLeftIsPullback
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
@@ -373,13 +373,9 @@ local notation "l₂'" =>
 def pushoutPushoutLeftIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
     IsColimit
       (PushoutCocone.mk l₁' l₂' (show f₂ ≫ l₁' = f₃ ≫ l₂' from (pushout.inl_desc _ _ _).symm)) := by
-  apply PushoutCocone.isColimitOfFlip
-  apply rightSquareMkIsPushout
-  · apply PushoutCocone.isColimitOfFlip
-    exact pushoutIsPushout g₃ g₄
-  · exact IsColimit.ofIsoColimit (PushoutCocone.flipIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄))
-      (PushoutCocone.ext (Iso.refl _) (by simp) (by simp))
-  · exact pushout.condition.symm
+  apply botSquareIsPushout (pushoutIsPushout _ g₄)
+  simpa [PushoutCocone.pasteVert] using
+    PushoutCocone.mkSelfIsColimit (pushoutIsPushout (g₃ ≫ f₂) g₄)
 #align category_theory.limits.pushout_pushout_left_is_pushout CategoryTheory.Limits.pushoutPushoutLeftIsPushout
 
 /-- `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃` is the pushout `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
@@ -388,9 +384,7 @@ def pushoutAssocIsPushout [HasPushout (g₃ ≫ f₂) g₄] :
       (PushoutCocone.mk (f₁ ≫ l₁') l₂'
         (show g₁ ≫ f₁ ≫ l₁' = (g₂ ≫ f₃) ≫ l₂' by
           rw [Category.assoc, pushout.inl_desc, pushout.condition_assoc])) := by
-  apply pasteHorizMkIsPushout
-  · apply pushoutPushoutLeftIsPushout
-  · exact pushoutIsPushout _ _
+  simpa using pasteHorizIsPushout (pushoutIsPushout g₁ g₂) (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄)
 #align category_theory.limits.pushout_assoc_is_pushout CategoryTheory.Limits.pushoutAssocIsPushout
 
 theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g₂ ≫ f₃) :=
@@ -400,10 +394,8 @@ theorem hasPushout_assoc [HasPushout (g₃ ≫ f₂) g₄] : HasPushout g₁ (g�
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ×[X₂] (X₂ ⨿[Z₂] X₃)`. -/
 def pushoutPushoutRightIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
     IsColimit (PushoutCocone.mk l₁ l₂ (show f₂ ≫ l₁ = f₃ ≫ l₂ from pushout.inr_desc _ _ _)) := by
-  apply rightSquareMkIsPushout
-  · exact pushoutIsPushout _ _
-  · convert pushoutIsPushout g₁ (g₂ ≫ f₃)
-    rw [pushout.inl_desc]
+  apply rightSquareIsPushout (pushoutIsPushout _ _)
+  simpa [PushoutCocone.pasteHoriz] using PushoutCocone.mkSelfIsColimit (pushoutIsPushout _ _)
 #align category_theory.limits.pushout_pushout_right_is_pushout CategoryTheory.Limits.pushoutPushoutRightIsPushout
 
 /-- `X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)` is the pushout `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃`. -/
@@ -412,14 +404,7 @@ def pushoutAssocSymmIsPushout [HasPushout g₁ (g₂ ≫ f₃)] :
       (PushoutCocone.mk l₁ (f₄ ≫ l₂)
         (show (g₃ ≫ f₂) ≫ l₁ = g₄ ≫ f₄ ≫ l₂ by
           rw [Category.assoc, pushout.inr_desc, pushout.condition_assoc])) := by
-  apply PushoutCocone.isColimitOfFlip
-  apply pasteHorizMkIsPushout
-  · apply PushoutCocone.isColimitOfFlip
-    apply pushoutPushoutRightIsPushout
-  · apply PushoutCocone.isColimitOfFlip
-    exact pushoutIsPushout g₃ g₄
-  · exact pushout.condition.symm
-  · exact (pushout.inr_desc _ _ _).symm
+  simpa using pasteVertIsPushout (pushoutIsPushout _ _) (pushoutPushoutRightIsPushout _ _ _ _)
 #align category_theory.limits.pushout_assoc_symm_is_pushout CategoryTheory.Limits.pushoutAssocSymmIsPushout
 
 theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g₃ ≫ f₂) g₄ :=
