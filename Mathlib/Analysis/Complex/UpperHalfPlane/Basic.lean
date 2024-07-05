@@ -7,7 +7,7 @@ import Mathlib.Data.Fintype.Parity
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.LinearCombination
 
