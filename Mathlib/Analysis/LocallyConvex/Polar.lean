@@ -150,6 +150,24 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
     _ = ε := mul_one _
 #align linear_map.polar_univ LinearMap.polar_univ
 
+theorem polar_subMulAction (m : SubMulAction 𝕜 E) : B.polar m = { y | ∀ x ∈ m, B x y = 0 } := by
+  rw [le_antisymm_iff]
+  constructor
+  · intro y hy
+    rw [Set.mem_setOf_eq]
+    by_contra hc
+    cases' (not_forall.mp hc) with x hx
+    rw [Classical.not_imp] at hx
+    cases' (NormedField.exists_lt_norm 𝕜 ‖(B x) y‖⁻¹ ) with r hr
+    let he := hy _ (SubMulAction.smul_mem m r hx.1)
+    simp only [LinearMapClass.map_smul, smul_apply, smul_eq_mul, norm_mul, norm_inv] at he
+    apply (lt_self_iff_false (1 : ℝ)).mp
+    conv_lhs => rw [←  inv_mul_cancel (norm_ne_zero_iff.mpr hx.2)]
+    exact lt_of_le_of_lt' he (mul_lt_mul_of_pos_right hr (norm_pos_iff.mpr hx.2))
+  · intro _ h x hx
+    rw [h x hx, norm_zero]
+    exact zero_le_one
+
 end NontriviallyNormedField
 
 end LinearMap
