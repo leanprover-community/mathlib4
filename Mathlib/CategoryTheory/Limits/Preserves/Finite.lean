@@ -246,6 +246,7 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
 class PreservesFiniteCoproducts (F : C ⥤ D) where
+  /-- preservation of colimits indexed by `Discrete J` when `[Fintype J]` -/
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
 noncomputable instance (F : C ⥤ D) (J : Type*) [Finite J] [PreservesFiniteCoproducts F] :
