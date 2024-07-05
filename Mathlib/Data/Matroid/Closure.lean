@@ -70,14 +70,14 @@ lemma Flat.iInter {ι : Type*} [Nonempty ι] {Fs : ι → Set α}
 in which the `IsClosed` sets correspond to `Flat`s.
 (We can't define such an operator on all of `Set α`,
 since this would incorrectly force `univ` to always be a flat.)-/
-def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) := by
-  refine ClosureOperator.ofCompletePred (fun F ↦ M.Flat F.1) fun s hs ↦ ?_
-  obtain (rfl | hne) := s.eq_empty_or_nonempty
-  · simp
-  have _ := hne.coe_sort
-  convert Flat.iInter (M := M) (Fs := fun (F : s) ↦ F.1.1) (fun F ↦ hs F.1 F.2)
-  ext
-  aesop
+def subtypeClosure (M : Matroid α) : ClosureOperator (Iic M.E) :=
+  ClosureOperator.ofCompletePred (fun F ↦ M.Flat F.1) fun s hs ↦ by
+    obtain (rfl | hne) := s.eq_empty_or_nonempty
+    · simp
+    have _ := hne.coe_sort
+    convert Flat.iInter (M := M) (Fs := fun (F : s) ↦ F.1.1) (fun F ↦ hs F.1 F.2)
+    ext
+    aesop
 
 lemma flat_iff_isClosed : M.Flat F ↔ ∃ h : F ⊆ M.E, M.subtypeClosure.IsClosed ⟨F, h⟩ := by
   simpa [subtypeClosure] using Flat.subset_ground
@@ -109,7 +109,7 @@ lemma closure_eq_subtypeClosure (M : Matroid α) (X : Set α) :
 lemma closure_subset_ground (M : Matroid α) (X : Set α) : M.closure X ⊆ M.E :=
   sInter_subset_of_mem ⟨M.ground_flat, inter_subset_right⟩
 
-lemma ground_subset_closure_iff : M.E ⊆ M.closure X ↔ M.closure X = M.E := by
+@[simp] lemma ground_subset_closure_iff : M.E ⊆ M.closure X ↔ M.closure X = M.E := by
   simp [M.closure_subset_ground X, subset_antisymm_iff]
 
 @[simp] lemma closure_inter_ground (M : Matroid α) (X : Set α) :
