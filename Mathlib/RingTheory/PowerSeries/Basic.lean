@@ -528,8 +528,8 @@ lemma constantCoeff_mul (φ ψ : R⟦X⟧) :
 lemma constantCoeff_pow (n : ℕ) (φ : R⟦X⟧) (hC : constantCoeff R φ = 1) :
     constantCoeff R (φ ^ n) = 1 := by
   induction n
-  . exact rfl
-  . simp_all only [map_pow, one_pow]
+  · exact rfl
+  · simp_all only [map_pow, one_pow]
 
 section Map
 
