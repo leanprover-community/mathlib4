@@ -2898,6 +2898,7 @@ import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Reflection
 import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.Forms
 import Mathlib.LinearAlgebra.RootSystem.Simple
 import Mathlib.LinearAlgebra.RootSystem.Test
 import Mathlib.LinearAlgebra.SModEq
