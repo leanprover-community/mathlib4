@@ -402,7 +402,7 @@ theorem post_post_exhaust: DirectSum.IsInternal
 universe u
 
 variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
-    (hT : ∀(i : n), (T n i).IsSymmetric)
+    (hT : ∀ n [Fintype n], (∀ (i : n), (T n i).IsSymmetric))
     (hC : ∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i))
 
 theorem cracker0 [Subsingleton n] : (∀ (i j : n), T n j  = T n i) := by
@@ -416,7 +416,7 @@ theorem cracker1 [Subsingleton n] (h : Nonempty n) : ∃ (S : E →ₗ[𝕜] E),
     have i := choice h
     use (T n i)
     constructor
-    · exact hT i
+    · exact hT n i
     · exact fun i_1 ↦ cracker0 i i_1
 
 theorem cracker2 [Subsingleton n] (S : E →ₗ[𝕜] E) :
@@ -439,7 +439,7 @@ theorem disjointness (S : E →ₗ[𝕜] E) : ∃ (γ : n → 𝕜), (⨅ j, eig
 
 --maybe orthogonalFamily_eigenspaces can get us something like the above for less...
 
-theorem base [h1 : Subsingleton n]:
+theorem base [Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   by_cases case : Nonempty n
   · have h2 := cracker3 hT case (n := n) (𝕜 := 𝕜) (T := T)
@@ -460,7 +460,7 @@ theorem induction_step [Nontrivial n] :
 theorem ind_exhaust : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
   · intro p hp hpp
-    apply base --something is wacky with n versus p...this used to work.
+    exact base hT
   · intro p hp
     exact induction_step
 
@@ -471,7 +471,7 @@ theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
 theorem post_ind_exhaust : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
     ⨅ (j : n), (eigenspace (T n j) (α j))) := by
     rw [OrthogonalFamily.isInternal_iff]
-    · exact ind_exhaust
+    · exact ind_exhaust hT
     · exact ind_Orthogonality
 
 end Simultaneous
