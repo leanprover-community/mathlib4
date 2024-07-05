@@ -6,7 +6,6 @@ Authors: Joël Riou, Kim Morrison
 import Mathlib.CategoryTheory.GradedObject.Unitor
 
 import Mathlib.Tactic.CategoryTheory.Coherence
-import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.GradedObject.Unitor
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
