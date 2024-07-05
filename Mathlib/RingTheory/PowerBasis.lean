@@ -163,11 +163,9 @@ theorem exists_sModEq (pb : PowerBasis A B) (b : B) :
     refine Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|
       Nat.pos_of_ne_zero <| fun h ↦ not_mem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
 
-open Submodule in
+open Submodule.Quotient in
 theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
-  obtain ⟨a, ha⟩ := pb.exists_sModEq b
-  refine ⟨a, ?_⟩
-  rwa [← Ideal.mem_span_singleton, ← Quotient.mk_eq_zero, Quotient.mk_sub, sub_eq_zero]
+  simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using pb.exists_sModEq b
 section minpoly
 
 variable [Algebra A S]
