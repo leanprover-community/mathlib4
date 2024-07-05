@@ -1668,13 +1668,15 @@ variable {α : Type*} [TopologicalSpace α]
 lemma add_norm_nonneg (f : α →ᵇ ℝ) :
     0 ≤ f + const _ ‖f‖ := by
   intro x
-  dsimp
+  simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_add,
+    const_toFun, Pi.add_apply]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).1]
 
 lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
     0 ≤ const _ ‖f‖ - f := by
   intro x
-  dsimp
+  simp only [ContinuousMap.toFun_eq_coe, coe_to_continuous_fun, coe_zero, Pi.zero_apply, coe_sub,
+    const_toFun, Pi.sub_apply, sub_nonneg]
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end

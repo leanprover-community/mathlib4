@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
-import Mathlib.CategoryTheory.Sites.CoverPreserving
+import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.CategoryTheory.Sites.Sheafification
 
 #align_import category_theory.sites.cover_lifting from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
@@ -185,8 +185,8 @@ theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
   · rw [pulledbackFamily_apply, pulledbackFamily_apply]
     · congr 2
       simp [eq]
-    · change S (G.map _ ≫ Y.hom.unop)
-      simpa only [Functor.map_comp, Category.assoc] using hV'
+  · change S (G.map _ ≫ Y.hom.unop)
+    simpa only [Functor.map_comp, Category.assoc] using hV'
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran_is_sheaf_of_cover_lifting.get_section_commute CategoryTheory.RanIsSheafOfIsCocontinuous.getSection_commute
 

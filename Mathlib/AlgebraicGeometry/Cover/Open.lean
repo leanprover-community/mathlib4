@@ -397,6 +397,44 @@ def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
   idx j := j.fst
   app j := (𝓤.obj j.fst).affineCover.map _
 
+/-- If two global sections agree after restriction to each member of an open cover, then
+they agree globally. -/
+lemma OpenCover.ext_elem {X : Scheme.{u}} {U : Opens X} (f g : Γ(X, U)) (𝒰 : X.OpenCover)
+    (h : ∀ i : 𝒰.J, (𝒰.map i).app U f = (𝒰.map i).app U g) : f = g := by
+  fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf
+    (fun i ↦ (𝒰.map (𝒰.f i)).opensRange ⊓ U) _ (fun _ ↦ homOfLE inf_le_right)
+  · intro x hx
+    simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_inf, Hom.opensRange_coe, Opens.coe_mk,
+      Set.mem_iUnion, Set.mem_inter_iff, Set.mem_range, SetLike.mem_coe, exists_and_right]
+    refine ⟨?_, hx⟩
+    simpa using ⟨_, 𝒰.covers x⟩
+  · intro x;
+    replace h := h (𝒰.f x)
+    rw [← IsOpenImmersion.map_ΓIso_inv] at h
+    exact (IsOpenImmersion.ΓIso (𝒰.map (𝒰.f x)) U).commRingCatIsoToRingEquiv.symm.injective h
+
+/-- If the restriction of a global section to each member of an open cover is zero, then it is
+globally zero. -/
+lemma zero_of_zero_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X, U)) (𝒰 : X.OpenCover)
+    (h : ∀ i : 𝒰.J, (𝒰.map i).app U s = 0) : s = 0 :=
+  𝒰.ext_elem s 0 (fun i ↦ by rw [map_zero]; exact h i)
+
+/-- If a global section is nilpotent on each member of a finite open cover, then `f` is
+nilpotent. -/
+lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : Opens X} (s : Γ(X, U))
+    (𝒰 : X.OpenCover) [Finite 𝒰.J] (h : ∀ i : 𝒰.J, IsNilpotent ((𝒰.map i).app U s)) :
+    IsNilpotent s := by
+  choose fn hfn using h
+  have : Fintype 𝒰.J := Fintype.ofFinite 𝒰.J
+  /- the maximum of all `fn i` (exists, because `𝒰.J` is finite) -/
+  let N : ℕ := Finset.sup Finset.univ fn
+  have hfnleN (i : 𝒰.J) : fn i ≤ N := Finset.le_sup (Finset.mem_univ i)
+  use N
+  apply zero_of_zero_cover
+  intro i
+  simp only [map_pow]
+  exact pow_eq_zero_of_le (hfnleN i) (hfn i)
+
 section deprecated
 
 /-- The basic open sets form an affine open cover of `Spec R`. -/

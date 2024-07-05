@@ -1900,7 +1900,6 @@ theorem not_mem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
   s.2.not_mem_erase
 #align finset.not_mem_erase Finset.not_mem_erase
 
--- While this can be solved by `simp`, this lemma is eligible for `dsimp`
 @[simp]
 theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
@@ -3355,7 +3354,7 @@ theorem mem_toList {a : α} {s : Finset α} : a ∈ s.toList ↔ a ∈ s :=
 
 @[simp]
 theorem toList_eq_nil {s : Finset α} : s.toList = [] ↔ s = ∅ :=
-  toList_eq_nil.trans val_eq_zero
+  Multiset.toList_eq_nil.trans val_eq_zero
 #align finset.to_list_eq_nil Finset.toList_eq_nil
 
 @[simp]

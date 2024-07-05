@@ -1031,7 +1031,11 @@ theorem some_spec₂ {α : Sort*} {p : α → Prop} {h : ∃ a, p a} (q : α →
     (hpq : ∀ a, p a → q a) : q (choose h) := hpq _ <| choose_spec _
 #align classical.some_spec2 Classical.some_spec₂
 
-/-- A version of `Classical.indefiniteDescription` which is definitionally equal to a pair -/
+/-- A version of `Classical.indefiniteDescription` which is definitionally equal to a pair.
+
+In Lean 4, this definition is defeq to `Classical.indefiniteDescription`,
+so it is deprecated. -/
+@[deprecated Classical.indefiniteDescription (since := "2024-07-04")]
 noncomputable def subtype_of_exists {α : Type*} {P : α → Prop} (h : ∃ x, P x) : { x // P x } :=
   ⟨Classical.choose h, Classical.choose_spec h⟩
 #align classical.subtype_of_exists Classical.subtype_of_exists
@@ -1041,19 +1045,19 @@ protected noncomputable def byContradiction' {α : Sort*} (H : ¬(α → False))
   Classical.choice <| (peirce _ False) fun h ↦ (H fun a ↦ h ⟨a⟩).elim
 #align classical.by_contradiction' Classical.byContradiction'
 
-/-- `classical.byContradiction'` is equivalent to lean's axiom `classical.choice`. -/
+/-- `Classical.byContradiction'` is equivalent to lean's axiom `Classical.choice`. -/
 def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) : Nonempty α → α :=
   fun H ↦ contra H.elim
 #align classical.choice_of_by_contradiction' Classical.choice_of_byContradiction'
 
 end Classical
 
-set_option autoImplicit true in
 /-- This function has the same type as `Exists.recOn`, and can be used to case on an equality,
 but `Exists.recOn` can only eliminate into Prop, while this version eliminates into any universe
 using the axiom of choice. -/
 -- @[elab_as_elim] -- FIXME
-noncomputable def Exists.classicalRecOn {p : α → Prop} (h : ∃ a, p a) {C} (H : ∀ a, p a → C) : C :=
+noncomputable def Exists.classicalRecOn {α : Sort*} {p : α → Prop} (h : ∃ a, p a)
+    {C : Sort*} (H : ∀ a, p a → C) : C :=
   H (Classical.choose h) (Classical.choose_spec h)
 #align exists.classical_rec_on Exists.classicalRecOn
 
@@ -1181,7 +1185,7 @@ theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := 
 #align dite_eq_iff dite_eq_iff
 
 theorem ite_eq_iff : ite P a b = c ↔ P ∧ a = c ∨ ¬P ∧ b = c :=
-  dite_eq_iff.trans <| by simp only; rw [exists_prop, exists_prop]
+  dite_eq_iff.trans <| by rw [exists_prop, exists_prop]
 #align ite_eq_iff ite_eq_iff
 
 theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
@@ -1210,11 +1214,11 @@ theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b :=
 #align dite_ne_right_iff dite_ne_right_iff
 
 theorem ite_ne_left_iff : ite P a b ≠ a ↔ ¬P ∧ a ≠ b :=
-  dite_ne_left_iff.trans <| by simp only; rw [exists_prop]
+  dite_ne_left_iff.trans <| by rw [exists_prop]
 #align ite_ne_left_iff ite_ne_left_iff
 
 theorem ite_ne_right_iff : ite P a b ≠ b ↔ P ∧ a ≠ b :=
-  dite_ne_right_iff.trans <| by simp only; rw [exists_prop]
+  dite_ne_right_iff.trans <| by rw [exists_prop]
 #align ite_ne_right_iff ite_ne_right_iff
 
 protected theorem Ne.dite_eq_left_iff (h : ∀ h, a ≠ B h) : dite P (fun _ ↦ a) B = a ↔ P :=

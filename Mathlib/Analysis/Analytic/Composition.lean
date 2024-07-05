@@ -492,7 +492,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
           (‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊) * r ^ n :=
         mul_le_mul' (q.compAlongComposition_nnnorm p c) le_rfl
       _ = ‖q c.length‖₊ * rq ^ n * ((∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n) * r0 ^ n := by
-        simp only [mul_pow]; ring
+        ring
       _ ≤ Cq * Cp ^ n * r0 ^ n := mul_le_mul' (mul_le_mul' A B) le_rfl
       _ = Cq / 4 ^ n := by
         simp only [r0]
@@ -590,9 +590,7 @@ theorem compChangeOfVariables_blocksFun (m M N : ℕ) {i : Σ n, Fin n → ℕ}
       i.2 j := by
   rcases i with ⟨n, f⟩
   dsimp [Composition.blocksFun, Composition.blocks, compChangeOfVariables]
-  simp only [map_ofFn, List.get_ofFn, Function.comp_apply]
-  -- Porting note: didn't used to need `rfl`
-  rfl
+  simp only [map_ofFn, List.getElem_ofFn, Function.comp_apply]
 #align formal_multilinear_series.comp_change_of_variables_blocks_fun FormalMultilinearSeries.compChangeOfVariables_blocksFun
 
 /-- Target set in the change of variables to compute the composition of partial sums of formal
@@ -611,7 +609,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     exact fun a => c.one_le_blocks' _
   · dsimp [compChangeOfVariables]
     rw [Composition.sigma_eq_iff_blocks_eq]
-    simp only [Composition.blocksFun, Composition.blocks, Subtype.coe_eta, List.get_map]
+    simp only [Composition.blocksFun, Composition.blocks, Subtype.coe_eta]
     conv_rhs => rw [← List.ofFn_get c.blocks]
 #align formal_multilinear_series.comp_partial_sum_target_subset_image_comp_partial_sum_source FormalMultilinearSeries.compPartialSumTargetSet_image_compPartialSumSource
 
@@ -1008,24 +1006,25 @@ two compositions `a` of `n` and `b` of `a.length`, and an index `i` bounded by t
 def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin (a.gather b).length) : Composition ((a.gather b).blocksFun i) where
   blocks :=
-    List.get (a.blocks.splitWrtComposition b)
-      ⟨i.val, (by rw [length_splitWrtComposition, ← length_gather]; exact i.2)⟩
+    (a.blocks.splitWrtComposition b)[i.val]'(by
+      rw [length_splitWrtComposition, ← length_gather]; exact i.2)
   blocks_pos {i} hi :=
     a.blocks_pos
       (by
         rw [← a.blocks.join_splitWrtComposition b]
-        exact mem_join_of_mem (List.get_mem _ _ _) hi)
-  blocks_sum := by simp only [Composition.blocksFun, get_map, Composition.gather]
+        exact mem_join_of_mem (List.getElem_mem _ _ _) hi)
+  blocks_sum := by simp [Composition.blocksFun, getElem_map, Composition.gather]
 #align composition.sigma_composition_aux Composition.sigmaCompositionAux
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) :
     Composition.length (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩) =
       Composition.blocksFun b i :=
-  show List.length ((splitWrtComposition a.blocks b).get ⟨i, _⟩) = blocksFun b i by
-    rw [get_map_rev List.length, get_of_eq (map_length_splitWrtComposition _ _)]; rfl
+  show List.length ((splitWrtComposition a.blocks b)[i.1]) = blocksFun b i by
+    rw [getElem_map_rev List.length, getElem_of_eq (map_length_splitWrtComposition _ _)]; rfl
 #align composition.length_sigma_composition_aux Composition.length_sigmaCompositionAux
 
+set_option linter.deprecated false in
 theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     (i : Fin b.length) (j : Fin (blocksFun b i)) :
     blocksFun (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩)
@@ -1035,6 +1034,7 @@ theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.len
     rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']; rfl
 #align composition.blocks_fun_sigma_composition_aux Composition.blocksFun_sigmaCompositionAux
 
+set_option linter.deprecated false in
 /-- Auxiliary lemma to prove that the composition of formal multilinear series is associative.
 
 Consider a composition `a` of `n` and a composition `b` of `a.length`. Grouping together some
@@ -1065,7 +1065,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
           take (sum (take i b.blocks)) (take (sum (take (i + 1) b.blocks)) a.blocks) := by
         rw [take_take, min_eq_left]
         apply monotone_sum_take _ (Nat.le_succ _)
-      rw [this, get_map, get_splitWrtComposition, ←
+      rw [this, getElem_map, getElem_splitWrtComposition, ←
         take_append_drop (sum (take i b.blocks)) (take (sum (take (Nat.succ i) b.blocks)) a.blocks),
         sum_append]
       congr
@@ -1081,7 +1081,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     have : sizeUpTo b i + Nat.succ j = (sizeUpTo b i + j).succ := rfl
     rw [this, sizeUpTo_succ _ D, IHj A, sizeUpTo_succ _ B]
     simp only [sigmaCompositionAux, add_assoc, add_left_inj, Fin.val_mk]
-    rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take _ _ C]
+    rw [getElem_of_eq (getElem_splitWrtComposition _ _ _ _), getElem_drop', getElem_take _ _ C]
 #align composition.size_up_to_size_up_to_add Composition.sizeUpTo_sizeUpTo_add
 
 /-- Natural equivalence between `(Σ (a : composition n), composition a.length)` and
@@ -1129,11 +1129,11 @@ def sigmaEquivSigmaPi (n : ℕ) :
       exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
-      conv_rhs => rw [← ofFn_get b.blocks]
+      conv_rhs => rw [← ofFn_getElem b.blocks]
       congr 1
       refine (Fin.heq_fun_iff B).2 fun i => ?_
-      rw [sigmaCompositionAux, Composition.length, List.get_map_rev List.length,
-        List.get_of_eq (map_length_splitWrtComposition _ _)]
+      rw [sigmaCompositionAux, Composition.length, List.getElem_map_rev List.length,
+        List.getElem_of_eq (map_length_splitWrtComposition _ _)]
   right_inv := by
     -- the fact that we have a right inverse is essentially `splitWrtComposition_join`,
     -- but we need to massage it to take care of the dependent setting.
@@ -1152,12 +1152,11 @@ def sigmaEquivSigmaPi (n : ℕ) :
     · rw [Fin.heq_fun_iff]
       · intro i
         dsimp [Composition.sigmaCompositionAux]
-        rw [get_of_eq (splitWrtComposition_join _ _ _)]
-        · simp only [get_ofFn]
-          rfl
+        rw [getElem_of_eq (splitWrtComposition_join _ _ _)]
+        · simp only [getElem_ofFn]
         · simp only [map_ofFn]
           rfl
-        · congr
+      · congr
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
 end Composition
