@@ -450,6 +450,8 @@ theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
+/-The proof of the following is definitely needed, but seems annoying like the `disjointness` claim
+  above. -/
 theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : Submodule 𝕜 E) :
     (∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔ (∀ (b : 𝕜), eigenspace S b ≤ K) := by sorry
 
