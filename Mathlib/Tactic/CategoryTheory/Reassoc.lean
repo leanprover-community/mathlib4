@@ -49,8 +49,8 @@ def reassocExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
 /--
-Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` in some
-category, will create a new lemma named `F_assoc` of shape
+Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` are
+morphisms in some category, will create a new lemma named `F_assoc` of shape
 `∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
 but with the conclusions simplified using the axioms for a category
 (`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
