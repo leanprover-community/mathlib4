@@ -4,6 +4,13 @@
 PR is merged. Please leave a blank newline before the `---`, otherwise
 GitHub will format the text above it as a title.
 
+For details on the "pull request lifecycle" in mathlib, please see:
+https://leanprover-community.github.io/contribute/index.html
+
+In particular, note that most reviewers will only notice your PR
+if it passes the continuous integration checks, and is labeled with `awaiting-review`.
+Please ask for help on https://leanprover.zulipchat.com if needed.
+
 To indicate co-authors, include lines at the bottom of the commit message
 (that is, before the `---`) using the following format:
 
