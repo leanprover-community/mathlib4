@@ -72,12 +72,12 @@ def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
 #align algebraic_geometry.Scheme.iso_Spec AlgebraicGeometry.Scheme.isoSpec
 
 @[reassoc]
-lemma Scheme.isoSpec_hom_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
+theorem Scheme.isoSpec_hom_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     X.isoSpec.hom ≫ Spec.map (f.app ⊤) = f ≫ Y.isoSpec.hom := by
   simp only [isoSpec, asIso_hom, ΓSpec.adjunction_unit_naturality]
 
 @[reassoc]
-lemma Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
+theorem Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     Spec.map (f.app ⊤) ≫ Y.isoSpec.inv = X.isoSpec.inv ≫ f := by
   rw [Iso.eq_inv_comp, isoSpec, asIso_hom, ← ΓSpec.adjunction_unit_naturality_assoc, isoSpec,
     asIso_inv, IsIso.hom_inv_id, Category.comp_id]
@@ -287,8 +287,8 @@ theorem range_fromSpec :
 @[simp]
 theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (range_fromSpec hU)
 
-@[reassoc, simp]
-lemma map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (h : op U ⟶ op V):
+@[simp, reassoc]
+theorem map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (h : op U ⟶ op V):
     Spec.map (X.presheaf.map h) ≫ hU.fromSpec = hV.fromSpec := by
   have : IsAffine (X.restrictFunctor.obj U).left := hU
   haveI : IsAffine _ := hV

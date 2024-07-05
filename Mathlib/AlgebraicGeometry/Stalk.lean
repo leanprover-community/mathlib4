@@ -6,13 +6,11 @@ Authors: Andrew Yang, Fangming Li
 import Mathlib.AlgebraicGeometry.AffineScheme
 
 /-!
-# The Canonical Map from the Spectrum of a Stalk to the Original Scheme
+# Stalks of a Scheme
 
 Given a scheme `X` and a point `x : X`, `AlgebraicGeometry.Scheme.fromSpecStalk X x` is the
-canonical scheme morphism from `Spec(O_x)` to `X`.
-
-This is helpful for constructing the canonical map from the spectrum of the residue field of a point
-to the original scheme.
+canonical scheme morphism from `Spec(O_x)` to `X`. This is helpful for constructing the canonical
+map from the spectrum of the residue field of a point to the original scheme.
 -/
 
 namespace AlgebraicGeometry
@@ -23,15 +21,16 @@ open CategoryTheory Opposite TopologicalSpace
 A morphism from `Spec(O_x)` to `X`, which is defined with the help of an affine open
 neighborhood `U` of `x`.
 -/
-noncomputable def IsAffineOpen.fromSpecStalk {X : Scheme} {U : TopologicalSpace.Opens X}
-    (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) : Spec (X.stalk x) ⟶ X :=
+noncomputable def IsAffineOpen.fromSpecStalk
+    {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
+    Spec (X.stalk x) ⟶ X :=
   Spec.map (X.presheaf.germ ⟨x, hxU⟩) ≫ hU.fromSpec
 
 /--
 The morphism from `Spec(O_x)` to `X` given by `IsAffineOpen.fromSpec` does not depend on the affine
 open neighborhood of `x` we choose.
 -/
-lemma IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : TopologicalSpace.Opens X}
+theorem IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : TopologicalSpace.Opens X}
     (hU : IsAffineOpen U) (hV : IsAffineOpen V) (hxU : x ∈ U) (hxV : x ∈ V) :
     hU.fromSpecStalk hxU = hV.fromSpecStalk hxV := by
   obtain ⟨U', h₁, h₂, h₃ : U' ≤ U ⊓ V⟩ :=
@@ -54,5 +53,10 @@ If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`
 noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
     Scheme.Spec.obj (op (X.stalk x)) ⟶ X :=
   (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
+
+@[simp]
+theorem IsAffineOpen.fromSpecStalk_eq_fromSpecStalk
+    {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) {x : X} (hxU : x ∈ U) :
+    hU.fromSpecStalk hxU = X.fromSpecStalk x := fromSpecStalk_eq ..
 
 end AlgebraicGeometry
