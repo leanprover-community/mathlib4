@@ -156,14 +156,14 @@ instance (F : C ⥤ H) : (L.ran.obj F).IsRightKanExtension (L.ranCounit.app F) :
   infer_instance
 
 /-- If there exists a pointwise right Kan extension of `F` along `L`,
-then `L.lan.obj G` is a pointwise right Kan extension of `F`. -/
+then `L.ran.obj G` is a pointwise right Kan extension of `F`. -/
 noncomputable def isPointwiseRightKanExtensionRanCounit
     (F : C ⥤ H) [HasPointwiseRightKanExtension L F] :
     (RightExtension.mk _ (L.ranCounit.app F)).IsPointwiseRightKanExtension :=
   isPointwiseRightKanExtensionOfIsRightKanExtension (F := F) _ (L.ranCounit.app F)
 
 variable (H) in
-/-- The right Kan extension functor `L.ran` is left adjoint to the
+/-- The right Kan extension functor `L.ran` is right adjoint to the
 precomposition by `L`. -/
 noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
   Adjunction.mkOfHomEquiv

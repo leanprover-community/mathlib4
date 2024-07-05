@@ -38,7 +38,7 @@ theorem mem_sieves_of_hasEffectiveEpi (S : Sieve X) :
     cases f
     exact ⟨π, ⟨h.2, Category.id_comp π⟩⟩
   apply Coverage.saturate_of_superset (regularCoverage C) h_le
-  exact Coverage.saturate.of X _ ⟨Y, π, rfl, h.1⟩
+  exact Coverage.Saturate.of X _ ⟨Y, π, rfl, h.1⟩
 
 /-- Effective epis in a preregular category are stable under composition. -/
 instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
@@ -49,9 +49,9 @@ instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
     exact fun W => regularTopology.isSheaf_yoneda_obj W _ h₂
-  apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows (fun () ↦ Y)
+  apply Coverage.Saturate.transitive X (Sieve.generate (Presieve.ofArrows (fun () ↦ Y)
       (fun () ↦ π)))
-  · apply Coverage.saturate.of
+  · apply Coverage.Saturate.of
     use Y, π
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]
