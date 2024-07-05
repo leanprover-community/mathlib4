@@ -239,10 +239,6 @@ theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 #align mv_power_series.zero_inv MvPowerSeries.zero_inv
 
-theorem invOfUnit_eq' (φ : MvPowerSeries σ R) (h : IsUnit (constantCoeff σ R φ) ):
-    invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
-  rfl
-
 -- Porting note (#10618): simp can prove this.
 -- @[simp]
 theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
