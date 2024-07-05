@@ -54,10 +54,8 @@ corresponding to the right square.
 -/
 
 variable {X₃ Y₁ Y₂ Y₃ : C} {g₁ : Y₁ ⟶ Y₂} {g₂ : Y₂ ⟶ Y₃} {i₃ : X₃ ⟶ Y₃} (t₂ : PullbackCone g₂ i₃)
-variable (t₁ : PullbackCone g₁ t₂.fst)
+variable {i₂ : t₂.pt ⟶ Y₂} (t₁ : PullbackCone g₁ i₂) (hi₂ : i₂ = t₂.fst)
 
-local notation "X₂" => t₂.pt
-local notation "i₂" => t₂.fst
 local notation "f₂" => t₂.snd
 local notation "X₁" => t₁.pt
 local notation "i₁" => t₁.fst
@@ -65,7 +63,8 @@ local notation "f₁" => t₁.snd
 
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s horizontally -/
 abbrev PullbackCone.pasteHoriz : PullbackCone (g₁ ≫ g₂) i₃ :=
-  PullbackCone.mk i₁ (f₁ ≫ f₂) (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition])
+  PullbackCone.mk i₁ (f₁ ≫ f₂)
+    (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ←hi₂])
 
 variable {t₁} {t₂}
 
@@ -79,13 +78,13 @@ Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
 Then the big square is a pullback if both the small squares are.
 -/
-def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.pasteHoriz t₁) := by
+def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.pasteHoriz t₁ hi₂) := by
   apply PullbackCone.isLimitAux'
   intro s
   -- obtain both limits
   obtain ⟨l₂, hl₂, hl₂'⟩ := PullbackCone.IsLimit.lift' H (s.fst ≫ g₁) s.snd
     (by rw [← s.condition, Category.assoc])
-  obtain ⟨l₁, hl₁, hl₁'⟩ := PullbackCone.IsLimit.lift' H' s.fst l₂ hl₂.symm
+  obtain ⟨l₁, hl₁, hl₁'⟩ := PullbackCone.IsLimit.lift' H' s.fst l₂ (by rw [← hl₂, hi₂])
   --
   refine ⟨l₁, hl₁, by simp [reassoc_of% hl₁', hl₂'], ?_⟩
   -- Uniqueness
@@ -93,8 +92,10 @@ def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.
   apply PullbackCone.IsLimit.hom_ext H' (by simpa [hl₁] using hm₁)
   apply PullbackCone.IsLimit.hom_ext H
   · dsimp at hm₁
-    rw [Category.assoc, ← t₁.condition, reassoc_of% hm₁, hl₁', hl₂]
+    rw [Category.assoc, ← hi₂, ← t₁.condition, reassoc_of% hm₁, hl₁', hi₂, hl₂]
   · simpa [hl₁', hl₂'] using hm₂
+
+variable (t₁)
 
 /-- Given
 ```
@@ -106,17 +107,16 @@ Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
 Then the left square is a pullback if the right square and the big square are.
 -/
-def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁)) : IsLimit t₁ := by
+def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁ hi₂)) : IsLimit t₁ := by
   apply PullbackCone.isLimitAux'
   intro s
   -- Obtain the induced morphism from the universal property of the big square
   obtain ⟨l, hl, hl'⟩ := PullbackCone.IsLimit.lift' H' s.fst (s.snd ≫ f₂)
-    (by rw [Category.assoc, ← t₂.condition, reassoc_of% s.condition])
+    (by rw [Category.assoc, ← t₂.condition, reassoc_of% s.condition, ← hi₂])
   refine ⟨l, hl, ?_, ?_⟩
   -- Check that ....
   · apply PullbackCone.IsLimit.hom_ext H
-    · rw [← s.condition, ← hl, Category.assoc, ← t₁.condition, Category.assoc]
-      rfl
+    · simp [← s.condition, ← hl, ← t₁.condition, ← hi₂]
     · simpa using hl'
   -- Uniqueness
   · intro m hm₁ hm₂
@@ -145,7 +145,8 @@ to the top square.
 
 -/
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₂ ⟶ X₁} {f₂ : X₃ ⟶ X₂} {i₁ : Y₁ ⟶ X₁}
-variable (t₁ : PullbackCone i₁ f₁) (t₂ : PullbackCone t₁.snd f₂)
+variable (t₁ : PullbackCone i₁ f₁) {i₂ : t₁.pt ⟶ X₂} (t₂ : PullbackCone i₂ f₂)
+  (hi₂ : i₂ = t₁.snd)
 
 local notation "Y₂" => t₁.pt
 local notation "g₁" => t₁.fst
@@ -156,9 +157,10 @@ local notation "i₃" => t₂.snd
 
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
 abbrev PullbackCone.pasteVert : PullbackCone i₁ (f₂ ≫ f₁) :=
-  PullbackCone.mk (g₂ ≫ g₁) i₃ (by rw [← reassoc_of% t₂.condition, ← t₁.condition, Category.assoc])
+  PullbackCone.mk (g₂ ≫ g₁) i₃
+    (by rw [← reassoc_of% t₂.condition, Category.assoc, t₁.condition, ← hi₂])
 
-def PullbackCone.pasteVertFlip : (t₁.pasteVert t₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip) :=
+def PullbackCone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip hi₂) :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
 
 variable {t₁} {t₂}
@@ -177,13 +179,13 @@ Y₁ - i₁ -> X₁
 ```
 The big square is a pullback if both the small squares are.
 -/
-def pasteVertIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit t₂) : IsLimit (t₁.pasteVert t₂) := by
-  apply PullbackCone.isLimitOfFlip <| IsLimit.ofIsoLimit _ (t₁.pasteVertFlip t₂).symm
-  exact pasteHorizIsPullback (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂)
+def pasteVertIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit t₂) : IsLimit (t₁.pasteVert t₂ hi₂) := by
+  apply PullbackCone.isLimitOfFlip <| IsLimit.ofIsoLimit _ (t₁.pasteVertFlip t₂ hi₂).symm
+  exact pasteHorizIsPullback hi₂ (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂)
 
-def topSquareIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit (t₁.pasteVert t₂)) : IsLimit t₂ :=
+def topSquareIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit (t₁.pasteVert t₂ hi₂)) : IsLimit t₂ :=
   PullbackCone.isLimitOfFlip
-    (leftSquareIsPullback (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂))
+    (leftSquareIsPullback _ hi₂ (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂))
 
 end PastePullbackVert
 
@@ -201,7 +203,8 @@ Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 -/
 
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₁ ⟶ X₂} {f₂ : X₂ ⟶ X₃} {i₁ : X₁ ⟶ Y₁}
-variable (t₁ : PushoutCocone i₁ f₁) (t₂ : PushoutCocone t₁.inr f₂)
+variable (t₁ : PushoutCocone i₁ f₁) {i₂ : X₂ ⟶ t₁.pt} (t₂ : PushoutCocone i₂ f₂)
+variable (hi₂ : i₂ = t₁.inr)
 
 local notation "Y₂" => t₁.pt
 local notation "g₁" => t₁.inl
@@ -211,17 +214,19 @@ local notation "g₂" => t₂.inl
 local notation "i₃" => t₂.inr
 
 abbrev PushoutCocone.pasteHoriz : PushoutCocone i₁ (f₁ ≫ f₂) :=
-  PushoutCocone.mk (g₁ ≫ g₂) i₃ (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition])
+  PushoutCocone.mk (g₁ ≫ g₂) i₃
+    (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ← hi₂])
 
 variable {t₁} {t₂}
 
-def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) : IsColimit (t₁.pasteHoriz t₂) := by
+def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
+    IsColimit (t₁.pasteHoriz t₂ hi₂) := by
   apply PushoutCocone.isColimitAux'
   intro s
   -- obtain both descs
   obtain ⟨l₁, hl₁, hl₁'⟩ := PushoutCocone.IsColimit.desc' H s.inl (f₂ ≫ s.inr)
     (by rw [s.condition, Category.assoc])
-  obtain ⟨l₂, hl₂, hl₂'⟩ := PushoutCocone.IsColimit.desc' H' l₁ s.inr hl₁'
+  obtain ⟨l₂, hl₂, hl₂'⟩ := PushoutCocone.IsColimit.desc' H' l₁ s.inr (by rw [← hl₁', hi₂])
   --
   refine ⟨l₂, by simp [hl₂, hl₁], hl₂', ?_⟩
   -- Uniqueness
@@ -230,20 +235,22 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) : IsColimit (
   simp only [PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, Category.assoc] at hm₁ hm₂
   apply PushoutCocone.IsColimit.hom_ext H
   · rw [hm₁, ← hl₁, hl₂]
-  · rw [reassoc_of% t₂.condition, reassoc_of% t₂.condition, hm₂, hl₂']
+  · rw [←hi₂, reassoc_of% t₂.condition, reassoc_of% t₂.condition, hm₂, hl₂']
 
--- TODO: afternew name should have few enough characters
-def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t₂)) : IsColimit t₂ := by
+variable (t₂)
+
+def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t₂ hi₂)) :
+    IsColimit t₂ := by
   apply PushoutCocone.isColimitAux'
   intro s
   -- Obtain the induced morphism from the universal property of the big square
   obtain ⟨l, hl, hl'⟩ := PushoutCocone.IsColimit.desc' H' (g₁ ≫ s.inl) s.inr
-    (by rw [reassoc_of% t₁.condition, s.condition, Category.assoc])
+    (by rw [reassoc_of% t₁.condition, ← hi₂, s.condition, Category.assoc])
   refine ⟨l, ?_, hl', ?_⟩
   -- Check that ....
   · simp at hl hl'
     apply PushoutCocone.IsColimit.hom_ext H hl
-    rw [← Category.assoc, t₂.condition, s.condition, Category.assoc, hl']
+    rw [← Category.assoc, ← hi₂, t₂.condition, s.condition, Category.assoc, hl']
   -- Uniqueness (TODO GOLF THIS)
   · intro m hm₁ hm₂
     apply PushoutCocone.IsColimit.hom_ext H'
@@ -273,7 +280,8 @@ to the top square.
 
 -/
 variable {Y₃ Y₂ Y₁ X₃ : C} {g₂ : Y₃ ⟶ Y₂} {g₁ : Y₂ ⟶ Y₁} {i₃ : Y₃ ⟶ X₃}
-variable (t₁ : PushoutCocone g₂ i₃) (t₂ : PushoutCocone g₁ t₁.inl)
+variable (t₁ : PushoutCocone g₂ i₃) {i₂ : Y₂ ⟶ t₁.pt} (t₂ : PushoutCocone g₁ i₂)
+  (hi₂ : i₂ = t₁.inl)
 
 local notation "X₂" => t₁.pt
 local notation "f₂" => t₁.inr
@@ -284,9 +292,10 @@ local notation "i₁" => t₂.inl
 
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
 abbrev PushoutCocone.pasteVert : PushoutCocone (g₂ ≫ g₁) i₃ :=
-  PushoutCocone.mk i₁ (f₂ ≫ f₁) (by rw [← reassoc_of% t₁.condition, Category.assoc, t₂.condition])
+  PushoutCocone.mk i₁ (f₂ ≫ f₁)
+    (by rw [← reassoc_of% t₁.condition, Category.assoc, t₂.condition, ← hi₂])
 
-def PushoutCocone.pasteVertFlip : (t₁.pasteVert t₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip) :=
+def PushoutCocone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip hi₂) :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
 
 variable {t₁} {t₂}
@@ -305,9 +314,10 @@ Y₁ - i₁ -> X₁
 ```
 The big square is a pushout if both the small squares are.
 -/
-def pasteVertIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit t₂) : IsColimit (t₁.pasteVert t₂) := by
-  apply PushoutCocone.isColimitOfFlip <| IsColimit.ofIsoColimit _ (t₁.pasteVertFlip t₂).symm
-  exact pasteHorizIsPushout (PushoutCocone.flipIsColimit H₁) (PushoutCocone.flipIsColimit H₂)
+def pasteVertIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit t₂) :
+    IsColimit (t₁.pasteVert t₂ hi₂) := by
+  apply PushoutCocone.isColimitOfFlip <| IsColimit.ofIsoColimit _ (t₁.pasteVertFlip t₂ hi₂).symm
+  exact pasteHorizIsPushout hi₂ (PushoutCocone.flipIsColimit H₁) (PushoutCocone.flipIsColimit H₂)
 
 /-- Given
 ```
@@ -323,9 +333,9 @@ Y₁ - i₁ -> X₁
 ```
 The bottom square is a pushout if the top square and the big square are.
 -/
-def botSquareIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit (t₁.pasteVert t₂)) : IsColimit t₂ :=
+def botSquareIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit (t₁.pasteVert t₂ hi₂)) : IsColimit t₂ :=
   PushoutCocone.isColimitOfFlip
-    (rightSquareIsPushout (PushoutCocone.flipIsColimit H₁) (PushoutCocone.flipIsColimit H₂))
+    (rightSquareIsPushout _ hi₂ (PushoutCocone.flipIsColimit H₁) (PushoutCocone.flipIsColimit H₂))
 
 end PastePushoutVert
 
@@ -345,10 +355,11 @@ Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
 Then the big square is a pullback if both the small squares are.
 -/
+-- TODO: 1 occurence in pullbacks AG
 def pasteHorizMkIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
     (H' : IsLimit (PullbackCone.mk _ _ h₁)) :
     IsLimit (PullbackCone.mk i₁ (f₁ ≫ f₂) (by rw [reassoc_of% h₁, Category.assoc, h₂])) :=
-  pasteHorizIsPullback H H'
+  pasteHorizIsPullback rfl H H'
 #align category_theory.limits.big_square_is_pullback CategoryTheory.Limits.pasteHorizMkIsPullback
 
 /-- Given
@@ -367,7 +378,7 @@ def pasteHorizMkIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₂))
       (PushoutCocone.mk _ _
         (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
           rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc])) :=
-  pasteHorizIsPushout H' H
+  pasteHorizIsPushout rfl H' H
 #align category_theory.limits.big_square_is_pushout CategoryTheory.Limits.pasteHorizMkIsPushout
 
 /-- Given
@@ -387,7 +398,7 @@ def leftSquareMkIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
           (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
             rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc]))) :
     IsLimit (PullbackCone.mk _ _ h₁) :=
-  leftSquareIsPullback H H'
+  leftSquareIsPullback _ rfl H H'
 #align category_theory.limits.left_square_is_pullback CategoryTheory.Limits.leftSquareMkIsPullback
 
 /-- Given
@@ -407,7 +418,7 @@ def rightSquareMkIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₁))
           (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
             rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc]))) :
     IsColimit (PushoutCocone.mk _ _ h₂) :=
-  rightSquareIsPushout H H'
+  rightSquareIsPushout _ rfl H H'
 #align category_theory.limits.right_square_is_pushout CategoryTheory.Limits.rightSquareMkIsPushout
 
 end PasteLemma
@@ -430,8 +441,8 @@ variable [HasPullback f g] [HasPullback f' (pullback.fst : pullback f g ⟶ _)]
 -- TODO: can this be an instance? Or needs to be a them?
 instance hasPullbackHorizPaste : HasPullback (f' ≫ f) g :=
   HasLimit.mk {
-    cone := (pullback.cone f g).pasteHoriz (pullback.cone f' pullback.fst)
-    isLimit := pasteHorizIsPullback (pullback.isLimit f g) (pullback.isLimit f' pullback.fst)
+    cone := (pullback.cone f g).pasteHoriz (pullback.cone f' pullback.fst) rfl
+    isLimit := pasteHorizIsPullback rfl (pullback.isLimit f g) (pullback.isLimit f' pullback.fst)
   }
 
 /-- The canonical isomorphism `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y` -/
@@ -439,7 +450,7 @@ noncomputable def pullbackRightPullbackFstIso :
     pullback f' (pullback.fst : pullback f g ⟶ _) ≅ pullback (f' ≫ f) g :=
   -- TODO: iso of cone iso! isoLimitCone API?
   IsLimit.conePointUniqueUpToIso
-    (pasteHorizIsPullback (pullback.isLimit f g) (pullback.isLimit f' pullback.fst))
+    (pasteHorizIsPullback rfl (pullback.isLimit f g) (pullback.isLimit f' pullback.fst))
     (pullback.isLimit (f' ≫ f) g)
 #align category_theory.limits.pullback_right_pullback_fst_iso CategoryTheory.Limits.pullbackRightPullbackFstIso
 
@@ -501,8 +512,8 @@ variable [HasPullback f g] [HasPullback (pullback.snd : pullback f g ⟶ _) g']
 -- TODO: can this be an instance? Or needs to be a them?
 instance : HasPullback f (g' ≫ g) :=
   HasLimit.mk {
-    cone := (pullback.cone f g).pasteVert (pullback.cone pullback.snd g')
-    isLimit := pasteVertIsPullback (pullback.isLimit f g) (pullback.isLimit pullback.snd g')
+    cone := (pullback.cone f g).pasteVert (pullback.cone pullback.snd g') rfl
+    isLimit := pasteVertIsPullback rfl (pullback.isLimit f g) (pullback.isLimit pullback.snd g')
   }
 
 /-- The canonical isomorphism `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W` -/
@@ -510,7 +521,7 @@ def pullbackRightPullbackSndIso :
     pullback (pullback.snd : pullback f g ⟶ _) g' ≅ pullback f (g' ≫ g) := by
   -- TODO: term mode doesn't work here?
   apply IsLimit.conePointUniqueUpToIso
-      (pasteVertIsPullback (pullback.isLimit f g) (pullback.isLimit pullback.snd g'))
+      (pasteVertIsPullback rfl (pullback.isLimit f g) (pullback.isLimit pullback.snd g'))
       (pullback.isLimit f (g' ≫ g))
 
 @[reassoc (attr := simp)]
@@ -558,15 +569,15 @@ variable [HasPushout f g] [HasPushout (pushout.inr : _ ⟶ pushout f g) g']
 
 instance : HasPushout f (g ≫ g') :=
   HasColimit.mk {
-    cocone := (pushout.cocone f g).pasteHoriz (pushout.cocone pushout.inr g')
-    isColimit := pasteHorizIsPushout (pushout.isColimit f g) (pushout.isColimit pushout.inr g')
+    cocone := (pushout.cocone f g).pasteHoriz (pushout.cocone pushout.inr g') rfl
+    isColimit := pasteHorizIsPushout rfl (pushout.isColimit f g) (pushout.isColimit pushout.inr g')
   }
 
 /-- The canonical isomorphism `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ⨿[X] W` -/
 noncomputable def pushoutLeftPushoutInrIso :
     pushout (pushout.inr : _ ⟶ pushout f g) g' ≅ pushout f (g ≫ g') :=
   IsColimit.coconePointUniqueUpToIso
-    (pasteHorizIsPushout (pushout.isColimit f g) (pushout.isColimit pushout.inr g'))
+    (pasteHorizIsPushout rfl (pushout.isColimit f g) (pushout.isColimit pushout.inr g'))
     (pushout.isColimit f (g ≫ g'))
 #align category_theory.limits.pushout_left_pushout_inr_iso CategoryTheory.Limits.pushoutLeftPushoutInrIso
 
@@ -579,7 +590,7 @@ theorem inl_pushoutLeftPushoutInrIso_inv :
 @[reassoc (attr := simp)]
 theorem inr_pushoutLeftPushoutInrIso_hom :
     pushout.inr ≫ (pushoutLeftPushoutInrIso f g g').hom = pushout.inr :=
-  IsColimit.comp_coconePointUniqueUpToIso_hom (pasteHorizIsPushout _ _) _ WalkingSpan.right
+  IsColimit.comp_coconePointUniqueUpToIso_hom (pasteHorizIsPushout _ _ _) _ WalkingSpan.right
 #align category_theory.limits.inr_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inr_pushoutLeftPushoutInrIso_hom
 
 @[reassoc (attr := simp)]
@@ -592,7 +603,7 @@ theorem inr_pushoutLeftPushoutInrIso_inv :
 theorem inl_inl_pushoutLeftPushoutInrIso_hom :
     pushout.inl ≫ pushout.inl ≫ (pushoutLeftPushoutInrIso f g g').hom = pushout.inl := by
   rw [← Category.assoc]
-  apply IsColimit.comp_coconePointUniqueUpToIso_hom (pasteHorizIsPushout _ _) _ WalkingSpan.left
+  apply IsColimit.comp_coconePointUniqueUpToIso_hom (pasteHorizIsPushout _ _ _) _ WalkingSpan.left
 #align category_theory.limits.inl_inl_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inl_inl_pushoutLeftPushoutInrIso_hom
 
 @[reassoc (attr := simp)]
@@ -627,15 +638,15 @@ variable [HasPushout f g] [HasPushout f' (pushout.inl : _ ⟶ pushout f g)]
 
 instance : HasPushout (f ≫ f') g :=
   HasColimit.mk {
-    cocone := (pushout.cocone f g).pasteVert (pushout.cocone f' pushout.inl)
-    isColimit := pasteVertIsPushout (pushout.isColimit f g) (pushout.isColimit f' pushout.inl)
+    cocone := (pushout.cocone f g).pasteVert (pushout.cocone f' pushout.inl) rfl
+    isColimit := pasteVertIsPushout rfl (pushout.isColimit f g) (pushout.isColimit f' pushout.inl)
   }
 
 /-- The canonical isomorphism `W ⨿[Y] (Y ⨿[X] Z) ≅ W ⨿[X] Z` -/
 noncomputable def pushoutRightPushoutInlIso :
     pushout f' (pushout.inl : _ ⟶ pushout f g) ≅ pushout (f ≫ f') g :=
   IsColimit.coconePointUniqueUpToIso
-    (pasteVertIsPushout (pushout.isColimit f g) (pushout.isColimit f' pushout.inl))
+    (pasteVertIsPushout rfl (pushout.isColimit f g) (pushout.isColimit f' pushout.inl))
     (pushout.isColimit (f ≫ f') g)
 
 @[reassoc (attr := simp)]
@@ -647,7 +658,7 @@ theorem inl_pushoutRightPushoutInlIso_inv :
 theorem inr_inr_pushoutRightPushoutInlIso_hom :
     pushout.inr ≫ pushout.inr ≫ (pushoutRightPushoutInlIso f g f').hom = pushout.inr := by
   rw [← Category.assoc]
-  apply IsColimit.comp_coconePointUniqueUpToIso_hom (pasteVertIsPushout _ _) _ WalkingSpan.right
+  apply IsColimit.comp_coconePointUniqueUpToIso_hom (pasteVertIsPushout rfl _ _) _ WalkingSpan.right
 
 @[reassoc (attr := simp)]
 theorem inr_pushoutRightPushoutInlIso_inv :
@@ -657,7 +668,7 @@ theorem inr_pushoutRightPushoutInlIso_inv :
 @[reassoc (attr := simp)]
 theorem inl_pushoutRightPushoutInlIso_hom :
     pushout.inl ≫ (pushoutRightPushoutInlIso f g f').hom = pushout.inl :=
-  IsColimit.comp_coconePointUniqueUpToIso_hom (pasteVertIsPushout _ _) _ WalkingSpan.left
+  IsColimit.comp_coconePointUniqueUpToIso_hom (pasteVertIsPushout rfl _ _) _ WalkingSpan.left
 
 -- TODO: pushout.condition make variables explicit?
 

@@ -548,21 +548,15 @@ def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ 
 def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   apply (openCoverOfLeft (𝒰.pullbackCover f) f g).bind
   intro i
-  let Xᵢ := pullback f (𝒰.map i)
-  let Yᵢ := pullback g (𝒰.map i)
-  let W := pullback (pullback.snd : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
-  have this :=
-    pasteHorizMkIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
-      (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
-      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+  have := PullbackCone.flipIsLimit <|
+    pasteVertIsPullback rfl (pullbackIsPullback g (𝒰.map i))
+      (pullbackIsPullback pullback.snd (pullback.snd (f:=f) (g:=𝒰.map i)))
   refine
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
-        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) ?_
+        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) inferInstance
   · simp [← pullback.condition]
   · simp only [Category.comp_id, Category.id_comp]
-  · infer_instance
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
@@ -583,8 +577,9 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   apply pullback.hom_ext <;> dsimp <;>
   · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
       limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
-      limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
-      pullbackSymmetry_hom_comp_snd_assoc]
+      limit.isoLimitCone_inv_π_assoc, PullbackCone.flip_pt, PullbackCone.π_app_left,
+      PullbackCone.π_app_right, PullbackCone.flip_fst, PullbackCone.flip_snd,
+      pullbackSymmetry_hom_comp_snd_assoc, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base AlgebraicGeometry.Scheme.Pullback.openCoverOfBase
 
