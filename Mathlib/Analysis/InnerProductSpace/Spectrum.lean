@@ -458,10 +458,15 @@ theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : S
   · have := H (Function.const n b)
     simpa only [ge_iff_le, Function.const_apply, ciInf_const]
   · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
-
-
-
-
+  intro h
+  by_cases case : Nonempty n
+  · intro f
+    have A : ∃ (c : 𝕜), f = Function.const n c := by sorry
+    obtain ⟨c , hC⟩ := A
+    have := h c
+    rw [hC]
+    simpa only [Function.const_apply, ciInf_const, ge_iff_le]
+  ·
 
 theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
   (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E)) = (⨆ t, eigenspace S t) := by
