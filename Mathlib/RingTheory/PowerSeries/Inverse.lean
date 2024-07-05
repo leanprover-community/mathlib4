@@ -121,8 +121,8 @@ set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_X_mul_shift PowerSeries.sub_const_eq_X_mul_shift
 
 theorem isUnit_iff_constantCoeff (φ : R⟦X⟧) :
-    IsUnit φ ↔ IsUnit (constantCoeff R φ) := by
-  MvPowerSeries.isUnit_iff_constantCoeff _ R φ
+    IsUnit φ ↔ IsUnit (constantCoeff R φ) :=
+  MvPowerSeries.isUnit_iff_constantCoeff φ
 
 end Ring
 
