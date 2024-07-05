@@ -66,6 +66,12 @@ lemma Scheme.eq_restrict_presheaf_map_eqToHom {X : Scheme.{u}} (U : Opens X) {V 
 lemma opensRange_ιOpens {X : Scheme.{u}} (U : Opens X) : (Scheme.ιOpens U).opensRange = U :=
   Opens.ext Subtype.range_val
 
+attribute [-simp] eqToHom_op in
+/-- The global sections of the restriction is isomorphic to the sections on the open set. -/
+@[simps!]
+def Scheme.resTop (X : Scheme.{u}) (U : Opens X) : Γ(X ∣_ᵤ U, ⊤) ≅ Γ(X, U) :=
+  X.presheaf.mapIso (eqToIso U.openEmbedding_obj_top.symm).op
+
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
 def opensRestrict {X : Scheme.{u}} (U : Opens X) :

@@ -346,6 +346,43 @@ def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineO
   f := (𝓤.bind fun j => (𝓤.obj j).affineCover).f
   covers := (𝓤.bind fun j => (𝓤.obj j).affineCover).covers
 
+/-- The pullback of the affine refinement is the pullback of the affine cover. -/
+def OpenCover.pullbackCoverAffineRefinementObj (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
+    (𝒰.affineRefinement.openCover.pullbackCover f).obj i ≅
+      ((𝒰.obj i.1).affineCover.pullbackCover (𝒰.pullbackHom f i.1)).obj i.2 := by
+  refine pullbackSymmetry _ _ ≪≫ (pullbackRightPullbackFstIso _ _ _).symm ≪≫
+    pullbackSymmetry _ _ ≪≫
+      asIso (pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) ?_ ?_)
+  · simp [pullbackHom]
+  · simp
+
+@[reassoc (attr := simp)]
+lemma OpenCover.pullbackCoverAffineRefinementObj_inv_map (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
+    (𝒰.pullbackCoverAffineRefinementObj f i).inv ≫
+      (𝒰.affineRefinement.openCover.pullbackCover f).map i =
+      ((𝒰.obj i.1).affineCover.pullbackCover (𝒰.pullbackHom f i.1)).map i.2 ≫
+        (𝒰.pullbackCover f).map i.1 := by
+  simp only [pullbackCover_obj, AffineOpenCover.openCover_obj, AffineOpenCover.openCover_map,
+    pullbackCoverAffineRefinementObj, Iso.trans_inv, asIso_inv, Iso.symm_inv, Category.assoc,
+    pullbackCover_map, pullbackSymmetry_inv_comp_fst, IsIso.inv_comp_eq, limit.lift_π_assoc, id_eq,
+    PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app, pullbackSymmetry_hom_comp_fst]
+  convert pullbackSymmetry_inv_comp_snd_assoc
+    ((𝒰.obj i.1).affineCover.map i.2) pullback.fst _ using 2
+  exact pullbackRightPullbackFstIso_hom_snd _ _ _
+
+@[reassoc (attr := simp)]
+lemma OpenCover.pullbackCoverAffineRefinementObj_inv_pullbackHom
+    (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
+    (𝒰.pullbackCoverAffineRefinementObj f i).inv ≫
+      𝒰.affineRefinement.openCover.pullbackHom f i =
+      (𝒰.obj i.1).affineCover.pullbackHom (𝒰.pullbackHom f i.1) i.2 := by
+  simp only [pullbackCover_obj, pullbackHom, AffineOpenCover.openCover_obj,
+    AffineOpenCover.openCover_map, pullbackCoverAffineRefinementObj, Iso.trans_inv, asIso_inv,
+    Iso.symm_inv, Category.assoc, pullbackSymmetry_inv_comp_snd, IsIso.inv_comp_eq, limit.lift_π,
+    id_eq, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
+  convert pullbackSymmetry_inv_comp_fst ((𝒰.obj i.1).affineCover.map i.2) pullback.fst
+  exact pullbackRightPullbackFstIso_hom_fst _ _ _
+
 section category
 
 /--

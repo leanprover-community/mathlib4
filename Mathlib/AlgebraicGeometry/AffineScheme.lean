@@ -292,6 +292,12 @@ theorem image_of_isOpenImmersion (f : X ⟶ Y) [H : IsOpenImmersion f] :
   exact Set.image_eq_range _ _
 #align algebraic_geometry.is_affine_open.image_is_open_immersion AlgebraicGeometry.IsAffineOpen.image_of_isOpenImmersion
 
+theorem preimage_of_isIso {U : Opens Y.carrier} (hU : IsAffineOpen U) (f : X ⟶ Y) [IsIso f] :
+    IsAffineOpen (f ⁻¹ᵁ U) :=
+  haveI : IsAffine _ := hU
+  isAffine_of_isIso (f ∣_ U)
+#align algebraic_geometry.is_affine_open.map_is_iso AlgebraicGeometry.IsAffineOpen.preimage_of_isIso
+
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     (f : AlgebraicGeometry.Scheme.Hom X Y) [H : IsOpenImmersion f] {U : Opens X} :
     IsAffineOpen (f ''ᵁ U) ↔ IsAffineOpen U := by
