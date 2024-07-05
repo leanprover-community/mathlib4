@@ -163,7 +163,7 @@ instance (F : C ⥤ H) : (L.ran.obj F).IsRightKanExtension (L.ranCounit.app F) :
   infer_instance
 
 /-- If there exists a pointwise right Kan extension of `F` along `L`,
-then `L.lan.obj G` is a pointwise right Kan extension of `F`. -/
+then `L.ran.obj G` is a pointwise right Kan extension of `F`. -/
 noncomputable def isPointwiseRightKanExtensionRanCounit
     (F : C ⥤ H) [HasPointwiseRightKanExtension L F] :
     (RightExtension.mk _ (L.ranCounit.app F)).IsPointwiseRightKanExtension :=
