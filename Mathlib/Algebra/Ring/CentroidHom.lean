@@ -45,6 +45,8 @@ be satisfied by itself and all stricter types.
 centroid
 -/
 
+assert_not_exists Field
+
 open Function
 
 variable {F M N R α : Type*}
