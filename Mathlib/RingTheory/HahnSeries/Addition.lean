@@ -71,6 +71,66 @@ theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a
   rfl
 #align hahn_series.add_coeff HahnSeries.add_coeff
 
+/--
+`addOppositeEquiv` is an additive monoid isomorphism between
+Hahn series over `Γ` with coefficients in the opposite additive monoid `Rᵃᵒᵖ`
+and the additive opposite of Hahn series over `Γ` with coefficients `R`.
+-/
+@[simps (config := .lemmasOnly)]
+def addOppositeEquiv : HahnSeries Γ (Rᵃᵒᵖ) ≃+ (HahnSeries Γ R)ᵃᵒᵖ where
+  toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
+  invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
+  left_inv x := by ext; simp
+  right_inv x := by
+    apply AddOpposite.unop_injective
+    ext
+    simp
+  map_add' x y := by
+    apply AddOpposite.unop_injective
+    ext
+    simp
+
+@[simp]
+lemma addOppositeEquiv_support (x : HahnSeries Γ (Rᵃᵒᵖ)) :
+    (addOppositeEquiv x).unop.support = x.support := by
+  ext
+  simp [addOppositeEquiv_apply]
+
+@[simp]
+lemma addOppositeEquiv_symm_support (x : (HahnSeries Γ R)ᵃᵒᵖ) :
+    (addOppositeEquiv.symm x).support = x.unop.support := by
+  rw [← addOppositeEquiv_support, AddEquiv.apply_symm_apply]
+
+@[simp]
+lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
+    (addOppositeEquiv x).unop.orderTop = x.orderTop := by
+  simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
+    addOppositeEquiv_support, ne_eq]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
+  simp_rw [HahnSeries.ext_iff x 0, Function.funext_iff]
+  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
+
+@[simp]
+lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
+    (addOppositeEquiv.symm x).orderTop = x.unop.orderTop := by
+  rw [← addOppositeEquiv_orderTop, AddEquiv.apply_symm_apply]
+
+@[simp]
+lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
+    (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
+  simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
+    addOppositeEquiv_support, ne_eq]
+  simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
+  simp_rw [HahnSeries.ext_iff x 0, Function.funext_iff]
+  simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
+  split <;> rfl
+
+@[simp]
+lemma addOppositeEquiv_symm_leadingCoeff (x : (HahnSeries Γ R)ᵃᵒᵖ) :
+    (addOppositeEquiv.symm x).leadingCoeff = .op x.unop.leadingCoeff := by
+  apply AddOpposite.unop_injective
+  rw [← addOppositeEquiv_leadingCoeff, AddEquiv.apply_symm_apply, AddOpposite.unop_op]
+
 theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support x ∪ support y :=
   fun a ha => by
   rw [mem_support, add_coeff] at ha
@@ -118,17 +178,10 @@ theorem orderTop_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   exact le_antisymm hxyx (le_of_eq_of_le (min_eq_left_of_lt hxy).symm min_orderTop_le_orderTop_add)
 
 theorem orderTop_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
-    (hxy : x.orderTop < y.orderTop) : (y + x).orderTop = x.orderTop := by
-  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
-  let g : Γ := Set.IsWF.min x.isWF_support (support_nonempty_iff.2 hx)
-  have hcxyne : (y + x).coeff g ≠ 0 := by
-    rw [add_coeff, coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy),
-      zero_add]
-    exact coeff_orderTop_ne (orderTop_of_ne hx)
-  have hxyx : (y + x).orderTop ≤ x.orderTop := by
-    rw [orderTop_of_ne hx]
-    exact orderTop_le_of_coeff_ne_zero hcxyne
-  exact le_antisymm hxyx (le_of_eq_of_le (min_eq_right_of_lt hxy).symm min_orderTop_le_orderTop_add)
+    (hxy : y.orderTop < x.orderTop) : (x + y).orderTop = y.orderTop := by
+  simpa [← map_add, ← AddOpposite.op_add, hxy] using orderTop_add_eq_left
+    (x := addOppositeEquiv.symm (.op y))
+    (y := addOppositeEquiv.symm (.op x))
 
 theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x + y).leadingCoeff = x.leadingCoeff := by
@@ -142,15 +195,10 @@ theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
       coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
 
 theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
-    (hxy : x.orderTop < y.orderTop) : (y + x).leadingCoeff = x.leadingCoeff := by
-  have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
-  have ho : (y + x).orderTop = x.orderTop := orderTop_add_eq_right hxy
-  by_cases h : y + x = 0
-  · rw [h, orderTop_zero] at ho
-    rw [h, orderTop_eq_top_iff.mp ho.symm]
-  · rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
-    rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, add_coeff,
-      coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), zero_add]
+    (hxy : y.orderTop < x.orderTop) : (x + y).leadingCoeff = y.leadingCoeff := by
+  simpa [← map_add, ← AddOpposite.op_add, hxy] using leadingCoeff_add_eq_left
+    (x := addOppositeEquiv.symm (.op y))
+    (y := addOppositeEquiv.symm (.op x))
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
