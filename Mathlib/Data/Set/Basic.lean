@@ -1232,6 +1232,10 @@ theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
 #align set.mem_singleton_iff Set.mem_singleton_iff
 
 @[simp]
+theorem not_mem_singleton_iff {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
+  Iff.rfl
+
+@[simp]
 theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
   rfl
 #align set.set_of_eq_eq_singleton Set.setOf_eq_eq_singleton
