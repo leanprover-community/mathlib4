@@ -12,9 +12,9 @@ import Mathlib.Lean.Meta.Simp
 
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ⟶ Y` in some category
-will create a new lemmas named `F_assoc` of shape
+will create a new lemma named `F_assoc` of shape
 `∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
-but with the conclusions simplified used the axioms for a category
+but with the conclusions simplified using the axioms for a category
 (`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
 
 This is useful for generating lemmas which the simplifier can use even on expressions
@@ -48,7 +48,23 @@ but with compositions fully right associated and identities removed.
 def reassocExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
-/-- Syntax for the `reassoc` attribute -/
+/--
+Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` in some
+category, will create a new lemma named `F_assoc` of shape
+`∀ .. {Z : C} (h : Y ⟶ Z), f ≫ h = g ≫ h`
+but with the conclusions simplified using the axioms for a category
+(`Category.comp_id`, `Category.id_comp`, and `Category.assoc`).
+So, for example, if the conclusion of `F` is `a ≫ b = g` then
+the conclusion of `F_assoc` will be `a ≫ (b ≫ h) = g ≫ h` (note that `≫` reassociates
+to the right so the brackets will not appear in the statement).
+
+This attribute is useful for generating lemmas which the simplifier can use even on expressions
+that are already right associated.
+
+Note that if the lemma is a `simp` lemma, then probably the reassociated lemma should
+also be a `simp` lemma, and to ensure this you need to tag it `@[simp, reassoc]` with
+the tags in this order.
+-/
 syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
