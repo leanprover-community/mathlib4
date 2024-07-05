@@ -9,6 +9,7 @@ import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.Dual
+import Mathlib.Analysis.NormedSpace.WeakDual
 
 #align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
@@ -393,7 +394,13 @@ range of an L-projection.
 structure IsMideal (m : Submodule 𝕜 A) : Prop where
   Closed: IsClosed (m : Set A)
   Lproj:  ∃ (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)),
-    IsLprojection (NormedSpace.Dual 𝕜 A) P ∧ (Set.range P) = NormedSpace.polar (E := A) 𝕜 m
+    IsLprojection (NormedSpace.Dual 𝕜 A) P ∧ (Set.range P) = WeakDual.polar (E := A) 𝕜 m
+
+
+/-
+lemma IsMideal.inter (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
+    m₁ ⊓ m₂ = TopologicalSpace.Closure m₁ + m₂ := sorry
+-/
 
 /- The M-ideals are a sub-lattice of the lattice of submodules -/
 /-
