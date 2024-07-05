@@ -103,6 +103,8 @@ variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A] [StarOrderedRi
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
   [UniqueContinuousFunctionalCalculus ℝ A]
 
+/-- The real logarithm, defined via the continuous functional calculus. This can be used on
+matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/
 noncomputable def log (a : A) : A := cfc Real.log a
 
 lemma isSelfAdjoint_log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
