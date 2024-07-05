@@ -34,9 +34,9 @@ instance : (constantSheaf (coherentTopology Profinite) (Type (u+1))).Full :=
 
 open Condensed.LocallyConstant CompHausLike.LocallyConstant
 
-noncomputable def isColimitLocallyConstantPresheaf (X' : Type (u+1)) (S : Profinite.{u}) :
+noncomputable def isColimitLocallyConstantPresheaf (X : Type (u+1)) (S : Profinite.{u}) :
     IsColimit ((profiniteToCompHaus.op ⋙
-      (CondensedSet.LocallyConstant.functor.{u}.obj X').val).mapCocone S.asLimitCone.op) :=
+      (CondensedSet.LocallyConstant.functor.{u}.obj X).val).mapCocone S.asLimitCone.op) :=
   Condensed.isColimitLocallyConstantPresheafDiagram _ _
 
 theorem isDiscrete_of_isColimit_mapCone (X : CondensedSet.{u}) (h : ∀ S : Profinite.{u},
@@ -49,7 +49,7 @@ theorem isDiscrete_of_isColimit_mapCone (X : CondensedSet.{u}) (h : ∀ S : Prof
     Condensed.isoDiscrete _ h
   exact ⟨_, ⟨e.functor.preimageIso ((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
-noncomputable abbrev _root_.CondensedSet.LocallyConstant.adjunction :
+noncomputable abbrev LocallyConstant.adjunction :
     CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u+1)) :=
   Condensed.LocallyConstant.adjunction _ _
 
@@ -97,8 +97,8 @@ instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
 
 open Condensed.LocallyConstant CompHausLike.LocallyConstant
 
-noncomputable def isColimitLocallyConstantPresheaf (X' : Type u) (S : LightProfinite.{u}) :
-    IsColimit ((LightCondSet.LocallyConstant.functor.{u}.obj X').val.mapCocone
+noncomputable def isColimitLocallyConstantPresheaf (X : Type u) (S : LightProfinite.{u}) :
+    IsColimit ((LightCondSet.LocallyConstant.functor.{u}.obj X).val.mapCocone
       (coconeRightOpOfCone S.asLimitCone)) :=
   LightCondensed.isColimitLocallyConstantPresheafDiagram _ _
 
@@ -109,7 +109,7 @@ theorem isDiscrete_of_isColimit_mapCone (X : LightCondSet.{u}) (h : ∀ S : Ligh
     LightCondensed.isoDiscrete _ h
   exact ⟨_, ⟨((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
-noncomputable abbrev _root_.LightCondSet.LocallyConstant.adjunction :
+noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
   Condensed.LocallyConstant.adjunction _ _
 

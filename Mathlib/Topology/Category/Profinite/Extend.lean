@@ -20,8 +20,8 @@ attribute [local instance] FintypeCat.discreteTopology ConcreteCategory.instFunL
 
 namespace Profinite
 
-variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u}}
-    (c : Cone <| F ⋙ toProfinite)
+variable {I : Type u} [Category.{u} I] [IsCofiltered I]
+    {F : I ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toProfinite)
 
 /--
 A continuous map from a profinite set to a finite set factors through one of the components of
