@@ -228,7 +228,6 @@ end
 lemma map_add : (α + β).map F = α.map F + β.map F := by
   letI := HasDerivedCategory.standard C
   letI := HasDerivedCategory.standard D
-  have : F.mapDerivedCategory.Additive := sorry -- needs IsTriangulated -> Additive
   apply homEquiv.injective
   simp only [homEquiv_map, homEquiv_add, ShiftedHom.map_add, ShiftedHom.add_comp,
     ShiftedHom.comp_add]

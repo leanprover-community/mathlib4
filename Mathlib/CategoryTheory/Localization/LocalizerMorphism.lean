@@ -47,7 +47,7 @@ structure LocalizerMorphism where
 namespace LocalizerMorphism
 
 /-- The identity functor as a morphism of localizers. -/
-@[simps]
+@[reducible]
 def id : LocalizerMorphism W₁ W₁ where
   functor := 𝟭 C₁
   map _ _ _ hf := hf
@@ -55,7 +55,7 @@ def id : LocalizerMorphism W₁ W₁ where
 variable {W₁ W₂ W₃}
 
 /-- The composition of two localizers morphisms. -/
-@[simps]
+@[reducible]
 def comp (Φ : LocalizerMorphism W₁ W₂) (Ψ : LocalizerMorphism W₂ W₃) :
     LocalizerMorphism W₁ W₃ where
   functor := Φ.functor ⋙ Ψ.functor
