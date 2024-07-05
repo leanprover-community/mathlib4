@@ -6,7 +6,7 @@ Authors: Alex J. Best, Xavier Roblot
 import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.NormBasic
 import Mathlib.Topology.Instances.Complex
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
