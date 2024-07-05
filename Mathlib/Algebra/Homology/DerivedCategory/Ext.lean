@@ -223,7 +223,6 @@ section
 variable [HasDerivedCategory.{w'} C] [HasDerivedCategory.{t'} D]
   [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
-
 lemma homEquiv_map : homEquiv (α.map F) =
     (ShiftedHom.mk₀ 0 (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).inv.app X)).comp
       (((homEquiv α).map F.mapDerivedCategory).comp (ShiftedHom.mk₀ 0 (by simp)
@@ -240,7 +239,6 @@ lemma homEquiv_symm_map
           (add_zero _)) :=
   homEquiv.injective (by simp [homEquiv_map])
 
---set_option pp.universes true
 
 lemma map_id : α.map (𝟭 C) = α := by
   dsimp only [map]
@@ -261,16 +259,31 @@ lemma homEquiv_add' :
   simp only [Equiv.symm_apply_apply]
   rfl
 
+--set_option pp.universes true
+
+lemma homEquiv_homEquiv_symm
+      (a : ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
+      ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ))
+      [HasDerivedCategory.{t'} C] :
+      homEquiv.{t'} (homEquiv.{w'}.symm a) = by
+        letI b := ShiftedHom.mk₀ (0 : ℤ) (by simp) ((Functor.singleFunctorCompMapDerivedCategoryIso.{w', t'} (𝟭 C) 0).inv.app X)
+        letI c := a.map (Functor.mapDerivedCategory.{w', t'} (𝟭 C))
+        letI d := ShiftedHom.mk₀ (0 : ℤ) (by simp) ((Functor.singleFunctorCompMapDerivedCategoryIso.{w', t'} (𝟭 C) 0).hom.app Y)
+        exact b.comp (c.comp d (zero_add _)) (add_zero _) := by
+  sorry
+
+@[simp]
+lemma homEquiv_symm_add (a b : ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
+        ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ)) :
+    homEquiv.symm (a + b) = homEquiv.symm a + homEquiv.symm b := by
+  have : ∀ (n : ℤ), (shiftFunctor (DerivedCategory.{w'} C) n).Additive := inferInstance
+  letI := HasDerivedCategory.standard C
+  apply homEquiv.{max u v}.injective
+  simp [homEquiv_add', homEquiv_homEquiv_symm]
 
 @[simp]
 lemma homEquiv_add : homEquiv (α + β) = homEquiv α + homEquiv β := by
-  apply homEquiv.symm.injective
-  letI := HasDerivedCategory.standard C
-  simp only [Equiv.symm_apply_apply]
-  --rw [← (α + β).map_id]
-  --conv_rhs => rw [← α.map_id, ← β.map_id]
-  --apply (homEquiv_map.{max u v, w', w, w} (α + β) (𝟭 C)).trans
-  sorry
+  apply homEquiv.symm.injective (by simp)
 
 end
 
