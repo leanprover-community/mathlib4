@@ -7,10 +7,10 @@ import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Dynamics.Newton
 
 #align_import dynamics.periodic_pts from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
