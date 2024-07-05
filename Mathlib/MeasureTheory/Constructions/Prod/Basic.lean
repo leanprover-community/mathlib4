@@ -371,8 +371,8 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
     calc
       μ s * ν t ≤ μ s' * ν t := by gcongr
-      _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
-      _ ≤ ∫⁻ x in s', f x ∂μ := set_lintegral_mono measurable_const hfm fun x => id
+      _ = ∫⁻ _ in s', ν t ∂μ := by rw [setLIntegral_const, mul_comm]
+      _ ≤ ∫⁻ x in s', f x ∂μ := setLIntegral_mono measurable_const hfm fun x => id
       _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
       _ = μ.prod ν ST := (prod_apply hSTm).symm
       _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
@@ -908,11 +908,13 @@ theorem AEMeasurable.prod_swap [SFinite μ] [SFinite ν] {f : β × α → γ}
   exact hf.comp_measurable measurable_swap
 #align ae_measurable.prod_swap AEMeasurable.prod_swap
 
+-- TODO: make this theorem usable with `fun_prop`
 theorem AEMeasurable.fst [SFinite ν] {f : α → γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 #align ae_measurable.fst AEMeasurable.fst
 
+-- TODO: make this theorem usable with `fun_prop`
 theorem AEMeasurable.snd [SFinite ν] {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
@@ -1036,6 +1038,10 @@ theorem fst_univ : ρ.fst univ = ρ univ := by rw [fst_apply MeasurableSet.univ,
 
 @[simp] theorem fst_zero : fst (0 : Measure (α × β)) = 0 := by simp [fst]
 
+instance [SFinite ρ] : SFinite ρ.fst := by
+  rw [fst]
+  infer_instance
+
 instance fst.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.fst := by
   rw [fst]
   infer_instance
@@ -1083,6 +1089,10 @@ theorem snd_univ : ρ.snd univ = ρ univ := by rw [snd_apply MeasurableSet.univ,
 
 @[simp] theorem snd_zero : snd (0 : Measure (α × β)) = 0 := by simp [snd]
 
+instance [SFinite ρ] : SFinite ρ.snd := by
+  rw [snd]
+  infer_instance
+
 instance snd.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.snd := by
   rw [snd]
   infer_instance
@@ -1116,6 +1126,14 @@ theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : 
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
 #align measure_theory.measure.snd_map_prod_mk MeasureTheory.Measure.snd_map_prod_mk
+
+@[simp] lemma fst_map_swap : (ρ.map Prod.swap).fst = ρ.snd := by
+  rw [Measure.fst, Measure.map_map measurable_fst measurable_swap]
+  rfl
+
+@[simp] lemma snd_map_swap : (ρ.map Prod.swap).snd = ρ.fst := by
+  rw [Measure.snd, Measure.map_map measurable_snd measurable_swap]
+  rfl
 
 end Measure
 

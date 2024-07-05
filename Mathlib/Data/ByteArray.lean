@@ -3,7 +3,6 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Char
 
 set_option autoImplicit true
 
@@ -12,15 +11,15 @@ namespace Nat
 /- Up -/
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
-def Up (ub a i : ℕ) := i < a ∧ i < ub
+def Up (ub a i : Nat) := i < a ∧ i < ub
 
-lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
+theorem Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
-lemma Up.WF (ub) : WellFounded (Up ub) :=
+theorem Up.WF (ub) : WellFounded (Up ub) :=
   Subrelation.wf (h₂ := (measure (ub - ·)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
-def upRel (ub : ℕ) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
+def upRel (ub : Nat) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
 
 end Nat
 
@@ -83,7 +82,7 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
     let c := s.get p
     have : utf8ByteSize s - (next s p).byteIdx < utf8ByteSize s - p.byteIdx :=
       Nat.sub_lt_sub_left (Nat.lt_of_not_le <| mt decide_eq_true h)
-        (Nat.lt_add_of_pos_right (String.csize_pos _))
+        (Nat.lt_add_of_pos_right (Char.utf8Size_pos _))
     loop (s.next p) (out.push c.toUInt8)
     termination_by utf8ByteSize s - p.byteIdx
   loop 0 ByteArray.empty
@@ -92,11 +91,11 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
 every byte will become a unicode character with codepoint < 256. -/
 def ByteSlice.toString (bs : ByteSlice) : String := Id.run do
   let mut s := ""
-  for c in bs do s := s.push c.toChar
+  for c in bs do s := s.push (Char.ofUInt8 c)
   s
 
 instance : ToString ByteSlice where
   toString bs := Id.run do
     let mut s := ""
-    for c in bs do s := s.push c.toChar
+    for c in bs do s := s.push (Char.ofUInt8 c)
     s

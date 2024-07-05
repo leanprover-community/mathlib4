@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Order.Interval.Finset.Nat
 
 #align_import number_theory.divisors from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -485,10 +485,10 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
   intro a
   constructor <;> intro h
   · rcases h with ⟨_h_left, rfl, h_right⟩
-    rw [pow_lt_pow_iff_right pp.one_lt] at h_right
-    exact ⟨h_right, by rfl⟩
+    rw [Nat.pow_lt_pow_iff_right pp.one_lt] at h_right
+    exact ⟨h_right, rfl⟩
   · rcases h with ⟨h_left, rfl⟩
-    rw [pow_lt_pow_iff_right pp.one_lt]
+    rw [Nat.pow_lt_pow_iff_right pp.one_lt]
     simp [h_left, le_of_lt]
 #align nat.mem_proper_divisors_prime_pow Nat.mem_properDivisors_prime_pow
 

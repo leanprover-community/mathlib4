@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
-import Mathlib.CategoryTheory.Triangulated.Triangulated
+import Mathlib.CategoryTheory.Localization.Triangulated
+import Mathlib.CategoryTheory.Shift.Localization
 
 /-! # Triangulated subcategories
 
@@ -150,14 +151,14 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, le_isoClosure _ _ hZ⟩
 
-lemma respectsIso_W : S.W.RespectsIso where
-  left := by
+instance respectsIso_W : S.W.RespectsIso where
+  precomp := by
     rintro X' X Y e f ⟨Z, g, h, mem, mem'⟩
     refine' ⟨Z, g, h ≫ e.inv⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ _, mem'⟩
     refine' Triangle.isoMk _ _ e (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) _
     dsimp
     simp only [assoc, ← Functor.map_comp, e.inv_hom_id, Functor.map_id, comp_id, id_comp]
-  right := by
+  postcomp := by
     rintro X Y Y' e f ⟨Z, g, h, mem, mem'⟩
     refine' ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ _, mem'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
@@ -167,12 +168,12 @@ instance : S.W.ContainsIdentities := by
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, zero _⟩⟩
 
 lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
-  refine (S.respectsIso_W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
+  refine (S.W.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
 lemma smul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     S.W (n • f) ↔ S.W f :=
-  S.respectsIso_W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
+  S.W.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
 
 variable {S}
 
@@ -182,8 +183,13 @@ lemma W.shift {X₁ X₂ : C} {f : X₁ ⟶ X₂} (hf : S.W f) (n : ℤ) : S.W (
   exact ⟨_, _, _, Pretriangulated.Triangle.shift_distinguished _ hT n, S.shift _ _ mem⟩
 
 lemma W.unshift {X₁ X₂ : C} {f : X₁ ⟶ X₂} {n : ℤ} (hf : S.W (f⟦n⟧')) : S.W f :=
-  (S.respectsIso_W.arrow_mk_iso_iff
+  (S.W.arrow_mk_iso_iff
      (Arrow.isoOfNatIso (shiftEquiv C n).unitIso (Arrow.mk f))).2 (hf.shift (-n))
+
+instance : S.W.IsCompatibleWithShift ℤ where
+  condition n := by
+    ext K L f
+    exact ⟨fun hf => hf.unshift, fun hf => hf.shift n⟩
 
 instance [IsTriangulated C] : S.W.IsMultiplicative where
   comp_mem := by
@@ -240,6 +246,15 @@ instance [IsTriangulated C] : S.W.HasRightCalculusOfFractions where
     · have eq := comp_distTriang_mor_zero₁₂ _ mem'
       dsimp at eq
       rw [← sub_eq_zero, ← comp_sub, hq, reassoc_of% eq, zero_comp]
+
+instance [IsTriangulated C] : S.W.IsCompatibleWithTriangulation := ⟨by
+  rintro T₁ T₃ mem₁ mem₃ a b ⟨Z₅, g₅, h₅, mem₅, mem₅'⟩ ⟨Z₄, g₄, h₄, mem₄, mem₄'⟩ comm
+  obtain ⟨Z₂, g₂, h₂, mem₂⟩ := distinguished_cocone_triangle (T₁.mor₁ ≫ b)
+  have H := someOctahedron rfl mem₁ mem₄ mem₂
+  have H' := someOctahedron comm.symm mem₅ mem₃ mem₂
+  let φ : T₁ ⟶ T₃ := H.triangleMorphism₁ ≫ H'.triangleMorphism₂
+  exact ⟨φ.hom₃, S.W.comp_mem _ _ (W.mk S H.mem mem₄') (W.mk' S H'.mem mem₅'),
+    by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩
 
 section
 
