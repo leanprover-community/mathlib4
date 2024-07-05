@@ -61,9 +61,8 @@ to the right so the brackets will not appear in the statement).
 This attribute is useful for generating lemmas which the simplifier can use even on expressions
 that are already right associated.
 
-Note that if the lemma is a `simp` lemma, then probably the reassociated lemma should
-also be a `simp` lemma, and to ensure this you need to tag it `@[simp, reassoc]` with
-the tags in this order.
+Note that if you want both the lemma and the reassociated lemma to be
+`simp` lemmas, you should tag the lemma `@[reassoc (attr := simp)]`.
 -/
 syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
