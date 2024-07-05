@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Instances
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.NormedSpace.Spectrum
+import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Topology.ContinuousFunction.FunctionalCalculus
 
 /-!
 # The exp and log functions based on the continuous functional calculus
