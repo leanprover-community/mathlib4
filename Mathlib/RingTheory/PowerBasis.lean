@@ -164,8 +164,7 @@ theorem exists_sModEq (pb : PowerBasis A B) (b : B) :
       Nat.pos_of_ne_zero <| fun h ↦ not_mem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
 
 open Submodule in
-theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) :
-    ∃ a, pb.gen ∣ b - algebraMap A B a := by
+theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
   obtain ⟨a, ha⟩ := pb.exists_sModEq b
   refine ⟨a, ?_⟩
   rwa [← Ideal.mem_span_singleton, ← Quotient.mk_eq_zero, Quotient.mk_sub, sub_eq_zero]
