@@ -162,8 +162,6 @@ def fromIdeal : Ideal R →o TwoSidedIdeal R where
   toFun I := span I
   monotone' _ _ := span_mono
 
-lemma : GaloisConnection
-
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ TwoSidedIdeal.asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
