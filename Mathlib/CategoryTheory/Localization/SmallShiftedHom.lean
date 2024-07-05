@@ -127,7 +127,7 @@ variable (L : C ⥤ D) [L.IsLocalization W] [HasShift D M] [L.CommShift M]
   {X Y Z T : C}
 
 /-- The bijection `SmallShiftedHom.{w} W X Y m ≃ ShiftedHom (L.obj X) (L.obj Y) m`
-for all `m : M`, and `X` and `Y` in `C`m when `L : C ⥤ D` is a localization functor for
+for all `m : M`, and `X` and `Y` in `C` when `L : C ⥤ D` is a localization functor for
 `W : MorphismProperty C` such that the category `D` is equipped with a shift by `M`
 and `L` commutes with the shifts. -/
 noncomputable def equiv [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} :
