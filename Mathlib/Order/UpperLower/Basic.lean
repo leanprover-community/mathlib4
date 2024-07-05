@@ -511,7 +511,12 @@ section LE
 
 variable [LE α]
 
-/-- The type of upper sets of an order. -/
+/--
+The type of upper sets of an order.
+
+An upper set in an order is a subset such that any element greater than one of its members is
+also a member. Also called up-set, upward-closed set.
+-/
 structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/
   carrier : Set α
@@ -519,7 +524,12 @@ structure UpperSet (α : Type*) [LE α] where
   upper' : IsUpperSet carrier
 #align upper_set UpperSet
 
-/-- The type of lower sets of an order. -/
+/--
+The type of lower sets of an order.
+
+A lower set in an order is a subset such that any element less than one of its members is also
+a member. Also called down-set, downward-closed set.
+-/
 structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
