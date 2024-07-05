@@ -133,7 +133,7 @@ lemma mk_comp_algebraMap : (mk W).comp (algebraMap R R[X][Y]) = algebraMap R W.C
 lemma equation_mk_X_mk_Y :
     (W.baseChange W.CoordinateRing).toAffine.Equation (mk W (C X)) (mk W Y) := by
   rw [Affine.Equation, baseChange, ← mk_comp_algebraMap, ← map_map, ← baseChange,
-    map_polynomial, map_mapRingHom_evalEval, baseChange_polynomial_evalEval_X_Y, mk_polynomial]
+    map_polynomial, map_mapRingHom_evalEval, evalEval_baseChange_polynomial_X_Y, mk_polynomial]
 
 /-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
 noncomputable def map : W.CoordinateRing →+* (W.map f).toAffine.CoordinateRing :=
@@ -169,7 +169,7 @@ protected lemma map_smul (x : R[X]) (y : W.CoordinateRing) :
   rw [smul, _root_.map_mul, map_mk, map_C, smul]
   rfl
 
-variable {W} {x y : R} (eqn : W.Equation x y)
+variable {x y : R} (eqn : W.Equation x y) {W}
 
 noncomputable def eval : W.CoordinateRing →+* R :=
   AdjoinRoot.lift (evalRingHom x) y <| by rwa [eval₂_evalRingHom]
@@ -315,7 +315,7 @@ lemma mk_comp_algebraMap : (mk W).comp (algebraMap R R[X][Y]) = algebraMap R W.F
 lemma equation_mk_X_mk_Y :
     (W.baseChange W.FunctionField).toAffine.Equation (mk W (C X)) (mk W Y) := by
   rw [Affine.Equation, baseChange, ← mk_comp_algebraMap, ← map_map, ← baseChange,
-    map_polynomial, map_mapRingHom_evalEval, baseChange_polynomial_evalEval_X_Y, mk_polynomial]
+    map_polynomial, map_mapRingHom_evalEval, evalEval_baseChange_polynomial_X_Y, mk_polynomial]
 
 noncomputable section
 
