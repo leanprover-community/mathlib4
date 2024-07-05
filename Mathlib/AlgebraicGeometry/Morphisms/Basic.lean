@@ -148,15 +148,23 @@ theorem AffineTargetMorphismProperty.toProperty_apply (P : AffineTargetMorphismP
   delta AffineTargetMorphismProperty.toProperty; simp [*]
 #align algebraic_geometry.affine_target_morphism_property.to_property_apply AlgebraicGeometry.AffineTargetMorphismProperty.toProperty_apply
 
-theorem affine_cancel_left_isIso {P : AffineTargetMorphismProperty} (hP : P.toProperty.RespectsIso)
+theorem AffineTargetMorphismProperty.cancel_left_of_respectsIso
+    (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [IsAffine Z] : P (f ≫ g) ↔ P g := by
-  rw [← P.toProperty_apply, ← P.toProperty_apply, hP.cancel_left_isIso]
-#align algebraic_geometry.affine_cancel_left_is_iso AlgebraicGeometry.affine_cancel_left_isIso
+  rw [← P.toProperty_apply, ← P.toProperty_apply, P.toProperty.cancel_left_of_respectsIso]
+#align algebraic_geometry.affine_cancel_left_is_iso AlgebraicGeometry.AffineTargetMorphismProperty.cancel_left_of_respectsIso
 
-theorem affine_cancel_right_isIso {P : AffineTargetMorphismProperty} (hP : P.toProperty.RespectsIso)
+theorem AffineTargetMorphismProperty.cancel_right_of_respectsIso
+    (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] [IsAffine Z] [IsAffine Y] :
-    P (f ≫ g) ↔ P f := by rw [← P.toProperty_apply, ← P.toProperty_apply, hP.cancel_right_isIso]
-#align algebraic_geometry.affine_cancel_right_is_iso AlgebraicGeometry.affine_cancel_right_isIso
+    P (f ≫ g) ↔ P f := by rw [← P.toProperty_apply, ← P.toProperty_apply,
+      P.toProperty.cancel_right_of_respectsIso]
+#align algebraic_geometry.affine_cancel_right_is_iso AlgebraicGeometry.AffineTargetMorphismProperty.cancel_right_of_respectsIso
+
+@[deprecated (since := "2024-07-02")] alias affine_cancel_left_isIso :=
+  AffineTargetMorphismProperty.cancel_left_of_respectsIso
+@[deprecated (since := "2024-07-02")] alias affine_cancel_right_isIso :=
+  AffineTargetMorphismProperty.cancel_right_of_respectsIso
 
 theorem affine_arrow_mk_iso_iff {P : AffineTargetMorphismProperty} (hP : P.toProperty.RespectsIso)
     {X Y X' Y' : Scheme} {f : X ⟶ Y} {f' : X' ⟶ Y'}
