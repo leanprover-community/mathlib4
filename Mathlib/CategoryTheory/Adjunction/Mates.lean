@@ -125,9 +125,7 @@ theorem unit_mateEquiv (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (c : C) :
   rw [R₂.map_comp]
   slice_lhs 3 4 =>
     {
-      rw [← R₂.map_comp, Functor.comp_map L₁ H]
-      rw [← H.map_comp]
-      rw [left_triangle_components]
+      rw [← R₂.map_comp, Functor.comp_map L₁ H, ← H.map_comp, left_triangle_components]
     }
   simp only [comp_obj, map_id, comp_id]
 
@@ -142,13 +140,11 @@ end mateEquiv
 
 section mateEquivVComp
 
-variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
-variable {D : Type u₄} {E : Type u₅} {F : Type u₆}
+variable {A : Type u₁} {B : Type u₂} {C : Type u₃} {D : Type u₄} {E : Type u₅} {F : Type u₆}
 variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
 variable [Category.{v₄} D] [Category.{v₅} E][Category.{v₆} F]
 variable {G₁ : A ⥤ C}{G₂ : C ⥤ E}{H₁ : B ⥤ D}{H₂ : D ⥤ F}
-variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : C ⥤ D}{R₂ : D ⥤ C}
-variable {L₃ : E ⥤ F}{R₃ : F ⥤ E}
+variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : C ⥤ D}{R₂ : D ⥤ C}{L₃ : E ⥤ F}{R₃ : F ⥤ E}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 /-- Squares between left adjoints can be composed "vertically" by pasting. -/
@@ -209,8 +205,7 @@ variable [Category.{v₄} D] [Category.{v₅} E][Category.{v₆} F]
 variable {G : A ⥤ D}{H : B ⥤ E}{K : C ⥤ F}
 variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : D ⥤ E}{R₂ : E ⥤ D}
 variable {L₃ : B ⥤ C}{R₃ : C ⥤ B} {L₄ : E ⥤ F}{R₄ : F ⥤ E}
-variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂)
-variable (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
+variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃) (adj₄ : L₄ ⊣ R₄)
 
 /-- Squares between left adjoints can be composed "horizontally" by pasting. -/
 def leftAdjointSquare.hcomp :
@@ -557,9 +552,8 @@ section mateEquivconjugateEquivVComp
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}{D : Type u₄}
 variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
 variable [Category.{v₄} D]
-variable {G : A ⥤ C}{H : B ⥤ D}
-variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : C ⥤ D}{R₂ : D ⥤ C}
-variable {L₃ : C ⥤ D}{R₃ : D ⥤ C}
+variable {G : A ⥤ C} {H : B ⥤ D}
+variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : C ⥤ D} {R₂ : D ⥤ C} {L₃ : C ⥤ D}{R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 /-- Composition of a squares between left adjoints with a conjugate square. -/
@@ -597,9 +591,8 @@ section conjugateEquivmateEquivVComp
 variable {A : Type u₁} {B : Type u₂} {C : Type u₃}{D : Type u₄}
 variable [Category.{v₁} A] [Category.{v₂} B][Category.{v₃} C]
 variable [Category.{v₄} D]
-variable {G : A ⥤ C}{H : B ⥤ D}
-variable {L₁ : A ⥤ B}{R₁ : B ⥤ A} {L₂ : A ⥤ B}{R₂ : B ⥤ A}
-variable {L₃ : C ⥤ D}{R₃ : D ⥤ C}
+variable {G : A ⥤ C} {H : B ⥤ D}
+variable {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ : A ⥤ B} {R₂ : B ⥤ A} {L₃ : C ⥤ D} {R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
 /-- Composition of a conjugate square with a squares between left adjoints. -/
