@@ -8,14 +8,12 @@ import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
-import Mathlib.Analysis.NormedSpace.Star.Matrix
-import Mathlib.Algebra.Star.Unitary
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
 
 This file defines an instance of the continuous functional calculus for Hermitian matrices over an
-RCLike field 𝕜.
+`RCLike` field `𝕜`.
 
 ## Main Results
 
