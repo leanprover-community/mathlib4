@@ -222,7 +222,7 @@ theorem extend_weight [LieModule.IsTriangularizable k L V] (A : LieIdeal k L) (z
     (hv : v ≠ 0) (hvA' : ∀ (x : A), ⁅x, v⁆ = χ' x • v) :
     ∃ (χ : Module.Dual k L) (v : V), v ≠ 0 ∧ ∀ (x : L), ⁅x, v⁆ = χ x • v := by
   set Vχ' := altWeightSpace (V := V) A χ'
-  obtain ⟨c, hc⟩ : ∃ c, Module.End.HasEigenvalue (toEnd k L Vχ' z) c := by
+  obtain ⟨c, hc⟩ : ∃ c, Module.End.HasEigenvalue (toEnd k _ Vχ' z) c := by
     have : Nontrivial Vχ' := nontrivial_of_ne ⟨v, hvA'⟩ 0 <| Subtype.coe_ne_coe.mp hv
     apply Module.End.exists_hasEigenvalue_of_iSup_genEigenspace_eq_top
     exact LieModule.IsTriangularizable.iSup_eq_top z
@@ -250,7 +250,7 @@ theorem extend_weight [LieModule.IsTriangularizable k L V] (A : LieIdeal k L) (z
       LinearEquiv.coe_coe, Function.comp_apply, smul_eq_mul]
     rcases Submodule.mem_span_singleton.mp ((π2 x).prop) with ⟨d, hd⟩
     rw [← hd, smul_lie]
-    have : ⁅z, v'⁆ = (toEnd k L Vχ' z) ⟨v', hv'⟩ := rfl
+    have : ⁅z, v'⁆ = (toEnd k _ Vχ' z) ⟨v', hv'⟩ := rfl
     rw [this, Module.End.HasEigenvector.apply_eq_smul hv'', mul_comm, mul_smul]
     simp only [SetLike.mk_smul_mk]
     congr 2
@@ -305,15 +305,15 @@ decreasing_by
 theorem LieModule.exists_forall_lie_eq_smul_of_Solvable
     [IsSolvable k L] [LieModule.IsTriangularizable k L V] :
     ∃ χ : Module.Dual k L, ∃ v : V, v ≠ 0 ∧ ∀ x : L, ⁅x, v⁆ = χ x • v := by
-  let imL := (LieModule.toEnd k L V).range
+  let imL := (π).range
   have hdim : FiniteDimensional k imL := Submodule.finiteDimensional_of_le (le_top)
   suffices h : ∃ χ : Module.Dual k imL, ∃ v : V, v ≠ 0 ∧ ∀ x : imL, ⁅x, v⁆ = χ x • v by
     rcases h with ⟨χ', v, hv, hχ'⟩
-    let toEndo : L →ₗ[k] imL := LinearMap.codRestrict imL.toSubmodule (LieModule.toEnd k L V)
-        (fun x ↦ LinearMap.mem_range.mpr ⟨x, rfl⟩ : ∀ x : L, LieModule.toEnd k L V x ∈ imL)
+    let toEndo : L →ₗ[k] imL := LinearMap.codRestrict imL.toSubmodule π
+        (fun x ↦ LinearMap.mem_range.mpr ⟨x, rfl⟩ : ∀ x : L, π x ∈ imL)
     use χ'.comp toEndo, v, hv
     intro x
     have : ⁅x, v⁆ = ⁅toEndo x, v⁆ := rfl
     rw [LinearMap.comp_apply, this, hχ' (toEndo x)]
-  have hsolv : IsSolvable k imL := LieHom.isSolvable_range (LieModule.toEnd k L V)
+  have hsolv : IsSolvable k imL := LieHom.isSolvable_range π
   apply LieModule.exists_forall_lie_eq_smul_finrank (L := imL)
