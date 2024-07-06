@@ -289,7 +289,8 @@ theorem LieModule.exists_forall_lie_eq_smul_finrank :
   lift A to LieIdeal k L
   · intros
     exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
-  have hAsolv : LieAlgebra.IsSolvable k A := (LieIdeal.incl_injective A).lieAlgebra_isSolvable
+  change LieIdeal k L at A -- remove this line when bug in `lift` is fixed
+  have hAsolv : LieAlgebra.IsSolvable k A := A.incl_injective.lieAlgebra_isSolvable
   obtain ⟨χ', v, hv, hvA⟩ := LieModule.exists_forall_lie_eq_smul_finrank A
   apply extend_weight A z hz hcompl χ' v hv hvA
 termination_by L _ _ _ => finrank k L
