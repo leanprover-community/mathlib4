@@ -93,7 +93,7 @@ instance : InfSet (TwoSidedIdeal R) where
   sInf s := { ringCon := sInf $ TwoSidedIdeal.ringCon '' s }
 
 lemma sInf_ringCon (S : Set (TwoSidedIdeal R)) :
-  (sInf S).ringCon = sInf (TwoSidedIdeal.ringCon '' S) := rfl
+    (sInf S).ringCon = sInf (TwoSidedIdeal.ringCon '' S) := rfl
 
 lemma iInf_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
     (⨅ i, I i).ringCon = ⨅ i, (I i).ringCon := by
