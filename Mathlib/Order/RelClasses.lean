@@ -3,7 +3,7 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 -/
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Nat.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
@@ -185,8 +185,7 @@ theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTricho
 /-- Construct a partial order from an `isStrictOrder` relation.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
+abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   le x y := x = y ∨ r x y
   lt := r
   le_refl x := Or.inl rfl
@@ -209,8 +208,7 @@ set_option linter.uppercaseLean3 false in
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
+abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
   let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y =>
       decidable_of_iff (¬r y x)
         ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
@@ -345,14 +343,12 @@ instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (R
   ⟨i.wf.transGen⟩
 
 /-- A class for a well founded relation `<`. -/
-@[reducible]
-def WellFoundedLT (α : Type*) [LT α] : Prop :=
+abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 #align well_founded_lt WellFoundedLT
 
 /-- A class for a well founded relation `>`. -/
-@[reducible]
-def WellFoundedGT (α : Type*) [LT α] : Prop :=
+abbrev WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 #align well_founded_gt WellFoundedGT
 
@@ -568,23 +564,15 @@ theorem unbounded_of_isEmpty [IsEmpty α] {r : α → α → Prop} (s : Set α) 
 
 end Set
 
-namespace Prod
+namespace Order.Preimage
 
-instance isRefl_preimage_fst {r : α → α → Prop} [IsRefl α r] : IsRefl (α × α) (Prod.fst ⁻¹'o r) :=
-  ⟨fun a => refl_of r a.1⟩
+instance instIsRefl {r : α → α → Prop} [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
+  ⟨fun a => refl_of r (f a)⟩
 
-instance isRefl_preimage_snd {r : α → α → Prop} [IsRefl α r] : IsRefl (α × α) (Prod.snd ⁻¹'o r) :=
-  ⟨fun a => refl_of r a.2⟩
-
-instance isTrans_preimage_fst {r : α → α → Prop} [IsTrans α r] :
-    IsTrans (α × α) (Prod.fst ⁻¹'o r) :=
+instance instIsTrans {r : α → α → Prop} [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
   ⟨fun _ _ _ => trans_of r⟩
 
-instance isTrans_preimage_snd {r : α → α → Prop} [IsTrans α r] :
-    IsTrans (α × α) (Prod.snd ⁻¹'o r) :=
-  ⟨fun _ _ _ => trans_of r⟩
-
-end Prod
+end Order.Preimage
 
 /-! ### Strict-non strict relations -/
 

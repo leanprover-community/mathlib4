@@ -160,7 +160,7 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
     (by
       intro X Y f
-      refine' Quiver.Hom.unop_inj _
+      refine Quiver.Hom.unop_inj ?_
       ext x
       simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
         comp_f, Hom.isoOfComponents_hom_f]
@@ -216,7 +216,7 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
           (Opposite.unop X).op.unopSymm ≅ unop X).op)
     (by
       intro X Y f
-      refine' Quiver.Hom.unop_inj _
+      refine Quiver.Hom.unop_inj ?_
       ext x
       simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
         comp_f, Hom.isoOfComponents_hom_f]

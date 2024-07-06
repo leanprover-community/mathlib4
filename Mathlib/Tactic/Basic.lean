@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
-import Std
+import Batteries
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.Linter.OldObtain
 
 set_option autoImplicit true
 

@@ -164,13 +164,13 @@ variable {xs ys : List α} {n : ℕ}
 
 theorem sym_one_eq : xs.sym 1 = xs.map (· ::ₛ .nil) := by
   induction xs with
-  | nil => rfl
+  | nil => simp only [List.sym, Nat.succ_eq_add_one, Nat.reduceAdd, map_nil]
   | cons x xs ih =>
     rw [map_cons, ← ih, List.sym, List.sym, map_singleton, singleton_append]
 
 theorem sym2_eq_sym_two : xs.sym2.map (Sym2.equivSym α) = xs.sym 2 := by
   induction xs with
-  | nil => rfl
+  | nil => simp only [List.sym, map_eq_nil, sym2_eq_nil_iff]
   | cons x xs ih =>
     rw [List.sym, ← ih, sym_one_eq, map_map, List.sym2, map_append, map_map]
     rfl
@@ -190,7 +190,7 @@ theorem sym_map {β : Type*} (f : α → β) (n : ℕ) (xs : List α) :
 protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sym n <+ ys.sym n :=
   match n, h with
   | 0, _ => by simp [List.sym]
-  | n + 1, .slnil => .slnil
+  | n + 1, .slnil => by simp only [refl]
   | n + 1, .cons a h => by
     rw [List.sym, ← nil_append (List.sym (n + 1) xs)]
     apply Sublist.append (nil_sublist _)
@@ -247,7 +247,7 @@ theorem length_sym {n : ℕ} {xs : List α} :
     (xs.sym n).length = Nat.multichoose xs.length n :=
   match n, xs with
   | 0, _ => by rw [List.sym, Nat.multichoose]; rfl
-  | n + 1, [] => rfl
+  | n + 1, [] => by simp [List.sym]
   | n + 1, x :: xs => by
     rw [List.sym, length_append, length_map, length_cons]
     rw [@length_sym n (x :: xs), @length_sym (n + 1) xs]

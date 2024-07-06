@@ -67,7 +67,7 @@ theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
   intro x hxa hxb
   rw [range, mem_coe, List.mem_range] at hxa
   obtain ⟨c, _, rfl⟩ := mem_map.1 hxb
-  exact (self_le_add_right _ _).not_lt hxa
+  exact (Nat.le_add_right _ _).not_lt hxa
 #align multiset.range_disjoint_map_add Multiset.range_disjoint_map_add
 
 theorem range_add_eq_union (a b : ℕ) : range (a + b) = range a ∪ (range b).map (a + ·) := by

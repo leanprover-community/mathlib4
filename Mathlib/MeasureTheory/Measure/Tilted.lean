@@ -34,7 +34,6 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {f : α → �
 /-- Exponentially tilted measure. When `x ↦ exp (f x)` is integrable, `μ.tilted f` is the
 probability measure with density with respect to `μ` proportional to `exp (f x)`. Otherwise it is 0.
 -/
-@[pp_dot]
 noncomputable
 def Measure.tilted (μ : Measure α) (f : α → ℝ) : Measure α :=
   μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ))
@@ -109,9 +108,8 @@ lemma tilted_apply_eq_ofReal_integral' {s : Set α} (f : α → ℝ) (hs : Measu
   · rw [tilted_apply' _ _ hs, ← ofReal_integral_eq_lintegral_ofReal]
     · exact hf.integrableOn.div_const _
     · exact ae_of_all _ (fun _ ↦ by positivity)
-  · simp only [hf, not_false_eq_true, tilted_of_not_integrable, Measure.zero_toOuterMeasure,
-      OuterMeasure.coe_zero, Pi.zero_apply, integral_undef hf, div_zero, integral_zero,
-      ENNReal.ofReal_zero]
+  · simp only [hf, not_false_eq_true, tilted_of_not_integrable, Measure.coe_zero,
+      Pi.zero_apply, integral_undef hf, div_zero, integral_zero, ENNReal.ofReal_zero]
 
 lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α) :
     μ.tilted f s = ENNReal.ofReal (∫ a in s, exp (f a) / ∫ x, exp (f x) ∂μ ∂μ) := by
@@ -119,9 +117,7 @@ lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α)
   · rw [tilted_apply _ _, ← ofReal_integral_eq_lintegral_ofReal]
     · exact hf.integrableOn.div_const _
     · exact ae_of_all _ (fun _ ↦ by positivity)
-  · simp only [hf, not_false_eq_true, tilted_of_not_integrable, Measure.zero_toOuterMeasure,
-      OuterMeasure.coe_zero, Pi.zero_apply, integral_undef hf, div_zero, integral_zero,
-      ENNReal.ofReal_zero]
+  · simp [tilted_of_not_integrable hf, integral_undef hf]
 
 instance isFiniteMeasure_tilted : IsFiniteMeasure (μ.tilted f) := by
   by_cases hf : Integrable (fun x ↦ exp (f x)) μ
@@ -134,22 +130,22 @@ instance isFiniteMeasure_tilted : IsFiniteMeasure (μ.tilted f) := by
 lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     IsProbabilityMeasure (μ.tilted f) := by
   constructor
-  simp_rw [tilted_apply' _ _ MeasurableSet.univ, set_lintegral_univ,
+  simp_rw [tilted_apply' _ _ MeasurableSet.univ, setLIntegral_univ,
     ENNReal.ofReal_div_of_pos (integral_exp_pos hf), div_eq_mul_inv]
   rw [lintegral_mul_const'' _ hf.1.aemeasurable.ennreal_ofReal,
     ← ofReal_integral_eq_lintegral_ofReal hf (ae_of_all _ fun _ ↦ (exp_pos _).le),
     ENNReal.mul_inv_cancel]
-  simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
-  · exact integral_exp_pos hf
+  · simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
+    exact integral_exp_pos hf
   · simp
 
 section lintegral
 
-lemma set_lintegral_tilted' (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+lemma setLIntegral_tilted' (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ x in s, g x ∂(μ.tilted f)
       = ∫⁻ x in s, ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ) * g x ∂μ := by
   by_cases hf : AEMeasurable f μ
-  · rw [Measure.tilted, set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀]
+  · rw [Measure.tilted, setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀]
     · simp only [Pi.mul_apply]
     · refine AEMeasurable.restrict ?_
       exact ((measurable_exp.comp_aemeasurable hf).div_const _).ennreal_ofReal
@@ -163,11 +159,14 @@ lemma set_lintegral_tilted' (f : α → ℝ) (g : α → ℝ≥0∞) {s : Set α
     rw [integral_undef hf']
     simp
 
-lemma set_lintegral_tilted [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞) (s : Set α) :
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_tilted' := setLIntegral_tilted'
+
+lemma setLIntegral_tilted [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ x in s, g x ∂(μ.tilted f)
       = ∫⁻ x in s, ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ) * g x ∂μ := by
   by_cases hf : AEMeasurable f μ
-  · rw [Measure.tilted, set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀']
+  · rw [Measure.tilted, setLIntegral_withDensity_eq_setLIntegral_mul_non_measurable₀']
     · simp only [Pi.mul_apply]
     · refine AEMeasurable.restrict ?_
       exact ((measurable_exp.comp_aemeasurable hf).div_const _).ennreal_ofReal
@@ -180,10 +179,13 @@ lemma set_lintegral_tilted [SFinite μ] (f : α → ℝ) (g : α → ℝ≥0∞)
     rw [integral_undef hf']
     simp
 
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_tilted := setLIntegral_tilted
+
 lemma lintegral_tilted (f : α → ℝ) (g : α → ℝ≥0∞) :
     ∫⁻ x, g x ∂(μ.tilted f)
       = ∫⁻ x, ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ) * (g x) ∂μ := by
-  rw [← set_lintegral_univ, set_lintegral_tilted' f g MeasurableSet.univ, set_lintegral_univ]
+  rw [← setLIntegral_univ, setLIntegral_tilted' f g MeasurableSet.univ, setLIntegral_univ]
 
 end lintegral
 
@@ -191,10 +193,10 @@ section integral
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-lemma set_integral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
+lemma setIntegral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
   by_cases hf : AEMeasurable f μ
-  · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀ _ _ hs]
+  · rw [tilted_eq_withDensity_nnreal, setIntegral_withDensity_eq_setIntegral_smul₀ _ _ hs]
     · congr
     · suffices AEMeasurable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by
         rw [← aemeasurable_coe_nnreal_real_iff]
@@ -208,10 +210,13 @@ lemma set_integral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : Me
     rw [integral_undef hf']
     simp
 
-lemma set_integral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set α) :
+@[deprecated (since := "2024-04-17")]
+alias set_integral_tilted' := setIntegral_tilted'
+
+lemma setIntegral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set α) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
   by_cases hf : AEMeasurable f μ
-  · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀']
+  · rw [tilted_eq_withDensity_nnreal, setIntegral_withDensity_eq_setIntegral_smul₀']
     · congr
     · suffices AEMeasurable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by
         rw [← aemeasurable_coe_nnreal_real_iff]
@@ -224,10 +229,13 @@ lemma set_integral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set 
       integral_zero_measure]
     rw [integral_undef hf']
     simp
+
+@[deprecated (since := "2024-04-17")]
+alias set_integral_tilted := setIntegral_tilted
 
 lemma integral_tilted (f : α → ℝ) (g : α → E) :
     ∫ x, g x ∂(μ.tilted f) = ∫ x, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
-  rw [← integral_univ, set_integral_tilted' f g MeasurableSet.univ, integral_univ]
+  rw [← integral_univ, setIntegral_tilted' f g MeasurableSet.univ, integral_univ]
 
 end integral
 
@@ -252,7 +260,7 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
   | inl h => simp [h]
   | inr h0 =>
     ext1 s hs
-    rw [tilted_apply' _ _ hs, tilted_apply' _ _ hs, set_lintegral_tilted' f _ hs]
+    rw [tilted_apply' _ _ hs, tilted_apply' _ _ hs, setLIntegral_tilted' f _ hs]
     congr with x
     rw [← ENNReal.ofReal_mul (by positivity),
       integral_exp_tilted f, Pi.add_apply, exp_add]
@@ -286,12 +294,11 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
   cases eq_zero_or_neZero μ with
   | inl h => simp only [h, tilted_zero_measure]; exact fun _ _ ↦ by simp
   | inr h0 =>
-    refine withDensity_absolutelyContinuous' ?_ ?_ ?_
+    refine withDensity_absolutelyContinuous' ?_ ?_
     · exact (hf.1.aemeasurable.div_const _).ennreal_ofReal
     · filter_upwards
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
-    · refine ae_of_all _ (by simp)
 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Order.Monotone.Monovary
 
 /-!

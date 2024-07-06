@@ -30,7 +30,7 @@ https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_
 -/
 
 
-universe v₁ v₂ u u₂
+universe w w' v₁ v₂ u u₂
 
 noncomputable section
 
@@ -84,8 +84,8 @@ instance whiskeringLeftPreservesLimits [HasLimits D] (F : C ⥤ E) :
         exact PreservesLimit.preserves hc⟩⟩⟩
 #align category_theory.whiskering_left_preserves_limits CategoryTheory.whiskeringLeftPreservesLimits
 
-instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Type*}
-    [Category.{u} D] {E : Type*} [Category.{u} E] {J : Type u} [SmallCategory J]
+instance whiskeringRightPreservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
+    [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   ⟨fun {K} =>
@@ -95,9 +95,10 @@ instance whiskeringRightPreservesLimitsOfShape {C : Type u} [Category C] {D : Ty
       exact PreservesLimit.preserves hc⟩⟩
 #align category_theory.whiskering_right_preserves_limits_of_shape CategoryTheory.whiskeringRightPreservesLimitsOfShape
 
-instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type*} [Category.{u} D]
-    {E : Type*} [Category.{u} E] (F : D ⥤ E) [HasLimits D] [PreservesLimits F] :
-    PreservesLimits ((whiskeringRight C D E).obj F) :=
+instance whiskeringRightPreservesLimits {C : Type*} [Category C] {D : Type*} [Category D]
+    {E : Type*} [Category E] (F : D ⥤ E) [HasLimitsOfSize.{w, w'} D]
+    [PreservesLimitsOfSize.{w, w'} F] :
+    PreservesLimitsOfSize.{w, w'} ((whiskeringRight C D E).obj F) :=
   ⟨inferInstance⟩
 #align category_theory.whiskering_right_preserves_limits CategoryTheory.whiskeringRightPreservesLimits
 
@@ -105,9 +106,9 @@ instance whiskeringRightPreservesLimits {C : Type u} [Category C] {D : Type*} [C
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 noncomputable def preservesLimitOfLanPreservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
-    [PreservesLimitsOfShape J (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
+    [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
   apply @preservesLimitsOfShapeOfReflectsOfPreserves _ _ _ _ _ _ _ _ F yoneda ?_
-  exact preservesLimitsOfShapeOfNatIso (compYonedaIsoYonedaCompLan F).symm
+  exact preservesLimitsOfShapeOfNatIso (Presheaf.compYonedaIsoYonedaCompLan F).symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_limit_of_Lan_preserves_limit CategoryTheory.preservesLimitOfLanPreservesLimit
 

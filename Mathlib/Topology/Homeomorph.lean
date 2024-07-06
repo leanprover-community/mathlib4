@@ -146,7 +146,7 @@ theorem refl_symm : (Homeomorph.refl X).symm = Homeomorph.refl X :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous (h : X ≃ₜ Y) : Continuous h :=
   h.continuous_toFun
 #align homeomorph.continuous Homeomorph.continuous
@@ -467,6 +467,13 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
   refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
   exact hs.2.2.2.image _ h.symm.continuous.continuousOn
 
+/-- The codomain of a homeomorphism is a locally compact space if and only if
+the domain is a locally compact space. -/
+theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
+    LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
+  exact ⟨fun _ => h.symm.openEmbedding.locallyCompactSpace,
+    fun _ => h.closedEmbedding.locallyCompactSpace⟩
+
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
 def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
   continuous_toFun := h₁
@@ -511,7 +518,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
 
 @[simp]
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
-  refine' ⟨_, fun hf => h.isOpenMap.comp hf⟩
+  refine ⟨?_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
   rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp.assoc]
   exact h.symm.isOpenMap.comp hf
@@ -519,7 +526,7 @@ theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) 
 
 @[simp]
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
-  refine' ⟨_, fun hf => hf.comp h.isOpenMap⟩
+  refine ⟨?_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
   rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp.assoc]
   exact hf.comp h.symm.isOpenMap
@@ -636,7 +643,7 @@ end
 @[simps! apply toEquiv]
 def piCongrLeft {ι ι' : Type*} {Y : ι' → Type*} [∀ j, TopologicalSpace (Y j)]
     (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ₜ ∀ j, Y j where
-  continuous_toFun := continuous_pi <| e.forall_congr_left.mp fun i ↦ by
+  continuous_toFun := continuous_pi <| e.forall_congr_right.mp fun i ↦ by
     simpa only [Equiv.toFun_as_coe, Equiv.piCongrLeft_apply_apply] using continuous_apply i
   continuous_invFun := Pi.continuous_precomp' e
   toEquiv := Equiv.piCongrLeft _ e
@@ -758,11 +765,10 @@ section
 variable {ι : Type*}
 
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
-  depending on whether they satisfy a predicate p or not.-/
+  depending on whether they satisfy a predicate p or not. -/
 @[simps!]
 def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, TopologicalSpace (Y i)]
-    [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i
-    where
+    [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
   continuous_toFun := by
     apply Continuous.prod_mk <;> exact continuous_pi fun j => continuous_apply j.1
@@ -778,16 +784,16 @@ variable [DecidableEq ι] (i : ι)
   the product of all the remaining spaces. -/
 @[simps!]
 def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
-    (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j
-    where
+    (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j where
   toEquiv := Equiv.piSplitAt i Y
   continuous_toFun := (continuous_apply i).prod_mk (continuous_pi fun j => continuous_apply j.1)
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piSplitAt]
       split_ifs with h
-      subst h
-      exacts [continuous_fst, (continuous_apply _).comp continuous_snd]
+      · subst h
+        exact continuous_fst
+      · exact (continuous_apply _).comp continuous_snd
 #align homeomorph.pi_split_at Homeomorph.piSplitAt
 
 variable (Y)

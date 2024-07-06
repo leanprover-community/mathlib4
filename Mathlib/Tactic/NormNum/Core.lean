@@ -3,7 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Lean.Meta.DiscrTree
+import Batteries.Lean.Meta.DiscrTree
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Util.Qq
 import Lean.Elab.Tactic.Location
@@ -116,7 +116,7 @@ def deriveInt {α : Q(Type u)} (e : Q($α))
   pure ⟨lit, proof⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a rational number, typed expressions `n : ℚ` and `d : ℚ` for the numerator and
+returning a rational number, typed expressions `n : ℤ` and `d : ℕ` for the numerator and
 denominator, and a proof of `IsRat e n d` in expression form. -/
 def deriveRat {α : Q(Type u)} (e : Q($α))
     (_inst : Q(DivisionRing $α) := by with_reducible assumption) :

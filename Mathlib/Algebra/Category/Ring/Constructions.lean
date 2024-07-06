@@ -3,12 +3,11 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 
 #align_import algebra.category.Ring.constructions from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -42,13 +41,13 @@ def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra f
   letI := RingHom.toAlgebra g
   fapply Limits.PushoutCocone.mk
-  show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
-  show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
-  show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
-  ext r
-  trans algebraMap R (A ⊗[R] B) r
-  · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
-  · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
+  · show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
+  · show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
+  · show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
+  · ext r
+    trans algebraMap R (A ⊗[R] B) r
+    · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
+    · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone CommRingCat.pushoutCocone
 
@@ -147,8 +146,8 @@ section Terminal
 /-- The trivial ring is the (strict) terminal object of `CommRingCat`. -/
 def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   refine IsTerminal.ofUnique (h := fun X => ⟨⟨⟨⟨1, rfl⟩, fun _ _ => rfl⟩, ?_, ?_⟩, ?_⟩)
-  · dsimp
-  · intros; dsimp
+  · rfl
+  · intros; simp; ext
   · intros f; ext; rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.punit_is_terminal CommRingCat.punitIsTerminal
@@ -237,14 +236,14 @@ def piFanIsLimit : IsLimit (piFan R) where
 /--
 The categorical product and the usual product agrees
 -/
-def piIsoPi : ∏ R ≅ CommRingCat.of ((i : ι) → R i) :=
+def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 /--
 The categorical product and the usual product agrees
 -/
 def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
-    (∏ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
+    (∏ᶜ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
   (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 
 end Pi

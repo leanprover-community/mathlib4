@@ -351,7 +351,7 @@ theorem fderivWithin.snd (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableW
 
 end Snd
 
-section Prod_map
+section prodMap
 
 variable {f₂ : G → G'} {f₂' : G →L[𝕜] G'} {y : G} (p : E × G)
 
@@ -373,7 +373,7 @@ protected theorem DifferentiableAt.prod_map (hf : DifferentiableAt 𝕜 f p.1)
   (hf.comp p differentiableAt_fst).prod (hf₂.comp p differentiableAt_snd)
 #align differentiable_at.prod_map DifferentiableAt.prod_map
 
-end Prod_map
+end prodMap
 
 section Pi
 
@@ -414,7 +414,7 @@ theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
   have h := ((hasStrictFDerivAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ':=id') (x:=f))).1
   have h' : comp (proj i) id' = proj i := by rfl
-  rw[← h']; apply h; apply hasStrictFDerivAt_id
+  rw [← h']; apply h; apply hasStrictFDerivAt_id
 
 @[simp 1100] -- Porting note: increased priority to make lint happy
 theorem hasStrictFDerivAt_pi :
@@ -477,7 +477,7 @@ theorem hasFDerivWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' 
   have h := ((hasFDerivWithinAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ':=id') (x:=f) (s:=s'))).1
   have h' : comp (proj i) id' = proj i := by rfl
-  rw[← h']; apply h; apply hasFDerivWithinAt_id
+  rw [← h']; apply h; apply hasFDerivWithinAt_id
 
 theorem hasFDerivWithinAt_pi :
     HasFDerivWithinAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') s x ↔

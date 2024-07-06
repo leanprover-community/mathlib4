@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Num.Basic
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Vector.Basic
 
 #align_import data.num.bitwise from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
@@ -278,7 +277,6 @@ and the negation of the MSB is sign-extended to all higher bits.
 
 namespace NzsNum
 
--- mathport name: nznum.bit
 @[inherit_doc]
 scoped notation a "::" b => bit a b
 
@@ -295,7 +293,6 @@ def not : NzsNum → NzsNum
   | b :: p => Not b :: not p
 #align nzsnum.not NzsNum.not
 
--- mathport name: «expr~ »
 @[inherit_doc]
 scoped prefix:100 "~" => not
 
@@ -342,7 +339,6 @@ def not : SNum → SNum
 #align snum.not SNum.not
 
 -- Porting note: Defined `priority` so that `~1 : SNum` is unambiguous.
--- mathport name: snum.not
 @[inherit_doc]
 scoped prefix:100 (priority := default + 1) "~" => not
 
@@ -353,7 +349,6 @@ def bit : Bool → SNum → SNum
   | b, nz p => p.bit b
 #align snum.bit SNum.bit
 
--- mathport name: snum.bit
 @[inherit_doc]
 scoped notation a "::" b => bit a b
 

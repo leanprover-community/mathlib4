@@ -5,6 +5,7 @@ Authors: Justin Thomas
 -/
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Algebra.Polynomial.Module.AEval
 
 #align_import linear_algebra.annihilating_polynomial from "leanprover-community/mathlib"@"d3e8e0a0237c10c2627bf52c246b15ff8e7df4c0"
 
@@ -155,7 +156,7 @@ theorem annIdealGenerator_eq_minpoly (a : A) : annIdealGenerator 𝕜 a = minpol
   by_cases h : annIdealGenerator 𝕜 a = 0
   · rw [h, minpoly.eq_zero]
     rintro ⟨p, p_monic, hp : aeval a p = 0⟩
-    refine' p_monic.ne_zero (Ideal.mem_bot.mp _)
+    refine p_monic.ne_zero (Ideal.mem_bot.mp ?_)
     simpa only [annIdealGenerator_eq_zero_iff.mp h] using mem_annIdeal_iff_aeval_eq_zero.mpr hp
   · exact minpoly.unique _ _ (monic_annIdealGenerator _ _ h) (annIdealGenerator_aeval_eq_zero _ _)
       fun q q_monic hq =>
@@ -172,7 +173,7 @@ theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
   · rw [← span_singleton_annIdealGenerator, Ideal.span_singleton_eq_span_singleton] at p_gen
     rw [eq_comm]
     apply eq_of_monic_of_associated p_monic _ p_gen
-    · apply monic_annIdealGenerator _ _ ((Associated.ne_zero_iff p_gen).mp h)
+    apply monic_annIdealGenerator _ _ ((Associated.ne_zero_iff p_gen).mp h)
 #align polynomial.monic_generator_eq_minpoly Polynomial.monic_generator_eq_minpoly
 
 theorem span_minpoly_eq_annihilator {M} [AddCommGroup M] [Module 𝕜 M] (f : Module.End 𝕜 M) :

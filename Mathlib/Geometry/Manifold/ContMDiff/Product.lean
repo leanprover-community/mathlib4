@@ -294,8 +294,8 @@ theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
 
 theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
     ContMDiffAt I (I'.prod J') n f x ↔
-      ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x :=
-  by simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
+      ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x := by
+  simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
 #align cont_mdiff_at_prod_iff contMDiffAt_prod_iff
 
 theorem contMDiff_prod_iff (f : M → M' × N') :
@@ -319,7 +319,7 @@ theorem smooth_prod_assoc :
   smooth_fst.fst.prod_mk <| smooth_fst.snd.prod_mk smooth_snd
 #align smooth_prod_assoc smooth_prod_assoc
 
-section Prod_map
+section prodMap
 
 variable {g : N → N'} {r : Set N} {y : N}
 
@@ -384,7 +384,7 @@ nonrec theorem Smooth.prod_map (hf : Smooth I I' f) (hg : Smooth J J' g) :
   hf.prod_map hg
 #align smooth.prod_map Smooth.prod_map
 
-end Prod_map
+end prodMap
 
 section PiSpace
 
@@ -402,8 +402,6 @@ variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGrou
 theorem contMDiffWithinAt_pi_space :
     ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Fi i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) s x := by
-  -- Porting note: `simp` fails to apply it on the LHS
-  rw [contMDiffWithinAt_iff]
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
     writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), PartialEquiv.refl_coe, id]
 #align cont_mdiff_within_at_pi_space contMDiffWithinAt_pi_space

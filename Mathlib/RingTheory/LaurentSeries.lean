@@ -1,10 +1,15 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
+import Mathlib.Data.Int.Interval
+import Mathlib.RingTheory.Binomial
+import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
+import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
@@ -14,29 +19,59 @@ import Mathlib.RingTheory.Localization.FractionRing
 
 ## Main Definitions
 * Defines `LaurentSeries` as an abbreviation for `HahnSeries ℤ`.
+* Defines `hasseDeriv` of a Laurent series with coefficients in a module over a ring.
 * Provides a coercion `PowerSeries R` into `LaurentSeries R` given by
   `HahnSeries.ofPowerSeries`.
 * Defines `LaurentSeries.powerSeriesPart`
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
+* Embedding of rational functions into Laurent series, provided as a coercion, utilizing
+the underlying `RatFunc.coeAlgHom`.
+* Study of the X-Adic valuation on the ring of Laurent series over a field
+
+## Main Results
+* Basic properties of Hasse derivatives
 
 -/
+universe u
 
 open scoped Classical
-open HahnSeries BigOperators Polynomial
+open HahnSeries Polynomial
 
 noncomputable section
 
-universe u
-
 /-- A `LaurentSeries` is implemented as a `HahnSeries` with value group `ℤ`. -/
-abbrev LaurentSeries (R : Type*) [Zero R] :=
+abbrev LaurentSeries (R : Type u) [Zero R] :=
   HahnSeries ℤ R
 #align laurent_series LaurentSeries
 
 variable {R : Type*}
 
 namespace LaurentSeries
+
+section HasseDeriv
+
+/-- The Hasse derivative of Laurent series, as a linear map. -/
+@[simps]
+def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V] (k : ℕ) :
+    LaurentSeries V →ₗ[R] LaurentSeries V where
+  toFun f := HahnSeries.ofSuppBddBelow (fun (n : ℤ) => (Ring.choose (n + k) k) • f.coeff (n + k))
+    (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ)
+    (fun _ h_lt ↦ by rw [coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h_lt, smul_zero]))
+  map_add' f g := by
+    ext
+    simp only [ofSuppBddBelow, add_coeff', Pi.add_apply, smul_add]
+  map_smul' r f := by
+    ext
+    simp only [ofSuppBddBelow, smul_coeff, RingHom.id_apply, smul_comm r]
+
+variable [Semiring R] {V : Type*} [AddCommGroup V] [Module R V]
+
+theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
+    (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
+  rfl
+
+end HasseDeriv
 
 section Semiring
 
@@ -83,7 +118,7 @@ theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 �
     simp only [ne_eq]
     intro h
     rw [PowerSeries.ext_iff, not_forall]
-    refine' ⟨0, _⟩
+    refine ⟨0, ?_⟩
     simp [coeff_order_ne_zero h]
   · rintro rfl
     simp
@@ -110,7 +145,7 @@ theorem single_order_mul_powerSeriesPart (x : LaurentSeries R) :
 
 theorem ofPowerSeries_powerSeriesPart (x : LaurentSeries R) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
-  refine' Eq.trans _ (congr rfl x.single_order_mul_powerSeriesPart)
+  refine Eq.trans ?_ (congr rfl x.single_order_mul_powerSeriesPart)
   rw [← mul_assoc, single_mul_single, neg_add_self, mul_one, ← C_apply, C_one, one_mul]
 #align laurent_series.of_power_series_power_series_part LaurentSeries.ofPowerSeries_powerSeriesPart
 
@@ -131,22 +166,20 @@ instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units' := by
     rintro ⟨_, n, rfl⟩
-    refine' ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, _, _⟩, _⟩
-    · simp only [single_mul_single, mul_one, add_right_neg]
-      rfl
-    · simp only [single_mul_single, mul_one, add_left_neg]
-      rfl
+    refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
+    · simp
+    · simp
     · dsimp; rw [ofPowerSeries_X_pow]
   surj' z := by
     by_cases h : 0 ≤ z.order
-    · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
+    · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
         Submonoid.coe_one]
       rw [Int.natAbs_of_nonneg h, single_order_mul_powerSeriesPart]
-    · refine' ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, _⟩
+    · refine ⟨⟨powerSeriesPart z, PowerSeries.X ^ Int.natAbs z.order, ⟨_, rfl⟩⟩, ?_⟩
       simp only [coe_algebraMap, ofPowerSeries_powerSeriesPart]
       rw [mul_comm _ z]
-      refine' congr rfl _
+      refine congr rfl ?_
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
       exact le_of_not_ge h
   exists_of_eq {x y} := by
@@ -155,9 +188,7 @@ instance of_powerSeries_localization [CommRing R] :
     exact ⟨1, rfl⟩
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
--- Porting note: this instance is needed
-local instance {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
-instance {K : Type u} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
+instance {K : Type*} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
     (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf =>
     isUnit_of_mem_nonZeroDivisors <| map_mem_nonZeroDivisors _ HahnSeries.ofPowerSeries_injective hf
@@ -204,11 +235,11 @@ theorem coeff_coe (i : ℤ) :
     ((f : PowerSeries R) : LaurentSeries R).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.coe_nat_nonneg _).not_lt,
+  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_lt,
       Int.natAbs_ofNat]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
-      Ne.def, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
+      Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
       not_false_iff]
 #align power_series.coeff_coe PowerSeries.coeff_coe
 
@@ -236,9 +267,220 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries 
 #noalign power_series.coe_bit0
 #noalign power_series.coe_bit1
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _
 #align power_series.coe_pow PowerSeries.coe_pow
 
 end PowerSeries
+
+namespace RatFunc
+section RatFunc
+
+open RatFunc
+
+variable {F : Type u} [Field F] (p q : F[X]) (f g : RatFunc F)
+
+/-- The coercion `RatFunc F → LaurentSeries F` as bundled alg hom. -/
+def coeAlgHom (F : Type u) [Field F] : RatFunc F →ₐ[F[X]] LaurentSeries F :=
+  liftAlgHom (Algebra.ofId _ _) <|
+    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
+      Polynomial.algebraMap_hahnSeries_injective _
+#align ratfunc.coe_alg_hom RatFunc.coeAlgHom
+
+/-- The coercion `RatFunc F → LaurentSeries F` as a function.
+
+This is the implementation of `coeToLaurentSeries`.
+-/
+@[coe]
+def coeToLaurentSeries_fun {F : Type u} [Field F] : RatFunc F → LaurentSeries F :=
+  coeAlgHom F
+
+instance coeToLaurentSeries : Coe (RatFunc F) (LaurentSeries F) :=
+  ⟨coeToLaurentSeries_fun⟩
+#align ratfunc.coe_to_laurent_series RatFunc.coeToLaurentSeries
+
+theorem coe_def : (f : LaurentSeries F) = coeAlgHom F f :=
+  rfl
+#align ratfunc.coe_def RatFunc.coe_def
+
+theorem coe_num_denom : (f : LaurentSeries F) = f.num / f.denom :=
+  liftAlgHom_apply _ _ f
+#align ratfunc.coe_num_denom RatFunc.coe_num_denom
+
+theorem coe_injective : Function.Injective ((↑) : RatFunc F → LaurentSeries F) :=
+  liftAlgHom_injective _ (Polynomial.algebraMap_hahnSeries_injective _)
+#align ratfunc.coe_injective RatFunc.coe_injective
+
+-- Porting note: removed the `norm_cast` tag:
+-- `norm_cast: badly shaped lemma, rhs can't start with coe `↑(coeAlgHom F) f`
+@[simp]
+theorem coe_apply : coeAlgHom F f = f :=
+  rfl
+#align ratfunc.coe_apply RatFunc.coe_apply
+
+theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := by
+  simp only [coePolynomial, coe_def, AlgHom.commutes, algebraMap_hahnSeries_apply]
+
+@[simp, norm_cast]
+theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
+  (coeAlgHom F).map_zero
+#align ratfunc.coe_zero RatFunc.coe_zero
+
+theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) ≠ 0 := by
+  simp only [ne_eq, Polynomial.coe_eq_zero_iff, hf, not_false_eq_true]
+
+@[simp, norm_cast]
+theorem coe_one : ((1 : RatFunc F) : LaurentSeries F) = 1 :=
+  (coeAlgHom F).map_one
+#align ratfunc.coe_one RatFunc.coe_one
+
+@[simp, norm_cast]
+theorem coe_add : ((f + g : RatFunc F) : LaurentSeries F) = f + g :=
+  (coeAlgHom F).map_add _ _
+#align ratfunc.coe_add RatFunc.coe_add
+
+@[simp, norm_cast]
+theorem coe_sub : ((f - g : RatFunc F) : LaurentSeries F) = f - g :=
+  (coeAlgHom F).map_sub _ _
+#align ratfunc.coe_sub RatFunc.coe_sub
+
+@[simp, norm_cast]
+theorem coe_neg : ((-f : RatFunc F) : LaurentSeries F) = -f :=
+  (coeAlgHom F).map_neg _
+#align ratfunc.coe_neg RatFunc.coe_neg
+
+@[simp, norm_cast]
+theorem coe_mul : ((f * g : RatFunc F) : LaurentSeries F) = f * g :=
+  (coeAlgHom F).map_mul _ _
+#align ratfunc.coe_mul RatFunc.coe_mul
+
+@[simp, norm_cast]
+theorem coe_pow (n : ℕ) : ((f ^ n : RatFunc F) : LaurentSeries F) = (f : LaurentSeries F) ^ n :=
+  (coeAlgHom F).map_pow _ _
+#align ratfunc.coe_pow RatFunc.coe_pow
+
+@[simp, norm_cast]
+theorem coe_div :
+    ((f / g : RatFunc F) : LaurentSeries F) = (f : LaurentSeries F) / (g : LaurentSeries F) :=
+  map_div₀ (coeAlgHom F) _ _
+#align ratfunc.coe_div RatFunc.coe_div
+
+@[simp, norm_cast]
+theorem coe_C (r : F) : ((RatFunc.C r : RatFunc F) : LaurentSeries F) = HahnSeries.C r := by
+  rw [coe_num_denom, num_C, denom_C, Polynomial.coe_C, -- Porting note: removed `coe_C`
+    Polynomial.coe_one,
+    PowerSeries.coe_one, div_one]
+  simp only [algebraMap_eq_C, ofPowerSeries_C, C_apply]  -- Porting note: added
+set_option linter.uppercaseLean3 false in
+#align ratfunc.coe_C RatFunc.coe_C
+
+-- TODO: generalize over other modules
+@[simp, norm_cast]
+theorem coe_smul (r : F) : ((r • f : RatFunc F) : LaurentSeries F) = r • (f : LaurentSeries F) := by
+  rw [RatFunc.smul_eq_C_mul, ← C_mul_eq_smul, coe_mul, coe_C]
+#align ratfunc.coe_smul RatFunc.coe_smul
+
+-- Porting note: removed `norm_cast` because "badly shaped lemma, rhs can't start with coe"
+-- even though `single 1 1` is a bundled function application, not a "real" coercion
+@[simp]
+theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
+  rw [coe_num_denom, num_X, denom_X, Polynomial.coe_X, -- Porting note: removed `coe_C`
+     Polynomial.coe_one,
+     PowerSeries.coe_one, div_one]
+  simp only [ofPowerSeries_X]  -- Porting note: added
+set_option linter.uppercaseLean3 false in
+#align ratfunc.coe_X RatFunc.coe_X
+
+theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
+    single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n h_ind
+  · simp
+  · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
+      add_comm]
+
+theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
+    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
+  apply eq_inv_of_mul_eq_one_right
+  simp [hα]
+
+theorem single_zpow (n : ℤ) :
+    single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n_pos n_neg
+  · apply single_one_eq_pow
+  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
+      single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+      Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
+
+instance : Algebra (RatFunc F) (LaurentSeries F) :=
+  RingHom.toAlgebra (coeAlgHom F).toRingHom
+
+theorem algebraMap_apply_div :
+    algebraMap (RatFunc F) (LaurentSeries F) (algebraMap _ _ p / algebraMap _ _ q) =
+      algebraMap F[X] (LaurentSeries F) p / algebraMap _ _ q := by
+  -- Porting note: had to supply implicit arguments to `convert`
+  convert coe_div (algebraMap F[X] (RatFunc F) p) (algebraMap F[X] (RatFunc F) q) <;>
+    rw [← mk_one, coe_def, coeAlgHom, mk_eq_div, liftAlgHom_apply_div, map_one, div_one,
+      Algebra.ofId_apply]
+#align ratfunc.algebra_map_apply_div RatFunc.algebraMap_apply_div
+
+instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
+  ⟨fun x y z => by
+    ext
+    simp⟩
+
+end RatFunc
+
+end RatFunc
+
+section AdicValuation
+
+namespace PowerSeries
+
+variable (K : Type*) [Field K]
+
+/-- The prime ideal `(X)` of `PowerSeries K`, when `K` is a field, as a term of the
+`HeightOneSpectrum`. -/
+def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
+  asIdeal := Ideal.span {X}
+  isPrime := PowerSeries.span_X_isPrime
+  ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
+
+open RatFunc IsDedekindDomain.HeightOneSpectrum
+
+variable {K}
+
+/- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of its coercion to `K⟦X⟧`-/
+theorem intValuation_eq_of_coe (P : K[X]) :
+    (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
+  by_cases hP : P = 0
+  · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
+  simp only [intValuation_apply]
+  rw [intValuationDef_if_neg _ hP, intValuationDef_if_neg _ <| coe_ne_zero hP]
+  simp only [idealX_span, ofAdd_neg, inv_inj, WithZero.coe_inj, EmbeddingLike.apply_eq_iff_eq,
+    Nat.cast_inj]
+  have span_ne_zero :
+    (Ideal.span {P} : Ideal K[X]) ≠ 0 ∧ (Ideal.span {Polynomial.X} : Ideal K[X]) ≠ 0 := by
+    simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
+      not_false_iff, and_self_iff]
+  have span_ne_zero' :
+    (Ideal.span {↑P} : Ideal K⟦X⟧) ≠ 0 ∧ ((idealX K).asIdeal : Ideal K⟦X⟧) ≠ 0 := by
+    simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
+      not_false_eq_true, true_and, (idealX K).3]
+  rw [count_associates_factors_eq (Ideal.span {P}) (Ideal.span {Polynomial.X}) (span_ne_zero).1
+    (Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X) (span_ne_zero).2,
+    count_associates_factors_eq (Ideal.span {↑(P : K⟦X⟧)}) (idealX K).asIdeal]
+  convert (normalized_count_X_eq_of_coe hP).symm
+  exacts [count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
+    count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) normUnit_X X_prime,
+    span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
+
+/-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`-/
+@[simp]
+theorem intValuation_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
+  rw [← Polynomial.coe_X, ← intValuation_apply, ← intValuation_eq_of_coe]
+  apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
+
+end PowerSeries
+
+end AdicValuation

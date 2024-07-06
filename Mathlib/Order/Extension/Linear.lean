@@ -29,11 +29,11 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
     rintro c hc₁ hc₂ s hs
     haveI := (hc₁ hs).1
-    refine' ⟨sSup c, _, fun z hz => le_sSup hz⟩
-    refine'
-        { refl := _
-          trans := _
-          antisymm := _ } <;>
+    refine ⟨sSup c, ?_, fun z hz => le_sSup hz⟩
+    refine
+        { refl := ?_
+          trans := ?_
+          antisymm := ?_ } <;>
       simp_rw [binary_relation_sSup_iff]
     · intro x
       exact ⟨s, hs, refl x⟩
@@ -57,15 +57,15 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   let s' x' y' := s x' y' ∨ s x' x ∧ s y y'
   rw [← hs₂ s' _ fun _ _ ↦ Or.inl] at h
   · apply h.1 (Or.inr ⟨refl _, refl _⟩)
-  · refine'
+  · refine
     { refl := fun x ↦ Or.inl (refl _)
-      trans := _
-      antisymm := _ }
-    rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)
-    · exact Or.inl (_root_.trans ab bc)
-    · exact Or.inr ⟨_root_.trans ab bx, yc⟩
-    · exact Or.inr ⟨ax, _root_.trans yb bc⟩
-    · exact Or.inr ⟨ax, yc⟩
+      trans := ?_
+      antisymm := ?_ }
+    · rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)
+      · exact Or.inl (_root_.trans ab bc)
+      · exact Or.inr ⟨_root_.trans ab bx, yc⟩
+      · exact Or.inr ⟨ax, _root_.trans yb bc⟩
+      · exact Or.inr ⟨ax, yc⟩
     rintro a b (ab | ⟨ax : s a x, yb : s y b⟩) (ba | ⟨bx : s b x, ya : s y a⟩)
     · exact antisymm ab ba
     · exact (h.2 (_root_.trans ya (_root_.trans ab bx))).elim

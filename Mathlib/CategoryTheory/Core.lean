@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Scott Morrison All rights reserved.
+Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
@@ -30,7 +30,7 @@ universe v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): linter not yet ported
 -- @[nolint has_nonempty_instance]
 
 def Core (C : Type u₁) := C
@@ -67,7 +67,7 @@ def inclusion : Core C ⥤ C where
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
 -- Porting note: This worked without proof before.
-instance : Faithful (inclusion C) where
+instance : (inclusion C).Faithful where
   map_injective := by
     intro _ _
     apply Iso.ext
@@ -94,8 +94,7 @@ end Core
 /-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
 to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 -/
-def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂)
-    where
+def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂) where
   obj := m
   map f := (EquivFunctor.mapEquiv m f.toEquiv).toIso
   map_id α := by apply Iso.ext; funext x; exact congr_fun (EquivFunctor.map_refl' _) x

@@ -25,8 +25,6 @@ multilinear map, alternating map, continuous
 
 open Function Matrix
 
-open scoped BigOperators
-
 /-- A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,
 is a continuous map that is
 
@@ -45,7 +43,7 @@ add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
 add_decl_doc ContinuousAlternatingMap.toAlternatingMap
 
 @[inherit_doc]
-notation M "[⋀^" ι "]→L[" R "]" N:100 => ContinuousAlternatingMap R M N ι
+notation M " [⋀^" ι "]→L[" R "] " N:100 => ContinuousAlternatingMap R M N ι
 
 namespace ContinuousAlternatingMap
 
@@ -232,7 +230,7 @@ def applyAddHom (v : ι → M) : M [⋀^ι]→L[R] N →+ N :=
 
 @[simp]
 theorem sum_apply {α : Type*} (f : α → M [⋀^ι]→L[R] N) (m : ι → M) {s : Finset α} :
-    (∑ a in s, f a) m = ∑ a in s, f a m :=
+    (∑ a ∈ s, f a) m = ∑ a ∈ s, f a m :=
   map_sum (applyAddHom m) f s
 
 /-- Projection to `ContinuousMultilinearMap`s as a bundled `AddMonoidHom`. -/
@@ -399,7 +397,7 @@ theorem vecCons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin
   f.toMultilinearMap.cons_smul m c x
 
 theorem map_piecewise_add [DecidableEq ι] (m m' : ι → M) (t : Finset ι) :
-    f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') :=
+    f (t.piecewise (m + m') m') = ∑ s ∈ t.powerset, f (s.piecewise m m') :=
   f.toMultilinearMap.map_piecewise_add _ _ _
 
 /-- Additivity of a continuous alternating map along all coordinates at the same time,
@@ -419,7 +417,7 @@ sum of `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions wit
 `r n ∈ Aₙ`. This follows from multilinearity by expanding successively with respect to each
 coordinate. -/
 theorem map_sum_finset :
-    (f fun i => ∑ j in A i, g' i j) = ∑ r in piFinset A, f fun i => g' i (r i) :=
+    (f fun i => ∑ j ∈ A i, g' i j) = ∑ r ∈ piFinset A, f fun i => g' i (r i) :=
   f.toMultilinearMap.map_sum_finset _ _
 
 /-- If `f` is continuous alternating, then `f (Σ_{j₁} g₁ j₁, ..., Σ_{jₙ} gₙ jₙ)` is the sum of
@@ -500,7 +498,7 @@ variable {R M M' N N' ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M
   (f g : M [⋀^ι]→L[R] N)
 
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ι → M) (s : Finset ι) :
-    f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m :=
+    f (s.piecewise (fun i => c i • m i) m) = (∏ i ∈ s, c i) • f m :=
   f.toMultilinearMap.map_piecewise_smul _ _ _
 
 /-- Multiplicativity of a continuous alternating map along all coordinates at the same time,
@@ -543,6 +541,14 @@ def toContinuousMultilinearMapLinear :
   toFun := toContinuousMultilinearMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+/-- Linear map version of the map `toAlternatingMap`
+associating to a continuous alternating map the corresponding alternating map. -/
+@[simps (config := .asFn) apply]
+def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A] N) where
+  toFun := toAlternatingMap
+  map_add' := by simp
+  map_smul' := by simp
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]

@@ -112,7 +112,7 @@ def homology'IsoKernelDesc : homology' f g w ≅ kernel (cokernel.desc f g w) :=
 
 namespace homology'
 
--- `homology.π` is taken
+-- `homology'.π` is taken
 /-- The canonical map from the kernel of `g` to the homology of `f` and `g`. -/
 def π' : kernel g ⟶ homology' f g w :=
   cokernel.π _ ≫ (homology'IsoCokernelLift _ _ _).inv
@@ -262,13 +262,10 @@ theorem map_eq_lift_desc'_left (α β h) :
             erw [← reassoc_of% α.w]
             simp))
         (by
-          -- Porting note: used to be ext
-          apply homology'.hom_from_ext
+          ext
           simp) := by
   rw [map_eq_desc'_lift_left]
-  -- Porting note: once was known as ext
-  apply homology'.hom_to_ext
-  apply homology'.hom_from_ext
+  ext
   simp
 #align homology.map_eq_lift_desc'_left homology'.map_eq_lift_desc'_left
 
@@ -295,13 +292,10 @@ theorem map_eq_lift_desc'_right (α β h) :
             erw [← reassoc_of% α.w]
             simp))
         (by
-          -- Porting note: once was known as ext
-          apply homology'.hom_from_ext
+          ext
           simp [h]) := by
   rw [map_eq_desc'_lift_right]
-  -- Porting note: once was known as ext
-  apply homology'.hom_to_ext
-  apply homology'.hom_from_ext
+  ext
   simp
 #align homology.map_eq_lift_desc'_right homology'.map_eq_lift_desc'_right
 
@@ -310,8 +304,7 @@ theorem map_ι (α β h) :
     map w w' α β h ≫ ι f' g' w' =
       ι f g w ≫ cokernel.map f f' α.left β.left (by simp [h, β.w.symm]) := by
   rw [map_eq_lift_desc'_left, lift_ι]
-  -- Porting note: once was known as ext
-  apply homology'.hom_from_ext
+  ext
   simp only [← Category.assoc]
   rw [π'_ι, π'_desc', Category.assoc, Category.assoc, cokernel.π_desc]
 #align homology.map_ι homology'.map_ι
@@ -349,7 +342,7 @@ noncomputable def homology'FunctorIso (i : ι) :
       intro X Y f
       dsimp
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
-      refine' coequalizer.hom_ext _
+      refine coequalizer.hom_ext ?_
       dsimp [homology'Iso]
       simp only [PreservesCokernel.iso_inv]
       dsimp [homology'.map]
@@ -361,10 +354,10 @@ noncomputable def homology'FunctorIso (i : ι) :
         F.mapHomologicalComplex_map_f, F.map_comp]
       dsimp [HomologicalComplex.dFrom, HomologicalComplex.Hom.next]
       rw [kernel_map_comp_preserves_kernel_iso_inv_assoc]
-      conv_lhs => erw [← F.map_comp_assoc]
-      rotate_right; simp
-      rw [← kernel_map_comp_kernelSubobjectIso_inv]
-      any_goals simp)
+      · conv_lhs => erw [← F.map_comp_assoc]
+        rw [← kernel_map_comp_kernelSubobjectIso_inv]
+        · simp
+      · simp)
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homology'FunctorIso
 
 end CategoryTheory.Functor
