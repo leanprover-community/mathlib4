@@ -5,9 +5,9 @@ Authors: Damiano Testa
 -/
 import ImportGraph.Imports
 
-/-! # `#min_imps` a command to find minimal imports
+/-! # `#min_imports in` a command to find minimal imports
 
-`#min_imps stx` scans the syntax `stx` to find a collection of minimal imports that should be
+`#min_imports in stx` scans the syntax `stx` to find a collection of minimal imports that should be
 sufficient for `stx` to make sense.
 If `stx` is a command, then it also elaborates `stx` and, in case it is a declaration, then
 it also finds the imports implied by the declaration.
@@ -76,7 +76,7 @@ def getIrredundantImports {m : Type → Type} [Monad m] [MonadResolveName m] [Mo
   let redundant := env.findRedundantImports tot.toArray
   return tot.diff redundant
 
-/-- `minImpsCore stx` is the internal function to elaborate the `#min_imps` command.
+/-- `minImpsCore stx` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs
 ```lean
 import A
@@ -91,17 +91,17 @@ def minImpsCore (stx : Syntax) : CommandElabM Unit := do
     --let fileNames := if tk.isSome then (fileNames).filter (`Mathlib).isPrefixOf else fileNames
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
 
-/-- `#min_imps cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
+/-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
 to find a collection of minimal imports that should be sufficient for `cmd` to work. -/
-syntax (name := minImpsStx) "#min_imps" command : command
+syntax (name := minImpsStx) "#min_imports in" command : command
 
 @[inherit_doc minImpsStx]
-syntax "#min_imps" term : command
+syntax "#min_imports in" term : command
 
 elab_rules : command
-  | `(#min_imps $cmd:command)=> do
+  | `(#min_imports in $cmd:command)=> do
     Elab.Command.elabCommand cmd <|> pure ()
     minImpsCore cmd
-  | `(#min_imps $cmd:term)=> minImpsCore cmd
+  | `(#min_imports in $cmd:term)=> minImpsCore cmd
 
 end Mathlib.Command.MinImps
