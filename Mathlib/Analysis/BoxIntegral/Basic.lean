@@ -695,7 +695,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     obtain ⟨x, hx⟩ := BoxIntegral.Box.nonempty_coe I
     exact le_trans (norm_nonneg (f x)) <| hC x (I.coe_subset_Icc hx)
   rcases exists_pos_mul_lt ε0 (4 * C) with ⟨ε₂, ε₂0, hε₂⟩
-  have ε₂0': ENNReal.ofReal ε₂ ≠ 0 := fun h ↦ not_le_of_gt ε₂0 (ofReal_eq_zero.1 h)
+  have ε₂0' : ENNReal.ofReal ε₂ ≠ 0 := ne_of_gt <| ofReal_pos.2 ε₂0
 
   -- The set of discontinuities of f is contained in an open set U with μ U < ε₂.
   let D := { x ∈ Box.Icc I | ¬ ContinuousWithinAt f (Box.Icc I) x }
