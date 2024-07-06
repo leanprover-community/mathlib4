@@ -67,7 +67,7 @@ theorem IsMatching.toEdge_eq_of_adj (h : M.IsMatching) (hv : v ∈ M.verts) (hvw
 
 theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge := by
   rintro ⟨e, he⟩
-  refine Sym2.ind (fun x y he => ?_) e he
+  induction' e with x y
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
 #align simple_graph.subgraph.is_matching.to_edge.surjective SimpleGraph.Subgraph.IsMatching.toEdge.surjective
 
@@ -163,7 +163,7 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
       obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
       use w
       have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ (hw.1) hv
-      refine ⟨⟨⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩, ⟨?_, hw.1⟩⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
+      refine ⟨⟨⟨⟨v', hv'⟩, hv, rfl⟩, ?_, hw.1⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
       apply ConnectedComponent.mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
       simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.mem_diff, Set.mem_univ, true_and,
         Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,

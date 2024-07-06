@@ -422,7 +422,7 @@ theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommG
     [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
       ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
         x = rTensor M (J.inclusion hle) y := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
   | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
       (span_singleton_le_iff_mem _ _).mpr i.property,
@@ -733,7 +733,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     obtain ⟨s, hs⟩ := h.out
     refine ⟨⟨s.image (TensorProduct.mk R A M 1), eq_top_iff.mpr ?_⟩⟩
     rintro x -
-    induction x using TensorProduct.induction_on with
+    induction x with
     | zero => exact zero_mem _
     | tmul x y =>
       -- Porting note: new TC reminder

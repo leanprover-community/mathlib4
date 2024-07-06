@@ -2373,10 +2373,10 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
     (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
     (hadj : H.Adj v w) : w ∈ (↑) '' (c : Set H.verts) := by
   rw [Set.mem_image]
-  obtain ⟨v' , hv'⟩ := hv
+  obtain ⟨v', hv'⟩ := hv
   use ⟨w, hw⟩
   refine ⟨?_, rfl⟩
-  rw [← (ConnectedComponent.mem_supp_iff _ _).mp hv'.1]
+  rw [← (ConnectedComponent.mem_supp_iff ..).mp hv'.1]
   exact ConnectedComponent.connectedComponentMk_eq_of_adj ((hv'.2 ▸ hadj.symm).coe)
 
 end ConnectedComponent

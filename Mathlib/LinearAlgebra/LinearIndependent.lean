@@ -11,6 +11,7 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -1411,6 +1412,21 @@ theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndepend
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
 #align linear_independent_fin_succ' linearIndependent_fin_succ'
+
+/-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
+vector in the complement of their span.
+-/
+def equiv_linearIndependent (n : ℕ) :
+    { s : Fin (n + 1) → V // LinearIndependent K s } ≃
+      Σ s : { s : Fin n → V // LinearIndependent K s },
+        ((Submodule.span K (Set.range (s : Fin n → V)))ᶜ : Set V) where
+  toFun s := ⟨⟨Fin.tail s.val, (linearIndependent_fin_succ.mp s.property).left⟩,
+    ⟨s.val 0, (linearIndependent_fin_succ.mp s.property).right⟩⟩
+  invFun s := ⟨Fin.cons s.2.val s.1.val,
+    linearIndependent_fin_cons.mpr ⟨s.1.property, s.2.property⟩⟩
+  left_inv _ := by simp only [Fin.cons_self_tail, Subtype.coe_eta]
+  right_inv := fun ⟨_, _⟩ => by simp only [Fin.cons_zero, Subtype.coe_eta, Sigma.mk.inj_iff,
+    Fin.tail_cons, heq_eq_eq, and_self]
 
 theorem linearIndependent_fin2 {f : Fin 2 → V} :
     LinearIndependent K f ↔ f 1 ≠ 0 ∧ ∀ a : K, a • f 1 ≠ f 0 := by
