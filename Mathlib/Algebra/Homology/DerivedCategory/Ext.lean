@@ -89,6 +89,12 @@ variable {ι : Type*} {c : ComplexShape ι} [DecidableEq ι]
 class _root_.HomologicalComplex.IsSingle (K : HomologicalComplex C c) : Prop where
   nonempty : ∃ (X : C) (i : ι), Nonempty (K ≅ (HomologicalComplex.single C c i).obj X)
 
+lemma _root_.HomologicalComplex.isSingle_of_iso {K L : HomologicalComplex C c} (e : K ≅ L)
+    [hL : L.IsSingle] : K.IsSingle where
+  nonempty := by
+    obtain ⟨X, i, ⟨e'⟩⟩ := hL
+    exact ⟨X, i, ⟨e ≪≫ e'⟩⟩
+
 instance (X : C) (i : ι) : ((HomologicalComplex.single C c i).obj X).IsSingle where
   nonempty := ⟨X, i, ⟨Iso.refl _⟩⟩
 
@@ -182,8 +188,12 @@ variable
   [HasExt.{t} D] (F : C ⥤ D) [F.Additive]
   [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
-instance (K : CochainComplex C ℤ) [K.IsSingle] :
-    ((F.mapHomologicalComplex _).obj K).IsSingle := sorry
+instance (K : CochainComplex C ℤ) [hK : K.IsSingle] :
+    ((F.mapHomologicalComplex _).obj K).IsSingle where
+  nonempty := by
+    obtain ⟨X, n, ⟨e⟩⟩ := hK
+    exact ⟨F.obj X, n, ⟨(F.mapHomologicalComplex _).mapIso e ≪≫
+      (HomologicalComplex.singleMapHomologicalComplex _ _ _).app _⟩⟩
 
 instance (X : C) :
     ((F ⋙ HomologicalComplex.single D (ComplexShape.up ℤ) 0).obj X).IsSingle := by
@@ -219,23 +229,24 @@ lemma homEquiv_symm_add' :
 
 section
 
+open DerivedCategory
 
 variable [HasDerivedCategory.{w'} C] [HasDerivedCategory.{t'} D]
   [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 lemma homEquiv_map : homEquiv (α.map F) =
-    (ShiftedHom.mk₀ 0 (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).inv.app X)).comp
+    (ShiftedHom.mk₀ 0 (by simp) ((singleFunctorCompMapDerivedCategoryIso F 0).inv.app X)).comp
       (((homEquiv α).map F.mapDerivedCategory).comp (ShiftedHom.mk₀ 0 (by simp)
-        ((F.singleFunctorCompMapDerivedCategoryIso 0).hom.app Y)) (zero_add _)) (add_zero _) := by
+        ((singleFunctorCompMapDerivedCategoryIso F 0).hom.app Y)) (zero_add _)) (add_zero _) := by
   sorry
 
 lemma homEquiv_symm_map
     (a : ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
         ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ)) :
     (homEquiv.symm a).map F = homEquiv.symm
-      ((ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).inv.app X)).comp
+      ((ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp) ((singleFunctorCompMapDerivedCategoryIso F 0).inv.app X)).comp
         ((a.map F.mapDerivedCategory).comp
-          (ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp) ((F.singleFunctorCompMapDerivedCategoryIso 0).hom.app Y)) (zero_add _))
+          (ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp) ((singleFunctorCompMapDerivedCategoryIso F 0).hom.app Y)) (zero_add _))
           (add_zero _)) :=
   homEquiv.injective (by simp [homEquiv_map])
 
@@ -266,9 +277,9 @@ lemma homEquiv_homEquiv_symm
       ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ))
       [HasDerivedCategory.{t'} C] :
       homEquiv.{t'} (homEquiv.{w'}.symm a) = by
-        letI b := ShiftedHom.mk₀ (0 : ℤ) (by simp) ((Functor.singleFunctorCompMapDerivedCategoryIso.{w', t'} (𝟭 C) 0).inv.app X)
+        letI b := ShiftedHom.mk₀ (0 : ℤ) (by simp) ((singleFunctorCompMapDerivedCategoryIso.{w', t'} (𝟭 C) 0).inv.app X)
         letI c := a.map (Functor.mapDerivedCategory.{w', t'} (𝟭 C))
-        letI d := ShiftedHom.mk₀ (0 : ℤ) (by simp) ((Functor.singleFunctorCompMapDerivedCategoryIso.{w', t'} (𝟭 C) 0).hom.app Y)
+        letI d := ShiftedHom.mk₀ (0 : ℤ) (by simp) ((singleFunctorCompMapDerivedCategoryIso.{w', t'} (𝟭 C) 0).hom.app Y)
         exact b.comp (c.comp d (zero_add _)) (add_zero _) := by
   sorry
 
