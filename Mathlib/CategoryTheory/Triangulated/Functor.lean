@@ -156,15 +156,6 @@ lemma map_distinguished [F.IsTriangulated] (T : Triangle C) (hT : T ∈ distTria
 
 namespace IsTriangulated
 
-instance : (𝟭 C).IsTriangulated where
-  map_distinguished T hT :=
-    isomorphic_distinguished _ hT _ ((mapTriangleIdIso C).app T)
-
-instance [F.IsTriangulated] [G.IsTriangulated] : (F ⋙ G).IsTriangulated where
-  map_distinguished T hT :=
-    isomorphic_distinguished _ (G.map_distinguished _ (F.map_distinguished T hT)) _
-      ((mapTriangleCompIso F G).app T)
-
 open ZeroObject
 
 instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
@@ -204,6 +195,15 @@ noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
     (by dsimp; infer_instance) (by dsimp; infer_instance)
 
 instance (priority := 100) : F.Additive := F.additive_of_preserves_binary_products
+
+instance : (𝟭 C).IsTriangulated where
+  map_distinguished T hT :=
+    isomorphic_distinguished _ hT _ ((mapTriangleIdIso C).app T)
+
+instance [F.IsTriangulated] [G.IsTriangulated] : (F ⋙ G).IsTriangulated where
+  map_distinguished T hT :=
+    isomorphic_distinguished _ (G.map_distinguished _ (F.map_distinguished T hT)) _
+      ((mapTriangleCompIso F G).app T)
 
 end IsTriangulated
 
