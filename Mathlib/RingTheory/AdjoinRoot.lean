@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Data.Polynomial.FieldDivision
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.FinitePresentation
@@ -51,7 +51,7 @@ noncomputable section
 
 open scoped Classical
 
-open BigOperators Polynomial
+open Polynomial
 
 universe u v w
 
@@ -84,7 +84,7 @@ instance : DecidableEq (AdjoinRoot f) :=
 protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
   Ideal.Quotient.nontrivial
     (by
-      simp_rw [Ne.def, span_singleton_eq_top, Polynomial.isUnit_iff, not_exists, not_and]
+      simp_rw [Ne, span_singleton_eq_top, Polynomial.isUnit_iff, not_exists, not_and]
       rintro x hx rfl
       exact h (degree_C hx.ne_zero))
 #align adjoin_root.nontrivial AdjoinRoot.nontrivial
@@ -262,7 +262,7 @@ theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
   · exact C_eq_zero.mp (eq_zero_of_zero_dvd (by rwa [h] at hp))
   · contrapose! hf with h_contra
     rw [← degree_C h_contra]
-    apply le_antisymm (degree_le_of_dvd hp (by rwa [Ne.def, C_eq_zero])) _
+    apply le_antisymm (degree_le_of_dvd hp (by rwa [Ne, C_eq_zero])) _
     rwa [degree_C h_contra, zero_le_degree_iff]
 #align adjoin_root.of.injective_of_degree_ne_zero AdjoinRoot.of.injective_of_degree_ne_zero
 
@@ -390,24 +390,26 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
-noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
-  { Quotient.groupWithZero (span {f} : Ideal K[X]) with
-    toCommRing := AdjoinRoot.instCommRing f
-    ratCast := fun a => of f (a : K)
-    ratCast_mk := fun a b h1 h2 => by
-      letI : GroupWithZero (AdjoinRoot f) := Ideal.Quotient.groupWithZero _
-      -- Porting note: was
-      -- `rw [Rat.cast_mk' (K := ℚ), _root_.map_mul, _root_.map_intCast, map_inv₀, map_natCast]`
-      convert_to ((Rat.mk' a b h1 h2 : K) : AdjoinRoot f) = ((↑a * (↑b)⁻¹ : K) : AdjoinRoot f)
-      · simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
-      · simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
-    qsmul := (· • ·)
-    qsmul_eq_mul' := fun a x =>
-      -- Porting note: I gave the explicit motive and changed `rw` to `simp`.
-      AdjoinRoot.induction_on (C := fun y => a • y = (of f) a * y) x fun p => by
-        simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.rat_smul_eq_C_mul]
-  }
-#align adjoin_root.field AdjoinRoot.field
+noncomputable instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero (AdjoinRoot f) :=
+  Quotient.groupWithZero (span {f} : Ideal K[X])
+
+noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) where
+  __ := instCommRing _
+  __ := instGroupWithZero
+  nnqsmul := (· • ·)
+  qsmul := (· • ·)
+  nnratCast_def q := by
+    rw [← map_natCast (of f), ← map_natCast (of f), ← map_div₀, ← NNRat.cast_def]; rfl
+  ratCast_def q := by
+    rw [← map_natCast (of f), ← map_intCast (of f), ← map_div₀, ← Rat.cast_def]; rfl
+  nnqsmul_def q x :=
+    AdjoinRoot.induction_on (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
+      simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.nnqsmul_eq_C_mul]
+  qsmul_def q x :=
+    -- Porting note: I gave the explicit motive and changed `rw` to `simp`.
+    AdjoinRoot.induction_on (C := fun y ↦ q • y = (of f) q * y) x fun p ↦ by
+      simp only [smul_mk, of, RingHom.comp_apply, ← (mk f).map_mul, Polynomial.qsmul_eq_C_mul]
+#align adjoin_root.field AdjoinRoot.instField
 
 theorem coe_injective (h : degree f ≠ 0) : Function.Injective ((↑) : K → AdjoinRoot f) :=
   have := AdjoinRoot.nontrivial f h
@@ -543,7 +545,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
-  refine' (minpoly.unique K _ f'_monic _ _).symm
+  refine (minpoly.unique K _ f'_monic ?_ ?_).symm
   · rw [AlgHom.map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
@@ -553,11 +555,11 @@ theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff�
     · simp only [RingHom.comp_apply, mk_X, lift_root]
   rw [degree_eq_natDegree f'_monic.ne_zero, degree_eq_natDegree q_monic.ne_zero,
     Nat.cast_le, natDegree_mul hf, natDegree_C, add_zero]
-  apply natDegree_le_of_dvd
-  · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
-    exact mk_eq_zero.1 this
-  · exact q_monic.ne_zero
-  · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
+  · apply natDegree_le_of_dvd
+    · have : mk f q = 0 := by rw [← commutes, RingHom.comp_apply, mk_self, RingHom.map_zero]
+      exact mk_eq_zero.1 this
+    · exact q_monic.ne_zero
+  · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
 #align adjoin_root.minpoly_root AdjoinRoot.minpoly_root
 
 /-- The elements `1, root f, ..., root f ^ (d - 1)` form a basis for `AdjoinRoot f`,
@@ -566,7 +568,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
   let f' := f * C f.leadingCoeff⁻¹
   have deg_f' : f'.natDegree = f.natDegree := by
     rw [natDegree_mul hf, natDegree_C, add_zero]
-    · rwa [Ne.def, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
+    · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
   have minpoly_eq : minpoly K (root f) = f' := minpoly_root hf
   apply @Basis.mk _ _ _ fun i : Fin f.natDegree => root f ^ i.val
   · rw [← deg_f', ← minpoly_eq]
@@ -646,7 +648,6 @@ end minpoly
 section Equiv'
 
 variable [CommRing R] [CommRing S] [Algebra R S]
-
 variable (g : R[X]) (pb : PowerBasis R S)
 
 /-- If `S` is an extension of `R` with power basis `pb` and `g` is a monic polynomial over `R`
@@ -704,8 +705,8 @@ end Field
 end Equiv
 
 -- Porting note: consider splitting the file here.  In the current mathlib3, the only result
--- that depends any of these lemmas is
--- `normalized_factors_map_equiv_normalized_factors_min_poly_mk` in `number_theory.kummer_dedekind`
+-- that depends any of these lemmas was
+-- `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` in `NumberTheory.KummerDedekind`
 -- that uses
 -- `PowerBasis.quotientEquivQuotientMinpolyMap == PowerBasis.quotientEquivQuotientMinpolyMap`
 section
@@ -800,7 +801,7 @@ theorem Polynomial.quotQuotEquivComm_symm_mk_mk (p : R[X]) :
 #align adjoin_root.polynomial.quot_quot_equiv_comm_symm_mk_mk AdjoinRoot.Polynomial.quotQuotEquivComm_symm_mk_mk
 
 /-- The natural isomorphism `R[α]/I[α] ≅ (R/I)[X]/(f mod I)` for `α` a root of `f : R[X]`
-  and `I : Ideal R`.-/
+  and `I : Ideal R`. -/
 def quotAdjoinRootEquivQuotPolynomialQuot :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]) :=
@@ -853,8 +854,8 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :
     AdjoinRoot.quotEquivQuotMap f I (Ideal.Quotient.mk (Ideal.map (of f) I) (AdjoinRoot.mk f g)) =
       Ideal.Quotient.mk (Ideal.span ({Polynomial.map (Ideal.Quotient.mk I) f} : Set (R ⧸ I)[X]))
-      (g.map (Ideal.Quotient.mk I)) :=
-  by rw [AdjoinRoot.quotEquivQuotMap_apply, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of]
+      (g.map (Ideal.Quotient.mk I)) := by
+  rw [AdjoinRoot.quotEquivQuotMap_apply, AdjoinRoot.quotAdjoinRootEquivQuotPolynomialQuot_mk_of]
 #align adjoin_root.quot_equiv_quot_map_apply_mk AdjoinRoot.quotEquivQuotMap_apply_mk
 
 theorem quotEquivQuotMap_symm_apply_mk (f g : R[X]) (I : Ideal R) :
@@ -927,10 +928,10 @@ end PowerBasis
 /-- If `L / K` is an integral extension, `K` is a domain, `L` is a field, then any irreducible
 polynomial over `L` divides some monic irreducible polynomial over `K`. -/
 theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
-    [CommRing K] [IsDomain K] [Field L] [Algebra K L] (H : Algebra.IsIntegral K L) {f : L[X]}
+    [CommRing K] [IsDomain K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] {f : L[X]}
     (hf : Irreducible f) : ∃ g : K[X], g.Monic ∧ Irreducible g ∧ f ∣ g.map (algebraMap K L) := by
   haveI := Fact.mk hf
   have h := hf.ne_zero
-  have h2 := isIntegral_trans H _ (AdjoinRoot.isIntegral_root h)
+  have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩

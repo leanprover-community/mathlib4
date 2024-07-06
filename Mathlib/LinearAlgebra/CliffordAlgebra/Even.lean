@@ -41,7 +41,6 @@ namespace CliffordAlgebra
 universe uR uM uA uB
 
 variable {R : Type uR} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable {Q : QuadraticForm R M}
 
 -- put this after `Q` since we want to talk about morphisms from `CliffordAlgebra Q` to `A` and
@@ -231,7 +230,7 @@ theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap 
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   cases' x with x x_property
   cases y
-  refine' (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans _
+  refine (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans ?_
   dsimp only
   induction x, x_property using even_induction Q with
   | algebraMap r =>

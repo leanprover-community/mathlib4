@@ -1,5 +1,5 @@
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Data.Rat.Field
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 

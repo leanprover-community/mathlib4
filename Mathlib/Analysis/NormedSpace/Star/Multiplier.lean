@@ -89,7 +89,6 @@ namespace DoubleCentralizer
 section NontriviallyNormed
 
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
-
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /-!
@@ -189,13 +188,13 @@ instance instNatCast : NatCast 𝓜(𝕜, A) where
   natCast n :=
     ⟨n, fun x y => by
       rw [Prod.snd_natCast, Prod.fst_natCast]
-      simp only [← Nat.smul_one_eq_coe, smul_apply, one_apply, mul_smul_comm, smul_mul_assoc]⟩
+      simp only [← Nat.smul_one_eq_cast, smul_apply, one_apply, mul_smul_comm, smul_mul_assoc]⟩
 
 instance instIntCast : IntCast 𝓜(𝕜, A) where
   intCast n :=
     ⟨n, fun x y => by
       rw [Prod.snd_intCast, Prod.fst_intCast]
-      simp only [← Int.smul_one_eq_coe, smul_apply, one_apply, mul_smul_comm, smul_mul_assoc]⟩
+      simp only [← Int.smul_one_eq_cast, smul_apply, one_apply, mul_smul_comm, smul_mul_assoc]⟩
 
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
   pow a n :=
@@ -203,7 +202,7 @@ instance instPow : Pow 𝓜(𝕜, A) ℕ where
       induction' n with k hk generalizing x y
       · rfl
       · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
-        rw [pow_succ a.snd, mul_apply, a.central, hk, pow_succ' a.fst, mul_apply]⟩
+        rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
   ⟨0⟩
@@ -234,14 +233,20 @@ theorem one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
 #align double_centralizer.one_to_prod DoubleCentralizer.one_toProd
 
 @[simp]
-theorem nat_cast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
+theorem natCast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
-#align double_centralizer.nat_cast_to_prod DoubleCentralizer.nat_cast_toProd
+#align double_centralizer.nat_cast_to_prod DoubleCentralizer.natCast_toProd
+
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_toProd := natCast_toProd
 
 @[simp]
-theorem int_cast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
+theorem intCast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
-#align double_centralizer.int_cast_to_prod DoubleCentralizer.int_cast_toProd
+#align double_centralizer.int_cast_to_prod DoubleCentralizer.intCast_toProd
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_toProd := intCast_toProd
 
 @[simp]
 theorem pow_toProd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).toProd = a.toProd ^ n :=
@@ -298,21 +303,33 @@ theorem mul_snd (a b : 𝓜(𝕜, A)) : (a * b).snd = b.snd * a.snd :=
   rfl
 #align double_centralizer.mul_snd DoubleCentralizer.mul_snd
 
-theorem nat_cast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
+theorem natCast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
-#align double_centralizer.nat_cast_fst DoubleCentralizer.nat_cast_fst
+#align double_centralizer.nat_cast_fst DoubleCentralizer.natCast_fst
 
-theorem nat_cast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
-  rfl
-#align double_centralizer.nat_cast_snd DoubleCentralizer.nat_cast_snd
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_fst := natCast_fst
 
-theorem int_cast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
+theorem natCast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-#align double_centralizer.int_cast_fst DoubleCentralizer.int_cast_fst
+#align double_centralizer.nat_cast_snd DoubleCentralizer.natCast_snd
 
-theorem int_cast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_snd := natCast_snd
+
+theorem intCast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
-#align double_centralizer.int_cast_snd DoubleCentralizer.int_cast_snd
+#align double_centralizer.int_cast_fst DoubleCentralizer.intCast_fst
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_fst := intCast_fst
+
+theorem intCast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
+  rfl
+#align double_centralizer.int_cast_snd DoubleCentralizer.intCast_snd
+
+@[deprecated (since := "2024-04-17")]
+alias int_cast_snd := intCast_snd
 
 theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl
@@ -576,10 +593,10 @@ instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range uniformEmbedding_toProdMulOpposite.toUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]
-  refine' isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq _ _
-  exact
-    ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp <| continuous_unop.comp continuous_snd).mul
-      continuous_const
+  refine isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq ?_ ?_
+  · exact
+      ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp <| continuous_unop.comp continuous_snd).mul
+        continuous_const
   exact continuous_const.mul ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp continuous_fst)
 
 variable [StarRing A] [CstarRing A]
@@ -616,7 +633,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         simpa only [← sq] using CstarRing.nnnorm_self_mul_star.symm
       _ ≤ ‖b‖₊ * ‖a.fst (star (a.snd b))‖₊ :=
         ((a.central b (star (a.snd b))).symm ▸ nnnorm_mul_le _ _)
-      _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := (mul_comm _ _)
+      _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := mul_comm _ _
       _ ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
         nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_opNNNorm _) _
 
@@ -652,9 +669,7 @@ end NontriviallyNormed
 section DenselyNormed
 
 variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
-
 variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
-
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
 instance instCstarRing : CstarRing 𝓜(𝕜, A) where
@@ -687,9 +702,9 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
       simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
       simp only [← @opNNNorm_mul_apply 𝕜 _ A]
       simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
-      refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
+      refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) ?_ fun r hr => ?_
       · rintro - ⟨x, hx, rfl⟩
-        refine' csSup_le (hball.image _) _
+        refine csSup_le (hball.image _) ?_
         rintro - ⟨y, hy, rfl⟩
         exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
       · simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop, exists_exists_and_eq_and]
@@ -697,9 +712,9 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
         simp_rw [← nnnorm_fst, ← sSup_closed_unit_ball_eq_nnnorm] at hr'
         obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
         have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
-        refine' ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), _⟩
-        refine' lt_csSup_of_lt _ ⟨x, hx, rfl⟩ _
-        · refine' ⟨‖a‖₊ * ‖a‖₊, _⟩
+        refine ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), ?_⟩
+        refine lt_csSup_of_lt ?_ ⟨x, hx, rfl⟩ ?_
+        · refine ⟨‖a‖₊ * ‖a‖₊, ?_⟩
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
         · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]

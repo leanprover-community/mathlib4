@@ -39,6 +39,7 @@ variable {C : Type u} [Category.{v} C] [HasZeroObject C] [HasZeroMorphisms C]
 An `InjectiveResolution Z` consists of a bundled `ℕ`-indexed cochain complex of injective objects,
 along with a quasi-isomorphism from the complex consisting of just `Z` supported in degree `0`.
 -/
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure InjectiveResolution (Z : C) where
   /-- the cochain complex involved in the resolution -/
@@ -85,7 +86,7 @@ variable {Z : C} (I : InjectiveResolution Z)
 lemma cocomplex_exactAt_succ (n : ℕ) :
     I.cocomplex.ExactAt (n + 1) := by
   rw [← quasiIsoAt_iff_exactAt I.ι (n + 1) (exactAt_succ_single_obj _ _)]
-  · infer_instance
+  infer_instance
 
 lemma exact_succ (n : ℕ):
     (ShortComplex.mk _ _ (I.cocomplex.d_comp_d n (n + 1) (n + 2))).Exact :=

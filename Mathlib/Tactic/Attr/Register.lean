@@ -38,8 +38,8 @@ register_simp_attr field_simps
 /-- Simp attribute for lemmas about `Even` -/
 register_simp_attr parity_simps
 
-/-- "Simp attribute for lemmas about `IsROrC`" -/
-register_simp_attr isROrC_simps
+/-- "Simp attribute for lemmas about `RCLike`" -/
+register_simp_attr rclike_simps
 
 /-- The simpset `rify_simps` is used by the tactic `rify` to move expressions from `ℕ`, `ℤ`, or
 `ℚ` to `ℝ`. -/

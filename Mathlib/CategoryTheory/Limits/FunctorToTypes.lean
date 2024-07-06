@@ -20,7 +20,6 @@ open CategoryTheory.Limits
 universe w v₁ v₂ u₁ u₂
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
-
 variable (F : J ⥤ K ⥤ TypeMax.{u₁, w})
 
 theorem jointly_surjective (k : K) {t : Cocone F} (h : IsColimit t) (x : t.pt.obj k) :

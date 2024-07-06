@@ -98,12 +98,14 @@ instance [Star R] [ContinuousStar R] : ContinuousStar (Matrix m m R) :=
   ⟨continuous_id.matrix_conjTranspose⟩
 
 @[continuity]
-theorem Continuous.matrix_col {A : X → n → R} (hA : Continuous A) : Continuous fun x => col (A x) :=
+theorem Continuous.matrix_col {ι : Type*} {A : X → n → R} (hA : Continuous A) :
+    Continuous fun x => col ι (A x) :=
   continuous_matrix fun i _ => (continuous_apply i).comp hA
 #align continuous.matrix_col Continuous.matrix_col
 
 @[continuity]
-theorem Continuous.matrix_row {A : X → n → R} (hA : Continuous A) : Continuous fun x => row (A x) :=
+theorem Continuous.matrix_row {ι : Type*} {A : X → n → R} (hA : Continuous A) :
+    Continuous fun x => row ι (A x) :=
   continuous_matrix fun _ _ => (continuous_apply _).comp hA
 #align continuous.matrix_row Continuous.matrix_row
 
@@ -194,7 +196,7 @@ theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
 theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
-  refine' continuous_finset_sum _ fun l _ => Continuous.const_smul _ _
+  refine continuous_finset_sum _ fun l _ => Continuous.const_smul ?_ _
   exact continuous_finset_prod _ fun l _ => hA.matrix_elem _ _
 #align continuous.matrix_det Continuous.matrix_det
 
@@ -243,7 +245,7 @@ theorem Continuous.matrix_fromBlocks {A : X → Matrix n l R} {B : X → Matrix 
     (hC : Continuous C) (hD : Continuous D) :
     Continuous fun x => Matrix.fromBlocks (A x) (B x) (C x) (D x) :=
   continuous_matrix <| by
-    rintro (i | i) (j | j) <;> refine' Continuous.matrix_elem _ i j <;> assumption
+    rintro (i | i) (j | j) <;> refine Continuous.matrix_elem ?_ i j <;> assumption
 #align continuous.matrix_from_blocks Continuous.matrix_fromBlocks
 
 @[continuity]

@@ -95,16 +95,6 @@ theorem dedup_idem {m : Multiset α} : m.dedup.dedup = m.dedup :=
   Quot.induction_on m fun _ => @congr_arg _ _ _ _ ofList List.dedup_idem
 #align multiset.dedup_idempotent Multiset.dedup_idem
 
-@[simp]
-theorem dedup_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multiset β) :
-    (m.dedup.bind f).dedup = (m.bind f).dedup := by
-  ext x
-  -- Porting note: was `simp_rw [count_dedup, mem_bind, mem_dedup]`
-  simp_rw [count_dedup]
-  refine if_congr ?_ rfl rfl
-  simp
-#align multiset.dedup_bind_dedup Multiset.dedup_bind_dedup
-
 theorem dedup_eq_zero {s : Multiset α} : dedup s = 0 ↔ s = 0 :=
   ⟨fun h => eq_zero_of_subset_zero <| h ▸ subset_dedup _, fun h => h.symm ▸ dedup_zero⟩
 #align multiset.dedup_eq_zero Multiset.dedup_eq_zero

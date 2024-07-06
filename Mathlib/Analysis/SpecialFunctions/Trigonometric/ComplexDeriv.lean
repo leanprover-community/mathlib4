@@ -51,7 +51,7 @@ theorem tendsto_abs_tan_atTop (k : ℤ) :
 
 @[simp]
 theorem continuousAt_tan {x : ℂ} : ContinuousAt tan x ↔ cos x ≠ 0 := by
-  refine' ⟨fun hc h₀ => _, fun h => (hasDerivAt_tan h).continuousAt⟩
+  refine ⟨fun hc h₀ => ?_, fun h => (hasDerivAt_tan h).continuousAt⟩
   exact not_tendsto_nhds_of_tendsto_atTop (tendsto_abs_tan_of_cos_eq_zero h₀) _
     (hc.norm.tendsto.mono_left inf_le_left)
 #align complex.continuous_at_tan Complex.continuousAt_tan

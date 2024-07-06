@@ -3,7 +3,7 @@ Copyright (c) 2021 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Jeremy Tan
 -/
-import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Set.Finite
@@ -183,6 +183,7 @@ set_option linter.uppercaseLean3 false in
 `k * (k - ℓ - 1) = (n - k - 1) * μ`. -/
 theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     k * (k - ℓ - 1) = (n - k - 1) * μ := by
+  letI := Classical.decEq V
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
   convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
@@ -198,7 +199,7 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     have s : {v} ⊆ G.neighborFinset w \ G.neighborFinset v := by
       rw [singleton_subset_iff, mem_sdiff, mem_neighborFinset]
       exact ⟨hw.symm, G.not_mem_neighborFinset_self v⟩
-    rw [inter_comm, neighborFinset_compl, inter_sdiff, ← sdiff_eq_inter_compl, card_sdiff s,
+    rw [inter_comm, neighborFinset_compl, ← inter_sdiff_assoc, ← sdiff_eq_inter_compl, card_sdiff s,
       card_singleton, ← sdiff_inter_self_left, card_sdiff (by apply inter_subset_left)]
     congr
     · simp [h.regular w]
@@ -207,7 +208,7 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
       congr!
   · intro w hw
     simp_rw [neighborFinset_compl, mem_sdiff, mem_compl, mem_singleton, mem_neighborFinset,
-      ← Ne.def] at hw
+      ← Ne.eq_def] at hw
     simp_rw [bipartiteBelow, adj_comm, ← mem_neighborFinset, filter_mem_eq_inter,
       neighborFinset_def, ← Set.toFinset_inter, ← h.of_not_adj hw.2.symm hw.1,
       ← Set.toFinset_card]

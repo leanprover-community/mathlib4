@@ -30,7 +30,7 @@ namespace Complex
 
 lemma continuousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     ContinuousOn (fun t : ℝ ↦ (1 + t • z)⁻¹) (Set.Icc 0 1) :=
-  ContinuousOn.inv₀ (Continuous.continuousOn (by continuity))
+  ContinuousOn.inv₀ (by fun_prop)
     (fun t ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
 
 open intervalIntegral in
@@ -54,11 +54,9 @@ lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
 ### The Taylor polynomials of the logarithm
 -/
 
-open BigOperators
-
 /-- The `n`th Taylor polynomial of `log` at `1`, as a function `ℂ → ℂ` -/
 noncomputable
-def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j in Finset.range n, (-1) ^ (j + 1) * z ^ j / j
+def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j ∈ Finset.range n, (-1) ^ (j + 1) * z ^ j / j
 
 lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
   funext
@@ -76,12 +74,12 @@ lemma logTaylor_at_zero (n : ℕ) : logTaylor n 0 = 0 := by
   | succ n ih => simpa [logTaylor_succ, ih] using ne_or_eq n 0
 
 lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
-    HasDerivAt (logTaylor (n + 1)) (∑ j in Finset.range n, (-1) ^ j * z ^ j) z := by
+    HasDerivAt (logTaylor (n + 1)) (∑ j ∈ Finset.range n, (-1) ^ j * z ^ j) z := by
   induction n with
   | zero => simp [logTaylor_succ, logTaylor_zero, Pi.add_def, hasDerivAt_const]
   | succ n ih =>
     rw [logTaylor_succ]
-    simp only [cpow_nat_cast, Nat.cast_add, Nat.cast_one, Nat.odd_iff_not_even,
+    simp only [cpow_natCast, Nat.cast_add, Nat.cast_one, Nat.odd_iff_not_even,
       Finset.sum_range_succ, (show (-1) ^ (n + 1 + 1) = (-1) ^ n by ring)]
     refine HasDerivAt.add ih ?_
     simp only [Nat.odd_iff_not_even, Int.cast_pow, Int.cast_neg, Int.cast_one, mul_div_assoc]
@@ -89,7 +87,6 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
       simp_rw [div_eq_mul_inv]
       convert HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
       field_simp [Nat.cast_add_one_ne_zero n]
-      ring
     convert HasDerivAt.const_mul _ this using 2
     ring
 
@@ -100,14 +97,13 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
 lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     HasDerivAt (fun z : ℂ ↦ log (1 + z) - logTaylor (n + 1) z) ((-z) ^ n * (1 + z)⁻¹) z := by
   convert ((hasDerivAt_log hz).comp_const_add 1 z).sub (hasDerivAt_logTaylor n z) using 1
-  push_cast
   have hz' : -z ≠ 1 := by
     intro H
     rw [neg_eq_iff_eq_neg] at H
     simp only [H, add_right_neg] at hz
     exact slitPlane_ne_zero hz rfl
   simp_rw [← mul_pow, neg_one_mul, geom_sum_eq hz', ← neg_add', div_neg, add_comm z]
-  field_simp [add_comm z 1 ▸ slitPlane_ne_zero hz]
+  field_simp [slitPlane_ne_zero hz]
 
 /-- Give a bound on `‖(1 + t * z)⁻¹‖` for `0 ≤ t ≤ 1` and `‖z‖ < 1`. -/
 lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz : ‖z‖ < 1) :
@@ -129,8 +125,7 @@ lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ 
     IntervalIntegrable (fun t : ℝ ↦ t ^ n * ‖(1 + t * z)⁻¹‖) MeasureTheory.volume 0 1 := by
   have := continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   rw [← Set.uIcc_of_le zero_le_one] at this
-  exact ContinuousOn.intervalIntegrable <|
-    Continuous.continuousOn (by continuity) |>.mul <| ContinuousOn.norm this
+  exact ContinuousOn.intervalIntegrable (by fun_prop)
 
 open intervalIntegral in
 /-- The difference of `log (1+z)` and its `(n+1)`st Taylor polynomial can be bounded in
@@ -138,7 +133,7 @@ terms of `‖z‖`. -/
 lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z) - logTaylor (n + 1) z‖ ≤ ‖z‖ ^ (n + 1) * (1 - ‖z‖)⁻¹ / (n + 1) := by
   have help : IntervalIntegrable (fun t : ℝ ↦ t ^ n * (1 - ‖z‖)⁻¹) MeasureTheory.volume 0 1 :=
-    IntervalIntegrable.mul_const (Continuous.intervalIntegrable (by continuity) 0 1) (1 - ‖z‖)⁻¹
+    IntervalIntegrable.mul_const (Continuous.intervalIntegrable (by fun_prop) 0 1) (1 - ‖z‖)⁻¹
   let f (z : ℂ) : ℂ := log (1 + z) - logTaylor (n + 1) z
   let f' (z : ℂ) : ℂ := (-z) ^ n * (1 + z)⁻¹
   have hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (0 + t * z)) (0 + t * z) := by
@@ -148,7 +143,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
       StarConvex.add_smul_mem starConvex_one_slitPlane (mem_slitPlane_of_norm_lt_one hz) ht.1 ht.2
   have hcont : ContinuousOn (fun t : ℝ ↦ f' (0 + t * z)) (Set.Icc 0 1) := by
     simp only [zero_add, zero_le_one, not_true_eq_false]
-    exact (Continuous.continuousOn (by continuity)).mul <|
+    exact (Continuous.continuousOn (by fun_prop)).mul <|
       continuousOn_one_add_mul_inv <| mem_slitPlane_of_norm_lt_one hz
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
     convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
@@ -158,7 +153,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
   simp only [H, norm_mul]
   simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
     mul_comm _ (z ^ n), mul_assoc, intervalIntegral.integral_const_mul, norm_mul, norm_pow,
-    norm_neg, norm_one, one_pow, one_mul, ← mul_assoc, ← pow_succ, mul_div_assoc]
+    norm_neg, norm_one, one_pow, one_mul, ← mul_assoc, ← pow_succ', mul_div_assoc]
   refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg (norm_nonneg z) (n + 1))
   calc ‖∫ t in (0 : ℝ)..1, (t : ℂ) ^ n * (1 + t * z)⁻¹‖
     _ ≤ ∫ t in (0 : ℝ)..1, ‖(t : ℂ) ^ n * (1 + t * z)⁻¹‖ :=
@@ -243,7 +238,7 @@ lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
   field_simp
-  rw [div_eq_div_iff, pow_succ, mul_assoc (-1), ← mul_pow, neg_mul_neg, neg_one_mul, one_mul]
+  rw [div_eq_div_iff, pow_succ', mul_assoc (-1), ← mul_pow, neg_mul_neg, neg_one_mul, one_mul]
   all_goals {norm_cast; exact hn.ne'}
 
 end Complex

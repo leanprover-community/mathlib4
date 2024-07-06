@@ -85,7 +85,7 @@ lemma pairwiseDisjoint_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t 
   classical
   simp only [diffFinset, coe_sdiff, coe_singleton]
   exact Set.PairwiseDisjoint.subset (hC.diff_eq_sUnion' s hs t ht).choose_spec.2.1
-      (Set.diff_subset _ _)
+      diff_subset
 
 lemma sUnion_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ⋃₀ hC.diffFinset hs ht = s \ t := by
@@ -120,7 +120,7 @@ lemma pairwiseDisjoint_insert_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (
     PairwiseDisjoint (insert t (hC.diffFinset hs ht) : Set (Set α)) id := by
   have h := hC.pairwiseDisjoint_diffFinset hs ht
   refine PairwiseDisjoint.insert_of_not_mem h (hC.not_mem_diffFinset hs ht) fun u hu ↦ ?_
-  simp_rw [id.def]
+  simp_rw [id]
   refine Disjoint.mono_right ?_ (hC.disjoint_sUnion_diffFinset hs ht)
   simp only [Set.le_eq_subset]
   exact subset_sUnion_of_mem hu
@@ -161,19 +161,19 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
       Disjoint (⋃₀ (Ju u hu : Set (Set α))) (⋃₀ ↑(Ju v hv)) :=by
     intro u hu v hv huv_disj
     rw [hJu_sUnion, hJu_sUnion]
-    exact disjoint_of_subset (Set.diff_subset u t) (Set.diff_subset v t) huv_disj
+    exact disjoint_of_subset Set.diff_subset Set.diff_subset huv_disj
   let J' : Finset (Set α) := Finset.biUnion (Finset.univ : Finset J) fun u ↦ Ju u (h_ss u.prop)
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
     simp only [J' ,Subtype.coe_mk, univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
-      mem_iUnion, Finset.exists_coe, bex_imp]
+      mem_iUnion, Finset.exists_coe, exists₂_imp]
     intro v hv huvt
     exact hJu_subset v (h_ss hv) huvt
   refine ⟨J', hJ'_subset, ?_, ?_⟩
   · rw [Finset.coe_biUnion]
     refine PairwiseDisjoint.biUnion ?_ ?_
-    · simp only [univ_eq_attach, mem_coe, id.def, iSup_eq_iUnion]
-      simp_rw [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+    · simp only [univ_eq_attach, mem_coe, id, iSup_eq_iUnion]
+      simp_rw [PairwiseDisjoint, Set.Pairwise]
       intro x _ y _ hxy
       have hxy_disj : Disjoint (x : Set α) y := by
         by_contra h_contra
@@ -222,7 +222,7 @@ lemma pairwiseDisjoint_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   classical
   simp only [diffFinset₀, coe_sdiff, coe_singleton]
   exact Set.PairwiseDisjoint.subset
-    (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.2.1 (Set.diff_subset _ _)
+    (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.2.1 diff_subset
 
 lemma diff_sUnion_eq_sUnion_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     s \ ⋃₀ I = ⋃₀ hC.diffFinset₀ hs hI := by
@@ -234,7 +234,7 @@ lemma diff_sUnion_eq_sUnion_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) 
 lemma sUnion_diffFinset₀_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     ⋃₀ (hC.diffFinset₀ hs hI : Set (Set α)) ⊆ s := by
   rw [← hC.diff_sUnion_eq_sUnion_diffFinset₀]
-  exact diff_subset _ _
+  exact diff_subset
 
 lemma disjoint_sUnion_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     Disjoint (⋃₀ (I : Set (Set α))) (⋃₀ hC.diffFinset₀ hs hI) := by
@@ -256,7 +256,7 @@ lemma pairwiseDisjoint_union_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C)
     PairwiseDisjoint (I ∪ hC.diffFinset₀ hs hI : Set (Set α)) id := by
   rw [pairwiseDisjoint_union]
   refine ⟨h_dis, hC.pairwiseDisjoint_diffFinset₀ hs hI, fun u hu v hv _ ↦ ?_⟩
-  simp_rw [id.def]
+  simp_rw [id]
   exact disjoint_of_subset (subset_sUnion_of_mem hu) (subset_sUnion_of_mem hv)
     (hC.disjoint_sUnion_diffFinset₀ hs hI)
 

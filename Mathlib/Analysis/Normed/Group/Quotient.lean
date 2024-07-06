@@ -5,7 +5,6 @@ Authors: Patrick Massot, Riccardo Brasca
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Data.Real.Sqrt
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
@@ -328,7 +327,7 @@ theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) �
 /-- The operator norm of the projection is `0` if the subspace is dense. -/
 theorem norm_trivial_quotient_mk (S : AddSubgroup M)
     (h : (S.topologicalClosure : Set M) = Set.univ) : ‖S.normedMk‖ = 0 := by
-  refine' le_antisymm (opNorm_le_bound _ le_rfl fun x => _) (norm_nonneg _)
+  refine le_antisymm (opNorm_le_bound _ le_rfl fun x => ?_) (norm_nonneg _)
   have hker : x ∈ S.normedMk.ker.topologicalClosure := by
     rw [S.ker_normedMk, ← SetLike.mem_coe, h]
     trivial
@@ -398,7 +397,6 @@ theorem IsQuotient.norm_le {f : NormedAddGroupHom M N} (hquot : IsQuotient f) (m
   · exact ⟨0, f.ker.zero_mem, by simp⟩
 #align normed_add_group_hom.is_quotient.norm_le NormedAddGroupHom.IsQuotient.norm_le
 
--- Porting note (#10756): new lemma
 theorem norm_lift_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) :
     ‖lift S f hf‖ ≤ ‖f‖ :=

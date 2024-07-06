@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Data.Polynomial.Degree.Lemmas
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Tactic.ComputeDegree
 
 #align_import linear_algebra.matrix.polynomial from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -28,7 +28,7 @@ matrix determinant, polynomial
 
 set_option linter.uppercaseLean3 false
 
-open Matrix BigOperators Polynomial
+open Matrix Polynomial
 
 variable {n α : Type*} [DecidableEq n] [Fintype n] [CommRing α]
 
@@ -39,8 +39,8 @@ namespace Polynomial
 theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
     natDegree (det ((X : α[X]) • A.map C + B.map C : Matrix n n α[X])) ≤ Fintype.card n := by
   rw [det_apply]
-  refine' (natDegree_sum_le _ _).trans _
-  refine' Multiset.max_nat_le_of_forall_le _ _ _
+  refine (natDegree_sum_le _ _).trans ?_
+  refine Multiset.max_le_of_forall_le _ _ ?_
   simp only [forall_apply_eq_imp_iff, true_and_iff, Function.comp_apply, Multiset.map_map,
     Multiset.mem_map, exists_imp, Finset.mem_univ_val]
   intro g
@@ -62,18 +62,18 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
 theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) 0 = det B := by
   rw [det_apply, finset_sum_coeff, det_apply]
-  refine' Finset.sum_congr rfl _
+  refine Finset.sum_congr rfl ?_
   rintro g -
   convert coeff_smul (R := α) (sign g) _ 0
   rw [coeff_zero_prod]
-  refine' Finset.prod_congr rfl _
+  refine Finset.prod_congr rfl ?_
   simp
 #align polynomial.coeff_det_X_add_C_zero Polynomial.coeff_det_X_add_C_zero
 
 theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) (Fintype.card n) = det A := by
   rw [det_apply, det_apply, finset_sum_coeff]
-  refine' Finset.sum_congr rfl _
+  refine Finset.sum_congr rfl ?_
   simp only [Algebra.id.smul_eq_mul, Finset.mem_univ, RingHom.mapMatrix_apply, forall_true_left,
     map_apply, Pi.smul_apply]
   intro g

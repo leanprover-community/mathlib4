@@ -65,8 +65,8 @@ structure AbstractCompletion (α : Type u) [UniformSpace α] where
   uniformStruct : UniformSpace space
   /-- The completion is complete. -/
   complete : CompleteSpace space
-  /-- The completion is a separated space. -/
-  separation : SeparatedSpace space
+  /-- The completion is a T₀ space. -/
+  separation : T0Space space
   /-- The map into the completion is uniform-inducing. -/
   uniformInducing : UniformInducing coe
   /-- The map into the completion has dense range. -/
@@ -85,7 +85,7 @@ local notation "hatα" => pkg.space
 local notation "ι" => pkg.coe
 
 /-- If `α` is complete, then it is an abstract completion of itself. -/
-def ofComplete [SeparatedSpace α] [CompleteSpace α] : AbstractCompletion α :=
+def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
   mk α id inferInstance inferInstance inferInstance uniformInducing_id denseRange_id
 #align abstract_completion.of_complete AbstractCompletion.ofComplete
 
@@ -153,7 +153,7 @@ theorem continuous_extend : Continuous (pkg.extend f) :=
   pkg.uniformContinuous_extend.continuous
 #align abstract_completion.continuous_extend AbstractCompletion.continuous_extend
 
-variable [SeparatedSpace β]
+variable [T0Space β]
 
 theorem extend_unique (hf : UniformContinuous f) {g : hatα → β} (hg : UniformContinuous g)
     (h : ∀ a : α, f a = g (ι a)) : pkg.extend f = g := by
@@ -219,7 +219,7 @@ theorem map_id : pkg.map pkg id = id :=
 
 variable {γ : Type*} [UniformSpace γ]
 
-theorem extend_map [CompleteSpace γ] [SeparatedSpace γ] {f : β → γ} {g : α → β}
+theorem extend_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α → β}
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
     pkg'.extend f ∘ map g = pkg.extend (f ∘ g) :=
   pkg.funext (pkg'.continuous_extend.comp (pkg.continuous_map pkg' _)) pkg.continuous_extend
@@ -265,8 +265,7 @@ theorem inverse_compare : pkg.compare pkg' ∘ pkg'.compare pkg = id := by
 #align abstract_completion.inverse_compare AbstractCompletion.inverse_compare
 
 /-- The uniform bijection between two completions of the same uniform space. -/
-def compareEquiv : pkg.space ≃ᵤ pkg'.space
-    where
+def compareEquiv : pkg.space ≃ᵤ pkg'.space where
   toFun := pkg.compare pkg'
   invFun := pkg'.compare pkg
   left_inv := congr_fun (pkg'.inverse_compare pkg)
@@ -294,8 +293,7 @@ local notation "hatβ" => pkg'.space
 local notation "ι'" => pkg'.coe
 
 /-- Products of completions -/
-protected def prod : AbstractCompletion (α × β)
-    where
+protected def prod : AbstractCompletion (α × β) where
   space := hatα × hatβ
   coe p := ⟨ι p.1, ι' p.2⟩
   uniformStruct := inferInstance
@@ -324,9 +322,9 @@ protected def extend₂ (f : α → β → γ) : hatα → hatβ → γ :=
   curry <| (pkg.prod pkg').extend (uncurry f)
 #align abstract_completion.extend₂ AbstractCompletion.extend₂
 
-section SeparatedSpace
+section T0Space
 
-variable [SeparatedSpace γ] {f : α → β → γ}
+variable [T0Space γ] {f : α → β → γ}
 
 theorem extension₂_coe_coe (hf : UniformContinuous <| uncurry f) (a : α) (b : β) :
     pkg.extend₂ pkg' f (ι a) (ι' b) = f a b :=
@@ -334,10 +332,9 @@ theorem extension₂_coe_coe (hf : UniformContinuous <| uncurry f) (a : α) (b :
     (pkg.prod pkg').extend_coe hf _
 #align abstract_completion.extension₂_coe_coe AbstractCompletion.extension₂_coe_coe
 
-end SeparatedSpace
+end T0Space
 
 variable {f : α → β → γ}
-
 variable [CompleteSpace γ] (f)
 
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (pkg.extend₂ pkg' f) := by

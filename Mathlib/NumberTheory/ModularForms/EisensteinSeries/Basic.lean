@@ -85,13 +85,13 @@ end gamma_action
 
 section eisSummand
 
-/-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series.-/
+/-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series. -/
 def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := 1 / (v 0 * z.1 + v 1) ^ k
 
 /-- How the `eisSummand` function changes under the Moebius action. -/
 theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z : ℍ) :
     eisSummand k i (A • z) = (z.denom A) ^ k * eisSummand k (i ᵥ* A) z := by
-  simp only [eisSummand, specialLinearGroup_apply, algebraMap_int_eq, eq_intCast, ofReal_int_cast,
+  simp only [eisSummand, specialLinearGroup_apply, algebraMap_int_eq, eq_intCast, ofReal_intCast,
     one_div, vecMul, vec2_dotProduct, Int.cast_add, Int.cast_mul]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : ((u * ((a * z + b) / (c * z + d)) + v) ^ k)⁻¹ =
       (c * z + d) ^ k * (((u * a + v * c) * z + (u * b + v * d)) ^ k)⁻¹ := by

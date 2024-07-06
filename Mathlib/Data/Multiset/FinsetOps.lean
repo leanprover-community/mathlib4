@@ -36,7 +36,7 @@ theorem coe_ndinsert (a : α) (l : List α) : ndinsert a l = (insert a l : List 
   rfl
 #align multiset.coe_ndinsert Multiset.coe_ndinsert
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+@[simp]
 theorem ndinsert_zero (a : α) : ndinsert a 0 = {a} :=
   rfl
 #align multiset.ndinsert_zero Multiset.ndinsert_zero
@@ -217,11 +217,12 @@ def ndinter (s t : Multiset α) : Multiset α :=
 #align multiset.ndinter Multiset.ndinter
 
 @[simp]
-theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ l₂ : List α) :=
-  rfl
+theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ l₂ : List α) := by
+  simp only [ndinter, mem_coe, filter_coe, coe_eq_coe, ← elem_eq_mem]
+  apply Perm.refl
 #align multiset.coe_ndinter Multiset.coe_ndinter
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+@[simp]
 theorem zero_ndinter (s : Multiset α) : ndinter 0 s = 0 :=
   rfl
 #align multiset.zero_ndinter Multiset.zero_ndinter

@@ -15,10 +15,9 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
 -/
 
-set_option autoImplicit true
-
 namespace SimpleGraph
 
+universe u v
 variable {V : Type u} {V' : Type v} {G : SimpleGraph V} {G' : SimpleGraph V'}
 
 namespace Subgraph
@@ -156,7 +155,8 @@ end Subgraph
 
 section induced_subgraphs
 
-lemma connected_induce_iff : (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
+lemma connected_induce_iff {s : Set V} :
+    (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
 
 lemma induce_union_connected {s t : Set V}
@@ -181,7 +181,7 @@ lemma Walk.connected_induce_support {u v : V} (p : G.Walk u v) :
   rw [← p.verts_toSubgraph]
   exact p.toSubgraph_connected.induce_verts
 
-lemma induce_connected_adj_union {s t : Set V}
+lemma induce_connected_adj_union {v w : V} {s t : Set V}
     (sconn : (G.induce s).Connected) (tconn : (G.induce t).Connected)
     (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :
     (G.induce (s ∪ t)).Connected := by

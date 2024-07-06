@@ -59,7 +59,7 @@ theorem ne_zero {a b c : ℤ} (h : Fermat42 a b c) : c ≠ 0 := by
   apply ne_zero_pow two_ne_zero _; apply ne_of_gt
   rw [← h.2.2, (by ring : a ^ 4 + b ^ 4 = (a ^ 2) ^ 2 + (b ^ 2) ^ 2)]
   exact
-    add_pos (sq_pos_of_ne_zero _ (pow_ne_zero 2 h.1)) (sq_pos_of_ne_zero _ (pow_ne_zero 2 h.2.1))
+    add_pos (sq_pos_of_ne_zero (pow_ne_zero 2 h.1)) (sq_pos_of_ne_zero (pow_ne_zero 2 h.2.1))
 #align fermat_42.ne_zero Fermat42.ne_zero
 
 /-- We say a solution to `a ^ 4 + b ^ 4 = c ^ 2` is minimal if there is no other solution with
@@ -90,18 +90,18 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   apply Int.gcd_eq_one_iff_coprime.mp
   by_contra hab
   obtain ⟨p, hp, hpa, hpb⟩ := Nat.Prime.not_coprime_iff_dvd.mp hab
-  obtain ⟨a1, rfl⟩ := Int.coe_nat_dvd_left.mpr hpa
-  obtain ⟨b1, rfl⟩ := Int.coe_nat_dvd_left.mpr hpb
+  obtain ⟨a1, rfl⟩ := Int.natCast_dvd.mpr hpa
+  obtain ⟨b1, rfl⟩ := Int.natCast_dvd.mpr hpb
   have hpc : (p : ℤ) ^ 2 ∣ c := by
-    rw [← Int.pow_dvd_pow_iff zero_lt_two, ← h.1.2.2]
+    rw [← Int.pow_dvd_pow_iff two_ne_zero, ← h.1.2.2]
     apply Dvd.intro (a1 ^ 4 + b1 ^ 4)
     ring
   obtain ⟨c1, rfl⟩ := hpc
   have hf : Fermat42 a1 b1 c1 :=
-    (Fermat42.mul (Int.coe_nat_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
+    (Fermat42.mul (Int.natCast_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
   apply Nat.le_lt_asymm (h.2 _ _ _ hf)
   rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
-  · exact Nat.one_lt_pow _ _ two_ne_zero (Nat.Prime.one_lt hp)
+  · exact Nat.one_lt_pow two_ne_zero (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
 #align fermat_42.coprime_of_minimal Fermat42.coprime_of_minimal
 
@@ -286,7 +286,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     apply gt_of_gt_of_ge _ (Int.natAbs_le_self_sq i)
     rw [← hi, ht3]
     apply gt_of_gt_of_ge _ (Int.le_self_sq m)
-    exact lt_add_of_pos_right (m ^ 2) (sq_pos_of_ne_zero n hn)
+    exact lt_add_of_pos_right (m ^ 2) (sq_pos_of_ne_zero hn)
   have hic' : Int.natAbs c ≤ Int.natAbs i := by
     apply h.2 j k i
     exact ⟨hj0, hk0, hh.symm⟩

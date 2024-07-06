@@ -58,7 +58,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   · rw [codisjoint_iff_le_sup]
     intro x _
     rw [mem_sup']
-    refine' ⟨f x, ⟨x - f x, _⟩, add_sub_cancel'_right _ _⟩
+    refine ⟨f x, ⟨x - f x, ?_⟩, add_sub_cancel _ _⟩
     rw [mem_ker, LinearMap.map_sub, hf, sub_self]
 #align linear_map.is_compl_of_proj LinearMap.isCompl_of_proj
 
@@ -362,7 +362,7 @@ theorem coe_isComplEquivProj_symm_apply (f : { f : E →ₗ[R] p // ∀ x : p, f
 #align submodule.coe_is_compl_equiv_proj_symm_apply Submodule.coe_isComplEquivProj_symm_apply
 
 /-- The idempotent endomorphisms of a module with range equal to a submodule are in 1-1
-correspondence with linear maps to the submodule that restrict to the identity on the submodule.-/
+correspondence with linear maps to the submodule that restrict to the identity on the submodule. -/
 @[simps] def isIdempotentElemEquiv :
     { f : Module.End R E // IsIdempotentElem f ∧ range f = p } ≃
     { f : E →ₗ[R] p // ∀ x : p, f x = x } where

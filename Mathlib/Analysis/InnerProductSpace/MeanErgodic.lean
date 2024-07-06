@@ -13,16 +13,16 @@ In this file we prove the von Neumann Mean Ergodic Theorem for an operator in a 
 It says that for a contracting linear self-map `f : E →ₗ[𝕜] E` of a Hilbert space,
 the Birkhoff averages
 ```
-birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`,
 see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
 open Filter Finset Function Bornology
-open scoped BigOperators Topology
+open scoped Topology
 
-variable {𝕜 E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 
 /-- **Von Neumann Mean Ergodic Theorem**, a version for a normed space.
 
@@ -32,7 +32,7 @@ Let `g : E → S` be a continuous linear projection, `g|_S=id`.
 If the range of `f - id` is dense in the kernel of `g`,
 then for each `x`, the Birkhoff averages
 ```
-birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
 converge to `g x` as `N → ∞`.
 
@@ -64,9 +64,9 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
   along the orbits of `f x` and `x`, and most of the terms cancel. -/
   have : IsBounded (Set.range (_root_.id <| f^[·] x)) :=
     isBounded_iff_forall_norm_le.2 ⟨‖x‖, Set.forall_mem_range.2 fun n ↦ by
-      have H : f^[n] 0 = 0 := (f : E →+ E).iterate_map_zero n
+      have H : f^[n] 0 = 0 := iterate_map_zero (f : E →+ E) n
       simpa [H] using (hf.iterate n).dist_le_mul x 0⟩
-  have H : ∀ n x y, f^[n] (x - y) = f^[n] x - f^[n] y := (f : E →+ E).iterate_map_sub
+  have H : ∀ n x y, f^[n] (x - y) = f^[n] x - f^[n] y := iterate_map_sub (f : E →+ E)
   simpa [birkhoffAverage, birkhoffSum, Finset.sum_sub_distrib, smul_sub, H]
     using tendsto_birkhoffAverage_apply_sub_birkhoffAverage 𝕜 this
 
@@ -78,7 +78,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 For a contracting continuous linear self-map `f : E →L[𝕜] E` of a Hilbert space, `‖f‖ ≤ 1`,
 the Birkhoff averages
 ```
-birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n ∈ Finset.range N, f^[n] x
 ```
 converge to the orthogonal projection of `x` to the subspace of fixed points of `f`. -/
 theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)

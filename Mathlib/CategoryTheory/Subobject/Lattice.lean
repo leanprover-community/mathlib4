@@ -3,6 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
 -/
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Subobject.FactorThru
 import Mathlib.CategoryTheory.Subobject.WellPowered
 
@@ -23,7 +24,6 @@ noncomputable section
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 namespace CategoryTheory
@@ -146,8 +146,8 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   map k :=
     { app := fun g => by
         apply homMk _ _
-        apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
-        rw [pullback.condition, assoc, w k]
+        · apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
+          rw [pullback.condition, assoc, w k]
         dsimp
         rw [pullback.lift_snd_assoc, assoc, w k] }
 #align category_theory.mono_over.inf CategoryTheory.MonoOver.inf
@@ -165,9 +165,9 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
 /-- A morphism version of the `le_inf` axiom. -/
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
   intro k₁ k₂
-  refine' homMk (pullback.lift k₂.left k₁.left _) _
-  rw [w k₁, w k₂]
-  erw [pullback.lift_snd_assoc, w k₁]
+  refine homMk (pullback.lift k₂.left k₁.left ?_) ?_
+  · rw [w k₁, w k₂]
+  · erw [pullback.lift_snd_assoc, w k₁]
 #align category_theory.mono_over.le_inf CategoryTheory.MonoOver.leInf
 
 end Inf
@@ -185,14 +185,14 @@ def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
 
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
-  refine' homMk (coprod.inl ≫ factorThruImage _) _
+  refine homMk (coprod.inl ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inl_desc]
   rfl
 #align category_theory.mono_over.le_sup_left CategoryTheory.MonoOver.leSupLeft
 
 /-- A morphism version of `le_sup_right`. -/
 def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
-  refine' homMk (coprod.inr ≫ factorThruImage _) _
+  refine homMk (coprod.inr ≫ factorThruImage _) ?_
   erw [Category.assoc, image.fac, coprod.inr_desc]
   rfl
 #align category_theory.mono_over.le_sup_right CategoryTheory.MonoOver.leSupRight
@@ -200,9 +200,9 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
 /-- A morphism version of `sup_le`. -/
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
-  refine' homMk _ _
-  apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
-  · ext
+  refine homMk ?_ ?_
+  · apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
+    ext
     · simp [w k₁]
     · simp [w k₂]
   · apply image.lift_fac
@@ -219,7 +219,7 @@ section OrderTop
 instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
-    refine' Quotient.ind' fun f => _
+    refine Quotient.ind' fun f => ?_
     exact ⟨MonoOver.leTop f⟩
 #align category_theory.subobject.order_top CategoryTheory.Subobject.orderTop
 
@@ -258,7 +258,7 @@ theorem top_factors {A B : C} (f : A ⟶ B) : (⊤ : Subobject B).Factors f :=
 theorem isIso_iff_mk_eq_top {X Y : C} (f : X ⟶ Y) [Mono f] : IsIso f ↔ mk f = ⊤ :=
   ⟨fun _ => mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h => by
     rw [← ofMkLEMk_comp h.le, Category.comp_id]
-    exact IsIso.of_iso (isoOfMkEqMk _ _ h)⟩
+    exact (isoOfMkEqMk _ _ h).isIso_hom⟩
 #align category_theory.subobject.is_iso_iff_mk_eq_top CategoryTheory.Subobject.isIso_iff_mk_eq_top
 
 theorem isIso_arrow_iff_eq_top {Y : C} (P : Subobject Y) : IsIso P.arrow ↔ P = ⊤ := by
@@ -299,7 +299,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
-    refine' Quotient.ind' fun f => _
+    refine Quotient.ind' fun f => ?_
     exact ⟨MonoOver.botLE f⟩
 #align category_theory.subobject.order_bot CategoryTheory.Subobject.orderBot
 
@@ -473,7 +473,7 @@ theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
 theorem prod_eq_inf {A : C} {f₁ f₂ : Subobject A} [HasBinaryProduct f₁ f₂] :
     (f₁ ⨯ f₂) = f₁ ⊓ f₂ := by
   apply le_antisymm
-  · refine' le_inf _ _ _ (Limits.prod.fst.le) (Limits.prod.snd.le)
+  · refine le_inf _ _ _ (Limits.prod.fst.le) (Limits.prod.snd.le)
   · apply leOfHom
     exact prod.lift (inf_le_left _ _).hom (inf_le_right _ _).hom
 #align category_theory.subobject.prod_eq_inf CategoryTheory.Subobject.prod_eq_inf
@@ -685,7 +685,7 @@ def sSup {A : C} (s : Set (Subobject A)) : Subobject A :=
 
 theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup s := by
   fapply le_of_comm
-  · refine' eqToHom _ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
+  · refine eqToHom ?_ ≫ Sigma.ι _ ⟨equivShrink (Subobject A) f, by simpa [Set.mem_image] using hf⟩
       ≫ factorThruImage _ ≫ (underlyingIso _).inv
     exact (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _).symm)
   · simp [sSup, smallCoproductDesc]
@@ -701,10 +701,10 @@ theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α
 theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, g ≤ f) :
     sSup s ≤ f := by
   fapply le_of_comm
-  · refine'(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, _, _⟩
-    · refine' Sigma.desc _
+  · refine(underlyingIso _).hom ≫ image.lift ⟨_, f.arrow, ?_, ?_⟩
+    · refine Sigma.desc ?_
       rintro ⟨g, m⟩
-      refine' underlying.map (homOfLE (k _ _))
+      refine underlying.map (homOfLE (k _ ?_))
       simpa using m
     · ext
       dsimp [smallCoproductDesc]

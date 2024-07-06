@@ -79,7 +79,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
-
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-!
@@ -565,7 +564,7 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 #align category_theory.subobject.pullback_comp CategoryTheory.Subobject.pullback_comp
 
-instance (f : X ⟶ Y) : Faithful (pullback f) where
+instance (f : X ⟶ Y) : (pullback f).Faithful where
 
 end Pullback
 
@@ -650,12 +649,12 @@ theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} 
   intro a
   apply Quotient.sound
   apply ThinSkeleton.equiv_of_both_ways
-  · refine' MonoOver.homMk (pullback.lift pullback.fst _ _) (pullback.lift_snd _ _ _)
+  · refine MonoOver.homMk (pullback.lift pullback.fst _ ?_) (pullback.lift_snd _ _ _)
     change _ ≫ a.arrow ≫ h = (pullback.snd ≫ g) ≫ _
     rw [assoc, ← comm, pullback.condition_assoc]
-  · refine' MonoOver.homMk (pullback.lift pullback.fst
+  · refine MonoOver.homMk (pullback.lift pullback.fst
       (PullbackCone.IsLimit.lift t (pullback.fst ≫ a.arrow) pullback.snd _)
-      (PullbackCone.IsLimit.lift_fst _ _ _ _).symm) _
+      (PullbackCone.IsLimit.lift_fst _ _ _ ?_).symm) ?_
     · rw [← pullback.condition, assoc]
       rfl
     · dsimp

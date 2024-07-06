@@ -97,9 +97,38 @@ lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a
   choose f hf using ht
   exact ⟨fun b ↦ if h : a = b then h ▸ x else f _ h, by aesop, by simp⟩
 
-lemma filter_piFinset_of_not_mem [∀ a, DecidableEq (δ a)] (t : ∀ a, Finset (δ a)) (a : α)
-    (x : δ a) (hx : x ∉ t a) : (piFinset t).filter (· a = x) = ∅ := by
+lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
+    ((piFinset fun _i : α ↦ t).image fun f ↦ f a) = t := by
+  obtain rfl | ht := t.eq_empty_or_nonempty
+  · haveI : Nonempty α := ⟨a⟩
+    simp
+  · exact eval_image_piFinset (fun _ ↦ t) a fun _ _ ↦ ht
+
+variable [∀ a, DecidableEq (δ a)]
+
+lemma filter_piFinset_of_not_mem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
+    (piFinset t).filter (· a = x) = ∅ := by
   simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
+
+-- TODO: This proof looks like a good example of something that `aesop` can't do but should
+lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
+    (hts : t ⊆ s i) : piFinset (Function.update s i t) = (piFinset s).filter (fun f ↦ f i ∈ t) := by
+  ext f
+  simp only [mem_piFinset, mem_filter]
+  refine ⟨fun h ↦ ?_, fun h j ↦ ?_⟩
+  · have := by simpa using h i
+    refine ⟨fun j ↦ ?_, this⟩
+    obtain rfl | hji := eq_or_ne j i
+    · exact hts this
+    · simpa [hji] using h j
+  · obtain rfl | hji := eq_or_ne j i
+    · simpa using h.2
+    · simpa [hji] using h.1 j
+
+lemma piFinset_update_singleton_eq_filter_piFinset_eq (s : ∀ i, Finset (δ i)) (i : α) {a : δ i}
+    (ha : a ∈ s i) :
+    piFinset (Function.update s i {a}) = (piFinset s).filter (fun f ↦ f i = a) := by
+  simp [piFinset_update_eq_filter_piFinset_mem, ha]
 
 end Fintype
 
@@ -124,8 +153,8 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
 -- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
 -- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
 noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
-  Fintype (α ↪ β) :=
-  by classical. exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
+  Fintype (α ↪ β) := by
+  classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]

@@ -19,15 +19,13 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
--- Porting note: removed from module documentation because it moved to `data.finsupp.multiset`
+-- Porting note: removed from module documentation because it moved to `Data.Finsupp.Multiset`
 -- TODO: move to `Data.Finsupp.Multiset` when that is ported
 -- * `Finsupp.orderIsoMultiset`: The order isomorphism between `ℕ`-valued finitely supported
 --   functions and multisets.
 
 
 noncomputable section
-
-open BigOperators
 
 open Finset
 
@@ -261,7 +259,7 @@ theorem single_tsub : single i (a - b) = single i a - single i b := by
 
 theorem support_tsub {f1 f2 : ι →₀ α} : (f1 - f2).support ⊆ f1.support := by
   simp (config := { contextual := true }) only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
-    Ne.def, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
+    Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 #align finsupp.support_tsub Finsupp.support_tsub
 
 theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
@@ -278,7 +276,7 @@ variable [CanonicallyLinearOrderedAddCommMonoid α]
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
   ext
-  simp only [inf_apply, mem_support_iff, Ne.def, Finset.mem_union, Finset.mem_filter,
+  simp only [inf_apply, mem_support_iff, Ne, Finset.mem_union, Finset.mem_filter,
     Finset.mem_inter]
   simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
 #align finsupp.support_inf Finsupp.support_inf
@@ -286,7 +284,7 @@ theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = 
 @[simp]
 theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne.def, ← bot_eq_zero]
+  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
   rw [_root_.sup_eq_bot_iff, not_and_or]
 #align finsupp.support_sup Finsupp.support_sup
 

@@ -31,11 +31,8 @@ namespace Orientation
 attribute [local instance] Complex.finrank_real_complex_fact
 
 variable {V V' : Type*}
-
 variable [NormedAddCommGroup V] [NormedAddCommGroup V']
-
 variable [InnerProductSpace ℝ V] [InnerProductSpace ℝ V']
-
 variable [Fact (finrank ℝ V = 2)] [Fact (finrank ℝ V' = 2)] (o : Orientation ℝ V (Fin 2))
 
 local notation "J" => o.rightAngleRotation
@@ -47,7 +44,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       intro x y
-      simp only [IsROrC.conj_to_real, id.def, LinearMap.smul_apply, LinearMap.add_apply,
+      simp only [RCLike.conj_to_real, id, LinearMap.smul_apply, LinearMap.add_apply,
         LinearMap.id_coe, LinearEquiv.coe_coe, LinearIsometryEquiv.coe_toLinearEquiv,
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,
@@ -70,7 +67,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       ext x
       convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
-          Function.comp_apply, id.def, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
+          Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply, ← mul_smul, add_smul,
           smul_add, smul_neg, smul_sub, mul_comm, sq]
@@ -80,7 +77,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       ext x
       convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
-          Function.comp_apply, id.def, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
+          Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply,
           add_smul, smul_neg, smul_sub, smul_smul]
@@ -182,7 +179,7 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.expMapCircle : ℂ) * o.kahler x y := by
-  -- Porting note: this needed the `Complex.conj_ofReal` instead of `IsROrC.conj_ofReal`;
+  -- Porting note: this needed the `Complex.conj_ofReal` instead of `RCLike.conj_ofReal`;
   -- I believe this is because the respective coercions are no longer defeq, and
   -- `Real.Angle.coe_expMapCircle` uses the `Complex` version.
   simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
@@ -331,7 +328,7 @@ theorem oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero {x y : V} (hx : 
   · rintro rfl
     rw [← LinearIsometryEquiv.map_smul, ← o.oangle_smul_left_of_pos x y hp, eq_comm,
       rotation_oangle_eq_iff_norm_eq, norm_smul, Real.norm_of_nonneg hp.le,
-      div_mul_cancel _ (norm_ne_zero_iff.2 hx)]
+      div_mul_cancel₀ _ (norm_ne_zero_iff.2 hx)]
   · intro hye
     rw [hye, o.oangle_smul_right_of_pos _ _ hp, o.oangle_rotation_self_right hx]
 #align orientation.oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero Orientation.oangle_eq_iff_eq_norm_div_norm_smul_rotation_of_ne_zero
@@ -487,7 +484,7 @@ the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     ⟪x, y⟫ = 0 ↔ x = 0 ∨ ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) x = y := by
   rw [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with (rfl | rfl | h | h)
     · exact Or.inl rfl
     · exact Or.inr ⟨0, zero_smul _ _⟩
@@ -499,17 +496,17 @@ theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
         (o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero
           (o.left_ne_zero_of_oangle_eq_neg_pi_div_two h)
           (o.right_ne_zero_of_oangle_eq_neg_pi_div_two h) _).1 h
-      refine' Or.inr ⟨-r, _⟩
+      refine Or.inr ⟨-r, ?_⟩
       rw [neg_smul, ← smul_neg, o.neg_rotation_pi_div_two]
   · rcases h with (rfl | ⟨r, rfl⟩)
     · exact Or.inl rfl
     · by_cases hx : x = 0; · exact Or.inl hx
       rcases lt_trichotomy r 0 with (hr | rfl | hr)
-      · refine' Or.inr (Or.inr (Or.inr _))
+      · refine Or.inr (Or.inr (Or.inr ?_))
         rw [o.oangle_smul_right_of_neg _ _ hr, o.neg_rotation_pi_div_two,
           o.oangle_rotation_self_right hx]
       · exact Or.inr (Or.inl (zero_smul _ _))
-      · refine' Or.inr (Or.inr (Or.inl _))
+      · refine Or.inr (Or.inr (Or.inl ?_))
         rw [o.oangle_smul_right_of_pos _ _ hr, o.oangle_rotation_self_right hx]
 #align orientation.inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two Orientation.inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two
 

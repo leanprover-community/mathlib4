@@ -33,7 +33,7 @@ set_option linter.uppercaseLean3 false
 open Finset Function
 
 open scoped Classical
-open BigOperators Pointwise Polynomial
+open Pointwise Polynomial
 
 noncomputable section
 
@@ -142,25 +142,19 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
     simp (config := { contextual := true }) [Ne.symm hn]
 #align hahn_series.of_power_series_X HahnSeries.ofPowerSeries_X
 
-@[simp]
-theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
+theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
-  rw [RingHom.map_pow]
-  induction' n with n ih
-  · simp
-    rfl
-  · rw [pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
-      Nat.cast_succ, add_comm]
+  simp
 #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
 
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
-/-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Fintype` `σ`.
+/-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
-even though we assume `Fintype σ` as this is more natural for alignment with `MvPowerSeries`.
+even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.
 After importing `Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed instead.
  -/
 @[simps]
-def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
+def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
   toFun f := f.coeff
   invFun f := ⟨(f : (σ →₀ ℕ) → R), Finsupp.isPWO _⟩
   left_inv f := by
@@ -178,7 +172,7 @@ def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃
     classical
       change (f * g).coeff n = _
       simp_rw [mul_coeff]
-      refine' (sum_filter_ne_zero _).symm.trans <| (sum_congr _ fun _ _ ↦ rfl).trans <|
+      refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
         sum_filter_ne_zero _
       ext m
       simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,
@@ -187,7 +181,7 @@ def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 #align hahn_series.to_mv_power_series HahnSeries.toMvPowerSeries
 
-variable {σ : Type*} [Fintype σ]
+variable {σ : Type*} [Finite σ]
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=

@@ -159,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem PInfty_add_QInfty : (PInfty : K[X] ⟶ _) + QInfty = 𝟙 _ := by
   dsimp only [QInfty]
-  simp only [add_sub_cancel'_right]
+  simp only [add_sub_cancel]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_add_Q_infty AlgebraicTopology.DoldKan.PInfty_add_QInfty
 
@@ -194,8 +194,8 @@ variable {C}
 theorem map_PInfty_f {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (n : ℕ) :
     (PInfty : K[((whiskering C D).obj G).obj X] ⟶ _).f n =
-      G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) :=
-  by simp only [PInfty_f, map_P]
+      G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) := by
+  simp only [PInfty_f, map_P]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.map_P_infty_f AlgebraicTopology.DoldKan.map_PInfty_f
 

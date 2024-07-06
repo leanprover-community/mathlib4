@@ -33,25 +33,15 @@ noncomputable section
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-
 variable {f f₀ f₁ g : E → F}
-
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
-
 variable (e : E →L[𝕜] F)
-
 variable {x : E}
-
 variable {s t : Set E}
-
 variable {L L₁ L₂ : Filter E}
 
 section ConstSMul
@@ -350,20 +340,18 @@ section Sum
 /-! ### Derivative of a finite sum of functions -/
 
 
-open BigOperators
-
 variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
 @[fun_prop]
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
-    HasStrictFDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x := by
+    HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
   dsimp [HasStrictFDerivAt] at *
   convert IsLittleO.sum h
   simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
 #align has_strict_fderiv_at.sum HasStrictFDerivAt.sum
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) x L) :
-    HasFDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
+    HasFDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x L := by
   simp only [hasFDerivAtFilter_iff_isLittleO] at *
   convert IsLittleO.sum h
   simp [ContinuousLinearMap.sum_apply]
@@ -371,48 +359,48 @@ theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) x
 
 @[fun_prop]
 theorem HasFDerivWithinAt.sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :
-    HasFDerivWithinAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) s x :=
+    HasFDerivWithinAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) s x :=
   HasFDerivAtFilter.sum h
 #align has_fderiv_within_at.sum HasFDerivWithinAt.sum
 
 @[fun_prop]
 theorem HasFDerivAt.sum (h : ∀ i ∈ u, HasFDerivAt (A i) (A' i) x) :
-    HasFDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x :=
+    HasFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x :=
   HasFDerivAtFilter.sum h
 #align has_fderiv_at.sum HasFDerivAt.sum
 
 @[fun_prop]
 theorem DifferentiableWithinAt.sum (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
-    DifferentiableWithinAt 𝕜 (fun y => ∑ i in u, A i y) s x :=
+    DifferentiableWithinAt 𝕜 (fun y => ∑ i ∈ u, A i y) s x :=
   HasFDerivWithinAt.differentiableWithinAt <|
     HasFDerivWithinAt.sum fun i hi => (h i hi).hasFDerivWithinAt
 #align differentiable_within_at.sum DifferentiableWithinAt.sum
 
 @[simp, fun_prop]
 theorem DifferentiableAt.sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
-    DifferentiableAt 𝕜 (fun y => ∑ i in u, A i y) x :=
+    DifferentiableAt 𝕜 (fun y => ∑ i ∈ u, A i y) x :=
   HasFDerivAt.differentiableAt <| HasFDerivAt.sum fun i hi => (h i hi).hasFDerivAt
 #align differentiable_at.sum DifferentiableAt.sum
 
 @[fun_prop]
 theorem DifferentiableOn.sum (h : ∀ i ∈ u, DifferentiableOn 𝕜 (A i) s) :
-    DifferentiableOn 𝕜 (fun y => ∑ i in u, A i y) s := fun x hx =>
+    DifferentiableOn 𝕜 (fun y => ∑ i ∈ u, A i y) s := fun x hx =>
   DifferentiableWithinAt.sum fun i hi => h i hi x hx
 #align differentiable_on.sum DifferentiableOn.sum
 
 @[simp, fun_prop]
 theorem Differentiable.sum (h : ∀ i ∈ u, Differentiable 𝕜 (A i)) :
-    Differentiable 𝕜 fun y => ∑ i in u, A i y := fun x => DifferentiableAt.sum fun i hi => h i hi x
+    Differentiable 𝕜 fun y => ∑ i ∈ u, A i y := fun x => DifferentiableAt.sum fun i hi => h i hi x
 #align differentiable.sum Differentiable.sum
 
 theorem fderivWithin_sum (hxs : UniqueDiffWithinAt 𝕜 s x)
     (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
-    fderivWithin 𝕜 (fun y => ∑ i in u, A i y) s x = ∑ i in u, fderivWithin 𝕜 (A i) s x :=
+    fderivWithin 𝕜 (fun y => ∑ i ∈ u, A i y) s x = ∑ i ∈ u, fderivWithin 𝕜 (A i) s x :=
   (HasFDerivWithinAt.sum fun i hi => (h i hi).hasFDerivWithinAt).fderivWithin hxs
 #align fderiv_within_sum fderivWithin_sum
 
 theorem fderiv_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
-    fderiv 𝕜 (fun y => ∑ i in u, A i y) x = ∑ i in u, fderiv 𝕜 (A i) x :=
+    fderiv 𝕜 (fun y => ∑ i ∈ u, A i y) x = ∑ i ∈ u, fderiv 𝕜 (A i) x :=
   (HasFDerivAt.sum fun i hi => (h i hi).hasFDerivAt).fderiv
 #align fderiv_sum fderiv_sum
 

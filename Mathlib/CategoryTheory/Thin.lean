@@ -43,7 +43,6 @@ end
 -- In particular this allows `C` to be a preorder, with the category instance inherited from the
 -- preorder structure.
 variable [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable [Quiver.IsThin C]
 
 /-- If `C` is a thin category, then `D ⥤ C` is a thin category. -/
@@ -62,7 +61,7 @@ instance subsingleton_iso {X Y : C} : Subsingleton (X ≅ Y) :=
   ⟨by
     intro i₁ i₂
     ext1
-    apply Subsingleton.elim⟩
+    subsingleton⟩
 #align category_theory.subsingleton_iso CategoryTheory.subsingleton_iso
 
 end CategoryTheory
