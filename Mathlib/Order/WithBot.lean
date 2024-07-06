@@ -182,9 +182,11 @@ lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f
 @[simp] lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
     map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
 
-theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
-  Option.ne_none_iff_exists
+lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
 #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
+
+lemma forall_ne_iff_eq_bot {x : WithBot α} : (∀ a : α, ↑a ≠ x) ↔ x = ⊥ :=
+  Option.forall_some_ne_iff_eq_none
 
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
@@ -318,7 +320,7 @@ theorem some_lt_some : @LT.lt (WithBot α) _ (Option.some a) (Option.some b) ↔
 theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_coe _
 #align with_bot.none_lt_some WithBot.none_lt_some
 
-@[simp, deprecated not_lt_none "Don't mix Option and WithBot" (since := "2024-05-27")]
+@[simp, deprecated not_lt_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
 #align with_bot.not_lt_none WithBot.not_lt_none
 
@@ -365,12 +367,10 @@ instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
       cases' o₁ with a
       · cases' o₂ with b
         · rfl
-        have := h₂ b
         rcases h₂ b rfl with ⟨_, ⟨⟩, _⟩
       · rcases h₁ a rfl with ⟨b, ⟨⟩, h₁'⟩
         rcases h₂ b rfl with ⟨_, ⟨⟩, h₂'⟩
-        rw [le_antisymm h₁' h₂']
-         }
+        rw [le_antisymm h₁' h₂'] }
 #align with_bot.partial_order WithBot.partialOrder
 
 section Preorder
@@ -839,9 +839,11 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
   rfl
 #align with_top.of_dual_map WithTop.ofDual_map
 
-theorem ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x :=
-  Option.ne_none_iff_exists
+lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
 #align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
+
+lemma forall_ne_iff_eq_top {x : WithTop α} : (∀ a : α, ↑a ≠ x) ↔ x = ⊤ :=
+  Option.forall_some_ne_iff_eq_none
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
@@ -1069,6 +1071,10 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
   rfl
 #align with_bot.of_dual_map WithBot.ofDual_map
 
+lemma forall_lt_iff_eq_bot [Preorder α] {x : WithBot α} :
+    (∀ y : α, x < y) ↔ x = ⊥ :=
+  ⟨fun h ↦ forall_ne_iff_eq_bot.mp (fun x ↦ (h x).ne'), fun h ↦ h ▸ fun y ↦ bot_lt_coe y⟩
+
 section LE
 
 variable [LE α] {a b : α}
@@ -1265,6 +1271,9 @@ theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=
 @[simp]
 theorem coe_top_lt [OrderTop α] {x : WithTop α} : (⊤ : α) < x ↔ x = ⊤ :=
   WithBot.lt_coe_bot (α := αᵒᵈ)
+
+lemma forall_lt_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ :=
+  ⟨fun h ↦ forall_ne_iff_eq_top.mp (fun x ↦ (h x).ne), fun h ↦ h ▸ fun y ↦ coe_lt_top y⟩
 
 end Preorder
 

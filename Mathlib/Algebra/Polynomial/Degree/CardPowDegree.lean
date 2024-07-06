@@ -83,7 +83,7 @@ theorem cardPowDegree_apply [DecidableEq Fq] (p : Fq[X]) :
   convert rfl
 #align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
 
-@[simp, nolint simpNF]
+@[simp]
 theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl
 #align polynomial.card_pow_degree_zero Polynomial.cardPowDegree_zero
 

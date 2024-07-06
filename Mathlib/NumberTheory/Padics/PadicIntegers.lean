@@ -81,8 +81,8 @@ variable (p)
 /-- The `p`-adic integers as a subring of `ℚ_[p]`. -/
 def subring : Subring ℚ_[p] where
   carrier := { x : ℚ_[p] | ‖x‖ ≤ 1 }
-  zero_mem' := by set_option tactic.skipAssignedInstances false in norm_num
-  one_mem' := by set_option tactic.skipAssignedInstances false in norm_num
+  zero_mem' := by norm_num
+  one_mem' := by norm_num
   add_mem' hx hy := (padicNormE.nonarchimedean _ _).trans <| max_le_iff.2 ⟨hx, hy⟩
   mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one hx (norm_nonneg _) hy
   neg_mem' hx := (norm_neg _).trans_le hx
@@ -193,8 +193,7 @@ theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
   norm_cast
 #align padic_int.coe_int_eq PadicInt.intCast_eq
 
--- 2024-04-05
-@[deprecated] alias coe_int_eq := intCast_eq
+@[deprecated (since := "2024-04-05")] alias coe_int_eq := intCast_eq
 
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
