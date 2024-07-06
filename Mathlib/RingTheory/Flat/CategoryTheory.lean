@@ -8,7 +8,6 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Monoidal.Tor
-import Mathlib.Algebra.Homology.HomologySequence
 
 /-!
 # Tensoring with a flat module is an exact functor
