@@ -1206,7 +1206,7 @@ lemma max_mul_mul_le_max_mul_max (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
 
 lemma min_mul_min_le_mul_min_min {b c} (ha : 0 ≤ a) (hb : 0 ≤ b) (hc : 0 ≤ c) (hd : 0 ≤ d):
     min a c * min b d ≤ min (a * b) (c * d) :=
-  have ab: min a c * min b d ≤  a * b :=
+  have ab : min a c * min b d ≤ a * b :=
     mul_le_mul (min_le_left a c) (min_le_left b d) (le_min hb hd) ha
   have cd : min a c * min b d ≤ c * d :=
     mul_le_mul (min_le_right a c) (min_le_right b d) (le_min hb hd) (hc)
