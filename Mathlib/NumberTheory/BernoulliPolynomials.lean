@@ -219,7 +219,7 @@ variable {A : Type*} [CommRing A] [Algebra ℚ A]
 -- This name should probably be updated afterwards
 /-- The theorem that $(e^X - 1) * ∑ Bₙ(t)* X^n/n! = Xe^{tX}$ -/
 theorem bernoulli_generating_function (t : A) :
-    (mk fun n => aeval t ((1 / n ! : ℚ) • bernoulli n)) * (exp A - 1) =
+    (PowerSeries.mk fun n => aeval t ((1 / n ! : ℚ) • bernoulli n)) * (exp A - 1) =
       PowerSeries.X * rescale t (exp A) := by
   -- check equality of power series by checking coefficients of X^n
   ext n
