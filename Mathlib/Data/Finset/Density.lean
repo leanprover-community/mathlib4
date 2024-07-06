@@ -133,7 +133,7 @@ lemma dens_sdiff_add_dens_eq_dens (h : s ⊆ t) : dens (t \ s) + dens s = dens t
 lemma dens_sdiff_add_dens (s t : Finset α) : dens (s \ t) + dens t = (s ∪ t).dens := by
   rw [← dens_union_of_disjoint sdiff_disjoint, sdiff_union_self_eq_union]
 
-lemma dens_sdiff_comm [IsCancelAdd ℚ≥0] (h : card s = card t) : dens (s \ t) = dens (t \ s) :=
+lemma dens_sdiff_comm (h : card s = card t) : dens (s \ t) = dens (t \ s) :=
   add_left_injective (dens t) $ by
     simp_rw [dens_sdiff_add_dens, union_comm s, ← dens_sdiff_add_dens, dens, h]
 
