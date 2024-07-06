@@ -169,7 +169,8 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
       infer_instance
     rw [h₁, F.map_comp, F.map_comp, F.map_id, h₂, zero_comp, comp_zero]
 
-noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
+noncomputable instance [F.IsTriangulated] :
+    PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
     have := fun (X₁ X₃ : C) ↦ PreservesLimitPair.ofIsoProdComparison F X₁ X₃
     exact ⟨fun {K} ↦ preservesLimitOfIsoDiagram F (diagramIsoPair K).symm⟩
@@ -194,7 +195,8 @@ noncomputable instance : PreservesLimitsOfShape (Discrete WalkingPair) F := by
     (binaryProductTriangle_distinguished _ _)
     (by dsimp; infer_instance) (by dsimp; infer_instance)
 
-instance (priority := 100) : F.Additive := F.additive_of_preserves_binary_products
+instance (priority := 100) [F.IsTriangulated] : F.Additive :=
+  F.additive_of_preserves_binary_products
 
 instance : (𝟭 C).IsTriangulated where
   map_distinguished T hT :=
