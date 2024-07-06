@@ -408,13 +408,19 @@ This is a variant of `GlueData` that only requires conditions on `V (i, j)` when
 See `GlueData.ofGlueData'`
 -/
 structure GlueData' where
+  /-- Indexing type of a glue data. -/
   J : Type v
+  /-- Objects of a glue data to be glued. -/
   U : J → C
+  /-- Objects representing the intersections. -/
   V : ∀ (i j : J), i ≠ j → C
+  /-- The inclusion maps of the intersection into the object. -/
   f : ∀ i j h, V i j h ⟶ U i
   f_mono : ∀ i j h, Mono (f i j h) := by infer_instance
   f_hasPullback : ∀ i j k hij hik, HasPullback (f i j hij) (f i k hik) := by infer_instance
+  /-- The transition maps between the intersections. -/
   t : ∀ i j h, V i j h ⟶ V j i h.symm
+  /-- The transition maps between the intersection of intersections. -/
   t' : ∀ i j k hij hik hjk,
     pullback (f i j hij) (f i k hik) ⟶ pullback (f j k hjk) (f j i hij.symm)
   t_fac : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫ pullback.snd = pullback.fst ≫ t i j hij
