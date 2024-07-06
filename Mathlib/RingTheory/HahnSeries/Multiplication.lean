@@ -19,8 +19,12 @@ Hahn series.
 
 ## Main Definitions
   * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
-  of `HahnSeries Γ R` on `HahnModule Γ V` for an `R`-module `V`.
+  of `HahnSeries Γ R` on `HahnModule Γ V` for an `R`-module `V`, where `Γ'` admits an ordered
+  cancellative vector addition operation from `Γ`.
+
+  ## Main results
   * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
+  * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `HahnSeries Γ R`-module.
 
 ## To do
 
@@ -90,30 +94,33 @@ def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
 
 namespace HahnModule
 
+section
+
+variable [PartialOrder Γ] [Zero V] [SMul R V]
+
 /-- The casting function to the type synonym. -/
-def of {Γ : Type*} (R : Type*) {V : Type*} [PartialOrder Γ] [Zero V] [SMul R V] :
-    HahnSeries Γ V ≃ HahnModule Γ R V := Equiv.refl _
+def of (R : Type*) [SMul R V] : HahnSeries Γ V ≃ HahnModule Γ R V :=
+  Equiv.refl _
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
 @[elab_as_elim]
-def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → Sort*}
-    (h : ∀ x : HahnSeries Γ V, motive (of R x)) : ∀ x, motive x :=
+def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
+    ∀ x, motive x :=
   fun x => h <| (of R).symm x
 
 @[ext]
-theorem ext [PartialOrder Γ] [Zero V] [SMul R V] (x y : HahnModule Γ R V)
-    (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
+theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
 
-theorem ext_iff {Γ R V : Type*} [PartialOrder Γ] [Zero V] [SMul R V]
-    (x y : HahnModule Γ R V) : ((of R).symm x).coeff = ((of R).symm y).coeff ↔ x = y := by
+theorem ext_iff (x y : HahnModule Γ R V) :
+    ((of R).symm x).coeff = ((of R).symm y).coeff ↔ x = y := by
   simp_all only [HahnSeries.coeff_inj, EmbeddingLike.apply_eq_iff_eq]
+
+end
 
 section SMul
 
-variable [AddCommMonoid V] [SMul R V]
-
-variable [PartialOrder Γ]
+variable [PartialOrder Γ] [AddCommMonoid V] [SMul R V]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
@@ -163,13 +170,12 @@ section SMulZeroClass
 variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [OrderedCancelVAdd Γ Γ'] [Zero R]
   [AddCommMonoid V]
 
-instance instBaseSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
-    SMulZeroClass R (HahnModule Γ R V) :=
+instance instBaseSMulZeroClass [SMulZeroClass R V] : SMulZeroClass R (HahnModule Γ R V) :=
   inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 
-@[simp] theorem of_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
+@[simp] theorem of_smul [SMulZeroClass R V] (r : R) (x : HahnSeries Γ V) :
   (of R) (r • x) = r • (of R) x := rfl
-@[simp] theorem of_symm_smul [PartialOrder Γ] [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
+@[simp] theorem of_symm_smul [SMulZeroClass R V] (r : R) (x : HahnModule Γ R V) :
   (of R).symm (r • x) = r • (of R).symm x := rfl
 
 instance instSMulZeroClass [SMulZeroClass R V] :
@@ -273,8 +279,8 @@ theorem single_smul_coeff_add [MulZeroClass R] [SMulWithZero R V] {r : R} {x : H
       exact ⟨rfl, by exact hx, rfl⟩
   · simp
 
-theorem single_zero_smul_coeff {Γ} [OrderedAddCommMonoid Γ] [VAdd Γ Γ']
-    [OrderedCancelAddAction Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {r : R}
+theorem single_zero_smul_coeff {Γ} [OrderedAddCommMonoid Γ] [AddAction Γ Γ']
+    [OrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {r : R}
     {x : HahnModule Γ' R V} {a : Γ'} :
     ((of R).symm ((HahnSeries.single 0 r : HahnSeries Γ R) • x)).coeff a =
       r • ((of R).symm x).coeff a := by
@@ -282,8 +288,8 @@ theorem single_zero_smul_coeff {Γ} [OrderedAddCommMonoid Γ] [VAdd Γ Γ']
   exact single_smul_coeff_add
 
 @[simp]
-theorem single_zero_smul_eq_smul (Γ) [OrderedAddCommMonoid Γ] [VAdd Γ Γ']
-    [OrderedCancelAddAction Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {r : R}
+theorem single_zero_smul_eq_smul (Γ) [OrderedAddCommMonoid Γ] [AddAction Γ Γ']
+    [OrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {r : R}
     {x : HahnModule Γ' R V} : (HahnSeries.single (0 : Γ) r) • x = r • x := by
   ext
   exact single_zero_smul_coeff
@@ -295,7 +301,7 @@ theorem zero_smul' [Zero R] [SMulWithZero R V] {x : HahnModule Γ' R V} :
   simp [smul_coeff]
 
 @[simp]
-theorem one_smul' {Γ} [OrderedAddCommMonoid Γ] [VAdd Γ Γ'] [OrderedCancelAddAction Γ Γ']
+theorem one_smul' {Γ} [OrderedAddCommMonoid Γ] [AddAction Γ Γ'] [OrderedCancelVAdd Γ Γ']
     [MonoidWithZero R] [MulActionWithZero R V] {x : HahnModule Γ' R V} :
     (1 : HahnSeries Γ R) • x = x := by
   ext g
@@ -596,7 +602,7 @@ end HahnSeries
 
 namespace HahnModule
 
-variable [PartialOrder Γ'] [VAdd Γ Γ'] [OrderedCancelAddAction Γ Γ'] [AddCommMonoid V]
+variable [PartialOrder Γ'] [AddAction Γ Γ'] [OrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
 
 private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
     (z : HahnModule Γ' R V) : (x * y) • z = x • (y • z) := by
