@@ -168,6 +168,23 @@ theorem polar_subMulAction (m : SubMulAction 𝕜 E) : B.polar m = { y | ∀ x �
     rw [h x hx, norm_zero]
     exact zero_le_one
 
+def polarSubmodule (m : SubMulAction 𝕜 E) : Submodule 𝕜 F :=
+  ⟨⟨⟨B.polar m, by
+    intro a b ha hb
+    rw [polar_subMulAction] at *
+    simp only [Set.mem_setOf_eq] at *
+    simp only [map_add]
+    intro x hx
+    rw [(ha _ hx), (hb _ hx), add_zero]⟩, by
+    simp only [zero_mem_polar]⟩, by
+    intro c y hy
+    simp only
+    simp only at hy
+    rw [polar_subMulAction] at *
+    simp only [Set.mem_setOf_eq] at *
+    intro x hx
+    rw [CompatibleSMul.map_smul (B x) c y, (hy _ hx), smul_zero]⟩
+
 end NontriviallyNormedField
 
 end LinearMap
