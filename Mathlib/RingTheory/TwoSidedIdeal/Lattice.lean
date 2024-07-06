@@ -15,7 +15,7 @@ namespace TwoSidedIdeal
 variable (R : Type*) [NonUnitalNonAssocRing R]
 
 instance : Sup (TwoSidedIdeal R) where
-  sup := fun I J => { ringCon := I.ringCon ⊔ J.ringCon }
+  sup I J := { ringCon := I.ringCon ⊔ J.ringCon }
 
 instance : SemilatticeSup (TwoSidedIdeal R) where
   le_sup_left I J :=  by rw [ringCon_le_iff]; exact le_sup_left
