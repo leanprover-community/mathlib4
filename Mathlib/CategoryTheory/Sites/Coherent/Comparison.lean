@@ -90,7 +90,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         refine Or.inl ⟨I, inferInstance, _, _, ⟨rfl, ?_⟩⟩
         convert IsIso.id _
         aesop
-    | top => apply Coverage.saturate.top
-    | transitive Y T => apply Coverage.saturate.transitive Y T<;> [assumption; assumption]
+    | top => apply Coverage.Saturate.top
+    | transitive Y T => apply Coverage.Saturate.transitive Y T<;> [assumption; assumption]
 
 end CategoryTheory
