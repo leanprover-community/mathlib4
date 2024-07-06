@@ -69,3 +69,7 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
     simp only [mem_antidiagonal, add_zero, not_true_eq_false] at he
 
 end Semiring
+
+end MvPowerSeries
+
+end
