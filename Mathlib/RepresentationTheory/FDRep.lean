@@ -53,6 +53,9 @@ abbrev FDRep (k G : Type u) [Field k] [Monoid G] :=
   Action (FGModuleCat.{u} k) (MonCat.of G)
 #align fdRep FDRep
 
+@[deprecated (since := "2024-07-05")]
+alias FdRep := FDRep
+
 namespace FDRep
 
 variable {k G : Type u} [Field k] [Monoid G]
