@@ -168,9 +168,9 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
     cases' ht with ht ht
-    · set_option tactic.skipAssignedInstances false in norm_num [ht]
+    · norm_num [ht]
     · rw [Set.mem_singleton_iff] at ht
-      set_option tactic.skipAssignedInstances false in norm_num [ht]
+      norm_num [ht]
 #align path.homotopy.hcomp Path.Homotopy.hcomp
 
 theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × I) :

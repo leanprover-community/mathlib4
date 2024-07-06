@@ -4,9 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Init.Logic
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Coe
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Lemmas about booleans
 
 These are the lemmas about booleans which were present in core Lean 3. See also
@@ -14,8 +26,6 @@ the file Mathlib.Data.Bool.Basic which contains lemmas about booleans from
 mathlib 3.
 
 -/
-
-set_option autoImplicit true
 
 -- We align Lean 3 lemmas with lemmas in `Init.SimpLemmas` in Lean 4.
 #align band_self Bool.and_self
@@ -75,7 +85,8 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 #align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
 
--- Adaptation note: this is no longer a simp lemma, as after nightly-2024-03-05 the LHS simplifies.
+#adaptation_note /-- this is no longer a simp lemma,
+  as after nightly-2024-03-05 the LHS simplifies. -/
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
@@ -132,18 +143,15 @@ theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
   (decide_false_iff p).1
 #align of_to_bool_ff Bool.of_decide_false
 
-theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) :
-    decide p = decide q := by
-  cases h' : decide q with
-  | false => exact decide_false (mt h.1 <| of_decide_false h')
-  | true => exact decide_true (h.2 <| of_decide_true h')
+theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q :=
+  decide_eq_decide.mpr h
 #align to_bool_congr Bool.decide_congr
 
-theorem coe_or_iff (a b : Bool) : a || b ↔ a ∨ b := by simp
-#align bor_coe_iff Bool.coe_or_iff
+@[deprecated (since := "2024-06-07")] alias coe_or_iff := or_eq_true_iff
+#align bor_coe_iff Bool.or_eq_true_iff
 
-theorem coe_and_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
-#align band_coe_iff Bool.coe_and_iff
+@[deprecated (since := "2024-06-07")] alias coe_and_iff := and_eq_true_iff
+#align band_coe_iff Bool.and_eq_true_iff
 
 theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
   cases a <;> cases b <;> decide

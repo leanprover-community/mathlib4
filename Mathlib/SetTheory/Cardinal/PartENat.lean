@@ -55,7 +55,7 @@ theorem toPartENat_apply_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : toPart
   congr_arg PartENat.ofENat (toENat_eq_top.2 h)
 #align cardinal.to_part_enat_apply_of_aleph_0_le Cardinal.toPartENat_apply_of_aleph0_le
 
-@[deprecated]
+@[deprecated (since := "2024-02-15")]
 alias toPartENat_cast := toPartENat_natCast
 
 @[simp]
@@ -72,7 +72,7 @@ theorem toPartENat_surjective : Surjective toPartENat := fun x =>
   PartENat.casesOn x ⟨ℵ₀, toPartENat_apply_of_aleph0_le le_rfl⟩ fun n => ⟨n, toPartENat_natCast n⟩
 #align cardinal.to_part_enat_surjective Cardinal.toPartENat_surjective
 
-@[deprecated] alias toPartENat_eq_top_iff_le_aleph0 := toPartENat_eq_top
+@[deprecated (since := "2024-02-15")] alias toPartENat_eq_top_iff_le_aleph0 := toPartENat_eq_top
 
 theorem toPartENat_strictMonoOn : StrictMonoOn toPartENat (Set.Iic ℵ₀) :=
   PartENat.withTopOrderIso.symm.strictMono.comp_strictMonoOn toENat_strictMonoOn

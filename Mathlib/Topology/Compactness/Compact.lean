@@ -494,7 +494,6 @@ theorem isCompact_accumulate {K : ℕ → Set X} (hK : ∀ n, IsCompact (K n)) (
   (finite_le_nat n).isCompact_biUnion fun k _ => hK k
 #align is_compact_accumulate isCompact_accumulate
 
--- Porting note (#10756): new lemma
 theorem Set.Finite.isCompact_sUnion {S : Set (Set X)} (hf : S.Finite) (hc : ∀ s ∈ S, IsCompact s) :
     IsCompact (⋃₀ S) := by
   rw [sUnion_eq_biUnion]; exact hf.isCompact_biUnion hc
@@ -639,8 +638,9 @@ theorem disjoint_cocompact_right (f : Filter X) :
   simp_rw [hasBasis_cocompact.disjoint_iff_right, compl_compl]
   tauto
 
--- deprecated on 2024-02-07: see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`
-@[deprecated] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
+@[deprecated "see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`"
+  (since := "2024-02-07")]
+theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
   (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
 #align nat.cocompact_eq Nat.cocompact_eq
 
@@ -803,7 +803,7 @@ theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot 
   simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
 #align cluster_point_of_compact exists_clusterPt_of_compactSpace
 
-@[deprecated] -- Since 28 January 2024
+@[deprecated (since := "2024-01-28")]
 alias cluster_point_of_compact := exists_clusterPt_of_compactSpace
 
 nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by
