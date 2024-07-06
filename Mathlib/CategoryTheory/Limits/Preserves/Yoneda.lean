@@ -51,11 +51,29 @@ def blu₂ : yoneda.flip ≅ (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v) :=
 def myYonedaLemma : F.flip ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ≅
     yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F :=
   NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y => by
-    dsimp
+    -- dsimp
     apply Equiv.toIso
     exact Equiv.trans Equiv.ulift (yonedaEquiv).symm
-    ) sorry) sorry
+    ) (by
+      intros j j' f
+      ext x
+      dsimp at x
+      simp
+      apply yonedaEquiv.injective
+      simp only [op_unop, Equiv.apply_symm_apply]
+      rw [yonedaEquiv_comp]
+      simp
+    )) (by
+      intros X Y f
+      ext j x
+      dsimp at x
+      simp
+      apply yonedaEquiv.injective
+      simp only [op_unop, Equiv.apply_symm_apply]
+      rw [yonedaEquiv_comp, yonedaEquiv_yoneda_map]
+      simp [yonedaEquiv])
 
+/-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`. -/
 noncomputable def yonedaYonedaColimit₂ :
     yoneda.op ⋙ yoneda.obj (colimit F) ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := calc
   yoneda.op ⋙ yoneda.obj (colimit F)
@@ -77,28 +95,6 @@ noncomputable def yonedaYonedaColimit₂ :
   _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) :=
         isoWhiskerLeft yoneda.op (colimitIsoFlipCompColim (F ⋙ yoneda)).symm
 
-/-- Naturally in `X`, we have `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`. -/
-@[simps!]
-noncomputable def yonedaYonedaColimit :
-    yoneda.op ⋙ yoneda.obj (colimit F) ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := calc
-  yoneda.op ⋙ yoneda.obj (colimit F)
-    ≅ colimit F ⋙ uliftFunctor.{u} := yonedaOpCompYonedaObj (colimit F)
-  _ ≅ F.flip ⋙ colim ⋙ uliftFunctor.{u} := isoWhiskerRight (colimitIsoFlipCompColim _) _
-  _ ≅ F.flip ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙ colim :=
-        isoWhiskerLeft F.flip (preservesColimitNatIso uliftFunctor.{u})
-  _ ≅ (evaluation _ _ ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u}) ⋙
-          (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        Iso.refl _
-  _ ≅ (yoneda.op ⋙ coyoneda) ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        isoWhiskerRight largeCurriedYonedaLemma.symm _
-  _ ≅ yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim := Functor.associator _ _ _
-  _ ≅ yoneda.op ⋙ (coyoneda ⋙ (whiskeringLeft _ _ _).obj F) ⋙ colim :=
-        isoWhiskerLeft yoneda.op (Functor.associator _ _ _).symm
-  _ ≅ yoneda.op ⋙ (F ⋙ yoneda).flip ⋙ colim := isoWhiskerLeft yoneda.op (isoWhiskerRight
-        (isoWhiskerRight (blu₂).symm _ ≪≫ (blu₁ F).symm) colim)
-  _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) :=
-        isoWhiskerLeft yoneda.op (colimitIsoFlipCompColim (F ⋙ yoneda)).symm
-
 theorem qu_aux {X : C} {j : J } :
     colimit.ι (F ⋙ (evaluation Cᵒᵖ (Type v)).obj (op X) ⋙ uliftFunctor.{u, v}) j ≫
     (preservesColimitIso uliftFunctor.{u, v} ((Functor.flip F).obj (op X))).inv =
@@ -109,11 +105,11 @@ theorem qu {X : C} : ((yonedaYonedaColimit₂ F).app (op X)).inv = (colimitObjIs
       ≫ (colimit.post F (coyoneda.obj (Opposite.op (yoneda.obj X)))) := by
   dsimp [yonedaYonedaColimit₂]
   simp only [Iso.cancel_iso_hom_left]
-  simp
+  -- simp?
   apply colimit.hom_ext
   intro j
   simp
-  erw [colimit.ι_post F (coyoneda.obj (op (yoneda.obj X))) j]
+  erw [colimit.ι_post F (coyoneda.obj _)]
   rw [← Functor.map_comp_assoc]
   erw [colimitObjIsoColimitCompEvaluation_ι_inv]
   ext η Y f
