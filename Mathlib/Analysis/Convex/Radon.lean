@@ -89,13 +89,11 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   /- Construct a family of vectors indexed by `ι` such that the vector corresponding to `i : ι`
   is an arbitrary element of the intersection of all `F j` except `F i`. -/
   let a (i : s) : E := Set.Nonempty.some (s := ⋂ j ∈ (s.erase i), F j) <| by
-    let s' :=  s.erase i
-    apply hk (s := s')
-    · exact fun i hi ↦h_convex i (mem_of_mem_erase hi)
+    apply hk (s := s.erase i)
+    · exact fun i hi ↦ h_convex i (mem_of_mem_erase hi)
     · intro J hJ_ss hJ_card
-      apply h_inter J <| subset_trans hJ_ss (erase_subset i.val s)
-      assumption
-    · simp only [coe_mem, card_erase_of_mem, s']; omega
+      exact h_inter J (subset_trans hJ_ss (erase_subset i.val s)) hJ_card
+    · simp only [coe_mem, card_erase_of_mem]; omega
   /- This family of vectors is not affine independent because the number of them exceeds the
   dimension of the space. -/
   have h_ind : ¬AffineIndependent 𝕜 a := by
@@ -145,7 +143,7 @@ theorem helly_theorem {F : ι → Set E} {s : Finset ι}
   apply helly_theorem' h_convex
   intro I hI_ss hI_card
   obtain ⟨J, hI_ss_J, hJ_ss, hJ_card⟩ := exists_subsuperset_card_eq hI_ss hI_card h_card
-  apply Set.Nonempty.mono <| biInter_mono hI_ss_J (by intro _ _; rfl)
+  apply Set.Nonempty.mono <| biInter_mono hI_ss_J (fun _ _ => Set.Subset.rfl)
   exact h_inter J hJ_ss hJ_card
 
 /-- **Helly's theorem** for finite sets of convex sets.
@@ -190,7 +188,7 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
     (⋂ i, F i).Nonempty := by
   /- If `ι` is empty the statement is trivial. -/
   cases' isEmpty_or_nonempty ι with _ h_nonempty
-  simp only [iInter_of_empty, Set.univ_nonempty]
+  · simp only [iInter_of_empty, Set.univ_nonempty]
   /- By the finite version of theorem, every finite subfamily has an intersection. -/
   have h_fin (I : Finset ι) : (⋂ i ∈ I, F i).Nonempty := by
     apply helly_theorem' (s := I) (𝕜 := 𝕜) (by simp [h_convex])
