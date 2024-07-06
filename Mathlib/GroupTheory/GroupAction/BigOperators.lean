@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Multiset.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.BigOperators.Finprod
 
 #align_import group_theory.group_action.big_operators from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -66,5 +67,10 @@ theorem Finset.smul_prod {r : α} {f : γ → β} {s : Finset γ} :
     (r • ∏ x ∈ s, f x) = ∏ x ∈ s, r • f x :=
   map_prod (MulDistribMulAction.toMonoidHom β r) f s
 #align finset.smul_prod Finset.smul_prod
+
+theorem smul_finprod [Finite γ] {f : γ → β} (r : α) :
+    r • ∏ᶠ x : γ, f x = ∏ᶠ x : γ, r • (f x) := by
+  cases nonempty_fintype γ
+  simp only [finprod_eq_prod_of_fintype, Finset.smul_prod]
 
 end
