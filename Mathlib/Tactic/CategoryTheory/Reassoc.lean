@@ -63,7 +63,7 @@ that are already right associated.
 
 Note that if you want both the lemma and the reassociated lemma to be
 `simp` lemmas, you should tag the lemma `@[reassoc (attr := simp)]`.
-The variants `@[simp, reassoc]` and `@[reassoc, simp]` on a lemma `F` will tag `F` with `@[simp]`,
+The variant `@[simp, reassoc]` on a lemma `F` will tag `F` with `@[simp]`,
 but not `F_apply` (this is sometimes useful).
 -/
 syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
