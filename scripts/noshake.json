@@ -338,7 +338,9 @@
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
   "Mathlib.Algebra.Module.LinearMap.Star":
-  ["Mathlib.Algebra.Module.Equiv", "Mathlib.Algebra.Star.Basic"],
+  ["Mathlib.Algebra.Module.Equiv",
+   "Mathlib.Algebra.Module.Equiv.Defs",
+   "Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Module.Equiv": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
