@@ -309,7 +309,8 @@ theorem sum_range_pow (n p : ℕ) :
   have hne : ∀ m : ℕ, (m ! : ℚ) ≠ 0 := fun m => mod_cast factorial_ne_zero m
   -- compute the Cauchy product of two power series
   have h_cauchy :
-    ((PowerSeries.mk fun p => bernoulli p / p !) * PowerSeries.mk fun q => coeff ℚ (q + 1) (exp ℚ ^ n)) =
+    ((PowerSeries.mk fun p => bernoulli p / p !) *
+      PowerSeries.mk fun q => coeff ℚ (q + 1) (exp ℚ ^ n)) =
       PowerSeries.mk fun p => ∑ i ∈ range (p + 1),
           bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! := by
     ext q : 1

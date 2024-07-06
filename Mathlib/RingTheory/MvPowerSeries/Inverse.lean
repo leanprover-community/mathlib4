@@ -199,7 +199,7 @@ open MvPowerSeries
 
 variable {k : Type*} [Field k]
 
-/-- The inverse `1/f` of a multivariable power series `f` over a ring with `Inv` -/
+/-- The inverse `1/f` of a multivariable power series `f` over a field -/
 protected def inv (φ : MvPowerSeries σ k) : MvPowerSeries σ k :=
   inv.aux (constantCoeff σ k φ)⁻¹ φ
 #align mv_power_series.inv MvPowerSeries.inv
@@ -216,7 +216,6 @@ theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k)
   coeff_inv_aux n _ φ
 #align mv_power_series.coeff_inv MvPowerSeries.coeff_inv
 
-
 @[simp]
 theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
     constantCoeff σ k φ⁻¹ = (constantCoeff σ k φ)⁻¹ := by
@@ -224,8 +223,7 @@ theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, if_pos rfl]
 #align mv_power_series.constant_coeff_inv MvPowerSeries.constantCoeff_inv
 
-theorem inv_eq_zero {φ : MvPowerSeries σ k} :
-    φ⁻¹ = 0 ↔ (constantCoeff σ k φ) = 0 :=
+theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ (constantCoeff σ k φ) = 0 :=
   ⟨fun h => by simpa using congr_arg (constantCoeff σ k) h, fun h =>
     ext fun n => by
       classical
