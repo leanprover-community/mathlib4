@@ -146,54 +146,26 @@ open scoped Classical
 /-- (Implementation Detail) The glue data associated to a disjoint union. -/
 @[simps]
 noncomputable
-def disjointGlueData : Scheme.GlueData where
+def disjointGlueData' : GlueData' Scheme where
   J := ι
   U := f
-  V ij := if ij.1 = ij.2 then f ij.1 else ∅
-  f i j := if h : i = j then eqToHom (if_pos h) ≫ 𝟙 _ else eqToHom (if_neg h) ≫ Scheme.emptyTo _
-  t i j := eqToHom (by aesop)
-  t_id i := rfl
-  t' i j k :=
-    if h : i = j then
-      (Limits.pullbackSymmetry _ _).hom ≫ Limits.pullback.map _ _ _ _ (eqToHom (by aesop))
-        (eqToHom (by aesop)) (eqToHom (by aesop)) (by aesop) (by aesop)
-    else
-      Limits.pullback.fst ≫ eqToHom (if_neg h) ≫ Scheme.emptyTo _
-  t_fac i j k := by
-    dsimp only
-    split_ifs with h
-    · subst h; simp
-    · apply Limits.IsInitial.strict_hom_ext
-      rw [if_neg (Ne.symm h)]
-      exact emptyIsInitial
-  cocycle i j k := by
-    dsimp only
-    by_cases hij : i = j
-    by_cases hik : i = k
-    · subst hij
-      subst hik
-      simp only [↓reduceDIte, eqToHom_refl, Category.assoc]
-      ext <;> simp only [Category.assoc, Limits.limit.lift_π, eqToHom_refl, id_eq,
-        Limits.PullbackCone.mk_pt, Limits.PullbackCone.mk_π_app, Category.comp_id,
-        Limits.pullbackSymmetry_hom_comp_fst, Limits.pullbackSymmetry_hom_comp_snd,
-        Category.id_comp]
-      · refine (@Limits.fst_eq_snd_of_mono_eq _ _ _ _ _ (show _ from ?_)).symm
-        simp only [↓reduceDIte, Category.comp_id]
-        infer_instance
-      · refine @Limits.fst_eq_snd_of_mono_eq _ _ _ _ _ (show _ from ?_)
-        simp only [↓reduceDIte, Category.comp_id]
-        infer_instance
-    · apply Limits.IsInitial.hom_ext
-      apply IsInitial.ofStrict pullback.snd
-      rw [if_neg hik]
-      exact emptyIsInitial
-    · apply Limits.IsInitial.hom_ext
-      apply IsInitial.ofStrict pullback.fst
-      rw [if_neg hij]
-      exact emptyIsInitial
-  f_open i j := by dsimp only; split <;> infer_instance
-  f_mono i j := by dsimp only; split <;> infer_instance
-  f_id i := by simp only [↓reduceDIte, Category.comp_id]; infer_instance
+  V _ _ _ := ∅
+  f _ _ _ := Scheme.emptyTo _
+  t _ _ _ := 𝟙 _
+  t' _ _ _ _ _ _ := Limits.pullback.fst ≫ Scheme.emptyTo _
+  t_fac _ _ _ _ _ _ := emptyIsInitial.strict_hom_ext _ _
+  t_inv _ _ _ := Category.comp_id _
+  cocycle _ _ _ _ _ _ := (emptyIsInitial.ofStrict pullback.fst).hom_ext _ _
+  f_mono _ _ := by dsimp only; infer_instance
+
+/-- (Implementation Detail) The glue data associated to a disjoint union. -/
+@[simps! J V U f t]
+noncomputable
+def disjointGlueData : Scheme.GlueData where
+  __ := GlueData.ofGlueData' (disjointGlueData' f)
+  f_open i j := by
+    dsimp only [GlueData.ofGlueData', GlueData'.f', disjointGlueData']
+    split <;> infer_instance
 
 /-- (Implementation Detail) The cofan in `LocallyRingedSpace` associated to a disjoint union. -/
 noncomputable
@@ -217,7 +189,7 @@ def toLocallyRingedSpaceCoproductCofanIsColimit :
       Scheme.forgetToLocallyRingedSpace_map, GlueData.mapGlueData_t, disjointGlueData_t]
     split_ifs with h
     · subst h
-      simp only [eqToHom_refl, ↓reduceDIte, ← Category.assoc]
+      simp only [eqToHom_refl, ↓reduceDIte, ← Category.assoc, GlueData'.f']
       congr
     · apply Limits.IsInitial.hom_ext
       rw [if_neg h]
