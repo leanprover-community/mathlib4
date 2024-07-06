@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Algebra.Order.Sub.Canonical
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Set.List
 import Mathlib.Init.Quot
@@ -18,6 +19,8 @@ These are implemented as the quotient of a list by permutations.
 ## Notation
 We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
+
+-- assert_not_exists OrderedCommMonoid
 
 universe v
 
@@ -681,17 +684,27 @@ instance : CovariantClass (Multiset α) (Multiset α) (· + ·) (· ≤ ·) :=
 instance : ContravariantClass (Multiset α) (Multiset α) (· + ·) (· ≤ ·) :=
   ⟨fun _s _t _u => add_le_add_iff_left'.1⟩
 
-instance : OrderedCancelAddCommMonoid (Multiset α) where
-  zero := 0
-  add := (· + ·)
+instance instAddCommMonoid : AddCancelCommMonoid (Multiset α) where
   add_comm := fun s t => Quotient.inductionOn₂ s t fun l₁ l₂ => Quot.sound perm_append_comm
   add_assoc := fun s₁ s₂ s₃ =>
     Quotient.inductionOn₃ s₁ s₂ s₃ fun l₁ l₂ l₃ => congr_arg _ <| append_assoc l₁ l₂ l₃
   zero_add := fun s => Quot.inductionOn s fun l => rfl
   add_zero := fun s => Quotient.inductionOn s fun l => congr_arg _ <| append_nil l
-  add_le_add_left := fun s₁ s₂ => add_le_add_left
-  le_of_add_le_add_left := fun s₁ s₂ s₃ => le_of_add_le_add_left
+  add_left_cancel := fun _ _ _ h =>
+    le_antisymm (Multiset.add_le_add_iff_left'.mp h.le) (Multiset.add_le_add_iff_left'.mp h.ge)
   nsmul := nsmulRec
+
+-- instance : OrderedCancelAddCommMonoid (Multiset α) where
+--   zero := 0
+--   add := (· + ·)
+--   add_comm := fun s t => Quotient.inductionOn₂ s t fun l₁ l₂ => Quot.sound perm_append_comm
+--   add_assoc := fun s₁ s₂ s₃ =>
+--     Quotient.inductionOn₃ s₁ s₂ s₃ fun l₁ l₂ l₃ => congr_arg _ <| append_assoc l₁ l₂ l₃
+--   zero_add := fun s => Quot.inductionOn s fun l => rfl
+--   add_zero := fun s => Quotient.inductionOn s fun l => congr_arg _ <| append_nil l
+--   add_le_add_left := fun s₁ s₂ => add_le_add_left
+--   le_of_add_le_add_left := fun s₁ s₂ s₃ => le_of_add_le_add_left
+--   nsmul := nsmulRec
 
 theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_add_left (zero_le t) s
 #align multiset.le_add_right Multiset.le_add_right
@@ -707,12 +720,12 @@ theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
     fun ⟨_u, e⟩ => e.symm ▸ le_add_right _ _⟩
 #align multiset.le_iff_exists_add Multiset.le_iff_exists_add
 
-instance : CanonicallyOrderedAddCommMonoid (Multiset α) where
-  __ := inferInstanceAs (OrderBot (Multiset α))
-  le_self_add := le_add_right
-  exists_add_of_le h := leInductionOn h fun s =>
-      let ⟨l, p⟩ := s.exists_perm_append
-      ⟨l, Quot.sound p⟩
+-- instance : CanonicallyOrderedAddCommMonoid (Multiset α) where
+--   __ := inferInstanceAs (OrderBot (Multiset α))
+--   le_self_add := le_add_right
+--   exists_add_of_le h := leInductionOn h fun s =>
+--       let ⟨l, p⟩ := s.exists_perm_append
+--       ⟨l, Quot.sound p⟩
 
 @[simp]
 theorem cons_add (a : α) (s t : Multiset α) : a ::ₘ s + t = a ::ₘ (s + t) := by
@@ -1711,6 +1724,9 @@ theorem sub_cons (a : α) (s t : Multiset α) : s - a ::ₘ t = s.erase a - t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => congr_arg _ <| diff_cons _ _ _
 #align multiset.sub_cons Multiset.sub_cons
 
+protected theorem zero_sub (t : Multiset α) : 0 - t = 0 :=
+  Multiset.induction_on t rfl fun a s ih => by simp [ih]
+
 /-- This is a special case of `tsub_le_iff_right`, which should be used instead of this.
   This is needed to prove `OrderedSub (Multiset α)`. -/
 protected theorem sub_le_iff_le_add : s - t ≤ u ↔ s ≤ u + t := by
@@ -1721,6 +1737,11 @@ protected theorem sub_le_iff_le_add : s - t ≤ u ↔ s ≤ u + t := by
 
 instance : OrderedSub (Multiset α) :=
   ⟨fun _n _m _k => Multiset.sub_le_iff_le_add⟩
+
+instance : ExistsAddOfLE (Multiset α) where
+  exists_add_of_le h := leInductionOn h fun s =>
+      let ⟨l, p⟩ := s.exists_perm_append
+      ⟨l, Quot.sound p⟩
 
 theorem cons_sub_of_le (a : α) {s t : Multiset α} (h : t ≤ s) : a ::ₘ s - t = a ::ₘ (s - t) := by
   rw [← singleton_add, ← singleton_add, add_tsub_assoc_of_le h]
@@ -1778,7 +1799,7 @@ theorem union_le (h₁ : s ≤ u) (h₂ : t ≤ u) : s ∪ t ≤ u := by
 
 @[simp]
 theorem mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
-  ⟨fun h => (mem_add.1 h).imp_left (mem_of_le tsub_le_self),
+  ⟨fun h => (mem_add.1 h).imp_left (mem_of_le <| Multiset.sub_le_iff_le_add.mpr (le_add_right _ _)),
     (Or.elim · (mem_of_le <| le_union_left _ _) (mem_of_le <| le_union_right _ _))⟩
 #align multiset.mem_union Multiset.mem_union
 
@@ -1790,7 +1811,7 @@ theorem map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f)
 #align multiset.map_union Multiset.map_union
 
 @[simp] theorem zero_union : 0 ∪ s = s := by
-  simp [union_def]
+  simp [union_def, Multiset.zero_sub]
 
 @[simp] theorem union_zero : s ∪ 0 = s := by
   simp [union_def]
@@ -1839,7 +1860,7 @@ theorem inter_le_right (s : Multiset α) : ∀ t, s ∩ t ≤ t :=
 
 theorem le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
   revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
-  · simpa only [zero_inter, nonpos_iff_eq_zero] using h₁
+  · simpa only [zero_inter] using h₁
   by_cases h : a ∈ u
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
     exact IH (erase_le_iff_le_cons.2 h₁) (erase_le_erase _ h₂)
