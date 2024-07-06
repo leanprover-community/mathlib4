@@ -3,6 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.Probability.Kernel.IntegralCompProd
 
 /-!
@@ -30,7 +31,7 @@ open ProbabilityTheory
 namespace MeasureTheory.Measure
 
 variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-  {μ : Measure α} {κ η : kernel α β}
+  {μ ν : Measure α} {κ η : kernel α β}
 
 /-- The composition-product of a measure and a kernel. -/
 noncomputable
@@ -162,16 +163,17 @@ instance [IsFiniteMeasure μ] [IsFiniteKernel κ] : IsFiniteMeasure (μ ⊗ₘ �
 instance [IsProbabilityMeasure μ] [IsMarkovKernel κ] : IsProbabilityMeasure (μ ⊗ₘ κ) := by
   rw [compProd]; infer_instance
 
-lemma absolutelyContinuous_compProd_left {ν : Measure α} [SFinite μ] [SFinite ν]
-    (hμν : μ ≪ ν) (κ : kernel α β) [IsSFiniteKernel κ]  :
+lemma absolutelyContinuous_compProd_left [SFinite ν] (hμν : μ ≪ ν)
+    (κ : kernel α β) [IsSFiniteKernel κ]  :
     μ ⊗ₘ κ ≪ ν ⊗ₘ κ := by
+  have : SFinite μ := sFinite_of_absolutelyContinuous hμν
   refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
   rw [Measure.compProd_apply hs, lintegral_eq_zero_iff (kernel.measurable_kernel_prod_mk_left hs)]
     at hs_zero ⊢
   exact hμν.ae_eq hs_zero
 
-lemma absolutelyContinuous_compProd_right (μ : Measure α)
-    [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+lemma absolutelyContinuous_compProd_right (μ : Measure α) [SFinite μ]
+    [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     μ ⊗ₘ κ ≪ μ ⊗ₘ η := by
   refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
@@ -179,11 +181,29 @@ lemma absolutelyContinuous_compProd_right (μ : Measure α)
     at hs_zero ⊢
   filter_upwards [hs_zero, hκη] with a ha_zero ha_ac using ha_ac ha_zero
 
-lemma absolutelyContinuous_compProd {ν : Measure α}
-    [SFinite μ] [SFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η]
-    (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂ν, κ a ≪ η a) :
-    μ ⊗ₘ κ ≪ ν ⊗ₘ η :=
-  (Measure.absolutelyContinuous_compProd_left hμν κ).trans
-    (Measure.absolutelyContinuous_compProd_right ν hκη)
+lemma absolutelyContinuous_compProd [SFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+    (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
+    μ ⊗ₘ κ ≪ ν ⊗ₘ η := by
+  have : SFinite μ := sFinite_of_absolutelyContinuous hμν
+  exact (Measure.absolutelyContinuous_compProd_right μ hκη).trans
+    (Measure.absolutelyContinuous_compProd_left hμν _)
+
+lemma absolutelyContinuous_of_compProd
+    [SFinite μ] [SFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η] [h_zero : ∀ a, NeZero (κ a)]
+    (h : μ ⊗ₘ κ ≪ ν ⊗ₘ η) :
+    μ ≪ ν := by
+  refine Measure.AbsolutelyContinuous.mk (fun s hs hs0 ↦ ?_)
+  have h1 : (ν ⊗ₘ η) (s ×ˢ Set.univ) = 0 := by
+    rw [Measure.compProd_apply_prod hs MeasurableSet.univ]
+    exact setLIntegral_measure_zero _ _ hs0
+  have h2 := h h1
+  rw [Measure.compProd_apply_prod hs MeasurableSet.univ, lintegral_eq_zero_iff] at h2
+  swap; · exact kernel.measurable_coe _ MeasurableSet.univ
+  by_contra hμs
+  have : Filter.NeBot (ae (μ.restrict s)) := by simp [hμs]
+  obtain ⟨a, ha⟩ : ∃ a, κ a Set.univ = 0 := h2.exists
+  refine absurd ha ?_
+  simp only [Measure.measure_univ_eq_zero]
+  exact (h_zero a).out
 
 end MeasureTheory.Measure
