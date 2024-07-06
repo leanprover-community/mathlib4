@@ -28,7 +28,7 @@ to emphasise that the definition of a Dyck word does not depend on that underlyi
 
 ## TODO
 
-* Prove the bijection between Dyck words and Catalan numbers.
+* Prove the bijection between Dyck words and rooted binary trees.
 -/
 
 open List
