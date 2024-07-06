@@ -112,6 +112,7 @@ theorem pullback_diagonal_map_snd_snd_fst :
 
 variable [HasPullback i₁ i₂]
 
+/-- The underlying map of `pullbackDiagonalIso` -/
 def pullbackDiagonalMapIso_hom :
     pullback (diagonal f)
         (map (i₁ ≫ snd) (i₂ ≫ snd) f f (i₁ ≫ fst) (i₂ ≫ fst) i
@@ -124,6 +125,7 @@ def pullbackDiagonalMapIso_hom :
       pullback_diagonal_map_snd_snd_fst]
   · simp only [Category.assoc, condition])
 
+/-- The underlying inverse of `pullbackDiagonalIso` -/
 def pullbackDiagonalMapIso_inv : pullback i₁ i₂ ⟶
     pullback (diagonal f)
         (map (i₁ ≫ snd) (i₂ ≫ snd) f f (i₁ ≫ fst) (i₂ ≫ fst) i
