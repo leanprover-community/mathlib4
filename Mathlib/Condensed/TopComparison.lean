@@ -108,7 +108,7 @@ noncomputable instance [PreservesFiniteCoproducts G] :
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
--- @[simps!]
+@[simps! val_obj val_map]
 noncomputable def TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
   @CondensedSet.ofSheafCompHaus (yonedaPresheaf.{u, u+1, u, u+1} compHausToTop.{u} X) _ (by
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
@@ -121,6 +121,7 @@ noncomputable def TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
 /--
 `TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
+@[simps]
 noncomputable def topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} where
   obj X := X.toCondensedSet
   map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩

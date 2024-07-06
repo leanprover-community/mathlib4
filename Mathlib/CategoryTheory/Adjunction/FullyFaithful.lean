@@ -15,9 +15,6 @@ import Mathlib.CategoryTheory.Yoneda
 A left adjoint is fully faithful, if and only if the unit is an isomorphism
 (and similarly for right adjoints and the counit).
 
-## Future work
-
-The statements from Riehl 4.5.13 for adjoints which are either full, or faithful.
 -/
 
 
@@ -60,25 +57,34 @@ instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunctio
 set_option linter.uppercaseLean3 false in
 #align category_theory.unit_is_iso_of_L_fully_faithful CategoryTheory.Adjunction.unit_isIso_of_L_fully_faithful
 
+/-- If the right adjoint is faithful, then each component of the counit is an epimorphism.
+
+See [Riehl] 4.5.13 -/
+instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) where
+  left_cancellation {Y} f g hfg := by
+    apply R.map_injective
+    apply (h.homEquiv (R.obj X) Y).symm.injective
+    simpa using hfg
+
+/-- If the right adjoint is full, then each component of the counit is a split monomorphism.
+
+See [Riehl] 4.5.13 -/
+noncomputable def counitSplitMonoOfRFull [R.Full] (X : D) : SplitMono (h.counit.app X) where
+  retraction := R.preimage (h.unit.app (R.obj X))
+  id := by simp [← h.counit_naturality (R.preimage (h.unit.app (R.obj X)))]
+
+/-- If the right adjoint is full, then each component of the counit is a split monomorphism.
+
+See [Riehl] 4.5.13 -/
+instance counit_isSplitMono_of_R_full [R.Full] (X : D) : IsSplitMono (h.counit.app X) :=
+  ⟨⟨h.counitSplitMonoOfRFull X⟩⟩
+
 /-- If the right adjoint is fully faithful, then the counit is an isomorphism.
 
-See <https://stacks.math.columbia.edu/tag/07RB> (we only prove the forward direction!)
--/
-instance counit_isIso_of_R_fully_faithful [R.Full] [R.Faithful] : IsIso (Adjunction.counit h) :=
-  @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.counit h) fun X =>
-    @isIso_of_op _ _ _ _ _ <|
-      @Coyoneda.isIso _ _ _ _ ((Adjunction.counit h).app X).op
-        ⟨⟨{ app := fun Y f => R.preimage ((h.homEquiv (R.obj X) Y) f) },
-            ⟨by
-              ext x
-              apply R.map_injective
-              simp,
-             by
-              ext x
-              dsimp
-              simp only [Adjunction.homEquiv_unit, Functor.preimage_comp, Functor.preimage_map]
-              rw [← h.counit_naturality]
-              simp⟩⟩⟩
+See [Riehl] 4.5.13 -/
+instance counit_isIso_of_R_fully_faithful [R.Full] [R.Faithful] : IsIso (Adjunction.counit h) := by
+  have : ∀ X, IsIso (h.counit.app X) := fun X ↦ isIso_of_epi_of_isSplitMono _
+  apply NatIso.isIso_of_isIso_app
 set_option linter.uppercaseLean3 false in
 #align category_theory.counit_is_iso_of_R_fully_faithful CategoryTheory.Adjunction.counit_isIso_of_R_fully_faithful
 
@@ -119,6 +125,25 @@ noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful whe
 /-- If the counit is an isomorphism, then the right adjoint is fully faithful. -/
 noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful where
   preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
+
+/-- If each component the counit is an epimorphism, then the right adjoint is faithful. -/
+lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful where
+  map_injective {X Y f g} hfg := by
+    apply Epi.left_cancellation (f := h.counit.app X)
+    apply (h.homEquiv (R.obj X) Y).injective
+    simpa using hfg
+
+/-- If each component the counit is a split monomorphism, then the right adjoint is full. -/
+lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R.Full where
+  map_surjective {X Y} f := by
+    use (retraction (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f)
+    have h' : R.map (h.counit.app X) ≫ R.map (retraction (h.counit.app X)) = 𝟙 _ :=
+      by simp [← Functor.map_comp]
+    have : R.map (retraction (h.counit.app X)) = h.unit.app (R.obj X) := by
+      rw [← id_comp (R.map (retraction (h.counit.app X)))]
+      simp only [Functor.id_obj, Functor.comp_obj, id_comp,
+        ← h.right_triangle_components X, assoc, h', comp_id]
+    simp [this]
 
 instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerLeft L h.counit) := by
