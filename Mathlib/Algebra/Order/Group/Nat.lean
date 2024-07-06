@@ -47,8 +47,6 @@ instance instOrderedSub : OrderedSub ℕ := by
 
 /-! ### Miscellaneous lemmas -/
 
-theorem _root_.NeZero.one_le {n : ℕ} [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)
-
 variable {α : Type*} {n : ℕ} {f : α → ℕ}
 
 /-- See also `pow_left_strictMonoOn`. -/

@@ -366,4 +366,80 @@ protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
 
 end Clopens
 
+/-! ### Irreducible closed sets -/
+
+/-- The type of irreducible closed subsets of a topological space. -/
+structure IrreducibleCloseds (α : Type*) [TopologicalSpace α] where
+  /-- the carrier set, i.e. the points in this set -/
+  carrier : Set α
+  is_irreducible' : IsIrreducible carrier
+  is_closed' : IsClosed carrier
+
+namespace IrreducibleCloseds
+
+instance : SetLike (IrreducibleCloseds α) α where
+  coe := IrreducibleCloseds.carrier
+  coe_injective' s t h := by cases s; cases t; congr
+
+instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
+  prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩
+
+theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) := s.is_irreducible'
+
+theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.is_closed'
+
+/-- See Note [custom simps projection]. -/
+def Simps.coe (s : IrreducibleCloseds α) : Set α := s
+
+initialize_simps_projections IrreducibleCloseds (carrier → coe, as_prefix coe)
+
+@[ext]
+protected theorem ext {s t : IrreducibleCloseds α} (h : (s : Set α) = t) : s = t :=
+  SetLike.ext' h
+
+@[simp]
+theorem coe_mk (s : Set α) (h : IsIrreducible s) (h' : IsClosed s) : (mk s h h' : Set α) = s :=
+  rfl
+
+/-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
+@[simps]
+def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
+  ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
+
+@[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
+/--
+The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducible x ∧ IsClosed x }`.
+-/
+@[simps apply symm_apply]
+def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x } where
+  toFun a   := ⟨a.1, a.2, a.3⟩
+  invFun a  := ⟨a.1, a.2.1, a.2.2⟩
+  left_inv  := fun ⟨_, _, _⟩ => rfl
+  right_inv := fun ⟨_, _, _⟩ => rfl
+
+/--
+The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x ∧ IsIrreducible x }`.
+-/
+@[simps apply symm_apply]
+def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x } where
+  toFun a   := ⟨a.1, a.3, a.2⟩
+  invFun a  := ⟨a.1, a.2.2, a.2.1⟩
+  left_inv  := fun ⟨_, _, _⟩ => rfl
+  right_inv := fun ⟨_, _, _⟩ => rfl
+
+variable (α) in
+/-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an
+order isomorphism.-/
+def orderIsoSubtype : IrreducibleCloseds α ≃o { x : Set α // IsIrreducible x ∧ IsClosed x } :=
+  equivSubtype.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
+
+variable (α) in
+/-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x }` is an
+order isomorphism.-/
+def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
+  equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
+
+end IrreducibleCloseds
+
 end TopologicalSpace
