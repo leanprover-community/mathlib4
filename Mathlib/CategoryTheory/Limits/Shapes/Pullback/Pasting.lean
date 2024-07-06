@@ -81,13 +81,12 @@ Then the big square is a pullback if both the small squares are.
 def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.pasteHoriz t₁ hi₂) := by
   apply PullbackCone.isLimitAux'
   intro s
-  -- obtain both limits
+  -- Obtain the lift from lifting from both the small squares consecutively.
   obtain ⟨l₂, hl₂, hl₂'⟩ := PullbackCone.IsLimit.lift' H (s.fst ≫ g₁) s.snd
     (by rw [← s.condition, Category.assoc])
   obtain ⟨l₁, hl₁, hl₁'⟩ := PullbackCone.IsLimit.lift' H' s.fst l₂ (by rw [← hl₂, hi₂])
-  --
   refine ⟨l₁, hl₁, by simp [reassoc_of% hl₁', hl₂'], ?_⟩
-  -- Uniqueness
+  -- Uniqueness also follows from the universal property of both the small squares.
   intro m hm₁ hm₂
   apply PullbackCone.IsLimit.hom_ext H' (by simpa [hl₁] using hm₁)
   apply PullbackCone.IsLimit.hom_ext H
@@ -114,15 +113,15 @@ def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁ 
   obtain ⟨l, hl, hl'⟩ := PullbackCone.IsLimit.lift' H' s.fst (s.snd ≫ f₂)
     (by rw [Category.assoc, ← t₂.condition, reassoc_of% s.condition, ← hi₂])
   refine ⟨l, hl, ?_, ?_⟩
-  -- Check that ....
+  -- To check that `l` is compatible with the projections, we use the universal property of `t₂`
   · apply PullbackCone.IsLimit.hom_ext H
     · simp [← s.condition, ← hl, ← t₁.condition, ← hi₂]
     · simpa using hl'
-  -- Uniqueness
+  -- Uniqueness of the lift follows from the universal property of the big square
   · intro m hm₁ hm₂
     apply PullbackCone.IsLimit.hom_ext H' (by simpa [hm₁] using hl.symm)
-    dsimp at hl' ⊢
-    rw [reassoc_of% hm₂, hl']
+    rw [hl', ← hm₂]
+    simp only [PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc]
 
 end PastePullback
 
@@ -249,13 +248,12 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
     IsColimit (t₁.pasteHoriz t₂ hi₂) := by
   apply PushoutCocone.isColimitAux'
   intro s
-  -- obtain both descs
+  -- Obtain the induced map from descending from both the small squares consecutively.
   obtain ⟨l₁, hl₁, hl₁'⟩ := PushoutCocone.IsColimit.desc' H s.inl (f₂ ≫ s.inr)
     (by rw [s.condition, Category.assoc])
   obtain ⟨l₂, hl₂, hl₂'⟩ := PushoutCocone.IsColimit.desc' H' l₁ s.inr (by rw [← hl₁', hi₂])
-  --
   refine ⟨l₂, by simp [hl₂, hl₁], hl₂', ?_⟩
-  -- Uniqueness
+  -- Uniqueness also follows from the universal property of both the small squares.
   intro m hm₁ hm₂
   apply PushoutCocone.IsColimit.hom_ext H' _ (by simpa [hl₂'] using hm₂)
   simp only [PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, Category.assoc] at hm₁ hm₂
@@ -283,17 +281,18 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
   obtain ⟨l, hl, hl'⟩ := PushoutCocone.IsColimit.desc' H' (g₁ ≫ s.inl) s.inr
     (by rw [reassoc_of% t₁.condition, ← hi₂, s.condition, Category.assoc])
   refine ⟨l, ?_, hl', ?_⟩
-  -- Check that ....
+  -- To check that `l` is compatible with the projections, we use the universal property of `t₁`
   · simp at hl hl'
     apply PushoutCocone.IsColimit.hom_ext H hl
     rw [← Category.assoc, ← hi₂, t₂.condition, s.condition, Category.assoc, hl']
-  -- Uniqueness (TODO GOLF THIS)
+  -- Uniqueness of the lift follows from the universal property of the big square
+  -- TODO: why is this one complicated????
   · intro m hm₁ hm₂
     apply PushoutCocone.IsColimit.hom_ext H'
-    simp at hl ⊢
-    rw [hl, hm₁]
-    simp at hl hl' ⊢
-    rw [hm₂, ← hl']
+    dsimp at hl hl' ⊢
+    rw [hl, Category.assoc, ← hm₁]
+    simp [hm₂] at hl' ⊢
+    rw [hl', ← hm₂]
 
 end PastePushout
 
@@ -475,7 +474,6 @@ In this section we show that `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y`.
 variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (f' : W ⟶ X)
 variable [HasPullback f g] [HasPullback f' (pullback.fst : pullback f g ⟶ _)]
 
--- TODO: can this be an instance? Or needs to be a them?
 instance hasPullbackHorizPaste : HasPullback (f' ≫ f) g :=
   HasLimit.mk {
     cone := (pullback.cone f g).pasteHoriz (pullback.cone f' pullback.fst) rfl
@@ -545,7 +543,7 @@ In this section we show that `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W`.
 variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (g' : W ⟶ Y)
 variable [HasPullback f g] [HasPullback (pullback.snd : pullback f g ⟶ _) g']
 
-instance : HasPullback f (g' ≫ g) :=
+instance hasPullbackVertPaste : HasPullback f (g' ≫ g) :=
   HasLimit.mk {
     cone := (pullback.cone f g).pasteVert (pullback.cone pullback.snd g') rfl
     isLimit := pasteVertIsPullback rfl (pullback.isLimit f g) (pullback.isLimit pullback.snd g')
@@ -671,7 +669,7 @@ In this section we will construct the isomorphism `W ⨿[Y] (Y ⨿[X] Z) ≅ W �
 variable {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (f' : Y ⟶ W)
 variable [HasPushout f g] [HasPushout f' (pushout.inl : _ ⟶ pushout f g)]
 
-instance : HasPushout (f ≫ f') g :=
+instance hasPushoutVertPaste : HasPushout (f ≫ f') g :=
   HasColimit.mk {
     cocone := (pushout.cocone f g).pasteVert (pushout.cocone f' pushout.inl) rfl
     isColimit := pasteVertIsPushout rfl (pushout.isColimit f g) (pushout.isColimit f' pushout.inl)
