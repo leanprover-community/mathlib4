@@ -159,7 +159,8 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso @P) :
 
 theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally @P).RespectsIso := by
   have := sourceAffineLocally_respectsIso h
-  apply targetAffineLocally_respectsIso
+  delta affineLocally
+  infer_instance
 #align algebraic_geometry.affine_locally_respects_iso AlgebraicGeometry.affineLocally_respectsIso
 
 theorem affineLocally_iff_affineOpens_le
@@ -445,15 +446,17 @@ theorem isLocal_sourceAffineLocally : (sourceAffineLocally @P).IsLocal :=
     (@RingHom.PropertyIsLocal.ofLocalizationSpan _ hP)
 #align ring_hom.property_is_local.is_local_source_affine_locally RingHom.PropertyIsLocal.isLocal_sourceAffineLocally
 
-theorem is_local_affineLocally : PropertyIsLocalAtTarget (affineLocally @P) :=
-  hP.isLocal_sourceAffineLocally.targetAffineLocally_isLocal
-#align ring_hom.property_is_local.is_local_affine_locally RingHom.PropertyIsLocal.is_local_affineLocally
+abbrev hasAffinePropertyAffineLocally : HasAffineProperty (affineLocally @P) where
+  affineProperty := sourceAffineLocally @P
+  isLocal_affineProperty := hP.isLocal_sourceAffineLocally
+  eq_targetAffineLocally' := rfl
 
 theorem affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y)
     [∀ i, IsAffine (𝒰.obj i)] (𝒰' : ∀ i, Scheme.OpenCover.{u} ((𝒰.pullbackCover f).obj i))
     [∀ i j, IsAffine ((𝒰' i).obj j)] :
     affineLocally (@P) f ↔ ∀ i j, P (Scheme.Γ.map ((𝒰' i).map j ≫ pullback.snd).op) :=
-  (hP.isLocal_sourceAffineLocally.affine_openCover_iff f 𝒰).trans
+  letI := hP.hasAffinePropertyAffineLocally
+  (HasAffineProperty.iff_of_openCover 𝒰).trans
     (forall_congr' fun i => hP.source_affine_openCover_iff _ (𝒰' i))
 #align ring_hom.property_is_local.affine_open_cover_iff RingHom.PropertyIsLocal.affine_openCover_iff
 
@@ -554,21 +557,14 @@ theorem affineLocally_isStableUnderComposition : (affineLocally @P).IsStableUnde
       · -- Porting note: used to be exact _|>. hg i j but that can't find an instance
         apply hP.affine_openCover_iff _ _ _|>.mp
         exact hg
-      · delta affineLocally at hf
-        -- Porting note: again strange behavior of TFAE
-        have := (hP.isLocal_sourceAffineLocally.affine_openCover_TFAE f).out 0 3
-        rw [this] at hf
-        -- Porting note: needed to help Lean with this instance (same as above)
-        have : IsOpenImmersion <|
-            ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst) :=
-          LocallyRingedSpace.IsOpenImmersion.comp _ _
-        specialize hf ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst)
+      · letI := hP.hasAffinePropertyAffineLocally
+        replace hf := HasAffineProperty.of_isPullback (.of_hasPullback _
+          ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst)) hf
         -- Porting note: again strange behavior of TFAE
         have := (hP.affine_openCover_TFAE
           (pullback.snd : pullback f ((pullback g (S.affineCover.map i)).affineCover.map j ≫
           pullback.fst) ⟶ _)).out 0 3
-        rw [this] at hf
-        apply hf
+        apply this.mp hf
 #align ring_hom.property_is_local.affine_locally_stable_under_composition RingHom.PropertyIsLocal.affineLocally_isStableUnderComposition
 
 end RingHom.PropertyIsLocal
