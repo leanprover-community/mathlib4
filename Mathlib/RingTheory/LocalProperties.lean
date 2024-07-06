@@ -479,13 +479,15 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   · exact Algebra.smul_def _ _
 #align is_localization.smul_mem_finset_integer_multiple_span IsLocalization.smul_mem_finsetIntegerMultiple_span
 
-/-- If `S` is an `R' = M⁻¹R` algebra, and `x ∈ span R' s`,
-then `t • x ∈ span R s` for some `t : M`. -/
-theorem multiple_mem_span_of_mem_localization_span [Algebra R' S] [Algebra R S]
-    [IsScalarTower R R' S] [IsLocalization M R'] (s : Set S) (x : S)
-    (hx : x ∈ Submodule.span R' s) : ∃ t : M, t • x ∈ Submodule.span R s := by
+/-- If `M` is an `R' = S⁻¹R` module, and `x ∈ span R' s`,
+then `t • x ∈ span R s` for some `t : S`. -/
+theorem multiple_mem_span_of_mem_localization_span
+    {N : Type*} [AddCommMonoid N] [Module R N] [Module R' N]
+    [IsScalarTower R R' N] [IsLocalization M R'] (s : Set N) (x : N)
+    (hx : x ∈ Submodule.span R' s) : ∃ (t : M), t • x ∈ Submodule.span R s := by
+  classical
   obtain ⟨s', hss', hs'⟩ := Submodule.mem_span_finite_of_mem_span hx
-  rsuffices ⟨t, ht⟩ : ∃ t : M, t • x ∈ Submodule.span R (s' : Set S)
+  rsuffices ⟨t, ht⟩ : ∃ t : M, t • x ∈ Submodule.span R (s' : Set N)
   · exact ⟨t, Submodule.span_mono hss' ht⟩
   clear hx hss' s
   induction s' using Finset.induction_on generalizing x
@@ -495,12 +497,12 @@ theorem multiple_mem_span_of_mem_localization_span [Algebra R' S] [Algebra R S]
     Submodule.mem_span_insert] at hs' ⊢
   rcases hs' with ⟨y, z, hz, rfl⟩
   rcases IsLocalization.surj M y with ⟨⟨y', s'⟩, e⟩
-  replace e : _ * a = _ * a := (congr_arg (fun x => algebraMap R' S x * a) e : _)
-  simp_rw [RingHom.map_mul, ← IsScalarTower.algebraMap_apply, mul_comm (algebraMap R' S y),
-    mul_assoc, ← Algebra.smul_def] at e
+  apply congrArg (fun x ↦ x • a) at e
+  simp only [algebraMap_smul] at e
   rcases hs _ hz with ⟨t, ht⟩
-  refine ⟨t * s', t * y', _, (Submodule.span R (s : Set S)).smul_mem s' ht, ?_⟩
-  rw [smul_add, ← smul_smul, mul_comm, ← smul_smul, ← smul_smul, ← e]
+  refine ⟨t * s', t * y', _, (Submodule.span R (s : Set N)).smul_mem s' ht, ?_⟩
+  rw [smul_add, ← smul_smul, mul_comm, ← smul_smul, ← smul_smul, ← e, mul_comm, ← Algebra.smul_def]
+  simp
   rfl
 #align multiple_mem_span_of_mem_localization_span multiple_mem_span_of_mem_localization_span
 

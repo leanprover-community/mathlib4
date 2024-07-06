@@ -1474,6 +1474,36 @@ lemma exists_image_eq_injOn_of_subset_range (ht : t ⊆ range f) :
     ∃ s, f '' s = t ∧ InjOn f s :=
   image_preimage_eq_of_subset ht ▸ exists_image_eq_and_injOn _ _
 
+/-- If `f` maps `s` bijectively to `t` and a set `t'` is contained in the image of some `s₁ ⊇ s`,
+then `s₁` has a subset containing `s` that `f` maps bijectively to `t'`.-/
+theorem BijOn.exists_extend_of_subset {t' : Set β} (h : BijOn f s t) (hss₁ : s ⊆ s₁) (htt' : t ⊆ t')
+    (ht' : SurjOn f s₁ t') : ∃ s', s ⊆ s' ∧ s' ⊆ s₁ ∧ Set.BijOn f s' t' := by
+  obtain ⟨r, hrss, hbij⟩ := exists_subset_bijOn ((s₁ ∩ f ⁻¹' t') \ f ⁻¹' t) f
+  rw [image_diff_preimage, image_inter_preimage] at hbij
+  refine ⟨s ∪ r, subset_union_left, ?_, ?_, ?_, fun y hyt' ↦ ?_⟩
+  · exact union_subset hss₁ <| hrss.trans <| diff_subset.trans inter_subset_left
+  · rw [mapsTo', image_union, hbij.image_eq, h.image_eq, union_subset_iff]
+    exact ⟨htt', diff_subset.trans inter_subset_right⟩
+  · rw [injOn_union, and_iff_right h.injOn, and_iff_right hbij.injOn]
+    · refine fun x hxs y hyr hxy ↦ (hrss hyr).2 ?_
+      rw [← h.image_eq]
+      exact ⟨x, hxs, hxy⟩
+    exact (subset_diff.1 hrss).2.symm.mono_left h.mapsTo
+  rw [image_union, h.image_eq, hbij.image_eq, union_diff_self]
+  exact .inr ⟨ht' hyt', hyt'⟩
+
+/-- If `f` maps `s` bijectively to `t`, and `t'` is a superset of `t` contained in the range of `f`,
+then `f` maps some superset of `s` bijectively to `t'`. -/
+theorem BijOn.exists_extend {t' : Set β} (h : BijOn f s t) (htt' : t ⊆ t') (ht' : t' ⊆ range f) :
+    ∃ s', s ⊆ s' ∧ BijOn f s' t' := by
+  simpa using h.exists_extend_of_subset (subset_univ s) htt' (by simpa [SurjOn])
+
+theorem InjOn.exists_subset_injOn_subset_range_eq {r : Set α} (hinj : InjOn f r) (hrs : r ⊆ s) :
+    ∃ u : Set α, r ⊆ u ∧ u ⊆ s ∧ f '' u = f '' s ∧ InjOn f u := by
+  obtain ⟨u, hru, hus, h⟩ := hinj.bijOn_image.exists_extend_of_subset hrs
+    (image_subset f hrs) Subset.rfl
+  exact ⟨u, hru, hus, h.image_eq, h.injOn⟩
+
 theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
     (h : Classical.choice n ∈ s) : invFun f ⁻¹' s = f '' s ∪ (range f)ᶜ := by
   ext x
@@ -1708,7 +1738,6 @@ theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : �
   pi_if _ _ _
 #align set.pi_piecewise Set.pi_piecewise
 
--- Porting note (#10756): new lemma
 theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
   simp [compl_eq_univ_diff]

@@ -32,7 +32,7 @@ variable {R M M' N N' P P' : Type*}
 
 section Function
 
-variable (f : M → N) (g : N → P)
+variable (f : M → N) (g : N → P) (g' : P → P')
 
 /-- The maps `f` and `g` form an exact pair :
   `g y = 0` iff `y` belongs to the image of `f` -/
@@ -50,6 +50,19 @@ lemma Exact.of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
     (h2 : ∀ x, g x = 0 → x ∈ Set.range f) : Exact f g :=
   fun y => Iff.intro (h2 y) <|
     Exists.rec ((forall_apply_eq_imp_iff (p := (g · = 0))).mpr (congrFun h1) y)
+
+lemma Exact.comp_injective [Zero P] [Zero P'] (exact : Exact f g)
+    (inj : Function.Injective g') (h0 : g' 0 = 0) :
+    Exact f (g' ∘ g) := by
+  intro x
+  refine ⟨fun H => exact x |>.mp <| inj <| h0 ▸ H, ?_⟩
+  intro H
+  rw [Function.comp_apply, exact x |>.mpr H, h0]
+
+lemma Exact.of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
+    (hr : ∀ y, g y = 0 → y ∈ Set.range f) :
+    Exact f g :=
+  fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
 
 end Function
 
