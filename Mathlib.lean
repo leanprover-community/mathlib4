@@ -3624,6 +3624,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.EisensteinCriterion
+import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.RingTheory.Etale.Basic
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Filtration
