@@ -65,7 +65,7 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
   rw [Nat.odd_iff_not_even, c.even_length_iff_congr p]
   tauto
 
-theorem Walk.two_lt_chromaticNumber_of_odd_closed {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
+theorem Walk.two_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
     (hOdd : Odd p.length) : 2 < G.chromaticNumber := Classical.by_contradiction <| by
   intro h
   simp only [not_lt] at h
