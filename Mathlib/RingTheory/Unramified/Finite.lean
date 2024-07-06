@@ -43,9 +43,8 @@ A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
 -/
 theorem iff_exists_tensorProduct [EssFiniteType R S] :
-     FormallyUnramified R S ↔ ∃ t : S ⊗[R] S,
-      (∀ s, ((1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)) * t = 0) ∧
-      TensorProduct.lmul' R t = 1 := by
+    FormallyUnramified R S ↔ ∃ t : S ⊗[R] S,
+      (∀ s, ((1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)) * t = 0) ∧ TensorProduct.lmul' R t = 1 := by
   have := KaehlerDifferential.ideal_fg R S
   rw [iff_subsingleton_kaehlerDifferential, KaehlerDifferential,
     Ideal.cotangent_subsingleton_iff, Ideal.isIdempotentElem_iff_of_fg _
@@ -150,8 +149,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
 variable (R S)
 
 /-- An unramified free algebra is finitely generated. Iversen I.2.8 -/
-lemma finite_of_free [EssFiniteType R S] [Module.Free R S]
-    [FormallyUnramified R S] : Module.Finite R S := by
+lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   classical
   let I := Module.Free.ChooseBasisIndex R S
   -- Let `bᵢ` be an `R`-basis of `S`.
@@ -235,7 +233,7 @@ If `S` is an unramified `R`-algebra, and `M` is a `S`-module, then the map
 `S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits a `S`-linear section. -/
 noncomputable
 def sec :
-      M →ₗ[S] S ⊗[R] M where
+    M →ₗ[S] S ⊗[R] M where
   __ := ((TensorProduct.AlgebraTensorModule.mapBilinear R S S S S S M
     LinearMap.id).flip (elem R S)).comp (lsmul R R M).toLinearMap.flip
   map_smul' r m := by
