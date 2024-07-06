@@ -79,6 +79,10 @@ instance coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 #align lie_submodule.coe_submodule LieSubmodule.coeSubmodule
 
+instance instCanLiftSubmoduleLieSubmodule : CanLift (Submodule R M) (LieSubmodule R L M) (·)
+    (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
+  prf N hN := ⟨⟨N, hN⟩, rfl⟩
+
 -- Syntactic tautology
 #noalign lie_submodule.to_submodule_eq_coe
 

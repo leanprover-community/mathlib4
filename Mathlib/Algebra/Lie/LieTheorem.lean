@@ -214,13 +214,6 @@ def altWeightSpace : LieSubmodule k L V where
 
 end
 
--- move this
-theorem exists_lieIdeal_of_derivedSeries_le (A : Submodule k L) (h : derivedSeries k L 1 ≤ A) :
-    ∃ A' : LieIdeal k L, A = A' := by
-  refine ⟨⟨A, ?_⟩, rfl⟩
-  intro x m _
-  exact h <| LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
-
 section
 
 open LieModule in
@@ -293,9 +286,10 @@ theorem LieModule.exists_forall_lie_eq_smul_finrank :
       rw [left_lt_sup]
       contrapose! hz with h
       exact h <| Submodule.mem_span_singleton_self z
-  obtain ⟨A, rfl⟩ : ∃ A' : LieIdeal k L, A = A'.toSubmodule :=
-    exists_lieIdeal_of_derivedSeries_le _ hAL
-  have hAsolv : LieAlgebra.IsSolvable k A := A.incl_injective.lieAlgebra_isSolvable
+  lift A to LieIdeal k L
+  · intros
+    exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
+  have hAsolv : LieAlgebra.IsSolvable k A := (LieIdeal.incl_injective A).lieAlgebra_isSolvable
   obtain ⟨χ', v, hv, hvA⟩ := LieModule.exists_forall_lie_eq_smul_finrank A
   apply extend_weight A z hz hcompl χ' v hv hvA
 termination_by L _ _ _ => finrank k L

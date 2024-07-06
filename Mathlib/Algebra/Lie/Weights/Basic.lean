@@ -414,7 +414,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
   induction' l with l ih
   · simp
   simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
-  exact LieSubmodule.lie_mem_lie _ ⊤ (LieSubmodule.mem_top x) ih
+  exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
     [IsNilpotent R L M] (x : L) :

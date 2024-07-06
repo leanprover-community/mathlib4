@@ -93,7 +93,7 @@ theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J
   · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
     cases' h with h h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
-      exact LieSubmodule.mono_lie _ _ _ _ (ih (le_refl k)) (ih (le_refl k))
+      exact LieSubmodule.mono_lie (ih (le_refl k)) (ih (le_refl k))
     · rw [derivedSeriesOfIdeal_succ]; exact le_trans (LieSubmodule.lie_le_left _ _) (ih h)
 #align lie_algebra.derived_series_of_ideal_le LieAlgebra.derivedSeriesOfIdeal_le
 
@@ -117,7 +117,7 @@ theorem derivedSeriesOfIdeal_add_le_add (J : LieIdeal R L) (k l : ℕ) :
     D (k + l) (I + J) ≤ D k I + D l J := by
   let D₁ : LieIdeal R L →o LieIdeal R L :=
     { toFun := fun I => ⁅I, I⁆
-      monotone' := fun I J h => LieSubmodule.mono_lie I J I J h h }
+      monotone' := fun I J h => LieSubmodule.mono_lie h h }
   have h₁ : ∀ I J : LieIdeal R L, D₁ (I ⊔ J) ≤ D₁ I ⊔ J := by
     simp [D₁, LieSubmodule.lie_le_right, LieSubmodule.lie_le_left, le_sup_of_le_right]
   rw [← D₁.iterate_sup_le_sup_iff] at h₁
@@ -180,7 +180,7 @@ theorem derivedSeries_map_le (k : ℕ) : (derivedSeries R L' k).map f ≤ derive
   induction' k with k ih
   · simp only [Nat.zero_eq, derivedSeries_def, derivedSeriesOfIdeal_zero, le_top]
   · simp only [derivedSeries_def, derivedSeriesOfIdeal_succ] at ih ⊢
-    exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie _ _ _ _ ih ih)
+    exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie ih ih)
 #align lie_ideal.derived_series_map_le LieIdeal.derivedSeries_map_le
 
 theorem derivedSeries_map_eq (k : ℕ) (h : Function.Surjective f) :
