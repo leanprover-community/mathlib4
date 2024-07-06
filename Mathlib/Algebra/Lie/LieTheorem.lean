@@ -45,9 +45,8 @@ lemma map_iteratedRange_le (n : ℕ) :
     Submodule.map f (iteratedRange x f n) ≤ iteratedRange x f (n + 1) := by
   rw [Submodule.map_span]
   apply Submodule.span_mono
-  rintro _ ⟨_, ⟨m, hm, rfl⟩, rfl⟩
-  use m + 1, Nat.add_lt_add_right hm 1
-  rw [pow_succ', LinearMap.mul_apply]
+  suffices ∀ a < n, ∃ b < n + 1, (f ^ b) x = (f ^ (a + 1)) x by simpa [pow_succ']
+  aesop
 
 /-- The union of `iteratedRange` for all `n : ℕ`.-/
 abbrev iSup_iteratedRange : Submodule R M := ⨆ k : ℕ, iteratedRange x f k
@@ -55,8 +54,7 @@ abbrev iSup_iteratedRange : Submodule R M := ⨆ k : ℕ, iteratedRange x f k
 lemma map_iteratedRange_iSup_le_iSup :
     Submodule.map f (iSup_iteratedRange x f) ≤ iSup_iteratedRange x f := by
   rw [Submodule.map_iSup, iSup_le_iff]
-  intro i
-  exact (map_iteratedRange_le x f i).trans (le_iSup _ _)
+  exact fun i ↦ (map_iteratedRange_le x f i).trans (le_iSup _ _)
 
 end LinearMap.End
 
