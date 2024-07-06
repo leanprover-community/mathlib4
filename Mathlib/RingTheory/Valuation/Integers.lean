@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.Algebra.EuclideanDomain.Int
 
 #align_import ring_theory.valuation.integers from "leanprover-community/mathlib"@"7b7da89322fe46a16bf03eeb345b0acfc73fe10e"
 
