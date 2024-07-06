@@ -23,6 +23,8 @@ universe v' u' v u
 open CategoryTheory Category Limits
 
 variable (C : Type u) [Category.{v} C] [Preadditive C] [HasZeroObject C]
+  {D : Type u'} [Category.{v'} D] [Preadditive D] [HasZeroObject D]
+  (F : C ⥤ D) [F.Additive]
 
 namespace CochainComplex
 
@@ -67,6 +69,19 @@ consisting of `X` in degree `n : ℤ` and zero otherwise.
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
 
+variable {C}
+
+@[simps! hom_hom inv_hom]
+noncomputable def singleFunctorsPostcompMapCochainComplexIso :
+    (singleFunctors C).postcomp (F.mapHomologicalComplex (ComplexShape.up ℤ)) ≅
+      (singleFunctors D).precomp F :=
+  SingleFunctors.isoMk (singleMapHomologicalComplex F (ComplexShape.up ℤ)) (fun n a a' h ↦ by
+    obtain rfl : a' = a + n := by omega
+    ext X : 2
+    dsimp [singleFunctors]
+    ext
+    simp [singleObjXSelf, singleObjXIsoOfEq])
+
 end CochainComplex
 
 namespace HomotopyCategory
@@ -96,5 +111,20 @@ noncomputable def singleFunctorsPostcompQuotientIso :
 noncomputable def singleFunctorPostcompQuotientIso (n : ℤ) :
     singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ quotient _ _ :=
   (SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQuotientIso C)
+
+variable {C}
+
+/-- The canonical isomorphism between
+`(singleFunctors C).postcomp (F.mapHomotopyCategory (ComplexShape.up ℤ))` and
+`(singleFunctors D).precomp F` when `F` is an additive functor. -/
+noncomputable def singleFunctorsPostcompMapHomotopyCategoryIso :
+    (singleFunctors C).postcomp (F.mapHomotopyCategory (ComplexShape.up ℤ)) ≅
+      (singleFunctors D).precomp F :=
+  SingleFunctors.postcompPostcompIso _ _ _ ≪≫
+    SingleFunctors.postcompIsoOfIso _ (F.mapHomotopyCategoryFactors (ComplexShape.up ℤ)) ≪≫
+    (SingleFunctors.postcompPostcompIso _ _ _).symm ≪≫
+    (SingleFunctors.postcompFunctor C ℤ (HomotopyCategory.quotient D (ComplexShape.up ℤ))).mapIso
+      (CochainComplex.singleFunctorsPostcompMapCochainComplexIso F) ≪≫
+    SingleFunctors.precompPostcompIso _ _ _
 
 end HomotopyCategory

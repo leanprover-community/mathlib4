@@ -89,12 +89,31 @@ instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
 open DerivedCategory
-#check (singleFunctors C₁).postcomp F.mapDerivedCategory
 
--- TODO: promote this as an isomorphism
--- from `(singleFunctors C₁).postcomp F.mapDerivedCategory`
-def singleFunctorCompMapDerivedCategoryIso (n : ℤ ) :
-    DerivedCategory.singleFunctor C₁ n ⋙ F.mapDerivedCategory ≅
-      F ⋙ DerivedCategory.singleFunctor C₂ n := sorry
 
 end CategoryTheory.Functor
+
+namespace DerivedCategory
+
+/-- The canonical isomorphism
+`(singleFunctors C₁).postcomp F.mapDerivedCategory ≅ (singleFunctors C₂).precomp F`
+when `F` is an exact functor between abelian categories. -/
+noncomputable def singleFunctorsPostcompMapDerivedCategoryIso :
+    (singleFunctors C₁).postcomp F.mapDerivedCategory ≅
+      (singleFunctors C₂).precomp F :=
+  SingleFunctors.postcompPostcompIso _ _ _ ≪≫
+    SingleFunctors.postcompIsoOfIso _ F.mapDerivedCategoryFactorsh ≪≫
+    (SingleFunctors.postcompPostcompIso _ _ _).symm ≪≫
+    (SingleFunctors.postcompFunctor C₁ ℤ Qh).mapIso
+    (HomotopyCategory.singleFunctorsPostcompMapHomotopyCategoryIso F) ≪≫
+    SingleFunctors.precompPostcompIso _ _ _
+
+/-- The canonical isomorphism between
+`singleFunctor C₁ n ⋙ F.mapDerivedCategory ≅ F ⋙ singleFunctor C₂ n`
+when `F` is an exact functor between abelian categories. -/
+noncomputable abbrev singleFunctorCompMapDerivedCategoryIso (n : ℤ) :
+    DerivedCategory.singleFunctor C₁ n ⋙ F.mapDerivedCategory ≅
+      F ⋙ DerivedCategory.singleFunctor C₂ n :=
+  (SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompMapDerivedCategoryIso F)
+
+end DerivedCategory
