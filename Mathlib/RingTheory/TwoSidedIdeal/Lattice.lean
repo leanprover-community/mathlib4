@@ -79,7 +79,7 @@ instance : SupSet (TwoSidedIdeal R) where
   sSup s := { ringCon := sSup $ TwoSidedIdeal.ringCon '' s }
 
 lemma sSup_ringCon (S : Set (TwoSidedIdeal R)) :
-  (sSup S).ringCon = sSup (TwoSidedIdeal.ringCon '' S) := rfl
+    (sSup S).ringCon = sSup (TwoSidedIdeal.ringCon '' S) := rfl
 
 lemma iSup_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
     (⨆ i, I i).ringCon = ⨆ i, (I i).ringCon := by
