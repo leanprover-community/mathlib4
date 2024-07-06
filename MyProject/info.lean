@@ -74,8 +74,8 @@ noncomputable def info' {α : Type*} {m : MeasurableSpace α} {μ : Measure α} 
 
 noncomputable def partition.partOf'' {α : Type*} {m : MeasurableSpace α} {μ : Measure α}[IsProbabilityMeasure μ]
     (p : partition m μ) (x : α) [dec : Decidable (x ∈ (⋃ n, p.f n))]: ℕ :=
-  if h : x ∈ (⋃ n, p.f n) then 
-    Exists.choose (show ∃ n, x ∈ p.f n from (Set.mem_iUnion.mp h)) else 0  
+  if h : x ∈ (⋃ n, p.f n) then
+    Exists.choose (show ∃ n, x ∈ p.f n from (Set.mem_iUnion.mp h)) else 0
 
 
 lemma partition.partOf_spec {α : Type*} {m : MeasurableSpace α} {μ : Measure α}[IsProbabilityMeasure μ]
@@ -90,8 +90,3 @@ lemma partition.partOf_spec {α : Type*} {m : MeasurableSpace α} {μ : Measure 
 noncomputable def info'' {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
     (p : partition m μ)(x : α) [dec : Decidable (x ∈ (⋃ n, p.f n))]: ℝ :=
   (-Real.log (μ (p.f (p.partOf'' x))).toReal)
-
-
-
-
-

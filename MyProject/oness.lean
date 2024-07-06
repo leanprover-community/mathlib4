@@ -31,26 +31,26 @@ structure partition {α : Type*} (m : MeasurableSpace α) (μ : Measure α) [IsP
   countable : P.Countable
 
 def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
-  (p1 p2 : partition m μ) : partition m μ 
-    where 
+  (p1 p2 : partition m μ) : partition m μ
+    where
   P := {x | ∃ a b, a ∈ p1.P ∧ b ∈ p2.P ∧ x = a ∩ b}
   measurable := by
-    intro k hk; dsimp at hk; rcases hk with ⟨a,b,h₁,h₂,h₃⟩;rw[h₃] 
+    intro k hk; dsimp at hk; rcases hk with ⟨a,b,h₁,h₂,h₃⟩;rw[h₃]
     exact MeasurableSet.inter (p1.measurable a h₁) (p2.measurable b h₂)
   disjoint := by
-    intro a b hab; dsimp at a b; have := a; have:= hab; 
-    rcases a with ⟨c,d,e,hd,he,hc⟩ 
+    intro a b hab; dsimp at a b; have := a; have:= hab;
+    rcases a with ⟨c,d,e,hd,he,hc⟩
     rcases b with ⟨f,g,h,hg,hh,hf⟩
     have : d ≠ g ∨ e ≠ h := by
       by_contra h'; push_neg at h'
       rw [h'.1,h'.2,← hf] at hc; dsimp at hab
       exact hab hc
-  cover := by 
+  cover := by
     have h: ⋃₀ p1.P ∩ ⋃₀ p2.P  ⊆ ⋃₀ {x | ∃ a b, a ∈ p1.P ∧ b ∈ p2.P ∧ x = a ∩ b} := by
       intro x ⟨hx₁,hx₂⟩;rw [mem_sUnion] at *
       rcases hx₁ with ⟨a,ha₁,ha₂⟩; rcases hx₂ with ⟨b,hb₁,hb₂⟩
-      use a∩b;simp; refine ⟨?_, ha₂ ,hb₂⟩ 
-      exact ⟨a,ha₁,b,hb₁,rfl⟩ 
+      use a∩b;simp; refine ⟨?_, ha₂ ,hb₂⟩
+      exact ⟨a,ha₁,b,hb₁,rfl⟩
     have h₁: μ  (⋃₀ p1.P ∩ ⋃₀ p2.P)ᶜ = 0 := by
       rw [Set.compl_inter]
       have h₁ := measure_union_le (μ := μ) ((⋃₀ p1.P)ᶜ) ((⋃₀ p2.P)ᶜ)
@@ -62,12 +62,10 @@ def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [Is
     have h₂ := Set.countable_iff_exists_injective.mp p2.countable
     rcases h₁ with ⟨f,hf⟩;rcases h₂ with ⟨g,hg⟩
     refine Set.countable_iff_exists_injective.mpr ?_
-    · use (λ x : {x // ∃ a b, a ∈ p1.P ∧ b ∈ p2.P ∧ x = a ∩ b} ↦ 
+    · use (λ x : {x // ∃ a b, a ∈ p1.P ∧ b ∈ p2.P ∧ x = a ∩ b} ↦
        (Nat.pairEquiv.toFun (1,2)))
 
   noncmputable def met_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
   (p : partition m μ) : ℝ  :=
   -∑' (a:p.P),
   μ a * ENNReal.log (μ a)
-
-
