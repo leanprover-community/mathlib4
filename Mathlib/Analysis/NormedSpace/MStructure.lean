@@ -396,10 +396,9 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
   Lproj:  ∃ (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)),
     IsLprojection (NormedSpace.Dual 𝕜 A) P ∧ (Set.range P) = WeakDual.polar (E := A) 𝕜 m
 
-
 /-
 lemma IsMideal.inter (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
-    m₁ ⊓ m₂ = TopologicalSpace.Closure m₁ + m₂ := sorry
+    WeakDual.polar 𝕜 (m₁ ⊓ m₂) = closure (WeakDual.polar 𝕜 m₁ + WeakDual.polar (E := A) 𝕜 m₂) := sorry
 -/
 
 /- The M-ideals are a sub-lattice of the lattice of submodules -/
