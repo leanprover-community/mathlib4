@@ -119,9 +119,9 @@ def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁ 
     · simpa using hl'
   -- Uniqueness of the lift follows from the universal property of the big square
   · intro m hm₁ hm₂
-    apply PullbackCone.IsLimit.hom_ext H' (by simpa [hm₁] using hl.symm)
-    rw [hl', ← hm₂]
-    simp only [PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc]
+    apply PullbackCone.IsLimit.hom_ext H'
+    · simpa [hm₁] using hl.symm
+    · simpa [← hm₂] using hl'.symm
 
 end PastePullback
 
@@ -286,13 +286,10 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
     apply PushoutCocone.IsColimit.hom_ext H hl
     rw [← Category.assoc, ← hi₂, t₂.condition, s.condition, Category.assoc, hl']
   -- Uniqueness of the lift follows from the universal property of the big square
-  -- TODO: why is this one complicated????
   · intro m hm₁ hm₂
     apply PushoutCocone.IsColimit.hom_ext H'
-    dsimp at hl hl' ⊢
-    rw [hl, Category.assoc, ← hm₁]
-    simp [hm₂] at hl' ⊢
-    rw [hl', ← hm₂]
+    · simpa [← hm₁] using hl.symm
+    · simpa [← hm₂] using hl'.symm
 
 end PastePushout
 
@@ -483,7 +480,6 @@ instance hasPullbackHorizPaste : HasPullback (f' ≫ f) g :=
 /-- The canonical isomorphism `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y` -/
 noncomputable def pullbackRightPullbackFstIso :
     pullback f' (pullback.fst : pullback f g ⟶ _) ≅ pullback (f' ≫ f) g :=
-  -- TODO: iso of cone iso! isoLimitCone API?
   IsLimit.conePointUniqueUpToIso
     (pasteHorizIsPullback rfl (pullback.isLimit f g) (pullback.isLimit f' pullback.fst))
     (pullback.isLimit (f' ≫ f) g)
