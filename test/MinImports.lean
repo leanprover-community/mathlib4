@@ -34,6 +34,21 @@ lemma uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
 #min_imports in uses_norm_num
 
 /--
+info: ℤ : Type
+---
+info: Try this: change True
+---
+info: import Mathlib.Tactic.Change
+import Mathlib.Tactic.Lemma
+import Mathlib.Init.Data.Int.Basic
+-/
+#guard_msgs in
+#min_imports start
+#check ℤ
+lemma ohMy : True := by change? _; trivial
+until
+
+/--
 info: theorem extracted_1 (n : ℕ) : n = n := sorry
 ---
 info: import Mathlib.Tactic.ExtractGoal

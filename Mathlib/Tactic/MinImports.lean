@@ -92,7 +92,19 @@ def minImpsCore (stx : Syntax) : CommandElabM Unit := do
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
 
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
-to find a collection of minimal imports that should be sufficient for `cmd` to work. -/
+to find a collection of minimal imports that should be sufficient for `cmd` to work.
+
+The variant
+```
+#min_imports start
+[multiple commands]
+until
+```
+does a similar thing, but reports minimal imports for all the commands between
+`#min_imports start` and `until`.
+The `until` is optional: if it is missing, then `#min_imports start` will report the combined
+minimal imports for every command until the end of the file.
+-/
 syntax (name := minImpsStx) "#min_imports in" command : command
 
 @[inherit_doc minImpsStx]
@@ -103,5 +115,17 @@ elab_rules : command
     Elab.Command.elabCommand cmd <|> pure ()
     minImpsCore cmd
   | `(#min_imports in $cmd:term)=> minImpsCore cmd
+
+@[inherit_doc minImpsStx]
+syntax "#min_imports start" command* "until"? : command
+
+elab_rules : command
+  | `(#min_imports start $cmds* $[until]?)=> do
+    let mut tot : NameSet := {}
+    for cmd in cmds do
+      Elab.Command.elabCommand cmd <|> pure ()
+      tot := tot.append (← getIrredundantImports cmd)
+    let fileNames := tot.toArray.qsort Name.lt
+    logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
 
 end Mathlib.Command.MinImps
