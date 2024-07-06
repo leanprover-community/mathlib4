@@ -18,8 +18,6 @@ import Mathlib.Data.Finsupp.Indicator
 This file contains theorems relevant to big operators in finitely supported functions.
 -/
 
--- No bundled ordered algebra classes should be necessary
-assert_not_exists OrderedCommMonoid
 
 noncomputable section
 
