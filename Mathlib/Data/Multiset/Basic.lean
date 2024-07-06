@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Set.List
 import Mathlib.Init.Quot
@@ -20,7 +19,8 @@ These are implemented as the quotient of a list by permutations.
 We define the global infix notation `::ₘ` for `Multiset.cons`.
 -/
 
--- assert_not_exists OrderedCommMonoid
+-- No bundled ordered algebra should be required
+assert_not_exists OrderedCommMonoid
 
 universe v
 
@@ -694,18 +694,6 @@ instance instAddCommMonoid : AddCancelCommMonoid (Multiset α) where
     le_antisymm (Multiset.add_le_add_iff_left'.mp h.le) (Multiset.add_le_add_iff_left'.mp h.ge)
   nsmul := nsmulRec
 
--- instance : OrderedCancelAddCommMonoid (Multiset α) where
---   zero := 0
---   add := (· + ·)
---   add_comm := fun s t => Quotient.inductionOn₂ s t fun l₁ l₂ => Quot.sound perm_append_comm
---   add_assoc := fun s₁ s₂ s₃ =>
---     Quotient.inductionOn₃ s₁ s₂ s₃ fun l₁ l₂ l₃ => congr_arg _ <| append_assoc l₁ l₂ l₃
---   zero_add := fun s => Quot.inductionOn s fun l => rfl
---   add_zero := fun s => Quotient.inductionOn s fun l => congr_arg _ <| append_nil l
---   add_le_add_left := fun s₁ s₂ => add_le_add_left
---   le_of_add_le_add_left := fun s₁ s₂ s₃ => le_of_add_le_add_left
---   nsmul := nsmulRec
-
 theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_add_left (zero_le t) s
 #align multiset.le_add_right Multiset.le_add_right
 
@@ -719,13 +707,6 @@ theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
       ⟨l, Quot.sound p⟩,
     fun ⟨_u, e⟩ => e.symm ▸ le_add_right _ _⟩
 #align multiset.le_iff_exists_add Multiset.le_iff_exists_add
-
--- instance : CanonicallyOrderedAddCommMonoid (Multiset α) where
---   __ := inferInstanceAs (OrderBot (Multiset α))
---   le_self_add := le_add_right
---   exists_add_of_le h := leInductionOn h fun s =>
---       let ⟨l, p⟩ := s.exists_perm_append
---       ⟨l, Quot.sound p⟩
 
 @[simp]
 theorem cons_add (a : α) (s t : Multiset α) : a ::ₘ s + t = a ::ₘ (s + t) := by
