@@ -1716,6 +1716,10 @@ protected theorem sub_le_iff_le_add : s - t ≤ u ↔ s ≤ u + t := by
       simp [IH, erase_le_iff_le_cons])
 #align multiset.sub_le_iff_le_add Multiset.sub_le_iff_le_add
 
+protected theorem sub_le_self (s t : Multiset α) : s - t ≤ s := by
+  rw [Multiset.sub_le_iff_le_add]
+  exact le_add_right _ _
+
 instance : OrderedSub (Multiset α) :=
   ⟨fun _n _m _k => Multiset.sub_le_iff_le_add⟩
 
@@ -1778,9 +1782,10 @@ theorem union_le (h₁ : s ≤ u) (h₂ : t ≤ u) : s ∪ t ≤ u := by
   rw [← eq_union_left h₂]; exact union_le_union_right h₁ t
 #align multiset.union_le Multiset.union_le
 
+
 @[simp]
 theorem mem_union : a ∈ s ∪ t ↔ a ∈ s ∨ a ∈ t :=
-  ⟨fun h => (mem_add.1 h).imp_left (mem_of_le <| Multiset.sub_le_iff_le_add.mpr (le_add_right _ _)),
+  ⟨fun h => (mem_add.1 h).imp_left (mem_of_le <| Multiset.sub_le_self _ _),
     (Or.elim · (mem_of_le <| le_union_left _ _) (mem_of_le <| le_union_right _ _))⟩
 #align multiset.mem_union Multiset.mem_union
 

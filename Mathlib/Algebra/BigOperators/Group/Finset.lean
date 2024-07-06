@@ -36,6 +36,7 @@ See the documentation of `to_additive.attr` for more information.
 -/
 
 -- TODO
+-- assert_not_exists OrderedCommMonoid
 -- assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
@@ -1721,11 +1722,12 @@ theorem eq_prod_range_div' {M : Type*} [CommGroup M] (f : ℕ → M) (n : ℕ) :
 reduces to the difference of the last and first terms
 when the function we are summing is monotone.
 -/
-theorem sum_range_tsub [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
-    [ContravariantClass α α (· + ·) (· ≤ ·)] {f : ℕ → α} (h : Monotone f) (n : ℕ) :
+theorem sum_range_tsub [AddCommMonoid α] [PartialOrder α] [Sub α] [OrderedSub α]
+    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [ExistsAddOfLE α]
+    {f : ℕ → α} (h : Monotone f) (n : ℕ) :
     ∑ i ∈ range n, (f (i + 1) - f i) = f n - f 0 := by
   apply sum_range_induction
-  case base => apply tsub_self
+  case base => apply tsub_eq_of_eq_add; rw [zero_add]
   case step =>
     intro n
     have h₁ : f n ≤ f (n + 1) := h (Nat.le_succ _)

@@ -124,6 +124,8 @@ assert_not_exists Multiset.Powerset
 
 assert_not_exists CompleteLattice
 
+assert_not_exists OrderedCommMonoid
+
 open Multiset Subtype Nat Function
 
 universe u
@@ -2090,7 +2092,7 @@ variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `s \ t` is the set consisting of the elements of `s` that are not in `t`. -/
 instance : SDiff (Finset α) :=
-  ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le tsub_le_self s₁.2⟩⟩
+  ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le (Multiset.sub_le_self ..) s₁.2⟩⟩
 
 @[simp]
 theorem sdiff_val (s₁ s₂ : Finset α) : (s₁ \ s₂).val = s₁.val - s₂.val :=
@@ -3015,7 +3017,7 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
 
 lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]
-  exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, zero_ne_one⟩
+  exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, Nat.zero_ne_one⟩
 
 end Range
 
