@@ -108,7 +108,7 @@ lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d :
     scalarRTensor (monomial e r ⊗ₜ[R] n) d = if e = d then r • n else 0 := by
   rw [scalarRTensor_apply_tmul_apply, coeff_monomial, ite_smul, zero_smul]
 
- lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ):
+lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ):
     scalarRTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then n else 0 := by
   rw [scalarRTensor_apply_tmul_apply, coeff_X', ite_smul, one_smul, zero_smul]
 
