@@ -234,12 +234,6 @@ open DerivedCategory
 variable [HasDerivedCategory.{w'} C] [HasDerivedCategory.{t'} D]
   [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
-lemma homEquiv_map : homEquiv (α.map F) =
-    (ShiftedHom.mk₀ 0 (by simp) ((singleFunctorCompMapDerivedCategoryIso F 0).inv.app X)).comp
-      (((homEquiv α).map F.mapDerivedCategory).comp (ShiftedHom.mk₀ 0 (by simp)
-        ((singleFunctorCompMapDerivedCategoryIso F 0).hom.app Y)) (zero_add _)) (add_zero _) := by
-  sorry
-
 lemma homEquiv_symm_map
     (a : ShiftedHom ((DerivedCategory.singleFunctor C 0).obj X)
         ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ)) :
@@ -247,9 +241,16 @@ lemma homEquiv_symm_map
       ((ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp) ((singleFunctorCompMapDerivedCategoryIso F 0).inv.app X)).comp
         ((a.map F.mapDerivedCategory).comp
           (ShiftedHom.mk₀ ((0 : ℕ) : ℤ) (by simp) ((singleFunctorCompMapDerivedCategoryIso F 0).hom.app Y)) (zero_add _))
-          (add_zero _)) :=
-  homEquiv.injective (by simp [homEquiv_map])
+          (add_zero _)) := by
+  dsimp [homEquiv, Ext.map]
+  sorry--homEquiv.injective (by simp [homEquiv_map])
 
+lemma homEquiv_map : homEquiv (α.map F) =
+    (ShiftedHom.mk₀ 0 (by simp) ((singleFunctorCompMapDerivedCategoryIso F 0).inv.app X)).comp
+      (((homEquiv α).map F.mapDerivedCategory).comp (ShiftedHom.mk₀ 0 (by simp)
+        ((singleFunctorCompMapDerivedCategoryIso F 0).hom.app Y)) (zero_add _)) (add_zero _) := by
+  obtain ⟨a, rfl⟩ := homEquiv.symm.surjective α
+  simp [homEquiv_symm_map]
 
 lemma map_id : α.map (𝟭 C) = α := by
   dsimp only [map]

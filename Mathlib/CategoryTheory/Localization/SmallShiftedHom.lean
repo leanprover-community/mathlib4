@@ -191,6 +191,13 @@ lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
     comp_id, Functor.map_comp]
   rfl
 
+@[simp]
+lemma equiv_mk [HasSmallLocalizedShiftedHom.{w} W M X Y] {a : M}
+    (α : ShiftedHom X Y a) : equiv W L (mk W α) = α.map L := by
+  dsimp [mk, equiv, ShiftedHom.map, Iso.homToEquiv]
+  erw [SmallHom.equiv_mk]
+  rfl
+
 end
 
 lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
