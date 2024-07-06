@@ -190,8 +190,14 @@ instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _
 instance leftModule : Module R I :=
   Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ => rfl
 
+@[simp]
+lemma coe_smul {r : R} {x : I} : ↑(r • x : R) = r • (x : R) := rfl
+
 instance rightModule : Module Rᵐᵒᵖ I :=
   Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ => rfl
+
+@[simp]
+lemma coe_mop_smul {r : Rᵐᵒᵖ} {x : I} : ↑(r • x : R) = r.unop • (x : R) := rfl
 
 instance : SMulCommClass R Rᵐᵒᵖ I where
   smul_comm r s x := Subtype.ext <| smul_comm r s x.1
