@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Localization.HasLocalization
+import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # The shift induced on a localized category
@@ -51,6 +52,13 @@ lemma shiftFunctor_comp_inverts (a : A) :
   Localization.inverts L W _ (by simpa only [iff] using hf)
 
 end IsCompatibleWithShift
+
+variable {A} in
+/-- The morphism of localizer from `W` to `W` given by the functor `shiftFunctor C a`
+when `a : A` and `W` is compatible with the shift by `A`. -/
+abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
+  functor := shiftFunctor C a
+  map := by rw [MorphismProperty.IsCompatibleWithShift.condition]
 
 end MorphismProperty
 
