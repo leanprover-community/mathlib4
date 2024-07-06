@@ -209,10 +209,6 @@ variable {k G : Type u} [Field k] [Monoid G] {V W : FdRep k G}
 instance toRep_finiteDimensional : FiniteDimensional k V.toRep :=
   FGModuleCat.instFiniteCarrier k _
 
-/-- Lift `FdRep` morphisms to `Rep` morphisms via the forgetful functor. -/
-def lift_hom (f : V ⟶ W) : V.toRep ⟶ W.toRep :=
-  (forget₂ _ _).map f
-
 /-- Bundles Rep with a FiniteDimensional into a FdRep. -/
 def ofRep (V : Rep k G) [hV : FiniteDimensional k V] : FdRep k G :=
   ⟨⟨V.V, hV⟩, V.ρ⟩
