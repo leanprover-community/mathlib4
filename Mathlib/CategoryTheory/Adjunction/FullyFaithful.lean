@@ -32,34 +32,40 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
+/-- If the left adjoint is faithful, then each component of the unit is an monomorphism.
+
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
+instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
+  right_cancellation {Y} f g hfg := by
+    apply L.map_injective
+    apply (h.homEquiv Y (L.obj X)).injective
+    simpa using hfg
+
+/-- If the left adjoint is full, then each component of the unit is a split epimorphism.
+
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
+noncomputable def unitSplitEpiOfLFull [L.Full] (X : C) : SplitEpi (h.unit.app X) where
+  section_ := L.preimage (h.counit.app (L.obj X))
+  id := by simp [← h.unit_naturality (L.preimage (h.counit.app (L.obj X)))]
+
+/-- If the right adjoint is full, then each component of the counit is a split monomorphism.
+
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
+instance unit_isSplitEpi_of_L_full [L.Full] (X : C) : IsSplitEpi (h.unit.app X) :=
+  ⟨⟨h.unitSplitEpiOfLFull X⟩⟩
+
 /-- If the left adjoint is fully faithful, then the unit is an isomorphism.
 
-See
-* Lemma 4.5.13 from [Riehl][riehl2017]
-* https://math.stackexchange.com/a/2727177
-* https://stacks.math.columbia.edu/tag/07RB (we only prove the forward direction!)
--/
-instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) :=
-  @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.unit h) fun X =>
-    @Yoneda.isIso _ _ _ _ ((Adjunction.unit h).app X)
-      ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f) },
-          ⟨by
-            ext x
-            apply L.map_injective
-            aesop_cat,
-           by
-            ext x
-            dsimp
-            simp only [Adjunction.homEquiv_counit, Functor.preimage_comp,
-              Functor.preimage_map, Category.assoc]
-            rw [← h.unit_naturality]
-            simp⟩⟩⟩
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
+instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) := by
+  have : ∀ X, IsIso (h.unit.app X) := fun X ↦ isIso_of_mono_of_isSplitEpi _
+  apply NatIso.isIso_of_isIso_app
 set_option linter.uppercaseLean3 false in
 #align category_theory.unit_is_iso_of_L_fully_faithful CategoryTheory.Adjunction.unit_isIso_of_L_fully_faithful
 
 /-- If the right adjoint is faithful, then each component of the counit is an epimorphism.
 
-See [Riehl] 4.5.13 -/
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
 instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) where
   left_cancellation {Y} f g hfg := by
     apply R.map_injective
@@ -68,20 +74,20 @@ instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) wh
 
 /-- If the right adjoint is full, then each component of the counit is a split monomorphism.
 
-See [Riehl] 4.5.13 -/
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
 noncomputable def counitSplitMonoOfRFull [R.Full] (X : D) : SplitMono (h.counit.app X) where
   retraction := R.preimage (h.unit.app (R.obj X))
   id := by simp [← h.counit_naturality (R.preimage (h.unit.app (R.obj X)))]
 
 /-- If the right adjoint is full, then each component of the counit is a split monomorphism.
 
-See [Riehl] 4.5.13 -/
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
 instance counit_isSplitMono_of_R_full [R.Full] (X : D) : IsSplitMono (h.counit.app X) :=
   ⟨⟨h.counitSplitMonoOfRFull X⟩⟩
 
 /-- If the right adjoint is fully faithful, then the counit is an isomorphism.
 
-See [Riehl] 4.5.13 -/
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
 instance counit_isIso_of_R_fully_faithful [R.Full] [R.Faithful] : IsIso (Adjunction.counit h) := by
   have : ∀ X, IsIso (h.counit.app X) := fun X ↦ isIso_of_epi_of_isSplitMono _
   apply NatIso.isIso_of_isIso_app
@@ -118,22 +124,47 @@ noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L �
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_R_unit_iso_of_is_iso_counit CategoryTheory.Adjunction.whiskerLeftRUnitIsoOfIsIsoCounit
 
-/-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
+/-- If each component the unit is a monomorphism, then the left adjoint is faithful.
+
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
+lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful where
+  map_injective {X Y f g} hfg := by
+    apply Mono.right_cancellation (f := h.unit.app Y)
+    apply (h.homEquiv X (L.obj Y)).symm.injective
+    simpa using hfg
+
+/-- If each component the unit is a split epimorphism, then the left adjoint is full.
+
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
+lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full where
+  map_surjective {X Y} f := by
+    use ((h.homEquiv X (L.obj Y)) f ≫ section_ (h.unit.app Y))
+    have h' : L.map (section_ (h.unit.app Y)) ≫ L.map (h.unit.app Y) = 𝟙 _ :=
+      by simp [← Functor.map_comp]
+    have : L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) := by
+      rw [← comp_id (L.map (section_ (h.unit.app Y)))]
+      simp only [Functor.comp_obj, Functor.id_obj, comp_id,
+        ← h.left_triangle_components Y, ← assoc, h', id_comp]
+    simp [this]
+
+/-- If the unit is an isomorphism, then the left adjoint is fully faithful.
+
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
 noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful where
   preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 
-/-- If the counit is an isomorphism, then the right adjoint is fully faithful. -/
-noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful where
-  preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
+/-- If each component the counit is an epimorphism, then the right adjoint is faithful.
 
-/-- If each component the counit is an epimorphism, then the right adjoint is faithful. -/
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
 lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful where
   map_injective {X Y f g} hfg := by
     apply Epi.left_cancellation (f := h.counit.app X)
     apply (h.homEquiv (R.obj X) Y).injective
     simpa using hfg
 
-/-- If each component the counit is a split monomorphism, then the right adjoint is full. -/
+/-- If each component the counit is a split monomorphism, then the right adjoint is full.
+
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
 lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R.Full where
   map_surjective {X Y} f := by
     use (retraction (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f)
@@ -144,6 +175,12 @@ lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R
       simp only [Functor.id_obj, Functor.comp_obj, id_comp,
         ← h.right_triangle_components X, assoc, h', comp_id]
     simp [this]
+
+/-- If the counit is an isomorphism, then the right adjoint is fully faithful.
+
+See Lemma 4.5.13 from [Riehl][riehl2017] -/
+noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful where
+  preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
 
 instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerLeft L h.counit) := by
