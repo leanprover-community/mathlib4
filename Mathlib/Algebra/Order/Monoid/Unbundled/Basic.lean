@@ -368,7 +368,6 @@ theorem max_mul_mul_le_max_mul_max' : max (a * b) (c * d) ≤ max a c * max b d 
 #align max_mul_mul_le_max_mul_max' max_mul_mul_le_max_mul_max'
 #align max_add_add_le_max_add_max max_add_add_le_max_add_max
 
---TODO: Also missing `min_mul_min_le_min_mul_mul`
 @[to_additive min_add_min_le_min_add_add]
 theorem min_mul_min_le_min_mul_mul' : min a c * min b d ≤ min (a * b) (c * d) :=
   le_min (mul_le_mul' (min_le_left _ _) <| min_le_left _ _) <|

@@ -95,7 +95,7 @@ def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
       fac := fun _ => by rintro ⟨⟨⟩⟩
       uniq := fun _ _ _ => by
         funext
-        apply Subsingleton.elim }
+        subsingleton }
 #align category_theory.limits.types.terminal_limit_cone CategoryTheory.Limits.Types.terminalLimitCone
 
 /-- The terminal object in `Type u` is `PUnit`. -/
