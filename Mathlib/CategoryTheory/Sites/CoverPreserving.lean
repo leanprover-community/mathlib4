@@ -111,7 +111,7 @@ theorem CoverPreserving.preservesOneHypercovers_of_representablyFlat
       refine K.superset_covering ?_
         (K.pullback_stable A₃.hom (hG.cover_preserve (E.mem₁ i₁ i₂ q₁.right q₂.right fac)))
       rintro T f ⟨U, a, b, ⟨j, c, fac₃, fac₄⟩ , h⟩
-      refine' ⟨j, b ≫ G.map c, _, _⟩
+      refine ⟨j, b ≫ G.map c, ?_, ?_⟩
       · rw [E.map_p₁, ← fac₁, reassoc_of% h, ← G.map_comp, fac₃, G.map_comp, assoc]
       · rw [E.map_p₂, ← fac₂, reassoc_of% h, ← G.map_comp, fac₄, G.map_comp, assoc] }
 
