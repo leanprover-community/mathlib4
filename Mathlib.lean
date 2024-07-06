@@ -1158,6 +1158,7 @@ import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Restrict
+import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus.Unitary
 import Mathlib.Analysis.NormedSpace.Star.Exponential
 import Mathlib.Analysis.NormedSpace.Star.GelfandDuality
 import Mathlib.Analysis.NormedSpace.Star.Matrix
