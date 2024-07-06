@@ -691,9 +691,9 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   refine integrable_iff_cauchy_basis.2 fun ε ε0 ↦ ?_
   rcases exists_pos_mul_lt ε0 (2 * μ.toBoxAdditive I) with ⟨ε₁, ε₁0, hε₁⟩
   rcases hb with ⟨C, hC⟩
-  by_cases C0 : C ≥ 0; swap
-  · obtain ⟨x, hx⟩ := BoxIntegral.Box.nonempty_coe I
-    exact False.elim <| C0 <| le_trans (norm_nonneg (f x)) <| hC x (I.coe_subset_Icc hx)
+  have C0 : 0 ≤ C := by
+    obtain ⟨x, hx⟩ := BoxIntegral.Box.nonempty_coe I
+    exact le_trans (norm_nonneg (f x)) <| hC x (I.coe_subset_Icc hx)
   rcases exists_pos_mul_lt ε0 (4 * C) with ⟨ε₂, ε₂0, hε₂⟩
   have ε₂0': ENNReal.ofReal ε₂ ≠ 0 := fun h ↦ not_le_of_gt ε₂0 (ofReal_eq_zero.1 h)
 
