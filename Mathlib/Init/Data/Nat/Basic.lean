@@ -7,6 +7,19 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Util.CompileInductive
 
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+-/
+
 namespace Nat
 
 set_option linter.deprecated false
