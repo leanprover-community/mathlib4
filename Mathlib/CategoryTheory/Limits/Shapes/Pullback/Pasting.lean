@@ -160,6 +160,8 @@ abbrev PullbackCone.pasteVert : PullbackCone i₁ (f₂ ≫ f₁) :=
   PullbackCone.mk (g₂ ≫ g₁) i₃
     (by rw [← reassoc_of% t₂.condition, Category.assoc, t₁.condition, ← hi₂])
 
+/-- Pasting two pullback cones vertically is isomorphic to the pullback cone obtained by flipping
+them, pasting horizontally, and then flipping the result again. -/
 def PullbackCone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip hi₂) :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
 
@@ -183,6 +185,20 @@ def pasteVertIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit t₂) : IsLimit (t
   apply PullbackCone.isLimitOfFlip <| IsLimit.ofIsoLimit _ (t₁.pasteVertFlip t₂ hi₂).symm
   exact pasteHorizIsPullback hi₂ (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂)
 
+/-- Given
+```
+Y₃ - i₃ -> X₃
+|          |
+g₂         f₂
+∨          ∨
+Y₂ - i₂ -> X₂
+|          |
+g₁         f₁
+∨          ∨
+Y₁ - i₁ -> X₁
+```
+The top square is a pullback if the bottom square and the big square are.
+-/
 def topSquareIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit (t₁.pasteVert t₂ hi₂)) : IsLimit t₂ :=
   PullbackCone.isLimitOfFlip
     (leftSquareIsPullback _ hi₂ (PullbackCone.flipIsLimit H₁) (PullbackCone.flipIsLimit H₂))
@@ -191,7 +207,7 @@ end PastePullbackVert
 
 section PastePushout
 
-/- Consider the following diagram
+/- Let's consider the following diagram
 ```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
@@ -199,9 +215,8 @@ i₁         i₂         i₃
 ∨          ∨          ∨
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
-
+where `t₁` denotes the left pushout cocone, and `t₂` denotes the right pushout cocone.
 -/
-
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₁ ⟶ X₂} {f₂ : X₂ ⟶ X₃} {i₁ : X₁ ⟶ Y₁}
 variable (t₁ : PushoutCocone i₁ f₁) {i₂ : X₂ ⟶ t₁.pt} (t₂ : PushoutCocone i₂ f₂)
 variable (hi₂ : i₂ = t₁.inr)
@@ -213,12 +228,23 @@ local notation "Y₃" => t₂.pt
 local notation "g₂" => t₂.inl
 local notation "i₃" => t₂.inr
 
+/-- The pushout cocone obtained by pasting two pushout cocones horizontally. -/
 abbrev PushoutCocone.pasteHoriz : PushoutCocone i₁ (f₁ ≫ f₂) :=
   PushoutCocone.mk (g₁ ≫ g₂) i₃
     (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ← hi₂])
 
 variable {t₁} {t₂}
 
+/-- Given
+```
+X₁ - f₁ -> X₂ - f₂ -> X₃
+|          |          |
+i₁         i₂         i₃
+∨          ∨          ∨
+Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
+Then the big square is a pushout if both the small squares are.
+-/
 def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
     IsColimit (t₁.pasteHoriz t₂ hi₂) := by
   apply PushoutCocone.isColimitAux'
@@ -239,6 +265,16 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
 
 variable (t₂)
 
+/-- Given
+
+X₁ - f₁ -> X₂ - f₂ -> X₃
+|          |          |
+i₁         i₂         i₃
+∨          ∨          ∨
+Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+
+Then the right square is a pushout if the left square and the big square are.
+-/
 def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t₂ hi₂)) :
     IsColimit t₂ := by
   apply PushoutCocone.isColimitAux'
@@ -277,7 +313,6 @@ Y₁ - i₁ -> X₁
 ```
 Let `t₁` denote the cone corresponding to the bottom square, and `t₂` denote the cone corresponding
 to the top square.
-
 -/
 variable {Y₃ Y₂ Y₁ X₃ : C} {g₂ : Y₃ ⟶ Y₂} {g₁ : Y₂ ⟶ Y₁} {i₃ : Y₃ ⟶ X₃}
 variable (t₁ : PushoutCocone g₂ i₃) {i₂ : Y₂ ⟶ t₁.pt} (t₂ : PushoutCocone g₁ i₂)
@@ -296,6 +331,8 @@ abbrev PushoutCocone.pasteVert : PushoutCocone (g₂ ≫ g₁) i₃ :=
   PushoutCocone.mk i₁ (f₂ ≫ f₁)
     (by rw [← reassoc_of% t₁.condition, Category.assoc, t₂.condition, ← hi₂])
 
+/-- Pasting two pushout cocones vertically is isomorphic to the pushout cocone obtained by flipping
+them, pasting horizontally, and then flipping the result again. -/
 def PushoutCocone.pasteVertFlip : (t₁.pasteVert t₂ hi₂).flip ≅ (t₁.flip.pasteHoriz t₂.flip hi₂) :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
 
@@ -356,7 +393,6 @@ Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
 Then the big square is a pullback if both the small squares are.
 -/
--- TODO: 1 occurence in pullbacks AG
 def pasteHorizMkIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
     (H' : IsLimit (PullbackCone.mk _ _ h₁)) :
     IsLimit (PullbackCone.mk i₁ (f₁ ≫ f₂) (by rw [reassoc_of% h₁, Category.assoc, h₂])) :=
@@ -507,10 +543,8 @@ In this section we show that `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W`.
 
 
 variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (g' : W ⟶ Y)
--- TODO: these two variables should imply the third!
 variable [HasPullback f g] [HasPullback (pullback.snd : pullback f g ⟶ _) g']
 
--- TODO: can this be an instance? Or needs to be a them?
 instance : HasPullback f (g' ≫ g) :=
   HasLimit.mk {
     cone := (pullback.cone f g).pasteVert (pullback.cone pullback.snd g') rfl
@@ -519,9 +553,8 @@ instance : HasPullback f (g' ≫ g) :=
 
 /-- The canonical isomorphism `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W` -/
 def pullbackRightPullbackSndIso :
-    pullback (pullback.snd : pullback f g ⟶ _) g' ≅ pullback f (g' ≫ g) := by
-  -- TODO: term mode doesn't work here?
-  apply IsLimit.conePointUniqueUpToIso
+    pullback (pullback.snd : pullback f g ⟶ _) g' ≅ pullback f (g' ≫ g) :=
+  IsLimit.conePointUniqueUpToIso
       (pasteVertIsPullback rfl (pullback.isLimit f g) (pullback.isLimit pullback.snd g'))
       (pullback.isLimit f (g' ≫ g))
 
@@ -555,6 +588,7 @@ theorem pullbackRightPullbackSndIso_inv_fst_snd :
 end
 
 section
+
 /- Let's consider the following diagram of pushouts
 ```
 X ---- g ----> Z ----- g' -----> W
@@ -565,7 +599,6 @@ Y - inl -> Y ⨿[X] Z --inl--> (Y ⨿[X] Z) ⨿[Z] W
 ```
 In this section we show that `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ⨿[X] W`.
 -/
-
 variable {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (g' : Z ⟶ W)
 variable [HasPushout f g] [HasPushout (pushout.inr : _ ⟶ pushout f g) g']
 
