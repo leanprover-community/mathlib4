@@ -301,8 +301,9 @@ noncomputable def toSup {X : C} (m : X ∈ O) : X ⟶ sup O H :=
 
 /-- The triangles of consisting of a morphism in `H` and the maps to `sup O H` commute.
 -/
-theorem toSup_commutes {X Y : C} (mX : X ∈ O) (mY : Y ∈ O) {f : X ⟶ Y}
-    (mf : (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H) :
+theorem toSup_commutes {X Y : C}
+    (mX : X ∈ O := by simp [O]) (mY : Y ∈ O := by simp [O]) {f : X ⟶ Y}
+    (mf : (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H := by simp [H]) :
     f ≫ toSup O H mY = toSup O H mX :=
   (sup_exists O H).choose_spec.choose_spec mX mY mf
 #align category_theory.is_filtered.to_sup_commutes CategoryTheory.IsFiltered.toSup_commutes
