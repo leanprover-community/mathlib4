@@ -230,6 +230,7 @@ instance isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvab
 theorem derivedSeries_lt_top_of_solvable [IsSolvable R L] [Nontrivial L] :
     derivedSeries R L 1 < ⊤ := by
   obtain ⟨n, hn⟩ := IsSolvable.solvable (R := R) (L := L)
+  rw [lt_top_iff_ne_top]
   intro contra
   rw [LieIdeal.derivedSeries_eq_top n contra] at hn
   exact top_ne_bot hn
