@@ -92,7 +92,7 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
 #align finsupp.has_repr Finsupp.instRepr
 
 -- This cannot be put in `Mathlib.Data.DFinsupp.Notation` where it belongs, since doc-strings
--- can only be added/modified in the file where the declaration is defined.
+-- can only be added/modified in the file where the corresponding declaration is defined.
 extend_docs Finsupp.fun₀ after
   "If the expected type is `Π₀ i, α i` (`DFinsupp`)
   and `Mathlib.Data.DFinsupp.Notation` is imported,
