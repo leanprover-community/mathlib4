@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Multiset.Fold
 
@@ -14,8 +14,7 @@ import Mathlib.Data.Multiset.Fold
 # The fold operation for a commutative associative operation over a finset.
 -/
 
--- TODO:
--- assert_not_exists OrderedCommMonoid
+assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidWithZero
 
 namespace Finset

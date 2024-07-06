@@ -36,10 +36,10 @@ See the documentation of `to_additive.attr` for more information.
 -/
 
 -- TODO
--- assert_not_exists OrderedCommMonoid
 -- assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
+assert_not_exists OrderedCommMonoid
 
 variable {ι κ α β γ : Type*}
 
@@ -2002,7 +2002,7 @@ theorem prod_ite_one (s : Finset α) (p : α → Prop) [DecidablePred p]
 #align finset.sum_ite_zero Finset.sum_ite_zero
 
 @[to_additive]
-theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [OrderedCommMonoid γ]
+theorem prod_erase_lt_of_one_lt {γ : Type*} [DecidableEq α] [CommMonoid γ] [Preorder γ]
     [CovariantClass γ γ (· * ·) (· < ·)] {s : Finset α} {d : α} (hd : d ∈ s) {f : α → γ}
     (hdf : 1 < f d) : ∏ m ∈ s.erase d, f m < ∏ m ∈ s, f m := by
   conv in ∏ m ∈ s, f m => rw [← Finset.insert_erase hd]
