@@ -297,6 +297,34 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker
   refine ⟨_, ((equiv (Fintype.equivFin I)).mpr h₁),
     by ext x; simpa using congr_fun h₂ (Fintype.equivFin I x)⟩
 
+theorem eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute {e₁ e₂ : R}
+    (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂))
+    (H' : Commute e₁ e₂) :
+    e₁ = e₂ := by
+  have : (e₁ - e₂) ^ 3 = (e₁ - e₂) := by
+    simp only [pow_succ, pow_zero, mul_sub, one_mul, sub_mul, he₁.eq, he₂.eq,
+      H'.eq, mul_assoc]
+    simp only [← mul_assoc, he₁.eq, he₂.eq]
+    abel
+  obtain ⟨n, hn⟩ := H
+  have : (e₁ - e₂) ^ (2 * n + 1) = (e₁ - e₂) := by
+    clear hn; induction n <;> simp [mul_add, add_assoc, pow_add _ (2 * _) 3, this, ← pow_succ, *]
+  rwa [pow_succ, two_mul, pow_add, hn, zero_mul, zero_mul, eq_comm, sub_eq_zero] at this
+
+theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent_of_isMulCentral
+    (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
+    (he : ∀ i, IsIdempotentElem (e i))
+    (he' : ∀ i, IsMulCentral (e i))
+    (he'' : CompleteOrthogonalIdempotents (f ∘ e)) :
+    CompleteOrthogonalIdempotents e := by
+  obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker f h he'' (fun _ ↦ ⟨_, rfl⟩)
+  obtain rfl : e = e' := by
+    ext i
+    refine eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute
+      (he _) (h₁.idem _) (h _ ?_) ((he' i).comm _)
+    simpa [RingHom.mem_ker, sub_eq_zero] using congr_fun h₂.symm i
+  exact h₁
+
 end Ring
 
 section CommRing
@@ -305,16 +333,8 @@ variable {R S : Type*} [CommRing R] [Ring S] (f : R →+* S) {I} [Fintype I] {e 
 
 theorem eq_of_isNilpotent_sub_of_isIdempotentElem {e₁ e₂ : R}
     (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) (H : IsNilpotent (e₁ - e₂)) :
-    e₁ = e₂ := by
-  have : (e₁ - e₂) ^ 3 = (e₁ - e₂) := by
-    simp only [pow_succ, pow_zero, mul_sub, one_mul, sub_mul, he₁.eq, he₂.eq,
-      mul_comm e₁ e₂, mul_left_comm e₁ e₂, mul_assoc]
-    simp only [← mul_assoc, he₁.eq, he₂.eq]
-    ring
-  obtain ⟨n, hn⟩ := H
-  have : (e₁ - e₂) ^ (2 * n + 1) = (e₁ - e₂) := by
-    clear hn; induction n <;> simp [mul_add, add_assoc, pow_add _ (2 * _) 3, this, ← pow_succ, *]
-  rwa [pow_succ, two_mul, pow_add, hn, zero_mul, zero_mul, eq_comm, sub_eq_zero] at this
+    e₁ = e₂ :=
+  eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute he₁ he₂ H (.all _ _)
 
 theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
     (e : S) (he : e ∈ f.range) (he' : IsIdempotentElem e) :
@@ -327,12 +347,9 @@ theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingH
 theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
     (he : ∀ i, IsIdempotentElem (e i))
     (he' : CompleteOrthogonalIdempotents (f ∘ e)) :
-    CompleteOrthogonalIdempotents e := by
-  obtain ⟨e', h₁, h₂⟩ := lift_of_isNilpotent_ker f h he' (fun _ ↦ ⟨_, rfl⟩)
-  obtain rfl : e = e' := funext fun i ↦
-    (existsUnique_isIdempotentElem_eq_of_ker_isNilpotent f h _ ⟨_, rfl⟩ (he'.idem i)).unique
-      ⟨he _, rfl⟩ ⟨h₁.idem i, congr_fun h₂ i⟩
-  exact h₁
+    CompleteOrthogonalIdempotents e :=
+  of_ker_isNilpotent_of_isMulCentral f h he
+    (fun _ ↦ Semigroup.mem_center_iff.mpr (mul_comm · _)) he'
 
 lemma OrthogonalIdempotents.prod_one_sub (he : OrthogonalIdempotents e) :
     ∏ i, (1 - e i) = 1 - ∑ i, e i := by
