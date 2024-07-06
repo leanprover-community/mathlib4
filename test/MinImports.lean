@@ -32,3 +32,14 @@ lemma uses_norm_num : (0 + 1 : ℕ) = 1 := by norm_num
 /-- info: import Mathlib.Tactic.NormNum.Basic -/
 #guard_msgs in
 #min_imps uses_norm_num
+
+/--
+info: theorem extracted_1 (n : ℕ) : n = n := sorry
+---
+info: import Mathlib.Tactic.ExtractGoal
+import Mathlib.Tactic.Lemma
+import Mathlib.Init.Data.Nat.Notation
+-/
+#guard_msgs in
+#min_imps
+lemma hi (n : ℕ) : n = n := by extract_goal; rfl
