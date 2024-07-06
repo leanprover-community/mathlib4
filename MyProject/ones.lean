@@ -403,7 +403,7 @@ lemma eqset₂  {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProba
 lemma eqset₃ {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
     (p : partition m μ): μ (eqset p)ᶜ  = 0 := by
     unfold eqset; simp
-    exact measure_mono_null (eqset₁ p) (eqset₂ p)
+    exact measure_mono_null (eqset₁ p) (measure_union_null (eqset₂ p) (p.cover))
 
 
 
@@ -470,3 +470,38 @@ lemma lentinf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabi
       refine (measure_union ?_) ?_
       . exact disjoint_sdiff_right
     simp [h,h''] at h_eq; exact h_eq
+
+theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
+    (p : partition m μ) {c: ℕ → ℝ}:
+    met_entropy p = ∫ x, info p x ∂μ := by
+  by_cases junk : ¬ Integrable (info (μ := μ) p) μ
+  · simp [integral_undef junk]
+    sorry -- You should prove that your `tsum` defining `info` has the same junk value as `integral`
+  simp only [not_not, integrable_congr (info_ae_eq μ p)] at junk
+  rw [integral_congr_ae (info_ae_eq μ p)]
+  unfold met_entropy
+  have h := p.cover
+  have : ∫ (a : α), ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) a ∂μ =
+    ∫ (a : α) in ⋃ n, p.f n, ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) a ∂μ := by
+    rw[h]
+    exact Eq.symm integral_univ
+  rw[this]
+  let c: ℕ → ℝ := λ n ↦ if μ (eqset₀ p n) = 0 then 0 else -(μ (p.f n)).toReal.log
+  have h₁:= info_ae_eq μ p
+  have h₂: ∫ (a : α) in ⋃ n, p.f n, ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) a ∂μ =
+  ∑' (i : ℕ), (μ (p.f i)).toReal • c i := by
+    refine' (should_this_be_in_the_library _ _ _ _ _)
+    · exact fun i => MeasurableSet.nullMeasurableSet (p.measurable i)
+    · exact p.disjoint
+    · simp only [p.cover, integrableOn_univ,integrable_congr (info_ae_eq μ p),junk]
+    · sorry
+  rw[h₂]; rw[← tsum_neg]; apply tsum_congr
+  intro r; simp [c]
+  by_cases h₀ : μ (eqset₀ p r) = 0
+  · simp only [if_pos h₀]
+    rw[lentinf p r h₀]
+    have h: ENNReal.toReal 0 = 0 := by
+      exact rfl
+    rw[h,zero_mul]
+    exact neg_zero
+  · simp only [if_neg h₀]
