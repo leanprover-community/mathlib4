@@ -164,6 +164,12 @@ theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, 
 #align topological_space.opens.map_obj TopologicalSpace.Opens.map_obj
 
 @[simp]
+lemma map_homOfLE (f : X ⟶ Y) {U V : Opens Y} (e : U ≤ V) :
+    (TopologicalSpace.Opens.map f).map (homOfLE e) =
+      homOfLE (show (Opens.map f).obj U ≤ (Opens.map f).obj V from fun _ hx ↦ e hx) :=
+  rfl
+
+@[simp]
 theorem map_id_obj (U : Opens X) : (map (𝟙 X)).obj U = U :=
   let ⟨_, _⟩ := U
   rfl

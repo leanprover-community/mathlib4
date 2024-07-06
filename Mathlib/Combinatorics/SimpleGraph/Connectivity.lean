@@ -2227,6 +2227,19 @@ theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.P
   ⟨ConnectedComponent.ind₂ fun v w => ConnectedComponent.sound (h v w)⟩
 #align simple_graph.preconnected.subsingleton_connected_component SimpleGraph.Preconnected.subsingleton_connectedComponent
 
+/-- This is `Quot.recOn` specialized to connected components.
+For convenience, it strengthens the assumptions in the hypothesis
+to provide a path between the vertices. -/
+@[elab_as_elim]
+def recOn
+    {motive : G.ConnectedComponent → Sort*}
+    (c : G.ConnectedComponent)
+    (f : (v : V) → motive (G.connectedComponentMk v))
+    (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
+      ConnectedComponent.sound p.reachable ▸ f u = f v) :
+    motive c :=
+  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.2
+
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
   C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
@@ -2355,6 +2368,16 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
   left_inv v := Subtype.ext_val (φ.toEquiv.left_inv ↑v)
   right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
+
+lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
+    (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
+    (hadj : H.Adj v w) : w ∈ (↑) '' (c : Set H.verts) := by
+  rw [Set.mem_image]
+  obtain ⟨v', hv'⟩ := hv
+  use ⟨w, hw⟩
+  refine ⟨?_, rfl⟩
+  rw [← (ConnectedComponent.mem_supp_iff ..).mp hv'.1]
+  exact ConnectedComponent.connectedComponentMk_eq_of_adj ((hv'.2 ▸ hadj.symm).coe)
 
 end ConnectedComponent
 
@@ -2612,6 +2635,9 @@ instance : Decidable G.Connected := by
   rw [connected_iff, ← Finset.univ_nonempty_iff]
   infer_instance
 
+instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
+  c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
+    (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 end Finite
 
 end WalkCounting
