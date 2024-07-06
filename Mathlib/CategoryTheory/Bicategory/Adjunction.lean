@@ -32,7 +32,7 @@ identity maps or applying the pentagon relation. Such a hack may not be necessar
 coherence tactic is improved. One possible way would be to perform such a simplification in the
 preprocessing of the coherence tactic.
 
-## Todo
+## TODO
 
 * `Bicategory.mkOfAdjointifyUnit`: construct an adjoint equivalence from 2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `η` to a unit.

@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Multiplicity
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where
   `Irreducible` is equivalent to `Prime`
 
-## To do
+## TODO
 * set up the complete lattice structure on `FactorSet`.
 
 -/
