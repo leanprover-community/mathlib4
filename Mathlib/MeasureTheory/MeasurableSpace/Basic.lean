@@ -315,7 +315,6 @@ theorem measurableSet_preimage {t : Set β} (hf : Measurable f) (ht : Measurable
   hf ht
 #align measurable_set_preimage measurableSet_preimage
 
--- Porting note (#10756): new theorem
 protected theorem MeasurableSet.preimage {t : Set β} (ht : MeasurableSet t) (hf : Measurable f) :
     MeasurableSet (f ⁻¹' t) :=
   hf ht
@@ -716,10 +715,12 @@ theorem measurable_snd {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
 
 variable {m : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 
+@[fun_prop]
 theorem Measurable.fst {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).1 :=
   measurable_fst.comp hf
 #align measurable.fst Measurable.fst
 
+@[fun_prop]
 theorem Measurable.snd {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).2 :=
   measurable_snd.comp hf
 #align measurable.snd Measurable.snd
@@ -737,6 +738,7 @@ theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a)
         exact hf₂)
 #align measurable.prod Measurable.prod
 
+@[fun_prop]
 theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace γ} {f : α → β}
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
@@ -888,15 +890,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
     simp only [dif_pos (mem_iUnion.2 ⟨i, hx⟩)]
     exact iUnionLift_of_mem ⟨x, mem_iUnion.2 ⟨i, hx⟩⟩ hx
 
-/-- Given countably many disjoint measurable sets `t n` and countably many measurable
-functions `g n`, one can construct a measurable function that coincides with `g n` on `t n`. -/
-@[deprecated exists_measurable_piecewise (since := "2023-02-11")]
-theorem exists_measurable_piecewise_nat {m : MeasurableSpace α} (t : ℕ → Set β)
-    (t_meas : ∀ n, MeasurableSet (t n)) (t_disj : Pairwise (Disjoint on t)) (g : ℕ → β → α)
-    (hg : ∀ n, Measurable (g n)) : ∃ f : β → α, Measurable f ∧ ∀ n x, x ∈ t n → f x = g n x :=
-  exists_measurable_piecewise t t_meas g hg <| t_disj.mono fun i j h => by
-    simp only [h.inter_eq, eqOn_empty]
-#align exists_measurable_piecewise_nat exists_measurable_piecewise_nat
+#align exists_measurable_piecewise_nat exists_measurable_piecewise
 
 end Prod
 
@@ -915,7 +909,7 @@ theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Mea
     MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
 #align measurable_pi_iff measurable_pi_iff
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
   measurable_pi_iff.1 measurable_id a
 #align measurable_pi_apply measurable_pi_apply
@@ -926,7 +920,7 @@ theorem Measurable.eval {a : δ} {g : α → ∀ a, π a} (hg : Measurable g) :
   (measurable_pi_apply a).comp hg
 #align measurable.eval Measurable.eval
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
 theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
@@ -1106,7 +1100,6 @@ theorem measurable_inr [MeasurableSpace α] [MeasurableSpace β] : Measurable (@
 
 variable {m : MeasurableSpace α} {mβ : MeasurableSpace β}
 
--- Porting note (#10756): new theorem
 theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
     MeasurableSet s ↔ MeasurableSet (Sum.inl ⁻¹' s) ∧ MeasurableSet (Sum.inr ⁻¹' s) :=
   Iff.rfl
@@ -1128,7 +1121,6 @@ theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f :
     (hf : Measurable f) (hg : Measurable g) : Measurable (Sum.map f g) :=
   (measurable_inl.comp hf).sumElim (measurable_inr.comp hg)
 
--- Porting note (#10756): new theorem
 @[simp] theorem measurableSet_inl_image {s : Set α} :
     MeasurableSet (Sum.inl '' s : Set (α ⊕ β)) ↔ MeasurableSet s := by
   simp [measurableSet_sum_iff, Sum.inl_injective.preimage_image]
@@ -1136,7 +1128,6 @@ theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f :
 alias ⟨_, MeasurableSet.inl_image⟩ := measurableSet_inl_image
 #align measurable_set.inl_image MeasurableSet.inl_image
 
--- Porting note (#10756): new theorem
 @[simp] theorem measurableSet_inr_image {s : Set β} :
     MeasurableSet (Sum.inr '' s : Set (α ⊕ β)) ↔ MeasurableSet s := by
   simp [measurableSet_sum_iff, Sum.inr_injective.preimage_image]
@@ -1419,7 +1410,6 @@ theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ 
 instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
--- Porting note (#10756): new lemma
 @[simp]
 protected theorem sup_eq_union (s t : {s : Set α // MeasurableSet s}) : s ⊔ t = s ∪ t := rfl
 
@@ -1435,7 +1425,6 @@ theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ 
 instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
--- Porting note (#10756): new lemma
 @[simp]
 protected theorem inf_eq_inter (s t : {s : Set α // MeasurableSet s}) : s ⊓ t = s ∩ t := rfl
 

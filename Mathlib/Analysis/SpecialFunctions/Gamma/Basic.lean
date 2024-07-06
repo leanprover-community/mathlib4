@@ -303,7 +303,7 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 #align complex.Gamma_aux_recurrence2 Complex.GammaAux_recurrence2
 
 /-- The `Γ` function (of a complex variable `s`). -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 irreducible_def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 #align complex.Gamma Complex.Gamma
@@ -500,7 +500,7 @@ end Complex
 namespace Real
 
 /-- The `Γ` function (of a real variable `s`). -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 def Gamma (s : ℝ) : ℝ :=
   (Complex.Gamma s).re
 #align real.Gamma Real.Gamma
