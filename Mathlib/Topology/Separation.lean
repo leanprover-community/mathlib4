@@ -74,7 +74,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 ### T₁ spaces
 
 * `isClosedMap_const`: The constant map is a closed map.
-* `discrete_of_t1_of_finite`: A finite T₁ space must have the discrete topology.
+* `Finite.instDiscreteTopology`: A finite T₁ space must have the discrete topology.
 
 ### T₂ spaces
 
@@ -960,13 +960,15 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 #align infinite_of_mem_nhds infinite_of_mem_nhds
 
-theorem discrete_of_t1_of_finite [T1Space X] [Finite X] :
-    DiscreteTopology X := by
-  apply singletons_open_iff_discrete.mp
-  intro x
-  rw [← isClosed_compl_iff]
-  exact (Set.toFinite _).isClosed
-#align discrete_of_t1_of_finite discrete_of_t1_of_finite
+instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
+  discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
+#align discrete_of_t1_of_finite Finite.instDiscreteTopology
+
+theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
+    (f : X → Y) : ContinuousOn f s := by
+  rw [continuousOn_iff_continuous_restrict]
+  have : Finite s := hs
+  fun_prop
 
 theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTopology X] :
     Subsingleton X := by
@@ -979,7 +981,7 @@ theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTop
 theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPreconnected s)
     (hs : s.Nontrivial) : s.Infinite := by
   refine mt (fun hf => (subsingleton_coe s).mp ?_) (not_subsingleton_iff.mpr hs)
-  haveI := @discrete_of_t1_of_finite s _ _ hf.to_subtype
+  haveI := @Finite.instDiscreteTopology s _ _ hf.to_subtype
   exact @PreconnectedSpace.trivial_of_discrete _ _ (Subtype.preconnectedSpace h) _
 #align is_preconnected.infinite_of_nontrivial IsPreconnected.infinite_of_nontrivial
 
