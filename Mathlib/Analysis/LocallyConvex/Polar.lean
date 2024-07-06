@@ -173,8 +173,7 @@ def polarSubmodule (m : SubMulAction 𝕜 E) : Submodule 𝕜 F :=
     intro _ _ ha hb
     rw [polar_subMulAction, Set.mem_setOf_eq] at *
     intro _ hx
-    rw [map_add, (ha _ hx), (hb _ hx), add_zero]⟩, zero_mem_polar B ↑m ⟩, by
-    intro _ y hy
+    rw [map_add, (ha _ hx), (hb _ hx), add_zero]⟩, zero_mem_polar B ↑m ⟩, fun _ y hy => by
     simp only
     simp only at hy
     rw [polar_subMulAction, Set.mem_setOf_eq] at *
