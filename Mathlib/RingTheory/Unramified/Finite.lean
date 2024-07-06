@@ -44,7 +44,6 @@ A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S
 theorem iff_exists_tensorProduct [EssFiniteType R S] :
     FormallyUnramified R S ↔ ∃ t : S ⊗[R] S,
       (∀ s, ((1 : S) ⊗ₜ[R] s - s ⊗ₜ[R] (1 : S)) * t = 0) ∧ TensorProduct.lmul' R t = 1 := by
-  have := KaehlerDifferential.ideal_fg R S
   rw [iff_subsingleton_kaehlerDifferential, KaehlerDifferential,
     Ideal.cotangent_subsingleton_iff, Ideal.isIdempotentElem_iff_of_fg _
       (KaehlerDifferential.ideal_fg R S)]
