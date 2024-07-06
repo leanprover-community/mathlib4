@@ -8,7 +8,6 @@ import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.RingTheory.Flat.Basic
-import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 
@@ -98,6 +97,19 @@ The following is the second equivalent characterization of linearly disjointness
   elements contained in the intersection of `M` and `N` are not `R`-linearly independent (namely,
   their span is not `R ^ 2`). In particular, if any two elements in the intersection of `M` and `N`
   are commutative, then the rank of the intersection of `M` and `N` is at most one.
+
+  These results are stated using bundled version (i.e. `a : ↥(M ⊓ N)`). If you want a not bundled
+  version (i.e. `a : S` with `ha : a ∈ M ⊓ N`), you may use `LinearIndependent.of_comp` and
+  `FinVec.map_eq` (in `Mathlib/Data/Fin/Tuple/Reflection.lean`),
+  see the following code snippet:
+
+  ```
+  have h := H.not_linearIndependent_pair_of_commute_of_flat hf ⟨a, ha⟩ ⟨b, hb⟩ hc
+  contrapose! h
+  refine .of_comp (M ⊓ N).subtype ?_
+  convert h
+  exact (FinVec.map_eq _ _).symm
+  ```
 
 - `Submodule.LinearDisjoint.rank_le_one_of_commute_of_flat_of_self`:
   if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
@@ -426,25 +438,6 @@ theorem not_linearIndependent_pair_of_commute_of_flat (hf : Module.Flat R M ∨ 
   · exact H.not_linearIndependent_pair_of_commute_of_flat_left a b hc
   · exact H.not_linearIndependent_pair_of_commute_of_flat_right a b hc
 
-theorem not_linearIndependent_pair_of_commute_of_flat' (hf : Module.Flat R M ∨ Module.Flat R N)
-    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) (hc : Commute a b) :
-    ¬LinearIndependent R ![a, b] := by
-  have h := H.not_linearIndependent_pair_of_commute_of_flat hf ⟨a, ha⟩ ⟨b, hb⟩ hc
-  contrapose! h
-  refine .of_comp (M ⊓ N).subtype ?_
-  convert h
-  exact (FinVec.map_eq _ _).symm
-
-theorem not_linearIndependent_pair_of_commute_of_flat_left' [Module.Flat R M]
-    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) (hc : Commute a b) :
-    ¬LinearIndependent R ![a, b] :=
-  H.not_linearIndependent_pair_of_commute_of_flat' (Or.inl ‹_›) ha hb hc
-
-theorem not_linearIndependent_pair_of_commute_of_flat_right' [Module.Flat R N]
-    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) (hc : Commute a b) :
-    ¬LinearIndependent R ![a, b] :=
-  H.not_linearIndependent_pair_of_commute_of_flat' (Or.inr ‹_›) ha hb hc
-
 end
 
 theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
@@ -513,18 +506,6 @@ theorem not_linearIndependent_pair_of_flat_right [Module.Flat R N]
 theorem not_linearIndependent_pair_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
   H.not_linearIndependent_pair_of_commute_of_flat hf a b (mul_comm _ _)
-
-theorem not_linearIndependent_pair_of_flat' (hf : Module.Flat R M ∨ Module.Flat R N)
-    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) : ¬LinearIndependent R ![a, b] :=
-  H.not_linearIndependent_pair_of_commute_of_flat' hf ha hb (mul_comm _ _)
-
-theorem not_linearIndependent_pair_of_flat_left' [Module.Flat R M]
-    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) : ¬LinearIndependent R ![a, b] :=
-  H.not_linearIndependent_pair_of_commute_of_flat_left' ha hb (mul_comm _ _)
-
-theorem not_linearIndependent_pair_of_flat_right' [Module.Flat R N]
-    {a b : S} (ha : a ∈ M ⊓ N) (hb : b ∈ M ⊓ N) : ¬LinearIndependent R ![a, b] :=
-  H.not_linearIndependent_pair_of_commute_of_flat_right' ha hb (mul_comm _ _)
 
 end
 
