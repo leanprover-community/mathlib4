@@ -64,7 +64,7 @@ local notation "f₁" => t₁.snd
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s horizontally -/
 abbrev PullbackCone.pasteHoriz : PullbackCone (g₁ ≫ g₂) i₃ :=
   PullbackCone.mk i₁ (f₁ ≫ f₂)
-    (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ←hi₂])
+    (by rw [reassoc_of% t₁.condition, Category.assoc, ← t₂.condition, ← hi₂])
 
 variable {t₁} {t₂}
 
@@ -235,7 +235,7 @@ def pasteHorizIsPushout (H : IsColimit t₁) (H' : IsColimit t₂) :
   simp only [PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, Category.assoc] at hm₁ hm₂
   apply PushoutCocone.IsColimit.hom_ext H
   · rw [hm₁, ← hl₁, hl₂]
-  · rw [←hi₂, reassoc_of% t₂.condition, reassoc_of% t₂.condition, hm₂, hl₂']
+  · rw [← hi₂, reassoc_of% t₂.condition, reassoc_of% t₂.condition, hm₂, hl₂']
 
 variable (t₂)
 
@@ -547,7 +547,8 @@ theorem pullbackRightPullbackSndIso_inv_snd_snd :
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackSndIso_inv_fst_snd :
-    (pullbackRightPullbackSndIso f g g').inv ≫ pullback.fst ≫ pullback.snd = pullback.snd ≫ g' := by
+    (pullbackRightPullbackSndIso f g g').inv ≫ pullback.fst ≫ pullback.snd =
+      pullback.snd ≫ g' := by
   rw [pullback.condition]
   exact pullbackRightPullbackSndIso_inv_snd_snd_assoc f g g' g'
 

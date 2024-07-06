@@ -68,7 +68,6 @@ variable {X₁ X₂ X₃ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ 
 variable (f₄ : X₃ ⟶ Y₂) [HasPullback f₁ f₂] [HasPullback f₃ f₄]
 
 local notation "Z₁" => pullback f₁ f₂
-local notation "t₁" => pullback.cone f₁ f₂
 
 local notation "Z₂" => pullback f₃ f₄
 
@@ -81,7 +80,6 @@ local notation "g₃" => (pullback.fst : Z₂ ⟶ X₂)
 local notation "g₄" => (pullback.snd : Z₂ ⟶ X₃)
 
 local notation "W" => pullback (g₂ ≫ f₃) f₄
-local notation "t₂" => pullback.cone (g₂ ≫ f₃) f₄
 
 local notation "W'" => pullback f₁ (g₃ ≫ f₂)
 
