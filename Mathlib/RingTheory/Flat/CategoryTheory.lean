@@ -5,7 +5,10 @@ Authors: Jujian Zhang
 -/
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.CategoryTheory.Monoidal.Tor
+import Mathlib.Algebra.Homology.HomologySequence
 
 /-!
 # Tensoring with a flat module is an exact functor
@@ -19,9 +22,12 @@ In this file we prove that tensoring with a flat module is an exact functor.
 - `Module.Flat.iff_tensorRight_preservesFiniteLimits`: an `R`-module `M` is flat if and only if
   right tensoring with `M` preserves finite limits, i.e. the functor `M ⊗ -` is left exact.
 
+- `Module.Flat.higherTorIsoZero`: if an `R`-module `M` is flat, then `Torⁿ(M, N) ≅ 0` for all `N`
+  and all `n ≥ 1`.
+
 ## TODO
 
-- relate flatness and `Tor`-groups.
+- Prove that vanishing `Tor`-groups implies flat.
 
 -/
 
@@ -44,10 +50,7 @@ noncomputable instance [flat : Flat R M] {X Y : ModuleCat.{u} R} (f : X ⟶ Y) :
     have mono0 : Mono ι :=
       { right_cancellation := fun {Z} g h H => by
           let c' : Limits.Cone (Limits.parallelPair f 0) :=
-          ⟨Z, ⟨fun | .zero => h ≫ ι | .one => 0,
-            fun | _, _, .left => by simp [ι]
-                | _, _, .right => by simp [ι]
-                | _, _, .id x => by simp⟩⟩
+          ⟨Z, ⟨fun | .zero => h ≫ ι | .one => 0, by rintro _ _ (⟨j⟩|⟨j⟩) <;> simpa [ι] using H⟩⟩
 
           rw [hc.uniq c' g, hc.uniq c' h] <;>
           rintro (⟨j⟩|⟨j⟩) <;> simpa [ι] using H }
@@ -117,5 +120,29 @@ lemma iff_tensorRight_preservesFiniteLimits :
     have inj : Mono <| (tensorRight M).map (ModuleCat.ofHom L) :=
       preserves_mono_of_preservesLimit (tensorRight M) (ModuleCat.ofHom L)
     rwa [ModuleCat.mono_iff_injective] at inj⟩
+
+section Tor
+
+open scoped ZeroObject
+
+/--
+For a flat module `M`, higher tor groups vanish.
+-/
+noncomputable def higherTorIsoZero [flat : Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
+    ((Tor' _ (n + 1)).obj N).obj M ≅ 0 := by
+  dsimp [Tor', Functor.flip]
+  let pN := ProjectiveResolution.of N
+  refine' pN.isoLeftDerivedObj (tensorRight M) (n + 1) ≪≫ ?_
+  refine Limits.IsZero.isoZero ?_
+  dsimp only [HomologicalComplex.homologyFunctor_obj]
+  rw [← HomologicalComplex.exactAt_iff_isZero_homology, HomologicalComplex.exactAt_iff,
+    ← exact_iff_shortComplex_exact, ModuleCat.exact_iff, Eq.comm, ← LinearMap.exact_iff]
+  refine iff_rTensor_exact |>.1 flat ?_
+  rw [LinearMap.exact_iff, Eq.comm, ← ModuleCat.exact_iff]
+  have := pN.complex_exactAt_succ n
+  rw [HomologicalComplex.exactAt_iff, ← exact_iff_shortComplex_exact] at this
+  exact this
+
+end Tor
 
 end Module.Flat
