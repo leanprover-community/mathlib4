@@ -90,7 +90,7 @@ noncomputable def yonedaYonedaColimit :
           (whiskeringLeft _ _ _).obj F ⋙ colim :=
         Iso.refl _
   _ ≅ (yoneda.op ⋙ coyoneda) ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        isoWhiskerRight curriedYonedaLemma.symm _
+        isoWhiskerRight largeCurriedYonedaLemma.symm _
   _ ≅ yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim := Functor.associator _ _ _
   _ ≅ yoneda.op ⋙ (coyoneda ⋙ (whiskeringLeft _ _ _).obj F) ⋙ colim :=
         isoWhiskerLeft yoneda.op (Functor.associator _ _ _).symm
@@ -117,34 +117,19 @@ theorem qu {X : C} : ((yonedaYonedaColimit₂ F).app (op X)).inv = (colimitObjIs
   rw [← Functor.map_comp_assoc]
   erw [colimitObjIsoColimitCompEvaluation_ι_inv]
   ext η Y f
-  simp [yonedaOpCompYonedaObj, curriedYonedaLemma]
+  simp [yonedaOpCompYonedaObj, largeCurriedYonedaLemma]
 
-  erw [← (colimit.ι F j).naturality]
-  simp only [Functor.comp_obj, coyoneda_obj_obj, unop_op, ι_colimMap_assoc, evaluation_obj_obj,
-    whiskerLeft_app, colimit.ι_post]
-  rw [reassoc_of% qu_aux]
-  rw [← Functor.map_comp_assoc]
-  erw [colimitObjIsoColimitCompEvaluation_ι_inv]
-  simp only [curriedYonedaLemma, Functor.comp_obj, Functor.op_obj, whiskeringRight_obj_obj,
-    yonedaSections, yonedaLemma, evaluationUncurried_obj, Functor.prod_obj, Functor.id_obj, unop_op,
-    yoneda_obj_obj, op_unop, NatIso.ofComponents_hom_app, coyoneda_obj_obj, evaluation_obj_obj,
-    Iso.app_hom, Functor.flip_obj_obj, yonedaOpCompYonedaObj, isoWhiskerRight_inv, whiskerRight_app,
-    NatIso.ofComponents_inv_app, evaluation_obj_map, Iso.app_inv]
-  ext η Y y
-  simp
-  rw [←types_comp_apply ((colimit.ι F j).app (op X)) ((colimit F).map y.op)]
-  dsimp at y
-  simp [-types_comp_apply]
-  erw [← (colimit.ι F j).naturality]
-  simp
-  erw [← FunctorToTypes.naturality _ _ η]
-  simp
+  have := congrFun ((colimit.ι F j).naturality f.op).symm
+  dsimp at this
+  rw [this]
+  -- ???????
+  rw [yonedaEquiv_naturality, yonedaEquiv_comp, yonedaEquiv_yoneda_map]
 
 noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
   suffices IsIso (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) from
     preservesColimitOfIsIsoPost _ _
   suffices colimit.post F (coyoneda.obj (op (yoneda.obj X))) =
-      (colimitObjIsoColimitCompEvaluation _ _).inv ≫ ((yonedaYonedaColimit F).app (op X)).inv from
+      (colimitObjIsoColimitCompEvaluation _ _).inv ≫ ((yonedaYonedaColimit₂ F).app (op X)).inv from
     this ▸ inferInstance
   rw [qu]
   simp
