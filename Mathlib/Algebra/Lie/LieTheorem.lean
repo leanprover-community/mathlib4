@@ -233,8 +233,9 @@ theorem extend_weight [LieModule.IsTriangularizable k L V] (A : LieIdeal k L) (z
 
   let π1 := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hcompl
   let π2 := (k ∙ z).linearProjOfIsCompl ↑A hcompl.symm
+  let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z hz').symm
 
-  use (χ'.comp π1) + c • ((LinearEquiv.toSpanNonzeroSingleton k _ z hz').symm.comp π2), v'
+  use (χ'.comp π1) + c • (e.comp π2), v'
   constructor
   · have := hv''.right
     rw [ne_eq]
@@ -244,19 +245,14 @@ theorem extend_weight [LieModule.IsTriangularizable k L V] (A : LieIdeal k L) (z
   · intro x
     have π1_add_π2 : (π1 x : L) + π2 x = x :=
       Submodule.linear_proj_add_linearProjOfIsCompl_eq_self hcompl x
-    nth_rw 1 [← π1_add_π2, add_lie]
-    rw [hv' (π1 x), LinearMap.add_apply, LinearMap.comp_apply, add_smul, add_right_inj]
-    simp only [LieIdeal.coe_to_lieSubalgebra_to_submodule, LinearMap.smul_apply, LinearMap.coe_comp,
-      LinearEquiv.coe_coe, Function.comp_apply, smul_eq_mul]
+    conv_lhs => rw [← π1_add_π2, add_lie]
+    have hzv' : ⁅z, v'⁆ = (toEnd k _ Vχ' z) ⟨v', hv'⟩ := rfl
     rcases Submodule.mem_span_singleton.mp ((π2 x).prop) with ⟨d, hd⟩
-    rw [← hd, smul_lie]
-    have : ⁅z, v'⁆ = (toEnd k _ Vχ' z) ⟨v', hv'⟩ := rfl
-    rw [this, Module.End.HasEigenvector.apply_eq_smul hv'', mul_comm, mul_smul]
-    simp only [SetLike.mk_smul_mk]
-    congr 2
-    rw [LinearEquiv.eq_symm_apply]
-    ext
-    exact hd
+    obtain rfl : d = e (π2 x) := by
+      rw [LinearEquiv.eq_symm_apply]
+      ext
+      exact hd
+    simp [hv' (π1 x), ← hd, add_smul, mul_smul, hzv', hv''.apply_eq_smul, smul_comm _ c v']
 
 theorem LieModule.exists_forall_lie_eq_smul_finrank :
     ∀ (L : Type*) [LieRing L] [LieAlgebra k L] [FiniteDimensional k L] [IsSolvable k L]
