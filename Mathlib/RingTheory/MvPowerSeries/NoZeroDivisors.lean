@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Data.Finsupp.WellFounded
 
 /-! # ZeroDivisors in a MvPowerSeries ring
