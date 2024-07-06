@@ -20,7 +20,7 @@ In this file we provide various results regarding idempotent elements in rings.
 - `OrthogonalIdempotents`:
   A family `{ eᵢ }` of idempotent elements is orthogonal if `eᵢ * eⱼ = 0` for all `i ≠ j`.
 - `CompleteOrthogonalIdempotents`:
-  A family `{ eᵢ }` of orthogonal idempotent elements is complete if `∑ eᵢ = 0`.
+  A family `{ eᵢ }` of orthogonal idempotent elements is complete if `∑ eᵢ = 1`.
 
 ## Main results
 
@@ -30,10 +30,10 @@ In this file we provide various results regarding idempotent elements in rings.
   complete orthogonal idempotents in `R`.
 - `existsUnique_isIdempotentElem_eq_of_ker_isNilpotent`:
   If `R` is commutative and the kernel of `f : R →+* S` consists of nilpotent elements,
-  then every idempotent in the range of `f` lifts to a unique idempotent in `S`.
+  then every idempotent in the range of `f` lifts to a unique idempotent in `R`.
 - `CompleteOrthogonalIdempotents.bijective_pi`:
   If `R` is commutative, then a family `{ eᵢ }` of complete orthogonal idempotent elements induces
-  an ring isomorphism `R ≃ ∏ R ⧸ ⟨1 - eᵢ⟩`.
+  a ring isomorphism `R ≃ ∏ R ⧸ ⟨1 - eᵢ⟩`.
 -/
 section Ring
 
