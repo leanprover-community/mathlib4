@@ -186,6 +186,9 @@ namespace LinearDisjoint
 
 variable (M N)
 
+/-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent
+(in this result it is stated as `Submodule.mulLeftMap` is injective),
+then `M` and `N` are linearly disjoint. -/
 theorem of_map_basis_left' {ι : Type*} (m : Basis ι R M)
     (H : Function.Injective (mulLeftMap N m)) : M.LinearDisjoint N := by
   simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
@@ -193,6 +196,9 @@ theorem of_map_basis_left' {ι : Type*} (m : Basis ι R M)
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
+/-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent
+(in this result it is stated as `Submodule.mulRightMap` is injective),
+then `M` and `N` are linearly disjoint. -/
 theorem of_map_basis_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
   simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
@@ -200,6 +206,10 @@ theorem of_map_basis_right' {ι : Type*} (n : Basis ι R N)
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
+/-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
+such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent
+(in this result it is stated as the relevant `Finsupp.total` is injective),
+then `M` and `N` are linearly disjoint. -/
 theorem of_map_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
     (H : Function.Injective (Finsupp.total (κ × ι) S R fun i ↦ m i.1 * n i.2)) :
     M.LinearDisjoint N := by
@@ -212,20 +222,26 @@ theorem of_map_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
   simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
+/-- The zero module is linearly disjoint with any other submodules. -/
 theorem of_bot_left : (⊥ : Submodule R S).LinearDisjoint N :=
   ⟨Function.injective_of_subsingleton _⟩
 
+/-- The zero module is linearly disjoint with any other submodules. -/
 theorem of_bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
   ⟨Function.injective_of_subsingleton _⟩
 
+/-- The image of `R` in `S` is linearly disjoint with any other submodules. -/
 theorem of_one_left : (1 : Submodule R S).LinearDisjoint N := by
   rw [linearDisjoint_iff, mulMap_one_left_eq]
   exact N.injective_subtype.comp N.lTensorOne.injective
 
+/-- The image of `R` in `S` is linearly disjoint with any other submodules. -/
 theorem of_one_right : M.LinearDisjoint (1 : Submodule R S) := by
   rw [linearDisjoint_iff, mulMap_one_right_eq]
   exact M.injective_subtype.comp M.rTensorOne.injective
 
+/-- If for any finitely generated submodules `M'` of `M`, `M'` and `N` are linearly disjoint,
+then `M` and `N` themselves are linearly disjoint. -/
 theorem of_linearDisjoint_fg_left
     (H : ∀ M' : Submodule R S, M' ≤ M → M'.FG → M'.LinearDisjoint N) :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
@@ -237,6 +253,8 @@ theorem of_linearDisjoint_fg_left
   rw [← hx', ← hy']; congr
   exact (H M' hM hFG).injective (by simp [← mulMap_comp_rTensor _ hM, hx', hy', hxy])
 
+/-- If for any finitely generated submodules `N'` of `N`, `M` and `N'` are linearly disjoint,
+then `M` and `N` themselves are linearly disjoint. -/
 theorem of_linearDisjoint_fg_right
     (H : ∀ N' : Submodule R S, N' ≤ N → N'.FG → M.LinearDisjoint N') :
     M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
@@ -248,6 +266,8 @@ theorem of_linearDisjoint_fg_right
   rw [← hx', ← hy']; congr
   exact (H N' hN hFG).injective (by simp [← mulMap_comp_lTensor _ hN, hx', hy', hxy])
 
+/-- If for any finitely generated submodules `M'` and `N'` of `M` and `N`, respectively,
+`M'` and `N'` are linearly disjoint, then `M` and `N` themselves are linearly disjoint. -/
 theorem of_linearDisjoint_fg
     (H : ∀ (M' N' : Submodule R S), M' ≤ M → N' ≤ N → M'.FG → N'.FG → M'.LinearDisjoint N') :
     M.LinearDisjoint N :=
@@ -283,6 +303,10 @@ variable [CommRing R] [Ring S] [Algebra R S]
 variable (M N : Submodule R S)
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, if `N` is a flat `R`-module, then for any family of
+`R`-linearly independent elements `{ m_i }` of `M`, they are also `N`-linearly independent,
+in the sense that the `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }`
+to the sum of `m_i * n_i` (`Submodule.mulLeftMap N m`) has trivial kernel. -/
 theorem map_linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N]
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
@@ -291,6 +315,8 @@ theorem map_linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
 
+/-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
+then `M` and `N` are linearly disjoint. -/
 theorem of_map_basis_left {ι : Type*} (m : Basis ι R M)
     (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N := by
   -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
@@ -298,6 +324,10 @@ theorem of_map_basis_left {ι : Type*} (m : Basis ι R M)
   exact of_map_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
+`R`-linearly independent elements `{ n_i }` of `N`, they are also `M`-linearly independent,
+in the sense that the `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }`
+to the sum of `m_i * n_i` (`Submodule.mulRightMap M n`) has trivial kernel. -/
 theorem map_linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
@@ -306,6 +336,8 @@ theorem map_linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Fla
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
 
+/-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
+then `M` and `N` are linearly disjoint. -/
 theorem of_map_basis_right {ι : Type*} (n : Basis ι R N)
     (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N := by
   -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
@@ -313,6 +345,10 @@ theorem of_map_basis_right {ι : Type*} (n : Basis ι R N)
   exact of_map_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, if `M` is flat, then for any family of
+`R`-linearly independent elements `{ m_i }` of `M`, and any family of
+`R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
+also `R`-linearly independent. -/
 theorem map_linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat R M]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
@@ -330,6 +366,10 @@ theorem map_linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.
   rwa [this] at h
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, if `N` is flat, then for any family of
+`R`-linearly independent elements `{ m_i }` of `M`, and any family of
+`R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
+also `R`-linearly independent. -/
 theorem map_linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Flat R N]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
@@ -347,6 +387,10 @@ theorem map_linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module
   rwa [this] at h
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then for any family of
+`R`-linearly independent elements `{ m_i }` of `M`, and any family of
+`R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
+also `R`-linearly independent. -/
 theorem map_linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
     (hf : Module.Flat R M ∨ Module.Flat R N)
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
@@ -355,12 +399,17 @@ theorem map_linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
   · exact H.map_linearIndependent_mul_of_flat_left hm hn
   · exact H.map_linearIndependent_mul_of_flat_right hm hn
 
+/-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
+such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
+then `M` and `N` are linearly disjoint. -/
 theorem of_map_basis_mul {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
     (H : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1) : M.LinearDisjoint N := by
   rw [LinearIndependent, LinearMap.ker_eq_bot] at H
   exact of_map_basis_mul' M N m n H
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, if `N` is flat, then for any submodule `M'` of `M`,
+`M'` and `N` are also linearly disjoint. -/
 theorem of_le_left_of_flat (H : M.LinearDisjoint N) {M' : Submodule R S}
     (h : M' ≤ M) [Module.Flat R N] : M'.LinearDisjoint N := by
   let i := mulMap M N ∘ₗ (inclusion h).rTensor N
@@ -370,6 +419,8 @@ theorem of_le_left_of_flat (H : M.LinearDisjoint N) {M' : Submodule R S}
   exact ⟨this ▸ hi⟩
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, if `M` is flat, then for any submodule `N'` of `N`,
+`M` and `N'` are also linearly disjoint. -/
 theorem of_le_right_of_flat (H : M.LinearDisjoint N) {N' : Submodule R S}
     (h : N' ≤ N) [Module.Flat R M] : M.LinearDisjoint N' := by
   let i := mulMap M N ∘ₗ (inclusion h).lTensor M
@@ -379,18 +430,26 @@ theorem of_le_right_of_flat (H : M.LinearDisjoint N) {N' : Submodule R S}
   exact ⟨this ▸ hi⟩
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, `M'` and `N'` are submodules of `M` and `N`,
+respectively, such that `N` and `M'` are flat, then `M'` and `N'` are also linearly disjoint. -/
 theorem of_le_of_flat_right (H : M.LinearDisjoint N) {M' N' : Submodule R S}
     (hm : M' ≤ M) (hn : N' ≤ N) [Module.Flat R N] [Module.Flat R M'] :
     M'.LinearDisjoint N' := (H.of_le_left_of_flat hm).of_le_right_of_flat hn
 
 variable {M N} in
+/-- If `M` and `N` are linearly disjoint, `M'` and `N'` are submodules of `M` and `N`,
+respectively, such that `M` and `N'` are flat, then `M'` and `N'` are also linearly disjoint. -/
 theorem of_le_of_flat_left (H : M.LinearDisjoint N) {M' N' : Submodule R S}
     (hm : M' ≤ M) (hn : N' ≤ N) [Module.Flat R M] [Module.Flat R N'] :
     M'.LinearDisjoint N' := (H.of_le_right_of_flat hn).of_le_left_of_flat hm
 
+/-- If `N` is flat, `M` is contained in `i(R)`, where `i : R → S` is the structure map,
+then `M` and `N` are linearly disjoint. -/
 theorem of_left_le_one_of_flat (h : M ≤ 1) [Module.Flat R N] :
     M.LinearDisjoint N := (of_one_left N).of_le_left_of_flat h
 
+/-- If `M` is flat, `N` is contained in `i(R)`, where `i : R → S` is the structure map,
+then `M` and `N` are linearly disjoint. -/
 theorem of_right_le_one_of_flat (h : N ≤ 1) [Module.Flat R M] :
     M.LinearDisjoint N := (of_one_right M).of_le_right_of_flat h
 
@@ -404,6 +463,8 @@ section
 
 variable [Nontrivial R]
 
+/-- If `M` and `N` are linearly disjoint, if `M` is flat, then any two commutative
+elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
 theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
   let n : Fin 2 → N := (inclusion inf_le_right) ∘ ![a, b]
@@ -418,6 +479,8 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
     false_or, m] at hm
   exact h.ne_zero 0 hm.2
 
+/-- If `M` and `N` are linearly disjoint, if `N` is flat, then any two commutative
+elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
 theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
   let m : Fin 2 → M := (inclusion inf_le_left) ∘ ![a, b]
@@ -432,6 +495,8 @@ theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
     false_or, n] at hn
   exact h.ne_zero 0 hn.2
 
+/-- If `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then any two commutative
+elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
 theorem not_linearIndependent_pair_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := by
   rcases hf with _ | _
@@ -440,6 +505,8 @@ theorem not_linearIndependent_pair_of_commute_of_flat (hf : Module.Flat R M ∨ 
 
 end
 
+/-- If `M` and `N` are linearly disjoint, if one of `M` and `N` is flat,
+if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M ⊓ N)` is at most one. -/
 theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 := by
   nontriviality R
@@ -458,14 +525,20 @@ theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat
   ext i
   fin_cases i <;> simp
 
+/-- If `M` and `N` are linearly disjoint, if `M` is flat,
+if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M ⊓ N)` is at most one. -/
 theorem rank_inf_le_one_of_commute_of_flat_left [Module.Flat R M]
     (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
   H.rank_inf_le_one_of_commute_of_flat (Or.inl ‹_›) hc
 
+/-- If `M` and `N` are linearly disjoint, if `N` is flat,
+if any two elements of `↥(M ⊓ N)` are commutative, then the rank of `↥(M ⊓ N)` is at most one. -/
 theorem rank_inf_le_one_of_commute_of_flat_right [Module.Flat R N]
     (hc : ∀ (m n : ↥(M ⊓ N)), Commute m.1 n.1) : Module.rank R ↥(M ⊓ N) ≤ 1 :=
   H.rank_inf_le_one_of_commute_of_flat (Or.inr ‹_›) hc
 
+/-- If `M` and itself are linearly disjoint, if `M` is flat,
+if any two elements of `M` are commutative, then the rank of `M` is at most one. -/
 theorem rank_le_one_of_commute_of_flat_of_self (H : M.LinearDisjoint M) [Module.Flat R M]
     (hc : ∀ (m n : M), Commute m.1 n.1) : Module.rank R M ≤ 1 := by
   rw [← inf_of_le_left (le_refl M)] at hc ⊢
@@ -495,30 +568,44 @@ section
 
 variable [Nontrivial R]
 
+/-- The `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat_left`
+for commutative rings. -/
 theorem not_linearIndependent_pair_of_flat_left [Module.Flat R M]
     (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
   H.not_linearIndependent_pair_of_commute_of_flat_left a b (mul_comm _ _)
 
+/-- The `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat_right`
+for commutative rings. -/
 theorem not_linearIndependent_pair_of_flat_right [Module.Flat R N]
     (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
   H.not_linearIndependent_pair_of_commute_of_flat_right a b (mul_comm _ _)
 
+/-- The `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat`
+for commutative rings. -/
 theorem not_linearIndependent_pair_of_flat (hf : Module.Flat R M ∨ Module.Flat R N)
     (a b : ↥(M ⊓ N)) : ¬LinearIndependent R ![a, b] :=
   H.not_linearIndependent_pair_of_commute_of_flat hf a b (mul_comm _ _)
 
 end
 
+/-- The `Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat`
+for commutative rings. -/
 theorem rank_inf_le_one_of_flat (hf : Module.Flat R M ∨ Module.Flat R N) :
     Module.rank R ↥(M ⊓ N) ≤ 1 :=
   H.rank_inf_le_one_of_commute_of_flat hf fun _ _ ↦ mul_comm _ _
 
+/-- The `Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat_left`
+for commutative rings. -/
 theorem rank_inf_le_one_of_flat_left [Module.Flat R M] : Module.rank R ↥(M ⊓ N) ≤ 1 :=
   H.rank_inf_le_one_of_commute_of_flat_left fun _ _ ↦ mul_comm _ _
 
+/-- The `Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat_right`
+for commutative rings. -/
 theorem rank_inf_le_one_of_flat_right [Module.Flat R N] : Module.rank R ↥(M ⊓ N) ≤ 1 :=
   H.rank_inf_le_one_of_commute_of_flat_right fun _ _ ↦ mul_comm _ _
 
+/-- The `Submodule.LinearDisjoint.rank_le_one_of_commute_of_flat_of_self`
+for commutative rings. -/
 theorem rank_le_one_of_flat_of_self (H : M.LinearDisjoint M) [Module.Flat R M] :
     Module.rank R M ≤ 1 :=
   H.rank_le_one_of_commute_of_flat_of_self fun _ _ ↦ mul_comm _ _
