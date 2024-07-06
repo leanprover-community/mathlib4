@@ -708,8 +708,12 @@ lemma toAddCircle_intCast (j : ℤ) :
 
 lemma toAddCircle_natCast (j : ℕ) :
     toAddCircle (j : ZMod N) = ↑(j / N : ℝ) := by
-  rw [← Int.cast_natCast, toAddCircle_intCast, Int.cast_natCast]
+  simpa using toAddCircle_intCast (N := N) j
 
+/--
+Explicit formula for `toCircle j`. Note that this is "evil" because it uses `ZMod.val`. Where
+possible, it is recommended to lift `j` to `ℤ` and use `toAddCircle_intCast` instead.
+-/
 lemma toAddCircle_apply (j : ZMod N) :
     toAddCircle j = ↑(j.val / N : ℝ) := by
   rw [← toAddCircle_natCast, natCast_zmod_val]

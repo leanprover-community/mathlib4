@@ -121,7 +121,7 @@ theorem Real.Angle.expMapCircle_coe (x : ℝ) : Real.Angle.expMapCircle x = _roo
 theorem Real.Angle.coe_expMapCircle (θ : Real.Angle) :
     (θ.expMapCircle : ℂ) = θ.cos + θ.sin * I := by
   induction θ using Real.Angle.induction_on
-  simp [Complex.exp_mul_I]
+  simp [exp_mul_I]
 #align real.angle.coe_exp_map_circle Real.Angle.coe_expMapCircle
 
 @[simp]
@@ -253,26 +253,29 @@ noncomputable def toCircle : AddChar (ZMod N) circle where
     Function.Periodic.lift_coe, mul_zero, expMapCircle_zero]
 
 lemma toCircle_intCast (j : ℤ) :
-    toCircle (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
+    toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
   rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_intCast,
     Function.Periodic.lift_coe, expMapCircle_apply]
   push_cast
   ring_nf
 
 lemma toCircle_natCast (j : ℕ) :
-    toCircle (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
-  simpa using toCircle_intCast j
+    toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
+  simpa using toCircle_intCast (N := N) j
 
+/--
+Explicit formula for `toCircle j`. Note that this is "evil" because it uses `ZMod.val`. Where
+possible, it is recommended to lift `j` to `ℤ` and use `toCircle_intCast` instead.
+-/
 lemma toCircle_apply (j : ZMod N) :
-    toCircle j = Complex.exp (2 * π * Complex.I * j.val / N) := by
+    toCircle j = exp (2 * π * I * j.val / N) := by
   rw [← toCircle_natCast, natCast_zmod_val]
 
-/-- The additive character from `ZMod N` to `ℂ`, sending
-`j mod N` to `exp (2 * π * I * j / N)`. -/
+/-- The additive character from `ZMod N` to `ℂ`, sending `j mod N` to `exp (2 * π * I * j / N)`. -/
 noncomputable def stdAddChar : AddChar (ZMod N) ℂ := circle.subtype.compAddChar toCircle
 
 lemma stdAddChar_coe (j : ℤ) :
-    stdAddChar (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
+    stdAddChar (j : ZMod N) = exp (2 * π * I * j / N) := by
   simp only [stdAddChar, MonoidHom.coe_compAddChar, Function.comp_apply,
     Submonoid.coe_subtype, toCircle_intCast]
 
