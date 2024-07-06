@@ -31,9 +31,9 @@ open Finsupp
 
 variable {σ R : Type*}
 
-section Ring
+section Semiring
 
-variable [Ring R]
+variable [Semiring R]
 
 /-- A multivariate power series is not a zero divisor
   when its constant coefficient is not a zero divisor -/
@@ -68,4 +68,4 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
   · intro he
     simp only [mem_antidiagonal, add_zero, not_true_eq_false] at he
 
-end Ring
+end Semiring
