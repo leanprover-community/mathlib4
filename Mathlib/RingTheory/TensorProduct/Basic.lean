@@ -258,9 +258,9 @@ instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
     [IsScalarTower S A A] [SMulCommClass R S A] : IsScalarTower S (A ⊗[R] B) (A ⊗[R] B) where
   smul_assoc r x y := by
     change r • x * y = r • (x * y)
-    induction y using TensorProduct.induction_on with
+    induction y with
     | zero => simp [smul_zero]
-    | tmul a b => induction x using TensorProduct.induction_on with
+    | tmul a b => induction x with
       | zero => simp [smul_zero]
       | tmul a' b' =>
         dsimp
@@ -274,9 +274,9 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
     [SMulCommClass S A A] [SMulCommClass R S A] : SMulCommClass S (A ⊗[R] B) (A ⊗[R] B) where
   smul_comm r x y := by
     change r • (x * y) = x * r • y
-    induction y using TensorProduct.induction_on with
+    induction y with
     | zero => simp [smul_zero]
-    | tmul a b => induction x using TensorProduct.induction_on with
+    | tmul a b => induction x with
       | zero => simp [smul_zero]
       | tmul a' b' =>
         dsimp

@@ -6,8 +6,8 @@ Authors: Johan Commelin, Floris van Doorn
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
 
@@ -74,6 +74,7 @@ namespace Set
 
 /-! ### `0`/`1` as sets -/
 
+assert_not_exists OrderedAddCommMonoid
 
 section One
 
@@ -977,7 +978,8 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
 
 @[to_additive (attr := simp)]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
+  match n with
+  | n + 1 => rw [pow_succ', empty_mul]
 #align set.empty_pow Set.empty_pow
 #align set.empty_nsmul Set.empty_nsmul
 
@@ -1358,13 +1360,6 @@ lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : 
 
 end Group
 
-@[to_additive]
-theorem BddAbove.mul [OrderedCommMonoid α] {A B : Set α} (hA : BddAbove A) (hB : BddAbove B) :
-    BddAbove (A * B) :=
-  hA.image2 (fun _ _ _ h ↦ mul_le_mul_right' h _) (fun _ _ _ h ↦ mul_le_mul_left' h _) hB
-#align set.bdd_above_mul Set.BddAbove.mul
-#align set.bdd_above_add Set.BddAbove.add
-
 end Set
 
 /-! ### Miscellaneous -/
@@ -1392,7 +1387,7 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
   replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
     Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
   replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
-    (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
+    (congr_arg f (Nat.add_sub_of_le hk)).symm.trans (key (k - n)).2
   exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
 #align add_group.card_nsmul_eq_card_nsmul_card_univ_aux AddGroup.card_nsmul_eq_card_nsmul_card_univ_aux

@@ -191,7 +191,8 @@ theorem mk_mul_mk [Add ι] [GMul A] {i j} (a : A i) (b : A j) :
 
 namespace GMonoid
 
-variable {A} [AddMonoid ι] [GMul A] [GOne A]
+variable {A}
+variable [AddMonoid ι] [GMul A] [GOne A]
 
 /-- A default implementation of power on a graded monoid, like `npowRec`.
 `GMonoid.gnpow` should be used instead. -/

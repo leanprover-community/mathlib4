@@ -673,15 +673,6 @@ theorem memℒp_indicator_iff_restrict (hs : MeasurableSet s) :
   simp [Memℒp, aestronglyMeasurable_indicator_iff hs, snorm_indicator_eq_snorm_restrict hs]
 #align measure_theory.mem_ℒp_indicator_iff_restrict MeasureTheory.memℒp_indicator_iff_restrict
 
-/-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
-`μ.restrict s` are the same. -/
-theorem snorm_restrict_eq [SFinite μ] {s : Set α} (hsf : f.support ⊆ s) :
-    snorm f p (μ.restrict s) = snorm f p μ := by
-  replace hsf := hsf.trans <| subset_toMeasurable μ s
-  simp_rw [Function.support_subset_iff', ← Set.indicator_apply_eq_self] at hsf
-  simp_rw [← μ.restrict_toMeasurable_of_sFinite s,
-    ← snorm_indicator_eq_snorm_restrict (measurableSet_toMeasurable μ s), funext hsf]
-
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/
 theorem Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top
