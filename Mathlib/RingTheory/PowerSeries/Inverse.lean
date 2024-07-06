@@ -120,6 +120,10 @@ theorem sub_const_eq_X_mul_shift (φ : R⟦X⟧) :
 set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_X_mul_shift PowerSeries.sub_const_eq_X_mul_shift
 
+theorem invOfUnit_mul (φ : R⟦X⟧) (u : Rˣ) (h : constantCoeff R φ = u) :
+    invOfUnit φ u * φ = 1 :=
+  MvPowerSeries.invOfUnit_mul φ u h
+
 theorem isUnit_iff_constantCoeff (φ : R⟦X⟧) :
     IsUnit φ ↔ IsUnit (constantCoeff R φ) :=
   MvPowerSeries.isUnit_iff_constantCoeff φ
