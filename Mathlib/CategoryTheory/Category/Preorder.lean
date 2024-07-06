@@ -107,6 +107,30 @@ theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
 
+lemma homOfLE_isIso_of_eq {x y : X} (h : x ≤ y) (heq : x = y) :
+    IsIso (homOfLE h) :=
+  ⟨homOfLE (le_of_eq heq.symm), by simp⟩
+
+@[simp, reassoc]
+lemma homOfLE_comp_eqToHom {a b c : X} (hab : a ≤ b) (hbc : b = c) :
+    homOfLE hab ≫ eqToHom hbc = homOfLE (hab.trans (le_of_eq hbc)) :=
+  rfl
+
+@[simp, reassoc]
+lemma eqToHom_comp_homOfLE {a b c : X} (hab : a = b) (hbc : b ≤ c) :
+    eqToHom hab ≫ homOfLE hbc = homOfLE ((le_of_eq hab).trans hbc) :=
+  rfl
+
+@[simp, reassoc]
+lemma homOfLE_op_comp_eqToHom {a b c : X} (hab : b ≤ a) (hbc : op b = op c) :
+    (homOfLE hab).op ≫ eqToHom hbc = (homOfLE ((le_of_eq (op_injective hbc.symm)).trans hab)).op :=
+  rfl
+
+@[simp, reassoc]
+lemma eqToHom_comp_homOfLE_op {a b c : X} (hab : op a = op b) (hbc : c ≤ b) :
+    eqToHom hab ≫ (homOfLE hbc).op = (homOfLE (hbc.trans (le_of_eq (op_injective hab.symm)))).op :=
+  rfl
+
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
 def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
   (homOfLE h).op

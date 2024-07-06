@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
 /-!
 # Big operators on a list in ordered groups
