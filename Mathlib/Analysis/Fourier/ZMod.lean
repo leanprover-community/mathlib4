@@ -54,7 +54,7 @@ variable {N : ℕ} [NeZero N] (χ : DirichletCharacter ℂ N)
 lemma fourierTransform_eq_gaussSum_mulShift (k : ZMod N) :
     𝓕 χ k = gaussSum χ (stdAddChar.mulShift (-k)) := by
   simp only [dft_def]
-  refine congr_arg Finset.univ.sum (funext fun j ↦ ?_)
+  refine Fintype.sum_congr rfl fun j ↦ ?_
   rw [AddChar.mulShift_apply, mul_comm j, Submonoid.smul_def, smul_eq_mul, neg_mul,
     stdAddChar_apply, mul_comm (χ _)]
 

@@ -264,7 +264,7 @@ lemma toCircle_intCast (j : ℤ) :
 
 lemma toCircle_natCast (j : ℕ) :
     toCircle (j : ZMod N) = Complex.exp (2 * π * Complex.I * j / N) := by
-  rw [← Int.cast_natCast, toCircle_intCast, Int.cast_natCast]
+  simpa using toCircle_intCast j
 
 lemma toCircle_apply (j : ZMod N) :
     toCircle j = Complex.exp (2 * π * Complex.I * j.val / N) := by
