@@ -8,7 +8,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 #align_import category_theory.glue_data from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
@@ -424,7 +423,6 @@ structure GlueData' where
     t' j k i hjk hij.symm hik.symm ≫ t' k i j hik.symm hjk.symm hij = 𝟙 _
 
 attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback mono_comp
-  hasPullback_of_left_iso
 
 attribute [reassoc (attr := simp)] GlueData'.t_inv GlueData'.cocycle
 
