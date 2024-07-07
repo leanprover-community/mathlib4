@@ -48,7 +48,7 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
 
-open Localization
+open Localization Limits
 
 /-- The property that morphisms between single complexes in arbitrary degrees are `w`-small
 in the derived category. -/
@@ -130,7 +130,51 @@ lemma comp_hom {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + 
 lemma ext {n : ℕ} {α β : Ext X Y n} (h : α.hom = β.hom) : α = β :=
   homEquiv.injective h
 
+lemma ext_iff {n : ℕ} {α β : Ext X Y n} : α = β ↔ α.hom = β.hom :=
+  ⟨fun h ↦ by rw [h], ext⟩
+
 end
+
+noncomputable def mk₀ (f : X ⟶ Y) : Ext X Y 0 := SmallShiftedHom.mk₀ _ _ (by simp)
+  ((CochainComplex.singleFunctor C 0).map f)
+
+@[simp]
+lemma mk₀_hom [HasDerivedCategory.{w'} C] (f : X ⟶ Y) :
+    (mk₀ f).hom = ShiftedHom.mk₀ _ (by simp) ((DerivedCategory.singleFunctor C 0).map f) :=
+  sorry
+
+section
+
+variable {n : ℕ} {X₁ X₂ : C}
+
+lemma biprod_ext {α β : Ext (X₁ ⊞ X₂) Y n}
+    (h : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n)): α = β := by
+  letI := HasDerivedCategory.standard C
+  rw [ext_iff] at h ⊢
+  simp at h
+  sorry
+
+variable (α₁ : Ext X₁ Y n) (α₂ : Ext X₂ Y n)
+
+def descBiprod : Ext (X₁ ⊞ X₂) Y n := by
+  have := α₁
+  have := α₂
+  sorry
+
+@[simp]
+lemma inl_descBiprod : (mk₀ biprod.inl).comp (descBiprod α₁ α₂) (zero_add n) = α₁ := sorry
+
+@[simp]
+lemma inr_descBiprod : (mk₀ biprod.inr).comp (descBiprod α₁ α₂) (zero_add n) = α₂ := sorry
+
+end
+
+noncomputable instance {n : ℕ} : Add (Ext X Y n) where
+  add α₁ α₂ := (mk₀ (biprod.lift (𝟙 X) (𝟙 X))).comp (descBiprod α₁ α₂) (zero_add n)
+
+lemma add_hom [HasDerivedCategory.{w'} C] {n : ℕ} (α₁ α₂ : Ext X Y n) :
+    (α₁ + α₂).hom = α₁.hom + α₂.hom :=
+  sorry
 
 end Ext
 
