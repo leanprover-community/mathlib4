@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Nonneg.OrderedRing
+import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Int.Lemmas
 

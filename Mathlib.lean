@@ -588,7 +588,7 @@ import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.Algebra.Order.Nonneg.OrderedRing
+import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Pointwise

@@ -5,7 +5,7 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Nonneg.OrderedRing
+import Mathlib.Algebra.Order.Nonneg.Ring
 
 /-!
 # Modules over nonnegative elements
