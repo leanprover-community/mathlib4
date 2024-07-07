@@ -36,11 +36,11 @@ lemma cot_pi_eq_exp_ratio (z : ℂ) :
   rw [cot_eq_exp_ratio (π * z)]
   ring_nf
 
-theorem UpperHalfPlane.exp_two_pi_I_lt_one (z : ℍ) :
-    Complex.abs (Complex.exp (2 * π * I * z)) < 1 := by
-  simp only [coe_I, Complex.abs_exp, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero,
-    sub_zero, Complex.I_re, mul_im, zero_mul, add_zero, Complex.I_im, mul_one, sub_self, coe_re,
-    coe_im, zero_sub, exp_lt_one_iff, Left.neg_neg_iff]
+theorem UpperHalfPlane.abs_exp_two_pi_I_lt_one (z : ℍ) :
+    ‖(Complex.exp (2 * π * Complex.I * z))‖ < 1 := by
+  simp only [coe_I, Complex.norm_eq_abs, Complex.abs_exp, mul_re, re_ofNat, ofReal_re, im_ofNat,
+    ofReal_im, mul_zero, sub_zero, Complex.I_re, mul_im, zero_mul, add_zero, Complex.I_im, mul_one,
+    sub_self, coe_re, coe_im, zero_sub, exp_lt_one_iff, Left.neg_neg_iff]
   positivity
 
 /- This is the version one probably wants, which is why the pi's are there. -/
@@ -51,6 +51,6 @@ theorem pi_mul_cot_pi_q_exp (z : ℍ) :
     simp only [div_mul_eq_div_mul_one_div, div_I, one_div, neg_mul, mul_neg, neg_inj]
     ring
   rw [cot_pi_eq_exp_ratio, h1, one_div, (tsum_geometric_of_norm_lt_one
-    (by exact UpperHalfPlane.exp_two_pi_I_lt_one z)).symm, add_comm, geom_series_mul_one_add
-      (Complex.exp (2 * π * I * (z : ℂ))) (UpperHalfPlane.exp_two_pi_I_lt_one _)]
+    (UpperHalfPlane.abs_exp_two_pi_I_lt_one z)).symm, add_comm, geom_series_mul_one_add
+      (Complex.exp (2 * π * I * (z : ℂ))) (UpperHalfPlane.abs_exp_two_pi_I_lt_one _)]
   ring
