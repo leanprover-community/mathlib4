@@ -15,12 +15,15 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.Analysis.Subadditive
+import Mathlib.Analysis.SpecialFunctions.Log.ENNReal
+import Mathlib.Analysis.Convex.Function
+import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 
 
 
 --fkt lemma is fully contained in lean
 --and is described by the followinf theorems
-#eval ENNReal.log 0
+
 
 #check Subadditive --definition
 #check Subadditive.lim
@@ -130,6 +133,7 @@ def refine_partition {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [Is
       have h₁ := measure_union_le (μ := μ) ((⋃ n, p1.f n)ᶜ) ((⋃ n, p2.f n)ᶜ)
       have h₂ :  μ (⋃ n, p1.f n)ᶜ + μ (⋃ n, p2.f n)ᶜ = 0 := by
         simp only [p1.cover,p2.cover]; rw [add_zero]
+      apply measure_union_null p1.cover p2.cover
     exact measure_mono_null (compl_subset_compl_of_subset h) h₁
 }
 
@@ -210,7 +214,8 @@ lemma equiv {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabili
 
 --one small issue
 
-
+#check StrictConvexOn.map_sum_lt
+#check Finset.sum_congr
 
 theorem max_entropy {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
 (n : ℕ) (fp : finpart m μ n) :(met_entropy' n fp  ≤ Real.log n) ∧ (met_entropy' n fp = Real.log (n) ↔
@@ -228,7 +233,7 @@ by
       simp [met_entropy']
       obtain (rfl | hn) := eq_zero_or_pos n
       · simp
-      · have : n ≠ 0 := by linarith[hn]
+      · have h0: n ≠ 0 := by linarith[hn]
         have h: -1/(n:ℝ) *Real.log (n:ℝ) = 1/(n:ℝ) * Real.log (1/(n:ℝ)) := by
           field_simp
           simp [Real.log_inv, mul_inv_cancel <| show (n : ℝ) ≠ 0 by norm_cast]
@@ -243,24 +248,68 @@ by
           rfl
         have h5: φ ((∑ i in Finset.univ, 1/(n:ℝ)*(μ (fp.f i)).toReal)) = φ ((1/(n:ℝ)) * (∑ i in Finset.univ, (μ (fp.f i)).toReal)) := by
           rw[mul_sum]
-        have h6: sconvex_on' (Ici (0:ℝ)) φ := by
-          sorry
+        have h6: StrictConvexOn ℝ (Ici (0:ℝ)) φ := by
+          exact Real.strictConvexOn_mul_log
         let t : Fin n → ℝ := λ i ↦ 1 / n
         have h7: φ ((∑ i in Finset.univ, (t i)*(μ (fp.f i)).toReal)) = φ ((∑ i in Finset.univ, 1/(n:ℝ)*(μ (fp.f i)).toReal)) := by
           exact rfl
+        have h₀: ∀ i ∈ Finset.univ, 0 < t i := by
+          intro j hj
+          refine one_div_pos.mpr ?_
+          exact Nat.cast_pos'.mpr hn
+        have h₁: ∑ i, t i = 1 := by
+          have: ∑ i, t i = ((∑ i in (Finset.univ : Finset (Fin n)),  1 / n) : ℝ ) := by
+            apply Finset.sum_congr
+            · rfl
+            · intro x hx
+              exact rfl
+          rw[this,Finset.sum_const,Finset.card_univ]
+          simp
+          refine mul_inv_cancel ?_
+          · exact Nat.cast_ne_zero.mpr h0
+        have hmem: ∀ i ∈ Finset.univ, (μ (fp.f i)).toReal ∈ (Ici (0:ℝ)) := by
+          intro i hi
+          show (μ (fp.f i)).toReal ≥ 0
+          exact toReal_nonneg
+        have hp : ∃ j ∈ Finset.univ, ∃ k ∈ Finset.univ,(μ (fp.f j)).toReal ≠ (μ (fp.f k)).toReal:= by
+          use a
+          constructor
+          · exact Finset.mem_univ a
+          · by_contra h
+            push_neg at h
+            have:= equiv n fp
+            have h1: ∑ i : Fin n, (μ (fp.f i)).toReal = ∑ i : Fin n, (μ (fp.f a)).toReal := by
+              exact Eq.symm (sum_congr rfl h)
+            rw[h1] at this
+            have h2: ∑ i : Fin n, (μ (fp.f a)).toReal = n*(μ (fp.f a)).toReal:= by
+              rw[Finset.sum_const,Finset.card_univ]; simp
+            rw[h2] at this
+            rw[addone'] at this
+        have := StrictConvexOn.map_sum_lt h6 h₀ h₁ hmem hp
+        have h7: φ ((∑ i in Finset.univ, (t i)*(μ (fp.f i)).toReal)) = φ ((∑ i in Finset.univ, 1/(n:ℝ)*(μ (fp.f i)).toReal)) := by
+          exact rfl
         have h8: φ ((∑ i in Finset.univ, (t i)*(μ (fp.f i)).toReal)) <  ∑ i in Finset.univ, (t i) * φ ((μ (fp.f i)).toReal) := by
-          apply (h6 n)
-          · intro s; simp [zero_le (μ (fp.f s))]
-          · intro s; change 0 ≤ 1 / (n : ℝ);simp
-          · change ∑ i : Fin n, 1 / (n : ℝ) = 1
-            simp[mul_inv_cancel,this]
+          exact this
         have h9:  ∑ i in Finset.univ, (t i) * φ ((μ (fp.f i)).toReal) = ∑ i in Finset.univ, 1/(n:ℝ) * φ ((μ (fp.f i)).toReal):= by
           exact rfl
         rw[h7,h9,h5,h2,mul_one,← mul_sum] at h8;unfold φ at h8
         have : 0 < 1 / (n : ℝ) := by
-          sorry
-        sorry
-        apply (mul_lt_mul_left.mp (1 / (n : ℝ)) ((1 / ↑n).log_) ( ∑ i : Fin n, (μ (fp.f i)).toReal * (μ (fp.f i)).toReal.log) this).mp at h8
+          refine one_div_pos.mpr ?_
+          exact Nat.cast_pos'.mpr hn
+        apply (mul_lt_mul_left this).mp at h8
+        simp
+        have ht: (1 / ↑n:ℝ ) = (↑n)⁻¹ := by
+          rw [inv_eq_one_div]
+        have hs :  Real.log (↑n)⁻¹ = - Real.log (↑n) := by
+          exact Real.log_inv ↑n
+        rw[← ht] at hs; rw[hs] at h8
+        have : Real.log ↑n > - ∑ i : Fin n, (μ (fp.f i)).toReal * Real.log (μ (fp.f i)).toReal := by
+          exact neg_lt_of_neg_lt h8
+        exact le_of_lt this
+  · constructor
+    ·  sorry
+    · sorry
+
 
 
 
@@ -372,12 +421,12 @@ lemma eqset₁  {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProba
     by_cases h: x ∈ (⋃ n, p.f n)
     · let s: ℕ := Exists.choose (mem_iUnion.mp h)
       rw[Set.mem_iInter] at hx
-      have h:= hx s
-      unfold eqset₀ at h; rw[Set.diff_eq,Set.compl_inter,compl_compl] at h
-      have h': x ∈ p.f s := Exists.choose_spec (mem_iUnion.mp h)
-      cases' h with h'' h''
-      · exfalso; exact h'' h'
-      · left;rw[mem_iUnion] at *; rcases h'' with ⟨a,A,c,d⟩;use s
+      have h₁:= hx s
+      unfold eqset₀ at h₁; rw[Set.diff_eq,Set.compl_inter,compl_compl] at h₁
+      have h₂: x ∈ p.f s := Exists.choose_spec (mem_iUnion.mp h)
+      cases' h₁ with h₃ h₃
+      · exfalso; exact h₃ h₂
+      · left;rw[mem_iUnion] at *; rcases h₃ with ⟨a,A,c,d⟩;use s
         simp at c
         rw[mem_iUnion]; use a
         refine mem_iUnion.mpr ?h.a
@@ -386,7 +435,7 @@ lemma eqset₁  {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProba
           tauto
         rw[← c.2 ] at d
         use h10
-        exact ⟨h',d⟩
+        exact ⟨h₂,d⟩
     right
     assumption
 
@@ -409,29 +458,27 @@ lemma eqset₃ {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbab
 
 lemma pre_info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
     (p : partition m μ) : eqset p ⊆  {x | info p x = ∑' n, (p.partOf ⁻¹' {n}).indicator (λ _ ↦ -Real.log (μ (p.f n)).toReal) x} := by
-    intro x' hx'
-    show info p x' = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) x'
+    intro x' _
+    show info p x' = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x'
     let N := p.partOf x'
-    have h:= p.partOf_spec x'
-    have h₁: ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) x' = (p.partOf ⁻¹' {N}).indicator (fun x => -(μ (p.f N)).toReal.log) x' := by
+    have h₁: ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun _ => -(μ (p.f n)).toReal.log) x' = (p.partOf ⁻¹' {N}).indicator (fun _ => -(μ (p.f N)).toReal.log) x' := by
       apply tsum_eq_single
       intro b hbn
-      exact indicator_of_not_mem (id (Ne.symm hbn)) fun x => -(μ (p.f b)).toReal.log
+      exact indicator_of_not_mem (id (Ne.symm hbn)) fun _ => -(μ (p.f b)).toReal.log
     rw[h₁]
-    exact Eq.symm (indicator_of_mem rfl fun x => -(μ (p.f N)).toReal.log)
+    exact Eq.symm (indicator_of_mem rfl fun _ => -(μ (p.f N)).toReal.log)
 
 
 lemma info_ae_eq {α : Type*} {m : MeasurableSpace α} (μ : Measure α) [IsProbabilityMeasure μ]
     (p : partition m μ) :
     info (μ := μ) p =ᵐ[μ] fun x ↦ ∑' n, (p.partOf ⁻¹' {n}).indicator (fun _ ↦ (-Real.log (μ (p.f n)).toReal)) x := by
-    let s := {x | info p x = ∑' n, (p.partOf ⁻¹' {n}).indicator (λ _ ↦ -Real.log (μ (p.f n)).toReal) x}
     have h:= (pre_info_ae_eq μ p)
     have h': {x | info p x = ∑' (n : ℕ), (p.partOf ⁻¹' {n}).indicator (fun x => -(μ (p.f n)).toReal.log) x}ᶜ⊆ (eqset p)ᶜ := by
       exact compl_subset_compl_of_subset h
     exact measure_mono_null h' (eqset₃ p)
 
 #check setIntegral_const
-#check lintegral_iUnion_ae
+
 
 lemma should_this_be_in_the_library
     {X : Type*} [MeasurableSpace X] (μ : Measure X) {ι : Type*} [Countable ι]
@@ -467,8 +514,16 @@ lemma lentinf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabi
       exact Eq.symm (union_diff_cancel' (fun ⦃a⦄ a => a) h')
     have h_eq : μ (p.f n) = μ (eqset₀ p n) + μ (p.f n \ eqset₀ p n) := by
       nth_rewrite 1[h''']
+      rw[add_comm,Set.union_comm]
       refine (measure_union ?_) ?_
-      . exact disjoint_sdiff_right
+      . exact disjoint_sdiff_left
+      · unfold eqset₀
+        refine MeasurableSet.diff ?refine_2.h₁ ?refine_2.h₂
+        · exact p.measurable n
+        · refine MeasurableSet.biUnion ?refine_2.h₂.hs ?refine_2.h₂.h
+          · exact countable_complement_singleton n
+          · intro b hb
+            exact p.measurable b
     simp [h,h''] at h_eq; exact h_eq
 
 theorem ent_inf {α : Type*} {m : MeasurableSpace α} {μ : Measure α} [IsProbabilityMeasure μ]
