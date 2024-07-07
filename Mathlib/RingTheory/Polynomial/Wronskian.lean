@@ -43,7 +43,7 @@ theorem wronskianBilin_apply (a b : R[X]) : wronskianBilin R a b = wronskian a b
 
 @[simp]
 theorem wronskian_zero_left (a : R[X]) : wronskian 0 a = 0 := by
-  rw [←wronskianBilin_apply 0 a, map_zero]; rfl
+  rw [← wronskianBilin_apply 0 a, map_zero]; rfl
 
 @[simp]
 theorem wronskian_zero_right (a : R[X]) : wronskian a 0 = 0 := (wronskianBilin R a).map_zero
