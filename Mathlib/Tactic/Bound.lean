@@ -248,7 +248,7 @@ def maybeTerms : Syntax → Array Syntax
   | node _ _ #[_, node _ _ s, _] => s.getEvenElems
   | _ => #[]
 
-/-- Add extra hypotheses -/
+/-- Add each provided hypothesis `x` to the context, as by with `have := x` -/
 def addHyps (xs : Array Syntax) : TacticM Unit :=
   if xs.isEmpty then pure () else Tactic.withMainContext do
     for x in xs do
@@ -266,7 +266,14 @@ def boundConfig : Aesop.Options := {
 
 end Bound
 
-/-- `bound` tactic for proving inequalities via straightforward recursion on expression structure -/
+/-- `bound` tactic for proving inequalities via straightforward recursion on expression structure.
+
+`bound` is built on top of `aesop`, and uses
+1. Apply lemmas registered via the `@bound` attribute
+2. Forward lemmas registered via the `@bound_forward` attribute
+3. Local hypotheses from the context
+4. Optionally: additional hypotheses provided as `bound [h₀, h₁]` or similar. These are added to the
+   context as if by `have := hᵢ`. -/
 elab "bound" lemmas:(("[" term,* "]")?) : tactic => do
   Bound.addHyps (Bound.maybeTerms lemmas)
   let tac ← `(tactic| aesop (rule_sets := [Bound, -default]) (config := Bound.boundConfig))

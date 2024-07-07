@@ -223,8 +223,7 @@ theorem ofReal_lt_ofReal_iff_of_nonneg {p q : ℝ} (hp : 0 ≤ p) :
 theorem ofReal_pos {p : ℝ} : 0 < ENNReal.ofReal p ↔ 0 < p := by simp [ENNReal.ofReal]
 #align ennreal.of_real_pos ENNReal.ofReal_pos
 
-@[bound]
-lemma ofReal_pos_of_pos {p : ℝ} : 0 < p → 0 < ENNReal.ofReal p := ofReal_pos.mpr
+@[bound] alias ⟨_, Bound.ofReal_pos_of_pos⟩ := ofReal_pos
 
 @[simp]
 theorem ofReal_eq_zero {p : ℝ} : ENNReal.ofReal p = 0 ↔ p ≤ 0 := by simp [ENNReal.ofReal]

@@ -859,8 +859,7 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
 
 /-- Guessing rule for the `bound` tactic: when trying to prove `x ^ y ≤ x ^ z`, we can either assume
 `1 ≤ x` or `0 < x ≤ 1`. -/
-@[bound]
-lemma rpow_le_rpow_of_exponent_le_or_ge {x y z : ℝ}
+@[bound] lemma rpow_le_rpow_of_exponent_le_or_ge {x y z : ℝ}
     (h : 1 ≤ x ∧ y ≤ z ∨ 0 < x ∧ x ≤ 1 ∧ z ≤ y) : x ^ y ≤ x ^ z := by
   rcases h with ⟨x1, yz⟩ | ⟨x0, x1, zy⟩
   · exact Real.rpow_le_rpow_of_exponent_le x1 yz
