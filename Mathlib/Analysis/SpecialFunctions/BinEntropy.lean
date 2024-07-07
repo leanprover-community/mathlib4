@@ -661,7 +661,6 @@ lemma qaryEntropy_strictMono {q : ℕ} (qLe2: 2 ≤ q) :
 
 /-- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma binaryEntropy_strictMono : StrictMonoOn binaryEntropy (Icc 0 2⁻¹) := by
-  unfold binaryEntropy
   rw [show Icc (0:ℝ) 2⁻¹ = Icc 0 (1 - 1/2) by norm_num]
   exact qaryEntropy_strictMono (by rfl)
 
