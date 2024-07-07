@@ -29,7 +29,7 @@ theorem continuous_mk : Continuous (@mk M) := continuous_induced_rng.2 continuou
 theorem continuous_mk_symm : Continuous (@mk M).symm := continuous_induced_dom
 
 /-- `DomMulAct.mk` as a homeomorphism. -/
-@[to_additive (attr := simps toEquiv)]
+@[to_additive (attr := simps toEquiv) "`DomAddAct.mk` as a homeomorphism"]
 def mkHomeomorph : M ≃ₜ Mᵈᵐᵃ where
   toEquiv := mk
 
