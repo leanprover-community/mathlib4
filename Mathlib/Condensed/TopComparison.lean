@@ -20,7 +20,6 @@ We apply this API to `CompHaus` and define the functor
 
 ## Projects
 
-* Prove that `topCatToCondensedSet` is faithful.
 * Define compactly generated topological spaces.
 * Prove that `topCatToCondensedSet` restricted to compactly generated spaces is fully faithful.
 * Define the left adjoint of the restriction mentioned in the previous point.

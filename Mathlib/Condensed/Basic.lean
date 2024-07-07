@@ -50,3 +50,16 @@ Condensed sets (types) with the appropriate universe levels, i.e. `Type (u+1)`-v
 sheaves on `CompHaus.{u}`.
 -/
 abbrev CondensedSet := Condensed.{u} (Type (u+1))
+
+namespace Condensed
+
+variable {C : Type w} [Category.{v} C]
+
+@[simp]
+lemma id_val (X : Condensed.{u} C) : (𝟙 X : X ⟶ X).val = 𝟙 _ := rfl
+
+@[simp]
+lemma comp_val {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  (f ≫ g).val = f.val ≫ g.val := rfl
+
+end Condensed
