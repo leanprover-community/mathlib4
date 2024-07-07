@@ -975,7 +975,7 @@ theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f)
   rw [mem_iInf_finite'] at hs
   simp only [← Finset.inf_eq_iInf] at hs
   rcases hs with ⟨is, his⟩
-  induction is using Finset.induction_on generalizing s with
+  induction is generalizing s with
   | empty => rwa [mem_top.1 his]
   | insert _ ih =>
     rw [Finset.inf_insert, mem_inf_iff] at his
@@ -1055,7 +1055,7 @@ theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V �
 @[simp]
 theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) :
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
-  induction' s using Finset.induction_on with i s _ hs
+  induction' s with i s _ hs
   · simp
   · rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
 #align filter.infi_principal_finset Filter.iInf_principal_finset

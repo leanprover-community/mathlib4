@@ -301,7 +301,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
     ‖iteratedFDerivWithin 𝕜 n (∏ j ∈ u, f j ·) s x‖ ≤
       ∑ p ∈ u.sym n, (p : Multiset ι).multinomial *
         ∏ j ∈ u, ‖iteratedFDerivWithin 𝕜 (Multiset.count j p) (f j) s x‖ := by
-  induction u using Finset.induction generalizing n with
+  induction u generalizing n with
   | empty =>
     cases n with
     | zero => simp [Sym.eq_nil_of_card_zero]

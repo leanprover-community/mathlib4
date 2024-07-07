@@ -451,7 +451,7 @@ theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) 
 #align mv_polynomial.induction_on'' MvPolynomial.induction_on''
 
 /-- Analog of `Polynomial.induction_on`. -/
-@[recursor 5]
+@[recursor 5, induction_eliminator]
 theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_X : ∀ p n, M p → M (p * X n)) : M p :=
   induction_on'' p h_C (fun a b f _ha _hb hf hm => h_add (monomial a b) f hm hf) h_X
@@ -513,7 +513,7 @@ theorem algHom_C {A : Type*} [Semiring A] [Algebra R A] (f : MvPolynomial σ R �
 theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
   refine top_unique fun p hp => ?_; clear hp
-  induction p using MvPolynomial.induction_on with
+  induction p with
   | h_C => exact S.algebraMap_mem _
   | h_add p q hp hq => exact S.add_mem hp hq
   | h_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)

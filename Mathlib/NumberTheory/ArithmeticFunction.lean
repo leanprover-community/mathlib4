@@ -630,7 +630,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i ∈ s, g i) = ∏ i ∈ s, f (g i) := by
   classical
-    induction' s using Finset.induction_on with a s has ih hs
+    induction' s with a s has ih hs
     · simp [hf]
     rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
     rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
@@ -986,7 +986,7 @@ theorem cardFactors_mul {m n : ℕ} (m0 : m ≠ 0) (n0 : n ≠ 0) : Ω (m * n) =
 
 theorem cardFactors_multiset_prod {s : Multiset ℕ} (h0 : s.prod ≠ 0) :
     Ω s.prod = (Multiset.map Ω s).sum := by
-  induction s using Multiset.induction_on with
+  induction s with
   | empty => simp
   | cons ih => simp_all [cardFactors_mul, not_or]
 #align nat.arithmetic_function.card_factors_multiset_prod ArithmeticFunction.cardFactors_multiset_prod

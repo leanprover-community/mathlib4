@@ -448,7 +448,7 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     logb b (∏ i ∈ s, f i) = ∑ i ∈ s, logb b (f i) := by
   classical
-    induction' s using Finset.induction_on with a s ha ih
+    induction' s with a s ha ih
     · simp
     simp only [Finset.mem_insert, forall_eq_or_imp] at hf
     simp [ha, ih hf.2, logb_mul hf.1 (Finset.prod_ne_zero_iff.2 hf.2)]

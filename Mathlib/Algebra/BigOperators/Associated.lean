@@ -57,7 +57,7 @@ theorem Prod.associated_iff {M N : Type*} [Monoid M] [Monoid N] {x z : M × N} :
 
 theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
     (g : ι → M) (h : ∀ i, i ∈ s → (f i) ~ᵤ (g i)) : (∏ i ∈ s, f i) ~ᵤ (∏ i ∈ s, g i) := by
-  induction s using Finset.induction with
+  induction s with
   | empty =>
     simp only [Finset.prod_empty]
     rfl
@@ -82,7 +82,7 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
-  induction' s using Multiset.induction_on with a s induct n primes divs generalizing n
+  induction' s with a s induct n primes divs generalizing n
   · simp only [Multiset.prod_zero, one_dvd]
   · rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)

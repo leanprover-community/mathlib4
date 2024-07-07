@@ -130,7 +130,7 @@ theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
 
 -- @[simp] -- Porting note: simp normal form is `fourier_zero'`
 theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
-  induction x using QuotientAddGroup.induction_on'
+  induction x
   simp only [fourier_coe_apply]
   norm_num
 #align fourier_zero fourier_zero
@@ -152,7 +152,7 @@ theorem fourier_one {x : AddCircle T} : fourier 1 x = toCircle x := by rw [fouri
 
 -- @[simp] -- Porting note: simp normal form is `fourier_neg'`
 theorem fourier_neg {n : ℤ} {x : AddCircle T} : fourier (-n) x = conj (fourier n x) := by
-  induction x using QuotientAddGroup.induction_on'
+  induction x
   simp_rw [fourier_apply, toCircle]
   rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_zsmul]
   simp_rw [Function.Periodic.lift_coe, ← coe_inv_circle_eq_conj, ← expMapCircle_neg,

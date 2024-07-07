@@ -156,7 +156,7 @@ lemma cutExpand_double_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a₂ a) 
   assuming `r` is irreflexive. -/
 theorem acc_of_singleton [IsIrrefl α r] {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
-  induction s using Multiset.induction with
+  induction s with
   | empty => exact Acc.intro 0 fun s h ↦ (not_cutExpand_zero s h).elim
   | cons a s ihs =>
     rw [← s.singleton_add a]

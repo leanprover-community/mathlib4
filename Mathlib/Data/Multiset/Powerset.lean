@@ -299,7 +299,7 @@ theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (map f) := by
-  induction' s using Multiset.induction with t s ih generalizing n
+  induction' s with t s ih generalizing n
   · cases n <;> simp [powersetCard_zero_left, powersetCard_zero_right]
   · cases n <;> simp [ih, map_comp_cons]
 #align multiset.powerset_len_map Multiset.powersetCard_map

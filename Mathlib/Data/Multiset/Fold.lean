@@ -82,7 +82,7 @@ theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
 theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
     (s.bind t).fold op ((s.map b).fold op b₀) =
     (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
-  induction' s using Multiset.induction_on with a ha ih
+  induction' s with a ha ih
   · rw [zero_bind, map_zero, map_zero, fold_zero]
   · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
 #align multiset.fold_bind Multiset.fold_bind

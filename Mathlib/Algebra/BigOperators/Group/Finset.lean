@@ -2508,7 +2508,7 @@ theorem toFinset_prod_dvd_prod [CommMonoid α] (S : Multiset α) : S.toFinset.pr
 theorem prod_sum {α : Type*} {ι : Type*} [CommMonoid α] (f : ι → Multiset α) (s : Finset ι) :
     (∑ x ∈ s, f x).prod = ∏ x ∈ s, (f x).prod := by
   classical
-    induction' s using Finset.induction_on with a t hat ih
+    induction' s with a t hat ih
     · rw [Finset.sum_empty, Finset.prod_empty, Multiset.prod_zero]
     · rw [Finset.sum_insert hat, Finset.prod_insert hat, Multiset.prod_add, ih]
 #align multiset.prod_sum Multiset.prod_sum
@@ -2525,7 +2525,7 @@ theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset �
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   classical
-    induction' s using Finset.induction_on with i s his IH
+    induction' s with i s his IH
     · simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
     · simp only [his, Finset.sum_insert, not_false_iff]
       exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)

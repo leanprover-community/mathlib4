@@ -180,7 +180,7 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
   set u := 𝒜.sup id
   have hu : ∀ s ∈ 𝒜, s ⊆ u := fun s ↦ le_sup (f := id)
   clear_value u
-  induction' u using Finset.induction with a u _ ih generalizing 𝒜
+  induction' u with a u _ ih generalizing 𝒜
   · simp_rw [subset_empty] at hu
     rw [← subset_singleton_iff', subset_singleton_iff] at hu
     obtain rfl | rfl := hu <;> assumption

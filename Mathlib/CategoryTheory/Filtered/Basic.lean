@@ -236,7 +236,7 @@ variable [IsFiltered C]
 -/
 theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (X ⟶ S) := by
   classical
-  induction' O using Finset.induction with X O' nm h
+  induction' O with X O' nm h
   · exact ⟨Classical.choice IsFiltered.nonempty, by intro; simp⟩
   · obtain ⟨S', w'⟩ := h
     use max X S'
@@ -259,7 +259,7 @@ theorem sup_exists :
         (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H →
           f ≫ T mY = T mX := by
   classical
-  induction' H using Finset.induction with h' H' nmf h''
+  induction' H with h' H' nmf h''
   · obtain ⟨S, f⟩ := sup_objs_exists O
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
@@ -721,7 +721,7 @@ variable [IsCofiltered C]
 -/
 theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (S ⟶ X) := by
   classical
-  induction' O using Finset.induction with X O' nm h
+  induction' O with X O' nm h
   · exact ⟨Classical.choice IsCofiltered.nonempty, by intro; simp⟩
   · obtain ⟨S', w'⟩ := h
     use min X S'
@@ -744,7 +744,7 @@ theorem inf_exists :
         (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H →
           T mX ≫ f = T mY := by
   classical
-  induction' H using Finset.induction with h' H' nmf h''
+  induction' H with h' H' nmf h''
   · obtain ⟨S, f⟩ := inf_objs_exists O
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'

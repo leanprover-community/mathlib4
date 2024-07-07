@@ -118,7 +118,7 @@ alias smeval_nat_cast := smeval_natCast
 
 @[simp]
 theorem smeval_smul (r : R) : (r • p).smeval x = r • p.smeval x := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q ph qh =>
     rw [smul_add, smeval_add, ph, qh, ← smul_add, smeval_add]
   | h_monomial n a =>
@@ -187,7 +187,7 @@ variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
   [NatPowAssoc S] (x : S)
 
 theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
-  induction q using Polynomial.induction_on' with
+  induction q with
   | h_add p q ph qh =>
     intro n
     simp only [add_mul, smeval_add, ph, qh, Nat.cast_add]
@@ -199,7 +199,7 @@ theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeva
 alias smeval_at_nat_cast := smeval_at_natCast
 
 theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q ph qh =>
     simp_all only [smeval_add, coeff_add, add_smul]
   | h_monomial n a =>
@@ -209,7 +209,7 @@ theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
         smul_zero]
 
 theorem smeval_mul_X : (p * X).smeval x = p.smeval x * x := by
-    induction p using Polynomial.induction_on' with
+    induction p with
   | h_add p q ph qh =>
     simp only [add_mul, smeval_add, ph, qh]
   | h_monomial n a =>
@@ -217,7 +217,7 @@ theorem smeval_mul_X : (p * X).smeval x = p.smeval x * x := by
       mul_assoc, npow_add, smul_mul_assoc, npow_one]
 
 theorem smeval_X_mul : (X * p).smeval x = x * p.smeval x := by
-    induction p using Polynomial.induction_on' with
+    induction p with
   | h_add p q ph qh =>
     simp only [smeval_add, ph, qh, mul_add]
   | h_monomial n a =>
@@ -226,7 +226,7 @@ theorem smeval_X_mul : (X * p).smeval x = x * p.smeval x := by
 
 theorem smeval_assoc_X_pow (m n : ℕ) :
     p.smeval x * x ^ m * x ^ n = p.smeval x * (x ^ m * x ^ n) := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q ph qh =>
     simp only [smeval_add, ph, qh, add_mul]
   | h_monomial n a =>
@@ -241,7 +241,7 @@ theorem smeval_mul_X_pow : ∀ (n : ℕ), (p * X^n).smeval x = p.smeval x * x^n
 
 theorem smeval_X_pow_assoc (m n : ℕ) :
     x ^ m * x ^ n * p.smeval x = x ^ m * (x ^ n * p.smeval x) := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q ph qh =>
     simp only [smeval_add, ph, qh, mul_add]
   | h_monomial n a =>
@@ -255,7 +255,7 @@ theorem smeval_X_pow_mul : ∀ (n : ℕ), (X^n * p).smeval x = x^n * p.smeval x
       smeval_X_pow_assoc, npow_one]
 
 theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q ph qh =>
     simp only [mul_add, smeval_add, ph, qh, smul_add]
   | h_monomial n b =>
@@ -263,7 +263,7 @@ theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
 
 theorem smeval_monomial_mul (n : ℕ) :
     (monomial n r * p).smeval x = r • (x ^ n * p.smeval x) := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add r s hr hs =>
     simp only [add_comp, hr, hs, smeval_add, add_mul]
     rw [← C_mul_X_pow_eq_monomial, mul_assoc, smeval_C_mul, smeval_X_pow_mul, smeval_add]
@@ -271,7 +271,7 @@ theorem smeval_monomial_mul (n : ℕ) :
     rw [smeval_monomial, monomial_mul_monomial, smeval_monomial, npow_add, mul_smul, mul_smul_comm]
 
 theorem smeval_mul : (p * q).smeval x  = p.smeval x * q.smeval x := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add r s hr hs =>
     simp only [add_comp, hr, hs, smeval_add, add_mul]
   | h_monomial n a =>
@@ -284,7 +284,7 @@ theorem smeval_pow : ∀ (n : ℕ), (p^n).smeval x = (p.smeval x)^n
     rw [npow_add, smeval_mul, smeval_pow n, pow_one, npow_add, npow_one]
 
 theorem smeval_comp : (p.comp q).smeval x  = p.smeval (q.smeval x) := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add r s hr hs =>
     simp [add_comp, hr, hs, smeval_add]
   | h_monomial n a =>

@@ -109,7 +109,7 @@ theorem SupPrime.ne_bot (ha : SupPrime a) : a ≠ ⊥ := by rintro rfl; exact no
 
 theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s, f i = a := by
   classical
-  induction' s using Finset.induction with i s _ ih
+  induction' s with i s _ ih
   · simpa [ha.ne_bot] using h.symm
   simp only [exists_prop, exists_mem_insert] at ih ⊢
   rw [sup_insert] at h
@@ -118,7 +118,7 @@ theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s
 
 theorem SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s, a ≤ f i := by
   classical
-  induction' s using Finset.induction with i s _ ih
+  induction' s with i s _ ih
   · simp [ha.ne_bot]
   · simp only [exists_prop, exists_mem_insert, sup_insert, ha.le_sup, ih]
 #align sup_prime.le_finset_sup SupPrime.le_finset_sup

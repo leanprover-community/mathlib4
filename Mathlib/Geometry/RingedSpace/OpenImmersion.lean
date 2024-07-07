@@ -115,7 +115,7 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
     fapply NatIso.ofComponents
     · intro U
       refine asIso (f.c.app (op (opensFunctor f |>.obj (unop U)))) ≪≫ X.presheaf.mapIso (eqToIso ?_)
-      induction U using Opposite.rec' with | h U => ?_
+      induction U with | h U => ?_
       cases U
       dsimp only [IsOpenMap.functor, Functor.op, Opens.map]
       congr 2
@@ -280,7 +280,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
   have : ∀ (U : (Opens Y)ᵒᵖ), IsIso (f.c.app U) := by
     intro U
     have : U = op (opensFunctor f |>.obj ((Opens.map f.base).obj (unop U))) := by
-      induction U using Opposite.rec' with | h U => ?_
+      induction U with | h U => ?_
       cases U
       dsimp only [Functor.op, Opens.map]
       congr
@@ -348,8 +348,8 @@ def pullbackConeOfLeftFst :
                     rw [pullback.condition]))
       naturality := by
         intro U V i
-        induction U using Opposite.rec'
-        induction V using Opposite.rec'
+        induction U
+        induction V
         -- Note: this doesn't fire in `simp` because of reduction of the term via structure eta
         -- before discrimination tree key generation
         rw [inv_naturality_assoc]
@@ -363,7 +363,7 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
   -- Porting note: `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext _ _ <| funext fun U => ?_
   · simpa using pullback.condition
-  · induction U using Opposite.rec'
+  · induction U
     -- Porting note: `NatTrans.comp_app` is not picked up by `dsimp`
     -- Perhaps see : https://github.com/leanprover-community/mathlib4/issues/5026
     rw [NatTrans.comp_app]
@@ -427,7 +427,7 @@ theorem pullbackConeOfLeftLift_fst :
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext _ _ <| funext fun x => ?_
   · change pullback.lift _ _ _ ≫ pullback.fst = _
     simp
-  · induction x using Opposite.rec' with | h x => ?_
+  · induction x with | h x => ?_
     change ((_ ≫ _) ≫ _ ≫ _) ≫ _ = _
     simp_rw [Category.assoc]
     erw [← s.pt.presheaf.map_comp]
@@ -992,7 +992,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     · infer_instance
     apply limit_π_isIso_of_is_strict_terminal
     intro j hj
-    induction j using Opposite.rec' with | h j => ?_
+    induction j with | h j => ?_
     dsimp
     convert (F.obj j).sheaf.isTerminalOfEmpty using 3
     convert image_preimage_is_empty F i j (fun h => hj (congr_arg op h.symm)) U using 6

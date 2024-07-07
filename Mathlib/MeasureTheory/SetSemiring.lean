@@ -138,7 +138,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
     ∃ J : Finset (Set α), ↑J ⊆ C ∧ PairwiseDisjoint (J : Set (Set α)) id ∧
       s \ ⋃₀ I = ⋃₀ J := by
   classical
-  induction I using Finset.induction with
+  induction I with
   | empty =>
     simp only [coe_empty, sUnion_empty, diff_empty, exists_prop]
     refine ⟨{s}, singleton_subset_set_iff.mpr hs, ?_⟩
@@ -303,7 +303,7 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
     ⋃ i ∈ S, s i ∈ C := by
   classical
-  induction' S using Finset.induction with i S _ h hs
+  induction' S with i S _ h hs
   · simp [hC.empty_mem]
   · simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     refine hC.union_mem (hs i (mem_insert_self i S)) ?_
