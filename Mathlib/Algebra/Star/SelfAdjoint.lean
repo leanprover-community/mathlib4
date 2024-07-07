@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Star.NumericInstances
 import Mathlib.Algebra.Star.Pi
 
 #align_import algebra.star.self_adjoint from "leanprover-community/mathlib"@"a6ece35404f60597c651689c1b46ead86de5ac1b"

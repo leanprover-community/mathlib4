@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Field.Opposite
 
 /-!
 # Star ring classes and facts about the star operation for primitive types, ℕ, ℤ, ℚ, ℚ≥0.
