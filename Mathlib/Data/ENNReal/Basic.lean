@@ -453,10 +453,20 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
-@[simp] theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
+@[simp] theorem ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n : ℝ≥0∞)) ≠ ∞ :=
+  WithTop.ofNat_ne_top n
+
+@[simp] theorem ofNat_lt_top (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n : ℝ≥0∞)) < ∞ :=
+  coe_lt_top
+
+@[simp] theorem top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : ∞ ≠ no_index (OfNat.ofNat n : ℝ≥0∞) :=
+  (ofNat_ne_top n).symm
+
+@[deprecated ofNat_ne_top]
+theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
 #align ennreal.two_ne_top ENNReal.two_ne_top
 
-@[simp] theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
+@[deprecated ofNat_lt_top] theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
 instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
@@ -567,14 +577,8 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 @[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
 #align ennreal.nat_ne_top ENNReal.natCast_ne_top
 
-@[simp] theorem ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n : ℝ≥0∞)) ≠ ∞ :=
-  WithTop.ofNat_ne_top n
-
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 #align ennreal.top_ne_nat ENNReal.top_ne_natCast
-
-@[simp] theorem top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : ∞ ≠ no_index (OfNat.ofNat n : ℝ≥0∞) :=
-  (ofNat_ne_top n).symm
 
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 #align ennreal.one_lt_top ENNReal.one_lt_top
