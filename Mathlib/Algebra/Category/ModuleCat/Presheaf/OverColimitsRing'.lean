@@ -249,7 +249,8 @@ protected lemma mul_smul
     erw [colimit.w_apply, colimit.w_apply, Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
   rw [eq₃]
   conv_rhs => rw [eq₁]; rhs; rw [eq₂]
-  rw [rep_smul, rep_smul, rep_smul, smulColimit.mul_smul]
+  rw [rep_smul, rep_smul, rep_smul, smulColimit.mul_smul] <;>
+  assumption
 
 lemma smul_zero (r : colimit (C := ring) R) : colimitSMulColimit (M := M) r 0 = 0 := by
   rw [show r = colimit.ι R (Concrete.indexRepColimit R r) _ by
