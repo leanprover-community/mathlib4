@@ -137,12 +137,12 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
-    addOppositeEquiv_support, ne_eq]
+  simp only [leadingCoeff, coeffTop, orderTop, AddOpposite.unop_op, mk_eq_zero,
+    AddEquivClass.map_eq_zero_iff, addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
   simp_rw [HahnSeries.ext_iff x 0, Function.funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
-  split <;> rfl
+  split_ifs <;> rfl
 
 @[simp]
 lemma addOppositeEquiv_symm_leadingCoeff (x : (HahnSeries Γ R)ᵃᵒᵖ) :
@@ -206,12 +206,10 @@ theorem leadingCoeff_add_eq_left {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : x.orderTop < y.orderTop) : (x + y).leadingCoeff = x.leadingCoeff := by
   have hx : x ≠ 0 := ne_zero_iff_orderTop.mpr hxy.ne_top
   have ho : (x + y).orderTop = x.orderTop := orderTop_add_eq_left hxy
-  by_cases h : x + y = 0
-  · rw [h, orderTop_zero] at ho
-    rw [h, orderTop_eq_top_iff.mp ho.symm]
-  · rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
-    rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, add_coeff,
-      coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
+  by_cases h : x + y = 0; · simp_all [ne_zero_iff_orderTop]
+  rw [orderTop_of_ne h, orderTop_of_ne hx, WithTop.coe_eq_coe] at ho
+  rw [leadingCoeff_of_ne h, leadingCoeff_of_ne hx, ho, add_coeff,
+    coeff_eq_zero_of_lt_orderTop (lt_of_eq_of_lt (orderTop_of_ne hx).symm hxy), add_zero]
 
 theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (hxy : y.orderTop < x.orderTop) : (x + y).leadingCoeff = y.leadingCoeff := by
@@ -565,7 +563,7 @@ theorem support_subset_add_single_support : y.support ⊆ x.support := by
   intro g hg
   by_cases hgx : g = orderTop x
   · intro hx
-    apply (coeff_orderTop_ne_zero hgx.symm) hx
+    apply (coeff_orderTop_ne hgx.symm) hx
   · exact fun hxg => hg (Eq.mp (congrArg (fun r ↦ r = 0)
     (coeff_eq_of_not_orderTop hxy g hgx).symm) hxg)
 

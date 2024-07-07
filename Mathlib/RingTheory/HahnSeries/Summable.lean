@@ -370,7 +370,7 @@ end AddCommGroup
 
 section SMul
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
+variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [OrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
 
 theorem smul_support_subset_prod [AddCommMonoid R] [SMulWithZero R V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
@@ -515,7 +515,7 @@ end SMul
 section Semiring
 
 variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [IsOrderedCancelAddAction Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V] {α : Type*}
+  [OrderedCancelVAdd Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V] {α : Type*}
 
 instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
   smul := (· • ·)
@@ -732,7 +732,7 @@ variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
 theorem pow_finite_co_support (g : Γ) : Set.Finite {a | ((fun n ↦ x ^ n) a).coeff g ≠ 0} := by
   have hpwo : Set.IsPWO (⋃ n, support (x ^ n)) :=
-    isPWO_iUnion_support_powers x (zero_le_order_of_orderTop <| le_of_lt hx)
+    isPWO_iUnion_support_powers x (zero_le_orderTop_iff.mp <| le_of_lt hx)
   by_cases hox : x = 0
   · rw [hox]
     exact Set.Finite.subset (Set.finite_singleton 0) (co_support_zero g)
@@ -748,7 +748,7 @@ theorem pow_finite_co_support (g : Γ) : Set.Finite {a | ((fun n ↦ x ^ n) a).c
       _
   · exact (mem_addAntidiagonal.1 (mem_coe.1 hij)).2.1
   · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
-    exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le (zero_lt_order_of_orderTop hx hox) <|
+    exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le ((zero_lt_orderTop_iff hox).mp hx) <|
       order_le_of_coeff_ne_zero <| Function.mem_support.mp hi
   · rintro (_ | n) hn
     · exact Set.mem_union_right _ (Set.mem_singleton 0)
@@ -835,7 +835,7 @@ positive order Hahn series `x`.-/
 def PowerSeriesFamily (f : PowerSeries R) : SummableFamily Γ R ℕ where
   toFun n := (PowerSeries.coeff R n f) • x ^ n
   isPWO_iUnion_support' := isPWO_iUnion_support_smul_pow (fun n => PowerSeries.coeff R n f) x
-    (zero_le_order_of_orderTop <| le_of_lt hx)
+    (zero_le_orderTop_iff.mp <| le_of_lt hx)
   finite_co_support' g := smul_pow_finite_co_support hx (fun n => PowerSeries.coeff R n f) g
 
 theorem powerSeriesFamilyAdd (f g : PowerSeries R) :
@@ -1163,12 +1163,12 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
     if x0 : x = 0 then 0
     else
       (single (-x.order)) (x.leadingCoeff)⁻¹ *
-        (SummableFamily.powers (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mp x0)))).hsum
+        (SummableFamily.powers (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mp x0)))
+        (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mpr x0)))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _

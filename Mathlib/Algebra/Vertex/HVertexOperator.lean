@@ -3,8 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.RingTheory.HahnSeries.Binomial
 
 /-!
@@ -137,8 +136,8 @@ end Coeff
 
 section Module
 
-variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [VAdd Γ Γ']
-  [IsOrderedCancelAddAction Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
+variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
+  [OrderedCancelVAdd Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
   [Module R V] [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
@@ -297,7 +296,6 @@ theorem toLex_vAdd_of_sub (k l m n : ℤ) :
     Int.sub_add_cancel]
 --#find_home! toLex_vAdd_of_sub --[Mathlib.RingTheory.HahnSeries.Multiplication]
 
-
 /-- `-Y + X` as a unit of `R((X))((Y))` -/
 def subLeft (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
   HahnSeries.UnitBinomial (AddGroup.isAddUnit (toLex (0,1))) lex_basis_lt (isUnit_neg_one (α := R))
@@ -427,6 +425,5 @@ So, define `W((z)) ⊗ X → (W ⊗ X)((z))` by coefficient-wise maps, then exte
 end VertexAlg
 
 end StateFieldMap
-
 
 end HVertexOperator

@@ -360,7 +360,7 @@ theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ
   have h : smeval (1 - n : Polynomial ℤ) r = 1 - n := by
     rw [← C_eq_natCast, ← C_1, ← C_sub, smeval_C]
     simp only [npow_zero, zsmul_one, Int.cast_sub, Int.cast_one, Int.cast_natCast]
-  rw [h, ascPochhammer_smeval_nat_int, add_comm_sub]
+  rw [h, ascPochhammer_smeval_cast, add_comm_sub]
 
 theorem choose_natCast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
@@ -387,7 +387,7 @@ theorem choose_zero_succ (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S
     (n : ℕ) : choose (0 : S) (Nat.succ n) = 0 := by
   unfold choose
   rw [Nat.cast_succ, zero_sub, neg_add, neg_add_cancel_right, ← Nat.add_one,
-    multichoose_succ_neg_cast]
+    multichoose_succ_neg_natCast]
 
 theorem choose_zero_pos (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] [BinomialRing S]
     {k : ℕ} (h_pos: 0 < k) : choose (0 : S) k = 0 := by

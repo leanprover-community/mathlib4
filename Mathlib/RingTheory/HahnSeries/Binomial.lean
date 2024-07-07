@@ -59,7 +59,7 @@ variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 theorem orderTop_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).orderTop = g := by
   rw [← orderTop_single ha]
-  exact orderTop_add_eq (lt_of_eq_of_lt (orderTop_single ha)
+  exact orderTop_add_eq_left (lt_of_eq_of_lt (orderTop_single ha)
     (lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le))
 
 theorem single_add_single_coeff {g g' : Γ} (hgg' : g < g') {a b : R} :
