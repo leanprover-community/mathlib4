@@ -333,6 +333,8 @@
   "Mathlib.Analysis.InnerProductSpace.Basic":
   ["Mathlib.Algebra.Module.LinearMap.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
+  "Mathlib.Analysis.Convex.Basic":
+  ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
