@@ -39,7 +39,7 @@ namespace CategoryTheory.Limits
 variable {C : Type u} [Category.{v} C]
 
 section PasteLemma
-section PastePullback
+section PastePullbackHoriz
 
 /- Let's consider the following diagram
 ```
@@ -123,7 +123,7 @@ def leftSquareIsPullback (H : IsLimit t₂) (H' : IsLimit (t₂.pasteHoriz t₁ 
     · simpa [hm₁] using hl.symm
     · simpa [← hm₂] using hl'.symm
 
-end PastePullback
+end PastePullbackHoriz
 
 section PastePullbackVert
 
@@ -204,7 +204,7 @@ def topSquareIsPullback (H₁ : IsLimit t₁) (H₂ : IsLimit (t₁.pasteVert t�
 
 end PastePullbackVert
 
-section PastePushout
+section PastePushoutHoriz
 
 /- Let's consider the following diagram
 ```
@@ -291,7 +291,7 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
     · simpa [← hm₁] using hl.symm
     · simpa [← hm₂] using hl'.symm
 
-end PastePushout
+end PastePushoutHoriz
 
 section PastePushoutVert
 
@@ -371,87 +371,6 @@ def botSquareIsPushout (H₁ : IsColimit t₁) (H₂ : IsColimit (t₁.pasteVert
     (rightSquareIsPushout _ hi₂ (PushoutCocone.flipIsColimit H₁) (PushoutCocone.flipIsColimit H₂))
 
 end PastePushoutVert
-
-
-variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃) (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃)
-variable (i₁ : X₁ ⟶ Y₁) (i₂ : X₂ ⟶ Y₂) (i₃ : X₃ ⟶ Y₃)
-variable (h₁ : i₁ ≫ g₁ = f₁ ≫ i₂) (h₂ : i₂ ≫ g₂ = f₂ ≫ i₃)
-
-
-/-- Given
-```
-X₁ - f₁ -> X₂ - f₂ -> X₃
-|          |          |
-i₁         i₂         i₃
-∨          ∨          ∨
-Y₁ - g₁ -> Y₂ - g₂ -> Y₃
-```
-Then the big square is a pullback if both the small squares are.
--/
-def pasteHorizMkIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
-    (H' : IsLimit (PullbackCone.mk _ _ h₁)) :
-    IsLimit (PullbackCone.mk i₁ (f₁ ≫ f₂) (by rw [reassoc_of% h₁, Category.assoc, h₂])) :=
-  pasteHorizIsPullback rfl H H'
-#align category_theory.limits.big_square_is_pullback CategoryTheory.Limits.pasteHorizMkIsPullback
-
-/-- Given
-```
-X₁ - f₁ -> X₂ - f₂ -> X₃
-|          |          |
-i₁         i₂         i₃
-∨          ∨          ∨
-Y₁ - g₁ -> Y₂ - g₂ -> Y₃
-```
-Then the big square is a pushout if both the small squares are.
--/
-def pasteHorizMkIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₂))
-    (H' : IsColimit (PushoutCocone.mk _ _ h₁)) :
-    IsColimit
-      (PushoutCocone.mk _ _
-        (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
-          rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc])) :=
-  pasteHorizIsPushout rfl H' H
-#align category_theory.limits.big_square_is_pushout CategoryTheory.Limits.pasteHorizMkIsPushout
-
-/-- Given
-```
-X₁ - f₁ -> X₂ - f₂ -> X₃
-|          |          |
-i₁         i₂         i₃
-∨          ∨          ∨
-Y₁ - g₁ -> Y₂ - g₂ -> Y₃
-```
-Then the left square is a pullback if the right square and the big square are.
--/
-def leftSquareMkIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
-    (H' :
-      IsLimit
-        (PullbackCone.mk _ _
-          (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
-            rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc]))) :
-    IsLimit (PullbackCone.mk _ _ h₁) :=
-  leftSquareIsPullback _ rfl H H'
-#align category_theory.limits.left_square_is_pullback CategoryTheory.Limits.leftSquareMkIsPullback
-
-/-- Given
-
-X₁ - f₁ -> X₂ - f₂ -> X₃
-|          |          |
-i₁         i₂         i₃
-∨          ∨          ∨
-Y₁ - g₁ -> Y₂ - g₂ -> Y₃
-
-Then the right square is a pushout if the left square and the big square are.
--/
-def rightSquareMkIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₁))
-    (H' :
-      IsColimit
-        (PushoutCocone.mk _ _
-          (show i₁ ≫ g₁ ≫ g₂ = (f₁ ≫ f₂) ≫ i₃ by
-            rw [← Category.assoc, h₁, Category.assoc, h₂, Category.assoc]))) :
-    IsColimit (PushoutCocone.mk _ _ h₂) :=
-  rightSquareIsPushout _ rfl H H'
-#align category_theory.limits.right_square_is_pushout CategoryTheory.Limits.rightSquareMkIsPushout
 
 end PasteLemma
 
