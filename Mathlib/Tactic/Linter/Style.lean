@@ -65,8 +65,8 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
           Linter.logLint linter.setOption head
             m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
                is only intended for development and not for final code. \
-               If you intend to submit this contribution to the Mathlib project, please remove
-               'set_option {name}'."
+               If you intend to submit this contribution to the Mathlib project, \
+               please remove 'set_option {name}'."
 
 initialize addLinter setOptionLinter
 
