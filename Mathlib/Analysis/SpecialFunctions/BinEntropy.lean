@@ -486,7 +486,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
   apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
   · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
     apply Tendsto.comp (f:=(fun x ↦ 1 - x)) (g:=Real.log) this
-    have contF : Continuous (fun (x:ℝ) ↦ 1 - x) := by exact continuous_sub_left 1
+    have contF : Continuous (fun (x:ℝ) ↦ 1 - x) := continuous_sub_left 1
     have : MapsTo (fun (x:ℝ) ↦ 1 - x)  (Iio 1) (Ioi 0) := by
       intro x hx
       simp_all only [mem_Iio, mem_Ioi, sub_pos]
