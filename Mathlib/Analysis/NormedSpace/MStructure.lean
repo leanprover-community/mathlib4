@@ -393,7 +393,23 @@ lemma IsLprojection.range_sum (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
   rw [le_antisymm_iff]
   constructor
   · intro z hz
-    sorry
+    rw [Submodule.add_eq_sup, Submodule.mem_sup] at hz
+    simp only [LinearMap.mem_range, exists_exists_eq_and] at hz
+    cases' hz with x hx
+    cases' hx with y hxy
+    simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
+      ContinuousLinearMap.coe_mul, Pi.sub_apply, ContinuousLinearMap.add_apply, Function.comp_apply]
+    use z
+    rw [← hxy]
+    simp only [map_add]
+    rw [← Function.comp_apply (f := P.val), ← ContinuousLinearMap.coe_mul, P.prop.proj]
+    rw [← Function.comp_apply (f := Q.val) (g := Q.val), ← ContinuousLinearMap.coe_mul, Q.prop.proj]
+    rw [← Function.comp_apply (f := Q.val) (g := P.val), ← ContinuousLinearMap.coe_mul]
+    rw [IsLprojection.commute Q.prop P.prop]
+    rw [← Function.comp_apply (f := P.val) (g := (P.val * Q.val)), ← ContinuousLinearMap.coe_mul]
+    rw [← mul_assoc]
+    rw [P.prop.proj]
+    abel
   · intro z hz
     simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
       ContinuousLinearMap.coe_mul, Pi.sub_apply, ContinuousLinearMap.add_apply,
@@ -404,7 +420,6 @@ lemma IsLprojection.range_sum (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
       abel
     rw [e1]
     exact Submodule.add_mem_sup (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _ )
-
 
 /--
 A closed subspace of a Banach space is said to be an M-ideal if the topological annihilator is the
