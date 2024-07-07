@@ -3,6 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Regular.Basic
@@ -41,7 +42,6 @@ assert_not_exists Rat.instField
 universe u v w
 
 open MulOpposite
-open scoped NNRat
 
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
 -/
@@ -454,14 +454,6 @@ abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 
-<<<<<<< HEAD
-=======
-instance Nat.instStarRing : StarRing ℕ := starRingOfComm
-instance Int.instStarRing : StarRing ℤ := starRingOfComm
-instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
-instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
-
->>>>>>> master
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
