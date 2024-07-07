@@ -130,8 +130,8 @@ lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful wher
 lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full where
   map_surjective {X Y} f := by
     use ((h.homEquiv X (L.obj Y)) f ≫ section_ (h.unit.app Y))
-    have h' : L.map (section_ (h.unit.app Y)) ≫ L.map (h.unit.app Y) = 𝟙 _ :=
-      by simp [← Functor.map_comp]
+    have h' : L.map (section_ (h.unit.app Y)) ≫ L.map (h.unit.app Y) = 𝟙 _ := by
+      simp [← Functor.map_comp]
     have : L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) := by
       rw [← comp_id (L.map (section_ (h.unit.app Y)))]
       simp only [Functor.comp_obj, Functor.id_obj, comp_id,
@@ -153,8 +153,8 @@ lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful wh
 lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R.Full where
   map_surjective {X Y} f := by
     use (retraction (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f)
-    have h' : R.map (h.counit.app X) ≫ R.map (retraction (h.counit.app X)) = 𝟙 _ :=
-      by simp [← Functor.map_comp]
+    have h' : R.map (h.counit.app X) ≫ R.map (retraction (h.counit.app X)) = 𝟙 _ := by
+      simp [← Functor.map_comp]
     have : R.map (retraction (h.counit.app X)) = h.unit.app (R.obj X) := by
       rw [← id_comp (R.map (retraction (h.counit.app X)))]
       simp only [Functor.id_obj, Functor.comp_obj, id_comp,
