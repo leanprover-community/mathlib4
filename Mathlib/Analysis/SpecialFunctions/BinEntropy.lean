@@ -336,12 +336,9 @@ lemma deriv_log_one_sub_at_1 : deriv (fun p ↦ log (1 - p)) 1 = 0 := by
 
 lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻¹ := by
   by_cases xis1 : x = 1
-  · rw [xis1]
-    simp only [sub_self, inv_zero, neg_zero]
-    exact deriv_log_one_sub_at_1
+  · simp only [xis1, sub_self, inv_zero, neg_zero, deriv_log_one_sub_at_1]
   · rw [deriv.log]
-    simp only [deriv_one_minus]
-    field_simp
+    field_simp [deriv_one_minus]
     fun_prop
     exact sub_ne_zero_of_ne fun a ↦ xis1 a.symm
 
