@@ -5,8 +5,8 @@ Authors: Alexander Bentkamp
 -/
 
 import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 #align_import linear_algebra.basic from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 

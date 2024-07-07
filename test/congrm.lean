@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Fintype.Card
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrM
 
 private axiom test_sorry : ∀ {α}, α
 namespace Tests.Congrm
