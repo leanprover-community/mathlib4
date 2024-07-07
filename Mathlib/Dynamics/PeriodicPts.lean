@@ -592,11 +592,6 @@ namespace Function
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 @[simp]
-theorem iterate_prod_map (f : α → α) (g : β → β) (n : ℕ) :
-    (Prod.map f g)^[n] = Prod.map (f^[n]) (g^[n]) := by induction n <;> simp [*, Prod.map_comp_map]
-#align function.iterate_prod_map Function.iterate_prod_map
-
-@[simp]
 theorem isFixedPt_prod_map (x : α × β) :
     IsFixedPt (Prod.map f g) x ↔ IsFixedPt f x.1 ∧ IsFixedPt g x.2 :=
   Prod.ext_iff
