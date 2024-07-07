@@ -8,9 +8,13 @@ import Mathlib.RingTheory.Unramified.Derivations
 import Mathlib.RingTheory.Flat.Stability
 
 /-!
-# Unramified Algebra
+# Various results about unramified algebras
+
+We prove various theorems about unramified algebras. In fact we work in the more general setting
+of formally unramified algebras which are essentially of finite type.
 
 ## Main results
+
 - `Algebra.FormallyUnramified.iff_exists_tensorProduct`:
   A finite-type `R`-algebra `S` is (formally) unramified iff
   there exists a `t : S ⊗[R] S` satisfying
@@ -63,7 +67,7 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
     · rw [sub_sub_cancel, he₂, Ideal.mem_span_singleton]
   · rintro ⟨t, ht₁, ht₂⟩
     use 1 - t
-    rw [show t = 1 - (1 - t) by ring] at ht₁; generalize 1 - t = e at *
+    rw [← sub_sub_self 1 t] at ht₁; generalize 1 - t = e at *
     constructor
     · suffices e * (1 - e) = 0 by
         simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm] using this
@@ -76,7 +80,7 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
         Ideal.span_le, Set.singleton_subset_iff, SetLike.mem_coe, Set.range_subset_iff]
       intro s
       use 1 ⊗ₜ[R] s - s ⊗ₜ[R] 1
-      simpa [mul_sub, sub_eq_zero, mul_comm e] using ht₁ s
+      linear_combination ht₁ s
 
 variable [FormallyUnramified R S] [EssFiniteType R S]
 
@@ -85,7 +89,7 @@ variable (R S) in
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
-See `FormallyUnramified.iff_exists_tensorProduct`.
+See `Algebra.FormallyUnramified.iff_exists_tensorProduct`.
 This is the choice of such a `t`.
 -/
 noncomputable
@@ -127,9 +131,9 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
     ext j s
     rw [Finsupp.sum_smul_index]
     simp only [mul_smul, Finsupp.sum, ← Finset.smul_sum]
-    · intro _; simp only [zero_smul]
-    · intro _; simp only [zero_smul]
-    · intro _ _ _; simp only [add_smul]
+    · intro; simp only [zero_smul]
+    · intro; simp only [zero_smul]
+    · intros; simp only [add_smul]
   have h₂ : ∀ (x : S), ((b.repr x).support.sum fun a ↦ b.repr x a • b a) = x := by
     simpa only [Finsupp.total_apply, Finsupp.sum] using b.total_repr
   simp_rw [map_finsupp_sum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
@@ -140,8 +144,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
   · exact Finset.subset_biUnion_of_mem (fun i ↦ (a i).support) hi
   · simp only [Finset.mem_sdiff, Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_not,
       and_imp, forall_exists_index]
-    intro j k _ _ h₃
-    simp [h₃]
+    simp (config := {contextual := true})
   · exact fun _ _ ↦ rfl
 
 variable (R S)
@@ -153,7 +156,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   -- Let `bᵢ` be an `R`-basis of `S`.
   let b : Basis I R S := Module.Free.chooseBasis R S
   -- Let `∑ₛ fᵢ ⊗ bᵢ : S ⊗[R] S` (summing over some finite `s`) be an element such that
-  -- `∑ₛ fᵢbᵢ = 1` and `∀ s, sfᵢ ⊗ bᵢ = aᵢ ⊗ sfᵢ` which exists since `S` is unramified over `R`.
+  -- `∑ₛ fᵢbᵢ = 1` and `∀ x : S, xfᵢ ⊗ bᵢ = aᵢ ⊗ xfᵢ` which exists since `S` is unramified over `R`.
   have ⟨f, hf⟩ : ∃ (a : I →₀ S), elem R S = a.sum (fun i x ↦ x ⊗ₜ b i) := by
     let b' := ((Basis.singleton PUnit.{1} S).tensorProduct b).reindex (Equiv.punitProd I)
     use b'.repr (elem R S)
@@ -208,8 +211,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     · simp_rw [this, hf, Finsupp.sum, Finset.mul_sum, TensorProduct.tmul_mul_tmul, one_mul]
     · rw [← one_tmul_mul_elem, hf, finite_of_free_aux]
       rfl
-    · intro _; simp
-    · intro _; simp
+    · intro; simp
+    · intro; simp
   -- In particular, `fⱼx = ∑ Fᵢⱼbⱼ = ∑ Gᵢⱼbⱼ = ∑ₛ aᵢⱼfᵢ` for all `j`.
   have : ∀ j, x * f j = f.sum fun i y ↦ a i j • y := by
     intro j
