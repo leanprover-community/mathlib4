@@ -131,13 +131,10 @@ lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful wher
 lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full where
   map_surjective {X Y} f := by
     use ((h.homEquiv X (L.obj Y)) f ≫ section_ (h.unit.app Y))
-    have h' : L.map (section_ (h.unit.app Y)) ≫ L.map (h.unit.app Y) = 𝟙 _ := by
-      simp [← Functor.map_comp]
-    have : L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) := by
-      rw [← comp_id (L.map (section_ (h.unit.app Y)))]
-      simp only [Functor.comp_obj, Functor.id_obj, comp_id,
-        ← h.left_triangle_components Y, ← assoc, h', id_comp]
-    simp [this]
+    suffices L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) by simp [this]
+    rw [← comp_id (L.map (section_ (h.unit.app Y)))]
+    simp only [Functor.comp_obj, Functor.id_obj, comp_id, ← h.left_triangle_components Y,
+      ← assoc, ← Functor.map_comp, IsSplitEpi.id, Functor.map_id, id_comp]
 
 /-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
 noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful where
@@ -154,13 +151,10 @@ lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful wh
 lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R.Full where
   map_surjective {X Y} f := by
     use (retraction (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f)
-    have h' : R.map (h.counit.app X) ≫ R.map (retraction (h.counit.app X)) = 𝟙 _ := by
-      simp [← Functor.map_comp]
-    have : R.map (retraction (h.counit.app X)) = h.unit.app (R.obj X) := by
-      rw [← id_comp (R.map (retraction (h.counit.app X)))]
-      simp only [Functor.id_obj, Functor.comp_obj, id_comp,
-        ← h.right_triangle_components X, assoc, h', comp_id]
-    simp [this]
+    suffices R.map (retraction (h.counit.app X)) = h.unit.app (R.obj X) by simp [this]
+    rw [← id_comp (R.map (retraction (h.counit.app X)))]
+    simp only [Functor.id_obj, Functor.comp_obj, id_comp, ← h.right_triangle_components X,
+      assoc, ← Functor.map_comp, IsSplitMono.id, Functor.map_id, comp_id]
 
 /-- If the counit is an isomorphism, then the right adjoint is fully faithful. -/
 noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful where
