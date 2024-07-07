@@ -468,19 +468,8 @@ lemma eventuallyEq_nhdsWithin_of_eqOn_interval_right
 lemma eventuallyEq_nhdsWithin_of_eqOn_interval_left
     (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Ioo (x - ε) x, f y = g y) :
     f =ᶠ[𝓝[<] x] g := by
-  apply eventuallyEq_nhdsWithin_iff.mpr
-  apply Metric.eventually_nhds_iff.mpr
-  use ε
-  constructor
-  · exact epsPos
-  · intro y yclose ygex
-    have : y ∈ Ioo (x - ε) x := by
-      simp_all only [mem_Ioo, and_imp, mem_Ioi, true_and]
-      constructor
-      · simp_all only [mem_Iio]
-        exact sub_lt_of_abs_sub_lt_left yclose
-      · exact ygex
-    simp_all only [mem_Ioo, and_imp, mem_Ioi, true_and]
+  have : x - ε < x := sub_lt_self x epsPos
+  filter_upwards [Ioo_mem_nhdsWithin_Iio' this] using h
 
 lemma tendsto_atTop_if_tendsto_neg_atBot {f : ℝ → ℝ} {l : Filter ℝ} :
     Tendsto f l atBot ↔ Tendsto (fun x ↦ -f x) l atTop := by
