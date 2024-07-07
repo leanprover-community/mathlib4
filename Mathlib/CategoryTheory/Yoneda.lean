@@ -346,6 +346,15 @@ lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ Type v
   obtain ⟨u, rfl⟩ := yonedaEquiv.surjective t
   rw [yonedaEquiv_naturality', Equiv.symm_apply_apply, Equiv.symm_apply_apply]
 
+/-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
+with morphisms `yoneda.obj X ⟶ P` agree. -/
+lemma hom_ext_yoneda {P Q : Cᵒᵖ ⥤ Type v₁} {f g : P ⟶ Q}
+    (h : ∀ (X : C) (p : yoneda.obj X ⟶ P), p ≫ f = p ≫ g) :
+    f = g := by
+  ext X x
+  simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
+    using congr_arg (yonedaEquiv) (h _ (yonedaEquiv.symm x))
+
 variable (C)
 
 /-- The "Yoneda evaluation" functor, which sends `X : Cᵒᵖ` and `F : Cᵒᵖ ⥤ Type`
@@ -430,6 +439,29 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     dsimp [yonedaEquiv]
     simp [← FunctorToTypes.naturality])
 #align category_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
+
+/-- The curried version of the Yoneda lemma. -/
+def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
+    yoneda.op ⋙ coyoneda ≅
+      evaluation Cᵒᵖ (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+  NatIso.ofComponents
+    (fun X => NatIso.ofComponents
+      (fun Y => Equiv.toIso <| yonedaEquiv.trans Equiv.ulift.symm)
+      (by
+        intros Y Z f
+        ext g
+        rw [← ULift.down_inj]
+        simpa using yonedaEquiv_comp _ _))
+    (by
+      intros Y Z f
+      ext F g
+      rw [← ULift.down_inj]
+      simpa using (yonedaEquiv_naturality _ _).symm)
+
+/-- Version of the Yoneda lemma where the presheaf is fixed but the argument varies. -/
+def yonedaOpCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁) :
+    yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
+  isoWhiskerRight largeCurriedYonedaLemma ((evaluation _ _).obj P)
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
@@ -568,11 +600,34 @@ variable {C}
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma {C : Type u₁} [SmallCategory C] :
-    (coyoneda.rightOp ⋙ coyoneda : C ⥤ (C ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation C (Type u₁) :=
+    coyoneda.rightOp ⋙ coyoneda ≅ evaluation C (Type u₁) :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun F ↦ Equiv.toIso coyonedaEquiv)) (by
     intro X Y f
     ext a b
     simp [coyonedaEquiv, ← FunctorToTypes.naturality])
+
+/-- The curried version of the Coyoneda lemma. -/
+def largeCurriedCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
+    (coyoneda.rightOp ⋙ coyoneda) ≅
+      evaluation C (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+  NatIso.ofComponents
+    (fun X => NatIso.ofComponents
+      (fun Y => Equiv.toIso <| coyonedaEquiv.trans Equiv.ulift.symm)
+      (by
+        intros Y Z f
+        ext g
+        rw [← ULift.down_inj]
+        simpa using coyonedaEquiv_comp _ _))
+    (by
+      intro Y Z f
+      ext F g
+      rw [← ULift.down_inj]
+      simpa using (coyonedaEquiv_naturality _ _).symm)
+
+/-- Version of the Coyoneda lemma where the presheaf is fixed but the argument varies. -/
+def coyonedaCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : C ⥤ Type v₁) :
+    coyoneda.rightOp ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
+  isoWhiskerRight largeCurriedCoyonedaLemma ((evaluation _ _).obj P)
 
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma' {C : Type u₁} [SmallCategory C] :
@@ -591,5 +646,22 @@ lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
   simp only [Category.comp_id, ← Category.assoc, hg, Category.id_comp]
 
 end CoyonedaLemma
+
+section
+
+variable {C}
+variable {D : Type*} [Category.{v₁} D] (F : C ⥤ D)
+
+/-- The natural transformation `yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X)`
+when `F : C ⥤ D` and `X : C`. -/
+def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) :=
+  yonedaEquiv.symm (𝟙 _)
+
+@[simp]
+lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
+    (yonedaMap F Y).app X f = F.map f := by
+  simp [yonedaMap, yonedaEquiv]
+
+end
 
 end CategoryTheory
