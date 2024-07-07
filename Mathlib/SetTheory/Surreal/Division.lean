@@ -495,8 +495,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
       let y' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
         (by apply invVal_numeric <;> tauto)
-      x' * y + x * y' - x' * y' < 1
-    := by
+      x' * y + x * y' - x' * y' < 1 := by
   rcases ij <;> simp
   · case _ val =>
       rcases val with ⟨i, j⟩
@@ -561,8 +560,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
       let y' := Surreal.mk (invVal (fun (i : {i // 0 < L i}) => L i) R (fun i => (L i).inv')
         (fun j => (R j).inv') (PGame.mk l r L R) j)
         (by apply invVal_numeric <;> tauto)
-      1 < x' * y + x * y' - x' * y'
-    := by
+      1 < x' * y + x * y' - x' * y' := by
   rcases ij <;> simp
   · case _ val =>
       rcases val with ⟨i, j⟩
@@ -610,8 +608,7 @@ lemma onag_1_10 :
     (x.inv').Numeric ∧ -- (ii)
     (∀ i, ((normalization x) * x.inv').moveLeft i < 1) ∧ -- (iii) left
     (∀ j, 1 < ((normalization x) * x.inv').moveRight j) ∧ --- (iii) right
-    x * x.inv' ≈ 1 -- (iv)
-    := by
+    x * x.inv' ≈ 1 := by -- (iv)
   induction x
   case mk xl xr xL xR ih_xl ih_xr =>
     set x := PGame.mk xl xr xL xR with x_rfl
@@ -629,8 +626,8 @@ lemma onag_1_10 :
       intro i
       specialize ih_xr i
       exact (ih_xr (right_pos_of_pos x_num x_pos i)).2.2.1
-    have inv_l : ∀ (i : { i // 0 < xL i }), mk (xL i) (xl_num _) * mk (xL ↑i).inv' (h3 i i.2) = 1
-        := by
+    have inv_l : ∀ (i : { i // 0 < xL i }),
+        mk (xL i) (xl_num _) * mk (xL ↑i).inv' (h3 i i.2) = 1 := by
       intro i
       specialize ih_xl i i.2
       have := ih_xl.2.2.2.2.2
