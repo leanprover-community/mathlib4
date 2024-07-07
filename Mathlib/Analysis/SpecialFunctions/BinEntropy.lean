@@ -324,19 +324,13 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
 
 lemma deriv_log_one_sub_at_1 : deriv (fun p ↦ log (1 - p)) 1 = 0 := by
   have : ¬ DifferentiableAt ℝ (fun p ↦ log (1 - p)) 1 := by
-    by_contra
-    have : ¬ DifferentiableAt ℝ log 0 := by
-      simp_all only [implies_true, differentiableAt_log_iff, ne_eq,
-        not_true_eq_false, not_false_eq_true]
-    have : DifferentiableAt ℝ log 0 := by
-      have : Real.log = (fun p ↦ log (1 - p)) ∘ (fun x => 1 - x) := by
-        ext
-        simp only [Function.comp_apply, sub_sub_cancel]
+    by_contra h_contra
+    have h₁ : ¬ DifferentiableAt ℝ log 0 := by simp [Real.differentiableAt_log_iff]
+    have h₂ : DifferentiableAt ℝ log 0 := by
+      have : Real.log = (fun p ↦ log (1 - p)) ∘ (fun x => 1 - x) := by ext; simp
       rw [this]
-      apply DifferentiableAt.comp
-      · simp only [sub_zero]
-        assumption
-      · fun_prop
+      refine DifferentiableAt.comp _ ?_ (by fun_prop)
+      simp only [sub_zero, h_contra]
     contradiction
   exact deriv_zero_of_not_differentiableAt this
 
