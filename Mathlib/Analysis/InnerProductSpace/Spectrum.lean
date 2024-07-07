@@ -510,6 +510,8 @@ theorem induction_step [Nontrivial n] :
     ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T m j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) →
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by sorry
 
+/-May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
+  orthogonalFamily_eigenspaces'-/
 theorem ind_exhaust : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
   · intro p hp hpp
@@ -521,23 +523,24 @@ theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))
     (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T n j) (γ j))).subtypeₗᵢ) := by
   intro f g hfg Ef Eg
-  --simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype]
   have H := Function.ne_iff.mp hfg
   obtain ⟨a , ha⟩ := H
-  simp only [Submodule.mem_iInf] at Ef
-  simp only [Submodule.mem_iInf] at Eg
   have H1 := Ef.2
   have H2 := Eg.2
-  have H3 := orthogonalFamily_eigenspaces ((hT n) a)
-  simp only at H3
-  simp only [ne_eq, OrthogonalFamily,
-    Subtype.forall] at * --took out the Submodule.coe_subytpes here too
-  apply H3 ha
-  --have H11 := Ef.2 a
-  have := H1 a
-  --have D := H3 ha (Ef.1) H1 (Eg.1) H2
-  sorry--coercion issues...maybe type ascript?
+  simp only [Submodule.mem_iInf] at H1 H2
+  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype]
+  have H3 := H1 a
+  have H4 := H2 a
+  have H5 := orthogonalFamily_eigenspaces ((hT n) a)
+  have H6 := H5 ha (f a) (g a)
+  --almost done.
+
+
+
+
+
   sorry
+
 
 #exit
 theorem post_ind_exhaust : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
