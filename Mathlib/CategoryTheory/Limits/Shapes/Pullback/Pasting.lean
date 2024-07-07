@@ -321,7 +321,6 @@ local notation "X₁" => t₂.pt
 local notation "f₁" => t₂.inr
 local notation "i₁" => t₂.inl
 
--- TODO: this should probably just be notation!
 /-- The `PullbackCone` obtained by pasting two `PullbackCone`'s vertically -/
 abbrev PushoutCocone.pasteVert : PushoutCocone (g₂ ≫ g₁) i₃ :=
   PushoutCocone.mk i₁ (f₂ ≫ f₁)
@@ -698,8 +697,6 @@ theorem inr_pushoutRightPushoutInlIso_inv :
 theorem inl_pushoutRightPushoutInlIso_hom :
     pushout.inl ≫ (pushoutRightPushoutInlIso f g f').hom = pushout.inl :=
   IsColimit.comp_coconePointUniqueUpToIso_hom (pasteVertIsPushout rfl _ _) _ WalkingSpan.left
-
--- TODO: pushout.condition make variables explicit?
 
 @[reassoc (attr := simp)]
 theorem inr_inl_pushoutRightPushoutInlIso_hom :
