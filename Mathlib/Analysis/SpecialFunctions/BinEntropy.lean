@@ -363,39 +363,6 @@ lemma deriv_binaryEntropy' {x : ℝ} :
       have := (differentiableAt_binaryEntropy_iff_ne_zero_one x).mp h
       simp_all only [ne_eq, not_true_eq_false, zero_ne_one, not_false_eq_true, and_true]
 
-/-- Binary entropy has derivative `log (1 - p) - log p`.
-It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
-lemma deriv_binaryEntropy''' {x : ℝ} :
-    deriv (fun p ↦ -p * p.log - (1 - p) * (1 - p).log) x = log (1 - x) - log x := by
-  by_cases is_x_where_nondiff : x ≠ 0 ∧ x ≠ 1
-  · obtain ⟨h, hh⟩ := is_x_where_nondiff
-    have diff_log_one_sub : DifferentiableAt ℝ (fun p ↦ log (1 - p)) x :=
-      DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
-    rw [deriv_sub]
-    · simp_rw [← neg_mul_eq_neg_mul]
-      rw [deriv.neg, deriv_mul_log h]
-      simp_rw [mul_sub_right_distrib]
-      simp only [one_mul]
-      rw [deriv_sub diff_log_one_sub (by fun_prop), deriv_log_one_sub,
-        deriv_mul differentiableAt_id' diff_log_one_sub, deriv_id'',
-        deriv.log (by fun_prop) (sub_ne_zero_of_ne hh.symm), deriv_const_sub 1, deriv_id'']
-      simp only [one_mul]
-      field_simp [sub_ne_zero.mpr hh.symm]
-      ring
-    · apply DifferentiableAt.mul (DifferentiableAt.neg differentiableAt_id')
-        (differentiableAt_log h)
-    · fun_prop
-  -- pathological case where `deriv = 0` since function is not differentiable there
-  · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
-    rw [← binaryEntropy_eq]
-    rw [deriv_zero_of_not_differentiableAt]
-    · cases this with  -- surely this can be shortened?
-        | inl xis0 => simp only [xis0, sub_zero, log_one, log_zero, sub_self]
-        | inr xis1 => simp only [xis1, sub_zero, log_one, log_zero, sub_self]
-    · intro h
-      have := (differentiableAt_binaryEntropy_iff_ne_zero_one x).mp h
-      simp_all only [ne_eq, not_true_eq_false, zero_ne_one, not_false_eq_true, and_true]
-
 lemma deriv_qaryEntropy' {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
     deriv (fun p => p * log (q - 1) - p * log p - (1 - p) * log (1 - p)) x
        = log (q - 1) + log (1 - x) - log x := by
