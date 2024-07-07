@@ -132,12 +132,6 @@ lemma ext {n : ℕ} {α β : Ext X Y n} (h : α.hom = β.hom) : α = β :=
 
 end
 
--- TODO: promote `homEquiv` above as `homAddEquiv` with the same
--- degree of generality, i.e. for any `[HasDerivedCategory.{w'} C]`
-noncomputable instance {n : ℕ} : AddCommGroup (Ext X Y n) :=
-  letI := HasDerivedCategory.standard C
-  homEquiv.addCommGroup
-
 end Ext
 
 end Abelian
