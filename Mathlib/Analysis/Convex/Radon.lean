@@ -143,7 +143,7 @@ theorem helly_theorem {F : ι → Set E} {s : Finset ι}
   apply helly_theorem' h_convex
   intro I hI_ss hI_card
   obtain ⟨J, hI_ss_J, hJ_ss, hJ_card⟩ := exists_subsuperset_card_eq hI_ss hI_card h_card
-  apply Set.Nonempty.mono <| biInter_mono hI_ss_J (fun _ _ => Set.Subset.rfl)
+  apply Set.Nonempty.mono <| biInter_mono hI_ss_J (fun _ _ ↦ Set.Subset.rfl)
   exact h_inter J hJ_ss hJ_card
 
 /-- **Helly's theorem** for finite sets of convex sets.
