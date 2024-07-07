@@ -79,8 +79,6 @@ lemma iff_rTensor_preserves_shortComplex_exact :
 
 open scoped MonoidalCategory in
 set_option maxHeartbeats 400000 in
--- In two goals, we need to use `simpa` in one; and `simp` in the other.
-set_option linter.unnecessarySimpa false in
 noncomputable instance [flat : Flat R M] {X Y : ModuleCat.{u} R} (f : X ⟶ Y) :
     Limits.PreservesLimit (Limits.parallelPair f 0) (tensorLeft M) where
   preserves {c} hc := by
@@ -113,39 +111,20 @@ noncomputable instance [flat : Flat R M] {X Y : ModuleCat.{u} R} (f : X ⟶ Y) :
       rw [ModuleCat.mono_iff_injective] at mono0 ⊢
       exact lTensor_preserves_injective_linearMap _ mono0
 
-    have := ShortComplex.exact_and_mono_f_iff_f_is_kernel s' |>.1 ⟨exact1, mono1⟩ |>.some
-    -- convert this
-    -- simp? [s']
     refine Limits.IsLimit.equivOfNatIsoOfIso
       ⟨⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩,
         ⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩, ?_, ?_⟩ _ _ ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ $
-        this
-        -- Abelian.isLimitOfExactOfMono ι' f' exact1
+        ShortComplex.exact_and_mono_f_iff_f_is_kernel s' |>.1 ⟨exact1, mono1⟩ |>.some
     · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp [s']
     · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp [s']
     · ext (⟨⟩|⟨⟩) <;> simp [s']
     · ext (⟨⟩|⟨⟩) <;> simp [s']
     · exact 𝟙 _
-    · rintro (⟨⟩ | ⟨⟩) <;>
-
-      simp only [ShortComplex.map_X₂, tensorLeft_obj, ShortComplex.map_X₃, ShortComplex.map_g,
-        tensorLeft_map, Functor.comp_obj, Limits.parallelPair_obj_zero, Limits.parallelPair_obj_one,
-        Functor.comp_map, Limits.walkingParallelPairHom_id, NatTrans.comp_app, NatTrans.id_app,
-        ModuleCat.coe_comp, Function.comp_apply, ModuleCat.id_apply, ShortComplex.map_X₁,
-        ShortComplex.map_f, Limits.Fork.app_zero_eq_ι, Limits.Cones.postcompose_obj_pt,
-        Limits.Fork.ofι_pt, Functor.mapCone_pt, Functor.mapCone_π_app, Category.id_comp,
-        Limits.Cones.postcompose_obj_π, Functor.const_obj_obj, Limits.Fork.ofι_π_app,
-        Category.comp_id, s', ι]
-      rw [← MonoidalCategory.whiskerLeft_comp]
-      congr
-      simp
-  #exit
-       -- [c]
-      -- <;> simpa [ι', ι, f', Eq.comm] using exact1.w
-    -- · exact 𝟙 _
-    -- · rintro (⟨⟩ | ⟨⟩) <;> simpa [ι', ι, f', Eq.comm] using exact1.w
-    -- · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
-    -- · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
+    · rintro (⟨⟩ | ⟨⟩) <;> simp [s', ι, ← MonoidalCategory.whiskerLeft_comp]
+    · exact 𝟙 _
+    · rintro (⟨⟩ | ⟨⟩) <;> simp [s', ι, ← MonoidalCategory.whiskerLeft_comp]
+    · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
+    · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
 
 noncomputable instance tensorLeft_preservesFiniteLimits [Flat R M] :
     Limits.PreservesFiniteLimits (tensorLeft M) :=
