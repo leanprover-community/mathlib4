@@ -3,7 +3,9 @@ Copyright (c) 2024 Jineon Back and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.LinearAlgebra.SesquilinearForm
 
 /-!
 # Wronskian of a pair of polynomial
@@ -28,36 +30,49 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R]
 
-/-- Wronskian: W(a, b) = ab' - a'b. -/
 def wronskian (a b : R[X]) : R[X] :=
   a * (derivative b) - (derivative a) * b
 
+variable (R) in
+/-- `Polynomial.wronskian` as a bilinear map. -/
+def wronskianBilin : R[X] →ₗ[R] R[X] →ₗ[R] R[X] :=
+  (LinearMap.mul R R[X]).compl₂ derivative - (LinearMap.mul R R[X]).comp derivative
+
+@[simp]
+theorem wronskianBilin_apply (a b : R[X]) : wronskianBilin R a b = wronskian a b := rfl
+
 @[simp]
 theorem wronskian_zero_left (a : R[X]) : wronskian 0 a = 0 := by
-  simp_rw [wronskian]; simp only [zero_mul, derivative_zero, sub_self]
+  rw [←wronskianBilin_apply 0 a, map_zero]; rfl
 
 @[simp]
-theorem wronskian_zero_right (a : R[X]) : wronskian a 0 = 0 := by
-  simp_rw [wronskian]; simp only [derivative_zero, mul_zero, sub_self]
+theorem wronskian_zero_right (a : R[X]) : wronskian a 0 = 0 := (wronskianBilin R a).map_zero
 
-theorem wronskian_neg_left (a b : R[X]) : wronskian (-a) b = -wronskian a b := by
-  simp_rw [wronskian, derivative_neg]; ring
+theorem wronskian_neg_left (a b : R[X]) : wronskian (-a) b = -wronskian a b :=
+  LinearMap.map_neg₂ (wronskianBilin R) a b
 
-theorem wronskian_neg_right (a b : R[X]) : wronskian a (-b) = -wronskian a b := by
-  simp_rw [wronskian, derivative_neg]; ring
+theorem wronskian_neg_right (a b : R[X]) : wronskian a (-b) = -wronskian a b :=
+  (wronskianBilin R a).map_neg b
 
 theorem wronskian_add_right (a b c : R[X]) : wronskian a (b + c) = wronskian a b + wronskian a c :=
-  by simp_rw [wronskian, derivative_add]; ring
+  (wronskianBilin R a).map_add b c
 
-theorem wronskian_self (a : R[X]) : wronskian a a = 0 := by rw [wronskian, mul_comm, sub_self]
+theorem wronskian_add_left (a b c : R[X]) : wronskian (a + b) c = wronskian a c + wronskian b c :=
+  (wronskianBilin R).map_add₂ a b c
 
-theorem wronskian_anticomm (a b : R[X]) : wronskian a b = -wronskian b a := by
-  rw [wronskian, wronskian]; ring
+theorem wronskian_is_alt (a : R[X]) : wronskian a a = 0 := by rw [wronskian, mul_comm, sub_self]
 
-theorem wronskian_eq_of_sum_zero {a b c : R[X]} (h : a + b + c = 0) :
-    wronskian a b = wronskian b c := by
-  rw [← neg_eq_iff_add_eq_zero] at h
-  rw [← h, wronskian_neg_right, wronskian_add_right, wronskian_self, add_zero, ← wronskian_anticomm]
+theorem IsAltwronskianBilin : (wronskianBilin R).IsAlt := by intro a; exact wronskian_is_alt a
+
+theorem wronskian_self_eq_zero (a : R[X]) : wronskian a a = 0 := wronskian_is_alt a
+
+theorem wronskianBilin_neq_eq (a b : R[X]) : -(wronskianBilin R) a b = (wronskianBilin R) b a :=
+  LinearMap.IsAlt.neg IsAltwronskianBilin a b
+
+theorem wronskian_neg_eq (a b : R[X]) : -wronskian a b = wronskian b a := wronskianBilin_neq_eq a b
+
+theorem wronskian_eq_of_sum_zero {a b c : R[X]} (hAdd : a + b + c = 0) :
+    wronskian a b = wronskian b c := IsAltwronskianBilin.eq_of_add_add_eq_zero hAdd
 
 private theorem degree_ne_bot {a : R[X]} (ha : a ≠ 0) : a.degree ≠ ⊥ := by
   intro h; rw [Polynomial.degree_eq_bot] at h; exact ha h
