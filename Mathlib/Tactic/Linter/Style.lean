@@ -58,13 +58,15 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some (head) := stx.find? is_set_option then
-      if let some (name) := parse_set_option head then
-        if #[`pp, `profiler, `trace, `debug].contains name.getRoot then
+    if let some head := stx.find? is_set_option then
+      if let some name := parse_set_option head then
+        let forbidden := [`debug, `pp, `profiler, `trace]
+        if forbidden.contains name.getRoot then
           Linter.logLint linter.setOption head
-            m!"'set_option {name}' is only intended for development: \
-               unless you remove this 'set_option' or you silence the linter, \
-               `Mathlib` CI will flag this use."
+            m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
+               is only intended for development and not for final code. \
+               If you intend to submit this contribution to the Mathlib project, please remove
+               'set_option {name}'."
 
 initialize addLinter setOptionLinter
 

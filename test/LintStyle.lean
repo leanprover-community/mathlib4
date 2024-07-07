@@ -16,8 +16,9 @@ set_option linter.setOption false
 -- On the top level, i.e. as commands.
 
 /--
-warning: 'set_option pp.all' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option pp.all'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -25,8 +26,9 @@ set_option linter.setOption true in
 set_option pp.all true
 
 /--
-warning: 'set_option profiler' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option profiler'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -34,8 +36,9 @@ set_option linter.setOption true in
 set_option profiler false
 
 /--
-warning: 'set_option pp.all' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option pp.all'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -43,8 +46,9 @@ set_option linter.setOption true in
 set_option pp.all false
 
 /--
-warning: 'set_option profiler.threshold' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option profiler.threshold'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -52,8 +56,9 @@ set_option linter.setOption true in
 set_option profiler.threshold 50
 
 /--
-warning: 'set_option trace.profiler.output' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option trace.profiler.output'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -61,8 +66,9 @@ set_option linter.setOption true in
 set_option trace.profiler.output "foo"
 
 /--
-warning: 'set_option debug.moduleNameAtTimeout' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option debug.moduleNameAtTimeout'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -75,8 +81,9 @@ set_option autoImplicit false
 -- We also cover set_option tactics.
 
 /--
-warning: 'set_option pp.all' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option pp.all'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -86,8 +93,9 @@ lemma tactic : True := by
   trivial
 
 /--
-warning: 'set_option pp.raw.maxDepth' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option pp.raw.maxDepth'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -97,8 +105,9 @@ lemma tactic2 : True := by
   trivial
 
 /--
-warning: 'set_option pp.all' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option pp.all'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
@@ -108,8 +117,9 @@ lemma tactic3 : True := by
   trivial
 
 /--
-warning: 'set_option trace.profiler.output' is only intended for development: unless you remove
-this 'set_option' or you silence the linter, `Mathlib` CI will flag this use.
+warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove 'set_option trace.profiler.output'.
 note: this linter can be disabled with `set_option linter.setOption false`
 -/
 #guard_msgs in
