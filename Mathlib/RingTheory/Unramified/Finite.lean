@@ -72,9 +72,8 @@ theorem iff_exists_tensorProduct [EssFiniteType R S] :
     · suffices e ∈ (Submodule.span (S ⊗[R] S) {1 - e}).annihilator by
         simpa [IsIdempotentElem, mul_sub, sub_eq_zero, eq_comm, -Ideal.submodule_span_eq,
           Submodule.mem_annihilator_span_singleton] using this
-      refine (show Ideal.span _ ≤ _ from ?_) ht₂
-      simpa only [Ideal.span_le, Set.range_subset_iff, Submodule.mem_annihilator_span_singleton,
-        SetLike.mem_coe]
+      exact (show Ideal.span _ ≤ _ by simpa only [Ideal.span_le, Set.range_subset_iff,
+        Submodule.mem_annihilator_span_singleton, SetLike.mem_coe]) ht₂
     · apply le_antisymm <;> simp only [Ideal.submodule_span_eq, Ideal.mem_span_singleton, ht₂,
         Ideal.span_le, Set.singleton_subset_iff, SetLike.mem_coe, Set.range_subset_iff]
       intro s

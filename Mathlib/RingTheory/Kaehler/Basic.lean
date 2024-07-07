@@ -509,23 +509,23 @@ instance KaehlerDifferential.finite [EssFiniteType R S] :
   classical
   let s := (EssFiniteType.finset R S).image (fun s ↦ D R S s)
   refine ⟨⟨s, top_le_iff.mp ?_⟩⟩
-  · rw [← span_range_derivation, Submodule.span_le]
-    rintro _ ⟨x, rfl⟩
-    have : ∀ x ∈ adjoin R (EssFiniteType.finset R S).toSet,
-        .D _ _ x ∈ Submodule.span S s.toSet := by
-      intro x hx
-      refine adjoin_induction hx ?_ ?_ ?_ ?_
-      · exact fun x hx ↦ Submodule.subset_span (Finset.mem_image_of_mem _ hx)
-      · simp
-      · exact fun x y hx hy ↦ (D R S).map_add x y ▸ add_mem hx hy
-      · intro x y hx hy
-        simp only [Derivation.leibniz]
-        exact add_mem (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hx)
-    obtain ⟨t, ht, ht', hxt⟩ := (essFiniteType_cond_iff R S (EssFiniteType.finset R S)).mp
-      EssFiniteType.cond.choose_spec x
-    rw [show D R S x =
-      ht'.unit⁻¹ • (D R S (x * t) - x • D R S t) by simp [smul_smul, Units.smul_def]]
-    exact Submodule.smul_mem _ _ (sub_mem (this _ hxt) (Submodule.smul_mem _ _ (this _ ht)))
+  rw [← span_range_derivation, Submodule.span_le]
+  rintro _ ⟨x, rfl⟩
+  have : ∀ x ∈ adjoin R (EssFiniteType.finset R S).toSet,
+      .D _ _ x ∈ Submodule.span S s.toSet := by
+    intro x hx
+    refine adjoin_induction hx ?_ ?_ ?_ ?_
+    · exact fun x hx ↦ Submodule.subset_span (Finset.mem_image_of_mem _ hx)
+    · simp
+    · exact fun x y hx hy ↦ (D R S).map_add x y ▸ add_mem hx hy
+    · intro x y hx hy
+      simp only [Derivation.leibniz]
+      exact add_mem (Submodule.smul_mem _ _ hy) (Submodule.smul_mem _ _ hx)
+  obtain ⟨t, ht, ht', hxt⟩ := (essFiniteType_cond_iff R S (EssFiniteType.finset R S)).mp
+    EssFiniteType.cond.choose_spec x
+  rw [show D R S x =
+    ht'.unit⁻¹ • (D R S (x * t) - x • D R S t) by simp [smul_smul, Units.smul_def]]
+  exact Submodule.smul_mem _ _ (sub_mem (this _ hxt) (Submodule.smul_mem _ _ (this _ ht)))
 
 end Finiteness
 
