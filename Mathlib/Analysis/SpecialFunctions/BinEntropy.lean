@@ -148,9 +148,6 @@ lemma binaryEntropy_zero_iff_zero_or_one {p : ℝ} : binaryEntropy p = 0 ↔ p =
     cases h <;> simp only [log_one, mul_zero, sub_self, log_zero, neg_zero, log_zero, mul_zero,
       sub_zero, log_one, sub_self, *]
 
--- TODO find home or inline
-lemma zero_lt_log_two : 0 < log 2 := (log_pos_iff zero_lt_two).mpr one_lt_two
-
 /-- For probability `p < 0.5`, `binaryEntropy p < log 2`. -/
 lemma binaryEntropy_lt_log2_of_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) :
     binaryEntropy p < log 2 := by
@@ -158,7 +155,8 @@ lemma binaryEntropy_lt_log2_of_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p <
   rw [binaryEntropy_eq']
   rw [show -p * p.log = -(p * p.log) by ring]
   by_cases pz : p = 0
-  · simp only [log_zero, mul_zero, neg_zero, sub_zero, log_one, sub_self, pz, zero_lt_log_two]
+  · simp only [log_zero, mul_zero, neg_zero, sub_zero, log_one, sub_self, pz,
+      show 0 < log 2 by positivity]
   · have invppos : 0 < 1/p := by positivity
     have : 0 < 1 - p := by linarith -- used implicitly by tactics.
     have sub1pinvpos : 0 < 1 / (1 - p) := by positivity
@@ -619,8 +617,8 @@ lemma strictConcave_qaryEntropy {q : ℕ} : StrictConcaveOn ℝ (Icc 0 1) (qaryE
   rw [deriv2_qaryEntropy]
   · simp_all only [interior_Icc, mem_Ioo]
     apply div_neg_of_neg_of_pos
-    norm_num [zero_lt_log_two]
-    simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hx, zero_lt_log_two]
+    norm_num [show 0 < log 2 by positivity]
+    simp_all only [gt_iff_lt, mul_pos_iff_of_pos_left, sub_pos, hx]
 
 lemma strictConcave_binaryEntropy : StrictConcaveOn ℝ (Icc 0 1) binaryEntropy :=
   strictConcave_qaryEntropy
