@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Group.Invertible.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Data.SetLike.Basic
-import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.SetLike.Basic
+import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.star.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -35,6 +36,7 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 assert_not_exists Finset
 assert_not_exists Subgroup
 assert_not_exists OrderedAddCommMonoid
+assert_not_exists Rat.instField
 
 universe u v w
 
@@ -452,6 +454,14 @@ abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 
+<<<<<<< HEAD
+=======
+instance Nat.instStarRing : StarRing ℕ := starRingOfComm
+instance Int.instStarRing : StarRing ℤ := starRingOfComm
+instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
+instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
+
+>>>>>>> master
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
