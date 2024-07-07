@@ -6,8 +6,8 @@ Authors: Jon Bannon, Jireh Loreaux
 
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
-import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
+import Mathlib.Topology.ContinuousFunction.Units
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
