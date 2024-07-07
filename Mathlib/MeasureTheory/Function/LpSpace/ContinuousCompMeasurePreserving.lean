@@ -140,7 +140,7 @@ theorem Filter.Tendsto.compMeasurePreservingLp {α : Type*} {l : Filter α}
       l (𝓝 ⟨g₀, hgm₀⟩) :=
     tendsto_subtype_rng.2 hg
   convert this.comp (hf.prod_mk_nhds hg)
-  
+
 variable {Z : Type*} [TopologicalSpace Z] {f : Z → Lp E p ν} {g : Z → C(X, Y)} {s : Set Z} {z : Z}
 
 theorem ContinuousWithinAt.compMeasurePreservingLp (hf : ContinuousWithinAt f s z)
@@ -163,4 +163,3 @@ theorem Continuous.compMeasurePreservingLp (hf : Continuous f) (hg : Continuous 
     Continuous (fun z ↦ Lp.compMeasurePreserving (g z) (hgm z) (f z)) :=
   continuous_iff_continuousAt.mpr fun _ ↦
     hf.continuousAt.compMeasurePreservingLp hg.continuousAt hgm hp
-
