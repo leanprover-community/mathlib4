@@ -194,7 +194,7 @@ instance : Neg (GalConjClasses F E) :=
   ⟨Quotient.lift (fun x : E => mk F (-x))
       (by
         rintro _ y ⟨f, rfl⟩; rw [eq]
-        use f; change f (-y) = -f y; rw [AlgEquiv.map_neg])⟩
+        use f; simp only [smul_neg])⟩
 
 theorem mk_neg (x : E) : mk F (-x) = -mk F x :=
   rfl
@@ -227,21 +227,21 @@ theorem minpoly_out (c : GalConjClasses F E) : _root_.minpoly F c.out = minpoly 
   rw [← c.out_eq, minpoly_mk, c.out_eq]
 #align gal_conj_classes.minpoly_out GalConjClasses.minpoly_out
 
-variable [IsSeparable F E]
+variable [Algebra.IsSeparable F E]
 -- most lemmas work with Algebra.IsIntegral / Algebra.IsAlgebraic
 -- but there isn't a lemma saying these are implied by `IsSeparable`
 
 theorem monic_minpoly (c : GalConjClasses F E) : (minpoly c).Monic := by
-  rw [← c.out_eq, minpoly_mk]; exact minpoly.monic (IsSeparable.isIntegral F _)
+  rw [← c.out_eq, minpoly_mk]; exact minpoly.monic (Algebra.IsSeparable.isIntegral F _)
 #align gal_conj_classes.minpoly.monic GalConjClasses.monic_minpoly
 
 theorem minpoly_ne_zero (c : GalConjClasses F E) : minpoly c ≠ 0 := by
   rw [← c.out_eq, minpoly_mk]
-  exact minpoly.ne_zero (IsSeparable.isIntegral F _)
+  exact minpoly.ne_zero (Algebra.IsSeparable.isIntegral F _)
 #align gal_conj_classes.minpoly.ne_zero GalConjClasses.minpoly_ne_zero
 
 theorem irreducible_minpoly (c : GalConjClasses F E) : Irreducible (minpoly c) := by
-  rw [← c.out_eq, minpoly_mk]; exact minpoly.irreducible (IsSeparable.isIntegral F _)
+  rw [← c.out_eq, minpoly_mk]; exact minpoly.irreducible (Algebra.IsSeparable.isIntegral F _)
 #align gal_conj_classes.minpoly.irreducible GalConjClasses.irreducible_minpoly
 
 theorem splits_minpoly [n : Normal F E] (c : GalConjClasses F E) :
@@ -249,15 +249,15 @@ theorem splits_minpoly [n : Normal F E] (c : GalConjClasses F E) :
 #align gal_conj_classes.minpoly.splits GalConjClasses.splits_minpoly
 
 theorem separable_minpoly (c : GalConjClasses F E) : Separable (minpoly c) := by
-  rw [← c.out_eq, minpoly_mk]; exact IsSeparable.separable F c.out
+  rw [← c.out_eq, minpoly_mk]; exact Algebra.IsSeparable.isSeparable F c.out
 #align gal_conj_classes.minpoly.separable GalConjClasses.separable_minpoly
 
 theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = minpoly d) :
     c = d := by
   induction' c using GalConjClasses.ind with x
   induction' d using GalConjClasses.ind with y
-  let fc := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F x)
-  let fd := IntermediateField.adjoinRootEquivAdjoin F (IsSeparable.isIntegral F y)
+  let fc := IntermediateField.adjoinRootEquivAdjoin F (Algebra.IsSeparable.isIntegral F x)
+  let fd := IntermediateField.adjoinRootEquivAdjoin F (Algebra.IsSeparable.isIntegral F y)
   let congr_f {px py : F[X]} (h : px = py) : AdjoinRoot px ≃ₐ[F] AdjoinRoot py :=
     h ▸ AlgEquiv.refl
   change _root_.minpoly F x = _root_.minpoly F y at h

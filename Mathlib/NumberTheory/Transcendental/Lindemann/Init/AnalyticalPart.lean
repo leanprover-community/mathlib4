@@ -127,7 +127,7 @@ theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
       ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc (0 : ℝ) 1,
         Complex.abs ((p q).eval (x • s)) ≤ c ^ q) :
     ∃ c ≥ 0, ∀ q ≥ 1, Complex.abs (P (p q) s) ≤ c ^ q := by
-  simp_rw []; obtain ⟨c', hc', h'⟩ := P_le' p s h; clear h
+  obtain ⟨c', hc', h'⟩ := P_le' p s h; clear h
   let c₁ := max (Real.exp s.re) 1
   let c₂ := max (Real.exp (Complex.abs s)) 1
   have h₂ : 0 ≤ Real.exp (Complex.abs s) := (Real.exp_pos _).le
