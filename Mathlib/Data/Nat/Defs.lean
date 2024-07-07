@@ -904,7 +904,9 @@ lemma leRec_succ' {n} {motive : (m : ℕ) → n ≤ m → Sort*} (refl le_succ_o
 lemma leRec_trans {n m k} {motive : (m : ℕ) → n ≤ m → Sort*} (refl le_succ_of_le)
     (hnm : n ≤ m) (hmk : m ≤ k) :
     leRec (motive := motive) refl le_succ_of_le (Nat.le_trans hnm hmk) =
-      leRec (leRec refl (fun _ h => le_succ_of_le h) hnm) (fun _ h => le_succ_of_le <| Nat.le_trans hnm h) hmk := by
+      leRec
+        (leRec refl (fun _ h => le_succ_of_le h) hnm)
+        (fun _ h => le_succ_of_le <| Nat.le_trans hnm h) hmk := by
   induction hmk with
   | refl => rw [leRec_self]
   | step hmk ih => rw [leRec_succ _ _ (Nat.le_trans hnm hmk), ih, leRec_succ]
