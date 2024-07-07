@@ -83,7 +83,7 @@ lemma sSup_ringCon (S : Set (TwoSidedIdeal R)) :
 
 lemma iSup_ringCon {ι : Type*} (I : ι → TwoSidedIdeal R) :
     (⨆ i, I i).ringCon = ⨆ i, (I i).ringCon := by
-  simp only [iSup, sSup_ringCon]; congr!; ext; simp
+  simp only [iSup, sSup_ringCon]; congr; ext; simp
 
 instance : CompleteSemilatticeSup (TwoSidedIdeal R) where
   sSup_le s I h := by simp_rw [ringCon_le_iff] at h ⊢; exact sSup_le $ by aesop

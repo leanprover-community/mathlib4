@@ -75,7 +75,7 @@ def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
 
 lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := Iff.rfl
 
-/-- Two-sided-ideals corresponds to congruence relation of a ring. -/
+/-- Two-sided-ideals corresponds to congruence relations on a ring. -/
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
   invFun := .mk
