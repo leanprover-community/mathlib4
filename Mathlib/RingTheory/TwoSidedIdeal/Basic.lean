@@ -72,7 +72,7 @@ the coercion from two-sided-ideals to sets is an order embedding
 def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
   toFun := SetLike.coe
   inj' := SetLike.coe_injective
-  map_rel_iff' {I J} := ⟨fun (h : (I : Set R) ⊆ (J : Set R)) _ h' => h h', fun h _ h' => h h'⟩
+  map_rel_iff' {I J} := ⟨fun (h : (I : Set R) ⊆ (J : Set R)) _ h' ↦ h h', fun h _ h' ↦ h h'⟩
 
 lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :=
   coeOrderEmbedding.map_rel_iff.symm
@@ -119,16 +119,16 @@ def mk' (carrier : Set R)
     (mul_mem_left : ∀ {x y}, y ∈ carrier → x * y ∈ carrier)
     (mul_mem_right : ∀ {x y}, x ∈ carrier → x * y ∈ carrier) : TwoSidedIdeal R where
   ringCon :=
-    { r := fun x y => x - y ∈ carrier
+    { r := fun x y ↦ x - y ∈ carrier
       iseqv :=
-      { refl := fun x => by simpa using zero_mem
-        symm := fun h => by simpa using neg_mem h
-        trans := fun {x y z} h1 h2 => by
+      { refl := fun x ↦ by simpa using zero_mem
+        symm := fun h ↦ by simpa using neg_mem h
+        trans := fun {x y z} h1 h2 ↦ by
           simpa only [show x - z = (x - y) + (y - z) by abel] using add_mem h1 h2 }
-      mul' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) => show _ ∈ carrier by
+      mul' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
         rw [show a * c - b * d = a * (c - d) + (a - b) * d by rw [mul_sub, sub_mul]; abel]
         exact add_mem (mul_mem_left h2) (mul_mem_right h1)
-      add' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) => show _ ∈ carrier by
+      add' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
         rw [show a + c - (b + d) = (a - b) + (c - d) by abel]
         exact add_mem h1 h2 }
 
@@ -188,16 +188,16 @@ instance : SMul R I where smul r x := ⟨r • x.1, I.mul_mem_left _ _ x.2⟩
 instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _ x.2⟩
 
 instance leftModule : Module R I :=
-  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ => rfl
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
 
 @[simp]
-lemma coe_smul {r : R} {x : I} : ↑(r • x : R) = r * (x : R) := rfl
+lemma coe_smul {r : R} {x : I} : (r • x : R) = r * (x : R) := rfl
 
 instance rightModule : Module Rᵐᵒᵖ I :=
-  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ => rfl
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
 
 @[simp]
-lemma coe_mop_smul {r : Rᵐᵒᵖ} {x : I} : ↑(r • x : R) = (x : R) * r.unop := rfl
+lemma coe_mop_smul {r : Rᵐᵒᵖ} {x : I} : (r • x : R) = (x : R) * r.unop := rfl
 
 instance : SMulCommClass R Rᵐᵒᵖ I where
   smul_comm r s x := Subtype.ext <| smul_comm r s x.1
