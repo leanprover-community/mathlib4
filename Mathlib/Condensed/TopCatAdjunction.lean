@@ -10,7 +10,7 @@ variable (X : CondensedSet.{u})
 
 namespace CondensedSet
 
-private def _root_.CompHaus.const (S : CompHaus.{u}) (s : S) : CompHaus.of PUnit ⟶ S :=
+private def _root_.CompHaus.const (S : CompHaus.{u}) (s : S) : CompHaus.of PUnit.{u+1} ⟶ S :=
   ContinuousMap.const _ s
 
 private def coinducingCoprod :
