@@ -103,7 +103,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
   cases nonempty_encodable ι
   apply le_antisymm
   · refine iSup_le ?_; intro i; rw [comap_generateFrom]
-    apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩; dsimp
+    apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
     choose t h1t h2t using hC
     simp_rw [eval_preimage, ← h2t]
     rw [← @iUnion_const _ ℕ _ s]

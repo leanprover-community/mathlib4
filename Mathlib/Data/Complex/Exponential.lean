@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.Order.CauSeq.BigOperators
+import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
@@ -1730,9 +1731,6 @@ end Mathlib.Meta.Positivity
 
 namespace Complex
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12230 -/
 @[simp]
 theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
