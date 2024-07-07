@@ -567,8 +567,14 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 @[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
 #align ennreal.nat_ne_top ENNReal.natCast_ne_top
 
+@[simp] theorem ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n : ℝ≥0∞)) ≠ ∞ :=
+  WithTop.ofNat_ne_top n
+
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 #align ennreal.top_ne_nat ENNReal.top_ne_natCast
+
+@[simp] theorem top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : ∞ ≠ no_index (OfNat.ofNat n : ℝ≥0∞) :=
+  (ofNat_ne_top n).symm
 
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 #align ennreal.one_lt_top ENNReal.one_lt_top
