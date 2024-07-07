@@ -462,18 +462,8 @@ open Filter Topology Set
 lemma eventuallyEq_nhdsWithin_of_eqOn_interval_right
     (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Ioo x (x + ε), f y = g y) :
     f =ᶠ[𝓝[>] x] g := by
-  apply eventuallyEq_nhdsWithin_iff.mpr
-  apply Metric.eventually_nhds_iff.mpr
-  use ε
-  constructor
-  · exact epsPos
-  · intro y yclose ygex
-    have : y ∈ Ioo x (x + ε) := by
-      simp_all only [mem_Ioo, and_imp, mem_Ioi, true_and]
-      have : dist y x = y - x := by
-        simp_all only [Real.dist_eq, abs_eq_self, sub_nonneg, le_of_lt ygex]
-      linarith
-    simp_all only [mem_Ioo, and_imp, mem_Ioi, true_and]
+  have : x < x + ε := lt_add_of_pos_right x epsPos
+  filter_upwards [Ioo_mem_nhdsWithin_Ioi' this] using h
 
 lemma eventuallyEq_nhdsWithin_of_eqOn_interval_left
     (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Ioo (x - ε) x, f y = g y) :
