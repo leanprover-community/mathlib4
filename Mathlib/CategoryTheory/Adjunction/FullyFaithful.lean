@@ -5,7 +5,7 @@ Authors: Scott Morrison, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.Yoneda
+import Mathlib.CategoryTheory.EpiMono
 
 #align_import category_theory.adjunction.fully_faithful from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
