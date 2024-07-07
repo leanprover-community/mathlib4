@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Module.Defs
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
@@ -15,6 +15,9 @@ import Mathlib.GroupTheory.GroupAction.Pi
 # Further basic results about modules.
 
 -/
+
+assert_not_exists OrderedSemiring
+assert_not_exists Nonneg.inv
 
 open Function Set
 
@@ -58,17 +61,6 @@ theorem map_inv_intCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [F
 @[deprecated (since := "2024-04-17")]
 alias map_inv_int_cast_smul := map_inv_intCast_smul
 
-theorem map_ratCast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
-    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
-    [Module S M₂] (c : ℚ) (x : M) :
-    f ((c : R) • x) = (c : S) • f x := by
-  rw [Rat.cast_def, Rat.cast_def, div_eq_mul_inv, div_eq_mul_inv, mul_smul, mul_smul,
-    map_intCast_smul f R S, map_inv_natCast_smul f R S]
-#align map_rat_cast_smul map_ratCast_smul
-
-@[deprecated (since := "2024-04-17")]
-alias map_rat_cast_smul := map_ratCast_smul
-
 /-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
 agree on inverses of natural numbers in `R` and `S`. -/
 theorem inv_natCast_smul_eq {E : Type*} (R S : Type*) [AddCommMonoid E] [DivisionSemiring R]
@@ -111,16 +103,6 @@ theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [Divis
 
 @[deprecated (since := "2024-04-17")]
 alias inv_int_cast_smul_comm := inv_intCast_smul_comm
-
-/-- If `E` is a vector space over two division rings `R` and `S`, then scalar multiplications
-agree on rational numbers in `R` and `S`. -/
-theorem ratCast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRing R]
-    [DivisionRing S] [Module R E] [Module S E] (r : ℚ) (x : E) : (r : R) • x = (r : S) • x :=
-  map_ratCast_smul (AddMonoidHom.id E) R S r x
-#align rat_cast_smul_eq ratCast_smul_eq
-
-@[deprecated (since := "2024-04-17")]
-alias rat_cast_smul_eq := ratCast_smul_eq
 
 section NoZeroSMulDivisors
 
