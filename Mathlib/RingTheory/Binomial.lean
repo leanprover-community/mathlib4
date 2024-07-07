@@ -204,7 +204,7 @@ end Polynomial
 
 end Pochhammer
 
-section Nat_Int
+section Basic_Instances
 
 open Polynomial
 
@@ -248,7 +248,7 @@ noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R �
     simp only [← smul_assoc]
     field_simp
 
-end Nat_Int
+end Basic_Instances
 
 section Neg
 
@@ -258,7 +258,8 @@ open Polynomial
 
 variable {R : Type*} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
 
-theorem ascPochhammer_smeval_neg_self : ∀(n : ℕ),
+@[simp]
+theorem smeval_ascPochhammer_self_neg : ∀ n : ℕ,
     smeval (ascPochhammer ℕ n) (-n : ℤ) = (-1)^n * n.factorial
   | 0 => by
     rw [Nat.cast_zero, neg_zero, ascPochhammer_zero, Nat.factorial_zero, smeval_one, pow_zero,
@@ -266,72 +267,72 @@ theorem ascPochhammer_smeval_neg_self : ∀(n : ℕ),
   | n + 1 => by
     rw [ascPochhammer_succ_left, smeval_X_mul, smeval_comp, smeval_add, smeval_X, smeval_one,
       pow_zero, pow_one, one_smul, Nat.cast_add, Nat.cast_one, neg_add_rev, neg_add_cancel_comm,
-      ascPochhammer_smeval_neg_self n, ← mul_assoc, mul_comm _ ((-1) ^ n),
-      show (-1 + -↑n = (-1 : ℤ) * (n + 1)) by linarith, ← mul_assoc, pow_add, pow_one,
+      smeval_ascPochhammer_self_neg n, ← mul_assoc, mul_comm _ ((-1) ^ n),
+      show (-1 + -↑n = (-1 : ℤ) * (n + 1)) by omega, ← mul_assoc, pow_add, pow_one,
       Nat.factorial, Nat.cast_mul, ← mul_assoc, Nat.cast_succ]
 
-theorem ascPochhammer_succ_smeval_neg (n : ℕ) :
+@[simp]
+theorem smeval_ascPochhammer_succ_neg (n : ℕ) :
     smeval (ascPochhammer ℕ (n + 1)) (-n : ℤ) = 0 := by
   rw [ascPochhammer_succ_right, smeval_mul, smeval_add, smeval_X, ← C_eq_natCast, smeval_C,
     pow_zero, pow_one, Nat.cast_id, nsmul_eq_mul, mul_one, add_left_neg, mul_zero]
 
-theorem ascPochhammer_smeval_neg_add (n : ℕ) : ∀(k : ℕ),
+theorem smeval_ascPochhammer_neg_add (n : ℕ) : ∀ k : ℕ,
     smeval (ascPochhammer ℕ (n + k + 1)) (-n : ℤ) = 0
   | 0 => by
-    rw [add_zero, ascPochhammer_succ_smeval_neg]
+    rw [add_zero, smeval_ascPochhammer_succ_neg]
   | k + 1 => by
-    rw [ascPochhammer_succ_right, smeval_mul, ← add_assoc, ascPochhammer_smeval_neg_add n k,
+    rw [ascPochhammer_succ_right, smeval_mul, ← add_assoc, smeval_ascPochhammer_neg_add n k,
       zero_mul]
 
-theorem ascPochhammer_smeval_neg_lt (n k : ℕ) (h : n < k) :
+@[simp]
+theorem smeval_ascPochhammer_neg_of_lt {n k : ℕ} (h : n < k) :
     smeval (ascPochhammer ℕ k) (-n : ℤ) = 0 := by
-  have hk : k = n + (k - n - 1) + 1 := by
-    rw [add_rotate, Nat.sub_sub, Nat.add_right_comm, Nat.add_assoc, Nat.sub_add_cancel h]
-  rw [hk, ascPochhammer_smeval_neg_add]
+  rw [show k = n + (k - n - 1) + 1 by omega, smeval_ascPochhammer_neg_add]
 
-theorem ascPochhammer_smeval_nat_cast [NatPowAssoc R] (n k : ℕ) :
+theorem smeval_ascPochhammer_nat_cast [NatPowAssoc R] (n k : ℕ) :
     smeval (ascPochhammer ℕ k) (n : R) = smeval (ascPochhammer ℕ k) n := by
   rw [smeval_at_natCast (ascPochhammer ℕ k) n]
 
-theorem multichoose_neg (n : ℕ) : multichoose (-n : ℤ) n = (-1)^n := by
-    refine @nsmul_right_injective ℤ _ _ _ (Nat.factorial n) (Nat.factorial_ne_zero n)
-      (multichoose (-n : ℤ) n) ((-1)^n) ?_
-    simp only
-    rw [factorial_nsmul_multichoose_eq_ascPochhammer, ascPochhammer_smeval_neg_self, nsmul_eq_mul,
-      Nat.cast_comm]
-
-theorem multichoose_succ_neg (n : ℕ) : multichoose (-n : ℤ) (n + 1) = 0 := by
-  refine @nsmul_right_injective ℤ _ _ _ (Nat.factorial (n + 1)) (Nat.factorial_ne_zero (n + 1))
-    (multichoose (-n : ℤ) (n + 1)) 0 ?_
+theorem multichoose_neg_self (n : ℕ) : multichoose (-n : ℤ) n = (-1)^n := by
+  apply nsmul_right_injective _ (Nat.factorial_ne_zero _)
   simp only
-  rw [factorial_nsmul_multichoose_eq_ascPochhammer, ascPochhammer_succ_smeval_neg, smul_zero]
+  rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_self_neg, nsmul_eq_mul,
+    Nat.cast_comm]
+
+@[simp]
+theorem multichoose_neg_succ (n : ℕ) : multichoose (-n : ℤ) (n + 1) = 0 := by
+  apply nsmul_right_injective _ (Nat.factorial_ne_zero _)
+  simp only
+  rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_succ_neg, smul_zero]
 
 theorem multichoose_neg_add (n k : ℕ) : multichoose (-n : ℤ) (n + k + 1) = 0 := by
   refine nsmul_right_injective (Nat.factorial (n + k + 1)) (Nat.factorial_ne_zero (n + k + 1)) ?_
   simp only
-  rw [factorial_nsmul_multichoose_eq_ascPochhammer, ascPochhammer_smeval_neg_add, smul_zero]
+  rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_neg_add, smul_zero]
 
-theorem multichoose_neg_lt (n k : ℕ) (h : n < k) : multichoose (-n : ℤ) k = 0 := by
+@[simp]
+theorem multichoose_neg_of_lt (n k : ℕ) (h : n < k) : multichoose (-n : ℤ) k = 0 := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
-  rw [factorial_nsmul_multichoose_eq_ascPochhammer, ascPochhammer_smeval_neg_lt n k h, smul_zero]
+  rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_ascPochhammer_neg_of_lt h, smul_zero]
 
-theorem multichoose_succ_neg_cast [NatPowAssoc R] (n : ℕ) :
+theorem multichoose_succ_neg_natCast [NatPowAssoc R] (n : ℕ) :
     multichoose (-n : R) (n + 1) = 0 := by
   refine nsmul_right_injective (Nat.factorial (n + 1)) (Nat.factorial_ne_zero (n + 1)) ?_
-  simp only
-  rw [factorial_nsmul_multichoose_eq_ascPochhammer, smul_zero, smeval_at_neg_nat,
-    ascPochhammer_succ_smeval_neg, Int.cast_zero]
+  simp only [smul_zero]
+  rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_neg_nat,
+    smeval_ascPochhammer_succ_neg n, Int.cast_zero]
 
-theorem ascPochhammer_smeval_nat_int [NatPowAssoc R] (r : R) : ∀(n : ℕ),
+theorem smeval_ascPochhammer_int_ofNat [NatPowAssoc R] (r : R) : ∀ n : ℕ,
     smeval (ascPochhammer ℤ n) r = smeval (ascPochhammer ℕ n) r
   | 0 => by
     simp only [ascPochhammer_zero, smeval_one]
   | n + 1 => by
     simp only [ascPochhammer_succ_right, smeval_mul]
-    rw [ascPochhammer_smeval_nat_int r n]
+    rw [smeval_ascPochhammer_int_ofNat r n]
     simp only [smeval_add, smeval_X, ← C_eq_natCast, smeval_C, natCast_zsmul, nsmul_eq_mul,
-    Nat.cast_id]
+      Nat.cast_id]
 
 end Ring
 

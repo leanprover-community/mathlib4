@@ -293,8 +293,7 @@ theorem orderTop_single (h : r ≠ 0) : (single a r).orderTop = a :=
 
 theorem orderTop_single_le : a ≤ (single a r).orderTop := by
   by_cases hr : r = 0
-  · rw [hr, single_eq_zero, orderTop_zero]
-    exact OrderTop.le_top (a : WithTop Γ)
+  · simp only [hr, map_zero, orderTop_zero, le_top]
   · rw [orderTop_single hr]
 
 theorem lt_orderTop_single {g g' : Γ} (hgg' : g < g') : g < (single g' r).orderTop :=
@@ -410,6 +409,31 @@ theorem leadingCoeff_leadingTerm {x : HahnSeries Γ R} :
   · rw [h, leadingTerm_zero]
   · rw [leadingTerm_of_ne h, leadingCoeff_of_single]
 
+/-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
+zero if the series vanishes. -/
+def leadingCoeff (x : HahnSeries Γ R) : R :=
+  if h : x = 0 then 0 else x.coeff (x.isWF_support.min (support_nonempty_iff.2 h))
+
+@[simp]
+theorem leadingCoeff_zero : leadingCoeff (0 : HahnSeries Γ R) = 0 :=
+  dif_pos rfl
+
+theorem leadingCoeff_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
+    x.leadingCoeff = x.coeff (x.isWF_support.min (support_nonempty_iff.2 hx)) :=
+  dif_neg hx
+
+theorem leadingCoeff_eq_iff {x : HahnSeries Γ R} : x.leadingCoeff = 0 ↔ x = 0 := by
+  refine { mp := ?_, mpr := fun hx => hx ▸ leadingCoeff_zero }
+  contrapose!
+  exact fun hx => (leadingCoeff_of_ne hx) ▸ coeff_orderTop_ne (orderTop_of_ne hx)
+
+theorem leadingCoeff_ne_iff {x : HahnSeries Γ R} : x.leadingCoeff ≠ 0 ↔ x ≠ 0 :=
+  leadingCoeff_eq_iff.not
+
+theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r := by
+  simp only [leadingCoeff, single_eq_zero_iff]
+  by_cases h : r = 0 <;> simp [h]
+
 variable [Zero Γ]
 
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
@@ -507,6 +531,25 @@ theorem leadingTerm_eq [Zero Γ] {x : HahnSeries Γ R} :
   by_cases h : x = 0
   · rw [h, leadingTerm_zero, order_zero, zero_coeff, single_eq_zero]
   · rw [leadingTerm_of_ne h, leadingCoeff_eq, order_of_ne h]
+
+theorem zero_lt_orderTop_iff {x : HahnSeries Γ R} (hx : x ≠ 0) :
+    0 < x.orderTop ↔ 0 < x.order := by
+  simp_all [orderTop_of_ne hx, order_of_ne hx]
+
+theorem zero_lt_orderTop_of_order {x : HahnSeries Γ R} (hx : 0 < x.order) : 0 < x.orderTop := by
+  by_cases h : x = 0
+  · simp_all only [order_zero, lt_self_iff_false]
+  · exact (zero_lt_orderTop_iff h).mpr hx
+
+theorem zero_le_orderTop_iff {x : HahnSeries Γ R} : 0 ≤ x.orderTop ↔ 0 ≤ x.order := by
+  by_cases h : x = 0
+  · simp_all
+  · simp_all [order_of_ne h, orderTop_of_ne h, zero_lt_orderTop_iff]
+
+theorem leadingCoeff_eq [Zero Γ] {x : HahnSeries Γ R} : x.leadingCoeff = x.coeff x.order := by
+  by_cases h : x = 0
+  · rw [h, leadingCoeff_zero, zero_coeff]
+  · rw [leadingCoeff_of_ne h, order_of_ne h]
 
 end Order
 
