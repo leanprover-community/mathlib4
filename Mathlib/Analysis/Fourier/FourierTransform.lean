@@ -81,7 +81,7 @@ def fourierIntegral (e : AddChar 𝕜 𝕊) (μ : Measure V) (L : V →ₗ[𝕜]
   ∫ v, e (-L v w) • f v ∂μ
 #align vector_fourier.fourier_integral VectorFourier.fourierIntegral
 
-theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure V)
+theorem fourierIntegral_const_smul (e : AddChar 𝕜 𝕊) (μ : Measure V)
     (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (r : ℂ) :
     fourierIntegral e μ L (r • f) = r • fourierIntegral e μ L f := by
   ext1 w
@@ -90,7 +90,7 @@ theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure V)
   simp only [Pi.smul_apply, fourierIntegral, ← integral_smul]
   congr 1 with v
   rw [smul_comm]
-#align vector_fourier.fourier_integral_smul_const VectorFourier.fourierIntegral_smul_const
+#align vector_fourier.fourier_integral_smul_const VectorFourier.fourierIntegral_const_smul
 
 /-- The uniform norm of the Fourier integral of `f` is bounded by the `L¹` norm of `f`. -/
 theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure V)
@@ -154,7 +154,7 @@ variable [CompleteSpace E]
 
 theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
-    fourierIntegral e μ L f + fourierIntegral e μ L g = fourierIntegral e μ L (f + g) := by
+    fourierIntegral e μ L (f + g) = fourierIntegral e μ L f + fourierIntegral e μ L g := by
   ext1 w
   dsimp only [Pi.add_apply, fourierIntegral]
   simp_rw [smul_add]
@@ -296,10 +296,10 @@ theorem fourierIntegral_def (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : �
   rfl
 #align fourier.fourier_integral_def Fourier.fourierIntegral_def
 
-theorem fourierIntegral_smul_const (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
+theorem fourierIntegral_const_smul (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜) (f : 𝕜 → E) (r : ℂ) :
     fourierIntegral e μ (r • f) = r • fourierIntegral e μ f :=
-  VectorFourier.fourierIntegral_smul_const _ _ _ _ _
-#align fourier.fourier_integral_smul_const Fourier.fourierIntegral_smul_const
+  VectorFourier.fourierIntegral_const_smul _ _ _ _ _
+#align fourier.fourier_integral_smul_const Fourier.fourierIntegral_const_smul
 
 /-- The uniform norm of the Fourier transform of `f` is bounded by the `L¹` norm of `f`. -/
 theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜)
