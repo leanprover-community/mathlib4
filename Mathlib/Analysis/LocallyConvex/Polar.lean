@@ -168,6 +168,7 @@ theorem polar_subMulAction (m : SubMulAction 𝕜 E) : B.polar m = { y | ∀ x �
     rw [h x hx, norm_zero]
     exact zero_le_one
 
+/-- The polar of a set closed under scalar multiplication as a submodule -/
 def polarSubmodule (m : SubMulAction 𝕜 E) : Submodule 𝕜 F :=
   ⟨⟨⟨B.polar m, by
     intro _ _ ha hb
