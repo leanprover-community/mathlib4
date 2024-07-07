@@ -32,6 +32,8 @@ theorem jointly_surjective' [∀ k, HasColimit (F.flip.obj k)] (k : K) (x : (col
     ∃ j y, x = (colimit.ι F j).app k y :=
   jointly_surjective _ _ (colimit.isColimit _) x
 
--- theorem colimit.map_ι_apply
+theorem colimit.map_ι_apply [HasColimit F] (j : J) {k k' : K} {f : k ⟶ k'} {x} :
+    (colimit F).map f ((colimit.ι F j).app _ x) = (colimit.ι F j).app _ ((F.obj j).map f x) :=
+  congrFun ((colimit.ι F j).naturality _).symm _
 
 end CategoryTheory.FunctorToTypes

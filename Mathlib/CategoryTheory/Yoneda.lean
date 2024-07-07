@@ -341,6 +341,14 @@ lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : yonedaEquiv (yoneda.map f
   rw [yonedaEquiv_apply]
   simp
 
+lemma map_yonedaEquiv {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F)
+    (g : Y ⟶ X) : F.map g.op (yonedaEquiv f) = f.app (op Y) g := by
+  rw [yonedaEquiv_naturality, yonedaEquiv_comp, yonedaEquiv_yoneda_map]
+
+lemma map_yonedaEquiv' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj (unop X) ⟶ F)
+    (g : X ⟶ Y) : F.map g (yonedaEquiv f) = f.app Y g.unop := by
+  rw [yonedaEquiv_naturality', yonedaEquiv_comp, yonedaEquiv_yoneda_map]
+
 lemma yonedaEquiv_symm_map {X Y : Cᵒᵖ} (f : X ⟶ Y) {F : Cᵒᵖ ⥤ Type v₁} (t : F.obj X) :
     yonedaEquiv.symm (F.map f t) = yoneda.map f.unop ≫ yonedaEquiv.symm t := by
   obtain ⟨u, rfl⟩ := yonedaEquiv.surjective t
@@ -441,6 +449,7 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
 #align category_theory.curried_yoneda_lemma CategoryTheory.curriedYonedaLemma
 
 /-- The curried version of the Yoneda lemma. -/
+@[simps! (config := { isSimp := false, fullyApplied := false }) hom_app_app inv_app_app]
 def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
     yoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
