@@ -10,6 +10,8 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 # Topological structure on `DomMulAct _`
 
 In this file we define topology on `DomMulAct _` and prove basic facts about this topology.
+The topology on `Mᵈᵐᵃ` is the same as the topology on `M`
+(formally, it is induced by `DomMulAct.mk.symm`, since the types aren't definitionally equal).
 -/
 
 open Filter TopologicalSpace
