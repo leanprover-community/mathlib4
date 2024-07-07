@@ -147,25 +147,54 @@ section
 
 variable {n : ℕ} {X₁ X₂ : C}
 
-lemma biprod_ext {α β : Ext (X₁ ⊞ X₂) Y n}
-    (h : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n)): α = β := by
-  letI := HasDerivedCategory.standard C
-  rw [ext_iff] at h ⊢
-  simp at h
+instance [HasDerivedCategory C] :
+    PreservesBinaryBiproduct X₁ X₂ (DerivedCategory.singleFunctor C 0) :=
   sorry
+
+lemma biprod_ext {α β : Ext (X₁ ⊞ X₂) Y n}
+    (h₁ : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n))
+    (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :
+    α = β := by
+  letI := HasDerivedCategory.standard C
+  rw [ext_iff] at h₁ h₂ ⊢
+  simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp] at h₁ h₂
+  apply BinaryCofan.IsColimit.hom_ext
+    (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
+      (BinaryBiproduct.isBilimit X₁ X₂)).isColimit
+  all_goals assumption
 
 variable (α₁ : Ext X₁ Y n) (α₂ : Ext X₂ Y n)
 
-def descBiprod : Ext (X₁ ⊞ X₂) Y n := by
-  have := α₁
-  have := α₂
-  sorry
+noncomputable def descBiprod : Ext (X₁ ⊞ X₂) Y n := by
+  letI := HasDerivedCategory.standard C
+  exact homEquiv.symm (Cofan.IsColimit.desc
+    (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
+      (BinaryBiproduct.isBilimit X₁ X₂)).isColimit (by
+        rintro ⟨_|_⟩
+        · exact α₁.hom
+        · exact α₂.hom))
 
 @[simp]
-lemma inl_descBiprod : (mk₀ biprod.inl).comp (descBiprod α₁ α₂) (zero_add n) = α₁ := sorry
+lemma inl_descBiprod : (mk₀ biprod.inl).comp (descBiprod α₁ α₂) (zero_add n) = α₁ := by
+  letI := HasDerivedCategory.standard C
+  ext
+  dsimp [descBiprod]
+  simp only [comp_hom, Int.Nat.cast_ofNat_Int, mk₀_hom, Equiv.apply_symm_apply,
+    ShiftedHom.mk₀_comp]
+  exact Cofan.IsColimit.fac
+    (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
+      (BinaryBiproduct.isBilimit X₁ X₂)).isColimit _ WalkingPair.left
 
 @[simp]
-lemma inr_descBiprod : (mk₀ biprod.inr).comp (descBiprod α₁ α₂) (zero_add n) = α₂ := sorry
+lemma inr_descBiprod : (mk₀ biprod.inr).comp (descBiprod α₁ α₂) (zero_add n) = α₂ := by
+  letI := HasDerivedCategory.standard C
+  ext
+  dsimp [descBiprod]
+  simp only [comp_hom, Int.Nat.cast_ofNat_Int, mk₀_hom, Equiv.apply_symm_apply,
+    ShiftedHom.mk₀_comp]
+  exact Cofan.IsColimit.fac
+    (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
+      (BinaryBiproduct.isBilimit X₁ X₂)).isColimit _ WalkingPair.right
 
 end
 
