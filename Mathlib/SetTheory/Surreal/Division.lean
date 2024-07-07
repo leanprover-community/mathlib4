@@ -82,12 +82,11 @@ lemma right_pos_of_pos : ∀ j, 0 < x.moveRight j := by
   · exact numeric_zero
   · exact x_num
 
-/-! ### Normalization of a positive numeric game
+/-! ### Normalization of a positive numeric game -/
 
-  If x is a positive numeric game, then keeping only the positive Left options then inserting
+/-- If x is a positive numeric game, then keeping only the positive Left options then inserting
   0 as a Left option, results in an equal game. This game is called the normalization of x.
 -/
-
 def normalization (x : PGame) : PGame :=
   match x with
   | ⟨_, r, L, R⟩ => insertLeft ⟨{i // 0 < L i}, r, fun i => L i, R⟩ 0
@@ -239,7 +238,7 @@ def components {l r} (L : l → PGame) (R : r → PGame)
       Surreal.mk ((PGame.mk l r L R).inv'.moveRight j) (by apply inv'_numeric_right <;> tauto))
 
 /-- The identity 1 - x*y'' = (1 - x * y')*(x' - x)/x' -/
-def eq1 {l r} (L : l → PGame) (R : r → PGame)
+lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (x_pos : 0 < PGame.mk l r L R)
@@ -374,7 +373,7 @@ lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
       · exact ihr_pos j
 
 /-- The identity x' * y + x * y' - x' * y' = 1 + x' * (y - y'') -/
-def eq2 {l r} (L : l → PGame) (R : r → PGame)
+lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
     (inv_l : ∀ (i : { i // 0 < L i }),
