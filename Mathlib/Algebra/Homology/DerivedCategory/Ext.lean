@@ -269,8 +269,8 @@ lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
 lemma add_hom (α β : Ext X Y n) : (α + β).hom = α.hom + β.hom := by
   let α' : Ext (X ⊞ X) Y n := (mk₀ biprod.fst).comp α (zero_add n)
   let β' : Ext (X ⊞ X) Y n := (mk₀ biprod.snd).comp β (zero_add n)
-  have eq₁ : α + β = (mk₀ (biprod.lift (𝟙 X) (𝟙 X))).comp (α' + β') (zero_add n) :=
-    by simp [α', β']
+  have eq₁ : α + β = (mk₀ (biprod.lift (𝟙 X) (𝟙 X))).comp (α' + β') (zero_add n) := by
+    simp [α', β']
   have eq₂ : α' + β' = homEquiv.symm (α'.hom + β'.hom) := by
     apply biprod_ext
     all_goals ext; simp [α', β', ← Functor.map_comp]
