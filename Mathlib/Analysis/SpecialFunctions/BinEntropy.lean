@@ -471,14 +471,6 @@ lemma eventuallyEq_nhdsWithin_of_eqOn_interval_left
   have : x - ε < x := sub_lt_self x epsPos
   filter_upwards [Ioo_mem_nhdsWithin_Iio' this] using h
 
-lemma tendsto_atTop_if_tendsto_neg_atBot {f : ℝ → ℝ} {l : Filter ℝ} :
-    Tendsto f l atBot ↔ Tendsto (fun x ↦ -f x) l atTop := by
-  constructor
-  · apply Tendsto.comp
-    exact tendsto_neg_atBot_atTop
-  · intro
-    simp_all only [tendsto_neg_atTop_iff]
-
 private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
     Tendsto (fun (x:ℝ) ↦ (1 - x).log - x.log) (𝓝[>] 0) atTop := by
   apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
@@ -487,7 +479,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
     gcongr
     have : x ≤ 1/2 := hx.2
     linarith
-  · apply tendsto_atTop_if_tendsto_neg_atBot.mp tendsto_log_nhdsWithin_zero_right
+  · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsWithin_zero_right
 
 private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
     Tendsto (fun (x:ℝ) ↦ (1 - x).log - x.log) (𝓝[<] 1) atBot := by
