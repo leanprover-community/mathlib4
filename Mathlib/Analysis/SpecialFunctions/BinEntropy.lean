@@ -363,9 +363,9 @@ lemma deriv_binaryEntropy' {x : ℝ} :
       have := (differentiableAt_binaryEntropy_iff_ne_zero_one x).mp h
       simp_all only [ne_eq, not_true_eq_false, zero_ne_one, not_false_eq_true, and_true]
 
-lemma deriv_qaryEntropy' {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
-    deriv (fun p => p * log (q - 1) - p * log p - (1 - p) * log (1 - p)) x
-       = log (q - 1) + log (1 - x) - log x := by
+lemma deriv_qaryEntropy {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
+    deriv (qaryEntropy q) x = log (q - 1) + log (1 - x) - log x := by
+  unfold qaryEntropy
   have differentiable_const_minus {q : ℝ} (p : ℝ) :
     DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
   have {a b c : ℝ} : a - b - c = a + (-b - c) := by ring
@@ -384,11 +384,6 @@ lemma deriv_qaryEntropy' {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
         ((DifferentiableAt.mul differentiableAt_id') (DifferentiableAt.log differentiableAt_id' h))
     · apply DifferentiableAt.mul (differentiable_const_minus x)
         (DifferentiableAt.log (differentiable_const_minus x) (sub_ne_zero_of_ne hh.symm))
-
-lemma deriv_qaryEntropy {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
-    deriv (qaryEntropy q) x = log (q - 1) + log (1 - x) - log x := by
-  unfold qaryEntropy
-  exact deriv_qaryEntropy' h hh
 
 /-- Binary entropy has derivative `log (1 - p) - log p`.
 It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
@@ -414,7 +409,7 @@ lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1
     convert differentiableAt_binaryEntropy xne0 gne1 using 1
     exact binaryEntropy_eq.symm
   convert hasDerivAt_deriv_iff.mpr diffAt using 1
-  exact (deriv_qaryEntropy' xne0 gne1).symm
+  exact (deriv_qaryEntropy xne0 gne1).symm
 
 open Filter Topology Set
 
