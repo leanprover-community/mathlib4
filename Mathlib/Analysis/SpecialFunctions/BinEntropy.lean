@@ -215,10 +215,6 @@ This is due to definition of `Real.log` for negative numbers. -/
 
 /-! ### Derivatives of binary entropy function -/
 
-@[simp] lemma deriv_one_minus (x : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) x = -1 := by
-  have onem (y : ℝ) : 1 - y = -(y + -1) := by ring
-  simp only [onem, neg_add_rev, neg_neg, differentiableAt_const, deriv_const_add', deriv_neg'']
-
 section general
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -336,7 +332,8 @@ lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻�
   by_cases xis1 : x = 1
   · simp only [xis1, sub_self, inv_zero, neg_zero, deriv_log_one_sub_at_1]
   · rw [deriv.log]
-    field_simp [deriv_one_minus]
+    rw [deriv_const_sub 1, deriv_id'']
+    field_simp
     fun_prop
     exact sub_ne_zero_of_ne fun a ↦ xis1 a.symm
 
@@ -354,8 +351,8 @@ lemma deriv_binaryEntropy' {x : ℝ} :
     simp only [mul_sub_right_distrib, one_mul]
     rw [deriv_sub this (by fun_prop), deriv_log_one_sub]
     · rw [deriv_mul (by fun_prop) this, deriv_id'']
-      rw [deriv.log (by fun_prop) (sub_ne_zero_of_ne (hh.symm))]
-      simp only [one_mul, deriv_one_minus]
+      rw [deriv.log (by fun_prop) (sub_ne_zero_of_ne (hh.symm)), deriv_const_sub 1, deriv_id'']
+      simp only [one_mul]
       field_simp [sub_ne_zero.mpr hh.symm]
       ring
     · exact (hasDerivAt_negMulLog h).differentiableAt
@@ -385,8 +382,8 @@ lemma deriv_binaryEntropy''' {x : ℝ} :
       simp only [one_mul]
       rw [deriv_sub diff_log_one_sub (by fun_prop), deriv_log_one_sub,
         deriv_mul differentiableAt_id' diff_log_one_sub, deriv_id'',
-        deriv.log (by fun_prop) (sub_ne_zero_of_ne hh.symm)]
-      simp only [one_mul, deriv_one_minus]
+        deriv.log (by fun_prop) (sub_ne_zero_of_ne hh.symm), deriv_const_sub 1, deriv_id'']
+      simp only [one_mul]
       field_simp [sub_ne_zero.mpr hh.symm]
       ring
     · apply DifferentiableAt.mul (DifferentiableAt.neg differentiableAt_id')
@@ -551,9 +548,11 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
       rw [deriv_sub ?_ (differentiableAt_log xne0)]
       · repeat rw [deriv_div_const]
         rw [deriv.log differentiableAt_id' xne0]
-        simp only [deriv_one_minus, deriv_id'', one_div]
+        simp only [deriv_id'', one_div]
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
-          field_simp [sub_ne_zero_of_ne xne1.symm, this]
+          have d_oneminus (x : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) x = -1 := by
+            rw [deriv_const_sub 1, deriv_id'']
+          field_simp [sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
       · apply DifferentiableAt.add
         simp only [ne_eq, differentiableAt_const]
