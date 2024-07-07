@@ -134,7 +134,7 @@ lemma ext_iff {n : ℕ} {α β : Ext X Y n} : α = β ↔ α.hom = β.hom :=
 
 end
 
-/-- The canonical map `(X ⟶ Y) → (Ext X Y 0)`. -/
+/-- The canonical map `(X ⟶ Y) → Ext X Y 0`. -/
 noncomputable def mk₀ (f : X ⟶ Y) : Ext X Y 0 := SmallShiftedHom.mk₀ _ _ (by simp)
   ((CochainComplex.singleFunctor C 0).map f)
 
