@@ -387,6 +387,25 @@ lemma IsLprojection.range_inter (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜
     P.prop.1 Q.prop.1]
   rfl
 
+lemma IsLprojection.range_sum (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
+    (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P }) :
+    LinearMap.range P.val + LinearMap.range Q.val = LinearMap.range (P ⊔ Q).val := by
+  rw [le_antisymm_iff]
+  constructor
+  · intro z hz
+    sorry
+  · intro z hz
+    simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
+      ContinuousLinearMap.coe_mul, Pi.sub_apply, ContinuousLinearMap.add_apply,
+      Function.comp_apply] at hz
+    cases' hz with x hx
+    have e1 : z = P.val (x - Q.val x) + Q.val x := by
+      rw [map_sub, ← hx]
+      abel
+    rw [e1]
+    exact Submodule.add_mem_sup (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _ )
+
+
 /--
 A closed subspace of a Banach space is said to be an M-ideal if the topological annihilator is the
 range of an L-projection.
