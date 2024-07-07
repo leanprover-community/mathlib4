@@ -500,7 +500,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
   rcases ij <;> simp
   · case _ val =>
       rcases val with ⟨i, j⟩
-      simp
+      simp only
       have := eq2 L R h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₁ i j)
       simp only [components] at this
       conv_lhs at this => {
@@ -508,7 +508,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
         simp [inv']
       }
       rw [this]
-      simp
+      simp only [add_lt_iff_neg_left]
       apply mul_neg_of_pos_of_neg
       · exact i.2
       · apply sub_neg.mpr
@@ -519,7 +519,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
         exact this
   · case _ val =>
       rcases val with ⟨i, j⟩
-      simp
+      simp only
       have := eq2 L R h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.right₂ i j)
       simp only [components] at this
       conv_lhs at this => {
@@ -527,7 +527,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
         simp [inv']
       }
       rw [this]
-      simp
+      simp only [add_lt_iff_neg_left]
       apply mul_neg_of_pos_of_neg
       · exact right_pos_of_pos h5 x_pos i
       · apply sub_neg.mpr
@@ -566,7 +566,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
   rcases ij <;> simp
   · case _ val =>
       rcases val with ⟨i, j⟩
-      simp
+      simp only
       have := eq2 L R h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₂ i j)
       simp only [components] at this
       conv_lhs at this => {
@@ -574,7 +574,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
         simp [inv']
       }
       rw [this]
-      simp
+      simp only [lt_add_iff_pos_right]
       apply Left.mul_pos
       · exact i.2
       · apply sub_pos.mpr
@@ -585,7 +585,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
         exact this
   · case _ val =>
       rcases val with ⟨i, j⟩
-      simp
+      simp only
       have := eq2 L R h1 h2 h3 h4 h5 inv_l inv_r inv_numeric x_pos (InvTy.left₁ i j)
       simp only [components] at this
       conv_lhs at this => {
