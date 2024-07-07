@@ -302,6 +302,9 @@ instance semiring : Semiring { x : α // 0 ≤ x } :=
     (fun _ _ => rfl) fun _ => rfl
 #align nonneg.semiring Nonneg.semiring
 
+instance monoidWithZero : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance
+#align nonneg.monoid_with_zero Nonneg.monoidWithZero
+
 /-- Coercion `{x : α // 0 ≤ x} → α` as a `RingHom`. -/
 def coeRingHom : { x : α // 0 ≤ x } →+* α :=
   { toFun := ((↑) : { x : α // 0 ≤ x } → α)
