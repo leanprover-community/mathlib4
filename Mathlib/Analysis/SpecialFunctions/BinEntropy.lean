@@ -516,39 +516,10 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
       simp_all only [mem_Iio, mem_Ioi, sub_pos]
     convert ContinuousWithinAt.tendsto_nhdsWithin (x:=(1:ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
-  · have : 𝓝[<] (1:ℝ) ≤ 𝓝 1 := nhdsWithin_le_nhds
-    apply Eventually.filter_mono this
-    apply Metric.eventually_nhds_iff.mpr
-    use 2⁻¹
-    simp_all only [Real.dist_eq]
-    constructor
-    · norm_num
-    · intro y hy
-      simp only [neg_le_neg_iff]
-      suffices log (1 - 2⁻¹) < y.log by linarith
-      apply strictMonoOn_log
-      simp only [mem_Ioi, sub_pos]
-      · norm_num
-      · by_cases abspos : 0 ≤ y - 1
-        · simp [abs_eq_self.mpr abspos] at hy
-          have : 0 < y := by
-            linarith
-          exact this
-        · have : y - 1 ≤ 0 := by linarith
-          simp [abs_eq_neg_self.mpr this] at hy
-          have : 0 < y := by
-            have : (1:ℝ) = 2⁻¹ + 2⁻¹ := by norm_num
-            linarith
-          exact this
-      · by_cases abspos : 0 ≤ y - 1
-        · simp [abs_eq_self.mpr abspos] at hy
-          linarith
-        · have : |y - 1| = 1 - y := by
-            have :  y - 1 ≤ 0 := by linarith
-            simp_all only [abs_eq_neg_self.mpr this]
-            simp only [neg_sub]
-          rw [this] at hy
-          linarith
+  · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by norm_num
+    filter_upwards [Ico_mem_nhdsWithin_Iio' h₁] with x hx
+    gcongr
+    exact hx.1
 
 lemma not_continuousAt_deriv_qaryEntropy_one {q : ℕ} :
     ¬ContinuousAt (deriv (qaryEntropy q)) 1 := by
