@@ -473,12 +473,12 @@ theorem div_eq_one_iff {a b : ℝ≥0∞} (hb₀ : b ≠ 0) (hb₁ : b ≠ ∞) 
 #align ennreal.div_eq_one_iff ENNReal.div_eq_one_iff
 
 theorem inv_two_add_inv_two : (2 : ℝ≥0∞)⁻¹ + 2⁻¹ = 1 := by
-  rw [← two_mul, ← div_eq_mul_inv, ENNReal.div_self two_ne_zero two_ne_top]
+  rw [← two_mul, ← div_eq_mul_inv, ENNReal.div_self two_ne_zero ofNat_ne_top]
 #align ennreal.inv_two_add_inv_two ENNReal.inv_two_add_inv_two
 
-theorem inv_three_add_inv_three : (3 : ℝ≥0∞)⁻¹ + 3⁻¹ + 3⁻¹ = 1 :=
-  calc (3 : ℝ≥0∞)⁻¹ + 3⁻¹ + 3⁻¹ = 3 * 3⁻¹ := by ring
-  _ = 1 := ENNReal.mul_inv_cancel (Nat.cast_ne_zero.2 <| by decide) coe_ne_top
+theorem inv_three_add_inv_three : (3 : ℝ≥0∞)⁻¹ + 3⁻¹ + 3⁻¹ = 1 := by
+  rw [← ENNReal.mul_inv_cancel three_ne_zero ofNat_ne_top]
+  ring
 #align ennreal.inv_three_add_inv_three ENNReal.inv_three_add_inv_three
 
 @[simp]
@@ -500,8 +500,8 @@ theorem add_thirds (a : ℝ≥0∞) : a / 3 + a / 3 + a / 3 = a := by
 protected lemma div_ne_zero : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ ⊤ := by
   rw [← pos_iff_ne_zero, div_pos_iff]
 
-protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 := by
-  simp only [div_pos_iff, ne_eq, h, not_false_eq_true, two_ne_top, and_self]
+protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 :=
+  ENNReal.div_pos h ofNat_ne_top
 #align ennreal.half_pos ENNReal.half_pos
 
 protected theorem one_half_lt_one : (2⁻¹ : ℝ≥0∞) < 1 :=
@@ -526,7 +526,7 @@ theorem sub_half (h : a ≠ ∞) : a - a / 2 = a / 2 := by
 
 @[simp]
 theorem one_sub_inv_two : (1 : ℝ≥0∞) - 2⁻¹ = 2⁻¹ := by
-  simpa only [div_eq_mul_inv, one_mul] using sub_half one_ne_top
+  rw [← one_div, sub_half one_ne_top]
 #align ennreal.one_sub_inv_two ENNReal.one_sub_inv_two
 
 /-- The birational order isomorphism between `ℝ≥0∞` and the unit interval `Set.Iic (1 : ℝ≥0∞)`. -/

@@ -453,20 +453,21 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 theorem one_lt_two : (1 : ℝ≥0∞) < 2 := Nat.one_lt_ofNat
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
-@[simp] theorem ofNat_ne_top (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n : ℝ≥0∞)) ≠ ∞ :=
+@[simp] theorem ofNat_ne_top {n : ℕ} [n.AtLeastTwo] : (no_index (OfNat.ofNat n : ℝ≥0∞)) ≠ ∞ :=
   WithTop.ofNat_ne_top n
 
-@[simp] theorem ofNat_lt_top (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n : ℝ≥0∞)) < ∞ :=
+@[simp] theorem ofNat_lt_top {n : ℕ} [n.AtLeastTwo] : (no_index (OfNat.ofNat n : ℝ≥0∞)) < ∞ :=
   coe_lt_top
 
-@[simp] theorem top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : ∞ ≠ no_index (OfNat.ofNat n : ℝ≥0∞) :=
-  (ofNat_ne_top n).symm
+@[simp] theorem top_ne_ofNat {n : ℕ} [n.AtLeastTwo] : ∞ ≠ no_index (OfNat.ofNat n : ℝ≥0∞) :=
+  ofNat_ne_top.symm
 
-@[deprecated ofNat_ne_top]
+@[deprecated ofNat_ne_top (since := "2024-07-07")]
 theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
 #align ennreal.two_ne_top ENNReal.two_ne_top
 
-@[deprecated ofNat_lt_top] theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
+@[deprecated ofNat_lt_top (since := "2024-07-07")]
+theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
 instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
