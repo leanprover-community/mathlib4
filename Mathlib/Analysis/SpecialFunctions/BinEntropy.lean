@@ -261,20 +261,16 @@ lemma differentiableAt_iff_differentiableAt_comp_mul_add
 end general
 
 lemma differentiableAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
-    DifferentiableAt ℝ (fun p => -p * log p - (1 - p) * log (1 - p)) x := by
+    DifferentiableAt ℝ binaryEntropy x := by
+  simp only [binaryEntropy_eq]
   refine DifferentiableAt.sub (DifferentiableAt.mul (by fun_prop) ?_)
       (DifferentiableAt.mul (by fun_prop)
       (DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr gne1.symm)))
   exact DifferentiableAt.log differentiableAt_id' xne0
 
-lemma differentiableAt_binaryEntropy' {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
-    DifferentiableAt ℝ binaryEntropy x := by
-  simp only [binaryEntropy_eq]
-  exact differentiableAt_binaryEntropy xne0 gne1
-
 lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
     DifferentiableAt ℝ binaryEntropy x ↔ x ≠ 0 ∧ x ≠ 1 := by
-  refine ⟨?_, fun ne0Ne1 ↦ differentiableAt_binaryEntropy' ne0Ne1.1 ne0Ne1.2⟩
+  refine ⟨?_, fun ne0Ne1 ↦ differentiableAt_binaryEntropy ne0Ne1.1 ne0Ne1.2⟩
   intro is_diff
   rw [binaryEntropy_eq] at is_diff
   by_cases is_x0 : x ≠ 0
@@ -438,8 +434,7 @@ lemma deriv_binaryEntropy {x : ℝ} :
 lemma hasDerivAt_binaryEntropy {x : ℝ} (xne0: x ≠ 0) (xne1 : x ≠ 1) :
     HasDerivAt binaryEntropy (log (1 - x) - log x) x := by
   convert hasDerivAt_deriv_iff.mpr (differentiableAt_binaryEntropy xne0 xne1) using 1
-  · exact binaryEntropy_eq
-  · exact (deriv_binaryEntropy').symm
+  exact deriv_binaryEntropy.symm
 
 lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
     HasDerivAt (qaryEntropy q) (log (q - 1) + log (1 - x) - log x) x := by
@@ -448,7 +443,9 @@ lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1
     have : (fun p => p * log (q - 1) - p * log p - (1 - p) * log (1 - p)) =
       (fun p => p * log (q - 1) + (-p * log p - (1 - p) * log (1 - p))) := by ext; ring
     rw [this]
-    exact DifferentiableAt.add (by fun_prop) (differentiableAt_binaryEntropy xne0 gne1)
+    apply DifferentiableAt.add (by fun_prop)
+    convert differentiableAt_binaryEntropy xne0 gne1 using 1
+    exact binaryEntropy_eq.symm
   convert hasDerivAt_deriv_iff.mpr diffAt using 1
   exact (deriv_qaryEntropy' xne0 gne1).symm
 
