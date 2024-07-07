@@ -131,6 +131,8 @@ noncomputable def comp {a b c : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
   SmallHom.comp f (g.shift a c h)
 
 variable (W) in
+/-- The canonical map `(X ⟶ Y) → SmallShiftedHom.{w} W X Y m₀` when `m₀ = 0` and
+`[HasSmallLocalizedShiftedHom.{w} W M X Y]` holds. -/
 noncomputable def mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
     SmallShiftedHom.{w} W X Y m₀ :=
