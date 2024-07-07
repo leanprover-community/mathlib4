@@ -181,6 +181,9 @@ theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
   simp_rw [← coe_add, toCircle_apply_mk, mul_add, expMapCircle_add]
 #align add_circle.to_circle_add AddCircle.toCircle_add
 
+lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
+  rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, expMapCircle_zero]
+
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (expMapCircle.continuous.comp <| continuous_const.mul continuous_id')
 #align add_circle.continuous_to_circle AddCircle.continuous_toCircle
@@ -225,6 +228,12 @@ theorem homeomorphCircle_apply (hT : T ≠ 0) (x : AddCircle T) :
     homeomorphAddCircle_apply_mk, homeomorphCircle'_apply_mk, toCircle_apply_mk]
   ring_nf
 
+/-- The canoncial map from the additive to the multiplicative circle, as an `AddChar`. -/
+noncomputable def toCircle_addChar : AddChar (AddCircle T) circle where
+  toFun := toCircle
+  map_zero_eq_one' := toCircle_zero
+  map_add_eq_mul' := toCircle_add
+
 end AddCircle
 
 open AddCircle
@@ -246,16 +255,13 @@ variable {N : ℕ} [NeZero N]
 
 /-- The additive character from `ZMod N` to the unit circle in `ℂ`, sending `j mod N` to
 `exp (2 * π * I * j / N)`. -/
-noncomputable def toCircle : AddChar (ZMod N) circle where
-  toFun := fun j ↦ (toAddCircle j).toCircle
-  map_add_eq_mul' a b := by simp_rw [map_add, AddCircle.toCircle_add]
-  map_zero_eq_one' := by simp_rw [map_zero, AddCircle.toCircle, ← QuotientAddGroup.mk_zero,
-    Function.Periodic.lift_coe, mul_zero, expMapCircle_zero]
+noncomputable def toCircle : AddChar (ZMod N) circle :=
+  toCircle_addChar.compAddMonoidHom toAddCircle
 
 lemma toCircle_intCast (j : ℤ) :
     toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
-  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_intCast,
-    Function.Periodic.lift_coe, expMapCircle_apply]
+  rw [toCircle, AddChar.compAddMonoidHom_apply, toCircle_addChar, AddChar.coe_mk,
+    AddCircle.toCircle, toAddCircle_intCast, Function.Periodic.lift_coe, expMapCircle_apply]
   push_cast
   ring_nf
 
@@ -271,6 +277,9 @@ lemma toCircle_apply (j : ZMod N) :
     toCircle j = exp (2 * π * I * j.val / N) := by
   rw [← toCircle_natCast, natCast_zmod_val]
 
+lemma injective_toCircle : Injective (toCircle : ZMod N → circle) :=
+  (AddCircle.injective_toCircle one_ne_zero).comp (toAddCircle_injective N)
+
 /-- The additive character from `ZMod N` to `ℂ`, sending `j mod N` to `exp (2 * π * I * j / N)`. -/
 noncomputable def stdAddChar : AddChar (ZMod N) ℂ := circle.subtype.compAddChar toCircle
 
@@ -280,3 +289,6 @@ lemma stdAddChar_coe (j : ℤ) :
     Submonoid.coe_subtype, toCircle_intCast]
 
 lemma stdAddChar_apply (j : ZMod N) : stdAddChar j = ↑(toCircle j) := rfl
+
+lemma injective_stdAddChar : Injective (stdAddChar : AddChar (ZMod N) ℂ) :=
+  Subtype.coe_injective.comp injective_toCircle
