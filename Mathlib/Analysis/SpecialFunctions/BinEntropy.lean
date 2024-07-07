@@ -482,27 +482,11 @@ lemma tendsto_atTop_if_tendsto_neg_atBot {f : ℝ → ℝ} {l : Filter ℝ} :
 private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
     Tendsto (fun (x:ℝ) ↦ (1 - x).log - x.log) (𝓝[>] 0) atTop := by
   apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
-  · have : 𝓝[>] (0:ℝ) ≤ 𝓝 0 := nhdsWithin_le_nhds
-    apply Eventually.filter_mono this
-    apply Metric.eventually_nhds_iff.mpr
-    use 1/2
-    constructor
-    · norm_num
-    · intro y hy
-      suffices log (1 / 2) < (1 - y).log by linarith
-      apply Real.strictMonoOn_log
-      · norm_num
-      · simp_all only [dist_zero_right, norm_eq_abs, one_div, mem_Ioi, sub_pos]
-        have : y < 2⁻¹ := lt_of_abs_lt hy
-        linarith [two_inv_lt_one (α:=ℝ)]
-      · simp_all only [dist_zero_right, norm_eq_abs, one_div]
-        have : (1 : ℝ) = 2⁻¹ + 2⁻¹ := by norm_num
-        by_cases ypos : 0 < y
-        · have : y < 2⁻¹ := lt_of_abs_lt hy
-          linarith
-        · have : (0 : ℝ) < 2⁻¹ := by simp_all only [not_lt, inv_pos, Nat.ofNat_pos]
-          have : -2⁻¹ < y := neg_lt_of_abs_lt hy
-          linarith
+  · have h₁ : (0 : ℝ) < 1 / 2 := by norm_num
+    filter_upwards [Ioc_mem_nhdsWithin_Ioi' h₁] with x hx
+    gcongr
+    have : x ≤ 1/2 := hx.2
+    linarith
   · apply tendsto_atTop_if_tendsto_neg_atBot.mp tendsto_log_nhdsWithin_zero_right
 
 private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
