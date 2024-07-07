@@ -856,17 +856,23 @@ lemma rec_add_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`.
 
-This is a version of `Nat.le.rec` that works for `Sort`. -/
+This is a version of `Nat.le.rec` that works for `Sort`. Similarly to `Nat.le.rec`, it can be used as
+```
+induction hle using Nat.leRec with
+| refl => sorry
+| le_succ_of_le hle ih => sorry
+```
+-/
 @[elab_as_elim]
 def leRec {n} {motive : (m : ℕ) → n ≤ m → Sort*}
-    (self : motive n le_rfl)
-    (next : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h)) :
+    (refl : motive n le_rfl)
+    (le_succ_of_le : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h)) :
     ∀ {m} (h : n ≤ m), motive m h
-  | 0, H => Nat.eq_zero_of_le_zero H ▸ self
+  | 0, H => Nat.eq_zero_of_le_zero H ▸ refl
   | m + 1, H =>
     (le_succ_iff.1 H).by_cases
-      (fun h : n ≤ m ↦ next h <| leRec self next h)
-      (fun h : n = m + 1 ↦ h ▸ self)
+      (fun h : n ≤ m ↦ le_succ_of_le h <| leRec refl le_succ_of_le h)
+      (fun h : n = m + 1 ↦ h ▸ refl)
 
 -- This verifies the signatures of the recursor matches the builtin one, as promised in the
 -- above.
@@ -874,39 +880,39 @@ theorem leRec_eq_leRec : @Nat.leRec.{0} = @Nat.le.rec := rfl
 
 @[simp]
 lemma leRec_self {n} {motive : (m : ℕ) → n ≤ m → Sort*}
-    (self : motive n le_rfl)
-    (next : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h)) :
-    (leRec (motive := motive) self next le_rfl : motive n le_rfl) = self := by
+    (refl : motive n le_rfl)
+    (le_succ_of_le : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h)) :
+    (leRec (motive := motive) refl le_succ_of_le le_rfl : motive n le_rfl) = refl := by
   cases n <;> simp [leRec, Or.by_cases, dif_neg]
 
 @[simp]
 lemma leRec_succ {n} {motive : (m : ℕ) → n ≤ m → Sort*}
-    (next : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h))
-    (self : motive n le_rfl)
+    (refl : motive n le_rfl)
+    (le_succ_of_le : ∀ ⦃k⦄ (h : n ≤ k), motive k h → motive (k + 1) (le_succ_of_le h))
     (h1 : n ≤ m) {h2 : n ≤ m + 1} :
-    (leRec (motive := motive) self next h2) =
-      next h1 (leRec (motive := motive) self next h1) := by
+    (leRec (motive := motive) refl le_succ_of_le h2) =
+      le_succ_of_le h1 (leRec (motive := motive) refl le_succ_of_le h1) := by
   conv =>
     lhs
     rw [leRec, Or.by_cases, dif_pos h1]
 
-lemma leRec_succ' {n} {motive : (m : ℕ) → n ≤ m → Sort*} (self next) :
-    (leRec (motive := motive) self next (le_succ _)) = next _ self := by
+lemma leRec_succ' {n} {motive : (m : ℕ) → n ≤ m → Sort*} (refl le_succ_of_le) :
+    (leRec (motive := motive) refl le_succ_of_le (le_succ _)) = le_succ_of_le _ refl := by
   rw [leRec_succ, leRec_self]
 
-lemma leRec_trans {n m k} {motive : (m : ℕ) → n ≤ m → Sort*} (self next)
+lemma leRec_trans {n m k} {motive : (m : ℕ) → n ≤ m → Sort*} (refl le_succ_of_le)
     (hnm : n ≤ m) (hmk : m ≤ k) :
-    leRec (motive := motive) self next (Nat.le_trans hnm hmk) =
-      leRec (leRec self (fun _ h => next h) hnm) (fun _ h => next <| Nat.le_trans hnm h) hmk := by
+    leRec (motive := motive) refl le_succ_of_le (Nat.le_trans hnm hmk) =
+      leRec (leRec refl (fun _ h => le_succ_of_le h) hnm) (fun _ h => le_succ_of_le <| Nat.le_trans hnm h) hmk := by
   induction hmk with
   | refl => rw [leRec_self]
   | step hmk ih => rw [leRec_succ _ _ (Nat.le_trans hnm hmk), ih, leRec_succ]
 
 lemma leRec_succ_left {motive : (m : ℕ) → n ≤ m → Sort*}
-    (self next) {m} (h1 : n ≤ m) (h2 : n + 1 ≤ m) :
+    (refl le_succ_of_le) {m} (h1 : n ≤ m) (h2 : n + 1 ≤ m) :
     -- the `@` is needed for this to elaborate, even though we only provide explicit arguments!
-    @leRec _ _ (next le_rfl self) (fun k h ih => next (le_of_succ_le h) ih) _ h2 =
-      leRec (motive := motive) self next h1 := by
+    @leRec _ _ (le_succ_of_le le_rfl refl) (fun k h ih => le_succ_of_le (le_of_succ_le h) ih) _ h2 =
+      leRec (motive := motive) refl le_succ_of_le h1 := by
   rw [leRec_trans _ _ (le_succ n) h2, leRec_succ']
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
@@ -1018,8 +1024,8 @@ def decreasingInduction {n} {motive : (m : ℕ) → m ≤ n → Sort*}
     (of_succ : ∀ k (h : k < n), motive (k + 1) h → motive k (le_of_succ_le h))
     (self : motive n le_rfl) {m} (mn : m ≤ n) : motive m mn := by
   induction mn using leRec with
-  | self => exact self
-  | @next k _ ih =>
+  | refl => exact self
+  | @le_succ_of_le k _ ih =>
     apply ih (fun i hi => of_succ i (le_succ_of_le hi)) (of_succ k (lt_succ_self _) self)
 #align nat.decreasing_induction Nat.decreasingInduction
 
