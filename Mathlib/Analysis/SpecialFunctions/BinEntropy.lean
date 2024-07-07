@@ -223,22 +223,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f g : E → F}
 variable {x : E}
 
-lemma DifferentiableAt.add_iff_left (hg : DifferentiableAt 𝕜 g x) :
-    DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 f x := by
-  constructor <;> intro h
-  · have f_eq_sum_sub_g: f = (fun y => f y + g y) - g := by
-      ext
-      simp only [Pi.sub_apply, add_sub_cancel_right]
-    rw [f_eq_sum_sub_g]
-    exact DifferentiableAt.sub h hg
-  · simp_all only [DifferentiableAt.add]
-
-lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
-    DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 g x := by
-  rw [show (fun y ↦ f y + g y) = (fun y ↦ g y + f y) by ext; rw [add_comm]]
-  exact hg.add_iff_left
-
-lemma differentiableAt_iff_differentiableAt_comp_mul_add
+lemma DifferentiableAt.iff_comp_mul_add
     {a b m : 𝕜} (hm : m ≠ 0) (f : 𝕜 → E) :
     DifferentiableAt 𝕜 f a ↔ DifferentiableAt 𝕜 (fun x => f (m * x + b)) (m⁻¹ * (a - b)):= by
   constructor <;> intro h
@@ -291,7 +276,7 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
             simp [negMulLog]
             ring_nf
           · ring
-        have := (differentiableAt_iff_differentiableAt_comp_mul_add
+        have := (DifferentiableAt.iff_comp_mul_add
           (a:=(0:ℝ)) (b:=(1:ℝ)) (m:=(-1 : ℝ)) (show (-1 : ℝ) ≠ 0 by norm_num) negMulLog).mpr this
         unfold negMulLog at this
         have := differentiableAt_neg_iff.mpr this
