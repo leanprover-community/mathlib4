@@ -398,7 +398,8 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
 
 /-
 lemma IsMideal.inter (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
-    WeakDual.polar 𝕜 (m₁ ⊓ m₂) = closure (WeakDual.polar 𝕜 m₁ + WeakDual.polar (E := A) 𝕜 m₂) := sorry
+    WeakDual.polar 𝕜 (m₁ ⊓ m₂) = closure (WeakDual.polar 𝕜 m₁ + WeakDual.polar (E := A) 𝕜 m₂) :=
+    sorry
 -/
 
 /- The M-ideals are a sub-lattice of the lattice of submodules -/
