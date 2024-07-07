@@ -294,11 +294,11 @@ end colimitSMulColimit
 
 noncomputable instance : Module (colimit (C := ring) R) (colimit (C := ab) M) where
   smul := colimitSMulColimit
-  one_smul := colimitSMulColimit.one_smul _ compatible_smul _
-  mul_smul := colimitSMulColimit.mul_smul _ compatible_smul _
-  smul_zero := colimitSMulColimit.smul_zero _ compatible_smul _
-  smul_add := colimitSMulColimit.smul_add _ compatible_smul _
-  add_smul := colimitSMulColimit.add_smul _ compatible_smul _
-  zero_smul := colimitSMulColimit.zero_smul _ compatible_smul _
+  one_smul := colimitSMulColimit.one_smul _ _ compatible_smul
+  mul_smul := colimitSMulColimit.mul_smul _ _ compatible_smul
+  smul_zero := colimitSMulColimit.smul_zero _ _ compatible_smul
+  smul_add := colimitSMulColimit.smul_add _ _ compatible_smul
+  add_smul := colimitSMulColimit.add_smul _ _ compatible_smul
+  zero_smul := colimitSMulColimit.zero_smul _ _ compatible_smul
 
 end Module.overColimits
