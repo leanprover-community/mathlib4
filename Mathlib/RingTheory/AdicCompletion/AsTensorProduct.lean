@@ -70,10 +70,7 @@ lemma ofTensorProduct_naturality (f : M →ₗ[R] N) :
     map I f ∘ₗ ofTensorProduct I M =
       ofTensorProduct I N ∘ₗ AlgebraTensorModule.map LinearMap.id f := by
   ext
-  simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
-    LinearMap.coe_comp, Function.comp_apply, ofTensorProduct_tmul, one_smul, map_val_apply,
-    of_apply, Submodule.mkQ_apply,
-    LinearMap.reduceModIdeal_apply, AlgebraTensorModule.map_tmul, LinearMap.id_coe, id_eq]
+  simp
 
 section PiFintype
 
@@ -88,19 +85,13 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
   ext i j k
   suffices h : (if j = i then 1 else 0) = (if j = i then 1 else 0 : AdicCompletion I R).val k by
-    simpa only [AlgebraTensorModule.curry_apply, LinearMap.coe_comp, LinearMap.coe_single,
-      Function.comp_apply, curry_apply, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
-      ofTensorProduct_tmul, one_smul, piEquivOfFintype_apply, pi_apply_coe, of_apply,
-      Submodule.mkQ_apply, LinearMap.reduceModIdeal_apply, LinearMap.coe_proj, Function.eval,
-      Pi.single_apply, Ideal.Quotient.mk_eq_mk, RingHom.map_ite_one_zero,
-      piScalarRight_apply, piScalarRightHom_tmul, ite_smul, zero_smul]
+    simpa [Pi.single_apply, -smul_eq_mul, -Algebra.id.smul_eq_mul]
   split <;> simp only [smul_eq_mul, val_zero, val_one]
 
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
-  rw [← piEquivOfFintype_comp_ofTensorProduct_eq I ι]
-  rw [← LinearMap.comp_assoc]
+  rw [← piEquivOfFintype_comp_ofTensorProduct_eq I ι, ← LinearMap.comp_assoc]
   simp
 
 /- If `M = R^ι` and `ι` is finite, we may construct an inverse to `ofTensorProduct I (ι → R)`. -/
@@ -148,10 +139,7 @@ lemma ofTensorProduct_surjective_of_fg [Module.Finite R M] :
   let g := map I p ∘ₗ ofTensorProduct I (Fin n → R)
   have hfg : f = g := by
     ext
-    simp only [AlgebraTensorModule.curry_apply, LinearMap.coe_comp, LinearMap.coe_single,
-      Function.comp_apply, curry_apply, LinearMap.coe_restrictScalars, LinearMap.baseChange_tmul,
-      ofTensorProduct_tmul, one_smul, of_apply, Submodule.mkQ_apply, map_val_apply,
-      LinearMap.reduceModIdeal_apply, f, g]
+    simp [f, g]
   have hf : Function.Surjective f := by
     simp only [hfg, LinearMap.coe_comp, g]
     apply Function.Surjective.comp

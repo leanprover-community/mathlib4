@@ -50,20 +50,33 @@ def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
     R ⧸ (I ^ n • ⊤ : Ideal R) →ₐ[R] R ⧸ (I ^ m • ⊤ : Ideal R) :=
   AlgHom.ofLinearMap (transitionMap I R hmn) rfl (transitionMap_map_mul I hmn)
 
-/-- `AdicCompletion I R` is an `R`-subalgebra of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
-def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
-  Submodule.toSubalgebra (submodule I R) (fun _ ↦ by simp)
-    (fun x y hx hy m n hmn ↦ by simp [hx hmn, hy hmn])
+instance : Mul (AdicCompletion I R) where
+  mul x y := ⟨x.val * y.val, by simp [x.property, y.property]⟩
 
-/-- `AdicCompletion I R` is a subring of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
-def subring : Subring (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
-  Subalgebra.toSubring (subalgebra I)
+instance : One (AdicCompletion I R) where
+  one := ⟨1, by simp⟩
 
-instance : CommRing (AdicCompletion I R) :=
-  inferInstanceAs <| CommRing (subring I)
+instance : CommRing (AdicCompletion I R) where
+  left_distrib x y z := Subtype.ext <| left_distrib x.val y.val z.val
+  right_distrib x y z := Subtype.ext <| right_distrib x.val y.val z.val
+  zero_mul x := Subtype.ext <| zero_mul x.val
+  mul_zero x := Subtype.ext <| mul_zero x.val
+  mul_assoc x y z := Subtype.ext <| mul_assoc x.val y.val z.val
+  one_mul x := Subtype.ext <| one_mul x.val
+  mul_one x := Subtype.ext <| mul_one x.val
+  zsmul := zsmulRec
+  add_left_neg x := Subtype.ext <| add_left_neg x.val
+  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
+  mul_comm x y := Subtype.ext <| mul_comm x.val y.val
 
-instance : Algebra R (AdicCompletion I R) :=
-  inferInstanceAs <| Algebra R (subalgebra I)
+instance : Algebra R (AdicCompletion I R) where
+  toFun r := ⟨algebraMap R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by simp⟩
+  map_one' := Subtype.ext <| map_one _
+  map_mul' x y := Subtype.ext <| map_mul _ x y
+  map_zero' := Subtype.ext <| map_zero _
+  map_add' x y := Subtype.ext <| map_add _ x y
+  commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
+  smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 
 @[simp]
 theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
@@ -88,23 +101,33 @@ theorem evalₐ_mk (n : ℕ) (x : AdicCauchySequence I R) :
     evalₐ I n (mk I R x) = Ideal.Quotient.mk (I ^ n) (x.val n) := by
   simp [evalₐ]
 
-/-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
-def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
-  Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
-    (fun {m n} _ ↦ by simp; rfl)
-    (fun x y hx hy {m n} hmn ↦ by
-      simp only [Pi.mul_apply]
-      exact SModEq.mul (hx hmn) (hy hmn))
+instance : Mul (AdicCauchySequence I R) where
+  mul x y := ⟨x.val * y.val, fun hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
 
-/-- `AdicCauchySequence I R` is a subring of `ℕ → R`. -/
-def AdicCauchySequence.subring : Subring (ℕ → R) :=
-  Subalgebra.toSubring (AdicCauchySequence.subalgebra I)
+instance : One (AdicCauchySequence I R) where
+  one := ⟨1, fun _ ↦ rfl⟩
 
-instance : CommRing (AdicCauchySequence I R) :=
-  inferInstanceAs <| CommRing (AdicCauchySequence.subring I)
+instance : CommRing (AdicCauchySequence I R) where
+  left_distrib x y z := Subtype.ext <| left_distrib x.val y.val z.val
+  right_distrib x y z := Subtype.ext <| right_distrib x.val y.val z.val
+  zero_mul x := Subtype.ext <| zero_mul x.val
+  mul_zero x := Subtype.ext <| mul_zero x.val
+  mul_assoc x y z := Subtype.ext <| mul_assoc x.val y.val z.val
+  one_mul x := Subtype.ext <| one_mul x.val
+  mul_one x := Subtype.ext <| mul_one x.val
+  zsmul := zsmulRec
+  add_left_neg x := Subtype.ext <| add_left_neg x.val
+  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
+  mul_comm x y := Subtype.ext <| mul_comm x.val y.val
 
-instance : Algebra R (AdicCauchySequence I R) :=
-  inferInstanceAs <| Algebra R (AdicCauchySequence.subalgebra I)
+instance : Algebra R (AdicCauchySequence I R) where
+  toFun r := ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
+  map_one' := Subtype.ext <| map_one _
+  map_mul' x y := Subtype.ext <| map_mul _ x y
+  map_zero' := Subtype.ext <| map_zero _
+  map_add' x y := Subtype.ext <| map_add _ x y
+  commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
+  smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 
 @[simp]
 theorem one_apply (n : ℕ) : (1 : AdicCauchySequence I R) n = 1 :=

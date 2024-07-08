@@ -191,12 +191,6 @@ theorem map_zero : map I (0 : M →ₗ[R] N) = 0 := by
   ext
   simp
 
-@[simp]
-theorem val_sum {α : Type*} (s : Finset α) (f : α → AdicCompletion I M) (n : ℕ) :
-    (Finset.sum s f).val n = Finset.sum s (fun a ↦ (f a).val n) := by
-  change (Submodule.subtype (AdicCompletion.submodule I M) _) n = _
-  rw [map_sum, Finset.sum_apply, Submodule.coeSubtype]
-
 /-- A linear equiv induces a linear equiv on adic completions. -/
 def congr (f : M ≃ₗ[R] N) :
     AdicCompletion I M ≃ₗ[AdicCompletion I R] AdicCompletion I N :=
