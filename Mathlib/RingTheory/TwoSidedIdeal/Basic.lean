@@ -96,7 +96,7 @@ instance : AddSubgroupClass (TwoSidedIdeal R) R where
   add_mem := @add_mem _ _
   neg_mem := @neg_mem _ _
 
-lemma sub_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x - y ∈ I := by simpa using I.ringCon.sub hx hy
+lemma sub_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x - y ∈ I := _root_.sub_mem hx hy
 
 lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
   simpa using I.ringCon.mul (I.ringCon.refl x) hy
@@ -104,9 +104,9 @@ lemma mul_mem_left (x y) (hy : y ∈ I) : x * y ∈ I := by
 lemma mul_mem_right (x y) (hx : x ∈ I) : x * y ∈ I := by
   simpa using I.ringCon.mul hx (I.ringCon.refl y)
 
-lemma nsmul_mem {x} (n : ℕ) (hx : x ∈ I) : n • x ∈ I := by simpa using I.ringCon.nsmul _ hx
+lemma nsmul_mem {x} (n : ℕ) (hx : x ∈ I) : n • x ∈ I := _root_.nsmul_mem hx _
 
-lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := by simpa using I.ringCon.zsmul _ hx
+lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := _root_.zsmul_mem hx _
 
 /--
 The "set-theoretic-way" of constructing a two-sided ideal by providing:
