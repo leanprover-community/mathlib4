@@ -30,19 +30,21 @@ lemma of_ladder_addEquiv (hfg : Exact f g) : Exact f' g' := by
     obtain ⟨x₁, rfl⟩ := (hfg x₂).1 (e₃.injective (by rw [← h₂₃, hx₂, map_zero]))
     exact ⟨e₁ x₁, by rw [h₁₂]⟩
 
+lemma of_ladder_addEquiv' (hfg' : Exact f' g') : Exact f g := by
+  refine of_ladder_addEquiv f' g' f g e₁.symm e₂.symm e₃.symm ?_ ?_ hfg'
+  · ext y₁
+    obtain ⟨x₁, rfl⟩ := e₁.surjective y₁
+    apply e₂.injective
+    simpa using DFunLike.congr_fun comm₁₂.symm x₁
+  · ext y₂
+    obtain ⟨x₂, rfl⟩ := e₂.surjective y₂
+    apply e₃.injective
+    simpa using DFunLike.congr_fun comm₂₃.symm x₂
+
 lemma iff_of_ladder_addEquiv : Exact f g ↔ Exact f' g' := by
   constructor
   · exact of_ladder_addEquiv f g f' g' e₁ e₂ e₃ comm₁₂ comm₂₃
-  · intro h'
-    refine of_ladder_addEquiv f' g' f g e₁.symm e₂.symm e₃.symm ?_ ?_ h'
-    · ext y₁
-      obtain ⟨x₁, rfl⟩ := e₁.surjective y₁
-      apply e₂.injective
-      simpa using DFunLike.congr_fun comm₁₂.symm x₁
-    · ext y₂
-      obtain ⟨x₂, rfl⟩ := e₂.surjective y₂
-      apply e₃.injective
-      simpa using DFunLike.congr_fun comm₂₃.symm x₂
+  · exact of_ladder_addEquiv' f g f' g' e₁ e₂ e₃ comm₁₂ comm₂₃
 
 end Exact
 
@@ -92,12 +94,9 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
     (hS.singleTriangle_distinguished) n
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  refine Function.Exact.of_ladder_addEquiv (e₁ := AddEquiv.symm Ext.homAddEquiv)
-    (e₂ := AddEquiv.symm Ext.homAddEquiv)
-    (e₃ := AddEquiv.symm Ext.homAddEquiv)
-    (comm₁₂ := ?_) (comm₂₃ := sorry) (hfg := this)
-  dsimp
-  sorry
+  exact Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv)
+    (comm₁₂ := sorry) (comm₂₃ := sorry) (hfg' := this)
 
 section
 
@@ -115,12 +114,9 @@ lemma covariant_sequence_exact₃' :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  refine Function.Exact.of_ladder_addEquiv (e₁ := AddEquiv.symm Ext.homAddEquiv)
-    (e₂ := AddEquiv.symm Ext.homAddEquiv)
-    (e₃ := AddEquiv.symm Ext.homAddEquiv)
-    (comm₁₂ := ?_) (comm₂₃ := sorry) (hfg := this)
-  dsimp
-  sorry
+  exact Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv)
+    (comm₁₂ := sorry) (comm₂₃ := sorry) (hfg' := this)
 
 lemma covariant_sequence_exact₁' :
     (ShortComplex.mk
@@ -134,12 +130,9 @@ lemma covariant_sequence_exact₁' :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  refine Function.Exact.of_ladder_addEquiv (e₁ := AddEquiv.symm Ext.homAddEquiv)
-    (e₂ := AddEquiv.symm Ext.homAddEquiv)
-    (e₃ := AddEquiv.symm Ext.homAddEquiv)
-    (comm₁₂ := ?_) (comm₂₃ := sorry) (hfg := this)
-  dsimp
-  sorry
+  exact Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv)
+    (comm₁₂ := sorry) (comm₂₃ := sorry) (hfg' := this)
 
 open ComposableArrows
 
