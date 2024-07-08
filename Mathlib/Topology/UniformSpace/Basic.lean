@@ -1610,7 +1610,7 @@ theorem mem_uniform_prod [t₁ : UniformSpace α] [t₂ : UniformSpace β] {a : 
   rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap ha) (preimage_mem_comap hb)
 #align mem_uniform_prod mem_uniform_prod
 
-theorem uniform_prod_mem [UniformSpace α] [UniformSpace β] {s : Set ((α × β) × α × β)}
+theorem UniformityProd_of_uniform_prod [UniformSpace α] [UniformSpace β] {s : Set ((α × β) × α × β)}
     (h : s ∈ 𝓤 (α × β)) :
     ∃ a ∈ 𝓤 α, ∃ b ∈ 𝓤 β, UniformityProd a b ⊆ s := by
   rw [uniformity_prod, mem_inf_iff_superset] at h
