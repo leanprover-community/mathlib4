@@ -433,7 +433,7 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
   track it down. If we can't find this, we need to state it in its most general form and locate
   it appropriately in the library using a small, independent PR. #find_home! suggested
   Mathlib.Analysis.InnerProductSpace.Projection-/
-theorem eq_iff_orthogonal_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
+theorem eq_iff_orthogonalComplement_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
    constructor
    · intro H
      exact congrArg Submodule.orthogonal H
@@ -443,7 +443,9 @@ theorem eq_iff_orthogonal_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ :=
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
-theorem base [Subsingleton n]:
+/--The following result is auxiliary, and not meant to be used outside this file. It forms
+the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   by_cases case : Nonempty n
   · obtain ⟨S, hS⟩ := eigenspace_of_subsingleton_nonempty hT case
@@ -491,31 +493,33 @@ theorem base [Subsingleton n]:
     simp only [hS]
     have B := orthogonalComplement_iSup_eigenspaces_eq_bot hS.1
     rw [← B]
-    apply eq_iff_orthogonal_eq.mpr
+    apply eq_iff_orthogonalComplement_eq.mpr
     simp only [Submodule.orthogonal_orthogonal, Submodule.mk.injEq, AddSubmonoid.mk.injEq,
       AddSubsemigroup.mk.injEq]
     exact h1
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
-/-This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
+/-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
   some lemmas. -/
-theorem induction_step [Nontrivial n] :
+
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [Nontrivial n] :
     (∀ (m : Type u) [Fintype m], Fintype.card m < Fintype.card n →
     ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T m j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) →
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by sorry
 
-/-May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
+/-COMMENT: May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
   orthogonalFamily_eigenspaces'-/
+
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
   · intro p
-    exact base hT
+    exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base hT
   · intro p hp
-    exact induction_step
+    exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step
 
-theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
+theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))
     (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T n j) (γ j))).subtypeₗᵢ) := by
   intro f g hfg Ef Eg
@@ -534,11 +538,13 @@ theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
   exact H3
   exact H4
 
-theorem post_ind_exhaust : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
+/-- The Hilbert space on which a finite commuting family of symmetric linear operators acts
+decomposes as an internal direct sum of simultaneous eigenspaces for these operators. -/
+theorem direct_sum_isInternal_simultaneous : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
     ⨅ (j : n), (eigenspace (T n j) (α j))) := by
     rw [OrthogonalFamily.isInternal_iff]
     · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT
-    · exact ind_Orthogonality hT
+    · exact orthogonalFamily_iInf_eigenspaces hT
 
 end Simultaneous
 
