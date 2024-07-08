@@ -37,9 +37,8 @@ class CoalgebraStruct (R : Type u) (A : Type v)
   /-- The counit of the coalgebra -/
   counit : A →ₗ[R] R
 
-variable (R) in
 /--
-An representation of an element `a` of a coalgebra `A` is a finite sum of pure tensors `∑ xᵢ ⊗ yᵢ`
+A representation of an element `a` of a coalgebra `A` is a finite sum of pure tensors `∑ xᵢ ⊗ yᵢ`
 that is equal to `comul a`.
 -/
 structure CoalgebraStruct.Repr (R : Type u) {A : Type v}
@@ -55,7 +54,6 @@ structure CoalgebraStruct.Repr (R : Type u) {A : Type v}
   /-- `comul a` is equal to a finite sum of some pure tensors -/
   (eq : ∑ i ∈ index, left i ⊗ₜ[R] right i = comul a)
 
-variable (R) in
 /-- An arbitrarily chosen representation. -/
 def CoalgebraStruct.Repr.arbitrary (R : Type u) {A : Type v}
     [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) : Repr R a where
