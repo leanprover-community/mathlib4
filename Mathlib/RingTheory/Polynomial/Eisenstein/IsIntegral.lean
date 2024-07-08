@@ -123,7 +123,7 @@ end Cyclotomic
 section IsIntegral
 
 variable {K : Type v} {L : Type z} {p : R} [CommRing R] [Field K] [Field L]
-variable [Algebra K L] [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
+variable [Algebra K L] [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algebra.IsSeparable K L]
 variable [IsDomain R] [IsFractionRing R K] [IsIntegrallyClosed R]
 
 local notation "𝓟" => Submodule.span R {(p : R)}
@@ -198,8 +198,8 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     _ = (Q.coeff 0 • ↑1 + ∑ x ∈ (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) *
           B.gen ^ n := ?_
     _ = (Q.coeff 0 • B.gen ^ 0 +
-        ∑ x ∈ (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) * B.gen ^ n :=
-      by rw [_root_.pow_zero]
+        ∑ x ∈ (range (Q.natDegree + 1)).erase 0, Q.coeff x • B.gen ^ x) * B.gen ^ n := by
+      rw [_root_.pow_zero]
     _ = aeval B.gen Q * B.gen ^ n := ?_
     _ = _ := by rw [hQ, Algebra.smul_mul_assoc]
   · have : ∀ i ∈ (range (Q.natDegree + 1)).erase 0,

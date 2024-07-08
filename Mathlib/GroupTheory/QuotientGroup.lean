@@ -7,7 +7,7 @@ This file is to a certain extent based on `quotient_module.lean` by Johannes Hö
 -/
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Coset
 
 #align_import group_theory.quotient_group from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
@@ -59,8 +59,8 @@ protected def con : Con G where
     rw [leftRel_eq] at hab hcd ⊢
     dsimp only
     calc
-      (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) :=
-        by simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
+      (a * c)⁻¹ * (b * d) = c⁻¹ * (a⁻¹ * b) * c⁻¹⁻¹ * (c⁻¹ * d) := by
+        simp only [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
       _ ∈ N := N.mul_mem (nN.conj_mem _ hab _) hcd
 #align quotient_group.con QuotientGroup.con
 #align quotient_add_group.con QuotientAddGroup.con

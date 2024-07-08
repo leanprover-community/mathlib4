@@ -319,7 +319,6 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 #align interval_integrable.comp_mul_left IntervalIntegrable.comp_mul_left
 
--- Porting note (#10756): new lemma
 theorem comp_mul_left_iff {c : ℝ} (hc : c ≠ 0) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
       IntervalIntegrable f volume a b :=
@@ -424,7 +423,7 @@ end
 /-- Let `l'` be a measurably generated filter; let `l` be a of filter such that each `s ∈ l'`
 eventually includes `Ioc u v` as both `u` and `v` tend to `l`. Let `μ` be a measure finite at `l'`.
 
-Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ μ.ae`. Then `f` is interval integrable on
+Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ ae μ`. Then `f` is interval integrable on
 `u..v` provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
@@ -432,7 +431,7 @@ Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
 `TendstoIxxClass Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Measure ℝ}
     {l l' : Filter ℝ} (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l']
-    [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
+    [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ ae μ) (𝓝 c))
     {u v : ι → ℝ} {lt : Filter ι} (hu : Tendsto u lt l) (hv : Tendsto v lt l) :
     ∀ᶠ t in lt, IntervalIntegrable f μ (u t) (v t) :=
   have := (hf.integrableAtFilter_ae hfm hμ).eventually
@@ -506,7 +505,7 @@ theorem intervalIntegral_eq_integral_uIoc (f : ℝ → E) (a b : ℝ) (μ : Meas
     ∫ x in a..b, f x ∂μ = (if a ≤ b then 1 else -1 : ℝ) • ∫ x in Ι a b, f x ∂μ := by
   split_ifs with h
   · simp only [integral_of_le h, uIoc_of_le h, one_smul]
-  · simp only [integral_of_ge (not_le.1 h).le, uIoc_of_lt (not_le.1 h), neg_one_smul]
+  · simp only [integral_of_ge (not_le.1 h).le, uIoc_of_ge (not_le.1 h).le, neg_one_smul]
 #align interval_integral.interval_integral_eq_integral_uIoc intervalIntegral.intervalIntegral_eq_integral_uIoc
 
 theorem norm_intervalIntegral_eq (f : ℝ → E) (a b : ℝ) (μ : Measure ℝ) :
@@ -675,7 +674,8 @@ nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]
 
-@[deprecated] alias RCLike.interval_integral_ofReal := RCLike.intervalIntegral_ofReal -- 2024-04-06
+@[deprecated (since := "2024-04-06")]
+alias RCLike.interval_integral_ofReal := RCLike.intervalIntegral_ofReal
 
 nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
     (∫ x in a..b, (f x : ℂ) ∂μ) = ↑(∫ x in a..b, f x ∂μ) :=
@@ -744,13 +744,15 @@ theorem integral_comp_mul_left (hc : c ≠ 0) :
 #align interval_integral.integral_comp_mul_left intervalIntegral.integral_comp_mul_left
 
 -- Porting note (#10618): was @[simp]
-theorem smul_integral_comp_mul_left (c) : (c • ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x :=
-  by by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_left]
+theorem smul_integral_comp_mul_left (c) :
+    (c • ∫ x in a..b, f (c * x)) = ∫ x in c * a..c * b, f x := by
+  by_cases hc : c = 0 <;> simp [hc, integral_comp_mul_left]
 #align interval_integral.smul_integral_comp_mul_left intervalIntegral.smul_integral_comp_mul_left
 
 -- Porting note (#10618): was @[simp]
-theorem integral_comp_div (hc : c ≠ 0) : (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x :=
-  by simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
+theorem integral_comp_div (hc : c ≠ 0) :
+    (∫ x in a..b, f (x / c)) = c • ∫ x in a / c..b / c, f x := by
+  simpa only [inv_inv] using integral_comp_mul_right f (inv_ne_zero hc)
 #align interval_integral.integral_comp_div intervalIntegral.integral_comp_div
 
 -- Porting note (#10618): was @[simp]
@@ -1054,8 +1056,9 @@ section
 variable {f g : ℝ → ℝ} {a b : ℝ} {μ : Measure ℝ}
 
 theorem integral_eq_zero_iff_of_le_of_nonneg_ae (hab : a ≤ b) (hf : 0 ≤ᵐ[μ.restrict (Ioc a b)] f)
-    (hfi : IntervalIntegrable f μ a b) : ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b)] 0 :=
-  by rw [integral_of_le hab, integral_eq_zero_iff_of_nonneg_ae hf hfi.1]
+    (hfi : IntervalIntegrable f μ a b) :
+    ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b)] 0 := by
+  rw [integral_of_le hab, integral_eq_zero_iff_of_nonneg_ae hf hfi.1]
 #align interval_integral.integral_eq_zero_iff_of_le_of_nonneg_ae intervalIntegral.integral_eq_zero_iff_of_le_of_nonneg_ae
 
 theorem integral_eq_zero_iff_of_nonneg_ae (hf : 0 ≤ᵐ[μ.restrict (Ioc a b ∪ Ioc b a)] f)

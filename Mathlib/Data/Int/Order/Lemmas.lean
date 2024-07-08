@@ -12,7 +12,8 @@ import Mathlib.Algebra.Order.Ring.Abs
 
 The distinction between this file and `Data.Int.Order.Basic` is not particularly clear.
 They are separated by now to minimize the porting requirements for tactics during the transition to
-mathlib4. Now that `Data.Rat.Order` has been ported, please feel free to reorganize these two files.
+mathlib4. Now that `Algebra.Order.Ring.Rat` has been ported, please feel free to reorganize these
+two files.
 -/
 
 open Function Nat
@@ -40,14 +41,6 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
   rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_le.symm
 #align int.nat_abs_le_iff_mul_self_le Int.natAbs_le_iff_mul_self_le
-
-theorem dvd_div_of_mul_dvd {a b c : ℤ} (h : a * b ∣ c) : b ∣ c / a := by
-  rcases eq_or_ne a 0 with (rfl | ha)
-  · simp only [Int.ediv_zero, Int.dvd_zero]
-  rcases h with ⟨d, rfl⟩
-  refine ⟨d, ?_⟩
-  rw [mul_assoc, Int.mul_ediv_cancel_left _ ha]
-#align int.dvd_div_of_mul_dvd Int.dvd_div_of_mul_dvd
 
 lemma pow_right_injective (h : 1 < a.natAbs) : Injective ((a ^ ·) : ℕ → ℤ) := by
   refine (?_ : Injective (natAbs ∘ (a ^ · : ℕ → ℤ))).of_comp

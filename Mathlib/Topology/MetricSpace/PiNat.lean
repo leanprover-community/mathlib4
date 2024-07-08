@@ -449,8 +449,8 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
           exact hxy
       · simp only [le_iInf_iff, le_principal_iff]
         intro n
-        refine' mem_iInf_of_mem ((1 / 2) ^ n : ℝ) _
-        refine' mem_iInf_of_mem (by positivity) _
+        refine mem_iInf_of_mem ((1 / 2) ^ n : ℝ) ?_
+        refine mem_iInf_of_mem (by positivity) ?_
         simp only [mem_principal, setOf_subset_setOf, Prod.forall]
         intro x y hxy
         exact apply_eq_of_dist_lt hxy le_rfl }
@@ -902,7 +902,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
           { p : (∀ i : ι, F i) × ∀ i : ι, F i | dist (p.fst i) (p.snd i) < δ }
       · rintro ⟨i, hi⟩
-        refine' mem_iInf_of_mem δ (mem_iInf_of_mem δpos _)
+        refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
         simp only [Prod.forall, imp_self, mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
         simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_range, Finset.mem_coe] at hxy
@@ -913,8 +913,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
             (sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
-            refine' add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) _
-            refine' tsum_le_tsum (fun i => min_le_left _ _) _ _
+            refine add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) ?_
+            refine tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
             · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
             · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
           _ < (∑ _i ∈ K, δ) + ε / 2 := by
@@ -926,9 +926,9 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           _ = ε := add_halves _
     · simp only [le_iInf_iff, le_principal_iff]
       intro i ε εpos
-      refine' mem_iInf_of_mem (min ((1 / 2) ^ encode i : ℝ) ε) _
+      refine mem_iInf_of_mem (min ((1 / 2) ^ encode i : ℝ) ε) ?_
       have : 0 < min ((1 / 2) ^ encode i : ℝ) ε := lt_min (by simp) εpos
-      refine' mem_iInf_of_mem this _
+      refine mem_iInf_of_mem this ?_
       simp only [and_imp, Prod.forall, setOf_subset_setOf, lt_min_iff, mem_principal]
       intro x y hn hε
       calc

@@ -149,7 +149,7 @@ instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
     intro φ
     rcases LocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) with (⟨u, h⟩ | ⟨u, h⟩) <;>
         [left; right] <;>
-      · refine' isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u _)
+      · refine isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u ?_)
         simpa using h.symm
 
 -- TODO(jmc): once adic topology lands, show that this is complete

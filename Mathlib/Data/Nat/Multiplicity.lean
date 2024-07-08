@@ -8,7 +8,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Digits
 import Mathlib.RingTheory.Multiplicity
 
@@ -190,8 +190,8 @@ theorem multiplicity_choose_aux {p n b k : ℕ} (hp : p.Prime) (hkn : k ≤ n) :
     ∑ i ∈ Finset.Ico 1 b, n / p ^ i = ∑ i ∈ Finset.Ico 1 b, (k + (n - k)) / p ^ i := by
       simp only [add_tsub_cancel_of_le hkn]
     _ = ∑ i ∈ Finset.Ico 1 b,
-          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) :=
-      by simp only [Nat.add_div (pow_pos hp.pos _)]
+          (k / p ^ i + (n - k) / p ^ i + if p ^ i ≤ k % p ^ i + (n - k) % p ^ i then 1 else 0) := by
+      simp only [Nat.add_div (pow_pos hp.pos _)]
     _ = _ := by simp [sum_add_distrib, sum_boole]
 #align nat.prime.multiplicity_choose_aux Nat.Prime.multiplicity_choose_aux
 
@@ -305,8 +305,8 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
     cases b
     · simpa [bit0_eq_two_mul n]
     · suffices multiplicity 2 (2 * n + 1) + multiplicity 2 (2 * n)! < ↑(2 * n) + 1 by
-        simpa [succ_eq_add_one, multiplicity.mul, h2, prime_two, Nat.bit1_eq_succ_bit0,
-          bit0_eq_two_mul n, factorial]
+        simpa [multiplicity.mul, h2, prime_two, Nat.bit1_eq_succ_bit0, bit0_eq_two_mul n,
+          factorial]
       rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
       refine this.trans ?_
       exact mod_cast lt_succ_self _

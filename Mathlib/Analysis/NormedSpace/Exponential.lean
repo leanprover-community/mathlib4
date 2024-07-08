@@ -116,8 +116,8 @@ noncomputable def exp (x : 𝔸) : 𝔸 :=
 
 variable {𝕂}
 
-theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) : (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n :=
-  by simp [expSeries]
+theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
+    (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by simp [expSeries]
 #align exp_series_apply_eq NormedSpace.expSeries_apply_eq
 
 theorem expSeries_apply_eq' (x : 𝔸) :
@@ -152,8 +152,9 @@ theorem exp_op [T2Space 𝔸] (x : 𝔸) : exp 𝕂 (MulOpposite.op x) = MulOppo
 #align exp_op NormedSpace.exp_op
 
 @[simp]
-theorem exp_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) : exp 𝕂 (MulOpposite.unop x) = MulOpposite.unop (exp 𝕂 x) :=
-  by simp_rw [exp, expSeries_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
+theorem exp_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
+    exp 𝕂 (MulOpposite.unop x) = MulOpposite.unop (exp 𝕂 x) := by
+  simp_rw [exp, expSeries_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
 #align exp_unop NormedSpace.exp_unop
 
 theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸) :
@@ -419,7 +420,7 @@ theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
   -- Porting note: Lean needed this to be explicit for some reason
   rw [norm_inv, norm_pow, NNReal.norm_eq, norm_natCast, mul_comm, ← mul_assoc, ← div_eq_mul_inv]
   have : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸‖ ≤ 1 :=
-    norm_mkPiAlgebraFin_le_of_pos (Ei := fun _ => 𝔸) (Nat.pos_of_ne_zero hn)
+    norm_mkPiAlgebraFin_le_of_pos (Nat.pos_of_ne_zero hn)
   exact mul_le_of_le_one_right (div_nonneg (pow_nonneg r.coe_nonneg n) n !.cast_nonneg) this
 #align exp_series_radius_eq_top NormedSpace.expSeries_radius_eq_top
 

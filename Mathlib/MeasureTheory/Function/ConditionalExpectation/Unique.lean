@@ -199,13 +199,13 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
   refine sub_le_sub ?_ ?_
   · rw [Measure.restrict_restrict (hm _ h_meas_nonneg_g), Measure.restrict_restrict h_meas_nonneg_f,
       hgf _ (@MeasurableSet.inter α m _ _ h_meas_nonneg_g hs)
-        ((measure_mono (Set.inter_subset_right _ _)).trans_lt (lt_top_iff_ne_top.mpr hμs)),
+        ((measure_mono Set.inter_subset_right).trans_lt (lt_top_iff_ne_top.mpr hμs)),
       ← Measure.restrict_restrict (hm _ h_meas_nonneg_g), ←
       Measure.restrict_restrict h_meas_nonneg_f]
     exact setIntegral_le_nonneg (hm _ h_meas_nonneg_g) hf hfi
   · rw [Measure.restrict_restrict (hm _ h_meas_nonpos_g), Measure.restrict_restrict h_meas_nonpos_f,
       hgf _ (@MeasurableSet.inter α m _ _ h_meas_nonpos_g hs)
-        ((measure_mono (Set.inter_subset_right _ _)).trans_lt (lt_top_iff_ne_top.mpr hμs)),
+        ((measure_mono Set.inter_subset_right).trans_lt (lt_top_iff_ne_top.mpr hμs)),
       ← Measure.restrict_restrict (hm _ h_meas_nonpos_g), ←
       Measure.restrict_restrict h_meas_nonpos_f]
     exact setIntegral_nonpos_le (hm _ h_meas_nonpos_g) hf hfi

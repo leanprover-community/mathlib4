@@ -250,7 +250,7 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
       convert hc.neg
       simp only [neg_neg, Pi.neg_apply]
   rw [hω₁, this, ← hω₂]
-  constructor <;> rintro ⟨c, hc⟩ <;> refine' ⟨-c, fun ω hω => _⟩
+  constructor <;> rintro ⟨c, hc⟩ <;> refine ⟨-c, fun ω hω => ?_⟩
   · rw [mem_upperBounds] at hc
     refine neg_le.2 (hc _ ?_)
     simpa only [Pi.neg_apply, Set.mem_range, neg_inj]

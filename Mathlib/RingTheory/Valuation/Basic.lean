@@ -3,7 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
 
@@ -83,7 +84,7 @@ structure Valuation extends R →*₀ Γ₀ where
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
 
 You should also extend this typeclass when you extend `Valuation`. -/
-class ValuationClass (F) (R Γ₀ : outParam (Type*)) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
+class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
   [FunLike F R Γ₀]
   extends MonoidWithZeroHomClass F R Γ₀ : Prop where
   /-- The valuation of a a sum is less that the sum of the valuations -/
@@ -347,6 +348,35 @@ theorem map_one_sub_of_lt (h : v x < 1) : v (1 - x) = 1 := by
 theorem one_lt_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 < v x ↔ v x⁻¹ < 1 := by
   simpa using (inv_lt_inv₀ (v.ne_zero_iff.2 h) one_ne_zero).symm
 #align valuation.one_lt_val_iff Valuation.one_lt_val_iff
+
+theorem one_le_val_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : 1 ≤ v x ↔ v x⁻¹ ≤ 1 := by
+  convert (one_lt_val_iff v (inv_ne_zero h)).symm.not <;>
+  push_neg <;> simp only [inv_inv]
+
+theorem val_lt_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x < 1 ↔ 1 < v x⁻¹ := by
+  simpa only [inv_inv] using (one_lt_val_iff v (inv_ne_zero h)).symm
+
+theorem val_le_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x ≤ 1 ↔ 1 ≤ v x⁻¹ := by
+  simpa [inv_inv] using (one_le_val_iff v (inv_ne_zero h)).symm
+
+theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 1 := by
+  by_cases h : x = 0
+  · simp only [map_inv₀, inv_eq_one]
+  · simpa only [le_antisymm_iff, And.comm] using and_congr (one_le_val_iff v h) (val_le_one_iff v h)
+
+theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
+  by_cases h : x = 0
+  · simp only [h, _root_.map_zero, zero_le', inv_zero, zero_lt_one, or_self]
+  · simp only [← one_lt_val_iff v h, le_or_lt]
+
+/--
+This theorem is a weaker version of `Valuation.val_le_one_or_val_inv_lt_one`, but more symmetric
+in `x` and `x⁻¹`.
+-/
+theorem val_le_one_or_val_inv_le_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ ≤ 1 := by
+  by_cases h : x = 0
+  · simp only [h, _root_.map_zero, zero_le', inv_zero, or_self]
+  · simp only [← one_le_val_iff v h, le_total]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where

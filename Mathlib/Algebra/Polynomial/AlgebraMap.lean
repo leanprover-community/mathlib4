@@ -154,6 +154,9 @@ theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] �
 set_option linter.uppercaseLean3 false in
 #align polynomial.eval₂_int_cast_ring_hom_X Polynomial.eval₂_intCastRingHom_X
 
+@[deprecated (since := "2024-04-17")]
+alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
+
 end CommSemiring
 
 section aeval
@@ -235,27 +238,16 @@ theorem aeval_one : aeval x (1 : R[X]) = 1 :=
   AlgHom.map_one _
 #align polynomial.aeval_one Polynomial.aeval_one
 
-section deprecated
-set_option linter.deprecated false
-
--- Porting note: removed `@[simp]` because `simp` can prove this
-@[deprecated]
-theorem aeval_bit0 : aeval x (bit0 p) = bit0 (aeval x p) :=
-  AlgHom.map_bit0 _ _
-#align polynomial.aeval_bit0 Polynomial.aeval_bit0
-
--- Porting note: removed `@[simp]` because `simp` can prove this
-@[deprecated]
-theorem aeval_bit1 : aeval x (bit1 p) = bit1 (aeval x p) :=
-  AlgHom.map_bit1 _ _
-#align polynomial.aeval_bit1 Polynomial.aeval_bit1
-
-end deprecated
+#noalign polynomial.aeval_bit0
+#noalign polynomial.aeval_bit1
 
 -- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
 #align polynomial.aeval_nat_cast Polynomial.aeval_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias aeval_nat_cast := aeval_natCast
 
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _

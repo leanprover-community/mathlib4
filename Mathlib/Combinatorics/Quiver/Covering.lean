@@ -178,7 +178,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
 
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by
-  refine' ⟨fun u => _, fun u => _⟩ <;>
+  refine ⟨fun u => ?_, fun u => ?_⟩ <;>
     -- Porting note: was
     -- simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
     simp only [φ.symmetrifyStar, φ.symmetrifyCostar] <;>

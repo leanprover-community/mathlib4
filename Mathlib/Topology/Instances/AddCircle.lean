@@ -385,7 +385,6 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by
@@ -492,7 +491,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
   Equiv.symm <|
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
-        refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
+        refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
         · simp_rw [Subtype.ext_iff] at h
           rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_natCast m₁,
             ← Int.cast_natCast m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
@@ -503,7 +502,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
           swap
           · exact Nat.cast_ne_zero.2 hn.ne'
           rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]
-          refine' Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨_, _⟩) <;>
+          refine Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨?_, ?_⟩) <;>
             apply (Int.sub_le_self _ <| Nat.cast_nonneg _).trans_lt (Nat.cast_lt.2 _)
           exacts [m₁.2.1, m₂.2.1]
         obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
@@ -559,7 +558,6 @@ section UnitAddCircle
 
 instance instZeroLTOne [StrictOrderedSemiring 𝕜] : Fact ((0 : 𝕜) < 1) := ⟨zero_lt_one⟩
 
-/- ./././Mathport/Syntax/Translate/Command.lean:328:31: unsupported: @[derive] abbrev -/
 /-- The unit circle `ℝ ⧸ ℤ`. -/
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
@@ -694,3 +692,45 @@ end ZeroBased
 end AddCircle
 
 end IdentifyIccEnds
+
+namespace ZMod
+
+variable {N : ℕ} [NeZero N]
+
+/-- The `AddMonoidHom` from `ZMod N` to `ℝ / ℤ` sending `j mod N` to `j / N mod 1`. -/
+noncomputable def toAddCircle : ZMod N →+ UnitAddCircle :=
+  lift N ⟨AddMonoidHom.mk' (fun j ↦ ↑(j / N : ℝ)) (by simp [add_div]),
+    by simp [div_self (NeZero.ne _)]⟩
+
+lemma toAddCircle_intCast (j : ℤ) :
+    toAddCircle (j : ZMod N) = ↑(j / N : ℝ) := by
+  simp [toAddCircle]
+
+lemma toAddCircle_natCast (j : ℕ) :
+    toAddCircle (j : ZMod N) = ↑(j / N : ℝ) := by
+  simpa using toAddCircle_intCast (N := N) j
+
+/--
+Explicit formula for `toCircle j`. Note that this is "evil" because it uses `ZMod.val`. Where
+possible, it is recommended to lift `j` to `ℤ` and use `toAddCircle_intCast` instead.
+-/
+lemma toAddCircle_apply (j : ZMod N) :
+    toAddCircle j = ↑(j.val / N : ℝ) := by
+  rw [← toAddCircle_natCast, natCast_zmod_val]
+
+variable (N) in
+lemma toAddCircle_injective : Function.Injective (toAddCircle : ZMod N → _) := by
+  intro x y hxy
+  have : (0 : ℝ) < N := Nat.cast_pos.mpr (NeZero.pos _)
+  rwa [toAddCircle_apply, toAddCircle_apply, AddCircle.coe_eq_coe_iff_of_mem_Ico
+    (hp := Real.fact_zero_lt_one) (a := 0), div_left_inj' this.ne', Nat.cast_inj,
+    (val_injective N).eq_iff] at hxy <;>
+  exact ⟨by positivity, by simpa only [zero_add, div_lt_one this, Nat.cast_lt] using val_lt _⟩
+
+@[simp] lemma toAddCircle_inj {j k : ZMod N} : toAddCircle j = toAddCircle k ↔ j = k :=
+  (toAddCircle_injective N).eq_iff
+
+@[simp] lemma toAddCircle_eq_zero {j : ZMod N} : toAddCircle j = 0 ↔ j = 0 :=
+  map_eq_zero_iff _ (toAddCircle_injective N)
+
+end ZMod

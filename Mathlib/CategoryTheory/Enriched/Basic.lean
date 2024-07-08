@@ -94,6 +94,12 @@ theorem e_assoc (W X Y Z : C) :
   EnrichedCategory.assoc W X Y Z
 #align category_theory.e_assoc CategoryTheory.e_assoc
 
+@[reassoc]
+theorem e_assoc' (W X Y Z : C) :
+    (α_ _ _ _).hom ≫ _ ◁ eComp V X Y Z ≫ eComp V W X Z =
+      eComp V W X Y ▷ _ ≫ eComp V W Y Z := by
+  rw [← e_assoc V W X Y Z, Iso.hom_inv_id_assoc]
+
 section
 
 variable {V} {W : Type v} [Category.{w} W] [MonoidalCategory W]

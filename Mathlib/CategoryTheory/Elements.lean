@@ -47,6 +47,9 @@ def Functor.Elements (F : C ⥤ Type w) :=
   Σc : C, F.obj c
 #align category_theory.functor.elements CategoryTheory.Functor.Elements
 
+/-- Constructor for the type `F.Elements` when `F` is a functor to types. -/
+abbrev Functor.elementsMk (F : C ⥤ Type w) (X : C) (x : F.obj X) : F.Elements := ⟨X, x⟩
+
 -- Porting note: added because Sigma.ext would be triggered automatically
 lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
     (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
@@ -66,6 +69,12 @@ instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
 #align category_theory.category_of_elements CategoryTheory.categoryOfElements
 
 namespace CategoryOfElements
+
+/-- Constructor for morphisms in the category of elements of a functor to types. -/
+@[simps]
+def homMk {F : C ⥤ Type w} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f x.snd = y.snd) :
+    x ⟶ y :=
+  ⟨f, hf⟩
 
 @[ext]
 theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
@@ -130,7 +139,7 @@ instance : (π F).ReflectsIsomorphisms where
 @[simps]
 def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
   obj t := ⟨t.1, α.app t.1 t.2⟩
-  map {t₁ t₂} k := ⟨k.1, by simpa [← map_snd] using (FunctorToTypes.naturality _ _ α k.1 t₁.2).symm⟩
+  map {t₁ t₂} k := ⟨k.1, by simpa [map_snd] using (FunctorToTypes.naturality _ _ α k.1 t₁.2).symm⟩
 #align category_theory.category_of_elements.map CategoryTheory.CategoryOfElements.map
 
 @[simp]
@@ -296,5 +305,28 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
   Iso.refl _
 
 end CategoryOfElements
+
+namespace Functor
+
+/--
+The initial object in the category of elements for a representable functor. In `isInitial` it is
+shown that this is initial.
+-/
+def Elements.initial (A : C) : (yoneda.obj A).Elements :=
+  ⟨Opposite.op A, 𝟙 _⟩
+#align category_theory.colimit_adj.elements.initial CategoryTheory.Functor.Elements.initial
+
+/-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
+-/
+def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) where
+  desc s := ⟨s.pt.2.op, Category.comp_id _⟩
+  uniq s m _ := by
+    simp_rw [← m.2]
+    dsimp [Elements.initial]
+    simp
+  fac := by rintro s ⟨⟨⟩⟩
+#align category_theory.colimit_adj.is_initial CategoryTheory.Functor.Elements.isInitial
+
+end Functor
 
 end CategoryTheory

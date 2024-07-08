@@ -204,9 +204,9 @@ lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
     Measure.restrict_apply ht]
   calc ∫⁻ a in t ∩ μ.sigmaFiniteSetᶜ, μ.densityToFinite a ∂μ.toFinite
   _ = ∫⁻ _ in t ∩ μ.sigmaFiniteSetᶜ, ∞ ∂μ.toFinite := by
-        refine set_lintegral_congr_fun (ht.inter (measurableSet_sigmaFiniteSet μ).compl)
+        refine setLIntegral_congr_fun (ht.inter (measurableSet_sigmaFiniteSet μ).compl)
           (ae_of_all _ (fun x hx ↦ ?_))
-        simpa [Measure.sigmaFiniteSet] using ((Set.inter_subset_right _ _) hx)
+        simpa [Measure.sigmaFiniteSet] using ((Set.inter_subset_right) hx)
   _ = ∞ * μ.toFinite (t ∩ μ.sigmaFiniteSetᶜ) := by simp
 
 /-- The measure `μ.restrict μ.sigmaFiniteSetᶜ` takes only two values: 0 and ∞ . -/
@@ -242,7 +242,7 @@ lemma toFinite_withDensity_restrict_sigmaFiniteSet (μ : Measure α) [SFinite μ
   rw [Measure.restrict_apply hs, Measure.restrict_apply hs,
     withDensity_apply _ (hs.inter (measurableSet_sigmaFiniteSet μ)),
     withDensity_apply _ (hs.inter (measurableSet_sigmaFiniteSet μ))]
-  refine set_lintegral_congr_fun (hs.inter (measurableSet_sigmaFiniteSet μ))
+  refine setLIntegral_congr_fun (hs.inter (measurableSet_sigmaFiniteSet μ))
     (ae_of_all _ (fun x hx ↦ Eq.symm ?_))
   simp only [Measure.sigmaFiniteSet, Set.mem_inter_iff, Set.mem_compl_iff, Set.mem_setOf_eq,
     ne_eq] at hx

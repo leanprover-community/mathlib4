@@ -63,9 +63,9 @@ theorem measurable_of_measurable_coe (f : β → Measure α)
 #align measure_theory.measure.measurable_of_measurable_coe MeasureTheory.Measure.measurable_of_measurable_coe
 
 instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
-  refine' ⟨Measure.measurable_of_measurable_coe _ fun s hs => _⟩
+  refine ⟨Measure.measurable_of_measurable_coe _ fun s hs => ?_⟩
   simp_rw [Measure.coe_add, Pi.add_apply]
-  refine' Measurable.add _ _
+  refine Measurable.add ?_ ?_
   · exact (Measure.measurable_coe hs).comp measurable_fst
   · exact (Measure.measurable_coe hs).comp measurable_snd
 #align measure_theory.measure.has_measurable_add₂ MeasureTheory.Measure.instMeasurableAdd₂

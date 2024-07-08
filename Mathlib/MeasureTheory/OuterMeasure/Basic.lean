@@ -94,7 +94,7 @@ theorem measure_le_inter_add_diff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t
   simpa using measure_union_le (s ∩ t) (s \ t)
 
 theorem measure_diff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
-  (measure_mono <| diff_subset _ _).antisymm <| calc
+  (measure_mono diff_subset).antisymm <| calc
     μ s ≤ μ (s ∩ t) + μ (s \ t) := measure_le_inter_add_diff _ _ _
     _ ≤ μ t + μ (s \ t) := by gcongr; apply inter_subset_right
     _ = μ (s \ t) := by simp [ht]
@@ -128,6 +128,9 @@ theorem measure_union_null_iff : μ (s ∪ t) = 0 ↔ μ s = 0 ∧ μ t = 0 := b
 
 theorem measure_union_null (hs : μ s = 0) (ht : μ t = 0) : μ (s ∪ t) = 0 := by simp [*]
 #align measure_theory.measure_union_null MeasureTheory.measure_union_null
+
+lemma measure_null_iff_singleton (hs : s.Countable) : μ s = 0 ↔ ∀ x ∈ s, μ {x} = 0 := by
+  rw [← measure_biUnion_null_iff hs, biUnion_of_singleton]
 
 /-- Let `μ` be an (outer) measure; let `s : ι → Set α` be a sequence of sets, `S = ⋃ n, s n`.
 If `μ (S \ s n)` tends to zero along some nontrivial filter (usually `Filter.atTop` on `ι = ℕ`),

@@ -82,6 +82,10 @@ theorem rpow_add' (x : ℝ≥0) {y z : ℝ} (h : y + z ≠ 0) : x ^ (y + z) = x 
   NNReal.eq <| Real.rpow_add' x.2 h
 #align nnreal.rpow_add' NNReal.rpow_add'
 
+theorem rpow_add_of_nonneg (x : ℝ≥0) {y z : ℝ} (hy : 0 ≤ y) (hz : 0 ≤ z) :
+    x ^ (y + z) = x ^ y * x ^ z := by
+  ext; exact Real.rpow_add_of_nonneg x.2 hy hz
+
 /-- Variant of `NNReal.rpow_add'` that avoids having to prove `y + z = w` twice. -/
 lemma rpow_of_add_eq (x : ℝ≥0) (hw : w ≠ 0) (h : y + z = w) : x ^ w = x ^ y * x ^ z := by
   rw [← h, rpow_add']; rwa [h]
@@ -131,6 +135,9 @@ theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
 theorem rpow_natCast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
   NNReal.eq <| by simpa only [coe_rpow, coe_pow] using Real.rpow_natCast x n
 #align nnreal.rpow_nat_cast NNReal.rpow_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias rpow_nat_cast := rpow_natCast
 
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
@@ -369,6 +376,9 @@ theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
     (orderIsoRpow y hy).symm = orderIsoRpow (1 / y) (one_div_pos.2 hy) := by
   simp only [orderIsoRpow, one_div_one_div]; rfl
 
+theorem _root_.Real.nnnorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) : ‖x ^ y‖₊ = ‖x‖₊ ^ y := by
+  ext; exact Real.norm_rpow_of_nonneg hx
+
 end NNReal
 
 namespace ENNReal
@@ -530,6 +540,16 @@ theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) :
   simp [coe_rpow_of_ne_zero this, NNReal.rpow_add this]
 #align ennreal.rpow_add ENNReal.rpow_add
 
+theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) :
+    x ^ (y + z) = x ^ y * x ^ z := by
+  induction x using recTopCoe
+  · rcases hy.eq_or_lt with rfl|hy
+    · rw [rpow_zero, one_mul, zero_add]
+    rcases hz.eq_or_lt with rfl|hz
+    · rw [rpow_zero, mul_one, add_zero]
+    simp [top_rpow_of_pos, hy, hz, add_pos hy hz]
+  simp [coe_rpow_of_nonneg, hy, hz, add_nonneg hy hz, NNReal.rpow_add_of_nonneg _ hy hz]
+
 theorem rpow_neg (x : ℝ≥0∞) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
   cases' x with x
   · rcases lt_trichotomy y 0 with (H | H | H) <;>
@@ -570,6 +590,9 @@ theorem rpow_natCast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
   · simp [coe_rpow_of_nonneg _ (Nat.cast_nonneg n)]
 #align ennreal.rpow_nat_cast ENNReal.rpow_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias rpow_nat_cast := rpow_natCast
+
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
@@ -579,6 +602,9 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
 lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
+
+@[deprecated (since := "2024-04-17")]
+alias rpow_int_cast := rpow_intCast
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align ennreal.rpow_two ENNReal.rpow_two

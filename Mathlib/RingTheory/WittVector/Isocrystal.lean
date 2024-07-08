@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.RingTheory.WittVector.FrobeniusFractionField
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 #align_import ring_theory.witt_vector.isocrystal from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
@@ -51,9 +53,6 @@ This file introduces notation in the locale `Isocrystal`.
 * <https://www.math.ias.edu/~lurie/205notes/Lecture26-Isocrystals.pdf>
 
 -/
-
-set_option autoImplicit true
-
 
 noncomputable section
 
@@ -167,9 +166,9 @@ def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section Deriving
 
-instance : AddCommGroup (StandardOneDimIsocrystal p k m) :=
+instance {m : ℤ} : AddCommGroup (StandardOneDimIsocrystal p k m) :=
   inferInstanceAs (AddCommGroup K(p, k))
-instance : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
+instance {m : ℤ} : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
   inferInstanceAs (Module K(p, k) K(p, k))
 
 end Deriving
@@ -217,13 +216,10 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
     · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
-  -- Porting note: `refine'` below gets confused when this is inlined.
-  let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
-  refine ⟨⟨E, ?_⟩⟩
-  simp only [E]
-  intro c
+  refine ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, fun c ↦ ?_⟩⟩
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
-    LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
+    LinearEquiv.smulOfNeZero_apply, Units.smul_mk0, Units.smul_mk0, LinearEquiv.map_smul,
+    LinearEquiv.map_smul]
   -- Porting note: was
   -- simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
   --   LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]

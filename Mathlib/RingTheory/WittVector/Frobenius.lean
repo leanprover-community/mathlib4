@@ -100,8 +100,8 @@ theorem frobeniusPolyAux_eq (n : ℕ) :
           ∑ j ∈ range (p ^ (n - i)),
             (X i ^ p) ^ (p ^ (n - i) - (j + 1)) * frobeniusPolyAux p i ^ (j + 1) *
               C ↑((p ^ (n - i)).choose (j + 1) / p ^ (n - i - v p ⟨j + 1, Nat.succ_pos j⟩) *
-                ↑p ^ (j - v p ⟨j + 1, Nat.succ_pos j⟩) : ℕ) :=
-  by rw [frobeniusPolyAux, ← Fin.sum_univ_eq_sum_range]
+                ↑p ^ (j - v p ⟨j + 1, Nat.succ_pos j⟩) : ℕ) := by
+  rw [frobeniusPolyAux, ← Fin.sum_univ_eq_sum_range]
 #align witt_vector.frobenius_poly_aux_eq WittVector.frobeniusPolyAux_eq
 
 /-- The polynomials that give the coefficients of `frobenius x`,

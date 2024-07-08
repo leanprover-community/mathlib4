@@ -63,6 +63,8 @@ open TopologicalSpace CategoryTheory Opposite
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
+open AlgebraicGeometry.PresheafedSpace.IsOpenImmersion
+
 open CategoryTheory.GlueData
 
 namespace AlgebraicGeometry
@@ -144,9 +146,10 @@ theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
   rw [Set.image_comp]
   -- Porting note: `rw` to `erw` on `coe_comp`
   erw [coe_comp]
-  rw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
+  erw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
+   -- now `erw` after #13170
   · rfl
-  rw [← TopCat.epi_iff_surjective]
+  erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
 #align algebraic_geometry.PresheafedSpace.glue_data.pullback_base AlgebraicGeometry.PresheafedSpace.GlueData.pullback_base
 
@@ -159,7 +162,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
           (D.V _).presheaf.map
             (eqToHom
               (by
-                delta IsOpenImmersion.openFunctor
+                delta IsOpenImmersion.opensFunctor
                 dsimp only [Functor.op, IsOpenMap.functor, Opens.map, unop_op]
                 congr
                 apply pullback_base)) := by
@@ -188,7 +191,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
         (D.t' k i j).c.app _ ≫ (π₁⁻¹ k, j, i) (unop _) := by
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
-  · delta IsOpenImmersion.openFunctor
+  · delta IsOpenImmersion.opensFunctor
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr
     have := (𝖣.t_fac k i j).symm
@@ -202,14 +205,14 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     erw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
-      rw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply]
+      erw [← comp_apply, ← comp_base, D.t_inv, id_base, id_apply] -- now `erw` after #13170
     refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
-      rw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply]
+      erw [← comp_apply, ← comp_base, IsIso.inv_hom_id, id_base, id_apply] -- now `erw` after #13170
     · intro x
-      rw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply]
+      erw [← comp_apply, ← comp_base, IsIso.hom_inv_id, id_base, id_apply] -- now `erw` after #13170
   · rw [← IsIso.eq_inv_comp, IsOpenImmersion.inv_invApp, Category.assoc,
       (D.t' k i j).c.naturality_assoc]
     simp_rw [← Category.assoc]
@@ -218,8 +221,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     simp_rw [Category.assoc]
     erw [IsOpenImmersion.inv_naturality, IsOpenImmersion.inv_naturality_assoc,
       IsOpenImmersion.app_inv_app'_assoc]
-    · simp_rw [← (𝖣.V (k, i)).presheaf.map_comp, eqToHom_map (Functor.op _), eqToHom_op,
-        eqToHom_trans]
+    · simp_rw [← (𝖣.V (k, i)).presheaf.map_comp]; rfl
     rintro x ⟨y, -, eq⟩
     replace eq := ConcreteCategory.congr_arg (𝖣.t i k).base eq
     change ((π₂ i, j, k) ≫ D.t i k).base y = (D.t k i ≫ D.t i k).base x at eq
@@ -249,7 +251,7 @@ variable [HasLimits C]
 
 theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
     (Opens.map (𝖣.ι j).base).obj ((D.ι_openEmbedding i).isOpenMap.functor.obj U) =
-      (D.f_open j i).openFunctor.obj
+      (opensFunctor (D.f j i)).obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
   ext1
   dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe]
@@ -261,15 +263,15 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   erw [Set.preimage_image_eq]
   · refine Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) ?_
     dsimp
-    rw [coe_comp, Set.image_comp]
+    rw [Set.image_comp]
     refine congr_arg (_ '' ·) ?_
     rw [Set.eq_preimage_iff_image_eq, ← Set.image_comp]
     swap
-    · apply CategoryTheory.ConcreteCategory.bijective_of_isIso
+    · exact CategoryTheory.ConcreteCategory.bijective_of_isIso (C := TopCat) _
     change (D.t i j ≫ D.t j i).base '' _ = _
     rw [𝖣.t_inv]
     simp
-  · rw [← coe_comp, ← TopCat.mono_iff_injective]
+  · erw [← coe_comp, ← TopCat.mono_iff_injective] -- now `erw` after #13170
     infer_instance
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_image_preimage_eq AlgebraicGeometry.PresheafedSpace.GlueData.ι_image_preimage_eq
 
@@ -428,9 +430,9 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     · exact h2.symm
     · have := D.ι_gluedIso_inv (PresheafedSpace.forget _) i
       dsimp at this
-      rw [← this, coe_comp]
+      erw [← this, coe_comp] -- now `erw` after #13170
       refine Function.Injective.comp ?_ (TopCat.GlueData.ι_injective D.toTopGlueData i)
-      rw [← TopCat.mono_iff_injective]
+      erw [← TopCat.mono_iff_injective] -- now `erw` after #13170
       infer_instance
   delta ιInvApp
   rw [limit.lift_π]
@@ -617,9 +619,8 @@ theorem ι_isoPresheafedSpace_inv (i : D.J) :
 
 instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoPresheafedSpace_inv]
-  -- Porting note: was `inferInstance`
-  refine PresheafedSpace.IsOpenImmersion.comp (hf := ?_) (hg := inferInstance)
-  apply PresheafedSpace.GlueData.ιIsOpenImmersion
+  have := D.toPresheafedSpaceGlueData.ιIsOpenImmersion i
+  infer_instance
 #align algebraic_geometry.SheafedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.SheafedSpaceₓ.GlueData.ιIsOpenImmersion
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=

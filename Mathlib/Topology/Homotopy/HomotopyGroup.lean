@@ -201,8 +201,8 @@ def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
   toFun t :=
     ⟨(p.val.comp (Cube.insertAt i).toContinuousMap).curry t, fun y yH =>
       p.property (Cube.insertAt i (t, y)) (Cube.insertAt_boundary i <| Or.inr yH)⟩
-  source' := by ext t; refine' p.property (Cube.insertAt i (0, t)) ⟨i, Or.inl _⟩; simp
-  target' := by ext t; refine' p.property (Cube.insertAt i (1, t)) ⟨i, Or.inr _⟩; simp
+  source' := by ext t; refine p.property (Cube.insertAt i (0, t)) ⟨i, Or.inl ?_⟩; simp
+  target' := by ext t; refine p.property (Cube.insertAt i (1, t)) ⟨i, Or.inr ?_⟩; simp
 #align gen_loop.to_loop GenLoop.toLoop
 
 
@@ -220,7 +220,7 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
 /-- Generalized loop from a loop by uncurrying $I → (I^{N\setminus\{j\}} → X)$ into $I^N → X$. -/
 @[simps]
 def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
-  ⟨(ContinuousMap.comp ⟨Subtype.val, by continuity⟩ p.toContinuousMap).uncurry.comp
+  ⟨(ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ p.toContinuousMap).uncurry.comp
     (Cube.splitAt i).toContinuousMap,
     by
     rintro y ⟨j, Hj⟩
@@ -323,14 +323,18 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]
     obtain rfl | h := eq_or_ne j i
-    · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
+    · simp only [Prod.map_apply, id_eq, toContinuousMap_apply, funSplitAt_apply,
+        Function.uncurry_apply_pair]
+      rw [H.eq_fst]
+      exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
     · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
   all_goals
     intro
     apply (homotopyFrom_apply _ _ _).trans
-    first
-    | rw [H.apply_zero]
-    | rw [H.apply_one]
+    simp only [Prod.map_apply, id_eq, toContinuousMap_apply, funSplitAt_apply,
+      Function.uncurry_apply_pair, ContinuousMap.HomotopyWith.apply_zero,
+      ContinuousMap.HomotopyWith.apply_one, ne_eq, Path.coe_toContinuousMap, toLoop_apply_coe,
+      ContinuousMap.curry_apply, ContinuousMap.comp_apply]
     first
     | apply congr_arg p
     | apply congr_arg q
@@ -398,7 +402,7 @@ open GenLoop
   `Ω^{j // j ≠ i} x`. -/
 def homotopyGroupEquivFundamentalGroup (i : N) :
     HomotopyGroup N X x ≃ FundamentalGroup (Ω^ { j // j ≠ i } X x) const := by
-  refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
+  refine Equiv.trans ?_ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
   apply Quotient.congr (loopHomeo i).toEquiv
   exact fun p q => ⟨homotopicTo i, homotopicFrom i⟩
 #align homotopy_group_equiv_fundamental_group homotopyGroupEquivFundamentalGroup
@@ -468,7 +472,7 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
   i.e. the loops based at `x` up to homotopy. -/
 def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
     HomotopyGroup N X x ≃ FundamentalGroup X x := by
-  refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
+  refine Equiv.trans ?_ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
   refine Quotient.congr (genLoopEquivOfUnique N) ?_
   intros a₁ a₂; constructor <;> rintro ⟨H⟩
   · exact
@@ -476,8 +480,8 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
           map_zero_left := fun _ => H.apply_zero _
           map_one_left := fun _ => H.apply_one _
           prop' := fun t y iH => H.prop' _ _ ⟨default, iH⟩ }⟩
-  refine'
-    ⟨⟨⟨⟨fun tx => H (tx.fst, tx.snd default), H.continuous.comp _⟩, fun y => _, fun y => _⟩, _⟩⟩
+  refine
+    ⟨⟨⟨⟨fun tx => H (tx.fst, tx.snd default), H.continuous.comp ?_⟩, fun y => ?_, fun y => ?_⟩, ?_⟩⟩
   · exact continuous_fst.prod_mk ((continuous_apply _).comp continuous_snd)
   · exact (H.apply_zero _).trans (congr_arg a₁ (eq_const_of_unique y).symm)
   · exact (H.apply_one _).trans (congr_arg a₂ (eq_const_of_unique y).symm)
