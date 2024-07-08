@@ -109,7 +109,7 @@ theorem tensor_μ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
     TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
 
 @[simp]
-theorem tensor_μ_eq_tensorTensorTensorComm_apply
+theorem tensor_μ_apply
     {A B C D : ModuleCat R} (x : A) (y : B) (z : C) (w : D) :
     tensor_μ _ (A, B) (C, D) ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := rfl
 
