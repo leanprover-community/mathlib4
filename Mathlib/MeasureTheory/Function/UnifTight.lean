@@ -132,7 +132,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
 
 /-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
 all sequences indexed by a finite type. -/
-theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
+private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := by
   revert f
   induction' n with n h
@@ -296,7 +296,7 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
 
 /- Lemma used in `tendsto_Lp_notFinite_of_tendsto_ae`.
    XXX: Alternative name: `ae_tendsto_ae_congr`? -/
-theorem tendsto_ae_congr_ae {f f' : ℕ → α → β} {g g' : α → β}
+private theorem tendsto_ae_congr_ae {f f' : ℕ → α → β} {g g' : α → β}
     (hff' : ∀ (n : ℕ), f n =ᵐ[μ] f' n) (hgg' : g =ᵐ[μ] g')
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     ∀ᵐ x ∂μ, Tendsto (fun n => f' n x) atTop (𝓝 (g' x)) := by
