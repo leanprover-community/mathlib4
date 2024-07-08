@@ -165,7 +165,7 @@ section Tor
 
 open scoped ZeroObject
 
-/-
+/--
 For a flat module `M`, higher tor groups vanish.
 -/
 noncomputable def higherTorIsoZero [Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
@@ -185,6 +185,7 @@ noncomputable def higherTor'IsoZero [Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
   pN.isoLeftDerivedObj (tensorRight M) (n + 1) ≪≫
     (Limits.IsZero.isoZero $ HomologicalComplex.exactAt_iff_isZero_homology _ _ |>.1 $
       rTensor_shortComplex_exact M (pN.complex.sc (n + 1)) (pN.complex_exactAt_succ n))
+
 
 
 end Tor
