@@ -407,12 +407,7 @@ variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
 
 open Classical
 
-theorem cracker2 [Subsingleton n] (S : E →ₗ[𝕜] E) :
-    (∀ (i : n), T n i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
-    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
-  exact fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
-
-theorem cracker3 [Subsingleton n] (h : Nonempty n) :
+theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
     ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (γ : n → 𝕜), (∀ (i : n),
     (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
   have h0 : ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (i : n), T n i = S) := by
@@ -428,7 +423,11 @@ theorem cracker3 [Subsingleton n] (h : Nonempty n) :
   use S
   constructor
   · exact this
-  · refine cracker2 S (n := n) (𝕜 := 𝕜) (T := T) hS.2
+  · have h1 : (∀ (i : n), T n i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
+    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) :=
+     fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
+    exact h1 hS.2
+
 
 /-I find it hard to believe that the following doesn't appear in the library already. We should
   track it down. -/
@@ -487,7 +486,7 @@ theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
 theorem base [Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   by_cases case : Nonempty n
-  · have h2 := cracker3 hT case (n := n) (𝕜 := 𝕜) (T := T)
+  · have h2 := eigenspace_of_subsingleton_nonempty hT case (n := n) (𝕜 := 𝕜) (T := T)
     obtain ⟨S, hS⟩ := h2
     simp only [hS]
     have B := orthogonalComplement_iSup_eigenspaces_eq_bot hS.1
