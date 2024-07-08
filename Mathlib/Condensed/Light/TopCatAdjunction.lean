@@ -71,7 +71,7 @@ def lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
   obj X := X.toTopCat
   map f := toTopCatMap f
 
-namespace CondensedSet
+namespace LightCondSet
 
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X where
@@ -122,9 +122,8 @@ noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightC
         -- does rewriting using `NatTrans.naturality_apply` (not even with `erw`). What's going on?
         simp? says
           simp only [lightCondSetToTopCat_obj, LightProfinite.toTopCat_obj, Functor.id_obj,
-            Functor.comp_obj, topCatToLightCondSet_obj, Functor.id_map, comp_val, FunctorToTypes.comp,
-            Functor.comp_map, lightCondSetToTopCat_map, topCatToLightCondSet_map_val_app,
-            ContinuousMap.comp_apply, toTopCatMap_apply]
+            Functor.comp_obj, topCatToLightCondSet_obj, Functor.id_map, comp_val,
+            FunctorToTypes.comp, Functor.comp_map, lightCondSetToTopCat_map, topCatToLightCondSet_map_val_app, ContinuousMap.comp_apply, toTopCatMap_apply]
         exact (NatTrans.naturality_apply f.val _ _).symm }
     counit := { app := topCatAdjunctionCounit }
     left_triangle := by
@@ -138,4 +137,4 @@ instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
 
 instance : topCatToLightCondSet.Faithful := topCatAdjunction.faithful_R_of_epi_counit_app
 
-end CondensedSet
+end LightCondSet
