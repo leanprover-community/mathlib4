@@ -237,6 +237,7 @@ section Pi
 /-- The canonical map from the adic completion of the product to the product of the
 adic completions. -/
 @[simps!]
+noncomputable
 def pi : AdicCompletion I (∀ j, M j) →ₗ[AdicCompletion I R] ∀ j, AdicCompletion I (M j) :=
   LinearMap.pi (fun j ↦ map I (LinearMap.proj j))
 
@@ -248,6 +249,7 @@ open DirectSum
 
 /-- The canonical map from the sum of the adic completions to the adic completion
 of the sum. -/
+noncomputable
 def sum :
     (⨁ j, (AdicCompletion I (M j))) →ₗ[AdicCompletion I R] AdicCompletion I (⨁ j, M j) :=
   toModule (AdicCompletion I R) ι (AdicCompletion I (⨁ j, M j))
@@ -270,6 +272,7 @@ variable [Fintype ι]
 
 /-- If `ι` is finite, we use the equivalence of sum and product to obtain an inverse for
 `AdicCompletion.sum` from `AdicCompletion.pi`. -/
+noncomputable
 def sumInv : AdicCompletion I (⨁ j, M j) →ₗ[AdicCompletion I R] (⨁ j, (AdicCompletion I (M j))) :=
   letI f := map I (linearEquivFunOnFintype R ι M)
   letI g := linearEquivFunOnFintype (AdicCompletion I R) ι (fun j ↦ AdicCompletion I (M j))
@@ -310,6 +313,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   erw [DirectSum.sum_univ_of]
 
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
+noncomputable
 def sumEquivOfFintype :
     (⨁ j, (AdicCompletion I (M j))) ≃ₗ[AdicCompletion I R] AdicCompletion I (⨁ j, M j) :=
   LinearEquiv.ofLinear (sum I M) (sumInv I M) (sum_comp_sumInv I M) (sumInv_comp_sum I M)
@@ -333,6 +337,7 @@ open DirectSum
 variable [Fintype ι]
 
 /-- If `ι` is finite, `pi` is a linear equiv. -/
+noncomputable
 def piEquivOfFintype :
     AdicCompletion I (∀ j, M j) ≃ₗ[AdicCompletion I R] ∀ j, AdicCompletion I (M j) :=
   letI f := (congr I (linearEquivFunOnFintype R ι M)).symm
@@ -345,6 +350,7 @@ theorem piEquivOfFintype_apply (x : AdicCompletion I (∀ j, M j)) :
   simp [piEquivOfFintype, sumInv, map_comp_apply]
 
 /-- Adic completion of `R^n` is `(AdicCompletion I R)^n`. -/
+noncomputable
 def piEquivFin (n : ℕ) :
     AdicCompletion I (Fin n → R) ≃ₗ[AdicCompletion I R] Fin n → AdicCompletion I R :=
   piEquivOfFintype I (ι := Fin n) (fun _ : Fin n ↦ R)
