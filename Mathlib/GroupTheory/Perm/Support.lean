@@ -6,6 +6,7 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Data.Set.Finite
 
 #align_import group_theory.perm.support from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -30,11 +31,11 @@ Assume `α` is a Fintype:
 -/
 
 
-open Equiv Finset
+open Equiv Set
 
 namespace Equiv.Perm
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section Disjoint
 
@@ -45,6 +46,10 @@ def Disjoint (f g : Perm α) :=
 #align equiv.perm.disjoint Equiv.Perm.Disjoint
 
 variable {f g h : Perm α}
+
+theorem disjoint_iff_eq_or_eq : Disjoint f g ↔ ∀ x : α, f x = x ∨ g x = x :=
+  Iff.rfl
+#align equiv.perm.disjoint_iff_eq_or_eq Equiv.Perm.disjoint_iff_eq_or_eq
 
 @[symm]
 theorem Disjoint.symm : Disjoint f g → Disjoint g f := by simp only [Disjoint, or_comm, imp_self]
@@ -78,10 +83,6 @@ theorem disjoint_one_left (f : Perm α) : Disjoint 1 f := fun _ => Or.inl rfl
 @[simp]
 theorem disjoint_one_right (f : Perm α) : Disjoint f 1 := fun _ => Or.inr rfl
 #align equiv.perm.disjoint_one_right Equiv.Perm.disjoint_one_right
-
-theorem disjoint_iff_eq_or_eq : Disjoint f g ↔ ∀ x : α, f x = x ∨ g x = x :=
-  Iff.rfl
-#align equiv.perm.disjoint_iff_eq_or_eq Equiv.Perm.disjoint_iff_eq_or_eq
 
 @[simp]
 theorem disjoint_refl_iff : Disjoint f f ↔ f = 1 := by
@@ -152,34 +153,6 @@ theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ 
   exact ext fun a => or_self_iff.mp (h_disjoint a)
 #align equiv.perm.nodup_of_pairwise_disjoint Equiv.Perm.nodup_of_pairwise_disjoint
 
-theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
-  | 0 => rfl
-  | n + 1 => by rw [pow_succ, mul_apply, hfx, pow_apply_eq_self_of_apply_eq_self hfx n]
-#align equiv.perm.pow_apply_eq_self_of_apply_eq_self Equiv.Perm.pow_apply_eq_self_of_apply_eq_self
-
-theorem zpow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℤ, (f ^ n) x = x
-  | (n : ℕ) => pow_apply_eq_self_of_apply_eq_self hfx n
-  | Int.negSucc n => by rw [zpow_negSucc, inv_eq_iff_eq, pow_apply_eq_self_of_apply_eq_self hfx]
-#align equiv.perm.zpow_apply_eq_self_of_apply_eq_self Equiv.Perm.zpow_apply_eq_self_of_apply_eq_self
-
-theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
-    ∀ n : ℕ, (f ^ n) x = x ∨ (f ^ n) x = f x
-  | 0 => Or.inl rfl
-  | n + 1 =>
-    (pow_apply_eq_of_apply_apply_eq_self hffx n).elim
-      (fun h => Or.inr (by rw [pow_succ', mul_apply, h]))
-      fun h => Or.inl (by rw [pow_succ', mul_apply, h, hffx])
-#align equiv.perm.pow_apply_eq_of_apply_apply_eq_self Equiv.Perm.pow_apply_eq_of_apply_apply_eq_self
-
-theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
-    ∀ i : ℤ, (f ^ i) x = x ∨ (f ^ i) x = f x
-  | (n : ℕ) => pow_apply_eq_of_apply_apply_eq_self hffx n
-  | Int.negSucc n => by
-    rw [zpow_negSucc, inv_eq_iff_eq, ← f.injective.eq_iff, ← mul_apply, ← pow_succ', eq_comm,
-      inv_eq_iff_eq, ← mul_apply, ← pow_succ, @eq_comm _ x, or_comm]
-    exact pow_apply_eq_of_apply_apply_eq_self hffx _
-#align equiv.perm.zpow_apply_eq_of_apply_apply_eq_self Equiv.Perm.zpow_apply_eq_of_apply_apply_eq_self
-
 theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a : α} :
     (σ * τ) a = a ↔ σ a = a ∧ τ a = a := by
   refine ⟨fun h => ?_, fun h => by rw [mul_apply, h.2, h.1]⟩
@@ -192,59 +165,32 @@ theorem Disjoint.mul_eq_one_iff {σ τ : Perm α} (hστ : Disjoint σ τ) :
     σ * τ = 1 ↔ σ = 1 ∧ τ = 1 := by simp_rw [ext_iff, one_apply, hστ.mul_apply_eq_iff, forall_and]
 #align equiv.perm.disjoint.mul_eq_one_iff Equiv.Perm.Disjoint.mul_eq_one_iff
 
-theorem Disjoint.zpow_disjoint_zpow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℤ) :
-    Disjoint (σ ^ m) (τ ^ n) := fun x =>
-  Or.imp (fun h => zpow_apply_eq_self_of_apply_eq_self h m)
-    (fun h => zpow_apply_eq_self_of_apply_eq_self h n) (hστ x)
-#align equiv.perm.disjoint.zpow_disjoint_zpow Equiv.Perm.Disjoint.zpow_disjoint_zpow
-
-theorem Disjoint.pow_disjoint_pow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℕ) :
-    Disjoint (σ ^ m) (τ ^ n) :=
-  hστ.zpow_disjoint_zpow m n
-#align equiv.perm.disjoint.pow_disjoint_pow Equiv.Perm.Disjoint.pow_disjoint_pow
-
 end Disjoint
 
 section IsSwap
 
-variable [DecidableEq α]
+--variable [DecidableEq α]
 
 /-- `f.IsSwap` indicates that the permutation `f` is a transposition of two elements. -/
-def IsSwap (f : Perm α) : Prop :=
-  ∃ x y, x ≠ y ∧ f = swap x y
+def IsSwap (f : Perm α) (x y : α) : Prop := (∀ {z}, z ≠ x → z ≠ y → f z = z) ∧ f x = y ∧ f y = x
 #align equiv.perm.is_swap Equiv.Perm.IsSwap
 
-@[simp]
-theorem ofSubtype_swap_eq {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
-    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y :=
-  Equiv.ext fun z => by
-    by_cases hz : p z
-    · rw [swap_apply_def, ofSubtype_apply_of_mem _ hz]
-      split_ifs with hzx hzy
-      · simp_rw [hzx, Subtype.coe_eta, swap_apply_left]
-      · simp_rw [hzy, Subtype.coe_eta, swap_apply_right]
-      · rw [swap_apply_of_ne_of_ne] <;>
-        simp [Subtype.ext_iff, *]
-    · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne]
-      · intro h
-        apply hz
-        rw [h]
-        exact Subtype.prop x
-      intro h
-      apply hz
-      rw [h]
-      exact Subtype.prop y
-#align equiv.perm.of_subtype_swap_eq Equiv.Perm.ofSubtype_swap_eq
+theorem swap_isSwap [DecidableEq α] {x y : α} : IsSwap (swap x y) x y :=
+⟨swap_apply_of_ne_of_ne, swap_apply_left _ _, swap_apply_right _ _⟩
 
 theorem IsSwap.of_subtype_isSwap {p : α → Prop} [DecidablePred p] {f : Perm (Subtype p)}
-    (h : f.IsSwap) : (ofSubtype f).IsSwap :=
-  let ⟨⟨x, hx⟩, ⟨y, hy⟩, hxy⟩ := h
-  ⟨x, y, by
-    simp only [Ne, Subtype.ext_iff] at hxy
-    exact hxy.1, by
-    rw [hxy.2, ofSubtype_swap_eq]⟩
+    {x y : Subtype p} (h : f.IsSwap x y) : (ofSubtype f).IsSwap x.1 y.1 := by
+  unfold IsSwap at h ⊢
+  simp_rw [ne_eq, Subtype.ext_iff, Subtype.forall] at h
+  simp_rw [ofSubtype_apply_coe]
+  refine' ⟨fun {z} => _, h.2⟩
+  by_cases hz : (p z)
+  · simp_rw [ofSubtype_apply_of_mem _ hz]
+    exact h.1 z hz
+  · simp_rw [ofSubtype_apply_of_not_mem _ hz, implies_true]
 #align equiv.perm.is_swap.of_subtype_is_swap Equiv.Perm.IsSwap.of_subtype_isSwap
 
+/-
 theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap x (f x) * f) y ≠ y) :
     f y ≠ y ∧ y ≠ x := by
   simp only [swap_apply_def, mul_apply, f.injective.eq_iff] at *
@@ -252,65 +198,51 @@ theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap
   · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
   · split_ifs at hy with h <;> try { simp [*] at * }
 #align equiv.perm.ne_and_ne_of_swap_mul_apply_ne_self Equiv.Perm.ne_and_ne_of_swap_mul_apply_ne_self
+-/
 
 end IsSwap
 
 section support
 
-section Set
+variable {f g : Perm α}
 
-variable (p q : Perm α)
-
-theorem set_support_inv_eq : { x | p⁻¹ x ≠ x } = { x | p x ≠ x } := by
-  ext x
-  simp only [Set.mem_setOf_eq, Ne]
-  rw [inv_def, symm_apply_eq, eq_comm]
-#align equiv.perm.set_support_inv_eq Equiv.Perm.set_support_inv_eq
-
-theorem set_support_apply_mem {p : Perm α} {a : α} :
-    p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } := by simp
-#align equiv.perm.set_support_apply_mem Equiv.Perm.set_support_apply_mem
-
-theorem set_support_zpow_subset (n : ℤ) : { x | (p ^ n) x ≠ x } ⊆ { x | p x ≠ x } := by
-  intro x
-  simp only [Set.mem_setOf_eq, Ne]
-  intro hx H
-  simp [zpow_apply_eq_self_of_apply_eq_self H] at hx
-#align equiv.perm.set_support_zpow_subset Equiv.Perm.set_support_zpow_subset
-
-theorem set_support_mul_subset : { x | (p * q) x ≠ x } ⊆ { x | p x ≠ x } ∪ { x | q x ≠ x } := by
-  intro x
-  simp only [Perm.coe_mul, Function.comp_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
-  by_cases hq : q x = x <;> simp [hq]
-#align equiv.perm.set_support_mul_subset Equiv.Perm.set_support_mul_subset
-
-end Set
-
-variable [DecidableEq α] [Fintype α] {f g : Perm α}
-
-/-- The `Finset` of nonfixed points of a permutation. -/
-def support (f : Perm α) : Finset α :=
-  univ.filter fun x => f x ≠ x
+/-- The `Set` of nonfixed points of a permutation. -/
+def support (f : Perm α) : Set α := { x | f x ≠ x }
 #align equiv.perm.support Equiv.Perm.support
 
+variable {f g : Perm α}
+
 @[simp]
-theorem mem_support {x : α} : x ∈ f.support ↔ f x ≠ x := by
-  rw [support, mem_filter, and_iff_right (mem_univ x)]
+theorem mem_support {x : α} : x ∈ f.support ↔ f x ≠ x := Iff.rfl
 #align equiv.perm.mem_support Equiv.Perm.mem_support
 
-theorem not_mem_support {x : α} : x ∉ f.support ↔ f x = x := by simp
+theorem not_mem_support {x : α} : x ∉ f.support ↔ f x = x := by simp_rw [mem_support, not_not]
 #align equiv.perm.not_mem_support Equiv.Perm.not_mem_support
-
-theorem coe_support_eq_set_support (f : Perm α) : (f.support : Set α) = { x | f x ≠ x } := by
-  ext
-  simp
-#align equiv.perm.coe_support_eq_set_support Equiv.Perm.coe_support_eq_set_support
 
 @[simp]
 theorem support_eq_empty_iff {σ : Perm α} : σ.support = ∅ ↔ σ = 1 := by
-  simp_rw [Finset.ext_iff, mem_support, Finset.not_mem_empty, iff_false_iff, not_not,
+  simp_rw [Set.ext_iff, mem_support, Set.not_mem_empty, iff_false_iff, not_not,
     Equiv.Perm.ext_iff, one_apply]
 #align equiv.perm.support_eq_empty_iff Equiv.Perm.support_eq_empty_iff
+
+theorem support_nonempty_iff : f.support.Nonempty ↔ f ≠ 1 := by
+  rw [Set.nonempty_iff_ne_empty]
+  exact support_eq_empty_iff.not
+
+@[simp]
+theorem support_ne_singleton {x : α} : f.support ≠ {x} := by
+  simp_rw [ne_eq, Set.ext_iff, mem_singleton_iff, mem_support, not_forall, not_iff, not_not]
+  exact ⟨f⁻¹ x, by rw [apply_inv_self, eq_comm]⟩
+
+theorem support_nonempty_iff_nontrivial : f.support.Nontrivial ↔ f ≠ 1 := by
+  rw [← support_nonempty_iff]
+  refine' ⟨Set.Nontrivial.nonempty, fun h => _⟩
+  have H := h.exists_eq_singleton_or_nontrivial
+  simp_rw [support_ne_singleton, exists_false, false_or] at H
+  exact H
+
+theorem support_subsingleton_iff_eq_empty : f.support.Subsingleton ↔ f = 1 := by
+  rw [← not_iff_not, not_subsingleton_iff, support_nonempty_iff_nontrivial]
 
 @[simp]
 theorem support_one : (1 : Perm α).support = ∅ := by rw [support_eq_empty_iff]
@@ -350,39 +282,48 @@ theorem exists_mem_support_of_mem_support_prod {l : List (Perm α)} {x : α}
     exact Or.inr hf'
 #align equiv.perm.exists_mem_support_of_mem_support_prod Equiv.Perm.exists_mem_support_of_mem_support_prod
 
-theorem support_pow_le (σ : Perm α) (n : ℕ) : (σ ^ n).support ≤ σ.support := fun _ h1 =>
-  mem_support.mpr fun h2 => mem_support.mp h1 (pow_apply_eq_self_of_apply_eq_self h2 n)
-#align equiv.perm.support_pow_le Equiv.Perm.support_pow_le
+@[simp]
+theorem mem_support_inv {x : α} : x ∈ support f⁻¹ ↔ x ∈ f.support := by
+  simp_rw [mem_support, not_iff_not, inv_eq_iff_eq.trans eq_comm]
 
 @[simp]
-theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
-  simp_rw [Finset.ext_iff, mem_support, not_iff_not, inv_eq_iff_eq.trans eq_comm, imp_true_iff]
+theorem support_inv (f : Perm α) : support f⁻¹ = f.support := by
+  simp_rw [Set.ext_iff, mem_support_inv, implies_true]
 #align equiv.perm.support_inv Equiv.Perm.support_inv
 
--- @[simp] -- Porting note (#10618): simp can prove this
+theorem mem_support_inv_conj {x : α} :
+    x ∈ (g⁻¹ * f * g).support ↔ g x ∈ f.support := by
+  simp_rw [mem_support, ne_eq, mul_apply, Equiv.Perm.inv_eq_iff_eq]
+
+theorem mem_support_conj {x : α} : x ∈ (g * f * g⁻¹).support ↔ g⁻¹ x ∈ f.support := by
+  simp_rw [← mem_support_inv_conj, inv_inv]
+
 theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
-  rw [mem_support, mem_support, Ne, Ne, apply_eq_iff_eq]
+  simp_rw [← mem_support_inv_conj, mul_assoc, inv_mul_cancel_left]
 #align equiv.perm.apply_mem_support Equiv.Perm.apply_mem_support
 
-@[simp]
-theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
-    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
+theorem apply_inv_mem_support {x : α} : f⁻¹ x ∈ f.support ↔ x ∈ f.support := by
+  simp_rw [← mem_support_conj, mul_inv_cancel_right]
 
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
-  simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
+theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
+  rw [← mem_support_inv_conj, ← zpow_neg, ← zpow_add_one, ← zpow_add, neg_add_cancel_comm, zpow_one]
+#align equiv.perm.zpow_apply_mem_support Equiv.Perm.zpow_apply_mem_support
+
+theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support :=
+  zpow_apply_mem_support (n := Int.ofNat n)
 #align equiv.perm.pow_apply_mem_support Equiv.Perm.pow_apply_mem_support
 
-@[simp]
-theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
-    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
-  rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
+theorem support_pow_le (σ : Perm α) : ∀ n : ℕ, (σ ^ n).support ≤ σ.support
+  | 0 => by simp_rw [pow_zero, support_one, le_eq_subset, empty_subset]
+  | (n + 1) => (support_mul_le _ _).trans (sup_le (σ.support_pow_le n) le_rfl)
+#align equiv.perm.support_pow_le Equiv.Perm.support_pow_le
 
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem zpow_apply_mem_support {n : ℤ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
-  simp only [mem_support, ne_eq, apply_zpow_apply_eq_iff]
-#align equiv.perm.zpow_apply_mem_support Equiv.Perm.zpow_apply_mem_support
+theorem support_zpow_le (σ : Perm α) : ∀ n : ℤ, (σ ^ n).support ≤ σ.support
+  | (Int.ofNat n) => σ.support_pow_le _
+  | (Int.negSucc n) => by
+    rw [zpow_negSucc, support_inv]
+    exact σ.support_pow_le _
+#align equiv.perm.support_zpow_le Equiv.Perm.support_zpow_le
 
 theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.support ∩ g.support, f x = g x) (k : ℕ) :
     ∀ x ∈ f.support ∩ g.support, (f ^ k) x = (g ^ k) x := by
@@ -390,13 +331,256 @@ theorem pow_eq_on_of_mem_support (h : ∀ x ∈ f.support ∩ g.support, f x = g
   · simp
   · intro x hx
     rw [pow_succ, mul_apply, pow_succ, mul_apply, h _ hx, hk]
-    rwa [mem_inter, apply_mem_support, ← h _ hx, apply_mem_support, ← mem_inter]
+    rwa [mem_inter_iff, apply_mem_support, ← h _ hx, apply_mem_support, ← mem_inter_iff]
 #align equiv.perm.pow_eq_on_of_mem_support Equiv.Perm.pow_eq_on_of_mem_support
 
+theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ := by
+  induction' l with hd tl hl
+  · simp
+  · rw [List.prod_cons, List.map_cons, List.foldr_cons]
+    refine (support_mul_le hd tl.prod).trans ?_
+    exact sup_le_sup le_rfl hl
+#align equiv.perm.support_prod_le Equiv.Perm.support_prod_le
+
+@[simp]
+theorem support_extend_domain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p) {g : Perm α} :
+    support (g.extendDomain f) = g.support.image f.asEmbedding := by
+  ext b
+  simp only [exists_prop, Function.Embedding.coeFn_mk, toEmbedding_apply, mem_image, Ne,
+    Function.Embedding.trans_apply, mem_support]
+  by_cases pb : p b
+  · rw [extendDomain_apply_subtype _ _ pb]
+    constructor
+    · rintro h
+      refine ⟨f.symm ⟨b, pb⟩, ?_, by simp⟩
+      contrapose! h
+      simp [h]
+    · rintro ⟨a, ha, hb⟩
+      contrapose! ha
+      obtain rfl : a = f.symm ⟨b, pb⟩ := by
+        rw [eq_symm_apply]
+        exact Subtype.coe_injective hb
+      rw [eq_symm_apply]
+      exact Subtype.coe_injective ha
+  · rw [extendDomain_apply_not_subtype _ _ pb]
+    simp only [not_exists, false_iff_iff, not_and, eq_self_iff_true, not_true]
+    rintro a _ rfl
+    exact pb (Subtype.prop _)
+#align equiv.perm.support_extend_domain Equiv.Perm.support_extend_domain
+
+theorem support_eq_pair_iff {x y : α} : f.support = {x, y} ↔ x ≠ y ∧ IsSwap f x y := by
+  rcases eq_or_ne x y with rfl | hxy
+  · simp_rw [insert_eq_of_mem (mem_singleton x), support_ne_singleton, ne_eq, not_true, false_and]
+  · simp_rw [ne_eq, hxy, not_false_eq_true, true_and, le_antisymm_iff (a := f.support),
+    le_eq_subset, Set.pair_subset_iff, Set.subset_pair_iff, mem_support]
+    refine' ⟨fun ⟨hz, hx, hy⟩ => _, fun ⟨hz, hx, hy⟩ => _⟩
+    · have Hx := hz _ (apply_mem_support.mpr hx)
+      simp_rw [hx, false_or] at Hx
+      have Hy := hz _ (apply_mem_support.mpr hy)
+      simp_rw [hy, or_false] at Hy
+      have Hz := fun {z} => (hz z).mt
+      simp_rw [not_or, ne_eq, not_not, and_imp] at Hz
+      exact ⟨Hz, Hx, Hy⟩
+    · simp_rw [ne_eq, hx, hxy.symm, hy, hxy, not_false_eq_true, and_true]
+      simp_rw [← and_imp, ← not_or] at hz
+      exact fun z Hz => by_contra (fun h => Hz (hz h))
+
+/-
+
+
+theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
+  | 0 => rfl
+  | n + 1 => by rw [pow_succ, mul_apply, hfx, pow_apply_eq_self_of_apply_eq_self hfx n]
+#align equiv.perm.pow_apply_eq_self_of_apply_eq_self Equiv.Perm.pow_apply_eq_self_of_apply_eq_self
+
+theorem zpow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℤ, (f ^ n) x = x
+  | (n : ℕ) => pow_apply_eq_self_of_apply_eq_self hfx n
+  | Int.negSucc n => by rw [zpow_negSucc, inv_eq_iff_eq, pow_apply_eq_self_of_apply_eq_self hfx]
+#align equiv.perm.zpow_apply_eq_self_of_apply_eq_self Equiv.Perm.zpow_apply_eq_self_of_apply_eq_self
+
+theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
+    ∀ n : ℕ, (f ^ n) x = x ∨ (f ^ n) x = f x
+  | 0 => Or.inl rfl
+  | n + 1 =>
+    (pow_apply_eq_of_apply_apply_eq_self hffx n).elim
+      (fun h => Or.inr (by rw [pow_succ', mul_apply, h]))
+      fun h => Or.inl (by rw [pow_succ', mul_apply, h, hffx])
+#align equiv.perm.pow_apply_eq_of_apply_apply_eq_self Equiv.Perm.pow_apply_eq_of_apply_apply_eq_self
+
+theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
+    ∀ i : ℤ, (f ^ i) x = x ∨ (f ^ i) x = f x
+  | (n : ℕ) => pow_apply_eq_of_apply_apply_eq_self hffx n
+  | Int.negSucc n => by
+    rw [zpow_negSucc, inv_eq_iff_eq, ← f.injective.eq_iff, ← mul_apply, ← pow_succ', eq_comm,
+      inv_eq_iff_eq, ← mul_apply, ← pow_succ, @eq_comm _ x, or_comm]
+    exact pow_apply_eq_of_apply_apply_eq_self hffx _
+#align equiv.perm.zpow_apply_eq_of_apply_apply_eq_self Equiv.Perm.zpow_apply_eq_of_apply_apply_eq_self
+
+
+section Set
+
+variable (p q : Perm α)
+
+theorem set_support_inv_eq : { x | p⁻¹ x ≠ x } = { x | p x ≠ x } := by
+  ext x
+  simp only [Set.mem_setOf_eq, Ne]
+  rw [inv_def, symm_apply_eq, eq_comm]
+#align equiv.perm.set_support_inv_eq Equiv.Perm.set_support_inv_eq
+
+theorem set_support_apply_mem {p : Perm α} {a : α} :
+    p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } := by simp
+#align equiv.perm.set_support_apply_mem Equiv.Perm.set_support_apply_mem
+
+theorem set_support_zpow_subset (n : ℤ) : { x | (p ^ n) x ≠ x } ⊆ { x | p x ≠ x } := by
+  intro x
+  simp only [Set.mem_setOf_eq, Ne]
+  intro hx H
+  simp [zpow_apply_eq_self_of_apply_eq_self H] at hx
+#align equiv.perm.set_support_zpow_subset Equiv.Perm.set_support_zpow_subset
+
+theorem set_support_mul_subset : { x | (p * q) x ≠ x } ⊆ { x | p x ≠ x } ∪ { x | q x ≠ x } := by
+  intro x
+  simp only [Perm.coe_mul, Function.comp_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
+  by_cases hq : q x = x <;> simp [hq]
+#align equiv.perm.set_support_mul_subset Equiv.Perm.set_support_mul_subset
+
+end Set
+-/
+
+/-
+theorem coe_support_eq_set_support (f : Perm α) : (f.support : Set α) = { x | f x ≠ x } := by
+  ext
+  simp
+#align equiv.perm.coe_support_eq_set_support Equiv.Perm.coe_support_eq_set_support
+-/
+
+
+/-
+@[simp]
+theorem apply_pow_apply_eq_iff (f : Perm α) (n : ℕ) {x : α} :
+    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
+  rw [← mul_apply, Commute.self_pow f, mul_apply, apply_eq_iff_eq]
+
+
+@[simp]
+theorem apply_zpow_apply_eq_iff (f : Perm α) (n : ℤ) {x : α} :
+    f ((f ^ n) x) = (f ^ n) x ↔ f x = x := by
+  rw [← mul_apply, Commute.self_zpow f, mul_apply, apply_eq_iff_eq]
+-/
+
+
+section DecidableEq
+
+variable [DecidableEq α]
+
+theorem support_swap_iff [DecidableEq α] (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
+  simp_rw [support_eq_pair_iff, swap_isSwap, and_true]
+#align equiv.perm.support_swap_iff Equiv.Perm.support_swap_iff
+
+@[simp]
+theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := by
+  rwa [support_swap_iff]
+#align equiv.perm.support_swap Equiv.Perm.support_swap
+
+theorem support_swap_mul_swap {x y z : α} (hxz : x ≠ z) :
+    support (swap x y * swap y z) = {x, y, z} := by
+  rcases eq_or_ne z y with rfl | hzy
+  · simp_rw [swap_self, mul_refl, insert_eq_of_mem (mem_singleton z)]
+    exact support_swap hxz
+  · simp_rw [Set.ext_iff, mem_support, mul_apply, mem_insert_iff, mem_singleton_iff]
+    refine' fun w => _
+    rcases eq_or_ne w y with rfl | hwy
+    · simp_rw [swap_apply_left, swap_apply_of_ne_of_ne hxz.symm hzy,
+      ne_eq, hzy, true_or, or_true, not_false_eq_true]
+    · rcases eq_or_ne w z with rfl | hwz
+      · simp_rw [swap_apply_right, ne_eq, hxz, or_true, not_false_eq_true]
+      · simp_rw [swap_apply_of_ne_of_ne hwy hwz]
+        rcases eq_or_ne w x with rfl | hwx
+        · simp_rw [swap_apply_left, true_or, ne_eq, hwy.symm, not_false_eq_true]
+        · simp_rw [swap_apply_of_ne_of_ne hwx hwy, ne_eq, not_true_eq_false, false_iff, not_or]
+          exact ⟨hwx, hwy, hwz⟩
+
+theorem support_swap_mul_swap_of_nodup {x y z : α} (h : List.Nodup [x, y, z]) :
+    support (swap x y * swap y z) = {x, y, z} := by
+  simp only [List.nodup_cons, List.mem_cons, List.mem_singleton, not_or, List.not_mem_nil,
+    not_false_eq_true, List.nodup_nil, and_self, and_true] at h
+  rcases h with ⟨⟨_, hxz⟩, _⟩
+  rw [support_swap_mul_swap hxz]
+#align equiv.perm.support_swap_mul_swap Equiv.Perm.support_swap_mul_swap_of_nodup
+
+theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
+    f.support \ {x, y} ≤ (swap x y * f).support := by
+  intro
+  simp only [mem_diff, mem_support, Ne, mem_insert_iff, mem_singleton_iff, not_or, coe_mul,
+    Function.comp_apply, and_imp]
+  push_neg
+  rintro ha hx hy H
+  rw [swap_apply_eq_iff, swap_apply_of_ne_of_ne hx hy] at H
+  exact ha H
+#align equiv.perm.support_swap_mul_ge_support_diff Equiv.Perm.support_swap_mul_ge_support_diff
+
+theorem support_swap_mul_eq (f : Perm α) (x : α) (h : f (f x) ≠ x) :
+    (swap x (f x) * f).support = f.support \ {x} := by
+  by_cases hx : f x = x
+  · rw [hx] at h
+    exact (h (hx)).elim
+  ext z
+  by_cases hzx : z = x
+  · simp [hzx]
+  by_cases hzf : z = f x
+  · simp [hzf, hx, h, swap_apply_of_ne_of_ne]
+  by_cases hzfx : f z = x
+  · simp [Ne.symm hzx, hzx, Ne.symm hzf, hzfx]
+  · simp [Ne.symm hzx, hzx, Ne.symm hzf, hzfx, f.injective.ne hzx, swap_apply_of_ne_of_ne]
+#align equiv.perm.support_swap_mul_eq Equiv.Perm.support_swap_mul_eq
+
+theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (swap x (f x) * f)) :
+    y ∈ support f ∧ y ≠ x := by
+  simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff] at *
+  by_cases h : f y = x
+  · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
+  · split_ifs at hy with heq
+    · subst heq; exact ⟨h, hy⟩
+    · exact ⟨hy, heq⟩
+#align equiv.perm.mem_support_swap_mul_imp_mem_support_ne Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
+
+instance mem_support_decidablePred [DecidableEq α] (f : Perm α) :
+    DecidablePred (· ∈ f.support) := fun x => if h : f x ≠ x then isTrue h else isFalse h
+
+end DecidableEq
+
+section DecidableEqFintype
+
+variable [DecidableEq α] [Fintype α]
+
+instance fintype_support (f : Perm α) : Fintype (f.support) := setFintype f.support
+
+lemma coe_univ_filter_ne_eq_support (f : Perm α) :
+    Finset.univ.filter fun x => f x ≠ x = f.support := (Finset.coe_filter_univ _)
+
+lemma support_toFinset (f : Perm α) :
+    f.support.toFinset = Finset.univ.filter fun x => f x ≠ x :=
+  Finset.coe_injective (by rw [coe_univ_filter_ne_eq_support, Set.coe_toFinset])
+
+end DecidableEqFintype
+
+section Disjoint
+
+variable {f g h : Perm α}
+
 theorem disjoint_iff_disjoint_support : Disjoint f g ↔ _root_.Disjoint f.support g.support := by
-  simp [disjoint_iff_eq_or_eq, disjoint_iff, disjoint_iff, Finset.ext_iff, not_and_or,
-    imp_iff_not_or]
-#align equiv.perm.disjoint_iff_disjoint_support Equiv.Perm.disjoint_iff_disjoint_support
+  simp_rw [disjoint_iff_eq_or_eq, disjoint_iff, Set.ext_iff, inf_eq_inter, mem_inter_iff,
+  mem_support, bot_eq_empty, not_mem_empty, iff_false, not_and_or, not_not]
+
+theorem Disjoint.zpow_disjoint_zpow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℤ) :
+    Disjoint (σ ^ m) (τ ^ n) := by
+  rw [disjoint_iff_disjoint_support, disjoint_iff, eq_bot_iff] at hστ ⊢
+  exact (inf_le_inf (support_zpow_le _ _) (support_zpow_le _ _)).trans hστ
+#align equiv.perm.disjoint.zpow_disjoint_zpow Equiv.Perm.Disjoint.zpow_disjoint_zpow
+
+theorem Disjoint.pow_disjoint_pow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℕ) :
+    Disjoint (σ ^ m) (τ ^ n) := hστ.zpow_disjoint_zpow m n
+#align equiv.perm.disjoint.pow_disjoint_pow Equiv.Perm.Disjoint.pow_disjoint_pow
 
 theorem Disjoint.disjoint_support (h : Disjoint f g) : _root_.Disjoint f.support g.support :=
   disjoint_iff_disjoint_support.1 h
@@ -418,85 +602,6 @@ theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise D
     have : Disjoint hd tl.prod := disjoint_prod_right _ h.left
     simp [this.support_mul, hl h.right]
 #align equiv.perm.support_prod_of_pairwise_disjoint Equiv.Perm.support_prod_of_pairwise_disjoint
-
-theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ := by
-  induction' l with hd tl hl
-  · simp
-  · rw [List.prod_cons, List.map_cons, List.foldr_cons]
-    refine (support_mul_le hd tl.prod).trans ?_
-    exact sup_le_sup le_rfl hl
-#align equiv.perm.support_prod_le Equiv.Perm.support_prod_le
-
-theorem support_zpow_le (σ : Perm α) (n : ℤ) : (σ ^ n).support ≤ σ.support := fun _ h1 =>
-  mem_support.mpr fun h2 => mem_support.mp h1 (zpow_apply_eq_self_of_apply_eq_self h2 n)
-#align equiv.perm.support_zpow_le Equiv.Perm.support_zpow_le
-
-@[simp]
-theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := by
-  ext z
-  by_cases hx : z = x
-  any_goals simpa [hx] using h.symm
-  by_cases hy : z = y <;>
-  · simp [swap_apply_of_ne_of_ne, hx, hy] <;>
-    exact h
-#align equiv.perm.support_swap Equiv.Perm.support_swap
-
-theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
-  refine ⟨fun h => ?_, fun h => support_swap h⟩
-  rintro rfl
-  simp [Finset.ext_iff] at h
-#align equiv.perm.support_swap_iff Equiv.Perm.support_swap_iff
-
-theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
-    support (swap x y * swap y z) = {x, y, z} := by
-  simp only [List.not_mem_nil, and_true_iff, List.mem_cons, not_false_iff, List.nodup_cons,
-    List.mem_singleton, and_self_iff, List.nodup_nil] at h
-  push_neg at h
-  apply le_antisymm
-  · convert support_mul_le (swap x y) (swap y z) using 1
-    rw [support_swap h.left.left, support_swap h.right.left]
-    simp [Finset.ext_iff]
-  · intro
-    simp only [mem_insert, mem_singleton]
-    rintro (rfl | rfl | rfl | _) <;>
-      simp [swap_apply_of_ne_of_ne, h.left.left, h.left.left.symm, h.left.right.symm,
-        h.left.right.left.symm, h.right.left.symm]
-#align equiv.perm.support_swap_mul_swap Equiv.Perm.support_swap_mul_swap
-
-theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
-    f.support \ {x, y} ≤ (swap x y * f).support := by
-  intro
-  simp only [and_imp, Perm.coe_mul, Function.comp_apply, Ne, mem_support, mem_insert, mem_sdiff,
-    mem_singleton]
-  push_neg
-  rintro ha ⟨hx, hy⟩ H
-  rw [swap_apply_eq_iff, swap_apply_of_ne_of_ne hx hy] at H
-  exact ha H
-#align equiv.perm.support_swap_mul_ge_support_diff Equiv.Perm.support_swap_mul_ge_support_diff
-
-theorem support_swap_mul_eq (f : Perm α) (x : α) (h : f (f x) ≠ x) :
-    (swap x (f x) * f).support = f.support \ {x} := by
-  by_cases hx : f x = x
-  · simp [hx, sdiff_singleton_eq_erase, not_mem_support.mpr hx, erase_eq_of_not_mem]
-  ext z
-  by_cases hzx : z = x
-  · simp [hzx]
-  by_cases hzf : z = f x
-  · simp [hzf, hx, h, swap_apply_of_ne_of_ne]
-  by_cases hzfx : f z = x
-  · simp [Ne.symm hzx, hzx, Ne.symm hzf, hzfx]
-  · simp [Ne.symm hzx, hzx, Ne.symm hzf, hzfx, f.injective.ne hzx, swap_apply_of_ne_of_ne]
-#align equiv.perm.support_swap_mul_eq Equiv.Perm.support_swap_mul_eq
-
-theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (swap x (f x) * f)) :
-    y ∈ support f ∧ y ≠ x := by
-  simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff] at *
-  by_cases h : f y = x
-  · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
-  · split_ifs at hy with heq
-    · subst heq; exact ⟨h, hy⟩
-    · exact ⟨hy, heq⟩
-#align equiv.perm.mem_support_swap_mul_imp_mem_support_ne Equiv.Perm.mem_support_swap_mul_imp_mem_support_ne
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
   disjoint_left.mp h.disjoint_support hx
@@ -529,91 +634,83 @@ theorem support_le_prod_of_mem {l : List (Perm α)} (h : f ∈ l) (hl : l.Pairwi
   rwa [mem_support, ← eq_on_support_mem_disjoint h hl _ hx, ← mem_support]
 #align equiv.perm.support_le_prod_of_mem Equiv.Perm.support_le_prod_of_mem
 
-section ExtendDomain
+end Disjoint
 
-variable {β : Type*} [DecidableEq β] [Fintype β] {p : β → Prop} [DecidablePred p]
 
 @[simp]
-theorem support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
-    support (g.extendDomain f) = g.support.map f.asEmbedding := by
-  ext b
-  simp only [exists_prop, Function.Embedding.coeFn_mk, toEmbedding_apply, mem_map, Ne,
-    Function.Embedding.trans_apply, mem_support]
-  by_cases pb : p b
-  · rw [extendDomain_apply_subtype _ _ pb]
-    constructor
-    · rintro h
-      refine ⟨f.symm ⟨b, pb⟩, ?_, by simp⟩
-      contrapose! h
-      simp [h]
-    · rintro ⟨a, ha, hb⟩
-      contrapose! ha
-      obtain rfl : a = f.symm ⟨b, pb⟩ := by
-        rw [eq_symm_apply]
-        exact Subtype.coe_injective hb
-      rw [eq_symm_apply]
-      exact Subtype.coe_injective ha
-  · rw [extendDomain_apply_not_subtype _ _ pb]
-    simp only [not_exists, false_iff_iff, not_and, eq_self_iff_true, not_true]
-    rintro a _ rfl
-    exact pb (Subtype.prop _)
-#align equiv.perm.support_extend_domain Equiv.Perm.support_extend_domain
+theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
+    ((f.subtypePerm h : Perm { x // x ∈ s }).support) =
+    (s.attach.filter ((fun x => decide (f x ≠ x))) : Finset { x // x ∈ s }) := by
+  ext
+  simp [Subtype.ext_iff]
+#align equiv.perm.support_subtype_perm Equiv.Perm.support_subtype_perm
 
-theorem card_support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
-    (g.extendDomain f).support.card = g.support.card := by simp
-#align equiv.perm.card_support_extend_domain Equiv.Perm.card_support_extend_domain
+section Conjugation
 
-end ExtendDomain
+variable {α : Type*} [Fintype α] [DecidableEq α] {σ τ : Perm α}
+
+@[simp]
+theorem support_conj : (σ * τ * σ⁻¹).support = τ.support.image σ := by
+  ext x
+  rw [mem_support_conj, mem_image]
+  refine' ⟨fun h => ⟨_, h, apply_inv_self _ _⟩,
+  fun ⟨y, hy, hyx⟩ => by rw [← eq_inv_iff_eq] at hyx ; rwa [hyx] at hy⟩
+#align equiv.perm.support_conj Equiv.Perm.support_conj
+
+end Conjugation
+
 
 section Card
 
--- @[simp] -- Porting note (#10618): simp can prove thisrove this
-theorem card_support_eq_zero {f : Perm α} : f.support.card = 0 ↔ f = 1 := by
-  rw [Finset.card_eq_zero, support_eq_empty_iff]
+variable [Fintype α] [DecidableEq α]
+
+theorem card_support_eq_zero {f : Perm α} : f.support.toFinset.card = 0 ↔ f = 1 := by
+  rw [Finset.card_eq_zero, toFinset_eq_empty, support_eq_empty_iff]
 #align equiv.perm.card_support_eq_zero Equiv.Perm.card_support_eq_zero
 
-theorem one_lt_card_support_of_ne_one {f : Perm α} (h : f ≠ 1) : 1 < f.support.card := by
-  simp_rw [one_lt_card_iff, mem_support, ← not_or]
+theorem one_lt_card_support_of_ne_one {f : Perm α} (h : f ≠ 1) : 1 < f.support.toFinset.card := by
+  simp_rw [Finset.one_lt_card_iff, mem_toFinset, mem_support, ← not_or]
   contrapose! h
   ext a
   specialize h (f a) a
   rwa [apply_eq_iff_eq, or_self_iff, or_self_iff] at h
 #align equiv.perm.one_lt_card_support_of_ne_one Equiv.Perm.one_lt_card_support_of_ne_one
 
-theorem card_support_ne_one (f : Perm α) : f.support.card ≠ 1 := by
+theorem card_support_ne_one (f : Perm α) : f.support.toFinset.card ≠ 1 := by
   by_cases h : f = 1
   · exact ne_of_eq_of_ne (card_support_eq_zero.mpr h) zero_ne_one
   · exact ne_of_gt (one_lt_card_support_of_ne_one h)
 #align equiv.perm.card_support_ne_one Equiv.Perm.card_support_ne_one
 
 @[simp]
-theorem card_support_le_one {f : Perm α} : f.support.card ≤ 1 ↔ f = 1 := by
+theorem card_support_le_one {f : Perm α} : f.support.toFinset.card ≤ 1 ↔ f = 1 := by
   rw [le_iff_lt_or_eq, Nat.lt_succ_iff, Nat.le_zero, card_support_eq_zero, or_iff_not_imp_right,
     imp_iff_right f.card_support_ne_one]
 #align equiv.perm.card_support_le_one Equiv.Perm.card_support_le_one
 
-theorem two_le_card_support_of_ne_one {f : Perm α} (h : f ≠ 1) : 2 ≤ f.support.card :=
+theorem two_le_card_support_of_ne_one {f : Perm α} (h : f ≠ 1) : 2 ≤ f.support.toFinset.card :=
   one_lt_card_support_of_ne_one h
 #align equiv.perm.two_le_card_support_of_ne_one Equiv.Perm.two_le_card_support_of_ne_one
 
 theorem card_support_swap_mul {f : Perm α} {x : α} (hx : f x ≠ x) :
-    (swap x (f x) * f).support.card < f.support.card :=
-  Finset.card_lt_card
+    (swap x (f x) * f).support.toFinset.card < f.support.toFinset.card := by
+  refine' Finset.card_lt_card (toFinset_ssubset_toFinset.mpr
     ⟨fun z hz => (mem_support_swap_mul_imp_mem_support_ne hz).left, fun h =>
-      absurd (h (mem_support.2 hx)) (mt mem_support.1 (by simp))⟩
+      absurd (h (mem_support.2 hx)) (mt mem_support.1 (by simp))⟩)
 #align equiv.perm.card_support_swap_mul Equiv.Perm.card_support_swap_mul
 
-theorem card_support_swap {x y : α} (hxy : x ≠ y) : (swap x y).support.card = 2 :=
-  show (swap x y).support.card = Finset.card ⟨x ::ₘ y ::ₘ 0, by simp [hxy]⟩ from
-    congr_arg card <| by simp [support_swap hxy, *, Finset.ext_iff]
+theorem card_support_swap {x y : α} (hxy : x ≠ y) : (swap x y).support.toFinset.card = 2 :=
+  show (swap x y).support.toFinset.card = Finset.card ⟨x ::ₘ y ::ₘ 0, by simp [hxy]⟩ from
+    congr_arg Finset.card <| by simp [support_swap hxy, *, Finset.ext_iff]
 #align equiv.perm.card_support_swap Equiv.Perm.card_support_swap
 
 @[simp]
-theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := by
+theorem card_support_eq_two {f : Perm α} :
+    f.support.toFinset.card = 2 ↔ ∃ x y, x ≠ y ∧ IsSwap f x y := by
   constructor <;> intro h
-  · obtain ⟨x, t, hmem, hins, ht⟩ := card_eq_succ.1 h
-    obtain ⟨y, rfl⟩ := card_eq_one.1 ht
-    rw [mem_singleton] at hmem
+  · obtain ⟨x, t, hmem, hins, ht⟩ := Finset.card_eq_succ.1 h
+    obtain ⟨y, rfl⟩ := Finset.card_eq_one.1 ht
+    simp only [Finset.mem_singleton] at hmem
     refine ⟨x, y, hmem, ?_⟩
     ext a
     have key : ∀ b, f b ≠ b ↔ _ := fun b => by rw [← mem_support, ← hins, mem_insert, mem_singleton]
@@ -628,14 +725,6 @@ theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := b
     exact card_support_swap hxy
 #align equiv.perm.card_support_eq_two Equiv.Perm.card_support_eq_two
 
-theorem Disjoint.card_support_mul (h : Disjoint f g) :
-    (f * g).support.card = f.support.card + g.support.card := by
-  rw [← Finset.card_union_of_disjoint]
-  · congr
-    ext
-    simp [h.support_mul]
-  · simpa using h.disjoint_support
-#align equiv.perm.disjoint.card_support_mul Equiv.Perm.Disjoint.card_support_mul
 
 theorem card_support_prod_list_of_pairwise_disjoint {l : List (Perm α)} (h : l.Pairwise Disjoint) :
     l.prod.support.card = (l.map (Finset.card ∘ support)).sum := by
@@ -646,20 +735,38 @@ theorem card_support_prod_list_of_pairwise_disjoint {l : List (Perm α)} (h : l.
     exact (disjoint_prod_right _ ha).card_support_mul
 #align equiv.perm.card_support_prod_list_of_pairwise_disjoint Equiv.Perm.card_support_prod_list_of_pairwise_disjoint
 
+theorem card_support_extend_domain (f : α ≃ Subtype p) {g : Perm α} :
+    (g.extendDomain f).support.card = g.support.card := by simp
+#align equiv.perm.card_support_extend_domain Equiv.Perm.card_support_extend_domain
+
+
+
+
 end Card
 
-end support
+/-
+-- support_toFinset
+section Card
 
-@[simp]
-theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
-    ((f.subtypePerm h : Perm { x // x ∈ s }).support) =
-    (s.attach.filter ((fun x => decide (f x ≠ x))) : Finset { x // x ∈ s }) := by
-  ext
-  simp [Subtype.ext_iff]
-#align equiv.perm.support_subtype_perm Equiv.Perm.support_subtype_perm
 
-end Equiv.Perm
 
+
+
+
+
+
+
+theorem Disjoint.card_support_mul (h : Disjoint f g) :
+    (f * g).support.card = f.support.card + g.support.card := by
+  rw [← Finset.card_union_of_disjoint]
+  · congr
+    ext
+    simp [h.support_mul]
+  · simpa using h.disjoint_support
+#align equiv.perm.disjoint.card_support_mul Equiv.Perm.Disjoint.card_support_mul
+
+
+end Card
 section FixedPoints
 
 namespace Equiv.Perm
@@ -678,23 +785,15 @@ theorem fixed_point_card_lt_of_ne_one [DecidableEq α] [Fintype α] {σ : Perm �
 end Equiv.Perm
 
 end FixedPoints
+-/
 
-section Conjugation
-
-namespace Equiv.Perm
-
-variable {α : Type*} [Fintype α] [DecidableEq α] {σ τ : Perm α}
-
-@[simp]
-theorem support_conj : (σ * τ * σ⁻¹).support = τ.support.map σ.toEmbedding := by
-  ext
-  simp only [mem_map_equiv, Perm.coe_mul, Function.comp_apply, Ne, Perm.mem_support,
-    Equiv.eq_symm_apply, inv_def]
-#align equiv.perm.support_conj Equiv.Perm.support_conj
+/-
 
 theorem card_support_conj : (σ * τ * σ⁻¹).support.card = τ.support.card := by simp
 #align equiv.perm.card_support_conj Equiv.Perm.card_support_conj
 
-end Equiv.Perm
+-/
 
-end Conjugation
+end support
+
+end Equiv.Perm

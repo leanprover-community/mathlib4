@@ -509,6 +509,29 @@ theorem subtypeEquivSubtypePerm_apply_of_not_mem (f : Perm (Subtype p)) (h : ¬p
   f.ofSubtype_apply_of_not_mem h
 #align equiv.perm.subtype_equiv_subtype_perm_apply_of_not_mem Equiv.Perm.subtypeEquivSubtypePerm_apply_of_not_mem
 
+@[simp]
+theorem ofSubtype_swap_eq [DecidableEq α] {p : α → Prop} [DecidablePred p] (x y : Subtype p) :
+    ofSubtype (Equiv.swap x y) = Equiv.swap ↑x ↑y :=
+  Equiv.ext fun z => by
+    by_cases hz : p z
+    · rw [swap_apply_def, ofSubtype_apply_of_mem _ hz]
+      split_ifs with hzx hzy
+      · simp_rw [hzx, Subtype.coe_eta, swap_apply_left]
+      · simp_rw [hzy, Subtype.coe_eta, swap_apply_right]
+      · rw [swap_apply_of_ne_of_ne] <;>
+        simp [Subtype.ext_iff, *]
+    · rw [ofSubtype_apply_of_not_mem _ hz, swap_apply_of_ne_of_ne]
+      · intro h
+        apply hz
+        rw [h]
+        exact Subtype.prop x
+      intro h
+      apply hz
+      rw [h]
+      exact Subtype.prop y
+#align equiv.perm.of_subtype_swap_eq Equiv.Perm.ofSubtype_swap_eq
+
+
 end Subtype
 
 end Perm
