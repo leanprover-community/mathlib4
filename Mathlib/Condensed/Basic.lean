@@ -59,7 +59,7 @@ variable {C : Type w} [Category.{v} C]
 lemma id_val (X : Condensed.{u} C) : (𝟙 X : X ⟶ X).val = 𝟙 _ := rfl
 
 @[simp]
-lemma comp_val {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  (f ≫ g).val = f.val ≫ g.val := rfl
+lemma comp_val {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).val = f.val ≫ g.val :=
+  rfl
 
 end Condensed
