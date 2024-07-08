@@ -99,7 +99,6 @@ protected theorem sub (hf : UnifTight f p μ) (hg : UnifTight g p μ)
   rw [sub_eq_add_neg]
   exact hf.add hg.neg hf_meas fun i => (hg_meas i).neg
 
-
 protected theorem ae_eq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
     UnifTight g p μ := by
   intro ε hε
@@ -120,7 +119,7 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : Memℒp g 
   exact ⟨s, ne_of_lt hμs, fun _ => hgε.le⟩
 
 /-- A single function is tight. -/
-theorem unifTight_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
+theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
     {f : ι → α → β} (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
   by_cases hε_top : ε = ∞
   · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
@@ -130,7 +129,6 @@ theorem unifTight_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_snorm_indicator_compl_lt hp_top hε.ne'
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε.le
-
 
 /-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
 all sequences indexed by a finite type. -/
@@ -187,7 +185,7 @@ variable {μ : Measure α} {p : ℝ≥0∞}
 
 variable {f : ℕ → α → β} {g : α → β}
 
-/- Both directions and an iff version of Vitali's convergence theorem on measure spaces
+/-! Both directions and an iff version of Vitali's convergence theorem on measure spaces
    of not necesserily finite volume. See `Thm III.6.15` of Dunford & Schwartz, Part I (1958). -/
 
 /- We start with the reverse direction. We only need to show that uniform tightness follows
@@ -349,9 +347,10 @@ theorem tendsto_Lp_notFinite_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞
       hms'⟩
 
 
-/-- **Vitali's convergence theorem** (non-finite measure version):
-    A sequence of functions `f` converges to `g` in Lp
-    if and only if it is uniformly integrable, uniformly tight and to `g` in measure. -/
+/-- **Vitali's convergence theorem** (non-finite measure version).
+
+A sequence of functions `f` converges to `g` in Lp
+if and only if it is uniformly integrable, uniformly tight and to `g` in measure. -/
 -- XXX: logically, this should be renamed to `tendstoInMeasure_iff_tendsto_Lp`, while
 --  the current version of that could be renamed to `tendstoInMeasure_iff_tendsto_Lp_of_isFinite`.
 theorem tendstoInMeasure_notFinite_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
@@ -367,6 +366,4 @@ theorem tendstoInMeasure_notFinite_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ �
 
 
 end VitaliConvergence
-
-
 end MeasureTheory

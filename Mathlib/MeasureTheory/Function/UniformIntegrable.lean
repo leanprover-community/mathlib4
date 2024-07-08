@@ -143,7 +143,7 @@ protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ n, f n =ᵐ[μ] 
   simp_rw [Set.indicator_apply, hx]
 #align measure_theory.unif_integrable.ae_eq MeasureTheory.UnifIntegrable.ae_eq
 
-/-- Uniform integrability is preserved by restriction of functions to a set. -/
+/-- Uniform integrability is preserved by restriction of the functions to a set. -/
 protected theorem indicator (hf : UnifIntegrable f p μ) (E : Set α) :
     UnifIntegrable (fun i => E.indicator (f i)) p μ := fun ε hε ↦ by
   obtain ⟨δ, hδ_pos, hε⟩ := hf hε
@@ -154,7 +154,7 @@ protected theorem indicator (hf : UnifIntegrable f p μ) (E : Set α) :
     _ ≤ snorm (s.indicator (f i)) p μ := snorm_indicator_le _
     _ ≤ ENNReal.ofReal ε := hε _ _ hs hμs
 
-/-- Uniform integrability is preserved by restriction of measure to a set. -/
+/-- Uniform integrability is preserved by restriction of the measure to a set. -/
 protected theorem restrict (hf : UnifIntegrable f p μ) (E : Set α) :
     UnifIntegrable f p (μ.restrict E) := fun ε hε ↦ by
   obtain ⟨δ, hδ_pos, hδε⟩ := hf hε
