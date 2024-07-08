@@ -69,12 +69,10 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
-open Classical ENNReal Topology
+open scoped Classical
+open ENNReal Topology
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
@@ -85,7 +83,6 @@ namespace MeasureTheory
 section MeasurableSpace
 
 variable [TopologicalSpace β]
-
 variable (β)
 
 /-- The equivalence relation of being almost everywhere equal for almost everywhere strongly
@@ -106,7 +103,6 @@ def AEEqFun (μ : Measure α) : Type _ :=
 
 variable {α β}
 
--- mathport name: «expr →ₘ[ ] »
 @[inherit_doc MeasureTheory.AEEqFun]
 notation:25 α " →ₘ[" μ "] " β => AEEqFun α β μ
 
@@ -220,7 +216,7 @@ open MeasureTheory.Measure (QuasiMeasurePreserving)
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
     α →ₘ[μ] γ :=
-  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) <| fun _ _ h ↦
+  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
     mk_eq_mk.2 <| h.comp_tendsto hf.tendsto_ae
 
 @[simp]
@@ -243,7 +239,7 @@ end compQuasiMeasurePreserving
 
 section compMeasurePreserving
 
-variable [MeasurableSpace β] {ν : MeasureTheory.Measure β}
+variable [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β} {g : β → γ}
 
 /-- Composition of an almost everywhere equal function and a quasi measure preserving function.
 
@@ -253,8 +249,7 @@ def compMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : MeasurePr
   g.compQuasiMeasurePreserving f hf.quasiMeasurePreserving
 
 @[simp]
-theorem compMeasurePreserving_mk {g : β → γ} (hg : AEStronglyMeasurable g ν)
-    (hf : MeasurePreserving f μ ν) :
+theorem compMeasurePreserving_mk (hg : AEStronglyMeasurable g ν) (hf : MeasurePreserving f μ ν) :
     (mk g hg).compMeasurePreserving f hf =
       mk (g ∘ f) (hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving) :=
   rfl
@@ -294,6 +289,12 @@ theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : 
   apply coeFn_mk
 #align measure_theory.ae_eq_fun.coe_fn_comp MeasureTheory.AEEqFun.coeFn_comp
 
+theorem comp_compQuasiMeasurePreserving [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
+    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : Measure.QuasiMeasurePreserving φ μ ν) :
+    (comp g hg f).compQuasiMeasurePreserving φ hφ =
+      comp g hg (f.compQuasiMeasurePreserving φ hφ) := by
+  rcases f; rfl
+
 section CompMeasurable
 
 variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [MeasurableSpace γ]
@@ -317,8 +318,9 @@ theorem compMeasurable_mk (g : β → γ) (hg : Measurable g) (f : α → β)
 #align measure_theory.ae_eq_fun.comp_measurable_mk MeasureTheory.AEEqFun.compMeasurable_mk
 
 theorem compMeasurable_eq_mk (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) :
-    compMeasurable g hg f = mk (g ∘ f) (hg.comp_aemeasurable f.aemeasurable).aestronglyMeasurable :=
-  by rw [← compMeasurable_mk g hg f f.aestronglyMeasurable, mk_coeFn]
+    compMeasurable g hg f =
+    mk (g ∘ f) (hg.comp_aemeasurable f.aemeasurable).aestronglyMeasurable := by
+  rw [← compMeasurable_mk g hg f f.aestronglyMeasurable, mk_coeFn]
 #align measure_theory.ae_eq_fun.comp_measurable_eq_mk MeasureTheory.AEEqFun.compMeasurable_eq_mk
 
 theorem coeFn_compMeasurable (g : β → γ) (hg : Measurable g) (f : α →ₘ[μ] β) :
@@ -375,11 +377,9 @@ theorem comp₂_eq_pair (g : β → γ → δ) (hg : Continuous (uncurry g)) (f�
 #align measure_theory.ae_eq_fun.comp₂_eq_pair MeasureTheory.AEEqFun.comp₂_eq_pair
 
 theorem comp₂_eq_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
-    (f₂ : α →ₘ[μ] γ) :
-    comp₂ g hg f₁ f₂ =
-      mk (fun a => g (f₁ a) (f₂ a))
-        (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prod_mk f₂.aestronglyMeasurable)) :=
-  by rw [comp₂_eq_pair, pair_eq_mk, comp_mk]; rfl
+    (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ = mk (fun a => g (f₁ a) (f₂ a))
+      (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prod_mk f₂.aestronglyMeasurable)) := by
+  rw [comp₂_eq_pair, pair_eq_mk, comp_mk]; rfl
 #align measure_theory.ae_eq_fun.comp₂_eq_mk MeasureTheory.AEEqFun.comp₂_eq_mk
 
 theorem coeFn_comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -421,8 +421,8 @@ theorem comp₂Measurable_eq_mk (g : β → γ → δ) (hg : Measurable (uncurry
     (f₂ : α →ₘ[μ] γ) :
     comp₂Measurable g hg f₁ f₂ =
       mk (fun a => g (f₁ a) (f₂ a))
-        (hg.comp_aemeasurable (f₁.aemeasurable.prod_mk f₂.aemeasurable)).aestronglyMeasurable :=
-  by rw [comp₂Measurable_eq_pair, pair_eq_mk, compMeasurable_mk]; rfl
+        (hg.comp_aemeasurable (f₁.aemeasurable.prod_mk f₂.aemeasurable)).aestronglyMeasurable := by
+  rw [comp₂Measurable_eq_pair, pair_eq_mk, compMeasurable_mk]; rfl
 #align measure_theory.ae_eq_fun.comp₂_measurable_eq_mk MeasureTheory.AEEqFun.comp₂Measurable_eq_mk
 
 theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -433,10 +433,10 @@ theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry
 
 end
 
-/-- Interpret `f : α →ₘ[μ] β` as a germ at `μ.ae` forgetting that `f` is almost everywhere
+/-- Interpret `f : α →ₘ[μ] β` as a germ at `ae μ` forgetting that `f` is almost everywhere
     strongly measurable. -/
-def toGerm (f : α →ₘ[μ] β) : Germ μ.ae β :=
-  Quotient.liftOn' f (fun f => ((f : α → β) : Germ μ.ae β)) fun _ _ H => Germ.coe_eq.2 H
+def toGerm (f : α →ₘ[μ] β) : Germ (ae μ) β :=
+  Quotient.liftOn' f (fun f => ((f : α → β) : Germ (ae μ) β)) fun _ _ H => Germ.coe_eq.2 H
 #align measure_theory.ae_eq_fun.to_germ MeasureTheory.AEEqFun.toGerm
 
 @[simp]
@@ -447,9 +447,22 @@ theorem mk_toGerm (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β).toGerm = f
 theorem toGerm_eq (f : α →ₘ[μ] β) : f.toGerm = (f : α → β) := by rw [← mk_toGerm, mk_coeFn]
 #align measure_theory.ae_eq_fun.to_germ_eq MeasureTheory.AEEqFun.toGerm_eq
 
-theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ μ.ae β) := fun f g H =>
+theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae μ) β) := fun f g H =>
   ext <| Germ.coe_eq.1 <| by rwa [← toGerm_eq, ← toGerm_eq]
 #align measure_theory.ae_eq_fun.to_germ_injective MeasureTheory.AEEqFun.toGerm_injective
+
+@[simp]
+theorem compQuasiMeasurePreserving_toGerm [MeasurableSpace β] {f : α → β} {ν}
+    (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
+    (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
+  rcases g; rfl
+
+@[simp]
+theorem compMeasurePreserving_toGerm [MeasurableSpace β] {f : α → β} {ν}
+    (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν) :
+    (g.compMeasurePreserving f hf).toGerm =
+      g.toGerm.compTendsto f hf.quasiMeasurePreserving.tendsto_ae :=
+  compQuasiMeasurePreserving_toGerm _ _
 
 theorem comp_toGerm (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) :
     (comp g hg f).toGerm = f.toGerm.map g :=
@@ -651,13 +664,11 @@ theorem one_toGerm [One β] : (1 : α →ₘ[μ] β).toGerm = 1 :=
 section SMul
 
 variable {𝕜 𝕜' : Type*}
-
 variable [SMul 𝕜 γ] [ContinuousConstSMul 𝕜 γ]
-
 variable [SMul 𝕜' γ] [ContinuousConstSMul 𝕜' γ]
 
 instance instSMul : SMul 𝕜 (α →ₘ[μ] γ) :=
-  ⟨fun c f => comp ((· • ·) c) (continuous_id.const_smul c) f⟩
+  ⟨fun c f => comp (c • ·) (continuous_id.const_smul c) f⟩
 #align measure_theory.ae_eq_fun.has_smul MeasureTheory.AEEqFun.instSMul
 
 @[simp]
@@ -758,7 +769,7 @@ instance instMonoid : Monoid (α →ₘ[μ] γ) :=
 
 /-- `AEEqFun.toGerm` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`AEEqFun.toGerm` as an `AddMonoidHom`."]
-def toGermMonoidHom : (α →ₘ[μ] γ) →* μ.ae.Germ γ where
+def toGermMonoidHom : (α →ₘ[μ] γ) →* (ae μ).Germ γ where
   toFun := toGerm
   map_one' := one_toGerm
   map_mul' := mul_toGerm
@@ -835,7 +846,7 @@ theorem div_toGerm (f g : α →ₘ[μ] γ) : (f / g).toGerm = f.toGerm / g.toGe
 
 end Div
 
-section Zpow
+section ZPow
 
 instance instPowInt : Pow (α →ₘ[μ] γ) ℤ :=
   ⟨fun f n => comp _ (continuous_zpow n) f⟩
@@ -856,7 +867,7 @@ theorem zpow_toGerm (f : α →ₘ[μ] γ) (n : ℤ) : (f ^ n).toGerm = f.toGerm
   comp_toGerm _ _ _
 #align measure_theory.ae_eq_fun.zpow_to_germ MeasureTheory.AEEqFun.zpow_toGerm
 
-end Zpow
+end ZPow
 
 end Group
 
@@ -939,7 +950,7 @@ section Abs
 
 theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β] [AddGroup β]
     [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
-  simp_rw [abs_eq_sup_neg]
+  simp_rw [abs]
   filter_upwards [AEEqFun.coeFn_sup f (-f), AEEqFun.coeFn_neg f] with x hx_sup hx_neg
   rw [hx_sup, hx_neg, Pi.neg_apply]
 #align measure_theory.ae_eq_fun.coe_fn_abs MeasureTheory.AEEqFun.coeFn_abs
@@ -978,7 +989,6 @@ namespace ContinuousMap
 open MeasureTheory
 
 variable [TopologicalSpace α] [BorelSpace α] (μ)
-
 variable [TopologicalSpace β] [SecondCountableTopologyEither α β] [PseudoMetrizableSpace β]
 
 /-- The equivalence class of `μ`-almost-everywhere measurable functions associated to a continuous
@@ -1006,7 +1016,6 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
 #align continuous_map.to_ae_eq_fun_add_hom ContinuousMap.toAEEqFunAddHom
 
 variable {𝕜 : Type*} [Semiring 𝕜]
-
 variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
   [TopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
 

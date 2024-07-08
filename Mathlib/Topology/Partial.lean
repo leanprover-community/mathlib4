@@ -3,8 +3,8 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Filter.Partial
+import Mathlib.Topology.Basic
 
 #align_import topology.partial from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -20,45 +20,45 @@ open Filter
 
 open Topology
 
-variable {α β : Type*} [TopologicalSpace α]
+variable {X Y : Type*} [TopologicalSpace X]
 
-theorem rtendsto_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    RTendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.core s ∈ l :=
+theorem rtendsto_nhds {r : Rel Y X} {l : Filter Y} {x : X} :
+    RTendsto r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.core s ∈ l :=
   all_mem_nhds_filter _ _ (fun _s _t => id) _
 #align rtendsto_nhds rtendsto_nhds
 
-theorem rtendsto'_nhds {r : Rel β α} {l : Filter β} {a : α} :
-    RTendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.preimage s ∈ l := by
+theorem rtendsto'_nhds {r : Rel Y X} {l : Filter Y} {x : X} :
+    RTendsto' r l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → r.preimage s ∈ l := by
   rw [rtendsto'_def]
   apply all_mem_nhds_filter
   apply Rel.preimage_mono
 #align rtendsto'_nhds rtendsto'_nhds
 
-theorem ptendsto_nhds {f : β →. α} {l : Filter β} {a : α} :
-    PTendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.core s ∈ l :=
+theorem ptendsto_nhds {f : Y →. X} {l : Filter Y} {x : X} :
+    PTendsto f l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → f.core s ∈ l :=
   rtendsto_nhds
 #align ptendsto_nhds ptendsto_nhds
 
-theorem ptendsto'_nhds {f : β →. α} {l : Filter β} {a : α} :
-    PTendsto' f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.preimage s ∈ l :=
+theorem ptendsto'_nhds {f : Y →. X} {l : Filter Y} {x : X} :
+    PTendsto' f l (𝓝 x) ↔ ∀ s, IsOpen s → x ∈ s → f.preimage s ∈ l :=
   rtendsto'_nhds
 #align ptendsto'_nhds ptendsto'_nhds
 
 /-! ### Continuity and partial functions -/
 
 
-variable [TopologicalSpace β]
+variable [TopologicalSpace Y]
 
 /-- Continuity of a partial function -/
-def PContinuous (f : α →. β) :=
+def PContinuous (f : X →. Y) :=
   ∀ s, IsOpen s → IsOpen (f.preimage s)
 #align pcontinuous PContinuous
 
-theorem open_dom_of_pcontinuous {f : α →. β} (h : PContinuous f) : IsOpen f.Dom := by
+theorem open_dom_of_pcontinuous {f : X →. Y} (h : PContinuous f) : IsOpen f.Dom := by
   rw [← PFun.preimage_univ]; exact h _ isOpen_univ
 #align open_dom_of_pcontinuous open_dom_of_pcontinuous
 
-theorem pcontinuous_iff' {f : α →. β} :
+theorem pcontinuous_iff' {f : X →. Y} :
     PContinuous f ↔ ∀ {x y} (h : y ∈ f x), PTendsto' f (𝓝 x) (𝓝 y) := by
   constructor
   · intro h x y h'
@@ -83,7 +83,7 @@ theorem pcontinuous_iff' {f : α →. β} :
   exact ⟨s, Set.Subset.refl _, os, ys⟩
 #align pcontinuous_iff' pcontinuous_iff'
 
-theorem continuousWithinAt_iff_ptendsto_res (f : α → β) {x : α} {s : Set α} :
+theorem continuousWithinAt_iff_ptendsto_res (f : X → Y) {x : X} {s : Set X} :
     ContinuousWithinAt f s x ↔ PTendsto (PFun.res f s) (𝓝 x) (𝓝 (f x)) :=
   tendsto_iff_ptendsto _ _ _ _
 #align continuous_within_at_iff_ptendsto_res continuousWithinAt_iff_ptendsto_res

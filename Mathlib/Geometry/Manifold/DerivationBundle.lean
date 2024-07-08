@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -42,6 +42,7 @@ def PointedSmoothMap (_ : M) :=
   C^n⟮I, M; 𝕜⟯
 #align pointed_smooth_map PointedSmoothMap
 
+@[inherit_doc]
 scoped[Derivation] notation "C^" n "⟮" I ", " M "; " 𝕜 "⟯⟨" x "⟩" => PointedSmoothMap 𝕜 I M n x
 
 variable {𝕜 M}
@@ -50,9 +51,9 @@ namespace PointedSmoothMap
 
 open scoped Derivation
 
-instance funLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M fun _ => 𝕜 :=
-  ContMDiffMap.funLike
-#align pointed_smooth_map.fun_like PointedSmoothMap.funLike
+instance instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 :=
+  ContMDiffMap.instFunLike
+#align pointed_smooth_map.fun_like PointedSmoothMap.instFunLike
 
 instance {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
   SmoothMap.commRing
@@ -95,8 +96,7 @@ open scoped Derivation
 
 /-- The derivations at a point of a manifold. Some regard this as a possible definition of the
 tangent space -/
-@[reducible]
-def PointDerivation (x : M) :=
+abbrev PointDerivation (x : M) :=
   Derivation 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜
 #align point_derivation PointDerivation
 

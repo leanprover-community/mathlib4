@@ -3,16 +3,16 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Defs
 import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Transfer ring structures from `α` to `Shrink α`.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
+
+variable {α : Type*}
 
 instance [NonUnitalNonAssocSemiring α] [Small α] : NonUnitalNonAssocSemiring (Shrink α) :=
   (equivShrink _).symm.nonUnitalNonAssocSemiring

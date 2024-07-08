@@ -34,7 +34,7 @@ def Frm :=
 
 namespace Frm
 
-instance : CoeSort Frm (Type*) :=
+instance : CoeSort Frm Type* :=
   Bundled.coeSort
 
 instance (X : Frm) : Frame X :=
@@ -62,7 +62,7 @@ instance bundledHom : BundledHom Hom where
   toFun {α β} _ _ := ((↑) : FrameHom α β → α → β)
   id {α} _ := FrameHom.id α
   comp _ _ _ := FrameHom.comp
-  hom_ext _ _ := FunLike.coe_injective
+  hom_ext _ _ := DFunLike.coe_injective
 #align Frm.bundled_hom Frm.bundledHom
 
 -- Porting note: Originally `deriving instance LargeCategory, ConcreteCategory for Frm`
@@ -103,6 +103,6 @@ def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
 #align Top_op_to_Frame topCatOpToFrm
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausOpToFrame.faithful : Faithful (compHausToTop.op ⋙ topCatOpToFrm.{u}) :=
+instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=
   ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
 #align CompHaus_op_to_Frame.faithful CompHausOpToFrame.faithful

@@ -58,7 +58,7 @@ instance : BundledHom @LatticeHom where
   toFun _ _ f := f.toFun
   id := @LatticeHom.id
   comp := @LatticeHom.comp
-  hom_ext _ _ _ _ h := FunLike.coe_injective h
+  hom_ext _ _ _ _ h := DFunLike.coe_injective h
 
 instance : LargeCategory.{u} Lat :=
   BundledHom.category LatticeHom

@@ -42,7 +42,7 @@ lemma quasiIso_iff (φ : S₁ ⟶ S₂) :
     exact ⟨h⟩
 
 instance quasiIso_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ] : QuasiIso φ :=
-  ⟨IsIso.of_iso (homologyMapIso (asIso φ))⟩
+  ⟨(homologyMapIso (asIso φ)).isIso_hom⟩
 
 instance quasiIso_comp (φ : S₁ ⟶ S₂) (φ' : S₂ ⟶ S₃) [hφ : QuasiIso φ] [hφ' : QuasiIso φ'] :
     QuasiIso (φ ≫ φ') := by
@@ -87,7 +87,7 @@ lemma quasiIso_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : A
   suffices φ' = α ≫ φ ≫ β by
     rw [this]
     infer_instance
-  simp only [Arrow.w_mk_right_assoc, Arrow.mk_left, Arrow.mk_right, Arrow.mk_hom,
+  simp only [α, β, Arrow.w_mk_right_assoc, Arrow.mk_left, Arrow.mk_right, Arrow.mk_hom,
     ← Arrow.comp_right, e.inv_hom_id, Arrow.id_right, comp_id]
 
 lemma quasiIso_iff_of_arrow_mk_iso (φ : S₁ ⟶ S₂) (φ' : S₃ ⟶ S₄) (e : Arrow.mk φ ≅ Arrow.mk φ') :

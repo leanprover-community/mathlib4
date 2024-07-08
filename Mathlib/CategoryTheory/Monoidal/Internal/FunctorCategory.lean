@@ -35,14 +35,13 @@ open CategoryTheory MonoidalCategory
 namespace CategoryTheory.Monoidal
 
 variable (C : Type u₁) [Category.{v₁} C]
-
 variable (D : Type u₂) [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 namespace MonFunctorCategoryEquivalence
 
 variable {C D}
 
--- porting note: the `obj` field of `functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D` defined below
+-- Porting note: the `obj` field of `functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D` defined below
 -- had to be defined separately as `Functor.obj` in order to speed up the compilation
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
@@ -75,7 +74,7 @@ def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
 set_option linter.uppercaseLean3 false in
 #align category_theory.monoidal.Mon_functor_category_equivalence.functor CategoryTheory.Monoidal.MonFunctorCategoryEquivalence.functor
 
--- porting note: the `obj` field of `inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D)` defined below
+-- Porting note: the `obj` field of `inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D)` defined below
 -- had to be defined separately as `Inverse.obj` in order to speed up the compilation
 /-- A functor to the category of monoid objects can be translated as a monoid object
 in the functor category. -/

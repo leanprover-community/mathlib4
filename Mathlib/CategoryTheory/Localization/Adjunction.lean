@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.CatCommSq
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Localization of adjunctions
@@ -23,14 +24,18 @@ namespace CategoryTheory
 
 open Localization Category
 
+namespace Adjunction
+
 variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D₁] [Category D₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁} (adj : G ⊣ F)
-  (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
+
+section
+
+variable (L₁ : C₁ ⥤ D₁) (W₁ : MorphismProperty C₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ D₂) (W₂ : MorphismProperty C₂) [L₂.IsLocalization W₂]
   (G' : D₁ ⥤ D₂) (F' : D₂ ⥤ D₁)
   [CatCommSq G L₁ L₂ G'] [CatCommSq F L₂ L₁ F']
 
-namespace Adjunction
 
 namespace Localization
 
@@ -119,6 +124,25 @@ lemma localization_counit_app (X₂ : C₂) :
       (CatCommSq.iso G L₁ L₂ G').inv.app (F.obj X₂) ≫
       L₂.map (adj.counit.app X₂) := by
   apply Localization.η_app
+
+end
+
+lemma isLocalization [F.Full] [F.Faithful] :
+    G.IsLocalization ((MorphismProperty.isomorphisms C₂).inverseImage G) := by
+  let W := ((MorphismProperty.isomorphisms C₂).inverseImage G)
+  have hG : W.IsInvertedBy G := fun _ _ _ hf => hf
+  have : ∀ (X : C₁), IsIso ((whiskerRight adj.unit W.Q).app X) := fun X =>
+    Localization.inverts W.Q W _ (by
+      change IsIso _
+      infer_instance)
+  have : IsIso (whiskerRight adj.unit W.Q) := NatIso.isIso_of_isIso_app _
+  let e : W.Localization ≌ C₂ := Equivalence.mk (Localization.lift G hG W.Q) (F ⋙ W.Q)
+    (liftNatIso W.Q W W.Q (G ⋙ F ⋙ W.Q) _ _
+    (W.Q.leftUnitor.symm ≪≫ asIso (whiskerRight adj.unit W.Q)))
+    (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Localization.fac G hG W.Q) ≪≫
+      asIso adj.counit)
+  apply Functor.IsLocalization.of_equivalence_target W.Q W G e
+    (Localization.fac G hG W.Q)
 
 end Adjunction
 

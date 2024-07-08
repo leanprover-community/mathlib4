@@ -34,7 +34,6 @@ namespace AlgebraicTopology
 namespace DoldKan
 
 variable {C : Type*} [Category C] [Preadditive C]
-
 variable {X : SimplicialObject C}
 
 /-- A morphism `φ : Y ⟶ X _[n+1]` satisfies `HigherFacesVanish q φ`
@@ -56,7 +55,7 @@ theorem comp_δ_eq_zero {Y : C} {n : ℕ} {q : ℕ} {φ : Y ⟶ X _[n + 1]} (v :
   obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero hj₁
   apply v i
   simp only [Fin.val_succ] at hj₂
-  linarith
+  omega
 #align algebraic_topology.dold_kan.higher_faces_vanish.comp_δ_eq_zero AlgebraicTopology.DoldKan.HigherFacesVanish.comp_δ_eq_zero
 
 theorem of_succ {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish (q + 1) φ) :
@@ -84,11 +83,11 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   rw [← Fin.sum_congr' _ (hnaq_shift 2).symm, Fin.sum_trunc]
   swap
   · rintro ⟨k, hk⟩
-    suffices φ ≫ X.δ (⟨a + 2 + k, by linarith⟩ : Fin (n + 2)) = 0 by
+    suffices φ ≫ X.δ (⟨a + 2 + k, by omega⟩ : Fin (n + 2)) = 0 by
       simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
-    convert v ⟨a + k + 1, by linarith⟩ (by rw [Fin.val_mk]; linarith)
+    convert v ⟨a + k + 1, by omega⟩ (by rw [Fin.val_mk]; omega)
     dsimp
-    linarith
+    omega
   -- cleaning up the second sum
   rw [← Fin.sum_congr' _ (hnaq_shift 3).symm, @Fin.sum_trunc _ _ (a + 3)]
   swap
@@ -96,14 +95,14 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     rw [assoc, X.δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
     · simp only [Fin.lt_iff_val_lt_val]
       dsimp [Fin.natAdd, Fin.cast]
-      linarith
+      omega
     · intro h
       rw [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
       dsimp [Fin.cast] at h
-      linarith
+      omega
     · dsimp [Fin.cast, Fin.pred]
       rw [Nat.add_right_comm, Nat.add_sub_assoc (by norm_num : 1 ≤ 3)]
-      linarith
+      omega
   simp only [assoc]
   conv_lhs =>
     congr
@@ -119,7 +118,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   apply simplif
   · -- b = f
     rw [← pow_add, Odd.neg_one_pow, neg_smul, one_zsmul]
-    exact ⟨a, by linarith⟩
+    exact ⟨a, by omega⟩
   · -- d + e = 0
     rw [X.δ_comp_σ_self' (Fin.castSucc_mk _ _ _).symm,
       X.δ_comp_σ_succ' (Fin.succ_mk _ _ _).symm]
@@ -130,11 +129,11 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     apply Finset.sum_eq_zero
     rintro ⟨i, hi⟩ _
     simp only
-    have hia : (⟨i, by linarith⟩ : Fin (n + 2)) ≤
-        Fin.castSucc (⟨a, by linarith⟩ : Fin (n + 1)) := by
+    have hia : (⟨i, by omega⟩ : Fin (n + 2)) ≤
+        Fin.castSucc (⟨a, by omega⟩ : Fin (n + 1)) := by
       rw [Fin.le_iff_val_le_val]
       dsimp
-      linarith
+      omega
     erw [δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]
     congr 2
     ring
@@ -147,10 +146,10 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
   rw [hσ'_eq_zero hqn (c_mk (n + 1) n rfl), comp_zero, zero_add]
   by_cases hqn' : n + 1 < q
   · rw [hσ'_eq_zero hqn' (c_mk (n + 2) (n + 1) rfl), zero_comp, comp_zero]
-  · simp only [hσ'_eq (show n + 1 = 0 + q by linarith) (c_mk (n + 2) (n + 1) rfl), pow_zero,
+  · simp only [hσ'_eq (show n + 1 = 0 + q by omega) (c_mk (n + 2) (n + 1) rfl), pow_zero,
       Fin.mk_zero, one_zsmul, eqToHom_refl, comp_id, comp_sum,
       AlternatingFaceMapComplex.obj_d_eq]
-    rw [← Fin.sum_congr' _ (show 2 + (n + 1) = n + 1 + 2 by linarith), Fin.sum_trunc]
+    rw [← Fin.sum_congr' _ (show 2 + (n + 1) = n + 1 + 2 by omega), Fin.sum_trunc]
     · simp only [Fin.sum_univ_castSucc, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
         Fin.cast_mk, Fin.castSucc_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
@@ -161,12 +160,12 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
       · simp only [Fin.lt_iff_val_lt_val]
         dsimp [Fin.succ]
-        linarith
+        omega
       · intro h
         simp only [Fin.pred, Fin.subNat, Fin.ext_iff, Nat.succ_add_sub_one,
           Fin.val_zero, add_eq_zero, false_and] at h
       · simp only [Fin.pred, Fin.subNat, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
-        linarith
+        omega
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.higher_faces_vanish.comp_Hσ_eq_zero AlgebraicTopology.DoldKan.HigherFacesVanish.comp_Hσ_eq_zero
 
@@ -177,10 +176,10 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
   simp only [comp_add, add_comp, comp_id]
   -- when n < q, the result follows immediately from the assumption
   by_cases hqn : n < q
-  · rw [v.comp_Hσ_eq_zero hqn, zero_comp, add_zero, v j (by linarith)]
+  · rw [v.comp_Hσ_eq_zero hqn, zero_comp, add_zero, v j (by omega)]
   -- we now assume that n≥q, and write n=a+q
   cases' Nat.le.dest (not_lt.mp hqn) with a ha
-  rw [v.comp_Hσ_eq (show n = a + q by linarith), neg_comp, add_neg_eq_zero, assoc, assoc]
+  rw [v.comp_Hσ_eq (show n = a + q by omega), neg_comp, add_neg_eq_zero, assoc, assoc]
   cases' n with m hm
   -- the boundary case n=0
   · simp only [Nat.eq_zero_of_add_eq_zero_left ha, Fin.eq_zero j, Fin.mk_zero, Fin.mk_one,
@@ -192,12 +191,11 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
   · simp only [hj₂, Fin.eta, δ_comp_σ_succ, comp_id]
     rfl
   -- now, we assume j ≠ a (i.e. a < j)
-  have haj : a < j := (Ne.le_iff_lt hj₂).mp (by linarith)
-  have hj₃ := j.is_lt
+  have haj : a < j := (Ne.le_iff_lt hj₂).mp (by omega)
   have ham : a ≤ m := by
     by_contra h
     rw [not_le, ← Nat.succ_le_iff] at h
-    linarith
+    omega
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
   · rw [Fin.lt_iff_val_lt_val]
@@ -209,14 +207,16 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     · rw [Fin.le_iff_val_le_val]
       dsimp
       linarith
-    simp only [← assoc, v j (by linarith), zero_comp]
+    simp only [← assoc, v j (by omega), zero_comp]
   · -- in the last case, a=m, q=1 and j=a+1
     rw [X.δ_comp_δ_self'_assoc]
     swap
     · ext
+      cases j
       dsimp
-      linarith
-    simp only [← assoc, v j (by linarith), zero_comp]
+      dsimp only [Nat.succ_eq_add_one] at *
+      omega
+    simp only [← assoc, v j (by omega), zero_comp]
 #align algebraic_topology.dold_kan.higher_faces_vanish.induction AlgebraicTopology.DoldKan.HigherFacesVanish.induction
 
 end HigherFacesVanish

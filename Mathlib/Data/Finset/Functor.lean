@@ -89,7 +89,7 @@ theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then 
 
 /-- `Finset.image₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem image₂_def {α β γ : Type _} (f : α → β → γ) (s : Finset α) (t : Finset β) :
+theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = f <$> s <*> t := by
   ext
   simp [mem_sup]
@@ -104,7 +104,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         exact (sup_bot _).symm
       · ext a
         rw [if_neg ht.ne_empty, mem_sup]
-        refine' ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, _⟩
+        refine ⟨fun ha => ⟨const _ a, mem_image_of_mem _ ha, mem_image_const_self.2 ht⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
         obtain ⟨b, hb, rfl⟩ := hf
@@ -116,7 +116,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
       · rw [if_pos rfl, image_empty, sup_empty, bot_eq_empty]
       · ext a
         rw [if_neg hs.ne_empty, mem_sup]
-        refine' ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, _⟩
+        refine ⟨fun ha => ⟨id, mem_image_const_self.2 hs, by rwa [image_id]⟩, ?_⟩
         rintro ⟨f, hf, ha⟩
         rw [mem_image] at hf ha
         obtain ⟨b, hb, rfl⟩ := ha
@@ -165,7 +165,7 @@ instance : LawfulMonad Finset :=
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
     pure_bind := fun t s => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, ←sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
+    bind_assoc := fun s f g => by simp only [bind, ← sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 
@@ -202,7 +202,7 @@ theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → I
   exact s.val_toFinset
 #align finset.id_traverse Finset.id_traverse
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem map_comp_coe (h : α → β) :

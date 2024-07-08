@@ -16,23 +16,17 @@ operation. Note that these only apply when the field that the derivative is resp
 star operation; which as should be expected rules out `𝕜 = ℂ`.
 -/
 
-set_option autoImplicit true
-
-
 universe u v w
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {f : 𝕜 → F}
 
 /-! ### Derivative of `x ↦ star x` -/
 
 
 variable [StarRing 𝕜] [TrivialStar 𝕜] [StarAddMonoid F] [ContinuousStar F]
-
-variable [StarModule 𝕜 F]
+variable [StarModule 𝕜 F] {f' : F} {s : Set 𝕜} {x : 𝕜} {L : Filter 𝕜}
 
 protected nonrec theorem HasDerivAtFilter.star (h : HasDerivAtFilter f f' x L) :
     HasDerivAtFilter (fun x => star (f x)) (star f') x L := by
@@ -55,11 +49,11 @@ protected nonrec theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
 
 protected theorem derivWithin.star (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun y => star (f y)) s x = star (derivWithin f s x) :=
-  FunLike.congr_fun (fderivWithin_star hxs) _
+  DFunLike.congr_fun (fderivWithin_star hxs) _
 #align deriv_within.star derivWithin.star
 
 protected theorem deriv.star : deriv (fun y => star (f y)) x = star (deriv f x) :=
-  FunLike.congr_fun fderiv_star _
+  DFunLike.congr_fun fderiv_star _
 #align deriv.star deriv.star
 
 @[simp]

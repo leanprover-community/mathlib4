@@ -3,10 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
+import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.NormedSpace.Ray
+import Mathlib.Analysis.NormedSpace.AddTorsor
 
 #align_import analysis.convex.normed from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 
@@ -25,14 +26,13 @@ We prove the following facts:
   is bounded.
 -/
 
-
-variable {ι : Type*} {E : Type*}
+variable {ι : Type*} {E P : Type*}
 
 open Metric Set
+open scoped Convex
 
-open Pointwise Convex
-
-variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] {s t : Set E}
+variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable {s t : Set E}
 
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
 and `convexOn_univ_norm`. -/
@@ -100,7 +100,7 @@ theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHul
 /-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
 theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
-  refine' (EMetric.diam_le fun x hx y hy => _).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
+  refine (EMetric.diam_le fun x hx y hy => ?_).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
   rcases convexHull_exists_dist_ge2 hx hy with ⟨x', hx', y', hy', H⟩
   rw [edist_dist]
   apply le_trans (ENNReal.ofReal_le_ofReal H)
@@ -130,10 +130,14 @@ instance (priority := 100) NormedSpace.instLocPathConnectedSpace : LocPathConnec
     (convex_ball x r).isPathConnected <| by simp [r_pos]
 #align normed_space.loc_path_connected NormedSpace.instLocPathConnectedSpace
 
-theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
+theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :
     dist x y + dist y z = dist x z := by
-  simp only [dist_eq_norm, mem_segment_iff_sameRay] at *
-  simpa only [sub_add_sub_cancel', norm_sub_rev] using h.norm_add.symm
+  obtain ⟨a, ⟨ha₀, ha₁⟩, rfl⟩ := h
+  simp [abs_of_nonneg, ha₀, ha₁, sub_mul]
+
+theorem dist_add_dist_of_mem_segment {x y z : E} (h : y ∈ [x -[ℝ] z]) :
+    dist x y + dist y z = dist x z :=
+  (mem_segment_iff_wbtw.1 h).dist_add_dist
 #align dist_add_dist_of_mem_segment dist_add_dist_of_mem_segment
 
 /-- The set of vectors in the same ray as `x` is connected. -/

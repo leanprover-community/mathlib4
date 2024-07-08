@@ -39,7 +39,6 @@ lie algebra, universal enveloping algebra, tensor algebra
 universe u₁ u₂ u₃
 
 variable (R : Type u₁) (L : Type u₂)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 local notation "ιₜ" => TensorAlgebra.ι R
@@ -89,7 +88,7 @@ def mkAlgHom : TensorAlgebra R L →ₐ[R] UniversalEnvelopingAlgebra R L :=
 variable {L}
 
 /-- The natural Lie algebra morphism from a Lie algebra to its universal enveloping algebra. -/
-@[simps!] -- Porting note: added
+@[simps!] -- Porting note (#11445): added
 def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
   { (mkAlgHom R L).toLinearMap.comp ιₜ with
     map_lie' := fun {x y} => by
@@ -119,7 +118,8 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [LieHom.coe_comp, Function.comp_apply, AlgHom.coe_toLieHom,
       UniversalEnvelopingAlgebra.ι_apply, mkAlgHom]
-    rw [RingQuot.liftAlgHom_mkAlgHom_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
   right_inv F := by
     apply RingQuot.ringQuot_ext'
@@ -129,7 +129,8 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   LinearMap.toFun_eq_coe, LinearMap.coe_comp, LieHom.coe_linearMap_comp,
     --   AlgHom.comp_toLinearMap, Function.comp_apply, AlgHom.toLinearMap_apply,
     --   RingQuot.liftAlgHom_mkAlgHom_apply, AlgHom.coe_toLieHom, LieHom.coe_mk]
-    simp [mkAlgHom]
+    -- extra `rfl` after leanprover/lean4#2644
+    simp [mkAlgHom]; rfl
 #align universal_enveloping_algebra.lift UniversalEnvelopingAlgebra.lift
 
 @[simp]
@@ -154,7 +155,7 @@ theorem lift_ι_apply' (x : L) :
   simpa using lift_ι_apply R f x
 
 theorem lift_unique (g : UniversalEnvelopingAlgebra R L →ₐ[R] A) : g ∘ ι R = f ↔ g = lift R f := by
-  refine' Iff.trans _ (lift R).symm_apply_eq
+  refine Iff.trans ?_ (lift R).symm_apply_eq
   constructor <;> · intro h; ext; simp [← h]
 #align universal_enveloping_algebra.lift_unique UniversalEnvelopingAlgebra.lift_unique
 

@@ -59,8 +59,8 @@ TODO: prove the equivalence.
 -/
 structure IsDedekindDomainDvr : Prop where
   isNoetherianRing : IsNoetherianRing A
-  is_dvr_at_nonzero_prime :
-    ∀ (P) (_ : P ≠ (⊥ : Ideal A)) (_ : P.IsPrime), DiscreteValuationRing (Localization.AtPrime P)
+  is_dvr_at_nonzero_prime : ∀ P ≠ (⊥ : Ideal A), ∀ _ : P.IsPrime,
+    DiscreteValuationRing (Localization.AtPrime P)
 #align is_dedekind_domain_dvr IsDedekindDomainDvr
 
 /-- Localizing a domain of Krull dimension `≤ 1` gives another ring of Krull dimension `≤ 1`.
@@ -72,15 +72,15 @@ theorem Ring.DimensionLEOne.localization {R : Type*} (Rₘ : Type*) [CommRing R]
     [CommRing Rₘ] [Algebra R Rₘ] {M : Submonoid R} [IsLocalization M Rₘ] (hM : M ≤ R⁰)
     [h : Ring.DimensionLEOne R] : Ring.DimensionLEOne Rₘ := ⟨by
   intro p hp0 hpp
-  refine' Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => _⟩
+  refine Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => ?_⟩
   have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.isPrime⟩ := hpP
   rw [← (IsLocalization.orderIsoOfPrime M Rₘ).lt_iff_lt] at hpP'
   haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) p) :=
     ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨p, hpp⟩).2.1
   haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) P) :=
     ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨P, hPm.isPrime⟩).2.1
-  have _ : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
-  refine' h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨_, hpP'⟩
+  have hlt : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
+  refine h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨?_, hlt⟩
   exact IsLocalization.bot_lt_comap_prime _ _ hM _ hp0⟩
 #align ring.dimension_le_one.localization Ring.DimensionLEOne.localization
 
@@ -96,14 +96,14 @@ theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (
     IsScalarTower.of_algebraMap_eq fun x => (IsLocalization.lift_eq h x).symm
   haveI : IsFractionRing Aₘ (FractionRing A) :=
     IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M _ _
-  refine' (isDedekindDomain_iff _ (FractionRing A)).mpr ⟨_, _, _, _⟩
+  refine (isDedekindDomain_iff _ (FractionRing A)).mpr ⟨?_, ?_, ?_, ?_⟩
   · infer_instance
   · exact IsLocalization.isNoetherianRing M _ (by infer_instance)
   · exact Ring.DimensionLEOne.localization Aₘ hM
   · intro x hx
     obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
-    obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp IsDedekindRing.toIsIntegrallyClosed hy
-    refine' ⟨IsLocalization.mk' Aₘ z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr _⟩
+    obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp IsDedekindRing.toIsIntegralClosure hy
+    refine ⟨IsLocalization.mk' Aₘ z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr ?_⟩
     rw [hz, ← Algebra.smul_def]
     rfl
 #align is_localization.is_dedekind_domain IsLocalization.isDedekindDomain

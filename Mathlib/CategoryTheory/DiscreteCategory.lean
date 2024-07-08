@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.Data.ULift
 
 #align_import category_theory.discrete_category from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
@@ -44,7 +45,7 @@ universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 /-- A wrapper for promoting any type to a category,
 with the only morphisms being equalities.
 -/
-@[ext, aesop safe cases (rule_sets [CategoryTheory])]
+@[ext, aesop safe cases (rule_sets := [CategoryTheory])]
 structure Discrete (α : Type u₁) where
   /-- A wrapper for promoting any type to a category,
   with the only morphisms being equalities. -/
@@ -53,11 +54,10 @@ structure Discrete (α : Type u₁) where
 
 @[simp]
 theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
-  ext
   rfl
 #align category_theory.discrete.mk_as CategoryTheory.Discrete.mk_as
 
-/-- `Discrete α` is equivalent to the original type `α`.-/
+/-- `Discrete α` is equivalent to the original type `α`. -/
 @[simps]
 def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   toFun := Discrete.as
@@ -109,7 +109,7 @@ open Lean Elab Tactic in
 /--
 Use:
 ```
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 ```
 to locally gives `aesop_cat` the ability to call `cases` on
@@ -120,9 +120,9 @@ def discreteCases : TacticM Unit := do
 
 -- Porting note:
 -- investigate turning on either
--- `attribute [aesop safe cases (rule_sets [CategoryTheory])] Discrete`
+-- `attribute [aesop safe cases (rule_sets := [CategoryTheory])] Discrete`
 -- or
--- `attribute [aesop safe tactic (rule_sets [CategoryTheory])] discreteCases`
+-- `attribute [aesop safe tactic (rule_sets := [CategoryTheory])] discreteCases`
 -- globally.
 
 instance [Unique α] : Unique (Discrete α) :=
@@ -165,10 +165,10 @@ variable {C : Type u₂} [Category.{v₂} C]
 instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
   ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by aesop_cat⟩⟩
 
-attribute [local aesop safe tactic (rule_sets [CategoryTheory])]
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
-/-- Any function `I → C` gives a functor `Discrete I ⥤ C`.-/
+/-- Any function `I → C` gives a functor `Discrete I ⥤ C`. -/
 def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
   obj := F ∘ Discrete.as
   map {X Y} f := by
@@ -224,6 +224,11 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
     simp
 #align category_theory.discrete.nat_iso CategoryTheory.Discrete.natIso
+
+instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
+    IsIso (Discrete.natTrans f) := by
+  change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
+  infer_instance
 
 @[simp]
 theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ≅ G.obj i)
@@ -295,5 +300,23 @@ theorem functor_map_id (F : Discrete J ⥤ C) {j : Discrete J} (f : j ⟶ j) :
 #align category_theory.discrete.functor_map_id CategoryTheory.Discrete.functor_map_id
 
 end Discrete
+
+/-- The equivalence of categories `(J → C) ≌ (Discrete J ⥤ C)`. -/
+@[simps]
+def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :
+    (J → C) ≌ (Discrete J ⥤ C) where
+  functor :=
+    { obj := fun F => Discrete.functor F
+      map := fun f => Discrete.natTrans (fun j => f j.as) }
+  inverse :=
+    { obj := fun F j => F.obj ⟨j⟩
+      map := fun f j => f.app ⟨j⟩ }
+  unitIso := Iso.refl _
+  counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun j => Iso.refl _)
+    (by
+      rintro ⟨x⟩ ⟨y⟩ f
+      obtain rfl : x = y := Discrete.eq_of_hom f
+      obtain rfl : f = 𝟙 _ := rfl
+      simp))) (by aesop_cat)
 
 end CategoryTheory

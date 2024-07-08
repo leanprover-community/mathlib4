@@ -5,35 +5,31 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.Nat.Lemmas
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
+
 /-!
-Definitions for `List` not (yet) in `Std`
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
+## Definitions for `List` not (yet) in `Batteries`
 -/
-
-set_option autoImplicit true
-
 
 open Decidable List
 
 universe u v w
+variable {α : Type u}
 
 namespace List
 
-
-
-open Option Nat
-
 #align list.nth List.get?
-
-/-- nth element of a list `l` given `n < l.length`. -/
-@[deprecated get]
-def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
-#align list.nth_le List.nthLe
-
-set_option linter.deprecated false in
-@[deprecated]
-theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
@@ -50,10 +46,7 @@ def headI [Inhabited α] : List α → α
 
 #align list.map_with_index List.mapIdx
 
-/-- Find index of element with given property. -/
-@[deprecated findIdx]
-def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ := List.findIdx p
-#align list.find_index List.findIndex
+#align list.find_index List.findIdx
 
 #align list.update_nth List.set
 
@@ -74,11 +67,14 @@ def getLastI [Inhabited α] : List α → α
 #align list.init List.dropLast
 
 /-- List with a single given element. -/
-@[inline] protected def ret {α : Type u} (a : α) : List α := [a]
-#align list.ret List.ret
+@[inline, deprecated List.pure (since := "2024-03-24")]
+protected def ret {α : Type u} (a : α) : List α := [a]
+#align list.ret List.pure
 
 /-- `≤` implies not `>` for lists. -/
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt
+
+@[deprecated (since := "2024-06-07")] alias toArray_data := Array.data_toArray
 
 end List

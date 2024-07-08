@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Order.RelClasses
+import Mathlib.Data.List.Basic
 
 #align_import data.list.lex from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
@@ -58,7 +59,7 @@ theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
 
 @[simp]
 theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
-  fun.
+  nofun
 #align list.lex.not_nil_right List.Lex.not_nil_right
 
 theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
@@ -128,7 +129,7 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
   | [], b :: l₂ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
     haveI := decidableRel r l₁ l₂
-    refine' decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => _, fun h => _⟩
+    refine decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => ?_, fun h => ?_⟩
     · rcases h with (h | ⟨rfl, h⟩)
       · exact Lex.rel h
       · exact Lex.cons h
@@ -210,5 +211,30 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @nil a as => apply lt.nil
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
+
+@[simp]
+theorem nil_le {α} [LinearOrder α] {l : List α} : [] ≤ l :=
+  match l with
+  | [] => le_rfl
+  | _ :: _ => le_of_lt <| nil_lt_cons _ _
+
+theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
+    a' ≤ a :=
+  match h with
+  | .cons _ => le_rfl
+  | .rel h => h.le
+
+theorem head!_le_of_lt [Preorder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
+    l'.head! ≤ l.head! := by
+  replace h : List.Lex (· < ·) l' l := h
+  by_cases hl : l = []
+  · simp [hl] at h
+  · rw [← List.cons_head!_tail hl', ← List.cons_head!_tail hl] at h
+    exact head_le_of_lt h
+
+theorem cons_le_cons [LinearOrder α] (a : α) {l l' : List α} (h : l' ≤ l) :
+    a :: l' ≤ a :: l := by
+  rw [le_iff_lt_or_eq] at h ⊢
+  exact h.imp .cons (congr_arg _)
 
 end List

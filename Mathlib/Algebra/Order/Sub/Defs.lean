@@ -3,9 +3,8 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Lemmas
+import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Order.Lattice
 
 #align_import algebra.order.sub.defs from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
@@ -59,12 +58,13 @@ class OrderedSub (α : Type*) [LE α] [Add α] [Sub α] : Prop where
 
 section Add
 
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
-
 @[simp]
-theorem tsub_le_iff_right : a - b ≤ c ↔ a ≤ c + b :=
+theorem tsub_le_iff_right [LE α] [Add α] [Sub α] [OrderedSub α] {a b c : α} :
+    a - b ≤ c ↔ a ≤ c + b :=
   OrderedSub.tsub_le_iff_right a b c
 #align tsub_le_iff_right tsub_le_iff_right
+
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
 
 /-- See `add_tsub_cancel_right` for the equality if `ContravariantClass α α (+) (≤)`. -/
 theorem add_tsub_le_right : a + b - b ≤ a :=
@@ -103,7 +103,7 @@ theorem add_tsub_le_left : a + b - a ≤ b :=
   tsub_le_iff_left.mpr le_rfl
 #align add_tsub_le_left add_tsub_le_left
 
-theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
+@[gcongr] theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
   tsub_le_iff_left.mpr <| h.trans le_add_tsub
 #align tsub_le_tsub_right tsub_le_tsub_right
 
@@ -119,11 +119,11 @@ section Cov
 
 variable [CovariantClass α α (· + ·) (· ≤ ·)]
 
-theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
+@[gcongr] theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
   tsub_le_iff_left.mpr <| le_add_tsub.trans <| add_le_add_right h _
 #align tsub_le_tsub_left tsub_le_tsub_left
 
-theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
+@[gcongr] theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _
 #align tsub_le_tsub tsub_le_tsub
 
@@ -173,7 +173,7 @@ theorem tsub_tsub_le_tsub_add {a b c : α} : a - (b - c) ≤ a - b + c :=
 /-- See `tsub_add_tsub_comm` for the equality. -/
 theorem add_tsub_add_le_tsub_add_tsub : a + b - (c + d) ≤ a - c + (b - d) := by
   rw [add_comm c, tsub_le_iff_left, add_assoc, ← tsub_le_iff_left, ← tsub_le_iff_left]
-  refine' (tsub_le_tsub_right add_tsub_le_assoc c).trans _
+  refine (tsub_le_tsub_right add_tsub_le_assoc c).trans ?_
   rw [add_comm a, add_comm (a - c)]
   exact add_tsub_le_assoc
 #align add_tsub_add_le_tsub_add_tsub add_tsub_add_le_tsub_add_tsub
@@ -274,7 +274,7 @@ theorem tsub_add_eq_tsub_tsub_swap (a b c : α) : a - (b + c) = a - c - b := by
 #align tsub_add_eq_tsub_tsub_swap tsub_add_eq_tsub_tsub_swap
 
 theorem tsub_right_comm : a - b - c = a - c - b := by
-  rw [←tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
+  rw [← tsub_add_eq_tsub_tsub, tsub_add_eq_tsub_tsub_swap]
 #align tsub_right_comm tsub_right_comm
 
 /-! ### Lemmas that assume that an element is `AddLECancellable`. -/
@@ -308,7 +308,7 @@ protected theorem add_tsub_cancel_left (ha : AddLECancellable a) : a + b - a = b
 
 protected theorem lt_add_of_tsub_lt_left (hb : AddLECancellable b) (h : a - b < c) : a < b + c := by
   rw [lt_iff_le_and_ne, ← tsub_le_iff_left]
-  refine' ⟨h.le, _⟩
+  refine ⟨h.le, ?_⟩
   rintro rfl
   simp [hb] at h
 #align add_le_cancellable.lt_add_of_tsub_lt_left AddLECancellable.lt_add_of_tsub_lt_left
@@ -316,7 +316,7 @@ protected theorem lt_add_of_tsub_lt_left (hb : AddLECancellable b) (h : a - b < 
 protected theorem lt_add_of_tsub_lt_right (hc : AddLECancellable c) (h : a - c < b) :
     a < b + c := by
   rw [lt_iff_le_and_ne, ← tsub_le_iff_right]
-  refine' ⟨h.le, _⟩
+  refine ⟨h.le, ?_⟩
   rintro rfl
   simp [hc] at h
 #align add_le_cancellable.lt_add_of_tsub_lt_right AddLECancellable.lt_add_of_tsub_lt_right
@@ -387,8 +387,8 @@ section Both
 variable [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
 
 theorem add_tsub_add_eq_tsub_right (a c b : α) : a + c - (b + c) = a - b := by
-  refine' add_tsub_add_le_tsub_right.antisymm (tsub_le_iff_right.2 <| le_of_add_le_add_right _)
-  exact c
+  refine add_tsub_add_le_tsub_right.antisymm (tsub_le_iff_right.2 <| ?_)
+  apply le_of_add_le_add_right
   rw [add_assoc]
   exact le_tsub_add
 #align add_tsub_add_eq_tsub_right add_tsub_add_eq_tsub_right

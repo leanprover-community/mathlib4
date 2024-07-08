@@ -17,9 +17,6 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
 
-set_option autoImplicit true
-
-
 variable {α β γ : Sort*}
 
 /-- `IsEmpty α` expresses that `α` is empty. -/
@@ -46,6 +43,9 @@ protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
   ⟨fun x ↦ IsEmpty.false (f x)⟩
 #align function.is_empty Function.isEmpty
 
+theorem Function.Surjective.isEmpty [IsEmpty α] {f : α → β} (hf : f.Surjective) : IsEmpty β :=
+  ⟨fun y ↦ let ⟨x, _⟩ := hf y; IsEmpty.false x⟩
+
 instance {p : α → Sort*} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
 
@@ -60,6 +60,12 @@ instance Prod.isEmpty_left {α β} [IsEmpty α] : IsEmpty (α × β) :=
 
 instance Prod.isEmpty_right {α β} [IsEmpty β] : IsEmpty (α × β) :=
   Function.isEmpty Prod.snd
+
+instance Quot.instIsEmpty {α : Sort*} [IsEmpty α] {r : α → α → Prop} : IsEmpty (Quot r) :=
+  Function.Surjective.isEmpty Quot.exists_rep
+
+instance Quotient.instIsEmpty {α : Sort*} [IsEmpty α] {s : Setoid α} : IsEmpty (Quotient s) :=
+  Quot.instIsEmpty
 
 instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
   ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩
@@ -99,6 +105,7 @@ namespace IsEmpty
 
 open Function
 
+universe u in
 /-- Eliminate out of a type that `IsEmpty` (using projection notation). -/
 @[elab_as_elim]
 protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort*} (a : α) : p a :=
@@ -152,6 +159,13 @@ theorem isEmpty_Prop {p : Prop} : IsEmpty p ↔ ¬p := by
 theorem isEmpty_pi {π : α → Sort*} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpty (π a) := by
   simp only [← not_nonempty_iff, Classical.nonempty_pi, not_forall]
 #align is_empty_pi isEmpty_pi
+
+theorem isEmpty_fun : IsEmpty (α → β) ↔ Nonempty α ∧ IsEmpty β := by
+  rw [isEmpty_pi, ← exists_true_iff_nonempty, ← exists_and_right, true_and]
+
+@[simp]
+theorem nonempty_fun : Nonempty (α → β) ↔ IsEmpty α ∨ Nonempty β :=
+  not_iff_not.mp <| by rw [not_or, not_nonempty_iff, not_nonempty_iff, isEmpty_fun, not_isEmpty_iff]
 
 @[simp]
 theorem isEmpty_sigma {α} {E : α → Type*} : IsEmpty (Sigma E) ↔ ∀ a, IsEmpty (E a) := by

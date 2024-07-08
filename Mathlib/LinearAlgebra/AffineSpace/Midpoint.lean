@@ -219,7 +219,7 @@ theorem midpoint_zero_add (x y : V) : midpoint R 0 (x + y) = midpoint R x y :=
 
 theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y) := by
   rw [midpoint_eq_iff, pointReflection_apply, vsub_eq_sub, vadd_eq_add, sub_add_eq_add_sub, ←
-    two_smul R, smul_smul, mul_invOf_self, one_smul, add_sub_cancel']
+    two_smul R, smul_smul, mul_invOf_self, one_smul, add_sub_cancel_left]
 #align midpoint_eq_smul_add midpoint_eq_smul_add
 
 @[simp]
@@ -250,8 +250,7 @@ variable (R R' : Type*) {E F : Type*} [Ring R] [Invertible (2 : R)] [AddCommGrou
 
 /-- A map `f : E → F` sending zero to zero and midpoints to midpoints is an `AddMonoidHom`. -/
 def ofMapMidpoint (f : E → F) (h0 : f 0 = 0)
-    (hm : ∀ x y, f (midpoint R x y) = midpoint R' (f x) (f y)) : E →+ F
-    where
+    (hm : ∀ x y, f (midpoint R x y) = midpoint R' (f x) (f y)) : E →+ F where
   toFun := f
   map_zero' := h0
   map_add' x y :=

@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Ring.Divisibility.Basic
 
 #align_import ring_theory.prime from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -20,15 +22,13 @@ variable {R : Type*} [CancelCommMonoidWithZero R]
 
 open Finset
 
-open BigOperators
-
-/-- If `x * y = a * ∏ i in s, p i` where `p i` is always prime, then
+/-- If `x * y = a * ∏ i ∈ s, p i` where `p i` is always prime, then
   `x` and `y` can both be written as a divisor of `a` multiplied by
   a product over a subset of `s`  -/
 theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Finset α} {p : α → R}
-    (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i in s, p i) :
+    (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i ∈ s, p i) :
     ∃ (t u : Finset α) (b c : R),
-      t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i in t, p i) ∧ y = c * ∏ i in u, p i := by
+      t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i ∈ t, p i) ∧ y = c * ∏ i ∈ u, p i := by
   induction' s using Finset.induction with i s his ih generalizing x y a
   · exact ⟨∅, ∅, x, y, by simp [hx]⟩
   · rw [prod_insert his, ← mul_assoc] at hx
@@ -37,8 +37,7 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
       ⟨t, u, b, c, htus, htu, hbc, rfl, rfl⟩
     have hit : i ∉ t := fun hit ↦ his (htus ▸ mem_union_left _ hit)
     have hiu : i ∉ u := fun hiu ↦ his (htus ▸ mem_union_right _ hiu)
-    obtain ⟨d, rfl⟩ | ⟨d, rfl⟩ : p i ∣ b ∨ p i ∣ c
-    exact hpi.dvd_or_dvd ⟨a, by rw [← hbc, mul_comm]⟩
+    obtain ⟨d, rfl⟩ | ⟨d, rfl⟩ : p i ∣ b ∨ p i ∣ c := hpi.dvd_or_dvd ⟨a, by rw [← hbc, mul_comm]⟩
     · rw [mul_assoc, mul_comm a, mul_right_inj' hpi.ne_zero] at hbc
       exact ⟨insert i t, u, d, c, by rw [insert_union, htus], disjoint_insert_left.2 ⟨hiu, htu⟩, by
           simp [hbc, prod_insert hit, mul_assoc, mul_comm, mul_left_comm]⟩
@@ -54,7 +53,7 @@ theorem mul_eq_mul_prime_pow {x y a p : R} {n : ℕ} (hp : Prime p) (hx : x * y 
   rcases mul_eq_mul_prime_prod (fun _ _ ↦ hp)
     (show x * y = a * (range n).prod fun _ ↦ p by simpa) with
       ⟨t, u, b, c, htus, htu, rfl, rfl, rfl⟩
-  exact ⟨t.card, u.card, b, c, by rw [← card_disjoint_union htu, htus, card_range], by simp⟩
+  exact ⟨t.card, u.card, b, c, by rw [← card_union_of_disjoint htu, htus, card_range], by simp⟩
 #align mul_eq_mul_prime_pow mul_eq_mul_prime_pow
 
 end CancelCommMonoidWithZero

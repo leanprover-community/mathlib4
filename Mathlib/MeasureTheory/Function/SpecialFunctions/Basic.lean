@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 
 #align_import measure_theory.function.special_functions.basic from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 
@@ -35,6 +36,20 @@ theorem measurable_log : Measurable log :=
   measurable_of_measurable_on_compl_singleton 0 <|
     Continuous.measurable <| continuousOn_iff_continuous_restrict.1 continuousOn_log
 #align real.measurable_log Real.measurable_log
+
+lemma measurable_of_measurable_exp {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ}
+    (hf : Measurable (fun x ↦ exp (f x))) :
+    Measurable f := by
+  have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
+  rw [this]
+  exact measurable_log.comp hf
+
+lemma aemeasurable_of_aemeasurable_exp {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ}
+    {μ : MeasureTheory.Measure α} (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
+    AEMeasurable f μ := by
+  have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
+  rw [this]
+  exact measurable_log.comp_aemeasurable hf
 
 @[measurability]
 theorem measurable_sin : Measurable sin :=
@@ -166,7 +181,7 @@ theorem Measurable.sinh : Measurable fun x => Real.sinh (f x) :=
 #align measurable.sinh Measurable.sinh
 
 @[measurability]
-theorem Measurable.sqrt : Measurable fun x => sqrt (f x) :=
+theorem Measurable.sqrt : Measurable fun x => √(f x) :=
   continuous_sqrt.measurable.comp hf
 #align measurable.sqrt Measurable.sqrt
 
@@ -234,14 +249,14 @@ instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=
 #align nnreal.has_measurable_pow NNReal.hasMeasurablePow
 
 instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
-  refine' ⟨ENNReal.measurable_of_measurable_nnreal_prod _ _⟩
+  refine ⟨ENNReal.measurable_of_measurable_nnreal_prod ?_ ?_⟩
   · simp_rw [ENNReal.coe_rpow_def]
-    refine' Measurable.ite _ measurable_const (measurable_fst.pow measurable_snd).coe_nnreal_ennreal
+    refine Measurable.ite ?_ measurable_const (measurable_fst.pow measurable_snd).coe_nnreal_ennreal
     exact
       MeasurableSet.inter (measurable_fst (measurableSet_singleton 0))
         (measurable_snd measurableSet_Iio)
   · simp_rw [ENNReal.top_rpow_def]
-    refine' Measurable.ite measurableSet_Ioi measurable_const _
+    refine Measurable.ite measurableSet_Ioi measurable_const ?_
     exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const
 #align ennreal.has_measurable_pow ENNReal.hasMeasurablePow
 
