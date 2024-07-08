@@ -714,10 +714,9 @@ instance : FunLike (Function.End α) α α where
   coe := Function.End.toFun
   coe_injective' := fun ⟨f⟩ ⟨g⟩ => by simp_rw [Function.End.mk.injEq, imp_self]
 
-@[simps!]
 instance : Monoid (Function.End α) where
   one := ⟨id⟩
-  mul f g := ⟨f.toFun ∘ g.toFun⟩
+  mul f g := ⟨f ∘ g⟩
   mul_assoc f g h := rfl
   mul_one f := rfl
   one_mul f := rfl
