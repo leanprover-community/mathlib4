@@ -569,14 +569,15 @@ theorem zero_update : update 0 a b = single a b := by
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
   classical
-  dsimp [update]; congr <;> apply Subsingleton.elim
+  dsimp only [update]
+  congr!
 #align finsupp.support_update Finsupp.support_update
 
 @[simp]
 theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.support.erase a := by
   classical
   simp only [update, ite_true, mem_support_iff, ne_eq, not_not]
-  congr; apply Subsingleton.elim
+  congr!
 #align finsupp.support_update_zero Finsupp.support_update_zero
 
 variable {b}
@@ -585,7 +586,7 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
     support (f.update a b) = insert a f.support := by
   classical
   simp only [update, h, ite_false, mem_support_iff, ne_eq]
-  congr; apply Subsingleton.elim
+  congr!
 #align finsupp.support_update_ne_zero Finsupp.support_update_ne_zero
 
 theorem support_update_subset [DecidableEq α] [DecidableEq M] :
@@ -637,8 +638,8 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
 theorem support_erase [DecidableEq α] {a : α} {f : α →₀ M} :
     (f.erase a).support = f.support.erase a := by
   classical
-  dsimp [erase]
-  congr; apply Subsingleton.elim
+  dsimp only [erase]
+  congr!
 #align finsupp.support_erase Finsupp.support_erase
 
 @[simp]
@@ -724,6 +725,8 @@ def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) 
   toFun := f
   mem_support_toFun := by classical simpa
 #align finsupp.on_finset Finsupp.onFinset
+
+@[simp, norm_cast] lemma coe_onFinset (s : Finset α) (f : α → M) (hf) : onFinset s f hf = f := rfl
 
 @[simp]
 theorem onFinset_apply {s : Finset α} {f : α → M} {hf a} : (onFinset s f hf : α →₀ M) a = f a :=
@@ -983,7 +986,7 @@ theorem zipWith_apply {f : M → N → P} {hf : f 0 0 = 0} {g₁ : α →₀ M} 
 
 theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0} {g₁ : α →₀ M}
     {g₂ : α →₀ N} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
-  rw [Subsingleton.elim D] <;> exact support_onFinset_subset
+  convert support_onFinset_subset
 #align finsupp.support_zip_with Finsupp.support_zipWith
 
 @[simp]

@@ -787,11 +787,11 @@ theorem disjoint_compl_right : Disjoint a aᶜ :=
 #align disjoint_compl_right disjoint_compl_right
 
 theorem LE.le.disjoint_compl_left (h : b ≤ a) : Disjoint aᶜ b :=
-  disjoint_compl_left.mono_right h
+  _root_.disjoint_compl_left.mono_right h
 #align has_le.le.disjoint_compl_left LE.le.disjoint_compl_left
 
 theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a bᶜ :=
-  disjoint_compl_right.mono_left h
+  _root_.disjoint_compl_right.mono_left h
 #align has_le.le.disjoint_compl_right LE.le.disjoint_compl_right
 
 theorem IsCompl.compl_eq (h : IsCompl a b) : aᶜ = b :=
@@ -990,11 +990,11 @@ theorem codisjoint_hnot_left : Codisjoint (￢a) a :=
 #align codisjoint_hnot_left codisjoint_hnot_left
 
 theorem LE.le.codisjoint_hnot_left (h : a ≤ b) : Codisjoint (￢a) b :=
-  codisjoint_hnot_left.mono_right h
+  _root_.codisjoint_hnot_left.mono_right h
 #align has_le.le.codisjoint_hnot_left LE.le.codisjoint_hnot_left
 
 theorem LE.le.codisjoint_hnot_right (h : b ≤ a) : Codisjoint a (￢b) :=
-  codisjoint_hnot_right.mono_left h
+  _root_.codisjoint_hnot_right.mono_left h
 #align has_le.le.codisjoint_hnot_right LE.le.codisjoint_hnot_right
 
 theorem IsCompl.hnot_eq (h : IsCompl a b) : ￢a = b :=

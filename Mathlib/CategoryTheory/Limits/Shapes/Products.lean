@@ -663,7 +663,7 @@ def limitConeOfUnique : LimitCone (Discrete.functor f) where
       π := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
         dsimp
         congr
-        apply Subsingleton.elim)) }
+        subsingleton)) }
   isLimit :=
     { lift := fun s => s.π.app default
       fac := fun s j => by
@@ -693,7 +693,7 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f) where
       ι := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
         dsimp
         congr
-        apply Subsingleton.elim)) }
+        subsingleton)) }
   isColimit :=
     { desc := fun s => s.ι.app default
       fac := fun s j => by

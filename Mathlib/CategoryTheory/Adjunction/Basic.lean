@@ -476,17 +476,28 @@ def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) 
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
+  (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
 /-- Composition of adjunctions.
 
 See <https://stacks.math.columbia.edu/tag/0DV0>.
 -/
-def comp (adj₁ : F ⊣ G) (adj₂ : H ⊣ I) : F ⋙ H ⊣ I ⋙ G where
+def comp : F ⋙ H ⊣ I ⋙ G where
   homEquiv X Z := Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
   unit := adj₁.unit ≫ (whiskerLeft F <| whiskerRight adj₂.unit G) ≫ (Functor.associator _ _ _).inv
   counit :=
     (Functor.associator _ _ _).hom ≫ (whiskerLeft I <| whiskerRight adj₁.counit H) ≫ adj₂.counit
 #align category_theory.adjunction.comp CategoryTheory.Adjunction.comp
+
+@[simp, reassoc]
+lemma comp_unit_app (X : C) :
+    (adj₁.comp adj₂).unit.app X = adj₁.unit.app X ≫ G.map (adj₂.unit.app (F.obj X)) := by
+  simp [Adjunction.comp]
+
+@[simp, reassoc]
+lemma comp_counit_app (X : E) :
+    (adj₁.comp adj₂).counit.app X = H.map (adj₁.counit.app (I.obj X)) ≫ adj₂.counit.app X := by
+  simp [Adjunction.comp]
 
 end
 
