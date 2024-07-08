@@ -15,7 +15,7 @@ Given a commutative ring `R`, this file defines the equivalence of categories be
 `R`-coalgebras and comonoid objects in the category of `R`-modules.
 
 We then use this to set up boilerplate for the `Coalgebra` instance on a tensor product of
-coalgebras defined in `Mathlib.RingTheory.Coalgebra.TensorProduct`.
+coalgebras defined in `Mathlib.RingTheory.Coalgebra.TensorProduct` in #11975.
 
 ## Implementation notes
 
@@ -23,7 +23,7 @@ We make the definiton `CoalgebraCat.instMonoidalCategoryAux` in this file, which
 monoidal structure on `CoalgebraCat` induced by the equivalence with `Comon(R-Mod)`. We
 use this to show the comultiplication and counit on a tensor product of coalgebras satisfy
 the coalgebra axioms, but our actual `MonoidalCategory` instance on `CoalgebraCat` is
-constructed in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` to have better
+constructed in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` in #11976 to have better
 definitional equalities.
 
 -/
@@ -42,9 +42,7 @@ variable {R : Type u} [CommRing R]
   comul := ModuleCat.ofHom Coalgebra.comul
   counit_comul := by simpa only [ModuleCat.of_coe] using Coalgebra.rTensor_counit_comp_comul
   comul_counit := by simpa only [ModuleCat.of_coe] using Coalgebra.lTensor_counit_comp_comul
-  comul_assoc := by
-    simp_rw [← Category.assoc, Iso.comp_inv_eq, ModuleCat.of_coe]
-    exact Coalgebra.coassoc.symm
+  comul_assoc := by simp_rw [ModuleCat.of_coe]; exact Coalgebra.coassoc.symm
 
 variable (R) in
 /-- The natural functor from `R`-coalgebras to comonoid objects in the category of `R`-modules. -/
@@ -68,9 +66,9 @@ instance ofComonObjCoalgebraStruct (X : Comon_ (ModuleCat R)) :
 structure. -/
 def ofComonObj (X : Comon_ (ModuleCat R)) : CoalgebraCat R where
   carrier := X.X
-  isCoalgebra :=
+  instCoalgebra :=
     { ofComonObjCoalgebraStruct X with
-      coassoc := (LinearEquiv.eq_toLinearMap_symm_comp _ _).1 X.comul_assoc.symm
+      coassoc := X.comul_assoc.symm
       rTensor_counit_comp_comul := X.counit_comul
       lTensor_counit_comp_comul := X.comul_counit }
 
@@ -98,7 +96,7 @@ variable {R}
 
 /-- The monoidal category structure on the category of `R`-coalgebras induced by the
 equivalence with `Comon(R-Mod)`. This is just an auxiliary definition; the `MonoidalCategory`
-instance we make in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` will have better
+instance we make in `Mathlib.Algebra.Category.CoalgebraCat.Monoidal` in #11976 will have better
 definitional equalities. -/
 noncomputable def instMonoidalCategoryAux : MonoidalCategory (CoalgebraCat R) :=
   Monoidal.transport (comonEquivalence R).symm
