@@ -496,7 +496,6 @@ theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T
   intro γ v hv
   simp only [Submodule.mem_iInf] at *
   intro i
-  have := hv i
   exact eigenspace_invariant (h i) (γ i) v (hv i)
 
 /-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
@@ -507,8 +506,8 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
     ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T m j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) →
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   intro h
-  have H := exists_pair_ne n
-  obtain ⟨i, j, hij⟩ := H
+  obtain ⟨i, j, hij⟩ := exists_pair_ne n
+  --have := Set.fintypeDiff
   sorry
 
 /-COMMENT: May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
