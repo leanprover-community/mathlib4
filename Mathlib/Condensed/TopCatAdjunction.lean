@@ -9,8 +9,8 @@ import Mathlib.Condensed.TopComparison
 # The adjunction between condensed sets and topological spaces
 
 This file defines the functor `condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u+1}` which is
-right adjoint to `topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`. We prove that the counit
-is bijective (but not in general an isomorphism) and conclude that the left adjoint is faithful.
+left adjoint to `topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`. We prove that the counit
+is bijective (but not in general an isomorphism) and conclude that the right adjoint is faithful.
 -/
 
 universe u
