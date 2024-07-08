@@ -72,6 +72,21 @@ lemma continuous_from_compactlyGeneratedSpace {X : Type w} [TopologicalSpace X]
   apply continuous_le_dom CompactlyGeneratedSpace.le_compactlyGenerated
   exact continuous_from_compactlyGenerated f h
 
+lemma compactlyGeneratedSpace_of_continuous_maps {X : Type w} [t : TopologicalSpace X]
+    (h : ∀ {Y : Type w} [tY : TopologicalSpace Y] (f : X → Y),
+      (∀ (S : CompHaus.{u}) (g : C(S, X)), Continuous (f ∘ g)) → Continuous f) :
+        CompactlyGeneratedSpace.{u} X where
+  le_compactlyGenerated := by
+    suffices Continuous[t, compactlyGenerated.{u} X] (id : X → X) by
+      rwa [← continuous_id_iff_le]
+    apply h (tY := compactlyGenerated.{u} X)
+    intro S g
+    let f : (Σ (i : (T : CompHaus.{u}) × C(T, X)), i.fst) → X := fun ⟨⟨_, i⟩, s⟩ ↦ i s
+    suffices ∀ (i : (T : CompHaus.{u}) × C(T, X)),
+      Continuous[inferInstance, compactlyGenerated X] (fun (a : i.fst) ↦ f ⟨i, a⟩) from this ⟨S, g⟩
+    rw [← @continuous_sigma_iff]
+    apply continuous_coinduced_rng
+
 /-- The type of `u`-compactly generated `w`-small topological spaces. -/
 structure CompactlyGenerated where
   /-- The underlying topological space of an object of `CompactlyGenerated`. -/
@@ -106,6 +121,9 @@ def of : CompactlyGenerated.{u, w} where
 @[simps!]
 def compactlyGeneratedToTop : CompactlyGenerated.{u, w} ⥤ TopCat.{w} :=
   inducedFunctor _
+
+def fullyFaithfulCompactlyGeneratedToTop : compactlyGeneratedToTop.FullyFaithful :=
+  fullyFaithfulInducedFunctor _
 
 instance : compactlyGeneratedToTop.{u, w}.Full  :=
   inferInstanceAs (inducedFunctor _).Full

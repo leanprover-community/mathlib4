@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Condensed.TopComparison
+import Mathlib.Topology.Category.CompactlyGenerated
 /-!
 
 # The adjunction between condensed sets and topological spaces
@@ -41,6 +42,13 @@ def CondensedSet.toTopCat : TopCat.{u+1} := TopCat.of (X.val.obj ⟨CompHaus.of 
 
 namespace CondensedSet
 
+lemma continuous_coinducingCoprod {S : CompHaus.{u}} (x : X.val.obj ⟨S⟩) :
+    Continuous fun a ↦ (X.coinducingCoprod ⟨⟨S, x⟩, a⟩) := by
+  suffices ∀ (i : (T : CompHaus.{u}) × X.val.obj ⟨T⟩),
+      Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
+  rw [← continuous_sigma_iff]
+  apply continuous_coinduced_rng
+
 variable {X} {Y : CondensedSet} (f : X ⟶ Y)
 
 /-- The map part of the functor `CondensedSet ⥤ TopCat`  -/
@@ -56,10 +64,7 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat where
         (fun (a : S) ↦ Y.val.map (S.const a).op (f.val.app ⟨S⟩ x)) :=
       funext fun a ↦ NatTrans.naturality_apply f.val (S.const a).op x
     rw [this]
-    suffices ∀ (i : (T : CompHaus.{u}) × Y.val.obj ⟨T⟩),
-        Continuous (fun (a : i.fst) ↦ Y.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
-    rw [← continuous_sigma_iff]
-    apply continuous_coinduced_rng
+    exact continuous_coinducingCoprod Y _
 
 end CondensedSet
 
@@ -124,5 +129,72 @@ instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   exact (topCatAdjunctionCounit_bijective _).2
 
 instance : topCatToCondensedSet.Faithful := topCatAdjunction.faithful_R_of_epi_counit_app
+
+open CompactlyGenerated
+
+instance (X : CondensedSet.{u}) : CompactlyGeneratedSpace.{u, u+1} X.toTopCat := by
+  apply compactlyGeneratedSpace_of_continuous_maps
+  intro Y _ f h
+  rw [continuous_coinduced_dom, continuous_sigma_iff]
+  exact fun ⟨S, s⟩ ↦ h S ⟨_, continuous_coinducingCoprod X _⟩
+
+instance (X : CondensedSet.{u}) : CompactlyGeneratedSpace.{u, u+1} (condensedSetToTopCat.obj X) :=
+  inferInstanceAs (CompactlyGeneratedSpace.{u, u+1} X.toTopCat)
+
+/-- The functor from condensed sets to topological spaces lands in compactly generated spaces. -/
+def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u+1} where
+  obj X := CompactlyGenerated.of (condensedSetToTopCat.obj X)
+  map f := toTopCatMap f
+
+/--
+The functor from topological spaces to condensed sets restricted to compactly generated spaces.
+-/
+noncomputable def compactlyGeneratedToCondensedSet :
+    CompactlyGenerated.{u, u+1} ⥤ CondensedSet.{u} :=
+  compactlyGeneratedToTop ⋙ topCatToCondensedSet
+
+
+/--
+The adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` restricted to compactly generated
+spaces.
+-/
+noncomputable def compactlyGeneratedAdjunction :
+    condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet :=
+  topCatAdjunction.restrictFullyFaithful (iC := 𝟭 _) (iD := compactlyGeneratedToTop)
+    (Functor.FullyFaithful.id _) fullyFaithfulCompactlyGeneratedToTop
+    (Iso.refl _) (Iso.refl _)
+
+/--
+The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
+is a homeomorphism.
+-/
+def compactlyGeneratedAdjunctionCounitHomeo (X : TopCat.{u+1}) [CompactlyGeneratedSpace.{u} X] :
+    X.toCondensedSet.toTopCat ≃ₜ X where
+  toEquiv := topCatAdjunctionCounitEquiv X
+  continuous_toFun := (topCatAdjunctionCounit X).continuous
+  continuous_invFun := by
+    apply continuous_from_compactlyGeneratedSpace
+    exact fun _ _ ↦ continuous_coinducingCoprod X.toCondensedSet _
+
+/--
+The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
+is an isomorphism.
+-/
+noncomputable def compactlyGeneratedAdjunctionCounitIso (X : CompactlyGenerated.{u, u+1}) :
+    condensedSetToCompactlyGenerated.obj (compactlyGeneratedToCondensedSet.obj X) ≅ X :=
+  isoOfHomeo (compactlyGeneratedAdjunctionCounitHomeo X.toTop)
+
+instance : IsIso compactlyGeneratedAdjunction.counit := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro X
+  exact inferInstanceAs (IsIso (compactlyGeneratedAdjunctionCounitIso X).hom)
+
+/--
+The functor from topological spaces to condensed sets restricted to compactly generated spaces
+is fully faithful.
+-/
+noncomputable def fullyFaithfulCompactlyGeneratedToCondensedSet :
+    compactlyGeneratedToCondensedSet.FullyFaithful :=
+  compactlyGeneratedAdjunction.fullyFaithfulROfIsIsoCounit
 
 end CondensedSet
