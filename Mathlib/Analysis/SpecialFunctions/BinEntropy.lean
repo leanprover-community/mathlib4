@@ -398,18 +398,6 @@ lemma hasDerivAt_qaryEntropy {q : ℕ} {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1
 
 open Filter Topology Set
 
-lemma eventuallyEq_nhdsWithin_of_eqOn_interval_right
-    (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Ioo x (x + ε), f y = g y) :
-    f =ᶠ[𝓝[>] x] g := by
-  have : x < x + ε := lt_add_of_pos_right x epsPos
-  filter_upwards [Ioo_mem_nhdsWithin_Ioi' this] using h
-
-lemma eventuallyEq_nhdsWithin_of_eqOn_interval_left
-    (f g : ℝ → ℝ) (x ε : ℝ) (epsPos : 0 < ε) (h : ∀ y ∈ Ioo (x - ε) x, f y = g y) :
-    f =ᶠ[𝓝[<] x] g := by
-  have : x - ε < x := sub_lt_self x epsPos
-  filter_upwards [Ioo_mem_nhdsWithin_Iio' this] using h
-
 private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
     Tendsto (fun (x:ℝ) ↦ (1 - x).log - x.log) (𝓝[>] 0) atTop := by
   apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
@@ -448,15 +436,13 @@ lemma not_continuousAt_deriv_qaryEntropy_one {q : ℕ} :
     apply tendsto_atBot_add_const_left
     exact tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot
   apply Filter.Tendsto.congr' _ tendstoBot
-  apply eventuallyEq_nhdsWithin_of_eqOn_interval_left (fun x ↦ log (q - 1) + log (1 - x) - log x)
-    (deriv (qaryEntropy q)) 1 2⁻¹
-  · norm_num
-  · intros
-    apply (deriv_qaryEntropy _ _).symm
-    simp_all only [mem_Ioo, ne_eq]
-    · linarith [show (1 : ℝ) = 2⁻¹ + 2⁻¹ by norm_num]
-    · simp_all only [mem_Ioo, ne_eq]
-      linarith [two_inv_lt_one (α:=ℝ)]
+  filter_upwards [Ioo_mem_nhdsWithin_Iio' (show 1 - 2⁻¹ < (1:ℝ) by norm_num)]
+  intros
+  apply (deriv_qaryEntropy _ _).symm
+  simp_all only [mem_Ioo, ne_eq]
+  · linarith [show (1 : ℝ) = 2⁻¹ + 2⁻¹ by norm_num]
+  · simp_all only [mem_Ioo, ne_eq]
+    linarith [two_inv_lt_one (α:=ℝ)]
 
 lemma not_continuousAt_deriv_qaryEntropy_zero {q : ℕ} :
     ¬ContinuousAt (deriv (qaryEntropy q)) 0 := by
@@ -470,15 +456,13 @@ lemma not_continuousAt_deriv_qaryEntropy_zero {q : ℕ} :
     apply tendsto_atTop_add_const_left
     exact tendsto_log_one_sub_sub_log_nhdsWithin_atAtop
   apply Filter.Tendsto.congr' _ asdf
-  apply eventuallyEq_nhdsWithin_of_eqOn_interval_right (fun x ↦ log (q - 1) + log (1 - x) - log x)
-    (deriv (qaryEntropy q)) 0 2⁻¹
-  · norm_num
-  · intros
-    apply (deriv_qaryEntropy _ _).symm
-    simp_all only [zero_add, mem_Ioo, ne_eq]
-    · linarith
-    · simp_all only [zero_add, mem_Ioo, ne_eq]
-      linarith [two_inv_lt_one (α:=ℝ)]
+  filter_upwards [Ioo_mem_nhdsWithin_Ioi' (show (0:ℝ) < 2⁻¹ by norm_num)]
+  intros
+  apply (deriv_qaryEntropy _ _).symm
+  simp_all only [zero_add, mem_Ioo, ne_eq]
+  · linarith
+  · simp_all only [zero_add, mem_Ioo, ne_eq]
+    linarith [two_inv_lt_one (α:=ℝ)]
 
 /-- Second derivative of q-ary entropy. -/
 lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
