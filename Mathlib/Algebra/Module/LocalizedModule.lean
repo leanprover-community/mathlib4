@@ -5,6 +5,7 @@ Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.RingTheory.OreLocalization.Module
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Exact
 
 #align_import algebra.module.localized_module from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -194,8 +195,8 @@ theorem fromLocalizedModule_mk (m : M) (s : S) :
 #align is_localized_module.from_localized_module_mk IsLocalizedModule.fromLocalizedModule_mk
 
 theorem fromLocalizedModule.inj : Function.Injective <| fromLocalizedModule S f := fun x y eq1 => by
-  induction' x with a b
-  induction' y with a' b'
+  induction' x using LocalizedModule.induction_on with a b
+  induction' y using LocalizedModule.induction_on with a' b'
   simp only [fromLocalizedModule_mk] at eq1
   -- Porting note: We remove `generalize_proofs h1 h2`.
   rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← LinearMap.map_smul,
