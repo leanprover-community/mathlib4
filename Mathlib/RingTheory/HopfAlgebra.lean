@@ -72,27 +72,27 @@ theorem mul_antipode_lTensor_comul_apply (a : A) :
     algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_antipode_lTensor_comul a
 
-open BigOperators Coalgebra
+open BigOperators Coalgebra CoalgebraStruct
 
-lemma sum_antipode_mul_eq_algebraMap_counit (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, antipode (R := R) (x i) * y i = algebraMap R A (counit a) := by
-  simpa [repr, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
+lemma sum_antipode_mul_eq {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, antipode (R := R) (repr.left i) * repr.right i =
+      algebraMap R A (counit a) := by
+  simpa [← repr.eq, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
 
-lemma sum_mul_antipode_eq_algebraMap_counit (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, x i * antipode (R := R) (y i) = algebraMap R A (counit a) := by
-  simpa [repr, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
+lemma sum_mul_antipode_eq {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, repr.left i * antipode (R := R) (repr.right i) =
+      algebraMap R A (counit a) := by
+  simpa [← repr.eq, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
 
-lemma sum_antipode_mul_eq_smul (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, antipode (R := R) (x i) * y i = (counit (R := R) a) • 1 := by
-  rw [sum_antipode_mul_eq_algebraMap_counit (repr := repr), Algebra.smul_def, mul_one]
+lemma sum_antipode_mul_eq_smul {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, antipode (R := R) (repr.left i) * repr.right i =
+      counit (R := R) a • 1 := by
+  rw [sum_antipode_mul_eq, Algebra.smul_def, mul_one]
 
-lemma sum_mul_antipode_eq_smul (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, x i * antipode (R := R) (y i) = (counit (R := R) a) • 1 := by
-  rw [sum_mul_antipode_eq_algebraMap_counit (repr := repr), Algebra.smul_def, mul_one]
+lemma sum_mul_antipode_eq_smul {a : A} (repr : Repr R a) :
+    ∑ i ∈ repr.index, repr.left i * antipode (R := R) (repr.right i) =
+      counit (R := R) a • 1 := by
+  rw [sum_mul_antipode_eq, Algebra.smul_def, mul_one]
 
 end HopfAlgebra
 
