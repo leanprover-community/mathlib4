@@ -88,7 +88,7 @@ def comp_algHom : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R
     rw [← @diagonal_one, @diagonal_apply, @diagonal_apply]
     if hii: i1 = i2 then
       simp only [hii, ↓reduceIte, diagonal_one, smul_apply, Prod.mk.injEq, true_and]
-      if hjj : j1 = j2 then subst hjj ; simp  else
+      if hjj : j1 = j2 then subst hjj; simp  else
         simp only [ne_eq, hjj, not_false_eq_true, one_apply_ne, smul_zero, ↓reduceIte]
     else simp only [hii, ↓reduceIte, zero_apply, Prod.mk.injEq]; tauto
 }
