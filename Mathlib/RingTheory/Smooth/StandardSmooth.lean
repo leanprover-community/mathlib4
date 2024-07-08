@@ -45,14 +45,15 @@ Furthermore, for algebras we define:
 - `IsStandardSmooth.relativeDimension`: If `S` is `R`-standard smooth this is the dimension
   of an arbitrary submersive `R`-presentation of `S`. This is independent of the choice
   of the presentation (TODO, see below).
+- `IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension `n`
+  if it admits a submersive `R`-presentation of dimension `n`.
 
 Finally, in the `RingHom` namespace we define
 
 - `IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth
   as `R`-algebra.
 - `IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard smooth of
-  relative dimension `n` if it is standard smooth and the relative dimension of `S` as an
-  `R`-algebra is `n`.
+  relative dimension `n` if `S` is standard smooth of relative dimension `n` as `R`-algebra.
 
 ## TODO
 
@@ -80,12 +81,14 @@ in June 2024.
 
 universe t t' w w' u v
 
-variable (R : Type u) [CommRing R]
-variable (S : Type v) [CommRing S] [Algebra R S]
-
 open TensorProduct
 
+variable (n : ℕ)
+
 namespace Algebra
+
+variable (R : Type u) [CommRing R]
+variable (S : Type v) [CommRing S] [Algebra R S]
 
 /--
 A `PreSubmersivePresentation` of an `R`-algebra `S` is a `Presentation`
@@ -180,17 +183,32 @@ class IsStandardSmooth : Prop where
 The relative dimension of a standard smooth `R`-algebra `S` is
 the dimension of an arbitrarily chosen submersive `R`-presentation of `S`.
 
-Note: This number is independent of the choice of the presentation as it is equal to
-the `S`-rank of `Ω[S/R]` (TODO).
+Note: If `S` is non-trivial, this number is independent of the choice of the presentation as it is
+equal to the `S`-rank of `Ω[S/R]` (TODO).
 -/
 noncomputable def IsStandardSmooth.relativeDimension [IsStandardSmooth R S] : ℕ :=
   ‹IsStandardSmooth R S›.out.some.dimension
+
+/--
+An `R`-algebra `S` is called standard smooth of relative dimension `n`, if there exists
+a submersive presentation of dimension `n`.
+-/
+class IsStandardSmoothOfRelativeDimension : Prop where
+  out : ∃ P : SubmersivePresentation.{t, w} R S, P.dimension = n
+
+variable {R} {S}
+
+lemma isStandardSmooth_of_isStandardSmoothOfRelativeDimension
+    [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
+    IsStandardSmooth.{t, w} R S :=
+  ⟨‹IsStandardSmoothOfRelativeDimension n R S›.out.nonempty⟩
 
 end Algebra
 
 namespace RingHom
 
-variable {R S}
+variable {R : Type u} [CommRing R]
+variable {S : Type v} [CommRing S]
 
 /-- A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth as `S`-algebra. -/
 def IsStandardSmooth (f : R →+* S) : Prop :=
@@ -198,9 +216,14 @@ def IsStandardSmooth (f : R →+* S) : Prop :=
 
 /-- A ring homomorphism `R →+* S` is standard smooth of relative dimension `n` if
 it is both standard smooth and is of relative dimension `n`. -/
-structure IsStandardSmoothOfRelativeDimension (n : ℕ) (f : R →+* S) : Prop where
-  isStandardSmooth : IsStandardSmooth.{t, w} f
-  relativeDimension_eq :
-    @Algebra.IsStandardSmooth.relativeDimension R _ S _ f.toAlgebra isStandardSmooth = n
+def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
+  @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
+
+lemma isStandardSmooth_of_isStandardSmoothOfRelativeDimension (f : R →+* S)
+    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
+    IsStandardSmooth.{t, w} f :=
+  letI : Algebra R S := f.toAlgebra
+  letI : Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S := hf
+  Algebra.isStandardSmooth_of_isStandardSmoothOfRelativeDimension n
 
 end RingHom
