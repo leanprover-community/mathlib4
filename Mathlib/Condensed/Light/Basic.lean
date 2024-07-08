@@ -33,3 +33,17 @@ Light condensed sets. Because `LightProfinite` is an essentially small category,
 same universe bump as in `CondensedSet`.
 -/
 abbrev LightCondSet := LightCondensed.{u} (Type u)
+
+namespace LightCondensed
+
+variable {C : Type w} [Category.{v} C]
+
+@[simp]
+lemma id_val (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).val = 𝟙 _ := rfl
+
+@[simp]
+lemma comp_val {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).val = f.val ≫ g.val :=
+  rfl
+
+end LightCondensed
