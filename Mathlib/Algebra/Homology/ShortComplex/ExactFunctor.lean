@@ -58,7 +58,7 @@ variable (F : C ⥤ D) [F.Additive]
 /--
 If a functor `F : C ⥤ D` preserves exact sequences, then it preserves monomorphism.
 -/
-def preservesMonomorphismsOfPreservesShortComplexExact
+lemma preservesMonomorphisms_of_preserves_shortComplex_exact
     (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) :
     F.PreservesMonomorphisms where
   preserves {X Y} f m :=
@@ -68,7 +68,7 @@ def preservesMonomorphismsOfPreservesShortComplexExact
 /--
 If a functor `F : C ⥤ D` preserves exact sequences, then it preserves epimorphism.
 -/
-def preservesEpimorphismsOfPreservesShortComplexExact
+lemma preservesEpimorphisms_of_preserves_shortComplex_exact
     (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) :
     F.PreservesEpimorphisms where
   preserves {X Y} f e :=
@@ -83,11 +83,11 @@ lemma preserves_shortComplex_shortExact_of_preserves_shortComplex_exact
     (S : ShortComplex C) (hS : S.ShortExact) : (S.map F).ShortExact where
   exact := h _ hS.exact
   mono_f :=
-    letI := F.preservesMonomorphismsOfPreservesShortComplexExact h
+    letI := F.preservesMonomorphisms_of_preserves_shortComplex_exact h
     letI : Mono S.f := hS.mono_f
     map_mono _ _
   epi_g :=
-    letI := F.preservesEpimorphismsOfPreservesShortComplexExact h
+    letI := F.preservesEpimorphisms_of_preserves_shortComplex_exact h
     letI : Epi S.g := hS.epi_g
     map_epi _ _
 
@@ -111,7 +111,7 @@ noncomputable def preservesKernelsOfPreservesShortComplexExact
       · ext; simp
       · ext; simp
 
-    have : F.PreservesMonomorphisms := F.preservesMonomorphismsOfPreservesShortComplexExact h
+    have : F.PreservesMonomorphisms := F.preservesMonomorphisms_of_preserves_shortComplex_exact h
     have exact1 : (s.map F).Exact := h s exact0
     have mono1 : Mono (F.map $ c.π.app .zero) := inferInstance
 
@@ -162,7 +162,7 @@ noncomputable def preservesCokernelsOfPreservesShortComplexExact
       · ext; simp
       · ext; simp
 
-    have : F.PreservesEpimorphisms := F.preservesEpimorphismsOfPreservesShortComplexExact h
+    have : F.PreservesEpimorphisms := F.preservesEpimorphisms_of_preserves_shortComplex_exact h
     have exact1 : (s.map F).Exact := h s exact0
     have epi1 : Epi (F.map $ c.ι.app .one) := inferInstance
     refine IsColimit.equivOfNatIsoOfIso
