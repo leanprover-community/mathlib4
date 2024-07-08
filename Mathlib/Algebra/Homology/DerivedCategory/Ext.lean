@@ -36,8 +36,7 @@ sheaves over `X` shall be in `Type u`.
 
 ## TODO
 * compute `Ext X Y 0`
-* define the class in `Ext S.X₃ S.X₁ 1` of a short exact short complex `S`
-* construct the long exact sequences of `Ext`.
+* construct the contravariant long exact sequences of `Ext`.
 
 -/
 
@@ -392,10 +391,9 @@ lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ :
   dsimp [SmallShiftedHom.equiv]
   erw [SmallHom.equiv_comp, Iso.homToEquiv_apply]
   rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
-  simp
   dsimp [singleδ, triangleOfSESδ, δ, w, S']
-  rw [Category.assoc, singleFunctorsPostcompQIso_hom_hom,
-    singleFunctorsPostcompQIso_inv_hom]
+  rw [Category.assoc, Category.assoc, Category.assoc,
+    singleFunctorsPostcompQIso_hom_hom, singleFunctorsPostcompQIso_inv_hom]
   erw [Category.id_comp, Functor.map_id, Category.comp_id]
   rfl
 
