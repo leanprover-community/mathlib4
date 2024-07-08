@@ -431,7 +431,7 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
 
 /-I find it hard to believe that the following doesn't appear in the library already. We should
   track it down. -/
-theorem ortho_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
+theorem eq_iff_orthogonal_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
    constructor
    · intro H
      exact congrArg Submodule.orthogonal H
@@ -491,7 +491,7 @@ theorem base [Subsingleton n]:
     simp only [hS]
     have B := orthogonalComplement_iSup_eigenspaces_eq_bot hS.1
     rw [← B]
-    apply ortho_eq.mpr
+    apply eq_iff_orthogonal_eq.mpr
     simp only [Submodule.orthogonal_orthogonal, Submodule.mk.injEq, AddSubmonoid.mk.injEq,
       AddSubsemigroup.mk.injEq]
     exact pre_base S
