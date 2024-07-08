@@ -19,6 +19,7 @@ namespace Matrix
 variable  (I J K L R : Type*)
 
 /-- Mₙ(Mₘ(R)) ≃ Mₙₘ(R) -/
+@[simps]
 def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   toFun m ik jl := m ik.1 jl.1 ik.2 jl.2
   invFun n i j k l := n (i, k) (j, l)
@@ -26,6 +27,7 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
   right_inv _ := rfl
 
 /-- Mₙ(Mₘ(R)) ≃ Mₘ(Mₙ(R)) -/
+@[simps]
 def swap : Matrix (I × J) (K × L) R ≃ Matrix (J × I) (L × K) R where
   toFun m ji kl := m (ji.2, ji.1) (kl.2, kl.1)
   invFun n ij kl := n (ij.2, ij.1) (kl.2, kl.1)
@@ -37,13 +39,15 @@ section AddCommMonoid
 variable [AddCommMonoid R]
 
 /-- Mₙ(Mₘ(R)) ≃+ Mₙₘ(R) -/
-def comp_addHom : Matrix I J (Matrix K L R) ≃+ Matrix (I × K) (J × L) R :=
+@[simps!]
+def compAddHom : Matrix I J (Matrix K L R) ≃+ Matrix (I × K) (J × L) R :=
 { Matrix.comp I J K L R with
   map_add' := fun _ _ ↦ rfl
 }
 
 /-- Mₙ(Mₘ(R)) ≃+ Mₘ(Mₙ(R)) -/
-def swap_addHom : Matrix (I × J) (K × L) R ≃+ Matrix (J × I) (L × K) R :=
+@[simps!]
+def swapAddHom : Matrix (I × J) (K × L) R ≃+ Matrix (J × I) (L × K) R :=
 { Matrix.swap I J K L R with
   map_add' := fun _ _ ↦ rfl
 }
@@ -52,22 +56,24 @@ end AddCommMonoid
 
 section Semiring
 
-variable [Semiring R][Fintype I][Fintype J] [DecidableEq I] [DecidableEq J]
+variable [Semiring R] [Fintype I] [Fintype J] [DecidableEq I] [DecidableEq J]
 
 /-- Mₙ(Mₘ(R)) ≃+* Mₙₘ(R) -/
-def comp_ringHom : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R :=
-{ Matrix.comp_addHom I I J J R with
+@[simps!]
+def compRingHom : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R :=
+{ Matrix.compAddHom I I J J R with
   map_mul' := fun _ _ ↦ by
     ext _ _
     refine (Matrix.sum_apply _ _ _ _).trans $ Eq.symm Fintype.sum_prod_type
 }
 
 /-- Mₙ(Mₘ(R)) ≃+* Mₘ(Mₙ(R)) -/
-def swap_ringHom : Matrix (I × J) (I × J) R ≃+* Matrix (J × I) (J × I) R :=
-{ Matrix.swap_addHom I J I J R with
+@[simps!]
+def swapRingHom : Matrix (I × J) (I × J) R ≃+* Matrix (J × I) (J × I) R :=
+{ Matrix.swapAddHom I J I J R with
   map_mul' := fun _ _ ↦ by
     ext _ _
-    simp only [swap_addHom, swap, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+    simp only [swapAddHom, swap, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
       AddEquiv.coe_mk, Equiv.coe_fn_mk, mul_apply, Fintype.sum_prod_type]
     exact Finset.sum_comm
 }
@@ -79,14 +85,16 @@ section LinearMap
 variable (K : Type*) [CommSemiring K] [AddCommMonoid R] [Module K R]
 
 /-- Mₙ(Mₘ(R)) ≃ₗ[K] Mₙₘ(R) -/
-def comp_linearMap : Matrix I J (Matrix K L R) ≃ₗ[K] Matrix (I × K) (J × L) R :=
-{ Matrix.comp_addHom I J K L R with
+@[simps!]
+def compLinearMap : Matrix I J (Matrix K L R) ≃ₗ[K] Matrix (I × K) (J × L) R :=
+{ Matrix.compAddHom I J K L R with
   map_smul' := fun _ _ ↦ rfl
 }
 
 /-- Mₙ(Mₘ(R)) ≃ₗ[K] Mₘ(Mₙ(R)) -/
-def swap_linearMap : Matrix (I × J) (K × L) R ≃ₗ[K] Matrix (J × I) (L × K) R :=
-{ Matrix.swap_addHom I J K L R with
+@[simps!]
+def swapLinearMap : Matrix (I × J) (K × L) R ≃ₗ[K] Matrix (J × I) (L × K) R :=
+{ Matrix.swapAddHom I J K L R with
   map_smul' := fun _ _ ↦ rfl
 }
 
@@ -99,42 +107,46 @@ variable (K : Type*) [CommSemiring K] [Semiring R] [Fintype I] [Fintype J] [Alge
 variable [DecidableEq I] [DecidableEq J]
 
 /-- Mₙ(Mₘ(R)) ≃ₐ[K] Mₙₘ(R) -/
-def comp_algHom : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R :=
-{ Matrix.comp_ringHom I J R with
+@[simps!]
+def compAlgHom : Matrix I I (Matrix J J R) ≃ₐ[K] Matrix (I × J) (I × J) R :=
+{ Matrix.compRingHom I J R with
   commutes' := fun c ↦ by
     ext ⟨i1, j1⟩ ⟨i2, j2⟩
-    simp only [comp_ringHom, comp_addHom, comp, AddEquiv.toEquiv_eq_coe, RingEquiv.toEquiv_eq_coe,
+    simp only [compRingHom, compAddHom, comp, AddEquiv.toEquiv_eq_coe, RingEquiv.toEquiv_eq_coe,
       Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, AddEquiv.coe_mk, Equiv.coe_fn_mk]
     simp only [algebraMap_eq_diagonal]; rw [Pi.algebraMap_def, Pi.algebraMap_def]
-    rw [@Algebra.algebraMap_eq_smul_one', @Algebra.algebraMap_eq_smul_one']
-    rw [← @diagonal_one, @diagonal_apply, @diagonal_apply]
+    rw [Algebra.algebraMap_eq_smul_one', Algebra.algebraMap_eq_smul_one']
+    rw [← diagonal_one, diagonal_apply, diagonal_apply]
     aesop
 }
 
 /-- Mₙ(Mₘ(R)) ≃ₐ[K] Mₘ(Mₙ(R)) -/
-def swap_algHom : Matrix (I × J) (I × J) R ≃ₐ[K] Matrix (J × I) (J × I) R :=
-{ Matrix.swap_ringHom I J R with
+@[simps!]
+def swapAlgHom : Matrix (I × J) (I × J) R ≃ₐ[K] Matrix (J × I) (J × I) R :=
+{ Matrix.swapRingHom I J R with
   commutes' := fun c ↦ by
     ext ⟨i1, j1⟩ ⟨i2, j2⟩
-    simp only [swap_ringHom, swap_addHom, swap, AddEquiv.toEquiv_eq_coe, RingEquiv.toEquiv_eq_coe,
+    simp only [swapRingHom, swapAddHom, swap, AddEquiv.toEquiv_eq_coe, RingEquiv.toEquiv_eq_coe,
       Equiv.toFun_as_coe, EquivLike.coe_coe, RingEquiv.coe_mk, AddEquiv.coe_mk, Equiv.coe_fn_mk,
       algebraMap_eq_diagonal]; rw [Pi.algebraMap_def, Pi.algebraMap_def,
-      @Algebra.algebraMap_eq_smul_one', @diagonal_apply, @diagonal_apply]
+      Algebra.algebraMap_eq_smul_one', diagonal_apply, diagonal_apply]
     aesop
 }
 
-open BigOperators Matrix MulOpposite in
-/-- Mn(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ -/
-def matrixEquivMatrixMop_algebra:
+open MulOpposite in
+/-- Mₙ(Rᵒᵖ) ≃ₐ[K] Mₙ(R)ᵒᵖ -/
+@[simps]
+def matrixEquivMatrixMopAlgebra:
     Matrix I I Rᵐᵒᵖ ≃ₐ[K] (Matrix I I R)ᵐᵒᵖ where
-  toFun := fun M => op (M.transpose.map (fun d => unop d))
-  invFun := fun M => (unop M).transpose.map (fun d => op d)
+  toFun M := op (M.transpose.map (fun d => unop d))
+  invFun M := (unop M).transpose.map (fun d => op d)
   left_inv a := by aesop
   right_inv a := by aesop
   map_mul' x y := unop_injective $ by ext; simp [transpose_map, transpose_apply, mul_apply]
   map_add' x y := by aesop
   commutes' k := by
-    simp only [algebraMap_apply, op_inj]; ext i j
+    simp only [algebraMap_apply, op_inj]
+    ext i j
     simp only [map_apply, transpose_apply, algebraMap_matrix_apply]
     aesop
 
