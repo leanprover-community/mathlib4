@@ -33,7 +33,7 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ => 1/x) y := by fun
 ```
 
 **Basic debugging:**
-The most common issue is that a function is missing appropriate theorem. For example
+The most common issue is that a function is missing the appropriate theorem. For example
 ```lean
 import Mathlib.Data.Complex.Exponential
 example : Continuous (fun x : ℝ => x * Real.sin x) := by fun_prop
@@ -46,9 +46,9 @@ Issues:
   No theorems found for `Real.sin` in order to prove `Continuous fun x => x.sin`
 ```
 this can be easily fixed by importing `Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic`
-where the theorem `Real.continuous_sin` is marked with `fun_prop` attribute.
+where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
 
-When the issue is not simply few missing theorems then you can turn on the option
+When the issue is not simply a few missing theorems then you can turn on the option
 ```lean
 set_option trace.Meta.Tactic.fun_prop true
 ```
@@ -59,7 +59,7 @@ and the trace of how `fun_prop` steps through the whole expression is displayed.
 
 To set up `fun_prop` for a new function property you have to:
 
-1. Mark function property with `fun_prop` attribute when defining it
+1. Mark the function property with `fun_prop` attribute when defining it
 ```lean
 @[fun_prop]
 def Continuous (f : X → Y) := ...
@@ -83,7 +83,7 @@ theorems continuous_comp (f : Y → Z) (g : X → Y) (hf : Continuous f) (hg : C
   Continuous (fun x => f (g x)) := ...
 ```
 The constant theorem is not absolutely necessary as for example `IsLinearMap ℝ (fun x => y)` does
-not hold but almost certainly want to mark it if it is available.
+not hold but we almost certainly want to mark it if it is available.
 
 3. Mark concrete function theorems. They can be stated simply as
 ```lean
@@ -103,15 +103,15 @@ theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x => 
 theorem continuous_add (f g : X → Y) (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x => f x + g x) := ...
 ```
-It is enough to provide function theorems in either form. It is manly a matter of convenience.
+It is enough to provide function theorems in either form. It is mainly a matter of convenience.
 
 
-With such basic set up you should be able to prove continuity of basic algebraic expressions.
+With such a basic set up you should be able to prove continuity of basic algebraic expressions.
 
 
 When marking theorems it is a good idea to check that a theorem has been registered correctly.
 You can do this by turning on the `Meta.Tactic.fun_prop.attr` option. For example
-(note that the notation `f x + g x` is just a syntatic suggar for `@HAdd.hAdd X Y Y _ (f x) (g x))
+(note that the notation `f x + g x` is just a syntactic sugar for `@HAdd.hAdd X Y Y _ (f x) (g x))
 ```
 set_option trace.Meta.Tactic.fun_prop.attr true
 @[fun_prop]
@@ -142,7 +142,7 @@ basic setup and using the tactic
   - morphism theorems
   - transition theorems
 
-- checking theorems is correctly recognized
+- checking theorems are correctly recognized
 
 ### Dischargning subgoals and `ContinuousAt/On` variants
 

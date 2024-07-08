@@ -176,7 +176,7 @@ def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
 
   return none
 
-/-- Apply lambda calculus rule P fun x => y` -/
+/-- Apply lambda calculus rule `P fun x => y` -/
 def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   let thms ← getLambdaTheorems funPropDecl.funPropName .const
@@ -193,7 +193,7 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
 
   return none
 
-/-- Apply lambda calculus rule P fun f => f i` -/
+/-- Apply lambda calculus rule `P fun f => f i` -/
 def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   -- let ext := lambdaTheoremsExt.getState (← getEnv)
@@ -573,7 +573,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   if let .some r ← tryTheorems funPropDecl e fData localThms funProp then
     return r
 
-  -- log error if no global or local theoresm were found
+  -- log error if no global or local theorems were found
   if globalThms.size = 0 && localThms.size = 0 then
      logError s!"No theorems found for `{funName}` in order to prove `{← ppExpr e}`"
 

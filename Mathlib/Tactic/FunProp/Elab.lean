@@ -51,7 +51,7 @@ def funPropTac : Tactic
     goal.withContext do
       let goalType ← goal.getType
 
-      -- the whnf and telscope is here because the goal can be
+      -- the whnf and telescope is here because the goal can be
       -- `∀ y, let f := fun x => x + y; Continuous fun x => x + f x`
       -- However it is still not complete solution. How should we deal with mix of let and forall?
       withReducible <| forallTelescopeReducing (← whnfR goalType) fun _ type => do
