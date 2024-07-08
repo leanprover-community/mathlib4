@@ -20,7 +20,7 @@ This file defines abundant, pseudoperfect, deficient, and weird numbers and form
   equals `n`
 * `Nat.Deficient`: a natural number `n` is _deficient_ if the sum of its proper divisors is less
   than `n`
-* `Nat.WeirdNumber`: a natural number is _weird_ if it is both abundant and not pseudoperfect
+* `Nat.Weird`: a natural number is _weird_ if it is both abundant and not pseudoperfect
 
 ## Main Results
 * `Nat.deficient_or_perfect_or_abundant`: A positive natural number is either deficient,
@@ -59,7 +59,7 @@ def Pseudoperfect (n : ℕ) : Prop :=
   0 < n ∧ ∃ s ⊆ properDivisors n, ∑ i ∈ s, i = n
 
 /-- `n : ℕ` is a _weird_ number if and only if it is both abundant and pseudoperfect. -/
-def WeirdNumber (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
+def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 
 theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n := by
@@ -77,8 +77,8 @@ theorem isAbundant_twelve : Abundant 12 := by
   norm_num
 
 set_option maxRecDepth 1800 in
-theorem isWeird_seventy : WeirdNumber 70 := by
-  rw [WeirdNumber, Abundant, not_pseudoperfect_iff_forall]
+theorem isWeird_seventy : Weird 70 := by
+  rw [Weird, Abundant, not_pseudoperfect_iff_forall]
   have div70 : properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} := by rfl
   constructor
   · rw [div70]
@@ -91,24 +91,24 @@ theorem isWeird_seventy : WeirdNumber 70 := by
 
 lemma deficient_not_abundant_or_perfect (hn : 0 < n) :
     Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
-    dsimp only [Perfect, Abundant, Deficient]
-    omega
+  dsimp only [Perfect, Abundant, Deficient]
+  omega
 
 lemma perfect_not_abundant_or_deficient (hn : 0 < n) :
     Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
-    dsimp only [Perfect, Abundant, Deficient]
-    omega
+  dsimp only [Perfect, Abundant, Deficient]
+  omega
 
 lemma abundant_not_perfect_or_deficient (hn : 0 < n) :
     Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
-    dsimp only [Perfect, Abundant, Deficient]
-    omega
+  dsimp only [Perfect, Abundant, Deficient]
+  omega
 
 /-- A positive natural number is either deficient, perfect, or abundant -/
 theorem deficient_or_perfect_or_abundant (hn : 0 < n) :
     Deficient n ∨ Abundant n ∨ Perfect n := by
-    dsimp only [Perfect, Abundant, Deficient]
-    omega
+  dsimp only [Perfect, Abundant, Deficient]
+  omega
 
 theorem perfect_pseudoperfect (h : Perfect n) : Pseudoperfect n :=
   ⟨h.2, ⟨properDivisors n, ⟨fun ⦃_⦄ a ↦ a, h.1⟩⟩⟩
@@ -116,8 +116,8 @@ theorem perfect_pseudoperfect (h : Perfect n) : Pseudoperfect n :=
 theorem prime_not_abundant (h : Prime n) : ¬ Abundant n :=
   fun h1 ↦ (h.one_lt.trans h1).ne' (sum_properDivisors_eq_one_iff_prime.mpr h)
 
-theorem prime_not_weird (h : Prime n) : ¬ WeirdNumber n := by
-  simp only [Nat.WeirdNumber, not_and_or]
+theorem prime_not_weird (h : Prime n) : ¬ Weird n := by
+  simp only [Nat.Weird, not_and_or]
   left
   exact prime_not_abundant h
 
@@ -184,19 +184,8 @@ theorem exists_infinite_even_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Eve
       (NeZero.ne' (n + 1))⟩⟩
 
 theorem exists_infinite_odd_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Odd d := by
-  obtain ⟨p, ⟨h1, h2⟩⟩ := exists_infinite_primes n
-
-  sorry
-
-
-/- theorem exists_infinite_odd_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Odd d := by
-  use 3 ^ (n + 1)
-  have h : n < 3 ^ (n + 1):= by
-    calc
-      n < 2 ^ n := lt_two_pow n
-      _ < 2 ^ (n + 1) := pow_lt_pow_right Nat.one_lt_two (lt_add_one n)
-      _ < 3 ^ (n + 1) := Nat.pow_lt_pow_left (by norm_num) (Ne.symm (NeZero.ne' (n + 1)))
-  exact ⟨le_of_succ_le h, ⟨prime_pow_deficient prime_three, Odd.pow (odd_iff.mpr
-    (by rfl))⟩⟩-/
+  obtain ⟨p, ⟨h1, h2⟩⟩ := exists_infinite_primes (max n 3)
+  exact ⟨p, le_of_max_le_left h1, ⟨prime_deficient h2, Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt
+    (le_of_max_le_right h1)))⟩⟩
 
 end Nat
