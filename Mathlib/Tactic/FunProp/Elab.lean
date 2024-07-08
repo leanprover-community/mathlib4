@@ -17,6 +17,7 @@ namespace Meta.FunProp
 
 open Lean.Parser.Tactic
 
+/-- `fun_prop` config elaborator -/
 declare_config_elab elabFunPropConfig   FunProp.Config
 
 /-- Tactic to prove function properties -/
