@@ -535,12 +535,6 @@ instance instRing : Ring (A ⊗[R] B) where
 theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
   rw [intCast_def, ← zsmul_one, smul_tmul, zsmul_one]
 
--- verify there are no diamonds
-example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
-  with_reducible_and_instances rfl
--- fails at `with_reducible_and_instances rfl` #10906
-example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
-
 end Ring
 
 section CommRing
@@ -569,16 +563,6 @@ instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
 end RightAlgebra
 
 end CommRing
-
-/-- Verify that typeclass search finds the ring structure on `A ⊗[ℤ] B`
-when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
--/
-example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
-
-/-- Verify that typeclass search finds the comm_ring structure on `A ⊗[ℤ] B`
-when `A` and `B` are merely comm_rings, by treating both as `ℤ`-algebras.
--/
-example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
 /-!
 We now build the structure maps for the symmetric monoidal category of `R`-algebras.

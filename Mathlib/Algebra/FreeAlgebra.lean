@@ -288,11 +288,6 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A
 instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
--- verify there is no diamond but we will need
--- `reducible_and_instances` which currently fails #10906
-variable (S : Type) [CommRing S] in
-example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
-
 variable {X}
 
 /-- The canonical function `X → FreeAlgebra R X`.

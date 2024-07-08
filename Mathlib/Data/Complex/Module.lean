@@ -53,9 +53,6 @@ variable {R : Type*} {S : Type*}
 
 attribute [local ext] Complex.ext
 
--- Test that the `SMul ℚ ℂ` instance is correct.
-example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
-
 /- The priority of the following instances has been manually lowered, as when they don't apply
 they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't
 come from actions on `ℝ`). See #11980-/

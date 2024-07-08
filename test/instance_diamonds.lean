@@ -89,6 +89,21 @@ example :
 
 end TensorProduct
 
+section TensorProduct'
+
+open Algebra TensorProduct
+
+variable {R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+-- verify there are no diamonds
+example :
+  (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
+  with_reducible_and_instances rfl
+-- fails at `with_reducible_and_instances rfl` #10906
+example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
+
+end TensorProduct'
+
 section Units
 
 example (α : Type _) [Monoid α] :
@@ -332,3 +347,20 @@ example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.instAlgebra ℚ :
   -- TODO: with_reducible_and_instances rfl
 end AlgebraicClosure
 
+section FreeAlgebra
+
+open FreeAlgebra
+
+-- verify there is no diamond but we will need
+-- `reducible_and_instances` which currently fails #10906
+variable (S : Type) [CommRing S] in
+example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+
+end FreeAlgebra
+
+section Rat
+
+-- Test that the `SMul ℚ ℂ` instance is correct.
+example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+
+end Rat
