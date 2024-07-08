@@ -72,6 +72,7 @@ def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u+1} where
 namespace CondensedSet
 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
+@[simps]
 def topCatAdjunctionCounit (X : TopCat.{u+1}) : X.toCondensedSet.toTopCat ⟶ X where
   toFun x := x.1 PUnit.unit
   continuous_toFun := by
@@ -92,6 +93,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u+1}) :
   (topCatAdjunctionCounitEquiv X).bijective
 
 /-- The unit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
+@[simps val_app val_app_apply]
 def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
   val := {
     app := fun S x ↦ {
@@ -103,27 +105,14 @@ def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSe
         apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
-      simp only [types_comp_apply, ContinuousMap.coe_mk, TopCat.toCondensedSet_val_map,
-        ContinuousMap.comp_apply, ← FunctorToTypes.map_comp_apply]
+      simp only [TopCat.toCondensedSet_val_obj, compHausToTop_obj, Opposite.op_unop,
+        types_comp_apply, TopCat.toCondensedSet_val_map, ← FunctorToTypes.map_comp_apply]
       rfl }
 
 /-- The adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 noncomputable def topCatAdjunction : condensedSetToTopCat.{u} ⊣ topCatToCondensedSet :=
   Adjunction.mkOfUnitCounit {
-    unit := {
-      app := topCatAdjunctionUnit
-      naturality := by
-        intro X Y f
-        -- shouldn't `ext` just do the following?
-        apply Sheaf.hom_ext; ext S a; apply ContinuousMap.ext; intro x
-        -- `simpa using (NatTrans.naturality_apply f.val _ _).symm` doesn't work, and neither
-        -- does rewriting using `NatTrans.naturality_apply` (not even with `erw`). What's going on?
-        simp? says
-          simp only [condensedSetToTopCat_obj, compHausToTop_obj, Functor.id_obj, Functor.comp_obj,
-            topCatToCondensedSet_obj, Functor.id_map, comp_val, FunctorToTypes.comp,
-            Functor.comp_map, condensedSetToTopCat_map, topCatToCondensedSet_map_val_app,
-            ContinuousMap.comp_apply, toTopCatMap_apply]
-        exact (NatTrans.naturality_apply f.val _ _).symm }
+    unit := { app := topCatAdjunctionUnit }
     counit := { app := topCatAdjunctionCounit }
     left_triangle := by
       ext Y
