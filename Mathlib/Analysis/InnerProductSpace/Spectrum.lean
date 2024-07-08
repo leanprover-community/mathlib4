@@ -430,7 +430,9 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
 
 
 /-I find it hard to believe that the following doesn't appear in the library already. We should
-  track it down. -/
+  track it down. If we can't find this, we need to state it in its most general form and locate
+  it appropriately in the library using a small, independent PR. #find_home! suggested
+  Mathlib.Analysis.InnerProductSpace.Projection-/
 theorem eq_iff_orthogonal_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ := by
    constructor
    · intro H
