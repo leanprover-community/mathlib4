@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.SesquilinearForm
 /-!
 # Wronskian of a pair of polynomial
 
-This file defines Wronskian of a pair of polynomial, which is `W(a, b) = ab' - a'b`.
+This file defines Wronskian of a pair of polynomials, which is `W(a, b) = ab' - a'b`.
 We also prove basic properties of it.
 
 ## Main declarations
@@ -30,6 +30,7 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R]
 
+/-- Wronskian of a pair of polynomials, `W(a, b) = ab' - a'b`. -/
 def wronskian (a b : R[X]) : R[X] :=
   a * (derivative b) - (derivative a) * b
 
@@ -62,17 +63,15 @@ theorem wronskian_add_left (a b c : R[X]) : wronskian (a + b) c = wronskian a c 
 
 theorem wronskian_is_alt (a : R[X]) : wronskian a a = 0 := by rw [wronskian, mul_comm, sub_self]
 
-theorem IsAltwronskianBilin : (wronskianBilin R).IsAlt := by intro a; exact wronskian_is_alt a
+theorem IsAlt_wronskianBilin : (wronskianBilin R).IsAlt := by intro a; exact wronskian_is_alt a
 
 theorem wronskian_self_eq_zero (a : R[X]) : wronskian a a = 0 := wronskian_is_alt a
 
-theorem wronskianBilin_neq_eq (a b : R[X]) : -(wronskianBilin R) a b = (wronskianBilin R) b a :=
-  LinearMap.IsAlt.neg IsAltwronskianBilin a b
-
-theorem wronskian_neg_eq (a b : R[X]) : -wronskian a b = wronskian b a := wronskianBilin_neq_eq a b
+theorem wronskian_neg_eq (a b : R[X]) : -wronskian a b = wronskian b a :=
+  LinearMap.IsAlt.neg IsAlt_wronskianBilin a b
 
 theorem wronskian_eq_of_sum_zero {a b c : R[X]} (hAdd : a + b + c = 0) :
-    wronskian a b = wronskian b c := IsAltwronskianBilin.eq_of_add_add_eq_zero hAdd
+    wronskian a b = wronskian b c := IsAlt_wronskianBilin.eq_of_add_add_eq_zero hAdd
 
 private theorem degree_ne_bot {a : R[X]} (ha : a ≠ 0) : a.degree ≠ ⊥ := by
   intro h; rw [Polynomial.degree_eq_bot] at h; exact ha h
