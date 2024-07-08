@@ -94,9 +94,12 @@ theorem Concrete.colimit_exists_rep [HasColimit F] (x : ↑(colimit F)) :
   Concrete.isColimit_exists_rep F (colimit.isColimit _) x
 #align category_theory.limits.concrete.colimit_exists_rep CategoryTheory.Limits.Concrete.colimit_exists_rep
 
+/-- if `x` is an element of `colimit F`, we arbitrarily choose an index `j` so that some elements of
+`F j` represents `x`.-/
 noncomputable def Concrete.indexRepColimit [HasColimit F] (x : ↑(colimit F)) : J :=
   (Concrete.colimit_exists_rep F x).choose
 
+/--if `x` is an element of `colimit F`, we arbitrarily choose some elements representing `x`.-/
 noncomputable def Concrete.repColimit [HasColimit F] (x : ↑(colimit F)) :
     F.obj (Concrete.indexRepColimit F x) :=
   (Concrete.colimit_exists_rep F x).choose_spec.choose
