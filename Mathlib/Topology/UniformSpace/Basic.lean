@@ -1622,7 +1622,7 @@ theorem UniformityProd_of_uniform_prod [UniformSpace α] [UniformSpace β] {s : 
   apply subset_trans _ uv_sub
   apply subset_trans _ (inter_subset_inter a_sub b_sub)
   intro x
-  simp [UniformityProd_def]
+  simp [UniformityProd]
 
 theorem tendsto_prod_uniformity_fst [UniformSpace α] [UniformSpace β] :
     Tendsto (fun p : (α × β) × α × β => (p.1.1, p.2.1)) (𝓤 (α × β)) (𝓤 α) :=
