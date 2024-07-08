@@ -3,6 +3,7 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
+import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.MeasureTheory.Function.EssSup
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
@@ -1181,7 +1182,7 @@ theorem Memℒp.exists_snorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
       · simp [*]
     refine ⟨s, hsm, hs, ?_⟩
     rwa [snorm_indicator_eq_restrict hsm.compl, snorm_eq_lintegral_rpow_nnnorm hp₀ hp_top,
-      ENNReal.rpow_one_div_lt_iff]
+      one_div, ENNReal.rpow_inv_lt_iff]
     simp [ENNReal.toReal_pos, *]
 
 end UnifTight
