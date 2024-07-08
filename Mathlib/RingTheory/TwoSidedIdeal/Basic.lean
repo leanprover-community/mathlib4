@@ -7,6 +7,7 @@ Authors: Jujian Zhang
 import Mathlib.Tactic.Abel
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Two Sided Ideals
@@ -71,7 +72,7 @@ the coercion from two-sided-ideals to sets is an order embedding
 def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
   toFun := SetLike.coe
   inj' := SetLike.coe_injective
-  map_rel_iff' {I J} := ⟨fun (h : (I : Set R) ⊆ (J : Set R)) _ h' => h h', fun h _ h' => h h'⟩
+  map_rel_iff' {I J} := ⟨fun (h : (I : Set R) ⊆ (J : Set R)) _ h' ↦ h h', fun h _ h' ↦ h h'⟩
 
 lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) :=
   coeOrderEmbedding.map_rel_iff.symm
@@ -118,16 +119,16 @@ def mk' (carrier : Set R)
     (mul_mem_left : ∀ {x y}, y ∈ carrier → x * y ∈ carrier)
     (mul_mem_right : ∀ {x y}, x ∈ carrier → x * y ∈ carrier) : TwoSidedIdeal R where
   ringCon :=
-    { r := fun x y => x - y ∈ carrier
+    { r := fun x y ↦ x - y ∈ carrier
       iseqv :=
-      { refl := fun x => by simpa using zero_mem
-        symm := fun h => by simpa using neg_mem h
-        trans := fun {x y z} h1 h2 => by
+      { refl := fun x ↦ by simpa using zero_mem
+        symm := fun h ↦ by simpa using neg_mem h
+        trans := fun {x y z} h1 h2 ↦ by
           simpa only [show x - z = (x - y) + (y - z) by abel] using add_mem h1 h2 }
-      mul' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) => show _ ∈ carrier by
+      mul' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
         rw [show a * c - b * d = a * (c - d) + (a - b) * d by rw [mul_sub, sub_mul]; abel]
         exact add_mem (mul_mem_left h2) (mul_mem_right h1)
-      add' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) => show _ ∈ carrier by
+      add' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
         rw [show a + c - (b + d) = (a - b) + (c - d) by abel]
         exact add_mem h1 h2 }
 
@@ -169,6 +170,58 @@ instance addCommGroup : AddCommGroup I :=
   Function.Injective.addCommGroup _ Subtype.coe_injective
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
+/-- The coercion into the ring as a `AddMonoidHom` -/
+@[simp]
+def coeAddMonoidHom : I →+ R where
+  toFun := (↑)
+  map_zero' := rfl
+  map_add' _ _ := rfl
+
 end NonUnitalNonAssocRing
+
+section Ring
+
+variable {R : Type*} [Ring R] (I : TwoSidedIdeal R)
+
+instance : SMul R I where smul r x := ⟨r • x.1, I.mul_mem_left _ _ x.2⟩
+
+instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _ x.2⟩
+
+instance leftModule : Module R I :=
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
+
+@[simp]
+lemma coe_smul {r : R} {x : I} : (r • x : R) = r * (x : R) := rfl
+
+instance rightModule : Module Rᵐᵒᵖ I :=
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
+
+@[simp]
+lemma coe_mop_smul {r : Rᵐᵒᵖ} {x : I} : (r • x : R) = (x : R) * r.unop := rfl
+
+instance : SMulCommClass R Rᵐᵒᵖ I where
+  smul_comm r s x := Subtype.ext <| smul_comm r s x.1
+
+/--
+For any `I : RingCon R`, when we view it as an ideal, `I.subtype` is the injective `R`-linear map
+`I → R`.
+-/
+@[simps]
+def subtype : I →ₗ[R] R where
+  toFun x := x.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/--
+For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
+map `I → Rᵐᵒᵖ`.
+-/
+@[simps]
+def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
+  toFun x := MulOpposite.op x.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end Ring
 
 end TwoSidedIdeal

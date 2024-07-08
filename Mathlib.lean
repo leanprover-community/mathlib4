@@ -307,6 +307,7 @@ import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
+import Mathlib.Algebra.Homology.DerivedCategory.Ext
 import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
@@ -544,6 +545,7 @@ import Mathlib.Algebra.Order.Group.PosPart
 import Mathlib.Algebra.Order.Group.Prod
 import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Order.Group.TypeTags
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Group.WithTop
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
@@ -1023,6 +1025,7 @@ import Mathlib.Analysis.Fourier.FourierTransformDeriv
 import Mathlib.Analysis.Fourier.Inversion
 import Mathlib.Analysis.Fourier.PoissonSummation
 import Mathlib.Analysis.Fourier.RiemannLebesgueLemma
+import Mathlib.Analysis.Fourier.ZMod
 import Mathlib.Analysis.FunctionalSpaces.SobolevInequality
 import Mathlib.Analysis.Hofer
 import Mathlib.Analysis.InnerProductSpace.Adjoint
@@ -4099,6 +4102,7 @@ import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Constructions.DomMulAct
 import Mathlib.Topology.Algebra.ContinuousAffineMap
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.Equicontinuity
@@ -4312,6 +4316,7 @@ import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.Instances.Sign
 import Mathlib.Topology.Instances.TrivSqZeroExt
+import Mathlib.Topology.Instances.ZMod
 import Mathlib.Topology.Irreducible
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.KrullDimension
