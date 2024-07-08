@@ -405,19 +405,18 @@ variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
     (hT : ∀ n, (∀ (i : n), (T n i).IsSymmetric))
     (hC : ∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i))
 
-theorem cracker0 [Subsingleton n] : (∀ (i j : n), T n j  = T n i) := by
-  intro i _ ; rw [Subsingleton.allEq i _]
-
 open Classical
 
 /-Note the need for the Axiom of Choice below! This is the reason for `Classical` above. -/
 theorem cracker1 [Subsingleton n] (h : Nonempty n) : ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (i : n), T n i = S)
     := by
     have i := choice h
+    have H : (∀ (i j : n), T n j  = T n i) := by
+      intro i _ ; rw [Subsingleton.allEq i _]
     use (T n i)
     constructor
     · exact hT n i
-    · exact fun i_1 ↦ cracker0 i i_1
+    · exact fun i_1 ↦ H i i_1
 
 theorem cracker2 [Subsingleton n] (S : E →ₗ[𝕜] E) :
     (∀ (i : n), T n i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
