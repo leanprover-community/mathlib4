@@ -8,8 +8,6 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
-open CategoryTheory Category Limits Opposite
-
 /-!
 # Module structures of filtered colimits of abelian groups over filtered colimts of rings
 
@@ -31,6 +29,8 @@ all the time. So we ask `R` and `M` to be functors into concrete categories whic
 and abelian groups respectively.
 
 -/
+
+open CategoryTheory Category Limits Opposite
 
 universe u u' v v' w
 
