@@ -442,7 +442,8 @@ theorem inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
 #align category_theory.is_pushout.inr_iso_pushout_hom CategoryTheory.IsPushout.inr_isoPushout_hom
 
 theorem of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ pushout f g)
-    (w₁ : inl ≫ i.hom = pushout.inl _ _) (w₂ : inr ≫ i.hom = pushout.inr _ _) : IsPushout f g inl inr :=
+    (w₁ : inl ≫ i.hom = pushout.inl _ _) (w₂ : inr ≫ i.hom = pushout.inr _ _) :
+      IsPushout f g inl inr :=
   of_isColimit' h
     (Limits.IsColimit.ofIsoColimit (colimit.isColimit _)
       (PushoutCocone.ext (s := PushoutCocone.mk ..) i w₁ w₂).symm)

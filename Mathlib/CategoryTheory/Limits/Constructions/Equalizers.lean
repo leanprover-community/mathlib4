@@ -145,7 +145,8 @@ abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
   pushout.inl _ _
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.pushout_inl CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.pushoutInl
 
-theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) : pushoutInl F = pushout.inr _ _ := by
+theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
+    pushoutInl F = pushout.inr _ _ := by
   convert (whisker_eq Limits.coprod.inl pushout.condition :
     (_ : F.obj _ ⟶ constructCoequalizer _) = _) <;> simp
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.pushout_inl_eq_pushout_inr CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.pushoutInl_eq_pushout_inr
