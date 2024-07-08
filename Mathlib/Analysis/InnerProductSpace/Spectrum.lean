@@ -490,6 +490,15 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
+theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T n i) ∘ₗ S = S ∘ₗ (T n i)) :
+    ∀ γ : n → 𝕜, ∀ v ∈ (⨅ (i : n), eigenspace (T n i) (γ i)),
+    S v ∈ (⨅ (i : n), eigenspace (T n i) (γ i)) := by
+  intro γ v hv
+  simp only [Submodule.mem_iInf] at *
+  intro i
+  have := hv i
+  exact eigenspace_invariant (h i) (γ i) v (hv i)
+
 /-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
   some lemmas. -/
 
@@ -500,8 +509,6 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
   intro h
   have H := exists_pair_ne n
   obtain ⟨i, j, hij⟩ := H
-  --now remove one of these elements from n, show that the resulting fintype has smaller cardinality,
-  --and then you can use the hypotheses. We then will need the invariance lemma.
   sorry
 
 /-COMMENT: May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
