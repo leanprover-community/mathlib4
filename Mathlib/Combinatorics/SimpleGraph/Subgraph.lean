@@ -158,6 +158,8 @@ theorem isSpanning_iff {G' : Subgraph G} : G'.IsSpanning ↔ G'.verts = Set.univ
   Set.eq_univ_iff_forall.symm
 #align simple_graph.subgraph.is_spanning_iff SimpleGraph.Subgraph.isSpanning_iff
 
+protected alias ⟨IsSpanning.verts_eq_univ, _⟩ := isSpanning_iff
+
 /-- Coercion from `Subgraph G` to `SimpleGraph V`.  If `G'` is a spanning
 subgraph, then `G'.spanningCoe` yields an isomorphic graph.
 In general, this adds in all vertices from `V` as isolated vertices. -/

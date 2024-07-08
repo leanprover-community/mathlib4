@@ -229,12 +229,13 @@ theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f 
 #align category_theory.limits.pushout.condition CategoryTheory.Limits.pushout.condition
 
 /-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
+
 ```
-    W ⟶ Y
-      ↘      ↘
-        S ⟶ T
-      ↗      ↗
-    X ⟶ Z
+W ⟶ Y
+  ↘   ↘
+  S ⟶ T
+  ↗   ↗
+X ⟶ Z
 ```
 -/
 abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
@@ -251,12 +252,13 @@ abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) 
 #align category_theory.limits.pullback.map_desc CategoryTheory.Limits.pullback.mapDesc
 
 /-- Given such a diagram, then there is a natural morphism `W ⨿ₛ X ⟶ Y ⨿ₜ Z`.
+
 ```
-        W ⟶ Y
-      ↗      ↗
-    S ⟶ T
-      ↘      ↘
-        X ⟶ Z
+  W ⟶ Y
+ ↗   ↗
+S ⟶ T
+ ↘   ↘
+  X ⟶ Z
 ```
 -/
 abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
