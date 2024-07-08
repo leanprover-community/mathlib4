@@ -1,6 +1,7 @@
+import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Homology.DerivedCategory.Ext
 import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.Algebra.Exact
+import Mathlib.CategoryTheory.Triangulated.Yoneda
 
 universe w v u
 
@@ -65,9 +66,7 @@ lemma ab_exact_iff_function_exact (S : ShortComplex AddCommGrp.{u}) :
 
 end ShortComplex
 
-end CategoryTheory
-
-namespace CategoryTheory
+open Opposite DerivedCategory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
 
@@ -89,7 +88,15 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
         simp only [comp_assoc_of_third_deg_zero, mk₀_comp_mk₀, ShortComplex.zero, mk₀_zero,
           comp_zero]
         rfl)).Exact := by
-  have := hS
+  letI := HasDerivedCategory.standard C
+  have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
+    (hS.singleTriangle_distinguished) n
+  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
+  refine Function.Exact.of_ladder_addEquiv (e₁ := AddEquiv.symm Ext.homAddEquiv)
+    (e₂ := AddEquiv.symm Ext.homAddEquiv)
+    (e₃ := AddEquiv.symm Ext.homAddEquiv)
+    (comm₁₂ := ?_) (comm₂₃ := sorry) (hfg := this)
+  dsimp
   sorry
 
 section
@@ -104,7 +111,15 @@ lemma covariant_sequence_exact₃' :
         simp only [comp_assoc_of_second_deg_zero, ShortComplex.ShortExact.comp_extClass,
           comp_zero]
         rfl)).Exact := by
-  have := hS
+  letI := HasDerivedCategory.standard C
+  have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
+    (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
+  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
+  refine Function.Exact.of_ladder_addEquiv (e₁ := AddEquiv.symm Ext.homAddEquiv)
+    (e₂ := AddEquiv.symm Ext.homAddEquiv)
+    (e₃ := AddEquiv.symm Ext.homAddEquiv)
+    (comm₁₂ := ?_) (comm₂₃ := sorry) (hfg := this)
+  dsimp
   sorry
 
 lemma covariant_sequence_exact₁' :
@@ -115,7 +130,15 @@ lemma covariant_sequence_exact₁' :
         dsimp [AddCommGrp.ofHom]
         simp only [comp_assoc_of_third_deg_zero, ShortComplex.ShortExact.extClass_comp, comp_zero]
         rfl)).Exact := by
-  have := hS
+  letI := HasDerivedCategory.standard C
+  have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
+    (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
+  rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
+  refine Function.Exact.of_ladder_addEquiv (e₁ := AddEquiv.symm Ext.homAddEquiv)
+    (e₂ := AddEquiv.symm Ext.homAddEquiv)
+    (e₃ := AddEquiv.symm Ext.homAddEquiv)
+    (comm₁₂ := ?_) (comm₂₃ := sorry) (hfg := this)
+  dsimp
   sorry
 
 open ComposableArrows
