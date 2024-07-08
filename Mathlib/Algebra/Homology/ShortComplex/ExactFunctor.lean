@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Jujian Zhang
 -/
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
