@@ -13,7 +13,57 @@ import Mathlib.Data.Fin.Tuple.Reflection
 
 open Pointwise Polynomial
 
+local macro "eval_simp" : tactic =>
+  `(tactic| simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, eval_pow])
+
+local macro "map_simp" : tactic =>
+  `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow, map_div₀,
+    Polynomial.map_ofNat, map_C, map_X, Polynomial.map_neg, Polynomial.map_add, Polynomial.map_sub,
+    Polynomial.map_mul, Polynomial.map_pow, Polynomial.map_div, coe_mapRingHom,
+    WeierstrassCurve.map])
+
 universe u v
+
+namespace Polynomial
+
+lemma evalEval_add {R : Type u} [Semiring R] (x y : R) (p q : R[X][Y]) :
+    (p + q).evalEval x y = p.evalEval x y + q.evalEval x y := by
+  simp only [evalEval, eval_add]
+
+lemma evalEval_sub {R : Type u} [Ring R] (x y : R) (p q : R[X][Y]) :
+    (p - q).evalEval x y = p.evalEval x y - q.evalEval x y := by
+  simp only [evalEval, eval_sub]
+
+lemma evalEval_mul {R : Type u} [CommSemiring R] (x y : R) (p q : R[X][Y]) :
+    (p * q).evalEval x y = p.evalEval x y * q.evalEval x y := by
+  simp only [evalEval, eval_mul]
+
+lemma evalEval_pow {R : Type u} [CommSemiring R] (x y : R) (p : R[X][Y]) (n : ℕ) :
+    (p ^ n).evalEval x y = p.evalEval x y ^ n := by
+  simp only [evalEval, eval_pow]
+
+lemma aeval_ne_zero_of_isCoprime {R : Type u} [CommSemiring R] {A : Type v}
+    [Nontrivial A] [Semiring A] [Algebra R A] {f g : R[X]} (h : IsCoprime f g) (a : A) :
+    ¬(aeval a f = 0 ∧ aeval a g = 0) := by
+  rintro ⟨hf, hg⟩
+  rcases h with ⟨_, _, h⟩
+  apply_fun aeval a at h
+  simp only [map_add, map_mul, map_one, hf, hg, mul_zero, add_zero, zero_ne_one] at h
+
+lemma isCoprime_iff_aeval_ne_zero {F : Type u} [Field F] (K : Type v) [Field K]
+    [IsAlgClosed K] [Algebra F K] (f g : F[X]) :
+    IsCoprime f g ↔ ∀ a : K, ¬(aeval a f = 0 ∧ aeval a g = 0) := by
+  refine ⟨fun h => aeval_ne_zero_of_isCoprime h,
+    fun h => isCoprime_of_dvd _ _ ?_ fun x hx hx' => ?_⟩
+  · replace h := h 0
+    contrapose! h
+    rw [h.left, h.right, map_zero, and_self]
+  · rintro ⟨_, rfl⟩ ⟨_, rfl⟩
+    obtain ⟨a, ha : _ = _⟩ := IsAlgClosed.exists_root (x.map <| algebraMap F K) <| by
+      simpa only [degree_map] using (ne_of_lt <| degree_pos_of_ne_zero_of_nonunit hx' hx).symm
+    exact h a <| by rw [eval_map_algebraMap] at ha; simp only [map_mul, ha, zero_mul, true_and]
+
+end Polynomial
 
 namespace MonoidHom
 
@@ -66,24 +116,94 @@ lemma evalEval_φ (n : ℤ) {x y : R} (h : W.toAffine.Equation x y) :
     (W.φ n).evalEval x y = (W.Φ n).eval x := by
   rw [← AdjoinRoot.evalEval_mk h, Affine.CoordinateRing.mk_φ, AdjoinRoot.evalEval_mk h, evalEval_C]
 
-noncomputable instance [IsDomain R] (h : (4 : R) ≠ 0) : Fintype {x : R // W.Ψ₂Sq.eval x = 0} :=
-  @Fintype.ofFinite _ <| finite_setOf_isRoot <| W.Ψ₂Sq_ne_zero h
-
-noncomputable instance [IsDomain R] {n : ℤ} (h : (n : R) ≠ 0) :
-    Fintype {x : R // (W.ΨSq n).eval x = 0} :=
-  @Fintype.ofFinite _ <| finite_setOf_isRoot <| W.ΨSq_ne_zero h
-
-noncomputable instance [IsDomain R] (n : ℤ) : Fintype {x : R // (W.Φ n).eval x = 0} :=
-  @Fintype.ofFinite _ <| finite_setOf_isRoot <| W.Φ_ne_zero n
-
 protected noncomputable def ω (W : WeierstrassCurve R) (n : ℤ) : R[X][Y] :=
   sorry
 
 end DivisionPolynomial
 
-namespace Affine.Point
+namespace Affine
 
 variable (W' : Affine R) (W : Affine F)
+
+noncomputable def polynomialEvalX (x : R) : R[X] :=
+  W'.polynomial.map <| evalRingHom x
+
+lemma polynomialEvalX_eq (x : R) : W'.polynomialEvalX x =
+    X ^ 2 + C (W'.a₁ * x + W'.a₃) * X - C (x ^ 3 + W'.a₂ * x ^ 2 + W'.a₄ * x + W'.a₆) := by
+  rw [polynomialEvalX, polynomial]
+  map_simp
+  rw [coe_evalRingHom]
+  eval_simp
+
+lemma degree_polynomialEvalX [Nontrivial R] (x : R) : (W'.polynomialEvalX x).degree = 2 := by
+  rw [polynomialEvalX_eq]
+  compute_degree!
+
+lemma equation_iff_eval_polynomialEvalX (x y : R) :
+    W'.toAffine.Equation x y ↔ eval y (W'.polynomialEvalX x) = 0 := by
+  rw [Equation, polynomialEvalX, map_evalRingHom_eval]
+
+variable {W} in
+lemma equation_X_surjective_of_splits {x : F}
+    (hx : (W.toAffine.polynomialEvalX x).Splits <| RingHom.id F) :
+    ∃ y : F, W.toAffine.Equation x y := by
+  simp only [equation_iff_eval_polynomialEvalX]
+  exact exists_root_of_splits (RingHom.id F) hx <| W.degree_polynomialEvalX x ▸ two_ne_zero
+
+lemma equation_X_surjective [IsAlgClosed F] (x : F) : ∃ y : F, W.toAffine.Equation x y :=
+  equation_X_surjective_of_splits <| IsAlgClosed.splits <| W.toAffine.polynomialEvalX x
+
+variable {W} in
+lemma nonsingular_X_surjective_of_splits (hΔ : W.Δ ≠ 0) {x : F}
+    (hx : (W.toAffine.polynomialEvalX x).Splits <| RingHom.id F) :
+    ∃ y : F, W.toAffine.Nonsingular x y := by
+  rcases equation_X_surjective_of_splits hx with ⟨x, hx⟩
+  exact ⟨x, W.toAffine.nonsingular_of_Δ_ne_zero hx hΔ⟩
+
+variable {W} in
+lemma nonsingular_X_surjective [IsAlgClosed F] (hΔ : W.Δ ≠ 0) (x : F) :
+    ∃ y : F, W.toAffine.Nonsingular x y :=
+  nonsingular_X_surjective_of_splits hΔ <| IsAlgClosed.splits <| W.toAffine.polynomialEvalX x
+
+noncomputable def polynomialEvalY (y : R) : R[X] :=
+  W'.polynomial.eval <| C y
+
+lemma polynomialEvalY_eq (y : R) : W'.polynomialEvalY y = C y ^ 2 + (C W'.a₁ * X + C W'.a₃) * C y -
+    (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆) := by
+  rw [polynomialEvalY, polynomial]
+  eval_simp
+
+lemma degree_polynomialEvalY [Nontrivial R] (y : R) : (W'.polynomialEvalY y).degree = 3 := by
+  rw [polynomialEvalY_eq]
+  compute_degree!
+
+lemma equation_iff_eval_polynomialEvalY (x y : R) :
+    W'.toAffine.Equation x y ↔ eval x (W'.polynomialEvalY y) = 0 := by
+  rw [Equation, evalEval, polynomialEvalY]
+
+variable {W} in
+lemma equation_Y_surjective_of_splits {y : F}
+    (hx : (W.toAffine.polynomialEvalY y).Splits <| RingHom.id F) :
+    ∃ x : F, W.toAffine.Equation x y := by
+  simp only [equation_iff_eval_polynomialEvalY]
+  exact exists_root_of_splits (RingHom.id F) hx <| W.degree_polynomialEvalY y ▸ three_ne_zero
+
+lemma equation_Y_surjective [IsAlgClosed F] (y : F) : ∃ x : F, W.toAffine.Equation x y :=
+  equation_Y_surjective_of_splits <| IsAlgClosed.splits <| W.toAffine.polynomialEvalY y
+
+variable {W} in
+lemma nonsingular_Y_surjective_of_splits (hΔ : W.Δ ≠ 0) {y : F}
+    (hx : (W.toAffine.polynomialEvalY y).Splits <| RingHom.id F) :
+    ∃ x : F, W.toAffine.Nonsingular x y := by
+  rcases equation_Y_surjective_of_splits hx with ⟨x, hx⟩
+  exact ⟨x, W.toAffine.nonsingular_of_Δ_ne_zero hx hΔ⟩
+
+variable {W} in
+lemma nonsingular_Y_surjective [IsAlgClosed F] (hΔ : W.Δ ≠ 0) (y : F) :
+    ∃ x : F, W.toAffine.Nonsingular x y :=
+  nonsingular_Y_surjective_of_splits hΔ <| IsAlgClosed.splits <| W.toAffine.polynomialEvalY y
+
+namespace Point
 
 @[simps]
 def equivNonsingularSubtype {p : W'.Point → Prop} (p0 : p 0) : {P : W'.Point // p P} ≃
@@ -157,7 +277,9 @@ lemma zsmulKerEquivNonsingular_symm_some {n : ℤ} {x y : F} (h : W.Nonsingular 
     (zsmulKerEquivNonsingular W n).symm (.some ⟨⟨x, y⟩, h, hn⟩) = ⟨some h, hn⟩ :=
   rfl
 
-end Affine.Point
+end Point
+
+end Affine
 
 namespace Jacobian
 
@@ -310,5 +432,18 @@ lemma zsmul_eq_zero_iff (n : ℤ) {x y : F} (h : W.NonsingularLift ⟦![x, y, 1]
 end Point
 
 end Jacobian
+
+lemma isCoprime_Φ_ΨSq [IsAlgClosed F] {W : WeierstrassCurve F} (hΔ : W.Δ ≠ 0) (n : ℤ) :
+    IsCoprime (W.Φ n) (W.ΨSq n) := by
+  refine (Polynomial.isCoprime_iff_aeval_ne_zero F ..).mpr fun x ⟨hΦ, hΨ⟩ => ?_
+  rcases W.toAffine.nonsingular_X_surjective hΔ x with ⟨y, h⟩
+  have hn {n : ℤ} := Jacobian.Point.zsmul_eq_zero_iff n <| (Jacobian.nonsingularLift_some ..).mpr h
+  rw [coe_aeval_eq_eval, ← evalEval_Ψ_sq n h.left, ← evalEval_ψ n h.left,
+    pow_eq_zero_iff two_ne_zero] at hΨ
+  simp only [coe_aeval_eq_eval, ← evalEval_φ n h.left, WeierstrassCurve.φ, evalEval_sub,
+    evalEval_mul, evalEval_pow, hΨ, zero_pow two_ne_zero, mul_zero, zero_sub, neg_eq_zero,
+    mul_eq_zero, ← hn, add_smul, sub_smul, one_smul, hn.mpr hΨ, zero_add, or_self,
+    Jacobian.Point.ext_iff, Jacobian.Point.zero_point, Quotient.eq] at hΦ
+  exact Jacobian.not_equiv_of_Z_eq_zero_right one_ne_zero rfl hΦ
 
 end WeierstrassCurve
