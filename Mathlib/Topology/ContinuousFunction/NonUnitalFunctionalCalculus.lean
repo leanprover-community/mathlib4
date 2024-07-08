@@ -613,12 +613,6 @@ noncomputable def cfcₙHom_of_cfcHom {a : A} (ha : p a) : C(σₙ R a, R)₀ �
   (cfcHom ha (R := R) : C(spectrum R a, R) →⋆ₙₐ[R] A).comp <|
     (ψ : C(σₙ R a, R) →⋆ₙₐ[R] C(spectrum R a, R)).comp e
 
-lemma cfcₙHom_of_cfcHom_map_id {a : A} (ha : p a) :
-    cfcₙHom_of_cfcHom R ha (⟨.restrict (σₙ R a) <| .id R, by simp⟩) = a := by
-  simp only [cfcₙHom_of_cfcHom, NonUnitalStarAlgHom.comp_apply, toContinuousMapHom_apply,
-    NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
-  exact cfcHom_id ha
-
 lemma closedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
     ClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
   let f : C(spectrum R a, σₙ R a) :=
