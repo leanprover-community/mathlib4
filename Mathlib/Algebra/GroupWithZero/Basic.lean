@@ -5,8 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Data.Int.Defs
+import Mathlib.Logic.Unique
 
 #align_import algebra.group_with_zero.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -36,6 +35,7 @@ and require `0⁻¹ = 0`.
 
 -/
 
+assert_not_exists DenselyOrdered
 
 open scoped Classical
 
@@ -316,17 +316,14 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
     inv_inv := fun a => by
       by_cases h : a = 0
       · simp [h]
-
       · exact left_inv_eq_right_inv (inv_mul_cancel <| inv_ne_zero h) (inv_mul_cancel h)
         ,
     mul_inv_rev := fun a b => by
       by_cases ha : a = 0
       · simp [ha]
-
       by_cases hb : b = 0
       · simp [hb]
-
-      refine' inv_eq_of_mul _
+      apply inv_eq_of_mul
       simp [mul_assoc, ha, hb],
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 #align group_with_zero.to_division_monoid GroupWithZero.toDivisionMonoid
@@ -511,51 +508,3 @@ lemma div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
 #align div_sq_cancel div_sq_cancel
 
 end CommGroupWithZero
-
-/-! ### Order dual -/
-
-
-open OrderDual
-
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
-
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
-
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
-
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
-
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
-
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := h
-
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
-
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := h
-
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
-
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
-
-/-! ### Lexicographic order -/
-
-
-instance [h : MulZeroClass α] : MulZeroClass (Lex α) := h
-
-instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := h
-
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := h
-
-instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
-
-instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
-
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) := h
-
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
-
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) := h
-
-instance [h : GroupWithZero α] : GroupWithZero (Lex α) := h
-
-instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := h

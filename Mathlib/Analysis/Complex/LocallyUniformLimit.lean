@@ -59,7 +59,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
     exact div_le_div hM (hf w hw) (sq_pos_of_pos hr) le_rfl
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
   simp only [cderiv, norm_smul]
-  refine' (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq _)
+  refine (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq ?_)
   field_simp [_root_.abs_of_nonneg Real.pi_pos.le]
   ring
 #align complex.norm_cderiv_le Complex.norm_cderiv_le
@@ -67,7 +67,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by
   have h1 : ContinuousOn (fun w : ℂ => ((w - z) ^ 2)⁻¹) (sphere z r) := by
-    refine' ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => hr.ne _
+    refine ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => hr.ne ?_
     rwa [mem_sphere_iff_norm, sq_eq_zero_iff.mp h, norm_zero] at hw
   simp_rw [cderiv, ← smul_sub]
   congr 1
@@ -165,7 +165,7 @@ theorem _root_.TendstoLocallyUniformlyOn.deriv (hf : TendstoLocallyUniformlyOn F
   · simp only [TendstoUniformlyOn, eventually_bot, imp_true_iff]
   rintro K hKU hK
   obtain ⟨δ, hδ, hK4, h⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
-  refine' h.congr_right fun z hz => cderiv_eq_deriv hU (hf.differentiableOn hF hU) hδ _
+  refine h.congr_right fun z hz => cderiv_eq_deriv hU (hf.differentiableOn hF hU) hδ ?_
   exact (closedBall_subset_cthickening hz δ).trans hK4
 #align tendsto_locally_uniformly_on.deriv TendstoLocallyUniformlyOn.deriv
 
@@ -181,7 +181,7 @@ theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u
     DifferentiableOn ℂ (fun w : ℂ => ∑' i : ι, F i w) U := by
   classical
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  refine' hc.differentiableOn (eventually_of_forall fun s => _) hU
+  refine hc.differentiableOn (eventually_of_forall fun s => ?_) hU
   exact DifferentiableOn.sum fun i _ => hf i
 #align complex.differentiable_on_tsum_of_summable_norm Complex.differentiableOn_tsum_of_summable_norm
 

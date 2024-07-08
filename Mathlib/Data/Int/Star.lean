@@ -3,7 +3,6 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Parity
 import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.Order.Monoid.Submonoid
 

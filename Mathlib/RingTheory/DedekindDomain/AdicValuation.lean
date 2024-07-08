@@ -6,7 +6,7 @@ Authors: María Inés de Frutos-Fernández
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
-import Mathlib.Topology.Algebra.ValuedField
+import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Algebra.Order.Group.TypeTags
 
 #align_import ring_theory.dedekind_domain.adic_valuation from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -38,7 +38,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   ideal `(r)`.
 - `IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
   with `v`-adic valuation `Multiplicative.ofAdd (-1)`.
-- IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
+- `IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
   is the valuation of `r` divided by the valuation of `s`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
@@ -81,6 +81,7 @@ def intValuationDef (r : R) : ℤₘ₀ :=
     ↑(Multiplicative.ofAdd
       (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ))
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def IsDedekindDomain.HeightOneSpectrum.intValuationDef
+
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
   if_pos hr
@@ -220,6 +221,7 @@ theorem IntValuation.map_add_le_max' (x y : R) :
 #align is_dedekind_domain.height_one_spectrum.int_valuation.map_add_le_max' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_add_le_max'
 
 /-- The `v`-adic valuation on `R`. -/
+@[simps]
 def intValuation : Valuation R ℤₘ₀ where
   toFun := v.intValuationDef
   map_zero' := IntValuation.map_zero' v
@@ -227,6 +229,10 @@ def intValuation : Valuation R ℤₘ₀ where
   map_mul' := IntValuation.map_mul' v
   map_add_le_max' := IntValuation.map_add_le_max' v
 #align is_dedekind_domain.height_one_spectrum.int_valuation IsDedekindDomain.HeightOneSpectrum.intValuation
+
+
+theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
+    intValuation v r = intValuationDef v r := rfl
 
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem int_valuation_exists_uniformizer :
@@ -252,6 +258,13 @@ theorem int_valuation_exists_uniformizer :
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
   exact Nat.eq_of_le_of_lt_succ mem nmem
 #align is_dedekind_domain.height_one_spectrum.int_valuation_exists_uniformizer IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer
+
+/-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
+theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
+    v.intValuation r = Multiplicative.ofAdd (-1 : ℤ) := by
+  rw [intValuation_apply, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
+    ofAdd_neg, WithZero.coe_inv]
+  apply v.associates_irreducible
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
@@ -333,7 +346,7 @@ theorem adicValued_apply {x : K} : (v.adicValued.v : _) x = v.valuation x :=
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
-def adicCompletion :=
+abbrev adicCompletion :=
   @UniformSpace.Completion K v.adicValued.toUniformSpace
 #align is_dedekind_domain.height_one_spectrum.adic_completion IsDedekindDomain.HeightOneSpectrum.adicCompletion
 
@@ -425,44 +438,27 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       have h :
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
-      refine' ValuationSubring.mul_mem _ _ _ _ x.2
+      refine ValuationSubring.mul_mem _ _ _ ?_ x.2
       --porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
+      rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
     ⟨(algebraMap R K r : adicCompletion K v), by
-      -- porting note (#10754): added instance
-      letI : Valued K ℤₘ₀ := adicValued v
-      -- Porting note: rest of proof was `simpa only
-      --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
-      --   v.valuation_le_one _
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
-      exact v.valuation_le_one _⟩
+      simpa only [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
+        v.valuation_le_one _⟩
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by
     ext
-    --porting note (#10754): added instance
-    letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
-    --porting note (#10754): added instance
-    letI : Valued K ℤₘ₀ := adicValued v
     simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
   commutes' r x := by
-    -- Porting note: added `dsimp` line
-    dsimp
     rw [mul_comm]
   smul_def' r x := by
     ext
-    -- Porting note: added `dsimp`
-    dsimp
-    --porting note (#10754): added instance
-    letI : Valued K ℤₘ₀ := adicValued v
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl
 
@@ -475,7 +471,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
 instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
   eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
     rw [Algebra.smul_def, mul_eq_zero] at hcx
-    refine' hcx.imp_left fun hc => _
+    refine hcx.imp_left fun hc => ?_
     letI : UniformSpace K := v.adicValued.toUniformSpace
     rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
     exact

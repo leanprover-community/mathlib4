@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2017 Simon Hudon All rights reserved.
+Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
@@ -310,8 +310,7 @@ set_option linter.uppercaseLean3 false in
 end Approx
 
 /-- constructor for M-types -/
-protected def mk (x : F (M F)) : M F
-    where
+protected def mk (x : F (M F)) : M F where
   approx := Approx.sMk x
   consistent := Approx.P_mk x
 set_option linter.uppercaseLean3 false in
@@ -342,7 +341,9 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   cases' h : x.approx (succ n) with _ hd ch
   have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
-    apply x.consistent
+    · split
+      injections
+    · apply x.consistent
   revert ch
   rw [h']
   intros ch h
@@ -772,7 +773,7 @@ theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f 
   cases' gxeq : g x with a f'
   have h₀ : M.dest (f x) = ⟨a, f ∘ f'⟩ := by rw [hyp, gxeq, PFunctor.map_eq]
   have h₁ : M.dest (M.corec g x) = ⟨a, M.corec g ∘ f'⟩ := by rw [dest_corec, gxeq, PFunctor.map_eq]
-  refine' ⟨_, _, _, h₀, h₁, _⟩
+  refine ⟨_, _, _, h₀, h₁, ?_⟩
   intro i
   exact ⟨f' i, trivial, rfl, rfl⟩
 set_option linter.uppercaseLean3 false in

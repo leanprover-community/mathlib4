@@ -31,7 +31,7 @@ suppress_compilation
 
 noncomputable section
 
-open BigOperators NNReal Finset Metric ContinuousMultilinearMap Fin Function
+open NNReal Finset Metric ContinuousMultilinearMap Fin Function
 
 /-!
 ### Type variables
@@ -454,7 +454,7 @@ variable {𝕜 G}
 theorem ContinuousMultilinearMap.fin0_apply_norm (f : G[×0]→L[𝕜] G') {x : Fin 0 → G} :
     ‖f x‖ = ‖f‖ := by
   obtain rfl : x = 0 := Subsingleton.elim _ _
-  refine' le_antisymm (by simpa using f.le_opNorm 0) _
+  refine le_antisymm (by simpa using f.le_opNorm 0) ?_
   have : ‖ContinuousMultilinearMap.curry0 𝕜 G f.uncurry0‖ ≤ ‖f.uncurry0‖ :=
     ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) fun m => by
       simp [-ContinuousMultilinearMap.apply_zero_curry0]
@@ -667,7 +667,7 @@ theorem curryFinFinset_symm_apply_const (hk : s.card = k) (hl : sᶜ.card = l)
 theorem curryFinFinset_apply_const (hk : s.card = k) (hl : sᶜ.card = l) (f : G[×n]→L[𝕜] G')
     (x y : G) : (curryFinFinset 𝕜 G G' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
-  refine' (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans _
+  refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
   rw [LinearIsometryEquiv.symm_apply_apply]
 #align continuous_multilinear_map.curry_fin_finset_apply_const ContinuousMultilinearMap.curryFinFinset_apply_const
 

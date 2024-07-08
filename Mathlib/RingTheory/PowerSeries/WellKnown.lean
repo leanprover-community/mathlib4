@@ -3,9 +3,10 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.RingTheory.PowerSeries.Basic
 
 #align_import ring_theory.power_series.well_known from "leanprover-community/mathlib"@"8199f6717c150a7fe91c4534175f4cf99725978f"
 
@@ -16,6 +17,10 @@ In this file we define the following power series:
 
 * `PowerSeries.invUnitsSub`: given `u : Rˣ`, this is the series for `1 / (u - x)`.
   It is given by `∑ n, x ^ n /ₚ u ^ (n + 1)`.
+
+* `PowerSeries.invOneSubPow`: given a commutative ring `S` and a number `d : ℕ`,
+  `PowerSeries.invOneSubPow d : S⟦X⟧ˣ` is the power series `∑ n, Nat.choose (d + n) d`
+  whose multiplicative inverse is `(1 - X) ^ (d + 1)`.
 
 * `PowerSeries.sin`, `PowerSeries.cos`, `PowerSeries.exp` : power series for sin, cosine, and
   exponential functions.
@@ -65,6 +70,77 @@ theorem map_invUnitsSub (f : R →+* S) (u : Rˣ) :
 #align power_series.map_inv_units_sub PowerSeries.map_invUnitsSub
 
 end Ring
+
+section invOneSubPow
+
+variable {S : Type*} [CommRing S] (d : ℕ)
+
+/--
+(1 + X + X^2 + ...) * (1 - X) = 1.
+
+Note that the power series `1 + X + X^2 + ...` is written as `mk 1` where `1` is the constant
+function so that `mk 1` is the power series with all coefficients equal to one.
+-/
+theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
+  rw [mul_comm, ext_iff]
+  intro n
+  cases n with
+  | zero => simp
+  | succ n => simp [sub_mul]
+
+/--
+Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
+states that for any `d : ℕ`, `(1 + X + X^2 + ... : S⟦X⟧) ^ (d + 1)` is equal to the power series
+`mk fun n => Nat.choose (d + n) d : S⟦X⟧`.
+-/
+theorem mk_one_pow_eq_mk_choose_add :
+    (mk 1 : S⟦X⟧) ^ (d + 1) = (mk fun n => Nat.choose (d + n) d : S⟦X⟧) := by
+  induction d with
+  | zero => ext; simp
+  | succ d hd =>
+      ext n
+      rw [pow_add, hd, pow_one, mul_comm, coeff_mul]
+      simp_rw [coeff_mk, Pi.one_apply, one_mul]
+      norm_cast
+      rw [Finset.sum_antidiagonal_choose_add, ← Nat.choose_succ_succ, Nat.succ_eq_add_one,
+        add_right_comm]
+
+/--
+The power series `mk fun n => Nat.choose (d + n) d`, whose multiplicative inverse is
+`(1 - X) ^ (d + 1)`.
+-/
+noncomputable def invOneSubPow : S⟦X⟧ˣ where
+  val := mk fun n => Nat.choose (d + n) d
+  inv := (1 - X) ^ (d + 1)
+  val_inv := by
+    rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow, mk_one_mul_one_sub_eq_one, one_pow]
+  inv_val := by
+    rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow, mul_comm, mk_one_mul_one_sub_eq_one, one_pow]
+
+theorem invOneSubPow_val_eq_mk_choose_add :
+    (invOneSubPow d).val = (mk fun n => Nat.choose (d + n) d : S⟦X⟧) := rfl
+
+theorem invOneSubPow_val_zero_eq_invUnitSub_one :
+    (invOneSubPow 0).val = invUnitsSub (1 : Sˣ) := by
+  simp [invOneSubPow, invUnitsSub]
+
+/--
+The theorem `PowerSeries.mk_one_mul_one_sub_eq_one` implies that `1 - X` is a unit in `S⟦X⟧`
+whose inverse is the power series `1 + X + X^2 + ...`. This theorem states that for any `d : ℕ`,
+`PowerSeries.invOneSubPow d` is equal to `(1 - X)⁻¹ ^ (d + 1)`.
+-/
+theorem invOneSubPow_eq_inv_one_sub_pow :
+    invOneSubPow d = (Units.mkOfMulEqOne (1 - X) (mk 1 : S⟦X⟧)
+    <| Eq.trans (mul_comm _ _) mk_one_mul_one_sub_eq_one)⁻¹ ^ (d + 1) := by
+  rw [inv_pow]
+  exact (DivisionMonoid.inv_eq_of_mul _ (invOneSubPow d) <| by
+    rw [← Units.val_eq_one, Units.val_mul, Units.val_pow_eq_pow_val]
+    exact (invOneSubPow d).inv_val).symm
+
+theorem invOneSubPow_inv_eq_one_sub_pow :
+    (invOneSubPow d).inv = (1 - X : S⟦X⟧) ^ (d + 1) := rfl
+
+end invOneSubPow
 
 section Field
 
@@ -167,7 +243,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     by convert this using 1 <;> ring
   congr 1
   rw [← map_natCast (algebraMap ℚ A) (n.choose x), ← map_mul, ← map_mul]
-  refine' RingHom.congr_arg _ _
+  refine RingHom.congr_arg _ ?_
   rw [mul_one_div (↑(n.choose x) : ℚ), one_div_mul_one_div]
   symm
   rw [div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]

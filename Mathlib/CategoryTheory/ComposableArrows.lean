@@ -3,7 +3,6 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
@@ -126,7 +125,8 @@ def obj : Fin 2 → C
   | ⟨0, _⟩ => X₀
   | ⟨1, _⟩  => X₁
 
-variable {X₀ X₁} (f : X₀ ⟶ X₁)
+variable {X₀ X₁}
+variable (f : X₀ ⟶ X₁)
 
 /-- The obvious map `obj X₀ X₁ i ⟶ obj X₀ X₁ j` whenever `i j : Fin 2` satisfy `i ≤ j`. -/
 @[simp]
@@ -361,7 +361,8 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
-      · simp [Fin.le_def, Nat.succ_eq_add_one] at hjk
+      · simp [Fin.le_def] at hjk
+        omega
       · dsimp
         rw [assoc, ← F.map_comp, homOfLE_comp]
   · obtain _ | j := j
@@ -855,9 +856,9 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
     exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
   · intro obj mapSucc
     obtain ⟨F, e, h⟩ := hn (fun i => obj i.succ) (fun i => mapSucc i.succ)
-    refine' ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
+    refine ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
       | 0 => Iso.refl _
-      | ⟨i + 1, hi⟩ => e _, fun i hi => _⟩
+      | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
     obtain _ | i := i
     · dsimp
       rw [assoc, Iso.inv_hom_id, comp_id]
@@ -885,15 +886,39 @@ lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by valid) :
 
 end mkOfObjOfMapSucc
 
+variable (C n) in
+/-- The equivalence `(ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n` obtained
+by reversing the arrows. -/
+@[simps!]
+def opEquivalence : (ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n :=
+  ((orderDualEquivalence (Fin (n + 1))).symm.trans
+      Fin.revOrderIso.equivalence).symm.congrLeft.op.trans
+    (Functor.leftOpRightOpEquiv (Fin (n + 1)) C)
+
 end ComposableArrows
 
 variable {C}
 
+section
+
+open ComposableArrows
+
+variable {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ)
+
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
 with a functor `C ⥤ D`. -/
 @[simps!]
-def Functor.mapComposableArrows {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ) :
+def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
+
+/-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` induced by `G : C ⥤ D`
+commutes with `opEquivalence`. -/
+def Functor.mapComposableArrowsOpIso :
+    G.mapComposableArrows n ⋙ (opEquivalence D n).functor.rightOp ≅
+      (opEquivalence C n).functor.rightOp ⋙ (G.op.mapComposableArrows n).op :=
+  Iso.refl _
+
+end
 
 end CategoryTheory

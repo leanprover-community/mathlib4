@@ -55,7 +55,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddCommGroup L] [Countable L]
   exact ((fund.measure_eq_tsum _).trans (measure_iUnion₀
     (Pairwise.mono h fun i j hij => (hij.mono inf_le_left inf_le_left).aedisjoint)
       fun _ => (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
-      (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right _ _)
+      (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right)
 #align measure_theory.exists_pair_mem_lattice_not_disjoint_vadd MeasureTheory.exists_pair_mem_lattice_not_disjoint_vadd
 
 /-- The **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E` whose volume
@@ -75,12 +75,12 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
   obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h
-  refine' ⟨x - y, sub_ne_zero.2 hxy, _⟩
+  refine ⟨x - y, sub_ne_zero.2 hxy, ?_⟩
   rw [Set.mem_inv_smul_set_iff₀ (two_ne_zero' ℝ)] at hv hw
   simp_rw [AddSubgroup.vadd_def, vadd_eq_add, add_comm _ w, ← sub_eq_sub_iff_add_eq_add, ←
     AddSubgroup.coe_sub] at hvw
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
-  refine' h_conv hw (h_symm _ hv) _ _ _ <;> norm_num
+  refine h_conv hw (h_symm _ hv) ?_ ?_ ?_ <;> norm_num
 #align measure_theory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
 
 /-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric

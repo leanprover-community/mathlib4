@@ -45,7 +45,6 @@ noncomputable section
 open Function Set Subalgebra MvPolynomial Algebra
 
 open scoped Classical
-open BigOperators
 
 universe x u v w
 
@@ -114,7 +113,7 @@ theorem linearIndependent : LinearIndependent R x := by
     ext
     simp
   rw [this]
-  refine' hx.comp _
+  refine hx.comp ?_
   rw [← linearIndependent_iff_injective_total]
   exact linearIndependent_X _ _
 #align algebraic_independent.linear_independent AlgebraicIndependent.linearIndependent
@@ -142,7 +141,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
   have h : ∀ p : MvPolynomial ι R, aeval x p ∈ (@aeval R _ _ _ _ _ ((↑) : range x → A)).range := by
     intro p
     rw [AlgHom.mem_range]
-    refine' ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, _⟩
+    refine ⟨MvPolynomial.rename (codRestrict x (range x) mem_range_self) p, ?_⟩
     simp [Function.comp, aeval_rename]
   intro x y hxy
   rw [this] at hxy
@@ -151,7 +150,7 @@ theorem map {f : A →ₐ[R] A'} (hf_inj : Set.InjOn f (adjoin R (range x))) :
 #align algebraic_independent.map AlgebraicIndependent.map
 
 theorem map' {f : A →ₐ[R] A'} (hf_inj : Injective f) : AlgebraicIndependent R (f ∘ x) :=
-  hx.map (injOn_of_injective hf_inj _)
+  hx.map hf_inj.injOn
 #align algebraic_independent.map' AlgebraicIndependent.map'
 
 theorem of_comp (f : A →ₐ[R] A') (hfv : AlgebraicIndependent R (f ∘ x)) :
@@ -167,7 +166,7 @@ open AlgebraicIndependent
 
 theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) :
     AlgebraicIndependent R (f ∘ x) ↔ AlgebraicIndependent R x :=
-  ⟨fun h => h.of_comp f, fun h => h.map (injOn_of_injective hf _)⟩
+  ⟨fun h => h.of_comp f, fun h => h.map hf.injOn⟩
 #align alg_hom.algebraic_independent_iff AlgHom.algebraicIndependent_iff
 
 @[nontriviality]
@@ -322,7 +321,7 @@ theorem AlgebraicIndependent.image {ι} {s : Set ι} {f : ι → A}
 theorem algebraicIndependent_iUnion_of_directed {η : Type*} [Nonempty η] {s : η → Set A}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :
     AlgebraicIndependent R ((↑) : (⋃ i, s i) → A) := by
-  refine' algebraicIndependent_of_finite (⋃ i, s i) fun t ht ft => _
+  refine algebraicIndependent_of_finite (⋃ i, s i) fun t ht ft => ?_
   rcases finite_subset_iUnion ft ht with ⟨I, fi, hI⟩
   rcases hs.finset_le fi.toFinset with ⟨i, hi⟩
   exact (h i).mono (Subset.trans hI <| iUnion₂_subset fun j hj => hi j (fi.mem_toFinset.2 hj))
@@ -343,8 +342,8 @@ theorem exists_maximal_algebraicIndependent (s t : Set A) (hst : s ⊆ t)
   rcases zorn_subset_nonempty { u : Set A | AlgebraicIndependent R ((↑) : u → A) ∧ s ⊆ u ∧ u ⊆ t }
       (fun c hc chainc hcn =>
         ⟨⋃₀ c, by
-          refine' ⟨⟨algebraicIndependent_sUnion_of_directed hcn chainc.directedOn
-              fun a ha => (hc ha).1, _, _⟩, _⟩
+          refine ⟨⟨algebraicIndependent_sUnion_of_directed hcn chainc.directedOn
+              fun a ha => (hc ha).1, ?_, ?_⟩, ?_⟩
           · cases' hcn with x hx
             exact subset_sUnion_of_subset _ x (hc hx).2.1 hx
           · exact sUnion_subset fun x hx => (hc hx).2.2
@@ -466,7 +465,7 @@ theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
           Polynomial (adjoin R (Set.range x)) →+* A)
         hx.mvPolynomialOptionEquivPolynomialAdjoin.toRingHom =
       ↑(MvPolynomial.aeval fun o : Option ι => o.elim a x : MvPolynomial (Option ι) R →ₐ[R] A) := by
-  refine' MvPolynomial.ringHom_ext _ _ <;>
+  refine MvPolynomial.ringHom_ext ?_ ?_ <;>
     simp only [RingHom.comp_apply, RingEquiv.toRingHom_eq_coe, RingEquiv.coe_toRingHom,
       AlgHom.coe_toRingHom, AlgHom.coe_toRingHom]
   · intro r
@@ -532,7 +531,8 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u}
 #align algebraic_independent.is_transcendence_basis_iff AlgebraicIndependent.isTranscendenceBasis_iff
 
 theorem IsTranscendenceBasis.isAlgebraic [Nontrivial R] (hx : IsTranscendenceBasis R x) :
-    IsAlgebraic (adjoin R (range x)) A := by
+    Algebra.IsAlgebraic (adjoin R (range x)) A := by
+  constructor
   intro a
   rw [← not_iff_comm.1 (hx.1.option_iff _).symm]
   intro ai

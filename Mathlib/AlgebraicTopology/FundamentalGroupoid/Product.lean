@@ -26,7 +26,6 @@ In this file, we give the following definitions/theorems:
     preserves all products.
 -/
 
--- Porting note: Plenty declarations in this file already used uppercase in mathlib 3 names
 set_option linter.uppercaseLean3 false
 
 noncomputable section
@@ -109,8 +108,7 @@ theorem coneDiscreteComp_obj_mapCone :
 
 /-- This is `piIso.inv` as a cone morphism (in fact, isomorphism) -/
 def piTopToPiCone :
-    Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I => πₓ (X i)
-    where
+    Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I => πₓ (X i) where
   hom := CategoryTheory.Functor.pi' (proj X)
 #align fundamental_groupoid_functor.pi_Top_to_pi_cone FundamentalGroupoidFunctor.piTopToPiCone
 

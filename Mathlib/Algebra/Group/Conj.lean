@@ -14,6 +14,10 @@ import Mathlib.Algebra.Group.Semiconj.Units
 See also `MulAut.conj` and `Quandle.conj`.
 -/
 
+-- TODO: After #13027,
+-- assert_not_exists MonoidWithZero
+assert_not_exists Multiset
+
 universe u v
 
 variable {α : Type u} {β : Type v}
@@ -124,18 +128,6 @@ theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻�
 #align conj_injective conj_injective
 
 end Group
-
-@[simp]
-theorem isConj_iff₀ [GroupWithZero α] {a b : α} : IsConj a b ↔ ∃ c : α, c ≠ 0 ∧ c * a * c⁻¹ = b :=
-  ⟨fun ⟨c, hc⟩ =>
-    ⟨c, by
-      rw [← Units.val_inv_eq_inv_val, Units.mul_inv_eq_iff_eq_mul]
-      exact ⟨c.ne_zero, hc⟩⟩,
-    fun ⟨c, c0, hc⟩ =>
-    ⟨Units.mk0 c c0, by
-      rw [SemiconjBy, ← Units.mul_inv_eq_iff_eq_mul, Units.val_inv_eq_inv_val, Units.val_mk0]
-      exact hc⟩⟩
-#align is_conj_iff₀ isConj_iff₀
 
 namespace IsConj
 
@@ -326,5 +318,3 @@ theorem carrier_eq_preimage_mk {a : ConjClasses α} : a.carrier = ConjClasses.mk
 #align conj_classes.carrier_eq_preimage_mk ConjClasses.carrier_eq_preimage_mk
 
 end ConjClasses
-
-assert_not_exists Multiset

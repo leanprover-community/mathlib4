@@ -64,7 +64,7 @@ attribute [coe] PresheafedSpace.carrier
 
 -- Porting note: we add this instance, as Lean does not reliably use the `CoeOut` instance above
 -- in downstream files.
-instance : CoeSort (PresheafedSpace C) (Type*) where coe := fun X => X.carrier
+instance : CoeSort (PresheafedSpace C) Type* where coe := fun X => X.carrier
 
 -- Porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
@@ -104,7 +104,7 @@ structure Hom (X Y : PresheafedSpace C) where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.hom AlgebraicGeometry.PresheafedSpace.Hom
 
--- Porting note: eventually, the ext lemma shall be applied to terms in `X ⟶ Y`
+-- Porting note (#11041): eventually, the `ext` lemma shall be applied to terms in `X ⟶ Y`
 -- rather than `Hom X Y`, this one was renamed `Hom.ext` instead of `ext`,
 -- and the more practical lemma `ext` is defined just after the definition
 -- of the `Category` instance
@@ -185,8 +185,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {C}
 
--- Porting note: adding an ext lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): adding an `ext` lemma.
 @[ext]
 theorem ext {X Y : PresheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
@@ -284,24 +283,14 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
   inv :=
     { base := H.inv
       c := Presheaf.toPushforwardOfIso H α.hom }
-  hom_inv_id := by
-    ext
-    · simp only [comp_base, Iso.hom_inv_id, FunctorToTypes.map_id_apply, id_base]
-    rw [NatTrans.comp_app]
-    simp only [id_base, comp_obj, op_obj, comp_base, Presheaf.pushforwardObj_obj,
-      Opens.map_comp_obj, comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, assoc,
-      Iso.hom_inv_id_app, comp_id, whiskerRight_app, eqToHom_app, id_c_app, map_id,
-      ← Functor.map_comp, eqToHom_trans, eqToHom_refl]
+  hom_inv_id := by ext <;> simp
   inv_hom_id := by
     ext
     · dsimp
       rw [H.inv_hom_id]
     dsimp
-    simp only [Presheaf.pushforwardObj_obj, op_obj, Opens.map_comp_obj, comp_obj,
-      comp_c_app, unop_op, Presheaf.toPushforwardOfIso_app, whiskerRight_app, eqToHom_app,
-      assoc, id_c_app, map_id]
-    rw [← α.hom.naturality, Presheaf.pushforwardObj_map, eqToHom_map, eqToHom_map,
-      eqToHom_map, eqToHom_trans_assoc, eqToHom_refl, id_comp]
+    simp only [Presheaf.toPushforwardOfIso_app, assoc, ← α.hom.naturality]
+    simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, id_comp]
     apply Iso.inv_hom_id_app
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.iso_of_components AlgebraicGeometry.PresheafedSpace.isoOfComponents
@@ -319,9 +308,8 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
     ext U
     dsimp
     rw [NatTrans.id_app]
-    simp only [Presheaf.pushforwardObj_obj, op_obj, Presheaf.pushforwardToOfIso_app,
-      Iso.symm_inv, mapIso_hom, forget_map, Iso.symm_hom, mapIso_inv,
-      unop_op, eqToHom_map, assoc]
+    simp only [Presheaf.pushforwardToOfIso_app, Iso.symm_inv, mapIso_hom, forget_map,
+      Iso.symm_hom, mapIso_inv, eqToHom_map, assoc]
     have eq₁ := congr_app H.hom_inv_id (op ((Opens.map H.hom.base).obj U))
     have eq₂ := H.hom.c.naturality (eqToHom (congr_obj (congr_arg Opens.map
       ((forget C).congr_map H.inv_hom_id.symm)) U)).op
@@ -333,18 +321,18 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.sheaf_iso_of_iso AlgebraicGeometry.PresheafedSpace.sheafIsoOfIso
 
 instance base_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
-  IsIso.of_iso ((forget _).mapIso (asIso f))
+  ((forget _).mapIso (asIso f)).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.base_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.base_isIso_of_iso
 
 instance c_isIso_of_iso (f : X ⟶ Y) [IsIso f] : IsIso f.c :=
-  IsIso.of_iso (sheafIsoOfIso (asIso f))
+  (sheafIsoOfIso (asIso f)).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.c_is_iso_of_iso AlgebraicGeometry.PresheafedSpace.c_isIso_of_iso
 
 /-- This could be used in conjunction with `CategoryTheory.NatIso.isIso_of_isIso_app`. -/
 theorem isIso_of_components (f : X ⟶ Y) [IsIso f.base] [IsIso f.c] : IsIso f :=
-  IsIso.of_iso (isoOfComponents (asIso f.base) (asIso f.c).symm)
+  (isoOfComponents (asIso f.base) (asIso f.c).symm).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.is_iso_of_components AlgebraicGeometry.PresheafedSpace.isIso_of_components
 
@@ -396,15 +384,13 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (h
         NatIso.isIso_app_of_isIso
           (whiskerLeft hf.isOpenMap.functor hf.isOpenMap.adjunction.counit) V
     have := PresheafedSpace.congr_app eq (op (hf.isOpenMap.functor.obj V))
-    simp only [PresheafedSpace.comp_c_app, PresheafedSpace.ofRestrict_c_app, Category.assoc,
-      cancel_epi] at this
+    rw [PresheafedSpace.comp_c_app, PresheafedSpace.comp_c_app,
+      PresheafedSpace.ofRestrict_c_app, Category.assoc, cancel_epi] at this
     have h : _ ≫ _ = _ ≫ _ ≫ _ :=
       congr_arg (fun f => (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
-    erw [g₁.c.naturality, g₂.c.naturality_assoc] at h
-    simp only [Presheaf.pushforwardObj_map, eqToHom_op, Category.assoc, eqToHom_map,
-      eqToHom_trans] at h
-    rw [← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc, eqToHom_trans] at h
-    rw [NatTrans.comp_app]
+    simp only [g₁.c.naturality, g₂.c.naturality_assoc] at h
+    simp only [eqToHom_op, eqToHom_unop, eqToHom_map, eqToHom_trans,
+      ← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc] at h
     simpa using h
 
 set_option linter.uppercaseLean3 false in
@@ -425,7 +411,8 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
         (by
           rw [restrict_top_presheaf, ← Presheaf.Pushforward.comp_eq]
           erw [Iso.inv_hom_id]
-          rw [Presheaf.Pushforward.id_eq]) := by
+          rw [Presheaf.id_pushforward]
+          dsimp) := by
   /- another approach would be to prove the left hand side
        is a natural isomorphism, but I encountered a universe
        issue when `apply NatIso.isIso_of_isIso_app`. -/
@@ -499,8 +486,6 @@ variable {C}
 namespace CategoryTheory
 
 variable {D : Type*} [Category D]
-
-attribute [local simp] Presheaf.pushforwardObj
 
 namespace Functor
 

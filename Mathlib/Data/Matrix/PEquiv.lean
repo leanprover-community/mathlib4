@@ -124,15 +124,13 @@ theorem toMatrix_injective [DecidableEq n] [MonoidWithZero α] [Nontrivial α] :
     Function.Injective (@toMatrix m n α _ _ _) := by
   classical
     intro f g
-    refine' not_imp_not.1 _
+    refine not_imp_not.1 ?_
     simp only [Matrix.ext_iff.symm, toMatrix_apply, PEquiv.ext_iff, not_forall, exists_imp]
     intro i hi
     use i
     cases' hf : f i with fi
     · cases' hg : g i with gi
-      -- Porting note: was `cc`
-      · rw [hf, hg] at hi
-        exact (hi rfl).elim
+      · rw [hf, hg] at hi; exact (hi rfl).elim
       · use gi
         simp
     · use fi

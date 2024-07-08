@@ -36,7 +36,7 @@ variable {α β γ : Sort*} {p q : α → Prop}
 
 #noalign subtype.tag_irrelevant
 #noalign subtype.exists_of_subtype
-#align subtype.inhabited Subtype.instInhabited
+#noalign subtype.inhabited
 
 attribute [coe] Subtype.val
 
@@ -142,7 +142,7 @@ theorem val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
 
 lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective.ne_iff
 
-@[deprecated] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe -- 2024-04-04
+@[deprecated (since := "2024-04-04")] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe
 #align subtype.ne_of_val_ne Subtype.ne_of_val_ne
 
 -- Porting note: it is unclear why the linter doesn't like this.
@@ -183,7 +183,7 @@ theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Inject
 theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
     Surjective fun f : ∀ x, β x ↦ restrict p f := by
   letI := Classical.decPred p
-  refine' fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
+  refine fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| ?_⟩
   rintro ⟨x, hx⟩
   exact dif_pos hx
 #align subtype.surjective_restrict Subtype.surjective_restrict

@@ -69,7 +69,7 @@ lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
 def descFOne {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex.X 1 ⟶ I.cocomplex.X 1 :=
   J.exact₀.descToInjective (descFZero f I J ≫ I.cocomplex.d 0 1)
-    (by dsimp; simp [← assoc, descFZero])
+    (by dsimp; simp [← assoc, assoc, descFZero])
 #align category_theory.InjectiveResolution.desc_f_one CategoryTheory.InjectiveResolution.descFOne
 
 @[simp]
@@ -202,12 +202,12 @@ def homotopyEquiv {X : C} (I J : InjectiveResolution X) :
     simpa [id_comp] using descIdHomotopy _ _
 #align category_theory.InjectiveResolution.homotopy_equiv CategoryTheory.InjectiveResolution.homotopyEquiv
 
-@[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
+@[reassoc (attr := simp)]
 theorem homotopyEquiv_hom_ι {X : C} (I J : InjectiveResolution X) :
     I.ι ≫ (homotopyEquiv I J).hom = J.ι := by simp [homotopyEquiv]
 #align category_theory.InjectiveResolution.homotopy_equiv_hom_ι CategoryTheory.InjectiveResolution.homotopyEquiv_hom_ι
 
-@[reassoc (attr := simp)] -- Porting note: Originally `@[simp, reassoc.1]`
+@[reassoc (attr := simp)]
 theorem homotopyEquiv_inv_ι {X : C} (I J : InjectiveResolution X) :
     J.ι ≫ (homotopyEquiv I J).inv = I.ι := by simp [homotopyEquiv]
 #align category_theory.InjectiveResolution.homotopy_equiv_inv_ι CategoryTheory.InjectiveResolution.homotopyEquiv_inv_ι
@@ -322,7 +322,7 @@ lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
   simp [ofCocomplex]
 
-#adaptation_note /-- Since nightly-2024-03-11, this takes takes forever now -/
+#adaptation_note /-- Since nightly-2024-03-11, this takes forever now -/
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
@@ -348,7 +348,7 @@ irreducible_def of : InjectiveResolution Z where
   quasiIso := ⟨fun n => by
     cases n
     · rw [CochainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros]
-      · refine' (ShortComplex.exact_and_mono_f_iff_of_iso _).2
+      · refine (ShortComplex.exact_and_mono_f_iff_of_iso ?_).2
           ⟨exact_f_d (Injective.ι Z), by dsimp; infer_instance⟩
         exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp)
           (by simp [ofCocomplex])

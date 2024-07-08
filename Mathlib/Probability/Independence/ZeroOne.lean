@@ -21,18 +21,14 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   σ-algebras `s` has probability 0 or 1.
 -/
 
--- See https://github.com/leanprover-community/mathlib4/issues/12532
--- This option is needed so often in this file that we set it for the whole file.
-set_option backward.synthInstance.canonInstances false
-
 open MeasureTheory MeasurableSpace
 
 open scoped MeasureTheory ENNReal
 
 namespace ProbabilityTheory
 
-variable {α Ω ι : Type*} {_mα : MeasurableSpace α} {m m0 : MeasurableSpace Ω}
-  {κ : kernel α Ω} {μα : Measure α} {μ : Measure Ω}
+variable {α Ω ι : Type*} {_mα : MeasurableSpace α} {s : ι → MeasurableSpace Ω}
+  {m m0 : MeasurableSpace Ω} {κ : kernel α Ω} {μα : Measure α} {μ : Measure Ω}
 
 theorem kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : kernel.IndepSet t t κ μα) :
@@ -77,7 +73,7 @@ theorem condexp_eq_zero_or_one_of_condIndepSet_self
   | inl h => exact Or.inl (Or.inl h)
   | inr h => exact Or.inr h
 
-variable [IsMarkovKernel κ] [IsProbabilityMeasure μ] {s : ι → MeasurableSpace Ω}
+variable [IsMarkovKernel κ] [IsProbabilityMeasure μ]
 
 open Filter
 
@@ -113,8 +109,8 @@ For the example of `f = atTop`, we can take
 theorem kernel.indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) {t : Set ι} (ht : p t) :
     Indep (⨆ n ∈ t, s n) (limsup s f) κ μα := by
-  refine' indep_of_indep_of_le_right (indep_biSup_compl h_le h_indep t) _
-  refine' limsSup_le_of_le (by isBoundedDefault) _
+  refine indep_of_indep_of_le_right (indep_biSup_compl h_le h_indep t) ?_
+  refine limsSup_le_of_le (by isBoundedDefault) ?_
   simp only [Set.mem_compl_iff, eventually_map]
   exact eventually_of_mem (hf t ht) le_iSup₂
 
@@ -134,13 +130,13 @@ theorem condIndep_biSup_limsup [StandardBorelSpace Ω] [Nonempty Ω]
 theorem kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     Indep (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) κ μα := by
-  refine' indep_iSup_of_directed_le _ _ _ _
+  apply indep_iSup_of_directed_le
   · exact fun a => indep_biSup_limsup h_le h_indep hf (hnsp a)
   · exact fun a => iSup₂_le fun n _ => h_le n
   · exact limsup_le_iSup.trans (iSup_le h_le)
   · intro a b
     obtain ⟨c, hc⟩ := hns a b
-    refine' ⟨c, _, _⟩ <;> refine' iSup_mono fun n => iSup_mono' fun hn => ⟨_, le_rfl⟩
+    refine ⟨c, ?_, ?_⟩ <;> refine iSup_mono fun n => iSup_mono' fun hn => ⟨?_, le_rfl⟩
     · exact hc.1 hn
     · exact hc.2 hn
 
@@ -165,7 +161,7 @@ theorem kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
     rw [← this]
     exact indep_iSup_directed_limsup h_le h_indep hf hns hnsp
   rw [iSup_comm]
-  refine' iSup_congr fun n => _
+  refine iSup_congr fun n => ?_
   have h : ⨆ (i : α) (_ : n ∈ ns i), s n = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
   haveI : Nonempty (∃ i : α, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]
@@ -214,8 +210,8 @@ theorem kernel.measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n �
 theorem measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
-    μ t = 0 ∨ μ t = 1 :=
-  by simpa only [ae_dirac_eq, Filter.eventually_pure]
+    μ t = 0 ∨ μ t = 1 := by
+  simpa only [ae_dirac_eq, Filter.eventually_pure]
     using kernel.measure_zero_or_one_of_measurableSet_limsup h_le h_indep hf hns hnsp hns_univ
       ht_tail
 #align probability_theory.measure_zero_or_one_of_measurable_set_limsup ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup
@@ -245,11 +241,11 @@ theorem kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
     Indep (limsup s atTop) (limsup s atTop) κ μα := by
   let ns : ι → Set ι := Set.Iic
   have hnsp : ∀ i, BddAbove (ns i) := fun i => bddAbove_Iic
-  refine' indep_limsup_self h_le h_indep _ _ hnsp _
+  refine indep_limsup_self h_le h_indep ?_ ?_ hnsp ?_
   · simp only [mem_atTop_sets, ge_iff_le, Set.mem_compl_iff, BddAbove, upperBounds, Set.Nonempty]
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, a < b := exists_gt a
-    refine' ⟨b, fun c hc hct => _⟩
+    refine ⟨b, fun c hc hct => ?_⟩
     suffices ∀ i ∈ t, i < c from lt_irrefl c (this c hct)
     exact fun i hi => (ha hi).trans_lt (hb.trans_le hc)
   · exact Monotone.directed_le fun i j hij k hki => le_trans hki hij
@@ -299,11 +295,11 @@ theorem kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
     Indep (limsup s atBot) (limsup s atBot) κ μα := by
   let ns : ι → Set ι := Set.Ici
   have hnsp : ∀ i, BddBelow (ns i) := fun i => bddBelow_Ici
-  refine' indep_limsup_self h_le h_indep _ _ hnsp _
+  refine indep_limsup_self h_le h_indep ?_ ?_ hnsp ?_
   · simp only [mem_atBot_sets, ge_iff_le, Set.mem_compl_iff, BddBelow, lowerBounds, Set.Nonempty]
     rintro t ⟨a, ha⟩
     obtain ⟨b, hb⟩ : ∃ b, b < a := exists_lt a
-    refine' ⟨b, fun c hc hct => _⟩
+    refine ⟨b, fun c hc hct => ?_⟩
     suffices ∀ i ∈ t, c < i from lt_irrefl c (this c hct)
     exact fun i hi => hc.trans_lt (hb.trans_le (ha hi))
   · exact Antitone.directed_le fun _ _ ↦ Set.Ici_subset_Ici.2

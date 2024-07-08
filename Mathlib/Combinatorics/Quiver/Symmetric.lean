@@ -221,8 +221,7 @@ theorem lift_unique [HasReverse V'] (φ : V ⥤q V') (Φ : Symmetrify V ⥤q V')
 
 /-- A prefunctor canonically defines a prefunctor of the symmetrifications. -/
 @[simps]
-def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V
-    where
+def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify V where
   obj := φ.obj
   map := Sum.map φ.map φ.map
 #align prefunctor.symmetrify Prefunctor.symmetrify

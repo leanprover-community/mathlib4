@@ -129,10 +129,10 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
   ⟨fun V =>
     isConnected_of_zigzag fun A B => by
       rcases A with ⟨⟨⟨⟩⟩, ⟨i⟩ | ⟨i, j⟩, a⟩ <;> rcases B with ⟨⟨⟨⟩⟩, ⟨i'⟩ | ⟨i', j'⟩, b⟩
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf a.le b.le).hom }, _], _, rfl⟩
+                hom := (le_inf a.le b.le).hom }, _], ?_, rfl⟩
         exact
           List.Chain.cons
             (Or.inr
@@ -143,13 +143,13 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 ⟨{  left := 𝟙 _
                     right := right i i' }⟩)
               List.Chain.nil)
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i' i
                 hom := (le_inf (b.le.trans inf_le_left) a.le).hom },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], _, rfl⟩
+                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
         exact
           List.Chain.cons
             (Or.inr
@@ -164,13 +164,13 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                   ⟨{  left := 𝟙 _
                       right := left i' j' }⟩)
                 List.Chain.nil))
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
                 hom := (a.le.trans inf_le_left).hom },
               { left := ⟨⟨⟩⟩
                 right := pair i i'
-                hom := (le_inf (a.le.trans inf_le_left) b.le).hom }, _], _, rfl⟩
+                hom := (le_inf (a.le.trans inf_le_left) b.le).hom }, _], ?_, rfl⟩
         exact
           List.Chain.cons
             (Or.inl
@@ -185,7 +185,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                   ⟨{  left := 𝟙 _
                       right := right i i' }⟩)
                 List.Chain.nil))
-      · refine'
+      · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
                 hom := (a.le.trans inf_le_left).hom },
@@ -194,7 +194,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 hom := (le_inf (a.le.trans inf_le_left) (b.le.trans inf_le_left)).hom },
               { left := ⟨⟨⟩⟩
                 right := single i'
-                hom := (b.le.trans inf_le_left).hom }, _], _, rfl⟩
+                hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
         exact
           List.Chain.cons
             (Or.inl
@@ -217,8 +217,8 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
 /-- The diagram in `opens X` indexed by pairwise intersections from `U` is isomorphic
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
-def pairwiseDiagramIso : Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _
-    where
+def pairwiseDiagramIso :
+    Pairwise.diagram U ≅ pairwiseToOpensLeCover U ⋙ fullSubcategoryInclusion _ where
   hom := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
 set_option linter.uppercaseLean3 false in
@@ -355,11 +355,11 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
       exacts [⟨⟨WalkingPair.left⟩, h⟩, ⟨⟨WalkingPair.right⟩, h⟩]
     · rintro ⟨⟨_ | _⟩, h⟩
       exacts [Or.inl h, Or.inr h]
-  refine'
+  refine
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.lift
         ⟨s.pt,
-          { app := _
-            naturality := _ }⟩ ≫
+          { app := ?_
+            naturality := ?_ }⟩ ≫
       F.1.map (eqToHom hι).op
   · rintro ((_ | _) | (_ | _))
     exacts [s.fst, s.snd, s.fst ≫ F.1.map (homOfLE inf_le_left).op,
@@ -414,7 +414,7 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
   apply PullbackCone.isLimitAux'
   intro s
   use interUnionPullbackConeLift F U V s
-  refine' ⟨_, _, _⟩
+  refine ⟨?_, ?_, ?_⟩
   · apply interUnionPullbackConeLift_left
   · apply interUnionPullbackConeLift_right
   · intro m h₁ h₂

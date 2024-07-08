@@ -140,7 +140,7 @@ theorem Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInv
 @[to_additive] -- Porting note: was `@[simp]`
 theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
     Integrable (fun t => f (g / t)) μ ↔ Integrable f μ := by
-  refine' ⟨fun h => _, fun h => h.comp_div_left g⟩
+  refine ⟨fun h => ?_, fun h => h.comp_div_left g⟩
   convert h.comp_inv.comp_mul_left g⁻¹
   simp_rw [div_inv_eq_mul, mul_inv_cancel_left]
 #align measure_theory.integrable_comp_div_left MeasureTheory.integrable_comp_div_left

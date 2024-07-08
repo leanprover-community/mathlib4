@@ -7,6 +7,7 @@ import Mathlib.Algebra.PUnitInstances
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
+import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.ring.boolean_ring from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -222,8 +223,7 @@ theorem le_sup_inf_aux (a b c : α) : (a + b + a * b) * (a + c + a * c) = a + b 
   calc
     (a + b + a * b) * (a + c + a * c) =
         a * a + b * c + a * (b * c) + (a * b + a * a * b) + (a * c + a * a * c) +
-          (a * b * c + a * a * b * c) :=
-      by ring
+          (a * b * c + a * a * b * c) := by ring
     _ = a + b * c + a * (b * c) := by simp only [mul_self, add_self, add_zero]
 
 #align boolean_ring.le_sup_inf_aux BooleanRing.le_sup_inf_aux
@@ -303,9 +303,8 @@ theorem ofBoolAlg_sdiff (a b : AsBoolAlg α) : ofBoolAlg (a \ b) = ofBoolAlg a *
 #align of_boolalg_sdiff ofBoolAlg_sdiff
 
 private theorem of_boolalg_symmDiff_aux (a b : α) : (a + b + a * b) * (1 + a * b) = a + b :=
-  calc
-    (a + b + a * b) * (1 + a * b) = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) :=
-      by ring
+  calc (a + b + a * b) * (1 + a * b)
+    _ = a + b + (a * b + a * b * (a * b)) + (a * (b * b) + a * a * b) := by ring
     _ = a + b := by simp only [mul_self, add_self, add_zero]
 
 @[simp]
@@ -335,8 +334,7 @@ theorem toBoolAlg_mul (a b : α) : toBoolAlg (a * b) = toBoolAlg a ⊓ toBoolAlg
   rfl
 #align to_boolalg_mul toBoolAlg_mul
 
--- `toBoolAlg_add` simplifies the LHS but this lemma is eligible to `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg a ⊔ toBoolAlg b :=
   rfl
 #align to_boolalg_add_add_mul toBoolAlg_add_add_mul
@@ -493,8 +491,7 @@ theorem ofBoolRing_one : ofBoolRing (1 : AsBoolRing α) = ⊤ :=
   rfl
 #align of_boolring_one ofBoolRing_one
 
--- `sub_eq_add` proves this lemma but it is eligible for `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem ofBoolRing_neg (a : AsBoolRing α) : ofBoolRing (-a) = ofBoolRing a :=
   rfl
 #align of_boolring_neg ofBoolRing_neg
@@ -504,8 +501,7 @@ theorem ofBoolRing_add (a b : AsBoolRing α) : ofBoolRing (a + b) = ofBoolRing a
   rfl
 #align of_boolring_add ofBoolRing_add
 
--- `sub_eq_add` simplifies the LHS but this lemma is eligible for `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem ofBoolRing_sub (a b : AsBoolRing α) : ofBoolRing (a - b) = ofBoolRing a ∆ ofBoolRing b :=
   rfl
 #align of_boolring_sub ofBoolRing_sub

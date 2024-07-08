@@ -232,7 +232,8 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
 
 section Pre
 
-variable {A B} [Closed B]
+variable {A B}
+variable [Closed B]
 
 /-- Pre-compose an internal hom with an external hom. -/
 def pre (f : B ⟶ A) : ihom A ⟶ ihom B :=
@@ -259,9 +260,8 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) :
 
 @[simp]
 theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
-  simp only [pre, Functor.map_id]
-  dsimp
-  simp
+  rw [pre, Functor.map_id]
+  apply transferNatTransSelf_id
 #align category_theory.monoidal_closed.pre_id CategoryTheory.MonoidalClosed.pre_id
 
 @[simp]
@@ -278,8 +278,7 @@ end Pre
 
 /-- The internal hom functor given by the monoidal closed structure. -/
 @[simps]
-def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C
-    where
+def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 #align category_theory.monoidal_closed.internal_hom CategoryTheory.MonoidalClosed.internalHom

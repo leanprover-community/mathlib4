@@ -71,7 +71,7 @@ theorem IsClosedMap.restrictPreimage (H : IsClosedMap f) (s : Set β) :
       simpa [isClosed_induced_iff]
   exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
-@[deprecated] -- since 2024-04-02
+@[deprecated (since := "2024-04-02")]
 theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
     IsClosedMap (s.restrictPreimage f) := H.restrictPreimage s
 
@@ -83,7 +83,7 @@ theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
       simpa [isOpen_induced_iff]
   exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
-@[deprecated] -- since 2024-04-02
+@[deprecated (since := "2024-04-02")]
 theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
     IsOpenMap (s.restrictPreimage f) := H.restrictPreimage s
 
@@ -115,7 +115,7 @@ theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
 
 theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :
     IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
-  refine' ⟨fun h i => h.restrictPreimage _, _⟩
+  refine ⟨fun h i => h.restrictPreimage _, ?_⟩
   rintro H s hs
   rw [isClosed_iff_coe_preimage_of_iSup_eq_top hU]
   intro i

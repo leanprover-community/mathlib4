@@ -43,8 +43,6 @@ https://en.wikipedia.org/wiki/Divergence_of_the_sum_of_the_reciprocals_of_the_pr
 
 set_option linter.uppercaseLean3 false
 
-open scoped BigOperators
-
 open scoped Classical
 
 open Filter Finset
@@ -78,12 +76,12 @@ More precisely, for any `x : ℕ`, the sum of the reciprocals of the primes betw
 is less than 1/2.
 -/
 theorem sum_lt_half_of_not_tendsto
-    (h : ¬Tendsto (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
+    (h : ¬Tendsto (fun n => ∑ p ∈ Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop) :
-    ∃ k, ∀ x, ∑ p in P x k, 1 / (p : ℝ) < 1 / 2 := by
+    ∃ k, ∀ x, ∑ p ∈ P x k, 1 / (p : ℝ) < 1 / 2 := by
   have h0 :
-    (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ)) = fun n =>
-      ∑ p in range n, ite (Nat.Prime p) (1 / (p : ℝ)) 0 := by
+    (fun n => ∑ p ∈ Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ)) = fun n =>
+      ∑ p ∈ range n, ite (Nat.Prime p) (1 / (p : ℝ)) 0 := by
     simp only [sum_filter]
   have hf : ∀ n : ℕ, 0 ≤ ite (Nat.Prime n) (1 / (n : ℝ)) 0 := by
     intro n; split_ifs
@@ -95,7 +93,7 @@ theorem sum_lt_half_of_not_tendsto
   use k
   intro x
   rw [P, ← filter_filter, sum_filter]
-  refine' (h _ _).2
+  refine (h _ ?_).2
   rw [disjoint_iff_ne]
   simp only [mem_filter]
   intro a ha b hb
@@ -115,7 +113,7 @@ theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   constructor
   · rintro ⟨hex, hexh⟩
     obtain ⟨p, ⟨hpp, hpe1⟩, hpk⟩ := hexh hex
-    refine' ⟨p, _, ⟨hex, hpe1⟩⟩
+    refine ⟨p, ?_, ⟨hex, hpe1⟩⟩
     exact ⟨(Nat.le_of_dvd e.succ_pos hpe1).trans_lt (Nat.succ_lt_succ hex), hpk, hpp⟩
   · rintro ⟨p, hpfilter, ⟨hex, hpe1⟩⟩
     rw [imp_iff_right hex]
@@ -126,14 +124,14 @@ theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
 The number of `e < x` for which `e + 1` has a prime factor `p > k` is bounded by `x` times the sum
 of reciprocals of primes in `(k, x]`.
 -/
-theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p in P x k, 1 / (p : ℝ) := by
+theorem card_le_mul_sum {x k : ℕ} : (card (U x k) : ℝ) ≤ x * ∑ p ∈ P x k, 1 / (p : ℝ) := by
   let P := Finset.filter (fun p => k < p ∧ Nat.Prime p) (range (x + 1))
   let N p := Finset.filter (fun e => p ∣ e + 1) (range x)
-  have h : card (Finset.biUnion P N) ≤ ∑ p in P, card (N p) := card_biUnion_le
+  have h : card (Finset.biUnion P N) ≤ ∑ p ∈ P, card (N p) := card_biUnion_le
   calc
-    (card (Finset.biUnion P N) : ℝ) ≤ ∑ p in P, (card (N p) : ℝ) := by assumption_mod_cast
-    _ ≤ ∑ p in P, x * (1 / (p : ℝ)) := sum_le_sum fun p _ => ?_
-    _ = x * ∑ p in P, 1 / (p : ℝ) := by rw [mul_sum]
+    (card (Finset.biUnion P N) : ℝ) ≤ ∑ p ∈ P, (card (N p) : ℝ) := by assumption_mod_cast
+    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := sum_le_sum fun p _ => ?_
+    _ = x * ∑ p ∈ P, 1 / (p : ℝ) := by rw [mul_sum]
   simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 #align theorems_100.card_le_mul_sum Theorems100.card_le_mul_sum
 
@@ -144,7 +142,7 @@ The number of `e < x` for which `e + 1` is a squarefree product of primes smalle
 theorem card_le_two_pow {x k : ℕ} :
     card (Finset.filter (fun e => Squarefree (e + 1)) (M x k)) ≤ 2 ^ k := by
   let M₁ := Finset.filter (fun e => Squarefree (e + 1)) (M x k)
-  let f s := (∏ a in s, a) - 1
+  let f s := (∏ a ∈ s, a) - 1
   let K := powerset (image Nat.succ (range k))
   -- Take `e` in `M x k`. If `e + 1` is squarefree, then it is the product of a subset of `[1, k]`.
   -- It follows that `e` is one less than such a product.
@@ -154,7 +152,7 @@ theorem card_le_two_pow {x k : ℕ} :
     obtain ⟨⟨-, hmp⟩, hms⟩ := hm
     use! (m + 1).factors
     · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_factors m.succ_ne_zero]
-    refine' ⟨fun p => _, _⟩
+    refine ⟨fun p => ?_, ?_⟩
     · suffices p ∈ (m + 1).factors → ∃ a : ℕ, a < k ∧ a.succ = p by simpa
       simp only [Nat.mem_factors m.succ_ne_zero]
       intro hp
@@ -191,8 +189,8 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
     have hm' := m.zero_lt_succ
     obtain ⟨a, b, hab₁, hab₂⟩ := Nat.sq_mul_squarefree_of_pos' hm'
     obtain ⟨ham, hbm⟩ := Dvd.intro_left _ hab₁, Dvd.intro _ hab₁
-    refine'
-      ⟨a, b, ⟨⟨⟨_, fun p hp => _⟩, hab₂⟩, ⟨_, fun p hp => _⟩⟩, by simp_rw [hab₁, m.add_one_sub_one]⟩
+    refine ⟨a, b, ⟨⟨⟨?_, fun p hp => ?_⟩, hab₂⟩, ⟨?_, fun p hp => ?_⟩⟩, by
+        simp_rw [hab₁, m.add_one_sub_one]⟩
     · exact (Nat.succ_le_succ_iff.mp (Nat.le_of_dvd hm' ham)).trans_lt hm.1
     · exact hm.2 p ⟨hp.1, hp.2.trans ham⟩
     · calc
@@ -210,7 +208,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : card (M x k) ≤ 2 ^ k * Nat.sqrt
 #align theorems_100.card_le_two_pow_mul_sqrt Theorems100.card_le_two_pow_mul_sqrt
 
 theorem Real.tendsto_sum_one_div_prime_atTop :
-    Tendsto (fun n => ∑ p in Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
+    Tendsto (fun n => ∑ p ∈ Finset.filter (fun p => Nat.Prime p) (range n), 1 / (p : ℝ))
       atTop atTop := by
   -- Assume that the sum of the reciprocals of the primes converges.
   by_contra h
@@ -235,7 +233,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   -- and for U, the inequality is strict.
   have h3 :=
     calc
-      (card U' : ℝ) ≤ x * ∑ p in P, 1 / (p : ℝ) := card_le_mul_sum
+      (card U' : ℝ) ≤ x * ∑ p ∈ P, 1 / (p : ℝ) := card_le_mul_sum
       _ < x * (1 / 2) := mul_lt_mul_of_pos_left (h1 x) (by norm_num [x])
       _ = x / 2 := mul_one_div (x : ℝ) 2
   have h4 :=
@@ -243,7 +241,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
       (card M' : ℝ) ≤ 2 ^ k * x.sqrt := by exact mod_cast card_le_two_pow_mul_sqrt
       _ = 2 ^ k * (2 ^ (k + 1) : ℕ) := by rw [Nat.sqrt_eq]
       _ = x / 2 := by field_simp [x, mul_right_comm, ← pow_succ]
-  refine' lt_irrefl (x : ℝ) _
+  refine lt_irrefl (x : ℝ) ?_
   calc
     (x : ℝ) = (card U' : ℝ) + (card M' : ℝ) := by assumption_mod_cast
     _ < x / 2 + x / 2 := add_lt_add_of_lt_of_le h3 h4

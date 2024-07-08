@@ -45,7 +45,7 @@ In particular,
 
 
 For finitely presented algebras, see `Algebra.FinitePresentation`
-in file `RingTheory/FinitePresentation`.
+in file `Mathlib.RingTheory.FinitePresentation`.
 -/
 
 section Semiring
@@ -68,6 +68,20 @@ end Semiring
 section Ring
 
 variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+
+universe u in
+variable (R M : Type u) [Ring R] [AddCommGroup M] [Module R M] in
+/-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
+generated submodule. -/
+theorem Module.FinitePresentation.equiv_quotient [fp : Module.FinitePresentation R M] :
+    ∃ (L : Type u) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L) (_ : M ≃ₗ[R] L ⧸ K),
+      Module.Free R L ∧ Module.Finite R L ∧ K.FG := by
+  obtain ⟨ι, ⟨hι₁, hι₂⟩⟩ := fp
+  use ι →₀ R, inferInstance, inferInstance
+  use LinearMap.ker (Finsupp.total { x // x ∈ ι } M R Subtype.val)
+  refine ⟨(LinearMap.quotKerEquivOfSurjective _ ?_).symm, inferInstance, inferInstance, hι₂⟩
+  apply LinearMap.range_eq_top.mp
+  simpa only [Finsupp.range_total, Subtype.range_coe_subtype, Finset.setOf_mem]
 
 -- Ideally this should be an instance but it makes mathlib much slower.
 lemma Module.finitePresentation_of_finite [IsNoetherianRing R] [h : Module.Finite R M] :
@@ -204,7 +218,7 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
 end Ring
 
 section CommRing
-open BigOperators
+
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R) (f : N →ₗ[R] N') [IsLocalizedModule S f]
 
@@ -219,8 +233,8 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=
-    fun x ↦ (∏ j in σ.erase x.1, (s (g j)).2) • (s (g x)).1
-  let s₀ := ∏ j in σ, (s (g j)).2
+    fun x ↦ (∏ j ∈ σ.erase x.1, (s (g j)).2) • (s (g x)).1
+  let s₀ := ∏ j ∈ σ, (s (g j)).2
   have hi : f ∘ₗ Finsupp.total σ N R i = (s₀ • g) ∘ₗ π := by
     ext j
     simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply, Finsupp.total_single,

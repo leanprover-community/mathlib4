@@ -15,6 +15,7 @@ import Mathlib.Tactic.Nontriviality
 
 -/
 
+assert_not_exists DenselyOrdered
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]
@@ -37,6 +38,13 @@ theorem mul_inverse_rev {M₀} [CommMonoidWithZero M₀] (a b : M₀) :
     Ring.inverse (a * b) = inverse b * inverse a :=
   mul_inverse_rev' (Commute.all _ _)
 #align ring.mul_inverse_rev Ring.mul_inverse_rev
+
+lemma inverse_pow (r : M₀) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r ^ n)
+  | 0 => by rw [pow_zero, pow_zero, Ring.inverse_one]
+  | n + 1 => by
+    rw [pow_succ', pow_succ, Ring.mul_inverse_rev' ((Commute.refl r).pow_left n),
+      Ring.inverse_pow r n]
+#align ring.inverse_pow Ring.inverse_pow
 
 end Ring
 

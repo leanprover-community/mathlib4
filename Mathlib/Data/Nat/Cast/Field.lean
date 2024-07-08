@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.CharZero
-import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Tactic.Common
 
 #align_import data.nat.cast.field from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
@@ -37,7 +36,7 @@ theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (hn : (n : 
 theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d : ℕ}
     (hn : d ∣ n) (hm : d ∣ m) :
     (↑(m / d) : α) / (↑(n / d) : α) = (m : α) / n := by
-  rcases eq_or_ne d 0 with (rfl | hd); · simp [zero_dvd_iff.mp hm]
+  rcases eq_or_ne d 0 with (rfl | hd); · simp [Nat.zero_dvd.1 hm]
   replace hd : (d : α) ≠ 0 := by norm_cast
   rw [cast_div hm, cast_div hn, div_div_div_cancel_right _ hd] <;> exact hd
 #align nat.cast_div_div_div_cancel_right Nat.cast_div_div_div_cancel_right
@@ -69,13 +68,13 @@ theorem one_div_pos_of_nat {n : ℕ} : 0 < 1 / ((n : α) + 1) := by
 #align nat.one_div_pos_of_nat Nat.one_div_pos_of_nat
 
 theorem one_div_le_one_div {n m : ℕ} (h : n ≤ m) : 1 / ((m : α) + 1) ≤ 1 / ((n : α) + 1) := by
-  refine' one_div_le_one_div_of_le _ _
+  refine one_div_le_one_div_of_le ?_ ?_
   · exact Nat.cast_add_one_pos _
   · simpa
 #align nat.one_div_le_one_div Nat.one_div_le_one_div
 
 theorem one_div_lt_one_div {n m : ℕ} (h : n < m) : 1 / ((m : α) + 1) < 1 / ((n : α) + 1) := by
-  refine' one_div_lt_one_div_of_lt _ _
+  refine one_div_lt_one_div_of_lt ?_ ?_
   · exact Nat.cast_add_one_pos _
   · simpa
 #align nat.one_div_lt_one_div Nat.one_div_lt_one_div

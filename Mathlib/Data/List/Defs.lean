@@ -8,7 +8,6 @@ import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
-import Batteries.Data.RBMap.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
@@ -454,7 +453,7 @@ def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : L
 
 
 /-- Left-biased version of `List.map₂`. `map₂Left f as bs` applies `f` to each pair
-`aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
+`aᵢ ∈ as` and `bᵢ ∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
 for the remaining `aᵢ`.
 
 ```
@@ -473,7 +472,7 @@ def map₂Left (f : α → Option β → γ) : List α → List β → List γ
 #align list.map₂_left List.map₂Left
 
 /-- Right-biased version of `List.map₂`. `map₂Right f as bs` applies `f` to each
-pair `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `as` is shorter than `bs`, `f` is applied to
+pair `aᵢ ∈ as` and `bᵢ ∈ bs`. If `as` is shorter than `bs`, `f` is applied to
 `none` for the remaining `bᵢ`.
 
 ```
@@ -548,5 +547,32 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
+
+/-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
+@[simp]
+def iterate (f : α → α) (a : α) : (n : ℕ) → List α
+  | 0     => []
+  | n + 1 => a :: iterate f (f a) n
+
+/-- Tail-recursive version of `List.iterate`. -/
+@[inline]
+def iterateTR (f : α → α) (a : α) (n : ℕ) : List α :=
+  loop a n []
+where
+  /-- `iterateTR.loop f a n l := iterate f a n ++ reverse l`. -/
+  @[simp, specialize]
+  loop (a : α) (n : ℕ) (l : List α) : List α :=
+    match n with
+    | 0     => reverse l
+    | n + 1 => loop (f a) n (a :: l)
+
+theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
+    iterateTR.loop f a n l = reverse l ++ iterate f a n := by
+  induction n generalizing a l <;> simp [*]
+
+@[csimp]
+theorem iterate_eq_iterateTR : @iterate = @iterateTR := by
+  funext α f a n
+  exact Eq.symm <| iterateTR_loop_eq f a n []
 
 end List

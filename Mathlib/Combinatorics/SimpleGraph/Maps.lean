@@ -397,8 +397,7 @@ def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
-def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v)
-    where
+def mapNeighborSet (v : V) : G.neighborSet v ↪ G'.neighborSet (f v) where
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   inj' := by
     rintro ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ h
@@ -554,8 +553,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]
-def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
-    where
+def mapEdgeSet : G.edgeSet ≃ G'.edgeSet where
   toFun := Hom.mapEdgeSet f
   invFun := Hom.mapEdgeSet f.symm
   left_inv := by
@@ -576,8 +574,7 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
 
 /-- A graph isomorphism induces an equivalence of neighbor sets. -/
 @[simps]
-def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v)
-    where
+def mapNeighborSet (v : V) : G.neighborSet v ≃ G'.neighborSet (f v) where
   toFun w := ⟨f w, f.apply_mem_neighborSet_iff.mpr w.2⟩
   invFun w :=
     ⟨f.symm w, by
