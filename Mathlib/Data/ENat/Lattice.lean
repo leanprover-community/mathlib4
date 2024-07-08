@@ -51,8 +51,8 @@ lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
 
 lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s :=
-  ⟨fun h ↦ have ⟨_, h₁, h₂⟩  := (sInf_eq_bot.mp h) 1 (by decide)
-  lt_one_iff_eq_zero.mp h₂ ▸ h₁, inf_eq_bot_of_bot_mem⟩
+  rw [←lt_one_iff_eq_zero]
+  simp only [sInf_lt_iff, lt_one_iff_eq_zero, exists_eq_right]
 
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
   sSup_eq_bot'
