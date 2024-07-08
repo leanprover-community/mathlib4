@@ -24,6 +24,34 @@ namespace Functor
 
 section
 
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+  (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
+
+/-- An additive functor which preserves homology preserves finite limits. -/
+noncomputable def preservesFiniteLimitsOfPreservesHomology
+    [HasFiniteProducts C] [HasKernels C] : PreservesFiniteLimits F := by
+  have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesKernel F f
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
+  have : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
+  have : HasZeroObject D :=
+    ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
+  exact preservesFiniteLimitsOfPreservesKernels F
+
+/-- An additive which preserves homology preserves finite colimits. -/
+noncomputable def preservesFiniteColimitsOfPreservesHomology
+    [HasFiniteCoproducts C] [HasCokernels C] : PreservesFiniteColimits F := by
+  have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesCokernel F f
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryCoproducts
+  have : HasCoequalizers C := Preadditive.hasCoequalizers_of_hasCokernels
+  have : HasZeroObject D :=
+    ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
+  exact preservesFiniteColimitsOfPreservesCokernels F
+
+end
+
+
+section
+
 variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
@@ -176,32 +204,13 @@ lemma preserves_shortComplexExact_iff_preserves_homology :
   ⟨fun h => ⟨preservesHomologyOfPreservesShortComplexExact F h⟩, fun ⟨_⟩ _ h =>
     ShortComplex.Exact.map_of_preservesRightHomologyOf h _⟩
 
-end
-
-section
-
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-  (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
-
-/-- An additive functor which preserves homology preserves finite limits. -/
-noncomputable def preservesFiniteLimitsOfPreservesHomology
-    [HasFiniteProducts C] [HasKernels C] : PreservesFiniteLimits F := by
-  have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesKernel F f
-  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
-  have : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
-  have : HasZeroObject D :=
-    ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
-  exact preservesFiniteLimitsOfPreservesKernels F
-
-/-- An additive which preserves homology preserves finite colimits. -/
-noncomputable def preservesFiniteColimitsOfPreservesHomology
-    [HasFiniteCoproducts C] [HasCokernels C] : PreservesFiniteColimits F := by
-  have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesCokernel F f
-  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryCoproducts
-  have : HasCoequalizers C := Preadditive.hasCoequalizers_of_hasCokernels
-  have : HasZeroObject D :=
-    ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
-  exact preservesFiniteColimitsOfPreservesCokernels F
+lemma preserves_shortComplex_shortExact_iff_preserves_finite_limit_colimit :
+    (∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) ↔
+    Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F) :=
+  ⟨fun h => ⟨⟨preservesFiniteLimitOfPreservesShortComplexExact F h⟩,
+    ⟨preservesFiniteColimitOfPreservesShortComplexExact F h⟩⟩,
+    fun ⟨⟨_⟩, ⟨_⟩⟩ => preserves_shortComplexExact_iff_preserves_homology F |>.2
+      ⟨inferInstance⟩⟩
 
 end
 
