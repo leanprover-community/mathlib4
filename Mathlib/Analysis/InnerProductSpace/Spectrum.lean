@@ -402,7 +402,7 @@ theorem post_post_exhaust: DirectSum.IsInternal
 universe u
 
 variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
-    (hT : ∀ n [Fintype n], (∀ (i : n), (T n i).IsSymmetric))
+    (hT : ∀ n, (∀ (i : n), (T n i).IsSymmetric))
     (hC : ∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i))
 
 theorem cracker0 [Subsingleton n] : (∀ (i j : n), T n j  = T n i) := by
@@ -512,9 +512,10 @@ theorem induction_step [Nontrivial n] :
 
 /-May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
   orthogonalFamily_eigenspaces'-/
-theorem ind_exhaust : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+theorem ind_exhaust : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ
+    = ⊥ := by
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
-  · intro p hp hpp
+  · intro p
     exact base hT
   · intro p hp
     exact induction_step
