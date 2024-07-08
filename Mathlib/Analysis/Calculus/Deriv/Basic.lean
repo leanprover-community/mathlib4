@@ -474,13 +474,11 @@ theorem derivWithin_fderivWithin :
 theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
   simp [← derivWithin_fderivWithin]
 
-@[simp]
 theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
   rfl
 #align fderiv_deriv fderiv_deriv
 
-theorem deriv_fderiv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = fderiv 𝕜 f x := by
-  simp only [deriv, ContinuousLinearMap.smulRight_one_one]
+theorem deriv_fderiv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = fderiv 𝕜 f x := by simp [deriv]
 #align deriv_fderiv deriv_fderiv
 
 @[simp]
