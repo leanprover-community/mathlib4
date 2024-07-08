@@ -121,8 +121,8 @@ noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightC
         -- `simpa using (NatTrans.naturality_apply f.val _ _).symm` doesn't work, and neither
         -- does rewriting using `NatTrans.naturality_apply` (not even with `erw`). What's going on?
         simp? says
-          simp only [lightCondSetToTopCat_obj, compHausToTop_obj, Functor.id_obj, Functor.comp_obj,
-            topCatToLightCondSet_obj, Functor.id_map, comp_val, FunctorToTypes.comp,
+          simp only [lightCondSetToTopCat_obj, LightProfinite.toTopCat_obj, Functor.id_obj,
+            Functor.comp_obj, topCatToLightCondSet_obj, Functor.id_map, comp_val, FunctorToTypes.comp,
             Functor.comp_map, lightCondSetToTopCat_map, topCatToLightCondSet_map_val_app,
             ContinuousMap.comp_apply, toTopCatMap_apply]
         exact (NatTrans.naturality_apply f.val _ _).symm }
