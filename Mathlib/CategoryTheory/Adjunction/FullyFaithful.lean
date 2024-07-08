@@ -27,6 +27,8 @@ See also https://stacks.math.columbia.edu/tag/07RB for the statements about full
 
 In the file `Mathlib.CategoryTheory.Monad.Adjunction`, we prove that in fact, if there exists an
 isomorphism `L ⋙ R ≅ 𝟭 C`, then the unit is an isomorphism, and similarly for the counit.
+See `CategoryTheory.Adjunction.isIso_unit_of_iso` and
+`CategoryTheory.Adjunction.isIso_counit_of_iso`.
 -/
 
 
@@ -58,10 +60,12 @@ noncomputable def unitSplitEpiOfLFull [L.Full] (X : C) : SplitEpi (h.unit.app X)
 instance unit_isSplitEpi_of_L_full [L.Full] (X : C) : IsSplitEpi (h.unit.app X) :=
   ⟨⟨h.unitSplitEpiOfLFull X⟩⟩
 
+instance [L.Full] [L.Faithful] (X : C) : IsIso (h.unit.app X) :=
+  isIso_of_mono_of_isSplitEpi _
+
 /-- If the left adjoint is fully faithful, then the unit is an isomorphism. -/
-instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) := by
-  have : ∀ X, IsIso (h.unit.app X) := fun X ↦ isIso_of_mono_of_isSplitEpi _
-  apply NatIso.isIso_of_isIso_app
+instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) :=
+  NatIso.isIso_of_isIso_app _
 set_option linter.uppercaseLean3 false in
 #align category_theory.unit_is_iso_of_L_fully_faithful CategoryTheory.Adjunction.unit_isIso_of_L_fully_faithful
 
@@ -79,10 +83,12 @@ noncomputable def counitSplitMonoOfRFull [R.Full] (X : D) : SplitMono (h.counit.
 instance counit_isSplitMono_of_R_full [R.Full] (X : D) : IsSplitMono (h.counit.app X) :=
   ⟨⟨h.counitSplitMonoOfRFull X⟩⟩
 
+instance [R.Full] [R.Faithful] (X : D) : IsIso (h.counit.app X) :=
+  isIso_of_epi_of_isSplitMono _
+
 /-- If the right adjoint is fully faithful, then the counit is an isomorphism. -/
-instance counit_isIso_of_R_fully_faithful [R.Full] [R.Faithful] : IsIso (Adjunction.counit h) := by
-  have : ∀ X, IsIso (h.counit.app X) := fun X ↦ isIso_of_epi_of_isSplitMono _
-  apply NatIso.isIso_of_isIso_app
+instance counit_isIso_of_R_fully_faithful [R.Full] [R.Faithful] : IsIso (Adjunction.counit h) :=
+  NatIso.isIso_of_isIso_app _
 set_option linter.uppercaseLean3 false in
 #align category_theory.counit_is_iso_of_R_fully_faithful CategoryTheory.Adjunction.counit_isIso_of_R_fully_faithful
 
