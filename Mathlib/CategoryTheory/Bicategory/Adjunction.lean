@@ -292,6 +292,63 @@ end Equivalence
 
 end
 
+noncomputable
+section
+
+/-- A structure giving a chosen right adjoint of a 1-morphism `left`. -/
+structure RightAdjoint (left : a ⟶ b) where
+  /-- The right adjoint to `left`. -/
+  right : b ⟶ a
+  /-- The adjunction between `left` and `right`. -/
+  adj : left ⊣ right
+
+/-- The existence of a right adjoint of `f`. -/
+class IsLeftAdjoint (left : a ⟶ b) : Prop where mk' ::
+  nonempty : Nonempty (RightAdjoint left)
+
+theorem IsLeftAdjoint.mk (adj : f ⊣ g) : IsLeftAdjoint f :=
+  ⟨⟨g, adj⟩⟩
+
+/-- Use the axiom of choice to extract a right adjoint from an `IsLeftAdjoint` instance. -/
+def getRightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : RightAdjoint f :=
+  Classical.choice IsLeftAdjoint.nonempty
+
+/-- The right adjoint of a 1-morphism. -/
+def rightAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : b ⟶ a :=
+  (getRightAdjoint f).right
+
+/-- Evidence that `f⁺⁺` is a right adjoint of `f`. -/
+def Adjunction.ofIsLeftAdjoint (f : a ⟶ b) [IsLeftAdjoint f] : f ⊣ rightAdjoint f :=
+  (getRightAdjoint f).adj
+
+/-- A structure giving a chosen left adjoint of a 1-morphism `right`. -/
+structure LeftAdjoint (right : b ⟶ a) where
+  /-- The left adjoint to `right`. -/
+  left : a ⟶ b
+  /-- The adjunction between `left` and `right`. -/
+  adj : left ⊣ right
+
+/-- The existence of a left adjoint of `f`. -/
+class IsRightAdjoint (right : b ⟶ a) : Prop where mk' ::
+  nonempty : Nonempty (LeftAdjoint right)
+
+theorem IsRightAdjoint.mk (adj : f ⊣ g) : IsRightAdjoint g :=
+  ⟨⟨f, adj⟩⟩
+
+/-- Use the axiom of choice to extract a left adjoint from an `IsRightAdjoint` instance. -/
+def getLeftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : LeftAdjoint f :=
+  Classical.choice IsRightAdjoint.nonempty
+
+/-- The left adjoint of a 1-morphism. -/
+def leftAdjoint (f : b ⟶ a) [IsRightAdjoint f] : a ⟶ b :=
+  (getLeftAdjoint f).left
+
+/-- Evidence that `f⁺` is a left adjoint of `f`. -/
+def Adjunction.ofIsRightAdjoint (f : b ⟶ a) [IsRightAdjoint f] : leftAdjoint f ⊣ f :=
+  (getLeftAdjoint f).adj
+
+end
+
 end Bicategory
 
 end CategoryTheory
