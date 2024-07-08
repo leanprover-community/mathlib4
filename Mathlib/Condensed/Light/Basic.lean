@@ -46,4 +46,22 @@ lemma comp_val {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).val = f.val ≫ g.val :=
   rfl
 
+@[ext]
+lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.val.app S = g.val.app S) :
+    f = g := by
+  apply Sheaf.hom_ext
+  ext
+  exact h _
+
 end LightCondensed
+
+namespace LightCondSet
+
+-- Note: `simp` can prove this when stated for `Condensed C` for a concrete category `C`.
+-- However, it doesn't seem to see through the abbreviation `CondensedSet`
+@[simp]
+lemma hom_naturality_apply {X Y : LightCondSet.{u}} (f : X ⟶ Y)  {S T : LightProfiniteᵒᵖ}
+    (g : S ⟶ T) (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
+  NatTrans.naturality_apply f.val g x
+
+end LightCondSet

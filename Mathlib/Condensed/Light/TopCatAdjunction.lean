@@ -6,11 +6,11 @@ Authors: Dagur Asgeirsson
 import Mathlib.Condensed.Light.TopComparison
 /-!
 
-# The adjunction between condensed sets and topological spaces
+# The adjunction between light condensed sets and topological spaces
 
-This file defines the functor `lightCondSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u+1}` which is
-right adjoint to `topCatToLightCondSet : TopCat.{u+1} ⥤ CondensedSet.{u}`. We prove that the counit
-is bijective (but not in general an isomorphism) and conclude that the left adjoint is faithful.
+This file defines the functor `lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u}` which is
+left adjoint to `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`. We prove that the counit
+is bijective (but not in general an isomorphism) and conclude that the right adjoint is faithful.
 -/
 
 universe u
@@ -21,31 +21,31 @@ attribute [local instance] ConcreteCategory.instFunLike
 
 variable (X : LightCondSet.{u})
 
-/-- Auxiliary defiinition to define the topology on `X(*)` for a condensed set `X`. -/
+/-- Auxiliary defiinition to define the topology on `X(*)` for a light condensed set `X`. -/
 private def _root_.LightProfinite.const (S : LightProfinite.{u}) (s : S) :
     LightProfinite.of PUnit.{u+1} ⟶ S :=
   ContinuousMap.const _ s
 
-/-- Auxiliary defiinition to define the topology on `X(*)` for a condensed set `X`. -/
+/-- Auxiliary defiinition to define the topology on `X(*)` for a light condensed set `X`. -/
 private def LightCondSet.coinducingCoprod :
     (Σ (i : (S : LightProfinite.{u}) × X.val.obj ⟨S⟩), i.fst) →
       X.val.obj ⟨LightProfinite.of PUnit⟩ :=
   fun ⟨⟨S, i⟩, s⟩ ↦ X.val.map (S.const s).op i
 
-/-- Let `X` be a condensed set. We define a topology on `X(*)` as the quotient topology of
-all the maps from compact Hausdorff `S` spaces to `X(*)`, corresponding to elements of `X(S)`.
-In other words, the topology coinduced by the map `CondensedSet.coinducingCoprod` above. -/
+/-- Let `X` be a light condensed set. We define a topology on `X(*)` as the quotient topology of
+all the maps from light profinite sets `S` to `X(*)`, corresponding to elements of `X(S)`.
+In other words, the topology coinduced by the map `LightCondSet.coinducingCoprod` above. -/
 local instance : TopologicalSpace (X.val.obj ⟨LightProfinite.of PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
-/-- The object part of the functor `CondensedSet ⥤ TopCat`  -/
+/-- The object part of the functor `LightCondSet ⥤ TopCat`  -/
 def LightCondSet.toTopCat : TopCat.{u} := TopCat.of (X.val.obj ⟨LightProfinite.of PUnit⟩)
 
 namespace LightCondSet
 
 variable {X} {Y : LightCondSet} (f : X ⟶ Y)
 
-/-- The map part of the functor `CondensedSet ⥤ TopCat`  -/
+/-- The map part of the functor `LightCondSet ⥤ TopCat`  -/
 @[simps]
 def toTopCatMap : X.toTopCat ⟶ Y.toTopCat where
   toFun := f.val.app ⟨LightProfinite.of PUnit⟩
@@ -65,7 +65,7 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat where
 
 end LightCondSet
 
-/-- The functor `CondensedSet ⥤ TopCat`  -/
+/-- The functor `LightCondSet ⥤ TopCat`  -/
 @[simps]
 def lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
   obj X := X.toTopCat
@@ -81,7 +81,7 @@ def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X wh
     continuity
 
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` is always bijective,
-but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
+but not an isomorphism in general (the inverse isn't continuous unless `X` is sequential).
 -/
 def topCatAdjunctionCounitEquiv (X : TopCat.{u}) : X.toLightCondSet.toTopCat ≃ X where
   toFun := topCatAdjunctionCounit X
@@ -94,6 +94,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
   (topCatAdjunctionCounitEquiv X).bijective
 
 /-- The unit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
+@[simps val_app val_app_apply]
 def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   val := {
     app := fun S x ↦ {
@@ -112,20 +113,7 @@ def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSe
 /-- The adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightCondSet :=
   Adjunction.mkOfUnitCounit {
-    unit := {
-      app := topCatAdjunctionUnit
-      naturality := by
-        intro X Y f
-        -- shouldn't `ext` just do the following?
-        apply Sheaf.hom_ext; ext S a; apply ContinuousMap.ext; intro x
-        -- `simpa using (NatTrans.naturality_apply f.val _ _).symm` doesn't work, and neither
-        -- does rewriting using `NatTrans.naturality_apply` (not even with `erw`). What's going on?
-        simp? says
-          simp only [lightCondSetToTopCat_obj, LightProfinite.toTopCat_obj, Functor.id_obj,
-            Functor.comp_obj, topCatToLightCondSet_obj, Functor.id_map, comp_val,
-            FunctorToTypes.comp, Functor.comp_map, lightCondSetToTopCat_map,
-            topCatToLightCondSet_map_val_app, ContinuousMap.comp_apply, toTopCatMap_apply]
-        exact (NatTrans.naturality_apply f.val _ _).symm }
+    unit := { app := topCatAdjunctionUnit }
     counit := { app := topCatAdjunctionCounit }
     left_triangle := by
       ext Y
