@@ -163,7 +163,7 @@ abelian group structure on the constructed derived category
 is used in order to obtain most of the compatibilities satisfied by
 this abelian group structure. It is then shown that the bijection
 `homEquiv` between `Ext X Y n` and Hom-types in the derived category
-cane be promoted to an additive equivalence for any `[HasDerivedCategory C]` instance. -/
+can be promoted to an additive equivalence for any `[HasDerivedCategory C]` instance. -/
 
 noncomputable instance : AddCommGroup (Ext X Y n) :=
   letI := HasDerivedCategory.standard C
