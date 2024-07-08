@@ -464,6 +464,25 @@ theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : S
 
 theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
   (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E)) = (⨆ t, eigenspace S t) := by
+  have h0 : ∀ (K : Submodule 𝕜 E), ((∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔
+      (∀ (b : 𝕜), eigenspace S b ≤ K)) := by
+    intro K
+    constructor
+    intro H
+    intro b
+    by_cases case : Nonempty n
+    · have := H (Function.const n b)
+      simpa only [ge_iff_le, Function.const_apply, ciInf_const]
+    · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
+    intro h
+    by_cases case : Nonempty n
+    · intro f
+      have c := choice case
+      have A := eq_const_of_subsingleton f c
+      have := h (f c)
+      rw [A]
+      simpa only [Function.const_apply, ciInf_const, ge_iff_le]
+    · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
   ext F
   constructor
   · intro hF
@@ -472,7 +491,7 @@ theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
       SetLike.mem_coe] at *
     intro i hi
     have I : ∀ (a : 𝕜), eigenspace S a ≤ i := fun a ↦ hi a
-    rw [← pre_pre_base (n := n) S i] at I
+    rw [← h0] at I
     apply hF
     exact I
   · intro hF
@@ -481,7 +500,7 @@ theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
       SetLike.mem_coe] at *
     intro i hi
     have I : ∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ i := fun a ↦ hi fun j ↦ a j
-    rw [pre_pre_base (n := n) S i] at I
+    rw [h0] at I
     apply hF
     exact I
 
