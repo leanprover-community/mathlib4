@@ -105,10 +105,12 @@ theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 
 
 open BigOperators CoalgebraStruct
 
+@[simp]
 lemma sum_counit_tmul_eq {a : A} (repr : Repr R a) :
     ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ (repr.right i) = 1 ⊗ₜ[R] a := by
   simpa [← repr.eq, map_sum] using congr($(rTensor_counit_comp_comul (R := R) (A := A)) a)
 
+@[simp]
 lemma sum_tmul_counit_eq {a : A} (repr : Repr R a) :
     ∑ i ∈ repr.index, (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = a ⊗ₜ[R] 1 := by
   simpa [← repr.eq, map_sum] using congr($(lTensor_counit_comp_comul (R := R) (A := A)) a)
