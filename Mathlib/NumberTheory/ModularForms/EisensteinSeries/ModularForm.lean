@@ -17,10 +17,6 @@ We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence c
 
 noncomputable section
 
-open ModularForm EisensteinSeries UpperHalfPlane Set Filter Function Complex Matrix
-  SlashInvariantForm
-
-open scoped Topology BigOperators Nat Classical MatrixGroups
 
 namespace EisensteinSeries
 
@@ -31,4 +27,4 @@ def eisensteinSeries_MF {k : ℤ} {N : ℕ+} (hk : 3 ≤ k) (a : Fin 2 → ZMod 
   toFun := eisensteinSeries_SIF a k
   slash_action_eq' := (eisensteinSeries_SIF a k).slash_action_eq'
   holo' := eisensteinSeries_SIF_MDifferentiable hk a
-  bdd_at_infty' := eisensteinSeries_SIF_IsBoundedAtImInfty a k hk
+  bdd_at_infty' := isBoundedAtImInfty_eisensteinSeries_SIF a hk
