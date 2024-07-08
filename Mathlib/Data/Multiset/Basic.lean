@@ -2253,7 +2253,7 @@ theorem filterMap_some (s : Multiset α) : filterMap some s = s :=
 @[simp]
 theorem mem_filterMap (f : α → Option β) (s : Multiset α) {b : β} :
     b ∈ filterMap f s ↔ ∃ a, a ∈ s ∧ f a = some b :=
-  Quot.inductionOn s fun l => List.mem_filterMap f l
+  Quot.inductionOn s fun _ => List.mem_filterMap
 #align multiset.mem_filter_map Multiset.mem_filterMap
 
 theorem map_filterMap_of_inv (f : α → Option β) (g : β → α) (H : ∀ x : α, (f x).map g = some x)
