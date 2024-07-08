@@ -197,4 +197,9 @@ noncomputable def fullyFaithfulCompactlyGeneratedToCondensedSet :
     compactlyGeneratedToCondensedSet.FullyFaithful :=
   compactlyGeneratedAdjunction.fullyFaithfulROfIsIsoCounit
 
+noncomputable instance : Reflective compactlyGeneratedToCondensedSet where
+  map_surjective := fullyFaithfulCompactlyGeneratedToCondensedSet.map_surjective
+  map_injective := fullyFaithfulCompactlyGeneratedToCondensedSet.map_injective
+  adj := compactlyGeneratedAdjunction
+
 end CondensedSet
