@@ -217,7 +217,7 @@ def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α 
 theorem erase_mk [DecidableEq α] (m : Multiset α)
     (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
     (mk m hc).erase a h =mk (m.erase a)
-        (by rw [Multiset.card_erase_of_mem h, hc]; rfl) :=
+        (by rw [Multiset.card_erase_of_mem h, hc, Nat.add_one, Nat.pred_succ]) :=
   rfl
 #align sym.erase_mk Sym.erase_mk
 
@@ -382,11 +382,11 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
-  ext; simp only [map, val_eq_coe, Multiset.map_id', coe_inj]; rfl
+  ext; simp only [map, Multiset.map_id', ← val_eq_coe]
 #align sym.map_id' Sym.map_id'
 
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
-  ext; simp only [map, val_eq_coe, id_eq, Multiset.map_id', coe_inj]; rfl
+  ext; simp only [map, id_eq, Multiset.map_id', ← val_eq_coe]
 #align sym.map_id Sym.map_id
 
 @[simp]
