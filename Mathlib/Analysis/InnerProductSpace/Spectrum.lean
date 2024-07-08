@@ -498,6 +498,10 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
     ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T m j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) →
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   intro h
+  have H := exists_pair_ne n
+  obtain ⟨i, j, hij⟩ := H
+  --now remove one of these elements from n, show that the resulting fintype has smaller cardinality,
+  --and then you can use the hypotheses. We then will need the invariance lemma.
   sorry
 
 /-COMMENT: May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
