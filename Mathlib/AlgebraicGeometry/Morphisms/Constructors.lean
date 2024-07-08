@@ -346,6 +346,8 @@ lemma of_isLocal_of_isLocalAtTarget (P : MorphismProperty Scheme)
       exact hs
     use s, U, hU, hf
 
+/-- If `P` is local at the target, to show that `P` is stable under base change, it suffices to
+check this for base change along a morphism of affine schemes. -/
 lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
     (P : MorphismProperty Scheme) (hP₁ : PropertyIsLocalAtTarget P)
     (hP₂ : (of P).StableUnderBaseChange) :
@@ -355,38 +357,6 @@ lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
   exact hP₂
 
 end AffineTargetMorphismProperty
-
-open AffineTargetMorphismProperty
-
-/-- A morphism property of schemes is `StableUnderAffineBaseChange` if
-the base change along a morphism of affine schemes of a morphism with affine target is affine. -/
-def StableUnderAffineBaseChange (P : MorphismProperty Scheme) : Prop :=
-  ∀ {X Y Y' S : Scheme} [IsAffine X] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S) (f' : Y' ⟶ Y)
-    (g' : Y' ⟶ X) (_ : IsPullback f' g' g f) (_ : P g), P g'
-
-namespace StableUnderAffineBaseChange
-
-lemma mk {P : MorphismProperty Scheme} [P.RespectsIso]
-    (hP₂ : ∀ (X Y S : Scheme) [IsAffine X] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S),
-      P g → P (pullback.fst : pullback f g ⟶ X)) :
-    StableUnderAffineBaseChange P := fun {X Y Y' S} _ _ f g f' g' sq hg ↦ by
-  let e := sq.flip.isoPullback
-  rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
-  exact hP₂ _ _ _ f g hg
-
-/-- If `P` is local at the target, to show that `P` is stable under base change, it suffices to
-check this for base change along a morphism of affine schemes. -/
-lemma stableUnderBaseChange {P : MorphismProperty Scheme} (hP₁ : PropertyIsLocalAtTarget P)
-    (hP₂ : StableUnderAffineBaseChange P) :
-    MorphismProperty.StableUnderBaseChange P := by
-  apply stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget P hP₁
-  intro X Y S _ _ f g hg
-  apply hP₂ f g pullback.snd
-  · apply IsPullback.flip
-    apply IsPullback.of_hasPullback
-  · exact hg
-
-end StableUnderAffineBaseChange
 
 end Restriction
 
