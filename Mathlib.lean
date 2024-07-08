@@ -22,7 +22,9 @@ import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Directed
+import Mathlib.Algebra.Algebra.Subalgebra.Int
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
+import Mathlib.Algebra.Algebra.Subalgebra.Nat
 import Mathlib.Algebra.Algebra.Subalgebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Order
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
@@ -476,6 +478,7 @@ import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.MvPolynomial.Invertible
 import Mathlib.Algebra.MvPolynomial.Monad
+import Mathlib.Algebra.MvPolynomial.NatInt
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.MvPolynomial.Polynomial
 import Mathlib.Algebra.MvPolynomial.Rename
@@ -631,6 +634,7 @@ import Mathlib.Algebra.Polynomial.HasseDeriv
 import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.Algebra.Polynomial.Induction
 import Mathlib.Algebra.Polynomial.Inductions
+import Mathlib.Algebra.Polynomial.Int
 import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Mirror
@@ -3528,6 +3532,7 @@ import Mathlib.RingTheory.AdicCompletion.Functoriality
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.Adjoin.Field
+import Mathlib.RingTheory.Adjoin.NatInt
 import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.AdjoinRoot
@@ -3639,12 +3644,15 @@ import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Localization.FractionRingInt
 import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.Localization.Int
 import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Integral
 import Mathlib.RingTheory.Localization.InvSubmonoid
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Module
+import Mathlib.RingTheory.Localization.Nat
 import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Localization.Submodule
