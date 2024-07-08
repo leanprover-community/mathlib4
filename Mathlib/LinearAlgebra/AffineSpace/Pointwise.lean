@@ -41,7 +41,6 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseAddAction
 
 open Pointwise
 
--- Porting note (#10756): new theorem
 theorem pointwise_vadd_eq_map (v : V) (s : AffineSubspace k P) :
     v +ᵥ s = s.map (AffineEquiv.constVAdd k P v) :=
   rfl
