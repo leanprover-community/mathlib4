@@ -532,29 +532,23 @@ theorem ind_Orthogonality : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
   have H3 := H1 a
   have H4 := H2 a
   have H5 := orthogonalFamily_eigenspaces ((hT n) a)
-  have H6 := H5 ha (f a) (g a)
-  --almost done.
+  have H6 := H5 ha
+  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H6
+  apply H6
+  exact H3
+  exact H4
 
-
-
-
-
-  sorry
-
-
-#exit
 theorem post_ind_exhaust : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
     ⨅ (j : n), (eigenspace (T n j) (α j))) := by
     rw [OrthogonalFamily.isInternal_iff]
     · exact ind_exhaust hT
-    · exact ind_Orthogonality
+    · exact ind_Orthogonality hT
 
 end Simultaneous
 
 end IsSymmetric
 
 end LinearMap
-
 section Nonneg
 
 @[simp]
