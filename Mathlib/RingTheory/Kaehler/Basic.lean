@@ -614,10 +614,13 @@ end Presentation
 section ExactSequence
 
 /- We have the commutative diagram
+```
 A --→ B
 ↑     ↑
 |     |
-R --→ S -/
+R --→ S
+```
+-/
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 variable [SMulCommClass S A B]
@@ -630,10 +633,12 @@ local macro "finsupp_map" : term =>
 
 /--
 Given the commutative diagram
+```
 A --→ B
 ↑     ↑
 |     |
 R --→ S
+```
 The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/S}` is spanned by the image of the
 kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `ds` with `s : S`.
 See `kerTotal_map'` for the special case where `R = S`.
@@ -675,10 +680,13 @@ theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
+```
 A --→ B
 ↑     ↑
 |     |
-R --→ S -/
+R --→ S
+```
+-/
 def KaehlerDifferential.map : Ω[A⁄R] →ₗ[A] Ω[B⁄S] :=
   Derivation.liftKaehlerDifferential
     (((KaehlerDifferential.D S B).restrictScalars R).compAlgebraMap A)

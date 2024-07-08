@@ -39,7 +39,7 @@ measure at least `r` has an infinite subset whose finite intersections all have 
 TODO: The infinity of `t` should be strengthened to `t` having positive natural density. -/
 lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ : r ≠ 0)
     (hr : ∀ n, r ≤ μ (s n)) :
-  ∃ t : Set ℕ, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ n ∈ u, s n) := by
+    ∃ t : Set ℕ, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ n ∈ u, s n) := by
   -- We let `M f` be the set on which the norm of `f` exceeds its essential supremum, and `N` be the
   -- union of `M` of the finite products of the indicators of the `s n`.
   let M (f : α → ℝ) : Set α := {x | snormEssSup f μ < ‖f x‖₊}
@@ -120,7 +120,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
 measure at least `r` has an infinite subset whose finite intersections all have positive volume. -/
 lemma bergelson [Infinite ι] {s : ι → Set α} (hs : ∀ i, MeasurableSet (s i)) (hr₀ : r ≠ 0)
     (hr : ∀ i, r ≤ μ (s i)) :
-  ∃ t : Set ι, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ i ∈ u, s i) := by
+    ∃ t : Set ι, t.Infinite ∧ ∀ ⦃u⦄, u ⊆ t → u.Finite → 0 < μ (⋂ i ∈ u, s i) := by
   obtain ⟨t, ht, h⟩ := bergelson' (fun n ↦ hs $ Infinite.natEmbedding _ n) hr₀ (fun n ↦ hr _)
   refine ⟨_, ht.image $ (Infinite.natEmbedding _).injective.injOn, fun u hut hu ↦
     (h (preimage_subset_of_surjOn (Infinite.natEmbedding _).injective hut) $ hu.preimage
