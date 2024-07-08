@@ -403,7 +403,7 @@ universe u
 
 variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
     (hT : ∀ n, (∀ (i : n), (T n i).IsSymmetric))
-    (hC : ∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i))
+    (hC : ∀ n, (∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i)))
 
 open Classical
 
