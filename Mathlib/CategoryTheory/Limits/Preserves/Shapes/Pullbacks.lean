@@ -184,8 +184,8 @@ variable (f g) [PreservesColimit (span f g) G]
 /-- If `G` preserves pushouts and `C` has them, then the pushout cocone constructed of the mapped
 morphisms of the pushout cocone is a colimit. -/
 def isColimitOfHasPushoutOfPreservesColimit [i : HasPushout f g] :
-    IsColimit (PushoutCocone.mk (G.map pushout.inl) (G.map (@pushout.inr _ _ _ _ _ f g i))
-    (show G.map f ≫ G.map pushout.inl = G.map g ≫ G.map pushout.inr from by
+    IsColimit (PushoutCocone.mk (G.map (pushout.inl _ _)) (G.map (@pushout.inr _ _ _ _ _ f g i))
+    (show G.map f ≫ G.map (pushout.inl _ _) = G.map g ≫ G.map (pushout.inr _ _) from by
       simp only [← G.map_comp, pushout.condition])) :=
   isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout f g)
 #align category_theory.limits.is_colimit_of_has_pushout_of_preserves_colimit CategoryTheory.Limits.isColimitOfHasPushoutOfPreservesColimit
@@ -223,27 +223,27 @@ theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).hom = pushoutCom
 
 @[reassoc]
 theorem PreservesPushout.inl_iso_hom :
-    pushout.inl ≫ (PreservesPushout.iso G f g).hom = G.map pushout.inl := by
+    pushout.inl _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inl _ _) := by
   delta PreservesPushout.iso
   simp
 #align category_theory.limits.preserves_pushout.inl_iso_hom CategoryTheory.Limits.PreservesPushout.inl_iso_hom
 
 @[reassoc]
 theorem PreservesPushout.inr_iso_hom :
-    pushout.inr ≫ (PreservesPushout.iso G f g).hom = G.map pushout.inr := by
+    pushout.inr _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inr _ _) := by
   delta PreservesPushout.iso
   simp
 #align category_theory.limits.preserves_pushout.inr_iso_hom CategoryTheory.Limits.PreservesPushout.inr_iso_hom
 
 @[reassoc (attr := simp)]
 theorem PreservesPushout.inl_iso_inv :
-    G.map pushout.inl ≫ (PreservesPushout.iso G f g).inv = pushout.inl := by
+    G.map (pushout.inl _ _) ≫ (PreservesPushout.iso G f g).inv = pushout.inl _ _ := by
   simp [PreservesPushout.iso, Iso.comp_inv_eq]
 #align category_theory.limits.preserves_pushout.inl_iso_inv CategoryTheory.Limits.PreservesPushout.inl_iso_inv
 
 @[reassoc (attr := simp)]
 theorem PreservesPushout.inr_iso_inv :
-    G.map pushout.inr ≫ (PreservesPushout.iso G f g).inv = pushout.inr := by
+    G.map (pushout.inr _ _) ≫ (PreservesPushout.iso G f g).inv = pushout.inr _ _ := by
   simp [PreservesPushout.iso, Iso.comp_inv_eq]
 #align category_theory.limits.preserves_pushout.inr_iso_inv CategoryTheory.Limits.PreservesPushout.inr_iso_inv
 

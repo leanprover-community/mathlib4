@@ -259,8 +259,8 @@ noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesiv
     RegularMonoCategory C :=
   ⟨fun f _ =>
     { Z := pushout f f
-      left := pushout.inl
-      right := pushout.inr
+      left := pushout.inl _ _
+      right := pushout.inr _ _
       w := pushout.condition
       isLimit := (Adhesive.isPullback_of_isPushout_of_mono_left
         (IsPushout.of_hasPushout f f)).isLimitFork }⟩

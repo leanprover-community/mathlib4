@@ -124,19 +124,19 @@ abbrev pullback.snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : 
 #align category_theory.limits.pullback.snd CategoryTheory.Limits.pullback.snd
 
 /-- The first inclusion into the pushout of `f` and `g`. -/
-abbrev pushout.inl {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] : Y ⟶ pushout f g :=
+abbrev pushout.inl {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Y ⟶ pushout f g :=
   colimit.ι (span f g) WalkingSpan.left
 #align category_theory.limits.pushout.inl CategoryTheory.Limits.pushout.inl
 
 /-- The second inclusion into the pushout of `f` and `g`. -/
-abbrev pushout.inr {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] : Z ⟶ pushout f g :=
+abbrev pushout.inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Z ⟶ pushout f g :=
   colimit.ι (span f g) WalkingSpan.right
 #align category_theory.limits.pushout.inr CategoryTheory.Limits.pushout.inr
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
     `pullback.lift : W ⟶ pullback f g`. -/
-abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y)
-    (w : h ≫ f = k ≫ g) : W ⟶ pullback f g :=
+abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
+    (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
 #align category_theory.limits.pullback.lift CategoryTheory.Limits.pullback.lift
 
@@ -169,12 +169,12 @@ theorem PullbackCone.snd_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [Has
 
 -- Porting note (#10618): simp can prove this; removed simp
 theorem PushoutCocone.inl_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y)
-    [HasColimit (span f g)] : PushoutCocone.inl (colimit.cocone (span f g)) = pushout.inl := rfl
+    [HasColimit (span f g)] : PushoutCocone.inl (colimit.cocone (span f g)) = pushout.inl _ _ := rfl
 #align category_theory.limits.pushout_cocone.inl_colimit_cocone CategoryTheory.Limits.PushoutCocone.inl_colimit_cocone
 
 -- Porting note (#10618): simp can prove this; removed simp
 theorem PushoutCocone.inr_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y)
-    [HasColimit (span f g)] : PushoutCocone.inr (colimit.cocone (span f g)) = pushout.inr := rfl
+    [HasColimit (span f g)] : PushoutCocone.inr (colimit.cocone (span f g)) = pushout.inr _ _ := rfl
 #align category_theory.limits.pushout_cocone.inr_colimit_cocone CategoryTheory.Limits.PushoutCocone.inr_colimit_cocone
 
 -- Porting note (#10618): simp can prove this and reassoced version; removed simp
@@ -194,14 +194,14 @@ theorem pullback.lift_snd {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback
 -- Porting note (#10618): simp can prove this and reassoced version; removed simp
 @[reassoc]
 theorem pushout.inl_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W)
-    (k : Z ⟶ W) (w : f ≫ h = g ≫ k) : pushout.inl ≫ pushout.desc h k w = h :=
+    (k : Z ⟶ W) (w : f ≫ h = g ≫ k) : pushout.inl _ _ ≫ pushout.desc h k w = h :=
   colimit.ι_desc _ _
 #align category_theory.limits.pushout.inl_desc CategoryTheory.Limits.pushout.inl_desc
 
 -- Porting note (#10618): simp can prove this and reassoced version; removed simp
 @[reassoc]
 theorem pushout.inr_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W)
-    (k : Z ⟶ W) (w : f ≫ h = g ≫ k) : pushout.inr ≫ pushout.desc h k w = k :=
+    (k : Z ⟶ W) (w : f ≫ h = g ≫ k) : pushout.inr _ _ ≫ pushout.desc h k w = k :=
   colimit.ι_desc _ _
 #align category_theory.limits.pushout.inr_desc CategoryTheory.Limits.pushout.inr_desc
 
@@ -214,9 +214,10 @@ def pullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (
 #align category_theory.limits.pullback.lift' CategoryTheory.Limits.pullback.lift'
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
-    `l : pushout f g ⟶ W` such that `pushout.inl ≫ l = h` and `pushout.inr ≫ l = k`. -/
+    `l : pushout f g ⟶ W` such that `pushout.inl _ _ ≫ l = h` and `pushout.inr _ _ ≫ l = k`. -/
 def pullback.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
-    (w : f ≫ h = g ≫ k) : { l : pushout f g ⟶ W // pushout.inl ≫ l = h ∧ pushout.inr ≫ l = k } :=
+    (w : f ≫ h = g ≫ k) :
+      { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
   ⟨pushout.desc h k w, pushout.inl_desc _ _ _, pushout.inr_desc _ _ _⟩
 #align category_theory.limits.pullback.desc' CategoryTheory.Limits.pullback.desc'
 
@@ -228,7 +229,7 @@ theorem pullback.condition {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback 
 
 @[reassoc]
 theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] :
-    f ≫ (pushout.inl : Y ⟶ pushout f g) = g ≫ pushout.inr :=
+    f ≫ (pushout.inl _ _ : Y ⟶ pushout f g) = g ≫ pushout.inr _ _ :=
   PushoutCocone.condition _
 #align category_theory.limits.pushout.condition CategoryTheory.Limits.pushout.condition
 
@@ -266,7 +267,7 @@ abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) 
 abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
     (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
     (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) : pushout f₁ f₂ ⟶ pushout g₁ g₂ :=
-  pushout.desc (i₁ ≫ pushout.inl) (i₂ ≫ pushout.inr)
+  pushout.desc (i₁ ≫ pushout.inl _ _) (i₂ ≫ pushout.inr _ _)
     (by simp only [reassoc_of% eq₁, reassoc_of% eq₂, condition])
 #align category_theory.limits.pushout.map CategoryTheory.Limits.pushout.map
 
@@ -295,14 +296,14 @@ def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     equal -/
 @[ext 1100]
 theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] {W : C}
-    {k l : pushout f g ⟶ W} (h₀ : pushout.inl ≫ k = pushout.inl ≫ l)
-    (h₁ : pushout.inr ≫ k = pushout.inr ≫ l) : k = l :=
+    {k l : pushout f g ⟶ W} (h₀ : pushout.inl _ _ ≫ k = pushout.inl _ _ ≫ l)
+    (h₁ : pushout.inr _ _ ≫ k = pushout.inr _ _ ≫ l) : k = l :=
   colimit.hom_ext <| PushoutCocone.coequalizer_ext _ h₀ h₁
 #align category_theory.limits.pushout.hom_ext CategoryTheory.Limits.pushout.hom_ext
 
 /-- The pushout cocone built from the pushout coprojections is a pushout. -/
 def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
-    IsColimit (PushoutCocone.mk (pushout.inl : _ ⟶ pushout f g) pushout.inr pushout.condition) :=
+    IsColimit (PushoutCocone.mk (pushout.inl f g) (pushout.inr _ _) pushout.condition) :=
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
     (by aesop_cat)
 #align category_theory.limits.pushout_is_pushout CategoryTheory.Limits.pushoutIsPushout
@@ -420,19 +421,21 @@ This is an isomorphism iff `G` preserves the pushout of `f,g`; see
 -/
 def pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] [HasPushout (G.map f) (G.map g)] :
     pushout (G.map f) (G.map g) ⟶ G.obj (pushout f g) :=
-  pushout.desc (G.map pushout.inl) (G.map pushout.inr)
+  pushout.desc (G.map (pushout.inl _ _)) (G.map (pushout.inr _ _))
     (by simp only [← G.map_comp, pushout.condition])
 #align category_theory.limits.pushout_comparison CategoryTheory.Limits.pushoutComparison
 
 @[reassoc (attr := simp)]
 theorem inl_comp_pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
-    [HasPushout (G.map f) (G.map g)] : pushout.inl ≫ pushoutComparison G f g = G.map pushout.inl :=
+    [HasPushout (G.map f) (G.map g)] : pushout.inl _ _ ≫ pushoutComparison G f g =
+      G.map (pushout.inl _ _) :=
   pushout.inl_desc _ _ _
 #align category_theory.limits.inl_comp_pushout_comparison CategoryTheory.Limits.inl_comp_pushoutComparison
 
 @[reassoc (attr := simp)]
 theorem inr_comp_pushoutComparison (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g]
-    [HasPushout (G.map f) (G.map g)] : pushout.inr ≫ pushoutComparison G f g = G.map pushout.inr :=
+    [HasPushout (G.map f) (G.map g)] : pushout.inr _ _ ≫ pushoutComparison G f g =
+      G.map (pushout.inr _ _) :=
   pushout.inr_desc _ _ _
 #align category_theory.limits.inr_comp_pushout_comparison CategoryTheory.Limits.inr_comp_pushoutComparison
 
@@ -508,26 +511,26 @@ def pushoutSymmetry [HasPushout f g] : pushout f g ≅ pushout g f :=
 
 @[reassoc (attr := simp)]
 theorem inl_comp_pushoutSymmetry_hom [HasPushout f g] :
-    pushout.inl ≫ (pushoutSymmetry f g).hom = pushout.inr :=
+    pushout.inl _ _ ≫ (pushoutSymmetry f g).hom = pushout.inr _ _ :=
   (colimit.isColimit (span f g)).comp_coconePointUniqueUpToIso_hom
     (PushoutCocone.flipIsColimit (pushoutIsPushout g f)) _
 #align category_theory.limits.inl_comp_pushout_symmetry_hom CategoryTheory.Limits.inl_comp_pushoutSymmetry_hom
 
 @[reassoc (attr := simp)]
 theorem inr_comp_pushoutSymmetry_hom [HasPushout f g] :
-    pushout.inr ≫ (pushoutSymmetry f g).hom = pushout.inl :=
+    pushout.inr _ _ ≫ (pushoutSymmetry f g).hom = pushout.inl _ _ :=
   (colimit.isColimit (span f g)).comp_coconePointUniqueUpToIso_hom
     (PushoutCocone.flipIsColimit (pushoutIsPushout g f)) _
 #align category_theory.limits.inr_comp_pushout_symmetry_hom CategoryTheory.Limits.inr_comp_pushoutSymmetry_hom
 
 @[reassoc (attr := simp)]
 theorem inl_comp_pushoutSymmetry_inv [HasPushout f g] :
-    pushout.inl ≫ (pushoutSymmetry f g).inv = pushout.inr := by simp [Iso.comp_inv_eq]
+    pushout.inl _ _ ≫ (pushoutSymmetry f g).inv = pushout.inr _ _ := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.inl_comp_pushout_symmetry_inv CategoryTheory.Limits.inl_comp_pushoutSymmetry_inv
 
 @[reassoc (attr := simp)]
 theorem inr_comp_pushoutSymmetry_inv [HasPushout f g] :
-    pushout.inr ≫ (pushoutSymmetry f g).inv = pushout.inl := by simp [Iso.comp_inv_eq]
+    pushout.inr _ _ ≫ (pushoutSymmetry f g).inv = pushout.inl _ _ := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.inr_comp_pushout_symmetry_inv CategoryTheory.Limits.inr_comp_pushoutSymmetry_inv
 
 end PushoutSymmetry

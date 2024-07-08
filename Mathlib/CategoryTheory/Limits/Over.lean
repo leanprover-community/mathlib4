@@ -206,9 +206,9 @@ variable [HasPushouts C]
 by pushing a morphism forward along `f`. -/
 @[simps]
 def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
-  obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
+  obj g := Under.mk (pushout.inr _ _ : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
   map := fun g {h} {k} =>
-    Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
+    Under.homMk (pushout.desc (k.right ≫ pushout.inl _ _) (pushout.inr _ _) (by simp [← pushout.condition]))
 #align category_theory.under.pushout CategoryTheory.Under.pushout
 
 end

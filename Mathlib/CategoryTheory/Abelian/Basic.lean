@@ -619,7 +619,7 @@ variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` -/
 abbrev biproductToPushout : Y ⊞ Z ⟶ pushout f g :=
-  biprod.desc pushout.inl pushout.inr
+  biprod.desc (pushout.inl _ _) (pushout.inr _ _)
 #align category_theory.abelian.biproduct_to_pushout_is_cokernel.biproduct_to_pushout CategoryTheory.Abelian.BiproductToPushoutIsCokernel.biproductToPushout
 
 /-- The canonical map `Y ⊞ Z ⟶ pushout f g` induces a cokernel cofork on the map
@@ -742,7 +742,7 @@ section MonoPushout
 
 variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
-instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g) :=
+instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift (0 : R ⟶ Y) e
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
@@ -765,7 +765,7 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
       _ = 0 := zero_comp
 #align category_theory.abelian.mono_pushout_of_mono_f CategoryTheory.Abelian.mono_pushout_of_mono_f
 
-instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g) :=
+instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl _ _ : Y ⟶ pushout f g) :=
   mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift e (0 : R ⟶ Z)
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]

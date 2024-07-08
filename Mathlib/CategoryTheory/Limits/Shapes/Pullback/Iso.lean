@@ -187,7 +187,7 @@ theorem hasPushout_of_left_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_left_iso
 
-instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr : _ ⟶ pushout f g) := by
+instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr _ _ : _ ⟶ pushout f g) := by
   refine ⟨⟨pushout.desc (inv f ≫ g) (𝟙 _) (by simp), by simp, ?_⟩⟩
   ext
   · simp [← pushout.condition]
@@ -245,7 +245,7 @@ theorem hasPushout_of_right_iso : HasPushout f g :=
 
 attribute [local instance] hasPushout_of_right_iso
 
-instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl : _ ⟶ pushout f g) := by
+instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl _ _ : _ ⟶ pushout f g) := by
   refine ⟨⟨pushout.desc (𝟙 _) (inv g ≫ f) (by simp), by simp, ?_⟩⟩
   ext
   · simp [← pushout.condition]

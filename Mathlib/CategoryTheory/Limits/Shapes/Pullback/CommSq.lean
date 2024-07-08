@@ -369,7 +369,7 @@ theorem of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
 
 /-- The pushout provided by `HasPushout f g` fits into an `IsPushout`. -/
 theorem of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :
-    IsPushout f g (pushout.inl : X ⟶ pushout f g) (pushout.inr : Y ⟶ pushout f g) :=
+    IsPushout f g (pushout.inl _ _ : X ⟶ pushout f g) (pushout.inr _ _ : Y ⟶ pushout f g) :=
   of_isColimit (colimit.isColimit (span f g))
 #align category_theory.is_pushout.of_has_pushout CategoryTheory.IsPushout.of_hasPushout
 
@@ -419,30 +419,30 @@ noncomputable def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P �
 
 @[simp]
 theorem inl_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
-    pushout.inl ≫ h.isoPushout.inv = inl := by
+    pushout.inl _ _ ≫ h.isoPushout.inv = inl := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 #align category_theory.is_pushout.inl_iso_pushout_inv CategoryTheory.IsPushout.inl_isoPushout_inv
 
 @[simp]
 theorem inr_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
-    pushout.inr ≫ h.isoPushout.inv = inr := by
+    pushout.inr _ _ ≫ h.isoPushout.inv = inr := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 #align category_theory.is_pushout.inr_iso_pushout_inv CategoryTheory.IsPushout.inr_isoPushout_inv
 
 @[simp]
 theorem inl_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
-    inl ≫ h.isoPushout.hom = pushout.inl := by simp [← Iso.eq_comp_inv]
+    inl ≫ h.isoPushout.hom = pushout.inl _ _ := by simp [← Iso.eq_comp_inv]
 #align category_theory.is_pushout.inl_iso_pushout_hom CategoryTheory.IsPushout.inl_isoPushout_hom
 
 @[simp]
 theorem inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
-    inr ≫ h.isoPushout.hom = pushout.inr := by simp [← Iso.eq_comp_inv]
+    inr ≫ h.isoPushout.hom = pushout.inr _ _ := by simp [← Iso.eq_comp_inv]
 #align category_theory.is_pushout.inr_iso_pushout_hom CategoryTheory.IsPushout.inr_isoPushout_hom
 
 theorem of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ pushout f g)
-    (w₁ : inl ≫ i.hom = pushout.inl) (w₂ : inr ≫ i.hom = pushout.inr) : IsPushout f g inl inr :=
+    (w₁ : inl ≫ i.hom = pushout.inl _ _) (w₂ : inr ≫ i.hom = pushout.inr _ _) : IsPushout f g inl inr :=
   of_isColimit' h
     (Limits.IsColimit.ofIsoColimit (colimit.isColimit _)
       (PushoutCocone.ext (s := PushoutCocone.mk ..) i w₁ w₂).symm)

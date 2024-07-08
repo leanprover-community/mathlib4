@@ -273,8 +273,8 @@ lemma snd_δ : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.�
 /-- The pushout of `L₂.X₂` and `L₃.X₁` along `L₂.X₁`. -/
 noncomputable def P' := pushout S.L₂.f S.v₂₃.τ₁
 
-lemma snd_δ_inr : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr : _ ⟶ S.P') =
-    pullback.fst _ _ ≫ S.v₁₂.τ₂ ≫ pushout.inl := by
+lemma snd_δ_inr : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr _ _ : _ ⟶ S.P') =
+    pullback.fst _ _ ≫ S.v₁₂.τ₂ ≫ pushout.inl _ _ := by
   simp only [snd_δ_assoc, ← pushout.condition, φ₂, φ₁_L₂_f_assoc, assoc]
 
 /-- The canonical morphism `L₀.X₂ ⟶ P`. -/
@@ -334,7 +334,7 @@ noncomputable def PIsoUnopOpP' : S.P ≅ Opposite.unop S.op.P' := pullbackIsoUno
 noncomputable def P'IsoUnopOpP : S.P' ≅ Opposite.unop S.op.P := pushoutIsoUnopPullback _ _
 
 lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
-  rw [Quiver.Hom.unop_op, ← cancel_mono (pushout.inr : _ ⟶ S.P'),
+  rw [Quiver.Hom.unop_op, ← cancel_mono (pushout.inr _ _ : _ ⟶ S.P'),
     ← cancel_epi (pullback.snd _ _ : S.P ⟶ _), S.snd_δ_inr,
     ← cancel_mono S.P'IsoUnopOpP.hom, ← cancel_epi S.PIsoUnopOpP'.inv,
     P'IsoUnopOpP, PIsoUnopOpP', assoc, assoc, assoc, assoc,

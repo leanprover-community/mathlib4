@@ -269,28 +269,28 @@ local notation "Y₁" => pushout g₁ g₂
 
 local notation "Y₂" => pushout g₃ g₄
 
-local notation "f₁" => (pushout.inl : X₁ ⟶ Y₁)
+local notation "f₁" => (pushout.inl _ _ : X₁ ⟶ Y₁)
 
-local notation "f₂" => (pushout.inr : X₂ ⟶ Y₁)
+local notation "f₂" => (pushout.inr _ _ : X₂ ⟶ Y₁)
 
-local notation "f₃" => (pushout.inl : X₂ ⟶ Y₂)
+local notation "f₃" => (pushout.inl _ _ : X₂ ⟶ Y₂)
 
-local notation "f₄" => (pushout.inr : X₃ ⟶ Y₂)
+local notation "f₄" => (pushout.inr _ _ : X₃ ⟶ Y₂)
 
 local notation "W" => pushout g₁ (g₂ ≫ f₃)
 
 local notation "W'" => pushout (g₃ ≫ f₂) g₄
 
 local notation "l₁" =>
-  (pushout.desc pushout.inl (f₃ ≫ pushout.inr) (pushout.condition.trans (Category.assoc _ _ _)) :
-    Y₁ ⟶ W)
+  (pushout.desc (pushout.inl _ _) (f₃ ≫ pushout.inr _ _)
+    (pushout.condition.trans (Category.assoc _ _ _)) : Y₁ ⟶ W)
 
-local notation "l₂" => (pushout.inr : Y₂ ⟶ W)
+local notation "l₂" => (pushout.inr _ _ : Y₂ ⟶ W)
 
-local notation "l₁'" => (pushout.inl : Y₁ ⟶ W')
+local notation "l₁'" => (pushout.inl _ _ : Y₁ ⟶ W')
 
 local notation "l₂'" =>
-  (pushout.desc (f₂ ≫ pushout.inl) pushout.inr
+  (pushout.desc (f₂ ≫ pushout.inl _ _) (pushout.inr _ _)
       (Eq.trans (Eq.symm (Category.assoc _ _ _)) pushout.condition) :
     Y₂ ⟶ W')
 
@@ -355,18 +355,18 @@ theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g�
 -- variable [HasPushout (g₃ ≫ f₂) g₄] [HasPushout g₁ (g₂ ≫ f₃)]
 
 /-- The canonical isomorphism `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃ ≅ X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
-noncomputable def pushoutAssoc [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
-    pushout (g₃ ≫ pushout.inr : _ ⟶ pushout g₁ g₂) g₄ ≅
-      pushout g₁ (g₂ ≫ pushout.inl : _ ⟶ pushout g₃ g₄) :=
+noncomputable def pushoutAssoc [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
+    pushout (g₃ ≫ pushout.inr _ _ : _ ⟶ pushout g₁ g₂) g₄ ≅
+      pushout g₁ (g₂ ≫ pushout.inl _ _ : _ ⟶ pushout g₃ g₄) :=
   (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄).coconePointUniqueUpToIso
     (pushoutPushoutRightIsPushout g₁ g₂ g₃ g₄)
 #align category_theory.limits.pushout_assoc CategoryTheory.Limits.pushoutAssoc
 
 @[reassoc (attr := simp)]
-theorem inl_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
-    pushout.inl ≫ pushout.inl ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inl := by
+theorem inl_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
+    pushout.inl _ _ ≫ pushout.inl _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inl _ _ := by
   trans f₁ ≫ l₁
   · congr 1
     exact
@@ -376,9 +376,10 @@ theorem inl_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y
 #align category_theory.limits.inl_inl_pushout_assoc_hom CategoryTheory.Limits.inl_inl_pushoutAssoc_hom
 
 @[reassoc (attr := simp)]
-theorem inr_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
-    pushout.inr ≫ pushout.inl ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inl ≫ pushout.inr := by
+theorem inr_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
+    pushout.inr _ _ ≫ pushout.inl _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom =
+      pushout.inl _ _ ≫ pushout.inr _ _ := by
   trans f₂ ≫ l₁
   · congr 1
     exact
@@ -388,9 +389,9 @@ theorem inr_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y
 #align category_theory.limits.inr_inl_pushout_assoc_hom CategoryTheory.Limits.inr_inl_pushoutAssoc_hom
 
 @[reassoc (attr := simp)]
-theorem inr_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
-    pushout.inr ≫ pushout.inr ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inr := by
+theorem inr_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
+    pushout.inr _ _ ≫ pushout.inr _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inr _ _ := by
   trans f₄ ≫ l₂'
   · congr 1
     exact
@@ -400,23 +401,24 @@ theorem inr_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y
 #align category_theory.limits.inr_inr_pushout_assoc_inv CategoryTheory.Limits.inr_inr_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
-theorem inl_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
-    pushout.inl ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inl ≫ pushout.inl := by
+theorem inl_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
+    pushout.inl _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inl _ _ ≫ pushout.inl _ _ := by
   rw [Iso.comp_inv_eq, Category.assoc, inl_inl_pushoutAssoc_hom]
 #align category_theory.limits.inl_pushout_assoc_inv CategoryTheory.Limits.inl_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
-theorem inl_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
-    pushout.inl ≫ pushout.inr ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inr ≫ pushout.inl := by
+theorem inl_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
+    pushout.inl _ _ ≫ pushout.inr _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv =
+      pushout.inr _ _ ≫ pushout.inl _ _ := by
   rw [← Category.assoc, Iso.comp_inv_eq, Category.assoc, inr_inl_pushoutAssoc_hom]
 #align category_theory.limits.inl_inr_pushout_assoc_inv CategoryTheory.Limits.inl_inr_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
-theorem inr_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
-    pushout.inr ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inr ≫ pushout.inr := by
+theorem inr_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr _ _ : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl _ _ : X₂ ⟶ Y₂))] :
+    pushout.inr _ _ ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inr _ _ ≫ pushout.inr _ _ := by
   rw [← Iso.eq_comp_inv, Category.assoc, inr_inr_pushoutAssoc_inv]
 #align category_theory.limits.inr_pushout_assoc_hom CategoryTheory.Limits.inr_pushoutAssoc_hom
 

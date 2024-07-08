@@ -321,20 +321,20 @@ end PushoutCocone
 
 /-- The pushout of an epimorphism is an epimorphism -/
 instance pushout.inl_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi g] :
-    Epi (pushout.inl : Y ⟶ pushout f g) :=
+    Epi (pushout.inl _ _ : Y ⟶ pushout f g) :=
   PushoutCocone.epi_inl_of_is_pushout_of_epi (colimit.isColimit _)
 #align category_theory.limits.pushout.inl_of_epi CategoryTheory.Limits.pushout.inl_of_epi
 
 /-- The pushout of an epimorphism is an epimorphism -/
 instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi f] :
-    Epi (pushout.inr : Z ⟶ pushout f g) :=
+    Epi (pushout.inr _ _ : Z ⟶ pushout f g) :=
   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
 #align category_theory.limits.pushout.inr_of_epi CategoryTheory.Limits.pushout.inr_of_epi
 
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
 instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
-    Epi (coprod.desc pushout.inl pushout.inr : _ ⟶ pushout f g) :=
+    Epi (coprod.desc (pushout.inl _ _) pushout.inr _ _ : _ ⟶ pushout f g) :=
   ⟨fun {W} i₁ i₂ h => by
     ext
     · simpa using congrArg (fun f => coprod.inl ≫ f) h
@@ -343,8 +343,8 @@ instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y
 
 /-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]
-    [HasPushout f g] : IsColimit (PushoutCocone.mk pushout.inl pushout.inr
-    (show (h ≫ f) ≫ pushout.inl = (h ≫ g) ≫ pushout.inr from by
+    [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl _ _) (pushout.inr _ _)
+    (show (h ≫ f) ≫ pushout.inl _ _ = (h ≫ g) ≫ pushout.inr _ _ from by
     simp only [Category.assoc]; rw [cancel_epi]; exact pushout.condition)) :=
   PushoutCocone.isColimitOfEpiComp f g h _ (colimit.isColimit (span f g))
 #align category_theory.limits.pushout_is_pushout_of_epi_comp CategoryTheory.Limits.pushoutIsPushoutOfEpiComp
@@ -365,8 +365,8 @@ instance hasPushout_of_right_factors_epi : HasPushout h (h ≫ f) := by
 #align category_theory.limits.has_pushout_of_right_factors_epi CategoryTheory.Limits.hasPushout_of_right_factors_epi
 
 instance pushout_inr_iso_of_right_factors_epi :
-    IsIso (pushout.inr : _ ⟶ pushout h (h ≫ f)) := by
-  convert (congrArg IsIso (show pushout.inr ≫ _ = _ from colimit.isoColimitCocone_ι_inv
+    IsIso (pushout.inr _ _ : _ ⟶ pushout h (h ≫ f)) := by
+  convert (congrArg IsIso (show pushout.inr _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp (𝟙 _) f h⟩ WalkingSpan.right)).mp
     inferInstance
   · apply (Category.comp_id _).symm
@@ -380,8 +380,8 @@ instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h :
 #align category_theory.limits.has_pushout_of_left_factors_epi CategoryTheory.Limits.hasPushout_of_left_factors_epi
 
 instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
-    IsIso (pushout.inl : _ ⟶ pushout (h ≫ f) h) := by
-  convert (congrArg IsIso (show pushout.inl ≫ _ = _ from colimit.isoColimitCocone_ι_inv
+    IsIso (pushout.inl _ _ : _ ⟶ pushout (h ≫ f) h) := by
+  convert (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp f (𝟙 _) h⟩ WalkingSpan.left)).mp
         inferInstance;
   · exact (Category.comp_id _).symm
@@ -400,7 +400,7 @@ instance has_cokernel_pair_of_epi [Epi f] : HasPushout f f :=
   ⟨⟨⟨_, PushoutCocone.isColimitMkIdId f⟩⟩⟩
 #align category_theory.limits.has_cokernel_pair_of_epi CategoryTheory.Limits.has_cokernel_pair_of_epi
 
-theorem inl_eq_inr_of_epi_eq [Epi f] : (pushout.inl : _ ⟶ pushout f f) = pushout.inr :=
+theorem inl_eq_inr_of_epi_eq [Epi f] : (pushout.inl _ _ : _ ⟶ pushout f f) = pushout.inr _ _ :=
   ((PushoutCocone.isColimitMkIdId f).fac (getColimitCocone (span f f)).cocone left).symm.trans
     ((PushoutCocone.isColimitMkIdId f).fac (getColimitCocone (span f f)).cocone right : _)
 #align category_theory.limits.inl_eq_inr_of_epi_eq CategoryTheory.Limits.inl_eq_inr_of_epi_eq
@@ -410,14 +410,14 @@ theorem pullback_symmetry_hom_of_epi_eq [Epi f] : (pushoutSymmetry f f).hom = �
   ext <;> simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.pullback_symmetry_hom_of_epi_eq CategoryTheory.Limits.pullback_symmetry_hom_of_epi_eq
 
-instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl : _ ⟶ pushout f f) := by
+instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl _ _ : _ ⟶ pushout f f) := by
   refine ⟨⟨pushout.desc (𝟙 _) (𝟙 _) (by simp), by simp, ?_⟩⟩
   apply pushout.hom_ext
   · simp
   · simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.inl_iso_of_epi_eq CategoryTheory.Limits.inl_iso_of_epi_eq
 
-instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr : _ ⟶ pushout f f) :=
+instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr _ _ : _ ⟶ pushout f f) :=
   inl_eq_inr_of_epi_eq f ▸ inl_iso_of_epi_eq f
 #align category_theory.limits.inr_iso_of_epi_eq CategoryTheory.Limits.inr_iso_of_epi_eq
 

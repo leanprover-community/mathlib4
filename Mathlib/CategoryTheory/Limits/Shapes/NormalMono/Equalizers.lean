@@ -268,25 +268,25 @@ private abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (
 /-- The coequalizer of `f` and `g` exists. -/
 @[irreducible, nolint defLemma] -- Porting note: changed to def and restored irreducible
 def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
-  have huv : (pushout.inl : Y ⟶ Q f g) = pushout.inr :=
+  have huv : (pushout.inl _ _ : Y ⟶ Q f g) = pushout.inr _ _ :=
     calc
-      (pushout.inl : Y ⟶ Q f g) = 𝟙 _ ≫ pushout.inl := Eq.symm <| Category.id_comp _
-      _ = (coprod.inl ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl := by rw [coprod.inl_desc]
-      _ = (coprod.inl ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr := by
+      (pushout.inl _ _ : Y ⟶ Q f g) = 𝟙 _ ≫ pushout.inl _ _ := Eq.symm <| Category.id_comp _
+      _ = (coprod.inl ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl _ _ := by rw [coprod.inl_desc]
+      _ = (coprod.inl ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr _ _ := by
         simp only [Category.assoc, pushout.condition]
-      _ = pushout.inr := by rw [coprod.inl_desc, Category.id_comp]
+      _ = pushout.inr _ _ := by rw [coprod.inl_desc, Category.id_comp]
 
-  have hvu : f ≫ (pushout.inl : Y ⟶ Q f g) = g ≫ pushout.inr :=
+  have hvu : f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = g ≫ pushout.inr _ _ :=
     calc
-      f ≫ (pushout.inl : Y ⟶ Q f g) = (coprod.inr ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl := by
+      f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = (coprod.inr ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl _ _ := by
         rw [coprod.inr_desc]
-      _ = (coprod.inr ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr := by
+      _ = (coprod.inr ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr _ _ := by
         simp only [Category.assoc, pushout.condition]
-      _ = g ≫ pushout.inr := by rw [coprod.inr_desc]
+      _ = g ≫ pushout.inr _ _ := by rw [coprod.inr_desc]
 
-  have huu : f ≫ (pushout.inl : Y ⟶ Q f g) = g ≫ pushout.inl := by rw [hvu, huv]
+  have huu : f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = g ≫ pushout.inl _ _ := by rw [hvu, huv]
   HasColimit.mk
-    { cocone := Cofork.ofπ pushout.inl huu
+    { cocone := Cofork.ofπ (pushout.inl _ _) huu
       isColimit :=
         Cofork.IsColimit.mk _
           (fun s =>

@@ -244,12 +244,12 @@ end
 section
 
 variable {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (g' : Z ⟶ W)
-variable [HasPushout f g] [HasPushout (pushout.inr : _ ⟶ pushout f g) g']
+variable [HasPushout f g] [HasPushout (pushout.inr _ _ : _ ⟶ pushout f g) g']
 variable [HasPushout f (g ≫ g')]
 
 /-- The canonical isomorphism `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ×[X] W` -/
 noncomputable def pushoutLeftPushoutInrIso :
-    pushout (pushout.inr : _ ⟶ pushout f g) g' ≅ pushout f (g ≫ g') :=
+    pushout (pushout.inr _ _ : _ ⟶ pushout f g) g' ≅ pushout f (g ≫ g') :=
   ((bigSquareIsPushout g g' _ _ f _ _ pushout.condition pushout.condition (pushoutIsPushout _ _)
           (pushoutIsPushout _ _)).coconePointUniqueUpToIso
       (pushoutIsPushout _ _) :
@@ -258,7 +258,7 @@ noncomputable def pushoutLeftPushoutInrIso :
 
 @[reassoc (attr := simp)]
 theorem inl_pushoutLeftPushoutInrIso_inv :
-    pushout.inl ≫ (pushoutLeftPushoutInrIso f g g').inv = pushout.inl ≫ pushout.inl :=
+    pushout.inl _ _ ≫ (pushoutLeftPushoutInrIso f g g').inv = pushout.inl _ _ ≫ pushout.inl _ _ :=
   ((bigSquareIsPushout g g' _ _ f _ _ pushout.condition pushout.condition (pushoutIsPushout _ _)
           (pushoutIsPushout _ _)).comp_coconePointUniqueUpToIso_inv
       (pushoutIsPushout _ _) WalkingSpan.left :
@@ -267,7 +267,7 @@ theorem inl_pushoutLeftPushoutInrIso_inv :
 
 @[reassoc (attr := simp)]
 theorem inr_pushoutLeftPushoutInrIso_hom :
-    pushout.inr ≫ (pushoutLeftPushoutInrIso f g g').hom = pushout.inr :=
+    pushout.inr _ _ ≫ (pushoutLeftPushoutInrIso f g g').hom = pushout.inr _ _ :=
   ((bigSquareIsPushout g g' _ _ f _ _ pushout.condition pushout.condition (pushoutIsPushout _ _)
           (pushoutIsPushout _ _)).comp_coconePointUniqueUpToIso_hom
       (pushoutIsPushout _ _) WalkingSpan.right :
@@ -276,19 +276,19 @@ theorem inr_pushoutLeftPushoutInrIso_hom :
 
 @[reassoc (attr := simp)]
 theorem inr_pushoutLeftPushoutInrIso_inv :
-    pushout.inr ≫ (pushoutLeftPushoutInrIso f g g').inv = pushout.inr := by
+    pushout.inr _ _ ≫ (pushoutLeftPushoutInrIso f g g').inv = pushout.inr _ _ := by
   rw [Iso.comp_inv_eq, inr_pushoutLeftPushoutInrIso_hom]
 #align category_theory.limits.inr_pushout_left_pushout_inr_iso_inv CategoryTheory.Limits.inr_pushoutLeftPushoutInrIso_inv
 
 @[reassoc (attr := simp)]
 theorem inl_inl_pushoutLeftPushoutInrIso_hom :
-    pushout.inl ≫ pushout.inl ≫ (pushoutLeftPushoutInrIso f g g').hom = pushout.inl := by
+    pushout.inl _ _ ≫ pushout.inl _ _ ≫ (pushoutLeftPushoutInrIso f g g').hom = pushout.inl _ _ := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, inl_pushoutLeftPushoutInrIso_inv]
 #align category_theory.limits.inl_inl_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inl_inl_pushoutLeftPushoutInrIso_hom
 
 @[reassoc (attr := simp)]
 theorem inr_inl_pushoutLeftPushoutInrIso_hom :
-    pushout.inr ≫ pushout.inl ≫ (pushoutLeftPushoutInrIso f g g').hom = g' ≫ pushout.inr := by
+    pushout.inr _ _ ≫ pushout.inl _ _ ≫ (pushoutLeftPushoutInrIso f g g').hom = g' ≫ pushout.inr _ _ := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, Category.assoc, inr_pushoutLeftPushoutInrIso_inv,
     pushout.condition]
 #align category_theory.limits.inr_inl_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inr_inl_pushoutLeftPushoutInrIso_hom

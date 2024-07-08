@@ -167,9 +167,9 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
 theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g) :
-    P (pushout.inl : S ⟶ pushout f g) := by
+    P (pushout.inl _ _ : S ⟶ pushout f g) := by
   rw [←
-    show _ = pushout.inl from
+    show _ = pushout.inl _ _ from
       colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit f g⟩
         WalkingSpan.left,
     hP'.cancel_right_isIso]

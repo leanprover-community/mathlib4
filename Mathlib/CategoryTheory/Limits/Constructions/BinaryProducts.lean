@@ -177,7 +177,7 @@ noncomputable def colimitCoconeOfInitialAndPushouts [HasInitial C] [HasPushouts 
     { pt := pushout (initial.to (F.obj ⟨WalkingPair.left⟩)) (initial.to (F.obj ⟨WalkingPair.right⟩))
       ι :=
         Discrete.natTrans fun x =>
-          Discrete.casesOn x fun x => WalkingPair.casesOn x pushout.inl pushout.inr }
+          Discrete.casesOn x fun x => WalkingPair.casesOn x (pushout.inl _ _) (pushout.inr _ _) }
   isColimit := isBinaryCoproductOfIsInitialIsPushout F _ initialIsInitial _ _ (pushoutIsPushout _ _)
 #align colimit_cocone_of_initial_and_pushouts colimitCoconeOfInitialAndPushouts
 

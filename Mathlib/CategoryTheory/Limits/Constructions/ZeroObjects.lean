@@ -204,26 +204,26 @@ def pushoutZeroZeroIso (X Y : C) [HasBinaryCoproduct X Y] :
 
 @[simp]
 theorem inl_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
-    pushout.inl ≫ (pushoutZeroZeroIso X Y).hom = coprod.inl := by
+    pushout.inl _ _ ≫ (pushoutZeroZeroIso X Y).hom = coprod.inl := by
   dsimp [pushoutZeroZeroIso]
   simp
 #align category_theory.limits.inl_pushout_zero_zero_iso_hom CategoryTheory.Limits.inl_pushoutZeroZeroIso_hom
 
 @[simp]
 theorem inr_pushoutZeroZeroIso_hom (X Y : C) [HasBinaryCoproduct X Y] :
-    pushout.inr ≫ (pushoutZeroZeroIso X Y).hom = coprod.inr := by
+    pushout.inr _ _ ≫ (pushoutZeroZeroIso X Y).hom = coprod.inr := by
   dsimp [pushoutZeroZeroIso]
   simp
 #align category_theory.limits.inr_pushout_zero_zero_iso_hom CategoryTheory.Limits.inr_pushoutZeroZeroIso_hom
 
 @[simp]
 theorem inl_pushoutZeroZeroIso_inv (X Y : C) [HasBinaryCoproduct X Y] :
-    coprod.inl ≫ (pushoutZeroZeroIso X Y).inv = pushout.inl := by simp [Iso.comp_inv_eq]
+    coprod.inl ≫ (pushoutZeroZeroIso X Y).inv = pushout.inl _ _ := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.inl_pushout_zero_zero_iso_inv CategoryTheory.Limits.inl_pushoutZeroZeroIso_inv
 
 @[simp]
 theorem inr_pushoutZeroZeroIso_inv (X Y : C) [HasBinaryCoproduct X Y] :
-    coprod.inr ≫ (pushoutZeroZeroIso X Y).inv = pushout.inr := by simp [Iso.comp_inv_eq]
+    coprod.inr ≫ (pushoutZeroZeroIso X Y).inv = pushout.inr _ _ := by simp [Iso.comp_inv_eq]
 #align category_theory.limits.inr_pushout_zero_zero_iso_inv CategoryTheory.Limits.inr_pushoutZeroZeroIso_inv
 
 end CategoryTheory.Limits
