@@ -13,12 +13,13 @@ import Mathlib.LinearAlgebra.Quotient
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,
 `Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
 
+* For additive maps `f : M →+ N`  and `g : N →+ P`,
+`Exact f g` says that `range f = ker g`
+
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
 `Exact f g` says that `range f = ker g`
 
 ## TODO :
-
-* add the cases of `AddMonoidHom`
 
 * generalize to `SemilinearMap`, even `SemilinearMapClass`
 
@@ -68,6 +69,35 @@ end Function
 
 section AddMonoidHom
 
+section
+
+open AddMonoidHom
+
+variable [AddGroup M] [AddGroup N] [AddGroup P] {f : M →+ N} {g : N →+ P}
+
+lemma Exact.addMonoidHom_ker_eq (hfg : Exact f g) :
+    ker g = range f :=
+  SetLike.ext hfg
+
+lemma _root_.AddMonoidHom.exact_iff :
+    Exact f g ↔ ker g = range f :=
+  Iff.symm SetLike.ext_iff
+
+lemma _root_.AddMonoidHom.exact_of_comp_eq_zero_of_ker_le_range
+    (h1 : g.comp f = 0) (h2 : ker g ≤ range f) : Exact f g :=
+  Exact.of_comp_of_mem_range (congrArg DFunLike.coe h1) h2
+
+lemma _root_.AddMonoidHom.exact_of_comp_of_mem_range
+    (h1 : g.comp f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
+  exact_of_comp_eq_zero_of_ker_le_range h1 h2
+
+lemma Exact.addMonoidHom_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
+  DFunLike.coe_injective h.comp_eq_zero
+
+end
+
+section
+
 variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [AddCommMonoid X₁] [AddCommMonoid X₂] [AddCommMonoid X₃]
   [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃]
   (e₁ : X₁ ≃+ Y₁) (e₂ : X₂ ≃+ Y₂) (e₃ : X₃ ≃+ Y₃)
@@ -104,6 +134,8 @@ lemma Exact.iff_of_ladder_addEquiv : Exact g₁₂ g₂₃ ↔ Exact f₁₂ f�
   constructor
   · exact of_ladder_addEquiv_of_exact' e₁ e₂ e₃ comm₁₂ comm₂₃
   · exact of_ladder_addEquiv_of_exact e₁ e₂ e₃ comm₁₂ comm₂₃
+
+end
 
 end AddMonoidHom
 
