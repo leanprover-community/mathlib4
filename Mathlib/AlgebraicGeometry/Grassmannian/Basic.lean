@@ -1,5 +1,5 @@
-import Mathlib
 import Mathlib.AlgebraicGeometry.Gluing
+import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -16,9 +16,27 @@ section
 
 open CommRingCat TensorProduct CategoryTheory.Limits
 
+variable (R S T U : Type u) [CommRing R] [CommRing S] [CommRing T] [CommRing U]
+  [Algebra R S] [Algebra R T] [Algebra R U] [Algebra S U] [IsScalarTower R S U] [Algebra T U]
+  [IsScalarTower R T U]
+  (f g : R)
+
 noncomputable
-nonrec abbrev Spec.algebraMap (R S : Type u) [CommRing R] [CommRing S] [Algebra R S] :
-  Spec (.of S) ⟶ Spec (.of R) := Spec.map (CommRingCat.ofHom (algebraMap R S))
+nonrec abbrev Spec.algebraMap : Spec (.of S) ⟶ Spec (.of R) :=
+  Spec.map (CommRingCat.ofHom (algebraMap R S))
+
+lemma basicOpen_range :
+    Set.range (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))).val.base =
+    Scheme.basicOpen (X := Spec (.of R)) (U := ⊤) ((Scheme.ΓSpecIso (.of R)).inv f) := by
+  simp only [basicOpen_eq_of_affine', coe_of]
+  rw [Spec.map_base]
+  change Set.range ⇑(PrimeSpectrum.comap (algebraMap R (Localization.Away f))) = _
+  rw [PrimeSpectrum.localization_away_comap_range (S := Localization.Away f) (r := f)]
+  rw [← Function.comp_apply (f := (ΓSpecIso (CommRingCat.of R)).hom)]
+  change _ = ↑(PrimeSpectrum.basicOpen (((ΓSpecIso (CommRingCat.of R)).inv ≫
+    (ΓSpecIso (CommRingCat.of R)).hom) f))
+  rw [Iso.inv_hom_id]
+  simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, coe_id_of, RingHom.id_apply]
 
 noncomputable
 def pullbackSpecIso (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
@@ -37,6 +55,10 @@ def pullbackSpecIso (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Alg
     exacts [Equiv.refl _, fun _ _ ↦ rfl, fun _ _ ↦ rfl, fun _ ↦ rfl]
   · apply (config := { allowSynthFailures := true, newGoals := .all }) AlgEquiv.mk
     exacts [Equiv.refl _, fun _ _ ↦ rfl, fun _ _ ↦ rfl, fun _ ↦ rfl]
+
+noncomputable def pullbackLocalizationIso [IsLocalization.Away f S] [IsLocalization.Away g T]
+    [IsLocalization.Away (f * g) U] : pullback (Spec.algebraMap R S)
+    (Spec.algebraMap R T) ≅ Spec (.of U) := sorry
 
 lemma pullbackSpecIso_inv_fst
     {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
@@ -57,6 +79,10 @@ lemma pullbackSpecIso_inv_fst
     CommRingCat.pushoutCocone_inr, AlgHom.toRingHom_eq_coe]
   ext; rfl
 
+lemma pullbackLocalizationIso_inv_fst [IsLocalization.Away f S] [IsLocalization.Away g T]
+    [IsLocalization.Away (f * g) U] : (pullbackLocalizationIso R S T U f g).inv ≫ pullback.fst =
+    Spec.algebraMap _ _ := sorry
+
 lemma pullbackSpecIso_inv_snd
     {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
     (pullbackSpecIso R S T).inv ≫ pullback.snd =
@@ -76,6 +102,10 @@ lemma pullbackSpecIso_inv_snd
     CommRingCat.pushoutCocone_pt, CommRingCat.coe_of, PushoutCocone.ι_app_right,
     CommRingCat.pushoutCocone_inr, AlgHom.toRingHom_eq_coe]
   ext; rfl
+
+lemma pullbackLocalizationIso_inv_snd [IsLocalization.Away f S] [IsLocalization.Away g T]
+    [IsLocalization.Away (f * g) U] : (pullbackLocalizationIso R S T U f g).inv ≫ pullback.snd =
+    Spec.algebraMap _ _ := sorry
 
 
 end
@@ -414,8 +444,8 @@ def glueData : GlueData where
       (Limits.pullback.snd (f := open_immersion hr j k) (g := open_immersion hr j i))
       (Limits.pullback.fst (f := open_immersion hr i j) (g := open_immersion hr i k) ≫
       transition_Spec hr i j) ?_
-    have := pullbackSpecIso_inv_snd {R :=  MvPolynomial (Fin (finrank K V - r) × Fin r) K}
-      {S := Localization.Away (equation hr j k)} {T := Localization.Away (equation hr i j)}
+    have := pullbackSpecIso_inv_snd (R :=  MvPolynomial (Fin (finrank K V - r) × Fin r) K)
+      (S := Localization.Away (equation hr j k)) (T := Localization.Away (equation hr i j))
   t_fac := sorry
   cocycle := sorry
   f_open _ _ := inferInstance
