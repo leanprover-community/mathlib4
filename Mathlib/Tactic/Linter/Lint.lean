@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Lean.Linter.Util
-import Batteries.Data.Array.Basic
 import Batteries.Tactic.Lint
 
 /-!
