@@ -68,15 +68,15 @@ theorem isAlt_wronskianBilin : (wronskianBilin R).IsAlt := by intro a; exact wro
 theorem wronskian_self_eq_zero (a : R[X]) : wronskian a a = 0 := wronskian_is_alt a
 
 theorem wronskian_neg_eq (a b : R[X]) : -wronskian a b = wronskian b a :=
-  LinearMap.IsAlt.neg IsAlt_wronskianBilin a b
+  LinearMap.IsAlt.neg isAlt_wronskianBilin a b
 
 theorem wronskian_eq_of_sum_zero {a b c : R[X]} (hAdd : a + b + c = 0) :
-    wronskian a b = wronskian b c := IsAlt_wronskianBilin.eq_of_add_add_eq_zero hAdd
+    wronskian a b = wronskian b c := isAlt_wronskianBilin.eq_of_add_add_eq_zero hAdd
 
 private theorem degree_ne_bot {a : R[X]} (ha : a ≠ 0) : a.degree ≠ ⊥ := by
   intro h; rw [Polynomial.degree_eq_bot] at h; exact ha h
 
-theorem wronskian.degree_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
+theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
     (wronskian a b).degree < a.degree + b.degree := by
   calc
     (wronskian a b).degree ≤ max (a * derivative b).degree (derivative a * b).degree :=
@@ -100,7 +100,7 @@ theorem wronskian.natDegree_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   have ha : a ≠ 0 := by intro h; subst h; rw [wronskian_zero_left] at hw; exact hw rfl
   have hb : b ≠ 0 := by intro h; subst h; rw [wronskian_zero_right] at hw; exact hw rfl
   rw [← WithBot.coe_lt_coe, WithBot.coe_add]
-  convert ← wronskian.degree_lt_add ha hb
+  convert ← degree_wronskian_lt_add ha hb
   · exact Polynomial.degree_eq_natDegree hw
   · exact Polynomial.degree_eq_natDegree ha
   · exact Polynomial.degree_eq_natDegree hb
