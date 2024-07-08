@@ -76,18 +76,18 @@ theorem StableUnderBaseChange.snd {P : MorphismProperty C} (hP : StableUnderBase
 
 theorem StableUnderBaseChange.baseChange_obj [HasPullbacks C] {P : MorphismProperty C}
     (hP : StableUnderBaseChange P) {S S' : C} (f : S' ⟶ S) (X : Over S) (H : P X.hom) :
-    P ((Over.baseChange f).obj X).hom :=
+    P ((Over.pullback f).obj X).hom :=
   hP.snd X.hom f H
 #align category_theory.morphism_property.stable_under_base_change.base_change_obj CategoryTheory.MorphismProperty.StableUnderBaseChange.baseChange_obj
 
 theorem StableUnderBaseChange.baseChange_map [HasPullbacks C] {P : MorphismProperty C}
     (hP : StableUnderBaseChange P) {S S' : C} (f : S' ⟶ S) {X Y : Over S} (g : X ⟶ Y)
-    (H : P g.left) : P ((Over.baseChange f).map g).left := by
+    (H : P g.left) : P ((Over.pullback f).map g).left := by
   have := hP.respectsIso
   let e :=
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
       pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
-  have : e.inv ≫ pullback.snd = ((Over.baseChange f).map g).left := by
+  have : e.inv ≫ pullback.snd = ((Over.pullback f).map g).left := by
     ext <;> dsimp [e] <;> simp
   rw [← this, P.cancel_left_of_respectsIso]
   exact hP.snd _ _ H
@@ -104,9 +104,9 @@ theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismPropert
     pullback.map f g f' g' i₁ i₂ (𝟙 _) ((Category.comp_id _).trans e₁)
         ((Category.comp_id _).trans e₂) =
       ((pullbackSymmetry _ _).hom ≫
-          ((Over.baseChange _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
+          ((Over.pullback _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
         (pullbackSymmetry _ _).hom ≫
-          ((Over.baseChange g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left := by
+          ((Over.pullback g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left := by
     ext <;> dsimp <;> simp
   rw [this]
   apply P.comp_mem <;> rw [P.cancel_left_of_respectsIso]

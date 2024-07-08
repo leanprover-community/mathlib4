@@ -1,22 +1,31 @@
 /-
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Andrew Yang, Emily Riehl
+Authors: Bhavik Mehta, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Monad.Products
+import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Adjunction.Unique
 
 #align_import category_theory.adjunction.over from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
 
 /-!
 # Adjunctions related to the over category
 
-Construct the left adjoint `star X` to `Over.forget X : Over X ⥤ C`.
+In a category with pullbacks, for any morphism `f : X ⟶ Y`, the functor `Over.map f : Over X ⥤ Over Y` has a right adjoint `Over.pullback f`.
+
+In a category with binary products, for any object `X` the functor `Over.forget X : Over X ⥤ C` has a right adjoint `Over.star X`.
+
+## Main declarations
+
+- `Over.pullback f : Over Y ⥤ Over X` is the functor induced by a morphism `f : X ⟶ Y`.
+- `Over.mapPullbackAdj` is the adjunction `Over.map f ⊣ Over.pullback f`.
 
 ## TODO
-Show `star X` itself has a left adjoint provided `C` is locally cartesian closed.
+Show `star X` itself has a right adjoint provided `C` is cartesian closed.
 -/
 
 
@@ -35,41 +44,59 @@ namespace Over
 
 open Limits
 
--- Porting note: removed semireducible from the simps config
-/-- Given a morphism `f : X ⟶ Y`, the functor `baseChange f` takes morphisms over `Y` to morphisms
-over `X` via pullbacks. -/
+variable [HasPullbacks C]
+
+/-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
+by pulling back a morphism along `f`. -/
 @[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
-def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
-  obj g := Over.mk (pullback.snd : pullback g.hom f ⟶ _)
-  map i := Over.homMk (pullback.map _ _ _ _ i.left (𝟙 _) (𝟙 _) (by simp) (by simp))
-  map_id Z := by
-    apply Over.OverMorphism.ext; apply pullback.hom_ext
-    · dsimp; simp
-    · dsimp; simp
-  map_comp f g := by
-    apply Over.OverMorphism.ext; apply pullback.hom_ext
-    · dsimp; simp
-    · dsimp; simp
-#align category_theory.limits.base_change CategoryTheory.Over.baseChange
+def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
+  obj g := Over.mk (pullback.snd : CategoryTheory.Limits.pullback g.hom f ⟶ X)
+  map := fun g {h} {k} =>
+    Over.homMk (pullback.lift (pullback.fst ≫ k.left) pullback.snd (by simp [pullback.condition]))
+#align category_theory.over.pullback CategoryTheory.Over.pullback
+#align category_theory.limits.base_change CategoryTheory.Over.pullback
 
-@[deprecated (since := "2024-05-15")] noncomputable alias Limits.baseChange := Over.baseChange
+@[deprecated (since := "2024-05-15")]
+noncomputable alias Limits.baseChange := Over.pullback
 
-/-- The adjunction `Over.map ⊣ baseChange` -/
+@[deprecated (since := "2024-07-08")]
+noncomputable alias baseChange := pullback
+
+/-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
-def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ baseChange f :=
-  .mkOfHomEquiv <| {
-    homEquiv := fun X Y => {
-      toFun := fun u => Over.homMk (pullback.lift u.left X.hom <| by simp)
-      invFun := fun v => Over.homMk (v.left ≫ pullback.fst) <|
-        by simp [← Over.w v, pullback.condition]
-      left_inv := by aesop_cat
-      right_inv := by
-        intro v
-        ext
-        dsimp
-        ext
-        · simp
-        · simpa using Over.w v |>.symm } }
+def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun g h =>
+        { toFun := fun X =>
+            Over.homMk (pullback.lift X.left g.hom <| by simp)
+          invFun := fun Y => Over.homMk (Y.left ≫ pullback.fst) <| by
+            simp [← Over.w Y, pullback.condition]
+          left_inv := by aesop_cat
+          right_inv := fun Y => by
+            ext
+            dsimp
+            ext
+            · simp
+            · simpa using Over.w Y |>.symm } }
+#align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
+
+@[deprecated (since := "2024-07-08")]
+noncomputable alias mapAdjunction := mapPullbackAdj
+
+/-- pullback (𝟙 A) : Over A ⥤ Over A is the identity functor. -/
+def pullbackId {A : C} : pullback (𝟙 A) ≅ 𝟭 _ :=
+  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft (Over.mapId A).symm)
+#align category_theory.over.pullback_id CategoryTheory.Over.pullbackId
+
+/-- pullback commutes with composition (up to natural isomorphism). -/
+def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
+  Adjunction.rightAdjointUniq (mapPullbackAdj _)
+    (((mapPullbackAdj _).comp (mapPullbackAdj _)).ofNatIsoLeft (Over.mapComp _ _).symm)
+#align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
+
+instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : (pullback f).IsRightAdjoint  :=
+  ⟨_, ⟨mapPullbackAdj f⟩⟩
+#align category_theory.over.pullback_is_right_adjoint CategoryTheory.Over.pullbackIsRightAdjoint
 
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
@@ -100,5 +127,19 @@ end Over
 
 @[deprecated (since := "2024-05-18")] noncomputable alias forgetAdjStar := Over.forgetAdjStar
 
+namespace Under
+
+variable [HasPushouts C]
+
+/-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
+by pushing a morphism forward along `f`. -/
+@[simps]
+def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
+  obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
+  map := fun g {h} {k} =>
+    Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
+#align category_theory.under.pushout CategoryTheory.Under.pushout
+
+end Under
 
 end CategoryTheory
