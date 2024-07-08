@@ -379,7 +379,7 @@ theorem smul_support_subset_prod [AddCommMonoid R] [SMulWithZero R V] (s : Summa
     intro ab hab
     simp_all only [Function.mem_support, ne_eq, Set.Finite.coe_toFinset, Set.mem_prod,
       Set.mem_setOf_eq]
-    exact ne_zero_and_ne_zero_of_smul hab
+    refine ⟨left_ne_zero_of_smul hab, right_ne_zero_of_smul hab⟩
 
 theorem smul_support_finite [AddCommMonoid R] [SMulWithZero R V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
@@ -417,8 +417,7 @@ theorem finite_co_support_prod [AddCommMonoid R] [SMulWithZero R V] (s : Summabl
       obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero ha
       simp only [mem_coe, mem_vAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
         Function.mem_support, exists_prop, Prod.exists]
-      exact ⟨ij.1, ij.2, ⟨⟨a.1, (ne_zero_and_ne_zero_of_smul hij.2).1⟩,
-        ⟨a.2, (ne_zero_and_ne_zero_of_smul hij.2).2⟩,
+      exact ⟨ij.1, ij.2, ⟨⟨a.1, left_ne_zero_of_smul hij.2⟩, ⟨a.2, right_ne_zero_of_smul hij.2⟩,
         ((mem_vAddAntidiagonal _ _ _).mp hij.1).2.2⟩, hij.2⟩
 
 /-- An elementwise scalar multiplication of one summable family on another. -/
@@ -970,6 +969,8 @@ open SummableFamily
 
 variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R}
 (hx : 0 < x.orderTop)
+
+-- Should I call this PowerSeries.heval?
 
 /-- The ring homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
 variable `X` to a positive order element `x`. -/

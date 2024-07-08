@@ -376,8 +376,8 @@ heterogeneous fields (or vertex operators) from `V` to `W`.  Equivalently, it is
 `U →ₗ[R] V →ₗ[R] HahnModule Γ R W`.  When `Γ = ℤ` and `U = V = W`, then the multiplication map in a
 vertex algebra has this form, but in other cases, we use this for module structures and intertwining
 operators. -/
-abbrev HStateFieldMap (Γ R U V W : Type*) [PartialOrder Γ] [CommRing R] [AddCommGroup U] [Module R U]
-    [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
+abbrev HStateFieldMap (Γ R U V W : Type*) [PartialOrder Γ] [CommRing R] [AddCommGroup U]
+    [Module R U] [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W] :=
   U →ₗ[R] HVertexOperator Γ R V W
 
 -- Can I just use `curry` to say this is a HVertexOperator Γ R (U ⊗ V) W?
@@ -385,8 +385,9 @@ abbrev HStateFieldMap (Γ R U V W : Type*) [PartialOrder Γ] [CommRing R] [AddCo
 
 namespace VertexAlg
 
-variable {U} (R) {X Y : Type*} [CommRing R] [AddCommGroup U] [Module R U] [AddCommGroup V] [Module R V]
-  [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+variable {U} (R) {X Y : Type*} [CommRing R] [AddCommGroup U] [Module R U] [AddCommGroup V]
+  [Module R V] [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R X] [AddCommGroup Y]
+  [Module R Y]
 
 /-- The coefficient function of a heterogeneous state-field map. -/
 @[simps]

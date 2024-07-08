@@ -830,6 +830,24 @@ theorem pow_leadingCoeff {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSer
     by_contra
     simp_all [IsNilpotent]
 
+/-- An invertible Hahn series supported at an additive unit. -/
+@[simps]
+def UnitSingle {g : Γ} (hg : IsAddUnit g) {r : R} (hr : IsUnit r) : (HahnSeries Γ R)ˣ where
+  val := single g r
+  inv := single hg.addUnit.neg hr.unit.inv
+  val_inv := by simp
+  inv_val := by simp
+
+/-!
+theorem single_isUnit_iff (g : Γ) (r : R) : IsUnit (single g r) ↔ IsAddUnit g ∧ IsUnit r := by
+  constructor
+  intro ⟨⟨u, i, hui, hiu⟩, h⟩
+  rw [Units.val_mk] at h
+  rw [h] at hui
+  have hc : ((single g) r * i).coeff 0 = 1 := by
+    rw [hui, one_coeff, if_pos rfl]
+-/
+
 end Semiring
 
 section Domain

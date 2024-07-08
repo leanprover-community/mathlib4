@@ -9,11 +9,9 @@ import Mathlib.RingTheory.Valuation.Basic
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
 /-!
-# Hahn Series
-If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
-coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  We introduce valuations and binomial
-expansions.
+# Additive Valuation on Hahn series
+If `Γ` is linearly ordered cancellative additive commutative monoid and `R` is a commutative domain,
+then `HahnSeries Γ R` admits an additive valuation.
 
 ## Main Definitions
   * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
@@ -21,7 +19,7 @@ expansions.
 
 ## Main results
 
-  *
+  * comparison with `order` and `orderTop`
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
