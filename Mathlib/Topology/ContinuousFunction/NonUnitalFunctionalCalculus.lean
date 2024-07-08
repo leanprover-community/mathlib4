@@ -667,10 +667,10 @@ instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctiona
   predicate_zero := cfc_predicate_zero R
   exists_cfc_of_predicate _ ha :=
     ⟨cfcₙHom_of_cfcHom R ha,
-            closedEmbedding_cfcₙHom_of_cfcHom ha,
-            cfcHom_id ha,
-            cfcₙHom_of_cfcHom_map_quasispectrum ha,
-            fun _ ↦ cfcHom_predicate ha _⟩
+      closedEmbedding_cfcₙHom_of_cfcHom ha,
+      cfcHom_id ha,
+      cfcₙHom_of_cfcHom_map_quasispectrum ha,
+      fun _ ↦ cfcHom_predicate ha _⟩
 
 lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueNonUnitalContinuousFunctionalCalculus R A] {a : A}
     (ha : p a) : cfcₙHom (R := R) ha = cfcₙHom_of_cfcHom R ha := by
