@@ -83,7 +83,7 @@ noncomputable def limitConeOfTerminalAndPullbacks [HasTerminal C] [HasPullbacks 
           (terminal.from (F.obj ⟨WalkingPair.right⟩))
       π :=
         Discrete.natTrans fun x =>
-          Discrete.casesOn x fun x => WalkingPair.casesOn x pullback.fst pullback.snd }
+          Discrete.casesOn x fun x => WalkingPair.casesOn x (pullback.fst _ _) (pullback.snd _ _) }
   isLimit :=
     isBinaryProductOfIsTerminalIsPullback F _ terminalIsTerminal _ _ (pullbackIsPullback _ _)
 #align limit_cone_of_terminal_and_pullbacks limitConeOfTerminalAndPullbacks

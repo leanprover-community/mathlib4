@@ -74,10 +74,10 @@ variable (f g) [PreservesLimit (cospan f g) G]
 
 /-- If `G` preserves pullbacks and `C` has them, then the pullback cone constructed of the mapped
 morphisms of the pullback cone is a limit. -/
-def isLimitOfHasPullbackOfPreservesLimit [i : HasPullback f g] :
-    have : G.map pullback.fst ≫ G.map f = G.map pullback.snd ≫ G.map g := by
+def isLimitOfHasPullbackOfPreservesLimit [HasPullback f g] :
+    have : G.map (pullback.fst f g) ≫ G.map f = G.map (pullback.snd f g) ≫ G.map g := by
       simp only [← G.map_comp, pullback.condition];
-    IsLimit (PullbackCone.mk (G.map (@pullback.fst _ _ _ _ _ f g i)) (G.map pullback.snd) this) :=
+    IsLimit (PullbackCone.mk (G.map (pullback.fst f g)) (G.map (pullback.snd f g)) this) :=
   isLimitPullbackConeMapOfIsLimit G _ (pullbackIsPullback f g)
 #align category_theory.limits.is_limit_of_has_pullback_of_preserves_limit CategoryTheory.Limits.isLimitOfHasPullbackOfPreservesLimit
 
@@ -118,25 +118,25 @@ theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).hom = pullback
 
 @[reassoc]
 theorem PreservesPullback.iso_hom_fst :
-    (PreservesPullback.iso G f g).hom ≫ pullback.fst = G.map pullback.fst := by
+    (PreservesPullback.iso G f g).hom ≫ pullback.fst _ _ = G.map (pullback.fst f g) := by
   simp [PreservesPullback.iso]
 #align category_theory.limits.preserves_pullback.iso_hom_fst CategoryTheory.Limits.PreservesPullback.iso_hom_fst
 
 @[reassoc]
 theorem PreservesPullback.iso_hom_snd :
-    (PreservesPullback.iso G f g).hom ≫ pullback.snd = G.map pullback.snd := by
+    (PreservesPullback.iso G f g).hom ≫ pullback.snd _ _ = G.map (pullback.snd f g) := by
   simp [PreservesPullback.iso]
 #align category_theory.limits.preserves_pullback.iso_hom_snd CategoryTheory.Limits.PreservesPullback.iso_hom_snd
 
 @[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_fst :
-    (PreservesPullback.iso G f g).inv ≫ G.map pullback.fst = pullback.fst := by
+    (PreservesPullback.iso G f g).inv ≫ G.map (pullback.fst f g) = pullback.fst _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 #align category_theory.limits.preserves_pullback.iso_inv_fst CategoryTheory.Limits.PreservesPullback.iso_inv_fst
 
 @[reassoc (attr := simp)]
 theorem PreservesPullback.iso_inv_snd :
-    (PreservesPullback.iso G f g).inv ≫ G.map pullback.snd = pullback.snd := by
+    (PreservesPullback.iso G f g).inv ≫ G.map (pullback.snd f g) = pullback.snd _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 #align category_theory.limits.preserves_pullback.iso_inv_snd CategoryTheory.Limits.PreservesPullback.iso_inv_snd
 

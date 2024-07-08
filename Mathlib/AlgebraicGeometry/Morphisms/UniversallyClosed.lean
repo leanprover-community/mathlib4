@@ -76,12 +76,12 @@ theorem topologically_isClosedMap_respectsIso : RespectsIso (topologically @IsCl
   exact (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso (asIso f))).isClosedMap
 
 instance universallyClosedFst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
-    UniversallyClosed (pullback.fst : pullback f g ⟶ _) :=
+    UniversallyClosed (pullback.fst f g) :=
   universallyClosed_stableUnderBaseChange.fst f g hg
 #align algebraic_geometry.universally_closed_fst AlgebraicGeometry.universallyClosedFst
 
 instance universallyClosedSnd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
-    UniversallyClosed (pullback.snd : pullback f g ⟶ _) :=
+    UniversallyClosed (pullback.snd f g) :=
   universallyClosed_stableUnderBaseChange.snd f g hf
 #align algebraic_geometry.universally_closed_snd AlgebraicGeometry.universallyClosedSnd
 
@@ -96,7 +96,7 @@ theorem universallyClosed_isLocalAtTarget : PropertyIsLocalAtTarget @Universally
 
 theorem UniversallyClosed.openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)
     (𝒰 : Scheme.OpenCover.{u} Y) :
-    UniversallyClosed f ↔ ∀ i, UniversallyClosed (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
+    UniversallyClosed f ↔ ∀ i, UniversallyClosed (pullback.snd f (𝒰.map i)) :=
   universallyClosed_isLocalAtTarget.openCover_iff f 𝒰
 #align algebraic_geometry.universally_closed.open_cover_iff AlgebraicGeometry.UniversallyClosed.openCover_iff
 

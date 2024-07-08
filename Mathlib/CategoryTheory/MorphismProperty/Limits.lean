@@ -48,7 +48,7 @@ def StableUnderCobaseChange (P : MorphismProperty C) : Prop :=
 #align category_theory.morphism_property.stable_under_cobase_change CategoryTheory.MorphismProperty.StableUnderCobaseChange
 
 theorem StableUnderBaseChange.mk {P : MorphismProperty C} [HasPullbacks C] (hP₁ : RespectsIso P)
-    (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S) (_ : P g), P (pullback.fst : pullback f g ⟶ X)) :
+    (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S) (_ : P g), P (pullback.fst f g)) :
     StableUnderBaseChange P := fun X Y Y' S f g f' g' sq hg => by
   let e := sq.flip.isoPullback
   rw [← hP₁.cancel_left_isIso e.inv, sq.flip.isoPullback_inv_fst]
@@ -64,13 +64,13 @@ theorem StableUnderBaseChange.respectsIso {P : MorphismProperty C} (hP : StableU
 
 theorem StableUnderBaseChange.fst {P : MorphismProperty C} (hP : StableUnderBaseChange P)
     {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P g) :
-    P (pullback.fst : pullback f g ⟶ X) :=
+    P (pullback.fst f g) :=
   hP (IsPullback.of_hasPullback f g).flip H
 #align category_theory.morphism_property.stable_under_base_change.fst CategoryTheory.MorphismProperty.StableUnderBaseChange.fst
 
 theorem StableUnderBaseChange.snd {P : MorphismProperty C} (hP : StableUnderBaseChange P)
     {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] (H : P f) :
-    P (pullback.snd : pullback f g ⟶ Y) :=
+    P (pullback.snd f g) :=
   hP (IsPullback.of_hasPullback f g) H
 #align category_theory.morphism_property.stable_under_base_change.snd CategoryTheory.MorphismProperty.StableUnderBaseChange.snd
 
@@ -86,7 +86,7 @@ theorem StableUnderBaseChange.baseChange_map [HasPullbacks C] {P : MorphismPrope
   let e :=
     pullbackRightPullbackFstIso Y.hom f g.left ≪≫
       pullback.congrHom (g.w.trans (Category.comp_id _)) rfl
-  have : e.inv ≫ pullback.snd = ((Over.baseChange f).map g).left := by
+  have : e.inv ≫ pullback.snd _ _ = ((Over.baseChange f).map g).left := by
     ext <;> dsimp [e] <;> simp
   rw [← this, hP.respectsIso.cancel_left_isIso]
   exact hP.snd _ _ H

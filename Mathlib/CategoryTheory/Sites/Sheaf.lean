@@ -646,12 +646,12 @@ def secondObj : A :=
 
 /-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
 def firstMap : firstObj R P ⟶ secondObj R P :=
-  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 #align category_theory.presheaf.first_map CategoryTheory.Presheaf.firstMap
 
 /-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
 def secondMap : firstObj R P ⟶ secondObj R P :=
-  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 #align category_theory.presheaf.second_map CategoryTheory.Presheaf.secondMap
 
 theorem w : forkMap R P ≫ firstMap R P = forkMap R P ≫ secondMap R P := by

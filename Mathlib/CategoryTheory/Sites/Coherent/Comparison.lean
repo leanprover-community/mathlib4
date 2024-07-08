@@ -41,14 +41,14 @@ instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
     refine ⟨α, inferInstance, ?_⟩
     obtain ⟨Y, g, _, g', hg⟩ := Preregular.exists_fac f (Sigma.desc π₁)
     let X₂ := fun a ↦ pullback g' (Sigma.ι X₁ a)
-    let π₂ := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a) ≫ g
-    let π' := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a)
+    let π₂ := fun a ↦ pullback.fst g' (Sigma.ι X₁ a) ≫ g
+    let π' := fun a ↦ pullback.fst g' (Sigma.ι X₁ a)
     have _ := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' inferInstance
     refine ⟨X₂, π₂, ?_, ?_⟩
     · have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp
       rw [← effectiveEpi_desc_iff_effectiveEpiFamily, ← this]
       infer_instance
-    · refine ⟨id, fun b ↦ pullback.snd, fun b ↦ ?_⟩
+    · refine ⟨id, fun b ↦ pullback.snd _ _, fun b ↦ ?_⟩
       simp only [π₂, id_eq, Category.assoc, ← hg]
       rw [← Category.assoc, pullback.condition]
       simp

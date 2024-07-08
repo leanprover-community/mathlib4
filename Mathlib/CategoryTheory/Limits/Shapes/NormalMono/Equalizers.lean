@@ -107,23 +107,23 @@ private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (
  -- Porting note: changed to irreducible def since irreducible_def was breaking things
 @[irreducible, nolint defLemma]
 def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
-  have huv : (pullback.fst : P f g ⟶ X) = pullback.snd :=
+  have huv : (pullback.fst _ _ : P f g ⟶ X) = pullback.snd _ _ :=
     calc
-      (pullback.fst : P f g ⟶ X) = pullback.fst ≫ 𝟙 _ := Eq.symm <| Category.comp_id _
-      _ = pullback.fst ≫ prod.lift (𝟙 X) f ≫ Limits.prod.fst := by rw [prod.lift_fst]
-      _ = pullback.snd ≫ prod.lift (𝟙 X) g ≫ Limits.prod.fst := by rw [pullback.condition_assoc]
-      _ = pullback.snd := by rw [prod.lift_fst, Category.comp_id]
+      (pullback.fst _ _ : P f g ⟶ X) = pullback.fst _ _ ≫ 𝟙 _ := Eq.symm <| Category.comp_id _
+      _ = pullback.fst _ _ ≫ prod.lift (𝟙 X) f ≫ Limits.prod.fst := by rw [prod.lift_fst]
+      _ = pullback.snd _ _ ≫ prod.lift (𝟙 X) g ≫ Limits.prod.fst := by rw [pullback.condition_assoc]
+      _ = pullback.snd _ _ := by rw [prod.lift_fst, Category.comp_id]
 
-  have hvu : (pullback.fst : P f g ⟶ X) ≫ f = pullback.snd ≫ g :=
+  have hvu : (pullback.fst _ _ : P f g ⟶ X) ≫ f = pullback.snd _ _ ≫ g :=
     calc
-      (pullback.fst : P f g ⟶ X) ≫ f = pullback.fst ≫ prod.lift (𝟙 X) f ≫ Limits.prod.snd := by
+      (pullback.fst _ _ : P f g ⟶ X) ≫ f = pullback.fst _ _ ≫ prod.lift (𝟙 X) f ≫ Limits.prod.snd := by
         rw [prod.lift_snd]
-      _ = pullback.snd ≫ prod.lift (𝟙 X) g ≫ Limits.prod.snd := by rw [pullback.condition_assoc]
-      _ = pullback.snd ≫ g := by rw [prod.lift_snd]
+      _ = pullback.snd _ _ ≫ prod.lift (𝟙 X) g ≫ Limits.prod.snd := by rw [pullback.condition_assoc]
+      _ = pullback.snd _ _ ≫ g := by rw [prod.lift_snd]
 
-  have huu : (pullback.fst : P f g ⟶ X) ≫ f = pullback.fst ≫ g := by rw [hvu, ← huv]
+  have huu : (pullback.fst _ _ : P f g ⟶ X) ≫ f = pullback.fst _ _ ≫ g := by rw [hvu, ← huv]
   HasLimit.mk
-    { cone := Fork.ofι pullback.fst huu
+    { cone := Fork.ofι (pullback.fst _ _) huu
       isLimit :=
         Fork.IsLimit.mk _
           (fun s =>

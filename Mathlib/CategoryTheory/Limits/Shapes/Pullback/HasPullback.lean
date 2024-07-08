@@ -62,6 +62,7 @@ abbrevation for `HasColimitsOfShape WalkingSpan C`
 (The dual results for pushouts are also available)
 
 NOTE: golfed some proofs also
+TODO: had to add 2 erws in Galois... (decomposition.lean)
 
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
@@ -113,12 +114,12 @@ abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
   colimit.cocone (span f g)
 
 /-- The first projection of the pullback of `f` and `g`. -/
-abbrev pullback.fst {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] : pullback f g ⟶ X :=
+abbrev pullback.fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : pullback f g ⟶ X :=
   limit.π (cospan f g) WalkingCospan.left
 #align category_theory.limits.pullback.fst CategoryTheory.Limits.pullback.fst
 
 /-- The second projection of the pullback of `f` and `g`. -/
-abbrev pullback.snd {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] : pullback f g ⟶ Y :=
+abbrev pullback.snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : pullback f g ⟶ Y :=
   limit.π (cospan f g) WalkingCospan.right
 #align category_theory.limits.pullback.snd CategoryTheory.Limits.pullback.snd
 
@@ -158,12 +159,12 @@ abbrev pushout.isColimit {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g
 
 @[simp]
 theorem PullbackCone.fst_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (cospan f g)] :
-    PullbackCone.fst (limit.cone (cospan f g)) = pullback.fst := rfl
+    PullbackCone.fst (limit.cone (cospan f g)) = pullback.fst f g := rfl
 #align category_theory.limits.pullback_cone.fst_colimit_cocone CategoryTheory.Limits.PullbackCone.fst_limit_cone
 
 @[simp]
 theorem PullbackCone.snd_limit_cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasLimit (cospan f g)] :
-    PullbackCone.snd (limit.cone (cospan f g)) = pullback.snd := rfl
+    PullbackCone.snd (limit.cone (cospan f g)) = pullback.snd f g := rfl
 #align category_theory.limits.pullback_cone.snd_colimit_cocone CategoryTheory.Limits.PullbackCone.snd_limit_cone
 
 -- Porting note (#10618): simp can prove this; removed simp
@@ -179,14 +180,14 @@ theorem PushoutCocone.inr_colimit_cocone {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y)
 -- Porting note (#10618): simp can prove this and reassoced version; removed simp
 @[reassoc]
 theorem pullback.lift_fst {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
-    (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : pullback.lift h k w ≫ pullback.fst = h :=
+    (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : pullback.lift h k w ≫ pullback.fst f g = h :=
   limit.lift_π _ _
 #align category_theory.limits.pullback.lift_fst CategoryTheory.Limits.pullback.lift_fst
 
 -- Porting note (#10618): simp can prove this and reassoced version; removed simp
 @[reassoc]
 theorem pullback.lift_snd {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
-    (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : pullback.lift h k w ≫ pullback.snd = k :=
+    (k : W ⟶ Y) (w : h ≫ f = k ≫ g) : pullback.lift h k w ≫ pullback.snd f g = k :=
   limit.lift_π _ _
 #align category_theory.limits.pullback.lift_snd CategoryTheory.Limits.pullback.lift_snd
 
@@ -207,7 +208,8 @@ theorem pushout.inr_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
     `l : W ⟶ pullback f g` such that `l ≫ pullback.fst = h` and `l ≫ pullback.snd = k`. -/
 def pullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y)
-    (w : h ≫ f = k ≫ g) : { l : W ⟶ pullback f g // l ≫ pullback.fst = h ∧ l ≫ pullback.snd = k } :=
+    (w : h ≫ f = k ≫ g) :
+      { l : W ⟶ pullback f g // l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k } :=
   ⟨pullback.lift h k w, pullback.lift_fst _ _ _, pullback.lift_snd _ _ _⟩
 #align category_theory.limits.pullback.lift' CategoryTheory.Limits.pullback.lift'
 
@@ -220,7 +222,7 @@ def pullback.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h
 
 @[reassoc]
 theorem pullback.condition {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] :
-    (pullback.fst : pullback f g ⟶ X) ≫ f = pullback.snd ≫ g :=
+    pullback.fst f g ≫ f = pullback.snd f g ≫ g :=
   PullbackCone.condition _
 #align category_theory.limits.pullback.condition CategoryTheory.Limits.pullback.condition
 
@@ -242,7 +244,7 @@ theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f 
 abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : pullback f₁ f₂ ⟶ pullback g₁ g₂ :=
-  pullback.lift (pullback.fst ≫ i₁) (pullback.snd ≫ i₂)
+  pullback.lift (pullback.fst f₁ f₂ ≫ i₁) (pullback.snd f₁ f₂ ≫ i₂)
     (by simp only [Category.assoc, ← eq₁, ← eq₂, pullback.condition_assoc])
 #align category_theory.limits.pullback.map CategoryTheory.Limits.pullback.map
 
@@ -278,14 +280,14 @@ abbrev pushout.mapLift {X Y S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) [
     equal -/
 @[ext 1100]
 theorem pullback.hom_ext {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] {W : C}
-    {k l : W ⟶ pullback f g} (h₀ : k ≫ pullback.fst = l ≫ pullback.fst)
-    (h₁ : k ≫ pullback.snd = l ≫ pullback.snd) : k = l :=
+    {k l : W ⟶ pullback f g} (h₀ : k ≫ pullback.fst f g = l ≫ pullback.fst f g)
+    (h₁ : k ≫ pullback.snd f g = l ≫ pullback.snd f g) : k = l :=
   limit.hom_ext <| PullbackCone.equalizer_ext _ h₀ h₁
 #align category_theory.limits.pullback.hom_ext CategoryTheory.Limits.pullback.hom_ext
 
 /-- The pullback cone built from the pullback projections is a pullback. -/
 def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
-    IsLimit (PullbackCone.mk (pullback.fst : pullback f g ⟶ _) pullback.snd pullback.condition) :=
+    IsLimit (PullbackCone.mk (pullback.fst f g) (pullback.snd f g) pullback.condition) :=
   PullbackCone.mkSelfIsLimit <| pullback.isLimit f g
 #align category_theory.limits.pullback_is_pullback CategoryTheory.Limits.pullbackIsPullback
 
@@ -386,21 +388,21 @@ This is an isomorphism iff `G` preserves the pullback of `f,g`; see
 -/
 def pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [HasPullback (G.map f) (G.map g)] :
     G.obj (pullback f g) ⟶ pullback (G.map f) (G.map g) :=
-  pullback.lift (G.map pullback.fst) (G.map pullback.snd)
+  pullback.lift (G.map (pullback.fst f g)) (G.map (pullback.snd f g))
     (by simp only [← G.map_comp, pullback.condition])
 #align category_theory.limits.pullback_comparison CategoryTheory.Limits.pullbackComparison
 
 @[reassoc (attr := simp)]
 theorem pullbackComparison_comp_fst (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPullback (G.map f) (G.map g)] :
-    pullbackComparison G f g ≫ pullback.fst = G.map pullback.fst :=
+    pullbackComparison G f g ≫ pullback.fst _ _ = G.map (pullback.fst f g) :=
   pullback.lift_fst _ _ _
 #align category_theory.limits.pullback_comparison_comp_fst CategoryTheory.Limits.pullbackComparison_comp_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackComparison_comp_snd (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     [HasPullback (G.map f) (G.map g)] :
-    pullbackComparison G f g ≫ pullback.snd = G.map pullback.snd :=
+    pullbackComparison G f g ≫ pullback.snd _ _ = G.map (pullback.snd f g):=
   pullback.lift_snd _ _ _
 #align category_theory.limits.pullback_comparison_comp_snd CategoryTheory.Limits.pullbackComparison_comp_snd
 
@@ -465,22 +467,22 @@ def pullbackSymmetry [HasPullback f g] : pullback f g ≅ pullback g f :=
 
 @[reassoc (attr := simp)]
 theorem pullbackSymmetry_hom_comp_fst [HasPullback f g] :
-    (pullbackSymmetry f g).hom ≫ pullback.fst = pullback.snd := by simp [pullbackSymmetry]
+    (pullbackSymmetry f g).hom ≫ pullback.fst g f = pullback.snd f g := by simp [pullbackSymmetry]
 #align category_theory.limits.pullback_symmetry_hom_comp_fst CategoryTheory.Limits.pullbackSymmetry_hom_comp_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackSymmetry_hom_comp_snd [HasPullback f g] :
-    (pullbackSymmetry f g).hom ≫ pullback.snd = pullback.fst := by simp [pullbackSymmetry]
+    (pullbackSymmetry f g).hom ≫ pullback.snd g f = pullback.fst f g := by simp [pullbackSymmetry]
 #align category_theory.limits.pullback_symmetry_hom_comp_snd CategoryTheory.Limits.pullbackSymmetry_hom_comp_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackSymmetry_inv_comp_fst [HasPullback f g] :
-    (pullbackSymmetry f g).inv ≫ pullback.fst = pullback.snd := by simp [Iso.inv_comp_eq]
+    (pullbackSymmetry f g).inv ≫ pullback.fst f g = pullback.snd g f := by simp [Iso.inv_comp_eq]
 #align category_theory.limits.pullback_symmetry_inv_comp_fst CategoryTheory.Limits.pullbackSymmetry_inv_comp_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackSymmetry_inv_comp_snd [HasPullback f g] :
-    (pullbackSymmetry f g).inv ≫ pullback.snd = pullback.fst := by simp [Iso.inv_comp_eq]
+    (pullbackSymmetry f g).inv ≫ pullback.snd f g = pullback.fst g f := by simp [Iso.inv_comp_eq]
 #align category_theory.limits.pullback_symmetry_inv_comp_snd CategoryTheory.Limits.pullbackSymmetry_inv_comp_snd
 
 end PullbackSymmetry

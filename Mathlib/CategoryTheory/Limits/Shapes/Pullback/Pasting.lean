@@ -195,46 +195,46 @@ end PasteLemma
 section
 
 variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (f' : W ⟶ X)
-variable [HasPullback f g] [HasPullback f' (pullback.fst : pullback f g ⟶ _)]
+variable [HasPullback f g] [HasPullback f' (pullback.fst f g)]
 variable [HasPullback (f' ≫ f) g]
 
 /-- The canonical isomorphism `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y` -/
 noncomputable def pullbackRightPullbackFstIso :
-    pullback f' (pullback.fst : pullback f g ⟶ _) ≅ pullback (f' ≫ f) g := by
+    pullback f' (pullback.fst f g) ≅ pullback (f' ≫ f) g := by
   let this :=
-    bigSquareIsPullback (pullback.snd : pullback f' (pullback.fst : pullback f g ⟶ _) ⟶ _)
-      pullback.snd f' f pullback.fst pullback.fst g pullback.condition pullback.condition
+    bigSquareIsPullback (pullback.snd _ _ : pullback f' (pullback.fst f g) ⟶ _)
+      (pullback.snd _ _) f' f (pullback.fst _ _) (pullback.fst _ _) g pullback.condition pullback.condition
       (pullbackIsPullback _ _) (pullbackIsPullback _ _)
   exact (this.conePointUniqueUpToIso (pullbackIsPullback _ _) : _)
 #align category_theory.limits.pullback_right_pullback_fst_iso CategoryTheory.Limits.pullbackRightPullbackFstIso
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_hom_fst :
-    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.fst = pullback.fst :=
+    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.fst _ _ = pullback.fst _ _ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left
 #align category_theory.limits.pullback_right_pullback_fst_iso_hom_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_hom_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_hom_snd :
-    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.snd = pullback.snd ≫ pullback.snd :=
+    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
 #align category_theory.limits.pullback_right_pullback_fst_iso_hom_snd CategoryTheory.Limits.pullbackRightPullbackFstIso_hom_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_fst :
-    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.fst = pullback.fst :=
+    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.fst _ _ = pullback.fst _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_snd_snd :
-    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd ≫ pullback.snd = pullback.snd :=
+    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ = pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.right
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_snd_snd CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_snd_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_snd_fst :
-    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd ≫ pullback.fst = pullback.fst ≫ f' := by
+    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f' := by
   rw [← pullback.condition]
   exact pullbackRightPullbackFstIso_inv_fst_assoc _ _ _ _
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_snd_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_snd_fst

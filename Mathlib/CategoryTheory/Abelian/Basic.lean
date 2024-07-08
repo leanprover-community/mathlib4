@@ -583,7 +583,7 @@ variable [Limits.HasPullbacks C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` -/
 abbrev pullbackToBiproduct : pullback f g ⟶ X ⊞ Y :=
-  biprod.lift pullback.fst pullback.snd
+  biprod.lift (pullback.fst f g) (pullback.snd f g)
 #align category_theory.abelian.pullback_to_biproduct_is_kernel.pullback_to_biproduct CategoryTheory.Abelian.PullbackToBiproductIsKernel.pullbackToBiproduct
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` induces a kernel cone on the map
@@ -650,9 +650,9 @@ variable [Limits.HasPullbacks C] {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism.
     Proof from [aluffi2016, IX.2.3], cf. [borceux-vol2, 1.7.6] -/
-instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y) :=
+instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd f g) :=
   -- It will suffice to consider some morphism e : Y ⟶ R such that
-    -- pullback.snd ≫ e = 0 and show that e = 0.
+    -- pullback.snd f g ≫ e = 0 and show that e = 0.
     epi_of_cancel_zero _ fun {R} e h => by
     -- Consider the morphism u := (0, e) : X ⊞ Y⟶ R.
     let u := biprod.desc (0 : X ⟶ R) e
@@ -683,9 +683,9 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
 #align category_theory.abelian.epi_pullback_of_epi_f CategoryTheory.Abelian.epi_pullback_of_epi_f
 
 /-- In an abelian category, the pullback of an epimorphism is an epimorphism. -/
-instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X) :=
+instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst f g) :=
   -- It will suffice to consider some morphism e : X ⟶ R such that
-  -- pullback.fst ≫ e = 0 and show that e = 0.
+  -- pullback.fst f g ≫ e = 0 and show that e = 0.
   epi_of_cancel_zero _ fun {R} e h => by
     -- Consider the morphism u := (e, 0) : X ⊞ Y ⟶ R.
     let u := biprod.desc e (0 : Y ⟶ R)

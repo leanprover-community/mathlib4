@@ -71,31 +71,31 @@ local notation "Z₁" => pullback f₁ f₂
 
 local notation "Z₂" => pullback f₃ f₄
 
-local notation "g₁" => (pullback.fst : Z₁ ⟶ X₁)
+local notation "g₁" => (pullback.fst _ _ : Z₁ ⟶ X₁)
 
-local notation "g₂" => (pullback.snd : Z₁ ⟶ X₂)
+local notation "g₂" => (pullback.snd _ _ : Z₁ ⟶ X₂)
 
-local notation "g₃" => (pullback.fst : Z₂ ⟶ X₂)
+local notation "g₃" => (pullback.fst _ _ : Z₂ ⟶ X₂)
 
-local notation "g₄" => (pullback.snd : Z₂ ⟶ X₃)
+local notation "g₄" => (pullback.snd _ _ : Z₂ ⟶ X₃)
 
 local notation "W" => pullback (g₂ ≫ f₃) f₄
 
 local notation "W'" => pullback f₁ (g₃ ≫ f₂)
 
-local notation "l₁" => (pullback.fst : W ⟶ Z₁)
+local notation "l₁" => (pullback.fst _ _ : W ⟶ Z₁)
 
 local notation "l₂" =>
-  (pullback.lift (pullback.fst ≫ g₂) pullback.snd
+  (pullback.lift (pullback.fst _ _ ≫ g₂) (pullback.snd _ _)
       (Eq.trans (Category.assoc _ _ _) pullback.condition) :
     W ⟶ Z₂)
 
 local notation "l₁'" =>
-  (pullback.lift pullback.fst (pullback.snd ≫ g₃)
+  (pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ g₃)
       (pullback.condition.trans (Eq.symm (Category.assoc _ _ _))) :
     W' ⟶ Z₁)
 
-local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
+local notation "l₂'" => (pullback.snd f₁ (g₃ ≫ f₂))
 
 /-- `(X₁ ×[Y₁] X₂) ×[Y₂] X₃` is the pullback `(X₁ ×[Y₁] X₂) ×[X₂] (X₂ ×[Y₂] X₃)`. -/
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
@@ -156,22 +156,22 @@ theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback 
 
 /- Porting note: these don't seem to be propagating change from
 -- variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ (g₃ ≫ f₂)] -/
-variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)]
+variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)]
 
 /-- The canonical isomorphism `(X₁ ×[Y₁] X₂) ×[Y₂] X₃ ≅ X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
-noncomputable def pullbackAssoc [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
-    pullback (pullback.snd ≫ f₃ : pullback f₁ f₂ ⟶ _) f₄ ≅
-      pullback f₁ (pullback.fst ≫ f₂ : pullback f₃ f₄ ⟶ _) :=
+noncomputable def pullbackAssoc [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
+    [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
+    pullback (pullback.snd _ _ ≫ f₃ : pullback f₁ f₂ ⟶ _) f₄ ≅
+      pullback f₁ (pullback.fst _ _ ≫ f₂ : pullback f₃ f₄ ⟶ _) :=
   (pullbackPullbackLeftIsPullback f₁ f₂ f₃ f₄).conePointUniqueUpToIso
     (pullbackPullbackRightIsPullback f₁ f₂ f₃ f₄)
 #align category_theory.limits.pullback_assoc CategoryTheory.Limits.pullbackAssoc
 
 @[reassoc (attr := simp)]
-theorem pullbackAssoc_inv_fst_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
-    (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst ≫ pullback.fst = pullback.fst := by
-  trans l₁' ≫ pullback.fst
+theorem pullbackAssoc_inv_fst_fst [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
+    [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
+    (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst _ _ ≫ pullback.fst _ _ = pullback.fst _ _ := by
+  trans l₁' ≫ pullback.fst _ _
   · rw [← Category.assoc]
     congr 1
     exact IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
@@ -179,17 +179,17 @@ theorem pullbackAssoc_inv_fst_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
 #align category_theory.limits.pullback_assoc_inv_fst_fst CategoryTheory.Limits.pullbackAssoc_inv_fst_fst
 
 @[reassoc (attr := simp)]
-theorem pullbackAssoc_hom_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
-    (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫ pullback.fst = pullback.fst ≫ pullback.fst := by
+theorem pullbackAssoc_hom_fst [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
+    [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
+    (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫ pullback.fst _ _ = pullback.fst _ _ ≫ pullback.fst _ _ := by
   rw [← Iso.eq_inv_comp, pullbackAssoc_inv_fst_fst]
 #align category_theory.limits.pullback_assoc_hom_fst CategoryTheory.Limits.pullbackAssoc_hom_fst
 
 @[reassoc (attr := simp)]
-theorem pullbackAssoc_hom_snd_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] : (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫
-    pullback.snd ≫ pullback.fst = pullback.fst ≫ pullback.snd := by
-  trans l₂ ≫ pullback.fst
+theorem pullbackAssoc_hom_snd_fst [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
+    [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] : (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫
+    pullback.snd _ _ ≫ pullback.fst _ _ = pullback.fst _ _ ≫ pullback.snd _ _ := by
+  trans l₂ ≫ pullback.fst _ _
   · rw [← Category.assoc]
     congr 1
     exact IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
@@ -197,10 +197,10 @@ theorem pullbackAssoc_hom_snd_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
 #align category_theory.limits.pullback_assoc_hom_snd_fst CategoryTheory.Limits.pullbackAssoc_hom_snd_fst
 
 @[reassoc (attr := simp)]
-theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
-    (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫ pullback.snd ≫ pullback.snd = pullback.snd := by
-  trans l₂ ≫ pullback.snd
+theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
+    [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
+    (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫ pullback.snd _ _ ≫ pullback.snd _ _ = pullback.snd _ _ := by
+  trans l₂ ≫ pullback.snd _ _
   · rw [← Category.assoc]
     congr 1
     exact IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
@@ -208,16 +208,16 @@ theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
 #align category_theory.limits.pullback_assoc_hom_snd_snd CategoryTheory.Limits.pullbackAssoc_hom_snd_snd
 
 @[reassoc (attr := simp)]
-theorem pullbackAssoc_inv_fst_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
-    (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst ≫ pullback.snd =
-    pullback.snd ≫ pullback.fst := by rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_fst]
+theorem pullbackAssoc_inv_fst_snd [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
+    [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
+    (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
+    pullback.snd _ _ ≫ pullback.fst _ _ := by rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_fst]
 #align category_theory.limits.pullback_assoc_inv_fst_snd CategoryTheory.Limits.pullbackAssoc_inv_fst_snd
 
 @[reassoc (attr := simp)]
-theorem pullbackAssoc_inv_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
-    (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.snd = pullback.snd ≫ pullback.snd := by
+theorem pullbackAssoc_inv_snd [HasPullback ((pullback.snd _ _ : Z₁ ⟶ X₂) ≫ f₃) f₄]
+    [HasPullback f₁ ((pullback.fst _ _ : Z₂ ⟶ X₂) ≫ f₂)] :
+    (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ := by
   rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_snd]
 #align category_theory.limits.pullback_assoc_inv_snd CategoryTheory.Limits.pullbackAssoc_inv_snd
 

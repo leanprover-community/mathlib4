@@ -71,7 +71,7 @@ theorem hasPullback_of_left_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_left_iso
 
-instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd : pullback f g ⟶ _) := by
+instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd f g) := by
   refine ⟨⟨pullback.lift (g ≫ inv f) (𝟙 _) (by simp), ?_, by simp⟩⟩
   ext
   · simp [← pullback.condition_assoc]
@@ -129,7 +129,7 @@ theorem hasPullback_of_right_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_right_iso
 
-instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst : pullback f g ⟶ _) := by
+instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst f g) := by
   refine ⟨⟨pullback.lift (𝟙 _) (f ≫ inv g) (by simp), ?_, by simp⟩⟩
   ext
   · simp

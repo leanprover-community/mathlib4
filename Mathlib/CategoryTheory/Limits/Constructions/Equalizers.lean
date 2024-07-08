@@ -44,11 +44,11 @@ abbrev constructEqualizer (F : WalkingParallelPair ⥤ C) : C :=
 /-- Define the equalizing morphism -/
 abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
     constructEqualizer F ⟶ F.obj WalkingParallelPair.zero :=
-  pullback.fst
+  pullback.fst _ _
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst
 
 theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
-    pullbackFst F = pullback.snd := by
+    pullbackFst F = pullback.snd _ _ := by
   convert (eq_whisker pullback.condition Limits.prod.fst :
       (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst_eq_pullback_snd CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst_eq_pullback_snd

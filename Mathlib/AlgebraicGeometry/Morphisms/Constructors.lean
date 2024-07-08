@@ -64,16 +64,16 @@ theorem diagonal_targetAffineLocally_of_openCover
     (P : AffineTargetMorphismProperty) (hP : P.IsLocal)
     {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y) [∀ i, IsAffine (𝒰.obj i)]
     (𝒰' : ∀ i, Scheme.OpenCover.{u} (pullback f (𝒰.map i))) [∀ i j, IsAffine ((𝒰' i).obj j)]
-    (h𝒰' : ∀ i j k, P (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) pullback.snd)) :
+    (h𝒰' : ∀ i j k, P (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) (pullback.snd _ _))) :
     (targetAffineLocally P).diagonal f := by
   let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
-    Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) pullback.snd pullback.snd
+    Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) (pullback.snd _ _) (pullback.snd _ _)
   have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i => by dsimp [𝒱]; infer_instance
   apply (hP.affine_openCover_iff _ 𝒱).mpr
   rintro ⟨i, j, k⟩
   dsimp [𝒱]
   convert (affine_cancel_left_isIso hP.1
-    (pullbackDiagonalMapIso _ _ ((𝒰' i).map j) ((𝒰' i).map k)).inv pullback.snd).mp _
+    (pullbackDiagonalMapIso _ _ ((𝒰' i).map j) ((𝒰' i).map k)).inv (pullback.snd _ _)).mp _
   pick_goal 3
   · convert h𝒰' i j k; apply pullback.hom_ext <;> simp
   all_goals apply pullback.hom_ext <;>
@@ -84,11 +84,11 @@ theorem diagonal_targetAffineLocally_of_openCover
 theorem AffineTargetMorphismProperty.diagonal_of_targetAffineLocally
     (P : AffineTargetMorphismProperty) (hP : P.IsLocal) {X Y U : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y)
     [IsAffine U] [IsOpenImmersion g] (H : (targetAffineLocally P).diagonal f) :
-    P.diagonal (pullback.snd : pullback f g ⟶ _) := by
+    P.diagonal (pullback.snd f g) := by
   rintro U V f₁ f₂ hU hV hf₁ hf₂
   replace H := ((hP.affine_openCover_TFAE (pullback.diagonal f)).out 0 3).mp H
-  let g₁ := pullback.map (f₁ ≫ pullback.snd) (f₂ ≫ pullback.snd) f f
-    (f₁ ≫ pullback.fst) (f₂ ≫ pullback.fst) g
+  let g₁ := pullback.map (f₁ ≫ pullback.snd _ _) (f₂ ≫ pullback.snd _ _) f f
+    (f₁ ≫ pullback.fst _ _) (f₂ ≫ pullback.fst _ _) g
     (by rw [Category.assoc, Category.assoc, pullback.condition])
     (by rw [Category.assoc, Category.assoc, pullback.condition])
   specialize H g₁
@@ -106,14 +106,14 @@ theorem AffineTargetMorphismProperty.IsLocal.diagonal_affine_openCover_TFAE
     TFAE
       [(targetAffineLocally P).diagonal f,
         ∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)),
-          ∀ i : 𝒰.J, P.diagonal (pullback.snd : pullback f (𝒰.map i) ⟶ _),
+          ∀ i : 𝒰.J, P.diagonal (pullback.snd f (𝒰.map i)),
         ∀ (𝒰 : Scheme.OpenCover.{u} Y) [∀ i, IsAffine (𝒰.obj i)] (i : 𝒰.J),
-          P.diagonal (pullback.snd : pullback f (𝒰.map i) ⟶ _),
+          P.diagonal (pullback.snd f (𝒰.map i)),
         ∀ {U : Scheme} (g : U ⟶ Y) [IsAffine U] [IsOpenImmersion g],
-          P.diagonal (pullback.snd : pullback f g ⟶ _),
+          P.diagonal (pullback.snd f g),
         ∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)) (𝒰' :
           ∀ i, Scheme.OpenCover.{u} (pullback f (𝒰.map i))) (_ : ∀ i j, IsAffine ((𝒰' i).obj j)),
-          ∀ i j k, P (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) pullback.snd)] := by
+          ∀ i j k, P (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) (pullback.snd _ _))] := by
   tfae_have 1 → 4
   · introv H hU hg _ _; apply P.diagonal_of_targetAffineLocally <;> assumption
   tfae_have 4 → 3
@@ -150,7 +150,7 @@ section Universally
 
 theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
     (hP : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y),
-      (∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) → P f) :
+      (∀ i : 𝒰.J, P (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) → P f) :
     PropertyIsLocalAtTarget P.universally := by
   refine ⟨P.universally_respectsIso, fun {X Y} f U =>
     P.universally_stableUnderBaseChange (isPullback_morphismRestrict f U).flip, ?_⟩
@@ -158,7 +158,8 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
   apply hP _ (𝒰.pullbackCover i₂)
   intro i
   dsimp
-  apply h i (pullback.lift (pullback.fst ≫ i₁) (pullback.snd ≫ pullback.snd) _) pullback.snd
+  apply h i (pullback.lift (pullback.fst _ _ ≫ i₁) (pullback.snd _ _ ≫ pullback.snd _ _) _)
+    (pullback.snd _ _)
   swap
   · rw [Category.assoc, Category.assoc, ← pullback.condition, ← pullback.condition_assoc, H.w]
   refine (IsPullback.of_right ?_ (pullback.lift_snd _ _ _) (IsPullback.of_hasPullback _ _)).flip
