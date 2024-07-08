@@ -15,10 +15,10 @@ We also prove basic properties of it.
 
 ## Main declarations
 
-- `wronskian_eq_sum_zero`: We have `W(a, b) = W(b, c)` when `a + b + c = 0`.
-- `wronskian.degree_lt_add`: Degree of Wronskian `W(a, b)` is strictly smaller than
+- `wronskian_eq_of_sum_zero`: We have `W(a, b) = W(b, c)` when `a + b + c = 0`.
+- `degree_wronskian_lt_add`: Degree of Wronskian `W(a, b)` is strictly smaller than
   the sum of degrees of `a` and `b`
-- `wronskian.natDegree_lt_add`: `natDegree` version of the above theorem. We need to assume that
+- `natDegree_wronskian_lt_add`: `natDegree` version of the above theorem. We need to assume that
   the Wronskian is nonzero. (Otherwise, `a = b = 1` gives a counterexample.)
 -/
 
@@ -61,11 +61,10 @@ theorem wronskian_add_right (a b c : R[X]) : wronskian a (b + c) = wronskian a b
 theorem wronskian_add_left (a b c : R[X]) : wronskian (a + b) c = wronskian a c + wronskian b c :=
   (wronskianBilin R).map_add₂ a b c
 
-theorem wronskian_is_alt (a : R[X]) : wronskian a a = 0 := by rw [wronskian, mul_comm, sub_self]
+theorem wronskian_self_eq_zero (a : R[X]) : wronskian a a = 0 := by
+  rw [wronskian, mul_comm, sub_self]
 
-theorem isAlt_wronskianBilin : (wronskianBilin R).IsAlt := by intro a; exact wronskian_is_alt a
-
-theorem wronskian_self_eq_zero (a : R[X]) : wronskian a a = 0 := wronskian_is_alt a
+theorem isAlt_wronskianBilin : (wronskianBilin R).IsAlt := wronskian_self_eq_zero
 
 theorem wronskian_neg_eq (a b : R[X]) : -wronskian a b = wronskian b a :=
   LinearMap.IsAlt.neg isAlt_wronskianBilin a b
@@ -95,7 +94,7 @@ theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
         rw [WithBot.add_lt_add_iff_right (degree_ne_bot hb)]
         exact Polynomial.degree_derivative_lt ha
 
-theorem wronskian.natDegree_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
+theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
     (wronskian a b).natDegree < a.natDegree + b.natDegree := by
   have ha : a ≠ 0 := by intro h; subst h; rw [wronskian_zero_left] at hw; exact hw rfl
   have hb : b ≠ 0 := by intro h; subst h; rw [wronskian_zero_right] at hw; exact hw rfl
