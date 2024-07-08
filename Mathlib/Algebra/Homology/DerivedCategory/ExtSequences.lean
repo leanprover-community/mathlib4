@@ -3,7 +3,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Triangulated.Yoneda
 
-universe w v u
+universe w' w v u
 
 namespace Function
 
@@ -78,7 +78,23 @@ namespace Ext
 
 section CovariantSequence
 
+lemma hom_comp_singleFunctor_map_shift [HasDerivedCategory.{w'} C]
+    {X Y Z : C} {n : ℕ} (x : Ext X Y n) (f : Y ⟶ Z) :
+    x.hom ≫ ((DerivedCategory.singleFunctor C 0).map f)⟦(n : ℤ)⟧' =
+      (x.comp (mk₀ f) (add_zero n)).hom := by
+  simp only [comp_hom, mk₀_hom, ShiftedHom.comp_mk₀]
+
 variable {X : C} {S : ShortComplex C} (hS : S.ShortExact)
+
+lemma preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply
+    [HasDerivedCategory.{w'} C] {X : C} {n₀ : ℕ} (x : Ext X S.X₃ n₀)
+    {n₁ : ℕ} (h : n₀ + 1 = n₁) :
+    (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequenceδ
+      hS.singleTriangle n₀ n₁ (by omega) x.hom =
+        (x.comp hS.extClass h).hom := by
+  rw [Pretriangulated.preadditiveCoyoneda_homologySequenceδ_apply,
+    comp_hom, hS.extClass_hom, ShiftedHom.comp]
+  rfl
 
 variable (X)
 
@@ -94,9 +110,10 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
     (hS.singleTriangle_distinguished) n
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  exact Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
+  apply Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv)
-    (comm₁₂ := sorry) (comm₂₃ := sorry) (hfg' := this)
+     (hfg' := this)
+  all_goals ext x; apply hom_comp_singleFunctor_map_shift (C := C)
 
 section
 
@@ -114,9 +131,11 @@ lemma covariant_sequence_exact₃' :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  exact Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
-    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv)
-    (comm₁₂ := sorry) (comm₂₃ := sorry) (hfg' := this)
+  apply Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (hfg' := this)
+  · ext x; apply hom_comp_singleFunctor_map_shift (C := C)
+  · ext x
+    exact preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply hS x h
 
 lemma covariant_sequence_exact₁' :
     (ShortComplex.mk
@@ -130,12 +149,17 @@ lemma covariant_sequence_exact₁' :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  exact Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
-    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv)
-    (comm₁₂ := sorry) (comm₂₃ := sorry) (hfg' := this)
+  apply Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (hfg' := this)
+  · ext x
+    exact preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply hS x h
+  · ext x; apply hom_comp_singleFunctor_map_shift (C := C)
 
 open ComposableArrows
 
+/-- Given a short exact short complex `S` in an abelian category `C` and an object `X : C`,
+this is the long exact sequence
+`Ext X S.X₁ n₀ → Ext X S.X₂ n₀ → Ext X S.X₃ n₀ → Ext X S.X₁ n₁ → Ext X S.X₂ n₁ → Ext X S.X₃ n₁`. -/
 noncomputable def covariantSequence : ComposableArrows AddCommGrp.{w} 5 :=
   mk₅ (AddCommGrp.ofHom ((mk₀ S.f).postcomp X (add_zero n₀)))
     (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n₀)))
