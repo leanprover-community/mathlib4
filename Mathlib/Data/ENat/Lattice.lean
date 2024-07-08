@@ -50,8 +50,8 @@ variable {s : Set ℕ∞}
 lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
 
-lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s :=
-  rw [←lt_one_iff_eq_zero]
+lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
+  rw [← lt_one_iff_eq_zero]
   simp only [sInf_lt_iff, lt_one_iff_eq_zero, exists_eq_right]
 
 lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
