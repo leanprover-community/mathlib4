@@ -96,7 +96,7 @@ theorem mul_eq_mul_right : c ≠ 0 → c ≠ ∞ → (a * c = b * c ↔ a = b) :
 #align ennreal.mul_eq_mul_right ENNReal.mul_eq_mul_right
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
-theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b ≤ a * c ↔ b ≤ c) :=
+theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
   (mul_left_strictMono h0 hinf).le_iff_le
 #align ennreal.mul_le_mul_left ENNReal.mul_le_mul_left
 
@@ -106,7 +106,7 @@ theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ 
 #align ennreal.mul_le_mul_right ENNReal.mul_le_mul_right
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
-theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : (a * b < a * c ↔ b < c) :=
+theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b < c :=
   (mul_left_strictMono h0 hinf).lt_iff_lt
 #align ennreal.mul_lt_mul_left ENNReal.mul_lt_mul_left
 

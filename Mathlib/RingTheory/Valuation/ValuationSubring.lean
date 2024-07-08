@@ -6,6 +6,7 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.Algebra.Ring.Subring.Pointwise
+import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 #align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -420,13 +421,8 @@ def valuationSubring : ValuationSubring K :=
   { v.integer with
     mem_or_inv_mem' := by
       intro x
-      rcases le_or_lt (v x) 1 with h | h
-      · left; exact h
-      · right; change v x⁻¹ ≤ 1
-        rw [map_inv₀ v, ← inv_one, inv_le_inv₀]
-        · exact le_of_lt h
-        · intro c; simp [c] at h
-        · exact one_ne_zero }
+      rcases val_le_one_or_val_inv_le_one v x with h | h
+      exacts [Or.inl h, Or.inr h] }
 #align valuation.valuation_subring Valuation.valuationSubring
 
 @[simp]
