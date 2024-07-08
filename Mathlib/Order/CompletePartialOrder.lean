@@ -82,6 +82,3 @@ end CompletePartialOrder
 instance CompleteLattice.toCompletePartialOrder [CompleteLattice α] : CompletePartialOrder α where
   sSup := sSup
   lubOfDirected _ _ := isLUB_sSup _
-
-lemma sSup_eq_bot' [CompleteLattice α] {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
-  rw [sSup_eq_bot, ← Set.subset_singleton_iff_eq, Set.subset_singleton_iff]
