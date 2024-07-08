@@ -14,10 +14,7 @@ We define the functor `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`.
 
 ## Projects
 
-* Prove that `topCatToLightCondSet` is faithful.
-* Define sequential topological spaces.
 * Prove that `topCatToLightCondSet` restricted to sequential spaces is fully faithful.
-* Define the left adjoint of the restriction mentioned in the previous point.
 -/
 
 universe w w' v u
