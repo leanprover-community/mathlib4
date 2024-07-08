@@ -708,7 +708,7 @@ theorem le_rpow_one_div_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ≤ y 
 #align ennreal.le_rpow_one_div_iff ENNReal.le_rpow_one_div_iff
 
 theorem rpow_inv_lt_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
-  simp only [← not_le, le_rpow_one_div_iff hz]
+  simp only [← not_le, ← one_div, le_rpow_one_div_iff hz]
 
 theorem lt_rpow_one_div_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ (1 / z) ↔ x ^ z < y := by
   nth_rw 1 [← rpow_one x]
