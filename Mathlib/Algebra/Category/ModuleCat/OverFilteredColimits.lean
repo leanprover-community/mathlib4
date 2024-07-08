@@ -266,7 +266,7 @@ protected lemma one_smul (m : colimit (C := 𝔄𝔟) ℳ) :
     rw [map_one], rep_smul, smulColimit.one_smul]
 
 protected lemma mul_smul
-      (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
+    (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimitSMulColimit (r₁ * r₂) m = colimitSMulColimit r₁ (colimitSMulColimit r₂ m) := by
   classical
   let O : Finset J :=
