@@ -1056,7 +1056,7 @@ noncomputable def autToPow : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         dsimp only [μ', AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
           RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.mul_apply] at *
         replace hxy : x (((μ' : Sˣ) : S) ^ hy'.choose) = ((μ' : Sˣ) : S) ^ hxy'.choose := hy ▸ hxy
-        rw [x.map_pow] at hxy
+        rw [map_pow] at hxy
         replace hxy : (((μ' : Sˣ) : S) ^ hx'.choose) ^ hy'.choose = ((μ' : Sˣ) : S) ^ hxy'.choose :=
           hx ▸ hxy
         rw [← pow_mul] at hxy

@@ -34,9 +34,6 @@ isomorphisms.
 * `≃r`: `RelIso`
 -/
 
-set_option autoImplicit true
-
-
 open Function
 
 universe u v w
@@ -246,12 +243,12 @@ instance : EmbeddingLike (r ↪r s) α β where
   injective' f := f.inj'
 
 @[simp]
-theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β) = f :=
+theorem coe_toEmbedding {f : r ↪r s} : ((f : r ↪r s).toEmbedding : α → β) = f :=
   rfl
 #align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
 
 @[simp]
-theorem coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
+theorem coe_toRelHom {f : r ↪r s} : ((f : r ↪r s).toRelHom : α → β) = f :=
   rfl
 
 theorem injective (f : r ↪r s) : Injective f :=
@@ -266,7 +263,7 @@ theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
 @[simp]
-theorem coe_mk : ⇑(⟨f, h⟩ : r ↪r s) = f :=
+theorem coe_mk {f} {h} : ⇑(⟨f, h⟩ : r ↪r s) = f :=
   rfl
 #align rel_embedding.coe_fn_mk RelEmbedding.coe_mk
 
@@ -599,7 +596,7 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
 @[simps]
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
-  inj' := f.injective.Prod_map g.injective
+  inj' := f.injective.prodMap g.injective
   map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply

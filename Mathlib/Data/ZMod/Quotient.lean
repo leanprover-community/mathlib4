@@ -155,7 +155,7 @@ theorem orbitZPowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
 #align mul_action.orbit_zpowers_equiv_symm_apply MulAction.orbitZPowersEquiv_symm_apply
 #align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbitZMultiplesEquiv_symm_apply
 
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias _root_.AddAction.orbit_zmultiples_equiv_symm_apply := orbitZMultiplesEquiv_symm_apply
 
 theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :

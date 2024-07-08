@@ -445,6 +445,7 @@ def kernelCompMono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel f] [Mono g
   inv := kernel.lift _ (kernel.ι _) (by simp)
 #align category_theory.limits.kernel_comp_mono CategoryTheory.Limits.kernelCompMono
 
+#adaptation_note /-- nightly-2024-04-01 The `symm` wasn't previously necessary. -/
 instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel g] :
     HasKernel (f ≫ g) where
   exists_limit :=
@@ -452,7 +453,7 @@ instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [H
         isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat))
             (by aesop_cat) fun s m w => by
           simp_rw [← w]
-          symm -- Adaptation note: nightly-2024-04-01 This `symm` wasn't previously necessary.
+          symm
           apply equalizer.hom_ext
           simp }⟩
 #align category_theory.limits.has_kernel_iso_comp CategoryTheory.Limits.hasKernel_iso_comp
@@ -928,6 +929,7 @@ theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → Fa
   cokernel_not_mono_of_nonzero w inferInstance
 #align category_theory.limits.cokernel_not_iso_of_nonzero CategoryTheory.Limits.cokernel_not_iso_of_nonzero
 
+#adaptation_note /-- nightly-2024-04-01 The `symm` wasn't previously necessary. -/
 -- TODO the remainder of this section has obvious generalizations to `HasCoequalizer f g`.
 instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokernel f] [IsIso g] :
     HasCokernel (f ≫ g) where
@@ -939,7 +941,7 @@ instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokern
               cokernel.desc _ (g ≫ s.π) (by rw [← Category.assoc, CokernelCofork.condition]))
             (by aesop_cat) fun s m w => by
             simp_rw [← w]
-            symm -- Adaptation note: nightly-2024-04-01 This `symm` wasn't previously necessary.
+            symm
             apply coequalizer.hom_ext
             simp }⟩
 #align category_theory.limits.has_cokernel_comp_iso CategoryTheory.Limits.hasCokernel_comp_iso
