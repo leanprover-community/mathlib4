@@ -611,8 +611,8 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
     exact ih
 #align list.last_append List.getLast_append'
 
-theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a :=
-  getLast_concat ..
+theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a := by
+  simp
 #align list.last_concat List.getLast_concat'
 
 @[simp]
