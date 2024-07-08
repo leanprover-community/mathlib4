@@ -1904,6 +1904,106 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
       ⟩
 #align pgame.lt_iff_sub_pos SetTheory.PGame.lt_iff_sub_pos
 
+/-! ### Inserting an option -/
+
+/-- The pregame constructed by inserting x' as a new left option into x. -/
+def insertLeft (x : PGame) (x' : PGame) : PGame :=
+  match x with
+  | mk xl xr xL xR => mk (Sum xl PUnit) xr (fun i' =>
+      match i' with
+      | .inl i => xL i
+      | .inr () => x'
+    ) xR
+
+/-- A new left option cannot hurt Left. -/
+lemma insert_left (x : PGame) (x' : PGame) : x ≤ insertLeft x x' := by
+  rw [le_def]
+  constructor
+  · intro i
+    left
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [insertLeft, leftMoves_mk, moveLeft_mk, Sum.exists, exists_const]
+    left
+    use i
+  · intro j
+    right
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [rightMoves_mk, moveRight_mk, insertLeft]
+    use j
+
+/-- Adding a gift horse left option does not change the value of x. -/
+lemma insertLeft_giftHorse (x : PGame) (x' : PGame) (h : x' ⧏ x) : x ≈ insertLeft x x' := by
+  rw [equiv_def]
+  constructor
+  · apply insert_left
+  · rw [le_def]
+    constructor
+    · intro i
+      rcases x with ⟨xl, xr, xL, xR⟩
+      simp only [insertLeft, leftMoves_mk, moveLeft_mk] at i ⊢
+      rcases i with i | _
+      · simp only
+        left
+        use i
+      · simp only
+        rw [lf_iff_exists_le] at h
+        simp only [leftMoves_mk, moveLeft_mk] at h
+        exact h
+    · intro j
+      right
+      rcases x with ⟨xl, xr, xL, xR⟩
+      simp only [insertLeft, rightMoves_mk, moveRight_mk]
+      use j
+
+/-- The pregame constructed by inserting x' as a new right option into x. -/
+def insertRight (x : PGame) (x' : PGame) : PGame :=
+  match x with
+  | mk xl xr xL xR => mk xl (Sum xr PUnit) xL (fun i' =>
+      match i' with
+      | .inl i => xR i
+      | .inr () => x'
+    )
+
+/-- A new right option cannot hurt Right. -/
+lemma insert_right (x : PGame) (x' : PGame) : insertRight x x' ≤ x := by
+  rw [le_def]
+  constructor
+  · intro i
+    left
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [leftMoves_mk, insertRight, moveLeft_mk]
+    use i
+  · intro j
+    right
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [insertRight, rightMoves_mk, moveRight_mk, Sum.exists, exists_const]
+    left
+    use j
+
+/-- Adding a gift horse right option does not change the value of x. -/
+lemma insertRight_giftHorse (x : PGame) (x' : PGame) (h : x ⧏ x') : x ≈ insertRight x x' := by
+  rw [equiv_def]
+  constructor
+  · rw [le_def]
+    constructor
+    · intro i
+      rcases x with ⟨xl, xr, xL, xR⟩
+      simp only [insertRight, leftMoves_mk, moveLeft_mk]
+      left
+      use i
+    · intro j
+      rcases x with ⟨xl, xr, xL, xR⟩
+      simp only [insertRight, moveRight_mk, rightMoves_mk]
+      rcases j with j | _
+      · simp only
+        right
+        use j
+      · simp only
+        rw [lf_iff_exists_le] at h
+        simp only [rightMoves_mk, moveRight_mk] at h
+        exact h
+  · apply insert_right
+
 /-! ### Special pre-games -/
 
 
