@@ -443,79 +443,58 @@ theorem eq_iff_orthogonal_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ = Lᗮ :=
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
-theorem pre_pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] (K : Submodule 𝕜 E) :
-    (∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔ (∀ (b : 𝕜), eigenspace S b ≤ K) := by
-  constructor
-  intro H
-  intro b
-  by_cases case : Nonempty n
-  · have := H (Function.const n b)
-    simpa only [ge_iff_le, Function.const_apply, ciInf_const]
-  · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
-  intro h
-  by_cases case : Nonempty n
-  · intro f
-    have c := choice case
-    have A := eq_const_of_subsingleton f c
-    have := h (f c)
-    rw [A]
-    simpa only [Function.const_apply, ciInf_const, ge_iff_le]
-  · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
-
-theorem pre_base (S : E →ₗ[𝕜] E) [Subsingleton n] [Nonempty n] :
-  (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E)) = (⨆ t, eigenspace S t) := by
-  have h0 : ∀ (K : Submodule 𝕜 E), ((∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔
-      (∀ (b : 𝕜), eigenspace S b ≤ K)) := by
-    intro K
-    constructor
-    intro H
-    intro b
-    by_cases case : Nonempty n
-    · have := H (Function.const n b)
-      simpa only [ge_iff_le, Function.const_apply, ciInf_const]
-    · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
-    intro h
-    by_cases case : Nonempty n
-    · intro f
-      have c := choice case
-      have A := eq_const_of_subsingleton f c
-      have := h (f c)
-      rw [A]
-      simpa only [Function.const_apply, ciInf_const, ge_iff_le]
-    · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
-  ext F
-  constructor
-  · intro hF
-    simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe] at *
-    intro i hi
-    have I : ∀ (a : 𝕜), eigenspace S a ≤ i := fun a ↦ hi a
-    rw [← h0] at I
-    apply hF
-    exact I
-  · intro hF
-    simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe] at *
-    intro i hi
-    have I : ∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ i := fun a ↦ hi fun j ↦ a j
-    rw [h0] at I
-    apply hF
-    exact I
-
 theorem base [Subsingleton n]:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   by_cases case : Nonempty n
-  · have h2 := eigenspace_of_subsingleton_nonempty hT case (n := n) (𝕜 := 𝕜) (T := T)
-    obtain ⟨S, hS⟩ := h2
+  · obtain ⟨S, hS⟩ := eigenspace_of_subsingleton_nonempty hT case
+    have h1 : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E))
+        = (⨆ t, eigenspace S t) := by
+      have h2 : ∀ (K : Submodule 𝕜 E), ((∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ K) ↔
+        (∀ (b : 𝕜), eigenspace S b ≤ K)) := by
+        intro K
+        constructor
+        intro H
+        intro b
+        by_cases case : Nonempty n
+        · have := H (Function.const n b)
+          simpa only [ge_iff_le, Function.const_apply, ciInf_const]
+        · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
+        intro h
+        by_cases case : Nonempty n
+        · intro f
+          have c := choice case
+          have A := eq_const_of_subsingleton f c
+          have := h (f c)
+          rw [A]
+          simpa only [Function.const_apply, ciInf_const, ge_iff_le]
+        · simp only [not_nonempty_iff, not_isEmpty_of_nonempty] at case
+      ext F
+      constructor
+      · intro hF
+        simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+          Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+          SetLike.mem_coe] at *
+        intro i hi
+        have I : ∀ (a : 𝕜), eigenspace S a ≤ i := fun a ↦ hi a
+        rw [← h2] at I
+        apply hF
+        exact I
+      · intro hF
+        simp only [iSup, sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+          Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+          SetLike.mem_coe] at *
+        intro i hi
+        have I : ∀ (a : n → 𝕜), ⨅ j, eigenspace S (a j) ≤ i := fun a ↦ hi fun j ↦ a j
+        rw [h2] at I
+        apply hF
+        exact I
     simp only [hS]
     have B := orthogonalComplement_iSup_eigenspaces_eq_bot hS.1
     rw [← B]
     apply eq_iff_orthogonal_eq.mpr
     simp only [Submodule.orthogonal_orthogonal, Submodule.mk.injEq, AddSubmonoid.mk.injEq,
       AddSubsemigroup.mk.injEq]
-    exact pre_base S
+    exact h1
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
