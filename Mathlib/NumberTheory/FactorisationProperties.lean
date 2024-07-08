@@ -47,6 +47,8 @@ open BigOperators Finset
 
 namespace Nat
 
+variable {n : ℕ}
+
 /-- `n : ℕ` is _abundant_ if the sum of the proper divisors of `n` is greater than `n`. -/
 def Abundant (n : ℕ) : Prop := ∑ i in properDivisors n, i > n
 
