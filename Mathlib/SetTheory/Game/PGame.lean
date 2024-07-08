@@ -1907,7 +1907,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
 /-! ### Inserting an option -/
 
 /-- The pregame constructed by inserting x' as a new left option into x. -/
-def insertLeft (x : PGame) (x' : PGame) : PGame :=
+def insertLeft (x x' : PGame) : PGame :=
   match x with
   | mk xl xr xL xR => mk (Sum xl PUnit) xr (fun i' =>
       match i' with
@@ -1916,7 +1916,7 @@ def insertLeft (x : PGame) (x' : PGame) : PGame :=
     ) xR
 
 /-- A new left option cannot hurt Left. -/
-lemma insert_left (x : PGame) (x' : PGame) : x ≤ insertLeft x x' := by
+lemma le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
   rw [le_def]
   constructor
   · intro i
@@ -1931,11 +1931,13 @@ lemma insert_left (x : PGame) (x' : PGame) : x ≤ insertLeft x x' := by
     simp only [rightMoves_mk, moveRight_mk, insertLeft]
     use j
 
-/-- Adding a gift horse left option does not change the value of x. -/
-lemma insertLeft_giftHorse (x : PGame) (x' : PGame) (h : x' ⧏ x) : x ≈ insertLeft x x' := by
+/-- Adding a gift horse left option does not change the value of x. A gift horse left option is
+ a game x' with x' ⧏ x. It is called "gift horse" because it seems like Left has gotten the "gift"
+ of a new option, but actually the value of the game did not change. -/
+lemma equiv_insertLeft_of_lf {x x' : PGame} (h : x' ⧏ x) : x ≈ insertLeft x x' := by
   rw [equiv_def]
   constructor
-  · apply insert_left
+  · apply le_insertLeft
   · rw [le_def]
     constructor
     · intro i
@@ -1956,7 +1958,7 @@ lemma insertLeft_giftHorse (x : PGame) (x' : PGame) (h : x' ⧏ x) : x ≈ inser
       use j
 
 /-- The pregame constructed by inserting x' as a new right option into x. -/
-def insertRight (x : PGame) (x' : PGame) : PGame :=
+def insertRight (x x' : PGame) : PGame :=
   match x with
   | mk xl xr xL xR => mk xl (Sum xr PUnit) xL (fun i' =>
       match i' with
@@ -1965,7 +1967,7 @@ def insertRight (x : PGame) (x' : PGame) : PGame :=
     )
 
 /-- A new right option cannot hurt Right. -/
-lemma insert_right (x : PGame) (x' : PGame) : insertRight x x' ≤ x := by
+lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
   rw [le_def]
   constructor
   · intro i
@@ -1980,8 +1982,10 @@ lemma insert_right (x : PGame) (x' : PGame) : insertRight x x' ≤ x := by
     left
     use j
 
-/-- Adding a gift horse right option does not change the value of x. -/
-lemma insertRight_giftHorse (x : PGame) (x' : PGame) (h : x ⧏ x') : x ≈ insertRight x x' := by
+/-- Adding a gift horse right option does not change the value of x. A gift horse right option is
+ a game x' with x ⧏ x'. It is called "gift horse" because it seems like Right has gotten the "gift"
+ of a new option, but actually the value of the game did not change. -/
+lemma equiv_insertRight_of_lf {x x' : PGame} (h : x ⧏ x') : x ≈ insertRight x x' := by
   rw [equiv_def]
   constructor
   · rw [le_def]
@@ -2002,7 +2006,7 @@ lemma insertRight_giftHorse (x : PGame) (x' : PGame) (h : x ⧏ x') : x ≈ inse
         rw [lf_iff_exists_le] at h
         simp only [rightMoves_mk, moveRight_mk] at h
         exact h
-  · apply insert_right
+  · apply insertRight_le
 
 /-! ### Special pre-games -/
 
