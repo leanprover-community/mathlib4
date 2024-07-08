@@ -159,15 +159,14 @@ theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = �
     · apply h
     rfl
 #align power_series.ext PowerSeries.ext
-
-/-- Two formal power series are equal if all their coefficients are equal. -/
-theorem ext_iff {φ ψ : R⟦X⟧} : φ = ψ ↔ ∀ n, coeff R n φ = coeff R n ψ :=
-  ⟨fun h n => congr_arg (coeff R n) h, ext⟩
 #align power_series.ext_iff PowerSeries.ext_iff
 
+/-- Two formal power series are equal if all their coefficients are equal. -/
+add_decl_doc PowerSeries.ext_iff
+
 instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
-  simp only [subsingleton_iff, ext_iff]
-  exact fun _ _ _ ↦ (subsingleton_iff).mp (by infer_instance) _ _
+  simp only [subsingleton_iff, PowerSeries.ext_iff]
+  subsingleton
 
 /-- Constructor for formal power series. -/
 def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
@@ -266,8 +265,8 @@ theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
 
 theorem C_injective : Function.Injective (C R) := by
   intro a b H
-  have := (ext_iff (φ := C R a) (ψ := C R b)).mp H 0
-  rwa [coeff_zero_C, coeff_zero_C] at this
+  simp_rw [PowerSeries.ext_iff] at H
+  simpa only [coeff_zero_C] using H 0
 
 protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
   refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩

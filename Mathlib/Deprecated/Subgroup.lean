@@ -446,7 +446,7 @@ theorem isNormalSubgroup_ker {f : G → H} (hf : IsGroupHom f) : IsNormalSubgrou
 theorem injective_of_trivial_ker {f : G → H} (hf : IsGroupHom f) (h : ker f = trivial G) :
     Function.Injective f := by
   intro a₁ a₂ hfa
-  simp [ext_iff, ker, IsSubgroup.trivial] at h
+  simp [Set.ext_iff, ker, IsSubgroup.trivial] at h
   have ha : a₁ * a₂⁻¹ = 1 := by rw [← h]; exact hf.inv_ker_one hfa
   rw [eq_inv_of_mul_eq_one_left ha, inv_inv a₂]
 #align is_group_hom.injective_of_trivial_ker IsGroupHom.injective_of_trivial_ker

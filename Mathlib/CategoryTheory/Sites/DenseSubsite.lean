@@ -498,7 +498,7 @@ lemma isContinuous [Faithful G] (Hp : CoverPreserving J K G) : G.IsContinuous J 
 
 instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
-  map_surjective α := ⟨⟨sheafHom α.val⟩, Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val⟩
+  map_surjective α := ⟨⟨sheafHom α.val⟩, Sheaf.Hom.ext <| sheafHom_restrict_eq α.val⟩
 #align category_theory.cover_dense.sites.pullback.full CategoryTheory.Functor.IsCoverDense.full_sheafPushforwardContinuous
 
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :

@@ -48,8 +48,8 @@ variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
   map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
+  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
+  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_compose CategoryTheory.sheafCompose
 

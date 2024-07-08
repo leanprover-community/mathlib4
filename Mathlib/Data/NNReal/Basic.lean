@@ -97,13 +97,10 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=
   Subtype.eq
 #align nnreal.eq NNReal.eq
-
-protected theorem eq_iff {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) ↔ n = m :=
-  Subtype.ext_iff.symm
 #align nnreal.eq_iff NNReal.eq_iff
 
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
-  not_congr <| NNReal.eq_iff
+  not_congr <| NNReal.eq_iff.symm
 #align nnreal.ne_iff NNReal.ne_iff
 
 protected theorem «forall» {p : ℝ≥0 → Prop} :

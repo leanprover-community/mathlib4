@@ -75,9 +75,6 @@ instance : CoeOut (Sylow p G) (Subgroup G) :=
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr
 #align sylow.ext Sylow.ext
-
-theorem ext_iff {P Q : Sylow p G} : P = Q ↔ (P : Subgroup G) = Q :=
-  ⟨congr_arg _, ext⟩
 #align sylow.ext_iff Sylow.ext_iff
 
 instance : SetLike (Sylow p G) G where

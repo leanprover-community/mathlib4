@@ -225,7 +225,7 @@ instance : Add ℍ[R,c₁,c₂] :=
 #align quaternion_algebra.has_add_add_im_k QuaternionAlgebra.add_imK
 
 @[simp] theorem add_im : (a + b).im = a.im + b.im :=
-  QuaternionAlgebra.ext _ _ (zero_add _).symm rfl rfl rfl
+  QuaternionAlgebra.ext (zero_add _).symm rfl rfl rfl
 
 @[simp]
 theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -253,7 +253,7 @@ instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 #align quaternion_algebra.has_neg_neg_im_k QuaternionAlgebra.neg_imK
 
 @[simp] theorem neg_im : (-a).im = -a.im :=
-  QuaternionAlgebra.ext _ _ neg_zero.symm rfl rfl rfl
+  QuaternionAlgebra.ext neg_zero.symm rfl rfl rfl
 
 @[simp]
 theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂]) = ⟨-a₁, -a₂, -a₃, -a₄⟩ :=
@@ -280,7 +280,7 @@ instance : Sub ℍ[R,c₁,c₂] :=
 #align quaternion_algebra.has_sub_sub_im_k QuaternionAlgebra.sub_imK
 
 @[simp] theorem sub_im : (a - b).im = a.im - b.im :=
-  QuaternionAlgebra.ext _ _ (sub_zero _).symm rfl rfl rfl
+  QuaternionAlgebra.ext (sub_zero _).symm rfl rfl rfl
 
 @[simp]
 theorem mk_sub_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -295,17 +295,17 @@ theorem coe_im : (x : ℍ[R,c₁,c₂]).im = 0 :=
 
 @[simp]
 theorem re_add_im : ↑a.re + a.im = a :=
-  QuaternionAlgebra.ext _ _ (add_zero _) (zero_add _) (zero_add _) (zero_add _)
+  QuaternionAlgebra.ext (add_zero _) (zero_add _) (zero_add _) (zero_add _)
 #align quaternion_algebra.re_add_im QuaternionAlgebra.re_add_im
 
 @[simp]
 theorem sub_self_im : a - a.im = a.re :=
-  QuaternionAlgebra.ext _ _ (sub_zero _) (sub_self _) (sub_self _) (sub_self _)
+  QuaternionAlgebra.ext (sub_zero _) (sub_self _) (sub_self _) (sub_self _)
 #align quaternion_algebra.sub_self_im QuaternionAlgebra.sub_self_im
 
 @[simp]
 theorem sub_self_re : a - a.re = a.im :=
-  QuaternionAlgebra.ext _ _ (sub_self _) (sub_zero _) (sub_zero _) (sub_zero _)
+  QuaternionAlgebra.ext (sub_self _) (sub_zero _) (sub_zero _) (sub_zero _)
 #align quaternion_algebra.sub_self_re QuaternionAlgebra.sub_self_re
 
 /-- Multiplication is given by
@@ -375,7 +375,7 @@ instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂] where
 #align quaternion_algebra.smul_im_k QuaternionAlgebra.smul_imK
 
 @[simp] theorem smul_im {S} [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
-  QuaternionAlgebra.ext _ _ (smul_zero s).symm rfl rfl rfl
+  QuaternionAlgebra.ext (smul_zero s).symm rfl rfl rfl
 
 @[simp]
 theorem smul_mk (re im_i im_j im_k : R) :
@@ -388,7 +388,7 @@ end
 @[simp, norm_cast]
 theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) :
     (↑(s • r) : ℍ[R,c₁,c₂]) = s • (r : ℍ[R,c₁,c₂]) :=
-  QuaternionAlgebra.ext _ _ rfl (smul_zero s).symm (smul_zero s).symm (smul_zero s).symm
+  QuaternionAlgebra.ext rfl (smul_zero s).symm (smul_zero s).symm (smul_zero s).symm
 #align quaternion_algebra.coe_smul QuaternionAlgebra.coe_smul
 
 instance : AddCommGroup ℍ[R,c₁,c₂] :=
@@ -693,7 +693,7 @@ theorem imK_star : (star a).imK = -a.imK :=
 
 @[simp]
 theorem im_star : (star a).im = -a.im :=
-  QuaternionAlgebra.ext _ _ neg_zero.symm rfl rfl rfl
+  QuaternionAlgebra.ext neg_zero.symm rfl rfl rfl
 #align quaternion_algebra.im_star QuaternionAlgebra.im_star
 
 @[simp]
@@ -737,7 +737,7 @@ theorem star_coe : star (x : ℍ[R,c₁,c₂]) = x := by ext <;> simp
 @[simp]
 theorem star_smul [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R,c₁,c₂]) :
     star (s • a) = s • star a :=
-  QuaternionAlgebra.ext _ _ rfl (smul_neg _ _).symm (smul_neg _ _).symm (smul_neg _ _).symm
+  QuaternionAlgebra.ext rfl (smul_neg _ _).symm (smul_neg _ _).symm (smul_neg _ _).symm
 #align quaternion_algebra.star_smul QuaternionAlgebra.star_smul
 
 theorem eq_re_of_eq_coe {a : ℍ[R,c₁,c₂]} {x : R} (h : a = x) : a = a.re := by rw [h, coe_re]
@@ -854,12 +854,8 @@ instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,-1])
 
 @[ext]
 theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
-  QuaternionAlgebra.ext a b
+  QuaternionAlgebra.ext
 #align quaternion.ext Quaternion.ext
-
-theorem ext_iff {a b : ℍ[R]} :
-    a = b ↔ a.re = b.re ∧ a.imI = b.imI ∧ a.imJ = b.imJ ∧ a.imK = b.imK :=
-  QuaternionAlgebra.ext_iff a b
 #align quaternion.ext_iff Quaternion.ext_iff
 
 /-- The imaginary part of a quaternion. -/

@@ -84,9 +84,6 @@ theorem coe_mk_apply (f₁ : α → Option β) (f₂ : β → Option α) (h) (x 
 @[ext] theorem ext {f g : α ≃. β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align pequiv.ext PEquiv.ext
-
-theorem ext_iff {f g : α ≃. β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align pequiv.ext_iff PEquiv.ext_iff
 
 /-- The identity map as a partial equivalence. -/

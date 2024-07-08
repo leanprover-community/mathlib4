@@ -170,9 +170,8 @@ noncomputable def typeEquiv : Type u ≌ SheafOfTypes typesGrothendieckTopology 
       fun _ => rfl)
     (Iso.symm <|
       NatIso.ofComponents (fun S => equivYoneda' S) fun {S₁ S₂} f =>
-        SheafOfTypes.Hom.ext _ _ <|
-          NatTrans.ext _ _ <|
-            funext fun α => funext fun s => funext fun x => eval_app S₁ S₂ f (unop α) s x)
+        SheafOfTypes.Hom.ext <| NatTrans.ext <|
+          funext fun α => funext fun s => funext fun x => eval_app S₁ S₂ f (unop α) s x)
 #align category_theory.type_equiv CategoryTheory.typeEquiv
 
 theorem subcanonical_typesGrothendieckTopology : Sheaf.Subcanonical typesGrothendieckTopology.{u} :=

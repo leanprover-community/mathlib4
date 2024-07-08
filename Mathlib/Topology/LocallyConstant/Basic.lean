@@ -291,8 +291,6 @@ theorem coe_inj {f g : LocallyConstant X Y} : (f : X → Y) = g ↔ f = g :=
 theorem ext ⦃f g : LocallyConstant X Y⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 #align locally_constant.ext LocallyConstant.ext
-
-theorem ext_iff {f g : LocallyConstant X Y} : f = g ↔ ∀ x, f x = g x := DFunLike.ext_iff
 #align locally_constant.ext_iff LocallyConstant.ext_iff
 
 section CodomainTopologicalSpace

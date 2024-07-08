@@ -146,7 +146,7 @@ set_option linter.uppercaseLean3 false in
 instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
-        ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext _ _ <| E.π.naturality _⟩⟩
+        ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext <| E.π.naturality _⟩⟩
       validLift := Cones.ext (eqToIso rfl) fun j => by
         dsimp
         simp

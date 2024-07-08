@@ -612,9 +612,6 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   Finsupp.ext
 #align mv_polynomial.ext MvPolynomial.ext
-
-theorem ext_iff (p q : MvPolynomial σ R) : p = q ↔ ∀ m, coeff m p = coeff m q :=
-  ⟨fun h m => by rw [h], ext p q⟩
 #align mv_polynomial.ext_iff MvPolynomial.ext_iff
 
 @[simp]
@@ -831,7 +828,7 @@ theorem coeff_X_mul' [DecidableEq σ] (m) (s : σ) (p : MvPolynomial σ R) :
 #align mv_polynomial.coeff_X_mul' MvPolynomial.coeff_X_mul'
 
 theorem eq_zero_iff {p : MvPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p = 0 := by
-  rw [ext_iff]
+  rw [MvPolynomial.ext_iff]
   simp only [coeff_zero]
 #align mv_polynomial.eq_zero_iff MvPolynomial.eq_zero_iff
 
@@ -1382,7 +1379,7 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map 
 theorem map_injective (hf : Function.Injective f) :
     Function.Injective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := by
   intro p q h
-  simp only [ext_iff, coeff_map] at h ⊢
+  simp only [MvPolynomial.ext_iff, coeff_map] at h ⊢
   intro m
   exact hf (h m)
 #align mv_polynomial.map_injective MvPolynomial.map_injective

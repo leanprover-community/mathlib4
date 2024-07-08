@@ -65,7 +65,7 @@ def FreeCoequalizer.π : (Monad.free T).obj X.A ⟶ X where
 theorem FreeCoequalizer.condition :
     FreeCoequalizer.topMap X ≫ FreeCoequalizer.π X =
       FreeCoequalizer.bottomMap X ≫ FreeCoequalizer.π X :=
-  Algebra.Hom.ext _ _ X.assoc.symm
+  Algebra.Hom.ext X.assoc.symm
 #align category_theory.monad.free_coequalizer.condition CategoryTheory.Monad.FreeCoequalizer.condition
 
 instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by

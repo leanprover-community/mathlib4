@@ -263,10 +263,6 @@ theorem MeasurableSpace.ext {m₁ m₂ : MeasurableSpace α}
     (h : ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s) : m₁ = m₂ :=
   measurableSet_injective <| funext fun s => propext (h s)
 #align measurable_space.ext MeasurableSpace.ext
-
-theorem MeasurableSpace.ext_iff {m₁ m₂ : MeasurableSpace α} :
-    m₁ = m₂ ↔ ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s :=
-  ⟨fun h _ => h ▸ Iff.rfl, MeasurableSpace.ext⟩
 #align measurable_space.ext_iff MeasurableSpace.ext_iff
 
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/

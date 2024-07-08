@@ -117,7 +117,9 @@ theorem powerSeriesPart_eq_zero (x : LaurentSeries R) : x.powerSeriesPart = 0 �
   · contrapose!
     simp only [ne_eq]
     intro h
-    rw [PowerSeries.ext_iff, not_forall]
+    -- Adaptation note (2024-07-08): this was all in one rw, but that created an instance goal
+    simp_rw [PowerSeries.ext_iff]
+    rw [not_forall]
     refine ⟨0, ?_⟩
     simp [coeff_order_ne_zero h]
   · rintro rfl

@@ -69,6 +69,7 @@ compile_def% Singleton.singleton
 
 attribute [ext] Set.ext
 #align set.ext Set.ext
+#align set.ext_iff Set.ext_iff
 
 universe u v w
 

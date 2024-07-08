@@ -119,8 +119,8 @@ between them. -/
 def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α ≅ β where
   hom := ⟨e, he⟩
   inv := ⟨e.symm, e.symm_apply_eq.2 he.symm⟩
-  hom_inv_id := Pointed.Hom.ext _ _ e.symm_comp_self
-  inv_hom_id := Pointed.Hom.ext _ _ e.self_comp_symm
+  hom_inv_id := Pointed.Hom.ext e.symm_comp_self
+  inv_hom_id := Pointed.Hom.ext e.self_comp_symm
 set_option linter.uppercaseLean3 false in
 #align Pointed.iso.mk Pointed.Iso.mk
 
@@ -131,8 +131,8 @@ end Pointed
 def typeToPointed : Type u ⥤ Pointed.{u} where
   obj X := ⟨Option X, none⟩
   map f := ⟨Option.map f, rfl⟩
-  map_id _ := Pointed.Hom.ext _ _ Option.map_id
-  map_comp _ _ := Pointed.Hom.ext _ _ (Option.map_comp_map _ _).symm
+  map_id _ := Pointed.Hom.ext Option.map_id
+  map_comp _ _ := Pointed.Hom.ext (Option.map_comp_map _ _).symm
 set_option linter.uppercaseLean3 false in
 #align Type_to_Pointed typeToPointed
 

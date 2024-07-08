@@ -340,8 +340,8 @@ def extendDomainHom : Perm α →* Perm β where
 
 theorem extendDomainHom_injective : Function.Injective (extendDomainHom f) :=
   (injective_iff_map_eq_one (extendDomainHom f)).mpr fun e he =>
-    ext fun x =>
-      f.injective (Subtype.ext ((extendDomain_apply_image e f x).symm.trans (ext_iff.mp he (f x))))
+    ext fun x => f.injective <|
+      Subtype.ext ((extendDomain_apply_image e f x).symm.trans (Perm.ext_iff.mp he (f x)))
 #align equiv.perm.extend_domain_hom_injective Equiv.Perm.extendDomainHom_injective
 
 @[simp]

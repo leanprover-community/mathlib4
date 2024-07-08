@@ -77,9 +77,6 @@ theorem ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by
   simp only at h
   simp [Function.funext_iff, h]
 #align witt_vector.ext WittVector.ext
-
-theorem ext_iff {x y : 𝕎 R} : x = y ↔ ∀ n, x.coeff n = y.coeff n :=
-  ⟨fun h n => by rw [h], ext⟩
 #align witt_vector.ext_iff WittVector.ext_iff
 
 variable (p)

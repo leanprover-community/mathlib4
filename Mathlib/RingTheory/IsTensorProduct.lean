@@ -490,7 +490,7 @@ theorem Algebra.lift_algHom_comp_right [Algebra.IsPushout R S R' S'] {A : Type*}
   AlgHom.ext fun x => (Algebra.pushoutDesc_right S' f g H x : _)
 #align algebra.lift_alg_hom_comp_right Algebra.lift_algHom_comp_right
 
-@[ext]
+@[ext (iff := false)]
 theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] {f g : S' →ₐ[R] A} (h₁ : f.comp (toAlgHom R R' S') = g.comp (toAlgHom R R' S'))
     (h₂ : f.comp (toAlgHom R S S') = g.comp (toAlgHom R S S')) : f = g := by

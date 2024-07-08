@@ -143,6 +143,7 @@ theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   DFunLike.ext _ _ h
 #align valuation.ext Valuation.ext
+#align valuation.ext_iff Valuation.ext_iff
 
 variable (v : Valuation R Γ₀) {x y z : R}
 
@@ -211,12 +212,6 @@ theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg 
 theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
-
-/-- Deprecated. Use `DFunLike.ext_iff`. -/
--- @[deprecated] Porting note: using `DFunLike.ext_iff` is not viable below for now
-theorem ext_iff {v₁ v₂ : Valuation R Γ₀} : v₁ = v₂ ↔ ∀ r, v₁ r = v₂ r :=
-  DFunLike.ext_iff
-#align valuation.ext_iff Valuation.ext_iff
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.
 -- In addition, type class inference would not be able to infer `v`.
@@ -741,9 +736,6 @@ theorem map_pow : ∀ (x : R) (n : ℕ), v (x ^ n) = n • (v x) :=
 theorem ext {v₁ v₂ : AddValuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=
   Valuation.ext h
 #align add_valuation.ext AddValuation.ext
-
-theorem ext_iff {v₁ v₂ : AddValuation R Γ₀} : v₁ = v₂ ↔ ∀ (r : R), v₁ r = v₂ r :=
-  Valuation.ext_iff
 #align add_valuation.ext_iff AddValuation.ext_iff
 
 -- The following definition is not an instance, because we have more than one `v` on a given `R`.

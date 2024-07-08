@@ -337,9 +337,6 @@ instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
 theorem ext {f g : lp E p} (h : (f : ∀ i, E i) = g) : f = g :=
   Subtype.ext h
 #align lp.ext lp.ext
-
-protected theorem ext_iff {f g : lp E p} : f = g ↔ (f : ∀ i, E i) = g :=
-  Subtype.ext_iff
 #align lp.ext_iff lp.ext_iff
 
 theorem eq_zero' [IsEmpty α] (f : lp E p) : f = 0 :=
