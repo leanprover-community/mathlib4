@@ -66,6 +66,47 @@ lemma Exact.of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
 
 end Function
 
+section AddMonoidHom
+
+variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [AddCommMonoid X₁] [AddCommMonoid X₂] [AddCommMonoid X₃]
+  [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃]
+  (e₁ : X₁ ≃+ Y₁) (e₂ : X₂ ≃+ Y₂) (e₃ : X₃ ≃+ Y₃)
+  {f₁₂ : X₁ →+ X₂} {f₂₃ : X₂ →+ X₃} {g₁₂ : Y₁ →+ Y₂} {g₂₃ : Y₂ →+ Y₃}
+  (comm₁₂ : g₁₂.comp e₁.toAddMonoidHom = e₂.toAddMonoidHom.comp f₁₂)
+  (comm₂₃ : g₂₃.comp e₂.toAddMonoidHom = e₃.toAddMonoidHom.comp f₂₃)
+
+lemma Exact.of_ladder_addEquiv_of_exact (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
+  have h₁₂ := DFunLike.congr_fun comm₁₂
+  have h₂₃ := DFunLike.congr_fun comm₂₃
+  dsimp at h₁₂ h₂₃
+  apply of_comp_eq_zero_of_ker_in_range
+  · ext y₁
+    obtain ⟨x₁, rfl⟩ := e₁.surjective y₁
+    dsimp
+    rw [h₁₂, h₂₃, H.apply_apply_eq_zero, map_zero]
+  · intro y₂ hx₂
+    obtain ⟨x₂, rfl⟩ := e₂.surjective y₂
+    obtain ⟨x₁, rfl⟩ := (H x₂).1 (e₃.injective (by rw [← h₂₃, hx₂, map_zero]))
+    exact ⟨e₁ x₁, by rw [h₁₂]⟩
+
+lemma Exact.of_ladder_addEquiv_of_exact' (H : Exact g₁₂ g₂₃) : Exact f₁₂ f₂₃ := by
+  refine of_ladder_addEquiv_of_exact e₁.symm e₂.symm e₃.symm ?_ ?_ H
+  · ext y₁
+    obtain ⟨x₁, rfl⟩ := e₁.surjective y₁
+    apply e₂.injective
+    simpa using DFunLike.congr_fun comm₁₂.symm x₁
+  · ext y₂
+    obtain ⟨x₂, rfl⟩ := e₂.surjective y₂
+    apply e₃.injective
+    simpa using DFunLike.congr_fun comm₂₃.symm x₂
+
+lemma Exact.iff_of_ladder_addEquiv : Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ := by
+  constructor
+  · exact of_ladder_addEquiv_of_exact' e₁ e₂ e₃ comm₁₂ comm₂₃
+  · exact of_ladder_addEquiv_of_exact e₁ e₂ e₃ comm₁₂ comm₂₃
+
+end AddMonoidHom
+
 section LinearMap
 
 open LinearMap
@@ -112,25 +153,19 @@ variable
     {f₁₂ : M →ₗ[R] N} {f₂₃ : N →ₗ[R] P} {g₁₂ : M' →ₗ[R] N'}
     {g₂₃ : N' →ₗ[R] P'} {e₁ : M ≃ₗ[R] M'} {e₂ : N ≃ₗ[R] N'} {e₃ : P ≃ₗ[R] P'}
 
+lemma Exact.iff_of_ladder_linearEquiv
+    (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃) :
+    Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ :=
+  iff_of_ladder_addEquiv
+    (f₁₂ := f₁₂.toAddMonoidHom) (f₂₃ := f₂₃.toAddMonoidHom)
+    (g₁₂ := g₁₂.toAddMonoidHom) (g₂₃ := g₂₃.toAddMonoidHom)
+    (e₁ := e₁.toAddEquiv) (e₂ := e₂.toAddEquiv) (e₃ := e₃.toAddEquiv)
+    (congr_arg LinearMap.toAddMonoidHom h₁₂) (congr_arg LinearMap.toAddMonoidHom h₂₃)
+
 lemma Exact.of_ladder_linearEquiv_of_exact
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃)
     (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
-  rw [← LinearEquiv.eq_comp_toLinearMap_symm] at h₁₂ h₂₃
-  rwa [h₁₂, h₂₃, comp_assoc, LinearEquiv.conj_exact_iff_exact,
-    e₁.symm.surjective.comp_exact_iff_exact,
-    e₃.injective.comp_exact_iff_exact]
-
-lemma Exact.iff_of_ladder_linearEquiv
-    (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃) :
-    Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ where
-  mp := have h₂₁ := (e₂.eq_toLinearMap_symm_comp (f₁₂ ∘ₗ e₁.symm) g₁₂).mpr <|
-          Eq.trans (comp_assoc _ _ _).symm <|
-            (e₁.comp_toLinearMap_symm_eq g₁₂ (e₂ ∘ₗ f₁₂)).mpr h₁₂.symm
-        have h₃₂ := (e₃.eq_toLinearMap_symm_comp (f₂₃ ∘ₗ e₂.symm) g₂₃).mpr <|
-          Eq.trans (comp_assoc _ _ _).symm <|
-            (e₂.comp_toLinearMap_symm_eq g₂₃ (e₃ ∘ₗ f₂₃)).mpr h₂₃.symm
-        of_ladder_linearEquiv_of_exact h₂₁ h₃₂
-  mpr := of_ladder_linearEquiv_of_exact h₁₂ h₂₃
+  rwa [iff_of_ladder_linearEquiv h₁₂ h₂₃]
 
 end LinearMap
 
