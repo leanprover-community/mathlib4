@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.Hom.Basic
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.GroupTheory.GroupAction.Prod
 
 #align_import algebra.hom.non_unital_alg from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 

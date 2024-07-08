@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom.Basic
 import Mathlib.Algebra.Module.Equiv
+import Mathlib.Algebra.Ring.Aut
 
 #align_import algebra.algebra.equiv from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
