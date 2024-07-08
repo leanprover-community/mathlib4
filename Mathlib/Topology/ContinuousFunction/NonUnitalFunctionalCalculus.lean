@@ -691,10 +691,10 @@ lemma cfcₙ_eq_cfc [UniqueNonUnitalContinuousFunctionalCalculus R A] {f : R →
     (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f a := by
   by_cases ha : p a
-  · have hf' : ContinuousOn f (spectrum R a) :=
-      ContinuousOn.mono hf <| spectrum_subset_quasispectrum R a
+  · have hf' := hf.mono <| spectrum_subset_quasispectrum R a
     rw [cfc_apply f a ha hf', cfcₙ_apply f a hf, cfcₙHom_eq_cfcₙHom_of_cfcHom, cfcₙHom_of_cfcHom]
-    dsimp
+    dsimp only [NonUnitalStarAlgHom.comp_apply, toContinuousMapHom_apply,
+      NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
     congr
   · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate (R := R) a ha]
 
