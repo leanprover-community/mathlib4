@@ -23,8 +23,8 @@ This file defines an instance of the continuous functional calculus for Hermitia
 
 - `cfc_eq` : Proof that the above agrees with the continuous functional calculus.
 
-- `instContinuousFunctionalCalculus` : Instance of the continuous functional calculus for a
-  Hermitian matrix `A` over `𝕜`.
+- `Matrix.IsHermitian.instContinuousFunctionalCalculus` : Instance of the continuous functional
+  calculus for a Hermitian matrix `A` over `𝕜`.
 
 ## Tags
 
@@ -45,7 +45,8 @@ namespace IsHermitian
 
 variable (hA : IsHermitian A)
 
-/-- The ℝ-spectrum of a Hermitian Matrix over RCLike field is the range of the eigenvalue function-/
+/-- The `ℝ`-spectrum of a Hermitian matrix over `RCLike` field is the range of the eigenvalue
+function -/
 theorem eigenvalues_eq_spectrum_real {a : Matrix n n 𝕜} (ha : IsHermitian a) :
     (spectrum ℝ a) = Set.range (ha.eigenvalues) := by
   ext x
@@ -53,7 +54,9 @@ theorem eigenvalues_eq_spectrum_real {a : Matrix n n 𝕜} (ha : IsHermitian a) 
   ← spectrum.algebraMap_mem_iff 𝕜, spectrum_diagonal, RCLike.algebraMap_eq_ofReal]
   simp
 
-/--Definition of the StarAlgHom for the functional calculus of a Hermitian matrix. -/
+/-- The star algebra homomorphism underlying the instance of the continuous functional
+calculus of a Hermitian matrix. This is an auxiliary definition and is not intended
+for use outside of this file. -/
 @[simps]
 noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n 𝕜) where
   toFun := fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) *
