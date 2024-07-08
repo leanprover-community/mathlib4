@@ -3,7 +3,7 @@ Copyright (c) 2022 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Scott Morrison
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Order.Interval.Set.Basic
 

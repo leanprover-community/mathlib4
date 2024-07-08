@@ -276,19 +276,10 @@ theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
   ⟨⟨x, y, hxy⟩⟩
 #align set.nontrivial_of_nontrivial Set.nontrivial_of_nontrivial
 
--- Porting note: simp_rw broken here
--- Perhaps review after https://github.com/leanprover/lean4/issues/1937?
 /-- `s`, coerced to a type, is a nontrivial type if and only if `s` is a nontrivial set. -/
 @[simp, norm_cast]
 theorem nontrivial_coe_sort {s : Set α} : Nontrivial s ↔ s.Nontrivial := by
-  -- simp_rw [← nontrivial_univ_iff, Set.Nontrivial, mem_univ, exists_true_left, SetCoe.exists,
-  --   Subtype.mk_eq_mk]
-  rw [← nontrivial_univ_iff, Set.Nontrivial, Set.Nontrivial]
-  apply Iff.intro
-  · rintro ⟨x, _, y, _, hxy⟩
-    exact ⟨x, Subtype.prop x, y, Subtype.prop y, fun h => hxy (Subtype.coe_injective h)⟩
-  · rintro ⟨x, hx, y, hy, hxy⟩
-    exact ⟨⟨x, hx⟩, mem_univ _, ⟨y, hy⟩, mem_univ _, Subtype.mk_eq_mk.not.mpr hxy⟩
+  simp [← nontrivial_univ_iff, Set.Nontrivial]
 #align set.nontrivial_coe_sort Set.nontrivial_coe_sort
 
 alias ⟨_, Nontrivial.coe_sort⟩ := nontrivial_coe_sort

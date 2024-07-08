@@ -3,8 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Polynomial.FieldDivision
 
 #align_import data.polynomial.degree.card_pow_degree from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
@@ -82,7 +83,7 @@ theorem cardPowDegree_apply [DecidableEq Fq] (p : Fq[X]) :
   convert rfl
 #align polynomial.card_pow_degree_apply Polynomial.cardPowDegree_apply
 
-@[simp, nolint simpNF]
+@[simp]
 theorem cardPowDegree_zero : cardPowDegree (0 : Fq[X]) = 0 := rfl
 #align polynomial.card_pow_degree_zero Polynomial.cardPowDegree_zero
 
