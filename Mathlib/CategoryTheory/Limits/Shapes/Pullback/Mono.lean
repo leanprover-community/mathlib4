@@ -152,7 +152,8 @@ instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z
 /-- The pullback of `f, g` is also the pullback of `f ≫ i, g ≫ i` for any mono `i`. -/
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
     [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst _ _) (pullback.snd _ _)
-      (show (pullback.fst _ _) ≫ f ≫ i = (pullback.snd _ _) ≫ g ≫ i from by -- Porting note: used to be _
+      -- Porting note: following used to be _
+      (show (pullback.fst _ _) ≫ f ≫ i = (pullback.snd _ _) ≫ g ≫ i from by
         simp only [← Category.assoc]; rw [cancel_mono]; apply pullback.condition)) :=
   PullbackCone.isLimitOfCompMono f g i _ (limit.isLimit (cospan f g))
 #align category_theory.limits.pullback_is_pullback_of_comp_mono CategoryTheory.Limits.pullbackIsPullbackOfCompMono
@@ -321,7 +322,7 @@ end PushoutCocone
 
 /-- The pushout of an epimorphism is an epimorphism -/
 instance pushout.inl_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi g] :
-    Epi (pushout.inl _ _ : Y ⟶ pushout f g) :=
+    Epi (pushout.inl f g) :=
   PushoutCocone.epi_inl_of_is_pushout_of_epi (colimit.isColimit _)
 #align category_theory.limits.pushout.inl_of_epi CategoryTheory.Limits.pushout.inl_of_epi
 
@@ -334,7 +335,7 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
 instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
-    Epi (coprod.desc (pushout.inl _ _) pushout.inr _ _ : _ ⟶ pushout f g) :=
+    Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
   ⟨fun {W} i₁ i₂ h => by
     ext
     · simpa using congrArg (fun f => coprod.inl ≫ f) h

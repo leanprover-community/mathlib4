@@ -116,8 +116,8 @@ def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g
 
   have hvu : (pullback.fst _ _ : P f g ⟶ X) ≫ f = pullback.snd _ _ ≫ g :=
     calc
-      (pullback.fst _ _ : P f g ⟶ X) ≫ f = pullback.fst _ _ ≫ prod.lift (𝟙 X) f ≫ Limits.prod.snd := by
-        rw [prod.lift_snd]
+      (pullback.fst _ _ : P f g ⟶ X) ≫ f =
+        pullback.fst _ _ ≫ prod.lift (𝟙 X) f ≫ Limits.prod.snd := by rw [prod.lift_snd]
       _ = pullback.snd _ _ ≫ prod.lift (𝟙 X) g ≫ Limits.prod.snd := by rw [pullback.condition_assoc]
       _ = pullback.snd _ _ ≫ g := by rw [prod.lift_snd]
 

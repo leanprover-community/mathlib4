@@ -203,7 +203,8 @@ noncomputable def pullbackRightPullbackFstIso :
     pullback f' (pullback.fst f g) ≅ pullback (f' ≫ f) g := by
   let this :=
     bigSquareIsPullback (pullback.snd _ _ : pullback f' (pullback.fst f g) ⟶ _)
-      (pullback.snd _ _) f' f (pullback.fst _ _) (pullback.fst _ _) g pullback.condition pullback.condition
+      (pullback.snd _ _) f' f (pullback.fst _ _) (pullback.fst _ _) g
+      pullback.condition pullback.condition
       (pullbackIsPullback _ _) (pullbackIsPullback _ _)
   exact (this.conePointUniqueUpToIso (pullbackIsPullback _ _) : _)
 #align category_theory.limits.pullback_right_pullback_fst_iso CategoryTheory.Limits.pullbackRightPullbackFstIso
@@ -216,7 +217,8 @@ theorem pullbackRightPullbackFstIso_hom_fst :
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_hom_snd :
-    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ :=
+    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.snd _ _ =
+      pullback.snd _ _ ≫ pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
 #align category_theory.limits.pullback_right_pullback_fst_iso_hom_snd CategoryTheory.Limits.pullbackRightPullbackFstIso_hom_snd
 
@@ -228,13 +230,15 @@ theorem pullbackRightPullbackFstIso_inv_fst :
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_snd_snd :
-    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ = pullback.snd _ _ :=
+    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
+      pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.right
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_snd_snd CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_snd_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_snd_fst :
-    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ = pullback.fst _ _ ≫ f' := by
+    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
+      pullback.fst _ _ ≫ f' := by
   rw [← pullback.condition]
   exact pullbackRightPullbackFstIso_inv_fst_assoc _ _ _ _
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_snd_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_snd_fst
@@ -282,13 +286,15 @@ theorem inr_pushoutLeftPushoutInrIso_inv :
 
 @[reassoc (attr := simp)]
 theorem inl_inl_pushoutLeftPushoutInrIso_hom :
-    pushout.inl _ _ ≫ pushout.inl _ _ ≫ (pushoutLeftPushoutInrIso f g g').hom = pushout.inl _ _ := by
+    pushout.inl _ _ ≫ pushout.inl _ _ ≫ (pushoutLeftPushoutInrIso f g g').hom =
+      pushout.inl _ _ := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, inl_pushoutLeftPushoutInrIso_inv]
 #align category_theory.limits.inl_inl_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inl_inl_pushoutLeftPushoutInrIso_hom
 
 @[reassoc (attr := simp)]
 theorem inr_inl_pushoutLeftPushoutInrIso_hom :
-    pushout.inr _ _ ≫ pushout.inl _ _ ≫ (pushoutLeftPushoutInrIso f g g').hom = g' ≫ pushout.inr _ _ := by
+    pushout.inr _ _ ≫ pushout.inl _ _ ≫ (pushoutLeftPushoutInrIso f g g').hom =
+      g' ≫ pushout.inr _ _ := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, Category.assoc, inr_pushoutLeftPushoutInrIso_inv,
     pushout.condition]
 #align category_theory.limits.inr_inl_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inr_inl_pushoutLeftPushoutInrIso_hom

@@ -146,42 +146,48 @@ def pullbackDiagonalMapIso :
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_hom_fst :
-    (pullbackDiagonalMapIso f i i₁ i₂).hom ≫ pullback.fst _ _ = pullback.snd _ _ ≫ pullback.fst _ _ := by
+    (pullbackDiagonalMapIso f i i₁ i₂).hom ≫ pullback.fst _ _ =
+      pullback.snd _ _ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
   simp
 #align category_theory.limits.pullback_diagonal_map_iso_hom_fst CategoryTheory.Limits.pullbackDiagonalMapIso_hom_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_hom_snd :
-    (pullbackDiagonalMapIso f i i₁ i₂).hom ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ := by
+    (pullbackDiagonalMapIso f i i₁ i₂).hom ≫ pullback.snd _ _ =
+      pullback.snd _ _ ≫ pullback.snd _ _ := by
   delta pullbackDiagonalMapIso
   simp
 #align category_theory.limits.pullback_diagonal_map_iso_hom_snd CategoryTheory.Limits.pullbackDiagonalMapIso_hom_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_inv_fst :
-    (pullbackDiagonalMapIso f i i₁ i₂).inv ≫ pullback.fst _ _ = pullback.fst _ _ ≫ i₁ ≫ pullback.fst _ _ := by
+    (pullbackDiagonalMapIso f i i₁ i₂).inv ≫ pullback.fst _ _ =
+      pullback.fst _ _ ≫ i₁ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
   simp
 #align category_theory.limits.pullback_diagonal_map_iso_inv_fst CategoryTheory.Limits.pullbackDiagonalMapIso_inv_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_inv_snd_fst :
-    (pullbackDiagonalMapIso f i i₁ i₂).inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ = pullback.fst _ _ := by
+    (pullbackDiagonalMapIso f i i₁ i₂).inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
+      pullback.fst _ _ := by
   delta pullbackDiagonalMapIso
   simp
 #align category_theory.limits.pullback_diagonal_map_iso_inv_snd_fst CategoryTheory.Limits.pullbackDiagonalMapIso_inv_snd_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIso_inv_snd_snd :
-    (pullbackDiagonalMapIso f i i₁ i₂).inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ = pullback.snd _ _ := by
+    (pullbackDiagonalMapIso f i i₁ i₂).inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
+      pullback.snd _ _ := by
   delta pullbackDiagonalMapIso
   simp
 #align category_theory.limits.pullback_diagonal_map_iso_inv_snd_snd CategoryTheory.Limits.pullbackDiagonalMapIso_inv_snd_snd
 
 theorem pullback_fst_map_snd_isPullback :
     IsPullback (fst _ _ ≫ i₁ ≫ fst _ _)
-      (map i₁ i₂ (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) _ _ _ (Category.id_comp _).symm (Category.id_comp _).symm)
+      (map i₁ i₂ (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) _ _ _
+        (Category.id_comp _).symm (Category.id_comp _).symm)
       (diagonal f)
       (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i (by simp [condition])
         (by simp [condition])) :=
@@ -233,14 +239,16 @@ def pullbackDiagonalMapIdIso :
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIdIso_hom_fst :
-    (pullbackDiagonalMapIdIso f g i).hom ≫ pullback.fst _ _ = pullback.snd _ _ ≫ pullback.fst _ _ := by
+    (pullbackDiagonalMapIdIso f g i).hom ≫ pullback.fst _ _ =
+      pullback.snd _ _ ≫ pullback.fst _ _ := by
   delta pullbackDiagonalMapIdIso
   simp
 #align category_theory.limits.pullback_diagonal_map_id_iso_hom_fst CategoryTheory.Limits.pullbackDiagonalMapIdIso_hom_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIdIso_hom_snd :
-    (pullbackDiagonalMapIdIso f g i).hom ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ := by
+    (pullbackDiagonalMapIdIso f g i).hom ≫ pullback.snd _ _ =
+      pullback.snd _ _ ≫ pullback.snd _ _ := by
   delta pullbackDiagonalMapIdIso
   simp
 #align category_theory.limits.pullback_diagonal_map_id_iso_hom_snd CategoryTheory.Limits.pullbackDiagonalMapIdIso_hom_snd
@@ -254,14 +262,16 @@ theorem pullbackDiagonalMapIdIso_inv_fst :
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIdIso_inv_snd_fst :
-    (pullbackDiagonalMapIdIso f g i).inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ = pullback.fst _ _ := by
+    (pullbackDiagonalMapIdIso f g i).inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
+      pullback.fst _ _ := by
   rw [Iso.inv_comp_eq]
   simp
 #align category_theory.limits.pullback_diagonal_map_id_iso_inv_snd_fst CategoryTheory.Limits.pullbackDiagonalMapIdIso_inv_snd_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackDiagonalMapIdIso_inv_snd_snd :
-    (pullbackDiagonalMapIdIso f g i).inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ = pullback.snd _ _ := by
+    (pullbackDiagonalMapIdIso f g i).inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
+      pullback.snd _ _ := by
   rw [Iso.inv_comp_eq]
   simp
 #align category_theory.limits.pullback_diagonal_map_id_iso_inv_snd_snd CategoryTheory.Limits.pullbackDiagonalMapIdIso_inv_snd_snd
@@ -311,14 +321,16 @@ theorem diagonalObjPullbackFstIso_hom_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y �
 
 @[reassoc (attr := simp)]
 theorem diagonalObjPullbackFstIso_hom_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
-    (diagonalObjPullbackFstIso f g).hom ≫ pullback.snd _ _ = pullback.fst _ _ ≫ pullback.fst _ _ := by
+    (diagonalObjPullbackFstIso f g).hom ≫ pullback.snd _ _ =
+      pullback.fst _ _ ≫ pullback.fst _ _ := by
   delta diagonalObjPullbackFstIso
   simp
 #align category_theory.limits.diagonal_obj_pullback_fst_iso_hom_snd CategoryTheory.Limits.diagonalObjPullbackFstIso_hom_snd
 
 @[reassoc (attr := simp)]
 theorem diagonalObjPullbackFstIso_inv_fst_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
-    (diagonalObjPullbackFstIso f g).inv ≫ pullback.fst _ _ ≫ pullback.fst _ _ = pullback.snd _ _ := by
+    (diagonalObjPullbackFstIso f g).inv ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
+      pullback.snd _ _ := by
   delta diagonalObjPullbackFstIso
   simp
 #align category_theory.limits.diagonal_obj_pullback_fst_iso_inv_fst_fst CategoryTheory.Limits.diagonalObjPullbackFstIso_inv_fst_fst
@@ -333,7 +345,8 @@ theorem diagonalObjPullbackFstIso_inv_fst_snd {X Y Z : C} (f : X ⟶ Z) (g : Y �
 
 @[reassoc (attr := simp)]
 theorem diagonalObjPullbackFstIso_inv_snd_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
-    (diagonalObjPullbackFstIso f g).inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ = pullback.snd _ _ := by
+    (diagonalObjPullbackFstIso f g).inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
+      pullback.snd _ _ := by
   delta diagonalObjPullbackFstIso
   simp
 #align category_theory.limits.diagonal_obj_pullback_fst_iso_inv_snd_fst CategoryTheory.Limits.diagonalObjPullbackFstIso_inv_snd_fst

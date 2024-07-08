@@ -229,7 +229,7 @@ theorem pullback.condition {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback 
 
 @[reassoc]
 theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] :
-    f ≫ (pushout.inl _ _ : Y ⟶ pushout f g) = g ≫ pushout.inr _ _ :=
+    f ≫ (pushout.inl f g) = g ≫ pushout.inr _ _ :=
   PushoutCocone.condition _
 #align category_theory.limits.pushout.condition CategoryTheory.Limits.pushout.condition
 

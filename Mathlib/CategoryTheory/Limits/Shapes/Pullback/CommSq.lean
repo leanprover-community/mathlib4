@@ -369,7 +369,7 @@ theorem of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
 
 /-- The pushout provided by `HasPushout f g` fits into an `IsPushout`. -/
 theorem of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :
-    IsPushout f g (pushout.inl _ _ : X ⟶ pushout f g) (pushout.inr _ _ : Y ⟶ pushout f g) :=
+    IsPushout f g (pushout.inl f g) (pushout.inr f g) :=
   of_isColimit (colimit.isColimit (span f g))
 #align category_theory.is_pushout.of_has_pushout CategoryTheory.IsPushout.of_hasPushout
 

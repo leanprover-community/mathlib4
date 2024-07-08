@@ -176,8 +176,8 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
       (pullback.map _ _ _ _ (𝟙 X) a₂ (𝟙 Z) (by simp) <| (Category.comp_id _).trans h.1.1) := by
   refine ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
     (fun s => pullback.lift (s.fst ≫ pullback.fst _ _)
-      (h.lift (s.fst ≫ pullback.snd _ _) (s.snd ≫ pullback.snd _ _) ?_ ) ?_) (fun s => ?_) (fun s => ?_)
-        (fun s m hm => ?_)⟩⟩
+      (h.lift (s.fst ≫ pullback.snd _ _) (s.snd ≫ pullback.snd _ _) ?_ ) ?_) (fun s => ?_)
+        (fun s => ?_) (fun s m hm => ?_)⟩⟩
   · simp_rw [Category.assoc, ← pullback.condition, ← Category.assoc, s.condition]
   · simp only [assoc, lift_fst_assoc, pullback.condition]
   · ext <;> simp
