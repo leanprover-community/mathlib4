@@ -1596,11 +1596,33 @@ theorem mem_uniformity_of_uniformContinuous_invariant [UniformSpace α] [Uniform
   exact ⟨u, hu, fun a b c hab => @huvt ((_, _), (_, _)) ⟨hab, refl_mem_uniformity hv⟩⟩
 #align mem_uniformity_of_uniform_continuous_invariant mem_uniformity_of_uniformContinuous_invariant
 
+/-- An entourage of the diagonal in α and an entourage in β yield an entourage in α × β once we
+permute coordinates.-/
+def UniformityProd (a : Set (α × α)) (b : Set (β × β)) : Set ((α × β) × α × β) :=
+    { x | (x.1.1, x.2.1) ∈ a ∧ (x.1.2, x.2.2) ∈ b }
+
+theorem UniformityProd_def {a : Set (α × α)} {b : Set (β × β)} {x : (α × β) × α × β} :
+    x ∈ UniformityProd a b ↔ (x.1.1, x.2.1) ∈ a ∧ (x.1.2, x.2.2) ∈ b := by rfl
+
 theorem mem_uniform_prod [t₁ : UniformSpace α] [t₂ : UniformSpace β] {a : Set (α × α)}
     {b : Set (β × β)} (ha : a ∈ 𝓤 α) (hb : b ∈ 𝓤 β) :
-    { p : (α × β) × α × β | (p.1.1, p.2.1) ∈ a ∧ (p.1.2, p.2.2) ∈ b } ∈ 𝓤 (α × β) := by
+    UniformityProd a b ∈ 𝓤 (α × β) := by
   rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap ha) (preimage_mem_comap hb)
 #align mem_uniform_prod mem_uniform_prod
+
+theorem uniform_prod_mem [UniformSpace α] [UniformSpace β] {s : Set ((α × β) × α × β)}
+    (h : s ∈ 𝓤 (α × β)) :
+    ∃ a ∈ 𝓤 α, ∃ b ∈ 𝓤 β, UniformityProd a b ⊆ s := by
+  rw [uniformity_prod, mem_inf_iff_superset] at h
+  rcases h with ⟨u, hu, v, hv, uv_sub⟩
+  rw [mem_comap] at hu hv
+  rcases hu with ⟨a, a_uni, a_sub⟩
+  rcases hv with ⟨b, b_uni, b_sub⟩
+  use a, a_uni, b, b_uni
+  apply subset_trans _ uv_sub
+  apply subset_trans _ (inter_subset_inter a_sub b_sub)
+  intro x
+  simp [UniformityProd_def]
 
 theorem tendsto_prod_uniformity_fst [UniformSpace α] [UniformSpace β] :
     Tendsto (fun p : (α × β) × α × β => (p.1.1, p.2.1)) (𝓤 (α × β)) (𝓤 α) :=
