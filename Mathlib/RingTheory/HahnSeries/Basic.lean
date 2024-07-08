@@ -57,7 +57,7 @@ section Zero
 variable [PartialOrder Γ] [Zero R]
 
 theorem coeff_injective : Injective (coeff : HahnSeries Γ R → Γ → R) :=
-  HahnSeries.ext
+  fun _ _ => HahnSeries.ext
 #align hahn_series.coeff_injective HahnSeries.coeff_injective
 
 @[simp]
@@ -94,7 +94,7 @@ instance : Inhabited (HahnSeries Γ R) :=
   ⟨0⟩
 
 instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
-  ⟨fun a b => a.ext b (Subsingleton.elim _ _)⟩
+  ⟨fun _ _ => HahnSeries.ext (by subsingleton)⟩
 
 @[simp]
 theorem zero_coeff {a : Γ} : (0 : HahnSeries Γ R).coeff a = 0 :=
@@ -170,7 +170,7 @@ def single (a : Γ) : ZeroHom R (HahnSeries Γ R) where
   toFun r :=
     { coeff := Pi.single a r
       isPWO_support' := (Set.isPWO_singleton a).mono Pi.support_single_subset }
-  map_zero' := HahnSeries.ext _ _ (Pi.single_zero _)
+  map_zero' := HahnSeries.ext (Pi.single_zero _)
 #align hahn_series.single HahnSeries.single
 
 variable {a b : Γ} {r : R}

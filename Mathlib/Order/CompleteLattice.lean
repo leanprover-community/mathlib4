@@ -1822,8 +1822,8 @@ theorem snd_sInf [InfSet α] [InfSet β] (s : Set (α × β)) : (sInf s).snd = s
 #align prod.snd_Inf Prod.snd_sInf
 
 theorem swap_sInf [InfSet α] [InfSet β] (s : Set (α × β)) : (sInf s).swap = sInf (Prod.swap '' s) :=
-  ext (congr_arg sInf <| image_comp Prod.fst swap s : _)
-    (congr_arg sInf <| image_comp Prod.snd swap s : _)
+  Prod.ext (congr_arg sInf <| image_comp Prod.fst swap s)
+    (congr_arg sInf <| image_comp Prod.snd swap s)
 #align prod.swap_Inf Prod.swap_sInf
 
 theorem fst_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).fst = sSup (Prod.fst '' s) :=
@@ -1835,8 +1835,8 @@ theorem snd_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).snd = s
 #align prod.snd_Sup Prod.snd_sSup
 
 theorem swap_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).swap = sSup (Prod.swap '' s) :=
-  ext (congr_arg sSup <| image_comp Prod.fst swap s : _)
-    (congr_arg sSup <| image_comp Prod.snd swap s : _)
+  Prod.ext (congr_arg sSup <| image_comp Prod.fst swap s)
+    (congr_arg sSup <| image_comp Prod.snd swap s)
 #align prod.swap_Sup Prod.swap_sSup
 
 theorem fst_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).fst = ⨅ i, (f i).fst :=

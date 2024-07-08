@@ -518,9 +518,6 @@ theorem toFun_eq_coe {f : M →[L] N} : f.toFun = (f : M → N) :=
 theorem ext ⦃f g : M →[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align first_order.language.hom.ext FirstOrder.Language.Hom.ext
-
-theorem ext_iff {f g : M →[L] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align first_order.language.hom.ext_iff FirstOrder.Language.Hom.ext_iff
 
 @[simp]
@@ -657,9 +654,6 @@ theorem coe_injective : @Function.Injective (M ↪[L] N) (M → N) (↑)
 theorem ext ⦃f g : M ↪[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
 #align first_order.language.embedding.ext FirstOrder.Language.Embedding.ext
-
-theorem ext_iff {f g : M ↪[L] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.embedding.ext_iff FirstOrder.Language.Embedding.ext_iff
 
 theorem toHom_injective : @Function.Injective (M ↪[L] N) (M →[L] N) (·.toHom) := by
@@ -881,9 +875,6 @@ theorem coe_injective : @Function.Injective (M ≃[L] N) (M → N) (↑) :=
 theorem ext ⦃f g : M ≃[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   coe_injective (funext h)
 #align first_order.language.equiv.ext FirstOrder.Language.Equiv.ext
-
-theorem ext_iff {f g : M ≃[L] N} : f = g ↔ ∀ x, f x = g x :=
-  ⟨fun h _ => h ▸ rfl, fun h => ext h⟩
 #align first_order.language.equiv.ext_iff FirstOrder.Language.Equiv.ext_iff
 
 theorem bijective (f : M ≃[L] N) : Function.Bijective f :=

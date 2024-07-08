@@ -137,9 +137,6 @@ theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :
   toOuterMeasure_injective <| by
   rw [← trimmed, OuterMeasure.trim_congr (h _), trimmed]
 #align measure_theory.measure.ext MeasureTheory.Measure.ext
-
-theorem ext_iff : μ₁ = μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s = μ₂ s :=
-  ⟨by rintro rfl s _hs; rfl, Measure.ext⟩
 #align measure_theory.measure.ext_iff MeasureTheory.Measure.ext_iff
 
 theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=

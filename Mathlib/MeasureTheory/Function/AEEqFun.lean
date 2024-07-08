@@ -170,9 +170,6 @@ theorem mk_coeFn (f : α →ₘ[μ] β) : mk f f.aestronglyMeasurable = f := by
 theorem ext {f g : α →ₘ[μ] β} (h : f =ᵐ[μ] g) : f = g := by
   rwa [← f.mk_coeFn, ← g.mk_coeFn, mk_eq_mk]
 #align measure_theory.ae_eq_fun.ext MeasureTheory.AEEqFun.ext
-
-theorem ext_iff {f g : α →ₘ[μ] β} : f = g ↔ f =ᵐ[μ] g :=
-  ⟨fun h => by rw [h], fun h => ext h⟩
 #align measure_theory.ae_eq_fun.ext_iff MeasureTheory.AEEqFun.ext_iff
 
 theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f := by

@@ -79,12 +79,12 @@ section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
 abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
-  eqToHom <| FundamentalGroupoid.ext _ _ hx
+  eqToHom <| FundamentalGroupoid.ext hx
 #align continuous_map.homotopy.hcast ContinuousMap.Homotopy.hcast
 
 @[simp]
 theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
-    hcast hx₀ = eqToHom (FundamentalGroupoid.ext _ _ hx₀) :=
+    hcast hx₀ = eqToHom (FundamentalGroupoid.ext hx₀) :=
   rfl
 #align continuous_map.homotopy.hcast_def ContinuousMap.Homotopy.hcast_def
 
@@ -105,8 +105,8 @@ theorem eq_path_of_eq_image :
     (πₘ f).map ⟦p⟧ = hcast (start_path hfg) ≫ (πₘ g).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by
   rw [Functor.conj_eqToHom_iff_heq
     ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧)
-    (FundamentalGroupoid.ext _ _ <| start_path hfg)
-    (FundamentalGroupoid.ext _ _ <| end_path hfg)]
+    (FundamentalGroupoid.ext <| start_path hfg)
+    (FundamentalGroupoid.ext <| end_path hfg)]
   exact heq_path_of_eq_image hfg
 #align continuous_map.homotopy.eq_path_of_eq_image ContinuousMap.Homotopy.eq_path_of_eq_image
 
@@ -195,7 +195,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
       hcast (H.apply_one x).symm.symm := by
   dsimp only [prodToProdTopI, uhpath01, hcast]
   refine (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
-    (FundamentalGroupoid.ext _ _ <| H.apply_one x).symm).mpr ?_
+    (FundamentalGroupoid.ext <| H.apply_one x).symm).mpr ?_
   simp only [id_eq_path_refl, prodToProdTop_map, Path.Homotopic.prod_lift, map_eq, ←
     Path.Homotopic.map_lift]
   apply Path.Homotopic.hpath_hext; intro; rfl

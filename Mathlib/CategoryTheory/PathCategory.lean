@@ -54,7 +54,7 @@ def of : V ⥤q Paths V where
   map f := f.toPath
 #align category_theory.paths.of CategoryTheory.Paths.of
 
-attribute [local ext] Functor.ext
+attribute [local ext (iff := false)] Functor.ext
 
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
 def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
@@ -120,7 +120,7 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
 #align category_theory.paths.lift_unique CategoryTheory.Paths.lift_unique
 
 /-- Two functors out of a path category are equal when they agree on singleton paths. -/
-@[ext]
+@[ext (iff := false)]
 theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
     (h : ∀ (a b : V) (e : a ⟶ b), F.map e.toPath =
         eqToHom (congr_fun h_obj a) ≫ G.map e.toPath ≫ eqToHom (congr_fun h_obj.symm b)) :

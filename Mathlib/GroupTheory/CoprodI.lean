@@ -387,7 +387,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
         heq_iff_eq, ← Subtype.ext_iff_val] using he
     rcases this with ⟨rfl, h⟩
     congr
-    exact Word.ext _ _ h
+    exact Word.ext h
 #align free_product.word.rcons_inj Monoid.CoprodI.Word.rcons_inj
 
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
@@ -645,7 +645,7 @@ def equiv : CoprodI M ≃ Word M where
 #align free_product.word.equiv Monoid.CoprodI.Word.equiv
 
 instance : DecidableEq (Word M) :=
-  Function.Injective.decidableEq Word.ext
+  Function.Injective.decidableEq fun _ _ => Word.ext
 
 instance : DecidableEq (CoprodI M) :=
   Equiv.decidableEq Word.equiv

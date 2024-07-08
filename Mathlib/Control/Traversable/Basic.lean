@@ -124,10 +124,6 @@ theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) 
   ext1 α
   exact funext (h α)
 #align applicative_transformation.ext ApplicativeTransformation.ext
-
-theorem ext_iff {η η' : ApplicativeTransformation F G} :
-    η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
-  ⟨fun h _ _ => h ▸ rfl, fun h => ext h⟩
 #align applicative_transformation.ext_iff ApplicativeTransformation.ext_iff
 
 section Preserves

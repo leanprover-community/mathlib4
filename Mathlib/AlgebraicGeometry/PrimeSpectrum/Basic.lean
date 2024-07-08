@@ -485,7 +485,7 @@ theorem isClosed_singleton_iff_isMaximal (x : PrimeSpectrum R) :
   constructor <;> intro H
   · rcases x.asIdeal.exists_le_maximal x.2.1 with ⟨m, hm, hxm⟩
     exact (congr_arg asIdeal (@H ⟨m, hm.isPrime⟩ hxm)) ▸ hm
-  · exact fun p hp ↦ PrimeSpectrum.ext _ _ (H.eq_of_le p.2.1 hp).symm
+  · exact fun p hp ↦ PrimeSpectrum.ext (H.eq_of_le p.2.1 hp).symm
 #align prime_spectrum.is_closed_singleton_iff_is_maximal PrimeSpectrum.isClosed_singleton_iff_isMaximal
 
 theorem isRadical_vanishingIdeal (s : Set (PrimeSpectrum R)) : (vanishingIdeal s).IsRadical := by
@@ -650,7 +650,7 @@ theorem preimage_comap_zeroLocus (s : Set R) : comap f ⁻¹' zeroLocus s = zero
 
 theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     Function.Injective (comap f) := fun x y h =>
-  PrimeSpectrum.ext _ _
+  PrimeSpectrum.ext
     (Ideal.comap_injective_of_surjective f hf
       (congr_arg PrimeSpectrum.asIdeal h : (comap f x).asIdeal = (comap f y).asIdeal))
 #align prime_spectrum.comap_injective_of_surjective PrimeSpectrum.comap_injective_of_surjective
@@ -921,7 +921,7 @@ We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if 
 
 
 instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (PrimeSpectrum.ext)
+  PartialOrder.lift asIdeal (fun _ _ => PrimeSpectrum.ext)
 
 @[simp]
 theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
@@ -958,7 +958,7 @@ instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
 
 instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
-  uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+  uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 
 end Order
 
@@ -999,7 +999,7 @@ def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) 
   default :=
     ⟨LocalRing.maximalIdeal (Localization I.primeCompl),
     (LocalRing.maximalIdeal.isMaximal _).isPrime⟩
-  uniq x := PrimeSpectrum.ext _ _ (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
+  uniq x := PrimeSpectrum.ext (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
 
 end LocalizationAtMinimal
 

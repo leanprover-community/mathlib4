@@ -339,12 +339,6 @@ protected theorem ext (e' : PartialHomeomorph X Y) (h : ∀ x, e x = e' x)
     (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
   toPartialEquiv_injective (PartialEquiv.ext h hinv hs)
 #align local_homeomorph.ext PartialHomeomorph.ext
-
-protected theorem ext_iff {e e' : PartialHomeomorph X Y} :
-    e = e' ↔ (∀ x, e x = e' x) ∧ (∀ x, e.symm x = e'.symm x) ∧ e.source = e'.source :=
-  ⟨by
-    rintro rfl
-    exact ⟨fun x => rfl, fun x => rfl, rfl⟩, fun h => e.ext e' h.1 h.2.1 h.2.2⟩
 #align local_homeomorph.ext_iff PartialHomeomorph.ext_iff
 
 @[simp, mfld_simps]

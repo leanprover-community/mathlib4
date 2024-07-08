@@ -92,7 +92,7 @@ instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
 
 @[ext] lemma Hom.ext' (X Y : LocallyRingedSpace.{u}) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 -- TODO perhaps we should make a bundled `LocalRing` and return one here?
 -- TODO define `sheaf.stalk` so we can write `X.𝒪.stalk` here?
@@ -146,9 +146,9 @@ instance : Category LocallyRingedSpace.{u} where
   Hom := Hom
   id := id
   comp {X Y Z} f g := comp f g
-  comp_id {X Y} f := Hom.ext _ _ <| by simp [comp]
-  id_comp {X Y} f := Hom.ext _ _ <| by simp [comp]
-  assoc {_ _ _ _} f g h := Hom.ext _ _ <| by simp [comp]
+  comp_id {X Y} f := Hom.ext <| by simp [comp]
+  id_comp {X Y} f := Hom.ext <| by simp [comp]
+  assoc {_ _ _ _} f g h := Hom.ext <| by simp [comp]
 
 /-- The forgetful functor from `LocallyRingedSpace` to `SheafedSpace CommRing`. -/
 @[simps]
@@ -159,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.forget_to_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.forgetToSheafedSpace
 
 instance : forgetToSheafedSpace.Faithful where
-  map_injective {_ _} _ _ h := Hom.ext _ _ h
+  map_injective {_ _} _ _ h := Hom.ext h
 
 /-- The forgetful functor from `LocallyRingedSpace` to `Top`. -/
 @[simps!]
@@ -221,15 +221,15 @@ def isoOfSheafedSpaceIso {X Y : LocallyRingedSpace.{u}} (f : X.toSheafedSpace �
     X ≅ Y where
   hom := homOfSheafedSpaceHomOfIsIso f.hom
   inv := homOfSheafedSpaceHomOfIsIso f.inv
-  hom_inv_id := Hom.ext _ _ f.hom_inv_id
-  inv_hom_id := Hom.ext _ _ f.inv_hom_id
+  hom_inv_id := Hom.ext f.hom_inv_id
+  inv_hom_id := Hom.ext f.inv_hom_id
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.iso_of_SheafedSpace_iso AlgebraicGeometry.LocallyRingedSpace.isoOfSheafedSpaceIso
 
 instance : forgetToSheafedSpace.ReflectsIsomorphisms where reflects {_ _} f i :=
   { out :=
       ⟨homOfSheafedSpaceHomOfIsIso (CategoryTheory.inv (forgetToSheafedSpace.map f)),
-        Hom.ext _ _ (IsIso.hom_inv_id (I := i)), Hom.ext _ _ (IsIso.inv_hom_id (I := i))⟩ }
+        Hom.ext (IsIso.hom_inv_id (I := i)), Hom.ext (IsIso.inv_hom_id (I := i))⟩ }
 
 instance is_sheafedSpace_iso {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.1 :=
   LocallyRingedSpace.forgetToSheafedSpace.map_isIso f

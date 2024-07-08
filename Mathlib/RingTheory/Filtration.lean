@@ -184,7 +184,8 @@ set_option linter.uppercaseLean3 false in
 #align ideal.filtration.infi_N Ideal.Filtration.iInf_N
 
 instance : CompleteLattice (I.Filtration M) :=
-  Function.Injective.completeLattice Ideal.Filtration.N Ideal.Filtration.ext sup_N inf_N
+  Function.Injective.completeLattice Ideal.Filtration.N
+    (fun _ _ => Ideal.Filtration.ext) sup_N inf_N
     (fun _ => sSup_image) (fun _ => sInf_image) top_N bot_N
 
 instance : Inhabited (I.Filtration M) :=

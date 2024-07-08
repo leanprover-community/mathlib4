@@ -260,11 +260,13 @@ lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 
     · simp only [h0, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ne_eq, true_and, ofReal_eq_zero]
       left
       rw [sub_eq_zero, eq_comm]
-      simp only [ne_eq, ext_iff, one_re, ne_of_lt hz.2, or_iff_left, false_and, not_false_eq_true]
+      simp only [ne_eq, Complex.ext_iff, one_re, ne_of_lt hz.2, or_iff_left,
+        false_and, not_false_eq_true]
     · simp only [h1, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ofReal_eq_zero, ne_eq, true_and]
       right
       rw [eq_comm]
-      simp only [ne_eq, ext_iff, zero_re, ne_of_lt hz.1, or_iff_left, false_and, not_false_eq_true]
+      simp only [ne_eq, Complex.ext_iff, zero_re, ne_of_lt hz.1, or_iff_left,
+        false_and, not_false_eq_true]
   · push_neg at h
     replace h : (0 < sSupNormIm f 0) ∧ (0 < sSupNormIm f 1) :=
       ⟨(lt_of_le_of_ne (sSupNormIm_nonneg f 0) (ne_comm.mp h.1)),

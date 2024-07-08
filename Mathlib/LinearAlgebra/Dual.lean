@@ -1257,7 +1257,7 @@ variable (f : M₁ →ₗ[R] M₂)
 theorem ker_dualMap_eq_dualAnnihilator_range :
     LinearMap.ker f.dualMap = f.range.dualAnnihilator := by
   ext
-  simp_rw [mem_ker, ext_iff, Submodule.mem_dualAnnihilator,
+  simp_rw [mem_ker, LinearMap.ext_iff, Submodule.mem_dualAnnihilator,
     ← SetLike.mem_coe, range_coe, Set.forall_mem_range]
   rfl
 #align linear_map.ker_dual_map_eq_dual_annihilator_range LinearMap.ker_dualMap_eq_dualAnnihilator_range
@@ -1432,12 +1432,12 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
 
 theorem ker_dualMap_eq_dualCoannihilator_range (f : M →ₗ[R] M') :
     LinearMap.ker f.dualMap = (Dual.eval R M' ∘ₗ f).range.dualCoannihilator := by
-  ext x; simp [ext_iff (f := dualMap f x)]
+  ext x; simp [LinearMap.ext_iff (f := dualMap f x)]
 
 @[simp]
 lemma dualCoannihilator_range_eq_ker_flip (B : M →ₗ[R] M' →ₗ[R] R) :
     (range B).dualCoannihilator = LinearMap.ker B.flip := by
-  ext x; simp [ext_iff (f := B.flip x)]
+  ext x; simp [LinearMap.ext_iff (f := B.flip x)]
 
 end LinearMap
 

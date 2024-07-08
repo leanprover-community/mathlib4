@@ -223,12 +223,12 @@ theorem image2_image_right (f : α → γ → δ) (g : β → γ) :
 
 @[simp]
 theorem image2_left (h : t.Nonempty) : image2 (fun x _ => x) s t = s := by
-  simp [nonempty_def.mp h, ext_iff]
+  simp [nonempty_def.mp h, Set.ext_iff]
 #align set.image2_left Set.image2_left
 
 @[simp]
 theorem image2_right (h : s.Nonempty) : image2 (fun _ y => y) s t = t := by
-  simp [nonempty_def.mp h, ext_iff]
+  simp [nonempty_def.mp h, Set.ext_iff]
 #align set.image2_right Set.image2_right
 
 lemma image2_range (f : α' → β' → γ) (g : α → α') (h : β → β') :

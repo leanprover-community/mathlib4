@@ -193,9 +193,6 @@ theorem pi_ext' (h : ∀ i, f.comp (single i) = g.comp (single i)) : f = g := by
   refine pi_ext fun i x => ?_
   convert LinearMap.congr_fun (h i) x
 #align linear_map.pi_ext' LinearMap.pi_ext'
-
-theorem pi_ext'_iff : f = g ↔ ∀ i, f.comp (single i) = g.comp (single i) :=
-  ⟨fun h _ => h ▸ rfl, pi_ext'⟩
 #align linear_map.pi_ext'_iff LinearMap.pi_ext'_iff
 
 end Ext

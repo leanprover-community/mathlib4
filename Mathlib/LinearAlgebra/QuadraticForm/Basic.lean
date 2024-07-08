@@ -178,14 +178,11 @@ variable {Q}
 theorem ext (H : ∀ x : M, Q x = Q' x) : Q = Q' :=
   DFunLike.ext _ _ H
 #align quadratic_form.ext QuadraticForm.ext
+#align quadratic_form.ext_iff QuadraticForm.ext_iff
 
 theorem congr_fun (h : Q = Q') (x : M) : Q x = Q' x :=
   DFunLike.congr_fun h _
 #align quadratic_form.congr_fun QuadraticForm.congr_fun
-
-theorem ext_iff : Q = Q' ↔ ∀ x, Q x = Q' x :=
-  DFunLike.ext_iff
-#align quadratic_form.ext_iff QuadraticForm.ext_iff
 
 /-- Copy of a `QuadraticForm` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/

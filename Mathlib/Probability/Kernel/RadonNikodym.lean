@@ -457,7 +457,7 @@ lemma singularPart_eq_zero_iff_measure_eq_zero (κ η : kernel α γ)
     [IsFiniteKernel κ] [IsFiniteKernel η] (a : α) :
     singularPart κ η a = 0 ↔ κ a (mutuallySingularSetSlice κ η a) = 0 := by
   have h_eq_add := rnDeriv_add_singularPart κ η
-  simp_rw [ext_iff, Measure.ext_iff] at h_eq_add
+  simp_rw [kernel.ext_iff, Measure.ext_iff] at h_eq_add
   specialize h_eq_add a (mutuallySingularSetSlice κ η a)
     (measurableSet_mutuallySingularSetSlice κ η a)
   simp only [coeFn_add, Pi.add_apply, Measure.coe_add,
@@ -469,7 +469,7 @@ lemma withDensity_rnDeriv_eq_zero_iff_measure_eq_zero (κ η : kernel α γ)
     [IsFiniteKernel κ] [IsFiniteKernel η] (a : α) :
     withDensity η (rnDeriv κ η) a = 0 ↔ κ a (mutuallySingularSetSlice κ η a)ᶜ = 0 := by
   have h_eq_add := rnDeriv_add_singularPart κ η
-  simp_rw [ext_iff, Measure.ext_iff] at h_eq_add
+  simp_rw [kernel.ext_iff, Measure.ext_iff] at h_eq_add
   specialize h_eq_add a (mutuallySingularSetSlice κ η a)ᶜ
     (measurableSet_mutuallySingularSetSlice κ η a).compl
   simp only [coeFn_add, Pi.add_apply, Measure.coe_add,

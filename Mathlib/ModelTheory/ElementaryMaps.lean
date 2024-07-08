@@ -191,9 +191,6 @@ theorem coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
 theorem ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align first_order.language.elementary_embedding.ext FirstOrder.Language.ElementaryEmbedding.ext
-
-theorem ext_iff {f g : M ↪ₑ[L] N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align first_order.language.elementary_embedding.ext_iff FirstOrder.Language.ElementaryEmbedding.ext_iff
 
 variable (L) (M)

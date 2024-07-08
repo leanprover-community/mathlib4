@@ -195,11 +195,6 @@ theorem toSetoid_inj {c d : Con M} (H : c.toSetoid = d.toSetoid) : c = d :=
   ext <| ext_iff.1 H
 #align con.to_setoid_inj Con.toSetoid_inj
 #align add_con.to_setoid_inj AddCon.toSetoid_inj
-
-/-- Iff version of extensionality rule for congruence relations. -/
-@[to_additive "Iff version of extensionality rule for additive congruence relations."]
-theorem ext_iff {c d : Con M} : (∀ x y, c x y ↔ d x y) ↔ c = d :=
-  ⟨ext, fun h _ _ => h ▸ Iff.rfl⟩
 #align con.ext_iff Con.ext_iff
 #align add_con.ext_iff AddCon.ext_iff
 
@@ -396,7 +391,7 @@ protected theorem liftOn_coe {β} (c : Con M) (f : M → β) (h : ∀ a b, c a b
 @[to_additive "Makes an additive isomorphism of quotients by two additive congruence relations,
 given that the relations are equal."]
 protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
-  { Quotient.congr (Equiv.refl M) <| by apply ext_iff.2 h with
+  { Quotient.congr (Equiv.refl M) <| by apply Con.ext_iff.1 h with
     map_mul' := fun x y => by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
 #align con.congr Con.congr
 #align add_con.congr AddCon.congr
