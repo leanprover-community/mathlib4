@@ -305,7 +305,7 @@ theorem IsSeqCompact.image_of_continuous (f_cont : Continuous f) {K : Set X}
   IsSeqCompact.image (Continuous.seqContinuous f_cont) K_cpt
 
 /-- The range of continuous function on a sequentially compact space is sequentially compact. -/
-theorem SeqCompactSpace.range_of_continuous [SeqCompactSpace X] (f_cont : Continuous f) :
+theorem isSeqCompact_range_of_continuous [SeqCompactSpace X] (f_cont : Continuous f) :
     IsSeqCompact (Set.range f) :=
   isSeqCompact_range (Continuous.seqContinuous f_cont)
 
