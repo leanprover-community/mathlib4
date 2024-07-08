@@ -124,7 +124,7 @@ protected theorem exact {p p' : α × α} (h : Sym2.mk p = Sym2.mk p') : Sym2.Re
 protected theorem eq {p p' : α × α} : Sym2.mk p = Sym2.mk p' ↔ Sym2.Rel α p p' :=
   Quotient.eq' (s₁ := Sym2.Rel.setoid α)
 
-@[elab_as_elim]
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected theorem ind {f : Sym2 α → Prop} (h : ∀ x y, f s(x, y)) : ∀ i, f i :=
   Quot.ind <| Prod.rec <| h
 #align sym2.ind Sym2.ind
@@ -273,7 +273,7 @@ theorem map_comp {g : β → γ} {f : α → β} : Sym2.map (g ∘ f) = Sym2.map
 #align sym2.map_comp Sym2.map_comp
 
 theorem map_map {g : β → γ} {f : α → β} (x : Sym2 α) : map g (map f x) = map (g ∘ f) x := by
-  revert x; apply Sym2.ind; aesop
+  induction x; aesop
 #align sym2.map_map Sym2.map_map
 
 @[simp]
@@ -317,8 +317,8 @@ instance : SetLike (Sym2 α) α where
   coe z := { x | z.Mem x }
   coe_injective' z z' h := by
     simp only [Set.ext_iff, Set.mem_setOf_eq] at h
-    induction' z using Sym2.ind with x y
-    induction' z' using Sym2.ind with x' y'
+    induction' z with x y
+    induction' z' with x' y'
     have hx := h x; have hy := h y; have hx' := h x'; have hy' := h y'
     simp only [mem_iff', eq_self_iff_true, or_true_iff, iff_true_iff,
       true_or_iff, true_iff_iff] at hx hy hx' hy'
@@ -385,7 +385,7 @@ theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
 
 theorem mem_and_mem_iff {x y : α} {z : Sym2 α} (hne : x ≠ y) : x ∈ z ∧ y ∈ z ↔ z = s(x, y) := by
   constructor
-  · induction' z using Sym2.ind with x' y'
+  · induction' z with x' y'
     rw [mem_iff, mem_iff]
     aesop
   · rintro rfl
@@ -405,7 +405,7 @@ end Membership
 
 @[simp]
 theorem mem_map {f : α → β} {b : β} {z : Sym2 α} : b ∈ Sym2.map f z ↔ ∃ a, a ∈ z ∧ f a = b := by
-  induction' z using Sym2.ind with x y
+  induction' z with x y
   simp only [map_pair_eq, mem_iff, exists_eq_or_imp, exists_eq_left]
   aesop
 #align sym2.mem_map Sym2.mem_map
@@ -465,7 +465,7 @@ theorem diag_isDiag (a : α) : IsDiag (diag a) :=
 #align sym2.diag_is_diag Sym2.diag_isDiag
 
 theorem IsDiag.mem_range_diag {z : Sym2 α} : IsDiag z → z ∈ Set.range (@diag α) := by
-  induction' z using Sym2.ind with x y
+  induction' z with x y
   rintro (rfl : x = y)
   exact ⟨_, rfl⟩
 #align sym2.is_diag.mem_range_diag Sym2.IsDiag.mem_range_diag
@@ -692,7 +692,7 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
 
 @[simp]
 theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other' h) = z := by
-  induction z using Sym2.ind
+  induction z
   have h' := mem_iff.mp h
   aesop (add norm unfold [Sym2.rec, Quot.rec]) (rule_sets := [Sym2])
 #align sym2.other_spec' Sym2.other_spec'
@@ -709,7 +709,7 @@ theorem other_mem' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.o
 
 theorem other_invol' [DecidableEq α] {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other' ha ∈ z) :
     Mem.other' hb = a := by
-  induction z using Sym2.ind
+  induction z
   aesop (rule_sets := [Sym2]) (add norm unfold [Sym2.rec, Quot.rec])
 #align sym2.other_invol' Sym2.other_invol'
 
@@ -724,7 +724,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
     ((s ×ˢ s).image Sym2.mk).filter IsDiag = s.diag.image Sym2.mk := by
   ext z
-  induction' z using Sym2.inductionOn
+  induction' z
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
   constructor
   · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
@@ -739,7 +739,7 @@ theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
     (((s ×ˢ s).image Sym2.mk).filter fun a : Sym2 α => ¬a.IsDiag) =
       s.offDiag.image Sym2.mk := by
   ext z
-  induction z using Sym2.inductionOn
+  induction z
   simp only [mem_image, mem_offDiag, mem_filter, Prod.exists, mem_product]
   constructor
   · rintro ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩

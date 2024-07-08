@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
-import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.Algebra.EuclideanDomain.Int
 
 #align_import algebra.order.euclidean_absolute_value from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -21,7 +21,6 @@ absolute value is compatible with the Euclidean domain structure on its domain.
  * `AbsoluteValue.abs_isEuclidean` shows the "standard" absolute value on `ℤ`,
    mapping negative `x` to `-x`, is euclidean.
 -/
-
 
 @[inherit_doc]
 local infixl:50 " ≺ " => EuclideanDomain.r
