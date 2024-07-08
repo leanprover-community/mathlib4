@@ -1606,9 +1606,9 @@ theorem exists_set_lintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f 
   refine ⟨_, measurableSet_support hg_meas, hgsupp, ?_⟩
   calc
     ∫⁻ a in (support g)ᶜ, f a ∂μ
-      = ∫⁻ a in (support g)ᶜ, f a - g a ∂μ := set_lintegral_congr_fun
+      = ∫⁻ a in (support g)ᶜ, f a - g a ∂μ := setLIntegral_congr_fun
       (measurableSet_support hg_meas).compl <| ae_of_all _ <| by intro; simp_all
-    _ ≤ ∫⁻ a, f a - g a ∂μ := set_lintegral_le_lintegral _ _
+    _ ≤ ∫⁻ a, f a - g a ∂μ := setLIntegral_le_lintegral _ _
     _ = ∫⁻ a, f a ∂μ - ∫⁻ a, g a ∂μ :=
       lintegral_sub hg_meas (ne_top_of_le_ne_top hf <| lintegral_mono hgf) (ae_of_all _ hgf)
     _ < ε := ENNReal.sub_lt_of_lt_add (lintegral_mono hgf) <|
@@ -1625,8 +1625,8 @@ theorem exists_measurable_le_set_lintegral_eq_of_integrable {f : α → ℝ≥0�
   rw [← compl_compl s, set_lintegral_compl hms.compl, set_lintegral_compl hms.compl, hifg]
   · gcongr; apply hgf
   · rw [hifg] at hf
-    exact ne_top_of_le_ne_top hf (set_lintegral_le_lintegral _ _)
-  · exact ne_top_of_le_ne_top hf (set_lintegral_le_lintegral _ _)
+    exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
+  · exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
 
 end UnifTight
 
