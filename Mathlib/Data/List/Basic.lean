@@ -2350,7 +2350,7 @@ theorem splitOnP_spec (as : List α) :
     · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj_right]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
-        (append_ne_nil_of_ne_nil_right _ [[]] (cons_ne_nil [] [])), cons_inj_right]
+        (append_ne_nil_of_ne_nil_right _ (cons_ne_nil [] [])), cons_inj_right]
       exact ih
 where
   join_zipWith {xs ys : List (List α)} {a : α} (hxs : xs ≠ []) (hys : ys ≠ []) :
