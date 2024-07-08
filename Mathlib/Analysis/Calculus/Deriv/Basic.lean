@@ -489,12 +489,6 @@ lemma fderiv_deriv' {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 �
   simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, smul_eq_mul]
   ring
 
-@[simp]
-lemma fderiv_deriv'' {f : 𝕜 → 𝕜} {x : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) = ((deriv f x) * ·) := by
-  ext
-  simp_all only [fderiv_deriv']
-
-
 theorem norm_deriv_eq_norm_fderiv : ‖deriv f x‖ = ‖fderiv 𝕜 f x‖ := by
   simp [← deriv_fderiv]
 
