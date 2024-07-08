@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Algebra.Algebra.Int
 
 #align_import algebra.module.bimodule from "leanprover-community/mathlib"@"58cef51f7a819e7227224461e392dee423302f2d"
 

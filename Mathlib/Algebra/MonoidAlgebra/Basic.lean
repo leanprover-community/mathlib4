@@ -9,6 +9,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Algebra.Algebra.Basic
 
 #align_import algebra.monoid_algebra.basic from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 

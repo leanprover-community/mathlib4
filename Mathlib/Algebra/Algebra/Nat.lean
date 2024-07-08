@@ -6,8 +6,6 @@ Authors: Yury G. Kudryashov, Oliver Nash
 
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Data.Int.CharZero
-import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Algebra instances for actions by ℕ and theorems specifically about them

@@ -298,24 +298,6 @@ instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
 instance instExpChar (p : ℕ) [ExpChar K p] : ExpChar (SplittingField f) p :=
   expChar_of_injective_algebraMap (algebraMap K _).injective p
 
--- The algebra instance deriving from `K` should be definitionally equal to that
--- deriving from the field structure on `SplittingField f`.
-example :
-    (AddCommMonoid.natModule : Module ℕ (SplittingField f)) =
-      @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
-  rfl
-
-example :
-    (AddCommGroup.intModule _ : Module ℤ (SplittingField f)) =
-      @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
-  rfl
-
-example [CharZero K] : SplittingField.algebra' f = algebraRat :=
-  rfl
-
-example {q : ℚ[X]} : algebraInt (SplittingField q) = SplittingField.algebra' q :=
-  rfl
-
 instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
     IsSplittingField K (SplittingField f) f :=
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm

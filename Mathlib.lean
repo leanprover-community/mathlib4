@@ -4,7 +4,10 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Hom.Basic
+import Mathlib.Algebra.Algebra.Hom.Int
+import Mathlib.Algebra.Algebra.Hom.Nat
+import Mathlib.Algebra.Algebra.Hom.Rat
 import Mathlib.Algebra.Algebra.Int
 import Mathlib.Algebra.Algebra.Nat
 import Mathlib.Algebra.Algebra.NonUnitalHom

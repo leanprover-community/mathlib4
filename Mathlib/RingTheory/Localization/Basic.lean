@@ -1091,13 +1091,6 @@ theorem mk_algebraMap {A : Type*} [CommSemiring A] [Algebra A R] (m : A) :
   rw [mk_eq_mk', mk'_eq_iff_eq_mul, Submonoid.coe_one, map_one, mul_one]; rfl
 #align localization.mk_algebra_map Localization.mk_algebraMap
 
-theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
-  simpa using mk_algebraMap (R := R) (A := ℕ) _
-#align localization.mk_nat_cast Localization.mk_natCast
-
-@[deprecated (since := "2024-04-17")]
-alias mk_nat_cast := mk_natCast
-
 variable [IsLocalization M S]
 
 section
@@ -1210,13 +1203,6 @@ theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
     _ = mk (b * -c + d * a) (b * d) := add_mk _ _ _ _
     _ = mk (d * a - b * c) (b * d) := by congr; ring
 #align localization.sub_mk Localization.sub_mk
-
-theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
-  simpa using mk_algebraMap (R := R) (A := ℤ) _
-#align localization.mk_int_cast Localization.mk_intCast
-
-@[deprecated (since := "2024-04-17")]
-alias mk_int_cast := mk_intCast
 
 end Localization
 

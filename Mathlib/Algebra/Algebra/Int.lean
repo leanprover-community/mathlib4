@@ -3,11 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Oliver Nash
 -/
-
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Int.CharZero
-import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Algebra instances for actions by ℚ and theorems about them

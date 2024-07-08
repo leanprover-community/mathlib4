@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Oliver Nash
 -/
 
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Algebra.Algebra.Defs
 
 /-!
 # Algebra instances for actions by ℚ and theorems about them
