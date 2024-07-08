@@ -74,7 +74,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 ### T₁ spaces
 
 * `isClosedMap_const`: The constant map is a closed map.
-* `discrete_of_t1_of_finite`: A finite T₁ space must have the discrete topology.
+* `Finite.instDiscreteTopology`: A finite T₁ space must have the discrete topology.
 
 ### T₂ spaces
 
@@ -960,13 +960,15 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 #align infinite_of_mem_nhds infinite_of_mem_nhds
 
-theorem discrete_of_t1_of_finite [T1Space X] [Finite X] :
-    DiscreteTopology X := by
-  apply singletons_open_iff_discrete.mp
-  intro x
-  rw [← isClosed_compl_iff]
-  exact (Set.toFinite _).isClosed
-#align discrete_of_t1_of_finite discrete_of_t1_of_finite
+instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
+  discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
+#align discrete_of_t1_of_finite Finite.instDiscreteTopology
+
+theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
+    (f : X → Y) : ContinuousOn f s := by
+  rw [continuousOn_iff_continuous_restrict]
+  have : Finite s := hs
+  fun_prop
 
 theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTopology X] :
     Subsingleton X := by
@@ -979,7 +981,7 @@ theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTop
 theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPreconnected s)
     (hs : s.Nontrivial) : s.Infinite := by
   refine mt (fun hf => (subsingleton_coe s).mp ?_) (not_subsingleton_iff.mpr hs)
-  haveI := @discrete_of_t1_of_finite s _ _ hf.to_subtype
+  haveI := @Finite.instDiscreteTopology s _ _ hf.to_subtype
   exact @PreconnectedSpace.trivial_of_discrete _ _ (Subtype.preconnectedSpace h) _
 #align is_preconnected.infinite_of_nontrivial IsPreconnected.infinite_of_nontrivial
 
@@ -1098,6 +1100,18 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x 
 #align disjoint_nhds_within_of_mem_discrete disjoint_nhdsWithin_of_mem_discrete
 
 #align topological_space.subset_trans embedding_inclusionₓ
+
+theorem closedEmbedding_update {ι : Type*} {β : ι → Type*}
+    [DecidableEq ι] [(i : ι) → TopologicalSpace (β i)]
+    (x : (i : ι) → β i) (i : ι) [(i : ι) → T1Space (β i)] :
+    ClosedEmbedding (update x i) := by
+  apply closedEmbedding_of_continuous_injective_closed
+  · exact continuous_const.update i continuous_id
+  · exact update_injective x i
+  · intro s hs
+    rw [update_image]
+    apply isClosed_set_pi
+    simp [forall_update_iff, hs, isClosed_singleton]
 
 /-! ### R₁ (preregular) spaces -/
 
@@ -2305,8 +2319,12 @@ theorem T25Space.of_injective_continuous [TopologicalSpace Y] [T25Space Y] {f : 
   t2_5 x y hne := (tendsto_lift'_closure_nhds hcont x).disjoint (t2_5 <| hinj.ne hne)
     (tendsto_lift'_closure_nhds hcont y)
 
-instance [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
-  .of_injective_continuous Subtype.val_injective continuous_subtype_val
+theorem Embedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X → Y} (hf : Embedding f) :
+    T25Space X :=
+  .of_injective_continuous hf.inj hf.continuous
+
+instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
+  embedding_subtype_val.t25Space
 
 section T25
 

@@ -439,6 +439,53 @@ theorem isLowerSet_iff_Iio_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Ii
 
 end PartialOrder
 
+/-! ### Upper/lower sets and Fibrations -/
+
+namespace Relation
+
+variable {f : α → β} {s : Set α}
+
+lemma Fibration.isLowerSet_image [LE α] [LE β] (hf : Fibration (· ≤ ·) (· ≤ ·) f)
+    {s : Set α} (hs : IsLowerSet s) : IsLowerSet (f '' s) := by
+  rintro _ y' e ⟨x, hx, rfl⟩; obtain ⟨y, e', rfl⟩ := hf e; exact ⟨_, hs e' hx, rfl⟩
+
+alias _root_.IsLowerSet.image_fibration := Fibration.isLowerSet_image
+
+lemma fibration_iff_isLowerSet_image_Iic [Preorder α] [LE β] :
+    Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ x, IsLowerSet (f '' Iic x) :=
+  ⟨fun h x ↦ (isLowerSet_Iic x).image_fibration h, fun H x _ e ↦ H x e ⟨x, le_rfl, rfl⟩⟩
+
+lemma fibration_iff_isLowerSet_image [Preorder α] [LE β] :
+    Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ s, IsLowerSet s → IsLowerSet (f '' s) :=
+  ⟨Fibration.isLowerSet_image,
+    fun H ↦ fibration_iff_isLowerSet_image_Iic.mpr (H _ <| isLowerSet_Iic ·)⟩
+
+lemma fibration_iff_image_Iic [Preorder α] [Preorder β] (hf : Monotone f) :
+    Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ x, f '' Iic x = Iic (f x) :=
+  ⟨fun H x ↦ le_antisymm (fun _ ⟨_, hy, e⟩ ↦ e ▸ hf hy)
+    ((H.isLowerSet_image (isLowerSet_Iic x)).Iic_subset ⟨x, le_rfl, rfl⟩),
+    fun H ↦ fibration_iff_isLowerSet_image_Iic.mpr (fun x ↦ (H x).symm ▸ isLowerSet_Iic (f x))⟩
+
+lemma Fibration.isUpperSet_image [LE α] [LE β] (hf : Fibration (· ≥ ·) (· ≥ ·) f)
+    {s : Set α} (hs : IsUpperSet s) : IsUpperSet (f '' s) :=
+  @Fibration.isLowerSet_image αᵒᵈ βᵒᵈ _ _ _ hf s hs
+
+alias _root_.IsUpperSet.image_fibration := Fibration.isUpperSet_image
+
+lemma fibration_iff_isUpperSet_image_Ici [Preorder α] [LE β] :
+    Fibration (· ≥ ·) (· ≥ ·) f ↔ ∀ x, IsUpperSet (f '' Ici x) :=
+  @fibration_iff_isLowerSet_image_Iic αᵒᵈ βᵒᵈ _ _ _
+
+lemma fibration_iff_isUpperSet_image [Preorder α] [LE β] :
+    Fibration (· ≥ ·) (· ≥ ·) f ↔ ∀ s, IsUpperSet s → IsUpperSet (f '' s) :=
+  @fibration_iff_isLowerSet_image αᵒᵈ βᵒᵈ _ _ _
+
+lemma fibration_iff_image_Ici [Preorder α] [Preorder β] (hf : Monotone f) :
+    Fibration (· ≥ ·) (· ≥ ·) f ↔ ∀ x, f '' Ici x = Ici (f x) :=
+  fibration_iff_image_Iic hf.dual
+
+end Relation
+
 section LinearOrder
 variable [LinearOrder α] {s t : Set α}
 
@@ -464,7 +511,7 @@ section LE
 
 variable [LE α]
 
-/-- The type of upper sets of an order. -/
+@[inherit_doc IsUpperSet]
 structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/
   carrier : Set α
@@ -472,13 +519,17 @@ structure UpperSet (α : Type*) [LE α] where
   upper' : IsUpperSet carrier
 #align upper_set UpperSet
 
-/-- The type of lower sets of an order. -/
+extend_docs UpperSet before "The type of upper sets of an order."
+
+@[inherit_doc IsLowerSet]
 structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
   /-- The carrier of a `LowerSet` is a lower set. -/
   lower' : IsLowerSet carrier
 #align lower_set LowerSet
+
+extend_docs LowerSet before "The type of lower sets of an order."
 
 namespace UpperSet
 
@@ -1052,7 +1103,7 @@ namespace UpperSet
 
 variable {f : α ≃o β} {s t : UpperSet α} {a : α} {b : β}
 
-/-- An order isomorphism of preorders induces an order isomorphism of their upper sets. -/
+/-- An order isomorphism of Preorders induces an order isomorphism of their upper sets. -/
 def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   toFun s := ⟨f '' s, s.upper.image f⟩
   invFun t := ⟨f ⁻¹' t, t.upper.preimage f.monotone⟩
@@ -1097,7 +1148,7 @@ namespace LowerSet
 
 variable {f : α ≃o β} {s t : LowerSet α} {a : α} {b : β}
 
-/-- An order isomorphism of preorders induces an order isomorphism of their lower sets. -/
+/-- An order isomorphism of Preorders induces an order isomorphism of their lower sets. -/
 def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
   toFun s := ⟨f '' s, s.lower.image f⟩
   invFun t := ⟨f ⁻¹' t, t.lower.preimage f.monotone⟩
@@ -1655,6 +1706,14 @@ protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelo
 
 @[simp] lemma IsUpperSet.disjoint_lowerClosure_right (hs : IsUpperSet s) :
     Disjoint s (lowerClosure t) ↔ Disjoint s t := hs.toDual.disjoint_upperClosure_right
+
+@[simp] lemma upperClosure_eq :
+    ↑(upperClosure s) = s ↔ IsUpperSet s :=
+  ⟨(· ▸ UpperSet.upper _), IsUpperSet.upperClosure⟩
+
+@[simp] lemma lowerClosure_eq :
+    ↑(lowerClosure s) = s ↔ IsLowerSet s :=
+  @upperClosure_eq αᵒᵈ _ _
 
 end closure
 

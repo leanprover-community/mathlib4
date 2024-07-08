@@ -454,6 +454,18 @@ instance Pi.normedCommGroup [∀ i, NormedCommGroup (π i)] : NormedCommGroup (�
 #align pi.normed_comm_group Pi.normedCommGroup
 #align pi.normed_add_comm_group Pi.normedAddCommGroup
 
+theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
+    ‖Pi.single i y‖₊ = ‖y‖₊ := by
+  have H : ∀ b, ‖single i y b‖₊ = single (f := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
+    intro b
+    refine Pi.apply_single (fun i (x : π i) ↦ ‖x‖₊) ?_ i y b
+    simp
+  simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite, Finset.filter_eq']
+
+theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
+    ‖Pi.single i y‖ = ‖y‖ :=
+  congr_arg Subtype.val <| Pi.nnnorm_single y
+
 end Pi
 
 /-! ### Multiplicative opposite -/
