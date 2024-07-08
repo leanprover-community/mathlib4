@@ -683,7 +683,7 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueNonUnitalContinuousFunctionalCalcu
   · simp
   · exact (cfcₙHom_closedEmbedding (R := R) ha).continuous
   · exact (closedEmbedding_cfcₙHom_of_cfcHom ha).continuous
-  · simp only [cfcₙHom_id, cfcₙHom_of_cfcHom_map_id]
+  · simpa only [cfcₙHom_id (R := R) ha] using (cfcHom_id ha).symm
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
 `cfcₙ`. -/
