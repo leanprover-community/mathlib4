@@ -17,9 +17,11 @@ namespace Meta.FunProp
 
 open Lean.Parser.Tactic
 
+declare_config_elab elabFunPropConfig   FunProp.Config
+
 /-- Tactic to prove function properties -/
 syntax (name := funPropTacStx)
-  "fun_prop" (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
+  "fun_prop" (config)? (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
@@ -30,22 +32,7 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
 def funPropTac : Tactic
-  | `(tactic| fun_prop $[$d]? $[[$names,*]]?) => do
-
-    let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
-      match d with
-      | none => pure emptyDischarge
-      | some d =>
-        match d with
-        | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
-        | _ => pure emptyDischarge
-
-    let namesToUnfold : Array Name :=
-      match names with
-      | none => #[]
-      | .some ns => ns.getElems.map (fun n => n.getId)
-
-    let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
+  | `(tactic| fun_prop $[$cfg]? $[$d]? $[[$names,*]]?) => do
 
     let goal ← getMainGoal
     goal.withContext do
@@ -62,7 +49,30 @@ def funPropTac : Tactic
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
 
-      let ctx : Context := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
+      let cfg ←
+        match cfg with
+        | .some stx => elabFunPropConfig stx
+        | .none => pure {}
+
+      let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
+        match d with
+        | none => pure emptyDischarge
+        | some d =>
+          match d with
+          | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
+          | _ => pure emptyDischarge
+
+      let namesToUnfold : Array Name :=
+        match names with
+        | none => #[]
+        | .some ns => ns.getElems.map (fun n => n.getId)
+
+      let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
+
+      let ctx : Context :=
+        { config := cfg,
+          disch := disch,
+          constToUnfold := .ofArray namesToUnfold _}
       let (r?, s) ← funProp goalType ctx |>.run {}
       if let .some r := r? then
         goal.assign r.proof
@@ -77,6 +87,5 @@ def funPropTac : Tactic
         msg := s.secondaryMsgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
 
         throwError msg
-
 
   | _ => throwUnsupportedSyntax

@@ -120,7 +120,6 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
       return none
     let proof ← instantiateMVars (mkAppN val xs)
 
-    trace[Meta.Tactic.fun_prop.apply] "{← ppOrigin thmId}, \n{e}"
     return .some { proof := proof }
   else
     trace[Meta.Tactic.fun_prop] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
@@ -354,8 +353,10 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
 /-- Prove function property of using *transition theorems*.  -/
 def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)) :
-    FunPropM (Option Result) :=
+    FunPropM (Option Result) := do
   withSecondaryLoggingMode do
+
+  unless (← read).config.useTransThms do return none
 
   let ext := transitionTheoremsExt.getState (← getEnv)
   let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }

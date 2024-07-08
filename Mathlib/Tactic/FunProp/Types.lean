@@ -17,13 +17,12 @@ open Lean Meta
 
 namespace Meta.FunProp
 
-initialize registerTraceClass `Meta.Tactic.fun_prop.attr
+
 initialize registerTraceClass `Meta.Tactic.fun_prop
-initialize registerTraceClass `Meta.Tactic.fun_prop.step
-initialize registerTraceClass `Meta.Tactic.fun_prop.apply
-initialize registerTraceClass `Meta.Tactic.fun_prop.unfold
+initialize registerTraceClass `Meta.Tactic.fun_prop.attr
 initialize registerTraceClass `Meta.Tactic.fun_prop.cache
 initialize registerTraceClass `Meta.Tactic.fun_prop.errors
+initialize registerTraceClass `Meta.Tactic.fun_prop.step
 
 /-- Indicated origin of a function or a statement. -/
 inductive Origin where
@@ -84,6 +83,8 @@ structure Config where
   maxDepth := 200
   /-- Maximum number of steps `fun_prop` can take. -/
   maxSteps := 100000
+  /-- Use transition theorem. -/
+  useTransThms := true
 deriving Inhabited
 
 /-- `fun_prop` context -/

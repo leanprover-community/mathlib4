@@ -69,8 +69,7 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
 
   match f with
   | .lam _ _ xBody _ =>
-    if ¬xBody.hasLooseBVars then
-      return .some .const
+    unless xBody.hasLooseBVars do return .some .const
     match xBody with
     | .bvar 0 => return .some .id
     | .app (.bvar 0) (.fvar _) =>  return .some .apply
