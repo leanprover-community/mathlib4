@@ -63,7 +63,7 @@ theorem wronskian_add_left (a b c : R[X]) : wronskian (a + b) c = wronskian a c 
 
 theorem wronskian_is_alt (a : R[X]) : wronskian a a = 0 := by rw [wronskian, mul_comm, sub_self]
 
-theorem IsAlt_wronskianBilin : (wronskianBilin R).IsAlt := by intro a; exact wronskian_is_alt a
+theorem isAlt_wronskianBilin : (wronskianBilin R).IsAlt := by intro a; exact wronskian_is_alt a
 
 theorem wronskian_self_eq_zero (a : R[X]) : wronskian a a = 0 := wronskian_is_alt a
 
