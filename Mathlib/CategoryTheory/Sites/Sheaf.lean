@@ -388,6 +388,9 @@ instance : (sheafToPresheaf J A).Full :=
 instance : (sheafToPresheaf J A).Faithful :=
   (fullyFaithfulSheafToPresheaf J A).faithful
 
+instance : (sheafToPresheaf J A).ReflectsIsomorphisms :=
+  (fullyFaithfulSheafToPresheaf J A).reflectsIsomorphisms
+
 /-- This is stated as a lemma to prevent class search from forming a loop since a sheaf morphism is
 monic if and only if it is monic as a presheaf morphism (under suitable assumption). -/
 theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mono f.1] : Mono f :=
@@ -589,6 +592,14 @@ theorem isSheaf_iff_multifork :
       congr 1
       apply he
 #align category_theory.presheaf.is_sheaf_iff_multifork CategoryTheory.Presheaf.isSheaf_iff_multifork
+
+variable {J P} in
+/-- If `F : Cᵒᵖ ⥤ A` is a sheaf for a Grothendieck topology `J` on `C`,
+and `S` is a cover of `X : C`, then the multifork `S.multifork F` is limit. -/
+def IsSheaf.isLimitMultifork
+    (hP : Presheaf.IsSheaf J P) {X : C} (S : J.Cover X) : IsLimit (S.multifork P) := by
+  rw [Presheaf.isSheaf_iff_multifork] at hP
+  exact (hP X S).some
 
 theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)] :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), IsIso (S.toMultiequalizer P) := by
