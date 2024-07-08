@@ -204,34 +204,52 @@ end IsPrecomplete
 
 namespace AdicCompletion
 
+/-- `AdicCompletion` is the submodule of compatible families in
+`∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
+def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
+  carrier := { f | ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
+  zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
+  add_mem' hf hg m n hmn := by
+    rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
+  smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
+
+@[irreducible]
 instance : Zero (AdicCompletion I M) where
   zero := ⟨0, by simp⟩
 
+@[irreducible]
 instance : Add (AdicCompletion I M) where
   add x y := ⟨x.val + y.val, by simp [x.property, y.property]⟩
 
+@[irreducible]
 instance : Neg (AdicCompletion I M) where
   neg x := ⟨- x.val, by simp [x.property]⟩
 
-instance : AddCommGroup (AdicCompletion I M) where
-  add_assoc x y z := Subtype.ext <| add_assoc x.val y.val z.val
+@[irreducible]
+instance : Sub (AdicCompletion I M) where
   sub x y := ⟨x.val - y.val, by simp [x.property, y.property]⟩
-  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
-  zero_add a := Subtype.ext <| zero_add a.val
-  add_zero a := Subtype.ext <| add_zero a.val
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-  add_left_neg a := Subtype.ext <| add_left_neg a.val
-  add_comm x y := Subtype.ext <| add_comm x.val y.val
 
-instance : Module R (AdicCompletion I M) where
+@[irreducible]
+instance : SMul ℕ (AdicCompletion I M) where
+  smul n x := ⟨n • x.val, by simp [x.property]⟩
+
+@[irreducible]
+instance : SMul ℤ (AdicCompletion I M) where
+  smul n x := ⟨n • x.val, by simp [x.property]⟩
+
+instance : AddCommGroup (AdicCompletion I M) :=
+  let f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
+  Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+@[irreducible]
+instance : SMul R (AdicCompletion I M) where
   smul r x := ⟨r • x.val, by simp [x.property]⟩
-  one_smul x := Subtype.ext <| one_smul R x.val
-  mul_smul r s x := Subtype.ext <| mul_smul r s x.val
-  smul_add r x y := Subtype.ext <| smul_add r x.val y.val
-  add_smul r s x := Subtype.ext <| add_smul r s x.val
-  zero_smul x := Subtype.ext <| zero_smul R x.val
-  smul_zero r := Subtype.ext <| smul_zero r
+
+instance : Module R (AdicCompletion I M) :=
+  let f : AdicCompletion I M →+ ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) :=
+    { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+  Subtype.val_injective.module R f (fun _ _ ↦ rfl)
 
 /-- The canonical inclusion from the completion to the product. -/
 @[simps]
@@ -374,34 +392,56 @@ def AdicCauchySequence : Type _ := { f : ℕ → M // IsAdicCauchy I M f }
 
 namespace AdicCauchySequence
 
+/-- The type of `I`-adic cauchy sequences is a submodule of the product `ℕ → M`. -/
+def submodule : Submodule R (ℕ → M) where
+  carrier := { f | IsAdicCauchy I M f }
+  add_mem' := by
+    intro f g hf hg m n hmn
+    exact SModEq.add (hf hmn) (hg hmn)
+  zero_mem' := by
+    intro _ _ _
+    rfl
+  smul_mem' := by
+    intro r f hf m n hmn
+    exact SModEq.smul (hf hmn) r
+
+@[irreducible]
 instance : Zero (AdicCauchySequence I M) where
   zero := ⟨0, fun _ ↦ rfl⟩
 
+@[irreducible]
 instance : Add (AdicCauchySequence I M) where
   add x y := ⟨x.val + y.val, fun hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
 
+@[irreducible]
 instance : Neg (AdicCauchySequence I M) where
   neg x := ⟨- x.val, fun hmn ↦ SModEq.neg (x.property hmn)⟩
 
-instance : AddCommGroup (AdicCauchySequence I M) where
-  add_assoc x y z := Subtype.ext <| add_assoc x.val y.val z.val
+@[irreducible]
+instance : Sub (AdicCauchySequence I M) where
   sub x y := ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
-  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
-  zero_add a := Subtype.ext <| zero_add a.val
-  add_zero a := Subtype.ext <| add_zero a.val
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-  add_left_neg a := Subtype.ext <| add_left_neg a.val
-  add_comm x y := Subtype.ext <| add_comm x.val y.val
 
-instance : Module R (AdicCauchySequence I M) where
+@[irreducible]
+instance : SMul ℕ (AdicCauchySequence I M) where
+  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.nsmul (x.property hmn) n⟩
+
+@[irreducible]
+instance : SMul ℤ (AdicCauchySequence I M) where
+  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.zsmul (x.property hmn) n⟩
+
+instance : AddCommGroup (AdicCauchySequence I M) := by
+  let f : AdicCauchySequence I M → (ℕ → M) := Subtype.val
+  apply Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+@[irreducible]
+instance : SMul R (AdicCauchySequence I M) where
   smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
-  one_smul x := Subtype.ext <| one_smul R x.val
-  mul_smul r s x := Subtype.ext <| mul_smul r s x.val
-  smul_add r x y := Subtype.ext <| smul_add r x.val y.val
-  add_smul r s x := Subtype.ext <| add_smul r s x.val
-  zero_smul x := Subtype.ext <| zero_smul R x.val
-  smul_zero r := Subtype.ext <| smul_zero r
+
+instance : Module R (AdicCauchySequence I M) :=
+  let f : AdicCauchySequence I M →+ (ℕ → M) :=
+    { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+  Subtype.val_injective.module R f (fun _ _ ↦ rfl)
 
 instance : CoeFun (AdicCauchySequence I M) (fun _ ↦ ℕ → M) where
   coe f := f.val

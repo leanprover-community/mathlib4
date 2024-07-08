@@ -45,29 +45,50 @@ theorem transitionMap_map_mul {m n : ℕ} (hmn : m ≤ n) (x y : R ⧸ (I ^ n �
     transitionMap I R hmn (x * y) = transitionMap I R hmn x * transitionMap I R hmn y :=
   Quotient.inductionOn₂' x y (fun _ _ ↦ rfl)
 
+@[local simp]
+theorem transitionMap_map_pow {m n a : ℕ} (hmn : m ≤ n) (x : R ⧸ (I ^ n • ⊤ : Ideal R)) :
+    transitionMap I R hmn (x ^ a) = transitionMap I R hmn x ^ a :=
+  Quotient.inductionOn' x (fun _ ↦ rfl)
+
 /-- `AdicCompletion.transitionMap` as an algebra homomorphism. -/
 def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
     R ⧸ (I ^ n • ⊤ : Ideal R) →ₐ[R] R ⧸ (I ^ m • ⊤ : Ideal R) :=
   AlgHom.ofLinearMap (transitionMap I R hmn) rfl (transitionMap_map_mul I hmn)
 
+/-- `AdicCompletion I R` is an `R`-subalgebra of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
+def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
+  Submodule.toSubalgebra (submodule I R) (fun _ ↦ by simp)
+    (fun x y hx hy m n hmn ↦ by simp [hx hmn, hy hmn])
+
+/-- `AdicCompletion I R` is a subring of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
+def subring : Subring (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
+  Subalgebra.toSubring (subalgebra I)
+
+@[irreducible]
 instance : Mul (AdicCompletion I R) where
   mul x y := ⟨x.val * y.val, by simp [x.property, y.property]⟩
 
+@[irreducible]
 instance : One (AdicCompletion I R) where
   one := ⟨1, by simp⟩
 
-instance : CommRing (AdicCompletion I R) where
-  left_distrib x y z := Subtype.ext <| left_distrib x.val y.val z.val
-  right_distrib x y z := Subtype.ext <| right_distrib x.val y.val z.val
-  zero_mul x := Subtype.ext <| zero_mul x.val
-  mul_zero x := Subtype.ext <| mul_zero x.val
-  mul_assoc x y z := Subtype.ext <| mul_assoc x.val y.val z.val
-  one_mul x := Subtype.ext <| one_mul x.val
-  mul_one x := Subtype.ext <| mul_one x.val
-  zsmul := zsmulRec
-  add_left_neg x := Subtype.ext <| add_left_neg x.val
-  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
-  mul_comm x y := Subtype.ext <| mul_comm x.val y.val
+@[irreducible]
+instance : NatCast (AdicCompletion I R) where
+  natCast n := ⟨n, fun _ ↦ rfl⟩
+
+@[irreducible]
+instance : IntCast (AdicCompletion I R) where
+  intCast n := ⟨n, fun _ ↦ rfl⟩
+
+@[irreducible]
+instance : Pow (AdicCompletion I R) ℕ where
+  pow x n := ⟨x.val ^ n, fun _ ↦ by simp [x.property]⟩
+
+instance : CommRing (AdicCompletion I R) :=
+  let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
+  Subtype.val_injective.commRing f rfl rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 instance : Algebra R (AdicCompletion I R) where
   toFun r := ⟨algebraMap R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by simp⟩
@@ -101,24 +122,43 @@ theorem evalₐ_mk (n : ℕ) (x : AdicCauchySequence I R) :
     evalₐ I n (mk I R x) = Ideal.Quotient.mk (I ^ n) (x.val n) := by
   simp [evalₐ]
 
+/-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
+def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
+  Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
+    (fun {m n} _ ↦ by simp; rfl)
+    (fun x y hx hy {m n} hmn ↦ by
+      simp only [Pi.mul_apply]
+      exact SModEq.mul (hx hmn) (hy hmn))
+
+/-- `AdicCauchySequence I R` is a subring of `ℕ → R`. -/
+def AdicCauchySequence.subring : Subring (ℕ → R) :=
+  Subalgebra.toSubring (AdicCauchySequence.subalgebra I)
+
+@[irreducible]
 instance : Mul (AdicCauchySequence I R) where
   mul x y := ⟨x.val * y.val, fun hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
 
+@[irreducible]
 instance : One (AdicCauchySequence I R) where
   one := ⟨1, fun _ ↦ rfl⟩
 
-instance : CommRing (AdicCauchySequence I R) where
-  left_distrib x y z := Subtype.ext <| left_distrib x.val y.val z.val
-  right_distrib x y z := Subtype.ext <| right_distrib x.val y.val z.val
-  zero_mul x := Subtype.ext <| zero_mul x.val
-  mul_zero x := Subtype.ext <| mul_zero x.val
-  mul_assoc x y z := Subtype.ext <| mul_assoc x.val y.val z.val
-  one_mul x := Subtype.ext <| one_mul x.val
-  mul_one x := Subtype.ext <| mul_one x.val
-  zsmul := zsmulRec
-  add_left_neg x := Subtype.ext <| add_left_neg x.val
-  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
-  mul_comm x y := Subtype.ext <| mul_comm x.val y.val
+@[irreducible]
+instance : NatCast (AdicCauchySequence I R) where
+  natCast n := ⟨n, fun _ ↦ rfl⟩
+
+@[irreducible]
+instance : IntCast (AdicCauchySequence I R) where
+  intCast n := ⟨n, fun _ ↦ rfl⟩
+
+@[irreducible]
+instance : Pow (AdicCauchySequence I R) ℕ where
+  pow x n := ⟨x.val ^ n, fun hmn ↦ SModEq.pow n (x.property hmn)⟩
+
+instance : CommRing (AdicCauchySequence I R) :=
+  let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
+  Subtype.val_injective.commRing f rfl rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 instance : Algebra R (AdicCauchySequence I R) where
   toFun r := ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
