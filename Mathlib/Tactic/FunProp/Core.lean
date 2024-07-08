@@ -147,20 +147,37 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
 
     tryTheoremCore xs bis thmProof type e thmOrigin funProp
 
+  -- `simp` introduces new meta variable context depth for some reason
+  -- This is probably to avoid mvar assignment when trying a theorem fails
+  --
+  -- However, in `fun_prop` case this is not completely desirable
+  -- For example, I want to be able to solve a goal with mvars like `ContDiff ℝ ?n f` using local
+  -- hypothesis `(h : ContDiff ℝ ∞ f)` and assign `∞` to the mvar `?n`.
+  --
+  -- This could be problematic if there are two local hypothesis `(hinf : ContDiff ℝ ∞ f)` and
+  -- `(h1 : ContDiff ℝ 1 f)` and appart from solving `ContDiff ℝ ?n f` there is also a subgoal
+  -- `2 ≤ ?n`. If `fun_prop` decides to try `h1` first it would assign `1` to `?n` and then there
+  -- is no hope solving `2 ≤ 1` and it won't be able to apply `hinf` after trying `h1` as `n?` is
+  -- assigned already. Ideally `fun_prop` would roll back the `MetaM.State`. This issue did not
+  -- come up yet so I didn't bother and I'm worried about the performance impact.
   if newMCtxDepth then
     withNewMCtxDepth go
   else
     go
 
 
-/-- Try to apply a theorem -/
+/-- Try to apply a theorem `thmOrigin` to the goal `e`. -/
 def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Option Result))
     (newMCtxDepth : Bool := false) : FunPropM (Option Result) :=
   tryTheoremWithHint? e thmOrigin #[] funProp newMCtxDepth
 
 
-/-- Apply lambda calculus rule P fun x => x` -/
-def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
+/--
+Try to prove `e` using using *identity lambda theorem*.
+
+For example, `e = q(Continuous fun x => x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
+-/
+def applyIdRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   let thms ← getLambdaTheorems funPropDecl.funPropName .id
   if thms.size = 0 then
@@ -170,13 +187,16 @@ def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
     return none
 
   for thm in thms do
-    let .id id_X := thm.thmArgs | return none
-    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X)] funProp then
+    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[] funProp then
       return r
 
   return none
 
-/-- Apply lambda calculus rule `P fun x => y` -/
+/--
+Try to prove `e` using using *constant lambda theorem*.
+
+For example, `e = q(Continuous fun x => y)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
+-/
 def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   let thms ← getLambdaTheorems funPropDecl.funPropName .const
@@ -193,40 +213,28 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
 
   return none
 
-/-- Apply lambda calculus rule `P fun f => f i` -/
-def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
+/--
+Try to prove `e` using using *apply lambda theorem*.
+
+For example, `e = q(Continuous fun f => f x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
+-/
+def applyApplyRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
-  -- let ext := lambdaTheoremsExt.getState (← getEnv)
-  let .forallE n X Y _ := XY | return none
+  let thms := (← getLambdaTheorems funPropDecl.funPropName .apply)
 
-  let thms ← getLambdaTheorems funPropDecl.funPropName .proj
-  -- non dependent case
-  if ¬(Y.hasLooseBVars) then
-    for thm in thms do
-      let .proj id_x id_Y := thm.thmArgs | return none
-      if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp then
-        return r
-
-  -- dependent case
-  -- can also handle non-dependent cases if non-dependent theorem is not available
-  let Y := Expr.lam n X Y default
-
-  let thms' ← getLambdaTheorems funPropDecl.funPropName .projDep
-
-  if thms.size = 0 ∧ thms'.size = 0 then
-    let msg := s!"missing projection rule to prove `{← ppExpr e}`"
-    logError msg
-    trace[Meta.Tactic.fun_prop] msg
-    return none
-
-  for thm in thms' do
-    let .projDep id_x id_Y := thm.thmArgs | return none
-    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp then
+  for thm in thms do
+    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[] funProp then
       return r
 
   return none
 
-/-- Apply lambda calculus rule `P f → P g → P fun x => f (g x)` -/
+/--
+Try to prove `e` using *composition lambda theorem*.
+
+For example, `e = q(Continuous fun x => f (g x))` and `funPropDecl` is `FunPropDecl` for
+`Continuous`
+
+You also have to provide the functions `f` and `g`.  -/
 def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
@@ -244,8 +252,13 @@ def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
 
   return none
 
-/-- Apply lambda calculus rule `∀ y, P (f · y) → P fun x y => f x y` -/
-def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
+/--
+Try to prove `e` using *pi lambda theorem*.
+
+For example, `e = q(Continuous fun x y => f x y)` and `funPropDecl` is `FunPropDecl` for
+`Continuous`
+-/
+def applyPiRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   let thms ← getLambdaTheorems funPropDecl.funPropName .pi
@@ -256,14 +269,20 @@ def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
     return none
 
   for thm in thms do
-    let .pi id_f := thm.thmArgs | return none
-    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f)] funProp then
+    if let .some r ← tryTheoremWithHint? e (.decl thm.thmName) #[] funProp then
       return r
 
   return none
 
 
-/-- Prove function property of `fun x => let y := g x; f x y`. -/
+/--
+Try to prove `e = q(P (fun x => let y := φ x; ψ x y)`.
+
+For example,
+  - `funPropDecl` is `FunPropDecl` for `Continuous`
+  - `e = q(Continuous fun x => let y := φ x; ψ x y)`
+  - `f = q(fun x => let y := φ x; ψ x y)`
+-/
 def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
@@ -305,7 +324,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
   | _ => throwError "expected expression of the form `fun x => lam y := ..; ..`"
 
 
-/-- Prove function property of using "morphism theorems" e.g. bundled linear map is linear map.  -/
+/-- Prove function property of using *morphism theorems*. -/
 def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   trace[Meta.Tactic.fun_prop.step] "applying morphism theoresm to {← ppExpr e}"
@@ -313,7 +332,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   match ← fData.isMorApplication with
   | .none => throwError "fun_prop bug: ivalid use of mor rules on {← ppExpr e}"
   | .underApplied =>
-    applyPiRule funPropDecl e (← fData.toExpr) funProp
+    applyPiRule funPropDecl e funProp
   | .overApplied =>
     let .some (f,g) ← fData.peeloffArgDecomposition | return none
     applyCompRule funPropDecl e f g funProp
@@ -333,7 +352,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     trace[Meta.Tactic.fun_prop.step] "no theorem matched"
     return none
 
-/-- Prove function property of using "transition theorems" e.g. continuity from linearity.  -/
+/-- Prove function property of using *transition theorems*.  -/
 def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) :=
   withSecondaryLoggingMode do
@@ -355,7 +374,14 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
   trace[Meta.Tactic.fun_prop.step] "no theorem matched"
   return none
 
-/-- Try to remove applied argument. -/
+/-- Try to remove applied argument i.e. prove `P (fun x => f x y)` from `P (fun x => f x)`.
+
+For exmaple
+  - `funPropDecl` is `FunPropDecl` for `Continuous`
+  - `e = q(Continuous fun x => foo (bar x) y)`
+  - `fData` contains info on `fun x => foo (bar x) y`
+  This tries to prove `Continuous fun x => foo (bar x) y` from `Continuous fun x => foo (bar x)`
+ -/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
@@ -384,9 +410,10 @@ def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let .some (f, g) ← fData.nontrivialDecomposition then
       applyCompRule funPropDecl e f g funProp
     else
-      applyProjRule funPropDecl e fData.args[0]!.expr (← fData.domainType) funProp
+      applyApplyRule funPropDecl e funProp
 
-/-- Get candidate theorems from the environment for function property `funPropDecl` and
+/--
+Get candidate theorems from the environment for function property `funPropDecl` and
 function `funName`. -/
 def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
     (mainArgs : Array Nat) (appliedArgs : Nat) : MetaM (Array FunctionTheorem) := do
@@ -405,7 +432,8 @@ def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
   -- todo: sorting and filtering
   return thms
 
-/-- Get candidate theorems from the local context for function property `funPropDecl` and
+/--
+Get candidate theorems from the local context for function property `funPropDecl` and
 function `funName`. -/
 def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
     (mainArgs : Array Nat) (appliedArgs : Nat) : FunPropM (Array FunctionTheorem) := do
@@ -456,7 +484,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
   return thms
 
 
-/-- Try to apply theorems `thms` to `e` -/
+/-- Try to apply *function theorems* `thms` to `e`. -/
 def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (thms : Array FunctionTheorem) (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
@@ -478,7 +506,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       continue
     | .gt =>
       trace[Meta.Tactic.fun_prop] s!"adding argument to later use {← ppOrigin' thm.thmOrigin}"
-      if let .some r ← applyPiRule funPropDecl e (← fData.toExpr) funProp then
+      if let .some r ← applyPiRule funPropDecl e funProp then
         return r
       continue
     | .eq =>
@@ -650,12 +678,12 @@ mutual
     | .lam f =>
       trace[Meta.Tactic.fun_prop.step] "pi case on {← ppExpr f}"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f
-      applyPiRule funPropDecl e f funProp
+      applyPiRule funPropDecl e funProp
     | .data fData =>
       let e := e.setArg funPropDecl.funArgId (← fData.toExpr) -- update e with reduced f
 
       if fData.isIdentityFun then
-        applyIdRule funPropDecl e (← fData.domainType) funProp
+        applyIdRule funPropDecl e funProp
       else if fData.isConstantFun then
         applyConstRule funPropDecl e funProp
       else
