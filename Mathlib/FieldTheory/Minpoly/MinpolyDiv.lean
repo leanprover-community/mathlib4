@@ -20,7 +20,7 @@ See `traceForm_dualBasis_powerBasis_eq`.
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
 
-open Polynomial BigOperators FiniteDimensional
+open Polynomial FiniteDimensional
 
 variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
 variable (x : S)
@@ -143,8 +143,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
     · apply Submodule.smul_mem
       apply Submodule.subset_span
       exact ⟨0, Nat.zero_lt_succ _, pow_zero _⟩
-    · rw [Nat.succ_eq_add_one, ← tsub_tsub, tsub_add_cancel_of_le
-        (le_tsub_of_add_le_left (b := 1) hi)]
+    · rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left (b := 1) hi)]
       apply SetLike.le_def.mp ?_
         (Submodule.mul_mem_mul (IH ((Nat.le_succ _).trans hi))
           (Submodule.mem_span_singleton_self x))
@@ -184,7 +183,7 @@ section PowerBasis
 variable {K}
 
 lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
-    [FiniteDimensional K L] [IsSeparable K L]
+    [FiniteDimensional K L] [Algebra.IsSeparable K L]
     {x : L} (hxL : Algebra.adjoin K {x} = ⊤) {r : ℕ} (hr : r < finrank K L) :
     ∑ σ : L →ₐ[K] E, ((x ^ r / aeval x (derivative <| minpoly K x)) •
       minpolyDiv K x).map σ = (X ^ r : E[X]) := by
@@ -199,7 +198,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
       Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_pow, eval_X]
     rw [sub_eq_zero, div_mul_cancel₀]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
-    exact (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+    exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
     · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,
@@ -208,7 +207,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
       refine ⟨finrank_pos, ?_⟩
       intro σ
       exact ((Polynomial.natDegree_smul_le _ _).trans (natDegree_map_le _ _)).trans_lt
-        ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.of_finite _ _ x)).trans_le
+        ((natDegree_minpolyDiv_lt (Algebra.IsIntegral.isIntegral x)).trans_le
           (minpoly.natDegree_le _))
     · rwa [natDegree_pow, natDegree_X, mul_one, AlgHom.card]
 

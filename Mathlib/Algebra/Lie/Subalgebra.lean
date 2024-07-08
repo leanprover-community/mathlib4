@@ -57,8 +57,7 @@ instance : Coe (LieSubalgebra R L) (Submodule R L) :=
 
 namespace LieSubalgebra
 
-instance : SetLike (LieSubalgebra R L) L
-    where
+instance : SetLike (LieSubalgebra R L) L where
   coe L' := L'.carrier
   coe_injective' L' L'' h := by
     rcases L' with ⟨⟨⟩⟩
@@ -66,15 +65,13 @@ instance : SetLike (LieSubalgebra R L) L
     congr
     exact SetLike.coe_injective' h
 
-instance : AddSubgroupClass (LieSubalgebra R L) L
-    where
+instance : AddSubgroupClass (LieSubalgebra R L) L where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
   neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
 
 /-- A Lie subalgebra forms a new Lie ring. -/
-instance lieRing (L' : LieSubalgebra R L) : LieRing L'
-    where
+instance lieRing (L' : LieSubalgebra R L) : LieRing L' where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
   lie_add := by
     intros
@@ -247,8 +244,7 @@ variable [Module R M] [LieModule R L M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance lieModule : LieModule R L' M
-    where
+instance lieModule : LieModule R L' M where
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
 
@@ -719,8 +715,7 @@ theorem coe_lieSpan_submodule_eq_iff {p : Submodule R L} :
 variable (R L)
 
 /-- `lieSpan` forms a Galois insertion with the coercion from `LieSubalgebra` to `Set`. -/
-protected def gi : GaloisInsertion (lieSpan R L : Set L → LieSubalgebra R L) (↑)
-    where
+protected def gi : GaloisInsertion (lieSpan R L : Set L → LieSubalgebra R L) (↑) where
   choice s _ := lieSpan R L s
   gc _ _ := lieSpan_le
   le_l_u _ := subset_lieSpan

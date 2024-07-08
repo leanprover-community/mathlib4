@@ -160,7 +160,7 @@ theorem right_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R
 @[elab_as_elim]
 theorem left_induction {P : CliffordAlgebra Q → Prop} (algebraMap : ∀ r : R, P (algebraMap _ _ r))
     (add : ∀ x y, P x → P y → P (x + y)) (ι_mul : ∀ x m, P x → P (ι Q m * x)) : ∀ x, P x := by
-  refine' reverse_involutive.surjective.forall.2 _
+  refine reverse_involutive.surjective.forall.2 ?_
   intro x
   induction' x using CliffordAlgebra.right_induction with r x y hx hy m x hx
   · simpa only [reverse.commutes] using algebraMap r
@@ -226,7 +226,7 @@ theorem foldr'_ι_mul (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     foldr' Q f hf n (ι Q m * x) = f m (x, foldr' Q f hf n x) := by
   dsimp [foldr']
   rw [foldr_mul, foldr_ι, foldr'Aux_apply_apply]
-  refine' congr_arg (f m) (Prod.mk.eta.symm.trans _)
+  refine congr_arg (f m) (Prod.mk.eta.symm.trans ?_)
   congr 1
   induction x using CliffordAlgebra.left_induction with
   | algebraMap r => simp_rw [foldr_algebraMap, Prod.smul_mk, Algebra.algebraMap_eq_smul_one]

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Set.Intervals.OrdConnected
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Data.Set.Lattice
 
 #align_import order.upper_lower.basic from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
@@ -439,6 +439,53 @@ theorem isLowerSet_iff_Iio_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Ii
 
 end PartialOrder
 
+/-! ### Upper/lower sets and Fibrations -/
+
+namespace Relation
+
+variable {f : α → β} {s : Set α}
+
+lemma Fibration.isLowerSet_image [LE α] [LE β] (hf : Fibration (· ≤ ·) (· ≤ ·) f)
+    {s : Set α} (hs : IsLowerSet s) : IsLowerSet (f '' s) := by
+  rintro _ y' e ⟨x, hx, rfl⟩; obtain ⟨y, e', rfl⟩ := hf e; exact ⟨_, hs e' hx, rfl⟩
+
+alias _root_.IsLowerSet.image_fibration := Fibration.isLowerSet_image
+
+lemma fibration_iff_isLowerSet_image_Iic [Preorder α] [LE β] :
+    Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ x, IsLowerSet (f '' Iic x) :=
+  ⟨fun h x ↦ (isLowerSet_Iic x).image_fibration h, fun H x _ e ↦ H x e ⟨x, le_rfl, rfl⟩⟩
+
+lemma fibration_iff_isLowerSet_image [Preorder α] [LE β] :
+    Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ s, IsLowerSet s → IsLowerSet (f '' s) :=
+  ⟨Fibration.isLowerSet_image,
+    fun H ↦ fibration_iff_isLowerSet_image_Iic.mpr (H _ <| isLowerSet_Iic ·)⟩
+
+lemma fibration_iff_image_Iic [Preorder α] [Preorder β] (hf : Monotone f) :
+    Fibration (· ≤ ·) (· ≤ ·) f ↔ ∀ x, f '' Iic x = Iic (f x) :=
+  ⟨fun H x ↦ le_antisymm (fun _ ⟨_, hy, e⟩ ↦ e ▸ hf hy)
+    ((H.isLowerSet_image (isLowerSet_Iic x)).Iic_subset ⟨x, le_rfl, rfl⟩),
+    fun H ↦ fibration_iff_isLowerSet_image_Iic.mpr (fun x ↦ (H x).symm ▸ isLowerSet_Iic (f x))⟩
+
+lemma Fibration.isUpperSet_image [LE α] [LE β] (hf : Fibration (· ≥ ·) (· ≥ ·) f)
+    {s : Set α} (hs : IsUpperSet s) : IsUpperSet (f '' s) :=
+  @Fibration.isLowerSet_image αᵒᵈ βᵒᵈ _ _ _ hf s hs
+
+alias _root_.IsUpperSet.image_fibration := Fibration.isUpperSet_image
+
+lemma fibration_iff_isUpperSet_image_Ici [Preorder α] [LE β] :
+    Fibration (· ≥ ·) (· ≥ ·) f ↔ ∀ x, IsUpperSet (f '' Ici x) :=
+  @fibration_iff_isLowerSet_image_Iic αᵒᵈ βᵒᵈ _ _ _
+
+lemma fibration_iff_isUpperSet_image [Preorder α] [LE β] :
+    Fibration (· ≥ ·) (· ≥ ·) f ↔ ∀ s, IsUpperSet s → IsUpperSet (f '' s) :=
+  @fibration_iff_isLowerSet_image αᵒᵈ βᵒᵈ _ _ _
+
+lemma fibration_iff_image_Ici [Preorder α] [Preorder β] (hf : Monotone f) :
+    Fibration (· ≥ ·) (· ≥ ·) f ↔ ∀ x, f '' Ici x = Ici (f x) :=
+  fibration_iff_image_Iic hf.dual
+
+end Relation
+
 section LinearOrder
 variable [LinearOrder α] {s t : Set α}
 
@@ -464,7 +511,7 @@ section LE
 
 variable [LE α]
 
-/-- The type of upper sets of an order. -/
+@[inherit_doc IsUpperSet]
 structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/
   carrier : Set α
@@ -472,13 +519,17 @@ structure UpperSet (α : Type*) [LE α] where
   upper' : IsUpperSet carrier
 #align upper_set UpperSet
 
-/-- The type of lower sets of an order. -/
+extend_docs UpperSet before "The type of upper sets of an order."
+
+@[inherit_doc IsLowerSet]
 structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
   /-- The carrier of a `LowerSet` is a lower set. -/
   lower' : IsLowerSet carrier
 #align lower_set LowerSet
+
+extend_docs LowerSet before "The type of lower sets of an order."
 
 namespace UpperSet
 
@@ -628,13 +679,13 @@ theorem coe_iInf (f : ι → UpperSet α) : (↑(⨅ i, f i) : Set α) = ⋃ i, 
 #align upper_set.coe_infi UpperSet.coe_iInf
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) : (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j :=
-  by simp_rw [coe_iSup]
+theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) :
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iSup]
 #align upper_set.coe_supr₂ UpperSet.coe_iSup₂
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) : (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j :=
-  by simp_rw [coe_iInf]
+theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iInf]
 #align upper_set.coe_infi₂ UpperSet.coe_iInf₂
 
 @[simp]
@@ -782,13 +833,13 @@ theorem coe_iInf (f : ι → LowerSet α) : (↑(⨅ i, f i) : Set α) = ⋂ i, 
 #align lower_set.coe_infi LowerSet.coe_iInf
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) : (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j :=
-  by simp_rw [coe_iSup]
+theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) :
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iSup]
 #align lower_set.coe_supr₂ LowerSet.coe_iSup₂
 
 @[norm_cast] -- Porting note: no longer a `simp`
-theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) : (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j :=
-  by simp_rw [coe_iInf]
+theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) :
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iInf]
 #align lower_set.coe_infi₂ LowerSet.coe_iInf₂
 
 @[simp]
@@ -1008,8 +1059,7 @@ end LowerSet
 
 /-- Upper sets are order-isomorphic to lower sets under complementation. -/
 @[simps]
-def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α
-    where
+def upperSetIsoLowerSet : UpperSet α ≃o LowerSet α where
   toFun := UpperSet.compl
   invFun := LowerSet.compl
   left_inv := UpperSet.compl_compl
@@ -1028,19 +1078,17 @@ instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t =
 instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
 #align lower_set.is_total_le LowerSet.isTotal_le
 
-noncomputable instance : CompleteLinearOrder (UpperSet α) :=
-  { UpperSet.completelyDistribLattice with
-    le_total := IsTotal.total
-    decidableLE := Classical.decRel _
-    decidableEq := Classical.decRel _
-    decidableLT := Classical.decRel _ }
+noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := by
+  classical exact Lattice.toLinearOrder _
 
-noncomputable instance : CompleteLinearOrder (LowerSet α) :=
-  { LowerSet.completelyDistribLattice with
-    le_total := IsTotal.total
-    decidableLE := Classical.decRel _
-    decidableEq := Classical.decRel _
-    decidableLT := Classical.decRel _ }
+noncomputable instance LowerSet.instLinearOrder : LinearOrder (LowerSet α) := by
+  classical exact Lattice.toLinearOrder _
+
+noncomputable instance UpperSet.instCompleteLinearOrder : CompleteLinearOrder (UpperSet α) :=
+  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
+
+noncomputable instance LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) :=
+  { completelyDistribLattice, instLinearOrder, LinearOrder.toBiheytingAlgebra with }
 
 end LinearOrder
 
@@ -1055,7 +1103,7 @@ namespace UpperSet
 
 variable {f : α ≃o β} {s t : UpperSet α} {a : α} {b : β}
 
-/-- An order isomorphism of preorders induces an order isomorphism of their upper sets. -/
+/-- An order isomorphism of Preorders induces an order isomorphism of their upper sets. -/
 def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   toFun s := ⟨f '' s, s.upper.image f⟩
   invFun t := ⟨f ⁻¹' t, t.upper.preimage f.monotone⟩
@@ -1100,7 +1148,7 @@ namespace LowerSet
 
 variable {f : α ≃o β} {s t : LowerSet α} {a : α} {b : β}
 
-/-- An order isomorphism of preorders induces an order isomorphism of their lower sets. -/
+/-- An order isomorphism of Preorders induces an order isomorphism of their lower sets. -/
 def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
   toFun s := ⟨f '' s, s.lower.image f⟩
   invFun t := ⟨f ⁻¹' t, t.lower.preimage f.monotone⟩
@@ -1608,7 +1656,7 @@ theorem Set.OrdConnected.upperClosure_inter_lowerClosure (h : s.OrdConnected) :
 
 theorem ordConnected_iff_upperClosure_inter_lowerClosure :
     s.OrdConnected ↔ ↑(upperClosure s) ∩ ↑(lowerClosure s) = s := by
-  refine' ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => _⟩
+  refine ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => ?_⟩
   rw [← h]
   exact (UpperSet.upper _).ordConnected.inter (LowerSet.lower _).ordConnected
 #align ord_connected_iff_upper_closure_inter_lower_closure ordConnected_iff_upperClosure_inter_lowerClosure
@@ -1659,6 +1707,14 @@ protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelo
 @[simp] lemma IsUpperSet.disjoint_lowerClosure_right (hs : IsUpperSet s) :
     Disjoint s (lowerClosure t) ↔ Disjoint s t := hs.toDual.disjoint_upperClosure_right
 
+@[simp] lemma upperClosure_eq :
+    ↑(upperClosure s) = s ↔ IsUpperSet s :=
+  ⟨(· ▸ UpperSet.upper _), IsUpperSet.upperClosure⟩
+
+@[simp] lemma lowerClosure_eq :
+    ↑(lowerClosure s) = s ↔ IsLowerSet s :=
+  @upperClosure_eq αᵒᵈ _ _
+
 end closure
 
 /-! ### Set Difference -/
@@ -1685,8 +1741,8 @@ lemma coe_erase (s : LowerSet α) (a : α) : s.erase a = (s : Set α) \ UpperSet
 @[simp] lemma sdiff_singleton (s : LowerSet α) (a : α) : s.sdiff {a} = s.erase a := by
   simp [sdiff, erase]
 
-lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset _ _
-lemma erase_le : s.erase a ≤ s := diff_subset _ _
+lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset
+lemma erase_le : s.erase a ≤ s := diff_subset
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
@@ -1706,10 +1762,10 @@ lemma erase_le : s.erase a ≤ s := diff_subset _ _
 
 lemma sdiff_sup_lowerClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     s.sdiff t ⊔ lowerClosure t = s := by
-  refine' le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ _
+  refine le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
-  · exact subset_union_right _ _ (subset_lowerClosure hat)
-  · refine subset_union_left _ _ ⟨ha, ?_⟩
+  · exact subset_union_right (subset_lowerClosure hat)
+  · refine subset_union_left ⟨ha, ?_⟩
     rintro ⟨b, hb, hba⟩
     exact hat <| hst _ ha _ hb hba
 
@@ -1746,8 +1802,8 @@ lemma coe_erase (s : UpperSet α) (a : α) : s.erase a = (s : Set α) \ LowerSet
 @[simp] lemma sdiff_singleton (s : UpperSet α) (a : α) : s.sdiff {a} = s.erase a := by
   simp [sdiff, erase]
 
-lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset _ _
-lemma le_erase : s ≤ s.erase a := diff_subset _ _
+lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset
+lemma le_erase : s ≤ s.erase a := diff_subset
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
@@ -1767,10 +1823,10 @@ lemma le_erase : s ≤ s.erase a := diff_subset _ _
 
 lemma sdiff_inf_upperClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     s.sdiff t ⊓ upperClosure t = s := by
-  refine' ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ _
+  refine ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
-  · exact subset_union_right _ _ (subset_upperClosure hat)
-  · refine subset_union_left _ _ ⟨ha, ?_⟩
+  · exact subset_union_right (subset_upperClosure hat)
+  · refine subset_union_left ⟨ha, ?_⟩
     rintro ⟨b, hb, hab⟩
     exact hat <| hst _ ha _ hb hab
 

@@ -22,7 +22,7 @@ euclidean geometry, perpendicular, perpendicular bisector, line segment bisector
 -/
 
 open Set
-open scoped BigOperators RealInnerProductSpace
+open scoped RealInnerProductSpace
 
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]

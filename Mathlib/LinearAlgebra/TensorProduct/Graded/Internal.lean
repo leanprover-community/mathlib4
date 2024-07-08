@@ -93,12 +93,10 @@ theorem of_one : of R 𝒜 ℬ 1 = 1 := rfl
 @[simp]
 theorem of_symm_one : (of R 𝒜 ℬ).symm 1 = 1 := rfl
 
--- for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem of_symm_of (x : A ⊗[R] B) : (of R 𝒜 ℬ).symm (of R 𝒜 ℬ x) = x := rfl
 
--- for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem symm_of_of (x : 𝒜 ᵍ⊗[R] ℬ) : of R 𝒜 ℬ ((of R 𝒜 ℬ).symm x) = x := rfl
 
 /-- Two linear maps from the graded tensor product agree if they agree on the underlying tensor
@@ -305,7 +303,9 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (LinearMap.mul' R C
       ∘ₗ (TensorProduct.map f.toLinearMap g.toLinearMap)
       ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] A ⊗[R] B))
-    (by dsimp [Algebra.TensorProduct.one_def]; simp only [_root_.map_one, mul_one])
+    (by
+      dsimp [Algebra.TensorProduct.one_def]
+      simp only [_root_.map_one, mul_one])
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3

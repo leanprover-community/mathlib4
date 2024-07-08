@@ -61,7 +61,7 @@ lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
     mk s hs_sup hs_inf < mk t ht_sup ht_inf ↔ s ⊂ t := Iff.rfl
 
 /-- Copy of a sublattice with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
+equalities. -/
 protected def copy (L : Sublattice α) (s : Set α) (hs : s = L) : Sublattice α where
   carrier := s
   supClosed' := hs.symm ▸ L.supClosed'

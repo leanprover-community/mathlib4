@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
@@ -31,6 +31,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [SmoothMul I G] (g h : G)
 
 -- Generate trivial has_sizeof instance. It prevents weird type class inference timeout problems
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
 -- @[local nolint instance_priority, local instance 10000]
 -- private def disable_has_sizeof {α} : SizeOf α :=
 --   ⟨fun _ => 0⟩

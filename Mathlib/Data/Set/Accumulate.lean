@@ -42,6 +42,11 @@ theorem monotone_accumulate [Preorder α] : Monotone (Accumulate s) := fun _ _ h
   biUnion_subset_biUnion_left fun _ hz => le_trans hz hxy
 #align set.monotone_accumulate Set.monotone_accumulate
 
+@[gcongr]
+theorem accumulate_subset_accumulate [Preorder α] {x y} (h : x ≤ y) :
+    Accumulate s x ⊆ Accumulate s y :=
+  monotone_accumulate h
+
 theorem biUnion_accumulate [Preorder α] (x : α) : ⋃ y ≤ x, Accumulate s y = ⋃ y ≤ x, s y := by
   apply Subset.antisymm
   · exact iUnion₂_subset fun y hy => monotone_accumulate hy

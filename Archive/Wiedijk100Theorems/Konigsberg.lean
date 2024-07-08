@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Trails
 import Mathlib.Tactic.DeriveFintype
+import Mathlib.Tactic.NormNum
 
 #align_import wiedijk_100_theorems.konigsberg from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 

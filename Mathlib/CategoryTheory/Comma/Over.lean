@@ -197,7 +197,7 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ 
 
 end
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
+instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
   reflects {Y Z} f t := by
     let g : Z ⟶ Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
@@ -207,10 +207,10 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
 #align category_theory.over.forget_reflects_iso CategoryTheory.Over.forget_reflects_iso
 
 /-- The identity over `X` is terminal. -/
-def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
+noncomputable def mkIdTerminal : Limits.IsTerminal (mk (𝟙 X)) :=
   CostructuredArrow.mkIdTerminal
 
-instance forget_faithful : Faithful (forget X) where
+instance forget_faithful : (forget X).Faithful where
 #align category_theory.over.forget_faithful CategoryTheory.Over.forget_faithful
 
 -- TODO: Show the converse holds if `T` has binary products.
@@ -241,7 +241,7 @@ monomorphisms.
 The converse of `CategoryTheory.Over.mono_of_mono_left`.
 -/
 instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left := by
-  refine' ⟨fun { Y : T } l m a => _⟩
+  refine ⟨fun { Y : T } l m a => ?_⟩
   let l' : mk (m ≫ f.hom) ⟶ f := homMk l (by
         dsimp; rw [← Over.w k, ← Category.assoc, congrArg (· ≫ g.hom) a, Category.assoc])
   suffices l' = (homMk m : mk (m ≫ f.hom) ⟶ f) by apply congrArg CommaMorphism.left this
@@ -256,24 +256,21 @@ variable (f : Over X)
 
 /-- Given f : Y ⟶ X, this is the obvious functor from (T/X)/f to T/Y -/
 @[simps]
-def iteratedSliceForward : Over f ⥤ Over f.left
-    where
+def iteratedSliceForward : Over f ⥤ Over f.left where
   obj α := Over.mk α.hom.left
   map κ := Over.homMk κ.left.left (by dsimp; rw [← Over.w κ]; rfl)
 #align category_theory.over.iterated_slice_forward CategoryTheory.Over.iteratedSliceForward
 
 /-- Given f : Y ⟶ X, this is the obvious functor from T/Y to (T/X)/f -/
 @[simps]
-def iteratedSliceBackward : Over f.left ⥤ Over f
-    where
+def iteratedSliceBackward : Over f.left ⥤ Over f where
   obj g := mk (homMk g.hom : mk (g.hom ≫ f.hom) ⟶ f)
   map α := homMk (homMk α.left (w_assoc α f.hom)) (OverMorphism.ext (w α))
 #align category_theory.over.iterated_slice_backward CategoryTheory.Over.iteratedSliceBackward
 
 /-- Given f : Y ⟶ X, we have an equivalence between (T/X)/f and T/Y -/
 @[simps]
-def iteratedSliceEquiv : Over f ≌ Over f.left
-    where
+def iteratedSliceEquiv : Over f ≌ Over f.left where
   functor := iteratedSliceForward f
   inverse := iteratedSliceBackward f
   unitIso := NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)))
@@ -298,8 +295,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
 @[simps]
-def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X)
-    where
+def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Over.homMk (F.map f.left)
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
@@ -319,19 +315,19 @@ variable {D : Type u₂} [Category.{v₂} D]
 def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
   CostructuredArrow.pre F (𝟭 T) X
 
-instance (F : D ⥤ T) (X : T) [Faithful F] : Faithful (toOver F X) :=
-  show Faithful (CostructuredArrow.pre _ _ _) from inferInstance
+instance (F : D ⥤ T) (X : T) [F.Faithful] : (toOver F X).Faithful :=
+  show (CostructuredArrow.pre _ _ _).Faithful from inferInstance
 
-instance (F : D ⥤ T) (X : T) [Full F] : Full (toOver F X) :=
-  show Full (CostructuredArrow.pre _ _ _) from inferInstance
+instance (F : D ⥤ T) (X : T) [F.Full] : (toOver F X).Full :=
+  show (CostructuredArrow.pre _ _ _).Full from inferInstance
 
-instance (F : D ⥤ T) (X : T) [EssSurj F] : EssSurj (toOver F X) :=
-  show EssSurj (CostructuredArrow.pre _ _ _) from inferInstance
+instance (F : D ⥤ T) (X : T) [F.EssSurj] : (toOver F X).EssSurj :=
+  show (CostructuredArrow.pre _ _ _).EssSurj from inferInstance
 
 /-- An equivalence `F` induces an equivalence `CostructuredArrow F X ≌ Over X`. -/
-noncomputable def isEquivalenceToOver (F : D ⥤ T) (X : T) [IsEquivalence F] :
-    IsEquivalence (toOver F X) :=
-  CostructuredArrow.isEquivalencePre _ _ _
+instance isEquivalence_toOver (F : D ⥤ T) (X : T) [F.IsEquivalence] :
+    (toOver F X).IsEquivalence :=
+  CostructuredArrow.isEquivalence_pre _ _ _
 
 end CostructuredArrow
 
@@ -480,7 +476,7 @@ def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ 
 
 end
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
+instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
   reflects {Y Z} f t := by
     let g : Z ⟶ Y := Under.homMk (inv ((Under.forget X).map f))
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
@@ -490,10 +486,10 @@ instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
 #align category_theory.under.forget_reflects_iso CategoryTheory.Under.forget_reflects_iso
 
 /-- The identity under `X` is initial. -/
-def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
+noncomputable def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
 
-instance forget_faithful : Faithful (forget X) where
+instance forget_faithful : (forget X).Faithful where
 #align category_theory.under.forget_faithful CategoryTheory.Under.forget_faithful
 
 -- TODO: Show the converse holds if `T` has binary coproducts.
@@ -523,7 +519,7 @@ preserves epimorphisms.
 The converse of `CategoryTheory.under.epi_of_epi_right`.
 -/
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
-  refine' ⟨fun { Y : T } l m a => _⟩
+  refine ⟨fun { Y : T } l m a => ?_⟩
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
@@ -557,19 +553,19 @@ variable {D : Type u₂} [Category.{v₂} D]
 def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
   StructuredArrow.pre X F (𝟭 T)
 
-instance (X : T) (F : D ⥤ T) [Faithful F] : Faithful (toUnder X F) :=
-  show Faithful (StructuredArrow.pre _ _ _) from inferInstance
+instance (X : T) (F : D ⥤ T) [F.Faithful] : (toUnder X F).Faithful :=
+  show (StructuredArrow.pre _ _ _).Faithful from inferInstance
 
-instance (X : T) (F : D ⥤ T) [Full F] : Full (toUnder X F) :=
-  show Full (StructuredArrow.pre _ _ _) from inferInstance
+instance (X : T) (F : D ⥤ T) [F.Full] : (toUnder X F).Full :=
+  show (StructuredArrow.pre _ _ _).Full from inferInstance
 
-instance (X : T) (F : D ⥤ T) [EssSurj F] : EssSurj (toUnder X F) :=
-  show EssSurj (StructuredArrow.pre _ _ _) from inferInstance
+instance (X : T) (F : D ⥤ T) [F.EssSurj] : (toUnder X F).EssSurj :=
+  show (StructuredArrow.pre _ _ _).EssSurj from inferInstance
 
 /-- An equivalence `F` induces an equivalence `StructuredArrow X F ≌ Under X`. -/
-noncomputable def isEquivalenceToUnder (X : T) (F : D ⥤ T) [IsEquivalence F] :
-    IsEquivalence (toUnder X F) :=
-  StructuredArrow.isEquivalencePre _ _ _
+instance isEquivalence_toUnder (X : T) (F : D ⥤ T) [F.IsEquivalence] :
+    (toUnder X F).IsEquivalence :=
+  StructuredArrow.isEquivalence_pre _ _ _
 
 end StructuredArrow
 

@@ -89,6 +89,7 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     conv_rhs =>
       erw [← forget₂_comp_apply, ← forget₂_comp_apply,
         HomologicalComplex.pOpcycles_opcyclesToCycles_assoc, HomologicalComplex.toCycles_i]
+    rfl
 
 end ShortExact
 

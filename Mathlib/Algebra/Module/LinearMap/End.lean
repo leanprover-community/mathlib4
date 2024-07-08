@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Endomorphisms of a module
@@ -66,6 +66,10 @@ theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 
 theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 #align linear_map.coe_mul LinearMap.coe_mul
+
+instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
+  obtain ⟨m, ne⟩ := exists_ne (0 : M)
+  exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
 
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
@@ -147,7 +151,7 @@ theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m :=
 
 theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
     (hm : (f ^ k) m = 0) : (f ^ l) m = 0 := by
-  rw [← tsub_add_cancel_of_le hk, pow_add, mul_apply, hm, map_zero]
+  rw [← Nat.sub_add_cancel hk, pow_add, mul_apply, hm, map_zero]
 #align linear_map.pow_map_zero_of_le LinearMap.pow_map_zero_of_le
 
 theorem commute_pow_left_of_commute
@@ -193,13 +197,13 @@ theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
 
 theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
     Injective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), iterate_succ, coe_comp] at h
+  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by omega), iterate_succ, coe_comp] at h
   exact h.of_comp
 #align linear_map.injective_of_iterate_injective LinearMap.injective_of_iterate_injective
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
     Surjective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
+  rw [← Nat.succ_pred_eq_of_pos (Nat.pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
   exact Surjective.of_comp h
 #align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
 
@@ -369,7 +373,8 @@ lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext;
 @[simp]
 lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
     f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
-  rcases eq_or_ne x 0 with rfl | hx; simp
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
   ext v
   replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v

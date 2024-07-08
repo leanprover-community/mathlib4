@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 import Mathlib.Algebra.Homology.Homotopy
+import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-! The homotopy cofiber of a morphism of homological complexes
 

@@ -52,8 +52,7 @@ cone.
 -/
 @[simps]
 def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Cone (F ⋙ fst L R))
-    {c₂ : Cone (F ⋙ snd L R)} (t₂ : IsLimit c₂) : Cone F
-    where
+    {c₂ : Cone (F ⋙ snd L R)} (t₂ : IsLimit c₂) : Cone F where
   pt :=
     { left := c₁.pt
       right := c₂.pt
@@ -103,8 +102,7 @@ colimit cocone.
 -/
 @[simps]
 def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
-    (t₁ : IsColimit c₁) (c₂ : Cocone (F ⋙ snd L R)) : Cocone F
-    where
+    (t₁ : IsColimit c₁) (c₂ : Cocone (F ⋙ snd L R)) : Cocone F where
   pt :=
     { left := c₁.pt
       right := c₂.pt

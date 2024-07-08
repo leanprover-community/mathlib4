@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.Prod
 import Mathlib.CategoryTheory.Localization.Equivalence
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Localization of product categories
@@ -62,9 +63,9 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
       (Pi.optionEquivalence C).symm (Pi.optionEquivalence D).symm ?_ ?_
     · intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
       refine ⟨_, _, (Pi.optionEquivalence C).inverse.map f, ?_, ⟨Iso.refl _⟩⟩
-      · rintro (_|i)
-        · exact hf₁
-        · apply hf₂
+      rintro (_|i)
+      · exact hf₁
+      · apply hf₂
     · apply MorphismProperty.IsInvertedBy.pi
       rintro (_|i) <;> apply Localization.inverts
 
@@ -88,7 +89,7 @@ instance {J : Type} [Finite J] {C : Type u₁} {D : Type u₂} [Category.{v₁} 
   refine Functor.IsLocalization.of_equivalences L₁
     (MorphismProperty.pi (fun _ => W)) L₂ _ E E' ?_ ?_
   · intro X Y f hf
-    exact MorphismProperty.subset_isoClosure _ _ (fun ⟨j⟩ => hf j)
+    exact MorphismProperty.le_isoClosure _ _ (fun ⟨j⟩ => hf j)
   · intro X Y f hf
     have : ∀ (j : Discrete J), IsIso ((L₂.map f).app j) :=
       fun j => Localization.inverts L W _ (hf j)

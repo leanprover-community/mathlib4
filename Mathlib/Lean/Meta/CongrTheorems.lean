@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.Meta.Tactic.Cleanup
-import Mathlib.Lean.Meta
+import Lean.Meta.Tactic.Cases
+import Lean.Meta.Tactic.Refl
+import Mathlib.Logic.IsEmpty
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`
@@ -28,17 +30,32 @@ Note that this is slightly abusing `.subsingletonInst` since
 (2) the argument might not even be an instance. -/
 def mkHCongrWithArity' (f : Expr) (numArgs : Nat) : MetaM CongrTheorem := do
   let thm ← mkHCongrWithArity f numArgs
-  process thm thm.type thm.argKinds.toList #[] #[] #[]
+  process thm thm.type thm.argKinds.toList #[] #[] #[] #[]
 where
-  /-- Process the congruence theorem by trying to pre-prove arguments using `prove`. -/
+  /--
+  Process the congruence theorem by trying to pre-prove arguments using `prove`.
+
+  - `cthm` is the original `CongrTheorem`, modified only after visiting every argument.
+  - `type` is type of the congruence theorem, after all the parameters so far have been applied.
+  - `argKinds` is the list of `CongrArgKind`s, which this function recurses on.
+  - `argKinds'` is the accumulated array of `CongrArgKind`s, which is the original array but
+    with some kinds replaced by `.subsingletonInst`.
+  - `params` is the *new* list of parameters, as fvars that need to be abstracted at the end.
+  - `args` is the list of arguments (fvars) to supply to `cthm.proof` before abstracting `params`.
+  - `letArgs` records `(fvar, expr)` assignments for each `fvar` that was solved for by `prove`.
+  -/
   process (cthm : CongrTheorem) (type : Expr) (argKinds : List CongrArgKind)
-      (argKinds' : Array CongrArgKind) (params args : Array Expr) : MetaM CongrTheorem := do
+      (argKinds' : Array CongrArgKind) (params args : Array Expr)
+      (letArgs : Array (Expr × Expr)) : MetaM CongrTheorem := do
     match argKinds with
     | [] =>
-      if params.size == args.size then
+      if letArgs.isEmpty then
+        -- Then we didn't prove anything, so we can use the CongrTheorem as-is.
         return cthm
       else
-        let pf' ← mkLambdaFVars params (mkAppN cthm.proof args)
+        let proof := letArgs.foldr (init := mkAppN cthm.proof args) (fun (fvar, val) proof =>
+          (proof.abstract #[fvar]).instantiate1 val)
+        let pf' ← mkLambdaFVars params proof
         return {proof := pf', type := ← inferType pf', argKinds := argKinds'}
     | argKind :: argKinds =>
       match argKind with
@@ -48,12 +65,15 @@ where
           -- See if we can prove `eq` from previous parameters.
           let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
           let g ← g.clear eq.fvarId!
-          if (← observing? <| prove g params).isSome then
+          if (← observing? <| prove g args).isSome then
+            let eqPf ← instantiateMVars (.mvar g)
             process cthm type' argKinds (argKinds'.push .subsingletonInst)
-              (params := params ++ #[x, y]) (args := args ++ #[x, y, .mvar g])
+              (params := params ++ #[x, y]) (args := args ++ params')
+              (letArgs := letArgs.push (eq, eqPf))
           else
             process cthm type' argKinds (argKinds'.push argKind)
               (params := params ++ params') (args := args ++ params')
+              (letArgs := letArgs)
       | _ => panic! "Unexpected CongrArgKind"
   /-- Close the goal given only the fvars in `params`, or else fails. -/
   prove (g : MVarId) (params : Array Expr) : MetaM Unit := do
@@ -71,6 +91,79 @@ where
     if ← g.subsingletonElim then return
     -- We have no more tricks.
     failure
+
+universe u v
+
+/-- A version of `Subsingleton` with few instances. It should fail fast. -/
+class FastSubsingleton (α : Sort u) : Prop where
+  /-- The subsingleton instance. -/
+  [inst : Subsingleton α]
+
+/-- A version of `IsEmpty` with few instances. It should fail fast. -/
+class FastIsEmpty (α : Sort u) : Prop where
+  [inst : IsEmpty α]
+
+protected theorem FastSubsingleton.elim {α : Sort u} [h : FastSubsingleton α] : (a b : α) → a = b :=
+  h.inst.allEq
+
+instance (priority := 100) {α : Type u} [inst : FastIsEmpty α] : FastSubsingleton α where
+  inst := have := inst.inst; inferInstance
+
+instance {p : Prop} : FastSubsingleton p := {}
+
+instance {p : Prop} : FastSubsingleton (Decidable p) := {}
+
+instance : FastSubsingleton (Fin 1) := {}
+
+instance : FastSubsingleton PUnit := {}
+
+instance : FastIsEmpty Empty := {}
+
+instance : FastIsEmpty False := {}
+
+instance : FastIsEmpty (Fin 0) := {}
+
+instance {α : Sort u} [inst : FastIsEmpty α] {β : (x : α) → Sort v} :
+    FastSubsingleton ((x : α) → β x) where
+  inst.allEq _ _ := funext fun a => (inst.inst.false a).elim
+
+instance {α : Sort u} {β : (x : α) → Sort v} [inst : ∀ x, FastSubsingleton (β x)] :
+    FastSubsingleton ((x : α) → β x) where
+  inst := have := λ x => (inst x).inst; inferInstance
+
+/--
+Runs `mx` in a context where all local `Subsingleton` and `IsEmpty` instances
+have associated `FastSubsingleton` and `FastIsEmpty` instances.
+The function passed to `mx` eliminates these instances from expressions,
+since they are only locally valid inside this context.
+-/
+def withSubsingletonAsFast {α : Type} [Inhabited α] (mx : (Expr → Expr) → MetaM α) : MetaM α := do
+  let insts1 := (← getLocalInstances).filter fun inst => inst.className == ``Subsingleton
+  let insts2 := (← getLocalInstances).filter fun inst => inst.className == ``IsEmpty
+  let mkInst (f : Name) (inst : Expr) : MetaM Expr := do
+    forallTelescopeReducing (← inferType inst) fun args _ => do
+      mkLambdaFVars args <| ← mkAppOptM f #[none, mkAppN inst args]
+  let vals := (← insts1.mapM fun inst => mkInst ``FastSubsingleton.mk inst.fvar)
+    ++ (← insts2.mapM fun inst => mkInst ``FastIsEmpty.mk inst.fvar)
+  let tys ← vals.mapM inferType
+  withLocalDeclsD (tys.map fun ty => (`inst, fun _ => pure ty)) fun args =>
+    withNewLocalInstances args 0 do
+      let elim (e : Expr) : Expr := e.replaceFVars args vals
+      mx elim
+
+/-- Like `subsingletonElim` but uses `FastSubsingleton` to fail fast. -/
+def fastSubsingletonElim (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `fastSubsingletonElim
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, rhs) := tgt.eq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← withSubsingletonAsFast fun elim =>
+        elim <$> mkAppM ``FastSubsingleton.elim #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
 
 /--
 `mkRichHCongr fType funInfo fixedFun fixedParams forceHEq`
@@ -249,7 +342,7 @@ where
     if ← mvarId.proofIrrelHeq then return
     -- Make the goal be an eq and then try `Subsingleton.elim`
     let mvarId ← mvarId.heqOfEq
-    if ← mvarId.subsingletonElim then return
+    if ← fastSubsingletonElim mvarId then return
     -- We have no more tricks.
     throwError "was not able to solve for proof"
   /-- Driver for `trySolveCore`. -/

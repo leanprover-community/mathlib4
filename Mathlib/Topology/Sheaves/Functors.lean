@@ -82,7 +82,7 @@ variable {C}
 variable (A : Type*) [Category.{w} A] [ConcreteCategory.{w} A] [HasColimits A] [HasLimits A]
 variable [PreservesLimits (CategoryTheory.forget A)]
 variable [PreservesFilteredColimits (CategoryTheory.forget A)]
-variable [ReflectsIsomorphisms (CategoryTheory.forget A)]
+variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
 
 /--
 The pullback functor.
@@ -105,9 +105,8 @@ def pullbackPushforwardAdjunction (f : X ⟶ Y) :
     pullback A f ⊣ pushforward A f :=
   (Opens.map f).sheafAdjunctionContinuous _ _ _
 
-instance : IsLeftAdjoint (pullback A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
-instance : IsRightAdjoint (pushforward A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
-
+instance : (pullback A f).IsLeftAdjoint  := (pullbackPushforwardAdjunction A f).isLeftAdjoint
+instance : (pushforward A f).IsRightAdjoint := (pullbackPushforwardAdjunction A f).isRightAdjoint
 
 end Sheaf
 

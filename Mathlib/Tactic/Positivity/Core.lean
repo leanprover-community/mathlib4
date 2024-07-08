@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.Order.Invertible
+import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Int.Cast.Lemmas
 import Qq
 
 /-!

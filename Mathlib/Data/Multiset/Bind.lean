@@ -3,8 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Multiset.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Data.Multiset.Dedup
 
 #align_import data.multiset.bind from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
@@ -21,6 +20,9 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.product`: Cartesian product of two multisets.
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
+
+assert_not_exists MonoidWithZero
+assert_not_exists MulAction
 
 universe v
 
@@ -42,8 +44,7 @@ theorem coe_join :
     ∀ L : List (List α), join (L.map ((↑) : List α → Multiset α) : Multiset (Multiset α)) = L.join
   | [] => rfl
   | l :: L => by
-      -- Porting note: was `congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)`
-      simp only [join, List.map, sum_coe, List.sum_cons, List.join, ← coe_add, ← coe_join L]
+      exact congr_arg (fun s : Multiset α => ↑l + s) (coe_join L)
 #align multiset.coe_join Multiset.coe_join
 
 @[simp]
@@ -76,6 +77,20 @@ theorem mem_join {a S} : a ∈ @join α S ↔ ∃ s ∈ S, a ∈ s :=
 theorem card_join (S) : card (@join α S) = sum (map card S) :=
   Multiset.induction_on S (by simp) (by simp)
 #align multiset.card_join Multiset.card_join
+
+@[simp]
+theorem map_join (f : α → β) (S : Multiset (Multiset α)) :
+    map f (join S) = join (map (map f) S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons _ _ ih => simp [ih]
+
+@[to_additive (attr := simp)]
+theorem prod_join [CommMonoid α] {S : Multiset (Multiset α)} :
+    prod (join S) = prod (map prod S) := by
+  induction S using Multiset.induction with
+  | empty => simp
+  | cons _ _ ih => simp [ih]
 
 theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.join t.join := by
   induction h with
@@ -160,8 +175,7 @@ theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f
 #align multiset.bind_hcongr Multiset.bind_hcongr
 
 theorem map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
-    map f (bind m n) = bind m fun a => map f (n a) :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }))
+    map f (bind m n) = bind m fun a => map f (n a) := by simp [bind]
 #align multiset.map_bind Multiset.map_bind
 
 theorem bind_map (m : Multiset α) (n : β → Multiset γ) (f : α → β) :
@@ -186,8 +200,7 @@ theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ}
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
-    (s.bind t).prod = (s.map fun a => (t a).prod).prod :=
-  Multiset.induction_on s (by simp) fun a s ih => by simp [ih, cons_bind]
+    (s.bind t).prod = (s.map fun a => (t a).prod).prod := by simp [bind]
 #align multiset.prod_bind Multiset.prod_bind
 #align multiset.sum_bind Multiset.sum_bind
 

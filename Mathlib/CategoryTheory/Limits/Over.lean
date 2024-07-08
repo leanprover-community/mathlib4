@@ -3,13 +3,12 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 #align_import category_theory.limits.over from "leanprover-community/mathlib"@"3e0dd193514c9380edc69f1da92e80c02713c41d"
 
@@ -109,8 +108,8 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
         { toFun := fun X =>
             Over.homMk (pullback.lift X.left g.hom (Over.w X)) (pullback.lift_snd _ _ _)
           invFun := fun Y => by
-            refine' Over.homMk _ _
-            refine' Y.left ≫ pullback.fst
+            refine Over.homMk ?_ ?_
+            · refine Y.left ≫ pullback.fst
             dsimp
             rw [← Over.w Y, Category.assoc, pullback.condition, Category.assoc]; rfl
           left_inv := fun X => by
@@ -142,8 +141,8 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pullback (f ≫ g) �
     (((mapPullbackAdj _).comp (mapPullbackAdj _)).ofNatIsoLeft (Over.mapComp _ _).symm)
 #align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
 
-instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : IsRightAdjoint (pullback f) :=
-  ⟨_, mapPullbackAdj f⟩
+instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : (pullback f).IsRightAdjoint  :=
+  ⟨_, ⟨mapPullbackAdj f⟩⟩
 #align category_theory.over.pullback_is_right_adjoint CategoryTheory.Over.pullbackIsRightAdjoint
 
 end

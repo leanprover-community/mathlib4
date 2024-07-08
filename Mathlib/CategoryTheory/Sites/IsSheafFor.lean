@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.Sieves
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 #align_import category_theory.sites.sheaf_of_types from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -100,6 +101,20 @@ instance : Inhabited (FamilyOfElements P (⊥ : Presieve X)) :=
 def FamilyOfElements.restrict {R₁ R₂ : Presieve X} (h : R₁ ≤ R₂) :
     FamilyOfElements P R₂ → FamilyOfElements P R₁ := fun x _ f hf => x f (h _ hf)
 #align category_theory.presieve.family_of_elements.restrict CategoryTheory.Presieve.FamilyOfElements.restrict
+
+/-- The image of a family of elements by a morphism of presheaves. -/
+def FamilyOfElements.map (p : FamilyOfElements P R) (φ : P ⟶ Q) :
+    FamilyOfElements Q R :=
+  fun _ f hf => φ.app _ (p f hf)
+
+@[simp]
+lemma FamilyOfElements.map_apply
+    (p : FamilyOfElements P R) (φ : P ⟶ Q) {Y : C} (f : Y ⟶ X) (hf : R f) :
+    p.map φ f hf = φ.app _ (p f hf) := rfl
+
+lemma FamilyOfElements.restrict_map
+    (p : FamilyOfElements P R) (φ : P ⟶ Q) {R' : Presieve X} (h : R' ≤ R) :
+    (p.restrict h).map φ = (p.map φ).restrict h := rfl
 
 /-- A family of elements for the arrow set `R` is *compatible* if for any `f₁ : Y₁ ⟶ X` and
 `f₂ : Y₂ ⟶ X` in `R`, and any `g₁ : Z ⟶ Y₁` and `g₂ : Z ⟶ Y₂`, if the square `g₁ ≫ f₁ = g₂ ≫ f₂`
@@ -456,7 +471,7 @@ the proof of C2.1.4 of [Elephant], and the discussion in [MM92], Chapter III, Se
 def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
     (S.functor ⟶ P) ≃ { x : FamilyOfElements P (S : Presieve X) // x.Compatible } where
   toFun α := by
-    refine' ⟨fun Y f hf => _, _⟩
+    refine ⟨fun Y f hf => ?_, ?_⟩
     · apply α.app (op Y) ⟨_, hf⟩
     · rw [compatible_iff_sieveCompatible]
       intro Y Z f g hf
@@ -491,7 +506,8 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
     ext Y ⟨f, hf⟩
     convert h f hf
     rw [yonedaEquiv_naturality]
-    simp [yonedaEquiv]
+    dsimp [yonedaEquiv]
+    simp
 #align category_theory.presieve.extension_iff_amalgamation CategoryTheory.Presieve.extension_iff_amalgamation
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
@@ -502,12 +518,9 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
     IsSheafFor P (S : Presieve X) ↔ YonedaSheafCondition P S := by
   rw [IsSheafFor, YonedaSheafCondition]
   simp_rw [extension_iff_amalgamation]
-  rw [Equiv.forall_congr_left' natTransEquivCompatibleFamily]
+  rw [Equiv.forall_congr_left natTransEquivCompatibleFamily]
   rw [Subtype.forall]
-  apply ball_congr
-  intro x hx
-  rw [Equiv.exists_unique_congr_left _]
-  simp
+  exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
 #align category_theory.presieve.is_sheaf_for_iff_yoneda_sheaf_condition CategoryTheory.Presieve.isSheafFor_iff_yonedaSheafCondition
 
 /--
@@ -568,7 +581,7 @@ theorem isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor :
   · intro z hx
     exact exists_unique_of_exists_of_unique (z.2 hx) z.1
   · intro h
-    refine' ⟨_, ExistsUnique.exists ∘ h⟩
+    refine ⟨?_, ExistsUnique.exists ∘ h⟩
     intro t₁ t₂ ht₁ ht₂
     apply (h _).unique ht₁ ht₂
     exact is_compatible_of_exists_amalgamation x ⟨_, ht₂⟩
@@ -628,7 +641,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
 -/
 theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presieve.singleton (𝟙 X)) := by
   intro x _
-  refine' ⟨x _ (Presieve.singleton_self _), _, _⟩
+  refine ⟨x _ (Presieve.singleton_self _), ?_, ?_⟩
   · rintro _ _ ⟨rfl, rfl⟩
     simp
   · intro t ht

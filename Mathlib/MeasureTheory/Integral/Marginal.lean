@@ -86,8 +86,8 @@ notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 variable (μ)
 
 theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫⁻_s, f ∂μ) := by
-  refine' Measurable.lintegral_prod_right _
-  refine' hf.comp _
+  refine Measurable.lintegral_prod_right ?_
+  refine hf.comp ?_
   rw [measurable_pi_iff]; intro i
   by_cases hi : i ∈ s
   · simp [hi, updateFinset]

@@ -300,7 +300,7 @@ theorem map_pure (m : α → β) (a : α) : map m (pure a) = pure (m a) :=
 theorem comap_pure {m : α → β} (a : α) (inj : Injective m) (large) :
     comap (pure <| m a) inj large = pure a :=
   coe_injective <|
-    comap_pure.trans <| by
+    Filter.comap_pure.trans <| by
       rw [coe_pure, ← principal_singleton, ← image_singleton, preimage_image_eq _ inj]
 #align ultrafilter.comap_pure Ultrafilter.comap_pure
 
@@ -332,7 +332,7 @@ theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofini
 #align ultrafilter.le_cofinite_or_eq_pure Ultrafilter.le_cofinite_or_eq_pure
 
 /-- Monadic bind for ultrafilters, coming from the one on filters
-defined in terms of map and join.-/
+defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
   ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
@@ -445,7 +445,7 @@ theorem Iic_pure (a : α) : Iic (pure a : Filter α) = {⊥, pure a} :=
 #align filter.Iic_pure Filter.Iic_pure
 
 theorem mem_iff_ultrafilter : s ∈ f ↔ ∀ g : Ultrafilter α, ↑g ≤ f → s ∈ g := by
-  refine' ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => _⟩
+  refine ⟨fun hf g hg => hg hf, fun H => by_contra fun hf => ?_⟩
   set g : Filter (sᶜ : Set α) := comap (↑) f
   haveI : NeBot g := comap_neBot_iff_compl_range.2 (by simpa [compl_setOf] )
   simpa using H ((of g).map (↑)) (map_le_iff_le_comap.mpr (of_le g))
@@ -473,7 +473,7 @@ theorem exists_ultrafilter_iff {f : Filter α} : (∃ u : Ultrafilter α, ↑u �
 
 theorem forall_neBot_le_iff {g : Filter α} {p : Filter α → Prop} (hp : Monotone p) :
     (∀ f : Filter α, NeBot f → f ≤ g → p f) ↔ ∀ f : Ultrafilter α, ↑f ≤ g → p f := by
-  refine' ⟨fun H f hf => H f f.neBot hf, _⟩
+  refine ⟨fun H f hf => H f f.neBot hf, ?_⟩
   intro H f hf hfg
   exact hp (of_le f) (H _ ((of_le f).trans hfg))
 #align filter.forall_ne_bot_le_iff Filter.forall_neBot_le_iff

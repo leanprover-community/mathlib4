@@ -3,8 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Equiv
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.RingTheory.FreeRing
 
@@ -95,7 +95,7 @@ lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.
   rw [← Multiset.singleton_add, ofAdd_add,
     of, FreeAbelianGroup.of_mul_of]
 
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
     C z :=
@@ -131,7 +131,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
     let x' := Multiplicative.toAdd x
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
-      exact F.congr_arg (Multiset.sum_map_singleton x')
+      exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
 def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
@@ -239,7 +239,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
-    refine' Subring.InClosure.recOn hx _ _ _ _
+    refine Subring.InClosure.recOn hx ?_ ?_ ?_ ?_
     · use 1
       rw [RingHom.map_one]
       norm_cast
@@ -250,7 +250,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [RingHom.map_mul, lift_of, if_pos hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
-      refine' ⟨q + r, _⟩
+      refine ⟨q + r, ?_⟩
       rw [RingHom.map_add, hq, hr]
       norm_cast
   specialize this (of p) hps
@@ -260,7 +260,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   exfalso
   apply Ne.symm Int.zero_ne_one
   rcases this with ⟨w, H⟩
-  rw [← Polynomial.C_eq_int_cast] at H
+  rw [← Polynomial.C_eq_intCast] at H
   have : Polynomial.X.coeff 1 = (Polynomial.C ↑w).coeff 1 := by rw [H]; rfl
   rwa [Polynomial.coeff_C, if_neg (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X, if_pos rfl] at this
 #align free_comm_ring.is_supported_of FreeCommRing.isSupported_of
@@ -268,7 +268,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
 -- Porting note: Changed `(Subtype.val : s → α)` to `(↑)` in the type
 theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
     (hxs : IsSupported x s) : map (↑) (restriction s x) = x := by
-  refine' Subring.InClosure.recOn hxs _ _ _ _
+  refine Subring.InClosure.recOn hxs ?_ ?_ ?_ ?_
   · rw [RingHom.map_one]
     rfl
   · rw [map_neg, map_one]
@@ -284,12 +284,12 @@ theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite
     (fun p => ⟨{p}, Set.finite_singleton p, isSupported_of.2 <| Set.mem_singleton _⟩)
     (fun _ _ ⟨s, hfs, hxs⟩ ⟨t, hft, hxt⟩ =>
       ⟨s ∪ t, hfs.union hft,
-        isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
-          (isSupported_upwards hxt <| Set.subset_union_right s t)⟩)
+        isSupported_add (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hxt Set.subset_union_right)⟩)
     fun _ _ ⟨s, hfs, hxs⟩ ⟨t, hft, hxt⟩ =>
     ⟨s ∪ t, hfs.union hft,
-      isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left s t)
-        (isSupported_upwards hxt <| Set.subset_union_right s t)⟩
+      isSupported_mul (isSupported_upwards hxs Set.subset_union_left)
+        (isSupported_upwards hxt Set.subset_union_right)⟩
 #align free_comm_ring.exists_finite_support FreeCommRing.exists_finite_support
 
 theorem exists_finset_support (x : FreeCommRing α) : ∃ s : Finset α, IsSupported x ↑s :=
@@ -360,7 +360,7 @@ protected theorem coe_mul (x y : FreeRing α) : ↑(x * y) = (x : FreeCommRing �
 variable (α)
 
 protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x => by
-  induction x using FreeCommRing.induction_on with
+  induction x with
   | hn1 =>
     use -1
     rfl
@@ -387,6 +387,7 @@ theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
     FreeMonoid.recOn L rfl fun hd tl ih => by
       rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]
       conv_lhs => reduce
+      rfl
 #align free_ring.coe_eq FreeRing.coe_eq
 
 /-- If α has size at most 1 then the natural map from the free ring on `α` to the

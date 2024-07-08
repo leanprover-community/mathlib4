@@ -51,12 +51,7 @@ section AddHomClass
 variable {α β F : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
   [FunLike F α β] [AddHomClass F α β]
 
-set_option linter.deprecated false in
-/-- Additive homomorphisms preserve `bit0`. -/
-@[deprecated, simp]
-theorem map_bit0 (f : F) (a : α) : (f (bit0 a) : β) = bit0 (f a) :=
-  map_add _ _ _
-#align map_bit0 map_bit0
+#noalign map_bit0
 
 end AddHomClass
 
@@ -103,10 +98,9 @@ variable {α : Type*} [Mul α] [HasDistribNeg α]
 
 open MulOpposite
 
-instance hasDistribNeg : HasDistribNeg αᵐᵒᵖ :=
-  { MulOpposite.involutiveNeg _ with
-    neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
-    mul_neg := fun _ _ => unop_injective <| neg_mul _ _ }
+instance instHasDistribNeg : HasDistribNeg αᵐᵒᵖ where
+  neg_mul _ _ := unop_injective <| mul_neg _ _
+  mul_neg _ _ := unop_injective <| neg_mul _ _
 
 end Mul
 
@@ -136,7 +130,7 @@ attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 theorem vieta_formula_quadratic {b c x : α} (h : x * x - b * x + c = 0) :
     ∃ y : α, y * y - b * y + c = 0 ∧ x + y = b ∧ x * y = c := by
   have : c = x * (b - x) := (eq_neg_of_add_eq_zero_right h).trans (by simp [mul_sub, mul_comm])
-  refine' ⟨b - x, _, by simp, by rw [this]⟩
+  refine ⟨b - x, ?_, by simp, by rw [this]⟩
   rw [this, sub_add, ← sub_mul, sub_self]
 set_option linter.uppercaseLean3 false in
 #align Vieta_formula_quadratic vieta_formula_quadratic
@@ -155,7 +149,7 @@ section NoZeroDivisors
 
 variable (α)
 
-lemma IsLeftCancelMulZero.to_noZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
+lemma IsLeftCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocRing α] [IsLeftCancelMulZero α] :
     NoZeroDivisors α :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} h ↦ by
       by_cases hx : x = 0
@@ -167,7 +161,7 @@ lemma IsLeftCancelMulZero.to_noZeroDivisors [Ring α] [IsLeftCancelMulZero α] :
         rwa [sub_zero] at this } }
 #align is_left_cancel_mul_zero.to_no_zero_divisors IsLeftCancelMulZero.to_noZeroDivisors
 
-lemma IsRightCancelMulZero.to_noZeroDivisors [Ring α] [IsRightCancelMulZero α] :
+lemma IsRightCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocRing α] [IsRightCancelMulZero α] :
     NoZeroDivisors α :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := fun {x y} h ↦ by
       by_cases hy : y = 0
@@ -179,7 +173,8 @@ lemma IsRightCancelMulZero.to_noZeroDivisors [Ring α] [IsRightCancelMulZero α]
         rwa [sub_zero] at this } }
 #align is_right_cancel_mul_zero.to_no_zero_divisors IsRightCancelMulZero.to_noZeroDivisors
 
-instance (priority := 100) NoZeroDivisors.to_isCancelMulZero [Ring α] [NoZeroDivisors α] :
+instance (priority := 100) NoZeroDivisors.to_isCancelMulZero
+    [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
     IsCancelMulZero α :=
   { mul_left_cancel_of_ne_zero := fun ha h ↦ by
       rw [← sub_eq_zero, ← mul_sub] at h
@@ -190,7 +185,7 @@ instance (priority := 100) NoZeroDivisors.to_isCancelMulZero [Ring α] [NoZeroDi
 #align no_zero_divisors.to_is_cancel_mul_zero NoZeroDivisors.to_isCancelMulZero
 
 /-- In a ring, `IsCancelMulZero` and `NoZeroDivisors` are equivalent. -/
-lemma isCancelMulZero_iff_noZeroDivisors [Ring α] :
+lemma isCancelMulZero_iff_noZeroDivisors [NonUnitalNonAssocRing α] :
     IsCancelMulZero α ↔ NoZeroDivisors α :=
   ⟨fun _ => IsRightCancelMulZero.to_noZeroDivisors _, fun _ => inferInstance⟩
 

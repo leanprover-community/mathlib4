@@ -172,8 +172,7 @@ theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, �
     y ∈ T†.domain := by
   cases' h with w hw
   rw [T.mem_adjoint_domain_iff]
-  -- Porting note: was `by continuity`
-  have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := ContinuousLinearMap.continuous _
+  have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1
   exact funext fun x => (hw x).symm
 #align linear_pmap.mem_adjoint_domain_of_exists LinearPMap.mem_adjoint_domain_of_exists
@@ -216,14 +215,14 @@ variable [CompleteSpace E] [CompleteSpace F]
 variable (A : E →L[𝕜] F) {p : Submodule 𝕜 E}
 
 /-- Restricting `A` to a dense submodule and taking the `LinearPMap.adjoint` is the same
-as taking the `continuous_linear_map.adjoint` interpreted as a `linear_pmap`. -/
+as taking the `ContinuousLinearMap.adjoint` interpreted as a `LinearPMap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true_iff,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
-  refine' LinearPMap.adjoint_apply_eq _ _ fun v => _
+  refine LinearPMap.adjoint_apply_eq ?_ _ fun v => ?_
   · -- Porting note: was simply `hp` as an argument above
     simpa using hp
   · simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, coe_coe]
@@ -257,7 +256,8 @@ theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.doma
     intro x
     rw [mem_adjoint_domain_iff, ← hA]
     refine (innerSL 𝕜 x).cont.comp ?_
-    simp [adjoint, h, continuous_const]
+    simp only [adjoint, h]
+    exact continuous_const
   simp [h'] at h
 
 end LinearPMap

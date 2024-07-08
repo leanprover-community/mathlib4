@@ -19,15 +19,13 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
--- Porting note: removed from module documentation because it moved to `data.finsupp.multiset`
+-- Porting note: removed from module documentation because it moved to `Data.Finsupp.Multiset`
 -- TODO: move to `Data.Finsupp.Multiset` when that is ported
 -- * `Finsupp.orderIsoMultiset`: The order isomorphism between `ℕ`-valued finitely supported
 --   functions and multisets.
 
 
 noncomputable section
-
-open BigOperators
 
 open Finset
 

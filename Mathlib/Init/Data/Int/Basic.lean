@@ -7,21 +7,28 @@ The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.Int.Order
+
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+-/
 
 open Nat
 
--- TODO: backport?
 #align int.neg_succ_of_nat Int.negSucc
 
 -- @[inherit_doc]
 notation "ℤ" => Int
 
 namespace Int
-
-protected theorem coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
-  rfl
-#align int.coe_nat_eq Int.coe_nat_eq
 
 #align int.of_nat_zero Int.ofNat_zero
 #align int.of_nat_one Int.ofNat_one

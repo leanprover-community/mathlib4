@@ -3,7 +3,7 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Data.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 #align_import ring_theory.polynomial.opposites from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
@@ -94,14 +94,14 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by
-  induction' p using MulOpposite.rec' with p
+  induction' p with p
   cases p
   rfl
 #align polynomial.coeff_op_ring_equiv Polynomial.coeff_opRingEquiv
 
 @[simp]
 theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by
-  induction' p using MulOpposite.rec' with p
+  induction' p with p
   cases p
   exact Finsupp.support_mapRange_of_injective (map_zero _) _ op_injective
 #align polynomial.support_op_ring_equiv Polynomial.support_opRingEquiv

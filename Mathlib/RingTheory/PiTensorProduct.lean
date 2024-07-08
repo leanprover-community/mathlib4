@@ -188,7 +188,7 @@ The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 -/
 @[simps]
 def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
-  toFun a := tprod R (MonoidHom.single _ i a)
+  toFun a := tprod R (MonoidHom.mulSingle _ i a)
   map_one' := by simp only [_root_.map_one]; rfl
   map_mul' a a' := by simp
   map_zero' := MultilinearMap.map_update_zero _ _ _
@@ -252,14 +252,13 @@ instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
   __ := inferInstanceAs <| AddCommMonoid (⨂[R] i, A i)
   mul_comm := PiTensorProduct.mul_comm
 
-open scoped BigOperators in
 @[simp] lemma tprod_prod {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) :
-    tprod R (∏ k in s, x k) = ∏ k in s, tprod R (x k) :=
+    tprod R (∏ k ∈ s, x k) = ∏ k ∈ s, tprod R (x k) :=
   map_prod (tprodMonoidHom R) x s
 
 section
 
-open BigOperators Function
+open Function
 
 variable [Fintype ι]
 
