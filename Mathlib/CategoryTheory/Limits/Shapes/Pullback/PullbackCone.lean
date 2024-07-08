@@ -50,8 +50,6 @@ Various ways of constructing pullback cones:
   that `fst ≫ f = snd ≫ g`.
 * `PullbackCone.flip` is the `PullbackCone` obtained by flipping `fst` and `snd`.
 
-* go back and forth between cone/pullbackcone
-
 Interaction with `IsLimit`:
 * `PullbackCone.isLimitAux` and `PullbackCone.isLimitAux'` provide two convenient ways to show that
   a given `PullbackCone` is a limit cone.
