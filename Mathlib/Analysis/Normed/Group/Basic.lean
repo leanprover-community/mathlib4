@@ -1693,3 +1693,87 @@ instance normedCommGroup [NormedCommGroup E] {s : Subgroup E} : NormedCommGroup 
 #align add_subgroup.normed_add_comm_group AddSubgroup.normedAddCommGroup
 
 end Subgroup
+
+/-! ### Subgroup classes of normed groups -/
+
+
+namespace SubgroupClass
+
+section SeminormedGroup
+
+variable [SeminormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E] (s : S)
+
+/-- A subgroup of a seminormed group is also a seminormed group,
+with the restriction of the norm. -/
+@[to_additive "A subgroup of a seminormed additive group is also a seminormed additive group, with
+the restriction of the norm."]
+instance (priority := 75) seminormedGroup : SeminormedGroup s :=
+  SeminormedGroup.induced _ _ (SubgroupClass.subtype s)
+
+/-- If `x` is an element of a subgroup `s` of a seminormed group `E`, its norm in `s` is equal to
+its norm in `E`. -/
+@[to_additive (attr := simp) "If `x` is an element of an additive subgroup `s` of a seminormed
+additive group `E`, its norm in `s` is equal to its norm in `E`."]
+theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
+  rfl
+
+end SeminormedGroup
+
+@[to_additive]
+instance (priority := 75) seminormedCommGroup [SeminormedCommGroup E] {S : Type*} [SetLike S E]
+    [SubgroupClass S E] (s : S) : SeminormedCommGroup s :=
+  SeminormedCommGroup.induced _ _ (SubgroupClass.subtype s)
+
+@[to_additive]
+instance (priority := 75) normedGroup [NormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E]
+    (s : S) : NormedGroup s :=
+  NormedGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
+
+@[to_additive]
+instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLike S E]
+    [SubgroupClass S E] (s : S) : NormedCommGroup s :=
+  NormedCommGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
+
+end SubgroupClass
+
+/-! ### Submodules of normed groups -/
+
+
+namespace Submodule
+
+-- See note [implicit instance arguments]
+/-- A submodule of a seminormed group is also a seminormed group, with the restriction of the norm.
+-/
+instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E]
+    (s : Submodule 𝕜 E) : SeminormedAddCommGroup s :=
+  SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
+#align submodule.seminormed_add_comm_group Submodule.seminormedAddCommGroup
+
+-- See note [implicit instance arguments].
+/-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
+norm in `E`. -/
+@[simp]
+theorem coe_norm [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
+    (x : s) : ‖x‖ = ‖(x : E)‖ :=
+  rfl
+#align submodule.coe_norm Submodule.coe_norm
+
+-- See note [implicit instance arguments].
+/-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `E` is equal to its
+norm in `s`.
+
+This is a reversed version of the `simp` lemma `Submodule.coe_norm` for use by `norm_cast`. -/
+@[norm_cast]
+theorem norm_coe [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
+    (x : s) : ‖(x : E)‖ = ‖x‖ :=
+  rfl
+#align submodule.norm_coe Submodule.norm_coe
+
+-- See note [implicit instance arguments].
+/-- A submodule of a normed group is also a normed group, with the restriction of the norm. -/
+instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
+    (s : Submodule 𝕜 E) : NormedAddCommGroup s :=
+  { Submodule.seminormedAddCommGroup s with
+    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+
+end Submodule
