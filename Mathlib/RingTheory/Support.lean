@@ -30,6 +30,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
 
+/-- The support of a module, defined as the set of primes `p` such that `Mₚ ≠ 0`. -/
 variable (R M) in
 def Module.support : Set (PrimeSpectrum R) :=
   { p | Nontrivial (LocalizedModule p.asIdeal.primeCompl M) }
