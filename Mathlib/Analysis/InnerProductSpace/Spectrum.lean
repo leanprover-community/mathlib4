@@ -407,9 +407,15 @@ variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
 
 open Classical
 
-/-Note the need for the Axiom of Choice below! This is the reason for `Classical` above. -/
-theorem cracker1 [Subsingleton n] (h : Nonempty n) : ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (i : n), T n i = S)
-    := by
+theorem cracker2 [Subsingleton n] (S : E →ₗ[𝕜] E) :
+    (∀ (i : n), T n i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
+    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
+  exact fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
+
+theorem cracker3 [Subsingleton n] (h : Nonempty n) :
+    ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (γ : n → 𝕜), (∀ (i : n),
+    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
+  have h0 : ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (i : n), T n i = S) := by
     have i := choice h
     have H : (∀ (i j : n), T n j  = T n i) := by
       intro i _ ; rw [Subsingleton.allEq i _]
@@ -417,16 +423,7 @@ theorem cracker1 [Subsingleton n] (h : Nonempty n) : ∃ (S : E →ₗ[𝕜] E),
     constructor
     · exact hT n i
     · exact fun i_1 ↦ H i i_1
-
-theorem cracker2 [Subsingleton n] (S : E →ₗ[𝕜] E) :
-    (∀ (i : n), T n i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
-    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
-  exact fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
-
-theorem cracker3 [Subsingleton n] (h : Nonempty n) :  ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (γ : n → 𝕜), (∀ (i : n),
-    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
-  have h1 := cracker1 hT h (T := T)
-  obtain ⟨S , hS⟩ := h1
+  obtain ⟨S , hS⟩ := h0
   have := hS.1
   use S
   constructor
