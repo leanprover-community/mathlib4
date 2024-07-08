@@ -22,6 +22,14 @@ In this file we prove that tensoring with a flat module is an exact functor.
 - `Module.Flat.iff_tensorRight_preservesFiniteLimits`: an `R`-module `M` is flat if and only if
   right tensoring with `M` preserves finite limits, i.e. the functor `M ⊗ -` is left exact.
 
+- `Module.Flat.iff_lTensor_preserves_shortComplex_exact`: an `R`-module `M` is flat if and only if
+  for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`, `0 ⟶ M ⊗ A ⟶ M ⊗ B ⟶ M ⊗ C ⟶ 0` is also
+  a short exact sequence.
+
+- `Module.Flat.iff_rTensor_preserves_shortComplex_exact`: an `R`-module `M` is flat if and only if
+  for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`, `0 ⟶ A ⊗ M ⟶ B ⊗ M ⟶ C ⊗ M ⟶ 0` is also
+  a short exact sequence.
+
 - `Module.Flat.higherTorIsoZero`: if an `R`-module `M` is flat, then `Torⁿ(M, N) ≅ 0` for all `N`
   and all `n ≥ 1`.
 
@@ -86,10 +94,10 @@ noncomputable instance [flat : Flat R M] {X Y : ModuleCat.{u} R} (f : X ⟶ Y) :
     have mono0 : Mono ι :=
       { right_cancellation := fun {Z} g h H => by
           let c' : Limits.Cone (Limits.parallelPair f 0) :=
-          ⟨Z, ⟨fun | .zero => h ≫ ι | .one => 0, by rintro _ _ (⟨j⟩|⟨j⟩) <;> simpa [ι] using H⟩⟩
+          ⟨Z, ⟨fun | .zero => h ≫ ι | .one => 0, by rintro _ _ (⟨j⟩|⟨j⟩) <;> simp [ι, H]⟩⟩
 
           rw [hc.uniq c' g, hc.uniq c' h] <;>
-          rintro (⟨j⟩|⟨j⟩) <;> simpa [ι] using H }
+          rintro (⟨j⟩|⟨j⟩) <;> try simp [ι, H] <;> try simpa [ι, c'] using H }
     let s : ShortComplex (ModuleCat R) := .mk ι f $ by simp [ι]
     have exact0 : s.Exact:= by
       refine ShortComplex.exact_of_f_is_kernel _ $
@@ -101,13 +109,10 @@ noncomputable instance [flat : Flat R M] {X Y : ModuleCat.{u} R} (f : X ⟶ Y) :
       · rfl
       · rfl
 
-    let s' := s.map (tensorLeft M)
-    let f' := M ◁ f; let ι' := M ◁ ι
-    have exact1 : s'.Exact := by
-      apply lTensor_shortComplex_exact; assumption
+    let s' := s.map (tensorLeft M); let f' := M ◁ f; let ι' := M ◁ ι
+    have exact1 : s'.Exact := by apply lTensor_shortComplex_exact; assumption
 
     have mono1 : Mono ι' := by
-
       rw [ModuleCat.mono_iff_injective] at mono0 ⊢
       exact lTensor_preserves_injective_linearMap _ mono0
 
@@ -163,23 +168,27 @@ section Tor
 
 open scoped ZeroObject
 
+/-
+For a flat module `M`, higher tor groups vanish.
+-/
+noncomputable def higherTorIsoZero [Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
+    ((Tor _ (n + 1)).obj M).obj N ≅ 0 :=
+  let pN := ProjectiveResolution.of N
+  pN.isoLeftDerivedObj (tensorLeft M) (n + 1) ≪≫
+    (Limits.IsZero.isoZero $ HomologicalComplex.exactAt_iff_isZero_homology _ _ |>.1 $
+      lTensor_shortComplex_exact M (pN.complex.sc (n + 1)) (pN.complex_exactAt_succ n))
+
+
 /--
 For a flat module `M`, higher tor groups vanish.
 -/
-noncomputable def higherTorIsoZero [flat : Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
-    ((Tor' _ (n + 1)).obj N).obj M ≅ 0 := by
-  dsimp [Tor', Functor.flip]
+noncomputable def higherTor'IsoZero [Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
+    ((Tor' _ (n + 1)).obj N).obj M ≅ 0 :=
   let pN := ProjectiveResolution.of N
-  refine' pN.isoLeftDerivedObj (tensorRight M) (n + 1) ≪≫ ?_
-  refine Limits.IsZero.isoZero ?_
-  dsimp only [HomologicalComplex.homologyFunctor_obj]
-  rw [← HomologicalComplex.exactAt_iff_isZero_homology, HomologicalComplex.exactAt_iff,
-    ← exact_iff_shortComplex_exact, ModuleCat.exact_iff, Eq.comm, ← LinearMap.exact_iff]
-  refine iff_rTensor_exact |>.1 flat ?_
-  rw [LinearMap.exact_iff, Eq.comm, ← ModuleCat.exact_iff]
-  have := pN.complex_exactAt_succ n
-  rw [HomologicalComplex.exactAt_iff, ← exact_iff_shortComplex_exact] at this
-  exact this
+  pN.isoLeftDerivedObj (tensorRight M) (n + 1) ≪≫
+    (Limits.IsZero.isoZero $ HomologicalComplex.exactAt_iff_isZero_homology _ _ |>.1 $
+      rTensor_shortComplex_exact M (pN.complex.sc (n + 1)) (pN.complex_exactAt_succ n))
+
 
 end Tor
 
