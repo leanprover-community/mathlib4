@@ -39,7 +39,7 @@ instance : CoeSort (HopfAlgebraCat.{v} R) (Type v) :=
 
 variable (R)
 
-/-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebras. -/
+/-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebra. -/
 @[simps]
 def of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgebraCat R where
