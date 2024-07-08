@@ -218,12 +218,12 @@ There are four types of theorems that are used a bit differently.
     The function theorem for `Neg.neg` and `Continuous` can be stated as:
     ```lean
     @[fun_prop]
-    theorem continuous_neg : Continuous (fun x => Neg.neg x) := ...
+    theorem continuous_neg : Continuous (fun x => - x) := ...
     ```
     or as:
     ```lean
     @[fun_prop]
-    theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x => Neg.neg f x) := ...
+    theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x => - f x) := ...
     ```
     The first form is called *uncurried form* and the second form is called *compositional form*.
     You can provide either form; it is mainly a matter of convenience. You can check if the form of
@@ -235,19 +235,20 @@ There are four types of theorems that are used a bit differently.
     provide both versions.
 
     One exception to this rule is the theorem for `Prod.mk`, which has to be stated in compositional
-    form.
+    form. This because this theorem together with *lambda theorems* is used to break expression to
+    smaller pieces and `fun_prop`  assumes it is written in compositional form.
 
     The reason the first form is called *uncurried* is because if we have a function of multiple
     arguments, we have to uncurry the function:
     ```lean
     @[fun_prop]
-    theorem continuous_add : Continuous (fun (x : X × X) => HAdd.hAdd x.1 x.2) := ...
+    theorem continuous_add : Continuous (fun (x : X × X) => x.1 + x.2) := ...
     ```
     and the *compositional form* of this theorem is:
     ```lean
     @[fun_prop]
     theorem continuous_add (f g : X → Y) (hf : Continuous f) (hg : Continuous g) :
-        Continuous (fun x => HAdd.hAdd (f x) (g x)) := ...
+        Continuous (fun x => f x + g x) := ...
     ```
 
     When dealing with functions with multiple arguments, you need to state, e.g., continuity only
@@ -278,13 +279,18 @@ There are four types of theorems that are used a bit differently.
 
     In fact, not only `DFunLike.coe` but any function coercion is treated this way. Such function
     coercion has to be registered with `Lean.Meta.registerCoercion` with coercion type `.coeFun`.
+    Here is an example of custom structure `MyFunLike` that that should be considered as bundled
+    morphism by `fun_prop`:
     ```lean
+    structure MyFunLike (α β : Type) where
+      toFun : α → β
+
+    instance {α β} : CoeFun (MyFunLike α β) (fun _ => α → β) := ⟨MyFunLike.toFun⟩
+
     #eval Lean.Elab.Command.liftTermElabM do
-      Lean.Meta.registerCoercion <morphism_to_fun_coercion_name>
-        (some { numArgs := _, coercee := _, type := .coeFun })
+      Lean.Meta.registerCoercion ``MyFunLike.toFun
+        (.some { numArgs := 3, coercee := 2, type := .coeFun })
     ```
-    This is useful when you define your own bundled morphism and do not want to use Mathlib's
-    `FunLike` class.
 
 - Transition Theorems:
     Transition theorems allow `fun_prop` to infer one function property from another.
