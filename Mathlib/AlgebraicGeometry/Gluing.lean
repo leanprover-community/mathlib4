@@ -280,8 +280,8 @@ variable {X : Scheme.{u}} (𝒰 : OpenCover.{u} X)
 
 /-- (Implementation) the transition maps in the glue data associated with an open cover. -/
 def gluedCoverT' (x y z : 𝒰.J) :
-    pullback (pullback.fst (𝒰.map x) (𝒰.map y)) (pullback.fst (𝒰.map x) (𝒰.map z)) ⟶
-      pullback (pullback.fst (𝒰.map y) (𝒰.map z)) (pullback.fst (𝒰.map y) (𝒰.map x)) := by
+  pullback (pullback.fst (𝒰.map x) (𝒰.map y)) (pullback.fst (𝒰.map x) (𝒰.map z)) ⟶
+    pullback (pullback.fst (𝒰.map y) (𝒰.map z)) (pullback.fst (𝒰.map y) (𝒰.map x)) := by
   refine (pullbackRightPullbackFstIso _ _ _).hom ≫ ?_
   refine ?_ ≫ (pullbackSymmetry _ _).hom
   refine ?_ ≫ (pullbackRightPullbackFstIso _ _ _).inv
