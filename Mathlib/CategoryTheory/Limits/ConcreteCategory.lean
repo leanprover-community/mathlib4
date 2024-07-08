@@ -94,6 +94,17 @@ theorem Concrete.colimit_exists_rep [HasColimit F] (x : ↑(colimit F)) :
   Concrete.isColimit_exists_rep F (colimit.isColimit _) x
 #align category_theory.limits.concrete.colimit_exists_rep CategoryTheory.Limits.Concrete.colimit_exists_rep
 
+noncomputable def Concrete.indexRepColimit [HasColimit F] (x : ↑(colimit F)) : J :=
+  (Concrete.colimit_exists_rep F x).choose
+
+noncomputable def Concrete.repColimit [HasColimit F] (x : ↑(colimit F)) :
+    F.obj (Concrete.indexRepColimit F x) :=
+  (Concrete.colimit_exists_rep F x).choose_spec.choose
+
+theorem Concrete.ι_repColimit_eq [HasColimit F] (x : ↑(colimit F)) :
+    colimit.ι F (Concrete.indexRepColimit F x) (Concrete.repColimit F x) = x :=
+  (Concrete.colimit_exists_rep F x).choose_spec.choose_spec
+
 theorem Concrete.isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : F.obj i) (y : F.obj j)
     (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
     D.ι.app i x = D.ι.app j y := by
