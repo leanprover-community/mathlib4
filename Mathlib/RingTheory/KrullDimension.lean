@@ -13,17 +13,15 @@ Given a commutative ring, its ring theoretic Krull dimension is the order theore
 applied to its prime spectrum. Unfolding this definition, it is the length of the longest series of
 prime ideals ordered by inclusion.
 
-Key results in this file include:
-1. the ring theoretic Krull dimension of a commutative ring is equal to the topological Krull
-   dimension of its prime spectrum;
-2. given a surjective homomorphism `f : R →+* S` of commutative rings, the Krull dimension of `S`
-   cannot exceed that of `R`;
-3. the Krull dimension of any quotient ring of a commutative ring must be less than or equal to
-   the Krull dimension of that commutative ring;
-4. two isomorphic commutative rings have the same Krull dimension;
-5. for a commutative ring whose Krull dimension is zero, any prime ideal is maximal;
-6. for a commutative ring whose Krull dimension is zero, any prime ideal is minimal;
-7. the Krull dimension of a field is zero.
+
+## Main definitions and results
+
+* `ringKrullDim`: the ring theoretic Krull dimension of a commutative ring.
+
+* `ringKrullDim.eq_topologicalKrullDim`: the ring theoretic Krull dimension of a commutative ring
+is equal to the topological Krull dimension of its prime spectrum.
+
+* `ringKrullDim.eq_zero_of_field`: the Krull dimension of a field is zero.
 -/
 
 /--
@@ -31,6 +29,16 @@ The ring theoretic Krull dimension is the Krull dimension of its spectrum ordere
 -/
 noncomputable abbrev ringKrullDim (R : Type*) [CommRing R] : WithBot (WithTop ℕ) :=
   krullDim (PrimeSpectrum R)
+
+lemma ringKrullDim_eq_bot_of_subsingleton (R : Type*) [CommRing R] [Subsingleton R] :
+    ringKrullDim R = ⊥ :=
+  krullDim_eq_bot_of_isEmpty
+
+lemma ringKrullDim_gt_bot_of_nontrivial (R : Type*) [CommRing R] [Nontrivial R] :
+    ringKrullDim R > ⊥ :=
+  lt_of_lt_of_le
+    (Batteries.compareOfLessAndEq_eq_lt.mp $ show compareOfLessAndEq ⊥ 0 = Ordering.lt by rfl)
+    krullDim_nonneg_of_nonempty
 
 namespace ringKrullDim
 
@@ -98,3 +106,10 @@ theorem eq_zero_of_isField {F : Type*} [CommRing F] (hF : IsField F) : ringKrull
 end Field
 
 end ringKrullDim
+
+proof_wanted Polynomial.ringKrullDim_le (R : Type*) [CommRing R] :
+  ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
+
+proof_wanted MvPolynomial.fin_ringKrullDim_eq_plus_of_isNoetherianRing
+    (R : Type*) [CommRing R] [IsNoetherianRing R] (n : ℕ) :
+  ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
