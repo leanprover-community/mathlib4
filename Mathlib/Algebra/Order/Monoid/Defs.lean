@@ -160,16 +160,6 @@ theorem add_top (a : α) : a + ⊤ = ⊤ :=
   Trans.trans (add_comm _ _) (top_add _)
 #align add_top add_top
 
-@[simp]
-theorem add_eq_top {a b : α} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
-  LinearOrderedAddCommMonoidWithTop.add_eq_top a b
-
-theorem add_ne_top {a b : α} : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
-  add_eq_top.not.trans not_or
-
-theorem add_lt_top {a b : α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
-  simp_rw [lt_top_iff_ne_top, add_ne_top]
-
 end LinearOrderedAddCommMonoidWithTop
 
 variable [LinearOrderedCommMonoid α] {a : α}
