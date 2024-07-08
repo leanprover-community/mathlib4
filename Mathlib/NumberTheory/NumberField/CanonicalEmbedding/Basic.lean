@@ -41,7 +41,7 @@ variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
-open NumberField
+--open NumberField
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
 def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
@@ -180,7 +180,7 @@ end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace FiniteDimensional Finset
+open NumberField.InfinitePlace FiniteDimensional Finset
 
 /-- The space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 local notation "E" K =>
@@ -405,7 +405,7 @@ noncomputable section stdBasis
 
 open scoped Classical
 
-open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators Finset ComplexConjugate
+open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix ComplexConjugate
 
 variable [NumberField K]
 
@@ -545,7 +545,7 @@ noncomputable section integerLattice
 
 variable [NumberField K]
 
-open Module FiniteDimensional Module.Free
+open Module.Free
 
 open scoped nonZeroDivisors
 
