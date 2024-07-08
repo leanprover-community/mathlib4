@@ -335,17 +335,10 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
 
 end IsLprojection
 
--- Subspace of a normed space is a normed space (NormedSpace/Basic)
-/-
-instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
-    (s : Submodule R E) : NormedSpace 𝕜 s where norm_smul_le c x := norm_smul_le c (x : E)
--/
-
 variable {𝕜 A F : Type*}
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup A] --[NormedAddCommGroup X]
-variable [Module 𝕜 A] [Module 𝕜 X] [NormedSpace 𝕜 A]
+variable [RCLike 𝕜] [NormedAddCommGroup A]
+variable [Module 𝕜 X] [NormedSpace 𝕜 A]
 
 lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)}
     (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
@@ -429,6 +422,14 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
   Closed: IsClosed (m : Set A)
   Lproj:  ∃ (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)),
     IsLprojection (NormedSpace.Dual 𝕜 A) P ∧ (Set.range P) = WeakDual.polar (E := A) 𝕜 m
+
+open NormedSpace in
+open Metric in
+open scoped ComplexOrder in
+lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
+    ↑(polarSubmodule 𝕜 m₁.toSubMulAction + polarSubmodule 𝕜 m₂.toSubMulAction) ∩ closedBall 0 1 =
+    convexHull 𝕜 (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) := sorry
+
 
 /-
 lemma IsMideal.inter (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
