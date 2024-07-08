@@ -17,7 +17,7 @@ Unlike the related `#find_home`, this command takes into account notation and ta
 
 open Lean Elab Command
 
-namespace Mathlib.Command.MinImps
+namespace Mathlib.Command.MinImports
 
 /-- `getSyntaxNodeKinds stx` takes a `Syntax` input `stx` and returns the `NameSet` of all the
 `SyntaxNodeKinds` and all the identifiers contained in `stx`. -/
@@ -76,7 +76,7 @@ def getIrredundantImports {m : Type → Type} [Monad m] [MonadResolveName m] [Mo
   let redundant := env.findRedundantImports tot.toArray
   return tot.diff redundant
 
-/-- `minImpsCore stx` is the internal function to elaborate the `#min_imports in` command.
+/-- `minImportsCore stx` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs
 ```lean
 import A
@@ -85,7 +85,7 @@ import B
 import Z
 ```
  -/
-def minImpsCore (stx : Syntax) : CommandElabM Unit := do
+def minImportsCore (stx : Syntax) : CommandElabM Unit := do
     let tot ← getIrredundantImports stx
     let fileNames := tot.toArray.qsort Name.lt
     --let fileNames := if tk.isSome then (fileNames).filter (`Mathlib).isPrefixOf else fileNames
@@ -105,18 +105,18 @@ does a similar thing, but reports minimal imports for all the commands between
 The `until` is optional: if it is missing, then `#min_imports start` will report the combined
 minimal imports for every command until the end of the file.
 -/
-syntax (name := minImpsStx) "#min_imports in" command : command
+syntax (name := minImportsStx) "#min_imports in" command : command
 
-@[inherit_doc minImpsStx]
+@[inherit_doc minImportsStx]
 syntax "#min_imports in" term : command
 
 elab_rules : command
   | `(#min_imports in $cmd:command)=> do
     Elab.Command.elabCommand cmd <|> pure ()
-    minImpsCore cmd
-  | `(#min_imports in $cmd:term)=> minImpsCore cmd
+    minImportsCore cmd
+  | `(#min_imports in $cmd:term)=> minImportsCore cmd
 
-@[inherit_doc minImpsStx]
+@[inherit_doc minImportsStx]
 syntax "#min_imports start" command* "until"? : command
 
 elab_rules : command
@@ -128,4 +128,4 @@ elab_rules : command
     let fileNames := tot.toArray.qsort Name.lt
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
 
-end Mathlib.Command.MinImps
+end Mathlib.Command.MinImports
