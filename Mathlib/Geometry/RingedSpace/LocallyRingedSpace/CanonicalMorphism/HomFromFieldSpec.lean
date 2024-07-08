@@ -39,35 +39,6 @@ Details of our construction:
    essentially a composition of `f` and some isomorphism (see `stalkFunctor_map_natTrans_eq`).
 -/
 
-/--
-If two rings are isomorphic and one of them is a field, then the other ring is also a field.
--/
-theorem isField_of_iso {R : CommRingCat} {S : CommRingCat} (i : R ≅ S) (hS : IsField S) :
-    IsField R where
-  exists_pair_ne := by
-    rcases hS.exists_pair_ne with ⟨x, y, hxy⟩
-    exact ⟨i.symm.hom x, i.symm.hom y, fun h ↦ by
-      have : i.hom (i.inv x) = i.hom (i.inv y) := congrArg i.hom h
-      rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply, CategoryTheory.Iso.inv_hom_id,
-        CategoryTheory.id_apply] at this
-      exact hxy this⟩
-  mul_comm := fun x y ↦ by
-    have (r : R) : r = i.inv (i.hom r) := by
-      rw [← CategoryTheory.comp_apply, CategoryTheory.Iso.hom_inv_id, CategoryTheory.id_apply]
-    rw [this x, this y, ← map_mul, mul_comm, map_mul]
-  mul_inv_cancel := by
-    intro a ha
-    rcases hS.mul_inv_cancel (fun h ↦ by
-      have := congr_arg i.inv h
-      rw [← CategoryTheory.comp_apply, CategoryTheory.Iso.hom_inv_id, CategoryTheory.id_apply,
-        map_zero] at this
-      exact ha this) with ⟨b, hb⟩
-    exact ⟨i.inv b, by
-      let hb' := congr_arg i.inv hb
-      rw [map_mul, ← CategoryTheory.comp_apply, CategoryTheory.Iso.hom_inv_id,
-        CategoryTheory.id_apply, map_one] at hb'
-      exact hb'⟩
-
 /-- If the domain and codomain of a ring homomorphism are both fields, then the homomorphism is
 local. -/
 theorem isLocalRingHom_of_isField_of_isField
@@ -378,7 +349,8 @@ noncomputable def HomFromFieldSpec :
       ⟨fun _ ↦ x, continuous_const⟩) x1)).map
       ⟨fun O ↦ valCAppOpens x F f O, fun O1 O2 i ↦ valCAppOpens_naturality x F f i⟩
     have hg : IsLocalRingHom g := isLocalRingHom_of_isField_of_isField
-      (isField_of_iso (FirstFieldIso x F) hF) (isField_of_iso (SecondFieldIso F hF x1) hF) g
+      (MulEquiv.isField F hF (FirstFieldIso x F).commRingCatIsoToRingEquiv)
+      (MulEquiv.isField F hF (SecondFieldIso F hF x1).commRingCatIsoToRingEquiv) g
     have hh : IsLocalRingHom h := by
       change IsLocalRingHom ((TopCat.Presheaf.stalkFunctor CommRingCat x).map _)
       erw [stalkFunctor_map_natTrans_eq]
