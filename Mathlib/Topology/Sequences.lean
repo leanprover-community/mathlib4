@@ -277,6 +277,41 @@ theorem CompactSpace.tendsto_subseq [CompactSpace X] (x : ℕ → X) :
 
 end FirstCountableTopology
 
+section Image
+
+/-- Sequential compactness of sets is preserved under sequentially continuous functions. -/
+theorem IsSeqCompact.image {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
+    (f_cont : SeqContinuous f) {K : Set X} (K_cpt : IsSeqCompact K) :
+    IsSeqCompact (f '' K) := by
+  intro ys ys_in_fK
+  choose xs xs_in_K fxs_eq_ys using fun n ↦ (ys_in_fK n)
+  simp only [Set.mem_image, exists_exists_and_eq_and]
+  obtain ⟨a, a_in_K, phi, phi_mono, xs_phi_lim⟩ := K_cpt xs_in_K
+  refine ⟨a, a_in_K, phi, phi_mono, ?_⟩
+  exact Filter.Tendsto.congr (fun x ↦ fxs_eq_ys (phi x)) (f_cont xs_phi_lim)
+
+/-- The range of sequentially continuous function on a sequentially compact space is sequentially
+compact. -/
+theorem isSeqCompact_range {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [SeqCompactSpace X] (f : X → Y) (hf : SeqContinuous f) :
+    IsSeqCompact (Set.range f) := by
+  rw [← Set.image_univ]
+  exact IsSeqCompact.image f hf ((seqCompactSpace_iff X).mp ‹SeqCompactSpace X›)
+
+/-- Sequential compactness of sets is preserved under continuous functions. -/
+theorem IsSeqCompact.image_of_continuous {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) (f_cont : Continuous f) {K : Set X} (K_cpt : IsSeqCompact K) :
+    IsSeqCompact (f '' K) :=
+  IsSeqCompact.image f (Continuous.seqContinuous f_cont) K_cpt
+
+/-- The range of continuous function on a sequentially compact space is sequentially compact. -/
+theorem SeqCompactSpace.range_of_continuous {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [SeqCompactSpace X] (f : X → Y) (f_cont : Continuous f) :
+    IsSeqCompact (Set.range f) :=
+  isSeqCompact_range f (Continuous.seqContinuous f_cont)
+
+end Image
+
 end SeqCompact
 
 section UniformSpaceSeqCompact
