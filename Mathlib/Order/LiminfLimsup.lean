@@ -574,6 +574,30 @@ theorem liminf_le_of_le {f : Filter β} {u : β → α} {a}
   csSup_le hf h
 #align filter.liminf_le_of_le Filter.liminf_le_of_le
 
+theorem limsup_le_iff {α β : Type*} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β}
+    (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) (b : β) :
+    limsup u f ≤ b ↔ ∀ c > b, ∀ᶠ a in f, u a < c := by
+  constructor
+  · intro h _ b_lt
+    rcases exists_lt_of_csInf_lt h₂ (lt_of_le_of_lt h b_lt) with ⟨_, uppbd, ltof⟩
+    exact Eventually.mono uppbd (fun x h' ↦ lt_of_le_of_lt h' ltof)
+  · intro h
+    --Two cases: Either b is a cluster point from above, or it is not.-
+    --In the first case, we use `forall_lt_iff_le'` and split intervals in two.-
+    --In the second case, the function `u` must eventually be smaller or equal to `b`.-
+    by_cases h' : ∀ c > b, ∃ d, b < d ∧ d < c
+    · rw [← forall_lt_iff_le']
+      intro c b_lt_c
+      rcases h' c b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
+      apply lt_of_le_of_lt _ d_lt_c
+      specialize h d b_lt_d
+      exact limsup_le_of_le h₁ (Eventually.mono h (fun _ ↦ le_of_lt))
+    · apply limsup_le_of_le h₁
+      set_option push_neg.use_distrib true in push_neg at h'
+      rcases h' with ⟨d, b_lt_d, hd⟩
+      exact Eventually.mono (h d b_lt_d) <| fun x hx ↦ (or_iff_left (not_le_of_lt hx)).1 (hd (u x))
+
 theorem limsInf_le_limsSup {f : Filter α} [NeBot f]
     (h₁ : f.IsBounded (· ≤ ·) := by isBoundedDefault)
     (h₂ : f.IsBounded (· ≥ ·) := by isBoundedDefault):
@@ -701,27 +725,6 @@ theorem liminf_const {α : Type*} [ConditionallyCompleteLattice β] {f : Filter 
     (b : β) : liminf (fun _ => b) f = b :=
   limsup_const (β := βᵒᵈ) b
 #align filter.liminf_const Filter.liminf_const
-
-theorem limsup_max {α β : Type*} [ConditionallyCompleteLattice β] {f : Filter α} [NeBot f]
-    {u v : α → β}
-    (h₁ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
-    (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
-    (h₃ : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault)
-    (h₄ : f.IsBoundedUnder (· ≥ ·) v := by isBoundedDefault):
-    limsup (fun a ↦ max (u a) (v a)) f = max (limsup u f) (limsup v f) := by
-  apply le_antisymm
-  · apply limsup_le_iff.2
-    intro b hb
-    have hu := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_left _ _) hb)
-    have hv := Filter.eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb); clear hb
-    apply Filter.mem_of_superset (Filter.inter_mem hu hv); clear hu hv
-    intro a
-    simp only [Set.mem_inter_iff, Set.mem_setOf_eq, max_le_iff, and_imp]
-    exact fun hua hva ↦ ⟨le_of_lt hua, le_of_lt hva⟩
-  · apply @max_le β _ (limsup u f) (limsup v f) (limsup (fun a ↦ max (u a) (v a)) f)
-    apply max_le
-    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a)))
-    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a)))
 
 theorem HasBasis.liminf_eq_sSup_iUnion_iInter {ι ι' : Type*} {f : ι → α} {v : Filter ι}
     {p : ι' → Prop} {s : ι' → Set ι} (hv : v.HasBasis p s) :
@@ -1554,3 +1557,145 @@ theorem OrderIso.liminf_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
 #align order_iso.liminf_apply OrderIso.liminf_apply
 
 end Order
+
+section MinMax
+
+open Filter
+
+theorem isBoundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → β}
+    (h₁ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (h₂ : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
+    f.IsBoundedUnder (· ≤ ·) (fun a ↦ max (u a) (v a)) := by
+  rcases h₁ with ⟨a, ha⟩
+  rcases h₂ with ⟨b, hb⟩
+  use max a b
+  rw [eventually_map] at ha hb ⊢
+  apply Eventually.mono <| Eventually.and ha hb
+  exact fun _ h ↦ max_le_max h.1 h.2
+
+theorem isBoundedUnder_ge_max [LinearOrder β] {f : Filter α} {u v : α → β}
+    (h : f.IsBoundedUnder (· ≥ ·) u ∨ f.IsBoundedUnder (· ≥ ·) v) :
+    f.IsBoundedUnder (· ≥ ·) (fun a ↦ max (u a) (v a)) := by
+  rcases h with (h' | h') <;>
+  · apply IsBoundedUnder.mono_ge h'
+    apply eventually_of_forall
+    simp
+
+theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → β}
+    (h : f.IsCoboundedUnder (· ≤ ·) u ∨ f.IsCoboundedUnder (· ≤ ·) v) :
+    f.IsCoboundedUnder (· ≤ ·) (fun a ↦ max (u a) (v a)) := by
+  rcases h with (h' | h') <;>
+  · rcases h' with ⟨b, hb⟩
+    use b
+    intro c hc
+    apply hb c
+    rw [eventually_map] at hc ⊢
+    apply Eventually.mono hc
+    intro _
+    simp only [max_le_iff, and_imp]
+    intro h₁ h₂
+    trivial
+
+theorem le_limsup_iff {α β : Type*} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β}
+    (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) (b : β) :
+    b ≤ limsup u f ↔ ∀ c < b, ∃ᶠ a in f, c < u a := by
+  constructor
+  · intro h _ b_lt
+    rcases exists_lt_of_csInf_lt h₂ (lt_of_le_of_lt h b_lt) with ⟨_, uppbd, ltof⟩
+    exact Eventually.mono uppbd (fun x h' ↦ lt_of_le_of_lt h' ltof)
+  · intro h
+    --Two cases: Either b is a cluster point from below, or it is not.-
+    --In the first case, we use `forall_lt_iff_le'` and split intervals in two.-
+    --In the second case, the function `u` must frequently be larger or equal to `b`.-
+    by_cases h' : ∀ c < b, ∃ d, c < d ∧ d < b
+    · rw [← forall_lt_iff_le']
+      intro c b_lt_c
+      rcases h' c b_lt_c with ⟨d, b_lt_d, d_lt_c⟩
+      apply lt_of_le_of_lt _ d_lt_c
+      specialize h d b_lt_d
+      exact limsup_le_of_le h₁ (Eventually.mono h (fun _ ↦ le_of_lt))
+    · apply limsup_le_of_le h₁
+      set_option push_neg.use_distrib true in push_neg at h'
+      rcases h' with ⟨d, b_lt_d, hd⟩
+      exact Eventually.mono (h d b_lt_d) <| fun x hx ↦ (or_iff_left (not_le_of_lt hx)).1 (hd (u x))
+theorem limsup_max {α β : Type*} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : α → β}
+    (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (h₂ : f.IsCoboundedUnder (· ≤ ·) v := by isBoundedDefault)
+    (h₃ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
+    (h₄ : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
+    limsup (fun a ↦ max (u a) (v a)) f = max (limsup u f) (limsup v f) := by
+  have bddmax := isBoundedUnder_le_max h₃ h₄
+  have cobddmax : f.IsCoboundedUnder (· ≤ ·) (fun a ↦ max (u a) (v a)) :=
+    isCoboundedUnder_le_max (Or.inl h₁)
+  apply le_antisymm
+  · apply (limsup_le_iff cobddmax bddmax _).2
+    intro b hb
+    have hu := eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_left _ _) hb) h₃
+    have hv := eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb) h₄
+    apply mem_of_superset (inter_mem hu hv)
+    intro a
+    simp
+  · apply @max_le β _ (limsup u f) (limsup v f) (limsup (fun a ↦ max (u a) (v a)) f)
+    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a))) h₁ bddmax
+    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a))) h₂ bddmax
+
+open Finset
+
+theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter α} {F : ι → α → β}
+    {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
+    f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup s F a) := by
+  choose! m hm using h
+  use sup s m
+  simp only [eventually_map] at hm ⊢
+  rw [← eventually_all_finset s] at hm
+  apply Eventually.mono hm
+  intro _ h
+  apply le_of_eq_of_le _ (sup_mono_fun h)
+  simp only [Finset.sup_apply]
+
+theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter α} {F : ι → α → β}
+    {s : Finset ι} (hs : s.Nonempty) (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
+    f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup' s hs F a) := by
+  choose! m hm using h
+  use sup' s hs m
+  simp only [eventually_map] at hm ⊢
+  rw [← eventually_all_finset s] at hm
+  apply Eventually.mono hm
+  intro a h
+  simp only [Finset.sup'_apply, sup'_le_iff]
+  exact fun i i_s ↦ le_trans (h i i_s) (le_sup' m i_s)
+
+theorem isBoundedUnder_ge_finset_sup [LinearOrder β] [OrderBot β] {f : Filter α} {F : ι → α → β}
+    {s : Finset ι} (h : ∃ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
+    f.IsBoundedUnder (· ≥ ·) (fun a ↦ sup s F a) := by
+  rcases h with ⟨i, i_s, hi⟩
+  apply IsBoundedUnder.mono_ge hi
+  apply eventually_of_forall
+  intro a
+  simp only [Finset.sup_apply]
+  exact @le_sup β ι _ _ s (fun j ↦ F j a) i i_s
+
+theorem isBoundedUnder_ge_finset_sup' [LinearOrder β] {f : Filter α} {F : ι → α → β}
+    {s : Finset ι} (hs : s.Nonempty) (h : ∃ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
+    f.IsBoundedUnder (· ≥ ·) (fun a ↦ sup' s hs F a) := by
+  rcases h with ⟨i, i_s, hi⟩
+  apply IsBoundedUnder.mono_ge hi
+  apply eventually_of_forall
+  intro a
+  simp only [Finset.sup'_apply]
+  exact @le_sup' β ι _ s (fun j ↦ F j a) i i_s
+
+
+
+
+
+
+
+
+
+
+
+end MinMax
+
+#lint
