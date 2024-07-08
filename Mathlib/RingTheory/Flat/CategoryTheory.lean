@@ -90,46 +90,43 @@ set_option maxHeartbeats 400000 in
 noncomputable instance [flat : Flat R M] {X Y : ModuleCat.{u} R} (f : X ⟶ Y) :
     Limits.PreservesLimit (Limits.parallelPair f 0) (tensorLeft M) where
   preserves {c} hc := by
-    let ι : c.pt ⟶ X := c.π.app .zero
-    have mono0 : Mono ι :=
+    have mono0 : Mono (c.π.app .zero) :=
       { right_cancellation := fun {Z} g h H => by
           let c' : Limits.Cone (Limits.parallelPair f 0) :=
-          ⟨Z, ⟨fun | .zero => h ≫ ι | .one => 0, by rintro _ _ (⟨j⟩|⟨j⟩) <;> simp [ι, H]⟩⟩
-
+          ⟨Z, ⟨fun | .zero => h ≫ c.π.app .zero | .one => 0, by rintro _ _ (⟨j⟩|⟨j⟩) <;> simp [H]⟩⟩
           rw [hc.uniq c' g, hc.uniq c' h] <;>
-          rintro (⟨j⟩|⟨j⟩) <;> try simp [ι, H] <;> try simpa [ι, c'] using H }
-    let s : ShortComplex (ModuleCat R) := .mk ι f $ by simp [ι]
+          rintro (⟨j⟩|⟨j⟩) <;> try simp [H] <;> try simpa [c'] using H }
+    let s : ShortComplex (ModuleCat R) := .mk (c.π.app .zero) f $ by simp
     have exact0 : s.Exact:= by
       refine ShortComplex.exact_of_f_is_kernel _ $
         Limits.IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ hc
       · exact 𝟙 c.pt
-      · rintro (⟨⟩|⟨⟩) <;> simp [ι]
+      · rintro (⟨⟩|⟨⟩) <;> simp
       · exact 𝟙 c.pt
-      · rintro (⟨⟩|⟨⟩) <;> simp [ι]
+      · rintro (⟨⟩|⟨⟩) <;> simp
       · rfl
       · rfl
 
-    let s' := s.map (tensorLeft M); let f' := M ◁ f; let ι' := M ◁ ι
-    have exact1 : s'.Exact := by apply lTensor_shortComplex_exact; assumption
-
-    have mono1 : Mono ι' := by
+    have exact1 : (s.map (tensorLeft M)).Exact := by apply lTensor_shortComplex_exact; assumption
+    have mono1 : Mono (M ◁ c.π.app .zero) := by
       rw [ModuleCat.mono_iff_injective] at mono0 ⊢
       exact lTensor_preserves_injective_linearMap _ mono0
 
     refine Limits.IsLimit.equivOfNatIsoOfIso
       ⟨⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩,
         ⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩, ?_, ?_⟩ _ _ ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ $
-        ShortComplex.exact_and_mono_f_iff_f_is_kernel s' |>.1 ⟨exact1, mono1⟩ |>.some
-    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp [s']
-    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp [s']
-    · ext (⟨⟩|⟨⟩) <;> simp [s']
-    · ext (⟨⟩|⟨⟩) <;> simp [s']
+        ShortComplex.exact_and_mono_f_iff_f_is_kernel (s.map (tensorLeft M)) |>.1
+          ⟨exact1, mono1⟩ |>.some
+    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
+    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
+    · ext (⟨⟩|⟨⟩) <;> simp
+    · ext (⟨⟩|⟨⟩) <;> simp
     · exact 𝟙 _
-    · rintro (⟨⟩ | ⟨⟩) <;> simp [s', ι, ← MonoidalCategory.whiskerLeft_comp]
+    · rintro (⟨⟩ | ⟨⟩) <;> simp [← MonoidalCategory.whiskerLeft_comp]
     · exact 𝟙 _
-    · rintro (⟨⟩ | ⟨⟩) <;> simp [s', ι, ← MonoidalCategory.whiskerLeft_comp]
-    · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
-    · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
+    · rintro (⟨⟩ | ⟨⟩) <;> simp [← MonoidalCategory.whiskerLeft_comp]
+    · ext (⟨⟩ | ⟨⟩); simp
+    · ext (⟨⟩ | ⟨⟩); simp
 
 noncomputable instance tensorLeft_preservesFiniteLimits [Flat R M] :
     Limits.PreservesFiniteLimits (tensorLeft M) :=
