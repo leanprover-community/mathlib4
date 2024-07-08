@@ -46,11 +46,13 @@ variable (h₁ : i₁ ≫ g₁ = f₁ ≫ i₂) (h₂ : i₂ ≫ g₂ = f₂ ≫
 
 /-- Given
 
+```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
 
 Then the big square is a pullback if both the small squares are.
 -/
@@ -82,11 +84,13 @@ def bigSquareIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
 
 /-- Given
 
+```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
 
 Then the big square is a pushout if both the small squares are.
 -/
@@ -119,11 +123,13 @@ def bigSquareIsPushout (H : IsColimit (PushoutCocone.mk _ _ h₂))
 
 /-- Given
 
+```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
 
 Then the left square is a pullback if the right square and the big square are.
 -/
@@ -156,11 +162,13 @@ def leftSquareIsPullback (H : IsLimit (PullbackCone.mk _ _ h₂))
 
 /-- Given
 
+```
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
+```
 
 Then the right square is a pushout if the left square and the big square are.
 -/
