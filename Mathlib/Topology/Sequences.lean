@@ -279,9 +279,10 @@ end FirstCountableTopology
 
 section Image
 
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+
 /-- Sequential compactness of sets is preserved under sequentially continuous functions. -/
-theorem IsSeqCompact.image {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
-    (f_cont : SeqContinuous f) {K : Set X} (K_cpt : IsSeqCompact K) :
+theorem IsSeqCompact.image (f_cont : SeqContinuous f) {K : Set X} (K_cpt : IsSeqCompact K) :
     IsSeqCompact (f '' K) := by
   intro ys ys_in_fK
   choose xs xs_in_K fxs_eq_ys using fun n ↦ (ys_in_fK n)
@@ -292,23 +293,21 @@ theorem IsSeqCompact.image {X Y : Type*} [TopologicalSpace X] [TopologicalSpace 
 
 /-- The range of sequentially continuous function on a sequentially compact space is sequentially
 compact. -/
-theorem isSeqCompact_range {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [SeqCompactSpace X] (f : X → Y) (hf : SeqContinuous f) :
+theorem isSeqCompact_range [SeqCompactSpace X] (f_cont : SeqContinuous f) :
     IsSeqCompact (Set.range f) := by
   rw [← Set.image_univ]
-  exact IsSeqCompact.image f hf ((seqCompactSpace_iff X).mp ‹SeqCompactSpace X›)
+  exact IsSeqCompact.image f_cont ((seqCompactSpace_iff X).mp ‹SeqCompactSpace X›)
 
 /-- Sequential compactness of sets is preserved under continuous functions. -/
-theorem IsSeqCompact.image_of_continuous {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (f : X → Y) (f_cont : Continuous f) {K : Set X} (K_cpt : IsSeqCompact K) :
+theorem IsSeqCompact.image_of_continuous (f_cont : Continuous f) {K : Set X}
+    (K_cpt : IsSeqCompact K) :
     IsSeqCompact (f '' K) :=
-  IsSeqCompact.image f (Continuous.seqContinuous f_cont) K_cpt
+  IsSeqCompact.image (Continuous.seqContinuous f_cont) K_cpt
 
 /-- The range of continuous function on a sequentially compact space is sequentially compact. -/
-theorem SeqCompactSpace.range_of_continuous {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [SeqCompactSpace X] (f : X → Y) (f_cont : Continuous f) :
+theorem SeqCompactSpace.range_of_continuous [SeqCompactSpace X] (f_cont : Continuous f) :
     IsSeqCompact (Set.range f) :=
-  isSeqCompact_range f (Continuous.seqContinuous f_cont)
+  isSeqCompact_range (Continuous.seqContinuous f_cont)
 
 end Image
 
