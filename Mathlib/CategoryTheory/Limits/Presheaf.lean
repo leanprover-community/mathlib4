@@ -375,8 +375,7 @@ noncomputable def compYonedaIsoYonedaCompLan :
       rw [yonedaMap_app_apply] at eq₁
       simp only [yonedaMap_app_apply, Functor.map_id] at eq₂
       simp only [id_comp] at eq₃
-      dsimp [yonedaEquiv]
-      rw [id_comp, eq₁, eq₂, eq₃])
+      simp [yonedaEquiv, eq₁, eq₂, eq₃])
 
 @[simp]
 lemma compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
