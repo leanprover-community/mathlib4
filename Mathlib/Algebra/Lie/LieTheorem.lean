@@ -257,7 +257,7 @@ theorem LieModule.exists_forall_lie_eq_smul_finrank :
     simp only [Subsingleton.elim x 0, zero_lie, map_zero, zero_smul]
   obtain H|⟨A, hcoatomA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
   · rw [LieSubmodule.coeSubmodule_eq_top_iff] at H
-    exact (derivedSeries_ne_top_of_solvable k L H).elim
+    exact ((derivedSeries_lt_top_of_solvable k L).ne H).elim
   obtain ⟨z, hz⟩ : ∃ (z : L), z ∉ A := by
     by_contra! h
     apply hcoatomA.1
