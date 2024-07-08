@@ -15,7 +15,6 @@ import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
-import Mathlib.LinearAlgebra.Basic
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
@@ -129,7 +128,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 theorem map_op_one :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
-  induction x using MulOpposite.rec'
+  induction x
   simp
 #align submodule.map_op_one Submodule.map_op_one
 

@@ -7,7 +7,7 @@ import Mathlib.Data.Fintype.Parity
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.LinearCombination
 
@@ -243,10 +243,6 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   num g z / denom g z
 #align upper_half_plane.smul_aux' UpperHalfPlane.smulAux'
 
-#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
-(Part of the code was ignoring the `maxDischargeDepth` setting:
- now that we have to increase it, other paths become slow.) -/
-set_option maxHeartbeats 400000 in
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]

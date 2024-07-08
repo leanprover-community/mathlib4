@@ -400,6 +400,17 @@ theorem HasCompactSupport.mul_left (hf : HasCompactSupport f') : HasCompactSuppo
 
 end MulZeroClass
 
+section OrderedAddGroup
+
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [AddGroup β] [Lattice β]
+  [CovariantClass β β (· + ·) (· ≤ ·)]
+
+protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :
+    HasCompactSupport |f| :=
+  hf.comp_left (g := abs) abs_zero
+
+end OrderedAddGroup
+
 end CompactSupport2
 
 section LocallyFinite

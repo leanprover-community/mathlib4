@@ -160,8 +160,7 @@ lemma homEquiv_id : homEquiv W L₁ L₂ (𝟙 (L₁.obj X)) = 𝟙 (L₂.obj X)
 lemma homEquiv_isoOfHom_inv (f : Y ⟶ X) (hf : W f) :
     homEquiv W L₁ L₂ (isoOfHom L₁ W f hf).inv = (isoOfHom L₂ W f hf).inv := by
   rw [← cancel_mono (isoOfHom L₂ W f hf).hom, Iso.inv_hom_id, isoOfHom_hom,
-    ← homEquiv_map W L₁ L₂ f, ← homEquiv_comp, isoOfHom_inv,
-    IsIso.inv_hom_id, homEquiv_id]
+    ← homEquiv_map W L₁ L₂ f, ← homEquiv_comp, isoOfHom_inv_hom_id, homEquiv_id]
 
 end Localization
 
