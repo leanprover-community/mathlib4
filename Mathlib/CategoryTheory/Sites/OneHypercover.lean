@@ -103,7 +103,7 @@ lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W �
       by simpa using fac.symm =≫ pullback.snd _ _⟩
 
 variable (i₁ i₂) in
-lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ pullback.fst _ _ pullback.snd _ _ := by
+lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _ _) (pullback.snd _ _) := by
   rw [← Sieve.pullback_id (S := E.sieve₁' i₁ i₂),
     sieve₁_eq_pullback_sieve₁' _ _ _ pullback.condition]
   congr

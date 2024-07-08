@@ -293,7 +293,7 @@ def gluedCoverT' (x y z : 𝒰.J) :
 @[simp, reassoc]
 theorem gluedCoverT'_fst_fst (x y z : 𝒰.J) :
   𝒰.gluedCoverT' x y z ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
-      pullback.fst _ _ ≫ pullback.snd _ _ := by
+    pullback.fst _ _ ≫ pullback.snd _ _ := by
   delta gluedCoverT'; simp
 #align algebraic_geometry.Scheme.open_cover.glued_cover_t'_fst_fst AlgebraicGeometry.Scheme.OpenCover.gluedCoverT'_fst_fst
 

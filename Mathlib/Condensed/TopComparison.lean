@@ -40,18 +40,18 @@ An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
 theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullback π π]
     [PreservesLimit (cospan π π) G]
     {a : C(G.obj Z, X)}
-    (ha : a ∘ (G.map pullback.fst _ _) = a ∘ (G.map (pullback.snd _ _ (f := π) (g := π)))) :
+    (ha : a ∘ (G.map (pullback.fst _ _)) = a ∘ (G.map (pullback.snd π π))) :
     Function.FactorsThrough a (G.map π) := by
   intro x y hxy
   let xy : G.obj (pullback π π) := (PreservesPullback.iso G π π).inv <|
     (TopCat.pullbackIsoProdSubtype (G.map π) (G.map π)).inv ⟨(x, y), hxy⟩
   have ha' := congr_fun ha xy
   dsimp at ha'
-  have h₁ : ∀ y, G.map pullback.fst _ _ ((PreservesPullback.iso G π π).inv y) =
-      pullback.fst _ _ (f := G.map π) (g := G.map π) y := by
+  have h₁ : ∀ y, G.map (pullback.fst _ _) ((PreservesPullback.iso G π π).inv y) =
+      pullback.fst (G.map π) (G.map π) y := by
     simp only [← PreservesPullback.iso_inv_fst]; intro y; rfl
-  have h₂ : ∀ y, G.map pullback.snd _ _ ((PreservesPullback.iso G π π).inv y) =
-      pullback.snd _ _ (f := G.map π) (g := G.map π) y := by
+  have h₂ : ∀ y, G.map (pullback.snd _ _) ((PreservesPullback.iso G π π).inv y) =
+      pullback.snd (G.map π) (G.map π) y := by
     simp only [← PreservesPullback.iso_inv_snd]; intro y; rfl
   erw [h₁, h₂, TopCat.pullbackIsoProdSubtype_inv_fst_apply,
     TopCat.pullbackIsoProdSubtype_inv_snd_apply] at ha'
