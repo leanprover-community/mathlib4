@@ -428,7 +428,6 @@ theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
      fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
     exact h1 hS.2
 
-
 /-I find it hard to believe that the following doesn't appear in the library already. We should
   track it down. If we can't find this, we need to state it in its most general form and locate
   it appropriately in the library using a small, independent PR. #find_home! suggested
@@ -530,20 +529,12 @@ theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n �
     (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))
     (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T n j) (γ j))).subtypeₗᵢ) := by
   intro f g hfg Ef Eg
-  have H := Function.ne_iff.mp hfg
-  obtain ⟨a , ha⟩ := H
-  have H1 := Ef.2
-  have H2 := Eg.2
-  simp only [Submodule.mem_iInf] at H1 H2
-  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype]
-  have H3 := H1 a
-  have H4 := H2 a
-  have H5 := orthogonalFamily_eigenspaces ((hT n) a)
-  have H6 := H5 ha
-  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H6
-  apply H6
-  exact H3
-  exact H4
+  obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
+  have H := (orthogonalFamily_eigenspaces ((hT n) a) ha)
+  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H
+  apply H
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T n _) (f _)).mp Ef.2 _
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T n _) (g _)).mp Eg.2 _
 
 /-- The Hilbert space on which a finite commuting family of symmetric linear operators acts
 decomposes as an internal direct sum of simultaneous eigenspaces for these operators. -/
