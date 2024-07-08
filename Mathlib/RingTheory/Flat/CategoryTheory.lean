@@ -9,6 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 # Tensoring with a flat module is an exact functor
@@ -49,15 +50,15 @@ variable {R : Type u} [CommRing R] (M : ModuleCat.{u} R)
 
 lemma lTensor_shortComplex_exact [Flat R M] (C : ShortComplex $ ModuleCat R) (hC : C.Exact) :
     C.map (tensorLeft M) |>.Exact := by
-  rw [ModuleCat.iff_shortComplex_exact, Eq.comm, ← LinearMap.exact_iff]
+  rw [ShortComplex.moduleCat_exact_iff_range_eq_ker, Eq.comm, ← LinearMap.exact_iff]
   exact lTensor_exact M $ LinearMap.exact_iff.2 $ Eq.symm $
-    ModuleCat.iff_shortComplex_exact _ _ C.zero |>.1 hC
+    ShortComplex.moduleCat_exact_iff_range_eq_ker _ |>.1 hC
 
 lemma rTensor_shortComplex_exact [Flat R M] (C : ShortComplex $ ModuleCat R) (hC : C.Exact) :
     C.map (tensorRight M) |>.Exact := by
-  rw [ModuleCat.iff_shortComplex_exact, Eq.comm, ← LinearMap.exact_iff]
+  rw [ShortComplex.moduleCat_exact_iff_range_eq_ker, Eq.comm, ← LinearMap.exact_iff]
   exact rTensor_exact M $ LinearMap.exact_iff.2 $ Eq.symm $
-    ModuleCat.iff_shortComplex_exact _ _ C.zero |>.1 hC
+    ShortComplex.moduleCat_exact_iff_range_eq_ker _ |>.1 hC
 
 lemma iff_lTensor_preserves_shortComplex_exact :
     Flat R M ↔
@@ -66,10 +67,11 @@ lemma iff_lTensor_preserves_shortComplex_exact :
     rw [iff_lTensor_exact]
     intro N N' N'' _ _ _ _ _ _ f g h
     specialize H (.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g)
-      (DFunLike.ext _ _ h.apply_apply_eq_zero)) (ModuleCat.shortComplex_exact _ _ $ Eq.symm $
+      (DFunLike.ext _ _ h.apply_apply_eq_zero))
+      (ShortComplex.moduleCat_exact_iff_range_eq_ker _ |>.2 $ Eq.symm $
         LinearMap.exact_iff |>.1 $ h)
     rw [LinearMap.exact_iff, Eq.comm]
-    rw [ModuleCat.iff_shortComplex_exact] at H
+    rw [ShortComplex.moduleCat_exact_iff_range_eq_ker] at H
     convert H⟩
 
 lemma iff_rTensor_preserves_shortComplex_exact :
@@ -79,10 +81,11 @@ lemma iff_rTensor_preserves_shortComplex_exact :
     rw [iff_rTensor_exact]
     intro N N' N'' _ _ _ _ _ _ f g h
     specialize H (.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g)
-      (DFunLike.ext _ _ h.apply_apply_eq_zero)) (ModuleCat.shortComplex_exact _ _ $ Eq.symm $
+      (DFunLike.ext _ _ h.apply_apply_eq_zero))
+      (ShortComplex.moduleCat_exact_iff_range_eq_ker _ |>.2 $ Eq.symm $
         LinearMap.exact_iff |>.1 $ h)
     rw [LinearMap.exact_iff, Eq.comm]
-    rw [ModuleCat.iff_shortComplex_exact] at H
+    rw [ShortComplex.moduleCat_exact_iff_range_eq_ker] at H
     convert H⟩
 
 open scoped MonoidalCategory in
@@ -175,7 +178,6 @@ noncomputable def higherTorIsoZero [Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
     (Limits.IsZero.isoZero $ HomologicalComplex.exactAt_iff_isZero_homology _ _ |>.1 $
       lTensor_shortComplex_exact M (pN.complex.sc (n + 1)) (pN.complex_exactAt_succ n))
 
-
 /--
 For a flat module `M`, higher tor groups vanish.
 -/
@@ -185,8 +187,6 @@ noncomputable def higherTor'IsoZero [Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
   pN.isoLeftDerivedObj (tensorRight M) (n + 1) ≪≫
     (Limits.IsZero.isoZero $ HomologicalComplex.exactAt_iff_isZero_homology _ _ |>.1 $
       rTensor_shortComplex_exact M (pN.complex.sc (n + 1)) (pN.complex_exactAt_succ n))
-
-
 
 end Tor
 

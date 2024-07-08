@@ -129,30 +129,4 @@ theorem exact_iff : Exact f g ↔ LinearMap.range f = LinearMap.ker g := by
 set_option linter.uppercaseLean3 false in
 #align Module.exact_iff ModuleCat.exact_iff
 
-theorem shortComplex_exact (H : LinearMap.range f = LinearMap.ker g) :
-    ShortComplex.Exact (.mk f g $ range_le_ker_iff.1 $ le_of_eq H) := by
-  rw [ShortComplex.exact_iff_kernel_ι_comp_cokernel_π_zero]
-  simp only [Functor.comp_obj]
-  suffices eq1 : (kernelIsoKer g).inv ≫ kernel.ι g ≫
-      cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = 0 by
-    rwa [Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv, Limits.comp_zero,
-      Limits.zero_comp] at eq1
-  rw [← Category.assoc, kernelIsoKer_inv_kernel_ι, cokernel_π_cokernelIsoRangeQuotient_hom, H]
-  ext ⟨x, hx⟩
-  change x ∈ ker (ker g).mkQ
-  rwa [Submodule.ker_mkQ]
-
-theorem iff_shortComplex_exact (h : f ≫ g = 0) :
-    ShortComplex.Exact (.mk f g h) ↔ LinearMap.range f = LinearMap.ker g := by
-  refine ⟨fun H => le_antisymm (range_le_ker_iff.2 h) $ ker_le_range_iff.2 ?_,
-    shortComplex_exact _ _⟩
-  suffices eq1 : (kernelIsoKer g).inv ≫ kernel.ι g ≫
-      cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = 0 by
-    simpa only [Functor.comp_obj, cokernel_π_cokernelIsoRangeQuotient_hom, ← Category.assoc,
-      kernelIsoKer_inv_kernel_ι] using eq1
-  rw [Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv, Limits.comp_zero,
-      Limits.zero_comp]
-  rw [ShortComplex.exact_iff_kernel_ι_comp_cokernel_π_zero] at H
-  exact H
-
 end ModuleCat
