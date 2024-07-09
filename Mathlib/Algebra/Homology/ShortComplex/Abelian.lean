@@ -182,9 +182,4 @@ instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
     CategoryWithHomology C where
   hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 
-/-- Comparison isomorphism between two definitions of homology. -/
-noncomputable def homology'IsoHomology :
-    _root_.homology' S.f S.g S.zero ≅ S.homology :=
-  homology'IsoCokernelLift S.f S.g S.zero ≪≫ S.homologyIsoCokernelLift.symm
-
 end ShortComplex
