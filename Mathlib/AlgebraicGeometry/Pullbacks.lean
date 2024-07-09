@@ -557,7 +557,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
   intro i
   have := PullbackCone.flipIsLimit <|
     pasteVertIsPullback rfl (pullbackIsPullback g (𝒰.map i))
-      (pullbackIsPullback pullback.snd (pullback.snd (f:=f) (g:=𝒰.map i)))
+      (pullbackIsPullback (pullback.snd g (𝒰.map i)) (pullback.snd f (𝒰.map i)))
   refine
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
