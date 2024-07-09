@@ -149,6 +149,9 @@ class IsTopAbsorbing (α : Type*) [Add α] [Top α] : Prop where
 export IsTopAbsorbing (top_add add_top)
 attribute [simp] top_add add_top
 
+#align top_add IsTopAbsorbing.top_add
+#align add_top IsTopAbsorbing.add_top
+
 class IsBotAbsorbing (α : Type*) [Add α] [Bot α] : Prop where
   /-- Bot is a left aborbing element for addition -/
   bot_add : ∀ a : α, ⊥ + a = ⊥

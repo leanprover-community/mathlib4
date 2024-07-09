@@ -318,17 +318,25 @@ theorem mul_mem_mul : s ∈ f → t ∈ g → s * t ∈ f * g :=
 #align filter.mul_mem_mul Filter.mul_mem_mul
 #align filter.add_mem_add Filter.add_mem_add
 
-@[to_additive (attr := simp)]
 theorem bot_mul : ⊥ * g = ⊥ :=
   map₂_bot_left
 #align filter.bot_mul Filter.bot_mul
-#align filter.bot_add Filter.bot_add
 
-@[to_additive (attr := simp)]
 theorem mul_bot : f * ⊥ = ⊥ :=
   map₂_bot_right
 #align filter.mul_bot Filter.mul_bot
+
+instance {α : Type*} [Add α] : IsBotAbsorbing (Filter α) where
+  bot_add _ := map₂_bot_left
+  add_bot _ := map₂_bot_right
+
+protected theorem bot_add {α : Type*} [Add α] {g : Filter α} : ⊥ + g = ⊥ := by simp
+#align filter.bot_add Filter.bot_add
+
+protected theorem add_bot {α : Type*} [Add α] {f : Filter α} : f + ⊥ = ⊥ := by simp
 #align filter.add_bot Filter.add_bot
+
+attribute [to_additive existing (attr := simp)] bot_mul mul_bot
 
 @[to_additive (attr := simp)]
 theorem mul_eq_bot_iff : f * g = ⊥ ↔ f = ⊥ ∨ g = ⊥ :=

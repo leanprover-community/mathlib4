@@ -309,7 +309,7 @@ theorem isBounded_image2 (f : α → β → γ) {K₁ K₂ : ℝ≥0} {s : Set �
     (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) : Bornology.IsBounded (Set.image2 f s t) :=
   Metric.isBounded_iff_ediam_ne_top.2 <|
     ne_top_of_le_ne_top
-      (ENNReal.add_ne_top.mpr
+      (add_ne_top.mpr
         ⟨ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top,
           ENNReal.mul_ne_top ENNReal.coe_ne_top ht.ediam_ne_top⟩)
       (ediam_image2_le _ _ _ hf₁ hf₂)
