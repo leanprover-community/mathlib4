@@ -277,33 +277,26 @@ variable {A B : E →ₗ[𝕜] E}  {α β : 𝕜} (hA : A.IsSymmetric) (hB : B.I
 
 theorem eigenspace_invariant  (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
   intro v hv
-  simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply] at *
-  rw [← comp_apply A B v, hAB, comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero]
+  rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
+  comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
 
-theorem restrict_exhaust1 : (⨆ γ , (eigenspace (LinearMap.restrict B
-    (eigenspace_invariant hAB α)) γ))ᗮ = ⊥ := by
-  have H := LinearMap.IsSymmetric.restrict_invariant hB (eigenspace_invariant hAB α)
-  have H1 := FiniteDimensional.finiteDimensional_submodule (eigenspace A α)
-  exact H.orthogonalComplement_iSup_eigenspaces_eq_bot
-
-theorem restrict_exhaust2 : (⨆ γ , (eigenspace (LinearMap.restrict B
+theorem restrict_exhaust: (⨆ γ , (eigenspace (LinearMap.restrict B
     (eigenspace_invariant hAB α)) γ)) = ⊤ := by
-  rw [← Submodule.orthogonal_eq_bot_iff]
-  apply restrict_exhaust1 hB
-  exact hAB
+    have h:= LinearMap.IsSymmetric.restrict_invariant hB (eigenspace_invariant hAB α)
+    have H: (⨆ γ , (eigenspace (LinearMap.restrict B (eigenspace_invariant hAB α)) γ))ᗮ = ⊥ := by
+      exact h.orthogonalComplement_iSup_eigenspaces_eq_bot
+    rw [← Submodule.orthogonal_eq_bot_iff]
+    apply H
 
 theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtype (eigenspace A α))
     (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ) → x ∈ eigenspace B γ := by
   intro h
-  dsimp [eigenspace] at *
-  simp only [mem_ker, sub_apply, Module.algebraMap_end_apply]
-  simp only [Submodule.mem_map, mem_ker, sub_apply, Module.algebraMap_end_apply,
-    Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk, exists_and_right, exists_eq_right] at h
+  simp only [mem_ker, sub_apply, Module.algebraMap_end_apply, Submodule.mem_map, mem_ker, sub_apply,
+  Module.algebraMap_end_apply, Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk, exists_and_right,
+  exists_eq_right] at *
   obtain ⟨y, hy⟩ := h
-  exact
-    (AddSubmonoid.mk_eq_zero
-          (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp
-      hy
+  exact (AddSubmonoid.mk_eq_zero
+  (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
 
 theorem matching (γ : 𝕜) : Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
        = (eigenspace B γ ⊓ eigenspace A α) := by
@@ -311,21 +304,19 @@ theorem matching (γ : 𝕜) : Submodule.map (Submodule.subtype (eigenspace A α
   simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
       exists_eq_right] at *
   constructor
-  · intro h
-    obtain ⟨x1, _⟩ := h
-    constructor
-    · simp only [SetLike.mem_coe]
-      apply eigen_extend hAB γ x
+  <;> intro ⟨x1, x2⟩
+  · constructor
+    <;> rw [SetLike.mem_coe]
+    · apply eigen_extend hAB γ x
       simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
         exists_eq_right]
       use x1
-    · simp only [SetLike.mem_coe, x1]
-  · rintro ⟨h1, h2⟩
-    use h2
+    · apply x1
+  · use x2
     refine mem_eigenspace_iff.mpr ?h.a
     refine SetCoe.ext ?h.a.a
-    simp only [restrict_coe_apply]
-    exact mem_eigenspace_iff.mp h1
+    rw [restrict_coe_apply]
+    exact mem_eigenspace_iff.mp x1
 
 theorem function_version : (fun (γ : 𝕜) ↦ Submodule.map (Submodule.subtype (eigenspace A α))
     (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)) = (fun (γ : 𝕜) ↦
@@ -333,28 +324,19 @@ theorem function_version : (fun (γ : 𝕜) ↦ Submodule.map (Submodule.subtype
   funext
   exact matching hAB _
 
-theorem submod_subtype_commute : Submodule.map (Submodule.subtype (eigenspace A α)) (⨆ γ , (eigenspace (LinearMap.restrict B
-    (eigenspace_invariant hAB α)) γ)) = (⨆ γ , Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (LinearMap.restrict B
-    (eigenspace_invariant hAB α)) γ)) := Submodule.map_iSup (eigenspace A α).subtype fun i ↦
-      eigenspace (B.restrict (eigenspace_invariant hAB α)) i
-
 theorem semi_final_exhaust : (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) = eigenspace A α := by
-   rw [← function_version hAB, ← submod_subtype_commute hAB, restrict_exhaust2 hB hAB] at *
-   simp only [Submodule.map_top, Submodule.range_subtype]
+   rw [← function_version hAB, ← Submodule.map_iSup, restrict_exhaust hB hAB, Submodule.map_top,
+   Submodule.range_subtype]
 
 theorem pre_exhaust :  (⨆ (γ : 𝕜), eigenspace A γ) =  ⊤ := by
   exact Submodule.orthogonal_eq_bot_iff.mp (hA.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-theorem pre_pre_exhaust: (fun (α : 𝕜) ↦  eigenspace A α) = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
+theorem pre_exhaust': (fun (α : 𝕜 ) ↦  eigenspace A α)  = fun(α : 𝕜) ↦  (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)) := by
 funext
-exact Eq.symm (semi_final_exhaust hB hAB)
+exact (semi_final_exhaust hB hAB).symm
 
 theorem exhaust : (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α))) = ⊤ := by
-  conv =>
-    rhs
-    rw [← hA.pre_exhaust]
-    rhs
-    rw [pre_pre_exhaust hB hAB]
+  rw [← hA.pre_exhaust, pre_exhaust' hB hAB]
 
 theorem post_exhaust: (⨆ (α : 𝕜), (⨆ (γ : 𝕜), (eigenspace B γ ⊓ eigenspace A α)))ᗮ = ⊥ := by
   rw [Submodule.orthogonal_eq_bot_iff]
@@ -495,7 +477,6 @@ theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T
 
 /-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
   some lemmas. -/
-variable (i j : n) [Fintype n]
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [Nontrivial n] :
     (∀ (m : Type u) [Fintype m], Fintype.card m < Fintype.card n →
@@ -504,18 +485,17 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
   intro h
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
   have h1 := h {x // i ≠ x} (Fintype.card_subtype_lt fun a ↦ a rfl)
-
   --somehow can use invariance_iInf together with h1 now...
-
-
-  --have H := (set_fintype_card_eq_univ_iff (⊤ : Set n)).mpr rfl
-  --have H1 := Set.Finite.fintype (Set.toFinite (⊤ \ Set.singleton i))
-  --have H2 : Fintype.card (@Set.Elem n (⊤ \ (Set.singleton i))) < Fintype.card (⊤ : Set n) := by
---maybe just define subtype {j : n // i ≠ j} and then use Fintype.card_subtype_le
-
-
+  -- ***** Can we show that (T n i) commutes with every (T { x // i ≠ x } j)
+  have Q : ∀ (j : { x // i ≠ x }), (T n i) ∘ₗ (T { x // i ≠ x } j) = (T { x // i ≠ x } j) ∘ₗ (T n i)
+      := by
+    intro j
+    have R : (T { x // i ≠ x } j) = (T n j.1) := by
+      ext v
+      sorry
+    rw [R]
+    exact hC n i ↑j
   sorry
-
 #exit
 /-COMMENT: May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
   orthogonalFamily_eigenspaces'-/
