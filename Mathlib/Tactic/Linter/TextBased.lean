@@ -366,7 +366,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations;
 update the list of style exceptions if configured so.
-Return the number of files which had new style errors.
+Return the number of files which had unexpected style errors.
 `moduleNames` are all the modules to lint,
 `mode` specifies what kind of output this script should produce. -/
 def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 := do
@@ -423,12 +423,3 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
     IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
   return numberErrorFiles
-
-/-- Lint all files referenced in a given import-only file.
-Print formatted errors and possibly update the style exceptions file accordingly.
-Return the number of files which had new style errors.
-`mode` specifies what kind of output this script should produce. -/
-def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
-  -- Read all module names from the file at `path`.
-  let allModules ← IO.FS.lines path
-  lintModules allModules mode
