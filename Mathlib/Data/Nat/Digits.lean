@@ -560,7 +560,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 
 /-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
 -/
-lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p):
+lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
   convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
