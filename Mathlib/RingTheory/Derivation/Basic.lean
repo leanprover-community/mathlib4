@@ -1,5 +1,5 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
@@ -157,7 +157,7 @@ theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
 @[simp]
 theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction' n with n ihn
-  · rw [Nat.zero_eq, pow_zero, map_one_eq_zero, zero_smul]
+  · rw [pow_zero, map_one_eq_zero, zero_smul]
   · rcases (zero_le n).eq_or_lt with (rfl | hpos)
     · erw [pow_one, one_smul, pow_zero, one_smul]
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
@@ -410,13 +410,12 @@ theorem map_intCast (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
 #align derivation.map_coe_int Derivation.map_intCast
 
--- 2024-04-05
-@[deprecated] alias map_coe_nat := map_natCast
-@[deprecated] alias map_coe_int := map_intCast
+@[deprecated (since := "2024-04-05")] alias map_coe_nat := map_natCast
+@[deprecated (since := "2024-04-05")] alias map_coe_int := map_intCast
 
 theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]
-  refine' eq_neg_of_add_eq_zero_left _
+  refine eq_neg_of_add_eq_zero_left ?_
   calc
     D a + a ^ 2 • D b = a • b • D a + a • a • D b := by simp only [smul_smul, h, one_smul, sq]
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]

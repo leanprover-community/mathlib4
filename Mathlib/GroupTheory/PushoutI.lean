@@ -296,7 +296,6 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
   have hhead : ((d.compl i).equiv (Word.equivPair i w).head).2 =
       (Word.equivPair i w).head := by
     rw [Word.equivPair_head]
-    dsimp only
     split_ifs with h
     · rcases h with ⟨_, rfl⟩
       exact hw _ _ (List.head_mem _)

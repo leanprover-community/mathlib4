@@ -6,6 +6,8 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Commute
+import Mathlib.Algebra.Ring.Invertible
+import Mathlib.Order.Synonym
 
 #align_import algebra.field.basic from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
@@ -46,10 +48,14 @@ theorem div_add_one (h : b ≠ 0) : a / b + 1 = (a + b) / b :=
   (div_add_same h).symm
 #align div_add_one div_add_one
 
+/-- See `inv_add_inv` for the more convenient version when `K` is commutative. -/
+theorem inv_add_inv' (ha : a ≠ 0) (hb : b ≠ 0) :
+    a⁻¹ + b⁻¹ = a⁻¹ * (a + b) * b⁻¹ :=
+  let _ := invertibleOfNonzero ha; let _ := invertibleOfNonzero hb; invOf_add_invOf a b
+
 theorem one_div_mul_add_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : b ≠ 0) :
     1 / a * (a + b) * (1 / b) = 1 / a + 1 / b := by
-  rw [mul_add, one_div_mul_cancel ha, add_mul, one_mul, mul_assoc, mul_one_div_cancel hb, mul_one,
-    add_comm]
+  simpa only [one_div] using (inv_add_inv' ha hb).symm
 #align one_div_mul_add_mul_one_div_eq_one_div_add_one_div one_div_mul_add_mul_one_div_eq_one_div_add_one_div
 
 theorem add_div_eq_mul_add_div (a b : α) (hc : c ≠ 0) : a + b / c = (a * c + b) / c :=
@@ -170,14 +176,13 @@ theorem sub_div (a b c : K) : (a - b) / c = a / c - b / c :=
 #align sub_div sub_div
 
 /-- See `inv_sub_inv` for the more convenient version when `K` is commutative. -/
-theorem inv_sub_inv' {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = a⁻¹ * (b - a) * b⁻¹ := by
-  rw [mul_sub, sub_mul, mul_inv_cancel_right₀ hb, inv_mul_cancel ha, one_mul]
+theorem inv_sub_inv' {a b : K} (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ - b⁻¹ = a⁻¹ * (b - a) * b⁻¹ :=
+  let _ := invertibleOfNonzero ha; let _ := invertibleOfNonzero hb; invOf_sub_invOf a b
 #align inv_sub_inv' inv_sub_inv'
 
 theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : b ≠ 0) :
     1 / a * (b - a) * (1 / b) = 1 / a - 1 / b := by
-  rw [mul_sub_left_distrib (1 / a), one_div_mul_cancel ha, mul_sub_right_distrib, one_mul,
-    mul_assoc, mul_one_div_cancel hb, mul_one]
+  simpa only [one_div] using (inv_sub_inv' ha hb).symm
 #align one_div_mul_sub_mul_one_div_eq_one_div_add_one_div one_div_mul_sub_mul_one_div_eq_one_div_add_one_div
 
 -- see Note [lower instance priority]
@@ -263,17 +268,18 @@ section NoncomputableDefs
 variable {R : Type*} [Nontrivial R]
 
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
-@[reducible] -- See note [reducible non-instances]
-noncomputable def DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
+-- See note [reducible non-instances]
+noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     DivisionRing R where
   toRing := ‹Ring R›
   __ := groupWithZeroOfIsUnitOrEqZero h
+  nnqsmul := _
   qsmul := _
 #align division_ring_of_is_unit_or_eq_zero DivisionRing.ofIsUnitOrEqZero
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
-@[reducible] -- See note [reducible non-instances]
-noncomputable def Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
+-- See note [reducible non-instances]
+noncomputable abbrev Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     Field R where
   toCommRing := ‹CommRing R›
   __ := DivisionRing.ofIsUnitOrEqZero h
@@ -282,69 +288,72 @@ noncomputable def Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit a �
 end NoncomputableDefs
 
 namespace Function.Injective
-variable [Zero α] [Add α] [Neg α] [Sub α] [One α] [Mul α] [Inv α] [Div α] [SMul ℕ α]
-  [SMul ℤ α] [SMul ℚ α] [Pow α ℕ] [Pow α ℤ] [NatCast α] [IntCast α] [RatCast α]
+variable [Zero α] [Add α] [Neg α] [Sub α] [One α] [Mul α] [Inv α] [Div α] [SMul ℕ α] [SMul ℤ α]
+  [SMul ℚ≥0 α] [SMul ℚ α] [Pow α ℕ] [Pow α ℤ] [NatCast α] [IntCast α] [NNRatCast α] [RatCast α]
   (f : α → β) (hf : Injective f)
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
-@[reducible] -- See note [reducible non-instances]
-protected def divisionSemiring [DivisionSemiring β] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev divisionSemiring [DivisionSemiring β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) : DivisionSemiring α where
+    (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : DivisionSemiring α where
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
   __ := hf.groupWithZero f zero one mul inv div npow zpow
+  nnratCast_def q := hf $ by rw [nnratCast, NNRat.cast_def, div, natCast, natCast]
+  nnqsmul := (· • ·)
+  nnqsmul_def q a := hf $ by rw [nnqsmul, NNRat.smul_def, mul, nnratCast]
 #align function.injective.division_semiring Function.Injective.divisionSemiring
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
-@[reducible] -- See note [reducible non-instances]
-protected def divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
+    (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n)
+    (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) : DivisionRing α where
   toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
   __ := hf.groupWithZero f zero one mul inv div npow zpow
-  __ := hf.divisionSemiring f zero one add mul inv div nsmul npow zpow natCast
+  __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
   ratCast_def q := hf $ by erw [ratCast, div, intCast, natCast, Rat.cast_def]
   qsmul := (· • ·)
   qsmul_def q a := hf $ by erw [qsmul, mul, Rat.smul_def, ratCast]
 #align function.injective.division_ring Function.Injective.divisionRing
 
 /-- Pullback a `Field` along an injective function. -/
-@[reducible] -- See note [reducible non-instances]
-protected def semifield [Semifield β] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev semifield [Semifield β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) : Semifield α where
+    (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : Semifield α where
   toCommSemiring := hf.commSemiring f zero one add mul nsmul npow natCast
   __ := hf.commGroupWithZero f zero one mul inv div npow zpow
-  __ := hf.divisionSemiring f zero one add mul inv div nsmul npow zpow natCast
+  __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
 #align function.injective.semifield Function.Injective.semifield
 
 /-- Pullback a `Field` along an injective function. -/
-@[reducible] -- See note [reducible non-instances]
-protected def field [Field β] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev field [Field β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y)
-    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
-    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x)
+    (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x) (qsmul : ∀ (q : ℚ) (x), f (q • x) = q • f x)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n)
+    (natCast : ∀ n : ℕ, f n = n) (intCast : ∀ n : ℤ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q)
     (ratCast : ∀ q : ℚ, f q = q) :
     Field α where
   toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
-  __ := hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul qsmul npow zpow
-    natCast intCast ratCast
+  __ := hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow zpow
+    natCast intCast nnratCast ratCast
 #align function.injective.field Function.Injective.field
 
 end Function.Injective

@@ -109,7 +109,7 @@ instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α
   letI := upgradePolishSpace α
   infer_instance
 
-@[deprecated] -- 2024-02-23
+@[deprecated (since := "2024-02-23")]
 theorem t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] : T2Space α := inferInstance
 #align polish_space.t2_space PolishSpace.t2Space
 
@@ -271,7 +271,7 @@ theorem dist_eq (x y : CompleteCopy s) :
 #align polish_space.dist_complete_copy_eq TopologicalSpace.Opens.CompleteCopy.dist_eqₓ
 
 theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
-  (le_add_iff_nonneg_right _).2 (abs_nonneg _)
+  le_add_of_nonneg_right (abs_nonneg _)
 #align polish_space.dist_le_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.dist_val_le_distₓ
 
 instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)

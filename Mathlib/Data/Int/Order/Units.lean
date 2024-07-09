@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Int.Units
 
 #align_import data.int.order.units from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
@@ -64,7 +63,7 @@ theorem sq_eq_one_of_sq_le_three {x : ℤ} (h1 : x ^ 2 ≤ 3) (h2 : x ≠ 0) : x
 theorem units_pow_eq_pow_mod_two (u : ℤˣ) (n : ℕ) : u ^ n = u ^ (n % 2) := by
   conv =>
       lhs
-      rw [← Nat.mod_add_div n 2];
+      rw [← Nat.mod_add_div n 2]
       rw [pow_add, pow_mul, units_sq, one_pow, mul_one]
 #align int.units_pow_eq_pow_mod_two Int.units_pow_eq_pow_mod_two
 

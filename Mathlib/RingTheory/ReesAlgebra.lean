@@ -31,7 +31,7 @@ variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 open Polynomial
 
-open Polynomial BigOperators
+open Polynomial
 
 /-- The Rees algebra of an ideal `I`, defined as the subalgebra of `R[X]` whose `i`-th coefficient
 falls in `I ^ i`. -/
@@ -69,7 +69,7 @@ theorem mem_reesAlgebra_iff_support (f : R[X]) :
     f ∈ reesAlgebra I ↔ ∀ i ∈ f.support, f.coeff i ∈ I ^ i := by
   apply forall_congr'
   intro a
-  rw [mem_support_iff, Iff.comm, imp_iff_right_iff, Ne, ← imp_iff_not_or]
+  rw [mem_support_iff, Iff.comm, Classical.imp_iff_right_iff, Ne, ← imp_iff_not_or]
   exact fun e => e.symm ▸ (I ^ a).zero_mem
 #align mem_rees_algebra_iff_support mem_reesAlgebra_iff_support
 

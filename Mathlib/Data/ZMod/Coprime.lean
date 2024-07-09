@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 #align_import data.zmod.coprime from "leanprover-community/mathlib"@"4b4975cf92a1ffe2ddfeff6ff91b0c46a9162bf5"
 

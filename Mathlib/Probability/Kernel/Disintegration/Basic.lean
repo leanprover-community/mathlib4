@@ -68,10 +68,10 @@ open scoped ENNReal MeasureTheory Topology ProbabilityTheory
 
 #noalign probability_theory.cond_kernel_real
 #noalign probability_theory.cond_kernel_real_Iic
-#noalign probability_theory.set_lintegral_cond_kernel_real_Iic
-#noalign probability_theory.set_lintegral_cond_kernel_real_univ
+#noalign probability_theory.setLIntegral_cond_kernel_real_Iic
+#noalign probability_theory.setLIntegral_cond_kernel_real_univ
 #noalign probability_theory.lintegral_cond_kernel_real_univ
-#noalign probability_theory.set_lintegral_cond_kernel_real_prod
+#noalign probability_theory.setLIntegral_cond_kernel_real_prod
 #noalign probability_theory.lintegral_cond_kernel_real_mem
 #noalign probability_theory.kernel.const_eq_comp_prod_real
 #noalign probability_theory.measure_eq_comp_prod_real
@@ -93,8 +93,7 @@ section Real
 /-! ### Disintegration of kernels from `α` to `γ × ℝ` for countably generated `γ` -/
 
 lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
-    IsRatCondKernelCDFAux (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ)
-      where
+    IsRatCondKernelCDFAux (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ) where
   measurable := measurable_pi_iff.mpr fun _ ↦ measurable_density κ (fst κ) measurableSet_Iic
   mono' a q r hqr :=
     ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (by exact_mod_cast hqr))

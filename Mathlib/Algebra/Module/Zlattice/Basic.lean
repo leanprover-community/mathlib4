@@ -37,8 +37,6 @@ the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
 -/
 
 
-open scoped BigOperators
-
 noncomputable section
 
 namespace Zspan
@@ -145,7 +143,7 @@ theorem fract_apply (m : E) : fract b m = m - floor b m := rfl
 
 @[simp]
 theorem repr_fract_apply (m : E) (i : ι) : b.repr (fract b m) i = Int.fract (b.repr m i) := by
-  rw [fract, LinearEquiv.map_sub, Finsupp.coe_sub, Pi.sub_apply, repr_floor_apply, Int.fract]
+  rw [fract, map_sub, Finsupp.coe_sub, Pi.sub_apply, repr_floor_apply, Int.fract]
 #align zspan.repr_fract_apply Zspan.repr_fract_apply
 
 @[simp]
@@ -195,7 +193,7 @@ theorem fract_eq_fract (m n : E) : fract b m = fract b n ↔ -m + n ∈ span ℤ
   classical
   rw [eq_comm, Basis.ext_elem_iff b]
   simp_rw [repr_fract_apply, Int.fract_eq_fract, eq_comm, Basis.mem_span_iff_repr_mem,
-    sub_eq_neg_add, map_add, LinearEquiv.map_neg, Finsupp.coe_add, Finsupp.coe_neg, Pi.add_apply,
+    sub_eq_neg_add, map_add, map_neg, Finsupp.coe_add, Finsupp.coe_neg, Pi.add_apply,
     Pi.neg_apply, ← eq_intCast (algebraMap ℤ K) _, Set.mem_range]
 #align zspan.fract_eq_fract Zspan.fract_eq_fract
 
@@ -435,7 +433,7 @@ theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
-      (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective) _)
+      (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective))
     have : Set.Finite ((Zspan.fundamentalDomain b) ∩ L) :=
       Metric.finite_isBounded_inter_isClosed (Zspan.fundamentalDomain_isBounded b) inferInstance
     refine Set.Finite.subset this ?_
@@ -518,8 +516,8 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
   have h_card : Fintype.card (Module.Free.ChooseBasisIndex ℤ L) =
       (Set.range b).toFinset.card := by
     rw [Set.toFinset_range, Finset.univ.card_image_of_injective]
-    rfl
-    exact Subtype.coe_injective.comp (Basis.injective _)
+    · rfl
+    · exact Subtype.coe_injective.comp (Basis.injective _)
   rw [finrank_eq_card_chooseBasisIndex]
     -- We prove that `finrank ℤ L ≤ finrank K E` and `finrank K E ≤ finrank ℤ L`
   refine le_antisymm ?_ ?_
@@ -561,7 +559,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
         refine sub_mem ?_ ?_
-        · exact zsmul_mem (subset_span (Set.diff_subset _ _ hv)) _
+        · exact zsmul_mem (subset_span (Set.diff_subset hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) :=
       Metric.finite_isBounded_inter_isClosed Metric.isBounded_closedBall inferInstance

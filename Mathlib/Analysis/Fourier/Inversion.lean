@@ -56,7 +56,7 @@ lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
     apply (Tendsto.cexp _).smul_const
     exact tendsto_inv_atTop_zero.ofReal.neg.mul_const _
   · filter_upwards with c using
-      AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable (by continuity)) hf.1
+      AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable (by fun_prop)) hf.1
   · filter_upwards [Ici_mem_atTop (0 : ℝ)] with c (hc : 0 ≤ c)
     filter_upwards with v
     simp only [ofReal_inv, neg_mul, norm_smul, Complex.norm_eq_abs]

@@ -44,7 +44,7 @@ theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} 
     ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
-  refine' tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩
+  refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       ((h_mono.le_iff_le has hxs).2 hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
@@ -65,7 +65,7 @@ theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β}
     ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
-  refine' tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩
+  refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       (h_mono has hxs hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
@@ -81,7 +81,7 @@ is continuous at `a` from the right. -/
 theorem continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin [DenselyOrdered β]
     {f : α → β} {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a)
     (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a := by
-  refine' continuousWithinAt_right_of_monotoneOn_of_exists_between h_mono hs fun b hb => _
+  refine continuousWithinAt_right_of_monotoneOn_of_exists_between h_mono hs fun b hb => ?_
   rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
   rcases exists_between hab' with ⟨c', hc'⟩
   rcases mem_closure_iff.1 (hb' ⟨hc'.1.le, hc'.2⟩) (Ioo (f a) b') isOpen_Ioo hc' with

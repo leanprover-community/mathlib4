@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Scott Morrison All rights reserved.
+Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
@@ -94,8 +94,7 @@ end Core
 /-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
 to a categorical functor `Core (Type u₁) ⥤ Core (Type u₂)`.
 -/
-def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂)
-    where
+def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u₁) ⥤ Core (Type u₂) where
   obj := m
   map f := (EquivFunctor.mapEquiv m f.toEquiv).toIso
   map_id α := by apply Iso.ext; funext x; exact congr_fun (EquivFunctor.map_refl' _) x

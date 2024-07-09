@@ -3,9 +3,9 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Algebra.Field.Subfield
 import Mathlib.Topology.Algebra.Field
-import Mathlib.FieldTheory.Subfield
+import Mathlib.Topology.Algebra.UniformRing
 
 #align_import topology.algebra.uniform_field from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -71,7 +71,7 @@ def hatInv : hat K → hat K :=
 
 theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     ContinuousAt hatInv x := by
-  refine' denseInducing_coe.continuousAt_extend _
+  refine denseInducing_coe.continuousAt_extend ?_
   apply mem_of_superset (compl_singleton_mem_nhds h)
   intro y y_ne
   rw [mem_compl_singleton_iff] at y_ne
@@ -85,7 +85,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   apply CompletableTopField.nice
   · haveI := denseInducing_coe.comap_nhds_neBot y
     apply cauchy_nhds.comap
-    · rw [Completion.comap_coe_eq_uniformity]
+    rw [Completion.comap_coe_eq_uniformity]
   · have eq_bot : 𝓝 (0 : hat K) ⊓ 𝓝 y = ⊥ := by
       by_contra h
       exact y_ne (eq_of_nhds_neBot <| neBot_iff.mpr h).symm
@@ -153,14 +153,13 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 #align uniform_space.completion.mul_hat_inv_cancel UniformSpace.Completion.mul_hatInv_cancel
 
-instance instField : Field (hat K) :=
-  { Completion.instInvCompletion,
-    (by infer_instance : CommRing (hat K)) with
-    exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((uniformEmbedding_coe K).inj h)⟩
-    mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
-    inv_zero := by simp only [Inv.inv, ite_true]
-    -- TODO: use a better defeq
-    qsmul := qsmulRec _ }
+instance instField : Field (hat K) where
+  exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((uniformEmbedding_coe K).inj h)⟩
+  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
+  inv_zero := by simp only [Inv.inv, ite_true]
+  -- TODO: use a better defeq
+  nnqsmul := _
+  qsmul := _
 #align uniform_space.completion.field UniformSpace.Completion.instField
 
 instance : TopologicalDivisionRing (hat K) :=

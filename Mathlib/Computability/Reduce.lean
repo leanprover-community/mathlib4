@@ -373,8 +373,8 @@ protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
 
 /-- Lifts a function on sets of natural numbers to many-one degrees.
 -/
-@[reducible] -- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
-protected def liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
+-- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
   Quotient.liftOn' d f h
 #align many_one_degree.lift_on ManyOneDegree.liftOn
@@ -395,8 +395,8 @@ protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set �
       intro p₁ p₂ hp
       induction d₂ using ManyOneDegree.ind_on
       apply h
-      assumption
-      rfl)
+      · assumption
+      · rfl)
 #align many_one_degree.lift_on₂ ManyOneDegree.liftOn₂
 
 @[simp]

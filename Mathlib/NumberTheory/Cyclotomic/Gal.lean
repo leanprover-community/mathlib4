@@ -56,22 +56,16 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
   apply_fun Units.val at hfg
   simp only [IsPrimitiveRoot.coe_autToPow_apply] at hfg
-  -- Porting note: was `generalize_proofs hf' hg' at hfg`
-  revert hfg
-  generalize_proofs hf' hg'
-  intro hfg
+  generalize_proofs hf' hg' at hfg
   have hf := hf'.choose_spec
   have hg := hg'.choose_spec
-  -- Porting note: was `generalize_proofs hζ at hf hg`
-  revert hf hg
-  generalize_proofs hζ
-  intro hf hg
+  generalize_proofs hζ at hf hg
   suffices f (hμ.toRootsOfUnity : Lˣ) = g (hμ.toRootsOfUnity : Lˣ) by
     apply AlgEquiv.coe_algHom_injective
     apply (hμ.powerBasis K).algHom_ext
     exact this
   rw [ZMod.eq_iff_modEq_nat] at hfg
-  refine' (hf.trans _).trans hg.symm
+  refine (hf.trans ?_).trans hg.symm
   rw [← rootsOfUnity.coe_pow _ hf'.choose, ← rootsOfUnity.coe_pow _ hg'.choose]
   congr 2
   rw [pow_eq_pow_iff_modEq]
@@ -154,13 +148,11 @@ noncomputable def fromZetaAut : L ≃ₐ[K] L :=
 
 theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [fromZetaAut, autEquivPow_symm_apply]
--- Porting note: `generalize_proofs` did not generalize the same proofs, making the proof different.
-  generalize_proofs h1 h2
-  nth_rewrite 4 [← (zeta_spec n K L).powerBasis_gen K]
-  have := Exists.choose_spec ((zeta_spec n K L).eq_pow_of_pow_eq_one hμ.pow_eq_one n.pos)
-  rw [PowerBasis.equivOfMinpoly_gen, h1.powerBasis_gen K, ZMod.coe_unitOfCoprime,
-    ZMod.val_cast_of_lt this.1]
-  exact this.2
+  generalize_proofs hζ h _ hμ _
+  nth_rewrite 4 [← hζ.powerBasis_gen K]
+  rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
+  convert h.choose_spec.2
+  exact ZMod.val_cast_of_lt h.choose_spec.1
 #align is_cyclotomic_extension.from_zeta_aut_spec IsCyclotomicExtension.fromZetaAut_spec
 
 end IsCyclotomicExtension

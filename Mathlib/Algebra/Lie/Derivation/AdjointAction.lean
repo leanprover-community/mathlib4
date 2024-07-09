@@ -1,5 +1,5 @@
 /-
-Copyright © 2024 Frédéric Marbach. All rights reserved.
+Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
@@ -53,6 +53,10 @@ variable {R L}
 /-- The definitions `LieDerivation.ad` and `LieAlgebra.ad` agree. -/
 @[simp] lemma coe_ad_apply_eq_ad_apply (x : L) : ad R L x = LieAlgebra.ad R L x := by ext; simp
 
+lemma ad_apply_lieDerivation (x : L) (D : LieDerivation R L L) : ad R L (D x) = - ⁅x, D⁆ := rfl
+
+lemma lie_ad (x : L) (D : LieDerivation R L L) : ⁅ad R L x, D⁆ = ⁅x, D⁆ := by ext; simp
+
 variable (R L) in
 /-- The kernel of the adjoint action on a Lie algebra is equal to its center. -/
 lemma ad_ker_eq_center : (ad R L).ker = LieAlgebra.center R L := by
@@ -60,11 +64,14 @@ lemma ad_ker_eq_center : (ad R L).ker = LieAlgebra.center R L := by
   rw [← LieAlgebra.self_module_ker_eq_center, LieHom.mem_ker, LieModule.mem_ker]
   simp [DFunLike.ext_iff]
 
+/-- If the center of a Lie algebra is trivial, then the adjoint action is injective. -/
+lemma injective_ad_of_center_eq_bot (h : LieAlgebra.center R L = ⊥) :
+    Function.Injective (ad R L) := by
+  rw [← LieHom.ker_eq_bot, ad_ker_eq_center, h]
+
 /-- The commutator of a derivation `D` and a derivation of the form `ad x` is `ad (D x)`. -/
 lemma lie_der_ad_eq_ad_der (D : LieDerivation R L L) (x : L) : ⁅D, ad R L x⁆ = ad R L (D x) := by
-  ext a
-  rw [commutator_apply, ad_apply_apply, ad_apply_apply, ad_apply_apply, apply_lie_eq_add,
-    add_sub_cancel_left]
+  rw [ad_apply_lieDerivation, ← lie_ad, lie_skew]
 
 variable (R L) in
 /-- The range of the adjoint action homomorphism from a Lie algebra `L` to the Lie algebra of its
@@ -78,6 +85,15 @@ for some `x` in the Lie algebra `L`. -/
 lemma mem_ad_idealRange_iff {D : LieDerivation R L L} :
     D ∈ (ad R L).idealRange ↔ ∃ x : L, ad R L x = D :=
   (ad R L).mem_idealRange_iff (ad_isIdealMorphism R L)
+
+lemma maxTrivSubmodule_eq_bot_of_center_eq_bot (h : LieAlgebra.center R L = ⊥) :
+    LieModule.maxTrivSubmodule R L (LieDerivation R L L) = ⊥ := by
+  refine (LieSubmodule.eq_bot_iff _).mpr fun D hD ↦ ext fun x ↦ ?_
+  have : ad R L (D x) = 0 := by
+    rw [LieModule.mem_maxTrivSubmodule] at hD
+    simp [ad_apply_lieDerivation, hD]
+  rw [← LieHom.mem_ker, ad_ker_eq_center, h, LieSubmodule.mem_bot] at this
+  simp [this]
 
 end AdjointAction
 

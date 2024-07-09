@@ -73,7 +73,7 @@ theorem whiskering_linearYoneda :
 
 @[simp]
 theorem whiskering_linearYoneda₂ :
-    linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) =
+    linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) =
       preadditiveYoneda :=
   rfl
 #align category_theory.whiskering_linear_yoneda₂ CategoryTheory.whiskering_linearYoneda₂
@@ -87,24 +87,22 @@ theorem whiskering_linearCoyoneda :
 @[simp]
 theorem whiskering_linearCoyoneda₂ :
     linearCoyoneda R C ⋙
-        (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) =
+        (whiskeringRight _ _ _).obj (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) =
       preadditiveCoyoneda :=
   rfl
 #align category_theory.whiskering_linear_coyoneda₂ CategoryTheory.whiskering_linearCoyoneda₂
 
 instance full_linearYoneda : (linearYoneda R C).Full :=
   let _ :  Functor.Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj
-    (forget (ModuleCat.{v} R))) :=
-    Yoneda.yonedaFull
-  Functor.Full.ofCompFaithful (linearYoneda R C)
+    (forget (ModuleCat.{v} R))) := Yoneda.yoneda_full
+  Functor.Full.of_comp_faithful (linearYoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))
 #align category_theory.linear_yoneda_full CategoryTheory.full_linearYoneda
 
 instance full_linearCoyoneda : (linearCoyoneda R C).Full :=
   let _ : Functor.Full (linearCoyoneda R C ⋙ (whiskeringRight _ _ _).obj
-    (forget (ModuleCat.{v} R))) :=
-    Coyoneda.coyonedaFull
-  Functor.Full.ofCompFaithful (linearCoyoneda R C)
+    (forget (ModuleCat.{v} R))) := Coyoneda.coyoneda_full
+  Functor.Full.of_comp_faithful (linearCoyoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))
 #align category_theory.linear_coyoneda_full CategoryTheory.full_linearCoyoneda
 

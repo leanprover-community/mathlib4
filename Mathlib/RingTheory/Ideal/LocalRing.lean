@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.Logic.Equiv.TransferInstance
@@ -81,8 +81,8 @@ theorem of_unique_nonzero_prime (h : ∃! P : Ideal R, P ≠ ⊥ ∧ Ideal.IsPri
   of_unique_max_ideal
     (by
       rcases h with ⟨P, ⟨hPnonzero, hPnot_top, _⟩, hPunique⟩
-      refine' ⟨P, ⟨⟨hPnot_top, _⟩⟩, fun M hM => hPunique _ ⟨_, Ideal.IsMaximal.isPrime hM⟩⟩
-      · refine' Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM _
+      refine ⟨P, ⟨⟨hPnot_top, ?_⟩⟩, fun M hM => hPunique _ ⟨?_, Ideal.IsMaximal.isPrime hM⟩⟩
+      · refine Ideal.maximal_of_no_maximal fun M hPM hM => ne_of_lt hPM ?_
         exact (hPunique _ ⟨ne_bot_of_gt hPM, Ideal.IsMaximal.isPrime hM⟩).symm
       · rintro rfl
         exact hPnot_top (hM.1.2 P (bot_lt_iff_ne_bot.2 hPnonzero)))
@@ -188,11 +188,14 @@ theorem of_surjective' [CommRing S] [Nontrivial S] (f : R →+* S) (hf : Functio
     apply f.isUnit_map)
 #align local_ring.of_surjective' LocalRing.of_surjective'
 
+theorem maximalIdeal_le_jacobson (I : Ideal R) :
+    LocalRing.maximalIdeal R ≤ I.jacobson :=
+  le_sInf fun _ ⟨_, h⟩ => le_of_eq (LocalRing.eq_maximalIdeal h).symm
+
 theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
-    I.jacobson = LocalRing.maximalIdeal R := by
-  apply le_antisymm
-  · exact sInf_le ⟨LocalRing.le_maximalIdeal h, LocalRing.maximalIdeal.isMaximal R⟩
-  · exact le_sInf fun J (hJ : I ≤ J ∧ J.IsMaximal) => le_of_eq (LocalRing.eq_maximalIdeal hJ.2).symm
+    I.jacobson = LocalRing.maximalIdeal R :=
+  le_antisymm (sInf_le ⟨le_maximalIdeal h, maximalIdeal.isMaximal R⟩)
+              (maximalIdeal_le_jacobson I)
 #align local_ring.jacobson_eq_maximal_ideal LocalRing.jacobson_eq_maximalIdeal
 
 end LocalRing
@@ -341,6 +344,13 @@ theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R �
   exact hb
 #align local_ring.surjective_units_map_of_local_ring_hom LocalRing.surjective_units_map_of_local_ringHom
 
+-- see Note [lower instance priority]
+/-- Every ring hom `f : K →+* R` from a division ring `K` to a nontrivial ring `R` is a
+local ring hom. -/
+instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
+    (f : K →+* R) : IsLocalRingHom f where
+  map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
+
 section
 
 variable (R) [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
@@ -365,6 +375,20 @@ noncomputable instance ResidueField.field : Field (ResidueField R) :=
 def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 #align local_ring.residue LocalRing.residue
+
+variable {R}
+
+lemma ker_residue : RingHom.ker (residue R) = maximalIdeal R :=
+  Ideal.mk_ker
+
+@[simp]
+lemma residue_eq_zero_iff (x : R) : residue R x = 0 ↔ x ∈ maximalIdeal R := by
+  rw [← RingHom.mem_ker, ker_residue]
+
+lemma residue_ne_zero_iff_isUnit (x : R) : residue R x ≠ 0 ↔ IsUnit x := by
+  simp
+
+variable (R)
 
 instance ResidueField.algebra : Algebra R (ResidueField R) :=
   Ideal.Quotient.algebra _
@@ -533,7 +557,6 @@ theorem LocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : LocalRing.maximalI
 
 namespace RingEquiv
 
-@[reducible]
 protected theorem localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
     (e : A ≃+* B) : LocalRing B :=
   haveI := e.symm.toEquiv.nontrivial

@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Type tags for right action on the domain of a function

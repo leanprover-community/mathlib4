@@ -16,7 +16,7 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 
 noncomputable section
 
-open scoped NNReal ENNReal Pointwise BigOperators Topology
+open scoped NNReal ENNReal Pointwise Topology
 
 open Inv Set Function MeasureTheory.Measure Filter
 
@@ -122,20 +122,19 @@ theorem setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0)
     rw [mem_smul_set_iff_inv_smul_mem₀ hR]
     rfl
 
-@[deprecated]
-alias set_integral_comp_smul :=
-  setIntegral_comp_smul -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_comp_smul := setIntegral_comp_smul
 
 theorem setIntegral_comp_smul_of_pos (f : E → F) {R : ℝ} (s : Set E) (hR : 0 < R) :
     ∫ x in s, f (R • x) ∂μ = (R ^ finrank ℝ E)⁻¹ • ∫ x in R • s, f x ∂μ := by
   rw [setIntegral_comp_smul μ f s hR.ne', abs_of_nonneg (inv_nonneg.2 (pow_nonneg hR.le _))]
 
-@[deprecated]
-alias set_integral_comp_smul_of_pos :=
-  setIntegral_comp_smul_of_pos -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_comp_smul_of_pos := setIntegral_comp_smul_of_pos
 
-theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y :=
-  by simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
+theorem integral_comp_mul_left (g : ℝ → F) (a : ℝ) :
+    (∫ x : ℝ, g (a * x)) = |a⁻¹| • ∫ y : ℝ, g y := by
+  simp_rw [← smul_eq_mul, Measure.integral_comp_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_mul_left MeasureTheory.Measure.integral_comp_mul_left
 
 theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
@@ -143,8 +142,9 @@ theorem integral_comp_inv_mul_left (g : ℝ → F) (a : ℝ) :
   simp_rw [← smul_eq_mul, Measure.integral_comp_inv_smul, FiniteDimensional.finrank_self, pow_one]
 #align measure_theory.measure.integral_comp_inv_mul_left MeasureTheory.Measure.integral_comp_inv_mul_left
 
-theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) : (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y :=
-  by simpa only [mul_comm] using integral_comp_mul_left g a
+theorem integral_comp_mul_right (g : ℝ → F) (a : ℝ) :
+    (∫ x : ℝ, g (x * a)) = |a⁻¹| • ∫ y : ℝ, g y := by
+  simpa only [mul_comm] using integral_comp_mul_left g a
 #align measure_theory.measure.integral_comp_mul_right MeasureTheory.Measure.integral_comp_mul_right
 
 theorem integral_comp_inv_mul_right (g : ℝ → F) (a : ℝ) :
@@ -166,13 +166,13 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
   -- reduce to one-way implication
   suffices
     ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
-    refine' ⟨fun hf => _, fun hf => this hf hR⟩
+    refine ⟨fun hf => ?_, fun hf => this hf hR⟩
     convert this hf (inv_ne_zero hR)
     rw [← mul_smul, mul_inv_cancel hR, one_smul]
   -- now prove
   intro g hg S hS
   let t := ((Homeomorph.smul (isUnit_iff_ne_zero.2 hS).unit).toMeasurableEquiv : E ≃ᵐ E)
-  refine' (integrable_map_equiv t g).mp (_ : Integrable g (map (S • ·) μ))
+  refine (integrable_map_equiv t g).mp (?_ : Integrable g (map (S • ·) μ))
   rwa [map_addHaar_smul μ hS, integrable_smul_measure _ ENNReal.ofReal_ne_top]
   simpa only [Ne, ENNReal.ofReal_eq_zero, not_le, abs_pos] using inv_ne_zero (pow_ne_zero _ hS)
 #align measure_theory.integrable_comp_smul_iff MeasureTheory.integrable_comp_smul_iff

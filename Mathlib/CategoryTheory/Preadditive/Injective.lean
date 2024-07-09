@@ -98,7 +98,7 @@ theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Injective P) : Injective Q :=
   {
     factors := fun g f mono => by
       obtain ⟨h, h_eq⟩ := @Injective.factors C _ P _ _ _ (g ≫ i.inv) f mono
-      refine' ⟨h ≫ i.hom, _⟩
+      refine ⟨h ≫ i.hom, ?_⟩
       rw [← Category.assoc, h_eq, Category.assoc, Iso.inv_hom_id, Category.comp_id] }
 #align category_theory.injective.of_iso CategoryTheory.Injective.of_iso
 
@@ -140,16 +140,16 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     · simp only [prod.lift_fst]
     · simp only [prod.lift_snd]
 
-instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ c) where
+instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ᶜ c) where
   factors g f mono := by
-    refine' ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, _⟩
+    refine ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, ?_⟩
     ext b
     simp only [Category.assoc, limit.lift_π, Fan.mk_π_app, comp_factorThru]
 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [Injective Q] :
     Injective (P ⊞ Q) where
   factors g f mono := by
-    refine' ⟨biprod.lift (factorThru (g ≫ biprod.fst) f) (factorThru (g ≫ biprod.snd) f), _⟩
+    refine ⟨biprod.lift (factorThru (g ≫ biprod.fst) f) (factorThru (g ≫ biprod.snd) f), ?_⟩
     ext
     · simp only [Category.assoc, biprod.lift_fst, comp_factorThru]
     · simp only [Category.assoc, biprod.lift_snd, comp_factorThru]
@@ -157,15 +157,15 @@ instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [
 instance {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀ b, Injective (c b)] :
     Injective (⨁ c) where
   factors g f mono := by
-    refine' ⟨biproduct.lift fun b => factorThru (g ≫ biproduct.π _ _) f, _⟩
+    refine ⟨biproduct.lift fun b => factorThru (g ≫ biproduct.π _ _) f, ?_⟩
     ext
     simp only [Category.assoc, biproduct.lift_π, comp_factorThru]
 
-instance {P : Cᵒᵖ} [Projective P] : Injective (unop P) where
+instance {P : Cᵒᵖ} [Projective P] : Injective no_index (unop P) where
   factors g f mono :=
     ⟨(@Projective.factorThru Cᵒᵖ _ P _ _ _ g.op f.op _).unop, Quiver.Hom.op_inj (by simp)⟩
 
-instance {J : Cᵒᵖ} [Injective J] : Projective (unop J) where
+instance {J : Cᵒᵖ} [Injective J] : Projective no_index (unop J) where
   factors f e he :=
     ⟨(@factorThru Cᵒᵖ _ J _ _ _ f.op e.op _).unop, Quiver.Hom.op_inj (by simp)⟩
 
@@ -272,36 +272,6 @@ theorem enoughProjectives_of_enoughInjectives_op [EnoughInjectives Cᵒᵖ] : En
 theorem enoughInjectives_of_enoughProjectives_op [EnoughProjectives Cᵒᵖ] : EnoughInjectives C :=
   ⟨fun X => ⟨⟨_, inferInstance, (Projective.π (op X)).unop, inferInstance⟩⟩⟩
 #align category_theory.injective.enough_injectives_of_enough_projectives_op CategoryTheory.Injective.enoughInjectives_of_enoughProjectives_op
-
-open Injective
-
-section
-
-variable [HasZeroMorphisms C] [HasImages Cᵒᵖ] [HasEqualizers Cᵒᵖ]
-
-/-- Given a pair of exact morphism `f : Q ⟶ R` and `g : R ⟶ S` and a map `h : R ⟶ J` to an injective
-object `J` such that `f ≫ h = 0`, then `g` descents to a map `S ⟶ J`. See below:
-
-```
-Q --- f --> R --- g --> S
-            |
-            | h
-            v
-            J
-```
--/
-def Exact.desc {J Q R S : C} [Injective J] (h : R ⟶ J) (f : Q ⟶ R) (g : R ⟶ S)
-    (hgf : Exact g.op f.op) (w : f ≫ h = 0) : S ⟶ J :=
-  (Exact.lift h.op g.op f.op hgf (congr_arg Quiver.Hom.op w)).unop
-#align category_theory.injective.exact.desc CategoryTheory.Injective.Exact.desc
-
-@[simp]
-theorem Exact.comp_desc {J Q R S : C} [Injective J] (h : R ⟶ J) (f : Q ⟶ R) (g : R ⟶ S)
-    (hgf : Exact g.op f.op) (w : f ≫ h = 0) : g ≫ Exact.desc h f g hgf w = h := by
-  convert congr_arg Quiver.Hom.unop (Exact.lift_comp h.op g.op f.op hgf (congrArg Quiver.Hom.op w))
-#align category_theory.injective.exact.comp_desc CategoryTheory.Injective.Exact.comp_desc
-
-end
 
 end Injective
 

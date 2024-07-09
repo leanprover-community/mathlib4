@@ -47,4 +47,3 @@ theorem convex_halfspace_im_gt (r : ℝ) : Convex ℝ { c : ℂ | r < c.im } :=
 theorem convex_halfspace_im_ge (r : ℝ) : Convex ℝ { c : ℂ | r ≤ c.im } :=
   convex_halfspace_ge (IsLinearMap.mk Complex.add_im Complex.smul_im) _
 #align convex_halfspace_im_ge convex_halfspace_im_ge
-
