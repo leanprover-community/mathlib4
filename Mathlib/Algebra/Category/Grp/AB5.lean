@@ -11,7 +11,7 @@ import Mathlib.Algebra.Category.Grp.FilteredColimits
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
 /-!
-# The category of abelian groups satisfying Grothendieck's Axiom AB5
+# The category of abelian groups satisfies Grothendieck's axiom AB5
 
 -/
 
@@ -45,3 +45,4 @@ noncomputable instance :
 noncomputable instance :
     PreservesFiniteLimits <| colim (J := J) (C := AddCommGrp.{u}) := by
   apply Functor.preservesFiniteLimitsOfPreservesHomology
+
