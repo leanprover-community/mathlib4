@@ -69,14 +69,12 @@ section
 
 set_option linter.deprecated false
 
-@[simp, norm_cast]
-theorem cast_bit0 [CharZero α] (n : ℚ) : ((bit0 n : ℚ) : α) = (bit0 n : α) :=
-  cast_add _ _
+theorem cast_bit0 [CharZero α] (n : ℚ) : ((2 * n : ℚ) : α) = (2 * n : α) := by
+  norm_cast
 #align rat.cast_bit0 Rat.cast_bit0
 
-@[simp, norm_cast]
-theorem cast_bit1 [CharZero α] (n : ℚ) : ((bit1 n : ℚ) : α) = (bit1 n : α) := by
-  rw [bit1, cast_add, cast_one, cast_bit0]; rfl
+theorem cast_bit1 [CharZero α] (n : ℚ) : ((2 * n + 1 : ℚ) : α) = (2 * n + 1 : α) := by
+  norm_cast
 #align rat.cast_bit1 Rat.cast_bit1
 
 end

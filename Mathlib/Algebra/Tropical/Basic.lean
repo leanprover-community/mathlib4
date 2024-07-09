@@ -349,7 +349,7 @@ theorem add_self (x : Tropical R) : x + x = x :=
 
 set_option linter.deprecated false in
 @[simp]
-theorem bit0 (x : Tropical R) : bit0 x = x :=
+theorem bit0 (x : Tropical R) : x + x = x :=
   add_self x
 #align tropical.bit0 Tropical.bit0
 
