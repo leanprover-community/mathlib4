@@ -1332,9 +1332,9 @@ theorem limsup_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
     (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ a in f, u a < y := by
   refine ⟨fun h _ h' ↦ eventually_lt_of_limsup_lt (lt_of_le_of_lt h h') h₂, fun h ↦ ?_⟩
-    --Two cases: Either `x` is a cluster point from above, or it is not.
-    --In the first case, we use `forall_lt_iff_le'` and split an interval.
-    --In the second case, the function `u` must eventually be smaller or equal to `x`.
+  --Two cases: Either `x` is a cluster point from above, or it is not.
+  --In the first case, we use `forall_lt_iff_le'` and split an interval.
+  --In the second case, the function `u` must eventually be smaller or equal to `x`.
   by_cases h' : ∀ y > x, ∃ z, x < z ∧ z < y
   · rw [← forall_lt_iff_le']
     intro y x_lt_y
@@ -1343,57 +1343,48 @@ theorem limsup_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
   · apply limsup_le_of_le h₁
     set_option push_neg.use_distrib true in push_neg at h'
     rcases h' with ⟨z, x_lt_z, hz⟩
-    exact Eventually.mono (h z x_lt_z) <| fun w hw ↦ (or_iff_left (not_le_of_lt hw)).1 (hz (u w))
+    exact (h z x_lt_z).mono  <| fun w hw ↦ (or_iff_left (not_le_of_lt hw)).1 (hz (u w))
 
 theorem le_limsup_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     x ≤ limsup u f ↔ ∀ y < x, ∃ᶠ a in f, y < u a := by
-  constructor
-  · exact fun h _ h' ↦ frequently_lt_of_lt_limsup h₁ (lt_of_lt_of_le h' h)
-  · intro h
-    --Two cases: Either b is a cluster point from below, or it is not.
-    --In the first case, we use `forall_lt_iff_le` and split an interval.
-    --In the second case, the function `u` must frequently be larger or equal to `b`.
-    by_cases h' : ∀ y < x, ∃ z, y < z ∧ z < x
-    · rw [← forall_lt_iff_le]
-      intro y y_lt_x
-      rcases h' y y_lt_x with ⟨z, y_lt_z, z_lt_x⟩
-      apply lt_of_lt_of_le y_lt_z
-      specialize h z z_lt_x
-      exact le_limsup_of_frequently_le (Frequently.mono h (fun _ ↦ le_of_lt)) h₂
-    · apply le_limsup_of_frequently_le _ h₂
-      set_option push_neg.use_distrib true in push_neg at h'
-      rcases h' with ⟨z, z_lt_x, hz⟩
-      exact Frequently.mono (h z z_lt_x) <| fun w hw ↦ (or_iff_right (not_le_of_lt hw)).1 (hz (u w))
+  refine ⟨fun h _ h' ↦ frequently_lt_of_lt_limsup h₁ (lt_of_lt_of_le h' h), fun h ↦ ?_⟩
+  --Two cases: Either b is a cluster point from below, or it is not.
+  --In the first case, we use `forall_lt_iff_le` and split an interval.
+  --In the second case, the function `u` must frequently be larger or equal to `b`.
+  by_cases h' : ∀ y < x, ∃ z, y < z ∧ z < x
+  · rw [← forall_lt_iff_le]
+    intro y y_lt_x
+    rcases h' y y_lt_x with ⟨z, y_lt_z, z_lt_x⟩
+    exact lt_of_lt_of_le y_lt_z (le_limsup_of_frequently_le
+      ((h z z_lt_x).mono (fun _ ↦ le_of_lt)) h₂)
+  · apply le_limsup_of_frequently_le _ h₂
+    set_option push_neg.use_distrib true in push_neg at h'
+    rcases h' with ⟨z, z_lt_x, hz⟩
+    exact (h z z_lt_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_lt hw)).1 (hz (u w))
 
 theorem limsup_le_iff' {α β} [CompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β} :
-    limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ a in f, u a < y :=
-  limsup_le_iff
+    limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ a in f, u a < y := limsup_le_iff
 
 theorem le_limsup_iff' {α β} [CompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β} :
-    x ≤ limsup u f ↔ ∀ y < x, ∃ᶠ a in f, y < u a :=
-  le_limsup_iff
+    x ≤ limsup u f ↔ ∀ y < x, ∃ᶠ a in f, y < u a := le_limsup_iff
 
 theorem le_liminf_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β}
     (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
-    x ≤ liminf u f ↔ ∀ y < x, ∀ᶠ a in f, y < u a :=
-  limsup_le_iff (β := βᵒᵈ) h₁ h₂
+    x ≤ liminf u f ↔ ∀ y < x, ∀ᶠ a in f, y < u a := limsup_le_iff (β := βᵒᵈ) h₁ h₂
 
 theorem liminf_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β}
     (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
-    liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a < y :=
-  le_limsup_iff (β := βᵒᵈ) h₁ h₂
+    liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a < y := le_limsup_iff (β := βᵒᵈ) h₁ h₂
 
 theorem le_liminf_iff' {α β} [CompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β} :
-    x ≤ liminf u f ↔ ∀ y < x, ∀ᶠ a in f, y < u a :=
-  le_liminf_iff
+    x ≤ liminf u f ↔ ∀ y < x, ∀ᶠ a in f, y < u a := le_liminf_iff
 
 theorem liminf_le_iff' {α β} [CompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β} :
-    liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a < y :=
-  liminf_le_iff
+    liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a < y := liminf_le_iff
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
 
@@ -1621,8 +1612,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
     intro c hc
     apply hb c
     rw [eventually_map] at hc ⊢
-    apply Eventually.mono hc
-    intro _
+    refine hc.mono (fun _ ↦ ?_)
     simp only [max_le_iff, and_imp]
     intro h₁ h₂
     trivial
@@ -1644,14 +1634,13 @@ theorem limsup_max [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : 
     apply mem_of_superset (inter_mem hu hv)
     intro a
     simp
-  · apply max_le (c := limsup (fun a ↦ max (u a) (v a)) f)
-    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a))) h₁ bddmax
-    · exact limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a))) h₂ bddmax
+  · exact max_le (c := limsup (fun a ↦ max (u a) (v a)) f)
+      (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a))) h₁ bddmax)
+      (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a))) h₂ bddmax)
 
 @[simp]
 theorem limsup_max' [CompleteLinearOrder β] {f : Filter α} {u v : α → β} :
-    limsup (fun a ↦ max (u a) (v a)) f = max (limsup u f) (limsup v f) :=
-  limsup_max
+    limsup (fun a ↦ max (u a) (v a)) f = max (limsup u f) (limsup v f) := limsup_max
 
 theorem liminf_min [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : α → β}
     (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
@@ -1663,8 +1652,7 @@ theorem liminf_min [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : 
 
 @[simp]
 theorem liminf_min' [CompleteLinearOrder β] {f : Filter α} {u v : α → β} :
-    liminf (fun a ↦ min (u a) (v a)) f = min (liminf u f) (liminf v f) :=
-  liminf_min
+    liminf (fun a ↦ min (u a) (v a)) f = min (liminf u f) (liminf v f) := liminf_min
 
 open Finset
 
@@ -1675,10 +1663,7 @@ theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter 
   use sup s m
   simp only [eventually_map] at hm ⊢
   rw [← eventually_all_finset s] at hm
-  apply Eventually.mono hm
-  intro _ h
-  apply le_of_eq_of_le _ (sup_mono_fun h)
-  simp only [Finset.sup_apply]
+  exact hm.mono fun _ h ↦ le_of_eq_of_le (Finset.sup_apply s F _) (sup_mono_fun h)
 
 theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
