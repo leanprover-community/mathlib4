@@ -138,7 +138,7 @@ class LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
 
 /--
-The additive equivalent of `MulZeroClass`
+The additive equivalent of `MulZeroClass` for `Top`
 -/
 class IsTopAbsorbing (α : Type*) [Add α] [Top α] : Prop where
   /-- Top is a left aborbing element for addition -/
@@ -152,6 +152,9 @@ attribute [simp] top_add add_top
 #align top_add IsTopAbsorbing.top_add
 #align add_top IsTopAbsorbing.add_top
 
+/--
+The additive equivalent of `MulZeroClass` for `Bot`
+-/
 class IsBotAbsorbing (α : Type*) [Add α] [Bot α] : Prop where
   /-- Bot is a left aborbing element for addition -/
   bot_add : ∀ a : α, ⊥ + a = ⊥
@@ -169,12 +172,18 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCom
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
 #align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
-class NoTopAddends (α : Type*) [Add α] [Top α] where
+/--
+The additive equivalent of `NoZeroDivisors` for `Top`
+-/
+class NoTopAddends (α : Type*) [Add α] [Top α] : Prop where
   eq_top_or_eq_top_of_add_eq_top : ∀ {a b : α}, a + b = ⊤ → a = ⊤ ∨ b = ⊤
 
 export NoTopAddends (eq_top_or_eq_top_of_add_eq_top)
 
-class NoBotAddends (α : Type*) [Add α] [Bot α] where
+/--
+The additive equivalent of `NoZeroDivisors` for `Bot`
+-/
+class NoBotAddends (α : Type*) [Add α] [Bot α] : Prop where
   eq_bot_or_eq_bot_of_add_eq_bot : ∀ {a b : α}, a + b = ⊥ → a = ⊥ ∨ b = ⊥
 
 export NoBotAddends (eq_bot_or_eq_bot_of_add_eq_bot)

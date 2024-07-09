@@ -336,7 +336,8 @@ protected theorem bot_add {α : Type*} [Add α] {g : Filter α} : ⊥ + g = ⊥ 
 protected theorem add_bot {α : Type*} [Add α] {f : Filter α} : f + ⊥ = ⊥ := by simp
 #align filter.add_bot Filter.add_bot
 
-attribute [to_additive existing (attr := simp)] bot_mul mul_bot
+attribute [to_additive existing] bot_mul mul_bot
+attribute [simp] bot_mul mul_bot
 
 @[to_additive (attr := simp)]
 theorem mul_eq_bot_iff : f * g = ⊥ ↔ f = ⊥ ∨ g = ⊥ :=
