@@ -485,8 +485,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
   intro h
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
   have h1 := h {x // i ≠ x} (Fintype.card_subtype_lt fun a ↦ a rfl)
-  --somehow can use invariance_iInf together with h1 now...
-  -- ***** Can we show that (T n i) commutes with every (T { x // i ≠ x } j)
+  have Q0 : Subtype.restrict (fun j ↦ i ≠ j) (T n) = T {x // i ≠ x} := by sorry
   have Q : ∀ (j : { x // i ≠ x }), (T n i) ∘ₗ (T { x // i ≠ x } j) = (T { x // i ≠ x } j) ∘ₗ (T n i)
       := by
     intro j
