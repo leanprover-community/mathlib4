@@ -52,13 +52,6 @@ lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * lo
   refine DifferentiableOn.differentiableAt differentiableOn_mul_log ?_
   simp [hx]
 
--- TODO inline or find home
-lemma abs_min_lt_of_nonneg {α : Type} [LinearOrderedAddCommGroup α] {L R x : α}
-    (hL : 0 ≤ L) (hR : 0 ≤ R) (Llx : L < x) :
-    |min L R| < x := by
-  rw [abs_of_nonneg (le_min hL hR)]
-  exact min_lt_of_left_lt Llx
-
 /- helper lemma for `not_eventually_bounded_zero_mul_log` -/
 private lemma NegMulLog.one_lt_log_sub_const_of_lt_exp_sub
     (x D : ℝ) (hx : 0 < x) (h : x < rexp (D - 2)) :
@@ -80,7 +73,10 @@ lemma not_eventually_bounded_derivative_zero_mul_log (D : ℝ) :
   exists min (2⁻¹ * x) (exp (D - 2))
   have xhalf_gt0 : 0 < 2⁻¹ * x := by norm_num [hx]
   constructor
-  · exact abs_min_lt_of_nonneg (le_of_lt xhalf_gt0) (exp_nonneg (D - 2)) (by norm_num; linarith)
+  · rw [abs_of_nonneg (le_min (le_of_lt xhalf_gt0) (exp_nonneg (D - 2)))]
+    apply min_lt_of_left_lt
+    norm_num
+    linarith
   · have exists_pos : 0 < |min (2⁻¹ * x) (rexp (D - 2))| := by
       simp only [one_div, abs_pos]
       exact ne_of_gt (lt_min xhalf_gt0 (exp_pos (D - 2)))
