@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Order.Interval.Finset.Basic
 

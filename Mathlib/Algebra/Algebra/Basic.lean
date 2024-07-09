@@ -10,6 +10,7 @@ import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Data.Int.CharZero
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -18,6 +19,8 @@ import Mathlib.Data.Int.CharZero
 
 This file could usefully be split further.
 -/
+
+assert_not_exists OrderedCommMonoid
 
 universe u v w u₁ v₁
 
