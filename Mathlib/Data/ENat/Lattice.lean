@@ -50,6 +50,14 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   case inl => simp [ENat.iInf_coe_eq_top.2 ‹_›]
   case inr => norm_cast
 
+lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, (f i : ℕ∞) = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · sorry
+  · obtain ⟨i, h⟩ := h
+    rw [Nat.cast_eq_zero] at h
+    by_contra! hc
+    sorry
+
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
 variable {s : Set ℕ∞}

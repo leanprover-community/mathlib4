@@ -74,7 +74,7 @@ theorem pos_edist_of_ne {u v : V} (hne : u ≠ v) :
 
 lemma edist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
     G.edist u v = ⊤ := by
-  simp [edist, not_reachable_iff_isEmplty_walk.mp h]
+  simp [edist, not_reachable_iff_isEmpty_walk.mp h]
 
 theorem Reachable.of_edist_ne_top {u v : V} (h : G.edist u v ≠ ⊤) :
     G.Reachable u v :=
