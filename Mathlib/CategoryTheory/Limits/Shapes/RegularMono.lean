@@ -215,8 +215,8 @@ instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
 noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
   W := pullback f f
-  left := pullback.fst
-  right := pullback.snd
+  left := pullback.fst f f
+  right := pullback.snd f f
   w := pullback.condition
   isColimit := hc
 
