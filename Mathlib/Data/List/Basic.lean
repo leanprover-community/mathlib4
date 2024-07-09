@@ -902,11 +902,6 @@ theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
 
 end deprecated
 
--- Porting note: List.modifyHead has @[simp], and Lean 4 treats this as
--- an invitation to unfold modifyHead in any context,
--- not just use the equational lemmas.
-
--- @[simp]
 @[simp 1100]
 theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
     (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
@@ -988,7 +983,7 @@ theorem bidirectionalRec_nil {motive : List α → Sort*}
 @[simp]
 theorem bidirectionalRec_singleton {motive : List α → Sort*}
     (nil : motive []) (singleton : ∀ a : α, motive [a])
-    (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α):
+    (cons_append : ∀ (a : α) (l : List α) (b : α), motive l → motive (a :: (l ++ [b]))) (a : α) :
     bidirectionalRec nil singleton cons_append [a] = singleton a := by
   simp [bidirectionalRec]
 
