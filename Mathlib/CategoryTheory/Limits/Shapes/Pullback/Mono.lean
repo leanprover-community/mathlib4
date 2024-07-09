@@ -418,7 +418,7 @@ instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl _ _ : _ ⟶ pushout f f)
   · simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.inl_iso_of_epi_eq CategoryTheory.Limits.inl_iso_of_epi_eq
 
-instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr _ _ : _ ⟶ pushout f f) :=
+instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr f f) :=
   inl_eq_inr_of_epi_eq f ▸ inl_iso_of_epi_eq f
 #align category_theory.limits.inr_iso_of_epi_eq CategoryTheory.Limits.inr_iso_of_epi_eq
 
