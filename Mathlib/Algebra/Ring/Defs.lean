@@ -182,8 +182,8 @@ theorem two_mul (n : α) : 2 * n = n + n :=
 
 -- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
 set_option linter.deprecated false in
-theorem bit0_eq_two_mul (n : α) : bit0 n = 2 * n :=
-  (two_mul _).symm
+theorem bit0_eq_two_mul (n : α) : 2 * n = 2 * n :=
+  rfl
 #align bit0_eq_two_mul bit0_eq_two_mul
 
 -- Porting note: was [has_add α] [mul_one_class α] [left_distrib_class α]

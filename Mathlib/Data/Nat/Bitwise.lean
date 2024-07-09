@@ -69,7 +69,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
   conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp only [mod_two_of_bodd, cond]; cases bodd x <;> rfl
-  simp only [hn, hm, mod_two_iff_bod, ite_false, bit, bit1, bit0, Bool.cond_eq_ite]
+  simp only [hn, hm, mod_two_iff_bod, ite_false, bit, two_mul, Bool.cond_eq_ite]
   split_ifs <;> rfl
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
@@ -86,13 +86,13 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   conv_lhs => unfold bitwise
   #adaptation_note /-- nightly-2024-03-16: simp was
   -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite] -/
-  simp only [bit, ite_apply, bit1, bit0, Bool.cond_eq_ite]
+  simp only [bit, ite_apply, Bool.cond_eq_ite]
   have h1 x :     (x + x) % 2 = 0 := by rw [← two_mul, mul_comm]; apply mul_mod_left
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h3 x :     (x + x) / 2 = x := by omega
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs
-    <;> simp_all (config := {decide := true})
+    <;> simp_all (config := {decide := true}) [two_mul]
 #align nat.bitwise_bit Nat.bitwise_bit
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
@@ -100,7 +100,7 @@ lemma bit_mod_two (a : Bool) (x : ℕ) :
   #adaptation_note /-- nightly-2024-03-16: simp was
   -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
   --   Bool.cond_eq_ite] -/
-  simp only [bit, ite_apply, bit1, bit0, ← mul_two, Bool.cond_eq_ite]
+  simp only [bit, ite_apply, ← mul_two, Bool.cond_eq_ite]
   split_ifs <;> simp [Nat.add_mod]
 
 @[simp]
@@ -155,12 +155,12 @@ attribute [simp] testBit_xor
 end
 
 @[simp]
-theorem bit_false : bit false = bit0 :=
+theorem bit_false : bit false = (2 * ·) :=
   rfl
 #align nat.bit_ff Nat.bit_false
 
 @[simp]
-theorem bit_true : bit true = bit1 :=
+theorem bit_true : bit true = (2 * · + 1) :=
   rfl
 #align nat.bit_tt Nat.bit_true
 
@@ -182,7 +182,7 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
   rw [← bit_ne_zero_iff] at ham hbn
   simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
     ite_false]
-  conv_rhs => simp only [bit, bit1, bit0, Bool.cond_eq_ite]
+  conv_rhs => simp only [bit, two_mul, Bool.cond_eq_ite]
   split_ifs with hf <;> rfl
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
@@ -206,7 +206,7 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
   induction' n using Nat.binaryRec with b n hn
   · rfl
   · have : b = false := by simpa using h 0
-    rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_bit_succ], mul_zero]
+    rw [this, bit_false, hn fun i => by rw [← h (i + 1), testBit_bit_succ]]
 #align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit_eq_false
 
 theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
@@ -259,7 +259,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
     have : n = m :=
       eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
       <;> rw [testBit_bit_succ]
-    rw [hn, hm, this, bit_false, bit_true, bit0_val, bit1_val]
+    rw [hn, hm, this, bit_false, bit_true]
     exact Nat.lt_succ_self _
   · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
     simp only [testBit_bit_succ] at hn hm
@@ -462,7 +462,7 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
 #align nat.lt_lxor_cases Nat.lt_xor_cases
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp [bit0, bit1] <;> omega
+  cases b <;> simp <;> omega
 
 /-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also
 fits within `n` bits -/
