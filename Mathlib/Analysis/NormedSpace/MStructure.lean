@@ -10,6 +10,7 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.Dual
 import Mathlib.Analysis.NormedSpace.WeakDual
+import Mathlib.Analysis.Convex.Normed
 
 #align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
@@ -428,7 +429,25 @@ open Metric in
 open scoped ComplexOrder in
 lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
     ↑(polarSubmodule 𝕜 m₁.toSubMulAction + polarSubmodule 𝕜 m₂.toSubMulAction) ∩ closedBall 0 1 =
-    convexHull 𝕜 (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) := sorry
+    convexHull ℝ (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) := by
+  rw [le_antisymm_iff]
+  constructor
+  · sorry
+  · simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
+    constructor
+    · apply convexHull_min _
+      sorry
+      simp only [Set.union_subset_iff]
+      constructor
+      · sorry
+        -- apply inf_le_left (a := polar 𝕜 ↑m₁)
+        --apply le_sup_left
+      · sorry
+    · apply convexHull_min
+      rw [← Set.union_inter_distrib_right]
+      exact Set.inter_subset_right
+      exact convex_closedBall _ _
+
 
 
 /-
