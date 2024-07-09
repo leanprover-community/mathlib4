@@ -6,7 +6,7 @@ Authors: Markus Himmel
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Abelian.Basic
 
 #align_import algebra.category.Module.abelian from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 

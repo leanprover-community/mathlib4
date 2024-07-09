@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.Algebra.Category.Grp.Colimits
-import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Category.Grp.Kernels
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 
 #align_import algebra.category.Group.abelian from "leanprover-community/mathlib"@"f7baecbb54bd0f24f228576f97b1752fc3c9b318"

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.SingleHomology
 
 #align_import algebra.homology.quasi_iso from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
 

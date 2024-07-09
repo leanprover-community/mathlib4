@@ -7,6 +7,8 @@ Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Living
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.Algebra.Category.Grp.FilteredColimits
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
 /-!
 # The category of abelian groups satisfying Grothendieck's Axiom AB5

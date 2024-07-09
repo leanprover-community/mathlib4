@@ -3,11 +3,11 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Adam Topaz, Johan Commelin, Jakob von Raumer
 -/
+import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import Mathlib.CategoryTheory.Preadditive.LeftExact
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.Tactic.TFAE
 

@@ -5,6 +5,7 @@ Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 #align_import algebra.homology.opposite from "leanprover-community/mathlib"@"8c75ef3517d4106e89fe524e6281d0b0545f47fc"
