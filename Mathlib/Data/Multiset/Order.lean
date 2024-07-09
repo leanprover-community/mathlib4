@@ -64,7 +64,7 @@ theorem redLt_LT [DecidableEq α] [Preorder α] (M N : Multiset α) :
   intro hyp
   rcases hyp with ⟨X, Y, a, M_def, N_def, ys_lt_a⟩
   apply MultisetLT.MLT Y {a} X _ M_def N_def
-  · simp; assumption
+  · simpa
   · simp
 
 /- Some useful lemmas about Multisets and the defined relations: -/
@@ -85,12 +85,8 @@ lemma mul_singleton_erase [DecidableEq α] {a : α} {M : Multiset α} :
 
 lemma mul_mem_not_erase [DecidableEq α] {a a0: α} {M X : Multiset α}
     (H : M = (a0 ::ₘ X).erase a) (hyp : ¬ a = a0) : a0 ∈ M := by
-  rw [H]
-  have : a0 ∈ (a0 ::ₘ X).erase a ↔ a0 ∈ (a0 ::ₘ X) := by
-    apply Multiset.mem_erase_of_ne
-    aesop
-  rw [this]
-  simp_all
+  rw [H, Multiset.mem_erase_of_ne fun h ↦ hyp <| id <| Eq.symm h, Multiset.mem_cons]
+  tauto
 
 lemma mem_erase_cons [DecidableEq α] {a0: α} {M : Multiset α} (_ : a0 ∈ M) :
     M = M - {a0} + {a0} := by
@@ -309,9 +305,7 @@ lemma double_split {α} [dec : DecidableEq α]:
     ∀ (M N P Q: Multiset α) ,  M + N = P + Q → N = N ∩ Q + (P - M)  := by
   intros M N P Q h
   ext x
-  rw [Multiset.count_add]
-  rw [Multiset.count_inter]
-  rw [Multiset.count_sub]
+  rw [Multiset.count_add, Multiset.count_inter, Multiset.count_sub]
   have H0 : M.count x + N.count x = P.count x + Q.count x := by
     rw [Multiset.ext] at h
     simp_all only [Multiset.mem_add, Multiset.count_add]
@@ -319,12 +313,12 @@ lemma double_split {α} [dec : DecidableEq α]:
     have : N.count x ≥ Q.count x := by linarith
     simp_all only [ge_iff_le, min_eq_right]
     apply le_eq_sub (M.count x) (N.count x) (P.count x) (Q.count x)
-    · simp_all
+    · exact l_u
     · exact H0
   else
     simp_all only [not_le, gt_iff_lt]
     have : Multiset.count x N ≤ Multiset.count x Q := by linarith
-    have:= le_of_lt l_u
+    have := le_of_lt l_u
     simp_all
 
 lemma in_notin_diff {α} [DecidableEq α]:
@@ -489,19 +483,17 @@ lemma direct_subset_red [dec : DecidableEq α] [Preorder α]
                       simp [Multiset.cons_erase claim]
                     rw [this] at t_in_Y
                     rw [Multiset.mem_add] at t_in_Y
-                    have : t ∈ ( {y} : Multiset α) := by exact Or.resolve_left t_in_Y t_in_newY
-                    rw [← Multiset.mem_singleton]
-                    assumption
+                    have : t ∈ ( {y} : Multiset α) := Or.resolve_left t_in_Y t_in_newY
+                    rwa [← Multiset.mem_singleton]
                   have x_in_fy : x ∈ f y := by
                     unfold_let f; simp; rw [← this]; exact ⟨x_in_X, x_lt_t⟩
                   have x_notin_Xfy : x ∉ X - f y := by
                     by_contra
                     let neg_f : α → Multiset α := fun y' => X.filter (fun x => ¬ x < y')
                     have : X - f y = neg_f y := by
-                      have fy_negfy_X : f y + neg_f y = X := by
-                        rw [Multiset.filter_add_not]
-                      rw [← fy_negfy_X]; simp
-                    have x_in_neg_fy : x ∈ neg_f y := by rw [this] at x_in; exact x_in
+                      have fy_negfy_X : f y + neg_f y = X := Multiset.filter_add_not _ _
+                      rw [← fy_negfy_X, add_tsub_cancel_left]
+                    have x_in_neg_fy : x ∈ neg_f y := this ▸ x_in
                     subst_eqs
                     unfold_let neg_f at *
                     simp_all only [Multiset.mem_filter]
@@ -536,8 +528,7 @@ lemma Lt_LT_equiv [DecidableEq α] [Preorder α] [DecidableRel (fun (x : α) (y:
       rcases hLt with ⟨Z, X, y, a_def, b_def, X_lt_y⟩
       use X
       · simp
-      · simp only [Multiset.mem_singleton, exists_eq_left]
-        assumption
+      · simpa
     | tail _ aih bih => -- it suffices to show MultisetLT is transitive
       apply LT_trans _ _ _ _ bih
       apply redLt_LT
