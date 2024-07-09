@@ -828,7 +828,7 @@ theorem Disjoint.supportCard_mul [Finite g.support] (h : Disjoint f g) :
 #align equiv.perm.disjoint.card_support_mul Equiv.Perm.Disjoint.supportCard_mul
 
 theorem supportCard_prod_list_of_pairwise_disjoint [Finite α] {l : List (Perm α)}
-  (h : l.Pairwise Disjoint) : l.prod.supportCard = (l.map (fun f => f.supportCard)).sum := by
+    (h : l.Pairwise Disjoint) : l.prod.supportCard = (l.map (fun f => f.supportCard)).sum := by
   induction' l with a t ih
   · exact supportCard_eq_zero.mpr rfl
   · obtain ⟨ha, ht⟩ := List.pairwise_cons.1 h
