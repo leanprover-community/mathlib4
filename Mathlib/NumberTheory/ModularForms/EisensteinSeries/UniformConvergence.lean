@@ -8,7 +8,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.Order.Interval.Finset.Box
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 
 /-!
 # Uniform convergence of Eisenstein series
