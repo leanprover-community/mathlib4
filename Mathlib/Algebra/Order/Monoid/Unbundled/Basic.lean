@@ -41,6 +41,13 @@ instance Nat.instCovariantClassMulLE : CovariantClass ℕ ℕ (· * ·) (· ≤ 
 
 end Nat
 
+section Int
+
+instance Int.instCovariantClassAddLE : CovariantClass ℤ ℤ ((· + ·)) (· ≤ ·) where
+  elim := fun _ _ _ h => Int.add_le_add_left h _
+
+end Int
+
 variable {α β : Type*}
 
 section Mul

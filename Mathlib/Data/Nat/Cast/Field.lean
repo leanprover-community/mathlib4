@@ -5,11 +5,9 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Order.BoundedOrder
--- import Mathlib.Algebra.Order.Field.Basic
--- import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.Common
 
 #align_import data.nat.cast.field from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 
@@ -33,7 +31,8 @@ theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (hn : (n : 
     ((m / n : ℕ) : α) = m / n := by
   rcases n_dvd with ⟨k, rfl⟩
   have : n ≠ 0 := by rintro rfl; simp at hn
-  rw [Nat.mul_div_cancel_left _ <| zero_lt_of_ne_zero this, mul_comm n, cast_mul, mul_div_cancel_right₀ _ hn]
+  rw [Nat.mul_div_cancel_left _ <| zero_lt_of_ne_zero this, mul_comm n,
+    cast_mul, mul_div_cancel_right₀ _ hn]
 #align nat.cast_div Nat.cast_div
 
 theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d : ℕ}
