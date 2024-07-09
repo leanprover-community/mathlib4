@@ -94,10 +94,12 @@ initialize allowedRef : IO.Ref (HashSet SyntaxNodeKind) ←
     |>.insert `change?
     |>.insert `«tactic#adaptation_note_»
 
-/-- `#allow_unused_tactic` takes an input a space-separated list of identifiers and extends
-the tactics that are allowed by the unused tactic linter to not modify goals using the
-input identifiers.
-For instance, you can allow `done` and `skip` to not emit warning using
+/-- `#allow_unused_tactic` takes an input a space-separated list of identifiers.
+These identifiers are then allowed by the unused tactic linter:
+even if these tactics do not modify goals, there will be no warning emitted.
+Note: for this to work, these identifiers should be the `SyntaxNodeKind` of each tactic.
+
+For instance, you can allow `done` and `skip` tactics using
 ```lean
 #allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 ```
