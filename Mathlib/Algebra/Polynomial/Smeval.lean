@@ -155,13 +155,20 @@ variable (R : Type*) [Ring R] {S : Type*} [AddCommGroup S] [Pow S ℕ] [Module R
 
 @[simp]
 theorem smeval_neg : (-p).smeval x = - p.smeval x := by
-  have h : (p + -p).smeval x = 0 := by rw [add_neg_self, smeval_zero]
-  rw [smeval_add, add_eq_zero_iff_neg_eq] at h
-  exact id h.symm
+  rw [← add_eq_zero_iff_eq_neg, ← smeval_add, add_left_neg, smeval_zero]
 
 @[simp]
 theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
   rw [sub_eq_add_neg, smeval_add, smeval_neg, sub_eq_add_neg]
+
+theorem smeval_neg_nat (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
+    (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
+  rw [smeval_eq_sum, smeval_eq_sum]
+  simp only [Polynomial.smul_pow, sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
+  refine Finset.sum_congr rfl ?_
+  intro k _
+  rw [show -(n : S) = (-n : ℤ) by simp only [Int.cast_neg, Int.cast_natCast], nsmul_eq_mul,
+    ← AddGroupWithOne.intCast_ofNat, ← Int.cast_npow, ← Int.cast_mul, ← nsmul_eq_mul]
 
 end Neg
 

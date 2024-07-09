@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.FinCategory.AsType
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.Data.Fintype.Option
 
 #align_import category_theory.limits.shapes.finite_limits from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
