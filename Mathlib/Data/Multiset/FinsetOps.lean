@@ -93,8 +93,8 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
     if h : a ∈ s then by simp [h, l]
     else by
       rw [ndinsert_of_not_mem h, ← cons_erase m, cons_le_cons_iff, ← le_cons_of_not_mem h,
-          cons_erase m]
-        exact l⟩
+          cons_erase m];
+      exact l⟩
 #align multiset.ndinsert_le Multiset.ndinsert_le
 
 theorem attach_ndinsert (a : α) (s : Multiset α) :
