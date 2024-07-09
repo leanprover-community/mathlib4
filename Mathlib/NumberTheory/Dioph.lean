@@ -467,7 +467,7 @@ theorem diophPFun_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f} (df : Di
   ext (ex1_dioph (d.inter df)) fun v =>
     ⟨fun ⟨x, hS, (h : Exists _)⟩ => by
       rw [show (x ::ₒ v) ∘ some = v from funext fun s => rfl] at h
-        cases' h with hf h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
+      cases' h with hf h; refine ⟨hf, ?_⟩; rw [PFun.fn, h]; exact hS,
     fun ⟨x, hS⟩ =>
       ⟨f.fn v x, hS, show Exists _ by
         rw [show (f.fn v x ::ₒ v) ∘ some = v from funext fun s => rfl]; exact ⟨x, rfl⟩⟩⟩

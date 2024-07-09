@@ -190,7 +190,7 @@ theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
     (continuous_if_le ?_ ?_
       (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_).continuousOn
       ?_ <;>
-    [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip
+    [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
       skip] <;>
     · intro x hx
       norm_num [hx]
