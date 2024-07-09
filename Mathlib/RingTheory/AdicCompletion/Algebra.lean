@@ -72,23 +72,18 @@ instance : Mul (AdicCompletion I R) where
 instance : One (AdicCompletion I R) where
   one := ⟨1, by simp⟩
 
-@[irreducible]
-instance : NatCast (AdicCompletion I R) where
-  natCast n := ⟨n, fun _ ↦ rfl⟩
-
-@[irreducible]
-instance : IntCast (AdicCompletion I R) where
-  intCast n := ⟨n, fun _ ↦ rfl⟩
-
-@[irreducible]
-instance : Pow (AdicCompletion I R) ℕ where
-  pow x n := ⟨x.val ^ n, fun _ ↦ by simp [x.property]⟩
-
-instance : CommRing (AdicCompletion I R) :=
-  let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
-  Subtype.val_injective.commRing f rfl rfl
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+instance : CommRing (AdicCompletion I R) where
+  left_distrib x y z := Subtype.ext <| left_distrib x.val y.val z.val
+  right_distrib x y z := Subtype.ext <| right_distrib x.val y.val z.val
+  zero_mul x := Subtype.ext <| zero_mul x.val
+  mul_zero x := Subtype.ext <| mul_zero x.val
+  mul_assoc x y z := Subtype.ext <| mul_assoc x.val y.val z.val
+  one_mul x := Subtype.ext <| one_mul x.val
+  mul_one x := Subtype.ext <| mul_one x.val
+  zsmul := zsmulRec
+  add_left_neg x := Subtype.ext <| add_left_neg x.val
+  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
+  mul_comm x y := Subtype.ext <| mul_comm x.val y.val
 
 instance : Algebra R (AdicCompletion I R) where
   toFun r := ⟨algebraMap R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by simp⟩
@@ -142,23 +137,18 @@ instance : Mul (AdicCauchySequence I R) where
 instance : One (AdicCauchySequence I R) where
   one := ⟨1, fun _ ↦ rfl⟩
 
-@[irreducible]
-instance : NatCast (AdicCauchySequence I R) where
-  natCast n := ⟨n, fun _ ↦ rfl⟩
-
-@[irreducible]
-instance : IntCast (AdicCauchySequence I R) where
-  intCast n := ⟨n, fun _ ↦ rfl⟩
-
-@[irreducible]
-instance : Pow (AdicCauchySequence I R) ℕ where
-  pow x n := ⟨x.val ^ n, fun hmn ↦ SModEq.pow n (x.property hmn)⟩
-
-instance : CommRing (AdicCauchySequence I R) :=
-  let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
-  Subtype.val_injective.commRing f rfl rfl
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+instance : CommRing (AdicCauchySequence I R) where
+  left_distrib x y z := Subtype.ext <| left_distrib x.val y.val z.val
+  right_distrib x y z := Subtype.ext <| right_distrib x.val y.val z.val
+  zero_mul x := Subtype.ext <| zero_mul x.val
+  mul_zero x := Subtype.ext <| mul_zero x.val
+  mul_assoc x y z := Subtype.ext <| mul_assoc x.val y.val z.val
+  one_mul x := Subtype.ext <| one_mul x.val
+  mul_one x := Subtype.ext <| mul_one x.val
+  zsmul := zsmulRec
+  add_left_neg x := Subtype.ext <| add_left_neg x.val
+  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
+  mul_comm x y := Subtype.ext <| mul_comm x.val y.val
 
 instance : Algebra R (AdicCauchySequence I R) where
   toFun r := ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
