@@ -75,6 +75,7 @@ theorem wronskian_eq_of_sum_zero {a b c : R[X]} (hAdd : a + b + c = 0) :
 private theorem degree_ne_bot {a : R[X]} (ha : a ≠ 0) : a.degree ≠ ⊥ := by
   intro h; rw [Polynomial.degree_eq_bot] at h; exact ha h
 
+/-- Degree of `W(a,b)` is strictly less than the sum of degrees of `a` and `b` (both nonzero). -/
 theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
     (wronskian a b).degree < a.degree + b.degree := by
   calc
@@ -94,6 +95,11 @@ theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
         rw [WithBot.add_lt_add_iff_right (degree_ne_bot hb)]
         exact Polynomial.degree_derivative_lt ha
 
+/--
+`natDegree` version of the above theorem.
+Note this would be false with just `(ha : a ≠ 0) (hb : b ≠ 0),
+as when `a = b = 1` we have `(wronskian a b).natDegree = a.natDegree = b.natDegree = 0`.
+-/
 theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
     (wronskian a b).natDegree < a.natDegree + b.natDegree := by
   have ha : a ≠ 0 := by intro h; subst h; rw [wronskian_zero_left] at hw; exact hw rfl
@@ -103,12 +109,3 @@ theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   · exact Polynomial.degree_eq_natDegree hw
   · exact Polynomial.degree_eq_natDegree ha
   · exact Polynomial.degree_eq_natDegree hb
-
--- Note: the following is false!
--- Counterexample: b = a = 1 →
--- (wronskian a b).natDegree = a.natDegree = b.natDegree = 0
-/-
-lemma wronskian.natDegree_lt_add {a b : R[X]}
-  (ha : a ≠ 0) (hb : b ≠ 0) :
-  (wronskian a b).natDegree < a.natDegree + b.natDegree := sorry
--/
