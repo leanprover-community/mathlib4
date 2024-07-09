@@ -12,7 +12,7 @@ import Qq
 
 Any lemma tagged with `@[bound]` is registered as an apply rule for the `bound` tactic, by
 converting it to either `norm apply` or `safe apply <priority>`.  The classification is based
-on the number and types of the lemmas hypotheses.
+on the number and types of the lemma's hypotheses.
 -/
 
 open Lean (MetaM)
@@ -38,7 +38,7 @@ def ineqPriority (a b : Q($α)) : MetaM ℕ := do
 /-- Map a hypothesis type to a score -/
 partial def hypPriority (hyp : Q(Prop)) : MetaM ℕ := do
   match hyp with
-    -- Conjections add scores
+    -- Conjunctions add scores
     | ~q($a ∧ $b) => pure <| (← hypPriority a) + (← hypPriority b)
     -- Guessing (disjunction) gets a big penalty
     | ~q($a ∨ $b) => pure <| 100 + (← hypPriority a) + (← hypPriority b)
@@ -65,7 +65,8 @@ def typePriority (decl : Lean.Name) (type : Lean.Expr) : MetaM ℕ :=
     | ~q(@LT.lt _ $i $a $b) => return ()
     | ~q(@GE.ge _ $i $b $a) => return ()
     | ~q(@GT.gt _ $i $b $a) => return ()
-    | _ => throwError (f!"`{decl}` has invalid type `{type}` as a bound lemma")
+    | _ => throwError (f!"`{decl}` has invalid type `{type}` as a 'bound' lemma: \
+                          it should be an inequality")
 
 /-- Map a theorem decl to a score (0 means `norm apply`, `0 <` means `safe apply`) -/
 def declPriority (decl : Lean.Name) : Lean.MetaM ℕ := do
@@ -92,7 +93,7 @@ initialize Lean.registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun decl stx attrKind => Lean.withRef stx do
     let score ← Aesop.runTermElabMAsCoreM <| declPriority decl
-    trace[bound.attribute] "{decl} has score {score}"
+    trace[bound.attribute] "'{decl}' has score '{score}'"
     let context ← Aesop.runMetaMAsCoreM Aesop.ElabM.Context.forAdditionalGlobalRules
     let (rule, ruleSets) ← Aesop.runTermElabMAsCoreM <|
       (scoreToConfig decl score).buildGlobalRule.run context
