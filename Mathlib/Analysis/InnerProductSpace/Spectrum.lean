@@ -490,10 +490,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
   have Q : ∀ (j : { x // i ≠ x }), (T n i) ∘ₗ (T { x // i ≠ x } j) = (T { x // i ≠ x } j) ∘ₗ (T n i)
       := by
     intro j
-    have R : (T { x // i ≠ x } j) = (T n j.1) := by
-      ext v
-      sorry
-    rw [R]
+    have R := Set.restrict_eq (T n) {x | i ≠ x}
+    sorry
+    rw [S]
     exact hC n i ↑j
   sorry
 #exit
