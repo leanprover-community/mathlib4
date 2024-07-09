@@ -15,7 +15,7 @@ import Mathlib.Tactic.Set
 /-!
 #  A meta-testing linter
 
-In a file with `import Mathlib.Tactic.MetaTesting`, you can run the tests in a single command
+In a file with `import Mathlib.Tactic.Linter.MetaTesting`, you can run the tests in a single command
 writing `#meta_test cmd`.
 
 If you want to run the tests on all the files, you write `set_option linter.metaTest true`.

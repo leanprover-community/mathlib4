@@ -1,6 +1,6 @@
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Tactic.MoveAdd
-import Mathlib.Tactic.MetaTesting
+import Mathlib.Tactic.Linter.MetaTesting
 
 section exclude
 
