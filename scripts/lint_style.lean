@@ -25,7 +25,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Collect all the modules to read.
   let mut allModules := #[]
   for s in ["Mathlib.lean", "Archive.lean", "Counterexamples.lean"] do
-    allModules := allModules.append (← IO.FS.lines s)
+    allModules := allModules.append ((← IO.FS.lines s).map (·.stripPrefix "import "))
   numberErrorFiles ← lintModules allModules mode
   -- Make sure to return an exit code of at most 125, so this return value can be used further
   -- in shell scripts.

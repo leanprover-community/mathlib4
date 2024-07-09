@@ -371,10 +371,10 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
     (fun ctx ↦ !(ctx.isCoveredByExceptions exceptions)))
   return errors
 
-/-- Lint a collection of modules for style violations.
+/-- Lint a collection of Lean modules for style violations.
 Print formatted errors for all unexpected style violations;
 update the list of style exceptions if configured so.
-Return the number of files which had unexpected style errors.
+Return the number of modules which had unexpected style errors.
 `moduleNames` are all the modules to lint,
 `mode` specifies what kind of output this script should produce. -/
 def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 := do
@@ -389,7 +389,6 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
   let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
   for module in moduleNames do
-    let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
     let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
     match mode with
