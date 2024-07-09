@@ -189,14 +189,14 @@ private theorem zero_add' (x : LocalizedModule S M) : 0 + x = x :=
   induction_on
     (fun m s => by
       rw [← zero_mk s, mk_add_mk, smul_zero, zero_add, mk_eq]
-        exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
+      exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
     x
 
 private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
   induction_on
     (fun m s => by
       rw [← zero_mk s, mk_add_mk, smul_zero, add_zero, mk_eq]
-        exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
+      exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
     x
 
 instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
