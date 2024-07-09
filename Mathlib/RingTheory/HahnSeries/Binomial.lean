@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
+import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Binomial
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
@@ -38,18 +39,9 @@ open Finset Function
 open scoped Classical
 open BigOperators Pointwise
 
-noncomputable section
+suppress_compilation
 
 variable {Γ : Type*} {R : Type*}
-
-/-- The homomorphism from `ℕ` to an AddMonoid given by sending `1` to an element. -/
-@[simps]
-def nsmul.MonoidHom {Γ : Type*} [AddMonoid Γ] (g : Γ) : ℕ →+ Γ where
-  toFun n := n • g
-  map_zero' := by simp [zero_nsmul]
-  map_add' m n := by simp [add_nsmul]
-
---#find_home! nsmul.MonoidHom --[Mathlib.Algebra.Group.Nat]
 
 namespace HahnSeries
 
@@ -60,55 +52,37 @@ algebras?  -/
 
 section Binomial
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
-
--- redo `(1 - single g r)` using embDomain for some ℕ → Γ.  When `g > 0` this works.
-
-/-- Monomial evaluation of a power series ring by substitution of `X` into a Hahn series single of
-strictly positive order. -/
-def meval {g : Γ} (hg : 0 < g) (r : R) : PowerSeries R →+* HahnSeries Γ R :=
-  ((embDomainRingHom (nsmul.MonoidHom g) (StrictMono.injective (nsmul_left_strictMono hg))
-      (fun _ _ => StrictMono.le_iff_le (nsmul_left_strictMono hg))).comp
-      (toPowerSeries (R := R)).symm).comp (PowerSeries.rescale r)
-
---#find_home! meval --[Mathlib.RingTheory.HahnSeries.PowerSeries]
-
-theorem meval_X {g : Γ} (hg : 0 < g) (r : R) : meval hg r PowerSeries.X = single g r := by
-  let f : ℕ ↪o Γ := ⟨⟨nsmul.MonoidHom g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
-      (StrictMono.le_iff_le (nsmul_left_strictMono hg))⟩
-  have hemb : single g r = embDomain f (single 1 r) := by
-    rw [show g = (f 1) by simp [f, nsmul.MonoidHom]]
-    exact (embDomain_single (f := f) (g := (1 : ℕ)) (r := r)).symm
-  rw [hemb, meval, RingHom.comp_assoc]
-  simp only [RingHom.coe_comp, RingHom.coe_coe, comp_apply, embDomainRingHom_apply]
-  congr 1
-  ext n
-  by_cases hn : n = 1
-  · rw [hn, toPowerSeries_symm_apply_coeff, PowerSeries.coeff_rescale, PowerSeries.coeff_one_X,
-      single_coeff_same, npow_one, mul_one]
-  · rw [toPowerSeries_symm_apply_coeff, PowerSeries.coeff_rescale, PowerSeries.coeff_X,
-      single_coeff_of_ne hn]
-    simp_all only [ite_false, mul_zero]
-
--- change to use hom from power series ring.
-theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
-  refine isUnit_of_mul_eq_one _ _ (SummableFamily.one_sub_self_mul_hsum_powers ?_)
-  by_cases hr : r = 0;
-  · simp_all only [map_zero, orderTop_zero, WithTop.zero_lt_top]
-  · simp_all only [orderTop_single hr, WithTop.coe_pos]
-
-theorem pos_addUnit_neg_add {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') :
-    0 < hg.addUnit.neg + g' := by
+theorem pos_addUnit_neg_add [AddMonoid Γ] [LT Γ]
+    [CovariantClass Γ Γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x < x_1]
+    [ContravariantClass Γ Γ (fun x x_1 ↦ x + x_1) fun x x_1 ↦ x < x_1] {g g' : Γ} (hg : IsAddUnit g)
+    (hgg' : g < g') : 0 < hg.addUnit.neg + g' := by
   refine (lt_add_iff_pos_right g).mp ?_
   rw [← add_assoc, AddUnits.neg_eq_val_neg, IsAddUnit.add_val_neg, zero_add]
   exact hgg'
 
+--#find_home pos_addUnit_neg_add --Mathlib.Algebra.Order.Group.Units
+
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+
+theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
+  have hm : meval hg r (1 - PowerSeries.X) = 1 - single g r := by
+    rw [RingHom.map_sub (meval hg r) 1 PowerSeries.X, meval_X, RingHom.map_one]
+  rw [← hm]
+  refine RingHom.isUnit_map (meval hg r) ?_
+  rw [← pow_one (1 - PowerSeries.X)]
+  nth_rw 2[← zero_add 1]
+  rw [← PowerSeries.invOneSubPow_inv_eq_one_sub_pow 0]
+  exact Units.isUnit (PowerSeries.invOneSubPow 0)⁻¹
+
+/-- An invertible binomial, i.e., one with invertible leading term. -/
 def UnitBinomial' {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
     (HahnSeries Γ R)ˣ :=
   (UnitSingle hg ha) *
     IsUnit.unit (isUnit_one_sub_single (pos_addUnit_neg_add hg hgg') (ha.unit.inv * b))
 
+-- coefficients of powers - use embDomain_coeff and embDomain_notin_range from Basic
 
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 
 theorem orderTop_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).orderTop = g := by

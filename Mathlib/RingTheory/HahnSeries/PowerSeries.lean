@@ -3,9 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.Finsupp.PWO
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Finsupp.PWO
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
@@ -244,3 +244,48 @@ theorem _root_.Polynomial.algebraMap_hahnSeries_injective :
 #align polynomial.algebra_map_hahn_series_injective Polynomial.algebraMap_hahnSeries_injective
 
 end Algebra
+
+section meval
+
+variable [LinearOrderedCancelAddCommMonoid Γ]
+
+/-- Monomial evaluation of a power series by substitution of `X` into a Hahn series single of
+strictly positive order. -/
+def meval [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) : PowerSeries R →+* HahnSeries Γ R :=
+  ((embDomainRingHom (multiplesHom Γ g) (StrictMono.injective (nsmul_left_strictMono hg))
+      (fun _ _ => StrictMono.le_iff_le (nsmul_left_strictMono hg))).comp
+      (toPowerSeries (R := R)).symm).comp (PowerSeries.rescale r)
+
+--delete
+theorem meval_add [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a b : PowerSeries R) :
+    meval hg r (a + b) = meval hg r a + meval hg r b :=
+  RingHom.map_add (meval hg r) a b
+
+--delete
+theorem meval_sub [CommRing R] {g : Γ} (hg : 0 < g) (r : R) (a b : PowerSeries R) :
+    meval hg r (a - b) = meval hg r a - meval hg r b :=
+  RingHom.map_sub (meval hg r) a b
+
+theorem meval_X [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) :
+    meval hg r PowerSeries.X = single g r := by
+  let f : ℕ ↪o Γ := ⟨⟨multiplesHom Γ g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
+      (StrictMono.le_iff_le (nsmul_left_strictMono hg))⟩
+  have hemb : single g r = embDomain f (single 1 r) := by
+    rw [show g = (f 1) by simp [f, multiplesHom]]
+    exact (embDomain_single (f := f) (g := (1 : ℕ)) (r := r)).symm
+  rw [hemb, meval, RingHom.comp_assoc]
+  simp only [RingHom.coe_comp, RingHom.coe_coe, comp_apply, embDomainRingHom_apply]
+  congr 1
+  ext n
+  by_cases hn : n = 1
+  · rw [hn, toPowerSeries_symm_apply_coeff, PowerSeries.coeff_rescale, PowerSeries.coeff_one_X,
+      single_coeff_same, pow_one, mul_one]
+  · rw [toPowerSeries_symm_apply_coeff, PowerSeries.coeff_rescale, PowerSeries.coeff_X,
+      single_coeff_of_ne hn]
+    simp_all only [ite_false, mul_zero]
+
+-- meval_X_pow
+-- meval_C
+-- meval_coeff
+
+end meval
