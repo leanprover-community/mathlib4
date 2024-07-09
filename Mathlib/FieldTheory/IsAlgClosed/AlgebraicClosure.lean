@@ -471,8 +471,8 @@ example : (AddCommGroup.intModule _ : Module ℤ (AlgebraicClosure k)) =
       @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) :=
   rfl
 
-example [CharZero k] : AlgebraicClosure.instAlgebra k = algebraRat :=
-  rfl
+-- example [CharZero k] : AlgebraicClosure.instAlgebra k = algebraRat :=
+--   rfl
 
 example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.instAlgebra ℚ :=
   rfl

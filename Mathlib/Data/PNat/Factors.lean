@@ -6,6 +6,7 @@ Authors: Neil Strickland
 import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Data.Multiset.Sort
 
 #align_import data.pnat.factors from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
