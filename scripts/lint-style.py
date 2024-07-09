@@ -277,19 +277,6 @@ def isolated_by_dot_semicolon_check(lines, path):
         newlines.append((line_nr, line))
     return errors, newlines
 
-ERR_TRS = 26 # trailing semicolon
-
-def trailing_semicolon_check(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line, is_comment in annotate_comments(lines):
-        newline = line
-        if (not is_comment) and line.rstrip().endswith(";"):
-            errors += [(ERR_TRS, line_nr, path)]
-            newline = line.removesuffix(";\n") + "\n"
-        newlines.append((line_nr, newline))
-    return errors, newlines
-
 def left_arrow_check(lines, path):
     errors = []
     newlines = []
@@ -347,8 +334,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
         if errno == ERR_NSP:
             output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
-        if errno == ERR_TRS:
-            output_message(path, line_nr, "ERR_TRS", "Line ends with unnecessary semicolon, please remove")
 
 def lint(path, fix=False):
     global new_exceptions
@@ -361,8 +346,8 @@ def lint(path, fix=False):
         for error_check in [line_endings_check,
                             four_spaces_in_second_line,
                             isolated_by_dot_semicolon_check,
-                            trailing_semicolon_check]:#left_arrow_check,
-                            #nonterminal_simp_check]:
+                            left_arrow_check,
+                            nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 
