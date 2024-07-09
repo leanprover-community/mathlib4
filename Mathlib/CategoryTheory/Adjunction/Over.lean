@@ -65,28 +65,28 @@ noncomputable alias baseChange := pullback
 
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
-def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
+def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun g h =>
-        { toFun := fun X =>
-            Over.homMk (pullback.lift X.left g.hom <| by simp)
-          invFun := fun Y => Over.homMk (Y.left ≫ pullback.fst) <| by
-            simp [← Over.w Y, pullback.condition]
+    { homEquiv := fun x y =>
+        { toFun := fun u =>
+            Over.homMk (pullback.lift u.left x.hom <| by simp)
+          invFun := fun v => Over.homMk (v.left ≫ pullback.fst) <| by
+            simp [← Over.w v, pullback.condition]
           left_inv := by aesop_cat
-          right_inv := fun Y => by
+          right_inv := fun v => by
             ext
             dsimp
             ext
             · simp
-            · simpa using Over.w Y |>.symm } }
+            · simpa using (Over.w v).symm } }
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
 
 @[deprecated (since := "2024-07-08")]
 noncomputable alias mapAdjunction := mapPullbackAdj
 
-/-- pullback (𝟙 A) : Over A ⥤ Over A is the identity functor. -/
-def pullbackId {A : C} : pullback (𝟙 A) ≅ 𝟭 _ :=
-  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft (Over.mapId A).symm)
+/-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
+def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
+  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft (Over.mapId X).symm)
 #align category_theory.over.pullback_id CategoryTheory.Over.pullbackId
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
@@ -95,7 +95,7 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pullback (f ≫ g) �
     (((mapPullbackAdj _).comp (mapPullbackAdj _)).ofNatIsoLeft (Over.mapComp _ _).symm)
 #align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
 
-instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : (pullback f).IsRightAdjoint  :=
+instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint  :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 #align category_theory.over.pullback_is_right_adjoint CategoryTheory.Over.pullbackIsRightAdjoint
 
@@ -136,10 +136,44 @@ variable [HasPushouts C]
 by pushing a morphism forward along `f`. -/
 @[simps]
 def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
-  obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
-  map := fun g {h} {k} =>
-    Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
+  obj x := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout x.hom f)
+  map := fun x {x'} {u} =>
+    Under.homMk (pushout.desc (u.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
 #align category_theory.under.pushout CategoryTheory.Under.pushout
+
+/-- `Under.pushout f` is left adjoint to `Under.map f`. -/
+@[simps! unit_app counit_app]
+def mapPushoutAdj {X Y : C} (f : X ⟶ Y) : pushout f ⊣ map f :=
+  Adjunction.mkOfHomEquiv {
+    homEquiv := fun x y => {
+      toFun := fun u => Under.homMk (pushout.inl ≫ u.right) <| by
+        simp only [map_obj_hom]
+        rw [← Under.w u]
+        simp only [Functor.const_obj_obj, map_obj_right, Functor.id_obj, pushout_obj, mk_right,
+          mk_hom]
+        rw [← assoc, ← assoc, pushout.condition]
+      invFun := fun v => Under.homMk (pushout.desc v.right y.hom <| by simp)
+      left_inv := fun u => by
+        ext
+        dsimp
+        ext
+        · simp
+        · simpa using (Under.w u).symm
+      right_inv := by aesop_cat
+    }
+  }
+
+/-- pushoutback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
+def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
+  (mapPushoutAdj (𝟙 X)).leftAdjointUniq (Adjunction.id.ofNatIsoRight mapId.symm)
+
+/-- pushout commutes with composition (up to natural isomorphism). -/
+def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
+  (mapPushoutAdj (f ≫ g)).leftAdjointUniq
+    (((mapPushoutAdj f).comp (mapPushoutAdj g)).ofNatIsoRight (mapComp f g).symm)
+
+instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoint  :=
+  ⟨_, ⟨mapPushoutAdj f⟩⟩
 
 end Under
 
