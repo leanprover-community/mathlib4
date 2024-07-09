@@ -9,6 +9,7 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.Topology.Irreducible
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sober
 
