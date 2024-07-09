@@ -137,21 +137,16 @@ open Unitization
 lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
       ‖ψ x‖₊ ≤ ‖x‖₊ := by
-    suffices ∀ s : Unitization ℂ A, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
-      set_option maxSynthPendingDepth 2 in -- see: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20type.20class.20synthesis.20error/near/421224482
-      exact nonneg_le_nonneg_of_sq_le_sq zero_le' <| by
-        simpa only [nnnorm_star_mul_self, map_star, map_mul]
-        using this _ (IsSelfAdjoint.star_mul_self x)
+    suffices ∀ {s}, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
+      refine nonneg_le_nonneg_of_sq_le_sq zero_le' ?_
+      simp_rw [← nnnorm_star_mul_self, ← map_star, ← map_mul]
+      exact this <| .star_mul_self x
     intro s hs
-    have : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s :=
-      iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
-    rw [IsSelfAdjoint.spectralRadius_eq_nnnorm] at this
-    · set_option maxSynthPendingDepth 2 in -- see: https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20type.20class.20synthesis.20error/near/421224482
-      simpa only [hs.spectralRadius_eq_nnnorm, (hs.starHom_apply ψ).spectralRadius_eq_nnnorm,
-        coe_le_coe] using
-        show spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s from
-        iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
-    · exact (hs.starHom_apply ψ)
+    suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
+      -- changing the order of `rw`s below runs into https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20type.20class.20synthesis.20error/near/421224482
+      rwa [(hs.starHom_apply ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
+        at this
+    exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
   simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
 #align star_alg_hom.nnnorm_apply_le NonUnitalStarAlgHom.nnnorm_apply_le
 
