@@ -184,11 +184,7 @@ section OperationsAndInfty
 
 variable {α : Type*}
 
--- @[simp] theorem add_eq_top : a + b = ∞ ↔ a = ∞ ∨ b = ∞ := WithTop.add_eq_top
--- #align ennreal.add_eq_top ENNReal.add_eq_top
-
--- @[simp] theorem add_lt_top : a + b < ∞ ↔ a < ∞ ∧ b < ∞ := WithTop.add_lt_top
--- #align ennreal.add_lt_top ENNReal.add_lt_top
+instance : NoTopAddends ℝ≥0∞ := inferInstanceAs <| NoTopAddends (WithTop ℝ≥0)
 
 theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞) (h₂ : r₂ ≠ ∞) :
     (r₁ + r₂).toNNReal = r₁.toNNReal + r₂.toNNReal := by
