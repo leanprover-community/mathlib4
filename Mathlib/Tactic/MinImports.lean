@@ -165,8 +165,6 @@ def minImportsLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    --if stx.isOfKind ``Parser.Command.eoi || stx == (← `(command| set_option linter.minImports true)) then
-    --  return
     let tot ← getIrredundantImports stx
     let redundant := (← getEnv).findRedundantImports (prevImports.append tot).toArray
     let currImports := tot.diff redundant
