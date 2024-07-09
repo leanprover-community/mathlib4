@@ -150,7 +150,7 @@ theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * 
   exact if hp : p = 0 then by simp only [hp, zero_mul, le_refl]
   else by
     rw [degree_mul, degree_eq_natDegree hp, degree_eq_natDegree hq]
-      exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
+    exact WithBot.coe_le_coe.2 (Nat.le_add_right _ _)
 #align polynomial.degree_le_mul_left Polynomial.degree_le_mul_left
 
 theorem natDegree_le_of_dvd {p q : R[X]} (h1 : p ∣ q) (h2 : q ≠ 0) : p.natDegree ≤ q.natDegree := by
@@ -803,7 +803,7 @@ theorem exists_multiset_roots [DecidableEq R] :
             exact mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm]
-              exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
+            exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
         by
           change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
           intro a
