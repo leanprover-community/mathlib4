@@ -121,6 +121,20 @@ theorem isInteger_of_is_root_of_monic {p : A[X]} (hp : Monic p) {r : K} (hr : ae
   isInteger_of_isUnit_den (isUnit_of_dvd_one (hp ▸ den_dvd_of_is_root hr))
 #align is_integer_of_is_root_of_monic isInteger_of_is_root_of_monic
 
+theorem exists_integer_of_is_root_of_monic {p : A[X]} (hp : Monic p) {r : K} (hr : aeval r p = 0) :
+    ∃ r' : A, r = algebraMap A K r' ∧ r' ∣ p.coeff 0 := by
+  /- I tried deducing this from above by unwrapping IsInteger,
+    but the divisibility condition is annoying -/
+  obtain ⟨inv, h_inv⟩ := hp ▸ den_dvd_of_is_root hr
+  use num A r * inv, ?_
+  · have h : inv ∣ 1 := ⟨den A r, by simpa [mul_comm] using h_inv⟩
+    simpa using mul_dvd_mul (num_dvd_of_is_root hr) h
+  · have d_ne_zero : algebraMap A K (den A r) ≠ 0 :=
+      IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A r).prop
+    nth_rw 1 [← mk'_num_den' A r]
+    rw [div_eq_iff d_ne_zero, map_mul, mul_assoc, mul_comm ((algebraMap A K) inv),
+      ← map_mul, ← h_inv, map_one, mul_one]
+
 namespace UniqueFactorizationMonoid
 
 theorem integer_of_integral {x : K} : IsIntegral A x → IsInteger A x := fun ⟨_, hp, hx⟩ =>

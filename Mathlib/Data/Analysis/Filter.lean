@@ -125,8 +125,8 @@ def ofFilter (f : Filter α) : f.Realizer :=
     { f := Subtype.val
       pt := ⟨univ, univ_mem⟩
       inf := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦ ⟨_, inter_mem h₁ h₂⟩
-      inf_le_left := fun ⟨x, _⟩ ⟨y, _⟩ ↦ inter_subset_left x y
-      inf_le_right := fun ⟨x, _⟩ ⟨y, _⟩ ↦ inter_subset_right x y },
+      inf_le_left := fun ⟨x, _⟩ ⟨y, _⟩ ↦ inter_subset_left
+      inf_le_right := fun ⟨x, _⟩ ⟨y, _⟩ ↦ inter_subset_right },
     filter_eq <| Set.ext fun _ ↦ by simp [exists_mem_subset_iff]⟩
 #align filter.realizer.of_filter Filter.Realizer.ofFilter
 

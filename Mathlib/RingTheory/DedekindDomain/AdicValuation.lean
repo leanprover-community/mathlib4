@@ -6,7 +6,7 @@ Authors: María Inés de Frutos-Fernández
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
-import Mathlib.Topology.Algebra.ValuedField
+import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Algebra.Order.Group.TypeTags
 
 #align_import ring_theory.dedekind_domain.adic_valuation from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -81,6 +81,7 @@ def intValuationDef (r : R) : ℤₘ₀ :=
     ↑(Multiplicative.ofAdd
       (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ))
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def IsDedekindDomain.HeightOneSpectrum.intValuationDef
+
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
   if_pos hr
@@ -229,6 +230,10 @@ def intValuation : Valuation R ℤₘ₀ where
   map_add_le_max' := IntValuation.map_add_le_max' v
 #align is_dedekind_domain.height_one_spectrum.int_valuation IsDedekindDomain.HeightOneSpectrum.intValuation
 
+
+theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
+    intValuation v r = intValuationDef v r := rfl
+
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem int_valuation_exists_uniformizer :
     ∃ π : R, v.intValuationDef π = Multiplicative.ofAdd (-1 : ℤ) := by
@@ -253,6 +258,13 @@ theorem int_valuation_exists_uniformizer :
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
   exact Nat.eq_of_le_of_lt_succ mem nmem
 #align is_dedekind_domain.height_one_spectrum.int_valuation_exists_uniformizer IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer
+
+/-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
+theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
+    v.intValuation r = Multiplicative.ofAdd (-1 : ℤ) := by
+  rw [intValuation_apply, v.intValuationDef_if_neg hr, ← hv, Associates.count_self, Int.ofNat_one,
+    ofAdd_neg, WithZero.coe_inv]
+  apply v.associates_irreducible
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
@@ -426,7 +438,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       have h :
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
-      refine' ValuationSubring.mul_mem _ _ _ _ x.2
+      refine ValuationSubring.mul_mem _ _ _ ?_ x.2
       --porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
       rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
@@ -459,7 +471,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
 instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
   eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
     rw [Algebra.smul_def, mul_eq_zero] at hcx
-    refine' hcx.imp_left fun hc => _
+    refine hcx.imp_left fun hc => ?_
     letI : UniformSpace K := v.adicValued.toUniformSpace
     rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
     exact

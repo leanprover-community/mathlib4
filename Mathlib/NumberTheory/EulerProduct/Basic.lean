@@ -53,7 +53,7 @@ lemma Summable.norm_lt_one {F : Type*} [NormedField F] [CompleteSpace F] {f : �
 
 open scoped Topology
 
-open Nat Finset BigOperators
+open Nat Finset
 
 section General
 
@@ -77,7 +77,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
     (hsum : ∀ {p : ℕ}, p.Prime → Summable (fun n : ℕ ↦ ‖f (p ^ n)‖)) (s : Finset ℕ) :
     Summable (fun m : factoredNumbers s ↦ ‖f m‖) ∧
       HasSum (fun m : factoredNumbers s ↦ f m)
-        (∏ p in s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n)) := by
+        (∏ p ∈ s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n)) := by
   induction' s using Finset.induction with p s hp ih
   · rw [factoredNumbers_empty]
     simp only [not_mem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
@@ -103,7 +103,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
 /-- A version of `EulerProduct.summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum`
 in terms of the value of the series. -/
 lemma prod_filter_prime_tsum_eq_tsum_factoredNumbers (hsum : Summable (‖f ·‖)) (s : Finset ℕ) :
-    ∏ p in s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n) = ∑' m : factoredNumbers s, f m :=
+    ∏ p ∈ s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n) = ∑' m : factoredNumbers s, f m :=
   (summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum hf₁ hmul
     (fun hp ↦ hsum.comp_injective <| Nat.pow_right_injective hp.one_lt) _).2.tsum_eq.symm
 
@@ -129,14 +129,14 @@ lemma norm_tsum_factoredNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0
 lemma summable_and_hasSum_smoothNumbers_prod_primesBelow_tsum
     (hsum : ∀ {p : ℕ}, p.Prime → Summable (fun n : ℕ ↦ ‖f (p ^ n)‖)) (N : ℕ) :
     Summable (fun m : N.smoothNumbers ↦ ‖f m‖) ∧
-      HasSum (fun m : N.smoothNumbers ↦ f m) (∏ p in N.primesBelow, ∑' n : ℕ, f (p ^ n)) := by
+      HasSum (fun m : N.smoothNumbers ↦ f m) (∏ p ∈ N.primesBelow, ∑' n : ℕ, f (p ^ n)) := by
   rw [smoothNumbers_eq_factoredNumbers, primesBelow]
   exact summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum hf₁ hmul hsum _
 
 /-- A version of `EulerProduct.summable_and_hasSum_smoothNumbers_prod_primesBelow_tsum`
 in terms of the value of the series. -/
 lemma prod_primesBelow_tsum_eq_tsum_smoothNumbers (hsum : Summable (‖f ·‖)) (N : ℕ) :
-    ∏ p in N.primesBelow, ∑' n : ℕ, f (p ^ n) = ∑' m : N.smoothNumbers, f m :=
+    ∏ p ∈ N.primesBelow, ∑' n : ℕ, f (p ^ n) = ∑' m : N.smoothNumbers, f m :=
   (summable_and_hasSum_smoothNumbers_prod_primesBelow_tsum hf₁ hmul
     (fun hp ↦ hsum.comp_injective <| Nat.pow_right_injective hp.one_lt) _).2.tsum_eq.symm
 
@@ -167,7 +167,7 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
   refine ⟨range N₀, fun s hs ↦ ?_⟩
-  have : ∏ p in s, {p | Nat.Prime p}.mulIndicator F p = ∏ p in s.filter Nat.Prime, F p :=
+  have : ∏ p ∈ s, {p | Nat.Prime p}.mulIndicator F p = ∏ p ∈ s.filter Nat.Prime, F p :=
     prod_mulIndicator_eq_prod_filter s (fun _ ↦ F) _ id
   rw [this, dist_eq_norm, prod_filter_prime_tsum_eq_tsum_factoredNumbers hf₁ hmul hsum,
     norm_sub_rev]
@@ -192,11 +192,11 @@ multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 `∏' p : {p : ℕ | p.Prime}, ∑' e, f (p ^ e) = ∑' n, f n`.
 This is a version using convergence of finite partial products. -/
 theorem eulerProduct (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
-    Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) := by
+    Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) := by
   have := (eulerProduct_hasProd_mulIndicator hf₁ hmul hsum hf₀).tendsto_prod_nat
   let F : ℕ → R := fun p ↦ ∑' (e : ℕ), f (p ^ e)
-  have H (n : ℕ) : ∏ i in range n, Set.mulIndicator {p | Nat.Prime p} F i =
-                     ∏ p in primesBelow n, ∑' (e : ℕ), f (p ^ e) :=
+  have H (n : ℕ) : ∏ i ∈ range n, Set.mulIndicator {p | Nat.Prime p} F i =
+                     ∏ p ∈ primesBelow n, ∑' (e : ℕ), f (p ^ e) :=
     prod_mulIndicator_eq_prod_filter (range n) (fun _ ↦ F) (fun _ ↦ {p | Nat.Prime p}) id
   simpa only [H]
 
@@ -235,7 +235,7 @@ complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 This version is stated in the form of convergence of finite partial products. -/
 nonrec theorem IsMultiplicative.eulerProduct {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hsum : Summable (‖f ·‖)) :
-    Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) :=
+    Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) :=
   eulerProduct hf.1 hf.2 hsum f.map_zero
 
 /-- The *Euler Product* for a multiplicative arithmetic function `f` with values in a
@@ -281,10 +281,10 @@ we show that the sum involved converges absolutely. -/
 lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric {f : ℕ →* F}
     (h : ∀ {p : ℕ}, p.Prime → ‖f p‖ < 1) (s : Finset ℕ) :
     Summable (fun m : factoredNumbers s ↦ ‖f m‖) ∧
-      HasSum (fun m : factoredNumbers s ↦ f m) (∏ p in s.filter Nat.Prime, (1 - f p)⁻¹) := by
+      HasSum (fun m : factoredNumbers s ↦ f m) (∏ p ∈ s.filter Nat.Prime, (1 - f p)⁻¹) := by
   have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
   have H₁ :
-      ∏ p in s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n) = ∏ p in s.filter Nat.Prime, (1 - f p)⁻¹ := by
+      ∏ p ∈ s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n) = ∏ p ∈ s.filter Nat.Prime, (1 - f p)⁻¹ := by
     refine prod_congr rfl fun p hp ↦ ?_
     simp only [map_pow]
     exact tsum_geometric_of_norm_lt_one <| h (mem_filter.mp hp).2
@@ -299,7 +299,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric {f : ℕ �
 in terms of the value of the series. -/
 lemma prod_filter_prime_geometric_eq_tsum_factoredNumbers {f : ℕ →* F} (hsum : Summable f)
     (s : Finset ℕ) :
-    ∏ p in s.filter Nat.Prime, (1 - f p)⁻¹ = ∑' m : factoredNumbers s, f m := by
+    ∏ p ∈ s.filter Nat.Prime, (1 - f p)⁻¹ = ∑' m : factoredNumbers s, f m := by
   refine (summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric ?_ s).2.tsum_eq.symm
   exact fun {_} hp ↦ hsum.norm_lt_one hp.one_lt
 
@@ -310,14 +310,14 @@ we show that the sum involved converges absolutely. -/
 lemma summable_and_hasSum_smoothNumbers_prod_primesBelow_geometric {f : ℕ →* F}
     (h : ∀ {p : ℕ}, p.Prime → ‖f p‖ < 1) (N : ℕ) :
     Summable (fun m : N.smoothNumbers ↦ ‖f m‖) ∧
-      HasSum (fun m : N.smoothNumbers ↦ f m) (∏ p in N.primesBelow, (1 - f p)⁻¹) := by
+      HasSum (fun m : N.smoothNumbers ↦ f m) (∏ p ∈ N.primesBelow, (1 - f p)⁻¹) := by
   rw [smoothNumbers_eq_factoredNumbers, primesBelow]
   exact summable_and_hasSum_factoredNumbers_prod_filter_prime_geometric h _
 
 /-- A version of `EulerProduct.summable_and_hasSum_smoothNumbers_prod_primesBelow_geometric`
 in terms of the value of the series. -/
 lemma prod_primesBelow_geometric_eq_tsum_smoothNumbers {f : ℕ →* F} (hsum : Summable f) (N : ℕ) :
-    ∏ p in N.primesBelow, (1 - f p)⁻¹ = ∑' m : N.smoothNumbers, f m := by
+    ∏ p ∈ N.primesBelow, (1 - f p)⁻¹ = ∑' m : N.smoothNumbers, f m := by
   rw [smoothNumbers_eq_factoredNumbers, primesBelow]
   exact prod_filter_prime_geometric_eq_tsum_factoredNumbers hsum _
 
@@ -348,11 +348,11 @@ If `f : ℕ →*₀ F`, where `F` is a complete normed field and `‖f ·‖` is
 `∏' p : Nat.Primes, (1 - f p)⁻¹ = ∑' n, f n`.
 This version is stated in the form of convergence of finite partial products. -/
 theorem eulerProduct_completely_multiplicative {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
-    Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - f p)⁻¹) atTop (𝓝 (∑' n, f n)) := by
+    Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, (1 - f p)⁻¹) atTop (𝓝 (∑' n, f n)) := by
   have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
   have := (eulerProduct_hasProd_mulIndicator f.map_one hmul hsum f.map_zero).tendsto_prod_nat
-  have H (n : ℕ) : ∏ p in range n, {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) p =
-                     ∏ p in primesBelow n, (1 - f p)⁻¹ :=
+  have H (n : ℕ) : ∏ p ∈ range n, {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) p =
+                     ∏ p ∈ primesBelow n, (1 - f p)⁻¹ :=
     prod_mulIndicator_eq_prod_filter
       (range n) (fun _ ↦ fun p ↦ (1 - f p)⁻¹) (fun _ ↦ {p | Nat.Prime p}) id
   have H' : {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) =

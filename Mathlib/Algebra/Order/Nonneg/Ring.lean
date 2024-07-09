@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
 
@@ -227,10 +227,16 @@ protected theorem coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α
   rfl
 #align nonneg.coe_nat_cast Nonneg.coe_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias coe_nat_cast := Nonneg.coe_natCast
+
 @[simp]
 theorem mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
 #align nonneg.mk_nat_cast Nonneg.mk_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias mk_nat_cast := mk_natCast
 
 instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.GroupRingAction
+import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
@@ -31,7 +32,7 @@ element of `G`, where `G` is a group that acts on `F`.
 
 noncomputable section
 
-open scoped Classical BigOperators
+open scoped Classical
 
 open MulAction Finset FiniteDimensional
 
@@ -157,8 +158,8 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     · ext x
       rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
   show
-    (∑ x in s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
-      ∑ x in s, (fun y => l y • MulAction.toFun G F y) x g'
+    (∑ x ∈ s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
+      ∑ x ∈ s, (fun y => l y • MulAction.toFun G F y) x g'
   rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
     sum_apply _ _ fun y => l y • toFun G F y]
   rw [hla, toFun_apply, toFun_apply, smul_smul, mul_inv_cancel_left]
@@ -285,14 +286,15 @@ instance normal : Normal (FixedPoints.subfield G F) F where
       exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _
 #align fixed_points.normal FixedPoints.normal
 
-instance separable : IsSeparable (FixedPoints.subfield G F) F :=
+instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F :=
   ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
-    erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,
-      minpoly, Polynomial.map_toSubring _ (subfield G F).toSubring]
+    erw [IsSeparable, ← minpoly_eq_minpoly,
+      ← Polynomial.separable_map (FixedPoints.subfield G F).subtype, minpoly,
+      Polynomial.map_toSubring _ (subfield G F).toSubring]
     exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
-#align fixed_points.separable FixedPoints.separable
+#align fixed_points.separable FixedPoints.isSeparable
 
 instance : FiniteDimensional (subfield G F) F := by
   cases nonempty_fintype G

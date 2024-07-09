@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020 Kyle Miller All rights reserved.
+Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
@@ -29,9 +29,8 @@ symmetric powers
 
 -/
 
-set_option autoImplicit true
-
-
+assert_not_exists MonoidWithZero
+open Mathlib (Vector)
 open Function
 
 /-- The nth symmetric power is n-tuples up to permutation.  We define it
@@ -53,7 +52,7 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 #align sym.has_coe Sym.hasCoe
 
 -- Porting note: instance needed for Data.Finset.Sym
-instance [DecidableEq α] : DecidableEq (Sym α n) :=
+instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
   inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
@@ -79,11 +78,9 @@ theorem coe_inj {s₁ s₂ : Sym α n} : (s₁ : Multiset α) = s₂ ↔ s₁ = 
   coe_injective.eq_iff
 #align sym.coe_inj Sym.coe_inj
 
--- Porting note (#10756): new theorem
 @[ext] theorem ext {s₁ s₂ : Sym α n} (h : (s₁ : Multiset α) = ↑s₂) : s₁ = s₂ :=
   coe_injective h
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem val_eq_coe (s : Sym α n) : s.1 = ↑s :=
   rfl
@@ -217,7 +214,7 @@ def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α 
 theorem erase_mk [DecidableEq α] (m : Multiset α)
     (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
     (mk m hc).erase a h =mk (m.erase a)
-        (by rw [Multiset.card_erase_of_mem h, hc]; rfl) :=
+        (by rw [Multiset.card_erase_of_mem h, hc, Nat.add_one, Nat.pred_succ]) :=
   rfl
 #align sym.erase_mk Sym.erase_mk
 
@@ -382,11 +379,11 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
-  ext; simp only [map, val_eq_coe, Multiset.map_id', coe_inj]; rfl
+  ext; simp only [map, Multiset.map_id', ← val_eq_coe]
 #align sym.map_id' Sym.map_id'
 
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
-  ext; simp only [map, val_eq_coe, id_eq, Multiset.map_id', coe_inj]; rfl
+  ext; simp only [map, id_eq, Multiset.map_id', ← val_eq_coe]
 #align sym.map_id Sym.map_id
 
 @[simp]
@@ -561,7 +558,7 @@ Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
 def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
     m.1.filter (a ≠ ·),
-    eq_tsub_of_add_eq <|
+    Nat.eq_sub_of_add_eq <|
       Eq.trans
         (by
           rw [← countP_eq_card_filter, add_comm]
@@ -659,12 +656,10 @@ def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inr s => s.map Embedding.some
 #align sym_option_succ_equiv.decode SymOptionSuccEquiv.decode
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inl (s : Sym (Option α) n) : decode (Sum.inl s) = none ::ₛ s :=
   rfl
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.some :=
   rfl

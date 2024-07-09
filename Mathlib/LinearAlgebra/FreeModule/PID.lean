@@ -47,8 +47,6 @@ free module, finitely generated module, rank, structure theorem
 -/
 
 
-open BigOperators
-
 universe u v
 
 section Ring
@@ -379,7 +377,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
         apply this
       intro i
       calc
-        (∏ j, a j) • s i = (∏ j in {i}ᶜ, a j) • a i • s i := by
+        (∏ j, a j) • s i = (∏ j ∈ {i}ᶜ, a j) • a i • s i := by
           rw [Fintype.prod_eq_prod_compl_mul i, mul_smul]
         _ ∈ N := N.smul_mem _ (ha' i)
 
@@ -535,9 +533,9 @@ This is a strengthening of `Submodule.basisOfPidOfLe`.
 noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (N O : Submodule R M)
     (N_le_O : N ≤ O) : Σo n : ℕ, Basis.SmithNormalForm (N.comap O.subtype) (Fin o) n := by
   choose n o hno bO bN a snf using N.exists_smith_normal_form_of_le b O N_le_O
-  refine'
+  refine
     ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLEEmb hno), a,
-      fun i ↦ _⟩
+      fun i ↦ ?_⟩
   ext
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
     Submodule.coe_smul_of_tower, Fin.castLEEmb_apply]

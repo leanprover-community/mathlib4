@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 #align_import category_theory.limits.shapes.kernel_pair from "leanprover-community/mathlib"@"f6bab67886fb92c3e2f539cc90a83815f69a189d"
@@ -184,8 +184,8 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
   · ext
     · simp [s.condition]
     · simp
-  · -- Adaptation note: nightly-2024-04-01
-    -- This `symm` (or the following ones that undo it) wasn't previously necessary.
+  · #adaptation_note /-- nightly-2024-04-01
+    This `symm` (or the following ones that undo it) wasn't previously necessary. -/
     symm
     apply pullback.hom_ext
     · symm

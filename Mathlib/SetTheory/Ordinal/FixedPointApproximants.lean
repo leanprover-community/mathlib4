@@ -50,7 +50,7 @@ theorem not_injective_limitation_set : ¬ InjOn g (Iio (ord <| succ #α)) := by
   intro h_inj
   have h := lift_mk_le_lift_mk_of_injective <| injOn_iff_injective.1 h_inj
   have mk_initialSeg_subtype :
-      #(Iio (ord <| succ #α)) = lift (succ #α) := by
+      #(Iio (ord <| succ #α)) = lift.{u + 1} (succ #α) := by
     simpa only [coe_setOf, card_typein, card_ord] using mk_initialSeg (ord <| succ #α)
   rw [mk_initialSeg_subtype, lift_lift, lift_le] at h
   exact not_le_of_lt (Order.lt_succ #α) h
@@ -217,6 +217,10 @@ def gfpApprox (a : Ordinal.{u}) : α :=
 termination_by a
 decreasing_by exact h
 
+-- By unsealing these recursive definitions we can relate them
+-- by definitional equality
+unseal gfpApprox lfpApprox
+
 theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
   lfpApprox_monotone (OrderHom.dual f) x
 
@@ -247,7 +251,7 @@ lemma gfpApprox_ord_mem_fixedPoint (h_init : f x ≤ x) :
 /-- Every value of the ordinal approximants are greater or equal than every fixed point of f
   that is smaller then the initial value -/
 lemma le_gfpApprox_of_mem_fixedPoints {a : α}
-    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i:=
+    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i :=
   lfpApprox_le_of_mem_fixedPoints (OrderHom.dual f) x h_a h_le_init i
 
 /-- The greatest fixed point of f is reached after the successor of the domains cardinality -/

@@ -268,8 +268,8 @@ lemma monotone_or_antitone_iff_uIcc :
 -- Porting note: mathport expands the syntactic sugar `∀ a b c ∈ s` differently than Lean3
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
-      ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] :=
-  by simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
+      ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
+  simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
     mem_uIcc]
 #align set.monotone_on_or_antitone_on_iff_uIcc Set.monotoneOn_or_antitoneOn_iff_uIcc
 
@@ -287,8 +287,8 @@ notation "Ι" => Set.uIoc
 
 @[simp] lemma uIoc_of_le (h : a ≤ b) : Ι a b = Ioc a b := by simp [uIoc, h]
 #align set.uIoc_of_le Set.uIoc_of_le
-@[simp] lemma uIoc_of_lt (h : b < a) : Ι a b = Ioc b a := by simp [uIoc, le_of_lt h]
-#align set.uIoc_of_lt Set.uIoc_of_lt
+@[simp] lemma uIoc_of_ge (h : b ≤ a) : Ι a b = Ioc b a := by simp [uIoc, h]
+#align set.uIoc_of_lt Set.uIoc_of_ge
 
 lemma uIoc_eq_union : Ι a b = Ioc a b ∪ Ioc b a := by
   cases le_total a b <;> simp [uIoc, *]
@@ -325,6 +325,8 @@ lemma Ioc_subset_uIoc : Ioc a b ⊆ Ι a b := Ioc_subset_Ioc (min_le_left _ _) (
 #align set.Ioc_subset_uIoc Set.Ioc_subset_uIoc
 lemma Ioc_subset_uIoc' : Ioc a b ⊆ Ι b a := Ioc_subset_Ioc (min_le_right _ _) (le_max_left _ _)
 #align set.Ioc_subset_uIoc' Set.Ioc_subset_uIoc'
+
+lemma uIoc_subset_uIcc : Ι a b ⊆ uIcc a b := Ioc_subset_Icc_self
 
 lemma eq_of_mem_uIoc_of_mem_uIoc : a ∈ Ι b c → b ∈ Ι a c → a = b := by
   simp_rw [mem_uIoc]; rintro (⟨_, _⟩ | ⟨_, _⟩) (⟨_, _⟩ | ⟨_, _⟩) <;> apply le_antisymm <;>

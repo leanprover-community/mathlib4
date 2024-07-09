@@ -7,7 +7,7 @@ import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Induction
 import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 
 #align_import data.polynomial.inductions from "leanprover-community/mathlib"@"57e09a1296bfb4330ddf6624f1028ba186117d82"
 
@@ -20,7 +20,7 @@ This file contains lemmas dealing with different flavours of induction on polyno
 
 noncomputable section
 
-open BigOperators Polynomial
+open Polynomial
 
 open Finset
 

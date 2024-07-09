@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Subsingleton
 
 #align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -35,6 +36,7 @@ The results here should be used to golf the basic `Group` lemmas.
 -/
 
 assert_not_exists Multiplicative
+assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
 
 open Function
@@ -671,7 +673,7 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
 
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
-  ⟨⟨a, a, Subsingleton.elim _ _, Subsingleton.elim _ _⟩, rfl⟩
+  ⟨⟨a, a, by subsingleton, by subsingleton⟩, rfl⟩
 #align is_unit_of_subsingleton isUnit_of_subsingleton
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
@@ -682,7 +684,7 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
-  uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
+  uniq _ := Units.val_eq_one.mp (by subsingleton)
 
 @[to_additive (attr := simp)]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -734,8 +736,7 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 #align is_unit.pow IsUnit.pow
 #align is_add_unit.nsmul IsAddUnit.nsmul
 
-theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 :=
-  Subsingleton.elim u 1
+theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 := by subsingleton
 #align units_eq_one units_eq_one
 
 @[to_additive] lemma isUnit_iff_eq_one [Unique Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
@@ -833,6 +834,10 @@ theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
   rfl
 #align is_unit.unit_spec IsUnit.unit_spec
 #align is_add_unit.add_unit_spec IsAddUnit.addUnit_spec
+
+@[to_additive (attr := simp)]
+theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
+  Units.eq_iff.1 rfl
 
 @[to_additive (attr := simp)]
 theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
@@ -1175,8 +1180,8 @@ end DivisionCommMonoid
 end IsUnit
 
 @[field_simps]
-lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u :=
-  by rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
+lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := by
+  rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 #align divp_eq_div divp_eq_div
 
 @[to_additive]

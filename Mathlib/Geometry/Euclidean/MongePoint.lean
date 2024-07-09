@@ -51,8 +51,6 @@ generalization, the Monge point of a simplex.
 
 noncomputable section
 
-open scoped BigOperators
-
 open scoped Classical
 
 open scoped RealInnerProductSpace

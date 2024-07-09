@@ -386,7 +386,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
     IsCompact.closure_subset_of_isOpen M.2 (IsOpen.sdiff U'.2 isClosed_closure) hM
   have : (↑(L' ⊔ M') : Set G) ⊆ U' := by
     simp only [Compacts.coe_sup, union_subset_iff, hL'U', true_and]
-    exact hM'.trans (diff_subset _ _ )
+    exact hM'.trans diff_subset
   rw [μ.outerMeasure_of_isOpen (↑U') U'.2]
   refine le_trans (ge_of_eq ?_) (μ.le_innerContent _ _ this)
   exact μ.sup_disjoint L' M' (subset_diff.1 hM').2.symm isClosed_closure isClosed_closure
@@ -420,7 +420,7 @@ instance regular [WeaklyLocallyCompactSpace G] : μ.measure.Regular := by
   rw [measure_apply _ hU.measurableSet, μ.outerMeasure_of_isOpen U hU] at hr
   simp only [innerContent, lt_iSup_iff] at hr
   rcases hr with ⟨K, hKU, hr⟩
-  refine' ⟨K, hKU, K.2, hr.trans_le _⟩
+  refine ⟨K, hKU, K.2, hr.trans_le ?_⟩
   exact (μ.le_outerMeasure_compacts K).trans (le_toMeasure_apply _ _ _)
 #align measure_theory.content.regular MeasureTheory.Content.regular
 

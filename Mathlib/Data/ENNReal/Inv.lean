@@ -154,12 +154,28 @@ protected theorem div_pos (ha : a ≠ 0) (hb : b ≠ ∞) : 0 < a / b :=
   ENNReal.mul_pos ha <| ENNReal.inv_ne_zero.2 hb
 #align ennreal.div_pos ENNReal.div_pos
 
+protected theorem inv_mul_le_iff {x y z : ℝ≥0∞} (h1 : x ≠ 0) (h2 : x ≠ ∞) :
+    x⁻¹ * y ≤ z ↔ y ≤ x * z := by
+  rw [← mul_le_mul_left h1 h2, ← mul_assoc, ENNReal.mul_inv_cancel h1 h2, one_mul]
+
+protected theorem mul_inv_le_iff {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ ∞) :
+    x * y⁻¹ ≤ z ↔ x ≤ z * y := by
+  rw [mul_comm, ENNReal.inv_mul_le_iff h1 h2, mul_comm]
+
+protected theorem div_le_iff {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ ∞) :
+    x / y ≤ z ↔ x ≤ z * y := by
+  rw [div_eq_mul_inv, ENNReal.mul_inv_le_iff h1 h2]
+
+protected theorem div_le_iff' {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ ∞) :
+    x / y ≤ z ↔ x ≤ y * z := by
+  rw [mul_comm, ENNReal.div_le_iff h1 h2]
+
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
-  induction' b using recTopCoe with b
+  induction' b with b
   · replace ha : a ≠ 0 := ha.neg_resolve_right rfl
     simp [ha]
-  induction' a using recTopCoe with a
+  induction' a with a
   · replace hb : b ≠ 0 := coe_ne_zero.1 (hb.neg_resolve_left rfl)
     simp [hb]
   by_cases h'a : a = 0
@@ -198,7 +214,7 @@ protected theorem inv_pos : 0 < a⁻¹ ↔ a ≠ ∞ :=
 theorem inv_strictAnti : StrictAnti (Inv.inv : ℝ≥0∞ → ℝ≥0∞) := by
   intro a b h
   lift a to ℝ≥0 using h.ne_top
-  induction b using recTopCoe; · simp
+  induction b; · simp
   rw [coe_lt_coe] at h
   rcases eq_or_ne a 0 with (rfl | ha); · simp [h]
   rw [← coe_inv h.ne_bot, ← coe_inv ha, coe_lt_coe]
@@ -291,7 +307,7 @@ theorem div_eq_top : a / b = ∞ ↔ a ≠ 0 ∧ b = 0 ∨ a = ∞ ∧ b ≠ ∞
 
 protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ ∨ c ≠ ∞) :
     a ≤ c / b ↔ a * b ≤ c := by
-  induction' b using recTopCoe with b
+  induction' b with b
   · lift c to ℝ≥0 using ht.neg_resolve_left rfl
     rw [div_top, nonpos_iff_eq_zero]
     rcases eq_or_ne a 0 with (rfl | ha) <;> simp [*]
@@ -325,7 +341,15 @@ theorem div_le_of_le_mul' (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 #align ennreal.div_le_of_le_mul' ENNReal.div_le_of_le_mul'
 
-protected theorem div_self_le_one : a / a ≤ 1 := div_le_of_le_mul <| by rw [one_mul]
+@[simp] protected theorem div_self_le_one : a / a ≤ 1 := div_le_of_le_mul <| by rw [one_mul]
+
+@[simp] protected lemma mul_inv_le_one (a : ℝ≥0∞) : a * a⁻¹ ≤ 1 := ENNReal.div_self_le_one
+@[simp] protected lemma inv_mul_le_one (a : ℝ≥0∞) : a⁻¹ * a ≤ 1 := by simp [mul_comm]
+
+@[simp] lemma mul_inv_ne_top (a : ℝ≥0∞) : a * a⁻¹ ≠ ⊤ :=
+  ne_top_of_le_ne_top one_ne_top a.mul_inv_le_one
+
+@[simp] lemma inv_mul_ne_top (a : ℝ≥0∞) : a⁻¹ * a ≠ ⊤ := by simp [mul_comm]
 
 theorem mul_le_of_le_div (h : a ≤ b / c) : a * c ≤ b := by
   rw [← inv_inv c]
@@ -472,6 +496,9 @@ theorem add_thirds (a : ℝ≥0∞) : a / 3 + a / 3 + a / 3 = a := by
 
 @[simp] theorem div_pos_iff : 0 < a / b ↔ a ≠ 0 ∧ b ≠ ∞ := by simp [pos_iff_ne_zero, not_or]
 #align ennreal.div_pos_iff ENNReal.div_pos_iff
+
+protected lemma div_ne_zero : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ ⊤ := by
+  rw [← pos_iff_ne_zero, div_pos_iff]
 
 protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 := by
   simp only [div_pos_iff, ne_eq, h, not_false_eq_true, two_ne_top, and_self]

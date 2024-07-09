@@ -13,7 +13,7 @@ import Mathlib.Data.Set.Pointwise.Basic
 # Pointwise star operation on sets
 
 This file defines the star operation pointwise on sets and provides the basic API.
-Besides basic facts about about how the star operation acts on sets (e.g., `(s ∩ t)⋆ = s⋆ ∩ t⋆`),
+Besides basic facts about how the star operation acts on sets (e.g., `(s ∩ t)⋆ = s⋆ ∩ t⋆`),
 if `s t : Set α`, then under suitable assumption on `α`, it is shown
 
 * `(s + t)⋆ = s⋆ + t⋆`
@@ -109,7 +109,7 @@ theorem star_subset [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t ↔ s ⊆ t�
 #align set.star_subset Set.star_subset
 
 theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Finite :=
-  hs.preimage <| star_injective.injOn _
+  hs.preimage star_injective.injOn
 #align set.finite.star Set.Finite.star
 
 theorem star_singleton {β : Type*} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by

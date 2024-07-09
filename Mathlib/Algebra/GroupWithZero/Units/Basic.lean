@@ -377,7 +377,7 @@ lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :
   hb.isUnit.div_mul_cancel_right _
 
 set_option linter.deprecated false in
-@[deprecated div_mul_cancel_right₀] -- 2024-03-20
+@[deprecated div_mul_cancel_right₀ (since := "2024-03-20")]
 lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
 #align div_mul_left div_mul_left
 
@@ -501,7 +501,7 @@ lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
 set_option linter.deprecated false in
-@[deprecated div_mul_cancel_left₀] -- 2024-03-22
+@[deprecated div_mul_cancel_left₀ (since := "2024-03-22")]
 lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
 #align div_mul_right div_mul_right
 
@@ -579,9 +579,4 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 
 end NoncomputableDefs
 
--- 2024-03-20
--- The names `div_mul_cancel`, `mul_div_cancel` and `mul_div_cancel_left` have been reused
--- @[deprecated] alias div_mul_cancel := div_mul_cancel₀
--- @[deprecated] alias mul_div_cancel := mul_div_cancel_right₀
--- @[deprecated] alias mul_div_cancel_left := mul_div_cancel_left₀
-@[deprecated] alias mul_div_cancel' := mul_div_cancel₀
+@[deprecated (since := "2024-03-20")] alias mul_div_cancel' := mul_div_cancel₀

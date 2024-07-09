@@ -60,7 +60,6 @@ theorem Set.Subsingleton.isPreirreducible (hs : s.Subsingleton) : IsPreirreducib
   fun _u _v _ _ ⟨_x, hxs, hxu⟩ ⟨y, hys, hyv⟩ => ⟨y, hys, hs hxs hys ▸ hxu, hyv⟩
 #align set.subsingleton.is_preirreducible Set.Subsingleton.isPreirreducible
 
--- Porting note (#10756): new lemma
 theorem isPreirreducible_singleton {x} : IsPreirreducible ({x} : Set X) :=
   subsingleton_singleton.isPreirreducible
 
@@ -308,8 +307,8 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
   replace ht : IsIrreducible t := ⟨⟨z, h₂ (h₁ hz)⟩, ht⟩
   refine ⟨⟨z, h₁ hz⟩, ?_⟩
   rintro u v hu hv ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
-  obtain ⟨x, -, hx'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X)))
-  · refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_
+  obtain ⟨x, -, hx'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X))) := by
+    refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_
     · simp [*]
     · intro U H
       simp only [Finset.mem_insert, Finset.mem_singleton] at H

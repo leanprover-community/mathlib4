@@ -21,6 +21,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 -/
 
 assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 universe u v w
 

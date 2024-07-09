@@ -328,6 +328,16 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
 
 end
 
+variable (C) in
+/-- The functor `C ⥤ Triangle C` which sends `X` to `contractibleTriangle X`. -/
+@[simps]
+def contractibleTriangleFunctor [HasZeroObject C] [HasZeroMorphisms C] : C ⥤ Triangle C where
+  obj X := contractibleTriangle X
+  map f :=
+    { hom₁ := f
+      hom₂ := f
+      hom₃ := 0 }
+
 namespace Triangle
 
 /-- The first projection `Triangle C ⥤ C`. -/

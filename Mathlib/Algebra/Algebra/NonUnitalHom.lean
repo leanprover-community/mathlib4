@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.GroupTheory.GroupAction.Prod
 
 #align_import algebra.hom.non_unital_alg from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
@@ -68,8 +69,8 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are equivariant with respect to `φ`.  -/
-class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} [Monoid R] [Monoid S]
-    (φ : outParam (R →* S)) (A B : outParam (Type*))
+class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
+    (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
@@ -79,7 +80,7 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} [Monoid R] [
 from `A` to `B` which are `R`-linear.
 
   This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
-abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam (Type*))
+abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
     [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B
@@ -339,7 +340,7 @@ variable {φ' : S →* R} {ψ : S →* T} {χ : R →* T}
 
 set_option linter.unusedVariables false in
 /-- The composition of morphisms is a morphism. -/
-def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.CompTriple φ ψ χ]:
+def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₛₙₐ[χ] C :=
   { (f : B →ₙ* C).comp (g : A →ₙ* B), (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) with }
 #align non_unital_alg_hom.comp NonUnitalAlgHom.comp

@@ -5,6 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Orientation
 import Mathlib.Tactic.LinearCombination
 
@@ -80,7 +81,7 @@ lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
   FiniteDimensional.of_fact_finrank_eq_two
 
@@ -211,11 +212,11 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
   { o.rightAngleRotationAux₁ with
     norm_map' := fun x => by
       dsimp
-      refine' le_antisymm _ _
+      refine le_antisymm ?_ ?_
       · cases' eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h h
         · rw [← h]
           positivity
-        refine' le_of_mul_le_mul_right _ h
+        refine le_of_mul_le_mul_right ?_ h
         rw [← real_inner_self_eq_norm_mul_norm, o.inner_rightAngleRotationAux₁_left]
         exact o.areaForm_le x (o.rightAngleRotationAux₁ x)
       · let K : Submodule ℝ E := ℝ ∙ x
@@ -231,7 +232,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
-        refine' le_of_mul_le_mul_right _ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
+        refine le_of_mul_le_mul_right ?_ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
         rw [← o.abs_areaForm_of_orthogonal hw']
         rw [← o.inner_rightAngleRotationAux₁_left x w]
         exact abs_real_inner_le_norm (o.rightAngleRotationAux₁ x) w }

@@ -40,7 +40,7 @@ open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open ENNReal (ofReal)
 
-open scoped BigOperators ENNReal NNReal Topology
+open scoped ENNReal NNReal Topology
 
 /-!
 ### Definition of the Lebesgue measure and lengths of intervals
@@ -193,7 +193,7 @@ instance isFiniteMeasure_restrict_Ioo (x y : ℝ) : IsFiniteMeasure (volume.rest
 theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
   by_cases hs : Bornology.IsBounded s
   · rw [Real.ediam_eq hs, ← volume_Icc]
-    exact volume.mono (Real.subset_Icc_sInf_sSup_of_isBounded hs)
+    exact volume.mono hs.subset_Icc_sInf_sSup
   · rw [Metric.ediam_of_unbounded hs]; exact le_top
 #align real.volume_le_diam Real.volume_le_diam
 
@@ -503,8 +503,9 @@ theorem measurableSet_region_between_cc (hf : Measurable f) (hg : Measurable g)
 #align measurable_set_region_between_cc measurableSet_region_between_cc
 
 /-- The graph of a measurable function is a measurable set. -/
-theorem measurableSet_graph (hf : Measurable f) : MeasurableSet { p : α × ℝ | p.snd = f p.fst } :=
-  by simpa using measurableSet_region_between_cc hf hf MeasurableSet.univ
+theorem measurableSet_graph (hf : Measurable f) :
+    MeasurableSet { p : α × ℝ | p.snd = f p.fst } := by
+  simpa using measurableSet_region_between_cc hf hf MeasurableSet.univ
 #align measurable_set_graph measurableSet_graph
 
 theorem volume_regionBetween_eq_lintegral' (hf : Measurable f) (hg : Measurable g)

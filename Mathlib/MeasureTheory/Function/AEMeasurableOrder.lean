@@ -54,7 +54,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
   let u' : β → Set α := fun p => ⋂ q ∈ s ∩ Ioi p, u p q
   have u'_meas : ∀ i, MeasurableSet (u' i) := by
     intro i
-    exact MeasurableSet.biInter (s_count.mono (inter_subset_left _ _)) fun b _ => (huv i b).1
+    exact MeasurableSet.biInter (s_count.mono inter_subset_left) fun b _ => (huv i b).1
   let f' : α → β := fun x => ⨅ i : s, piecewise (u' i) (fun _ => (i : β)) (fun _ => (⊤ : β)) x
   have f'_meas : Measurable f' := by
     apply measurable_iInf
@@ -65,7 +65,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       μ t ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u' p ∩ v p q) := by
         refine (measure_iUnion_le _).trans ?_
         refine ENNReal.tsum_le_tsum fun p => ?_
-        haveI := (s_count.mono (inter_subset_left _ (Ioi ↑p))).to_subtype
+        haveI := (s_count.mono (s.inter_subset_left (t := Ioi ↑p))).to_subtype
         apply measure_iUnion_le
       _ ≤ ∑' (p : s) (q : ↥(s ∩ Ioi p)), μ (u p q ∩ v p q) := by
         gcongr with p q

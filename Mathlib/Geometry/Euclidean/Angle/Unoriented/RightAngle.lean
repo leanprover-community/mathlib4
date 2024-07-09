@@ -29,8 +29,6 @@ triangle unnecessarily.
 
 noncomputable section
 
-open scoped BigOperators
-
 open scoped EuclideanGeometry
 
 open scoped Real

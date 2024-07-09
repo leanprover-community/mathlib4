@@ -152,7 +152,7 @@ lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
 variable {K L} in
 /-- The restriction of the Killing form to a Cartan subalgebra, as a linear equivalence to the
 dual. -/
-@[simps!]
+@[simps! apply_apply]
 noncomputable def cartanEquivDual :
     H ≃ₗ[K] Module.Dual K H :=
   (traceForm K H L).toDual <| traceForm_cartan_nondegenerate K L H
@@ -260,13 +260,14 @@ lemma isSemisimple_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H) :
   replace h_der (y z : L) : S ⁅y, z⁆ = ⁅S y, z⁆ + ⁅y, S z⁆ := by
     have hy : y ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_weightSpace_eq_top]
     have hz : z ∈ ⨆ α : H → K, rootSpace H α := by simp [iSup_weightSpace_eq_top]
-    induction hy using LieSubmodule.iSup_induction'
-    · induction hz using LieSubmodule.iSup_induction'
-      · next α y hy β z hz => exact h_der y z α β hy hz
-      · simp
-      · next h h' => simp only [lie_add, map_add, h, h']; abel
-    · simp
-    · next h h' => simp only [add_lie, map_add, h, h']; abel
+    induction hy using LieSubmodule.iSup_induction' with
+    | hN α y hy =>
+      induction hz using LieSubmodule.iSup_induction' with
+      | hN β z hz => exact h_der y z α β hy hz
+      | h0 => simp
+      | hadd _ _ _ _ h h' => simp only [lie_add, map_add, h, h']; abel
+    | h0 => simp
+    | hadd _ _ _ _ h h' => simp only [add_lie, map_add, h, h']; abel
   /- An equivalent form of the derivation axiom used in `LieDerivation`. -/
   replace h_der : ∀ y z : L, S ⁅y, z⁆ = ⁅y, S z⁆ - ⁅z, S y⁆ := by
     simp_rw [← lie_skew (S _) _, add_comm, ← sub_eq_add_neg] at h_der; assumption
@@ -384,6 +385,9 @@ lemma traceForm_coroot (α : Weight K H L) (x : H) :
     simpa [hα, ← α.coe_coe, map_zero] using root_apply_coroot contra
   · simp [coroot, Weight.coe_toLinear_eq_zero_iff.mpr hα]
 
+@[simp]
+lemma coroot_zero [Nontrivial L] : coroot (0 : Weight K H L) = 0 := by simp [Weight.isZero_zero]
+
 lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
     (corootSpace α).toSubmodule = K ∙ coroot α := by
   if hα : α.IsZero then
@@ -416,16 +420,16 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     (hx : x ∈ α.ker) (hy : y ∈ K ∙ coroot α) :
     traceForm K H L x y = 0 := by
   rw [← coe_corootSpace_eq_span_singleton, LieSubmodule.mem_coeSubmodule, mem_corootSpace'] at hy
-  induction hy using Submodule.span_induction'
-  · next z hz =>
+  induction hy using Submodule.span_induction' with
+  | mem z hz =>
     obtain ⟨u, hu, v, -, huv⟩ := hz
     change killingForm K L (x : L) (z : L) = 0
     replace hx : α x = 0 := by simpa using hx
     rw [← huv, ← traceForm_apply_lie_apply, ← LieSubalgebra.coe_bracket_of_module,
       lie_eq_smul_of_mem_rootSpace hu, hx, zero_smul, map_zero, LinearMap.zero_apply]
-  · simp
-  · next hx hy => simp [hx, hy]
-  · next hz => simp [hz]
+  | zero => simp
+  | add _ _ _ _ hx hy => simp [hx, hy]
+  | smul _ _ _ hz => simp [hz]
 
 @[simp] lemma orthogonal_span_coroot_eq_ker (α : Weight K H L) :
     (traceForm K H L).orthogonal (K ∙ coroot α) = α.ker := by
@@ -545,3 +549,49 @@ end IsKilling
 end Field
 
 end LieAlgebra
+
+namespace LieModule
+
+namespace Weight
+
+open LieAlgebra IsKilling
+
+variable {K L}
+
+variable [FiniteDimensional K L]
+variable [IsKilling K L] {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
+variable {α : Weight K H L}
+
+instance : InvolutiveNeg (Weight K H L) where
+  neg α := ⟨-α, by
+    by_cases hα : α.IsZero
+    · convert α.weightSpace_ne_bot; rw [hα, neg_zero]
+    · intro e
+      obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
+      have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
+        (fun y hy ↦ by rw [rootSpace, e] at hy; rw [hy, map_zero])
+      rw [ker_killingForm_eq_bot] at this
+      exact x_ne0 this⟩
+  neg_neg α := by ext; simp
+
+@[simp] lemma coe_neg : ((-α : Weight K H L) : H → K) = -α := rfl
+
+lemma IsZero.neg (h : α.IsZero) : (-α).IsZero := by ext; rw [coe_neg, h, neg_zero]
+
+@[simp] lemma isZero_neg : (-α).IsZero ↔ α.IsZero := ⟨fun h ↦ neg_neg α ▸ h.neg, fun h ↦ h.neg⟩
+
+lemma IsNonZero.neg (h : α.IsNonZero) : (-α).IsNonZero := fun e ↦ h (by simpa using e.neg)
+
+@[simp] lemma isNonZero_neg {α : Weight K H L} : (-α).IsNonZero ↔ α.IsNonZero := isZero_neg.not
+
+@[simp] lemma toLinear_neg {α : Weight K H L} : (-α).toLinear = -α.toLinear := rfl
+
+variable [CharZero K]
+
+@[simp]
+lemma _root_.LieAlgebra.IsKilling.coroot_neg (α : Weight K H L) : coroot (-α) = -coroot α := by
+  simp [coroot]
+
+end Weight
+
+end LieModule

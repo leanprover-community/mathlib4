@@ -46,7 +46,7 @@ algebraic closure, algebraically closed
 
 universe u v w
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 open Polynomial
 
@@ -229,7 +229,7 @@ instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K]
 #align is_alg_closure.normal IsAlgClosure.normal
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
-    [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
+    [IsAlgClosure R K] [CharZero R] : Algebra.IsSeparable R K :=
   ⟨fun _ => (minpoly.irreducible (Algebra.IsIntegral.isIntegral _)).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 

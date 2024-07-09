@@ -491,7 +491,7 @@ instance : QuasiIso e.hom where
   quasiIsoAt n := by
     classical
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    exact IsIso.of_iso (e.toHomologyIso n)
+    exact (e.toHomologyIso n).isIso_hom
 
 instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
 

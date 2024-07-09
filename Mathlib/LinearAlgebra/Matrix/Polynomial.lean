@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Tactic.ComputeDegree
 
 #align_import linear_algebra.matrix.polynomial from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -28,7 +28,7 @@ matrix determinant, polynomial
 
 set_option linter.uppercaseLean3 false
 
-open Matrix BigOperators Polynomial
+open Matrix Polynomial
 
 variable {n α : Type*} [DecidableEq n] [Fintype n] [CommRing α]
 

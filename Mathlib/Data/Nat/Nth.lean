@@ -3,6 +3,7 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
 -/
+import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
@@ -59,8 +60,8 @@ variable {p}
 -/
 
 
-theorem nth_of_card_le (hf : (setOf p).Finite) {n : ℕ} (hn : hf.toFinset.card ≤ n) : nth p n = 0 :=
-  by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
+theorem nth_of_card_le (hf : (setOf p).Finite) {n : ℕ} (hn : hf.toFinset.card ≤ n) :
+    nth p n = 0 := by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
 #align nat.nth_of_card_le Nat.nth_of_card_le
 
 theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
@@ -105,7 +106,7 @@ theorem nth_injOn (hf : (setOf p).Finite) : (Set.Iio hf.toFinset.card).InjOn (nt
 #align nat.nth_inj_on Nat.nth_injOn
 
 theorem range_nth_of_finite (hf : (setOf p).Finite) : Set.range (nth p) = insert 0 (setOf p) := by
-  simpa only [← nth_eq_getD_sort hf, mem_sort, Set.Finite.mem_toFinset]
+  simpa only [← List.getD_eq_getElem?, ← nth_eq_getD_sort hf, mem_sort, Set.Finite.mem_toFinset]
     using Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
 #align nat.range_nth_of_finite Nat.range_nth_of_finite
 
@@ -412,5 +413,21 @@ theorem lt_nth_iff_count_lt (hp : (setOf p).Infinite) {a b : ℕ} : a < count p 
 #align nat.lt_nth_iff_count_lt Nat.lt_nth_iff_count_lt
 
 end Count
+
+theorem nth_of_forall {n : ℕ} (hp : ∀ n' ≤ n, p n') : nth p n = n := by
+  classical nth_rw 1 [← count_of_forall (hp · ·.le), nth_count (hp n le_rfl)]
+
+@[simp] theorem nth_true (n : ℕ) : nth (fun _ ↦ True) n = n := nth_of_forall fun _ _ ↦ trivial
+
+theorem nth_of_forall_not {n : ℕ} (hp : ∀ n' ≥ n, ¬p n') : nth p n = 0 := by
+  have : setOf p ⊆ Finset.range n := by
+    intro n' hn'
+    contrapose! hp
+    exact ⟨n', by simpa using hp, Set.mem_setOf.mp hn'⟩
+  rw [nth_of_card_le ((finite_toSet _).subset this)]
+  · refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
+    exact Set.Finite.toFinset_subset.mpr this
+
+@[simp] theorem nth_false (n : ℕ) : nth (fun _ ↦ False) n = 0 := nth_of_forall_not fun _ _ ↦ id
 
 end Nat

@@ -156,7 +156,7 @@ variable {k G : Type u} [Field k] [Group G]
 
 -- Verify that the right rigid structure is available when the monoid is a group.
 noncomputable instance : RightRigidCategory (FdRep k G) := by
-  change RightRigidCategory (Action (FGModuleCat k) (GroupCat.of G)); infer_instance
+  change RightRigidCategory (Action (FGModuleCat k) (Grp.of G)); infer_instance
 
 end FdRep
 

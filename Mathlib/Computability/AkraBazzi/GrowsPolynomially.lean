@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
@@ -27,7 +26,7 @@ this issue doesn't seem to arise in practice.
 
 -/
 
-open Finset Real Filter Asymptotics BigOperators
+open Finset Real Filter Asymptotics
 open scoped Topology
 
 namespace AkraBazziRecurrence
@@ -197,7 +196,6 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         intro n hn hyp_ind z hz
         have z_nonneg : 0 ≤ z := by
           calc (0:ℝ) ≤ (2:ℝ)^n * max n₀ 2 := by
-                        set_option tactic.skipAssignedInstances false in
                         exact mul_nonneg (pow_nonneg (by norm_num) _) (by norm_num)
                   _ ≤ z := by exact_mod_cast hz.1
         have le_2n : max n₀ 2 ≤ (2:ℝ)^n * max n₀ 2 := by
@@ -477,7 +475,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                   rwa [neg_neg, ← neg_mul, ← neg_div]
            _ = 3/2 * f x := by ring
     intro u ⟨hu_lb, hu_ub⟩
-    have hfu_nonpos : f u ≤ 0:= hf₂ _ hu_lb
+    have hfu_nonpos : f u ≤ 0 := hf₂ _ hu_lb
     have hfg₃ : ‖g u‖ ≤ -1/2 * f u := by
       calc ‖g u‖ ≤ 1/2 * ‖f u‖ := hfg' _ hu_lb
            _ = 1/2 * (-f u) := by congr; exact norm_of_nonpos hfu_nonpos

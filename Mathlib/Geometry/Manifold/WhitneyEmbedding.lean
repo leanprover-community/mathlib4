@@ -36,7 +36,7 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
 
 open Function Filter FiniteDimensional Set
 
-open scoped Topology Manifold Classical Filter BigOperators
+open scoped Topology Manifold Classical Filter
 
 noncomputable section
 

@@ -147,7 +147,7 @@ theorem proj_of_mem {t : ℝ} (ht : t ∈ Icc v.tMin v.tMax) : ↑(v.proj t) = t
   simp only [proj, projIcc_of_mem v.tMin_le_tMax ht]
 #align picard_lindelof.proj_of_mem PicardLindelof.proj_of_mem
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_proj : Continuous v.proj :=
   continuous_projIcc
 #align picard_lindelof.continuous_proj PicardLindelof.continuous_proj
@@ -164,7 +164,8 @@ structure FunSpace where
 
 namespace FunSpace
 
-variable {v} (f : FunSpace v)
+variable {v}
+variable (f : FunSpace v)
 
 instance : CoeFun (FunSpace v) fun _ => Icc v.tMin v.tMax → E :=
   ⟨toFun⟩
@@ -245,10 +246,10 @@ theorem dist_le_of_forall {f₁ f₂ : FunSpace v} {d : ℝ} (h : ∀ t, dist (f
 #align picard_lindelof.fun_space.dist_le_of_forall PicardLindelof.FunSpace.dist_le_of_forall
 
 instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
-  refine' (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
-      (IsClosed.isComplete _)
+  refine (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
+      (IsClosed.isComplete ?_)
   rw [range_toContinuousMap, setOf_and]
-  refine' (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter _
+  refine (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter ?_
   have : IsClosed {f : Icc v.tMin v.tMax → E | LipschitzWith v.C f} :=
     isClosed_setOf_lipschitzWith v.C
   exact this.preimage ContinuousMap.continuous_coe
@@ -301,16 +302,12 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
   calc
     ‖∫ τ in Ι (v.t₀ : ℝ) t, f₁.vComp τ - f₂.vComp τ‖ ≤
         ∫ τ in Ι (v.t₀ : ℝ) t, v.L * ((v.L * |τ - v.t₀|) ^ n / n ! * d) := by
-      refine norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc ?_) ?_
-      · -- Porting note: was `continuity`
-        refine .mul continuous_const <| .mul (.div_const ?_ _) continuous_const
-        refine .pow (.mul continuous_const <| .abs <| ?_) _
-        exact .sub continuous_id continuous_const
-      · refine (ae_restrict_mem measurableSet_Ioc).mono fun τ hτ => ?_
-        refine (v.lipschitzOnWith (v.proj τ).2).norm_sub_le_of_le (f₁.mem_closedBall _)
-            (f₂.mem_closedBall _) ((h _).trans_eq ?_)
-        rw [v.proj_of_mem]
-        exact uIcc_subset_Icc v.t₀.2 t.2 <| Ioc_subset_Icc_self hτ
+      refine norm_integral_le_of_norm_le (Continuous.integrableOn_uIoc (by fun_prop)) ?_
+      refine (ae_restrict_mem measurableSet_Ioc).mono fun τ hτ ↦ ?_
+      refine (v.lipschitzOnWith (v.proj τ).2).norm_sub_le_of_le (f₁.mem_closedBall _)
+          (f₂.mem_closedBall _) ((h _).trans_eq ?_)
+      rw [v.proj_of_mem]
+      exact uIcc_subset_Icc v.t₀.2 t.2 <| Ioc_subset_Icc_self hτ
     _ = (v.L * |t.1 - v.t₀|) ^ (n + 1) / (n + 1)! * d := by
       simp_rw [mul_pow, div_eq_mul_inv, mul_assoc, MeasureTheory.integral_mul_left,
         MeasureTheory.integral_mul_right, integral_pow_abs_sub_uIoc, div_eq_mul_inv,

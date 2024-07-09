@@ -76,8 +76,6 @@ section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
-open List
-
 #align list.mpartition List.partitionM
 
 theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
@@ -186,8 +184,8 @@ theorem guard_true {h : Decidable True} : @guard F _ True h = pure () := by simp
 #align guard_true guard_true
 
 @[simp]
-theorem guard_false {h : Decidable False} : @guard F _ False h = failure :=
-  by simp [guard, if_neg not_false]
+theorem guard_false {h : Decidable False} : @guard F _ False h = failure := by
+  simp [guard, if_neg not_false]
 #align guard_false guard_false
 
 end Alternative
@@ -208,7 +206,7 @@ instance : Monad (Sum.{v, u} e) where
   bind := @Sum.bind e
 
 instance : LawfulFunctor (Sum.{v, u} e) := by
-  refine' { .. } <;> intros <;> (try casesm Sum _ _) <;> rfl
+  constructor <;> intros <;> (try casesm Sum _ _) <;> rfl
 
 instance : LawfulMonad (Sum.{v, u} e) where
   seqRight_eq := by
@@ -253,7 +251,7 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
   f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
-      simp only [map_seq, map_map]; rfl
+      simp only [map_seq, map_map, Function.comp_def]
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]

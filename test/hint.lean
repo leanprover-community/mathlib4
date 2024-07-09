@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 
 /--
 info: Try these:

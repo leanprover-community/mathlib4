@@ -49,7 +49,7 @@ universe u v w
 variable {m : Type u} {n : Type v} {α : Type w}
 variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m] [CommRing α]
 
-open Matrix BigOperators Polynomial Equiv Equiv.Perm Finset
+open Matrix Polynomial Equiv Equiv.Perm Finset
 
 section Cramer
 
@@ -152,17 +152,17 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
 theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
-    (∑ x in s, cramer A (f x)) = cramer A (∑ x in s, f x) :=
+    (∑ x ∈ s, cramer A (f x)) = cramer A (∑ x ∈ s, f x) :=
   (map_sum (cramer A) ..).symm
 #align matrix.sum_cramer Matrix.sum_cramer
 
 /-- Use linearity of `cramer` and vector evaluation to take `cramer A _ i` out of a summation. -/
 theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
-    (∑ x in s, cramer A (fun j => f j x) i) = cramer A (fun j : n => ∑ x in s, f j x) i :=
+    (∑ x ∈ s, cramer A (fun j => f j x) i) = cramer A (fun j : n => ∑ x ∈ s, f j x) i :=
   calc
-    (∑ x in s, cramer A (fun j => f j x) i) = (∑ x in s, cramer A fun j => f j x) i :=
+    (∑ x ∈ s, cramer A (fun j => f j x) i) = (∑ x ∈ s, cramer A fun j => f j x) i :=
       (Finset.sum_apply i s _).symm
-    _ = cramer A (fun j : n => ∑ x in s, f j x) i := by
+    _ = cramer A (fun j : n => ∑ x ∈ s, f j x) i := by
       rw [sum_cramer, cramer_apply, cramer_apply]
       simp only [updateColumn]
       congr with j
@@ -314,7 +314,7 @@ theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A
 
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j
-  simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i]
+  simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i, one_apply]
 #align matrix.adjugate_subsingleton Matrix.adjugate_subsingleton
 
 theorem adjugate_eq_one_of_card_eq_one {A : Matrix n n α} (h : Fintype.card n = 1) :
@@ -340,7 +340,7 @@ theorem adjugate_one : adjugate (1 : Matrix n n α) = 1 := by
 
 @[simp]
 theorem adjugate_diagonal (v : n → α) :
-    adjugate (diagonal v) = diagonal fun i => ∏ j in Finset.univ.erase i, v j := by
+    adjugate (diagonal v) = diagonal fun i => ∏ j ∈ Finset.univ.erase i, v j := by
   ext i j
   simp only [adjugate_def, cramer_apply, diagonal_transpose, of_apply]
   obtain rfl | hij := eq_or_ne i j
@@ -537,8 +537,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A := by
   -- get rid of the `- 2`
   cases' h_card : Fintype.card n with n'
-  · haveI : IsEmpty n := Fintype.card_eq_zero_iff.mp h_card
-    apply Subsingleton.elim
+  · subsingleton [Fintype.card_eq_zero_iff.mp h_card]
   cases n'
   · exact (h h_card).elim
   rw [← h_card]

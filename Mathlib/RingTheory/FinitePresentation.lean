@@ -25,11 +25,9 @@ In this file we define several notions of finiteness that are common in commutat
 
 -/
 
-set_option autoImplicit true
-
 open Function (Surjective)
 
-open BigOperators Polynomial
+open Polynomial
 
 section ModuleAndAlgebra
 
@@ -102,7 +100,7 @@ theorem equiv [FinitePresentation R A] (e : A ≃ₐ[R] B) : FinitePresentation 
 variable (R)
 
 /-- The ring of polynomials in finitely many variables is finitely presented. -/
-protected instance mvPolynomial (ι : Type u_2) [Finite ι] :
+protected instance mvPolynomial (ι : Type*) [Finite ι] :
     FinitePresentation R (MvPolynomial ι R) where
   out := by
     cases nonempty_fintype ι
@@ -177,9 +175,8 @@ theorem iff_quotient_mvPolynomial' :
     -- exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
-    refine'
-      ⟨Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective,
-        Ideal.fg_ker_comp _ f _ hf.2 equiv.symm.surjective⟩
+    use Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective
+    refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
     erw [RingHom.ker_coe_equiv equiv.symm.toRingEquiv]
     exact Submodule.fg_bot
     -- Porting note: was
@@ -187,6 +184,7 @@ theorem iff_quotient_mvPolynomial' :
     -- exact RingHom.ker_coe_equiv equiv.symm.toRingEquiv
 #align algebra.finite_presentation.iff_quotient_mv_polynomial' Algebra.FinitePresentation.iff_quotient_mvPolynomial'
 
+universe v in
 -- Porting note: make universe level explicit to ensure `ι, ι'` has the same universe level
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
 as `R`-algebra. -/
@@ -301,7 +299,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
         rw [add_mul, mul_add, add_assoc, ← map_mul]
         apply AddSubmonoid.add_mem_sup
         · exact Set.mem_range_self _
-        · refine' add_mem (Ideal.mul_mem_left _ _ hq₂) (Ideal.mul_mem_right _ _ hq₁)
+        · refine add_mem (Ideal.mul_mem_left _ _ hq₂) (Ideal.mul_mem_right _ _ hq₁)
     obtain ⟨_, ⟨p, rfl⟩, q, hq, rfl⟩ := AddSubmonoid.mem_sup.mp this
     rw [map_add, aeval_map_algebraMap, ← aeval_unique, show MvPolynomial.aeval (f ∘ X) q = 0
       from leI hq, add_zero] at hx

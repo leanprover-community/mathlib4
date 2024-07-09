@@ -21,7 +21,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -139,10 +139,13 @@ set_option linter.uppercaseLean3 false in
 
 -- these used to be about `algebraMap ℤ R`, but now the simp-normal form is `Int.castRingHom R`.
 @[simp]
-theorem ringHom_eval₂_cast_int_ringHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[X]) (f : R →+* S)
+theorem ringHom_eval₂_intCastRingHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[X]) (f : R →+* S)
     (r : R) : f (eval₂ (Int.castRingHom R) r p) = eval₂ (Int.castRingHom S) (f r) p :=
   algHom_eval₂_algebraMap p f.toIntAlgHom r
-#align polynomial.ring_hom_eval₂_cast_int_ring_hom Polynomial.ringHom_eval₂_cast_int_ringHom
+#align polynomial.ring_hom_eval₂_cast_int_ring_hom Polynomial.ringHom_eval₂_intCastRingHom
+
+@[deprecated (since := "2024-05-27")]
+alias ringHom_eval₂_cast_int_ringHom := ringHom_eval₂_intCastRingHom
 
 @[simp]
 theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
@@ -150,6 +153,9 @@ theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] �
   eval₂_algebraMap_X p f.toIntAlgHom
 set_option linter.uppercaseLean3 false in
 #align polynomial.eval₂_int_cast_ring_hom_X Polynomial.eval₂_intCastRingHom_X
+
+@[deprecated (since := "2024-04-17")]
+alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
 
 end CommSemiring
 
@@ -232,27 +238,16 @@ theorem aeval_one : aeval x (1 : R[X]) = 1 :=
   AlgHom.map_one _
 #align polynomial.aeval_one Polynomial.aeval_one
 
-section deprecated
-set_option linter.deprecated false
-
--- Porting note: removed `@[simp]` because `simp` can prove this
-@[deprecated]
-theorem aeval_bit0 : aeval x (bit0 p) = bit0 (aeval x p) :=
-  AlgHom.map_bit0 _ _
-#align polynomial.aeval_bit0 Polynomial.aeval_bit0
-
--- Porting note: removed `@[simp]` because `simp` can prove this
-@[deprecated]
-theorem aeval_bit1 : aeval x (bit1 p) = bit1 (aeval x p) :=
-  AlgHom.map_bit1 _ _
-#align polynomial.aeval_bit1 Polynomial.aeval_bit1
-
-end deprecated
+#noalign polynomial.aeval_bit0
+#noalign polynomial.aeval_bit1
 
 -- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
 #align polynomial.aeval_nat_cast Polynomial.aeval_natCast
+
+@[deprecated (since := "2024-04-17")]
+alias aeval_nat_cast := aeval_natCast
 
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _
@@ -395,13 +390,13 @@ section Semiring
 variable [Semiring S] {f : R →+* S}
 
 theorem aeval_eq_sum_range [Algebra R S] {p : R[X]} (x : S) :
-    aeval x p = ∑ i in Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
+    aeval x p = ∑ i ∈ Finset.range (p.natDegree + 1), p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range (algebraMap R S) x
 #align polynomial.aeval_eq_sum_range Polynomial.aeval_eq_sum_range
 
 theorem aeval_eq_sum_range' [Algebra R S] {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
-    aeval x p = ∑ i in Finset.range n, p.coeff i • x ^ i := by
+    aeval x p = ∑ i ∈ Finset.range n, p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range' (algebraMap R S) hn x
 #align polynomial.aeval_eq_sum_range' Polynomial.aeval_eq_sum_range'
