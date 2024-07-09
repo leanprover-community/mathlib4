@@ -426,6 +426,7 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
 
 open NormedSpace in
 open Metric in
+open Submodule in
 open scoped ComplexOrder in
 lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
     ↑(polarSubmodule 𝕜 m₁.toSubMulAction + polarSubmodule 𝕜 m₂.toSubMulAction) ∩ closedBall 0 1 =
@@ -436,13 +437,14 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
   · simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
     constructor
     · apply convexHull_min _
-      sorry
+      exact fun _ hx _ hy _ _ _ _ _ => add_mem (smul_of_tower_mem _ _ hx) (smul_of_tower_mem _ _ hy)
       simp only [Set.union_subset_iff]
-      constructor
-      · sorry
-        -- apply inf_le_left (a := polar 𝕜 ↑m₁)
-        --apply le_sup_left
-      · sorry
+      exact ⟨subset_trans
+          (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₁.toSubMulAction)))
+          (SetLike.coe_subset_coe.mpr le_sup_left),
+        subset_trans
+          (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₂.toSubMulAction)))
+          (SetLike.coe_subset_coe.mpr le_sup_right)⟩
     · apply convexHull_min
       rw [← Set.union_inter_distrib_right]
       exact Set.inter_subset_right
