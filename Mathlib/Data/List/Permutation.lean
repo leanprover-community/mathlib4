@@ -87,7 +87,7 @@ theorem permutationsAux2_comp_append {t : α} {ts ys : List α} {r : List β} (f
   · simp [ys_ih fun xs => f (ys_hd :: xs)]
 #align list.permutations_aux2_comp_append List.permutationsAux2_comp_append
 
-theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β') (t : α) (ts ys : List α)
+theorem map_permutationsAux2' {α' β'} (g : α → α') (g' : β → β') (t : α) (ts ys : List α)
     (r : List β) (f : List α → β) (f' : List α' → β') (H : ∀ a, g' (f a) = f' (map g a)) :
     map g' (permutationsAux2 t ts r ys f).2 =
       (permutationsAux2 (g t) (map g ts) (map g' r) (map g ys) f').2 := by
@@ -124,7 +124,7 @@ theorem permutationsAux2_snd_eq (t : α) (ts : List α) (r : List β) (ys : List
   rw [← permutationsAux2_append, map_permutationsAux2, permutationsAux2_comp_append]
 #align list.permutations_aux2_snd_eq List.permutationsAux2_snd_eq
 
-theorem map_map_permutationsAux2 {α α'} (g : α → α') (t : α) (ts ys : List α) :
+theorem map_map_permutationsAux2 {α'} (g : α → α') (t : α) (ts ys : List α) :
     map (map g) (permutationsAux2 t ts [] ys id).2 =
       (permutationsAux2 (g t) (map g ts) [] (map g ys) id).2 :=
   map_permutationsAux2' _ _ _ _ _ _ _ _ fun _ => rfl
@@ -180,7 +180,7 @@ theorem foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
       (L.bind fun y => (permutationsAux2 t ts [] y id).2) ++ r := by
   induction' L with l L ih
   · rfl
-  · simp_rw [foldr_cons, ih, cons_bind, append_assoc, permutationsAux2_append]
+  · simp_rw [foldr_cons, ih, bind_cons, append_assoc, permutationsAux2_append]
 #align list.foldr_permutations_aux2 List.foldr_permutationsAux2
 
 theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)} {l' : List α} :
@@ -238,7 +238,7 @@ theorem map_permutationsAux (f : α → β) :
   refine permutationsAux.rec (by simp) ?_
   introv IH1 IH2; rw [map] at IH2
   simp only [foldr_permutationsAux2, map_append, map, map_map_permutationsAux2, permutations,
-    bind_map, IH1, append_assoc, permutationsAux_cons, cons_bind, ← IH2, map_bind]
+    bind_map, IH1, append_assoc, permutationsAux_cons, bind_cons, ← IH2, map_bind]
 #align list.map_permutations_aux List.map_permutationsAux
 
 theorem map_permutations (f : α → β) (ts : List α) :
@@ -255,7 +255,7 @@ theorem permutationsAux_append (is is' ts : List α) :
     permutationsAux (is ++ ts) is' =
       (permutationsAux is is').map (· ++ ts) ++ permutationsAux ts (is.reverse ++ is') := by
   induction' is with t is ih generalizing is'; · simp
-  simp only [foldr_permutationsAux2, ih, bind_map, cons_append, permutationsAux_cons, map_append,
+  simp only [foldr_permutationsAux2, ih, map_bind, cons_append, permutationsAux_cons, map_append,
     reverse_cons, append_assoc, singleton_append]
   congr 2
   funext _

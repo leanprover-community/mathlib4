@@ -34,7 +34,7 @@ def Frm :=
 
 namespace Frm
 
-instance : CoeSort Frm (Type*) :=
+instance : CoeSort Frm Type* :=
   Bundled.coeSort
 
 instance (X : Frm) : Frame X :=

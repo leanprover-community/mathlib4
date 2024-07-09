@@ -128,12 +128,12 @@ theorem left_invariance {s : Set H} {x : H} {f : H → H'} {e' : PartialHomeomor
   constructor
   · intro h
     rw [hG.is_local_nhds h3f] at h
-    have h2 := hG.left_invariance' (G'.symm he') (inter_subset_right _ _) (e'.mapsTo hxe') h
+    have h2 := hG.left_invariance' (G'.symm he') inter_subset_right (e'.mapsTo hxe') h
     rw [← hG.is_local_nhds h3f] at h2
     refine hG.congr_nhdsWithin ?_ (e'.left_inv hxe') h2
     exact eventually_of_mem h2f fun x' ↦ e'.left_inv
   · simp_rw [hG.is_local_nhds h2f]
-    exact hG.left_invariance' he' (inter_subset_right _ _) hxe'
+    exact hG.left_invariance' he' inter_subset_right hxe'
 #align structure_groupoid.local_invariant_prop.left_invariance StructureGroupoid.LocalInvariantProp.left_invariance
 
 theorem right_invariance {s : Set H} {x : H} {f : H → H'} {e : PartialHomeomorph H H} (he : e ∈ G)
@@ -656,7 +656,7 @@ theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureG
     obtain ⟨e, he, hfe, hxe⟩ := hf h2x
     refine ⟨e.restr f.source, closedUnderRestriction' he f.open_source, ?_, ?_, hxe, ?_⟩
     · simp_rw [PartialHomeomorph.restr_source]
-      exact (inter_subset_right _ _).trans interior_subset
+      exact inter_subset_right.trans interior_subset
     · intro x' hx'
       exact hfe ⟨hx'.1, hx'.2.1⟩
     · rw [f.open_source.interior_eq]

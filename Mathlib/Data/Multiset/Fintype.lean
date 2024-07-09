@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Card
 
 #align_import data.multiset.fintype from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
@@ -227,8 +227,7 @@ theorem Multiset.map_univ_coe (m : Multiset α) :
 @[simp]
 theorem Multiset.map_univ {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
-  erw [← Multiset.map_map]
-  rw [Multiset.map_univ_coe]
+  erw [← Multiset.map_map, Multiset.map_univ_coe]
 #align multiset.map_univ Multiset.map_univ
 
 @[simp]

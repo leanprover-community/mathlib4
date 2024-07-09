@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 In this file, we define the class of morphisms `epiWithInjectiveKernel` in an
 abelian category. We show that this property of morphisms is multiplicative.
 
-This shall be used in the file `Algebra.Homology.Factorizations.Basic` in
+This shall be used in the file `Mathlib.Algebra.Homology.Factorizations.Basic` in
 order to define morphisms of cochain complexes which satisfy this property
 degreewise.
 
@@ -62,7 +62,7 @@ instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
     rw [epiWithInjectiveKernel_iff] at hg₁ hg₂ ⊢
     obtain ⟨I₁, _, f₁, w₁, ⟨σ₁⟩⟩ := hg₁
     obtain ⟨I₂, _, f₂, w₂, ⟨σ₂⟩⟩ := hg₂
-    refine' ⟨I₁ ⊞ I₂, inferInstance, biprod.fst ≫ f₁ + biprod.snd ≫ f₂ ≫ σ₁.s, _, ⟨_⟩⟩
+    refine ⟨I₁ ⊞ I₂, inferInstance, biprod.fst ≫ f₁ + biprod.snd ≫ f₂ ≫ σ₁.s, ?_, ⟨?_⟩⟩
     · ext
       · simp [reassoc_of% w₁]
       · simp [reassoc_of% σ₁.s_g, w₂]

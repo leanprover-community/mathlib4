@@ -119,8 +119,8 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
       refine add_le_add ?_ ?_
       · rw [add_apply, add_apply]
         apply le_add_right _
-        rw [← restrict_eq_self μ (inter_subset_right _ _),
-          ← restrict_eq_self ν (inter_subset_right _ _)]
+        rw [← restrict_eq_self μ inter_subset_right,
+          ← restrict_eq_self ν inter_subset_right]
         apply h_ν'_in
       · rw [add_apply, restrict_apply (h_meas_t.diff h_meas_s), diff_eq, inter_assoc, inter_self,
           ← add_apply]

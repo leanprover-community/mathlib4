@@ -148,8 +148,8 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   rw [this]; clear this
   have :
     LocallyConstant.comap (C.π.app j0) ggg =
-      LocallyConstant.unflip (LocallyConstant.comap (C.π.app j0) ggg).flip :=
-    by simp
+      LocallyConstant.unflip (LocallyConstant.comap (C.π.app j0) ggg).flip := by
+    simp
   rw [this]; clear this
   congr 1
   ext1 a

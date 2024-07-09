@@ -90,7 +90,7 @@ theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
   rw [← measure_inter_notConvergentSeq_eq_zero hfg n, Set.inter_iInter]
   refine tendsto_measure_iInter (fun n => hsm.inter <| notConvergentSeq_measurableSet hf hg)
     (fun k l hkl => Set.inter_subset_inter_right _ <| notConvergentSeq_antitone hkl)
-    ⟨h.some, ne_top_of_le_ne_top hs (measure_mono <| Set.inter_subset_left _ _)⟩
+    ⟨h.some, ne_top_of_le_ne_top hs (measure_mono Set.inter_subset_left)⟩
 #align measure_theory.egorov.measure_not_convergent_seq_tendsto_zero MeasureTheory.Egorov.measure_notConvergentSeq_tendsto_zero
 
 variable [SemilatticeSup ι] [Nonempty ι] [Countable ι]
@@ -162,7 +162,7 @@ theorem iUnionNotConvergentSeq_subset (hε : 0 < ε) (hf : ∀ n, StronglyMeasur
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     iUnionNotConvergentSeq hε hf hg hsm hs hfg ⊆ s := by
   rw [iUnionNotConvergentSeq, ← Set.inter_iUnion]
-  exact Set.inter_subset_left _ _
+  exact Set.inter_subset_left
 #align measure_theory.egorov.Union_not_convergent_seq_subset MeasureTheory.Egorov.iUnionNotConvergentSeq_subset
 
 theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)

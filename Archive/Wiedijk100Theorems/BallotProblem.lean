@@ -157,8 +157,8 @@ theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
   | 0, q => by simp
   | p + 1, 0 => by simp
   | p + 1, q + 1 => by
-    rw [counted_succ_succ, Set.finite_union, Set.finite_image_iff (List.cons_injective.injOn _),
-      Set.finite_image_iff (List.cons_injective.injOn _)]
+    rw [counted_succ_succ, Set.finite_union, Set.finite_image_iff List.cons_injective.injOn,
+      Set.finite_image_iff List.cons_injective.injOn]
     exact ⟨countedSequence_finite _ _, countedSequence_finite _ _⟩
 #align ballot.counted_sequence_finite Ballot.countedSequence_finite
 
@@ -233,7 +233,7 @@ theorem first_vote_pos :
         countedSequence (p + 1) (q + 1) ∩ List.cons 1 '' countedSequence p (q + 1) =
           List.cons 1 '' countedSequence p (q + 1) := by
         rw [inter_eq_right, counted_succ_succ]
-        exact subset_union_left _ _
+        exact subset_union_left
       rw [(condCount_eq_zero_iff <| (countedSequence_finite _ _).image _).2 this, condCount,
         cond_apply _ list_int_measurableSet, hint, count_injective_image List.cons_injective,
         count_countedSequence, count_countedSequence, one_mul, zero_mul, add_zero,
@@ -241,7 +241,7 @@ theorem first_vote_pos :
       · norm_cast
         rw [mul_comm _ (p + 1), ← Nat.succ_eq_add_one p, Nat.succ_add, Nat.succ_mul_choose_eq,
           mul_comm]
-      all_goals simp [(Nat.choose_pos <| (le_add_iff_nonneg_right _).2 zero_le').ne.symm]
+      all_goals simp [(Nat.choose_pos <| le_add_of_nonneg_right zero_le').ne']
     · simp
 #align ballot.first_vote_pos Ballot.first_vote_pos
 

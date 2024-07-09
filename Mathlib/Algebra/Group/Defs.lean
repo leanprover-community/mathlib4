@@ -91,7 +91,7 @@ class VAdd (G : Type u) (P : Type v) where
 #align has_vadd VAdd
 
 /-- Type class for the `-ᵥ` notation. -/
-class VSub (G : outParam (Type*)) (P : Type*) where
+class VSub (G : outParam Type*) (P : Type*) where
   /-- `a -ᵥ b` computes the difference of `a` and `b`. The meaning of this notation is
   type-dependent, but it is intended to be used for additive torsors. -/
   vsub : P → P → G

@@ -50,7 +50,7 @@ instance str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.str CategoryTheory.Grpd.str'
 
-instance : CoeSort Grpd (Type*) :=
+instance : CoeSort Grpd Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `Grpd` from the underlying type and the typeclass `Groupoid`. -/
@@ -135,7 +135,7 @@ def piLimitFanIsLimit ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.IsLimit 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.pi_limit_fan_is_limit CategoryTheory.Grpd.piLimitFanIsLimit
 
-instance has_pi : Limits.HasProducts Grpd.{u, u} :=
+instance has_pi : Limits.HasProducts.{u} Grpd.{u, u} :=
   Limits.hasProducts_of_limit_fans (by apply piLimitFan) (by apply piLimitFanIsLimit)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.has_pi CategoryTheory.Grpd.has_pi

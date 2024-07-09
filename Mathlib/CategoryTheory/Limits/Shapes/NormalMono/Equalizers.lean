@@ -35,17 +35,15 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
   let ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
   let ⟨a', ha'⟩ :=
     KernelFork.IsLimit.lift' i (kernel.ι (prod.lift f g)) <|
-      calc
-        kernel.ι (prod.lift f g) ≫ f = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.fst :=
-          by rw [prod.lift_fst]
+      calc kernel.ι (prod.lift f g) ≫ f
+        _ = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.fst := by rw [prod.lift_fst]
         _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.fst := by rw [kernel.condition_assoc]
         _ = 0 := zero_comp
 
   let ⟨b', hb'⟩ :=
     KernelFork.IsLimit.lift' i' (kernel.ι (prod.lift f g)) <|
-      calc
-        kernel.ι (prod.lift f g) ≫ g = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.snd :=
-          by rw [prod.lift_snd]
+      calc kernel.ι (prod.lift f g) ≫ g
+        _ = kernel.ι (prod.lift f g) ≫ prod.lift f g ≫ Limits.prod.snd := by rw [prod.lift_snd]
         _ = (0 : kernel (prod.lift f g) ⟶ P ⨯ Q) ≫ Limits.prod.snd := by rw [kernel.condition_assoc]
         _ = 0 := zero_comp
 
@@ -62,16 +60,15 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
               prod.hom_ext
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.fst =
-                      PullbackCone.snd s ≫ b ≫ f :=
-                    by simp only [prod.lift_fst, Category.assoc]
+                      PullbackCone.snd s ≫ b ≫ f := by simp only [prod.lift_fst, Category.assoc]
                   _ = PullbackCone.fst s ≫ a ≫ f := by rw [PullbackCone.condition_assoc]
                   _ = PullbackCone.fst s ≫ 0 := by rw [haf]
                   _ = 0 ≫ Limits.prod.fst := by rw [comp_zero, zero_comp]
                   )
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.snd =
-                      PullbackCone.snd s ≫ b ≫ g :=
-                    by simp only [prod.lift_snd, Category.assoc]
+                      PullbackCone.snd s ≫ b ≫ g := by
+                    simp only [prod.lift_snd, Category.assoc]
                   _ = PullbackCone.snd s ≫ 0 := by rw [hbg]
                   _ = 0 ≫ Limits.prod.snd := by rw [comp_zero, zero_comp]
                   ))
@@ -93,8 +90,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
               _ = PullbackCone.snd s ≫ b := PullbackCone.condition s
               _ =
                   kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) _ ≫
-                    kernel.ι (prod.lift f g) :=
-                by rw [kernel.lift_ι]
+                    kernel.ι (prod.lift f g) := by rw [kernel.lift_ι]
                }
 #align category_theory.normal_mono_category.pullback_of_mono CategoryTheory.NormalMonoCategory.pullback_of_mono
 
@@ -196,8 +192,8 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     CokernelCofork.IsColimit.desc' i (cokernel.π (coprod.desc f g)) <|
       calc
         f ≫ cokernel.π (coprod.desc f g) =
-            coprod.inl ≫ coprod.desc f g ≫ cokernel.π (coprod.desc f g) :=
-          by rw [coprod.inl_desc_assoc]
+            coprod.inl ≫ coprod.desc f g ≫ cokernel.π (coprod.desc f g) := by
+          rw [coprod.inl_desc_assoc]
         _ = coprod.inl ≫ (0 : P ⨿ Q ⟶ cokernel (coprod.desc f g)) := by rw [cokernel.condition]
         _ = 0 := HasZeroMorphisms.comp_zero _ _
 
@@ -205,8 +201,8 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     CokernelCofork.IsColimit.desc' i' (cokernel.π (coprod.desc f g)) <|
       calc
         g ≫ cokernel.π (coprod.desc f g) =
-            coprod.inr ≫ coprod.desc f g ≫ cokernel.π (coprod.desc f g) :=
-          by rw [coprod.inr_desc_assoc]
+            coprod.inr ≫ coprod.desc f g ≫ cokernel.π (coprod.desc f g) := by
+          rw [coprod.inr_desc_assoc]
         _ = coprod.inr ≫ (0 : P ⨿ Q ⟶ cokernel (coprod.desc f g)) := by rw [cokernel.condition]
         _ = 0 := HasZeroMorphisms.comp_zero _ _
 
@@ -222,16 +218,14 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
               coprod.hom_ext
                 (calc
                   coprod.inl ≫ coprod.desc f g ≫ b ≫ PushoutCocone.inr s =
-                      f ≫ b ≫ PushoutCocone.inr s :=
-                    by rw [coprod.inl_desc_assoc]
+                      f ≫ b ≫ PushoutCocone.inr s := by rw [coprod.inl_desc_assoc]
                   _ = f ≫ a ≫ PushoutCocone.inl s := by rw [PushoutCocone.condition]
                   _ = 0 ≫ PushoutCocone.inl s := by rw [← Category.assoc, eq_whisker hfa]
                   _ = coprod.inl ≫ 0 := by rw [comp_zero, zero_comp]
                   )
                 (calc
                   coprod.inr ≫ coprod.desc f g ≫ b ≫ PushoutCocone.inr s =
-                      g ≫ b ≫ PushoutCocone.inr s :=
-                    by rw [coprod.inr_desc_assoc]
+                      g ≫ b ≫ PushoutCocone.inr s := by rw [coprod.inr_desc_assoc]
                   _ = 0 ≫ PushoutCocone.inr s := by rw [← Category.assoc, eq_whisker hgb]
                   _ = coprod.inr ≫ 0 := by rw [comp_zero, zero_comp]
                   ))
@@ -257,8 +251,8 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
               _ = b ≫ PushoutCocone.inr s := PushoutCocone.condition s
               _ =
                   cokernel.π (coprod.desc f g) ≫
-                    cokernel.desc (coprod.desc f g) (b ≫ PushoutCocone.inr s) _ :=
-                by rw [cokernel.π_desc]
+                    cokernel.desc (coprod.desc f g) (b ≫ PushoutCocone.inr s) _ := by
+                rw [cokernel.π_desc]
                }
 #align category_theory.normal_epi_category.pushout_of_epi CategoryTheory.NormalEpiCategory.pushout_of_epi
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Module.Basic
 
 #align_import linear_algebra.linear_pmap from "leanprover-community/mathlib"@"8b981918a93bc45a8600de608cde7944a80d92b9"
 
@@ -266,7 +267,7 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
     exact ⟨fun x hx =>
       ⟨fg_le hx, fh_le hx, by
         -- Porting note: `[exact ⟨x, hx⟩, rfl, rfl]` → `[skip, exact ⟨x, hx⟩, skip] <;> rfl`
-        refine' (fg_eq _).symm.trans (fh_eq _) <;> [skip; exact ⟨x, hx⟩; skip] <;> rfl⟩,
+        convert (fg_eq _).symm.trans (fh_eq _) <;> [skip; exact ⟨x, hx⟩; skip] <;> rfl⟩,
       fun x ⟨y, yg, hy⟩ h => by
         apply fg_eq
         exact h⟩
@@ -310,7 +311,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
     simp only [AddSubgroupClass.coe_sub, coe_mk, coe_mk, hxy, ← sub_add, ← sub_sub, sub_self,
       zero_sub, ← H]
     apply neg_add_eq_sub
-  refine' ⟨{ toFun := fg.. }, fg_eq⟩
+  use { toFun := fg, map_add' := ?_, map_smul' := ?_ }, fg_eq
   · rintro ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩
     rw [← add_assoc, add_right_comm (f _), ← map_add, add_assoc, ← map_add]
     apply fg_eq
@@ -587,7 +588,7 @@ theorem domain_supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉
   rfl
 #align linear_pmap.domain_sup_span_singleton LinearPMap.domain_supSpanSingleton
 
-@[simp, nolint simpNF] -- Porting note: Left-hand side does not simplify.
+@[simp]
 theorem supSpanSingleton_apply_mk (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) (x' : E)
     (hx' : x' ∈ f.domain) (c : K) :
     f.supSpanSingleton x y hx
@@ -622,8 +623,8 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     rcases hc (P x).1.1 (P x).1.2 p.1 p.2 with ⟨q, _hqc, hxq, hpq⟩
     -- Porting note: `refine' ..; exacts [inclusion hpq.1 y, hxy, rfl]`
     --               → `refine' .. <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy`
-    refine' (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy
-  refine' ⟨{ toFun := f.. }, _⟩
+    convert (hxq.2 _).trans (hpq.2 _).symm <;> [skip; exact inclusion hpq.1 y; rfl]; exact hxy
+  use { toFun := f, map_add' := ?_, map_smul' := ?_ }, ?_
   · intro x y
     rcases hc (P x).1.1 (P x).1.2 (P y).1.1 (P y).1.2 with ⟨p, hpc, hpx, hpy⟩
     set x' := inclusion hpx.1 ⟨x, (P x).2⟩
@@ -948,10 +949,11 @@ theorem le_graph_iff {f g : E →ₗ.[R] F} : f.graph ≤ g.graph ↔ f ≤ g :=
 #align linear_pmap.le_graph_iff LinearPMap.le_graph_iff
 
 theorem eq_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) : f = g := by
-  -- Porting note: `ext` → `refine ext ..`
-  refine ext (Submodule.ext fun x => ?_) (fun x y h' => ?_)
+  ext
   · exact mem_domain_iff_of_eq_graph h
-  · exact (le_of_le_graph h.le).2 h'
+  · apply (le_of_le_graph h.le).2
+    assumption
+
 #align linear_pmap.eq_of_eq_graph LinearPMap.eq_of_eq_graph
 
 end Graph

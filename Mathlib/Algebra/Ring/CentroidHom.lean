@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -43,6 +44,8 @@ be satisfied by itself and all stricter types.
 
 centroid
 -/
+
+assert_not_exists Field
 
 open Function
 
@@ -379,8 +382,7 @@ instance : AddCommMonoid (CentroidHom α) :=
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
-@[simp, norm_cast, nolint simpNF]
+@[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
 #align centroid_hom.coe_nat_cast CentroidHom.coe_natCast
@@ -457,7 +459,7 @@ instance applyModule : Module (CentroidHom α) α where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
   one_smul _ := rfl
-  mul_smul _ _ _:= rfl
+  mul_smul _ _ _ := rfl
   smul_zero := map_zero
   smul_add := map_add
 
@@ -603,8 +605,7 @@ instance : Sub (CentroidHom α) :=
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
-@[simp, norm_cast, nolint simpNF]
+@[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl
 #align centroid_hom.coe_int_cast CentroidHom.coe_intCast
@@ -681,7 +682,7 @@ abbrev commRing
   { CentroidHom.instRing with
     mul_comm := fun f g ↦ by
       ext
-      refine' sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ _)
+      refine sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ ?_)
       rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,
         comp_mul_comm] }
 #align centroid_hom.comm_ring CentroidHom.commRing

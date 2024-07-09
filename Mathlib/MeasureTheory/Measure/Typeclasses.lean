@@ -184,13 +184,33 @@ theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasur
   ae_iff_measure_eq hs
 #align measure_theory.ae_mem_iff_measure_eq MeasureTheory.ae_mem_iff_measure_eq
 
+lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
+    {X : Type*} [MeasurableSpace X] {μ : Measure X} [IsFiniteMeasure μ]
+    {Es : ℕ → Set X} (Es_mble : ∀ i, MeasurableSet (Es i))
+    (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
+    Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
+  have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
+    fun n m hnm ↦ biUnion_mono (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
+  have nothing : ⋂ n, ⋃ i ≥ n, Es i = ∅ := by
+    apply subset_antisymm _ (empty_subset _)
+    intro x hx
+    simp only [ge_iff_le, mem_iInter, mem_iUnion, exists_prop] at hx
+    obtain ⟨j, _, x_in_Es_j⟩ := hx 0
+    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
+    have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
+    contradiction
+  have key :=
+    tendsto_measure_iInter (μ := μ) (fun n ↦ by measurability) decr ⟨0, measure_ne_top _ _⟩
+  simp only [ge_iff_le, nothing, measure_empty] at key
+  convert key
+
 open scoped symmDiff
 
 theorem abs_toReal_measure_sub_le_measure_symmDiff'
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
     |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal := by
-  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset (diff_subset s t) hs').ne
-  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset (diff_subset t s) ht').ne
+  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset diff_subset hs').ne
+  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
     convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
@@ -277,6 +297,17 @@ theorem prob_compl_eq_one_sub (hs : MeasurableSet s) : μ sᶜ = 1 - μ s :=
   prob_compl_eq_one_sub₀ hs.nullMeasurableSet
 #align measure_theory.prob_compl_eq_one_sub MeasureTheory.prob_compl_eq_one_sub
 
+lemma prob_compl_lt_one_sub_of_lt_prob {p : ℝ≥0∞} (hμs : p < μ s) (s_mble : MeasurableSet s) :
+    μ sᶜ < 1 - p := by
+  rw [prob_compl_eq_one_sub s_mble]
+  apply ENNReal.sub_lt_of_sub_lt prob_le_one (Or.inl one_ne_top)
+  convert hμs
+  exact ENNReal.sub_sub_cancel one_ne_top (lt_of_lt_of_le hμs prob_le_one).le
+
+lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_mble : MeasurableSet s) :
+    μ sᶜ ≤ 1 - p := by
+  simpa [prob_compl_eq_one_sub s_mble] using tsub_le_tsub_left hμs 1
+
 @[simp] lemma prob_compl_eq_zero_iff₀ (hs : NullMeasurableSet s μ) : μ sᶜ = 0 ↔ μ s = 1 := by
   rw [prob_compl_eq_one_sub₀ hs, tsub_eq_zero_iff_le, one_le_prob_iff]
 
@@ -353,7 +384,7 @@ instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := 
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
   rw [Measure.restrict_apply ht1]
-  apply measure_mono_null (inter_subset_left t s) ht2
+  apply measure_mono_null inter_subset_left ht2
 #align measure_theory.measure.restrict.has_no_atoms MeasureTheory.Measure.restrict.instNoAtoms
 
 theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
@@ -384,7 +415,7 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
 #align finset.measure_zero Finset.measure_zero
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
-  union_ae_eq_right.2 <| measure_mono_null (diff_subset _ _) (measure_singleton _)
+  union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
 #align measure_theory.insert_ae_eq_self MeasureTheory.insert_ae_eq_self
 
 section
@@ -892,7 +923,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
           μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) := by
             gcongr
             exact disjointed_le w n
-          _ ≤ μ (w n) := measure_mono (inter_subset_right _ _)
+          _ ≤ μ (w n) := measure_mono inter_subset_right
           _ < ∞ := hw n
       _ = ∑' n, μ.restrict (t ∩ u) (disjointed w n) := by
         congr 1
@@ -966,8 +997,8 @@ theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : Mea
   rcases h's with ⟨n, hn⟩
   simp only [restrict_apply hs] at hn
   refine
-    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, ?_⟩
-  exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
+    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left, hn, ?_⟩
+  exact (measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top _ _)
 #align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
 namespace FiniteSpanningSetsIn
@@ -1032,7 +1063,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
   rw [ext_iff_of_iUnion_eq_univ (iUnion_spanningSets μ)]
   intro i
   ext s hs
-  rw [← ENNReal.add_right_inj (measure_mono (inter_subset_right s _) |>.trans_lt <|
+  rw [← ENNReal.add_right_inj (measure_mono s.inter_subset_right |>.trans_lt <|
     measure_spanningSets_lt_top μ i).ne]
   simp only [ext_iff', coe_add, Pi.add_apply] at h
   simp [hs, h]
@@ -1074,7 +1105,7 @@ instance Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
     SigmaFinite (μ.restrict s) := by
   refine ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => ?_, iUnion_spanningSets μ⟩⟩⟩
   rw [Measure.restrict_apply (measurable_spanningSets μ i)]
-  exact (measure_mono <| inter_subset_left _ _).trans_lt (measure_spanningSets_lt_top μ i)
+  exact (measure_mono inter_subset_left).trans_lt (measure_spanningSets_lt_top μ i)
 #align measure_theory.restrict.sigma_finite MeasureTheory.Restrict.sigmaFinite
 
 instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
@@ -1116,10 +1147,19 @@ theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable 
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
 #align measure_theory.sigma_finite.of_map MeasureTheory.SigmaFinite.of_map
 
-theorem _root_.MeasurableEquiv.sigmaFinite_map {μ : Measure α} (f : α ≃ᵐ β) (h : SigmaFinite μ) :
+lemma _root_.MeasurableEmbedding.sigmaFinite_map {f : α → β} (hf : MeasurableEmbedding f)
+    [SigmaFinite μ] :
     SigmaFinite (μ.map f) := by
-  refine SigmaFinite.of_map _ f.symm.measurable.aemeasurable ?_
-  rwa [map_map f.symm.measurable f.measurable, f.symm_comp_self, Measure.map_id]
+  refine ⟨fun n ↦ f '' (spanningSets μ n) ∪ (Set.range f)ᶜ, by simp, fun n ↦ ?_, ?_⟩
+  · rw [hf.map_apply, Set.preimage_union]
+    simp only [Set.preimage_compl, Set.preimage_range, Set.compl_univ, Set.union_empty,
+      Set.preimage_image_eq _ hf.injective]
+    exact measure_spanningSets_lt_top μ n
+  · rw [← Set.iUnion_union, ← Set.image_iUnion, iUnion_spanningSets,
+      Set.image_univ, Set.union_compl_self]
+
+theorem _root_.MeasurableEquiv.sigmaFinite_map (f : α ≃ᵐ β) [SigmaFinite μ] :
+    SigmaFinite (μ.map f) := f.measurableEmbedding.sigmaFinite_map
 #align measurable_equiv.sigma_finite_map MeasurableEquiv.sigmaFinite_map
 
 /-- Similar to `ae_of_forall_measure_lt_top_ae_restrict`, but where you additionally get the
@@ -1187,8 +1227,8 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
   refine TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds (fun s hs => hs.1) ?_
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
-  refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right _ _⟩
-  exact measure_mono (inter_subset_left _ _)
+  refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right⟩
+  exact measure_mono inter_subset_left
 #align measure_theory.measure.is_topological_basis_is_open_lt_top MeasureTheory.Measure.isTopologicalBasis_isOpen_lt_top
 
 /-- A measure `μ` is finite on compacts if any compact set `K` satisfies `μ K < ∞`. -/

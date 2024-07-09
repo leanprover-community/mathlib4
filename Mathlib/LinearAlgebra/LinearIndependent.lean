@@ -11,6 +11,7 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Tactic.Abel
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -531,8 +532,8 @@ theorem linearIndependent_iUnion_of_directed {η : Type*} {s : η → Set M} (hs
 theorem linearIndependent_sUnion_of_directed {s : Set (Set M)} (hs : DirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, LinearIndependent R ((↑) : ((a : Set M) : Type _) → M)) :
     LinearIndependent R (fun x => x : ⋃₀ s → M) := by
-  rw [sUnion_eq_iUnion];
-    exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
+  rw [sUnion_eq_iUnion]
+  exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
 #align linear_independent_sUnion_of_directed linearIndependent_sUnion_of_directed
 
 theorem linearIndependent_biUnion_of_directed {η} {s : Set η} {t : η → Set M}
@@ -774,8 +775,8 @@ theorem linearIndependent_sum {v : Sum ι ι' → M} :
   rw [linearIndependent_iff'] at *
   intro s g hg i hi
   have :
-    ((∑ i ∈ s.preimage Sum.inl (Sum.inl_injective.injOn _), (fun x => g x • v x) (Sum.inl i)) +
-        ∑ i ∈ s.preimage Sum.inr (Sum.inr_injective.injOn _), (fun x => g x • v x) (Sum.inr i)) =
+    ((∑ i ∈ s.preimage Sum.inl Sum.inl_injective.injOn, (fun x => g x • v x) (Sum.inl i)) +
+        ∑ i ∈ s.preimage Sum.inr Sum.inr_injective.injOn, (fun x => g x • v x) (Sum.inr i)) =
       0 := by
     -- Porting note: `g` must be specified.
     rw [Finset.sum_preimage' (g := fun x => g x • v x),
@@ -1122,8 +1123,8 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'} (hv : 
 theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
-  letI := Classical.decEq (G →* L);
-  letI : MulAction L L := DistribMulAction.toMulAction;
+  letI := Classical.decEq (G →* L)
+  letI : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
   exact linearIndependent_iff'.2
     -- To do this, we use `Finset` induction,
@@ -1156,12 +1157,12 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                   Finset.sum_sub_distrib
                 _ =
                     (g a * a x * a y + ∑ i ∈ s, g i * i x * i y) -
-                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) :=
-                  by rw [add_sub_add_left_eq_sub]
+                      (g a * a x * a y + ∑ i ∈ s, g i * a x * i y) := by
+                  rw [add_sub_add_left_eq_sub]
                 _ =
                     (∑ i ∈ insert a s, g i * i x * i y) -
-                      ∑ i ∈ insert a s, g i * a x * i y :=
-                  by rw [Finset.sum_insert has, Finset.sum_insert has]
+                      ∑ i ∈ insert a s, g i * a x * i y := by
+                  rw [Finset.sum_insert has, Finset.sum_insert has]
                 _ =
                     (∑ i ∈ insert a s, g i * i (x * y)) -
                       ∑ i ∈ insert a s, a x * (g i * i y) :=
@@ -1171,8 +1172,8 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                     (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
                 _ =
                     (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
-                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y :=
-                  by rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
+                      a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y := by
+                  rw [Finset.sum_apply, Finset.sum_apply, Finset.mul_sum]; rfl
                 _ = 0 - a x * 0 := by rw [hg]; rfl
                 _ = 0 := by rw [mul_zero, sub_zero]
                 )
@@ -1230,7 +1231,7 @@ theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependen
     (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
   have :=
     eq_of_linearIndependent_of_span_subtype (hl.mono (Set.union_subset hsu htu))
-      (Set.subset_union_right _ _) (Set.union_subset (Set.Subset.trans subset_span hst) subset_span)
+      Set.subset_union_right (Set.union_subset (Set.Subset.trans subset_span hst) subset_span)
   rw [← this]; apply Set.subset_union_left
 #align le_of_span_le_span le_of_span_le_span
 
@@ -1411,6 +1412,21 @@ theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndepend
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
   rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
 #align linear_independent_fin_succ' linearIndependent_fin_succ'
+
+/-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
+vector in the complement of their span.
+-/
+def equiv_linearIndependent (n : ℕ) :
+    { s : Fin (n + 1) → V // LinearIndependent K s } ≃
+      Σ s : { s : Fin n → V // LinearIndependent K s },
+        ((Submodule.span K (Set.range (s : Fin n → V)))ᶜ : Set V) where
+  toFun s := ⟨⟨Fin.tail s.val, (linearIndependent_fin_succ.mp s.property).left⟩,
+    ⟨s.val 0, (linearIndependent_fin_succ.mp s.property).right⟩⟩
+  invFun s := ⟨Fin.cons s.2.val s.1.val,
+    linearIndependent_fin_cons.mpr ⟨s.1.property, s.2.property⟩⟩
+  left_inv _ := by simp only [Fin.cons_self_tail, Subtype.coe_eta]
+  right_inv := fun ⟨_, _⟩ => by simp only [Fin.cons_zero, Subtype.coe_eta, Sigma.mk.inj_iff,
+    Fin.tail_cons, heq_eq_eq, and_self]
 
 theorem linearIndependent_fin2 {f : Fin 2 → V} :
     LinearIndependent K f ↔ f 1 ≠ 0 ∧ ∀ a : K, a • f 1 ≠ f 0 := by

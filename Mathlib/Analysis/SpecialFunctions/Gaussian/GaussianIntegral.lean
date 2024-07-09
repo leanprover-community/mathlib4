@@ -193,8 +193,8 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     atTop (𝓝 (-(2 * b)⁻¹ * 0)) := by
     refine Tendsto.const_mul _ (tendsto_zero_iff_norm_tendsto_zero.mpr ?_)
     simp_rw [norm_cexp_neg_mul_sq b]
-    exact tendsto_exp_atBot.comp (Tendsto.neg_const_mul_atTop (neg_lt_zero.2 hb)
-        (tendsto_pow_atTop two_ne_zero))
+    exact tendsto_exp_atBot.comp
+      ((tendsto_pow_atTop two_ne_zero).const_mul_atTop_of_neg (neg_lt_zero.2 hb))
   convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
     (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
   simp only [mul_zero, ofReal_zero, zero_pow, Ne, bit0_eq_zero, Nat.one_ne_zero,
@@ -209,8 +209,8 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
   `integral_mul_cexp_neg_mul_sq` using the fact that this function has an obvious primitive. -/
   calc
     (∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2)) ^ 2 =
-        ∫ p : ℝ × ℝ, cexp (-b * (p.1 : ℂ) ^ 2) * cexp (-b * (p.2 : ℂ) ^ 2) :=
-      by rw [pow_two, ← integral_prod_mul]; rfl
+        ∫ p : ℝ × ℝ, cexp (-b * (p.1 : ℂ) ^ 2) * cexp (-b * (p.2 : ℂ) ^ 2) := by
+      rw [pow_two, ← integral_prod_mul]; rfl
     _ = ∫ p : ℝ × ℝ, cexp (-b * ((p.1 : ℂ)^ 2 + (p.2 : ℂ) ^ 2)) := by
       congr
       ext1 p

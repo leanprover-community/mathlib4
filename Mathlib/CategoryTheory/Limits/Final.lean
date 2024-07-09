@@ -365,9 +365,9 @@ section
 https://stacks.math.columbia.edu/tag/04E7
 -/
 def colimitIso' [HasColimit (F ⋙ G)] :
-    haveI : HasColimit G := hasColimit_of_comp F;
+    haveI : HasColimit G := hasColimit_of_comp F
     colimit (F ⋙ G) ≅ colimit G :=
-  haveI : HasColimit G := hasColimit_of_comp F;
+  haveI : HasColimit G := hasColimit_of_comp F
   asIso (colimit.pre G F)
 #align category_theory.functor.final.colimit_iso' CategoryTheory.Functor.Final.colimitIso'
 
@@ -654,9 +654,9 @@ section
 https://stacks.math.columbia.edu/tag/04E7
 -/
 def limitIso' [HasLimit (F ⋙ G)] :
-    haveI : HasLimit G := hasLimit_of_comp F;
+    haveI : HasLimit G := hasLimit_of_comp F
     limit (F ⋙ G) ≅ limit G :=
-  haveI : HasLimit G := hasLimit_of_comp F;
+  haveI : HasLimit G := hasLimit_of_comp F
   (asIso (limit.pre G F)).symm
 #align category_theory.functor.initial.limit_iso' CategoryTheory.Functor.Initial.limitIso'
 
@@ -721,7 +721,7 @@ theorem initial_iff_comp_equivalence [IsEquivalence G] : Initial F ↔ Initial (
 theorem initial_iff_equivalence_comp [IsEquivalence F] : Initial G ↔ Initial (F ⋙ G) :=
   ⟨fun _ => initial_equivalence_comp _ _, fun _ => initial_of_equivalence_comp F _⟩
 
-theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
+instance final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   let s₁ : C ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} C := AsSmall.equiv
   let s₂ : D ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} D := AsSmall.equiv
   let s₃ : E ≌ AsSmall.{max u₁ v₁ u₂ v₂ u₃ v₃} E := AsSmall.equiv
@@ -738,7 +738,7 @@ theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   rw [← colimit.pre_pre]
   infer_instance
 
-theorem initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
+instance initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
   suffices Final (F ⋙ G).op from initial_of_final_op _
   exact final_comp F.op G.op
 

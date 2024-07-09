@@ -133,14 +133,14 @@ namespace Rel
 class FiniteDimensional : Prop where
   /-- A relation `r` is said to be finite dimensional iff there is a relation series of `r` with the
     maximum length. -/
-  exists_longest_relSeries : ∃ (x : RelSeries r), ∀ (y : RelSeries r), y.length ≤ x.length
+  exists_longest_relSeries : ∃ x : RelSeries r, ∀ y : RelSeries r, y.length ≤ x.length
 
 /-- A relation `r` is said to be infinite dimensional iff there exists relation series of arbitrary
   length. -/
 class InfiniteDimensional : Prop where
   /-- A relation `r` is said to be infinite dimensional iff there exists relation series of
     arbitrary length. -/
-  exists_relSeries_with_length : ∀ (n : ℕ), ∃ (x : RelSeries r), x.length = n
+  exists_relSeries_with_length : ∀ n : ℕ, ∃ x : RelSeries r, x.length = n
 
 end Rel
 
@@ -654,3 +654,10 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 end LTSeries
 
 end LTSeries
+
+/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
+  is `β`. -/
+lemma infiniteDimensionalOrder_of_strictMono [Preorder α] [Preorder β]
+    (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
+    InfiniteDimensionalOrder β :=
+  ⟨fun n ↦ ⟨(LTSeries.withLength _ n).map f hf, LTSeries.length_withLength α n⟩⟩

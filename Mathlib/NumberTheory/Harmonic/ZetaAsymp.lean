@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+import Mathlib.NumberTheory.Harmonic.GammaDeriv
+
 
 /-!
 # Asymptotics of `ζ s` as `s → 1`
@@ -15,6 +16,8 @@ The goal of this file is to evaluate the limit of `ζ s - 1 / (s - 1)` as `s →
 
 * `tendsto_riemannZeta_sub_one_div`: the limit of `ζ s - 1 / (s - 1)`, at the filter of punctured
   neighbourhoods of 1 in `ℂ`, exists and is equal to the Euler-Mascheroni constant `γ`.
+* `riemannZeta_one_ne_zero`: with our definition of `ζ 1` (which is characterised as the limit of
+  `ζ s - 1 / (s - 1) / Gammaℝ s` as `s → 1`), we have `ζ 1 ≠ 0`.
 
 ### Outline of arguments
 
@@ -28,6 +31,8 @@ we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 -/
 
 open Real Set MeasureTheory Filter Topology
+
+@[inherit_doc] local notation "γ" => eulerMascheroniConstant
 
 namespace ZetaAsymptotics
 -- since the intermediate lemmas are of little interest in themselves we put them in a namespace
@@ -117,7 +122,7 @@ lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1
 /-- The topological sum of `ZetaAsymptotics.term (n + 1) 1` over all `n : ℕ` is `1 - γ`. This is
 proved by directly evaluating the sum of the first `N` terms and using the limit definition of `γ`.
 -/
-lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - eulerMascheroniConstant) := by
+lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   rw [hasSum_iff_tendsto_nat_of_nonneg (fun n ↦ term_nonneg (n + 1) 1)]
   show Tendsto (fun N ↦ term_sum 1 N) atTop _
   simp_rw [term_sum_one, sub_eq_neg_add]
@@ -282,9 +287,9 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
 
 /-- First version of the limit formula, with a limit over real numbers tending to 1 from above. -/
 lemma tendsto_riemannZeta_sub_one_div_nhds_right :
-    Tendsto (fun s : ℝ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[>] 1) (𝓝 eulerMascheroniConstant) := by
+    Tendsto (fun s : ℝ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[>] 1) (𝓝 γ) := by
   suffices Tendsto (fun s : ℝ ↦ (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1))
-    (𝓝[>] 1) (𝓝 eulerMascheroniConstant) by
+    (𝓝[>] 1) (𝓝 γ) by
     apply ((Complex.continuous_ofReal.tendsto _).comp this).congr'
     filter_upwards [self_mem_nhdsWithin] with s hs
     simp only [Function.comp_apply, Complex.ofReal_sub, Complex.ofReal_div,
@@ -308,7 +313,7 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
 
 /-- The function `ζ s - 1 / (s - 1)` tends to `γ` as `s → 1`. -/
 theorem _root_.tendsto_riemannZeta_sub_one_div :
-    Tendsto (fun s : ℂ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[≠] 1) (𝓝 eulerMascheroniConstant) := by
+    Tendsto (fun s : ℂ ↦ riemannZeta s - 1 / (s - 1)) (𝓝[≠] 1) (𝓝 γ) := by
   -- We use the removable-singularity theorem to show that *some* limit over `𝓝[≠] (1 : ℂ)` exists,
   -- and then use the previous result to deduce that this limit must be `γ`.
   let f (s : ℂ) := riemannZeta s - 1 / (s - 1)
@@ -346,5 +351,73 @@ lemma _root_.isBigO_riemannZeta_sub_one_div {F : Type*} [Norm F] [One F] [NormOn
      tendsto_riemannZeta_sub_one_div.isBigO_one (F := F)
 
 end continuity
+
+section val_at_one
+
+open Complex
+
+lemma tendsto_Gamma_term_aux : Tendsto (fun s ↦ 1 / (s - 1) - 1 / Gammaℝ s / (s - 1)) (𝓝[≠] 1)
+    (𝓝 (-(γ + Complex.log (4 * ↑π)) / 2)) := by
+  have h := hasDerivAt_Gammaℝ_one
+  rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, Gammaℝ_one] at h
+  have := h.div (hasDerivAt_Gammaℝ_one.continuousAt.tendsto.mono_left nhdsWithin_le_nhds)
+    (Gammaℝ_one.trans_ne one_ne_zero)
+  rw [Gammaℝ_one, div_one] at this
+  refine this.congr' ?_
+  have : {z | 0 < re z} ∈ 𝓝 (1 : ℂ) := by
+    apply (continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds
+    simp only [mem_preimage, one_re, mem_Ioi, zero_lt_one]
+  rw [EventuallyEq, eventually_nhdsWithin_iff]
+  filter_upwards [this] with a ha _
+  rw [Pi.div_apply, ← sub_div, div_right_comm, sub_div' _ _ _ (Gammaℝ_ne_zero_of_re_pos ha),
+    one_mul]
+
+lemma tendsto_riemannZeta_sub_one_div_Gammaℝ :
+    Tendsto (fun s ↦ riemannZeta s - 1 / Gammaℝ s / (s - 1)) (𝓝[≠] 1)
+    (𝓝 ((γ - Complex.log (4 * ↑π)) / 2)) := by
+  have := tendsto_riemannZeta_sub_one_div.add tendsto_Gamma_term_aux
+  simp_rw [sub_add_sub_cancel] at this
+  convert this using 2
+  ring_nf
+
+/-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes
+this particular value to it. -/
+lemma _root_.riemannZeta_one : riemannZeta 1 = (γ - Complex.log (4 * ↑π)) / 2 := by
+  have := (HurwitzZeta.tendsto_hurwitzZetaEven_sub_one_div_nhds_one 0).mono_left
+    <| nhdsWithin_le_nhds (s := {1}ᶜ)
+  simp only [HurwitzZeta.hurwitzZetaEven_zero, div_right_comm _ _ (Gammaℝ _)] at this
+  exact tendsto_nhds_unique this tendsto_riemannZeta_sub_one_div_Gammaℝ
+
+/-- Formula for `Λ 1`. Note that mathematically `Λ 1` is undefined, but our construction ascribes
+this particular value to it. -/
+lemma _root_.completedRiemannZeta_one :
+    completedRiemannZeta 1 = (γ - Complex.log (4 * ↑π)) / 2 :=
+  (riemannZeta_one ▸ div_one (_ : ℂ) ▸ Gammaℝ_one ▸ riemannZeta_def_of_ne_zero one_ne_zero).symm
+
+/-- Formula for `Λ₀ 1`, where `Λ₀` is the entire function satisfying
+`Λ₀ s = π ^ (-s / 2) Γ(s / 2) ζ(s) + 1 / s + 1 / (1 - s)` away from `s = 0, 1`.
+
+Note that `s = 1` is _not_ a pole of `Λ₀`, so this statement (unlike `riemannZeta_one`) is
+a mathematically meaningful statement and is not dependent on Mathlib's particular conventions for
+division by zero. -/
+lemma _root_.completedRiemannZeta₀_one :
+    completedRiemannZeta₀ 1 = (γ - Complex.log (4 * ↑π)) / 2 + 1 := by
+  have := completedRiemannZeta_eq 1
+  rw [sub_self, div_zero, div_one, sub_zero, eq_sub_iff_add_eq] at this
+  rw [← this, completedRiemannZeta_one]
+
+/-- With Mathlib's particular conventions, we have `ζ 1 ≠ 0`. -/
+lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
+  -- This one's for you, Kevin.
+  suffices (γ - (4 * π).log) / 2 ≠ 0 by
+    simpa only [riemannZeta_one, ← ofReal_ne_zero, ofReal_log (by positivity : 0 ≤ 4 * π),
+      push_cast]
+  refine div_ne_zero (sub_lt_zero.mpr (lt_trans ?_ ?_ (b := 1))).ne two_ne_zero
+  · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
+  · rw [lt_log_iff_exp_lt (by positivity)]
+    exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
+      <| mul_le_mul_of_nonneg_left two_le_pi (by norm_num)
+
+end val_at_one
 
 end ZetaAsymptotics

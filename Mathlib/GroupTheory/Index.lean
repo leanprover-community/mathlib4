@@ -3,6 +3,7 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
@@ -360,8 +361,8 @@ theorem index_eq_card [Fintype (G ⧸ H)] : H.index = Fintype.card (G ⧸ H) :=
 @[to_additive index_mul_card]
 theorem index_mul_card [Fintype G] [hH : Fintype H] :
     H.index * Fintype.card H = Fintype.card G := by
-  rw [← relindex_bot_left_eq_card, ← index_bot_eq_card, mul_comm];
-    exact relindex_mul_index bot_le
+  rw [← relindex_bot_left_eq_card, ← index_bot_eq_card, mul_comm]
+  exact relindex_mul_index bot_le
 #align subgroup.index_mul_card Subgroup.index_mul_card
 #align add_subgroup.index_mul_card AddSubgroup.index_mul_card
 
@@ -614,3 +615,26 @@ theorem index_center_le_pow [Finite (commutatorSet G)] [Group.FG G] :
 end FiniteIndex
 
 end Subgroup
+
+namespace MonoidHom
+
+open Finset
+
+variable {G M F : Type*} [Group G] [Fintype G] [Monoid M] [DecidableEq M]
+  [FunLike F G M] [MonoidHomClass F G M]
+
+@[to_additive]
+lemma card_fiber_eq_of_mem_range (f : F) {x y : M} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
+    (univ.filter <| fun g => f g = x).card = (univ.filter <| fun g => f g = y).card := by
+  rcases hx with ⟨x, rfl⟩
+  rcases hy with ⟨y, rfl⟩
+  rcases mul_left_surjective x y with ⟨y, rfl⟩
+  conv_lhs =>
+    rw [← map_univ_equiv (Equiv.mulRight y⁻¹), filter_map, card_map]
+  congr 2 with g
+  simp only [Function.comp, Equiv.toEmbedding_apply, Equiv.coe_mulRight, map_mul]
+  let f' := MonoidHomClass.toMonoidHom f
+  show f' g * f' y⁻¹ = f' x ↔ f' g = f' x * f' y
+  rw [← f'.coe_toHomUnits y⁻¹, map_inv, Units.mul_inv_eq_iff_eq_mul, f'.coe_toHomUnits]
+
+end MonoidHom

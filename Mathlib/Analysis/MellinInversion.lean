@@ -29,7 +29,7 @@ private theorem rexp_neg_image_aux : rexp ∘ Neg.neg '' univ = Ioi 0 := by
   rw [Set.image_comp, Set.image_univ_of_surjective neg_surjective, Set.image_univ, Real.range_exp]
 
 private theorem rexp_neg_injOn_aux : univ.InjOn (rexp ∘ Neg.neg) :=
-  (Real.exp_injective.injOn _).comp (neg_injective.injOn _) (univ.mapsTo_univ _)
+  Real.exp_injective.injOn.comp neg_injective.injOn (univ.mapsTo_univ _)
 
 private theorem rexp_cexp_aux (x : ℝ) (s : ℂ) (f : E) :
     rexp (-x) • cexp (-↑x) ^ (s - 1) • f = cexp (-s * ↑x) • f := by

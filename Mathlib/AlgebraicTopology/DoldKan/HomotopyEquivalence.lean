@@ -33,11 +33,11 @@ variable {C : Type*} [Category C] [Preadditive C] (X : SimplicialObject C)
 noncomputable def homotopyPToId : ∀ q : ℕ, Homotopy (P q : K[X] ⟶ _) (𝟙 _)
   | 0 => Homotopy.refl _
   | q + 1 => by
-    refine'
-      Homotopy.trans (Homotopy.ofEq _)
+    refine
+      Homotopy.trans (Homotopy.ofEq ?_)
         (Homotopy.trans
           (Homotopy.add (homotopyPToId q) (Homotopy.compLeft (homotopyHσToZero q) (P q)))
-          (Homotopy.ofEq _))
+          (Homotopy.ofEq ?_))
     · simp only [P_succ, comp_add, comp_id]
     · simp only [add_zero, comp_zero]
 set_option linter.uppercaseLean3 false in

@@ -218,7 +218,7 @@ theorem Function.Surjective.le_map_cofinite {f : α → β} (hf : Surjective f) 
 /-- For an injective function `f`, inverse images of finite sets are finite. See also
 `Filter.comap_cofinite_le` and `Function.Injective.comap_cofinite_eq`. -/
 theorem Function.Injective.tendsto_cofinite {f : α → β} (hf : Injective f) :
-    Tendsto f cofinite cofinite := fun _ h => h.preimage (hf.injOn _)
+    Tendsto f cofinite cofinite := fun _ h => h.preimage hf.injOn
 #align function.injective.tendsto_cofinite Function.Injective.tendsto_cofinite
 
 /-- The pullback of the `Filter.cofinite` under an injective function is equal to `Filter.cofinite`.

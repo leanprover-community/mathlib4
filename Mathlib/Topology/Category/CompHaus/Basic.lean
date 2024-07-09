@@ -55,7 +55,7 @@ namespace CompHaus
 instance : Inhabited CompHaus :=
   ⟨{ toTop := { α := PEmpty } }⟩
 
-instance : CoeSort CompHaus (Type*) :=
+instance : CoeSort CompHaus Type* :=
   ⟨fun X => X.toTop⟩
 
 instance {X : CompHaus} : CompactSpace X :=
@@ -233,7 +233,7 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     -- Porting note: `ext` fails.
     apply ContinuousMap.ext
     intro (x : StoneCech X)
-    refine' congr_fun _ x
+    refine congr_fun ?_ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
     · rintro _ ⟨y, rfl⟩
       apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
@@ -376,6 +376,8 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
     apply (forget CompHaus).epi_of_epi_map
 set_option linter.uppercaseLean3 false in
 #align CompHaus.epi_iff_surjective CompHaus.epi_iff_surjective
+
+attribute [-instance] Finite.instDiscreteTopology
 
 theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor

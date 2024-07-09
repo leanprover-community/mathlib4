@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Calle Sönne
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import topology.category.Profinite.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
@@ -79,7 +80,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
-instance : CoeSort Profinite (Type*) :=
+instance : CoeSort Profinite Type* :=
   ⟨fun X => X.toCompHaus⟩
 
 -- Porting note (#10688): This lemma was not needed in mathlib3

@@ -290,22 +290,18 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) :
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
-  refine' tendsto_of_tendsto_of_tendsto_of_le_of_le' _ tendsto_const_nhds _ _
-  -- Porting note: `show` no longer reorders goals
-  pick_goal 4
-  · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
-    filter_upwards [eventually_ne_atTop 0] with n hn using
-      le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
-  -- Porting note: `show` no longer reorders goals
-  pick_goal 3
-  · show ∀ᶠ n : ℕ in atTop, f x - f 1 - x * (log (n + 1) - log n) ≤ logGammaSeq x n
-    filter_upwards with n
-    rw [sub_le_iff_le_add', sub_le_iff_le_add']
-    convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
-    ring
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' (f := logGammaSeq x)
+    (g := fun n ↦ f x - f 1 - x * (log (n + 1) - log n)) ?_ tendsto_const_nhds ?_ ?_
   · have : f x - f 1 = f x - f 1 - x * 0 := by ring
     nth_rw 2 [this]
     exact Tendsto.sub tendsto_const_nhds (tendsto_log_nat_add_one_sub_log.const_mul _)
+  · filter_upwards with n
+    rw [sub_le_iff_le_add', sub_le_iff_le_add']
+    convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
+    ring
+  · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
+    filter_upwards [eventually_ne_atTop 0] with n hn using
+      le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
 #align real.bohr_mollerup.tendsto_log_gamma_seq_of_le_one Real.BohrMollerup.tendsto_logGammaSeq_of_le_one
 
 theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)

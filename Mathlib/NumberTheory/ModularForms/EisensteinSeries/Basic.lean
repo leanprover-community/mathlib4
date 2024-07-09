@@ -86,15 +86,15 @@ end gamma_action
 section eisSummand
 
 /-- The function on `(Fin 2 → ℤ)` whose sum defines an Eisenstein series. -/
-def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := 1 / (v 0 * z.1 + v 1) ^ k
+def eisSummand (k : ℤ) (v : Fin 2 → ℤ) (z : ℍ) : ℂ := (v 0 * z.1 + v 1) ^ (-k)
 
 /-- How the `eisSummand` function changes under the Moebius action. -/
 theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z : ℍ) :
     eisSummand k i (A • z) = (z.denom A) ^ k * eisSummand k (i ᵥ* A) z := by
-  simp only [eisSummand, specialLinearGroup_apply, algebraMap_int_eq, eq_intCast, ofReal_intCast,
-    one_div, vecMul, vec2_dotProduct, Int.cast_add, Int.cast_mul]
-  have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : ((u * ((a * z + b) / (c * z + d)) + v) ^ k)⁻¹ =
-      (c * z + d) ^ k * (((u * a + v * c) * z + (u * b + v * d)) ^ k)⁻¹ := by
+  simp only [eisSummand, vecMul, vec2_dotProduct]
+  push_cast
+  have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : (u * ((a * z + b) / (c * z + d)) + v) ^ (-k) =
+      (c * z + d) ^ k * ((u * a + v * c) * z + (u * b + v * d)) ^ (-k) := by
     field_simp [hc]
     ring_nf
   apply h (hc := z.denom_ne_zero A)
@@ -104,7 +104,7 @@ end eisSummand
 variable (a)
 
 /-- An Eisenstein series of weight `k` and level `Γ(N)`, with congruence condition `a`. -/
-def eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N a, eisSummand k x z
+def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N a, eisSummand k x z
 
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
@@ -120,3 +120,6 @@ def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A := by rw [subgroup_slash, ← SL_slash, eisensteinSeries_slash_apply,
       (Gamma_mem' N A).mp A.2, SpecialLinearGroup.coe_one, vecMul_one]
+
+lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
+    eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl

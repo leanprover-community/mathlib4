@@ -120,24 +120,15 @@ theorem conj : ∀ x₀, ∀ {U}, U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x₀
 is discrete. -/
 @[to_additive "The trivial additive group filter basis consists of `{0}` only. The associated
 topology is discrete."]
-instance : Inhabited (GroupFilterBasis G) := ⟨by
-  refine'
-    { sets := {{1}}
-      nonempty := singleton_nonempty _.. }
-  all_goals simp only [exists_prop, mem_singleton_iff]
-  · rintro - - rfl rfl
-    use {1}
-    simp
-  · simp
-  · rintro - rfl
-    use {1}
-    simp
-  · rintro - rfl
-    use {1}
-    simp
-  · rintro x₀ - rfl
-    use {1}
-    simp⟩
+instance : Inhabited (GroupFilterBasis G) where
+  default := {
+    sets := {{1}}
+    nonempty := singleton_nonempty _
+    inter_sets := by simp
+    one' := by simp
+    mul' := by simp
+    inv' := by simp
+    conj' := by simp }
 
 @[to_additive]
 theorem subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=

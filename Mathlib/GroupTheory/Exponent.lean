@@ -3,8 +3,6 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Data.ZMod.Quotient
-import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
@@ -117,7 +115,7 @@ theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
 @[to_additive]
 protected alias ⟨_, ExponentExists.exponent_ne_zero⟩ := exponent_ne_zero
 
-@[to_additive (attr := deprecated)] -- 2024-01-27
+@[to_additive (attr := deprecated (since := "2024-01-27"))]
 theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := exponent_ne_zero.symm
 
 @[to_additive]
@@ -244,7 +242,7 @@ theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n
 
 variable (G)
 
-@[to_additive (attr := deprecated)] -- 2024-02-17
+@[to_additive (attr := deprecated (since := "2024-01-27"))]
 theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
   exponent_dvd.mpr h
 
@@ -381,7 +379,7 @@ theorem lcm_orderOf_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm order
 #align monoid.lcm_order_eq_exponent Monoid.lcm_orderOf_eq_exponent
 #align add_monoid.lcm_add_order_eq_exponent AddMonoid.lcm_addOrderOf_eq_exponent
 
-@[to_additive (attr := deprecated) AddMonoid.lcm_addOrder_eq_exponent] -- 2024-01-26
+@[to_additive (attr := deprecated (since := "2024-01-26")) AddMonoid.lcm_addOrder_eq_exponent]
 alias lcm_order_eq_exponent := lcm_orderOf_eq_exponent
 
 variable {H : Type*} [Monoid H]
@@ -551,7 +549,8 @@ section Group
 
 variable [Group G]
 
-@[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent] -- 2024-02-17
+@[to_additive (attr := deprecated Monoid.one_lt_exponent (since := "2024-02-17"))
+  AddGroup.one_lt_exponent]
 lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
   Monoid.one_lt_exponent
 
@@ -575,38 +574,6 @@ theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H)
     g ^ Monoid.exponent H = 1 := exponent_toSubmonoid H ▸ Submonoid.pow_exponent_eq_one g_in_H
 
 end Group
-
-section CommGroup
-
-open Subgroup
-
-variable (G) [CommGroup G] [Group.FG G]
-
-@[to_additive]
-theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.rank G := by
-  obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
-  rw [← hS1, ← Fintype.card_coe, ← Finset.card_univ, ← Finset.prod_const]
-  let f : (∀ g : S, zpowers (g : G)) →* G := noncommPiCoprod fun s t _ x y _ _ => mul_comm x _
-  have hf : Function.Surjective f := by
-    rw [← MonoidHom.range_top_iff_surjective, eq_top_iff, ← hS2, closure_le]
-    exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
-  replace hf := nat_card_dvd_of_surjective f hf
-  rw [Nat.card_pi] at hf
-  refine hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => ?_)
-  rw [Nat.card_zpowers]
-  exact Monoid.order_dvd_exponent (g : G)
-#align card_dvd_exponent_pow_rank card_dvd_exponent_pow_rank
-#align card_dvd_exponent_nsmul_rank card_dvd_exponent_nsmul_rank
-
-@[to_additive]
-theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
-    Nat.card G ∣ n ^ Group.rank G :=
-  (card_dvd_exponent_pow_rank G).trans
-    (pow_dvd_pow_of_dvd (Monoid.exponent_dvd_of_forall_pow_eq_one hG) (Group.rank G))
-#align card_dvd_exponent_pow_rank' card_dvd_exponent_pow_rank'
-#align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
-
-end CommGroup
 
 section PiProd
 
@@ -716,9 +683,10 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
--- TODO: Delete; deprecated on 2024-02-17
+-- TODO: delete
 /-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible, deprecated) "Any additive group of exponent two is abelian."]
+@[to_additive (attr := reducible, deprecated (since := "2024-02-17"))
+  "Any additive group of exponent two is abelian."]
 def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
   mul_comm := mul_comm_of_exponent_two hG
 

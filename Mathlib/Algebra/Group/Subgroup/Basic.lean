@@ -7,9 +7,7 @@ import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Set.Image
-import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
 
 #align_import group_theory.subgroup.basic from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
@@ -85,6 +83,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
+assert_not_exists OrderedAddCommMonoid
 
 open Function
 open Int
@@ -131,10 +130,6 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
   ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
 #align inv_mem_iff inv_mem_iff
 #align neg_mem_iff neg_mem_iff
-
-@[simp] theorem abs_mem_iff {S G} [AddGroup G] [LinearOrder G] {_ : SetLike S G}
-    [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
-  cases abs_choice x <;> simp [*]
 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
@@ -206,7 +201,7 @@ end InvMemClass
 
 namespace SubgroupClass
 
-@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv -- 2024-01-15
+@[to_additive (attr := deprecated (since := "2024-01-15"))] alias coe_inv := InvMemClass.coe_inv
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
@@ -406,7 +401,7 @@ theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) :
 #align subgroup.mem_mk Subgroup.mem_mk
 #align add_subgroup.mem_mk AddSubgroup.mem_mk
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
     (mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv : Set G) = s :=
   rfl
@@ -2199,12 +2194,6 @@ theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
 
 variable (H)
 
-/-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
-theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
-    H.Normal :=
-  normalizer_eq_top.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
-#align subgroup.normalizer_condition.normal_of_coatom Subgroup.NormalizerCondition.normal_of_coatom
-
 end Normalizer
 
 /-- Commutativity of a subgroup -/
@@ -2260,6 +2249,43 @@ instance subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommuta
 #align add_subgroup.add_subgroup_of_is_commutative AddSubgroup.addSubgroupOf_isCommutative
 
 end Subgroup
+
+namespace MulEquiv
+variable {H : Type*} [Group H]
+
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their inverse images.
+
+See also `MulEquiv.mapSubgroup` which maps subgroups to their forward images.
+-/
+@[simps]
+def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
+  toFun := Subgroup.comap f
+  invFun := Subgroup.comap f.symm
+  left_inv sg := by simp [Subgroup.comap_comap]
+  right_inv sh := by simp [Subgroup.comap_comap]
+  map_rel_iff' {sg1 sg2} :=
+    ⟨fun h => by simpa [Subgroup.comap_comap] using
+      Subgroup.comap_mono (f := (f.symm : H →* G)) h, Subgroup.comap_mono⟩
+
+/--
+An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their forward images.
+
+See also `MulEquiv.comapSubgroup` which maps subgroups to their inverse images.
+-/
+@[simps]
+def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup H where
+  toFun := Subgroup.map f
+  invFun := Subgroup.map f.symm
+  left_inv sg := by simp [Subgroup.map_map]
+  right_inv sh := by simp [Subgroup.map_map]
+  map_rel_iff' {sg1 sg2} :=
+    ⟨fun h => by simpa [Subgroup.map_map] using
+      Subgroup.map_mono (f := (f.symm : H →* G)) h, Subgroup.map_mono⟩
+
+end MulEquiv
 
 namespace Group
 
@@ -3281,15 +3307,17 @@ end MonoidHom
 
 variable {N : Type*} [Group N]
 
+namespace Subgroup
+
 -- Here `H.Normal` is an explicit argument so we can use dot notation with `comap`.
 @[to_additive]
-theorem Subgroup.Normal.comap {H : Subgroup N} (hH : H.Normal) (f : G →* N) : (H.comap f).Normal :=
+theorem Normal.comap {H : Subgroup N} (hH : H.Normal) (f : G →* N) : (H.comap f).Normal :=
   ⟨fun _ => by simp (config := { contextual := true }) [Subgroup.mem_comap, hH.conj_mem]⟩
 #align subgroup.normal.comap Subgroup.Normal.comap
 #align add_subgroup.normal.comap AddSubgroup.Normal.comap
 
 @[to_additive]
-instance (priority := 100) Subgroup.normal_comap {H : Subgroup N} [nH : H.Normal] (f : G →* N) :
+instance (priority := 100) normal_comap {H : Subgroup N} [nH : H.Normal] (f : G →* N) :
     (H.comap f).Normal :=
   nH.comap _
 #align subgroup.normal_comap Subgroup.normal_comap
@@ -3297,20 +3325,20 @@ instance (priority := 100) Subgroup.normal_comap {H : Subgroup N} [nH : H.Normal
 
 -- Here `H.Normal` is an explicit argument so we can use dot notation with `subgroupOf`.
 @[to_additive]
-theorem Subgroup.Normal.subgroupOf {H : Subgroup G} (hH : H.Normal) (K : Subgroup G) :
+theorem Normal.subgroupOf {H : Subgroup G} (hH : H.Normal) (K : Subgroup G) :
     (H.subgroupOf K).Normal :=
   hH.comap _
 #align subgroup.normal.subgroup_of Subgroup.Normal.subgroupOf
 #align add_subgroup.normal.add_subgroup_of AddSubgroup.Normal.addSubgroupOf
 
 @[to_additive]
-instance (priority := 100) Subgroup.normal_subgroupOf {H N : Subgroup G} [N.Normal] :
+instance (priority := 100) normal_subgroupOf {H N : Subgroup G} [N.Normal] :
     (N.subgroupOf H).Normal :=
   Subgroup.normal_comap _
 #align subgroup.normal_subgroup_of Subgroup.normal_subgroupOf
 #align add_subgroup.normal_add_subgroup_of AddSubgroup.normal_addSubgroupOf
 
-theorem Subgroup.map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
+theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (map f (normalClosure s)) := Normal.map inferInstance f hf
   apply le_antisymm
@@ -3318,10 +3346,20 @@ theorem Subgroup.map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f
       ← Set.image_subset_iff, subset_normalClosure]
   · exact normalClosure_le_normal (Set.image_subset f subset_normalClosure)
 
-theorem Subgroup.comap_normalClosure (s : Set N) (f : G ≃* N) :
+theorem comap_normalClosure (s : Set N) (f : G ≃* N) :
     normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by
   have := Set.preimage_equiv_eq_image_symm s f.toEquiv
   simp_all [comap_equiv_eq_map_symm, map_normalClosure s f.symm f.symm.surjective]
+
+lemma Normal.of_map_injective {G H : Type*} [Group G] [Group H] {φ : G →* H}
+    (hφ : Function.Injective φ) {L : Subgroup G} (n : (L.map φ).Normal) : L.Normal :=
+  L.comap_map_eq_self_of_injective hφ ▸ n.comap φ
+
+theorem Normal.of_map_subtype {K : Subgroup G} {L : Subgroup K}
+    (n : (Subgroup.map K.subtype L).Normal) : L.Normal :=
+  n.of_map_injective K.subtype_injective
+
+end Subgroup
 
 namespace MonoidHom
 
@@ -3443,14 +3481,6 @@ theorem mem_closure_pair {x y z : C} :
   simp_rw [mem_closure_singleton, exists_exists_eq_and]
 #align subgroup.mem_closure_pair Subgroup.mem_closure_pair
 #align add_subgroup.mem_closure_pair AddSubgroup.mem_closure_pair
-
-@[to_additive]
-instance : IsModularLattice (Subgroup C) :=
-  ⟨fun {x} y z xz a ha => by
-    rw [mem_inf, mem_sup] at ha
-    rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
-    rw [mem_sup]
-    exact ⟨b, hb, c, mem_inf.2 ⟨hc, (mul_mem_cancel_left (xz hb)).1 haz⟩, rfl⟩⟩
 
 end Subgroup
 

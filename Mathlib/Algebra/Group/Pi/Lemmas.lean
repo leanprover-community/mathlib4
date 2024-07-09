@@ -31,6 +31,10 @@ variable {f : I → Type v}
 -- The family of types already equipped with instances
 variable (x y : ∀ i, f i) (i j : I)
 
+@[to_additive (attr := simp)]
+theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α → β) = {1} :=
+  range_const
+
 @[to_additive]
 theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
@@ -94,7 +98,8 @@ theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f
 #align pi.monoid_hom_injective Pi.monoidHom_injective
 #align pi.add_monoid_hom_injective Pi.addMonoidHom_injective
 
-variable (f) [(i : I) → Mul (f i)]
+variable (f)
+variable [(i : I) → Mul (f i)]
 
 /-- Evaluation of functions into an indexed collection of semigroups at a point is a semigroup
 homomorphism.
@@ -153,7 +158,8 @@ end MulHom
 
 section MonoidHom
 
-variable (f) [(i : I) → MulOneClass (f i)]
+variable (f)
+variable [(i : I) → MulOneClass (f i)]
 
 /-- Evaluation of functions into an indexed collection of monoids at a point is a monoid
 homomorphism.
@@ -331,10 +337,10 @@ For injections of commuting elements at the same index, see `Commute.map` -/
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
-  by_cases h1 : i = k;
+  by_cases h1 : i = k
   · subst h1
     simp [hij]
-  by_cases h2 : j = k;
+  by_cases h2 : j = k
   · subst h2
     simp [hij]
   simp [h1, h2]
