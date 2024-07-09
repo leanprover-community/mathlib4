@@ -385,7 +385,8 @@ universe u
 
 variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
     (hT : ∀ n, (∀ (i : n), (T n i).IsSymmetric))
-    (hC : ∀ n, (∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i)))
+    (hC : (∀ n, (∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i)))
+      ∧ (∀ p : n → Prop, Subtype.restrict p (T n) = T {x // p x}))
 
 open Classical
 
@@ -486,14 +487,14 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
   have h1 := h {x // i ≠ x} (Fintype.card_subtype_lt fun a ↦ a rfl)
   have Q0 : Subtype.restrict (fun j ↦ i ≠ j) (T n) = T {x // i ≠ x} := by sorry
-  have Q : ∀ (j : { x // i ≠ x }), (T n i) ∘ₗ (T { x // i ≠ x } j) = (T { x // i ≠ x } j) ∘ₗ (T n i)
-      := by
-    intro j
-    have R := Set.restrict_eq (T n) {x | i ≠ x}
-    sorry
-    rw [S]
-    exact hC n i ↑j
+  have Q : ∀ (j : { x // i ≠ x }), (T n i) ∘ₗ (T { x // i ≠ x } j) = (T { x // i ≠ x } j) ∘ₗ (T n i) :=
+      by
+      intro j
+      have := hC.2 (fun j ↦ i ≠ j)
+      rw [← this]
+      sorry
   sorry
+
 #exit
 /-COMMENT: May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
   orthogonalFamily_eigenspaces'-/
