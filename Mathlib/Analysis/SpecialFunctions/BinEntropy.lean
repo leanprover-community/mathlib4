@@ -297,21 +297,20 @@ lemma differentiableAt_binaryEntropy_iff_ne_zero_one (x : ℝ) :
     have := not_DifferentiableAt_log_mul_zero
     contradiction
 
-lemma deriv_log_one_sub_at_1 : deriv (fun p ↦ log (1 - p)) 1 = 0 := by
-  have : ¬ DifferentiableAt ℝ (fun p ↦ log (1 - p)) 1 := by
-    by_contra h_contra
-    have h₁ : ¬ DifferentiableAt ℝ log 0 := by simp [Real.differentiableAt_log_iff]
-    have h₂ : DifferentiableAt ℝ log 0 := by
-      have : Real.log = (fun p ↦ log (1 - p)) ∘ (fun x => 1 - x) := by ext; simp
-      rw [this]
-      refine DifferentiableAt.comp _ ?_ (by fun_prop)
-      simp only [sub_zero, h_contra]
-    contradiction
-  exact deriv_zero_of_not_differentiableAt this
-
-lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻¹ := by
+private lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(1-x)⁻¹ := by
   by_cases xis1 : x = 1
-  · simp only [xis1, sub_self, inv_zero, neg_zero, deriv_log_one_sub_at_1]
+  · have deriv_log_one_sub_at_1 : deriv (fun p ↦ log (1 - p)) 1 = 0 := by
+      have : ¬ DifferentiableAt ℝ (fun p ↦ log (1 - p)) 1 := by
+        by_contra h_contra
+        have h₁ : ¬ DifferentiableAt ℝ log 0 := by simp [Real.differentiableAt_log_iff]
+        have h₂ : DifferentiableAt ℝ log 0 := by
+          have : Real.log = (fun p ↦ log (1 - p)) ∘ (fun x => 1 - x) := by ext; simp
+          rw [this]
+          refine DifferentiableAt.comp _ ?_ (by fun_prop)
+          simp only [sub_zero, h_contra]
+        contradiction
+      exact deriv_zero_of_not_differentiableAt this
+    simp only [xis1, sub_self, inv_zero, neg_zero, deriv_log_one_sub_at_1]
   · rw [deriv.log]
     rw [deriv_const_sub 1, deriv_id'']
     field_simp
