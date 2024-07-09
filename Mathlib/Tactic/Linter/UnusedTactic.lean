@@ -99,7 +99,7 @@ These identifiers are then allowed by the unused tactic linter:
 even if these tactics do not modify goals, there will be no warning emitted.
 Note: for this to work, these identifiers should be the `SyntaxNodeKind` of each tactic.
 
-For instance, you can allow `done` and `skip` tactics using
+For instance, you can allow the `done` and `skip` tactics using
 ```lean
 #allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 ```
