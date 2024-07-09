@@ -442,11 +442,6 @@ theorem eq_iff_orthogonalComplement_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ
      rw [← (Submodule.orthogonal_orthogonal K), ← (Submodule.orthogonal_orthogonal) L]
      exact congrArg Submodule.orthogonal H
 
-/-QUESTION: Is the following easier to prove if we use `Nontrivial` for the
-case break rather than `Nonempty`? Recall that `by_cases` uses choice, so
-we are not escaping choice by doing this, entirely. Maybe the proof can be
-made shorter though.-/
-
 /--The following result is auxiliary, and not meant to be used outside this file. It forms
 the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
@@ -507,9 +502,13 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   intro h
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
+  have H := (set_fintype_card_eq_univ_iff (⊤ : Set n)).mpr rfl
   --have := Set.fintypeDiff
+  -- Set.fintypeSingleton
+
   sorry
 
+#exit
 /-COMMENT: May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
   orthogonalFamily_eigenspaces'-/
 
