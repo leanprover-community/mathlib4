@@ -62,7 +62,8 @@ theorem nat_lt_order_iff {φ : MvPowerSeries σ R} {n : ℕ} :
   classical
   by_cases h : φ = 0
   · simp [h, order_zero]
-  simp only [order_def, ne_eq, dif_neg h, Nat.cast_lt, Nat.lt_find_iff, not_exists, not_and, not_imp_not]
+  simp only [order_def, ne_eq, dif_neg h, Nat.cast_lt, Nat.lt_find_iff,
+    not_exists, not_and, not_imp_not]
   constructor
   · exact fun hn d hd ↦ hn (d.sum fun _ s ↦ s) hd d (by rfl)
   · exact fun h m hm d h' ↦ h d (Eq.symm (Eq.symm h') ▸ hm)

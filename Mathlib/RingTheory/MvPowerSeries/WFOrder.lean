@@ -38,7 +38,8 @@ noncomputable def wf_order (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ 
 
 theorem wf_order_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     ∃ (ne : Set.Nonempty (toLex '' φ.support)),
-      wf_order φ = WithTop.some ((@wellFounded_lt (Lex (σ →₀ ℕ)) (instLTLex) (Lex.wellFoundedLT)).min (toLex '' φ.support) ne) := by
+      wf_order φ = WithTop.some ((@wellFounded_lt (Lex (σ →₀ ℕ))
+        (instLTLex) (Lex.wellFoundedLT)).min (toLex '' φ.support) ne) := by
   suffices ne : Set.Nonempty (toLex '' φ.support) by
     use ne
     unfold wf_order
