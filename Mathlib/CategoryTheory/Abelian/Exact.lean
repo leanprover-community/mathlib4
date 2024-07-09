@@ -290,24 +290,6 @@ end
 
 section
 
-variable [L.PreservesZeroMorphisms] [L.PreservesHomology]
-
-/-- A functor which preserves homology preserves finite limits. -/
-def preservesFiniteLimitsOfPreservesHomology : PreservesFiniteLimits L := by
-  have := PreservesHomology.preservesKernels (F := L)
-  apply preservesFiniteLimitsOfPreservesKernels
-#align category_theory.functor.preserves_finite_limits_of_map_exact CategoryTheory.Functor.preservesFiniteLimitsOfPreservesHomology
-
-/-- A functor which preserves homology preserves finite colimits. -/
-def preservesFiniteColimitsOfPreservesHomology : PreservesFiniteColimits L := by
-  have := PreservesHomology.preservesCokernels (F := L)
-  apply preservesFiniteColimitsOfPreservesCokernels
-#align category_theory.functor.preserves_finite_colimits_of_map_exact CategoryTheory.Functor.preservesFiniteColimitsOfPreservesHomology
-
-end
-
-section
-
 /-- A functor preserving zero morphisms, monos, and cokernels preserves homology. -/
 def preservesHomologyOfPreservesMonosAndCokernels [PreservesZeroMorphisms L]
     [PreservesMonomorphisms L] [∀ {X Y} (f : X ⟶ Y), PreservesColimit (parallelPair f 0) L] :
