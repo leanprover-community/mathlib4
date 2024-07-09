@@ -30,7 +30,8 @@ import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.AlgebraicCard
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Associated.OrderedCommMonoid
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Finprod
@@ -627,7 +628,9 @@ import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
-import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.PUnitInstances.Algebra
+import Mathlib.Algebra.PUnitInstances.Module
+import Mathlib.Algebra.PUnitInstances.Order
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Pointwise.Stabilizer
 import Mathlib.Algebra.Polynomial.AlgebraMap
