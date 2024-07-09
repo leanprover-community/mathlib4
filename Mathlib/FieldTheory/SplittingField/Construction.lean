@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.Algebra.CharP.Algebra
 
@@ -310,6 +311,7 @@ example :
       @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
   rfl
 
+-- TODO: importing Mathlib.Algebra.Algebra.Rat for this is bad
 example [CharZero K] : SplittingField.algebra' f = algebraRat :=
   rfl
 
