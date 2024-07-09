@@ -56,10 +56,10 @@ theorem diagonal_snd : diagonal f ≫ pullback.snd _ _ = 𝟙 _ :=
 instance : IsSplitMono (diagonal f) :=
   ⟨⟨⟨pullback.fst _ _, diagonal_fst f⟩⟩⟩
 
-instance : IsSplitEpi (pullback.fst _ _ : pullback f f ⟶ X) :=
+instance : IsSplitEpi (pullback.fst f f) :=
   ⟨⟨⟨diagonal f, diagonal_fst f⟩⟩⟩
 
-instance : IsSplitEpi (pullback.snd _ _ : pullback f f ⟶ X) :=
+instance : IsSplitEpi (pullback.snd f f) :=
   ⟨⟨⟨diagonal f, diagonal_snd f⟩⟩⟩
 
 instance [Mono f] : IsIso (diagonal f) := by
