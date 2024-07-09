@@ -129,3 +129,54 @@ elab_rules : command
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"import {·}")).toList}"
 
 end Mathlib.Command.MinImports
+
+/-!
+#  The "minImports" linter
+
+The "minImports" linter tracks information about minimal imports over several commands.
+-/
+
+namespace Mathlib.Linter
+
+/-- `minImportsRef` keeps track of cumulative imports across multiple commands. -/
+initialize minImportsRef : IO.Ref NameSet ← IO.mkRef {}
+
+/-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
+elab "#reset_min_imports" : command => minImportsRef.set {}
+
+/-- The "minImports" linter tracks information about minimal imports over several commands. -/
+register_option linter.minImports : Bool := {
+  defValue := false
+  descr := "enable the minImports linter"
+}
+
+namespace MinImports
+
+open Mathlib.Command.MinImports
+
+/-- Gets the value of the `linter.minImports` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.minImports o
+
+@[inherit_doc Mathlib.Linter.linter.minImports]
+def minImportsLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    let prevImports ← minImportsRef.get
+    unless linter.minImports.get (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    --if stx.isOfKind ``Parser.Command.eoi || stx == (← `(command| set_option linter.minImports true)) then
+    --  return
+    let tot ← getIrredundantImports stx
+    let redundant := (← getEnv).findRedundantImports (prevImports.append tot).toArray
+    let currImports := tot.diff redundant
+    let currImpArray := currImports.toArray.qsort Name.lt
+    if (currImpArray != #[] && currImpArray != #[`Lean.Parser.Command]) &&
+       currImpArray ≠ prevImports.toArray.qsort Name.lt then
+      minImportsRef.modify fun _ => currImports
+      Linter.logLint linter.minImports stx
+        m!"Imports increased to\n{currImpArray}"
+
+initialize addLinter minImportsLinter
+
+end MinImports
