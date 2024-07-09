@@ -52,23 +52,16 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
-lemma sSup_eq_zero : sSup s = 0 ↔ s = {0} ∨ s = ∅ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← bot_eq_zero, sSup_eq_bot, bot_eq_zero] at h
-    by_cases h' : s = ∅
-    · apply Or.inr h'
-    · apply Or.inl
-      ext x
-      refine ⟨h x, fun hx ↦ ?_⟩
-      subst hx
-      obtain ⟨u, hu⟩ := nonempty_def.mp <| nonempty_iff_ne_empty.mpr h'
-      exact h u hu ▸ hu
-  · cases' h with h h
-    · exact h ▸ sSup_singleton
-    · exact h ▸ sSup_empty
+variable {s : Set ℕ∞}
 
-lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s :=
-  ⟨fun h ↦ have ⟨_, h₁, h₂⟩  := (sInf_eq_bot.mp h) 1 (by decide)
-  lt_one_iff_eq_zero.mp h₂ ▸ h₁, inf_eq_bot_of_bot_mem⟩
+lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
+  sSup_eq_bot
+
+lemma sInf_eq_zero : sInf s = 0 ↔ 0 ∈ s := by
+  rw [← lt_one_iff_eq_zero]
+  simp only [sInf_lt_iff, lt_one_iff_eq_zero, exists_eq_right]
+
+lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
+  sSup_eq_bot'
 
 end ENat

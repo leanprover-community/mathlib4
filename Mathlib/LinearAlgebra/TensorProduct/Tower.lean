@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 #align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
@@ -395,7 +394,7 @@ theorem leftComm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 @[simp]
-theorem leftComm_symm_tmul (m : M) (p : P) (q : Q):
+theorem leftComm_symm_tmul (m : M) (p : P) (q : Q) :
     (leftComm R A M P Q).symm (p ⊗ₜ (m ⊗ₜ q)) = m ⊗ₜ (p ⊗ₜ q) :=
   rfl
 
@@ -426,7 +425,7 @@ theorem rightComm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 @[simp]
-theorem rightComm_symm_tmul (m : M) (p : P) (q : Q):
+theorem rightComm_symm_tmul (m : M) (p : P) (q : Q) :
     (rightComm R A M P Q).symm ((m ⊗ₜ q) ⊗ₜ p) = (m ⊗ₜ p) ⊗ₜ q :=
   rfl
 

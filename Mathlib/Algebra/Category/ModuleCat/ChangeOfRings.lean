@@ -50,7 +50,7 @@ open CategoryTheory Limits
 
 namespace ModuleCat
 
-universe v u₁ u₂ u₃
+universe v u₁ u₂ u₃ w
 
 namespace RestrictScalars
 
@@ -529,7 +529,6 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars 
     map_add' := fun y1 y2 =>
       LinearMap.ext fun s : S => by
         -- Porting note: double dsimp seems odd
-        set_option tactic.skipAssignedInstances false in
         dsimp only [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
           RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
           MonoidHom.coe_coe, ZeroHom.coe_mk, smul_eq_mul, id_eq, eq_mpr_eq_cast, cast_eq,
@@ -619,11 +618,11 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
 #align category_theory.Module.restrict_coextend_scalars_adj ModuleCat.restrictCoextendScalarsAdj
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    (restrictScalars f).IsLeftAdjoint  :=
+    (restrictScalars.{max u₂ w} f).IsLeftAdjoint  :=
   (restrictCoextendScalarsAdj f).isLeftAdjoint
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    (coextendScalars f).IsRightAdjoint  :=
+    (coextendScalars.{u₁, u₂, max u₂ w} f).IsRightAdjoint  :=
   (restrictCoextendScalarsAdj f).isRightAdjoint
 
 namespace ExtendRestrictScalarsAdj
@@ -858,11 +857,11 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
 #align category_theory.Module.extend_restrict_scalars_adj ModuleCat.extendRestrictScalarsAdj
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    (extendScalars f).IsLeftAdjoint :=
+    (extendScalars.{u₁, u₂, max u₂ w} f).IsLeftAdjoint :=
   (extendRestrictScalarsAdj f).isLeftAdjoint
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    (restrictScalars f).IsRightAdjoint :=
+    (restrictScalars.{max u₂ w, u₁, u₂} f).IsRightAdjoint :=
   (extendRestrictScalarsAdj f).isRightAdjoint
 
 noncomputable instance preservesLimitRestrictScalars
@@ -870,7 +869,6 @@ noncomputable instance preservesLimitRestrictScalars
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => by
-    have : Small.{v} ((F ⋙ restrictScalars f) ⋙ forget _).sections := by assumption
     have hc' := isLimitOfPreserves (forget₂ _ AddCommGrp) hc
     exact isLimitOfReflects (forget₂ _ AddCommGrp) hc'⟩
 

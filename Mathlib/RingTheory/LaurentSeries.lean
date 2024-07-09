@@ -1,12 +1,14 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Data.Int.Interval
 import Mathlib.RingTheory.Binomial
+import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
+import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Localization.FractionRing
 
@@ -25,6 +27,7 @@ import Mathlib.RingTheory.Localization.FractionRing
   `HahnSeries.ofPowerSeries`.
 * Embedding of rational functions into Laurent series, provided as a coercion, utilizing
 the underlying `RatFunc.coeAlgHom`.
+* Study of the X-Adic valuation on the ring of Laurent series over a field
 
 ## Main Results
 * Basic properties of Hasse derivatives
@@ -164,10 +167,8 @@ instance of_powerSeries_localization [CommRing R] :
   map_units' := by
     rintro ⟨_, n, rfl⟩
     refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
-    · simp only [single_mul_single, mul_one, add_right_neg]
-      rfl
-    · simp only [single_mul_single, mul_one, add_left_neg]
-      rfl
+    · simp
+    · simp
     · dsimp; rw [ofPowerSeries_X_pow]
   surj' z := by
     by_cases h : 0 ≤ z.order
@@ -394,17 +395,14 @@ set_option linter.uppercaseLean3 false in
 theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
-  · simp only [Nat.cast_zero, pow_zero]
-    rfl
+  · simp
   · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
       add_comm]
 
 theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
     single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
   apply eq_inv_of_mul_eq_one_right
-  rw [HahnSeries.single_mul_single, add_right_neg, mul_comm,
-    inv_mul_cancel hα]
-  rfl
+  simp [hα]
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
@@ -434,3 +432,55 @@ instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
 end RatFunc
 
 end RatFunc
+
+section AdicValuation
+
+namespace PowerSeries
+
+variable (K : Type*) [Field K]
+
+/-- The prime ideal `(X)` of `PowerSeries K`, when `K` is a field, as a term of the
+`HeightOneSpectrum`. -/
+def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
+  asIdeal := Ideal.span {X}
+  isPrime := PowerSeries.span_X_isPrime
+  ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
+
+open RatFunc IsDedekindDomain.HeightOneSpectrum
+
+variable {K}
+
+/- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of its coercion to `K⟦X⟧`-/
+theorem intValuation_eq_of_coe (P : K[X]) :
+    (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
+  by_cases hP : P = 0
+  · rw [hP, Valuation.map_zero, Polynomial.coe_zero, Valuation.map_zero]
+  simp only [intValuation_apply]
+  rw [intValuationDef_if_neg _ hP, intValuationDef_if_neg _ <| coe_ne_zero hP]
+  simp only [idealX_span, ofAdd_neg, inv_inj, WithZero.coe_inj, EmbeddingLike.apply_eq_iff_eq,
+    Nat.cast_inj]
+  have span_ne_zero :
+    (Ideal.span {P} : Ideal K[X]) ≠ 0 ∧ (Ideal.span {Polynomial.X} : Ideal K[X]) ≠ 0 := by
+    simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, hP, Polynomial.X_ne_zero,
+      not_false_iff, and_self_iff]
+  have span_ne_zero' :
+    (Ideal.span {↑P} : Ideal K⟦X⟧) ≠ 0 ∧ ((idealX K).asIdeal : Ideal K⟦X⟧) ≠ 0 := by
+    simp only [Ideal.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot, coe_eq_zero_iff, hP,
+      not_false_eq_true, true_and, (idealX K).3]
+  rw [count_associates_factors_eq (Ideal.span {P}) (Ideal.span {Polynomial.X}) (span_ne_zero).1
+    (Ideal.span_singleton_prime Polynomial.X_ne_zero|>.mpr prime_X) (span_ne_zero).2,
+    count_associates_factors_eq (Ideal.span {↑(P : K⟦X⟧)}) (idealX K).asIdeal]
+  convert (normalized_count_X_eq_of_coe hP).symm
+  exacts [count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X prime_X,
+    count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) normUnit_X X_prime,
+    span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
+
+/-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`-/
+@[simp]
+theorem intValuation_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
+  rw [← Polynomial.coe_X, ← intValuation_apply, ← intValuation_eq_of_coe]
+  apply intValuation_singleton _ Polynomial.X_ne_zero (by rfl)
+
+end PowerSeries
+
+end AdicValuation

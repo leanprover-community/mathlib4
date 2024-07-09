@@ -1342,7 +1342,6 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
 #align set.eq_singleton_iff_nonempty_unique_mem Set.eq_singleton_iff_nonempty_unique_mem
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- while `simp` is capable of proving this, it is not capable of turning the LHS into the RHS.
 @[simp]
 theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl⟩ :=
@@ -1472,11 +1471,9 @@ theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t :
     (hs : s.Nonempty) [Nonempty t] : s = t :=
   have := hs.to_subtype; eq_of_nonempty_of_subsingleton s t
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
     s = {0} := eq_of_nonempty_of_subsingleton' {0} h
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
     s = {1} := eq_of_nonempty_of_subsingleton' {1} h
 
@@ -2533,38 +2530,40 @@ end Subsingleton
 
 namespace Set
 
-variable {α : Type u} (s t : Set α) (a : α)
+variable {α : Type u} (s t : Set α) (a b : α)
 
 instance decidableSdiff [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s \ t) :=
-  (by infer_instance : Decidable (a ∈ s ∧ a ∉ t))
+  inferInstanceAs (Decidable (a ∈ s ∧ a ∉ t))
 #align set.decidable_sdiff Set.decidableSdiff
 
 instance decidableInter [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∩ t) :=
-  (by infer_instance : Decidable (a ∈ s ∧ a ∈ t))
+  inferInstanceAs (Decidable (a ∈ s ∧ a ∈ t))
 #align set.decidable_inter Set.decidableInter
 
 instance decidableUnion [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∪ t) :=
-  (by infer_instance : Decidable (a ∈ s ∨ a ∈ t))
+  inferInstanceAs (Decidable (a ∈ s ∨ a ∈ t))
 #align set.decidable_union Set.decidableUnion
 
 instance decidableCompl [Decidable (a ∈ s)] : Decidable (a ∈ sᶜ) :=
-  (by infer_instance : Decidable (a ∉ s))
+  inferInstanceAs (Decidable (a ∉ s))
 #align set.decidable_compl Set.decidableCompl
 
-instance decidableEmptyset : DecidablePred (· ∈ (∅ : Set α)) := fun _ => Decidable.isFalse (by simp)
+instance decidableEmptyset : Decidable (a ∈ (∅ : Set α)) := Decidable.isFalse (by simp)
 #align set.decidable_emptyset Set.decidableEmptyset
 
-instance decidableUniv : DecidablePred (· ∈ (Set.univ : Set α)) := fun _ =>
-  Decidable.isTrue (by simp)
+instance decidableUniv : Decidable (a ∈ univ) := Decidable.isTrue (by simp)
 #align set.decidable_univ Set.decidableUniv
+
+instance decidableInsert [Decidable (a = b)] [Decidable (a ∈ s)] : Decidable (a ∈ insert b s) :=
+  inferInstanceAs (Decidable (_ ∨ _))
+
+-- Porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
+instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
+  inferInstanceAs (Decidable (a = b))
 
 instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
 #align set.decidable_set_of Set.decidableSetOf
-
--- Porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
-instance decidableMemSingleton {a b : α} [DecidableEq α] :
-    Decidable (a ∈ ({b} : Set α)) := decidableSetOf _ (· = b)
 
 end Set
 

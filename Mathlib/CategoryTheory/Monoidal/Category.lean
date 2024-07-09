@@ -428,7 +428,7 @@ theorem whiskerLeft_dite {P : Prop} [Decidable P]
   split_ifs <;> rfl
 
 theorem dite_whiskerRight {P : Prop} [Decidable P]
-    {X Y : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (Z : C):
+    {X Y : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (Z : C) :
       (if h : P then f h else f' h) ▷ Z = if h : P then f h ▷ Z else f' h ▷ Z := by
   split_ifs <;> rfl
 
