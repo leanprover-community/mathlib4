@@ -1906,7 +1906,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
 
 /-! ### Inserting an option -/
 
-/-- The pregame constructed by inserting x' as a new left option into x. -/
+/-- The pregame constructed by inserting `x'` as a new left option into x. -/
 def insertLeft (x x' : PGame.{u}) : PGame :=
   match x with
   | mk xl xr xL xR => mk (Sum xl PUnit) xr (Sum.elim xL fun _ => x') xR
@@ -1927,9 +1927,9 @@ lemma le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
     simp only [rightMoves_mk, moveRight_mk, insertLeft]
     use j
 
-/-- Adding a gift horse left option does not change the value of x. A gift horse left option is
- a game x' with x' ⧏ x. It is called "gift horse" because it seems like Left has gotten the "gift"
- of a new option, but actually the value of the game did not change. -/
+/-- Adding a gift horse left option does not change the value of `x`. A gift horse left option is
+ a game `x'` with `x' ⧏ x`. It is called "gift horse" because it seems like Left has gotten the
+ "gift" of a new option, but actually the value of the game did not change. -/
 lemma equiv_insertLeft_of_lf {x x' : PGame} (h : x' ⧏ x) : x ≈ insertLeft x x' := by
   rw [equiv_def]
   constructor
@@ -1953,7 +1953,7 @@ lemma equiv_insertLeft_of_lf {x x' : PGame} (h : x' ⧏ x) : x ≈ insertLeft x 
       simp only [insertLeft, rightMoves_mk, moveRight_mk]
       use j
 
-/-- The pregame constructed by inserting x' as a new right option into x. -/
+/-- The pregame constructed by inserting `x'` as a new right option into x. -/
 def insertRight (x x' : PGame.{u}) : PGame :=
   match x with
   | mk xl xr xL xR => mk xl (Sum xr PUnit) xL (Sum.elim xR fun _ => x')
@@ -1974,9 +1974,9 @@ lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
     left
     use j
 
-/-- Adding a gift horse right option does not change the value of x. A gift horse right option is
- a game x' with x ⧏ x'. It is called "gift horse" because it seems like Right has gotten the "gift"
- of a new option, but actually the value of the game did not change. -/
+/-- Adding a gift horse right option does not change the value of `x`. A gift horse right option is
+ a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
+ "gift" of a new option, but actually the value of the game did not change. -/
 lemma equiv_insertRight_of_lf {x x' : PGame} (h : x ⧏ x') : x ≈ insertRight x x' := by
   rw [equiv_def]
   constructor
