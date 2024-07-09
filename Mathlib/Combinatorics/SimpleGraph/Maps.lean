@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
+import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.FunLike.Fintype
 
 /-!
@@ -670,5 +671,18 @@ noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := 
   use Fintype.equivFinOfCardEq hc; simp [overFin]
 
 end Finite
+
+section degree
+
+variable (v) [Fintype (G.neighborSet v)] (f : G ≃g G')
+
+instance : Fintype (G'.neighborSet (f v)) :=
+  Fintype.ofEquiv ↑(G.neighborSet v) (f.mapNeighborSet v)
+
+theorem degree_map_eq : G'.degree (f v) = G.degree v := by
+  apply eq_comm.1 (Finset.card_bijective f (RelIso.bijective f) _)
+  simp_rw [mem_neighborFinset, f.map_adj_iff, implies_true]
+
+end degree
 
 end SimpleGraph
