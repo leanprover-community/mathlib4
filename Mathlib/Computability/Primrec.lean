@@ -1583,7 +1583,7 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
       @prec' 1 _ _
         (fun v => by
           have x := v.head; have y := v.tail.head
-            exact if x.succ < y.succ * y.succ then y else y.succ)
+          exact if x.succ < y.succ * y.succ then y else y.succ)
         head (const 0) ?_
     · exact this
     have x1 : @Primrec' 3 fun v => v.head.succ := succ.comp₁ _ head

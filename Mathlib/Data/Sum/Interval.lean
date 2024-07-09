@@ -327,7 +327,7 @@ variable [Preorder α] [Preorder β] [OrderTop α] [OrderBot β] [LocallyFiniteO
 /-- Throwaway tactic. -/
 local elab "simp_lex" : tactic => do
   Lean.Elab.Tactic.evalTactic <| ← `(tactic|
-    refine toLex.surjective.forall₃.2 ?_
+    refine toLex.surjective.forall₃.2 ?_;
     rintro (a | a) (b | b) (c | c) <;> simp only
       [sumLexLift_inl_inl, sumLexLift_inl_inr, sumLexLift_inr_inl, sumLexLift_inr_inr,
         inl_le_inl_iff, inl_le_inr, not_inr_le_inl, inr_le_inr_iff, inl_lt_inl_iff, inl_lt_inr,

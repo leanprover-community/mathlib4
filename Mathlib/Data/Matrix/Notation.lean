@@ -465,17 +465,17 @@ theorem eta_fin_two (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0
 #align matrix.eta_fin_two Matrix.eta_fin_two
 
 theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
-    A = !![A 0 0, A 0 1, A 0 2
-           A 1 0, A 1 1, A 1 2
+    A = !![A 0 0, A 0 1, A 0 2;
+           A 1 0, A 1 1, A 1 2;
            A 2 0, A 2 1, A 2 2] := by
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 #align matrix.eta_fin_three Matrix.eta_fin_three
 
 theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
-    !![a₁₁, a₁₂
-       a₂₁, a₂₂] * !![b₁₁, b₁₂
-                      b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂
+    !![a₁₁, a₁₂;
+       a₂₁, a₂₂] * !![b₁₁, b₁₂;
+                      b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                      a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ]
@@ -483,13 +483,13 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
 
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
-    !![a₁₁, a₁₂, a₁₃
-       a₂₁, a₂₂, a₂₃
-       a₃₁, a₃₂, a₃₃] * !![b₁₁, b₁₂, b₁₃
-                           b₂₁, b₂₂, b₂₃
+    !![a₁₁, a₁₂, a₁₃;
+       a₂₁, a₂₂, a₂₃;
+       a₃₁, a₃₂, a₃₃] * !![b₁₁, b₁₂, b₁₃;
+                           b₂₁, b₂₂, b₂₃;
                            b₃₁, b₃₂, b₃₃] =
-    !![a₁₁*b₁₁ + a₁₂*b₂₁ + a₁₃*b₃₁, a₁₁*b₁₂ + a₁₂*b₂₂ + a₁₃*b₃₂, a₁₁*b₁₃ + a₁₂*b₂₃ + a₁₃*b₃₃
-       a₂₁*b₁₁ + a₂₂*b₂₁ + a₂₃*b₃₁, a₂₁*b₁₂ + a₂₂*b₂₂ + a₂₃*b₃₂, a₂₁*b₁₃ + a₂₂*b₂₃ + a₂₃*b₃₃
+    !![a₁₁*b₁₁ + a₁₂*b₂₁ + a₁₃*b₃₁, a₁₁*b₁₂ + a₁₂*b₂₂ + a₁₃*b₃₂, a₁₁*b₁₃ + a₁₂*b₂₃ + a₁₃*b₃₃;
+       a₂₁*b₁₁ + a₂₂*b₂₁ + a₂₃*b₃₁, a₂₁*b₁₂ + a₂₂*b₂₂ + a₂₃*b₃₂, a₂₁*b₁₃ + a₂₂*b₂₃ + a₂₃*b₃₃;
        a₃₁*b₁₁ + a₃₂*b₂₁ + a₃₃*b₃₁, a₃₁*b₁₂ + a₃₂*b₂₂ + a₃₃*b₃₂, a₃₁*b₁₃ + a₃₂*b₂₃ + a₃₃*b₃₃] := by
   ext i j
   fin_cases i <;> fin_cases j
