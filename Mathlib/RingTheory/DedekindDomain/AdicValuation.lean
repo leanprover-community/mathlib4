@@ -95,8 +95,7 @@ theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def_if_neg IsDedekindDomain.HeightOneSpectrum.intValuationDef_if_neg
 
 /-- Nonzero elements have nonzero adic valuation. -/
-theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuationDef x ≠ 0 :=
-  by
+theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuationDef x ≠ 0 := by
   rw [intValuationDef, if_neg hx]
   exact WithZero.coe_ne_zero
 
@@ -233,20 +232,17 @@ theorem intValuation.map_add_le_max' (x y : R) :
         set nmin :=
           min ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span { x })).factors)
             ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span { y })).factors)
-        have h_dvd_x : x ∈ v.asIdeal ^ nmin :=
-          by
+        have h_dvd_x : x ∈ v.asIdeal ^ nmin := by
           rw [← Associates.le_singleton_iff x nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hx) _]
           · exact min_le_left _ _
           apply v.associates_irreducible
-        have h_dvd_y : y ∈ v.asIdeal ^ nmin :=
-          by
+        have h_dvd_y : y ∈ v.asIdeal ^ nmin := by
           rw [← Associates.le_singleton_iff y nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hy) _]
           · exact min_le_right _ _
           apply v.associates_irreducible
-        have h_dvd_xy : Associates.mk v.asIdeal ^ nmin ≤ Associates.mk (Ideal.span {x + y}) :=
-          by
+        have h_dvd_xy : Associates.mk v.asIdeal ^ nmin ≤ Associates.mk (Ideal.span {x + y}) := by
           rw [Associates.le_singleton_iff]
           exact Ideal.add_mem (v.asIdeal ^ nmin) h_dvd_x h_dvd_y
         rw [Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hxy) _] at h_dvd_xy
