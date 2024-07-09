@@ -336,7 +336,7 @@ instance : LE ℝ :=
   ⟨le⟩
 
 private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
-  show le _ _ ↔ _ by rw [le_def]
+  iff_of_eq <| le_def _ _
 
 @[simp]
 theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by

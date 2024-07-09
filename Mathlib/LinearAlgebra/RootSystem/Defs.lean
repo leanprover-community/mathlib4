@@ -141,8 +141,7 @@ lemma flip_flip : P.flip.flip = P :=
   rfl
 
 /-- This is the pairing between roots and coroots. -/
-def pairing : R :=
-    P.toLin (P.root i) (P.coroot j)
+def pairing : R := P.toLin (P.root i) (P.coroot j)
 
 @[simp]
 lemma root_coroot_eq_pairing : P.toLin (P.root i) (P.coroot j) = P.pairing i j :=
