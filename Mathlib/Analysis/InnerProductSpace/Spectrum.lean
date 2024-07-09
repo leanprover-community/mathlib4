@@ -503,8 +503,11 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
   intro h
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
   have H := (set_fintype_card_eq_univ_iff (⊤ : Set n)).mpr rfl
-  --have := Set.fintypeDiff
-  -- Set.fintypeSingleton
+  have H1 := Set.Finite.fintype (Set.toFinite (⊤ \ Set.singleton i))
+  have H2 : Fintype.card (@Set.Elem n (⊤ \ (Set.singleton i))) < Fintype.card (⊤ : Set n) := by
+    simp only [Set.top_eq_univ]
+
+
 
   sorry
 
