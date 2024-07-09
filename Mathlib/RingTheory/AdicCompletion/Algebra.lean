@@ -65,12 +65,30 @@ def subring : Subring (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
   Subalgebra.toSubring (subalgebra I)
 
 @[irreducible]
-instance : Mul (AdicCompletion I R) where
-  mul x y := ⟨x.val * y.val, by simp [x.property, y.property]⟩
+def one : AdicCompletion I R :=
+  ⟨1, by simp⟩
+
+instance : One (AdicCompletion I R) where
+  one := one I
 
 @[irreducible]
-instance : One (AdicCompletion I R) where
-  one := ⟨1, by simp⟩
+def mul (x y : AdicCompletion I R) : AdicCompletion I R :=
+  ⟨x.val * y.val, by simp [x.property, y.property]⟩
+
+instance : Mul (AdicCompletion I R) where
+  mul := mul I
+
+section
+
+unseal mul
+unseal add
+unseal sub
+unseal neg
+unseal zero
+unseal one
+unseal smul
+unseal zsmul
+unseal nsmul
 
 instance : CommRing (AdicCompletion I R) where
   left_distrib x y z := Subtype.ext <| left_distrib x.val y.val z.val
@@ -80,13 +98,18 @@ instance : CommRing (AdicCompletion I R) where
   mul_assoc x y z := Subtype.ext <| mul_assoc x.val y.val z.val
   one_mul x := Subtype.ext <| one_mul x.val
   mul_one x := Subtype.ext <| mul_one x.val
-  zsmul := zsmulRec
+  zsmul := zsmul I R
   add_left_neg x := Subtype.ext <| add_left_neg x.val
   sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
   mul_comm x y := Subtype.ext <| mul_comm x.val y.val
 
+@[irreducible]
+def algebraMapFun (r : R) : AdicCompletion I R :=
+  ⟨algebraMap R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by simp⟩
+
+unseal algebraMapFun in
 instance : Algebra R (AdicCompletion I R) where
-  toFun r := ⟨algebraMap R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by simp⟩
+  toFun := algebraMapFun I
   map_one' := Subtype.ext <| map_one _
   map_mul' x y := Subtype.ext <| map_mul _ x y
   map_zero' := Subtype.ext <| map_zero _
@@ -102,6 +125,8 @@ theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
 theorem val_mul (n : ℕ) (x y : AdicCompletion I R) : (x * y).val n = x.val n * y.val n :=
   rfl
 
+end
+
 /-- The canonical algebra map from the adic completion to `R ⧸ I ^ n`.
 
 This is `AdicCompletion.eval` postcomposed with the algebra isomorphism
@@ -110,15 +135,19 @@ def evalₐ (n : ℕ) : AdicCompletion I R →ₐ[R] R ⧸ I ^ n :=
   have h : (I ^ n • ⊤ : Ideal R) = I ^ n := by ext x; simp
   AlgHom.comp
     (Ideal.quotientEquivAlgOfEq R h)
-    (AlgHom.ofLinearMap (eval I R n) rfl (fun _ _ ↦ rfl))
+    (AlgHom.ofLinearMap (eval I R n) (by simp only [coe_eval, val_one])
+      (fun _ _ ↦ by simp only [coe_eval, val_mul]))
 
 @[simp]
 theorem evalₐ_mk (n : ℕ) (x : AdicCauchySequence I R) :
     evalₐ I n (mk I R x) = Ideal.Quotient.mk (I ^ n) (x.val n) := by
   simp [evalₐ]
+  rfl
+
+namespace AdicCauchySequence
 
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
-def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
+def subalgebra : Subalgebra R (ℕ → R) :=
   Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
     (fun {m n} _ ↦ by simp; rfl)
     (fun x y hx hy {m n} hmn ↦ by
@@ -126,16 +155,34 @@ def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
       exact SModEq.mul (hx hmn) (hy hmn))
 
 /-- `AdicCauchySequence I R` is a subring of `ℕ → R`. -/
-def AdicCauchySequence.subring : Subring (ℕ → R) :=
+def subring : Subring (ℕ → R) :=
   Subalgebra.toSubring (AdicCauchySequence.subalgebra I)
 
 @[irreducible]
-instance : Mul (AdicCauchySequence I R) where
-  mul x y := ⟨x.val * y.val, fun hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
+def one : AdicCauchySequence I R :=
+  ⟨1, fun _ ↦ rfl⟩
+
+instance : One (AdicCauchySequence I R) where
+  one := one I
 
 @[irreducible]
-instance : One (AdicCauchySequence I R) where
-  one := ⟨1, fun _ ↦ rfl⟩
+def mul (x y : AdicCauchySequence I R) : AdicCauchySequence I R :=
+  ⟨x.val * y.val, fun hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
+
+instance : Mul (AdicCauchySequence I R) where
+  mul := mul I
+
+section
+
+unseal mul
+unseal add
+unseal sub
+unseal neg
+unseal zero
+unseal one
+unseal smul
+unseal nsmul
+unseal zsmul
 
 instance : CommRing (AdicCauchySequence I R) where
   left_distrib x y z := Subtype.ext <| left_distrib x.val y.val z.val
@@ -145,13 +192,18 @@ instance : CommRing (AdicCauchySequence I R) where
   mul_assoc x y z := Subtype.ext <| mul_assoc x.val y.val z.val
   one_mul x := Subtype.ext <| one_mul x.val
   mul_one x := Subtype.ext <| mul_one x.val
-  zsmul := zsmulRec
+  zsmul := zsmul I R
   add_left_neg x := Subtype.ext <| add_left_neg x.val
   sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
   mul_comm x y := Subtype.ext <| mul_comm x.val y.val
 
+@[irreducible]
+def algebraMapFun (r : R) : AdicCauchySequence I R :=
+  ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
+
+unseal algebraMapFun in
 instance : Algebra R (AdicCauchySequence I R) where
-  toFun r := ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
+  toFun := algebraMapFun I
   map_one' := Subtype.ext <| map_one _
   map_mul' x y := Subtype.ext <| map_mul _ x y
   map_zero' := Subtype.ext <| map_zero _
@@ -159,10 +211,16 @@ instance : Algebra R (AdicCauchySequence I R) where
   commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
   smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 
+end
+
+end AdicCauchySequence
+
+unseal AdicCauchySequence.one in
 @[simp]
 theorem one_apply (n : ℕ) : (1 : AdicCauchySequence I R) n = 1 :=
   rfl
 
+unseal AdicCauchySequence.mul in
 @[simp]
 theorem mul_apply (n : ℕ) (f g : AdicCauchySequence I R) : (f * g) n = f n * g n :=
   rfl
@@ -170,7 +228,7 @@ theorem mul_apply (n : ℕ) (f g : AdicCauchySequence I R) : (f * g) n = f n * g
 /-- The canonical algebra map from adic cauchy sequences to the adic completion. -/
 @[simps!]
 def mkₐ : AdicCauchySequence I R →ₐ[R] AdicCompletion I R :=
-  AlgHom.ofLinearMap (mk I R) rfl (fun _ _ ↦ rfl)
+  AlgHom.ofLinearMap (mk I R) (by ext; simp) (fun _ _ ↦ by ext; simp)
 
 @[simp]
 theorem evalₐ_mkₐ (n : ℕ) (x : AdicCauchySequence I R) :
@@ -226,17 +284,20 @@ instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Sub
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl
 
-instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
-  smul r x := {
-    val := fun n ↦ eval I R n r • eval I M n x
-    property := fun {m n} hmn ↦ by
-      apply induction_on I R r (fun r ↦ ?_)
-      apply induction_on I M x (fun x ↦ ?_)
-      simp only [coe_eval, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk,
-        mk_smul_mk, LinearMapClass.map_smul, transitionMap_mk]
-      rw [smul_mk I hmn]
-  }
+@[irreducible]
+def smul' (r : AdicCompletion I R) (x : AdicCompletion I M) : AdicCompletion I M where
+  val := fun n ↦ eval I R n r • eval I M n x
+  property := fun {m n} hmn ↦ by
+    apply induction_on I R r (fun r ↦ ?_)
+    apply induction_on I M x (fun x ↦ ?_)
+    simp only [coe_eval, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk,
+      mk_smul_mk, LinearMapClass.map_smul, transitionMap_mk]
+    rw [smul_mk I hmn]
 
+instance : SMul (AdicCompletion I R) (AdicCompletion I M) where
+  smul := smul' I
+
+unseal smul' in
 @[simp]
 theorem smul_eval (n : ℕ) (r : AdicCompletion I R) (x : AdicCompletion I M) :
     (r • x).val n = r.val n • x.val n :=
@@ -268,6 +329,8 @@ instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
     ext n
     rw [smul_eval, val_smul, val_smul, smul_eval, smul_assoc]
 
+unseal smul' in
+unseal mul in
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
 Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)
