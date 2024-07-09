@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Logic
 import Mathlib.Mathport.Rename
 
 /-!
@@ -51,7 +50,7 @@ def EqvGen.Setoid : Setoid α :=
 #align eqv_gen.setoid EqvGen.Setoid
 
 theorem Quot.exact {a b : α} (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
-  @Quotient.exact _ (EqvGen.Setoid r) a b (congr_arg
+  @Quotient.exact _ (EqvGen.Setoid r) a b (congrArg
     (Quot.lift (Quotient.mk (EqvGen.Setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
 #align quot.exact Quot.exact
 

@@ -335,10 +335,11 @@ lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.
     (f : (X.presheaf.obj <| op U)) (hf : IsNilpotent f) :
     X.toRingedSpace.basicOpen f = ⊥ := by
   obtain ⟨n, hn⟩ := hf
-  by_cases h : 0 < n
-  · rw [←  X.toRingedSpace.basicOpen_pow f n h, hn]
+  cases n.eq_zero_or_pos with
+  | inr h =>
+    rw [←  X.toRingedSpace.basicOpen_pow f n h, hn]
     simp [basicOpen_zero]
-  · rw [not_lt, nonpos_iff_eq_zero] at h
+  | inl h =>
     rw [h, pow_zero] at hn
     simp [eq_zero_of_zero_eq_one hn.symm f, basicOpen_zero]
 
