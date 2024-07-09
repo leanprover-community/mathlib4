@@ -27,12 +27,13 @@ is also proved later in the file.
 * `MeasureTheory.unifTight_finite`: a finite sequence of Lp functions is uniformly
   tight.
 * `MeasureTheory.tendsto_Lp_notFinite_of_tendsto_ae`: a sequence of Lp functions which is uniformly
-  integrable and uniformly tight converges in Lp if they converge almost everywhere.
+  integrable and uniformly tight converges in Lp if it converge almost everywhere.
 * `MeasureTheory.tendstoInMeasure_notFinite_iff_tendsto_Lp`: Vitali convergence theorem:
   a sequence of Lp functions converges in Lp if and only if it is uniformly integrable,
   uniformly tight and converges in measure.
 
 ## Tags
+
 uniform integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
 
@@ -48,12 +49,16 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 section UnifTight
 
 /- This follows closely the `UnifIntegrable` section
-   from `MeasureTheory.Functions.UniformIntegrable`.-/
+from `MeasureTheory.Functions.UniformIntegrable`.-/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
 
-/-- Definition of being Uniformly Tight. -/
+/-- Definition of being Uniformly Tight.
+
+A sequence of functions `f` is uniformly tight in `L^p` if for all `ε > 0`, there
+exists some measurable set `s` with finite measure such that the Lp-norm of
+`f i` restricted to `sᶜ` is smaller than `ε` for all `i`. -/
 def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε
 
@@ -99,7 +104,7 @@ protected theorem sub (hf : UnifTight f p μ) (hg : UnifTight g p μ)
   rw [sub_eq_add_neg]
   exact hf.add hg.neg hf_meas fun i => (hg_meas i).neg
 
-protected theorem ae_eq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
+protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
     UnifTight g p μ := by
   intro ε hε
   obtain ⟨s, hμs, hfε⟩ := hf hε
@@ -109,7 +114,12 @@ protected theorem ae_eq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) 
 
 end UnifTight
 
-/-- A constant function is tight. -/
+/-- If two functions agree a.e., one is tight iff the other is tight. -/
+theorem unifTight_congr_ae {g : ι → α → β} (hfg : ∀ n, f n =ᵐ[μ] g n) :
+    UnifTight f p μ ↔ UnifTight g p μ :=
+  ⟨fun h => h.aeeq hfg, fun h => h.aeeq fun i => (hfg i).symm⟩
+
+/-- A constant sequence is tight. -/
 theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : Memℒp g p μ) :
     UnifTight (fun _ : ι => g) p μ := by
   intro ε hε
@@ -186,7 +196,7 @@ variable {μ : Measure α} {p : ℝ≥0∞}
 variable {f : ℕ → α → β} {g : α → β}
 
 /-! Both directions and an iff version of Vitali's convergence theorem on measure spaces
-   of not necesserily finite volume. See `Thm III.6.15` of Dunford & Schwartz, Part I (1958). -/
+   of not necessarily finite volume. See `Thm III.6.15` of Dunford & Schwartz, Part I (1958). -/
 
 /- We start with the reverse direction. We only need to show that uniform tightness follows
    from convergence in Lp. Mathlib already has the analogous `unifIntegrable_of_tendsto_Lp`
@@ -206,7 +216,7 @@ theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n
   · exact (snorm_indicator_le _).trans (hNε n (not_lt.mp hn))
 
 /-- Convergence in Lp implies uniform tightness. -/
-theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
+private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
     (hg : Memℒp g p μ) (hfg : Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0)) :
     UnifTight f p μ := by
   have : f = (fun _ => g) + fun n => f n - g := by ext1 n; simp
@@ -218,8 +228,8 @@ theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p �
 
 
 /- Next we deal with the forward direction. The `Memℒp` and `TendstoInMeasure` hypotheses
-   are unwrapped and strengthened to by known lemmas to have in addition `StronglyMeasurable`
-   and a.e. convergence. The bulk of the proof is done under these stronger hyptheses. -/
+   are unwrapped and strengthened (by known lemmas) to also have the `StronglyMeasurable`
+   and a.e. convergence hypotheses. The bulk of the proof is done under these stronger hypotheses.-/
 
 theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞)
     {f : ℕ → α → β} {g : α → β} (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
@@ -294,9 +304,8 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
     _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
     _ = ε := by simp only [ENNReal.add_thirds] --ENNReal.add_thirds ε
 
-/- Lemma used in `tendsto_Lp_notFinite_of_tendsto_ae`.
-   XXX: Alternative name: `ae_tendsto_ae_congr`? -/
-private theorem tendsto_ae_congr_ae {f f' : ℕ → α → β} {g g' : α → β}
+/- Lemma used in `tendsto_Lp_notFinite_of_tendsto_ae`. -/
+private theorem ae_tendsto_ae_congr {f f' : ℕ → α → β} {g g' : α → β}
     (hff' : ∀ (n : ℕ), f n =ᵐ[μ] f' n) (hgg' : g =ᵐ[μ] g')
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     ∀ᵐ x ∂μ, Tendsto (fun n => f' n x) atTop (𝓝 (g' x)) := by
@@ -314,11 +323,11 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae (hp : 1 ≤ p) (hp' : p ≠ ∞)
   have hf := fun n => (haef n).stronglyMeasurable_mk
   have hff' := fun n => (haef n).ae_eq_mk (μ := μ)
   have hui' := hui.ae_eq hff'
-  have hut' := hut.ae_eq hff'
+  have hut' := hut.aeeq hff'
   have hg := hg'.aestronglyMeasurable.stronglyMeasurable_mk
   have hgg' := hg'.aestronglyMeasurable.ae_eq_mk (μ := μ)
   have hg'' := hg'.ae_eq hgg'
-  have haefg' := tendsto_ae_congr_ae hff' hgg' hfg
+  have haefg' := ae_tendsto_ae_congr hff' hgg' hfg
   set f' := fun n => (haef n).mk (μ := μ)
   set g' := hg'.aestronglyMeasurable.mk (μ := μ)
   have haefg (n : ℕ) : f n - g =ᵐ[μ] f' n - g' := (hff' n).sub hgg'
