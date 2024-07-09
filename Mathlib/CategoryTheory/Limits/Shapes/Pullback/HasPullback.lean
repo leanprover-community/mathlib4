@@ -212,52 +212,6 @@ theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f 
   PushoutCocone.condition _
 #align category_theory.limits.pushout.condition CategoryTheory.Limits.pushout.condition
 
-/-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
-
-    W ⟶ Y
-      ↘      ↘
-        S ⟶ T
-      ↗      ↗
-    X ⟶ Z
-
--/
-abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
-    (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
-    (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : pullback f₁ f₂ ⟶ pullback g₁ g₂ :=
-  pullback.lift (pullback.fst ≫ i₁) (pullback.snd ≫ i₂)
-    (by simp [← eq₁, ← eq₂, pullback.condition_assoc])
-#align category_theory.limits.pullback.map CategoryTheory.Limits.pullback.map
-
-/-- The canonical map `X ×ₛ Y ⟶ X ×ₜ Y` given `S ⟶ T`. -/
-abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [HasPullback f g]
-    [HasPullback (f ≫ i) (g ≫ i)] : pullback f g ⟶ pullback (f ≫ i) (g ≫ i) :=
-  pullback.map f g (f ≫ i) (g ≫ i) (𝟙 _) (𝟙 _) i (Category.id_comp _).symm (Category.id_comp _).symm
-#align category_theory.limits.pullback.map_desc CategoryTheory.Limits.pullback.mapDesc
-
-/-- Given such a diagram, then there is a natural morphism `W ⨿ₛ X ⟶ Y ⨿ₜ Z`.
-
-        W ⟶ Y
-      ↗      ↗
-    S ⟶ T
-      ↘      ↘
-        X ⟶ Z
-
--/
-abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
-    (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
-    (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) : pushout f₁ f₂ ⟶ pushout g₁ g₂ :=
-  pushout.desc (i₁ ≫ pushout.inl) (i₂ ≫ pushout.inr)
-    (by
-      simp only [← Category.assoc, eq₁, eq₂]
-      simp [pushout.condition])
-#align category_theory.limits.pushout.map CategoryTheory.Limits.pushout.map
-
-/-- The canonical map `X ⨿ₛ Y ⟶ X ⨿ₜ Y` given `S ⟶ T`. -/
-abbrev pushout.mapLift {X Y S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) [HasPushout f g]
-    [HasPushout (i ≫ f) (i ≫ g)] : pushout (i ≫ f) (i ≫ g) ⟶ pushout f g :=
-  pushout.map (i ≫ f) (i ≫ g) f g (𝟙 _) (𝟙 _) i (Category.comp_id _) (Category.comp_id _)
-#align category_theory.limits.pushout.map_lift CategoryTheory.Limits.pushout.mapLift
-
 /-- Two morphisms into a pullback are equal if their compositions with the pullback morphisms are
     equal -/
 @[ext 1100]
@@ -289,6 +243,84 @@ def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
   PushoutCocone.IsColimit.mk _ (fun s => pushout.desc s.inl s.inr s.condition) (by simp) (by simp)
     (by aesop_cat)
 #align category_theory.limits.pushout_is_pushout CategoryTheory.Limits.pushoutIsPushout
+
+/-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
+
+    W ⟶ Y
+      ↘      ↘
+        S ⟶ T
+      ↗      ↗
+    X ⟶ Z
+
+-/
+abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
+    (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
+    (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : pullback f₁ f₂ ⟶ pullback g₁ g₂ :=
+  pullback.lift (pullback.fst ≫ i₁) (pullback.snd ≫ i₂)
+    (by simp [← eq₁, ← eq₂, pullback.condition_assoc])
+#align category_theory.limits.pullback.map CategoryTheory.Limits.pullback.map
+
+/-- The canonical map `X ×ₛ Y ⟶ X ×ₜ Y` given `S ⟶ T`. -/
+abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) [HasPullback f g]
+    [HasPullback (f ≫ i) (g ≫ i)] : pullback f g ⟶ pullback (f ≫ i) (g ≫ i) :=
+  pullback.map f g (f ≫ i) (g ≫ i) (𝟙 _) (𝟙 _) i (Category.id_comp _).symm (Category.id_comp _).symm
+#align category_theory.limits.pullback.map_desc CategoryTheory.Limits.pullback.mapDesc
+
+@[reassoc]
+lemma pullback.map_comp {X Y Z X' Y' Z' X'' Y'' Z'' : C}
+    {f : X ⟶ Z} {g : Y ⟶ Z} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'} {f'' : X'' ⟶ Z''} {g'' : Y'' ⟶ Z''}
+    (i₁ : X ⟶ X') (j₁ : X' ⟶ X'') (i₂ : Y ⟶ Y') (j₂ : Y' ⟶ Y'') (i₃ : Z ⟶ Z') (j₃ : Z' ⟶ Z'')
+    [HasPullback f g] [HasPullback f' g'] [HasPullback f'' g'']
+    (e₁ e₂ e₃ e₄) :
+    pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂ ≫ pullback.map f' g' f'' g'' j₁ j₂ j₃ e₃ e₄ =
+      pullback.map f g f'' g'' (i₁ ≫ j₁) (i₂ ≫ j₂) (i₃ ≫ j₃)
+        (by rw [reassoc_of% e₁, e₃, Category.assoc])
+        (by rw [reassoc_of% e₂, e₄, Category.assoc]) := by ext <;> simp
+
+@[simp]
+lemma pullback.map_id {X Y Z : C}
+    {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] :
+    pullback.map f g f g (𝟙 _) (𝟙 _) (𝟙 _) (by simp) (by simp) = 𝟙 _ := by ext <;> simp
+
+/-- Given such a diagram, then there is a natural morphism `W ⨿ₛ X ⟶ Y ⨿ₜ Z`.
+
+        W ⟶ Y
+      ↗      ↗
+    S ⟶ T
+      ↘      ↘
+        X ⟶ Z
+
+-/
+abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
+    (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
+    (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) : pushout f₁ f₂ ⟶ pushout g₁ g₂ :=
+  pushout.desc (i₁ ≫ pushout.inl) (i₂ ≫ pushout.inr)
+    (by
+      simp only [← Category.assoc, eq₁, eq₂]
+      simp [pushout.condition])
+#align category_theory.limits.pushout.map CategoryTheory.Limits.pushout.map
+
+/-- The canonical map `X ⨿ₛ Y ⟶ X ⨿ₜ Y` given `S ⟶ T`. -/
+abbrev pushout.mapLift {X Y S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) [HasPushout f g]
+    [HasPushout (i ≫ f) (i ≫ g)] : pushout (i ≫ f) (i ≫ g) ⟶ pushout f g :=
+  pushout.map (i ≫ f) (i ≫ g) f g (𝟙 _) (𝟙 _) i (Category.comp_id _) (Category.comp_id _)
+#align category_theory.limits.pushout.map_lift CategoryTheory.Limits.pushout.mapLift
+
+@[reassoc]
+lemma pushout.map_comp {X Y Z X' Y' Z' X'' Y'' Z'' : C}
+    {f : X ⟶ Y} {g : X ⟶ Z} {f' : X' ⟶ Y'} {g' : X' ⟶ Z'} {f'' : X'' ⟶ Y''} {g'' : X'' ⟶ Z''}
+    (i₁ : X ⟶ X') (j₁ : X' ⟶ X'') (i₂ : Y ⟶ Y') (j₂ : Y' ⟶ Y'') (i₃ : Z ⟶ Z') (j₃ : Z' ⟶ Z'')
+    [HasPushout f g] [HasPushout f' g'] [HasPushout f'' g'']
+    (e₁ e₂ e₃ e₄) :
+    pushout.map f g f' g' i₂ i₃ i₁ e₁ e₂ ≫ pushout.map f' g' f'' g'' j₂ j₃ j₁ e₃ e₄ =
+      pushout.map f g f'' g'' (i₂ ≫ j₂) (i₃ ≫ j₃) (i₁ ≫ j₁)
+        (by rw [reassoc_of% e₁, e₃, Category.assoc])
+        (by rw [reassoc_of% e₂, e₄, Category.assoc]) := by ext <;> simp
+
+@[simp]
+lemma pushout.map_id {X Y Z : C}
+    {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] :
+    pushout.map f g f g (𝟙 _) (𝟙 _) (𝟙 _) (by simp) (by simp) = 𝟙 _ := by ext <;> simp
 
 instance pullback.map_isIso {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂]
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)

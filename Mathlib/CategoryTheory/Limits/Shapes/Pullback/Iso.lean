@@ -78,6 +78,11 @@ instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd : pullback f g ⟶ _
   · simp [pullback.condition_assoc]
 #align category_theory.limits.pullback_snd_iso_of_left_iso CategoryTheory.Limits.pullback_snd_iso_of_left_iso
 
+@[reassoc (attr := simp)]
+lemma pullback_inv_snd_fst_of_left_isIso :
+    inv (pullback.snd : pullback f g ⟶ _) ≫ pullback.fst = g ≫ inv f := by
+  rw [IsIso.inv_comp_eq, ← pullback.condition_assoc, IsIso.hom_inv_id, Category.comp_id]
+
 end PullbackLeftIso
 
 section PullbackRightIso
@@ -135,6 +140,11 @@ instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst : pullback f g ⟶ 
   · simp
   · simp [pullback.condition_assoc]
 #align category_theory.limits.pullback_snd_iso_of_right_iso CategoryTheory.Limits.pullback_snd_iso_of_right_iso
+
+@[reassoc (attr := simp)]
+lemma pullback_inv_fst_snd_of_right_isIso :
+    inv (pullback.fst : pullback f g ⟶ _) ≫ pullback.snd = f ≫ inv g := by
+  rw [IsIso.inv_comp_eq, pullback.condition_assoc, IsIso.hom_inv_id, Category.comp_id]
 
 end PullbackRightIso
 
@@ -194,6 +204,11 @@ instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr : _ ⟶ pushout f g) :
   · simp [pushout.condition_assoc]
 #align category_theory.limits.pushout_inr_iso_of_left_iso CategoryTheory.Limits.pushout_inr_iso_of_left_iso
 
+@[reassoc (attr := simp)]
+lemma pushout_inl_inv_inr_of_right_isIso :
+    pushout.inl ≫ inv (pushout.inr : _ ⟶ pushout f g) = inv f ≫ g := by
+  rw [IsIso.eq_inv_comp, pushout.condition_assoc, IsIso.hom_inv_id, Category.comp_id]
+
 end PushoutLeftIso
 
 section PushoutRightIso
@@ -251,6 +266,11 @@ instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl : _ ⟶ pushout f g) 
   · simp [← pushout.condition]
   · simp [pushout.condition]
 #align category_theory.limits.pushout_inl_iso_of_right_iso CategoryTheory.Limits.pushout_inl_iso_of_right_iso
+
+@[reassoc (attr := simp)]
+lemma pushout_inr_inv_inl_of_right_isIso :
+    pushout.inr ≫ inv (pushout.inl : _ ⟶ pushout f g) = inv g ≫ f := by
+  rw [IsIso.eq_inv_comp, ← pushout.condition_assoc, IsIso.hom_inv_id, Category.comp_id]
 
 end PushoutRightIso
 
