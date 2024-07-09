@@ -3,11 +3,10 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
--- import Mathlib.CategoryTheory.Comma.Over
--- import Mathlib.CategoryTheory.Limits.Comma
--- import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 import Mathlib.CategoryTheory.Adjunction.Unique
+import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Monad.Products
 
