@@ -776,11 +776,11 @@ theorem Basis'.insert_not_indep (hI : M.Basis' I X) (he : e ∈ X \ I) : ¬ M.In
   fun hi ↦ he.2 <| insert_eq_self.1 <| Eq.symm <|
     hI.eq_of_subset_indep hi (subset_insert _ _) (insert_subset he.1 hI.subset)
 
-theorem basis_iff_mem_maximals (hX : X ⊆ M.E := by aesop_mat):
+theorem basis_iff_mem_maximals (hX : X ⊆ M.E := by aesop_mat) :
     M.Basis I X ↔ I ∈ maximals (· ⊆ ·) {I | M.Indep I ∧ I ⊆ X} := by
   rw [Basis, and_iff_left hX]
 
-theorem basis_iff_mem_maximals_Prop (hX : X ⊆ M.E := by aesop_mat):
+theorem basis_iff_mem_maximals_Prop (hX : X ⊆ M.E := by aesop_mat) :
     M.Basis I X ↔ I ∈ maximals (· ⊆ ·) (fun I ↦ M.Indep I ∧ I ⊆ X) :=
   basis_iff_mem_maximals
 
