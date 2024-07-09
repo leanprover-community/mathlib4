@@ -15,10 +15,10 @@ We also prove basic properties of it.
 
 ## Main declarations
 
-- `wronskian_eq_of_sum_zero`: We have `W(a, b) = W(b, c)` when `a + b + c = 0`.
-- `degree_wronskian_lt_add`: Degree of Wronskian `W(a, b)` is strictly smaller than
+- `Polynomial.wronskian_eq_of_sum_zero`: We have `W(a, b) = W(b, c)` when `a + b + c = 0`.
+- `Polynomial.degree_wronskian_lt_add`: Degree of Wronskian `W(a, b)` is strictly smaller than
   the sum of degrees of `a` and `b`
-- `natDegree_wronskian_lt_add`: `natDegree` version of the above theorem. We need to assume that
+- `Polynomial.natDegree_wronskian_lt_add`: `natDegree` version of the above theorem. We need to assume that
   the Wronskian is nonzero. (Otherwise, `a = b = 1` gives a counterexample.)
 -/
 
