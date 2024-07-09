@@ -218,6 +218,18 @@ example (K : Type)
   linear_combination (exp := 6) 2 * y * z ^ 2 * h₂ / 7 + (x ^ 3  - y ^ 2 * z / 7) * h₁ -
     x * y * z * h₀ + y * z * h / 7
 
+/-! ### Cases with inequalities -/
+
+-- set_option trace.debug true in
+example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by
+  linear_combination (norm := skip) hx
+  ring_nf
+  norm_num1
+
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by
+  linear_combination (norm := skip) (h1 + h2)
+  ring_nf
+  norm_num1
 
 /-! ### Regression tests -/
 

@@ -45,6 +45,32 @@ open Elab Meta Term
 theorem add_eq_const [Add α] (p : a = b) (c : α) : a + c = b + c := congr($p + c)
 theorem add_const_eq [Add α] (p : b = c) (a : α) : a + b = a + c := congr(a + $p)
 theorem add_eq_eq [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := congr($p₁ + $p₂)
+
+theorem add_le_eq [Add α] [LE α] [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)]
+    {a₁ b₁ a₂ b₂ : α} (p₁ : a₁ ≤ b₁) (p₂ : a₂ = b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
+  p₂ ▸ add_le_add_right p₁ b₂
+
+theorem add_eq_le [Add α] [LE α] [CovariantClass α α (· + ·) (· ≤ ·)] {a₁ b₁ a₂ b₂ : α}
+    (p₁ : a₁ = b₁) (p₂ : a₂ ≤ b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
+  p₁ ▸ add_le_add_left p₂ b₁
+
+theorem add_lt_eq [Add α] [LT α] [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
+    {a₁ b₁ a₂ b₂ : α} (p₁ : a₁ < b₁) (p₂ : a₂ = b₂) : a₁ + a₂ < b₁ + b₂ :=
+  p₂ ▸ add_lt_add_right p₁ b₂
+
+theorem add_eq_lt [Add α] [LT α] [CovariantClass α α (· + ·) (· < ·)] {a₁ b₁ a₂ b₂ : α}
+    (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
+  p₁ ▸ add_lt_add_left p₂ b₁
+
+alias add_le_const := add_le_add_right
+alias add_const_le := add_le_add_left
+alias add_le_le := add_le_add
+alias add_lt_const := add_lt_add_right
+alias add_const_lt := add_lt_add_left
+alias add_lt_lt := add_lt_add
+alias add_lt_le := add_lt_add_of_lt_of_le
+alias add_le_lt := add_lt_add_of_le_of_lt
+
 theorem sub_eq_const [Sub α] (p : a = b) (c : α) : a - c = b - c := congr($p - c)
 theorem sub_const_eq [Sub α] (p : b = c) (a : α) : a - b = a - c := congr(a - $p)
 theorem sub_eq_eq [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := congr($p₁ - $p₂)
@@ -57,14 +83,11 @@ theorem div_eq_eq [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁
 theorem neg_eq [Neg α] (p : (a:α) = b) : -a = -b := congr(-$p)
 theorem inv_eq [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := congr($p⁻¹)
 
-alias add_le_const := add_le_add_right
-alias add_const_le := add_le_add_left
-alias add_le_le := add_le_add
-
 inductive RelType
   | Eq
   | Le
   | Lt
+  deriving Repr, ToExpr
 
 export RelType (Eq Le Lt)
 
@@ -77,103 +100,107 @@ using `+`/`-`/`*`/`/` on equations and values.
 * `none` means that the input expression is not an equation but a value;
   the input syntax itself is used in this case.
 -/
-partial def expandLinearCombo : Syntax.Term → TermElabM (RelType × Option (Syntax.Term))
+partial def expandLinearCombo : Syntax.Term → TermElabM (Option (RelType × Syntax.Term))
   | `(($e)) => expandLinearCombo e
   | `($e₁ + $e₂) => do
-      let (rel₁, p₁) ← expandLinearCombo e₁
-      let (rel₂, p₂) ← expandLinearCombo e₂
-      match rel₁, rel₂ with
-      | Eq, Eq => Prod.mk Eq <$>
-        match p₁, p₂ with
-        | none, none => pure none
-        | some p₁, none => ``(add_eq_const $p₁ $e₂)
-        | none, some p₂ => ``(add_const_eq $p₂ $e₁)
-        | some p₁, some p₂ => ``(add_eq_eq $p₁ $p₂)
-      | Le, Le => Prod.mk Le <$>
-        match p₁, p₂ with
-        | none, none => pure none
-        | some p₁, none => ``(add_le_const $p₁ $e₂)
-        | none, some p₂ => ``(add_const_le $p₂ $e₁)
-        | some p₁, some p₂ => ``(add_le_le $p₁ $p₂)
-      | _, _ => Prod.mk Eq <$> pure none
+      match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+      | none, none => pure none
+      | none, some (Eq, p₂) => Option.map (Prod.mk Eq) <$> ``(add_const_eq $p₂ $e₁)
+      | none, some (Le, p₂) => Option.map (Prod.mk Le) <$> ``(add_const_le $p₂ $e₁)
+      | none, some (Lt, p₂) => Option.map (Prod.mk Lt) <$> ``(add_const_lt $p₂ $e₁)
+      | some (Eq, p₁), none => Option.map (Prod.mk Eq) <$> ``(add_eq_const $p₁ $e₂)
+      | some (Eq, p₁), some (Eq, p₂) => Option.map (Prod.mk Eq) <$> ``(add_eq_eq $p₁ $p₂)
+      | some (Eq, p₁), some (Le, p₂) => Option.map (Prod.mk Le) <$> ``(add_eq_le $p₁ $p₂)
+      | some (Eq, p₁), some (Lt, p₂) => Option.map (Prod.mk Lt) <$> ``(add_eq_lt $p₁ $p₂)
+      | some (Le, p₁), none => Option.map (Prod.mk Le) <$> ``(add_le_const $p₁ $e₂)
+      | some (Le, p₁), some (Eq, p₂) => Option.map (Prod.mk Le) <$> ``(add_le_eq $p₁ $p₂)
+      | some (Le, p₁), some (Le, p₂) => Option.map (Prod.mk Le) <$> ``(add_le_le $p₁ $p₂)
+      | some (Le, p₁), some (Lt, p₂) => Option.map (Prod.mk Lt) <$> ``(add_le_lt $p₁ $p₂)
+      | some (Lt, p₁), none => Option.map (Prod.mk Lt) <$> ``(add_lt_const $p₁ $e₂)
+      | some (Lt, p₁), some (Eq, p₂) => Option.map (Prod.mk Lt) <$> ``(add_lt_eq $p₁ $p₂)
+      | some (Lt, p₁), some (Le, p₂) => Option.map (Prod.mk Lt) <$> ``(add_lt_le $p₁ $p₂)
+      | some (Lt, p₁), some (Lt, p₂) => Option.map (Prod.mk Lt) <$> ``(add_lt_lt $p₁ $p₂)
   | `($e₁ - $e₂) => do
-      let (rel₁, p₁) ← expandLinearCombo e₁
-      let (rel₂, p₂) ← expandLinearCombo e₂
-      match rel₁, rel₂ with
-      | Eq, Eq => Prod.mk Eq <$>
-        match p₁, p₂ with
-        | none, none => pure none
-        | some p₁, none => ``(sub_eq_const $p₁ $e₂)
-        | none, some p₂ => ``(sub_const_eq $p₂ $e₁)
-        | some p₁, some p₂ => ``(sub_eq_eq $p₁ $p₂)
-      | _, _ => Prod.mk Eq <$> pure none
+      Option.map (Prod.mk Eq) <$>
+      match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+      | none, none => pure none
+      | some (Eq, p₁), none => ``(sub_eq_const $p₁ $e₂)
+      | none, some (Eq, p₂) => ``(sub_const_eq $p₂ $e₁)
+      | some (Eq, p₁), some (Eq, p₂) => ``(sub_eq_eq $p₁ $p₂)
+      | _, _ => pure none
   | `($e₁ * $e₂) => do
-      let (rel₁, p₁) ← expandLinearCombo e₁
-      let (rel₂, p₂) ← expandLinearCombo e₂
-      match rel₁, rel₂ with
-      | Eq, Eq => Prod.mk Eq <$>
-        match p₁, p₂ with
-        | none, none => pure none
-        | some p₁, none => ``(mul_eq_const $p₁ $e₂)
-        | none, some p₂ => ``(mul_const_eq $p₂ $e₁)
-        | some p₁, some p₂ => ``(mul_eq_eq $p₁ $p₂)
-      | _, _ => Prod.mk Eq <$> pure none
+      Option.map (Prod.mk Eq) <$>
+      match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+      | none, none => pure none
+      | some (Eq, p₁), none => ``(mul_eq_const $p₁ $e₂)
+      | none, some (Eq, p₂) => ``(mul_const_eq $p₂ $e₁)
+      | some (Eq, p₁), some (Eq, p₂) => ``(mul_eq_eq $p₁ $p₂)
+      | _, _ => pure none
   | `($e₁ / $e₂) => do
-      let (rel₁, p₁) ← expandLinearCombo e₁
-      let (rel₂, p₂) ← expandLinearCombo e₂
-      match rel₁, rel₂ with
-      | Eq, Eq => Prod.mk Eq <$>
-        match p₁, p₂ with
-        | none, none => pure none
-        | some p₁, none => ``(div_eq_const $p₁ $e₂)
-        | none, some p₂ => ``(div_const_eq $p₂ $e₁)
-        | some p₁, some p₂ => ``(div_eq_eq $p₁ $p₂)
-      | _, _ => Prod.mk Eq <$> pure none
+      Option.map (Prod.mk Eq) <$>
+      match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
+      | none, none => pure none
+      | some (Eq, p₁), none => ``(div_eq_const $p₁ $e₂)
+      | none, some (Eq, p₂) => ``(div_const_eq $p₂ $e₁)
+      | some (Eq, p₁), some (Eq, p₂) => ``(div_eq_eq $p₁ $p₂)
+      | _, _ => pure none
   | `(-$e) => do
-      let (rel, p) ← expandLinearCombo e
-      match rel with
-      | Eq => Prod.mk Eq <$>
-        match p with
-        | none => pure none
-        | some p => ``(neg_eq $p)
-      | _ => Prod.mk Eq <$> pure none
+      Option.map (Prod.mk Eq) <$>
+      match ← expandLinearCombo e with
+      | none => pure none
+      | some (Eq, p) => ``(neg_eq $p)
+      | _ => pure none
   | `($e⁻¹) => do
-      let (rel, p) ← expandLinearCombo e
-      match rel with
-      | Eq => Prod.mk Eq <$>
-        match p with
-        | none => pure none
-        | some p => ``(inv_eq $p)
-      | _ => Prod.mk Eq <$> pure none
+      Option.map (Prod.mk Eq) <$>
+      match ← expandLinearCombo e with
+      | none => pure none
+      | some (Eq, p) => ``(inv_eq $p)
+      | _ => pure none
   | `(← $e) => do
-      let (rel, p) ← expandLinearCombo e
-      match rel with
-      | Eq => Prod.mk Eq <$>
-        match p with
-        | none => pure none
-        | some p => ``(Eq.symm $p)
-      | _ => Prod.mk Eq <$> pure none
+      Option.map (Prod.mk Eq) <$>
+      match ← expandLinearCombo e with
+      | some (Eq, p) => ``(Eq.symm $p)
+      | _ => pure none
   | e => do
+      trace[debug] "leaf case"
       let e ← elabTerm e none
+      trace[debug] "{e}"
       let eType ← inferType e
       let whnfEType ← withReducible do whnf eType
+      trace[debug] "{whnfEType}"
       if whnfEType.isEq then
-        pure (Eq, some (← e.toSyntax))
+        trace[debug] "determined to be ="
+        pure <| some (Eq, ← e.toSyntax)
       else if whnfEType.isLe then
-        pure (Le, some (← e.toSyntax))
+        trace[debug] "determined to be ≤"
+        pure <| some (Le, ← e.toSyntax)
       else if whnfEType.isLt then
-        pure (Lt, some (← e.toSyntax))
+        trace[debug] "determined to be <"
+        pure <| some (Lt, ← e.toSyntax)
       else
-        pure (Eq, none)
+        pure none
 
-def expandLinearComboClean (stx : Syntax.Term) : TermElabM (RelType × Option Syntax.Term) := do
-  let (rel, result) ← expandLinearCombo stx
-  return Prod.mk rel <| result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
+def expandLinearComboClean (stx : Syntax.Term) : TermElabM (Option (RelType × Syntax.Term)) := do
+  let result ← expandLinearCombo stx
+  trace[debug] "{result.map Prod.snd}"
+  return result.map fun r => (r.1, ⟨r.2.raw.setInfo (SourceInfo.fromRef stx true)⟩)
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
 theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
+
+theorem le_of_add [LinearOrderedAddCommGroup α] (p : (a:α) ≤ b) (H : (a' - b') - (a - b) ≤ 0) :
+    a' ≤ b' := by
+  rw [sub_nonpos] at H
+  rw [← sub_nonpos] at p ⊢
+  exact H.trans p
+
+theorem lt_of_add [LinearOrderedAddCommGroup α] (p : (a:α) < b) (H : (a' - b') - (a - b) ≤ 0) :
+    a' < b' := by
+  rw [sub_nonpos] at H
+  rw [← sub_neg] at p ⊢
+  exact lt_of_le_of_lt H p
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
@@ -183,12 +210,17 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
     (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
-  let p ← match input with
-  | none => `(Eq.refl 0)
+  let (rel, p) ← match input with
+  | none => (Prod.mk Eq) <$> `(Eq.refl 0)
   | some e => withSynthesize do
-    match (← expandLinearComboClean e).2 with
-    | none => `(Eq.refl $e)
+    match (← expandLinearComboClean e) with
+    | none => (Prod.mk Eq) <$> `(Eq.refl $e)
     | some p => pure p
+  trace[debug] "input is {input}"
+  trace[debug] "built-up expression has the relation {reprStr rel}"
+  trace[debug] "built-up expression is the proof {p}"
+  trace[debug] "two goals? {twoGoals}"
+  trace[debug] "exponent {exp?}"
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
   Tactic.evalTactic <| ← withFreshMacroScope <|
   if twoGoals then
@@ -197,11 +229,17 @@ def elabLinearCombination
       case' a => $norm:tactic
       case' b => $norm:tactic))
   else
+    let easy :=
+      match rel with
+      | Eq => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+      | Le => `(tactic| (apply le_of_add $p ?a; case' a => $norm:tactic))
+      | Lt => `(tactic| (refine lt_of_add $p ?a; case' a => $norm:tactic))
     match exp? with
     | some n =>
-      if n.getNat = 1 then `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+      if n.getNat = 1 then
+        easy
       else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-    | _ => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
+    | _ => easy
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
