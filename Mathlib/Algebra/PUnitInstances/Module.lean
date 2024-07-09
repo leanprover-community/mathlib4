@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Action.Basic
 /-!
 # Instances on PUnit
 
-This file collects facts about module structures on the one-element type
+This file collects facts about module structures on the one-element type.
 -/
 
 namespace PUnit
