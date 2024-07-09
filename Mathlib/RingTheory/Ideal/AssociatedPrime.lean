@@ -116,7 +116,7 @@ theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
 #align linear_equiv.associated_primes.eq LinearEquiv.AssociatedPrimes.eq
 
 theorem associatedPrimes.eq_empty_of_subsingleton [Subsingleton M] : associatedPrimes R M = ∅ := by
-  ext; simp only [Set.mem_empty_iff_false, iff_false_iff];
+  ext; simp only [Set.mem_empty_iff_false, iff_false_iff]
   apply not_isAssociatedPrime_of_subsingleton
 #align associated_primes.eq_empty_of_subsingleton associatedPrimes.eq_empty_of_subsingleton
 

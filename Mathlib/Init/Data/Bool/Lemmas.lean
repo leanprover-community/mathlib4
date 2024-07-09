@@ -8,6 +8,17 @@ import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Coe
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Lemmas about booleans
 
 These are the lemmas about booleans which were present in core Lean 3. See also
@@ -15,8 +26,6 @@ the file Mathlib.Data.Bool.Basic which contains lemmas about booleans from
 mathlib 3.
 
 -/
-
-set_option autoImplicit true
 
 -- We align Lean 3 lemmas with lemmas in `Init.SimpLemmas` in Lean 4.
 #align band_self Bool.and_self
