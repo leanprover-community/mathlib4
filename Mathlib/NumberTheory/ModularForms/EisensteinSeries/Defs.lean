@@ -25,7 +25,7 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Complex Matrix
+open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup
 
 open scoped MatrixGroups
 
