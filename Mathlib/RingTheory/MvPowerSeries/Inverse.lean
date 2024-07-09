@@ -140,8 +140,8 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
 
 theorem invOfUnit_mul (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
     invOfUnit φ u * φ = 1 := by
-  rw [← mul_cancel_right_mem_nonZeroDivisors (r := φ.invOfUnit u)]
-  rw [mul_assoc, one_mul, mul_invOfUnit _ _ h, mul_one]
+  rw [← mul_cancel_right_mem_nonZeroDivisors (r := φ.invOfUnit u), mul_assoc, one_mul,
+    mul_invOfUnit _ _ h, mul_one]
   apply mem_nonZeroDivisors_of_constantCoeff
   simp only [constantCoeff_invOfUnit, IsUnit.mem_nonZeroDivisors (Units.isUnit u⁻¹)]
 
