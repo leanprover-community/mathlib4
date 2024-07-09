@@ -204,12 +204,23 @@ end IsPrecomplete
 
 namespace AdicCompletion
 
+/-- `AdicCompletion` is the submodule of compatible families in
+`∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
+def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
+  carrier := { f | ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
+  zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
+  add_mem' hf hg m n hmn := by
+    rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
+  smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
+
+/-- Zero of `AdicCompletion I M`. -/
 @[irreducible]
 def zero : AdicCompletion I M := ⟨0, by simp⟩
 
 instance : Zero (AdicCompletion I M) where
   zero := zero I M
 
+/-- Addition in `AdicCompletion I M`. -/
 @[irreducible]
 def add (x y : AdicCompletion I M) : AdicCompletion I M :=
   ⟨x.val + y.val, by simp [x.property, y.property]⟩
@@ -217,6 +228,7 @@ def add (x y : AdicCompletion I M) : AdicCompletion I M :=
 instance : Add (AdicCompletion I M) where
   add := add I M
 
+/-- Negation in `AdicCompletion I M`. -/
 @[irreducible]
 def neg (x : AdicCompletion I M) : AdicCompletion I M :=
   ⟨- x.val, by simp [x.property]⟩
@@ -224,6 +236,7 @@ def neg (x : AdicCompletion I M) : AdicCompletion I M :=
 instance : Neg (AdicCompletion I M) where
   neg := neg I M
 
+/-- Subtraction in `AdicCompletion I M`. -/
 @[irreducible]
 def sub (x y : AdicCompletion I M) : AdicCompletion I M :=
   ⟨x.val - y.val, by simp [x.property, y.property]⟩
@@ -231,10 +244,12 @@ def sub (x y : AdicCompletion I M) : AdicCompletion I M :=
 instance : Sub (AdicCompletion I M) where
   sub := sub I M
 
+/-- Natural scalar multiplication in `AdicCompletion I M`. -/
 @[irreducible]
 def nsmul (n : ℕ) (x : AdicCompletion I M) : AdicCompletion I M :=
   nsmulRec n x
 
+/-- Integer scalar multiplication in `AdicCompletion I M`. -/
 @[irreducible]
 def zsmul (n : ℤ) (x : AdicCompletion I M) : AdicCompletion I M :=
   zsmulRec (nsmul I M) n x
@@ -255,6 +270,7 @@ instance : AddCommGroup (AdicCompletion I M) where
   add_left_neg a := Subtype.ext <| add_left_neg a.val
   add_comm x y := Subtype.ext <| add_comm x.val y.val
 
+/-- Scalar multiplication in `AdicCompletion I M`. -/
 @[irreducible]
 def smul (r : R) (x : AdicCompletion I M) : AdicCompletion I M :=
   ⟨r • x.val, by simp [x.property]⟩
@@ -424,35 +440,20 @@ def AdicCauchySequence : Type _ := { f : ℕ → M // IsAdicCauchy I M f }
 
 namespace AdicCauchySequence
 
-instance : Zero (AdicCauchySequence I M) where
-  zero := ⟨0, fun _ ↦ rfl⟩
+/-- The type of `I`-adic cauchy sequences is a submodule of the product `ℕ → M`. -/
+def submodule : Submodule R (ℕ → M) where
+  carrier := { f | IsAdicCauchy I M f }
+  add_mem' := by
+    intro f g hf hg m n hmn
+    exact SModEq.add (hf hmn) (hg hmn)
+  zero_mem' := by
+    intro _ _ _
+    rfl
+  smul_mem' := by
+    intro r f hf m n hmn
+    exact SModEq.smul (hf hmn) r
 
-instance : Add (AdicCauchySequence I M) where
-  add x y := ⟨x.val + y.val, fun hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
-
-instance : Neg (AdicCauchySequence I M) where
-  neg x := ⟨- x.val, fun hmn ↦ SModEq.neg (x.property hmn)⟩
-
-instance : AddCommGroup (AdicCauchySequence I M) where
-  add_assoc x y z := Subtype.ext <| add_assoc x.val y.val z.val
-  sub x y := ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
-  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
-  zero_add a := Subtype.ext <| zero_add a.val
-  add_zero a := Subtype.ext <| add_zero a.val
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-  add_left_neg a := Subtype.ext <| add_left_neg a.val
-  add_comm x y := Subtype.ext <| add_comm x.val y.val
-
-instance : Module R (AdicCauchySequence I M) where
-  smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
-  one_smul x := Subtype.ext <| one_smul R x.val
-  mul_smul r s x := Subtype.ext <| mul_smul r s x.val
-  smul_add r x y := Subtype.ext <| smul_add r x.val y.val
-  add_smul r s x := Subtype.ext <| add_smul r s x.val
-  zero_smul x := Subtype.ext <| zero_smul R x.val
-  smul_zero r := Subtype.ext <| smul_zero r
-
+/-- Zero in `AdicCauchySequence I M`. -/
 @[irreducible]
 def zero : AdicCauchySequence I M :=
   ⟨0, fun _ ↦ rfl⟩
@@ -460,6 +461,7 @@ def zero : AdicCauchySequence I M :=
 instance : Zero (AdicCauchySequence I M) where
   zero := zero I M
 
+/-- Addition in `AdicCauchySequence I M`. -/
 @[irreducible]
 def add (x y : AdicCauchySequence I M) : AdicCauchySequence I M :=
   ⟨x.val + y.val, fun hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
@@ -467,6 +469,7 @@ def add (x y : AdicCauchySequence I M) : AdicCauchySequence I M :=
 instance : Add (AdicCauchySequence I M) where
   add := add I M
 
+/-- Negation in `AdicCauchySequence I M`. -/
 @[irreducible]
 def neg (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
   ⟨- x.val, fun hmn ↦ SModEq.neg (x.property hmn)⟩
@@ -474,6 +477,7 @@ def neg (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
 instance : Neg (AdicCauchySequence I M) where
   neg := neg I M
 
+/-- Subtraction in `AdicCauchySequence I M`. -/
 @[irreducible]
 def sub (x y : AdicCauchySequence I M) : AdicCauchySequence I M :=
   ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
@@ -481,10 +485,12 @@ def sub (x y : AdicCauchySequence I M) : AdicCauchySequence I M :=
 instance : Sub (AdicCauchySequence I M) where
   sub := sub I M
 
+/-- Natural scalar multiplication in `AdicCauchySequence I M`. -/
 @[irreducible]
 def nsmul (n : ℕ) (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
   nsmulRec n x
 
+/-- Integer scalar multiplication in `AdicCauchySequence I M`. -/
 @[irreducible]
 def zsmul (n : ℤ) (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
   zsmulRec (nsmul I M) n x
@@ -505,6 +511,7 @@ instance : AddCommGroup (AdicCauchySequence I M) where
   add_left_neg a := Subtype.ext <| add_left_neg a.val
   add_comm x y := Subtype.ext <| add_comm x.val y.val
 
+/-- Scalar multiplication in `AdicCauchySequence I M`. -/
 @[irreducible]
 def smul (r : R) (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
   ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
