@@ -56,12 +56,8 @@ lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * lo
 lemma abs_min_lt_of_nonneg {α : Type} [LinearOrderedAddCommGroup α] {L R x : α}
     (hL : 0 ≤ L) (hR : 0 ≤ R) (Llx : L < x) :
     |min L R| < x := by
-  by_cases xlt : L < R
-  · rw [min_eq_left_of_lt xlt, abs_eq_self.mpr hL]
-    exact Llx
-  · simp only [min_eq_right, le_of_not_lt xlt]
-    rw [abs_eq_self.mpr hR]
-    exact lt_of_le_of_lt (le_of_not_lt xlt) Llx
+  rw [abs_of_nonneg (le_min hL hR)]
+  exact min_lt_of_left_lt Llx
 
 /- helper lemma for `not_eventually_bounded_zero_mul_log` -/
 private lemma NegMulLog.one_lt_log_sub_const_of_lt_exp_sub
