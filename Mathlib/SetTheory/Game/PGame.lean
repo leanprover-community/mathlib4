@@ -1907,7 +1907,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
 /-! ### Inserting an option -/
 
 /-- The pregame constructed by inserting x' as a new left option into x. -/
-def insertLeft (x x' : PGame) : PGame :=
+def insertLeft (x x' : PGame.{u}) : PGame :=
   match x with
   | mk xl xr xL xR => mk (Sum xl PUnit) xr (Sum.elim xL fun _ => x') xR
 
@@ -1954,7 +1954,7 @@ lemma equiv_insertLeft_of_lf {x x' : PGame} (h : x' ⧏ x) : x ≈ insertLeft x 
       use j
 
 /-- The pregame constructed by inserting x' as a new right option into x. -/
-def insertRight (x x' : PGame) : PGame :=
+def insertRight (x x' : PGame.{u}) : PGame :=
   match x with
   | mk xl xr xL xR => mk xl (Sum xr PUnit) xL (Sum.elim xR fun _ => x')
 
