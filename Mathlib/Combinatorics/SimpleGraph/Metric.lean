@@ -11,21 +11,19 @@ import Mathlib.Data.ENat.Lattice
 /-!
 # Graph metric
 
-This module defines the `SimpleGraph.dist` function, which takes
-pairs of vertices to the length of the shortest walk between them.
+This module defines the `SimpleGraph.edist` function, which takes pairs of vertices to the length of
+the shortest walk between them, or `⊤` if they are disconnected. It also defines `SimpleGraph.dist`
+which is the `ℕ`-valued version of `SimpleGraph.edist`.
 
 ## Main definitions
 
+- `SimpleGraph.dist` is the graph extended metric.
 - `SimpleGraph.dist` is the graph metric.
 
 ## Todo
 
 - Provide an additional computable version of `SimpleGraph.dist`
   for when `G` is connected.
-
-- Evaluate `Nat` vs `ENat` for the codomain of `dist`, or potentially
-  having an additional `edist` when the objects under consideration are
-  disconnected graphs.
 
 - When directed graphs exist, a directed notion of distance,
   likely `ENat`-valued.
@@ -89,7 +87,7 @@ protected theorem Connected.edist_triangle (hconn : G.Connected) {u v w : V} :
   rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
   apply edist_le
 
-theorem dist_comm {u v : V} : G.edist u v = G.edist v u := by
+theorem edist_comm {u v : V} : G.edist u v = G.edist v u := by
   have {u v : V} (h : G.Reachable u v) : G.edist u v ≤ G.edist v u := by
     obtain ⟨p, hp⟩ := h.symm.exists_walk_of_edist
     rw [← hp, ← Walk.length_reverse]
@@ -123,67 +121,38 @@ noncomputable def dist (u v : V) : ℕ :=
   (G.edist u v).toNat
 #align simple_graph.dist SimpleGraph.dist
 
-lemma dist_eq_edist_of_ne_zero {u v : V} (h : G.dist u v ≠ 0) :
-    G.dist u v = G.edist u v :=
-  ((fun h ↦ (ENat.toNat_eq_iff h).mp) h rfl).symm
+variable {G} {u v : V}
 
-lemma dist_zero_def {u v : V} (h : G.dist u v = 0) :
-    G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) := by
-  rw [h]
-  rw [dist, edist, ENat.toNat_eq_zero] at h
-  symm
-  cases h <;> by_contra <;> simp_all [iInf, ENat.sInf_eq_zero]
+theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) :=
+  ENat.iInf_toNat
 
-theorem dist_def {u v : V} :
-    G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) := by
-  let s := Set.range (Walk.length : G.Walk u v → ℕ)
-  by_cases h : G.dist u v = 0
-  · exact G.dist_zero_def h
-  · push_neg at h
-    #check G.dist_eq_edist_of_ne_zero h
-    rw [G.dist_eq_edist_of_ne_zero h]
-
-  /--rw [dist]
-  by_cases h : G.edist u v = ⊤
-  · symm
-    rw [h, ENat.toNat_top, Nat.sInf_eq_zero]
-    simp [ENat.iInf_coe_eq_top.mp h]
-  · rw [edist, ← ne_eq, ENat.iInf_coe_ne_top] at h
-    --rw [edist, iInf]
-
-    sorry -/
-    --rw [← ne_eq, ← ENat.coe_toNat_eq_self] at h
-
-end dist
-
-/--
-protected theorem Reachable.exists_walk_of_dist {u v : V} (hr : G.Reachable u v) :
+protected theorem Reachable.exists_walk_of_dist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
-  Nat.sInf_mem (Set.range_nonempty_iff_nonempty.mpr hr)
+  dist_eq_sInf ▸ Nat.sInf_mem (Set.range_nonempty_iff_nonempty.mpr hr)
 #align simple_graph.reachable.exists_walk_of_dist SimpleGraph.Reachable.exists_walk_of_dist
 
 protected theorem Connected.exists_walk_of_dist (hconn : G.Connected) (u v : V) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
-  (hconn u v).exists_walk_of_dist
+  dist_eq_sInf ▸ (hconn u v).exists_walk_of_dist
 #align simple_graph.connected.exists_walk_of_dist SimpleGraph.Connected.exists_walk_of_dist
 
-theorem dist_le {u v : V} (p : G.Walk u v) : G.dist u v ≤ p.length :=
-  Nat.sInf_le ⟨p, rfl⟩
+theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
+  dist_eq_sInf ▸ Nat.sInf_le ⟨p, rfl⟩
 #align simple_graph.dist_le SimpleGraph.dist_le
 
 @[simp]
-theorem dist_eq_zero_iff_eq_or_not_reachable {u v : V} :
-    G.dist u v = 0 ↔ u = v ∨ ¬G.Reachable u v := by simp [dist, Nat.sInf_eq_zero, Reachable]
+theorem dist_eq_zero_iff_eq_or_not_reachable :
+    G.dist u v = 0 ↔ u = v ∨ ¬G.Reachable u v := by simp [dist_eq_sInf, Nat.sInf_eq_zero, Reachable]
 #align simple_graph.dist_eq_zero_iff_eq_or_not_reachable SimpleGraph.dist_eq_zero_iff_eq_or_not_reachable
 
-theorem dist_self {v : V} : dist G v v = 0 := by simp
+theorem dist_self : dist G v v = 0 := by simp
 #align simple_graph.dist_self SimpleGraph.dist_self
 
-protected theorem Reachable.dist_eq_zero_iff {u v : V} (hr : G.Reachable u v) :
+protected theorem Reachable.dist_eq_zero_iff (hr : G.Reachable u v) :
     G.dist u v = 0 ↔ u = v := by simp [hr]
 #align simple_graph.reachable.dist_eq_zero_iff SimpleGraph.Reachable.dist_eq_zero_iff
 
-protected theorem Reachable.pos_dist_of_ne {u v : V} (h : G.Reachable u v) (hne : u ≠ v) :
+protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v) :
     0 < G.dist u v :=
   Nat.pos_of_ne_zero (by simp [h, hne])
 #align simple_graph.reachable.pos_dist_of_ne SimpleGraph.Reachable.pos_dist_of_ne
@@ -194,7 +163,7 @@ protected theorem Connected.dist_eq_zero_iff (hconn : G.Connected) {u v : V} :
 
 protected theorem Connected.pos_dist_of_ne {u v : V} (hconn : G.Connected) (hne : u ≠ v) :
     0 < G.dist u v :=
-  Nat.pos_of_ne_zero (by intro h; exact False.elim (hne (hconn.dist_eq_zero_iff.mp h)))
+  Nat.pos_of_ne_zero fun h ↦ False.elim <| hne <| (hconn.dist_eq_zero_iff).mp h
 #align simple_graph.connected.pos_dist_of_ne SimpleGraph.Connected.pos_dist_of_ne
 
 theorem dist_eq_zero_of_not_reachable {u v : V} (h : ¬G.Reachable u v) : G.dist u v = 0 := by
@@ -203,6 +172,7 @@ theorem dist_eq_zero_of_not_reachable {u v : V} (h : ¬G.Reachable u v) : G.dist
 
 theorem nonempty_of_pos_dist {u v : V} (h : 0 < G.dist u v) :
     (Set.univ : Set (G.Walk u v)).Nonempty := by
+  rw [dist_eq_sInf] at h
   simpa [Set.range_nonempty_iff_nonempty, Set.nonempty_iff_univ_nonempty] using
     Nat.nonempty_of_pos_sInf h
 #align simple_graph.nonempty_of_pos_dist SimpleGraph.nonempty_of_pos_dist
@@ -266,6 +236,7 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
   obtain ⟨p, h⟩ := hconn.exists_walk_of_dist u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
--/
+
+end dist
 
 end SimpleGraph
