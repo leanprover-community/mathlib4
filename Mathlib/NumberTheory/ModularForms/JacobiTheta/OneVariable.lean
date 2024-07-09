@@ -21,7 +21,7 @@ show that `θ` is differentiable on `ℍ`, and `θ(τ) - 1` has exponential deca
 
 open Complex Real Asymptotics Filter Topology
 
-open scoped Real BigOperators UpperHalfPlane
+open scoped Real UpperHalfPlane
 
 /-- Jacobi's one-variable theta function `∑' (n : ℤ), exp (π * I * n ^ 2 * τ)`. -/
 noncomputable def jacobiTheta (τ : ℂ) : ℂ := ∑' n : ℤ, cexp (π * I * (n : ℂ) ^ 2 * τ)
@@ -59,7 +59,7 @@ theorem norm_exp_mul_sq_le {τ : ℂ} (hτ : 0 < τ.im) (n : ℤ) :
     ‖cexp (π * I * (n : ℂ) ^ 2 * τ)‖ ≤ rexp (-π * τ.im) ^ n.natAbs := by
   let y := rexp (-π * τ.im)
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
-  refine' (le_of_eq _).trans (_ : y ^ n ^ 2 ≤ _)
+  refine (le_of_eq ?_).trans (?_ : y ^ n ^ 2 ≤ _)
   · rw [Complex.norm_eq_abs, Complex.abs_exp]
     have : (π * I * n ^ 2 * τ : ℂ).re = -π * τ.im * (n : ℝ) ^ 2 := by
       rw [(by push_cast; ring : (π * I * n ^ 2 * τ : ℂ) = (π * n ^ 2 : ℝ) * (τ * I)),
@@ -76,14 +76,14 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     HasSum (fun n : ℕ => cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)) ((jacobiTheta τ - 1) / 2) := by
   have := hasSum_jacobiTheta₂_term 0 hτ
   simp_rw [jacobiTheta₂_term, mul_zero, zero_add, ← jacobiTheta_eq_jacobiTheta₂] at this
-  have := this.sum_nat_of_sum_int
+  have := this.nat_add_neg
   rw [← hasSum_nat_add_iff' 1] at this
   simp_rw [Finset.sum_range_one, Int.cast_neg, Int.cast_natCast, Nat.cast_zero, neg_zero,
     Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,
     Nat.cast_add, Nat.cast_one] at this
   convert this.div_const 2 using 1
-  simp_rw [mul_div_cancel_right₀ (G₀ := ℂ) _ two_ne_zero]
+  simp_rw [mul_div_cancel_right₀ _ (two_ne_zero' ℂ)]
 #align has_sum_nat_jacobi_theta hasSum_nat_jacobiTheta
 
 theorem jacobiTheta_eq_tsum_nat {τ : ℂ} (hτ : 0 < im τ) :
@@ -120,10 +120,10 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
 theorem isBigO_at_im_infty_jacobiTheta_sub_one :
     (fun τ => jacobiTheta τ - 1) =O[comap im atTop] fun τ => rexp (-π * τ.im) := by
   simp_rw [IsBigO, IsBigOWith, Filter.eventually_comap, Filter.eventually_atTop]
-  refine' ⟨2 / (1 - rexp (-π)), 1, fun y hy τ hτ =>
-    (norm_jacobiTheta_sub_one_le (hτ.symm ▸ zero_lt_one.trans_le hy : 0 < im τ)).trans _⟩
+  refine ⟨2 / (1 - rexp (-π)), 1, fun y hy τ hτ =>
+    (norm_jacobiTheta_sub_one_le (hτ.symm ▸ zero_lt_one.trans_le hy : 0 < im τ)).trans ?_⟩
   rw [Real.norm_eq_abs, Real.abs_exp]
-  refine' mul_le_mul_of_nonneg_right _ (exp_pos _).le
+  refine mul_le_mul_of_nonneg_right ?_ (exp_pos _).le
   rw [div_le_div_left (zero_lt_two' ℝ), sub_le_sub_iff_left, exp_le_exp, neg_mul, neg_le_neg_iff]
   · exact le_mul_of_one_le_right pi_pos.le (hτ.symm ▸ hy)
   · rw [sub_pos, exp_lt_one_iff, neg_mul, neg_lt_zero]

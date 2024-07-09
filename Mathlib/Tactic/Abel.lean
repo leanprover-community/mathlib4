@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison
 -/
-import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
 import Mathlib.Util.AtomM
 
@@ -13,6 +13,11 @@ import Mathlib.Util.AtomM
 Evaluate expressions in the language of additive, commutative monoids and groups.
 
 -/
+
+-- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
+assert_not_exists OrderedAddCommMonoid
+assert_not_exists TopologicalSpace
+assert_not_exists PseudoMetricSpace
 
 set_option autoImplicit true
 
@@ -299,7 +304,7 @@ lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
 def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
-  let ⟨e₁', p₁, _, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
+  let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
   match e₁'.int? with
   | some n => do

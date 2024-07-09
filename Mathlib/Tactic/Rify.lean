@@ -79,6 +79,9 @@ macro_rules
 @[rify_simps] lemma ratCast_lt (a b : ℚ) : a < b ↔ (a : ℝ) < (b : ℝ) := by simp
 @[rify_simps] lemma ratCast_ne (a b : ℚ) : a ≠ b ↔ (a : ℝ) ≠ (b : ℝ) := by simp
 
+@[deprecated (since := "2024-04-17")]
+alias rat_cast_ne := ratCast_ne
+
 -- See note [no_index around OfNat.ofNat]
 @[rify_simps] lemma ofNat_rat_real (a : ℕ) [a.AtLeastTwo] :
     ((no_index (OfNat.ofNat a : ℚ)) : ℝ) = (OfNat.ofNat a : ℝ) := rfl

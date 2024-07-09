@@ -28,6 +28,8 @@ universe v u
 
 namespace CategoryTheory
 
+open Bicategory
+
 -- intended to be used with explicit universe parameters
 /-- Category of categories. -/
 @[nolint checkUnivs]
@@ -57,8 +59,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.of CategoryTheory.Cat.of
 
 /-- Bicategory structure on `Cat` -/
-instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u}
-    where
+instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   Hom C D := C ⥤ D
   id C := 𝟭 C
   comp F G := F ⋙ G
@@ -89,22 +90,52 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
-  Functor.id_map f
+  rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.id_map CategoryTheory.Cat.id_map
 
 @[simp]
 theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
-  Functor.comp_obj F G X
+  rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.comp_obj CategoryTheory.Cat.comp_obj
 
 @[simp]
 theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
     (F ≫ G).map f = G.map (F.map f) :=
-  Functor.comp_map F G f
+  rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.comp_map CategoryTheory.Cat.comp_map
+
+@[simp]
+lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
+    (F ◁ η).app X = η.app (F.obj X) :=
+  rfl
+
+@[simp]
+lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
+    (η ▷ H).app X = H.map (η.app X) :=
+  rfl
+
+lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = eqToHom (by simp) :=
+  rfl
+
+lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).inv.app X = eqToHom (by simp) :=
+  rfl
+
+lemma rightUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).hom.app X = eqToHom (by simp) :=
+  rfl
+
+lemma rightUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).inv.app X = eqToHom (by simp) :=
+  rfl
+
+lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
+    (α_ F G H).hom.app X = eqToHom (by simp) :=
+  rfl
+
+lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
+    (α_ F G H).inv.app X = eqToHom (by simp) :=
+  rfl
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
@@ -122,8 +153,7 @@ section
 attribute [local simp] eqToHom_map
 
 /-- Any isomorphism in `Cat` induces an equivalence of the underlying categories. -/
-def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D
-    where
+def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   functor := γ.hom
   inverse := γ.inv
   unitIso := eqToIso <| Eq.symm γ.hom_inv_id
@@ -162,9 +192,7 @@ instance : Functor.Faithful typeToCat.{u} where
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
-  preimage F := Discrete.as ∘ F.obj ∘ Discrete.mk
-  witness := by
-    intro X Y F
+  map_surjective F := ⟨Discrete.as ∘ F.obj ∘ Discrete.mk, by
     apply Functor.ext
     · intro x y f
       dsimp
@@ -172,6 +200,6 @@ instance : Functor.Full typeToCat.{u} where
       aesop_cat
     · rintro ⟨x⟩
       apply Discrete.ext
-      rfl
+      rfl⟩
 
 end CategoryTheory

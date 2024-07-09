@@ -47,8 +47,6 @@ since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingC
 -/
 
 
-open BigOperators
-
 noncomputable section
 
 namespace MvPolynomial
@@ -333,7 +331,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.eval₂_hom_C_left MvPolynomial.eval₂Hom_C_left
 
 theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r : R) :
-    bind₁ f (monomial d r) = C r * ∏ i in d.support, f i ^ d i := by
+    bind₁ f (monomial d r) = C r * ∏ i ∈ d.support, f i ^ d i := by
   simp only [monomial_eq, AlgHom.map_mul, bind₁_C_right, Finsupp.prod, AlgHom.map_prod,
     AlgHom.map_pow, bind₁_X_right]
 #align mv_polynomial.bind₁_monomial MvPolynomial.bind₁_monomial
@@ -353,12 +351,12 @@ section
 
 theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R) :
     (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
-  calc
-    (bind₁ f φ).vars = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars :=
-      by rw [← AlgHom.map_sum, ← φ.as_sum]
+  calc (bind₁ f φ).vars
+    _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars := by
+      rw [← AlgHom.map_sum, ← φ.as_sum]
     _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
       (vars_sum_subset _ _)
-    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i in d.support, f i ^ d i) := by
+    _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) := by
       simp only [bind₁_monomial]
     _ ≤ φ.support.biUnion fun d : σ →₀ ℕ => d.support.biUnion fun i => vars (f i) := ?_
     -- proof below
@@ -367,10 +365,10 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
   · apply Finset.biUnion_mono
     intro d _hd
     calc
-      vars (C (coeff d φ) * ∏ i : σ in d.support, f i ^ d i) ≤
-          (C (coeff d φ)).vars ∪ (∏ i : σ in d.support, f i ^ d i).vars :=
+      vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) ≤
+          (C (coeff d φ)).vars ∪ (∏ i ∈ d.support, f i ^ d i).vars :=
         vars_mul _ _
-      _ ≤ (∏ i : σ in d.support, f i ^ d i).vars := by
+      _ ≤ (∏ i ∈ d.support, f i ^ d i).vars := by
         simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]
       _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := vars_prod _
       _ ≤ d.support.biUnion fun i : σ => (f i).vars := ?_
@@ -391,23 +389,20 @@ theorem mem_vars_bind₁ (f : σ → MvPolynomial τ R) (φ : MvPolynomial σ R)
   simpa only [exists_prop, Finset.mem_biUnion, mem_support_iff, Ne] using vars_bind₁ f φ h
 #align mv_polynomial.mem_vars_bind₁ MvPolynomial.mem_vars_bind₁
 
-instance monad : Monad fun σ => MvPolynomial σ R
-    where
+instance monad : Monad fun σ => MvPolynomial σ R where
   map f p := rename f p
   pure := X
   bind p f := bind₁ f p
 #align mv_polynomial.monad MvPolynomial.monad
 
-instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R
-    where
+instance lawfulFunctor : LawfulFunctor fun σ => MvPolynomial σ R where
   map_const := by intros; rfl
   -- Porting note: I guess `map_const` no longer has a default implementation?
   id_map := by intros; simp [(· <$> ·)]
   comp_map := by intros; simp [(· <$> ·)]
 #align mv_polynomial.is_lawful_functor MvPolynomial.lawfulFunctor
 
-instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R
-    where
+instance lawfulMonad : LawfulMonad fun σ => MvPolynomial σ R where
   pure_bind := by intros; simp [pure, bind]
   bind_assoc := by intros; simp [bind, ← bind₁_comp_bind₁]
   seqLeft_eq := by intros; simp [SeqLeft.seqLeft, Seq.seq, (· <$> ·), bind₁_rename]; rfl

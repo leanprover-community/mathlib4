@@ -60,7 +60,7 @@ variable (J C)
 
 instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     IsIdempotentComplete (J ⥤ C) := by
-  refine' ⟨fun F p hp => _⟩
+  refine ⟨fun F p hp => ?_⟩
   have hC := (isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent C).mp inferInstance
   haveI : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
   /- We construct the direct factor `Y` associated to `p : F ⟶ F` by computing
@@ -119,8 +119,8 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
 #align category_theory.idempotents.karoubi_functor_category_embedding CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding
 
 instance : (karoubiFunctorCategoryEmbedding J C).Full where
-  preimage {P Q} f :=
-    { f :=
+  map_surjective {P Q} f :=
+   ⟨{ f :=
         { app := fun j => (f.app j).f
           naturality := fun j j' φ => by
             rw [← Karoubi.comp_p_assoc]
@@ -130,8 +130,7 @@ instance : (karoubiFunctorCategoryEmbedding J C).Full where
             erw [← h, assoc, ← P.p.naturality_assoc φ, p_comp (f.app j')] }
       comm := by
         ext j
-        exact (f.app j).comm }
-  witness f := rfl
+        exact (f.app j).comm }, rfl⟩
 
 instance : (karoubiFunctorCategoryEmbedding J C).Faithful where
   map_injective h := by

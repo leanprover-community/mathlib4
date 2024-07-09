@@ -6,7 +6,6 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
@@ -27,7 +26,7 @@ this issue doesn't seem to arise in practice.
 
 -/
 
-open Finset Real Filter Asymptotics BigOperators
+open Finset Real Filter Asymptotics
 open scoped Topology
 
 namespace AkraBazziRecurrence
@@ -197,7 +196,6 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         intro n hn hyp_ind z hz
         have z_nonneg : 0 ≤ z := by
           calc (0:ℝ) ≤ (2:ℝ)^n * max n₀ 2 := by
-                        set_option tactic.skipAssignedInstances false in
                         exact mul_nonneg (pow_nonneg (by norm_num) _) (by norm_num)
                   _ ≤ z := by exact_mod_cast hz.1
         have le_2n : max n₀ 2 ≤ (2:ℝ)^n * max n₀ 2 := by
@@ -333,28 +331,28 @@ protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomiall
           simp [abs_of_nonpos hx₁, abs_of_nonpos hx₂]
         simp only [iff_eventuallyEq hmain, neg_mul]
         exact this
-  · intro b hb
-    have hf := hf.abs b hb
-    have hg := hg.abs b hb
-    obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
-    obtain ⟨c₃, hc₃_mem, c₄, hc₄_mem, hg⟩ := hg
-    refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
-    refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
-    filter_upwards [hf, hg] with x hf hg
-    intro u hu
-    refine ⟨?lb, ?ub⟩
-    case lb => calc
-      c₁ * c₃ * (|f x| * |g x|) = (c₁ * |f x|) * (c₃ * |g x|) := by ring
-      _ ≤ |f u| * |g u| := by
-             gcongr
-             · exact (hf u hu).1
-             · exact (hg u hu).1
-    case ub => calc
-      |f u| * |g u| ≤ (c₂ * |f x|) * (c₄ * |g x|) := by
-             gcongr
-             · exact (hf u hu).2
-             · exact (hg u hu).2
-      _ = c₂ * c₄ * (|f x| * |g x|) := by ring
+  intro b hb
+  have hf := hf.abs b hb
+  have hg := hg.abs b hb
+  obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
+  obtain ⟨c₃, hc₃_mem, c₄, hc₄_mem, hg⟩ := hg
+  refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
+  refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
+  filter_upwards [hf, hg] with x hf hg
+  intro u hu
+  refine ⟨?lb, ?ub⟩
+  case lb => calc
+    c₁ * c₃ * (|f x| * |g x|) = (c₁ * |f x|) * (c₃ * |g x|) := by ring
+    _ ≤ |f u| * |g u| := by
+           gcongr
+           · exact (hf u hu).1
+           · exact (hg u hu).1
+  case ub => calc
+    |f u| * |g u| ≤ (c₂ * |f x|) * (c₄ * |g x|) := by
+           gcongr
+           · exact (hf u hu).2
+           · exact (hg u hu).2
+    _ = c₂ * c₄ * (|f x| * |g x|) := by ring
 
 lemma GrowsPolynomially.const_mul {f : ℝ → ℝ} {c : ℝ} (hf : GrowsPolynomially f) :
     GrowsPolynomially fun x => c * f x :=
@@ -477,7 +475,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                   rwa [neg_neg, ← neg_mul, ← neg_div]
            _ = 3/2 * f x := by ring
     intro u ⟨hu_lb, hu_ub⟩
-    have hfu_nonpos : f u ≤ 0:= hf₂ _ hu_lb
+    have hfu_nonpos : f u ≤ 0 := hf₂ _ hu_lb
     have hfg₃ : ‖g u‖ ≤ -1/2 * f u := by
       calc ‖g u‖ ≤ 1/2 * ‖f u‖ := hfg' _ hu_lb
            _ = 1/2 * (-f u) := by congr; exact norm_of_nonpos hfu_nonpos

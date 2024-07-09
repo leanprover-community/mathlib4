@@ -53,7 +53,7 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : - 1 
     _ = b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
       rw [integral_mul_left, integral_rpow_mul_exp_neg_rpow _ hq, mul_assoc, ← mul_assoc,
         ← rpow_neg_one, ← rpow_mul, ← rpow_add]
-      congr; ring
+      · congr; ring
       all_goals positivity
 
 theorem integral_exp_neg_rpow {p : ℝ} (hp : 0 < p) :

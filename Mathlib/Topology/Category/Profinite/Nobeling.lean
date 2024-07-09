@@ -196,7 +196,8 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
     · ext i
       exact dif_pos i.prop
 
-variable {C} (hC : IsCompact C)
+variable {C}
+variable (hC : IsCompact C)
 
 /--
 For a given compact subset `C` of `I → Bool`, `spanFunctor` is the functor from the poset of finsets
@@ -498,7 +499,7 @@ noncomputable
 def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ where
   toFun := fun y ↦ if y = x then 1 else 0
   isLocallyConstant :=
-    haveI : DiscreteTopology (π C (· ∈ s)) := discrete_of_t1_of_finite
+    haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
     IsLocallyConstant.of_discrete _
 
 open scoped Classical in
@@ -558,8 +559,7 @@ theorem factors_prod_eq_basis_of_ne {x y : (π C (· ∈ s))} (h : y ≠ x) :
   rw [list_prod_apply (π C (· ∈ s)) y _]
   apply List.prod_eq_zero
   simp only [List.mem_map]
-  obtain ⟨a, ha⟩ : ∃ a, y.val a ≠ x.val a
-  · contrapose! h; ext; apply h
+  obtain ⟨a, ha⟩ : ∃ a, y.val a ≠ x.val a := by contrapose! h; ext; apply h
   cases hx : x.val a
   · rw [hx, ne_eq, Bool.not_eq_false] at ha
     refine ⟨1 - (e (π C (· ∈ s)) a), ⟨one_sub_e_mem_of_false _ _ ha hx, ?_⟩⟩
@@ -656,7 +656,7 @@ theorem fin_comap_jointlySurjective
     (f : LocallyConstant C ℤ) : ∃ (s : Finset I)
     (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap ⟨(ProjRestrict C (· ∈ s)),
       continuous_projRestrict _ _⟩ := by
-  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant.{0, u, u} (Finset I)ᵒᵖ _ _ _
+  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant (Finset I)ᵒᵖ _ _ _
     (spanCone hC.isCompact) ℤ
     (spanCone_isLimit hC.isCompact) f
   exact ⟨(Opposite.unop J), g, h⟩
@@ -1260,8 +1260,7 @@ theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   intro y
   ext x
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.sub_apply]
-  simp only [continuous_CC'₀, continuous_CC'₁, LocallyConstant.coe_comap, continuous_projRestrict,
-    Function.comp_apply, sub_eq_zero]
+  simp only [Pi.zero_apply, sub_eq_zero]
   congr 1
   ext i
   dsimp [CC'₀, CC'₁, ProjRestrict, Proj]
@@ -1506,7 +1505,7 @@ theorem GoodProducts.max_eq_o_cons_tail (l : MaxProducts C ho) :
 theorem Products.evalCons {l : List I} {a : I}
     (hla : (a::l).Chain' (·>·)) : Products.eval C ⟨a::l,hla⟩ =
     (e C a) * Products.eval C ⟨l,List.Chain'.sublist hla (List.tail_sublist (a::l))⟩ := by
-  simp only [eval._eq_1, List.map, List.prod_cons]
+  simp only [eval.eq_1, List.map, List.prod_cons]
 
 theorem Products.max_eq_eval [Inhabited I] (l : Products I) (hl : l.val ≠ [])
     (hlh : l.val.head! = term I ho) :
@@ -1536,7 +1535,6 @@ theorem Products.max_eq_eval [Inhabited I] (l : Products I) (hl : l.val ≠ [])
     · simp [mem_C'_eq_false C ho x x.prop, Bool.coe_false]
   · push_neg at h₂; obtain ⟨i, hi⟩ := h₂; exfalso; rw [hi' i hi.1] at hi; exact hi.2 (h₁ i hi.1)
   · push_neg at h₁; obtain ⟨i, hi⟩ := h₁; exfalso; rw [← hi' i hi.1] at hi; exact hi.2 (h₃ i hi.1)
-  · rfl
 
 namespace GoodProducts
 

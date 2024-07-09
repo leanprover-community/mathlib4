@@ -119,8 +119,8 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   clear_value x
   simp only [Prod.ext_iff] at hx
   obtain ⟨rfl, rfl⟩ := hx
-  refine' wellFoundedOn_devosMulRel.induction (P := fun x : Finset α × Finset α ↦
-    min (minOrder α) ↑(card x.1 + card x.2 - 1) ≤ card (x.1 * x.2)) ⟨hs, ht⟩ _
+  refine wellFoundedOn_devosMulRel.induction (P := fun x : Finset α × Finset α ↦
+    min (minOrder α) ↑(card x.1 + card x.2 - 1) ≤ card (x.1 * x.2)) ⟨hs, ht⟩ ?_
   clear! x
   rintro ⟨s, t⟩ ⟨hs, ht⟩ ih
   simp only [min_le_iff, tsub_le_iff_right, Prod.forall, Set.mem_setOf_eq, and_imp,
@@ -159,14 +159,14 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     simp [-coe_smul_finset]
   -- Else, we can transform `s`, `t` to `s'`, `t'` and `s''`, `t''`, such that one of `(s', t')` and
   -- `(s'', t'')` is strictly smaller than `(s, t)` according to `DevosMulRel`.
-  replace hsg : (s ∩ op g • s).card < s.card := card_lt_card ⟨inter_subset_left _ _, fun h ↦
-    hsg <| eq_of_superset_of_card_ge (h.trans <| inter_subset_right _ _) (card_smul_finset _ _).le⟩
+  replace hsg : (s ∩ op g • s).card < s.card := card_lt_card ⟨inter_subset_left, fun h ↦
+    hsg <| eq_of_superset_of_card_ge (h.trans inter_subset_right) (card_smul_finset _ _).le⟩
   replace aux1 := card_mono <| mulETransformLeft.fst_mul_snd_subset g (s, t)
   replace aux2 := card_mono <| mulETransformRight.fst_mul_snd_subset g (s, t)
   -- If the left translate of `t` by `g⁻¹` is disjoint from `t`, then we're easily done.
   obtain hgt | hgt := disjoint_or_nonempty_inter t (g⁻¹ • t)
   · rw [← card_smul_finset g⁻¹ t]
-    refine' Or.inr ((add_le_add_right hst _).trans _)
+    refine Or.inr ((add_le_add_right hst _).trans ?_)
     rw [← card_union_of_disjoint hgt]
     exact (card_le_card_mul_left _ hgs).trans (le_add_of_le_left aux1)
   -- Else, we're done by induction on either `(s', t')` or `(s'', t'')` depending on whether
@@ -212,8 +212,8 @@ lemma Finset.card_add_card_sub_one_le_card_mul [LinearOrder α] [Semigroup α] [
       ← card_union_add_card_inter, ← card_singleton _, ← this, Nat.add_sub_cancel]
     exact card_mono (union_subset (mul_subset_mul_left <| singleton_subset_iff.2 <| min'_mem _ _) <|
       mul_subset_mul_right <| singleton_subset_iff.2 <| max'_mem _ _)
-  refine' eq_singleton_iff_unique_mem.2 ⟨mem_inter.2 ⟨mul_mem_mul (max'_mem _ _) <|
-    mem_singleton_self _, mul_mem_mul (mem_singleton_self _) <| min'_mem _ _⟩, _⟩
+  refine eq_singleton_iff_unique_mem.2 ⟨mem_inter.2 ⟨mul_mem_mul (max'_mem _ _) <|
+    mem_singleton_self _, mul_mem_mul (mem_singleton_self _) <| min'_mem _ _⟩, ?_⟩
   simp only [mem_inter, and_imp, mem_mul, mem_singleton, exists_and_left, exists_eq_left,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mul_left_inj]
   exact fun a' ha' b' hb' h ↦ (le_max' _ _ ha').eq_of_not_lt fun ha ↦

@@ -36,8 +36,6 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 noncomputable section
 
-open BigOperators
-
 section OrderedCommSemiring
 
 variable (R : Type*) [StrictOrderedCommSemiring R]
@@ -374,7 +372,10 @@ theorem eq_or_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fin
   letI := Classical.decEq ι
   -- Porting note: this needs to be made explicit for the simp below
   have orientation_neg_neg :
-    ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by simp
+      ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by
+    #adaptation_note
+    /-- `set_option maxSynthPendingDepth 2` required after https://github.com/leanprover/lean4/pull/4119 -/
+    set_option maxSynthPendingDepth 2 in simp
   rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
     rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂, orientation_neg_neg]
 #align orientation.eq_or_eq_neg Orientation.eq_or_eq_neg

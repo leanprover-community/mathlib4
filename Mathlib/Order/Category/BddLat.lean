@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.Order.Category.BddOrd
 import Mathlib.Order.Category.Lat
 import Mathlib.Order.Category.Semilat
@@ -34,7 +34,7 @@ structure BddLat where
 
 namespace BddLat
 
-instance : CoeSort BddLat (Type*) :=
+instance : CoeSort BddLat Type* :=
   ⟨fun X => X.toLat⟩
 
 instance (X : BddLat) : Lattice X :=

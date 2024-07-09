@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
 
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.GroupCat.Injective
+import Mathlib.Algebra.Category.Grp.Injective
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Rat
 import Mathlib.LinearAlgebra.Isomorphisms
@@ -185,7 +184,7 @@ lemma eq_zero_of_ofSpanSingleton_apply_self (a : A)
     AddCircle.coe_eq_zero_iff] at h
   rcases h with ⟨n, hn⟩
   apply_fun Rat.den at hn
-  rw [zsmul_one, Rat.coe_int_den, Rat.inv_natCast_den_of_pos] at hn
+  rw [zsmul_one, Rat.den_intCast, Rat.inv_natCast_den_of_pos] at hn
   · split_ifs at hn
     · cases hn
     · rwa [eq_comm, AddMonoid.addOrderOf_eq_one_iff] at hn

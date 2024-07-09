@@ -3,11 +3,11 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
-import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Topology.Algebra.GroupWithZero
+import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Order.LocalExtr
-import Mathlib.FieldTheory.Subfield
 
 #align_import topology.algebra.field from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
@@ -130,7 +130,7 @@ variable {α 𝕜 : Type*} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α
 theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
-  have : DiscreteTopology ({1, -1} : Set 𝕜) := discrete_of_t1_of_finite
+  have : DiscreteTopology ({1, -1} : Set 𝕜) := Finite.instDiscreteTopology
   have hmaps : MapsTo f S {1, -1} := by
     simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
   simpa using hS.eqOn_const_of_mapsTo hf hmaps

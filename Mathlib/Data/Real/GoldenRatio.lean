@@ -29,13 +29,11 @@ noncomputable section
 open Polynomial
 
 /-- The golden ratio `φ := (1 + √5)/2`. -/
-@[reducible]
-def goldenRatio : ℝ := (1 + √5) / 2
+abbrev goldenRatio : ℝ := (1 + √5) / 2
 #align golden_ratio goldenRatio
 
 /-- The conjugate of the golden ratio `ψ := (1 - √5)/2`. -/
-@[reducible]
-def goldenConj : ℝ := (1 - √5) / 2
+abbrev goldenConj : ℝ := (1 - √5) / 2
 #align golden_conj goldenConj
 
 @[inherit_doc goldenRatio] scoped[goldenRatio] notation "φ" => goldenRatio
@@ -112,7 +110,7 @@ theorem gold_ne_zero : φ ≠ 0 :=
 #align gold_ne_zero gold_ne_zero
 
 theorem one_lt_gold : 1 < φ := by
-  refine' lt_of_mul_lt_mul_left _ (le_of_lt gold_pos)
+  refine lt_of_mul_lt_mul_left ?_ (le_of_lt gold_pos)
   simp [← sq, gold_pos, zero_lt_one, - div_pow] -- Porting note: Added `- div_pow`
 #align one_lt_gold one_lt_gold
 
@@ -250,8 +248,8 @@ theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n +
   | zero => norm_num
   | succ n ih =>
     calc
-      _ = φ * (Nat.fib n) + φ ^ 2 * (Nat.fib (n + 1)) :=
-        by simp only [Nat.fib_add_one (Nat.succ_ne_zero n), Nat.succ_sub_succ_eq_sub, tsub_zero,
+      _ = φ * (Nat.fib n) + φ ^ 2 * (Nat.fib (n + 1)) := by
+        simp only [Nat.fib_add_one (Nat.succ_ne_zero n), Nat.succ_sub_succ_eq_sub, tsub_zero,
           Nat.cast_add, gold_sq]; ring
       _ = φ * ((Nat.fib n) + φ * (Nat.fib (n + 1))) := by ring
       _ = φ ^ (n + 2) := by rw [add_comm, ih]; ring

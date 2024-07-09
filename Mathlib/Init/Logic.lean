@@ -3,14 +3,32 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Std.Tactic.Relation.Rfl
 import Mathlib.Tactic.Lemma
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.ProjectionNotation
+import Batteries.Tactic.Alias
+import Batteries.Tactic.Lint.Misc
+import Batteries.Logic -- Only needed for #align
+
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+-/
 
 set_option autoImplicit true
+
+universe u v
+variable {α : Sort u}
 
 #align opt_param_eq optParam_eq
 
@@ -20,13 +38,11 @@ set_option autoImplicit true
 
 theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
 
-theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
+theorem cast_proof_irrel {β : Sort u} (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
 attribute [symm] Eq.symm
 
 /- Ne -/
-
-theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
 
 attribute [symm] Ne.symm
 
@@ -277,7 +293,7 @@ theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
 #align exists_imp_exists Exists.imp
 
 -- @[congr]
-theorem exists_unique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
+theorem existsUnique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
   exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
 
 /- decidable -/
@@ -326,7 +342,8 @@ alias decidableFalse := instDecidableFalse
 #align not.decidable Not.decidable
 #align iff.decidable Iff.decidable
 
-instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
+instance {q : Prop} [Decidable p] [Decidable q] : Decidable (Xor' p q) :=
+    inferInstanceAs (Decidable (Or ..))
 
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
 def IsDecRefl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
@@ -350,7 +367,7 @@ theorem decidableEq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
 
 #align inhabited.default Inhabited.default
 #align arbitrary Inhabited.default
-#align nonempty_of_inhabited instNonempty
+#align nonempty_of_inhabited instNonemptyOfInhabited
 
 /- subsingleton -/
 
@@ -671,5 +688,3 @@ end Binary
 #align subsingleton_iff_forall_eq subsingleton_iff_forall_eq
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
-
-attribute [pp_dot] False.elim Eq.symm Eq.trans

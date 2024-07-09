@@ -17,12 +17,11 @@ Porting note:
 This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
 name clashes.  -/
 
-set_option autoImplicit true
-
 open Nat Function Option
 
 namespace Stream'
 
+universe u v w
 variable {α : Type u} {β : Type v} {δ : Type w}
 
 instance [Inhabited α] : Inhabited (Stream' α) :=
@@ -66,12 +65,12 @@ theorem drop_drop (n m : Nat) (s : Stream' α) : drop n (drop m s) = drop (n + m
   ext; simp [Nat.add_assoc]
 #align stream.drop_drop Stream'.drop_drop
 
-@[simp] theorem get_tail {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
+@[simp] theorem get_tail {n : ℕ} {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
 
-@[simp] theorem tail_drop' {s : Stream' α} : tail (drop i s) = s.drop (i+1) := by
+@[simp] theorem tail_drop' {i : ℕ} {s : Stream' α} : tail (drop i s) = s.drop (i+1) := by
   ext; simp [Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
 
-@[simp] theorem drop_tail' {s : Stream' α} : drop i (tail s) = s.drop (i+1) := rfl
+@[simp] theorem drop_tail' {i : ℕ} {s : Stream' α} : drop i (tail s) = s.drop (i+1) := rfl
 
 theorem tail_drop (n : Nat) (s : Stream' α) : tail (drop n s) = drop n (tail s) := by simp
 #align stream.tail_drop Stream'.tail_drop
@@ -326,7 +325,9 @@ theorem bisim_simple (s₁ s₂ : Stream' α) :
     head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
   eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
     (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor; exact h₁; rw [← h₂, ← h₃]
+      constructor
+      · exact h₁
+      rw [← h₂, ← h₃]
       (repeat' constructor) <;> assumption)
     (And.intro hh (And.intro ht₁ ht₂))
 #align stream.bisim_simple Stream'.bisim_simple
@@ -574,7 +575,8 @@ theorem take_succ (n : Nat) (s : Stream' α) : take (succ n) s = head s::take n 
   rfl
 #align stream.take_succ Stream'.take_succ
 
-@[simp] theorem take_succ_cons (n : Nat) (s : Stream' α) : take (n+1) (a::s) = a :: take n s := rfl
+@[simp] theorem take_succ_cons {a : α} (n : ℕ) (s : Stream' α) :
+    take (n+1) (a::s) = a :: take n s := rfl
 
 theorem take_succ' {s : Stream' α} : ∀ n, s.take (n+1) = s.take n ++ [s.get n]
   | 0 => rfl
@@ -591,7 +593,7 @@ theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min 
   | m, 0 => by rw [Nat.zero_min, take_zero, List.take_nil]
   | m+1, n+1 => by rw [take_succ, List.take_cons, Nat.succ_min_succ, take_succ, take_take]
 
-@[simp] theorem concat_take_get {s : Stream' α} : s.take n ++ [s.get n] = s.take (n+1) :=
+@[simp] theorem concat_take_get {n : ℕ} {s : Stream' α} : s.take n ++ [s.get n] = s.take (n+1) :=
   (take_succ' n).symm
 
 theorem get?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n).get? k = s.get k
@@ -603,7 +605,7 @@ theorem get?_take_succ (n : Nat) (s : Stream' α) :
   get?_take (Nat.lt_succ_self n)
 #align stream.nth_take_succ Stream'.get?_take_succ
 
-@[simp] theorem dropLast_take {xs : Stream' α} :
+@[simp] theorem dropLast_take {n : ℕ} {xs : Stream' α} :
     (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
   cases n with
   | zero => simp
@@ -761,7 +763,9 @@ theorem get_nats (n : Nat) : get nats n = n :=
 
 theorem nats_eq : nats = cons 0 (map succ nats) := by
   apply Stream'.ext; intro n
-  cases n; rfl; rw [get_succ]; rfl
+  cases n
+  · rfl
+  rw [get_succ]; rfl
 #align stream.nats_eq Stream'.nats_eq
 
 end Stream'

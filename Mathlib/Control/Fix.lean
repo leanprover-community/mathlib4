@@ -91,9 +91,9 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     congr
     ext x: 1
     rw [assert_neg]
-    rfl
-    rw [Nat.zero_add] at _this
-    simpa only [not_not, Coe]
+    · rfl
+    · rw [Nat.zero_add] at _this
+      simpa only [not_not, Coe]
   | succ n n_ih =>
     intro x'
     rw [Fix.approx, WellFounded.fix_eq, fixAux]

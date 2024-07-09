@@ -79,7 +79,7 @@ theorem symmetry (X Y : C) :
         (Limits.BinaryFan.braiding (ℬ Y X).isLimit (ℬ X Y).isLimit).hom =
       𝟙 (tensorObj ℬ X Y) := by
   dsimp [tensorHom, Limits.BinaryFan.braiding]
-  apply (ℬ _ _).isLimit.hom_ext;
+  apply (ℬ _ _).isLimit.hom_ext
   rintro ⟨⟨⟩⟩ <;> · dsimp [Limits.IsLimit.conePointUniqueUpToIso]; simp
 #align category_theory.monoidal_of_chosen_finite_products.symmetry CategoryTheory.MonoidalOfChosenFiniteProducts.symmetry
 
@@ -89,8 +89,8 @@ open MonoidalOfChosenFiniteProducts
 
 /-- The monoidal structure coming from finite products is symmetric.
 -/
-def symmetricOfChosenFiniteProducts : SymmetricCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ)
-    where
+def symmetricOfChosenFiniteProducts :
+    SymmetricCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ) where
   braiding _ _ := Limits.BinaryFan.braiding (ℬ _ _).isLimit (ℬ _ _).isLimit
   braiding_naturality_left f X := braiding_naturality ℬ f (𝟙 X)
   braiding_naturality_right X _ _ f := braiding_naturality ℬ (𝟙 X) f

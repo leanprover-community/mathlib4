@@ -96,7 +96,7 @@ theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0)
 
 theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
     F =ᵐ[μ] univ ↔ F = univ := by
-  refine' ⟨fun h ↦ _, fun h ↦ by rw [h]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
   rwa [ae_eq_univ, hF.isOpen_compl.measure_eq_zero_iff μ, compl_empty_iff] at h
 
 theorem _root_.IsClosed.measure_eq_univ_iff_eq [OpensMeasurableSpace X] [IsFiniteMeasure μ]
@@ -119,9 +119,9 @@ equal on this set. -/
 theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
     (hf : ContinuousOn f U) (hg : ContinuousOn g U) : EqOn f g U := by
   replace h := ae_imp_of_ae_restrict h
-  simp only [EventuallyEq, ae_iff, not_imp] at h
+  simp only [EventuallyEq, ae_iff, Classical.not_imp] at h
   have : IsOpen (U ∩ { a | f a ≠ g a }) := by
-    refine' isOpen_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) _
+    refine isOpen_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) ?_
     rcases ha with ⟨ha : a ∈ U, ha' : (f a, g a) ∈ (diagonal Y)ᶜ⟩
     exact
       (hf.continuousAt (hU.mem_nhds ha)).prod_mk_nhds (hg.continuousAt (hU.mem_nhds ha))
@@ -157,7 +157,7 @@ theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
     {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
     {f : X → Z} (hf : Continuous f) (hf_surj : Function.Surjective f) :
     (Measure.map f μ).IsOpenPosMeasure := by
-  refine' ⟨fun U hUo hUne => _⟩
+  refine ⟨fun U hUo hUne => ?_⟩
   rw [Measure.map_apply hf.measurable hUo.measurableSet]
   exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
 #align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
@@ -233,7 +233,7 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
 @[simp] lemma measure_closedBall_pos_iff {X : Type*} [MetricSpace X] {m : MeasurableSpace X}
     (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
     0 < μ (closedBall x r) ↔ 0 < r := by
-  refine' ⟨fun h ↦ _, measure_closedBall_pos μ x⟩
+  refine ⟨fun h ↦ ?_, measure_closedBall_pos μ x⟩
   contrapose! h
   rw [(subsingleton_closedBall x h).measure_zero μ]
 

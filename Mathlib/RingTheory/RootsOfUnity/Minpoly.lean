@@ -66,7 +66,7 @@ theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     convert RingHom.map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
         (minpoly_dvd_x_pow_sub_one h)
     simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
-  refine' Separable.of_dvd (separable_X_pow_sub_C 1 _ one_ne_zero) hdvd
+  refine Separable.of_dvd (separable_X_pow_sub_C 1 ?_ one_ne_zero) hdvd
   by_contra hzero
   exact hdiv ((ZMod.natCast_zmod_eq_zero_iff_dvd n p).1 hzero)
 #align is_primitive_root.separable_minpoly_mod IsPrimitiveRoot.separable_minpoly_mod
@@ -84,10 +84,10 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
   rcases n.eq_zero_or_pos with (rfl | hpos)
   · simp_all
   letI : IsIntegrallyClosed ℤ := GCDMonoid.toIsIntegrallyClosed
-  refine' minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos) _
-  · rw [aeval_def, coe_expand, ← comp, eval₂_eq_eval_map, map_comp, Polynomial.map_pow, map_X,
-      eval_comp, eval_pow, eval_X, ← eval₂_eq_eval_map, ← aeval_def]
-    exact minpoly.aeval _ _
+  refine minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos) ?_
+  rw [aeval_def, coe_expand, ← comp, eval₂_eq_eval_map, map_comp, Polynomial.map_pow, map_X,
+    eval_comp, eval_pow, eval_X, ← eval₂_eq_eval_map, ← aeval_def]
+  exact minpoly.aeval _ _
 #align is_primitive_root.minpoly_dvd_expand IsPrimitiveRoot.minpoly_dvd_expand
 
 /-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
@@ -133,12 +133,12 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     rw [IsPrimitive.Int.dvd_iff_map_cast_dvd_map_cast (P * Q) (X ^ n - 1) PQprim
         (monic_X_pow_sub_C (1 : ℤ) (ne_of_gt hpos)).isPrimitive,
       Polynomial.map_mul]
-    refine' IsCoprime.mul_dvd _ _ _
+    refine IsCoprime.mul_dvd ?_ ?_ ?_
     · have aux := IsPrimitive.Int.irreducible_iff_irreducible_map_cast Pmonic.isPrimitive
-      refine' (dvd_or_coprime _ _ (aux.1 Pirr)).resolve_left _
+      refine (dvd_or_coprime _ _ (aux.1 Pirr)).resolve_left ?_
       rw [map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Pmonic]
       intro hdiv
-      refine' hdiff (eq_of_monic_of_associated Pmonic Qmonic _)
+      refine hdiff (eq_of_monic_of_associated Pmonic Qmonic ?_)
       exact associated_of_dvd_dvd hdiv (Pirr.dvd_symm Qirr hdiv)
     · apply (map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Pmonic).2
       exact minpoly_dvd_x_pow_sub_one h
@@ -175,7 +175,7 @@ and of `μ ^ m` are the same. -/
 theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.Coprime m n) :
     minpoly ℤ μ = minpoly ℤ (μ ^ m) := by
   revert n hcop
-  refine' UniqueFactorizationMonoid.induction_on_prime m _ _ _
+  refine UniqueFactorizationMonoid.induction_on_prime m ?_ ?_ ?_
   · intro h hn
     congr
     simpa [(Nat.coprime_zero_left _).mp hn] using h

@@ -80,11 +80,11 @@ instance [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) :=
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-@[ext] -- Porting note (#10756): new theorem
+@[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
-@[ext] -- Porting note (#10756): new theorem
+@[ext]
 theorem EuclideanHalfSpace.ext [Zero (Fin n)] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
@@ -93,13 +93,13 @@ theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
 #align range_half_space range_euclideanHalfSpace
-@[deprecated] alias range_half_space := range_euclideanHalfSpace -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
 
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
 #align range_quadrant range_euclideanQuadrant
-@[deprecated] alias range_quadrant := range_euclideanQuadrant -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias range_quadrant := range_euclideanQuadrant
 
 end
 
@@ -126,8 +126,8 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
         uniqueDiffOn_Ici 0
     simpa only [singleton_pi] using this
   continuous_toFun := continuous_subtype_val
-  continuous_invFun :=
-    (continuous_id.update 0 <| (continuous_apply 0).max continuous_const).subtype_mk _
+  continuous_invFun := by
+    exact (continuous_id.update 0 <| (continuous_apply 0).max continuous_const).subtype_mk _
 #align model_with_corners_euclidean_half_space modelWithCornersEuclideanHalfSpace
 
 /--

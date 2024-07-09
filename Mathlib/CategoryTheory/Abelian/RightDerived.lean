@@ -37,6 +37,16 @@ and show how to compute the components.
 * `Functor.toRightDerivedZero`: the natural transformation `F ⟶ F.rightDerived 0`,
   which is an isomorphism when `F` is left exact (i.e. preserves finite limits),
   see also `Functor.rightDerivedZeroIsoSelf`.
+
+## TODO
+
+* refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
+material enters mathlib: derived categories, injective/projective derivability
+structures, existence of derived functors from derivability structures.
+Eventually, we shall get a right derived functor
+`F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
+and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
+
 -/
 
 universe v u
@@ -274,7 +284,7 @@ instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso ((InjectiveResolution.self X).toRightDerivedZero' F) := by
   dsimp [InjectiveResolution.toRightDerivedZero']
   rw [CochainComplex.isIso_liftCycles_iff]
-  refine' ⟨ShortComplex.Splitting.exact _, inferInstance⟩
+  refine ⟨ShortComplex.Splitting.exact ?_, inferInstance⟩
   exact
     { r := 𝟙 _
       s := 0

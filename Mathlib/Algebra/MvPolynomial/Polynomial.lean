@@ -32,8 +32,8 @@ theorem eval_polynomial_eval_finSuccEquiv {n : ℕ} {x : Fin n → R}
     (eval x) (Polynomial.eval q (finSuccEquiv R n f)) = eval (Fin.cases (eval x q) x) f := by
   simp only [finSuccEquiv_apply, coe_eval₂Hom, polynomial_eval_eval₂, eval_eval₂]
   conv in RingHom.comp _ _ =>
-  { refine @RingHom.ext _ _ _ _ _ (RingHom.id _) fun r => ?_
-    simp }
+    refine @RingHom.ext _ _ _ _ _ (RingHom.id _) fun r => ?_
+    simp
   simp only [eval₂_id]
   congr
   funext i

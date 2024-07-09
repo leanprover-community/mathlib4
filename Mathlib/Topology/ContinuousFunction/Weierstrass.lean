@@ -32,8 +32,8 @@ This is just a matter of unravelling definitions and using the Bernstein approxi
 theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
   rw [eq_top_iff]
   rintro f -
-  refine' Filter.Frequently.mem_closure _
-  refine' Filter.Tendsto.frequently (bernsteinApproximation_uniform f) _
+  refine Filter.Frequently.mem_closure ?_
+  refine Filter.Tendsto.frequently (bernsteinApproximation_uniform f) ?_
   apply frequently_of_forall
   intro n
   simp only [SetLike.mem_coe]
@@ -75,8 +75,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- 🎉
     exact p
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
-    have : Subsingleton (Set.Icc a b) := (Set.subsingleton_Icc_of_ge h).coe_sort
-    apply Subsingleton.elim
+    subsingleton [(Set.subsingleton_Icc_of_ge h).coe_sort]
 #align polynomial_functions_closure_eq_top polynomialFunctions_closure_eq_top
 
 /-- An alternative statement of Weierstrass' theorem.

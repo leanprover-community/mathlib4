@@ -20,13 +20,11 @@ open Function Order
 namespace Int
 
 -- so that Lean reads `Int.succ` through `SuccOrder.succ`
-@[reducible]
-instance : SuccOrder ℤ :=
+@[instance] abbrev instSuccOrder : SuccOrder ℤ :=
   { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 -- so that Lean reads `Int.pred` through `PredOrder.pred`
-@[reducible]
-instance : PredOrder ℤ where
+@[instance] abbrev instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le
   min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_le ha).elim
@@ -86,13 +84,16 @@ theorem covBy_add_one (z : ℤ) : z ⋖ z + 1 :=
   Int.covBy_iff_succ_eq.mpr rfl
 #align int.covby_add_one Int.covBy_add_one
 
-end Int
-
 @[simp, norm_cast]
-theorem Nat.cast_int_covBy_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
+theorem natCast_covBy {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
   rw [Nat.covBy_iff_succ_eq, Int.covBy_iff_succ_eq]
   exact Int.natCast_inj
-#align nat.cast_int_covby_iff Nat.cast_int_covBy_iff
+#align nat.cast_int_covby_iff Int.natCast_covBy
 
-alias ⟨_, CovBy.cast_int⟩ := Nat.cast_int_covBy_iff
-#align covby.cast_int CovBy.cast_int
+end Int
+
+alias ⟨_, CovBy.intCast⟩ := Int.natCast_covBy
+#align covby.cast_int CovBy.intCast
+
+@[deprecated (since := "2024-05-27")] alias Nat.cast_int_covBy_iff := Int.natCast_covBy
+@[deprecated (since := "2024-05-27")] alias CovBy.cast_int := CovBy.intCast

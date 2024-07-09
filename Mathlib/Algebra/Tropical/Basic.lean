@@ -3,7 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupPower.CovariantClass
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Hom.Basic
@@ -62,14 +62,13 @@ namespace Tropical
 /-- Reinterpret `x : R` as an element of `Tropical R`.
 See `Tropical.tropEquiv` for the equivalence.
 -/
---@[pp_nodot] Porting note: not implemented in Lean4
 def trop : R → Tropical R :=
   id
 #align tropical.trop Tropical.trop
 
 /-- Reinterpret `x : Tropical R` as an element of `R`.
 See `Tropical.tropEquiv` for the equivalence. -/
---@[pp_nodot] Porting note: not implemented in Lean4
+@[pp_nodot]
 def untrop : Tropical R → R :=
   id
 #align tropical.untrop Tropical.untrop
