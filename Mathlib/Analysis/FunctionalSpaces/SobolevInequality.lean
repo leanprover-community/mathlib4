@@ -49,7 +49,7 @@ Potentially also useful:
   a Hilbert space, without restrictions on its dimension.
 -/
 
-open scoped Classical BigOperators ENNReal NNReal Topology
+open scoped ENNReal NNReal
 open Set Function Finset MeasureTheory Measure Filter
 
 noncomputable section
@@ -134,7 +134,7 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
             refine (hf.pow_const _).mul <| Finset.measurable_prod _ ?_
             exact fun _ _ ↦ hf.lmarginal μ |>.pow_const _
-    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s:=s) (fun x ↦ ?_)
+    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s := s) (fun x ↦ ?_)
   -- The remainder of the computation happens within an `|s|`-fold iterated integral
   simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
   set X := update x i
@@ -195,8 +195,7 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
           ∏ j in s, (∫⋯∫⁻_{j}, (∫⋯∫⁻_{i}, f ∂μ) ∂μ) x ^ p := by
               -- identify the result with the RHS integrand
               congr! 2 with j hj
-              · push_cast
-                ring_nf
+              · ring_nf
               · congr! 1
                 rw [← lmarginal_union μ f hf]
                 · congr
@@ -674,7 +673,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
     · positivity
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)
   let C := SNormLESNormFDerivOfEqConst F μ p
-  calc snorm u q μ = snorm u q (μ.restrict s) := by rw [snorm_restrict_eq h2u]
+  calc snorm u q μ = snorm u q (μ.restrict s) := by rw [snorm_restrict_eq_of_support_subset h2u]
     _ ≤ snorm u p' (μ.restrict s) * t := by
         convert snorm_le_snorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
         rw [← ENNReal.coe_rpow_of_nonneg]
@@ -683,7 +682,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
           norm_cast
           rw [hp']
           simpa using hpq
-    _ = snorm u p' μ * t := by rw [snorm_restrict_eq h2u]
+    _ = snorm u p' μ * t := by rw [snorm_restrict_eq_of_support_subset h2u]
     _ ≤ (C * snorm (fderiv ℝ u) p μ) * t := by
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure

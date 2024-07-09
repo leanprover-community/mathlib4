@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.Topology.QuasiSeparated
 
@@ -147,13 +148,13 @@ instance quasiSeparated_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸
     (MorphismProperty.diagonal_isStableUnderComposition
-        quasiCompact_respectsIso quasiCompact_stableUnderBaseChange)
+        quasiCompact_stableUnderBaseChange)
 #align algebraic_geometry.quasi_separated_stable_under_composition AlgebraicGeometry.quasiSeparated_isStableUnderComposition
 
 theorem quasiSeparated_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸
-    quasiCompact_stableUnderBaseChange.diagonal quasiCompact_respectsIso
+    quasiCompact_stableUnderBaseChange.diagonal
 #align algebraic_geometry.quasi_separated_stable_under_base_change AlgebraicGeometry.quasiSeparated_stableUnderBaseChange
 
 instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
@@ -161,7 +162,7 @@ instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiS
   MorphismProperty.comp_mem _ f g inferInstance inferInstance
 #align algebraic_geometry.quasi_separated_comp AlgebraicGeometry.quasiSeparatedComp
 
-theorem quasiSeparated_respectsIso : MorphismProperty.RespectsIso @QuasiSeparated :=
+instance quasiSeparated_respectsIso : MorphismProperty.RespectsIso @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ quasiCompact_respectsIso.diagonal
 #align algebraic_geometry.quasi_separated_respects_iso AlgebraicGeometry.quasiSeparated_respectsIso
 

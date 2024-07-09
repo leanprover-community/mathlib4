@@ -42,6 +42,7 @@
   "Mathlib.Data.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
   "Mathlib.Data.Rat.Init",
+  "Mathlib.Data.Set.Notation",
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
   "Mathlib.Geometry.Manifold.Instances.Real",
@@ -77,7 +78,7 @@
   "Mathlib.Tactic.Coe",
   "Mathlib.Tactic.Common",
   "Mathlib.Tactic.Congr!",
-  "Mathlib.Tactic.Congrm",
+  "Mathlib.Tactic.CongrM",
   "Mathlib.Tactic.Constructor",
   "Mathlib.Tactic.Continuity",
   "Mathlib.Tactic.Contrapose",
@@ -88,7 +89,7 @@
   "Mathlib.Tactic.DeriveFintype",
   "Mathlib.Tactic.DeriveToExpr",
   "Mathlib.Tactic.Eqns",
-  "Mathlib.Tactic.Existsi",
+  "Mathlib.Tactic.ExistsI",
   "Mathlib.Tactic.ExtendDoc",
   "Mathlib.Tactic.ExtractGoal",
   "Mathlib.Tactic.FBinop",
@@ -204,6 +205,7 @@
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE"],
+  "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
@@ -212,6 +214,7 @@
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
+   "Mathlib.Algebra.Order.Ring.Basic",
    "Mathlib.Data.Int.CharZero",
    "Mathlib.Data.Nat.Factorial.Basic",
    "Mathlib.Data.PNat.Defs"],
@@ -224,6 +227,7 @@
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
+  "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto": ["Mathlib.Init.Logic"],
@@ -301,12 +305,15 @@
   "Mathlib.GroupTheory.MonoidLocalization": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
+  "Mathlib.Geometry.Manifold.PoincareConjecture":
+  ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
+   "Mathlib.Util.Superscript"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.GroupTheory.GroupAction.Defs"],
-  "Mathlib.Data.Matroid.Map": ["Mathlib.Data.Set.Subset"],
   "Mathlib.Data.List.TFAE": ["Batteries.Tactic.Classical"],
+  "Mathlib.Data.List.ProdSigma": ["Mathlib.Data.List.Basic"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
@@ -318,16 +325,27 @@
   ["Mathlib.Tactic.Positivity.Finset"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.CategoryTheory.Sites.IsSheafFor":
+  ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
-  ["Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
+  ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
+   "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
+  "Mathlib.Analysis.NormedSpace.LinearIsometry": ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Analysis.InnerProductSpace.Basic":
+  ["Mathlib.Algebra.Module.LinearMap.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
+  "Mathlib.Analysis.Convex.Basic":
+  ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
   "Mathlib.Algebra.Module.LinearMap.Star":
   ["Mathlib.Algebra.Module.Equiv", "Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Algebra.Module.Equiv": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
+  "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
