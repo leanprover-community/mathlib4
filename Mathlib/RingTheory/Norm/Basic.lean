@@ -3,9 +3,8 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.RingTheory.Norm.Defs
 import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
@@ -58,58 +57,6 @@ open Matrix Polynomial
 open scoped Matrix
 
 namespace Algebra
-
-variable (R)
-
-/-- The norm of an element `s` of an `R`-algebra is the determinant of `(*) s`. -/
-noncomputable def norm : S →* R :=
-  LinearMap.det.comp (lmul R S).toRingHom.toMonoidHom
-#align algebra.norm Algebra.norm
-
-theorem norm_apply (x : S) : norm R x = LinearMap.det (lmul R S x) := rfl
-#align algebra.norm_apply Algebra.norm_apply
-
-theorem norm_eq_one_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) (x : S) :
-    norm R x = 1 := by rw [norm_apply, LinearMap.det]; split_ifs <;> trivial
-#align algebra.norm_eq_one_of_not_exists_basis Algebra.norm_eq_one_of_not_exists_basis
-
-variable {R}
-
-theorem norm_eq_one_of_not_module_finite (h : ¬Module.Finite R S) (x : S) : norm R x = 1 := by
-  refine norm_eq_one_of_not_exists_basis _ (mt ?_ h) _
-  rintro ⟨s, ⟨b⟩⟩
-  exact Module.Finite.of_basis b
-#align algebra.norm_eq_one_of_not_module_finite Algebra.norm_eq_one_of_not_module_finite
-
--- Can't be a `simp` lemma because it depends on a choice of basis
-theorem norm_eq_matrix_det [Fintype ι] [DecidableEq ι] (b : Basis ι R S) (s : S) :
-    norm R s = Matrix.det (Algebra.leftMulMatrix b s) := by
-  rw [norm_apply, ← LinearMap.det_toMatrix b, ← toMatrix_lmul_eq]; rfl
-#align algebra.norm_eq_matrix_det Algebra.norm_eq_matrix_det
-
-/-- If `x` is in the base ring `K`, then the norm is `x ^ [L : K]`. -/
-theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
-    norm R (algebraMap R S x) = x ^ Fintype.card ι := by
-  haveI := Classical.decEq ι
-  rw [norm_apply, ← det_toMatrix b, lmul_algebraMap]
-  convert @det_diagonal _ _ _ _ _ fun _ : ι => x
-  · ext (i j); rw [toMatrix_lsmul]
-  · rw [Finset.prod_const, Finset.card_univ]
-#align algebra.norm_algebra_map_of_basis Algebra.norm_algebraMap_of_basis
-
-/-- If `x` is in the base field `K`, then the norm is `x ^ [L : K]`.
-
-(If `L` is not finite-dimensional over `K`, then `norm = 1 = x ^ 0 = x ^ (finrank L K)`.)
--/
-@[simp]
-protected theorem norm_algebraMap {L : Type*} [Ring L] [Algebra K L] (x : K) :
-    norm K (algebraMap K L x) = x ^ finrank K L := by
-  by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
-  · rw [norm_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
-  · rw [norm_eq_one_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis, pow_zero]
-    rintro ⟨s, ⟨b⟩⟩
-    exact H ⟨s, ⟨b⟩⟩
-#align algebra.norm_algebra_map Algebra.norm_algebraMap
 
 section EqProdRoots
 
