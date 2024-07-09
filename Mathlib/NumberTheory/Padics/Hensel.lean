@@ -331,7 +331,7 @@ private theorem newton_seq_dist_to_a :
   | k + 2, _h =>
     have hlt : ‖newton_seq (k + 2) - newton_seq (k + 1)‖ < ‖newton_seq (k + 1) - a‖ := by
       rw [newton_seq_dist_to_a (k + 1) (succ_pos _)]; apply newton_seq_succ_dist_weak
-        assumption
+      assumption
     have hne' : ‖newton_seq (k + 2) - newton_seq (k + 1)‖ ≠ ‖newton_seq (k + 1) - a‖ := ne_of_lt hlt
     calc
       ‖newton_seq (k + 2) - a‖ =
