@@ -193,7 +193,7 @@ theorem indep_bot_left (m' : MeasurableSpace Ω) {_mΩ : MeasurableSpace Ω}
 theorem indepSet_empty_right {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ] (s : Set Ω) :
     IndepSet s ∅ κ μ := by
-  simp only [IndepSet, generateFrom_singleton_empty];
+  simp only [IndepSet, generateFrom_singleton_empty]
   exact indep_bot_right _
 
 theorem indepSet_empty_left {_mΩ : MeasurableSpace Ω} {κ : kernel α Ω}

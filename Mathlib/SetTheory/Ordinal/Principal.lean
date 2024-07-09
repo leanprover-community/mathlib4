@@ -353,7 +353,7 @@ theorem mul_lt_omega_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < (omega^c)) (h
 
 theorem mul_omega_opow_opow {a b : Ordinal} (a0 : 0 < a) (h : a < (omega^omega^b)) :
     a * (omega^omega^b) = (omega^omega^b) := by
-  by_cases b0 : b = 0;
+  by_cases b0 : b = 0
   · rw [b0, opow_zero, opow_one] at h ⊢
     exact mul_omega a0 h
   refine

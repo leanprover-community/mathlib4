@@ -511,7 +511,7 @@ theorem val_bit0 {n : ℕ} (k : Fin n) : ((bit0 k : Fin n) : ℕ) = bit0 (k : �
 @[deprecated (since := "2023-01-12")]
 theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
     ((bit1 k : Fin n) : ℕ) = bit1 (k : ℕ) % n := by
-  cases n;
+  cases n
   · cases' k with k h
     cases k
     · show _ % _ = _
