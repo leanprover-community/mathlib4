@@ -137,15 +137,25 @@ theorem Nodup.le_dedup_iff_le {s t : Multiset α} (hno : s.Nodup) : s ≤ t.dedu
   simp [le_dedup, hno]
 #align multiset.nodup.le_dedup_iff_le Multiset.Nodup.le_dedup_iff_le
 
-theorem Subset.dedup_add {s t : Multiset α} (h : s ⊆ t) :
+theorem Subset.dedup_add_right {s t : Multiset α} (h : s ⊆ t) :
     dedup (s + t) = dedup t := by
   induction s, t using Quot.induction_on₂
-  exact congr_arg ((↑) : List α → Multiset α) <| List.Subset.dedup_append h
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Subset.dedup_append_right h
+
+theorem Subset.dedup_add_left {s t : Multiset α} (h : t ⊆ s) :
+    dedup (s + t) = dedup s := by
+  rw [add_comm, Subset.dedup_add_right h]
 
 theorem Disjoint.dedup_add {s t : Multiset α} (h : Disjoint s t) :
     dedup (s + t) = dedup s + dedup t := by
   induction s, t using Quot.induction_on₂
   exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.dedup_append h
+
+/-- Note that the tronger `List.Subset.dedup_append_right` is proved earlier. -/
+theorem _root_.List.Subset.dedup_append_left {s t : List α} (h : t ⊆ s) :
+    List.dedup (s ++ t) ~ List.dedup s := by
+  have := Multiset.Subset.dedup_add_left (α := α) (s := s) (t := t) h
+  simpa using this
 
 end Multiset
 
