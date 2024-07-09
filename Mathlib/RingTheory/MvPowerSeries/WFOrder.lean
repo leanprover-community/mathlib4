@@ -26,6 +26,7 @@ section WFOrder
 open Finsupp
 variable [LinearOrder σ] [WellFoundedGT σ]
 
+/-- The lex order on multivariate power series.  -/
 noncomputable def wf_order (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ ℕ))) := by
   classical
   exact if h : φ = 0 then ⊤ else by
@@ -184,6 +185,7 @@ end WFOrder
 
 section
 -- This belongs to `NoZeroDivisors.lean`
+/-- The opposite linear order to a given linear order -/
 def LinearOrder.swap (h : LinearOrder σ) : LinearOrder σ :=
   letI : IsStrictTotalOrder σ (Function.swap h.lt) := IsStrictTotalOrder.swap h.lt
   linearOrderOfSTO (Function.swap h.lt)
