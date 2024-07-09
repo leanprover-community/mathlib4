@@ -411,7 +411,7 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
       if errors.size > 0 then
         allUnexpectedErrors := allUnexpectedErrors.append errors
         numberErrorFiles := numberErrorFiles + 1
-        formatErrors allUnexpectedErrors ErrorFormat.humanReadable
+        --formatErrors allUnexpectedErrors ErrorFormat.humanReadable
   match mode with
   | OutputSetting.print _ =>
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
