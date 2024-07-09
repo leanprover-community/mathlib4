@@ -7,7 +7,17 @@ Authors: Antoine Chambert-Loir
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.WellFounded
 
+/-! WellFounder order of multivariate power series
+
+Given an ordering of `σ` such that `WellOrderGT σ`,
+the lexicographic order on `σ →₀ ℕ` is a well ordering,
+which can be used to define a natural valuation `wf_order` on the ring `MvPowerSeries σ R`:
+the smallest exponent in the support.
+
+-/
+
 namespace MvPowerSeries
+
 variable {σ R : Type}
 variable [Semiring R]
 
@@ -88,7 +98,33 @@ theorem wf_order_le_of_coeff_neq_zero {φ : MvPowerSeries σ R} {d : σ →₀ �
   intro h'
   exact h (coeff_eq_zero_of_lt_wf_order h')
 
-theorem coeff_mul_of_wf_order_add {φ ψ : MvPowerSeries σ R}
+theorem le_wf_order_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ ℕ))} :
+    w ≤ wf_order φ ↔ (∀ (d : σ →₀ ℕ) (_ : toLex d < w), coeff R d φ = 0) := by
+  constructor
+  · intro h d hd
+    apply coeff_eq_zero_of_lt_wf_order
+    exact lt_of_lt_of_le hd h
+  · intro h
+    rw [← not_lt]
+    intro h'
+    have hφ : φ ≠ 0 := by
+      rw [ne_eq, eq_zero_iff_wf_order_eq_top]
+      intro h''
+      rw [h'', ← not_le] at h'
+      apply h'
+      exact le_top
+    obtain ⟨d, hd⟩ := exists_finsupp_eq_wf_order_of_ne_zero hφ
+    refine coeff_ne_zero_of_wf_order hd.symm (h d ?_)
+    exact (lt_of_eq_of_lt hd.symm h')
+
+theorem wf_order_add_ge {φ ψ : MvPowerSeries σ R} :
+    wf_order (φ + ψ) ≥ min (wf_order φ) (wf_order ψ) := by
+  rw [ge_iff_le, le_wf_order_iff]
+  intro d hd
+  simp only [lt_min_iff] at hd
+  rw [map_add, coeff_eq_zero_of_lt_wf_order hd.1, coeff_eq_zero_of_lt_wf_order hd.2, add_zero]
+
+theorem coeff_mul_of_add_wf_order {φ ψ : MvPowerSeries σ R}
     {p q : σ →₀ ℕ} (hp : wf_order φ = toLex p) (hq : wf_order ψ = toLex q) :
     coeff R (p + q) (φ * ψ) = coeff R p φ * coeff R q ψ := by
   rw [coeff_mul]
@@ -120,37 +156,22 @@ theorem coeff_mul_of_wf_order_add {φ ψ : MvPowerSeries σ R}
 
 theorem wf_order_mul_ge (φ ψ : MvPowerSeries σ R) :
     wf_order (φ * ψ) ≥ wf_order φ + wf_order ψ := by
-  by_cases h : φ * ψ = 0
-  · simp only [h, wf_order_zero, ge_iff_le, le_top]
-  rcases exists_finsupp_eq_wf_order_of_ne_zero h with ⟨d, hd⟩
-  have hφ : φ ≠ 0 := left_ne_zero_of_mul h
-  have hψ : ψ ≠ 0 := right_ne_zero_of_mul h
-  rcases exists_finsupp_eq_wf_order_of_ne_zero hφ with ⟨p, hp⟩
-  rcases exists_finsupp_eq_wf_order_of_ne_zero hψ with ⟨q, hq⟩
-  simp only [hd, hp, hq, ge_iff_le]
-  suffices toLex (p + q) ≤ toLex d by
-    exact (WithTop.le_coe rfl).mpr this
-  rw [← not_lt]
-  intro h'
-  apply coeff_ne_zero_of_wf_order hd.symm
+  rw [ge_iff_le, le_wf_order_iff]
+  intro d hd
   rw [coeff_mul]
   apply Finset.sum_eq_zero
   rintro ⟨u, v⟩ h
   simp only [Finset.mem_antidiagonal] at h
   simp only
-  suffices toLex u < toLex p ∨ toLex v < toLex q by
+  suffices toLex u < wf_order φ ∨ toLex v < wf_order ψ by
     rcases this with (hu | hv)
-    · rw [coeff_eq_zero_of_lt_wf_order (d := u), zero_mul]
-      rw [hp]
-      exact WithTop.coe_lt_coe.mpr hu
-    · rw [coeff_eq_zero_of_lt_wf_order (d := v), mul_zero]
-      rw [hq]
-      exact WithTop.coe_lt_coe.mpr hv
+    · rw [coeff_eq_zero_of_lt_wf_order hu, zero_mul]
+    · rw [coeff_eq_zero_of_lt_wf_order hv, mul_zero]
   rw [or_iff_not_imp_left, not_lt, ← not_le]
-  intro hpu hqv
-  rw [← not_le] at h'
-  apply h'
-  simp only [← h, toLex_add, add_le_add hpu hqv]
+  intro hu hv
+  rw [← not_le] at hd
+  apply hd
+  simp only [← h, toLex_add, WithTop.coe_add, add_le_add hu hv]
 
 theorem wf_order_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
     wf_order (φ * ψ) = wf_order φ + wf_order ψ := by
@@ -163,13 +184,13 @@ theorem wf_order_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
   apply le_antisymm _ (wf_order_mul_ge φ ψ)
   rw [hp, hq]
   apply wf_order_le_of_coeff_neq_zero (d := p + q)
-  rw [coeff_mul_of_wf_order_add hp hq, mul_ne_zero_iff]
+  rw [coeff_mul_of_add_wf_order hp hq, mul_ne_zero_iff]
   exact ⟨coeff_ne_zero_of_wf_order hp.symm, coeff_ne_zero_of_wf_order hq.symm⟩
 
 end WFOrder
 
 section
-
+-- This belongs to `NoZeroDivisors.lean`
 def LinearOrder.swap (h : LinearOrder σ) : LinearOrder σ :=
   letI : IsStrictTotalOrder σ (Function.swap h.lt) := IsStrictTotalOrder.swap h.lt
   linearOrderOfSTO (Function.swap h.lt)
