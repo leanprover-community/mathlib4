@@ -221,7 +221,7 @@ object in the construction of the morphism `δ : L₀.X₃ ⟶ L₃.X₁`. -/
 noncomputable def P := pullback S.L₁.g S.v₀₁.τ₃
 
 /-- The canonical map `P ⟶ L₂.X₂`. -/
-noncomputable def φ₂ : S.P ⟶ S.L₂.X₂ := pullback.fst ≫ S.v₁₂.τ₂
+noncomputable def φ₂ : S.P ⟶ S.L₂.X₂ := pullback.fst _ _ ≫ S.v₁₂.τ₂
 
 @[reassoc (attr := simp)]
 lemma lift_φ₂ {A : C} (a : A ⟶ S.L₁.X₂) (b : A ⟶ S.L₀.X₃) (h : a ≫ S.L₁.g = b ≫ S.v₀₁.τ₃) :
@@ -241,7 +241,7 @@ noncomputable def L₀' : ShortComplex C where
   X₂ := S.P
   X₃ := S.L₀.X₃
   f := pullback.lift S.L₁.f 0 (by simp)
-  g := pullback.snd
+  g := pullback.snd _ _
   zero := by simp
 
 @[reassoc (attr := simp)] lemma L₁_f_φ₁ : S.L₀'.f ≫ S.φ₁ = S.v₁₂.τ₁ := by
@@ -252,13 +252,13 @@ noncomputable def L₀' : ShortComplex C where
 instance : Epi S.L₀'.g := by dsimp only [L₀']; infer_instance
 
 instance [Mono S.L₁.f] : Mono S.L₀'.f :=
-  mono_of_mono_fac (show S.L₀'.f ≫ pullback.fst = S.L₁.f by simp [L₀'])
+  mono_of_mono_fac (show S.L₀'.f ≫ pullback.fst _ _ = S.L₁.f by simp [L₀'])
 
 lemma L₀'_exact : S.L₀'.Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A x₂ hx₂
   dsimp [L₀'] at x₂ hx₂
-  obtain ⟨A', π, hπ, x₁, fac⟩ := S.L₁_exact.exact_up_to_refinements (x₂ ≫ pullback.fst)
+  obtain ⟨A', π, hπ, x₁, fac⟩ := S.L₁_exact.exact_up_to_refinements (x₂ ≫ pullback.fst _ _)
     (by rw [assoc, pullback.condition, reassoc_of% hx₂, zero_comp])
   exact ⟨A', π, hπ, x₁, pullback.hom_ext (by simpa [L₀'] using fac) (by simp [L₀', hx₂])⟩
 
@@ -267,14 +267,14 @@ noncomputable def δ : S.L₀.X₃ ⟶ S.L₃.X₁ :=
   S.L₀'_exact.desc (S.φ₁ ≫ S.v₂₃.τ₁) (by simp only [L₁_f_φ₁_assoc, w₁₃_τ₁])
 
 @[reassoc (attr := simp)]
-lemma snd_δ : (pullback.snd : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.τ₁ :=
+lemma snd_δ : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ = S.φ₁ ≫ S.v₂₃.τ₁ :=
   S.L₀'_exact.g_desc _ _
 
 /-- The pushout of `L₂.X₂` and `L₃.X₁` along `L₂.X₁`. -/
 noncomputable def P' := pushout S.L₂.f S.v₂₃.τ₁
 
-lemma snd_δ_inr : (pullback.snd : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr : _ ⟶ S.P') =
-    pullback.fst ≫ S.v₁₂.τ₂ ≫ pushout.inl := by
+lemma snd_δ_inr : (pullback.snd _ _ : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr _ _ : _ ⟶ S.P') =
+    pullback.fst _ _ ≫ S.v₁₂.τ₂ ≫ pushout.inl _ _ := by
   simp only [snd_δ_assoc, ← pushout.condition, φ₂, φ₁_L₂_f_assoc, assoc]
 
 /-- The canonical morphism `L₀.X₂ ⟶ P`. -/
@@ -282,7 +282,7 @@ lemma snd_δ_inr : (pullback.snd : S.P ⟶ _) ≫ S.δ ≫ (pushout.inr : _ ⟶ 
 noncomputable def L₀X₂ToP : S.L₀.X₂ ⟶ S.P := pullback.lift S.v₀₁.τ₂ S.L₀.g S.v₀₁.comm₂₃
 
 @[reassoc]
-lemma L₀X₂ToP_comp_pullback_snd : S.L₀X₂ToP ≫ pullback.snd = S.L₀.g := by simp
+lemma L₀X₂ToP_comp_pullback_snd : S.L₀X₂ToP ≫ pullback.snd _ _ = S.L₀.g := by simp
 
 @[reassoc]
 lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
@@ -317,12 +317,12 @@ lemma L₁'_exact : S.L₁'.Exact := by
   obtain ⟨A₂, π₂, hπ₂, x₁, hx₁⟩ := S.exact_C₁_down.exact_up_to_refinements (p ≫ S.φ₁) hp'
   dsimp at x₁ hx₁
   let x₂' := x₁ ≫ S.L₁.f
-  let x₂ := π₂ ≫ p ≫ pullback.fst
+  let x₂ := π₂ ≫ p ≫ pullback.fst _ _
   have hx₂' : (x₂ - x₂') ≫ S.v₁₂.τ₂ = 0 := by
     simp only [x₂, x₂', sub_comp, assoc, ← S.v₁₂.comm₁₂, ← reassoc_of% hx₁, φ₂, φ₁_L₂_f, sub_self]
   let k₂ : A₂ ⟶ S.L₀.X₂ := S.exact_C₂_up.lift _ hx₂'
   have hk₂ : k₂ ≫ S.v₀₁.τ₂ = x₂ - x₂' := S.exact_C₂_up.lift_f _ _
-  have hk₂' : k₂ ≫ S.L₀.g = π₂ ≫ p ≫ pullback.snd := by
+  have hk₂' : k₂ ≫ S.L₀.g = π₂ ≫ p ≫ pullback.snd _ _ := by
     simp only [x₂, x₂', ← cancel_mono S.v₀₁.τ₃, assoc, ← S.v₀₁.comm₂₃, reassoc_of% hk₂,
       sub_comp, S.L₁.zero, comp_zero, sub_zero, pullback.condition]
   exact ⟨A₂, π₂ ≫ π₁, epi_comp _ _, k₂, by simp only [assoc, L₁'_f, ← hk₂', hp]⟩
@@ -334,8 +334,8 @@ noncomputable def PIsoUnopOpP' : S.P ≅ Opposite.unop S.op.P' := pullbackIsoUno
 noncomputable def P'IsoUnopOpP : S.P' ≅ Opposite.unop S.op.P := pushoutIsoUnopPullback _ _
 
 lemma op_δ : S.op.δ = S.δ.op := Quiver.Hom.unop_inj (by
-  rw [Quiver.Hom.unop_op, ← cancel_mono (pushout.inr : _ ⟶ S.P'),
-    ← cancel_epi (pullback.snd : S.P ⟶ _), S.snd_δ_inr,
+  rw [Quiver.Hom.unop_op, ← cancel_mono (pushout.inr _ _ : _ ⟶ S.P'),
+    ← cancel_epi (pullback.snd _ _ : S.P ⟶ _), S.snd_δ_inr,
     ← cancel_mono S.P'IsoUnopOpP.hom, ← cancel_epi S.PIsoUnopOpP'.inv,
     P'IsoUnopOpP, PIsoUnopOpP', assoc, assoc, assoc, assoc,
     pushoutIsoUnopPullback_inr_hom, pullbackIsoUnopPushout_inv_snd_assoc,
@@ -489,7 +489,7 @@ lemma naturality_φ₁ (f : S₁ ⟶ S₂) : S₁.φ₁ ≫ f.f₂.τ₁ = funct
 
 @[reassoc]
 lemma naturality_δ (f : S₁ ⟶ S₂) : S₁.δ ≫ f.f₃.τ₁ = f.f₀.τ₃ ≫ S₂.δ := by
-  rw [← cancel_epi (pullback.snd : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,
+  rw [← cancel_epi (pullback.snd _ _ : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,
     comp_τ₁, naturality_φ₁_assoc, ← S₂.snd_δ, functorP_map, pullback.lift_snd_assoc, assoc]
 
 /-- The functor which sends `S : SnakeInput C` to `S.L₁'` which is

@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.GroupTheory.GroupAction.Pi
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -457,7 +457,7 @@ instance applyModule : Module (CentroidHom α) α where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
   one_smul _ := rfl
-  mul_smul _ _ _:= rfl
+  mul_smul _ _ _ := rfl
   smul_zero := map_zero
   smul_add := map_add
 

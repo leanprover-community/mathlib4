@@ -46,7 +46,7 @@ section PastePullbackHoriz
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
 where `t₁` denotes the cone corresponding to the left square, and `t₂` denotes the cone
@@ -73,7 +73,7 @@ variable {t₁} {t₂}
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
 Then the big square is a pullback if both the small squares are.
@@ -101,7 +101,7 @@ variable (t₁)
 X₁ - f₁ -> X₂ - f₂ -> X₃
 |          |          |
 i₁         i₂         i₃
-∨          ∨          ∨
+↓          ↓          ↓
 Y₁ - g₁ -> Y₂ - g₂ -> Y₃
 ```
 Then the left square is a pullback if the right square and the big square are.
@@ -405,31 +405,34 @@ noncomputable def pullbackRightPullbackFstIso :
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_hom_fst :
-    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.fst = pullback.fst :=
+    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.fst _ _ = pullback.fst _ _ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left
 #align category_theory.limits.pullback_right_pullback_fst_iso_hom_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_hom_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_hom_snd :
-    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.snd = pullback.snd ≫ pullback.snd :=
+    (pullbackRightPullbackFstIso f g f').hom ≫ pullback.snd _ _ =
+      pullback.snd _ _ ≫ pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
 #align category_theory.limits.pullback_right_pullback_fst_iso_hom_snd CategoryTheory.Limits.pullbackRightPullbackFstIso_hom_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_fst :
-    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.fst = pullback.fst :=
+    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.fst _ _ = pullback.fst _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_snd_snd :
-    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd ≫ pullback.snd = pullback.snd :=
+    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.snd _ _ =
+      pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.right
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_snd_snd CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_snd_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackRightPullbackFstIso_inv_snd_fst :
-    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd ≫ pullback.fst = pullback.fst ≫ f' := by
+    (pullbackRightPullbackFstIso f g f').inv ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
+      pullback.fst _ _ ≫ f' := by
   rw [← pullback.condition]
   exact pullbackRightPullbackFstIso_inv_fst_assoc f g f' _
 #align category_theory.limits.pullback_right_pullback_fst_iso_inv_snd_fst CategoryTheory.Limits.pullbackRightPullbackFstIso_inv_snd_fst
@@ -555,7 +558,8 @@ theorem inl_inl_pushoutLeftPushoutInrIso_hom :
 
 @[reassoc (attr := simp)]
 theorem inr_inl_pushoutLeftPushoutInrIso_hom :
-    pushout.inr ≫ pushout.inl ≫ (pushoutLeftPushoutInrIso f g g').hom = g' ≫ pushout.inr := by
+    pushout.inr _ _ ≫ pushout.inl _ _ ≫ (pushoutLeftPushoutInrIso f g g').hom =
+      g' ≫ pushout.inr _ _ := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, Category.assoc, inr_pushoutLeftPushoutInrIso_inv,
     pushout.condition]
 #align category_theory.limits.inr_inl_pushout_left_pushout_inr_iso_hom CategoryTheory.Limits.inr_inl_pushoutLeftPushoutInrIso_hom

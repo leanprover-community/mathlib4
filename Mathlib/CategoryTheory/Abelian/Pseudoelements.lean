@@ -123,7 +123,8 @@ section
     be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
 theorem pseudoEqual_trans {P : C} : Transitive (PseudoEqual P) := by
   intro f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩
-  refine ⟨pullback q p', pullback.fst ≫ p, pullback.snd ≫ q', epi_comp _ _, epi_comp _ _, ?_⟩
+  refine ⟨pullback q p', pullback.fst _ _ ≫ p, pullback.snd _ _ ≫ q',
+    epi_comp _ _, epi_comp _ _, ?_⟩
   rw [Category.assoc, comm, ← Category.assoc, pullback.condition, Category.assoc, comm',
     Category.assoc]
 #align category_theory.abelian.pseudo_equal_trans CategoryTheory.Abelian.pseudoEqual_trans
@@ -330,9 +331,9 @@ section
 theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surjective f :=
   fun qbar =>
   Quotient.inductionOn qbar fun q =>
-    ⟨((pullback.fst : pullback f q.hom ⟶ P) : Over P),
+    ⟨(pullback.fst f q.hom : Over P),
       Quotient.sound <|
-        ⟨pullback f q.hom, 𝟙 (pullback f q.hom), pullback.snd, inferInstance, inferInstance, by
+        ⟨pullback f q.hom, 𝟙 (pullback f q.hom), pullback.snd _ _, inferInstance, inferInstance, by
           rw [Category.id_comp, ← pullback.condition, app_hom, Over.coe_hom]⟩⟩
 #align category_theory.abelian.pseudoelement.pseudo_surjective_of_epi CategoryTheory.Abelian.Pseudoelement.pseudo_surjective_of_epi
 
@@ -367,21 +368,21 @@ theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact
       obtain ⟨c, hc⟩ := KernelFork.IsLimit.lift' (isLimitImage f g h) _ hb'
       -- We compute the pullback of the map into the image and `c`.
       -- The pseudoelement induced by the first pullback map will be our preimage.
-      use (pullback.fst : pullback (Abelian.factorThruImage f) c ⟶ P)
+      use (pullback.fst (Abelian.factorThruImage f) c)
       -- It remains to show that the image of this element under `f` is pseudo-equal to `b`.
       apply Quotient.sound
       -- `pullback.snd` is an epimorphism because the map onto the image is!
       refine ⟨pullback (Abelian.factorThruImage f) c, 𝟙 _,
-              pullback.snd, inferInstance, inferInstance, ?_⟩
+              pullback.snd _ _, inferInstance, inferInstance, ?_⟩
       -- Now we can verify that the diagram commutes.
       calc
-        𝟙 (pullback (Abelian.factorThruImage f) c) ≫ pullback.fst ≫ f = pullback.fst ≫ f :=
+        𝟙 (pullback (Abelian.factorThruImage f) c) ≫ pullback.fst _ _ ≫ f = pullback.fst _ _ ≫ f :=
           Category.id_comp _
-        _ = pullback.fst ≫ Abelian.factorThruImage f ≫ kernel.ι (cokernel.π f) := by
+        _ = pullback.fst _ _ ≫ Abelian.factorThruImage f ≫ kernel.ι (cokernel.π f) := by
           rw [Abelian.image.fac]
-        _ = (pullback.snd ≫ c) ≫ kernel.ι (cokernel.π f) := by
+        _ = (pullback.snd _ _ ≫ c) ≫ kernel.ι (cokernel.π f) := by
           rw [← Category.assoc, pullback.condition]
-        _ = pullback.snd ≫ b.hom := by
+        _ = pullback.snd _ _ ≫ b.hom := by
           rw [Category.assoc]
           congr
         ⟩
@@ -415,7 +416,7 @@ theorem exact_of_pseudo_exact {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) :
           simp only [Category.assoc, Abelian.image.fac]
           exact comm)
       -- Let's give a name to the second pullback morphism.
-      let j : pullback (kernel.ι (cokernel.π f)) (kernel.ι g) ⟶ kernel g := pullback.snd
+      let j : pullback (kernel.ι (cokernel.π f)) (kernel.ι g) ⟶ kernel g := pullback.snd _ _
       -- Since `q` is an epimorphism, in particular this means that `j` is an epimorphism.
       haveI pe : Epi j := epi_of_epi_fac hz₂
       -- But it is also a monomorphism, because `kernel.ι (cokernel.π f)` is: A kernel is
@@ -463,7 +464,7 @@ variable [Limits.HasPullbacks C]
     `Counterexamples/Pseudoelement.lean` for details. -/
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
-      ∃ s, (pullback.fst : pullback f g ⟶ P) s = p ∧ (pullback.snd : pullback f g ⟶ Q) s = q :=
+      ∃ s, pullback.fst f g s = p ∧ pullback.snd f g s = q :=
   Quotient.inductionOn₂ p q fun x y h => by
     obtain ⟨Z, a, b, ea, eb, comm⟩ := Quotient.exact h
     obtain ⟨l, hl₁, hl₂⟩ := @pullback.lift' _ _ _ _ _ _ f g _ (a ≫ x.hom) (b ≫ y.hom) (by

@@ -616,8 +616,8 @@ theorem Indep.exists_insert_of_not_base (hI : M.Indep I) (hI' : ¬M.Base I) (hB 
     ∃ e ∈ B \ I, M.Indep (insert e I) := by
   obtain ⟨B', hB', hIB'⟩ := hI.exists_base_superset
   obtain ⟨x, hxB', hx⟩ := exists_of_ssubset (hIB'.ssubset_of_ne (by (rintro rfl; exact hI' hB')))
-  obtain (hxB | hxB) := em (x ∈ B)
-  · exact ⟨x, ⟨hxB, hx⟩, hB'.indep.subset (insert_subset hxB' hIB') ⟩
+  by_cases hxB : x ∈ B
+  · exact ⟨x, ⟨hxB, hx⟩, hB'.indep.subset (insert_subset hxB' hIB')⟩
   obtain ⟨e,he, hBase⟩ := hB'.exchange hB ⟨hxB',hxB⟩
   exact ⟨e, ⟨he.1, not_mem_subset hIB' he.2⟩,
     indep_iff.2 ⟨_, hBase, insert_subset_insert (subset_diff_singleton hIB' hx)⟩⟩
@@ -776,11 +776,11 @@ theorem Basis'.insert_not_indep (hI : M.Basis' I X) (he : e ∈ X \ I) : ¬ M.In
   fun hi ↦ he.2 <| insert_eq_self.1 <| Eq.symm <|
     hI.eq_of_subset_indep hi (subset_insert _ _) (insert_subset he.1 hI.subset)
 
-theorem basis_iff_mem_maximals (hX : X ⊆ M.E := by aesop_mat):
+theorem basis_iff_mem_maximals (hX : X ⊆ M.E := by aesop_mat) :
     M.Basis I X ↔ I ∈ maximals (· ⊆ ·) {I | M.Indep I ∧ I ⊆ X} := by
   rw [Basis, and_iff_left hX]
 
-theorem basis_iff_mem_maximals_Prop (hX : X ⊆ M.E := by aesop_mat):
+theorem basis_iff_mem_maximals_Prop (hX : X ⊆ M.E := by aesop_mat) :
     M.Basis I X ↔ I ∈ maximals (· ⊆ ·) (fun I ↦ M.Indep I ∧ I ⊆ X) :=
   basis_iff_mem_maximals
 

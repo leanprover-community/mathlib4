@@ -316,7 +316,8 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
   | nil => cases h₂
   | cons x' xs xs_ih =>
     cases i
-    · simp at h₂
+    · simp only [length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
+        getElem?_eq_getElem, getElem_cons_zero, Option.some.injEq] at h₂
       subst h₂
       cases ys
       · cases h₁
