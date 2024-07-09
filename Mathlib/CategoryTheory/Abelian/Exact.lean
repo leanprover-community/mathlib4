@@ -260,6 +260,7 @@ theorem preservesEpimorphisms_of_map_exact : L.PreservesEpimorphisms where
     exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)  (Iso.refl _)
 #align category_theory.functor.preserves_epimorphisms_of_map_exact CategoryTheory.Functor.preservesEpimorphisms_of_map_exact
 
+/-- A functor which preserves the exactness of short complexes preserves homology. -/
 def preservesHomologyOfMapExact : L.PreservesHomology where
   preservesCokernels X Y f := by
     have := preservesEpimorphisms_of_map_exact _ hL
