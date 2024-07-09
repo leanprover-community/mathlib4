@@ -11,7 +11,7 @@ import Mathlib.Data.Finsupp.WellFounded
 
 - `mem_nonZeroDivisors_of_constantCoeff` proves that
 a multivariate power series whose constant coefficient is not a zero divisor
-is not a zero divisor
+is itself not a zero divisor
 
 ## TODO
 
