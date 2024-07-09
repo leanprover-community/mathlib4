@@ -19,8 +19,6 @@ import Mathlib.GroupTheory.Perm.Cycle.Basic
 /-!
 # Cycle factors of a permutation
 
-Let `β` be a `Fintype` and `f : Equiv.Perm β`.
-
 * `Equiv.Perm.cycleOf`: `f.cycleOf x` is the cycle of `f` that `x` belongs to.
 * `Equiv.Perm.cycleFactors`: `f.cycleFactors` is a list of disjoint cyclic permutations
   that multiply to `f`.
@@ -183,23 +181,22 @@ theorem isCycle_cycleOf (f : Perm α) [DecidableRel f.SameCycle] (hx : f x ≠ x
 
 @[simp]
 theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
-    2 ≤ card (cycleOf f x).support ↔ f x ≠ x := by
+    2 ≤ (cycleOf f x).supportCard ↔ f x ≠ x := by
   refine ⟨fun h => ?_, fun h => by simpa using (isCycle_cycleOf _ h).two_le_card_support⟩
   contrapose! h
   rw [← cycleOf_eq_one_iff] at h
-  simp [h]
+  simp [h, supportCard_one]
 #align equiv.perm.two_le_card_support_cycle_of_iff Equiv.Perm.two_le_card_support_cycleOf_iff
 
-@[simp] lemma support_cycleOf_nonempty [DecidableEq α] [Fintype α] :
+@[simp] lemma support_cycleOf_nonempty :
     (cycleOf f x).support.Nonempty ↔ f x ≠ x := by
-  rw [← two_le_card_support_cycleOf_iff, ← card_pos, ← Nat.succ_le_iff]
-  exact ⟨fun h => Or.resolve_left h.eq_or_lt (card_support_ne_one _).symm, zero_lt_two.trans_le⟩
+  rw [support_nonempty_iff, ne_eq, cycleOf_eq_one_iff]
 #align equiv.perm.card_support_cycle_of_pos_iff Equiv.Perm.support_cycleOf_nonempty
 
 @[deprecated support_cycleOf_nonempty (since := "2024-06-16")]
 theorem card_support_cycleOf_pos_iff [DecidableEq α] [Fintype α] :
-    0 < card (cycleOf f x).support ↔ f x ≠ x := by
-  rw [card_pos, support_cycleOf_nonempty]
+    0 < (cycleOf f x).supportCard ↔ f x ≠ x := by
+  rw [Nat.pos_iff_ne_zero, ne_eq, supportCard_eq_zero, cycleOf_eq_one_iff]
 
 theorem pow_mod_orderOf_cycleOf_apply (f : Perm α) [DecidableRel f.SameCycle] (n : ℕ) (x : α) :
     (f ^ (n % orderOf (cycleOf f x))) x = (f ^ n) x := by
@@ -229,7 +226,7 @@ theorem Disjoint.cycleOf_mul_distrib [DecidableRel (f * g).SameCycle]
 #align equiv.perm.disjoint.cycle_of_mul_distrib Equiv.Perm.Disjoint.cycleOf_mul_distrib
 
 theorem support_cycleOf_eq_nil_iff [DecidableEq α] [Fintype α] :
-    (f.cycleOf x).support = ∅ ↔ x ∉ f.support := by simp
+    (f.cycleOf x).support = ∅ ↔ x ∉ f.support := by simp [not_mem_support]
 #align equiv.perm.support_cycle_of_eq_nil_iff Equiv.Perm.support_cycleOf_eq_nil_iff
 
 theorem support_cycleOf_le [DecidableEq α] [Fintype α] (f : Perm α) (x : α) :
@@ -245,14 +242,14 @@ theorem mem_support_cycleOf_iff [DecidableEq α] [Fintype α] :
     y ∈ support (f.cycleOf x) ↔ SameCycle f x y ∧ x ∈ support f := by
   by_cases hx : f x = x
   · rw [(cycleOf_eq_one_iff _).mpr hx]
-    simp [hx]
+    simp [hx, not_mem_support]
   · rw [mem_support, cycleOf_apply]
     split_ifs with hy
     · simp only [hx, hy, iff_true_iff, Ne, not_false_iff, and_self_iff, mem_support]
       rcases hy with ⟨k, rfl⟩
-      rw [← not_mem_support]
-      simpa using hx
-    · simpa [hx] using hy
+      rw [← not_mem_support, not_not, zpow_apply_mem_support]
+      exact hx
+    · simp [hy]
 #align equiv.perm.mem_support_cycle_of_iff Equiv.Perm.mem_support_cycleOf_iff
 
 theorem mem_support_cycleOf_iff' (hx : f x ≠ x) [DecidableEq α] [Fintype α] :
@@ -267,7 +264,7 @@ theorem SameCycle.mem_support_iff {f} [DecidableEq α] [Fintype α] (h : SameCyc
 #align equiv.perm.same_cycle.mem_support_iff Equiv.Perm.SameCycle.mem_support_iff
 
 theorem pow_mod_card_support_cycleOf_self_apply [DecidableEq α] [Fintype α]
-    (f : Perm α) (n : ℕ) (x : α) : (f ^ (n % (f.cycleOf x).support.card)) x = (f ^ n) x := by
+    (f : Perm α) (n : ℕ) (x : α) : (f ^ (n % (f.cycleOf x).supportCard)) x = (f ^ n) x := by
   by_cases hx : f x = x
   · rw [pow_apply_eq_self_of_apply_eq_self hx, pow_apply_eq_self_of_apply_eq_self hx]
   · rw [← cycleOf_pow_apply_self, ← cycleOf_pow_apply_self f, ← (isCycle_cycleOf f hx).orderOf,
@@ -292,24 +289,30 @@ theorem isCycleOn_support_cycleOf [DecidableEq α] [Fintype α] (f : Perm α) (x
       (mem_support_cycleOf_iff.1 h).2⟩
     , fun a ha b hb =>
       by
-        rw [mem_coe, mem_support_cycleOf_iff] at ha hb
+        rw [mem_support_cycleOf_iff] at ha hb
         exact ha.1.symm.trans hb.1⟩
 #align equiv.perm.is_cycle_on_support_cycle_of Equiv.Perm.isCycleOn_support_cycleOf
 
 theorem SameCycle.exists_pow_eq_of_mem_support {f} [DecidableEq α] [Fintype α] (h : SameCycle f x y)
-    (hx : x ∈ f.support) : ∃ i < (f.cycleOf x).support.card, (f ^ i) x = y := by
+    (hx : x ∈ f.support) : ∃ i < (f.cycleOf x).supportCard, (f ^ i) x = y := by
   rw [mem_support] at hx
-  exact Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (f.isCycleOn_support_cycleOf x)
-    (by rw [mem_support_cycleOf_iff' hx]) (by rwa [mem_support_cycleOf_iff' hx])
+  rw [supportCard_compute]
+  refine' Equiv.Perm.IsCycleOn.exists_pow_eq (b := y) (s := (f.cycleOf x).support.toFinset) _ _ _
+  · simp only [Set.coe_toFinset]
+    exact f.isCycleOn_support_cycleOf x
+  · simp only [Set.mem_toFinset]
+    rw [mem_support_cycleOf_iff' hx]
+  · simp only [Set.mem_toFinset]
+    rwa [mem_support_cycleOf_iff' hx]
 #align equiv.perm.same_cycle.exists_pow_eq_of_mem_support Equiv.Perm.SameCycle.exists_pow_eq_of_mem_support
 
 theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h : SameCycle f x y) :
-    ∃ i : ℕ, 0 < i ∧ i ≤ (f.cycleOf x).support.card + 1 ∧ (f ^ i) x = y := by
+    ∃ i : ℕ, 0 < i ∧ i ≤ (f.cycleOf x).supportCard + 1 ∧ (f ^ i) x = y := by
   by_cases hx : x ∈ f.support
   · obtain ⟨k, hk, hk'⟩ := h.exists_pow_eq_of_mem_support hx
     cases' k with k
-    · refine ⟨(f.cycleOf x).support.card, ?_, self_le_add_right _ _, ?_⟩
-      · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
+    · refine ⟨(f.cycleOf x).supportCard , ?_, self_le_add_right _ _, ?_⟩
+      · refine zero_lt_one.trans (one_lt_supportCard_of_ne_one ?_)
         simpa using hx
       · simp only [Nat.zero_eq, pow_zero, coe_one, id_eq] at hk'
         subst hk'
@@ -405,10 +408,11 @@ theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
       have hτl : ∀ x ∈ τ.support, τ x = l.prod x := eq_on_support_mem_disjoint hτ h2
       have key : ∀ x ∈ σ.support ∩ τ.support, σ x = τ x := by
         intro x hx
-        rw [h x (mem_support.mp (mem_of_mem_inter_left hx)), hτl x (mem_of_mem_inter_right hx)]
+        rw [h x (mem_support.mp (Set.mem_of_mem_inter_left hx)), hτl x
+          (Set.mem_of_mem_inter_right hx)]
       convert hτ
       refine h3.eq_on_support_inter_nonempty_congr (h1 _ hτ) key ?_ ha
-      exact key a (mem_inter_of_mem ha hτa)
+      exact key a (Set.mem_inter ha hτa)
 #align equiv.perm.mem_list_cycles_iff Equiv.Perm.mem_list_cycles_iff
 
 open scoped List in
@@ -585,7 +589,7 @@ theorem Disjoint.disjoint_cycleFactorsFinset {f g : Perm α} (h : Disjoint f g) 
   intro x hx hy
   simp only [mem_cycleFactorsFinset_iff, mem_support] at hx hy
   obtain ⟨⟨⟨a, ha, -⟩, hf⟩, -, hg⟩ := hx, hy
-  have := h.le_bot (by simp [ha, ← hf a ha, ← hg a ha] : a ∈ f.support ∩ g.support)
+  have := h.le_bot (by simp [ha, ← hf a ha, ← hg a ha, mem_support] : a ∈ f.support ∩ g.support)
   tauto
 #align equiv.perm.disjoint.disjoint_cycle_factors_finset Equiv.Perm.Disjoint.disjoint_cycleFactorsFinset
 
@@ -630,7 +634,7 @@ theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
   -- `a` is in the support of `c`, hence it is not in the support of `g c⁻¹`
   exact
     Equiv.Perm.not_mem_support.mp
-      (Finset.disjoint_left.mp (Equiv.Perm.Disjoint.disjoint_support hfc) ha)
+      (Set.disjoint_left.mp (Equiv.Perm.Disjoint.disjoint_support hfc) ha)
 #align equiv.perm.cycle_is_cycle_of Equiv.Perm.cycle_is_cycleOf
 
 end CycleFactorsFinset

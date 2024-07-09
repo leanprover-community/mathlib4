@@ -793,6 +793,9 @@ theorem supportCard_def : f.supportCard = f.support.toFinite.toFinset.card := rf
 theorem supportCard_eq_zero : f.supportCard = 0 ↔ f = 1 := by
   rw [supportCard_def, Finset.card_eq_zero, Finite.toFinset_eq_empty, support_eq_empty_iff]
 
+theorem supportCard_one : supportCard (1 : Perm α) = 0 := by
+  rw [supportCard_eq_zero]
+
 theorem one_lt_supportCard_of_ne_one (h : f ≠ 1) : 1 < f.supportCard := by
   simp_rw [supportCard_def, Finset.one_lt_card_iff, Finite.mem_toFinset, mem_support, ← not_or]
   contrapose! h

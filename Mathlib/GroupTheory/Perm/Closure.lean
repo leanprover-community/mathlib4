@@ -70,9 +70,9 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
       exact H.mul_mem (H.mul_mem (step1 n) ih) (step1 n)
   have step3 : ∀ y : α, swap x y ∈ H := by
     intro y
-    have hx : x ∈ (⊤ : Finset α) := Finset.mem_univ x
+    have hx : x ∈ (⊤ : Set α) := Set.mem_univ x
     rw [← h2, mem_support] at hx
-    have hy : y ∈ (⊤ : Finset α) := Finset.mem_univ y
+    have hy : y ∈ (⊤ : Set α) := Set.mem_univ y
     rw [← h2, mem_support] at hy
     cases' IsCycle.exists_pow_eq h1 hx hy with n hn
     rw [← hn]
@@ -89,14 +89,16 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     exact H.mul_mem (H.mul_mem (step3 y) (step3 z)) (step3 y)
   rw [eq_top_iff, ← closure_isSwap, closure_le]
   rintro τ ⟨y, z, _, h6⟩
-  rw [h6]
+  rw [h6.eq_swap]
   exact step4 y z
 #align equiv.perm.closure_cycle_adjacent_swap Equiv.Perm.closure_cycle_adjacent_swap
 
 theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n (Fintype.card α))
-    (h1 : IsCycle σ) (h2 : σ.support = Finset.univ) (x : α) :
+    (h1 : IsCycle σ) (h2 : σ.support = ⊤) (x : α) :
     closure ({σ, swap x ((σ ^ n) x)} : Set (Perm α)) = ⊤ := by
-  rw [← Finset.card_univ, ← h2, ← h1.orderOf] at h0
+  have h2' : σ.support.toFinset = Finset.univ := by
+    simp only [h2, Set.top_eq_univ, Set.toFinset_univ]
+  rw [← Finset.card_univ, ← h2', ← supportCard_compute, ← h1.orderOf] at h0
   cases' exists_pow_eq_self_of_coprime h0 with m hm
   have h2' : (σ ^ n).support = ⊤ := Eq.trans (support_pow_coprime h0) h2
   have h1' : IsCycle ((σ ^ n) ^ (m : ℤ)) := by rwa [← hm] at h1
@@ -109,17 +111,19 @@ theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n 
 #align equiv.perm.closure_cycle_coprime_swap Equiv.Perm.closure_cycle_coprime_swap
 
 theorem closure_prime_cycle_swap {σ τ : Perm α} (h0 : (Fintype.card α).Prime) (h1 : IsCycle σ)
-    (h2 : σ.support = Finset.univ) (h3 : IsSwap τ) : closure ({σ, τ} : Set (Perm α)) = ⊤ := by
+    (h2 : σ.support = ⊤) (h3 : IsSwap τ) : closure ({σ, τ} : Set (Perm α)) = ⊤ := by
   obtain ⟨x, y, h4, h5⟩ := h3
   obtain ⟨i, hi⟩ :=
-    h1.exists_pow_eq (mem_support.mp ((Finset.ext_iff.mp h2 x).mpr (Finset.mem_univ x)))
-      (mem_support.mp ((Finset.ext_iff.mp h2 y).mpr (Finset.mem_univ y)))
-  rw [h5, ← hi]
+    h1.exists_pow_eq (mem_support.mp ((Set.ext_iff.mp h2 x).mpr (Set.mem_univ x)))
+      (mem_support.mp ((Set.ext_iff.mp h2 y).mpr (Set.mem_univ y)))
+  rw [h5.eq_swap, ← hi]
   refine closure_cycle_coprime_swap
     (Nat.Coprime.symm (h0.coprime_iff_not_dvd.mpr fun h => h4 ?_)) h1 h2 x
   cases' h with m hm
-  rwa [hm, pow_mul, ← Finset.card_univ, ← h2, ← h1.orderOf, pow_orderOf_eq_one, one_pow,
-    one_apply] at hi
+  have h2' : σ.support.toFinset = Finset.univ := by
+    simp only [h2, Set.top_eq_univ, Set.toFinset_univ]
+  rwa [hm, pow_mul, ← Finset.card_univ, ← h2', ← supportCard_compute, ← h1.orderOf,
+    pow_orderOf_eq_one, one_pow, one_apply] at hi
 #align equiv.perm.closure_prime_cycle_swap Equiv.Perm.closure_prime_cycle_swap
 
 end Generation
