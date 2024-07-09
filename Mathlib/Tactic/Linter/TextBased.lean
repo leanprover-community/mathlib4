@@ -336,10 +336,10 @@ def allLinters : Array TextbasedLinter := #[
 inductive OutputSetting : Type
   /-- Print any style error to standard output (the default) -/
   | print (style : ErrorFormat)
-  /-- Update the style exceptions file (but still print style errors to standard output).
-  This adds any new lines for exceptions output, removes any lines which are no longer necessary,
-  and otherwise tries not to modify existing lines.
-  To fully regenerate the output, delete `style-exceptions.txt` and run this step again.
+  /-- Update the style exceptions file (and still print style errors to standard output).
+  This adds entries for any new exceptions, removes any entries which are no longer necessary,
+  and tries to not modify exception entries unless necessary.
+  To fully regenerate the exceptions file, delete `style-exceptions.txt` and run again in this mode.
   -/
   | update
   deriving BEq

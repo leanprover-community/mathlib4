@@ -18,22 +18,17 @@ open Cli
 
 /-- Implementation of the `lint_style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  if args.hasFlag "update" && args.hasFlag "regenerate" then
-    IO.println "invalid options: the --update and --regenerate flags are mutually exclusive"
-    return 2
   let errorStyle := if args.hasFlag "github" then ErrorFormat.github else ErrorFormat.humanReadable
-  let mode : OutputSetting := match (args.hasFlag "update", args.hasFlag "regenerate") with
-  | (true, _) => OutputSetting.append
-  | (_, true) => OutputSetting.regenerate
-  | _ => OutputSetting.print errorStyle
+  let mode : OutputSetting := if args.hasFlag "update" then OutputSetting.update else
+    OutputSetting.print errorStyle
   let mut numberErrorFiles : UInt32 := 0
-
+  -- TODO: need to re-implement this detail...
   -- When regenerating the exceptions, we have to be careful to not over-write one collection
   -- of errors in the first turn: down-grade all but the first output setting to `append`.
   numberErrorFiles ← lintAllFiles (System.mkFilePath ["Mathlib.lean"]) mode
-  let mode' := if mode == OutputSetting.regenerate then OutputSetting.append else mode
+  -- let mode' := if mode == OutputSetting.regenerate then OutputSetting.append else mode
   for s in ["Archive.lean", "Counterexamples.lean"] do
-    let n ← lintAllFiles (System.mkFilePath [s]) mode'
+    let n ← lintAllFiles (System.mkFilePath [s]) mode --mode'
     numberErrorFiles := numberErrorFiles + n
   -- Make sure to return an exit code of at most 125, so this return value can be used further
   -- in shell scripts.
@@ -49,10 +44,11 @@ def lint_style : Cmd := `[Cli|
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
-    update;     "Append all new errors to the current list of exceptions \
-                 (leaving existing entries untouched)"
-    regenerate; "Regenerate the file of style exceptions: \
-                 add entries for all current errors and update or remove all obsolete ones"
+    update;     "Also update the style exceptions file.\
+      This adds entries for any new exceptions, removes any entries which are no longer necessary,\
+      and tries to not modify exception entries unless necessary.
+      To fully regenerate the list of style exceptions, delete `style-exceptions.txt`
+      and again with this flag."
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
