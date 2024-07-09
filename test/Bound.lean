@@ -15,10 +15,7 @@ open Complex (abs)
 open scoped NNReal
 
 section positive_tests
-variable {n : ℕ}
-variable {x y : ℝ}
-variable {u : ℝ≥0}
-variable {z : ℂ}
+variable {n : ℕ} {x y : ℝ} {u : ℝ≥0} {z : ℂ}
 lemma test_pos_lt_sq (h : 0 < x) : x^2 > 0 := by bound
 lemma test_pos_gt_sq (h : x > 0) : x^2 > 0 := by bound
 lemma test_pos_mul (p : x > 0) (q : y > 0) : x * y > 0 := by bound
@@ -34,10 +31,7 @@ lemma test_pos_inv : 0 < (1 : ℝ)⁻¹ := by bound
 end positive_tests
 
 section nonneg_tests
-variable {n : ℕ}
-variable {x y : ℝ}
-variable {u : ℝ≥0}
-variable {z : ℂ}
+variable {n : ℕ} {x y : ℝ} {u : ℝ≥0} {z : ℂ}
 lemma test_abs : 0 ≤ abs z := by bound
 lemma test_abs_ge : abs z ≥ 0 := by bound
 lemma test_nn_sq : x^2 ≥ 0 := by bound
@@ -55,9 +49,7 @@ lemma test_inv : 0 ≤ (0 : ℝ)⁻¹ := by bound
 end nonneg_tests
 
 section bound_tests
-variable {a b c x y : ℝ}
-variable {z : ℂ}
-variable {n : ℕ}
+variable {a b c x y : ℝ} {z : ℂ} {n : ℕ}
 lemma test_sq (n : x ≥ 0) (h : x ≤ y) : x^2 ≤ y^2 := by bound
 lemma test_sq_ge (n : x ≥ 0) (h : x ≤ y) : y^2 ≥ x^2 := by bound
 lemma test_mul_left (n : a ≥ 0) (h : x ≤ y) : a * x ≤ a * y := by bound
@@ -83,8 +75,7 @@ lemma test_log (x y : ℝ) (x0 : 0 < x) (h : x ≤ y) : x.log ≤ y.log := by bo
 end bound_tests
 
 section guess_tests
-variable {a b c : ℝ}
-variable {n m : ℕ}
+variable {a b c : ℝ} {n m : ℕ}
 lemma test_le_max_of_le_left (h : a ≤ b) : a ≤ max b c := by bound
 lemma test_le_max_of_le_right (h : a ≤ c) : a ≤ max b c := by bound
 lemma test_lt_max_of_lt_left (h : a < b) : a < max b c := by bound
@@ -99,7 +90,8 @@ lemma test_rpow_le_rpow_of_exponent_le (a1 : 1 ≤ a) (h : b ≤ c) : a^b ≤ a^
 lemma test_rpow_le_rpow_of_exponent_ge (a0 : 0 < a) (a1 : a ≤ 1) (h : c ≤ b) : a^b ≤ a^c := by bound
 end guess_tests
 
--- This breaks without appropriate g.withContext use
+/-- This broke without appropriate `g.withContext` use in an older implementation of `bound`.
+Leaving the test here just in case. -/
 lemma test_with_context {s : Set ℂ} (o : IsOpen s) (z) (h : z ∈ s) : ∃ r : ℝ, r > 0 := by
   rw [Metric.isOpen_iff] at o
   rcases o z h with ⟨t, tp, bs⟩

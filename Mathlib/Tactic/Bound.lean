@@ -20,7 +20,7 @@ import Mathlib.Tactic.NormNum.Core
 ## The `bound` tactic
 
 `bound` is an `aesop` wrapper that proves inequalities by straightforward recursion on structure,
-assuming that intermediate terms are nonnegative or positive as needed.  It also has some report
+assuming that intermediate terms are nonnegative or positive as needed.  It also has some support
 for guessing where it is unclear where to recurse, such as which side of a `min` or `max` to use
 as the bound or whether to assume a power is less than or greater than one.
 
@@ -221,6 +221,8 @@ end Guessing
 
 /-!
 ### Closing tactics
+
+TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `omega` as well.
 -/
 
 /-- Close numerical goals with `norm_num` -/
