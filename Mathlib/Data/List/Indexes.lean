@@ -191,7 +191,7 @@ theorem mapIdx_append (K L : List α) (f : ℕ → α → β) :
     (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a ↦ f (i + K.length) a := by
   induction' K with a J IH generalizing f
   · rfl
-  · simp [IH fun i ↦ f (i + 1), Nat.add_assoc, Nat.succ_eq_add_one]
+  · simp [IH fun i ↦ f (i + 1), Nat.add_assoc]
 #align list.map_with_index_append List.mapIdx_append
 
 @[simp]
