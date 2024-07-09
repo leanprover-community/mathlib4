@@ -1672,8 +1672,7 @@ theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter
   use sup' s hs m
   simp only [eventually_map] at hm ⊢
   rw [← eventually_all_finset s] at hm
-  apply Eventually.mono hm
-  intro a h
+  refine hm.mono fun a h ↦ ?_
   simp only [Finset.sup'_apply, sup'_le_iff]
   exact fun i i_s ↦ le_trans (h i i_s) (le_sup' m i_s)
 
@@ -1681,9 +1680,7 @@ theorem isBoundedUnder_ge_finset_sup' [LinearOrder β] {f : Filter α} {F : ι �
     {s : Finset ι} (hs : s.Nonempty) (h : ∃ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
     f.IsBoundedUnder (· ≥ ·) (fun a ↦ sup' s hs F a) := by
   rcases h with ⟨i, i_s, hi⟩
-  apply IsBoundedUnder.mono_ge hi
-  apply eventually_of_forall
-  intro a
+  refine IsBoundedUnder.mono_ge hi (eventually_of_forall fun a ↦ ?_)
   simp only [Finset.sup'_apply]
   exact le_sup' (f := fun j ↦ F j a) i_s
 
@@ -1692,11 +1689,9 @@ theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι
     f.IsCoboundedUnder (· ≤ ·) (fun a ↦ sup' s hs F a) := by
   rcases h with ⟨i, i_s, b, hb⟩
   use b
-  intro c hc
-  apply hb c
+  refine fun c hc ↦  hb c ?_
   rw [eventually_map] at hc ⊢
-  apply Eventually.mono hc
-  intro a h
+  refine hc.mono fun a h ↦ ?_
   simp only [Finset.sup'_apply, sup'_le_iff] at h ⊢
   exact h i i_s
 
@@ -1718,17 +1713,15 @@ theorem limsup_finset_sup [ConditionallyCompleteLinearOrderBot β] {f : Filter �
     split_ands
     · rw [biInter_finset_mem]
       suffices key : ∀ i ∈ s, ∀ᶠ a in f, F i a < b from fun i i_s ↦ eventually_iff.1 (key i i_s)
-      intro i i_s
-      apply eventually_lt_of_limsup_lt _ (h₂ i i_s)
-      exact lt_of_le_of_lt (Finset.le_sup (f := fun i ↦ limsup (F i) f) i_s) hb
+      exact fun i i_s ↦ eventually_lt_of_limsup_lt (lt_of_le_of_lt
+        (Finset.le_sup (f := fun i ↦ limsup (F i) f) i_s) hb) (h₂ i i_s)
     · simp only [mem_iInter, mem_setOf_eq, Finset.sup_apply]
       intro a h
       rcases s_nemp with ⟨i, i_s⟩
       rw [Finset.sup_lt_iff (lt_of_le_of_lt bot_le (h i i_s))]
       exact h
-  · refine Finset.sup_le (fun i i_s ↦ ?_)
-    apply limsup_le_limsup _ (h₁ i i_s) bddsup
-    refine eventually_of_forall (fun a ↦ ?_)
+  · refine Finset.sup_le (fun i i_s ↦ limsup_le_limsup
+      (eventually_of_forall (fun a ↦ ?_)) (h₁ i i_s) bddsup)
     simp only [Finset.sup_apply]
     exact le_sup (f := fun j ↦ F j a) i_s
 
