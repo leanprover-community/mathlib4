@@ -17,7 +17,7 @@ is itself not a zero divisor
 
 Prove that if `R` has no zero divisors, then so does `MvPowerSeries σ R`
 (To avoid induction, it would be nice to endow `σ →₀ ℕ
-with a lexicographic order, for some well ordering of σ…)
+with a lexicographic order, for some well ordering of `σ`…)
 
 -/
 
