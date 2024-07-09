@@ -387,7 +387,7 @@ theorem isStronglyAtomic_dual_iff_is_stronglyCoatomic :
     IsStronglyCoatomic αᵒᵈ ↔ IsStronglyAtomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; rfl
 
-instance [IsStronglyAtomic α] : IsStronglyCoatomic αᵒᵈ := by
+instance OrderDual.instIsStronglyCoatomic [IsStronglyAtomic α] : IsStronglyCoatomic αᵒᵈ := by
   rwa [isStronglyCoatomic_dual_iff_is_stronglyAtomic]
 
 instance [IsStronglyCoatomic α] : IsStronglyAtomic αᵒᵈ := by
