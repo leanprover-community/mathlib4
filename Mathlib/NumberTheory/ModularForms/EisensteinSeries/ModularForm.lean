@@ -17,8 +17,9 @@ We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence c
 
 noncomputable section
 
+namespace ModularForm
 
-namespace EisensteinSeries
+open EisensteinSeries
 
 /-- This defines Eisenstein series as modular forms of weight `k`, level `Γ(N)` and congruence
 condition given by `a: Fin 2 → ZMod N`. -/
