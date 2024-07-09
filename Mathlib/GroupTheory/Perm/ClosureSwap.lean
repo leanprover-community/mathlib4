@@ -83,7 +83,7 @@ theorem swap_mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap)
     rw [Perm.smul_def, ne_comm, swap_apply_ne_self_iff, and_iff_right hzw] at this
     refine hσa (SubmonoidClass.swap_mem_trans (closure S) ?_ ha)
     obtain rfl | rfl := this <;> simpa [swap_comm] using subset_closure hσ
-  · obtain ⟨x, y, -, rfl⟩ := (hS f hf).exists_distinct_eq_swap ; rwa [swap_inv]
+  · obtain ⟨x, y, -, rfl⟩ := (hS f hf).exists_distinct_eq_swap; rwa [swap_inv]
   · exact orbit_eq_iff.mpr hf ▸ ⟨⟨swap z y, hz⟩, swap_apply_right z y⟩
   · rw [mem_setOf, swap_self]; apply one_mem
 
