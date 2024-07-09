@@ -422,10 +422,12 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
     let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
     let mut newExceptions := #[]
     for err in allUnexpectedErrors do
-      -- TODO: check if this is covered by an existing exception: then prefer the existing one
-      -- stuff
-      -- otherwise, just take the new error
-      newExceptions := newExceptions.push err
+      -- Is the current error covered by some existing style exception?
+      -- If so, prefer the existing exception; otherwise, we take the current one.
+      if let some (ex) := styleExceptions.find? fun e ↦ e.isSimilar err then
+        newExceptions := newExceptions.push ex
+      else
+        newExceptions := newExceptions.push err
     let this_output := "\n".intercalate (newExceptions.map
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
     IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
