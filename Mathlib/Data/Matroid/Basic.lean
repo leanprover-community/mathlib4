@@ -263,7 +263,8 @@ theorem antichain (hB : Base B) (hB' : Base B') (h : B ⊆ B') : B = B' :=
   h.antisymm (fun x hx ↦ by_contra
     (fun hxB ↦ let ⟨_, hy, _⟩ := exch B' B hB' hB x ⟨hx, hxB⟩; hy.2 <| h hy.1))
 
-theorem encard_diff_le_aux {B₁ B₂ : Set α} (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
+theorem encard_diff_le_aux {B₁ B₂ : Set α}
+    (exch : ExchangeProperty Base) (hB₁ : Base B₁) (hB₂ : Base B₂) :
     (B₁ \ B₂).encard ≤ (B₂ \ B₁).encard := by
   obtain (he | hinf | ⟨e, he, hcard⟩) :=
     (B₂ \ B₁).eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt
@@ -367,7 +368,8 @@ theorem Base.exchange {e : α} (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hx :
     ∃ y ∈ B₂ \ B₁, M.Base (insert y (B₁ \ {e}))  :=
   M.base_exchange B₁ B₂ hB₁ hB₂ _ hx
 
-theorem Base.exchange_mem {e : α} (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hxB₁ : e ∈ B₁) (hxB₂ : e ∉ B₂) :
+theorem Base.exchange_mem {e : α}
+    (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hxB₁ : e ∈ B₁) (hxB₂ : e ∉ B₂) :
     ∃ y, (y ∈ B₂ ∧ y ∉ B₁) ∧ M.Base (insert y (B₁ \ {e})) := by
   simpa using hB₁.exchange hB₂ ⟨hxB₁, hxB₂⟩
 
@@ -396,7 +398,8 @@ theorem Base.card_eq_card_of_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
 theorem Base.ncard_eq_ncard_of_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) : B₁.ncard = B₂.ncard := by
   rw [ncard_def B₁, hB₁.card_eq_card_of_base hB₂, ← ncard_def]
 
-theorem Base.finite_of_finite {B' : Set α} (hB : M.Base B) (h : B.Finite) (hB' : M.Base B') : B'.Finite :=
+theorem Base.finite_of_finite {B' : Set α}
+    (hB : M.Base B) (h : B.Finite) (hB' : M.Base B') : B'.Finite :=
   (finite_iff_finite_of_encard_eq_encard (hB.card_eq_card_of_base hB')).mp h
 
 theorem Base.infinite_of_infinite (hB : M.Base B) (h : B.Infinite) (hB₁ : M.Base B₁) :
