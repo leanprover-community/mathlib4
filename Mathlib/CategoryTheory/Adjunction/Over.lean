@@ -23,11 +23,12 @@ In a category with binary products, for any object `X` the functor `Over.forget 
 
 - `Over.pullback f : Over Y ⥤ Over X` is the functor induced by a morphism `f : X ⟶ Y`.
 - `Over.mapPullbackAdj` is the adjunction `Over.map f ⊣ Over.pullback f`.
+- `star : C ⥤ Over X` is the functor induced by an object `X`.
+- `forgetAdjStar` is the adjunction  `forget X ⊣ star X`.
 
 ## TODO
-Show `star X` itself has a right adjoint provided `C` is cartesian closed.
+Show `star X` itself has a right adjoint provided `C` is cartesian closed and has pullbacks.
 -/
-
 
 noncomputable section
 
