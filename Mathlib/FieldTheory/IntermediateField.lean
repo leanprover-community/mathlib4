@@ -602,7 +602,7 @@ theorem toSubalgebra_injective :
   rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective
 
-theorem map_injective (f : L →ₐ[K] L'):
+theorem map_injective (f : L →ₐ[K] L') :
     Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,

@@ -475,7 +475,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
                   rwa [neg_neg, ← neg_mul, ← neg_div]
            _ = 3/2 * f x := by ring
     intro u ⟨hu_lb, hu_ub⟩
-    have hfu_nonpos : f u ≤ 0:= hf₂ _ hu_lb
+    have hfu_nonpos : f u ≤ 0 := hf₂ _ hu_lb
     have hfg₃ : ‖g u‖ ≤ -1/2 * f u := by
       calc ‖g u‖ ≤ 1/2 * ‖f u‖ := hfg' _ hu_lb
            _ = 1/2 * (-f u) := by congr; exact norm_of_nonpos hfu_nonpos

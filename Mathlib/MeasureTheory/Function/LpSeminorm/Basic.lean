@@ -542,7 +542,7 @@ theorem snorm_norm_rpow (f : α → F) (hq_pos : 0 < q) :
     let iso := h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj
     exact (iso.essSup_apply (fun x => (‖f x‖₊ : ℝ≥0∞)) μ).symm
   rw [snorm_eq_snorm' h0 hp_top, snorm_eq_snorm' _ _]
-  swap;
+  swap
   · refine mul_ne_zero h0 ?_
     rwa [Ne, ENNReal.ofReal_eq_zero, not_le]
   swap; · exact ENNReal.mul_ne_top hp_top ENNReal.ofReal_ne_top
