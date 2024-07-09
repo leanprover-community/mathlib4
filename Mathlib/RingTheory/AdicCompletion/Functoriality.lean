@@ -105,8 +105,9 @@ theorem map_comp_apply (f : M →ₗ[R] N) (g : N →ₗ[R] P) (a : AdicCauchySe
   rfl
 
 @[simp]
-theorem map_zero : map I (0 : M →ₗ[R] N) = 0 :=
-  rfl
+theorem map_zero : map I (0 : M →ₗ[R] N) = 0 := by
+  ext
+  simp
 
 end AdicCauchySequence
 

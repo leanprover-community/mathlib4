@@ -87,6 +87,7 @@ variable [IsNoetherianRing R] [Module.Finite R N] (I)
 
 open LinearMap
 
+unseal zero in
 /-- Adic completion preserves injectivity of finite modules over a Noetherian ring. -/
 theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
     Function.Injective (map I f) := by
@@ -177,6 +178,7 @@ private noncomputable def mapExactAux :
 
 end
 
+unseal zero in
 /-- `AdicCompletion` over a Noetherian ring is exact on finitely generated modules. -/
 theorem map_exact : Function.Exact (map I f) (map I g) := by
   refine LinearMap.exact_of_comp_eq_zero_of_ker_le_range ?_ (fun y ↦ ?_)
