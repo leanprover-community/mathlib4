@@ -443,19 +443,19 @@ theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → 
     exact ⟨⟨hmem.1,fun c hac hlt ↦ WellFounded.not_lt_min h
       (Set.Ioc a b) ⟨b, hab,rfl.le⟩ ⟨hac, hlt.le.trans hmem.2⟩ hlt ⟩, hmem.2⟩
 
-theorem isStronglyCoatomic_of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
+theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
-  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| isStronglyAtomic_of_wellFounded_lt (α := αᵒᵈ) h
+  isStronglyAtomic_dual_iff_is_stronglyCoatomic.1 <| IsStronglyAtomic.of_wellFounded_lt (α := αᵒᵈ) h
 
 instance [WellFoundedLT α] : IsStronglyAtomic α :=
-  isStronglyAtomic_of_wellFounded_lt wellFounded_lt
+  IsStronglyAtomic.of_wellFounded_lt wellFounded_lt
 
 instance [WellFoundedGT α] : IsStronglyCoatomic α :=
-    isStronglyCoatomic_of_wellFounded_gt wellFounded_gt
+    IsStronglyCoatomic.of_wellFounded_gt wellFounded_gt
 
 theorem isAtomic_of_orderBot_wellFounded_lt [OrderBot α]
     (h : WellFounded ((· < ·) : α → α → Prop)) : IsAtomic α :=
-  (isStronglyAtomic_of_wellFounded_lt h).isAtomic
+  (IsStronglyAtomic.of_wellFounded_lt h).isAtomic
 #align is_atomic_of_order_bot_well_founded_lt isAtomic_of_orderBot_wellFounded_lt
 
 theorem isCoatomic_of_orderTop_gt_wellFounded [OrderTop α]
@@ -1056,7 +1056,8 @@ theorem CompleteLattice.isStronglyAtomic [IsUpperModularLattice α] [IsAtomistic
 
 /-- A complete lower-modular lattice that is coatomistic is strongly coatomic.
 Not an instance to prevent loops. -/
-theorem [IsLowerModularLattice α] [IsCoatomistic α] : IsStronglyCoatomic α := by
+theorem CompleteLattice.isStronglyCoatomic [IsLowerModularLattice α] [IsCoatomistic α] :
+    IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
   exact CompleteLattice.isStronglyAtomic
 
