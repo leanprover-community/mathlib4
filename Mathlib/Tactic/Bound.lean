@@ -27,7 +27,7 @@ as the bound or whether to assume a power is less than or greater than one.
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
 between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
   `0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
-By turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
+by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
 uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
 
 Additional hypotheses can be passed as `bound [h0, h1 n, ...]`.  This is equivalent to declaring
@@ -59,7 +59,7 @@ lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically conv
 
 1. Nonnegativity/positivity/nonpositivity/negativity hypotheses get score 1 (those involving `0`).
 2. Other inequalities get score 10.
-3. Disjunctions `a ∨ b` gets score 100, plus the score of `a` and `b`.
+3. Disjunctions `a ∨ b` get score 100, plus the score of `a` and `b`.
 
 Score `0` lemmas turn into `norm apply` rules, and score `0 < s` lemmas turn into `safe apply s`
 rules.  The score is roughly lexicographic ordering on the counts of the three type (guessing,
@@ -77,7 +77,7 @@ rules that similarly expose inequalities inside structures are often useful.
 There are several cases where there are two standard ways to recurse down an inequality, and it is
 not obvious which is correct without more information.  For example, `a ≤ min b c` is registered as
 a `safe apply 4` rule, since we always need to prove `a ≤ b ∧ a ≤ c`.  But if we see `min a b ≤ c`,
-either `a ≤ b` and `a ≤ c` suffices, and we don't know which.
+either `a ≤ c` or `b ≤ c` suffices, and we don't know which.
 
 In these cases we declare a new lemma with an `∨` hypotheses that covers the two cases.  Tagging
 it as `@[bound]` will add a +100 penalty to the score, so that it will be used only if necessary.
@@ -103,7 +103,7 @@ namespace Bound
 
 /-- Possibly this one should be deleted, but we'd need to add support for `ℕ ≠ 0` goals -/
 lemma le_self_pow_of_pos {R : Type} [OrderedSemiring R] {a : R} {m : ℕ} (ha : 1 ≤ a) (h : 0 < m) :
-    a ≤ a^m :=
+    a ≤ a ^ m :=
   le_self_pow ha h.ne'
 
 /-!
@@ -199,7 +199,7 @@ lemma lt_max_of_lt_left_or_lt_right : a < b ∨ a < c → a < max b c := lt_max_
 lemma min_le_of_left_le_or_right_le : a ≤ c ∨ b ≤ c → min a b ≤ c := min_le_iff.mpr
 lemma min_lt_of_left_lt_or_right_lt : a < c ∨ b < c → min a b < c := min_lt_iff.mpr
 
-/-- Branch on `1 ≤ a ∨ a ≤ 1` for `a^n` -/
+/-- Branch on `1 ≤ a ∨ a ≤ 1` for `a ^ n` -/
 lemma pow_le_pow_right_of_le_one_or_one_le {R : Type} [OrderedSemiring R] {a : R} {n m : ℕ}
     (h : 1 ≤ a ∧ n ≤ m ∨ 0 ≤ a ∧ a ≤ 1 ∧ m ≤ n) : a ^ n ≤ a ^ m := by
   rcases h with ⟨a1, nm⟩ | ⟨a0, a1, mn⟩
@@ -276,7 +276,11 @@ end Bound
 3. Local hypotheses from the context
 4. Optionally: additional hypotheses provided as `bound [h₀, h₁]` or similar. These are added to the
    context as if by `have := hᵢ`. -/
-elab "bound" lemmas:(("[" term,* "]")?) : tactic => do
-  Bound.addHyps (Bound.maybeTerms lemmas)
-  let tac ← `(tactic| aesop (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
-  liftMetaTactic fun g ↦ do return (← Lean.Elab.runTactic g tac.raw).1
+syntax "bound " (" [" term,* "]")? : tactic
+
+elab_rules : tactic
+  | `(tactic| bound $[[$lemmas:term,*]]?) => do
+    let lemmas := (lemmas.getD ⟨#[]⟩).getElems
+    Bound.addHyps lemmas
+    let tac ← `(tactic| aesop (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
+    liftMetaTactic fun g ↦ do return (← Lean.Elab.runTactic g tac.raw).1
