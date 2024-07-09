@@ -9,7 +9,6 @@ import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Topology.Irreducible
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sober
 
@@ -786,6 +785,39 @@ theorem closedEmbedding_comap_of_surjective (hf : Surjective f) : ClosedEmbeddin
 
 end SpecOfSurjective
 
+section SpecProd
+
+variable {R S} [CommRing R] [CommRing S]
+
+lemma primeSpectrumProd_symm_inl (x) :
+    (primeSpectrumProd R S).symm (.inl x) = comap (RingHom.fst R S) x := by
+  ext; simp [Ideal.prod]
+
+lemma primeSpectrumProd_symm_inr (x) :
+    (primeSpectrumProd R S).symm (.inr x) = comap (RingHom.snd R S) x := by
+  ext; simp [Ideal.prod]
+
+/-- The prime spectrum of `R × S` is homeomorphic
+to the disjoint union of `PrimeSpectrum R` and `PrimeSpectrum S`. -/
+noncomputable
+def primeSpectrumProdHomeo :
+    PrimeSpectrum (R × S) ≃ₜ PrimeSpectrum R ⊕ PrimeSpectrum S := by
+  refine ((primeSpectrumProd R S).symm.toHomeomorphOfInducing ?_).symm
+  refine (closedEmbedding_of_continuous_injective_closed ?_ (Equiv.injective _) ?_).toInducing
+  · rw [continuous_sum_dom]
+    simp only [Function.comp, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
+    exact ⟨(comap _).2, (comap _).2⟩
+  · rw [isClosedMap_sum]
+    constructor
+    · simp_rw [primeSpectrumProd_symm_inl]
+      refine (closedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
+      exact Prod.fst_surjective
+    · simp_rw [primeSpectrumProd_symm_inr]
+      refine (closedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
+      exact Prod.snd_surjective
+
+end SpecProd
+
 section CommSemiRing
 
 variable [CommSemiring R] [CommSemiring S]
@@ -982,7 +1014,7 @@ Zero loci of prime ideals are closed irreducible sets in the Zariski topology an
 irreducible set is a zero locus of some prime ideal.
 -/
 protected def pointsEquivIrreducibleCloseds :
-    PrimeSpectrum R ≃o (TopologicalSpace.IrreducibleCloseds (PrimeSpectrum R))ᵒᵈ where
+    PrimeSpectrum R ≃o {s : Set (PrimeSpectrum R) | IsIrreducible s ∧ IsClosed s}ᵒᵈ where
   __ := irreducibleSetEquivPoints.toEquiv.symm.trans OrderDual.toDual
   map_rel_iff' {p q} :=
     (RelIso.symm irreducibleSetEquivPoints).map_rel_iff.trans (le_iff_specializes p q).symm
@@ -1017,20 +1049,19 @@ Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` 
 irreducible component is a zero locus of some minimal prime ideal.
 -/
 protected def minimalPrimes.equivIrreducibleComponents :
-    minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
+    minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ :=
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
-  rw [irreducibleComponents_eq_maximals_closed]
-  exact OrderIso.minimalsIsoMaximals (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
-    (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))
+  (e.trans <| PrimeSpectrum.pointsEquivIrreducibleCloseds R).minimalsIsoMaximals.trans
+    (OrderIso.setCongr _ _ <| by simp_rw [irreducibleComponents_eq_maximals_closed, and_comm]).dual
 
 namespace PrimeSpectrum
 
 lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
     minimalPrimes R := by
-  rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals,
-    ← minimals_swap, ← vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
+  rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals, ← minimals_swap,
+    ← PrimeSpectrum.vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
   exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.1
 
 lemma zeroLocus_minimalPrimes :
