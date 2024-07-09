@@ -1502,7 +1502,7 @@ See [Wikipedia, *Methods of computing square roots*]
 -/
 
 private lemma iter_fp_bound (n k : ℕ) :
-    let iter_next (n guess : ℕ) := (guess + n / guess) / 2
+    let iter_next (n guess : ℕ) := (guess + n / guess) / 2;
     sqrt.iter n k ≤ iter_next n (sqrt.iter n k) := by
   intro iter_next
   unfold sqrt.iter
@@ -1666,8 +1666,8 @@ lemma sqrt_add_eq (n : ℕ) (h : a ≤ n + n) : sqrt (n * n + a) = n :=
   le_antisymm
     (le_of_lt_succ <|
       sqrt_lt.2 <| by
-        rw [succ_mul, mul_succ, add_succ, Nat.add_assoc]
-          exact lt_succ_of_le (Nat.add_le_add_left h _))
+        rw [succ_mul, mul_succ, add_succ, Nat.add_assoc];
+        exact lt_succ_of_le (Nat.add_le_add_left h _))
     (le_sqrt.2 <| Nat.le_add_right _ _)
 #align nat.sqrt_add_eq Nat.sqrt_add_eq
 

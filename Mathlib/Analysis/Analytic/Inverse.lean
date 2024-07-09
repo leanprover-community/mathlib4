@@ -169,7 +169,7 @@ noncomputable def rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | 0 => 0
   | 1 => (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm
   | n + 2 =>
-    let q : FormalMultilinearSeries 𝕜 F E := fun k => if k < n + 2 then rightInv p i k else 0
+    let q : FormalMultilinearSeries 𝕜 F E := fun k => if k < n + 2 then rightInv p i k else 0;
     -(i.symm : F →L[𝕜] E).compContinuousMultilinearMap ((p.comp q) (n + 2))
 #align formal_multilinear_series.right_inv FormalMultilinearSeries.rightInv
 
@@ -446,7 +446,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
       ‖(i.symm : F →L[𝕜] E)‖ * a +
         ‖(i.symm : F →L[𝕜] E)‖ * C *
           ∑ k ∈ Ico 2 (n + 1), (r * ∑ j ∈ Ico 1 n, a ^ j * ‖p.rightInv i j‖) ^ k :=
-  let I := ‖(i.symm : F →L[𝕜] E)‖
+  let I := ‖(i.symm : F →L[𝕜] E)‖;
   calc
     ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i k‖ =
         a * I + ∑ k ∈ Ico 2 (n + 1), a ^ k * ‖p.rightInv i k‖ := by
