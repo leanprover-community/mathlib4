@@ -186,9 +186,8 @@ end LexOrder
 section
 -- This belongs to some other file
 /-- The opposite linear order to a given linear order -/
-def LinearOrder.swap (h : LinearOrder σ) : LinearOrder σ :=
-  letI : IsStrictTotalOrder σ (Function.swap h.lt) := IsStrictTotalOrder.swap h.lt
-  linearOrderOfSTO (Function.swap h.lt)
+def LinearOrder.swap (_ : LinearOrder σ) : LinearOrder σ :=
+  inferInstanceAs <| LinearOrder (OrderDual σ)
 
 -- This belongs to `NoZeroDivisors.lean` once this is merged from #14454
 theorem noZeroDivisors [NoZeroDivisors R] :
@@ -201,7 +200,6 @@ theorem noZeroDivisors [NoZeroDivisors R] :
         exact this
       exact IsWellOrder.toIsWellFounded
     simpa only [eq_zero_iff_lexOrder_eq_top, lexOrder_mul, WithTop.add_eq_top] using h
-
 
 end
 
