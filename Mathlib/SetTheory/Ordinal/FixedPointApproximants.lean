@@ -251,7 +251,7 @@ lemma gfpApprox_ord_mem_fixedPoint (h_init : f x ≤ x) :
 /-- Every value of the ordinal approximants are greater or equal than every fixed point of f
   that is smaller then the initial value -/
 lemma le_gfpApprox_of_mem_fixedPoints {a : α}
-    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i:=
+    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i :=
   lfpApprox_le_of_mem_fixedPoints (OrderHom.dual f) x h_a h_le_init i
 
 /-- The greatest fixed point of f is reached after the successor of the domains cardinality -/
