@@ -10,7 +10,7 @@ import Mathlib.Data.Finsupp.WellFounded
 /-! # ZeroDivisors in a MvPowerSeries ring
 
 - `mem_nonZeroDivisors_of_constantCoeff` proves that
-a mv power series whose constant is not a zero divisor
+a multivariate power series whose constant coefficient is not a zero divisor
 is not a zero divisor
 
 ## TODO
