@@ -343,7 +343,7 @@ instance comparison_essSurj [Reflective R] :
   apply (X.unit_assoc _).symm
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
-lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R):
+lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
   map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
 #align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparison_full

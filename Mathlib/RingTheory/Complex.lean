@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.Complex.Module
-import Mathlib.RingTheory.Norm
-import Mathlib.RingTheory.Trace
+import Mathlib.RingTheory.Norm.Defs
+import Mathlib.RingTheory.Trace.Defs
 
 #align_import ring_theory.complex from "leanprover-community/mathlib"@"9015c511549dc77a0f8d6eba021d8ac4bba20c82"
 

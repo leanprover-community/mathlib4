@@ -251,7 +251,7 @@ lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
 
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :
-    List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁:= by
+    List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁ := by
   rw [rdrop_eq_reverse_drop_reverse, ← length_reverse l₂,
       reverse_append, drop_left, reverse_reverse]
 
@@ -264,7 +264,7 @@ lemma rdrop_append_of_le_length {l₁ l₂ : List α} (k : ℕ) :
 
 @[simp]
 lemma rdrop_append_length_add {l₁ l₂ : List α} (k : ℕ) :
-    List.rdrop (l₁ ++ l₂) (length l₂ + k)  = List.rdrop l₁ k:= by
+    List.rdrop (l₁ ++ l₂) (length l₂ + k) = List.rdrop l₁ k := by
   rw [← rdrop_add, rdrop_append_length]
 
 end List

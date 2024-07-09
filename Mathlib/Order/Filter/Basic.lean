@@ -1566,7 +1566,7 @@ theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f
 #align filter.eventually_eq.add Filter.EventuallyEq.add
 
 @[to_additive const_smul]
-theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ):
+theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ) :
     (fun x => f x ^ c) =ᶠ[l] fun x => g x ^ c :=
   h.fun_comp (· ^ c)
 #align filter.eventually_eq.const_smul Filter.EventuallyEq.const_smul
