@@ -9,7 +9,7 @@ import Mathlib.Tactic.Ring
 # linear_combination Tactic
 
 In this file, the `linear_combination` tactic is created.  This tactic, which
-works over `Ring`s, attempts to simplify the target by creating a linear combination
+works over `CommRing`s, attempts to simplify the target by creating a linear combination
 of a list of equalities and subtracting it from the target.  This file also includes a
 definition for `linear_combination_config`.  A `linear_combination_config`
 object can be passed into the tactic, allowing the user to specify a
@@ -57,6 +57,10 @@ theorem div_eq_eq [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁
 theorem neg_eq [Neg α] (p : (a:α) = b) : -a = -b := congr(-$p)
 theorem inv_eq [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := congr($p⁻¹)
 
+alias add_le_const := add_le_add_right
+alias add_const_le := add_le_add_left
+alias add_le_le := add_le_add
+
 inductive RelType
   | Eq
   | Le
@@ -85,6 +89,12 @@ partial def expandLinearCombo : Syntax.Term → TermElabM (RelType × Option (Sy
         | some p₁, none => ``(add_eq_const $p₁ $e₂)
         | none, some p₂ => ``(add_const_eq $p₂ $e₁)
         | some p₁, some p₂ => ``(add_eq_eq $p₁ $p₂)
+      | Le, Le => Prod.mk Le <$>
+        match p₁, p₂ with
+        | none, none => pure none
+        | some p₁, none => ``(add_le_const $p₁ $e₂)
+        | none, some p₂ => ``(add_const_le $p₂ $e₁)
+        | some p₁, some p₂ => ``(add_le_le $p₁ $p₂)
       | _, _ => Prod.mk Eq <$> pure none
   | `($e₁ - $e₂) => do
       let (rel₁, p₁) ← expandLinearCombo e₁
