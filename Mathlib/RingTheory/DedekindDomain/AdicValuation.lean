@@ -95,20 +95,30 @@ theorem intValuationDef_if_neg {r : R} (hr : r ≠ 0) :
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def_if_neg IsDedekindDomain.HeightOneSpectrum.intValuationDef_if_neg
 
 /-- Nonzero elements have nonzero adic valuation. -/
-theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuationDef x ≠ 0 := by
+theorem intValuation_ne_zero (x : R) (hx : x ≠ 0) : v.intValuationDef x ≠ 0 :=
+  by
   rw [intValuationDef, if_neg hx]
   exact WithZero.coe_ne_zero
+
+@[deprecated (since := "2024-07-09")]
+alias int_valuation_ne_zero := intValuation_ne_zero
 #align is_dedekind_domain.height_one_spectrum.int_valuation_ne_zero IsDedekindDomain.HeightOneSpectrum.intValuation_ne_zero
 
 /-- Nonzero divisors have nonzero valuation. -/
 theorem intValuation_ne_zero' (x : nonZeroDivisors R) : v.intValuationDef x ≠ 0 :=
   v.intValuation_ne_zero x (nonZeroDivisors.coe_ne_zero x)
+
+@[deprecated (since := "2024-07-09")]
+alias int_valuation_ne_zero' := intValuation_ne_zero'
 #align is_dedekind_domain.height_one_spectrum.int_valuation_ne_zero' IsDedekindDomain.HeightOneSpectrum.intValuation_ne_zero'
 
 /-- Nonzero divisors have valuation greater than zero. -/
 theorem intValuation_zero_le (x : nonZeroDivisors R) : 0 < v.intValuationDef x := by
   rw [v.intValuationDef_if_neg (nonZeroDivisors.coe_ne_zero x)]
   exact WithZero.zero_lt_coe _
+
+@[deprecated (since := "2024-07-09")]
+alias int_valuation_zero_le := intValuation_zero_le
 #align is_dedekind_domain.height_one_spectrum.int_valuation_zero_le IsDedekindDomain.HeightOneSpectrum.intValuation_zero_le
 
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
@@ -119,6 +129,9 @@ theorem intValuation_le_one (x : R) : v.intValuationDef x ≤ 1 := by
   · rw [if_neg hx, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ofAdd_le,
       Right.neg_nonpos_iff]
     exact Int.natCast_nonneg _
+
+@[deprecated (since := "2024-07-09")]
+alias int_valuation_le_one := intValuation_le_one
 #align is_dedekind_domain.height_one_spectrum.int_valuation_le_one IsDedekindDomain.HeightOneSpectrum.intValuation_le_one
 
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
@@ -133,6 +146,9 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
       rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
       exact hr
     apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
+
+@[deprecated (since := "2024-07-09")]
+alias int_valuation_lt_one_iff_dvd := intValuation_lt_one_iff_dvd
 #align is_dedekind_domain.height_one_spectrum.int_valuation_lt_one_iff_dvd IsDedekindDomain.HeightOneSpectrum.intValuation_lt_one_iff_dvd
 
 /-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
@@ -146,23 +162,32 @@ theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
       Associates.le_singleton_iff,
       Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr)
         (by apply v.associates_irreducible)]
+
+@[deprecated (since := "2024-07-09")]
+alias int_valuation_le_pow_iff_dvd := intValuation_le_pow_iff_dvd
 #align is_dedekind_domain.height_one_spectrum.int_valuation_le_pow_iff_dvd IsDedekindDomain.HeightOneSpectrum.intValuation_le_pow_iff_dvd
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
-theorem IntValuation.map_zero' : v.intValuationDef 0 = 0 :=
+theorem intValuation.map_zero' : v.intValuationDef 0 = 0 :=
   v.intValuationDef_if_pos (Eq.refl 0)
-#align is_dedekind_domain.height_one_spectrum.int_valuation.map_zero' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_zero'
+
+@[deprecated (since := "2024-07-09")]
+alias IntValuation.map_zero' := intValuation.map_zero'
+#align is_dedekind_domain.height_one_spectrum.int_valuation.map_zero' IsDedekindDomain.HeightOneSpectrum.intValuation.map_zero'
 
 /-- The `v`-adic valuation of `1 : R` equals 1. -/
-theorem IntValuation.map_one' : v.intValuationDef 1 = 1 := by
+theorem intValuation.map_one' : v.intValuationDef 1 = 1 := by
   rw [v.intValuationDef_if_neg (zero_ne_one.symm : (1 : R) ≠ 0), Ideal.span_singleton_one, ←
     Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero (by apply v.associates_irreducible), Int.ofNat_zero, neg_zero, ofAdd_zero,
     WithZero.coe_one]
-#align is_dedekind_domain.height_one_spectrum.int_valuation.map_one' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_one'
+
+@[deprecated (since := "2024-07-09")]
+alias IntValuation.map_one' := intValuation.map_one'
+#align is_dedekind_domain.height_one_spectrum.int_valuation.map_one' IsDedekindDomain.HeightOneSpectrum.intValuation.map_one'
 
 /-- The `v`-adic valuation of a product equals the product of the valuations. -/
-theorem IntValuation.map_mul' (x y : R) :
+theorem intValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
   simp only [intValuationDef]
   by_cases hx : x = 0
@@ -174,18 +199,24 @@ theorem IntValuation.map_mul' (x y : R) :
         Associates.count_mul (by apply Associates.mk_ne_zero'.mpr hx)
           (by apply Associates.mk_ne_zero'.mpr hy) (by apply v.associates_irreducible)]
       rfl
-#align is_dedekind_domain.height_one_spectrum.int_valuation.map_mul' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_mul'
 
-theorem IntValuation.le_max_iff_min_le {a b c : ℕ} :
+@[deprecated (since := "2024-07-09")]
+alias IntValuation.map_mul' := intValuation.map_mul'
+#align is_dedekind_domain.height_one_spectrum.int_valuation.map_mul' IsDedekindDomain.HeightOneSpectrum.intValuation.map_mul'
+
+theorem intValuation.le_max_iff_min_le {a b c : ℕ} :
     Multiplicative.ofAdd (-c : ℤ) ≤
-        max (Multiplicative.ofAdd (-a : ℤ)) (Multiplicative.ofAdd (-b : ℤ)) ↔
+      max (Multiplicative.ofAdd (-a : ℤ)) (Multiplicative.ofAdd (-b : ℤ)) ↔
       min a b ≤ c := by
-  rw [le_max_iff, ofAdd_le, ofAdd_le, neg_le_neg_iff, neg_le_neg_iff, Int.ofNat_le, Int.ofNat_le,
-    ← min_le_iff]
-#align is_dedekind_domain.height_one_spectrum.int_valuation.le_max_iff_min_le IsDedekindDomain.HeightOneSpectrum.IntValuation.le_max_iff_min_le
+  rw [le_max_iff, ofAdd_le, ofAdd_le, neg_le_neg_iff, neg_le_neg_iff, Int.ofNat_le, Int.ofNat_le, ←
+    min_le_iff]
+
+@[deprecated (since := "2024-07-09")]
+alias IntValuation.le_max_iff_min_le := intValuation.le_max_iff_min_le
+#align is_dedekind_domain.height_one_spectrum.int_valuation.le_max_iff_min_le IsDedekindDomain.HeightOneSpectrum.intValuation.le_max_iff_min_le
 
 /-- The `v`-adic valuation of a sum is bounded above by the maximum of the valuations. -/
-theorem IntValuation.map_add_le_max' (x y : R) :
+theorem intValuation.map_add_le_max' (x y : R) :
     v.intValuationDef (x + y) ≤ max (v.intValuationDef x) (v.intValuationDef y) := by
   by_cases hx : x = 0
   · rw [hx, zero_add]
@@ -197,37 +228,43 @@ theorem IntValuation.map_add_le_max' (x y : R) :
       rw [max_eq_right (WithZero.zero_le (v.intValuationDef x))]
     · by_cases hxy : x + y = 0
       · rw [intValuationDef, if_pos hxy]; exact zero_le'
-      · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx,
-          v.intValuationDef_if_neg hy, WithZero.le_max_iff, IntValuation.le_max_iff_min_le]
+      · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
+          WithZero.le_max_iff, intValuation.le_max_iff_min_le]
         set nmin :=
-          min ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {x})).factors)
-            ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {y})).factors)
-        have h_dvd_x : x ∈ v.asIdeal ^ nmin := by
+          min ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span { x })).factors)
+            ((Associates.mk v.asIdeal).count (Associates.mk (Ideal.span { y })).factors)
+        have h_dvd_x : x ∈ v.asIdeal ^ nmin :=
+          by
           rw [← Associates.le_singleton_iff x nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hx) _]
           · exact min_le_left _ _
           apply v.associates_irreducible
-        have h_dvd_y : y ∈ v.asIdeal ^ nmin := by
+        have h_dvd_y : y ∈ v.asIdeal ^ nmin :=
+          by
           rw [← Associates.le_singleton_iff y nmin _,
             Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hy) _]
           · exact min_le_right _ _
           apply v.associates_irreducible
-        have h_dvd_xy : Associates.mk v.asIdeal ^ nmin ≤ Associates.mk (Ideal.span {x + y}) := by
+        have h_dvd_xy : Associates.mk v.asIdeal ^ nmin ≤ Associates.mk (Ideal.span {x + y}) :=
+          by
           rw [Associates.le_singleton_iff]
           exact Ideal.add_mem (v.asIdeal ^ nmin) h_dvd_x h_dvd_y
         rw [Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hxy) _] at h_dvd_xy
         · exact h_dvd_xy
         apply v.associates_irreducible
-#align is_dedekind_domain.height_one_spectrum.int_valuation.map_add_le_max' IsDedekindDomain.HeightOneSpectrum.IntValuation.map_add_le_max'
+
+@[deprecated (since := "2024-07-09")]
+alias IntValuation.map_add_le_max' := intValuation.map_add_le_max'
+#align is_dedekind_domain.height_one_spectrum.int_valuation.map_add_le_max' IsDedekindDomain.HeightOneSpectrum.intValuation.map_add_le_max'
 
 /-- The `v`-adic valuation on `R`. -/
 @[simps]
 def intValuation : Valuation R ℤₘ₀ where
   toFun := v.intValuationDef
-  map_zero' := IntValuation.map_zero' v
-  map_one' := IntValuation.map_one' v
-  map_mul' := IntValuation.map_mul' v
-  map_add_le_max' := IntValuation.map_add_le_max' v
+  map_zero' := intValuation.map_zero' v
+  map_one' := intValuation.map_one' v
+  map_mul' := intValuation.map_mul' v
+  map_add_le_max' := intValuation.map_add_le_max' v
 #align is_dedekind_domain.height_one_spectrum.int_valuation IsDedekindDomain.HeightOneSpectrum.intValuation
 
 
@@ -257,6 +294,9 @@ theorem intValuation_exists_uniformizer :
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
   exact Nat.eq_of_le_of_lt_succ mem nmem
+
+@[deprecated (since := "2024-07-09")]
+alias int_valuation_exists_uniformizer := intValuation_exists_uniformizer
 #align is_dedekind_domain.height_one_spectrum.int_valuation_exists_uniformizer IsDedekindDomain.HeightOneSpectrum.intValuation_exists_uniformizer
 
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
