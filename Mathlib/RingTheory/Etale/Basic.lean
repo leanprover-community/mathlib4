@@ -128,11 +128,13 @@ section Localization
 
 We now consider a commutative square of commutative rings
 
+```
 R -----> S
 |        |
 |        |
 v        v
 Rₘ ----> Sₘ
+```
 
 where `Rₘ` and `Sₘ` are the localisations of `R` and `S` at a multiplicatively closed
 subset `M` of `R`.

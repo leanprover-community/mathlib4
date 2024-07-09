@@ -246,12 +246,13 @@ def pushoutIsPushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
 
 /-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
 
-    W ⟶ Y
-      ↘      ↘
-        S ⟶ T
-      ↗      ↗
-    X ⟶ Z
-
+```
+W ⟶ Y
+  ↘   ↘
+  S ⟶ T
+  ↗   ↗
+X ⟶ Z
+```
 -/
 abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
@@ -284,12 +285,13 @@ lemma pullback.map_id {X Y Z : C}
 
 /-- Given such a diagram, then there is a natural morphism `W ⨿ₛ X ⟶ Y ⨿ₜ Z`.
 
-        W ⟶ Y
-      ↗      ↗
-    S ⟶ T
-      ↘      ↘
-        X ⟶ Z
-
+```
+  W ⟶ Y
+ ↗   ↗
+S ⟶ T
+ ↘   ↘
+  X ⟶ Z
+```
 -/
 abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
     (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
