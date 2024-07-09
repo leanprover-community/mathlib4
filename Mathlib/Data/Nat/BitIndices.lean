@@ -21,7 +21,9 @@ binary expansion of `n`. If `s : Finset ℕ` and `n = ∑ i in s, 2^i`, then
 The lemma `twoPowSum_bitIndices` proves that summing `2 ^ i` over this list gives `n`.
 This is used in `Combinatorics.colex` to construct a bijection `equivBitIndices : ℕ ≃ Finset ℕ`.
 
-TODO : Relate the material in this file to `Nat.digits` and `Nat.bits`.
+## TODO
+
+Relate the material in this file to `Nat.digits` and `Nat.bits`.
 -/
 
 open List
