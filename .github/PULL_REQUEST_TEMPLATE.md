@@ -24,6 +24,18 @@ If this PR depends on other PRs, please list them below this comment,
 using the following format:
 - [ ] depends on: #abc [optional extra text]
 - [ ] depends on: #xyz [optional extra text]
+
+If you are moving or deleting declarations,
+please use the following template above the `---` line.
+
+Moves:
+- Vector.* -> Mathlib.Vector.*
+- ...
+
+Deletions:
+- Nat.bit1_add_bit1
+- ...
+
 -->
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/from-referrer/)
