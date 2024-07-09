@@ -3,8 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Units
 import Mathlib.Data.Complex.Module
@@ -86,6 +89,21 @@ example :
     one_smul, TensorProduct.smul_tmul', I_mul_I] using contra
 
 end TensorProduct
+
+section TensorProduct'
+
+open Algebra TensorProduct
+
+variable {R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+-- verify there are no diamonds
+example :
+  (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
+  with_reducible_and_instances rfl
+-- fails at `with_reducible_and_instances rfl` #10906
+example : (algebraInt _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
+
+end TensorProduct'
 
 section Units
 
@@ -280,3 +298,70 @@ example {A : Type*} [Ring A] [Algebra ℝ A]:
   rfl
 
 end complexToReal
+
+section SplittingField
+
+open Polynomial
+
+variable {F : Type u} {K : Type v} {L : Type w}
+
+variable [Field K] [Field L] [Field F] {f : K[X]}
+
+-- The algebra instance deriving from `K` should be definitionally equal to that
+-- deriving from the field structure on `SplittingField f`.
+example :
+    (AddCommMonoid.natModule : Module ℕ (SplittingField f)) =
+      @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
+  rfl
+
+example :
+    (AddCommGroup.intModule _ : Module ℤ (SplittingField f)) =
+      @Algebra.toModule _ _ _ _ (SplittingField.algebra' f) :=
+  rfl
+
+example [CharZero K] : SplittingField.algebra' f = algebraRat := rfl
+  -- TODO: by with_reducible_and_instances rfl
+
+example {q : ℚ[X]} : algebraInt (SplittingField q) = SplittingField.algebra' q :=
+  rfl
+
+end SplittingField
+
+section AlgebraicClosure
+
+variable {k : Type u} [Field k]
+
+example : (AddCommMonoid.natModule : Module ℕ (AlgebraicClosure k)) =
+    @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) := by
+  with_reducible_and_instances rfl
+
+example : (AddCommGroup.intModule _ : Module ℤ (AlgebraicClosure k)) =
+      @Algebra.toModule _ _ _ _ (AlgebraicClosure.instAlgebra k) := by
+  with_reducible_and_instances rfl
+
+example [CharZero k] : AlgebraicClosure.instAlgebra k = algebraRat := by
+  rfl
+  -- TODO: with_reducible_and_instances rfl
+
+example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.instAlgebra ℚ := by
+  rfl
+  -- TODO: with_reducible_and_instances rfl
+end AlgebraicClosure
+
+section FreeAlgebra
+
+open FreeAlgebra
+
+-- verify there is no diamond but we will need
+-- `reducible_and_instances` which currently fails #10906
+variable (S : Type) [CommRing S] in
+example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+
+end FreeAlgebra
+
+section Rat
+
+-- Test that the `SMul ℚ ℂ` instance is correct.
+example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+
+end Rat

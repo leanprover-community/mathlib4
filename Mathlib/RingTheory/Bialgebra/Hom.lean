@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Bialgebra.Basic
 # Homomorphisms of `R`-bialgebras
 
 This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
-`Mathlib/Algebra/Algebra/Hom.lean`.
+`Mathlib.Algebra.Algebra.Hom.Basic`.
 
 ## Main definitions
 

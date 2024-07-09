@@ -5,6 +5,7 @@ Authors: Kenny Lau, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.LinearAlgebra.Span
+import Mathlib.Algebra.Algebra.Basic
 
 #align_import algebra.algebra.tower from "leanprover-community/mathlib"@"71150516f28d9826c7341f8815b31f7d8770c212"
 

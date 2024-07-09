@@ -10,6 +10,7 @@ import Mathlib.RepresentationTheory.Action.Limits
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Examples of Galois categories and fiber functors

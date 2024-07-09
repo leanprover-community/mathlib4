@@ -3,6 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Algebra.Hom.Int
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
@@ -140,6 +141,8 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
 #align is_integral_of_is_scalar_tower IsIntegral.tower_top
 #align is_integral_tower_top_of_is_integral IsIntegral.tower_top
 
+-- TODO: we need to import an `Algebra ℤ R` instance here and nowhere else
+-- this should be split into a separate file to avoid this
 theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B}
     [FunLike F B C] [RingHomClass F B C] (f : F)
     (hb : IsIntegral ℤ b) : IsIntegral ℤ (f b) :=

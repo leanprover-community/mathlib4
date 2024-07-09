@@ -3,7 +3,9 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Algebra.Hom.Basic
+import Mathlib.Algebra.Algebra.Int
+import Mathlib.Algebra.Algebra.Nat
 import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import algebra.ring_quot from "leanprover-community/mathlib"@"e5820f6c8fcf1b75bcd7738ae4da1c5896191f72"

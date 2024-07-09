@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Data.Set.UnionLift
 import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.NonUnitalSubring.Basic
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Non-unital Subalgebras over Commutative Semirings

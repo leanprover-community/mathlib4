@@ -132,15 +132,6 @@ theorem supported_strictMono [Nontrivial R] :
   strictMono_of_le_iff_le fun _ _ ↦ supported_le_supported_iff.symm
 #align mv_polynomial.supported_strict_mono MvPolynomial.supported_strictMono
 
-theorem exists_restrict_to_vars (R : Type*) [CommRing R] {F : MvPolynomial σ ℤ}
-    (hF : ↑F.vars ⊆ s) : ∃ f : (s → R) → R, ∀ x : σ → R, f (x ∘ (↑) : s → R) = aeval x F := by
-  rw [← mem_supported, supported_eq_range_rename, AlgHom.mem_range] at hF
-  cases' hF with F' hF'
-  use fun z ↦ aeval z F'
-  intro x
-  simp only [← hF', aeval_rename]
-#align mv_polynomial.exists_restrict_to_vars MvPolynomial.exists_restrict_to_vars
-
 end CommSemiring
 
 end MvPolynomial

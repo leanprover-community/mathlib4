@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Coalgebra.Basic
 # Homomorphisms of `R`-coalgebras
 
 This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
-`Mathlib/Algebra/Algebra/Hom.lean`.
+`Mathlib.Algebra.Algebra.Hom.Basic`.
 
 ## Main definitions
 

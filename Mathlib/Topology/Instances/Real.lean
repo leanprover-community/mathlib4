@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Real.Star
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Int
 import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.UniformMulAction
