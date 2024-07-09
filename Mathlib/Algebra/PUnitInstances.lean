@@ -120,7 +120,17 @@ instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUn
   add_le_add_left := by intros; rfl
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit where
-  top_add' _ := rfl
+  top_add _ := rfl
+
+instance : IsBotAbsorbing PUnit where
+  bot_add _ := rfl
+  add_bot _ := rfl
+
+instance : NoTopAddends PUnit where
+  eq_top_or_eq_top_of_add_eq_top {_ _ _} := .inl rfl
+
+instance : NoBotAddends PUnit where
+  eq_bot_or_eq_bot_of_add_eq_bot {_ _ _} := .inl rfl
 
 variable {R S : Type*}
 

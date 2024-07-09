@@ -161,7 +161,8 @@ attribute [simp] bot_add add_bot
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    OrderTop α, IsTopAbsorbing α
+    OrderTop α, IsTopAbsorbing α where
+  add_top a := add_comm a ⊤ ▸ top_add a
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
 #align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
