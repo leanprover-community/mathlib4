@@ -350,11 +350,8 @@ def nlinarithExtras : GlobalPreprocessor where
       let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
         HashSet.empty
       si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
-    let new_es ← s.filterMapM fun (e, is_sq) => do
-      try
-        mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-      catch _ =>
-        pure none
+    let new_es ← s.filterMapM fun (e, is_sq) =>
+      observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
     let new_es ← compWithZero.globalize.transform new_es
     trace[linarith] "nlinarith preprocessing found squares"
     trace[linarith] "{s}"
