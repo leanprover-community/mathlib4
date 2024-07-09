@@ -134,7 +134,7 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
             refine (hf.pow_const _).mul <| Finset.measurable_prod _ ?_
             exact fun _ _ ↦ hf.lmarginal μ |>.pow_const _
-    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s:=s) (fun x ↦ ?_)
+    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s := s) (fun x ↦ ?_)
   -- The remainder of the computation happens within an `|s|`-fold iterated integral
   simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
   set X := update x i

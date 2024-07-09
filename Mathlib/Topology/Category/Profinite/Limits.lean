@@ -223,7 +223,7 @@ instance : PreservesFiniteCoproducts profiniteToCompHaus := by
   exact CompHaus.finiteCoproduct.isColimit _
 
 noncomputable instance : PreservesFiniteCoproducts Profinite.toTopCat.{u} where
-  preserves _ _:= (inferInstance :
+  preserves _ _ := (inferInstance :
     PreservesColimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
 
 instance : FinitaryExtensive Profinite :=

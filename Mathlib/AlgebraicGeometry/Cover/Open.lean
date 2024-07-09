@@ -397,7 +397,7 @@ def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
   idx j := j.fst
   app j := (𝓤.obj j.fst).affineCover.map _
 
-/-- If two global sections agree after restriction to each member of a finite open cover, then
+/-- If two global sections agree after restriction to each member of an open cover, then
 they agree globally. -/
 lemma OpenCover.ext_elem {X : Scheme.{u}} {U : Opens X} (f g : Γ(X, U)) (𝒰 : X.OpenCover)
     (h : ∀ i : 𝒰.J, (𝒰.map i).app U f = (𝒰.map i).app U g) : f = g := by

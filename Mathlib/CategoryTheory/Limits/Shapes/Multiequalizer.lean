@@ -406,7 +406,7 @@ def IsLimit.lift (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
 
 @[reassoc (attr := simp)]
 lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
-    (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a : I.L):
+    (hk : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a : I.L) :
     IsLimit.lift hK k hk ≫ K.ι a = k a :=
   hK.fac _ _
 

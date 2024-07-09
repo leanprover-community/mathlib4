@@ -92,7 +92,7 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
 Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
 unit is an isomorphism.
 -/
-def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) :  𝟭 C ≅ L ⋙ R where
+def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
   hom := adj.unit
   inv :=  i.hom ≫ (adj.toMonad.transport i).μ
   hom_inv_id := by
@@ -343,7 +343,7 @@ instance comparison_essSurj [Reflective R] :
   apply (X.unit_assoc _).symm
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
-lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R):
+lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
   map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
 #align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparison_full

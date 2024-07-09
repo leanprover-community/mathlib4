@@ -67,7 +67,7 @@ namespace UnusedTactic
 abbrev M := StateRefT (HashMap String.Range Syntax) IO
 
 /-- `Parser`s allowed to not change the tactic state. -/
-def allowed : HashSet SyntaxNodeKind:= HashSet.empty
+def allowed : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `Mathlib.Tactic.Says.says
   |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
   -- attempt to speed up, by ignoring more tactics
