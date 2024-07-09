@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Batteries.Data.List.Pairwise
+import Mathlib.Data.List.Sort
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Star.Order
-import Mathlib.Data.List.Sort
 import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
