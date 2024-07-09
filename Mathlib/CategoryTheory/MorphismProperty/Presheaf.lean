@@ -260,7 +260,7 @@ lemma presheaf.property {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoneda.ob
 -- (Calle): this can definitely be golfed later. Also maybe provide other versions
 -- of this lemma with other pullback API's (e.g. `pullback f g` could be useful)
 -- possibly this should be the definition, and the weaker condition should be derived from this?
-lemma presheaf.property' (hP : StableUnderBaseChange P) {f : F ⟶ G} (hf : P.presheaf f) :
+lemma presheaf.property' (hP : P.RespectsIso) {f : F ⟶ G} (hf : P.presheaf f) :
     ∀ ⦃X Y : C⦄ {g : yoneda.obj X ⟶ G} {fst : yoneda.obj Y ⟶ F} {snd : Y ⟶ X}
     (_ : IsPullback fst (yoneda.map snd) f g), P snd := by
   intro X Y g fst snd h
@@ -272,14 +272,12 @@ lemma presheaf.property' (hP : StableUnderBaseChange P) {f : F ⟶ G} (hf : P.pr
   rw [Functor.FullyFaithful.preimage_map] at comp
   rw [← comp, Yoneda.fullyFaithful.preimage_comp]
 
-  simpa using hP.respectsIso.1 (Yoneda.fullyFaithful.preimageIso <| h.isoIsPullback h') _
-    (hf.property g)
+  simpa using hP.1 (Yoneda.fullyFaithful.preimageIso <| h.isoIsPullback h') _ (hf.property g)
 
-lemma presheaf_mk' (hP : StableUnderBaseChange P) {f : F ⟶ G} (hf : Presheaf.representable f) :
-    (∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C)
+lemma presheaf_mk' (hP : P.RespectsIso) {f : F ⟶ G} (hf : Presheaf.representable f)
+    (h : (∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C)
     (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X) (_ : IsPullback fst (yoneda.map snd) f g),
-    P snd) → P.presheaf f := by
-  intro h
+    P snd)) : P.presheaf f := by
   use hf
   intro X g
   obtain ⟨Y, fst, snd, ⟨h, P_snd⟩⟩ := h g
@@ -292,8 +290,7 @@ lemma presheaf_mk' (hP : StableUnderBaseChange P) {f : F ⟶ G} (hf : Presheaf.r
   rw [Functor.FullyFaithful.preimage_map] at comp
   rw [← comp, Yoneda.fullyFaithful.preimage_comp]
 
-  simpa using hP.respectsIso.1 (Yoneda.fullyFaithful.preimageIso <| h'.isoIsPullback h) _
-    P_snd
+  simpa using hP.1 (Yoneda.fullyFaithful.preimageIso <| h'.isoIsPullback h) _ P_snd
 
 -- this lemma is also introduced in PR #10425, this should be moved to CategoryTheory.Yoneda
 /-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
@@ -382,7 +379,7 @@ lemma representable_respectsIso : RespectsIso (Presheaf.representable (C:=C)) :=
 
 section
 
-variable [HasPullbacks C] (hP₀ : StableUnderBaseChange P)
+variable [HasPullbacks C] (hP₀ : P.RespectsIso)
 
 lemma presheaf_stableUnderBaseChange : StableUnderBaseChange (MorphismProperty.presheaf P) := by
   intro F G G' H f g f' g' hfBC hg
