@@ -184,12 +184,13 @@ theorem lexOrder_mul [NoZeroDivisors R] (φ ψ : MvPowerSeries σ R) :
 end LexOrder
 
 section
--- This belongs to `NoZeroDivisors.lean`
+-- This belongs to some other file
 /-- The opposite linear order to a given linear order -/
 def LinearOrder.swap (h : LinearOrder σ) : LinearOrder σ :=
   letI : IsStrictTotalOrder σ (Function.swap h.lt) := IsStrictTotalOrder.swap h.lt
   linearOrderOfSTO (Function.swap h.lt)
 
+-- This belongs to `NoZeroDivisors.lean` once this is merged from #14454
 theorem noZeroDivisors [NoZeroDivisors R] :
     NoZeroDivisors (MvPowerSeries σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
