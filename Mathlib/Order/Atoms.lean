@@ -423,7 +423,7 @@ instance [IsStronglyAtomic α] {s : Set α} [Set.OrdConnected s] : IsStronglyAto
 instance [IsStronglyCoatomic α] {s : Set α} [h : Set.OrdConnected s] : IsStronglyCoatomic s :=
   Set.OrdConnected.isStronglyCoatomic <| by assumption
 
-instance [SuccOrder α] : IsStronglyAtomic α where
+instance SuccOrder.toIsStronglyAtomic [SuccOrder α] : IsStronglyAtomic α where
   exists_covBy_le_of_lt a _ hab :=
     ⟨SuccOrder.succ a, Order.covBy_succ_of_not_isMax fun ha ↦ ha.not_lt hab,
       SuccOrder.succ_le_of_lt hab⟩
