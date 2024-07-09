@@ -401,7 +401,7 @@ instance IsStronglyAtomic.isAtomic (α : Type*) [PartialOrder α] [OrderBot α] 
     obtain ⟨x, hx, hxa⟩ := hlt.exists_covby_le
     exact ⟨x, bot_covBy_iff.1 hx, hxa⟩
 
-instance IsStronglyCoatomic.isCoatomic (α : Type*) [PartialOrder α] [OrderTop α]
+instance IsStronglyCoatomic.toIsCoatomic (α : Type*) [PartialOrder α] [OrderTop α]
     [IsStronglyCoatomic α] : IsCoatomic α :=
   isAtomic_dual_iff_isCoatomic.1 <| IsStronglyAtomic.isAtomic (α := αᵒᵈ)
 
