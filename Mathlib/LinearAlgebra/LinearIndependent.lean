@@ -533,7 +533,7 @@ theorem linearIndependent_sUnion_of_directed {s : Set (Set M)} (hs : DirectedOn 
     (h : ∀ a ∈ s, LinearIndependent R ((↑) : ((a : Set M) : Type _) → M)) :
     LinearIndependent R (fun x => x : ⋃₀ s → M) := by
   rw [sUnion_eq_iUnion]
-    exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
+  exact linearIndependent_iUnion_of_directed hs.directed_val (by simpa using h)
 #align linear_independent_sUnion_of_directed linearIndependent_sUnion_of_directed
 
 theorem linearIndependent_biUnion_of_directed {η} {s : Set η} {t : η → Set M}

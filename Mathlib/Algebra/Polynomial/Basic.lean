@@ -349,7 +349,7 @@ instance isScalarTower_right {α K : Type*} [Semiring K] [DistribSMul α K] [IsS
     IsScalarTower α K[X] K[X] :=
   ⟨by
     rintro _ ⟨⟩ ⟨⟩
-      simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
+    simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 #align polynomial.is_scalar_tower_right Polynomial.isScalarTower_right
 
 instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
