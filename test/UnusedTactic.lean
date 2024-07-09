@@ -15,6 +15,9 @@ set_option linter.unusedTactic false
 /--
 warning: 'congr' tactic does nothing
 note: this linter can be disabled with `set_option linter.unusedTactic false`
+---
+warning: 'done' tactic does nothing
+note: this linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
 set_option linter.unusedTactic true in
@@ -22,6 +25,7 @@ set_option linter.unusedTactic true in
 example : True := by
   congr
   constructor
+  done
 
 section allowing_more_unused_tactics
 --  test that allowing more unused tactics has the desired effect of silencing the linter
@@ -35,10 +39,3 @@ example : True := by
   done
 
 end allowing_more_unused_tactics
-
-#guard_msgs in
-set_option linter.unusedTactic true in
-example : True := by
-  skip
-  constructor
-  done
