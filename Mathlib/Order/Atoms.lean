@@ -1056,7 +1056,7 @@ theorem CompleteLattice.isStronglyAtomic [IsUpperModularLattice α] [IsAtomistic
 
 /-- A complete lower-modular lattice that is coatomistic is strongly coatomic.
 Not an instance to prevent loops. -/
-instance [IsLowerModularLattice α] [IsCoatomistic α] : IsStronglyCoatomic α := by
+theorem [IsLowerModularLattice α] [IsCoatomistic α] : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
   exact CompleteLattice.isStronglyAtomic
 
