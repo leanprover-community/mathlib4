@@ -446,7 +446,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
       ‖(i.symm : F →L[𝕜] E)‖ * a +
         ‖(i.symm : F →L[𝕜] E)‖ * C *
           ∑ k ∈ Ico 2 (n + 1), (r * ∑ j ∈ Ico 1 n, a ^ j * ‖p.rightInv i j‖) ^ k :=
-  let I := ‖(i.symm : F →L[𝕜] E)‖;
+  let I := ‖(i.symm : F →L[𝕜] E)‖
   calc
     ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i k‖ =
         a * I + ∑ k ∈ Ico 2 (n + 1), a ^ k * ‖p.rightInv i k‖ := by

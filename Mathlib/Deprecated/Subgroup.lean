@@ -203,7 +203,7 @@ theorem Multiplicative.isNormalSubgroup [AddGroup A] {s : Set A} (hs : IsNormalA
 theorem Multiplicative.isNormalSubgroup_iff [AddGroup A] {s : Set A} :
     @IsNormalSubgroup (Multiplicative A) _ s ↔ IsNormalAddSubgroup s :=
   ⟨by
-    rintro ⟨h₁, h₂⟩;
+    rintro ⟨h₁, h₂⟩
     exact @IsNormalAddSubgroup.mk A _ _ (Multiplicative.isSubgroup_iff.1 h₁) @h₂,
     fun h => Multiplicative.isNormalSubgroup h⟩
 #align multiplicative.is_normal_subgroup_iff Multiplicative.isNormalSubgroup_iff
@@ -474,7 +474,7 @@ theorem injective_iff_trivial_ker {f : G → H} (hf : IsGroupHom f) :
 @[to_additive]
 theorem trivial_ker_iff_eq_one {f : G → H} (hf : IsGroupHom f) :
     ker f = trivial G ↔ ∀ x, f x = 1 → x = 1 := by
-  rw [Set.ext_iff]; simp [ker];
+  rw [Set.ext_iff]; simp [ker]
   exact ⟨fun h x hx => (h x).1 hx, fun h x => ⟨h x, fun hx => by rw [hx, hf.map_one]⟩⟩
 #align is_group_hom.trivial_ker_iff_eq_one IsGroupHom.trivial_ker_iff_eq_one
 #align is_add_group_hom.trivial_ker_iff_eq_zero IsAddGroupHom.trivial_ker_iff_eq_zero
