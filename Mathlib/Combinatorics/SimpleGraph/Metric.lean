@@ -1,10 +1,10 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Vincent Beffara
+Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
-import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.ENat.Lattice
 
 #align_import combinatorics.simple_graph.metric from "leanprover-community/mathlib"@"352ecfe114946c903338006dd3287cb5a9955ff2"
 
@@ -43,15 +43,120 @@ variable {V : Type*} (G : SimpleGraph V)
 
 /-! ## Metric -/
 
+section edist
 
-/-- The distance between two vertices is the length of the shortest walk between them.
-If no such walk exists, this uses the junk value of `0`. -/
+noncomputable def edist (u v : V) : ℕ∞ :=
+  ⨅ w : G.Walk u v, w.length
+
+variable {G} {u v : V}
+
+protected theorem Reachable.exists_walk_of_edist {u v : V} (hr : G.Reachable u v) :
+    ∃ p : G.Walk u v, p.length = G.edist u v :=
+  csInf_mem <| Set.range_nonempty_iff_nonempty.mpr hr
+
+protected theorem Connected.exists_walk_of_edist (hconn : G.Connected) (u v : V) :
+    ∃ p : G.Walk u v, p.length = G.edist u v :=
+  (hconn u v).exists_walk_of_edist
+
+theorem edist_le {u v : V} (p : G.Walk u v) :
+    G.edist u v ≤ p.length :=
+  sInf_le ⟨p, rfl⟩
+
+@[simp]
+theorem edist_eq_zero_iff_eq {u v : V} :
+    G.edist u v = 0 ↔ u = v := by
+  apply Iff.intro <;> simp [edist, ENat.iInf_eq_zero]
+
+theorem edist_self {v : V} : edist G v v = 0 :=
+  edist_eq_zero_iff_eq.mpr rfl
+
+theorem pos_edist_of_ne {u v : V} (hne : u ≠ v) :
+    0 < G.edist u v :=
+  pos_iff_ne_zero.mpr <| edist_eq_zero_iff_eq.ne.mpr hne
+
+lemma edist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
+    G.edist u v = ⊤ := by
+  simp [edist, not_reachable_iff_isEmplty_walk.mp h]
+
+theorem Reachable.of_edist_ne_top {u v : V} (h : G.edist u v ≠ ⊤) :
+    G.Reachable u v :=
+  not_not.mp <| edist_eq_top_of_not_reachable.mt h
+
+protected theorem Connected.edist_triangle (hconn : G.Connected) {u v w : V} :
+    G.edist u w ≤ G.edist u v + G.edist v w := by
+  obtain ⟨p, hp⟩ := hconn.exists_walk_of_edist u v
+  obtain ⟨q, hq⟩ := hconn.exists_walk_of_edist v w
+  rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
+  apply edist_le
+
+theorem dist_comm {u v : V} : G.edist u v = G.edist v u := by
+  have {u v : V} (h : G.Reachable u v) : G.edist u v ≤ G.edist v u := by
+    obtain ⟨p, hp⟩ := h.symm.exists_walk_of_edist
+    rw [← hp, ← Walk.length_reverse]
+    apply edist_le
+  by_cases h : G.Reachable u v
+  · apply le_antisymm (this h) (this h.symm)
+  · have h' : ¬G.Reachable v u := fun h' => absurd h'.symm h
+    simp [h, h', edist_eq_top_of_not_reachable]
+
+lemma exists_walk_of_edist_ne_top {u v : V} (h : G.edist u v ≠ ⊤) :
+    ∃ p : G.Walk u v, p.length = G.edist u v :=
+  (Reachable.of_edist_ne_top h).exists_walk_of_edist
+
+/--
+The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
+-/
+theorem edist_eq_one_iff_adj {u v : V} : G.edist u v = 1 ↔ G.Adj u v := by
+  have ne_top_of_eq_one {n : ℕ∞} (h : n = 1) : n ≠ ⊤ := by
+    rw [← ENat.coe_toNat_eq_self, h]; rfl
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · let ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| ne_top_of_eq_one h
+    rw [h, Nat.cast_eq_one] at hw
+    exact w.adj_of_length_eq_one <| hw
+  · exact ge_antisymm (ENat.one_le_iff_pos.mpr <| pos_edist_of_ne h.ne) <| edist_le h.toWalk
+
+end edist
+
+section dist
+
 noncomputable def dist (u v : V) : ℕ :=
-  sInf (Set.range (Walk.length : G.Walk u v → ℕ))
+  (G.edist u v).toNat
 #align simple_graph.dist SimpleGraph.dist
 
-variable {G}
+lemma dist_eq_edist_of_ne_zero {u v : V} (h : G.dist u v ≠ 0) :
+    G.dist u v = G.edist u v :=
+  ((fun h ↦ (ENat.toNat_eq_iff h).mp) h rfl).symm
 
+lemma dist_zero_def {u v : V} (h : G.dist u v = 0) :
+    G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) := by
+  rw [h]
+  rw [dist, edist, ENat.toNat_eq_zero] at h
+  symm
+  cases h <;> by_contra <;> simp_all [iInf, ENat.sInf_eq_zero]
+
+theorem dist_def {u v : V} :
+    G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) := by
+  let s := Set.range (Walk.length : G.Walk u v → ℕ)
+  by_cases h : G.dist u v = 0
+  · exact G.dist_zero_def h
+  · push_neg at h
+    #check G.dist_eq_edist_of_ne_zero h
+    rw [G.dist_eq_edist_of_ne_zero h]
+
+  /--rw [dist]
+  by_cases h : G.edist u v = ⊤
+  · symm
+    rw [h, ENat.toNat_top, Nat.sInf_eq_zero]
+    simp [ENat.iInf_coe_eq_top.mp h]
+  · rw [edist, ← ne_eq, ENat.iInf_coe_ne_top] at h
+    --rw [edist, iInf]
+
+    sorry -/
+    --rw [← ne_eq, ← ENat.coe_toNat_eq_self] at h
+
+end dist
+
+/--
 protected theorem Reachable.exists_walk_of_dist {u v : V} (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
   Nat.sInf_mem (Set.range_nonempty_iff_nonempty.mpr hr)
@@ -161,5 +266,6 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
   obtain ⟨p, h⟩ := hconn.exists_walk_of_dist u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+-/
 
 end SimpleGraph
