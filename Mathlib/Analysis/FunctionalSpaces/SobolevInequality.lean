@@ -49,7 +49,7 @@ Potentially also useful:
   a Hilbert space, without restrictions on its dimension.
 -/
 
-open scoped Classical BigOperators ENNReal NNReal Topology
+open scoped ENNReal NNReal
 open Set Function Finset MeasureTheory Measure Filter
 
 noncomputable section
