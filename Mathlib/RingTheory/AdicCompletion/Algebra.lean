@@ -64,7 +64,6 @@ def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
 def subring : Subring (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
   Subalgebra.toSubring (subalgebra I)
 
-/-- One in `AdicCompletion I R`. -/
 @[irreducible]
 def one : AdicCompletion I R :=
   ⟨1, by simp⟩
@@ -72,7 +71,6 @@ def one : AdicCompletion I R :=
 instance : One (AdicCompletion I R) where
   one := one I
 
-/-- Multiplication in `AdicCompletion I R`. -/
 @[irreducible]
 def mul (x y : AdicCompletion I R) : AdicCompletion I R :=
   ⟨x.val * y.val, by simp [x.property, y.property]⟩
@@ -105,7 +103,6 @@ instance : CommRing (AdicCompletion I R) where
   sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
   mul_comm x y := Subtype.ext <| mul_comm x.val y.val
 
-/-- Function of `R`-algebra map of `AdicCompletion I R`. -/
 @[irreducible]
 def algebraMapFun (r : R) : AdicCompletion I R :=
   ⟨algebraMap R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by simp⟩
@@ -161,7 +158,6 @@ def subalgebra : Subalgebra R (ℕ → R) :=
 def subring : Subring (ℕ → R) :=
   Subalgebra.toSubring (AdicCauchySequence.subalgebra I)
 
-/-- One in `AdicCauchySequence I R`. -/
 @[irreducible]
 def one : AdicCauchySequence I R :=
   ⟨1, fun _ ↦ rfl⟩
@@ -169,7 +165,6 @@ def one : AdicCauchySequence I R :=
 instance : One (AdicCauchySequence I R) where
   one := one I
 
-/-- Multiplication in `AdicCauchySequence I R`. -/
 @[irreducible]
 def mul (x y : AdicCauchySequence I R) : AdicCauchySequence I R :=
   ⟨x.val * y.val, fun hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
@@ -202,7 +197,6 @@ instance : CommRing (AdicCauchySequence I R) where
   sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
   mul_comm x y := Subtype.ext <| mul_comm x.val y.val
 
-/-- Function of `R`-algebra map of `AdicCauchySequence I R`. -/
 @[irreducible]
 def algebraMapFun (r : R) : AdicCauchySequence I R :=
   ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
@@ -290,7 +284,6 @@ instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Sub
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl
 
-/-- `AdicCompletion I R`-scalar multiplication on `AdicCompletion I M`. -/
 @[irreducible]
 def smul' (r : AdicCompletion I R) (x : AdicCompletion I M) : AdicCompletion I M where
   val := fun n ↦ eval I R n r • eval I M n x
