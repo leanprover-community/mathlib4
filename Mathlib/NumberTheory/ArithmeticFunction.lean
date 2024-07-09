@@ -1148,7 +1148,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
     ∏ p ∈ n.primeFactors, (1 + f p) = ∑ d ∈ n.divisors, f d := by
   trans (∏ᵖ p ∣ n, ((ζ:ArithmeticFunction R) + f) p)
   · simp_rw [prodPrimeFactors_apply hn.ne_zero, add_apply, natCoe_apply]
-    apply Finset.prod_congr rfl; intro p hp;
+    apply Finset.prod_congr rfl; intro p hp
     rw [zeta_apply_ne (prime_of_mem_factors <| List.mem_toFinset.mp hp).ne_zero, cast_one]
   rw [isMultiplicative_zeta.natCast.prodPrimeFactors_add_of_squarefree h_mult hn,
     coe_zeta_mul_apply]

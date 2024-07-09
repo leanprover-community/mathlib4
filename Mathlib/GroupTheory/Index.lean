@@ -361,7 +361,7 @@ theorem index_eq_card [Fintype (G ⧸ H)] : H.index = Fintype.card (G ⧸ H) :=
 @[to_additive index_mul_card]
 theorem index_mul_card [Fintype G] [hH : Fintype H] :
     H.index * Fintype.card H = Fintype.card G := by
-  rw [← relindex_bot_left_eq_card, ← index_bot_eq_card, mul_comm];
+  rw [← relindex_bot_left_eq_card, ← index_bot_eq_card, mul_comm]
     exact relindex_mul_index bot_le
 #align subgroup.index_mul_card Subgroup.index_mul_card
 #align add_subgroup.index_mul_card AddSubgroup.index_mul_card

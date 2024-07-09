@@ -310,7 +310,7 @@ theorem isMaximal_iff {I : Ideal α} :
   isMaximal_def.trans <|
     and_congr I.ne_top_iff_one <|
       forall_congr' fun J => by
-        rw [lt_iff_le_not_le];
+        rw [lt_iff_le_not_le]
           exact
             ⟨fun H x h hx₁ hx₂ => J.eq_top_iff_one.1 <| H ⟨h, not_subset.2 ⟨_, hx₂, hx₁⟩⟩,
               fun H ⟨h₁, h₂⟩ =>

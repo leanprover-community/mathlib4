@@ -305,7 +305,7 @@ namespace RingTopology
 variable {α : Type*} [Ring α]
 
 instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
-  ⟨let _ : TopologicalSpace α := ⊤;
+  ⟨let _ : TopologicalSpace α := ⊤
     { continuous_add := continuous_top
       continuous_mul := continuous_top
       continuous_neg := continuous_top }⟩

@@ -124,7 +124,7 @@ theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
     | _, ⟨n, Or.inl rfl⟩ => this _ _
     | _, ⟨n, Or.inr rfl⟩ => by rw [Int.ediv_neg, abs_neg]; apply this
   fun a n => by
-  rw [abs_eq_natAbs, abs_eq_natAbs];
+  rw [abs_eq_natAbs, abs_eq_natAbs]
     exact
       ofNat_le_ofNat_of_le
         (match a, n with

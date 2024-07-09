@@ -238,12 +238,12 @@ theorem inner_smul_left (x y : F) {r : 𝕜} : ⟪r • x, y⟫ = r† * ⟪x, y
 #align inner_product_space.core.inner_smul_left InnerProductSpace.Core.inner_smul_left
 
 theorem inner_smul_right (x y : F) {r : 𝕜} : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_smul_left];
+  rw [← inner_conj_symm, inner_smul_left]
     simp only [conj_conj, inner_conj_symm, RingHom.map_mul]
 #align inner_product_space.core.inner_smul_right InnerProductSpace.Core.inner_smul_right
 
 theorem inner_zero_left (x : F) : ⟪0, x⟫ = 0 := by
-  rw [← zero_smul 𝕜 (0 : F), inner_smul_left];
+  rw [← zero_smul 𝕜 (0 : F), inner_smul_left]
     simp only [zero_mul, RingHom.map_zero]
 #align inner_product_space.core.inner_zero_left InnerProductSpace.Core.inner_zero_left
 

@@ -53,7 +53,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
               _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) :=
                 (add_le_add_left (nsmul_le_nsmul_right (@degree_le_natDegree _ _ q) n) _)
               _ = (n * natDegree q : ℕ) := by
-                rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul];
+                rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul]
                   simp
               _ ≤ (natDegree p * natDegree q : ℕ) :=
                 WithBot.coe_le_coe.2 <|

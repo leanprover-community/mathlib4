@@ -179,7 +179,7 @@ def minpoly : Polynomial (FixedPoints.subfield G F) :=
 namespace minpoly
 
 theorem monic : (minpoly G F x).Monic := by
-  simp only [minpoly, Polynomial.monic_toSubring];
+  simp only [minpoly, Polynomial.monic_toSubring]
   exact prodXSubSMul.monic G F x
 #align fixed_points.minpoly.monic FixedPoints.minpoly.monic
 

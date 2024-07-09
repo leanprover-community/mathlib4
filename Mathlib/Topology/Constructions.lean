@@ -493,7 +493,7 @@ theorem continuous_sInf_dom₂ {X Y Z} {f : X → Y → Z} {tas : Set (Topologic
     {tbs : Set (TopologicalSpace Y)} {tX : TopologicalSpace X} {tY : TopologicalSpace Y}
     {tc : TopologicalSpace Z} (hX : tX ∈ tas) (hY : tY ∈ tbs)
     (hf : Continuous fun p : X × Y => f p.1 p.2) : by
-    haveI := sInf tas; haveI := sInf tbs;
+    haveI := sInf tas; haveI := sInf tbs
       exact @Continuous _ _ _ tc fun p : X × Y => f p.1 p.2 := by
   have hX := continuous_sInf_dom hX continuous_id
   have hY := continuous_sInf_dom hY continuous_id

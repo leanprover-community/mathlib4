@@ -421,10 +421,10 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
     adjugate A =
     !![A 1 1 * A 2 2 - A 1 2 * A 2 1,
       -(A 0 1 * A 2 2) + A 0 2 * A 2 1,
-      A 0 1 * A 1 2 - A 0 2 * A 1 1;
+      A 0 1 * A 1 2 - A 0 2 * A 1 1
       -(A 1 0 * A 2 2) + A 1 2 * A 2 0,
       A 0 0 * A 2 2 - A 0 2 * A 2 0,
-      -(A 0 0 * A 1 2) + A 0 2 * A 1 0;
+      -(A 0 0 * A 1 2) + A 0 2 * A 1 0
       A 1 0 * A 2 1 - A 1 1 * A 2 0,
       -(A 0 0 * A 2 1) + A 0 1 * A 2 0,
       A 0 0 * A 1 1 - A 0 1 * A 1 0] := by
@@ -435,8 +435,8 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i : α) :
     adjugate !![a, b, c; d, e, f; g, h, i] =
-      !![  e * i  - f * h, -(b * i) + c * h,   b * f  - c * e;
-         -(d * i) + f * g,   a * i  - c * g, -(a * f) + c * d;
+      !![  e * i  - f * h, -(b * i) + c * h,   b * f  - c * e
+         -(d * i) + f * g,   a * i  - c * g, -(a * f) + c * d
            d * h  - e * g, -(a * h) + b * g,   a * e  - b * d] :=
   adjugate_fin_three _
 

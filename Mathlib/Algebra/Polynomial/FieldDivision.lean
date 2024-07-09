@@ -362,7 +362,7 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
 
 theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
-    have := EuclideanDomain.div_add_mod p q;
+    have := EuclideanDomain.div_add_mod p q
       rwa [h, mul_zero, zero_add, mod_eq_self_iff hq0] at this,
     fun h => by
     have hlt : degree p < degree (q * C (leadingCoeff q)⁻¹) := by
@@ -390,7 +390,7 @@ theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
 
 theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degree p := by
   have hq0 : q ≠ 0 := fun hq0 => by simp [hq0] at hq
-  rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq0];
+  rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq0]
     exact
       degree_divByMonic_lt _ (monic_mul_leadingCoeff_inv hq0) hp
         (by rw [degree_mul_leadingCoeff_inv _ hq0]; exact hq)

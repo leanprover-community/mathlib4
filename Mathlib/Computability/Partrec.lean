@@ -640,7 +640,7 @@ theorem bind_decode_iff {f : α → β → Option σ} :
             snd).bind
         (Computable.comp hf fst).to₂.partrec₂)
       fun n => by
-        simp; cases decode (α := α) n.unpair.1 <;> simp;
+        simp; cases decode (α := α) n.unpair.1 <;> simp
           cases decode (α := β) n.unpair.2 <;> simp,
     fun hf => by
     have :

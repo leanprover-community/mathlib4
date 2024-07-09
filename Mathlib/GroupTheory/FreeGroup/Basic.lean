@@ -764,7 +764,7 @@ theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
 
 @[to_additive]
 theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
-  rintro _ ⟨⟨L⟩, rfl⟩;
+  rintro _ ⟨⟨L⟩, rfl⟩
     exact
       List.recOn L s.one_mem fun ⟨x, b⟩ tl ih =>
         Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)

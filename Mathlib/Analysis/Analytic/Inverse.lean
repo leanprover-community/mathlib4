@@ -169,7 +169,7 @@ noncomputable def rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | 0 => 0
   | 1 => (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm
   | n + 2 =>
-    let q : FormalMultilinearSeries 𝕜 F E := fun k => if k < n + 2 then rightInv p i k else 0;
+    let q : FormalMultilinearSeries 𝕜 F E := fun k => if k < n + 2 then rightInv p i k else 0
     -(i.symm : F →L[𝕜] E).compContinuousMultilinearMap ((p.comp q) (n + 2))
 #align formal_multilinear_series.right_inv FormalMultilinearSeries.rightInv
 

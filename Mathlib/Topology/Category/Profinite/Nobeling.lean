@@ -575,7 +575,7 @@ theorem factors_prod_eq_basis (x : π C (· ∈ s)) :
     (factors C s x).prod = spanFinBasis C s x := by
   ext y
   dsimp [spanFinBasis]
-  split_ifs with h <;> [exact factors_prod_eq_basis_of_eq _ _ h;
+  split_ifs with h <;> [exact factors_prod_eq_basis_of_eq _ _ h
     exact factors_prod_eq_basis_of_ne _ _ h]
 
 theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}

@@ -175,7 +175,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunction
         continuous_toFun := continuous_coe.subtype_map (by simp [s'])
         continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
     have (ξ : C(s, ℝ≥0) →⋆ₐ[ℝ≥0] A) (hξ : Continuous ξ) :
-        (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e;
+        (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapOfNNReal hξ |>.comp <|
@@ -382,7 +382,7 @@ instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
       simpa only [Homeomorph.symm_apply_apply] using congr(e.symm $(e0)).symm
     have (ξ : C(s, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapZeroOfNNReal.comp <|
-          ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩;
+          ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩
           Continuous ξ' ∧ ξ' (ContinuousMapZero.id h0') = ξ (ContinuousMapZero.id h0)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapZeroOfNNReal hξ |>.comp <| ?_, ?_⟩

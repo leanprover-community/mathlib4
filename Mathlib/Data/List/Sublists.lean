@@ -180,7 +180,7 @@ theorem sublists_concat (l : List α) (a : α) :
 #align list.sublists_concat List.sublists_concat
 
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
-  induction' l with hd tl ih <;> [rfl;
+  induction' l with hd tl ih <;> [rfl
     simp only [reverse_cons, sublists_append, sublists'_cons, map_append, ih, sublists_singleton,
       map_eq_map, bind_eq_bind, map_map, bind_cons, append_nil, bind_nil, (· ∘ ·)]]
 #align list.sublists_reverse List.sublists_reverse
@@ -428,7 +428,7 @@ theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
 theorem sublists_cons_perm_append (a : α) (l : List α) :
     sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) :=
   Perm.trans (sublists_perm_sublists' _) <| by
-  rw [sublists'_cons];
+  rw [sublists'_cons]
   exact Perm.append (sublists_perm_sublists' _).symm (Perm.map _ (sublists_perm_sublists' _).symm)
 #align list.sublists_cons_perm_append List.sublists_cons_perm_append
 

@@ -50,7 +50,7 @@ theorem Chain.iff_mem {a : α} {l : List α} :
     Chain R a l ↔ Chain (fun x y => x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
   ⟨fun p => by
     induction' p with _ a b l r _ IH <;> constructor <;>
-      [exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩;
+      [exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩
       exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩],
     Chain.imp fun a b h => h.2.2⟩
 #align list.chain.iff_mem List.Chain.iff_mem
