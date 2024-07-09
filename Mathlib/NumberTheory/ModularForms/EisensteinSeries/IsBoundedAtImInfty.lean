@@ -27,7 +27,7 @@ we then use our bounds for Eisenstein series in these vertical strips to get the
 
 noncomputable section
 
-open ModularForm UpperHalfPlane  Matrix SlashInvariantForm
+open ModularForm UpperHalfPlane  Matrix SlashInvariantForm CongruenceSubgroup
 open scoped MatrixGroups
 
 namespace EisensteinSeries

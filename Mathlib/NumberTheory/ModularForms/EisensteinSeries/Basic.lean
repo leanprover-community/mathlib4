@@ -23,7 +23,7 @@ noncomputable section
 
 namespace ModularForm
 
-open EisensteinSeries
+open EisensteinSeries CongruenceSubgroup
 
 /-- This defines Eisenstein series as modular forms of weight `k`, level `Γ(N)` and congruence
 condition given by `a: Fin 2 → ZMod N`. -/
