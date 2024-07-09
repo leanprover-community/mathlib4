@@ -264,6 +264,9 @@ theorem isSwapOn_iff_eq_swap [DecidableEq α] {f : Perm α} {x y : α} :
     f.IsSwapOn x y ↔ f = swap x y :=
   ⟨fun hf => hf.congr swap_isSwapOn, fun hf => hf ▸ swap_isSwapOn⟩
 
+theorem IsSwapOn.eq_swap [DecidableEq α] {f : Perm α} {x y : α} (hf : f.IsSwapOn x y) :
+    f = swap x y := hf.congr swap_isSwapOn
+
 /-- `f.IsSwap` indicates that the permutation `f` is a transposition of two distinct elements. -/
 def IsSwap (f : Perm α) : Prop :=
   ∃ x y, x ≠ y ∧ f.IsSwapOn x y
@@ -305,6 +308,9 @@ theorem swap_isSwap [DecidableEq α] {x y : α} (h : x ≠ y) : IsSwap (swap x y
 theorem isSwap_iff_exists_distinct_eq_swap [DecidableEq α] {f : Perm α} :
     f.IsSwap ↔ ∃ x y, x ≠ y ∧ f = swap x y := by
   simp_rw [IsSwap, isSwapOn_iff_eq_swap]
+
+theorem IsSwap.exists_distinct_eq_swap [DecidableEq α] {f : Perm α} (hf : f.IsSwap) :
+    ∃ x y, x ≠ y ∧ f = swap x y := isSwap_iff_exists_distinct_eq_swap.mp hf
 
 end IsSwap
 
@@ -865,13 +871,6 @@ theorem supportCard_inv_conj [Finite f.support] [Finite g.support] :
 end SupportCard
 
 /-
-theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap x (f x) * f) y ≠ y) :
-    f y ≠ y ∧ y ≠ x := by
-  simp only [swap_apply_def, mul_apply, f.injective.eq_iff] at *
-  by_cases h : f y = x
-  · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
-  · split_ifs at hy with h <;> try { simp [*] at * }
-#align equiv.perm.ne_and_ne_of_swap_mul_apply_ne_self Equiv.Perm.ne_and_ne_of_swap_mul_apply_ne_self
 
 
 theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :

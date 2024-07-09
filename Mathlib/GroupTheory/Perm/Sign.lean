@@ -52,6 +52,14 @@ noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
     DecidableRel (modSwap i j).r :=
   fun _ _ => Or.decidable
 
+theorem ne_and_ne_of_swap_mul_apply_ne_self {f : Perm α} {x y : α} (hy : (swap x (f x) * f) y ≠ y) :
+    f y ≠ y ∧ y ≠ x := by
+  simp only [swap_apply_def, mul_apply, f.injective.eq_iff] at *
+  by_cases h : f y = x
+  · constructor <;> intro <;> simp_all only [if_true, eq_self_iff_true, not_true, Ne]
+  · split_ifs at hy with h <;> try { simp [*] at * }
+#align equiv.perm.ne_and_ne_of_swap_mul_apply_ne_self Equiv.Perm.ne_and_ne_of_swap_mul_apply_ne_self
+
 /-- Given a list `l : List α` and a permutation `f : Perm α` such that the nonfixed points of `f`
   are in `l`, recursively factors `f` as a product of transpositions. -/
 def swapFactorsAux :
@@ -75,7 +83,8 @@ def swapFactorsAux :
       ⟨swap x (f x)::m.1, by
         rw [List.prod_cons, m.2.1, ← mul_assoc, mul_def (swap x (f x)), swap_swap, ← one_def,
           one_mul],
-        fun {g} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
+        fun {g} hg => ((List.mem_cons).1 hg).elim
+          (fun h => ⟨x, f x, hfx, h ▸ swap_isSwapOn⟩) (m.2.2 _)⟩
 #align equiv.perm.swap_factors_aux Equiv.Perm.swapFactorsAux
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
@@ -105,7 +114,7 @@ theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
   · simp (config := { contextual := true }) only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap
     rcases hl.2 g (by simp) with ⟨x, y, hxy⟩
-    rw [← hl.1, List.prod_cons, hxy.2]
+    rw [← hl.1, List.prod_cons, hxy.2.eq_swap]
     exact
       hmul_swap _ _ _ hxy.1
         (ih _ ⟨rfl, fun v hv => hl.2 _ (List.mem_cons_of_mem _ hv)⟩ h1 hmul_swap)
@@ -126,7 +135,7 @@ theorem closure_isSwap [Finite α] : Subgroup.closure { σ : Perm α | IsSwap σ
 theorem mclosure_swap_castSucc_succ (n : ℕ) :
     Submonoid.closure (Set.range fun i : Fin n ↦ swap i.castSucc i.succ) = ⊤ := by
   apply top_unique
-  rw [← mclosure_isSwap, Submonoid.closure_le]
+  simp_rw [← mclosure_isSwap, Submonoid.closure_le, isSwap_iff_exists_distinct_eq_swap]
   rintro _ ⟨i, j, ne, rfl⟩
   wlog lt : i < j generalizing i j
   · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_lt.resolve_left lt)
@@ -435,9 +444,10 @@ theorem sign_swap' {x y : α} : sign (swap x y) = if x = y then 1 else -1 :=
   if H : x = y then by simp [H, swap_self] else by simp [sign_swap H, H]
 #align equiv.perm.sign_swap' Equiv.Perm.sign_swap'
 
-theorem IsSwap.sign_eq {f : Perm α} (h : f.IsSwap) : sign f = -1 :=
+theorem IsSwap.sign_eq {f : Perm α} (h : f.IsSwap) : sign f = -1 := by
   let ⟨_, _, hxy⟩ := h
-  hxy.2.symm ▸ sign_swap hxy.1
+  rw [isSwapOn_iff_eq_swap] at hxy
+  exact hxy.2.symm ▸ sign_swap hxy.1
 #align equiv.perm.is_swap.sign_eq Equiv.Perm.IsSwap.sign_eq
 
 @[simp]
@@ -478,10 +488,12 @@ theorem sign_surjective [Nontrivial α] : Function.Surjective (sign : Perm α �
 variable {α}
 
 theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) : s = sign :=
-  have : ∀ {f}, IsSwap f → s f = -1 := fun {f} ⟨x, y, hxy, hxy'⟩ =>
-    hxy'.symm ▸
+  have : ∀ {f}, IsSwap f → s f = -1 := fun {f} ⟨x, y, hxy, hxy'⟩ => by
+    rw [isSwapOn_iff_eq_swap] at hxy'
+    exact hxy'.symm ▸
       by_contradiction fun h => by
         have : ∀ f, IsSwap f → s f = 1 := fun f ⟨a, b, hab, hab'⟩ => by
+          rw [isSwapOn_iff_eq_swap] at hab'
           rw [← isConj_iff_eq, ← Or.resolve_right (Int.units_eq_one_or _) h, hab']
           exact s.map_isConj (isConj_swap hab hxy)
         let ⟨g, hg⟩ := hs (-1)
