@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
 
-import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic

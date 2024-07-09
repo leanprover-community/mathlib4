@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Topological (sub)algebras over `Rat`

@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Algebra.Algebra.Rat
 
 #align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
