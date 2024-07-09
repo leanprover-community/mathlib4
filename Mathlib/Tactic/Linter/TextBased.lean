@@ -363,13 +363,13 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
   return errors
 
-/-- Lint all files referenced in a given import-only file.
-Print formatted errors and possibly update the style exceptions file accordingly.
+/-- Lint a collection of modules for style violations.
+Print formatted errors for all unexpected style violations;
+update the list of style exceptions if configured so.
 Return the number of files which had new style errors.
+`moduleNames` are all the modules to lint,
 `mode` specifies what kind of output this script should produce. -/
-def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
-  -- Read all module names from the file at `path`.
-  let allModules ← IO.FS.lines path
+def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 := do
   -- Read the style exceptions file.
   let exceptionsFilePath := (mkFilePath ["scripts", "style-exceptions.txt"])
   let exceptions ← IO.FS.lines exceptionsFilePath
@@ -380,7 +380,7 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
 
   let mut numberErrorFiles : UInt32 := 0
   let mut allUnexpectedErrors := #[]
-  for module in allModules do
+  for module in moduleNames do
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
     let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
@@ -423,3 +423,12 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
     IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
   return numberErrorFiles
+
+/-- Lint all files referenced in a given import-only file.
+Print formatted errors and possibly update the style exceptions file accordingly.
+Return the number of files which had new style errors.
+`mode` specifies what kind of output this script should produce. -/
+def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
+  -- Read all module names from the file at `path`.
+  let allModules ← IO.FS.lines path
+  lintModules allModules mode
