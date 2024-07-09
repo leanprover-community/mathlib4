@@ -336,18 +336,13 @@ def allLinters : Array TextbasedLinter := #[
 inductive OutputSetting : Type
   /-- Print any style error to standard output (the default) -/
   | print (style : ErrorFormat)
-  /-- Append all new errors to the style exceptions file (and print them),
-  leaving existing ones intact -/
-  | append
-  /-- Regenerate the whole style exceptions file -/
-  | regenerate
+  /-- Update the style exceptions file (but still print style errors to standard output).
+  This adds any new lines for exceptions output, removes any lines which are no longer necessary,
+  and otherwise tries not to modify existing lines.
+  To fully regenerate the output, delete `style-exceptions.txt` and run this step again.
+  -/
+  | update
   deriving BEq
-
-/-- Append a given string at the end of an existing file. -/
--- XXX: move this to `Init.System.IO.lean` in Lean core
-def IO.FS.appendToFile (fname : FilePath) (content : String) : IO Unit := do
-  let previous_content ← IO.FS.readFile fname
-  IO.FS.writeFile fname (previous_content ++ content)
 
 /-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
 `sizeLimit` is any pre-existing limit on this file's size.
@@ -389,30 +384,39 @@ def lintAllFiles (path : FilePath) (mode : OutputSetting) : IO UInt32 := do
     let module := module.stripPrefix "import "
     -- Convert the module name to a file name, then lint that file.
     let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
-    -- Find all size limits for this given file.
-    -- If several size limits are given (unlikely in practice), we use the first one.
-    let sizeLimits := (styleExceptions.filter (·.path == path)).filterMap (fun errctx ↦
-      match errctx.error with
-      | StyleError.fileTooLong _ limit => some limit
-      | _ => none)
-    let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
-    if errors.size > 0 then
-      allUnexpectedErrors := allUnexpectedErrors.append errors
-      numberErrorFiles := numberErrorFiles + 1
     match mode with
-    | OutputSetting.print style => formatErrors allUnexpectedErrors style
-    | OutputSetting.append =>
-        if allUnexpectedErrors.size > 0 then
-      let formatted := (allUnexpectedErrors.map
-        (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
-      IO.FS.appendToFile exceptionsFilePath s!"{"\n".intercalate formatted}\n"
-    | OutputSetting.regenerate =>
-      -- Empty the style exceptions file first: `writeFile` overwrites previous contents.
-      IO.FS.writeFile exceptionsFilePath s!""
-      let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
-      let this_output := "\n".intercalate
-        (allUnexpectedErrors.map (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
-      IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
+    | OutputSetting.print style =>
+      -- Find all size limits for this given file.
+      -- If several size limits are given (unlikely in practice), we use the first one.
+      let sizeLimits := (styleExceptions.filter (·.path == path)).filterMap (fun errctx ↦
+        match errctx.error with
+        | StyleError.fileTooLong _ limit => some limit
+        | _ => none)
+      let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
+      if errors.size > 0 then
+        allUnexpectedErrors := allUnexpectedErrors.append errors
+        numberErrorFiles := numberErrorFiles + 1
+        formatErrors allUnexpectedErrors style
+    | OutputSetting.update =>
+      -- Collect all style errors, *ignoring* any previous exceptions.
+      let errors := ← lintFile path none #[]
+      if errors.size > 0 then
+        allUnexpectedErrors := allUnexpectedErrors.append errors
+        numberErrorFiles := numberErrorFiles + 1
+        formatErrors allUnexpectedErrors ErrorFormat.humanReadable
+
+      -- Regenerate the style exceptions file, including the Python output.
+      --   if allUnexpectedErrors.size > 0 then
+      -- let formatted := (allUnexpectedErrors.map
+      --   (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
+      -- IO.FS.appendToFile exceptionsFilePath s!"{"\n".intercalate formatted}\n"
+    -- | OutputSetting.regenerate =>
+    --   -- Empty the style exceptions file first: `writeFile` overwrites previous contents.
+    --   IO.FS.writeFile exceptionsFilePath s!""
+    --   let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
+    --   let this_output := "\n".intercalate
+    --     (allUnexpectedErrors.map (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
+    --   IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
     IO.println s!"error: found {numberErrorFiles} new style errors\n\
       run `lake exe lint_style --update` to ignore all of them"
