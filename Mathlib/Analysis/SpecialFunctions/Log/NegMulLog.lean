@@ -52,6 +52,20 @@ lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * lo
   refine DifferentiableOn.differentiableAt differentiableOn_mul_log ?_
   simp [hx]
 
+open Filter in
+lemma tendsto_deriv_mul_log_nhdsWithin_zero :
+    Tendsto (deriv (fun x ↦ x * log x)) (𝓝[>] 0) atBot := by
+  have : (deriv (fun x ↦ x * log x)) =ᶠ[𝓝[>] 0] (fun x ↦ log x + 1) := by
+    apply eventuallyEq_nhdsWithin_of_eqOn
+    intro x hx
+    rw [deriv_mul_log]
+    simp only [Set.mem_Ioi, ne_eq]
+    exact ne_of_gt hx
+  simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
+
+-- lemma isLittleO_nhds_zero_id_deriv_mul_log : id =o[𝓝[>] 0] (deriv (fun x ↦ x * log x)) := by
+--   sorry
+
 /- helper lemma for `not_eventually_bounded_zero_mul_log` -/
 private lemma NegMulLog.one_lt_log_sub_const_of_lt_exp_sub
     (x D : ℝ) (hx : 0 < x) (h : x < rexp (D - 2)) :
@@ -112,17 +126,6 @@ lemma not_DifferentiableAt_log_mul_zero :
 /-- Not differentiable, hence `deriv` has junk value zero. -/
 lemma deriv_mul_log_zero : deriv (fun x ↦ x * log x) 0 = 0 :=
   deriv_zero_of_not_differentiableAt not_DifferentiableAt_log_mul_zero
-
-open Filter in
-lemma tendsto_deriv_mul_log_nhdsWithin_zero :
-    Tendsto (deriv (fun x ↦ x * log x)) (𝓝[>] 0) atBot := by
-  have : (deriv (fun x ↦ x * log x)) =ᶠ[𝓝[>] 0] (fun x ↦ log x + 1) := by
-    apply eventuallyEq_nhdsWithin_of_eqOn
-    intro x hx
-    rw [deriv_mul_log]
-    simp only [Set.mem_Ioi, ne_eq]
-    exact ne_of_gt hx
-  simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
 
 section NotContinuousAtOfTendstoNhdsWithin
 -- TODO put elsewhere, generalize, maybe add other nhdsWithin variants?
