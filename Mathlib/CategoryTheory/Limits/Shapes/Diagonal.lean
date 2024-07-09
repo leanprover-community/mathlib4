@@ -111,11 +111,11 @@ variable [HasPullback i₁ i₂]
 /-- The underlying map of `pullbackDiagonalIso` -/
 def pullbackDiagonalMapIso_hom :
     pullback (diagonal f)
-        (map (i₁ ≫ snd) (i₂ ≫ snd) f f (i₁ ≫ fst) (i₂ ≫ fst) i
+        (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i
           (by simp only [Category.assoc, condition])
           (by simp only [Category.assoc, condition])) ⟶
       pullback i₁ i₂ :=
-  pullback.lift (pullback.snd ≫ pullback.fst) (pullback.snd ≫ pullback.snd) (by
+  pullback.lift (pullback.snd _ _ ≫ pullback.fst _ _) (pullback.snd _ _ ≫ pullback.snd _ _) (by
   ext
   · simp only [Category.assoc, pullback_diagonal_map_snd_fst_fst,
       pullback_diagonal_map_snd_snd_fst]
@@ -124,11 +124,11 @@ def pullbackDiagonalMapIso_hom :
 /-- The underlying inverse of `pullbackDiagonalIso` -/
 def pullbackDiagonalMapIso_inv : pullback i₁ i₂ ⟶
     pullback (diagonal f)
-        (map (i₁ ≫ snd) (i₂ ≫ snd) f f (i₁ ≫ fst) (i₂ ≫ fst) i
+        (map (i₁ ≫ snd _ _) (i₂ ≫ snd _ _) f f (i₁ ≫ fst _ _) (i₂ ≫ fst _ _) i
           (by simp only [Category.assoc, condition])
           (by simp only [Category.assoc, condition])) :=
-    pullback.lift (pullback.fst ≫ i₁ ≫ pullback.fst)
-      (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) pullback.snd (Category.id_comp _).symm
+    pullback.lift (pullback.fst _ _ ≫ i₁ ≫ pullback.fst _ _)
+      (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (pullback.snd _ _) (Category.id_comp _).symm
         (Category.id_comp _).symm) (by
         ext
         · simp only [Category.assoc, diagonal_fst, Category.comp_id, limit.lift_π,
