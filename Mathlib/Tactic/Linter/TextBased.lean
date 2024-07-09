@@ -119,13 +119,13 @@ def StyleError.normalise (err : StyleError) : StyleError := match err with
   | StyleError.lineLength _ => StyleError.lineLength 0
   | _ => err
 
-/-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
-instance : BEq ErrorContext where
-  beq ctx ctx' :=
-      ctx.path == ctx'.path
-      -- We completely ignore line numbers of errors. Not sure if this is best.
-      -- We normalise errors before comparing them.
-      && (ctx.error).normalise == (ctx'.error).normalise
+/-- Whether two `ErrorContexts` are considered "the same" for the purposes of the question
+"is this a new error or covered by an existing exception". -/
+def ErrorContext.isSimilar (ctx ctx' : ErrorContext) : Bool :=
+  ctx.path == ctx'.path
+    -- We completely ignore line numbers of errors. Not sure if this is best.
+    -- We normalise errors before comparing them.
+  && (ctx.error).normalise == (ctx'.error).normalise
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans or for github output matchers -/
@@ -344,6 +344,12 @@ inductive OutputSetting : Type
   | update
   deriving BEq
 
+/-- If a given ErrorContext` is covered by a collection of style exceptions.
+This (fuzzily) compares `ctx` to each provided exception.
+-/
+def ErrorContext.isCoveredByExceptions (ctx : ErrorContext) (exceptions : Array ErrorContext) : Bool :=
+  (exceptions.find? fun e ↦ e.isSimilar ctx).isSome
+
 /-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
 `sizeLimit` is any pre-existing limit on this file's size.
 `exceptions` are any other style exceptions. -/
@@ -360,7 +366,8 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
-  errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
+  errors := errors.append (allOutput.flatten.filter
+    (fun ctx ↦ !(ctx.isCoveredByExceptions exceptions)))
   return errors
 
 /-- Lint a collection of modules for style violations.
