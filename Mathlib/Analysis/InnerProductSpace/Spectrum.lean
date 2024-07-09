@@ -503,9 +503,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   intro h
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
-  have M : Fintype.card {x // i ≠ x} < Fintype.card n := by
-    exact Fintype.card_subtype_lt fun a ↦ a rfl
-  have h1 := h {x // i ≠ x} M
+  have h1 := h {x // i ≠ x} (Fintype.card_subtype_lt fun a ↦ a rfl)
+
+  --somehow can use invariance_iInf together with h1 now...
 
 
   --have H := (set_fintype_card_eq_univ_iff (⊤ : Set n)).mpr rfl
