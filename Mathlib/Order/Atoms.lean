@@ -435,7 +435,7 @@ end StronglyAtomic
 
 section WellFounded
 
-theorem isStronglyAtomic_of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
+theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → α → Prop)) :
     IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
     refine ⟨WellFounded.min h (Set.Ioc a b) ⟨b, hab,rfl.le⟩, ?_⟩
