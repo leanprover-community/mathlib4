@@ -68,6 +68,7 @@ set_option linter.deprecated false
 
 assert_not_exists MonoidWithZero
 
+open Mathlib (Vector)
 open Relation
 
 open Nat (iterate)

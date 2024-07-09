@@ -566,7 +566,7 @@ An element `x` of an algebra `K` over a commutative ring `F` is said to be *sepa
 minimal polynamial over `K` is separable. Note that the minimal polynomial of any element not
 integral over `F` is defined to be `0`, which is not a separable polynomial.
 -/
-def IsSeparable (x : K) : Prop := (Polynomial.Separable (minpoly F x))
+def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
 
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
 the minimal polynomial of every `x : K` is separable. This implies that `K/F` is an algebraic
@@ -577,7 +577,7 @@ We define this for general (commutative) rings and only assume `F` and `K` are f
 is needed for a proof.
 -/
 @[mk_iff isSeparable_def] protected class Algebra.IsSeparable : Prop where
-  isSeparable' : ∀ (x : K), IsSeparable F x
+  isSeparable' : ∀ x : K, IsSeparable F x
 #align is_separable Algebra.IsSeparable
 
 variable {K}

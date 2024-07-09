@@ -92,7 +92,7 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
 Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
 unit is an isomorphism.
 -/
-def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) :  𝟭 C ≅ L ⋙ R where
+def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
   hom := adj.unit
   inv :=  i.hom ≫ (adj.toMonad.transport i).μ
   hom_inv_id := by
