@@ -40,7 +40,6 @@ variable [Semiring R]
 theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
     (hφ : constantCoeff σ R φ ∈ nonZeroDivisors R) :
     φ ∈ nonZeroDivisors (MvPowerSeries σ R) := by
-  rw [mem_nonZeroDivisors_iff]
   intro x hx
   letI : WellFoundedLT (σ →₀ ℕ) := Finsupp.wellFoundedLT'
   ext d
