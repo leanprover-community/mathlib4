@@ -137,7 +137,7 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
 
 /-- The `v`-adic valuation of `r ∈ R` is less than `Multiplicative.ofAdd (-n)` if and only if
 `vⁿ` divides the ideal `(r)`. -/
-theorem int_valuation_le_pow_iff_dvd (r : R) (n : ℕ) :
+theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
     v.intValuationDef r ≤ Multiplicative.ofAdd (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
   rw [intValuationDef]
   split_ifs with hr
@@ -146,7 +146,7 @@ theorem int_valuation_le_pow_iff_dvd (r : R) (n : ℕ) :
       Associates.le_singleton_iff,
       Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr)
         (by apply v.associates_irreducible)]
-#align is_dedekind_domain.height_one_spectrum.int_valuation_le_pow_iff_dvd IsDedekindDomain.HeightOneSpectrum.int_valuation_le_pow_iff_dvd
+#align is_dedekind_domain.height_one_spectrum.int_valuation_le_pow_iff_dvd IsDedekindDomain.HeightOneSpectrum.intValuation_le_pow_iff_dvd
 
 /-- The `v`-adic valuation of `0 : R` equals 0. -/
 theorem IntValuation.map_zero' : v.intValuationDef 0 = 0 :=
@@ -235,7 +235,7 @@ theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
     intValuation v r = intValuationDef v r := rfl
 
 /-- There exists `π ∈ R` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
-theorem int_valuation_exists_uniformizer :
+theorem intValuation_exists_uniformizer :
     ∃ π : R, v.intValuationDef π = Multiplicative.ofAdd (-1 : ℤ) := by
   have hv : _root_.Irreducible (Associates.mk v.asIdeal) := v.associates_irreducible
   have hlt : v.asIdeal ^ 2 < v.asIdeal := by
@@ -257,7 +257,7 @@ theorem int_valuation_exists_uniformizer :
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
   exact Nat.eq_of_le_of_lt_succ mem nmem
-#align is_dedekind_domain.height_one_spectrum.int_valuation_exists_uniformizer IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer
+#align is_dedekind_domain.height_one_spectrum.int_valuation_exists_uniformizer IsDedekindDomain.HeightOneSpectrum.intValuation_exists_uniformizer
 
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤₘ₀)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
@@ -313,7 +313,7 @@ variable (K)
 
 /-- There exists `π ∈ K` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
 theorem valuation_exists_uniformizer : ∃ π : K, v.valuation π = Multiplicative.ofAdd (-1 : ℤ) := by
-  obtain ⟨r, hr⟩ := v.int_valuation_exists_uniformizer
+  obtain ⟨r, hr⟩ := v.intValuation_exists_uniformizer
   use algebraMap R K r
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
   exact hr
