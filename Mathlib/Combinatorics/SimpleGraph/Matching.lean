@@ -35,11 +35,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 * Tutte's Theorem
 
-<<<<<<< HEAD
-* Hall's Marriage Theorem (see combinatorics.hall)
-=======
 * Hall's Marriage Theorem (see `Mathlib.Combinatorics.Hall.Basic`)
->>>>>>> origin/master
 -/
 
 open Function
