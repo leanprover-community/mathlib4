@@ -142,6 +142,18 @@ section LinearOrderedAddCommGroupWithTop
 
 variable {α : Type*} [LinearOrderedAddCommGroupWithTop α]
 
+instance (priority := 100) toNoTopAddends : NoTopAddends α where
+  eq_top_or_eq_top_of_add_eq_top {a b h} := by
+    by_contra nh
+    rw [not_or] at nh
+    replace h := congrArg (-a + ·) h
+    dsimp only at h
+    rw [add_top, ← add_assoc, add_comm (-a), add_neg_cancel_of_ne_top,
+      zero_add] at h
+    · exact nh.2 h
+    · exact nh.1
+
+
 @[simp]
 lemma top_ne_zero' :
     (⊤ : α) ≠ 0 := by

@@ -119,30 +119,25 @@ instance add : Add (WithTop α) :=
 #noalign with_top.coe_bit0
 #noalign with_top.coe_bit1
 
-@[simp]
-theorem top_add (a : WithTop α) : ⊤ + a = ⊤ :=
-  rfl
-#align with_top.top_add WithTop.top_add
+instance noTopAddends : NoTopAddends (WithTop α) where
+  eq_top_or_eq_top_of_add_eq_top {a b h} := match a, b with
+    | ⊤, _ => .inl rfl
+    | _, ⊤ => .inr rfl
+    | (a : α), (b : α) => by simp [← coe_add] at h
 
-@[simp]
-theorem add_top (a : WithTop α) : a + ⊤ = ⊤ := by cases a <;> rfl
-#align with_top.add_top WithTop.add_top
+instance isTopAbsorbing : IsTopAbsorbing (WithTop α) where
+  top_add a := rfl
+  add_top a := by cases a <;> rfl
 
-@[simp]
-protected theorem add_eq_top : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
-  match a, b with
-  | ⊤, _ => simp
-  | _, ⊤ => simp
-  | (a : α), (b : α) => simp only [← coe_add, coe_ne_top, or_false]
-#align with_top.add_eq_top WithTop.add_eq_top
+#align with_top.top_add IsTopAbsorbing.top_add
 
-protected theorem add_ne_top : a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ :=
-  WithTop.add_eq_top.not.trans not_or
-#align with_top.add_ne_top WithTop.add_ne_top
+#align with_top.add_top IsTopAbsorbing.add_top
 
-protected theorem add_lt_top [LT α] {a b : WithTop α} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by
-  simp_rw [WithTop.lt_top_iff_ne_top, WithTop.add_ne_top]
-#align with_top.add_lt_top WithTop.add_lt_top
+#align with_top.add_eq_top add_eq_top
+
+#align with_top.add_ne_top add_ne_top
+
+#align with_top.add_lt_top add_lt_top
 
 theorem add_eq_coe :
     ∀ {a b : WithTop α} {c : α}, a + b = c ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = c
@@ -401,8 +396,8 @@ instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (
 
 instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoidWithTop (WithTop α) :=
-  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
-    top_add' := WithTop.top_add }
+  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid,
+    WithTop.isTopAbsorbing with }
 
 instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithTop α) :=
   ⟨fun {a} {b} =>
@@ -621,27 +616,25 @@ theorem coe_add (a b : α) : ((a + b : α) : WithBot α) = a + b :=
 #noalign with_bot.coe_bit0
 #noalign with_bot.coe_bit1
 
-@[simp]
-theorem bot_add (a : WithBot α) : ⊥ + a = ⊥ :=
-  rfl
-#align with_bot.bot_add WithBot.bot_add
+instance isBotAbsorbing : IsBotAbsorbing (WithBot α) where
+  bot_add a := rfl
+  add_bot a := by cases a <;> rfl
 
-@[simp]
-theorem add_bot (a : WithBot α) : a + ⊥ = ⊥ := by cases a <;> rfl
-#align with_bot.add_bot WithBot.add_bot
+instance noBotAddends : NoBotAddends (WithBot α) where
+  eq_bot_or_eq_bot_of_add_eq_bot {a b h} := by match a, b with
+  | ⊥, _ => simp
+  | _, ⊥ => simp
+  | (a : α), (b : α) => simp only [← coe_add, coe_ne_bot] at h
 
-@[simp]
-theorem add_eq_bot : a + b = ⊥ ↔ a = ⊥ ∨ b = ⊥ :=
-  WithTop.add_eq_top
-#align with_bot.add_eq_bot WithBot.add_eq_bot
+#align with_bot.bot_add IsBotAbsorbing.bot_add
 
-theorem add_ne_bot : a + b ≠ ⊥ ↔ a ≠ ⊥ ∧ b ≠ ⊥ :=
-  WithTop.add_ne_top
-#align with_bot.add_ne_bot WithBot.add_ne_bot
+#align with_bot.add_bot IsBotAbsorbing.add_bot
 
-theorem bot_lt_add [LT α] {a b : WithBot α} : ⊥ < a + b ↔ ⊥ < a ∧ ⊥ < b :=
-  WithTop.add_lt_top (α := αᵒᵈ)
-#align with_bot.bot_lt_add WithBot.bot_lt_add
+#align with_bot.add_eq_bot add_eq_bot
+
+#align with_bot.add_ne_bot add_ne_bot
+
+#align with_bot.bot_lt_add bot_lt_add
 
 theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a' + b' = x :=
   WithTop.add_eq_coe
