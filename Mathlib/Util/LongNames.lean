@@ -16,7 +16,7 @@ For finding declarations with excessively long names.
 open Lean Meta Elab
 
 /-- Helper function for `#long_names` and `#long_instances`. -/
-def printNameHashMap (h : Batteries.HashMap Name (Array Name)) : IO Unit :=
+def printNameHashMap (h : Std.HashMap Name (Array Name)) : IO Unit :=
   for (m, names) in h.toList do
     IO.println "----"
     IO.println <| m.toString ++ ":"
