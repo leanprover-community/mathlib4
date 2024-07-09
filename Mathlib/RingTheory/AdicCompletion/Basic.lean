@@ -27,6 +27,7 @@ with respect to an ideal `I`:
 
 -/
 
+suppress_compilation
 
 open Submodule
 
@@ -213,19 +214,15 @@ def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M))
     rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
   smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
 
-@[irreducible]
 instance : Zero (AdicCompletion I M) where
   zero := ⟨0, by simp⟩
 
-@[irreducible]
 instance : Add (AdicCompletion I M) where
   add x y := ⟨x.val + y.val, by simp [x.property, y.property]⟩
 
-@[irreducible]
 instance : Neg (AdicCompletion I M) where
   neg x := ⟨- x.val, by simp [x.property]⟩
 
-@[irreducible]
 instance : Sub (AdicCompletion I M) where
   sub x y := ⟨x.val - y.val, by simp [x.property, y.property]⟩
 
@@ -239,7 +236,6 @@ instance : AddCommGroup (AdicCompletion I M) where
   add_left_neg a := Subtype.ext <| add_left_neg a.val
   add_comm x y := Subtype.ext <| add_comm x.val y.val
 
-@[irreducible]
 instance : SMul R (AdicCompletion I M) where
   smul r x := ⟨r • x.val, by simp [x.property]⟩
 
@@ -405,19 +401,15 @@ def submodule : Submodule R (ℕ → M) where
     intro r f hf m n hmn
     exact SModEq.smul (hf hmn) r
 
-@[irreducible]
 instance : Zero (AdicCauchySequence I M) where
   zero := ⟨0, fun _ ↦ rfl⟩
 
-@[irreducible]
 instance : Add (AdicCauchySequence I M) where
   add x y := ⟨x.val + y.val, fun hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
 
-@[irreducible]
 instance : Neg (AdicCauchySequence I M) where
   neg x := ⟨- x.val, fun hmn ↦ SModEq.neg (x.property hmn)⟩
 
-@[irreducible]
 instance : Sub (AdicCauchySequence I M) where
   sub x y := ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
 
@@ -431,7 +423,6 @@ instance : AddCommGroup (AdicCauchySequence I M) where
   add_left_neg a := Subtype.ext <| add_left_neg a.val
   add_comm x y := Subtype.ext <| add_comm x.val y.val
 
-@[irreducible]
 instance : SMul R (AdicCauchySequence I M) where
   smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
 

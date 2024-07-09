@@ -21,6 +21,8 @@ providing as much API as possible.
 
 -/
 
+suppress_compilation
+
 open Submodule
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
@@ -64,11 +66,9 @@ def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
 def subring : Subring (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
   Subalgebra.toSubring (subalgebra I)
 
-@[irreducible]
 instance : Mul (AdicCompletion I R) where
   mul x y := ⟨x.val * y.val, by simp [x.property, y.property]⟩
 
-@[irreducible]
 instance : One (AdicCompletion I R) where
   one := ⟨1, by simp⟩
 
@@ -129,11 +129,9 @@ def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
 def AdicCauchySequence.subring : Subring (ℕ → R) :=
   Subalgebra.toSubring (AdicCauchySequence.subalgebra I)
 
-@[irreducible]
 instance : Mul (AdicCauchySequence I R) where
   mul x y := ⟨x.val * y.val, fun hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
 
-@[irreducible]
 instance : One (AdicCauchySequence I R) where
   one := ⟨1, fun _ ↦ rfl⟩
 
