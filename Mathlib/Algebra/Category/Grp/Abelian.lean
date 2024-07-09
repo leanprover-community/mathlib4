@@ -48,33 +48,4 @@ instance : Abelian AddCommGrp.{u} where
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
 
-theorem exact_iff : Exact f g ↔ f.range = g.ker := by
-  rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
-  exact
-    ⟨fun h => ((AddMonoidHom.range_le_ker_iff _ _).mpr h.left).antisymm
-        ((QuotientAddGroup.ker_le_range_iff _ _).mpr h.right),
-      fun h => ⟨(AddMonoidHom.range_le_ker_iff _ _).mp h.le,
-          (QuotientAddGroup.ker_le_range_iff _ _).mp h.symm.le⟩⟩
-
-/-- The category of abelian groups satisfies Grothedieck's Axiom AB5. -/
-instance {J : Type u} [SmallCategory J] [IsFiltered J] :
-    PreservesFiniteLimits <| colim (J := J) (C := AddCommGrp.{u}) := by
-  refine Functor.preservesFiniteLimitsOfMapExact _
-    fun F G H η γ h => (exact_iff _ _).mpr (le_antisymm ?_ ?_)
-  all_goals replace h : ∀ j : J, Exact (η.app j) (γ.app j) :=
-    fun j => Functor.map_exact ((evaluation _ _).obj j) η γ h
-  · rw [AddMonoidHom.range_le_ker_iff, ← comp_def]
-    exact colimit.hom_ext fun j => by simp [reassoc_of% (h j).w]
-  · intro x (hx : _ = _)
-    rcases Concrete.colimit_exists_rep G x with ⟨j, y, rfl⟩
-    erw [← comp_apply, colimit.ι_map, comp_apply,
-      ← map_zero (by exact colimit.ι H j : H.obj j →+ ↑(colimit H))] at hx
-    rcases Concrete.colimit_exists_of_rep_eq.{u} H _ _ hx with
-      ⟨k, e₁, e₂, hk : _ = H.map e₂ 0⟩
-    rw [map_zero, ← comp_apply, ← NatTrans.naturality, comp_apply] at hk
-    rcases ((exact_iff _ _).mp <| h k).ge hk with ⟨t, ht⟩
-    use colimit.ι F k t
-    erw [← comp_apply, colimit.ι_map, comp_apply, ht]
-    exact colimit.w_apply G e₁ y
-
 end AddCommGrp

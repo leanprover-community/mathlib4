@@ -56,6 +56,7 @@ import Mathlib.Algebra.Category.BoolRing
 import Mathlib.Algebra.Category.CoalgebraCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
+import Mathlib.Algebra.Category.Grp.AB5
 import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.Algebra.Category.Grp.Adjunctions
 import Mathlib.Algebra.Category.Grp.Basic
