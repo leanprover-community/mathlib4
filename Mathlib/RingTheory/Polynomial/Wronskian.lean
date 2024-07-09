@@ -24,7 +24,7 @@ We also prove basic properties of it.
 
 noncomputable section
 
-open scoped Polynomial Classical
+open scoped Polynomial
 
 namespace Polynomial
 
