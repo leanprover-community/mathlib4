@@ -3,7 +3,7 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic
@@ -55,6 +55,7 @@ variable {R : Type*} {S : Type*}
 
 attribute [local ext] Complex.ext
 
+-- TODO: importing `Algebra.Algebra.Rat` just for this is bad
 -- Test that the `SMul ℚ ℂ` instance is correct.
 example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 

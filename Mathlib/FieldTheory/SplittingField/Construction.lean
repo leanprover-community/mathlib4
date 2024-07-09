@@ -3,8 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.SplittingField.IsSplittingField
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.CharP.Algebra
+import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 #align_import field_theory.splitting_field.construction from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
