@@ -27,37 +27,37 @@ Let `M` and `N` be `R`-submodules in `S` (`Submodule R S`).
 
 The following is the first equivalent characterization of linearly disjointness:
 
-- `Submodule.LinearDisjoint.map_linearIndependent_left_of_flat`:
+- `Submodule.LinearDisjoint.linearIndependent_left_of_flat`:
   if `M` and `N` are linearly disjoint, if `N` is a flat `R`-module, then for any family of
   `R`-linearly independent elements `{ m_i }` of `M`, they are also `N`-linearly independent,
   in the sense that the `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }`
   to the sum of `m_i * n_i` (`Submodule.mulLeftMap N m`) is injective.
 
-- `Submodule.LinearDisjoint.of_map_basis_left`:
+- `Submodule.LinearDisjoint.of_basis_left`:
   conversely, if `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
   then `M` and `N` are linearly disjoint.
 
 Dually, we have:
 
-- `Submodule.LinearDisjoint.map_linearIndependent_right_of_flat`:
+- `Submodule.LinearDisjoint.linearIndependent_right_of_flat`:
   if `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
   `R`-linearly independent elements `{ n_i }` of `N`, they are also `M`-linearly independent,
   in the sense that the `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }`
   to the sum of `m_i * n_i` (`Submodule.mulRightMap M n`) is injective.
 
-- `Submodule.LinearDisjoint.of_map_basis_right`:
+- `Submodule.LinearDisjoint.of_basis_right`:
   conversely, if `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
   then `M` and `N` are linearly disjoint.
 
 The following is the second equivalent characterization of linearly disjointness:
 
-- `Submodule.LinearDisjoint.map_linearIndependent_mul_of_flat`:
+- `Submodule.LinearDisjoint.linearIndependent_mul_of_flat`:
   if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then for any family of
   `R`-linearly independent elements `{ m_i }` of `M`, and any family of
   `R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
   also `R`-linearly independent.
 
-- `Submodule.LinearDisjoint.of_map_basis_mul`:
+- `Submodule.LinearDisjoint.of_basis_mul`:
   conversely, if `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
   such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
   then `M` and `N` are linearly disjoint.
@@ -80,10 +80,10 @@ The following is the second equivalent characterization of linearly disjointness
   conversely, if any finitely generated submodules of `M` and `N` are linearly disjoint,
   then `M` and `N` themselves are linearly disjoint.
 
-- `Submodule.LinearDisjoint.of_bot_left`, `Submodule.LinearDisjoint.of_bot_right`:
+- `Submodule.LinearDisjoint.bot_left`, `Submodule.LinearDisjoint.bot_right`:
   the zero module is linearly disjoint with any other submodules.
 
-- `Submodule.LinearDisjoint.of_one_left`, `Submodule.LinearDisjoint.of_one_right`:
+- `Submodule.LinearDisjoint.one_left`, `Submodule.LinearDisjoint.one_right`:
   the image of `R` in `S` is linearly disjoint with any other submodules.
 
 - `Submodule.LinearDisjoint.of_left_le_one_of_flat`,
@@ -189,7 +189,7 @@ variable (M N)
 /-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent
 (in this result it is stated as `Submodule.mulLeftMap` is injective),
 then `M` and `N` are linearly disjoint. -/
-theorem of_map_basis_left' {ι : Type*} (m : Basis ι R M)
+theorem of_basis_left' {ι : Type*} (m : Basis ι R M)
     (H : Function.Injective (mulLeftMap N m)) : M.LinearDisjoint N := by
   simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_rTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
@@ -199,7 +199,7 @@ theorem of_map_basis_left' {ι : Type*} (m : Basis ι R M)
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent
 (in this result it is stated as `Submodule.mulRightMap` is injective),
 then `M` and `N` are linearly disjoint. -/
-theorem of_map_basis_right' {ι : Type*} (n : Basis ι R N)
+theorem of_basis_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
   simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_lTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
@@ -210,7 +210,7 @@ theorem of_map_basis_right' {ι : Type*} (n : Basis ι R N)
 such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent
 (in this result it is stated as the relevant `Finsupp.total` is injective),
 then `M` and `N` are linearly disjoint. -/
-theorem of_map_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
+theorem of_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
     (H : Function.Injective (Finsupp.total (κ × ι) S R fun i ↦ m i.1 * n i.2)) :
     M.LinearDisjoint N := by
   let i0 := (finsuppTensorFinsupp' R κ ι).symm
@@ -223,20 +223,20 @@ theorem of_map_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
   exact ⟨H⟩
 
 /-- The zero module is linearly disjoint with any other submodules. -/
-theorem of_bot_left : (⊥ : Submodule R S).LinearDisjoint N :=
+theorem bot_left : (⊥ : Submodule R S).LinearDisjoint N :=
   ⟨Function.injective_of_subsingleton _⟩
 
 /-- The zero module is linearly disjoint with any other submodules. -/
-theorem of_bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
+theorem bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
   ⟨Function.injective_of_subsingleton _⟩
 
 /-- The image of `R` in `S` is linearly disjoint with any other submodules. -/
-theorem of_one_left : (1 : Submodule R S).LinearDisjoint N := by
+theorem one_left : (1 : Submodule R S).LinearDisjoint N := by
   rw [linearDisjoint_iff, mulMap_one_left_eq]
   exact N.injective_subtype.comp N.lTensorOne.injective
 
 /-- The image of `R` in `S` is linearly disjoint with any other submodules. -/
-theorem of_one_right : M.LinearDisjoint (1 : Submodule R S) := by
+theorem one_right : M.LinearDisjoint (1 : Submodule R S) := by
   rw [linearDisjoint_iff, mulMap_one_right_eq]
   exact M.injective_subtype.comp M.rTensorOne.injective
 
@@ -307,7 +307,7 @@ variable {M N} in
 `R`-linearly independent elements `{ m_i }` of `M`, they are also `N`-linearly independent,
 in the sense that the `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }`
 to the sum of `m_i * n_i` (`Submodule.mulLeftMap N m`) has trivial kernel. -/
-theorem map_linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N]
+theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N]
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
@@ -317,18 +317,18 @@ theorem map_linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat
 
 /-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
-theorem of_map_basis_left {ι : Type*} (m : Basis ι R M)
+theorem of_basis_left {ι : Type*} (m : Basis ι R M)
     (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N := by
   -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
   letI : AddCommGroup (ι →₀ N) := Finsupp.instAddCommGroup
-  exact of_map_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
+  exact of_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
 `R`-linearly independent elements `{ n_i }` of `N`, they are also `M`-linearly independent,
 in the sense that the `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }`
 to the sum of `m_i * n_i` (`Submodule.mulRightMap M n`) has trivial kernel. -/
-theorem map_linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
+theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
   simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
@@ -338,18 +338,18 @@ theorem map_linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Fla
 
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
-theorem of_map_basis_right {ι : Type*} (n : Basis ι R N)
+theorem of_basis_right {ι : Type*} (n : Basis ι R N)
     (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N := by
   -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
   letI : AddCommGroup (ι →₀ M) := Finsupp.instAddCommGroup
-  exact of_map_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
+  exact of_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `M` is flat, then for any family of
 `R`-linearly independent elements `{ m_i }` of `M`, and any family of
 `R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
 also `R`-linearly independent. -/
-theorem map_linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat R M]
+theorem linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat R M]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm hn ⊢
@@ -370,7 +370,7 @@ variable {M N} in
 `R`-linearly independent elements `{ m_i }` of `M`, and any family of
 `R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
 also `R`-linearly independent. -/
-theorem map_linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Flat R N]
+theorem linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Flat R N]
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm hn ⊢
@@ -391,21 +391,21 @@ variable {M N} in
 `R`-linearly independent elements `{ m_i }` of `M`, and any family of
 `R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
 also `R`-linearly independent. -/
-theorem map_linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
+theorem linearIndependent_mul_of_flat (H : M.LinearDisjoint N)
     (hf : Module.Flat R M ∨ Module.Flat R N)
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
   rcases hf with _ | _
-  · exact H.map_linearIndependent_mul_of_flat_left hm hn
-  · exact H.map_linearIndependent_mul_of_flat_right hm hn
+  · exact H.linearIndependent_mul_of_flat_left hm hn
+  · exact H.linearIndependent_mul_of_flat_right hm hn
 
 /-- If `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
 such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
-theorem of_map_basis_mul {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
+theorem of_basis_mul {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
     (H : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1) : M.LinearDisjoint N := by
   rw [LinearIndependent, LinearMap.ker_eq_bot] at H
-  exact of_map_basis_mul' M N m n H
+  exact of_basis_mul' M N m n H
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `N` is flat, then for any submodule `M'` of `M`,
@@ -446,12 +446,12 @@ theorem of_le_of_flat_left (H : M.LinearDisjoint N) {M' N' : Submodule R S}
 /-- If `N` is flat, `M` is contained in `i(R)`, where `i : R → S` is the structure map,
 then `M` and `N` are linearly disjoint. -/
 theorem of_left_le_one_of_flat (h : M ≤ 1) [Module.Flat R N] :
-    M.LinearDisjoint N := (of_one_left N).of_le_left_of_flat h
+    M.LinearDisjoint N := (one_left N).of_le_left_of_flat h
 
 /-- If `M` is flat, `N` is contained in `i(R)`, where `i : R → S` is the structure map,
 then `M` and `N` are linearly disjoint. -/
 theorem of_right_le_one_of_flat (h : N ≤ 1) [Module.Flat R M] :
-    M.LinearDisjoint N := (of_one_right M).of_le_right_of_flat h
+    M.LinearDisjoint N := (one_right M).of_le_right_of_flat h
 
 section not_linearIndependent_pair
 
@@ -473,7 +473,7 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
   letI : AddCommGroup (Fin 2 →₀ M) := Finsupp.instAddCommGroup
   let m : Fin 2 →₀ M := .single 0 ⟨b.1, b.2.1⟩ - .single 1 ⟨a.1, a.2.1⟩
   have hm : mulRightMap M n m = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
-  rw [← LinearMap.mem_ker, H.map_linearIndependent_right_of_flat hn, mem_bot] at hm
+  rw [← LinearMap.mem_ker, H.linearIndependent_right_of_flat hn, mem_bot] at hm
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
     SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
     false_or, m] at hm
@@ -489,7 +489,7 @@ theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
   letI : AddCommGroup (Fin 2 →₀ N) := Finsupp.instAddCommGroup
   let n : Fin 2 →₀ N := .single 0 ⟨b.1, b.2.2⟩ - .single 1 ⟨a.1, a.2.2⟩
   have hn : mulLeftMap N m n = 0 := by simp [m, n, show _ * _ = _ * _ from hc]
-  rw [← LinearMap.mem_ker, H.map_linearIndependent_left_of_flat hm, mem_bot] at hn
+  rw [← LinearMap.mem_ker, H.linearIndependent_left_of_flat hm, mem_bot] at hn
   simp only [Fin.isValue, sub_eq_zero, Finsupp.single_eq_single_iff, zero_ne_one, Subtype.mk.injEq,
     SetLike.coe_eq_coe, false_and, AddSubmonoid.mk_eq_zero, ZeroMemClass.coe_eq_zero,
     false_or, n] at hn
