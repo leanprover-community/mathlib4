@@ -154,8 +154,7 @@ theorem Disjoint.dedup_add {s t : Multiset α} (h : Disjoint s t) :
 /-- Note that the tronger `List.Subset.dedup_append_right` is proved earlier. -/
 theorem _root_.List.Subset.dedup_append_left {s t : List α} (h : t ⊆ s) :
     List.dedup (s ++ t) ~ List.dedup s := by
-  have := Multiset.Subset.dedup_add_left (α := α) (s := s) (t := t) h
-  simpa using this
+  rw [← coe_eq_coe, ← coe_dedup, ← coe_add, Subset.dedup_add_left h, coe_dedup]
 
 end Multiset
 
