@@ -108,6 +108,7 @@ structure ErrorContext where
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
+  deriving BEq
 
 /-- The parts of a `StyleError` which are considered when matching against the existing
   style exceptions: for example, we ignore the particular line length of a "line too long" error. -/
@@ -428,6 +429,13 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
         newExceptions := newExceptions.push ex
       else
         newExceptions := newExceptions.push err
+    let newExceptions2 := allUnexpectedErrors.map fun err ↦
+      -- Is the current error covered by some existing style exception?
+      -- If so, prefer the existing exception; otherwise, we take the current one.
+      (styleExceptions.find? fun e ↦ e.isSimilar err).getD err
+    if newExceptions != newExceptions2 then
+      IO.println "something went wrong!"
+
     let this_output := "\n".intercalate (newExceptions.map
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
     IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
