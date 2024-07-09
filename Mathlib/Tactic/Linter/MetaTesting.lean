@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Batteries.Data.String.Basic
 import Batteries.Lean.Expr
-import Batteries.Lean.PersistentHashMap
 import Batteries.Lean.Syntax
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.Lemma
