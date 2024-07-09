@@ -436,7 +436,7 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in
     ∑ i in n.bitIndices.toFinset, 2 ^ i = n := by
   simp [List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
 
-/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i in s, 2^i` to `s`.-/
+/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i in s, 2^i` to `s`. -/
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
   invFun s := ∑ i in s, 2^i
