@@ -186,7 +186,7 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
 instance : CovariantClass (Ideal R) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ => map₂_le_map₂_right⟩
 
-@[deprecated smul_mono_right] -- 2024-03-31
+@[deprecated smul_mono_right (since := "2024-03-31")]
 protected theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
   _root_.smul_mono_right I h
 #align submodule.smul_mono_right Submodule.smul_mono_right
@@ -250,7 +250,7 @@ protected theorem smul_assoc : (I • J) • N = I • J • N :=
         show r • s • n ∈ (I • J) • N from mul_smul r s n ▸ smul_mem_smul (smul_mem_smul hr hs) hn)
 #align submodule.smul_assoc Submodule.smul_assoc
 
-@[deprecated smul_inf_le] -- 2024-03-31
+@[deprecated smul_inf_le (since := "2024-03-31")]
 protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
     I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
 #align submodule.smul_inf_le Submodule.smul_inf_le
@@ -259,7 +259,7 @@ theorem smul_iSup {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} : I • 
   map₂_iSup_right _ _ _
 #align submodule.smul_supr Submodule.smul_iSup
 
-@[deprecated smul_iInf_le] -- 2024-03-31
+@[deprecated smul_iInf_le (since := "2024-03-31")]
 protected theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
     I • iInf t ≤ ⨅ i, I • t i :=
   smul_iInf_le
@@ -402,7 +402,9 @@ theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
   rfl
 #align ideal.add_eq_sup Ideal.add_eq_sup
 
-@[simp]
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+@[simp, nolint simpNF]
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 #align ideal.zero_eq_bot Ideal.zero_eq_bot
@@ -817,7 +819,7 @@ lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (
   Multiset.prod_eq_zero_iff
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
-@[deprecated multiset_prod_eq_bot] -- since 26 Dec 2023
+@[deprecated multiset_prod_eq_bot (since := "2023-12-26")]
 theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ∃ I ∈ s, I = ⊥ := by
   simp
@@ -1058,10 +1060,10 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
               hrm
                 ⟨n + k, by
                   rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
-                      mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc];
-                    refine
-                      m.add_mem (m.mul_mem_right _ hpm)
-                        (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
+                      mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc]
+                  refine
+                    m.add_mem (m.mul_mem_right _ hpm)
+                    (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|
       this.radical.symm ▸ (sInf_le ⟨him, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 #align ideal.radical_eq_Inf Ideal.radical_eq_sInf
@@ -1153,8 +1155,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
             Set.Subset.trans h <|
               Set.Subset.trans Set.subset_union_right Set.subset_union_left)
           fun ⟨i, his, hi⟩ => by
-          refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right;
-            exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
+          refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right
+          exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
   induction' n with n ih generalizing a b s
   · clear hp

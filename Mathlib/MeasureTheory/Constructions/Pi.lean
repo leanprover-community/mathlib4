@@ -103,7 +103,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
   cases nonempty_encodable ι
   apply le_antisymm
   · refine iSup_le ?_; intro i; rw [comap_generateFrom]
-    apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩; dsimp
+    apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
     choose t h1t h2t using hC
     simp_rw [eval_preimage, ← h2t]
     rw [← @iUnion_const _ ℕ _ s]
@@ -507,6 +507,44 @@ theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s 
     Set.pi I s =ᵐ[Measure.pi μ] Set.pi I t :=
   (ae_le_set_pi fun i hi => (h i hi).le).antisymm (ae_le_set_pi fun i hi => (h i hi).symm.le)
 #align measure_theory.measure.ae_eq_set_pi MeasureTheory.Measure.ae_eq_set_pi
+
+lemma pi_map_piCongrLeft [hι' : Fintype ι'] (e : ι ≃ ι') {β : ι' → Type*}
+    [∀ i, MeasurableSpace (β i)] (μ : (i : ι') → Measure (β i)) [∀ i, SigmaFinite (μ i)] :
+    (Measure.pi fun i ↦ μ (e i)).map (MeasurableEquiv.piCongrLeft (fun i ↦ β i) e)
+      = Measure.pi μ := by
+  let e_meas : ((b : ι) → β (e b)) ≃ᵐ ((a : ι') → β a) :=
+    MeasurableEquiv.piCongrLeft (fun i ↦ β i) e
+  refine Measure.pi_eq (fun s _ ↦ ?_) |>.symm
+  rw [e_meas.measurableEmbedding.map_apply]
+  let s' : (i : ι) → Set (β (e i)) := fun i ↦ s (e i)
+  have : e_meas ⁻¹' pi univ s = pi univ s' := by
+    ext x
+    simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, s']
+    refine (e.forall_congr ?_).symm
+    intro i
+    rw [MeasurableEquiv.piCongrLeft_apply_apply e x i]
+  rw [this, pi_pi, Finset.prod_equiv e.symm]
+  · simp only [Finset.mem_univ, implies_true]
+  intro i _
+  simp only [s']
+  congr
+  all_goals rw [e.apply_symm_apply]
+
+lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
+    (μ : (i : Option ι) → Measure (β i)) [∀ (i : Option ι), SigmaFinite (μ i)] :
+    ((Measure.pi fun i ↦ μ (some i)).prod (μ none)).map
+      (MeasurableEquiv.piOptionEquivProd β).symm = Measure.pi μ := by
+  refine pi_eq (fun s _ ↦ ?_) |>.symm
+  let e_meas : ((i : ι) → β (some i)) × β none ≃ᵐ ((i : Option ι) → β i) :=
+    MeasurableEquiv.piOptionEquivProd β |>.symm
+  have me := MeasurableEquiv.measurableEmbedding e_meas
+  have : e_meas ⁻¹' pi univ s = (pi univ (fun i ↦ s (some i))) ×ˢ (s none) := by
+    ext x
+    simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, mem_prod]
+    refine ⟨by tauto, fun _ i ↦ ?_⟩
+    rcases i <;> tauto
+  simp only [me.map_apply, univ_option, le_eq_subset, Finset.prod_insertNone, this, prod_prod,
+    pi_pi, mul_comm]
 
 section Intervals
 

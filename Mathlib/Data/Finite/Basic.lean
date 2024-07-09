@@ -42,6 +42,7 @@ consider writing automation to create these "lowered" instances.
 finiteness, finite types
 -/
 
+open Mathlib
 
 noncomputable section
 

@@ -172,7 +172,7 @@ theorem not_irreducible_expand (R p) [CommSemiring R] [Fact p.Prime] [CharP R p]
 
 instance instPerfectRingProd (S : Type*) [CommSemiring S] [ExpChar S p] [PerfectRing S p] :
     PerfectRing (R × S) p where
-  bijective_frobenius := (bijective_frobenius R p).Prod_map (bijective_frobenius S p)
+  bijective_frobenius := (bijective_frobenius R p).prodMap (bijective_frobenius S p)
 
 end PerfectRing
 
@@ -248,7 +248,7 @@ end PerfectField
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable. -/
 instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
-    [Algebra K L] [Algebra.IsAlgebraic K L] [PerfectField K] : IsSeparable K L :=
+    [Algebra K L] [Algebra.IsAlgebraic K L] [PerfectField K] : Algebra.IsSeparable K L :=
   ⟨fun x ↦ PerfectField.separable_of_irreducible <|
     minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
 

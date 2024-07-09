@@ -96,6 +96,9 @@ theorem slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
 @[simp] lemma slope_neg (f : k → E) (x y : k) : slope (fun t ↦ -f t) x y = -slope f x y := by
   simp only [slope_def_module, neg_sub_neg, ← smul_neg, neg_sub]
 
+@[simp] lemma slope_neg_fun (f : k → E) : slope (-f) = -slope f := by
+  ext x y; exact slope_neg f x y
+
 /-- `slope f a c` is a linear combination of `slope f a b` and `slope f b c`. This version
 explicitly provides coefficients. If `a ≠ c`, then the sum of the coefficients is `1`, so it is
 actually an affine combination, see `lineMap_slope_slope_sub_div_sub`. -/
@@ -107,7 +110,7 @@ theorem sub_div_sub_smul_slope_add_sub_div_sub_smul_slope (f : k → PE) (a b c 
     by_cases hac : a = c
     · simp [hac]
     · rw [div_self (sub_ne_zero.2 <| Ne.symm hac), one_smul]
-  by_cases hbc : b = c;
+  by_cases hbc : b = c
   · subst hbc
     simp [sub_ne_zero.2 (Ne.symm hab)]
   rw [add_comm]

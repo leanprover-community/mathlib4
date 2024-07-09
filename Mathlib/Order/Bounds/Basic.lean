@@ -148,6 +148,15 @@ theorem not_bddBelow_iff {α : Type*} [LinearOrder α] {s : Set α} :
   @not_bddAbove_iff αᵒᵈ _ _
 #align not_bdd_below_iff not_bddBelow_iff
 
+@[simp] lemma bddBelow_preimage_ofDual {s : Set α} : BddBelow (ofDual ⁻¹' s) ↔ BddAbove s := Iff.rfl
+@[simp] lemma bddAbove_preimage_ofDual {s : Set α} : BddAbove (ofDual ⁻¹' s) ↔ BddBelow s := Iff.rfl
+
+@[simp] lemma bddBelow_preimage_toDual {s : Set αᵒᵈ} :
+    BddBelow (toDual ⁻¹' s) ↔ BddAbove s := Iff.rfl
+
+@[simp] lemma bddAbove_preimage_toDual {s : Set αᵒᵈ} :
+    BddAbove (toDual ⁻¹' s) ↔ BddBelow s := Iff.rfl
+
 theorem BddAbove.dual (h : BddAbove s) : BddBelow (ofDual ⁻¹' s) :=
   h
 #align bdd_above.dual BddAbove.dual
@@ -302,11 +311,9 @@ theorem IsGreatest.upperBounds_eq (h : IsGreatest s a) : upperBounds s = Ici a :
   h.isLUB.upperBounds_eq
 #align is_greatest.upper_bounds_eq IsGreatest.upperBounds_eq
 
--- Porting note (#10756): new lemma
 theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
   ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
 
--- Porting note (#10756): new lemma
 theorem IsLeast.lt_iff (h : IsLeast s a) : b < a ↔ ∀ x ∈ s, b < x :=
   h.dual.lt_iff
 
@@ -633,12 +640,10 @@ theorem isGLB_singleton : IsGLB {a} a :=
   isLeast_singleton.isGLB
 #align is_glb_singleton isGLB_singleton
 
-theorem bddAbove_singleton : BddAbove ({a} : Set α) :=
-  isLUB_singleton.bddAbove
+@[simp] lemma bddAbove_singleton : BddAbove ({a} : Set α) := isLUB_singleton.bddAbove
 #align bdd_above_singleton bddAbove_singleton
 
-theorem bddBelow_singleton : BddBelow ({a} : Set α) :=
-  isGLB_singleton.bddBelow
+@[simp] lemma bddBelow_singleton : BddBelow ({a} : Set α) := isGLB_singleton.bddBelow
 #align bdd_below_singleton bddBelow_singleton
 
 @[simp]

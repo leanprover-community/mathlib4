@@ -5,7 +5,7 @@ Authors: Justin Thomas
 -/
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Algebra.Polynomial.Module.Basic
+import Mathlib.Algebra.Polynomial.Module.AEval
 
 #align_import linear_algebra.annihilating_polynomial from "leanprover-community/mathlib"@"d3e8e0a0237c10c2627bf52c246b15ff8e7df4c0"
 

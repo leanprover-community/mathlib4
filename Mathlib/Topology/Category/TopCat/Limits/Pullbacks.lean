@@ -11,7 +11,6 @@ import Mathlib.Topology.Category.TopCat.Limits.Products
 # Pullbacks and pushouts in the category of topological spaces
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace
@@ -85,7 +84,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk]
       · intro m h₁ h₂
-        -- Porting note: used to be ext x
+        -- Porting note (#11041): used to be `ext x`.
         apply ContinuousMap.ext; intro x
         apply Subtype.ext
         apply Prod.ext
@@ -275,11 +274,13 @@ theorem pullback_snd_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are embeddings,
 then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an embedding.
 
-  W ⟶ Y
-    ↘      ↘
-      S ⟶ T
-    ↗      ↗
-  X ⟶ Z
+```
+W ⟶ Y
+ ↘   ↘
+  S ⟶ T
+ ↗   ↗
+X ⟶ Z
+```
 -/
 theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f₂ : X ⟶ S)
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : Embedding i₁) (H₂ : Embedding i₂)
@@ -299,11 +300,14 @@ theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : 
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are open embeddings, and `S ⟶ T`
 is mono, then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an open embedding.
-  W ⟶ Y
-    ↘      ↘
-      S ⟶ T
-    ↗       ↗
-  X ⟶ Z
+
+```
+W ⟶ Y
+ ↘   ↘
+  S ⟶ T
+ ↗   ↗
+X ⟶ Z
+```
 -/
 theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
     (f₂ : X ⟶ S) (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : OpenEmbedding i₁)

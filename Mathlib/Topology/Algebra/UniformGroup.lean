@@ -904,8 +904,8 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     of `x a` such that the quotient of the lifts lies in `u n`. -/
   have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
       ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' := by
-    have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ (↑) '' u i } :=
-      by simpa [uniformity_eq_comap_nhds_one'] using hv.comap _
+    have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ ↦ True) fun i ↦ { x | x.snd / x.fst ∈ (↑) '' u i } := by
+      simpa [uniformity_eq_comap_nhds_one'] using hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
     simp only [ge_iff_le, mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
