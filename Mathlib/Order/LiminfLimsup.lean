@@ -1747,9 +1747,8 @@ theorem limsup_finset_sup' [ConditionallyCompleteLinearOrder β] {f : Filter α}
       apply eventually_lt_of_limsup_lt _ (h₂ i i_s)
       exact lt_of_le_of_lt (Finset.le_sup' (f := fun i ↦ limsup (F i) f) i_s) hb
     · simp only [mem_iInter, mem_setOf_eq, Finset.sup'_apply, sup'_lt_iff, imp_self, implies_true]
-  · refine Finset.sup'_le hs (fun i ↦ limsup (F i) f) (fun i i_s ↦ ?_)
-    apply limsup_le_limsup _ (h₁ i i_s) bddsup
-    refine eventually_of_forall (fun a ↦ ?_)
+  · refine Finset.sup'_le hs (fun i ↦ limsup (F i) f)
+      (fun i i_s ↦ limsup_le_limsup (eventually_of_forall (fun a ↦ ?_)) (h₁ i i_s) bddsup)
     simp only [Finset.sup'_apply, le_sup'_iff]
     use i, i_s
 
