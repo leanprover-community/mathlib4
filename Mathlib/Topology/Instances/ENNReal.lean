@@ -1671,26 +1671,65 @@ lemma liminf_const_sub  (f : ι → ℝ≥0∞)
 
 variable {F}
 
+-- The following are generalizations of lemmas in `Topology.Algebra.Order.LiminfLimsup`,
+-- which are needed for the generalization requested in this PR. I will make a separate PR about
+-- these generalizations (in the appropriate file), which are indeed natural and important. I will
+-- then return to the current PR.
+
+theorem _root_.Antitone.map_limsSup_of_continuousAt'' {R S : Type*} {F : Filter R} [NeBot F]
+    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
+    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup)
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) :
+    f F.limsSup = F.liminf f := by sorry
+
+theorem _root_.Antitone.map_limsInf_of_continuousAt'' {R S : Type*} {F : Filter R} [NeBot F]
+    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
+    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsInf)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault)
+    (cobdd : F.IsCobounded (· ≥ ·) := by isBoundedDefault) :
+    f F.limsInf = F.limsup f :=
+  Antitone.map_limsSup_of_continuousAt'' (R := Rᵒᵈ) (S := Sᵒᵈ) f_decr.dual f_cont bdd_below cobdd
+
+theorem _root_.Monotone.map_limsSup_of_continuousAt'' {R S : Type*} {F : Filter R} [NeBot F]
+    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
+    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsSup)
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) :
+    f F.limsSup = F.limsup f :=
+  Antitone.map_limsSup_of_continuousAt'' (S := Sᵒᵈ) f_incr f_cont bdd_above cobdd
+
+theorem _root_.Monotone.map_limsInf_of_continuousAt'' {R S : Type*} {F : Filter R} [NeBot F]
+    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
+    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsInf)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault)
+    (cobdd : F.IsCobounded (· ≥ ·) := by isBoundedDefault) :
+    f F.limsInf = F.liminf f :=
+  Antitone.map_limsSup_of_continuousAt'' (R := Rᵒᵈ) f_incr.dual f_cont bdd_below cobdd
+
+theorem _root_.Monotone.map_liminf_of_continuousAt' {ι R S : Type*} {F : Filter ι} [NeBot F]
+    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
+    (f_incr : Monotone f) (a : ι → R) (f_cont : ContinuousAt f (F.liminf a))
+    (cobdd_above : F.IsCoboundedUnder (· ≥ ·) a := by isBoundedDefault)
+    (bdd_below : F.IsBoundedUnder (· ≥ ·) a := by isBoundedDefault) :
+    f (F.liminf a) = F.liminf (f ∘ a) :=
+  Monotone.map_limsInf_of_continuousAt'' (F := F.map a) f_incr f_cont bdd_below cobdd_above
+
+theorem _root_.isCobounded_ge_of_frequently_le {R : Type*} {F : Filter R} [NeBot F]
+    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+    (frbdd : ∃ l, ∃ᶠ r in F, r ≤ l) :
+    IsCobounded (· ≥ ·) F := sorry
+
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma liminf_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
-    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+lemma liminf_toReal_eq' {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+    {xs : ι → ℝ≥0∞} (le_b : ∃ᶠ i in F, xs i ≤ b) :
     F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
-  have liminf_le : F.liminf xs ≤ b := by
-    apply liminf_le_of_le ⟨0, by simp⟩
-    intro y h
-    obtain ⟨i, hi⟩ := (Eventually.and h le_b).exists
-    exact hi.1.trans hi.2
-  have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
-    filter_upwards [le_b] with i i_le_b
-    simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
-  have aux' : (F.liminf xs).toReal = ENNReal.truncateToReal b (F.liminf xs) := by
-    rw [truncateToReal_eq_toReal b_ne_top liminf_le]
-  simp_rw [liminf_congr aux, aux']
-  have key := Monotone.map_liminf_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
-          (continuous_truncateToReal b_ne_top).continuousAt
-          ⟨b, by simpa only [eventually_map] using le_b⟩ ⟨0, eventually_of_forall (by simp)⟩
-  rw [key]
-  rfl
+  sorry -- This still needs to be generalized.
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
 lemma limsup_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
@@ -1710,19 +1749,16 @@ lemma limsup_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
 lemma liminf_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
-    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+    {xs : ι → ℝ≥0∞} (le_b : ∃ᶠ i in F, xs i ≤ b) :
     F.liminf (fun i ↦ (xs i).toNNReal) = (F.liminf xs).toNNReal := by
   have obs : (liminf (fun i ↦ (xs i).toReal) F).toNNReal = liminf (fun i ↦ (xs i).toNNReal) F := by
-    rw [Real.toNNReal_mono.map_liminf_of_continuousAt
+    rw [Real.toNNReal_mono.map_liminf_of_continuousAt'
           (fun i ↦ (xs i).toReal) continuous_real_toNNReal.continuousAt ?_ ?_]
     · congr; funext i; simp
-    · refine ⟨b.toNNReal, ?_⟩
-      simp only [eventually_map]
-      filter_upwards [le_b] with i xs_bdd
-      exact ((toReal_le_toReal (ne_top_of_le_ne_top b_ne_top xs_bdd) b_ne_top).mpr xs_bdd).trans
-          (Preorder.le_refl b.toReal)
+    · refine @isCobounded_ge_of_frequently_le ℝ (F.map (fun i ↦ (xs i).toReal)) _ _ _ _ ?_
+      exact ⟨b.toReal, le_b.mono fun i hi ↦ toReal_mono b_ne_top hi⟩
     · refine ⟨0, by simp only [ge_iff_le, eventually_map, toReal_nonneg, eventually_true]⟩
-  simp [← obs, liminf_toReal_eq b_ne_top le_b]
+  simp [← obs, liminf_toReal_eq' b_ne_top le_b]
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
 lemma limsup_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
