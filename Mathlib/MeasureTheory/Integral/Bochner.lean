@@ -450,7 +450,7 @@ theorem integral_add_measure {ν} (f : α →ₛ E) (hf : Integrable f (μ + ν)
   simp_rw [integral_def]
   refine setToSimpleFunc_add_left'
     (weightedSMul μ) (weightedSMul ν) (weightedSMul (μ + ν)) (fun s _ hμνs => ?_) hf
-  rw [lt_top_iff_ne_top, Measure.coe_add, Pi.add_apply, ENNReal.add_ne_top] at hμνs
+  rw [lt_top_iff_ne_top, Measure.coe_add, Pi.add_apply, add_ne_top] at hμνs
   rw [weightedSMul_add_measure _ _ hμνs.1 hμνs.2]
 #align measure_theory.simple_func.integral_add_measure MeasureTheory.SimpleFunc.integral_add_measure
 

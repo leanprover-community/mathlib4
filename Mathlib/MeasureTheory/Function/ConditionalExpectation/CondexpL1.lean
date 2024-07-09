@@ -146,11 +146,11 @@ theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
 theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
     condexpIndL1Fin hm (hs.union ht) ((measure_union_le s t).trans_lt
-      (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne x =
+      (lt_top_iff_ne_top.mpr (add_ne_top.mpr ⟨hμs, hμt⟩))).ne x =
     condexpIndL1Fin hm hs hμs x + condexpIndL1Fin hm ht hμt x := by
   ext1
   have hμst :=
-    ((measure_union_le s t).trans_lt (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne
+    ((measure_union_le s t).trans_lt (lt_top_iff_ne_top.mpr (add_ne_top.mpr ⟨hμs, hμt⟩))).ne
   refine (condexpIndL1Fin_ae_eq_condexpIndSMul hm (hs.union ht) hμst x).trans ?_
   refine EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm
   have hs_eq := condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x
@@ -247,7 +247,7 @@ theorem condexpIndL1_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t
     (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
     condexpIndL1 hm μ (s ∪ t) x = condexpIndL1 hm μ s x + condexpIndL1 hm μ t x := by
   have hμst : μ (s ∪ t) ≠ ∞ :=
-    ((measure_union_le s t).trans_lt (lt_top_iff_ne_top.mpr (ENNReal.add_ne_top.mpr ⟨hμs, hμt⟩))).ne
+    ((measure_union_le s t).trans_lt (lt_top_iff_ne_top.mpr (add_ne_top.mpr ⟨hμs, hμt⟩))).ne
   rw [condexpIndL1_of_measurableSet_of_measure_ne_top hs hμs x,
     condexpIndL1_of_measurableSet_of_measure_ne_top ht hμt x,
     condexpIndL1_of_measurableSet_of_measure_ne_top (hs.union ht) hμst x]
