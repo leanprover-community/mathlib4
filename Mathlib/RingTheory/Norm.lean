@@ -384,7 +384,7 @@ theorem norm_norm [Algebra L F] [IsScalarTower K L F] [Algebra.IsSeparable K F] 
     intro σ
     letI : Algebra L A := σ.toRingHom.toAlgebra
     rw [← norm_eq_prod_embeddings L A (_ : F)]
-    rfl
+    simp [RingHom.algebraMap_toAlgebra]
   · rw [norm_eq_one_of_not_module_finite hKF]
     by_cases hKL : FiniteDimensional K L
     · have hLF : ¬FiniteDimensional L F := by
