@@ -532,7 +532,7 @@ theorem Integrable.add_measure {f : α → β} (hμ : Integrable f μ) (hν : In
     Integrable f (μ + ν) := by
   simp_rw [← memℒp_one_iff_integrable] at hμ hν ⊢
   refine ⟨hμ.aestronglyMeasurable.add_measure hν.aestronglyMeasurable, ?_⟩
-  rw [snorm_one_add_measure, ENNReal.add_lt_top]
+  rw [snorm_one_add_measure, add_lt_top]
   exact ⟨hμ.snorm_lt_top, hν.snorm_lt_top⟩
 #align measure_theory.integrable.add_measure MeasureTheory.Integrable.add_measure
 
@@ -646,7 +646,7 @@ theorem MeasurePreserving.integrable_comp_emb {f : α → δ} {ν} (h₁ : Measu
 theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
     (∫⁻ a, edist (f a) (g a) ∂μ) < ∞ :=
   lt_of_le_of_lt (lintegral_edist_triangle hf.aestronglyMeasurable aestronglyMeasurable_zero)
-    (ENNReal.add_lt_top.2 <| by
+    (add_lt_top.2 <| by
       simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
 #align measure_theory.lintegral_edist_lt_top MeasureTheory.lintegral_edist_lt_top

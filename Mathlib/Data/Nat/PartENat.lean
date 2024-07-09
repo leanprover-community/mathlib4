@@ -166,14 +166,13 @@ protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → 
   exact PartENat.casesOn'
 #align part_enat.cases_on PartENat.casesOn
 
--- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
-theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
-  Part.ext' (false_and_iff _) fun h => h.left.elim
-#align part_enat.top_add PartENat.top_add
+instance : IsTopAbsorbing PartENat where
+  top_add _ := Part.ext' (false_and_iff _) fun h => h.left.elim
+  add_top _ := (add_comm _ _).trans <|Part.ext' (false_and_iff _) fun h => h.left.elim
 
--- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
-theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
-#align part_enat.add_top PartENat.add_top
+
+#align part_enat.top_add IsTopAbsorbing.top_add
+#align part_enat.add_top IsTopAbsorbing.add_top
 
 @[simp]
 theorem natCast_get {x : PartENat} (h : x.Dom) : (x.get h : PartENat) = x := by
@@ -882,8 +881,7 @@ theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=
 end Find
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
-  { PartENat.linearOrder, PartENat.orderedAddCommMonoid, PartENat.orderTop with
-    top_add := top_add }
+  { PartENat.linearOrder, PartENat.orderedAddCommMonoid with }
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,

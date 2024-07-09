@@ -119,7 +119,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
   calc
     ∫⁻ t in Ioi 0, f t ≤ ∫⁻ t in Ioc 0 1 ∪ Ioi 1, f t := lintegral_mono_set Ioi_subset_Ioc_union_Ioi
     _ ≤ (∫⁻ t in Ioc 0 1, f t) + ∫⁻ t in Ioi 1, f t := lintegral_union_le _ _ _
-    _ < ∞ := ENNReal.add_lt_top.2 ⟨?_, ?_⟩
+    _ < ∞ := add_lt_top.2 ⟨?_, ?_⟩
   · -- We use estimates from auxiliary lemmas to deal with integral from `0` to `1`
     have h_int' : ∀ t ∈ Ioc (0 : ℝ) 1,
         f t = ENNReal.ofReal ((t ^ (-r⁻¹) - 1) ^ finrank ℝ E) * mB := fun t ht ↦ by
