@@ -382,7 +382,7 @@ instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
       simpa only [Homeomorph.symm_apply_apply] using congr(e.symm $(e0)).symm
     have (ξ : C(s, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapZeroOfNNReal.comp <|
-          ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩
+          ContinuousMapZero.nonUnitalStarAlgHom_precomp ℝ ⟨e, e0⟩;
           Continuous ξ' ∧ ξ' (ContinuousMapZero.id h0') = ξ (ContinuousMapZero.id h0)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapZeroOfNNReal hξ |>.comp <| ?_, ?_⟩
