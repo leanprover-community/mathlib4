@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.Positivity.Core
 
@@ -111,6 +112,8 @@ theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : ∏ i ∈ s, f i ≤ ∏ 
   Multiset.prod_map_le_prod_map f g h
 #align finset.prod_le_prod' Finset.prod_le_prod'
 #align finset.sum_le_sum Finset.sum_le_sum
+
+attribute [bound] sum_le_sum
 
 /-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
 or equal to the corresponding summand `g i` of another finite sum, then

@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Positivity.Core
 
 #align_import algebra.order.field.basic from "leanprover-community/mathlib"@"84771a9f5f0bd5e5d6218811556508ddf476dcbd"
@@ -162,13 +163,16 @@ lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c)
   · rwa [le_div_iff hc] at h
 #align mul_le_of_nonneg_of_le_div mul_le_of_nonneg_of_le_div
 
+@[bound]
 theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
   div_le_of_nonneg_of_le_mul hb zero_le_one <| by rwa [one_mul]
 #align div_le_one_of_le div_le_one_of_le
 
+@[bound]
 lemma mul_inv_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 := by
   simpa only [← div_eq_mul_inv] using div_le_one_of_le h hb
 
+@[bound]
 lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := by
   simpa only [← div_eq_inv_mul] using div_le_one_of_le h hb
 
@@ -176,7 +180,7 @@ lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := by
 ### Bi-implications of inequalities using inversions
 -/
 
-@[gcongr]
+@[gcongr, bound]
 theorem inv_le_inv_of_le (ha : 0 < a) (h : a ≤ b) : b⁻¹ ≤ a⁻¹ := by
   rwa [← one_div a, le_div_iff' ha, ← div_eq_mul_inv, div_le_iff (ha.trans_le h), one_mul]
 #align inv_le_inv_of_le inv_le_inv_of_le
@@ -232,6 +236,7 @@ theorem one_lt_inv (h₁ : 0 < a) (h₂ : a < 1) : 1 < a⁻¹ := by
   rwa [lt_inv (@zero_lt_one α _ _ _ _ _) h₁, inv_one]
 #align one_lt_inv one_lt_inv
 
+@[bound]
 theorem inv_le_one (ha : 1 ≤ a) : a⁻¹ ≤ 1 := by
   rwa [inv_le (zero_lt_one.trans_le ha) zero_lt_one, inv_one]
 #align inv_le_one inv_le_one
@@ -269,13 +274,13 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
 -/
 
 
-@[mono, gcongr]
+@[mono, gcongr, bound]
 lemma div_le_div_of_nonneg_right (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right hab (one_div_nonneg.2 hc)
 #align div_le_div_of_le_of_nonneg div_le_div_of_nonneg_right
 
-@[gcongr]
+@[gcongr, bound]
 lemma div_lt_div_of_pos_right (h : a < b) (hc : 0 < c) : a / c < b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_lt_mul_of_pos_right h (one_div_pos.2 hc)
@@ -288,7 +293,7 @@ lemma div_le_div_of_nonneg_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / 
   exact mul_le_mul_of_nonneg_left ((inv_le_inv (hc.trans_le h) hc).mpr h) ha
 #align div_le_div_of_le_left div_le_div_of_nonneg_left
 
-@[gcongr]
+@[gcongr, bound]
 lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a / c := by
   simpa only [div_eq_mul_inv, mul_lt_mul_left ha, inv_lt_inv (hc.trans h) hc]
 #align div_lt_div_of_lt_left div_lt_div_of_pos_left
@@ -328,7 +333,7 @@ theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤
   rw [le_div_iff d0, div_mul_eq_mul_div, div_le_iff b0]
 #align div_le_div_iff div_le_div_iff
 
-@[mono, gcongr]
+@[mono, gcongr, bound]
 theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc
@@ -348,14 +353,17 @@ theorem div_lt_div' (hac : a ≤ c) (hbd : d < b) (c0 : 0 < c) (d0 : 0 < d) : a 
 -/
 
 
+@[bound]
 theorem div_le_self (ha : 0 ≤ a) (hb : 1 ≤ b) : a / b ≤ a := by
   simpa only [div_one] using div_le_div_of_nonneg_left ha zero_lt_one hb
 #align div_le_self div_le_self
 
+@[bound]
 theorem div_lt_self (ha : 0 < a) (hb : 1 < b) : a / b < a := by
   simpa only [div_one] using div_lt_div_of_pos_left ha zero_lt_one hb
 #align div_lt_self div_lt_self
 
+@[bound]
 theorem le_div_self (ha : 0 ≤ a) (hb₀ : 0 < b) (hb₁ : b ≤ 1) : a ≤ a / b := by
   simpa only [div_one] using div_le_div_of_nonneg_left ha hb₀ hb₁
 #align le_div_self le_div_self
@@ -383,6 +391,10 @@ theorem le_one_div (ha : 0 < a) (hb : 0 < b) : a ≤ 1 / b ↔ b ≤ 1 / a := by
 
 theorem lt_one_div (ha : 0 < a) (hb : 0 < b) : a < 1 / b ↔ b < 1 / a := by simpa using lt_inv ha hb
 #align lt_one_div lt_one_div
+
+@[bound] lemma Bound.one_lt_div_of_pos_of_lt (b0 : 0 < b) : b < a → 1 < a / b := (one_lt_div b0).mpr
+
+@[bound] lemma Bound.div_lt_one_of_pos_of_lt (b0 : 0 < b) : a < b → a / b < 1 := (div_lt_one b0).mpr
 
 /-!
 ### Relating two divisions, involving `1`

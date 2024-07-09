@@ -515,6 +515,7 @@ theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌈a + (no_index (OfNat.ofNat n))⌉₊ = ⌈a⌉₊ + OfNat.ofNat n :=
   ceil_add_nat ha n
 
+@[bound]
 theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : α) < a + 1 :=
   lt_ceil.1 <| (Nat.lt_succ_self _).trans_le (ceil_add_one ha).ge
 #align nat.ceil_lt_add_one Nat.ceil_lt_add_one
@@ -1226,6 +1227,7 @@ theorem ceil_le_floor_add_one (a : α) : ⌈a⌉ ≤ ⌊a⌋ + 1 := by
   exact (lt_floor_add_one a).le
 #align int.ceil_le_floor_add_one Int.ceil_le_floor_add_one
 
+@[bound]
 theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 #align int.le_ceil Int.le_ceil

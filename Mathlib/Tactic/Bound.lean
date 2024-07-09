@@ -5,12 +5,6 @@ Authors: Geoffrey Irving
 -/
 
 import Aesop
-import Mathlib.Algebra.Order.AbsoluteValue
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Linarith.Frontend
@@ -122,14 +116,6 @@ lemma mul_lt_mul_right_of_pos_of_lt {α : Type} {a b c : α} [Mul α] [Zero α] 
     [MulPosStrictMono α] [MulPosReflectLT α] (c0 : 0 < c) : a < b → a * c < b * c :=
   (mul_lt_mul_right c0).mpr
 
-lemma one_lt_div_of_pos_of_lt {α : Type} [LinearOrderedSemifield α] {a b : α} (b0 : 0 < b) :
-    b < a → 1 < a / b :=
-  (one_lt_div b0).mpr
-
-lemma div_lt_one_of_pos_of_lt {α : Type} [LinearOrderedSemifield α] {a b : α} (b0 : 0 < b) :
-    a < b → a / b < 1 :=
-  (div_lt_one b0).mpr
-
 lemma Nat.cast_pos_of_pos {R : Type} [OrderedSemiring R] [Nontrivial R] {n : ℕ} :
     0 < n → 0 < (n : R) :=
   Nat.cast_pos.mpr
@@ -141,36 +127,31 @@ lemma Nat.one_le_cast_of_le {α : Type} [AddCommMonoidWithOne α] [PartialOrder 
 
 /-!
 ### Apply rules for `bound`
+
+Most `bound` lemmas are registered in-place where the lemma is declared. These are only the lemmas
+that do not require additional imports within this file.
 -/
 
 -- Reflexivity
 attribute [bound] le_refl
 
 -- 0 ≤, 0 <
-attribute [bound] sq_nonneg Nat.cast_nonneg abs_nonneg AbsoluteValue.nonneg Nat.zero_lt_succ
-  Int.ceil_lt_add_one pow_pos pow_nonneg sub_nonneg_of_le sub_pos_of_lt inv_nonneg_of_nonneg
-  inv_pos_of_pos tsub_pos_of_lt mul_pos mul_nonneg div_pos div_nonneg add_nonneg
+attribute [bound] sq_nonneg Nat.cast_nonneg abs_nonneg Nat.zero_lt_succ pow_pos pow_nonneg
+  sub_nonneg_of_le sub_pos_of_lt inv_nonneg_of_nonneg inv_pos_of_pos tsub_pos_of_lt mul_pos
+  mul_nonneg div_pos div_nonneg add_nonneg
 
 -- 1 ≤, ≤ 1
-attribute [bound] inv_le_one Nat.one_le_cast_of_le one_le_pow_of_one_le pow_le_one
-  one_le_mul_of_one_le_of_one_le div_le_one_of_le mul_inv_le_one_of_le inv_mul_le_one_of_le
+attribute [bound] Nat.one_le_cast_of_le one_le_pow_of_one_le pow_le_one
+  one_le_mul_of_one_le_of_one_le
 
 -- ≤
-attribute [bound] le_abs_self Int.le_ceil neg_abs_le neg_le_neg tsub_le_tsub_right
-  pow_le_pow_left div_le_div_of_nonneg_right mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right div_le_self le_add_of_nonneg_right le_add_of_nonneg_left
-  inv_le_inv_of_le le_self_pow_of_pos le_mul_of_one_le_right mul_le_of_le_one_right le_div_self
-  Finset.sum_le_sum sub_le_sub add_le_add div_le_div mul_le_mul
-
--- Triangle inequalities
-attribute [bound] AbsoluteValue.le_add AbsoluteValue.le_sub AbsoluteValue.add_le
-  AbsoluteValue.sub_le_add AbsoluteValue.abs_abv_sub_le_abv_sub
+attribute [bound] le_abs_self neg_abs_le neg_le_neg tsub_le_tsub_right pow_le_pow_left
+  mul_le_mul_of_nonneg_left mul_le_mul_of_nonneg_right le_add_of_nonneg_right le_add_of_nonneg_left
+  le_self_pow_of_pos le_mul_of_one_le_right mul_le_of_le_one_right sub_le_sub add_le_add mul_le_mul
 
 -- <
 attribute [bound] Nat.cast_pos_of_pos neg_lt_neg sub_lt_sub_left sub_lt_sub_right add_lt_add_left
-  add_lt_add_right mul_lt_mul_left_of_pos_of_lt mul_lt_mul_right_of_pos_of_lt div_lt_div_of_pos_left
-  div_lt_div_of_pos_right pow_lt_pow_left div_lt_self one_lt_div_of_pos_of_lt
-  div_lt_one_of_pos_of_lt
+  add_lt_add_right mul_lt_mul_left_of_pos_of_lt mul_lt_mul_right_of_pos_of_lt pow_lt_pow_left
 
 -- min and max
 attribute [bound] min_le_right min_le_left le_max_left le_max_right le_min max_le lt_min max_lt
