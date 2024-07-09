@@ -531,6 +531,23 @@ theorem DifferentiableAt.sub (hf : DifferentiableAt 𝕜 f x) (hg : Differentiab
   (hf.hasFDerivAt.sub hg.hasFDerivAt).differentiableAt
 #align differentiable_at.sub DifferentiableAt.sub
 
+@[simp]
+lemma DifferentiableAt.add_iff_left (hg : DifferentiableAt 𝕜 g x) :
+    DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 f x := by
+  constructor <;> intro h
+  · have f_eq_sum_sub_g: f = (fun y => f y + g y) - g := by
+      ext
+      simp only [Pi.sub_apply, add_sub_cancel_right]
+    rw [f_eq_sum_sub_g]
+    exact DifferentiableAt.sub h hg
+  · simp_all only [DifferentiableAt.add]
+
+@[simp]
+lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
+    DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 g x := by
+  rw [show (fun y ↦ f y + g y) = (fun y ↦ g y + f y) by ext; rw [add_comm]]
+  exact hg.add_iff_left
+
 @[fun_prop]
 theorem DifferentiableOn.sub (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s) :
     DifferentiableOn 𝕜 (fun y => f y - g y) s := fun x hx => (hf x hx).sub (hg x hx)
