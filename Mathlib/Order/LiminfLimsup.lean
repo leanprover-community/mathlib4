@@ -618,8 +618,7 @@ theorem limsup_le_limsup {α : Type*} [ConditionallyCompleteLattice β] {f : Fil
 #align filter.limsup_le_limsup Filter.limsup_le_limsup
 
 theorem limsup_le_limsup' {α} [CompleteLattice β] {f : Filter α} {u v : α → β} (h : u ≤ᶠ[f] v) :
-    limsup u f ≤ limsup v f :=
-  limsup_le_limsup h
+    limsup u f ≤ limsup v f := limsup_le_limsup h
 
 theorem liminf_le_liminf {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : ∀ᶠ a in f, u a ≤ v a)
@@ -630,8 +629,7 @@ theorem liminf_le_liminf {α : Type*} [ConditionallyCompleteLattice β] {f : Fil
 #align filter.liminf_le_liminf Filter.liminf_le_liminf
 
 theorem liminf_le_liminf' {α} [CompleteLattice β] {f : Filter α} {u v : α → β} (h : u ≤ᶠ[f] v) :
-    liminf u f ≤ liminf v f :=
-  liminf_le_liminf h
+    liminf u f ≤ liminf v f := liminf_le_liminf h
 
 theorem limsSup_le_limsSup_of_le {f g : Filter α} (h : f ≤ g)
     (hf : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
@@ -1333,23 +1331,19 @@ theorem limsup_le_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter 
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ a in f, u a < y := by
-  constructor
-  · exact fun h _ h' ↦ eventually_lt_of_limsup_lt (lt_of_le_of_lt h h') h₂
-  · intro h
+  refine ⟨fun h _ h' ↦ eventually_lt_of_limsup_lt (lt_of_le_of_lt h h') h₂, fun h ↦ ?_⟩
     --Two cases: Either `x` is a cluster point from above, or it is not.
     --In the first case, we use `forall_lt_iff_le'` and split an interval.
     --In the second case, the function `u` must eventually be smaller or equal to `x`.
-    by_cases h' : ∀ y > x, ∃ z, x < z ∧ z < y
-    · rw [← forall_lt_iff_le']
-      intro y x_lt_y
-      rcases h' y x_lt_y with ⟨z, x_lt_z, z_lt_y⟩
-      apply lt_of_le_of_lt _ z_lt_y
-      specialize h z x_lt_z
-      exact limsup_le_of_le h₁ (Eventually.mono h (fun _ ↦ le_of_lt))
-    · apply limsup_le_of_le h₁
-      set_option push_neg.use_distrib true in push_neg at h'
-      rcases h' with ⟨z, x_lt_z, hz⟩
-      exact Eventually.mono (h z x_lt_z) <| fun w hw ↦ (or_iff_left (not_le_of_lt hw)).1 (hz (u w))
+  by_cases h' : ∀ y > x, ∃ z, x < z ∧ z < y
+  · rw [← forall_lt_iff_le']
+    intro y x_lt_y
+    rcases h' y x_lt_y with ⟨z, x_lt_z, z_lt_y⟩
+    exact lt_of_le_of_lt (limsup_le_of_le h₁ ((h z x_lt_z).mono (fun _ ↦ le_of_lt))) z_lt_y
+  · apply limsup_le_of_le h₁
+    set_option push_neg.use_distrib true in push_neg at h'
+    rcases h' with ⟨z, x_lt_z, hz⟩
+    exact Eventually.mono (h z x_lt_z) <| fun w hw ↦ (or_iff_left (not_le_of_lt hw)).1 (hz (u w))
 
 theorem le_limsup_iff {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β} {x : β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
