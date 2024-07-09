@@ -100,7 +100,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     rw [← rpow_mul, ← rpow_natCast]
     on_goal 1 => apply rpow_le_rpow_of_exponent_le
     all_goals norm_num1
- #align bertrand.real_main_inequality Bertrand.real_main_inequality
+#align bertrand.real_main_inequality Bertrand.real_main_inequality
 
 end Bertrand
 
