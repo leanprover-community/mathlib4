@@ -55,6 +55,8 @@ In the definitions below, we use the following notation:
   returning a term of type `R`
 * `map (f : R → S₁) p` : returns the multivariate polynomial obtained from `p` by the change of
   coefficient semiring corresponding to `f`
+* `aeval (g : σ → S₁) p` : evaluates the multivariate polynomial obtained from `p` by the change
+  of coefficient semiring corresponding to `g` (`a` stands for `algebra`)
 
 ## Implementation notes
 

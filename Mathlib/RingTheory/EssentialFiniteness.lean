@@ -21,8 +21,8 @@ open scoped TensorProduct
 
 namespace Algebra
 
-variable (R S T) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T]
-variable [IsScalarTower R S T]
+variable (R S T : Type*) [CommRing R] [CommRing S] [CommRing T]
+variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /--
 An `R`-algebra is essentially of finite type if
@@ -30,7 +30,7 @@ it is the localization of an algebra of finite type.
 See `essFiniteType_iff_exists_subalgebra`.
 -/
 class EssFiniteType : Prop where
-  cond : ∃ (s : Finset S),
+  cond : ∃ s : Finset S,
     IsLocalization ((IsUnit.submonoid S).comap (algebraMap (adjoin R (s : Set S)) S)) S
 
 /-- Let `S` be an `R`-algebra essentially of finite type, this is a choice of a finset `s ⊆ S`
