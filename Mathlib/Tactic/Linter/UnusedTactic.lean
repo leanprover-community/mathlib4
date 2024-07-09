@@ -66,31 +66,46 @@ namespace UnusedTactic
 /-- The monad for collecting the ranges of the syntaxes that do not modify any goal. -/
 abbrev M := StateRefT (HashMap String.Range Syntax) IO
 
-/-- `Parser`s allowed to not change the tactic state. -/
-def allowed : HashSet SyntaxNodeKind:= HashSet.empty
-  |>.insert `Mathlib.Tactic.Says.says
-  |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
-  -- attempt to speed up, by ignoring more tactics
-  |>.insert `by
-  |>.insert `null
-  |>.insert `«]»
-  |>.insert ``Lean.Parser.Term.byTactic
-  |>.insert ``Lean.Parser.Tactic.tacticSeq
-  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
-  |>.insert ``Lean.Parser.Tactic.tacticTry_
+/-- `Parser`s allowed to not change the tactic state.
+This can be increased dynamically, using `#allow_unused_tactic`.
+-/
+initialize allowedRef : IO.Ref (HashSet SyntaxNodeKind) ←
+  IO.mkRef <| HashSet.empty
+    |>.insert `Mathlib.Tactic.Says.says
+    |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
+    -- attempt to speed up, by ignoring more tactics
+    |>.insert `by
+    |>.insert `null
+    |>.insert `«]»
+    |>.insert ``Lean.Parser.Term.byTactic
+    |>.insert ``Lean.Parser.Tactic.tacticSeq
+    |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
+    |>.insert ``Lean.Parser.Tactic.tacticTry_
+    -- the following `SyntaxNodeKind`s play a role in silencing `test`s
+    |>.insert ``Lean.Parser.Tactic.guardHyp
+    |>.insert ``Lean.Parser.Tactic.guardTarget
+    |>.insert ``Lean.Parser.Tactic.failIfSuccess
+    |>.insert `Mathlib.Tactic.successIfFailWithMsg
+    |>.insert `Mathlib.Tactic.failIfNoProgress
+    |>.insert `Mathlib.Tactic.ExtractGoal.extractGoal
+    |>.insert `Mathlib.Tactic.Propose.propose'
+    |>.insert `Lean.Parser.Tactic.traceState
+    |>.insert `Mathlib.Tactic.tacticMatch_target_
+    |>.insert `change?
+    |>.insert `«tactic#adaptation_note_»
 
-  -- the following `SyntaxNodeKind`s play a role in silencing `test`s
-  |>.insert ``Lean.Parser.Tactic.guardHyp
-  |>.insert ``Lean.Parser.Tactic.guardTarget
-  |>.insert ``Lean.Parser.Tactic.failIfSuccess
-  |>.insert `Mathlib.Tactic.successIfFailWithMsg
-  |>.insert `Mathlib.Tactic.failIfNoProgress
-  |>.insert `Mathlib.Tactic.ExtractGoal.extractGoal
-  |>.insert `Mathlib.Tactic.Propose.propose'
-  |>.insert `Lean.Parser.Tactic.traceState
-  |>.insert `Mathlib.Tactic.tacticMatch_target_
-  |>.insert `change?
-  |>.insert `«tactic#adaptation_note_»
+/-- `#allow_unused_tactic` takes an input a space-separated list of identifiers and extends
+the tactics that are allowed by the unused tactic linter to not modify goals using the
+input identifiers.
+For instance, you can allow `done` and `skip` to not emit warning using
+```lean
+#allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
+```
+Notice that you should use the `SyntaxNodeKind` of the tactic.
+-/
+elab "#allow_unused_tactic " ids:ident* : command => do
+  let ids := ← Command.liftCoreM do ids.mapM realizeGlobalConstNoOverload
+  allowedRef.modify (·.insertMany ids)
 
 /--
 A list of blacklisted syntax kinds, which are expected to have subterms that contain
@@ -161,7 +176,7 @@ partial def eraseUsedTactics : InfoTree → M Unit
       let stx := i.stx
       let kind := stx.getKind
       if let some r := stx.getRange? true then
-        if allowed.contains kind
+        if (← allowedRef.get).contains kind
         -- if the tactic is allowed to not change the goals
         then modify (·.erase r)
         else

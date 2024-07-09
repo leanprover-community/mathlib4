@@ -22,3 +22,23 @@ set_option linter.unusedTactic true in
 example : True := by
   congr
   constructor
+
+section allowing_more_unused_tactics
+--  test that allowing more unused tactics has the desired effect of silencing the linter
+#allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
+
+#guard_msgs in
+set_option linter.unusedTactic true in
+example : True := by
+  skip
+  constructor
+  done
+
+end allowing_more_unused_tactics
+
+#guard_msgs in
+set_option linter.unusedTactic true in
+example : True := by
+  skip
+  constructor
+  done
