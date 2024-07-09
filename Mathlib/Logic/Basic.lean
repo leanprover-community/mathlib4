@@ -1050,6 +1050,12 @@ def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) :
   fun H ↦ contra H.elim
 #align classical.choice_of_by_contradiction' Classical.choice_of_byContradiction'
 
+@[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
+
+@[simp]
+lemma choose_eq' (a : α) : @Exists.choose _ (a = ·) ⟨a, rfl⟩ = a :=
+  (@choose_spec _ (a = ·) _).symm
+
 end Classical
 
 /-- This function has the same type as `Exists.recOn`, and can be used to case on an equality,
