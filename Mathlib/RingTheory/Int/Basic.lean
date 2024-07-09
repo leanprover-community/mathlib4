@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Nat.Prime.Basic

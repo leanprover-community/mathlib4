@@ -83,6 +83,7 @@ assert_not_exists Field
 assert_not_exists Module
 
 open scoped Classical
+open Mathlib (Vector)
 open Function Set Order
 
 noncomputable section

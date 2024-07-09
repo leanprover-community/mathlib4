@@ -53,7 +53,7 @@ class Functor.IsHomLift {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) :
 
 /-- `subst_hom_lift p f φ` tries to substitute `f` with `p(φ)` by using `p.IsHomLift f φ` -/
 macro "subst_hom_lift" p:ident f:ident φ:ident : tactic =>
-  `(tactic| obtain ⟨⟩ := Functor.IsHomLift.cond (p:=$p) (f:=$f) (φ:=$φ))
+  `(tactic| obtain ⟨⟩ := Functor.IsHomLift.cond (p := $p) (f := $f) (φ := $φ))
 
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/
 @[simp]
