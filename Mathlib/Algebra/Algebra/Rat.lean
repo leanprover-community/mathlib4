@@ -6,7 +6,6 @@ Authors: Kenny Lau, Yury Kudryashov
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Rat.Cast.CharZero
 
-#align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
 /-!
 # Further basic results about `Algebra`'s over `ℚ`.
