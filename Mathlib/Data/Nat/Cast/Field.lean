@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 import Mathlib.Algebra.CharZero.Defs
--- import Mathlib.Algebra.Order.Field.Basic
--- import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Tactic.Common
 import Mathlib.Algebra.Field.Defs
