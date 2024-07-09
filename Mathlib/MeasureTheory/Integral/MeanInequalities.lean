@@ -305,7 +305,7 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
       have h_two : (2 : ℝ≥0∞) ^ (p - 1) ≠ ⊤ :=
         ENNReal.rpow_ne_top_of_nonneg (by simp [hp1]) ENNReal.coe_ne_top
       rw [lintegral_add_left', lintegral_const_mul'' _ (hf.pow_const p),
-        lintegral_const_mul' _ _ h_two, ENNReal.add_lt_top]
+        lintegral_const_mul' _ _ h_two, add_lt_top]
       · exact ⟨ENNReal.mul_lt_top h_two hf_top.ne, ENNReal.mul_lt_top h_two hg_top.ne⟩
       · exact (hf.pow_const p).const_mul _
 #align ennreal.lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top ENNReal.lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top

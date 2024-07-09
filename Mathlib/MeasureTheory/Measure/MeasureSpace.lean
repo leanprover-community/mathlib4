@@ -1123,15 +1123,12 @@ theorem toOuterMeasure_top [MeasurableSpace α] :
   rfl
 #align measure_theory.measure.to_outer_measure_top MeasureTheory.Measure.toOuterMeasure_top
 
-@[simp]
-theorem top_add : ⊤ + μ = ⊤ :=
-  top_unique <| Measure.le_add_right le_rfl
-#align measure_theory.measure.top_add MeasureTheory.Measure.top_add
+instance : IsTopAbsorbing (Measure α) where
+  top_add _ := top_unique <| Measure.le_add_right le_rfl
+  add_top _ := top_unique <| Measure.le_add_left le_rfl
 
-@[simp]
-theorem add_top : μ + ⊤ = ⊤ :=
-  top_unique <| Measure.le_add_left le_rfl
-#align measure_theory.measure.add_top MeasureTheory.Measure.add_top
+#align measure_theory.measure.top_add IsTopAbsorbing.top_add
+#align measure_theory.measure.add_top IsTopAbsorbing.add_top
 
 protected theorem zero_le {_m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ μ :=
   bot_le
