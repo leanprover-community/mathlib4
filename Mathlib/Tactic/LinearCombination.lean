@@ -30,26 +30,39 @@ Lastly, calls a normalization tactic on this target.
 
 -/
 
+def Lean.Expr.isLe (e : Expr) :=
+  e.isAppOfArity ``LE.le 4
+
+def Lean.Expr.isLt (e : Expr) :=
+  e.isAppOfArity ``LT.lt 4
+
 set_option autoImplicit true
 
 namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
 open Elab Meta Term
 
-theorem pf_add_c [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
-theorem c_add_pf [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
-theorem add_pf [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
-theorem pf_sub_c [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
-theorem c_sub_pf [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
-theorem sub_pf [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
-theorem neg_pf [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
-theorem pf_mul_c [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
-theorem c_mul_pf [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
-theorem mul_pf [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
-theorem inv_pf [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
-theorem pf_div_c [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
-theorem c_div_pf [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
-theorem div_pf [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
+theorem add_eq_const [Add α] (p : a = b) (c : α) : a + c = b + c := congr($p + c)
+theorem add_const_eq [Add α] (p : b = c) (a : α) : a + b = a + c := congr(a + $p)
+theorem add_eq_eq [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := congr($p₁ + $p₂)
+theorem sub_eq_const [Sub α] (p : a = b) (c : α) : a - c = b - c := congr($p - c)
+theorem sub_const_eq [Sub α] (p : b = c) (a : α) : a - b = a - c := congr(a - $p)
+theorem sub_eq_eq [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := congr($p₁ - $p₂)
+theorem mul_eq_const [Mul α] (p : a = b) (c : α) : a * c = b * c := congr($p * c)
+theorem mul_const_eq [Mul α] (p : b = c) (a : α) : a * b = a * c := congr(a * $p)
+theorem mul_eq_eq [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := congr($p₁ * $p₂)
+theorem div_eq_const [Div α] (p : a = b) (c : α) : a / c = b / c := congr($p / c)
+theorem div_const_eq [Div α] (p : b = c) (a : α) : a / b = a / c := congr(a / $p)
+theorem div_eq_eq [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := congr($p₁ / $p₂)
+theorem neg_eq [Neg α] (p : (a:α) = b) : -a = -b := congr(-$p)
+theorem inv_eq [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := congr($p⁻¹)
+
+inductive RelType
+  | Eq
+  | Le
+  | Lt
+
+export RelType (Eq Le Lt)
 
 /--
 Performs macro expansion of a linear combination expression,
@@ -60,51 +73,92 @@ using `+`/`-`/`*`/`/` on equations and values.
 * `none` means that the input expression is not an equation but a value;
   the input syntax itself is used in this case.
 -/
-partial def expandLinearCombo (stx : Syntax.Term) : TermElabM (Option Syntax.Term) := do
-  let mut result ← match stx with
+partial def expandLinearCombo : Syntax.Term → TermElabM (RelType × Option (Syntax.Term))
   | `(($e)) => expandLinearCombo e
   | `($e₁ + $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_add_c $p₁ $e₂)
-    | none, some p₂ => ``(c_add_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(add_pf $p₁ $p₂)
+      let (rel₁, p₁) ← expandLinearCombo e₁
+      let (rel₂, p₂) ← expandLinearCombo e₂
+      match rel₁, rel₂ with
+      | Eq, Eq => Prod.mk Eq <$>
+        match p₁, p₂ with
+        | none, none => pure none
+        | some p₁, none => ``(add_eq_const $p₁ $e₂)
+        | none, some p₂ => ``(add_const_eq $p₂ $e₁)
+        | some p₁, some p₂ => ``(add_eq_eq $p₁ $p₂)
+      | _, _ => Prod.mk Eq <$> pure none
   | `($e₁ - $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_sub_c $p₁ $e₂)
-    | none, some p₂ => ``(c_sub_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(sub_pf $p₁ $p₂)
-  | `(-$e) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(neg_pf $p)
-  | `(← $e) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(Eq.symm $p)
+      let (rel₁, p₁) ← expandLinearCombo e₁
+      let (rel₂, p₂) ← expandLinearCombo e₂
+      match rel₁, rel₂ with
+      | Eq, Eq => Prod.mk Eq <$>
+        match p₁, p₂ with
+        | none, none => pure none
+        | some p₁, none => ``(sub_eq_const $p₁ $e₂)
+        | none, some p₂ => ``(sub_const_eq $p₂ $e₁)
+        | some p₁, some p₂ => ``(sub_eq_eq $p₁ $p₂)
+      | _, _ => Prod.mk Eq <$> pure none
   | `($e₁ * $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_mul_c $p₁ $e₂)
-    | none, some p₂ => ``(c_mul_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(mul_pf $p₁ $p₂)
-  | `($e⁻¹) => do
-    match ← expandLinearCombo e with
-    | none => pure none
-    | some p => ``(inv_pf $p)
+      let (rel₁, p₁) ← expandLinearCombo e₁
+      let (rel₂, p₂) ← expandLinearCombo e₂
+      match rel₁, rel₂ with
+      | Eq, Eq => Prod.mk Eq <$>
+        match p₁, p₂ with
+        | none, none => pure none
+        | some p₁, none => ``(mul_eq_const $p₁ $e₂)
+        | none, some p₂ => ``(mul_const_eq $p₂ $e₁)
+        | some p₁, some p₂ => ``(mul_eq_eq $p₁ $p₂)
+      | _, _ => Prod.mk Eq <$> pure none
   | `($e₁ / $e₂) => do
-    match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
-    | none, none => pure none
-    | some p₁, none => ``(pf_div_c $p₁ $e₂)
-    | none, some p₂ => ``(c_div_pf $p₂ $e₁)
-    | some p₁, some p₂ => ``(div_pf $p₁ $p₂)
+      let (rel₁, p₁) ← expandLinearCombo e₁
+      let (rel₂, p₂) ← expandLinearCombo e₂
+      match rel₁, rel₂ with
+      | Eq, Eq => Prod.mk Eq <$>
+        match p₁, p₂ with
+        | none, none => pure none
+        | some p₁, none => ``(div_eq_const $p₁ $e₂)
+        | none, some p₂ => ``(div_const_eq $p₂ $e₁)
+        | some p₁, some p₂ => ``(div_eq_eq $p₁ $p₂)
+      | _, _ => Prod.mk Eq <$> pure none
+  | `(-$e) => do
+      let (rel, p) ← expandLinearCombo e
+      match rel with
+      | Eq => Prod.mk Eq <$>
+        match p with
+        | none => pure none
+        | some p => ``(neg_eq $p)
+      | _ => Prod.mk Eq <$> pure none
+  | `($e⁻¹) => do
+      let (rel, p) ← expandLinearCombo e
+      match rel with
+      | Eq => Prod.mk Eq <$>
+        match p with
+        | none => pure none
+        | some p => ``(inv_eq $p)
+      | _ => Prod.mk Eq <$> pure none
+  | `(← $e) => do
+      let (rel, p) ← expandLinearCombo e
+      match rel with
+      | Eq => Prod.mk Eq <$>
+        match p with
+        | none => pure none
+        | some p => ``(Eq.symm $p)
+      | _ => Prod.mk Eq <$> pure none
   | e => do
-    let e ← elabTerm e none
-    let eType ← inferType e
-    let .true := (← withReducible do whnf eType).isEq | pure none
-    some <$> e.toSyntax
-  return result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
+      let e ← elabTerm e none
+      let eType ← inferType e
+      let whnfEType ← withReducible do whnf eType
+      if whnfEType.isEq then
+        pure (Eq, some (← e.toSyntax))
+      else if whnfEType.isLe then
+        pure (Le, some (← e.toSyntax))
+      else if whnfEType.isLt then
+        pure (Lt, some (← e.toSyntax))
+      else
+        pure (Eq, none)
+
+def expandLinearComboClean (stx : Syntax.Term) : TermElabM (RelType × Option Syntax.Term) := do
+  let (rel, result) ← expandLinearCombo stx
+  return Prod.mk rel <| result.map fun r => ⟨r.raw.setInfo (SourceInfo.fromRef stx true)⟩
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
@@ -122,7 +176,7 @@ def elabLinearCombination
   let p ← match input with
   | none => `(Eq.refl 0)
   | some e => withSynthesize do
-    match ← expandLinearCombo e with
+    match (← expandLinearComboClean e).2 with
     | none => `(Eq.refl $e)
     | some p => pure p
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
