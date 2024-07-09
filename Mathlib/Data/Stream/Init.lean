@@ -575,7 +575,7 @@ theorem take_succ (n : Nat) (s : Stream' α) : take (succ n) s = head s::take n 
   rfl
 #align stream.take_succ Stream'.take_succ
 
-@[simp] theorem take_succ_cons {a : α} (n : Nat) (s : Stream' α) :
+@[simp] theorem take_succ_cons {a : α} (n : ℕ) (s : Stream' α) :
     take (n+1) (a::s) = a :: take n s := rfl
 
 theorem take_succ' {s : Stream' α} : ∀ n, s.take (n+1) = s.take n ++ [s.get n]
