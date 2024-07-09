@@ -23,7 +23,6 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 * `SimpleGraph.Subgraph.IsMatching`: `M.IsMatching` means that `M` is a matching of its
   underlying graph.
-  denoted `M.is_matching`.
 
 * `SimpleGraph.Subgraph.IsPerfectMatching` defines when a subgraph `M` of a simple graph is a
   perfect matching, denoted `M.IsPerfectMatching`.
@@ -36,7 +35,11 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 * Tutte's Theorem
 
+<<<<<<< HEAD
 * Hall's Marriage Theorem (see combinatorics.hall)
+=======
+* Hall's Marriage Theorem (see `Mathlib.Combinatorics.Hall.Basic`)
+>>>>>>> origin/master
 -/
 
 open Function
@@ -219,25 +222,28 @@ lemma even_card_of_isPerfectMatching (c : ConnectedComponent G) (hM : M.IsPerfec
 lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
     (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
-    by_contra! h
-    have hMmatch : (M.induce c.supp).IsMatching := by
-      intro v hv
-      obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
-      obtain ⟨⟨v', hv'⟩, hv , rfl⟩ := hv
-      use w
-      have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ hw.1 hv
-      refine ⟨⟨⟨⟨v', hv'⟩, hv, rfl⟩, ?_, hw.1⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
-      apply mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
-      simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.mem_diff, Set.mem_univ, true_and,
-        Subgraph.induce_adj, Subgraph.top_adj, M.adj_sub hw.1] at hv' ⊢
-      trivial
-    apply Nat.odd_iff_not_even.mp codd
-    haveI : Fintype (Subgraph.induce M (Subtype.val '' c.supp)).verts := Fintype.ofFinite _
-    haveI : Fintype c.supp := Fintype.ofFinite _
-    have hMeven := Subgraph.IsMatching.even_card hMmatch
-    simp only [Subgraph.induce_verts, Set.toFinset_image, Nat.card_eq_fintype_card,
-      Set.toFinset_card, Finset.card_image_of_injective _ (Subtype.val_injective)] at hMeven ⊢
-    exact hMeven
+  by_contra! h
+  have hMmatch : (M.induce c.supp).IsMatching := by
+    intro v hv
+    obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
+    obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
+    use w
+    have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ (hw.1) hv
+    refine ⟨⟨⟨⟨v', hv'⟩, hv, rfl⟩, ?_, hw.1⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
+    apply ConnectedComponent.mem_coe_supp_of_adj ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ ⟨by trivial, hwnu⟩
+    simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.mem_diff, Set.mem_univ, true_and,
+      Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
+      and_true] at hv' ⊢
+    trivial
+
+  apply Nat.odd_iff_not_even.mp codd
+  haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
+  have hMeven := Subgraph.IsMatching.even_card hMmatch
+  haveI : Fintype (c.supp) := Fintype.ofFinite _
+  simp only [Subgraph.induce_verts, Subgraph.verts_top, Set.toFinset_image,
+    Nat.card_eq_fintype_card, Set.toFinset_image,
+    Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card] at hMeven ⊢
+  exact hMeven
 
 end Finite
 end ConnectedComponent

@@ -373,7 +373,7 @@ variable (K : Type*) [Field K] {Γ₀ : outParam Type*}
 /-- A `Valued` version of `Valuation.integer`, enabling the notation `𝒪[K]` for the
 valuation integers of a valued field `K`. -/
 @[reducible]
-def integer  : Subring K := (vK.v).integer
+def integer : Subring K := (vK.v).integer
 
 @[inherit_doc]
 scoped notation "𝒪[" K "]" => Valued.integer K
