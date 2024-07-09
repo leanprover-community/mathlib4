@@ -208,7 +208,7 @@ theorem numeric_of_insertLeft_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num
   rw [le_iff_forall_lt x'_num x_num] at h
   unfold Numeric at x_num ⊢
   rcases x with ⟨xl, xr, xL, xR⟩
-  simp only [insertLeft, Sum.forall, forall_const] at x_num ⊢
+  simp only [insertLeft, Sum.forall, forall_const, Sum.elim_inl, Sum.elim_inr] at x_num ⊢
   constructor
   · simp only [x_num.1, implies_true, true_and]
     simp only [rightMoves_mk, moveRight_mk] at h
@@ -221,7 +221,7 @@ theorem numeric_of_insertRight_numeric {x x' : PGame} (x_num : x.Numeric) (x'_nu
   rw [le_iff_forall_lt x_num x'_num] at h
   unfold Numeric at x_num ⊢
   rcases x with ⟨xl, xr, xL, xR⟩
-  simp only [insertRight, Sum.forall, forall_const] at x_num ⊢
+  simp only [insertRight, Sum.forall, forall_const, Sum.elim_inl, Sum.elim_inr] at x_num ⊢
   constructor
   · simp only [x_num.1, implies_true, true_and]
     simp only [leftMoves_mk, moveLeft_mk] at h
