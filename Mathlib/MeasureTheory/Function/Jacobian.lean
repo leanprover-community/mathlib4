@@ -962,7 +962,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
     · intro t g htg
       rcases eq_or_ne (μ t) ∞ with (ht | ht)
       · simp only [ht, εpos.ne', ENNReal.mul_top, ENNReal.coe_eq_zero, le_top, Ne,
-          not_false_iff, _root_.add_top]
+          not_false_iff, add_top]
       have := h t g (htg.mono_num (min_le_left _ _))
       rwa [ENNReal.coe_sub, ENNReal.sub_mul, tsub_le_iff_right] at this
       simp only [ht, imp_true_iff, Ne, not_false_iff]

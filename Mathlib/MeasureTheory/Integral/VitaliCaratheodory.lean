@@ -99,7 +99,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     by_cases h : ∫⁻ x, f x ∂μ = ⊤
     · refine
         ⟨fun _ => c, fun x => ?_, lowerSemicontinuous_const, by
-          simp only [_root_.top_add, le_top, h]⟩
+          simp only [top_add, le_top, h]⟩
       simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
       exact Set.indicator_le_self _ _ _
