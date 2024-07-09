@@ -1909,11 +1909,7 @@ theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
 /-- The pregame constructed by inserting x' as a new left option into x. -/
 def insertLeft (x x' : PGame) : PGame :=
   match x with
-  | mk xl xr xL xR => mk (Sum xl PUnit) xr (fun i' =>
-      match i' with
-      | .inl i => xL i
-      | .inr () => x'
-    ) xR
+  | mk xl xr xL xR => mk (Sum xl PUnit) xr (Sum.elim xL fun _ => x') xR
 
 /-- A new left option cannot hurt Left. -/
 lemma le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
@@ -1922,7 +1918,7 @@ lemma le_insertLeft (x x' : PGame) : x ≤ insertLeft x x' := by
   · intro i
     left
     rcases x with ⟨xl, xr, xL, xR⟩
-    simp only [insertLeft, leftMoves_mk, moveLeft_mk, Sum.exists, exists_const]
+    simp only [insertLeft, leftMoves_mk, moveLeft_mk, Sum.exists, Sum.elim_inl]
     left
     use i
   · intro j
@@ -1944,10 +1940,10 @@ lemma equiv_insertLeft_of_lf {x x' : PGame} (h : x' ⧏ x) : x ≈ insertLeft x 
       rcases x with ⟨xl, xr, xL, xR⟩
       simp only [insertLeft, leftMoves_mk, moveLeft_mk] at i ⊢
       rcases i with i | _
-      · simp only
+      · simp only [Sum.elim_inl]
         left
         use i
-      · simp only
+      · simp only [Sum.elim_inr]
         rw [lf_iff_exists_le] at h
         simp only [leftMoves_mk, moveLeft_mk] at h
         exact h
@@ -1960,11 +1956,7 @@ lemma equiv_insertLeft_of_lf {x x' : PGame} (h : x' ⧏ x) : x ≈ insertLeft x 
 /-- The pregame constructed by inserting x' as a new right option into x. -/
 def insertRight (x x' : PGame) : PGame :=
   match x with
-  | mk xl xr xL xR => mk xl (Sum xr PUnit) xL (fun i' =>
-      match i' with
-      | .inl i => xR i
-      | .inr () => x'
-    )
+  | mk xl xr xL xR => mk xl (Sum xr PUnit) xL (Sum.elim xR fun _ => x')
 
 /-- A new right option cannot hurt Right. -/
 lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
@@ -1978,7 +1970,7 @@ lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
   · intro j
     right
     rcases x with ⟨xl, xr, xL, xR⟩
-    simp only [insertRight, rightMoves_mk, moveRight_mk, Sum.exists, exists_const]
+    simp only [insertRight, rightMoves_mk, moveRight_mk, Sum.exists, Sum.elim_inl]
     left
     use j
 
@@ -1999,10 +1991,10 @@ lemma equiv_insertRight_of_lf {x x' : PGame} (h : x ⧏ x') : x ≈ insertRight 
       rcases x with ⟨xl, xr, xL, xR⟩
       simp only [insertRight, moveRight_mk, rightMoves_mk]
       rcases j with j | _
-      · simp only
+      · simp only [Sum.elim_inl]
         right
         use j
-      · simp only
+      · simp only [Sum.elim_inr]
         rw [lf_iff_exists_le] at h
         simp only [rightMoves_mk, moveRight_mk] at h
         exact h
