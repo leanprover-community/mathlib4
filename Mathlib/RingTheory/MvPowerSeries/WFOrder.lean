@@ -80,18 +80,10 @@ theorem coeff_eq_zero_of_lt_wf_order {φ : MvPowerSeries σ R} {d : σ →₀ �
     (h : toLex d < wf_order φ) : coeff R d φ = 0 := by
   by_cases hφ : φ = 0
   · simp only [hφ, map_zero]
-  have hφ' := wf_order_def_of_ne_zero hφ
-  rcases hφ' with ⟨ne, hφ'⟩
-  rw [hφ', WithTop.coe_lt_coe] at h
-  have hp := id hφ
-  simp only [eq_zero_iff_wf_order_eq_top, WithTop.ne_top_iff_exists] at hp
-  obtain ⟨p, hp⟩ := hp
-  set q := ofLex p
-  have hq : φ.wf_order = toLex q := by simp only [toLex_ofLex, hp, q]
-  simp only [hq, WithTop.coe_eq_coe] at hφ'
-  by_contra h'
-  let H := @wellFounded_lt (Lex (σ →₀ ℕ)) (instLTLex) (Lex.wellFoundedLT)
-  exact H.not_lt_min (toLex '' φ.support) ne (Set.mem_image_equiv.mpr h') h
+  · rcases wf_order_def_of_ne_zero hφ with ⟨ne, hφ'⟩
+    rw [hφ', WithTop.coe_lt_coe] at h
+    by_contra h'
+    exact WellFounded.not_lt_min _ (toLex '' φ.support) ne (Set.mem_image_equiv.mpr h') h
 
 theorem wf_order_le_of_coeff_neq_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : coeff R d φ ≠ 0) : wf_order φ ≤ toLex d := by
