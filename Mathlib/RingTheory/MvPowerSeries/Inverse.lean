@@ -149,10 +149,8 @@ theorem isUnit_iff_constantCoeff (φ : MvPowerSeries σ R) :
     IsUnit φ ↔ IsUnit (constantCoeff σ R φ) := by
   constructor
   · exact IsUnit.map _
-  · rintro ⟨u, hu⟩
-    rw [isUnit_iff_exists]
-    use φ.invOfUnit u
-    simp only [mul_invOfUnit φ u hu.symm, invOfUnit_mul φ u hu.symm, true_and]
+  · intro ⟨u, hu⟩
+    use ⟨_, φ.invOfUnit u, mul_invOfUnit φ u hu.symm,  invOfUnit_mul φ u hu.symm⟩
 
 end Ring
 
