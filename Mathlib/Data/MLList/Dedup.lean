@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Batteries.Data.MLList.Basic
-import Batteries.Data.HashMap.Basic
+import Std.Data.HashMap
 
 /-!
 # Lazy deduplication of lazy lists
@@ -12,7 +12,7 @@ import Batteries.Data.HashMap.Basic
 
 set_option autoImplicit true
 
-open Batteries
+open Std
 
 namespace MLList
 
