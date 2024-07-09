@@ -226,11 +226,6 @@ attribute [aesop unsafe 5% tactic (rule_sets := [Bound])] boundLinarith
 ### `bound` tactic implementation
 -/
 
-/-- Pull the array out of an optional `"[" term,* "]"` syntax, or return `#[]` -/
-def maybeTerms : Syntax → Array Syntax
-  | node _ _ #[_, node _ _ s, _] => s.getEvenElems
-  | _ => #[]
-
 /-- Add each provided hypothesis `x` to the context, as by with `have := x` -/
 def addHyps (xs : Array Syntax) : TacticM Unit :=
   if xs.isEmpty then pure () else Tactic.withMainContext do
