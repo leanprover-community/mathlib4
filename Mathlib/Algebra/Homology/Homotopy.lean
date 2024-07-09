@@ -582,12 +582,10 @@ def mkInductive : Homotopy e 0 where
   comm i := by
     dsimp
     simp only [add_zero]
-    refine' (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
+    refine (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans ?_
     congr
     · cases i
       · dsimp [fromNext, mkInductiveAux₂]
-        rw [dif_neg]
-        decide
       · dsimp [fromNext]
         simp only [ChainComplex.next_nat_succ, dite_true]
         rw [mkInductiveAux₃ e zero comm_zero one comm_one succ]
@@ -721,12 +719,10 @@ def mkCoinductive : Homotopy e 0 where
     dsimp
     simp only [add_zero]
     rw [add_comm]
-    refine' (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
+    refine (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans ?_
     congr
     · cases i
       · dsimp [toPrev, mkCoinductiveAux₂]
-        rw [dif_neg]
-        decide
       · dsimp [toPrev]
         simp only [CochainComplex.prev_nat_succ, dite_true]
         rw [mkCoinductiveAux₃ e zero comm_zero one comm_one succ]

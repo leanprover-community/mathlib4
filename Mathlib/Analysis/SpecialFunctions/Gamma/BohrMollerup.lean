@@ -16,7 +16,7 @@ positive-real-valued, log-convex function on the positive reals satisfying `f (x
 
 The proof of the Bohr-Mollerup theorem is bound up with the proof of (a weak form of) the Euler
 limit formula, `Real.BohrMollerup.tendsto_logGammaSeq`, stating that for positive
-real `x` the sequence `x * log n + log n! - ∑ (m : ℕ) in Finset.range (n + 1), log (x + m)`
+real `x` the sequence `x * log n + log n! - ∑ (m : ℕ) ∈ Finset.range (n + 1), log (x + m)`
 tends to `log Γ(x)` as `n → ∞`. We prove that any function satisfying the hypotheses of the
 Bohr-Mollerup theorem must agree with the limit in the Euler limit formula, so there is at most one
 such function; then we show that `Γ` satisfies these conditions.
@@ -43,7 +43,7 @@ noncomputable section
 
 open Filter Set MeasureTheory
 
-open scoped Nat ENNReal Topology BigOperators Real
+open scoped Nat ENNReal Topology Real
 
 section Convexity
 
@@ -193,7 +193,7 @@ namespace BohrMollerup
 /-- The function `n ↦ x log n + log n! - (log x + ... + log (x + n))`, which we will show tends to
 `log (Gamma x)` as `n → ∞`. -/
 def logGammaSeq (x : ℝ) (n : ℕ) : ℝ :=
-  x * log n + log n ! - ∑ m : ℕ in Finset.range (n + 1), log (x + m)
+  x * log n + log n ! - ∑ m ∈ Finset.range (n + 1), log (x + m)
 #align real.bohr_mollerup.log_gamma_seq Real.BohrMollerup.logGammaSeq
 
 variable {f : ℝ → ℝ} {x : ℝ} {n : ℕ}
@@ -211,7 +211,7 @@ theorem f_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn
 #align real.bohr_mollerup.f_nat_eq Real.BohrMollerup.f_nat_eq
 
 theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (n : ℕ) :
-    f (x + n) = f x + ∑ m : ℕ in Finset.range n, log (x + m) := by
+    f (x + n) = f x + ∑ m ∈ Finset.range n, log (x + m) := by
   induction' n with n hn
   · simp
   · have : x + n.succ = x + n + 1 := by push_cast; ring
@@ -257,8 +257,8 @@ theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
   · rw [Nat.cast_ne_zero]; exact Nat.succ_ne_zero n
   · rw [Nat.cast_ne_zero]; exact Nat.factorial_ne_zero n
   have :
-    ∑ m : ℕ in Finset.range (n + 1), log (x + 1 + ↑m) =
-      ∑ k : ℕ in Finset.range (n + 1), log (x + ↑(k + 1)) := by
+    ∑ m ∈ Finset.range (n + 1), log (x + 1 + ↑m) =
+      ∑ k ∈ Finset.range (n + 1), log (x + ↑(k + 1)) := by
     congr! 2 with m
     push_cast
     abel
@@ -290,22 +290,18 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) :
     Tendsto (logGammaSeq x) atTop (𝓝 <| f x - f 1) := by
-  refine' tendsto_of_tendsto_of_tendsto_of_le_of_le' _ tendsto_const_nhds _ _
-  -- Porting note: `show` no longer reorders goals
-  pick_goal 4
-  · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
-    filter_upwards [eventually_ne_atTop 0] with n hn using
-      le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
-  -- Porting note: `show` no longer reorders goals
-  pick_goal 3
-  · show ∀ᶠ n : ℕ in atTop, f x - f 1 - x * (log (n + 1) - log n) ≤ logGammaSeq x n
-    filter_upwards with n
-    rw [sub_le_iff_le_add', sub_le_iff_le_add']
-    convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
-    ring
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' (f := logGammaSeq x)
+    (g := fun n ↦ f x - f 1 - x * (log (n + 1) - log n)) ?_ tendsto_const_nhds ?_ ?_
   · have : f x - f 1 = f x - f 1 - x * 0 := by ring
     nth_rw 2 [this]
     exact Tendsto.sub tendsto_const_nhds (tendsto_log_nat_add_one_sub_log.const_mul _)
+  · filter_upwards with n
+    rw [sub_le_iff_le_add', sub_le_iff_le_add']
+    convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
+    ring
+  · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
+    filter_upwards [eventually_ne_atTop 0] with n hn using
+      le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
 #align real.bohr_mollerup.tendsto_log_gamma_seq_of_le_one Real.BohrMollerup.tendsto_logGammaSeq_of_le_one
 
 theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)

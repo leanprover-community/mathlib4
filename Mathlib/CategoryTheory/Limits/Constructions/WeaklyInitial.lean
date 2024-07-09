@@ -35,7 +35,7 @@ object.
 -/
 theorem has_weakly_initial_of_weakly_initial_set_and_hasProducts [HasProducts.{v} C] {ι : Type v}
     {B : ι → C} (hB : ∀ A : C, ∃ i, Nonempty (B i ⟶ A)) : ∃ T : C, ∀ X, Nonempty (T ⟶ X) :=
-  ⟨∏ B, fun X => ⟨Pi.π _ _ ≫ (hB X).choose_spec.some⟩⟩
+  ⟨∏ᶜ B, fun X => ⟨Pi.π _ _ ≫ (hB X).choose_spec.some⟩⟩
 #align category_theory.has_weakly_initial_of_weakly_initial_set_and_has_products CategoryTheory.has_weakly_initial_of_weakly_initial_set_and_hasProducts
 
 /-- If `C` has (small) wide equalizers and a weakly initial object, then it has an initial object.

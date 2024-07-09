@@ -25,7 +25,7 @@ if `L/F` satisfies the abovementioned splitting condition, in particular if `L/K
 a tower and `L/F` is normal.
 -/
 
-open BigOperators IntermediateField IsScalarTower Polynomial
+open IntermediateField IsScalarTower Polynomial
 
 variable (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
 
@@ -226,8 +226,8 @@ variable (K K' : IntermediateField F L)
 lemma le_normalClosure : K ≤ normalClosure F K L :=
   K.fieldRange_val.symm.trans_le K.val.fieldRange_le_normalClosure
 
-lemma normalClosure_of_normal [Normal F K] : normalClosure F K L = K :=
-by simp only [normalClosure_def, AlgHom.fieldRange_of_normal, iSup_const]
+lemma normalClosure_of_normal [Normal F K] : normalClosure F K L = K := by
+  simp only [normalClosure_def, AlgHom.fieldRange_of_normal, iSup_const]
 
 variable [Normal F L]
 
@@ -264,14 +264,14 @@ lemma normal_iff_normalClosure_eq : Normal F K ↔ normalClosure F K L = K :=
 lemma normal_iff_normalClosure_le : Normal F K ↔ normalClosure F K L ≤ K :=
 normal_iff_normalClosure_eq.trans (le_normalClosure K).le_iff_eq.symm
 
-lemma normal_iff_forall_fieldRange_le : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange ≤ K :=
-by rw [normal_iff_normalClosure_le, normalClosure_def, iSup_le_iff]
+lemma normal_iff_forall_fieldRange_le : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange ≤ K := by
+  rw [normal_iff_normalClosure_le, normalClosure_def, iSup_le_iff]
 
-lemma normal_iff_forall_map_le : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ ≤ K :=
-by rw [normal_iff_normalClosure_le, normalClosure_def', iSup_le_iff]
+lemma normal_iff_forall_map_le : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ ≤ K := by
+  rw [normal_iff_normalClosure_le, normalClosure_def', iSup_le_iff]
 
-lemma normal_iff_forall_map_le' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ ≤ K :=
-by rw [normal_iff_normalClosure_le, normalClosure_def'', iSup_le_iff]
+lemma normal_iff_forall_map_le' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ ≤ K := by
+  rw [normal_iff_normalClosure_le, normalClosure_def'', iSup_le_iff]
 
 lemma normal_iff_forall_fieldRange_eq : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange = K :=
 ⟨@AlgHom.fieldRange_of_normal (E := K), normal_iff_forall_fieldRange_le.2 ∘ fun h σ ↦ (h σ).le⟩

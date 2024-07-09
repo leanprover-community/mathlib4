@@ -215,7 +215,7 @@ theorem imageBasicOpen_image_open :
     IsOpen ((coequalizer.π f.1 g.1).base '' (imageBasicOpen f g U s).1) := by
   rw [← (TopCat.homeoOfIso (PreservesCoequalizer.iso (SheafedSpace.forget _) f.1
     g.1)).isOpen_preimage, TopCat.coequalizer_isOpen_iff, ← Set.preimage_comp]
-  erw [← coe_comp]
+  erw [← TopCat.coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
   -- Porting note (#11224): change `rw` to `erw`
@@ -245,8 +245,7 @@ instance coequalizer_π_stalk_isLocalRingHom (x : Y) :
       ⟨_, @Set.mem_image_of_mem _ _ (coequalizer.π f.val g.val).base x V.1 hxV⟩ s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.val g.val : _).c.app _), ← comp_apply,
-    NatTrans.naturality, comp_apply, TopCat.Presheaf.pushforwardObj_map, ←
-    isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
+    NatTrans.naturality, comp_apply, ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
   -- Porting note (#11224): change `rw` to `erw`
   erw [← comp_apply, ← comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)

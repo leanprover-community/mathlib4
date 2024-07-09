@@ -20,7 +20,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 namespace Polynomial
 
@@ -49,7 +49,7 @@ theorem monic_zero_iff_subsingleton' :
 #align polynomial.monic_zero_iff_subsingleton' Polynomial.monic_zero_iff_subsingleton'
 
 theorem Monic.as_sum (hp : p.Monic) :
-    p = X ^ p.natDegree + ∑ i in range p.natDegree, C (p.coeff i) * X ^ i := by
+    p = X ^ p.natDegree + ∑ i ∈ range p.natDegree, C (p.coeff i) * X ^ i := by
   conv_lhs => rw [p.as_sum_range_C_mul_X_pow, sum_range_succ_comm]
   suffices C (p.coeff p.natDegree) = 1 by rw [this, one_mul]
   exact congr_arg C hp
@@ -285,7 +285,7 @@ theorem monic_multiset_prod_of_monic (t : Multiset ι) (f : ι → R[X]) (ht : �
 #align polynomial.monic_multiset_prod_of_monic Polynomial.monic_multiset_prod_of_monic
 
 theorem monic_prod_of_monic (s : Finset ι) (f : ι → R[X]) (hs : ∀ i ∈ s, Monic (f i)) :
-    Monic (∏ i in s, f i) :=
+    Monic (∏ i ∈ s, f i) :=
   monic_multiset_prod_of_monic s.1 f hs
 #align polynomial.monic_prod_of_monic Polynomial.monic_prod_of_monic
 
@@ -304,7 +304,7 @@ theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : �
 #align polynomial.monic.next_coeff_multiset_prod Polynomial.Monic.nextCoeff_multiset_prod
 
 theorem Monic.nextCoeff_prod (s : Finset ι) (f : ι → R[X]) (h : ∀ i ∈ s, Monic (f i)) :
-    nextCoeff (∏ i in s, f i) = ∑ i in s, nextCoeff (f i) :=
+    nextCoeff (∏ i ∈ s, f i) = ∑ i ∈ s, nextCoeff (f i) :=
   Monic.nextCoeff_multiset_prod s.1 f h
 #align polynomial.monic.next_coeff_prod Polynomial.Monic.nextCoeff_prod
 

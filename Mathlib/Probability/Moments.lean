@@ -41,7 +41,7 @@ open MeasureTheory Filter Finset Real
 
 noncomputable section
 
-open scoped BigOperators MeasureTheory ProbabilityTheory ENNReal NNReal
+open scoped MeasureTheory ProbabilityTheory ENNReal NNReal
 
 namespace ProbabilityTheory
 
@@ -231,7 +231,7 @@ theorem IndepFun.mgf_add {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ)
 
 theorem IndepFun.mgf_add' {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) : mgf (X + Y) μ t = mgf X μ t * mgf Y μ t := by
-  have A : Continuous fun x : ℝ => exp (t * x) := by continuity
+  have A : Continuous fun x : ℝ => exp (t * x) := by fun_prop
   have h'X : AEStronglyMeasurable (fun ω => exp (t * X ω)) μ :=
     A.aestronglyMeasurable.comp_aemeasurable hX.aemeasurable
   have h'Y : AEStronglyMeasurable (fun ω => exp (t * Y ω)) μ :=
@@ -259,7 +259,7 @@ theorem aestronglyMeasurable_exp_mul_add {X Y : Ω → ℝ}
 
 theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
     (h_int : ∀ i ∈ s, AEStronglyMeasurable (fun ω => exp (t * X i ω)) μ) :
-    AEStronglyMeasurable (fun ω => exp (t * (∑ i in s, X i) ω)) μ := by
+    AEStronglyMeasurable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
   classical
   induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
   · simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
@@ -282,7 +282,7 @@ theorem IndepFun.integrable_exp_mul_add {X Y : Ω → ℝ} (h_indep : IndepFun X
 theorem iIndepFun.integrable_exp_mul_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
-    Integrable (fun ω => exp (t * (∑ i in s, X i) ω)) μ := by
+    Integrable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
   classical
   induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
   · simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
@@ -298,7 +298,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem iIndepFun.mgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
-    (s : Finset ι) : mgf (∑ i in s, X i) μ t = ∏ i in s, mgf (X i) μ t := by
+    (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
   classical
   induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
   · simp only [sum_empty, mgf_zero_fun, measure_univ, ENNReal.one_toReal, prod_empty]
@@ -314,7 +314,7 @@ set_option linter.uppercaseLean3 false in
 theorem iIndepFun.cgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
-    cgf (∑ i in s, X i) μ t = ∑ i in s, cgf (X i) μ t := by
+    cgf (∑ i ∈ s, X i) μ t = ∑ i ∈ s, cgf (X i) μ t := by
   simp_rw [cgf]
   rw [← log_prod _ _ fun j hj => ?_]
   · rw [h_indep.mgf_sum h_meas]

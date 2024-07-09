@@ -1,5 +1,5 @@
 /-
-Copyright © 2022 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2022 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doorn
 -/
@@ -326,7 +326,8 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
   exact le_of_eq (FiberBundle.totalSpaceMk_inducing F E (f x)).induced
 #align pullback.continuous_total_space_mk Pullback.continuous_totalSpaceMk
 
-variable {E F} [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
+variable {E F}
+variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
 -- Porting note: universe levels are explicitly provided
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
@@ -362,7 +363,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
     dsimp only
     simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp,
       pullbackTotalSpaceEmbedding]
-    refine'
+    refine
       continuousOn_fst.prod
         (e.continuousOn_symm.comp ((map_continuous f).prod_map continuous_id).continuousOn
           Subset.rfl)

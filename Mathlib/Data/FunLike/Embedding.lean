@@ -58,7 +58,7 @@ Continuing the example above:
 ```
 /-- `MyEmbeddingClass F A B` states that `F` is a type of `MyClass.op`-preserving embeddings.
 You should extend this class when you extend `MyEmbedding`. -/
-class MyEmbeddingClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
+class MyEmbeddingClass (F : Type*) (A B : outParam Type*) [MyClass A] [MyClass B]
     [FunLike F A B]
     extends EmbeddingLike F A B :=
   (map_op : ∀ (f : F) (x y : A), f (MyClass.op x y) = MyClass.op (f x) (f y))
@@ -89,7 +89,7 @@ Typically, you can just declare a new class analogous to `MyEmbeddingClass`:
 structure CoolerEmbedding (A B : Type*) [CoolClass A] [CoolClass B] extends MyEmbedding A B :=
   (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
-class CoolerEmbeddingClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
+class CoolerEmbeddingClass (F : Type*) (A B : outParam Type*) [CoolClass A] [CoolClass B]
     [FunLike F A B]
     extends MyEmbeddingClass F A B :=
   (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)

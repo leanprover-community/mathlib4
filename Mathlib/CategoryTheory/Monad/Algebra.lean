@@ -48,7 +48,6 @@ structure Algebra (T : Monad C) : Type max u₁ v₁ where
   assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by aesop_cat
 #align category_theory.monad.algebra CategoryTheory.Monad.Algebra
 
--- Porting note: Manually adding aligns.
 set_option linter.uppercaseLean3 false in
 #align category_theory.monad.algebra.A CategoryTheory.Monad.Algebra.A
 
@@ -100,7 +99,7 @@ instance : CategoryStruct (Algebra T) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note: Adding this ext lemma to help automation below.
+-- Porting note (#11041): Adding this `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 
@@ -193,14 +192,7 @@ def adj : T.free ⊣ T.forget :=
           right_inv := fun f => by
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
-            apply Category.comp_id },
-      -- This used to be automatic before leanprover/lean4#2644
-      homEquiv_naturality_right := by
-        intros
-        -- This doesn't look good:
-        simp? says simp only [forget_obj, free_obj_A, forget_map]
-        dsimp
-        simp }
+            apply Category.comp_id } }
 #align category_theory.monad.adj CategoryTheory.Monad.adj
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
@@ -321,7 +313,6 @@ structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   coassoc : a ≫ G.δ.app A = a ≫ G.map a := by aesop_cat
 #align category_theory.comonad.coalgebra CategoryTheory.Comonad.Coalgebra
 
--- Porting note: manually adding aligns.
 set_option linter.uppercaseLean3 false in
 #align category_theory.comonad.coalgebra.A CategoryTheory.Comonad.Coalgebra.A
 
@@ -380,7 +371,7 @@ instance : CategoryStruct (Coalgebra G) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note: Adding ext lemma to help automation below.
+-- Porting note (#11041): Adding `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 

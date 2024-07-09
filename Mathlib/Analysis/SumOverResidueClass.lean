@@ -3,7 +3,6 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Star.Order
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Analysis.Normed.Field.Basic
@@ -20,7 +19,6 @@ mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 -/
 
 
-open BigOperators in
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :
     f = ∑ a : ZMod m, {n : ℕ | (n : ZMod m) = a}.indicator f := by
   ext n

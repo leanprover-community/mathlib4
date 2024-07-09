@@ -160,8 +160,8 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
-  have : inst₁.toAddCommMonoidWithOne = inst₂.toAddCommMonoidWithOne :=
-    by ext : 1 <;> assumption
+  have : inst₁.toAddCommMonoidWithOne = inst₂.toAddCommMonoidWithOne := by
+    ext : 1 <;> assumption
   have : inst₁.toNatCast = inst₂.toNatCast :=
     congrArg (·.toNatCast) this
   -- Split into `NonUnitalNonAssocSemiring`, `One` and `natCast` instances.

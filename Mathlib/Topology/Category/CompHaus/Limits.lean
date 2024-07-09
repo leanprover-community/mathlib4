@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
@@ -23,6 +22,12 @@ So far, we have the following:
 -/
 
 namespace CompHaus
+
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 universe u w
 

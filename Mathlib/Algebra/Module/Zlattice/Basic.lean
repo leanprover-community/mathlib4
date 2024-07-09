@@ -37,8 +37,6 @@ the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
 -/
 
 
-open scoped BigOperators
-
 noncomputable section
 
 namespace Zspan
@@ -435,7 +433,7 @@ theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
-      (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective) _)
+      (Function.Injective.injOn (Subtype.coe_injective.comp (Zspan.quotientEquiv b).injective))
     have : Set.Finite ((Zspan.fundamentalDomain b) ∩ L) :=
       Metric.finite_isBounded_inter_isClosed (Zspan.fundamentalDomain_isBounded b) inferInstance
     refine Set.Finite.subset this ?_
@@ -561,7 +559,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
         refine sub_mem ?_ ?_
-        · exact zsmul_mem (subset_span (Set.diff_subset _ _ hv)) _
+        · exact zsmul_mem (subset_span (Set.diff_subset hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) :=
       Metric.finite_isBounded_inter_isClosed Metric.isBounded_closedBall inferInstance

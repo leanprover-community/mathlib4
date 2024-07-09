@@ -37,8 +37,6 @@ In the following, `f : Equiv.Perm β`.
 
 open Equiv Function Finset
 
-open BigOperators
-
 variable {ι α β : Type*}
 
 namespace Equiv.Perm
@@ -245,12 +243,23 @@ theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
     · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
 #align equiv.perm.same_cycle.exists_pow_eq'' Equiv.Perm.SameCycle.exists_pow_eq''
 
+instance (f : Perm α) [DecidableRel (SameCycle f⁻¹)] :
+    DecidableRel (SameCycle f) := fun x y =>
+  decidable_of_iff (f⁻¹.SameCycle x y) (sameCycle_inv)
+
+instance (f : Perm α) [DecidableRel (SameCycle f)] :
+    DecidableRel (SameCycle f⁻¹) := fun x y =>
+  decidable_of_iff (f.SameCycle x y) (sameCycle_inv).symm
+
+instance (priority := 100) [DecidableEq α] : DecidableRel (SameCycle (1 : Perm α)) := fun x y =>
+  decidable_of_iff (x = y) sameCycle_one.symm
+
 instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>
   decidable_of_iff (∃ n ∈ List.range (Fintype.card (Perm α)), (f ^ n) x = y)
     ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
       List.mem_range.2 (Int.ofNat_lt.1 <| by
         rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.natCast_ne_zero.2 (orderOf_pos _).ne')]
-        refine' (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
+        refine (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le ?_
         simp [orderOf_le_card_univ]),
       by
         rw [← zpow_natCast, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
@@ -745,18 +754,16 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : σ.support.car
 #align equiv.perm.is_cycle.is_conj Equiv.Perm.IsCycle.isConj
 
 theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
-    IsConj σ τ ↔ σ.support.card = τ.support.card :=
-  ⟨by
-    intro h
+    IsConj σ τ ↔ σ.support.card = τ.support.card where
+  mp h := by
     obtain ⟨π, rfl⟩ := (_root_.isConj_iff).1 h
-    refine Finset.card_congr (fun a _ => π a) (fun _ ha => ?_) (fun _ _ _ _ ab => π.injective ab)
-        fun b hb => ?_
+    refine Finset.card_bij (fun a _ => π a) (fun _ ha => ?_) (fun _ _ _ _ ab => π.injective ab)
+        fun b hb ↦ ⟨π⁻¹ b, ?_, π.apply_inv_self b⟩
     · simp [mem_support.1 ha]
-    · refine ⟨π⁻¹ b, ⟨?_, π.apply_inv_self b⟩⟩
-      contrapose! hb
-      rw [mem_support, Classical.not_not] at hb
-      rw [mem_support, Classical.not_not, Perm.mul_apply, Perm.mul_apply, hb, Perm.apply_inv_self],
-    hσ.isConj hτ⟩
+    contrapose! hb
+    rw [mem_support, Classical.not_not] at hb
+    rw [mem_support, Classical.not_not, Perm.mul_apply, Perm.mul_apply, hb, Perm.apply_inv_self]
+  mpr := hσ.isConj hτ
 #align equiv.perm.is_cycle.is_conj_iff Equiv.Perm.IsCycle.isConj_iff
 
 end Conjugation
@@ -1098,13 +1105,13 @@ namespace Finset
 variable [Semiring α] [AddCommMonoid β] [Module α β] {s : Finset ι} {σ : Perm ι}
 
 theorem sum_smul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f : ι → α) (g : ι → β) :
-    ((∑ i in s, f i) • ∑ i in s, g i) = ∑ k in range s.card, ∑ i in s, f i • g ((σ ^ k) i) := by
+    ((∑ i ∈ s, f i) • ∑ i ∈ s, g i) = ∑ k ∈ range s.card, ∑ i ∈ s, f i • g ((σ ^ k) i) := by
   simp_rw [sum_smul_sum, product_self_eq_disjiUnion_perm hσ, sum_disjiUnion, sum_map]
   rfl
 #align finset.sum_smul_sum_eq_sum_perm Finset.sum_smul_sum_eq_sum_perm
 
 theorem sum_mul_sum_eq_sum_perm (hσ : σ.IsCycleOn s) (f g : ι → α) :
-    ((∑ i in s, f i) * ∑ i in s, g i) = ∑ k in range s.card, ∑ i in s, f i * g ((σ ^ k) i) :=
+    ((∑ i ∈ s, f i) * ∑ i ∈ s, g i) = ∑ k ∈ range s.card, ∑ i ∈ s, f i * g ((σ ^ k) i) :=
   sum_smul_sum_eq_sum_perm hσ f g
 #align finset.sum_mul_sum_eq_sum_perm Finset.sum_mul_sum_eq_sum_perm
 

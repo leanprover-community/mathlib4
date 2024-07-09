@@ -250,9 +250,8 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     · rwa [← typein_le_typein, typein_enum]
   · rcases cof_eq (· < · : (Quotient.out o).α → (Quotient.out o).α → Prop) with ⟨S, hS, hS'⟩
     let f : S → Ordinal := fun s => typein LT.lt s.val
-    refine'
-      ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self i) (le_of_forall_lt fun a ha => _), by
-        rwa [type_lt o] at hS'⟩
+    refine ⟨S, f, le_antisymm (lsub_le fun i => typein_lt_self (o := o) i)
+      (le_of_forall_lt fun a ha => ?_), by rwa [type_lt o] at hS'⟩
     rw [← type_lt o] at ha
     rcases hS (enum (· < ·) a ha) with ⟨b, hb, hb'⟩
     rw [← typein_le_typein, typein_enum] at hb'
@@ -267,7 +266,7 @@ theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o
   · refine le_cof_type.2 fun S H => ?_
     have : Cardinal.lift.{u, v} #(ULift.up ⁻¹' S) ≤ #(S : Type (max u v)) := by
       rw [← Cardinal.lift_umax.{v, u}, ← Cardinal.lift_id'.{v, u} #S]
-      exact mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{u, v})
+      exact mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{v, u})
     refine (Cardinal.lift_le.2 <| cof_type_le ?_).trans this
     exact fun a =>
       let ⟨⟨b⟩, bs, br⟩ := H ⟨a⟩
@@ -328,7 +327,7 @@ theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
 theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
     (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : lsub.{u, v} f < c :=
-  lt_of_le_of_ne (lsub_le.{v, u} hf) fun h => by
+  lt_of_le_of_ne (lsub_le hf) fun h => by
     subst h
     exact (cof_lsub_le_lift.{u, v} f).not_lt hι
 #align ordinal.lsub_lt_ord_lift Ordinal.lsub_lt_ord_lift
@@ -534,11 +533,11 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
         · exact Or.inl h
         · exact Or.inr ⟨PUnit.unit, h.symm⟩
         · rcases hl x with ⟨a', aS, hn⟩
-          rw [(_ : ↑a = a')] at h
-          · exact absurd h hn
-          refine congr_arg Subtype.val (?_ : a = ⟨a', aS⟩)
-          haveI := le_one_iff_subsingleton.1 (le_of_eq e)
-          apply Subsingleton.elim,
+          refine absurd h ?_
+          convert hn
+          change _ = ↑(⟨a', aS⟩ : S)
+          have := le_one_iff_subsingleton.1 (le_of_eq e)
+          congr!,
     fun ⟨a, e⟩ => by simp [e]⟩
 #align ordinal.cof_eq_one_iff_is_succ Ordinal.cof_eq_one_iff_is_succ
 
@@ -1245,7 +1244,7 @@ theorem IsInaccessible.mk {c} (h₁ : ℵ₀ < c) (h₂ : c ≤ c.ord.cof) (h₃
 theorem univ_inaccessible : IsInaccessible univ.{u, v} :=
   IsInaccessible.mk (by simpa using lift_lt_univ' ℵ₀) (by simp) fun c h => by
     rcases lt_univ'.1 h with ⟨c, rfl⟩
-    rw [← lift_two_power.{u, max (u + 1) v}]
+    rw [← lift_two_power]
     apply lift_lt_univ'
 #align cardinal.univ_inaccessible Cardinal.univ_inaccessible
 

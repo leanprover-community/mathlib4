@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.Monotonicity
 
 #align_import data.nat.totient from "leanprover-community/mathlib"@"5cc2dfdd3e92f340411acea4427d701dc7ed26f8"
 
@@ -22,8 +21,6 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 -/
 
 open Finset
-
-open BigOperators
 
 namespace Nat
 
@@ -90,10 +87,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   · rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
       Nat.zero_eq, zero_add]
-    -- Porting note: below line was `mono`
-    refine Finset.card_mono ?_
-    refine monotone_filter_left a.Coprime ?_
-    simp only [Finset.le_eq_subset]
+    gcongr
     exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
@@ -156,7 +150,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
   rcases d.eq_zero_or_pos with (rfl | hd0); · simp [eq_zero_of_zero_dvd hnd]
   rcases hnd with ⟨x, rfl⟩
   rw [Nat.mul_div_cancel_left x hd0]
-  apply Finset.card_congr fun k _ => d * k
+  apply Finset.card_bij fun k _ => d * k
   · simp only [mem_filter, mem_range, and_imp, Coprime]
     refine fun a ha1 ha2 => ⟨(mul_lt_mul_left hd0).2 ha1, ?_⟩
     rw [gcd_mul_left, ha2, mul_one]
@@ -175,7 +169,7 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   rw [← sum_div_divisors n φ]
-  have : n = ∑ d : ℕ in n.divisors, (filter (fun k : ℕ => n.gcd k = d) (range n)).card := by
+  have : n = ∑ d ∈ n.divisors, (filter (fun k : ℕ => n.gcd k = d) (range n)).card := by
     nth_rw 1 [← card_range n]
     refine card_eq_sum_card_fiberwise fun x _ => mem_divisors.2 ⟨?_, hn.ne'⟩
     apply gcd_dvd_left
@@ -183,7 +177,7 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   exact sum_congr rfl fun x hx => totient_div_of_dvd (dvd_of_mem_divisors hx)
 #align nat.sum_totient Nat.sum_totient
 
-theorem sum_totient' (n : ℕ) : (∑ m in (range n.succ).filter (· ∣ n), φ m) = n := by
+theorem sum_totient' (n : ℕ) : (∑ m ∈ (range n.succ).filter (· ∣ n), φ m) = n := by
   convert sum_totient _ using 1
   simp only [Nat.divisors, sum_filter, range_eq_Ico]
   rw [sum_eq_sum_Ico_succ_bot] <;> simp
@@ -298,7 +292,7 @@ theorem totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_mul_prod_primeFactors (n : ℕ) :
-    (φ n * ∏ p in n.primeFactors, p) = n * ∏ p in n.primeFactors, (p - 1) := by
+    (φ n * ∏ p ∈ n.primeFactors, p) = n * ∏ p ∈ n.primeFactors, (p - 1) := by
   by_cases hn : n = 0; · simp [hn]
   rw [totient_eq_prod_factorization hn]
   nth_rw 3 [← factorization_prod_pow_eq_self hn]
@@ -310,7 +304,7 @@ theorem totient_mul_prod_primeFactors (n : ℕ) :
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_div_primeFactors_mul (n : ℕ) :
-    φ n = (n / ∏ p in n.primeFactors, p) * ∏ p in n.primeFactors, (p - 1) := by
+    φ n = (n / ∏ p ∈ n.primeFactors, p) * ∏ p ∈ n.primeFactors, (p - 1) := by
   rw [← mul_div_left n.totient, totient_mul_prod_primeFactors, mul_comm,
     Nat.mul_div_assoc _ (prod_primeFactors_dvd n), mul_comm]
   exact prod_pos (fun p => pos_of_mem_primeFactors)
@@ -318,11 +312,11 @@ theorem totient_eq_div_primeFactors_mul (n : ℕ) :
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_mul_prod_factors (n : ℕ) :
-    (φ n : ℚ) = n * ∏ p in n.primeFactors, (1 - (p : ℚ)⁻¹) := by
+    (φ n : ℚ) = n * ∏ p ∈ n.primeFactors, (1 - (p : ℚ)⁻¹) := by
   by_cases hn : n = 0
   · simp [hn]
   have hn' : (n : ℚ) ≠ 0 := by simp [hn]
-  have hpQ : (∏ p in n.primeFactors, (p : ℚ)) ≠ 0 := by
+  have hpQ : (∏ p ∈ n.primeFactors, (p : ℚ)) ≠ 0 := by
     rw [← cast_prod, cast_ne_zero, ← zero_lt_iff, prod_primeFactors_prod_factorization]
     exact prod_pos fun p hp => pos_of_mem_primeFactors hp
   simp only [totient_eq_div_primeFactors_mul n, prod_primeFactors_dvd n, cast_mul, cast_prod,

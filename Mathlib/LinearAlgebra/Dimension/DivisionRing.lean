@@ -38,7 +38,7 @@ universe u₀ u v v' v'' u₁' w w'
 variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open BigOperators Cardinal Basis Submodule Function Set
+open Cardinal Basis Submodule Function Set
 
 section Module
 
@@ -158,8 +158,8 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     apply eq_neg_of_add_eq_zero_left
     calc
       (b i + (g i)⁻¹ • (s.erase i).sum fun j => g j • b j) =
-          (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) :=
-        by rw [smul_add, ← mul_smul, inv_mul_cancel gx_ne_zero, one_smul]
+          (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) := by
+        rw [smul_add, ← mul_smul, inv_mul_cancel gx_ne_zero, one_smul]
       _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.

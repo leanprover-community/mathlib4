@@ -426,7 +426,7 @@ theorem continuous_integral_integral :
   simp_rw [←
     lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]
-  refine' tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖₊ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => ennnorm_integral_le_lintegral_ennnorm _
   show
@@ -506,9 +506,7 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
   exact integral_prod f hf
 #align measure_theory.set_integral_prod MeasureTheory.setIntegral_prod
 
-@[deprecated]
-alias set_integral_prod :=
-  setIntegral_prod -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")] alias set_integral_prod := setIntegral_prod
 
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
@@ -534,9 +532,7 @@ theorem setIntegral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L
   apply integral_prod_mul
 #align measure_theory.set_integral_prod_mul MeasureTheory.setIntegral_prod_mul
 
-@[deprecated]
-alias set_integral_prod_mul :=
-  setIntegral_prod_mul -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")] alias set_integral_prod_mul := setIntegral_prod_mul
 
 theorem integral_fun_snd (f : β → E) : ∫ z, f z.2 ∂μ.prod ν = (μ univ).toReal • ∫ y, f y ∂ν := by
   simpa using integral_prod_smul (1 : α → ℝ) f

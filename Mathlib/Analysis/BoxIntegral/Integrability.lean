@@ -24,7 +24,7 @@ integral, McShane integral, Bochner integral
 -/
 
 
-open scoped Classical NNReal ENNReal Topology BigOperators
+open scoped Classical NNReal ENNReal Topology
 
 universe u v
 
@@ -46,9 +46,9 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   /- First we choose a closed set `F ⊆ s ∩ I.Icc` and an open set `U ⊇ s` such that
     both `(s ∩ I.Icc) \ F` and `U \ s` have measure less than `ε`. -/
   have A : μ (s ∩ Box.Icc I) ≠ ∞ :=
-    ((measure_mono <| Set.inter_subset_right _ _).trans_lt (I.measure_Icc_lt_top μ)).ne
+    ((measure_mono Set.inter_subset_right).trans_lt (I.measure_Icc_lt_top μ)).ne
   have B : μ (s ∩ I) ≠ ∞ :=
-    ((measure_mono <| Set.inter_subset_right _ _).trans_lt (I.measure_coe_lt_top μ)).ne
+    ((measure_mono Set.inter_subset_right).trans_lt (I.measure_coe_lt_top μ)).ne
   obtain ⟨F, hFs, hFc, hμF⟩ : ∃ F, F ⊆ s ∩ Box.Icc I ∧ IsClosed F ∧ μ ((s ∩ Box.Icc I) \ F) < ε :=
     (hs.inter I.measurableSet_Icc).exists_isClosed_diff_lt A (ENNReal.coe_pos.2 ε0).ne'
   obtain ⟨U, hsU, hUo, hUt, hμU⟩ :
@@ -86,7 +86,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     refine (tsub_le_tsub (measure_mono htU) le_rfl).trans (le_measure_diff.trans ?_)
     refine (measure_mono fun x hx => ?_).trans hμU.le
     exact ⟨hx.1.1, fun hx' => hx.2 ⟨hx'.1, hx.1.2⟩⟩
-  · have hμt : μ t ≠ ∞ := ((measure_mono (htU.trans (inter_subset_left _ _))).trans_lt hUt).ne
+  · have hμt : μ t ≠ ∞ := ((measure_mono (htU.trans inter_subset_left)).trans_lt hUt).ne
     refine (ENNReal.le_toReal_sub hμt).trans (ENNReal.toReal_le_coe_of_le_coe ?_)
     refine le_measure_diff.trans ((measure_mono ?_).trans hμF.le)
     rintro x ⟨⟨hxs, hxI⟩, hxt⟩
@@ -251,8 +251,8 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     integral sum by `f (Nx x)`; then we replace each `μ J • f (Nx (π.tag J)) (π.tag J)`
     by the Bochner integral of `f (Nx (π.tag J)) x` over `J`, then we jump to the Bochner
     integral of `g`. -/
-  refine (dist_triangle4 _ (∑ J in π.boxes, (μ J).toReal • f (Nx <| π.tag J) (π.tag J))
-    (∑ J in π.boxes, ∫ x in J, f (Nx <| π.tag J) x ∂μ) _).trans ?_
+  refine (dist_triangle4 _ (∑ J ∈ π.boxes, (μ J).toReal • f (Nx <| π.tag J) (π.tag J))
+    (∑ J ∈ π.boxes, ∫ x in J, f (Nx <| π.tag J) x ∂μ) _).trans ?_
   rw [add_mul, add_mul, one_mul]
   refine add_le_add_three ?_ ?_ ?_
   · /- Since each `f (Nx <| π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
@@ -316,5 +316,34 @@ theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
   have : IntegrableOn f I μ :=
     IntegrableOn.mono_set (hc.integrableOn_compact I.isCompact_Icc) Box.coe_subset_Icc
   exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
+
+/-- If `f : ℝⁿ → E` is a.e. continuous and bounded on a rectangular box `I`, then it is Box
+    integrable on `I` w.r.t. a locally finite measure `μ` with the same integral. -/
+theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (μ : Measure (ι → ℝ))
+    [IsLocallyFiniteMeasure μ] {I : Box ι} (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C)
+    (hc : ∀ᵐ x ∂μ, ContinuousAt f x) (l : IntegrationParams) :
+    HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
+  obtain ⟨y, hy⟩ := integrable_of_bounded_and_ae_continuous l hb μ hc
+  convert hy
+  refine HasIntegral.unique (IntegrableOn.hasBoxIntegral ?_ ⊥ rfl) (HasIntegral.mono hy bot_le)
+  constructor
+  · let v := {x : (ι → ℝ) | ContinuousAt f x}
+    have : AEStronglyMeasurable f (μ.restrict v) :=
+      (ContinuousAt.continuousOn fun _ h ↦ h).aestronglyMeasurable (measurableSet_of_continuousAt f)
+    refine this.mono_measure (Measure.le_iff.2 fun s hs ↦ ?_)
+    repeat rw [μ.restrict_apply hs]
+    apply le_of_le_of_eq <| μ.mono s.inter_subset_left
+    refine measure_eq_measure_of_null_diff s.inter_subset_left ?_ |>.symm
+    rw [diff_self_inter, Set.diff_eq]
+    refine (le_antisymm (zero_le (μ (s ∩ vᶜ))) ?_).symm
+    exact le_trans (μ.mono s.inter_subset_right) (nonpos_iff_eq_zero.2 hc)
+  · have : IsFiniteMeasure (μ.restrict (Box.Icc I)) :=
+      { measure_univ_lt_top := by simp [I.isCompact_Icc.measure_lt_top (μ := μ)] }
+    have : IsFiniteMeasure (μ.restrict I) :=
+      isFiniteMeasure_of_le (μ.restrict (Box.Icc I))
+                            (μ.restrict_mono Box.coe_subset_Icc (le_refl μ))
+    obtain ⟨C, hC⟩ := hb
+    refine hasFiniteIntegral_of_bounded (C := C) (Filter.eventually_iff_exists_mem.2 ?_)
+    use I, self_mem_ae_restrict I.measurableSet_coe, fun y hy ↦ hC y (I.coe_subset_Icc hy)
 
 end MeasureTheory

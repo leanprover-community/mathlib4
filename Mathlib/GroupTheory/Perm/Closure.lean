@@ -24,8 +24,6 @@ import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 open Equiv Function Finset
 
-open BigOperators
-
 variable {ι α β : Type*}
 
 namespace Equiv.Perm

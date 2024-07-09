@@ -168,7 +168,7 @@ instance (priority := 100) paracompact_of_compact [CompactSpace X] : Paracompact
   -- the proof is trivial: we choose a finite subcover using compactness, and use it
   refine ⟨fun ι s ho hu ↦ ?_⟩
   rcases isCompact_univ.elim_finite_subcover _ ho hu.ge with ⟨T, hT⟩
-  refine' ⟨(T : Set ι), fun t ↦ s t, fun t ↦ ho _, _, locallyFinite_of_finite _,
+  refine ⟨(T : Set ι), fun t ↦ s t, fun t ↦ ho _, ?_, locallyFinite_of_finite _,
     fun t ↦ ⟨t, Subset.rfl⟩⟩
   simpa only [iUnion_coe_set, ← univ_subset_iff]
 #align paracompact_of_compact paracompact_of_compact
@@ -302,11 +302,11 @@ instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [Para
     choose u v hu hv hxu htv huv using SetCoe.forall'.1 H
     rcases precise_refinement_set hs u hu fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, hxu _⟩ with
       ⟨u', hu'o, hcov', hu'fin, hsub⟩
-    refine' ⟨⋃ i, u' i, (closure (⋃ i, u' i))ᶜ, isOpen_iUnion hu'o, isClosed_closure.isOpen_compl,
-      hcov', _, disjoint_compl_right.mono le_rfl (compl_le_compl subset_closure)⟩
+    refine ⟨⋃ i, u' i, (closure (⋃ i, u' i))ᶜ, isOpen_iUnion hu'o, isClosed_closure.isOpen_compl,
+      hcov', ?_, disjoint_compl_right.mono le_rfl (compl_le_compl subset_closure)⟩
     rw [hu'fin.closure_iUnion, compl_iUnion, subset_iInter_iff]
-    refine' fun i x hxt hxu ↦
-      absurd (htv i hxt) (closure_minimal _ (isClosed_compl_iff.2 <| hv _) hxu)
+    refine fun i x hxt hxu ↦
+      absurd (htv i hxt) (closure_minimal ?_ (isClosed_compl_iff.2 <| hv _) hxu)
     exact fun y hyu hyv ↦ (huv i).le_bot ⟨hsub _ hyu, hyv⟩
   -- Now we apply the lemma twice: first to `s` and `t`, then to `t` and each point of `s`.
   refine { normal := fun s t hs ht hst ↦ this s t hs fun x hx ↦ ?_ }

@@ -94,8 +94,8 @@ variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 @[to_additive (attr := simp)]
 theorem prod_cons : (a :: l).prod = a * l.prod :=
   calc
-    (a :: l).prod = foldl (· * ·) (a * 1) l :=
-      by simp only [List.prod, foldl_cons, one_mul, mul_one]
+    (a :: l).prod = foldl (· * ·) (a * 1) l := by
+      simp only [List.prod, foldl_cons, one_mul, mul_one]
     _ = _ := foldl_assoc
 #align list.prod_cons List.prod_cons
 #align list.sum_cons List.sum_cons
@@ -235,7 +235,7 @@ theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * 
 
 @[to_additive (attr := simp)]
 theorem prod_take_succ :
-    ∀ (L : List M) (i : ℕ) (p), (L.take (i + 1)).prod = (L.take i).prod * L.get ⟨i, p⟩
+    ∀ (L : List M) (i : ℕ) (p : i < L.length), (L.take (i + 1)).prod = (L.take i).prod * L[i]
   | [], i, p => by cases p
   | h :: t, 0, _ => rfl
   | h :: t, n + 1, p => by
@@ -274,7 +274,7 @@ theorem prod_set :
         ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
   | x :: xs, 0, a => by simp [set]
   | x :: xs, i + 1, a => by
-    simp [set, prod_set xs i a, mul_assoc, Nat.succ_eq_add_one, Nat.add_lt_add_iff_right]
+    simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
   | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
 #align list.prod_update_nth List.prod_set
 #align list.sum_update_nth List.sum_set
@@ -448,6 +448,29 @@ lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (l l' : List M) (h : l.length =
 #align list.prod_mul_prod_eq_prod_zip_with_of_length_eq List.prod_mul_prod_eq_prod_zipWith_of_length_eq
 #align list.sum_add_sum_eq_sum_zip_with_of_length_eq List.sum_add_sum_eq_sum_zipWith_of_length_eq
 
+@[to_additive]
+lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : List α) :
+    (l.map fun a => if p a then f a else g a).prod =
+      ((l.filter p).map f).prod * ((l.filter fun a ↦ ¬p a).map g).prod := by
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    simp only [map_cons, filter_cons, prod_cons, nodup_cons, ne_eq, mem_cons, count_cons] at ih ⊢
+    rw [ih]
+    clear ih
+    by_cases hx : p x
+    · simp only [hx, ↓reduceIte, decide_not, decide_True, map_cons, prod_cons, not_true_eq_false,
+        decide_False, Bool.false_eq_true, mul_assoc]
+    · simp only [hx, ↓reduceIte, decide_not, decide_False, Bool.false_eq_true, not_false_eq_true,
+      decide_True, map_cons, prod_cons, mul_left_comm]
+
+@[to_additive]
+lemma prod_map_filter_mul_prod_map_filter_not (p : α → Prop) [DecidablePred p] (f : α → M)
+    (l : List α) :
+    ((l.filter p).map f).prod * ((l.filter fun x => ¬p x).map f).prod = (l.map f).prod := by
+  rw [← prod_map_ite]
+  simp only [ite_self]
+
 end CommMonoid
 
 @[to_additive]
@@ -541,6 +564,21 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
       drop_eq_nil_of_le ((le_of_not_lt hn).trans n.le_succ)]
 #align list.prod_update_nth' List.prod_set'
 #align list.sum_update_nth' List.sum_set'
+
+@[to_additive]
+lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
+    (l.map fun x => if x = a then f x else g x).prod
+      = (f a / g a) ^ (l.count a) * (l.map g).prod := by
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    simp only [map_cons, prod_cons, nodup_cons, ne_eq, mem_cons, count_cons] at ih ⊢
+    rw [ih]
+    clear ih
+    by_cases hx : x = a
+    · simp only [hx, ite_true, div_pow, pow_add, pow_one, div_eq_mul_inv, mul_assoc, mul_comm,
+        mul_left_comm, mul_inv_cancel_left]
+    · simp only [hx, ite_false, ne_comm.mp hx, add_zero, mul_assoc, mul_comm (g x) _]
 
 end CommGroup
 
@@ -690,13 +728,14 @@ theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F)
 
 namespace MonoidHom
 
--- original lemma deprecated on 2023-01-10; additivised lemma on 2024-05-02
-/-- Deprecated, use `_root_.map_list_prod` instead. -/
-@[to_additive (attr := deprecated) "Deprecated, use `_root_.map_list_sum` instead."]
+@[to_additive]
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
-#align monoid_hom.map_list_prod MonoidHom.map_list_prod
-#align add_monoid_hom.map_list_sum AddMonoidHom.map_list_sum
+#align monoid_hom.map_list_prod map_list_prod
+#align add_monoid_hom.map_list_sum map_list_sum
+
+attribute [deprecated map_list_prod (since := "2023-01-10")] MonoidHom.map_list_prod
+attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_list_sum
 
 end MonoidHom
 
@@ -758,9 +797,15 @@ lemma drop_sum_join (L : List (List α)) (i : ℕ) :
 /-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
+lemma drop_take_succ_join_eq_getElem (L : List (List α)) (i : Nat) (h : i < L.length) :
+    (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
+  simpa using drop_take_succ_join_eq_getElem' _ _ _
+
+@[deprecated drop_take_succ_join_eq_getElem (since := "2024-06-11")]
 lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
     (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = get L i := by
-  simpa using drop_take_succ_join_eq_get' _ _
+  rw [drop_take_succ_join_eq_getElem _ _ i.2]
+  simp
 
 end List
 
@@ -858,7 +903,7 @@ lemma unop_map_list_prod {F : Type*} [FunLike F M Nᵐᵒᵖ] [MonoidHomClass F 
 namespace MonoidHom
 
 /-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-@[deprecated _root_.unop_map_list_prod]
+@[deprecated _root_.unop_map_list_prod (since := "2023-01-10")]
 protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
   unop_map_list_prod f l

@@ -16,7 +16,7 @@ The normal notation for this would be `N : P` which has already been taken by ty
 
 namespace Submodule
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {R M M' F G : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable {N N₁ N₂ P P₁ P₂ : Submodule R M}

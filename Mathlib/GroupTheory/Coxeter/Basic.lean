@@ -3,9 +3,9 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee
 -/
+import Mathlib.Algebra.Ring.Int
 import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.Coxeter.Matrix
-import Mathlib.Data.Int.Parity
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -410,21 +410,13 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
   induction' m with m ih
   · simp [alternatingWord]
   · rw [alternatingWord_succ', wordProd_cons, ih]
-    rcases Nat.even_or_odd m with even | odd
-    · rcases even with ⟨k, rfl⟩
-      ring_nf
-      have : Odd (1 + k * 2) := by use k; ring
-      simp [← two_mul, Nat.odd_iff_not_even.mp this]
-      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
-      norm_num
-    · rcases odd with ⟨k, rfl⟩
-      ring_nf
-      have h₁ : Odd (1 + k * 2) := by use k; ring
-      have h₂ : Even (2 + k * 2) := by use (k + 1); ring
-      simp [Nat.odd_iff_not_even.mp h₁, h₂]
-      rw [Nat.add_mul_div_right _ _ (by norm_num : 0 < 2)]
-      norm_num
-      rw [pow_succ', mul_assoc]
+    by_cases hm : Even m
+    · have h₁ : ¬ Even (m + 1) := by simp [hm, parity_simps]
+      have h₂ : (m + 1) / 2 = m / 2 := Nat.succ_div_of_not_dvd <| by rwa [← even_iff_two_dvd]
+      simp [hm, h₁, h₂]
+    · have h₁ : Even (m + 1) := by simp [hm, parity_simps]
+      have h₂ : (m + 1) / 2 = m / 2 + 1 := Nat.succ_div_of_dvd h₁.two_dvd
+      simp [hm, h₁, h₂, ← pow_succ', ← mul_assoc]
 
 theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (hm : m ≤ M i i' * 2) :
     π (alternatingWord i i' m) = π (alternatingWord i' i (M i i' * 2 - m)) := by

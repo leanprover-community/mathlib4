@@ -208,7 +208,7 @@ theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
 -- We make `mul_ite` and `ite_mul` simp lemmas,
 -- but not `add_ite` or `ite_add`.
 -- The problem we're trying to avoid is dealing with
--- summations of the form `∑ x in s, (f x + ite P 1 0)`,
+-- summations of the form `∑ x ∈ s, (f x + ite P 1 0)`,
 -- in which `add_ite` followed by `sum_ite` would needlessly slice up
 -- the `f x` terms according to whether `P` holds at `x`.
 -- There doesn't appear to be a corresponding difficulty so far with

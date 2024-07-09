@@ -26,7 +26,7 @@ noncomputable section
 variable {α β γ : Type*}
 
 open scoped Classical
-open BigOperators NNReal ENNReal
+open NNReal ENNReal
 
 open MeasureTheory
 
@@ -207,7 +207,7 @@ section BindOnSupport
   `p.bind f` is equivalent to `p.bindOnSupport (fun a _ ↦ f a)`, see `bindOnSupport_eq_bind`. -/
 def bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF β) : PMF β :=
   ⟨fun b => ∑' a, p a * if h : p a = 0 then 0 else f a h b, ENNReal.summable.hasSum_iff.2 (by
-    refine' ENNReal.tsum_comm.trans (_root_.trans (tsum_congr fun a => _) p.tsum_coe)
+    refine ENNReal.tsum_comm.trans (_root_.trans (tsum_congr fun a => ?_) p.tsum_coe)
     simp_rw [ENNReal.tsum_mul_left]
     split_ifs with h
     · simp only [h, zero_mul]
@@ -287,7 +287,7 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   split_ifs with h _ h_1 _ h_2
   any_goals ring1
   · have := h_1 a'
-    simp? [h] at this says simp only [h, ↓reduceDite, mul_eq_zero, false_or] at this
+    simp? [h] at this says simp only [h, ↓reduceDIte, mul_eq_zero, false_or] at this
     contradiction
   · simp [h_2]
 #align pmf.bind_on_support_bind_on_support PMF.bindOnSupport_bindOnSupport

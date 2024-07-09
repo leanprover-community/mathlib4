@@ -55,7 +55,7 @@ open MeasureTheory Filter Finset
 
 noncomputable section
 
-open scoped Topology BigOperators MeasureTheory ENNReal NNReal
+open scoped Topology MeasureTheory ENNReal NNReal
 
 variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
@@ -365,5 +365,21 @@ theorem Memℒp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α �
 #align probability_theory.mem_ℒp.uniform_integrable_of_ident_distrib ProbabilityTheory.Memℒp.uniformIntegrable_of_identDistrib
 
 end UniformIntegrable
+
+/-- If `X` and `Y` are independent and `(X, Y)` and `(X', Y')` are identically distributed,
+then `X'` and `Y'` are independent. -/
+lemma indepFun_of_identDistrib_pair
+    {μ : Measure γ} {μ' : Measure δ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']
+    {X : γ → α} {X' : δ → α} {Y : γ → β} {Y' : δ → β} (h_indep : IndepFun X Y μ)
+    (h_ident : IdentDistrib (fun ω ↦ (X ω, Y ω)) (fun ω ↦ (X' ω, Y' ω)) μ μ') :
+    IndepFun X' Y' μ' := by
+  rw [indepFun_iff_map_prod_eq_prod_map_map _ _, ← h_ident.map_eq,
+    (indepFun_iff_map_prod_eq_prod_map_map _ _).1 h_indep]
+  · exact congr (congrArg Measure.prod <| (h_ident.comp measurable_fst).map_eq)
+      (h_ident.comp measurable_snd).map_eq
+  · exact measurable_fst.aemeasurable.comp_aemeasurable h_ident.aemeasurable_fst
+  · exact measurable_snd.aemeasurable.comp_aemeasurable h_ident.aemeasurable_fst
+  · exact measurable_fst.aemeasurable.comp_aemeasurable h_ident.aemeasurable_snd
+  · exact measurable_snd.aemeasurable.comp_aemeasurable h_ident.aemeasurable_snd
 
 end ProbabilityTheory

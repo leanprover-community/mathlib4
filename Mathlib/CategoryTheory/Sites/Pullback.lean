@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Sites.CoverPreserving
+import Mathlib.CategoryTheory.Functor.Flat
+import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.CategoryTheory.Sites.LeftExact
 
 #align_import category_theory.sites.pushforward from "leanprover-community/mathlib"@"e2e38c005fc6f715502490da6cb0ec84df9ed228"
@@ -56,19 +57,19 @@ instance {X : C} : IsCofiltered (J.Cover X) :=
 same direction as `G`. -/
 @[simps!]
 def Functor.sheafPullback : Sheaf J A ⥤ Sheaf K A :=
-  sheafToPresheaf J A ⋙ lan G.op ⋙ presheafToSheaf K A
+  sheafToPresheaf J A ⋙ G.op.lan ⋙ presheafToSheaf K A
 #align category_theory.sites.pushforward CategoryTheory.Functor.sheafPullback
 
 instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
-  have : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
+  have : PreservesFiniteLimits (G.op.lan ⋙ presheafToSheaf K A) :=
     compPreservesFiniteLimits _ _
   apply compPreservesFiniteLimits
 
 /-- The pullback functor is left adjoint to the pushforward functor. -/
 def Functor.sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] :
     G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K :=
-  ((Lan.adjunction A G.op).comp (sheafificationAdjunction K A)).restrictFullyFaithful
-    (sheafToPresheaf J A) (𝟭 _) (Iso.refl _) (Iso.refl _)
+  ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
+    (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 #align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Functor.sheafAdjunctionContinuous
 
 end CategoryTheory

@@ -248,9 +248,10 @@ theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
 theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
-@[deprecated] alias densely_ordered_iff_forall_not_covBy :=
-  denselyOrdered_iff_forall_not_covBy -- 2024-04-04
 #align densely_ordered_iff_forall_not_covby denselyOrdered_iff_forall_not_covBy
+
+@[deprecated (since := "2024-04-04")]
+alias densely_ordered_iff_forall_not_covBy := denselyOrdered_iff_forall_not_covBy
 
 @[simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=

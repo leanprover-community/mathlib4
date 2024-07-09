@@ -17,7 +17,7 @@ In this file we prove that the set of Liouville numbers with exponent (irrationa
 strictly greater than two is a set of Lebesgue measure zero, see
 `volume_iUnion_setOf_liouvilleWith`.
 
-Since this set is a residual set, we show that the filters `residual` and `volume.ae` are disjoint.
+Since this set is a residual set, we show that the filters `residual` and `ae volume` are disjoint.
 These filters correspond to two common notions of genericity on `ℝ`: residual sets and sets of full
 measure. The fact that the filters are disjoint means that two mutually exclusive properties can be
 “generic” at the same time (in the sense of different “genericity” filters).
@@ -27,7 +27,7 @@ measure. The fact that the filters are disjoint means that two mutually exclusiv
 Liouville number, Lebesgue measure, residual, generic property
 -/
 
-open scoped Filter BigOperators ENNReal Topology NNReal
+open scoped Filter ENNReal Topology NNReal
 
 open Filter Set Metric MeasureTheory Real
 
@@ -92,7 +92,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
   have : ∀ b : ℕ, volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤
       ↑(2 * ((b : ℝ≥0) ^ (1 - r) + (b : ℝ≥0) ^ (-r))) := fun b ↦
     calc
-      volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤ ∑ a in Finset.Icc (0 : ℤ) b, volume (B a b) :=
+      volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤ ∑ a ∈ Finset.Icc (0 : ℤ) b, volume (B a b) :=
         measure_biUnion_finset_le _ _
       _ = ↑((b + 1) * (2 / (b : ℝ≥0) ^ r)) := by
         simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero, ← Int.ofNat_succ,
@@ -121,8 +121,8 @@ theorem volume_setOf_liouville : volume { x : ℝ | Liouville x } = 0 := by
   simpa only [ae_iff, Classical.not_not] using ae_not_liouville
 #align volume_set_of_liouville volume_setOf_liouville
 
-/-- The filters `residual ℝ` and `volume.ae` are disjoint. This means that there exists a residual
+/-- The filters `residual ℝ` and `ae volume` are disjoint. This means that there exists a residual
 set of Lebesgue measure zero (e.g., the set of Liouville numbers). -/
-theorem Real.disjoint_residual_ae : Disjoint (residual ℝ) volume.ae :=
+theorem Real.disjoint_residual_ae : Disjoint (residual ℝ) (ae volume) :=
   disjoint_of_disjoint_of_mem disjoint_compl_right eventually_residual_liouville ae_not_liouville
 #align real.disjoint_residual_ae Real.disjoint_residual_ae

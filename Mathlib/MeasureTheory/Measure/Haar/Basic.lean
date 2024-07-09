@@ -251,8 +251,8 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
     exact h2g₀
   refine
     le_trans
-      (add_le_add (this K₁.1 <| Subset.trans (subset_union_left _ _) h1s)
-        (this K₂.1 <| Subset.trans (subset_union_right _ _) h1s)) ?_
+      (add_le_add (this K₁.1 <| Subset.trans subset_union_left h1s)
+        (this K₂.1 <| Subset.trans subset_union_right h1s)) ?_
   rw [← Finset.card_union_of_disjoint, Finset.filter_union_right]
   · exact s.card_filter_le _
   apply Finset.disjoint_filter.mpr
@@ -277,7 +277,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   refine ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, ?_, Finset.card_map _⟩
   simp only [mem_setOf_eq]; refine Subset.trans (image_subset _ h1s) ?_
   rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
-  simp only [mem_preimage] at hg₁;
+  simp only [mem_preimage] at hg₁
   simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
     exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
   refine ⟨_, hg₂, ?_⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
@@ -515,9 +515,9 @@ theorem chaar_sup_eq {K₀ : PositiveCompacts G}
     · rw [h2U.interior_eq]; exact ⟨1, h3U⟩
     · refine disjoint_of_subset ?_ ?_ hU
       · refine Subset.trans (mul_subset_mul Subset.rfl ?_) h2L₁
-        exact Subset.trans (inv_subset.mpr h1U) (inter_subset_left _ _)
+        exact Subset.trans (inv_subset.mpr h1U) inter_subset_left
       · refine Subset.trans (mul_subset_mul Subset.rfl ?_) h2L₂
-        exact Subset.trans (inv_subset.mpr h1U) (inter_subset_right _ _)
+        exact Subset.trans (inv_subset.mpr h1U) inter_subset_right
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 #align measure_theory.measure.haar.chaar_sup_eq MeasureTheory.Measure.haar.chaar_sup_eq
 #align measure_theory.measure.haar.add_chaar_sup_eq MeasureTheory.Measure.haar.addCHaar_sup_eq
