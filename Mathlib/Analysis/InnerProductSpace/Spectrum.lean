@@ -495,6 +495,7 @@ theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T
 
 /-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
   some lemmas. -/
+variable (i j : n) [Fintype n]
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [Nontrivial n] :
     (∀ (m : Type u) [Fintype m], Fintype.card m < Fintype.card n →
@@ -502,11 +503,15 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   intro h
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
-  have H := (set_fintype_card_eq_univ_iff (⊤ : Set n)).mpr rfl
-  have H1 := Set.Finite.fintype (Set.toFinite (⊤ \ Set.singleton i))
-  have H2 : Fintype.card (@Set.Elem n (⊤ \ (Set.singleton i))) < Fintype.card (⊤ : Set n) := by
-    simp only [Set.top_eq_univ]
+  have M : Fintype.card {x // i ≠ x} < Fintype.card n := by
+    exact Fintype.card_subtype_lt fun a ↦ a rfl
+  have h1 := h {x // i ≠ x} M
 
+
+  --have H := (set_fintype_card_eq_univ_iff (⊤ : Set n)).mpr rfl
+  --have H1 := Set.Finite.fintype (Set.toFinite (⊤ \ Set.singleton i))
+  --have H2 : Fintype.card (@Set.Elem n (⊤ \ (Set.singleton i))) < Fintype.card (⊤ : Set n) := by
+--maybe just define subtype {j : n // i ≠ j} and then use Fintype.card_subtype_le
 
 
   sorry
