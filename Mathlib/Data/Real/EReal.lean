@@ -770,25 +770,21 @@ def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
 
 /-! ### Addition -/
 
-@[simp]
-theorem add_bot (x : EReal) : x + ⊥ = ⊥ :=
-  WithBot.add_bot _
-#align ereal.add_bot EReal.add_bot
+instance : IsBotAbsorbing EReal := WithBot.isBotAbsorbing
 
-@[simp]
-theorem bot_add (x : EReal) : ⊥ + x = ⊥ :=
-  WithBot.bot_add _
-#align ereal.bot_add EReal.bot_add
+instance : NoTopAddends EReal where
+  eq_top_or_eq_top_of_add_eq_top {a b h} := by cases a <;> cases b <;> simp_all [← coe_add]
 
-@[simp]
-theorem add_eq_bot_iff {x y : EReal} : x + y = ⊥ ↔ x = ⊥ ∨ y = ⊥ :=
-  WithBot.add_eq_bot
-#align ereal.add_eq_bot_iff EReal.add_eq_bot_iff
+instance : NoBotAddends EReal := WithBot.noBotAddends
 
-@[simp]
-theorem bot_lt_add_iff {x y : EReal} : ⊥ < x + y ↔ ⊥ < x ∧ ⊥ < y := by
-  simp [bot_lt_iff_ne_bot, not_or]
-#align ereal.bot_lt_add_iff EReal.bot_lt_add_iff
+#align ereal.add_bot IsBotAbsorbing.add_bot
+
+#align ereal.bot_add IsBotAbsorbing.bot_add
+
+#align ereal.add_eq_bot_iff add_eq_bot
+
+#align ereal.bot_lt_add_iff bot_lt_add
+
 
 @[simp]
 theorem top_add_top : (⊤ : EReal) + ⊤ = ⊤ :=
@@ -904,7 +900,7 @@ theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤
 the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
 instance : LinearOrderedAddCommMonoidWithTop ERealᵒᵈ where
   le_top := by simp
-  top_add' := by
+  top_add := by
     rw [OrderDual.forall]
     intro x
     rw [← OrderDual.toDual_bot, ← toDual_add, bot_add, OrderDual.toDual_bot]
@@ -1086,7 +1082,7 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   induction a
-  · rw [bot_add b, bot_sub b]
+  · rw [bot_add (b : EReal), bot_sub b]
   · norm_cast; linarith
   · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
 
