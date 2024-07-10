@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Defs
