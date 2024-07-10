@@ -84,13 +84,13 @@ theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
       case left =>
         apply lt_of_le_of_lt
         exact degree_mul_le a (derivative b)
-        rw [←Polynomial.degree_ne_bot] at ha
+        rw [← Polynomial.degree_ne_bot] at ha
         rw [WithBot.add_lt_add_iff_left ha]
         exact Polynomial.degree_derivative_lt hb
       case right =>
         apply lt_of_le_of_lt
         exact degree_mul_le (derivative a) b
-        rw [←Polynomial.degree_ne_bot] at hb
+        rw [← Polynomial.degree_ne_bot] at hb
         rw [WithBot.add_lt_add_iff_right hb]
         exact Polynomial.degree_derivative_lt ha
 
