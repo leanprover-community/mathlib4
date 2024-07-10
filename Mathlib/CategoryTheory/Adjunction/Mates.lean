@@ -100,8 +100,7 @@ def mateEquiv : (G ⋙ L₂ ⟶ L₁ ⋙ H) ≃ (R₁ ⋙ G ⟶ H ⋙ R₂) wher
     rw [← assoc, ← Functor.comp_map, assoc, ← β.naturality, ← assoc, Functor.comp_map,
       ← G.map_comp, right_triangle_components, map_id, id_comp]
 
--- deprecated on 2024-07-09
-@[deprecated] alias transferNatTrans := mateEquiv
+@[deprecated (since := "2024-07-09")] alias transferNatTrans := mateEquiv
 
 /-- A component of a transposed version of the mates correspondence. -/
 theorem mateEquiv_counit (α : G ⋙ L₂ ⟶ L₁ ⋙ H) (d : D) :
@@ -364,8 +363,7 @@ def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
     _ ≃ _ := mateEquiv adj₁ adj₂
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
 
--- deprecated on 2024-07-09
-@[deprecated] alias transferNatTransSelf := conjugateEquiv
+@[deprecated (since := "2024-07-09")] alias transferNatTransSelf := conjugateEquiv
 
 /-- A component of a transposed form of the conjugation definition. -/
 theorem conjugateEquiv_counit (α : L₂ ⟶ L₁) (d : D) :
