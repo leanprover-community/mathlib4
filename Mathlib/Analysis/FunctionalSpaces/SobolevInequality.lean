@@ -598,7 +598,7 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F]
     {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
     (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     snorm u p' μ ≤ SNormLESNormFDerivOfEqConst F μ p * snorm (fderiv ℝ u) p μ := by
-  /- Here we derive the GNS-inequality with a Hilbert space as codomain to the case with a
+  /- Here we reduce the GNS-inequality with a Hilbert space as codomain to the case with a
   finite-dimensional normed space as codomain, by transferring the result along the equivalence
   `F ≃ ℝᵐ`. -/
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
