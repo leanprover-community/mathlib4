@@ -122,7 +122,16 @@ def logOrderIso : ℝ≥0∞ ≃o EReal where
   map_rel_iff' := by simp only [Equiv.coe_fn_mk, log_le_log_iff, forall_const]
 
 @[simp] lemma logOrderIso_apply (x : ℝ≥0∞) : logOrderIso x = log x := rfl
-@[simp] lemma logOrderIso_symm_apply (x : EReal) : logOrderIso.symm x = exp x := rfl
+
+/-- `EReal.exp` and its inverse `ENNReal.log` are an order isomorphism between `EReal` and
+`ℝ≥0∞`. -/
+noncomputable
+def _root_.EReal.expOrderIso := logOrderIso.symm
+
+@[simp] lemma _root_.EReal.expOrderIso_apply (x : EReal) : expOrderIso x = exp x := rfl
+
+@[simp] lemma logOrderIso_symm : logOrderIso.symm = expOrderIso := rfl
+@[simp] lemma _root_.EReal.expOrderIso_symm : expOrderIso.symm = logOrderIso := rfl
 
 end OrderIso
 
@@ -134,7 +143,7 @@ noncomputable def logHomeomorph : ℝ≥0∞ ≃ₜ EReal := logOrderIso.toHomeo
 @[simp] lemma logHomeomorph_apply (x : ℝ≥0∞) : logHomeomorph x = log x := rfl
 
 /-- `exp` as a homeomorphism. -/
-noncomputable def _root_.EReal.expHomeomorph : EReal ≃ₜ ℝ≥0∞ := logOrderIso.symm.toHomeomorph
+noncomputable def _root_.EReal.expHomeomorph : EReal ≃ₜ ℝ≥0∞ := expOrderIso.toHomeomorph
 
 @[simp] lemma _root_.EReal.expHomeomorph_apply (x : EReal) : expHomeomorph x = exp x := rfl
 
@@ -146,7 +155,7 @@ noncomputable def _root_.EReal.expHomeomorph : EReal ≃ₜ ℝ≥0∞ := logOrd
 lemma continuous_log : Continuous log := logOrderIso.continuous
 
 @[continuity, fun_prop]
-lemma continuous_exp : Continuous exp := logOrderIso.symm.continuous
+lemma continuous_exp : Continuous exp := expOrderIso.continuous
 
 end Continuity
 
