@@ -12,3 +12,4 @@ import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Tactic.Linter.UnusedTactic
+import Mathlib.Tactic.MinImports
