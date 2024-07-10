@@ -341,9 +341,6 @@ variable {𝕜 A F : Type*}
 variable [RCLike 𝕜] [NormedAddCommGroup A]
 variable [Module 𝕜 X] [NormedSpace 𝕜 A]
 
---lemma convex1 (s₁ s₂ : Set A) (x y z : A) (h₁ : y ∈ s₁) (h₂ : z ∈ s₂) (h₃ : x = y + z)
-
-
 theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 := by
   apply (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
   intro x
@@ -435,11 +432,6 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
     IsLprojection (NormedSpace.Dual 𝕜 A) P ∧
       (LinearMap.range P) = NormedSpace.polarSubmodule (E := A) 𝕜 m.toSubMulAction
 
-#check (le_add_iff_nonneg_right 5).mpr
-
-
-lemma teat (a b : Prop) : a → a ∨ b := by exact fun a_1 ↦ Or.intro_left b a_1
-
 set_option maxHeartbeats 400000
 open NormedSpace in
 open Metric in
@@ -464,10 +456,6 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       apply proj_apply _ _
       exact Set.mem_of_mem_inter_left hx
       exact E.prop.proj
-
-
-      --rw [← proj_apply hx']
-      --sorry
     simp only [IsLprojection.coe_sup, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
       ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_mul, Pi.sub_apply,
       ContinuousLinearMap.add_apply, Function.comp_apply, mem_closedBall, dist_zero_right] at hx
@@ -485,17 +473,22 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       _ = E₁ x + (E₂ x - E₂ (E₁ x)) := by exact add_sub_assoc (E₁ x) (E₂ x) (E₂ (E₁ x))
       _ = E₁ x + E₂ (x - E₁ x) := by rw [map_sub]
       _ = y + z := rfl
-    have e4 :  ‖y‖ + ‖z‖ ≤ ‖x‖ := calc
-      ‖y‖ + ‖z‖ = ‖E₁ x‖ + ‖E₂ ((1 - E₁) x)‖ := rfl
-      _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by rw [add_le_add_iff_left]; apply ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
-      _ ≤ ‖E₁ x‖ + 1 * ‖(1 - E₁) x‖ := by
-        rw [add_le_add_iff_left]
-        apply mul_le_mul_of_nonneg_right
-        apply contractive hE₂.1
-        exact ContinuousLinearMap.opNorm_nonneg ((1 - E₁) x)
-      _ ≤ ‖E₁ x‖ + ‖(1 - E₁) x‖ := by rw [one_mul]
-      _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := by exact Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
-      _ = ‖x‖ := by rw [← hE₁.1.Lnorm]
+    have e4 :  ‖y‖ + ‖z‖ = ‖x‖ := by
+      rw [le_antisymm_iff]
+      constructor
+      · calc
+        ‖y‖ + ‖z‖ = ‖E₁ x‖ + ‖E₂ ((1 - E₁) x)‖ := rfl
+        _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by rw [add_le_add_iff_left]; apply ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
+        _ ≤ ‖E₁ x‖ + 1 * ‖(1 - E₁) x‖ := by
+          rw [add_le_add_iff_left]
+          apply mul_le_mul_of_nonneg_right
+          apply contractive hE₂.1
+          exact ContinuousLinearMap.opNorm_nonneg ((1 - E₁) x)
+        _ ≤ ‖E₁ x‖ + ‖(1 - E₁) x‖ := by rw [one_mul]
+        _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := by exact Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
+        _ = ‖x‖ := by rw [← hE₁.1.Lnorm]
+      · rw [e3]
+        exact ContinuousLinearMap.opNorm_add_le y z
     have e1 : y ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 := by
       simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
       constructor
@@ -504,7 +497,9 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           rfl
         rw [e]
         simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
-      · exact le_trans (le_trans ((le_add_iff_nonneg_right ‖y‖).mpr (norm_nonneg _)) e4) hx.2
+      · apply le_trans _ hx.2
+        rw [← e4]
+        exact ((le_add_iff_nonneg_right ‖y‖).mpr (norm_nonneg _))
     have e2 : z ∈ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
       simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
       constructor
@@ -513,7 +508,9 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           rfl
         rw [e]
         simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
-      · exact le_trans (le_trans ((le_add_iff_nonneg_left ‖z‖).mpr (norm_nonneg _)) e4) hx.2
+      · apply le_trans _ hx.2
+        rw [← e4]
+        exact ((le_add_iff_nonneg_left ‖z‖).mpr (norm_nonneg _))
     rcases eq_or_ne ‖x‖ 0 with (hxz | hxnz)
     · rw [norm_eq_zero] at hxz
       rw [hxz]
@@ -538,26 +535,74 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
             apply Set.mem_union_left
             simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
             constructor
-            have e : polar 𝕜 ↑m₁ = SetLike.coe (LinearMap.range E₁) := by
-              rw [hE₁.2]
-              rfl
-            rw [e]
-            simp only [SetLike.mem_coe, LinearMap.mem_range]
-            use y₁
-            calc
-            E₁ y₁ = E₁ ((‖x‖/‖y‖) • y) := rfl
-            _ = (‖x‖/‖y‖) • E₁  y := ContinuousLinearMap.map_smul_of_tower E₁ (‖x‖ / ‖y‖) y
-            _ = (‖x‖/‖y‖) • y := by
-              rw [proj_apply E₁ hE₁.1.proj _ _]
-              exact Set.mem_range_self x
-            _ = y₁ := rfl
-          have t₂ : z ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 :=
-            Set.mem_union_right (polar 𝕜 ↑m₁ ∩ closedBall 0 1) e2
+            · have e : polar 𝕜 ↑m₁ = SetLike.coe (LinearMap.range E₁) := by
+                rw [hE₁.2]
+                rfl
+              rw [e]
+              simp only [SetLike.mem_coe, LinearMap.mem_range]
+              use y₁
+              calc
+              E₁ y₁ = E₁ ((‖x‖/‖y‖) • y) := rfl
+              _ = (‖x‖/‖y‖) • E₁  y := ContinuousLinearMap.map_smul_of_tower E₁ (‖x‖ / ‖y‖) y
+              _ = (‖x‖/‖y‖) • y := by
+                rw [proj_apply E₁ hE₁.1.proj _ _]
+                exact Set.mem_range_self x
+              _ = y₁ := rfl
+            · calc
+              ‖y₁‖ = ‖(‖x‖/‖y‖) • y‖ := rfl
+              --_ = |1 := by
+              _ = ‖‖x‖/‖y‖‖ * ‖y‖ := norm_smul (‖x‖ / ‖y‖) y
+              _ = ‖x‖/‖y‖ * ‖y‖ := by simp only [norm_div, norm_norm]
+              _ = ‖x‖ := by exact div_mul_cancel₀ ‖x‖ hynz
+              _ ≤ 1 := hx.2
+          have t₂ : z₁ ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
+            apply Set.mem_union_right
+            simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+            constructor
+            · have e : polar 𝕜 ↑m₂ = SetLike.coe (LinearMap.range E₂) := by
+                rw [hE₂.2]
+                rfl
+              rw [e]
+              simp only [SetLike.mem_coe, LinearMap.mem_range]
+              use z₁
+              calc
+              E₂ z₁ = E₂ ((‖x‖/‖z‖) • z) := rfl
+              _ = (‖x‖/‖z‖) • E₂  z := ContinuousLinearMap.map_smul_of_tower E₂ (‖x‖ / ‖z‖) z
+              _ = (‖x‖/‖z‖) • z := by
+                rw [proj_apply E₂ hE₂.1.proj _ _]
+                exact Set.mem_range_self ((1 - E₁) x)
+              _ = z₁ := rfl
+            · calc
+              ‖z₁‖ = ‖(‖x‖/‖z‖) • z‖ := rfl
+              _ = ‖‖x‖/‖z‖‖ * ‖z‖ := norm_smul (‖x‖ / ‖z‖) z
+              _ = ‖x‖/‖z‖ * ‖z‖ := by simp only [norm_div, norm_norm]
+              _ = ‖x‖ := by exact div_mul_cancel₀ ‖x‖ hznz
+              _ ≤ 1 := hx.2
           apply segment_subset_convexHull t₁ t₂
           rw [segment]
           simp only [exists_and_left, Set.mem_setOf_eq]
-
-          sorry
+          use ‖y‖/‖x‖
+          constructor
+          · sorry
+          · use ‖z‖/‖x‖
+            constructor
+            · sorry
+            · constructor
+              · calc
+                ‖y‖ / ‖x‖ + ‖z‖ / ‖x‖ = (‖y‖ + ‖z‖) / ‖x‖ := div_add_div_same ‖y‖ ‖z‖ ‖x‖
+                _ = 1 := by exact (div_eq_one_iff_eq hxnz).mpr e4
+              · calc
+                (‖y‖ / ‖x‖) • y₁ + (‖z‖ / ‖x‖) • z₁ = (‖y‖ / ‖x‖) • ((‖x‖/‖y‖) • y) + (‖z‖ / ‖x‖) • ((‖x‖/‖z‖) • z) := rfl
+                _ = ((‖y‖ / ‖x‖) • (‖x‖/‖y‖)) • y + ((‖z‖ / ‖x‖) • (‖x‖/‖z‖)) • z := by rw [← smul_assoc, ← smul_assoc]
+                _ = ((‖y‖ / ‖x‖) * (‖x‖/‖y‖)) • y + ((‖z‖ / ‖x‖) * (‖x‖/‖z‖)) • z := by simp only [smul_eq_mul]
+                _ = ((‖y‖ / ‖x‖) * (‖y‖ / ‖x‖)⁻¹) • y + ((‖z‖ / ‖x‖) * (‖z‖ / ‖x‖)⁻¹) • z := by rw [inv_div, inv_div]
+                _ = y + ((‖z‖ / ‖x‖) * (‖z‖ / ‖x‖)⁻¹) • z := by
+                  rw [CommGroupWithZero.mul_inv_cancel, one_smul, inv_div]
+                  exact div_ne_zero hynz hxnz
+                _ = y + z := by
+                  rw [CommGroupWithZero.mul_inv_cancel, one_smul]
+                  exact div_ne_zero hznz hxnz
+                _ = x := by rw [e3]
   · simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
     constructor
     · apply convexHull_min _
@@ -574,7 +619,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       exact Set.inter_subset_right
       exact convex_closedBall _ _
 
-
+lemma tezst (x : A) (α : 𝕜) : ‖α•x‖ = ‖α‖ * ‖x‖ := by exact norm_smul α x
 
 /-
 lemma IsMideal.inter (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
