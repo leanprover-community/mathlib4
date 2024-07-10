@@ -837,3 +837,5 @@ def inverse {S₁ : Type*} [Semiring S₁] [MulSemiringAction M S₁]
 #align mul_semiring_action_hom.inverse MulSemiringActionHom.inverse
 
 end MulSemiringActionHom
+
+end DistribMulAction
