@@ -66,10 +66,10 @@ open Complex Set MeasureTheory Function Filter TopologicalSpace
 open scoped Real
 
 -- Porting note: notation copied from `./DivergenceTheorem`
-local macro:arg t:term:max noWs "ⁿ⁺¹":term => `(Fin (n + 1) → $t)
-local macro:arg t:term:max noWs "ⁿ":term => `(Fin n → $t)
-local macro:arg t:term:max noWs "⁰":term => `(Fin 0 → $t)
-local macro:arg t:term:max noWs "¹":term => `(Fin 1 → $t)
+local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
+local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
+local macro:arg t:term:max noWs "⁰" : term => `(Fin 0 → $t)
+local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
 
 /-!
 ### `torusMap`, a parametrization of a torus

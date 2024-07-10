@@ -60,7 +60,7 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 -- Porting note: The below recreates some of the lean3 notation, not fully yet
 -- section
 -- open Batteries.ExtendedBinder
--- syntax (name := bigdirectsum) "⨁ " extBinders ", " term:term
+-- syntax (name := bigdirectsum) "⨁ " extBinders ", " term : term
 -- macro_rules (kind := bigdirectsum)
 --   | `(⨁ $_:ident, $y:ident → $z:ident) => `(DirectSum _ (fun $y ↦ $z))
 --   | `(⨁ $x:ident, $p) => `(DirectSum _ (fun $x ↦ $p))

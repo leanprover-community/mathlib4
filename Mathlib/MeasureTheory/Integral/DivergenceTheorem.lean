@@ -70,9 +70,9 @@ section
 
 variable {n : ℕ}
 
-local macro:arg t:term:max noWs "ⁿ":term => `(Fin n → $t)
+local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
 
-local macro:arg t:term:max noWs "ⁿ⁺¹":term => `(Fin (n + 1) → $t)
+local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
 
 local notation "e " i => Pi.single i 1
 
@@ -366,8 +366,8 @@ open scoped Interval
 open ContinuousLinearMap (smulRight)
 
 
-local macro:arg t:term:max noWs "¹":term => `(Fin 1 → $t)
-local macro:arg t:term:max noWs "²":term => `(Fin 2 → $t)
+local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
+local macro:arg t:term:max noWs "²" : term => `(Fin 2 → $t)
 
 /-- **Fundamental theorem of calculus, part 2**. This version assumes that `f` is continuous on the
 interval and is differentiable off a countable set `s`.

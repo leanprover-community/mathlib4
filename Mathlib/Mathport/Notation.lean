@@ -551,7 +551,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   let name ← mkNameFromSyntax name? syntaxArgs attrKind
   elabCommand <| ← `(command|
     $[$doc]? $(attrs?)? $attrKind
-    syntax $(prec?)? (name := $(Lean.mkIdent name)) $(prio?)? $[$syntaxArgs]*:term)
+    syntax $(prec?)? (name := $(Lean.mkIdent name)) $(prio?)? $[$syntaxArgs]* : term)
 
   -- 2. The `macro_rules`
   let currNamespace : Name ← getCurrNamespace

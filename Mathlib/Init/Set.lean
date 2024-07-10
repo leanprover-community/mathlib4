@@ -93,7 +93,7 @@ instance : HasSubset (Set α) :=
 instance : EmptyCollection (Set α) :=
   ⟨fun _ ↦ False⟩
 
-syntax "{" extBinder " | " term "}":term
+syntax "{" extBinder " | " term "}" : term
 
 macro_rules
   | `({ $x:ident | $p }) => `(setOf fun $x:ident ↦ $p)
@@ -115,7 +115,7 @@ binders `x` and `y`, equivalent to `{z : Z | ∃ x y, f x y = z}`.
 If `f x y` is a single identifier, it must be parenthesized to avoid ambiguity with `{x | p x}`;
 for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
 -/
-macro (priority := low) "{" t:term " | " bs:extBinders "}":term =>
+macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
   `({x | ∃ᵉ $bs:extBinders, $t = x})
 
 /--
@@ -134,11 +134,11 @@ then the extended binder interpretation will be used.  For example, `{ n + 1 | n
 be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than using pattern matching.
 -/
 macro (name := macroPattSetBuilder) (priority := low-1)
-  "{" pat:term " : " t:term " | " p:term "}":term =>
+  "{" pat:term " : " t:term " | " p:term "}" : term =>
   `({ x : $t | match x with | $pat => $p })
 
 @[inherit_doc macroPattSetBuilder]
-macro (priority := low-1) "{" pat:term " | " p:term "}":term =>
+macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
 /-- Pretty printing for set-builder notation with pattern matching. -/

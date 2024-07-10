@@ -109,7 +109,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
       congr 1
       field_simp
 
-lemma term_sum_one (N : ℕ):term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
+lemma term_sum_one (N : ℕ) : term_sum 1 N = log (N + 1) - harmonic (N + 1) + 1 := by
   induction' N with N hN
   · simp_rw [term_sum, Finset.sum_range_zero, harmonic_succ, harmonic_zero,
       Nat.cast_zero, zero_add, Nat.cast_one, inv_one, Rat.cast_one, log_one, sub_add_cancel]

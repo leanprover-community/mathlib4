@@ -22,8 +22,8 @@ space viewed as a model space.
 open scoped Manifold
 open Metric (sphere)
 
-local macro:max "ℝ"n:superscript(term):term => `(EuclideanSpace ℝ (Fin $(⟨n.raw[0]⟩)))
-local macro:max "𝕊"n:superscript(term):term =>
+local macro:max "ℝ"n:superscript(term) : term => `(EuclideanSpace ℝ (Fin $(⟨n.raw[0]⟩)))
+local macro:max "𝕊"n:superscript(term) : term =>
   `(sphere (0 : EuclideanSpace ℝ (Fin ($(⟨n.raw[0]⟩) + 1))) 1)
 
 variable (M : Type*) [TopologicalSpace M] [T2Space M]

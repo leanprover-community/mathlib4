@@ -213,7 +213,7 @@ Checks to see that `xs` has only one binder.
 -/
 def isExplicitBinderSingular (xs : TSyntax ``explicitBinders) : Bool :=
   match xs with
-  | `(explicitBinders| $_:binderIdent $[ : $_]?) => true
+  | `(explicitBinders| $_:binderIdent $[: $_]?) => true
   | `(explicitBinders| ($_:binderIdent : $_)) => true
   | _ => false
 
