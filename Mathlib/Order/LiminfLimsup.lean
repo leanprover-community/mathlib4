@@ -1746,5 +1746,3 @@ theorem liminf_finset_inf' [ConditionallyCompleteLinearOrder β] {f : Filter α}
   limsup_finset_sup' (β := βᵒᵈ) hs h₁ h₂
 
 end MinMax
-
-#lint
