@@ -37,7 +37,7 @@ noncomputable section
 
 open CategoryTheory ModuleCat.monoidalCategory
 
-open scoped Classical BigOperators
+open scoped Classical
 
 universe u
 
@@ -296,3 +296,16 @@ instance rightRigidCategory : RightRigidCategory (FGModuleCat K) where
 end Field
 
 end FGModuleCat
+
+/-!
+`@[simp]` lemmas for `LinearMap.comp` and categorical identities.
+-/
+
+@[simp] theorem LinearMap.comp_id_fgModuleCat
+    {R} [Ring R] {G : FGModuleCat.{u} R} {H : Type u} [AddCommGroup H] [Module R H]
+    (f : G →ₗ[R] H) : f.comp (𝟙 G) = f :=
+  Category.id_comp (ModuleCat.ofHom f)
+@[simp] theorem LinearMap.id_fgModuleCat_comp
+    {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : FGModuleCat.{u} R}
+    (f : G →ₗ[R] H) : LinearMap.comp (𝟙 H) f = f :=
+  Category.comp_id (ModuleCat.ofHom f)

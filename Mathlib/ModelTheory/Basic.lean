@@ -39,12 +39,7 @@ the continuum hypothesis*][flypitch_itp]
 
 -/
 
-set_option autoImplicit true
-
-
 universe u v u' v' w w'
-
-open Cardinal
 
 open Cardinal
 
@@ -469,7 +464,7 @@ class StrongHomClass (L : outParam Language) (F M N : Type*)
 #align first_order.language.strong_hom_class FirstOrder.Language.StrongHomClass
 
 -- Porting note: using implicit brackets for `Structure` arguments
-instance (priority := 100) StrongHomClass.homClass [L.Structure M]
+instance (priority := 100) StrongHomClass.homClass {F : Type*} [L.Structure M]
     [L.Structure N] [FunLike F M N] [StrongHomClass L F M N] : HomClass L F M N where
   map_fun := StrongHomClass.map_fun
   map_rel φ _ R x := (StrongHomClass.map_rel φ R x).2
@@ -806,11 +801,11 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
     map_fun' := fun n f' {x} => by
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
-      refine' Eq.trans _ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
+      refine Eq.trans ?_ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
-      refine' (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans _
+      refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
       rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 #align first_order.language.equiv.symm FirstOrder.Language.Equiv.symm
 

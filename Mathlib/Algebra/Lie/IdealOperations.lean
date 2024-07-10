@@ -95,17 +95,19 @@ theorem lieIdeal_oper_eq_linear_span' :
 
 theorem lie_le_iff : ⁅I, N⁆ ≤ N' ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅x, m⁆ ∈ N' := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
-  refine' ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
+  refine ⟨fun h x hx m hm => h ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
   rintro h _ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩
   exact h x hx m hm
 #align lie_submodule.lie_le_iff LieSubmodule.lie_le_iff
 
+variable {N I} in
 theorem lie_coe_mem_lie (x : I) (m : N) : ⁅(x : L), (m : M)⁆ ∈ ⁅I, N⁆ := by
   rw [lieIdeal_oper_eq_span]; apply subset_lieSpan; use x, m
 #align lie_submodule.lie_coe_mem_lie LieSubmodule.lie_coe_mem_lie
 
+variable {N I} in
 theorem lie_mem_lie {x : L} {m : M} (hx : x ∈ I) (hm : m ∈ N) : ⁅x, m⁆ ∈ ⁅I, N⁆ :=
-  N.lie_coe_mem_lie I ⟨x, hx⟩ ⟨m, hm⟩
+  lie_coe_mem_lie ⟨x, hx⟩ ⟨m, hm⟩
 #align lie_submodule.lie_mem_lie LieSubmodule.lie_mem_lie
 
 theorem lie_comm : ⁅I, J⁆ = ⁅J, I⁆ := by
@@ -140,11 +142,12 @@ theorem bot_lie : ⁅(⊥ : LieIdeal R L), N⁆ = ⊥ := by
 
 theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L), m⁆ = 0 := by
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_eq_bot_iff]
-  refine' ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, _⟩
+  refine ⟨fun h x hx m hm => h ⁅x, m⁆ ⟨⟨x, hx⟩, ⟨m, hm⟩, rfl⟩, ?_⟩
   rintro h - ⟨⟨x, hx⟩, ⟨⟨n, hn⟩, rfl⟩⟩
   exact h x hx n hn
 #align lie_submodule.lie_eq_bot_iff LieSubmodule.lie_eq_bot_iff
 
+variable {I J N N'} in
 theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
   intro m h
   rw [lieIdeal_oper_eq_span, mem_lieSpan] at h; rw [lieIdeal_oper_eq_span, mem_lieSpan]
@@ -152,12 +155,14 @@ theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆
   use ⟨x, h₁ hx⟩, ⟨n, h₂ hn⟩
 #align lie_submodule.mono_lie LieSubmodule.mono_lie
 
+variable {I J} in
 theorem mono_lie_left (h : I ≤ J) : ⁅I, N⁆ ≤ ⁅J, N⁆ :=
-  mono_lie _ _ _ _ h (le_refl N)
+  mono_lie h (le_refl N)
 #align lie_submodule.mono_lie_left LieSubmodule.mono_lie_left
 
+variable {N N'} in
 theorem mono_lie_right (h : N ≤ N') : ⁅I, N⁆ ≤ ⁅I, N'⁆ :=
-  mono_lie _ _ _ _ (le_refl I) h
+  mono_lie (le_refl I) h
 #align lie_submodule.mono_lie_right LieSubmodule.mono_lie_right
 
 @[simp]
@@ -265,7 +270,7 @@ theorem map_bracket_le {I₁ I₂ : LieIdeal R L} : map f ⁅I₁, I₂⁆ ≤ �
   let fy₂ : ↥(map f I₂) := ⟨f y₂, mem_map hy₂⟩
   change _ ∈ comap f ⁅map f I₁, map f I₂⁆
   simp only [Submodule.coe_mk, mem_comap, LieHom.map_lie]
-  exact LieSubmodule.lie_coe_mem_lie _ _ fy₁ fy₂
+  exact LieSubmodule.lie_coe_mem_lie fy₁ fy₂
 #align lie_ideal.map_bracket_le LieIdeal.map_bracket_le
 
 theorem map_bracket_eq {I₁ I₂ : LieIdeal R L} (h : Function.Surjective f) :
@@ -283,7 +288,7 @@ theorem map_bracket_eq {I₁ I₂ : LieIdeal R L} (h : Function.Surjective f) :
 
 theorem comap_bracket_le {J₁ J₂ : LieIdeal R L'} : ⁅comap f J₁, comap f J₂⁆ ≤ comap f ⁅J₁, J₂⁆ := by
   rw [← map_le_iff_le_comap]
-  exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie _ _ _ _ map_comap_le map_comap_le)
+  exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie map_comap_le map_comap_le)
 #align lie_ideal.comap_bracket_le LieIdeal.comap_bracket_le
 
 variable {f}

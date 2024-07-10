@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 -/
 import Batteries.Data.List.Basic
+import Batteries.Data.String.Basic
 import Mathlib.Mathport.Rename
 
 #align_import data.string.defs from "leanprover-community/mathlib"@"e7131068d9696deec51e6cd7668b6d9ac69af6a4"
@@ -53,11 +54,8 @@ def mapTokens (c : Char) (f : String → String) : String → String :=
   intercalate (singleton c) ∘ List.map f ∘ (·.split (· = c))
 #align string.map_tokens String.mapTokens
 
-/-- `getRest s t` returns `some r` if `s = t ++ r`.
-If `t` is not a prefix of `s`, it returns `none`. -/
-def getRest (s t : String) : Option String :=
-  List.asString <$> s.toList.getRest t.toList
-#align string.get_rest String.getRest
+@[deprecated (since := "2024-06-04")] alias getRest := dropPrefix?
+#align string.get_rest String.dropPrefix?
 
 #align string.popn String.drop
 

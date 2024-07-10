@@ -71,7 +71,7 @@ def hatInv : hat K → hat K :=
 
 theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     ContinuousAt hatInv x := by
-  refine' denseInducing_coe.continuousAt_extend _
+  refine denseInducing_coe.continuousAt_extend ?_
   apply mem_of_superset (compl_singleton_mem_nhds h)
   intro y y_ne
   rw [mem_compl_singleton_iff] at y_ne

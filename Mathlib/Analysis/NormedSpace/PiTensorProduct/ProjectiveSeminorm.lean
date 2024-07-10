@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.PiTensorProduct
 Let `𝕜` be a nontrivially normed field and `E` be a family of normed `𝕜`-vector spaces `Eᵢ`,
 indexed by a finite type `ι`. We define a seminorm on `⨂[𝕜] i, Eᵢ`, which we call the
 "projective seminorm". For `x` an element of `⨂[𝕜] i, Eᵢ`, its projective seminorm is the
-infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` in `Π i, Eᵢ`)
+infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
 of `∑ j, Π i, ‖mⱼ i‖`.
 
 In particular, every norm `‖.‖` on `⨂[𝕜] i, Eᵢ` satisfying `‖⨂ₜ[𝕜] i, m i‖ ≤ Π i, ‖m i‖`
@@ -43,8 +43,6 @@ variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, Norm
 variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
-
-open BigOperators
 
 namespace PiTensorProduct
 
@@ -92,7 +90,7 @@ theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
   exact fun p _ ↦ projectiveSeminormAux_nonneg p
 
 /-- The projective seminorm on `⨂[𝕜] i, Eᵢ`. It sends an element `x` of `⨂[𝕜] i, Eᵢ` to the
-infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` in `Π i, Eᵢ`)
+infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
 of `∑ j, Π i, ‖mⱼ i‖`.
 -/
 noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by

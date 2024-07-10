@@ -52,7 +52,7 @@ protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermiti
     IsSelfAdjoint A := h
 #align matrix.is_hermitian.is_self_adjoint Matrix.IsHermitian.isSelfAdjoint
 
--- @[ext] -- Porting note: incorrect ext, not a structure or a lemma proving x = y
+-- @[ext] -- Porting note (#11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 #align matrix.is_hermitian.ext Matrix.IsHermitian.ext
@@ -155,7 +155,7 @@ theorem isHermitian_diagonal [TrivialStar α] [DecidableEq n] (v : n → α) :
 
 @[simp]
 theorem isHermitian_zero : (0 : Matrix n n α).IsHermitian :=
-  isSelfAdjoint_zero _
+  IsSelfAdjoint.zero _
 #align matrix.is_hermitian_zero Matrix.isHermitian_zero
 
 @[simp]
@@ -171,11 +171,11 @@ section AddCommMonoid
 variable [AddCommMonoid α] [StarAddMonoid α]
 
 theorem isHermitian_add_transpose_self (A : Matrix n n α) : (A + Aᴴ).IsHermitian :=
-  isSelfAdjoint_add_star_self A
+  IsSelfAdjoint.add_star_self A
 #align matrix.is_hermitian_add_transpose_self Matrix.isHermitian_add_transpose_self
 
 theorem isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermitian :=
-  isSelfAdjoint_star_add_self A
+  IsSelfAdjoint.star_add_self A
 #align matrix.is_hermitian_transpose_add_self Matrix.isHermitian_transpose_add_self
 
 end AddCommMonoid
@@ -202,8 +202,8 @@ section NonUnitalSemiring
 variable [NonUnitalSemiring α] [StarRing α] [NonUnitalSemiring β] [StarRing β]
 
 /-- Note this is more general than `IsSelfAdjoint.mul_star_self` as `B` can be rectangular. -/
-theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) : (A * Aᴴ).IsHermitian :=
-  by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
+theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) :
+    (A * Aᴴ).IsHermitian := by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 #align matrix.is_hermitian_mul_conj_transpose_self Matrix.isHermitian_mul_conjTranspose_self
 
 /-- Note this is more general than `IsSelfAdjoint.star_mul_self` as `B` can be rectangular. -/

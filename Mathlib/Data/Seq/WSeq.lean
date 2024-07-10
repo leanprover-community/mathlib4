@@ -496,7 +496,7 @@ def Equiv : WSeq α → WSeq α → Prop :=
 theorem liftRel_destruct {R : α → β → Prop} {s : WSeq α} {t : WSeq β} :
     LiftRel R s t → Computation.LiftRel (LiftRelO R (LiftRel R)) (destruct s) (destruct t)
   | ⟨R, h1, h2⟩ => by
-    refine' Computation.LiftRel.imp _ _ _ (h2 h1)
+    refine Computation.LiftRel.imp ?_ _ _ (h2 h1)
     apply LiftRelO.imp_right
     exact fun s' t' h' => ⟨R, h', @h2⟩
 #align stream.wseq.lift_rel_destruct Stream'.WSeq.liftRel_destruct
@@ -532,7 +532,7 @@ theorem destruct_congr_iff {s t : WSeq α} :
 #align stream.wseq.destruct_congr_iff Stream'.WSeq.destruct_congr_iff
 
 theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun s => by
-  refine' ⟨(· = ·), rfl, fun {s t} (h : s = t) => _⟩
+  refine ⟨(· = ·), rfl, fun {s t} (h : s = t) => ?_⟩
   rw [← h]
   apply Computation.LiftRel.refl
   intro a
@@ -551,7 +551,7 @@ theorem LiftRelO.swap (R : α → β → Prop) (C) :
 
 theorem LiftRel.swap_lem {R : α → β → Prop} {s1 s2} (h : LiftRel R s1 s2) :
     LiftRel (swap R) s2 s1 := by
-  refine' ⟨swap (LiftRel R), h, fun {s t} (h : LiftRel R t s) => _⟩
+  refine ⟨swap (LiftRel R), h, fun {s t} (h : LiftRel R t s) => ?_⟩
   rw [← LiftRelO.swap, Computation.LiftRel.swap]
   apply liftRel_destruct h
 #align stream.wseq.lift_rel.swap_lem Stream'.WSeq.LiftRel.swap_lem
@@ -566,14 +566,14 @@ theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (Lif
 
 theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
   fun s t u h1 h2 => by
-  refine' ⟨fun s u => ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h => _⟩
+  refine ⟨fun s u => ∃ t, LiftRel R s t ∧ LiftRel R t u, ⟨t, h1, h2⟩, fun {s u} h => ?_⟩
   rcases h with ⟨t, h1, h2⟩
   have h1 := liftRel_destruct h1
   have h2 := liftRel_destruct h2
-  refine'
+  refine
     Computation.liftRel_def.2
       ⟨(Computation.terminates_of_liftRel h1).trans (Computation.terminates_of_liftRel h2),
-        fun {a c} ha hc => _⟩
+        fun {a c} ha hc => ?_⟩
   rcases h1.left ha with ⟨b, hb, t1⟩
   have t2 := Computation.rel_of_liftRel h2 hb hc
   cases' a with a <;> cases' c with c
@@ -665,7 +665,7 @@ theorem head_think (s : WSeq α) : head (think s) = (head s).think := by simp [h
 
 @[simp]
 theorem flatten_pure (s : WSeq α) : flatten (Computation.pure s) = s := by
-  refine' Seq.eq_of_bisim (fun s1 s2 => flatten (Computation.pure s2) = s1) _ rfl
+  refine Seq.eq_of_bisim (fun s1 s2 => flatten (Computation.pure s2) = s1) ?_ rfl
   intro s' s h
   rw [← h]
   simp only [Seq.BisimO, flatten, Seq.omap, pure_def, Seq.corec_eq, destruct_pure]
@@ -683,9 +683,9 @@ theorem flatten_think (c : Computation (WSeq α)) : flatten c.think = think (fla
 
 @[simp]
 theorem destruct_flatten (c : Computation (WSeq α)) : destruct (flatten c) = c >>= destruct := by
-  refine'
+  refine
     Computation.eq_of_bisim
-      (fun c1 c2 => c1 = c2 ∨ ∃ c, c1 = destruct (flatten c) ∧ c2 = Computation.bind c destruct) _
+      (fun c1 c2 => c1 = c2 ∨ ∃ c, c1 = destruct (flatten c) ∧ c2 = Computation.bind c destruct) ?_
       (Or.inr ⟨c, rfl, rfl⟩)
   intro c1 c2 h
   exact
@@ -946,7 +946,7 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     dsimp only [cons, (· ∈ ·), WSeq.Mem, Seq.Mem, Seq.cons]
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']
-    refine' ⟨Stream'.eq_or_mem_of_mem_cons, fun o => _⟩
+    refine ⟨Stream'.eq_or_mem_of_mem_cons, fun o => ?_⟩
     · cases' o with e m
       · rw [e]
         apply Stream'.mem_cons
@@ -1161,7 +1161,7 @@ theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c
       simp only [destruct_flatten]; apply liftRel_bind _ _ h
       intro a b ab; apply Computation.LiftRel.imp _ _ _ (liftRel_destruct ab)
       intro a b; apply LiftRelO.imp_right
-      intro s t h; refine' ⟨Computation.pure s, Computation.pure t, _, _, _⟩ <;>
+      intro s t h; refine ⟨Computation.pure s, Computation.pure t, ?_, ?_, ?_⟩ <;>
         -- Porting note: These 2 theorems should be excluded.
         simp [h, -liftRel_pure_left, -liftRel_pure_right]⟩
 #align stream.wseq.lift_rel_flatten Stream'.WSeq.liftRel_flatten
@@ -1207,7 +1207,7 @@ theorem productive_congr {s t : WSeq α} (h : s ~ʷ t) : Productive s ↔ Produc
 
 theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
   ⟨fun s t => ∀ n, get? s n ~ get? t n, h, fun {s t} h => by
-    refine' liftRel_def.2 ⟨_, _⟩
+    refine liftRel_def.2 ⟨?_, ?_⟩
     · rw [← head_terminates_iff, ← head_terminates_iff]
       exact terminates_congr (h 0)
     · intro a b ma mb
@@ -1219,17 +1219,17 @@ theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
         cases' b with b t'
         injection mem_unique (Computation.mem_map _ ma) ((h 0 _).2 (Computation.mem_map _ mb)) with
           ab
-        refine' ⟨ab, fun n => _⟩
-        refine'
+        refine ⟨ab, fun n => ?_⟩
+        refine
           (get?_congr (flatten_equiv (Computation.mem_map _ ma)) n).symm.trans
-            ((_ : get? (tail s) n ~ get? (tail t) n).trans
+            ((?_ : get? (tail s) n ~ get? (tail t) n).trans
               (get?_congr (flatten_equiv (Computation.mem_map _ mb)) n))
         rw [get?_tail, get?_tail]
         apply h⟩
 #align stream.wseq.equiv.ext Stream'.WSeq.Equiv.ext
 
 theorem length_eq_map (s : WSeq α) : length s = Computation.map List.length (toList s) := by
-  refine'
+  refine
     Computation.eq_of_bisim
       (fun c1 c2 =>
         ∃ (l : List α) (s : WSeq α),
@@ -1243,11 +1243,11 @@ theorem length_eq_map (s : WSeq α) : length s = Computation.map List.length (to
               | none => Sum.inl l.reverse
               | some (none, s') => Sum.inr (l, s')
               | some (some a, s') => Sum.inr (a::l, s')) (l, s)))
-      _ ⟨[], s, rfl, rfl⟩
+      ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l, s, h⟩; rw [h.left, h.right]
   induction' s using WSeq.recOn with a s s <;> simp [toList, nil, cons, think, length]
-  · refine' ⟨a::l, s, _, _⟩ <;> simp
-  · refine' ⟨l, s, _, _⟩ <;> simp
+  · refine ⟨a::l, s, ?_, ?_⟩ <;> simp
+  · refine ⟨l, s, ?_, ?_⟩ <;> simp
 #align stream.wseq.length_eq_map Stream'.WSeq.length_eq_map
 
 @[simp]
@@ -1306,7 +1306,7 @@ theorem toList'_map (l : List α) (s : WSeq α) :
       | none => Sum.inl l.reverse
       | some (none, s') => Sum.inr (l, s')
       | some (some a, s') => Sum.inr (a :: l, s')) (l, s) = (l.reverse ++ ·) <$> toList s := by
-  refine'
+  refine
     Computation.eq_of_bisim
       (fun c1 c2 =>
         ∃ (l' : List α) (s : WSeq α),
@@ -1320,11 +1320,11 @@ theorem toList'_map (l : List α) (s : WSeq α) :
               | none => Sum.inl l.reverse
               | some (none, s') => Sum.inr (l, s')
               | some (some a, s') => Sum.inr (a::l, s')) (l', s)))
-      _ ⟨[], s, rfl, rfl⟩
+      ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l', s, h⟩; rw [h.left, h.right]
   induction' s using WSeq.recOn with a s s <;> simp [toList, nil, cons, think, length]
-  · refine' ⟨a::l', s, _, _⟩ <;> simp
-  · refine' ⟨l', s, _, _⟩ <;> simp
+  · refine ⟨a::l', s, ?_, ?_⟩ <;> simp
+  · refine ⟨l', s, ?_, ?_⟩ <;> simp
 #align stream.wseq.to_list'_map Stream'.WSeq.toList'_map
 
 @[simp]
@@ -1536,7 +1536,7 @@ theorem destruct_append (s t : WSeq α) :
   intro c1 c2 h; rcases h with ⟨s, t, h⟩; rw [h.left, h.right]
   induction' s using WSeq.recOn with a s s <;> simp
   · induction' t using WSeq.recOn with b t t <;> simp
-    · refine' ⟨nil, t, _, _⟩ <;> simp
+    · refine ⟨nil, t, ?_, ?_⟩ <;> simp
   · exact ⟨s, t, rfl, rfl⟩
 #align stream.wseq.destruct_append Stream'.WSeq.destruct_append
 
@@ -1560,7 +1560,7 @@ theorem destruct_join (S : WSeq (WSeq α)) :
     | c, _, Or.inl <| rfl => by cases c.destruct <;> simp
     | _, _, Or.inr ⟨S, rfl, rfl⟩ => by
       induction' S using WSeq.recOn with s S S <;> simp
-      · refine' Or.inr ⟨S, rfl, rfl⟩
+      · refine Or.inr ⟨S, rfl, rfl⟩
 #align stream.wseq.destruct_join Stream'.WSeq.destruct_join
 
 theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq β} (h1 : LiftRel R s1 t1)
@@ -1623,7 +1623,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply lt_of_lt_of_le _ (Nat.le_add_right _ _)
             apply Nat.lt_succ_of_le (Nat.le_add_right _ _)
           let ⟨ob, mb, rob⟩ := IH _ this ST' rs5'
-          refine' ⟨ob, _, rob⟩
+          refine ⟨ob, ?_, rob⟩
           · simp (config := { unfoldPartialApp := true }) only [destruct_join, destruct_join.aux]
             apply mem_bind mT
             simp only [destruct_append, destruct_append.aux]
@@ -1632,7 +1632,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             exact mb
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
           simp?  at rs5  says simp only [destruct_append.aux] at rs5
-          refine' ⟨some (b, append t' (join T')), _, _⟩
+          refine ⟨some (b, append t' (join T')), ?_, ?_⟩
           · simp (config := { unfoldPartialApp := true }) only [destruct_join, destruct_join.aux]
             apply mem_bind mT
             simp only [destruct_append, destruct_append.aux]
@@ -1692,7 +1692,7 @@ theorem join_ret (s : WSeq α) : join (ret s) ~ʷ s := by simpa [ret] using thin
 
 @[simp]
 theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
-  refine' ⟨fun s1 s2 => join (map ret s2) = s1, rfl, _⟩
+  refine ⟨fun s1 s2 => join (map ret s2) = s1, rfl, ?_⟩
   intro s' s h; rw [← h]
   apply liftRel_rec fun c1 c2 => ∃ s, c1 = destruct (join (map ret s)) ∧ c2 = destruct s
   · exact fun {c1 c2} h =>
@@ -1711,10 +1711,10 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
 
 @[simp]
 theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join S) (join T) := by
-  refine'
+  refine
     ⟨fun s1 s2 =>
       ∃ s S T, s1 = append s (join (append S T)) ∧ s2 = append s (append (join S) (join T)),
-      ⟨nil, S, T, by simp, by simp⟩, _⟩
+      ⟨nil, S, T, by simp, by simp⟩, ?_⟩
   intro s1 s2 h
   apply
     liftRel_rec
@@ -1729,10 +1729,10 @@ theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join 
   induction' s using WSeq.recOn with a s s <;> simp
   · induction' S using WSeq.recOn with s S S <;> simp
     · induction' T using WSeq.recOn with s T T <;> simp
-      · refine' ⟨s, nil, T, _, _⟩ <;> simp
-      · refine' ⟨nil, nil, T, _, _⟩ <;> simp
+      · refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
+      · refine ⟨nil, nil, T, ?_, ?_⟩ <;> simp
     · exact ⟨s, S, T, rfl, rfl⟩
-    · refine' ⟨nil, S, T, _, _⟩ <;> simp
+    · refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
   · exact ⟨s, S, T, rfl, rfl⟩
   · exact ⟨s, S, T, rfl, rfl⟩
 #align stream.wseq.join_append Stream'.WSeq.join_append
@@ -1760,20 +1760,20 @@ theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := 
         induction' s using WSeq.recOn with a s s <;> simp
         · induction' S using WSeq.recOn with s S S <;> simp
           · exact ⟨map f s, S, rfl, rfl⟩
-          · refine' ⟨nil, S, _, _⟩ <;> simp
+          · refine ⟨nil, S, ?_, ?_⟩ <;> simp
         · exact ⟨_, _, rfl, rfl⟩
         · exact ⟨_, _, rfl, rfl⟩
-  · refine' ⟨nil, S, _, _⟩ <;> simp
+  · refine ⟨nil, S, ?_, ?_⟩ <;> simp
 #align stream.wseq.map_join Stream'.WSeq.map_join
 
 @[simp]
 theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map join SS) := by
-  refine'
+  refine
     ⟨fun s1 s2 =>
       ∃ s S SS,
         s1 = append s (join (append S (join SS))) ∧
           s2 = append s (append (join S) (join (map join SS))),
-      ⟨nil, nil, SS, by simp, by simp⟩, _⟩
+      ⟨nil, nil, SS, by simp, by simp⟩, ?_⟩
   intro s1 s2 h
   apply
     liftRel_rec
@@ -1792,10 +1792,10 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
       induction' s using WSeq.recOn with a s s <;> simp
       · induction' S using WSeq.recOn with s S S <;> simp
         · induction' SS using WSeq.recOn with S SS SS <;> simp
-          · refine' ⟨nil, S, SS, _, _⟩ <;> simp
-          · refine' ⟨nil, nil, SS, _, _⟩ <;> simp
+          · refine ⟨nil, S, SS, ?_, ?_⟩ <;> simp
+          · refine ⟨nil, nil, SS, ?_, ?_⟩ <;> simp
         · exact ⟨s, S, SS, rfl, rfl⟩
-        · refine' ⟨nil, S, SS, _, _⟩ <;> simp
+        · refine ⟨nil, S, SS, ?_, ?_⟩ <;> simp
       · exact ⟨s, S, SS, rfl, rfl⟩
       · exact ⟨s, S, SS, rfl, rfl⟩
 #align stream.wseq.join_join Stream'.WSeq.join_join

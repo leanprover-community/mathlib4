@@ -111,7 +111,7 @@ variable (Q) {g}
 theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (lTensor Q g) := by
   intro z
-  induction z using TensorProduct.induction_on with
+  induction z with
   | zero => exact ⟨0, map_zero _⟩
   | tmul q p =>
     obtain ⟨n, rfl⟩ := hg p
@@ -136,7 +136,7 @@ theorem LinearMap.lTensor_range :
 theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
   intro z
-  induction z using TensorProduct.induction_on with
+  induction z with
   | zero => exact ⟨0, map_zero _⟩
   | tmul p q =>
     obtain ⟨n, rfl⟩ := hg p
@@ -165,6 +165,7 @@ variable {R M N P : Type*} [CommRing R]
 
 open Function LinearMap
 
+-- TODO: Move this and related lemmas to another file
 lemma LinearMap.exact_subtype_mkQ (Q : Submodule R N) :
     Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
   rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
@@ -416,6 +417,96 @@ theorem TensorProduct.map_ker :
   rw [range_eq_top.mpr (rTensor_surjective M' hg), Submodule.map_top]
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
 
+variable (M)
+
+variable (R) in
+theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
+    (h : Surjective (algebraMap R S)) :
+    Surjective (TensorProduct.mk R S M 1) := by
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
+  rintro _ ⟨x, y, rfl⟩
+  obtain ⟨x, rfl⟩ := h x
+  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
+  exact ⟨x • y, rfl⟩
+
+/-- Left tensoring a module with a quotient of the ring is the same as
+quotienting that module by the corresponding submodule. -/
+noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
+    (R ⧸ I) ⊗[R] M ≃ₗ[R] M ⧸ (I • ⊤ : Submodule R M) :=
+  (rTensor.equiv M (exact_subtype_mkQ I) I.mkQ_surjective).symm.trans <|
+    Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <|
+      Eq.trans (LinearMap.range_comp _ _).symm <|
+        Eq.trans ((Submodule.topEquiv.lTensor I).range_comp _).symm <|
+          Eq.symm <| Eq.trans (map₂_eq_range_lift_comp_mapIncl _ _ _) <|
+            congrArg _ (TensorProduct.ext' (fun _ _ => rfl))
+
+/-- Right tensoring a module with a quotient of the ring is the same as
+quotienting that module by the corresponding submodule. -/
+noncomputable def tensorQuotEquivQuotSMul (I : Ideal R) :
+    M ⊗[R] (R ⧸ I) ≃ₗ[R] M ⧸ (I • ⊤ : Submodule R M) :=
+  TensorProduct.comm R M _ ≪≫ₗ quotTensorEquivQuotSMul M I
+
+variable {M}
+
+@[simp]
+lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
+    quotTensorEquivQuotSMul M I (Ideal.Quotient.mk I r ⊗ₜ[R] x) =
+      Submodule.Quotient.mk (r • x) :=
+  (quotTensorEquivQuotSMul M I).eq_symm_apply.mp <|
+    Eq.trans (congrArg (· ⊗ₜ[R] x) <|
+        Eq.trans (congrArg (Ideal.Quotient.mk I)
+                    (Eq.trans (smul_eq_mul R) (mul_one r))).symm <|
+          Submodule.Quotient.mk_smul I r 1) <|
+      smul_tmul r _ x
+
+lemma quotTensorEquivQuotSMul_comp_mkQ_rTensor (I : Ideal R) :
+    quotTensorEquivQuotSMul M I ∘ₗ I.mkQ.rTensor M =
+      (I • ⊤ : Submodule R M).mkQ ∘ₗ TensorProduct.lid R M :=
+  TensorProduct.ext' (quotTensorEquivQuotSMul_mk_tmul I)
+
+@[simp]
+lemma quotTensorEquivQuotSMul_symm_mk (I : Ideal R) (x : M) :
+    (quotTensorEquivQuotSMul M I).symm (Submodule.Quotient.mk x) = 1 ⊗ₜ[R] x :=
+  rfl
+
+lemma quotTensorEquivQuotSMul_symm_comp_mkQ (I : Ideal R) :
+    (quotTensorEquivQuotSMul M I).symm ∘ₗ (I • ⊤ : Submodule R M).mkQ =
+      TensorProduct.mk R (R ⧸ I) M 1 :=
+  LinearMap.ext (quotTensorEquivQuotSMul_symm_mk I)
+
+lemma quotTensorEquivQuotSMul_comp_mk (I : Ideal R) :
+    quotTensorEquivQuotSMul M I ∘ₗ TensorProduct.mk R (R ⧸ I) M 1 =
+      Submodule.mkQ (I • ⊤) :=
+  Eq.symm <| (LinearEquiv.toLinearMap_symm_comp_eq _ _).mp <|
+    quotTensorEquivQuotSMul_symm_comp_mkQ I
+
+@[simp]
+lemma tensorQuotEquivQuotSMul_tmul_mk (I : Ideal R) (x : M) (r : R) :
+    tensorQuotEquivQuotSMul M I (x ⊗ₜ[R] Ideal.Quotient.mk I r) =
+      Submodule.Quotient.mk (r • x) :=
+  quotTensorEquivQuotSMul_mk_tmul I r x
+
+lemma tensorQuotEquivQuotSMul_comp_mkQ_lTensor (I : Ideal R) :
+    tensorQuotEquivQuotSMul M I ∘ₗ I.mkQ.lTensor M =
+      (I • ⊤ : Submodule R M).mkQ ∘ₗ TensorProduct.rid R M :=
+  TensorProduct.ext' (tensorQuotEquivQuotSMul_tmul_mk I)
+
+@[simp]
+lemma tensorQuotEquivQuotSMul_symm_mk (I : Ideal R) (x : M) :
+    (tensorQuotEquivQuotSMul M I).symm (Submodule.Quotient.mk x) = x ⊗ₜ[R] 1 :=
+  rfl
+
+lemma tensorQuotEquivQuotSMul_symm_comp_mkQ (I : Ideal R) :
+    (tensorQuotEquivQuotSMul M I).symm ∘ₗ (I • ⊤ : Submodule R M).mkQ =
+      (TensorProduct.mk R M (R ⧸ I)).flip 1 :=
+  LinearMap.ext (tensorQuotEquivQuotSMul_symm_mk I)
+
+lemma tensorQuotEquivQuotSMul_comp_mk (I : Ideal R) :
+    tensorQuotEquivQuotSMul M I ∘ₗ (TensorProduct.mk R M (R ⧸ I)).flip 1 =
+      Submodule.mkQ (I • ⊤) :=
+  Eq.symm <| (LinearEquiv.toLinearMap_symm_comp_eq _ _).mp <|
+    tensorQuotEquivQuotSMul_symm_comp_mkQ I
+
 end Modules
 
 section Algebras
@@ -439,7 +530,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
     intro hx
     rw [Ideal.map, ← submodule_span_eq] at hx
-    refine' Submodule.span_induction hx _ _ _ _
+    refine Submodule.span_induction hx ?_ ?_ ?_ ?_
     · intro x
       simp only [includeLeft_apply, Set.mem_image, SetLike.mem_coe]
       rintro ⟨y, hy, rfl⟩
@@ -451,19 +542,19 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       use x + y
       simp only [map_add]
     · rintro a x ⟨x, hx, rfl⟩
-      induction a using TensorProduct.induction_on with
+      induction a with
       | zero =>
         use 0
         simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
-        induction x using TensorProduct.induction_on with
+        induction x with
         | zero =>
           use 0
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
           simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype, smul_eq_mul, tmul_mul_tmul]
-          rfl
+          with_unfolding_all rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
           obtain ⟨y', hy'⟩ := hy
@@ -476,7 +567,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         simp only [map_add, ha', add_smul, hb']
 
   · rintro x ⟨y, rfl⟩
-    induction y using TensorProduct.induction_on with
+    induction y with
     | zero =>
         rw [map_zero]
         apply zero_mem
@@ -507,7 +598,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem, LinearMap.mem_range]
     intro hx
     rw [Ideal.map, ← submodule_span_eq] at hx
-    refine' Submodule.span_induction hx _ _ _ _
+    refine Submodule.span_induction hx ?_ ?_ ?_ ?_
     · intro x
       simp only [includeRight_apply, Set.mem_image, SetLike.mem_coe]
       rintro ⟨y, hy, rfl⟩
@@ -519,12 +610,12 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       use x + y
       simp only [map_add]
     · rintro a x ⟨x, hx, rfl⟩
-      induction a using TensorProduct.induction_on with
+      induction a with
       | zero =>
         use 0
         simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
-        induction x using TensorProduct.induction_on with
+        induction x with
         | zero =>
           use 0
           simp only [map_zero, smul_eq_mul, mul_zero]
@@ -544,7 +635,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [map_add, ha', add_smul, hb']
 
   · rintro x ⟨y, rfl⟩
-    induction y using TensorProduct.induction_on with
+    induction y with
     | zero =>
         rw [map_zero]
         apply zero_mem

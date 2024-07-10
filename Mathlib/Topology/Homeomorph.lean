@@ -146,7 +146,7 @@ theorem refl_symm : (Homeomorph.refl X).symm = Homeomorph.refl X :=
   rfl
 #align homeomorph.refl_symm Homeomorph.refl_symm
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous (h : X ≃ₜ Y) : Continuous h :=
   h.continuous_toFun
 #align homeomorph.continuous Homeomorph.continuous
@@ -518,7 +518,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
 
 @[simp]
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
-  refine' ⟨_, fun hf => h.isOpenMap.comp hf⟩
+  refine ⟨?_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
   rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp.assoc]
   exact h.symm.isOpenMap.comp hf
@@ -526,7 +526,7 @@ theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) 
 
 @[simp]
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
-  refine' ⟨_, fun hf => hf.comp h.isOpenMap⟩
+  refine ⟨?_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
   rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp.assoc]
   exact hf.comp h.symm.isOpenMap
@@ -643,7 +643,7 @@ end
 @[simps! apply toEquiv]
 def piCongrLeft {ι ι' : Type*} {Y : ι' → Type*} [∀ j, TopologicalSpace (Y j)]
     (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ₜ ∀ j, Y j where
-  continuous_toFun := continuous_pi <| e.forall_congr_left.mp fun i ↦ by
+  continuous_toFun := continuous_pi <| e.forall_congr_right.mp fun i ↦ by
     simpa only [Equiv.toFun_as_coe, Equiv.piCongrLeft_apply_apply] using continuous_apply i
   continuous_invFun := Pi.continuous_precomp' e
   toEquiv := Equiv.piCongrLeft _ e

@@ -13,6 +13,17 @@ import Mathlib.Tactic.TypeStar
 #align_import init.function from "leanprover-community/lean"@"03a6a6015c0b12dce7b36b4a1f7205a92dfaa592"
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # General operations on functions
 -/
 
@@ -45,11 +56,11 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 infixr:80 " ∘' " => Function.dcomp
 
-@[reducible, deprecated] -- Deprecated since 13 January 2024
+@[reducible, deprecated (since := "2024-01-13")]
 def compRight (f : β → β → β) (g : α → β) : β → α → β := fun b a => f b (g a)
 #align function.comp_right Function.compRight
 
-@[reducible, deprecated] -- Deprecated since 13 January 2024
+@[reducible, deprecated (since := "2024-01-13")]
 def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a b => f (g a) b
 #align function.comp_left Function.compLeft
 
@@ -68,7 +79,7 @@ produce a function `α → β → ζ` that applies `f` and `g` on each argument 
 -/
 -- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
 -- have been an oversight.
-@[reducible, deprecated] -- Deprecated since 13 January 2024
+@[reducible, deprecated (since := "2024-01-13")]
 def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ) : α → β → ζ := fun x y =>
   op (f x y) (g x y)
 #align function.combine Function.combine
@@ -81,7 +92,7 @@ abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x
 #adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
-@[reducible, deprecated] -- Deprecated since 13 January 2024
+@[reducible, deprecated (since := "2024-01-13")]
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x
 #align function.app Function.app
@@ -94,16 +105,16 @@ theorem id_comp (f : α → β) : id ∘ f = f := rfl
 #align function.left_id Function.id_comp
 #align function.comp.left_id Function.id_comp
 
-@[deprecated] alias left_id := id_comp -- Deprecated since 14 January 2014
-@[deprecated] alias comp.left_id := id_comp -- Deprecated since 14 January 2014
+@[deprecated (since := "2024-01-14")] alias left_id := id_comp
+@[deprecated (since := "2024-01-14")] alias comp.left_id := id_comp
 
 @[simp, mfld_simps]
 theorem comp_id (f : α → β) : f ∘ id = f := rfl
 #align function.right_id Function.comp_id
 #align function.comp.right_id Function.comp_id
 
-@[deprecated] alias right_id := comp_id -- Deprecated since 14 January 2014
-@[deprecated] alias comp.right_id := comp_id -- Deprecated since 14 January 2014
+@[deprecated (since := "2024-01-14")] alias right_id := comp_id
+@[deprecated (since := "2024-01-14")] alias comp.right_id := comp_id
 
 #align function.comp_app Function.comp_apply
 
@@ -117,7 +128,7 @@ theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) �
 @[simp] theorem comp_const (f : β → φ) (b : β) : f ∘ const α b = const α (f b) := rfl
 #align function.comp_const_right Function.comp_const
 
-@[deprecated] alias comp_const_right := comp_const -- Deprecated since 14 January 2014
+@[deprecated (since := "2024-01-14")] alias comp_const_right := comp_const
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def Injective (f : α → β) : Prop :=

@@ -49,8 +49,8 @@ theorem mem_sumLift₂ :
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
-    · refine' fun h ↦ (not_mem_empty _ h).elim
-    · refine' fun h ↦ (not_mem_empty _ h).elim
+    · refine fun h ↦ (not_mem_empty _ h).elim
+    · refine fun h ↦ (not_mem_empty _ h).elim
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩
@@ -77,7 +77,7 @@ theorem sumLift₂_eq_empty :
     sumLift₂ f g a b = ∅ ↔
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f a₁ b₁ = ∅) ∧
         ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → g a₂ b₂ = ∅ := by
-  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · constructor <;>
     · rintro a b rfl rfl
       exact map_eq_empty.1 h
@@ -151,7 +151,7 @@ lemma mem_sumLexLift :
     · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
-    · refine' fun h ↦ (mem_disjSum.1 h).elim _ _
+    · refine fun h ↦ (mem_disjSum.1 h).elim ?_ ?_
       · rintro ⟨c, hc, rfl⟩
         exact Or.inr (Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
       · rintro ⟨c, hc, rfl⟩
@@ -195,7 +195,7 @@ lemma sumLexLift_eq_empty :
       (∀ a₁ b₁, a = inl a₁ → b = inl b₁ → f₁ a₁ b₁ = ∅) ∧
         (∀ a₁ b₂, a = inl a₁ → b = inr b₂ → g₁ a₁ b₂ = ∅ ∧ g₂ a₁ b₂ = ∅) ∧
           ∀ a₂ b₂, a = inr a₂ → b = inr b₂ → f₂ a₂ b₂ = ∅ := by
-  refine' ⟨fun h ↦ ⟨_, _, _⟩, fun h ↦ _⟩
+  refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ ?_⟩
   any_goals rintro a b rfl rfl; exact map_eq_empty.1 h
   · rintro a b rfl rfl; exact disjSum_eq_empty.1 h
   cases a <;> cases b
@@ -275,7 +275,7 @@ theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
   rfl
 #align sum.Ioc_inl_inr Sum.Ioc_inl_inr
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+@[simp]
 theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
   rfl
 #align sum.Ioo_inl_inr Sum.Ioo_inl_inr
@@ -295,7 +295,7 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
   rfl
 #align sum.Ioc_inr_inl Sum.Ioc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+@[simp]
 theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
   rfl
 #align sum.Ioo_inr_inl Sum.Ioo_inr_inl
@@ -392,19 +392,19 @@ lemma Ioc_inl_inr : Ioc (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iic b)).map to
 lemma Ioo_inl_inr : Ioo (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iio b)).map toLex.toEmbedding := rfl
 #align sum.lex.Ioo_inl_inr Sum.Lex.Ioo_inl_inr
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
+@[simp]
 lemma Icc_inr_inl : Icc (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Icc_inr_inl Sum.Lex.Icc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
+@[simp]
 lemma Ico_inr_inl : Ico (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ico_inr_inl Sum.Lex.Ico_inr_inl
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
+@[simp]
 lemma Ioc_inr_inl : Ioc (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ioc_inr_inl Sum.Lex.Ioc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
+@[simp]
 lemma Ioo_inr_inl : Ioo (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ioo_inr_inl Sum.Lex.Ioo_inr_inl
 

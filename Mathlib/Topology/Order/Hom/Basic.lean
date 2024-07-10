@@ -46,7 +46,7 @@ section
 /-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
-class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
+class ContinuousOrderHomClass (F : Type*) (α β : outParam Type*) [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] extends
     ContinuousMapClass F α β : Prop where
   map_monotone (f : F) : Monotone f
@@ -108,7 +108,6 @@ instance : ContinuousOrderHomClass (α →Co β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 
--- Porting note (#10756): new lemma
 @[simp] theorem coe_toOrderHom (f : α →Co β) : ⇑f.toOrderHom = f := rfl
 
 theorem toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl

@@ -5,7 +5,6 @@ Authors: Antoine Labelle
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
@@ -354,7 +353,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
   -- Porting note: trouble figuring out the motive
   x.induction_on (p := fun z => z • y = z * y)
     (fun g => by
-      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
+      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
         ofMulAction_apply, smul_eq_mul]
       -- Porting note: single_mul_apply not firing in simp
@@ -500,8 +499,8 @@ This lemma says that $φ$ is $G$-linear.
 -/
 theorem dualTensorHom_comm (g : G) :
     dualTensorHom k V W ∘ₗ TensorProduct.map (ρV.dual g) (ρW g) =
-      (linHom ρV ρW) g ∘ₗ dualTensorHom k V W :=
-  by ext; simp [Module.Dual.transpose_apply]
+      (linHom ρV ρW) g ∘ₗ dualTensorHom k V W := by
+  ext; simp [Module.Dual.transpose_apply]
 #align representation.dual_tensor_hom_comm Representation.dualTensorHom_comm
 
 end LinearHom

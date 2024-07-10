@@ -66,7 +66,6 @@ linear_map, matrix, linear_equiv, diagonal, det, trace
 noncomputable section
 
 open LinearMap Matrix Set Submodule
-open scoped BigOperators
 
 section ToMatrixRight
 
@@ -1049,6 +1048,7 @@ lemma linearMap_apply (ij : ι₂ × ι₁) :
 
 lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
     (b₁.linearMap b₂ ij) (b₁ k) = if ij.2 = k then b₂ ij.1 else 0 := by
+  have := Classical.decEq ι₂
   rcases ij with ⟨i, j⟩
   rw [linearMap_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
   dsimp only [Matrix.stdBasisMatrix]

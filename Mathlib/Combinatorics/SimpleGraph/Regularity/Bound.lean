@@ -32,8 +32,6 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 open Finset Fintype Function Real
 
-open BigOperators
-
 namespace SzemerediRegularity
 
 /-- Auxiliary function for Szemerédi's regularity lemma. Blowing up a partition of size `n` during
@@ -229,28 +227,28 @@ theorem bound_pos : 0 < bound ε l :=
 variable {ι 𝕜 : Type*} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [DecidableRel r] {s t : Finset ι}
   {x : 𝕜}
 
-theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i in s, f i) / s.card) ^ 2)
-    (hs' : (s.card : 𝕜) ≠ 0) : (s.card : 𝕜) * x ^ 2 ≤ ∑ i in t, f i ^ 2 :=
+theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i ∈ s, f i) / s.card) ^ 2)
+    (hs' : (s.card : 𝕜) ≠ 0) : (s.card : 𝕜) * x ^ 2 ≤ ∑ i ∈ t, f i ^ 2 :=
   (mul_le_mul_of_nonneg_left (hs.trans sum_div_card_sq_le_sum_sq_div_card) <|
     Nat.cast_nonneg _).trans <| (mul_div_cancel₀ _ hs').le.trans <|
       sum_le_sum_of_subset_of_nonneg hst fun _ _ _ => sq_nonneg _
 #align szemeredi_regularity.mul_sq_le_sum_sq SzemerediRegularity.mul_sq_le_sum_sq
 
 theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) (hx : 0 ≤ x)
-    (hs : x ≤ |(∑ i in s, f i) / s.card - (∑ i in t, f i) / t.card|)
-    (ht : d ≤ ((∑ i in t, f i) / t.card) ^ 2) :
-    d + s.card / t.card * x ^ 2 ≤ (∑ i in t, f i ^ 2) / t.card := by
+    (hs : x ≤ |(∑ i ∈ s, f i) / s.card - (∑ i ∈ t, f i) / t.card|)
+    (ht : d ≤ ((∑ i ∈ t, f i) / t.card) ^ 2) :
+    d + s.card / t.card * x ^ 2 ≤ (∑ i ∈ t, f i ^ 2) / t.card := by
   obtain hscard | hscard := (s.card.cast_nonneg : (0 : 𝕜) ≤ s.card).eq_or_lt
   · simpa [← hscard] using ht.trans sum_div_card_sq_le_sum_sq_div_card
   have htcard : (0 : 𝕜) < t.card := hscard.trans_le (Nat.cast_le.2 (card_le_card hst))
-  have h₁ : x ^ 2 ≤ ((∑ i in s, f i) / s.card - (∑ i in t, f i) / t.card) ^ 2 :=
+  have h₁ : x ^ 2 ≤ ((∑ i ∈ s, f i) / s.card - (∑ i ∈ t, f i) / t.card) ^ 2 :=
     sq_le_sq.2 (by rwa [abs_of_nonneg hx])
-  have h₂ : x ^ 2 ≤ ((∑ i in s, (f i - (∑ j in t, f j) / t.card)) / s.card) ^ 2 := by
+  have h₂ : x ^ 2 ≤ ((∑ i ∈ s, (f i - (∑ j ∈ t, f j) / t.card)) / s.card) ^ 2 := by
     apply h₁.trans
     rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left₀ _ hscard.ne']
   apply (add_le_add_right ht _).trans
   rw [← mul_div_right_comm, le_div_iff htcard, add_mul, div_mul_cancel₀ _ htcard.ne']
-  have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j in t, f j) / t.card)) h₂ hscard.ne'
+  have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j ∈ t, f j) / t.card)) h₂ hscard.ne'
   apply (add_le_add_left h₃ _).trans
   -- Porting note: was
   -- `simp [← mul_div_right_comm _ (t.card : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,`

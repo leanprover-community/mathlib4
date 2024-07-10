@@ -175,6 +175,9 @@ theorem comp_val {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp_val AlgebraicGeometry.LocallyRingedSpace.comp_val
 
+@[simp] theorem id_val' (X : LocallyRingedSpace.{u}) : Hom.val (𝟙 X) = 𝟙 X.toSheafedSpace :=
+  rfl
+
 -- Porting note: complains that `(f ≫ g).val.c` can be further simplified
 -- so changed to its simp normal form `(f.val ≫ g.val).c`
 @[simp]
@@ -314,7 +317,6 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.preimage_basic_open AlgebraicGeometry.LocallyRingedSpace.preimage_basicOpen
 
 -- This actually holds for all ringed spaces with nontrivial stalks.
-@[simp]
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
@@ -327,6 +329,19 @@ theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
   exact zero_ne_one
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.basic_open_zero AlgebraicGeometry.LocallyRingedSpace.basicOpen_zero
+
+@[simp]
+lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.carrier)
+    (f : (X.presheaf.obj <| op U)) (hf : IsNilpotent f) :
+    X.toRingedSpace.basicOpen f = ⊥ := by
+  obtain ⟨n, hn⟩ := hf
+  cases n.eq_zero_or_pos with
+  | inr h =>
+    rw [←  X.toRingedSpace.basicOpen_pow f n h, hn]
+    simp [basicOpen_zero]
+  | inl h =>
+    rw [h, pow_zero] at hn
+    simp [eq_zero_of_zero_eq_one hn.symm f, basicOpen_zero]
 
 instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) [hU : Nonempty U] :
     Nontrivial (X.presheaf.obj <| op U) :=

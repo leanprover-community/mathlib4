@@ -122,7 +122,7 @@ def lengthParity : W →* Multiplicative (ZMod 2) := cs.lift ⟨fun _ ↦ Multip
   simp_rw [CoxeterMatrix.IsLiftable, ← ofAdd_add, (by decide : (1 + 1 : ZMod 2) = 0)]
   simp⟩
 
-theorem lengthParity_simple (i : B):
+theorem lengthParity_simple (i : B) :
     cs.lengthParity (s i) = Multiplicative.ofAdd 1 := cs.lift_apply_simple _ _
 
 theorem lengthParity_comp_simple :
@@ -131,7 +131,7 @@ theorem lengthParity_comp_simple :
 theorem lengthParity_eq_ofAdd_length (w : W) :
     cs.lengthParity w = Multiplicative.ofAdd (↑(ℓ w)) := by
   rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
-  rw [← hω, wordProd, MonoidHom.map_list_prod, List.map_map, lengthParity_comp_simple, map_const',
+  rw [← hω, wordProd, map_list_prod, List.map_map, lengthParity_comp_simple, map_const',
     prod_replicate, ← ofAdd_nsmul, nsmul_one]
 
 theorem length_mul_mod_two (w₁ w₂ : W) : ℓ (w₁ * w₂) % 2 = (ℓ w₁ + ℓ w₂) % 2 := by
@@ -216,9 +216,9 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
   have h₂ : ℓ (π (ω.drop j)) ≤ (ω.drop j).length    := cs.length_wordProd_le (ω.drop j)
   have h₃ := calc
     (ω.take j).length + (ω.drop j).length
-    _ = ω.length                             := by rw [← List.length_append, ω.take_append_drop j];
+    _ = ω.length                             := by rw [← List.length_append, ω.take_append_drop j]
     _ = ℓ (π ω)                              := hω.symm
-    _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j];
+    _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j]
     _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j))  := cs.length_mul_le _ _
   unfold IsReduced
   exact ⟨by linarith, by linarith⟩
