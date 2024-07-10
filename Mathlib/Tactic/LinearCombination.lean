@@ -102,17 +102,38 @@ def _root_.Lean.Expr.relType (e : Expr) : MetaM (Option RelType) := do
   else
     pure none
 
-def mkRelConst (rel : RelType) (n : Name) (p₂ e₁ : Term) : TermElabM (Option (RelType × Term)) :=
-  let i := mkIdent n
-  Option.map (Prod.mk rel) <$> ``($i $p₂ $e₁)
+def RelType.addRelConstData : RelType → RelType × Name
+  | Eq => (Eq, ``add_const_eq)
+  | Le => (Le, ``add_const_le)
+  | Lt => (Lt, ``add_const_lt)
 
-def mkConstRel (rel : RelType) (n : Name) (p₁ e₂ : Term) : TermElabM (Option (RelType × Term)) :=
-  let i := mkIdent n
-  Option.map (Prod.mk rel) <$> ``($i $p₁ $e₂)
+def RelType.addConstRelData : RelType → RelType × Name
+  | Eq => (Eq, ``add_eq_const)
+  | Le => (Le, ``add_le_const)
+  | Lt => (Lt, ``add_lt_const)
 
-def mkRelRel (rel : RelType) (n : Name) (p₁ p₂ : Term) : TermElabM (Option (RelType × Term)) :=
-  let i := mkIdent n
-  Option.map (Prod.mk rel) <$> ``($i $p₁ $p₂)
+def RelType.addRelRelData : RelType → RelType → RelType × Name
+  | Eq, Eq => (Eq, ``add_eq_eq)
+  | Eq, Le => (Le, ``add_eq_le)
+  | Eq, Lt => (Lt, ``add_eq_lt)
+  | Le, Eq => (Le, ``add_le_eq)
+  | Le, Le => (Le, ``add_le_le)
+  | Le, Lt => (Lt, ``add_le_lt)
+  | Lt, Eq => (Lt, ``add_lt_eq)
+  | Lt, Le => (Lt, ``add_lt_le)
+  | Lt, Lt => (Lt, ``add_lt_lt)
+
+def mkRelConst (d : RelType × Name) (p₂ e₁ : Term) : TermElabM (Option (RelType × Term)) :=
+  let i := mkIdent d.2
+  Option.map (Prod.mk d.1) <$> ``($i $p₂ $e₁)
+
+def mkConstRel (d : RelType × Name) (p₁ e₂ : Term) : TermElabM (Option (RelType × Term)) :=
+  let i := mkIdent d.2
+  Option.map (Prod.mk d.1) <$> ``($i $p₁ $e₂)
+
+def mkRelRel (d : RelType × Name) (p₁ p₂ : Term) : TermElabM (Option (RelType × Term)) :=
+  let i := mkIdent d.2
+  Option.map (Prod.mk d.1) <$> ``($i $p₁ $p₂)
 
 /--
 Performs macro expansion of a linear combination expression,
@@ -128,21 +149,9 @@ partial def expandLinearCombo : Term → TermElabM (Option (RelType × Term))
   | `($e₁ + $e₂) => do
       match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
       | none, none => pure none
-      | none, some (Eq, p₂) => mkRelConst Eq `add_const_eq p₂ e₁
-      | none, some (Le, p₂) => mkRelConst Le `add_const_le p₂ e₁
-      | none, some (Lt, p₂) => mkRelConst Lt `add_const_lt p₂ e₁
-      | some (Eq, p₁), none => mkConstRel Eq `add_eq_const p₁ e₂
-      | some (Eq, p₁), some (Eq, p₂) => mkRelRel Eq `add_eq_eq p₁ p₂
-      | some (Eq, p₁), some (Le, p₂) => mkRelRel Le `add_eq_le p₁ p₂
-      | some (Eq, p₁), some (Lt, p₂) => mkRelRel Lt `add_eq_lt p₁ p₂
-      | some (Le, p₁), none => mkConstRel Le `add_le_const p₁ e₂
-      | some (Le, p₁), some (Eq, p₂) => mkRelRel Le `add_le_eq p₁ p₂
-      | some (Le, p₁), some (Le, p₂) => mkRelRel Le `add_le_le p₁ p₂
-      | some (Le, p₁), some (Lt, p₂) => mkRelRel Lt `add_le_lt p₁ p₂
-      | some (Lt, p₁), none => mkConstRel Lt `add_lt_const p₁ e₂
-      | some (Lt, p₁), some (Eq, p₂) => mkRelRel Lt `add_lt_eq p₁ p₂
-      | some (Lt, p₁), some (Le, p₂) => mkRelRel Lt `add_lt_le p₁ p₂
-      | some (Lt, p₁), some (Lt, p₂) => mkRelRel Lt `add_lt_lt p₁ p₂
+      | none, some (rel₂, p₂) => mkRelConst rel₂.addRelConstData p₂ e₁
+      | some (rel₁, p₁), none => mkConstRel rel₁.addConstRelData p₁ e₂
+      | some (rel₁, p₁), some (rel₂, p₂) => mkRelRel (rel₁.addRelRelData rel₂) p₁ p₂
   | `($e₁ - $e₂) => do
       Option.map (Prod.mk Eq) <$>
       match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
