@@ -199,11 +199,8 @@ theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := b
   simp only [List.inter, elem_eq_mem, mem_reverse]
 #align list.inter_reverse List.inter_reverse
 
-theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs := by
-  induction xs with
-  | nil => simp
-  | cons x xs ih =>
-    rw [inter_cons_of_mem _ <| h <| mem_cons_self _ _, ih (subset_of_cons_subset h)]
+theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs :=
+  List.filter_eq_self.mpr fun _ ha => elem_eq_true_of_mem (h ha)
 
 end Inter
 
