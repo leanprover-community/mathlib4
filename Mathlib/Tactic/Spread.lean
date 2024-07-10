@@ -30,7 +30,7 @@ We need to be able to `let` some implementation details that are still local ins
 Normally implementation detail fvars are not local instances,
 but we need them to be implementation details so that `simp` will see them as "reducible" fvars.
 -/
-syntax (name := letImplDetailStx) "let_impl_detail " ident " := " term "; " term:term
+syntax (name := letImplDetailStx) "let_impl_detail " ident " := " term "; " term : term
 
 open Lean Elab Term Meta
 

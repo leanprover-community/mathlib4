@@ -115,7 +115,7 @@ theorem effectiveEpiFamily_tfae
   · intro; infer_instance
   tfae_have 3 ↔ 1
   · erw [((CompHaus.effectiveEpiFamily_tfae
-      (fun a ↦ Stonean.toCompHaus.obj (X a)) (fun a ↦ Stonean.toCompHaus.map (π a))).out 2 0 :)]
+      (fun a ↦ Stonean.toCompHaus.obj (X a)) (fun a ↦ Stonean.toCompHaus.map (π a))).out 2 0 : )]
     exact ⟨fun h ↦ Stonean.toCompHaus.finite_effectiveEpiFamily_of_map _ _ h,
       fun _ ↦ inferInstance⟩
   tfae_finish

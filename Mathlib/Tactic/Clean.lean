@@ -54,7 +54,7 @@ def x' : Id Nat := clean% by dsimp [Id]; exact 1
 -- def x' : Id Nat := 1
 ```
 -/
-syntax (name := cleanStx) "clean% " term:term
+syntax (name := cleanStx) "clean% " term : term
 
 @[term_elab cleanStx, inherit_doc cleanStx]
 def elabClean : Term.TermElab := fun stx expectedType? =>

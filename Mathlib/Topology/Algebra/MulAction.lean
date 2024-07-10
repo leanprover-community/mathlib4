@@ -257,7 +257,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
   -- unification instead.
   @ContinuousSMul.mk M X _ _ (_) <| by
       -- Porting note: needs `( :)`
-      rw [← (@sInf_singleton _ _ ‹TopologicalSpace M› :)]
+      rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht

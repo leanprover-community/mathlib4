@@ -10,7 +10,7 @@ import Batteries.Tactic.Lint
 
 This is intended for use in local notations. Basic usage is:
 ```
-local syntax:arg term:max superscript(term):term
+local syntax:arg term:max superscript(term) : term
 local macro_rules | `($a:term $b:superscript) => `($a ^ $b)
 ```
 where `superscript(term)` indicates that it will parse a superscript, and the `$b:superscript`
@@ -225,7 +225,7 @@ end Superscript
 /--
 The parser `superscript(term)` parses a superscript. Basic usage is:
 ```
-local syntax:arg term:max superscript(term):term
+local syntax:arg term:max superscript(term) : term
 local macro_rules | `($a:term $b:superscript) => `($a ^ $b)
 ```
 Given a notation like this, the expression `2⁶⁴` parses and expands to `2 ^ 64`.
@@ -250,7 +250,7 @@ def superscript.formatter :=
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
 ```
-local syntax:arg term:max subscript(term):term
+local syntax:arg term:max subscript(term) : term
 local macro_rules | `($a:term $i:subscript) => `($a $i)
 ```
 Given a notation like this, the expression `(a)ᵢ` parses and expands to `a i`. (Either parentheses

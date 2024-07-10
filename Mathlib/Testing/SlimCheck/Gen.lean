@@ -76,7 +76,7 @@ by the size parameter of `Gen`. -/
 def arrayOf (x : Gen α) : Gen (Array α) := do
   let (⟨sz⟩ : ULift ℕ) ← ULiftable.up do choose Nat 0 (← getSize) (Nat.zero_le _)
   let mut res := #[]
-  for _ in [0 : sz] do
+  for _ in [0:sz] do
     res := res.push (← x)
   pure res
 
@@ -115,6 +115,6 @@ end Gen
 /-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
 def Gen.run (x : Gen α) (size : Nat) : BaseIO α :=
   letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
-  IO.runRand (ReaderT.run x ⟨size⟩ :)
+  IO.runRand (ReaderT.run x ⟨size⟩:)
 
 end SlimCheck

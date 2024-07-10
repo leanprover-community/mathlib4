@@ -87,7 +87,7 @@ an equation `f = g` between morphisms `X ⟶ Y` in a category (possibly after a 
 produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
 -/
-elab "reassoc_of% " t:term:term => do
+elab "reassoc_of% " t:term : term => do
   reassocExpr (← elabTerm t none)
 
 end CategoryTheory

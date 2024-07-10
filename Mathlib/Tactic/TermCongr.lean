@@ -76,7 +76,7 @@ Please report anything that goes wrong with `congr(...)` lemmas on Zulip.
 
 For debugging, you can set `set_option trace.Elab.congr true`.
 -/
-syntax (name := termCongr) "congr(" withoutForbidden(ppDedentIfGrouped(term)) ")":term
+syntax (name := termCongr) "congr(" withoutForbidden(ppDedentIfGrouped(term)) ")" : term
 
 /-! ### Congruence holes
 
@@ -169,7 +169,7 @@ def elabCHole (h : Syntax) (forLhs : Bool) (expectedType? : Option Expr) : Term.
 /-- (Internal for `congr(...)`)
 Elaborates to an expression satisfying `cHole?` that equals the LHS or RHS of `h`,
 if the LHS or RHS is available after elaborating `h`. Uses the expected type as a hint. -/
-syntax (name := cHoleExpand) "cHole% " (&"lhs" <|> &"rhs") term:term
+syntax (name := cHoleExpand) "cHole% " (&"lhs" <|> &"rhs") term : term
 
 @[term_elab cHoleExpand, inherit_doc cHoleExpand]
 def elabCHoleExpand : Term.TermElab := fun stx expectedType? =>

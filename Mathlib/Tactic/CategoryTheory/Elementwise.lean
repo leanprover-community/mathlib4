@@ -224,7 +224,7 @@ One difference between `elementwise_of%` and `@[elementwise]` is that `@[element
 default applies `simp` to both sides of the generated lemma to get something that is in simp
 normal form. `elementwise_of%` does not do this.
 -/
-elab "elementwise_of% " t:term:term => do
+elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none
   let (pf, _) ← elementwiseExpr .anonymous (← inferType e) e (simpSides := false)
   return pf

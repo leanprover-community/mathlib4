@@ -31,7 +31,7 @@ This only works if a `Lean.ToExpr X` instance is available.
 
 Tip: you can use `show_term eval% x` to see the value of `eval% x`.
 -/
-syntax (name := eval_expr) "eval% " term:term
+syntax (name := eval_expr) "eval% " term : term
 
 @[term_elab eval_expr, inherit_doc eval_expr]
 unsafe def elabEvalExpr : Lean.Elab.Term.TermElab

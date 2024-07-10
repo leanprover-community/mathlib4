@@ -22,7 +22,7 @@ open Lean.PrettyPrinter.Delaborator
 also be written as `(x : α) → β x`. -/
 -- A direct copy of forall notation but with `Π`/`Pi` instead of `∀`/`Forall`.
 @[term_parser]
-def piNotation := leading_parser : leadPrec
+def piNotation := leading_parser:leadPrec
   unicodeSymbol "Π" "PiType" >>
   many1 (ppSpace >> (binderIdent <|> bracketedBinder)) >>
   optType >> ", " >> termParser
@@ -30,7 +30,7 @@ def piNotation := leading_parser : leadPrec
 /-- Dependent function type (a "pi type"). The notation `Π x ∈ s, β x` is
 short for `Π x, x ∈ s → β x`. -/
 -- A copy of forall notation from `Batteries.Util.ExtendedBinder` for pi notation
-syntax "Π " binderIdent binderPred ", " term:term
+syntax "Π " binderIdent binderPred ", " term : term
 
 macro_rules
   | `(Π $x:ident $pred:binderPred, $p) => `(Π $x:ident, satisfies_binder_pred% $x $pred → $p)
@@ -151,7 +151,7 @@ def exists_delab : Delab := whenPPOption Lean.getPPNotation do
   match stx with
   | `(∃ $group:bracketedExplicitBinders, ∃ $[$groups:bracketedExplicitBinders]*, $body) =>
     `(∃ $group $groups*, $body)
-  | `(∃ $b:binderIdent, ∃ $[$bs: binderIdent]*, $body) => `(∃ $b:binderIdent $[$bs]*, $body)
+  | `(∃ $b:binderIdent, ∃ $[$bs:binderIdent]*, $body) => `(∃ $b:binderIdent $[$bs]*, $body)
   | _ => pure stx
 end existential
 

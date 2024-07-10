@@ -82,7 +82,7 @@ expected type, so `(derive_fintype% _ : Fintype α)` works.
 This uses `proxy_equiv% α`, so as a side effect it defines `proxyType` and `proxyTypeEquiv` in
 the namespace associated to the inductive type `α`.
 -/
-macro "derive_fintype% " t:term:term => `(term| Fintype.ofEquiv _ (proxy_equiv% $t))
+macro "derive_fintype% " t:term : term => `(term| Fintype.ofEquiv _ (proxy_equiv% $t))
 
 /-
 Creates a `Fintype` instance by adding additional `Fintype` and `Decidable` instance arguments
