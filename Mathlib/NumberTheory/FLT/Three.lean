@@ -558,10 +558,10 @@ private lemma exists_cube_associated :
   have h₁ := S.isCoprime_x_z.mul_left S.isCoprime_y_z
   have h₂ : Associated (S.w ^ 3) (S.x * S.y * S.z) :=
     ⟨S.u, by rw [x_mul_y_mul_z_eq_u_mul_w_cube S, mul_comm]⟩
-  obtain ⟨T, h₃⟩ := exists_associated_pow_of_associated_mul_pow h₁ h₂
-  exact ⟨exists_associated_pow_of_associated_mul_pow S.isCoprime_x_y h₃,
-    exists_associated_pow_of_associated_mul_pow S.isCoprime_x_y.symm (mul_comm _ S.x ▸ h₃),
-    exists_associated_pow_of_associated_mul_pow h₁.symm (mul_comm _ S.z ▸ h₂)⟩
+  obtain ⟨T, h₃⟩ := exists_associated_pow_of_associated_pow_mul h₁ h₂
+  exact ⟨exists_associated_pow_of_associated_pow_mul S.isCoprime_x_y h₃,
+    exists_associated_pow_of_associated_pow_mul S.isCoprime_x_y.symm (mul_comm _ S.x ▸ h₃),
+    exists_associated_pow_of_associated_pow_mul h₁.symm (mul_comm _ S.z ▸ h₂)⟩
 
 /-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
 `S.X ^ 3 * S.u₁ = S.x` -/

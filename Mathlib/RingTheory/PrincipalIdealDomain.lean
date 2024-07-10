@@ -489,7 +489,7 @@ theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {
   exact exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 #align exists_associated_pow_of_mul_eq_pow' exists_associated_pow_of_mul_eq_pow'
 
-theorem exists_associated_pow_of_associated_mul_pow {a b c : R} (hab : IsCoprime a b) {k : ℕ}
+theorem exists_associated_pow_of_associated_pow_mul {a b c : R} (hab : IsCoprime a b) {k : ℕ}
     (h : Associated (c ^ k) (a * b)) : ∃ d : R, Associated (d ^ k) a := by
   obtain ⟨u, hu⟩ := h
   apply_fun (· * u⁻¹.1) at hu
