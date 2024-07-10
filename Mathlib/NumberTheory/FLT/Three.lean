@@ -495,7 +495,7 @@ private lemma lambda_not_dvd_w : ¬ λ ∣ S.w := by
   intro h
   replace h := mul_dvd_mul_left (λ ^ S.multiplicity) h
   rw [← w_spec] at h
-  have hh : _ := multiplicity.is_greatest' S.toSolution'.multiplicity_lambda_c_finite
+  have hh := multiplicity.is_greatest' S.toSolution'.multiplicity_lambda_c_finite
     (lt_add_one S.multiplicity)
   rw [pow_succ', mul_comm] at hh
   exact hh h
