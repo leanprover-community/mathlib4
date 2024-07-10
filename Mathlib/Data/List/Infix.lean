@@ -61,7 +61,7 @@ theorem suffix_rfl : l <:+ l :=
   suffix_refl _
 #align list.suffix_rfl List.suffix_rfl
 
-theorem infix_rfl : l <:+ : l :=
+theorem infix_rfl : l <:+: l :=
   infix_refl _
 #align list.infix_rfl List.infix_rfl
 
@@ -117,7 +117,7 @@ alias ⟨eq_nil_of_suffix_nil, _⟩ := suffix_nil
 
 #align list.infix_iff_prefix_suffix List.infix_iff_prefix_suffix
 
-theorem eq_of_infix_of_length_eq (h : l₁ <:+ : l₂) : l₁.length = l₂.length → l₁ = l₂ :=
+theorem eq_of_infix_of_length_eq (h : l₁ <:+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
   h.sublist.eq_of_length
 #align list.eq_of_infix_of_length_eq List.eq_of_infix_of_length_eq
 
@@ -268,7 +268,7 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
       suffix_cons_iff.symm
 #align list.decidable_suffix List.decidableSuffix
 
-instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+ : l₂)
+instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩
   | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
   | l₁, b :: l₂ =>
@@ -346,7 +346,7 @@ instance : IsPartialOrder (List α) (· <:+ ·) where
   trans _ _ _ := IsSuffix.trans
   antisymm _ _ h₁ h₂ := eq_of_suffix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+ : ·) where
+instance : IsPartialOrder (List α) (· <:+: ·) where
   refl := infix_refl
   trans _ _ _ := IsInfix.trans
   antisymm _ _ h₁ h₂ := eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
@@ -527,7 +527,7 @@ theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
   · simp only [insert_of_not_mem h, suffix_cons, insert]
 #align list.suffix_insert List.suffix_insert
 
-theorem infix_insert (a : α) (l : List α) : l <:+ : l.insert a :=
+theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
   (suffix_insert a l).isInfix
 #align list.infix_insert List.infix_insert
 

@@ -125,7 +125,7 @@ theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
 
 @[simp]
 theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
-    toCircle (n • (x : AddCircle T) :) = Complex.exp (2 * π * Complex.I * n * x / T) := by
+    toCircle (n • (x : AddCircle T):) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [← fourier_apply]; exact fourier_coe_apply
 
 -- @[simp] -- Porting note: simp normal form is `fourier_zero'`

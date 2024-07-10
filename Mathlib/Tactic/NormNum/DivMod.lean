@@ -64,7 +64,7 @@ partial def evalIntDiv : NormNumExt where eval {u α} e := do
     assumeInstancesCommute
     let ⟨zq, q, p⟩ := core a na za pa q(-$b) nb q(isNat_neg_of_isNegNat $pb)
     have q' := mkRawIntLit (-zq)
-    have : Q(-$q = $q') := (q(Eq.refl $q') :)
+    have : Q(-$q = $q') := (q(Eq.refl $q'):)
     return .isInt rℤ q' (-zq) q(isInt_ediv_neg $p $this)
   | _ => failure
 where
@@ -79,9 +79,9 @@ where
     have nr : Q(ℕ) := mkRawNatLit r
     let m := q * b
     have nm := mkRawIntLit m
-    have pf₁ : Q($nq * $nb = $nm) := (q(Eq.refl $nm) :)
-    have pf₂ : Q($nr + $nm = $na) := (q(Eq.refl $na) :)
-    have pf₃ : Q(Nat.blt $nr $nb = true) := (q(Eq.refl true) :)
+    have pf₁ : Q($nq * $nb = $nm) := (q(Eq.refl $nm):)
+    have pf₂ : Q($nr + $nm = $na) := (q(Eq.refl $na):)
+    have pf₃ : Q(Nat.blt $nr $nb = true) := (q(Eq.refl true):)
     ⟨q, nq, q(isInt_ediv $pa $pb $pf₁ $pf₂ $pf₃)⟩
 
 lemma isInt_emod_zero : ∀ {a b r : ℤ}, IsInt a r → IsNat b (nat_lit 0) → IsInt (a % b) r
@@ -139,9 +139,9 @@ where
     have nr : Q(ℕ) := mkRawNatLit r
     let m := q * b
     have nm := mkRawIntLit m
-    have pf₁ : Q($nq * $nb = $nm) := (q(Eq.refl $nm) :)
-    have pf₂ : Q($nr + $nm = $na) := (q(Eq.refl $na) :)
-    have pf₃ : Q(Nat.blt $nr $nb = true) := (q(Eq.refl true) :)
+    have pf₁ : Q($nq * $nb = $nm) := (q(Eq.refl $nm):)
+    have pf₂ : Q($nr + $nm = $na) := (q(Eq.refl $na):)
+    have pf₃ : Q(Nat.blt $nr $nb = true) := (q(Eq.refl true):)
     ⟨nr, q(isInt_emod $pa $pb $pf₁ $pf₂ $pf₃)⟩
 
 theorem isInt_dvd_true : {a b : ℤ} → {a' b' c : ℤ} →
