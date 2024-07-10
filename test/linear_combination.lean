@@ -17,6 +17,10 @@ example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
 example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
   linear_combination h1
 
+example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
+  fail_if_success linear_combination h1 + 3 -- FIXME give a better error message for this syntax
+  linear_combination h1
+
 example (x y : ℤ) (h1 : x + 2 = -3) (_h2 : y = 10) : 2 * x + 4 = -6 := by
   linear_combination 2 * h1
 
@@ -140,7 +144,7 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
 
 example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
   linear_combination (norm := skip) 2 * h1
-  simp (config := {decide := true})
+  ring
 
 /-! ### Cases without any arguments provided -/
 
@@ -191,7 +195,7 @@ example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 :=
 --   and ℕ does not.
 example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
   fail_if_success linear_combination h1
-  linear_combination2 h1
+  convert congr($h1)
 
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
@@ -218,21 +222,64 @@ example (K : Type)
   linear_combination (exp := 6) 2 * y * z ^ 2 * h₂ / 7 + (x ^ 3  - y ^ 2 * z / 7) * h₁ -
     x * y * z * h₀ + y * z * h / 7
 
-/-! ### Cases with inequalities -/
+/-! ### Linear inequalities -/
 
--- set_option trace.debug true in
 example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by
   linear_combination (norm := skip) hx
   ring_nf
   norm_num1
 
 example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by
-  linear_combination (norm := skip) (h1 + h2)
+  linear_combination (norm := skip) h1 + h2
   ring_nf
   norm_num1
 
 example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : a + b < 3 := by
-  linear_combination (norm := skip) (h1 + h2)
+  linear_combination (norm := skip) h1 + h2
+  ring_nf
+  norm_num1
+
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 2) : a ≤ b := by
+  linear_combination (norm := skip) h1 + h2
+  ring_nf
+  norm_num1
+
+example (a : ℚ) (ha : 0 ≤ a) : 0 ≤ 2 * a := by
+  linear_combination (norm := skip) 2 * ha
+  ring_nf
+  norm_num1
+
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : (a + b) / 2 ≤ 1 := by
+  linear_combination (norm := skip) (h1 + h2) / 2
+  ring_nf
+  norm_num1
+
+example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by
+  linear_combination (norm := skip) hy + 2 * hx
+  ring_nf
+  norm_num1
+
+/-! ### Nonlinear inequalities -/
+
+example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by
+  linear_combination (norm := skip) a * hb.le -- FIXME should permit writing just `hb`, not `hb.le`
+  ring_nf
+  norm_num1
+
+example {u v x y A B : ℝ} (_h1 : 0 < A) (h2 : A ≤ 1) (h3 : 1 ≤ B) (h4 : x ≤ B)
+    (h5 : y ≤ B) (h6 : 0 ≤ u) (h7 : 0 ≤ v) (h8 : u < A) (h9 : v < A) :
+    u * y + v * x + u * v < 3 * A * B := by
+  linear_combination (norm := skip) v * h2 + v * h3 + v * h4 + u * h5 + (v + B) * h8 + 2 * B * h9
+  ring_nf
+  norm_num1
+
+example {t : ℚ} (ht : t ≥ 10) : t ^ 2 - 3 * t - 17 ≥ 5 := by
+  linear_combination (norm := skip) (t + 7) * ht
+  ring_nf
+  norm_num1
+
+example {n : ℤ} (hn : n ≥ 5) : n ^ 2 > 2 * n + 11 := by
+  linear_combination (norm := skip) (n + 3) * hn
   ring_nf
   norm_num1
 

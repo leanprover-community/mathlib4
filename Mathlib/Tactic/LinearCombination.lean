@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro
 -/
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Positivity
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # linear_combination Tactic
@@ -42,8 +44,8 @@ namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
 open Elab Meta Term
 
-theorem add_eq_const [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
-theorem add_const_eq [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
+/-! ### Addition -/
+
 theorem add_eq_eq [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
 
 theorem add_le_eq [Add α] [LE α] [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)]
@@ -55,24 +57,100 @@ theorem add_eq_le [Add α] [LE α] [CovariantClass α α (· + ·) (· ≤ ·)]
   p₁ ▸ add_le_add_left p₂ b₁
 
 theorem add_lt_eq [Add α] [LT α] [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
-    {a₁ b₁ a₂ b₂ : α} (p₁ : a₁ < b₁) (p₂ : a₂ = b₂) : a₁ + a₂ < b₁ + b₂ :=
+    (p₁ : (a₁:α) < b₁) (p₂ : a₂ = b₂) : a₁ + a₂ < b₁ + b₂ :=
   p₂ ▸ add_lt_add_right p₁ b₂
 
 theorem add_eq_lt [Add α] [LT α] [CovariantClass α α (· + ·) (· < ·)] {a₁ b₁ a₂ b₂ : α}
     (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
   p₁ ▸ add_lt_add_left p₂ b₁
 
-theorem sub_eq_const [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
-theorem sub_const_eq [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
+/-! ### Subtraction -/
+
 theorem sub_eq_eq [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
-theorem mul_eq_const [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
-theorem mul_const_eq [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
-theorem mul_eq_eq [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
-theorem div_eq_const [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
-theorem div_const_eq [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
-theorem div_eq_eq [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
+
+theorem sub_le_eq [AddGroup α] [LE α] [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)]
+    (p₁ : (a₁:α) ≤ b₁) (p₂ : a₂ = b₂) : a₁ - a₂ ≤ b₁ - b₂ :=
+  p₂ ▸ sub_le_sub_right p₁ b₂
+
+-- theorem sub_eq_le [AddGroup α] [LE α] [CovariantClass α α (· + ·) (· ≤ ·)]
+--     [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)]
+--     (p₁ : (a₁:α) = b₁) (p₂ : b₂ ≤ a₂) : a₁ - a₂ ≤ b₁ - b₂ :=
+--   p₁ ▸ sub_le_sub_left p₂ b₁
+
+-- theorem sub_lt_le [LinearOrderedAddCommGroup α]
+--     (p₁ : (a₁:α) < b₁) (p₂ : b₂ ≤ a₂) : a₁ - a₂ < b₁ - b₂ :=
+--   (sub_lt_sub_right p₁ a₂).trans_le (sub_le_sub_left p₂ _)
+
+-- theorem sub_le_lt [AddGroup α] [Preorder α]
+--     [CovariantClass α α (· + ·) (· < ·)]
+--     [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)]
+--     [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
+--     (p₁ : (a₁:α) ≤ b₁) (p₂ : b₂ < a₂) : a₁ - a₂ < b₁ - b₂ :=
+--   (sub_le_sub_right p₁ a₂).trans_lt (sub_lt_sub_left p₂ _)
+
+theorem sub_lt_eq [AddGroup α] [LT α] [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
+    (p₁ : (a₁:α) < b₁) (p₂ : a₂ = b₂) : a₁ - a₂ < b₁ - b₂ :=
+  p₂ ▸ sub_lt_sub_right p₁ b₂
+
+-- theorem sub_eq_lt [AddGroup α] [LT α] [CovariantClass α α (· + ·) (· < ·)]
+--     [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
+--     (p₁ : (a₁:α) = b₁) (p₂ : b₂ < a₂) : a₁ - a₂ < b₁ - b₂ :=
+--   p₁ ▸ sub_lt_sub_left p₂ b₁
+
+/-! ### Negation -/
+
 theorem neg_eq [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
-theorem inv_eq [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
+-- alias ⟨_, neg_le⟩ := neg_le_neg_iff
+-- alias ⟨_, neg_lt⟩ := neg_lt_neg_iff
+
+/-! ### Multiplication -/
+
+theorem mul_eq_const [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
+
+theorem mul_le_const [Mul α] [Zero α] [Preorder α] [MulPosMono α] (p : b ≤ c) (a : α)
+    (ha : 0 ≤ a := by positivity) : b * a ≤ c * a :=
+  mul_le_mul_of_nonneg_right p ha
+
+theorem mul_lt_const [Mul α] [Zero α] [Preorder α] [MulPosStrictMono α] (p : b < c) (a : α)
+    (ha : 0 < a := by positivity) : b * a < c * a :=
+  mul_lt_mul_of_pos_right p ha
+
+-- FIXME allow for this variant
+theorem mul_lt_const' [Mul α] [Zero α] [Preorder α] [MulPosMono α] (p : b < c) (a : α)
+    (ha : 0 ≤ a := by positivity) : b * a ≤ c * a :=
+  mul_le_mul_of_nonneg_right p.le ha
+
+theorem mul_const_eq [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
+
+theorem mul_const_le [Mul α] [Zero α] [Preorder α] [PosMulMono α] (p : b ≤ c) (a : α)
+    (ha : 0 ≤ a := by positivity) : a * b ≤ a * c :=
+  mul_le_mul_of_nonneg_left p ha
+
+theorem mul_const_lt [Mul α] [Zero α] [Preorder α] [PosMulStrictMono α] (p : b < c) (a : α)
+    (ha : 0 < a := by positivity) : a * b < a * c :=
+  mul_lt_mul_of_pos_left p ha
+
+-- FIXME allow for this variant
+theorem mul_const_lt' [Mul α] [Zero α] [Preorder α] [PosMulMono α] (p : b < c) (a : α)
+    (ha : 0 ≤ a := by positivity) : a * b ≤ a * c :=
+  mul_le_mul_of_nonneg_left p.le ha
+
+/-! ### Division -/
+
+theorem div_eq_const [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
+
+theorem div_le_const [LinearOrderedSemifield α] (p : b ≤ c) (a : α)
+    (ha : 0 ≤ a := by positivity) : b / a ≤ c / a :=
+  div_le_div_of_nonneg_right p ha
+
+theorem div_lt_const [LinearOrderedSemifield α] (p : b < c) (a : α)
+    (ha : 0 < a := by positivity) : b / a < c / a :=
+  div_lt_div_of_pos_right p ha
+
+-- FIXME allow for this variant
+theorem div_lt_const' [LinearOrderedSemifield α] (p : b < c) (a : α)
+    (ha : 0 ≤ a := by positivity) : b / a ≤ c / a :=
+  div_le_div_of_nonneg_right p.le ha
 
 inductive RelType
   | Eq
@@ -82,26 +160,15 @@ inductive RelType
 
 export RelType (Eq Le Lt)
 
-def _root_.Lean.Expr.relType (e : Expr) : MetaM (Option RelType) := do
-  let whnfEType ← withReducible do whnf e
-  if whnfEType.isEq then
-    pure <| some Eq
-  else if whnfEType.isLe then
-    pure <| some Le
-  else if whnfEType.isLt then
-    pure <| some Lt
+def _root_.Lean.Expr.relType (e : Expr) : Option RelType :=
+  if e.isEq then
+    some Eq
+  else if e.isLe then
+    some Le
+  else if e.isLt then
+    some Lt
   else
-    pure none
-
-def RelType.addRelConstData : RelType → RelType × Name
-  | Eq => (Eq, ``add_const_eq)
-  | Le => (Le, ``add_le_add_right)
-  | Lt => (Lt, ``add_lt_add_right)
-
-def RelType.addConstRelData : RelType → RelType × Name
-  | Eq => (Eq, ``add_eq_const)
-  | Le => (Le, ``add_le_add_left)
-  | Lt => (Lt, ``add_lt_add_left)
+    none
 
 def RelType.addRelRelData : RelType → RelType → RelType × Name
   | Eq, Eq => (Eq, ``add_eq_eq)
@@ -114,17 +181,25 @@ def RelType.addRelRelData : RelType → RelType → RelType × Name
   | Lt, Le => (Lt, ``add_lt_add_of_lt_of_le)
   | Lt, Lt => (Lt, ``add_lt_add)
 
-def mkRelConst (d : RelType × Name) (p₂ e₁ : Term) : TermElabM (Option (RelType × Term)) :=
-  let i := mkIdent d.2
-  Option.map (Prod.mk d.1) <$> ``($i $p₂ $e₁)
+def RelType.subRelEqData : RelType → RelType × Name
+  | Eq => (Eq, ``sub_eq_eq)
+  | Le => (Le, ``sub_le_eq)
+  | Lt => (Lt, ``sub_lt_eq)
 
-def mkConstRel (d : RelType × Name) (p₁ e₂ : Term) : TermElabM (Option (RelType × Term)) :=
-  let i := mkIdent d.2
-  Option.map (Prod.mk d.1) <$> ``($i $p₁ $e₂)
+def RelType.mulConstRelData : RelType → RelType × Name
+  | Eq => (Eq, ``mul_eq_const)
+  | Le => (Le, ``mul_le_const)
+  | Lt => (Lt, ``mul_lt_const)
 
-def mkRelRel (d : RelType × Name) (p₁ p₂ : Term) : TermElabM (Option (RelType × Term)) :=
-  let i := mkIdent d.2
-  Option.map (Prod.mk d.1) <$> ``($i $p₁ $p₂)
+def RelType.mulRelConstData : RelType → RelType × Name
+  | Eq => (Eq, ``mul_const_eq)
+  | Le => (Le, ``mul_const_le)
+  | Lt => (Lt, ``mul_const_lt)
+
+def RelType.divRelConstData : RelType → RelType × Name
+  | Eq => (Eq, ``div_eq_const)
+  | Le => (Le, ``div_le_const)
+  | Lt => (Lt, ``div_lt_const)
 
 /--
 Performs macro expansion of a linear combination expression,
@@ -140,56 +215,59 @@ partial def expandLinearCombo : Term → TermElabM (Option (RelType × Term))
   | `($e₁ + $e₂) => do
       match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
       | none, none => pure none
-      | none, some (rel₂, p₂) => mkRelConst rel₂.addRelConstData p₂ e₁
-      | some (rel₁, p₁), none => mkConstRel rel₁.addConstRelData p₁ e₂
-      | some (rel₁, p₁), some (rel₂, p₂) => mkRelRel (rel₁.addRelRelData rel₂) p₁ p₂
+      | some (rel₁, p₁), some (rel₂, p₂) =>
+        let (rel, n) := rel₁.addRelRelData rel₂
+        let i := mkIdent n
+        Option.map (Prod.mk rel) <$> ``($i $p₁ $p₂)
+      | _, _ => failure
   | `($e₁ - $e₂) => do
-      Option.map (Prod.mk Eq) <$>
       match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
       | none, none => pure none
-      | some (Eq, p₁), none => ``(sub_eq_const $p₁ $e₂)
-      | none, some (Eq, p₂) => ``(sub_const_eq $p₂ $e₁)
-      | some (Eq, p₁), some (Eq, p₂) => ``(sub_eq_eq $p₁ $p₂)
-      | _, _ => pure none
+      | some (rel₁, p₁), some (Eq, p₂) =>
+        let (rel, n) := rel₁.subRelEqData
+        let i := mkIdent n
+        Option.map (Prod.mk rel) <$> ``($i $p₁ $p₂)
+      | _, _ => failure
   | `($e₁ * $e₂) => do
-      Option.map (Prod.mk Eq) <$>
       match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
       | none, none => pure none
-      | some (Eq, p₁), none => ``(mul_eq_const $p₁ $e₂)
-      | none, some (Eq, p₂) => ``(mul_const_eq $p₂ $e₁)
-      | some (Eq, p₁), some (Eq, p₂) => ``(mul_eq_eq $p₁ $p₂)
-      | _, _ => pure none
+      | some (rel₁, p₁), none =>
+        let (rel, n) := rel₁.mulRelConstData
+        let i := mkIdent n
+        Option.map (Prod.mk rel) <$> ``($i $p₁ $e₂)
+      | none, some (rel₂, p₂) =>
+        let (rel, n) := rel₂.mulConstRelData
+        let i := mkIdent n
+        Option.map (Prod.mk rel) <$> ``($i $p₂ $e₁)
+      | _, _ => failure
   | `($e₁ / $e₂) => do
-      Option.map (Prod.mk Eq) <$>
       match ← expandLinearCombo e₁, ← expandLinearCombo e₂ with
       | none, none => pure none
-      | some (Eq, p₁), none => ``(div_eq_const $p₁ $e₂)
-      | none, some (Eq, p₂) => ``(div_const_eq $p₂ $e₁)
-      | some (Eq, p₁), some (Eq, p₂) => ``(div_eq_eq $p₁ $p₂)
-      | _, _ => pure none
+      | some (rel₁, p₁), none =>
+        let (rel, n) := rel₁.divRelConstData
+        let i := mkIdent n
+        Option.map (Prod.mk rel) <$> ``($i $p₁ $e₂)
+      | _, _ => failure
   | `(-$e) => do
-      Option.map (Prod.mk Eq) <$>
       match ← expandLinearCombo e with
       | none => pure none
-      | some (Eq, p) => ``(neg_eq $p)
-      | _ => pure none
+      | some (Eq, p) => Option.map (Prod.mk Eq) <$> ``(neg_eq $p)
+      | _ => failure
   | `($e⁻¹) => do
       Option.map (Prod.mk Eq) <$>
       match ← expandLinearCombo e with
       | none => pure none
-      | some (Eq, p) => ``(inv_eq $p)
-      | _ => pure none
-  | `(← $e) => do
-      Option.map (Prod.mk Eq) <$>
-      match ← expandLinearCombo e with
-      | some (Eq, p) => ``(Eq.symm $p)
-      | _ => pure none
+      | _ => failure
   | e => do
       trace[debug] "leaf case"
       let e ← elabTerm e none
       trace[debug] "{e}"
       let eType ← inferType e
-      let relType ← eType.relType
+      trace[debug] "type is {eType}"
+      let whnfEType ← withReducible do whnf eType
+      trace[debug] "whnf of above is {whnfEType}"
+      let relType := whnfEType.relType
+      trace[debug] "the relation is {reprStr relType}"
       let s ← e.toSyntax
       pure <| relType.map (fun r ↦ (r, s))
 
@@ -236,57 +314,56 @@ theorem lt_of_lt [LinearOrderedAddCommGroup α] (p : (a:α) < b) (H : (a' - b') 
   rw [← sub_neg] at p ⊢
   exact lt_of_le_of_lt H p
 
+def RelType.relImpRelData : RelType → RelType → Option Name
+  | Eq, Eq => ``eq_of_eq
+  | Eq, Le => ``le_of_eq
+  | Eq, Lt => ``lt_of_eq
+  | Le, Eq => none
+  | Le, Le => ``le_of_le
+  | Le, Lt => ``lt_of_le
+  | Lt, Eq => none
+  | Lt, Le => ``le_of_lt
+  | Lt, Lt => ``lt_of_lt
+
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
-/-- Implementation of `linear_combination` and `linear_combination2`. -/
+/-- Implementation of `linear_combination`. -/
 def elabLinearCombination
-    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term)
-    (twoGoals := false) : Tactic.TacticM Unit := Tactic.withMainContext do
-  let (rel, p) ← match input with
+    (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
+    Tactic.TacticM Unit := Tactic.withMainContext do
+  let (hypRel, p) ← match input with
   | none => (Prod.mk Eq) <$> `(Eq.refl 0)
   | some e => withSynthesize do
     match (← expandLinearComboClean e) with
     | none => (Prod.mk Eq) <$> `(Eq.refl $e)
     | some p => pure p
   trace[debug] "input is {input}"
-  trace[debug] "built-up expression has the relation {reprStr rel}"
+  trace[debug] "built-up expression has the relation {reprStr hypRel}"
   trace[debug] "built-up expression is the proof {p}"
-  trace[debug] "two goals? {twoGoals}"
   trace[debug] "exponent {exp?}"
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
   let e ← Lean.Elab.Tactic.getMainTarget
-  let goalRel : Option RelType ← e.relType
+  let whnfEType ← withReducible do whnf e
+  let goalRel : Option RelType := whnfEType.relType
   Tactic.evalTactic <| ← withFreshMacroScope <|
-  if twoGoals then
-    `(tactic| (
-      refine eq_trans₃ $p ?a ?b
-      case' a => $norm:tactic
-      case' b => $norm:tactic))
-  else
-    match goalRel with
-    | none => `(tactic | fail "goal must be =, ≤ or <")
-    | some goalRel =>
-    let easy :=
-      match rel, goalRel with
-      | Eq, Eq => `(tactic| (refine eq_of_eq $p ?a; case' a => $norm:tactic))
-      | _, Eq => `(tactic| fail "cannot prove an equality from inequality hypotheses")
-      | Eq, Le => `(tactic| (apply le_of_eq $p ?a; case' a => $norm:tactic))
-      | Le, Le => `(tactic| (apply le_of_le $p ?a; case' a => $norm:tactic))
-      | Lt, Le => `(tactic| (apply le_of_lt $p ?a; case' a => $norm:tactic))
-      | Eq, Lt => `(tactic| (refine lt_of_eq $p ?a; case' a => $norm:tactic))
-      | Le, Lt => `(tactic| (refine lt_of_le $p ?a; case' a => $norm:tactic))
-      | Lt, Lt => `(tactic| (refine lt_of_lt $p ?a; case' a => $norm:tactic))
-    match exp? with
-    | some n =>
-      if n.getNat = 1 then
-        easy
-      else
-        match rel with
-        | Eq => `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
-        | _ => `(tactic | fail "linear combination tactic not implemented for exponentiation of inequality goals")
-    | _ => easy
+  match goalRel with
+  | none => `(tactic | fail "goal must be =, ≤ or <")
+  | some goalRel =>
+  let exp1 :=
+    match hypRel.relImpRelData goalRel with
+    | none => `(tactic| fail "cannot prove an equality from inequality hypotheses")
+    | some n => let i := mkIdent n; `(tactic| (refine $i $p ?a; case' a => $norm:tactic))
+  match exp? with
+  | some n =>
+    if n.getNat = 1 then
+      exp1
+    else
+      match hypRel with
+      | Eq => `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
+      | _ => `(tactic | fail "linear combination tactic not implemented for exponentiation of inequality goals")
+  | _ => exp1
 
 /--
 The `(norm := $tac)` syntax says to use `tac` as a normalization postprocessor for
@@ -377,8 +454,3 @@ syntax (name := linearCombination) "linear_combination"
 elab_rules : tactic
   | `(tactic| linear_combination $[(norm := $tac)]? $[(exp := $n)]? $(e)?) =>
     elabLinearCombination tac n e
-
-@[inherit_doc linearCombination]
-syntax "linear_combination2" (normStx)? (ppSpace colGt term)? : tactic
-elab_rules : tactic
-  | `(tactic| linear_combination2 $[(norm := $tac)]? $(e)?) => elabLinearCombination tac none e true
