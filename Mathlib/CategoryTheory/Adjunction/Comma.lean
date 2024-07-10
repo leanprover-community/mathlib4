@@ -99,7 +99,7 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     let B' : CostructuredArrow G A :=
       CostructuredArrow.mk (G.map g ≫ (⊤_ CostructuredArrow G A).hom)
     let g' : B' ⟶ ⊤_ CostructuredArrow G A := CostructuredArrow.homMk g rfl
-    have:terminal.from _ = g' := by aesop_cat
+    have : terminal.from _ = g' := by aesop_cat
     change CommaMorphism.left (terminal.from B') = _
     rw [this]
     rfl

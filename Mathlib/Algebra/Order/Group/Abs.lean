@@ -43,10 +43,10 @@ variable [Group α] {a b : α}
 #align abs_eq_sup_neg abs
 
 @[inherit_doc mabs]
-macro:max atomic("|" noWs) a:term noWs "|ₘ":term => `(mabs $a)
+macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
 
 @[inherit_doc abs]
-macro:max atomic("|" noWs) a:term noWs "|":term => `(abs $a)
+macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
 Tries to add discretionary parentheses in unparseable cases. -/

@@ -627,7 +627,7 @@ variable [SMulCommClass S A B]
 
 unsuppress_compilation in
 -- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
-local macro "finsupp_map":term =>
+local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
     (Finsupp.lmapDomain A A (algebraMap A B)))
 
