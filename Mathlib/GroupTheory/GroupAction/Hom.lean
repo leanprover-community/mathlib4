@@ -161,10 +161,6 @@ theorem ext {f g : X →ₑ[φ] Y} :
     (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
-
-theorem ext_iff  {f g : X →ₑ[φ] Y} :
-    f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align mul_action_hom.ext_iff MulActionHom.ext_iff
 
 protected theorem congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
@@ -298,7 +294,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y } {g : Y → X}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁)
       = MulActionHom.id M := by
-  rw [ext_iff]
+  rw [MulActionHom.ext_iff]
   intro x
   simp only [comp_apply, inverse_apply, id_apply]
   exact h₁ x
@@ -307,7 +303,7 @@ theorem inverse'_comp {f : X →ₑ[φ] Y } {g : Y → X}
     {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
-  rw [ext_iff]
+  rw [MulActionHom.ext_iff]
   intro x
   simp only [comp_apply, inverse_apply, id_apply]
   exact h₂ x
@@ -460,9 +456,6 @@ theorem coe_fn_coe' (f : A →ₑ+[φ] B) : ⇑(f : A →ₑ[φ] B) = f :=
 theorem ext {f g : A →ₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 #align distrib_mul_action_hom.ext DistribMulActionHom.ext
-
-theorem ext_iff {f g : A →ₑ+[φ] B} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align distrib_mul_action_hom.ext_iff DistribMulActionHom.ext_iff
 
 protected theorem congr_fun {f g : A →ₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
@@ -601,9 +594,6 @@ theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
 
 #align distrib_mul_action_hom.ext_ring DistribMulActionHom.ext_ring
-
-theorem ext_ring_iff {f g : R →ₑ+[σ] N'} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, ext_ring⟩
 #align distrib_mul_action_hom.ext_ring_iff DistribMulActionHom.ext_ring_iff
 
 end Semiring
@@ -744,9 +734,6 @@ theorem coe_fn_coe' (f : R →ₑ+*[φ] S) : ⇑(f : R →ₑ+[φ] S) = f :=
 theorem ext {f g : R →ₑ+*[φ] S} : (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 #align mul_semiring_action_hom.ext MulSemiringActionHom.ext
-
-theorem ext_iff {f g : R →ₑ+*[φ] S} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align mul_semiring_action_hom.ext_iff MulSemiringActionHom.ext_iff
 
 protected theorem map_zero (f : R →ₑ+*[φ] S) : f 0 = 0 :=

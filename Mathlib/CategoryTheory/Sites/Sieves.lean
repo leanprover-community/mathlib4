@@ -294,9 +294,6 @@ theorem arrows_ext : ∀ {R S : Sieve X}, R.arrows = S.arrows → R = S := by
 protected theorem ext {R S : Sieve X} (h : ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f) : R = S :=
   arrows_ext <| funext fun _ => funext fun f => propext <| h f
 #align category_theory.sieve.ext CategoryTheory.Sieve.ext
-
-protected theorem ext_iff {R S : Sieve X} : R = S ↔ ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, Sieve.ext⟩
 #align category_theory.sieve.ext_iff CategoryTheory.Sieve.ext_iff
 
 open Lattice

@@ -109,9 +109,6 @@ theorem coe_coe : (f.toMultilinearMap : (∀ i, M₁ i) → M₂) = f :=
 theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x) : f = f' :=
   DFunLike.ext _ _ H
 #align continuous_multilinear_map.ext ContinuousMultilinearMap.ext
-
-theorem ext_iff {f f' : ContinuousMultilinearMap R M₁ M₂} : f = f' ↔ ∀ x, f x = f' x := by
-  rw [← toMultilinearMap_injective.eq_iff, MultilinearMap.ext_iff]; rfl
 #align continuous_multilinear_map.ext_iff ContinuousMultilinearMap.ext_iff
 
 @[simp]

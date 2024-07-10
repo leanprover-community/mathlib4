@@ -200,7 +200,8 @@ variable {ι M}
 theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i f := rfl
 #align direct_sum.apply_eq_component DirectSum.apply_eq_component
 
-@[ext]
+-- Note(kmill): `@[ext]` cannot prove `ext_iff` because `R` is not determined by `f` or `g`.
+@[ext (iff := false)]
 theorem ext {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) : f = g :=
   DFinsupp.ext h
 #align direct_sum.ext DirectSum.ext

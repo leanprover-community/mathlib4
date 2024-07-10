@@ -143,7 +143,7 @@ variable {F G H}
 lemma comp_hom (f : F ⟶ G) (g : G ⟶ H) (a : A) : (f ≫ g).hom a = f.hom a ≫ g.hom a := rfl
 
 @[ext]
-lemma hom_ext (f g : F ⟶ G) (h : f.hom = g.hom) : f = g := Hom.ext f g h
+lemma hom_ext (f g : F ⟶ G) (h : f.hom = g.hom) : f = g := Hom.ext h
 
 /-- Construct an isomorphism in `SingleFunctors C D A` by giving
 level-wise isomorphisms and checking compatibility only in the forward direction. -/

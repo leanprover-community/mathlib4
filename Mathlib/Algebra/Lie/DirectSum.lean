@@ -186,7 +186,8 @@ def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
     map_lie' := fun {x y} => by simp [component, lapply] }
 #align direct_sum.lie_algebra_component DirectSum.lieAlgebraComponent
 
-@[ext]
+-- Note(kmill): `ext` cannot generate an iff theorem here since `x` and `y` do not determine `R`.
+@[ext (iff := false)]
 theorem lieAlgebra_ext {x y : ⨁ i, L i}
     (h : ∀ i, lieAlgebraComponent R ι L i x = lieAlgebraComponent R ι L i y) : x = y :=
   DFinsupp.ext h

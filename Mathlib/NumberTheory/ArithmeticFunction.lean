@@ -125,9 +125,6 @@ theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
 theorem ext ⦃f g : ArithmeticFunction R⦄ (h : ∀ x, f x = g x) : f = g :=
   ZeroHom.ext h
 #align nat.arithmetic_function.ext ArithmeticFunction.ext
-
-theorem ext_iff {f g : ArithmeticFunction R} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align nat.arithmetic_function.ext_iff ArithmeticFunction.ext_iff
 
 section One
@@ -1235,7 +1232,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
   let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, if_pos rfl⟩
   let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, if_pos rfl⟩
   trans (ζ : ArithmeticFunction ℤ) • f' = g'
-  · rw [ext_iff]
+  · rw [ArithmeticFunction.ext_iff]
     apply forall_congr'
     intro n
     cases n with
@@ -1250,7 +1247,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
   · constructor <;> intro h
     · rw [← h, ← mul_smul, moebius_mul_coe_zeta, one_smul]
     · rw [← h, ← mul_smul, coe_zeta_mul_moebius, one_smul]
-  · rw [ext_iff]
+  · rw [ArithmeticFunction.ext_iff]
     apply forall_congr'
     intro n
     cases n with

@@ -47,7 +47,7 @@ instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
         intro s hs
         obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).2
         exact ⟨⟨x⟩, fun i => ULift.ext _ _ (hx₁ i),
-          fun y hy => ULift.ext _ _ (hx₂ y.down fun i ↦ (ULift.ext_iff _ _).mp (hy i))⟩ } }
+          fun y hy => ULift.ext _ _ (hx₂ y.down fun i ↦ ULift.ext_iff.mp (hy i))⟩ } }
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small limits.

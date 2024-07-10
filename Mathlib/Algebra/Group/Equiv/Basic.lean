@@ -493,10 +493,6 @@ theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align mul_equiv.ext MulEquiv.ext
 #align add_equiv.ext AddEquiv.ext
-
-@[to_additive]
-theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align mul_equiv.ext_iff MulEquiv.ext_iff
 #align add_equiv.ext_iff AddEquiv.ext_iff
 

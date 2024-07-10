@@ -61,7 +61,7 @@ theorem toFun_eq_coe (f : E →ₗ.[R] F) (x : f.domain) : f.toFun x = f x :=
   rfl
 #align linear_pmap.to_fun_eq_coe LinearPMap.toFun_eq_coe
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {f g : E →ₗ.[R] F} (h : f.domain = g.domain)
     (h' : ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y) : f = g := by
   rcases f with ⟨f_dom, f⟩

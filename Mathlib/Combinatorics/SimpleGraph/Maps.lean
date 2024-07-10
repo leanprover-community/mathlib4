@@ -79,11 +79,11 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 #align simple_graph.map_monotone SimpleGraph.map_monotone
 
 @[simp] lemma map_id : G.map (Function.Embedding.refl _) = G :=
-  SimpleGraph.ext _ _ <| Relation.map_id_id _
+  SimpleGraph.ext <| Relation.map_id_id _
 #align simple_graph.map_id SimpleGraph.map_id
 
 @[simp] lemma map_map (f : V ↪ W) (g : W ↪ X) : (G.map f).map g = G.map (f.trans g) :=
-  SimpleGraph.ext _ _ <| Relation.map_map _ _ _ _ _
+  SimpleGraph.ext <| Relation.map_map _ _ _ _ _
 #align simple_graph.map_map SimpleGraph.map_map
 
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
@@ -100,7 +100,7 @@ protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
 @[simp] lemma comap_adj {G : SimpleGraph W} {f : V → W} :
     (G.comap f).Adj u v ↔ G.Adj (f u) (f v) := Iff.rfl
 
-@[simp] lemma comap_id {G : SimpleGraph V} : G.comap id = G := SimpleGraph.ext _ _ rfl
+@[simp] lemma comap_id {G : SimpleGraph V} : G.comap id = G := SimpleGraph.ext rfl
 #align simple_graph.comap_id SimpleGraph.comap_id
 
 @[simp] lemma comap_comap {G : SimpleGraph X} (f : V → W) (g : W → X) :

@@ -359,7 +359,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
   map_smul' r x := rfl
   invFun x := leftRegularHom A x
   left_inv f := by
-    refine Action.Hom.ext _ _ (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_)
+    refine Action.Hom.ext (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_)
     have :
       f.hom ((ofMulAction k G G).ρ x (Finsupp.single (1 : G) (1 : k))) =
         A.ρ x (f.hom (Finsupp.single (1 : G) (1 : k))) :=
@@ -443,7 +443,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
         dsimp
         erw [ρ_inv_self_apply]
         rfl}
-  left_inv f := Action.Hom.ext _ _ (TensorProduct.ext' fun _ _ => rfl)
+  left_inv f := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_equiv Rep.homEquiv
@@ -469,9 +469,9 @@ instance : MonoidalClosed (Rep k G) where
     { rightAdj := Rep.ihom A
       adj := Adjunction.mkOfHomEquiv (
       { homEquiv := Rep.homEquiv A
-        homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext _ _
+        homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext
           (TensorProduct.ext' fun _ _ => rfl)
-        homEquiv_naturality_right := fun _ _ => Action.Hom.ext _ _ (LinearMap.ext
+        homEquiv_naturality_right := fun _ _ => Action.Hom.ext (LinearMap.ext
           fun _ => LinearMap.ext fun _ => rfl) })}
 
 @[simp]

@@ -756,9 +756,6 @@ theorem toSet_subset_iff {x y : ZFSet} : x.toSet ⊆ y.toSet ↔ x ⊆ y := by
 theorem ext {x y : ZFSet.{u}} : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
   Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
 #align Set.ext ZFSet.ext
-
-theorem ext_iff {x y : ZFSet.{u}} : x = y ↔ ∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y :=
-  ⟨fun h => by simp [h], ext⟩
 #align Set.ext_iff ZFSet.ext_iff
 
 theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ext_iff.1 h
@@ -810,8 +807,7 @@ theorem nonempty_mk_iff {x : PSet} : (mk x).Nonempty ↔ x.Nonempty := by
 #align Set.nonempty_mk_iff ZFSet.nonempty_mk_iff
 
 theorem eq_empty (x : ZFSet.{u}) : x = ∅ ↔ ∀ y : ZFSet.{u}, y ∉ x := by
-  rw [ext_iff]
-  simp
+  simp [ZFSet.ext_iff]
 #align Set.eq_empty ZFSet.eq_empty
 
 theorem eq_empty_or_nonempty (u : ZFSet) : u = ∅ ∨ u.Nonempty := by
@@ -1269,7 +1265,7 @@ theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
 #align Set.mem_pair_sep ZFSet.mem_pairSep
 
 theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
-  have ae := ext_iff.1 H
+  have ae := ZFSet.ext_iff.1 H
   simp only [pair, mem_pair] at ae
   obtain rfl : x = x' := by
     cases' (ae {x}).1 (by simp) with h h
@@ -1281,11 +1277,11 @@ theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
     cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true_iff]) with xy'x xy'xx
     · rw [eq_comm, ← mem_singleton, ← xy'x, mem_pair]
       exact Or.inr rfl
-    · simpa [eq_comm] using (ext_iff.1 xy'xx y').1 (by simp)
+    · simpa [eq_comm] using (ZFSet.ext_iff.1 xy'xx y').1 (by simp)
   obtain xyx | xyy' := (ae {x, y}).1 (by simp)
-  · obtain rfl := mem_singleton.mp ((ext_iff.1 xyx y).1 <| by simp)
+  · obtain rfl := mem_singleton.mp ((ZFSet.ext_iff.1 xyx y).1 <| by simp)
     simp [he rfl]
-  · obtain rfl | yy' := mem_pair.mp ((ext_iff.1 xyy' y).1 <| by simp)
+  · obtain rfl | yy' := mem_pair.mp ((ZFSet.ext_iff.1 xyy' y).1 <| by simp)
     · simp [he rfl]
     · simp [yy']
 #align Set.pair_injective ZFSet.pair_injective
@@ -1425,9 +1421,6 @@ protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
 theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x z ↔ y z) → x = y :=
   Set.ext
 #align Class.ext Class.ext
-
-theorem ext_iff {x y : Class.{u}} : x = y ↔ ∀ z, x z ↔ y z :=
-  Set.ext_iff
 #align Class.ext_iff Class.ext_iff
 
 /-- Coerce a ZFC set into a class -/

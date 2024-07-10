@@ -171,9 +171,6 @@ variable (f : α →ₙ+* β) {x y : α}
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 #align non_unital_ring_hom.ext NonUnitalRingHom.ext
-
-theorem ext_iff {f g : α →ₙ+* β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align non_unital_ring_hom.ext_iff NonUnitalRingHom.ext_iff
 
 @[simp]
@@ -322,7 +319,7 @@ theorem coe_mul (f g : α →ₙ+* α) : ⇑(f * g) = f ∘ g :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →ₙ+* γ} {f : α →ₙ+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => ext <| hf.forall.2 (NonUnitalRingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align non_unital_ring_hom.cancel_right NonUnitalRingHom.cancel_right
 
 @[simp]
@@ -524,9 +521,6 @@ theorem coe_inj ⦃f g : α →+* β⦄ (h : (f : α → β) = g) : f = g :=
 theorem ext ⦃f g : α →+* β⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 #align ring_hom.ext RingHom.ext
-
-theorem ext_iff {f g : α →+* β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align ring_hom.ext_iff RingHom.ext_iff
 
 @[simp]
@@ -710,7 +704,7 @@ instance instMonoid : Monoid (α →+* α) where
 @[simp]
 theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => RingHom.ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => RingHom.ext <| hf.forall.2 (RingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align ring_hom.cancel_right RingHom.cancel_right
 
 @[simp]

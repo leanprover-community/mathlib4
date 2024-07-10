@@ -416,7 +416,7 @@ theorem symm_image_eq (h : e.IsImage s t) : e.symm '' (e.target ∩ t) = e.sourc
 #align local_equiv.is_image.symm_image_eq PartialEquiv.IsImage.symm_image_eq
 
 theorem iff_preimage_eq : e.IsImage s t ↔ e.source ∩ e ⁻¹' t = e.source ∩ s := by
-  simp only [IsImage, ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
+  simp only [IsImage, Set.ext_iff, mem_inter_iff, mem_preimage, and_congr_right_iff]
 #align local_equiv.is_image.iff_preimage_eq PartialEquiv.IsImage.iff_preimage_eq
 
 alias ⟨preimage_eq, of_preimage_eq⟩ := iff_preimage_eq
@@ -943,7 +943,7 @@ theorem refl_prod_refl :
 theorem prod_trans {η : Type*} {ε : Type*} (e : PartialEquiv α β) (f : PartialEquiv β γ)
     (e' : PartialEquiv δ η) (f' : PartialEquiv η ε) :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') := by
-  ext ⟨x, y⟩ <;> simp [ext_iff]; tauto
+  ext ⟨x, y⟩ <;> simp [Set.ext_iff]; tauto
 #align local_equiv.prod_trans PartialEquiv.prod_trans
 
 end Prod

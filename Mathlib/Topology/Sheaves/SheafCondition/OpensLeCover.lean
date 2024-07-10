@@ -168,7 +168,7 @@ def generateEquivalenceOpensLe :
     (by rintro ⟨⟨_, _⟩, _⟩; dsimp; congr)
     (by intros; refine Over.OverMorphism.ext ?_; aesop_cat)
   counitIso := eqToIso <| CategoryTheory.Functor.hext
-    (by intro; refine FullSubcategory.ext _ _ ?_; rfl) (by intros; rfl)
+    (by intro; refine FullSubcategory.ext ?_; rfl) (by intros; rfl)
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.generate_equivalence_opens_le TopCat.Presheaf.generateEquivalenceOpensLe
 

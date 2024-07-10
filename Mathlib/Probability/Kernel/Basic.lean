@@ -194,13 +194,11 @@ namespace kernel
 @[ext]
 theorem ext {η : kernel α β} (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h
 #align probability_theory.kernel.ext ProbabilityTheory.kernel.ext
-
-theorem ext_iff {η : kernel α β} : κ = η ↔ ∀ a, κ a = η a := DFunLike.ext_iff
 #align probability_theory.kernel.ext_iff ProbabilityTheory.kernel.ext_iff
 
 theorem ext_iff' {η : kernel α β} :
     κ = η ↔ ∀ a s, MeasurableSet s → κ a s = η a s := by
-  simp_rw [ext_iff, Measure.ext_iff]
+  simp_rw [kernel.ext_iff, Measure.ext_iff]
 #align probability_theory.kernel.ext_iff' ProbabilityTheory.kernel.ext_iff'
 
 theorem ext_fun {η : kernel α β} (h : ∀ a f, Measurable f → ∫⁻ b, f b ∂κ a = ∫⁻ b, f b ∂η a) :

@@ -345,9 +345,6 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 #align linear_map.congr_fun LinearMap.congr_fun
-
-theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align linear_map.ext_iff LinearMap.ext_iff
 
 @[simp]
@@ -500,9 +497,6 @@ theorem toAddMonoidHom_injective :
 theorem ext_ring {f g : R →ₛₗ[σ] M₃} (h : f 1 = g 1) : f = g :=
   ext fun x ↦ by rw [← mul_one x, ← smul_eq_mul, f.map_smulₛₗ, g.map_smulₛₗ, h]
 #align linear_map.ext_ring LinearMap.ext_ring
-
-theorem ext_ring_iff {σ : R →+* R} {f g : R →ₛₗ[σ] M} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h ↦ h ▸ rfl, ext_ring⟩
 #align linear_map.ext_ring_iff LinearMap.ext_ring_iff
 
 @[ext high]
@@ -583,7 +577,7 @@ variable {f g} {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁�
 /-- The linear map version of `Function.Surjective.injective_comp_right` -/
 lemma _root_.Function.Surjective.injective_linearMapComp_right (hg : Surjective g) :
     Injective fun f : M₂ →ₛₗ[σ₂₃] M₃ ↦ f.comp g :=
-  fun _ _ h ↦ ext <| hg.forall.2 (ext_iff.1 h)
+  fun _ _ h ↦ ext <| hg.forall.2 (LinearMap.ext_iff.1 h)
 
 @[simp]
 theorem cancel_right (hg : Surjective g) : f.comp g = f'.comp g ↔ f = f' :=

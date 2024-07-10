@@ -117,12 +117,11 @@ variable {R}
 theorem ext {φ ψ} (h : ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ) : φ = ψ :=
   funext h
 #align mv_power_series.ext MvPowerSeries.ext
+#align mv_power_series.ext_iff MvPowerSeries.ext_iff
 
 /-- Two multivariate formal power series are equal
- if and only if all their coefficients are equal. -/
-theorem ext_iff {φ ψ : MvPowerSeries σ R} : φ = ψ ↔ ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ :=
-  Function.funext_iff
-#align mv_power_series.ext_iff MvPowerSeries.ext_iff
+if and only if all their coefficients are equal. -/
+add_decl_doc MvPowerSeries.ext_iff
 
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     (monomial R n) = LinearMap.stdBasis R (fun _ ↦ R) n := by
@@ -249,7 +248,8 @@ theorem coeff_add_mul_monomial (a : R) :
 @[simp]
 theorem commute_monomial {a : R} {n} :
     Commute φ (monomial R n a) ↔ ∀ m, Commute (coeff R m φ) a := by
-  refine ext_iff.trans ⟨fun h m => ?_, fun h m => ?_⟩
+  rw [commute_iff_eq, MvPowerSeries.ext_iff]
+  refine ⟨fun h m => ?_, fun h m => ?_⟩
   · have := h (m + n)
     rwa [coeff_add_mul_monomial, add_comm, coeff_add_monomial_mul] at this
   · rw [coeff_mul_monomial, coeff_monomial_mul]
@@ -755,7 +755,7 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
       refine ⟨X default, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
       intro x
-      rw [ext_iff, not_forall]
+      simp_rw [MvPowerSeries.ext_iff, not_forall]
       refine ⟨Finsupp.single default 1, ?_⟩
       simp [algebraMap_apply, coeff_C]⟩⟩
 

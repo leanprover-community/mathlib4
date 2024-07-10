@@ -223,7 +223,7 @@ lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f
     ← tensorHom_id, ← tensorHom_id, ← MonoidalCategory.tensor_comp_assoc, id_comp,
     ι_tensorHom, ← MonoidalCategory.tensor_comp_assoc, comp_id]
 
-@[ext]
+@[ext (iff := false)]
 lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X₃) j ⟶ A)
     [H : HasGoodTensorTensor₂₃ X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (hi : i₁ + i₂ + i₃ = j),
@@ -233,7 +233,7 @@ lemma tensorObj₃_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ X�
   intro i₁ i₂ i₃ hi
   exact h i₁ i₂ i₃ hi
 
-@[ext]
+@[ext (iff := false)]
 lemma tensorObj₃'_ext {j : I} {A : C} (f g : tensorObj (tensorObj X₁ X₂) X₃ j ⟶ A)
     [H : HasGoodTensor₁₂Tensor X₁ X₂ X₃]
     (h : ∀ (i₁ i₂ i₃ : I) (h : i₁ + i₂ + i₃ = j),

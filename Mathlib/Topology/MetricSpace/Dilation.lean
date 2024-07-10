@@ -119,9 +119,6 @@ theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
 theorem ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align dilation.ext Dilation.ext
-
-theorem ext_iff {f g : α →ᵈ β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 #align dilation.ext_iff Dilation.ext_iff
 
 @[simp]
@@ -412,7 +409,7 @@ theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => Dilation.ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => Dilation.ext <| hf.forall.2 (Dilation.ext_iff.1 h), fun h => h ▸ rfl⟩
 #align dilation.cancel_right Dilation.cancel_right
 
 @[simp]

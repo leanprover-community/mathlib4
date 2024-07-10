@@ -73,7 +73,7 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
   intro v w hvw
   simp? at hvw says simp only [Subtype.mk.injEq] at hvw
-  exact Subtype.coe_injective ((HeightOneSpectrum.ext_iff (R := R) ↑v ↑w).mpr hvw)
+  exact Subtype.coe_injective (HeightOneSpectrum.ext hvw)
 #align ideal.finite_factors Ideal.finite_factors
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the
@@ -141,7 +141,7 @@ theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
   have hw_prime : Prime w.asIdeal := Ideal.prime_of_isPrime w.ne_bot w.isPrime
   have hvw := Prime.dvd_of_dvd_pow hv_prime hvw'
   rw [Prime.dvd_prime_iff_associated hv_prime hw_prime, associated_iff_eq] at hvw
-  exact (Finset.mem_erase.mp hw).1 (HeightOneSpectrum.ext w v (Eq.symm hvw))
+  exact (Finset.mem_erase.mp hw).1 (HeightOneSpectrum.ext hvw.symm)
 #align ideal.finprod_not_dvd Ideal.finprod_not_dvd
 
 end Ideal
