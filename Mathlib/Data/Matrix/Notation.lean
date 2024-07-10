@@ -90,12 +90,12 @@ Note that vector notation is provided elsewhere (by `Matrix.vecNotation`) as `![
 Under the hood, `!![a, b, c; d, e, f]` is syntax for `Matrix.of ![![a, b, c], ![d, e, f]]`.
 -/
 syntax (name := matrixNotation)
-  "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]":term
+  "!![" ppRealGroup(sepBy1(ppGroup(term,+,?), ";", "; ", allowTrailingSep)) "]" : term
 
 @[inherit_doc matrixNotation]
-syntax (name := matrixNotationRx0) "!![" ";"* "]":term
+syntax (name := matrixNotationRx0) "!![" ";"* "]" : term
 @[inherit_doc matrixNotation]
-syntax (name := matrixNotation0xC) "!![" ","+ "]":term
+syntax (name := matrixNotation0xC) "!![" ","+ "]" : term
 
 macro_rules
   | `(!![$[$[$rows],*];*]) => do

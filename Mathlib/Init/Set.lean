@@ -98,7 +98,7 @@ syntax "{" extBinder " | " term "}":term
 macro_rules
   | `({ $x:ident | $p }) => `(setOf fun $x:ident ↦ $p)
   | `({ $x:ident : $t | $p }) => `(setOf fun $x:ident : $t ↦ $p)
-  | `({ $x:ident $b : binderPred | $p }) =>
+  | `({ $x:ident $b:binderPred | $p }) =>
     `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)
 
 @[app_unexpander setOf]
@@ -116,7 +116,7 @@ If `f x y` is a single identifier, it must be parenthesized to avoid ambiguity w
 for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
 -/
 macro (priority := low) "{" t:term " | " bs:extBinders "}":term =>
-  `({x | ∃ᵉ $bs : extBinders, $t = x})
+  `({x | ∃ᵉ $bs:extBinders, $t = x})
 
 /--
 * `{ pat : X | p }` is notation for pattern matching in set-builder notation,

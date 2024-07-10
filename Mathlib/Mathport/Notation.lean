@@ -32,36 +32,36 @@ For example, the familiar exists is given by:
 which expands to the same expression as
 `∃ x y : Nat, x < y`
 -/
-syntax "expand_binders% " "(" ident " => " term ")" extBinders ", " term:term
+syntax "expand_binders% " "(" ident " => " term ")" extBinders ", " term : term
 
 macro_rules
-  | `(expand_binders% ($x => $term) $y : extBinder, $res) =>
-    `(expand_binders% ($x => $term) ($y : extBinder), $res)
+  | `(expand_binders% ($x => $term) $y:extBinder, $res) =>
+    `(expand_binders% ($x => $term) ($y:extBinder), $res)
   | `(expand_binders% ($_ => $_), $res) => pure res
 macro_rules
-  | `(expand_binders% ($x => $term) ($y:ident $[ : $ty]?) $binders*, $res) => do
+  | `(expand_binders% ($x => $term) ($y:ident $[: $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun $y:ident : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) (_%$ph $[ : $ty]?) $binders*, $res) => do
+  | `(expand_binders% ($x => $term) (_%$ph $[: $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun _%$ph : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) ($y:ident $pred : binderPred) $binders*, $res) =>
+  | `(expand_binders% ($x => $term) ($y:ident $pred:binderPred) $binders*, $res) =>
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
         $[$binders]*, $res)
 
 macro (name := expandFoldl) "expand_foldl% "
-  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]":term =>
+  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
   args.getElems.foldlM (init := init) fun res arg ↦ do
     term.replaceM fun e ↦
       return if e == x then some res else if e == y then some arg else none
 macro (name := expandFoldr) "expand_foldr% "
-  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]":term =>
+  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
   args.getElems.foldrM (init := init) fun arg res ↦ do
     term.replaceM fun e ↦
       return if e == x then some arg else if e == y then some res else none
@@ -457,7 +457,7 @@ for the notation.
 This command can be used in mathlib4 but it has an uncertain future and was created primarily
 for backward compatibility.
 -/
-elab (name := notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)? attrKind : Term.attrKind
+elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attrKind:Term.attrKind
     "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
     ppSpace items:(notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
@@ -487,24 +487,24 @@ elab (name := notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)? 
   let mut hasScoped := false
   for item in items do
     match item with
-    | `(notation3Item| $lit : str) =>
+    | `(notation3Item| $lit:str) =>
       -- Can't use `pushMacro` since it inserts an extra variable into the pattern for `str`, which
       -- breaks our delaborator
-      syntaxArgs := syntaxArgs.push (← `(stx| $lit : str))
+      syntaxArgs := syntaxArgs.push (← `(stx| $lit:str))
       pattArgs := pattArgs.push <| mkAtomFrom lit lit.1.isStrLit?.get!
-    | `(notation3Item| $_ : bindersItem) =>
+    | `(notation3Item| $_:bindersItem) =>
       if hasBindersItem then
         throwErrorAt item "Cannot have more than one `(...)` item."
       hasBindersItem := true
       -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
       -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
       -- but extBinders already has a space before it so we strip the trailing space of "∑ "
-      if let `(stx| $lit : str) := syntaxArgs.back then
-        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight) : str))
-      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders : extBinders))
-    | `(notation3Item| ($id:ident $sep : str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
+      if let `(stx| $lit:str) := syntaxArgs.back then
+        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
+      (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
+    | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
-        `(macroArg| $id:ident : sepBy(term $(prec?)?, $sep : str))
+        `(macroArg| $id:ident:sepBy(term $(prec?)?, $sep:str))
       -- N.B. `Syntax.getId` returns `.anonymous` for non-idents
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       let init' ← init.replaceM fun s => pure (boundValues.find? s.getId)
@@ -534,7 +534,7 @@ elab (name := notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)? 
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
-        `(expand_binders% ($scopedId => $scopedTerm') $$binders : extBinders,
+        `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
           $(⟨lit.1.mkAntiquotNode `term⟩):term)
       boundNames := boundNames.push lit.getId
     | `(notation3Item| $lit:ident $(prec?)?) =>

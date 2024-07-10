@@ -77,7 +77,7 @@ instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
 /-
 Porting note: the code below could replace the `notation3` command
 open Batteries.ExtendedBinder in
-syntax "⨆ " extBinder ", " term:51:term
+syntax "⨆ " extBinder ", " term:51 : term
 
 macro_rules
   | `(⨆ $x:ident, $p) => `(iSup fun $x:ident ↦ $p)
