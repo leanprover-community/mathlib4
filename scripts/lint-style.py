@@ -353,9 +353,9 @@ def missing_spaces_around_operators(lines, path):
                 if "Tactic" in str(path):
                     newlines.append((line_nr, line))
                     continue # for now
-                # errors += [(ERR_MISSING_SPACE, line_nr, path)]
+                errors += [(ERR_MISSING_SPACE, line_nr, path)]
                 # This replacement is approximate (e.g. doesn't handle purposeful double spaces).
-                # before_comment = before_comment.replace(":", " : ").replace("  ", " ").rstrip()
+                before_comment = before_comment.replace(":", " : ").replace("  ", " ").rstrip()
         newlines.append((line_nr, f'{line[:num_spaces]}{before_comment}{spaces}{comment}\n'))
     return errors, newlines
 
