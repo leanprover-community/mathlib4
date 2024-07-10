@@ -331,8 +331,10 @@ section frequently_bounded
 
 variable {F : Filter R} [LinearOrder R] [LinearOrder S]
 
+/-- For nontrivial filters in linear orders, coboundedness for `≤` implies frequently boundedness
+from below. -/
 lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
-    ∃ l, ∃ᶠ r in F, l ≤ r := by
+    ∃ l, ∃ᶠ x in F, l ≤ x := by
   obtain ⟨t, ht⟩ := cobdd
   by_cases tbot : IsBot t
   · refine ⟨t, frequently_of_forall fun r ↦ tbot r⟩
@@ -340,35 +342,38 @@ lemma IsCobounded.frequently_ge [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
     by_contra!
     exact tbot this
   refine ⟨t', ?_⟩
-  intro foo
-  specialize ht t' (by filter_upwards [foo] with _ h using (not_le.mp h).le)
+  intro ev
+  specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
   apply lt_irrefl t' <| lt_of_lt_of_le ht' ht
 
+/-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequently boundedness
+from above. -/
 lemma IsCobounded.frequently_le [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
-    ∃ l, ∃ᶠ r in F, r ≤ l :=
+    ∃ u, ∃ᶠ x in F, x ≤ u :=
   IsCobounded.frequently_ge (R := Rᵒᵈ) cobdd
 
-lemma isCobounded_le_of_frequently_ge (freq_ge : ∃ l, ∃ᶠ r in F, l ≤ r) :
+/-- In linear orders, frequently boundedness from below implies coboundedness for `≤`. -/
+lemma isCobounded_le_of_frequently_ge {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
     IsCobounded (· ≤ ·) F := by
-  obtain ⟨l, hl⟩ := freq_ge
   by_cases lbot : IsBot l
-  · refine ⟨l, fun r _ ↦ lbot r⟩
+  · refine ⟨l, fun x _ ↦ lbot x⟩
   obtain ⟨l', hl'⟩ : ∃ l', l' < l := by
     by_contra!
     exact lbot this
   refine ⟨l', ?_⟩
   intro u hu
-  have key : ∃ᶠ r in F, l ≤ r ∧ r ≤ u := Frequently.and_eventually hl hu
+  have key : ∃ᶠ x in F, l ≤ x ∧ x ≤ u := Frequently.and_eventually freq_ge hu
   obtain ⟨w, l_le_w, w_le_u⟩ := key.exists
   exact hl'.le.trans <| l_le_w.trans w_le_u
 
-lemma isCobounded_ge_of_frequently_le (freq_le : ∃ l, ∃ᶠ r in F, r ≤ l) :
+/-- In linear orders, frequently boundedness from above implies coboundedness for `≤`. -/
+lemma isCobounded_ge_of_frequently_le {u : R} (freq_le : ∃ᶠ r in F, r ≤ u) :
     IsCobounded (· ≥ ·) F :=
   isCobounded_le_of_frequently_ge (R := Rᵒᵈ) freq_le
 
 lemma Monotone.frequently_ge_map_of_frequently_ge {f : R → S} (f_incr : Monotone f)
-    (freq_ge : ∃ l, ∃ᶠ r in F, l ≤ r) :
-    ∃ l', ∃ᶠ r' in F.map f, l' ≤ r' := by
+    (freq_ge : ∃ l, ∃ᶠ x in F, l ≤ x) :
+    ∃ l', ∃ᶠ x' in F.map f, l' ≤ x' := by
   obtain ⟨l, hl⟩ := freq_ge
   refine ⟨f l, fun ev ↦ hl ?_⟩
   simp only [not_le, not_lt] at ev hl ⊢
@@ -377,8 +382,8 @@ lemma Monotone.frequently_ge_map_of_frequently_ge {f : R → S} (f_incr : Monoto
   exact lt_irrefl (f l) <| lt_of_le_of_lt (f_incr <| not_lt.mp con) hz
 
 lemma Monotone.frequently_le_map_of_frequently_le {f : R → S} (f_incr : Monotone f)
-    (freq_le : ∃ l, ∃ᶠ r in F, r ≤ l) :
-    ∃ l', ∃ᶠ r' in F.map f, r' ≤ l' := by
+    (freq_le : ∃ u, ∃ᶠ x in F, x ≤ u) :
+    ∃ u', ∃ᶠ x' in F.map f, x' ≤ u' := by
   obtain ⟨l, hl⟩ := freq_le
   refine ⟨f l, fun ev ↦ hl ?_⟩
   simp only [not_le, not_lt] at ev hl ⊢
@@ -387,20 +392,20 @@ lemma Monotone.frequently_le_map_of_frequently_le {f : R → S} (f_incr : Monoto
   apply lt_irrefl (f l) <| lt_of_lt_of_le hz <| f_incr (not_lt.mp con)
 
 lemma Antitone.frequently_le_map_of_frequently_ge {f : R → S} (f_decr : Antitone f)
-    (frbdd : ∃ l, ∃ᶠ r in F, l ≤ r) :
-    ∃ l', ∃ᶠ r' in F.map f, r' ≤ l' :=
+    (frbdd : ∃ l, ∃ᶠ x in F, l ≤ x) :
+    ∃ u, ∃ᶠ y in F.map f, y ≤ u :=
   Monotone.frequently_ge_map_of_frequently_ge (S := Sᵒᵈ) f_decr frbdd
 
 lemma Antitone.frequently_ge_map_of_frequently_le {f : R → S} (f_decr : Antitone f)
-    (frbdd : ∃ l, ∃ᶠ r in F, r ≤ l) :
-    ∃ l', ∃ᶠ r' in F.map f, l' ≤ r' :=
+    (frbdd : ∃ u, ∃ᶠ x in F, x ≤ u) :
+    ∃ l, ∃ᶠ y in F.map f, l ≤ y :=
   Monotone.frequently_le_map_of_frequently_le (S := Sᵒᵈ) f_decr frbdd
 
 lemma Monotone.isCoboundedUnder_le_of_isCobounded {f : R → S} (f_incr : Monotone f)
     [NeBot F] (cobdd : IsCobounded (· ≤ ·) F) :
     F.IsCoboundedUnder (· ≤ ·) f := by
-  apply isCobounded_le_of_frequently_ge
-  exact Monotone.frequently_ge_map_of_frequently_ge f_incr (IsCobounded.frequently_ge cobdd)
+  obtain ⟨s, hs⟩ := f_incr.frequently_ge_map_of_frequently_ge (IsCobounded.frequently_ge cobdd)
+  exact isCobounded_le_of_frequently_ge hs
 
 lemma Monotone.isCoboundedUnder_ge_of_isCobounded {f : R → S} (f_incr : Monotone f)
     [NeBot F] (cobdd : IsCobounded (· ≥ ·) F) :
