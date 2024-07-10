@@ -502,16 +502,16 @@ theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n �
   have H := (orthogonalFamily_eigenspaces (hT a) ha)
   simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H
   apply H
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T n _) (f _)).mp Ef.2 _
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T n _) (g _)).mp Eg.2 _
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
 
 /-- The Hilbert space on which a finite commuting family of symmetric linear operators acts
 decomposes as an internal direct sum of simultaneous eigenspaces for these operators. -/
 theorem direct_sum_isInternal_simultaneous : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
     ⨅ (j : n), (eigenspace (T j) (α j))) := by
     rw [OrthogonalFamily.isInternal_iff]
-    · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT
-    · exact orthogonalFamily_iInf_eigenspaces hT
+    · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
+    · exact orthogonalFamily_iInf_eigenspaces T hT
 
 end Simultaneous
 
