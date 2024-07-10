@@ -220,6 +220,21 @@ noncomputable def isLimit (h : IsPullback fst snd f g) : IsLimit h.cone :=
   h.isLimit'.some
 #align category_theory.is_pullback.is_limit CategoryTheory.IsPullback.isLimit
 
+/- Basic API for the universal property -/
+noncomputable def lift (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : W ⟶ P :=
+  PullbackCone.IsLimit.lift hP.isLimit h k w
+
+@[reassoc (attr := simp)]
+lemma lift_fst (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : hP.lift h k w ≫ fst = h :=
+  PullbackCone.IsLimit.lift_fst hP.isLimit h k w
+
+@[reassoc (attr := simp)]
+lemma lift_snd (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
+    (w : h ≫ f = k ≫ g) : hP.lift h k w ≫ snd = k :=
+  PullbackCone.IsLimit.lift_snd hP.isLimit h k w
+
 /-- If `c` is a limiting pullback cone, then we have an `IsPullback c.fst c.snd f g`. -/
 theorem of_isLimit {c : PullbackCone f g} (h : Limits.IsLimit c) : IsPullback c.fst c.snd f g :=
   { w := c.condition
@@ -569,6 +584,24 @@ theorem of_right {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₁ 
     (t : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) : IsPullback h₁₁ v₁₁ v₁₂ h₂₁ :=
   (of_bot s.flip p.symm t.flip).flip
 #align category_theory.is_pullback.of_right CategoryTheory.IsPullback.of_right
+
+/-- Variant of `IsPullback.of_right` where `h₁₁` is induced from the universal property of the
+right square.
+
+The objects fit in the following diagram:
+```
+X₁₁ - h₁₁ -> X₁₂ - h₁₂ -> X₁₃
+|            |            |
+v₁₁          v₁₂          v₁₃
+↓            ↓            ↓
+X₂₁ - h₂₁ -> X₂₂ - h₂₂ -> X₂₃
+```
+-/
+theorem of_right' {X₁₁ X₁₂ X₁₃ X₂₁ X₂₂ X₂₃ : C} {h₁₂ : X₁₂ ⟶ X₁₃} {h₂₁ : X₂₁ ⟶ X₂₂} {h₂₂ : X₂₂ ⟶ X₂₃}
+  {h₁₃ : X₁₁ ⟶ X₁₃} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₁₃ : X₁₃ ⟶ X₂₃}
+  (s : IsPullback h₁₃ v₁₁ v₁₃ (h₂₁ ≫ h₂₂)) (t : IsPullback h₁₂ v₁₂ v₁₃ h₂₂) :
+    IsPullback (t.lift h₁₃ (v₁₁ ≫ h₂₁) (by rw [s.w, Category.assoc])) v₁₁ v₁₂ h₂₁ := by
+  apply of_right ((t.lift_fst _ _ _) ▸ s) (t.lift_snd _ _ _) t
 
 theorem paste_vert_iff {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : X₁₁ ⟶ X₁₂} {h₂₁ : X₂₁ ⟶ X₂₂}
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
