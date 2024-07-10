@@ -495,11 +495,11 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     sorry
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
-    (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))
-    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T n j) (γ j))).subtypeₗᵢ) := by
+    (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
+    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
   intro f g hfg Ef Eg
   obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
-  have H := (orthogonalFamily_eigenspaces ((hT n) a) ha)
+  have H := (orthogonalFamily_eigenspaces (hT a) ha)
   simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H
   apply H
   · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T n _) (f _)).mp Ef.2 _
@@ -508,7 +508,7 @@ theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n �
 /-- The Hilbert space on which a finite commuting family of symmetric linear operators acts
 decomposes as an internal direct sum of simultaneous eigenspaces for these operators. -/
 theorem direct_sum_isInternal_simultaneous : DirectSum.IsInternal (fun (α : n → 𝕜) ↦
-    ⨅ (j : n), (eigenspace (T n j) (α j))) := by
+    ⨅ (j : n), (eigenspace (T j) (α j))) := by
     rw [OrthogonalFamily.isInternal_iff]
     · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT
     · exact orthogonalFamily_iInf_eigenspaces hT
