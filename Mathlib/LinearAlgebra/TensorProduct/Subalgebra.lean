@@ -44,40 +44,37 @@ variable [CommSemiring R] [Semiring S] [Algebra R S]
 
 variable (A : Subalgebra R S)
 
-variable {A} in
-private lemma lTensorOne_tmul' {x : (⊥ : Subalgebra R S)} {x' : R} (h : algebraMap R S x' = x.1)
-    (a : A) : (toSubmodule A).lTensorOne (x ⊗ₜ[R] a) = x' • a := by
-  convert (toSubmodule A).lTensorOne_tmul x' a
-  rw [h]
-
 /-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `i(R) ⊗[R] A` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `Algebra.TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def lTensorBot : (⊥ : Subalgebra R S) ⊗[R] A ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).lTensorOne ?_ ?_
   · rintro x y a b
-    obtain ⟨x', hx⟩ := Submodule.mem_one.1 x.2
-    obtain ⟨y', hy⟩ := Submodule.mem_one.1 y.2
-    have hxy : algebraMap R S (x' * y') = (x * y).1 := by simp [hx, hy]
-    erw [lTensorOne_tmul' hx a, lTensorOne_tmul' hy b, lTensorOne_tmul' hxy (a * b)]
+    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.2
+    replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
+    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
+    replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
+    rw [← hx, ← hy, ← map_mul]
+    erw [(toSubmodule A).lTensorOne_tmul x' a,
+      (toSubmodule A).lTensorOne_tmul y' b,
+      (toSubmodule A).lTensorOne_tmul (x' * y') (a * b)]
     rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
-  · have h : algebraMap R S 1 = (1 : (⊥ : Subalgebra R S)).1 := by rw [map_one]; rfl
-    erw [lTensorOne_tmul' h 1]
-    rw [one_smul]
+  · exact Submodule.lTensorOne_one_tmul _
+
+variable {A}
 
 @[simp]
-theorem lTensorBot_tmul (x : R) (a : A) :
-    A.lTensorBot (⟨algebraMap R S x, algebraMap_mem ⊥ x⟩ ⊗ₜ[R] a) = x • a :=
+theorem lTensorBot_tmul (x : R) (a : A) : A.lTensorBot (algebraMap R _ x ⊗ₜ[R] a) = x • a :=
   (toSubmodule A).lTensorOne_tmul x a
+
+@[simp]
+theorem lTensorBot_one_tmul (a : A) : A.lTensorBot (1 ⊗ₜ[R] a) = a :=
+  (toSubmodule A).lTensorOne_one_tmul a
 
 @[simp]
 theorem lTensorBot_symm_apply (a : A) : A.lTensorBot.symm a = 1 ⊗ₜ[R] a := rfl
 
-variable {A} in
-private lemma rTensorOne_tmul' {x : (⊥ : Subalgebra R S)} {x' : R} (h : algebraMap R S x' = x.1)
-    (a : A) : (toSubmodule A).rTensorOne (a ⊗ₜ[R] x) = x' • a := by
-  convert (toSubmodule A).rTensorOne_tmul x' a
-  rw [h]
+variable (A)
 
 /-- If `A` is a subalgebra of `S/R`, there is the natural `R`-algebra isomorphism between
 `A ⊗[R] i(R)` and `A` induced by multiplication in `S`, here `i : R → S` is the structure map.
@@ -85,22 +82,31 @@ This generalizes `Algebra.TensorProduct.rid` as `i(R)` is not necessarily isomor
 def rTensorBot : A ⊗[R] (⊥ : Subalgebra R S) ≃ₐ[R] A := by
   refine Algebra.TensorProduct.algEquivOfLinearEquivTensorProduct (toSubmodule A).rTensorOne ?_ ?_
   · rintro a b x y
-    obtain ⟨x', hx⟩ := Submodule.mem_one.1 x.2
-    obtain ⟨y', hy⟩ := Submodule.mem_one.1 y.2
-    have hxy : algebraMap R S (x' * y') = (x * y).1 := by simp [hx, hy]
-    erw [rTensorOne_tmul' hx a, rTensorOne_tmul' hy b, rTensorOne_tmul' hxy (a * b)]
+    obtain ⟨x', hx⟩ := Algebra.mem_bot.1 x.2
+    replace hx : algebraMap R _ x' = x := Subtype.val_injective hx
+    obtain ⟨y', hy⟩ := Algebra.mem_bot.1 y.2
+    replace hy : algebraMap R _ y' = y := Subtype.val_injective hy
+    rw [← hx, ← hy, ← map_mul]
+    erw [(toSubmodule A).rTensorOne_tmul x' a,
+      (toSubmodule A).rTensorOne_tmul y' b,
+      (toSubmodule A).rTensorOne_tmul (x' * y') (a * b)]
     rw [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_smul, mul_comm x' y']
-  · have h : algebraMap R S 1 = (1 : (⊥ : Subalgebra R S)).1 := by rw [map_one]; rfl
-    erw [rTensorOne_tmul' h 1]
-    rw [one_smul]
+  · exact Submodule.rTensorOne_tmul_one _
+
+variable {A}
 
 @[simp]
-theorem rTensorBot_tmul (x : R) (a : A) :
-    A.rTensorBot (a ⊗ₜ[R] ⟨algebraMap R S x, algebraMap_mem ⊥ x⟩) = x • a :=
+theorem rTensorBot_tmul (x : R) (a : A) : A.rTensorBot (a ⊗ₜ[R] algebraMap R _ x) = x • a :=
   (toSubmodule A).rTensorOne_tmul x a
 
 @[simp]
+theorem rTensorBot_tmul_one (a : A) : A.rTensorBot (a ⊗ₜ[R] 1) = a :=
+  (toSubmodule A).rTensorOne_tmul_one a
+
+@[simp]
 theorem rTensorBot_symm_apply (a : A) : A.rTensorBot.symm a = a ⊗ₜ[R] 1 := rfl
+
+variable (A)
 
 @[simp]
 theorem comm_trans_lTensorBot :
@@ -148,6 +154,7 @@ which is surjective (`Subalgebra.mulMap'_surjective`). -/
 def mulMap' : A ⊗[R] B →ₐ[R] ↥(A ⊔ B) :=
   (equivOfEq _ _ (mulMap_range A B)).toAlgHom.comp (mulMap A B).rangeRestrict
 
+variable {A B} in
 @[simp]
 theorem val_mulMap'_tmul (a : A) (b : B) : (mulMap' A B (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 

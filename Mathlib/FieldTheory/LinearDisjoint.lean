@@ -7,6 +7,7 @@ import Mathlib.FieldTheory.Adjoin
 import Mathlib.RingTheory.LinearDisjoint
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 
@@ -98,101 +99,101 @@ theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
 namespace LinearDisjoint
 
 variable (A) in
-theorem of_self_right : A.LinearDisjoint F :=
-  ⟨.of_bot_right _⟩
+theorem self_right : A.LinearDisjoint F :=
+  ⟨.bot_right _⟩
 
 variable (A) in
-theorem of_bot_right : A.LinearDisjoint (⊥ : IntermediateField F E) :=
-  linearDisjoint_iff'.2 (.of_bot_right _)
+theorem bot_right : A.LinearDisjoint (⊥ : IntermediateField F E) :=
+  linearDisjoint_iff'.2 (.bot_right _)
 
 variable (F E L) in
-theorem of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint L :=
-  ⟨.of_bot_left _⟩
+theorem bot_left : (⊥ : IntermediateField F E).LinearDisjoint L :=
+  ⟨.bot_left _⟩
 
 /-- If `A` and `L` are linearly disjoint, then any `F`-linearly independent family on `A` remains
 linearly independent over `L`. -/
-theorem map_linearIndependent_left (H : A.LinearDisjoint L)
+theorem linearIndependent_left (H : A.LinearDisjoint L)
     {ι : Type*} {a : ι → A} (ha : LinearIndependent F a) :
     LinearIndependent L (A.val ∘ a) :=
-  (H.1.map_linearIndependent_left_of_flat ha).map_of_injective_injective
+  (H.1.linearIndependent_left_of_flat ha).map_of_injective_injective
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) (AddMonoidHom.id E)
     (by simp) (by simp) (fun _ _ ↦ by simp_rw [Algebra.smul_def]; rfl)
 
 /-- If there exists an `F`-basis of `A` which remains linearly independent over `L`, then
 `A` and `L` are linearly disjoint. -/
-theorem of_map_linearIndependent_left {ι : Type*} (a : Basis ι F A)
+theorem of_basis_left {ι : Type*} (a : Basis ι F A)
     (H : LinearIndependent L (A.val ∘ a)) :
     A.LinearDisjoint L := by
   rw [linearDisjoint_iff]
-  refine Subalgebra.LinearDisjoint.of_map_linearIndependent_left _ _ a ?_
+  refine Subalgebra.LinearDisjoint.of_basis_left _ _ a ?_
   exact H.map_of_surjective_injective
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) (AddMonoidHom.id E)
     (AlgEquiv.surjective _) (by simp) (fun _ _ ↦ by simp_rw [Algebra.smul_def]; rfl)
 
 /-- If `A` and `B` are linearly disjoint, then any `F`-linearly independent family on `B` remains
 linearly independent over `A`. -/
-theorem map_linearIndependent_right (H : A.LinearDisjoint B)
+theorem linearIndependent_right (H : A.LinearDisjoint B)
     {ι : Type*} {b : ι → B} (hb : LinearIndependent F b) :
     LinearIndependent A (B.val ∘ b) :=
-  (linearDisjoint_iff'.1 H).map_linearIndependent_right_of_flat hb
+  (linearDisjoint_iff'.1 H).linearIndependent_right_of_flat hb
 
 /-- If there exists an `F`-basis of `B` which remains linearly independent over `A`, then
 `A` and `B` are linearly disjoint. -/
-theorem of_map_linearIndependent_right {ι : Type*} (b : Basis ι F B)
+theorem of_basis_right {ι : Type*} (b : Basis ι F B)
     (H : LinearIndependent A (B.val ∘ b)) :
     A.LinearDisjoint B :=
-  linearDisjoint_iff'.2 (.of_map_linearIndependent_right _ _ b H)
+  linearDisjoint_iff'.2 (.of_basis_right _ _ b H)
 
 /-- If `A` and `L` are linearly disjoint, then any `F`-linearly independent family on `L` remains
 linearly independent over `A`. -/
-theorem map_linearIndependent_right' (H : A.LinearDisjoint L)
+theorem linearIndependent_right' (H : A.LinearDisjoint L)
     {ι : Type*} {b : ι → L} (hb : LinearIndependent F b) :
     LinearIndependent A ((algebraMap L E) ∘ b) := by
-  have := H.1.map_linearIndependent_right_of_flat <| hb.map' _
+  have := H.1.linearIndependent_right_of_flat <| hb.map' _
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv.ker
   exact this
 
 /-- If there exists an `F`-basis of `L` which remains linearly independent over `A`, then
 `A` and `L` are linearly disjoint. -/
-theorem of_map_linearIndependent_right' {ι : Type*} (b : Basis ι F L)
+theorem of_basis_right' {ι : Type*} (b : Basis ι F L)
     (H : LinearIndependent A ((algebraMap L E) ∘ b)) :
     A.LinearDisjoint L := by
   rw [linearDisjoint_iff]
-  exact .of_map_linearIndependent_right _ _
+  exact .of_basis_right _ _
     (b.map (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv) H
 
 /-- If `A` and `B` are linearly disjoint, then for any `F`-linearly independent families
 `{ u_i }`, `{ v_j }` of `A`, `B`, the products `{ u_i * v_j }`
 are linearly independent over `F`. -/
-theorem map_linearIndependent_mul (H : A.LinearDisjoint B)
+theorem linearIndependent_mul (H : A.LinearDisjoint B)
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent F a)
     (hb : LinearIndependent F b) : LinearIndependent F fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
-  (linearDisjoint_iff'.1 H).map_linearIndependent_mul_of_flat_left ha hb
+  (linearDisjoint_iff'.1 H).linearIndependent_mul_of_flat_left ha hb
 
 /-- If `A` and `L` are linearly disjoint, then for any `F`-linearly independent families
 `{ u_i }`, `{ v_j }` of `A`, `L`, the products `{ u_i * v_j }`
 are linearly independent over `F`. -/
-theorem map_linearIndependent_mul' (H : A.LinearDisjoint L)
+theorem linearIndependent_mul' (H : A.LinearDisjoint L)
     {κ ι : Type*} {a : κ → A} {b : ι → L} (ha : LinearIndependent F a)
     (hb : LinearIndependent F b) :
     LinearIndependent F fun (i : κ × ι) ↦ (a i.1).1 * algebraMap L E (b i.2) := by
-  have := H.1.map_linearIndependent_mul_of_flat_left ha <| hb.map' _
+  have := H.1.linearIndependent_mul_of_flat_left ha <| hb.map' _
     (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv.ker
   exact this
 
 /-- If there are `F`-bases `{ u_i }`, `{ v_j }` of `A`, `B`, such that the products
 `{ u_i * v_j }` are linearly independent over `F`, then `A` and `B` are linearly disjoint. -/
-theorem of_map_linearIndependent_mul {κ ι : Type*} (a : Basis κ F A) (b : Basis ι F B)
+theorem of_basis_mul {κ ι : Type*} (a : Basis κ F A) (b : Basis ι F B)
     (H : LinearIndependent F fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1) : A.LinearDisjoint B :=
-  linearDisjoint_iff'.2 (.of_map_linearIndependent_mul _ _ a b H)
+  linearDisjoint_iff'.2 (.of_basis_mul _ _ a b H)
 
 /-- If there are `F`-bases `{ u_i }`, `{ v_j }` of `A`, `L`, such that the products
 `{ u_i * v_j }` are linearly independent over `F`, then `A` and `L` are linearly disjoint. -/
-theorem of_map_linearIndependent_mul' {κ ι : Type*} (a : Basis κ F A) (b : Basis ι F L)
+theorem of_basis_mul' {κ ι : Type*} (a : Basis κ F A) (b : Basis ι F L)
     (H : LinearIndependent F fun (i : κ × ι) ↦ (a i.1).1 * algebraMap L E (b i.2)) :
     A.LinearDisjoint L := by
   rw [linearDisjoint_iff]
-  exact .of_map_linearIndependent_mul _ _ a
+  exact .of_basis_mul _ _ a
     (b.map (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv) H
 
 theorem of_le_left {A' : IntermediateField F E} (H : A.LinearDisjoint L)
@@ -236,13 +237,12 @@ theorem _root_.IntermediateField.rank_sup_le_of_isAlgebraic
     (halg : Algebra.IsAlgebraic F A ∨ Algebra.IsAlgebraic F B) :
     Module.rank F ↥(A ⊔ B) ≤ Module.rank F A * Module.rank F B := by
   have := A.toSubalgebra.rank_sup_le_of_free B.toSubalgebra
-  rw [← sup_toSubalgebra_of_isAlgebraic A B halg] at this
-  exact this
+  rwa [← sup_toSubalgebra_of_isAlgebraic A B halg] at this
 
 -- TODO: move to suitable place
 theorem _root_.Localization.card_le' {M : Type u} [CommMonoid M] (S : Submonoid M) :
     Cardinal.mk (Localization S) ≤ Cardinal.mk M * Cardinal.mk S := by
-  let i : M × S → Localization S := (Localization.r S).toQuotient
+  let i : M × S → Localization S := fun (m, s) ↦ Localization.mk m s
   have h : Function.Surjective i := Quotient.surjective_Quotient_mk''
   simpa using Cardinal.mk_le_of_surjective h
 
@@ -463,55 +463,109 @@ theorem _root_.IntermediateField.mem_adjoin_range_iff
     Algebra.adjoin_range_eq_range_aeval, AlgHom.mem_range, exists_exists_eq_and]
   tauto
 
+-- TODO: ??? and move to suitable place
+instance (priority := 10) _root_.IntermediateField.instAlgebraAlgebraAdjoin
+    (F E : Type*) [Field F] [Field E] [Algebra F E] (S : Set E) :
+    Algebra (Algebra.adjoin F S) (IntermediateField.adjoin F S) :=
+  (Subalgebra.inclusion (IntermediateField.algebra_adjoin_le_adjoin F S)).toRingHom.toAlgebra
+
+-- TODO: ??? and move to suitable place
+instance (priority := 10) _root_.IntermediateField.instModuleAlgebraAdjoin
+    (F E : Type*) [Field F] [Field E] [Algebra F E] (S : Set E) :
+    Module (Algebra.adjoin F S) (IntermediateField.adjoin F S) := Algebra.toModule
+
+-- TODO: ??? and move to suitable place
+instance (priority := 10) _root_.IntermediateField.instSMulAlgebraAdjoin
+    (F E : Type*) [Field F] [Field E] [Algebra F E] (S : Set E) :
+    SMul (Algebra.adjoin F S) (IntermediateField.adjoin F S) := Algebra.toSMul
+
+-- TODO: ??? and move to suitable place
+instance (priority := 10) _root_.IntermediateField.instIsScalarTowerAlgebraAdjoin
+    (F E : Type*) [Field F] [Field E] [Algebra F E] (S : Set E) :
+    IsScalarTower (Algebra.adjoin F S) (IntermediateField.adjoin F S) E :=
+  IsScalarTower.of_algebraMap_eq (congrFun rfl)
+
+-- TODO: ??? and move to suitable place
+instance (priority := 10) _root_.IntermediateField.instIsFractionRingAlgebraAdjoin
+    (F E : Type*) [Field F] [Field E] [Algebra F E] (S : Set E) :
+    IsFractionRing (Algebra.adjoin F S) (IntermediateField.adjoin F S) where
+  map_units' y := by
+    have : y.1 ≠ 0 := fun h ↦ by simpa [h] using mem_nonZeroDivisors_iff.1 y.2 1
+    refine Ne.isUnit fun h ↦ ?_
+    apply_fun algebraMap _ E at h using Subtype.val_injective
+    exact this (Subtype.val_injective h)
+  surj' z := by
+    have h := z.2
+    simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
+      Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring] at h
+    obtain ⟨x1, h1, x2, h2, h⟩ := h
+    by_cases hzero : x2 = 0
+    · have : z = 0 := Subtype.val_injective (by rw [← h, hzero, div_zero]; rfl)
+      exact ⟨⟨0, 1⟩, by simp [this]⟩
+    use ⟨⟨_, h1⟩, ⟨⟨_, h2⟩, mem_nonZeroDivisors_of_ne_zero fun h ↦ hzero congr(Subtype.val $h)⟩⟩
+    exact Subtype.val_injective ((div_eq_iff hzero).1 h).symm
+  exists_of_eq {x} {y} h := by
+    use 1; rw [show x = y from Subtype.val_injective congr(algebraMap _ E $(h))]
+
 -- TODO: move to suitable place
 /-- Canonical isomorphism between rational functions and the
 intermediate field generated by algebraically independent elements. -/
 def _root_.AlgebraicIndependent.algEquivField {ι F E : Type*} {x : ι → E} [Field F] [Field E]
     [Algebra F E] (hx : AlgebraicIndependent F x) :
-    FractionRing (MvPolynomial ι F) ≃ₐ[F] ↥(IntermediateField.adjoin F (Set.range x)) := by
-  letI (S : Set E) : Algebra (Algebra.adjoin F S) (IntermediateField.adjoin F S) :=
-    (Subalgebra.inclusion (IntermediateField.algebra_adjoin_le_adjoin F S)).toRingHom.toAlgebra
-  letI (S : Set E) : Module (Algebra.adjoin F S) (IntermediateField.adjoin F S) := Algebra.toModule
-  letI (S : Set E) : SMul (Algebra.adjoin F S) (IntermediateField.adjoin F S) := Algebra.toSMul
-  haveI (S : Set E) : IsFractionRing (Algebra.adjoin F S) (IntermediateField.adjoin F S) := {
-    map_units' := fun y ↦ by
-      have : y.1 ≠ 0 := fun h ↦ by simpa [h] using mem_nonZeroDivisors_iff.1 y.2 1
-      refine Ne.isUnit fun h ↦ ?_
-      apply_fun algebraMap _ E at h using Subtype.val_injective
-      exact this (Subtype.val_injective h)
-    surj' := fun z ↦ by
-      have h := z.2
-      simp_rw [adjoin, mem_mk, Subring.mem_toSubsemiring, Subfield.mem_toSubring,
-        Subfield.mem_closure_iff, ← Algebra.adjoin_eq_ring_closure, Subalgebra.mem_toSubring] at h
-      obtain ⟨x1, h1, x2, h2, h⟩ := h
-      by_cases hzero : x2 = 0
-      · have : z = 0 := Subtype.val_injective (by rw [← h, hzero, div_zero]; rfl)
-        exact ⟨⟨0, 1⟩, by simp [this]⟩
-      use ⟨⟨_, h1⟩, ⟨⟨_, h2⟩, mem_nonZeroDivisors_of_ne_zero fun h ↦ hzero congr(Subtype.val $h)⟩⟩
-      exact Subtype.val_injective ((div_eq_iff hzero).1 h).symm
-    exists_of_eq := fun {x} {y} h ↦ by
-      use 1; rw [show x = y from Subtype.val_injective congr(algebraMap _ E $(h))]
-  }
-  exact IsFractionRing.algEquivOfAlgEquiv _ _ hx.aevalEquiv
+    FractionRing (MvPolynomial ι F) ≃ₐ[F] ↥(IntermediateField.adjoin F (Set.range x)) :=
+  IsFractionRing.algEquivOfAlgEquiv _ _ hx.aevalEquiv
 
 -- TODO: move to suitable place
 theorem _root_.AlgebraicIndependent.algebraMap_algEquivField {ι F E : Type*} {x : ι → E}
     [Field F] [Field E] [Algebra F E] (hx : AlgebraicIndependent F x) (p : MvPolynomial ι F) :
     algebraMap _ E (hx.algEquivField (algebraMap _ _ p)) = MvPolynomial.aeval x p := by
-  letI (S : Set E) : Algebra (Algebra.adjoin F S) (IntermediateField.adjoin F S) :=
-    (Subalgebra.inclusion (IntermediateField.algebra_adjoin_le_adjoin F S)).toRingHom.toAlgebra
-  letI (S : Set E) : Module (Algebra.adjoin F S) (IntermediateField.adjoin F S) := Algebra.toModule
-  letI (S : Set E) : SMul (Algebra.adjoin F S) (IntermediateField.adjoin F S) := Algebra.toSMul
-  haveI (S : Set E) : IsScalarTower (Algebra.adjoin F S) (IntermediateField.adjoin F S) E :=
-    IsScalarTower.of_algebraMap_eq (congrFun rfl)
   simp_rw [AlgebraicIndependent.algEquivField, IsFractionRing.algEquivOfAlgEquiv_apply,
     IsLocalization.map_eq, RingHom.coe_coe, ← IsScalarTower.algebraMap_apply,
     hx.algebraMap_aevalEquiv]
+
+-- TODO: move to suitable place
+theorem _root_.IsTranscendenceBasis.isAlgebraic_field {ι F E : Type*} {x : ι → E}
+    [Field F] [Field E] [Algebra F E] (hx : IsTranscendenceBasis F x) :
+    Algebra.IsAlgebraic (IntermediateField.adjoin F (Set.range x)) E := by
+  haveI := hx.isAlgebraic
+  exact Algebra.IsAlgebraic.tower_top_of_injective (R := Algebra.adjoin F (Set.range x))
+    (Subalgebra.inclusion_injective _)
+
+-- TODO: move to suitable place
+theorem _root_.exists_isTranscendenceBasis' (R : Type u) {A : Type v} [CommRing R] [CommRing A]
+    [Algebra R A] (h : Function.Injective (algebraMap R A)) :
+    ∃ (ι : Type v) (x : ι → A), IsTranscendenceBasis R x := by
+  obtain ⟨s, h⟩ := exists_isTranscendenceBasis R h
+  exact ⟨s, Subtype.val, h⟩
+
+-- -- TODO: move to suitable place
+-- theorem _root_.IntermediateField.rank_sup_eq_of_purely_transcendental
+--     {κ ι : Type*} (a : FractionRing (MvPolynomial κ F) ≃ₐ[F] A)
+--     (b : FractionRing (MvPolynomial ι F) ≃ₐ[F] B) :
+--     Module.rank F ↥(A ⊔ B) = Module.rank F A * Module.rank F B := by
+--   rcases isEmpty_or_nonempty κ with _ | _
+--   · have : Module.rank F A = 1 := by simpa using (IsFractionRing.algEquivOfAlgEquiv _ F
+--       (MvPolynomial.isEmptyAlgEquiv F κ)).symm.trans a |>.toLinearEquiv.symm.lift_rank_eq
+--     rw [this, rank_eq_one_iff.1 this, bot_sup_eq, one_mul]
+--   rcases isEmpty_or_nonempty ι with _ | _
+--   · have : Module.rank F B = 1 := by simpa using (IsFractionRing.algEquivOfAlgEquiv _ F
+--       (MvPolynomial.isEmptyAlgEquiv F ι)).symm.trans b |>.toLinearEquiv.symm.lift_rank_eq
+--     rw [this, rank_eq_one_iff.1 this, sup_bot_eq, mul_one]
+--   have ha := a.toLinearEquiv.lift_rank_eq
+--   rw [rank_fractionRing_mvPolynomial_eq] at ha
+--   sorry
 
 -- -- TODO: move to suitable place
 -- variable (A B) in
 -- theorem _root_.IntermediateField.rank_sup_le :
 --     Module.rank F ↥(A ⊔ B) ≤ Module.rank F A * Module.rank F B := by
+--   obtain ⟨κ, a, ha⟩ := exists_isTranscendenceBasis' _ (NoZeroSMulDivisors.algebraMap_injective F A)
+--   obtain ⟨ι, b, hb⟩ := exists_isTranscendenceBasis' _ (NoZeroSMulDivisors.algebraMap_injective F B)
+--   haveI := ha.isAlgebraic_field
+--   haveI := hb.isAlgebraic_field
+--   let ia := ha.1.algEquivField
+--   let ib := hb.1.algEquivField
+--   -- rank_sup_le_of_isAlgebraic ......
 --   sorry
 
 -- TODO: move to suitable place
@@ -527,8 +581,6 @@ theorem _root_.IntermediateField.finrank_sup_le :
     show Subalgebra.toSubmodule A.toSubalgebra ≤ Subalgebra.toSubmodule (A ⊔ B).toSubalgebra by simp
   rw [show finrank F A = 0 from Cardinal.toNat_apply_of_aleph0_le h,
     show finrank F ↥(A ⊔ B) = 0 from Cardinal.toNat_apply_of_aleph0_le (h.trans this), zero_mul]
-
--- TODO: need IntermediateField.rank_sup_le
 
 -- theorem rank_sup (H : A.LinearDisjoint B) :
 --     Module.rank F ↥(A ⊔ B) = Module.rank F A * Module.rank F B := by
