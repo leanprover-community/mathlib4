@@ -72,9 +72,6 @@ theorem wronskian_neg_eq (a b : R[X]) : -wronskian a b = wronskian b a :=
 theorem wronskian_eq_of_sum_zero {a b c : R[X]} (hAdd : a + b + c = 0) :
     wronskian a b = wronskian b c := isAlt_wronskianBilin.eq_of_add_add_eq_zero hAdd
 
-private theorem degree_ne_bot {a : R[X]} (ha : a ≠ 0) : a.degree ≠ ⊥ := by
-  intro h; rw [Polynomial.degree_eq_bot] at h; exact ha h
-
 /-- Degree of `W(a,b)` is strictly less than the sum of degrees of `a` and `b` (both nonzero). -/
 theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
     (wronskian a b).degree < a.degree + b.degree := by
@@ -87,12 +84,14 @@ theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
       case left =>
         apply lt_of_le_of_lt
         exact degree_mul_le a (derivative b)
-        rw [WithBot.add_lt_add_iff_left (degree_ne_bot ha)]
+        rw [←Polynomial.degree_ne_bot] at ha
+        rw [WithBot.add_lt_add_iff_left ha]
         exact Polynomial.degree_derivative_lt hb
       case right =>
         apply lt_of_le_of_lt
         exact degree_mul_le (derivative a) b
-        rw [WithBot.add_lt_add_iff_right (degree_ne_bot hb)]
+        rw [←Polynomial.degree_ne_bot] at hb
+        rw [WithBot.add_lt_add_iff_right hb]
         exact Polynomial.degree_derivative_lt ha
 
 /--
