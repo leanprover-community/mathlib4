@@ -8,6 +8,7 @@ import Mathlib.Dynamics.Minimal
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.Order.Filter.EventuallyConst
 
 #align_import measure_theory.group.action from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -21,7 +22,8 @@ some basic properties of such measures.
 -/
 
 
-open ENNReal NNReal Pointwise Topology MeasureTheory MeasureTheory.Measure Set Function
+open scoped ENNReal NNReal Pointwise Topology
+open MeasureTheory.Measure Set Function Filter
 
 namespace MeasureTheory
 
@@ -80,6 +82,38 @@ instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvarian
 #align measure_theory.vadd_invariant_measure.vadd_nnreal MeasureTheory.VAddInvariantMeasure.vadd_nnreal
 
 end SMulInvariantMeasure
+
+section AE
+
+variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
+  {μ : Measure α} [SMulInvariantMeasure G α μ]
+
+@[to_additive]
+theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by
+  rcases exists_measurable_superset_of_null h with ⟨t, hst, htm, ht⟩
+  rw [← SMulInvariantMeasure.measure_preimage_smul c⁻¹ htm, preimage_smul_inv] at ht
+  exact measure_mono_null (image_mono hst) ht
+#align measure_theory.measure_smul_null MeasureTheory.measure_smul_null
+
+@[to_additive (attr := simp)]
+theorem measure_smul_eq_zero_iff {s} (c : G) : μ (c • s) = 0 ↔ μ s = 0 :=
+  ⟨fun h ↦ by simpa using measure_smul_null h c⁻¹, fun h ↦ measure_smul_null h c⟩
+
+@[to_additive (attr := simp)]
+theorem smul_mem_ae (c : G) {s : Set α} : c • s ∈ ae μ ↔ s ∈ ae μ := by
+  simp only [mem_ae_iff, ← smul_set_compl, measure_smul_eq_zero_iff]
+
+@[to_additive (attr := simp)]
+theorem smul_ae (c : G) : c • ae μ = ae μ := by
+  ext s
+  simp only [mem_smul_filter, preimage_smul, smul_mem_ae]
+
+@[to_additive (attr := simp)]
+theorem eventuallyConst_smul_set_ae (c : G) {s : Set α} :
+    EventuallyConst (c • s : Set α) (ae μ) ↔ EventuallyConst s (ae μ) := by
+  rw [← preimage_smul_inv, eventuallyConst_preimage, Filter.map_smul, smul_ae]
+
+end AE
 
 section MeasurableSMul
 
@@ -226,10 +260,6 @@ theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
     hs.preimage (measurePreserving_smul _ _).quasiMeasurePreserving
 #align measure_theory.null_measurable_set.smul MeasureTheory.NullMeasurableSet.smul
 #align measure_theory.null_measurable_set.vadd MeasureTheory.NullMeasurableSet.vadd
-
-@[to_additive]
-theorem measure_smul_null {s} (h : μ s = 0) (c : G) : μ (c • s) = 0 := by rwa [measure_smul]
-#align measure_theory.measure_smul_null MeasureTheory.measure_smul_null
 
 section IsMinimal
 

@@ -173,13 +173,24 @@ theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) 
 #align measure_theory.quasi_measure_preserving_inv MeasureTheory.quasiMeasurePreserving_inv
 #align measure_theory.quasi_measure_preserving_neg MeasureTheory.quasiMeasurePreserving_neg
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem measure_inv_null : μ s⁻¹ = 0 ↔ μ s = 0 := by
   refine ⟨fun hs => ?_, (quasiMeasurePreserving_inv μ).preimage_null⟩
   rw [← inv_inv s]
   exact (quasiMeasurePreserving_inv μ).preimage_null hs
 #align measure_theory.measure_inv_null MeasureTheory.measure_inv_null
 #align measure_theory.measure_neg_null MeasureTheory.measure_neg_null
+
+@[to_additive (attr := simp)]
+theorem inv_ae : (ae μ)⁻¹ = ae μ := by
+  refine le_antisymm (quasiMeasurePreserving_inv μ).tendsto_ae ?_
+  nth_rewrite 1 [← inv_inv (ae μ)]
+  exact Filter.map_mono (quasiMeasurePreserving_inv μ).tendsto_ae
+
+@[to_additive (attr := simp)]
+theorem eventuallyConst_inv_set_ae :
+    EventuallyConst (s⁻¹ : Set G) (ae μ) ↔ EventuallyConst s (ae μ) := by
+  rw [← inv_preimage, eventuallyConst_preimage, Filter.map_inv, inv_ae]
 
 @[to_additive]
 theorem inv_absolutelyContinuous : μ.inv ≪ μ :=
@@ -513,5 +524,41 @@ theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
 #align measure_theory.quasi_measure_preserving_add_left MeasureTheory.quasiMeasurePreserving_add_left
 
 end QuasiMeasurePreserving
+
+/-- The left action of a group on itself is ergodic in the following sense.
+Let `μ` be a left invariant σ-finite measure on a measurable group `G`.
+Suppose that a set `s : Set G` is a.e. invariant under all left shifts, `g • s =ᵐ[μ] s`.
+Then `s` is either a null or a conull set. -/
+@[to_additive]
+theorem eventuallyConst_set_of_forall_smul_ae_eq [MeasurableInv G] [μ.IsMulLeftInvariant]
+    (hsm : MeasurableSet s) (hs : ∀ g : G, (g • s : Set G) =ᵐ[μ] s) :
+    EventuallyConst s (ae μ) := by
+  -- First, we discard the trivial case `μ = 0`.
+  rcases eq_zero_or_neZero μ with rfl | hμ₀; · simp
+  -- Now consider the set `t = {(g, x) | g⁻¹ * x ∈ s}`.
+  set t : Set (G × G) := {(g, x) | g⁻¹ * x ∈ s}
+  have htm : MeasurableSet t := hsm.preimage (by fun_prop)
+  -- For each `g`, the vertical section of `{x | (g, x) ∈ t} = g • s` is a.e. equal to `s`,
+  -- hence `t` is a.e. equal to `{(g, x) | x ∈ s}`.
+  have H₁ : t =ᵐ[μ.prod μ] (Prod.snd ⁻¹' s) := by
+    rw [eventuallyEq_set, ae_prod_iff_ae_ae]
+    · refine ae_of_all _ fun g ↦ ?_
+      simpa [t, mem_smul_set_iff_inv_smul_mem] using (hs g).mem_iff
+    · apply Measurable.setOf
+      exact htm.mem.iff (hsm.preimage measurable_snd).mem
+  -- Thus for a.e. `x`, the horizontal sections of these sets are a.e. equal.
+  -- Since `μ ≠ 0`, we can choose `x` such that these sections are a.e. equal.
+  obtain ⟨x, hx⟩ : ∃ x, (·, x) ⁻¹' t =ᵐ[μ] (·, x) ⁻¹' (Prod.snd ⁻¹' s) := by
+    rw [← prod_swap] at H₁
+    exact (ae_ae_of_ae_prod (ae_of_ae_map (by measurability) H₁)).exists
+  -- Simplifying, we see that `x • s⁻¹` is a.e. equal to the set `const G x ⁻¹' s`.
+  have hx' := calc
+    (x • s⁻¹ : Set G) = (·, x) ⁻¹' t := by ext; simp [t, mem_smul_set_iff_inv_smul_mem]
+    _ =ᵐ[μ] (const G x ⁻¹' s) := hx
+  -- The latter set is either empty or the whole group,
+  -- hence `x • s⁻¹` is an a.e. const set.
+  have hconst : EventuallyConst (x • s⁻¹ : Set G) (ae μ) :=
+    hx'.eventuallyConst_iff.2 (EventuallyConst.const (x ∈ s))
+  simpa using hconst
 
 end MeasureTheory

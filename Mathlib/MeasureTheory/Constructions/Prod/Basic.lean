@@ -511,6 +511,10 @@ theorem ae_ae_eq_of_ae_eq_uncurry {f g : α → β → γ} (h : uncurry f =ᵐ[�
     ∀ᵐ x ∂μ, f x =ᵐ[ν] g x :=
   ae_ae_eq_curry_of_prod h
 
+theorem ae_prod_iff_ae_ae {p : α × β → Prop} (hp : MeasurableSet {x | p x}) :
+    (∀ᵐ z ∂μ.prod ν, p z) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
+  measure_prod_null hp.compl
+
 theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
     (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
   measure_prod_null hs.compl
