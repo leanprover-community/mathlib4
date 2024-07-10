@@ -33,3 +33,5 @@ instance [HasColimitsOfShape K (PresheafOfModules.{v} R.val)] :
     exact hasColimitOfIso e
 
 end SheafOfModules
+
+end SheafOfModules

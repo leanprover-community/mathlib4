@@ -135,10 +135,10 @@ variable {R A}
   map_natCast (comulAlgHom R A) _
 
 @[simp] lemma counit_pow (a : A) (n : ℕ) : counit (R := R) (a ^ n) = counit a ^ n :=
-  (counitAlgHom R A).map_pow a n
+  map_pow (counitAlgHom R A) a n
 
 @[simp] lemma comul_pow (a : A) (n : ℕ) : comul (R := R) (a ^ n) = comul a ^ n :=
-  (comulAlgHom R A).map_pow a n
+  map_pow (comulAlgHom R A) a n
 
 end Bialgebra
 
@@ -154,5 +154,7 @@ instance toBialgebra : Bialgebra R R where
   counit_one := rfl
   mul_compr₂_comul := by ext; simp
   comul_one := rfl
+
+end CommSemiring
 
 end CommSemiring

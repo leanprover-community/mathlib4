@@ -29,3 +29,5 @@ instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUn
 
 instance : LinearOrderedAddCommMonoidWithTop PUnit where
   top_add' _ := rfl
+
+end PUnit
