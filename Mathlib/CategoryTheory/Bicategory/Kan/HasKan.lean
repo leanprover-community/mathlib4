@@ -193,7 +193,7 @@ open LeftLift
 variable {f : b ⟶ a} {g : c ⟶ a}
 
 /-- The existence of a left kan lift of `g` along `f`. -/
-class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' : :
+class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
   hasInitial : HasInitial <| LeftLift f g
 
 theorem LeftLift.IsKan.hasLeftKanLift {t : LeftLift f g} (H : IsKan t) : HasLeftKanLift f g :=

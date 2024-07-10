@@ -294,7 +294,7 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
         simp [← @IH n ls hm, Nat.min_eq_left, Nat.le_of_lt hm]
 #align list.prefix_take_le_iff List.prefix_take_le_iff
 
-theorem cons_prefix_iff : a : : l₁ <+ : b : : l₂ ↔ a = b ∧ l₁ <+ : l₂ : = by
+theorem cons_prefix_iff : a :: l₁ <+ : b :: l₂ ↔ a = b ∧ l₁ <+ : l₂ : = by
   constructor
   · rintro ⟨L, hL⟩
     simp only [cons_append] at hL
@@ -361,7 +361,7 @@ theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+ : t
     suffices s = nil ↔ s <+ : nil by simpa only [inits, mem_singleton]
     ⟨fun h => h.symm ▸ prefix_refl [], eq_nil_of_prefix_nil⟩
   | s, a :: t =>
-    suffices (s = nil ∨ ∃ l ∈ inits t, a : : l = s) ↔ s <+ : a : : t by simpa
+    suffices (s = nil ∨ ∃ l ∈ inits t, a :: l = s) ↔ s <+ : a :: t by simpa
     ⟨fun o =>
       match s, o with
       | _, Or.inl rfl => ⟨_, rfl⟩
@@ -383,7 +383,7 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s < : + t
   | s, a :: t => by
     simp only [tails, mem_cons, mem_tails s t]
     exact
-      show s = a : : t ∨ s < : + t ↔ s < : + a : : t from
+      show s = a :: t ∨ s < : + t ↔ s < : + a :: t from
         ⟨fun o =>
           match s, t, o with
           | _, t, Or.inl rfl => suffix_rfl

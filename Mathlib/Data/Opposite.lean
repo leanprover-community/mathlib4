@@ -34,7 +34,7 @@ variable (α : Sort u)
 -/
 structure Opposite :=
   /-- The canonical map `α → αᵒᵖ`. -/
-  op : :
+  op ::
   /-- The canonical map `αᵒᵖ → α`. -/
   unop : α
 #align opposite Opposite

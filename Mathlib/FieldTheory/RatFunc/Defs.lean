@@ -64,7 +64,7 @@ The inclusion of polynomials into `RatFunc` is `algebraMap K[X] (RatFunc K)`,
 the maps between `RatFunc K` and another field of fractions of `K[X]`,
 especially `FractionRing K[X]`, are given by `IsLocalization.algEquiv`.
 -/
-structure RatFunc [CommRing K] : Type u where ofFractionRing : :
+structure RatFunc [CommRing K] : Type u where ofFractionRing ::
 /-- the coercion to the fraction ring of the polynomial ring-/
   toFractionRing : FractionRing K[X]
 #align ratfunc RatFunc

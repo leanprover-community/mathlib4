@@ -70,7 +70,7 @@ order. -/
 @[ext]
 structure Colex (α) :=
   /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
-  toColex : :
+  toColex ::
   /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
   (ofColex : Finset α)
 

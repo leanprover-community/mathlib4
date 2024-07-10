@@ -87,7 +87,7 @@ available as `Basis.repr`.
 -/
 structure Basis where
   /-- `Basis.ofRepr` constructs a basis given an assignment of coordinates to each vector. -/
-  ofRepr : :
+  ofRepr ::
     /-- `repr` is the linear equivalence sending a vector `x` to its coordinates:
     the `c`s such that `x = ∑ i, c i`. -/
     repr : M ≃ₗ[R] ι →₀ R

@@ -78,7 +78,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 See <https://stacks.math.columbia.edu/tag/001J>
 -/
 @[ext]
-structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' : :
+structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
   /-- A functor in one direction -/
   functor : C ⥤ D
   /-- A functor in the other direction -/

@@ -170,20 +170,20 @@ variable (pp : β → Prop)
 private def f :
     ∀ n α,
       (fun i : Fin2 (n + 1) => { p_1 // ofRepeat (PredLast' α pp i p_1) }) ⟹ fun i : Fin2 (n + 1) =>
-        { p_1 : (α : : : β) i // PredLast α pp p_1 }
+        { p_1 : (α :: : β) i // PredLast α pp p_1 }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 private def g :
     ∀ n α,
-      (fun i : Fin2 (n + 1) => { p_1 : (α : : : β) i // PredLast α pp p_1 }) ⟹ fun i : Fin2 (n + 1) =>
+      (fun i : Fin2 (n + 1) => { p_1 : (α :: : β) i // PredLast α pp p_1 }) ⟹ fun i : Fin2 (n + 1) =>
         { p_1 // ofRepeat (PredLast' α pp i p_1) }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
-theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α : : : β)) :
+theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α :: : β)) :
     LiftP' (PredLast' _ P) x ↔ LiftP (PredLast _ P) x := by
   dsimp only [LiftP, LiftP']
   apply exists_iff_exists_of_mono F (f _ n α) (g _ n α)
@@ -206,21 +206,21 @@ private def f' :
     ∀ n α,
       (fun i : Fin2 (n + 1) =>
           { p_1 : _ × _ // ofRepeat (RelLast' α rr i (TypeVec.prod.mk _ p_1.fst p_1.snd)) }) ⟹
-        fun i : Fin2 (n + 1) => { p_1 : (α : : : β) i × _ // RelLast α rr p_1.fst p_1.snd }
+        fun i : Fin2 (n + 1) => { p_1 : (α :: : β) i × _ // RelLast α rr p_1.fst p_1.snd }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
 private def g' :
     ∀ n α,
-      (fun i : Fin2 (n + 1) => { p_1 : (α : : : β) i × _ // RelLast α rr p_1.fst p_1.snd }) ⟹
+      (fun i : Fin2 (n + 1) => { p_1 : (α :: : β) i × _ // RelLast α rr p_1.fst p_1.snd }) ⟹
         fun i : Fin2 (n + 1) =>
         { p_1 : _ × _ // ofRepeat (RelLast' α rr i (TypeVec.prod.mk _ p_1.1 p_1.2)) }
   | _, α, Fin2.fs i, x =>
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, α, Fin2.fz, x => ⟨x.val, x.property⟩
 
-theorem LiftR_RelLast_iff (x y : F (α : : : β)) :
+theorem LiftR_RelLast_iff (x y : F (α :: : β)) :
     LiftR' (RelLast' _ rr) x y ↔ LiftR (RelLast (i := _) _ rr) x y := by
   dsimp only [LiftR, LiftR']
   apply exists_iff_exists_of_mono F (f' rr _ _) (g' rr _ _)

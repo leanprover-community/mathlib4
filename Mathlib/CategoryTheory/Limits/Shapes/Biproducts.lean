@@ -353,7 +353,7 @@ attribute [inherit_doc LimitBicone] LimitBicone.bicone LimitBicone.isBilimit
 /-- `HasBiproduct F` expresses the mere existence of a bicone which is
 simultaneously a limit and a colimit of the diagram `F`.
 -/
-class HasBiproduct (F : J → C) : Prop where mk' : :
+class HasBiproduct (F : J → C) : Prop where mk' ::
   exists_biproduct : Nonempty (LimitBicone F)
 #align category_theory.limits.has_biproduct CategoryTheory.Limits.HasBiproduct
 
@@ -1470,7 +1470,7 @@ attribute [inherit_doc BinaryBiproductData] BinaryBiproductData.bicone
 /-- `HasBinaryBiproduct P Q` expresses the mere existence of a bicone which is
 simultaneously a limit and a colimit of the diagram `pair P Q`.
 -/
-class HasBinaryBiproduct (P Q : C) : Prop where mk' : :
+class HasBinaryBiproduct (P Q : C) : Prop where mk' ::
   exists_binary_biproduct : Nonempty (BinaryBiproductData P Q)
 #align category_theory.limits.has_binary_biproduct CategoryTheory.Limits.HasBinaryBiproduct
 

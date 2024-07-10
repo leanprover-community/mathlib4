@@ -87,7 +87,7 @@ theorem suffixLevenshtein_minimum_le_levenshtein_append (xs ys₁ ys₂) :
         (suffixLevenshtein_minimum_le_levenshtein_cons _ _ _)
 
 theorem le_levenshtein_cons (xs : List α) (y ys) :
-    ∃ xs', xs' < : + xs ∧ levenshtein C xs' ys ≤ levenshtein C xs (y : : ys) : = by
+    ∃ xs', xs' < : + xs ∧ levenshtein C xs' ys ≤ levenshtein C xs (y :: ys) : = by
   simpa [suffixLevenshtein_eq_tails_map, List.minimum_le_coe_iff] using
     suffixLevenshtein_minimum_le_levenshtein_cons (δ := δ) xs y ys
 

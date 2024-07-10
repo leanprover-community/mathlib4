@@ -183,7 +183,7 @@ def M.dest' {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a → P.last
 #align mvpfunctor.M.dest' MvPFunctor.M.dest'
 
 /-- Destructor for M-types -/
-def M.dest {α : TypeVec n} (x : P.M α) : P (α : : : P.M α) : =
+def M.dest {α : TypeVec n} (x : P.M α) : P (α :: : P.M α) : =
   M.dest' P (Sigma.eta <| PFunctor.M.dest x.fst).symm x.snd
 #align mvpfunctor.M.dest MvPFunctor.M.dest
 
@@ -268,7 +268,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
 #align mvpfunctor.M.bisim MvPFunctor.M.bisim
 
 theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
-    (h : ∀ x y, R x y → (id : : : Quot.mk R) <$$> M.dest _ x = (id : : : Quot.mk R) <$$> M.dest _ y)
+    (h : ∀ x y, R x y → (id :: : Quot.mk R) <$$> M.dest _ x = (id :: : Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
   apply M.bisim P R _ _ _ r
   clear r x y
@@ -300,7 +300,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
 #align mvpfunctor.M.bisim₀ MvPFunctor.M.bisim₀
 
 theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
-    (h : ∀ x y, R x y → (id : : : Quot.mk R) <$$> M.dest _ x = (id : : : Quot.mk R) <$$> M.dest _ y)
+    (h : ∀ x y, R x y → (id :: : Quot.mk R) <$$> M.dest _ x = (id :: : Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
   have := M.bisim₀ P (EqvGen R) ?_ ?_
   · solve_by_elim [EqvGen.rel]
@@ -324,7 +324,7 @@ theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
   rfl
 #align mvpfunctor.M.dest_map MvPFunctor.M.dest_map
 
-theorem M.map_dest {α β : TypeVec n} (g : (α : : : P.M α) ⟹ (β : : : P.M β)) (x : P.M α)
+theorem M.map_dest {α β : TypeVec n} (g : (α :: : P.M α) ⟹ (β :: : P.M β)) (x : P.M α)
     (h : ∀ x : P.M α, lastFun g x = (dropFun g <$$> x : P.M β)) :
     g <$$> M.dest P x = M.dest P (dropFun g <$$> x) := by
   rw [M.dest_map]; congr

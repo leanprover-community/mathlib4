@@ -226,7 +226,7 @@ theorem suffixLevenshtein_cons₁_aux {x y : {r : List δ // 0 < r.length}}
 theorem suffixLevenshtein_cons₁
     (x : α) (xs ys) :
     suffixLevenshtein C (x :: xs) ys =
-      ⟨levenshtein C (x : : xs) ys : :
+      ⟨levenshtein C (x :: xs) ys ::
         (suffixLevenshtein C xs ys).1, by simp⟩ := by
   induction ys with
   | nil =>
@@ -240,7 +240,7 @@ theorem suffixLevenshtein_cons₁
 
 theorem suffixLevenshtein_cons₁_fst (x : α) (xs ys) :
     (suffixLevenshtein C (x :: xs) ys).1 =
-      levenshtein C (x : : xs) ys : :
+      levenshtein C (x :: xs) ys ::
         (suffixLevenshtein C xs ys).1 := by
   simp [suffixLevenshtein_cons₁]
 

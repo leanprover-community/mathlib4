@@ -272,7 +272,7 @@ set_option linter.uppercaseLean3 false in
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
 abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
-    (f : P.last.B a → β) : P (α : : : β) : =
+    (f : P.last.B a → β) : P (α :: : β) : =
   ⟨a, splitFun f' f⟩
 #align mvpfunctor.obj_append1 MvPFunctor.objAppend1
 
@@ -291,7 +291,7 @@ the qpf axioms are expressed in terms of `map` on `P`.
 
 
 /-- Constructor for the W-type of `P` -/
-def wMk' {α : TypeVec n} : P (α : : : P.W α) → P.W α
+def wMk' {α : TypeVec n} : P (α :: : P.W α) → P.W α
   | ⟨a, f⟩ => P.wMk a (dropFun f) (lastFun f)
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_mk' MvPFunctor.wMk'
