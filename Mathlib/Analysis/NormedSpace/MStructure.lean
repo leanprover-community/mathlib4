@@ -9,7 +9,6 @@ import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.Dual
-import Mathlib.Analysis.NormedSpace.WeakDual
 import Mathlib.Analysis.Convex.Normed
 
 #align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
