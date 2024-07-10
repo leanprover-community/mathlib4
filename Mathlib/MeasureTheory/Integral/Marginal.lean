@@ -48,7 +48,7 @@ set `s` of integration variables is a `Finset`. We are assuming that the functio
 for most of this file. Note that asking whether it is `AEMeasurable` is not even well-posed,
 since there is no well-behaved measure on the domain of `f`.
 
-## Todo
+## TODO
 
 * Define the marginal function for functions taking values in a Banach space.
 
@@ -140,7 +140,6 @@ theorem lmarginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) 
 
 variable {μ}
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
     ∫⋯∫⁻_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
   let α : Type _ := ({i} : Finset δ)

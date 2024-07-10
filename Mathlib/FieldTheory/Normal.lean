@@ -332,7 +332,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
         (fun x _ ↦ ⟨(h.out x).1.tower_top,
           splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero (h.out x).1))
             -- Porting note: had to override typeclass inference below using `(_)`
-            (by rw [splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ (_) (_) (_)];
+            (by rw [splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ (_) (_) (_)]
                 exact (h.out x).2)
             (minpoly.dvd_map_of_isScalarTower F K₁ x)⟩)
         (IntermediateField.adjoin_univ _ _)

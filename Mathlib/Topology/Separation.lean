@@ -7,6 +7,7 @@ import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.GDelta
 
 #align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
@@ -55,7 +56,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
 
-### TODOs
+### TODO
 
 * Add perfectly normal and T6 spaces.
 * Use `hasSeparatingCovers_iff_separatedNhds` to prove that perfectly normal spaces
@@ -73,7 +74,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 ### T₁ spaces
 
 * `isClosedMap_const`: The constant map is a closed map.
-* `discrete_of_t1_of_finite`: A finite T₁ space must have the discrete topology.
+* `Finite.instDiscreteTopology`: A finite T₁ space must have the discrete topology.
 
 ### T₂ spaces
 
@@ -123,6 +124,8 @@ If the space is also Lindelöf:
 -/
 
 
+set_option linter.uppercaseLean3 false
+
 open Function Set Filter Topology TopologicalSpace
 open scoped Classical
 
@@ -171,12 +174,12 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         exists_false, exists_const, not_false_eq_true]
     refine
       ⟨⋃ n : ℕ, u n \ (closure (⋃ m ≤ n, v m)),
-        ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
-        open_lemma u (fun n ↦ ⋃ m ≤ n, v m) (fun n ↦ (u_props n).1),
-        open_lemma v (fun n ↦ ⋃ m ≤ n, u m) (fun n ↦ (v_props n).1),
-        cover_lemma s u v u_cov (fun n ↦ (v_props n).2),
-        cover_lemma t v u v_cov (fun n ↦ (u_props n).2),
-        ?_⟩
+       ⋃ n : ℕ, v n \ (closure (⋃ m ≤ n, u m)),
+       open_lemma u (fun n ↦ ⋃ m ≤ n, v m) (fun n ↦ (u_props n).1),
+       open_lemma v (fun n ↦ ⋃ m ≤ n, u m) (fun n ↦ (v_props n).1),
+       cover_lemma s u v u_cov (fun n ↦ (v_props n).2),
+       cover_lemma t v u v_cov (fun n ↦ (u_props n).2),
+       ?_⟩
     rw [Set.disjoint_left]
     rintro x ⟨un, ⟨n, rfl⟩, xinun⟩
     suffices ∀ (m : ℕ), x ∈ v m → x ∈ closure (⋃ m' ∈ {m' | m' ≤ m}, u m') by simpa
@@ -187,10 +190,12 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     exact subset_closure (mem_biUnion n_le_m xinun.1)
   · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
     exact
-      ⟨⟨fun _ ↦ U, h_sub_U.trans (iUnion_const U).symm.subset,
+      ⟨⟨fun _ ↦ U,
+        h_sub_U.trans (iUnion_const U).symm.subset,
         fun _ ↦
           ⟨U_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) k_sub_V (UV_dis.closure_left V_open)⟩⟩,
-      ⟨fun _ ↦ V, k_sub_V.trans (iUnion_const V).symm.subset,
+       ⟨fun _ ↦ V,
+        k_sub_V.trans (iUnion_const V).symm.subset,
         fun _ ↦
           ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
 
@@ -955,13 +960,15 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 #align infinite_of_mem_nhds infinite_of_mem_nhds
 
-theorem discrete_of_t1_of_finite [T1Space X] [Finite X] :
-    DiscreteTopology X := by
-  apply singletons_open_iff_discrete.mp
-  intro x
-  rw [← isClosed_compl_iff]
-  exact (Set.toFinite _).isClosed
-#align discrete_of_t1_of_finite discrete_of_t1_of_finite
+instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
+  discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
+#align discrete_of_t1_of_finite Finite.instDiscreteTopology
+
+theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
+    (f : X → Y) : ContinuousOn f s := by
+  rw [continuousOn_iff_continuous_restrict]
+  have : Finite s := hs
+  fun_prop
 
 theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTopology X] :
     Subsingleton X := by
@@ -974,7 +981,7 @@ theorem PreconnectedSpace.trivial_of_discrete [PreconnectedSpace X] [DiscreteTop
 theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPreconnected s)
     (hs : s.Nontrivial) : s.Infinite := by
   refine mt (fun hf => (subsingleton_coe s).mp ?_) (not_subsingleton_iff.mpr hs)
-  haveI := @discrete_of_t1_of_finite s _ _ hf.to_subtype
+  haveI := @Finite.instDiscreteTopology s _ _ hf.to_subtype
   exact @PreconnectedSpace.trivial_of_discrete _ _ (Subtype.preconnectedSpace h) _
 #align is_preconnected.infinite_of_nontrivial IsPreconnected.infinite_of_nontrivial
 
@@ -991,6 +998,43 @@ instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_o
   replace contra := nonempty_inter isOpen_compl_singleton
     contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
   simp [compl_inter_self {x}] at contra
+
+theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
+  isOpen_compl_singleton.isGδ
+#align is_Gδ_compl_singleton IsGδ.compl_singleton
+
+@[deprecated (since := "2024-02-15")] alias isGδ_compl_singleton := IsGδ.compl_singleton
+
+theorem Set.Countable.isGδ_compl {s : Set X} [T1Space X] (hs : s.Countable) : IsGδ sᶜ := by
+  rw [← biUnion_of_singleton s, compl_iUnion₂]
+  exact .biInter hs fun x _ => .compl_singleton x
+#align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
+
+theorem Set.Finite.isGδ_compl {s : Set X} [T1Space X] (hs : s.Finite) : IsGδ sᶜ :=
+  hs.countable.isGδ_compl
+#align set.finite.is_Gδ_compl Set.Finite.isGδ_compl
+
+theorem Set.Subsingleton.isGδ_compl {s : Set X} [T1Space X] (hs : s.Subsingleton) : IsGδ sᶜ :=
+  hs.finite.isGδ_compl
+#align set.subsingleton.is_Gδ_compl Set.Subsingleton.isGδ_compl
+
+theorem Finset.isGδ_compl [T1Space X] (s : Finset X) : IsGδ (sᶜ : Set X) :=
+  s.finite_toSet.isGδ_compl
+#align finset.is_Gδ_compl Finset.isGδ_compl
+
+variable [FirstCountableTopology X]
+
+protected theorem IsGδ.singleton [T1Space X] (x : X) : IsGδ ({x} : Set X) := by
+  rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
+  rw [← biInter_basis_nhds h_basis.toHasBasis]
+  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
+#align is_Gδ_singleton IsGδ.singleton
+
+@[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton
+
+theorem Set.Finite.isGδ {s : Set X} [T1Space X] (hs : s.Finite) : IsGδ s :=
+  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
+#align set.finite.is_Gδ Set.Finite.isGδ
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
   rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
@@ -1057,6 +1101,18 @@ theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x 
 
 #align topological_space.subset_trans embedding_inclusionₓ
 
+theorem closedEmbedding_update {ι : Type*} {β : ι → Type*}
+    [DecidableEq ι] [(i : ι) → TopologicalSpace (β i)]
+    (x : (i : ι) → β i) (i : ι) [(i : ι) → T1Space (β i)] :
+    ClosedEmbedding (update x i) := by
+  apply closedEmbedding_of_continuous_injective_closed
+  · exact continuous_const.update i continuous_id
+  · exact update_injective x i
+  · intro s hs
+    rw [update_image]
+    apply isClosed_set_pi
+    simp [forall_update_iff, hs, isClosed_singleton]
+
 /-! ### R₁ (preregular) spaces -/
 
 section R1Space
@@ -1085,7 +1141,7 @@ theorem specializes_iff_not_disjoint : x ⤳ y ↔ ¬Disjoint (𝓝 x) (𝓝 y) 
 theorem disjoint_nhds_nhds_iff_not_inseparable : Disjoint (𝓝 x) (𝓝 y) ↔ ¬Inseparable x y := by
   rw [disjoint_nhds_nhds_iff_not_specializes, specializes_iff_inseparable]
 
-theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X]:
+theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X] :
     R1Space X ↔ ∀ x y : X, Inseparable x y ∨ Disjoint (𝓝 x) (𝓝 y) :=
   ⟨fun _h x y ↦ (specializes_or_disjoint_nhds x y).imp_left Specializes.inseparable, fun h ↦
     ⟨fun x y ↦ (h x y).imp_left Inseparable.specializes⟩⟩
@@ -1873,7 +1929,7 @@ theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y}
 
 lemma Pi.isCompact_iff {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [∀ i, T2Space (π i)] {s : Set (Π i, π i)} :
-    IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s):= by
+    IsCompact s ↔ IsClosed s ∧ ∀ i, IsCompact (eval i '' s) := by
   constructor <;> intro H
   · exact ⟨H.isClosed, fun i ↦ H.image <| continuous_apply i⟩
   · exact IsCompact.of_isClosed_subset (isCompact_univ_pi H.2) H.1 (subset_pi_eval_image univ s)
@@ -2174,10 +2230,10 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r: RegularSpace X] [LindelofSpa
       t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains)
     exact
       ⟨interior n,
-        isOpen_interior,
-        disjoint_left.mpr fun ⦃_⦄ ain ↦
-          nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
-        fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
+       isOpen_interior,
+       disjoint_left.mpr fun ⦃_⦄ ain ↦
+         nsubkc <| (IsClosed.closure_subset_iff ncl).mpr interior_subset ain,
+       fun _ ↦ mem_interior_iff_mem_nhds.mpr nna⟩
   -- By Lindelöf, we may obtain a countable subcover witnessing `HasSeparatingCover`
   choose u u_open u_dis u_nhd using this
   obtain ⟨f, f_cov⟩ := s_cl.isLindelof.indexed_countable_subcover
@@ -2263,8 +2319,12 @@ theorem T25Space.of_injective_continuous [TopologicalSpace Y] [T25Space Y] {f : 
   t2_5 x y hne := (tendsto_lift'_closure_nhds hcont x).disjoint (t2_5 <| hinj.ne hne)
     (tendsto_lift'_closure_nhds hcont y)
 
-instance [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
-  .of_injective_continuous Subtype.val_injective continuous_subtype_val
+theorem Embedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X → Y} (hf : Embedding f) :
+    T25Space X :=
+  .of_injective_continuous hf.inj hf.continuous
+
+instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
+  embedding_subtype_val.t25Space
 
 section T25
 

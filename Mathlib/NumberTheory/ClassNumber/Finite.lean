@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 
 #align_import number_theory.class_number.finite from "leanprover-community/mathlib"@"ea0bcd84221246c801a6f8fbe8a4372f6d04b176"
 
@@ -34,7 +34,7 @@ section EuclideanDomain
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
 variable [Field K] [Field L]
 variable [Algebra R K] [IsFractionRing R K]
-variable [Algebra K L] [FiniteDimensional K L] [IsSeparable K L]
+variable [Algebra K L] [FiniteDimensional K L] [Algebra.IsSeparable K L]
 variable [algRL : Algebra R L] [IsScalarTower R K L]
 variable [Algebra R S] [Algebra S L]
 variable [ist : IsScalarTower R S L] [iic : IsIntegralClosure S R L]
@@ -137,7 +137,8 @@ theorem exists_min (I : (Ideal S)⁰) :
 
 section IsAdmissible
 
-variable {abv} (adm : abv.IsAdmissible)
+variable {abv}
+variable (adm : abv.IsAdmissible)
 
 /-- If we have a large enough set of elements in `R^ι`, then there will be a pair
 whose remainders are close together. We'll show that all sets of cardinality

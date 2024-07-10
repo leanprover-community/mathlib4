@@ -195,23 +195,29 @@ theorem _root_.MeasureTheory.Integrable.integral_condDistrib (hX : AEMeasurable 
 
 end Integrability
 
-theorem set_lintegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurable Y μ)
+theorem setLIntegral_preimage_condDistrib (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hs : MeasurableSet s) (ht : MeasurableSet t) :
     ∫⁻ a in X ⁻¹' t, condDistrib Y X μ (X a) s ∂μ = μ (X ⁻¹' t ∩ Y ⁻¹' s) := by
   -- Porting note: need to massage the LHS integrand into the form accepted by `lintegral_comp`
   -- (`rw` does not see that the two forms are defeq)
   conv_lhs => arg 2; change (fun a => ((condDistrib Y X μ) a) s) ∘ X
   rw [lintegral_comp (kernel.measurable_coe _ hs) hX, condDistrib, ← Measure.restrict_map hX ht, ←
-    Measure.fst_map_prod_mk₀ hY, Measure.set_lintegral_condKernel_eq_measure_prod ht hs,
+    Measure.fst_map_prod_mk₀ hY, Measure.setLIntegral_condKernel_eq_measure_prod ht hs,
     Measure.map_apply_of_aemeasurable (hX.aemeasurable.prod_mk hY) (ht.prod hs), mk_preimage_prod]
-#align probability_theory.set_lintegral_preimage_cond_distrib ProbabilityTheory.set_lintegral_preimage_condDistrib
+#align probability_theory.set_lintegral_preimage_cond_distrib ProbabilityTheory.setLIntegral_preimage_condDistrib
 
-theorem set_lintegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEMeasurable Y μ)
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_preimage_condDistrib := setLIntegral_preimage_condDistrib
+
+theorem setLIntegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEMeasurable Y μ)
     (hs : MeasurableSet s) {t : Set α} (ht : MeasurableSet[mβ.comap X] t) :
     ∫⁻ a in t, condDistrib Y X μ (X a) s ∂μ = μ (t ∩ Y ⁻¹' s) := by
   obtain ⟨t', ht', rfl⟩ := ht
-  rw [set_lintegral_preimage_condDistrib hX hY hs ht']
-#align probability_theory.set_lintegral_cond_distrib_of_measurable_set ProbabilityTheory.set_lintegral_condDistrib_of_measurableSet
+  rw [setLIntegral_preimage_condDistrib hX hY hs ht']
+#align probability_theory.set_lintegral_cond_distrib_of_measurable_set ProbabilityTheory.setLIntegral_condDistrib_of_measurableSet
+
+@[deprecated (since := "2024-06-29")]
+alias set_lintegral_condDistrib_of_measurableSet := setLIntegral_condDistrib_of_measurableSet
 
 /-- For almost every `a : α`, the `condDistrib Y X μ` kernel applied to `X a` and a measurable set
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/
@@ -224,7 +230,7 @@ theorem condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : 
     rw [integral_toReal ((measurable_condDistrib hs).mono hX.comap_le le_rfl).aemeasurable
       (eventually_of_forall fun ω => measure_lt_top (condDistrib Y X μ (X ω)) _),
       integral_indicator_const _ (hY hs), Measure.restrict_apply (hY hs), smul_eq_mul, mul_one,
-      inter_comm, set_lintegral_condDistrib_of_measurableSet hX hY.aemeasurable hs ht]
+      inter_comm, setLIntegral_condDistrib_of_measurableSet hX hY.aemeasurable hs ht]
   · refine (Measurable.stronglyMeasurable ?_).aeStronglyMeasurable'
     exact @Measurable.ennreal_toReal _ (mβ.comap X) _ (measurable_condDistrib hs)
 #align probability_theory.cond_distrib_ae_eq_condexp ProbabilityTheory.condDistrib_ae_eq_condexp

@@ -7,8 +7,8 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
-import Mathlib.Order.Iterate
 import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Order.Iterate
 
 #align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -327,7 +327,7 @@ theorem continuous_id : Continuous (@OrderHom.id α _) := by intro c; rw [c.map_
 #align omega_complete_partial_order.continuous_id OmegaCompletePartialOrder.continuous_id
 
 theorem continuous_comp (hfc : Continuous f) (hgc : Continuous g) : Continuous (g.comp f) := by
-  dsimp [Continuous] at *; intro;
+  dsimp [Continuous] at *; intro
   rw [hfc, hgc, Chain.map_comp]
 #align omega_complete_partial_order.continuous_comp OmegaCompletePartialOrder.continuous_comp
 

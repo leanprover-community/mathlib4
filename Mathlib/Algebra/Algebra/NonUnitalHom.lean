@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.GroupTheory.GroupAction.Prod
 
 #align_import algebra.hom.non_unital_alg from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
@@ -339,7 +340,7 @@ variable {φ' : S →* R} {ψ : S →* T} {χ : R →* T}
 
 set_option linter.unusedVariables false in
 /-- The composition of morphisms is a morphism. -/
-def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.CompTriple φ ψ χ]:
+def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₛₙₐ[χ] C :=
   { (f : B →ₙ* C).comp (g : A →ₙ* B), (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) with }
 #align non_unital_alg_hom.comp NonUnitalAlgHom.comp

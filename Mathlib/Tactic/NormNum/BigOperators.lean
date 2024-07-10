@@ -30,7 +30,7 @@ This plugin is noticeably less powerful than the equivalent version in Mathlib 3
 In particular, we can't use the plugin on sums containing variables.
 (See also the TODO note "To support variables".)
 
-## TODOs
+## TODO
 
  * Support intervals: `Finset.Ico`, `Finset.Icc`, ...
  * To support variables, like in Mathlib 3, turn this into a standalone tactic that unfolds
@@ -354,7 +354,7 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.prod _ _ _ _ _]
 partial def evalFinsetProd : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const `Finset.prod [_, v]) α) β') _) s) f ←
+  let .app (.app (.app (.app (.app (.const ``Finset.prod [v, _]) α) β') _) s) f ←
     whnfR e | failure
   guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
@@ -383,7 +383,7 @@ If your finset is not supported, you can add it to the match in `Finset.proveEmp
 -/
 @[norm_num @Finset.sum _ _ _ _ _]
 partial def evalFinsetSum : NormNumExt where eval {u β} e := do
-  let .app (.app (.app (.app (.app (.const `Finset.sum [_, v]) α) β') _) s) f ←
+  let .app (.app (.app (.app (.app (.const ``Finset.sum [v, _]) α) β') _) s) f ←
     whnfR e | failure
   guard <| ← withNewMCtxDepth <| isDefEq β β'
   have α : Q(Type v) := α
