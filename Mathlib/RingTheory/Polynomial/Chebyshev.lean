@@ -244,10 +244,10 @@ theorem map_T (f : R →+* S) (n : ℤ) : map f (T R n) = T S n := by
   | one => simp
   | add_two n ih1 ih2 =>
     simp_rw [T_add_two, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X,
-      ih1, ih2];
+      ih1, ih2]
   | neg_add_one n ih1 ih2 =>
     simp_rw [T_sub_one, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
-      ih2];
+      ih2]
 #align polynomial.chebyshev.map_T Polynomial.Chebyshev.map_T
 
 @[simp]
@@ -257,10 +257,10 @@ theorem map_U (f : R →+* S) (n : ℤ) : map f (U R n) = U S n := by
   | one => simp
   | add_two n ih1 ih2 =>
     simp_rw [U_add_two, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
-      ih2];
+      ih2]
   | neg_add_one n ih1 ih2 =>
     simp_rw [U_sub_one, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_ofNat, map_X, ih1,
-      ih2];
+      ih2]
 #align polynomial.chebyshev.map_U Polynomial.Chebyshev.map_U
 
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by

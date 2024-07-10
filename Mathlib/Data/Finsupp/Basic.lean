@@ -349,7 +349,7 @@ theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M)
 #align finsupp.equiv_map_domain_zero Finsupp.equivMapDomain_zero
 
 @[to_additive (attr := simp)]
-theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N):
+theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
     prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
   simp [prod, equivMapDomain]
 

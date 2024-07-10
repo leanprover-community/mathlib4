@@ -19,7 +19,7 @@ Further development can be found on the branch `von_neumann_v2`.
 
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
 
-## Todo
+## TODO
 
 - Define von Neumann ordinals.
 - Define the basic arithmetic operations on ordinals from a purely set-theoretic perspective.

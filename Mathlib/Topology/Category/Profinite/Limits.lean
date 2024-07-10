@@ -224,7 +224,7 @@ instance : PreservesFiniteCoproducts profiniteToCompHaus := by
     (fun j ↦ profiniteToCompHaus.obj (F.obj ⟨j⟩))) (Iso.refl _)
 
 noncomputable instance : PreservesFiniteCoproducts Profinite.toTopCat.{u} where
-  preserves _ _:= (inferInstance :
+  preserves _ _ := (inferInstance :
     PreservesColimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
 
 instance : FinitaryExtensive Profinite :=
