@@ -60,7 +60,7 @@ theorem smoothGerm.coe_eq_coe (f g : C^∞⟮I, M; I', N⟯) {x : M} (h : ∀ᶠ
   rwa [Germ.coe_eq]
 
 -- xxx: is this lemma useful?
-lemma smoothGerm_iff_of_smooth_function {x : M} (a : Germ (𝓝 x) N) :
+lemma mem_smoothGerm {x : M} (a : Germ (𝓝 x) N) :
     a ∈ smoothGerm I I' N x ↔ ∃ f : SmoothMap I I' M N, Germ.ofFun f = a := by
   rfl
 
@@ -70,7 +70,7 @@ end definition
 -- All axioms are easy to prove by choosing explicit representatives.
 section subring
 
--- xxx: would this be useful? HasZero resp. HasOne imply the space of smooth germs has one...
+-- xxx: would this be useful? Zero resp. One imply the space of smooth germs has one...
 variable (I' : ModelWithCorners 𝕜 E' H')
   (R : Type*) [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
 
@@ -85,7 +85,7 @@ def smoothGerm.toSubsemigroup [SmoothMul I' R] (x : M) : Subsemigroup (Germ (�
 
 /-- If `R` is a manifold with smooth multiplication,
 `smoothGerm I I' R x` is a submonoid of `Germ (𝓝 x) R`. -/
--- FIXME: is this definition useful, given it has the same assumptions has `toSubsemigroup`?
+-- FIXME: is this definition useful, given it has the same assumptions as `toSubsemigroup`?
 def smoothGerm.toSubmonoid [SmoothMul I' R] (x : M) : Submonoid (Germ (𝓝 x) R) where
   toSubsemigroup := smoothGerm.toSubsemigroup I I' R x
   one_mem' := ⟨1, by rw [SmoothMap.coe_one, Germ.coe_one]⟩
@@ -100,7 +100,7 @@ def smoothGerm.toAddSubsemigroup [SmoothAdd I' R] (x : M) : AddSubsemigroup (Ger
     exact ⟨f + g, by rw [← hf, ← hg, SmoothMap.coe_add, Germ.coe_add]⟩
 
 /-- If `G` is an additive Lie group, `smoothGerm I I' G x` is
-  an additive subgroup of `Germ (𝓝 x) G`. -/
+an additive subgroup of `Germ (𝓝 x) G`. -/
 def smoothGerm.toAddSubgroup [LieAddGroup I' R] (x : M) : AddSubgroup (Germ (𝓝 x) R) where
   __ := smoothGerm.toAddSubsemigroup I I' R x
   zero_mem' := ⟨0, by rw [SmoothMap.coe_zero, Germ.coe_zero]⟩
