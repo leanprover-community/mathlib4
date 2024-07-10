@@ -215,6 +215,12 @@ def forget : Cat.{v, u} ⥤ ReflQuiv.{v, u} where
   obj C := ReflQuiv.of C
   map F := F.toReflPrefunctor
 
+/-- The forgetful functor from categories to quivers. -/
+@[simps]
+def forgetToQuiv : ReflQuiv.{v, u} ⥤ Quiv.{v, u} where
+  obj V := Quiv.of V
+  map F := F.toPrefunctor
+
 end ReflQuiv
 
 namespace Cat
@@ -259,15 +265,74 @@ namespace ReflQuiv
 -- We might construct `of_lift_iso_self : Paths.of ⋙ lift F ≅ F`
 -- (and then show that `lift F` is initial amongst such functors)
 -- but it would require lifting quite a bit of machinery to quivers!
+
+/-- ER: An attempt to build the adjunction data. Universe error is why this is for u u.-/
+def adj.unit.app (V : ReflQuiv.{u, u}) : V ⟶ (Cat.freeRefl ⋙ forget).obj V where
+  obj := fun X => { as := X }
+  map := fun f =>
+    (Quotient.functor (C := Cat.free.obj V.toQuiv) (Cat.FreeReflRel (V := V))).map (Paths.of.map f)
+  map_id := fun X => by
+    apply Quotient.sound
+    simp [ReflPrefunctor.map_id]
+    constructor
+
+def adj.counit.app (C : Cat) : (forget ⋙ Cat.freeRefl).obj C ⟶ (𝟭 Cat).obj C := by
+  fapply Quotient.lift
+  · exact (Quiv.adj.counit.app C)
+  · intro x y f g rel
+    cases rel
+    unfold Quiv.adj
+    simp only [id_obj, forget_obj, Cat.free_obj, Quiv.forget_obj,
+      Adjunction.mkOfHomEquiv_counit_app, Equiv.invFun_as_coe, Equiv.coe_fn_symm_mk, Quiv.lift_obj,
+      ReflQuiver.id_eq_id, Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath,
+      Prefunctor.mapPath_nil, composePath_nil]
+    exact rfl
+
 /--
 The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
 -/
 def adj : Cat.freeRefl ⊣ ReflQuiv.forget :=
+  Adjunction.mkOfUnitCounit {
+    unit := {
+      app := adj.unit.app
+    }
+    counit := {
+      app := adj.counit.app
+      naturality := by
+        intro C D F
+        simp
+        apply Quotient.lift_unique'
+        unfold adj.counit.app
+        exact (Quiv.adj.counit.naturality F)
+    }
+  }
+
+def adj.homEquiv (V : ReflQuiv) (C : Cat) : (Cat.freeRefl.obj V ⟶ C) ≃ (V ⟶ forget.obj C) where
+  toFun F := {
+    obj := sorry
+    map := sorry
+  }
+  invFun G := by
+    fapply Quotient.lift
+    · exact (Quiv.adj.homEquiv _ _).symm (forgetToQuiv.map G)
+    · intro x y f g rel
+      cases rel
+      unfold Quiv.adj
+      simp only [Cat.free_obj, Quiv.forget_obj, Adjunction.mkOfHomEquiv_homEquiv, forget_obj,
+        forgetToQuiv_map, of_val, Equiv.coe_fn_symm_mk, Quiv.lift_obj, Quiv.lift_map,
+        Prefunctor.mapPath_toPath, composePath_toPath, Prefunctor.mapPath_nil, composePath_nil]
+      exact (G.map_id x)
+  left_inv := sorry
+  right_inv := sorry
+
+def adj' : Cat.freeRefl ⊣ ReflQuiv.forget :=
   Adjunction.mkOfHomEquiv
     { homEquiv := sorry
       homEquiv_naturality_left_symm := sorry }
 
+
 end ReflQuiv
+
 
 open Opposite Simplicial
 local notation3:1000 (priority := high) X " _[" n "]" =>
