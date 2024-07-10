@@ -155,7 +155,7 @@ private lemma HasDerivAt.complex_of_real {f : ℂ → ℂ} {g : ℝ → ℝ} {g'
     (hf : DifferentiableAt ℂ f s) (hg : HasDerivAt g g' s) (hfg : ∀ s : ℝ, f ↑s = ↑(g s)) :
     HasDerivAt f ↑g' s := by
   refine HasDerivAt.congr_deriv hf.hasDerivAt ?_
-  rw [← (funext hfg ▸ hf.hasDerivAt.comp_ofReal.deriv : )]
+  rw [← (funext hfg ▸ hf.hasDerivAt.comp_ofReal.deriv :)]
   exact hg.ofReal_comp.deriv
 
 lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :

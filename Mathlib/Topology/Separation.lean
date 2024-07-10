@@ -774,7 +774,7 @@ instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
 -- see Note [lower instance priority]
 instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
     T1Space X := by
-  rw [((t1Space_TFAE X).out 0 1 : )]
+  rw [((t1Space_TFAE X).out 0 1 :)]
   intro x
   rw [← totallyDisconnectedSpace_iff_connectedComponent_singleton.mp h x]
   exact isClosed_connectedComponent
@@ -1037,7 +1037,7 @@ theorem Set.Finite.isGδ {s : Set X} [T1Space X] (hs : s.Finite) : IsGδ s :=
 #align set.finite.is_Gδ Set.Finite.isGδ
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
-  rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 : )]
+  rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
   constructor
   · intro h x y xspecy
     rw [← Inducing.specializes_iff inducing_mk, h xspecy] at *
@@ -2226,7 +2226,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r : RegularSpace X] [LindelofSp
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
     wlog ains : a ∈ s
     · exact ⟨∅, isOpen_empty, SeparatedNhds.empty_left t |>.disjoint_closure_left, fun a ↦ ains a⟩
-    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 : ).mp r a tᶜ <|
+    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 :).mp r a tᶜ <|
       t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains)
     exact
       ⟨interior n,
@@ -2559,7 +2559,7 @@ open SeparationQuotient
 /-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space. -/
 instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) where
   t1 := by
-    rwa [((t1Space_TFAE (SeparationQuotient X)).out 1 0 : ), SeparationQuotient.t1Space_iff]
+    rwa [((t1Space_TFAE (SeparationQuotient X)).out 1 0 :), SeparationQuotient.t1Space_iff]
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     apply completely_normal <;> rw [← preimage_mk_closure]

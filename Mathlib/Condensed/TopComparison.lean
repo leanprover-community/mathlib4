@@ -114,7 +114,7 @@ noncomputable def TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       compHausToTop.{u} X
     intro Z B π he
-    rw [((CompHaus.effectiveEpi_tfae π).out 0 2 : )] at he
+    rw [((CompHaus.effectiveEpi_tfae π).out 0 2 :)] at he
     apply QuotientMap.of_surjective_continuous he π.continuous )
 
 

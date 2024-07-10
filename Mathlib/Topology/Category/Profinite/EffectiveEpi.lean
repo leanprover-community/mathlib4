@@ -122,7 +122,7 @@ theorem effectiveEpiFamily_tfae
   · intro; infer_instance
   tfae_have 3 ↔ 1
   · erw [((CompHaus.effectiveEpiFamily_tfae
-      (fun a ↦ profiniteToCompHaus.obj (X a)) (fun a ↦ profiniteToCompHaus.map (π a))).out 2 0 : )]
+      (fun a ↦ profiniteToCompHaus.obj (X a)) (fun a ↦ profiniteToCompHaus.map (π a))).out 2 0 :)]
     exact ⟨fun h ↦ profiniteToCompHaus.finite_effectiveEpiFamily_of_map _ _ h,
       fun _ ↦ inferInstance⟩
   tfae_finish

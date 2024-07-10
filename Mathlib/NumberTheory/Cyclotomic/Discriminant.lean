@@ -210,7 +210,7 @@ theorem discr_odd_prime [IsCyclotomicExtension {p} K L] [hp : Fact (p : ℕ).Pri
   have : IsCyclotomicExtension {p ^ (0 + 1)} K L := by
     rw [zero_add, pow_one]
     infer_instance
-  have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1) : ) := by simpa using hζ
+  have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1) :) := by simpa using hζ
   convert discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
   · rw [zero_add, pow_one, totient_prime hp.out]
   · rw [_root_.pow_zero, one_mul, zero_add, mul_one, Nat.sub_sub]
