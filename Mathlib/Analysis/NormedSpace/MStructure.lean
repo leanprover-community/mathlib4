@@ -432,7 +432,7 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
     IsLprojection (NormedSpace.Dual 𝕜 A) P ∧
       (LinearMap.range P) = NormedSpace.polarSubmodule (E := A) 𝕜 m.toSubMulAction
 
-#check OrderedCommRing
+#check (le_add_iff_nonneg_right 5).mpr
 
 open NormedSpace in
 open Metric in
@@ -450,12 +450,12 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     let E := P₁ ⊔ P₂
     rw [ ← hE₁.2, ← hE₂.2 ]
     rw [ (IsLprojection.range_sum P₁ P₂)]
-    intro x hx'
-    rw [Set.mem_inter_iff] at hx'
-    rw [IsLprojection.coe_sup] at hx'
+    intro x hx
+    rw [Set.mem_inter_iff] at hx
+    rw [IsLprojection.coe_sup] at hx
     have ex : E.val x = x := by
       apply proj_apply _ _
-      exact Set.mem_of_mem_inter_left hx'
+      exact Set.mem_of_mem_inter_left hx
       exact E.prop.proj
 
 
@@ -463,20 +463,11 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       --sorry
     simp only [IsLprojection.coe_sup, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
       ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_mul, Pi.sub_apply,
-      ContinuousLinearMap.add_apply, Function.comp_apply, mem_closedBall, dist_zero_right] at hx'
+      ContinuousLinearMap.add_apply, Function.comp_apply, mem_closedBall, dist_zero_right] at hx
     --cases' hx'.1 with x hx
     --rw [← hx]
     let y := E₁ x
     let z := E₂ ((1 - E₁) x)
-    have e1 : y ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 := by
-      simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
-      constructor
-      · have e : polar 𝕜 ↑m₁ = SetLike.coe (LinearMap.range E₁) := by
-          rw [hE₁.2]
-          rfl
-        rw [e]
-        simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
-      · sorry
     have e3 : x = y + z := calc
       x = E.val x := by rw [ex]
       _ = E₁ x + E₂ x - E₁ (E₂ x) := rfl
@@ -498,6 +489,15 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       _ ≤ ‖E₁ x‖ + ‖(1 - E₁) x‖ := by rw [one_mul]
       _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := by exact Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
       _ = ‖x‖ := by rw [← hE₁.1.Lnorm]
+    have e1 : y ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 := by
+      simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+      constructor
+      · have e : polar 𝕜 ↑m₁ = SetLike.coe (LinearMap.range E₁) := by
+          rw [hE₁.2]
+          rfl
+        rw [e]
+        simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
+      · exact le_trans (le_trans ((le_add_iff_nonneg_right ‖y‖).mpr (norm_nonneg _)) e4) hx.2
 
 
     --rw [convexHull]
