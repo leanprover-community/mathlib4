@@ -8,6 +8,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Spread
+import Mathlib.Util.WhatsNew
 
 #align_import data.pi.algebra from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -126,6 +127,7 @@ instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
 instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
+whatsnew in
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
 theorem pow_apply [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) (i : I) : (x ^ b) i = x i ^ b :=
   rfl

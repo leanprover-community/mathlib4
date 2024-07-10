@@ -1185,8 +1185,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     | Except.error errMsg => throwError errMsg
     | Except.ok attrImpl =>
       let runAttr := do
-        attrImpl.add src attr.stx attr.kind
-        attrImpl.add tgt attr.stx attr.kind
+        for decl in allDecls do
+          attrImpl.add decl attr.stx attr.kind
       -- not truly an elaborator, but a sensible target for go-to-definition
       let elaborator := attrImpl.ref
       if (← getInfoState).enabled && (← getEnv).contains elaborator then
