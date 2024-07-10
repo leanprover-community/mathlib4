@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Matrix.AbsoluteValue
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 
 #align_import number_theory.class_number.finite from "leanprover-community/mathlib"@"ea0bcd84221246c801a6f8fbe8a4372f6d04b176"
 
