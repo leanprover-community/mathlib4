@@ -62,21 +62,21 @@ protected theorem Connected.exists_walk_length_eq_edist  (hconn : G.Connected) (
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   (hconn u v).exists_walk_length_eq_edist
 
-theorem edist_le_length (p : G.Walk u v) :
+theorem edist_le (p : G.Walk u v) :
     G.edist u v ≤ p.length :=
   sInf_le ⟨p, rfl⟩
 
 @[simp]
-theorem edist_eq_zero_iff_eq :
+theorem edist_eq_zero_iff :
     G.edist u v = 0 ↔ u = v := by
   apply Iff.intro <;> simp [edist, ENat.iInf_eq_zero]
 
-theorem edist_self_eq_zero : edist G v v = 0 :=
-  edist_eq_zero_iff_eq.mpr rfl
+theorem edist_self : edist G v v = 0 :=
+  edist_eq_zero_iff.mpr rfl
 
 theorem pos_edist_of_ne (hne : u ≠ v) :
     0 < G.edist u v :=
-  pos_iff_ne_zero.mpr <| edist_eq_zero_iff_eq.ne.mpr hne
+  pos_iff_ne_zero.mpr <| edist_eq_zero_iff.ne.mpr hne
 
 lemma edist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
     G.edist u v = ⊤ := by
@@ -91,14 +91,14 @@ protected theorem Connected.edist_triangle (hconn : G.Connected) :
   obtain ⟨p, hp⟩ := hconn.exists_walk_length_eq_edist u v
   obtain ⟨q, hq⟩ := hconn.exists_walk_length_eq_edist v w
   rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
-  apply edist_le_length
+  apply edist_le
 
 theorem edist_comm : G.edist u v = G.edist v u := by
   rw [edist_eq_sInf, ← Set.image_univ, ← Set.image_univ_of_surjective Walk.reverse_surjective,
     ← Set.image_comp, Set.image_univ, Function.comp_def]
   simp_rw [Walk.length_reverse, ← edist_eq_sInf]
 
-lemma exists_walk_eq_length_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
+lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   (Reachable.of_edist_ne_top h).exists_walk_length_eq_edist
 
@@ -107,9 +107,9 @@ The extended distance between vertices is equal to `1` if and only if these vert
 -/
 theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨w, hw⟩ := exists_walk_eq_length_of_edist_ne_top <| by rw [h]; simp
+  · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
-  · exact le_antisymm (edist_le_length h.toWalk) (ENat.one_le_iff_pos.mpr <| pos_edist_of_ne h.ne)
+  · exact le_antisymm (edist_le h.toWalk) (ENat.one_le_iff_pos.mpr <| pos_edist_of_ne h.ne)
 
 end edist
 
@@ -138,34 +138,34 @@ protected theorem Connected.exists_walk_length_eq_dist (hconn : G.Connected) (u 
   dist_eq_sInf ▸ (hconn u v).exists_walk_length_eq_dist
 #align simple_graph.connected.exists_walk_of_dist SimpleGraph.Connected.exists_walk_length_eq_dist
 
-theorem dist_le_length (p : G.Walk u v) : G.dist u v ≤ p.length :=
+theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
   dist_eq_sInf ▸ Nat.sInf_le ⟨p, rfl⟩
-#align simple_graph.dist_le SimpleGraph.dist_le_length
+#align simple_graph.dist_le SimpleGraph.dist_le
 
 @[simp]
 theorem dist_eq_zero_iff_eq_or_not_reachable :
     G.dist u v = 0 ↔ u = v ∨ ¬G.Reachable u v := by simp [dist_eq_sInf, Nat.sInf_eq_zero, Reachable]
 #align simple_graph.dist_eq_zero_iff_eq_or_not_reachable SimpleGraph.dist_eq_zero_iff_eq_or_not_reachable
 
-theorem dist_self_eq_zero : dist G v v = 0 := by simp
-#align simple_graph.dist_self SimpleGraph.dist_self_eq_zero
+theorem dist_self : dist G v v = 0 := by simp
+#align simple_graph.dist_self SimpleGraph.dist_self
 
-protected theorem Reachable.dist_eq_zero_iff_eq (hr : G.Reachable u v) :
+protected theorem Reachable.dist_eq_zero_iff (hr : G.Reachable u v) :
     G.dist u v = 0 ↔ u = v := by simp [hr]
-#align simple_graph.reachable.dist_eq_zero_iff SimpleGraph.Reachable.dist_eq_zero_iff_eq
+#align simple_graph.reachable.dist_eq_zero_iff SimpleGraph.Reachable.dist_eq_zero_iff
 
 protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v) :
     0 < G.dist u v :=
   Nat.pos_of_ne_zero (by simp [h, hne])
 #align simple_graph.reachable.pos_dist_of_ne SimpleGraph.Reachable.pos_dist_of_ne
 
-protected theorem Connected.dist_eq_zero_iff_eq (hconn : G.Connected) :
+protected theorem Connected.dist_eq_zero_iff (hconn : G.Connected) :
     G.dist u v = 0 ↔ u = v := by simp [hconn u v]
-#align simple_graph.connected.dist_eq_zero_iff SimpleGraph.Connected.dist_eq_zero_iff_eq
+#align simple_graph.connected.dist_eq_zero_iff SimpleGraph.Connected.dist_eq_zero_iff
 
 protected theorem Connected.pos_dist_of_ne (hconn : G.Connected) (hne : u ≠ v) :
     0 < G.dist u v :=
-  Nat.pos_of_ne_zero fun h ↦ False.elim <| hne <| (hconn.dist_eq_zero_iff_eq).mp h
+  Nat.pos_of_ne_zero fun h ↦ False.elim <| hne <| (hconn.dist_eq_zero_iff).mp h
 #align simple_graph.connected.pos_dist_of_ne SimpleGraph.Connected.pos_dist_of_ne
 
 theorem dist_eq_zero_of_not_reachable (h : ¬G.Reachable u v) : G.dist u v = 0 := by
@@ -184,7 +184,7 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
   obtain ⟨p, hp⟩ := hconn.exists_walk_length_eq_dist u v
   obtain ⟨q, hq⟩ := hconn.exists_walk_length_eq_dist v w
   rw [← hp, ← hq, ← Walk.length_append]
-  apply dist_le_length
+  apply dist_le
 #align simple_graph.connected.dist_triangle SimpleGraph.Connected.dist_triangle
 
 theorem dist_comm : G.dist u v = G.dist v u := by
@@ -217,7 +217,7 @@ theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u
     apply Walk.bypass_eq_self_of_length_le
     calc p.length
       _ = G.dist u v := hp
-      _ ≤ p.bypass.length := dist_le_length p.bypass
+      _ ≤ p.bypass.length := dist_le p.bypass
   rw [← this]
   apply Walk.bypass_isPath
 
