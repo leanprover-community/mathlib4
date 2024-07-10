@@ -20,6 +20,10 @@ We also prove basic properties of it.
   the sum of degrees of `a` and `b`
 - `Polynomial.natDegree_wronskian_lt_add`: `natDegree` version of the above theorem.
   We need to assume that the Wronskian is nonzero. (Otherwise, `a = b = 1` gives a counterexample.)
+
+## TODO
+
+- Define Wronskian for n-tuple of polynomials, not necessarily two.
 -/
 
 noncomputable section
