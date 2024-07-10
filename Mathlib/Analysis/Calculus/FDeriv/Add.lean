@@ -540,8 +540,7 @@ lemma DifferentiableAt.add_iff_left (hg : DifferentiableAt 𝕜 g x) :
 @[simp]
 lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 g x := by
-  rw [show (fun y ↦ f y + g y) = (fun y ↦ g y + f y) by ext; rw [add_comm]]
-  exact hg.add_iff_left
+  simp only [add_comm (f _), hg.add_iff_left]
 
 @[fun_prop]
 theorem DifferentiableOn.sub (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s) :
