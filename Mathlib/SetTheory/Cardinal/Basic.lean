@@ -546,13 +546,13 @@ section deprecated
 set_option linter.deprecated false
 
 @[deprecated (since := "2023-02-11")]
-theorem power_bit0 (a b : Cardinal) : a ^ bit0 b = a ^ b * a ^ b :=
-  power_add
+theorem power_bit0 (a b : Cardinal) : a ^ (2 * b) = a ^ b * a ^ b := by
+  rw [two_mul, power_add]
 #align cardinal.power_bit0 Cardinal.power_bit0
 
 @[deprecated (since := "2023-02-11")]
-theorem power_bit1 (a b : Cardinal) : a ^ bit1 b = a ^ b * a ^ b * a := by
-  rw [bit1, ← power_bit0, power_add, power_one]
+theorem power_bit1 (a b : Cardinal) : a ^ (2 * b + 1) = a ^ b * a ^ b * a := by
+  rw [← power_bit0, power_add, power_one]
 #align cardinal.power_bit1 Cardinal.power_bit1
 
 end deprecated
@@ -626,12 +626,13 @@ section deprecated
 set_option linter.deprecated false
 
 @[simp, deprecated (since := "2023-02-11")]
-theorem lift_bit0 (a : Cardinal) : lift.{v} (bit0 a) = bit0 (lift.{v} a) :=
-  lift_add a a
+theorem lift_bit0 (a : Cardinal) : lift.{v} (2 * a) = 2 * (lift.{v} a) := by
+  rw [two_mul, two_mul, lift_add a a]
 #align cardinal.lift_bit0 Cardinal.lift_bit0
 
 @[simp, deprecated (since := "2023-02-11")]
-theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by simp [bit1]
+theorem lift_bit1 (a : Cardinal) : lift.{v} (2 * a + 1) = 2 * (lift.{v} a) + 1 := by
+  rw [lift_add, lift_bit0, lift_one]
 #align cardinal.lift_bit1 Cardinal.lift_bit1
 
 end deprecated

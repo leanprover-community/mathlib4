@@ -624,7 +624,7 @@ section Numeral
 set_option linter.deprecated false
 
 @[deprecated (since := "2023-04-02"), simp]
-theorem bit0_apply [Add α] (M : Matrix m m α) (i : m) (j : m) : (bit0 M) i j = bit0 (M i j) :=
+theorem bit0_apply [Add α] (M : Matrix m m α) (i : m) (j : m) : (M + M) i j = (M i j) + (M i j) :=
   rfl
 #align matrix.bit0_apply Matrix.bit0_apply
 
@@ -632,8 +632,7 @@ variable [AddZeroClass α] [One α]
 
 @[deprecated (since := "2023-04-02")]
 theorem bit1_apply (M : Matrix n n α) (i : n) (j : n) :
-    (bit1 M) i j = if i = j then bit1 (M i j) else bit0 (M i j) := by
-  dsimp [bit1]
+    (M + M + 1) i j = if i = j then (M i j) + (M i j) + 1 else (M i j) + (M i j) := by
   by_cases h : i = j
   · subst h
     simp
@@ -641,12 +640,12 @@ theorem bit1_apply (M : Matrix n n α) (i : n) (j : n) :
 #align matrix.bit1_apply Matrix.bit1_apply
 
 @[deprecated (since := "2023-04-02"), simp]
-theorem bit1_apply_eq (M : Matrix n n α) (i : n) : (bit1 M) i i = bit1 (M i i) := by
+theorem bit1_apply_eq (M : Matrix n n α) (i : n) : (M + M + 1) i i = (M i i) + (M i i) + 1 := by
   simp [bit1_apply]
 #align matrix.bit1_apply_eq Matrix.bit1_apply_eq
 
 @[deprecated (since := "2023-04-02"), simp]
-theorem bit1_apply_ne (M : Matrix n n α) {i j : n} (h : i ≠ j) : (bit1 M) i j = bit0 (M i j) := by
+theorem bit1_apply_ne (M : Matrix n n α) {i j : n} (h : i ≠ j) : (M + M + 1) i j = (M i j) + (M i j) := by
   simp [bit1_apply, h]
 #align matrix.bit1_apply_ne Matrix.bit1_apply_ne
 

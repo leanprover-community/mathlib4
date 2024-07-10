@@ -197,19 +197,19 @@ section deprecated
 
 set_option linter.deprecated false
 
-theorem fib_bit0 (n : ℕ) : fib (bit0 n) = fib n * (2 * fib (n + 1) - fib n) := by
+theorem fib_bit0 (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   rw [bit0_eq_two_mul, fib_two_mul]
 #align nat.fib_bit0 Nat.fib_bit0
 
-theorem fib_bit1 (n : ℕ) : fib (bit1 n) = fib (n + 1) ^ 2 + fib n ^ 2 := by
+theorem fib_bit1 (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 := by
   rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_one]
 #align nat.fib_bit1 Nat.fib_bit1
 
-theorem fib_bit0_succ (n : ℕ) : fib (bit0 n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 :=
+theorem fib_bit0_succ (n : ℕ) : fib (2 * n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 :=
   fib_bit1 n
 #align nat.fib_bit0_succ Nat.fib_bit0_succ
 
-theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
+theorem fib_bit1_succ (n : ℕ) : fib (2 * n + 1 + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
   rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_two]
 #align nat.fib_bit1_succ Nat.fib_bit1_succ
 

@@ -184,7 +184,7 @@ theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
 
 set_option linter.deprecated false in
 @[simp]
-theorem zpow_bit0_abs (a : α) (p : ℤ) : |a| ^ bit0 p = a ^ bit0 p :=
+theorem zpow_bit0_abs (a : α) (p : ℤ) : |a| ^ (2 * p) = a ^ (2 * p) :=
   (even_bit0 _).zpow_abs _
 #align zpow_bit0_abs zpow_bit0_abs
 

@@ -659,13 +659,13 @@ theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
 
 set_option linter.deprecated false in
 @[simp]
-theorem bit0_comp : comp (bit0 p : R[X]) q = bit0 (p.comp q) := by simp only [bit0, add_comp]
+theorem bit0_comp : comp (2 * p : R[X]) q = 2 * (p.comp q) := by simp only [two_mul, add_comp]
 #align polynomial.bit0_comp Polynomial.bit0_comp
 
 set_option linter.deprecated false in
 @[simp]
-theorem bit1_comp : comp (bit1 p : R[X]) q = bit1 (p.comp q) := by
-  simp only [bit1, add_comp, bit0_comp, one_comp]
+theorem bit1_comp : comp (2 * p + 1 : R[X]) q = 2 * (p.comp q) + 1 := by
+  simp only [add_comp, bit0_comp, one_comp]
 #align polynomial.bit1_comp Polynomial.bit1_comp
 
 @[simp]

@@ -35,24 +35,25 @@ theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_
 
 set_option linter.deprecated false in
 @[simp]
-theorem bit0_eq_zero : (bit0 : R → R) = 0 := by
+theorem bit0_eq_zero : (2 * · : R → R) = 0 := by
   funext
+  rw [two_mul]
   exact add_self_eq_zero _
 #align char_two.bit0_eq_zero CharTwo.bit0_eq_zero
 
 set_option linter.deprecated false in
-theorem bit0_apply_eq_zero (x : R) : (bit0 x : R) = 0 := by simp
+theorem bit0_apply_eq_zero (x : R) : (2 * x : R) = 0 := by simp
 #align char_two.bit0_apply_eq_zero CharTwo.bit0_apply_eq_zero
 
 set_option linter.deprecated false in
 @[simp]
-theorem bit1_eq_one : (bit1 : R → R) = 1 := by
+theorem bit1_eq_one : (2 * · + 1 : R → R) = 1 := by
   funext
-  simp [bit1]
+  simp
 #align char_two.bit1_eq_one CharTwo.bit1_eq_one
 
 set_option linter.deprecated false in
-theorem bit1_apply_eq_one (x : R) : (bit1 x : R) = 1 := by simp
+theorem bit1_apply_eq_one (x : R) : (2 * x + 1 : R) = 1 := by simp
 #align char_two.bit1_apply_eq_one CharTwo.bit1_apply_eq_one
 
 end Semiring

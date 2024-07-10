@@ -274,7 +274,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
     have m : Q(ℕ) := mkRawNatLit (n / 2)
-    haveI' : $b =Q bit0 $m := ⟨⟩
+    haveI' : $b =Q 2 * $m := ⟨⟩
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
     haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute

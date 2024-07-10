@@ -293,9 +293,9 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
     by_cases hn : n = 0
     · subst hn
       simp only [ne_eq, bit_eq_zero, true_and, Bool.not_eq_false] at h
-      simp only [h, bit_true, bit1_zero, factorial, mul_one, Nat.isUnit_iff, cast_one]
+      simp only [h, bit_true, factorial, mul_one, Nat.isUnit_iff, cast_one]
       rw [Prime.multiplicity_one]
-      · simp only [zero_lt_one]
+      · simp [zero_lt_one]
       · decide
     have : multiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.multiplicity_factorial_mul]
@@ -305,8 +305,7 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
     cases b
     · simpa [bit0_eq_two_mul n]
     · suffices multiplicity 2 (2 * n + 1) + multiplicity 2 (2 * n)! < ↑(2 * n) + 1 by
-        simpa [multiplicity.mul, h2, prime_two, Nat.bit1_eq_succ_bit0, bit0_eq_two_mul n,
-          factorial]
+        simpa [multiplicity.mul, h2, prime_two, bit, factorial]
       rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
       refine this.trans ?_
       exact mod_cast lt_succ_self _

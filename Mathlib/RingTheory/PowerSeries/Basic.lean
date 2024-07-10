@@ -896,14 +896,14 @@ set_option linter.uppercaseLean3 false in
 
 set_option linter.deprecated false in
 @[simp, norm_cast]
-theorem coe_bit0 : ((bit0 φ : R[X]) : PowerSeries R) = bit0 (φ : PowerSeries R) :=
-  coe_add φ φ
+theorem coe_bit0 : ((2 * φ : R[X]) : PowerSeries R) = 2 * (φ : PowerSeries R) := by
+  simp only [two_mul, coe_add]
 #align polynomial.coe_bit0 Polynomial.coe_bit0
 
 set_option linter.deprecated false in
 @[simp, norm_cast]
-theorem coe_bit1 : ((bit1 φ : R[X]) : PowerSeries R) = bit1 (φ : PowerSeries R) := by
-  rw [bit1, bit1, coe_add, coe_one, coe_bit0]
+theorem coe_bit1 : ((2 * φ + 1 : R[X]) : PowerSeries R) = 2 * (φ : PowerSeries R) + 1 := by
+  rw [coe_add, coe_one, coe_bit0]
 #align polynomial.coe_bit1 Polynomial.coe_bit1
 
 @[simp, norm_cast]

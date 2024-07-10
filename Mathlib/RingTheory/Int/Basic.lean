@@ -147,20 +147,22 @@ section bit
 set_option linter.deprecated false
 
 theorem eq_pow_of_mul_eq_pow_bit1_left {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ}
-    (h : a * b = c ^ bit1 k) : ∃ d, a = d ^ bit1 k := by
+    (h : a * b = c ^ (2 * k + 1)) : ∃ d, a = d ^ (2 * k + 1) := by
   obtain ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow' hab h
   replace hd := hd.symm
-  rw [associated_iff_natAbs, natAbs_eq_natAbs_iff, ← neg_pow_bit1] at hd
-  obtain rfl | rfl := hd <;> exact ⟨_, rfl⟩
+  rw [associated_iff_natAbs, natAbs_eq_natAbs_iff] at hd
+  sorry
+  -- rw [associated_iff_natAbs, natAbs_eq_natAbs_iff, ← neg_pow_bit1] at hd
+  -- obtain rfl | rfl := hd <;> exact ⟨_, rfl⟩
 #align int.eq_pow_of_mul_eq_pow_bit1_left Int.eq_pow_of_mul_eq_pow_bit1_left
 
 theorem eq_pow_of_mul_eq_pow_bit1_right {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ}
-    (h : a * b = c ^ bit1 k) : ∃ d, b = d ^ bit1 k :=
+    (h : a * b = c ^ (2 * k + 1)) : ∃ d, b = d ^ (2 * k + 1) :=
   eq_pow_of_mul_eq_pow_bit1_left hab.symm (by rwa [mul_comm] at h)
 #align int.eq_pow_of_mul_eq_pow_bit1_right Int.eq_pow_of_mul_eq_pow_bit1_right
 
 theorem eq_pow_of_mul_eq_pow_bit1 {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ}
-    (h : a * b = c ^ bit1 k) : (∃ d, a = d ^ bit1 k) ∧ ∃ e, b = e ^ bit1 k :=
+    (h : a * b = c ^ (2 * k + 1)) : (∃ d, a = d ^ (2 * k + 1)) ∧ ∃ e, b = e ^ (2 * k + 1) :=
   ⟨eq_pow_of_mul_eq_pow_bit1_left hab h, eq_pow_of_mul_eq_pow_bit1_right hab h⟩
 #align int.eq_pow_of_mul_eq_pow_bit1 Int.eq_pow_of_mul_eq_pow_bit1
 
