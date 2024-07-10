@@ -1,6 +1,5 @@
 Mathlib/Data/ByteArray.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/UnionFind.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Exception.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Expr/ReplaceRec.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late

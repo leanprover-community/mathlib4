@@ -19,7 +19,7 @@ MDifferentiable.
 
 noncomputable section
 
-open UpperHalfPlane Filter Function Complex Manifold
+open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
 
 namespace EisensteinSeries
 
