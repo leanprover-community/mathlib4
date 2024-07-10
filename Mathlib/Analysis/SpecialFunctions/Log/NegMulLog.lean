@@ -158,7 +158,7 @@ lemma not_continuousAt_deriv_mul_log_zero :
     ¬ ContinuousAt (deriv (fun (x : ℝ) ↦ x * log x)) 0 :=
   not_continuousAt_of_tendsto_nhdsWithin_Ioi_atBot tendsto_deriv_mul_log_nhdsWithin_zero
 
-lemma deriv2_mul_log {x : ℝ} : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := by
+lemma deriv2_mul_log (x : ℝ) : deriv^[2] (fun x ↦ x * log x) x = x⁻¹ := by
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, Function.comp_apply]
   by_cases hx : x ≠ 0
   · suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ x * log x) y = log y + 1 by
@@ -239,9 +239,9 @@ lemma hasDerivAt_negMulLog {x : ℝ} (hx : x ≠ 0) : HasDerivAt negMulLog (- lo
   refine DifferentiableOn.differentiableAt differentiableOn_negMulLog ?_
   simp [hx]
 
-lemma deriv2_negMulLog {x : ℝ} : deriv^[2] negMulLog x = - x⁻¹ := by
+lemma deriv2_negMulLog (x : ℝ) : deriv^[2] negMulLog x = - x⁻¹ := by
   rw [negMulLog_eq_neg]
-  have h := deriv2_mul_log (x := x)
+  have h := deriv2_mul_log
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp,
     Function.comp_apply, deriv.neg', differentiableAt_id', differentiableAt_log_iff, ne_eq] at h ⊢
   rw [h]
