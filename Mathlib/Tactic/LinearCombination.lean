@@ -42,16 +42,16 @@ namespace Mathlib.Tactic.LinearCombination
 open Lean hiding Rat
 open Elab Meta Term
 
-theorem add_eq_const [Add α] (p : a = b) (c : α) : a + c = b + c := congr($p + c)
-theorem add_const_eq [Add α] (p : b = c) (a : α) : a + b = a + c := congr(a + $p)
-theorem add_eq_eq [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := congr($p₁ + $p₂)
+theorem add_eq_const [Add α] (p : a = b) (c : α) : a + c = b + c := p ▸ rfl
+theorem add_const_eq [Add α] (p : b = c) (a : α) : a + b = a + c := p ▸ rfl
+theorem add_eq_eq [Add α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ + a₂ = b₁ + b₂ := p₁ ▸ p₂ ▸ rfl
 
 theorem add_le_eq [Add α] [LE α] [CovariantClass α α (Function.swap (· + ·)) (· ≤ ·)]
-    {a₁ b₁ a₂ b₂ : α} (p₁ : a₁ ≤ b₁) (p₂ : a₂ = b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
+    (p₁ : (a₁:α) ≤ b₁) (p₂ : a₂ = b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
   p₂ ▸ add_le_add_right p₁ b₂
 
-theorem add_eq_le [Add α] [LE α] [CovariantClass α α (· + ·) (· ≤ ·)] {a₁ b₁ a₂ b₂ : α}
-    (p₁ : a₁ = b₁) (p₂ : a₂ ≤ b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
+theorem add_eq_le [Add α] [LE α] [CovariantClass α α (· + ·) (· ≤ ·)]
+    (p₁ : (a₁:α) = b₁) (p₂ : a₂ ≤ b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
   p₁ ▸ add_le_add_left p₂ b₁
 
 theorem add_lt_eq [Add α] [LT α] [CovariantClass α α (Function.swap (· + ·)) (· < ·)]
@@ -62,26 +62,17 @@ theorem add_eq_lt [Add α] [LT α] [CovariantClass α α (· + ·) (· < ·)] {a
     (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
   p₁ ▸ add_lt_add_left p₂ b₁
 
-alias add_le_const := add_le_add_right
-alias add_const_le := add_le_add_left
-alias add_le_le := add_le_add
-alias add_lt_const := add_lt_add_right
-alias add_const_lt := add_lt_add_left
-alias add_lt_lt := add_lt_add
-alias add_lt_le := add_lt_add_of_lt_of_le
-alias add_le_lt := add_lt_add_of_le_of_lt
-
-theorem sub_eq_const [Sub α] (p : a = b) (c : α) : a - c = b - c := congr($p - c)
-theorem sub_const_eq [Sub α] (p : b = c) (a : α) : a - b = a - c := congr(a - $p)
-theorem sub_eq_eq [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := congr($p₁ - $p₂)
-theorem mul_eq_const [Mul α] (p : a = b) (c : α) : a * c = b * c := congr($p * c)
-theorem mul_const_eq [Mul α] (p : b = c) (a : α) : a * b = a * c := congr(a * $p)
-theorem mul_eq_eq [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := congr($p₁ * $p₂)
-theorem div_eq_const [Div α] (p : a = b) (c : α) : a / c = b / c := congr($p / c)
-theorem div_const_eq [Div α] (p : b = c) (a : α) : a / b = a / c := congr(a / $p)
-theorem div_eq_eq [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := congr($p₁ / $p₂)
-theorem neg_eq [Neg α] (p : (a:α) = b) : -a = -b := congr(-$p)
-theorem inv_eq [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := congr($p⁻¹)
+theorem sub_eq_const [Sub α] (p : a = b) (c : α) : a - c = b - c := p ▸ rfl
+theorem sub_const_eq [Sub α] (p : b = c) (a : α) : a - b = a - c := p ▸ rfl
+theorem sub_eq_eq [Sub α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ - a₂ = b₁ - b₂ := p₁ ▸ p₂ ▸ rfl
+theorem mul_eq_const [Mul α] (p : a = b) (c : α) : a * c = b * c := p ▸ rfl
+theorem mul_const_eq [Mul α] (p : b = c) (a : α) : a * b = a * c := p ▸ rfl
+theorem mul_eq_eq [Mul α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ * a₂ = b₁ * b₂ := p₁ ▸ p₂ ▸ rfl
+theorem div_eq_const [Div α] (p : a = b) (c : α) : a / c = b / c := p ▸ rfl
+theorem div_const_eq [Div α] (p : b = c) (a : α) : a / b = a / c := p ▸ rfl
+theorem div_eq_eq [Div α] (p₁ : (a₁:α) = b₁) (p₂ : a₂ = b₂) : a₁ / a₂ = b₁ / b₂ := p₁ ▸ p₂ ▸ rfl
+theorem neg_eq [Neg α] (p : (a:α) = b) : -a = -b := p ▸ rfl
+theorem inv_eq [Inv α] (p : (a:α) = b) : a⁻¹ = b⁻¹ := p ▸ rfl
 
 inductive RelType
   | Eq
@@ -104,24 +95,24 @@ def _root_.Lean.Expr.relType (e : Expr) : MetaM (Option RelType) := do
 
 def RelType.addRelConstData : RelType → RelType × Name
   | Eq => (Eq, ``add_const_eq)
-  | Le => (Le, ``add_const_le)
-  | Lt => (Lt, ``add_const_lt)
+  | Le => (Le, ``add_le_add_right)
+  | Lt => (Lt, ``add_lt_add_right)
 
 def RelType.addConstRelData : RelType → RelType × Name
   | Eq => (Eq, ``add_eq_const)
-  | Le => (Le, ``add_le_const)
-  | Lt => (Lt, ``add_lt_const)
+  | Le => (Le, ``add_le_add_left)
+  | Lt => (Lt, ``add_lt_add_left)
 
 def RelType.addRelRelData : RelType → RelType → RelType × Name
   | Eq, Eq => (Eq, ``add_eq_eq)
   | Eq, Le => (Le, ``add_eq_le)
   | Eq, Lt => (Lt, ``add_eq_lt)
   | Le, Eq => (Le, ``add_le_eq)
-  | Le, Le => (Le, ``add_le_le)
-  | Le, Lt => (Lt, ``add_le_lt)
+  | Le, Le => (Le, ``add_le_add)
+  | Le, Lt => (Lt, ``add_lt_add_of_le_of_lt)
   | Lt, Eq => (Lt, ``add_lt_eq)
-  | Lt, Le => (Lt, ``add_lt_le)
-  | Lt, Lt => (Lt, ``add_lt_lt)
+  | Lt, Le => (Lt, ``add_lt_add_of_lt_of_le)
+  | Lt, Lt => (Lt, ``add_lt_add)
 
 def mkRelConst (d : RelType × Name) (p₂ e₁ : Term) : TermElabM (Option (RelType × Term)) :=
   let i := mkIdent d.2
