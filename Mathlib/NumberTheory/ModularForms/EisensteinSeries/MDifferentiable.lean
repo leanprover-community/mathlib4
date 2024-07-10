@@ -19,9 +19,7 @@ MDifferentiable.
 
 noncomputable section
 
-open ModularForm EisensteinSeries UpperHalfPlane Set Filter Function Complex Manifold
-
-open scoped Topology BigOperators Nat Classical UpperHalfPlane
+open UpperHalfPlane Filter Function Complex Manifold CongruenceSubgroup
 
 namespace EisensteinSeries
 
