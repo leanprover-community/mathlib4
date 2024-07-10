@@ -391,8 +391,8 @@ private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
 
 private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := by
   induction' p with m s
-  rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero], mk'_smul_mk,
-    zero_smul, zero_mk]
+  rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero],
+    mk'_smul_mk, zero_smul, zero_mk]
 
 noncomputable instance isModule : Module T (LocalizedModule S M) where
   smul := (· • ·)

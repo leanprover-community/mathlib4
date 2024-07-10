@@ -607,7 +607,8 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
               exact rpow_le_rpow_of_exponent_nonpos (by positivity) (hf₁ u hu).1 (le_of_lt hp)
           _ = _ := by rw [← mul_rpow (le_of_lt hc₁_mem) (le_of_lt hf_pos)]
     | .inr (.inr hneg) => -- eventually negative (which is impossible)
-      have : ∀ᶠ (_ : ℝ) in atTop, False := by filter_upwards [hf_nonneg, hneg] with x hx hx'; linarith
+      have : ∀ᶠ (_ : ℝ) in atTop, False := by
+        filter_upwards [hf_nonneg, hneg] with x hx hx'; linarith
       rw [Filter.eventually_false_iff_eq_bot] at this
       exact False.elim <| (atTop_neBot).ne this
 

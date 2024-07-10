@@ -135,7 +135,8 @@ lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n 
   intro i
   simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
 
-lemma isLittleO_self_div_log_id : (fun (n : ℕ) => n / log n ^ 2) =o[atTop] (fun (n : ℕ) => (n : ℝ)) := by
+lemma isLittleO_self_div_log_id :
+    (fun (n : ℕ) => n / log n ^ 2) =o[atTop] (fun (n : ℕ) => (n : ℝ)) := by
   calc (fun (n : ℕ) => (n : ℝ) / log n ^ 2) = fun (n : ℕ) => (n : ℝ) * ((log n) ^ 2)⁻¹ := by
                   simp_rw [div_eq_mul_inv]
          _ =o[atTop] fun (n : ℕ) => (n : ℝ) * 1⁻¹   := by
@@ -447,7 +448,8 @@ lemma strictAntiOn_smoothingFn : StrictAntiOn ε (Set.Ioi 1) := by
   refine StrictMonoOn.mono strictMonoOn_log (fun x hx => ?_)
   exact Set.Ioi_subset_Ioi zero_le_one hx
 
-lemma strictMonoOn_one_sub_smoothingFn : StrictMonoOn (fun (x : ℝ) => (1 : ℝ) - ε x) (Set.Ioi 1) := by
+lemma strictMonoOn_one_sub_smoothingFn :
+    StrictMonoOn (fun (x : ℝ) => (1 : ℝ) - ε x) (Set.Ioi 1) := by
   simp_rw [sub_eq_add_neg]
   exact StrictMonoOn.const_add (StrictAntiOn.neg <| strictAntiOn_smoothingFn) 1
 
