@@ -59,8 +59,6 @@ lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, f i = 0 := by
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
-variable {s : Set ℕ∞}
-
 lemma sSup_eq_zero : sSup s = 0 ↔ ∀ a ∈ s, a = 0 :=
   sSup_eq_bot
 
