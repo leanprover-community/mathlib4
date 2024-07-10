@@ -33,7 +33,7 @@ for closed monoidal categories, and these could be generalised.
 -/
 
 
-universe v u u₂
+universe v v₂ u u₂
 
 noncomputable section
 
@@ -400,7 +400,7 @@ instance Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (init
   initial_mono B initialIsInitial
 #align category_theory.initial.mono_to CategoryTheory.Initial.mono_to
 
-variable {D : Type u₂} [Category.{v} D]
+variable {D : Type u₂} [Category.{v₂} D]
 
 section Functor
 
