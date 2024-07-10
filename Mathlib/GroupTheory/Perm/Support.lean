@@ -24,6 +24,8 @@ In the following, `f g : Equiv.Perm α`.
 * `Equiv.Perm.IsSwap`: `f` transposes some distinct elements `x` and `y`, and
   fixes all other elements.
 * `Equiv.Perm.support`: the elements `x : α` that are not fixed by `f`.
+* `Equiv.Perm.supportCard`: the cardinality of `f.support` when it is finite. Noncomputable but
+  has a computable representation when `α` is a `Fintype` with decidable equality.
 
 Assume `α` is a Fintype:
 * `Equiv.Perm.fixed_point_card_lt_of_ne_one f` says that `f` has
@@ -783,18 +785,27 @@ section SupportCard
 noncomputable def supportCard (f : Perm α) [Finite f.support] : ℕ :=
   f.support.toFinite.toFinset.card
 
+theorem supportCard_def [Finite f.support] : f.supportCard = f.support.toFinite.toFinset.card := rfl
+
 theorem supportCard_compute [DecidableEq α] [Fintype α] :
     f.supportCard = f.support.toFinset.card := congrArg _ (Finite.toFinset_eq_toFinset _)
 
-variable [Finite f.support]
+theorem supportCard_le_univ [Fintype α] : f.supportCard ≤ Fintype.card α := by
+  rw [supportCard_def]
+  exact Finset.card_le_univ _
 
-theorem supportCard_def : f.supportCard = f.support.toFinite.toFinset.card := rfl
+variable [Finite f.support]
 
 theorem supportCard_eq_zero : f.supportCard = 0 ↔ f = 1 := by
   rw [supportCard_def, Finset.card_eq_zero, Finite.toFinset_eq_empty, support_eq_empty_iff]
 
+@[simp]
 theorem supportCard_one : supportCard (1 : Perm α) = 0 := by
   rw [supportCard_eq_zero]
+
+@[simp]
+theorem supportCard_inv : supportCard f⁻¹ = supportCard f := by
+  simp_rw [supportCard_def, support_inv]
 
 theorem one_lt_supportCard_of_ne_one (h : f ≠ 1) : 1 < f.supportCard := by
   simp_rw [supportCard_def, Finset.one_lt_card_iff, Finite.mem_toFinset, mem_support, ← not_or]

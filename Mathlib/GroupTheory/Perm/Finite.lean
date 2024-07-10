@@ -229,12 +229,6 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
            mem_support]
 #align equiv.perm.disjoint.is_conj_mul Equiv.Perm.Disjoint.isConj_mul
 
-variable [DecidableEq α]
-
-section Fintype
-
-variable [Fintype α]
-
 theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf σ)) :
     (σ ^ n).support = σ.support := by
   obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
@@ -242,7 +236,5 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf
     le_antisymm (support_pow_le σ n)
       (le_trans (ge_of_eq (congr_arg support hm)) (support_pow_le (σ ^ n) m))
 #align equiv.perm.support_pow_coprime Equiv.Perm.support_pow_coprime
-
-end Fintype
 
 end Equiv.Perm
