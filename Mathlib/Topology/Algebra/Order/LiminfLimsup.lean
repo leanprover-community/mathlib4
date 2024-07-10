@@ -366,7 +366,7 @@ lemma isCobounded_le_of_frequently_ge {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x)
   obtain ⟨w, l_le_w, w_le_u⟩ := key.exists
   exact hl'.le.trans <| l_le_w.trans w_le_u
 
-/-- In linear orders, frequently boundedness from above implies coboundedness for `≤`. -/
+/-- In linear orders, frequently boundedness from above implies coboundedness for `≥`. -/
 lemma isCobounded_ge_of_frequently_le {u : R} (freq_le : ∃ᶠ r in F, r ≤ u) :
     IsCobounded (· ≥ ·) F :=
   isCobounded_le_of_frequently_ge (R := Rᵒᵈ) freq_le
