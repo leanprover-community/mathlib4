@@ -473,8 +473,7 @@ lemma deriv2_qaryEntropy {q : ℕ} {x : ℝ} :
         deriv (fun x ↦ (qaryEntropy q) x) y = log (q - 1) + log (1 - y) - log y by
       refine (Filter.EventuallyEq.deriv_eq this).trans ?_
       rw [deriv_sub ?_ (differentiableAt_log xne0)]
-      · repeat rw [deriv_div_const]
-        rw [deriv.log differentiableAt_id' xne0]
+      · rw [deriv.log differentiableAt_id' xne0]
         simp only [deriv_id'', one_div]
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop
           have d_oneminus (x : ℝ) : deriv (fun (y : ℝ) ↦ 1 - y) x = -1 := by
