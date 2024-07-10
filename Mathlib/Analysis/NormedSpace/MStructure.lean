@@ -436,12 +436,26 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
   constructor
   · cases' h₁.Lproj with E₁ hE₁
     cases' h₂.Lproj with E₂ hE₂
-    --rw [(polarSubmodule_eq_polar 𝕜 m₁.toSubMulAction)]
+    let P₁ : { P : (Dual 𝕜 A →L[𝕜] Dual 𝕜 A) // IsLprojection (Dual 𝕜 A) P } := ⟨E₁,hE₁.1⟩
+    let P₂ : { P : (Dual 𝕜 A →L[𝕜] Dual 𝕜 A) // IsLprojection (Dual 𝕜 A) P } := ⟨E₂,hE₂.1⟩
+    let E := P₁ ⊔ P₂
     rw [ ← hE₁.2, ← hE₂.2 ]
-    rw [ (IsLprojection.range_sum ⟨E₁,hE₁.1⟩ ⟨E₂,hE₂.1⟩)]
-    intro x' hx'
-    simp at hx'
-    cases' hx'.1 with x hx
+    rw [ (IsLprojection.range_sum P₁ P₂)]
+    intro x hx'
+    rw [Set.mem_inter_iff] at hx'
+    rw [IsLprojection.coe_sup] at hx'
+    have ex : E.val x = x := by
+      apply proj_apply _ _
+      exact Set.mem_of_mem_inter_left hx'
+      exact E.prop.proj
+
+
+      --rw [← proj_apply hx']
+      --sorry
+    simp only [IsLprojection.coe_sup, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
+      ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_mul, Pi.sub_apply,
+      ContinuousLinearMap.add_apply, Function.comp_apply, mem_closedBall, dist_zero_right] at hx'
+    --cases' hx'.1 with x hx
     --rw [← hx]
     let y := E₁ x
     let z := E₂ ((1 - E₁) x)
@@ -453,8 +467,10 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           rfl
         rw [e]
         simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
-    have e3 : x' = y + z := calc
-      x' = E₁ x + E₂ x - E₁ (E₂ x) := by rw [hx]
+      · sorry
+    have e3 : x = y + z := calc
+      x = E.val x := by rw [ex]
+      _ = E₁ x + E₂ x - E₁ (E₂ x) := rfl
       _ = E₁ x + E₂ x - (E₁ ∘ E₂) x := rfl
       _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
       _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [IsLprojection.commute hE₁.1 hE₂.1]
