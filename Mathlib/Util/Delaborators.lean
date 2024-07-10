@@ -33,8 +33,8 @@ short for `Π x, x ∈ s → β x`. -/
 syntax "Π " binderIdent binderPred ", " term:term
 
 macro_rules
-  | `(Π $x:ident $pred : binderPred, $p) => `(Π $x:ident, satisfies_binder_pred% $x $pred → $p)
-  | `(Π _ $pred : binderPred, $p) => `(Π x, satisfies_binder_pred% x $pred → $p)
+  | `(Π $x:ident $pred:binderPred, $p) => `(Π $x:ident, satisfies_binder_pred% $x $pred → $p)
+  | `(Π _ $pred:binderPred, $p) => `(Π x, satisfies_binder_pred% x $pred → $p)
 
 /-- Since pi notation and forall notation are interchangeable, we can
 parse it by simply using the pre-existing forall parser. -/
@@ -82,7 +82,7 @@ def delabPi' : Delab := whenPPOption Lean.getPPNotation do
   -- Replacements
   let stx : Term ←
     match stx with
-    | `($group : bracketedBinder → $body) => `(Π $group : bracketedBinder, $body)
+    | `($group:bracketedBinder → $body) => `(Π $group:bracketedBinder, $body)
     | _ => pure stx
   -- Merging
   match stx with
@@ -149,9 +149,9 @@ def exists_delab : Delab := whenPPOption Lean.getPPNotation do
       if x == y then `(∃ $x:ident ⊃ $z, $body) else pure stx
     | _ => pure stx
   match stx with
-  | `(∃ $group : bracketedExplicitBinders, ∃ $[$groups : bracketedExplicitBinders]*, $body) =>
+  | `(∃ $group:bracketedExplicitBinders, ∃ $[$groups:bracketedExplicitBinders]*, $body) =>
     `(∃ $group $groups*, $body)
-  | `(∃ $b : binderIdent, ∃ $[$bs : binderIdent]*, $body) => `(∃ $b : binderIdent $[$bs]*, $body)
+  | `(∃ $b:binderIdent, ∃ $[$bs: binderIdent]*, $body) => `(∃ $b:binderIdent $[$bs]*, $body)
   | _ => pure stx
 end existential
 

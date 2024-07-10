@@ -455,7 +455,7 @@ open Lean Expr Elab Term Tactic Meta Qq
 syntax "mv_bisim" (ppSpace colGt term) (" with" (ppSpace colGt binderIdent)+)? : tactic
 
 elab_rules : tactic
-  | `(tactic| mv_bisim $e $[ with $ids : binderIdent*]?) => do
+  | `(tactic| mv_bisim $e $[ with $ids:binderIdent*]?) => do
     let ids : TSyntaxArray `Lean.binderIdent := ids.getD #[]
     let idsn (n : ℕ) : Name :=
       match ids[n]? with

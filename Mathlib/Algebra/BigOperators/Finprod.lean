@@ -121,7 +121,7 @@ notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
 
 -- Porting note: The following ports the lean3 notation for this file, but is currently very fickle.
 
--- syntax (name := bigfinsum) "∑ᶠ" extBinders ", " term:67:term
+-- syntax (name := bigfinsum) "∑ᶠ" extBinders ", " term:67 : term
 -- macro_rules (kind := bigfinsum)
 --   | `(∑ᶠ $x:ident, $p) => `(finsum (fun $x:ident ↦ $p))
 --   | `(∑ᶠ $x:ident : $t, $p) => `(finsum (fun $x:ident : $t ↦ $p))
@@ -144,7 +144,7 @@ notation3"∏ᶠ "(...)", "r:67:(scoped f => finprod f) => r
 --       `(finsum fun $x => (finsum fun $y => (finsum fun $z => (finsum (α := $t) fun $h => $p))))
 --
 --
--- syntax (name := bigfinprod) "∏ᶠ " extBinders ", " term:67:term
+-- syntax (name := bigfinprod) "∏ᶠ " extBinders ", " term:67 : term
 -- macro_rules (kind := bigfinprod)
 --   | `(∏ᶠ $x:ident, $p) => `(finprod (fun $x:ident ↦ $p))
 --   | `(∏ᶠ $x:ident : $t, $p) => `(finprod (fun $x:ident : $t ↦ $p))
