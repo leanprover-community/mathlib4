@@ -341,6 +341,13 @@ variable {𝕜 A F : Type*}
 variable [RCLike 𝕜] [NormedAddCommGroup A]
 variable [Module 𝕜 X] [NormedSpace 𝕜 A]
 
+theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 := by
+  apply (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
+  intro x
+  rw [(h.Lnorm x)]
+  simp only [ContinuousLinearMap.smul_def, ContinuousLinearMap.coe_sub', Pi.sub_apply,
+    ContinuousLinearMap.one_apply, one_mul, le_add_iff_nonneg_right, norm_nonneg]
+
 lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)}
     (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
   · simp only [Set.le_eq_subset, Set.subset_inter_iff]
@@ -425,6 +432,8 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
     IsLprojection (NormedSpace.Dual 𝕜 A) P ∧
       (LinearMap.range P) = NormedSpace.polarSubmodule (E := A) 𝕜 m.toSubMulAction
 
+#check OrderedCommRing
+
 open NormedSpace in
 open Metric in
 open Submodule in
@@ -478,9 +487,17 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       _ = E₁ x + (E₂ x - E₂ (E₁ x)) := by exact add_sub_assoc (E₁ x) (E₂ x) (E₂ (E₁ x))
       _ = E₁ x + E₂ (x - E₁ x) := by rw [map_sub]
       _ = y + z := rfl
-      --rw  [← hx]
-      --sorry
-      --rw [← (LinearMap.comp_apply x)]
+    have e4 :  ‖y‖ + ‖z‖ ≤ ‖x‖ := calc
+      ‖y‖ + ‖z‖ = ‖E₁ x‖ + ‖E₂ ((1 - E₁) x)‖ := rfl
+      _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by rw [add_le_add_iff_left]; apply ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
+      _ ≤ ‖E₁ x‖ + 1 * ‖(1 - E₁) x‖ := by
+        rw [add_le_add_iff_left]
+        apply mul_le_mul_of_nonneg_right
+        apply contractive hE₂.1
+        exact ContinuousLinearMap.opNorm_nonneg ((1 - E₁) x)
+      _ ≤ ‖E₁ x‖ + ‖(1 - E₁) x‖ := by rw [one_mul]
+      _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := by exact Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
+      _ = ‖x‖ := by rw [← hE₁.1.Lnorm]
 
 
     --rw [convexHull]
