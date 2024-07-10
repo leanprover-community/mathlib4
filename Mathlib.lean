@@ -4215,6 +4215,7 @@ import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.Category.Profinite.Nobeling
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.Category.Profinite.Projective
+import Mathlib.Topology.Category.Sequential
 import Mathlib.Topology.Category.Stonean.Adjunctions
 import Mathlib.Topology.Category.Stonean.Basic
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
