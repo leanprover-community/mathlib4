@@ -100,7 +100,7 @@ variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK: Type*}
 
 /--
 When `K` is a field, if the preimage of the valuation integers of `A` equals to the valuation
-integers of `K`, then the valuation on `A` is an extension of valuation on `K`.
+integers of `K`, then the valuation on `A` is an extension of the valuation on `K`.
 -/
 theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
     IsValExtension vK vA where
