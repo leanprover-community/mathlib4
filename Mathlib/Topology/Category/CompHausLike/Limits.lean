@@ -49,7 +49,7 @@ def finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
 The inclusion of one of the factors into the explicit finite coproduct.
 -/
 def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
-  toFun := fun x ↦ ⟨a,x⟩
+  toFun := fun x ↦ ⟨a, x⟩
   continuous_toFun := continuous_sigmaMk (σ := fun a ↦ X a)
 
 /--
@@ -59,7 +59,7 @@ This is essentially the universal property of the coproduct.
 -/
 def finiteCoproduct.desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
-  toFun := fun ⟨a,x⟩ ↦ e a x
+  toFun := fun ⟨a, x⟩ ↦ e a x
   continuous_toFun := by
     apply continuous_sigma
     intro a; exact (e a).continuous
@@ -70,7 +70,7 @@ lemma finiteCoproduct.ι_desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)
 
 lemma finiteCoproduct.hom_ext {B : CompHausLike P} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
-  ext ⟨a,x⟩
+  ext ⟨a, x⟩
   specialize h a
   apply_fun (fun q ↦ q x) at h
   exact h

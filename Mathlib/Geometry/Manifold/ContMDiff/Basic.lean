@@ -375,7 +375,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
   lift x to U using Subtype.coe_image_subset _ _
     (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
   rw [← contMdiffAt_subtype_iff, ← comp_def]
-  erw [ extend_comp Subtype.val_injective]
+  erw [extend_comp Subtype.val_injective]
   exact diff.contMDiffAt
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :

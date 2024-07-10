@@ -84,13 +84,17 @@ Call `lake exe cache` to see its help menu.
 
 ### Building HTML documentation
 
-Building HTML documentation locally is straightforward, but it may take a while:
+Building HTML documentation locally is straightforward, but it may take a while (>20 minutes):
 
 ```shell
-lake -Kdoc=on build Mathlib:docs
+lake -R -Kdoc=on update doc-gen4
+lake build Mathlib:docs
 ```
 
 The HTML files can then be found in `build/doc`.
+
+Warning: these commands will make a change to `lake-manifest.json`
+which should *not* be committed to Mathlib.
 
 ## Transitioning from Lean 3
 
@@ -132,7 +136,6 @@ For a list containing more detailed information, see https://leanprover-communit
 * Gabriel Ebner (@gebner): tactics, infrastructure, core, formal languages
 * Sébastien Gouëzel (@sgouezel): topology, calculus, geometry, analysis, measure theory
 * Markus Himmel (@TwoFX): category theory
-* Chris Hughes (@ChrisHughes24): algebra
 * Yury G. Kudryashov (@urkud): analysis, topology, measure theory
 * Robert Y. Lewis (@robertylewis): tactics, documentation
 * Jireh Loreaux (@j-loreaux): analysis, topology, operator algebras

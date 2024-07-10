@@ -122,14 +122,21 @@ lemma isRightKanExtension_iff_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'') {L : C 
     refine isRightKanExtension_of_iso e.symm α' α ?_
     rw [← comm, ← whiskerLeft_comp_assoc, Iso.symm_hom, e.inv_hom_id, whiskerLeft_id', id_comp]
 
-/-- Two right Kan extensions are (canonically) isomorphic. -/
+/-- Right Kan extensions of isomorphic functors are isomorphic. -/
 @[simps]
-noncomputable def rightKanExtensionUnique
-    (F'' : D ⥤ H) (α' : L ⋙ F'' ⟶ F) [F''.IsRightKanExtension α'] : F' ≅ F'' where
-  hom := F''.liftOfIsRightKanExtension α' F' α
-  inv := F'.liftOfIsRightKanExtension α F'' α'
+noncomputable def rightKanExtensionUniqueOfIso {G : C ⥤ H} (i : F ≅ G) (G' : D ⥤ H)
+    (β : L ⋙ G' ⟶ G) [G'.IsRightKanExtension β] : F' ≅ G' where
+  hom := liftOfIsRightKanExtension _ β F' (α ≫ i.hom)
+  inv := liftOfIsRightKanExtension _ α G' (β ≫ i.inv)
   hom_inv_id := F'.hom_ext_of_isRightKanExtension α _ _ (by simp)
-  inv_hom_id := F''.hom_ext_of_isRightKanExtension α' _ _ (by simp)
+  inv_hom_id := G'.hom_ext_of_isRightKanExtension β _ _ (by simp)
+
+/-- Two right Kan extensions are (canonically) isomorphic. -/
+@[simps!]
+noncomputable def rightKanExtensionUnique
+    (F'' : D ⥤ H) (α' : L ⋙ F'' ⟶ F) [F''.IsRightKanExtension α'] : F' ≅ F'' :=
+  rightKanExtensionUniqueOfIso F' α (Iso.refl _) F'' α'
+
 
 lemma isRightKanExtension_iff_isIso {F' : D ⥤ H} {F'' : D ⥤ H} (φ : F'' ⟶ F')
     {L : C ⥤ D} {F : C ⥤ H} (α : L ⋙ F' ⟶ F) (α' : L ⋙ F'' ⟶ F)
@@ -208,14 +215,20 @@ lemma isLeftKanExtension_iff_of_iso {F' F'' : D ⥤ H} (e : F' ≅ F'')
     refine isLeftKanExtension_of_iso e.symm α' α ?_
     rw [← comm, assoc, ← whiskerLeft_comp, Iso.symm_hom, e.hom_inv_id, whiskerLeft_id', comp_id]
 
-/-- Two left Kan extensions are (canonically) isomorphic. -/
+/-- Left Kan extensions of isomorphic functors are isomorphic. -/
 @[simps]
-noncomputable def leftKanExtensionUnique
-    (F'' : D ⥤ H) (α' : F ⟶ L ⋙ F'') [F''.IsLeftKanExtension α'] : F' ≅ F'' where
-  hom := F'.descOfIsLeftKanExtension α F'' α'
-  inv := F''.descOfIsLeftKanExtension α' F' α
+noncomputable def leftKanExtensionUniqueOfIso {G : C ⥤ H} (i : F ≅ G) (G' : D ⥤ H)
+    (β : G ⟶ L ⋙ G') [G'.IsLeftKanExtension β] : F' ≅ G' where
+  hom := descOfIsLeftKanExtension _ α G' (i.hom ≫ β)
+  inv := descOfIsLeftKanExtension _ β F' (i.inv ≫ α)
   hom_inv_id := F'.hom_ext_of_isLeftKanExtension α _ _ (by simp)
-  inv_hom_id := F''.hom_ext_of_isLeftKanExtension α' _ _ (by simp)
+  inv_hom_id := G'.hom_ext_of_isLeftKanExtension β _ _ (by simp)
+
+/-- Two left Kan extensions are (canonically) isomorphic. -/
+@[simps!]
+noncomputable def leftKanExtensionUnique
+    (F'' : D ⥤ H) (α' : F ⟶ L ⋙ F'') [F''.IsLeftKanExtension α'] : F' ≅ F'' :=
+  leftKanExtensionUniqueOfIso F' α (Iso.refl _) F'' α'
 
 lemma isLeftKanExtension_iff_isIso {F' : D ⥤ H} {F'' : D ⥤ H} (φ : F' ⟶ F'')
     {L : C ⥤ D} {F : C ⥤ H} (α : F ⟶ L ⋙ F') (α' : F ⟶ L ⋙ F'')
