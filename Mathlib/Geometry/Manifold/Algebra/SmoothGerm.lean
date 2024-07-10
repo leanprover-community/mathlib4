@@ -53,7 +53,6 @@ theorem smoothGerm.coe_coe (f : C^∞⟮I, M; I', N⟯) (x : M) :
     ((f : smoothGerm I I' N x) : (𝓝 x).Germ N) = (f : (𝓝 x).Germ N) :=
   rfl
 
-@[simp]
 theorem smoothGerm.coe_eq_coe (f g : C^∞⟮I, M; I', N⟯) {x : M} (h : ∀ᶠ y in 𝓝 x, f y = g y) :
     (f : smoothGerm I I' N x) = (g : smoothGerm I I' N x) := by
   ext
@@ -76,7 +75,8 @@ variable (I' : ModelWithCorners 𝕜 E' H')
 
 /-- If `R` is a manifold with smooth multiplication,
 `smoothGerm I I' R x` is a sub-semigroup of `Germ (𝓝 x) R`. -/
-def smoothGerm.toSubsemigroup [SmoothMul I' R] (x : M) : Subsemigroup (Germ (𝓝 x) R) where
+-- FIXME: is this definition useful, given it has the same assumptions as `subsemigroup`?
+def smoothGerm.subsemigroup [SmoothMul I' R] (x : M) : Subsemigroup (Germ (𝓝 x) R) where
   carrier := smoothGerm I I' R x
   mul_mem' ha hb := by
     choose f hf using ha
@@ -85,14 +85,13 @@ def smoothGerm.toSubsemigroup [SmoothMul I' R] (x : M) : Subsemigroup (Germ (�
 
 /-- If `R` is a manifold with smooth multiplication,
 `smoothGerm I I' R x` is a submonoid of `Germ (𝓝 x) R`. -/
--- FIXME: is this definition useful, given it has the same assumptions as `toSubsemigroup`?
-def smoothGerm.toSubmonoid [SmoothMul I' R] (x : M) : Submonoid (Germ (𝓝 x) R) where
-  toSubsemigroup := smoothGerm.toSubsemigroup I I' R x
+def smoothGerm.submonoid [SmoothMul I' R] (x : M) : Submonoid (Germ (𝓝 x) R) where
+  toSubsemigroup := smoothGerm.subsemigroup I I' R x
   one_mem' := ⟨1, by rw [SmoothMap.coe_one, Germ.coe_one]⟩
 
 /-- If `R` is a manifold with smooth addition,
 `smoothGerm I I' R x` is an additive sub-semigroup of `Germ (𝓝 x) R`. -/
-def smoothGerm.toAddSubsemigroup [SmoothAdd I' R] (x : M) : AddSubsemigroup (Germ (𝓝 x) R) where
+def smoothGerm.addSubsemigroup [SmoothAdd I' R] (x : M) : AddSubsemigroup (Germ (𝓝 x) R) where
   carrier := smoothGerm I I' R x
   add_mem' ha hb := by
     choose f hf using ha
@@ -101,21 +100,23 @@ def smoothGerm.toAddSubsemigroup [SmoothAdd I' R] (x : M) : AddSubsemigroup (Ger
 
 /-- If `G` is an additive Lie group, `smoothGerm I I' G x` is
 an additive subgroup of `Germ (𝓝 x) G`. -/
-def smoothGerm.toAddSubgroup [LieAddGroup I' R] (x : M) : AddSubgroup (Germ (𝓝 x) R) where
-  __ := smoothGerm.toAddSubsemigroup I I' R x
+def smoothGerm.addSubgroup [LieAddGroup I' R] (x : M) : AddSubgroup (Germ (𝓝 x) R) where
+  __ := smoothGerm.addSubsemigroup I I' R x
   zero_mem' := ⟨0, by rw [SmoothMap.coe_zero, Germ.coe_zero]⟩
   neg_mem' h := by
     choose f hf using h
     exact ⟨-f, by rw [← hf, SmoothMap.coe_neg, Germ.coe_neg]⟩
 
 /-- If `R` is a smooth ring, `smoothGerm I I' R x` is a subring of `Germ (𝓝 x) R`. -/
-def smoothGerm.toSubring [SmoothRing I' R] (x : M) : Subring (Germ (𝓝 x) R) where
-  __ := smoothGerm.toSubmonoid I I' R x
-  __ := smoothGerm.toAddSubgroup I I' R x
+def smoothGerm.subring [SmoothRing I' R] (x : M) : Subring (Germ (𝓝 x) R) where
+  __ := smoothGerm.submonoid I I' R x
+  __ := smoothGerm.addSubgroup I I' R x
 
--- xxx: is this lemma useful?
-lemma smoothGerm.toSubring_mem_coe [SmoothRing I' R] {x : M} (a : Germ (𝓝 x) R) :
-    a ∈ smoothGerm.toSubring I I' R x ↔ a ∈ smoothGerm I I' R x := Iff.rfl
+@[simp, norm_cast]
+lemma smoothGerm.coe_toSubring [SmoothRing I' R] (x : M) : smoothGerm.subring I I' R x = smoothGerm I I' R x := rfl
+
+lemma smoothGerm.mem_toSubring [SmoothRing I' R] {x : M} (a : Germ (𝓝 x) R) :
+    a ∈ smoothGerm.subring I I' R x ↔ a ∈ smoothGerm I I' R x := Iff.rfl
 
 /-- The map `C^∞(M, R) → Germ (𝓝 x) R` as a ring homomorphism, for a smooth ring `R`. -/
 def RingHom.germOfContMDiffMap (R : Type*) [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
@@ -123,5 +124,5 @@ def RingHom.germOfContMDiffMap (R : Type*) [CommRing R] [TopologicalSpace R] [Ch
   (Germ.coeRingHom _).comp SmoothMap.coeFnRingHom
 
 lemma toSubring_eq_range [SmoothRing I' R] (x : M) :
-    smoothGerm.toSubring I I' R x = (RingHom.germOfContMDiffMap I I' R x).range := by
+    smoothGerm.subring I I' R x = (RingHom.germOfContMDiffMap I I' R x).range := by
   rfl
