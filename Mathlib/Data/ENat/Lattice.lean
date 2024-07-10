@@ -47,16 +47,15 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 
 lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   cases isEmpty_or_nonempty ι
-  case inl => simp [ENat.iInf_coe_eq_top.2 ‹_›]
-  case inr => norm_cast
+  · simp [iInf_coe_eq_top.mpr ‹_›]
+  · norm_cast
 
-lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, (f i : ℕ∞) = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · sorry
-  · obtain ⟨i, h⟩ := h
-    rw [Nat.cast_eq_zero] at h
-    by_contra! hc
-    sorry
+lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, f i = 0 := by
+  cases isEmpty_or_nonempty ι
+  · simp [iInf_coe_eq_top.mpr ‹_›]
+  · norm_cast
+    rw [iInf, Nat.sInf_eq_zero]
+    exact ⟨fun h ↦ by simp_all, .inl⟩
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
