@@ -378,9 +378,7 @@ theorem interedges_disjoint_right (s : Finset α) (ht : Disjoint t₁ t₂) :
 
 section map
 
-variable {G' : SimpleGraph β} (f : G ≃g G')
-
-variable [DecidableRel G'.Adj]
+variable {G' : SimpleGraph β} (f : G ≃g G') [DecidableRel G'.Adj]
 
 def interedgesMap : G.interedges s t ≃ G'.interedges (s.map f) (t.map f) := mapInteredges f
 
