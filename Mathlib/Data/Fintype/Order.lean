@@ -163,8 +163,7 @@ end Fintype
 
 /-! ### Concrete instances -/
 
-
-noncomputable instance Fin.completeLinearOrder {n : ℕ} : CompleteLinearOrder (Fin (n + 1)) :=
+noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=
   Fintype.toCompleteLinearOrder _
 
 noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
