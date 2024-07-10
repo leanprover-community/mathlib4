@@ -535,12 +535,24 @@ theorem DifferentiableAt.sub (hf : DifferentiableAt 𝕜 f x) (hg : Differentiab
 lemma DifferentiableAt.add_iff_left (hg : DifferentiableAt 𝕜 g x) :
     DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 f x := by
   refine ⟨fun h ↦ ?_, fun hf ↦ hf.add hg⟩
-  simpa using h.sub hg
+  simpa only [add_sub_cancel_right] using h.sub hg
 
 @[simp]
 lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 g x := by
   simp only [add_comm (f _), hg.add_iff_left]
+
+@[simp]
+lemma DifferentiableAt.sub_iff_left (hg : DifferentiableAt 𝕜 g x) :
+    DifferentiableAt 𝕜 (fun y => f y - g y) x ↔ DifferentiableAt 𝕜 f x := by
+  refine ⟨fun h ↦ ?_, fun hf ↦ hf.sub hg⟩
+  simpa only [sub_add_cancel] using h.add hg
+
+@[simp]
+lemma DifferentiableAt.sub_iff_right (hg : DifferentiableAt 𝕜 f x) :
+    DifferentiableAt 𝕜 (fun y => f y - g y) x ↔ DifferentiableAt 𝕜 g x := by
+  refine ⟨fun h ↦ ?_, fun hf ↦ hg.sub hf⟩
+  simpa only [sub_sub_cancel_left, differentiableAt_neg_iff] using h.sub hg
 
 @[fun_prop]
 theorem DifferentiableOn.sub (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s) :
