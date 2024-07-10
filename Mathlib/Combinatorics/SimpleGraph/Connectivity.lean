@@ -5,6 +5,9 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.Data.List.Rotate
+import Mathlib.Data.Fintype.Card
+import Mathlib.SetTheory.Cardinal.Finite
+
 
 #align_import combinatorics.simple_graph.connectivity from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
@@ -2380,6 +2383,25 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
   rw [← (mem_supp_iff _ _).mp h.1]
   exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
+lemma univ_eq_union_supp : (Set.univ : Set V) = ⋃ (c : G.ConnectedComponent), c.supp := by
+  ext v
+  refine ⟨?_, fun _ ↦ trivial⟩
+  intro _
+  use G.connectedComponentMk v
+  simp only [Set.mem_range, SetLike.mem_coe]
+  exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
+
+lemma supp_disjoint {c c' : ConnectedComponent G} (h : c ≠ c') : Disjoint c.supp c'.supp := by
+  intro s hsx hsy
+  simp only [Set.toFinset_card, Finset.mem_univ, ne_eq, Set.le_eq_subset,
+    Set.bot_eq_empty, Set.subset_empty_iff, Set.eq_empty_iff_forall_not_mem] at *
+  intro v hv
+  have hsxv := hsx hv
+  have hsyv := hsy hv
+  rw [ConnectedComponent.mem_supp_iff] at *
+  rw [hsxv] at hsyv
+  exact h hsyv
+
 end ConnectedComponent
 
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
@@ -2639,6 +2661,31 @@ instance : Decidable G.Connected := by
 instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
+
+lemma odd_card_exists_odd_component
+      (ho : Odd (Fintype.card V)) : ∃ (c : ConnectedComponent G), Odd (Nat.card c.supp) := by
+      simp_rw [Nat.odd_iff_not_even]
+      by_contra! hc
+      rw [
+        ← (set_fintype_card_eq_univ_iff _).mpr ((@ConnectedComponent.univ_eq_union_supp _ G).symm),
+        ← Set.toFinset_card, Nat.odd_iff_not_even] at ho
+      apply ho
+      have : Set.toFinset (⋃ (x : ConnectedComponent G), ConnectedComponent.supp x) =
+          Finset.biUnion (Finset.univ : Finset (ConnectedComponent G))
+          (fun x => (ConnectedComponent.supp x).toFinset) := by
+        ext v
+        simp only [Set.mem_toFinset, Set.mem_iUnion, ConnectedComponent.mem_supp_iff, exists_eq',
+          Finset.mem_biUnion, Finset.mem_univ, true_and, true_iff]
+      rw [this]
+      rw [Finset.card_biUnion (fun x _ y _ hxy ↦
+        Set.disjoint_toFinset.mpr (ConnectedComponent.supp_disjoint hxy))]
+      simp only [Set.toFinset_card]
+      exact Finset.Even_finset_sum _ fun c => (by
+        have := hc c.val
+        rw [@Nat.card_eq_fintype_card] at this
+        exact this
+        )
+
 end Finite
 
 end WalkCounting
