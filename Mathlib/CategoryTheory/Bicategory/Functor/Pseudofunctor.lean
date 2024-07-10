@@ -138,11 +138,17 @@ variable (F : Pseudofunctor B C)
 #noalign category_theory.pseudofunctor.to_prelax_functor_map₂
 
 /-- The oplax functor associated with a pseudofunctor. -/
+@[simps]
 def toOplax : OplaxFunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).hom
   mapComp := fun f g => (F.mapComp f g).hom
 #align category_theory.pseudofunctor.to_oplax CategoryTheory.Pseudofunctor.toOplax
+#align category_theory.pseudofunctor.to_oplax_map_id CategoryTheory.Pseudofunctor.toOplax_mapId
+#align category_theory.pseudofunctor.to_oplax_map_comp CategoryTheory.Pseudofunctor.toOplax_mapComp
+#noalign category_theory.pseudofunctor.to_oplax_obj
+#noalign category_theory.pseudofunctor.to_oplax_map
+#noalign category_theory.pseudofunctor.to_oplax_map₂
 
 instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
   ⟨toOplax⟩
@@ -151,35 +157,22 @@ instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
 -- Porting note: `toOplax_eq_coe` is a syntactic tautology in lean 4
 #noalign category_theory.pseudofunctor.to_oplax_eq_coe
 
-@[simp]
-theorem to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
-  rfl
-#align category_theory.pseudofunctor.to_oplax_obj CategoryTheory.Pseudofunctor.to_oplax_obj
+/-- The Lax functor associated with a pseudofunctor. -/
+@[simps]
+def toLax : LaxFunctor B C where
+  toPrelaxFunctor := F.toPrelaxFunctor
+  mapId := fun a => (F.mapId a).inv
+  mapComp := fun f g => (F.mapComp f g).inv
+  map₂_leftUnitor f := by
+    rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
+    simp
+  map₂_rightUnitor f := by
+    rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
+    simp
 
-@[simp]
-theorem to_oplax_map {a b : B} (f : a ⟶ b) : (F : OplaxFunctor B C).map f = F.map f :=
-  rfl
-#align category_theory.pseudofunctor.to_oplax_map CategoryTheory.Pseudofunctor.to_oplax_map
+instance hasCoeToLax : Coe (Pseudofunctor B C) (LaxFunctor B C) :=
+  ⟨toLax⟩
 
-@[simp]
-theorem to_oplax_map₂ {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
-    (F : OplaxFunctor B C).map₂ η = F.map₂ η :=
-  rfl
-
--- Porting note: to_oplax_map₂ related `OplaxFunctor.map₂` to `Pseudofunctor.map₂` but neither
--- of these exist
-#noalign category_theory.pseudofunctor.to_oplax_map₂
-
-@[simp]
-theorem to_oplax_mapId (a : B) : (F : OplaxFunctor B C).mapId a = (F.mapId a).hom :=
-  rfl
-#align category_theory.pseudofunctor.to_oplax_map_id CategoryTheory.Pseudofunctor.to_oplax_mapId
-
-@[simp]
-theorem to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
-    (F : OplaxFunctor B C).mapComp f g = (F.mapComp f g).hom :=
-  rfl
-#align category_theory.pseudofunctor.to_oplax_map_comp CategoryTheory.Pseudofunctor.to_oplax_mapComp
 
 /-- The identity pseudofunctor. -/
 @[simps]
