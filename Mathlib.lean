@@ -1686,6 +1686,7 @@ import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Canonical
+import Mathlib.CategoryTheory.Sites.CartesianClosed
 import Mathlib.CategoryTheory.Sites.Closed
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
@@ -1883,14 +1884,17 @@ import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
+import Mathlib.Condensed.CartesianClosed
 import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Light.Basic
+import Mathlib.Condensed.Light.CartesianClosed
 import Mathlib.Condensed.Light.Discrete
 import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.Light.Functors
+import Mathlib.Condensed.Light.Limits
 import Mathlib.Condensed.Light.Module
 import Mathlib.Condensed.Light.TopComparison
 import Mathlib.Condensed.Limits
