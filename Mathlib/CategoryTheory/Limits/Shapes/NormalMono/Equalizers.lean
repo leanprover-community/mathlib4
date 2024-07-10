@@ -266,7 +266,7 @@ private abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (
   pushout (coprod.desc (𝟙 Y) f) (coprod.desc (𝟙 Y) g)
 
 /-- The coequalizer of `f` and `g` exists. -/
-@[irreducible] -- Porting note: changed to def and restored irreducible
+@[irreducible, nolint defLemma] -- Porting note: changed to def and restored irreducible
 def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
   have huv : (pushout.inl : Y ⟶ Q f g) = pushout.inr :=
     calc
