@@ -35,6 +35,7 @@ open Lean hiding Rat
 open Elab Tactic Meta
 open Qq
 open Mathlib.Tactic (AtomM)
+open Batteries (RBSet)
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 partial def splitConjunctions : Preprocessor where
@@ -146,8 +147,6 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
 
-
-open Batteries
 
 /-- Ordering on `Expr`. -/
 def Expr.Ord : Ord Expr :=
@@ -309,7 +308,8 @@ section nlinarith
 and adds them to the set `s`.
 A pair `(i, true)` is added to `s` when `atoms[i]^2` appears in `e`,
 and `(i, false)` is added to `s` when `atoms[i]*atoms[i]` appears in `e`.  -/
-partial def findSquares (s : HashSet (Nat × Bool)) (e : Expr) : AtomM (HashSet (Nat × Bool)) :=
+partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
+    AtomM (RBSet (Nat × Bool) lexOrd.compare) :=
   -- Completely traversing the expression is non-ideal,
   -- as we can descend into expressions that could not possibly be seen by `linarith`.
   -- As a result we visit expressions with bvars, which then cause panics.
@@ -348,7 +348,7 @@ def nlinarithExtras : GlobalPreprocessor where
     -- find the squares in `AtomM` to ensure deterministic behavior
     let s ← AtomM.run .reducible do
       let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-        HashSet.empty
+        RBSet.empty
       si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
     let new_es ← s.filterMapM fun (e, is_sq) =>
       observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
