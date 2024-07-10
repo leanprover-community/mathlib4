@@ -15,9 +15,8 @@ functions, in `fourierTransformCLM`. It is also given as a continuous linear equ
 `fourierTransformCLE`.
 -/
 
-open Real Complex TopologicalSpace SchwartzMap MeasureTheory MeasureTheory.Measure
-
-open scoped FourierTransform BigOperators
+open Real MeasureTheory MeasureTheory.Measure
+open scoped FourierTransform
 
 namespace SchwartzMap
 

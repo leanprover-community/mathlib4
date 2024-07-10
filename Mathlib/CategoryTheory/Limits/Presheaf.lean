@@ -315,7 +315,7 @@ noncomputable def uniqueExtensionAlongYoneda (L : (Cᵒᵖ ⥤ Type v₁) ⥤ �
 #align category_theory.unique_extension_along_yoneda CategoryTheory.Presheaf.uniqueExtensionAlongYoneda
 
 instance (L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ) [PreservesColimitsOfSize.{v₁, max u₁ v₁} L]
-    [yoneda.HasPointwiseLeftKanExtension (yoneda ⋙ L)]:
+    [yoneda.HasPointwiseLeftKanExtension (yoneda ⋙ L)] :
     L.IsLeftKanExtension (𝟙 _ : yoneda ⋙ L ⟶ _) :=
   isLeftKanExtension_of_preservesColimits _ (Iso.refl _)
 
@@ -375,8 +375,7 @@ noncomputable def compYonedaIsoYonedaCompLan :
       rw [yonedaMap_app_apply] at eq₁
       simp only [yonedaMap_app_apply, Functor.map_id] at eq₂
       simp only [id_comp] at eq₃
-      dsimp [yonedaEquiv]
-      rw [id_comp, eq₁, eq₂, eq₃])
+      simp [yonedaEquiv, eq₁, eq₂, eq₃])
 
 @[simp]
 lemma compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
