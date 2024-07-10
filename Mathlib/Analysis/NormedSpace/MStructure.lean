@@ -478,7 +478,8 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       constructor
       · calc
         ‖y‖ + ‖z‖ = ‖E₁ x‖ + ‖E₂ ((1 - E₁) x)‖ := rfl
-        _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by rw [add_le_add_iff_left]; apply ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
+        _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by
+          rw [add_le_add_iff_left]; apply ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
         _ ≤ ‖E₁ x‖ + 1 * ‖(1 - E₁) x‖ := by
           rw [add_le_add_iff_left]
           apply mul_le_mul_of_nonneg_right
@@ -596,10 +597,14 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
                 ‖y‖ / ‖x‖ + ‖z‖ / ‖x‖ = (‖y‖ + ‖z‖) / ‖x‖ := div_add_div_same ‖y‖ ‖z‖ ‖x‖
                 _ = 1 := by exact (div_eq_one_iff_eq hxnz).mpr e4
               · calc
-                (‖y‖ / ‖x‖) • y₁ + (‖z‖ / ‖x‖) • z₁ = (‖y‖ / ‖x‖) • ((‖x‖/‖y‖) • y) + (‖z‖ / ‖x‖) • ((‖x‖/‖z‖) • z) := rfl
-                _ = ((‖y‖ / ‖x‖) • (‖x‖/‖y‖)) • y + ((‖z‖ / ‖x‖) • (‖x‖/‖z‖)) • z := by rw [← smul_assoc, ← smul_assoc]
-                _ = ((‖y‖ / ‖x‖) * (‖x‖/‖y‖)) • y + ((‖z‖ / ‖x‖) * (‖x‖/‖z‖)) • z := by simp only [smul_eq_mul]
-                _ = ((‖y‖ / ‖x‖) * (‖y‖ / ‖x‖)⁻¹) • y + ((‖z‖ / ‖x‖) * (‖z‖ / ‖x‖)⁻¹) • z := by rw [inv_div, inv_div]
+                (‖y‖ / ‖x‖) • y₁ + (‖z‖ / ‖x‖) • z₁ =
+                  (‖y‖ / ‖x‖) • ((‖x‖/‖y‖) • y) + (‖z‖ / ‖x‖) • ((‖x‖/‖z‖) • z) := rfl
+                _ = ((‖y‖ / ‖x‖) • (‖x‖/‖y‖)) • y + ((‖z‖ / ‖x‖) • (‖x‖/‖z‖)) • z := by
+                  rw [← smul_assoc, ← smul_assoc]
+                _ = ((‖y‖ / ‖x‖) * (‖x‖/‖y‖)) • y + ((‖z‖ / ‖x‖) * (‖x‖/‖z‖)) • z := by
+                  simp only [smul_eq_mul]
+                _ = ((‖y‖ / ‖x‖) * (‖y‖ / ‖x‖)⁻¹) • y + ((‖z‖ / ‖x‖) * (‖z‖ / ‖x‖)⁻¹) • z := by
+                  rw [inv_div, inv_div]
                 _ = y + ((‖z‖ / ‖x‖) * (‖z‖ / ‖x‖)⁻¹) • z := by
                   rw [CommGroupWithZero.mul_inv_cancel, one_smul, inv_div]
                   exact div_ne_zero hynz hxnz
