@@ -28,7 +28,7 @@ The strategy is the following:
   and `c` are in the cyclotomic ring `ℤ[ζ₃]` (where `ζ₃` is a primitive cube root of unity) and `u`
   is a unit of `ℤ[ζ₃]`. `FermatLastTheoremForThree_of_FermatLastTheoremThreeGen` (whose proof is
   rather elementary on paper) says that to prove Fermat's last theorem for exponent `3`, it is
-  enough to prove that this equation has no  solutions such that `c ≠ 0`, `¬ λ ∣ a`, `¬ λ ∣ b`,
+  enough to prove that this equation has no solutions such that `c ≠ 0`, `¬ λ ∣ a`, `¬ λ ∣ b`,
   `λ ∣ c` and `IsCoprime a b`. We call such a tuple a `Solution'`. A `Solution` is the same as a
   `Solution'` with the additional assumption that `λ ^ 2 ∣ a + b`. We then prove that, given
   `S' : Solution'`, there is `S : Solution` such that the multiplicity of `λ = ζ₃ - 1` in `c` is
