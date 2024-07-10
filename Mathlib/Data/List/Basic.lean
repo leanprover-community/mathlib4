@@ -173,7 +173,7 @@ attribute [simp] List.mem_bind
 
 #align list.length_pos_iff_exists_mem List.length_pos_iff_exists_mem
 
-alias ⟨ne_nil_of_length_pos, length_pos_of_ne_nil⟩ := length_pos
+alias ⟨_, length_pos_of_ne_nil⟩ := length_pos
 #align list.ne_nil_of_length_pos List.ne_nil_of_length_pos
 #align list.length_pos_of_ne_nil List.length_pos_of_ne_nil
 
@@ -471,9 +471,6 @@ theorem replicate_left_inj {a : α} {n m : ℕ} : replicate n a = replicate m a 
   (replicate_left_injective a).eq_iff
 #align list.replicate_left_inj List.replicate_left_inj
 
-@[simp] theorem head_replicate (n : ℕ) (a : α) (h) : head (replicate n a) h = a := by
-  cases n <;> simp at h ⊢
-
 /-! ### pure -/
 
 theorem mem_pure (x y : α) : x ∈ (pure y : List α) ↔ x = y := by simp
@@ -600,13 +597,13 @@ theorem getLast_cons {a : α} {l : List α} :
 #align list.last_cons List.getLast_cons
 
 theorem getLast_append_singleton {a : α} (l : List α) :
-    getLast (l ++ [a]) (append_ne_nil_of_ne_nil_right l _ (cons_ne_nil a _)) = a := by
-  simp only [getLast_append]
+    getLast (l ++ [a]) (append_ne_nil_of_ne_nil_right l (cons_ne_nil a _)) = a := by
+  simp [getLast_append]
 #align list.last_append_singleton List.getLast_append_singleton
 
 -- Porting note: name should be fixed upstream
 theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
-    getLast (l₁ ++ l₂) (append_ne_nil_of_ne_nil_right l₁ l₂ h) = getLast l₂ h := by
+    getLast (l₁ ++ l₂) (append_ne_nil_of_ne_nil_right l₁ h) = getLast l₂ h := by
   induction' l₁ with _ _ ih
   · simp
   · simp only [cons_append]
@@ -614,8 +611,8 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
     exact ih
 #align list.last_append List.getLast_append'
 
-theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a :=
-  getLast_concat ..
+theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a := by
+  simp
 #align list.last_concat List.getLast_concat'
 
 @[simp]
