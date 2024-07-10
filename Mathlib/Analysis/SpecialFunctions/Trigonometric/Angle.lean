@@ -943,7 +943,7 @@ theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -�
 
 theorem eq_iff_sign_eq_and_abs_toReal_eq {θ ψ : Angle} :
     θ = ψ ↔ θ.sign = ψ.sign ∧ |θ.toReal| = |ψ.toReal| := by
-  refine ⟨?_, fun h => ?_⟩;
+  refine ⟨?_, fun h => ?_⟩
   · rintro rfl
     exact ⟨rfl, rfl⟩
   rcases h with ⟨hs, hr⟩

@@ -125,7 +125,7 @@ theorem tmul_comp_tensorAssoc
 @[simp]
 theorem tmul_tensorAssoc_apply
     (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Q₃ : QuadraticForm R M₃)
-    (x : (M₁ ⊗[R] M₂) ⊗[R] M₃):
+    (x : (M₁ ⊗[R] M₂) ⊗[R] M₃) :
     Q₁.tmul (Q₂.tmul Q₃) (TensorProduct.assoc R M₁ M₂ M₃ x) = (Q₁.tmul Q₂).tmul Q₃ x :=
   DFunLike.congr_fun (tmul_comp_tensorAssoc Q₁ Q₂ Q₃) x
 
@@ -168,7 +168,7 @@ theorem tmul_tensorRId_apply
 
 /-- `TensorProduct.rid` preserves tensor products of quadratic forms. -/
 @[simps toLinearEquiv]
-def tensorRId (Q₁ : QuadraticForm R M₁):
+def tensorRId (Q₁ : QuadraticForm R M₁) :
     (Q₁.tmul (sq (R := R))).IsometryEquiv Q₁ where
   toLinearEquiv := TensorProduct.rid R M₁
   map_app' := tmul_tensorRId_apply Q₁
@@ -201,7 +201,7 @@ theorem tmul_tensorLId_apply
 
 /-- `TensorProduct.lid` preserves tensor products of quadratic forms. -/
 @[simps toLinearEquiv]
-def tensorLId (Q₂ : QuadraticForm R M₂):
+def tensorLId (Q₂ : QuadraticForm R M₂) :
     (QuadraticForm.tmul (sq (R := R)) Q₂).IsometryEquiv Q₂ where
   toLinearEquiv := TensorProduct.lid R M₂
   map_app' := tmul_tensorLId_apply Q₂

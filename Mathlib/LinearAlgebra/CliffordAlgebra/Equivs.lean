@@ -157,7 +157,7 @@ theorem toComplex_ι (r : ℝ) : toComplex (ι Q r) = r • Complex.I :=
 theorem toComplex_involute (c : CliffordAlgebra Q) :
     toComplex (involute c) = conj (toComplex c) := by
   have : toComplex (involute (ι Q 1)) = conj (toComplex (ι Q 1)) := by
-    simp only [involute_ι, toComplex_ι, AlgHom.map_neg, one_smul, Complex.conj_I]
+    simp only [involute_ι, toComplex_ι, map_neg, one_smul, Complex.conj_I]
   suffices toComplex.comp involute = Complex.conjAe.toAlgHom.comp toComplex by
     exact AlgHom.congr_fun this c
   ext : 2
@@ -317,10 +317,10 @@ theorem toQuaternion_star (c : CliffordAlgebra (Q c₁ c₂)) :
     simp only [reverse.commutes, AlgHom.commutes, QuaternionAlgebra.coe_algebraMap,
       QuaternionAlgebra.star_coe]
   | ι x =>
-    rw [reverse_ι, involute_ι, toQuaternion_ι, AlgHom.map_neg, toQuaternion_ι,
+    rw [reverse_ι, involute_ι, toQuaternion_ι, map_neg, toQuaternion_ι,
       QuaternionAlgebra.neg_mk, star_mk, neg_zero]
-  | mul x₁ x₂ hx₁ hx₂ => simp only [reverse.map_mul, AlgHom.map_mul, hx₁, hx₂, star_mul]
-  | add x₁ x₂ hx₁ hx₂ => simp only [reverse.map_add, AlgHom.map_add, hx₁, hx₂, star_add]
+  | mul x₁ x₂ hx₁ hx₂ => simp only [reverse.map_mul, map_mul, hx₁, hx₂, star_mul]
+  | add x₁ x₂ hx₁ hx₂ => simp only [reverse.map_add, map_add, hx₁, hx₂, star_add]
 #align clifford_algebra_quaternion.to_quaternion_star CliffordAlgebraQuaternion.toQuaternion_star
 
 /-- Map a quaternion into the clifford algebra. -/
