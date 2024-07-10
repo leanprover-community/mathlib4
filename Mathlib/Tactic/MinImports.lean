@@ -43,6 +43,29 @@ def getId (stx : Syntax) : Syntax :=
     | some declId => declId[0]
     | none => stx
 
+/-- extract all identifiers, as a `NameSet`. -/
+partial
+def getIds : Syntax → NameSet
+  | .node _ _ args => (args.map getIds).foldl (·.append ·) {}
+  | .ident _ _ nm _ => NameSet.empty.insert nm
+  | _ => {}
+
+/-- misses `simp`, `ext`, `to_additive`.  Catches `fun_prop`... -/
+def getAttrNames (stx : Syntax) : NameSet :=
+  match stx.find? (·.isOfKind ``Lean.Parser.Term.attributes) with
+    | none => {}
+    | some stx => getIds stx
+
+/-- returns all attribute declaration names -/
+def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
+  Id.run do
+  let mut new : NameSet := {}
+  for attr in (getAttrNames stx) do --.filterMap fun attr =>
+    match getAttributeImpl env attr with
+      | .ok attr => new := new.insert attr.ref
+      | .error .. => pure ()
+  return new
+
 /--`getAllImports cmd` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by the `SyntaxNodeKinds` and the identifiers contained in `cmd`. -/
 def getAllImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m]
@@ -50,7 +73,10 @@ def getAllImports {m : Type → Type} [Monad m] [MonadResolveName m] [MonadEnv m
     m NameSet := do
   let env ← getEnv
   --let nm ← liftCoreM do realizeGlobalConstNoOverloadWithInfo (getId cmd)
-  let ts := (getSyntaxNodeKinds cmd).append <| getVisited env (getId cmd).getId
+  -- we put together the implied declaration names, the `SyntaxNodeKinds`, the attributes
+  let ts := getVisited env (getId cmd).getId
+              |>.append (getSyntaxNodeKinds cmd)
+              |>.append (getAttrs env cmd)
   if dbg? then dbg_trace "{ts.toArray.qsort Name.lt}"
   let mut hm : HashMap Nat Name := {}
   for imp in env.header.moduleNames do
@@ -165,7 +191,9 @@ def minImportsLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    let tot ← getIrredundantImports stx
+    if stx.isOfKind ``Parser.Command.eoi then logInfo m!"{(← getEnv).imports.map (·.module)}"
+    let newImports ← getIrredundantImports stx
+    let tot := newImports.append prevImports
     let redundant := (← getEnv).findRedundantImports (prevImports.append tot).toArray
     let currImports := tot.diff redundant
     let currImpArray := currImports.toArray.qsort Name.lt
