@@ -149,7 +149,7 @@ def endOfLinter : Linter where run := withSetOptionIn fun stx ↦ do
         let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
           a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
         Linter.logLint linter.endOf stx
-          m!"warning: unclosed sections or namespaces; expected: '{ending}'"
+         m!"unclosed sections or namespaces; expected: '{ending}'"
 
 initialize addLinter endOfLinter
 
