@@ -95,7 +95,7 @@ for an equiv `α ≃ Fin n` given `Fintype.card α = n`.
 -/
 noncomputable def equivFin (α) [Fintype α] : α ≃ Fin (card α) :=
   letI := Classical.decEq α
-  (truncEquivFin α).out
+  (squashEquivFin α).out
 #align fintype.equiv_fin Fintype.equivFin
 
 /-- There is (computably) a bijection between `Fin (card α)` and `α`.
@@ -206,7 +206,7 @@ end
 theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β ↔ Nonempty (α ≃ β) :=
   ⟨fun h =>
     haveI := Classical.propDecidable
-    (truncEquivOfCardEq h).nonempty,
+    (squashEquivOfCardEq h).nonempty,
     fun ⟨f⟩ => card_congr f⟩
 #align fintype.card_eq Fintype.card_eq
 
@@ -835,7 +835,7 @@ def squashOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
 #align function.embedding.trunc_of_card_le Function.Embedding.squashOfCardLE
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
-    Nonempty (α ↪ β) := by classical exact (truncOfCardLE h).nonempty
+    Nonempty (α ↪ β) := by classical exact (squashOfCardLE h).nonempty
 #align function.embedding.nonempty_of_card_le Function.Embedding.nonempty_of_card_le
 
 theorem nonempty_iff_card_le [Fintype α] [Fintype β] :
