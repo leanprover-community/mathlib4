@@ -385,8 +385,8 @@ universe u
 
 variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
     (hT : ∀ n, (∀ (i : n), (T n i).IsSymmetric))
-    (hC : (∀ n, (∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i)))
-      ∧ (∀ p : n → Prop, Subtype.restrict p (T n) = T {x // p x}))
+    (hC : (∀ n, (∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i))))
+      --∧ (∀ p : n → Prop, Subtype.restrict p (T n) = T {x // p x}))
 
 open Classical
 
@@ -479,7 +479,7 @@ theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T
 /-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
   some lemmas. -/
 
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [Nontrivial n] :
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_induction_step [Nontrivial n] :
     (∀ (m : Type u) [Fintype m], Fintype.card m < Fintype.card n →
     ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T m j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) →
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
@@ -495,17 +495,13 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step [N
       sorry
   sorry
 
-#exit
-/-COMMENT: May also want ind_exhaust' and ind_Orthogonality' to match orthogonalFamily_eigenspaces and
-  orthogonalFamily_eigenspaces'-/
-
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
   · intro p
     exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base hT
   · intro p hp
-    exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base_induction_step
+    exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_induction_step
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))
