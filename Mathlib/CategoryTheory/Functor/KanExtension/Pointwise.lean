@@ -22,10 +22,6 @@ and if this holds for all `Y : D`, we construct a functor
 
 A dual API for pointwise right Kan extension is also formalized.
 
-## TODO
-
-* refactor the file `CategoryTheory.Limits.KanExtension` using this new general API
-
 ## References
 * https://ncatlab.org/nlab/show/Kan+extension
 
@@ -391,7 +387,7 @@ noncomputable def pointwiseRightKanExtensionCounit :
     L ⋙ pointwiseRightKanExtension L F ⟶ F where
   app X := limit.π (StructuredArrow.proj (L.obj X) L ⋙ F)
     (StructuredArrow.mk (𝟙 (L.obj X)))
-  naturality {X₁ X₂} f:= by
+  naturality {X₁ X₂} f := by
     simp only [comp_obj, pointwiseRightKanExtension_obj, comp_map,
       pointwiseRightKanExtension_map, limit.lift_π, StructuredArrow.map_mk]
     rw [comp_id]

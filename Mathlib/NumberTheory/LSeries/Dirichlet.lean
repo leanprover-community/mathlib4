@@ -92,11 +92,11 @@ lemma ArithmeticFunction.const_one_eq_zeta {R : Type*} [Semiring R] {n : ℕ} (h
     (1 : ℕ → R) n = (ζ ·) n := by
   simp only [Pi.one_apply, zeta_apply, hn, ↓reduceIte, cast_one]
 
-lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R):
+lemma LSeries.one_convolution_eq_zeta_convolution {R : Type*} [Semiring R] (f : ℕ → R) :
     (1 : ℕ → R) ⍟ f = ((ArithmeticFunction.zeta ·) : ℕ → R) ⍟ f :=
   convolution_congr ArithmeticFunction.const_one_eq_zeta fun _ ↦ rfl
 
-lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R):
+lemma LSeries.convolution_one_eq_convolution_zeta {R : Type*} [Semiring R] (f : ℕ → R) :
     f ⍟ (1 : ℕ → R) = f ⍟ ((ArithmeticFunction.zeta ·) : ℕ → R) :=
   convolution_congr (fun _ ↦ rfl) ArithmeticFunction.const_one_eq_zeta
 
