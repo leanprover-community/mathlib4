@@ -23,8 +23,7 @@ A lax functor `F` between bicategories `B` and `C` consists of
 * `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
 * `CategoryTheory.LaxFunctor.Pseudocore` : a structure on an Lax functor that promotes a
-  Lax functor to a pseudofunctor (TODO: the correpsonding code in `Pseudofunctor.lean` has not yet
-  been implemented)
+  Lax functor to a pseudofunctor
 
 ## Future work
 
@@ -139,7 +138,7 @@ instance : Inhabited (LaxFunctor B B) :=
   ⟨id B⟩
 
 /-- Composition of lax functors. -/
--- @[simps]
+@[simps]
 def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : LaxFunctor C D) :
     LaxFunctor B D where
   toPrelaxFunctor := PrelaxFunctor.comp F.toPrelaxFunctor G.toPrelaxFunctor
@@ -170,8 +169,8 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : L
       whiskerLeft_comp]
 
 /-- A structure on an Lax functor that promotes an Lax functor to a pseudofunctor.
-See `Pseudofunctor.mkOfLax`.
--/
+
+See `Pseudofunctor.mkOfLax`. -/
 structure PseudoCore (F : LaxFunctor B C) where
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)
   mapCompIso {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : F.map (f ≫ g) ≅ F.map f ≫ F.map g
