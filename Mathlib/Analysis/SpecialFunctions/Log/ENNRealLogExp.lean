@@ -15,14 +15,16 @@ We prove that `log` and `exp` define order isomorphisms between `ℝ≥0∞` and
 ## Main Definitions
 - `ENNReal.logOrderIso`: The order isomorphism between `ℝ≥0∞` and `EReal` defined by `log`
 and `exp`.
+- `EReal.expOrderIso`: The order isomorphism between `EReal` and `ℝ≥0∞` defined by `exp`
+and `log`.
 - `ENNReal.logHomeomorph`: `log` as a homeomorphism.
 - `EReal.expHomeomorph`: `exp` as a homeomorphism.
 
 ## Main Results
-- `ENNReal.log_exp`, `ENNReal.exp_log`: `log` and `exp` are inverses of each other.
-- `ENNReal.exp_nmul`, `ENNReal.exp_mul`: `exp` satisfies the identities `exp (n * x) = (exp x) ^ n`
+- `EReal.log_exp`, `ENNReal.exp_log`: `log` and `exp` are inverses of each other.
+- `EReal.exp_nmul`, `EReal.exp_mul`: `exp` satisfies the identities `exp (n * x) = (exp x) ^ n`
 and `exp (x * y) = (exp x) ^ y`.
-- `instMetrizableSpaceEReal`: `EReal` is a metrizable space.
+- `EReal` is a Polish space.
 
 ## Tags
 ENNReal, EReal, logarithm, exponential
@@ -47,56 +49,8 @@ section LogExp
 
 end LogExp
 
-section Log
-namespace ENNReal
-
-@[simp]
-lemma log_lt_log_iff {x y : ℝ≥0∞} : log x < log y ↔ x < y := by
-  refine ⟨fun h ↦ ?_, fun h ↦ log_strictMono h⟩
-  rw [← exp_log x, ← exp_log y]
-  exact exp_strictMono h
-
-@[simp] lemma bot_lt_log_iff {x : ℝ≥0∞} : ⊥ < log x ↔ 0 < x := log_zero ▸ @log_lt_log_iff 0 x
-
-@[simp] lemma log_lt_top_iff {x : ℝ≥0∞} : log x < ⊤ ↔ x < ⊤ := log_top ▸ @log_lt_log_iff x ⊤
-
-@[simp] lemma log_lt_zero_iff {x : ℝ≥0∞} : log x < 0 ↔ x < 1 := log_one ▸ @log_lt_log_iff x 1
-
-@[simp] lemma zero_lt_log_iff {x : ℝ≥0∞} : 0 < log x ↔ 1 < x := log_one ▸ @log_lt_log_iff 1 x
-
-@[simp]
-lemma log_le_log_iff {x y : ℝ≥0∞} : log x ≤ log y ↔ x ≤ y := by
-  refine ⟨fun h ↦ ?_, fun h ↦ log_monotone h⟩
-  rw [← exp_log x, ← exp_log y]
-  exact exp_monotone h
-
-@[simp] lemma log_le_zero_iff {x : ℝ≥0∞} : log x ≤ 0 ↔ x ≤ 1 := log_one ▸ @log_le_log_iff x 1
-
-@[simp] lemma zero_le_log_iff {x : ℝ≥0∞} : 0 ≤ log x ↔ 1 ≤ x := log_one ▸ @log_le_log_iff 1 x
-
-end ENNReal
-end Log
-
 section Exp
 namespace EReal
-@[simp]
-lemma exp_lt_exp_iff {a b : EReal} : exp a < exp b ↔ a < b := by
-  conv_rhs => rw [← log_exp a, ← log_exp b, log_lt_log_iff]
-
-@[simp] lemma zero_lt_exp_iff {a : EReal} : 0 < exp a ↔ ⊥ < a := exp_bot ▸ @exp_lt_exp_iff ⊥ a
-
-@[simp] lemma exp_lt_top_iff {a : EReal} : exp a < ⊤ ↔ a < ⊤ := exp_top ▸ @exp_lt_exp_iff a ⊤
-
-@[simp] lemma exp_lt_one_iff {a : EReal} : exp a < 1 ↔ a < 0 := exp_zero ▸ @exp_lt_exp_iff a 0
-
-@[simp] lemma one_lt_exp_iff {a : EReal} : 1 < exp a ↔ 0 < a := exp_zero ▸ @exp_lt_exp_iff 0 a
-
-@[simp] lemma exp_le_exp_iff {a b : EReal} : exp a ≤ exp b ↔ a ≤ b := by
-  conv_rhs => rw [← log_exp a, ← log_exp b, log_le_log_iff]
-
-@[simp] lemma exp_le_one_iff {a : EReal} : exp a ≤ 1 ↔ a ≤ 0 := exp_zero ▸ @exp_le_exp_iff a 0
-
-@[simp] lemma one_le_exp_iff {a : EReal} : 1 ≤ exp a ↔ 0 ≤ a := exp_zero ▸ @exp_le_exp_iff 0 a
 
 lemma exp_nmul (x : EReal) (n : ℕ) : exp (n * x) = (exp x) ^ n := by
   simp_rw [← log_eq_iff, log_pow, log_exp]
