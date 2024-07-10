@@ -481,7 +481,6 @@ theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
-  have : True := trivial
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
   · intro m hm hhm T hT hC
     exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base T hT
