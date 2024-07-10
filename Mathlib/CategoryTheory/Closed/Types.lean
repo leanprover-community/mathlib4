@@ -42,18 +42,9 @@ def Types.binaryProductAdjunction (X : Type v₁) :
 instance (X : Type v₁) : (Types.binaryProductFunctor.obj X).IsLeftAdjoint :=
   ⟨_, ⟨Types.binaryProductAdjunction X⟩⟩
 
--- Porting note: this instance should be moved to a higher file.
-instance : HasFiniteProducts (Type v₁) :=
-  hasFiniteProducts_of_hasProducts.{v₁} _
-
 instance : CartesianClosed (Type v₁) := CartesianClosed.mk _
   (fun X => Exponentiable.mk _ _
     ((Types.binaryProductAdjunction X).ofNatIsoLeft (Types.binaryProductIsoProd.app X)))
-
--- Porting note: in mathlib3, the assertion was for `(C ⥤ Type u₁)`, but then Lean4 was
--- confused with universes. It makes no harm to relax the universe assumptions here.
-instance {C : Type u₁} [Category.{v₁} C] : HasFiniteProducts (C ⥤ Type u₂) :=
-  hasFiniteProducts_of_hasProducts _
 
 instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :=
   CartesianClosed.mk _
