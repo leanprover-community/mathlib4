@@ -516,8 +516,7 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
       rcases h₂ with ⟨m₂, h₂, rfl⟩
       exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by aesop⟩
     · exact ⟨0, Submodule.zero_mem _, by aesop⟩
-  · rintro ⟨m, hm, rfl⟩
-    aesop
+  · aesop
 
 -- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`

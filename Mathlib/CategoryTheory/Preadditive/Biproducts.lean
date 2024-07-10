@@ -151,7 +151,6 @@ def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functo
     IsLimit.ofIsoLimit ht <|
       Cones.ext (Iso.refl _)
         (by
-          rintro ⟨j⟩
           aesop_cat)
 #align category_theory.limits.bicone_is_bilimit_of_limit_cone_of_is_limit CategoryTheory.Limits.biconeIsBilimitOfLimitConeOfIsLimit
 

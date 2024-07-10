@@ -226,7 +226,6 @@ theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
   rw [sign_inv]
   congr 1
   apply Fintype.prod_equiv σ
-  intros
   simp
 #align matrix.det_transpose Matrix.det_transpose
 
