@@ -534,13 +534,8 @@ theorem DifferentiableAt.sub (hf : DifferentiableAt 𝕜 f x) (hg : Differentiab
 @[simp]
 lemma DifferentiableAt.add_iff_left (hg : DifferentiableAt 𝕜 g x) :
     DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 f x := by
-  constructor <;> intro h
-  · have f_eq_sum_sub_g: f = (fun y => f y + g y) - g := by
-      ext
-      simp only [Pi.sub_apply, add_sub_cancel_right]
-    rw [f_eq_sum_sub_g]
-    exact DifferentiableAt.sub h hg
-  · simp_all only [DifferentiableAt.add]
+  refine ⟨fun h ↦ ?_, fun hf ↦ hf.add hg⟩
+  simpa using h.sub hg
 
 @[simp]
 lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
