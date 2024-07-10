@@ -48,7 +48,7 @@ set `s` of integration variables is a `Finset`. We are assuming that the functio
 for most of this file. Note that asking whether it is `AEMeasurable` is not even well-posed,
 since there is no well-behaved measure on the domain of `f`.
 
-## Todo
+## TODO
 
 * Define the marginal function for functions taking values in a Banach space.
 

@@ -61,8 +61,7 @@ This creates a little bit of friction, but lemmas like `IsPrimitiveRoot.isUnit` 
 
 -/
 
-
-open scoped Classical Polynomial
+open scoped Classical
 
 noncomputable section
 
