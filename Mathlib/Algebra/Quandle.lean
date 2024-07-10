@@ -67,7 +67,7 @@ The following notation is localized in `quandles`:
 
 Use `open quandles` to use these.
 
-## Todo
+## TODO
 
 * If `g` is the Lie algebra of a Lie group `G`, then `(x ◃ y) = Ad (exp x) x` forms a quandle.
 * If `X` is a symmetric space, then each point has a corresponding involution that acts on `X`,

@@ -148,13 +148,13 @@ instance quasiSeparated_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸
     (MorphismProperty.diagonal_isStableUnderComposition
-        quasiCompact_respectsIso quasiCompact_stableUnderBaseChange)
+        quasiCompact_stableUnderBaseChange)
 #align algebraic_geometry.quasi_separated_stable_under_composition AlgebraicGeometry.quasiSeparated_isStableUnderComposition
 
 theorem quasiSeparated_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸
-    quasiCompact_stableUnderBaseChange.diagonal quasiCompact_respectsIso
+    quasiCompact_stableUnderBaseChange.diagonal
 #align algebraic_geometry.quasi_separated_stable_under_base_change AlgebraicGeometry.quasiSeparated_stableUnderBaseChange
 
 instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
@@ -162,7 +162,7 @@ instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiS
   MorphismProperty.comp_mem _ f g inferInstance inferInstance
 #align algebraic_geometry.quasi_separated_comp AlgebraicGeometry.quasiSeparatedComp
 
-theorem quasiSeparated_respectsIso : MorphismProperty.RespectsIso @QuasiSeparated :=
+instance quasiSeparated_respectsIso : MorphismProperty.RespectsIso @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ quasiCompact_respectsIso.diagonal
 #align algebraic_geometry.quasi_separated_respects_iso AlgebraicGeometry.quasiSeparated_respectsIso
 
@@ -415,7 +415,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
         X.presheaf.map (homOfLE <| inf_le_right).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
-      · refine fun i => homOfLE ?_; erw [hs];
+      · refine fun i => homOfLE ?_; erw [hs]
         -- Porting note: have to add argument explicitly
         exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
       · exact le_of_eq hs

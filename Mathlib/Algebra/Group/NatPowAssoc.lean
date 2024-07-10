@@ -28,7 +28,7 @@ We also produce the following instances:
 
 - `NatPowAssoc` for Monoids, Pi types and products.
 
-## Todo
+## TODO
 
 * to_additive?
 
