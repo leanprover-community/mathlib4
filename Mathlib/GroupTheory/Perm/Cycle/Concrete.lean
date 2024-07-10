@@ -164,7 +164,7 @@ theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
   exact List.isCycle_formPerm h (length_nontrivial hn)
 #align cycle.is_cycle_form_perm Cycle.isCycle_formPerm
 
-theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
+theorem support_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     support (formPerm s h) = s.toFinset := by
   induction' s using Quot.inductionOn with s
   refine support_formPerm_of_nodup s h ?_

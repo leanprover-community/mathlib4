@@ -180,7 +180,7 @@ theorem isCycle_cycleOf (f : Perm α) [DecidableRel f.SameCycle] (hx : f x ≠ x
 #align equiv.perm.is_cycle_cycle_of Equiv.Perm.isCycle_cycleOf
 
 @[simp]
-theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
+theorem two_le_card_support_cycleOf_iff [Fintype α] :
     2 ≤ (cycleOf f x).supportCard ↔ f x ≠ x := by
   refine ⟨fun h => ?_, fun h => by simpa using (isCycle_cycleOf _ h).two_le_card_support⟩
   contrapose! h
@@ -194,7 +194,7 @@ theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
 #align equiv.perm.card_support_cycle_of_pos_iff Equiv.Perm.support_cycleOf_nonempty
 
 @[deprecated support_cycleOf_nonempty (since := "2024-06-16")]
-theorem card_support_cycleOf_pos_iff [DecidableEq α] [Fintype α] :
+theorem card_support_cycleOf_pos_iff [Fintype α] :
     0 < (cycleOf f x).supportCard ↔ f x ≠ x := by
   rw [Nat.pos_iff_ne_zero, ne_eq, supportCard_eq_zero, cycleOf_eq_one_iff]
 
@@ -225,7 +225,7 @@ theorem Disjoint.cycleOf_mul_distrib [DecidableRel (f * g).SameCycle]
   · simp [cycleOf_mul_of_apply_right_eq_self h.commute, hgx]
 #align equiv.perm.disjoint.cycle_of_mul_distrib Equiv.Perm.Disjoint.cycleOf_mul_distrib
 
-theorem support_cycleOf_eq_nil_iff [DecidableEq α] [Fintype α] :
+theorem support_cycleOf_eq_nil_iff :
     (f.cycleOf x).support = ∅ ↔ x ∉ f.support := by simp [not_mem_support]
 #align equiv.perm.support_cycle_of_eq_nil_iff Equiv.Perm.support_cycleOf_eq_nil_iff
 
@@ -238,7 +238,7 @@ theorem support_cycleOf_le [DecidableEq α] [Fintype α] (f : Perm α) (x : α) 
   · exact absurd rfl hy
 #align equiv.perm.support_cycle_of_le Equiv.Perm.support_cycleOf_le
 
-theorem mem_support_cycleOf_iff [DecidableEq α] [Fintype α] :
+theorem mem_support_cycleOf_iff :
     y ∈ support (f.cycleOf x) ↔ SameCycle f x y ∧ x ∈ support f := by
   by_cases hx : f x = x
   · rw [(cycleOf_eq_one_iff _).mpr hx]
@@ -252,7 +252,7 @@ theorem mem_support_cycleOf_iff [DecidableEq α] [Fintype α] :
     · simp [hy]
 #align equiv.perm.mem_support_cycle_of_iff Equiv.Perm.mem_support_cycleOf_iff
 
-theorem mem_support_cycleOf_iff' (hx : f x ≠ x) [DecidableEq α] [Fintype α] :
+theorem mem_support_cycleOf_iff' (hx : f x ≠ x) :
     y ∈ support (f.cycleOf x) ↔ SameCycle f x y := by
   rw [mem_support_cycleOf_iff, and_iff_left (mem_support.2 hx)]
 #align equiv.perm.mem_support_cycle_of_iff' Equiv.Perm.mem_support_cycleOf_iff'
