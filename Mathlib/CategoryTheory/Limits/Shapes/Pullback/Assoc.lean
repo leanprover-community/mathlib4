@@ -29,7 +29,7 @@ section PullbackAssoc
 
 /-
 The objects and morphisms are as follows:
-
+```
            Z₂ - g₄ -> X₃
            |          |
            g₃         f₄
@@ -39,19 +39,23 @@ Z₁ - g₂ -> X₂ - f₃ -> Y₂
 g₁         f₂
 ∨          ∨
 X₁ - f₁ -> Y₁
+```
 
 where the two squares are pullbacks.
 
 We can then construct the pullback squares
 
+```
 W  - l₂ -> Z₂ - g₄ -> X₃
 |                     |
 l₁                    f₄
 ∨                     ∨
 Z₁ - g₂ -> X₂ - f₃ -> Y₂
+```
 
 and
 
+```
 W' - l₂' -> Z₂
 |           |
 l₁'         g₃
@@ -61,6 +65,7 @@ Z₁          X₂
 g₁          f₂
 ∨           ∨
 X₁ -  f₁ -> Y₁
+```
 
 We will show that both `W` and `W'` are pullbacks over `g₁, g₂`, and thus we may construct a
 canonical isomorphism between them. -/
@@ -228,6 +233,7 @@ section PushoutAssoc
 /-
 The objects and morphisms are as follows:
 
+```
            Z₂ - g₄ -> X₃
            |          |
            g₃         f₄
@@ -237,11 +243,13 @@ Z₁ - g₂ -> X₂ - f₃ -> Y₂
 g₁         f₂
 ∨          ∨
 X₁ - f₁ -> Y₁
+```
 
 where the two squares are pushouts.
 
 We can then construct the pushout squares
 
+```
 Z₁ - g₂ -> X₂ - f₃ -> Y₂
 |                     |
 g₁                    l₂
@@ -259,6 +267,7 @@ X₂          Y₂
 f₂          l₂'
 ∨           ∨
 Y₁ - l₁' -> W'
+```
 
 We will show that both `W` and `W'` are pushouts over `f₂, f₃`, and thus we may construct a
 canonical isomorphism between them. -/
