@@ -747,13 +747,13 @@ theorem getLast?_append_of_ne_nil (l₁ : List α) :
   | b :: l₂, _ => getLast?_append_cons l₁ b l₂
 #align list.last'_append_of_ne_nil List.getLast?_append_of_ne_nil
 
-theorem getLast?_append {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
+theorem mem_getLast?_append_of_mem_getLast? {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
     x ∈ (l₁ ++ l₂).getLast? := by
   cases l₂
   · contradiction
   · rw [List.getLast?_append_cons]
     exact h
-#align list.last'_append List.getLast?_append
+#align list.last'_append List.mem_getLast?_append_of_mem_getLast?
 
 /-! ### head(!?) and tail -/
 
@@ -803,11 +803,12 @@ theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
   · rfl
 #align list.head_append List.head!_append
 
-theorem head?_append {s t : List α} {x : α} (h : x ∈ s.head?) : x ∈ (s ++ t).head? := by
+theorem mem_head?_append_of_mem_head? {s t : List α} {x : α} (h : x ∈ s.head?) :
+    x ∈ (s ++ t).head? := by
   cases s
   · contradiction
   · exact h
-#align list.head'_append List.head?_append
+#align list.head'_append List.mem_head?_append_of_mem_head?
 
 theorem head?_append_of_ne_nil :
     ∀ (l₁ : List α) {l₂ : List α} (_ : l₁ ≠ []), head? (l₁ ++ l₂) = head? l₁
@@ -841,9 +842,6 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
   have h' := mem_cons_self l.head! l.tail
   rwa [cons_head!_tail h] at h'
 #align list.head_mem_self List.head!_mem_self
-
-theorem head_mem {l : List α} : ∀ (h : l ≠ nil), l.head h ∈ l := by
-  cases l <;> simp
 
 #align list.head'_map List.head?_map
 
@@ -1092,17 +1090,8 @@ alias sublist_nil_iff_eq_nil := sublist_nil
   constructor <;> rintro (_ | _) <;> aesop
 
 #align list.replicate_sublist_replicate List.replicate_sublist_replicate
-
-theorem sublist_replicate_iff {l : List α} {a : α} {n : ℕ} :
-    l <+ replicate n a ↔ ∃ k ≤ n, l = replicate k a :=
-  ⟨fun h =>
-    ⟨l.length, h.length_le.trans_eq (length_replicate _ _),
-      eq_replicate_length.mpr fun b hb => eq_of_mem_replicate (h.subset hb)⟩,
-    by rintro ⟨k, h, rfl⟩; exact (replicate_sublist_replicate _).mpr h⟩
 #align list.sublist_replicate_iff List.sublist_replicate_iff
-
 #align list.sublist.eq_of_length List.Sublist.eq_of_length
-
 #align list.sublist.eq_of_length_le List.Sublist.eq_of_length_le
 
 theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l₂ :=
@@ -2439,7 +2428,7 @@ theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Ar
   | cons hd tl =>
     simp only [cons_append]
     rw [modifyLast.go, modifyLast.go]
-    case x_3 | x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
+    case x_3 | x_3 => exact append_ne_nil_of_ne_nil_right tl (cons_ne_nil a [])
     rw [modifyLast.go_append_one _ _ tl _, modifyLast.go_append_one _ _ tl (Array.push #[] hd)]
     simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append, append_assoc]
 
