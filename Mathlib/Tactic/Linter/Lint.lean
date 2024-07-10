@@ -111,15 +111,13 @@ initialize addLinter dupNamespace
 end DupNamespaceLinter
 
 /-!
-#  The "EndOf" linter
+# The "EndOf" linter
 
 The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
 -/
 
 open Lean Elab Command
-
-namespace Mathlib.Linter
 
 /-- The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
 It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
@@ -131,34 +129,27 @@ register_option linter.endOf : Bool := {
 
 namespace EndOf
 
-open Lean Elab Command
-
 /-- Gets the value of the `linter.endOf` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.endOf o
 
 @[inherit_doc Mathlib.Linter.linter.endOf]
-def endOfLinter : Linter where
-  run := withSetOptionIn fun stx => do
+def endOfLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    unless getLinterHash (← getOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    let sc ← getScopes
-    -- a single scope means that there is no active `section`/`namespace`
-    if sc.length == 1 then return
-    let ends := sc.dropLast.map fun s => (s.header, s.isNoncomputable)
-    -- if the "outermost" scope corresponds to a `noncomputable section`, then we exclude it
-    let ends := if ends.getLast!.2 then ends.dropLast else ends
-    if !ends.isEmpty then
-      let ending := (ends.map Prod.fst).foldl (init := "") fun a b =>
-        a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-      Linter.logLint linter.endOf stx m!"Expected: '{ending}'"
+    if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
+      let sc ← getScopes
+      -- A single scope means there is no active `section` or `namespace`.
+      if sc.length == 1 then return
+      let ends := sc.dropLast.map fun s ↦ (s.header, s.isNoncomputable)
+      -- If the "outermost" scope corresponds to a `noncomputable section`, we ignore it.
+      let ends := if ends.getLast!.2 then ends.dropLast else ends
+      if !ends.isEmpty then
+        let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
+          a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+        Linter.logLint linter.endOf stx m!"Expected: '{ending}'"
 
 initialize addLinter endOfLinter
 
 end EndOf
-
-end Mathlib.Linter
 
 end Mathlib.Linter
