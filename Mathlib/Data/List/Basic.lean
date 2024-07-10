@@ -2341,7 +2341,7 @@ theorem splitOnP_spec (as : List α) :
     · rw [if_pos h, h, map, cons_append, zipWith, nil_append, join, cons_append, cons_inj_right]
       exact ih
     · rw [if_neg h, eq_false_of_ne_true h, join_zipWith (splitOnP_ne_nil _ _)
-        (append_ne_nil_of_ne_nil_right _ [[]] (cons_ne_nil [] [])), cons_inj_right]
+        (append_ne_nil_of_ne_nil_right _ (cons_ne_nil [] [])), cons_inj_right]
       exact ih
 where
   join_zipWith {xs ys : List (List α)} {a : α} (hxs : xs ≠ []) (hys : ys ≠ []) :
@@ -2440,7 +2440,7 @@ theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
   | cons _ tl =>
     simp only [cons_append, modifyLast]
     rw [modifyLast.go]
-    case x_3 => exact append_ne_nil_of_ne_nil_right tl [a] (cons_ne_nil a [])
+    case x_3 => exact append_ne_nil_of_ne_nil_right tl (cons_ne_nil a [])
     rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
       nil_append, cons_append, nil_append, cons_inj_right]
     exact modifyLast_append_one _ _ tl
@@ -2788,7 +2788,7 @@ attribute [simp 1100] filterMap_cons_some
 
 #align list.filter_map_some List.filterMap_some
 
-#align list.map_filter_map_some_eq_filter_map_is_some List.map_filterMap_some_eq_filter_map_is_some
+#align list.map_filter_map_some_eq_filter_map_is_some List.map_filterMap_some_eq_filter_map_isSome
 
 #align list.mem_filter_map List.mem_filterMap
 
@@ -3521,14 +3521,6 @@ end Forall
 
 /-! ### Miscellaneous lemmas -/
 
-theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
-    (hl' : 0 < l.length := (by
-      contrapose! hl
-      simpa [length_eq_zero] using hl)) :
-    l.reverse.getLast hl = l.get ⟨0, hl'⟩ := by
-  rw [getLast_eq_get, get_reverse']
-  · simp
-  · simpa using hl'
 #align list.last_reverse List.getLast_reverse
 
 #noalign list.ilast'_mem --List.ilast'_mem
