@@ -18,7 +18,7 @@ of both L-series when adding two functions).
 
 open LSeries
 
-lemma LSeries.term_add (f g : ℕ → ℂ) (s : ℂ) : term (f + g) s = term f s + term g s := by
+lemma LSeries.term_add (f g : ℕ → ℂ) (s : ℂ):term (f + g) s = term f s + term g s := by
   ext ⟨- | n⟩
   · simp only [term_zero, Pi.add_apply, add_zero]
   · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.add_apply, add_div]
@@ -47,12 +47,12 @@ lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg :
 ### Negation
 -/
 
-lemma LSeries.term_neg (f : ℕ → ℂ) (s : ℂ) : term (-f) s = -term f s := by
+lemma LSeries.term_neg (f : ℕ → ℂ) (s : ℂ):term (-f) s = -term f s := by
   ext ⟨- | n⟩
   · simp only [Nat.zero_eq, term_zero, Pi.neg_apply, neg_zero]
   · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.neg_apply, Nat.cast_succ, neg_div]
 
-lemma LSeries.term_neg_apply (f : ℕ → ℂ) (s : ℂ) (n : ℕ) : term (-f) s n = -term f s n := by
+lemma LSeries.term_neg_apply (f : ℕ → ℂ) (s : ℂ) (n : ℕ):term (-f) s n = -term f s n := by
   rw [term_neg, Pi.neg_apply]
 
 lemma LSeriesHasSum.neg {f : ℕ → ℂ} {s a : ℂ} (hf : LSeriesHasSum f s a) :
@@ -78,7 +78,7 @@ lemma LSeries_neg (f : ℕ → ℂ) (s : ℂ) : LSeries (-f) s = -LSeries f s :=
 
 open LSeries
 
-lemma LSeries.term_sub (f g : ℕ → ℂ) (s : ℂ) : term (f - g) s = term f s - term g s := by
+lemma LSeries.term_sub (f g : ℕ → ℂ) (s : ℂ):term (f - g) s = term f s - term g s := by
   simp_rw [sub_eq_add_neg, term_add, term_neg]
 
 lemma LSeries.term_sub_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
@@ -104,7 +104,7 @@ lemma LSeries_sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg :
 ### Scalar multiplication
 -/
 
-lemma LSeries.term_smul (f : ℕ → ℂ) (c s : ℂ) : term (c • f) s = c • term f s := by
+lemma LSeries.term_smul (f : ℕ → ℂ) (c s : ℂ):term (c • f) s = c • term f s := by
   ext ⟨- | n⟩
   · simp only [Nat.zero_eq, term_zero, Pi.smul_apply, smul_eq_mul, mul_zero]
   · simp only [term_of_ne_zero (Nat.succ_ne_zero _), Pi.smul_apply, smul_eq_mul, Nat.cast_succ,

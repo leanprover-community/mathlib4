@@ -591,9 +591,9 @@ def prodPrimeFactors [CommMonoidWithZero R] (f : ℕ → R) : ArithmeticFunction
 open Batteries.ExtendedBinder
 
 /-- `∏ᵖ p ∣ n, f p` is custom notation for `prodPrimeFactors f n` -/
-scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67 : term
+scoped syntax (name := bigproddvd) "∏ᵖ " extBinder " ∣ " term ", " term:67:term
 scoped macro_rules (kind := bigproddvd)
-  | `(∏ᵖ $x : ident ∣ $n, $r) => `(prodPrimeFactors (fun $x ↦ $r) $n)
+  | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodPrimeFactors (fun $x ↦ $r) $n)
 
 @[simp]
 theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f : ℕ → R} {n : ℕ} (hn : n ≠ 0) :

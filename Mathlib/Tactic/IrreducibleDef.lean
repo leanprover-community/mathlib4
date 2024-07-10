@@ -33,7 +33,7 @@ namespace Lean.Elab.Command
 open Term Meta
 
 /-- `delta% t` elaborates to a head-delta reduced version of `t`. -/
-elab "delta% " t:term : term <= expectedType => do
+elab "delta% " t:term:term <= expectedType => do
   let t ← elabTerm t expectedType
   synthesizeSyntheticMVars
   let t ← instantiateMVars t
@@ -41,7 +41,7 @@ elab "delta% " t:term : term <= expectedType => do
   pure t
 
 /-- `eta_helper f = (· + 3)` elabs to `∀ x, f x = x + 3` -/
-local elab "eta_helper " t:term : term => do
+local elab "eta_helper " t:term:term => do
   let t ← elabTerm t none
   let some (_, lhs, rhs) := t.eq? | throwError "not an equation: {t}"
   synthesizeSyntheticMVars
@@ -51,7 +51,7 @@ local elab "eta_helper " t:term : term => do
     mkForallFVars xs <|← mkEq lhs rhs
 
 /-- `val_proj x` elabs to the *primitive projection* `@x.val`.  -/
-local elab "val_proj " e:term : term => do
+local elab "val_proj " e:term:term => do
   let e ← elabTerm (← `(($e : Subtype _))) none
   return mkProj ``Subtype 0 e
 

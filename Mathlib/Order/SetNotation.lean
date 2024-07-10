@@ -77,7 +77,7 @@ instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
 /-
 Porting note: the code below could replace the `notation3` command
 open Batteries.ExtendedBinder in
-syntax "⨆ " extBinder ", " term:51 : term
+syntax "⨆ " extBinder ", " term:51:term
 
 macro_rules
   | `(⨆ $x:ident, $p) => `(iSup fun $x:ident ↦ $p)
@@ -111,15 +111,15 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
       if prop && !dep then
         `(⨆ (_ : $dom), $body)
       else if prop || ppTypes then
-        `(⨆ ($x : ident : $dom), $body)
+        `(⨆ ($x:ident : $dom), $body)
       else
-        `(⨆ $x : ident, $body)
+        `(⨆ $x:ident, $body)
   -- Cute binders
   let stx : Term ←
     match stx with
-    | `(⨆ $x : ident, ⨆ (_ : $y : ident ∈ $s), $body)
-    | `(⨆ ($x : ident : $_), ⨆ (_ : $y : ident ∈ $s), $body) =>
-      if x == y then `(⨆ $x : ident ∈ $s, $body) else pure stx
+    | `(⨆ $x:ident, ⨆ (_ : $y:ident ∈ $s), $body)
+    | `(⨆ ($x:ident : $_), ⨆ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⨆ $x:ident ∈ $s, $body) else pure stx
     | _ => pure stx
   return stx
 
@@ -139,15 +139,15 @@ def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
       if prop && !dep then
         `(⨅ (_ : $dom), $body)
       else if prop || ppTypes then
-        `(⨅ ($x : ident : $dom), $body)
+        `(⨅ ($x:ident : $dom), $body)
       else
-        `(⨅ $x : ident, $body)
+        `(⨅ $x:ident, $body)
   -- Cute binders
   let stx : Term ←
     match stx with
-    | `(⨅ $x : ident, ⨅ (_ : $y : ident ∈ $s), $body)
-    | `(⨅ ($x : ident : $_), ⨅ (_ : $y : ident ∈ $s), $body) =>
-      if x == y then `(⨅ $x : ident ∈ $s, $body) else pure stx
+    | `(⨅ $x:ident, ⨅ (_ : $y:ident ∈ $s), $body)
+    | `(⨅ ($x:ident : $_), ⨅ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⨅ $x:ident ∈ $s, $body) else pure stx
     | _ => pure stx
   return stx
 end delaborators
@@ -222,15 +222,15 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
       if prop && !dep then
         `(⋃ (_ : $dom), $body)
       else if prop || ppTypes then
-        `(⋃ ($x : ident : $dom), $body)
+        `(⋃ ($x:ident : $dom), $body)
       else
-        `(⋃ $x : ident, $body)
+        `(⋃ $x:ident, $body)
   -- Cute binders
   let stx : Term ←
     match stx with
-    | `(⋃ $x : ident, ⋃ (_ : $y : ident ∈ $s), $body)
-    | `(⋃ ($x : ident : $_), ⋃ (_ : $y : ident ∈ $s), $body) =>
-      if x == y then `(⋃ $x : ident ∈ $s, $body) else pure stx
+    | `(⋃ $x:ident, ⋃ (_ : $y:ident ∈ $s), $body)
+    | `(⋃ ($x:ident : $_), ⋃ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⋃ $x:ident ∈ $s, $body) else pure stx
     | _ => pure stx
   return stx
 
@@ -250,15 +250,15 @@ def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
       if prop && !dep then
         `(⋂ (_ : $dom), $body)
       else if prop || ppTypes then
-        `(⋂ ($x : ident : $dom), $body)
+        `(⋂ ($x:ident : $dom), $body)
       else
-        `(⋂ $x : ident, $body)
+        `(⋂ $x:ident, $body)
   -- Cute binders
   let stx : Term ←
     match stx with
-    | `(⋂ $x : ident, ⋂ (_ : $y : ident ∈ $s), $body)
-    | `(⋂ ($x : ident : $_), ⋂ (_ : $y : ident ∈ $s), $body) =>
-      if x == y then `(⋂ $x : ident ∈ $s, $body) else pure stx
+    | `(⋂ $x:ident, ⋂ (_ : $y:ident ∈ $s), $body)
+    | `(⋂ ($x:ident : $_), ⋂ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⋂ $x:ident ∈ $s, $body) else pure stx
     | _ => pure stx
   return stx
 

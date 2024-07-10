@@ -1311,7 +1311,7 @@ Does not make use of the expected type; useful for big operators over finsets.
 #check finset% (Set.univ : Set Bool) -- Finset Bool
 ```
 -/
-elab (name := finsetStx) "finset% " t:term : term => do
+elab (name := finsetStx) "finset% " t:term:term => do
   let u ← mkFreshLevelMVar
   let ty ← mkFreshExprMVar (mkSort (.succ u))
   let x ← Elab.Term.elabTerm t (mkApp (.const ``Finset [u]) ty)

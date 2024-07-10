@@ -189,7 +189,7 @@ def borelize (t : Term) : TacticM Unit := withMainContext <| do
   i?.elim (addBorelInstance e) (borelToRefl e)
 
 elab_rules : tactic
-  | `(tactic| borelize $[$t : term]*) => t.forM borelize
+  | `(tactic| borelize $[$t:term]*) => t.forM borelize
 
 end Mathlib.Tactic.Borelize
 

@@ -71,7 +71,7 @@ lemma term_def (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   rfl
 
 @[simp]
-lemma term_zero (f : ℕ → ℂ) (s : ℂ) : term f s 0 = 0 := rfl
+lemma term_zero (f : ℕ → ℂ) (s : ℂ):term f s 0 = 0 := rfl
 
 -- We put `hn` first for convnience, so that we can write `rw [LSeries.term_of_ne_zero hn]` etc.
 @[simp]
@@ -143,7 +143,7 @@ lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
     LSeriesSummable g s := by
   rw [← Nat.cofinite_eq_atTop] at h
   refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually _ ?_
-  have : term f s =ᶠ[cofinite] term g s := by
+  have:term f s =ᶠ[cofinite] term g s := by
     rw [eventuallyEq_iff_exists_mem] at h ⊢
     obtain ⟨S, hS, hS'⟩ := h
     refine ⟨S \ {0}, diff_mem hS <| (Set.finite_singleton 0).compl_mem_cofinite, fun n hn ↦ ?_⟩
@@ -242,7 +242,7 @@ namespace LSeries
 
 open Nat Complex
 
-lemma term_delta (s : ℂ) (n : ℕ) : term δ s n = if n = 1 then 1 else 0 := by
+lemma term_delta (s : ℂ) (n : ℕ):term δ s n = if n = 1 then 1 else 0 := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero, zero_ne_one, ↓reduceIte]
   · simp only [ne_eq, hn, not_false_eq_true, term_of_ne_zero, delta]

@@ -482,7 +482,7 @@ private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
 private def getLocalOrIntro (t : Term) : TacticM FVarId := do
   match t with
     | `(_) => runIntro t `_
-    | `($id : ident) => getFVarId id <|> runIntro id id.getId
+    | `($id:ident) => getFVarId id <|> runIntro id id.getId
     | _ => Elab.throwUnsupportedSyntax
 
 elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do

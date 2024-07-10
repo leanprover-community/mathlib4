@@ -58,7 +58,7 @@ macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, terminal := true })
-      (rule_sets : = [$(Lean.mkIdent `SimpleGraph) : ident]))
+      (rule_sets : = [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
 Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph`
@@ -67,7 +67,7 @@ macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, terminal := true })
-      (rule_sets : = [$(Lean.mkIdent `SimpleGraph) : ident]))
+      (rule_sets : = [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
 A variant of `aesop_graph` which does not fail if it is unable to solve the
@@ -78,7 +78,7 @@ macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic
   `(tactic|
     aesop $c*
       (config := { introsTransparency? := some .default, warnOnNonterminal := false })
-      (rule_sets : = [$(Lean.mkIdent `SimpleGraph) : ident]))
+      (rule_sets : = [$(Lean.mkIdent `SimpleGraph):ident]))
 
 open Finset Function
 

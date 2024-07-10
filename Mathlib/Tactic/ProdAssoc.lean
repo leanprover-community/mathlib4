@@ -118,7 +118,7 @@ This elaborator postpones if there are metavariables in the expected type,
 and to propagate the fact that this elaborator produces an `Equiv`,
 the `prod_assoc%` macro sets things up with a type ascription.
 This enables using `prod_assoc%` with, for example `Equiv.trans` dot notation. -/
-syntax (name := prodAssocStx) "prod_assoc_internal%" : term
+syntax (name := prodAssocStx) "prod_assoc_internal%":term
 
 open Elab Term in
 /-- Elaborator for `prod_assoc%`. -/
@@ -146,6 +146,6 @@ example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ :=
   (prod_assoc% : _ ≃ α × β × γ × δ).trans prod_assoc%
 ```
 -/
-macro "prod_assoc%" : term => `((prod_assoc_internal% : _ ≃ _))
+macro "prod_assoc%":term => `((prod_assoc_internal% : _ ≃ _))
 
 end Lean.Expr

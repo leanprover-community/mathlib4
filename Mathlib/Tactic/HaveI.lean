@@ -17,7 +17,7 @@ as term-mode and do-elem syntax (like for example `let` or `have`).
 
 namespace Mathlib.Tactic.HaveI
 
-local syntax "haveIDummy" haveDecl : term
+local syntax "haveIDummy" haveDecl:term
 macro_rules
   | `(assert! haveIDummy $hd:haveDecl; $body) => `(haveI $hd:haveDecl; $body)
 
@@ -29,7 +29,7 @@ macro_rules
 macro "haveI' " hd:haveDecl : doElem =>
   `(doElem| assert! haveIDummy $hd:haveDecl)
 
-local syntax "letIDummy" haveDecl : term
+local syntax "letIDummy" haveDecl:term
 macro_rules
   | `(assert! letIDummy $hd:haveDecl; $body) => `(letI $hd:haveDecl; $body)
 

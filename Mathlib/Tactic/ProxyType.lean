@@ -283,7 +283,7 @@ in particular we have that
 proxy_equiv% (foo n α) : Unit ⊕ Bool ⊕ (x : Fin n) × Fin x ⊕ (_ : Bool) × α ≃ foo n α
 ```
 -/
-syntax (name := proxy_equiv) "proxy_equiv% " term : term
+syntax (name := proxy_equiv) "proxy_equiv% " term:term
 
 /-- Elaborator for `proxy_equiv%`. -/
 @[term_elab proxy_equiv]

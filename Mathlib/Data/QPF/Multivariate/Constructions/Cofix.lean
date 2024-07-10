@@ -461,7 +461,7 @@ elab_rules : tactic
       match ids[n]? with
       | some s =>
         match s with
-        | `(binderIdent| $n : ident) => n.getId
+        | `(binderIdent| $n:ident) => n.getId
         | `(binderIdent| _) => `_
         | _ => unreachable!
       | none => `_
@@ -469,7 +469,7 @@ elab_rules : tactic
       match ids[n]? with
       | some s =>
         match s with
-        | `(binderIdent| $n : ident) => `(rcasesPat| $n)
+        | `(binderIdent| $n:ident) => `(rcasesPat| $n)
         | `(binderIdent| _%$b) => `(rcasesPat| _%$b)
         | _ => unreachable!
       | none => `(rcasesPat| _)

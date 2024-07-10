@@ -655,7 +655,7 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
 * You can use the `include_str` macro in place of the two strings
   to load CNF / LRAT files from disk.
 -/
-elab "from_lrat " cnf:term:max ppSpace lrat:term:max : term => do
+elab "from_lrat " cnf:term:max ppSpace lrat:term:max:term => do
   let cnf ← unsafe evalTerm String (mkConst ``String) cnf
   let lrat ← unsafe evalTerm String (mkConst ``String) lrat
   let name ← mkAuxName `lrat

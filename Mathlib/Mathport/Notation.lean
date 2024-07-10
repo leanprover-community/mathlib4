@@ -32,36 +32,36 @@ For example, the familiar exists is given by:
 which expands to the same expression as
 `∃ x y : Nat, x < y`
 -/
-syntax "expand_binders% " "(" ident " => " term ")" extBinders ", " term : term
+syntax "expand_binders% " "(" ident " => " term ")" extBinders ", " term:term
 
 macro_rules
   | `(expand_binders% ($x => $term) $y : extBinder, $res) =>
     `(expand_binders% ($x => $term) ($y : extBinder), $res)
   | `(expand_binders% ($_ => $_), $res) => pure res
 macro_rules
-  | `(expand_binders% ($x => $term) ($y : ident $[ : $ty]?) $binders*, $res) => do
+  | `(expand_binders% ($x => $term) ($y:ident $[ : $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
     term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y : ident : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
+      `(fun $y:ident : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
   | `(expand_binders% ($x => $term) (_%$ph $[ : $ty]?) $binders*, $res) => do
     let ty := ty.getD (← `(_))
     term.replaceM fun x' ↦ do
       unless x == x' do return none
       `(fun _%$ph : $ty ↦ expand_binders% ($x => $term) $[$binders]*, $res)
-  | `(expand_binders% ($x => $term) ($y : ident $pred : binderPred) $binders*, $res) =>
+  | `(expand_binders% ($x => $term) ($y:ident $pred : binderPred) $binders*, $res) =>
     term.replaceM fun x' ↦ do
       unless x == x' do return none
-      `(fun $y : ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
+      `(fun $y:ident ↦ expand_binders% ($x => $term) (h : satisfies_binder_pred% $y $pred)
         $[$binders]*, $res)
 
 macro (name := expandFoldl) "expand_foldl% "
-  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
+  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]":term =>
   args.getElems.foldlM (init := init) fun res arg ↦ do
     term.replaceM fun e ↦
       return if e == x then some res else if e == y then some arg else none
 macro (name := expandFoldr) "expand_foldr% "
-  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]" : term =>
+  "(" x:ident ppSpace y:ident " => " term:term ") " init:term:max " [" args:term,* "]":term =>
   args.getElems.foldrM (init := init) fun arg res ↦ do
     term.replaceM fun e ↦
       return if e == x then some arg else if e == y then some res else none
@@ -337,9 +337,9 @@ partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := g
               -- the variable is unused and this binder is safe to merge into another
               `(extBinderParenthesized|(_ : $dom))
             else if prop || ppTypes then
-              `(extBinderParenthesized|($x : ident : $dom))
+              `(extBinderParenthesized|($x:ident : $dom))
             else
-              `(extBinderParenthesized|($x : ident))
+              `(extBinderParenthesized|($x:ident))
           -- Now use the body of the lambda for `lit` for the next iteration
           let s ← s.captureSubexpr lit
           -- TODO merge binders as an inverse to `satisfies_binder_pred%`
@@ -502,9 +502,9 @@ elab (name : = notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)?
       if let `(stx| $lit : str) : = syntaxArgs.back then
         syntaxArgs : = syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight) : str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders : extBinders))
-    | `(notation3Item| ($id : ident $sep : str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
+    | `(notation3Item| ($id:ident $sep : str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
-        `(macroArg| $id : ident : sepBy(term $(prec?)?, $sep : str))
+        `(macroArg| $id:ident : sepBy(term $(prec?)?, $sep : str))
       -- N.B. `Syntax.getId` returns `.anonymous` for non-idents
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       let init' ← init.replaceM fun s => pure (boundValues.find? s.getId)
@@ -525,21 +525,21 @@ elab (name : = notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)?
           matchers := matchers.push <|
             mkFoldrMatcher id.getId x.getId y.getId scopedTerm init boundNames
         | _ => throwUnsupportedSyntax
-    | `(notation3Item| $lit : ident $(prec?)? : (scoped $scopedId : ident => $scopedTerm)) =>
+    | `(notation3Item| $lit:ident $(prec?)? : (scoped $scopedId:ident => $scopedTerm)) =>
       hasScoped := true
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
-        `(macroArg| $lit : ident : term $(prec?)?)
+        `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
         mkScopedMatcher lit.getId scopedId.getId scopedTerm boundNames
       let scopedTerm' ← scopedTerm.replaceM fun s => pure (boundValues.find? s.getId)
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
         `(expand_binders% ($scopedId => $scopedTerm') $$binders : extBinders,
-          $(⟨lit.1.mkAntiquotNode `term⟩) : term)
+          $(⟨lit.1.mkAntiquotNode `term⟩):term)
       boundNames := boundNames.push lit.getId
-    | `(notation3Item| $lit : ident $(prec?)?) =>
+    | `(notation3Item| $lit:ident $(prec?)?) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <|←
-        `(macroArg| $lit : ident : term $(prec?)?)
+        `(macroArg| $lit:ident:term $(prec?)?)
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| lit.1.mkAntiquotNode `term
       boundNames := boundNames.push lit.getId
@@ -551,7 +551,7 @@ elab (name : = notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)?
   let name ← mkNameFromSyntax name? syntaxArgs attrKind
   elabCommand <| ← `(command|
     $[$doc]? $(attrs?)? $attrKind
-    syntax $(prec?)? (name := $(Lean.mkIdent name)) $(prio?)? $[$syntaxArgs]* : term)
+    syntax $(prec?)? (name := $(Lean.mkIdent name)) $(prio?)? $[$syntaxArgs]*:term)
 
   -- 2. The `macro_rules`
   let currNamespace : Name ← getCurrNamespace

@@ -1361,7 +1361,7 @@ theorem union_succ : GoodProducts C = GoodProducts (π C (ord I · < o)) ∪ Max
   ext l
   simp only [GoodProducts, MaxProducts, Set.mem_union, Set.mem_setOf_eq]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · by_cases hh : term I ho ∈ l.val
+  · by_cases hh:term I ho ∈ l.val
     · exact Or.inr ⟨h, hh⟩
     · left
       intro he

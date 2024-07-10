@@ -33,9 +33,9 @@ def fun₀ : = leading_parser : maxPrec
   ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
-local syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
+local syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg:term
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
-local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
+local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg:term
 
 /-- `Finsupp` elaborator for `single₀`. -/
 @[term_elab stxSingle₀]

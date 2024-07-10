@@ -150,7 +150,7 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
 
 /-- Elaborate an `#align` command. -/
 @[command_elab align] def elabAlign : CommandElab
-  | `(#align $id3 : ident $id4 : ident) => do
+  | `(#align $id3:ident $id4:ident) => do
     if (← getInfoState).enabled then
       addCompletionInfo <| CompletionInfo.id id4 id4.getId (danglingDot := false) {} none
       let c := removeX id4.getId
@@ -187,7 +187,7 @@ syntax (name := noalign) "#noalign " ident : command
 
 /-- Elaborate a `#noalign` command. -/
 @[command_elab noalign] def elabNoAlign : CommandElab
-  | `(#noalign $id3 : ident) => do
+  | `(#noalign $id3:ident) => do
     withRef id3 <| ensureUnused id3.getId
     liftCoreM <| addNameAlignment id3.getId .anonymous
   | _ => throwUnsupportedSyntax
@@ -197,7 +197,7 @@ syntax (name := lookup3) "#lookup3 " ident : command
 
 /-- Elaborate a `#lookup3` command. -/
 @[command_elab lookup3] def elabLookup3 : CommandElab
-  | `(#lookup3%$tk $id3 : ident) => do
+  | `(#lookup3%$tk $id3:ident) => do
     let n3 := id3.getId
     let m := renameExtension.getState (← getEnv) |>.get
     match m.find? n3 with
