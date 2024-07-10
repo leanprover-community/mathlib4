@@ -23,23 +23,22 @@ germ, smooth function, manifold
 noncomputable section
 
 open Filter Set
-
-open scoped Manifold Topology BigOperators
+open scoped Manifold Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  -- declare a smooth manifold `M` over the pair `(E, H)` with model `I`.
+  -- Declare a smooth manifold `M` over the pair `(E, H)` with model `I`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
-  -- declare a smooth manifold `N` over the pair `(E', H')` with model `I'`.
+  -- Declare a smooth manifold `N` over the pair `(E', H')` with model `I'`.
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
 
 namespace smoothGerm
 
--- Definition of germs of smooth maps, between any two manifolds.
+/-! Definition of germs of smooth maps, between any two manifolds. -/
 section definition
 
 variable (N) in
@@ -60,7 +59,7 @@ theorem coe_eq_coe (f g : C^∞⟮I, M; I', N⟯) {x : M} (h : ∀ᶠ y in 𝓝 
   ext
   rwa [Germ.coe_eq]
 
--- xxx: is this lemma useful?
+@[simp]
 lemma mem_smoothGerm {x : M} (a : Germ (𝓝 x) N) :
     a ∈ smoothGerm I I' N x ↔ ∃ f : SmoothMap I I' M N, Germ.ofFun f = a := by
   rfl
