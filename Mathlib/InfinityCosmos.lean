@@ -295,16 +295,38 @@ def adj : Cat.freeRefl ⊣ ReflQuiv.forget :=
   Adjunction.mkOfUnitCounit {
     unit := {
       app := adj.unit.app
+      naturality := by
+        intro V W f
+        unfold adj.unit.app
+        exact rfl
     }
     counit := {
       app := adj.counit.app
       naturality := by
         intro C D F
-        simp
         apply Quotient.lift_unique'
         unfold adj.counit.app
         exact (Quiv.adj.counit.naturality F)
     }
+    left_triangle := by
+      ext V
+      simp
+      fapply Functor.ext
+      · intro X
+        exact rfl
+      · intro X Y f
+        simp
+        sorry
+    right_triangle := by
+      ext C
+      simp
+      fapply ReflPrefunctor.ext
+      · intro X
+        exact rfl
+      · intro X Y f
+        unfold adj.unit.app adj.counit.app
+        simp
+        sorry
   }
 
 def adj.homEquiv (V : ReflQuiv) (C : Cat) : (Cat.freeRefl.obj V ⟶ C) ≃ (V ⟶ forget.obj C) where
@@ -494,6 +516,24 @@ def OneTruncation.ofNerve (C : Type u) [Category.{u} C] :
       · sorry
       · sorry
   inv_hom_id := sorry
+
+/-- ER: For use later. -/
+def OneTruncation.ofNerveNatIso : nerveFunctor ⋙ SSet.oneTruncation ≅ ReflQuiv.forget := by
+  refine NatIso.ofComponents (fun C => OneTruncation.ofNerve C) ?nat
+  · intro C D F
+    fapply ReflPrefunctor.ext <;> simp
+    · intro X
+      unfold SSet.oneTruncation nerveFunctor mapComposableArrows toReflPrefunctor
+      exact rfl
+    · intro X Y f
+      obtain ⟨f, rfl, rfl⟩ := f
+      unfold SSet.oneTruncation nerveFunctor mapComposableArrows toReflPrefunctor
+      simp [ReflQuiv.comp_eq_comp]
+      sorry
+
+/-- ER: Commenting out because of universe failure but otherwise I think this should work.-/
+-- def helperAdj : Cat.freeRefl.{u, u} ⊣ nerveFunctor.{u, u} ⋙ SSet.oneTruncation.{u} :=
+--   (ReflQuiv.adj).ofNatIsoRight (OneTruncation.ofNerveNatIso.symm)
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
@@ -688,5 +728,5 @@ instance : HasColimits Cat :=
 
 #print nerveFunctor
 
-def hoFunctor : SSet ⥤ Cat :=
-  ColimitAdj.extendAlongYoneda SimplexCategory.toCat
+-- def hoFunctor : SSet ⥤ Cat :=
+--   ColimitAdj.extendAlongYoneda SimplexCategory.toCat
