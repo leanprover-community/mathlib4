@@ -412,8 +412,7 @@ macro "isBoundedDefault" : tactic =>
     | apply isCobounded_le_of_bot
     | apply isCobounded_ge_of_top
     | apply isBounded_le_of_top
-    | apply isBounded_ge_of_bot
-    | assumption)
+    | apply isBounded_ge_of_bot)
 
 -- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
 -- unsafe def is_bounded_default : tactic Unit :=
@@ -609,7 +608,7 @@ theorem limsInf_le_limsInf {f g : Filter α}
   csSup_le_csSup hg hf h
 set_option linter.uppercaseLean3 false in
 #align filter.Liminf_le_Liminf Filter.limsInf_le_limsInf
-
+#check Lean.Meta.withReducible
 theorem limsup_le_limsup {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : u ≤ᶠ[f] v)
     (hu : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
