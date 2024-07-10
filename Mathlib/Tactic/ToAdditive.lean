@@ -9,6 +9,7 @@ import Mathlib.Data.Array.Defs
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
+import Mathlib.Lean.Name
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
@@ -670,14 +671,14 @@ def expand (e : Expr) : MetaM Expr := do
   return e₂
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
-def reorderForall (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr := do
+def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if reorder == [] then
     return src
   forallTelescope src fun xs e => do
     mkForallFVars (xs.permute! reorder) e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
-def reorderLambda (src : Expr) (reorder : List (List Nat) := []) : MetaM Expr := do
+def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if reorder == [] then
     return src
   lambdaTelescope src fun xs e => do
@@ -689,12 +690,15 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.join then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall (← expand decl.type) reorder
+  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand
+    <| ← unfoldAuxLemmas decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda (← expand v) reorder
+    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
+      <| ← unfoldAuxLemmas v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← applyReplacementFun <| ← reorderLambda (← expand info.value) reorder }
+      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
+        <| ← unfoldAuxLemmas info.value }
   return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
@@ -1169,10 +1173,10 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     withRef attr.stx do withLogging do
     -- todo: also support other simp-attributes,
     -- and attributes that generate simp-attributes, like `norm_cast`
-    if attr.name == `simp then
-      additivizeLemmas allDecls "simp lemmas"
-        (Meta.Simp.addSimpAttrFromSyntax · simpExtension attr.kind attr.stx)
-      return
+    -- if attr.name == `simp then
+    --   additivizeLemmas allDecls "simp lemmas"
+    --     (Meta.Simp.addSimpAttrFromSyntax · simpExtension attr.kind attr.stx)
+    --   return
     if attr.name == `simps then
       additivizeLemmas allDecls "simps lemmas" (simpsTacFromSyntax · attr.stx)
       return
