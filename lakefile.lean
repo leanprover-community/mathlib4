@@ -18,7 +18,7 @@ package mathlib where
 ## Mathlib dependencies on upstream projects.
 -/
 
-require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
+require batteries from git "https://github.com/leanprover-community/batteries" @ "v4.9.1"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
 require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.38"
