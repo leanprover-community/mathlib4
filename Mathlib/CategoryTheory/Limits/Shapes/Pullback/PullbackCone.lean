@@ -161,8 +161,8 @@ theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : 
 
 /-- To construct an isomorphism of pullback cones, it suffices to construct an isomorphism
 of the cone points and check it commutes with `fst` and `snd`. -/
-def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t.fst)
-    (w₂ : s.snd = i.hom ≫ t.snd) : s ≅ t :=
+def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t.fst := by aesop_cat)
+    (w₂ : s.snd = i.hom ≫ t.snd := by aesop_cat) : s ≅ t :=
   WalkingCospan.ext i w₁ w₂
 #align category_theory.limits.pullback_cone.ext CategoryTheory.Limits.PullbackCone.ext
 
@@ -170,7 +170,7 @@ def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t
 reconstructed using `PullbackCone.mk`. -/
 @[simps!]
 def eta (t : PullbackCone f g) : t ≅ mk t.fst t.snd t.condition :=
-  PullbackCone.ext (Iso.refl _) (by simp) (by simp)
+  PullbackCone.ext (Iso.refl _)
 
 /-- This is a slightly more convenient method to verify that a pullback cone is a limit cone. It
     only asks for a proof of facts that carry any mathematical content -/
@@ -404,8 +404,8 @@ theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
 
 /-- To construct an isomorphism of pushout cocones, it suffices to construct an isomorphism
 of the cocone points and check it commutes with `inl` and `inr`. -/
-def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = t.inl)
-    (w₂ : s.inr ≫ i.hom = t.inr) : s ≅ t :=
+def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = t.inl := by aesop_cat)
+    (w₂ : s.inr ≫ i.hom = t.inr := by aesop_cat) : s ≅ t :=
   WalkingSpan.ext i w₁ w₂
 #align category_theory.limits.pushout_cocone.ext CategoryTheory.Limits.PushoutCocone.ext
 
@@ -413,7 +413,7 @@ def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = 
 reconstructed using `PushoutCocone.mk`. -/
 @[simps!]
 def eta (t : PushoutCocone f g) : t ≅ mk t.inl t.inr t.condition :=
-  PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
+  PushoutCocone.ext (Iso.refl _)
 
 /-- This is a slightly more convenient method to verify that a pushout cocone is a colimit cocone.
     It only asks for a proof of facts that carry any mathematical content -/
