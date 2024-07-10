@@ -1392,10 +1392,13 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
 
 end SpecialFunctions
 
-theorem card_divisors (n : ℕ) (hnne0 : n ≠ 0) :
+theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
     n.divisors.card = n.primeFactors.prod (n.factorization · + 1) := by
-  rw [← sigma_zero_apply, isMultiplicative_sigma.multiplicative_factorization _ hnne0]
+  rw [← sigma_zero_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
   exact Finset.prod_congr n.support_factorization fun _ h =>
     sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
+
+@[deprecated (since := "2024-06-09")] theorem card_divisors (n : ℕ) (hn : n ≠ 0) :
+    n.divisors.card = n.primeFactors.prod (n.factorization · + 1) := Nat.card_divisors hn
 
 end ArithmeticFunction
