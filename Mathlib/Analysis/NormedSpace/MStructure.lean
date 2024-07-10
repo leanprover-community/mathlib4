@@ -422,7 +422,8 @@ range of an L-projection.
 structure IsMideal (m : Submodule 𝕜 A) : Prop where
   Closed: IsClosed (m : Set A)
   Lproj:  ∃ (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)),
-    IsLprojection (NormedSpace.Dual 𝕜 A) P ∧ (Set.range P) = WeakDual.polar (E := A) 𝕜 m
+    IsLprojection (NormedSpace.Dual 𝕜 A) P ∧
+      (LinearMap.range P) = NormedSpace.polarSubmodule (E := A) 𝕜 m.toSubMulAction
 
 open NormedSpace in
 open Metric in
@@ -433,7 +434,41 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     convexHull ℝ (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) := by
   rw [le_antisymm_iff]
   constructor
-  · sorry
+  · cases' h₁.Lproj with E₁ hE₁
+    cases' h₂.Lproj with E₂ hE₂
+    --rw [(polarSubmodule_eq_polar 𝕜 m₁.toSubMulAction)]
+    rw [ ← hE₁.2, ← hE₂.2 ]
+    rw [ (IsLprojection.range_sum ⟨E₁,hE₁.1⟩ ⟨E₂,hE₂.1⟩)]
+    intro x' hx'
+    simp at hx'
+    cases' hx'.1 with x hx
+    --rw [← hx]
+    let y := E₁ x
+    let z := E₂ ((1 - E₁) x)
+    have e1 : y ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 := by
+      simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+      constructor
+      · have e : polar 𝕜 ↑m₁ = SetLike.coe (LinearMap.range E₁) := by
+          rw [hE₁.2]
+          rfl
+        rw [e]
+        simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
+    have e3 : x' = y + z := calc
+      x' = E₁ x + E₂ x - E₁ (E₂ x) := by rw [hx]
+      _ = E₁ x + E₂ x - (E₁ ∘ E₂) x := rfl
+      _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
+      _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [IsLprojection.commute hE₁.1 hE₂.1]
+      _ = E₁ x + E₂ x - E₂ (E₁ x) := rfl
+      _ = E₁ x + (E₂ x - E₂ (E₁ x)) := by exact add_sub_assoc (E₁ x) (E₂ x) (E₂ (E₁ x))
+      _ = E₁ x + E₂ (x - E₁ x) := by rw [map_sub]
+      _ = y + z := rfl
+      --rw  [← hx]
+      --sorry
+      --rw [← (LinearMap.comp_apply x)]
+
+
+    --rw [convexHull]
+    sorry
   · simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
     constructor
     · apply convexHull_min _
