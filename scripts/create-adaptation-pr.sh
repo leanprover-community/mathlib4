@@ -71,10 +71,10 @@ git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
 
 echo
 echo "### [auto/user] create a PR for the new branch"
-echo "Create a pull request, label with 'awaiting-review' and 'awaiting-CI'"
+echo "Create a pull request, label with 'awaiting-CI'"
 echo "Set the base of the PR to 'bump/$BUMPVERSION'"
 echo "Here is a suggested 'gh' command to do this:"
-gh_command="gh pr create -t \"$pr_title\" -b '' -l awaiting-review -l awaiting-CI -B bump/$BUMPVERSION"
+gh_command="gh pr create -t \"$pr_title\" -b '' -l awaiting-CI -B bump/$BUMPVERSION"
 echo "> $gh_command"
 echo "Shall I run this command for you? (y/n)"
 read answer

@@ -8,7 +8,7 @@ For details on the "pull request lifecycle" in mathlib, please see:
 https://leanprover-community.github.io/contribute/index.html
 
 In particular, note that most reviewers will only notice your PR
-if it passes the continuous integration checks, and is labeled with `awaiting-review`.
+if it passes the continuous integration checks.
 Please ask for help on https://leanprover.zulipchat.com if needed.
 
 To indicate co-authors, include lines at the bottom of the commit message
