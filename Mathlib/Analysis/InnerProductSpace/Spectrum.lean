@@ -493,6 +493,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     have F := fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1
     have G := fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j
     have D := H {x // i ≠ x} C (Subtype.restrict (fun x ↦ i ≠ x) T) F G
+    --now for invariance_iInf and Samyak's lemmas!
     sorry
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
