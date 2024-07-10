@@ -29,6 +29,7 @@ variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
 
 /-- The pullback of two monomorphisms exists. -/
 @[irreducible] -- Porting note: changed to irreducible and a def
+@[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
 def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
     HasLimit (cospan a b) :=
   let ⟨P, f, haf, i⟩ := normalMonoOfMono a
@@ -105,7 +106,7 @@ private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (
 
 /-- The equalizer of `f` and `g` exists. -/
  -- Porting note: changed to irreducible def since irreducible_def was breaking things
-@[irreducible]
+@[irreducible, nolint defLemma]
 def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   have huv : (pullback.fst : P f g ⟶ X) = pullback.snd :=
     calc
@@ -183,7 +184,7 @@ namespace CategoryTheory.NormalEpiCategory
 variable [HasFiniteCoproducts C] [HasCokernels C] [NormalEpiCategory C]
 
 /-- The pushout of two epimorphisms exists. -/
-@[irreducible] -- Porting note: made a def and re-added irreducible
+@[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible
 def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     HasColimit (span a b) :=
   let ⟨P, f, hfa, i⟩ := normalEpiOfEpi a
