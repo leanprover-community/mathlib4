@@ -383,31 +383,30 @@ theorem post_post_exhaust: DirectSum.IsInternal
 
 universe u
 
-variable {n : Type u} [Fintype n] {T : ∀ n, n → (E →ₗ[𝕜] E)}
-    (hT : ∀ n, (∀ (i : n), (T n i).IsSymmetric))
-    (hC : (∀ n, (∀ (i j : n), (T n i) ∘ₗ (T n j) = (T n j) ∘ₗ (T n i))))
-      --∧ (∀ p : n → Prop, Subtype.restrict p (T n) = T {x // p x}))
+variable {n : Type u} [Fintype n] {T : n → (E →ₗ[𝕜] E)}
+    (hT :(∀ (i : n), ((T i).IsSymmetric)))
+    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i)))
 
 open Classical
 
 theorem eigenspace_of_subsingleton_nonempty [Subsingleton n] (h : Nonempty n) :
     ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (γ : n → 𝕜), (∀ (i : n),
-    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) := by
-  have h0 : ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (i : n), T n i = S) := by
+    (eigenspace (T i) (γ i) = eigenspace S (γ i)))) := by
+  have h0 : ∃ (S : E →ₗ[𝕜] E), S.IsSymmetric ∧ (∀ (i : n), T i = S) := by
     have i := choice h
-    have H : (∀ (i j : n), T n j  = T n i) := by
+    have H : (∀ (i j : n), T j  = T i) := by
       intro i _ ; rw [Subsingleton.allEq i _]
-    use (T n i)
+    use (T i)
     constructor
-    · exact hT n i
+    · exact hT i
     · exact fun i_1 ↦ H i i_1
   obtain ⟨S , hS⟩ := h0
   have := hS.1
   use S
   constructor
   · exact this
-  · have h1 : (∀ (i : n), T n i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
-    (eigenspace (T n i) (γ i) = eigenspace S (γ i)))) :=
+  · have h1 : (∀ (i : n), T i = S) → (∀ (γ : n → 𝕜), (∀ (i : n),
+    (eigenspace (T i) (γ i) = eigenspace S (γ i)))) :=
      fun a γ i ↦ congrFun (congrArg eigenspace (a i)) (γ i)
     exact h1 hS.2
 
@@ -428,7 +427,7 @@ theorem eq_iff_orthogonalComplement_eq {K L : Submodule 𝕜 E} : K = L ↔ Kᗮ
 /--The following result is auxiliary, and not meant to be used outside this file. It forms
 the base case of the induction proof of `orthogonalComplement_iSup_iInf_eigenspaces_eq_bot`-/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
-    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   by_cases case : Nonempty n
   · obtain ⟨S, hS⟩ := eigenspace_of_subsingleton_nonempty hT case
     have h1 : (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace S (γ j)) : Submodule 𝕜 E))
@@ -468,9 +467,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base [Subsingleton n]:
   · simp only [not_nonempty_iff] at case
     simp only [iInf_of_empty, ciSup_unique, Submodule.top_orthogonal_eq_bot]
 
-theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T n i) ∘ₗ S = S ∘ₗ (T n i)) :
-    ∀ γ : n → 𝕜, ∀ v ∈ (⨅ (i : n), eigenspace (T n i) (γ i)),
-    S v ∈ (⨅ (i : n), eigenspace (T n i) (γ i)) := by
+theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T i) ∘ₗ S = S ∘ₗ (T i)) :
+    ∀ γ : n → 𝕜, ∀ v ∈ (⨅ (i : n), eigenspace (T i) (γ i)),
+    S v ∈ (⨅ (i : n), eigenspace (T i) (γ i)) := by
   intro γ v hv
   simp only [Submodule.mem_iInf] at *
   intro i
@@ -478,11 +477,11 @@ theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T
 
 /-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
   some lemmas. -/
-
+/-
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_induction_step [Nontrivial n] :
     (∀ (m : Type u) [Fintype m], Fintype.card m < Fintype.card n →
-    ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T m j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) →
-    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+    ((⨆ (γ : m → 𝕜), (⨅ (j : m), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥)) →
+    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   intro h
   obtain ⟨i, j, hij⟩ := exists_pair_ne n
   have h1 := h {x // i ≠ x} (Fintype.card_subtype_lt fun a ↦ a rfl)
@@ -490,18 +489,35 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_induction_step [Nontri
   have Q : ∀ (j : { x // i ≠ x }), (T n i) ∘ₗ (T { x // i ≠ x } j) = (T { x // i ≠ x } j) ∘ₗ (T n i) :=
       by
       intro j
-      have := hC.2 (fun j ↦ i ≠ j)
+      have := hC1 (fun j ↦ i ≠ j)
       rw [← this]
       sorry
   sorry
+-/
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
-    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
-  · intro p
-    exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base hT
-  · intro p hp
-    exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_induction_step
+  · sorry
+    --intro p
+    --exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base
+  · intro m hm hmm H
+    have A := exists_pair_ne m
+    cases' A with i hi
+    cases' hi with j hij
+    have C := H {x // i ≠ x}
+    have D : Fintype.card { x // i ≠ x } < Fintype.card m := by
+      simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, tsub_lt_self_iff, zero_lt_one,
+      and_true]
+      exact Fintype.card_pos
+    have E := C D
+
+
+
+    --obtain ⟨i, j, hij⟩ := hmm
+    --have := H {x // x ≠ i}
+    --intro p hp
+    --exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_induction_step
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T n j) (γ j)) : Submodule 𝕜 E))
