@@ -2802,8 +2802,6 @@ attribute [simp 1100] filterMap_cons_some
 
 #align list.sublist.filter_map List.Sublist.filterMap
 
-theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : map f l₁ <+ map f l₂ :=
-  filterMap_eq_map f ▸ s.filterMap _
 #align list.sublist.map List.Sublist.map
 
 theorem filterMap_eq_bind_toList (f : α → Option β) (l : List α) :
