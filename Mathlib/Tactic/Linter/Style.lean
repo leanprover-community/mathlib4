@@ -31,7 +31,7 @@ namespace Style.SetOption
 
 /-- Whether a syntax element is a `set_option` command, tactic or term:
 Return the name of the option being set, if any. -/
-def parse_set_option : Syntax → Option (Name)
+def parse_set_option : Syntax → Option Name
   -- This handles all four possibilities of `_val`: a string, number, `true` and `false`.
   | `(command|set_option $name:ident $_val) => some name.getId
   | `(set_option $name:ident $_val in $_x) => some name.getId
@@ -58,10 +58,17 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some (head) := stx.find? is_set_option then
-      if let some (name) := parse_set_option head then
-        if #[`pp, `profiler, `trace].contains name.getRoot then
-          Linter.logLint linter.setOption head m!"Forbidden set_option `{name}`; please remove"
+    unless #[`Mathlib, `test, `Archive, `Counterexamples].contains (← getMainModule).getRoot do
+      return
+    if let some head := stx.find? is_set_option then
+      if let some name := parse_set_option head then
+        let forbidden := [`debug, `pp, `profiler, `trace]
+        if forbidden.contains name.getRoot then
+          Linter.logLint linter.setOption head
+            m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
+               is only intended for development and not for final code. \
+               If you intend to submit this contribution to the Mathlib project, \
+               please remove 'set_option {name}'."
 
 initialize addLinter setOptionLinter
 

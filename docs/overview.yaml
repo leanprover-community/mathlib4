@@ -19,7 +19,7 @@ General algebra:
     natural number: 'Nat'
     integer: 'Int'
     rational number: 'Rat'
-    continued fraction: 'ContinuedFraction'
+    continued fraction: 'ContFract'
     real number: 'Real'
     extended real number: 'EReal'
     complex number: 'Complex'

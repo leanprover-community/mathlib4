@@ -8,6 +8,17 @@ import Mathlib.Init.Logic
 #align_import init.algebra.classes from "leanprover-community/lean"@"31f3a46d7c18d6b2255a72df4f9d62644145d83b"
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Unbundled algebra classes
 
 These classes are part of an incomplete refactor described
@@ -61,8 +72,6 @@ Mario made the following analysis of uses in mathlib3:
 * `is_trichotomous`: some usage
 * `is_strict_total_order`: looks like the only usage is in `rbmap` again
 -/
-
-set_option autoImplicit true
 
 universe u v
 

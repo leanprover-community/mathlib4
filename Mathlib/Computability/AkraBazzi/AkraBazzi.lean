@@ -775,7 +775,7 @@ The next several lemmas are technical lemmas leading up to `rpow_p_mul_one_sub_s
 -/
 
 lemma isBigO_apply_r_sub_b (q : ℝ → ℝ) (hq_diff : DifferentiableOn ℝ q (Set.Ioi 1))
-    (hq_poly : GrowsPolynomially fun x => ‖deriv q x‖) (i : α):
+    (hq_poly : GrowsPolynomially fun x => ‖deriv q x‖) (i : α) :
     (fun n => q (r i n) - q (b i * n)) =O[atTop] fun n => (deriv q n) * (r i n - b i * n) := by
   let b' := b (min_bi b) / 2
   have hb_pos : 0 < b' := by have := R.b_pos (min_bi b); positivity

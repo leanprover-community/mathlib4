@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
-import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Logic.Equiv.Fin
 
 #align_import algebra.big_operators.fin from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
@@ -94,12 +94,12 @@ theorem prod_univ_castSucc [CommMonoid β] {n : ℕ} (f : Fin (n + 1) → β) :
 #align fin.sum_univ_cast_succ Fin.sum_univ_castSucc
 
 @[to_additive (attr := simp)]
-theorem prod_univ_get [CommMonoid α] (l : List α) : ∏ i, l.get i = l.prod := by
+theorem prod_univ_get [CommMonoid α] (l : List α) : ∏ i : Fin l.length, l[i.1] = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive (attr := simp)]
 theorem prod_univ_get' [CommMonoid β] (l : List α) (f : α → β) :
-    ∏ i, f (l.get i) = (l.map f).prod := by
+    ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
 @[to_additive]
@@ -342,8 +342,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
     fun a => by
       dsimp
       induction' n with n ih
-      · haveI : Subsingleton (Fin (m ^ 0)) := (finCongr <| pow_zero _).subsingleton
-        exact Subsingleton.elim _ _
+      · subsingleton [(finCongr <| pow_zero _).subsingleton]
       simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
       ext
       simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
@@ -398,9 +397,9 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       intro a; revert a; dsimp only [Fin.val_mk]
       refine Fin.consInduction ?_ ?_ n
       · intro a
-        haveI : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
+        have : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
           (finCongr <| prod_empty).subsingleton
-        exact Subsingleton.elim _ _
+        subsingleton
       · intro n x xs ih a
         simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
         ext

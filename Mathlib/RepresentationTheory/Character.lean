@@ -19,13 +19,13 @@ A key result is the orthogonality of characters for irreducible representations 
 over an algebraically closed field whose characteristic doesn't divide the order of the group. It
 is the theorem `char_orthonormal`
 
-# Implementation notes
+## Implementation notes
 
 Irreducible representations are implemented categorically, using the `Simple` class defined in
 `Mathlib.CategoryTheory.Simple`
 
-# TODO
-* Once we have the monoidal closed structure on `FDRep k G` and a better API for the rigid
+## TODO
+* Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
 structure, `char_dual` and `char_linHom` should probably be stated in terms of `Vᘁ` and `ihom V W`.
 -/
 
