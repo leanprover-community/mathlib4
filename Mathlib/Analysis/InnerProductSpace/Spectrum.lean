@@ -490,9 +490,8 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, tsub_lt_self_iff, zero_lt_one,
       and_true]
       exact Fintype.card_pos
-    have F := fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1
-    have G := fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j
-    have D := H {x // i ≠ x} C (Subtype.restrict (fun x ↦ i ≠ x) T) F G
+    have D := H {x // i ≠ x} C (Subtype.restrict (fun x ↦ i ≠ x) T)
+      (fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1) (fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j)
     --now for invariance_iInf and Samyak's lemmas!
     sorry
 
