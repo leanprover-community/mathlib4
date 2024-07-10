@@ -198,7 +198,7 @@ theorem chain'_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :
   chain_cons
 #align list.chain'_cons List.chain'_cons
 
-theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] < : + : l) l
+theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
   | [] => chain'_nil
   | [a] => chain'_singleton _
   | a :: b :: l =>
@@ -300,16 +300,16 @@ theorem Chain'.right_of_append (h : Chain' R (l₁ ++ l₂)) : Chain' R l₂ :=
   (chain'_append.1 h).2.1
 #align list.chain'.right_of_append List.Chain'.right_of_append
 
-theorem Chain'.infix (h : Chain' R l) (h' : l₁ < : + : l) : Chain' R l₁ := by
+theorem Chain'.infix (h : Chain' R l) (h' : l₁ <:+: l) : Chain' R l₁ := by
   rcases h' with ⟨l₂, l₃, rfl⟩
   exact h.left_of_append.right_of_append
 #align list.chain'.infix List.Chain'.infix
 
-theorem Chain'.suffix (h : Chain' R l) (h' : l₁ < : + l) : Chain' R l₁ :=
+theorem Chain'.suffix (h : Chain' R l) (h' : l₁ <:+ l) : Chain' R l₁ :=
   h.infix h'.isInfix
 #align list.chain'.suffix List.Chain'.suffix
 
-theorem Chain'.prefix (h : Chain' R l) (h' : l₁ <+ : l) : Chain' R l₁ :=
+theorem Chain'.prefix (h : Chain' R l) (h' : l₁ <+: l) : Chain' R l₁ :=
   h.infix h'.isInfix
 #align list.chain'.prefix List.Chain'.prefix
 
