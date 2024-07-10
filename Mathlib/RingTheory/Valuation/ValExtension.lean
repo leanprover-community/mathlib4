@@ -46,10 +46,9 @@ Valuation, Extension of Valuations
 -/
 open Valuation
 
-variable {R K A ΓR ΓK ΓA : Type*} [CommRing R] [Field K] [Ring A]
-    [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓK]
-    [LinearOrderedCommMonoidWithZero ΓA] [Algebra R A] [Algebra K A]
-    (vR : Valuation R ΓR) (vK : Valuation K ΓK) (vA : Valuation A ΓA)
+variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
+    [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA] [Algebra R A]
+    (vR : Valuation R ΓR) (vA : Valuation A ΓA)
 
 /--
 The class `IsValExtension R A` states that the valuation of `A` is an extension of the valuation
@@ -61,7 +60,7 @@ class IsValExtension : Prop where
 
 namespace IsValExtension
 
-section CoeLemma
+section algebraMap
 
 variable [IsValExtension vR vA]
 
@@ -85,18 +84,19 @@ theorem val_map_eq_one_iff (x : R) : vA (algebraMap R A x) = 1 ↔ vR x = 1 := b
   simpa only [le_antisymm_iff, _root_.map_one] using
     and_congr (val_map_le_iff vR vA x 1) (val_map_le_iff vR vA 1 x)
 
+end algebraMap
+
 instance id : IsValExtension vR vR where
   val_isEquiv_comap := by
     simp only [Algebra.id.map_eq_id, comap_id]
     rfl
 
-end CoeLemma
+section integer
 
-variable {ΓR ΓA ΓK: Type*} [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓK]
+variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK: Type*}
+    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓK]
     [LinearOrderedCommGroupWithZero ΓA] {vR : Valuation R ΓR} {vK : Valuation K ΓK}
     {vA : Valuation A ΓA} [IsValExtension vR vA] [IsValExtension vK vA]
-
-section mk'
 
 /--
 When `K` is a field, if the preimage of the valuation integers of `A` equals to the valuation
@@ -109,10 +109,6 @@ theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
     intro x
     rw [← Valuation.mem_integer_iff, ← Valuation.mem_integer_iff, ← h]
     rfl
-
-end mk'
-
-section integer
 
 instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul r a := ⟨r • a,
