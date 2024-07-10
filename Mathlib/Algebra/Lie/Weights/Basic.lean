@@ -90,7 +90,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   let f₁ : Module.End R (M₁ ⊗[R] M₂) := (toEnd R L M₁ x - χ₁ • ↑1).rTensor M₂
   let f₂ : Module.End R (M₁ ⊗[R] M₂) := (toEnd R L M₂ x - χ₂ • ↑1).lTensor M₁
   have h_comm_square : F ∘ₗ ↑g = (g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (f₁ + f₂) := by
-    ext m₁ m₂;
+    ext m₁ m₂
     simp only [f₁, f₂, F, ← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul,
       lie_tmul_right, tmul_smul, toEnd_apply_apply, LieModuleHom.map_smul,
       LinearMap.one_apply, LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply,
@@ -414,7 +414,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
   induction' l with l ih
   · simp
   simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
-  exact LieSubmodule.lie_mem_lie _ ⊤ (LieSubmodule.mem_top x) ih
+  exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
     [IsNilpotent R L M] (x : L) :
@@ -718,6 +718,15 @@ noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
   iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEnd R L M x).genEigenspace φ k = ⊤
+
+instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizable R L' M where
+  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+
+instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
+  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+
+instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
+  iSup_eq_top := by rintro ⟨-, x, rfl⟩; exact IsTriangularizable.iSup_eq_top x
 
 @[simp]
 lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :

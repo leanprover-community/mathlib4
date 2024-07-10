@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.GroupTheory.Congruence.Basic
 
 /-!

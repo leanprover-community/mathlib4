@@ -341,7 +341,15 @@ theorem div_le_of_le_mul' (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 #align ennreal.div_le_of_le_mul' ENNReal.div_le_of_le_mul'
 
-protected theorem div_self_le_one : a / a ≤ 1 := div_le_of_le_mul <| by rw [one_mul]
+@[simp] protected theorem div_self_le_one : a / a ≤ 1 := div_le_of_le_mul <| by rw [one_mul]
+
+@[simp] protected lemma mul_inv_le_one (a : ℝ≥0∞) : a * a⁻¹ ≤ 1 := ENNReal.div_self_le_one
+@[simp] protected lemma inv_mul_le_one (a : ℝ≥0∞) : a⁻¹ * a ≤ 1 := by simp [mul_comm]
+
+@[simp] lemma mul_inv_ne_top (a : ℝ≥0∞) : a * a⁻¹ ≠ ⊤ :=
+  ne_top_of_le_ne_top one_ne_top a.mul_inv_le_one
+
+@[simp] lemma inv_mul_ne_top (a : ℝ≥0∞) : a⁻¹ * a ≠ ⊤ := by simp [mul_comm]
 
 theorem mul_le_of_le_div (h : a ≤ b / c) : a * c ≤ b := by
   rw [← inv_inv c]
@@ -488,6 +496,9 @@ theorem add_thirds (a : ℝ≥0∞) : a / 3 + a / 3 + a / 3 = a := by
 
 @[simp] theorem div_pos_iff : 0 < a / b ↔ a ≠ 0 ∧ b ≠ ∞ := by simp [pos_iff_ne_zero, not_or]
 #align ennreal.div_pos_iff ENNReal.div_pos_iff
+
+protected lemma div_ne_zero : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ ⊤ := by
+  rw [← pos_iff_ne_zero, div_pos_iff]
 
 protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 := by
   simp only [div_pos_iff, ne_eq, h, not_false_eq_true, two_ne_top, and_self]

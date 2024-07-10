@@ -29,7 +29,7 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
   of the complete graph.
 
-## Todo
+## TODO
 
 * This is the simplest notion of an unoriented graph.  This should
   eventually fit into a more complete combinatorics hierarchy which

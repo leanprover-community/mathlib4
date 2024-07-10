@@ -439,7 +439,7 @@ variable {R : Type*} [CommRing R]
 
 /-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
 entries as its left or right column. -/
-lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2):
+lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2) :
     ∃ g : SL(2, R), g 0 j = a ∧ g 1 j = b := by
   obtain ⟨u, v, h⟩ := hab
   refine match j with
@@ -450,7 +450,7 @@ lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2):
 
 /-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
 entries as its top or bottom row. -/
-lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2):
+lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2) :
     ∃ g : SL(2, R), g i 0 = a ∧ g i 1 = b := by
   obtain ⟨u, v, h⟩ := hab
   refine match i with

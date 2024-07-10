@@ -182,4 +182,26 @@ theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P
 
 end StableUnderBaseChange
 
+section ToMorphismProperty
+
+/-- The categorical `MorphismProperty` associated to a property of ring homs expressed
+non-categorical terms. -/
+def toMorphismProperty : MorphismProperty CommRingCat := fun _ _ f ↦ P f
+
+variable {P}
+
+lemma toMorphismProperty_respectsIso_iff :
+    RespectsIso P ↔ (toMorphismProperty P).RespectsIso := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ⟨?_, ?_⟩⟩
+  · intro X Y Z e f hf
+    exact h.right f e.commRingCatIsoToRingEquiv hf
+  · intro X Y Z e f hf
+    exact h.left f e.commRingCatIsoToRingEquiv hf
+  · intro X Y Z _ _ _ f e
+    exact h.postcomp e.toCommRingCatIso (CommRingCat.ofHom f)
+  · intro X Y Z _ _ _ f e
+    exact h.precomp e.toCommRingCatIso (CommRingCat.ofHom f)
+
+end ToMorphismProperty
+
 end RingHom

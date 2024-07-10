@@ -8,6 +8,7 @@ import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Order.Antichain
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 #align_import combinatorics.simple_graph.coloring from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -41,7 +42,7 @@ a complete graph, whose vertices represent the colors.
 
 * `C.colorClasses` is the set containing all color classes.
 
-## Todo:
+## TODO
 
   * Gather material from:
     * https://github.com/leanprover-community/mathlib/blob/simple_graph_matching/src/combinatorics/simple_graph/coloring.lean
