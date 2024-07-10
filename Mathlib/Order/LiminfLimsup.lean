@@ -617,9 +617,6 @@ theorem limsup_le_limsup {α : Type*} [ConditionallyCompleteLattice β] {f : Fil
   limsSup_le_limsSup hu hv fun _ => h.trans
 #align filter.limsup_le_limsup Filter.limsup_le_limsup
 
-theorem limsup_le_limsup' {α} [CompleteLattice β] {f : Filter α} {u v : α → β} (h : u ≤ᶠ[f] v) :
-    limsup u f ≤ limsup v f := limsup_le_limsup h
-
 theorem liminf_le_liminf {α : Type*} [ConditionallyCompleteLattice β] {f : Filter α} {u v : α → β}
     (h : ∀ᶠ a in f, u a ≤ v a)
     (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
@@ -627,9 +624,6 @@ theorem liminf_le_liminf {α : Type*} [ConditionallyCompleteLattice β] {f : Fil
     liminf u f ≤ liminf v f :=
   limsup_le_limsup (β := βᵒᵈ) h hv hu
 #align filter.liminf_le_liminf Filter.liminf_le_liminf
-
-theorem liminf_le_liminf' {α} [CompleteLattice β] {f : Filter α} {u v : α → β} (h : u ≤ᶠ[f] v) :
-    liminf u f ≤ liminf v f := liminf_le_liminf h
 
 theorem limsSup_le_limsSup_of_le {f g : Filter α} (h : f ≤ g)
     (hf : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
