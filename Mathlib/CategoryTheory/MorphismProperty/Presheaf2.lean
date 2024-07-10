@@ -333,10 +333,7 @@ lemma representable_stableUnderBaseChange :
     StableUnderBaseChange (Presheaf.representable (C:=C)) := by
   intro F G G' H f g f' g' P₁ hg X h
   refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
-
-  apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) _
-  sorry
-
+  apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) (hg.isPullback (h ≫ f)).w
   apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
 
 lemma representable_ofIsIso {F G : Cᵒᵖ ⥤ Type v} (f : F ⟶ G) [IsIso f] :
