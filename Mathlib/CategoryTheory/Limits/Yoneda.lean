@@ -222,4 +222,4 @@ end Functor
 
 end CategoryTheory
 
--- assert_not_exists AddCommMonoid
+assert_not_exists AddCommMonoid
