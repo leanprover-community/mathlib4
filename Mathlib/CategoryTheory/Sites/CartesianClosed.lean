@@ -19,17 +19,6 @@ open CategoryTheory Limits
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
 
-instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
-  map_surjective := (fullyFaithfulSheafToPresheaf _ _).map_surjective
-  map_injective := (fullyFaithfulSheafToPresheaf _ _).map_injective
-  adj := sheafificationAdjunction _ _
-
-instance [HasSheafify J A] :  PreservesLimitsOfShape (Discrete (WalkingPair))
-    (reflector (sheafToPresheaf J A)) :=
-  inferInstanceAs (PreservesLimitsOfShape _ (presheafToSheaf _ _))
-
-instance [HasFiniteProducts A] : HasFiniteProducts (Cᵒᵖ ⥤ A) := ⟨inferInstance⟩
-
 instance [HasSheafify J A] [HasFiniteProducts A] [CartesianClosed (Cᵒᵖ ⥤ A)] :
     CartesianClosed (Sheaf J A) :=
   cartesianClosedOfReflective (sheafToPresheaf _ _)

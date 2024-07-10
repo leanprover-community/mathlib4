@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
@@ -71,6 +71,15 @@ def sheafificationAdjunction [HasWeakSheafify J A] :
 
 instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
+
+instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
+  map_surjective := (fullyFaithfulSheafToPresheaf _ _).map_surjective
+  map_injective := (fullyFaithfulSheafToPresheaf _ _).map_injective
+  adj := sheafificationAdjunction _ _
+
+instance [HasSheafify J A] :  PreservesLimitsOfShape (Discrete (WalkingPair))
+    (reflector (sheafToPresheaf J A)) :=
+  inferInstanceAs (PreservesLimitsOfShape _ (presheafToSheaf _ _))
 
 end
 
