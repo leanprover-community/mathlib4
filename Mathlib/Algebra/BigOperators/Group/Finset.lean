@@ -130,8 +130,8 @@ def processBigOpBinder (processed : (Array (Term × Term)))
 def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
     MacroM (Array (Term × Term)) :=
   match binders with
-  | `(bigOpBinders| $b : bigOpBinder) => processBigOpBinder #[] b
-  | `(bigOpBinders| $[($bs : bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
+  | `(bigOpBinders| $b:bigOpBinder) => processBigOpBinder #[] b
+  | `(bigOpBinders| $[($bs:bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
   | _ => Macro.throwUnsupported
 
 /-- Collect the binderIdents into a `⟨...⟩` expression. -/
@@ -181,7 +181,7 @@ Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
 syntax (name := bigprod) "∏ " bigOpBinders ("with " term)? ", " term:67:term
 
 macro_rules (kind := bigsum)
-  | `(∑ $bs : bigOpBinders $[with $p?]?, $v) => do
+  | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
@@ -190,7 +190,7 @@ macro_rules (kind := bigsum)
     | none => `(Finset.sum $s (fun $x ↦ $v))
 
 macro_rules (kind := bigprod)
-  | `(∏ $bs : bigOpBinders $[with $p?]?, $v) => do
+  | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
@@ -233,7 +233,7 @@ to show the domain type when the product is over `Finset.univ`. -/
         `(bigOpBinder| $(.mk i):ident : $ty)
       else
         `(bigOpBinder| $(.mk i):ident)
-    `(∏ $binder : bigOpBinder, $body)
+    `(∏ $binder:bigOpBinder, $body)
   else
     let ss ← withNaryArg 3 <| delab
     `(∏ $(.mk i):ident ∈ $ss, $body)
@@ -254,7 +254,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
         `(bigOpBinder| $(.mk i):ident : $ty)
       else
         `(bigOpBinder| $(.mk i):ident)
-    `(∑ $binder : bigOpBinder, $body)
+    `(∑ $binder:bigOpBinder, $body)
   else
     let ss ← withNaryArg 3 <| delab
     `(∑ $(.mk i):ident ∈ $ss, $body)
