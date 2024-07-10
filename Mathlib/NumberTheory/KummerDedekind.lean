@@ -289,7 +289,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
         (normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))).attach := by
   ext J
   -- WLOG, assume J is a normalized factor
-  by_cases hJ : J ∈ normalizedFactors (I.map (algebraMap R S));
+  by_cases hJ : J ∈ normalizedFactors (I.map (algebraMap R S))
   swap
   · rw [Multiset.count_eq_zero.mpr hJ, eq_comm, Multiset.count_eq_zero, Multiset.mem_map]
     simp only [Multiset.mem_attach, true_and_iff, not_exists]
