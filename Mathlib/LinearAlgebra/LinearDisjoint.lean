@@ -124,7 +124,7 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
-open scoped Classical TensorProduct
+open scoped TensorProduct
 
 noncomputable section
 
@@ -150,7 +150,7 @@ variable {M N}
 
 /-- If `M` and `N` are linearly disjoint submodules, then there is the natural isomorphism
 `M ⊗[R] N ≃ₗ[R] M * N` induced by multiplication in `S`. -/
-protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) : M ⊗[R] N ≃ₗ[R] ↥(M * N) :=
+protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) : M ⊗[R] N ≃ₗ[R] M * N :=
   LinearEquiv.ofInjective (M.mulMap N) H.injective ≪≫ₗ LinearEquiv.ofEq _ _ (mulMap_range M N)
 
 @[simp]
@@ -191,7 +191,7 @@ variable (M N)
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_left' {ι : Type*} (m : Basis ι R M)
     (H : Function.Injective (mulLeftMap N m)) : M.LinearDisjoint N := by
-  simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
+  classical simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_rTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
@@ -201,7 +201,7 @@ theorem of_basis_left' {ι : Type*} (m : Basis ι R M)
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
-  simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
+  classical simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_lTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
@@ -310,7 +310,7 @@ to the sum of `m_i * n_i` (`Submodule.mulLeftMap N m`) has trivial kernel. -/
 theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N]
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
-  simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  classical simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
     ← Function.comp.assoc, EquivLike.injective_comp]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
@@ -331,7 +331,7 @@ to the sum of `m_i * n_i` (`Submodule.mulRightMap M n`) has trivial kernel. -/
 theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
-  simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  classical simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
     ← Function.comp.assoc, EquivLike.injective_comp]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
