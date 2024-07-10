@@ -174,6 +174,7 @@ lemma exact_of_comp_of_mem_range
 
 end LinearMap
 
+variable (f g) in
 lemma LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
     Function.Exact (e ∘ₗ f) (g ∘ₗ (e.symm : N' →ₗ[R] N)) ↔ Exact f g := by
   simp_rw [LinearMap.exact_iff, LinearMap.ker_comp, ← e.map_eq_comap, LinearMap.range_comp]
