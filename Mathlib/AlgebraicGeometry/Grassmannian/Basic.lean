@@ -183,6 +183,14 @@ theorem RingHom.map_matrix_mul' :
 
 end
 
+section
+variable {m α β : Type*} [Fintype m] [DecidableEq m]
+  [CommRing α] [CommRing β] (M : Matrix m m α) (f : α →+* β)
+
+theorem RingHom.mapMatrix_inv : f.mapMatrix M⁻¹ = (f.mapMatrix M)⁻¹ := sorry
+
+end
+
 namespace Matrix
 
 variable {m n m₁ m₂ α : Type*} (e₁ : m₁ → m) (e₂ : m₂ → m)
@@ -254,6 +262,9 @@ abbrev matrix_coord : Matrix (Fin (finrank K V)) (Fin r) (functions_chart K V r)
       if x < r then if x.1 = y.1 then 1 else 0
       else MvPolynomial.X (⟨x.1 - r, by have := x.2; omega⟩, y))
 
+abbrev matrix_X : Matrix (Fin (finrank K V - r)) (Fin r) (functions_chart K V r) :=
+  Matrix.of (fun p q ↦ MvPolynomial.X (p,q))
+
 lemma matrix_coord_submatrix₁ : (matrix_coord K V hr).submatrix (Fin.castLE hr.le) id = 1 := by
   apply Matrix.ext; intro p q
   simp only [submatrix_apply, id_eq, of_apply, Fin.coe_castLE, Fin.is_lt, ↓reduceIte]
@@ -264,7 +275,7 @@ lemma matrix_coord_submatrix₁ : (matrix_coord K V hr).submatrix (Fin.castLE hr
 
 lemma matrix_coord_submatrix₂ : (matrix_coord K V hr).submatrix
     (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩ : Fin (finrank K V - r) → Fin (finrank K V)) id
-    = Matrix.of (fun p q ↦ MvPolynomial.X (p,q)) := by
+    = matrix_X K V := by
   apply Matrix.ext; intro p q
   simp only [submatrix_apply, id_eq, of_apply, add_lt_iff_neg_right, not_lt_zero', ↓reduceIte,
     add_tsub_cancel_right, Fin.eta]
@@ -319,6 +330,11 @@ abbrev matrix_F' (i j : Basis (Fin (finrank K V)) K V) :=
 
 abbrev matrix_G' (i j : Basis (Fin (finrank K V)) K V) :=
   (matrix_G hr i j).map
+  (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
+  (Localization.Away (equation hr i j)))
+
+abbrev matrix_X' (i j : Basis (Fin (finrank K V)) K V) :=
+  (matrix_X K V).map
   (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
   (Localization.Away (equation hr i j)))
 
@@ -432,12 +448,48 @@ lemma transition_aux_F (i j k : Basis (Fin (finrank K V)) K V) :
   rw [← Matrix.submatrix_map]
   conv_rhs => rw [RingHom.map_matrix_mul']
   rfl
+
+lemma transition_aux_G (i j k : Basis (Fin (finrank K V)) K V) :
+    Matrix.map (matrix_G hr j k) (transition_aux hr i j) =
+    (matrix_G hr i k).map (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
+    (Localization.Away (equation hr i j))) * (matrix_F' hr i j)⁻¹ := by
+  simp only [matrix_G]
+  rw [← Matrix.submatrix_map, transition_aux_matrix]
+  erw [← RingHom.map_matrix_mul']; rw [Basis.toMatrix_mul_toMatrix k j i]
+  conv_lhs => rw [Matrix.submatrix_mul _ (matrix_F' hr i j)⁻¹ _ (e₂ := id (α := Fin r))
+    (e₃ := id (α := Fin r)) Function.bijective_id, Matrix.submatrix_id_id]
+  congr 1
+  rw [← Matrix.submatrix_map]
+  conv_rhs => rw [RingHom.map_matrix_mul']
+  rfl
+
+lemma transition_aux_equation (i j k : Basis (Fin (finrank K V)) K V) :
+    transition_aux hr i j (equation hr j k) =
+    algebraMap _ (Localization.Away (equation hr i j)) (equation hr i k) *
+    IsLocalization.Away.invSelf (equation hr i j) := by
+  simp only [equation]
+  conv_lhs => erw [RingHom.map_det (transition_aux hr i j).toRingHom (matrix_F hr j k)]
+              rw [RingHom.mapMatrix_apply]; erw [transition_aux_F]
+              rw [Matrix.det_mul, det_nonsing_inv, matrix_F', ← RingHom.map_det,
+                ← RingHom.mapMatrix_apply, ← RingHom.map_det]
+  congr 1
+  rw [← one_mul (Ring.inverse _)]
+  symm
+  simp only [equation]
+  rw [Ring.eq_mul_inverse_iff_mul_eq, mul_comm, IsLocalization.Away.mul_invSelf]
+  exact Localization.Away.map_unit _ _
+
 lemma transition_aux_F_flip (i j : Basis (Fin (finrank K V)) K V) :
     Matrix.map (matrix_F hr j i) (transition_aux hr i j) = (matrix_F' hr i j)⁻¹ := by
   rw [transition_aux_F, matrix_F_eq_id_of_diagonal]
   simp only [map_zero, _root_.map_one, Matrix.map_one, RingHom.mapMatrix_apply, one_mul]
 
-lemma transition_aux_equation (i j : Basis (Fin (finrank K V)) K V) :
+lemma transition_aux_G_flip (i j : Basis (Fin (finrank K V)) K V) :
+    Matrix.map (matrix_G hr j i) (transition_aux hr i j) =
+    (matrix_X' hr i j) * (matrix_F' hr i j)⁻¹ := by
+  rw [transition_aux_G, matrix_G_eq_of_diagonal]
+
+lemma transition_aux_equation_flip (i j : Basis (Fin (finrank K V)) K V) :
     transition_aux hr i j (equation hr j i) = IsLocalization.Away.invSelf (equation hr i j) := by
   simp only [equation]
   conv_lhs => erw [RingHom.map_det (transition_aux hr i j).toRingHom (matrix_F hr j i)]
@@ -449,23 +501,106 @@ lemma transition_aux_equation (i j : Basis (Fin (finrank K V)) K V) :
   rw [Ring.eq_mul_inverse_iff_mul_eq, mul_comm, IsLocalization.Away.mul_invSelf]
   exact Localization.Away.map_unit _ _
 
-abbrev transition (i j : Basis (Fin (finrank K V)) K V) :
-    Localization.Away (equation hr j i) →+* Localization.Away (equation hr i j) := by
-  apply Localization.awayLift (r := equation hr j i) (transition_aux hr i j)
-  erw [transition_aux_equation]
+
+lemma transition_aux_equation_isUnit (i j : Basis (Fin (finrank K V)) K V) :
+    IsUnit ((transition_aux hr i j) (equation hr j i)) := by
+  erw [transition_aux_equation_flip]
   exact IsLocalization.Away.invSelf_unit _ (equation hr i j)
 
-abbrev transition_Spec (i j : Basis (Fin (finrank K V)) K V) :=
-  Spec.map (CommRingCat.ofHom (transition hr i j))
+abbrev transitionRingHom (i j : Basis (Fin (finrank K V)) K V) :
+    Localization.Away (equation hr j i) →+* Localization.Away (equation hr i j) := by
+  apply Localization.awayLift (r := equation hr j i) (transition_aux hr i j)
+  exact transition_aux_equation_isUnit _ _ _
 
-abbrev transition'₁ (i j k : Basis (Fin (finrank K V)) K V) :
+abbrev transition (i j : Basis (Fin (finrank K V)) K V) :
+    Localization.Away (equation hr j i) →ₐ[K] Localization.Away (equation hr i j) :=
+  {
+   transitionRingHom hr i j with
+   commutes' := by
+     intro x
+     dsimp
+     rw [transitionRingHom]
+     rw [IsScalarTower.algebraMap_apply _ (functions_chart K V r) _]
+     rw [IsLocalization.Away.AwayMap.lift_eq]
+     simp only [AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply, MvPolynomial.algebraMap_eq,
+       MvPolynomial.eval₂Hom_C]
+  }
+
+lemma transition_F'_flip (i j : Basis (Fin (finrank K V)) K V) :
+    Matrix.map (matrix_F' hr j i) (transition hr i j) = (matrix_F' hr i j)⁻¹ := by
+  rw [transition, matrix_F', RingHom.mapMatrix_apply, Matrix.map_map]
+  rw [← AlgHom.coe_toRingHom]
+  rw [← RingHom.coe_comp]; erw [IsLocalization.Away.AwayMap.lift_comp]
+  erw [transition_aux_F_flip]; erw [transition_aux_equation_flip]
+  apply IsLocalization.Away.invSelf_unit
+
+lemma transition_F'_inv_flip (i j : Basis (Fin (finrank K V)) K V) :
+    Matrix.map (matrix_F' hr j i)⁻¹ (transition hr i j) = matrix_F' hr i j := by
+  rw [← AlgHom.coe_toRingHom]
+  rw [← RingHom.mapMatrix_apply, RingHom.mapMatrix_inv, RingHom.mapMatrix_apply]
+  erw [transition_F'_flip]
+  rw [Matrix.nonsing_inv_nonsing_inv]
+  rw [← Matrix.isUnit_iff_isUnit_det]; exact isUnit_F' hr i j
+
+lemma transition_G'_flip (i j : Basis (Fin (finrank K V)) K V) :
+    Matrix.map (matrix_G' hr j i) (transition hr i j) =
+    (matrix_X' hr i j) * (matrix_F' hr i j)⁻¹ := by
+  rw [transition, matrix_G', Matrix.map_map]
+  rw [← AlgHom.coe_toRingHom, ← RingHom.coe_comp]; erw [IsLocalization.Away.AwayMap.lift_comp]
+  erw [transition_aux_G_flip]
+  exact transition_aux_equation_isUnit _ _ _
+
+lemma transition_transition (i j : Basis (Fin (finrank K V)) K V) :
+    (transition hr i j).comp (transition hr j i) = AlgHom.id _ _ := by
+  apply AlgHom.coe_ringHom_injective
+  apply IsLocalization.ringHom_ext (R := MvPolynomial (Fin (finrank K V - r) × Fin r) K)
+    (M := Submonoid.powers (equation hr i j))
+  simp only [AlgHom.id_toRingHom, RingHomCompTriple.comp_eq]
+  rw [AlgHom.comp_toRingHom, RingHom.comp_assoc]
+  conv_lhs => congr; rfl; rw [transition]; erw [IsLocalization.Away.AwayMap.lift_comp]; rfl;
+              exact transition_aux_equation_isUnit _ _ _
+  ext x
+  · rw [← MvPolynomial.algebraMap_eq]
+    rw [← AlgHom.comp_toRingHom]
+    erw [AlgHom.comp_algebraMap]
+    simp only [transition, AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply,
+    MvPolynomial.comp_eval₂Hom, RingHom.coe_comp, MvPolynomial.coe_eval₂Hom, Function.comp_apply,
+    MvPolynomial.eval₂_C]
+    rw [← IsScalarTower.algebraMap_apply]
+  · simp only [AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply, MvPolynomial.comp_eval₂Hom,
+    MvPolynomial.eval₂Hom_X']
+    change ((matrix_G' hr j i) * (matrix_F' hr j i)⁻¹).map (transition hr i j) x.1 x.2 = _
+    erw [Matrix.map_mul, transition_F'_inv_flip, transition_G'_flip]
+    rw [Matrix.mul_assoc, Matrix.nonsing_inv_mul, Matrix.mul_one]
+    simp only [map_apply, of_apply, Prod.mk.eta]
+    rw [← Matrix.isUnit_iff_isUnit_det]; exact isUnit_F' hr i j
+
+abbrev transition_Spec (i j : Basis (Fin (finrank K V)) K V) :=
+  Spec.map (CommRingCat.ofHom (transition hr i j).toRingHom)
+
+lemma transition_transition_Spec (i j : Basis (Fin (finrank K V)) K V) :
+    transition_Spec hr i j ≫ transition_Spec hr j i = 𝟙 _ := by
+  simp only [transition_Spec]
+  rw [← Spec.map_comp]
+  change Spec.map (CommRingCat.ofHom ((transition hr i j).comp (transition hr j i)).toRingHom) = _
+  rw [transition_transition]
+  change Spec.map (𝟙 _) = _
+  rw [Spec.map_id]
+
+def transition'₁ (i j k : Basis (Fin (finrank K V)) K V) :
     Limits.pullback (open_immersion hr i j) (open_immersion hr i k) ⟶
     Spec (CommRingCat.of (Localization.Away (equation hr j k))) := by
   refine (pullbackSpecIso (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
     (Localization.Away (equation hr i j)) (Localization.Away (equation hr i k))).hom ≫
     Spec.map (CommRingCat.ofHom (IsLocalization.Away.lift (equation hr j k) ?_
     (g := Algebra.TensorProduct.includeLeftRingHom.comp (transition_aux hr i j))))
-  sorry
+  rw [RingHom.comp_apply]; erw [transition_aux_equation, RingHom.map_mul, IsUnit.mul_iff]
+  constructor
+  · rw [← RingHom.comp_apply, Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap,
+      RingHom.comp_apply]
+    exact IsUnit.map Algebra.TensorProduct.includeRight (Localization.Away.map_unit _ _)
+  · exact IsUnit.map Algebra.TensorProduct.includeLeftRingHom
+      (IsLocalization.Away.invSelf_unit _ _)
 
 lemma transition'₁_immersion (i j k : Basis (Fin (finrank K V)) K V) :
     transition'₁ hr i j k ≫ open_immersion hr j k =
@@ -479,12 +614,35 @@ lemma transition'₁_immersion (i j k : Basis (Fin (finrank K V)) K V) :
   conv_lhs => rw [open_immersion, ← Spec.map_comp]
   apply congrArg Spec.map
   rw [← CommRingCat.ringHom_comp_eq_comp, ← Category.assoc, ← CommRingCat.ringHom_comp_eq_comp]
-  conv_rhs => change CommRingCat.ofHom ((transition hr i j).comp (algebraMap _ _)) ≫
+  conv_rhs => change CommRingCat.ofHom ((transition hr i j).toRingHom.comp (algebraMap _ _)) ≫
     CommRingCat.ofHom (algebraMap _ _)
               rw [← CommRingCat.ringHom_comp_eq_comp]
   rw [transition]
   rw [IsLocalization.Away.AwayMap.lift_comp, IsLocalization.Away.AwayMap.lift_comp]
   rfl
+
+lemma transition'₁_transition (i j k : Basis (Fin (finrank K V)) K V) :
+    transition'₁ hr i j k ≫ transition_Spec hr j k ≫ open_immersion hr k j =
+    Limits.pullback.snd ≫ transition_Spec hr i k ≫ open_immersion hr k i := by
+  rw [transition'₁]
+  rw [← cancel_epi (f := (pullbackSpecIso (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
+    (Localization.Away (equation hr i j)) (Localization.Away (equation hr i k))).inv)]
+  rw [← Category.assoc, ← Category.assoc, ← Category.assoc, Iso.inv_hom_id, Category.id_comp]
+  conv_rhs => rw [← Category.assoc, pullbackSpecIso_inv_snd, transition_Spec, open_immersion]
+              rw [← Spec.map_comp, ← Spec.map_comp, ← CommRingCat.ringHom_comp_eq_comp]
+              change Spec.map (CommRingCat.ofHom ((transition hr i k).toRingHom.comp
+                (algebraMap _ _)) ≫ CommRingCat.ofHom Algebra.TensorProduct.includeRight.toRingHom)
+              rw [← CommRingCat.ringHom_comp_eq_comp]
+  conv_lhs => rw [open_immersion, ← Spec.map_comp, ← Spec.map_comp, ← Category.assoc,
+                ← CommRingCat.ringHom_comp_eq_comp]
+              erw [← CommRingCat.ringHom_comp_eq_comp]
+  apply congrArg Spec.map
+  conv_lhs => congr; rfl; change (transition hr j k).toRingHom.comp (algebraMap _ _)
+              rw [transition, IsLocalization.Away.AwayMap.lift_comp]
+  rw [IsLocalization.Away.AwayMap.lift_comp]
+  sorry
+
+
 
 variable (K V r)
 
@@ -528,9 +686,19 @@ def glueData : GlueData where
     refine Limits.pullback.lift (transition'₁ hr i j k)
       (Limits.pullback.fst ≫ transition_Spec hr i j) ?_
     exact transition'₁_immersion _ _ _ _
-  t_fac i j k := by simp
+  t_fac i j k := by rw [Limits.pullback.lift_snd]
   cocycle i j k := by
     simp only
+    rw [← cancel_mono Limits.pullback.snd]
+    conv_lhs => rw [Category.assoc, Category.assoc]
+                congr; rfl; congr; rfl
+                rw [Limits.pullback.lift_snd]
+    slice_lhs 2 3 => rw [Limits.pullback.lift_fst]
+    rw [← cancel_mono (f := open_immersion hr i k), Category.assoc, Category.assoc]
+    rw [transition'₁_transition, Category.id_comp, ← Category.assoc, Limits.pullback.lift_snd]
+    slice_lhs 2 3 => rw [transition_transition_Spec]
+    rw [Category.id_comp, Limits.pullback.condition]
+
   f_open _ _ := inferInstance
 
 
