@@ -61,8 +61,7 @@ This creates a little bit of friction, but lemmas like `IsPrimitiveRoot.isUnit` 
 
 -/
 
-
-open scoped Classical Polynomial
+open scoped Classical
 
 noncomputable section
 
@@ -205,8 +204,7 @@ def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 
       rcases x with ⟨x, hx⟩; rw [mem_nthRoots k.pos] at hx
       simp only [Subtype.coe_mk, ← pow_succ, ← pow_succ', hx,
         tsub_add_cancel_of_le (show 1 ≤ (k : ℕ) from k.one_le)]
-    show (_ : Rˣ) ^ (k : ℕ) = 1
-    simp only [Units.ext_iff, hx, Units.val_mk, Units.val_one, Subtype.coe_mk,
+    simp only [mem_rootsOfUnity, Units.ext_iff, hx, Units.val_mk, Units.val_one, Subtype.coe_mk,
       Units.val_pow_eq_pow_val]
   left_inv := by rintro ⟨x, hx⟩; ext; rfl
   right_inv := by rintro ⟨x, hx⟩; ext; rfl

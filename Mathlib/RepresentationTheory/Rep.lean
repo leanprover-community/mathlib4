@@ -196,7 +196,7 @@ theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_of Rep.linearization_of
 
--- Porting note: helps fixing `linearizationTrivialIso` since change in behaviour of ext
+-- Porting note (#11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
 theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
@@ -607,7 +607,7 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
     exact LinearMap.congr_fun (w g) x
   · intro g h gw hw; simp only [map_add, add_left_inj, LinearMap.add_apply, hw, gw]
   · intro r g w
-    simp only [AlgHom.map_smul, w, RingHom.id_apply, LinearMap.smul_apply, LinearMap.map_smulₛₗ]
+    simp only [map_smul, w, RingHom.id_apply, LinearMap.smul_apply, LinearMap.map_smulₛₗ]
 set_option linter.uppercaseLean3 false in
 #align Rep.to_Module_monoid_algebra_map_aux Rep.to_Module_monoidAlgebra_map_aux
 

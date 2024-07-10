@@ -89,6 +89,62 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
   ComonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
 #align category_theory.adjunction.adj_to_comonad_iso CategoryTheory.Adjunction.adjToComonadIso
 
+/--
+Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
+unit is an isomorphism.
+-/
+def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
+  hom := adj.unit
+  inv :=  i.hom ≫ (adj.toMonad.transport i).μ
+  hom_inv_id := by
+    rw [← assoc]
+    ext X
+    exact (adj.toMonad.transport i).right_unit X
+  inv_hom_id := by
+    rw [assoc, ← Iso.eq_inv_comp, comp_id, ← id_comp i.inv, Iso.eq_comp_inv, assoc,
+      NatTrans.id_comm]
+    ext X
+    exact (adj.toMonad.transport i).right_unit X
+
+lemma isIso_unit_of_iso  (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
+  (inferInstanceAs (IsIso (unitAsIsoOfIso adj i).hom))
+
+/--
+Given an adjunction `L ⊣ R`, if `L ⋙ R` is isomorphic to the identity functor, then `L` is
+fully faithful.
+-/
+noncomputable def fullyFaithfulLOfCompIsoId (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : L.FullyFaithful :=
+  haveI := adj.isIso_unit_of_iso i
+  adj.fullyFaithfulLOfIsIsoUnit
+
+/--
+Given an adjunction `L ⊣ R`, if `R ⋙ L` is abstractly isomorphic to the identity functor, then the
+counit is an isomorphism.
+-/
+def counitAsIsoOfIso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R ⋙ L ≅ 𝟭 D where
+  hom := adj.counit
+  inv := (adj.toComonad.transport j).δ ≫ j.inv
+  hom_inv_id := by
+    rw [← assoc, Iso.comp_inv_eq, id_comp, ← comp_id j.hom, ← Iso.inv_comp_eq, ← assoc,
+      NatTrans.id_comm]
+    ext X
+    exact (adj.toComonad.transport j).right_counit X
+  inv_hom_id := by
+    rw [assoc]
+    ext X
+    exact (adj.toComonad.transport j).right_counit X
+
+lemma isIso_counit_of_iso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : IsIso adj.counit :=
+  inferInstanceAs (IsIso (counitAsIsoOfIso adj j).hom)
+
+/--
+Given an adjunction `L ⊣ R`, if `R ⋙ L` is isomorphic to the identity functor, then `R` is
+fully faithful.
+-/
+noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R.FullyFaithful :=
+  haveI := adj.isIso_counit_of_iso j
+  adj.fullyFaithfulROfIsIsoCounit
+
 end Adjunction
 
 /-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
@@ -292,7 +348,7 @@ instance comparison_essSurj [Reflective R] :
   apply (X.unit_assoc _).symm
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
-lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R):
+lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
   map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
 #align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparison_full
@@ -340,7 +396,8 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
   eqv := { full := Reflective.comparison_full _ }
 #align category_theory.monadic_of_reflective CategoryTheory.monadicOfReflective
 
-/-- Any coreflective inclusion has a comonadic left adjoint. -/
+/-- Any coreflective inclusion has a comonadic left adjoint.
+    cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
   adj := coreflectorAdjunction R

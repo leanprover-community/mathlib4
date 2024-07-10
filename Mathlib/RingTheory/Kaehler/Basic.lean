@@ -259,7 +259,7 @@ theorem KaehlerDifferential.span_range_derivation :
     exact ⟨x, KaehlerDifferential.DLinearMap_apply R S x⟩
   · exact ⟨zero_mem _, Submodule.zero_mem _⟩
   · rintro x y ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩; exact ⟨add_mem hx₁ hy₁, Submodule.add_mem _ hx₂ hy₂⟩
-  · rintro r x ⟨hx₁, hx₂⟩;
+  · rintro r x ⟨hx₁, hx₂⟩
     exact ⟨((KaehlerDifferential.ideal R S).restrictScalars S).smul_mem r hx₁,
       Submodule.smul_mem _ r hx₂⟩
 #align kaehler_differential.span_range_derivation KaehlerDifferential.span_range_derivation
@@ -614,10 +614,13 @@ end Presentation
 section ExactSequence
 
 /- We have the commutative diagram
+```
 A --→ B
 ↑     ↑
 |     |
-R --→ S -/
+R --→ S
+```
+-/
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 variable [SMulCommClass S A B]
@@ -630,10 +633,12 @@ local macro "finsupp_map" : term =>
 
 /--
 Given the commutative diagram
+```
 A --→ B
 ↑     ↑
 |     |
 R --→ S
+```
 The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/S}` is spanned by the image of the
 kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `ds` with `s : S`.
 See `kerTotal_map'` for the special case where `R = S`.
@@ -675,10 +680,13 @@ theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
+```
 A --→ B
 ↑     ↑
 |     |
-R --→ S -/
+R --→ S
+```
+-/
 def KaehlerDifferential.map : Ω[A⁄R] →ₗ[A] Ω[B⁄S] :=
   Derivation.liftKaehlerDifferential
     (((KaehlerDifferential.D S B).restrictScalars R).compAlgebraMap A)
@@ -761,7 +769,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
     LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
-    induction' x using TensorProduct.induction_on with r s
+    induction' x with r s
     · simp
     · obtain ⟨x, rfl⟩ := total_surjective _ _ s
       simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]

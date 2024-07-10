@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.RingTheory.IntegrallyClosed
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 #align_import ring_theory.polynomial.eisenstein.is_integral from "leanprover-community/mathlib"@"5bfbcca0a7ffdd21cf1682e59106d6c942434a32"
@@ -123,7 +123,7 @@ end Cyclotomic
 section IsIntegral
 
 variable {K : Type v} {L : Type z} {p : R} [CommRing R] [Field K] [Field L]
-variable [Algebra K L] [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
+variable [Algebra K L] [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algebra.IsSeparable K L]
 variable [IsDomain R] [IsFractionRing R K] [IsIntegrallyClosed R]
 
 local notation "𝓟" => Submodule.span R {(p : R)}

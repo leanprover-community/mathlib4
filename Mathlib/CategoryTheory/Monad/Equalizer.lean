@@ -17,7 +17,8 @@ In `C`, this fork diagram is a split equalizer (in particular, it is still an eq
 This split equalizer is known as the Beck equalizer (as it features heavily in Beck's
 comonadicity theorem).
 
-This file is adapted from `CategoryTheory.Monad.Coequalizer`. Please try to keep them in sync.
+This file is adapted from `Mathlib.CategoryTheory.Monad.Coequalizer`.
+Please try to keep them in sync.
 
 -/
 
@@ -44,7 +45,7 @@ Show that any coalgebra is an equalizer of cofree coalgebras.
 def CofreeEqualizer.topMap :  (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) :=
   (Comonad.cofree T).map X.a
 
-/-- The bottom map in the coequalizer diagram we will construct. -/
+/-- The bottom map in the equalizer diagram we will construct. -/
 @[simps]
 def CofreeEqualizer.bottomMap : (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) where
   f := T.δ.app X.A
@@ -77,8 +78,8 @@ equalizer.
 def beckCoalgebraFork : Fork (CofreeEqualizer.topMap X) (CofreeEqualizer.bottomMap X) :=
   Fork.ofι _ (CofreeEqualizer.condition X)
 
-/-- The cofork constructed is a colimit. This shows that any algebra is a (reflexive) coequalizer of
-free algebras.
+/-- The fork constructed is a limit. This shows that any coalgebra is a (coreflexive) equalizer of
+cofree coalgebras.
 -/
 def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
   Fork.IsLimit.mk' _ fun s => by
