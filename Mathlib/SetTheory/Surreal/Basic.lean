@@ -301,10 +301,8 @@ instance : One Surreal :=
 instance : Inhabited Surreal :=
   ⟨0⟩
 
-@[simp]
 lemma mk_eq_mk {x y : PGame.{u}} {hx hy} : mk x hx = mk y hy ↔ x ≈ y := Quotient.eq
 
-@[simp]
 lemma mk_eq_zero {x : PGame.{u}} {hx} : mk x hx = 0 ↔ x ≈ 0 := Quotient.eq
 
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
@@ -330,18 +328,31 @@ instance instLE : LE Surreal :=
 @[simp]
 lemma mk_le_mk {x y : PGame.{u}} {hx hy} : mk x hx ≤ mk y hy ↔ x ≤ y := Iff.rfl
 
-@[simp]
 lemma zero_le_mk {x : PGame.{u}} {hx} : 0 ≤ mk x hx ↔ 0 ≤ x := Iff.rfl
 
 instance instLT : LT Surreal :=
   ⟨lift₂ (fun x y _ _ => x < y) fun _ _ _ _ hx hy => propext (lt_congr hx hy)⟩
 #align surreal.has_lt Surreal.instLT
 
-@[simp]
 lemma mk_lt_mk {x y : PGame.{u}} {hx hy} : mk x hx < mk y hy ↔ x < y := Iff.rfl
 
-@[simp]
 lemma zero_lt_mk {x : PGame.{u}} {hx} : 0 < mk x hx ↔ 0 < x := Iff.rfl
+
+/-- Same as moveLeft_lt, but for `Surreal` instead of `PGame` -/
+theorem mk_moveLeft_lt_mk {x : PGame} (o : Numeric x) (i) :
+    Surreal.mk (x.moveLeft i) (by
+      rw [numeric_def] at o
+      exact o.2.1 i
+    ) < Surreal.mk x o := by
+  exact Numeric.moveLeft_lt o i
+
+/-- Same as lt_moveRight, but for `Surreal` instead of `PGame` -/
+theorem mk_lt_mk_moveRight {x : PGame} (o : Numeric x) (j) :
+    Surreal.mk x o < Surreal.mk (x.moveRight j) (by
+      rw [numeric_def] at o
+      exact o.2.2 j
+    ) := by
+  exact Numeric.lt_moveRight o j
 
 /-- Addition on surreals is inherited from pre-game addition:
 the sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
@@ -372,6 +383,14 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
   nsmul := nsmulRec
   zsmul := zsmulRec
+
+lemma add_def {x y: PGame} (hx: x.Numeric) (hy: y.Numeric):
+    Surreal.mk x hx + Surreal.mk y hy = Surreal.mk (x + y) (hx.add hy) := by rfl
+
+lemma sub_def {x y: PGame} (hx: x.Numeric) (hy: y.Numeric):
+    Surreal.mk x hx - Surreal.mk y hy = Surreal.mk (x - y) (hx.sub hy) := by rfl
+
+lemma zero_def : mk 0 numeric_zero = 0 := by rfl
 
 noncomputable instance : LinearOrderedAddCommGroup Surreal :=
   { Surreal.orderedAddCommGroup with
