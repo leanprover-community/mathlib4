@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Closed.Ideal
+import Mathlib.CategoryTheory.Limits.FunctorCategoryFinite
 import Mathlib.CategoryTheory.Sites.Limits
 /-!
 
