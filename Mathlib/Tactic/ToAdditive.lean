@@ -854,7 +854,7 @@ def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
-      insertTranslation srcLemma tgtLemma
+      insertTranslation srcLemma tgtLemma false
 
 /--
 Find the first argument of `nm` that has a multiplicative type-class on it.
@@ -1172,6 +1172,10 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     if attr.name == `simp then
       additivizeLemmas allDecls "simp lemmas"
         (Meta.Simp.addSimpAttrFromSyntax · simpExtension attr.kind attr.stx)
+      return
+    if attr.name == `norm_cast then
+      additivizeLemmas allDecls "norm_cast lemmas"
+        (Meta.NormCast.addNormCastAttrFromSyntax · attr.kind attr.stx)
       return
     if attr.name == `simps then
       additivizeLemmas allDecls "simps lemmas" (simpsTacFromSyntax · attr.stx)

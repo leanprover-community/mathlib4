@@ -5,6 +5,7 @@ Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
 -/
 import Batteries.Tactic.OpenPrivate
 import Lean.Elab.Tactic.Simp
+import Lean.Meta.Tactic.NormCast
 
 /-!
 # Helper functions for using the simplifier.
@@ -57,42 +58,16 @@ def getPropHyps : MetaM (Array FVarId) := do
         result := result.push localDecl.fvarId
   return result
 
-export private checkTypeIsProp shouldPreprocess preprocess mkSimpTheoremCore
-  from Lean.Meta.Tactic.Simp.SimpTheorems
-
-/-- Similar to `mkSimpTheoremsFromConst` except that it also returns the names of the generated
-lemmas.
-Remark: either the length of the arrays is the same,
-or the length of the first one is 0 and the length of the second one is 1. -/
-def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio : Nat) :
-    MetaM (Array Name × Array SimpTheorem) := do
-  let cinfo ← getConstInfo declName
-  let val := mkConst declName (cinfo.levelParams.map mkLevelParam)
-  withReducible do
-    let type ← inferType val
-    checkTypeIsProp type
-    if inv || (← shouldPreprocess type) then
-      let mut r := #[]
-      let mut auxNames := #[]
-      for (val, type) in (← preprocess val type inv (isGlobal := true)) do
-        let auxName ← mkAuxLemma cinfo.levelParams type val
-        auxNames := auxNames.push auxName
-        r := r.push <| ← mkSimpTheoremCore (.decl declName)
-          (mkConst auxName (cinfo.levelParams.map mkLevelParam)) #[] (mkConst auxName) post prio
-          false
-      return (auxNames, r)
-    else
-      return (#[], #[← mkSimpTheoremCore (.decl declName) (mkConst declName <|
-        cinfo.levelParams.map mkLevelParam) #[] (mkConst declName) post prio false])
+export private mkSimpTheoremsFromConst from Lean.Meta.Tactic.Simp.SimpTheorems
 
 /-- Similar to `addSimpTheorem` except that it returns an array of all auto-generated
   simp-theorems. -/
 def addSimpTheorem' (ext : SimpExtension) (declName : Name) (post : Bool) (inv : Bool)
     (attrKind : AttributeKind) (prio : Nat) : MetaM (Array Name) := do
-  let (auxNames, simpThms) ← mkSimpTheoremsFromConst' declName post inv prio
+  let simpThms ← mkSimpTheoremsFromConst declName post inv prio
   for simpThm in simpThms do
     ext.add (SimpEntry.thm simpThm) attrKind
-  return auxNames
+  return simpThms.filterMap (·.proof.constName?)
 
 /-- Similar to `AttributeImpl.add` in `mkSimpAttr` except that it doesn't require syntax,
   and returns an array of all auto-generated lemmas. -/
@@ -128,6 +103,63 @@ def addSimpAttrFromSyntax (declName : Name) (ext : SimpExtension) (attrKind : At
   addSimpAttr declName ext attrKind post prio
 
 end Simp
+
+/- Hack: modify `norm_cast` internals so that they return the generated simp lemmas.
+Hopefully Core is willing to upstream this? -/
+namespace NormCast
+
+open Simp
+
+/-- `addElim decl` adds `decl` as an `elim` lemma to be used by `norm_cast`. -/
+def addElim' (decl : Name)
+    (kind := AttributeKind.global) (prio := eval_prio default) : MetaM (Array Name) :=
+  addSimpTheorem' normCastExt.up decl (post := true) (inv := false) kind prio
+
+/-- `addMove decl` adds `decl` as a `move` lemma to be used by `norm_cast`. -/
+def addMove' (decl : Name)
+    (kind := AttributeKind.global) (prio := eval_prio default) : MetaM (Array Name) := do
+  let s1 ← addSimpTheorem' pushCastExt decl (post := true) (inv := false) kind prio
+  let s2 ← addSimpTheorem' normCastExt.up decl (post := true) (inv := true) kind prio
+  let s3 ← addSimpTheorem' normCastExt.down decl (post := true) (inv := false) kind prio
+  return s1 ++ s2 ++ s3
+
+/-- `addSquash decl` adds `decl` as a `squash` lemma to be used by `norm_cast`. -/
+def addSquash' (decl : Name)
+    (kind := AttributeKind.global) (prio := eval_prio default) : MetaM (Array Name) := do
+  let s1 ← addSimpTheorem' pushCastExt decl (post := true) (inv := false) kind prio
+  let s2 ← addSimpTheorem' normCastExt.squash decl (post := true) (inv := false) kind prio
+  let s3 ← addSimpTheorem' normCastExt.down decl (post := true) (inv := false) kind prio
+  return s1 ++ s2 ++ s3
+
+/-- `addInfer decl` infers the label of `decl` (`elim`, `move`, or `squash`) and arranges for it to
+be used by `norm_cast`.
+
+* elim lemma:   LHS has 0 head coes and ≥ 1 internal coe
+* move lemma:   LHS has 1 head coe and 0 internal coes,    RHS has 0 head coes and ≥ 1 internal coes
+* squash lemma: LHS has ≥ 1 head coes and 0 internal coes, RHS has fewer head coes
+-/
+def addInfer' (decl : Name)
+    (kind := AttributeKind.global) (prio := eval_prio default) : MetaM (Array Name) := do
+  let ty := (← getConstInfo decl).type
+  match ← classifyType ty with
+  | Label.elim => addElim' decl kind prio
+  | Label.squash => addSquash' decl kind prio
+  | Label.move => addMove' decl kind prio
+
+/-- Similar to `AttributeImpl.add` in the `norm_cast`-attribute
+  except that it returns an array of all auto-generated lemmas. -/
+def addNormCastAttrFromSyntax (decl : Name) (kind : AttributeKind)
+    (stx : Syntax) : MetaM (Array Name) := do
+    let `(attr| norm_cast $[$label:normCastLabel]? $[$prio]?) := stx | unreachable!
+    let prio := (prio.bind (·.1.isNatLit?)).getD (eval_prio default)
+    match label.bind (·.1.isStrLit?) with
+    | "elim" => addElim' decl kind prio
+    | "move" => addMove' decl kind prio
+    | "squash" => addSquash' decl kind prio
+    | none => addInfer' decl kind prio
+    | _ => unreachable!
+
+end NormCast
 
 /-- Construct a `SimpTheorems` from a list of names. -/
 def simpTheoremsOfNames (lemmas : List Name := []) (simpOnly : Bool := false) :
