@@ -599,13 +599,13 @@ theorem continuous_parametric_primitive_of_continuous
         · exact (hf.uncurry_left _).norm.integrableOn_Icc
         · exact eventually_of_forall (fun x ↦ norm_nonneg _)
         · have : Ι b₀ s ⊆ Icc (b₀ - δ) (b₀ + δ) := by
-            apply (uIoc_subset_uIcc _ _).trans (uIcc_subset_Icc ?_ ⟨hs.1.le, hs.2.le⟩ )
+            apply uIoc_subset_uIcc.trans (uIcc_subset_Icc ?_ ⟨hs.1.le, hs.2.le⟩ )
             simp [δpos.le]
           exact eventually_of_forall this
       · apply setIntegral_mono_set
         · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
         · exact eventually_of_forall (fun x ↦ norm_nonneg _)
-        · have : Ι a₀ b₀ ⊆ Icc a b := (uIoc_subset_uIcc _ _).trans
+        · have : Ι a₀ b₀ ⊆ Icc a b := uIoc_subset_uIcc.trans
             (uIcc_subset_Icc ⟨a_lt.1.le, lt_b.1.le⟩ ⟨a_lt.2.le, lt_b.2.le⟩)
           exact eventually_of_forall this
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
