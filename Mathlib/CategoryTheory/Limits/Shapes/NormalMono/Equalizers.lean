@@ -28,7 +28,6 @@ namespace CategoryTheory.NormalMonoCategory
 variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
 
 /-- The pullback of two monomorphisms exists. -/
-@[irreducible] -- Porting note: changed to irreducible and a def
 @[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
 def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
     HasLimit (cospan a b) :=

@@ -33,6 +33,7 @@ fibonacci, zeckendorf, digit
 open List Nat
 
 -- TODO: The `local` attribute makes this not considered as an instance by linters
+@[nolint defLemma docBlame]
 local instance : IsTrans ℕ fun a b ↦ b + 2 ≤ a where
   trans _a _b _c hba hcb := hcb.trans <| le_self_add.trans hba
 

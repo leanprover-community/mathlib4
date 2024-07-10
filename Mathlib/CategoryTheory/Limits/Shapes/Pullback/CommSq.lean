@@ -183,7 +183,7 @@ structure BicartesianSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) 
 #align category_theory.bicartesian_sq CategoryTheory.BicartesianSq
 
 -- Lean should make these parent projections as `lemma`, not `def`.
---attribute [nolint defLemma docBlame] BicartesianSq.toIsPullback BicartesianSq.toIsPushout
+attribute [nolint defLemma docBlame] /-BicartesianSq.toIsPullback-/ BicartesianSq.toIsPushout
 
 end
 
