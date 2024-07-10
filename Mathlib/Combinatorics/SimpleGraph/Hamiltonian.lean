@@ -19,7 +19,6 @@ In this file we introduce hamiltonian paths, cycles and graphs.
 -/
 
 open Finset Function
-open scoped BigOperators
 
 namespace SimpleGraph
 variable {α β : Type*} [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β] {G : SimpleGraph α}

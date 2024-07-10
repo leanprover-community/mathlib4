@@ -12,8 +12,8 @@ import Mathlib.CategoryTheory.Triangulated.Opposite
 # The Yoneda functors are homological
 
 Let `C` be a pretriangulated category. In this file, we show that the
-functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGroupCat` for `A : Cᵒᵖ` and
-`preadditiveYoneda.obj B : Cᵒᵖ ⥤ AddCommGroupCat` for `B : C` are homological functors.
+functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrp` for `A : Cᵒᵖ` and
+`preadditiveYoneda.obj B : Cᵒᵖ ⥤ AddCommGrp` for `B : C` are homological functors.
 
 -/
 
