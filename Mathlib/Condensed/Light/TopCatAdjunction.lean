@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Condensed.Light.TopComparison
 import Mathlib.Topology.Category.Sequential
-import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Category.LightProfinite.Sequence
 /-!
 
 # The adjunction between light condensed sets and topological spaces
@@ -13,11 +13,14 @@ import Mathlib.Topology.Compactification.OnePoint
 This file defines the functor `lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u}` which is
 left adjoint to `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`. We prove that the counit
 is bijective (but not in general an isomorphism) and conclude that the right adjoint is faithful.
+
+The counit is an isomorphism for sequential spaces, and we conclude that the functor
+`topCatToLightCondSet` is fully faithful when restricted to sequential spaces.
 -/
 
 universe u
 
-open LightCondensed LightCondSet CategoryTheory
+open LightCondensed LightCondSet CategoryTheory LightProfinite
 
 attribute [local instance] ConcreteCategory.instFunLike
 
@@ -165,8 +168,11 @@ noncomputable def sequentialAdjunction :
 /--
 The counit of the adjunction `lightCondSetToSequential ⊣ sequentialToLightCondSet`
 is a homeomorphism.
+
+Note: for now, we only have `ℕ∪{∞}` as a light profinite set at universe level 0, which is why we
+can only prove this for `X : TopCat.{0}`.
 -/
-def sequentialAdjunctionHomeo (X : TopCat.{u}) [SequentialSpace X] :
+def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X] :
     X.toLightCondSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
   continuous_toFun := (topCatAdjunctionCounit X).continuous
@@ -174,24 +180,24 @@ def sequentialAdjunctionHomeo (X : TopCat.{u}) [SequentialSpace X] :
     apply SeqContinuous.continuous
     unfold SeqContinuous
     intro f p h
-    let f' := OnePoint.continuousMapMkNat f p h
-    let f'' := (topCatAdjunctionCounitEquiv X).invFun ∘ f'
-    change Filter.Tendsto (fun n : ℕ ↦ f'' n) _ _
-    have : p = f' OnePoint.infty := rfl
-    erw [this, ← OnePoint.continuous_iff_from_nat]
-    sorry
-    -- exact continuous_coinducingCoprod X.toLightCondSet _
-
+    let g := (topCatAdjunctionCounitEquiv X).invFun ∘ (OnePoint.continuousMapMkNat f p h)
+    change Filter.Tendsto (fun n : ℕ ↦ g n) _ _
+    erw [← OnePoint.continuous_iff_from_nat]
+    let x : X.toLightCondSet.val.obj ⟨(ℕ∪{∞})⟩ := OnePoint.continuousMapMkNat f p h
+    exact continuous_coinducingCoprod X.toLightCondSet x
 
 /--
 The counit of the adjunction `lightCondSetToSequential ⊣ sequentialToLightCondSet`
 is an isomorphism.
+
+Note: for now, we only have `ℕ∪{∞}` as a light profinite set at universe level 0, which is why we
+can only prove this for `X : Sequential.{0}`.
 -/
-noncomputable def sequentialAdjunctionCounitIso (X : Sequential.{u}) :
+noncomputable def sequentialAdjunctionCounitIso (X : Sequential.{0}) :
     lightCondSetToSequential.obj (sequentialToLightCondSet.obj X) ≅ X :=
   isoOfHomeo (sequentialAdjunctionHomeo X.toTop)
 
-instance : IsIso sequentialAdjunction.counit := by
+instance : IsIso sequentialAdjunction.{0}.counit := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
   exact inferInstanceAs (IsIso (sequentialAdjunctionCounitIso X).hom)
@@ -199,9 +205,12 @@ instance : IsIso sequentialAdjunction.counit := by
 /--
 The functor from topological spaces to light condensed sets restricted to sequential spaces
 is fully faithful.
+
+Note: for now, we only have `ℕ∪{∞}` as a light profinite set at universe level 0, which is why we
+can only prove this for the functor `Sequential.{0} ⥤ LightCondSet.{0}`.
 -/
 noncomputable def fullyFaithfulSequentialToLightCondSet :
-    sequentialToLightCondSet.FullyFaithful :=
+    sequentialToLightCondSet.{0}.FullyFaithful :=
   sequentialAdjunction.fullyFaithfulROfIsIsoCounit
 
 end LightCondSet
