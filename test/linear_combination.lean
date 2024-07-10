@@ -231,6 +231,11 @@ example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by
   ring_nf
   norm_num1
 
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : a + b < 3 := by
+  linear_combination (norm := skip) (h1 + h2)
+  ring_nf
+  norm_num1
+
 /-! ### Regression tests -/
 
 def g (a : ℤ) : ℤ := a ^ 2

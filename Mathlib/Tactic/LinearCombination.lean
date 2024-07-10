@@ -91,6 +91,17 @@ inductive RelType
 
 export RelType (Eq Le Lt)
 
+def _root_.Lean.Expr.relType (e : Expr) : MetaM (Option RelType) := do
+  let whnfEType ← withReducible do whnf e
+  if whnfEType.isEq then
+    pure <| some Eq
+  else if whnfEType.isLe then
+    pure <| some Le
+  else if whnfEType.isLt then
+    pure <| some Lt
+  else
+    pure none
+
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
@@ -166,19 +177,9 @@ partial def expandLinearCombo : Syntax.Term → TermElabM (Option (RelType × Sy
       let e ← elabTerm e none
       trace[debug] "{e}"
       let eType ← inferType e
-      let whnfEType ← withReducible do whnf eType
-      trace[debug] "{whnfEType}"
-      if whnfEType.isEq then
-        trace[debug] "determined to be ="
-        pure <| some (Eq, ← e.toSyntax)
-      else if whnfEType.isLe then
-        trace[debug] "determined to be ≤"
-        pure <| some (Le, ← e.toSyntax)
-      else if whnfEType.isLt then
-        trace[debug] "determined to be <"
-        pure <| some (Lt, ← e.toSyntax)
-      else
-        pure none
+      let relType ← eType.relType
+      let s ← e.toSyntax
+      pure <| relType.map (fun r ↦ (r, s))
 
 def expandLinearComboClean (stx : Syntax.Term) : TermElabM (Option (RelType × Syntax.Term)) := do
   let result ← expandLinearCombo stx
@@ -187,16 +188,37 @@ def expandLinearComboClean (stx : Syntax.Term) : TermElabM (Option (RelType × S
 
 theorem eq_trans₃ (p : (a:α) = b) (p₁ : a = a') (p₂ : b = b') : a' = b' := p₁ ▸ p₂ ▸ p
 
-theorem eq_of_add [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; rwa [sub_eq_zero, p] at H
+theorem eq_of_eq [AddGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) = 0) : a' = b' := by
+  rw [← sub_eq_zero] at p ⊢
+  rw [sub_eq_zero] at H
+  exact H.trans p
 
-theorem le_of_add [LinearOrderedAddCommGroup α] (p : (a:α) ≤ b) (H : (a' - b') - (a - b) ≤ 0) :
+theorem le_of_le [LinearOrderedAddCommGroup α] (p : (a:α) ≤ b) (H : (a' - b') - (a - b) ≤ 0) :
     a' ≤ b' := by
   rw [sub_nonpos] at H
   rw [← sub_nonpos] at p ⊢
   exact H.trans p
 
-theorem lt_of_add [LinearOrderedAddCommGroup α] (p : (a:α) < b) (H : (a' - b') - (a - b) ≤ 0) :
+theorem le_of_eq [LinearOrderedAddCommGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) ≤ 0) :
+    a' ≤ b' :=
+  le_of_le p.le H
+
+theorem le_of_lt [LinearOrderedAddCommGroup α] (p : (a:α) < b) (H : (a' - b') - (a - b) ≤ 0) :
+    a' ≤ b' :=
+  le_of_le p.le H
+
+theorem lt_of_le [LinearOrderedAddCommGroup α] (p : (a:α) ≤ b) (H : (a' - b') - (a - b) < 0) :
+    a' < b' := by
+  rw [← sub_nonpos] at p
+  rw [← sub_neg]
+  rw [sub_neg] at H
+  exact H.trans_le p
+
+theorem lt_of_eq [LinearOrderedAddCommGroup α] (p : (a:α) = b) (H : (a' - b') - (a - b) < 0) :
+    a' < b' :=
+  lt_of_le p.le H
+
+theorem lt_of_lt [LinearOrderedAddCommGroup α] (p : (a:α) < b) (H : (a' - b') - (a - b) ≤ 0) :
     a' < b' := by
   rw [sub_nonpos] at H
   rw [← sub_neg] at p ⊢
@@ -222,6 +244,8 @@ def elabLinearCombination
   trace[debug] "two goals? {twoGoals}"
   trace[debug] "exponent {exp?}"
   let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
+  let e ← Lean.Elab.Tactic.getMainTarget
+  let goalRel : Option RelType ← e.relType
   Tactic.evalTactic <| ← withFreshMacroScope <|
   if twoGoals then
     `(tactic| (
@@ -229,16 +253,27 @@ def elabLinearCombination
       case' a => $norm:tactic
       case' b => $norm:tactic))
   else
+    match goalRel with
+    | none => `(tactic | fail "goal must be =, ≤ or <")
+    | some goalRel =>
     let easy :=
-      match rel with
-      | Eq => `(tactic| (refine eq_of_add $p ?a; case' a => $norm:tactic))
-      | Le => `(tactic| (apply le_of_add $p ?a; case' a => $norm:tactic))
-      | Lt => `(tactic| (refine lt_of_add $p ?a; case' a => $norm:tactic))
+      match rel, goalRel with
+      | Eq, Eq => `(tactic| (refine eq_of_eq $p ?a; case' a => $norm:tactic))
+      | _, Eq => `(tactic| fail "cannot prove an equality from inequality hypotheses")
+      | Eq, Le => `(tactic| (apply le_of_eq $p ?a; case' a => $norm:tactic))
+      | Le, Le => `(tactic| (apply le_of_le $p ?a; case' a => $norm:tactic))
+      | Lt, Le => `(tactic| (apply le_of_lt $p ?a; case' a => $norm:tactic))
+      | Eq, Lt => `(tactic| (refine lt_of_eq $p ?a; case' a => $norm:tactic))
+      | Le, Lt => `(tactic| (refine lt_of_le $p ?a; case' a => $norm:tactic))
+      | Lt, Lt => `(tactic| (refine lt_of_lt $p ?a; case' a => $norm:tactic))
     match exp? with
     | some n =>
       if n.getNat = 1 then
         easy
-      else `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
+      else
+        match rel with
+        | Eq => `(tactic| (refine eq_of_add_pow $n $p ?a; case' a => $norm:tactic))
+        | _ => `(tactic | fail "linear combination tactic not implemented for exponentiation of inequality goals")
     | _ => easy
 
 /--
