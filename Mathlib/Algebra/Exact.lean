@@ -109,8 +109,8 @@ variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [AddCommMonoid X₁] [AddCommMo
   [AddCommMonoid Y₁] [AddCommMonoid Y₂] [AddCommMonoid Y₃]
   (e₁ : X₁ ≃+ Y₁) (e₂ : X₂ ≃+ Y₂) (e₃ : X₃ ≃+ Y₃)
   {f₁₂ : X₁ →+ X₂} {f₂₃ : X₂ →+ X₃} {g₁₂ : Y₁ →+ Y₂} {g₂₃ : Y₂ →+ Y₃}
-  (comm₁₂ : g₁₂.comp e₁.toAddMonoidHom = e₂.toAddMonoidHom.comp f₁₂)
-  (comm₂₃ : g₂₃.comp e₂.toAddMonoidHom = e₃.toAddMonoidHom.comp f₂₃)
+  (comm₁₂ : g₁₂.comp e₁ = AddMonoidHom.comp e₂ f₁₂)
+  (comm₂₃ : g₂₃.comp e₂ = AddMonoidHom.comp e₃ f₂₃)
 
 lemma of_ladder_addEquiv_of_exact (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
   have h₁₂ := DFunLike.congr_fun comm₁₂
@@ -206,10 +206,8 @@ variable
 lemma Exact.iff_of_ladder_linearEquiv
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃) :
     Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ :=
-  iff_of_ladder_addEquiv
-    (f₁₂ := f₁₂.toAddMonoidHom) (f₂₃ := f₂₃.toAddMonoidHom)
-    (g₁₂ := g₁₂.toAddMonoidHom) (g₂₃ := g₂₃.toAddMonoidHom)
-    (e₁ := e₁.toAddEquiv) (e₂ := e₂.toAddEquiv) (e₃ := e₃.toAddEquiv)
+  iff_of_ladder_addEquiv e₁.toAddEquiv e₂.toAddEquiv e₃.toAddEquiv
+    (f₁₂ := f₁₂) (f₂₃ := f₂₃) (g₁₂ := g₁₂) (g₂₃ := g₂₃)
     (congr_arg LinearMap.toAddMonoidHom h₁₂) (congr_arg LinearMap.toAddMonoidHom h₂₃)
 
 lemma Exact.of_ladder_linearEquiv_of_exact
