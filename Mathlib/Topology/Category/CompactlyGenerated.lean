@@ -122,6 +122,7 @@ def of : CompactlyGenerated.{u, w} where
 def compactlyGeneratedToTop : CompactlyGenerated.{u, w} ⥤ TopCat.{w} :=
   inducedFunctor _
 
+/-- The functor to `TopCat` is indeed fully faithful.-/
 def fullyFaithfulCompactlyGeneratedToTop : compactlyGeneratedToTop.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
