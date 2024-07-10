@@ -457,7 +457,7 @@ for the notation.
 This command can be used in mathlib4 but it has an uncertain future and was created primarily
 for backward compatibility.
 -/
-elab (name : = notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)? attrKind : Term.attrKind
+elab (name := notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)? attrKind : Term.attrKind
     "notation3" prec?:(precedence)? name?:(namedName)? prio?:(namedPrio)? pp?:(prettyPrintOpt)?
     ppSpace items:(notation3Item)+ " => " val:term : command => do
   -- We use raw `Name`s for variables. This maps variable names back to the
@@ -490,7 +490,7 @@ elab (name : = notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)?
     | `(notation3Item| $lit : str) =>
       -- Can't use `pushMacro` since it inserts an extra variable into the pattern for `str`, which
       -- breaks our delaborator
-      syntaxArgs : = syntaxArgs.push (← `(stx| $lit : str))
+      syntaxArgs := syntaxArgs.push (← `(stx| $lit : str))
       pattArgs := pattArgs.push <| mkAtomFrom lit lit.1.isStrLit?.get!
     | `(notation3Item| $_ : bindersItem) =>
       if hasBindersItem then
@@ -499,8 +499,8 @@ elab (name : = notation3) doc : (docComment)? attrs? : (Parser.Term.attributes)?
       -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
       -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
       -- but extBinders already has a space before it so we strip the trailing space of "∑ "
-      if let `(stx| $lit : str) : = syntaxArgs.back then
-        syntaxArgs : = syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight) : str))
+      if let `(stx| $lit : str) := syntaxArgs.back then
+        syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight) : str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders : extBinders))
     | `(notation3Item| ($id:ident $sep : str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←

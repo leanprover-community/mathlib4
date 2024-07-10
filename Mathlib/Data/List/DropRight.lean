@@ -128,7 +128,7 @@ theorem rdropWhile_last_not (hl : l.rdropWhile p ≠ []) : ¬p ((rdropWhile p l)
   exact dropWhile_nthLe_zero_not _ _ _
 #align list.rdrop_while_last_not List.rdropWhile_last_not
 
-theorem rdropWhile_prefix : l.rdropWhile p <+ : l : = by
+theorem rdropWhile_prefix : l.rdropWhile p <+ : l := by
   rw [← reverse_suffix, rdropWhile, reverse_reverse]
   exact dropWhile_suffix _
 #align list.rdrop_while_prefix List.rdropWhile_prefix
@@ -211,7 +211,7 @@ theorem rtakeWhile_concat_neg (x : α) (h : ¬p x) : rtakeWhile p (l ++ [x]) = [
   rw [rtakeWhile_concat, if_neg h]
 #align list.rtake_while_concat_neg List.rtakeWhile_concat_neg
 
-theorem rtakeWhile_suffix : l.rtakeWhile p < : + l : = by
+theorem rtakeWhile_suffix : l.rtakeWhile p < : + l := by
   rw [← reverse_prefix, rtakeWhile, reverse_reverse]
   exact takeWhile_prefix _
 #align list.rtake_while_suffix List.rtakeWhile_suffix

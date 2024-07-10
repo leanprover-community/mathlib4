@@ -354,11 +354,11 @@ add_decl_doc DistribMulActionHom.toMulActionHom
 /- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
  see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
-notation : 25 (name : = «DistribMulActionHomLocal≺»)
+notation : 25 (name := «DistribMulActionHomLocal≺»)
   A " →ₑ+[" φ:25 "] " B:0 => DistribMulActionHom φ A B
 
 @[inherit_doc]
-notation : 25 (name : = «DistribMulActionHomIdLocal≺»)
+notation : 25 (name := «DistribMulActionHomIdLocal≺»)
   A " →+[" M:25 "] " B:0 => DistribMulActionHom (MonoidHom.id M) A B
 
 -- QUESTION/TODO : Impose that `φ` is a morphism of monoids?
@@ -645,11 +645,11 @@ add_decl_doc MulSemiringActionHom.toDistribMulActionHom
 /- Porting note: local notation given a name, conflict with Algebra.Hom.Freiman
  see https://github.com/leanprover/lean4/issues/2000 -/
 @[inherit_doc]
-notation : 25 (name : = «MulSemiringActionHomLocal≺»)
+notation : 25 (name := «MulSemiringActionHomLocal≺»)
   R " →ₑ+*[" φ:25 "] " S:0 => MulSemiringActionHom φ R S
 
 @[inherit_doc]
-notation : 25 (name : = «MulSemiringActionHomIdLocal≺»)
+notation : 25 (name := «MulSemiringActionHomIdLocal≺»)
   R " →+*[" M:25 "] " S:0 => MulSemiringActionHom (MonoidHom.id M) R S
 
 /-- `MulSemiringActionHomClass F φ R S` states that `F` is a type of morphisms preserving

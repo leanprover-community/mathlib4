@@ -772,7 +772,7 @@ instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
   embedding_uLift_down.t1Space
 
 -- see Note [lower instance priority]
-instance (priority : = 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
+instance (priority := 100) TotallyDisconnectedSpace.t1Space [h : TotallyDisconnectedSpace X] :
     T1Space X := by
   rw [((t1Space_TFAE X).out 0 1 : )]
   intro x
@@ -2226,7 +2226,7 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [r : RegularSpace X] [LindelofSp
   have (a : X) : ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) t ∧ (a ∈ s → a ∈ n) := by
     wlog ains : a ∈ s
     · exact ⟨∅, isOpen_empty, SeparatedNhds.empty_left t |>.disjoint_closure_left, fun a ↦ ains a⟩
-    obtain ⟨n, nna, ncl, nsubkc⟩ : = ((regularSpace_TFAE X).out 0 3 : ).mp r a tᶜ <|
+    obtain ⟨n, nna, ncl, nsubkc⟩ := ((regularSpace_TFAE X).out 0 3 : ).mp r a tᶜ <|
       t_cl.compl_mem_nhds (disjoint_left.mp st_dis ains)
     exact
       ⟨interior n,

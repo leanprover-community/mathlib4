@@ -170,14 +170,14 @@ def Cofix.corec'₁ {α : TypeVec n} {β : Type u} (g : ∀ {X}, (β → X) → 
 value instead of making a recursive call -/
 def Cofix.corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Cofix F α ⊕ β))) (x : β) :
     Cofix F α :=
-  let f : (α :: : Cofix F α) ⟹ (α :: : (Cofix F α ⊕ β)) : = id :: : Sum.inl
+  let f : (α :: : Cofix F α) ⟹ (α :: : (Cofix F α ⊕ β)) := id :: : Sum.inl
   Cofix.corec (Sum.elim (MvFunctor.map f ∘ Cofix.dest) g) (Sum.inr x : Cofix F α ⊕ β)
 #align mvqpf.cofix.corec' MvQPF.Cofix.corec'
 
 /-- Corecursor for `Cofix F`. The shape allows recursive calls to
 look like recursive calls. -/
 def Cofix.corec₁ {α : TypeVec n} {β : Type u}
-    (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α :: : X)) (x : β) : Cofix F α : =
+    (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α :: : X)) (x : β) : Cofix F α :=
   Cofix.corec' (fun x => g Sum.inl Sum.inr x) x
 #align mvqpf.cofix.corec₁ MvQPF.Cofix.corec₁
 
@@ -390,16 +390,16 @@ open Function
 theorem liftR_map_last [lawful : LawfulMvFunctor F]
     {α : TypeVec n} {ι ι'} (R : ι' → ι' → Prop)
     (x : F (α :: : ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
-    LiftR' (RelLast' _ R) ((id :: : f) <$$> x) ((id :: : g) <$$> x) : =
+    LiftR' (RelLast' _ R) ((id :: : f) <$$> x) ((id :: : g) <$$> x) :=
   let h : ι → { x : ι' × ι' // uncurry R x } := fun x => ⟨(f x, g x), hh x⟩
-  let b : (α :: : ι) ⟹ _ : = @diagSub n α :: : h
+  let b : (α :: : ι) ⟹ _ := @diagSub n α :: : h
   let c :
     (Subtype_ α.repeatEq :: : { x // uncurry R x }) ⟹
-      ((fun i : Fin2 n => { x // ofRepeat (α.RelLast' R i.fs x) }) :: : Subtype (uncurry R)) : =
+      ((fun i : Fin2 n => { x // ofRepeat (α.RelLast' R i.fs x) }) :: : Subtype (uncurry R)) :=
     ofSubtype _ :: : id
   have hh :
     subtypeVal _ ⊚ toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b =
-      ((id :: : f) ⊗' (id :: : g)) ⊚ prod.diag : = by
+      ((id :: : f) ⊗' (id :: : g)) ⊚ prod.diag := by
     dsimp [b]
     apply eq_of_drop_last_eq
     · dsimp
@@ -420,7 +420,7 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
 #align mvqpf.liftr_map_last MvQPF.liftR_map_last
 
 theorem liftR_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α :: : ι))
-    (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id :: : f) <$$> x) x : = by
+    (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id :: : f) <$$> x) x := by
   have := liftR_map_last R x f id hh
   rwa [appendFun_id_id, MvFunctor.id_map] at this
 #align mvqpf.liftr_map_last' MvQPF.liftR_map_last'
@@ -515,7 +515,7 @@ open MvFunctor (LiftP LiftR)
 variable {n : ℕ} {F : TypeVec.{u} (n + 1) → Type u} [q : MvQPF F]
 
 theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F (α :: : X)) :
-    Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id :: : f) ∘ g) (f x₀) : = by
+    Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id :: : f) ∘ g) (f x₀) := by
   mv_bisim x₀ with R a b x Ha Hb
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]

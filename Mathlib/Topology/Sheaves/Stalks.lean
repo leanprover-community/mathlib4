@@ -256,7 +256,7 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
       ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
         ((pullback C f).obj F).map (homOfLE hV).op ≫ φ =
       ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
-        ((pullback C f).obj F).map (homOfLE hV).op ≫ ψ) : φ = ψ : = by
+        ((pullback C f).obj F).map (homOfLE hV).op ≫ ψ) : φ = ψ := by
   obtain ⟨U⟩ := U
   apply ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩

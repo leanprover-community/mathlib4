@@ -36,7 +36,7 @@ variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
     (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)| =
-      (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| : = by
+      (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| := by
   rw [div_eq_div_iff]
   · replace h := congr_arg (I.den • ·) h
     have h' := congr_arg (a • ·) (den_mul_self_eq_num I)
@@ -77,7 +77,7 @@ theorem absNorm_eq (I : FractionalIdeal R⁰ K) :
 
 theorem absNorm_eq' {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
     (h : a • (I : Submodule R K) = Submodule.map (Algebra.linearMap R K) I₀) :
-    absNorm I = (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| : = by
+    absNorm I = (Ideal.absNorm I₀ : ℚ) / |Algebra.norm ℤ (a : R)| := by
   rw [absNorm, ← absNorm_div_norm_eq_absNorm_div_norm a I₀ h, MonoidWithZeroHom.coe_mk,
     ZeroHom.coe_mk]
 

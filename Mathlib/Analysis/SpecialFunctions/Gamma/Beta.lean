@@ -405,7 +405,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
   rw [this, Finset.prod_range_succ', Finset.prod_range_succ, aux, ← Finset.prod_mul_distrib,
     Nat.cast_zero, add_zero, add_comm (1 - z) n, ← add_sub_assoc]
   have : ∀ j : ℕ, (z + ↑(j + 1)) * (↑1 - z + ↑j) =
-      ((j + 1) ^ 2 : ) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) : = by
+      ((j + 1) ^ 2 : ) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) := by
     intro j
     push_cast
     have : (j : ℂ) + 1 ≠ 0 := by rw [← Nat.cast_succ, Nat.cast_ne_zero]; exact Nat.succ_ne_zero j

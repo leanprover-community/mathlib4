@@ -39,7 +39,7 @@ open Equiv MulAction
 namespace DomMulAct
 
 lemma mem_stabilizer_iff {g : (Perm α)ᵈᵐᵃ} :
-    g ∈ stabilizer (Perm α)ᵈᵐᵃ f ↔ f ∘ (mk.symm g : ) = f : = by
+    g ∈ stabilizer (Perm α)ᵈᵐᵃ f ↔ f ∘ (mk.symm g : ) = f := by
   simp only [MulAction.mem_stabilizer_iff]; rfl
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) f`

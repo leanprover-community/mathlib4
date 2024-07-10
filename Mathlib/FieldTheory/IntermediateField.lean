@@ -454,7 +454,7 @@ theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
 
-theorem gc_map_comap (f : L →ₐ[K] L') : GaloisConnection (map f) (comap f) : =
+theorem gc_map_comap (f : L →ₐ[K] L') : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate

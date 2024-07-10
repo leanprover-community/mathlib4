@@ -183,7 +183,7 @@ def M.dest' {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a → P.last
 #align mvpfunctor.M.dest' MvPFunctor.M.dest'
 
 /-- Destructor for M-types -/
-def M.dest {α : TypeVec n} (x : P.M α) : P (α :: : P.M α) : =
+def M.dest {α : TypeVec n} (x : P.M α) : P (α :: : P.M α) :=
   M.dest' P (Sigma.eta <| PFunctor.M.dest x.fst).symm x.snd
 #align mvpfunctor.M.dest MvPFunctor.M.dest
 

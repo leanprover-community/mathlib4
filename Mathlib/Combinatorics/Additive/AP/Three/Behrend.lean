@@ -262,7 +262,7 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
-    (↑(d ^ n) / ((n * (d - 1) ^ 2 : ) + 1) : ℝ) ≤ (sphere n d k).card : = by
+    (↑(d ^ n) / ((n * (d - 1) ^ 2 : ) + 1) : ℝ) ≤ (sphere n d k).card := by
   refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
@@ -272,7 +272,7 @@ theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 +
 #align behrend.exists_large_sphere_aux Behrend.exists_large_sphere_aux
 
 theorem exists_large_sphere (n d : ℕ) :
-    ∃ k, ((d ^ n : ) / (n * d ^ 2 : ) : ℝ) ≤ (sphere n d k).card : = by
+    ∃ k, ((d ^ n : ) / (n * d ^ 2 : ) : ℝ) ≤ (sphere n d k).card := by
   obtain ⟨k, -, hk⟩ := exists_large_sphere_aux n d
   refine ⟨k, ?_⟩
   obtain rfl | hn := n.eq_zero_or_pos
@@ -291,13 +291,13 @@ theorem exists_large_sphere (n d : ℕ) :
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere
 
-theorem bound_aux' (n d : ℕ) : ((d ^ n : ) / (n * d ^ 2 : ) : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) : =
+theorem bound_aux' (n d : ℕ) : ((d ^ n : ) / (n * d ^ 2 : ) : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) :=
   let ⟨_, h⟩ := exists_large_sphere n d
   h.trans <| cast_le.2 <| card_sphere_le_rothNumberNat _ _ _
 #align behrend.bound_aux' Behrend.bound_aux'
 
 theorem bound_aux (hd : d ≠ 0) (hn : 2 ≤ n) :
-    (d ^ (n - 2 : ) / n : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) : = by
+    (d ^ (n - 2 : ) / n : ℝ) ≤ rothNumberNat ((2 * d - 1) ^ n) := by
   convert bound_aux' n d using 1
   rw [cast_mul, cast_pow, mul_comm, ← div_div, pow_sub₀ _ _ hn, ← div_eq_mul_inv, cast_pow]
   rwa [cast_ne_zero]

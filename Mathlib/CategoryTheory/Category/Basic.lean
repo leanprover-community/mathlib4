@@ -131,7 +131,7 @@ macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
   first | sorry_if_sorry |
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
             (simp_config := { decide := true, zetaDelta := true })
-            (rule_sets : = [$(Lean.mkIdent `CategoryTheory):ident]))
+            (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--
 We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
@@ -141,7 +141,7 @@ macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
   first | sorry_if_sorry |
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
              (simp_config := { decide := true, zetaDelta := true })
-             (rule_sets : = [$(Lean.mkIdent `CategoryTheory):ident]))
+             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
 A variant of `aesop_cat` which does not fail when it is unable to solve the
 goal. Use this only for exploration! Nonterminal `aesop` is even worse than
@@ -151,7 +151,7 @@ macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_cla
   `(tactic|
     aesop $c* (config := { introsTransparency? := some .default, warnOnNonterminal := false })
               (simp_config := { decide := true, zetaDelta := true })
-              (rule_sets : = [$(Lean.mkIdent `CategoryTheory):ident]))
+              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 
 -- We turn on `ext` inside `aesop_cat`.

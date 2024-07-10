@@ -29,7 +29,7 @@ def fun₀.matchAlts : Parser :=
 
 As a result, if multiple match arms coincide, the last one takes precedence. -/
 @[term_parser]
-def fun₀ : = leading_parser : maxPrec
+def fun₀ := leading_parser : maxPrec
   ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/

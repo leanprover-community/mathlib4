@@ -151,14 +151,14 @@ def compileInductiveOnly (iv : InductiveVal) (warn := true) : MetaM Unit := do
           let rv' ← getConstInfoRec <| mkRecName iv.name
           if !iv.isRec && rv'.numMotives == 1 && iv.numCtors == 1 && iv.numIndices == 0 then
             let rule := rv.rules[0]!
-            let val : = .beta (replaceConst repl rule.rhs) xs[ : rv.getFirstIndexIdx]
+            let val := .beta (replaceConst repl rule.rhs) xs[ : rv.getFirstIndexIdx]
             let val := .beta val ⟨.map (major.proj iv.name) <| .range rule.nfields⟩
             mkLambdaFVars xs val
           else
             let val := .const (mkCasesOnName iv.name) (.param rv.levelParams.head! :: levels')
-            let val : = mkAppN val args[ : rv'.numParams]
-            let val : = .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx : ] body
-            let val : = mkAppN val xs[rv.getFirstIndexIdx : ]
+            let val := mkAppN val args[ : rv'.numParams]
+            let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx : ] body
+            let val := mkAppN val xs[rv.getFirstIndexIdx : ]
             let val := mkAppN val <| rv.rules.toArray.map fun rule =>
               .beta (replaceConst repl rule.rhs) xs[ : rv.getFirstIndexIdx]
             mkLambdaFVars xs val

@@ -172,7 +172,7 @@ instance : Neg (P ⟶ Q) := ⟨fun f => mk (-f.hom) (by
     map_smul, smul_neg])⟩
 
 @[simp]
-lemma neg_app (f : P ⟶ Q) (X : Cᵒᵖ) : (-f).app X = -f.app X : = rfl
+lemma neg_app (f : P ⟶ Q) (X : Cᵒᵖ) : (-f).app X = -f.app X := rfl
 
 instance : AddCommGroup (P ⟶ Q) where
   add_assoc := by intros; ext1; simp only [add_app, add_assoc]

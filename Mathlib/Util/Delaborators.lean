@@ -22,7 +22,7 @@ open Lean.PrettyPrinter.Delaborator
 also be written as `(x : α) → β x`. -/
 -- A direct copy of forall notation but with `Π`/`Pi` instead of `∀`/`Forall`.
 @[term_parser]
-def piNotation : = leading_parser : leadPrec
+def piNotation := leading_parser : leadPrec
   unicodeSymbol "Π" "PiType" >>
   many1 (ppSpace >> (binderIdent <|> bracketedBinder)) >>
   optType >> ", " >> termParser

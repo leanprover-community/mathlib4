@@ -1315,7 +1315,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
       ∀ n > 0, n ∈ s → (∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
   constructor
   · intro h
-    let G : = fun (n : ℕ) => (∑ i ∈ n.divisors, f i)
+    let G := fun (n : ℕ) => (∑ i ∈ n.divisors, f i)
     intro n hn hnP
     suffices ∑ d ∈ n.divisors, μ (n/d) • G d = f n from by
       rw [Nat.sum_divisorsAntidiagonal' (f := fun x y => μ x • g y), ← this, sum_congr rfl]
@@ -1325,7 +1325,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     apply sum_eq_iff_sum_smul_moebius_eq.mp _ n hn
     intro _ _; rfl
   · intro h
-    let F : = fun (n : ℕ) => ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd
+    let F := fun (n : ℕ) => ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd
     intro n hn hnP
     suffices ∑ d ∈ n.divisors, F d = g n from by
       rw [← this, sum_congr rfl]

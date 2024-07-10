@@ -179,7 +179,7 @@ elab_rules : tactic
         WittVector.sub_coeff, WittVector.nsmul_coeff, WittVector.zsmul_coeff, WittVector.pow_coeff]
       apply MvPolynomial.eval₂Hom_congr' (RingHom.ext_int _ _) _ rfl
       rintro ⟨b, k⟩ h -
-      replace h : = $e:term p _ h
+      replace h := $e:term p _ h
       simp only [Finset.mem_range, Finset.mem_product, true_and, Finset.mem_univ] at h
       have hk : k < n := by linarith
       fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,

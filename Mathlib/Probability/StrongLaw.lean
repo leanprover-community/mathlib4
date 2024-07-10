@@ -631,10 +631,10 @@ theorem strong_law_ae_real (X : ℕ → Ω → ℝ) (hint : Integrable (X 0))
   let neg : ℝ → ℝ := fun x => max (-x) 0
   have posm : Measurable pos := measurable_id'.max measurable_const
   have negm : Measurable neg := measurable_id'.neg.max measurable_const
-  have A : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (pos ∘ X i) ω) / n) atTop (𝓝 𝔼[pos ∘ X 0]) : =
+  have A : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (pos ∘ X i) ω) / n) atTop (𝓝 𝔼[pos ∘ X 0]) :=
     strong_law_aux7 _ hint.pos_part (fun i j hij => (hindep hij).comp posm posm)
       (fun i => (hident i).comp posm) fun i ω => le_max_right _ _
-  have B : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (neg ∘ X i) ω) / n) atTop (𝓝 𝔼[neg ∘ X 0]) : =
+  have B : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (neg ∘ X i) ω) / n) atTop (𝓝 𝔼[neg ∘ X 0]) :=
     strong_law_aux7 _ hint.neg_part (fun i j hij => (hindep hij).comp negm negm)
       (fun i => (hident i).comp negm) fun i ω => le_max_right _ _
   filter_upwards [A, B] with ω hωpos hωneg
@@ -804,7 +804,7 @@ theorem strong_law_ae
   let Y : ℕ → Ω → E := fun i ↦ (A i).1.mk (X i)
   have B : ∀ᵐ ω, ∀ n, X n ω = Y n ω :=
     ae_all_iff.2 (fun i ↦ AEStronglyMeasurable.ae_eq_mk (A i).1)
-  have Yint : Integrable (Y 0) : = Integrable.congr hint (AEStronglyMeasurable.ae_eq_mk (A 0).1)
+  have Yint : Integrable (Y 0) := Integrable.congr hint (AEStronglyMeasurable.ae_eq_mk (A 0).1)
   have C : ∀ᵐ ω, Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i ∈ range n, Y i ω)) atTop (𝓝 𝔼[Y 0]) := by
     apply strong_law_ae_of_measurable Y Yint ((A 0).1.stronglyMeasurable_mk)
       (fun i j hij ↦ IndepFun.ae_eq (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)

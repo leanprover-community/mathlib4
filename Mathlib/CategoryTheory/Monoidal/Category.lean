@@ -88,7 +88,7 @@ class MonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
   whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : tensorObj X₁ Y ⟶ tensorObj X₂ Y
   /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
   -- By default, it is defined in terms of whiskerings.
-  tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) : =
+  tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) :=
     whiskerRight f X₂ ≫ whiskerLeft Y₁ g
   /-- The tensor unity in the monoidal structure `𝟙_ C` -/
   tensorUnit : C

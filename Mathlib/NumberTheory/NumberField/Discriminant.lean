@@ -271,7 +271,7 @@ noncomputable abbrev rankOfDiscrBdd : ℕ :=
 
 /-- An upper bound on the Minkowski bound of a number field `K` with `|discr K| ≤ N`;
 see `minkowskiBound_lt_boundOfDiscBdd`. -/
-noncomputable abbrev boundOfDiscBdd : ℝ≥0 : = sqrt N * (2 : ℝ≥0) ^ rankOfDiscrBdd N + 1
+noncomputable abbrev boundOfDiscBdd : ℝ≥0 := sqrt N * (2 : ℝ≥0) ^ rankOfDiscrBdd N + 1
 
 variable {N} (hK : |discr K| ≤ N)
 

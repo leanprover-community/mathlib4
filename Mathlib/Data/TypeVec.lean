@@ -194,12 +194,12 @@ def Arrow.mpr {α β : TypeVec n} (h : α = β) : β ⟹ α
 #align typevec.arrow.mpr TypeVec.Arrow.mpr
 
 /-- decompose a vector into its prefix appended with its last element -/
-def toAppend1DropLast {α : TypeVec (n + 1)} : α ⟹ (drop α :: : last α) : =
+def toAppend1DropLast {α : TypeVec (n + 1)} : α ⟹ (drop α :: : last α) :=
   Arrow.mpr (append1_drop_last _)
 #align typevec.to_append1_drop_last TypeVec.toAppend1DropLast
 
 /-- stitch two bits of a vector back together -/
-def fromAppend1DropLast {α : TypeVec (n + 1)} : (drop α :: : last α) ⟹ α : =
+def fromAppend1DropLast {α : TypeVec (n + 1)} : (drop α :: : last α) ⟹ α :=
   Arrow.mp (append1_drop_last _)
 #align typevec.from_append1_drop_last TypeVec.fromAppend1DropLast
 
@@ -211,13 +211,13 @@ theorem lastFun_splitFun {α α' : TypeVec (n + 1)} (f : drop α ⟹ drop α') (
 
 @[simp]
 theorem dropFun_appendFun {α α' : TypeVec n} {β β' : Type*} (f : α ⟹ α') (g : β → β') :
-    dropFun (f :: : g) = f : =
+    dropFun (f :: : g) = f :=
   rfl
 #align typevec.drop_fun_append_fun TypeVec.dropFun_appendFun
 
 @[simp]
 theorem lastFun_appendFun {α α' : TypeVec n} {β β' : Type*} (f : α ⟹ α') (g : β → β') :
-    lastFun (f :: : g) = g : =
+    lastFun (f :: : g) = g :=
   rfl
 #align typevec.last_fun_append_fun TypeVec.lastFun_appendFun
 
@@ -253,13 +253,13 @@ theorem appendFun_comp  {α₀ α₁ α₂ : TypeVec n}
     {β₀ β₁ β₂ : Type*}
     (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂)
     (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
-    (f₁ ⊚ f₀ :: : g₁ ∘ g₀) = (f₁ :: : g₁) ⊚ (f₀ :: : g₀) : =
+    (f₁ ⊚ f₀ :: : g₁ ∘ g₀) = (f₁ :: : g₁) ⊚ (f₀ :: : g₀) :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp TypeVec.appendFun_comp
 
 theorem appendFun_comp' {α₀ α₁ α₂ : TypeVec n} {β₀ β₁ β₂ : Type*}
     (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂) (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
-    (f₁ :: : g₁) ⊚ (f₀ :: : g₀) = (f₁ ⊚ f₀ :: : g₁ ∘ g₀) : =
+    (f₁ :: : g₁) ⊚ (f₀ :: : g₀) = (f₁ ⊚ f₀ :: : g₁ ∘ g₀) :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp' TypeVec.appendFun_comp'
 
@@ -268,7 +268,7 @@ theorem nilFun_comp {α₀ : TypeVec 0} (f₀ : α₀ ⟹ Fin2.elim0) : nilFun �
 #align typevec.nil_fun_comp TypeVec.nilFun_comp
 
 theorem appendFun_comp_id {α : TypeVec n} {β₀ β₁ β₂ : Type u} (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
-    (@id _ α :: : g₁ ∘ g₀) = (id :: : g₁) ⊚ (id :: : g₀) : =
+    (@id _ α :: : g₁ ∘ g₀) = (id :: : g₁) ⊚ (id :: : g₀) :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_comp_id TypeVec.appendFun_comp_id
 
@@ -285,12 +285,12 @@ theorem lastFun_comp {α₀ α₁ α₂ : TypeVec (n + 1)} (f₀ : α₀ ⟹ α�
 #align typevec.last_fun_comp TypeVec.lastFun_comp
 
 theorem appendFun_aux {α α' : TypeVec n} {β β' : Type*} (f : (α :: : β) ⟹ (α' :: : β')) :
-    (dropFun f :: : lastFun f) = f : =
+    (dropFun f :: : lastFun f) = f :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_aux TypeVec.appendFun_aux
 
 theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
-    (@TypeVec.id n α :: : @_root_.id β) = TypeVec.id : =
+    (@TypeVec.id n α :: : @_root_.id β) = TypeVec.id :=
   eq_of_drop_last_eq rfl rfl
 #align typevec.append_fun_id_id TypeVec.appendFun_id_id
 
@@ -319,7 +319,7 @@ protected theorem casesNil_append1 {β : TypeVec 0 → Sort*} (f : β Fin2.elim0
 
 protected theorem casesCons_append1 (n : ℕ) {β : TypeVec (n + 1) → Sort*}
     (f : ∀ (t) (v : TypeVec n), β (v :: : t)) (v : TypeVec n) (α) :
-    TypeVec.casesCons n f (v :: : α) = f α v : =
+    TypeVec.casesCons n f (v :: : α) = f α v :=
   rfl
 #align typevec.cases_cons_append1 TypeVec.casesCons_append1
 
@@ -356,7 +356,7 @@ def typevecCasesNil₂ {β : Fin2.elim0 ⟹ Fin2.elim0 → Sort*} (f : β nilFun
 /-- specialized cases distinction for an arrow in the category of (n+1)-length type vectors -/
 def typevecCasesCons₂ (n : ℕ) (t t' : Type*) (v v' : TypeVec n)
     {β : (v :: : t) ⟹ (v' :: : t') → Sort*}
-    (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs :: : f)) : ∀ fs, β fs : = by
+    (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs :: : f)) : ∀ fs, β fs := by
   intro fs
   rw [← split_dropFun_lastFun fs]
   apply F
@@ -372,7 +372,7 @@ theorem typevecCasesCons₂_appendFun (n : ℕ) (t t' : Type*) (v v' : TypeVec n
     {β : (v :: : t) ⟹ (v' :: : t') → Sort*}
     (F : ∀ (f : t → t') (fs : v ⟹ v'), β (fs :: : f))
     (f fs) :
-    typevecCasesCons₂ n t t' v v' F (fs :: : f) = F f fs : =
+    typevecCasesCons₂ n t t' v v' F (fs :: : f) = F f fs :=
   rfl
 #align typevec.typevec_cases_cons₂_append_fun TypeVec.typevecCasesCons₂_appendFun
 
@@ -426,7 +426,7 @@ def repeatEq : ∀ {n} (α : TypeVec n), (α ⊗ α) ⟹ «repeat» _ Prop
 #align typevec.repeat_eq TypeVec.repeatEq
 
 theorem const_append1 {β γ} (x : γ) {n} (α : TypeVec n) :
-    TypeVec.const x (α :: : β) = appendFun (TypeVec.const x α) fun _ => x : = by
+    TypeVec.const x (α :: : β) = appendFun (TypeVec.const x α) fun _ => x := by
   ext i : 1; cases i <;> rfl
 #align typevec.const_append1 TypeVec.const_append1
 
@@ -444,8 +444,8 @@ theorem const_nil {β} (x : β) (α : TypeVec 0) : TypeVec.const x α = nilFun :
 
 @[typevec]
 theorem repeat_eq_append1 {β} {n} (α : TypeVec n) :
-    repeatEq (α :: : β) = splitFun (α : = (α ⊗ α) :: : _ )
-    (α' : = («repeat» n Prop) :: : _) (repeatEq α) (uncurry Eq) : = by
+    repeatEq (α :: : β) = splitFun (α := (α ⊗ α) :: : _ )
+    (α' := («repeat» n Prop) :: : _) (repeatEq α) (uncurry Eq) := by
   induction n <;> rfl
 #align typevec.repeat_eq_append1 TypeVec.repeat_eq_append1
 
@@ -455,13 +455,13 @@ theorem repeat_eq_nil (α : TypeVec 0) : repeatEq α = nilFun := by ext i; cases
 
 /-- predicate on a type vector to constrain only the last object -/
 def PredLast' (α : TypeVec n) {β : Type*} (p : β → Prop) :
-    (α :: : β) ⟹ «repeat» (n + 1) Prop : =
+    (α :: : β) ⟹ «repeat» (n + 1) Prop :=
   splitFun (TypeVec.const True α) p
 #align typevec.pred_last' TypeVec.PredLast'
 
 /-- predicate on the product of two type vectors to constrain only their last object -/
 def RelLast' (α : TypeVec n) {β : Type*} (p : β → β → Prop) :
-    (α :: : β) ⊗ (α :: : β) ⟹ «repeat» (n + 1) Prop : =
+    (α :: : β) ⊗ (α :: : β) ⟹ «repeat» (n + 1) Prop :=
   splitFun (repeatEq α) (uncurry p)
 #align typevec.rel_last' TypeVec.RelLast'
 
@@ -472,7 +472,7 @@ def Curry (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n)
 #align typevec.curry TypeVec.Curry
 
 instance Curry.inhabited (F : TypeVec.{u} (n + 1) → Type*) (α : Type u) (β : TypeVec.{u} n)
-    [I : Inhabited (F <| (β :: : α))] : Inhabited (Curry F α β) : =
+    [I : Inhabited (F <| (β :: : α))] : Inhabited (Curry F α β) :=
   I
 #align typevec.curry.inhabited TypeVec.Curry.inhabited
 
@@ -660,7 +660,7 @@ theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ �
 
 theorem append_prod_appendFun {n} {α α' β β' : TypeVec.{u} n} {φ φ' ψ ψ' : Type u}
     {f₀ : α ⟹ α'} {g₀ : β ⟹ β'} {f₁ : φ → φ'} {g₁ : ψ → ψ'} :
-    ((f₀ ⊗' g₀) :: : (_root_.Prod.map f₁ g₁)) = ((f₀ :: : f₁) ⊗' (g₀ :: : g₁)) : = by
+    ((f₀ ⊗' g₀) :: : (_root_.Prod.map f₁ g₁)) = ((f₀ :: : f₁) ⊗' (g₀ :: : g₁)) := by
   ext i a
   cases i
   · cases a

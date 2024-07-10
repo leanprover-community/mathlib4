@@ -571,7 +571,7 @@ theorem le_radius_cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ≥0) :
     exact mul_nonneg (inv_nonneg.2 Real.two_pi_pos.le)
       (intervalIntegral.integral_nonneg Real.two_pi_pos.le fun _ _ => norm_nonneg _)
   · rw [inv_pow]
-    have : (R : ℝ) ^ n ≠ 0 : = by norm_cast at hR ⊢
+    have : (R : ℝ) ^ n ≠ 0 := by norm_cast at hR ⊢
     rw [inv_mul_cancel_right₀ this]
 #align le_radius_cauchy_power_series le_radius_cauchyPowerSeries
 

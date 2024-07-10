@@ -757,22 +757,22 @@ theorem sub_inv_antitoneOn_Icc_left (ha : b < c) :
   · simp [hab, Set.Subsingleton.antitoneOn]
 
 theorem inv_antitoneOn_Ioi :
-    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) : = by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Ioi 0) := by
   convert sub_inv_antitoneOn_Ioi
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Iio :
-    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Iio 0) : = by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Iio 0) := by
   convert sub_inv_antitoneOn_Iio
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_right (ha : 0 < a) :
-    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) : = by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
   convert sub_inv_antitoneOn_Icc_right ha
   exact (sub_zero _).symm
 
 theorem inv_antitoneOn_Icc_left (hb : b < 0) :
-    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) : = by
+    AntitoneOn (fun x : α ↦ x⁻¹) (Set.Icc a b) := by
   convert sub_inv_antitoneOn_Icc_left hb
   exact (sub_zero _).symm
 

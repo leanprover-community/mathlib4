@@ -619,7 +619,7 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
 
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
-    span ((s.map fun (x : α) ↦ x ^ (n + 1)).toFinset : Set α) : = by
+    span ((s.map fun (x : α) ↦ x ^ (n + 1)).toFinset : Set α) := by
   induction' s using Multiset.induction_on with a s hs
   · simp
   simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,
@@ -668,7 +668,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   rintro _ hx
   simp_rw [Set.mem_image] at hx
   rcases hx with ⟨x, _, rfl⟩
-  have : span ({(x : α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) : = by
+  have : span ({(x : α) ^ (n + 1)} : Set α) ≤ span ((fun x : α => x ^ (n + 1)) '' s) := by
     rw [span_le, Set.singleton_subset_iff]
     exact subset_span ⟨x, x.prop, rfl⟩
   refine this ?_
