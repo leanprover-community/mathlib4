@@ -1,20 +1,13 @@
-Mathlib/Data/BinaryHeap.lean : line 7 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/ByteArray.lean : line 7 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Data/QPF/Multivariate/Basic.lean : line 75 : ERR_LIN : Line has more than 100 characters
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/UnionFind.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Int/Basic.lean : line 11 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Nat/Basic.lean : line 10 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Data/Nat/Lemmas.lean : line 13 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Logic.lean : line 15 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Init/Meta/WellFoundedTactics.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Exception.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/Expr/ReplaceRec.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Attributes.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Rename.lean : line 9 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ApplyWith.lean : line 9 : ERR_MOD : Module docstring missing, or too late
-Mathlib/Tactic/Basic.lean : line 13 : ERR_MOD : Module docstring missing, or too late
+Mathlib/Tactic/Basic.lean : line 14 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ByContra.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/ClearExcept.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Tactic/Coe.lean : line 8 : ERR_MOD : Module docstring missing, or too late
@@ -45,9 +38,7 @@ Mathlib/Analysis/Calculus/ContDiff/Defs.lean : line 1 : ERR_NUM_LIN : 1900 file 
 Mathlib/Analysis/Convolution.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1504 lines, try to split it up
 Mathlib/Analysis/InnerProductSpace/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2386 lines, try to split it up
 Mathlib/Analysis/Normed/Group/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1695 lines, try to split it up
-Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1542 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Biproducts.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2242 lines, try to split it up
-Mathlib/CategoryTheory/Limits/Shapes/Pullbacks.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2734 lines, try to split it up
 Mathlib/Combinatorics/SimpleGraph/Connectivity.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2726 lines, try to split it up
 Mathlib/Computability/Primrec.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1658 lines, try to split it up
 Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2071 lines, try to split it up
@@ -65,6 +56,7 @@ Mathlib/Data/Multiset/Basic.lean : line 1 : ERR_NUM_LIN : 3400 file contains 321
 Mathlib/Data/Nat/Defs.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1934 lines, try to split it up
 Mathlib/Data/Num/Lemmas.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1791 lines, try to split it up
 Mathlib/Data/Ordmap/Ordset.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1799 lines, try to split it up
+Mathlib/Data/QPF/Multivariate/Basic.lean : line 75 : ERR_LIN : Line has 131 characters, which is more than 100
 Mathlib/Data/Real/EReal.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1778 lines, try to split it up
 Mathlib/Data/Seq/WSeq.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1832 lines, try to split it up
 Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2674 lines, try to split it up
