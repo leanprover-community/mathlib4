@@ -48,13 +48,13 @@ namespace Representability
 variable {F f}
 variable (i j k : ι)
 
-noncomputable abbrev V := (hf i).representable.pullback (f j)
-noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).representable.fst (f j)
-noncomputable abbrev p₂ : V hf i j ⟶ X j := (hf i).representable.snd (f j)
+noncomputable abbrev V := (hf i).rep.pullback (f j)
+noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).rep.fst' (f j)
+noncomputable abbrev p₂ : V hf i j ⟶ X j := (hf i).rep.snd (f j)
 
 /-- TODO -/
 noncomputable abbrev symmetryIso : V hf i j ≅ V hf j i :=
-  ((hf i).representable.symmetryIso (hf j).representable)
+  ((hf i).rep.symmetryIso (hf j).rep)
 
 lemma isOpenImmersion_p₂ (i j : ι) :
     IsOpenImmersion (p₂ hf i j) := (hf i).property (f j)
@@ -73,15 +73,15 @@ lemma p₁_self_eq_p₂ (i : ι) :
     p₁ hf i i = p₂ hf i i := by
   have := mono_of_openImmersion_presheaf (hf i)
   apply yoneda.map_injective
-  rw [← cancel_mono (f i), (hf i).representable.condition (f i)]
+  rw [← cancel_mono (f i), (hf i).rep.condition (f i)]
 
 @[reassoc]
 lemma condition (i j : ι) : yoneda.map (p₁ hf i j) ≫ f i = yoneda.map (p₂ hf i j) ≫ f j :=
-  (hf i).representable.condition (f j)
+  (hf i).rep.condition (f j)
 
 lemma isIso_p₁_self (i : ι) :
     IsIso (p₁ hf i i) := by
-  refine ⟨(hf i).representable.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
+  refine ⟨(hf i).rep.lift' (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩
   ext1
   · simp
   · simp [p₁_self_eq_p₂ hf i]
@@ -91,15 +91,15 @@ lemma isIso_p₁_self (i : ι) :
 noncomputable def W := pullback (p₁ hf i j) (p₁ hf i k)
 
 @[reassoc]
-lemma condition₃ : (pullback.fst ≫ p₁ hf i j : W hf i j k ⟶ _ ) = pullback.snd ≫ p₁ hf i k := by
+lemma condition₃ : (pullback.fst _ _ ≫ p₁ hf i j : W hf i j k ⟶ _ ) = pullback.snd _ _ ≫ p₁ hf i k := by
   apply pullback.condition
 
 /-- TODO -/
-noncomputable def q₁ : W hf i j k ⟶ X i := pullback.fst ≫ p₁ hf i j
+noncomputable def q₁ : W hf i j k ⟶ X i := pullback.fst _ _ ≫ p₁ hf i j
 /-- TODO -/
-noncomputable def q₂ : W hf i j k ⟶ X j := pullback.fst ≫ p₂ hf i j
+noncomputable def q₂ : W hf i j k ⟶ X j := pullback.fst _ _ ≫ p₂ hf i j
 /-- TODO -/
-noncomputable def q₃ : W hf i j k ⟶ X k := pullback.snd ≫ p₂ hf i k
+noncomputable def q₃ : W hf i j k ⟶ X k := pullback.snd _ _ ≫ p₂ hf i k
 
 /-- TODO -/
 noncomputable def ιW : yoneda.obj (W hf i j k) ⟶ F.1 := yoneda.map (q₁ hf i j k) ≫ f i
@@ -119,7 +119,7 @@ lemma yoneda_map_q₃_f : yoneda.map (q₃ hf i j k) ≫ f k = ιW hf i j k := b
   rw [Functor.map_comp, assoc, ← condition hf i k, ← Functor.map_comp_assoc,
     ← condition₃, Functor.map_comp, assoc]
 
-lemma eq_q₁ : pullback.snd ≫ p₁ hf i k = q₁ hf i j k := by
+lemma eq_q₁ : pullback.snd _ _ ≫ p₁ hf i k = q₁ hf i j k := by
   apply yoneda.map_injective
   have := mono_of_openImmersion_presheaf (hf i)
   rw [← cancel_mono (f i), Functor.map_comp, assoc, yoneda_map_q₁_f,
@@ -148,8 +148,8 @@ variable {i j k}
 
 /-- TODO -/
 noncomputable def liftW : Z ⟶ W hf i j k :=
-  pullback.lift ((hf i).representable.lift' a b h₁)
-    ((hf i).representable.lift' a c h₂) (by simp)
+  pullback.lift ((hf i).rep.lift' a b h₁)
+    ((hf i).rep.lift' a c h₂) (by simp)
 
 @[reassoc (attr := simp)]
 lemma liftW_q₁ : liftW hf a b c h₁ h₂ ≫ q₁ hf i j k = a := by simp [liftW, q₁]
@@ -173,7 +173,7 @@ noncomputable def glueData : GlueData where
     have := isOpenImmersion_p₁ hf i j
     infer_instance
   f_id := isIso_p₁_self hf
-  t i j := (hf i).representable.symmetry (hf j).representable
+  t i j := (hf i).rep.symmetry (hf j).rep
   t_id i := by ext1 <;> simp [p₁_self_eq_p₂ hf i]
   t' i j k := liftW hf (q₂ _ _ _ _) (q₃ _ _ _ _) (q₁ _ _ _ _) (by simp) (by simp)
   t_fac i j k := by
@@ -226,7 +226,7 @@ instance : Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
 lemma injective {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
     (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :
     a ≫ toGlued hf i = b ≫ toGlued hf j := by
-  let φ : U ⟶ V hf i j := (hf i).representable.lift' a b h
+  let φ : U ⟶ V hf i j := (hf i).rep.lift' a b h
   have h₁ : φ ≫ p₁ hf i j = a := by simp [φ]
   have h₂ : φ ≫ p₂ hf i j = b := by simp [φ]
   rw [← h₁, ← h₂, assoc, assoc]
