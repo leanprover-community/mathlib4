@@ -435,6 +435,12 @@ lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := 
   · rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
 #align int.nat_abs_pow Int.natAbs_pow
 
+lemma pow_right_injective (h : 1 < a.natAbs) : ((a ^ ·) : ℕ → ℤ).Injective := by
+  refine (?_ : (natAbs ∘ (a ^ · : ℕ → ℤ)).Injective).of_comp
+  convert Nat.pow_right_injective h using 2
+  rw [Function.comp_apply, natAbs_pow]
+#align int.pow_right_injective Int.pow_right_injective
+
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
 #align int.nat_abs_sq Int.natAbs_sq
@@ -628,8 +634,8 @@ lemma ediv_dvd_ediv : ∀ {a b c : ℤ}, a ∣ b → b ∣ c → b / a ∣ c / a
   | a, _, _, ⟨b, rfl⟩, ⟨c, rfl⟩ =>
     if az : a = 0 then by simp [az]
     else by
-      rw [Int.mul_ediv_cancel_left _ az, Int.mul_assoc, Int.mul_ediv_cancel_left _ az];
-        apply Int.dvd_mul_right
+      rw [Int.mul_ediv_cancel_left _ az, Int.mul_assoc, Int.mul_ediv_cancel_left _ az]
+      apply Int.dvd_mul_right
 #align int.div_dvd_div Int.ediv_dvd_ediv
 
 /-- If `n > 0` then `m` is not divisible by `n` iff it is between `n * k` and `n * (k + 1)`

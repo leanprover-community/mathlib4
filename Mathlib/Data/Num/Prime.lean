@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Num.Lemmas
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.Ring.Divisibility.Basic
 
 #align_import data.num.prime from "leanprover-community/mathlib"@"58581d0fe523063f5651df0619be2bf65012a94a"
 

@@ -85,9 +85,11 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
     if h : p₀ ∈ U.unop then eqToHom (if_pos h) ≫ f ≫ eqToHom (if_pos h).symm
     else ((if_neg h).symm.ndrec terminalIsTerminal).from _
   naturality U V i := by
-    simp only [skyscraperPresheaf_map]; by_cases hV : p₀ ∈ V.unop
-    · have hU : p₀ ∈ U.unop := leOfHom i.unop hV; split_ifs
-      simp only [eqToHom_trans_assoc, Category.assoc, eqToHom_trans]
+    simp only [skyscraperPresheaf_map]
+    by_cases hV : p₀ ∈ V.unop
+    · have hU : p₀ ∈ U.unop := leOfHom i.unop hV
+      simp only [skyscraperPresheaf_obj, hU, hV, ↓reduceDIte, eqToHom_trans_assoc, Category.assoc,
+        eqToHom_trans]
     · apply ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext
 #align skyscraper_presheaf_functor.map' SkyscraperPresheafFunctor.map'
 
@@ -101,9 +103,7 @@ theorem SkyscraperPresheafFunctor.map'_comp {a b c : C} (f : a ⟶ b) (g : b ⟶
     SkyscraperPresheafFunctor.map' p₀ (f ≫ g) =
       SkyscraperPresheafFunctor.map' p₀ f ≫ SkyscraperPresheafFunctor.map' p₀ g := by
   ext U
-  -- Porting note: change `simp` to `rw`
-  rw [NatTrans.comp_app]
-  simp only [SkyscraperPresheafFunctor.map'_app]
+  simp only [SkyscraperPresheafFunctor.map'_app, NatTrans.comp_app]
   split_ifs with h <;> aesop_cat
 #align skyscraper_presheaf_functor.map'_comp SkyscraperPresheafFunctor.map'_comp
 
@@ -366,7 +366,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
   unit := StalkSkyscraperPresheafAdjunctionAuxs.unit _
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit _
   homEquiv_unit {𝓕} c α := by
-    ext U;
+    ext U
     -- Porting note: `NatTrans.comp_app` is not picked up by `simp`
     rw [NatTrans.comp_app]
     simp only [Equiv.coe_fn_mk, toSkyscraperPresheaf_app, SkyscraperPresheafFunctor.map'_app,

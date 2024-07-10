@@ -175,14 +175,14 @@ theorem sublists_cons (a : α) (l : List α) :
 @[simp]
 theorem sublists_concat (l : List α) (a : α) :
     sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
-  rw [sublists_append, sublists_singleton, bind_eq_bind, cons_bind, cons_bind, nil_bind,
+  rw [sublists_append, sublists_singleton, bind_eq_bind, bind_cons, bind_cons, bind_nil,
      map_id'' append_nil, append_nil]
 #align list.sublists_concat List.sublists_concat
 
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
   induction' l with hd tl ih <;> [rfl;
     simp only [reverse_cons, sublists_append, sublists'_cons, map_append, ih, sublists_singleton,
-      map_eq_map, bind_eq_bind, map_map, cons_bind, append_nil, nil_bind, (· ∘ ·)]]
+      map_eq_map, bind_eq_bind, map_map, bind_cons, append_nil, bind_nil, (· ∘ ·)]]
 #align list.sublists_reverse List.sublists_reverse
 
 theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists' (reverse l)) := by
@@ -428,7 +428,7 @@ theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
 theorem sublists_cons_perm_append (a : α) (l : List α) :
     sublists (a :: l) ~ sublists l ++ map (cons a) (sublists l) :=
   Perm.trans (sublists_perm_sublists' _) <| by
-  rw [sublists'_cons];
+  rw [sublists'_cons]
   exact Perm.append (sublists_perm_sublists' _).symm (Perm.map _ (sublists_perm_sublists' _).symm)
 #align list.sublists_cons_perm_append List.sublists_cons_perm_append
 
@@ -470,16 +470,16 @@ theorem range_bind_sublistsLen_perm (l : List α) :
     ((List.range (l.length + 1)).bind fun n => sublistsLen n l) ~ sublists' l := by
   induction' l with h tl l_ih
   · simp [range_succ]
-  · simp_rw [range_succ_eq_map, length, cons_bind, map_bind, sublistsLen_succ_cons, sublists'_cons,
+  · simp_rw [range_succ_eq_map, length, bind_cons, bind_map, sublistsLen_succ_cons, sublists'_cons,
       List.sublistsLen_zero, List.singleton_append]
     refine ((bind_append_perm (range (tl.length + 1)) _ _).symm.cons _).trans ?_
-    simp_rw [← List.bind_map, ← cons_append]
+    simp_rw [← List.map_bind, ← cons_append]
     rw [← List.singleton_append, ← List.sublistsLen_zero tl]
     refine Perm.append ?_ (l_ih.map _)
     rw [List.range_succ, append_bind, bind_singleton,
-      sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil, ←
-      List.map_bind (fun n => sublistsLen n tl) Nat.succ, ←
-      cons_bind 0 _ fun n => sublistsLen n tl, ← range_succ_eq_map]
+      sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil,
+      ← List.bind_map Nat.succ fun n => sublistsLen n tl,
+      ← bind_cons 0 _ fun n => sublistsLen n tl, ← range_succ_eq_map]
     exact l_ih
 #align list.range_bind_sublists_len_perm List.range_bind_sublistsLen_perm
 

@@ -67,7 +67,12 @@ end Module
 
 namespace FormalMultilinearSeries
 
-@[simp]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+-/
+@[simp, nolint simpNF]
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
 @[simp]
