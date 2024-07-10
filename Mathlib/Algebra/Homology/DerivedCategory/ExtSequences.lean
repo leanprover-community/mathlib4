@@ -20,51 +20,6 @@ and `X : C`.
 
 universe w' w v u
 
-namespace Function
-
-namespace Exact
-
-variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [AddGroup X₁] [AddGroup X₂] [AddGroup X₃]
-  [AddGroup Y₁] [AddGroup Y₂] [AddGroup Y₃]
-  (f : X₁ →+ X₂) (g : X₂ →+ X₃) (f' : Y₁ →+ Y₂) (g' : Y₂ →+ Y₃)
-  (e₁ : X₁ ≃+ Y₁) (e₂ : X₂ ≃+ Y₂) (e₃ : X₃ ≃+ Y₃)
-  (comm₁₂ : f'.comp e₁.toAddMonoidHom = e₂.toAddMonoidHom.comp f)
-  (comm₂₃ : g'.comp e₂.toAddMonoidHom = e₃.toAddMonoidHom.comp g)
-
-lemma of_ladder_addEquiv (hfg : Exact f g) : Exact f' g' := by
-  have h₁₂ := DFunLike.congr_fun comm₁₂
-  have h₂₃ := DFunLike.congr_fun comm₂₃
-  dsimp at h₁₂ h₂₃
-  apply of_comp_eq_zero_of_ker_in_range
-  · ext y₁
-    obtain ⟨x₁, rfl⟩ := e₁.surjective y₁
-    dsimp
-    rw [h₁₂, h₂₃, hfg.apply_apply_eq_zero, map_zero]
-  · intro y₂ hx₂
-    obtain ⟨x₂, rfl⟩ := e₂.surjective y₂
-    obtain ⟨x₁, rfl⟩ := (hfg x₂).1 (e₃.injective (by rw [← h₂₃, hx₂, map_zero]))
-    exact ⟨e₁ x₁, by rw [h₁₂]⟩
-
-lemma of_ladder_addEquiv' (hfg' : Exact f' g') : Exact f g := by
-  refine of_ladder_addEquiv f' g' f g e₁.symm e₂.symm e₃.symm ?_ ?_ hfg'
-  · ext y₁
-    obtain ⟨x₁, rfl⟩ := e₁.surjective y₁
-    apply e₂.injective
-    simpa using DFunLike.congr_fun comm₁₂.symm x₁
-  · ext y₂
-    obtain ⟨x₂, rfl⟩ := e₂.surjective y₂
-    apply e₃.injective
-    simpa using DFunLike.congr_fun comm₂₃.symm x₂
-
-lemma iff_of_ladder_addEquiv : Exact f g ↔ Exact f' g' := by
-  constructor
-  · exact of_ladder_addEquiv f g f' g' e₁ e₂ e₃ comm₁₂ comm₂₃
-  · exact of_ladder_addEquiv' f g f' g' e₁ e₂ e₃ comm₁₂ comm₂₃
-
-end Exact
-
-end Function
-
 namespace CategoryTheory
 
 namespace ShortComplex
@@ -125,9 +80,9 @@ lemma covariant_sequence_exact₂' (n : ℕ) :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₂ _
     (hS.singleTriangle_distinguished) n
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
+  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
     (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv)
-     (hfg' := this)
+     (H := this)
   all_goals ext x; apply hom_comp_singleFunctor_map_shift (C := C)
 
 section
@@ -146,8 +101,8 @@ lemma covariant_sequence_exact₃' :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₃ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
-    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (hfg' := this)
+  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
   · ext x; apply hom_comp_singleFunctor_map_shift (C := C)
   · ext x
     exact preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply hS x h
@@ -164,8 +119,8 @@ lemma covariant_sequence_exact₁' :
   have := (preadditiveCoyoneda.obj (op ((singleFunctor C 0).obj X))).homologySequence_exact₁ _
     (hS.singleTriangle_distinguished) n₀ n₁ (by omega)
   rw [ShortComplex.ab_exact_iff_function_exact] at this ⊢
-  apply Function.Exact.of_ladder_addEquiv' (e₁ := Ext.homAddEquiv)
-    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (hfg' := this)
+  apply Function.Exact.of_ladder_addEquiv_of_exact' (e₁ := Ext.homAddEquiv)
+    (e₂ := Ext.homAddEquiv) (e₃ := Ext.homAddEquiv) (H := this)
   · ext x
     exact preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply hS x h
   · ext x; apply hom_comp_singleFunctor_map_shift (C := C)
