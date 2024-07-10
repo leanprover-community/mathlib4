@@ -65,6 +65,7 @@ protected theorem Connected.exists_walk_length_eq_edist  (hconn : G.Connected) (
 theorem edist_le (p : G.Walk u v) :
     G.edist u v ≤ p.length :=
   sInf_le ⟨p, rfl⟩
+protected alias Walk.edist_le := edist_le
 
 @[simp]
 theorem edist_eq_zero_iff :
@@ -74,15 +75,16 @@ theorem edist_eq_zero_iff :
 theorem edist_self : edist G v v = 0 :=
   edist_eq_zero_iff.mpr rfl
 
-theorem pos_edist_of_ne (hne : u ≠ v) :
+theorem edist_pos_of_ne (hne : u ≠ v) :
     0 < G.edist u v :=
   pos_iff_ne_zero.mpr <| edist_eq_zero_iff.ne.mpr hne
+protected alias Ne.edist_pos := edist_pos_of_ne
 
 lemma edist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
     G.edist u v = ⊤ := by
   simp [edist, not_reachable_iff_isEmpty_walk.mp h]
 
-theorem Reachable.of_edist_ne_top (h : G.edist u v ≠ ⊤) :
+theorem reachable_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
     G.Reachable u v :=
   not_not.mp <| edist_eq_top_of_not_reachable.mt h
 
@@ -100,16 +102,17 @@ theorem edist_comm : G.edist u v = G.edist v u := by
 
 lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
-  (Reachable.of_edist_ne_top h).exists_walk_length_eq_edist
+  (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
 
 /--
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
 -/
+@[simp]
 theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
-  · exact le_antisymm (edist_le h.toWalk) (ENat.one_le_iff_pos.mpr <| pos_edist_of_ne h.ne)
+  · exact le_antisymm (edist_le h.toWalk) (ENat.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
 end edist
 
@@ -188,10 +191,7 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
 #align simple_graph.connected.dist_triangle SimpleGraph.Connected.dist_triangle
 
 theorem dist_comm : G.dist u v = G.dist v u := by
-  by_cases h : G.Reachable u v
-  · rw [dist, edist_comm, ← dist]
-  · have h' : ¬G.Reachable v u := fun h' => absurd h'.symm h
-    simp [h, h', dist_eq_zero_of_not_reachable]
+  rw [dist, dist, edist_comm]
 #align simple_graph.dist_comm SimpleGraph.dist_comm
 
 lemma dist_ne_zero_iff_ne_and_reachable : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
@@ -205,7 +205,10 @@ lemma exists_walk_of_dist_ne_zero (h : G.dist u v ≠ 0) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
   (Reachable.of_dist_ne_zero h).exists_walk_length_eq_dist
 
-/- The distance between vertices is equal to `1` if and only if these vertices are adjacent. -/
+/--
+The distance between vertices is equal to `1` if and only if these vertices are adjacent.
+-/
+@[simp]
 theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
   rw [dist, ENat.toNat_eq_iff, ENat.coe_one, edist_eq_one_iff_adj]
   decide
