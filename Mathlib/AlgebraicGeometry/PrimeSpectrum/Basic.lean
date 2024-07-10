@@ -7,6 +7,9 @@ import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.Topology.Irreducible
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sober
+import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Localization.Away.Basic
 
 #align_import algebraic_geometry.prime_spectrum.basic from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 

@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Ideal.MinimalPrime
-import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.Noetherian
 
 /-!
 # Prime spectrum of a commutative (semi)ring as a type
