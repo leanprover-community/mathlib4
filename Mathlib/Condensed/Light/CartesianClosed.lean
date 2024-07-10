@@ -11,7 +11,6 @@ import Mathlib.CategoryTheory.Sites.CartesianClosed
 # Light condensed sets form a cartesian closed category
 -/
 
-
 universe u
 
 noncomputable section
