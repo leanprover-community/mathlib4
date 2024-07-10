@@ -412,7 +412,7 @@ theorem exists_Ico_subset_of_mem_nhds' {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
 
 theorem exists_Ico_subset_of_mem_nhds {a : α} {s : Set α} (hs : s ∈ 𝓝 a) (h : ∃ u, a < u) :
     ∃ u, a < u ∧ Ico a u ⊆ s :=
-  let ⟨_l', hl'⟩ := h;
+  let ⟨_l', hl'⟩ := h
   let ⟨l, hl⟩ := exists_Ico_subset_of_mem_nhds' hs hl'
   ⟨l, hl.1.1, hl.2⟩
 #align exists_Ico_subset_of_mem_nhds exists_Ico_subset_of_mem_nhds

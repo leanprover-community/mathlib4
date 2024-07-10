@@ -1302,7 +1302,7 @@ theorem neg_ofLists (L R : List PGame) :
 
 theorem isOption_neg {x y : PGame} : IsOption x (-y) ↔ IsOption (-x) y := by
   rw [isOption_iff, isOption_iff, or_comm]
-  cases y;
+  cases y
   apply or_congr <;>
     · apply exists_congr
       intro

@@ -173,8 +173,8 @@ def pred (o : Ordinal) : Ordinal :=
 
 @[simp]
 theorem pred_succ (o) : pred (succ o) = o := by
-  have h : ∃ a, succ o = succ a := ⟨_, rfl⟩;
-    simpa only [pred, dif_pos h] using (succ_injective <| Classical.choose_spec h).symm
+  have h : ∃ a, succ o = succ a := ⟨_, rfl⟩
+  simpa only [pred, dif_pos h] using (succ_injective <| Classical.choose_spec h).symm
 #align ordinal.pred_succ Ordinal.pred_succ
 
 theorem pred_le_self (o) : pred o ≤ o :=
@@ -1894,8 +1894,8 @@ theorem blsub_type {α : Type u} (r : α → α → Prop) [IsWellOrder α r]
     (f : ∀ a < type r, Ordinal.{max u v}) :
     blsub.{_, v} (type r) f = lsub.{_, v} fun a => f (typein r a) (typein_lt_type _ _) :=
   eq_of_forall_ge_iff fun o => by
-    rw [blsub_le_iff, lsub_le_iff];
-      exact ⟨fun H b => H _ _, fun H i h => by simpa only [typein_enum] using H (enum r i h)⟩
+    rw [blsub_le_iff, lsub_le_iff]
+    exact ⟨fun H b => H _ _, fun H i h => by simpa only [typein_enum] using H (enum r i h)⟩
 #align ordinal.blsub_type Ordinal.blsub_type
 
 theorem blsub_const {o : Ordinal} (ho : o ≠ 0) (a : Ordinal) :

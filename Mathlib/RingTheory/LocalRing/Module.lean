@@ -71,7 +71,7 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
       (Submodule.mkQ (𝔪 • ⊤ : Submodule R M))).restrictScalars R)
     have : f.comp (TensorProduct.mk R k M 1) = Submodule.mkQ (𝔪 • ⊤) := by ext; simp [f]
     have hf : Function.Surjective f := by
-      intro x; obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x;
+      intro x; obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
       rw [← this, LinearMap.comp_apply]; exact ⟨_, rfl⟩
     apply_fun Submodule.map f at hN
     rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top.mpr hf,

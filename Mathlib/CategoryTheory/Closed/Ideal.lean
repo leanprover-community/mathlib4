@@ -150,7 +150,7 @@ itself cartesian closed.
 def cartesianClosedOfReflective : CartesianClosed D :=
   { __ := monoidalOfHasFiniteProducts D -- Porting note (#10754): added this instance
     closed := fun B =>
-      { rightAdj :=i ⋙ exp (i.obj B) ⋙ reflector i
+      { rightAdj := i ⋙ exp (i.obj B) ⋙ reflector i
         adj := by
           apply (exp.adjunction (i.obj B)).restrictFullyFaithful i.fullyFaithfulOfReflective
             i.fullyFaithfulOfReflective

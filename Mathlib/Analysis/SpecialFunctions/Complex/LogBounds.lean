@@ -17,7 +17,7 @@ To this end, we derive the representation of `log (1+z)` as the integral of `1/(
 over the unit interval (`Complex.log_eq_integral`) and introduce notation
 `Complex.logTaylor n` for the Taylor polynomial up to degree `n-1`.
 
-### TODO
+## TODO
 
 Refactor using general Taylor series theory, once this exists in Mathlib.
 -/
