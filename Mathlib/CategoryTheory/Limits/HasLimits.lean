@@ -83,7 +83,7 @@ structure LimitCone (F : J ⥤ C) where
 #align category_theory.limits.limit_cone.is_limit CategoryTheory.Limits.LimitCone.isLimit
 
 /-- `HasLimit F` represents the mere existence of a limit for `F`. -/
-class HasLimit (F : J ⥤ C) : Prop where mk' ::
+class HasLimit (F : J ⥤ C) : Prop where mk' : :
   /-- There is some limit cone for `F` -/
   exists_limit : Nonempty (LimitCone F)
 #align category_theory.limits.has_limit CategoryTheory.Limits.HasLimit
@@ -669,7 +669,7 @@ structure ColimitCocone (F : J ⥤ C) where
 #align category_theory.limits.colimit_cocone.is_colimit CategoryTheory.Limits.ColimitCocone.isColimit
 
 /-- `HasColimit F` represents the mere existence of a colimit for `F`. -/
-class HasColimit (F : J ⥤ C) : Prop where mk' ::
+class HasColimit (F : J ⥤ C) : Prop where mk' : :
   /-- There exists a colimit for `F` -/
   exists_colimit : Nonempty (ColimitCocone F)
 #align category_theory.limits.has_colimit CategoryTheory.Limits.HasColimit

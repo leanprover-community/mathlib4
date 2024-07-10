@@ -1568,7 +1568,7 @@ theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = 
 #align list.bind_congr List.bind_congr
 
 theorem infix_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
-    f a <:+: as.bind f :=
+    f a < : + : as.bind f : =
   List.infix_of_mem_join (List.mem_map_of_mem f h)
 
 @[simp]

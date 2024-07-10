@@ -170,14 +170,14 @@ def Cofix.corec'₁ {α : TypeVec n} {β : Type u} (g : ∀ {X}, (β → X) → 
 value instead of making a recursive call -/
 def Cofix.corec' {α : TypeVec n} {β : Type u} (g : β → F (α.append1 (Cofix F α ⊕ β))) (x : β) :
     Cofix F α :=
-  let f : (α ::: Cofix F α) ⟹ (α ::: (Cofix F α ⊕ β)) := id ::: Sum.inl
+  let f : (α : : : Cofix F α) ⟹ (α : : : (Cofix F α ⊕ β)) : = id : : : Sum.inl
   Cofix.corec (Sum.elim (MvFunctor.map f ∘ Cofix.dest) g) (Sum.inr x : Cofix F α ⊕ β)
 #align mvqpf.cofix.corec' MvQPF.Cofix.corec'
 
 /-- Corecursor for `Cofix F`. The shape allows recursive calls to
 look like recursive calls. -/
 def Cofix.corec₁ {α : TypeVec n} {β : Type u}
-    (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α ::: X)) (x : β) : Cofix F α :=
+    (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α : : : X)) (x : β) : Cofix F α : =
   Cofix.corec' (fun x => g Sum.inl Sum.inr x) x
 #align mvqpf.cofix.corec₁ MvQPF.Cofix.corec₁
 
@@ -363,7 +363,7 @@ theorem Cofix.ext {α : TypeVec n} (x y : Cofix F α) (h : x.dest = y.dest) : x 
   rw [← Cofix.mk_dest x, h, Cofix.mk_dest]
 #align mvqpf.cofix.ext MvQPF.Cofix.ext
 
-theorem Cofix.ext_mk {α : TypeVec n} (x y : F (α ::: Cofix F α)) (h : Cofix.mk x = Cofix.mk y) :
+theorem Cofix.ext_mk {α : TypeVec n} (x y : F (α : : : Cofix F α)) (h : Cofix.mk x = Cofix.mk y) :
     x = y := by rw [← Cofix.dest_mk x, h, Cofix.dest_mk]
 #align mvqpf.cofix.ext_mk MvQPF.Cofix.ext_mk
 
@@ -389,17 +389,17 @@ open Function
 
 theorem liftR_map_last [lawful : LawfulMvFunctor F]
     {α : TypeVec n} {ι ι'} (R : ι' → ι' → Prop)
-    (x : F (α ::: ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
-    LiftR' (RelLast' _ R) ((id ::: f) <$$> x) ((id ::: g) <$$> x) :=
+    (x : F (α : : : ι)) (f g : ι → ι') (hh : ∀ x : ι, R (f x) (g x)) :
+    LiftR' (RelLast' _ R) ((id : : : f) <$$> x) ((id : : : g) <$$> x) : =
   let h : ι → { x : ι' × ι' // uncurry R x } := fun x => ⟨(f x, g x), hh x⟩
-  let b : (α ::: ι) ⟹ _ := @diagSub n α ::: h
+  let b : (α : : : ι) ⟹ _ : = @diagSub n α : : : h
   let c :
-    (Subtype_ α.repeatEq ::: { x // uncurry R x }) ⟹
-      ((fun i : Fin2 n => { x // ofRepeat (α.RelLast' R i.fs x) }) ::: Subtype (uncurry R)) :=
-    ofSubtype _ ::: id
+    (Subtype_ α.repeatEq : : : { x // uncurry R x }) ⟹
+      ((fun i : Fin2 n => { x // ofRepeat (α.RelLast' R i.fs x) }) : : : Subtype (uncurry R)) : =
+    ofSubtype _ : : : id
   have hh :
     subtypeVal _ ⊚ toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b =
-      ((id ::: f) ⊗' (id ::: g)) ⊚ prod.diag := by
+      ((id : : : f) ⊗' (id : : : g)) ⊚ prod.diag : = by
     dsimp [b]
     apply eq_of_drop_last_eq
     · dsimp
@@ -419,15 +419,15 @@ theorem liftR_map_last [lawful : LawfulMvFunctor F]
   liftR_map _ _ _ _ (toSubtype _ ⊚ fromAppend1DropLast ⊚ c ⊚ b) hh
 #align mvqpf.liftr_map_last MvQPF.liftR_map_last
 
-theorem liftR_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α ::: ι))
-    (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id ::: f) <$$> x) x := by
+theorem liftR_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι → Prop) (x : F (α : : : ι))
+    (f : ι → ι) (hh : ∀ x : ι, R (f x) x) : LiftR' (RelLast' _ R) ((id : : : f) <$$> x) x : = by
   have := liftR_map_last R x f id hh
   rwa [appendFun_id_id, MvFunctor.id_map] at this
 #align mvqpf.liftr_map_last' MvQPF.liftR_map_last'
 
 end LiftRMap
 
-variable {F: TypeVec (n + 1) → Type u} [q : MvQPF F]
+variable {F : TypeVec (n + 1) → Type u} [q : MvQPF F]
 
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
@@ -455,13 +455,13 @@ open Lean Expr Elab Term Tactic Meta Qq
 syntax "mv_bisim" (ppSpace colGt term) (" with" (ppSpace colGt binderIdent)+)? : tactic
 
 elab_rules : tactic
-  | `(tactic| mv_bisim $e $[ with $ids:binderIdent*]?) => do
+  | `(tactic| mv_bisim $e $[ with $ids : binderIdent*]?) => do
     let ids : TSyntaxArray `Lean.binderIdent := ids.getD #[]
     let idsn (n : ℕ) : Name :=
       match ids[n]? with
       | some s =>
         match s with
-        | `(binderIdent| $n:ident) => n.getId
+        | `(binderIdent| $n : ident) => n.getId
         | `(binderIdent| _) => `_
         | _ => unreachable!
       | none => `_
@@ -469,7 +469,7 @@ elab_rules : tactic
       match ids[n]? with
       | some s =>
         match s with
-        | `(binderIdent| $n:ident) => `(rcasesPat| $n)
+        | `(binderIdent| $n : ident) => `(rcasesPat| $n)
         | `(binderIdent| _%$b) => `(rcasesPat| _%$b)
         | _ => unreachable!
       | none => `(rcasesPat| _)
@@ -514,8 +514,8 @@ open MvFunctor (LiftP LiftR)
 
 variable {n : ℕ} {F : TypeVec.{u} (n + 1) → Type u} [q : MvQPF F]
 
-theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F (α ::: X)) :
-    Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id ::: f) ∘ g) (f x₀) := by
+theorem corec_roll {α : TypeVec n} {X Y} {x₀ : X} (f : X → Y) (g : Y → F (α : : : X)) :
+    Cofix.corec (g ∘ f) x₀ = Cofix.corec (MvFunctor.map (id : : : f) ∘ g) (f x₀) : = by
   mv_bisim x₀ with R a b x Ha Hb
   rw [Ha, Hb, Cofix.dest_corec, Cofix.dest_corec, Function.comp_apply, Function.comp_apply]
   rw [MvFunctor.map_map, ← appendFun_comp_id]
@@ -545,7 +545,7 @@ theorem Cofix.dest_corec' {α : TypeVec.{u} n} {β : Type u}
 theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
     (g : ∀ {X}, (Cofix F α → X) → (β → X) → β → F (α.append1 X)) (x : β)
     (h : ∀ (X Y) (f : Cofix F α → X) (f' : β → X) (k : X → Y),
-      g (k ∘ f) (k ∘ f') x = (id ::: k) <$$> g f f' x) :
+      g (k ∘ f) (k ∘ f') x = (id : : : k) <$$> g f f' x) :
     Cofix.dest (Cofix.corec₁ (@g) x) = g id (Cofix.corec₁ @g) x := by
   rw [Cofix.corec₁, Cofix.dest_corec', ← h]; rfl
 #align mvqpf.cofix.dest_corec₁ MvQPF.Cofix.dest_corec₁

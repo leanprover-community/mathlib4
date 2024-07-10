@@ -71,7 +71,7 @@ attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
-  `(attr|aesop safe 50 apply (rule_sets := [$(Lean.mkIdent `Restrict):ident]))
+  `(attr|aesop safe 50 apply (rule_sets : = [$(Lean.mkIdent `Restrict) : ident]))
 
 attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
   le_sup_left le_sup_right
@@ -83,7 +83,7 @@ macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
     (config := { terminal := true
                  assumptionTransparency := .reducible
                  enableSimp := false })
-    (rule_sets := [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+    (rule_sets : = [-default, -builtin, $(Lean.mkIdent `Restrict) : ident]))
 
 /-- `restrict_tac?` passes along `Try this` from `aesop` -/
 macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
@@ -93,7 +93,7 @@ macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
                  assumptionTransparency := .reducible
                  enableSimp := false
                  maxRuleApplications := 300 })
-  (rule_sets := [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+  (rule_sets : = [-default, -builtin, $(Lean.mkIdent `Restrict) : ident]))
 
 attribute[aesop 10% (rule_sets := [Restrict])] le_trans
 attribute[aesop safe destruct (rule_sets := [Restrict])] Eq.trans_le

@@ -530,7 +530,7 @@ theorem kahler_neg_orientation (x y : E) : (-o).kahler x y = conj (o.kahler x y)
 #align orientation.kahler_neg_orientation Orientation.kahler_neg_orientation
 
 theorem kahler_mul (a x y : E) : o.kahler x a * o.kahler a y = ‖a‖ ^ 2 * o.kahler x y := by
-  trans ((‖a‖ ^ 2 :) : ℂ) * o.kahler x y
+  trans ((‖a‖ ^ 2 : ) : ℂ) * o.kahler x y
   · apply Complex.ext
     · simp only [o.kahler_apply_apply, Complex.add_im, Complex.add_re, Complex.I_im, Complex.I_re,
         Complex.mul_im, Complex.mul_re, Complex.ofReal_im, Complex.ofReal_re, Complex.real_smul]

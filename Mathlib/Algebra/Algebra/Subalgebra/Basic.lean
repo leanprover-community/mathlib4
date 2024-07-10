@@ -299,7 +299,7 @@ theorem coe_toSubmodule (S : Subalgebra R A) : (toSubmodule S : Set A) = S := rf
 #align subalgebra.coe_to_submodule Subalgebra.coe_toSubmodule
 
 theorem toSubmodule_injective : Function.Injective (toSubmodule : Subalgebra R A → Submodule R A) :=
-  fun _S₁ _S₂ h => SetLike.ext (SetLike.ext_iff.mp h :)
+  fun _S₁ _S₂ h => SetLike.ext (SetLike.ext_iff.mp h : )
 
 section
 

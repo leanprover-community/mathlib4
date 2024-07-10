@@ -1,0 +1,838 @@
+about to lint all files in directory Tactic
+Mathlib/Tactic/Abel.lean:339 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     return (e₂, ← iapp `Mathlib.Tactic.Abel.subst_into_neg #[e, e₁, e₂, p₁, p₂])
+
+Mathlib/Tactic/AdaptationNote.lean:43 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   Elab.Command.liftTermElabM <| reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
+
+Mathlib/Tactic/AdaptationNote.lean:47 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
+
+Mathlib/Tactic/ApplyFun.lean:31 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       let (eq', gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+
+Mathlib/Tactic/ApplyFun.lean:129 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let (pf, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+
+Mathlib/Tactic/ApplyFun.lean:151 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let ginj ← mkFreshExprSyntheticOpaqueMVar (← mkFreshTypeMVar) (appendTag (← g.getTag) `inj)
+
+Mathlib/Tactic/ApplyFun.lean:154 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let (_, gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+
+Mathlib/Tactic/ArithMult.lean:23 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   `(attr|aesop safe apply (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident]))
+
+Mathlib/Tactic/ArithMult.lean:35 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   (rule_sets := [$(Lean.mkIdent `IsMultiplicative):ident])})
+
+Mathlib/Tactic/Basic.lean:114 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   mvarId.checkNotAssigned `clear_value
+
+Mathlib/Tactic/Basic.lean:124 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         throwTacticEx `clear_value mvarId
+
+Mathlib/Tactic/ByContra.lean:37 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     `(tactic| by_contra! $(mkIdentFrom (under.getD tk) `this (canonical := true)):ident $[: $ty]?)
+
+Mathlib/Tactic/CC/Datatypes.lean:56 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     withLocalDeclD `x A fun x => do
+
+Mathlib/Tactic/CC/Datatypes.lean:58 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       withLocalDeclD `h hType fun h =>
+
+Mathlib/Tactic/CategoryTheory/BicategoryCoherence.lean:250 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   throwTacticEx `bicategorical_coherence g msg
+
+Mathlib/Tactic/CategoryTheory/Coherence.lean:106 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def exception (g : MVarId) (msg : MessageData) : MetaM α := throwTacticEx `monoidal_coherence g msg
+
+Mathlib/Tactic/CategoryTheory/Elementwise.lean:128 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       withLocalDecl `inst .instImplicit cty fun cfvar => do
+
+Mathlib/Tactic/CategoryTheory/Elementwise.lean:186 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `elementwise
+
+Mathlib/Tactic/CategoryTheory/Elementwise.lean:196 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         let w := mkUnusedName levels `w
+
+Mathlib/Tactic/CategoryTheory/Reassoc.lean:55 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `reassoc
+
+Mathlib/Tactic/Choose.lean:66 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   if orig = `_ then mkFreshUserName base else pure orig
+
+Mathlib/Tactic/Choose.lean:92 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         let data ← mkFreshNameFrom data ((← p.getBinderName).getD `h)
+
+Mathlib/Tactic/Choose.lean:132 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         let data ← mkFreshNameFrom data `h
+
+Mathlib/Tactic/Choose.lean:148 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let n := if let `(binderIdent| $n:ident) := data then n.getId else `_
+
+Mathlib/Tactic/Coe.lean:33 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let f ← withLocalDeclD `x a fun x ↦ do
+
+Mathlib/Tactic/ComputeDegree.lean:226 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | some 0 => .inl `zero
+
+Mathlib/Tactic/ComputeDegree.lean:227 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | some 1 => .inl `one
+
+Mathlib/Tactic/ComputeDegree.lean:228 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | some _ => .inl `many
+
+Mathlib/Tactic/ComputeDegree.lean:311 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``coeff_zero
+
+Mathlib/Tactic/ComputeDegree.lean:312 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         | .inl `one  => π ``natDegree_one_le ``degree_one_le ``coeff_one
+
+Mathlib/Tactic/ComputeDegree.lean:313 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         | .inl `many => π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
+
+Mathlib/Tactic/Congr!.lean:143 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let mvarId ← mvarId.assert (← mkFreshUserName `h_congr_thm) congrThmType congrThmProof
+
+Mathlib/Tactic/Congr!.lean:205 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     mvarId.checkNotAssigned `congr!
+
+Mathlib/Tactic/Congr!.lean:314 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     mvarId.checkNotAssigned `congrSimp?
+
+Mathlib/Tactic/Congr!.lean:353 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     mvarId.checkNotAssigned `userCongr?
+
+Mathlib/Tactic/Congr!.lean:384 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   observing? do withReducible <| mvarId.apply (← mkConstWithFreshMVarLevels `pi_congr)
+
+Mathlib/Tactic/Congr!.lean:410 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     mvarId.apply (← mkConstWithFreshMVarLevels `Function.hfunext)
+
+Mathlib/Tactic/Congr!.lean:441 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     mvarId.checkNotAssigned `subsingletonHelim
+
+Mathlib/Tactic/Congr!.lean:490 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   patterns : List (TSyntax `rcasesPat)
+
+Mathlib/Tactic/Congr!.lean:495 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
+
+Mathlib/Tactic/Congr!.lean:593 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   mvarId.checkNotAssigned `congr!
+
+Mathlib/Tactic/Congr!.lean:604 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       throwTacticEx `congr! mvarId
+
+Mathlib/Tactic/Congr!.lean:607 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       throwTacticEx `congr! mvarId
+
+Mathlib/Tactic/Congr!.lean:635 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (patterns : List (TSyntax `rcasesPat) := []) :
+
+Mathlib/Tactic/Congrm.lean:64 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         pure <| stx.mkAntiquotNode `term
+
+Mathlib/Tactic/Continuity.lean:19 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   `(attr|aesop safe apply (rule_sets := [$(Lean.mkIdent `Continuous):ident]))
+
+Mathlib/Tactic/Continuity.lean:26 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:      (rule_sets := [$(Lean.mkIdent `Continuous):ident]))
+
+Mathlib/Tactic/Continuity.lean:33 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (rule_sets := [$(Lean.mkIdent `Continuous):ident]))
+
+Mathlib/Tactic/Convert.lean:25 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (patterns : List (TSyntax `rcasesPat) := []) (g : MVarId) :
+
+Mathlib/Tactic/Convert.lean:108 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
+
+Mathlib/Tactic/Core.lean:92 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | _ => `_
+
+Mathlib/Tactic/DefEqTransformations.lean:25 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   mvarId.checkNotAssigned `changeLocalDecl
+
+Mathlib/Tactic/DefEqTransformations.lean:35 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:           throwTacticEx `changeLocalDecl mvarId
+
+Mathlib/Tactic/DeriveFintype.lean:94 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let header ← Deriving.mkHeader `Fintype 0 indVal
+
+Mathlib/Tactic/DeriveFintype.lean:95 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let binders' ← Deriving.mkInstImplicitBinders `Decidable indVal header.argNames
+
+Mathlib/Tactic/DeriveFintype.lean:155 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       let n : TSyntax `term := quote indVal.numCtors
+
+Mathlib/Tactic/DeriveToExpr.lean:77 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:           let a := mkIdent (← mkFreshUserName `a)
+
+Mathlib/Tactic/DeriveToExpr.lean:125 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let instName     ← mkFreshUserName `localinst
+
+Mathlib/Tactic/DeriveTraversable.lean:134 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let (#[α, β, f, x], m) ← m.introN 4 [`α, `β, `f, `x] | failure
+
+Mathlib/Tactic/DeriveTraversable.lean:177 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:                     name := `specialize
+
+Mathlib/Tactic/DeriveTraversable.lean:224 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         return mkForall `a .instImplicit paramCls tgt) <|> return tgt
+
+Mathlib/Tactic/DeriveTraversable.lean:243 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:                     name := `instance
+
+Mathlib/Tactic/DeriveTraversable.lean:364 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       let n ← mkFreshUserName `x
+
+Mathlib/Tactic/DeriveTraversable.lean:374 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let (#[_, applInst, α, β, f, x], m) ← m.introN 6 [`m, `applInst, `α, `β, `f, `x] | failure
+
+Mathlib/Tactic/DeriveTraversable.lean:435 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let some e ← getSimpExtension? `functor_norm | failure
+
+Mathlib/Tactic/Eqns.lean:37 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name  := `eqns
+
+Mathlib/Tactic/ExtractGoal.lean:136 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:                 else mkAuxName ((← getCurrNamespace) ++ `extracted) 1
+
+Mathlib/Tactic/ExtractLets.lean:23 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   mvarId.checkNotAssigned `extractLetsAt
+
+Mathlib/Tactic/ExtractLets.lean:87 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   setupNames (ids? : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole])) (ty : Expr) :
+
+Mathlib/Tactic/ExtractLets.lean:92 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       return Array.mkArray (← instantiateMVars ty).cleanupAnnotations.letDepth `_
+
+Mathlib/Tactic/ExtractLets.lean:94 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   doExtract (ids? : Option (TSyntaxArray [`ident, `Lean.Parser.Term.hole]))
+
+Mathlib/Tactic/ExtractLets.lean:95 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       (loc? : Option <| TSyntax `Lean.Parser.Tactic.location) :
+
+Mathlib/Tactic/FBinop.lean:129 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   withLocalDeclD `v fromType fun v => do
+
+Mathlib/Tactic/FieldSimp.lean:39 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
+
+Mathlib/Tactic/FieldSimp.lean:173 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let thms0 ← thms0.erase (.decl `mul_eq_zero)
+
+Mathlib/Tactic/FinCases.lean:65 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let (fvar, g) ← (← g.assert `this t v).intro1P
+
+Mathlib/Tactic/FunProp/Attr.lean:31 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name  := `fun_prop
+
+Mathlib/Tactic/FunProp/Core.lean:109 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   withTraceNode `Meta.Tactic.fun_prop
+
+Mathlib/Tactic/FunProp/Core.lean:604 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     withTraceNode `Meta.Tactic.fun_prop
+
+Mathlib/Tactic/FunProp/Decl.lean:125 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
+
+Mathlib/Tactic/FunProp/Decl.lean:126 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   withTraceNode `Meta.Tactic.fun_prop
+
+Mathlib/Tactic/FunProp/Decl.lean:128 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
+
+Mathlib/Tactic/FunProp/Elab.lean:26 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     withTraceNode `Meta.Tactic.fun_prop
+
+Mathlib/Tactic/FunProp/FunctionData.lean:195 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) (yₙ.expr)) default
+
+Mathlib/Tactic/FunProp/FunctionData.lean:273 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     withLocalDeclD `y (← inferType gx) fun y => do
+
+Mathlib/Tactic/FunProp/RefinedDiscrTree.lean:530 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     withLocalDeclD `_η type fun fvar =>
+
+Mathlib/Tactic/FunProp/Types.lean:74 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   #[`id, `Function.comp, `Function.HasUncurry.uncurry, `Function.uncurry]
+
+Mathlib/Tactic/GCongr/Core.lean:154 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `gcongr
+
+Mathlib/Tactic/GCongr/ForwardAttr.lean:39 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `gcongr_forward
+
+Mathlib/Tactic/GeneralizeProofs.lean:359 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         withLocalDeclD (← mkFreshUserName `pf) ty fun fvar => do
+
+Mathlib/Tactic/Have.lean:31 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   if id.raw[0].isIdent then id.raw[0].getId else HygieneInfo.mkIdent ⟨id.raw[0]⟩ `this |>.getId
+
+Mathlib/Tactic/HelpCmd.lean:262 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     `(#help cat$[+%$more]? $(mkIdentFrom tk `term) $(id)?)
+
+Mathlib/Tactic/HelpCmd.lean:272 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     `(#help cat$[+%$more]? $(mkIdentFrom tk `tactic) $(id)?)
+
+Mathlib/Tactic/HelpCmd.lean:282 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     `(#help cat$[+%$more]? $(mkIdentFrom tk `conv) $(id)?)
+
+Mathlib/Tactic/HelpCmd.lean:292 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     `(#help cat$[+%$more]? $(mkIdentFrom tk `command) $(id)?)
+
+Mathlib/Tactic/HigherOrder.lean:101 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       let some fcn ← getSimpExtension? `functor_norm | failure
+
+Mathlib/Tactic/HigherOrder.lean:115 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name := `higherOrder,
+
+Mathlib/Tactic/Hint.lean:30 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: initialize hintExtension : SimplePersistentEnvExtension (TSyntax `tactic) (List (TSyntax `tactic)) ←
+
+Mathlib/Tactic/Hint.lean:37 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def addHint (stx : TSyntax `tactic) : CoreM Unit := do
+
+Mathlib/Tactic/Hint.lean:41 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def getHints : CoreM (List (TSyntax `tactic)) := return hintExtension.getState (← getEnv)
+
+Mathlib/Tactic/Hint.lean:49 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let tac : TSyntax `tactic := ⟨tac.raw.copyHeadTailInfoFrom .missing⟩
+
+Mathlib/Tactic/Hint.lean:62 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Suggestion := do
+
+Mathlib/Tactic/Hint.lean:106 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let results := tacs.filterMapM fun t : TSyntax `tactic => do
+
+Mathlib/Tactic/Inhabit.lean:46 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       | none => `inhabited_h
+
+Mathlib/Tactic/IntervalCases.lean:363 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       | _ => `_
+
+Mathlib/Tactic/Lift.lean:109 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let coe ← mkFreshExprMVar (some <| .forallE `a new_tp old_tp .default)
+
+Mathlib/Tactic/Lift.lean:110 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let p ← mkFreshExprMVar (some <| .forallE `a old_tp (.sort .zero) .default)
+
+Mathlib/Tactic/Lift.lean:116 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
+
+Mathlib/Tactic/Lift.lean:117 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (newVarName newEqName : Option (TSyntax `ident)) (keepUsing : Bool) : TacticM Unit :=
+
+Mathlib/Tactic/Lift.lean:123 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let newEqName := (newEqName.map Syntax.getId).getD `rfl
+
+Mathlib/Tactic/Lift.lean:125 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let isNewEq := newEqName != `rfl
+
+Mathlib/Tactic/Lift.lean:144 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let newEqName ← if isNewVar && !isNewEq then withMainContext <| getUnusedUserName `tmpVar
+
+Mathlib/Tactic/Linarith/Frontend.lean:407 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
+
+Mathlib/Tactic/Linarith/Frontend.lean:422 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
+
+Mathlib/Tactic/Linarith/Verification.lean:141 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   mkAppM `neg_neg_of_pos #[zero_lt_one]
+
+Mathlib/Tactic/Linarith/Verification.lean:153 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       let nep := mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, t]]) #[h]
+
+Mathlib/Tactic/Lint.lean:79 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   | .node _ `Std.Tactic.Alias.alias args => #[args[2]!]
+
+Mathlib/Tactic/Measurability.lean:26 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   `(attr|aesop safe apply (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
+
+Mathlib/Tactic/Measurability.lean:34 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
+
+Mathlib/Tactic/Measurability.lean:43 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:37 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let [new_goal] ← goal.nthConstructor `left 0 (some 2)
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:41 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let [new_goal] ← goal.nthConstructor `right 1 (some 2)
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:80 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         then pure (mkApp2 (.const `Exists [l]) t
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:82 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         else pure <| mkApp2 (mkConst `And) t i)
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:93 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def mkAndList : List Expr → Expr := mkOpList (mkConst `And) (mkConst `True)
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:96 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def mkOrList : List Expr → Expr := mkOpList (mkConst `Or) (mkConst `False)
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:148 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       then pure (mkApp3 (.const `Eq [u]) ty idx inst)
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:149 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       else pure (mkApp4 (.const `HEq [u]) ty idx instTy inst))
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:152 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       pure (some 0, (mkConst `True))
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:160 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         let r ← mkExistsList bs' (mkConst `True)
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:312 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     pure (← mkForallFVars fvars (mkApp2 (mkConst `Iff) lhs (mkOrList rhss)), shape)
+
+Mathlib/Tactic/MkIffOfInductiveProp.lean:404 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `mkIff
+
+Mathlib/Tactic/ModCases.lean:81 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
+
+Mathlib/Tactic/ModCases.lean:89 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | _ => g.intro `H
+
+Mathlib/Tactic/ModCases.lean:155 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Unit := do
+
+Mathlib/Tactic/ModCases.lean:163 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | _ => g.intro `H
+
+Mathlib/Tactic/Monotonicity/Attr.lean:30 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let mono := `mono
+
+Mathlib/Tactic/Monotonicity/Basic.lean:55 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   liftMetaTactic fun g => do processSyntax cfg false false [] [] #[mkIdent `mono] [g]
+
+Mathlib/Tactic/MoveAdd.lean:285 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let left_assoc? := sum.getAppFn.isConstOf `And || sum.getAppFn.isConstOf `Or
+
+Mathlib/Tactic/MoveAdd.lean:414 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Expr × Bool × Syntax))
+
+Mathlib/Tactic/Nontriviality/Core.lean:122 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       g.assert `inst ty m
+
+Mathlib/Tactic/NormNum/BigOperators.lean:357 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let .app (.app (.app (.app (.app (.const `Finset.prod [_, v]) α) β') _) s) f ←
+
+Mathlib/Tactic/NormNum/BigOperators.lean:386 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let .app (.app (.app (.app (.app (.const `Finset.sum [_, v]) α) β') _) s) f ←
+
+Mathlib/Tactic/NormNum/Core.lean:167 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `norm_num
+
+Mathlib/Tactic/NormNum/Core.lean:235 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   g.checkNotAssigned `norm_num
+
+Mathlib/Tactic/NormNum/Prime.lean:181 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
+
+Mathlib/Tactic/Observe.lean:34 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | none   => `this
+
+Mathlib/Tactic/Observe.lean:40 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       reportOutOfHeartbeats `library_search tk
+
+Mathlib/Tactic/PPWithUniv.lean:40 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `ppWithUnivAttr
+
+Mathlib/Tactic/PPWithUniv.lean:46 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       let attr ← Elab.elabAttr <| ← `(Term.attrInstance| delab $(mkIdent <| `app ++ src))
+
+Mathlib/Tactic/Peel.lean:128 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   mkFreshUserName (if let .lam n .. := f then n else `a)
+
+Mathlib/Tactic/Peel.lean:165 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       applyPeelThm ``and_imp_left_of_imp_imp goal e ty target (← n?.getDM (mkFreshUserName `p)) n'
+
+Mathlib/Tactic/Peel.lean:183 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       let fvarId ← liftMetaTacticAux (peelCore · e l.head? (n?.getD `this) unfold)
+
+Mathlib/Tactic/Peel.lean:193 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let fvarId? ← observing? <| liftMetaTacticAux (peelCore · e none (n?.getD `this) unfold)
+
+Mathlib/Tactic/Peel.lean:240 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   | `(tactic| peel $n:num) => peelArgsIff <| .replicate n.getNat `_
+
+Mathlib/Tactic/Polyrith.lean:338 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (traceOnly := false) : MetaM (Except MVarId (TSyntax `tactic)) := do
+
+Mathlib/Tactic/Polyrith.lean:424 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     let traceMe ← Lean.isTracingEnabledFor `Meta.Tactic.polyrith
+
+Mathlib/Tactic/Positivity/Core.lean:99 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `positivity
+
+Mathlib/Tactic/ProdAssoc.lean:103 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   withLocalDeclD `t a fun fvar => do
+
+Mathlib/Tactic/ProjectionNotation.lean:111 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `ppDotAttr
+
+Mathlib/Tactic/ProxyType.lean:63 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   mkProxyType : Array (Name × Expr × Term) → TermElabM (Expr × Array Term × TSyntax `tactic)
+
+Mathlib/Tactic/ProxyType.lean:93 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       withLocalDeclD `x' (← mkAppM ``PLift #[xty]) fun x' => do
+
+Mathlib/Tactic/ProxyType.lean:107 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     TermElabM (Expr × Array Term × TSyntax `tactic) := do
+
+Mathlib/Tactic/ProxyType.lean:118 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   mkCType (ctypes : List Expr) : TermElabM (Expr × TSyntax `tactic) :=
+
+Mathlib/Tactic/ProxyType.lean:166 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:           let names ← xs.mapM (fun _ => mkFreshUserName `a)
+
+Mathlib/Tactic/ProxyType.lean:200 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         constructed from `Unit`, `PLift`, `Sigma`, `Empty`, and `Sum`. \
+
+Mathlib/Tactic/ProxyType.lean:201 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         See `{config.proxyEquivName}` for the equivalence. \
+
+Mathlib/Tactic/PushNeg.lean:79 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       match ← getBoolOption `push_neg.use_distrib with
+
+Mathlib/Tactic/PushNeg.lean:80 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (← mkAppM ``not_and_eq #[p, q])
+
+Mathlib/Tactic/ReduceModChar.lean:191 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let ext? ← getSimpExtension? `reduce_mod_char
+
+Mathlib/Tactic/ReduceModChar/Ext.lean:19 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   registerSimpAttr `reduce_mod_char
+
+Mathlib/Tactic/Relation/Trans.lean:35 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   name := `trans
+
+Mathlib/Tactic/RewriteSearch.lean:250 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   if ← isTracingEnabledFor `rw_search then do
+
+Mathlib/Tactic/RewriteSearch.lean:273 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     if ← isTracingEnabledFor `rw_search then do
+
+Mathlib/Tactic/Sat/FromLRAT.lean:333 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     lams.foldr (mkLambda `c default) ∘
+
+Mathlib/Tactic/Sat/FromLRAT.lean:334 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     mkLambda `v default (mkConst ``Sat.Valuation) ∘
+
+Mathlib/Tactic/Sat/FromLRAT.lean:335 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     mkLambda `hv default (mkApp2 (mkConst ``Sat.Valuation.satisfies_fmla) (mkBVar 0) ctx)
+
+Mathlib/Tactic/Sat/FromLRAT.lean:348 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   f := f ∘ lams.foldr (mkLambda `h default)
+
+Mathlib/Tactic/Sat/FromLRAT.lean:367 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       mkLambda `h default (mkApp2 (mkConst ``Sat.Valuation.neg) (v d1) lit) pr
+
+Mathlib/Tactic/Sat/FromLRAT.lean:369 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     f := fun e ↦ f <| mkApp app <| mkLambda `h default dom e
+
+Mathlib/Tactic/Sat/FromLRAT.lean:428 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     pr := mkLambda `h default ty pr
+
+Mathlib/Tactic/Sat/FromLRAT.lean:429 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   pr := mkLambda `v default (mkConst ``Sat.Valuation) pr
+
+Mathlib/Tactic/Sat/FromLRAT.lean:438 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     e := mkForall `a default (mkSort levelZero) e
+
+Mathlib/Tactic/Sat/FromLRAT.lean:439 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     pr := mkLambda `a default (mkSort levelZero) pr
+
+Mathlib/Tactic/Sat/FromLRAT.lean:545 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let ctxName ← mkAuxName (name ++ `ctx) 1
+
+Mathlib/Tactic/Sat/FromLRAT.lean:558 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let declName ← mkAuxName (name ++ `proof) 1
+
+Mathlib/Tactic/Sat/FromLRAT.lean:605 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let name := (← getCurrNamespace) ++ if n.1.isIdent then n.1.getId else `_example
+
+Mathlib/Tactic/Sat/FromLRAT.lean:661 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let name ← mkAuxName `lrat
+
+Mathlib/Tactic/Says.lean:64 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool := fun _ => true) :
+
+Mathlib/Tactic/Says.lean:81 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def evalTacticCapturingInfo (tac : TSyntax `tactic) : TacticM (List Message) :=
+
+Mathlib/Tactic/Says.lean:87 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tacticSeq) := do
+
+Mathlib/Tactic/Says.lean:135 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+
+Mathlib/Tactic/SimpIntro.lean:29 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let n := if var.isIdent then var.getId else `_
+
+Mathlib/Tactic/SimpIntro.lean:72 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     g.checkNotAssigned `simp_intro
+
+Mathlib/Tactic/SimpRw.lean:57 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
+
+Mathlib/Tactic/Simps/Basic.lean:517 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   withLocalDeclD `x (mkAppN strExpr typeArgs) fun e ↦
+
+Mathlib/Tactic/Simps/Basic.lean:596 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let customName := str ++ `Simps ++ proj.newName
+
+Mathlib/Tactic/Simps/Basic.lean:630 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     if (str ++ `Simps).isPrefixOf nm && !nm.isInternalDetail && !isReservedName env nm then
+
+Mathlib/Tactic/Simps/Basic.lean:671 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     return ← withLocalDeclD `self eStr fun instStr ↦ do
+
+Mathlib/Tactic/Simps/Basic.lean:749 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
+
+Mathlib/Tactic/Simps/Basic.lean:754 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     withOptions (· |>.updateBool `trace.simps.verbose (traceIfExists || ·)) <| do
+
+Mathlib/Tactic/Simps/Basic.lean:837 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite]
+
+Mathlib/Tactic/Simps/Basic.lean:918 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let mut (rhs, prf) := (rhs, mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs])
+
+Mathlib/Tactic/Simps/Basic.lean:933 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
+
+Mathlib/Tactic/Simps/Basic.lean:1052 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         The definition {nm} is not a constructor application. Please use `@[simps!]` instead.\n\
+
+Mathlib/Tactic/Simps/Basic.lean:1054 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         Explanation: `@[simps]` uses the definition to find what the simp lemmas should \
+
+Mathlib/Tactic/Simps/Basic.lean:1057 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         constructor, then `@[simps]` will unfold the right-hand side until it has found a \
+
+Mathlib/Tactic/Simps/Basic.lean:1060 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         `@[simps?]` to double-check whether `@[simps]` generated satisfactory lemmas.\n\
+
+Mathlib/Tactic/Simps/Basic.lean:1061 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         Note 1: `@[simps!]` also calls the `simp` tactic, and this can be expensive in certain \
+
+Mathlib/Tactic/Simps/Basic.lean:1063 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         Note 2: `@[simps!]` is equivalent to `@[simps (config := \{rhsMd := .default, \
+
+Mathlib/Tactic/Simps/Basic.lean:1064 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         simpRhs := true})]`. You can also try `@[simps (config := \{rhsMd := .default})]` \
+
+Mathlib/Tactic/Simps/Basic.lean:1065 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         to still unfold the definitions, but avoid calling `simp` on the resulting statement.\n\
+
+Mathlib/Tactic/Simps/Basic.lean:1066 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         Note 3: You need `simps!` if not all fields are given explicitly in this definition, \
+
+Mathlib/Tactic/Simps/Basic.lean:1068 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         `MulEquiv` by giving the corresponding `Equiv` and the proof that it respects \
+
+Mathlib/Tactic/Simps/Basic.lean:1069 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to \
+
+Mathlib/Tactic/Simps/Basic.lean:1118 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       \n  `initialize_simps_projections? {str}`.\n\
+
+Mathlib/Tactic/Simps/Basic.lean:1119 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       Note: these projection names might be customly defined for `simps`, \
+
+Mathlib/Tactic/Simps/NotationClass.lean:67 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   return #[Expr.const `Nat [], args[0]?.getD default] ++ args |>.map some
+
+Mathlib/Tactic/Simps/NotationClass.lean:71 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   return #[Expr.const `Int [], args[0]?.getD default] ++ args |>.map some
+
+Mathlib/Tactic/Simps/NotationClass.lean:99 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   findArgs : Name := `Simps.defaultfindArgs
+
+Mathlib/Tactic/Simps/NotationClass.lean:107 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name := `notation_class
+
+Mathlib/Tactic/Simps/NotationClass.lean:117 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         let findArgs := if findArgs?.isSome then findArgs?.get!.getId else `Simps.defaultfindArgs
+
+Mathlib/Tactic/SlimCheck.lean:173 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     traceDiscarded := cfg.traceDiscarded || (← isTracingEnabledFor `slim_check.discarded),
+
+Mathlib/Tactic/SlimCheck.lean:174 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     traceSuccesses := cfg.traceSuccesses || (← isTracingEnabledFor `slim_check.success),
+
+Mathlib/Tactic/SlimCheck.lean:175 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     traceShrink := cfg.traceShrink || (← isTracingEnabledFor `slim_check.shrink.steps),
+
+Mathlib/Tactic/SlimCheck.lean:177 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       || (← isTracingEnabledFor `slim_check.shrink.candidates) }
+
+Mathlib/Tactic/SplitIfs.lean:58 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   if e.isConstOf `True
+
+Mathlib/Tactic/SplitIfs.lean:59 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     then return some (mkConst `True.intro)
+
+Mathlib/Tactic/SplitIfs.lean:83 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: private def getNextName (hNames: IO.Ref (List (TSyntax `Lean.binderIdent))) : MetaM Name := do
+
+Mathlib/Tactic/SplitIfs.lean:85 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   | [] => mkFreshUserName `h
+
+Mathlib/Tactic/SplitIfs.lean:89 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:                 else pure `_
+
+Mathlib/Tactic/SplitIfs.lean:96 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let not_cond := mkApp (mkConst `Not) cond
+
+Mathlib/Tactic/SplitIfs.lean:104 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (hNames : IO.Ref (List (TSyntax `Lean.binderIdent))) :
+
+Mathlib/Tactic/SplitIfs.lean:110 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let cond := if cond.isAppOf `Not then cond.getAppArgs[0]! else cond
+
+Mathlib/Tactic/Spread.lean:64 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:           if name.getId.eraseMacroScopes == `__ then do
+
+Mathlib/Tactic/Spread.lean:76 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       let n := Name.num `__spread i
+
+Mathlib/Tactic/SudoSetOption.lean:21 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | Syntax.ident _ _ `true _  => pure <| DataValue.ofBool true
+
+Mathlib/Tactic/SudoSetOption.lean:22 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     | Syntax.ident _ _ `false _ => pure <| DataValue.ofBool false
+
+Mathlib/Tactic/TFAE.lean:119 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     withLocalDeclD (← mkFreshUserName `h) P fun (h : Q($P)) => do
+
+Mathlib/Tactic/TFAE.lean:162 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name := do
+
+Mathlib/Tactic/TFAE.lean:172 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def tfaeHaveCore (goal : MVarId) (name : Option (TSyntax `ident)) (i j : TSyntax `num)
+
+Mathlib/Tactic/TFAE.lean:187 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line: def elabIndex (i : TSyntax `num) (maxIndex : ℕ) : TacticM ℕ := do
+
+Mathlib/Tactic/TermCongr.lean:186 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       unless ks.any (fun (k, _) => k == `term) do
+
+Mathlib/Tactic/TermCongr.lean:233 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let iff := mkApp2 (Expr.const `Iff []) a b
+
+Mathlib/Tactic/ToAdditive.lean:348 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name  := `to_additive_ignore_args
+
+Mathlib/Tactic/ToAdditive.lean:364 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name := `to_additive_reorder
+
+Mathlib/Tactic/ToAdditive.lean:401 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name := `to_additive_relevant_arg
+
+Mathlib/Tactic/ToAdditive.lean:425 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name := `to_additive_change_numeral
+
+Mathlib/Tactic/ToAdditive.lean:561 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       (changeNumeralAttr.find? env) relevantArg (← getBoolOption `trace.to_additive_detail) e
+
+Mathlib/Tactic/ToAdditive.lean:715 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   else if let some post := env.mainModule ++ `_auxLemma |>.isPrefixOf? src then
+
+Mathlib/Tactic/ToAdditive.lean:716 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     return env.mainModule ++ `_auxAddLemma ++ post
+
+Mathlib/Tactic/ToAdditive.lean:731 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let auxLemma := mainModule ++ `_auxLemma
+
+Mathlib/Tactic/ToAdditive.lean:829 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       if thisAttr == `to_additive then
+
+Mathlib/Tactic/ToAdditive.lean:1144 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1145 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1146 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1147 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1148 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1149 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1151 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     warnParametricAttr stx simpsAttr thisAttr `simps src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1152 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1157 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let (additiveAttrs, attrs) := attrs.partition (·.name == `to_additive)
+
+Mathlib/Tactic/ToAdditive.lean:1170 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     if attr.name == `simp then
+
+Mathlib/Tactic/ToAdditive.lean:1174 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     if attr.name == `simps then
+
+Mathlib/Tactic/ToAdditive.lean:1213 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     applyAttributes cfg.ref cfg.attrs `to_additive src tgt
+
+Mathlib/Tactic/ToAdditive.lean:1232 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
+
+Mathlib/Tactic/ToAdditive.lean:1487 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     name := `to_additive
+
+Mathlib/Tactic/Trace.lean:17 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let e ← elabTerm (← `(toString $val)) (some (mkConst `String))
+
+Mathlib/Tactic/Trace.lean:18 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   logInfoAt tk <|← unsafe evalExpr String (mkConst `String) e
+
+Mathlib/Tactic/Use.lean:41 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     mvarId.checkNotAssigned `constructor
+
+Mathlib/Tactic/Use.lean:44 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:       (fun _ => throwTacticEx `constructor mvarId
+
+Mathlib/Tactic/Use.lean:68 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:         | _ => throwTacticEx `constructor mvarId
+
+Mathlib/Tactic/Variable.lean:308 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   stack.matches [`null, none, `null, ``Mathlib.Command.Variable.variable?]
+
+Mathlib/Tactic/Variable.lean:309 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   || stack.matches [`null, none, `null, `null, ``Mathlib.Command.Variable.variable?]
+
+Mathlib/Tactic/WLOG.lean:64 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     (xs : Option (TSyntaxArray `ident) := none) (H : Option Name := none) :
+
+Mathlib/Tactic/WLOG.lean:66 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   goal.checkNotAssigned `wlog
+
+Mathlib/Tactic/WLOG.lean:67 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let H := H.getD `this
+
+Mathlib/Tactic/WLOG.lean:69 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:   let h := h.getD `h
+
+Mathlib/Tactic/WLOG.lean:100 : Isolated single backtick: use ``double backticks in meta code for future-proofing
+relevant line:     reductionGoal.byCases P <| if inaccessible then `_ else h
+

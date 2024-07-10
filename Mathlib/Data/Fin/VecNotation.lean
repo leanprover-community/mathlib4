@@ -71,8 +71,8 @@ The `!![a, b; c, d]` syntax (provided by `Matrix.matrixNotation`) should be used
 syntax (name := vecNotation) "![" term,* "]" : term
 
 macro_rules
-  | `(![$term:term, $terms:term,*]) => `(vecCons $term ![$terms,*])
-  | `(![$term:term]) => `(vecCons $term ![])
+  | `(![$term : term, $terms : term,*]) => `(vecCons $term ![$terms,*])
+  | `(![$term : term]) => `(vecCons $term ![])
   | `(![]) => `(vecEmpty)
 
 /-- Unexpander for the `![x, y, ...]` notation. -/
@@ -86,7 +86,7 @@ def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
 /-- Unexpander for the `![]` notation. -/
 @[app_unexpander vecEmpty]
 def vecEmptyUnexpander : Lean.PrettyPrinter.Unexpander
-  | `($_:ident) => `(![])
+  | `($_ : ident) => `(![])
   | _ => throw ()
 
 /-- `vecHead v` gives the first entry of the vector `v` -/

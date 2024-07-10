@@ -42,7 +42,7 @@ lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
   rw [← isLocallySurjective_iff_epi', coherentTopology.isLocallySurjective_iff,
     regularTopology.isLocallySurjective_iff]
-  simp_rw [((CompHaus.effectiveEpi_tfae _).out 0 2 :)]
+  simp_rw [((CompHaus.effectiveEpi_tfae _).out 0 2 : )]
 
 variable [(extensiveTopology Stonean).WEqualsLocallyBijective A]
   [HasSheafify (extensiveTopology Stonean) A]

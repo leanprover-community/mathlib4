@@ -55,7 +55,7 @@ def singleUnexpander : Lean.PrettyPrinter.Unexpander
 @[app_unexpander Finsupp.update]
 def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $f $pat $val) => match f with
-    | `(fun₀ $xs:matchAlt*) => `(fun₀ $xs:matchAlt* | $pat => $val)
+    | `(fun₀ $xs : matchAlt*) => `(fun₀ $xs : matchAlt* | $pat => $val)
     | _ => throw ()
   | _ => throw ()
 

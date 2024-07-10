@@ -401,7 +401,7 @@ def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : M
   -- which we assume is always false for this function
   discard <| TermElabM.run do
     match tk with
-    | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
+    | `(binderIdent| $n : ident) => Elab.Term.addLocalVarInfo n fvar
     | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
 
 /-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates

@@ -268,7 +268,7 @@ def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [Is
 end ImageFactorisation
 
 /-- `has_image f` means that there exists an image factorisation of `f`. -/
-class HasImage (f : X ⟶ Y) : Prop where mk' ::
+class HasImage (f : X ⟶ Y) : Prop where mk' : :
   exists_image : Nonempty (ImageFactorisation f)
 #align category_theory.limits.has_image CategoryTheory.Limits.HasImage
 
@@ -705,7 +705,7 @@ def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f
 
 /-- `HasImageMap sq` means that there is an `ImageMap` for the square `sq`. -/
 class HasImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g) : Prop where
-mk' ::
+mk' : :
   has_image_map : Nonempty (ImageMap sq)
 #align category_theory.limits.has_image_map CategoryTheory.Limits.HasImageMap
 
@@ -897,7 +897,7 @@ variable (C)
 
 /-- A category has strong epi-mono factorisations if every morphism admits a strong epi-mono
     factorisation. -/
-class HasStrongEpiMonoFactorisations : Prop where mk' ::
+class HasStrongEpiMonoFactorisations : Prop where mk' : :
   has_fac : ∀ {X Y : C} (f : X ⟶ Y), Nonempty (StrongEpiMonoFactorisation f)
 #align category_theory.limits.has_strong_epi_mono_factorisations CategoryTheory.Limits.HasStrongEpiMonoFactorisations
 

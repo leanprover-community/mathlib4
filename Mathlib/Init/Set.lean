@@ -96,15 +96,15 @@ instance : EmptyCollection (Set α) :=
 syntax "{" extBinder " | " term "}" : term
 
 macro_rules
-  | `({ $x:ident | $p }) => `(setOf fun $x:ident ↦ $p)
-  | `({ $x:ident : $t | $p }) => `(setOf fun $x:ident : $t ↦ $p)
-  | `({ $x:ident $b:binderPred | $p }) =>
-    `(setOf fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p)
+  | `({ $x : ident | $p }) => `(setOf fun $x : ident ↦ $p)
+  | `({ $x : ident : $t | $p }) => `(setOf fun $x : ident : $t ↦ $p)
+  | `({ $x : ident $b : binderPred | $p }) =>
+    `(setOf fun $x : ident ↦ satisfies_binder_pred% $x $b ∧ $p)
 
 @[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
-  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
+  | `($_ fun $x : ident ↦ $p) => `({ $x : ident | $p })
+  | `($_ fun ($x : ident : $ty : term) ↦ $p) => `({ $x : ident : $ty : term | $p })
   | _ => throw ()
 
 open Batteries.ExtendedBinder in
@@ -116,7 +116,7 @@ If `f x y` is a single identifier, it must be parenthesized to avoid ambiguity w
 for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
 -/
 macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
-  `({x | ∃ᵉ $bs:extBinders, $t = x})
+  `({x | ∃ᵉ $bs : extBinders, $t = x})
 
 /--
 * `{ pat : X | p }` is notation for pattern matching in set-builder notation,
@@ -144,14 +144,14 @@ macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
 /-- Pretty printing for set-builder notation with pattern matching. -/
 @[app_unexpander setOf]
 def setOfPatternMatchUnexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
+  | `($_ fun $x : ident ↦ match $y : ident with | $pat => $p) =>
       if x == y then
-        `({ $pat:term | $p:term })
+        `({ $pat : term | $p : term })
       else
         throw ()
-  | `($_ fun ($x:ident : $ty:term) ↦ match $y:ident with | $pat => $p) =>
+  | `($_ fun ($x : ident : $ty : term) ↦ match $y : ident with | $pat => $p) =>
       if x == y then
-        `({ $pat:term : $ty:term | $p:term })
+        `({ $pat : term : $ty : term | $p : term })
       else
         throw ()
   | _ => throw ()

@@ -60,7 +60,7 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
 #align pequiv.to_matrix_apply PEquiv.toMatrix_apply
 
 theorem mul_matrix_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m) (M : Matrix m n α)
-    (i j) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
+    (i j) : (f.toMatrix * M : ) i j = Option.casesOn (f i) 0 fun fi => M fi j : = by
   dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f i with fi
   · simp [h]
@@ -82,7 +82,7 @@ theorem toMatrix_refl [DecidableEq n] [Zero α] [One α] :
 #align pequiv.to_matrix_refl PEquiv.toMatrix_refl
 
 theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
-    (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 fun fj => M i fj := by
+    (i j) : (M * f.toMatrix : ) i j = Option.casesOn (f.symm j) 0 fun fj => M i fj : = by
   dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f.symm j with fj
   · simp [h, ← f.eq_some_iff]

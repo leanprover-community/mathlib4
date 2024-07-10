@@ -29,7 +29,7 @@ def fun₀.matchAlts : Parser :=
 
 As a result, if multiple match arms coincide, the last one takes precedence. -/
 @[term_parser]
-def fun₀ := leading_parser:maxPrec
+def fun₀ : = leading_parser : maxPrec
   ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
@@ -50,7 +50,7 @@ def elabUpdate₀ : Elab.Term.TermElab
   | _ => fun _ => Elab.throwUnsupportedSyntax
 
 macro_rules
-  | `(term| fun₀ $x:matchAlt*) => do
+  | `(term| fun₀ $x : matchAlt*) => do
     let mut stx : Term ← `(0)
     let mut fst : Bool := true
     for xi in x do
@@ -75,7 +75,7 @@ def singleUnexpander : Lean.PrettyPrinter.Unexpander
 @[app_unexpander Finsupp.update]
 def updateUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $f $pat $val) => match f with
-    | `(fun₀ $xs:matchAlt*) => `(fun₀ $xs:matchAlt* | $pat => $val)
+    | `(fun₀ $xs : matchAlt*) => `(fun₀ $xs : matchAlt* | $pat => $val)
     | _ => throw ()
   | _ => throw ()
 

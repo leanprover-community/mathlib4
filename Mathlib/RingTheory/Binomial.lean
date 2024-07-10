@@ -345,7 +345,7 @@ variable {R : Type*}
 
 /-- The binomial coefficient `choose r n` generalizes the natural number `choose` function,
   interpreted in terms of choosing without replacement. -/
-def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ): R :=
+def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ) : R : =
   multichoose (r - n + 1) n
 
 variable [NonAssocRing R] [Pow R ℕ] [BinomialRing R]

@@ -359,7 +359,7 @@ lemma lifts_zero : 0 ∈ lifts (0 : ⨂[R] i, s i) := by
 respectively, then `p + q` lifts `x + y`.
 -/
 lemma lifts_add {x y : ⨂[R] i, s i} {p q : FreeAddMonoid (R × Π i, s i)}
-    (hp : p ∈ lifts x) (hq : q ∈ lifts y): p + q ∈ lifts (x + y) := by
+    (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) : = by
   simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
   rw [hp, hq]
 

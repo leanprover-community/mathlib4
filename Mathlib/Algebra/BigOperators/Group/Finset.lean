@@ -113,7 +113,7 @@ def processBigOpBinder (processed : (Array (Term × Term)))
   set_option hygiene false in
   withRef binder do
     match binder with
-    | `(bigOpBinder| $x:term) =>
+    | `(bigOpBinder| $x : term) =>
       match x with
       | `(($a + $b = $n)) => -- Maybe this is too cute.
         return processed |>.push (← `(⟨$a, $b⟩), ← `(Finset.Nat.antidiagonal $n))
@@ -130,8 +130,8 @@ def processBigOpBinder (processed : (Array (Term × Term)))
 def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
     MacroM (Array (Term × Term)) :=
   match binders with
-  | `(bigOpBinders| $b:bigOpBinder) => processBigOpBinder #[] b
-  | `(bigOpBinders| $[($bs:bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
+  | `(bigOpBinders| $b : bigOpBinder) => processBigOpBinder #[] b
+  | `(bigOpBinders| $[($bs : bigOpBinder)]*) => bs.foldlM processBigOpBinder #[]
   | _ => Macro.throwUnsupported
 
 /-- Collect the binderIdents into a `⟨...⟩` expression. -/
@@ -181,7 +181,7 @@ Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
 syntax (name := bigprod) "∏ " bigOpBinders ("with " term)? ", " term:67 : term
 
 macro_rules (kind := bigsum)
-  | `(∑ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∑ $bs : bigOpBinders $[with $p?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
@@ -190,7 +190,7 @@ macro_rules (kind := bigsum)
     | none => `(Finset.sum $s (fun $x ↦ $v))
 
 macro_rules (kind := bigprod)
-  | `(∏ $bs:bigOpBinders $[with $p?]?, $v) => do
+  | `(∏ $bs : bigOpBinders $[with $p?]?, $v) => do
     let processed ← processBigOpBinders bs
     let x ← bigOpBindersPattern processed
     let s ← bigOpBindersProd processed
@@ -203,16 +203,16 @@ macro_rules (kind := bigprod)
 where `x` ranges over the finite set `s`. -/
 syntax (name := bigsumin) "∑ " extBinder " in " term ", " term:67 : term
 macro_rules (kind := bigsumin)
-  | `(∑ $x:ident in $s, $r) => `(∑ $x:ident ∈ $s, $r)
-  | `(∑ $x:ident : $t in $s, $r) => `(∑ $x:ident ∈ ($s : Finset $t), $r)
+  | `(∑ $x : ident in $s, $r) => `(∑ $x : ident ∈ $s, $r)
+  | `(∑ $x : ident : $t in $s, $r) => `(∑ $x : ident ∈ ($s : Finset $t), $r)
 
 /-- (Deprecated, use `∏ x ∈ s, f x`)
 `∏ x in s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
 where `x` ranges over the finite set `s`. -/
 syntax (name := bigprodin) "∏ " extBinder " in " term ", " term:67 : term
 macro_rules (kind := bigprodin)
-  | `(∏ $x:ident in $s, $r) => `(∏ $x:ident ∈ $s, $r)
-  | `(∏ $x:ident : $t in $s, $r) => `(∏ $x:ident ∈ ($s : Finset $t), $r)
+  | `(∏ $x : ident in $s, $r) => `(∏ $x : ident ∈ $s, $r)
+  | `(∏ $x : ident : $t in $s, $r) => `(∏ $x : ident ∈ ($s : Finset $t), $r)
 
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open Batteries.ExtendedBinder
@@ -230,13 +230,13 @@ to show the domain type when the product is over `Finset.univ`. -/
     let binder ←
       if ppDomain then
         let ty ← withNaryArg 0 delab
-        `(bigOpBinder| $(.mk i):ident : $ty)
+        `(bigOpBinder| $(.mk i) : ident : $ty)
       else
-        `(bigOpBinder| $(.mk i):ident)
-    `(∏ $binder:bigOpBinder, $body)
+        `(bigOpBinder| $(.mk i) : ident)
+    `(∏ $binder : bigOpBinder, $body)
   else
     let ss ← withNaryArg 3 <| delab
-    `(∏ $(.mk i):ident ∈ $ss, $body)
+    `(∏ $(.mk i) : ident ∈ $ss, $body)
 
 /-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
@@ -251,13 +251,13 @@ to show the domain type when the sum is over `Finset.univ`. -/
     let binder ←
       if ppDomain then
         let ty ← withNaryArg 0 delab
-        `(bigOpBinder| $(.mk i):ident : $ty)
+        `(bigOpBinder| $(.mk i) : ident : $ty)
       else
-        `(bigOpBinder| $(.mk i):ident)
-    `(∑ $binder:bigOpBinder, $body)
+        `(bigOpBinder| $(.mk i) : ident)
+    `(∑ $binder : bigOpBinder, $body)
   else
     let ss ← withNaryArg 3 <| delab
-    `(∑ $(.mk i):ident ∈ $ss, $body)
+    `(∑ $(.mk i) : ident ∈ $ss, $body)
 
 end BigOperators
 

@@ -31,7 +31,7 @@ assert_not_exists FloorRing
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
-structure Real where ofCauchy ::
+structure Real where ofCauchy : :
   /-- The underlying Cauchy completion -/
   cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
 #align real Real

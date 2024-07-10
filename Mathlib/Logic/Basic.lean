@@ -1289,7 +1289,7 @@ theorem apply_ite₂ {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decid
 /-- A 'dite' producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `dite` that applies
 either branch to `a`. -/
 theorem dite_apply (f : P → ∀ a, σ a) (g : ¬P → ∀ a, σ a) (a : α) :
-    (dite P f g) a = dite P (fun h ↦ f h a) fun h ↦ g h a := by by_cases h:P <;> simp [h]
+    (dite P f g) a = dite P (fun h ↦ f h a) fun h ↦ g h a : = by by_cases h : P <;> simp [h]
 #align dite_apply dite_apply
 
 /-- A 'ite' producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `ite` that applies

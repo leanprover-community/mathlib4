@@ -308,7 +308,7 @@ section aesop
 macro (name := aesop_mat) "aesop_mat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c* (config := { terminal := true })
-  (rule_sets := [$(Lean.mkIdent `Matroid):ident]))
+  (rule_sets : = [$(Lean.mkIdent `Matroid) : ident]))
 
 /- We add a number of trivial lemmas (deliberately specialized to statements in terms of the
   ground set of a matroid) to the ruleset `Matroid` for `aesop`. -/

@@ -42,7 +42,7 @@ def formatTable (headers : Array String) (table : Array (Array String))
   -- Compute the maximum width of each column.
   let mut widths := headers.map (·.length)
   for row in table do
-    for i in [0:widths.size] do
+    for i in [0 : widths.size] do
       widths := widths.set! i (max widths[i]! ((row[i]?.map (·.length)).getD 0))
   -- Pad each cell with spaces to match the column width.
   let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!

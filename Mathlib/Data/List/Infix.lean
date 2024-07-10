@@ -53,25 +53,25 @@ section Fix
 #align list.suffix_refl List.suffix_refl
 #align list.infix_refl List.infix_refl
 
-theorem prefix_rfl : l <+: l :=
+theorem prefix_rfl : l <+ : l : =
   prefix_refl _
 #align list.prefix_rfl List.prefix_rfl
 
-theorem suffix_rfl : l <:+ l :=
+theorem suffix_rfl : l < : + l : =
   suffix_refl _
 #align list.suffix_rfl List.suffix_rfl
 
-theorem infix_rfl : l <:+: l :=
+theorem infix_rfl : l < : + : l : =
   infix_refl _
 #align list.infix_rfl List.infix_rfl
 
 #align list.suffix_cons List.suffix_cons
 
-theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
+theorem prefix_concat (a : α) (l) : l <+ : concat l a : = by simp
 #align list.prefix_concat List.prefix_concat
 
 theorem prefix_concat_iff {l₁ l₂ : List α} {a : α} :
-    l₁ <+: l₂ ++ [a] ↔ l₁ = l₂ ++ [a] ∨ l₁ <+: l₂ := by
+    l₁ <+ : l₂ ++ [a] ↔ l₁ = l₂ ++ [a] ∨ l₁ <+ : l₂ : = by
   simpa only [← reverse_concat', reverse_inj, reverse_suffix] using
     suffix_cons_iff (l₁ := l₁.reverse) (l₂ := l₂.reverse)
 
@@ -117,15 +117,15 @@ alias ⟨eq_nil_of_suffix_nil, _⟩ := suffix_nil
 
 #align list.infix_iff_prefix_suffix List.infix_iff_prefix_suffix
 
-theorem eq_of_infix_of_length_eq (h : l₁ <:+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
+theorem eq_of_infix_of_length_eq (h : l₁ < : + : l₂) : l₁.length = l₂.length → l₁ = l₂ : =
   h.sublist.eq_of_length
 #align list.eq_of_infix_of_length_eq List.eq_of_infix_of_length_eq
 
-theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
+theorem eq_of_prefix_of_length_eq (h : l₁ <+ : l₂) : l₁.length = l₂.length → l₁ = l₂ : =
   h.sublist.eq_of_length
 #align list.eq_of_prefix_of_length_eq List.eq_of_prefix_of_length_eq
 
-theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
+theorem eq_of_suffix_of_length_eq (h : l₁ < : + l₂) : l₁.length = l₂.length → l₁ = l₂ : =
   h.sublist.eq_of_length
 #align list.eq_of_suffix_of_length_eq List.eq_of_suffix_of_length_eq
 
@@ -162,20 +162,20 @@ lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropS
   dropSlice_subset n m l h
 #align list.mem_of_mem_slice List.mem_of_mem_dropSlice
 
-theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+: l :=
+theorem takeWhile_prefix (p : α → Bool) : l.takeWhile p <+ : l : =
   ⟨l.dropWhile p, takeWhile_append_dropWhile p l⟩
 #align list.take_while_prefix List.takeWhile_prefix
 
-theorem dropWhile_suffix (p : α → Bool) : l.dropWhile p <:+ l :=
+theorem dropWhile_suffix (p : α → Bool) : l.dropWhile p < : + l : =
   ⟨l.takeWhile p, takeWhile_append_dropWhile p l⟩
 #align list.drop_while_suffix List.dropWhile_suffix
 
-theorem dropLast_prefix : ∀ l : List α, l.dropLast <+: l
+theorem dropLast_prefix : ∀ l : List α, l.dropLast <+ : l
   | [] => ⟨nil, by rw [dropLast, List.append_nil]⟩
   | a :: l => ⟨_, dropLast_append_getLast (cons_ne_nil a l)⟩
 #align list.init_prefix List.dropLast_prefix
 
-theorem tail_suffix (l : List α) : tail l <:+ l := by rw [← drop_one]; apply drop_suffix
+theorem tail_suffix (l : List α) : tail l < : + l : = by rw [← drop_one]; apply drop_suffix
 #align list.tail_suffix List.tail_suffix
 
 theorem dropLast_sublist (l : List α) : l.dropLast <+ l :=
@@ -208,21 +208,21 @@ protected theorem Sublist.drop : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → ∀
   | _, _, h, 0 => h
   | _, _, h, n + 1 => by rw [← drop_tail, ← drop_tail]; exact h.tail.drop n
 
-theorem prefix_iff_eq_append : l₁ <+: l₂ ↔ l₁ ++ drop (length l₁) l₂ = l₂ :=
+theorem prefix_iff_eq_append : l₁ <+ : l₂ ↔ l₁ ++ drop (length l₁) l₂ = l₂ : =
   ⟨by rintro ⟨r, rfl⟩; rw [drop_left], fun e => ⟨_, e⟩⟩
 #align list.prefix_iff_eq_append List.prefix_iff_eq_append
 
-theorem suffix_iff_eq_append : l₁ <:+ l₂ ↔ take (length l₂ - length l₁) l₂ ++ l₁ = l₂ :=
+theorem suffix_iff_eq_append : l₁ < : + l₂ ↔ take (length l₂ - length l₁) l₂ ++ l₁ = l₂ : =
   ⟨by rintro ⟨r, rfl⟩; simp only [length_append, Nat.add_sub_cancel_right, take_left], fun e =>
     ⟨_, e⟩⟩
 #align list.suffix_iff_eq_append List.suffix_iff_eq_append
 
-theorem prefix_iff_eq_take : l₁ <+: l₂ ↔ l₁ = take (length l₁) l₂ :=
+theorem prefix_iff_eq_take : l₁ <+ : l₂ ↔ l₁ = take (length l₁) l₂ : =
   ⟨fun h => append_cancel_right <| (prefix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
     fun e => e.symm ▸ take_prefix _ _⟩
 #align list.prefix_iff_eq_take List.prefix_iff_eq_take
 
-theorem prefix_take_iff {x y : List α} {n : ℕ} : x <+: y.take n ↔ x <+: y ∧ x.length ≤ n := by
+theorem prefix_take_iff {x y : List α} {n : ℕ} : x <+ : y.take n ↔ x <+ : y ∧ x.length ≤ n : = by
   constructor
   · intro h
     constructor
@@ -236,19 +236,19 @@ theorem prefix_take_iff {x y : List α} {n : ℕ} : x <+: y.take n ↔ x <+: y �
     rw [hp, List.take_take]
     simp [min_eq_left, hl, hl']
 
-theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
-    x ++ [y.get ⟨x.length, hl⟩] <+: y := by
+theorem concat_get_prefix {x y : List α} (h : x <+ : y) (hl : x.length < y.length) :
+    x ++ [y.get ⟨x.length, hl⟩] <+ : y : = by
   use y.drop (x.length + 1)
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
   convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
-theorem suffix_iff_eq_drop : l₁ <:+ l₂ ↔ l₁ = drop (length l₂ - length l₁) l₂ :=
+theorem suffix_iff_eq_drop : l₁ < : + l₂ ↔ l₁ = drop (length l₂ - length l₁) l₂ : =
   ⟨fun h => append_cancel_left <| (suffix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
     fun e => e.symm ▸ drop_suffix _ _⟩
 #align list.suffix_iff_eq_drop List.suffix_iff_eq_drop
 
-instance decidablePrefix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+: l₂)
+instance decidablePrefix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+ : l₂)
   | [], l₂ => isTrue ⟨l₂, rfl⟩
   | a :: l₁, [] => isFalse fun ⟨t, te⟩ => List.noConfusion te
   | a :: l₁, b :: l₂ =>
@@ -259,7 +259,7 @@ instance decidablePrefix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
 #align list.decidable_prefix List.decidablePrefix
 
 -- Alternatively, use mem_tails
-instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+ l₂)
+instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ < : + l₂)
   | [], l₂ => isTrue ⟨l₂, append_nil _⟩
   | a :: l₁, [] => isFalse <| mt (Sublist.length_le ∘ IsSuffix.sublist) (by simp)
   | l₁, b :: l₂ =>
@@ -268,7 +268,7 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
       suffix_cons_iff.symm
 #align list.decidable_suffix List.decidableSuffix
 
-instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
+instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ < : + : l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩
   | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
   | l₁, b :: l₂ =>
@@ -278,7 +278,7 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
 #align list.decidable_infix List.decidableInfix
 
 theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
-    L.take m <+: L.take n ↔ m ≤ n := by
+    L.take m <+ : L.take n ↔ m ≤ n : = by
   simp only [prefix_iff_eq_take, length_take]
   induction m generalizing L n with
   | zero => simp [min_eq_left, eq_self_iff_true, Nat.zero_le, take]
@@ -294,7 +294,7 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
         simp [← @IH n ls hm, Nat.min_eq_left, Nat.le_of_lt hm]
 #align list.prefix_take_le_iff List.prefix_take_le_iff
 
-theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
+theorem cons_prefix_iff : a : : l₁ <+ : b : : l₂ ↔ a = b ∧ l₁ <+ : l₂ : = by
   constructor
   · rintro ⟨L, hL⟩
     simp only [cons_append] at hL
@@ -304,7 +304,7 @@ theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ :=
     rwa [prefix_cons_inj]
 #align list.cons_prefix_iff List.cons_prefix_iff
 
-protected theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f <+: l₂.map f := by
+protected theorem IsPrefix.map (h : l₁ <+ : l₂) (f : α → β) : l₁.map f <+ : l₂.map f : = by
   induction' l₁ with hd tl hl generalizing l₂
   · simp only [nil_prefix, map_nil]
   · cases' l₂ with hd₂ tl₂
@@ -313,8 +313,8 @@ protected theorem IsPrefix.map (h : l₁ <+: l₂) (f : α → β) : l₁.map f 
       simp only [List.map_cons, h, prefix_cons_inj, hl, map]
 #align list.is_prefix.map List.IsPrefix.map
 
-protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) :
-    l₁.filterMap f <+: l₂.filterMap f := by
+protected theorem IsPrefix.filterMap (h : l₁ <+ : l₂) (f : α → Option β) :
+    l₁.filterMap f <+ : l₂.filterMap f : = by
   induction' l₁ with hd₁ tl₁ hl generalizing l₂
   · simp only [nil_prefix, filterMap_nil]
   · cases' l₂ with hd₂ tl₂
@@ -327,8 +327,8 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
 
 @[deprecated (since := "2024-03-26")] alias IsPrefix.filter_map := IsPrefix.filterMap
 
-protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
-    l₁.reduceOption <+: l₂.reduceOption :=
+protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+ : l₂) :
+    l₁.reduceOption <+ : l₂.reduceOption : =
   h.filterMap id
 #align list.is_prefix.reduce_option List.IsPrefix.reduceOption
 
@@ -336,17 +336,17 @@ protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁
 #align list.is_suffix.filter List.IsSuffix.filter
 #align list.is_infix.filter List.IsInfix.filter
 
-instance : IsPartialOrder (List α) (· <+: ·) where
+instance : IsPartialOrder (List α) (· <+ : ·) where
   refl := prefix_refl
   trans _ _ _ := IsPrefix.trans
   antisymm _ _ h₁ h₂ := eq_of_prefix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+ ·) where
+instance : IsPartialOrder (List α) (· < : + ·) where
   refl := suffix_refl
   trans _ _ _ := IsSuffix.trans
   antisymm _ _ h₁ h₂ := eq_of_suffix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+: ·) where
+instance : IsPartialOrder (List α) (· < : + : ·) where
   refl := infix_refl
   trans _ _ _ := IsInfix.trans
   antisymm _ _ h₁ h₂ := eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
@@ -356,12 +356,12 @@ end Fix
 section InitsTails
 
 @[simp]
-theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
+theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+ : t
   | s, [] =>
-    suffices s = nil ↔ s <+: nil by simpa only [inits, mem_singleton]
+    suffices s = nil ↔ s <+ : nil by simpa only [inits, mem_singleton]
     ⟨fun h => h.symm ▸ prefix_refl [], eq_nil_of_prefix_nil⟩
   | s, a :: t =>
-    suffices (s = nil ∨ ∃ l ∈ inits t, a :: l = s) ↔ s <+: a :: t by simpa
+    suffices (s = nil ∨ ∃ l ∈ inits t, a : : l = s) ↔ s <+ : a : : t by simpa
     ⟨fun o =>
       match s, o with
       | _, Or.inl rfl => ⟨_, rfl⟩
@@ -377,13 +377,13 @@ theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
 #align list.mem_inits List.mem_inits
 
 @[simp]
-theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
+theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s < : + t
   | s, [] => by
     simp only [tails, mem_singleton, suffix_nil]
   | s, a :: t => by
     simp only [tails, mem_cons, mem_tails s t]
     exact
-      show s = a :: t ∨ s <:+ t ↔ s <:+ a :: t from
+      show s = a : : t ∨ s < : + t ↔ s < : + a : : t from
         ⟨fun o =>
           match s, t, o with
           | _, t, Or.inl rfl => suffix_rfl
@@ -521,13 +521,13 @@ theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l el
 #align list.mem_insert_iff List.mem_insert_iff
 
 @[simp]
-theorem suffix_insert (a : α) (l : List α) : l <:+ l.insert a := by
+theorem suffix_insert (a : α) (l : List α) : l < : + l.insert a : = by
   by_cases h : a ∈ l
   · simp only [insert_of_mem h, insert, suffix_refl]
   · simp only [insert_of_not_mem h, suffix_cons, insert]
 #align list.suffix_insert List.suffix_insert
 
-theorem infix_insert (a : α) (l : List α) : l <:+: l.insert a :=
+theorem infix_insert (a : α) (l : List α) : l < : + : l.insert a : =
   (suffix_insert a l).isInfix
 #align list.infix_insert List.infix_insert
 
@@ -547,23 +547,23 @@ theorem subset_insert (a : α) (l : List α) : l ⊆ l.insert a :=
 
 end Insert
 
-theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
+theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ < : + l₂) : a ∈ l₂ : =
   hl.subset hx
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
 
-theorem IsPrefix.ne_nil {x y : List α} (h : x <+: y) (hx : x ≠ []) : y ≠ [] := by
+theorem IsPrefix.ne_nil {x y : List α} (h : x <+ : y) (hx : x ≠ []) : y ≠ [] : = by
   rintro rfl; exact hx <| List.prefix_nil.mp h
 
-theorem IsPrefix.getElem {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
+theorem IsPrefix.getElem {x y : List α} (h : x <+ : y) {n} (hn : n < x.length) :
     x[n] = y[n]'(hn.trans_le h.length_le) := by
   obtain ⟨_, rfl⟩ := h
   exact (List.getElem_append n hn).symm
 
-theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
+theorem IsPrefix.get_eq {x y : List α} (h : x <+ : y) {n} (hn : n < x.length) :
     x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
   simp only [get_eq_getElem, IsPrefix.getElem h hn]
 
-theorem IsPrefix.head_eq {x y : List α} (h : x <+: y) (hx : x ≠ []) :
+theorem IsPrefix.head_eq {x y : List α} (h : x <+ : y) (hx : x ≠ []) :
     x.head hx = y.head (h.ne_nil hx) := by
   cases x <;> cases y <;> simp only [head_cons, ne_eq, not_true_eq_false] at hx ⊢
   all_goals (obtain ⟨_, h⟩ := h; injection h)

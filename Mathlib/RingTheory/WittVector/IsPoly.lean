@@ -147,7 +147,7 @@ The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and 
 because typeclass resolution did not play well with function composition.
 This no longer seems to be an issue, so that such instances can be defined directly.)
 -/
-class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop where mk' ::
+class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop where mk' : :
   poly :
     ∃ φ : ℕ → MvPolynomial ℕ ℤ,
       ∀ ⦃R⦄ [CommRing R] (x : 𝕎 R), (f x).coeff = fun n => aeval x.coeff (φ n)
@@ -219,7 +219,7 @@ The `ghost_calc` tactic makes use of the `IsPoly` and `IsPoly₂` typeclass and 
 because typeclass resolution did not play well with function composition.
 This no longer seems to be an issue, so that such instances can be defined directly.)
 -/
-class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' ::
+class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → 𝕎 R) : Prop where mk' : :
   poly :
     ∃ φ : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ,
       ∀ ⦃R⦄ [CommRing R] (x y : 𝕎 R), (f x y).coeff = fun n => peval (φ n) ![x.coeff, y.coeff]
@@ -482,7 +482,7 @@ private def runIntro (ref : Syntax) (n : Name) : TacticM FVarId := do
 private def getLocalOrIntro (t : Term) : TacticM FVarId := do
   match t with
     | `(_) => runIntro t `_
-    | `($id:ident) => getFVarId id <|> runIntro id id.getId
+    | `($id : ident) => getFVarId id <|> runIntro id id.getId
     | _ => Elab.throwUnsupportedSyntax
 
 elab_rules : tactic | `(tactic| ghost_calc $[$ids']*) => do

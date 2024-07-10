@@ -641,7 +641,7 @@ theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (h
   exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
 
 theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
-    StrictAntiOn (fun (x:ℝ) => x ^ r) (Set.Ioi 0) :=
+    StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) : =
   fun _ ha _ _ hab => rpow_lt_rpow_of_exponent_neg ha hab hr
 
 theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x) (hz : z ≤ 0) :
@@ -656,7 +656,7 @@ theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x)
   case inr => simp
 
 theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
-    AntitoneOn (fun (x:ℝ) => x ^ r) (Set.Ioi 0) :=
+    AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) : =
   fun _ ha _ _ hab => rpow_le_rpow_of_exponent_nonpos ha hab hr
 
 @[simp]

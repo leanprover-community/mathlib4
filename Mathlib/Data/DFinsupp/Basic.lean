@@ -58,7 +58,7 @@ variable (β)
 Note that `DFinsupp.support` is the preferred API for accessing the support of the function,
 `DFinsupp.support'` is an implementation detail that aids computability; see the implementation
 notes in this file for more information. -/
-structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
+structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' : :
   /-- The underlying function of a dependent function with finite support (aka `DFinsupp`). -/
   toFun : ∀ i, β i
   /-- The support of a dependent function with finite support (aka `DFinsupp`). -/

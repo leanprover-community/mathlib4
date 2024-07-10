@@ -26,7 +26,7 @@ set_option maxRecDepth 100000 in
 ```
 -/
 @[command_elab timeCmd] def timeCmdElab : CommandElab
-  | `(#time%$tk $stx:command) => do
+  | `(#time%$tk $stx : command) => do
     let start ← IO.monoMsNow
     elabCommand stx
     logInfoAt tk m!"time: {(← IO.monoMsNow) - start}ms"

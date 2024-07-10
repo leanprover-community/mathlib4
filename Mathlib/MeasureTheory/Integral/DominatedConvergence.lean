@@ -40,7 +40,7 @@ open scoped Topology
 
 namespace MeasureTheory
 
-variable {α E G: Type*}
+variable {α E G : Type*}
   [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
