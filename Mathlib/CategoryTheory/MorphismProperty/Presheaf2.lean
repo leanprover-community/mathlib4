@@ -256,11 +256,9 @@ lemma presheaf.property {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoneda.ob
     P (hf.choose.snd g) :=
   hf.choose_spec g
 
--- (Calle): this can definitely be golfed later. Also maybe provide other versions
--- of this lemma with other pullback API's (e.g. `pullback f g` could be useful)
 -- possibly this should be the definition, and the weaker condition should be derived from this?
 lemma presheaf.property' (hP : P.RespectsIso) {f : F ⟶ G} (hf : P.presheaf f) :
-    ∀ ⦃X Y : C⦄ {g : yoneda.obj X ⟶ G} {fst : yoneda.obj Y ⟶ F} {snd : Y ⟶ X}
+    ∀ ⦃X Y : C⦄ (g : yoneda.obj X ⟶ G) (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X)
     (_ : IsPullback fst (yoneda.map snd) f g), P snd := by
   intro X Y g fst snd h
 
@@ -299,10 +297,9 @@ lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y :
   apply IsPullback.of_map yoneda ((Presheaf.representable.yoneda_map f).condition' g)
   simpa using (Presheaf.representable.yoneda_map f).isPullback g
 
--- TODO: commit w/o this
-lemma presheaf_of_yoneda_map {X Y : C} {f : X ⟶ Y} (hf : P.presheaf (yoneda.map f)) : P f := by
-
-  sorry
+lemma presheaf_of_yoneda (hP : RespectsIso P) {X Y : C} {f : X ⟶ Y}
+    (hf : P.presheaf (yoneda.map f)) : P f :=
+  hf.property' hP (𝟙 _) (𝟙 _) f (IsPullback.id_horiz (yoneda.map f))
 
 /-- Morphisms satisfying `(monomorphism C).presheaf` are in particular monomorphisms.-/
 lemma presheaf_monomorphisms_le_monomorphisms :
@@ -337,7 +334,8 @@ lemma representable_stableUnderBaseChange :
   intro F G G' H f g f' g' P₁ hg X h
   refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
 
-  apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) (by sorry)
+  apply P₁.lift (hg.fst (h ≫ f)) (yoneda.map (hg.snd (h ≫ f)) ≫ h) _
+  sorry
 
   apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
 
@@ -359,7 +357,7 @@ variable [HasPullbacks C] (hP₀ : P.RespectsIso)
 lemma presheaf_stableUnderBaseChange : StableUnderBaseChange (MorphismProperty.presheaf P) := by
   intro F G G' H f g f' g' hfBC hg
   have hg' := representable_stableUnderBaseChange hfBC hg.representable
-  refine ⟨hg', fun X h ↦ hg.property' hP₀ (IsPullback.paste_horiz (hg'.isPullback h) hfBC)⟩
+  refine ⟨hg', fun X h ↦ hg.property' hP₀ _ _ _ (IsPullback.paste_horiz (hg'.isPullback h) hfBC)⟩
 
 -- if P.presheaf assumes `StableUnderBaseChange`, this could be maybe an instance
 -- (Calle): This is definitely golfable

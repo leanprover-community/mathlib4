@@ -339,6 +339,9 @@ theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) : IsPullb
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 #align category_theory.is_pullback.of_horiz_is_iso CategoryTheory.IsPullback.of_horiz_isIso
 
+def id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
+  of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+
 section
 
 variable {P': C} {fst' : P' ⟶ X} {snd' : P' ⟶ Y}
@@ -723,6 +726,9 @@ theorem unop {P X Y Z : Cᵒᵖ} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {
 theorem of_vert_isIso [IsIso snd] [IsIso f] (sq : CommSq fst snd f g) : IsPullback fst snd f g :=
   IsPullback.flip (of_horiz_isIso sq.flip)
 #align category_theory.is_pullback.of_vert_is_iso CategoryTheory.IsPullback.of_vert_isIso
+
+def id_vert (f : X ⟶ Z) : IsPullback f (𝟙 X) (𝟙 Z) f :=
+  of_vert_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
 
 end IsPullback
 
