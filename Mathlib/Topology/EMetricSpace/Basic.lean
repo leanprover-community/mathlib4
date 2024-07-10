@@ -637,7 +637,7 @@ def edistLtTopSetoid : Setoid α where
   iseqv :=
     ⟨fun x => by rw [edist_self]; exact ENNReal.coe_lt_top,
       fun h => by rwa [edist_comm], fun hxy hyz =>
-        lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩)⟩
+        lt_of_le_of_lt (edist_triangle _ _ _) (add_lt_top.2 ⟨hxy, hyz⟩)⟩
 #align emetric.edist_lt_top_setoid EMetric.edistLtTopSetoid
 
 @[simp]

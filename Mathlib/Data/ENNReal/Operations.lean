@@ -184,11 +184,11 @@ section OperationsAndInfty
 
 variable {α : Type*}
 
-@[simp] theorem add_eq_top : a + b = ∞ ↔ a = ∞ ∨ b = ∞ := WithTop.add_eq_top
-#align ennreal.add_eq_top ENNReal.add_eq_top
+instance : NoTopAddends ℝ≥0∞ := inferInstanceAs <| NoTopAddends (WithTop ℝ≥0)
 
-@[simp] theorem add_lt_top : a + b < ∞ ↔ a < ∞ ∧ b < ∞ := WithTop.add_lt_top
-#align ennreal.add_lt_top ENNReal.add_lt_top
+#align ennreal.add_eq_top add_eq_top
+
+#align ennreal.add_lt_top add_lt_top
 
 theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞) (h₂ : r₂ ≠ ∞) :
     (r₁ + r₂).toNNReal = r₁.toNNReal + r₂.toNNReal := by
@@ -200,8 +200,7 @@ theorem toNNReal_add {r₁ r₂ : ℝ≥0∞} (h₁ : r₁ ≠ ∞) (h₂ : r₂
 theorem not_lt_top {x : ℝ≥0∞} : ¬x < ∞ ↔ x = ∞ := by rw [lt_top_iff_ne_top, Classical.not_not]
 #align ennreal.not_lt_top ENNReal.not_lt_top
 
-theorem add_ne_top : a + b ≠ ∞ ↔ a ≠ ∞ ∧ b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using add_lt_top
-#align ennreal.add_ne_top ENNReal.add_ne_top
+#align ennreal.add_ne_top add_ne_top
 
 theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert WithTop.mul_top' a
 #align ennreal.mul_top ENNReal.mul_top'

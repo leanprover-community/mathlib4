@@ -233,7 +233,7 @@ theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : �
     exact Int.pow_sub_pow hp hp1 hxy hx n
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
       Nat.sub_eq_zero_iff_le.mpr (Nat.pow_le_pow_left hyx n), multiplicity.zero,
-      PartENat.top_add]
+      top_add]
 #align multiplicity.nat.pow_sub_pow multiplicity.Nat.pow_sub_pow
 
 theorem Nat.pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
@@ -370,7 +370,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
     rfl
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
       Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_left' hyx n), multiplicity.zero,
-      PartENat.top_add, PartENat.add_top]
+      top_add, add_top]
 #align nat.two_pow_sub_pow Nat.two_pow_sub_pow
 
 namespace padicValNat

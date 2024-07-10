@@ -338,10 +338,10 @@ theorem infEdist_le_infEdist_add_hausdorffEdist :
   ENNReal.le_of_forall_pos_le_add fun ε εpos h => by
     have ε0 : (ε / 2 : ℝ≥0∞) ≠ 0 := by simpa [pos_iff_ne_zero] using εpos
     have : infEdist x s < infEdist x s + ε / 2 :=
-      ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).1.ne ε0
+      ENNReal.lt_add_right (add_lt_top.1 h).1.ne ε0
     obtain ⟨y : α, ys : y ∈ s, dxy : edist x y < infEdist x s + ↑ε / 2⟩ := infEdist_lt_iff.mp this
     have : hausdorffEdist s t < hausdorffEdist s t + ε / 2 :=
-      ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).2.ne ε0
+      ENNReal.lt_add_right (add_lt_top.1 h).2.ne ε0
     obtain ⟨z : α, zt : z ∈ t, dyz : edist y z < hausdorffEdist s t + ↑ε / 2⟩ :=
       exists_edist_lt_of_hausdorffEdist_lt ys this
     calc

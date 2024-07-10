@@ -167,7 +167,7 @@ theorem log_mul_add {x y : ℝ≥0∞} : log (x * y) = log x + log y := by
   · simp
   · rw [log_top]
     rcases ENNReal.trichotomy y with (rfl | rfl | y_real)
-    · rw [mul_zero, log_zero, EReal.add_bot]
+    · rw [mul_zero, log_zero, add_bot]
     · simp
     · rw [log_pos_real' y_real, ENNReal.top_mul', EReal.top_add_coe, log_eq_top_iff]
       simp only [ite_eq_right_iff, zero_ne_top, imp_false]

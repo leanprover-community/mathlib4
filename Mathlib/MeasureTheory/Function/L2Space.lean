@@ -136,7 +136,7 @@ theorem snorm_inner_lt_top (f g : α →₂[μ] E) : snorm (fun x : α => ⟪f x
   refine (snorm_mono_ae (ae_of_all _ h)).trans_lt ((snorm_add_le ?_ ?_ le_rfl).trans_lt ?_)
   · exact ((Lp.aestronglyMeasurable f).norm.aemeasurable.pow_const _).aestronglyMeasurable
   · exact ((Lp.aestronglyMeasurable g).norm.aemeasurable.pow_const _).aestronglyMeasurable
-  rw [ENNReal.add_lt_top]
+  rw [add_lt_top]
   exact ⟨snorm_rpow_two_norm_lt_top f, snorm_rpow_two_norm_lt_top g⟩
 #align measure_theory.L2.snorm_inner_lt_top MeasureTheory.L2.snorm_inner_lt_top
 

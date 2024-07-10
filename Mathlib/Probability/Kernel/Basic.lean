@@ -164,7 +164,7 @@ instance isFiniteKernel_zero (α β : Type*) {mα : MeasurableSpace α} {mβ : M
 instance IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (κ + η) := by
   refine ⟨⟨IsFiniteKernel.bound κ + IsFiniteKernel.bound η,
-    ENNReal.add_lt_top.mpr ⟨IsFiniteKernel.bound_lt_top κ, IsFiniteKernel.bound_lt_top η⟩,
+    add_lt_top.mpr ⟨IsFiniteKernel.bound_lt_top κ, IsFiniteKernel.bound_lt_top η⟩,
     fun a => ?_⟩⟩
   exact add_le_add (kernel.measure_le_bound _ _ _) (kernel.measure_le_bound _ _ _)
 #align probability_theory.is_finite_kernel.add ProbabilityTheory.IsFiniteKernel.add

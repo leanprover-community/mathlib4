@@ -247,7 +247,7 @@ theorem measure_iUnion_null_iff' {ι : Prop} {s : ι → Set α} : μ (⋃ i, s 
 #align measure_theory.measure_Union_null_iff' MeasureTheory.measure_iUnion_null_iff'
 
 theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) < ∞ :=
-  (measure_union_le s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
+  (measure_union_le s t).trans_lt (add_lt_top.mpr ⟨hs, ht⟩)
 #align measure_theory.measure_union_lt_top MeasureTheory.measure_union_lt_top
 
 @[simp]

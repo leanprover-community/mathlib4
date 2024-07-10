@@ -137,30 +137,56 @@ class LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid
 
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
 
+/--
+The additive equivalent of `MulZeroClass` for `Top`
+-/
+class IsTopAbsorbing (α : Type*) [Add α] [Top α] : Prop where
+  /-- Top is a left aborbing element for addition -/
+  top_add : ∀ a : α, ⊤ + a = ⊤
+  /-- Top is a right aborbing element for addition -/
+  add_top : ∀ a : α, a + ⊤ = ⊤
+
+export IsTopAbsorbing (top_add add_top)
+attribute [simp] top_add add_top
+
+#align top_add IsTopAbsorbing.top_add
+#align add_top IsTopAbsorbing.add_top
+
+/--
+The additive equivalent of `MulZeroClass` for `Bot`
+-/
+class IsBotAbsorbing (α : Type*) [Add α] [Bot α] : Prop where
+  /-- Bot is a left aborbing element for addition -/
+  bot_add : ∀ a : α, ⊥ + a = ⊥
+  /-- Bot is a right aborbing element for addition -/
+  add_bot : ∀ a : α, a + ⊥ = ⊥
+
+export IsBotAbsorbing (bot_add add_bot)
+attribute [simp] bot_add add_bot
+
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    OrderTop α where
-  /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
-  protected top_add' : ∀ x : α, ⊤ + x = ⊤
+    OrderTop α, IsTopAbsorbing α where
+  add_top a := add_comm a ⊤ ▸ top_add a
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
 #align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
-section LinearOrderedAddCommMonoidWithTop
+/--
+The additive equivalent of `NoZeroDivisors` for `Top`
+-/
+class NoTopAddends (α : Type*) [Add α] [Top α] : Prop where
+  eq_top_or_eq_top_of_add_eq_top : ∀ {a b : α}, a + b = ⊤ → a = ⊤ ∨ b = ⊤
 
-variable [LinearOrderedAddCommMonoidWithTop α] {a b : α}
+export NoTopAddends (eq_top_or_eq_top_of_add_eq_top)
 
-@[simp]
-theorem top_add (a : α) : ⊤ + a = ⊤ :=
-  LinearOrderedAddCommMonoidWithTop.top_add' a
-#align top_add top_add
+/--
+The additive equivalent of `NoZeroDivisors` for `Bot`
+-/
+class NoBotAddends (α : Type*) [Add α] [Bot α] : Prop where
+  eq_bot_or_eq_bot_of_add_eq_bot : ∀ {a b : α}, a + b = ⊥ → a = ⊥ ∨ b = ⊥
 
-@[simp]
-theorem add_top (a : α) : a + ⊤ = ⊤ :=
-  Trans.trans (add_comm _ _) (top_add _)
-#align add_top add_top
-
-end LinearOrderedAddCommMonoidWithTop
+export NoBotAddends (eq_bot_or_eq_bot_of_add_eq_bot)
 
 variable [LinearOrderedCommMonoid α] {a : α}
 

@@ -361,7 +361,7 @@ theorem _root_.Set.exists_isOpen_lt_add [OuterRegular μ] (A : Set α) (hA : μ 
 theorem _root_.Set.exists_isOpen_le_add (A : Set α) (μ : Measure α) [OuterRegular μ] {ε : ℝ≥0∞}
     (hε : ε ≠ 0) : ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U ≤ μ A + ε := by
   rcases eq_or_ne (μ A) ∞ with (H | H)
-  · exact ⟨univ, subset_univ _, isOpen_univ, by simp only [H, _root_.top_add, le_top]⟩
+  · exact ⟨univ, subset_univ _, isOpen_univ, by simp only [H, top_add, le_top]⟩
   · rcases A.exists_isOpen_lt_add H hε with ⟨U, AU, U_open, hU⟩
     exact ⟨U, AU, U_open, hU.le⟩
 #align set.exists_is_open_le_add Set.exists_isOpen_le_add

@@ -154,7 +154,7 @@ theorem snorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g 
       snorm_add_le' hf.aestronglyMeasurable hg.aestronglyMeasurable p
     _ < ∞ := by
       apply ENNReal.mul_lt_top (LpAddConst_lt_top p).ne
-      exact (ENNReal.add_lt_top.2 ⟨hf.2, hg.2⟩).ne
+      exact (add_lt_top.2 ⟨hf.2, hg.2⟩).ne
 #align measure_theory.snorm_add_lt_top MeasureTheory.snorm_add_lt_top
 
 theorem snorm'_sum_le {ι} {f : ι → α → E} {s : Finset ι}

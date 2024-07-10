@@ -105,7 +105,7 @@ theorem measureUnivNNReal_zero : measureUnivNNReal (0 : Measure α) = 0 :=
 
 instance isFiniteMeasureAdd [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ + ν) where
   measure_univ_lt_top := by
-    rw [Measure.coe_add, Pi.add_apply, ENNReal.add_lt_top]
+    rw [Measure.coe_add, Pi.add_apply, add_lt_top]
     exact ⟨measure_lt_top _ _, measure_lt_top _ _⟩
 #align measure_theory.is_finite_measure_add MeasureTheory.isFiniteMeasureAdd
 
@@ -1452,7 +1452,7 @@ protected theorem eventually (h : μ.FiniteAtFilter f) : ∀ᶠ s in f.smallSets
 
 theorem filterSup : μ.FiniteAtFilter f → μ.FiniteAtFilter g → μ.FiniteAtFilter (f ⊔ g) :=
   fun ⟨s, hsf, hsμ⟩ ⟨t, htg, htμ⟩ =>
-  ⟨s ∪ t, union_mem_sup hsf htg, (measure_union_le s t).trans_lt (ENNReal.add_lt_top.2 ⟨hsμ, htμ⟩)⟩
+  ⟨s ∪ t, union_mem_sup hsf htg, (measure_union_le s t).trans_lt (add_lt_top.2 ⟨hsμ, htμ⟩)⟩
 #align measure_theory.measure.finite_at_filter.filter_sup MeasureTheory.Measure.FiniteAtFilter.filterSup
 
 end FiniteAtFilter
@@ -1493,7 +1493,7 @@ theorem exists_open_superset_measure_lt_top' (h : IsCompact s)
   · rintro s t ⟨U, hsU, hUo, hU⟩ ⟨V, htV, hVo, hV⟩
     refine
       ⟨U ∪ V, union_subset_union hsU htV, hUo.union hVo,
-        (measure_union_le _ _).trans_lt <| ENNReal.add_lt_top.2 ⟨hU, hV⟩⟩
+        (measure_union_le _ _).trans_lt <| add_lt_top.2 ⟨hU, hV⟩⟩
   · intro x hx
     rcases (hμ x hx).exists_mem_basis (nhds_basis_opens _) with ⟨U, ⟨hx, hUo⟩, hU⟩
     exact ⟨U, nhdsWithin_le_nhds (hUo.mem_nhds hx), U, Subset.rfl, hUo, hU⟩
@@ -1509,7 +1509,7 @@ theorem exists_open_superset_measure_lt_top (h : IsCompact s) (μ : Measure α)
 theorem measure_lt_top_of_nhdsWithin (h : IsCompact s) (hμ : ∀ x ∈ s, μ.FiniteAtFilter (𝓝[s] x)) :
     μ s < ∞ :=
   IsCompact.induction_on h (by simp) (fun s t hst ht => (measure_mono hst).trans_lt ht)
-    (fun s t hs ht => (measure_union_le s t).trans_lt (ENNReal.add_lt_top.2 ⟨hs, ht⟩)) hμ
+    (fun s t hs ht => (measure_union_le s t).trans_lt (add_lt_top.2 ⟨hs, ht⟩)) hμ
 #align is_compact.measure_lt_top_of_nhds_within IsCompact.measure_lt_top_of_nhdsWithin
 
 theorem measure_zero_of_nhdsWithin (hs : IsCompact s) :

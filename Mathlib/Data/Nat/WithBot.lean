@@ -27,35 +27,35 @@ instance : WellFoundedRelation (WithBot ℕ) where
 
 theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := by
   cases n
-  · simp [WithBot.bot_add]
+  · simp
   cases m
-  · simp [WithBot.add_bot]
+  · simp
   simp [← WithBot.coe_add, _root_.add_eq_zero_iff]
 #align nat.with_bot.add_eq_zero_iff Nat.WithBot.add_eq_zero_iff
 
 theorem add_eq_one_iff {n m : WithBot ℕ} : n + m = 1 ↔ n = 0 ∧ m = 1 ∨ n = 1 ∧ m = 0 := by
   cases n
-  · simp only [WithBot.bot_add, WithBot.bot_ne_one, WithBot.bot_ne_zero, false_and, or_self]
+  · simp
   cases m
-  · simp [WithBot.add_bot]
+  · simp
   simp [← WithBot.coe_add, Nat.add_eq_one_iff]
 #align nat.with_bot.add_eq_one_iff Nat.WithBot.add_eq_one_iff
 
 theorem add_eq_two_iff {n m : WithBot ℕ} :
     n + m = 2 ↔ n = 0 ∧ m = 2 ∨ n = 1 ∧ m = 1 ∨ n = 2 ∧ m = 0 := by
   cases n
-  · simp [WithBot.bot_add]
+  · simp
   cases m
-  · simp [WithBot.add_bot]
+  · simp
   simp [← WithBot.coe_add, Nat.add_eq_two_iff]
 #align nat.with_bot.add_eq_two_iff Nat.WithBot.add_eq_two_iff
 
 theorem add_eq_three_iff {n m : WithBot ℕ} :
     n + m = 3 ↔ n = 0 ∧ m = 3 ∨ n = 1 ∧ m = 2 ∨ n = 2 ∧ m = 1 ∨ n = 3 ∧ m = 0 := by
   cases n
-  · simp [WithBot.bot_add]
+  · simp
   cases m
-  · simp [WithBot.add_bot]
+  · simp
   simp [← WithBot.coe_add, Nat.add_eq_three_iff]
 #align nat.with_bot.add_eq_three_iff Nat.WithBot.add_eq_three_iff
 
@@ -82,7 +82,7 @@ theorem lt_one_iff_le_zero {x : WithBot ℕ} : x < 1 ↔ x ≤ 0 :=
 
 theorem add_one_le_of_lt {n m : WithBot ℕ} (h : n < m) : n + 1 ≤ m := by
   cases n
-  · simp only [WithBot.bot_add, bot_le]
+  · simp
   cases m
   · exact (not_lt_bot h).elim
   · rwa [WithBot.coe_lt_coe, ← Nat.add_one_le_iff, ← WithBot.coe_le_coe, WithBot.coe_add,

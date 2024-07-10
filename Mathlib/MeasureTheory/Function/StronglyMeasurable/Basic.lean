@@ -1098,7 +1098,7 @@ protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : FinStronglyMeasura
   ⟨fun n => hf.approx n + hg.approx n, fun n =>
     (measure_mono (Function.support_add _ _)).trans_lt
       ((measure_union_le _ _).trans_lt
-        (ENNReal.add_lt_top.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩)),
+        (add_lt_top.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩)),
     fun x => (hf.tendsto_approx x).add (hg.tendsto_approx x)⟩
 #align measure_theory.fin_strongly_measurable.add MeasureTheory.FinStronglyMeasurable.add
 
@@ -1117,7 +1117,7 @@ protected theorem sub [AddGroup β] [ContinuousSub β] (hf : FinStronglyMeasurab
   ⟨fun n => hf.approx n - hg.approx n, fun n =>
     (measure_mono (Function.support_sub _ _)).trans_lt
       ((measure_union_le _ _).trans_lt
-        (ENNReal.add_lt_top.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩)),
+        (add_lt_top.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩)),
     fun x => (hf.tendsto_approx x).sub (hg.tendsto_approx x)⟩
 #align measure_theory.fin_strongly_measurable.sub MeasureTheory.FinStronglyMeasurable.sub
 
