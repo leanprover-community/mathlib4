@@ -290,32 +290,30 @@ theorem edgeDensity_comm (s t : Finset α) : edgeDensity r s t = edgeDensity r t
 
 end Symmetric
 
-end Rel
-
 section mySection
 
 variable {α β : Type*} (r : α → α → Prop) (r' : β → β → Prop) {s t : Finset α}
-variable [∀ a, DecidablePred (r a)] [∀ b, DecidablePred (r' b)]
+variable [∀ a, DecidablePred (r a)] [∀ b, DecidablePred (r' b)] (f : r ≃r r')
 
-#check Rel.interedges r' (s.map _) (t.map _)
+theorem mem_interedges_map (x : α × α) :
+    x ∈ interedges r s t ↔ (f.prodCongr ↑f) x ∈ interedges r' (s.map f) (t.map f) := by
+  simp only [mem_interedges_iff, Equiv.prodCongr_apply, RelIso.coe_fn_toEquiv, EquivLike.coe_coe,
+    Prod.map_fst, mem_map_equiv, EquivLike.coe_symm_apply_apply, Prod.map_snd, and_congr_right_iff]
+  exact fun _ _ ↦ Iff.symm f.map_rel_iff'
 
-lemma helper (f : r ≃r r') (x : α × α) :
-    x ∈ Rel.interedges r s t ↔ (f.prodCongr ↑f) x ∈ Rel.interedges r' (s.map f) (t.map f) := by
-  simp [@Rel.mem_interedges_iff]
-  intros
-  exact Iff.symm f.map_rel_iff'
+def mapInteredges (f : r ≃r r') : interedges r s t ≃ interedges r' (s.map f) (t.map f) :=
+  (f.prodCongr f).subtypeEquiv (fun x ↦ mem_interedges_map r r' f x)
 
-def asdf (f : r ≃r r') : Rel.interedges r s t ≃ Rel.interedges r' (s.map f) (t.map f) :=
-  (f.prodCongr f).subtypeEquiv (fun x ↦ helper r r' f x)
-
-/-
-  toFun w := ⟨(f.prodCongr f) w.1, sorry⟩
-  invFun w := ⟨(f.prodCongr f).symm w.1, sorry⟩
-  left_inv := by simp [Function.LeftInverse]; intros; exact (Equiv.symm_apply_eq f.toEquiv).mpr rfl
-  right_inv := by simp [Function.RightInverse, Function.LeftInverse]; intros;
--/
+theorem mapEdgeDensity : Rel.edgeDensity r s t = Rel.edgeDensity r' (s.map f) (t.map f) := by
+  unfold Rel.edgeDensity
+  congr
+  · exact Finset.card_eq_of_equiv (mapInteredges r r' f)
+  · exact Eq.symm (card_map f.toEmbedding)
+  · exact Eq.symm (card_map f.toEmbedding)
 
 end mySection
+
+end Rel
 
 open Rel
 
@@ -330,8 +328,6 @@ variable (G : SimpleGraph α) [DecidableRel G.Adj] {s s₁ s₂ t t₁ t₂ : Fi
 def interedges (s t : Finset α) : Finset (α × α) :=
   Rel.interedges G.Adj s t
 #align simple_graph.interedges SimpleGraph.interedges
-
-example {G' : SimpleGraph α} [DecidableRel G'.Adj] (f : G ≃g G') : G.interedges s t ≃ G'.interedges (s.map f) (t.map f) := asdf G.Adj G'.Adj f
 
 /-- Density of edges of a graph between two finsets of vertices. -/
 def edgeDensity : Finset α → Finset α → ℚ :=
@@ -379,6 +375,24 @@ theorem interedges_disjoint_right (s : Finset α) (ht : Disjoint t₁ t₂) :
     Disjoint (G.interedges s t₁) (G.interedges s t₂) :=
   Rel.interedges_disjoint_right _ _ ht
 #align simple_graph.interedges_disjoint_right SimpleGraph.interedges_disjoint_right
+
+section map
+
+variable {G' : SimpleGraph β} (f : G ≃g G')
+
+def asdf : DecidableRel G'.Adj := by
+  intro b₁ b₂
+  rw [← f.symm.map_adj_iff]
+  exact ‹DecidableRel G.Adj› (f.symm b₁) (f.symm b₂)
+
+variable [DecidableRel G'.Adj]
+
+def new : G.interedges s t ≃ G'.interedges (s.map f) (t.map f) :=
+  mapInteredges G.Adj G'.Adj f
+
+theorem new2 : G.edgeDensity s t = G'.edgeDensity (s.map f) (t.map f) := mapEdgeDensity G.Adj G'.Adj f
+
+end map
 
 section DecidableEq
 
