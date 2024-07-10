@@ -207,3 +207,5 @@ lemma map₂_inv_hom_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
 end
 
 end PrelaxFunctor
+
+end CategoryTheory

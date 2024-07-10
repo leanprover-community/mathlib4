@@ -158,3 +158,5 @@ instance toBialgebra : Bialgebra R R where
   comul_one := rfl
 
 end CommSemiring
+
+end CommSemiring
