@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.GCongr
@@ -292,6 +292,31 @@ end Symmetric
 
 end Rel
 
+section mySection
+
+variable {α β : Type*} (r : α → α → Prop) (r' : β → β → Prop) {s t : Finset α}
+variable [∀ a, DecidablePred (r a)] [∀ b, DecidablePred (r' b)]
+
+#check Rel.interedges r' (s.map _) (t.map _)
+
+lemma helper (f : r ≃r r') (x : α × α) :
+    x ∈ Rel.interedges r s t ↔ (f.prodCongr ↑f) x ∈ Rel.interedges r' (s.map f) (t.map f) := by
+  simp [@Rel.mem_interedges_iff]
+  intros
+  exact Iff.symm f.map_rel_iff'
+
+def asdf (f : r ≃r r') : Rel.interedges r s t ≃ Rel.interedges r' (s.map f) (t.map f) :=
+  (f.prodCongr f).subtypeEquiv (fun x ↦ helper r r' f x)
+
+/-
+  toFun w := ⟨(f.prodCongr f) w.1, sorry⟩
+  invFun w := ⟨(f.prodCongr f).symm w.1, sorry⟩
+  left_inv := by simp [Function.LeftInverse]; intros; exact (Equiv.symm_apply_eq f.toEquiv).mpr rfl
+  right_inv := by simp [Function.RightInverse, Function.LeftInverse]; intros;
+-/
+
+end mySection
+
 open Rel
 
 /-! ### Density of a graph -/
@@ -305,6 +330,8 @@ variable (G : SimpleGraph α) [DecidableRel G.Adj] {s s₁ s₂ t t₁ t₂ : Fi
 def interedges (s t : Finset α) : Finset (α × α) :=
   Rel.interedges G.Adj s t
 #align simple_graph.interedges SimpleGraph.interedges
+
+example {G' : SimpleGraph α} [DecidableRel G'.Adj] (f : G ≃g G') : G.interedges s t ≃ G'.interedges (s.map f) (t.map f) := asdf G.Adj G'.Adj f
 
 /-- Density of edges of a graph between two finsets of vertices. -/
 def edgeDensity : Finset α → Finset α → ℚ :=
