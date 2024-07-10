@@ -85,7 +85,7 @@ theorem zipWith_swap_prod_support' (l l' : List α) :
   simpa using mem_or_mem_of_zipWith_swap_prod_ne h
 #align list.zip_with_swap_prod_support' List.zipWith_swap_prod_support'
 
-theorem zipWith_swap_prod_support [Fintype α] (l l' : List α) :
+theorem zipWith_swap_prod_support (l l' : List α) :
     (zipWith swap l l').prod.support ≤ l.toFinset ⊔ l'.toFinset := by
   intro x hx
   have hx' : x ∈ (zipWith swap l l').prod.support := by simpa using hx
@@ -271,7 +271,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
     · simp [Nat.mod_eq_of_lt hn'] at h
 #align list.support_form_perm_of_nodup' List.support_formPerm_of_nodup'
 
-theorem support_formPerm_of_nodup [Fintype α] (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
+theorem support_formPerm_of_nodup (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     support (formPerm l) = l.toFinset := by
   rw [coe_toFinset]
   convert support_formPerm_of_nodup' _ h h'
