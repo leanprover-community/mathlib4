@@ -169,7 +169,7 @@ def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t
 /-- The natural isomorphism between a pullback cone and the corresponding pullback cone
 reconstructed using `PullbackCone.mk`. -/
 @[simps!]
-def isoMkSelf (t : PullbackCone f g) : mk t.fst t.snd t.condition ≅ t :=
+def eta (t : PullbackCone f g) : t ≅ mk t.fst t.snd t.condition :=
   PullbackCone.ext (Iso.refl _) (by simp) (by simp)
 
 /-- This is a slightly more convenient method to verify that a pullback cone is a limit cone. It
@@ -250,7 +250,7 @@ def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) 
 /-- The pullback cone reconstructed using `PullbackCone.mk` from a pullback cone that is a
 limit, is also a limit. -/
 def mkSelfIsLimit {t : PullbackCone f g} (ht : IsLimit t) : IsLimit (mk t.fst t.snd t.condition) :=
-  IsLimit.ofIsoLimit ht (isoMkSelf t).symm
+  IsLimit.ofIsoLimit ht (eta t)
 
 section Flip
 
@@ -412,7 +412,7 @@ def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = 
 /-- The natural isomorphism between a pushout cocone and the corresponding pushout cocone
 reconstructed using `PushoutCocone.mk`. -/
 @[simps!]
-def isoMkSelf (t : PushoutCocone f g) : mk t.inl t.inr t.condition ≅ t :=
+def eta (t : PushoutCocone f g) : t ≅ mk t.inl t.inr t.condition :=
   PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
 
 /-- This is a slightly more convenient method to verify that a pushout cocone is a colimit cocone.
@@ -494,7 +494,7 @@ def IsColimit.mk {W : C} {inl : Y ⟶ W} {inr : Z ⟶ W} (eq : f ≫ inl = g ≫
 colimit, is also a colimit. -/
 def mkSelfIsColimit {t : PushoutCocone f g} (ht : IsColimit t) :
     IsColimit (mk t.inl t.inr t.condition) :=
-  IsColimit.ofIsoColimit ht (isoMkSelf t).symm
+  IsColimit.ofIsoColimit ht (eta t)
 
 section Flip
 
