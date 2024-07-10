@@ -42,7 +42,7 @@ a complete graph, whose vertices represent the colors.
 
 * `C.colorClasses` is the set containing all color classes.
 
-## Todo:
+## TODO
 
   * Gather material from:
     * https://github.com/leanprover-community/mathlib/blob/simple_graph_matching/src/combinatorics/simple_graph/coloring.lean
