@@ -583,10 +583,14 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           simp only [exists_and_left, Set.mem_setOf_eq]
           use ‖y‖/‖x‖
           constructor
-          · sorry
+          · apply div_nonneg
+            exact ContinuousLinearMap.opNorm_nonneg y
+            exact ContinuousLinearMap.opNorm_nonneg x
           · use ‖z‖/‖x‖
             constructor
-            · sorry
+            · apply div_nonneg
+              exact ContinuousLinearMap.opNorm_nonneg z
+              exact ContinuousLinearMap.opNorm_nonneg x
             · constructor
               · calc
                 ‖y‖ / ‖x‖ + ‖z‖ / ‖x‖ = (‖y‖ + ‖z‖) / ‖x‖ := div_add_div_same ‖y‖ ‖z‖ ‖x‖
