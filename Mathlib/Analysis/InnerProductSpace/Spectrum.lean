@@ -49,13 +49,12 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 -/
 
 
-variable {𝕜 : Type*} [IsROrC 𝕜]
-
+variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
-open scoped BigOperators ComplexConjugate
+open scoped ComplexConjugate
 
 open Module.End
 
@@ -88,7 +87,7 @@ theorem orthogonalFamily_eigenspaces :
   · simp [hv']
   have H := hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector ⟨hv, hv'⟩)
   rw [mem_eigenspace_iff] at hv hw
-  refine' Or.resolve_left _ hμν.symm
+  refine Or.resolve_left ?_ hμν.symm
   simpa [inner_smul_left, inner_smul_right, hv, hw, H] using (hT v w).symm
 #align linear_map.is_symmetric.orthogonal_family_eigenspaces LinearMap.IsSymmetric.orthogonalFamily_eigenspaces
 
@@ -111,7 +110,7 @@ product space has no eigenvalues. -/
 theorem orthogonalComplement_iSup_eigenspaces (μ : 𝕜) :
     eigenspace (T.restrict hT.orthogonalComplement_iSup_eigenspaces_invariant) μ = ⊥ := by
   set p : Submodule 𝕜 E := (⨆ μ, eigenspace T μ)ᗮ
-  refine' eigenspace_restrict_eq_bot hT.orthogonalComplement_iSup_eigenspaces_invariant _
+  refine eigenspace_restrict_eq_bot hT.orthogonalComplement_iSup_eigenspaces_invariant ?_
   have H₂ : eigenspace T μ ⟂ p := (Submodule.isOrtho_orthogonal_right _).mono_left (le_iSup _ _)
   exact H₂.disjoint
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces
@@ -212,7 +211,7 @@ for a self-adjoint operator `T` on `E`.
 
 TODO Postcompose with a permutation so that these eigenvalues are listed in increasing order. -/
 noncomputable irreducible_def eigenvalues (i : Fin n) : ℝ :=
-  @IsROrC.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+  @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 #align linear_map.is_symmetric.eigenvalues LinearMap.IsSymmetric.eigenvalues
 
@@ -223,17 +222,17 @@ theorem hasEigenvector_eigenvectorBasis (i : Fin n) :
     (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
       hT.orthogonalFamily_eigenspaces').val
   simp_rw [eigenvalues]
-  change HasEigenvector T (IsROrC.re μ) v
+  change HasEigenvector T (RCLike.re μ) v
   have key : HasEigenvector T μ v := by
     have H₁ : v ∈ eigenspace T μ := by
-      simp_rw [eigenvectorBasis]
+      simp_rw [v, eigenvectorBasis]
       exact
         hT.direct_sum_isInternal.subordinateOrthonormalBasis_subordinate hn i
           hT.orthogonalFamily_eigenspaces'
     have H₂ : v ≠ 0 := by simpa using (hT.eigenvectorBasis hn).toBasis.ne_zero i
     exact ⟨H₁, H₂⟩
-  have re_μ : ↑(IsROrC.re μ) = μ := by
-    rw [← IsROrC.conj_eq_iff_re]
+  have re_μ : ↑(RCLike.re μ) = μ := by
+    rw [← RCLike.conj_eq_iff_re]
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 #align linear_map.is_symmetric.has_eigenvector_eigenvector_basis LinearMap.IsSymmetric.hasEigenvector_eigenvectorBasis
@@ -283,25 +282,25 @@ theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] 
 #align inner_product_apply_eigenvector inner_product_apply_eigenvector
 
 theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
-    (hnn : ∀ x : E, 0 ≤ IsROrC.re ⟪x, T x⟫) : 0 ≤ μ := by
+    (hnn : ∀ x : E, 0 ≤ RCLike.re ⟪x, T x⟫) : 0 ≤ μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
-  have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
-    have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
-    -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [← IsROrC.ofReal_pow, ← IsROrC.ofReal_mul] at this
+  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
+    have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
+    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
+    rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
     exact mod_cast this
   exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_nonneg_of_nonneg eigenvalue_nonneg_of_nonneg
 
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
-    (hnn : ∀ x : E, 0 < IsROrC.re ⟪x, T x⟫) : 0 < μ := by
+    (hnn : ∀ x : E, 0 < RCLike.re ⟪x, T x⟫) : 0 < μ := by
   obtain ⟨v, hv⟩ := hμ.exists_hasEigenvector
   have hpos : (0 : ℝ) < ‖v‖ ^ 2 := by simpa only [sq_pos_iff, norm_ne_zero_iff] using hv.2
-  have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
-    have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
-    -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [← IsROrC.ofReal_pow, ← IsROrC.ofReal_mul] at this
+  have : RCLike.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
+    have := congr_arg RCLike.re (inner_product_apply_eigenvector hv.1)
+    -- Porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
+    rw [← RCLike.ofReal_pow, ← RCLike.ofReal_mul] at this
     exact mod_cast this
   exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_pos_of_pos eigenvalue_pos_of_pos

@@ -42,8 +42,6 @@ for good definitional properties of the default term.
 
 -/
 
-set_option autoImplicit true
-
 universe u v w
 
 /-- `Unique α` expresses that `α` is a type with a unique term `default`.
@@ -81,8 +79,7 @@ arbitrarily invent the `a : α` term. Nevertheless, these instances are all
 equivalent by `Unique.Subsingleton.unique`.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
+abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
   default := a
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton
@@ -115,7 +112,7 @@ open Function
 
 section
 
-variable [Unique α]
+variable {α : Sort*} [Unique α]
 
 -- see Note [lower instance priority]
 instance (priority := 100) : Inhabited α :=
@@ -143,6 +140,8 @@ theorem exists_iff {p : α → Prop} : Exists p ↔ p default :=
 
 end
 
+variable {α : Sort*}
+
 @[ext]
 protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
   | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr; rw [h x, h y]
@@ -153,8 +152,7 @@ instance subsingleton_unique : Subsingleton (Unique α) :=
 
 /-- Construct `Unique` from `Inhabited` and `Subsingleton`. Making this an instance would create
 a loop in the class inheritance graph. -/
-@[reducible]
-def mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
+abbrev mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
   { h₁ with uniq := fun _ ↦ Subsingleton.elim _ _ }
 #align unique.mk' Unique.mk'
 
@@ -165,6 +163,8 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
   ⟨fun ⟨u⟩ ↦ by constructor <;> exact inferInstance,
    fun ⟨hs, hn⟩ ↦ ⟨by inhabit α; exact Unique.mk' α⟩⟩
 #align unique_iff_subsingleton_and_nonempty unique_iff_subsingleton_and_nonempty
+
+variable {α : Sort*}
 
 @[simp]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
@@ -185,11 +185,11 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_subsingleton [Subsingleton α] (f : α → β) (a : α) :
+theorem eq_const_of_subsingleton {β : Sort*} [Subsingleton α] (f : α → β) (a : α) :
     f = Function.const α (f a) :=
   funext fun x ↦ Subsingleton.elim x a ▸ rfl
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) :=
+theorem eq_const_of_unique {β : Sort*} [Unique α] (f : α → β) : f = Function.const α (f default) :=
   eq_const_of_subsingleton ..
 #align eq_const_of_unique eq_const_of_unique
 
@@ -200,7 +200,7 @@ theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
 
 namespace Function
 
-variable {f : α → β}
+variable {β : Sort*} {f : α → β}
 
 /-- If the codomain of an injective function is a subsingleton, then the domain
 is a subsingleton as well. -/
@@ -216,7 +216,8 @@ protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) 
 
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
-protected def Surjective.unique (f : α → β) (hf : Surjective f) [Unique.{u} α] : Unique β :=
+protected def Surjective.unique {α : Sort u} (f : α → β) (hf : Surjective f) [Unique.{u} α] :
+    Unique β :=
   @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 #align function.surjective.unique Function.Surjective.unique
 
@@ -236,6 +237,7 @@ end Function
 section Pi
 
 variable {ι : Sort*} {α : ι → Sort*}
+
 /-- Given one value over a unique, we get a dependent function. -/
 def uniqueElim [Unique ι] (x : α (default : ι)) (i : ι) : α i := by
   rw [Unique.eq_default i]
@@ -246,16 +248,17 @@ theorem uniqueElim_default {_ : Unique ι} (x : α (default : ι)) : uniqueElim 
   rfl
 
 @[simp]
-theorem uniqueElim_const {_ : Unique ι} (x : β) (i : ι) : uniqueElim (α := fun _ ↦ β) x i = x :=
+theorem uniqueElim_const {β : Sort*} {_ : Unique ι} (x : β) (i : ι) :
+    uniqueElim (α := fun _ ↦ β) x i = x :=
   rfl
 
 end Pi
 
--- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
+-- TODO: Mario turned this off as a simp lemma in Batteries, wanting to profile it.
 attribute [local simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
-  refine' ⟨default, _, _⟩ <;> intro x <;> simp
+  refine ⟨default, ?_, ?_⟩ <;> intro x <;> simp
 #align unique.bijective Unique.bijective
 
 namespace Option

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
+import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 /-!
 
 # Connections between the regular, extensive and coherent topologies
@@ -34,13 +36,6 @@ instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
     ext b
     simpa using hι b
 
-theorem effectiveEpi_desc_iff_effectiveEpiFamily [FinitaryPreExtensive C] {α : Type} [Finite α]
-    {B : C} (X : α → C) (π : (a : α) → X a ⟶ B) :
-    EffectiveEpi (Sigma.desc π) ↔ EffectiveEpiFamily X π := by
-  exact ⟨fun h ↦ ⟨⟨@effectiveEpiFamilyStructOfEffectiveEpiDesc _ _ _ _ X π _ h _ _ (fun g ↦
-    (FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
-    fun _ ↦ inferInstance⟩
-
 instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ h := by
     refine ⟨α, inferInstance, ?_⟩
@@ -66,19 +61,19 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · induction h with
     | of Y T hT =>
-      apply Coverage.saturate.of
+      apply Coverage.Saturate.of
       simp only [Coverage.sup_covering, Set.mem_union] at hT
       exact Or.elim hT
         (fun ⟨α, x, X, π, ⟨h, _⟩⟩ ↦ ⟨α, x, X, π, ⟨h, inferInstance⟩⟩)
         (fun ⟨Z, f, ⟨h, _⟩⟩ ↦ ⟨Unit, inferInstance, fun _ ↦ Z, fun _ ↦ f, ⟨h, inferInstance⟩⟩)
-    | top => apply Coverage.saturate.top
-    | transitive Y T => apply Coverage.saturate.transitive Y T<;> [assumption; assumption]
+    | top => apply Coverage.Saturate.top
+    | transitive Y T => apply Coverage.Saturate.transitive Y T<;> [assumption; assumption]
   · induction h with
     | of Y T hT =>
       obtain ⟨I, _, X, f, rfl, hT⟩ := hT
-      apply Coverage.saturate.transitive Y (generate (Presieve.ofArrows
+      apply Coverage.Saturate.transitive Y (generate (Presieve.ofArrows
         (fun (_ : Unit) ↦ (∐ fun (i : I) => X i)) (fun (_ : Unit) ↦ Sigma.desc f)))
-      · apply Coverage.saturate.of
+      · apply Coverage.Saturate.of
         simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
           Set.mem_setOf_eq]
         exact Or.inr ⟨_, Sigma.desc f, ⟨rfl, inferInstance⟩⟩
@@ -91,9 +86,9 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
           rintro Q q ⟨E, e, r, ⟨hq, rfl⟩⟩
           exact ⟨E, e, r ≫ (Sigma.desc f), by cases hq; simpa using Presieve.ofArrows.mk _, by simp⟩
         apply Coverage.saturate_of_superset _ this
-        apply Coverage.saturate.of
+        apply Coverage.Saturate.of
         refine Or.inl ⟨I, inferInstance, _, _, ⟨rfl, ?_⟩⟩
         convert IsIso.id _
         aesop
-    | top => apply Coverage.saturate.top
-    | transitive Y T => apply Coverage.saturate.transitive Y T<;> [assumption; assumption]
+    | top => apply Coverage.Saturate.top
+    | transitive Y T => apply Coverage.Saturate.transitive Y T<;> [assumption; assumption]

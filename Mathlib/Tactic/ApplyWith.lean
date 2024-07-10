@@ -1,6 +1,10 @@
+/-
+Copyright (c) 2022 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
 import Lean.Elab.Eval
 import Lean.Elab.Tactic.ElabTerm
-import Std.Util.TermUnsafe
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic Term

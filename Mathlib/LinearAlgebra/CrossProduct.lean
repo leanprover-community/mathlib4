@@ -5,7 +5,7 @@ Authors: Martin Dvorak, Kyle Miller, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Algebra.Lie.Basic
 
 #align_import linear_algebra.cross_product from "leanprover-community/mathlib"@"91288e351d51b3f0748f0a38faa7613fb0ae2ada"
@@ -83,9 +83,7 @@ theorem cross_anticomm' (v w : Fin 3 → R) : v ×₃ w + w ×₃ v = 0 := by
 
 @[simp]
 theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
-  -- Porting note: Original proof was `simp [cross_apply, mul_comm]`
-  simp_rw [cross_apply, mul_comm, cons_eq_zero_iff]
-  exact ⟨sub_self _, sub_self _, sub_self _, zero_empty.symm⟩
+  simp [cross_apply, mul_comm]
 #align cross_self cross_self
 
 /-- The cross product of two vectors is perpendicular to the first vector. -/

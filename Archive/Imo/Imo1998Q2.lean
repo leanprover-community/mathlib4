@@ -3,11 +3,12 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.Ring
 
 #align_import imo.imo1998_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
@@ -39,8 +40,6 @@ the lower bound: `a(b-1)^2/2 ≤ |A|`.
 Rearranging gives the result.
 -/
 
-
--- porting note: `A` already upper case
 set_option linter.uppercaseLean3 false
 
 open scoped Classical
@@ -122,7 +121,7 @@ theorem A_fibre_over_contestant (c : C) :
   ext p
   simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, true_and_iff, exists_prop]
   constructor
-  · rintro ⟨h₁, h₂⟩; refine' ⟨(c, p), _⟩; tauto
+  · rintro ⟨h₁, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
   · intro h; aesop
 #align imo1998_q2.A_fibre_over_contestant Imo1998Q2.A_fibre_over_contestant
 
@@ -131,19 +130,16 @@ theorem A_fibre_over_contestant_card (c : C) :
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).card := by
   rw [A_fibre_over_contestant r]
   apply Finset.card_image_of_injOn
-  -- porting note: used to be `tidy`. TODO: remove `ext` after `extCore` to `aesop`.
-  unfold Set.InjOn; intros; ext; all_goals aesop
+  unfold Set.InjOn
+  aesop
 #align imo1998_q2.A_fibre_over_contestant_card Imo1998Q2.A_fibre_over_contestant_card
 
 theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     agreedContestants r p = ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).image
     AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
-  · rw [Finset.mem_image]; refine' ⟨⟨c, p⟩, _⟩; aesop
-  -- porting note: this used to be `finish`
-  · simp only [Finset.mem_filter, Finset.mem_image, Prod.exists] at h
-    rcases h with ⟨_, ⟨_, ⟨_, ⟨h, _⟩⟩⟩⟩
-    cases h; aesop
+  · rw [Finset.mem_image]; refine ⟨⟨c, p⟩, ?_⟩; aesop
+  · aesop
 #align imo1998_q2.A_fibre_over_judge_pair Imo1998Q2.A_fibre_over_judgePair
 
 theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
@@ -151,7 +147,7 @@ theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
       ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
   rw [A_fibre_over_judgePair r h]
   apply Finset.card_image_of_injOn
-  -- porting note: used to be `tidy`
+  -- Porting note (#10936): used to be `tidy`
   unfold Set.InjOn; intros; ext; all_goals aesop
 #align imo1998_q2.A_fibre_over_judge_pair_card Imo1998Q2.A_fibre_over_judgePair_card
 
@@ -230,7 +226,7 @@ end
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff]
-  -- porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
+  -- Porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
   · convert Nat.cast_le (α := ℚ)
     · aesop
     · norm_cast

@@ -16,7 +16,8 @@ infinite list. In this file we define `Stream'` and some functions that take and
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 -/
 
-set_option autoImplicit true
+universe u v w
+variable {α : Type u} {β : Type v} {δ : Type w}
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
 def Stream' (α : Type u) := ℕ → α
@@ -78,7 +79,7 @@ def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
 def const (a : α) : Stream' α := fun _ => a
 #align stream.const Stream'.const
 
--- porting note: used to be implemented using RecOn
+-- Porting note: used to be implemented using RecOn
 /-- Iterates of a function as a stream. -/
 def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
@@ -96,7 +97,7 @@ def corec' (f : α → β × α) : α → Stream' β :=
   corec (Prod.fst ∘ f) (Prod.snd ∘ f)
 #align stream.corec' Stream'.corec'
 
--- porting note: this `#align` should be elsewhere but idk where
+-- Porting note: this `#align` should be elsewhere but idk where
 #align state StateM
 
 /-- Use a state monad to generate a stream through corecursion -/
@@ -184,7 +185,7 @@ def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (g
 #align stream.apply Stream'.apply
 
 infixl:75 " ⊛ " => apply
--- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
+-- Porting note: "input as \o*" was here but doesn't work for the above notation
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
 def nats : Stream' Nat := fun n => n

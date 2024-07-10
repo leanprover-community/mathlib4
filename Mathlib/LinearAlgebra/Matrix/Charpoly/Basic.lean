@@ -25,17 +25,13 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
 
--- porting note: these imports are no longer needed
---import Mathlib.Tactic.ApplyFun
---import Mathlib.Tactic.Squeeze
-
 noncomputable section
 
 universe u v w
 
 namespace Matrix
 
-open BigOperators Finset Matrix Polynomial
+open Finset Matrix Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable {m n : Type*} [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n]
@@ -112,10 +108,10 @@ theorem charpoly_reindex (e : n ≃ m)
 
 lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
     (M.map f).charpoly = M.charpoly.map f := by
-  rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det]
-  rfl
-@[simp]
+  rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det,
+    RingHom.mapMatrix_apply]
 
+@[simp]
 lemma charpoly_fromBlocks_zero₁₂ :
     (fromBlocks M₁₁ 0 M₂₁ M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
   simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
@@ -143,7 +139,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Using the algebra isomorphism `Matrix n n R[X] ≃ₐ[R] Polynomial (Matrix n n R)`,
   -- we have the same identity in `Polynomial (Matrix n n R)`.
   apply_fun matPolyEquiv at h
-  simp only [matPolyEquiv.map_mul, matPolyEquiv_charmatrix] at h
+  simp only [_root_.map_mul, matPolyEquiv_charmatrix] at h
   -- Because the coefficient ring `Matrix n n R` is non-commutative,
   -- evaluation at `M` is not multiplicative.
   -- However, any polynomial which is a product of the form $N * (t I - M)$

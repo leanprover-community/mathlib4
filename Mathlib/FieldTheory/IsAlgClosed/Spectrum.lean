@@ -14,9 +14,9 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 This file develops proves the spectral mapping theorem for polynomials over algebraically closed
 fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜` is a field, and
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
-spectrum of `a` under `(λ k, Polynomial.eval k p)`. When `𝕜` is algebraically closed, these are in
-fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial has positive
-degree), which is the **spectral mapping theorem**.
+spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebraically closed,
+these are in fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial
+has positive degree), which is the **spectral mapping theorem**.
 
 In addition, this file contains the fact that every element of a finite dimensional nontrivial
 algebra over an algebraically closed field has nonempty spectrum. In particular, this is used in
@@ -46,13 +46,12 @@ universe u v
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
-
 variable [CommRing R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
 local notation "↑ₐ" => algebraMap R A
 
--- porting note: removed an unneeded assumption `p ≠ 0`
+-- Porting note: removed an unneeded assumption `p ≠ 0`
 theorem exists_mem_of_not_isUnit_aeval_prod [IsDomain R] {p : R[X]} {a : A}
     (h : ¬IsUnit (aeval a (Multiset.map (fun x : R => X - C x) p.roots).prod)) :
     ∃ k : R, k ∈ σ a ∧ eval k p = 0 := by
@@ -69,7 +68,6 @@ end ScalarRing
 section ScalarField
 
 variable {𝕜 : Type u} {A : Type v}
-
 variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜
@@ -99,7 +97,7 @@ assuming `[Nontrivial A]`, is `{k}` where `p = Polynomial.C k`. -/
 theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
     (hdeg : 0 < degree p) : σ (aeval a p) = (eval · p) '' σ a := by
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`
-  refine' Set.eq_of_subset_of_subset (fun k hk => _) (subset_polynomial_aeval a p)
+  refine Set.eq_of_subset_of_subset (fun k hk => ?_) (subset_polynomial_aeval a p)
   -- write `C k - p` product of linear factors and a constant; show `C k - p ≠ 0`.
   have hprod := eq_prod_roots_of_splits_id (IsAlgClosed.splits (C k - p))
   have h_ne : C k - p ≠ 0 := ne_zero_of_degree_gt <| by
@@ -122,9 +120,9 @@ is nonempty instead of assuming the degree of the polynomial is positive. -/
 theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
     (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
   nontriviality A
-  refine' Or.elim (le_or_gt (degree p) 0) (fun h => _) (map_polynomial_aeval_of_degree_pos a p)
-  · rw [eq_C_of_degree_le_zero h]
-    simp only [Set.image_congr, eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
+  refine Or.elim (le_or_gt (degree p) 0) (fun h => ?_) (map_polynomial_aeval_of_degree_pos a p)
+  rw [eq_C_of_degree_le_zero h]
+  simp only [Set.image_congr, eval_C, aeval_C, scalar_eq, Set.Nonempty.image_const hnon]
 #align spectrum.map_polynomial_aeval_of_nonempty spectrum.map_polynomial_aeval_of_nonempty
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/

@@ -5,7 +5,7 @@ Authors: François Sunatori
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 
 #align_import analysis.complex.isometry from "leanprover-community/mathlib"@"ae690b0c236e488a0043f6faa8ce3546e7f2f9c5"
 
@@ -132,7 +132,7 @@ theorem linear_isometry_complex_aux {f : ℂ ≃ₗᵢ[ℝ] ℂ} (h : f 1 = 1) :
     · apply @LinearIsometry.im_apply_eq_im_or_neg_of_re_apply_eq_re f.toLinearIsometry
       intro z
       rw [@LinearIsometry.re_apply_eq_re f.toLinearIsometry h]
-  refine' h0.imp (fun h' : f I = I => _) fun h' : f I = -I => _ <;>
+  refine h0.imp (fun h' : f I = I => ?_) fun h' : f I = -I => ?_ <;>
     · apply LinearIsometryEquiv.toLinearEquiv_injective
       apply Complex.basisOneI.ext'
       intro i
@@ -144,7 +144,7 @@ theorem linear_isometry_complex (f : ℂ ≃ₗᵢ[ℝ] ℂ) :
   let a : circle := ⟨f 1, by rw [mem_circle_iff_abs, ← Complex.norm_eq_abs, f.norm_map, norm_one]⟩
   use a
   have : (f.trans (rotation a).symm) 1 = 1 := by simpa using rotation_apply a⁻¹ (f 1)
-  refine' (linear_isometry_complex_aux this).imp (fun h₁ => _) fun h₂ => _
+  refine (linear_isometry_complex_aux this).imp (fun h₁ => ?_) fun h₂ => ?_
   · simpa using eq_mul_of_inv_mul_eq h₁
   · exact eq_mul_of_inv_mul_eq h₂
 #align linear_isometry_complex linear_isometry_complex

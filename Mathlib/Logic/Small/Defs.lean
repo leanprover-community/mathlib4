@@ -23,9 +23,6 @@ If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 See `Mathlib.Logic.Small.Basic` for further instances and theorems.
 -/
 
-set_option autoImplicit true
-
-
 universe u w v v'
 
 /-- A type is `Small.{w}` if there exists an equivalence to some `S : Type w`.
@@ -63,12 +60,12 @@ theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
 -- It would be nice to mark this as `aesop cases` if
 -- https://github.com/JLimperg/aesop/issues/59
 -- is resolved.
-@[eliminator]
-protected noncomputable def Shrink.rec [Small.{w} α] {F : Shrink α → Sort v}
+@[induction_eliminator]
+protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
 
---Porting note: Priority changed to 101
+-- Porting note: Priority changed to 101
 instance (priority := 101) small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 #align small_self small_self
@@ -103,7 +100,7 @@ theorem small_type : Small.{max (u + 1) v} (Type u) :=
 
 section
 
-open Classical
+open scoped Classical
 
 theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔ Small.{w} β :=
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩

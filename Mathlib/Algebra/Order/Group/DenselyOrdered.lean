@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Monoid.OrderDual
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
 #align_import algebra.order.group.densely_ordered from "leanprover-community/mathlib"@"4e87c8477c6c38b753f050bc9664b94ee859896c"
 
@@ -19,9 +19,7 @@ variable {α : Type*}
 section DenselyOrdered
 
 variable [Group α] [LinearOrder α]
-
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
-
 variable [DenselyOrdered α] {a b c : α}
 
 @[to_additive]

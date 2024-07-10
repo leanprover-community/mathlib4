@@ -48,7 +48,7 @@ set `s` of integration variables is a `Finset`. We are assuming that the functio
 for most of this file. Note that asking whether it is `AEMeasurable` is not even well-posed,
 since there is no well-behaved measure on the domain of `f`.
 
-## Todo
+## TODO
 
 * Define the marginal function for functions taking values in a Banach space.
 
@@ -86,8 +86,8 @@ notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 variable (μ)
 
 theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫⁻_s, f ∂μ) := by
-  refine' Measurable.lintegral_prod_right _
-  refine' hf.comp _
+  refine Measurable.lintegral_prod_right ?_
+  refine hf.comp ?_
   rw [measurable_pi_iff]; intro i
   by_cases hi : i ∈ s
   · simp [hi, updateFinset]
@@ -202,7 +202,7 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
     {f : (∀ i, π (e i)) → ℝ≥0∞} (hf : Measurable f) (x : ∀ i, π i) :
       (∫⋯∫⁻_s.image e, f ∘ (· ∘' e) ∂μ) x = (∫⋯∫⁻_s, f ∂μ ∘' e) (x ∘' e) := by
   have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
-    measurable_pi_iff.mpr <| λ i ↦ measurable_pi_apply (e i)
+    measurable_pi_iff.mpr <| fun i ↦ measurable_pi_apply (e i)
   induction s using Finset.induction generalizing x with
   | empty => simp
   | insert hi ih =>

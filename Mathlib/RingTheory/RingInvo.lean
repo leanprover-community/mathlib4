@@ -27,10 +27,7 @@ We provide a coercion to a function `R → Rᵐᵒᵖ`.
 Ring involution
 -/
 
-set_option autoImplicit true
-
-
-variable (R : Type*)
+variable {F : Type*} (R : Type*)
 
 /-- A ring involution -/
 structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
@@ -64,10 +61,10 @@ variable {R} [Semiring R] [EquivLike F R Rᵐᵒᵖ]
 
 /-- Any type satisfying `RingInvoClass` can be cast into `RingInvo` via
 `RingInvoClass.toRingInvo`. -/
-instance [Semiring R] [RingInvoClass F R] : CoeTC F (RingInvo R) :=
+instance [RingInvoClass F R] : CoeTC F (RingInvo R) :=
   ⟨RingInvoClass.toRingInvo⟩
 
-instance [Semiring R] : EquivLike (RingInvo R) R Rᵐᵒᵖ where
+instance : EquivLike (RingInvo R) R Rᵐᵒᵖ where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
@@ -78,7 +75,7 @@ instance [Semiring R] : EquivLike (RingInvo R) R Rᵐᵒᵖ where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance [Semiring R] : RingInvoClass (RingInvo R) R where
+instance : RingInvoClass (RingInvo R) R where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   involution f := f.involution'
@@ -102,7 +99,7 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 #align ring_invo.involution RingInvo.involution
 
--- porting note: remove Coe instance, not needed
+-- Porting note: remove Coe instance, not needed
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
 --   ⟨RingInvo.toRingEquiv⟩
 -- #align ring_invo.has_coe_to_ring_equiv RingInvo.hasCoeToRingEquiv

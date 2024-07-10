@@ -3,10 +3,9 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Function.Indicator
-import Mathlib.Algebra.Order.Nonneg.Field
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Order.Field.Rat
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -20,19 +19,8 @@ cycles.
 open Function
 open scoped NNRat
 
--- The `LinearOrderedCommGroupWithZero` instance is a shortcut instance for performance
-deriving instance CanonicallyLinearOrderedSemifield, LinearOrderedCommGroupWithZero for NNRat
-
 namespace NNRat
 variable {α : Type*} {p q : ℚ≥0}
-
-instance instDenselyOrdered : DenselyOrdered ℚ≥0 := Nonneg.instDenselyOrdered
-
-@[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
-#align nnrat.coe_inv NNRat.coe_inv
-
-@[simp, norm_cast] lemma coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q := rfl
-#align nnrat.coe_div NNRat.coe_div
 
 /-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
 instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
@@ -82,8 +70,8 @@ variable {p q : ℚ≥0}
 @[simp]
 lemma num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   ext : 1
-  rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_ofNat,
-    Int.natAbs_of_nonneg (Rat.num_nonneg.2 q.prop)]
+  rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_natCast,
+    Int.natAbs_of_nonneg (Rat.num_nonneg.2 q.cast_nonneg)]
   exact Rat.num_div_den q
 #align nnrat.num_div_denom NNRat.num_div_den
 

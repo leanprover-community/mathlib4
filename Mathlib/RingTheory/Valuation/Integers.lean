@@ -23,7 +23,6 @@ namespace Valuation
 section Ring
 
 variable {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable (v : Valuation R Γ₀)
 
 /-- The ring of integers under a given valuation is the subring of elements with valuation ≤ 1. -/
@@ -43,9 +42,7 @@ end Ring
 section CommRing
 
 variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable (v : Valuation R Γ₀)
-
 variable (O : Type w) [CommRing O] [Algebra O R]
 
 /-- Given a valuation v : R → Γ₀ and a ring homomorphism O →+* R, we say that O is the integers of v
@@ -68,17 +65,25 @@ theorem integer.integers : v.Integers v.integer :=
 
 namespace Integers
 
-variable {v O} [CommRing O] [Algebra O R] (hv : Integers v O)
+variable {v O} [CommRing O] [Algebra O R]
 
-
-theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
+theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) ≤ 1) :
+    v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
-  le_antisymm (hv.2 _) <| by
+  le_antisymm (H _) <| by
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul]
-    exact mul_le_mul_left' (hv.2 (u⁻¹ : Units O)) _
-#align valuation.integers.one_of_is_unit Valuation.Integers.one_of_isUnit
+    exact mul_le_mul_left' (H (u⁻¹ : Units O)) _
 
+variable (hv : Integers v O)
+
+theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
+  one_of_isUnit' hx hv.map_le_one
+
+/--
+Let `O` be the integers of the valuation `v` on some commutative ring `R`. For every element `x` in
+`O`, `x` is a unit in `O` if and only if the image of `x` in `R` is a unit and has valuation 1.
+-/
 theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebraMap O R x) = 1) :
     IsUnit x :=
   let ⟨u, hu⟩ := hx
@@ -105,7 +110,6 @@ end CommRing
 section Field
 
 variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F] (hv : Integers v O)
 
 namespace Integers
@@ -132,6 +136,21 @@ theorem dvd_iff_le {x y : O} : x ∣ y ↔ v (algebraMap O F y) ≤ v (algebraMa
 theorem le_iff_dvd {x y : O} : v (algebraMap O F x) ≤ v (algebraMap O F y) ↔ y ∣ x :=
   ⟨hv.dvd_of_le, hv.le_of_dvd⟩
 #align valuation.integers.le_iff_dvd Valuation.Integers.le_iff_dvd
+
+/--
+This is the special case of `Valuation.Integers.isUnit_of_one` when the valuation is defined
+over a field. Let `v` be a valuation on some field `F` and `O` be its integers. For every element
+`x` in `O`, `x` is a unit in `O` if and only if the image of `x` in `F` has valuation 1.
+-/
+theorem isUnit_of_one' {x : O} (hvx : v (algebraMap O F x) = 1) : IsUnit x := by
+  refine isUnit_of_one hv (IsUnit.mk0 _ ?_) hvx
+  simp only [← v.ne_zero_iff, hvx, ne_eq, one_ne_zero, not_false_eq_true]
+
+theorem eq_algebraMap_or_inv_eq_algebraMap (x : F) :
+    ∃ a : O, x = algebraMap O F a ∨ x⁻¹ = algebraMap O F a := by
+  rcases val_le_one_or_val_inv_le_one v x with h | h <;>
+  obtain ⟨a, ha⟩ := exists_of_le_one hv h
+  exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
 
 end Integers
 

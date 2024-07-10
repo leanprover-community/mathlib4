@@ -9,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Limits in concrete categories
@@ -18,7 +20,7 @@ the preservation of products and pullbacks in order to describe these limits in 
 concrete category `C`.
 
 If `F : J → C` is a family of objects in `C`, we define a bijection
-`Limits.Concrete.productEquiv F : (forget C).obj (∏ F) ≃ ∀ j, F j`.
+`Limits.Concrete.productEquiv F : (forget C).obj (∏ᶜ F) ≃ ∀ j, F j`.
 
 Similarly, if `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S` are two morphisms, the elements
 in `pullback f₁ f₂` are identified by `Limits.Concrete.pullbackEquiv`
@@ -29,7 +31,7 @@ wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
 
 -/
 
-universe w v u
+universe w v u t r
 
 namespace CategoryTheory.Limits.Concrete
 
@@ -39,16 +41,18 @@ variable {C : Type u} [Category.{v} C]
 
 section Products
 
+section ProductEquiv
+
 variable [ConcreteCategory.{max w v} C] {J : Type w} (F : J → C)
   [HasProduct F] [PreservesLimit (Discrete.functor F) (forget C)]
 
-/-- The equivalence `(forget C).obj (∏ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
+/-- The equivalence `(forget C).obj (∏ᶜ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
 in a concrete category `C`. -/
-noncomputable def productEquiv : (forget C).obj (∏ F) ≃ ∀ j, F j :=
+noncomputable def productEquiv : (forget C).obj (∏ᶜ F) ≃ ∀ j, F j :=
   ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} (fun j => F j))).toEquiv
 
 @[simp]
-lemma productEquiv_apply_apply (x : (forget C).obj (∏ F)) (j : J) :
+lemma productEquiv_apply_apply (x : (forget C).obj (∏ᶜ F)) (j : J) :
     productEquiv F x j = Pi.π F j x :=
   congr_fun (piComparison_comp_π (forget C) F j) x
 
@@ -56,6 +60,30 @@ lemma productEquiv_apply_apply (x : (forget C).obj (∏ F)) (j : J) :
 lemma productEquiv_symm_apply_π (x : ∀ j, F j) (j : J) :
     Pi.π F j ((productEquiv F).symm x) = x j := by
   rw [← productEquiv_apply_apply, Equiv.apply_symm_apply]
+
+end ProductEquiv
+
+section ProductExt
+
+variable {J : Type w} (f : J → C) [HasProduct f] {D : Type t} [Category.{r} D]
+  [ConcreteCategory.{max w r} D] (F : C ⥤ D)
+  [PreservesLimit (Discrete.functor f) F]
+  [HasProduct fun j => F.obj (f j)]
+  [PreservesLimitsOfShape WalkingCospan (forget D)]
+  [PreservesLimit (Discrete.functor fun b ↦ F.toPrefunctor.obj (f b)) (forget D)]
+
+lemma Pi.map_ext (x y : F.obj (∏ᶜ f : C))
+    (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
+  apply ConcreteCategory.injective_of_mono_of_preservesPullback (PreservesProduct.iso F f).hom
+  apply @Concrete.limit_ext.{w, w, r, t} D
+    _ _ (Discrete J) _ _ _ _ (piComparison F _ x) (piComparison F _ y)
+  intro ⟨(j : J)⟩
+  show ((forget D).map (piComparison F f) ≫ (forget D).map (limit.π _ _)) x =
+    ((forget D).map (piComparison F f) ≫ (forget D).map _) y
+  rw [← (forget D).map_comp, piComparison_comp_π]
+  exact h j
+
+end ProductExt
 
 end Products
 
@@ -233,7 +261,7 @@ theorem multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequalizer I]
     simp [h]
 #align category_theory.limits.concrete.multiequalizer_ext CategoryTheory.Limits.Concrete.multiequalizer_ext
 
-/-- An auxiliary equivalence to be used in `multiequalizerEquiv` below.-/
+/-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
 def multiequalizerEquivAux (I : MulticospanIndex C) :
     (I.multicospan ⋙ forget C).sections ≃
     { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } where

@@ -63,3 +63,10 @@ example : a + -b = -b + a := by
   fail_if_success noncomm_ring
   abel
 example : a ^ 50 * a ^ 37 = a ^ 23 * a ^ 64 := by noncomm_ring
+
+/- some examples using arguments -/
+example (h : ∀ a : R, (2 : ℤ) • a = 0) : (a + 1) ^ 2 = a ^ 2 + 1 := by
+  noncomm_ring [h]
+example (h : a = b) (h2 : a = c) : a = c := by
+  fail_if_success noncomm_ring [h]
+  noncomm_ring [h2]

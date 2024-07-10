@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.LinearAlgebra.Basis
+import Mathlib.LinearAlgebra.Dual
 import Mathlib.Data.Fin.FlagRange
 
 /-!
@@ -36,7 +37,7 @@ theorem flag_last (b : Basis (Fin n) R M) : b.flag (.last n) = ⊤ := by
 
 theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
     b.flag k ≤ p ↔ ∀ i : Fin n, i.castSucc < k → b i ∈ p :=
-  span_le.trans ball_image_iff
+  span_le.trans forall_mem_image
 
 theorem flag_succ (b : Basis (Fin n) R M) (k : Fin n) :
     b.flag k.succ = (R ∙ b k) ⊔ b.flag k.castSucc := by
@@ -78,6 +79,11 @@ theorem flag_le_ker_coord (b : Basis (Fin n) R M) {k : Fin (n + 1)} {l : Fin n}
     (h : k ≤ l.castSucc) : b.flag k ≤ LinearMap.ker (b.coord l) := by
   nontriviality R
   exact b.flag_le_ker_coord_iff.2 h
+
+theorem flag_le_ker_dual (b : Basis (Fin n) R M) (k : Fin n) :
+    b.flag k.castSucc ≤ LinearMap.ker (b.dualBasis k) := by
+  nontriviality R
+  rw [coe_dualBasis, b.flag_le_ker_coord_iff]
 
 end CommRing
 

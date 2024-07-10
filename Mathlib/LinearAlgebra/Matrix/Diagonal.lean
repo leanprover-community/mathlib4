@@ -21,13 +21,13 @@ matrix, diagonal, linear_map
 
 noncomputable section
 
-open LinearMap Matrix Set Submodule BigOperators Matrix
+open LinearMap Matrix Set Submodule Matrix
 
 universe u v w
 
 namespace Matrix
 
-section CommSemiring -- porting note: generalized from `CommRing`
+section CommSemiring -- Porting note: generalized from `CommRing`
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
 

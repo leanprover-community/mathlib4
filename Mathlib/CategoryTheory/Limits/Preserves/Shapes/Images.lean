@@ -28,15 +28,10 @@ open CategoryTheory.Limits
 universe u₁ u₂ v₁ v₂
 
 variable {A : Type u₁} {B : Type u₂} [Category.{v₁} A] [Category.{v₂} B]
-
 variable [HasEqualizers A] [HasImages A]
-
 variable [StrongEpiCategory B] [HasImages B]
-
 variable (L : A ⥤ B)
-
 variable [∀ {X Y Z : A} (f : X ⟶ Z) (g : Y ⟶ Z), PreservesLimit (cospan f g) L]
-
 variable [∀ {X Y Z : A} (f : X ⟶ Y) (g : X ⟶ Z), PreservesColimit (span f g) L]
 
 /-- If a functor preserves span and cospan, then it preserves images.

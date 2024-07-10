@@ -12,7 +12,7 @@ import Mathlib.Tactic.FunProp
 # Basic definitions about topological spaces
 
 This file contains definitions about topology that do not require imports
-other than `Mathlib/Data/Set/Lattice`.
+other than `Mathlib.Data.Set.Lattice`.
 
 ## Main definitions
 
@@ -32,7 +32,7 @@ other than `Mathlib/Data/Set/Lattice`.
 
 * `interior s`: the *interior* of a set `s` is the maximal open set that is included in `s`.
 
-* `closure s`: the *closure* of a set `s` is the minimal closed that that includes `s`.
+* `closure s`: the *closure* of a set `s` is the minimal closed set that includes `s`.
 
 * `frontier s`: the *frontier* of a set is the set difference `closure s \ interior s`.
   A point `x` belongs to `frontier s`, if any neighborhood of `x`
@@ -166,3 +166,11 @@ scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 /-- Notation for `Continuous` with respect to a non-standard topologies. -/
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
+
+/-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
+any countable intersection of open dense subsets is dense.
+Formulated here when the source space is ℕ.
+Use `dense_iInter_of_isOpen` which works for any countable index type instead. -/
+class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
+  baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
+#align baire_space BaireSpace

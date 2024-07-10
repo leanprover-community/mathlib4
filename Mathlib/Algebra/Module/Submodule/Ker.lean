@@ -29,7 +29,7 @@ linear algebra, vector space, module
 
 open Function
 
-open BigOperators Pointwise
+open Pointwise
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}
@@ -52,9 +52,7 @@ variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 open Submodule
 
 variable {σ₂₁ : R₂ →+* R} {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
-
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 /-- The kernel of a linear map `f : M → M₂` is defined to be `comap f ⊥`. This is equivalent to the
@@ -163,7 +161,7 @@ theorem ker_eq_bot_of_injective {f : F} (hf : Injective f) : ker f = ⊥ := by
 def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
   toFun n := ker (f ^ n)
   monotone' n m w x h := by
-    obtain ⟨c, rfl⟩ := le_iff_exists_add.mp w
+    obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_ker] at h
     rw [LinearMap.mem_ker, add_comm, pow_add, LinearMap.mul_apply, h, LinearMap.map_zero]
 #align linear_map.iterate_ker LinearMap.iterateKer
@@ -256,13 +254,9 @@ namespace Submodule
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R₂ M₂]
-
 variable (p p' : Submodule R M) (q : Submodule R₂ M₂)
-
 variable {τ₁₂ : R →+* R₂}
-
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 open LinearMap
@@ -291,13 +285,9 @@ namespace LinearMap
 section Semiring
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 
 theorem ker_comp_of_ker_eq_bot (f : M →ₛₗ[τ₁₂] M₂) {g : M₂ →ₛₗ[τ₂₃] M₃} (hg : ker g = ⊥) :
@@ -318,21 +308,13 @@ section AddCommMonoid
 section
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable {module_M : Module R M} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
-
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
-
 variable {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
 variable {σ₃₂ : R₃ →+* R₂}
-
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
-
 variable {re₂₃ : RingHomInvPair σ₂₃ σ₃₂} {re₃₂ : RingHomInvPair σ₃₂ σ₂₃}
-
 variable (e : M ≃ₛₗ[σ₁₂] M₂) (e'' : M₂ ≃ₛₗ[σ₂₃] M₃)
 
 @[simp]

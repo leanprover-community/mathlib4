@@ -1,6 +1,4 @@
 import Mathlib.Tactic.Observe
-import Std.Tactic.GuardMsgs
-
 /-- info: Try this: have h : x + y = y + x := Nat.add_comm x y -/
 #guard_msgs in
 example (x y : Nat) : True := by

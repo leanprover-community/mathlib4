@@ -72,8 +72,8 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       fun h => h ^ 2 := by
   -- it suffices to check that the expression is bounded by `ε * ((‖v‖ + ‖w‖) * ‖w‖) * h^2` for
   -- small enough `h`, for any positive `ε`.
-  refine' IsLittleO.trans_isBigO
-    (isLittleO_iff.2 fun ε εpos => _) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
+  refine IsLittleO.trans_isBigO
+    (isLittleO_iff.2 fun ε εpos => ?_) (isBigO_const_mul_self ((‖v‖ + ‖w‖) * ‖w‖) _ _)
   -- consider a ball of radius `δ` around `x` in which the Taylor approximation for `f''` is
   -- good up to `δ`.
   rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff] at hx
@@ -112,7 +112,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   have g_deriv : ∀ t ∈ Icc (0 : ℝ) 1, HasDerivWithinAt g (g' t) (Icc 0 1) t := by
     intro t ht
     apply_rules [HasDerivWithinAt.sub, HasDerivWithinAt.add]
-    · refine' (hf _ _).comp_hasDerivWithinAt _ _
+    · refine (hf _ ?_).comp_hasDerivWithinAt _ ?_
       · exact xt_mem t ht
       apply_rules [HasDerivAt.hasDerivWithinAt, HasDerivAt.const_add, HasDerivAt.smul_const,
         hasDerivAt_mul_const]
@@ -147,10 +147,10 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
       _ ≤ ε * ‖h • v + (t * h) • w‖ * ‖h • w‖ := by
         apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
         have H : x + h • v + (t * h) • w ∈ Metric.ball x δ ∩ interior s := by
-          refine' ⟨_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
+          refine ⟨?_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
           rw [add_assoc, add_mem_ball_iff_norm]
           exact I.trans_lt hδ
-        simpa only [mem_setOf_eq, add_assoc x, add_sub_cancel'] using sδ H
+        simpa only [mem_setOf_eq, add_assoc x, add_sub_cancel_left] using sδ H
       _ ≤ ε * (‖h • v‖ + ‖h • w‖) * ‖h • w‖ := by
         gcongr
         apply (norm_add_le _ _).trans
@@ -166,10 +166,10 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   convert I using 1
   · congr 1
     simp only [g, Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
-      zero_smul, Ne.def, not_false_iff, bit0_eq_zero, zero_pow]
+      zero_smul, Ne, not_false_iff, bit0_eq_zero, zero_pow]
     abel
   · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
-      hpos.le, mul_assoc, pow_bit0_abs, norm_nonneg, abs_pow]
+      hpos.le, mul_assoc, norm_nonneg, abs_pow]
 #align convex.taylor_approx_two_segment Convex.taylor_approx_two_segment
 
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`
@@ -196,15 +196,15 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     abel
   have h2v : x + (2 : ℝ) • v ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h4v A using 1
-    simp only [smul_smul, one_div, add_sub_cancel', add_right_inj]
+    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj]
     norm_num
   have h2w : x + (2 : ℝ) • w ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h4w A using 1
-    simp only [smul_smul, one_div, add_sub_cancel', add_right_inj]
+    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj]
     norm_num
   have hvw : x + (v + w) ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
-    simp only [smul_smul, one_div, add_sub_cancel', add_right_inj, smul_add, smul_sub]
+    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj, smul_add, smul_sub]
     norm_num
     abel
   have h2vw : x + (2 • v + w) ∈ interior s := by
@@ -214,7 +214,8 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
     abel
   have hvww : x + (v + w) + w ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
-    rw [one_div, add_sub_add_right_eq_sub, add_sub_cancel', inv_smul_smul₀ two_ne_zero, two_smul]
+    rw [one_div, add_sub_add_right_eq_sub, add_sub_cancel_left, inv_smul_smul₀ two_ne_zero,
+      two_smul]
     abel
   have TA1 := s_conv.taylor_approx_two_segment hf xs hx h2vw h2vww
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
@@ -269,7 +270,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : x + (4 : ℝ) • (z + (0 : ℝ) • m) = y := by simp [hz]
     rw [← this]
-    refine' tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add _
+    refine tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add ?_
     exact continuousAt_id.smul continuousAt_const
   have B : ∀ m : E, ∀ᶠ t in 𝓝[>] (0 : ℝ), x + (4 : ℝ) • (z + t • m) ∈ interior s := by
     intro m

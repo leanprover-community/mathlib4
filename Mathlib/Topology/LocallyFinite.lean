@@ -53,7 +53,7 @@ theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (
 
 theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :
     LocallyFinite (f ∘ g) :=
-  hf.comp_injOn (hg.injOn _)
+  hf.comp_injOn hg.injOn
 #align locally_finite.comp_injective LocallyFinite.comp_injective
 
 theorem _root_.locallyFinite_iff_smallSets :
@@ -85,7 +85,7 @@ protected theorem nhdsWithin_iUnion (hf : LocallyFinite f) (a : X) :
       simp only [mem_setOf_eq, iUnion_nonempty_self]
     _ = ⨆ i ∈ {j | (f j ∩ U).Nonempty}, 𝓝[f i ∩ U] a := nhdsWithin_biUnion hfin _ _
     _ ≤ ⨆ i, 𝓝[f i ∩ U] a := iSup₂_le_iSup _ _
-    _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ <| inter_subset_left _ _
+    _ ≤ ⨆ i, 𝓝[f i] a := iSup_mono fun i ↦ nhdsWithin_mono _ inter_subset_left
 #align locally_finite.nhds_within_Union LocallyFinite.nhdsWithin_iUnion
 
 theorem continuousOn_iUnion' {g : X → Y} (hf : LocallyFinite f)
@@ -121,7 +121,7 @@ protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i
 protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
   intro x
   rcases hf x with ⟨s, hsx, hsf⟩
-  refine' ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => _⟩
+  refine ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => ?_⟩
   exact (hi.mono isOpen_interior.closure_inter).of_closure.mono
     (inter_subset_inter_right _ interior_subset)
 #align locally_finite.closure LocallyFinite.closure
@@ -140,7 +140,7 @@ theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
 theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
     (⋂ (i) (_ : x ∉ f i), (f i)ᶜ) ∈ 𝓝 x := by
-  refine' IsOpen.mem_nhds _ (mem_iInter₂.2 fun i => id)
+  refine IsOpen.mem_nhds ?_ (mem_iInter₂.2 fun i => id)
   suffices IsClosed (⋃ i : { i // x ∉ f i }, f i) by
     rwa [← isOpen_compl_iff, compl_iUnion, iInter_subtype] at this
   exact (hf.comp_injective Subtype.val_injective).isClosed_iUnion fun i => hc _
