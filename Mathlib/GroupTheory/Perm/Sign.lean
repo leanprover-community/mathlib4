@@ -80,7 +80,7 @@ def swapFactorsAux :
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
 The representation is non unique and depends on the linear order structure.
-For types without linear order `truncSwapFactors` can be used. -/
+For types without linear order `squashSwapFactors` can be used. -/
 def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
     { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
   swapFactorsAux ((@univ α _).sort (· ≤ ·)) f fun {_ _} => (mem_sort _).2 (mem_univ _)
@@ -88,11 +88,11 @@ def swapFactors [Fintype α] [LinearOrder α] (f : Perm α) :
 
 /-- This computably represents the fact that any permutation can be represented as the product of
   a list of transpositions. -/
-def truncSwapFactors [Fintype α] (f : Perm α) :
-    Trunc { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
-  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (swapFactorsAux l f (h _)))
+def squashSwapFactors [Fintype α] (f : Perm α) :
+    Squash { l : List (Perm α) // l.prod = f ∧ ∀ g ∈ l, IsSwap g } :=
+  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Squash.mk (swapFactorsAux l f (h _)))
     (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
-#align equiv.perm.trunc_swap_factors Equiv.Perm.truncSwapFactors
+#align equiv.perm.trunc_swap_factors Equiv.Perm.squashSwapFactors
 
 /-- An induction principle for permutations. If `P` holds for the identity permutation, and
 is preserved under composition with a non-trivial swap, then `P` holds for all permutations. -/
@@ -100,7 +100,7 @@ is preserved under composition with a non-trivial swap, then `P` holds for all p
 theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
   cases nonempty_fintype α
-  cases' (truncSwapFactors f).out with l hl
+  cases' (squashSwapFactors f).out with l hl
   induction' l with g l ih generalizing f
   · simp (config := { contextual := true }) only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap

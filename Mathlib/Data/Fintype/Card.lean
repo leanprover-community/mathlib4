@@ -67,30 +67,30 @@ def card (α) [Fintype α] : ℕ :=
 /-- There is (computably) an equivalence between `α` and `Fin (card α)`.
 
 Since it is not unique and depends on which permutation
-of the universe list is used, the equivalence is wrapped in `Trunc` to
+of the universe list is used, the equivalence is wrapped in `Squash` to
 preserve computability.
 
 See `Fintype.equivFin` for the noncomputable version,
-and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq`
+and `Fintype.squashEquivFinOfCardEq` and `Fintype.equivFinOfCardEq`
 for an equiv `α ≃ Fin n` given `Fintype.card α = n`.
 
-See `Fintype.truncFinBijection` for a version without `[DecidableEq α]`.
+See `Fintype.squashFinBijection` for a version without `[DecidableEq α]`.
 -/
-def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card α)) := by
+def squashEquivFin (α) [DecidableEq α] [Fintype α] : Squash (α ≃ Fin (card α)) := by
   unfold card Finset.card
   exact
     Quot.recOnSubsingleton'
       (motive := fun s : Multiset α =>
-        (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
+        (∀ x : α, x ∈ s) → s.Nodup → Squash (α ≃ Fin (Multiset.card s)))
       univ.val
-      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
+      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Squash.mk (nd.getEquivOfForallMemList _ h).symm)
       mem_univ_val univ.2
-#align fintype.trunc_equiv_fin Fintype.truncEquivFin
+#align fintype.trunc_equiv_fin Fintype.squashEquivFin
 
 /-- There is (noncomputably) an equivalence between `α` and `Fin (card α)`.
 
-See `Fintype.truncEquivFin` for the computable version,
-and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq`
+See `Fintype.squashEquivFin` for the computable version,
+and `Fintype.squashEquivFinOfCardEq` and `Fintype.equivFinOfCardEq`
 for an equiv `α ≃ Fin n` given `Fintype.card α = n`.
 -/
 noncomputable def equivFin (α) [Fintype α] : α ≃ Fin (card α) :=
@@ -104,19 +104,19 @@ Since it is not unique and depends on which permutation
 of the universe list is used, the bijection is wrapped in `Trunc` to
 preserve computability.
 
-See `Fintype.truncEquivFin` for a version that gives an equivalence
+See `Fintype.squashEquivFin` for a version that gives an equivalence
 given `[DecidableEq α]`.
 -/
-def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } := by
+def squashFinBijection (α) [Fintype α] : Squash { f : Fin (card α) → α // Bijective f } := by
   unfold card Finset.card
   refine
     Quot.recOnSubsingleton'
       (motive := fun s : Multiset α =>
-        (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
+        (∀ x : α, x ∈ s) → s.Nodup → Squash {f : Fin (Multiset.card s) → α // Bijective f})
       univ.val
-      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
+      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Squash.mk (nd.getBijectionOfForallMemList _ h))
       mem_univ_val univ.2
-#align fintype.trunc_fin_bijection Fintype.truncFinBijection
+#align fintype.trunc_fin_bijection Fintype.squashFinBijection
 
 theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :
     @card { x // p x } (Fintype.subtype s H) = s.card :=
@@ -163,20 +163,20 @@ variable [Fintype α] [Fintype β]
 /-- If the cardinality of `α` is `n`, there is computably a bijection between `α` and `Fin n`.
 
 See `Fintype.equivFinOfCardEq` for the noncomputable definition,
-and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
+and `Fintype.squashEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
-def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
-  (truncEquivFin α).map fun e => e.trans (finCongr h)
-#align fintype.trunc_equiv_fin_of_card_eq Fintype.truncEquivFinOfCardEq
+def squashEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Squash (α ≃ Fin n) :=
+  (squashEquivFin α).map fun e => e.trans (finCongr h)
+#align fintype.trunc_equiv_fin_of_card_eq Fintype.squashEquivFinOfCardEq
 
 /-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
 
-See `Fintype.truncEquivFinOfCardEq` for the computable definition,
-and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
+See `Fintype.squashEquivFinOfCardEq` for the computable definition,
+and `Fintype.squashEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
 noncomputable def equivFinOfCardEq {n : ℕ} (h : Fintype.card α = n) : α ≃ Fin n :=
   letI := Classical.decEq α
-  (truncEquivFinOfCardEq h).out
+  (squashEquivFinOfCardEq h).out
 #align fintype.equiv_fin_of_card_eq Fintype.equivFinOfCardEq
 
 /-- Two `Fintype`s with the same cardinality are (computably) in bijection.
@@ -185,20 +185,20 @@ See `Fintype.equivOfCardEq` for the noncomputable version,
 and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
 the specialization to `Fin`.
 -/
-def truncEquivOfCardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
-  (truncEquivFinOfCardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
-#align fintype.trunc_equiv_of_card_eq Fintype.truncEquivOfCardEq
+def squashEquivOfCardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Squash (α ≃ β) :=
+  (squashEquivFinOfCardEq h).bind fun e => (squashEquivFin β).map fun e' => e.trans e'.symm
+#align fintype.trunc_equiv_of_card_eq Fintype.squashEquivOfCardEq
 
 /-- Two `Fintype`s with the same cardinality are (noncomputably) in bijection.
 
-See `Fintype.truncEquivOfCardEq` for the computable version,
-and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
+See `Fintype.squashEquivOfCardEq` for the computable version,
+and `Fintype.squashEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
 the specialization to `Fin`.
 -/
 noncomputable def equivOfCardEq (h : card α = card β) : α ≃ β := by
   letI := Classical.decEq α
   letI := Classical.decEq β
-  exact (truncEquivOfCardEq h).out
+  exact (squashEquivOfCardEq h).out
 #align fintype.equiv_of_card_eq Fintype.equivOfCardEq
 
 end
@@ -827,12 +827,12 @@ theorem isEmpty_of_card_lt [Fintype α] [Fintype β] (h : Fintype.card β < Fint
 #align function.embedding.is_empty_of_card_lt Function.Embedding.isEmpty_of_card_lt
 
 /-- A constructive embedding of a fintype `α` in another fintype `β` when `card α ≤ card β`. -/
-def truncOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
-    (h : Fintype.card α ≤ Fintype.card β) : Trunc (α ↪ β) :=
-  (Fintype.truncEquivFin α).bind fun ea =>
-    (Fintype.truncEquivFin β).map fun eb =>
+def squashOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
+    (h : Fintype.card α ≤ Fintype.card β) : Squash (α ↪ β) :=
+  (Fintype.squashEquivFin α).bind fun ea =>
+    (Fintype.squashEquivFin β).map fun eb =>
       ea.toEmbedding.trans ((Fin.castLEEmb h).trans eb.symm.toEmbedding)
-#align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLE
+#align function.embedding.trunc_of_card_le Function.Embedding.squashOfCardLE
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
     Nonempty (α ↪ β) := by classical exact (truncOfCardLE h).nonempty
@@ -1265,16 +1265,16 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
 
 end Ranges
 
-section Trunc
+section Squash
 
 /-- A `Fintype` with positive cardinality constructively contains an element.
 -/
-def truncOfCardPos {α} [Fintype α] (h : 0 < Fintype.card α) : Trunc α :=
+def squashOfCardPos {α} [Fintype α] (h : 0 < Fintype.card α) : Squash α :=
   letI := Fintype.card_pos_iff.mp h
-  truncOfNonemptyFintype α
-#align trunc_of_card_pos truncOfCardPos
+  squashOfNonemptyFintype α
+#align trunc_of_card_pos squashOfCardPos
 
-end Trunc
+end Squash
 
 /-- A custom induction principle for fintypes. The base case is a subsingleton type,
 and the induction step is for non-trivial types, and one can assume the hypothesis for
