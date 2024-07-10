@@ -431,7 +431,7 @@ def lint(path, fix=False):
                             #four_spaces_in_second_line,
                             #isolated_by_dot_semicolon_check,
                             #left_arrow_check,
-                            missing_spaces_around_operators]:#nonterminal_simp_check]:
+                            ]:#missing_spaces_around_operators]:#nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 
