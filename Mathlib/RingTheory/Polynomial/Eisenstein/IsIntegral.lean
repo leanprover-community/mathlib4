@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.RingTheory.IntegrallyClosed
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 #align_import ring_theory.polynomial.eisenstein.is_integral from "leanprover-community/mathlib"@"5bfbcca0a7ffdd21cf1682e59106d6c942434a32"
