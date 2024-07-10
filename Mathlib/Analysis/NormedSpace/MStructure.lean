@@ -341,6 +341,9 @@ variable {𝕜 A F : Type*}
 variable [RCLike 𝕜] [NormedAddCommGroup A]
 variable [Module 𝕜 X] [NormedSpace 𝕜 A]
 
+--lemma convex1 (s₁ s₂ : Set A) (x y z : A) (h₁ : y ∈ s₁) (h₂ : z ∈ s₂) (h₃ : x = y + z)
+
+
 theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 := by
   apply (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
   intro x
@@ -498,7 +501,15 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
         rw [e]
         simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
       · exact le_trans (le_trans ((le_add_iff_nonneg_right ‖y‖).mpr (norm_nonneg _)) e4) hx.2
-
+    have e2 : z ∈ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
+      simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+      constructor
+      · have e : polar 𝕜 ↑m₂ = SetLike.coe (LinearMap.range E₂) := by
+          rw [hE₂.2]
+          rfl
+        rw [e]
+        simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
+      · exact le_trans (le_trans ((le_add_iff_nonneg_left ‖z‖).mpr (norm_nonneg _)) e4) hx.2
 
     --rw [convexHull]
     sorry
