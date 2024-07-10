@@ -188,60 +188,6 @@ class NoBotAddends (α : Type*) [Add α] [Bot α] : Prop where
 
 export NoBotAddends (eq_bot_or_eq_bot_of_add_eq_bot)
 
-section NoTopAddends
-
-variable {α : Type*} [Add α] [Top α] [IsTopAbsorbing α] [NoTopAddends α]
-
-@[simp]
-lemma add_eq_top {a b : α} :
-    a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ where
-  mp := eq_top_or_eq_top_of_add_eq_top
-  mpr h := by cases h <;> simp_all
-
-@[simp]
-lemma top_eq_add {a b : α} :
-    ⊤ = a + b ↔ a = ⊤ ∨ b = ⊤ := Eq.comm.trans add_eq_top
-
-lemma add_ne_top {a b : α} :
-    a + b ≠ ⊤ ↔ a ≠ ⊤ ∧ b ≠ ⊤ := by simp
-
-lemma top_ne_add {a b : α} :
-    ⊤ ≠ a + b ↔ a ≠ ⊤ ∧ b ≠ ⊤ := by simp
-
-@[simp]
-lemma add_lt_top {α : Type*} [PartialOrder α] [OrderTop α] [Add α]
-    [IsTopAbsorbing α] [NoTopAddends α] {a b : α} :
-    a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := by simp [lt_top_iff_ne_top]
-
-end NoTopAddends
-
-section NoBotAddends
-
-variable {α : Type*} [Add α] [Bot α] [IsBotAbsorbing α] [NoBotAddends α]
-
-@[simp]
-lemma add_eq_bot {a b : α} :
-    a + b = ⊥ ↔ a = ⊥ ∨ b = ⊥ where
-  mp := eq_bot_or_eq_bot_of_add_eq_bot
-  mpr h := by cases h <;> simp_all
-
-@[simp]
-lemma bot_eq_add {a b : α} :
-    ⊥ = a + b ↔ a = ⊥ ∨ b = ⊥ := Eq.comm.trans add_eq_bot
-
-lemma add_ne_bot {a b : α} :
-    a + b ≠ ⊥ ↔ a ≠ ⊥ ∧ b ≠ ⊥ := by simp
-
-lemma bot_ne_add {a b : α} :
-    ⊥ ≠ a + b ↔ a ≠ ⊥ ∧ b ≠ ⊥ := by simp
-
-@[simp]
-lemma bot_lt_add {α : Type*} [PartialOrder α] [OrderBot α] [Add α]
-    [IsBotAbsorbing α] [NoBotAddends α] {a b : α} :
-    ⊥ < a + b ↔ ⊥ < a ∧ ⊥ < b := by simp [bot_lt_iff_ne_bot]
-
-end NoBotAddends
-
 variable [LinearOrderedCommMonoid α] {a : α}
 
 @[to_additive (attr := simp)]
