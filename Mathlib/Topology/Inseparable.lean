@@ -721,14 +721,14 @@ theorem tendsto_lift_nhdsWithin_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → 
 #align separation_quotient.tendsto_lift_nhds_within_mk SeparationQuotient.tendsto_lift_nhdsWithin_mk
 
 @[simp]
-theorem continuousAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y}:
+theorem continuousAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     ContinuousAt (lift f hf) (mk x) ↔ ContinuousAt f x :=
   tendsto_lift_nhds_mk
 #align separation_quotient.continuous_at_lift SeparationQuotient.continuousAt_lift
 
 @[simp]
 theorem continuousWithinAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
-    {s : Set (SeparationQuotient X)}:
+    {s : Set (SeparationQuotient X)} :
     ContinuousWithinAt (lift f hf) s (mk x) ↔ ContinuousWithinAt f (mk ⁻¹' s) x :=
   tendsto_lift_nhdsWithin_mk
 #align separation_quotient.continuous_within_at_lift SeparationQuotient.continuousWithinAt_lift

@@ -186,7 +186,8 @@ lemma limsup_le_limsup (h : u ≤ᶠ[f] v) :
 `limsup_add_lt_of_lt` (stronger thesis). -/
 private lemma limsup_add_le_of_lt (ha : limsup u f < a) (hb : limsup v f < b) :
     limsup (u + v) f ≤ a + b := by
-  rcases eq_or_neBot f with (rfl | _); simp only [limsup_bot, bot_le]
+  rcases eq_or_neBot f with (rfl | _)
+  · simp only [limsup_bot, bot_le]
   rw [← @limsup_const EReal α _ f _ (a + b)]
   apply limsup_le_limsup (Eventually.mp (Eventually.and (eventually_lt_of_limsup_lt ha)
     (eventually_lt_of_limsup_lt hb)) (eventually_of_forall _))
@@ -216,13 +217,11 @@ lemma limsup_add_le_add_limsup
     (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤) (h' : limsup u f ≠ ⊤ ∨ limsup v f ≠ ⊥) :
     limsup (u + v) f ≤ (limsup u f) + (limsup v f) := by
   rcases eq_bot_or_bot_lt (limsup u f) with (u_bot | u_nbot)
-  · rcases h with (u_nbot | v_ntop)
-    · exfalso; exact u_nbot u_bot
-    · rw [limsup_add_bot_of_ne_top u_bot v_ntop]; exact bot_le
+  · have v_ntop := h.neg_resolve_left u_bot
+    rw [limsup_add_bot_of_ne_top u_bot v_ntop]; exact bot_le
   rcases eq_bot_or_bot_lt (limsup v f) with (v_bot | v_nbot)
-  · rcases h' with (u_ntop | v_nbot)
-    · rw [add_comm, limsup_add_bot_of_ne_top v_bot u_ntop]; exact bot_le
-    · exfalso; exact v_nbot v_bot
+  · have u_ntop := h'.neg_resolve_right v_bot
+    rw [add_comm, limsup_add_bot_of_ne_top v_bot u_ntop]; exact bot_le
   rcases eq_top_or_lt_top (limsup v f) with (v_top | v_ntop)
   · rw [v_top, add_top_of_ne_bot (ne_of_gt u_nbot)]; exact le_top
   have limsup_v_real := coe_toReal (ne_of_lt v_ntop) (ne_of_gt v_nbot)
