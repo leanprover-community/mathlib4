@@ -41,7 +41,7 @@ variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding
 
-open NumberField
+--open NumberField
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
 def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
@@ -180,7 +180,7 @@ end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace FiniteDimensional Finset
+open NumberField.InfinitePlace FiniteDimensional Finset
 
 /-- The space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 local notation "E" K =>
@@ -307,7 +307,7 @@ theorem normAtPlace_real (w : InfinitePlace K) (c : ℝ) :
   rw [show ((fun _ ↦ c, fun _ ↦ c) : (E K)) = c • 1 by ext <;> simp, normAtPlace_smul, map_one,
     mul_one]
 
-theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K):
+theorem normAtPlace_apply_isReal {w : InfinitePlace K} (hw : IsReal w) (x : E K) :
     normAtPlace w x = ‖x.1 ⟨w, hw⟩‖ := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dif_pos]
 
@@ -405,7 +405,7 @@ noncomputable section stdBasis
 
 open scoped Classical
 
-open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators Finset ComplexConjugate
+open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix ComplexConjugate
 
 variable [NumberField K]
 
@@ -545,7 +545,7 @@ noncomputable section integerLattice
 
 variable [NumberField K]
 
-open Module FiniteDimensional Module.Free
+open Module.Free
 
 open scoped nonZeroDivisors
 

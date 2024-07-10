@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.RingTheory.IntegrallyClosed
-import Mathlib.RingTheory.Trace
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Trace.Basic
+import Mathlib.RingTheory.Norm.Basic
 
 #align_import ring_theory.discriminant from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -97,7 +97,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
   have : (traceMatrix A b) *ᵥ g = 0 := by
     ext i
     have : ∀ j, (trace A B) (b i * b j) * g j = (trace A B) (g j • b j * b i) := by
-      intro j;
+      intro j
       simp [mul_comm]
     simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
       this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
