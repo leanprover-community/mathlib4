@@ -16,7 +16,7 @@ To indicate co-authors, include lines at the bottom of the commit message
 
 Co-authored-by: Author Name <author@email.com>
 
-If you are moving or deleting declarations, please include lines at the bottom of the commit message
+If you are moving or deleting declarations, please include these lines at the bottom of the commit message
 (that is, before the `---`) using the following format:
 
 Moves:
