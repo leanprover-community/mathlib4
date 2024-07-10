@@ -660,16 +660,3 @@ noncomputable instance : AddCommGroup W.Point where
   add_assoc _ _ _ := (toAffineAddEquiv W).injective <| by simp only [map_add, add_assoc]
 
 end WeierstrassCurve.Jacobian.Point
-
-namespace EllipticCurve.Affine.Point
-
-/-! ## Elliptic curves in affine coordinates -/
-
-variable {R : Type} [Nontrivial R] [CommRing R] (E : EllipticCurve R)
-
-/-- An affine point on an elliptic curve `E` over `R`. -/
-def mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
-  WeierstrassCurve.Affine.Point.some <| nonsingular E h
-#align elliptic_curve.point.mk EllipticCurve.Affine.Point.mk
-
-end EllipticCurve.Affine.Point

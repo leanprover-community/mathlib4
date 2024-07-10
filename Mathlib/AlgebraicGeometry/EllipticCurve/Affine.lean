@@ -250,8 +250,7 @@ set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_Y WeierstrassCurve.Affine.polynomialY
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma evalEval_polynomialY (x y : R) :
-    W.polynomialY.evalEval x y = 2 * y + W.a₁ * x + W.a₃ := by
+lemma evalEval_polynomialY (x y : R) : W.polynomialY.evalEval x y = 2 * y + W.a₁ * x + W.a₃ := by
   simp only [polynomialY]
   eval_simp
   rw [← add_assoc]
@@ -307,19 +306,21 @@ lemma nonsingular_iff_variableChange (x y : R) :
   congr! 3 <;> ring1
 #align weierstrass_curve.nonsingular_iff_variable_change WeierstrassCurve.Affine.nonsingular_iff_variableChange
 
-lemma nonsingular_zero_of_Δ_ne_zero (h : W.Equation 0 0) (hΔ : W.Δ ≠ 0) : W.Nonsingular 0 0 := by
-  simp only [equation_zero, nonsingular_zero] at *
+variable {W} in
+lemma equation_zero_iff_nonsingular_zero (hΔ : W.Δ ≠ 0) : W.Equation 0 0 ↔ W.Nonsingular 0 0 := by
+  simp only [equation_zero, nonsingular_zero, iff_self_and]
   contrapose! hΔ
-  simp only [b₂, b₄, b₆, b₈, Δ, h, hΔ]
+  simp only [b₂, b₄, b₆, b₈, Δ, hΔ]
   ring1
-#align weierstrass_curve.nonsingular_zero_of_Δ_ne_zero WeierstrassCurve.Affine.nonsingular_zero_of_Δ_ne_zero
+#align weierstrass_curve.nonsingular_zero_of_Δ_ne_zero WeierstrassCurve.Affine.equation_zero_iff_nonsingular_zero
 
+variable {W} in
 /-- A Weierstrass curve is nonsingular at every point if its discriminant is non-zero. -/
-lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W.Equation x y) (hΔ : W.Δ ≠ 0) : W.Nonsingular x y :=
-  (W.nonsingular_iff_variableChange x y).mpr <|
-    nonsingular_zero_of_Δ_ne_zero _ ((W.equation_iff_variableChange x y).mp h) <| by
-      rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]
-#align weierstrass_curve.nonsingular_of_Δ_ne_zero WeierstrassCurve.Affine.nonsingular_of_Δ_ne_zero
+lemma equation_iff_nonsingular {x y : R} (hΔ : W.Δ ≠ 0) : W.Equation x y ↔ W.Nonsingular x y := by
+  rw [equation_iff_variableChange, nonsingular_iff_variableChange,
+    equation_zero_iff_nonsingular_zero <| by
+      rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]]
+#align weierstrass_curve.nonsingular_of_Δ_ne_zero WeierstrassCurve.Affine.equation_iff_nonsingular
 
 end Nonsingular
 
@@ -633,8 +634,8 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
 
 variable {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
 
-/-- The formula x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²,
-where ψ(x,y) = 2y + a₁x + a₃. -/
+/-- The formula `x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²`,
+where `ψ(x,y) = 2y + a₁x + a₃`. -/
 lemma addX_eq_addX_negY_sub :
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ (W.negY x₂ y₂))
       - (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
@@ -642,8 +643,8 @@ lemma addX_eq_addX_negY_sub :
   field_simp [sub_ne_zero.mpr hx]
   ring1
 
-/-- The formula y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0,
-assuming that P₁ + P₂ + P₃ = O. -/
+/-- The formula `y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0`,
+assuming that `P₁ + P₂ + P₃ = O`. -/
 lemma cyclic_sum_Y_mul_X_sub_X :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
@@ -651,9 +652,8 @@ lemma cyclic_sum_Y_mul_X_sub_X :
   field_simp [sub_ne_zero.mpr hx]
   ring1
 
-/-- The formula
-ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁)),
-where ψ(x,y) = 2y + a₁x + a₃. -/
+/-- The formula `ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁))`,
+where `ψ(x,y) = 2y + a₁x + a₃`. -/
 lemma addY_sub_negY_addY :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     letI y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
@@ -666,7 +666,7 @@ end Field
 
 section Group
 
-/-! ### Group operations -/
+/-! ### Nonsingular rational points -/
 
 /-- A nonsingular rational point on a Weierstrass curve `W` in affine coordinates. This is either
 the unique point at infinity `WeierstrassCurve.Affine.Point.zero` or the nonsingular affine points
@@ -679,9 +679,71 @@ inductive Point
 /-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
 scoped notation3:max W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
+variable {W}
+
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` satisfying a
+predicate `p` with the union of zero and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y`. -/
+def pointEquivNonsingularSubtype {p : W.Point → Prop} (p0 : p .zero) : {P : W.Point // p P} ≃
+    WithZero {xy : R × R // ∃ h : W.Nonsingular xy.fst xy.snd, p <| .some h} where
+  toFun P := match P with
+    | ⟨.zero, _⟩ => none
+    | ⟨@Point.some _ _ _ x y h, ph⟩ => .some ⟨⟨x, y⟩, h, ph⟩
+  invFun P := P.casesOn ⟨.zero, p0⟩ fun xy => ⟨.some xy.property.choose, xy.property.choose_spec⟩
+  left_inv := by rintro (_ | _) <;> rfl
+  right_inv := by rintro (_ | _) <;> rfl
+
+@[simp]
+lemma pointEquivNonsingularSubtype_zero {p : W.Point → Prop} (p0 : p .zero) :
+    pointEquivNonsingularSubtype p0 ⟨.zero, p0⟩ = none :=
+  rfl
+
+@[simp]
+lemma pointEquivNonsingularSubtype_some {x y : R} {h : W.Nonsingular x y} {p : W.Point → Prop}
+    (p0 : p .zero) (ph : p <| .some h) :
+    pointEquivNonsingularSubtype p0 ⟨.some h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ :=
+  rfl
+
+@[simp]
+lemma pointEquivNonsingularSubtype_symm_none {p : W.Point → Prop} (p0 : p .zero) :
+    (pointEquivNonsingularSubtype p0).symm none = ⟨.zero, p0⟩ :=
+  rfl
+
+@[simp]
+lemma pointEquivNonsingularSubtype_symm_some {x y : R} {h : W.Nonsingular x y} {p : W.Point → Prop}
+    (p0 : p .zero) (ph : p <| .some h) :
+    (pointEquivNonsingularSubtype p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨.some h, ph⟩ :=
+  rfl
+
+variable (W) in
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` with the
+union of zero and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y`. -/
+def pointEquivNonsingular : W.Point ≃ WithZero {xy : R × R // W.Nonsingular xy.fst xy.snd} :=
+  (Equiv.Set.univ W.Point).symm.trans <| (pointEquivNonsingularSubtype trivial).trans
+    (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
+
+variable (W) in
+@[simp]
+lemma pointEquivNonsingular_zero : W.pointEquivNonsingular .zero = none :=
+  rfl
+
+@[simp]
+lemma pointEquivNonsingular_some {x y : R} (h : W.Nonsingular x y) :
+    W.pointEquivNonsingular (.some h) = .some ⟨⟨x, y⟩, h⟩ := by
+  rfl
+
+variable (W) in
+@[simp]
+lemma pointEquivNonsingular_symm_none : W.pointEquivNonsingular.symm none = .zero :=
+  rfl
+
+@[simp]
+lemma pointEquivNonsingular_symm_some {x y : R} {h : W.Nonsingular x y} :
+    W.pointEquivNonsingular.symm (.some ⟨⟨x, y⟩, h⟩) = .some h :=
+  rfl
+
 namespace Point
 
-variable {W}
+/-! ### Group operations -/
 
 instance : Inhabited W.Point :=
   ⟨zero⟩
@@ -689,8 +751,7 @@ instance : Inhabited W.Point :=
 instance : Zero W.Point :=
   ⟨zero⟩
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma zero_def : (zero : W.Point) = 0 :=
+lemma zero_def : 0 = (zero : W.Point) :=
   rfl
 #align weierstrass_curve.point.zero_def WeierstrassCurve.Affine.Point.zero_def
 
@@ -707,8 +768,7 @@ def neg : W.Point → W.Point
 instance : Neg W.Point :=
   ⟨neg⟩
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma neg_def (P : W.Point) : P.neg = -P :=
+lemma neg_def (P : W.Point) : -P = P.neg :=
   rfl
 #align weierstrass_curve.point.neg_def WeierstrassCurve.Affine.Point.neg_def
 
@@ -723,7 +783,7 @@ lemma neg_some {x y : R} (h : W.Nonsingular x y) : -some h = some (nonsingular_n
 #align weierstrass_curve.point.neg_some WeierstrassCurve.Affine.Point.neg_some
 
 instance : InvolutiveNeg W.Point :=
-  ⟨by rintro (_ | _) <;> simp [zero_def]; ring1⟩
+  ⟨by rintro (_ | _); rfl; simp only [neg_some, negY_negY]⟩
 
 open scoped Classical
 
@@ -740,21 +800,20 @@ noncomputable def add : W.Point → W.Point → W.Point
     else some (nonsingular_add h₁ h₂ fun hx hy ↦ h ⟨hx, hy⟩)
 #align weierstrass_curve.point.add WeierstrassCurve.Affine.Point.add
 
-noncomputable instance instAddPoint : Add W.Point :=
+noncomputable instance : Add W.Point :=
   ⟨add⟩
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
-lemma add_def (P Q : W.Point) : P.add Q = P + Q :=
+lemma add_def (P Q : W.Point) : P + Q = P.add Q :=
   rfl
 #align weierstrass_curve.point.add_def WeierstrassCurve.Affine.Point.add_def
 
-noncomputable instance instAddZeroClassPoint : AddZeroClass W.Point :=
+noncomputable instance : AddZeroClass W.Point :=
   ⟨by rintro (_ | _) <;> rfl, by rintro (_ | _) <;> rfl⟩
 
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some h₁ + some h₂ = 0 := by
-  simp_rw [← add_def, add]; exact dif_pos ⟨hx, hy⟩
+  simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_some_of_Yeq WeierstrassCurve.Affine.Point.add_of_Y_eq
 
@@ -839,8 +898,8 @@ lemma evalEval_baseChange_polynomial_X_Y :
   rw [baseChange, toAffine, map_polynomial, evalEval, eval_map, eval_C_X_eval₂_map_C_X]
 
 variable {W} in
-lemma Equation.map {x y : R} (h : W.Equation x y) : Equation (W.map f) (f x) (f y) := by
-  rw [Equation, map_polynomial, map_mapRingHom_evalEval, ← f.map_zero]; exact congr_arg f h
+lemma Equation.map {x y : R} (h : W.Equation x y) : (W.map f).toAffine.Equation (f x) (f y) := by
+  rw [Equation, map_polynomial, map_mapRingHom_evalEval, h, map_zero]
 
 variable {f} in
 lemma map_equation (hf : Function.Injective f) (x y : R) :
@@ -859,8 +918,8 @@ lemma map_polynomialY : (W.map f).toAffine.polynomialY = W.polynomialY.map (mapR
 variable {f} in
 lemma map_nonsingular (hf : Function.Injective f) (x y : R) :
     (W.map f).toAffine.Nonsingular (f x) (f y) ↔ W.Nonsingular x y := by
-  simp only [Nonsingular, evalEval, W.map_equation hf, map_polynomialX,
-    map_polynomialY, map_mapRingHom_evalEval, map_ne_zero_iff f hf]
+  simp only [Nonsingular, evalEval, W.map_equation hf, map_polynomialX, map_polynomialY,
+    map_mapRingHom_evalEval, map_ne_zero_iff f hf]
 #align weierstrass_curve.nonsingular_iff_base_change WeierstrassCurve.Affine.map_nonsingular
 
 lemma map_negPolynomial :
@@ -932,7 +991,7 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
     (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
 
-variable {g} in
+variable {f} in
 lemma baseChange_equation (hf : Function.Injective f) (x y : A) :
     (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
   erw [← map_equation _ hf, map_baseChange]
@@ -1097,11 +1156,73 @@ abbrev EllipticCurve.toAffine {R : Type u} [CommRing R] (E : EllipticCurve R) :
 
 namespace EllipticCurve.Affine
 
-variable {R : Type u} [CommRing R] (E : EllipticCurve R)
+variable {R : Type u} [Nontrivial R] [CommRing R] {E : EllipticCurve R}
 
-lemma nonsingular [Nontrivial R] {x y : R} (h : E.toAffine.Equation x y) :
-    E.toAffine.Nonsingular x y :=
-  E.toAffine.nonsingular_of_Δ_ne_zero h <| E.coe_Δ' ▸ E.Δ'.ne_zero
-#align elliptic_curve.nonsingular EllipticCurve.Affine.nonsingular
+lemma equation_iff_nonsingular {x y : R} : E.toAffine.Equation x y ↔ E.toAffine.Nonsingular x y :=
+  E.toAffine.equation_iff_nonsingular <| E.coe_Δ' ▸ E.Δ'.ne_zero
+#align elliptic_curve.nonsingular EllipticCurve.Affine.equation_iff_nonsingular
+
+/-- An affine point on an elliptic curve `E` over `R`. -/
+def Point.mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
+  .some <| equation_iff_nonsingular.mp h
+#align elliptic_curve.point.mk EllipticCurve.Affine.Point.mk
+
+/-- The equivalence between the rational points on an elliptic curve `E` satisfying a predicate `p`
+with the union of zero and the set of pairs `⟨x, y⟩` satisfying `E.Equation x y`. -/
+def pointEquivEquationSubtype {p : E.toAffine.Point → Prop} (p0 : p .zero) :
+    {P : E.toAffine.Point // p P} ≃
+      WithZero {xy : R × R // ∃ h : E.toAffine.Equation xy.fst xy.snd, p <| Point.mk h} :=
+  (WeierstrassCurve.Affine.pointEquivNonsingularSubtype p0).trans
+    (Equiv.setCongr <| by simpa only [equation_iff_nonsingular] using by rfl).optionCongr
+
+@[simp]
+lemma pointEquivEquationSubtype_zero {p : E.toAffine.Point → Prop} (p0 : p .zero) :
+    pointEquivEquationSubtype p0 ⟨.zero, p0⟩ = none :=
+  rfl
+
+@[simp]
+lemma pointEquivEquationSubtype_some {x y : R} {h : E.toAffine.Equation x y}
+    {p : E.toAffine.Point → Prop} (p0 : p .zero) (ph : p <| Point.mk h) :
+    pointEquivEquationSubtype p0 ⟨Point.mk h, ph⟩ = .some ⟨⟨x, y⟩, h, ph⟩ :=
+  rfl
+
+@[simp]
+lemma pointEquivEquationSubtype_symm_none {p : E.toAffine.Point → Prop} (p0 : p .zero) :
+    (pointEquivEquationSubtype p0).symm none = ⟨.zero, p0⟩ :=
+  rfl
+
+@[simp]
+lemma pointEquivEquationSubtype_symm_some {x y : R} {h : E.toAffine.Equation x y}
+    {p : E.toAffine.Point → Prop} (p0 : p .zero) (ph : p <| Point.mk h) :
+    (pointEquivEquationSubtype p0).symm (.some ⟨⟨x, y⟩, h, ph⟩) = ⟨Point.mk h, ph⟩ :=
+  rfl
+
+variable (E) in
+/-- The equivalence between the rational points on an elliptic curve `E` with the union of zero and
+the set of pairs `⟨x, y⟩` satisfying `E.Equation x y`. -/
+def pointEquivEquation :
+    E.toAffine.Point ≃ WithZero {xy : R × R // E.toAffine.Equation xy.fst xy.snd} :=
+  (Equiv.Set.univ E.toAffine.Point).symm.trans <| (pointEquivEquationSubtype trivial).trans
+    (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
+
+variable (E) in
+@[simp]
+lemma pointEquivEquation_zero : pointEquivEquation E .zero = none :=
+  rfl
+
+@[simp]
+lemma pointEquivEquation_some {x y : R} (h : E.toAffine.Equation x y) :
+    pointEquivEquation E (Point.mk h) = .some ⟨⟨x, y⟩, h⟩ := by
+  rfl
+
+variable (E) in
+@[simp]
+lemma pointEquivEquation_symm_none : (pointEquivEquation E).symm none = .zero :=
+  rfl
+
+@[simp]
+lemma pointEquivEquation_symm_some {x y : R} {h : E.toAffine.Equation x y} :
+    (pointEquivEquation E).symm (.some ⟨⟨x, y⟩, h⟩) = Point.mk h :=
+  rfl
 
 end EllipticCurve.Affine
