@@ -491,11 +491,10 @@ theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {
 
 theorem exists_associated_pow_of_associated_pow_mul {a b c : R} (hab : IsCoprime a b) {k : ℕ}
     (h : Associated (c ^ k) (a * b)) : ∃ d : R, Associated (d ^ k) a := by
-  obtain ⟨u, hu⟩ := h
-  apply_fun (· * u⁻¹.1) at hu
-  rw [mul_assoc, Units.mul_inv, mul_one, mul_assoc] at hu
+  obtain ⟨u, hu⟩ := h.symm
+  rw [mul_assoc] at hu
   exact exists_associated_pow_of_mul_eq_pow'
-    ((isCoprime_mul_unit_right_right u⁻¹.isUnit a b).mpr hab) hu.symm
+    ((isCoprime_mul_unit_right_right u.isUnit a b).mpr hab) hu
 
 end Bezout
 
