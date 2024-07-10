@@ -559,8 +559,10 @@ theorem _root_.exists_isTranscendenceBasis' (R : Type u) {A : Type v} [CommRing 
 -- variable (A B) in
 -- theorem _root_.IntermediateField.rank_sup_le :
 --     Module.rank F ↥(A ⊔ B) ≤ Module.rank F A * Module.rank F B := by
---   obtain ⟨κ, a, ha⟩ := exists_isTranscendenceBasis' _ (NoZeroSMulDivisors.algebraMap_injective F A)
---   obtain ⟨ι, b, hb⟩ := exists_isTranscendenceBasis' _ (NoZeroSMulDivisors.algebraMap_injective F B)
+--   obtain ⟨κ, a, ha⟩ := exists_isTranscendenceBasis' _
+--     (NoZeroSMulDivisors.algebraMap_injective F A)
+--   obtain ⟨ι, b, hb⟩ := exists_isTranscendenceBasis' _
+--     (NoZeroSMulDivisors.algebraMap_injective F B)
 --   haveI := ha.isAlgebraic_field
 --   haveI := hb.isAlgebraic_field
 --   let ia := ha.1.algEquivField
