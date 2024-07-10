@@ -12,6 +12,9 @@ import Mathlib.Topology.Category.CompactlyGenerated
 This file defines the functor `condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u+1}` which is
 left adjoint to `topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`. We prove that the counit
 is bijective (but not in general an isomorphism) and conclude that the right adjoint is faithful.
+
+The counit is an isomorphism for compactly generated spaces, and we conclude that the functor
+`topCatToCondensedSet` is fully faithful when restricted to compactly generated spaces.
 -/
 
 universe u
