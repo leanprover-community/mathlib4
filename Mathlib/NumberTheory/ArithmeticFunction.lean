@@ -885,14 +885,22 @@ theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
   rfl
 #align nat.arithmetic_function.sigma_apply ArithmeticFunction.sigma_apply
 
+theorem sigma_apply_prime_pow {k p i : ℕ} (hp : p.Prime) :
+    σ k (p ^ i) = ∑ j in .range (i + 1), p ^ (j * k) := by
+  simp [sigma_apply, divisors_prime_pow hp, Nat.pow_mul]
+
 theorem sigma_one_apply (n : ℕ) : σ 1 n = ∑ d ∈ divisors n, d := by simp [sigma_apply]
 #align nat.arithmetic_function.sigma_one_apply ArithmeticFunction.sigma_one_apply
+
+theorem sigma_one_apply_prime_pow {p i : ℕ} (hp : p.Prime) :
+    σ 1 (p ^ i) = ∑ k in .range (i + 1), p ^ k := by
+  simp [sigma_apply_prime_pow hp]
 
 theorem sigma_zero_apply (n : ℕ) : σ 0 n = (divisors n).card := by simp [sigma_apply]
 #align nat.arithmetic_function.sigma_zero_apply ArithmeticFunction.sigma_zero_apply
 
 theorem sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i + 1 := by
-  rw [sigma_zero_apply, divisors_prime_pow hp, card_map, card_range]
+  simp [sigma_apply_prime_pow hp]
 #align nat.arithmetic_function.sigma_zero_apply_prime_pow ArithmeticFunction.sigma_zero_apply_prime_pow
 
 theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
@@ -1403,5 +1411,19 @@ theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
 
 @[deprecated (since := "2024-06-09")] theorem card_divisors (n : ℕ) (hn : n ≠ 0) :
     n.divisors.card = n.primeFactors.prod (n.factorization · + 1) := Nat.card_divisors hn
+
+theorem _root_.Nat.Coprime.card_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
+    (m * n).divisors.card = m.divisors.card * n.divisors.card := by
+  simp only [← sigma_zero_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
+
+theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
+    ∑ d ∈ n.divisors, d = ∏ p ∈ n.primeFactors, ∑ k ∈ .range (n.factorization p + 1), p ^ k := by
+  rw [← sigma_one_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
+  exact Finset.prod_congr n.support_factorization fun _ h =>
+    sigma_one_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
+
+theorem _root_.Nat.Coprime.sum_divisors_mul {m n : ℕ} (hmn : m.Coprime n) :
+    ∑ d ∈ (m * n).divisors, d = (∑ d ∈ m.divisors, d) * ∑ d ∈ n.divisors, d := by
+  simp only [← sigma_one_apply, isMultiplicative_sigma.map_mul_of_coprime hmn]
 
 end ArithmeticFunction
