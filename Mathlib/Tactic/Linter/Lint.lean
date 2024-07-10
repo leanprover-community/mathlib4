@@ -114,7 +114,7 @@ end DupNamespaceLinter
 #  `oneLineAlign` linter
 
 The `oneLineAlign` linter checks that `#align` statements span a single line,
-which is desirable as it allows them to be parsed by dumb parsers.
+which is desirable as it allows them to be parsed by very simple parsers.
 -/
 
 /--
@@ -128,7 +128,7 @@ register_option linter.oneLineAlign : Bool := {
 
 namespace OneLineAlignLinter
 
-open Lean Parser Elab Command Meta
+open Lean
 
 /-- Gets the value of the `linter.oneLineAlign` option. -/
 def getLinterOneLineAlign (o : Options) : Bool := Linter.getLinterValue linter.oneLineAlign o
