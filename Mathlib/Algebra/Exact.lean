@@ -27,11 +27,10 @@ import Mathlib.LinearAlgebra.Quotient
 -/
 
 
-namespace Function
 
 variable {R M M' N N' P P' : Type*}
 
-section Function
+namespace Function
 
 variable (f : M → N) (g : N → P) (g' : P → P')
 
@@ -41,18 +40,20 @@ def Exact [Zero P] : Prop := ∀ y, g y = 0 ↔ y ∈ Set.range f
 
 variable {f g}
 
-lemma Exact.apply_apply_eq_zero [Zero P] (h : Exact f g) (x : M) :
+namespace Exact
+
+lemma apply_apply_eq_zero [Zero P] (h : Exact f g) (x : M) :
     g (f x) = 0 := (h _).mpr <| Set.mem_range_self _
 
-lemma Exact.comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
+lemma comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
   funext h.apply_apply_eq_zero
 
-lemma Exact.of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
+lemma of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
     (h2 : ∀ x, g x = 0 → x ∈ Set.range f) : Exact f g :=
   fun y => Iff.intro (h2 y) <|
     Exists.rec ((forall_apply_eq_imp_iff (p := (g · = 0))).mpr (congrFun h1) y)
 
-lemma Exact.comp_injective [Zero P] [Zero P'] (exact : Exact f g)
+lemma comp_injective [Zero P] [Zero P'] (exact : Exact f g)
     (inj : Function.Injective g') (h0 : g' 0 = 0) :
     Exact f (g' ∘ g) := by
   intro x
@@ -60,41 +61,47 @@ lemma Exact.comp_injective [Zero P] [Zero P'] (exact : Exact f g)
   intro H
   rw [Function.comp_apply, exact x |>.mpr H, h0]
 
-lemma Exact.of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
+lemma of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
     (hr : ∀ y, g y = 0 → y ∈ Set.range f) :
     Exact f g :=
   fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
+
+end Exact
 
 end Function
 
 section AddMonoidHom
 
-section
-
-open AddMonoidHom
-
 variable [AddGroup M] [AddGroup N] [AddGroup P] {f : M →+ N} {g : N →+ P}
 
-lemma Exact.addMonoidHom_ker_eq (hfg : Exact f g) :
-    ker g = range f :=
-  SetLike.ext hfg
+namespace AddMonoidHom
 
-lemma _root_.AddMonoidHom.exact_iff :
+open Function
+
+lemma exact_iff :
     Exact f g ↔ ker g = range f :=
   Iff.symm SetLike.ext_iff
 
-lemma _root_.AddMonoidHom.exact_of_comp_eq_zero_of_ker_le_range
+lemma exact_of_comp_eq_zero_of_ker_le_range
     (h1 : g.comp f = 0) (h2 : ker g ≤ range f) : Exact f g :=
   Exact.of_comp_of_mem_range (congrArg DFunLike.coe h1) h2
 
-lemma _root_.AddMonoidHom.exact_of_comp_of_mem_range
+lemma exact_of_comp_of_mem_range
     (h1 : g.comp f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
   exact_of_comp_eq_zero_of_ker_le_range h1 h2
 
-lemma Exact.addMonoidHom_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
-  DFunLike.coe_injective h.comp_eq_zero
+end AddMonoidHom
 
-end
+namespace Function.Exact
+
+open AddMonoidHom
+
+lemma addMonoidHom_ker_eq (hfg : Exact f g) :
+    ker g = range f :=
+  SetLike.ext hfg
+
+lemma addMonoidHom_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
+  DFunLike.coe_injective h.comp_eq_zero
 
 section
 
@@ -105,7 +112,7 @@ variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Type*} [AddCommMonoid X₁] [AddCommMo
   (comm₁₂ : g₁₂.comp e₁.toAddMonoidHom = e₂.toAddMonoidHom.comp f₁₂)
   (comm₂₃ : g₂₃.comp e₂.toAddMonoidHom = e₃.toAddMonoidHom.comp f₂₃)
 
-lemma Exact.of_ladder_addEquiv_of_exact (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
+lemma of_ladder_addEquiv_of_exact (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
   have h₁₂ := DFunLike.congr_fun comm₁₂
   have h₂₃ := DFunLike.congr_fun comm₂₃
   dsimp at h₁₂ h₂₃
@@ -119,7 +126,7 @@ lemma Exact.of_ladder_addEquiv_of_exact (H : Exact f₁₂ f₂₃) : Exact g₁
     obtain ⟨x₁, rfl⟩ := (H x₂).1 (e₃.injective (by rw [← h₂₃, hx₂, map_zero]))
     exact ⟨e₁ x₁, by rw [h₁₂]⟩
 
-lemma Exact.of_ladder_addEquiv_of_exact' (H : Exact g₁₂ g₂₃) : Exact f₁₂ f₂₃ := by
+lemma of_ladder_addEquiv_of_exact' (H : Exact g₁₂ g₂₃) : Exact f₁₂ f₂₃ := by
   refine of_ladder_addEquiv_of_exact e₁.symm e₂.symm e₃.symm ?_ ?_ H
   · ext y₁
     obtain ⟨x₁, rfl⟩ := e₁.surjective y₁
@@ -130,18 +137,20 @@ lemma Exact.of_ladder_addEquiv_of_exact' (H : Exact g₁₂ g₂₃) : Exact f�
     apply e₃.injective
     simpa using DFunLike.congr_fun comm₂₃.symm x₂
 
-lemma Exact.iff_of_ladder_addEquiv : Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ := by
+lemma iff_of_ladder_addEquiv : Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ := by
   constructor
   · exact of_ladder_addEquiv_of_exact' e₁ e₂ e₃ comm₁₂ comm₂₃
   · exact of_ladder_addEquiv_of_exact e₁ e₂ e₃ comm₁₂ comm₂₃
 
 end
 
+end Function.Exact
+
 end AddMonoidHom
 
 section LinearMap
 
-open LinearMap
+open Function
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid N]
   [AddCommMonoid N'] [AddCommMonoid P] [AddCommMonoid P'] [Module R M]
@@ -149,20 +158,33 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid N]
 
 variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
 
-lemma Exact.linearMap_ker_eq (hfg : Exact f g) : ker g = range f :=
-  SetLike.ext hfg
+namespace LinearMap
 
-lemma _root_.LinearMap.exact_iff :
+lemma exact_iff :
     Exact f g ↔ LinearMap.ker g = LinearMap.range f :=
   Iff.symm SetLike.ext_iff
 
-lemma _root_.LinearMap.exact_of_comp_eq_zero_of_ker_le_range
+lemma exact_of_comp_eq_zero_of_ker_le_range
     (h1 : g ∘ₗ f = 0) (h2 : ker g ≤ range f) : Exact f g :=
   Exact.of_comp_of_mem_range (congrArg DFunLike.coe h1) h2
 
-lemma _root_.LinearMap.exact_of_comp_of_mem_range
+lemma exact_of_comp_of_mem_range
     (h1 : g ∘ₗ f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
   exact_of_comp_eq_zero_of_ker_le_range h1 h2
+
+end LinearMap
+
+lemma LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
+    Function.Exact (e ∘ₗ f) (g ∘ₗ (e.symm : N' →ₗ[R] N)) ↔ Exact f g := by
+  simp_rw [LinearMap.exact_iff, LinearMap.ker_comp, ← e.map_eq_comap, LinearMap.range_comp]
+  exact (Submodule.map_injective_of_injective e.injective).eq_iff
+
+namespace Function
+
+open LinearMap
+
+lemma Exact.linearMap_ker_eq (hfg : Exact f g) : ker g = range f :=
+  SetLike.ext hfg
 
 lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
   DFunLike.coe_injective h.comp_eq_zero
@@ -175,11 +197,6 @@ lemma Surjective.comp_exact_iff_exact {p : M' →ₗ[R] M} (h : Surjective p) :
 lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
   forall_congr' fun _ => iff_congr (LinearMap.map_eq_zero_iff _ h) Iff.rfl
-
-lemma _root_.LinearEquiv.conj_exact_iff_exact (e : N ≃ₗ[R] N') :
-    Exact (e ∘ₗ f) (g ∘ₗ (e.symm : N' →ₗ[R] N)) ↔ Exact f g := by
-  simp_rw [exact_iff, ker_comp, ← e.map_eq_comap, range_comp]
-  exact (Submodule.map_injective_of_injective e.injective).eq_iff
 
 variable
     {f₁₂ : M →ₗ[R] N} {f₂₃ : N →ₗ[R] P} {g₁₂ : M' →ₗ[R] N'}
@@ -199,7 +216,11 @@ lemma Exact.of_ladder_linearEquiv_of_exact
     (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
   rwa [iff_of_ladder_linearEquiv h₁₂ h₂₃]
 
+end Function
+
 end LinearMap
+
+namespace Function
 
 section split
 
