@@ -172,7 +172,7 @@ elab "#reset_min_imports" : command => minImportsRef.set {}
 
 /-- The "minImports" linter tracks information about minimal imports over several commands. -/
 register_option linter.minImports : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the minImports linter"
 }
 

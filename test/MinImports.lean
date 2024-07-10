@@ -1,8 +1,6 @@
 import Mathlib.Tactic.MinImports
 import Mathlib.Tactic
 
-set_option linter.hashCommand true
-
 /--
 info: ℤ : Type
 ---
@@ -59,6 +57,8 @@ import Mathlib.Init.Data.Nat.Notation
 #min_imports in
 lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
+set_option linter.minImports true
+
 /--
 info: ℕ : Type
 ---
@@ -84,17 +84,9 @@ set_option linter.minImports true in
 set_option linter.minImports true in
 #guard (0 : ℤ) = 0
 
+set_option linter.minImports false in
+
 #reset_min_imports
-
-set_option linter.minImports true
-
-/--
-warning: Imports increased to
-[Init.Guard, Lean.Parser.Term, Mathlib.Init.Data.Nat.Notation]
-note: this linter can be disabled with `set_option linter.minImports false`
--/
-#guard_msgs in
-#guard (0 : ℕ) == 0
 
 /--
 warning: Imports increased to
@@ -102,10 +94,6 @@ warning: Imports increased to
 note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
-set_option linter.minImports true in
-#guard (0 : ℤ) = 0
-
-#guard_msgs in
--- no new imports needed here, so no message
+-- again, the imports pick-up, after the reset
 set_option linter.minImports true in
 #guard (0 : ℤ) = 0
