@@ -97,13 +97,15 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
 #align category_theory.oplax_functor.map_comp_naturality_left CategoryTheory.OplaxFunctor.mapComp_naturality_left
 #align category_theory.oplax_functor.map_comp_naturality_right' CategoryTheory.OplaxFunctor.mapComp_naturality_right
 #align category_theory.oplax_functor.map_comp_naturality_right CategoryTheory.OplaxFunctor.mapComp_naturality_right
--- #align category_theory.oplax_functor.map₂_id' CategoryTheory.OplaxFunctor.map₂_id
--- #align category_theory.oplax_functor.map₂_comp' CategoryTheory.OplaxFunctor.map₂_comp
+#align category_theory.oplax_functor.map₂_id' CategoryTheory.PrelaxFunctor.map₂_id
+#align category_theory.oplax_functor.map₂_comp' CategoryTheory.PrelaxFunctor.map₂_comp
 #align category_theory.oplax_functor.map₂_associator' CategoryTheory.OplaxFunctor.map₂_associator
 #align category_theory.oplax_functor.map₂_left_unitor CategoryTheory.OplaxFunctor.map₂_leftUnitor
 #align category_theory.oplax_functor.map₂_left_unitor' CategoryTheory.OplaxFunctor.map₂_leftUnitor
 #align category_theory.oplax_functor.map₂_right_unitor CategoryTheory.OplaxFunctor.map₂_rightUnitor
 #align category_theory.oplax_functor.map₂_right_unitor' CategoryTheory.OplaxFunctor.map₂_rightUnitor
+
+#align category_theory.oplax_functor.map_functor CategoryTheory.PrelaxFunctor.mapFunctor
 
 initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 

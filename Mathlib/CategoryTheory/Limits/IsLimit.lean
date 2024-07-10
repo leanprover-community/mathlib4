@@ -925,14 +925,22 @@ end Equivalence
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
   a cocone on `F` with cone point `W`. -/
-def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅ F ⟶ (const J).obj W where
-  hom f := (t.extend f.down).ι
-  inv ι := ⟨h.desc
+def homEquiv (h : IsColimit t) (W : C) : (t.pt ⟶ W) ≃ (F ⟶ (const J).obj W) where
+  toFun f := (t.extend f).ι
+  invFun ι := h.desc
       { pt := W
-        ι }⟩
-  hom_inv_id := by
-    funext f; apply ULift.ext
-    apply h.hom_ext; intro j; simp
+        ι }
+  left_inv f := h.hom_ext (by simp)
+  right_inv ι := by aesop_cat
+
+@[simp]
+lemma homEquiv_apply (h : IsColimit t) {W : C} (f : t.pt ⟶ W) :
+    h.homEquiv W f = (t.extend f).ι := rfl
+
+/-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
+  a cocone on `F` with cone point `W`. -/
+def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅ F ⟶ (const J).obj W :=
+  Equiv.toIso (Equiv.ulift.trans (h.homEquiv W))
 #align category_theory.limits.is_colimit.hom_iso CategoryTheory.Limits.IsColimit.homIso
 
 @[simp]
@@ -1014,7 +1022,7 @@ def homOfCocone (s : Cocone F) : X ⟶ s.pt :=
 
 @[simp]
 theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s) = s := by
-  dsimp [coconeOfHom, homOfCocone];
+  dsimp [coconeOfHom, homOfCocone]
   have ⟨s_pt,s_ι⟩ := s
   congr; dsimp
   convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) s_pt) s_ι using 1
