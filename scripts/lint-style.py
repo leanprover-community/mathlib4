@@ -48,8 +48,6 @@ ERR_CLN = 16 # line starts with a colon
 ERR_IND = 17 # second line not correctly indented
 ERR_ARR = 18 # space after "←"
 ERR_NSP = 20 # non-terminal simp
-ERR_MISSING_SPACE = 21 # missing spaces around colon or colon-equals
-ERR_DOUBLE_SPACE = 22 # double space (when not part of manual alignment)
 
 exceptions = []
 
@@ -279,86 +277,6 @@ def isolated_by_dot_semicolon_check(lines, path):
         newlines.append((line_nr, line))
     return errors, newlines
 
-'''Split of an inline Lean comment or beginning multi-line comment:
-return a tuple (before, spaces, comment) consisting of
-the string before the comment marked (right-trimmed), any space before the comment marked
-and the comment itself (including the comment marker).
-'''
-def split_inline_comment(line):
-    # Split off any in-line comment or beginning /-:
-    # this check ignores in-line string literals, but is good enough for our purposes.
-    before = line
-    spaces = ""
-    comment = ""
-    # Idx is the index of the first of "--" and "/-" (and -1 if neither occurs).
-    idx = line.find("--")
-    idx2 = line.find("/-")
-    if idx >= 0 and idx2 >= 0:
-        idx = min(idx, idx2)
-    else:
-        idx = max(idx, idx2)
-    if idx >= 0:
-        comment = line[idx:]
-        before = line[:idx]
-        # Make sure to preserve the number of spaces before the comment marked.
-        if before.endswith(" "):
-            num_spaces = len(before) - len(before.rstrip())
-            spaces = before[-num_spaces:]
-            before = before.rstrip()
-    assert f"{before}{spaces}{comment}" == line, f"bug in comment splitting: input is {line}, output is ('{before}', '{spaces}', '{comment}')"
-    return (before, spaces, comment)
-
-
-'''Error if a colon or colon-equals is not surrounded by spaces. '''
-def missing_spaces_around_operators(lines, path):
-    errors = []
-    newlines = []
-    for line_nr, line, is_comment, in_string in annotate_strings(annotate_comments(lines)):
-        if is_comment or in_string:
-            newlines.append((line_nr, line))
-            continue
-        num_spaces = len(line) - len(line.lstrip())
-        new_line = line.strip()
-        (before_comment, spaces, comment) = split_inline_comment(new_line)
-
-        # Handle := not surrounded by spaces.
-        if ":=" in before_comment:
-            left = before_comment.count(":=")
-            # Treat := as line ending separately.
-            if before_comment.endswith(":="):
-                left -= 1
-                if not before_comment.endswith(" :="):
-                    errors += [(ERR_MISSING_SPACE, line_nr, path)]
-                    before_comment = f"{before_comment[:-2]} :="
-            if left != before_comment.count(" := "):
-                errors += [(ERR_MISSING_SPACE, line_nr, path)]
-                # This replacement is approximate (e.g. doesn't handle purposeful double spaces).
-                before_comment = before_comment.replace(":=", " := ").replace("  ", " ").rstrip()
-        # Handle : which are not part of :=
-        if ":" in before_comment:
-            left = before_comment.count(":") - before_comment.count(":=") - (2 * before_comment.count("::"))
-            # Handle a line ending in a colon or double colon separately.
-            if before_comment.endswith("::"):
-                left -= 1
-                if not before_comment.endswith(" ::"):
-                    errors += [(ERR_MISSING_SPACE, line_nr, path)]
-                    before_comment = f"{before_comment[:-2]} ::"
-            elif before_comment.endswith(":"):
-                left -= 1
-                if not before_comment.endswith(" :"):
-                    errors += [(ERR_MISSING_SPACE, line_nr, path)]
-                    before_comment = f"{before_comment[:-1]} :"
-            # # TODO: need to handle ::, here and below!
-            if left != before_comment.count(" : "):
-                if "Tactic" in str(path):
-                    newlines.append((line_nr, line))
-                    continue # for now
-                errors += [(ERR_MISSING_SPACE, line_nr, path)]
-                # This replacement is approximate (e.g. doesn't handle purposeful double spaces).
-                before_comment = before_comment.replace(":", " : ").replace("  ", " ").rstrip()
-        newlines.append((line_nr, f'{line[:num_spaces]}{before_comment}{spaces}{comment}\n'))
-    return errors, newlines
-
 def left_arrow_check(lines, path):
     errors = []
     newlines = []
@@ -416,8 +334,6 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
         if errno == ERR_NSP:
             output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
-        if errno == ERR_MISSING_SPACE:
-            output_message(path, line_nr, "ERR_MISSING_SPACE", "Please put spaces around colons and colon-equals signs")
 
 def lint(path, fix=False):
     global new_exceptions
@@ -428,10 +344,10 @@ def lint(path, fix=False):
         enum_lines = enumerate(lines, 1)
         newlines = enum_lines
         for error_check in [line_endings_check,
-                            #four_spaces_in_second_line,
-                            #isolated_by_dot_semicolon_check,
-                            #left_arrow_check,
-                            ]:#missing_spaces_around_operators]:#nonterminal_simp_check]:
+                            four_spaces_in_second_line,
+                            isolated_by_dot_semicolon_check,
+                            left_arrow_check,
+                            nonterminal_simp_check]:
             errs, newlines = error_check(newlines, path)
             format_errors(errs)
 
