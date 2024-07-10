@@ -437,6 +437,10 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
 
 #check (le_add_iff_nonneg_right 5).mpr
 
+
+lemma teat (a b : Prop) : a → a ∨ b := by exact fun a_1 ↦ Or.intro_left b a_1
+
+set_option maxHeartbeats 400000
 open NormedSpace in
 open Metric in
 open Submodule in
@@ -510,9 +514,50 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
         rw [e]
         simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
       · exact le_trans (le_trans ((le_add_iff_nonneg_left ‖z‖).mpr (norm_nonneg _)) e4) hx.2
+    rcases eq_or_ne ‖x‖ 0 with (hxz | hxnz)
+    · rw [norm_eq_zero] at hxz
+      rw [hxz]
+      apply subset_convexHull
+      simp only [Set.mem_union, Set.mem_inter_iff, mem_closedBall, dist_self, zero_le_one, and_true]
+      apply Or.intro_left
+      exact LinearMap.zero_mem_polar (dualPairing 𝕜 A).flip ↑m₁
+    · rcases eq_or_ne ‖y‖ 0 with (hyz | hynz)
+      · rw [norm_eq_zero] at hyz
+        rw [e3, hyz, zero_add]
+        apply subset_convexHull
+        exact Set.mem_union_right (polar 𝕜 ↑m₁ ∩ closedBall 0 1) e2
+      · rcases eq_or_ne ‖z‖ 0 with (hzz | hznz)
+        · rw [norm_eq_zero] at hzz
+          rw [e3, hzz, add_zero]
+          apply subset_convexHull
+          exact Set.mem_union_left (polar 𝕜 ↑m₂ ∩ closedBall 0 1) e1
+        · let y₁ := (‖x‖/‖y‖) • y
+          let z₁ := (‖x‖/‖z‖) • z
 
-    --rw [convexHull]
-    sorry
+          have t₁ : y₁ ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
+            apply Set.mem_union_left
+            simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+            constructor
+            have e : polar 𝕜 ↑m₁ = SetLike.coe (LinearMap.range E₁) := by
+              rw [hE₁.2]
+              rfl
+            rw [e]
+            simp only [SetLike.mem_coe, LinearMap.mem_range]
+            use y₁
+            calc
+            E₁ y₁ = E₁ ((‖x‖/‖y‖) • y) := rfl
+            _ = (‖x‖/‖y‖) • E₁  y := ContinuousLinearMap.map_smul_of_tower E₁ (‖x‖ / ‖y‖) y
+            _ = (‖x‖/‖y‖) • y := by
+              rw [proj_apply E₁ hE₁.1.proj _ _]
+              exact Set.mem_range_self x
+            _ = y₁ := rfl
+          have t₂ : z ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 :=
+            Set.mem_union_right (polar 𝕜 ↑m₁ ∩ closedBall 0 1) e2
+          apply segment_subset_convexHull t₁ t₂
+          rw [segment]
+          simp only [exists_and_left, Set.mem_setOf_eq]
+
+          sorry
   · simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
     constructor
     · apply convexHull_min _
