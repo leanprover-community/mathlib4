@@ -372,6 +372,9 @@ theorem reverse_reverse {u v : V} (p : G.Walk u v) : p.reverse.reverse = p := by
   | cons _ _ ih => simp [ih]
 #align simple_graph.walk.reverse_reverse SimpleGraph.Walk.reverse_reverse
 
+theorem reverse_surjective {u v : V} : Function.Surjective (reverse : G.Walk u v → _) :=
+  RightInverse.surjective reverse_reverse
+
 @[simp]
 theorem length_nil {u : V} : (nil : G.Walk u u).length = 0 := rfl
 #align simple_graph.walk.length_nil SimpleGraph.Walk.length_nil

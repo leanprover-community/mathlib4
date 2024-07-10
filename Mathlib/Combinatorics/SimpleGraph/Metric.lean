@@ -52,6 +52,8 @@ noncomputable def edist (u v : V) : ℕ∞ :=
 
 variable {G} {u v w : V}
 
+theorem edist_eq_sInf : G.edist u v = sInf (Set.range fun w : G.Walk u v ↦ (w.length : ℕ∞)) := rfl
+
 protected theorem Reachable.exists_walk_length_eq_edist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   csInf_mem <| Set.range_nonempty_iff_nonempty.mpr hr
@@ -92,14 +94,9 @@ protected theorem Connected.edist_triangle (hconn : G.Connected) :
   apply edist_le_length
 
 theorem edist_comm : G.edist u v = G.edist v u := by
-  have {u v : V} (h : G.Reachable u v) : G.edist u v ≤ G.edist v u := by
-    obtain ⟨p, hp⟩ := h.symm.exists_walk_length_eq_edist
-    rw [← hp, ← Walk.length_reverse]
-    apply edist_le_length
-  by_cases h : G.Reachable u v
-  · apply le_antisymm (this h) (this h.symm)
-  · have h' : ¬G.Reachable v u := fun h' => absurd h'.symm h
-    simp [h, h', edist_eq_top_of_not_reachable]
+  rw [edist_eq_sInf, ← Set.image_univ, ← Set.image_univ_of_surjective Walk.reverse_surjective,
+    ← Set.image_comp, Set.image_univ, Function.comp_def]
+  simp_rw [Walk.length_reverse, ← edist_eq_sInf]
 
 lemma exists_walk_eq_length_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
@@ -109,13 +106,10 @@ lemma exists_walk_eq_length_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
 -/
 theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
-  have ne_top_of_eq_one {n : ℕ∞} (h : n = 1) : n ≠ ⊤ := by
-    rw [← ENat.coe_toNat_eq_self, h]; rfl
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · let ⟨w, hw⟩ := exists_walk_eq_length_of_edist_ne_top <| ne_top_of_eq_one h
-    rw [h, Nat.cast_eq_one] at hw
-    exact w.adj_of_length_eq_one <| hw
-  · exact ge_antisymm (ENat.one_le_iff_pos.mpr <| pos_edist_of_ne h.ne) <| edist_le_length h.toWalk
+  · obtain ⟨w, hw⟩ := exists_walk_eq_length_of_edist_ne_top <| by rw [h]; simp
+    exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
+  · exact le_antisymm (edist_le_length h.toWalk) (ENat.one_le_iff_pos.mpr <| pos_edist_of_ne h.ne)
 
 end edist
 
