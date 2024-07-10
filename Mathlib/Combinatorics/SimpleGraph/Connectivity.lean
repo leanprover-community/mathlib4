@@ -2376,12 +2376,14 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
 #align simple_graph.connected_component.iso_equiv_supp SimpleGraph.ConnectedComponent.isoEquivSupp
 
 lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
-    (hv : v ∈ (c.supp : Set V)) (hw : w ∈ H.verts)
-    (hadj : H.Adj v w) : w ∈ (c.supp : Set V) := by
-  obtain ⟨_, h⟩ := hv
+    (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
+    (hadj : H.Adj v w) : w ∈ (↑) '' (c : Set H.verts) := by
+  rw [Set.mem_image]
+  obtain ⟨v', hv'⟩ := hv
   use ⟨w, hw⟩
-  rw [← (mem_supp_iff _ _).mp h.1]
-  exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
+  refine ⟨?_, rfl⟩
+  rw [← (ConnectedComponent.mem_supp_iff ..).mp hv'.1]
+  exact ConnectedComponent.connectedComponentMk_eq_of_adj ((hv'.2 ▸ hadj.symm).coe)
 
 lemma univ_eq_union_supp : (Set.univ : Set V) = ⋃ (c : G.ConnectedComponent), c.supp := by
   ext v
@@ -2663,28 +2665,28 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
 lemma odd_card_exists_odd_component
-      (ho : Odd (Fintype.card V)) : ∃ (c : ConnectedComponent G), Odd (Nat.card c.supp) := by
-      simp_rw [Nat.odd_iff_not_even]
-      by_contra! hc
-      rw [
-        ← (set_fintype_card_eq_univ_iff _).mpr ((@ConnectedComponent.univ_eq_union_supp _ G).symm),
-        ← Set.toFinset_card, Nat.odd_iff_not_even] at ho
-      apply ho
-      have : Set.toFinset (⋃ (x : ConnectedComponent G), ConnectedComponent.supp x) =
-          Finset.biUnion (Finset.univ : Finset (ConnectedComponent G))
-          (fun x => (ConnectedComponent.supp x).toFinset) := by
-        ext v
-        simp only [Set.mem_toFinset, Set.mem_iUnion, ConnectedComponent.mem_supp_iff, exists_eq',
-          Finset.mem_biUnion, Finset.mem_univ, true_and, true_iff]
-      rw [this]
-      rw [Finset.card_biUnion (fun x _ y _ hxy ↦
-        Set.disjoint_toFinset.mpr (ConnectedComponent.supp_disjoint hxy))]
-      simp only [Set.toFinset_card]
-      exact Finset.Even_finset_sum _ fun c => (by
-        have := hc c.val
-        rw [@Nat.card_eq_fintype_card] at this
-        exact this
-        )
+    (ho : Odd (Fintype.card V)) : ∃ (c : ConnectedComponent G), Odd (Nat.card c.supp) := by
+  simp_rw [Nat.odd_iff_not_even]
+  by_contra! hc
+  rw [
+    ← (set_fintype_card_eq_univ_iff _).mpr ((@ConnectedComponent.univ_eq_union_supp _ G).symm),
+    ← Set.toFinset_card, Nat.odd_iff_not_even] at ho
+  apply ho
+  have : Set.toFinset (⋃ (x : ConnectedComponent G), ConnectedComponent.supp x) =
+      Finset.biUnion (Finset.univ : Finset (ConnectedComponent G))
+      (fun x => (ConnectedComponent.supp x).toFinset) := by
+    ext v
+    simp only [Set.mem_toFinset, Set.mem_iUnion, ConnectedComponent.mem_supp_iff, exists_eq',
+      Finset.mem_biUnion, Finset.mem_univ, true_and, true_iff]
+  rw [this]
+  rw [Finset.card_biUnion (fun x _ y _ hxy ↦
+    Set.disjoint_toFinset.mpr (ConnectedComponent.supp_disjoint hxy))]
+  simp only [Set.toFinset_card]
+  exact Finset.Even_finset_sum _ fun c => (by
+    have := hc c.val
+    rw [@Nat.card_eq_fintype_card] at this
+    exact this
+    )
 
 end Finite
 

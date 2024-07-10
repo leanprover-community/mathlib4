@@ -161,7 +161,8 @@ lemma LocallyLinear.card_edgeFinset (hG : G.LocallyLinear) :
   refine hG.edgeDisjointTriangles.card_edgeFinset_le.antisymm' ?_
   rw [← mul_comm, ← mul_one (Finset.card _)]
   refine card_mul_le_card_mul (fun e s ↦ e ∈ s.sym2) ?_ ?_
-  · simpa [Sym2.forall, Nat.one_le_iff_ne_zero, -card_eq_zero, card_ne_zero, Finset.Nonempty]
+  · simpa [Sym2.forall, Nat.one_le_iff_ne_zero, -Finset.card_eq_zero, Finset.card_ne_zero,
+        Finset.Nonempty]
       using hG.2
   simp only [mem_cliqueFinset_iff, is3Clique_iff, forall_exists_index, and_imp]
   rintro _ a b c hab hac hbc rfl
