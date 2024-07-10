@@ -68,6 +68,9 @@ noncomputable def equivSmallModel (C : Type u) [Category.{v} C] [EssentiallySmal
     (Classical.choose_spec (Classical.choose_spec (@EssentiallySmall.equiv_smallCategory C _ _)))
 #align category_theory.equiv_small_model CategoryTheory.equivSmallModel
 
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] : EssentiallySmall.{w} Cᵒᵖ where
+  equiv_smallCategory := ⟨(SmallModel C)ᵒᵖ, inferInstance, ⟨(equivSmallModel C).op⟩⟩
+
 theorem essentiallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (e : C ≌ D) : EssentiallySmall.{w} C ↔ EssentiallySmall.{w} D := by
   fconstructor

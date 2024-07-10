@@ -53,6 +53,25 @@ instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :
       have := Presheaf.isLeftAdjoint_of_preservesColimits (prod.functor.obj F)
       exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (prod.functor.obj F)))
 
+/-- This is not a good instance because of the universe levels. Below is the instance where the
+target category is `Type (max u₁ v₁)`. -/
+def cartesianClosedFunctorToTypes {C : Type u₁} [Category.{v₁} C] :
+    CartesianClosed (C ⥤ Type (max u₁ v₁ u₂)) :=
+  let e : (ULiftHom.{max u₁ v₁ u₂} (ULift.{max u₁ v₁ u₂} C)) ⥤ Type (max u₁ v₁ u₂) ≌
+      C ⥤ Type (max u₁ v₁ u₂) :=
+      Functor.asEquivalence ((whiskeringLeft _ _ _).obj
+        (ULift.equivalence.trans ULiftHom.equiv).functor)
+  cartesianClosedOfEquiv e
+
+instance {C : Type u₁} [Category.{v₁} C] : CartesianClosed (C ⥤ Type (max u₁ v₁)) :=
+  cartesianClosedFunctorToTypes
+
+instance {C : Type u₁} [Category.{v₁} C] [EssentiallySmall.{v₁} C] :
+    CartesianClosed (C ⥤ Type v₁) :=
+  let e : (SmallModel C) ⥤ Type v₁ ≌ C ⥤ Type v₁ :=
+    Functor.asEquivalence ((whiskeringLeft _ _ _).obj (equivSmallModel _).functor)
+  cartesianClosedOfEquiv e
+
 end CartesianClosed
 
 end
