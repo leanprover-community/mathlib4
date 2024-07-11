@@ -49,14 +49,16 @@ noncomputable def preservesFiniteColimitsOfPreservesHomology
 
 end
 
-
 section
 
 variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
 /--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves monomorphism.
+If a functor `F : C ⥤ D` preserves short exact sequences on the left hand side, (i.e.
+if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact)
+then it preserves
+monomorphism.
 -/
 lemma preservesMonomorphisms_of_preserves_shortExact_left
     (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f)) :
@@ -158,7 +160,9 @@ lemma preserves_finite_limits_tfae : List.TFAE
 
 
 /--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves monomorphism.
+If a functor `F : C ⥤ D` preserves exact sequences on the right hand side (i.e.
+if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact),
+then it preserves epimorphisms.
 -/
 lemma preservesEpimorphism_of_preserves_shortExact_right
     (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g)) :
@@ -260,7 +264,7 @@ lemma preserves_finite_colimits_tfae : List.TFAE
   tfae_finish
 
 open ZeroObject in
-lemma preserves_shortComplex_shortExact_iff_preserves_finite_limit_colimit :
+lemma preserves_shortComplex_exact_iff_preserves_finite_limit_colimit :
     (∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) ↔
     Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F) := by
   constructor
