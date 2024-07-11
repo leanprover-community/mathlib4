@@ -49,7 +49,7 @@ variable {F f}
 variable (i j k : ι)
 
 noncomputable abbrev V := (hf i).rep.pullback (f j)
-noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).rep.preFst (f j)
+noncomputable abbrev p₁ : V hf i j ⟶ X i := (hf i).rep.fst' (f j)
 noncomputable abbrev p₂ : V hf i j ⟶ X j := (hf i).rep.snd (f j)
 
 /-- TODO -/

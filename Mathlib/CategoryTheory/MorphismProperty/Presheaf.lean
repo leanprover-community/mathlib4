@@ -95,32 +95,36 @@ noncomputable abbrev fst : yoneda.obj (hf.pullback g) ⟶ F :=
   (hf g).choose_spec.choose_spec.choose
 
 /-- The preimage under yoneda of `hf.fst g`, whenever this makes sense. -/
-noncomputable abbrev preFst : hf'.pullback g ⟶ Y :=
+noncomputable abbrev fst' : hf'.pullback g ⟶ Y :=
   Yoneda.fullyFaithful.preimage (hf'.fst g)
 
-lemma yoneda_map_preFst : yoneda.map (hf'.preFst g) = hf'.fst g :=
+lemma yoneda_map_fst' : yoneda.map (hf'.fst' g) = hf'.fst g :=
   Functor.FullyFaithful.map_preimage _ _
 
 lemma isPullback : IsPullback (hf.fst g) (yoneda.map (hf.snd g)) f g :=
   (hf g).choose_spec.choose_spec.choose_spec
 
--- (Calle) maybe this should have a better name?
-@[reassoc]
-lemma condition : yoneda.map (hf'.preFst g) ≫ f' = yoneda.map (hf'.snd g) ≫ g := by
-  simpa only [yoneda_map_preFst] using (hf'.isPullback g).w
+/-- Variant of the pullback square when the first projection lies in the image of yoneda. -/
+lemma isPullback' : IsPullback (yoneda.map (hf'.fst' g)) (yoneda.map (hf'.snd g)) f' g :=
+  (hf'.yoneda_map_fst' _) ▸ (hf' g).choose_spec.choose_spec.choose_spec
 
-/-- Variant of `condition` when all vertices of the pullback square lie in the image of yoneda. -/
+
+-- TODO should be isPullbackPre (& then get w from IsPullback.w?).
+/-- Given a representable morphism `f' :  yoneda.obj Y ⟶ yoneda.obj Z`, and a morphism
+`g : ....`, this is a .....
+
+Variant of `hf'.i` when all vertices of the pullback square lie in the image of yoneda. -/
 @[reassoc]
-lemma condition' {X Y Z : C} {f : X ⟶ Z} (g : yoneda.obj Y ⟶ yoneda.obj Z)
+lemma w' {X Y Z : C} {f : X ⟶ Z} (g : yoneda.obj Y ⟶ yoneda.obj Z)
     (hf : Presheaf.representable (yoneda.map f)) :
-      hf.preFst g ≫ f = hf.snd g ≫ (Yoneda.fullyFaithful.preimage g) :=
+      hf.fst' g ≫ f = hf.snd g ≫ (Yoneda.fullyFaithful.preimage g) :=
   yoneda.map_injective <| by simp [(hf.isPullback g).w]
 
 variable {g}
 
 /-- Two morphisms `a b : Z ⟶ hf.pullback g` are equal if
 * Their compositions (in `C`) with `hf.snd g : hf.pullback  ⟶ X` are equal.
-* The compositions of `yoneda.map a` and `yoneda.map b` with `(hf.pullbackCone g).fst` are equal. -/
+* The compositions of `yoneda.map a` and `yoneda.map b` with `hf.fst g` are equal. -/
 @[ext 100]
 lemma hom_ext {Z : C} {a b : Z ⟶ hf.pullback g}
     (h₁ : yoneda.map a ≫ hf.fst g = yoneda.map b ≫ hf.fst g)
@@ -131,11 +135,11 @@ lemma hom_ext {Z : C} {a b : Z ⟶ hf.pullback g}
 /-- In the case of a representable morphism `f' : yoneda.obj Y ⟶ G`, whose codomain lies
 in the image of yoneda, we get that two morphism `a b : Z ⟶ hf.pullback g` are equal if
 * Their compositions (in `C`) with `hf'.snd g : hf.pullback  ⟶ X` are equal.
-* Their compositions (in `C`) with `hf'.fst g : hf.pullback  ⟶ X` are equal. -/
+* Their compositions (in `C`) with `hf'.fst' g : hf.pullback  ⟶ X` are equal. -/
 @[ext]
-lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g} (h₁ : a ≫ hf'.preFst g = b ≫ hf'.preFst g)
+lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g} (h₁ : a ≫ hf'.fst' g = b ≫ hf'.fst' g)
     (h₂ : a ≫ hf'.snd g = b ≫ hf'.snd g) : a = b :=
-  hf'.hom_ext (by simpa [yoneda_map_preFst] using yoneda.congr_map h₁) h₂
+  hf'.hom_ext (by simpa [yoneda_map_fst'] using yoneda.congr_map h₁) h₂
 
 section
 
@@ -165,8 +169,8 @@ variable {Z : C} (i : Z ⟶ Y) (h : Z ⟶ X) (hi : (yoneda.map i) ≫ f' = yoned
 noncomputable def lift' : Z ⟶ hf'.pullback g := hf'.lift _ _ hi
 
 @[reassoc (attr := simp)]
-lemma lift'_fst : hf'.lift' i h hi ≫ hf'.preFst g = i :=
-  yoneda.map_injective (by simp [yoneda_map_preFst, lift'])
+lemma lift'_fst : hf'.lift' i h hi ≫ hf'.fst' g = i :=
+  yoneda.map_injective (by simp [yoneda_map_fst', lift'])
 
 @[reassoc (attr := simp)]
 lemma lift'_snd : hf'.lift' i h hi ≫ hf'.snd g = h := by
@@ -176,13 +180,13 @@ end
 
 /-- TODO -/
 noncomputable def symmetry : hf'.pullback g ⟶ hg.pullback f' :=
-  hg.lift' (hf'.snd g) (hf'.preFst g) (condition _ _).symm
+  hg.lift' (hf'.snd g) (hf'.fst' g) (hf'.isPullback' _).w.symm
 
 @[reassoc (attr := simp)]
-lemma symmetry_fst : hf'.symmetry hg ≫ hg.preFst f' = hf'.snd g := by simp [symmetry]
+lemma symmetry_fst : hf'.symmetry hg ≫ hg.fst' f' = hf'.snd g := by simp [symmetry]
 
 @[reassoc (attr := simp)]
-lemma symmetry_snd : hf'.symmetry hg ≫ hg.snd f' = hf'.preFst g := by simp [symmetry]
+lemma symmetry_snd : hf'.symmetry hg ≫ hg.snd f' = hf'.fst' g := by simp [symmetry]
 
 @[reassoc (attr := simp)]
 lemma symmetry_symmetry : hf'.symmetry hg ≫ hg.symmetry hf' = 𝟙 _ := by aesop_cat
@@ -265,8 +269,8 @@ lemma presheaf_yoneda_map [HasPullbacks C] (hP : StableUnderBaseChange P) {X Y :
   use Presheaf.representable.yoneda_map f
   intro Z g
   apply hP (f := (Yoneda.fullyFaithful.preimage g))
-    (f' := (Presheaf.representable.yoneda_map f).preFst g) _ hf
-  apply IsPullback.of_map yoneda ((Presheaf.representable.yoneda_map f).condition' g)
+    (f' := (Presheaf.representable.yoneda_map f).fst' g) _ hf
+  apply IsPullback.of_map yoneda ((Presheaf.representable.yoneda_map f).w' g)
   simpa using (Presheaf.representable.yoneda_map f).isPullback g
 
 lemma presheaf_of_yoneda (hP : RespectsIso P) {X Y : C} {f : X ⟶ Y}
