@@ -179,5 +179,3 @@ instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) : (pushout f).IsLeftAdjoin
 end Under
 
 end CategoryTheory
-
-#min_imports
