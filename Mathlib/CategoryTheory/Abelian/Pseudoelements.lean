@@ -366,7 +366,7 @@ theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
       obtain ⟨c, hc⟩ := KernelFork.IsLimit.lift' hS.isLimitImage _ hb'
       -- We compute the pullback of the map into the image and `c`.
       -- The pseudoelement induced by the first pullback map will be our preimage.
-      use (pullback.fst : pullback (Abelian.factorThruImage S.f) c ⟶ S.X₁)
+      use pullback.fst (Abelian.factorThruImage S.f) c
       -- It remains to show that the image of this element under `f` is pseudo-equal to `b`.
       apply Quotient.sound
       refine ⟨pullback (Abelian.factorThruImage S.f) c, 𝟙 _,
