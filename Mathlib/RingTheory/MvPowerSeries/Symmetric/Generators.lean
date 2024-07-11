@@ -106,9 +106,7 @@ instance : HasBoundedDegree (esymm σ R n) := by
     exists_and_left] at h
   simp [h.1]
 
-instance : IsSymmetric (esymm σ R n) := by
-  intro e
-  exact rename_esymm _ _ n e
+instance : IsSymmetric (esymm σ R n) := rename_esymm _ _ n
 
 end ElementarySymmetric
 
@@ -155,9 +153,7 @@ instance : HasBoundedDegree (hsymm σ R n) := by
   simp only [coeff_hsymm, ne_eq, ite_eq_right_iff, not_forall, exists_prop] at h
   simp [h.1]
 
-instance : IsSymmetric (hsymm σ R n) := by
-  intro e
-  exact rename_hsymm _ _ n e
+instance : IsSymmetric (hsymm σ R n) := rename_hsymm _ _ n
 
 end CompleteHomogeneousSymmetric
 
@@ -184,9 +180,10 @@ lemma psum_zero : psum σ R 0 = 0 := by
   · simp only [ite_eq_right_iff, and_imp]
     intro h'; exfalso; apply h
     rw [Finsupp.sum, Finset.sum_eq_zero_iff] at h'
-    ext i; by_cases h'' : i ∈ s.support
-    · exact h' i h''
-    · simp only [Finsupp.mem_support_iff, ne_eq, not_not] at h''; exact h''
+    ext i; by_cases hi : i ∈ s.support
+    · exact h' i hi
+    · rw [Finsupp.mem_support_iff, ne_eq, not_not] at hi
+      exact hi
 
 theorem map_psum (f : R →+* S) : map _ f (psum σ R n) = psum σ S n := by
   ext s
@@ -213,9 +210,7 @@ instance : HasBoundedDegree (psum σ R n) := by
     exists_and_left] at h
   simp [h.1]
 
-instance : IsSymmetric (psum σ R n) := by
-  intro e
-  exact rename_psum _ _ n e
+instance : IsSymmetric (psum σ R n) := rename_psum _ _ n
 
 end PowerSums
 
@@ -289,6 +284,19 @@ lemma hsymm_one_eq_psum_one : hsymm σ R 1 = psum σ R 1 := by
 
 lemma esymm_one_eq_psum_one : esymm σ R 1 = psum σ R 1 := by
   rw [esymm_one_eq_hsymm_one, hsymm_one_eq_psum_one]
+
+@[simp]
+lemma hsymm_one : hsymm σ R 1 = fun s ↦ if ∃ i, s = Finsupp.single i 1 then 1 else 0 := by
+  funext s
+  simp_rw [hsymm_def, sum_one_iff_single]
+
+@[simp]
+lemma esymm_one : esymm σ R 1 = fun s ↦ if ∃ i, s = Finsupp.single i 1 then 1 else 0 := by
+  rw [esymm_one_eq_hsymm_one, hsymm_one]
+
+@[simp]
+lemma psum_one : psum σ R 1 = fun s ↦ if ∃ i, s = Finsupp.single i 1 then 1 else 0 := by
+  rw [← hsymm_one_eq_psum_one, hsymm_one]
 
 end SymmOne
 

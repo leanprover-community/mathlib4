@@ -10,6 +10,11 @@ import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.Sym.Basic
 
+import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Rename
+import Mathlib.RingTheory.MvPowerSeries.Symmetric.Basic
+import Mathlib.RingTheory.MvPowerSeries.Symmetric.Generators
+
 #align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
@@ -515,5 +520,26 @@ theorem msymm_isSymmetric {n : ℕ} (μ : n.Partition) : IsSymmetric (msymm σ R
   rename_msymm _ _ μ
 
 end MonomialSymmetric
+
+open Classical
+example {n : ℕ} (s : σ →₀ ℕ) [DecidableEq σ] : MvPowerSeries.monomial R s 1 = (∏ i : σ, X i ^ s i : MvPolynomial σ R) := by
+  ext t
+  rw [coeff_coe, MvPowerSeries.coeff_monomial]
+  split_ifs with h
+  · rw [h]
+    sorry
+  · 
+
+example {n : ℕ} (x : Sym σ n) (s : σ →₀ ℕ) [DecidableEq σ] : coeff s (x.1.map X).prod = if ∀ i, x.1.count i = s i then 1 else 0 := by
+  simp
+  sorry
+
+example (n : ℕ) [DecidableEq σ] : hsymm σ R n = MvPowerSeries.hsymm σ R n := by
+  ext s
+  simp [hsymm]
+  split_ifs with h
+  · rw [coeff_sum]
+    sorry
+  · sorry
 
 end MvPolynomial
