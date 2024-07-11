@@ -127,6 +127,71 @@ register_option linter.noInitialWhitespace : Bool := {
   descr := "enable the noInitialWhitespace linter"
 }
 
+def getStartPos (stx : Syntax) : Array String.Pos :=
+  if stx.isOfKind ``Lean.Parser.Term.implicitBinder ||
+     stx.isOfKind ``Lean.Parser.Term.explicitBinder then
+    match stx with
+      | .node _ _ #[ -- `im`/`explicitBinder`
+          .atom openBracket _, -- `{`
+          .node _ _ vars,
+          .node _ _ #[.atom siColon _, type],
+          .atom closedBracket _
+        ] =>
+        let vars := vars.map fun v => v.getHeadInfo.getPos?
+        (#[openBracket.getPos?] ++ vars ++ #[siColon.getPos?, type.getHeadInfo.getPos?, closedBracket.getPos?]).reduceOption
+      | _ => default
+  else default
+
+def inappropriateSpacing (file : String) (stx : Syntax) : Array Char :=
+  let startPos := getStartPos stx
+  if startPos.isEmpty then #[] else
+  let closedBracketPos := startPos.back
+  let colonPos := startPos.pop.pop.back
+  -- this should not be a space
+  let charFollowingOpenBracket   := file.get ⟨startPos[0]!.byteIdx+1⟩
+  -- this should not be a space
+  let charPrecedingClosedBracket := file.get ⟨closedBracketPos.byteIdx-1⟩
+  let varPos := (startPos.pop.pop.pop.eraseIdx 0).eraseIdx 0
+  -- these should not be spaces
+  let charsTwoBeforeAVar := varPos.map (file.get ⟨·.byteIdx-2⟩)
+  -- these should be spaces
+  let charAroundColon := #[file.get ⟨colonPos.byteIdx-1⟩, file.get ⟨colonPos.byteIdx+1⟩]
+  -- these should not be spaces
+  let charAroundColonPlusOne := #[file.get ⟨colonPos.byteIdx-2⟩, file.get ⟨colonPos.byteIdx+2⟩]
+  let spaces := charAroundColon
+  let nonspaces := (charsTwoBeforeAVar.push charFollowingOpenBracket ++ charAroundColonPlusOne).push charPrecedingClosedBracket
+  --dbg_trace "spaces: {spaces}"
+  --dbg_trace "nonspaces: {nonspaces}"
+  let errs := spaces.filter (· != ' ') ++ nonspaces.filter (· == ' ')
+  errs
+
+partial
+def getBinders : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let fargs := (args.map getBinders).flatten
+    if kind == ``Lean.Parser.Term.implicitBinder || kind == ``Lean.Parser.Term.explicitBinder then
+      fargs.push stx else fargs
+  | _ => #[]
+
+def modNameToFilePath (mod : Name) : System.FilePath :=
+  let cmps := (mod.components.drop 1).foldl (init := mod.getRoot.toString) fun a b =>
+    ((a.toString : System.FilePath) / b.toString)
+  cmps.addExtension "lean"
+
+elab "gb " cmd:command : command => do
+  Elab.Command.elabCommand cmd
+  --let binder := (cmd.raw.find? (·.isOfKind ``Lean.Parser.Term.implicitBinder)).get!
+  let binders := getBinders cmd
+  --logInfo m!"{binders.size}"
+  let fileName := modNameToFilePath (← getMainModule)
+  let file := (← IO.FS.readFile fileName)
+  --let errs := inappropriateSpacing file binder
+  dbg_trace "{(binders.map (inappropriateSpacing file)).flatten}"
+
+--set_option pp.rawOnError true
+--gb
+--variable {a b : Nat} {a b : Nat}
+
 namespace NoInitialWhitespace
 
 /-- Gets the value of the `linter.noInitialWhitespace` option. -/
@@ -147,6 +212,12 @@ def noInitialWhitespaceLinter : Linter where
         Linter.logLint linter.noInitialWhitespace stx
           m!"'{stx}' starts on column {pos.column}.\n\
              Please, do not leave any whitespace before this command!"
+      let binders := getBinders stx
+      let fileName := modNameToFilePath (← getMainModule)
+      let file := (← IO.FS.readFile fileName)
+      let should_be_empty := (binders.map (inappropriateSpacing file)).flatten
+      if !should_be_empty.isEmpty then
+        Linter.logLint linter.noInitialWhitespace stx m!"{should_be_empty} spaces!"
 
 initialize addLinter noInitialWhitespaceLinter
 
