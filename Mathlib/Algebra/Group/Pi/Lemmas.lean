@@ -337,10 +337,10 @@ For injections of commuting elements at the same index, see `Commute.map` -/
 theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     Pairwise fun i j => ∀ (x : f i) (y : f j), Commute (mulSingle i x) (mulSingle j y) := by
   intro i j hij x y; ext k
-  by_cases h1 : i = k;
+  by_cases h1 : i = k
   · subst h1
     simp [hij]
-  by_cases h2 : j = k;
+  by_cases h2 : j = k
   · subst h2
     simp [hij]
   simp [h1, h2]
