@@ -178,20 +178,6 @@ def modNameToFilePath (mod : Name) : System.FilePath :=
     ((a.toString : System.FilePath) / b.toString)
   cmps.addExtension "lean"
 
-elab "gb " cmd:command : command => do
-  Elab.Command.elabCommand cmd
-  --let binder := (cmd.raw.find? (·.isOfKind ``Lean.Parser.Term.implicitBinder)).get!
-  let binders := getBinders cmd
-  --logInfo m!"{binders.size}"
-  let fileName := modNameToFilePath (← getMainModule)
-  let file := (← IO.FS.readFile fileName)
-  --let errs := inappropriateSpacing file binder
-  dbg_trace "{(binders.map (inappropriateSpacing file)).flatten}"
-
---set_option pp.rawOnError true
---gb
---variable {a b : Nat} {a b : Nat}
-
 namespace NoInitialWhitespace
 
 /-- Gets the value of the `linter.noInitialWhitespace` option. -/
@@ -212,12 +198,13 @@ def noInitialWhitespaceLinter : Linter where
         Linter.logLint linter.noInitialWhitespace stx
           m!"'{stx}' starts on column {pos.column}.\n\
              Please, do not leave any whitespace before this command!"
-      let binders := getBinders stx
       let fileName := modNameToFilePath (← getMainModule)
       let file := (← IO.FS.readFile fileName)
-      let should_be_empty := (binders.map (inappropriateSpacing file)).flatten
-      if !should_be_empty.isEmpty then
-        Linter.logLint linter.noInitialWhitespace stx m!"{should_be_empty} spaces!"
+      let binders := getBinders stx
+      for binder in binders do
+        let shouldBeEmpty := inappropriateSpacing file binder
+        if ! shouldBeEmpty.isEmpty then
+          Linter.logLint linter.noInitialWhitespace binder m!"{shouldBeEmpty} spaces!"
 
 initialize addLinter noInitialWhitespaceLinter
 
