@@ -11,9 +11,10 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # Module structures of filtered colimits of abelian groups over filtered colimts of rings
 
-Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}`  with `j` running through same index category `J`. if for each `j ∈ J`, `Mⱼ` is an `Rⱼ` such
-that the `Rⱼ`-action is compatible, then `M` is an `Rⱼ`-module for all `j` and `M` is an `R`-module.
+Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of abelian groups
+`{Mⱼ}`  with `j` running through some filtered index category `J`. If for each `j ∈ J`, `Mⱼ` is
+an `Rⱼ`-module such that the `Rⱼ`-actions are compatible, then `M` is an `Rⱼ`-module for all `j`
+and `M` is an `R`-module.
 
 ## Implementation notes
 
@@ -167,9 +168,9 @@ end hSMul
 variable {ℛ ℳ} in
 /--
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}`  with the same indexing set `j ∈ J`, if for each `j ∈ J`, `Mⱼ` is an `Rⱼ`-module such
-that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is a scalar multiplication
-`Rⱼ → M → M` for every `j ∈ J`.
+abelian groups `{Mⱼ}` with the same indexing set `j ∈ J`, if for each `j ∈ J`, `Mⱼ` is an
+`Rⱼ`-module such that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is
+a scalar multiplication `Rⱼ → M → M` for every `j ∈ J`.
 -/
 noncomputable def sMulColimit {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimit (C := 𝔄𝔟) ℳ :=
@@ -258,9 +259,9 @@ noncomputable instance moduleObjColimit (j : J) :
 variable {ℛ ℳ} in
 /--
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}`  with the same indexing category `J`. If for each `j ∈ J`, `Mⱼ` is an `Rⱼ` such
-that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is a natural scalar multiplication
-`R → M → M`.
+abelian groups `{Mⱼ}`  with the same indexing category `J`. If for each `j ∈ J`, `Mⱼ` is an
+`Rⱼ`-module such that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is a
+natural scalar multiplication `R → M → M`.
 -/
 noncomputable def colimitsMulColimit (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimit (C := 𝔄𝔟) ℳ :=
@@ -300,13 +301,16 @@ lemma colimitsMulColimit_mul_smul
   have eq₃ : r₁ * r₂ = colimit.ι ℛ j
       (ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₁) *
        ℛ.map (IsFiltered.toSup O ∅ $ by simp [O]) (Concrete.repColimit ℛ r₂)) := by
-    rw [map_mul, colimit.w_apply, colimit.w_apply, Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
+    rw [map_mul, colimit.w_apply, colimit.w_apply, Concrete.ι_repColimit_eq,
+      Concrete.ι_repColimit_eq]
   rw [eq₃]
   conv_rhs => rw [eq₁]; rhs; rw [eq₂]
-  rw [colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul, sMulColimit_mul_smul]
+  rw [colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul,
+    sMulColimit_mul_smul]
 
 @[simp]
-lemma colimitsMulColimit_smul_zero (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) : colimitsMulColimit (ℳ := ℳ) r 0 = 0 := by
+lemma colimitsMulColimit_smul_zero (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) :
+    colimitsMulColimit (ℳ := ℳ) r 0 = 0 := by
   rw [show r = colimit.ι ℛ (Concrete.indexRepColimit ℛ r) _ by
     rw [Concrete.ι_repColimit_eq], colimitsMulColimit_rep_smul, sMulColimit_smul_zero]
 
@@ -335,14 +339,15 @@ lemma colimitsMulColimit_add_smul (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) �
     rw [colimit.w_apply, colimit.w_apply, Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
   rw [eq₃]
   conv_rhs => rw [eq₁]; rhs; rw [eq₂]
-  rw [colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul, sMulColimit_add_smul]
+  rw [colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul, colimitsMulColimit_rep_smul,
+    sMulColimit_add_smul]
 
 @[simp]
 lemma colimitsMulColimit_zero_smul (m : colimit (C := 𝔄𝔟) ℳ) :
     colimitsMulColimit (0 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) m = 0 := by
   let c : J := (inferInstance : IsFiltered J).2.some
-  rw [show (0 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) = colimit.ι ℛ c 0 by rw [map_zero], colimitsMulColimit_rep_smul,
-    sMulColimit_zero_smul]
+  rw [show (0 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) = colimit.ι ℛ c 0 by rw [map_zero],
+    colimitsMulColimit_rep_smul, sMulColimit_zero_smul]
 
 end colimitsMulColimit
 
