@@ -36,7 +36,7 @@ formulate the martingale convergence theorem.
   integrable.
 * `MeasureTheory.tendsto_Lp_of_tendsto_ae`: a sequence of Lp functions which is uniformly
   integrable converges in Lp if they converge almost everywhere.
-* `MeasureTheory.tendstoInMeasure_finite_iff_tendsto_Lp`: Vitali convergence theorem:
+* `MeasureTheory.tendstoInMeasure_iff_tendsto_Lp`: Vitali convergence theorem:
   a sequence of Lp functions converges in Lp if and only if it is uniformly integrable
   and converges in measure.
 
@@ -618,11 +618,9 @@ theorem tendsto_Lp_of_tendstoInMeasure [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' 
 set_option linter.uppercaseLean3 false in
 #align measure_theory.tendsto_Lp_of_tendsto_in_measure MeasureTheory.tendsto_Lp_of_tendstoInMeasure
 
-/-- **Vitali's convergence theorem** (finite measure version).
-
-A sequence of functions `f` converges to `g` in Lp if and
+/-- **Vitali's convergence theorem**: A sequence of functions `f` converges to `g` in Lp if and
 only if it is uniformly integrable and converges to `g` in measure. -/
-theorem tendstoInMeasure_finite_iff_tendsto_Lp [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
+theorem tendstoInMeasure_iff_tendsto_Lp [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ n, Memℒp (f n) p μ) (hg : Memℒp g p μ) :
     TendstoInMeasure μ f atTop g ∧ UnifIntegrable f p μ ↔
       Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) :=
@@ -631,7 +629,7 @@ theorem tendstoInMeasure_finite_iff_tendsto_Lp [IsFiniteMeasure μ] (hp : 1 ≤ 
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h⟩⟩
 set_option linter.uppercaseLean3 false in
-#align measure_theory.tendsto_in_measure_iff_tendsto_Lp MeasureTheory.tendstoInMeasure_finite_iff_tendsto_Lp
+#align measure_theory.tendsto_in_measure_iff_tendsto_Lp MeasureTheory.tendstoInMeasure_iff_tendsto_Lp
 
 /-- This lemma is superceded by `unifIntegrable_of` which do not require `C` to be positive. -/
 theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β}
