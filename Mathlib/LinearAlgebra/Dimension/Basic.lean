@@ -366,9 +366,10 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
   intro w hw
   refine ⟨⟨{0}, ?_⟩, ?_⟩
   · rw [linearIndependent_iff']
-    intros
-    exact Subsingleton.elim _ _
+    subsingleton
   · exact hw.trans_eq (Cardinal.mk_singleton _).symm
 #align rank_subsingleton rank_subsingleton
 
 end
+
+end Module

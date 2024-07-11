@@ -8,11 +8,11 @@ import Mathlib.SetTheory.Ordinal.FixedPoint
 #align_import set_theory.ordinal.principal from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
 /-!
-### Principal ordinals
+# Principal ordinals
 
 We define principal or indecomposable ordinals, and we prove the standard properties about them.
 
-### Main definitions and results
+## Main definitions and results
 * `Principal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
   any other typically excluded edge cases for simplicity.
 * `unbounded_principal`: Principal ordinals are unbounded.
@@ -21,7 +21,7 @@ We define principal or indecomposable ordinals, and we prove the standard proper
 * `principal_mul_iff_le_two_or_omega_opow_opow`: The main characterization theorem for
   multiplicative principal ordinals.
 
-### Todo
+## TODO
 * Prove that exponential principal ordinals are 0, 1, 2, ω, or epsilon numbers, i.e. fixed points
   of `fun x ↦ ω ^ x`.
 -/
@@ -88,11 +88,11 @@ theorem nfp_le_of_principal {op : Ordinal → Ordinal → Ordinal} {a o : Ordina
 
 /-! ### Principal ordinals are unbounded -/
 
--- Adaptation note: 2024-04-23
--- After https://github.com/leanprover/lean4/pull/3965,
--- we need to write `lt_blsub₂.{u}` twice below,
--- where previously the universe annotation was not necessary.
--- This appears to be correct behaviour, as `lt_blsub₂.{0}` also works.
+#adaptation_note /-- 2024-04-23
+After https://github.com/leanprover/lean4/pull/3965,
+we need to write `lt_blsub₂.{u}` twice below,
+where previously the universe annotation was not necessary.
+This appears to be correct behaviour, as `lt_blsub₂.{0}` also works. -/
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) :=
   fun a b ha hb => by
@@ -353,7 +353,7 @@ theorem mul_lt_omega_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < (omega^c)) (h
 
 theorem mul_omega_opow_opow {a b : Ordinal} (a0 : 0 < a) (h : a < (omega^omega^b)) :
     a * (omega^omega^b) = (omega^omega^b) := by
-  by_cases b0 : b = 0;
+  by_cases b0 : b = 0
   · rw [b0, opow_zero, opow_one] at h ⊢
     exact mul_omega a0 h
   refine

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
-begs="(theorem|lemma|inductive|structure|def|class|instance)"
+begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
 
 if [ "${1}" == "short" ]
 then
@@ -16,11 +16,14 @@ full_output=$(if [ -n "${1}" ]; then
 else
   git diff origin/master...HEAD
 fi |
+  ## the first sed "splits" `[+-]alias ⟨d1, d2⟩ := d` into
+  ## `[+-]alias d1 := d` and `[+-]alias d2 := d`
+  sed 's=^\([+-]\)alias ⟨\([^,]*\), *\([^⟩]*\)⟩\(.*\)=\1alias \2\4\n\1alias \3\4=' |
   ## purge `@[...]`, to attempt to catch declaration names
   sed 's=@\[[^]]*\] ==; s=noncomputable ==; s=nonrec ==; s=protected ==' |
-  ## extract lines that begin with '[+-]' followed by the input `theorem` or `lemma`
-  ## in the `git diff`
-  awk -v regex="^[+-]${begs}" 'BEGIN{ paired=0; added=0; removed=0 }
+  ## extract lines that begin with '[+-]' followed by the input `theorem`, `lemma`,...
+  ## and then a space in the `git diff`
+  awk -v regex="^[+-]${begs} " 'BEGIN{ paired=0; added=0; removed=0 }
     /^--- a\//    { minusFile=$2 }  ## the path to the old file
     /^\+\+\+ b\// { plusFile=$2 }   ## the path to the new file
     ($0 ~ regex){
@@ -82,8 +85,8 @@ else
       rest="instance"
       for(i=7; i<=NF-1; i++){rest=rest" "$i}
       # remove trailing `where` or `:=`
-      gsub(/ where.*/, "", rest)
-      gsub(/ :=.*/, "", rest)
+      gsub(/ where$/, "", rest)
+      gsub(/ :=$/, "", rest)
       # accumulate in `acc` the whole line with value the 4th field -- this is the +- field.
       acc[rest]=acc[rest] $4
       # if the line is not a nameless instance, accumulate the declaration name and +-
@@ -127,8 +130,11 @@ inductive triggers the count even if it is not lean code
 instance [I pretend] {to be a nameless} instance where
 def ohMy im a def
 instance [I also pretend] {to be a nameless} instance :=
+instance withAName {to be a nameless} instance :=
+instance (priority := high) {to be a nameless} instance :=
 def testingLongDiff1 im a def
 def testingLongDiff2 im a def
 def testingLongDiff3 im a def
-def testingLongDiff4 im a def
+@[trying to fool you] instance. the messing dot
+alias ⟨d1, d2⟩ := d  check the "split an iff alias"
 ReferenceTest

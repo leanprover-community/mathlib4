@@ -348,8 +348,8 @@ instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMul
 instance isScalarTower_right {α K : Type*} [Semiring K] [DistribSMul α K] [IsScalarTower α K K] :
     IsScalarTower α K[X] K[X] :=
   ⟨by
-    rintro _ ⟨⟩ ⟨⟩;
-      simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
+    rintro _ ⟨⟩ ⟨⟩
+    simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 #align polynomial.is_scalar_tower_right Polynomial.isScalarTower_right
 
 instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
@@ -474,7 +474,7 @@ theorem monomial_mul_monomial (n m : ℕ) (r s : R) :
 theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (n * k) (r ^ k) := by
   induction' k with k ih
   · simp [pow_zero, monomial_zero_one]
-  · simp [pow_succ, ih, monomial_mul_monomial, Nat.succ_eq_add_one, mul_add, add_comm]
+  · simp [pow_succ, ih, monomial_mul_monomial, mul_add, add_comm]
 #align polynomial.monomial_pow Polynomial.monomial_pow
 
 theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
@@ -535,16 +535,8 @@ theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r)
   smul_monomial _ _ r
 #align polynomial.smul_C Polynomial.smul_C
 
-set_option linter.deprecated false in
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem C_bit0 : C (bit0 a) = bit0 (C a) :=
-  C_add
-#align polynomial.C_bit0 Polynomial.C_bit0
-
-set_option linter.deprecated false in
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem C_bit1 : C (bit1 a) = bit1 (C a) := by simp [bit1, C_bit0]
-#align polynomial.C_bit1 Polynomial.C_bit1
+#noalign polynomial.C_bit0
+#noalign polynomial.C_bit1
 
 theorem C_pow : C (a ^ n) = C a ^ n :=
   C.map_pow a n
@@ -651,7 +643,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc, Nat.succ_eq_add_one]
+  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]
@@ -672,7 +664,6 @@ def coeff : R[X] → ℕ → R
   | ⟨p⟩ => p
 #align polynomial.coeff Polynomial.coeff
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem coeff_ofFinsupp (p) : coeff (⟨p⟩ : R[X]) = p := by rw [coeff]
 
@@ -1312,7 +1303,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
           if coeff p n = 1
           then (80, "X ^ " ++ Nat.repr n)
           else (70, "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n))
-      (p.support.sort (· ≤ ·));
+      (p.support.sort (· ≤ ·))
     match termPrecAndReprs with
     | [] => "0"
     | [(tprec, t)] => if prec ≥ tprec then Lean.Format.paren t else t

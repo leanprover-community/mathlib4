@@ -95,7 +95,7 @@ lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.
   rw [← Multiset.singleton_add, ofAdd_add,
     of, FreeAbelianGroup.of_mul_of]
 
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing α) (hn1 : C (-1))
     (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
     C z :=
@@ -360,7 +360,7 @@ protected theorem coe_mul (x y : FreeRing α) : ↑(x * y) = (x : FreeCommRing �
 variable (α)
 
 protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x => by
-  induction x using FreeCommRing.induction_on with
+  induction x with
   | hn1 =>
     use -1
     rfl
