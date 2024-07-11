@@ -258,9 +258,9 @@ instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
     [IsScalarTower S A A] [SMulCommClass R S A] : IsScalarTower S (A ⊗[R] B) (A ⊗[R] B) where
   smul_assoc r x y := by
     change r • x * y = r • (x * y)
-    induction y using TensorProduct.induction_on with
+    induction y with
     | zero => simp [smul_zero]
-    | tmul a b => induction x using TensorProduct.induction_on with
+    | tmul a b => induction x with
       | zero => simp [smul_zero]
       | tmul a' b' =>
         dsimp
@@ -274,9 +274,9 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
     [SMulCommClass S A A] [SMulCommClass R S A] : SMulCommClass S (A ⊗[R] B) (A ⊗[R] B) where
   smul_comm r x y := by
     change r • (x * y) = x * r • y
-    induction y using TensorProduct.induction_on with
+    induction y with
     | zero => simp [smul_zero]
-    | tmul a b => induction x using TensorProduct.induction_on with
+    | tmul a b => induction x with
       | zero => simp [smul_zero]
       | tmul a' b' =>
         dsimp
@@ -445,7 +445,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   ext a b
   have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
   dsimp at *
-  rwa [← f.map_mul, ← g.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
+  rwa [← _root_.map_mul, ← _root_.map_mul, tmul_mul_tmul, _root_.one_mul, _root_.mul_one] at this
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
   ext (AlgHom.ext fun _ => H _ _) (AlgHom.ext fun _ => H _ _)
@@ -684,8 +684,8 @@ def lift (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (
           map_smul' := fun c g => LinearMap.ext fun x => rfl }
       LinearMap.flip <| (restr ∘ₗ LinearMap.mul S C ∘ₗ f.toLinearMap).flip ∘ₗ g)
     (fun a₁ a₂ b₁ b₂ => show f (a₁ * a₂) * g (b₁ * b₂) = f a₁ * g b₁ * (f a₂ * g b₂) by
-      rw [f.map_mul, g.map_mul, (hfg a₂ b₁).mul_mul_mul_comm])
-    (show f 1 * g 1 = 1 by rw [f.map_one, g.map_one, one_mul])
+      rw [_root_.map_mul, _root_.map_mul, (hfg a₂ b₁).mul_mul_mul_comm])
+    (show f 1 * g 1 = 1 by rw [_root_.map_one, _root_.map_one, one_mul])
 
 @[simp]
 theorem lift_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (g y))
