@@ -202,7 +202,7 @@ theorem IsTerminal.strict_hom_ext (hI : IsTerminal I) {A : C} (f g : I ⟶ A) : 
   exact eq_of_inv_eq_inv (hI.hom_ext (inv f) (inv g))
 #align category_theory.limits.is_terminal.strict_hom_ext CategoryTheory.Limits.IsTerminal.strict_hom_ext
 
-/-- If `X ⟶ Y` with `Y` being a strict initial object, then `X` is also an initial object. -/
+/-- If `X ⟶ Y` with `Y` being a strict terminal object, then `X` is also an terminal object. -/
 noncomputable
 def IsTerminal.ofStrict {X Y : C} (f : X ⟶ Y)
     (hY : IsTerminal X) : IsTerminal Y :=
