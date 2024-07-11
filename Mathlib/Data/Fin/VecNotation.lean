@@ -396,7 +396,8 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp [vecAlt0, Nat.add_right_comm, ← Nat.add_assoc]
+  · simp only [← Nat.add_assoc, Nat.add_right_comm, cons_val_succ',
+      cons_vecAppend, Nat.add_eq, vecAlt0]
 #align matrix.cons_vec_alt0 Matrix.cons_vecAlt0
 
 -- Although proved by simp, extracting element 8 of a five-element
