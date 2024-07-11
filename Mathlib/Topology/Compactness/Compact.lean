@@ -1017,7 +1017,7 @@ lemma Inducing.isCompact_preimage_iff {f : X → Y} (hf : Inducing f) {K : Set Y
 
 /-- The preimage of a compact set in the image of an inducing map is compact. -/
 lemma Inducing.isCompact_preimage' {f : X → Y} (hf : Inducing f) {K : Set Y}
-    (hK: IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) :=
+    (hK : IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) :=
   (hf.isCompact_preimage_iff Kf).2 hK
 
 /-- The preimage of a compact set under a closed embedding is a compact set. -/

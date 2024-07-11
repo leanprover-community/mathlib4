@@ -349,7 +349,7 @@ theorem comp_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [Monoid
     f.comp g x = f (g x) := rfl
 #align non_unital_alg_hom.comp_apply NonUnitalAlgHom.comp_apply
 
-variable {B₁: Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
+variable {B₁ : Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
 
 /-- The inverse of a bijective morphism is a morphism. -/
 def inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A)
