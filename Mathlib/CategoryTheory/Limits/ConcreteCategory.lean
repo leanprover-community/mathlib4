@@ -99,7 +99,7 @@ theorem Concrete.colimit_exists_rep [HasColimit F] (x : ↑(colimit F)) :
 noncomputable def Concrete.indexRepColimit [HasColimit F] (x : ↑(colimit F)) : J :=
   (Concrete.colimit_exists_rep F x).choose
 
-/--if `x` is an element of `colimit F`, we arbitrarily choose some elements representing `x`.-/
+/--if `x` is an element of `colimit F`, we arbitrarily choose some element representing `x`.-/
 noncomputable def Concrete.repColimit [HasColimit F] (x : ↑(colimit F)) :
     F.obj (Concrete.indexRepColimit F x) :=
   (Concrete.colimit_exists_rep F x).choose_spec.choose
