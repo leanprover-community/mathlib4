@@ -30,7 +30,7 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * `smeval_mul`, `smeval_comp`: multiplicativity of evaluation, given power-associativity.
 * `eval₂_eq_smeval`, `leval_eq_smeval.linearMap`, `aeval = smeval.algebraMap`, etc.: comparisons
 
-## To do
+## TODO
 
 * `smeval_neg` and `smeval_intCast` for `R` a ring and `S` an `AddCommGroup`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
@@ -304,3 +304,5 @@ theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S
     (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p
 
 end Algebra
+
+end Polynomial

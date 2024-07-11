@@ -22,7 +22,7 @@ import Mathlib.RingTheory.Multiplicity
 * `UniqueFactorizationMonoid` holds for `WfDvdMonoid`s where
   `Irreducible` is equivalent to `Prime`
 
-## To do
+## TODO
 * set up the complete lattice structure on `FactorSet`.
 
 -/
@@ -1191,8 +1191,8 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
     congr
     rw [← (normalizedFactors a).map_id, ← (normalizedFactors b).map_id,
       Finset.prod_multiset_map_count, Finset.prod_multiset_map_count,
-      Finset.prod_subset (Finset.subset_union_left (s₂:=(normalizedFactors b).toFinset)),
-      Finset.prod_subset (Finset.subset_union_right (s₂:=(normalizedFactors b).toFinset)), ←
+      Finset.prod_subset (Finset.subset_union_left (s₂ := (normalizedFactors b).toFinset)),
+      Finset.prod_subset (Finset.subset_union_right (s₂ := (normalizedFactors b).toFinset)), ←
       Finset.prod_mul_distrib]
     · simp_rw [id, ← pow_add, this]
     all_goals simp only [Multiset.mem_toFinset]

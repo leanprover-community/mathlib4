@@ -288,7 +288,7 @@ theorem range_fromSpec :
 theorem opensRange_fromSpec : Scheme.Hom.opensRange hU.fromSpec = U := Opens.ext (range_fromSpec hU)
 
 @[reassoc (attr := simp)]
-theorem map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (f : op U ⟶ op V):
+theorem map_fromSpec {V : Opens X} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
     Spec.map (X.presheaf.map f) ≫ hU.fromSpec = hV.fromSpec := by
   have : IsAffine (X.restrictFunctor.obj U).left := hU
   haveI : IsAffine _ := hV
@@ -424,7 +424,7 @@ theorem basicOpen :
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 #align algebraic_geometry.is_affine_open.basic_open_is_affine AlgebraicGeometry.IsAffineOpen.basicOpen
 
-theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)):
+theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)) :
     IsAffineOpen (Scheme.ιOpens (X.basicOpen r) ⁻¹ᵁ U) := by
   apply (Scheme.ιOpens (X.basicOpen r)).isAffineOpen_iff_of_isOpenImmersion.mp
   dsimp [Scheme.Hom.opensFunctor, LocallyRingedSpace.IsOpenImmersion.opensFunctor]
