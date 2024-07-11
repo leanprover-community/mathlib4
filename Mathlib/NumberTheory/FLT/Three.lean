@@ -401,10 +401,6 @@ lemma lambda_sq_not_dvd_a_add_eta_sq_mul_b : ¬ λ ^ 2 ∣ (S.a + η ^ 2 * S.b) 
   rw [hk]
   ring
 
-lemma eta_add_one_mul_neg_eta_eq_one : ((η : 𝓞 K) + 1) * (-η) = 1 :=
-  calc ((η : 𝓞 K) + 1) * -η = -(η ^ 2 + η + 1) + 1 := by ring
-  _ = 1 := by rw [eta_sq]; ring
-
 attribute [local instance] IsCyclotomicExtension.Rat.three_pid
 attribute [local instance] UniqueFactorizationMonoid.toGCDMonoid
 
