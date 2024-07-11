@@ -6,6 +6,7 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.Tactic.FastInstance
 
 #align_import linear_algebra.adic_completion from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
@@ -234,6 +235,7 @@ instance : SMul ℤ (AdicCompletion I M) where
 
 instance : AddCommGroup (AdicCompletion I M) :=
   let f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
+  fast_instance%
   Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
@@ -243,6 +245,7 @@ instance : SMul R (AdicCompletion I M) where
 instance : Module R (AdicCompletion I M) :=
   let f : AdicCompletion I M →+ ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) :=
     { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+  fast_instance%
   Subtype.val_injective.module R f (fun _ _ ↦ rfl)
 
 /-- The canonical inclusion from the completion to the product. -/
