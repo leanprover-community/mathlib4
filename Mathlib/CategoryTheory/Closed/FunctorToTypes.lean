@@ -22,11 +22,11 @@ It should be shown that `C ⥤ Type max w v u` is also cartesian closed.
 
 namespace CategoryTheory
 
-universe w v u
+universe w v' v u' u
 
 open MonoidalCategory
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace Functor
 
@@ -89,7 +89,7 @@ instance closed (F : C ⥤ Type max w v u) : Closed F where
 
 instance monoidalClosed : MonoidalClosed (C ⥤ Type max w v u) where
 
-end FunctorToTypes
+--end FunctorToTypes
 
 --open Simplicial SimplicialCategory MonoidalCategory
 
@@ -97,8 +97,7 @@ end FunctorToTypes
 
 --open SimplicialObject
 
-def HomEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (F ⟶ G.ihom H) := sorry
-
+/-
 def HomIso (F G H : C ⥤ Type max w v u) : (F ⊗ G).ihom H ≅ F.ihom (G.ihom H) where
   hom := {
     app := fun X ⟨a, ha⟩ ↦ {
@@ -117,17 +116,22 @@ def HomIso (F G H : C ⥤ Type max w v u) : (F ⊗ G).ihom H ≅ F.ihom (G.ihom 
     have := Functor.HomObj.congr_app (congr_fun (ha f g) y.1) Z (𝟙 _)
     dsimp at this ⊢
     rw [this]
-
+    simp
     sorry
     ⟩ }
 
-/-
-namespace SimplicialCategory
 
-variable {C : Type u} [Category.{v} C] [SimplicialCategory C]
+def HomFunctor : (C ⥤ D)ᵒᵖ ⥤ (C ⥤ D) ⥤ (C ⥤ Type max v' v u) where
+  obj F := {
+    obj := fun G ↦ Functor.functorHom F.unop G
+    map := _
+  }
+  map := _
 
-class SimplicialTensor (K : SSet.{v}) (X : C) where
-  obj : C
+
+
+class Tensor (K : C ⥤ Type max v' v u) (X : C ⥤ D) where
+  obj : C ⥤ D
   iso : (sHomFunctor C).obj (Opposite.op obj) ≅
     (sHomFunctor C).obj (Opposite.op X) ⋙ (sHomFunctor SSet.{v}).obj (Opposite.op K)
   α' : K ⟶ sHom X obj
@@ -168,6 +172,6 @@ scoped infixr:70 " ⊗ₛ " => sTensorMap
 end
 
 end SimplicialCategory
--/
 
 end CategoryTheory
+-/

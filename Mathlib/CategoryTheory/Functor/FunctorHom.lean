@@ -150,3 +150,89 @@ noncomputable instance enrichedCategory : EnrichedCategory (C ⥤ Type max v' v 
   Hom := functorHom
   id F := natTransEquiv (𝟙 F)
   comp F G H := { app := fun X ⟨f, g⟩ => f.comp g }
+
+noncomputable def functorHomWhiskerRight {K K' : C ⥤ D} (f : K ⟶ K') (L : C ⥤ D) :
+    (functorHom K' L) ⟶ (functorHom K L) :=
+  (λ_ _).inv ≫ natTransEquiv f ▷ _ ≫ eComp (C ⥤ Type max v' v u) K K' L
+
+@[simp]
+lemma natTransEquiv_id {K : C ⥤ D} : natTransEquiv (𝟙 K) = eId (C ⥤ Type max v' v u) K := by aesop
+
+@[simp]
+lemma natTransEquiv_comp {K L M : C ⥤ D} (f : K ⟶ L) (g : L ⟶ M) :
+    natTransEquiv (f ≫ g) = (λ_ _).inv ≫ (natTransEquiv f ⊗ natTransEquiv g) ≫
+      eComp _ K L M := by aesop
+
+@[simp]
+lemma sHomWhiskerRight_id (K L : C ⥤ D) : functorHomWhiskerRight (𝟙 K) L = 𝟙 _ := by
+  simp only [functorHomWhiskerRight, natTransEquiv_id]
+  sorry
+
+@[simp, reassoc]
+lemma sHomWhiskerRight_comp {K K' K'' : C ⥤ D} (f : K ⟶ K') (f' : K' ⟶ K'') (L : C ⥤ D) :
+    functorHomWhiskerRight (f ≫ f') L =
+    functorHomWhiskerRight f' L ≫ functorHomWhiskerRight f L := by
+  dsimp [functorHomWhiskerRight]
+  sorry
+
+/-- The morphism `sHom K L ⟶ sHom K L'` induced by a morphism `L ⟶ L'`. -/
+noncomputable def functorHomWhiskerLeft (K : C ⥤ D) {L L' : C ⥤ D} (g : L ⟶ L') :
+    functorHom K L ⟶ functorHom K L' :=
+  (ρ_ _).inv ≫ _ ◁ natTransEquiv g ≫ eComp _ K L L'
+
+  @[simp]
+lemma sHomWhiskerLeft_id (K L : C ⥤ D) : functorHomWhiskerLeft K (𝟙 L) = 𝟙 _ := by
+  simp [functorHomWhiskerLeft, natTransEquiv_id, e_id_comp]
+  sorry
+
+@[simp, reassoc]
+lemma functorHomWhiskerLeft_comp (K : C ⥤ D) {L L' L'' : C ⥤ D} (g : L ⟶ L') (g' : L' ⟶ L'') :
+    functorHomWhiskerLeft K (g ≫ g') =
+    functorHomWhiskerLeft K g ≫ functorHomWhiskerLeft K g' := by
+  dsimp [functorHomWhiskerLeft]
+  simp only [natTransEquiv_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc, ← e_assoc]
+  sorry
+
+@[reassoc]
+lemma functorHom_whisker_exchange {K K' L L' : C ⥤ D} (f : K ⟶ K') (g : L ⟶ L') :
+    functorHomWhiskerLeft K' g ≫ functorHomWhiskerRight f L' =
+      functorHomWhiskerRight f L ≫ functorHomWhiskerLeft K g :=
+  ((ρ_ _).inv ≫ _ ◁ natTransEquiv g ≫ (λ_ _).inv ≫ natTransEquiv f ▷ _) ≫=
+    (e_assoc _ K K' L L').symm
+
+attribute [local simp] functorHom_whisker_exchange
+
+variable (C D) in
+/-- The bifunctor `Cᵒᵖ ⥤ C ⥤ SSet.{v}` which sends `K : Cᵒᵖ` and `L : C` to `sHom K.unop L`. -/
+@[simps]
+noncomputable def functorHomFunctor : (C ⥤ D)ᵒᵖ ⥤ (C ⥤ D) ⥤ (C ⥤ Type max v' v u) where
+  obj K :=
+    { obj := fun L => functorHom K.unop L
+      map := fun φ => functorHomWhiskerLeft K.unop φ }
+  map φ :=
+    { app := fun L => functorHomWhiskerRight φ.unop L }
+
+def HomObjEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (G.HomObj H F) where
+  toFun a := ⟨fun X y x ↦ a.app X (y, x), fun φ y ↦ by
+    ext x
+    erw [congr_fun (a.naturality φ) (y, x)]
+    rfl ⟩
+  invFun a := ⟨fun X ⟨x, y⟩ ↦ a.app X x y, fun X Y f ↦ by
+    ext ⟨x, y⟩
+    erw [congr_fun (a.naturality f x) y]
+    rfl ⟩
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
+/-- The bijection between morphisms `F ⊗ G ⟶ H` and morphisms `F ⟶ G.ihom H`. -/
+def prodHomEquiv (F G H : C ⥤ Type max w v u) : (F ⊗ G ⟶ H) ≃ (F ⟶ functorHom G H) :=
+  (HomObjEquiv F G H).trans (Functor.functorHomEquiv G H F).symm
+
+/-- `K⬝X : C ⥤ D` such that `[K⬝X, -] ≅ [K, [X, -]] ` -/
+class Tensor (K : C ⥤ Type max v' v u) (X : C ⥤ D) where
+  obj : C ⥤ D
+  iso : (functorHomFunctor C D).obj (Opposite.op obj) ≅
+    (functorHomFunctor C D).obj (Opposite.op X) ⋙ (functorHomFunctor C (Type max v' v u)).obj (Opposite.op K)
+  α' : K ⟶ functorHom X obj
+  fac (Y : C ⥤ D) : (prodHomEquiv _ _ _).symm (iso.hom.app Y) =
+    _ ◁ α' ≫ (β_ _ _).hom ≫ eComp _ X obj Y
