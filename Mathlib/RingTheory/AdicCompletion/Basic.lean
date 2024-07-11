@@ -6,7 +6,6 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.JacobsonIdeal
-import Mathlib.Tactic.FastInstance
 
 #align_import linear_algebra.adic_completion from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
