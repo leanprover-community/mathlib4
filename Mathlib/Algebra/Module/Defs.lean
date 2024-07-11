@@ -107,8 +107,8 @@ theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_s
 
 set_option linter.deprecated false in
 @[deprecated (since := "2022-12-31")]
-theorem two_smul' : (2 : R) • x = x + x :=
-  two_smul R x
+theorem two_smul' : (2 : R) • x = (2 : ℕ) • x := by
+  rw [two_smul, two_nsmul]
 #align two_smul' two_smul'
 
 @[simp]
