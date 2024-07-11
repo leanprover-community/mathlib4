@@ -82,11 +82,10 @@ variable (ι : Type*) [Fintype ι] [DecidableEq ι]
 private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     piEquivOfFintype I (fun _ : ι ↦ R) ∘ₗ ofTensorProduct I (ι → R) =
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
-  ext x i j k
-  suffices h : (if j = i then (Ideal.Quotient.mk (I ^ k • ⊤)) (x.val k) • 1 else 0) =
-      (if j = i then (mk I R) x else 0).val k by
-    simpa [-smul_eq_mul, -Algebra.id.smul_eq_mul, Pi.single_apply]
-  split <;> simp
+  ext i j k
+  suffices h : (if j = i then 1 else 0) = (if j = i then 1 else 0 : AdicCompletion I R).val k by
+    simpa [Pi.single_apply, -smul_eq_mul, -Algebra.id.smul_eq_mul]
+  split <;> simp only [smul_eq_mul, val_zero, val_one]
 
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
@@ -130,8 +129,6 @@ lemma ofTensorProduct_bijective_of_pi_of_fintype :
 
 end PiFintype
 
-unseal smul' in
-unseal mul in
 /-- If `M` is a finite `R`-module, then the canonical map
 `AdicCompletion I R ⊗[R] M →ₗ AdicCompletion I M` is surjective. -/
 lemma ofTensorProduct_surjective_of_fg [Module.Finite R M] :
