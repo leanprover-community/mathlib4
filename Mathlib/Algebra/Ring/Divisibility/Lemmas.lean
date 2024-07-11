@@ -106,13 +106,9 @@ lemma dvd_mul_sub_mul_mul_left_of_dvd {p a b c d x y : R}
   ring
 
 lemma dvd_mul_sub_mul_mul_right_of_dvd {p a b c d x y : R}
-    (h1 : p ∣ a * x + b * y) (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * y := by
-  obtain ⟨k1, hk1⟩ := h1
-  obtain ⟨k2, hk2⟩ := h2
-  refine ⟨-c * k1 + a * k2, ?_⟩
-  rw [show (a * d - b * c) * y = d * y * a - b * y * c by ring, eq_sub_of_add_eq' hk1,
-    eq_sub_of_add_eq' hk2]
-  ring
+    (h1 : p ∣ a * x + b * y) (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * y :=
+  (mul_comm a _ ▸ mul_comm c _ ▸ dvd_mul_sub_mul_mul_left_of_dvd 
+    (add_comm (c * x) _ ▸ h2) (add_comm (a * x) _ ▸ h1))
 
 lemma dvd_mul_sub_mul_mul_gcd_of_dvd {p a b c d x y : R} [IsDomain R] [GCDMonoid R]
     (h1 : p ∣ a * x + b * y) (h2 : p ∣ c * x + d * y) : p ∣ (a * d - b * c) * gcd x y := by
