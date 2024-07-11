@@ -909,8 +909,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
     all_goals
       repeat
         rw [show ∀ b n, (pos (PosNum.bit b n) : ℕ) = Nat.bit b ↑n by
-          intros b _; cases b <;> simp_all
-          ]
+          intros b _; cases b <;> simp_all]
       rw [Nat.bitwise_bit gff]
     any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
     any_goals rw [Nat.bitwise_zero_left, ← Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
@@ -1090,16 +1089,16 @@ theorem cast_to_int [AddGroupWithOne α] : ∀ n : ZNum, ((n : ℤ) : α) = n
   | neg p => by rw [cast_neg, cast_neg, Int.cast_neg, PosNum.cast_to_int]
 #align znum.cast_to_int ZNum.cast_to_int
 
-theorem bit0_of_bit0 : ∀ n : ZNum, ZNum.bit0 n = n.bit0 := fun _ ↦ rfl
-  /- | 0 => rfl -/
-  /- | pos _ => rfl -/
-  /- | neg _ => rfl -/
+theorem bit0_of_bit0 : ∀ n : ZNum, n + n = n.bit0
+  | 0 => rfl
+  | pos a => congr_arg pos a.bit0_of_bit0
+  | neg a => congr_arg neg a.bit0_of_bit0
 #align znum.bit0_of_bit0 ZNum.bit0_of_bit0
 
-theorem bit1_of_bit1 : ∀ n : ZNum, ZNum.bit1 n = n.bit1
+theorem bit1_of_bit1 : ∀ n : ZNum, n + n + 1 = n.bit1
   | 0 => rfl
-  | pos _ => rfl
-  | neg _ => rfl
+  | pos a => congr_arg pos a.bit1_of_bit1
+  | neg a => show PosNum.sub' 1 (a + a) = _ by rw [PosNum.one_sub', a.bit0_of_bit0]; rfl
 #align znum.bit1_of_bit1 ZNum.bit1_of_bit1
 
 @[simp, norm_cast]
@@ -1160,13 +1159,10 @@ theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
   | bit0 p => by
       have := congr_arg ZNum.bit0 (cast_to_znum p)
-      have := (ZNum.bit0_of_bit0 p).trans <| congr_arg _ (cast_to_znum p)
-      simp
-      sorry
+      rwa [← ZNum.bit0_of_bit0] at this
   | bit1 p => by
-      convert (ZNum.bit1_of_bit1 p).trans <| congr_arg _ (cast_to_znum p)
-      simp
-      sorry
+      have := congr_arg ZNum.bit1 (cast_to_znum p)
+      rwa [← ZNum.bit1_of_bit1] at this
 #align pos_num.cast_to_znum PosNum.cast_to_znum
 
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
