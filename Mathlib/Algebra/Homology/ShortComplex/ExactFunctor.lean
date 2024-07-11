@@ -63,98 +63,47 @@ monomorphism.
 lemma preservesMonomorphisms_of_preserves_shortExact_left
     (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f)) :
     F.PreservesMonomorphisms where
-  preserves {X Y} f m := by
-    let S : ShortComplex C := .mk f (cokernel.π f) $ by simp
-    have e : S.ShortExact :=
-    { exact := ShortComplex.exact_of_g_is_cokernel _ $ cokernelIsCokernel _
-      mono_f := inferInstance
-      epi_g := inferInstance }
-    exact h S e |>.2
+  preserves f _ := (h _ { exact := ShortComplex.exact_cokernel f }).2
 
-lemma preserves_finite_limits_tfae : List.TFAE
+lemma preservesFiniteLimits_tfae : List.TFAE
     [
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f),
       ∀ (S : ShortComplex C), S.Exact ∧ Mono S.f → (S.map F).Exact ∧ Mono (F.map S.f),
       ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty $ PreservesLimit (parallelPair f 0) F,
       Nonempty $ PreservesFiniteLimits F
     ] := by
-  tfae_have 1 → 2
-  · rintro h S ⟨e1, m1⟩
-    haveI := preservesMonomorphisms_of_preserves_shortExact_left F h
+  · rintro hF S ⟨hS, hf⟩
+    have := preservesMonomorphisms_of_preserves_shortExact_left F hF
     refine ⟨?_, inferInstance⟩
-
-    let s : ShortComplex C := .mk S.f (factorThruImage S.g) $
-      by simp [← cancel_mono (image.ι S.g)]
-
-    have se : s.ShortExact :=
-    { exact := (by
-        rw [ShortComplex.exact_iff_kernel_ι_comp_cokernel_π_zero] at e1 ⊢
-        rw [show S.g = _ from image.fac S.g |>.symm] at e1
-        simpa using ((kernelCompMono _ _).inv) ≫= e1)
-      mono_f := inferInstance
-      epi_g := inferInstance }
-
-    have := (s.map F).exact_and_mono_f_iff_f_is_kernel.1 (h _ se) |>.some
-    apply ShortComplex.exact_of_f_is_kernel
-    simp only [ShortComplex.map_X₂, ShortComplex.map_X₃, ShortComplex.map_g, ShortComplex.map_X₁,
-      ShortComplex.map_f] at this ⊢
-    apply isKernelCompMono (i := this) (g := F.map $ image.ι S.g)
-    simp [← F.map_comp]
+    let T := ShortComplex.mk S.f (Abelian.coimage.π S.g) (Abelian.comp_coimage_π_eq_zero S.zero)
+    let φ : T.map F ⟶ S.map F :=
+      { τ₁ := 𝟙 _
+        τ₂ := 𝟙 _
+        τ₃ := F.map (Abelian.factorThruCoimage S.g)
+        comm₂₃ := by
+          dsimp
+          rw [Category.id_comp, ← F.map_comp, cokernel.π_desc] }
+    exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).1
+      (hF T { exact := (S.exact_iff_exact_coimage_π).1 hS }).1
 
   tfae_have 2 → 3
-  · intro h X Y f
-    refine ⟨⟨fun {c} hc => ?_⟩⟩
-    have mono0 : Mono (c.π.app .zero) := mono_of_isLimit_fork hc
-    let s : ShortComplex C := .mk (c.π.app .zero) f $ by simp
-    have exact0 : s.Exact := by
-      refine ShortComplex.exact_of_f_is_kernel _ $
-        Limits.IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _ ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ hc
-      · exact 𝟙 c.pt
-      · rintro (⟨⟩|⟨⟩) <;> simp
-      · exact 𝟙 c.pt
-      · rintro (⟨⟩|⟨⟩) <;> simp
-      · ext; simp
-      · ext; simp
-
-    refine Limits.IsLimit.equivOfNatIsoOfIso
-      ⟨⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩,
-        ⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩, ?_, ?_⟩ _ _
-        ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ $
-        ShortComplex.exact_and_mono_f_iff_f_is_kernel (s.map F) |>.1
-          (h s ⟨exact0, mono0⟩) |>.some
-    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
-    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
-    · ext (⟨⟩|⟨⟩) <;> simp
-    · ext (⟨⟩|⟨⟩) <;> simp
-    · exact 𝟙 _
-    · rintro (⟨⟩ | ⟨⟩) <;> simp
-    · exact 𝟙 _
-    · rintro (⟨⟩ | ⟨⟩) <;> simp
-    · ext; simp
-    · ext; simp
+  · intro hF X Y f
+    refine ⟨preservesLimitOfPreservesLimitCone (kernelIsKernel f) ?_⟩
+    apply (KernelFork.isLimitMapConeEquiv _ F).2
+    let S := ShortComplex.mk _ _ (kernel.condition f)
+    let hS := hF S ⟨ShortComplex.exact_kernel f, by infer_instance⟩
+    have : Mono (S.map F).f := hS.2
+    exact hS.1.fIsKernel
 
   tfae_have 3 → 4
-  · intro h; refine ⟨?_⟩
-    apply (config := {allowSynthFailures := true}) preservesFiniteLimitsOfPreservesKernels
-    exact fun {X Y} f => (h f).some
+  · intro hF
+    have := fun X Y (f : X ⟶ Y) ↦ (hF f).some
+    exact ⟨by apply preservesFiniteLimitsOfPreservesKernels⟩
 
   tfae_have 4 → 1
-  · rintro ⟨inst⟩ S hS
-    refine (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨?_⟩
-    have := S.exact_and_mono_f_iff_f_is_kernel.1 ⟨hS.exact, hS.mono_f⟩ |>.some
-    have := isLimitOfPreserves F this
-    refine Limits.IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ this
-    · refine NatIso.ofComponents (fun
-      | .zero => Iso.refl _
-      | .one => Iso.refl _) ?_
-      · rintro (_|_) (_|_) (_|_|_) <;> simp
-    · refine ⟨?_, ?_, ?_, ?_⟩
-      · refine ⟨𝟙 _, ?_⟩
-        rintro (_|_) <;> simp [← F.map_comp]
-      · refine ⟨𝟙 _, ?_⟩
-        rintro (_|_) <;> simp [← F.map_comp]
-      · ext; simp
-      · ext; simp
+  · rintro ⟨_⟩ S hS
+    exact (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2
+      ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
 
   tfae_finish
 
