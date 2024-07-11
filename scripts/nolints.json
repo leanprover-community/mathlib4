@@ -888,4 +888,5 @@
  ["docBlame", "Mathlib.Meta.NormNum.evalAdd.core.intArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalAdd.core.ratArm"],
  ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.intArm"],
- ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.ratArm"]]
+ ["docBlame", "Mathlib.Meta.NormNum.evalMul.core.ratArm"],
+  ["unusedArguments", "Combinator.K"]]
