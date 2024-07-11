@@ -297,9 +297,9 @@ theorem measure_preimage_lt_top_of_memℒp (hp_pos : p ≠ 0) (hp_ne_top : p ≠
     (hf : Memℒp f p μ) (y : E) (hy_ne : y ≠ 0) : μ (f ⁻¹' {y}) < ∞ := by
   have hp_pos_real : 0 < p.toReal := ENNReal.toReal_pos hp_pos hp_ne_top
   have hf_snorm := Memℒp.snorm_lt_top hf
-  rw [snorm_eq_snorm' hp_pos hp_ne_top, f.snorm'_eq, ←
-    @ENNReal.lt_rpow_one_div_iff _ _ (1 / p.toReal) (by simp [hp_pos_real]),
-    @ENNReal.top_rpow_of_pos (1 / (1 / p.toReal)) (by simp [hp_pos_real]),
+  rw [snorm_eq_snorm' hp_pos hp_ne_top, f.snorm'_eq, one_div,
+    ← @ENNReal.lt_rpow_inv_iff _ _ p.toReal⁻¹ (by simp [hp_pos_real]),
+    @ENNReal.top_rpow_of_pos p.toReal⁻¹⁻¹ (by simp [hp_pos_real]),
     ENNReal.sum_lt_top_iff] at hf_snorm
   by_cases hyf : y ∈ f.range
   swap
