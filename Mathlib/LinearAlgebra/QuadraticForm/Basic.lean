@@ -602,11 +602,11 @@ def _root_.LinearMap.compQuadraticMapAux (f : N →ₗ[R] M') (Q : QuadraticMap 
 
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps! (config := { simpRhs := true })]
-def _root_.LinearMap.compQuadraticMap [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
+def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
     [IsScalarTower S R N] [IsScalarTower S R M] [Module S M']
     (f : N →ₗ[S] M') (Q : QuadraticMap R M N) : QuadraticMap S M M' :=
   _root_.LinearMap.compQuadraticMapAux f Q.restrictScalars
-#align linear_map.comp_quadratic_form LinearMap.compQuadraticMap
+#align linear_map.comp_quadratic_form LinearMap.compQuadraticMap'
 
 end Comp
 
@@ -833,11 +833,11 @@ variable {N' : Type*} [AddCommGroup N'] [Module R N']
 
 theorem _root_.LinearMap.compQuadraticMap_polar [CommSemiring S] [Algebra S R] [Module S N]
     [Module S N'] [IsScalarTower S R N] [Module S M] [IsScalarTower S R M] (f : N →ₗ[S] N')
-    (Q : QuadraticMap R M N) (x y : M) : polar (f.compQuadraticMap Q) x y = f (polar Q x y) := by
+    (Q : QuadraticMap R M N) (x y : M) : polar (f.compQuadraticMap' Q) x y = f (polar Q x y) := by
   simp [polar]
 
 theorem _root_.LinearMap.compQuadraticMap_polarBilin (f : N →ₗ[R] N') (Q : QuadraticMap R M N) :
-    (f.compQuadraticMap Q).polarBilin = Q.polarBilin.compr₂ f := by
+    (f.compQuadraticMap' Q).polarBilin = Q.polarBilin.compr₂ f := by
   ext
   rw [polarBilin_apply_apply, compr₂_apply, polarBilin_apply_apply,
     LinearMap.compQuadraticMap_polar]
@@ -1142,13 +1142,15 @@ theorem PosDef.add (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef 
 -- This should be in `Algebra/Ring/Defs` but that causes issues with `Tactic/Ring/Basic`
 -- See https://github.com/leanprover-community/mathlib4/pull/12617
 -- see Note [lower instance priority]
+
 instance (priority := 100) _root_.CommSemiring.toNonUnitalNonAssocCommSemiring [CommSemiring A] :
     NonUnitalNonAssocCommSemiring A :=
   { inferInstanceAs (CommMonoid A), inferInstanceAs (CommSemiring A) with }
 
+
 theorem linMulLinSelfPosDef {R} [LinearOrderedCommRing R] [Module R M] [LinearOrderedCommSemiring A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
-    (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin f f) :=
+    (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (A := A) f f) :=
   fun _x hx => mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h
 #align quadratic_form.lin_mul_lin_self_pos_def QuadraticMap.linMulLinSelfPosDef
 
