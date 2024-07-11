@@ -33,11 +33,11 @@ and abelian groups respectively.
 
 open CategoryTheory Category Limits Opposite
 
-universe u u' v v' w
+universe u u' v v' w w'
 
 section
 
-variable {J : Type w} [Category J] [IsFiltered J]
+variable {J : Type w} [Category.{w'} J] [IsFiltered J]
 variable {ℜ𝔦𝔫𝔤 : Type u} [Category.{u'} ℜ𝔦𝔫𝔤] [ConcreteCategory.{w} ℜ𝔦𝔫𝔤]
 variable {𝔄𝔟 : Type v} [Category.{v'} 𝔄𝔟] [ConcreteCategory.{w} 𝔄𝔟]
 
