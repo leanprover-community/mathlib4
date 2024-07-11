@@ -40,32 +40,21 @@ variable [Semiring R]
 theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
     (hφ : constantCoeff σ R φ ∈ nonZeroDivisors R) :
     φ ∈ nonZeroDivisors (MvPowerSeries σ R) := by
+  classical
   intro x hx
-  letI : WellFoundedLT (σ →₀ ℕ) := Finsupp.wellFoundedLT'
   ext d
-  simp only [map_zero]
   apply WellFoundedLT.induction d
   intro e he
-  classical
-  rw [← mul_right_mem_nonZeroDivisors_eq_zero_iff hφ]
-  have := coeff_mul e x φ
-  rw [hx, map_zero, Finset.sum_eq_single (e,0)] at this
-  exact this.symm
-  · rintro ⟨u,v⟩ huv huv'
-    simp only [mem_antidiagonal] at huv
-    simp only [ne_eq, Prod.mk.injEq, not_and] at huv'
-    suffices u < e by simp only [he u this, zero_mul]
-    rw [Finsupp.lt_def]
-    have hue : u ≤ e := by simp only [← huv, le_add_iff_nonneg_right, zero_le]
-    refine ⟨hue, ?_⟩
-    by_contra h'
-    suffices u = e by
-      apply huv' this
-      simpa only [← huv, self_eq_add_right] using this
-    push_neg at h'
-    exact le_antisymm hue h'
-  · intro he
-    simp only [mem_antidiagonal, add_zero, not_true_eq_false] at he
+  rw [map_zero, ← mul_right_mem_nonZeroDivisors_eq_zero_iff hφ, ← map_zero (f := coeff R e), ← hx]
+  convert (coeff_mul e x φ).symm
+  rw [Finset.sum_eq_single (e,0), coeff_zero_eq_constantCoeff]
+  · rintro ⟨u, _⟩ huv _
+    suffices u < e by simp only [he u this, zero_mul, map_zero]
+    have hue : u ≤ e := by simp only [← mem_antidiagonal.mp huv, le_add_iff_nonneg_right, zero_le]
+    exact ⟨hue, fun h ↦ by simp_all [mem_antidiagonal.mp huv, le_antisymm hue h]⟩
+  · simp only [mem_antidiagonal, add_zero, not_true_eq_false, coeff_zero_eq_constantCoeff,
+      false_implies]
+    
 
 end Semiring
 
