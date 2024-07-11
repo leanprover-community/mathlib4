@@ -114,6 +114,14 @@ theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
   rw [← not_nonempty_iff, ← univ_nonempty_iff, not_nonempty_iff_eq_empty]
 #align finset.univ_eq_empty_iff Finset.univ_eq_empty_iff
 
+theorem univ_nontrivial_iff :
+    (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
+  rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
+
+theorem univ_nontrivial [h : Nontrivial α] :
+    (Finset.univ : Finset α).Nontrivial :=
+  univ_nontrivial_iff.mpr h
+
 @[simp]
 theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
   univ_eq_empty_iff.2 ‹_›
@@ -614,7 +622,7 @@ def toFinset (s : Set α) [Fintype s] : Finset α :=
 
 @[congr]
 theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
-    toFinset s = toFinset t := by subst h; congr; exact Subsingleton.elim _ _
+    toFinset s = toFinset t := by subst h; congr!
 #align set.to_finset_congr Set.toFinset_congr
 
 @[simp]

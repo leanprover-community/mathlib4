@@ -243,7 +243,7 @@ theorem orderOf_le_of_pow_eq_one (hn : 0 < n) (h : x ^ n = 1) : orderOf x ≤ n 
 
 @[to_additive (attr := simp)]
 theorem orderOf_one : orderOf (1 : G) = 1 := by
-  rw [orderOf, ← minimalPeriod_id (x := (1:G)), ← one_mul_eq_id]
+  rw [orderOf, ← minimalPeriod_id (x := (1 : G)), ← one_mul_eq_id]
 #align order_of_one orderOf_one
 #align order_of_zero addOrderOf_zero
 
@@ -623,14 +623,12 @@ noncomputable def finEquivPowers (x : G) (hx : IsOfFinOrder x) : Fin (orderOf x)
 #align fin_equiv_powers finEquivPowers
 #align fin_equiv_multiples finEquivMultiples
 
--- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
 @[to_additive (attr := simp)]
 lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
     finEquivPowers x hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
 #align fin_equiv_powers_apply finEquivPowers_apply
 #align fin_equiv_multiples_apply finEquivMultiples_apply
 
--- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
 @[to_additive (attr := simp)]
 lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
@@ -893,8 +891,6 @@ noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ p
 #align powers_equiv_powers powersEquivPowers
 #align multiples_equiv_multiples multiplesEquivMultiples
 
--- Porting note: the simpNF linter complains that simp can change the LHS to something
--- that looks the same as the current LHS even with `pp.explicit`
 @[to_additive (attr := simp)]
 theorem powersEquivPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
     powersEquivPowers h ⟨x ^ n, n, rfl⟩ = ⟨y ^ n, n, rfl⟩ := by

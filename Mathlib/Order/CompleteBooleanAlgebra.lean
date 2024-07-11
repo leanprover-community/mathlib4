@@ -50,12 +50,9 @@ distributive lattice.
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
 
-set_option autoImplicit true
-
-
 open Function Set
 
-universe u v w
+universe u v w w'
 
 variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 

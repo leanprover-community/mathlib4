@@ -249,3 +249,5 @@ def ofState {S : Type u} [PGame.State S] (s : S) : Game :=
 #align game.of_state SetTheory.Game.ofState
 
 end Game
+
+end SetTheory
