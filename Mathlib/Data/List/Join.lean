@@ -26,11 +26,9 @@ namespace List
 theorem join_singleton (l : List α) : [l].join = l := by rw [join, join, append_nil]
 #align list.join_singleton List.join_singleton
 
-@[simp]
-theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = []
-  | [] => iff_of_true rfl (forall_mem_nil _)
-  | l :: L => by simp only [join, append_eq_nil, join_eq_nil, forall_mem_cons]
-#align list.join_eq_nil List.join_eq_nil
+@[deprecated join_eq_nil_iff (since := "2024-07-10")]
+theorem join_eq_nil : ∀ {L : List (List α)}, join L = [] ↔ ∀ l ∈ L, l = [] := join_eq_nil_iff
+#align list.join_eq_nil List.join_eq_nil_iff
 
 #align list.join_append List.join_append
 #align list.join_concat List.join_concat
@@ -85,7 +83,7 @@ lemma count_bind' [BEq β] (l : List α) (f : α → List β) (x : β) :
 
 @[simp]
 theorem bind_eq_nil {l : List α} {f : α → List β} : List.bind l f = [] ↔ ∀ x ∈ l, f x = [] :=
-  join_eq_nil.trans <| by
+  join_eq_nil_iff.trans <| by
     simp only [mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 #align list.bind_eq_nil List.bind_eq_nil
 
