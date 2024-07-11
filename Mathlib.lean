@@ -1002,6 +1002,7 @@ import Mathlib.Analysis.Convex.PartitionOfUnity
 import Mathlib.Analysis.Convex.Quasiconvex
 import Mathlib.Analysis.Convex.Radon
 import Mathlib.Analysis.Convex.Segment
+import Mathlib.Analysis.Convex.ShapleyFolkman
 import Mathlib.Analysis.Convex.Side
 import Mathlib.Analysis.Convex.SimplicialComplex.Basic
 import Mathlib.Analysis.Convex.Slope
