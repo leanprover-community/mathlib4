@@ -149,8 +149,9 @@ For a list containing more detailed information, see https://leanprover-communit
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
 
-## Emeritus maintainers:
+## Past maintainers:
 
 * Jeremy Avigad (@avigad): analysis
 * Johannes Hölzl (@johoelzl): measure theory, topology
 * Simon Hudon (@cipher1024): tactics
+* Chris Hughes (@ChrisHughes24): algebra
