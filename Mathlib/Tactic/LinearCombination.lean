@@ -6,6 +6,7 @@ Authors: Abby J. Goldberg, Mario Carneiro
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Positivity
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Tactic.Widget.Conv
 
 /-!
 # linear_combination Tactic
@@ -31,6 +32,22 @@ Lastly, calls a normalization tactic on this target.
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
 
 -/
+
+@[inherit_doc Mathlib.Tactic.Ring.ring1] syntax (name := ring1Conv) "ring1" : conv
+
+-- move this
+open Lean Meta Elab Tactic Qq Mathlib.Tactic in
+/-- Elaborator for `ring1` conv tactic. -/
+@[tactic ring1Conv] def elabRing1Conv : Tactic := fun _ ↦ withMainContext do
+  let e ← Conv.getLhs
+  let α ← inferType e
+  let .sort u ← whnf (← inferType α) | unreachable!
+  let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
+  have α : Q(Type v) := α
+  let sα ← synthInstanceQ q(CommSemiring $α)
+  let c ← Ring.mkCache sα
+  let ⟨a, _, pa⟩ ← (Ring.eval sα c e).run .default
+  Conv.updateLhs a pa
 
 def Lean.Expr.isLe (e : Expr) :=
   e.isAppOfArity ``LE.le 4
@@ -329,6 +346,24 @@ theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a:α) = b)
     (H : (a' - b')^n - (a - b) = 0) : a' = b' := by
   rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
+/-! ### Default discharger tactic for combination -/
+
+theorem nonpos_intRawCast {α : Type*} [LinearOrderedRing α] {a : ℕ} : (Int.rawCast (Int.negOfNat a) : α) + 0 ≤ 0 := by
+  simp
+
+theorem nonpos_ratRawCast {α : Type*} [LinearOrderedField α] {a b : ℕ} : (Rat.rawCast (Int.negOfNat a) b : α) + 0 ≤ 0 := by
+  simp [div_nonpos_iff]
+
+theorem neg_intRawCast {α : Type*} [LinearOrderedRing α] {a : ℕ} : (Int.rawCast (Int.negOfNat a.succ) : α) + 0 < 0 := by
+  simp [-Nat.succ_eq_add_one]
+
+theorem neg_ratRawCast {α : Type*} [LinearOrderedField α] {a b : ℕ} : (Rat.rawCast (Int.negOfNat a.succ) b.succ : α) + 0 < 0 := by
+  simp [div_neg_iff, -Nat.succ_eq_add_one]
+
+-- FIXME do I need parentheses around `(conv_lhs => ring1)`?
+macro "linear_combination_discharger" : tactic =>
+  `(tactic | ((conv_lhs => ring1); try first | exact nonpos_intRawCast | exact nonpos_ratRawCast | exact neg_intRawCast | exact neg_ratRawCast))
+
 /-- Implementation of `linear_combination`. -/
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
@@ -343,7 +378,7 @@ def elabLinearCombination
   trace[debug] "built-up expression has the relation {reprStr hypRel}"
   trace[debug] "built-up expression is the proof {p}"
   trace[debug] "exponent {exp?}"
-  let norm := norm?.getD (Unhygienic.run `(tactic| ring1))
+  let norm := norm?.getD (Unhygienic.run `(tactic| linear_combination_discharger))
   let e ← Lean.Elab.Tactic.getMainTarget
   let whnfEType ← withReducible do whnf e
   let goalRel : Option RelType := whnfEType.relType

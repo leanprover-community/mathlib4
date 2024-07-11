@@ -224,64 +224,35 @@ example (K : Type)
 
 /-! ### Linear inequalities -/
 
-example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by
-  linear_combination (norm := skip) hx
-  ring_nf
-  norm_num1
+example (x : ℚ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
 
-example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by
-  linear_combination (norm := skip) h1 + h2
-  ring_nf
-  norm_num1
+example (x : ℝ) (hx : x ≤ 3) : x - 1 ≤ 5 := by linear_combination hx
 
-example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : a + b < 3 := by
-  linear_combination (norm := skip) h1 + h2
-  ring_nf
-  norm_num1
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≤ 1) : a + b ≤ 2 := by linear_combination h1 + h2
 
-example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 2) : a ≤ b := by
-  linear_combination (norm := skip) h1 + h2
-  ring_nf
-  norm_num1
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : a + b < 3 := by linear_combination h1 + h2
 
-example (a : ℚ) (ha : 0 ≤ a) : 0 ≤ 2 * a := by
-  linear_combination (norm := skip) 2 * ha
-  ring_nf
-  norm_num1
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 2) : a ≤ b := by linear_combination h1 + h2
 
-example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : (a + b) / 2 ≤ 1 := by
-  linear_combination (norm := skip) (h1 + h2) / 2
-  ring_nf
-  norm_num1
+example (a : ℚ) (ha : 0 ≤ a) : 0 ≤ 2 * a := by linear_combination 2 * ha
 
-example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by
-  linear_combination (norm := skip) hy + 2 * hx
-  ring_nf
-  norm_num1
+example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : (a + b) / 2 ≤ 1 := by linear_combination (h1 + h2) / 2
+
+example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by linear_combination hy + 2 * hx
 
 /-! ### Nonlinear inequalities -/
 
-example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by
-  linear_combination (norm := skip) a * hb.le -- FIXME should permit writing just `hb`, not `hb.le`
-  ring_nf
-  norm_num1
+-- FIXME should permit writing just `hb`, not `hb.le`
+example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination a * hb.le
 
-example {u v x y A B : ℝ} (_h1 : 0 < A) (h2 : A ≤ 1) (h3 : 1 ≤ B) (h4 : x ≤ B)
-    (h5 : y ≤ B) (h6 : 0 ≤ u) (h7 : 0 ≤ v) (h8 : u < A) (h9 : v < A) :
+example {u v x y A B : ℝ} (_ : 0 ≤ u) (_ : 0 ≤ v) (h2 : A ≤ 1) (h3 : 1 ≤ B) (h4 : x ≤ B)
+    (h5 : y ≤ B) (h8 : u < A) (h9 : v < A) :
     u * y + v * x + u * v < 3 * A * B := by
-  linear_combination (norm := skip) v * h2 + v * h3 + v * h4 + u * h5 + (v + B) * h8 + 2 * B * h9
-  ring_nf
-  norm_num1
+  linear_combination v * h2 + v * h3 + v * h4 + u * h5 + (v + B) * h8 + 2 * B * h9
 
-example {t : ℚ} (ht : t ≥ 10) : t ^ 2 - 3 * t - 17 ≥ 5 := by
-  linear_combination (norm := skip) (t + 7) * ht
-  ring_nf
-  norm_num1
+example {t : ℚ} (ht : t ≥ 10) : t ^ 2 - 3 * t - 17 ≥ 5 := by linear_combination (t + 7) * ht
 
-example {n : ℤ} (hn : n ≥ 5) : n ^ 2 > 2 * n + 11 := by
-  linear_combination (norm := skip) (n + 3) * hn
-  ring_nf
-  norm_num1
+example {n : ℤ} (hn : n ≥ 5) : n ^ 2 > 2 * n + 11 := by linear_combination (n + 3) * hn
 
 /-! ### Regression tests -/
 
