@@ -54,7 +54,6 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
     exact ⟨hue, fun h ↦ by simp_all [mem_antidiagonal.mp huv, le_antisymm hue h]⟩
   · simp only [mem_antidiagonal, add_zero, not_true_eq_false, coeff_zero_eq_constantCoeff,
       false_implies]
-    
 
 end Semiring
 
