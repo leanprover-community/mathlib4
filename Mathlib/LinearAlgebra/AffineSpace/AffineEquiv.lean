@@ -593,7 +593,7 @@ theorem injective_pointReflection_left_of_module [Invertible (2 : k)] :
     ∀ y, Injective fun x : P₁ => pointReflection k x y :=
   injective_pointReflection_left_of_injective_bit0 k fun x y h => by
     dsimp at h
-    rwa [← two_smul k x, ← two_smul k y,
+    rwa [two_nsmul, two_nsmul, ← two_smul k x, ← two_smul k y,
       (isUnit_of_invertible (2 : k)).smul_left_cancel] at h
 #align affine_equiv.injective_point_reflection_left_of_module AffineEquiv.injective_pointReflection_left_of_module
 
