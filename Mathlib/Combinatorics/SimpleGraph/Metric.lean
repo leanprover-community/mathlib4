@@ -100,7 +100,7 @@ protected theorem edist_triangle : G.edist u w ≤ G.edist u v + G.edist v w := 
     case inr =>
       obtain ⟨p, hp⟩ := exists_walk_of_edist_ne_top huv
       obtain ⟨q, hq⟩ := exists_walk_of_edist_ne_top hvw
-      rw [←hp, ←hq, ←Nat.cast_add, ←Walk.length_append]
+      rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
       exact edist_le _
 
 theorem edist_comm : G.edist u v = G.edist v u := by
