@@ -182,20 +182,82 @@ theorem map_obj_hom : ((map f).obj U).hom = U.hom ≫ f :=
 theorem map_map_left : ((map f).map g).left = g.left :=
   rfl
 #align category_theory.over.map_map_left CategoryTheory.Over.map_map_left
+end
 
-variable (Y)
+section coherences
+/--
+This section proves various equalities between functors that
+demonstrate, for instance, that over categories assemble into a
+functor `mapFunctor : T ⥤ Cat`.
+
+These equalities between functors are then converted to natural
+isomorphisms using `eqToIso`. Such natural isomorphisms could be
+obtained directly using `Iso.refl` but this method will have
+better computational properties, when used, for instance, in
+developing the theory of Beck-Chevalley transformations.
+-/
 
 /-- Mapping by the identity morphism is just the identity functor. -/
-def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
+  fapply Functor.ext
+  · intro x
+    dsimp [Over, Over.map, Comma.mapRight]
+    simp only [Category.comp_id]
+    exact rfl
+  · intros x y u
+    dsimp [Over, Over.map, Comma.mapRight]
+    simp
+
+/-- The natural isomorphism arising from `mapForget_eq`. -/
+def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
+--  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_id CategoryTheory.Over.mapId
 
+/-- Mapping by `f` and then forgetting is the same as forgetting. -/
+theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
+    (map f) ⋙ (forget Y) = (forget X) := by
+  fapply Functor.ext
+  · dsimp [Over, Over.map]; intro x; exact rfl
+  · intros x y u; simp
+
+/-- The natural isomorphism arising from `mapForget_eq`. -/
+def mapForget {X Y : T} (f : X ⟶ Y) :
+    (map f) ⋙ (forget Y) ≅ (forget X) := eqToIso (mapForget_eq f)
+
+@[simp]
+theorem eqToHom_left {X : T} {U V : Over X} (e : U = V) :
+    (eqToHom e).left = eqToHom (e ▸ rfl : U.left = V.left) := by
+  subst e; rfl
+
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
-def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ map g :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (map f) ⋙ (map g) = map (f ≫ g) := by
+  fapply Functor.ext
+  · simp [Over.map, Comma.mapRight]
+  · intro U V k
+    ext
+    simp
+
+/-- The natural isomorphism arising from `mapComp_eq`. -/
+def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (map f) ⋙ (map g) ≅ map (f ≫ g) := eqToIso (mapComp_eq f g)
+--  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
-end
+end coherences
+
+-- set_option diagnostics true
+-- def mapFunctor.obj : T → Cat.{(max u₁ v₁) + 1} :=  by
+--   intro X
+--   have := Over X
+--   refine Cat.of ?C
+--   · exact Over X
+
+-- def mapFunctor : T ⥤ Cat where
+--   obj := Over
+--   map := map
+--   map_id := mapId_eq
+--   map_comp := mapComp_eq
 
 instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
   reflects {Y Z} f t := by
@@ -463,18 +525,60 @@ theorem map_obj_hom : ((map f).obj U).hom = f ≫ U.hom :=
 theorem map_map_right : ((map f).map g).right = g.right :=
   rfl
 #align category_theory.under.map_map_right CategoryTheory.Under.map_map_right
+end
+
+
+section coherences
+/--
+This section proves various equalities between functors that
+demonstrate, for instance, that under categories assemble into a
+functor `mapFunctor : Tᵒᵖ ⥤ Cat`.
+-/
 
 /-- Mapping by the identity morphism is just the identity functor. -/
-def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
+  fapply Functor.ext
+  · intro x
+    dsimp [Under, Under.map, Comma.mapLeft]
+    simp only [Category.id_comp]
+    exact rfl
+  · intros x y u
+    dsimp [Under, Under.map, Comma.mapLeft]
+    simp
+
+/-- Mapping by the identity morphism is just the identity functor. -/
+def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 #align category_theory.under.map_id CategoryTheory.Under.mapId
 
+/-- Mapping by `f` and then forgetting is the same as forgetting. -/
+theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
+    (map f) ⋙ (forget X) = (forget Y) := by
+  fapply Functor.ext
+  · dsimp [Under, Under.map]; intro x; exact rfl
+  · intros x y u; simp
+
+/-- The natural isomorphism arising from `mapForget_eq`. -/
+def mapForget {X Y : T} (f : X ⟶ Y) :
+    (map f) ⋙ (forget X) ≅ (forget Y) := eqToIso (mapForget_eq f)
+
+@[simp]
+theorem eqToHom_right {X : T} {U V : Under X} (e : U = V) :
+    (eqToHom e).right = eqToHom (e ▸ rfl : U.right = V.right) := by
+  subst e; rfl
+
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
-def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (map g) ⋙ (map f) = map (f ≫ g) := by
+  fapply Functor.ext
+  · simp [Under.map, Comma.mapLeft]
+  · intro U V k
+    ext
+    simp
+
+/-- The natural isomorphism arising from `mapComp_eq`. -/def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map g ⋙ map f ≅ map (f ≫ g) := eqToIso (mapComp_eq f g)
 #align category_theory.under.map_comp CategoryTheory.Under.mapComp
 
-end
+end coherences
 
 instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
   reflects {Y Z} f t := by
