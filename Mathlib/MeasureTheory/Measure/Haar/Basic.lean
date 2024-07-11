@@ -747,14 +747,14 @@ see the file `MeasureTheory.Measure.Haar.Unique`.
 
 variable [SecondCountableTopology G]
 
-/-- **Uniqueness of left-invariant measures**: In a second-countable topological group, any
+/-- **Uniqueness of left-invariant measures**: In a second-countable locally compact group, any
   σ-finite left-invariant measure is a scalar multiple of the Haar measure.
   This is slightly weaker than assuming that `μ` is a Haar measure (in particular we don't require
   `μ ≠ 0`).
   See also `isMulLeftInvariant_eq_smul_of_regular`
   for a statement not assuming second-countability. -/
 @[to_additive
-"**Uniqueness of left-invariant measures**: In a second-countable topological additive group,
+"**Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
   any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
   This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
   require `μ ≠ 0`).

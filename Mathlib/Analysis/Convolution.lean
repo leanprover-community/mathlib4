@@ -540,7 +540,7 @@ theorem convolution_congr [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ]
   ext x
   apply integral_congr_ae
   exact (h1.prod_mk <| h2.comp_tendsto
-    (quasiMeasurePreserving_sub_left_of_right_invariant μ x).tendsto_ae).fun_comp ↿fun x y => L x y
+    (quasiMeasurePreserving_sub_left_of_right_invariant μ x).tendsto_ae).fun_comp ↿fun x y ↦ L x y
 #align convolution_congr MeasureTheory.convolution_congr
 
 theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g + support f := by
