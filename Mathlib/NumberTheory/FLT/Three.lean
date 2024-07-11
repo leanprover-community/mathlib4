@@ -487,12 +487,10 @@ private lemma w_spec : S.c = λ ^ S.multiplicity * S.w :=
   (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose_spec
 
 private lemma lambda_not_dvd_w : ¬ λ ∣ S.w := fun h ↦ by
-  replace h := mul_dvd_mul_left (λ ^ S.multiplicity) h
-  rw [← w_spec] at h
-  have hh := multiplicity.is_greatest' S.toSolution'.multiplicity_lambda_c_finite
-    (lt_add_one S.multiplicity)
-  rw [pow_succ', mul_comm] at hh
-  exact hh h
+  refine multiplicity.is_greatest' S.toSolution'.multiplicity_lambda_c_finite
+    (lt_add_one S.multiplicity) ?_
+  rw [pow_succ', mul_comm]
+  exact S.w_spec ▸ (mul_dvd_mul_left (λ ^ S.multiplicity) h)
 
 private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   replace h := mul_dvd_mul_left (λ ^ (3 * S.multiplicity - 2)) h
