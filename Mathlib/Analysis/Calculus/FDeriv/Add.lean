@@ -559,6 +559,30 @@ theorem DifferentiableOn.sub (hf : DifferentiableOn 𝕜 f s) (hg : Differentiab
     DifferentiableOn 𝕜 (fun y => f y - g y) s := fun x hx => (hf x hx).sub (hg x hx)
 #align differentiable_on.sub DifferentiableOn.sub
 
+@[simp]
+lemma DifferentiableOn.add_iff_left (hg : DifferentiableOn 𝕜 g s) :
+    DifferentiableOn 𝕜 (fun y => f y + g y) s ↔ DifferentiableOn 𝕜 f s := by
+  refine ⟨fun h ↦ ?_, fun hf ↦ hf.add hg⟩
+  simpa only [add_sub_cancel_right] using h.sub hg
+
+@[simp]
+lemma DifferentiableOn.add_iff_right (hg : DifferentiableOn 𝕜 f s) :
+    DifferentiableOn 𝕜 (fun y => f y + g y) s ↔ DifferentiableOn 𝕜 g s := by
+  simp only [add_comm (f _), hg.add_iff_left]
+
+@[simp]
+lemma DifferentiableOn.sub_iff_left (hg : DifferentiableOn 𝕜 g s) :
+    DifferentiableOn 𝕜 (fun y => f y - g y) s ↔ DifferentiableOn 𝕜 f s := by
+  refine ⟨fun h ↦ ?_, fun hf ↦ hf.sub hg⟩
+  simpa only [sub_add_cancel] using h.add hg
+
+@[simp]
+lemma DifferentiableOn.sub_iff_right (hg : DifferentiableOn 𝕜 f s) :
+    DifferentiableOn 𝕜 (fun y => f y - g y) s ↔ DifferentiableOn 𝕜 g s := by
+  refine ⟨fun h ↦ ?_, fun hf ↦ hg.sub hf⟩
+  simpa only [sub_sub_cancel_left, differentiableOn_neg_iff] using h.sub hg
+
+
 @[simp, fun_prop]
 theorem Differentiable.sub (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g) :
     Differentiable 𝕜 fun y => f y - g y := fun x => (hf x).sub (hg x)
