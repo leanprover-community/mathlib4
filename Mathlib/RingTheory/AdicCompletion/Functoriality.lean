@@ -24,8 +24,6 @@ In this file we establish functorial properties of the adic completion.
 
 -/
 
-suppress_compilation
-
 variable {R : Type*} [CommRing R] (I : Ideal R)
 variable {M : Type*} [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommGroup N] [Module R N]
