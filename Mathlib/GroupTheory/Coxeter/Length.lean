@@ -216,9 +216,9 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
   have h₂ : ℓ (π (ω.drop j)) ≤ (ω.drop j).length    := cs.length_wordProd_le (ω.drop j)
   have h₃ := calc
     (ω.take j).length + (ω.drop j).length
-    _ = ω.length                             := by rw [← List.length_append, ω.take_append_drop j];
+    _ = ω.length                             := by rw [← List.length_append, ω.take_append_drop j]
     _ = ℓ (π ω)                              := hω.symm
-    _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j];
+    _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j]
     _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j))  := cs.length_mul_le _ _
   unfold IsReduced
   exact ⟨by linarith, by linarith⟩

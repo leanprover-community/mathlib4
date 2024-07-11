@@ -182,7 +182,7 @@ instance epi_v₂₃_τ₂ : Epi S.v₂₃.τ₂ := epi_of_isColimit_cofork S.h�
 instance epi_v₂₃_τ₃ : Epi S.v₂₃.τ₃ := epi_of_isColimit_cofork S.h₃τ₃
 
 /-- The lower part of the first column of the snake diagram is exact. -/
-lemma exact_C₁_down: (ShortComplex.mk S.v₁₂.τ₁ S.v₂₃.τ₁
+lemma exact_C₁_down : (ShortComplex.mk S.v₁₂.τ₁ S.v₂₃.τ₁
     (by rw [← comp_τ₁, S.w₁₃, zero_τ₁])).Exact :=
   exact_of_g_is_cokernel _ S.h₃τ₁
 

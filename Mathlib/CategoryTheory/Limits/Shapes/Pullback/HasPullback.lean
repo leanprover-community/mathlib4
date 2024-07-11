@@ -61,9 +61,6 @@ abbrevation for `HasColimitsOfShape WalkingSpan C`
 
 (The dual results for pushouts are also available)
 
-NOTE: golfed some proofs also
-TODO: had to add 2 erws in Galois... (decomposition.lean)
-
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)

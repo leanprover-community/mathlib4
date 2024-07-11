@@ -415,7 +415,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
         X.presheaf.map (homOfLE <| inf_le_right).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
-      · refine fun i => homOfLE ?_; erw [hs];
+      · refine fun i => homOfLE ?_; erw [hs]
         -- Porting note: have to add argument explicitly
         exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
       · exact le_of_eq hs
