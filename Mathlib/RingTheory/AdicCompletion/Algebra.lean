@@ -83,7 +83,6 @@ instance : Pow (AdicCompletion I R) ℕ where
 
 instance : CommRing (AdicCompletion I R) :=
   let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
-  fast_instance%
   Subtype.val_injective.commRing f rfl rfl
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
@@ -149,7 +148,6 @@ instance : Pow (AdicCauchySequence I R) ℕ where
 
 instance : CommRing (AdicCauchySequence I R) :=
   let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
-  fast_instance%
   Subtype.val_injective.commRing f rfl rfl
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
