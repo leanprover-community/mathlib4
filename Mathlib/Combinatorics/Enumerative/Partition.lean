@@ -113,7 +113,7 @@ variable {n : ℕ} {σ τ : Type*} [DecidableEq σ] [DecidableEq τ]
 lemma ofSym_map (e : σ ≃ τ) (s : Sym σ n) :
     ofSym (s.map e) = ofSym s := by
   simp only [ofSym, Sym.val_eq_coe, Sym.coe_map, toFinset_val, mk.injEq]
-  rw [Multiset.dedup_map_of_injective e.injective]
+  rw [Multiset.dedup_map e.injective]
   simp only [map_map, Function.comp_apply]
   congr; funext i
   rw [← Multiset.count_map_eq_count' e _ e.injective]

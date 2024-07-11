@@ -3,7 +3,6 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 -/
-
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Combinatorics.Enumerative.Partition
@@ -193,8 +192,7 @@ variable (f : ℕ → MvPolynomial σ R)
 
 /-- Given a sequence of `MvPolynomial` functions `f` and a partition `μ` of size `n`,
 `muProduct` computes the product of applying each function in `f` to the parts of `μ`. -/
-def muProduct {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
-  (μ.parts.map f).prod
+def muProduct {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map f).prod
 
 lemma muProduct_def (μ : n.Partition) :
     muProduct σ R f μ = (μ.parts.map f).prod := rfl
@@ -205,7 +203,7 @@ theorem muProduct_indiscrete_zero :
 
 @[simp]
 theorem muProduct_indiscrete_of_pos (npos : n > 0) :
-    muProduct σ R f (Nat.Partition.indiscrete n) = f n := by
+    muProduct σ R f (.indiscrete n) = f n := by
   rw [muProduct, Nat.Partition.indiscrete_parts, Multiset.map_singleton, Multiset.prod_singleton]
   linarith
 
@@ -262,10 +260,10 @@ theorem esymm_zero : esymm σ R 0 = 1 := by simp [esymm]
 @[simp]
 theorem esymm_one : esymm σ R 1 = ∑ i, X i := by simp [esymm, powersetCard_one]
 
-theorem esymmMu_zero : esymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by simp [esymmMu]
+theorem esymmMu_zero : esymmMu σ R (.indiscrete 0) = 1 := by simp [esymmMu]
 
 @[simp]
-theorem esymmMu_onePart : esymmMu σ R (Nat.Partition.indiscrete n) = esymm σ R n := by
+theorem esymmMu_onePart : esymmMu σ R (.indiscrete n) = esymm σ R n := by
   cases n <;> simp [esymmMu]
 
 theorem map_esymm (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
@@ -376,10 +374,10 @@ theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
   apply Fintype.sum_equiv oneEquiv
   simp only [oneEquiv_apply, Multiset.map_singleton, Multiset.prod_singleton, implies_true]
 
-theorem hsymmMu_zero : hsymmMu σ R (Nat.Partition.indiscrete 0) = 1 := by simp [hsymmMu]
+theorem hsymmMu_zero : hsymmMu σ R (.indiscrete 0) = 1 := by simp [hsymmMu]
 
 @[simp]
-theorem hsymmMu_onePart : hsymmMu σ R (Nat.Partition.indiscrete n) = hsymm σ R n := by
+theorem hsymmMu_onePart : hsymmMu σ R (.indiscrete n) = hsymm σ R n := by
   cases n <;> simp [hsymmMu]
 
 theorem map_hsymm (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
@@ -420,12 +418,12 @@ theorem psum_zero : psum σ R 0 = Fintype.card σ := by simp [psum]
 theorem psum_one : psum σ R 1 = ∑ i, X i := by simp [psum]
 
 @[simp]
-theorem psumMu_zero : psumMu σ R (Nat.Partition.indiscrete 0) = 1 := by
+theorem psumMu_zero : psumMu σ R (.indiscrete 0) = 1 := by
   rw [psumMu, muProduct_indiscrete_zero]
 
 @[simp]
 theorem psumMu_indiscrete {n : ℕ} (npos : n > 0) :
-    psumMu σ R (Nat.Partition.indiscrete n) = psum σ R n := by simp [psumMu, npos]
+    psumMu σ R (.indiscrete n) = psum σ R n := by simp [psumMu, npos]
 
 @[simp]
 theorem rename_psum (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
@@ -437,35 +435,33 @@ end PowerSum
 
 section MonomialSymmetric
 
-open Nat.Partition
-
 variable [DecidableEq σ] [DecidableEq τ] {n : ℕ} (μ : n.Partition)
 
 /-- The monomial symmetric `MvPolynomial σ R` with exponent set μ. -/
 def msymm : MvPolynomial σ R :=
-  ∑ s : {a : Sym σ n // ofSym a = μ},  (s.1.1.map X).prod
+  ∑ s : {a : Sym σ n // .ofSym a = μ},  (s.1.1.map X).prod
 
 lemma msymm_def : msymm σ R μ =
-    ∑ s : {a : Sym σ n // ofSym a = μ}, (s.1.1.map X).prod := rfl
+    ∑ s : {a : Sym σ n // .ofSym a = μ}, (s.1.1.map X).prod := rfl
 
 @[simp]
-theorem msymm_zero : msymm σ R (indiscrete 0) = 1 := by
+theorem msymm_zero : msymm σ R (.indiscrete 0) = 1 := by
   rw [msymm, Fintype.sum_subsingleton _ ⟨(Sym.nil : Sym σ 0), by rfl⟩]
   simp
 
 @[simp]
-theorem msymm_one : msymm σ R (indiscrete 1) = ∑ i, X i := by
+theorem msymm_one : msymm σ R (.indiscrete 1) = ∑ i, X i := by
   symm
-  apply Fintype.sum_equiv (ofSym_equiv_onePart σ)
+  apply Fintype.sum_equiv (Nat.Partition.ofSym_equiv_onePart σ)
   simp
 
 @[simp]
 theorem rename_msymm (e : σ ≃ τ) :
     rename e (msymm σ R μ) = msymm τ R μ := by
   rw [msymm, map_sum]
-  apply Fintype.sum_equiv (ofSym_shape_equiv μ e)
+  apply Fintype.sum_equiv (Nat.Partition.ofSym_shape_equiv μ e)
   intro
-  rw [← Multiset.prod_hom, Multiset.map_map, ofSym_shape_equiv]
+  rw [← Multiset.prod_hom, Multiset.map_map, Nat.Partition.ofSym_shape_equiv]
   simp
 
 theorem msymm_isSymmetric : IsSymmetric (msymm σ R μ) :=
