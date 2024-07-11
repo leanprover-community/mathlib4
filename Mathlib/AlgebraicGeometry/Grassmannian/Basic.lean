@@ -934,3 +934,5 @@ def glueData : GlueData where
 
 
 end Grassmannian
+
+def Grassmannian := (Grassmannian.glueData K V r hr).glued
