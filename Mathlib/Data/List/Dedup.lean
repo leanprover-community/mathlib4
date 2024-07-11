@@ -145,7 +145,8 @@ theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.I
     · rw [dedup_cons_of_not_mem h, dedup_cons_of_not_mem <| (mem_map_of_injective hf).not.mpr h, ih,
         map_cons]
 
-theorem Subset.dedup_append {xs ys : List α} (h : xs ⊆ ys) :
+/-- Note that the weaker `List.Subset.dedup_append_left` is proved later. -/
+theorem Subset.dedup_append_right {xs ys : List α} (h : xs ⊆ ys) :
     dedup (xs ++ ys) = dedup ys := by
   rw [List.dedup_append, Subset.union_eq_right (h.trans <| subset_dedup _)]
 
@@ -156,7 +157,7 @@ theorem Disjoint.union_eq {xs ys : List α} (h : Disjoint xs ys) :
   | cons x xs ih =>
     rw [cons_union]
     rw [disjoint_cons_left] at h
-    obtain hx | hx := Decidable.em (x ∈ xs)
+    by_cases hx : x ∈ xs
     · rw [dedup_cons_of_mem hx, insert_of_mem (mem_union_left hx _), ih h.2]
     · rw [dedup_cons_of_not_mem hx, insert_of_not_mem, ih h.2, cons_append]
       rw [mem_union_iff, not_or]
