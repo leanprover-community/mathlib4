@@ -38,7 +38,7 @@ variable (R : Type*) (A : Type u)
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 variable [TopologicalSpace R] [TopologicalSpace A]
 
- @[continuity, fun_prop]
+@[continuity, fun_prop]
 theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) := by
   rw [algebraMap_eq_smul_one']
   exact continuous_id.smul continuous_const

@@ -36,7 +36,7 @@ theorem coe_ndinsert (a : α) (l : List α) : ndinsert a l = (insert a l : List 
   rfl
 #align multiset.coe_ndinsert Multiset.coe_ndinsert
 
-@[simp] -- Porting note (#10675): dsimp can not prove this
+@[simp]
 theorem ndinsert_zero (a : α) : ndinsert a 0 = {a} :=
   rfl
 #align multiset.ndinsert_zero Multiset.ndinsert_zero
@@ -93,8 +93,8 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
     if h : a ∈ s then by simp [h, l]
     else by
       rw [ndinsert_of_not_mem h, ← cons_erase m, cons_le_cons_iff, ← le_cons_of_not_mem h,
-          cons_erase m];
-        exact l⟩
+          cons_erase m]
+      exact l⟩
 #align multiset.ndinsert_le Multiset.ndinsert_le
 
 theorem attach_ndinsert (a : α) (s : Multiset α) :
@@ -231,7 +231,7 @@ theorem coe_ndinter (l₁ l₂ : List α) : @ndinter α _ l₁ l₂ = (l₁ ∩ 
   apply Perm.refl
 #align multiset.coe_ndinter Multiset.coe_ndinter
 
-@[simp] -- Porting note (#10675): dsimp can not prove this
+@[simp]
 theorem zero_ndinter (s : Multiset α) : ndinter 0 s = 0 :=
   rfl
 #align multiset.zero_ndinter Multiset.zero_ndinter

@@ -1237,3 +1237,5 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
     · simp only [compl_compl, V'ne]
   rw [← this, compl_compl]
 #align is_closed.exists_minimal_nonempty_closed_subset IsClosed.exists_minimal_nonempty_closed_subset
+
+end Compact
