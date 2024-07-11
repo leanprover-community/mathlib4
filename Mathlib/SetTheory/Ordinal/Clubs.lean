@@ -5,19 +5,17 @@ Authors: Nir Paz
 -/
 import Mathlib.SetTheory.Cardinal.Cofinality
 
+
 /-!
 # Club and stationary sets
-
 This file sets up the basic theory of clubs (closed and unbounded sets) and stationary sets.
 
 ## Main definitions
-
 * `IsClosed`: A set of ordinals is closed in `o` if all of its elements are
   less than `o` and it contains all of its accumulation points below `o`.
 * `IsClub`: A set of ordinals is a club in `o` if it is closed in `o` and unbounded in `o`.
 
 ## Main results
-
 * `isClub_sInter`: The intersection of fewer than `o.cof` clubs in `o` is a club in `o`.
 -/
 

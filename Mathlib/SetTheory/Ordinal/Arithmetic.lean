@@ -348,20 +348,20 @@ def boundedLimitRec {l : Ordinal} (hLim : l.IsLimit) {C : Π o < l, Sort*} (H₁
   have := limitRecOn (C := fun o ↦ if h : o < l then C o h else C 0 hLim.pos) o
     (by convert H₁; simp only [dite_eq_right_iff, implies_true])
     (fun o ih ↦ if ho : o < l then by
-        simp only [ho, reduceDite, hLim.succ_lt] at ih ⊢; exact H₂ o ho ih
+        simp only [ho, hLim.succ_lt] at ih ⊢; exact H₂ o ho ih
       else by
         have aux : ¬ (succ o < l) := fun h : succ o < l ↦ ho <| (lt_succ o).trans h
-        simp only [aux, reduceDite]; exact H₁)
+        simp only [aux]; exact H₁)
     (fun o oLim ih ↦ by
       by_cases ho : o < l
-      · simp only [ho, reduceDite]
+      · simp only [ho]
         have ih' : ((o' : Ordinal) → (h' : o' < o) → C o' (h'.trans ho)) := fun o' ho' ↦ by
           have := ih o' ho'
           simp [ho'.trans ho] at this
           exact this
         have := H₃ o ho oLim ih'
         exact this
-      simp only [ho, reduceDite]; exact H₁)
+      simp only [ho]; exact H₁)
   simp_rw [dif_pos h] at this
   exact this
 
