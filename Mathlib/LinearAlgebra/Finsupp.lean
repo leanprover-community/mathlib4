@@ -355,7 +355,7 @@ variable {M R}
 section
 
 @[simp]
-theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)]:
+theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)] :
     (restrictDom M R s l : α →₀ M) = Finsupp.filter (· ∈ s) l := rfl
 #align finsupp.restrict_dom_apply Finsupp.restrictDom_apply
 
@@ -402,14 +402,17 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
   refine Finsupp.induction l ?_ ?_
   · exact zero_mem _
   · refine fun x a l _ _ => add_mem ?_
-    by_cases h : ∃ i, x ∈ s i <;> simp [h]
-    cases' h with i hi
-    exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+    by_cases h : ∃ i, x ∈ s i
+    · simp only [mem_comap, coe_comp, coeSubtype, Function.comp_apply, restrictDom_apply,
+        mem_iUnion, h, filter_single_of_pos]
+      cases' h with i hi
+      exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+    · simp [h]
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
 theorem supported_union (s t : Set α) :
     supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
-  erw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq]; rfl
+  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, cond_true, cond_false]
 #align finsupp.supported_union Finsupp.supported_union
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :

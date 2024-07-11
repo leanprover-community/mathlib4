@@ -105,6 +105,30 @@ theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
     smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
 
+/-- If two quadratic forms from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
+
+In other words, if a base change exists for a quadratic form, it is unique.
+
+Note that unlike `QuadraticForm.baseChange`, this does not need `Invertible (2 : R)`. -/
+@[ext]
+theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticForm A (A ⊗[R] M₂)⦄
+    (h : ∀ m, Q₁ (1 ⊗ₜ m) = Q₂ (1 ⊗ₜ m)) :
+    Q₁ = Q₂ := by
+  replace h (a m) : Q₁ (a ⊗ₜ m) = Q₂ (a ⊗ₜ m) := by
+    rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', map_smul, map_smul, h]
+  ext x
+  induction x with
+  | tmul => simp [h]
+  | zero => simp
+  | add x y hx hy =>
+    have : Q₁.polarBilin = Q₂.polarBilin := by
+      ext
+      dsimp [polar]
+      rw [← TensorProduct.tmul_add, h, h, h]
+    replace := congr($this x y)
+    dsimp [polar] at this
+    linear_combination this + hx + hy
+
 end CommRing
 
 end QuadraticForm

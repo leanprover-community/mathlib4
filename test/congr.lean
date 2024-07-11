@@ -90,7 +90,11 @@ example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
 
 set_option linter.unusedTactic false in
 /- `ι = κ` is not plausible -/
-example (f : ι → α) (g : κ → α) :
+-- This test does not work unless we specify that `ι` and `κ` lie in the same universe.
+-- Prior to https://github.com/leanprover/lean4/pull/4493 it did,
+-- because previously bodies of `example`s were (confusingly!) allowed to
+-- affect the elaboration of the signature!
+example {ι κ : Type u} (f : ι → α) (g : κ → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
   guard_target = Set.image f Set.univ = Set.image g Set.univ
