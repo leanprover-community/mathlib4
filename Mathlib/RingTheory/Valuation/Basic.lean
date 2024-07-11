@@ -293,11 +293,9 @@ theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
   v.toMonoidWithZeroHom.toMonoidHom.map_sub_swap x y
 #align valuation.map_sub_swap Valuation.map_sub_swap
 
-@[simp]
 theorem map_inv {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x, v x⁻¹ = (v x)⁻¹ :=
   map_inv₀ _
 
-@[simp]
 theorem map_div {R : Type*} [DivisionRing R] (v : Valuation R Γ₀) : ∀ x y, v (x / y) = v x / v y :=
   map_div₀ _
 
