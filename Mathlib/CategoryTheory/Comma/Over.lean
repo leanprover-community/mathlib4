@@ -185,7 +185,7 @@ theorem map_map_left : ((map f).map g).left = g.left :=
 end
 
 section coherences
-/--
+/-!
 This section proves various equalities between functors that
 demonstrate, for instance, that over categories assemble into a
 functor `mapFunctor : T ⥤ Cat`.
@@ -231,7 +231,7 @@ theorem eqToHom_left {X : T} {U V : Over X} (e : U = V) :
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (map f) ⋙ (map g) = map (f ≫ g) := by
+    map (f ≫ g) = (map f) ⋙ (map g) := by
   fapply Functor.ext
   · simp [Over.map, Comma.mapRight]
   · intro U V k
@@ -240,24 +240,17 @@ theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 
 /-- The natural isomorphism arising from `mapComp_eq`. -/
 def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (map f) ⋙ (map g) ≅ map (f ≫ g) := eqToIso (mapComp_eq f g)
---  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+    map (f ≫ g) ≅ (map f) ⋙ (map g) := eqToIso (mapComp_eq f g)
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
+/-- The functor defined by the over categories.-/
+def mapFunctor : T ⥤ Cat where
+  obj X := Cat.of (Over X)
+  map := map
+  map_id := mapId_eq
+  map_comp := mapComp_eq
+
 end coherences
-
--- set_option diagnostics true
--- def mapFunctor.obj : T → Cat.{(max u₁ v₁) + 1} :=  by
---   intro X
---   have := Over X
---   refine Cat.of ?C
---   · exact Over X
-
--- def mapFunctor : T ⥤ Cat where
---   obj := Over
---   map := map
---   map_id := mapId_eq
---   map_comp := mapComp_eq
 
 instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
   reflects {Y Z} f t := by
@@ -527,9 +520,8 @@ theorem map_map_right : ((map f).map g).right = g.right :=
 #align category_theory.under.map_map_right CategoryTheory.Under.map_map_right
 end
 
-
 section coherences
-/--
+/-!
 This section proves various equalities between functors that
 demonstrate, for instance, that under categories assemble into a
 functor `mapFunctor : Tᵒᵖ ⥤ Cat`.
@@ -568,15 +560,24 @@ theorem eqToHom_right {X : T} {U V : Under X} (e : U = V) :
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (map g) ⋙ (map f) = map (f ≫ g) := by
+    map (f ≫ g) = (map g) ⋙ (map f) := by
   fapply Functor.ext
   · simp [Under.map, Comma.mapLeft]
   · intro U V k
     ext
     simp
 
-/-- The natural isomorphism arising from `mapComp_eq`. -/def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map g ⋙ map f ≅ map (f ≫ g) := eqToIso (mapComp_eq f g)
+/-- The natural isomorphism arising from `mapComp_eq`. -/
+def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
+  eqToIso (mapComp_eq f g)
 #align category_theory.under.map_comp CategoryTheory.Under.mapComp
+
+/-- The functor defined by the under categories.-/
+def mapFunctor : Tᵒᵖ ⥤ Cat where
+  obj X := Cat.of (Under X.unop)
+  map f := map f.unop
+  map_id X := mapId_eq X.unop
+  map_comp f g := mapComp_eq (g.unop) (f.unop)
 
 end coherences
 
