@@ -234,8 +234,9 @@ instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst f f) := by
   · simp [fst_eq_snd_of_mono_eq]
 #align category_theory.limits.fst_iso_of_mono_eq CategoryTheory.Limits.fst_iso_of_mono_eq
 
-instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd f f) :=
-  fst_eq_snd_of_mono_eq f ▸ fst_iso_of_mono_eq f
+instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd : pullback f f ⟶ _) := by
+  rw [← fst_eq_snd_of_mono_eq]
+  infer_instance
 #align category_theory.limits.snd_iso_of_mono_eq CategoryTheory.Limits.snd_iso_of_mono_eq
 
 end
@@ -289,7 +290,7 @@ def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W 
   PushoutCocone.isColimitAux' _ fun t => ⟨hs.desc (PushoutCocone.mk t.inl t.inr <| by
     rw [← hhx, ← hhy, Category.assoc, Category.assoc, t.condition]),
       ⟨hs.fac _ WalkingSpan.left, hs.fac _ WalkingSpan.right, fun hr hr' => by
-        apply PushoutCocone.IsColimit.hom_ext hs;
+        apply PushoutCocone.IsColimit.hom_ext hs
         · simp only [PushoutCocone.mk_inl, PushoutCocone.mk_inr] at hr hr' ⊢
           simp only [hr, hr']
           symm
@@ -384,7 +385,7 @@ instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
     IsIso (pushout.inl _ _ : _ ⟶ pushout (h ≫ f) h) := by
   convert (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp f (𝟙 _) h⟩ WalkingSpan.left)).mp
-        inferInstance;
+        inferInstance
   · exact (Category.comp_id _).symm
   · exact (Category.comp_id _).symm
 #align category_theory.limits.pushout_inl_iso_of_left_factors_epi CategoryTheory.Limits.pushout_inl_iso_of_left_factors_epi
@@ -418,8 +419,9 @@ instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl _ _ : _ ⟶ pushout f f)
   · simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.inl_iso_of_epi_eq CategoryTheory.Limits.inl_iso_of_epi_eq
 
-instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr _ _ : _ ⟶ pushout f f) :=
-  inl_eq_inr_of_epi_eq f ▸ inl_iso_of_epi_eq f
+instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr : _ ⟶ pushout f f) := by
+  rw [← inl_eq_inr_of_epi_eq]
+  infer_instance
 #align category_theory.limits.inr_iso_of_epi_eq CategoryTheory.Limits.inr_iso_of_epi_eq
 
 end

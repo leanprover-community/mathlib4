@@ -885,3 +885,5 @@ instance preservesColimitRestrictScalars {R S : Type*} [Ring R] [Ring S]
 
 
 end ModuleCat
+
+end ModuleCat

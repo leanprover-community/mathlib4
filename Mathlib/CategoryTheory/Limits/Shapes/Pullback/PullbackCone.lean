@@ -50,8 +50,6 @@ Various ways of constructing pullback cones:
   that `fst ≫ f = snd ≫ g`.
 * `PullbackCone.flip` is the `PullbackCone` obtained by flipping `fst` and `snd`.
 
-* go back and forth between cone/pullbackcone
-
 Interaction with `IsLimit`:
 * `PullbackCone.isLimitAux` and `PullbackCone.isLimitAux'` provide two convenient ways to show that
   a given `PullbackCone` is a limit cone.
@@ -163,16 +161,16 @@ theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : 
 
 /-- To construct an isomorphism of pullback cones, it suffices to construct an isomorphism
 of the cone points and check it commutes with `fst` and `snd`. -/
-def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t.fst)
-    (w₂ : s.snd = i.hom ≫ t.snd) : s ≅ t :=
+def ext {s t : PullbackCone f g} (i : s.pt ≅ t.pt) (w₁ : s.fst = i.hom ≫ t.fst := by aesop_cat)
+    (w₂ : s.snd = i.hom ≫ t.snd := by aesop_cat) : s ≅ t :=
   WalkingCospan.ext i w₁ w₂
 #align category_theory.limits.pullback_cone.ext CategoryTheory.Limits.PullbackCone.ext
 
 /-- The natural isomorphism between a pullback cone and the corresponding pullback cone
 reconstructed using `PullbackCone.mk`. -/
 @[simps!]
-def isoMkSelf (t : PullbackCone f g) : mk t.fst t.snd t.condition ≅ t :=
-  PullbackCone.ext (Iso.refl _) (by simp) (by simp)
+def eta (t : PullbackCone f g) : t ≅ mk t.fst t.snd t.condition :=
+  PullbackCone.ext (Iso.refl _)
 
 /-- This is a slightly more convenient method to verify that a pullback cone is a limit cone. It
     only asks for a proof of facts that carry any mathematical content -/
@@ -252,7 +250,7 @@ def IsLimit.lift' {t : PullbackCone f g} (ht : IsLimit t) {W : C} (h : W ⟶ X) 
 /-- The pullback cone reconstructed using `PullbackCone.mk` from a pullback cone that is a
 limit, is also a limit. -/
 def mkSelfIsLimit {t : PullbackCone f g} (ht : IsLimit t) : IsLimit (mk t.fst t.snd t.condition) :=
-  IsLimit.ofIsoLimit ht (isoMkSelf t).symm
+  IsLimit.ofIsoLimit ht (eta t)
 
 section Flip
 
@@ -406,16 +404,16 @@ theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
 
 /-- To construct an isomorphism of pushout cocones, it suffices to construct an isomorphism
 of the cocone points and check it commutes with `inl` and `inr`. -/
-def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = t.inl)
-    (w₂ : s.inr ≫ i.hom = t.inr) : s ≅ t :=
+def ext {s t : PushoutCocone f g} (i : s.pt ≅ t.pt) (w₁ : s.inl ≫ i.hom = t.inl := by aesop_cat)
+    (w₂ : s.inr ≫ i.hom = t.inr := by aesop_cat) : s ≅ t :=
   WalkingSpan.ext i w₁ w₂
 #align category_theory.limits.pushout_cocone.ext CategoryTheory.Limits.PushoutCocone.ext
 
 /-- The natural isomorphism between a pushout cocone and the corresponding pushout cocone
 reconstructed using `PushoutCocone.mk`. -/
 @[simps!]
-def isoMkSelf (t : PushoutCocone f g) : mk t.inl t.inr t.condition ≅ t :=
-  PushoutCocone.ext (Iso.refl _) (by simp) (by simp)
+def eta (t : PushoutCocone f g) : t ≅ mk t.inl t.inr t.condition :=
+  PushoutCocone.ext (Iso.refl _)
 
 /-- This is a slightly more convenient method to verify that a pushout cocone is a colimit cocone.
     It only asks for a proof of facts that carry any mathematical content -/
@@ -496,7 +494,7 @@ def IsColimit.mk {W : C} {inl : Y ⟶ W} {inr : Z ⟶ W} (eq : f ≫ inl = g ≫
 colimit, is also a colimit. -/
 def mkSelfIsColimit {t : PushoutCocone f g} (ht : IsColimit t) :
     IsColimit (mk t.inl t.inr t.condition) :=
-  IsColimit.ofIsoColimit ht (isoMkSelf t).symm
+  IsColimit.ofIsoColimit ht (eta t)
 
 section Flip
 

@@ -61,9 +61,6 @@ abbrevation for `HasColimitsOfShape WalkingSpan C`
 
 (The dual results for pushouts are also available)
 
-NOTE: golfed some proofs also
-TODO: had to add 2 erws in Galois... (decomposition.lean)
-
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
@@ -104,10 +101,18 @@ abbrev pullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :=
 abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : PullbackCone f g :=
   limit.cone (cospan f g)
 
+/-- The cone associated to the pullback of `f` and `g`-/
+abbrev pullback.cone {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] : PullbackCone f g :=
+  limit.cone (cospan f g)
+
 /-- `pushout f g` computes the pushout of a pair of morphisms with the same source. -/
 abbrev pushout {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :=
   colimit (span f g)
 #align category_theory.limits.pushout CategoryTheory.Limits.pushout
+
+/-- The cocone associated to the pullback of `f` and `g` -/
+abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
+  colimit.cocone (span f g)
 
 /-- The cocone associated to the pullback of `f` and `g` -/
 abbrev pushout.cocone {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : PushoutCocone f g :=
@@ -146,6 +151,16 @@ abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (
     (w : f ≫ h = g ≫ k) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
 #align category_theory.limits.pushout.desc CategoryTheory.Limits.pushout.desc
+
+/-- The cone associated to a pullback is a limit cone. -/
+abbrev pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
+    IsLimit (pullback.cone f g) :=
+  limit.isLimit (cospan f g)
+
+/-- The cocone associated to a pushout is a colimit cone. -/
+abbrev pushout.isColimit {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] :
+    IsColimit (pushout.cocone f g) :=
+  colimit.isColimit (span f g)
 
 /-- The cone associated to a pullback is a limit cone. -/
 abbrev pullback.isLimit {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
@@ -335,6 +350,7 @@ theorem pullback.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Z} {g₁ g₂ : Y �
     (pullback.congrHom h₁ h₂).inv =
       pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
   ext <;> simp [Iso.inv_comp_eq]
+  ext <;> simp [Iso.inv_comp_eq]
 #align category_theory.limits.pullback.congr_hom_inv CategoryTheory.Limits.pullback.congrHom_inv
 
 instance pushout.map_isIso {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂]
@@ -369,6 +385,7 @@ theorem pushout.congrHom_inv {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X �
     (h₂ : g₁ = g₂) [HasPushout f₁ g₁] [HasPushout f₂ g₂] :
     (pushout.congrHom h₁ h₂).inv =
       pushout.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simp [h₁]) (by simp [h₂]) := by
+  ext <;> simp [Iso.comp_inv_eq]
   ext <;> simp [Iso.comp_inv_eq]
 #align category_theory.limits.pushout.congr_hom_inv CategoryTheory.Limits.pushout.congrHom_inv
 
@@ -581,10 +598,16 @@ def walkingCospanOpEquiv : WalkingCospanᵒᵖ ≌ WalkingSpan :=
 instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Category.{v} D]
     [HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D :=
   hasWidePullbacks_shrink WalkingPair
+instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [Category.{v} D]
+    [HasWidePullbacks.{w} D] : HasPullbacks.{v,u} D :=
+  hasWidePullbacks_shrink WalkingPair
 #align category_theory.limits.has_pullbacks_of_has_wide_pullbacks CategoryTheory.Limits.hasPullbacks_of_hasWidePullbacks
 
 -- see Note [lower instance priority]
 /-- Having wide pushout at any universe level implies having binary pushouts. -/
+instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category.{v} D]
+    [HasWidePushouts.{w} D] : HasPushouts.{v,u} D :=
+  hasWidePushouts_shrink WalkingPair
 instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [Category.{v} D]
     [HasWidePushouts.{w} D] : HasPushouts.{v,u} D :=
   hasWidePushouts_shrink WalkingPair
