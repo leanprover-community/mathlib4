@@ -349,8 +349,10 @@ namespace PosNum
 @[simp]
 theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
   | 1 => by erw [@Num.ofNat'_bit true 0, Num.ofNat'_zero]; rfl
-  | bit0 p => by sorry -- erw [@Num.ofNat'_bit false, of_to_nat' p]; rfl
-  | bit1 p => by sorry -- erw [@Num.ofNat'_bit true, of_to_nat' p]; rfl
+  | bit0 p => by
+      simpa only [Nat.bit_false, cond_false, two_mul, of_to_nat' p] using Num.ofNat'_bit false p
+  | bit1 p => by
+      simpa only [Nat.bit_true, cond_true, two_mul, of_to_nat' p] using Num.ofNat'_bit true p
 #align pos_num.of_to_nat' PosNum.of_to_nat'
 
 end PosNum
@@ -907,7 +909,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
     all_goals
       repeat
         rw [show ∀ b n, (pos (PosNum.bit b n) : ℕ) = Nat.bit b ↑n by
-          intros b _; cases b <;> sorry -- rfl
+          intros b _; cases b <;> simp_all
           ]
       rw [Nat.bitwise_bit gff]
     any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
