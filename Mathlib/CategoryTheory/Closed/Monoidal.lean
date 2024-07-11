@@ -232,17 +232,18 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
 
 section Pre
 
-variable {A B} [Closed B]
+variable {A B}
+variable [Closed B]
 
 /-- Pre-compose an internal hom with an external hom. -/
 def pre (f : B ⟶ A) : ihom A ⟶ ihom B :=
-  transferNatTransSelf (ihom.adjunction _) (ihom.adjunction _) ((tensoringLeft C).map f)
+  conjugateEquiv (ihom.adjunction _) (ihom.adjunction _) ((tensoringLeft C).map f)
 #align category_theory.monoidal_closed.pre CategoryTheory.MonoidalClosed.pre
 
 @[reassoc (attr := simp)]
 theorem id_tensor_pre_app_comp_ev (f : B ⟶ A) (X : C) :
     B ◁ (pre f).app X ≫ (ihom.ev B).app X = f ▷ (A ⟶[C] X) ≫ (ihom.ev A).app X :=
-  transferNatTransSelf_counit _ _ ((tensoringLeft C).map f) X
+  conjugateEquiv_counit _ _ ((tensoringLeft C).map f) X
 #align category_theory.monoidal_closed.id_tensor_pre_app_comp_ev CategoryTheory.MonoidalClosed.id_tensor_pre_app_comp_ev
 
 @[simp]
@@ -254,19 +255,19 @@ theorem uncurry_pre (f : B ⟶ A) (X : C) :
 @[reassoc (attr := simp)]
 theorem coev_app_comp_pre_app (f : B ⟶ A) :
     (ihom.coev A).app X ≫ (pre f).app (A ⊗ X) = (ihom.coev B).app X ≫ (ihom B).map (f ▷ _) :=
-  unit_transferNatTransSelf _ _ ((tensoringLeft C).map f) X
+  unit_conjugateEquiv _ _ ((tensoringLeft C).map f) X
 #align category_theory.monoidal_closed.coev_app_comp_pre_app CategoryTheory.MonoidalClosed.coev_app_comp_pre_app
 
 @[simp]
 theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
   rw [pre, Functor.map_id]
-  apply transferNatTransSelf_id
+  apply conjugateEquiv_id
 #align category_theory.monoidal_closed.pre_id CategoryTheory.MonoidalClosed.pre_id
 
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Closed A₁] [Closed A₂] [Closed A₃] (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
     pre (f ≫ g) = pre g ≫ pre f := by
-  rw [pre, pre, pre, transferNatTransSelf_comp, (tensoringLeft C).map_comp]
+  rw [pre, pre, pre, conjugateEquiv_comp, (tensoringLeft C).map_comp]
 #align category_theory.monoidal_closed.pre_map CategoryTheory.MonoidalClosed.pre_map
 
 theorem pre_comm_ihom_map {W X Y Z : C} [Closed W] [Closed X] (f : W ⟶ X) (g : Y ⟶ Z) :

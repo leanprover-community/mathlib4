@@ -128,7 +128,7 @@ theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array
   intro f l
   induction' l with head tail ih
   · intro; simp only [mapIdx.go, Array.toList_eq, length_nil, Nat.zero_add]
-  · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons];
+  · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons]
     simp only [Nat.add_succ, add_zero, Nat.add_comm]
 
 theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
@@ -191,7 +191,7 @@ theorem mapIdx_append (K L : List α) (f : ℕ → α → β) :
     (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a ↦ f (i + K.length) a := by
   induction' K with a J IH generalizing f
   · rfl
-  · simp [IH fun i ↦ f (i + 1), Nat.add_assoc, Nat.succ_eq_add_one]
+  · simp [IH fun i ↦ f (i + 1), Nat.add_assoc]
 #align list.map_with_index_append List.mapIdx_append
 
 @[simp]
