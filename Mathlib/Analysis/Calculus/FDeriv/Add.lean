@@ -673,7 +673,7 @@ theorem DifferentiableAt.sub_const (hf : DifferentiableAt 𝕜 f x) (c : F) :
 @[deprecated DifferentiableAt.sub_iff_left (since := "2024-07-11")]
 theorem differentiableAt_sub_const_iff (c : F) :
     DifferentiableAt 𝕜 (fun y => f y - c) x ↔ DifferentiableAt 𝕜 f x :=
-  DifferentiableAt.sub_iff_left (differentiableAt_const _)
+  (differentiableAt_const _).sub_iff_left
 #align differentiable_at_sub_const_iff differentiableAt_sub_const_iff
 
 @[fun_prop]
@@ -684,7 +684,7 @@ theorem DifferentiableOn.sub_const (hf : DifferentiableOn 𝕜 f s) (c : F) :
 @[deprecated DifferentiableOn.sub_iff_left (since := "2024-07-11")]
 theorem differentiableOn_sub_const_iff (c : F) :
     DifferentiableOn 𝕜 (fun y => f y - c) s ↔ DifferentiableOn 𝕜 f s :=
-  DifferentiableOn.sub_iff_left (differentiableOn_const _)
+  (differentiableOn_const _).sub_iff_left
 #align differentiable_on_sub_const_iff differentiableOn_sub_const_iff
 
 @[fun_prop]
@@ -695,7 +695,7 @@ theorem Differentiable.sub_const (hf : Differentiable 𝕜 f) (c : F) :
 @[deprecated Differentiable.sub_iff_left (since := "2024-07-11")]
 theorem differentiable_sub_const_iff (c : F) :
     (Differentiable 𝕜 fun y => f y - c) ↔ Differentiable 𝕜 f :=
-  Differentiable.sub_iff_left (differentiable_const _)
+  (differentiable_const _).sub_iff_left
 #align differentiable_sub_const_iff differentiable_sub_const_iff
 
 theorem fderivWithin_sub_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
@@ -751,7 +751,7 @@ theorem DifferentiableAt.const_sub (hf : DifferentiableAt 𝕜 f x) (c : F) :
 @[deprecated DifferentiableAt.sub_iff_right (since := "2024-07-11")]
 theorem differentiableAt_const_sub_iff (c : F) :
     DifferentiableAt 𝕜 (fun y => c - f y) x ↔ DifferentiableAt 𝕜 f x :=
-  DifferentiableAt.sub_iff_right (differentiableAt_const _)
+  (differentiableAt_const _).sub_iff_right
 #align differentiable_at_const_sub_iff differentiableAt_const_sub_iff
 
 @[fun_prop]
@@ -762,7 +762,7 @@ theorem DifferentiableOn.const_sub (hf : DifferentiableOn 𝕜 f s) (c : F) :
 @[deprecated DifferentiableOn.sub_iff_right (since := "2024-07-11")]
 theorem differentiableOn_const_sub_iff (c : F) :
     DifferentiableOn 𝕜 (fun y => c - f y) s ↔ DifferentiableOn 𝕜 f s :=
-  DifferentiableOn.sub_iff_right (differentiableOn_const _)
+  (differentiableOn_const _).sub_iff_right
 #align differentiable_on_const_sub_iff differentiableOn_const_sub_iff
 
 @[fun_prop]
@@ -773,7 +773,7 @@ theorem Differentiable.const_sub (hf : Differentiable 𝕜 f) (c : F) :
 @[deprecated Differentiable.sub_iff_right (since := "2024-07-11")]
 theorem differentiable_const_sub_iff (c : F) :
     (Differentiable 𝕜 fun y => c - f y) ↔ Differentiable 𝕜 f :=
-  Differentiable.sub_iff_right (differentiable_const _)
+  (differentiable_const _).sub_iff_right
 #align differentiable_const_sub_iff differentiable_const_sub_iff
 
 theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
