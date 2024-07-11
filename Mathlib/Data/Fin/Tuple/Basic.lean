@@ -1028,16 +1028,21 @@ theorem preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q�
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and_iff, mem_empty_iff_false]
 #align fin.preimage_insert_nth_Icc_of_not_mem Fin.preimage_insertNth_Icc_of_not_mem
 
+@[simp] lemma removeNth_update (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
+    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth, succAbove_ne]
+
+@[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
+    insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
+
+lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
+    insertNth p (f p) (removeNth p f) = f := by simp
+
 /-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
 Functional form of `Equiv.piFinSuccAbove`. -/
 @[deprecated removeNth (since := "2024-06-19")]
 def extractNth (i : Fin (n + 1)) (f : (∀ j, α j)) :
     α i × ∀ j, α (i.succAbove j) :=
-  (f i, fun j => f (i.succAbove j))
-
-@[simp]
-theorem insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
-    insertNth p (f p) (removeNth p f) = f := by simp [Fin.insertNth_eq_iff]
+  (f i, removeNth i f)
 
 end InsertNth
 
