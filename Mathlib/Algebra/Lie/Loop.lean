@@ -51,7 +51,7 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 as a Lie algebra over `R`. -/
 abbrev LoopAlgebra := RestrictScalars R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
 
-namespace LoopAlgebra
+namespace Loop
 
 instance instLieRing : LieRing (LoopAlgebra R L) :=
   ExtendScalars.instLieRing R (LaurentPolynomial R) L
@@ -82,3 +82,7 @@ section CentralExt
 -- define positive energy reps (positive part acts locally nilpotently)
 
 end CentralExt
+
+end Loop
+
+end LieAlgebra

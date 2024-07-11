@@ -98,3 +98,5 @@ theorem smnueval_at_zero : smnueval p (0:S) = 0 := by
 -- smnueval_mul_X, smnuevalcomp, etc.
 
 end NonUnitalPowAssoc
+
+end Polynomial

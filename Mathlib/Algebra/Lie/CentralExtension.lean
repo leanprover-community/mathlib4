@@ -54,3 +54,5 @@ def IsCentralExtension (f : M →ₗ⁅R⁆ L) : Prop := Function.Surjective f �
 /-- A Lie algebra homomorphism is module-split if it is surjective and the source is linearly
 isomorphic to the direct sum of the kernel and the target. -/
 def IsModuleSplit (f : M →ₗ⁅R⁆ L) : Prop := Function.Surjective f ∧ Nonempty (M ≃ₗ[R] L × f.ker)
+
+end LieAlgebra

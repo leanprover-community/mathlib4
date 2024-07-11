@@ -18,12 +18,13 @@ binomial ring is a torsion-free commutative ring `R` such that for any `x ∈ R`
 product `x(x-1)⋯(x-k+1)` is divisible by `k!`. The torsion-free condition lets us divide by `k!`
 unambiguously, so we get uniquely defined binomial coefficients.
 
-The defining condition doesn't require commutativity (or associativity), and we get a theory with
-essentially the same power by replacing subtraction with addition. Thus, we consider any
-`AddCommMonoid` `R` with natural number powers in which multiplication by factorials is injective,
-and demand that the evaluation of the ascending Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any
-element is divisible by `k!`. The quotient is called `multichoose r k`, following the convention
-given for natural numbers.
+The defining condition doesn't require commutativity or associativity, and we get a theory with
+essentially the same power by replacing subtraction with addition. Thus, we consider any additive
+commutative monoid with a notion of natural number exponents in which multiplication by positive
+integers is injective, and demand that the evaluation of the ascending Pochhammer polynomial
+`X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. The quotient is called `multichoose r k`,
+because for `r` a natural number, it is the number of multisets of cardinality `k` taken from a type
+of cardinality `n`.
 
 ## References
 
@@ -46,17 +47,17 @@ section Multichoose
 open Function Polynomial
 
 /-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by
-suitable factorials.   We define this notion as a mixin for additive commutative monoids with
-natural number exponentiation, but retain the ring name.  We introduce `Ring.multichoose` as the
-uniquely defined quotient. -/
+suitable factorials. We define this notion for a additive commutative monoids with natural number
+powers, but retain the ring name. We introduce `Ring.multichoose` as the uniquely defined
+quotient. -/
 class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
   /-- Scalar multiplication by positive integers is injective -/
   nsmul_right_injective (n : ℕ) (h : n ≠ 0) : Injective (n • · : R → R)
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
   multichoose : R → ℕ → R
-  /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!`. -/
-  factorial_nsmul_multichoose : ∀ (r : R) (n : ℕ),
-    n.factorial • multichoose r n = Polynomial.smeval (ascPochhammer ℕ n) r
+  /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by n! -/
+  factorial_nsmul_multichoose (r : R) (n : ℕ) :
+    n.factorial • multichoose r n = (ascPochhammer ℕ n).smeval r
 
 namespace Ring
 
@@ -75,7 +76,7 @@ theorem multichoose_eq_multichoose (r : R) (n : ℕ) :
     BinomialRing.multichoose r n = multichoose r n := rfl
 
 theorem factorial_nsmul_multichoose_eq_ascPochhammer (r : R) (n : ℕ) :
-    n.factorial • multichoose r n = smeval (ascPochhammer ℕ n) r :=
+    n.factorial • multichoose r n = (ascPochhammer ℕ n).smeval r :=
   BinomialRing.factorial_nsmul_multichoose r n
 
 @[simp]
@@ -346,17 +347,17 @@ open Polynomial
 
 variable {R : Type*}
 
-/-- The binomial coefficient `choose r n` generalizes the natural number choose function,
+/-- The binomial coefficient `choose r n` generalizes the natural number `choose` function,
   interpreted in terms of choosing without replacement. -/
-def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ): R :=
+def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ) : R :=
   multichoose (r - n + 1) n
 
 variable [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
 
 theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ) :
-    smeval (descPochhammer ℤ n) r = n.factorial • choose r n := by
+    (descPochhammer ℤ n).smeval r = n.factorial • choose r n := by
   rw [choose, factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
-    smeval_comp ℤ _ _ r, add_comm_sub, smeval_add, smeval_X, npow_one]
+    smeval_comp, add_comm_sub, smeval_add, smeval_X, npow_one]
   have h : smeval (1 - n : Polynomial ℤ) r = 1 - n := by
     rw [← C_eq_natCast, ← C_1, ← C_sub, smeval_C]
     simp only [npow_zero, zsmul_one, Int.cast_sub, Int.cast_one, Int.cast_natCast]
