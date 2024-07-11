@@ -93,8 +93,7 @@ attribute [reassoc (attr := simp)]
 
 -- the simpNF linter complains that `map₂_leftUnitor_assoc` etc can be
 -- proved with `simp` so I move them here
-attribute [reassoc] map₂_leftUnitor map₂_rightUnitor
-attribute [simp] map₂_leftUnitor map₂_rightUnitor
+attribute [simp, reassoc] map₂_leftUnitor map₂_rightUnitor
 
 /-- The underlying prelax functor. -/
 add_decl_doc LaxFunctor.toPrelaxFunctor
