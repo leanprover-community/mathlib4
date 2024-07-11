@@ -581,3 +581,5 @@ theorem order_lt_add_single_support_order [Zero Γ] (hy : y ≠ 0) : x.order < y
   exact orderTop_lt_add_single_support_orderTop hxy hy
 
 end LeadingTerm
+
+end HahnSeries

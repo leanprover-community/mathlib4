@@ -324,3 +324,5 @@ theorem meval_notin_range [CommSemiring R] {g g' : Γ} (hg : 0 < g) (r : R) (a :
   exact embDomain_notin_range hg'
 
 end meval
+
+end HahnSeries
