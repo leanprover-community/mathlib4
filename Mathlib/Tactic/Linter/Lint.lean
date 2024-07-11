@@ -149,4 +149,49 @@ initialize addLinter oneLineAlign
 
 end OneLineAlignLinter
 
+/-!
+# The "EndOf" linter
+
+The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
+-/
+
+open Lean Elab Command
+
+/-- The "EndOf" linter emits a warning on non-closed `section`s and `namespace`s.
+It allows the "outermost" `noncomputable section` to be left open (whether or not it is named).
+-/
+register_option linter.endOf : Bool := {
+  defValue := true
+  descr := "enable the EndOf linter"
+}
+
+namespace EndOf
+
+/-- Gets the value of the `linter.endOf` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.endOf o
+
+@[inherit_doc Mathlib.Linter.linter.endOf]
+def endOfLinter : Linter where run := withSetOptionIn fun stx ↦ do
+    -- Only run this linter at the end of a module.
+    unless stx.isOfKind ``Lean.Parser.Command.eoi do return
+    if getLinterHash (← getOptions) && !(← MonadState.get).messages.hasErrors then
+      let sc ← getScopes
+      -- The last scope is always the "base scope", corresponding to no active `section`s or
+      -- `namespace`s. We are interested in any *other* unclosed scopes.
+      if sc.length == 1 then return
+      let ends := sc.dropLast.map fun s ↦ (s.header, s.isNoncomputable)
+      -- If the outermost scope corresponds to a `noncomputable section`, we ignore it.
+      let ends := if ends.getLast!.2 then ends.dropLast else ends
+      -- If there are any further un-closed scopes, we emit a warning.
+      if !ends.isEmpty then
+        let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
+          a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
+        Linter.logLint linter.endOf stx
+         m!"unclosed sections or namespaces; expected: '{ending}'"
+
+initialize addLinter endOfLinter
+
+end EndOf
+
 end Mathlib.Linter
