@@ -316,7 +316,7 @@ variable {X Y Z : PresheafedSpace C} (f : X ⟶ Z) [hf : IsOpenImmersion f] (g :
 -/
 def pullbackConeOfLeftFst :
     Y.restrict (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base) ⟶ X where
-  base := pullback.fst
+  base := pullback.fst _ _
   c :=
     { app := fun U =>
         hf.invApp (unop U) ≫
@@ -482,14 +482,14 @@ instance hasPullback_of_right : HasPullback g f :=
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.has_pullback_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.hasPullback_of_right
 
 /-- Open immersions are stable under base-change. -/
-instance pullbackSndOfLeft : IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+instance pullbackSndOfLeft : IsOpenImmersion (pullback.snd f g) := by
   delta pullback.snd
   rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_snd_of_left AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft
 
 /-- Open immersions are stable under base-change. -/
-instance pullbackFstOfRight : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+instance pullbackFstOfRight : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_fst_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackFstOfRight
@@ -521,12 +521,12 @@ instance forgetPreservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.forget_preserves_limits_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.forgetPreservesLimitsOfRight
 
 theorem pullback_snd_isIso_of_range_subset (H : Set.range g.base ⊆ Set.range f.base) :
-    IsIso (pullback.snd : pullback f g ⟶ _) := by
+    IsIso (pullback.snd f g) := by
   haveI := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.toEmbedding g.base H
-  have : IsIso (pullback.snd : pullback f g ⟶ _).base := by
+  have : IsIso (pullback.snd f g).base := by
     delta pullback.snd
     rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
-    change IsIso (_ ≫ pullback.snd)
+    change IsIso (_ ≫ pullback.snd _ _)
     infer_instance
   apply to_iso
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_snd_is_iso_of_range_subset AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullback_snd_isIso_of_range_subset
@@ -538,7 +538,7 @@ commutes with these maps.
 -/
 def lift (H : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
   haveI := pullback_snd_isIso_of_range_subset f g H
-  inv (pullback.snd : pullback f g ⟶ _) ≫ pullback.fst
+  inv (pullback.snd f g) ≫ pullback.fst _ _
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.lift AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift
 
 @[simp, reassoc]
@@ -763,7 +763,7 @@ instance sheafedSpace_hasPullback_of_right : HasPullback g f :=
 
 /-- Open immersions are stable under base-change. -/
 instance sheafedSpace_pullback_snd_of_left :
-    SheafedSpace.IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+    SheafedSpace.IsOpenImmersion (pullback.snd f g) := by
   delta pullback.snd
   have : _ = limit.π (cospan f g) right := preservesLimitsIso_hom_π forget (cospan f g) right
   rw [← this]
@@ -775,7 +775,7 @@ instance sheafedSpace_pullback_snd_of_left :
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_pullback_snd_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpace_pullback_snd_of_left
 
 instance sheafedSpace_pullback_fst_of_right :
-    SheafedSpace.IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+    SheafedSpace.IsOpenImmersion (pullback.fst g f) := by
   delta pullback.fst
   have : _ = limit.π (cospan g f) left := preservesLimitsIso_hom_π forget (cospan g f) left
   rw [← this]
@@ -1088,7 +1088,7 @@ instance hasPullback_of_right : HasPullback g f :=
 
 /-- Open immersions are stable under base-change. -/
 instance pullback_snd_of_left :
-    LocallyRingedSpace.IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+    LocallyRingedSpace.IsOpenImmersion (pullback.snd f g) := by
   delta pullback.snd
   rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
   infer_instance
@@ -1096,7 +1096,7 @@ instance pullback_snd_of_left :
 
 /-- Open immersions are stable under base-change. -/
 instance pullback_fst_of_right :
-    LocallyRingedSpace.IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+    LocallyRingedSpace.IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.pullback_fst_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.pullback_fst_of_right
@@ -1183,7 +1183,7 @@ instance forgetToPresheafedSpaceReflectsPullbackOfRight :
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forgetToPresheafedSpace_reflects_pullback_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToPresheafedSpaceReflectsPullbackOfRight
 
 theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
-    IsIso (pullback.snd : pullback f g ⟶ _) := by
+    IsIso (pullback.snd f g) := by
   apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
     (F := LocallyRingedSpace.forgetToSheafedSpace)
   apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
@@ -1203,7 +1203,7 @@ commutes with these maps.
 def lift (H' : Set.range g.1.base ⊆ Set.range f.1.base) : Y ⟶ X :=
   -- Porting note (#10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
-  inv (pullback.snd : pullback f g ⟶ _) ≫ pullback.fst
+  inv (pullback.snd f g) ≫ pullback.fst _ _
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift
 
 @[simp, reassoc]
@@ -1220,7 +1220,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   -- Porting note (#10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   dsimp only [lift]
-  have : _ = (pullback.fst : pullback f g ⟶ _).val.base :=
+  have : _ = (pullback.fst f g).val.base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
   erw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
@@ -1233,7 +1233,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
   · erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
-    rw [show (inv (pullback.snd : pullback f g ⟶ _)).val.base = _ from
+    rw [show (inv (pullback.snd f g)).val.base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]
     infer_instance
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift_range AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift_range
