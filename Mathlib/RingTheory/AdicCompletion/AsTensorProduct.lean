@@ -145,3 +145,5 @@ lemma ofTensorProduct_surjective_of_fg [Module.Finite R M] :
     · exact AdicCompletion.map_surjective I hp
     · exact (ofTensorProduct_bijective_of_pi_of_fintype I (Fin n)).surjective
   exact Function.Surjective.of_comp hf
+
+end AdicCompletion
