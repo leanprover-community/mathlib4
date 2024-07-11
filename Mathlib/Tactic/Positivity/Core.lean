@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.Order.Invertible
+import Mathlib.Algebra.Order.Ring.Cast
 import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Int.Cast.Lemmas
 import Qq
 
 /-!
@@ -411,3 +411,9 @@ example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
 -/
 elab (name := positivity) "positivity" : tactic => do
   liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+
+end Positivity
+
+end Tactic
+
+end Mathlib

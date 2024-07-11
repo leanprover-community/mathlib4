@@ -67,8 +67,6 @@ open CategoryTheory.Preadditive
 
 open scoped Classical
 
-open BigOperators
-
 universe v v' u u'
 
 noncomputable section
@@ -103,7 +101,7 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
         cases j
         simp only [sum_comp, Category.assoc, Bicone.toCone_π_app, b.ι_π, comp_dite]
         -- See note [dsimp, simp].
-        dsimp;
+        dsimp
         simp }
   isColimit :=
     { desc := fun s => ∑ j : J, b.π j ≫ s.ι.app ⟨j⟩
@@ -380,7 +378,7 @@ theorem inr_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) 
     bicone. -/
 def isBinaryBilimitOfIsLimit {X Y : C} (t : BinaryBicone X Y) (ht : IsLimit t.toCone) :
     t.IsBilimit :=
-  isBinaryBilimitOfTotal _ (by refine' BinaryFan.IsLimit.hom_ext ht _ _ <;> simp)
+  isBinaryBilimitOfTotal _ (by refine BinaryFan.IsLimit.hom_ext ht ?_ ?_ <;> simp)
 #align category_theory.limits.is_binary_bilimit_of_is_limit CategoryTheory.Limits.isBinaryBilimitOfIsLimit
 
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
@@ -431,7 +429,7 @@ theorem snd_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCo
 def isBinaryBilimitOfIsColimit {X Y : C} (t : BinaryBicone X Y) (ht : IsColimit t.toCocone) :
     t.IsBilimit :=
   isBinaryBilimitOfTotal _ <| by
-    refine' BinaryCofan.IsColimit.hom_ext ht _ _ <;> simp
+    refine BinaryCofan.IsColimit.hom_ext ht ?_ ?_ <;> simp
 #align category_theory.limits.is_binary_bilimit_of_is_colimit CategoryTheory.Limits.isBinaryBilimitOfIsColimit
 
 /-- We can turn any colimit cocone over a pair into a bilimit bicone. -/
@@ -671,11 +669,11 @@ instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.
   allEq := fun a b => by
     apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g
     have h₁ := @biprod.add_eq_lift_id_desc _ _ a _ _ f g
-      (by convert (inferInstance : HasBinaryBiproduct X X); apply Subsingleton.elim)
+      (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g
-      (by convert (inferInstance : HasBinaryBiproduct X X); apply Subsingleton.elim)
+      (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
     refine h₁.trans (Eq.trans ?_ h₂.symm)
-    congr! 2 <;> apply Subsingleton.elim
+    congr! 2 <;> subsingleton
 #align category_theory.subsingleton_preadditive_of_has_binary_biproducts CategoryTheory.subsingleton_preadditive_of_hasBinaryBiproducts
 
 end
@@ -949,7 +947,7 @@ def preservesBiproductOfMonoBiproductComparison {f : J → C} [HasBiproduct f]
       (F.mapIso (biproduct.isoProduct f)).inv ≫
         biproductComparison F f ≫ (biproduct.isoProduct _).hom := by
     ext j
-    convert piComparison_comp_π F f j; simp [← Functor.map_comp]
+    convert piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
   haveI : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
   haveI : IsIso (piComparison F f) := by
     rw [that]
@@ -1063,8 +1061,8 @@ def preservesBinaryBiproductOfMonoBiprodComparison {X Y : C} [HasBinaryBiproduct
     PreservesBinaryBiproduct X Y F := by
   have that :
     prodComparison F X Y =
-      (F.mapIso (biprod.isoProd X Y)).inv ≫ biprodComparison F X Y ≫ (biprod.isoProd _ _).hom :=
-    by ext <;> simp [← Functor.map_comp]
+      (F.mapIso (biprod.isoProd X Y)).inv ≫ biprodComparison F X Y ≫ (biprod.isoProd _ _).hom := by
+    ext <;> simp [← Functor.map_comp]
   haveI : IsIso (biprodComparison F X Y) := isIso_of_mono_of_isSplitEpi _
   haveI : IsIso (prodComparison F X Y) := by
     rw [that]

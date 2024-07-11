@@ -46,7 +46,7 @@ algebraic closure, algebraically closed
 
 universe u v w
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 open Polynomial
 
@@ -103,7 +103,7 @@ theorem exists_eq_mul_self [IsAlgClosed k] (x : k) : ∃ z, x = z * z := by
 
 theorem roots_eq_zero_iff [IsAlgClosed k] {p : k[X]} :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine' ⟨fun h => _, fun hp => by rw [hp, roots_C]⟩
+  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
   rcases le_or_lt (degree p) 0 with hd | hd
   · exact eq_C_of_degree_le_zero hd
   · obtain ⟨z, hz⟩ := IsAlgClosed.exists_root p hd.ne'
@@ -229,7 +229,7 @@ instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K]
 #align is_alg_closure.normal IsAlgClosure.normal
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
-    [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
+    [IsAlgClosure R K] [CharZero R] : Algebra.IsSeparable R K :=
   ⟨fun _ => (minpoly.irreducible (Algebra.IsIntegral.isIntegral _)).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 

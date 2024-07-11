@@ -37,7 +37,7 @@ namespace AlgebraicGeometry
 
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
 abbrev RingedSpace : TypeMax.{u+1, v+1} :=
-  SheafedSpace.{_, v, u} CommRingCat.{v}
+  SheafedSpace.{v+1, v, u} CommRingCat.{v}
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace AlgebraicGeometry.RingedSpace
 
@@ -48,7 +48,7 @@ open SheafedSpace
 variable (X : RingedSpace)
 
 -- Porting note (#10670): this was not necessary in mathlib3
-instance : CoeSort RingedSpace (Type*) where
+instance : CoeSort RingedSpace Type* where
   coe X := X.carrier
 
 /--
@@ -190,7 +190,7 @@ theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj 
     erw [X.presheaf.germ_res_apply _ _ _] at hx
     exact ⟨x.2, g x, hx, rfl⟩
   · rintro ⟨hxV, x, hx, rfl⟩
-    refine' ⟨⟨x, hxV⟩, (_ : IsUnit _), rfl⟩
+    refine ⟨⟨x, hxV⟩, (?_ : IsUnit _), rfl⟩
     erw [X.presheaf.germ_res_apply _ _ _]
     exact hx
 set_option linter.uppercaseLean3 false in
@@ -223,6 +223,14 @@ theorem basicOpen_mul {U : Opens X} (f g : X.presheaf.obj (op U)) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_mul AlgebraicGeometry.RingedSpace.basicOpen_mul
 
+@[simp]
+lemma basicOpen_pow {U : Opens X} (f : X.presheaf.obj (op U)) (n : ℕ) (h : 0 < n) :
+    X.basicOpen (f ^ n) = X.basicOpen f := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le' h
+  induction k with
+  | zero => simp
+  | succ n hn => rw [pow_add]; simp_all
+
 theorem basicOpen_of_isUnit {U : Opens X} {f : X.presheaf.obj (op U)} (hf : IsUnit f) :
     X.basicOpen f = U := by
   apply le_antisymm
@@ -232,6 +240,34 @@ theorem basicOpen_of_isUnit {U : Opens X} {f : X.presheaf.obj (op U)} (hf : IsUn
   exact RingHom.isUnit_map _ hf
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.basic_open_of_is_unit AlgebraicGeometry.RingedSpace.basicOpen_of_isUnit
+
+/--
+The zero locus of a set of sections `s` over an open set `U` is the closed set consisting of
+the complement of `U` and of all points of `U`, where all elements of `f` vanish.
+-/
+def zeroLocus {U : Opens X} (s : Set (X.presheaf.obj (op U))) : Set X :=
+  ⋂ f ∈ s, (X.basicOpen f)ᶜ
+
+lemma zeroLocus_isClosed {U : Opens X} (s : Set (X.presheaf.obj (op U))) :
+    IsClosed (X.zeroLocus s) := by
+  apply isClosed_biInter
+  intro i _
+  simp only [isClosed_compl_iff]
+  exact Opens.isOpen (X.basicOpen i)
+
+lemma zeroLocus_singleton {U : Opens X} (f : X.presheaf.obj (op U)) :
+    X.zeroLocus {f} = (X.basicOpen f).carrierᶜ := by
+  simp [zeroLocus]
+
+@[simp]
+lemma zeroLocus_empty_eq_univ {U : Opens X} :
+    X.zeroLocus (∅ : Set (X.presheaf.obj (op U))) = Set.univ := by
+  simp [zeroLocus]
+
+@[simp]
+lemma mem_zeroLocus_iff {U : Opens X} (s : Set (X.presheaf.obj (op U))) (x : X) :
+    x ∈ X.zeroLocus s ↔ ∀ f ∈ s, x ∉ X.basicOpen f := by
+  simp [zeroLocus]
 
 end RingedSpace
 

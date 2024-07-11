@@ -88,7 +88,7 @@ class MonoidalCategoryStruct (C : Type u) [𝒞 : Category.{v} C] where
   whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : tensorObj X₁ Y ⟶ tensorObj X₂ Y
   /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
   -- By default, it is defined in terms of whiskerings.
-  tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) :=
+  tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : (tensorObj X₁ X₂ ⟶ tensorObj Y₁ Y₂) :=
     whiskerRight f X₂ ≫ whiskerLeft Y₁ g
   /-- The tensor unity in the monoidal structure `𝟙_ C` -/
   tensorUnit : C
@@ -156,7 +156,7 @@ See <https://stacks.math.columbia.edu/tag/0FFK>.
 -/
 -- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
-  tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) :
+  tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
     f ⊗ g = (f ▷ X₂) ≫ (Y₁ ◁ g) := by
       aesop_cat
   /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
@@ -340,7 +340,7 @@ def whiskerLeftIso (X : C) {Y Z : C} (f : Y ≅ Z) : X ⊗ Y ≅ X ⊗ Z where
   inv := X ◁ f.inv
 
 instance whiskerLeft_isIso (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] : IsIso (X ◁ f) :=
-  IsIso.of_iso (whiskerLeftIso X (asIso f))
+  (whiskerLeftIso X (asIso f)).isIso_hom
 
 @[simp]
 theorem inv_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
@@ -368,7 +368,7 @@ def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
   inv := f.inv ▷ Z
 
 instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) :=
-  IsIso.of_iso (whiskerRightIso (asIso f) Z)
+  (whiskerRightIso (asIso f) Z).isIso_hom
 
 @[simp]
 theorem inv_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] :
@@ -411,7 +411,7 @@ section
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
-  IsIso.of_iso (asIso f ⊗ asIso g)
+  (asIso f ⊗ asIso g).isIso_hom
 #align category_theory.monoidal_category.tensor_is_iso CategoryTheory.MonoidalCategory.tensor_isIso
 
 @[simp]
@@ -428,18 +428,18 @@ theorem whiskerLeft_dite {P : Prop} [Decidable P]
   split_ifs <;> rfl
 
 theorem dite_whiskerRight {P : Prop} [Decidable P]
-    {X Y : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (Z : C):
+    {X Y : C} (f : P → (X ⟶ Y)) (f' : ¬P → (X ⟶ Y)) (Z : C) :
       (if h : P then f h else f' h) ▷ Z = if h : P then f h ▷ Z else f' h ▷ Z := by
   split_ifs <;> rfl
 
 theorem tensor_dite {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
-    (g' : ¬P → (Y ⟶ Z)) : (f ⊗ if h : P then g h else g' h) = if h : P then f ⊗ g h else f ⊗ g' h :=
-  by split_ifs <;> rfl
+    (g' : ¬P → (Y ⟶ Z)) : (f ⊗ if h : P then g h else g' h) =
+    if h : P then f ⊗ g h else f ⊗ g' h := by split_ifs <;> rfl
 #align category_theory.monoidal_category.tensor_dite CategoryTheory.MonoidalCategory.tensor_dite
 
 theorem dite_tensor {P : Prop} [Decidable P] {W X Y Z : C} (f : W ⟶ X) (g : P → (Y ⟶ Z))
-    (g' : ¬P → (Y ⟶ Z)) : (if h : P then g h else g' h) ⊗ f = if h : P then g h ⊗ f else g' h ⊗ f :=
-  by split_ifs <;> rfl
+    (g' : ¬P → (Y ⟶ Z)) : (if h : P then g h else g' h) ⊗ f =
+    if h : P then g h ⊗ f else g' h ⊗ f := by split_ifs <;> rfl
 #align category_theory.monoidal_category.dite_tensor CategoryTheory.MonoidalCategory.dite_tensor
 
 @[simp]
@@ -542,8 +542,8 @@ theorem pentagon_inv_hom_hom_hom_inv :
 @[reassoc (attr := simp)]
 theorem pentagon_hom_inv_inv_inv_inv :
     W ◁ (α_ X Y Z).hom ≫ (α_ W X (Y ⊗ Z)).inv ≫ (α_ (W ⊗ X) Y Z).inv =
-      (α_ W (X ⊗ Y) Z).inv ≫ (α_ W X Y).inv ▷ Z :=
-  by simp [← cancel_epi (W ◁ (α_ X Y Z).inv)]
+      (α_ W (X ⊗ Y) Z).inv ≫ (α_ W X Y).inv ▷ Z := by
+  simp [← cancel_epi (W ◁ (α_ X Y Z).inv)]
 
 @[reassoc (attr := simp)]
 theorem pentagon_hom_hom_inv_hom_hom :
@@ -567,8 +567,8 @@ theorem pentagon_hom_hom_inv_inv_hom :
 @[reassoc (attr := simp)]
 theorem pentagon_inv_hom_hom_hom_hom :
     (α_ W X Y).inv ▷ Z ≫ (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom =
-      (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom :=
-  by simp [← cancel_epi ((α_ W X Y).hom ▷ Z)]
+      (α_ W (X ⊗ Y) Z).hom ≫ W ◁ (α_ X Y Z).hom := by
+  simp [← cancel_epi ((α_ W X Y).hom ▷ Z)]
 
 @[reassoc (attr := simp)]
 theorem pentagon_inv_inv_hom_inv_inv :

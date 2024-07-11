@@ -53,7 +53,7 @@ variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra
 namespace LieModule
 
 open Set Function LieAlgebra TensorProduct TensorProduct.LieModule
-open scoped BigOperators TensorProduct
+open scoped TensorProduct
 
 section notation_weightSpaceOf
 
@@ -90,7 +90,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
   let f₁ : Module.End R (M₁ ⊗[R] M₂) := (toEnd R L M₁ x - χ₁ • ↑1).rTensor M₂
   let f₂ : Module.End R (M₁ ⊗[R] M₂) := (toEnd R L M₂ x - χ₂ • ↑1).lTensor M₁
   have h_comm_square : F ∘ₗ ↑g = (g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (f₁ + f₂) := by
-    ext m₁ m₂;
+    ext m₁ m₂
     simp only [f₁, f₂, F, ← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul,
       lie_tmul_right, tmul_smul, toEnd_apply_apply, LieModuleHom.map_smul,
       LinearMap.one_apply, LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply,
@@ -210,9 +210,22 @@ variable {M}
 @[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
   cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
 
+lemma ext_iff {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by aesop
+
 lemma exists_ne_zero (χ : Weight R L M) :
     ∃ x ∈ weightSpace M χ, x ≠ 0 := by
   simpa [LieSubmodule.eq_bot_iff] using χ.weightSpace_ne_bot
+
+instance [Subsingleton M] : IsEmpty (Weight R L M) :=
+  ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
+
+instance [Nontrivial (weightSpace M (0 : L → R))] : Zero (Weight R L M) :=
+  ⟨0, fun e ↦ not_nontrivial (⊥ : LieSubmodule R L M) (e ▸ ‹_›)⟩
+
+@[simp]
+lemma coe_zero [Nontrivial (weightSpace M (0 : L → R))] : ((0 : Weight R L M) : L → R) = 0 := rfl
+
+lemma zero_apply [Nontrivial (weightSpace M (0 : L → R))] (x) : (0 : Weight R L M) x = 0 := rfl
 
 /-- The proposition that a weight of a Lie module is zero.
 
@@ -224,8 +237,16 @@ def IsZero (χ : Weight R L M) := (χ : L → R) = 0
 
 @[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
 
+lemma isZero_iff_eq_zero [Nontrivial (weightSpace M (0 : L → R))] {χ : Weight R L M} :
+    χ.IsZero ↔ χ = 0 := ext_iff (χ₂ := 0)
+
+lemma isZero_zero [Nontrivial (weightSpace M (0 : L → R))] : IsZero (0 : Weight R L M) := rfl
+
 /-- The proposition that a weight of a Lie module is non-zero. -/
 abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
+
+lemma isNonZero_iff_ne_zero [Nontrivial (weightSpace M (0 : L → R))] {χ : Weight R L M} :
+    χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not
 
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
@@ -325,7 +346,7 @@ variable (R L)
 @[simp]
 lemma weightSpace_zero_normalizer_eq_self :
     (weightSpace M (0 : L → R)).normalizer = weightSpace M 0 := by
-  refine' le_antisymm _ (LieSubmodule.le_normalizer _)
+  refine le_antisymm ?_ (LieSubmodule.le_normalizer _)
   intro m hm
   rw [LieSubmodule.mem_normalizer] at hm
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm ⊢
@@ -393,7 +414,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
   induction' l with l ih
   · simp
   simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
-  exact LieSubmodule.lie_mem_lie _ ⊤ (LieSubmodule.mem_top x) ih
+  exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent
     [IsNilpotent R L M] (x : L) :
@@ -697,6 +718,15 @@ noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
   iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEnd R L M x).genEigenspace φ k = ⊤
+
+instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizable R L' M where
+  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+
+instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
+  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
+
+instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
+  iSup_eq_top := by rintro ⟨-, x, rfl⟩; exact IsTriangularizable.iSup_eq_top x
 
 @[simp]
 lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :

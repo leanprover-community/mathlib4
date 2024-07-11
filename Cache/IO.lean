@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.11"
+  "0.1.13"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -292,7 +292,6 @@ def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "olean.hash", true),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
-    (packageDir / LIBDIR / path.withExtension "log.json", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
@@ -367,7 +366,8 @@ def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
+    IO.println s!"Unpacked in {(← IO.monoMsNow) - now} ms"
+    IO.println "Completed successfully!"
   else IO.println "No cache files to decompress"
 
 instance : Ord FilePath where

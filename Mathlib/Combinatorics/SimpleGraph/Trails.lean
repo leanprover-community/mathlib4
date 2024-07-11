@@ -3,6 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Ring.Parity
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 
 #align_import combinatorics.simple_graph.trails from "leanprover-community/mathlib"@"edaaaa4a5774e6623e0ddd919b2f2db49c65add4"
@@ -24,7 +25,7 @@ as Eulerian circuits).
 * `SimpleGraph.Walk.IsEulerian.card_odd_degree` gives the possible numbers of odd-degree
   vertices when there exists an Eulerian trail.
 
-## Todo
+## TODO
 
 * Prove that there exists an Eulerian trail when the conclusion to
   `SimpleGraph.Walk.IsEulerian.card_odd_degree` holds.

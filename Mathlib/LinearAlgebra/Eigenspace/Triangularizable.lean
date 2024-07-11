@@ -42,8 +42,20 @@ eigenspace, eigenvector, eigenvalue, eigen
 open Set Function Module FiniteDimensional
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+   {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Module.End
+
+theorem exists_hasEigenvalue_of_iSup_genEigenspace_eq_top [Nontrivial M] {f : End R M}
+    (hf : ⨆ μ, ⨆ k, f.genEigenspace μ k = ⊤) :
+    ∃ μ, f.HasEigenvalue μ := by
+  by_contra! contra
+  suffices ∀ μ, ⨆ k, f.genEigenspace μ k = ⊥ by simp [this] at hf
+  intro μ
+  replace contra : ∀ k, f.genEigenspace μ k = ⊥ := fun k ↦ by
+    have hk : ¬ f.HasGenEigenvalue μ k := fun hk ↦ contra μ (f.hasEigenvalue_of_hasGenEigenvalue hk)
+    rwa [HasGenEigenvalue, not_not] at hk
+  simp [contra]
 
 -- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
 /-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
@@ -185,7 +197,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
         ↑(p ⊓ ⨆ k, f.genEigenspace μ k) ↑(p ⊓ ⨆ k, f.genEigenspace μ k) :=
       hg₁.inter_inter hg₂
     rw [← LinearMap.injOn_iff_surjOn this]
-    exact hg₃.mono (inter_subset_right _ _)
+    exact hg₃.mono inter_subset_right
   specialize hm₂ μ
   obtain ⟨y, ⟨hy₀ : y ∈ p, hy₁ : y ∈ ⨆ k, f.genEigenspace μ k⟩, hy₂ : g y = g (m μ)⟩ :=
     hg₄ ⟨(hg₀ ▸ hg₁ hm₀), hg₂ hm₂⟩

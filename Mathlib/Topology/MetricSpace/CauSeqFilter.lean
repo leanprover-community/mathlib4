@@ -65,7 +65,7 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
 #align cauchy_seq.is_cau_seq CauchySeq.isCauSeq
 
 theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
-  refine' cauchy_iff.2 ⟨by infer_instance, fun s hs => _⟩
+  refine cauchy_iff.2 ⟨by infer_instance, fun s hs => ?_⟩
   rcases mem_uniformity_dist.1 hs with ⟨ε, ⟨hε, hεs⟩⟩
   cases' CauSeq.cauchy₂ f hε with N hN
   exists { n | n ≥ N }.image f

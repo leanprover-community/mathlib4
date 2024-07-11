@@ -196,7 +196,8 @@ lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
     · ext i
       exact dif_pos i.prop
 
-variable {C} (hC : IsCompact C)
+variable {C}
+variable (hC : IsCompact C)
 
 /--
 For a given compact subset `C` of `I → Bool`, `spanFunctor` is the functor from the poset of finsets
@@ -498,7 +499,7 @@ noncomputable
 def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ where
   toFun := fun y ↦ if y = x then 1 else 0
   isLocallyConstant :=
-    haveI : DiscreteTopology (π C (· ∈ s)) := discrete_of_t1_of_finite
+    haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
     IsLocallyConstant.of_discrete _
 
 open scoped Classical in
@@ -558,8 +559,7 @@ theorem factors_prod_eq_basis_of_ne {x y : (π C (· ∈ s))} (h : y ≠ x) :
   rw [list_prod_apply (π C (· ∈ s)) y _]
   apply List.prod_eq_zero
   simp only [List.mem_map]
-  obtain ⟨a, ha⟩ : ∃ a, y.val a ≠ x.val a
-  · contrapose! h; ext; apply h
+  obtain ⟨a, ha⟩ : ∃ a, y.val a ≠ x.val a := by contrapose! h; ext; apply h
   cases hx : x.val a
   · rw [hx, ne_eq, Bool.not_eq_false] at ha
     refine ⟨1 - (e (π C (· ∈ s)) a), ⟨one_sub_e_mem_of_false _ _ ha hx, ?_⟩⟩
@@ -656,7 +656,7 @@ theorem fin_comap_jointlySurjective
     (f : LocallyConstant C ℤ) : ∃ (s : Finset I)
     (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap ⟨(ProjRestrict C (· ∈ s)),
       continuous_projRestrict _ _⟩ := by
-  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant.{0, u, u} (Finset I)ᵒᵖ _ _ _
+  obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant (Finset I)ᵒᵖ _ _ _
     (spanCone hC.isCompact) ℤ
     (spanCone_isLimit hC.isCompact) f
   exact ⟨(Opposite.unop J), g, h⟩
@@ -779,13 +779,11 @@ theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := b
 instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) :=
   ⟨0, 1, ne_of_apply_ne DFunLike.coe <| (Function.const_injective (β := ℤ)).ne zero_ne_one⟩
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
   simp only [Products.lt_nil_empty, Products.eval, List.map, List.prod_nil, Set.image_empty,
     Submodule.span_empty, Submodule.mem_bot, one_ne_zero] at h
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Products.span_nil_eq_top :
     Submodule.span ℤ (eval ({fun _ ↦ false} : Set (I → Bool)) '' {nil}) = ⊤ := by
   rw [Set.image_singleton, eq_top_iff]
@@ -824,7 +822,6 @@ instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyCon
   simp [LocallyConstant.ext_iff] at h ⊢
   exact h x
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem GoodProducts.linearIndependentSingleton :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
   refine linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) ?_
@@ -1263,8 +1260,7 @@ theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   intro y
   ext x
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.sub_apply]
-  simp only [continuous_CC'₀, continuous_CC'₁, LocallyConstant.coe_comap, continuous_projRestrict,
-    Function.comp_apply, sub_eq_zero]
+  simp only [Pi.zero_apply, sub_eq_zero]
   congr 1
   ext i
   dsimp [CC'₀, CC'₁, ProjRestrict, Proj]
@@ -1587,7 +1583,7 @@ Removing the leading `o` from a term of `MaxProducts C` yields a list which `is
 `C'`.
 -/
 theorem maxTail_isGood (l : MaxProducts C ho)
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
+    (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     l.val.Tail.isGood (C' C ho) := by
   have : Inhabited I := ⟨term I ho⟩
   -- Write `l.Tail` as a linear combination of smaller products:
@@ -1658,12 +1654,12 @@ theorem maxTail_isGood (l : MaxProducts C ho)
 /-- Given `l : MaxProducts C ho`, its `Tail` is a `GoodProducts (C' C ho)`. -/
 noncomputable
 def MaxToGood
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
+    (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     MaxProducts C ho → GoodProducts (C' C ho) :=
   fun l ↦ ⟨l.val.Tail, maxTail_isGood C hC hsC ho l h₁⟩
 
 theorem maxToGood_injective
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
+    (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     (MaxToGood C hC hsC ho h₁).Injective := by
   intro m n h
   apply Subtype.ext ∘ Subtype.ext
@@ -1672,7 +1668,7 @@ theorem maxToGood_injective
   rw [max_eq_o_cons_tail C hsC ho m, max_eq_o_cons_tail C hsC ho n, h]
 
 theorem linearIndependent_comp_of_eval
-    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
+    (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     LinearIndependent ℤ (eval (C' C ho)) →
     LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
   dsimp [SumEval, ModuleCat.ofHom]

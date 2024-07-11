@@ -137,7 +137,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
       exact hQ2.symm
   · rintro ⟨RPID, Punique⟩
     haveI : LocalRing R := LocalRing.of_unique_nonzero_prime Punique
-    refine' { not_a_field' := _ }
+    refine { not_a_field' := ?_ }
     rcases Punique with ⟨P, ⟨hP1, hP2⟩, _⟩
     have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.1
     intro h
@@ -204,7 +204,7 @@ theorem toUniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
     · intro q hq
       have hpq := Multiset.eq_of_mem_replicate hq
       rw [hpq]
-      refine' ⟨spec.1.ne_zero, spec.1.not_unit, _⟩
+      refine ⟨spec.1.ne_zero, spec.1.not_unit, ?_⟩
       intro a b h
       by_cases ha : a = 0
       · rw [ha]
@@ -290,7 +290,7 @@ theorem of_ufd_of_unique_irreducible {R : Type u} [CommRing R] [IsDomain R]
   rw [iff_pid_with_one_nonzero_prime]
   haveI PID : IsPrincipalIdealRing R := aux_pid_of_ufd_of_unique_irreducible R h₁ h₂
   obtain ⟨p, hp⟩ := h₁
-  refine' ⟨PID, ⟨Ideal.span {p}, ⟨_, _⟩, _⟩⟩
+  refine ⟨PID, ⟨Ideal.span {p}, ⟨?_, ?_⟩, ?_⟩⟩
   · rw [Submodule.ne_bot_iff]
     exact ⟨p, Ideal.mem_span_singleton.mpr (dvd_refl p), hp.ne_zero⟩
   · rwa [Ideal.span_singleton_prime hp.ne_zero, ← UniqueFactorizationMonoid.irreducible_iff_prime]
@@ -334,7 +334,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
     exists_imp]
   rintro _ _ _ rfl
   rw [Associates.mk_eq_mk_iff_associated]
-  refine' associated_of_irreducible _ _ hirr
+  refine associated_of_irreducible _ ?_ hirr
   apply hfx.1
   assumption
 #align discrete_valuation_ring.associated_pow_irreducible DiscreteValuationRing.associated_pow_irreducible
@@ -369,7 +369,7 @@ theorem unit_mul_pow_congr_pow {p q : R} (hp : Irreducible p) (hq : Irreducible 
     simp only [Units.val_mul]
     rw [mul_left_comm, ← mul_assoc, h, mul_right_comm, Units.mul_inv, one_mul]
   have := by
-    refine' Multiset.card_eq_card_of_rel (UniqueFactorizationMonoid.factors_unique _ _ key)
+    refine Multiset.card_eq_card_of_rel (UniqueFactorizationMonoid.factors_unique ?_ ?_ key)
     all_goals
       intro x hx
       obtain rfl := Multiset.eq_of_mem_replicate hx

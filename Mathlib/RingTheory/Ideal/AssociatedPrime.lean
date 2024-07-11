@@ -27,7 +27,7 @@ We provide the definition and related lemmas about associated primes of modules.
 - `associatedPrimes.eq_singleton_of_isPrimary`: In a noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
-## Todo
+## TODO
 
 Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
 
@@ -88,7 +88,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     set_has_maximal_iff_noetherian.mpr H
       { P | (R ∙ x).annihilator ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (R ∙ y).annihilator }
       ⟨(R ∙ x).annihilator, rfl.le, this, x, rfl⟩
-  refine' ⟨_, ⟨⟨h₁, _⟩, y, rfl⟩, l⟩
+  refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
   intro a b hab
   rw [or_iff_not_imp_left]
   intro ha
@@ -116,7 +116,7 @@ theorem LinearEquiv.AssociatedPrimes.eq (l : M ≃ₗ[R] M') :
 #align linear_equiv.associated_primes.eq LinearEquiv.AssociatedPrimes.eq
 
 theorem associatedPrimes.eq_empty_of_subsingleton [Subsingleton M] : associatedPrimes R M = ∅ := by
-  ext; simp only [Set.mem_empty_iff_false, iff_false_iff];
+  ext; simp only [Set.mem_empty_iff_false, iff_false_iff]
   apply not_isAssociatedPrime_of_subsingleton
 #align associated_primes.eq_empty_of_subsingleton associatedPrimes.eq_empty_of_subsingleton
 
@@ -173,7 +173,7 @@ theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.
     associatedPrimes R (R ⧸ I) = {I.radical} := by
   ext J
   rw [Set.mem_singleton_iff]
-  refine' ⟨IsAssociatedPrime.eq_radical hI, _⟩
+  refine ⟨IsAssociatedPrime.eq_radical hI, ?_⟩
   rintro rfl
   haveI : Nontrivial (R ⧸ I) := by
     refine ⟨(Ideal.Quotient.mk I : _) 1, (Ideal.Quotient.mk I : _) 0, ?_⟩

@@ -172,7 +172,7 @@ theorem not_irreducible_expand (R p) [CommSemiring R] [Fact p.Prime] [CharP R p]
 
 instance instPerfectRingProd (S : Type*) [CommSemiring S] [ExpChar S p] [PerfectRing S p] :
     PerfectRing (R × S) p where
-  bijective_frobenius := (bijective_frobenius R p).Prod_map (bijective_frobenius S p)
+  bijective_frobenius := (bijective_frobenius R p).prodMap (bijective_frobenius S p)
 
 end PerfectRing
 
@@ -207,7 +207,7 @@ variable [PerfectField K]
 
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
-  refine' PerfectRing.ofSurjective _ _ fun y ↦ _
+  refine PerfectRing.ofSurjective _ _ fun y ↦ ?_
   let f : K[X] := X ^ p - C y
   let L := f.SplittingField
   let ι := algebraMap K L
@@ -215,12 +215,12 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
     rw [degree_X_pow_sub_C (expChar_pos K p) y, p.cast_ne_zero]; exact (expChar_pos K p).ne'
   let a : L := f.rootOfSplits ι (SplittingField.splits f) hf_deg
   have hfa : aeval a f = 0 := by rw [aeval_def, map_rootOfSplits _ (SplittingField.splits f) hf_deg]
-  have ha_pow : a ^ p = ι y := by rwa [AlgHom.map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hfa
+  have ha_pow : a ^ p = ι y := by rwa [map_sub, aeval_X_pow, aeval_C, sub_eq_zero] at hfa
   let g : K[X] := minpoly K a
   suffices (g.map ι).natDegree = 1 by
     rw [g.natDegree_map, ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] at this
     obtain ⟨a' : K, ha' : ι a' = a⟩ := minpoly.mem_range_of_degree_eq_one K a this
-    refine' ⟨a', NoZeroSMulDivisors.algebraMap_injective K L _⟩
+    refine ⟨a', NoZeroSMulDivisors.algebraMap_injective K L ?_⟩
     rw [RingHom.map_frobenius, ha', frobenius_def, ha_pow]
   have hg_dvd : g.map ι ∣ (X - C a) ^ p := by
     convert Polynomial.map_dvd ι (minpoly.dvd K a hfa)
@@ -232,7 +232,7 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
       natDegree_pow, natDegree_X_sub_C, mul_one]
   have hg_sep : (g.map ι).Separable := (separable_of_irreducible <| minpoly.irreducible ha).map
   rw [hg_pow] at hg_sep
-  refine' (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
+  refine (Separable.of_pow (not_isUnit_X_sub_C a) ?_ hg_sep).2
   rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
   exact minpoly.degree_pos ha
 
@@ -248,7 +248,7 @@ end PerfectField
 
 /-- If `L / K` is an algebraic extension, `K` is a perfect field, then `L / K` is separable. -/
 instance Algebra.IsAlgebraic.isSeparable_of_perfectField {K L : Type*} [Field K] [Field L]
-    [Algebra K L] [Algebra.IsAlgebraic K L] [PerfectField K] : IsSeparable K L :=
+    [Algebra K L] [Algebra.IsAlgebraic K L] [PerfectField K] : Algebra.IsSeparable K L :=
   ⟨fun x ↦ PerfectField.separable_of_irreducible <|
     minpoly.irreducible (Algebra.IsIntegral.isIntegral x)⟩
 

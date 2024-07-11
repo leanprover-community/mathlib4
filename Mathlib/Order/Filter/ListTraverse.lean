@@ -53,3 +53,4 @@ theorem mem_traverse_iff (fs : List β) (t : Set (List α)) :
     exact mem_of_superset (mem_traverse _ _ hus) hs
 #align filter.mem_traverse_iff Filter.mem_traverse_iff
 
+end Filter

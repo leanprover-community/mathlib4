@@ -33,7 +33,7 @@ set_option linter.uppercaseLean3 false
 open Finset Function
 
 open scoped Classical
-open BigOperators Pointwise Polynomial
+open Pointwise Polynomial
 
 noncomputable section
 
@@ -172,7 +172,7 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
     classical
       change (f * g).coeff n = _
       simp_rw [mul_coeff]
-      refine' (sum_filter_ne_zero _).symm.trans <| (sum_congr _ fun _ _ ↦ rfl).trans <|
+      refine (sum_filter_ne_zero _).symm.trans <| (sum_congr ?_ fun _ _ ↦ rfl).trans <|
         sum_filter_ne_zero _
       ext m
       simp only [and_congr_left_iff, mem_addAntidiagonal, mem_filter, mem_support,
@@ -244,3 +244,5 @@ theorem _root_.Polynomial.algebraMap_hahnSeries_injective :
 #align polynomial.algebra_map_hahn_series_injective Polynomial.algebraMap_hahnSeries_injective
 
 end Algebra
+
+end HahnSeries

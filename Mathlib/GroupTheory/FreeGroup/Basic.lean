@@ -410,8 +410,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 
       have H :
         1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
-          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) :=
-        by ac_rfl
+          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) := by
+        ac_rfl
       rw [H]
       apply Nat.lt_add_of_pos_right
       apply Nat.lt_add_right
@@ -428,7 +428,7 @@ theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n :=
   · exact ⟨0, rfl⟩
   · rcases ih with ⟨n, eq⟩
     exists 1 + n
-    simp [mul_add, eq, (Step.length h₂₃).symm, add_assoc]
+    simp [Nat.mul_add, eq, (Step.length h₂₃).symm, add_assoc]
 #align free_group.red.length FreeGroup.Red.length
 #align free_add_group.red.length FreeAddGroup.Red.length
 
@@ -561,8 +561,8 @@ theorem invRev_length : (invRev L₁).length = L₁.length := by simp [invRev]
 #align free_add_group.neg_rev_length FreeAddGroup.negRev_length
 
 @[to_additive (attr := simp)]
-theorem invRev_invRev : invRev (invRev L₁) = L₁ :=
-  by simp [invRev, List.map_reverse, (· ∘ ·)]
+theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
+  simp [invRev, List.map_reverse, (· ∘ ·)]
 #align free_group.inv_rev_inv_rev FreeGroup.invRev_invRev
 #align free_add_group.neg_rev_neg_rev FreeAddGroup.negRev_negRev
 
@@ -765,10 +765,9 @@ theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
 @[to_additive]
 theorem lift.range_le {s : Subgroup β} (H : Set.range f ⊆ s) : (lift f).range ≤ s := by
   rintro _ ⟨⟨L⟩, rfl⟩;
-    exact
-      List.recOn L s.one_mem fun ⟨x, b⟩ tl ih =>
-        Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
-          (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
+  exact List.recOn L s.one_mem fun ⟨x, b⟩ tl ih ↦
+    Bool.recOn b (by simp at ih ⊢; exact s.mul_mem (s.inv_mem <| H ⟨x, rfl⟩) ih)
+      (by simp at ih ⊢; exact s.mul_mem (H ⟨x, rfl⟩) ih)
 #align free_group.lift.range_le FreeGroup.lift.range_le
 #align free_add_group.lift.range_le FreeAddGroup.lift.range_le
 
@@ -1027,7 +1026,7 @@ instance : Monad FreeGroup.{u} where
   map {_α} {_β} {f} := map f
   bind {_α} {_β} {x} {f} := lift f x
 
-@[to_additive (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim, induction_eliminator)]
 protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C1 : C 1)
     (Cp : ∀ x, C <| pure x) (Ci : ∀ x, C (pure x) → C (pure x)⁻¹)
     (Cm : ∀ x y, C x → C y → C (x * y)) : C z :=
@@ -1180,7 +1179,7 @@ theorem reduce.not {p : Prop} :
       rcases L2 with (_ | ⟨a, L2⟩)
       · injections; subst_vars
         simp at h
-      · refine' @reduce.not _ L1 L2 L3 x' b' _
+      · refine @reduce.not _ L1 L2 L3 x' b' ?_
         injection H with _ H
         rw [r, H]; rfl
 #align free_group.reduce.not FreeGroup.reduce.not

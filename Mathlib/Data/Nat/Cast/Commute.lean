@@ -48,55 +48,63 @@ namespace SemiconjBy
 variable [Semiring α] {a x y : α}
 
 @[simp]
-lemma cast_nat_mul_right (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (n * x) (n * y) :=
+lemma natCast_mul_right (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (n * x) (n * y) :=
   SemiconjBy.mul_right (Nat.commute_cast _ _) h
-#align semiconj_by.cast_nat_mul_right SemiconjBy.cast_nat_mul_right
+#align semiconj_by.cast_nat_mul_right SemiconjBy.natCast_mul_right
 
 @[simp]
-lemma cast_nat_mul_left (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy (n * a) x y :=
+lemma natCast_mul_left (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy (n * a) x y :=
   SemiconjBy.mul_left (Nat.cast_commute _ _) h
-#align semiconj_by.cast_nat_mul_left SemiconjBy.cast_nat_mul_left
+#align semiconj_by.cast_nat_mul_left SemiconjBy.natCast_mul_left
 
 @[simp]
-lemma cast_nat_mul_cast_nat_mul (h : SemiconjBy a x y) (m n : ℕ) :
+lemma natCast_mul_natCast_mul (h : SemiconjBy a x y) (m n : ℕ) :
     SemiconjBy (m * a) (n * x) (n * y) :=
-  (h.cast_nat_mul_left m).cast_nat_mul_right n
-#align semiconj_by.cast_nat_mul_cast_nat_mul SemiconjBy.cast_nat_mul_cast_nat_mul
+  (h.natCast_mul_left m).natCast_mul_right n
+#align semiconj_by.cast_nat_mul_cast_nat_mul SemiconjBy.natCast_mul_natCast_mul
 
 end SemiconjBy
 
 namespace Commute
 variable [Semiring α] {a b : α}
 
-@[simp] lemma cast_nat_mul_right (h : Commute a b) (n : ℕ) : Commute a (n * b) :=
-  SemiconjBy.cast_nat_mul_right h n
-#align commute.cast_nat_mul_right Commute.cast_nat_mul_right
+@[simp] lemma natCast_mul_right (h : Commute a b) (n : ℕ) : Commute a (n * b) :=
+  SemiconjBy.natCast_mul_right h n
+#align commute.cast_nat_mul_right Commute.natCast_mul_right
 
-@[simp] lemma cast_nat_mul_left (h : Commute a b) (n : ℕ) : Commute (n * a) b :=
-  SemiconjBy.cast_nat_mul_left h n
-#align commute.cast_nat_mul_left Commute.cast_nat_mul_left
+@[simp] lemma natCast_mul_left (h : Commute a b) (n : ℕ) : Commute (n * a) b :=
+  SemiconjBy.natCast_mul_left h n
+#align commute.cast_nat_mul_left Commute.natCast_mul_left
 
-@[simp] lemma cast_nat_mul_cast_nat_mul (h : Commute a b) (m n : ℕ) : Commute (m * a) (n * b) :=
-  SemiconjBy.cast_nat_mul_cast_nat_mul h m n
-#align commute.cast_nat_mul_cast_nat_mul Commute.cast_nat_mul_cast_nat_mul
+@[simp] lemma natCast_mul_natCast_mul (h : Commute a b) (m n : ℕ) : Commute (m * a) (n * b) :=
+  SemiconjBy.natCast_mul_natCast_mul h m n
+#align commute.cast_nat_mul_cast_nat_mul Commute.natCast_mul_natCast_mul
 
 variable (a) (m n : ℕ)
 
--- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_right`
+-- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.natCast_mul_right`
 -- @[simp]
-lemma self_cast_nat_mul : Commute a (n * a) := (Commute.refl a).cast_nat_mul_right n
-#align commute.self_cast_nat_mul Commute.self_cast_nat_mul
+lemma self_natCast_mul : Commute a (n * a) := (Commute.refl a).natCast_mul_right n
+#align commute.self_cast_nat_mul Commute.self_natCast_mul
 
--- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_left`
+-- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.natCast_mul_left`
 -- @[simp]
-lemma cast_nat_mul_self : Commute (n * a) a := (Commute.refl a).cast_nat_mul_left n
-#align commute.cast_nat_mul_self Commute.cast_nat_mul_self
+lemma natCast_mul_self : Commute (n * a) a := (Commute.refl a).natCast_mul_left n
+#align commute.cast_nat_mul_self Commute.natCast_mul_self
 
--- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.cast_nat_mul_left`,
--- `Commute.cast_nat_mul_right`
+-- Porting note (#10618): `simp` can prove this using `Commute.refl`, `Commute.natCast_mul_left`,
+-- `Commute.natCast_mul_right`
 -- @[simp]
-lemma self_cast_nat_mul_cast_nat_mul : Commute (m * a) (n * a) :=
-  (Commute.refl a).cast_nat_mul_cast_nat_mul m n
-#align commute.self_cast_nat_mul_cast_nat_mul Commute.self_cast_nat_mul_cast_nat_mul
+lemma self_natCast_mul_natCast_mul : Commute (m * a) (n * a) :=
+  (Commute.refl a).natCast_mul_natCast_mul m n
+#align commute.self_cast_nat_mul_cast_nat_mul Commute.self_natCast_mul_natCast_mul
+
+@[deprecated (since := "2024-05-27")] alias cast_nat_mul_right := natCast_mul_right
+@[deprecated (since := "2024-05-27")] alias cast_nat_mul_left := natCast_mul_left
+@[deprecated (since := "2024-05-27")] alias cast_nat_mul_cast_nat_mul := natCast_mul_natCast_mul
+@[deprecated (since := "2024-05-27")] alias self_cast_nat_mul := self_natCast_mul
+@[deprecated (since := "2024-05-27")] alias cast_nat_mul_self := natCast_mul_self
+@[deprecated (since := "2024-05-27")]
+alias self_cast_nat_mul_cast_nat_mul := self_natCast_mul_natCast_mul
 
 end Commute

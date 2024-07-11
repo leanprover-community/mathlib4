@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.Ring.Synonym
 
 /-!

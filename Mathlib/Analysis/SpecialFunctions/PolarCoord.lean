@@ -86,8 +86,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
-    refine' ContinuousOn.comp (f := Complex.equivRealProd.symm)
-      (g := Complex.arg) (fun z hz => _) _ A
+    refine ContinuousOn.comp (f := Complex.equivRealProd.symm)
+      (g := Complex.arg) (fun z hz => ?_) ?_ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 #align polar_coord polarCoord

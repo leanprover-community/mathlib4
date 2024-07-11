@@ -105,8 +105,7 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
   · by_cases hn : n = 0
     · rwa [hn, pow_zero, pow_one] at h
     rw [hp, zero_pow hn, pow_zero] at h
-    haveI := subsingleton_of_zero_eq_one h.symm
-    exact Subsingleton.elim _ _
+    subsingleton [subsingleton_of_zero_eq_one h.symm]
   rwa [hp, one_pow, pow_one] at h
 
 theorem sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [CommRing R] {p : ℕ} [ExpChar R p]
@@ -180,7 +179,7 @@ theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
     rw [RingHom.mem_ker, RingHom.comp_apply, ← RingHom.mem_ker] at h
     simpa only [← Ideal.mem_comap, comap_pNilradical] using ker_le f p h
 
-/-- If `i : K →+* L` is a `p`-radical ring homomorphism , then it makes `L` a perfect closure
+/-- If `i : K →+* L` is a `p`-radical ring homomorphism, then it makes `L` a perfect closure
 of `K`, if `L` is perfect.
 In this case the kernel of `i` is equal to the `p`-nilradical of `K`
 (see `IsPerfectClosure.ker_eq`).

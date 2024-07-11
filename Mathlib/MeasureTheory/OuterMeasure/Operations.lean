@@ -27,7 +27,7 @@ outer measure
 noncomputable section
 
 open Set Function Filter
-open scoped Classical BigOperators NNReal Topology ENNReal
+open scoped Classical NNReal Topology ENNReal
 
 namespace MeasureTheory
 namespace OuterMeasure
@@ -427,3 +427,5 @@ theorem map_top_of_surjective (f : α → β) (hf : Surjective f) : map f ⊤ = 
 end Basic
 
 end OuterMeasure
+
+end MeasureTheory

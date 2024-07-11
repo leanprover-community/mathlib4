@@ -135,7 +135,6 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
@@ -287,7 +286,7 @@ variable {p}
 theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ := by
   constructor
   · rintro h
-    refine' eq_top_iff.mpr fun x _ => _
+    refine eq_top_iff.mpr fun x _ => ?_
     have : x - 0 ∈ p := (Submodule.Quotient.eq p).mp (Subsingleton.elim _ _)
     rwa [sub_zero] at this
   · rintro rfl
@@ -305,10 +304,10 @@ noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintyp
   @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _
 #align submodule.quotient.fintype Submodule.Quotient.fintype
 
-theorem card_eq_card_quotient_mul_card [Fintype M] (S : Submodule R M) [DecidablePred (· ∈ S)] :
-    Fintype.card M = Fintype.card S * Fintype.card (M ⧸ S) := by
-  rw [mul_comm, ← Fintype.card_prod]
-  exact Fintype.card_congr AddSubgroup.addGroupEquivQuotientProdAddSubgroup
+theorem card_eq_card_quotient_mul_card (S : Submodule R M) :
+    Nat.card M = Nat.card S * Nat.card (M ⧸ S) := by
+  rw [mul_comm, ← Nat.card_prod]
+  exact Nat.card_congr AddSubgroup.addGroupEquivQuotientProdAddSubgroup
 #align submodule.card_eq_card_quotient_mul_card Submodule.card_eq_card_quotient_mul_card
 
 section

@@ -15,7 +15,6 @@ import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
-import Mathlib.LinearAlgebra.Basic
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
@@ -48,8 +47,6 @@ multiplication of submodules, division of submodules, submodule semiring
 universe uι u v
 
 open Algebra Set MulOpposite
-
-open BigOperators
 
 open Pointwise
 
@@ -131,7 +128,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 theorem map_op_one :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
-  induction x using MulOpposite.rec'
+  induction x
   simp
 #align submodule.map_op_one Submodule.map_op_one
 
@@ -282,11 +279,11 @@ theorem map_op_mul :
         map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
   apply le_antisymm
   · simp_rw [map_le_iff_le_comap]
-    refine' mul_le.2 fun m hm n hn => _
+    refine mul_le.2 fun m hm n hn => ?_
     rw [mem_comap, map_equiv_eq_comap_symm, map_equiv_eq_comap_symm]
     show op n * op m ∈ _
     exact mul_mem_mul hn hm
-  · refine' mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => _)
+  · refine mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => ?_)
     rw [Submodule.mem_map_equiv] at hm hn ⊢
     exact mul_mem_mul hn hm
 #align submodule.map_op_mul Submodule.map_op_mul
@@ -469,9 +466,6 @@ theorem le_pow_toAddSubmonoid {n : ℕ} : M.toAddSubmonoid ^ n ≤ (M ^ n).toAdd
   · exact (pow_toAddSubmonoid M hn).ge
 #align submodule.le_pow_to_add_submonoid Submodule.le_pow_toAddSubmonoid
 
--- Adaptation note: nightly-2024-04-01
--- Previously this maxHeartbeats was not required. None of the backwards compatibility flags help.
-set_option maxHeartbeats 400000 in
 /-- Dependent version of `Submodule.pow_induction_on_left`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
@@ -647,16 +641,16 @@ instance : IdemCommSemiring (Submodule R A) :=
   { Submodule.idemSemiring with mul_comm := Submodule.mul_comm }
 
 theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
-    (∏ i in s, Submodule.span R (M i)) = Submodule.span R (∏ i in s, M i) := by
+    (∏ i ∈ s, Submodule.span R (M i)) = Submodule.span R (∏ i ∈ s, M i) := by
   letI := Classical.decEq ι
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · simp [one_eq_span, Set.singleton_one]
   · intro _ _ H ih
     rw [Finset.prod_insert H, Finset.prod_insert H, ih, span_mul_span]
 #align submodule.prod_span Submodule.prod_span
 
 theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
-    (∏ i in s, span R ({x i} : Set A)) = span R {∏ i in s, x i} := by
+    (∏ i ∈ s, span R ({x i} : Set A)) = span R {∏ i ∈ s, x i} := by
   rw [prod_span, Set.finset_prod_singleton]
 #align submodule.prod_span_singleton Submodule.prod_span_singleton
 
@@ -767,13 +761,13 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
   simp only [mem_map, mem_div_iff_forall_mul_mem]
   constructor
   · rintro ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-    exact ⟨x * y, hx _ hy, h.map_mul x y⟩
+    exact ⟨x * y, hx _ hy, map_mul h x y⟩
   · rintro hx
-    refine' ⟨h.symm x, fun z hz => _, h.apply_symm_apply x⟩
+    refine ⟨h.symm x, fun z hz => ?_, h.apply_symm_apply x⟩
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective
-    erw [h.map_mul, h.apply_symm_apply, hxz]
+    erw [map_mul, h.apply_symm_apply, hxz]
 #align submodule.map_div Submodule.map_div
 
 end Quotient
