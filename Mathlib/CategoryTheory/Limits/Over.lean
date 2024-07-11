@@ -96,9 +96,10 @@ open Tactic
 by pulling back a morphism along `f`. -/
 @[simps]
 def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
-  obj g := Over.mk (pullback.snd : CategoryTheory.Limits.pullback g.hom f ⟶ X)
+  obj g := Over.mk (pullback.snd g.hom f)
   map := fun g {h} {k} =>
-    Over.homMk (pullback.lift (pullback.fst ≫ k.left) pullback.snd (by simp [pullback.condition]))
+    Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd g.hom f)
+      (by simp [pullback.condition]))
 #align category_theory.over.pullback CategoryTheory.Over.pullback
 
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
@@ -109,7 +110,7 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
             Over.homMk (pullback.lift X.left g.hom (Over.w X)) (pullback.lift_snd _ _ _)
           invFun := fun Y => by
             refine Over.homMk ?_ ?_
-            · refine Y.left ≫ pullback.fst
+            · refine Y.left ≫ pullback.fst _ _
             dsimp
             rw [← Over.w Y, Category.assoc, pullback.condition, Category.assoc]; rfl
           left_inv := fun X => by
@@ -206,9 +207,10 @@ variable [HasPushouts C]
 by pushing a morphism forward along `f`. -/
 @[simps]
 def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
-  obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
+  obj g := Under.mk (pushout.inr _ _ : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
   map := fun g {h} {k} =>
-    Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
+    Under.homMk (pushout.desc (k.right ≫ pushout.inl _ _) (pushout.inr _ _)
+      (by simp [← pushout.condition]))
 #align category_theory.under.pushout CategoryTheory.Under.pushout
 
 end
