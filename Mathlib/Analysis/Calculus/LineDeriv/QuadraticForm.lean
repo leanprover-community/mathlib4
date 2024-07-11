@@ -22,7 +22,7 @@ namespace QuadraticForm
 
 theorem hasLineDerivAt (f : QuadraticForm 𝕜 E) (a b : E) :
     HasLineDerivAt 𝕜 f (polar f a b) a b := by
-  simpa [HasLineDerivAt, map_add_eq_polar, f.map_smul, mul_assoc]
+  simpa [HasLineDerivAt, QuadraticForm.map_add, f.map_smul, mul_assoc]
     using ((hasDerivAt_const (0 : 𝕜) (f a)).add
       ((hasDerivAt_id _).mul (hasDerivAt_mul_const _))).add (hasDerivAt_mul_const _)
 
