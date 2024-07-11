@@ -110,8 +110,8 @@ lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 @[reassoc]
 lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.map f ◁ F.mapComp g h ≫ F.mapComp f (g ≫ h) =
-    (α_ (F.map f) (F.map g) (F.map h)).inv ≫ F.mapComp f g ▷ F.map h ≫
-    F.mapComp (f ≫ g) h ≫ F.map₂ (α_ f g h).hom := by
+      (α_ (F.map f) (F.map g) (F.map h)).inv ≫ F.mapComp f g ▷ F.map h ≫
+        F.mapComp (f ≫ g) h ≫ F.map₂ (α_ f g h).hom := by
   simp only [map₂_associator, Iso.inv_hom_id_assoc]
 
 @[reassoc]
