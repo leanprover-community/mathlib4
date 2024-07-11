@@ -743,6 +743,26 @@ theorem extendScalars_injective :
 
 end ExtendScalars
 
+section RestrictUniverse
+
+variable {F E : IntermediateField K L} (h : F ≤ E)
+
+/--
+If `F ≤ E` are two intermediate fields of `L / K`, then `F` is also an intermediate field of
+`E / K`. It can be viewed as a dual to `IntermediateField.extendScalars`.
+-/
+def restrictUniverse : IntermediateField K E :=
+  (IntermediateField.inclusion h).fieldRange
+
+/--
+`F` is equivalent to `F` as an intermediate field of `E / K`.
+-/
+noncomputable def restrictUniverse_algEquiv :
+    F ≃ₐ[K] ↥(IntermediateField.restrictUniverse h) :=
+  AlgEquiv.ofInjectiveField _
+
+end RestrictUniverse
+
 end Tower
 
 section FiniteDimensional
