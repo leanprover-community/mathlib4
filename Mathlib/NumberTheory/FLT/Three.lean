@@ -14,15 +14,15 @@ import Mathlib.Algebra.Ring.Divisibility.Lemmas
 The goal of this file is to prove Fermat Last theorem in the case `n = 3`.
 
 ## Main results
-* `fermatLastTheoremThree_case1`: the first case of Fermat Last Theorem when `n = 3`:
-  if `a b c : ℤ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 * `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
 ## Implementation details
-We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43. The
+We follow the proof in <https://webusers.imj-prg.fr/~marc.hindry/Cours-arith.pdf>, page 43.
+
 The strategy is the following:
-* Case 1 is completely elementary and is proved using congruences modulo `9`.
+* The so called "Case 1", when `3 ∣ a * b * c` is completely elementary and is proved using
+  congruences modulo `9`.
 * To prove case 2, we consider the generalized equation `a ^ 3 + b ^ 3 = u * c ^ 3`, where `a`, `b`,
   and `c` are in the cyclotomic ring `ℤ[ζ₃]` (where `ζ₃` is a primitive cube root of unity) and `u`
   is a unit of `ℤ[ζ₃]`. `FermatLastTheoremForThree_of_FermatLastTheoremThreeGen` (whose proof is
@@ -40,6 +40,11 @@ The strategy is the following:
   equation `a ^ 3 + b ^ 3 = u * c ^ 3`. The construction is completely explicit, but it depends
   crucially on `IsCyclotomicExtension.Rat.Three.eq_one_or_neg_one_of_unit_of_congruent`, a special
   case of Kummer's lemma.
+* Note that we don't prove Case 1 for the generalized equation (in particular we don't prove that
+  the generalized equation has no nontrivial solutions). This is because the proof, even if
+  elementary on paper, would be quite annoying to formalize: indeed it involves a lot of explicit
+  computations in `ℤ[ζ₃] / (λ)`: this ring is isomorphic to `ℤ / 9ℤ`, but of course, even if we
+  construct such an isomorphism, tactics like `decide` would not work.
 
 -/
 
