@@ -53,8 +53,16 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A morphism of presheaves `F ⟶ G` is representable if for any `X : C`, and any morphism
-`g : yoneda.obj X ⟶ G`, the pullback `F ×_G yoneda.obj X` is also representable. -/
+/-- A morphism of presheaves `f : F ⟶ G` is representable if for any `X : C`, and any morphism
+`g : yoneda.obj X ⟶ G`, there exists a pullback square
+```
+yoneda.obj Y --yoneda.map snd--> yoneda.obj X
+    |                                |
+   fst                               g
+    |                                |
+    v                                v
+    F ------------ f --------------> G
+``` -/
 def Presheaf.representable : MorphismProperty (Cᵒᵖ ⥤ Type v) :=
   fun F G f ↦ ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C) (snd : Y ⟶ X)
     (fst : yoneda.obj Y ⟶ F), IsPullback fst (yoneda.map snd) f g
@@ -69,27 +77,31 @@ variable {F G : Cᵒᵖ ⥤ Type v} {f : F ⟶ G} (hf : Presheaf.representable f
 
 /-- Let `f : F ⟶ G` be a representable morphism in the category of presheaves of types on
 a category `C`. Then, for any `g : yoneda.obj X ⟶ G`, `hf.pullback g` denotes the (choice of) a
-corresponding object in `C` equipped with an isomorphism between `yoneda.obj (hf.pullback g)`
-and the categorical pullback of `f` and `g` in the category of presheaves. -/
+corresponding object in `C` such that `yoneda.obj (hf.pullback g)` forms a categorical pullback
+of `f` and `g` in the category of presheaves. -/
 noncomputable def pullback : C :=
   (hf g).choose
 
-/-- The preimage under yoneda of the second projection of `hf.pullbackCone g` -/
+/-- Given a representable morphism `f : F ⟶ G`, then for any `g : yoneda.obj X ⟶ G`, `hf.snd g`
+denotes the morphism in `C` whose image under `yoneda` is the second projection in the choice of a
+pullback square given by the defining property of `f` being representable. -/
 noncomputable abbrev snd : hf.pullback g ⟶ X :=
   (hf g).choose_spec.choose
 
+/-- Given a representable morphism `f : F ⟶ G`, then for any `g : yoneda.obj X ⟶ G`, `hf.fst g`
+denotes the first projection in the choice of a pullback square given by the defining property of
+`f` being representable. -/
 noncomputable abbrev fst : yoneda.obj (hf.pullback g) ⟶ F :=
   (hf g).choose_spec.choose_spec.choose
 
-/-- The preimage under yoneda of the first projection of `hf.pullbackCone g`, whenever this
-makes sense. -/
+/-- The preimage under yoneda of `hf.fst g`, whenever this makes sense. -/
 noncomputable abbrev preFst : hf'.pullback g ⟶ Y :=
   Yoneda.fullyFaithful.preimage (hf'.fst g)
 
 lemma yoneda_map_preFst : yoneda.map (hf'.preFst g) = hf'.fst g :=
   Functor.FullyFaithful.map_preimage _ _
 
-noncomputable def isPullback : IsPullback (hf.fst g) (yoneda.map (hf.snd g)) f g :=
+lemma isPullback : IsPullback (hf.fst g) (yoneda.map (hf.snd g)) f g :=
   (hf g).choose_spec.choose_spec.choose_spec
 
 -- (Calle) maybe this should have a better name?
