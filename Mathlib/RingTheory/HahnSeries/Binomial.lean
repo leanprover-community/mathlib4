@@ -351,3 +351,5 @@ theorem coeff_one_sub_single_zpow {g : Γ} (hg : 0 < g) {r : R} {n : ℤ} : ∀(
 -/
 
 end OneSubSingle
+
+end HahnSeries

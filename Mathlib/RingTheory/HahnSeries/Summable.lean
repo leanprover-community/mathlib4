@@ -1000,7 +1000,7 @@ def PowerSeriesSubst : PowerSeries R →ₐ[R] HahnSeries Γ R where
 
 theorem subst_mul {a b : PowerSeries R} :
     PowerSeriesSubst hx (a * b) = (PowerSeriesSubst hx a) * PowerSeriesSubst hx b :=
-  AlgHom.map_mul (PowerSeriesSubst hx) a b
+  map_mul (PowerSeriesSubst hx) a b
 
 theorem subst_power_series_unit (u : (PowerSeries R)ˣ) {x : HahnSeries Γ R} (hx : x.orderTop > 0) :
     IsUnit (PowerSeriesSubst hx u) := by

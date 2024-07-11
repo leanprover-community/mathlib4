@@ -352,3 +352,5 @@ r = -1, t = 0.
 theorem skew_symmetry_iff_Borcherds_at_zero
 -/
 end Unital
+
+end VertexAlg

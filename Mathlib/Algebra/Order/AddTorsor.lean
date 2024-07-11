@@ -64,8 +64,9 @@ instance [OrderedCommMonoid G] : MonoSMulMono G G where
   smul_le_smul_left _ _ := mul_le_mul_left'
   smul_le_smul_right _ _ := mul_le_mul_right'
 
-/-- We get an ordered additive commutative monoid from ordered vector addition. Will anyone use? -/
-@[to_additive]
+/-- We get an ordered commutative monoid from ordered scalar multiplication. Will anyone use? -/
+@[to_additive "We get an ordered additive commutative monoid from ordered vector addition. Will
+anyone use?"]
 def MonoSMulMono.toOrderedCommMonoid [CommMonoid G] [PartialOrder G] [MonoSMulMono G G] :
     OrderedCommMonoid G where
   mul_le_mul_left := MonoSMulMono.smul_le_smul_left
@@ -219,8 +220,8 @@ theorem smul_lt_smul_of_lt_of_le [Preorder G] [Preorder P] [SMul G P] [MonoSMulR
 
 end SMul
 
-/-- Vector addition for subsets. -/
-@[to_additive]
+/-- Scalar multiplication for subsets. -/
+@[to_additive "Vector addition for subsets."]
 protected def Set.SMul [SMul G P] : SMul (Set G) (Set P) :=
   ⟨image2 (· • ·)⟩
 
@@ -243,9 +244,10 @@ namespace SMul
 
 variable [SMul G P] {s s₁ s₂ : Set G} {t t₁ t₂ : Set P} {a : P} {x : G × P}
 
-/-- `VAdd.antidiagonal s t a` is the set of all pairs of an element in `s` and an
-      element in `t` that add to `a`.-/
-@[to_additive]
+/-- `SMul.antidiagonal s t a` is the set of all pairs of an element in `s` and an
+      element in `t` that scalar multiply to `a`.-/
+@[to_additive "`VAdd.antidiagonal s t a` is the set of all pairs of an element in `s` and an
+      element in `t` that vector-add to `a`."]
 def antidiagonal (s : Set G) (t : Set P) (a : P) : Set (G × P) :=
   { x | x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a }
 
@@ -352,8 +354,8 @@ theorem IsWF.SMul [LinearOrder G] [LinearOrder P] [SMul G P] [MonoSMulReflectLE 
   (hs.isPWO.SMul ht.isPWO).isWF
 
 @[to_additive]
-theorem IsWF.min_SMul [LinearOrder G] [LinearOrder P] [_root_.SMul G P] [MonoSMulReflectLE G P] {s : Set G}
-    {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
+theorem IsWF.min_SMul [LinearOrder G] [LinearOrder P] [_root_.SMul G P] [MonoSMulReflectLE G P]
+    {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hsn : s.Nonempty) (htn : t.Nonempty) :
     (hs.SMul ht).min (hsn.SMul htn) = hs.min hsn • ht.min htn := by
   refine' le_antisymm (IsWF.min_le _ _ (mem_SMul.2 ⟨_, hs.min_mem _, _, ht.min_mem _, rfl⟩)) _
   rw [IsWF.le_min_iff]
@@ -370,10 +372,12 @@ variable [PartialOrder G] [PartialOrder P] [SMul G P] [MonoSMulReflectLE G P] {s
     {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) {u : Set G} {hu : u.IsPWO} {v : Set P}
     {hv : v.IsPWO} {x : G × P}
 
-/-- `Finset.vAddAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
+/-- `Finset.SMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
+element in `t` whose scalar multiplicatoin yields `a`, but its construction requires proofs that `s`
+and `t` are well-ordered. -/
+@[to_additive "`Finset.VAddAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` whose vector addition yields `a`, but its construction requires proofs that `s` and
-`t` are well-ordered. -/
-@[to_additive]
+`t` are well-ordered."]
 noncomputable def SMulAntidiagonal [PartialOrder G] [PartialOrder P] [MonoSMulReflectLE G P]
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
   (SMulAntidiagonal.finite_of_isPWO hs ht a).toFinset

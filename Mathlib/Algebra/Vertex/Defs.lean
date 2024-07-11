@@ -249,3 +249,5 @@ theorem unit_right (a : V) : coeff (Y R a) 0 1 = a := VertexAlgebra.unit_right a
 -- homs? cofiniteness?
 
 end VertexAlg
+
+end VertexAlgebra
