@@ -96,7 +96,6 @@ protected lemma add_smul (r₁ r₂ : ℛ.obj c₁) (m : ℳ.obj c₂) :
 protected lemma zero_smul : hsmul i₁ i₂ (0 : ℛ.obj c₁) m = 0 := by
   simp [hsmul]
 
-set_option maxHeartbeats 800000 in
 lemma respect_ι
     {c₁ c₂ c₃ : J} (i₁ : c₁ ⟶ c₃) (i₂ : c₂ ⟶ c₃)
     (r : ℛ.obj c₁) (x : ℳ.obj c₂)
@@ -135,14 +134,30 @@ lemma respect_ι
   rw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply, ← ℛ.map_comp, ← ℛ.map_comp,
     ← ℳ.map_comp, ← ℳ.map_comp]
   convert congr($hm • $hn) using 1 <;> congr 3
-  · erw [IsFiltered.toSup_commutes O H (f := i₁), IsFiltered.toSup_commutes O H (f := fm₁)] <;>
-    simp [O, H]
-  · erw [IsFiltered.toSup_commutes O H (f := i₂), IsFiltered.toSup_commutes O H (f := fn₁)] <;>
-    simp [O, H]
-  · erw [IsFiltered.toSup_commutes O H (f := j₁), IsFiltered.toSup_commutes O H (f := fm₂)] <;>
-    simp [O, H]
-  · erw [IsFiltered.toSup_commutes O H (f := j₂), IsFiltered.toSup_commutes O H (f := fn₂)] <;>
-    simp [O, H]
+  · erw [IsFiltered.toSup_commutes O H (f := i₁), IsFiltered.toSup_commutes O H (f := fm₁)]
+    · simp only [Finset.mem_insert, Finset.mem_singleton, true_or, O]
+    · simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and, Finset.mem_singleton,
+      true_or, O, H]
+    · simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and, Finset.mem_singleton,
+      true_or, or_true, O, H]
+  · erw [IsFiltered.toSup_commutes O H (f := i₂), IsFiltered.toSup_commutes O H (f := fn₁)]
+    · simp only [Finset.mem_insert, Finset.mem_singleton, true_or, or_true, O]
+    · simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and, Finset.mem_singleton,
+      true_or, or_true, O, H]
+    · simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and, Finset.mem_singleton,
+      true_or, or_true, O, H]
+  · erw [IsFiltered.toSup_commutes O H (f := j₁), IsFiltered.toSup_commutes O H (f := fm₂)]
+    · simp only [Finset.mem_insert, Finset.mem_singleton, true_or, or_true, O]
+    · simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and, Finset.mem_singleton,
+      true_or, or_true, O, H]
+    · simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and, Finset.mem_singleton,
+      true_or, or_true, O, H]
+  · erw [IsFiltered.toSup_commutes O H (f := j₂), IsFiltered.toSup_commutes O H (f := fn₂)]
+    · simp only [Finset.mem_insert, Finset.mem_singleton, true_or, or_true, O]
+    · simp only [Finset.mem_insert, PSigma.mk.injEq, Finset.mem_singleton, heq_eq_eq, true_and,
+      true_or, or_true, O, H]
+    · simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and, Finset.mem_singleton,
+      or_true, O, H]
 
 end hsmul
 
