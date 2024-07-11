@@ -67,7 +67,7 @@ theorem eval_eq_smeval : p.eval r = p.smeval r := by
   rfl
 
 theorem eval₂_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] (f : R →+* S) (p : R[X])
-    (x: S) : letI : Module R S := RingHom.toModule f
+    (x : S) : letI : Module R S := RingHom.toModule f
     p.eval₂ f x = p.smeval x := by
   letI : Module R S := RingHom.toModule f
   rw [smeval_eq_sum, eval₂_eq_sum]
@@ -186,7 +186,7 @@ variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ]
   [NatPowAssoc S] (x : S)
 
-theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
+theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
   | h_add p q ph qh =>
     intro n

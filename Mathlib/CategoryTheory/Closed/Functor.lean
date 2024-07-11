@@ -179,8 +179,7 @@ theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
     [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobeniusMorphism_mate F h] at i
   exact @conjugateEquiv_of_iso _ _ _ _ _ _ _ _ _ _ _ i
-#align category_theory.frobenius_morphism_iso_of_exp_comparison_iso
-CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
+#align category_theory.frobenius_morphism_iso_of_exp_comparison_iso CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
 
 /--
 If the Frobenius morphism at `A` is an isomorphism, then the exponential comparison transformation
@@ -189,8 +188,7 @@ If the Frobenius morphism at `A` is an isomorphism, then the exponential compari
 theorem expComparison_iso_of_frobeniusMorphism_iso (h : L ⊣ F) (A : C)
     [i : IsIso (frobeniusMorphism F h A)] : IsIso (expComparison F A) := by
   rw [← frobeniusMorphism_mate F h]; infer_instance
-#align category_theory.exp_comparison_iso_of_frobenius_morphism_iso
-CategoryTheory.expComparison_iso_of_frobeniusMorphism_iso
+#align category_theory.exp_comparison_iso_of_frobenius_morphism_iso CategoryTheory.expComparison_iso_of_frobeniusMorphism_iso
 
 /-- If `F` is full and faithful, and has a left adjoint which preserves binary products, then it is
 cartesian closed.
@@ -201,7 +199,6 @@ products, then it is full and faithful.
 theorem cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts (h : L ⊣ F) [F.Full] [F.Faithful]
     [PreservesLimitsOfShape (Discrete WalkingPair) L] : CartesianClosedFunctor F where
   comparison_iso _ := expComparison_iso_of_frobeniusMorphism_iso F h _
-#align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products
-CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts
+#align category_theory.cartesian_closed_functor_of_left_adjoint_preserves_binary_products CategoryTheory.cartesianClosedFunctorOfLeftAdjointPreservesBinaryProducts
 
 end CategoryTheory
