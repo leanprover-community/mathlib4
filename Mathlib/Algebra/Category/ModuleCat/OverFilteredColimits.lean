@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 # Module structures of filtered colimits of abelian groups over filtered colimts of rings
 
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of abelian groups
-`{Mⱼ}`  with `j` running through some filtered index category `J`. If for each `j ∈ J`, `Mⱼ` is
+`{Mⱼ}`  with `j` running through the same filtered index category `J`. If for each `j ∈ J`, `Mⱼ` is
 an `Rⱼ`-module such that the `Rⱼ`-actions are compatible, then `M` is an `Rⱼ`-module for all `j`
 and `M` is an `R`-module.
 
@@ -61,9 +61,9 @@ namespace Module.overFilteredColimits
 variable {ℛ ℳ} in
 /--
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}`  with the same indexing set `j ∈ J`, if for each `j ∈ J`, `Mⱼ` is an `Rⱼ` such
-that the `Rⱼ`-action is compatible, then there is a heterogeneous scalar multiplication
-`Rᵢ → Mⱼ → Mₖ` for every `i → j` and `i → k`.
+abelian groups `{Mⱼ}`  with the same filtered indexing category `J`, if for each `j ∈ J`,
+`Mⱼ` is an `Rⱼ`-module such that the `Rⱼ`-actions are compatible, then there is a heterogeneous
+scalar multiplication `Rᵢ → Mⱼ → Mₖ` for every `i → j` and `i → k`.
 -/
 def hSMul {c₁ c₂ c₃ : J} (i₁ : c₁ ⟶ c₃) (i₂ : c₂ ⟶ c₃)
     (r : ℛ.obj c₁) (m : ℳ.obj c₂) : ℳ.obj c₃ :=
@@ -168,9 +168,9 @@ end hSMul
 variable {ℛ ℳ} in
 /--
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}` with the same indexing set `j ∈ J`, if for each `j ∈ J`, `Mⱼ` is an
-`Rⱼ`-module such that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is
-a scalar multiplication `Rⱼ → M → M` for every `j ∈ J`.
+abelian groups `{Mⱼ}` with the same filtered indexing category `j ∈ J`, if for each `j ∈ J`,
+`Mⱼ` is an `Rⱼ`-module such that the `Rⱼ`-actions are compatible with the morphisms in `J`,
+then there is a scalar multiplication `Rⱼ → M → M` for every `j ∈ J`.
 -/
 noncomputable def sMulColimit {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimit (C := 𝔄𝔟) ℳ :=
@@ -259,7 +259,7 @@ noncomputable instance moduleObjColimit (j : J) :
 variable {ℛ ℳ} in
 /--
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}`  with the same indexing category `J`. If for each `j ∈ J`, `Mⱼ` is an
+abelian groups `{Mⱼ}`  with the same filtered indexing category `J`. If for each `j ∈ J`, `Mⱼ` is an
 `Rⱼ`-module such that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is a
 natural scalar multiplication `R → M → M`.
 -/
