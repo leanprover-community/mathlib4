@@ -78,7 +78,6 @@ theorem edist_self : edist G v v = 0 :=
 theorem edist_pos_of_ne (hne : u ≠ v) :
     0 < G.edist u v :=
   pos_iff_ne_zero.mpr <| edist_eq_zero_iff.ne.mpr hne
-protected alias Ne.edist_pos := edist_pos_of_ne
 
 lemma edist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
     G.edist u v = ⊤ := by
@@ -88,21 +87,38 @@ theorem reachable_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
     G.Reachable u v :=
   not_not.mp <| edist_eq_top_of_not_reachable.mt h
 
-protected theorem Connected.edist_triangle (hconn : G.Connected) :
-    G.edist u w ≤ G.edist u v + G.edist v w := by
-  obtain ⟨p, hp⟩ := hconn.exists_walk_length_eq_edist u v
-  obtain ⟨q, hq⟩ := hconn.exists_walk_length_eq_edist v w
-  rw [← hp, ← hq, ← Nat.cast_add, ← Walk.length_append]
-  apply edist_le
+lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
+    ∃ p : G.Walk u v, p.length = G.edist u v :=
+  (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
+
+protected theorem edist_triangle : G.edist u w ≤ G.edist u v + G.edist v w := by
+  rcases eq_or_ne (G.edist u v) ⊤ with huv | huv
+  case inl => simp [huv]
+  case inr =>
+    rcases eq_or_ne (G.edist v w) ⊤ with hvw | hvw
+    case inl => simp [hvw]
+    case inr =>
+      obtain ⟨p, hp⟩ := exists_walk_of_edist_ne_top huv
+      obtain ⟨q, hq⟩ := exists_walk_of_edist_ne_top hvw
+      rw [←hp, ←hq, ←Nat.cast_add, ←Walk.length_append]
+      exact edist_le _
 
 theorem edist_comm : G.edist u v = G.edist v u := by
   rw [edist_eq_sInf, ← Set.image_univ, ← Set.image_univ_of_surjective Walk.reverse_surjective,
     ← Set.image_comp, Set.image_univ, Function.comp_def]
   simp_rw [Walk.length_reverse, ← edist_eq_sInf]
 
-lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
-    ∃ p : G.Walk u v, p.length = G.edist u v :=
-  (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
+lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
+    ∃ p : G.Walk u v, p.length = k :=
+  have : G.edist u v ≠ ⊤ := by rw [h]; exact ENat.coe_ne_top _
+  have ⟨p, hp⟩ := exists_walk_of_edist_ne_top this
+  ⟨p, Nat.cast_injective (hp.trans h)⟩
+
+lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ G.Reachable u v := by
+  refine ⟨reachable_of_edist_ne_top, fun h ↦ ?_⟩
+  by_contra hx
+  simp only [edist, iInf_eq_top, ENat.coe_ne_top] at hx
+  exact h.elim hx
 
 /--
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
