@@ -90,9 +90,6 @@ namespace LaxFunctor
 
 attribute [reassoc (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
-
--- the simpNF linter complains that `map₂_leftUnitor_assoc` etc can be
--- proved with `simp` so I move them here
 attribute [simp, reassoc] map₂_leftUnitor map₂_rightUnitor
 
 /-- The underlying prelax functor. -/
