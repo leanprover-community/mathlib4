@@ -243,13 +243,13 @@ theorem map_add_self (x : M) : Q (x + x) = 4 • Q x := by
   norm_num
 #align quadratic_form.map_add_self QuadraticMap.map_add_self
 
--- Porting note: removed @[simp] because it is superseded by `ZeroHomClass.map_zero`
+-- not @[simp] because it is superseded by `ZeroHomClass.map_zero`
 theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_smul]
 #align quadratic_form.map_zero QuadraticMap.map_zero
 
 instance zeroHomClass : ZeroHomClass (QuadraticMap R M N) M N :=
-  { QuadraticMap.instFunLike (R := R) (M := M) (N := N) with map_zero := map_zero }
+  { QuadraticMap.instFunLike (R := R) (M := M) (N := N) with map_zero := QuadraticMap.map_zero }
 #align quadratic_form.zero_hom_class QuadraticMap.zeroHomClass
 
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
