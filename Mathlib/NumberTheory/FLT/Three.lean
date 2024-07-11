@@ -147,8 +147,6 @@ variable {ζ : K} (hζ : IsPrimitiveRoot ζ (3 : ℕ+))
 local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
 local notation3 "λ" => hζ.toInteger - 1
 
-suppress_compilation
-
 /-- `FermatLastTheoremForThreeGen` is the statement that `a ^ 3 + b ^ 3 = u * c ^ 3` has no
 nontrivial solutions in `𝓞 K` for all `u : (𝓞 K)ˣ` such that `¬ λ ∣ a`, `¬ λ ∣ b` and `λ ∣ c`.
 The reason to consider `FermatLastTheoremForThreeGen` is to make a descent argument working. -/
@@ -443,12 +441,12 @@ lemma associated_of_dvd_a_add_eta_mul_b_of_dvd_a_add_eta_sq_mul_b {p : 𝓞 K} (
   _ = λ := by rw [eta_sq, coe_eta]; ring
 
 /-- Given `S : Solution`, we let `S.y` be any element such that `S.a + η * S.b = λ * S.y` -/
-private def y := (lambda_dvd_a_add_eta_mul_b S).choose
+private noncomputable def y := (lambda_dvd_a_add_eta_mul_b S).choose
 private lemma y_spec : S.a + η * S.b = λ * S.y :=
   (lambda_dvd_a_add_eta_mul_b S).choose_spec
 
 /-- Given `S : Solution`, we let `S.z` be any element such that `S.a + η ^ 2 * S.b = λ * S.z` -/
-private def z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
+private noncomputable def z := (lambda_dvd_a_add_eta_sq_mul_b S).choose
 private lemma z_spec : S.a + η ^ 2 * S.b = λ * S.z :=
   (lambda_dvd_a_add_eta_sq_mul_b S).choose_spec
 
@@ -463,7 +461,7 @@ private lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
   exact lambda_sq_not_dvd_a_add_eta_sq_mul_b _ h
 
 /-- We have that `λ ^ (3*S.multiplicity-2)` divides `S.a + S.b`. -/
-lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
+private lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
   have h : λ ^ S.multiplicity ∣ S.c := multiplicity.pow_multiplicity_dvd _
   replace h : (λ ^ multiplicity S) ^ 3 ∣ S.u * S.c ^ 3 := by simp [h]
   rw [← S.H, a_cube_add_b_cube_eq_mul, ← pow_mul, mul_comm, y_spec, z_spec] at h
@@ -477,19 +475,18 @@ lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
 
 /-- Given `S : Solution`, we let `S.x` be any element such that
 `S.a + S.b = λ ^ (3*S.multiplicity-2) * S.x` -/
-private def x := (lambda_pow_dvd_a_add_b S).choose
+private noncomputable def x := (lambda_pow_dvd_a_add_b S).choose
 private lemma x_spec : S.a + S.b = λ ^ (3 * S.multiplicity - 2) * S.x :=
   (lambda_pow_dvd_a_add_b S).choose_spec
 
 /-- Given `S : Solution`, we let `S.w` be any element such that `S.c = λ ^ S.multiplicity * S.w` -/
-private def w :=
+private noncomputable def w :=
   (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose
 
 private lemma w_spec : S.c = λ ^ S.multiplicity * S.w :=
   (multiplicity.pow_multiplicity_dvd S.toSolution'.multiplicity_lambda_c_finite).choose_spec
 
-private lemma lambda_not_dvd_w : ¬ λ ∣ S.w := by
-  intro h
+private lemma lambda_not_dvd_w : ¬ λ ∣ S.w := fun h ↦ by
   replace h := mul_dvd_mul_left (λ ^ S.multiplicity) h
   rw [← w_spec] at h
   have hh := multiplicity.is_greatest' S.toSolution'.multiplicity_lambda_c_finite
@@ -562,22 +559,22 @@ private lemma exists_cube_associated :
 
 /-- Given `S : Solution`, we let `S.u₁` and `S.X` be any elements such that
 `S.X ^ 3 * S.u₁ = S.x` -/
-private def X := (exists_cube_associated S).1.choose
-private def u₁ := (exists_cube_associated S).1.choose_spec.choose
+private noncomputable def X := (exists_cube_associated S).1.choose
+private noncomputable def u₁ := (exists_cube_associated S).1.choose_spec.choose
 private lemma X_u₁_spec : S.X ^ 3 * S.u₁ = S.x :=
   (exists_cube_associated S).1.choose_spec.choose_spec
 
 /-- Given `S : Solution`, we let `S.u₂` and `S.Y` be any elements such that
 `S.Y ^ 3 * S.u₂ = S.y` -/
-private def Y := (exists_cube_associated S).2.1.choose
-private def u₂ := (exists_cube_associated S).2.1.choose_spec.choose
+private noncomputable def Y := (exists_cube_associated S).2.1.choose
+private noncomputable def u₂ := (exists_cube_associated S).2.1.choose_spec.choose
 private lemma Y_u₂_spec : S.Y ^ 3 * S.u₂ = S.y :=
   (exists_cube_associated S).2.1.choose_spec.choose_spec
 
 /-- Given `S : Solution`, we let `S.u₃` and `S.Z` be any elements such that
 `S.Z ^ 3 * S.u₃ = S.z` -/
-private def Z := (exists_cube_associated S).2.2.choose
-private def u₃ :=(exists_cube_associated S).2.2.choose_spec.choose
+private noncomputable def Z := (exists_cube_associated S).2.2.choose
+private noncomputable def u₃ :=(exists_cube_associated S).2.2.choose_spec.choose
 private lemma Z_u₃_spec : S.Z ^ 3 * S.u₃ = S.z :=
   (exists_cube_associated S).2.2.choose_spec.choose_spec
 
@@ -605,12 +602,12 @@ private lemma formula1 : S.X^3*S.u₁*λ^(3*S.multiplicity-2)+S.Y^3*S.u₂*λ*η
   calc _ = S.a+S.b+η^2*S.b-S.a+η^2*S.b+2*η*S.b+S.b := by ring
   _ = 0 := by rw [eta_sq]; ring
 
-private def u₄ := η * S.u₃ * S.u₂⁻¹
+private noncomputable def u₄ := η * S.u₃ * S.u₂⁻¹
 private lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
-private def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
+private noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
 private lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
 
-lemma formula2 : S.Y ^ 3 + S.u₄ * S.Z ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
+private lemma formula2 : S.Y ^ 3 + S.u₄ * S.Z ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   rw [u₅_def, neg_mul, neg_mul, Units.val_neg, neg_mul, eq_neg_iff_add_eq_zero, add_assoc,
     add_comm (S.u₄ * S.Z ^ 3), ← add_assoc, add_comm (S.Y ^ 3)]
   apply mul_right_cancel₀ hζ.zeta_sub_one_prime'.ne_zero
@@ -674,7 +671,7 @@ private lemma formula3 :
 
 /-- Given `S : Solution`, we construct `S₁ : Solution'`, with smaller multiplicity of `λ` in
   `c` (see ``). -/
-def Solution'_descent : Solution' hζ where
+noncomputable def Solution'_descent : Solution' hζ where
   a := S.Y
   b := S.u₄ * S.Z
   c := λ ^ (S.multiplicity - 1) * S.X
