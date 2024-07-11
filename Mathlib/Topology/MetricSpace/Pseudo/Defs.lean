@@ -115,7 +115,6 @@ class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
   edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
     intros x y; exact ENNReal.coe_nnreal_eq _
-  -- Porting note (#11215): TODO: add := by _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
   toBornology : Bornology α := Bornology.ofDist dist dist_comm dist_triangle
