@@ -492,6 +492,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       exact Fintype.card_pos
     have D := H {x // i ≠ x} C (Subtype.restrict (fun x ↦ i ≠ x) T)
       (fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1) (fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j)
+    have F := invariance_iInf T (S := T i) (fun k ↦ (hC i ↑k).symm)
+
+
     --now for invariance_iInf and Samyak's lemmas!
     sorry
 
