@@ -35,6 +35,7 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
         | name => some name
       | none => some `Mathlib
     | IO.eprintln "invalid input: --module must be an existing module, such as 'Mathlib.Data.List.Basic'" *> IO.Process.exit 1
+  let only := (args.flag? "only").map fun val ↦ (val.value.splitOn " ")
   searchPathRef.set compile_time_search_path%
   let mFile ← findOLean module
   unless (← mFile.pathExists) do
@@ -55,7 +56,9 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
     let state := { env }
     Prod.fst <$> (CoreM.toIO · ctx state) do
       let decls ← getDeclsInPackage module.getRoot
-      let linters ← getChecks (slow := true) (useOnly := false)
+      let mut linters ← getChecks (slow := true) (useOnly := false)
+      if let some only := only then
+        linters := linters.filter fun lint ↦ only.contains lint.name.toString
       let results ← lintCore decls linters
       if update then
         writeJsonFile (α := NoLints) nolintsFile <|
