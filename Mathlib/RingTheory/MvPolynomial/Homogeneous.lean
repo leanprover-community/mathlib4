@@ -43,9 +43,8 @@ TODO
 def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
 lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
-  simp only [MvPolynomial.degree, Finset.sum_eq_zero_iff, Finsupp.mem_support_iff, ne_eq,
-    Decidable.not_imp_self]
-  exact Iff.symm DFunLike.ext_iff
+  simp only [degree, Finset.sum_eq_zero_iff, Finsupp.mem_support_iff, ne_eq, Decidable.not_imp_self,
+    DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply]
 
 theorem weightedDegree_one (d : σ →₀ ℕ) :
     weightedDegree 1 d = degree d := by
