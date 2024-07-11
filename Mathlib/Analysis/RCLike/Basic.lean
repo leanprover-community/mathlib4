@@ -628,7 +628,7 @@ instance (priority := 100) : CstarRing K where
 
 /-! ### Cast lemmas -/
 
-@[simp, rclike_simps, norm_cast]
+@[rclike_simps, norm_cast]
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 #align is_R_or_C.of_real_nat_cast RCLike.ofReal_natCast
