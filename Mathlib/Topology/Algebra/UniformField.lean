@@ -229,10 +229,8 @@ namespace UniformSpace
 
 instance comap_completableTopField (f : α →+* β)
     [@T0Space α (UniformSpace.comap f b).toTopologicalSpace] :
-    @CompletableTopField _ _ (UniformSpace.comap f b) := by
-  letI := UniformSpace.comap f b
-  have h : UniformInducing f := by rw [uniformInducing_iff_uniformSpace]
-  exact h.completableTopField
+    @CompletableTopField _ _ (UniformSpace.comap f b) :=
+  letI := UniformSpace.comap f b; (uniformInducing_iff_uniformSpace.2 rfl).completableTopField
 
 end UniformSpace
 

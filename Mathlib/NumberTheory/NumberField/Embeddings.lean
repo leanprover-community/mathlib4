@@ -1011,7 +1011,7 @@ noncomputable section InfiniteCompletion
 
 variable {K : Type*} [Field K] [NumberField K] (v : InfinitePlace K)
 
-/-- The normed field structure of a number field coming from the norm asociated to
+/-- The normed field structure of a number field coming from the embedding asociated to
 an infinite place. -/
 abbrev normedField : NormedField K :=
   NormedField.induced _ _ v.embedding v.embedding.injective
@@ -1027,8 +1027,7 @@ def completion :=
 namespace Completion
 
 instance : NormedField v.completion :=
-  letI := v.normedField
-  UniformSpace.Completion.instNormedField K
+  letI := v.normedField; UniformSpace.Completion.instNormedField K
 
 instance : CompleteSpace v.completion :=
   letI := v.normedField; UniformSpace.Completion.completeSpace K
@@ -1041,14 +1040,14 @@ instance : Coe K v.completion :=
 instance : Algebra K v.completion :=
   letI := v.normedField; UniformSpace.Completion.algebra K _
 
-/-- The embedding associated to an infinite place extended to `v.completion →+* ℂ`. -/
+/-- The embedding associated to an infinite place extended to an embedding `v.completion →+* ℂ`. -/
 def extensionEmbedding : v.completion →+* ℂ :=
   letI := v.normedField
   UniformSpace.Completion.extensionHom _ v.uniformEmbedding.uniformContinuous.continuous
 
 variable {v}
 
-/-- The embedding `v.completion → ℂ` preserves distances. -/
+/-- The embedding `v.completion →+* ℂ` preserves distances. -/
 theorem extensionEmbedding_dist_eq (x y : v.completion) :
     dist (extensionEmbedding v x) (extensionEmbedding v y) =
       dist x y := by
@@ -1063,18 +1062,18 @@ theorem extensionEmbedding_dist_eq (x y : v.completion) :
 
 variable (v)
 
-/-- The embedding `v.completion → ℂ` is an isometry. -/
+/-- The embedding `v.completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding :
     Isometry (extensionEmbedding v) :=
   Isometry.of_dist_eq extensionEmbedding_dist_eq
 
-/-- The embedding `v.completion → ℂ` is a closed embedding. -/
-theorem closed_extensionEmbedding: ClosedEmbedding (extensionEmbedding v) :=
+/-- The embedding `v.completion →+* ℂ` is a closed embedding. -/
+theorem closedEmbedding_extensionEmbedding: ClosedEmbedding (extensionEmbedding v) :=
   (isometry_extensionEmbedding v).closedEmbedding
 
 /-- The completion of a number field at an infinite place is locally compact. -/
 instance locallyCompactSpace : LocallyCompactSpace (v.completion) :=
-  (closed_extensionEmbedding v).locallyCompactSpace
+  (closedEmbedding_extensionEmbedding v).locallyCompactSpace
 
 end Completion
 
