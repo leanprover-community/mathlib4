@@ -94,8 +94,7 @@ theorem add_self_eq_zero {a : R} : a + a = 0 ↔ a = 0 := by
 set_option linter.deprecated false
 
 @[simp]
-theorem bit0_eq_zero {a : R} : 2 * a = 0 ↔ a = 0 :=
-  by rw [two_mul, add_self_eq_zero]
+theorem bit0_eq_zero {a : R} : 2 * a = 0 ↔ a = 0 := by rw [two_mul, add_self_eq_zero]
 #align bit0_eq_zero bit0_eq_zero
 
 @[simp]
