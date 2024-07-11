@@ -62,4 +62,4 @@ def benchOutput (js : System.FilePath) : IO Unit := do
     msg := msg.push (summary d)
   IO.println ("\n".intercalate msg.toList)
 
-run_cmd benchOutput "t2.json"
+run_cmd benchOutput "benchOutput.json"
