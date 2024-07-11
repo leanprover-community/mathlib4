@@ -952,6 +952,8 @@ theorem HaveLebesgueDecomposition.sfinite_of_isFiniteMeasure [SFinite μ]
 
 #noalign measure_theory.measure.restrict.measure_theory.is_finite_measure
 
+attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
+
 -- see Note [lower instance priority]
 variable (μ ν) in
 /-- **The Lebesgue decomposition theorem**:
@@ -988,8 +990,6 @@ nonrec instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite
     .sum ξ + ν.withDensity (∑' n, f n) = .sum fun n ↦ ξ n + ν.withDensity (f n) := by
       rw [withDensity_tsum hfm, Measure.sum_add_sum]
     _ = .sum fun n ↦ .restrict μ (s n) := by
-      refine Measure.sum_congr fun n ↦ ?_
-      have := haveLebesgueDecomposition_of_finiteMeasure (μ := μ.restrict (s n)) (ν := ν.restrict (s n))
       simp_rw [ξ, f, withDensity_indicator (hsm _), singularPart_add_rnDeriv]
     _ = μ := sum_restrict_disjointed_spanningSets ..
   exact ⟨⟨(.sum ξ, ∑' n, f n), by measurability, hξ, hadd.symm⟩⟩
