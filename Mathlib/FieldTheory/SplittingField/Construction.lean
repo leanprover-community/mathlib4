@@ -80,6 +80,17 @@ theorem factor_dvd_of_natDegree_ne_zero {f : K[X]} (hf : f.natDegree ≠ 0) : fa
   factor_dvd_of_degree_ne_zero (mt natDegree_eq_of_degree_eq_some hf)
 #align polynomial.factor_dvd_of_nat_degree_ne_zero Polynomial.factor_dvd_of_natDegree_ne_zero
 
+lemma isCoprime_iff_aeval_ne_zero (f g : K[X]) : IsCoprime f g ↔ ∀ {A : Type v} [CommRing A]
+    [IsDomain A] [Algebra K A] (a : A), ¬(aeval a f = 0 ∧ aeval a g = 0) := by
+  refine ⟨fun h => aeval_ne_zero_of_isCoprime h,
+    fun h => isCoprime_of_dvd _ _ ?_ fun x hx _ hf hg => ?_⟩
+  · replace h := @h K _ _ _ 0
+    contrapose! h
+    rw [h.left, h.right, map_zero, and_self]
+  · replace h := h <| AdjoinRoot.root x.factor
+    simp only [AdjoinRoot.aeval_eq, AdjoinRoot.mk_eq_zero] at h
+    exact h ⟨(factor_dvd_of_not_isUnit hx).trans hf, (factor_dvd_of_not_isUnit hx).trans hg⟩
+
 /-- Divide a polynomial f by `X - C r` where `r` is a root of `f` in a bigger field extension. -/
 def removeFactor (f : K[X]) : Polynomial (AdjoinRoot <| factor f) :=
   map (AdjoinRoot.of f.factor) f /ₘ (X - C (AdjoinRoot.root f.factor))
