@@ -50,3 +50,7 @@ lemma parallelPair_initial_mk {X Y : C} (f g : X ⟶ Y)
     let f₂ : (mk (Y := zero) (g ≫ a) : CostructuredArrow (parallelPair f g) Z) ⟶ mk (Y := one) a :=
       homMk right
     exact Zigzag.of_hom_inv f₁ f₂)
+
+end Limits
+
+end CategoryTheory

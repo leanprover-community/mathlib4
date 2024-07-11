@@ -520,7 +520,7 @@ theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
   Quot.sound (mulNegRelabelling x y).equiv
 #align pgame.quot_mul_neg SetTheory.PGame.quot_mul_neg
 
-theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧: Game) := by simp
+theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧ : Game) := by simp
 
 @[simp]
 theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * y⟧ + ⟦x * z⟧ :=
@@ -1046,3 +1046,5 @@ theorem inv_one_equiv : (1⁻¹ : PGame) ≈ 1 :=
 #align pgame.inv_one_equiv SetTheory.PGame.inv_one_equiv
 
 end PGame
+
+end SetTheory
