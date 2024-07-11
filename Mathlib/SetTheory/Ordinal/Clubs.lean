@@ -114,15 +114,40 @@ theorem exists_above_of_lt_cof {p : Ordinal} (hp : p < o) (hSemp : Nonempty S)
     exact lift_lt.mp <| fUlift ▸ (this.1)
     exact lift_lt.mp <| hq' ▸ (fUlift ▸ this).2
 
-/-- Given a limit ordinal `o` and a property on pairs of ordinals `P`, such that
-  for any `p < o` there is a `q < o` above `p` so that `P p q`, we can construct
-  an increasing `ω`-sequence below `o` that satisfies `P` between every 2 consecutive elements.
-  Additionaly, the sequence can begin arbitrarily high in `o`. That is, above any `r < o`. -/
-theorem exists_omega_seq_succ_prop (oLim : IsLimit o) {P : Ordinal → Ordinal → Prop}
+theorem monotone_of_succ_lt_omega (f : Π p < ω, Iio o)
+    (hf : ∀ i, (hi : i < ω) → f i hi < f (i + 1) (omega_isLimit.2 i hi)) :
+    ∀ (i j hi hj), i < j → f i hi < f j hj := fun i j hi hj iltj ↦ by
+  have : (hj : j < ω) → ∀ k, (kltj : k < j) → f k (kltj.trans hj) < f j hj := Ordinal.limitRecOn j
+    (by
+      intro _ _ h
+      cases (Ordinal.zero_le _).not_lt h)
+    (by
+      intro i ih hj k hk
+      cases (lt_succ_iff.mp hk).lt_or_eq with
+      | inl h =>
+          specialize ih ((lt_succ i).trans hj) k h
+          exact ih.trans <| hf i ((lt_succ i).trans hj)
+      | inr h =>
+          simp_rw [h]
+          exact hf i ((lt_succ i).trans hj))
+    (by
+      intro _ h _ h'
+      cases (omega_le_of_isLimit h).not_lt h')
+  exact this hj i iltj
+
+/--
+Given a limit ordinal `o` and a property on pairs of ordinals `P`, such that
+for any `p < o` there is a `q < o` above `p` so that `P p q`, we can construct
+an increasing `ω`-sequence below `o` that satisfies `P` between every 2 consecutive elements.
+Additionaly, the sequence can begin arbitrarily high in `o`. That is, above any `r < o`.
+-/
+theorem exists_omega_seq_succ_prop (opos : 0 < o) {P : Ordinal → Ordinal → Prop}
     (hP : ∀ p < o, ∃ q < o, (p < q ∧ P p q)) {r} (rlto : r < o) : ∃ f : Π p < ω, (Iio o),
     (∀ i : Ordinal.{u}, (hi : i < ω) → P (f i hi) (f (i + 1) (omega_isLimit.2 i hi)))
-    ∧ (∀ i : Ordinal.{u}, (hi : i < ω) → f i hi < f (i + 1) (omega_isLimit.2 i hi))
+    ∧ (∀ i j, (hi : i < ω) → (hj : j < ω) → (i < j) → f i hi < f j hj)
     ∧ r < f 0 omega_pos := by
+  have oLim : o.IsLimit := ⟨opos.ne.symm, fun a alto ↦ (hP a alto).casesOn fun r hr ↦
+    lt_of_le_of_lt (succ_le_iff.mpr hr.2.1) hr.1⟩
   let H₂ : (p : Ordinal) → p < ω → (Iio o) → (Iio o) := fun p _ fp ↦ by
     let C := choose (hP fp fp.2)
     have hC := (choose_spec (hP fp fp.2)).1
@@ -133,15 +158,44 @@ theorem exists_omega_seq_succ_prop (oLim : IsLimit o) {P : Ordinal → Ordinal �
     ⟨r + 1, oLim.succ_lt rlto⟩ H₂ H₃
   use f
   constructor <;> try constructor
-  intro n hn
-  · simp [f]
+  · intro n hn
+    simp [f]
     generalize_proofs _ pf
     exact (choose_spec pf).2.2
-  · intro i hi
-    simp [f, H₂]
-    generalize_proofs _ _ _ pf
-    exact (choose_spec pf).casesOn fun _ x ↦ x.casesOn fun x _ ↦ x
+  · have aux : ∀ i : Ordinal.{u}, (hi : i < ω) → f i hi < f (i + 1) (omega_isLimit.2 i hi) := by
+      intro i hi
+      simp [f, H₂]
+      generalize_proofs _ _ _ pf
+      exact (choose_spec pf).casesOn fun _ x ↦ x.casesOn fun x _ ↦ x
+    exact monotone_of_succ_lt_omega f aux
   simp [f]
+
+theorem exists_omega_seq_succ_prop_pos (onelto : 1 < o) {P : Ordinal → Ordinal → Prop}
+    (hP : ∀ p < o, 0 < p → ∃ q < o, (p < q ∧ P p q)) {r} (rlto : r < o) : ∃ f : Π p < ω, (Iio o),
+    (∀ i : Ordinal.{u}, (hi : i < ω) → P (f i hi) (f (i + 1) (omega_isLimit.2 i hi)))
+    ∧ (∀ i j, (hi : i < ω) → (hj : j < ω) → (i < j) → f i hi < f j hj)
+    ∧ r < f 0 omega_pos := by
+  have oLim : o.IsLimit := ⟨(zero_lt_one.trans onelto).ne.symm, fun a alto ↦ by
+    by_cases h : a = 0
+    · exact h ▸ succ_zero ▸ onelto
+    rcases hP a alto (Ordinal.pos_iff_ne_zero.mpr h) with ⟨w, hw⟩
+    exact lt_of_le_of_lt (succ_le_iff.mpr hw.2.1) hw.1⟩
+  let P' : Ordinal → Ordinal → Prop := fun p q ↦ p = 0 ∨ P p q
+  have hP' : ∀ p < o, ∃ q < o, (p < q ∧ P' p q) := fun p plto ↦ by
+    by_cases h : p = 0
+    · use 1; use succ_zero ▸ (oLim.succ_lt oLim.pos); use h ▸ zero_lt_one; exact Or.inl h
+    convert hP p plto (Ordinal.pos_iff_ne_zero.mpr h) using 1
+    simp_all only [false_or, P']
+  rcases exists_omega_seq_succ_prop (zero_lt_one.trans onelto) hP' rlto with ⟨f, hf⟩
+  use f
+  refine' ⟨fun i hi ↦ _, hf.2⟩
+  have := hf.1 i hi
+  have rltf0 := hf.2.2
+  by_cases hi' : i = 0
+  · subst hi'
+    exact this.resolve_left (pos_of_gt rltf0).ne.symm
+  · have rltfi := rltf0.trans <| hf.2.1 0 i omega_pos hi (Ordinal.pos_iff_ne_zero.mpr hi')
+    exact this.resolve_left (pos_of_gt rltfi).ne.symm
 
 /-- If between every 2 consecutive elements of an increasing `δ`-sequence
   there is an element of `C`, and `δ` is a limit ordinal,
@@ -160,7 +214,9 @@ theorem isAcc_bsup_of_between {δ : Ordinal} (C : Set Ordinal) (δLim : δ.IsLim
   use q; use qmemC
   exact ⟨lt_of_lt_of_le qmemIoo.2 (le_bsup _ _ _), plt.trans qmemIoo.1⟩
 
-/-- The intersection of less than `o.cof` clubs in `o` is a club in `o`. -/
+/--
+The intersection of less than `o.cof` clubs in `o` is a club in `o`.
+-/
 theorem isClub_sInter (hCof : ℵ₀ < o.cof) (hS : ∀ C ∈ S, IsClub C o) (hSemp : S.Nonempty)
     (Scard : #S < Cardinal.lift.{u + 1, u} o.cof) : IsClub (⋂₀ S) o := by
   refine' ⟨isClosed_sInter_of_isClosed hSemp (fun C CmemS ↦ (hS C CmemS).1), _⟩
@@ -171,9 +227,10 @@ theorem isClub_sInter (hCof : ℵ₀ < o.cof) (hS : ∀ C ∈ S, IsClub C o) (hS
   let P : Ordinal → Ordinal → Prop := fun p q ↦ ∀ C ∈ S, (C ∩ Ioo p q).Nonempty
   have auxP : ∀ p < o, ∃ q < o, p < q ∧ P p q := fun p plto ↦
     exists_above_of_lt_cof plto nonemptyS (fun U hU ↦ (hS U hU).2) Scard
-  rcases exists_omega_seq_succ_prop oLim auxP qlto with ⟨f, hf⟩
+  rcases exists_omega_seq_succ_prop oLim.pos auxP qlto with ⟨f, hf⟩
   let g := fun p pltω ↦ (f p pltω).1
-  have gInc : ∀ o h, g o h < g (o + 1) (omega_isLimit.succ_lt h) := fun o h ↦ hf.2.1 o h
+  have gInc : ∀ o h, g o h < g (o + 1) (omega_isLimit.succ_lt h) := fun o h ↦
+    hf.2.1 o (o + 1) h (omega_isLimit.succ_lt h) (lt_succ o)
   have bsuplt : bsup ω g < o := (bsup_lt_ord hCof) (fun i hi ↦ (f i hi).2)
   use bsup ω g
   constructor
