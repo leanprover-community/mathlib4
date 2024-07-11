@@ -804,7 +804,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} {_ : M
 
 /-- In an s-finite space, among disjoint null-measurable sets, only countably many can have positive
 measure. -/
-theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} { _ : MeasurableSpace α} {μ : Measure α}
+theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) :
     Set.Countable { i : ι | 0 < μ (As i) } := by

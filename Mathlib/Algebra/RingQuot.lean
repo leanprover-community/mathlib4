@@ -438,7 +438,7 @@ theorem ringQuot_ext [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+*
 
 variable [Semiring T]
 
-irreducible_def preLift {r : R → R → Prop} { f : R →+* T } (h : ∀ ⦃x y⦄, r x y → f x = f y) :
+irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
   RingQuot r →+* T :=
   { toFun := fun x ↦ Quot.lift f
         (by
