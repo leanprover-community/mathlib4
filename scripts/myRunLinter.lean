@@ -27,6 +27,22 @@ def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
 open Cli
 
 unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
+  let only := (args.flag? "only_linters").map fun val ↦ (val.value.splitOn " ")
+  let exclude := (args.flag? "exclude_linters").map fun val ↦ (val.value.splitOn " ")
+  let add := (args.flag? "add_linters").map fun val ↦ (val.value.splitOn " ")
+  -- "only" and "add" are contradictory: error if both are provided
+  if only.isSome && add.isSome then
+    IO.println "The options '--only_linters' and '--add_linters' are incompatible:\
+      please do not specify both"
+    IO.Process.exit 2
+  else if only.isSome && exclude.isSome then
+    IO.println "The options '--only_linters' and '--exclude_linters' are incompatible:\
+      please do not specify both"
+    IO.Process.exit 2
+  if add.isSome then
+    IO.println "Attention: the --add_linters flag has not been implemente yet, at it requires \
+      some changes to 'batteries'"
+  let print := args.hasFlag "print_linters"
   let update := args.hasFlag "update"
   let some module := match args.flag? "module" with
       | some mod =>
@@ -34,8 +50,8 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
         | .anonymous => none
         | name => some name
       | none => some `Mathlib
-    | IO.eprintln "invalid input: --module must be an existing module, such as 'Mathlib.Data.List.Basic'" *> IO.Process.exit 1
-  let only := (args.flag? "only").map fun val ↦ (val.value.splitOn " ")
+    | IO.eprintln "invalid input: --module must be an existing module, \
+        such as 'Mathlib.Data.List.Basic'" *> IO.Process.exit 1
   searchPathRef.set compile_time_search_path%
   let mFile ← findOLean module
   unless (← mFile.pathExists) do
@@ -57,8 +73,16 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
     Prod.fst <$> (CoreM.toIO · ctx state) do
       let decls ← getDeclsInPackage module.getRoot
       let mut linters ← getChecks (slow := true) (useOnly := false)
+      -- Modify the list of linters to run, if configured so.
       if let some only := only then
         linters := linters.filter fun lint ↦ only.contains lint.name.toString
+      else if let some exclude := exclude then
+        linters := linters.filter fun lint ↦ !exclude.contains lint.name.toString
+      -- TODO: add_linters is not implemented yet; requires re-adding an `extra` parameter to `getChecks`
+      if print then
+        IO.println s!"The following {linters.size} linter(s) were configured to run: \
+          {linters.map fun l ↦ l.name}"
+        IO.Process.exit 0
       let results ← lintCore decls linters
       if update then
         writeJsonFile (α := NoLints) nolintsFile <|
@@ -85,10 +109,16 @@ unsafe def runLinter : Cmd := `[Cli|
   "Runs the linters on all declarations in the given module (or `Mathlib` by default)."
 
   FLAGS:
+    only_linters : Array String;  "Only run these named linters"
+    exclude_linters : Array String; "Do not run these named linters"
+    add_linters : Array String; "Run these linters *in addition* to the default set"
+    print_linters; "Print the list of all discovered/configured linters and exit"
+
     update;     "Update the `nolints` file to remove any declarations \
-                that no longer need to be nolinted."
-    only : Array String;  "Only run these named linters. (In conjunction with the `--update` flag, \
-      this could lead to the nolints file missing entries for other linters: use with care!)"
+                that no longer need to be nolinted.
+                If the 'only_linters', 'exclude_linters' or 'add_linters' flags are passed,
+                this will only add entries for these linters: the nolints file could be missing
+                further entries. Use with care!"
 
     module : String;   "Run the linters on a given module: if omitted, will run on all modules in Mathlib"
 ]
