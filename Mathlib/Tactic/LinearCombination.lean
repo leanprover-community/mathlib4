@@ -361,8 +361,11 @@ theorem neg_ratRawCast {α : Type*} [LinearOrderedField α] {a b : ℕ} : (Rat.r
   simp [div_neg_iff, -Nat.succ_eq_add_one]
 
 -- FIXME do I need parentheses around `(conv_lhs => ring1)`?
-macro "linear_combination_discharger" : tactic =>
-  `(tactic | ((conv_lhs => ring1); try first | exact nonpos_intRawCast | exact nonpos_ratRawCast | exact neg_intRawCast | exact neg_ratRawCast))
+macro "linear_combination_le_discharger" : tactic =>
+  `(tactic | ((conv_lhs => ring1); try first | exact nonpos_intRawCast | exact nonpos_ratRawCast))
+
+macro "linear_combination_lt_discharger" : tactic =>
+  `(tactic | ((conv_lhs => ring1); try first | exact neg_intRawCast | exact neg_ratRawCast))
 
 /-- Implementation of `linear_combination`. -/
 def elabLinearCombination
@@ -378,7 +381,6 @@ def elabLinearCombination
   trace[debug] "built-up expression has the relation {reprStr hypRel}"
   trace[debug] "built-up expression is the proof {p}"
   trace[debug] "exponent {exp?}"
-  let norm := norm?.getD (Unhygienic.run `(tactic| linear_combination_discharger))
   let e ← Lean.Elab.Tactic.getMainTarget
   let whnfEType ← withReducible do whnf e
   let goalRel : Option RelType := whnfEType.relType
@@ -386,6 +388,12 @@ def elabLinearCombination
   match goalRel with
   | none => `(tactic | fail "goal must be =, ≤ or <")
   | some goalRel =>
+  let defaultTac :=
+    match goalRel with
+    | Eq => `(tactic | ring)
+    | Le => `(tactic| linear_combination_le_discharger)
+    | Lt => `(tactic| linear_combination_lt_discharger)
+  let norm := norm?.getD (Unhygienic.run defaultTac)
   let exp1 :=
     match hypRel.relImpRelData goalRel with
     | none => `(tactic| fail "cannot prove an equality from inequality hypotheses")
