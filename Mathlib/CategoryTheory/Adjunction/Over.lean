@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Andrew Yang, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Monad.Products
 
 #align_import category_theory.adjunction.over from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
@@ -52,8 +52,7 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
     · dsimp; simp
 #align category_theory.limits.base_change CategoryTheory.Over.baseChange
 
--- deprecated on 2024-05-15
-@[deprecated] noncomputable alias Limits.baseChange := Over.baseChange
+@[deprecated (since := "2024-05-15")] noncomputable alias Limits.baseChange := Over.baseChange
 
 /-- The adjunction `Over.map ⊣ baseChange` -/
 @[simps! unit_app counit_app]

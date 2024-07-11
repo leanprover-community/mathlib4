@@ -289,7 +289,7 @@ section ZeroOne
 we model them as constant unary functions. -/
 /-- The function that is constantly zero on Witt vectors is a polynomial function. -/
 instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
-  ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, AlgHom.map_zero, zero_coeff]⟩⟩
+  ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, map_zero, zero_coeff]⟩⟩
 #align witt_vector.zero_is_poly WittVector.zeroIsPoly
 
 @[simp]
@@ -306,12 +306,12 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 @[simp]
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
-  rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum, Finset.sum_eq_single 0]
-  · simp only [onePoly, one_pow, one_mul, AlgHom.map_pow, C_1, pow_zero, bind₁_X_right, if_true,
+  rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum, Finset.sum_eq_single 0]
+  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, if_true,
       eq_self_iff_true]
   · intro i _hi hi0
-    simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero,
-      AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
+    simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
+      bind₁_X_right, map_mul]
   · simp
 #align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
 

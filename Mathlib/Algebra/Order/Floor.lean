@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.GaloisConnection
@@ -1741,11 +1742,14 @@ theorem natCast_ceil_eq_intCast_ceil  (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a�
   rw [← Int.ofNat_ceil_eq_ceil ha, Int.cast_natCast]
 #align nat.cast_ceil_eq_cast_int_ceil natCast_ceil_eq_intCast_ceil
 
--- 2024-02-14
-@[deprecated] alias Nat.cast_floor_eq_int_floor := Int.ofNat_floor_eq_floor
-@[deprecated] alias Nat.cast_ceil_eq_int_ceil := Int.ofNat_ceil_eq_ceil
-@[deprecated] alias Nat.cast_floor_eq_cast_int_floor := natCast_floor_eq_intCast_floor
-@[deprecated] alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
+@[deprecated (since := "2024-02-14")] alias Nat.cast_floor_eq_int_floor := Int.ofNat_floor_eq_floor
+@[deprecated (since := "2024-02-14")] alias Nat.cast_ceil_eq_int_ceil := Int.ofNat_ceil_eq_ceil
+
+@[deprecated (since := "2024-02-14")]
+alias Nat.cast_floor_eq_cast_int_floor := natCast_floor_eq_intCast_floor
+
+@[deprecated (since := "2024-02-14")]
+alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
 
 end FloorRingToSemiring
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.Sieves
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 #align_import category_theory.sites.sheaf_of_types from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -517,12 +518,9 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
     IsSheafFor P (S : Presieve X) ↔ YonedaSheafCondition P S := by
   rw [IsSheafFor, YonedaSheafCondition]
   simp_rw [extension_iff_amalgamation]
-  rw [Equiv.forall_congr_left' natTransEquivCompatibleFamily]
+  rw [Equiv.forall_congr_left natTransEquivCompatibleFamily]
   rw [Subtype.forall]
-  apply forall₂_congr
-  intro x hx
-  rw [Equiv.exists_unique_congr_left _]
-  simp
+  exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
 #align category_theory.presieve.is_sheaf_for_iff_yoneda_sheaf_condition CategoryTheory.Presieve.isSheafFor_iff_yonedaSheafCondition
 
 /--
@@ -800,3 +798,5 @@ theorem isSheafFor_arrows_iff_pullbacks : (ofArrows X π).IsSheafFor P ↔
 end Arrows
 
 end Presieve
+
+end CategoryTheory

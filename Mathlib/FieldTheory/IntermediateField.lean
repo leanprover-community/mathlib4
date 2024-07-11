@@ -273,9 +273,8 @@ end InheritedLemmas
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
 #align intermediate_field.coe_nat_mem IntermediateField.natCast_mem
 
--- 2024-04-05
-@[deprecated _root_.natCast_mem] alias coe_nat_mem := natCast_mem
-@[deprecated _root_.intCast_mem] alias coe_int_mem := intCast_mem
+@[deprecated _root_.natCast_mem (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
+@[deprecated _root_.intCast_mem (since := "2024-04-05")] alias coe_int_mem := intCast_mem
 
 end IntermediateField
 
@@ -603,7 +602,7 @@ theorem toSubalgebra_injective :
   rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective
 
-theorem map_injective (f : L →ₐ[K] L'):
+theorem map_injective (f : L →ₐ[K] L') :
     Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,

@@ -16,12 +16,12 @@ cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved
 Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
 
-set_option autoImplicit true
-
 open Set Order Filter
 open scoped Cardinal
 
 namespace Cardinal
+
+universe u v
 
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of `t` is also bounded by `a`.

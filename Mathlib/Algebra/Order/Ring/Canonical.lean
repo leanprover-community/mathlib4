@@ -127,4 +127,7 @@ theorem tsub_mul (a b c : α) : (a - b) * c = a * c - b * c :=
   Contravariant.AddLECancellable.tsub_mul
 #align tsub_mul tsub_mul
 
+lemma mul_tsub_one (a b : α) : a * (b - 1) = a * b - a := by rw [mul_tsub, mul_one]
+lemma tsub_one_mul (a b : α) : (a - 1) * b = a * b - b := by rw [tsub_mul, one_mul]
+
 end Sub

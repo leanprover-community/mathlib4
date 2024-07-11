@@ -741,7 +741,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
 
 -- Porting note: replace use_finite_instance tactic
 open Lean.Elab.Tactic in
-/-- Try using `Set.to_finite` to dispatch a `Set.finite` goal. -/
+/-- Try using `Set.toFinite` to dispatch a `Set.Finite` goal. -/
 def evalUseFiniteInstance : TacticM Unit := do
   evalTactic (← `(tactic| intros; apply Set.toFinite))
 

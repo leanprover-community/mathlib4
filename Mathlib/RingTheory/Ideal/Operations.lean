@@ -402,7 +402,9 @@ theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
   rfl
 #align ideal.add_eq_sup Ideal.add_eq_sup
 
-@[simp]
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+@[simp, nolint simpNF]
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 #align ideal.zero_eq_bot Ideal.zero_eq_bot
@@ -1058,10 +1060,10 @@ theorem radical_eq_sInf (I : Ideal R) : radical I = sInf { J : Ideal R | I ≤ J
               hrm
                 ⟨n + k, by
                   rw [pow_add, ← hpqrn, ← hcxq, ← hfgrk, ← hdyg, add_mul, mul_add (c * x),
-                      mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc];
-                    refine
-                      m.add_mem (m.mul_mem_right _ hpm)
-                        (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
+                      mul_assoc c x (d * y), mul_left_comm x, ← mul_assoc]
+                  refine
+                    m.add_mem (m.mul_mem_right _ hpm)
+                    (m.add_mem (m.mul_mem_left _ hfm) (m.mul_mem_left _ hxym))⟩⟩
     hrm <|
       this.radical.symm ▸ (sInf_le ⟨him, this⟩ : sInf { J : Ideal R | I ≤ J ∧ IsPrime J } ≤ m) hr
 #align ideal.radical_eq_Inf Ideal.radical_eq_sInf
@@ -1153,8 +1155,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
             Set.Subset.trans h <|
               Set.Subset.trans Set.subset_union_right Set.subset_union_left)
           fun ⟨i, his, hi⟩ => by
-          refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right;
-            exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
+          refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right
+          exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
   induction' n with n ih generalizing a b s
   · clear hp

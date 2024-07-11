@@ -497,7 +497,7 @@ theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 �
 
 theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 0) (hn : 1 < n) :
     if Even n then (∑ i ∈ range n, x ^ i) < 0 else 1 < ∑ i ∈ range n, x ^ i := by
-  have hx0 : x < 0 := ((le_add_iff_nonneg_right _).2 zero_le_one).trans_lt hx
+  have hx0 : x < 0 := (le_add_of_nonneg_right zero_le_one).trans_lt hx
   refine Nat.le_induction ?_ ?_ n (show 2 ≤ n from hn)
   · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, gt_iff_lt, hx, even_two]
   clear hn

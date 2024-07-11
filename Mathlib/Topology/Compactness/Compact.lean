@@ -494,7 +494,6 @@ theorem isCompact_accumulate {K : ℕ → Set X} (hK : ∀ n, IsCompact (K n)) (
   (finite_le_nat n).isCompact_biUnion fun k _ => hK k
 #align is_compact_accumulate isCompact_accumulate
 
--- Porting note (#10756): new lemma
 theorem Set.Finite.isCompact_sUnion {S : Set (Set X)} (hf : S.Finite) (hc : ∀ s ∈ S, IsCompact s) :
     IsCompact (⋃₀ S) := by
   rw [sUnion_eq_biUnion]; exact hf.isCompact_biUnion hc
@@ -1238,3 +1237,5 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
     · simp only [compl_compl, V'ne]
   rw [← this, compl_compl]
 #align is_closed.exists_minimal_nonempty_closed_subset IsClosed.exists_minimal_nonempty_closed_subset
+
+end Compact
