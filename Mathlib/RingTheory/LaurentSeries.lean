@@ -527,7 +527,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
   intro hnd
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
   erw [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow,
-    ← (int_valuation_le_pow_iff_dvd (PowerSeries.idealX K) f d), ← intValuation_apply,
+    ← (intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d), ← intValuation_apply,
     ← valuation_of_algebraMap (R := K⟦X⟧) (K := (LaurentSeries K))]
   exact H
 
@@ -539,7 +539,7 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
     ⟨PowerSeries.X_pow_dvd_iff.mp, PowerSeries.X_pow_dvd_iff.mpr⟩
   erw [← this, valuation_of_algebraMap (PowerSeries.idealX K) f, ←
     span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
-  apply int_valuation_le_pow_iff_dvd
+  apply intValuation_le_pow_iff_dvd
 
 /- The coefficients of a Laurent series vanish in degree strictly less than its valuation-/
 theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
