@@ -1,7 +1,7 @@
 /-
-copyright (c) 2024 joël riou. all rights reserved.
-released under apache 2.0 license as described in the file license.
-authors: joël riou
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Embedding.Basic
 import Mathlib.Algebra.Homology.HomologicalComplex
