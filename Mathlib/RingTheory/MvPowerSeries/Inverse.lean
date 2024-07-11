@@ -138,6 +138,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         exact Nat.eq_zero_of_le_zero (H s)
 #align mv_power_series.mul_inv_of_unit MvPowerSeries.mul_invOfUnit
 
+@[simp]
 theorem invOfUnit_mul (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
     invOfUnit φ u * φ = 1 := by
   rw [← mul_cancel_right_mem_nonZeroDivisors (r := φ.invOfUnit u), mul_assoc, one_mul,
