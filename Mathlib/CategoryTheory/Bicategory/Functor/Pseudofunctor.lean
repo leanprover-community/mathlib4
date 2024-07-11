@@ -242,7 +242,7 @@ noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
-def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore): Pseudofunctor B C where
+def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
