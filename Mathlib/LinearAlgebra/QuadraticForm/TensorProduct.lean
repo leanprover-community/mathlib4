@@ -116,7 +116,7 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticForm A (A ⊗[R] M₂)⦄
     (h : ∀ m, Q₁ (1 ⊗ₜ m) = Q₂ (1 ⊗ₜ m)) :
     Q₁ = Q₂ := by
   replace h (a m) : Q₁ (a ⊗ₜ m) = Q₂ (a ⊗ₜ m) := by
-    rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', map_smul, map_smul, h]
+    rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', QuadraticMap.map_smul, QuadraticMap.map_smul, h]
   ext x
   induction x with
   | tmul => simp [h]
