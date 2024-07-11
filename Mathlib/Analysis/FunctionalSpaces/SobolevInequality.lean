@@ -269,8 +269,8 @@ theorem lintegral_prod_lintegral_pow_le
     ≤ (∫⁻ x, f x ∂.pi μ) ^ p := by
   have : Nontrivial ι :=
     Fintype.one_lt_card_iff_nontrivial.mp (by exact_mod_cast hp.one_lt)
-  have h0 : (1:ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
-  have h1 : (0:ℝ) < #ι - 1 := by linarith
+  have h0 : (1 : ℝ) < #ι := by norm_cast; exact Fintype.one_lt_card
+  have h1 : (0 : ℝ) < #ι - 1 := by linarith
   have h2 : 0 ≤ ((1 : ℝ) / (#ι - 1 : ℝ)) := by positivity
   have h3 : (#ι - 1 : ℝ) * ((1 : ℝ) / (#ι - 1 : ℝ)) ≤ 1 := by field_simp
   have h4 : p = 1 + 1 / (↑#ι - 1) := by field_simp; rw [mul_comm, hp.sub_one_mul_conj]
@@ -300,8 +300,8 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux
   By taking the product over these `n` factors, raising them to the power `(n-1)⁻¹` and integrating,
   we get the inequality `∫ |u| ^ (n/(n-1)) ≤ ∫ x, ∏ i, (∫ xᵢ, |Du(update x i xᵢ)|)^(n-1)⁻¹`.
   The result then follows from the grid-lines lemma. -/
-  have : (1:ℝ) ≤ ↑#ι - 1 := by
-    have hι : (2:ℝ) ≤ #ι := by exact_mod_cast hp.one_lt
+  have : (1 : ℝ) ≤ ↑#ι - 1 := by
+    have hι : (2 : ℝ) ≤ #ι := by exact_mod_cast hp.one_lt
     linarith
   calc ∫⁻ x, (‖u x‖₊ : ℝ≥0∞) ^ p
       = ∫⁻ x, ((‖u x‖₊ : ℝ≥0∞) ^ (1 / (#ι - 1 : ℝ))) ^ (#ι : ℝ) := by
@@ -662,7 +662,7 @@ theorem snorm_le_snorm_fderiv_of_le [FiniteDimensional ℝ F]
     · simp
     · gcongr
   have : (q : ℝ≥0∞) ≤ p' := by
-    have H : (p':ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
+    have H : (p' : ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
     norm_cast at H ⊢
     rwa [inv_le_inv] at H
     · dsimp
