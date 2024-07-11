@@ -130,6 +130,8 @@ instance instOrderedVAdd [LE G] [LE P] [OrderedVAdd G P] :
 
 end WithTop
 
+end WithTop
+
 /-- A vector addition is cancellative if it is pointwise injective on the left and right. -/
 class CancelVAdd (G P : Type*) [VAdd G P] : Prop where
   protected left_cancel : ∀ (a : G) (b c : P), a +ᵥ b = a +ᵥ c → b = c
