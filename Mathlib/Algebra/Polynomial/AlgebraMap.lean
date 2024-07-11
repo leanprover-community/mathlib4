@@ -418,6 +418,10 @@ end Semiring
 
 section CommSemiring
 
+lemma aeval_finset_prod {R S ι : Type*}
+    [CommSemiring R] [CommSemiring S] [Algebra R S] (s : Finset ι) (g : ι → R[X]) (x : S) :
+    aeval x (∏ i ∈ s, g i) = (∏ i ∈ s, aeval x (g i)) := eval₂_finset_prod (algebraMap R S) s g x
+
 section aevalTower
 
 variable [CommSemiring S] [Algebra S R] [Algebra S A'] [Algebra S B]
