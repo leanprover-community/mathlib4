@@ -620,7 +620,7 @@ def comp : MonoidalFunctor.{v₁, v₃} C E :=
 #align category_theory.monoidal_functor.comp CategoryTheory.MonoidalFunctor.comp
 
 @[inherit_doc]
-infixr : 80
+infixr:80
   " ⊗⋙ " =>-- We overload notation; potentially dangerous, but it seems to work.
   comp
 
