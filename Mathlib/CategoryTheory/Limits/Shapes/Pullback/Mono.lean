@@ -234,7 +234,7 @@ instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst f f) := by
   · simp [fst_eq_snd_of_mono_eq]
 #align category_theory.limits.fst_iso_of_mono_eq CategoryTheory.Limits.fst_iso_of_mono_eq
 
-instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd : pullback f f ⟶ _) := by
+instance snd_iso_of_mono_eq [Mono f] : IsIso (pullback.snd f f) := by
   rw [← fst_eq_snd_of_mono_eq]
   infer_instance
 #align category_theory.limits.snd_iso_of_mono_eq CategoryTheory.Limits.snd_iso_of_mono_eq
@@ -419,7 +419,7 @@ instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl _ _ : _ ⟶ pushout f f)
   · simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.inl_iso_of_epi_eq CategoryTheory.Limits.inl_iso_of_epi_eq
 
-instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr : _ ⟶ pushout f f) := by
+instance inr_iso_of_epi_eq [Epi f] : IsIso (pushout.inr f f) := by
   rw [← inl_eq_inr_of_epi_eq]
   infer_instance
 #align category_theory.limits.inr_iso_of_epi_eq CategoryTheory.Limits.inr_iso_of_epi_eq
