@@ -6,6 +6,7 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.Tactic.FastInstance
 
 #align_import linear_algebra.adic_completion from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
@@ -27,6 +28,7 @@ with respect to an ideal `I`:
 
 -/
 
+suppress_compilation
 
 open Submodule
 
@@ -213,84 +215,39 @@ def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M))
     rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
   smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
 
-/-- Zero of `AdicCompletion I M`. -/
-@[irreducible]
-def zero : AdicCompletion I M := ⟨0, by simp⟩
-
 instance : Zero (AdicCompletion I M) where
-  zero := zero I M
-
-/-- Addition in `AdicCompletion I M`. -/
-@[irreducible]
-def add (x y : AdicCompletion I M) : AdicCompletion I M :=
-  ⟨x.val + y.val, by simp [x.property, y.property]⟩
+  zero := ⟨0, by simp⟩
 
 instance : Add (AdicCompletion I M) where
-  add := add I M
-
-/-- Negation in `AdicCompletion I M`. -/
-@[irreducible]
-def neg (x : AdicCompletion I M) : AdicCompletion I M :=
-  ⟨- x.val, by simp [x.property]⟩
+  add x y := ⟨x.val + y.val, by simp [x.property, y.property]⟩
 
 instance : Neg (AdicCompletion I M) where
-  neg := neg I M
-
-/-- Subtraction in `AdicCompletion I M`. -/
-@[irreducible]
-def sub (x y : AdicCompletion I M) : AdicCompletion I M :=
-  ⟨x.val - y.val, by simp [x.property, y.property]⟩
+  neg x := ⟨- x.val, by simp [x.property]⟩
 
 instance : Sub (AdicCompletion I M) where
-  sub := sub I M
+  sub x y := ⟨x.val - y.val, by simp [x.property, y.property]⟩
 
-/-- Natural scalar multiplication in `AdicCompletion I M`. -/
-@[irreducible]
-def nsmul (n : ℕ) (x : AdicCompletion I M) : AdicCompletion I M :=
-  nsmulRec n x
+instance : SMul ℕ (AdicCompletion I M) where
+  smul n x := ⟨n • x.val, by simp [x.property]⟩
 
-/-- Integer scalar multiplication in `AdicCompletion I M`. -/
-@[irreducible]
-def zsmul (n : ℤ) (x : AdicCompletion I M) : AdicCompletion I M :=
-  zsmulRec (nsmul I M) n x
+instance : SMul ℤ (AdicCompletion I M) where
+  smul n x := ⟨n • x.val, by simp [x.property]⟩
 
-unseal add in
-unseal sub in
-unseal neg in
-unseal zero in
-unseal nsmul in
-unseal zsmul in
-instance : AddCommGroup (AdicCompletion I M) where
-  add_assoc x y z := Subtype.ext <| add_assoc x.val y.val z.val
-  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
-  zero_add a := Subtype.ext <| zero_add a.val
-  add_zero a := Subtype.ext <| add_zero a.val
-  nsmul := nsmul I M
-  zsmul := zsmul I M
-  add_left_neg a := Subtype.ext <| add_left_neg a.val
-  add_comm x y := Subtype.ext <| add_comm x.val y.val
-
-/-- Scalar multiplication in `AdicCompletion I M`. -/
-@[irreducible]
-def smul (r : R) (x : AdicCompletion I M) : AdicCompletion I M :=
-  ⟨r • x.val, by simp [x.property]⟩
+instance : AddCommGroup (AdicCompletion I M) :=
+  let f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
+  fast_instance%
+  Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : SMul R (AdicCompletion I M) where
-  smul := smul I M
+  smul r x := ⟨r • x.val, by simp [x.property]⟩
 
-unseal zero in
-unseal add in
-unseal smul in
-instance : Module R (AdicCompletion I M) where
-  one_smul x := Subtype.ext <| one_smul R x.val
-  mul_smul r s x := Subtype.ext <| mul_smul r s x.val
-  smul_add r x y := Subtype.ext <| smul_add r x.val y.val
-  add_smul r s x := Subtype.ext <| add_smul r s x.val
-  zero_smul x := Subtype.ext <| zero_smul R x.val
-  smul_zero r := Subtype.ext <| smul_zero r
+instance : Module R (AdicCompletion I M) :=
+  let f : AdicCompletion I M →+ ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) :=
+    { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+  fast_instance%
+  Subtype.val_injective.module R f (fun _ _ ↦ rfl)
 
-unseal add in
-unseal smul in
 /-- The canonical inclusion from the completion to the product. -/
 @[simps]
 def incl : AdicCompletion I M →ₗ[R] (∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -298,8 +255,6 @@ def incl : AdicCompletion I M →ₗ[R] (∀ n, M ⧸ (I ^ n • ⊤ : Submodule
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-unseal add in
-unseal smul in
 /-- The canonical linear map to the completion. -/
 def of : M →ₗ[R] AdicCompletion I M where
   toFun x := ⟨fun n => mkQ (I ^ n • ⊤ : Submodule R M) x, fun _ => rfl⟩
@@ -312,8 +267,6 @@ theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ (I ^ n • ⊤ : Submo
   rfl
 #align adic_completion.of_apply AdicCompletion.of_apply
 
-unseal add in
-unseal smul in
 /-- Linearly evaluating a sequence in the completion at a given input. -/
 def eval (n : ℕ) : AdicCompletion I M →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodule R M) where
   toFun f := f.1 n
@@ -348,19 +301,16 @@ theorem range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
   LinearMap.range_eq_top.2 (eval_surjective I M n)
 #align adic_completion.range_eval AdicCompletion.range_eval
 
-unseal zero in
 @[simp]
 theorem val_zero (n : ℕ) : (0 : AdicCompletion I M).val n = 0 :=
   rfl
 
 variable {I M}
 
-unseal add in
 @[simp]
 theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n + g.val n :=
   rfl
 
-unseal sub in
 @[simp]
 theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n - g.val n :=
   rfl
@@ -370,7 +320,6 @@ theorem val_sum {α : Type*} (s : Finset α) (f : α → AdicCompletion I M) (n 
     (Finset.sum s f).val n = Finset.sum s (fun a ↦ (f a).val n) := by
   simp_rw [← incl_apply, map_sum, Finset.sum_apply]
 
-unseal smul in
 /- No `simp` attribute, since it causes `simp` unification timeouts when considering
 the `AdicCompletion I R` module instance on `AdicCompletion I M` (see `AdicCompletion/Algebra`). -/
 theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = r • f.val n :=
@@ -453,104 +402,54 @@ def submodule : Submodule R (ℕ → M) where
     intro r f hf m n hmn
     exact SModEq.smul (hf hmn) r
 
-/-- Zero in `AdicCauchySequence I M`. -/
-@[irreducible]
-def zero : AdicCauchySequence I M :=
-  ⟨0, fun _ ↦ rfl⟩
-
 instance : Zero (AdicCauchySequence I M) where
-  zero := zero I M
-
-/-- Addition in `AdicCauchySequence I M`. -/
-@[irreducible]
-def add (x y : AdicCauchySequence I M) : AdicCauchySequence I M :=
-  ⟨x.val + y.val, fun hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
+  zero := ⟨0, fun _ ↦ rfl⟩
 
 instance : Add (AdicCauchySequence I M) where
-  add := add I M
-
-/-- Negation in `AdicCauchySequence I M`. -/
-@[irreducible]
-def neg (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
-  ⟨- x.val, fun hmn ↦ SModEq.neg (x.property hmn)⟩
+  add x y := ⟨x.val + y.val, fun hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
 
 instance : Neg (AdicCauchySequence I M) where
-  neg := neg I M
-
-/-- Subtraction in `AdicCauchySequence I M`. -/
-@[irreducible]
-def sub (x y : AdicCauchySequence I M) : AdicCauchySequence I M :=
-  ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
+  neg x := ⟨- x.val, fun hmn ↦ SModEq.neg (x.property hmn)⟩
 
 instance : Sub (AdicCauchySequence I M) where
-  sub := sub I M
+  sub x y := ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
 
-/-- Natural scalar multiplication in `AdicCauchySequence I M`. -/
-@[irreducible]
-def nsmul (n : ℕ) (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
-  nsmulRec n x
+instance : SMul ℕ (AdicCauchySequence I M) where
+  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.nsmul (x.property hmn) n⟩
 
-/-- Integer scalar multiplication in `AdicCauchySequence I M`. -/
-@[irreducible]
-def zsmul (n : ℤ) (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
-  zsmulRec (nsmul I M) n x
+instance : SMul ℤ (AdicCauchySequence I M) where
+  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.zsmul (x.property hmn) n⟩
 
-unseal add in
-unseal zero in
-unseal sub in
-unseal neg in
-unseal nsmul in
-unseal zsmul in
-instance : AddCommGroup (AdicCauchySequence I M) where
-  add_assoc x y z := Subtype.ext <| add_assoc x.val y.val z.val
-  sub_eq_add_neg x y := Subtype.ext <| sub_eq_add_neg x.val y.val
-  zero_add a := Subtype.ext <| zero_add a.val
-  add_zero a := Subtype.ext <| add_zero a.val
-  nsmul := nsmul I M
-  zsmul := zsmul I M
-  add_left_neg a := Subtype.ext <| add_left_neg a.val
-  add_comm x y := Subtype.ext <| add_comm x.val y.val
-
-/-- Scalar multiplication in `AdicCauchySequence I M`. -/
-@[irreducible]
-def smul (r : R) (x : AdicCauchySequence I M) : AdicCauchySequence I M :=
-  ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
+instance : AddCommGroup (AdicCauchySequence I M) := by
+  let f : AdicCauchySequence I M → (ℕ → M) := Subtype.val
+  apply Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : SMul R (AdicCauchySequence I M) where
-  smul := smul I M
+  smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
 
-unseal smul in
-unseal add in
-unseal zero in
-instance : Module R (AdicCauchySequence I M) where
-  one_smul x := Subtype.ext <| one_smul R x.val
-  mul_smul r s x := Subtype.ext <| mul_smul r s x.val
-  smul_add r x y := Subtype.ext <| smul_add r x.val y.val
-  add_smul r s x := Subtype.ext <| add_smul r s x.val
-  zero_smul x := Subtype.ext <| zero_smul R x.val
-  smul_zero r := Subtype.ext <| smul_zero r
+instance : Module R (AdicCauchySequence I M) :=
+  let f : AdicCauchySequence I M →+ (ℕ → M) :=
+    { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+  Subtype.val_injective.module R f (fun _ _ ↦ rfl)
 
 instance : CoeFun (AdicCauchySequence I M) (fun _ ↦ ℕ → M) where
   coe f := f.val
 
-unseal zero in
 @[simp]
 theorem zero_apply (n : ℕ) : (0 : AdicCauchySequence I M) n = 0 :=
   rfl
 
 variable {I M}
 
-unseal add in
 @[simp]
 theorem add_apply (n : ℕ) (f g : AdicCauchySequence I M) : (f + g) n = f n + g n :=
   rfl
 
-unseal sub in
 @[simp]
 theorem sub_apply (n : ℕ) (f g : AdicCauchySequence I M) : (f - g) n = f n - g n :=
   rfl
 
-unseal smul in
 @[simp]
 theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n = r • f n :=
   rfl
@@ -598,8 +497,8 @@ def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
     intro m n hmn
     simp only [mkQ_apply, transitionMap_mk]
     exact (f.property hmn).symm⟩
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp [val_smul]
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 /-- Criterion for checking that an adic cauchy sequence is mapped to zero in the adic completion. -/
 theorem mk_zero_of (f : AdicCauchySequence I M)
@@ -638,11 +537,11 @@ def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     M →ₗ[R] AdicCompletion I N where
   toFun := fun x ↦ ⟨fun n ↦ f n x, fun hkl ↦ LinearMap.congr_fun (h hkl) x⟩
   map_add' x y := by
-    ext
-    simp only [map_add, val_add]
+    simp only [map_add]
+    rfl
   map_smul' r x := by
-    ext
-    simp only [LinearMapClass.map_smul, RingHom.id_apply, val_smul]
+    simp only [LinearMapClass.map_smul, RingHom.id_apply]
+    rfl
 
 @[simp]
 lemma eval_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
