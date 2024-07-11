@@ -20,23 +20,6 @@ This file defines minimal and maximal of a set with respect to an arbitrary rela
 * `maximals r s`: Maximal elements of `s` with respect to `r`.
 * `minimals r s`: Minimal elements of `s` with respect to `r`.
 
-
-/-
-At the moment `Mathlib.Order.Minimal` defines `maximals r s : Set α` and `minimals r s : Set α`
-for `r : α → α → Prop` and `s : Set α`. I'd like to refactor things to have a predicate
-`Maximal r P : α → Prop` where `P : α → Prop` instead. This will allow dot notation,
-and can be later be used to unify ad hoc notions expressions of max/minimality in places like
-`LinearIndependent.Maximal` and `Set.Finite.exists_maximal_wrt`.
-
-I wanted to run a couple of questions by people.
-
-* Should the existing `maximals` and `minimals` remain, or should they be replaced by
-  `{x | Maximal r (· ∈ s) x}` instead?
-* Should `Maximal r P x` instead be `Maximal P x` with a `[Preorder α]`, as implemented in terms
-of an auxiliary `MaximalWrt r P x`? Most uses of `Maximal` are in practice with an existing
-preorder `(· ≤ ·)`; the exception of `α = Set β` can be easily smoothed over with API.
--/
-
 ## TODO
 
 Do we need a `Finset` version?
