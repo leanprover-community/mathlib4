@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Separation
 import Mathlib.Order.Filter.CountableInter
 
 #align_import topology.G_delta from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
@@ -178,49 +177,6 @@ theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 
   exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
 #align is_closed.is_Gδ IsClosed.isGδ
 
-section T1Space
-
-variable [T1Space X]
-
-theorem IsGδ.compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
-  isOpen_compl_singleton.isGδ
-#align is_Gδ_compl_singleton IsGδ.compl_singleton
-
-@[deprecated (since := "2024-02-15")] alias isGδ_compl_singleton := IsGδ.compl_singleton
-
-theorem Set.Countable.isGδ_compl {s : Set X} (hs : s.Countable) : IsGδ sᶜ := by
-  rw [← biUnion_of_singleton s, compl_iUnion₂]
-  exact .biInter hs fun x _ => .compl_singleton x
-#align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
-
-theorem Set.Finite.isGδ_compl {s : Set X} (hs : s.Finite) : IsGδ sᶜ :=
-  hs.countable.isGδ_compl
-#align set.finite.is_Gδ_compl Set.Finite.isGδ_compl
-
-theorem Set.Subsingleton.isGδ_compl {s : Set X} (hs : s.Subsingleton) : IsGδ sᶜ :=
-  hs.finite.isGδ_compl
-#align set.subsingleton.is_Gδ_compl Set.Subsingleton.isGδ_compl
-
-theorem Finset.isGδ_compl (s : Finset X) : IsGδ (sᶜ : Set X) :=
-  s.finite_toSet.isGδ_compl
-#align finset.is_Gδ_compl Finset.isGδ_compl
-
-variable [FirstCountableTopology X]
-
-protected theorem IsGδ.singleton (x : X) : IsGδ ({x} : Set X) := by
-  rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
-  rw [← biInter_basis_nhds h_basis.toHasBasis]
-  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
-#align is_Gδ_singleton IsGδ.singleton
-
-@[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton
-
-theorem Set.Finite.isGδ {s : Set X} (hs : s.Finite) : IsGδ s :=
-  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
-#align set.finite.is_Gδ Set.Finite.isGδ
-
-end T1Space
-
 end IsGδ
 
 section ContinuousAt
@@ -320,7 +276,7 @@ lemma meagre_empty : IsMeagre (∅ : Set X) := by
   exact Filter.univ_mem
 
 /-- Subsets of meagre sets are meagre. -/
-lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t :=
+lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts : t ⊆ s) : IsMeagre t :=
   Filter.mem_of_superset hs (compl_subset_compl.mpr hts)
 
 /-- An intersection with a meagre set is meagre. -/
