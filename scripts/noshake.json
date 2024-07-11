@@ -214,6 +214,7 @@
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
+   "Mathlib.Algebra.Order.Ring.Basic",
    "Mathlib.Data.Int.CharZero",
    "Mathlib.Data.Nat.Factorial.Basic",
    "Mathlib.Data.PNat.Defs"],
@@ -333,6 +334,8 @@
   "Mathlib.Analysis.InnerProductSpace.Basic":
   ["Mathlib.Algebra.Module.LinearMap.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
+  "Mathlib.Analysis.Convex.Basic":
+  ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],

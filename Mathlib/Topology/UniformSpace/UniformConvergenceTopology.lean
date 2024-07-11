@@ -1082,7 +1082,7 @@ protected def uniformEquivProdArrow [UniformSpace γ] :
 variable (𝔖) (δ : ι → Type*) [∀ i, UniformSpace (δ i)] in
 /-- The natural bijection between `α → Π i, δ i` and `Π i, α → δ i`, upgraded to a uniform
 isomorphism between `α →ᵤ[𝔖] (Π i, δ i)` and `Π i, α →ᵤ[𝔖] δ i`. -/
-protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((i:ι) → α →ᵤ[𝔖] δ i) :=
+protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ ((i : ι) → α →ᵤ[𝔖] δ i) :=
   -- Denote `φ` this bijection. We want to show that
   -- `comap φ (Π i, 𝒱(α, δ i, 𝔖, uδ i)) = 𝒱(α, (Π i, δ i), 𝔖, (Π i, uδ i))`.
   -- But `Π i, uδ i` is defined as `⨅ i, comap (eval i) (uδ i)`, so we just have to apply
@@ -1090,7 +1090,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
   -- which leaves us to check that some square commutes.
   -- We could also deduce this from `UniformFun.uniformEquivPiComm`, but it turns out
   -- to be more annoying.
-  @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i:ι) → δ i)) ((i:ι) → α →ᵤ[𝔖] δ i)
+  @Equiv.toUniformEquivOfUniformInducing (α →ᵤ[𝔖] ((i : ι) → δ i)) ((i : ι) → α →ᵤ[𝔖] δ i)
       _ _ (Equiv.piComm _) <| by
     constructor
     change comap (Prod.map Function.swap Function.swap) _ = _

@@ -76,8 +76,8 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   intro y y_ne
   rw [mem_compl_singleton_iff] at y_ne
   apply CompleteSpace.complete
-  have : (fun (x : K) => (↑x⁻¹: hat K)) =
-      ((fun (y : K) => (↑y: hat K))∘(fun (x : K) => (x⁻¹ : K))) := by
+  have : (fun (x : K) => (↑x⁻¹ : hat K)) =
+      ((fun (y : K) => (↑y : hat K))∘(fun (x : K) => (x⁻¹ : K))) := by
     unfold Function.comp
     simp
   rw [this, ← Filter.map_map]
