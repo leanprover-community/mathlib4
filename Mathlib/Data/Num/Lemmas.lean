@@ -760,9 +760,9 @@ theorem ofNat'_eq : ∀ n, Num.ofNat' n = n :=
     rw [ofNat'] at IH ⊢
     rw [Nat.binaryRec_eq, IH]
     -- Porting note: `Nat.cast_bit0` & `Nat.cast_bit1` are not `simp` theorems anymore.
-    · cases b <;> simp [Nat.bit, bit0_of_bit0, bit1_of_bit1, Nat.cast_bit0, Nat.cast_bit1]
-      sorry
-      sorry
+    · cases b <;> simp only [cond_false, cond_true, Nat.bit, two_mul, Nat.cast_add, Nat.cast_one]
+      · rw [bit0_of_bit0]
+      · rw [bit1_of_bit1]
     · rfl
 #align num.of_nat'_eq Num.ofNat'_eq
 
@@ -907,7 +907,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
     all_goals
       repeat
         rw [show ∀ b n, (pos (PosNum.bit b n) : ℕ) = Nat.bit b ↑n by
-          intros b _; cases b <;> sorry --rfl
+          intros b _; cases b <;> sorry -- rfl
           ]
       rw [Nat.bitwise_bit gff]
     any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
@@ -951,36 +951,34 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
   · rfl
   simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH,
         Nat.bit0_val, pow_succ, ← mul_assoc, mul_comm,
-        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl]
-  sorry
+        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl, mul_two]
 #align num.shiftl_to_nat Num.castNum_shiftLeft
 
 @[simp, norm_cast]
-
-theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ)  := by
-  sorry
-  -- cases' m with m <;> dsimp only [← shiftr_eq_shiftRight, shiftr]
-  -- · symm
-  --   apply Nat.zero_shiftRight
-  -- induction' n with n IH generalizing m
-  -- · cases m <;> rfl
-  -- cases' m with m m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
-  -- · rw [Nat.shiftRight_eq_div_pow]
-  --   symm
-  --   apply Nat.div_eq_of_lt
-  --   simp
-  -- · trans
-  --   · apply IH
-  --   change Nat.shiftRight m n = Nat.shiftRight (_root_.bit1 m) (n + 1)
-  --   rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
-  --   apply congr_arg fun x => Nat.shiftRight x n
-  --   simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
-  -- · trans
-  --   · apply IH
-  --   change Nat.shiftRight m n = Nat.shiftRight (_root_.bit0 m) (n + 1)
-  --   rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
-  --   apply congr_arg fun x => Nat.shiftRight x n
-  --   simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
+theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ) := by
+  cases' m with m <;> dsimp only [← shiftr_eq_shiftRight, shiftr]
+  · symm
+    apply Nat.zero_shiftRight
+  induction' n with n IH generalizing m
+  · cases m <;> rfl
+  have hdiv2 : ∀ m, Nat.div2 (m + m) = m := by intro; rw [Nat.div2_val]; omega
+  cases' m with m m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
+  · rw [Nat.shiftRight_eq_div_pow]
+    symm
+    apply Nat.div_eq_of_lt
+    simp
+  · trans
+    · apply IH
+    change Nat.shiftRight m n = Nat.shiftRight (m + m + 1) (n + 1)
+    rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    apply congr_arg fun x => Nat.shiftRight x n
+    simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
+  · trans
+    · apply IH
+    change Nat.shiftRight m n = Nat.shiftRight (m + m) (n + 1)
+    rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
+    apply congr_arg fun x => Nat.shiftRight x n
+    simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
 #align num.shiftr_to_nat Num.castNum_shiftRight
 
 @[simp]

@@ -253,7 +253,7 @@ instance shortBit0 (x : PGame.{u}) [Short x] : Short (x + x) := by infer_instanc
 #align pgame.short_bit0 SetTheory.PGame.shortBit0
 
 set_option linter.deprecated false in
-instance shortBit1 (x : PGame.{u}) [Short x] : Short ((x + x) + 1) := by sorry -- dsimp [bit1]; infer_instance
+instance shortBit1 (x : PGame.{u}) [Short x] : Short ((x + x) + 1) := shortAdd _ _
 #align pgame.short_bit1 SetTheory.PGame.shortBit1
 
 /-- Auxiliary construction of decidability instances.
