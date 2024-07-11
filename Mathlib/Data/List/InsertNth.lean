@@ -196,7 +196,7 @@ theorem getElem_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n +
 
 theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (insertNth n x l).length := (by
-      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])):
+      rwa [length_insertNth _ _ (by omega), Nat.succ_lt_succ_iff])) :
     (insertNth n x l).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
   simp [getElem_insertNth_add_succ, hk, hk']
 
@@ -218,3 +218,5 @@ theorem insertNth_injective (n : ℕ) (x : α) : Function.Injective (insertNth n
 #align list.insert_nth_injective List.insertNth_injective
 
 end InsertNth
+
+end List

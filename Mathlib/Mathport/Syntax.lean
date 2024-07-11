@@ -283,3 +283,7 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 
 /- E -/ syntax (name := assertInstance) "assert_instance " term : command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
+
+end Tactic
+
+end Mathlib

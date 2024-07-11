@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.Cast.Basic
 
@@ -28,7 +28,7 @@ We also produce the following instances:
 
 - `NatPowAssoc` for Monoids, Pi types and products.
 
-## Todo
+## TODO
 
 * to_additive?
 
