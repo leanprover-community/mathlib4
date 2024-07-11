@@ -38,19 +38,6 @@ variable {R}
 
 namespace MaximalSpectrum
 
-instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
-  let ⟨I, hI⟩ := Ideal.exists_maximal R
-  ⟨⟨I, hI⟩⟩
-
-/-- The natural inclusion from the maximal spectrum to the prime spectrum. -/
-def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
-  ⟨x.asIdeal, x.IsMaximal.isPrime⟩
-#align maximal_spectrum.to_prime_spectrum MaximalSpectrum.toPrimeSpectrum
-
-theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
-  simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h
-#align maximal_spectrum.to_prime_spectrum_injective MaximalSpectrum.toPrimeSpectrum_injective
-
 open PrimeSpectrum Set
 
 theorem toPrimeSpectrum_range :
