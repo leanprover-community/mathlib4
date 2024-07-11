@@ -610,9 +610,13 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
 
 end Comp
 
-section NonUnitalNonAssocCommSemiring
+section CommSemiring
 
-variable [CommSemiring R]  [NonUnitalNonAssocCommSemiring A]  [AddCommMonoid M] [Module R M]
+-- TODO `A` here should be a `NonUnitalNonAssocCommSemiring`, but then we break
+-- `linMulLinSelfPosDef` below. A fix is being worked on in
+-- https://github.com/leanprover-community/mathlib4/pull/12617
+
+variable [CommSemiring R]  [CommSemiring A]  [AddCommMonoid M] [Module R M]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The product of linear forms is a quadratic form. -/
@@ -670,7 +674,7 @@ theorem proj_apply (i j : n) (x : n → A) : proj (R := R) i j x = x i * x j :=
   rfl
 #align quadratic_form.proj_apply QuadraticMap.proj_apply
 
-end NonUnitalNonAssocCommSemiring
+end CommSemiring
 
 end QuadraticMap
 
@@ -1138,15 +1142,6 @@ theorem posDef_iff_nonneg {Q : QuadraticMap R₂ M N} : PosDef Q ↔ (∀ x, 0 �
 theorem PosDef.add (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef Q') :
     PosDef (Q + Q') := fun x hx => add_pos (hQ x hx) (hQ' x hx)
 #align quadratic_form.pos_def.add QuadraticMap.PosDef.add
-
--- This should be in `Algebra/Ring/Defs` but that causes issues with `Tactic/Ring/Basic`
--- See https://github.com/leanprover-community/mathlib4/pull/12617
--- see Note [lower instance priority]
-
-instance (priority := 100) _root_.CommSemiring.toNonUnitalNonAssocCommSemiring [CommSemiring A] :
-    NonUnitalNonAssocCommSemiring A :=
-  { inferInstanceAs (CommMonoid A), inferInstanceAs (CommSemiring A) with }
-
 
 theorem linMulLinSelfPosDef {R} [LinearOrderedCommRing R] [Module R M] [LinearOrderedCommSemiring A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
