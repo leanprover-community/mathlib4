@@ -88,5 +88,3 @@ instance toHopfAlgebra : HopfAlgebra R R where
 theorem antipode_eq_id : antipode (R := R) (A := R) = .id := rfl
 
 end CommSemiring
-
-end CommSemiring

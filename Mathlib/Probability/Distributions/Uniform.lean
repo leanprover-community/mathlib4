@@ -399,5 +399,3 @@ end Measure
 end OfMultiset
 
 end PMF
-
-end
