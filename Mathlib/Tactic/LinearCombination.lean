@@ -360,13 +360,6 @@ theorem neg_intRawCast {α : Type*} [LinearOrderedRing α] {a : ℕ} : (Int.rawC
 theorem neg_ratRawCast {α : Type*} [LinearOrderedField α] {a b : ℕ} : (Rat.rawCast (Int.negOfNat a.succ) b.succ : α) + 0 < 0 := by
   simp [div_neg_iff, -Nat.succ_eq_add_one]
 
--- FIXME do I need parentheses around `(conv_lhs => ring1)`?
-macro "linear_combination_le_discharger" : tactic =>
-  `(tactic | ((conv_lhs => ring1); try first | exact nonpos_intRawCast | exact nonpos_ratRawCast))
-
-macro "linear_combination_lt_discharger" : tactic =>
-  `(tactic | ((conv_lhs => ring1); try first | exact neg_intRawCast | exact neg_ratRawCast))
-
 /-- Implementation of `linear_combination`. -/
 def elabLinearCombination
     (norm? : Option Syntax.Tactic) (exp? : Option Syntax.NumLit) (input : Option Syntax.Term) :
@@ -391,8 +384,11 @@ def elabLinearCombination
   let defaultTac :=
     match goalRel with
     | Eq => `(tactic | ring)
-    | Le => `(tactic| linear_combination_le_discharger)
-    | Lt => `(tactic| linear_combination_lt_discharger)
+    | Le =>
+    -- FIXME do I need parentheses around `(conv_lhs => ring1)`?
+    `(tactic | ((conv_lhs => ring1); try first | exact nonpos_intRawCast | exact nonpos_ratRawCast))
+    | Lt =>
+    `(tactic | ((conv_lhs => ring1); try first | exact neg_intRawCast | exact neg_ratRawCast))
   let norm := norm?.getD (Unhygienic.run defaultTac)
   let exp1 :=
     match hypRel.relImpRelData goalRel with
