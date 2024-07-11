@@ -493,13 +493,13 @@ theorem invariance_iInf'' [Nonempty n] (i : n) :
   some lemmas. -/
 
 theorem inf_restrict' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
-    (⨆ (μ : 𝕜) , eigenspace (LinearMap.restrict (T i)
+    (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
     ((invariance_iInf' T hC i γ))) μ)ᗮ = ⊥ := by
   exact (LinearMap.IsSymmetric.restrict_invariant (hT i)
     (invariance_iInf' T hC i γ)).orthogonalComplement_iSup_eigenspaces_eq_bot
 
 theorem inf_restrict'' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
-    (⨆ (μ : 𝕜) , eigenspace (LinearMap.restrict (T i)
+    (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
     ((invariance_iInf' T hC i γ))) μ) = ⊤ := by
   exact
     pre_exhaust fun x y ↦
@@ -518,6 +518,10 @@ theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtyp
   (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
 
 -/
+variable (γ : 𝕜) (x : E)
+
+#check Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
+--theorem indexed_eigen_extend : x ∈ Submodule.map (Submodule.subtype )
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
