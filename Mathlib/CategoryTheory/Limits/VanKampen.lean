@@ -570,9 +570,8 @@ theorem BinaryCofan.isVanKampen_mk {X Y : C} (c : BinaryCofan X Y)
     have he₁ : c'.inl = e₁.hom ≫ (cones f c.inl).fst := by simp [e₁]
     have he₂ : c'.inr = e₂.hom ≫ (cones f c.inr).fst := by simp [e₂]
     rw [he₁, he₂]
-    exact
-      (BinaryCofan.mk _ _).isColimitCompRightIso e₂.hom
-        ((BinaryCofan.mk _ _).isColimitCompLeftIso e₁.hom (h₂ f))
+    exact (BinaryCofan.mk _ _).isColimitCompRightIso e₂.hom
+      ((BinaryCofan.mk _ _).isColimitCompLeftIso e₁.hom (h₂ f))
 #align category_theory.binary_cofan.is_van_kampen_mk CategoryTheory.BinaryCofan.isVanKampen_mk
 
 theorem BinaryCofan.mono_inr_of_isVanKampen [HasInitial C] {X Y : C} {c : BinaryCofan X Y}
