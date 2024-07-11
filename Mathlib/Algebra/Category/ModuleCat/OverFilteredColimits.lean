@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 # Module structures of filtered colimits of abelian groups over filtered colimts of rings
 
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}`  with the same indexing set `j ∈ J`, if for each `j ∈ J`, `Mⱼ` is an `Rⱼ` such
+abelian groups `{Mⱼ}`  with `j` running through same index category `J`. if for each `j ∈ J`, `Mⱼ` is an `Rⱼ` such
 that the `Rⱼ`-action is compatible, then `M` is an `Rⱼ`-module for all `j` and `M` is an `R`-module.
 
 ## Implementation notes
