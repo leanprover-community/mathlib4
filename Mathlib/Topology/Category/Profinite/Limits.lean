@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.Topology.Category.CompHaus.Limits
 
 /-!
@@ -224,7 +223,7 @@ instance : PreservesFiniteCoproducts profiniteToCompHaus := by
   exact CompHaus.finiteCoproduct.isColimit _
 
 noncomputable instance : PreservesFiniteCoproducts Profinite.toTopCat.{u} where
-  preserves _ _:= (inferInstance :
+  preserves _ _ := (inferInstance :
     PreservesColimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
 
 instance : FinitaryExtensive Profinite :=

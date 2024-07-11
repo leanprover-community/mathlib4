@@ -32,7 +32,7 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 
 namespace Finset
 
-variable {α : Type*}
+variable {α β : Type*}
 
 /-- `s.sym2` is the finset of all unordered pairs of elements from `s`.
 It is the image of `s ×ˢ s` under the quotient `α × α → Sym2 α`. -/
@@ -58,9 +58,21 @@ theorem sym2_cons (a : α) (s : Finset α) (ha : a ∉ s) :
       simp [Finset.disjoint_left, ha]) :=
   Finset.val_injective <| Multiset.sym2_cons _ _
 
-theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) (ha : a ∉ s) :
+theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
     (insert a s).sym2 = ((insert a s).image fun b => s(a, b)) ∪ s.sym2 := by
-  simpa [map_eq_image] using sym2_cons a s ha
+  obtain ha | ha := Decidable.em (a ∈ s)
+  · simp only [insert_eq_of_mem ha, right_eq_union, image_subset_iff]
+    aesop
+  · simpa [map_eq_image] using sym2_cons a s ha
+
+theorem sym2_map (f : α ↪ β) (s : Finset α) : (s.map f).sym2 = s.sym2.map (.sym2Map f) :=
+  Finset.val_injective <| s.val.sym2_map _
+
+theorem sym2_image [DecidableEq β] (f : α → β) (s : Finset α) :
+    (s.image f).sym2 = s.sym2.image (Sym2.map f) := by
+  apply Finset.val_injective
+  dsimp [Finset.sym2]
+  rw [← Multiset.dedup_sym2, Multiset.sym2_map]
 
 instance _root_.Sym2.instFintype [Fintype α] : Fintype (Sym2 α) where
   elems := Finset.univ.sym2

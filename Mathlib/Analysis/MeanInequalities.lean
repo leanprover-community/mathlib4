@@ -567,7 +567,7 @@ theorem Lp_add_le (f g : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
     (∑ i ∈ s, (f i + g i) ^ p) ^ (1 / p) ≤
       (∑ i ∈ s, f i ^ p) ^ (1 / p) + (∑ i ∈ s, g i ^ p) ^ (1 / p) := by
   -- The result is trivial when `p = 1`, so we can assume `1 < p`.
-  rcases eq_or_lt_of_le hp with (rfl | hp);
+  rcases eq_or_lt_of_le hp with (rfl | hp)
   · simp [Finset.sum_add_distrib]
   have hpq := Real.IsConjExponent.conjExponent hp
   have := isGreatest_Lp s (f + g) hpq
