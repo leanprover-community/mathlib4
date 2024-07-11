@@ -275,6 +275,13 @@ theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
 
+theorem IsAlt.eq_of_add_add_eq_zero [IsCancelAdd M] {a b c : M₁} (hAdd : a + b + c = 0) :
+    B a b = B b c := by
+  have : B a a + B a b + B a c = B a c + B b c + B c c := by
+    simp_rw [← map_add, ← map_add₂, hAdd, map_zero, LinearMap.zero_apply]
+  rw [H, H, zero_add, add_zero, add_comm] at this
+  exact add_left_cancel this
+
 end AddCommMonoid
 
 section AddCommGroup

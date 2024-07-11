@@ -15,7 +15,7 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * The coefficient function as an `R`-linear map.
 ## Main results
 * Ext
-## To do:
+## TODO
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product
   (needs PR#10781).
 * `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W` (needs PR#10846).  This means we
