@@ -3,9 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Logic.Pairwise
@@ -263,8 +264,9 @@ alias pairwise_disjoint_Ioo_add_int_cast := pairwise_disjoint_Ioo_add_intCast
 
 variable (α)
 
-theorem pairwise_disjoint_Ico_intCast : Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) :=
-  by simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
+theorem pairwise_disjoint_Ico_intCast :
+    Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) := by
+  simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
 #align set.pairwise_disjoint_Ico_int_cast Set.pairwise_disjoint_Ico_intCast
 
 @[deprecated (since := "2024-04-17")]

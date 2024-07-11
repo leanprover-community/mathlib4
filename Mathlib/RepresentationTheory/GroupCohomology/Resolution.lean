@@ -61,6 +61,9 @@ over `k`.
 /- Porting note: most altered proofs in this file involved changing `simp` to `rw` or `erw`, so
 https://github.com/leanprover-community/mathlib4/issues/5026 and
 https://github.com/leanprover-community/mathlib4/issues/5164 are relevant. -/
+
+suppress_compilation
+
 noncomputable section
 
 universe u v w
@@ -528,8 +531,8 @@ variable {k G}
 theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
     d k G n (Finsupp.single c 1) =
       Finset.univ.sum fun p : Fin (n + 1) =>
-        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) :=
-  by simp [d]
+        Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
+  simp [d]
 #align group_cohomology.resolution.d_of groupCohomology.resolution.d_of
 
 variable (k G)

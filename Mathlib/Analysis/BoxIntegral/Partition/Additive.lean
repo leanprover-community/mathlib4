@@ -205,7 +205,7 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
     (by
       intro J hJ j x
       rw [WithTop.coe_le_coe] at hJ
-      refine' i.succAboveCases (fun hx => _) (fun j hx => _) j
+      refine i.succAboveCases (fun hx => ?_) (fun j hx => ?_) j
       · simp only [Box.splitLower_def hx, Box.splitUpper_def hx, update_same, ← WithBot.some_eq_coe,
           Option.elim', Box.face, (· ∘ ·), update_noteq (Fin.succAbove_ne _ _)]
         abel

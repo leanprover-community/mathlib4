@@ -41,7 +41,7 @@ Given a functor `F : J ⥤ Type v`:
 * `surjective_toEventualRanges` shows that if `F` is Mittag-Leffler, then `F.toEventualRanges`
   has all morphisms `F.map f` surjective.
 
-## Todo
+## TODO
 
 * Prove [Stacks: Lemma 0597](https://stacks.math.columbia.edu/tag/0597)
 
@@ -230,9 +230,9 @@ theorem eventualRange_eq_iff {f : i ⟶ j} :
   apply range_comp_subset_range
 #align category_theory.functor.eventual_range_eq_iff CategoryTheory.Functor.eventualRange_eq_iff
 
-theorem isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔
-    ∀ j : J, ∃ (i : _) (f : i ⟶ j), ∀ ⦃k⦄ (g : k ⟶ i), range (F.map f) ⊆ range (F.map <| g ≫ f) :=
-  by simp_rw [isMittagLeffler_iff_eventualRange, eventualRange_eq_iff]
+theorem isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔ ∀ j : J, ∃ (i : _) (f : i ⟶ j),
+    ∀ ⦃k⦄ (g : k ⟶ i), range (F.map f) ⊆ range (F.map <| g ≫ f) := by
+  simp_rw [isMittagLeffler_iff_eventualRange, eventualRange_eq_iff]
 #align category_theory.functor.is_mittag_leffler_iff_subset_range_comp CategoryTheory.Functor.isMittagLeffler_iff_subset_range_comp
 
 theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).IsMittagLeffler :=

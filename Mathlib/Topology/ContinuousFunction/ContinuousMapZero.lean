@@ -17,6 +17,8 @@ Of course, one could generalize to maps between pointed topological spaces, but 
 the purpose of this type.
 -/
 
+assert_not_exists StarOrderedRing
+
 open Set Function
 
 /-- The type of continuous maps which map zero to zero.
@@ -174,6 +176,9 @@ instance instStarModule [StarRing R] {M : Type*} [SMulZeroClass M R] [Continuous
 
 @[simp] lemma coe_star [StarRing R] [ContinuousStar R] (f : C(X, R)₀) : ⇑(star f) = star ⇑f := rfl
 
+instance [StarRing R] [ContinuousStar R] [TrivialStar R] : TrivialStar C(X, R)₀ where
+  star_trivial _ := DFunLike.ext _ _ fun _ ↦ star_trivial _
+
 instance instCanLift : CanLift C(X, R) C(X, R)₀ (↑) (fun f ↦ f 0 = 0) where
   prf f hf := ⟨⟨f, hf⟩, rfl⟩
 
@@ -190,6 +195,16 @@ def toContinuousMapHom [StarRing R] [ContinuousStar R] : C(X, R)₀ →⋆ₙₐ
 lemma coe_toContinuousMapHom [StarRing R] [ContinuousStar R] :
     ⇑(toContinuousMapHom (X := X) (R := R)) = (↑) :=
   rfl
+
+/-- Coercion to a function as an `AddMonoidHom`. Similar to `ContinuousMap.coeFnAddMonoidHom`. -/
+def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
+  toFun f := f
+  map_zero' := coe_zero
+  map_add' f g := by simp
+
+@[simp] lemma coe_sum {ι : Type*} (s : Finset ι)
+    (f : ι → C(X, R)₀) : ⇑(s.sum f) = s.sum (fun i => ⇑(f i)) :=
+  map_sum coeFnAddMonoidHom f s
 
 end Semiring
 

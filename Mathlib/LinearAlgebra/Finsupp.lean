@@ -355,7 +355,7 @@ variable {M R}
 section
 
 @[simp]
-theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)]:
+theorem restrictDom_apply (s : Set α) (l : α →₀ M) [DecidablePred (· ∈ s)] :
     (restrictDom M R s l : α →₀ M) = Finsupp.filter (· ∈ s) l := rfl
 #align finsupp.restrict_dom_apply Finsupp.restrictDom_apply
 
@@ -402,13 +402,17 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
   refine Finsupp.induction l ?_ ?_
   · exact zero_mem _
   · refine fun x a l _ _ => add_mem ?_
-    by_cases h : ∃ i, x ∈ s i <;> simp [h]
-    cases' h with i hi
-    exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+    by_cases h : ∃ i, x ∈ s i
+    · simp only [mem_comap, coe_comp, coeSubtype, Function.comp_apply, restrictDom_apply,
+        mem_iUnion, h, filter_single_of_pos]
+      cases' h with i hi
+      exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+    · simp [h]
 #align finsupp.supported_Union Finsupp.supported_iUnion
 
-theorem supported_union (s t : Set α) : supported M R (s ∪ t) = supported M R s ⊔ supported M R t :=
-  by erw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq]; rfl
+theorem supported_union (s t : Set α) :
+    supported M R (s ∪ t) = supported M R s ⊔ supported M R t := by
+  rw [Set.union_eq_iUnion, supported_iUnion, iSup_bool_eq, cond_true, cond_false]
 #align finsupp.supported_union Finsupp.supported_union
 
 theorem supported_iInter {ι : Type*} (s : ι → Set α) :
@@ -416,8 +420,9 @@ theorem supported_iInter {ι : Type*} (s : ι → Set α) :
   Submodule.ext fun x => by simp [mem_supported, subset_iInter_iff]
 #align finsupp.supported_Inter Finsupp.supported_iInter
 
-theorem supported_inter (s t : Set α) : supported M R (s ∩ t) = supported M R s ⊓ supported M R t :=
-  by rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
+theorem supported_inter (s t : Set α) :
+    supported M R (s ∩ t) = supported M R s ⊓ supported M R t := by
+  rw [Set.inter_eq_iInter, supported_iInter, iInf_bool_eq]; rfl
 #align finsupp.supported_inter Finsupp.supported_inter
 
 theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
@@ -639,7 +644,7 @@ sending `l : β →₀ M` to the finitely supported function from `α` to `M` gi
 
 This is the linear version of `Finsupp.comapDomain`. -/
 def lcomapDomain (f : α → β) (hf : Function.Injective f) : (β →₀ M) →ₗ[R] α →₀ M where
-  toFun l := Finsupp.comapDomain f l (hf.injOn _)
+  toFun l := Finsupp.comapDomain f l hf.injOn
   map_add' x y := by ext; simp
   map_smul' c x := by ext; simp
 #align finsupp.lcomap_domain Finsupp.lcomapDomain
@@ -813,8 +818,8 @@ theorem mem_span_image_iff_total {s : Set α} {x : M} :
 
 theorem total_option (v : Option α → M) (f : Option α →₀ R) :
     Finsupp.total (Option α) M R v f =
-      f none • v none + Finsupp.total α M R (v ∘ Option.some) f.some :=
-  by rw [total_apply, sum_option_index_smul, total_apply]; simp
+      f none • v none + Finsupp.total α M R (v ∘ Option.some) f.some := by
+  rw [total_apply, sum_option_index_smul, total_apply]; simp
 #align finsupp.total_option Finsupp.total_option
 
 theorem total_total {α β : Type*} (A : α → M) (B : β → α →₀ R) (f : β →₀ R) :
@@ -864,8 +869,8 @@ theorem total_comp (f : α' → α) :
 
 theorem total_comapDomain (f : α → α') (l : α' →₀ R) (hf : Set.InjOn f (f ⁻¹' ↑l.support)) :
     Finsupp.total α M R v (Finsupp.comapDomain f l hf) =
-      (l.support.preimage f hf).sum fun i => l (f i) • v i :=
-  by rw [Finsupp.total_apply]; rfl
+      (l.support.preimage f hf).sum fun i => l (f i) • v i := by
+  rw [Finsupp.total_apply]; rfl
 #align finsupp.total_comap_domain Finsupp.total_comapDomain
 
 theorem total_onFinset {s : Finset α} {f : α → R} (g : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) :
@@ -1295,7 +1300,7 @@ theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     m ∈ sSup S ↔ ∃ s : Finset (Submodule R M), ↑s ⊆ S ∧ m ∈ ⨆ i ∈ s, i := by
   rw [sSup_eq_iSup, iSup_subtype', Submodule.mem_iSup_iff_exists_finset]
   refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype S), ?_, ?_⟩,
-          fun ⟨s, hsS, hs⟩ ↦ ⟨s.preimage (↑) (Subtype.coe_injective.injOn _), ?_⟩⟩
+          fun ⟨s, hsS, hs⟩ ↦ ⟨s.preimage (↑) Subtype.coe_injective.injOn, ?_⟩⟩
   · simpa using fun x _ ↦ x.property
   · suffices m ∈ ⨆ (i) (hi : i ∈ S) (_ : ⟨i, hi⟩ ∈ s), i by simpa
     rwa [iSup_subtype']
@@ -1457,3 +1462,48 @@ end Finsupp
 end AddCommMonoid
 
 end LinearMap
+
+namespace Submodule
+
+variable {S : Type*} [Semiring S] [Module R S] [SMulCommClass R R S] [SMulCommClass R S S]
+  [IsScalarTower R S S]
+
+/-- If `M` and `N` are submodules of an `R`-algebra `S`, `m : ι → M` is a family of elements, then
+there is an `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }` to the sum of `m_i * n_i`.
+This is used in the definition of linearly disjointness. -/
+def mulLeftMap {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M) :
+    (ι →₀ N) →ₗ[R] S := Finsupp.lsum R fun i ↦ (m i).1 • N.subtype
+
+theorem mulLeftMap_apply {M N : Submodule R S} {ι : Type*} (m : ι → M) (n : ι →₀ N) :
+    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).1 * n.1 := rfl
+
+@[simp]
+theorem mulLeftMap_apply_single {M N : Submodule R S} {ι : Type*} (m : ι → M) (i : ι) (n : N) :
+    mulLeftMap N m (Finsupp.single i n) = (m i).1 * n.1 := by
+  simp [mulLeftMap]
+
+/-- If `M` and `N` are submodules of an `R`-algebra `S`, `n : ι → N` is a family of elements, then
+there is an `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }` to the sum of `m_i * n_i`.
+This is used in the definition of linearly disjointness. -/
+def mulRightMap (M : Submodule R S) {N : Submodule R S} {ι : Type*} (n : ι → N) :
+    (ι →₀ M) →ₗ[R] S := Finsupp.lsum R fun i ↦ MulOpposite.op (n i).1 • M.subtype
+
+theorem mulRightMap_apply {M N : Submodule R S} {ι : Type*} (n : ι → N) (m : ι →₀ M) :
+    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 := rfl
+
+@[simp]
+theorem mulRightMap_apply_single {M N : Submodule R S} {ι : Type*} (n : ι → N) (i : ι) (m : M) :
+    mulRightMap M n (Finsupp.single i m) = m.1 * (n i).1 := by
+  simp [mulRightMap]
+
+theorem mulLeftMap_eq_mulRightMap_of_commute
+    {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M)
+    (hc : ∀ (i : ι) (n : N), Commute (m i).1 n.1) : mulLeftMap N m = mulRightMap N m := by
+  ext i n; simp [(hc i n).eq]
+
+theorem mulLeftMap_eq_mulRightMap {S : Type*} [CommSemiring S] [Module R S] [SMulCommClass R R S]
+    [SMulCommClass R S S] [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
+    {ι : Type*} (m : ι → M) : mulLeftMap N m = mulRightMap N m :=
+  mulLeftMap_eq_mulRightMap_of_commute N m fun _ _ ↦ mul_comm _ _
+
+end Submodule

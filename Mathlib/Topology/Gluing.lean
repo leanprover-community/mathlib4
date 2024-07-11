@@ -8,6 +8,7 @@ import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Tactic.Generalize
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 #align_import topology.gluing from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -368,8 +369,8 @@ theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i)
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
     · convert Subtype.eq this
-    rw [h.V_id]
-    trivial
+  rw [h.V_id]
+  trivial
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
@@ -380,7 +381,7 @@ instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     pullback (h.V i j).inclusion (h.V i k).inclusion ⟶
       pullback (h.V j k).inclusion (h.V j i).inclusion := by
-  refine' (pullbackIsoProdSubtype _ _).hom ≫ ⟨_, _⟩ ≫ (pullbackIsoProdSubtype _ _).inv
+  refine (pullbackIsoProdSubtype _ _).hom ≫ ⟨?_, ?_⟩ ≫ (pullbackIsoProdSubtype _ _).inv
   · intro x
     refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
@@ -388,7 +389,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
   -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
   have : Continuous (h.t i j) := map_continuous (self := ContinuousMap.toContinuousMapClass) _
   set_option tactic.skipAssignedInstances false in
-  exact ((Continuous.subtype_mk (by continuity) _).prod_mk (by continuity)).subtype_mk _
+  exact ((Continuous.subtype_mk (by fun_prop) _).prod_mk (by fun_prop)).subtype_mk _
 
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t' TopCat.GlueData.MkCore.t'
@@ -404,7 +405,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   f_id i := by
     -- Porting note (#12129): additional beta reduction needed
     beta_reduce
-    exact (h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
+    exact (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t
   t_id i := by ext; erw [h.t_id]; rfl  -- now `erw` after #13170
@@ -507,7 +508,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion (TopCat.of α) (U i))
-  use Set.inter_subset_left _ _
+  use Set.inter_subset_left
   constructor
   · erw [← Set.image_preimage_eq_inter_range]
     apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap

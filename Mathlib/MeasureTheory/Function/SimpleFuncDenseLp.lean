@@ -776,6 +776,9 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
   (simpleFunc.denseInducing hp_ne_top).dense
 #align measure_theory.Lp.simple_func.dense_range MeasureTheory.Lp.simpleFunc.denseRange
 
+protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
+  simpa only [denseRange_subtype_val] using simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
+
 variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 variable (α E 𝕜)
 
@@ -846,7 +849,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
       mem_setOf_eq, le_refl, and_self_iff]
   have : SeparableSpace ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y } : Set G) := by
     apply IsSeparable.separableSpace
-    apply IsSeparable.mono _ (Set.inter_subset_left _ _)
+    apply IsSeparable.mono _ Set.inter_subset_left
     exact
       (Lp.stronglyMeasurable (g : Lp G p μ)).isSeparable_range.union
         (finite_singleton _).isSeparable
@@ -856,7 +859,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
     intro n a
     change x n a ∈ { y : G | 0 ≤ y }
     have A : (range (g : α → G) ∪ {0} : Set G) ∩ { y | 0 ≤ y } ⊆ { y | 0 ≤ y } :=
-      inter_subset_right _ _
+      inter_subset_right
     apply A
     exact SimpleFunc.approxOn_mem g_meas _ n a
   have hx_memℒp : ∀ n, Memℒp (x n) p μ :=

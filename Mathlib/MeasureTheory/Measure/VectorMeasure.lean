@@ -208,12 +208,12 @@ theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : Meas
     _ = v (A \ B) + v (A ∩ B) := by
       rw [of_union]
       · rw [disjoint_comm]
-        exact Set.disjoint_of_subset_left (A.inter_subset_right B) disjoint_sdiff_self_right
+        exact Set.disjoint_of_subset_left A.inter_subset_right disjoint_sdiff_self_right
       · exact hA.diff hB
       · exact hA.inter hB
     _ = v (A \ B) + v (A ∩ B ∪ B \ A) := by
       rw [of_union, h', add_zero]
-      · exact Set.disjoint_of_subset_left (A.inter_subset_left B) disjoint_sdiff_self_right
+      · exact Set.disjoint_of_subset_left A.inter_subset_left disjoint_sdiff_self_right
       · exact hA.inter hB
       · exact hB.diff hA
     _ = v (A \ B) + v B := by rw [Set.union_comm, Set.inter_comm, Set.diff_union_inter]
@@ -843,9 +843,9 @@ variable (v w : VectorMeasure α M)
 theorem restrict_le_restrict_iff {i : Set α} (hi : MeasurableSet i) :
     v ≤[i] w ↔ ∀ ⦃j⦄, MeasurableSet j → j ⊆ i → v j ≤ w j :=
   ⟨fun h j hj₁ hj₂ => restrict_eq_self v hi hj₁ hj₂ ▸ restrict_eq_self w hi hj₁ hj₂ ▸ h j hj₁,
-    fun h => le_iff.1 fun j hj =>
+    fun h => le_iff.1 fun _ hj =>
       (restrict_apply v hi hj).symm ▸ (restrict_apply w hi hj).symm ▸
-      h (hj.inter hi) (Set.inter_subset_right j i)⟩
+      h (hj.inter hi) Set.inter_subset_right⟩
 #align measure_theory.vector_measure.restrict_le_restrict_iff MeasureTheory.VectorMeasure.restrict_le_restrict_iff
 
 theorem subset_le_of_restrict_le_restrict {i : Set α} (hi : MeasurableSet i) (hi₂ : v ≤[i] w)
@@ -895,7 +895,7 @@ variable (v w : VectorMeasure α M)
 nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) : -w ≤[i] -v := by
   intro j hj₁
   rw [restrict_apply _ hi hj₁, restrict_apply _ hi hj₁, neg_apply, neg_apply]
-  refine' neg_le_neg _
+  refine neg_le_neg ?_
   rw [← restrict_apply _ hi hj₁, ← restrict_apply _ hi hj₁]
   exact h j hj₁
 #align measure_theory.vector_measure.neg_le_neg MeasureTheory.VectorMeasure.neg_le_neg
@@ -922,7 +922,7 @@ theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, Measura
   rw [← ha₃, v.of_disjoint_iUnion_nat _ ha₄, w.of_disjoint_iUnion_nat _ ha₄]
   · refine tsum_le_tsum (fun n => (restrict_le_restrict_iff v w (hf₁ n)).1 (hf₂ n) ?_ ?_) ?_ ?_
     · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
-    · exact Set.Subset.trans (Set.inter_subset_right _ _) (disjointed_subset _ _)
+    · exact Set.Subset.trans Set.inter_subset_right (disjointed_subset _ _)
     · refine (v.m_iUnion (fun n => ?_) ?_).summable
       · exact ha₁.inter (MeasurableSet.disjointed hf₁ n)
       · exact (disjoint_disjointed _).mono fun i j => Disjoint.mono inf_le_right inf_le_right
@@ -1181,9 +1181,9 @@ theorem add_left [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v�
   · rw [Set.compl_inter] at ht
     rw [(_ : t = uᶜ ∩ t ∪ vᶜ \ uᶜ ∩ t),
       of_union _ (hmu.compl.inter hmt) ((hmv.compl.diff hmu.compl).inter hmt), hu₂, hv₂, add_zero]
-    · exact Set.Subset.trans (Set.inter_subset_left _ _) (Set.diff_subset _ _)
-    · exact Set.inter_subset_left _ _
-    · exact disjoint_sdiff_self_right.mono (Set.inter_subset_left _ _) (Set.inter_subset_left _ _)
+    · exact Set.Subset.trans Set.inter_subset_left diff_subset
+    · exact Set.inter_subset_left
+    · exact disjoint_sdiff_self_right.mono Set.inter_subset_left Set.inter_subset_left
     · apply Set.Subset.antisymm <;> intro x hx
       · by_cases hxu' : x ∈ uᶜ
         · exact Or.inl ⟨hxu', hx⟩
@@ -1312,7 +1312,7 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
     simp only [toMeasureOfZeroLE', s.restrict_apply hi₁ (MeasurableSet.iUnion hf₁), Set.inter_comm,
       Set.inter_iUnion, s.of_disjoint_iUnion_nat h₁ h₂, ENNReal.some_eq_coe, id]
     have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
-      s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ (Set.inter_subset_left _ _) hi₂)
+      s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ Set.inter_subset_left hi₂)
     rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
     · refine tsum_congr fun n => ?_
       simp_rw [s.restrict_apply hi₁ (hf₁ n), Set.inter_comm]
@@ -1323,7 +1323,7 @@ variable (s : SignedMeasure α) {i j : Set α}
 
 theorem toMeasureOfZeroLE_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) (hj₁ : MeasurableSet j) :
     s.toMeasureOfZeroLE i hi₁ hi j = ((↑) : ℝ≥0 → ℝ≥0∞) ⟨s (i ∩ j), nonneg_of_zero_le_restrict
-      s (zero_le_restrict_subset s hi₁ (Set.inter_subset_left _ _) hi)⟩ := by
+      s (zero_le_restrict_subset s hi₁ Set.inter_subset_left hi)⟩ := by
   simp_rw [toMeasureOfZeroLE, Measure.ofMeasurable_apply _ hj₁, toMeasureOfZeroLE',
     s.restrict_apply hi₁ hj₁, Set.inter_comm]
 #align measure_theory.signed_measure.to_measure_of_zero_le_apply MeasureTheory.SignedMeasure.toMeasureOfZeroLE_apply
@@ -1337,7 +1337,7 @@ def toMeasureOfLEZero (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
 
 theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj₁ : MeasurableSet j) :
     s.toMeasureOfLEZero i hi₁ hi j = ((↑) : ℝ≥0 → ℝ≥0∞) ⟨-s (i ∩ j), neg_apply s (i ∩ j) ▸
-      nonneg_of_zero_le_restrict _ (zero_le_restrict_subset _ hi₁ (Set.inter_subset_left _ _)
+      nonneg_of_zero_le_restrict _ (zero_le_restrict_subset _ hi₁ Set.inter_subset_left
       (@neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi))⟩ := by
   erw [toMeasureOfZeroLE_apply]
   · simp

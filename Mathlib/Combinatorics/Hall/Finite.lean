@@ -143,9 +143,9 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     intro x hx hc _
     exact absurd hx hc
   have : s'.card = (s ∪ s'.image fun z => z.1).card - s.card := by
-    simp [disj, card_image_of_injective _ Subtype.coe_injective]
+    simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
-  refine (tsub_le_tsub_right (ht _) _).trans ?_
+  refine (Nat.sub_le_sub_right (ht _) _).trans ?_
   rw [← card_sdiff]
   · refine (card_le_card ?_).trans le_rfl
     intro t
@@ -212,7 +212,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     simp only [of_eq_true]
     split_ifs with h
     · exact hsf' ⟨x, h⟩
-    · exact sdiff_subset _ _ (hsf'' ⟨x, h⟩)
+    · exact sdiff_subset (hsf'' ⟨x, h⟩)
 set_option linter.uppercaseLean3 false in
 #align hall_marriage_theorem.hall_hard_inductive_step_B HallMarriageTheorem.hall_hard_inductive_step_B
 
@@ -227,10 +227,10 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).ca
     ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   cases nonempty_fintype ι
   induction' hn : Fintype.card ι using Nat.strong_induction_on with n ih generalizing ι
-  rcases n with (_ | _)
+  rcases n with (_ | n)
   · rw [Fintype.card_eq_zero_iff] at hn
     exact ⟨isEmptyElim, isEmptyElim, isEmptyElim⟩
-  · have ih' : ∀ (ι' : Type u) [Fintype ι'] (t' : ι' → Finset α), Fintype.card ι' ≤ _ →
+  · have ih' : ∀ (ι' : Type u) [Fintype ι'] (t' : ι' → Finset α), Fintype.card ι' ≤ n →
         (∀ s' : Finset ι', s'.card ≤ (s'.biUnion t').card) →
         ∃ f : ι' → α, Function.Injective f ∧ ∀ x, f x ∈ t' x := by
       intro ι' _ _ hι' ht'

@@ -189,12 +189,12 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
       ext i
       by_cases hi : i ∈ s1 ∪ s2
       · rw [← sub_eq_zero]
-        rw [← Finset.sum_indicator_subset _ (Finset.subset_union_left s1 s2)] at hw1
-        rw [← Finset.sum_indicator_subset _ (Finset.subset_union_right s1 s2)] at hw2
+        rw [← Finset.sum_indicator_subset w1 (s1.subset_union_left (s₂ := s2))] at hw1
+        rw [← Finset.sum_indicator_subset w2 (s1.subset_union_right)] at hw2
         have hws : (∑ i ∈ s1 ∪ s2, (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) i) = 0 := by
           simp [hw1, hw2]
-        rw [Finset.affineCombination_indicator_subset _ _ (Finset.subset_union_left s1 s2),
-          Finset.affineCombination_indicator_subset _ _ (Finset.subset_union_right s1 s2),
+        rw [Finset.affineCombination_indicator_subset w1 p (s1.subset_union_left (s₂ := s2)),
+          Finset.affineCombination_indicator_subset w2 p s1.subset_union_right,
           ← @vsub_eq_zero_iff_eq V, Finset.affineCombination_vsub] at heq
         exact ha (s1 ∪ s2) (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) hws heq i hi
       · rw [← Finset.mem_coe, Finset.coe_union] at hi
@@ -359,7 +359,7 @@ variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V�
 independent, then the original family of points is also affine-independent. -/
 theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : AffineIndependent k (f ∘ p)) :
     AffineIndependent k p := by
-  cases' isEmpty_or_nonempty ι with h h;
+  cases' isEmpty_or_nonempty ι with h h
   · haveI := h
     apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
@@ -578,7 +578,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     have hsvi := hsv.linearIndependent
     have hsvt := hsv.span_eq
     rw [Basis.coe_ofVectorSpace] at hsvi hsvt
-    have h0 : ∀ v : V, v ∈ Basis.ofVectorSpaceIndex _ _ → v ≠ 0 := by
+    have h0 : ∀ v : V, v ∈ Basis.ofVectorSpaceIndex k V → v ≠ 0 := by
       intro v hv
       simpa [hsv] using hsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
@@ -591,7 +591,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     have hsvt := bsv.span_eq
     rw [Basis.coe_extend] at hsvi hsvt
     have hsv := h.subset_extend (Set.subset_univ _)
-    have h0 : ∀ v : V, v ∈ h.extend _ → v ≠ 0 := by
+    have h0 : ∀ v : V, v ∈ h.extend (Set.subset_univ _) → v ≠ 0 := by
       intro v hv
       simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
@@ -630,7 +630,6 @@ theorem exists_affineIndependent (s : Set P) :
 
 variable {V}
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Two different points are affinely independent. -/
 theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineIndependent k ![p₁, p₂] := by
   rw [affineIndependent_iff_linearIndependent_vsub k ![p₁, p₂] 0]

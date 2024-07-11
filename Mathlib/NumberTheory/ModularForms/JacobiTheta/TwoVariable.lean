@@ -144,7 +144,7 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
         refine tendsto_exp_atTop.comp ?_
         simp only [tendsto_neg_atTop_iff, mul_assoc]
         apply Filter.Tendsto.const_mul_atBot two_pos
-        exact (tendsto_natCast_atTop_atTop.atTop_mul_neg_const hz).const_mul_atBot pi_pos
+        exact (tendsto_natCast_atTop_atTop.atTop_mul_const_of_neg hz).const_mul_atBot pi_pos
       · revert h
         simpa only [hz, mul_zero, neg_zero, Real.exp_zero, summable_const_iff] using one_ne_zero
       · have : ((-↑·) : ℕ → ℤ).Injective := fun _ _ ↦ by simp only [neg_inj, Nat.cast_inj, imp_self]
@@ -431,7 +431,7 @@ lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
   · simp_rw [jacobiTheta₂_undef _ hτ, jacobiTheta₂'_undef _ hτ, mul_zero, sub_zero, mul_zero]
   have (n : ℤ) : jacobiTheta₂'_term n (z + τ) τ =
       cexp (-π * I * (τ + 2 * z)) * (jacobiTheta₂'_term (n + 1) z τ -
-      2 * π * I * jacobiTheta₂_term (n + 1) z τ):= by
+      2 * π * I * jacobiTheta₂_term (n + 1) z τ) := by
     simp only [jacobiTheta₂'_term, jacobiTheta₂_term]
     conv_rhs => rw [← sub_mul, mul_comm, mul_assoc, ← Complex.exp_add, Int.cast_add, Int.cast_one,
       mul_add, mul_one, add_sub_cancel_right]

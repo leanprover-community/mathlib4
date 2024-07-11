@@ -13,26 +13,29 @@ import Mathlib.Topology.Instances.RealVectorSpace
 #align_import analysis.complex.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
+
 # Normed space structure on `ℂ`.
 
-This file gathers basic facts on complex numbers of an analytic nature.
+This file gathers basic facts of analytic nature on the complex numbers.
 
 ## Main results
 
-This file registers `ℂ` as a normed field, expresses basic properties of the norm, and gives
-tools on the real vector space structure of `ℂ`. Notably, in the namespace `Complex`,
-it defines functions:
+This file registers `ℂ` as a normed field, expresses basic properties of the norm, and gives tools
+on the real vector space structure of `ℂ`. Notably, it defines the following functions in the
+namespace `Complex`.
 
-* `reCLM`
-* `imCLM`
-* `ofRealCLM`
-* `conjCLE`
-
-They are bundled versions of the real part, the imaginary part, the embedding of `ℝ` in `ℂ`, and
-the complex conjugate as continuous `ℝ`-linear maps. The last two are also bundled as linear
-isometries in `ofRealLI` and `conjLIE`.
+|Name              |Type         |Description                                             |
+|------------------|-------------|--------------------------------------------------------|
+|`equivRealProdCLM`|ℂ ≃L[ℝ] ℝ × ℝ|The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ` |
+|`reCLM`           |ℂ →L[ℝ] ℝ    |Real part function as a `ContinuousLinearMap`           |
+|`imCLM`           |ℂ →L[ℝ] ℝ    |Imaginary part function as a `ContinuousLinearMap`      |
+|`ofRealCLM`       |ℝ →L[ℝ] ℂ    |Embedding of the reals as a `ContinuousLinearMap`       |
+|`ofRealLI`        |ℝ →ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometry`               |
+|`conjCLE`         |ℂ ≃L[ℝ] ℂ    |Complex conjugation as a `ContinuousLinearEquiv`        |
+|`conjLIE`         |ℂ ≃ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
 
 We also register the fact that `ℂ` is an `RCLike` field.
+
 -/
 
 
@@ -259,8 +262,8 @@ theorem tendsto_abs_cocompact_atTop : Tendsto abs (cocompact ℂ) atTop :=
 #align complex.tendsto_abs_cocompact_at_top Complex.tendsto_abs_cocompact_atTop
 
 /-- The `normSq` function on `ℂ` is proper. -/
-theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop :=
-  by simpa [mul_self_abs]
+theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
+  simpa [mul_self_abs]
     using tendsto_abs_cocompact_atTop.atTop_mul_atTop tendsto_abs_cocompact_atTop
 #align complex.tendsto_norm_sq_cocompact_at_top Complex.tendsto_normSq_cocompact_atTop
 

@@ -248,7 +248,6 @@ theorem ghDist_le_hausdorffDist {X : Type u} [MetricSpace X] [CompactSpace X] [N
   exists (⟨A, B⟩ : NonemptyCompacts ℓ_infty_ℝ × NonemptyCompacts ℓ_infty_ℝ)
 #align Gromov_Hausdorff.GH_dist_le_Hausdorff_dist GromovHausdorff.ghDist_le_hausdorffDist
 
-set_option maxHeartbeats 400000 in
 /-- The optimal coupling constructed above realizes exactly the Gromov-Hausdorff distance,
 essentially by design. -/
 theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty X]
@@ -327,14 +326,14 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
                 cases z
                 · apply mem_union_left; apply mem_range_self
                 · apply mem_union_right; apply mem_range_self
-              refine' dist_le_diam_of_mem _ (A _) (A _)
+              refine dist_le_diam_of_mem ?_ (A _) (A _)
               rw [Φrange, Ψrange]
               exact (p ⊔ q).isCompact.isBounded
             _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := I
     let Fb := candidatesBOfCandidates F Fgood
     have : hausdorffDist (range (optimalGHInjl X Y)) (range (optimalGHInjr X Y)) ≤ HD Fb :=
       hausdorffDist_optimal_le_HD _ _ (candidatesBOfCandidates_mem F Fgood)
-    refine' le_trans this (le_of_forall_le_of_dense fun r hr => _)
+    refine le_trans this (le_of_forall_le_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
       have : f (inl x) ∈ ↑p := Φrange.subst (mem_range_self _)
@@ -386,9 +385,9 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
           hausdorffDist_optimal_le_HD _ _ candidatesBDist_mem_candidatesB
         _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := HD_candidatesBDist_le
         _ ≤ hausdorffDist (p : Set ℓ_infty_ℝ) q := not_lt.1 h
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · apply le_csInf
-    · refine' (Set.Nonempty.prod _ _).image _ <;> exact ⟨_, rfl⟩
+    · refine (Set.Nonempty.prod ?_ ?_).image _ <;> exact ⟨_, rfl⟩
     · rintro b ⟨⟨p, q⟩, ⟨hp, hq⟩, rfl⟩
       exact B p q hp hq
   · exact ghDist_le_hausdorffDist (isometry_optimalGHInjl X Y) (isometry_optimalGHInjr X Y)
@@ -813,7 +812,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     intro p
     by_cases hp : p ∉ t
     · have : Nonempty (Equiv (∅ : Set p.Rep) (Fin 0)) := by
-        rw [← Fintype.card_eq];
+        rw [← Fintype.card_eq]
         simp only [empty_card', Fintype.card_fin]
       use ∅, 0, bot_le, this.some
       -- Porting note: unclear why this next line wasn't needed in Lean 3
@@ -833,7 +832,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     ⟨⟨N p, lt_of_le_of_lt (hN p) (Nat.lt_succ_self _)⟩, fun a b =>
       ⟨min M ⌊ε⁻¹ * dist ((E p).symm a) ((E p).symm b)⌋₊,
         (min_le_left _ _).trans_lt (Nat.lt_succ_self _)⟩⟩
-  refine ⟨_, ?_, fun p => F p, ?_⟩;
+  refine ⟨_, ?_, fun p => F p, ?_⟩
   · infer_instance
   -- It remains to show that if `F p = F q`, then `p` and `q` are `ε`-close
   rintro ⟨p, pt⟩ ⟨q, qt⟩ hpq

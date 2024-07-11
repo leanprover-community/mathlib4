@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 
@@ -232,13 +232,13 @@ theorem map_add_self (x : M) : Q (x + x) = 4 * Q x := by
   norm_num
 #align quadratic_form.map_add_self QuadraticForm.map_add_self
 
--- Porting note: removed @[simp] because it is superseded by `ZeroHomClass.map_zero`
-theorem map_zero : Q 0 = 0 := by
+-- not @[simp] because it is superseded by `ZeroHomClass.map_zero`
+protected theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_mul]
 #align quadratic_form.map_zero QuadraticForm.map_zero
 
 instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R where
-  map_zero := map_zero
+  map_zero := QuadraticForm.map_zero
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] (a : S)
@@ -970,7 +970,7 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
 theorem _root_.LinearMap.BilinForm.toQuadraticForm_isOrtho [IsCancelAdd R]
-    [NoZeroDivisors R] [CharZero R] {B : BilinForm R M} {x y : M} (h : B.IsSymm):
+    [NoZeroDivisors R] [CharZero R] {B : BilinForm R M} {x y : M} (h : B.IsSymm) :
     B.toQuadraticForm.IsOrtho x y ↔ B.IsOrtho x y := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, toQuadraticForm_apply, map_add,

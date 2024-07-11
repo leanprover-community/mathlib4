@@ -171,7 +171,7 @@ theorem wcovBy_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → 
 #align wcovby_iff_le_and_eq_or_eq wcovBy_iff_le_and_eq_or_eq
 
 theorem WCovBy.le_and_le_iff (h : a ⩿ b) : a ≤ c ∧ c ≤ b ↔ c = a ∨ c = b := by
-  refine ⟨fun h2 => h.eq_or_eq h2.1 h2.2, ?_⟩; rintro (rfl | rfl);
+  refine ⟨fun h2 => h.eq_or_eq h2.1 h2.2, ?_⟩; rintro (rfl | rfl)
   exacts [⟨le_rfl, h.le⟩, ⟨h.le, le_rfl⟩]
 #align wcovby.le_and_le_iff WCovBy.le_and_le_iff
 
@@ -248,9 +248,10 @@ theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
 theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
-@[deprecated] alias densely_ordered_iff_forall_not_covBy :=
-  denselyOrdered_iff_forall_not_covBy -- 2024-04-04
 #align densely_ordered_iff_forall_not_covby denselyOrdered_iff_forall_not_covBy
+
+@[deprecated (since := "2024-04-04")]
+alias densely_ordered_iff_forall_not_covBy := denselyOrdered_iff_forall_not_covBy
 
 @[simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=

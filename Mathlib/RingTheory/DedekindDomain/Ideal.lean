@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
+import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.FractionalIdeal.Operations
@@ -227,6 +226,27 @@ theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (
   exact (right_inverse_eq _ I (spanSingleton _ (generator (I : Submodule R₁ K))⁻¹) hI).symm
 #align fractional_ideal.is_principal_inv FractionalIdeal.isPrincipal_inv
 
+variable {K}
+
+lemma den_mem_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) :
+    (algebraMap R₁ K) (I.den : R₁) ∈ I⁻¹ := by
+  rw [mem_inv_iff hI]
+  intro i hi
+  rw [← Algebra.smul_def (I.den : R₁) i, ← mem_coe, coe_one]
+  suffices Submodule.map (Algebra.linearMap R₁ K) I.num ≤ 1 from
+    this <| (den_mul_self_eq_num I).symm ▸ smul_mem_pointwise_smul i I.den I.coeToSubmodule hi
+  apply le_trans <| map_mono (show I.num ≤ 1 by simp only [Ideal.one_eq_top, le_top, bot_eq_zero])
+  rw [Ideal.one_eq_top, Submodule.map_top, one_eq_range]
+
+lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := by
+  by_cases hI : I = 0
+  · rw [hI, num_zero_eq <| NoZeroSMulDivisors.algebraMap_injective R₁ K, zero_mul, zero_eq_bot,
+      coeIdeal_bot]
+  · rw [mul_comm, ← den_mul_self_eq_num']
+    exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
+
+lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ :=
+  lt_of_lt_of_le (coeIdeal_ne_zero.2 (hI ∘ num_eq_zero_iff.1)).bot_lt I.num_le_mul_inv
 
 noncomputable instance : InvOneClass (FractionalIdeal R₁⁰ K) := { inv_one := div_one }
 
@@ -388,7 +408,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
       rwa [Ne, ← Multiset.cons_erase hPZ', Multiset.prod_cons, Ideal.mul_eq_bot, not_or, ←
         this] at hprodZ
     -- By maximality of `P` and `M`, we have that `P ≤ M` implies `P = M`.
-    have hPM' := (P.IsPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
+    have hPM' := (P.isPrime.isMaximal hP0).eq_of_le hM.ne_top hPM
     subst hPM'
     -- By minimality of `Z`, erasing `P` from `Z` is exactly what we need.
     refine ⟨Z.erase P, ?_, ?_⟩
@@ -839,8 +859,6 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
-  letI := Classical.decEq (Ideal A)
-  letI := Classical.decEq (Associates (Ideal A))
   letI := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
   have hgcd : gcd I J = I ⊔ J := by
     rw [gcd_eq_normalize _ _, normalize_eq]
@@ -882,10 +900,6 @@ theorem gcd_eq_sup (I J : Ideal A) : gcd I J = I ⊔ J := rfl
 @[simp]
 theorem lcm_eq_inf (I J : Ideal A) : lcm I J = I ⊓ J := rfl
 #align ideal.lcm_eq_inf Ideal.lcm_eq_inf
-
-theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : IsCoprime I J) : I ⊓ J = I * J := by
-  rw [← associated_iff_eq.mp (gcd_mul_lcm I J), lcm_eq_inf I J, gcd_eq_sup, coprime.sup_eq, top_mul]
-#align ideal.inf_eq_mul_of_coprime Ideal.inf_eq_mul_of_coprime
 
 theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
   rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff, one_eq_top, gcd_eq_sup]
@@ -1245,13 +1259,11 @@ theorem Ideal.IsPrime.mem_pow_mul (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : 
 
 section
 
-open scoped Classical
-
 theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : ℕ} (hle : x ≤ p ^ n)
-    (hlt : ¬x ≤ p ^ (n + 1)) : (normalizedFactors x).count p = n :=
+    [DecidableEq (Ideal R)] (hlt : ¬x ≤ p ^ (n + 1)) : (normalizedFactors x).count p = n :=
   count_normalizedFactors_eq' ((Ideal.isPrime_iff_bot_or_prime.mp hp).imp_right Prime.irreducible)
     (normalize_eq _) (Ideal.dvd_iff_le.mpr hle) (mt Ideal.le_of_dvd hlt)
-  #align ideal.count_normalized_factors_eq Ideal.count_normalizedFactors_eq
+#align ideal.count_normalized_factors_eq Ideal.count_normalizedFactors_eq
 
 end
 
@@ -1368,13 +1380,6 @@ theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥
     IsDedekindDomain.quotientEquivPiFactors hI (Ideal.Quotient.mk I x) = fun _P =>
       Ideal.Quotient.mk _ x := rfl
 #align is_dedekind_domain.quotient_equiv_pi_factors_mk IsDedekindDomain.quotientEquivPiFactors_mk
-
-/-- **Chinese remainder theorem**, specialized to two ideals. -/
-noncomputable def Ideal.quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
-    R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
-  Ideal.quotEquivOfEq (inf_eq_mul_of_coprime coprime).symm |>.trans <|
-    Ideal.quotientInfEquivQuotientProd I J coprime
-#align ideal.quotient_mul_equiv_quotient_prod Ideal.quotientMulEquivQuotientProd
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as
 `∏ i ∈ s, P i ^ e i`, then `R ⧸ I` factors as `Π (i : s), R ⧸ (P i ^ e i)`.
@@ -1514,7 +1519,8 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
 variable [DecidableRel ((· ∣ ·) : R → R → Prop)] [DecidableRel ((· ∣ ·) : Ideal R → Ideal R → Prop)]
 
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
-    factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. -/
+    factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
+    `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`.-/
 theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity {r d : R}
     (hr : r ≠ 0) (hd : d ∈ normalizedFactors r) :
     multiplicity d r =
@@ -1535,5 +1541,42 @@ theorem multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multipl
   rw [hx.symm, Equiv.symm_apply_apply, Subtype.coe_mk,
     multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity hr ha]
 #align multiplicity_normalized_factors_equiv_span_normalized_factors_symm_eq_multiplicity multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity
+
+/-- The bijection between the set of prime factors of the ideal `⟨r⟩` and the set of prime factors
+  of `r` preserves `count` of the corresponding multisets. See
+  `multiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_multiplicity` for the version
+  stated in terms of multiplicity. -/
+theorem count_span_normalizedFactors_eq {r X : R} (hr : r ≠ 0) (hX : Prime X) :
+    Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r}))  =
+        Multiset.count (normalize X) (normalizedFactors r) := by
+  have := multiplicity_eq_multiplicity_span (R := R) (a := X) (b := r)
+  rw [multiplicity_eq_count_normalizedFactors (Prime.irreducible hX) hr,
+    multiplicity_eq_count_normalizedFactors (Prime.irreducible ?_), normalize_apply,
+    normUnit_eq_one, Units.val_one, one_eq_top, mul_top, Nat.cast_inj] at this
+  simp only [normalize_apply, this]
+  · simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, hr, not_false_eq_true]
+  · simpa only [prime_span_singleton_iff]
+
+theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
+    (hr : r ≠ 0) (hX₁ : normUnit X = 1) (hX : Prime X) :
+      Multiset.count (Ideal.span {X} : Ideal R) (normalizedFactors (Ideal.span {r})) =
+        Multiset.count X (normalizedFactors r) := by
+  simpa [hX₁] using count_span_normalizedFactors_eq hr hX
+
+/-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
+  when regarding at these ideals as associated elements of the monoid of ideals.-/
+theorem count_associates_factors_eq [DecidableEq <| Associates (Ideal R)]
+    [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
+    (I J : Ideal R) (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
+    (Associates.mk J).count (Associates.mk I).factors = Multiset.count J (normalizedFactors I) := by
+  replace hI : Associates.mk I ≠ 0 := Associates.mk_ne_zero.mpr hI
+  have hJ' : Irreducible (Associates.mk J) := by
+    simpa only [Associates.irreducible_mk] using (Ideal.prime_of_isPrime hJ₀ hJ).irreducible
+  apply (Ideal.count_normalizedFactors_eq (p := J) (x := I) _ _).symm
+  all_goals
+    rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
+    simp only [Associates.dvd_eq_le]
+    rw [Associates.prime_pow_dvd_iff_le hI hJ']
+  linarith
 
 end PID

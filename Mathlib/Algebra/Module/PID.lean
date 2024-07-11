@@ -49,6 +49,9 @@ Then we get the general result using that a torsion free module is free (which h
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
 
+-- We shouldn't need to know about topology to prove
+-- the structure theorem for finitely generated modules over a PID.
+assert_not_exists TopologicalSpace
 
 universe u v
 
@@ -114,8 +117,8 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     Associates.mk_eq_mk_iff_associated, Associates.mk_pow]
   have prop :
     (fun n : ℕ => p ^ n • x = 0) = fun n : ℕ =>
-      (Associates.mk <| generator <| torsionOf R M x) ∣ Associates.mk p ^ n :=
-    by ext n; rw [← Associates.mk_pow, Associates.mk_dvd_mk, ← mem_iff_generator_dvd]; rfl
+      (Associates.mk <| generator <| torsionOf R M x) ∣ Associates.mk p ^ n := by
+    ext n; rw [← Associates.mk_pow, Associates.mk_dvd_mk, ← mem_iff_generator_dvd]; rfl
   have := (isTorsion'_powers_iff p).mp hM x; rw [prop] at this
   convert Associates.eq_pow_find_of_dvd_irreducible_pow (Associates.irreducible_mk.mpr hp)
     this.choose_spec

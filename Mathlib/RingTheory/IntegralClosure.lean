@@ -346,7 +346,7 @@ theorem RingHom.IsIntegralElem.of_mem_closure {x y z : S} (hx : f.IsIntegralElem
   rw [← Algebra.adjoin_union_coe_submodule, Set.singleton_union] at this
   exact
     IsIntegral.of_mem_of_fg (Algebra.adjoin R {x, y}) this z
-      (Algebra.mem_adjoin_iff.2 <| Subring.closure_mono (Set.subset_union_right _ _) hz)
+      (Algebra.mem_adjoin_iff.2 <| Subring.closure_mono Set.subset_union_right hz)
 #align ring_hom.is_integral_of_mem_closure RingHom.IsIntegralElem.of_mem_closure
 
 nonrec theorem IsIntegral.of_mem_closure {x y z : A} (hx : IsIntegral R x) (hy : IsIntegral R y)

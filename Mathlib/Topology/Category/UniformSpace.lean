@@ -43,7 +43,7 @@ deriving instance LargeCategory for UniformSpaceCat
 instance : ConcreteCategory UniformSpaceCat :=
   inferInstanceAs <| ConcreteCategory <| Bundled UniformSpace
 
-instance : CoeSort UniformSpaceCat (Type*) :=
+instance : CoeSort UniformSpaceCat Type* :=
   Bundled.coeSort
 
 instance (x : UniformSpaceCat) : UniformSpace x :=
@@ -65,16 +65,12 @@ theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
 instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨(forget UniformSpaceCat).map⟩
 
--- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover/std4/issues/86
-@[simp, nolint simpNF]
+@[simp]
 theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   rfl
 #align UniformSpace.coe_comp UniformSpaceCat.coe_comp
 
--- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover/std4/issues/86
-@[simp, nolint simpNF]
+@[simp]
 theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id

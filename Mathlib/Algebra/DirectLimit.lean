@@ -52,7 +52,9 @@ class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
 
 section
 
-variable {G} (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
+variable {G}
+variable (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
+
 theorem DirectedSystem.map_self i x h : f i i h x = x :=
   DirectedSystem.map_self' i x h
 theorem DirectedSystem.map_map {i j k} (hij hjk x) :
@@ -64,7 +66,8 @@ end
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
+variable {G}
+variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
@@ -197,7 +200,7 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
     DirectLimit G f →ₗ[R] DirectLimit G' f' :=
   lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ by
     cases isEmpty_or_nonempty ι
-    · exact Subsingleton.elim _ _
+    · subsingleton
     · have eq1 := LinearMap.congr_fun (hg i j h) g
       simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
@@ -210,7 +213,7 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
-  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
@@ -222,7 +225,7 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
     (map (fun i ↦ g₂ i ∘ₗ g₁ i) fun i j h ↦ by
         rw [LinearMap.comp_assoc, hg₁ i, ← LinearMap.comp_assoc, hg₂ i, LinearMap.comp_assoc] :
       DirectLimit G f →ₗ[R] DirectLimit G'' f'') :=
-  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 open LinearEquiv LinearMap in
@@ -470,7 +473,7 @@ def map (g : (i : ι) → G i →+ G' i)
     DirectLimit G f →+ DirectLimit G' f' :=
   lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
     cases isEmpty_or_nonempty ι
-    · exact Subsingleton.elim _ _
+    · subsingleton
     · have eq1 := DFunLike.congr_fun (hg i j h) g
       simp only [AddMonoidHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
@@ -483,7 +486,7 @@ def map (g : (i : ι) → G i →+ G' i)
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
-  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
@@ -496,7 +499,7 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
       rw [AddMonoidHom.comp_assoc, hg₁ i, ← AddMonoidHom.comp_assoc, hg₂ i,
         AddMonoidHom.comp_assoc] :
       DirectLimit G f →+ DirectLimit G'' f'') :=
-  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 /--
@@ -612,9 +615,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
               symm
               apply FreeCommRing.of_cons⟩)
         (fun s ⟨i, x, ih⟩ => ⟨i, -x, by
-          -- Porting note: Lean 3 was `of _ _ _`; Lean 4 is not as good at unification
-          -- here as Lean 3 is, for some reason.
-          rw [(of G f i).map_neg, ih]
+          rw [(of G _ _).map_neg, ih]
           rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
@@ -701,10 +702,10 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   have := Classical.decEq
   refine span_induction (Ideal.Quotient.eq_zero_iff_mem.1 H) ?_ ?_ ?_ ?_
   · rintro x (⟨i, j, hij, x, rfl⟩ | ⟨i, rfl⟩ | ⟨i, x, y, rfl⟩ | ⟨i, x, y, rfl⟩)
-    · refine'
+    · refine
         ⟨j, {⟨i, x⟩, ⟨j, f' i j hij x⟩}, ?_,
-          isSupported_sub (isSupported_of.2 <| Or.inr rfl) (isSupported_of.2 <| Or.inl rfl),
-            fun [_] => _⟩
+          isSupported_sub (isSupported_of.2 <| Or.inr (Set.mem_singleton _))
+            (isSupported_of.2 <| Or.inl rfl), fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | _⟩)
         · exact hij
         · rfl
@@ -716,19 +717,20 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           rw [this]
           · exact sub_self _
         exacts [Or.inl rfl, Or.inr rfl]
-    · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, fun [_] => _⟩
+    · refine ⟨i, {⟨i, 1⟩}, ?_, isSupported_sub (isSupported_of.2 (Set.mem_singleton _))
+        isSupported_one, fun [_] => ?_⟩
       · rintro k (rfl | h)
         rfl
         -- Porting note: the Lean3 proof contained `rw [restriction_of]`, but this
         -- lemma does not seem to work here
       · rw [RingHom.map_sub, RingHom.map_sub]
         erw [lift_of, dif_pos rfl, RingHom.map_one, lift_of, RingHom.map_one, sub_self]
-    · refine'
+    · refine
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, ?_,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_add (isSupported_of.2 <| Or.inr <| Or.inl rfl)
-              (isSupported_of.2 <| Or.inr <| Or.inr rfl)),
-          fun [_] => _⟩
+              (isSupported_of.2 <| Or.inr <| Or.inr (Set.mem_singleton _))),
+          fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_add, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
@@ -738,11 +740,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           rw [(f' i i _).map_add]
           · exact sub_self _
         all_goals tauto
-    · refine'
-        ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
+    · refine
+        ⟨i, {⟨i, x * y⟩, ⟨i, x⟩, ⟨i, y⟩}, ?_,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
             (isSupported_mul (isSupported_of.2 <| Or.inr <| Or.inl rfl)
-              (isSupported_of.2 <| Or.inr <| Or.inr rfl)), fun [_] => _⟩
+              (isSupported_of.2 <| Or.inr <| Or.inr (Set.mem_singleton _))), fun [_] => ?_⟩
       · rintro k (rfl | ⟨rfl | ⟨rfl | hk⟩⟩) <;> rfl
       · rw [(restriction _).map_sub, (restriction _).map_mul, restriction_of, restriction_of,
           restriction_of, dif_pos, dif_pos, dif_pos, RingHom.map_sub,
@@ -766,12 +768,12 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       · exact le_trans (hj z hz) hjk
     refine
       ⟨k, s ∪ t, this,
-        isSupported_add (isSupported_upwards hxs <| Set.subset_union_left s t)
-          (isSupported_upwards hyt <| Set.subset_union_right s t), fun [_] => ?_⟩
+        isSupported_add (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hyt Set.subset_union_right), fun [_] => ?_⟩
     -- Porting note: was `(restriction _).map_add`
     classical rw [RingHom.map_add, (FreeCommRing.lift _).map_add, ←
-      of.zero_exact_aux2 G f' hxs hi this hik (Set.subset_union_left s t), ←
-      of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right s t), ihs,
+      of.zero_exact_aux2 G f' hxs hi this hik Set.subset_union_left, ←
+      of.zero_exact_aux2 G f' hyt hj this hjk Set.subset_union_right, ihs,
       (f' i k hik).map_zero, iht, (f' j k hjk).map_zero, zero_add]
   · rintro x y ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
@@ -783,11 +785,11 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
       exacts [(hi z.1 <| Finset.mem_image.2 ⟨z, hz, rfl⟩).trans hik, (hj z hz).trans hjk]
     refine
       ⟨k, ↑s ∪ t, this,
-        isSupported_mul (isSupported_upwards hxs <| Set.subset_union_left (↑s) t)
-          (isSupported_upwards hyt <| Set.subset_union_right (↑s) t), fun [_] => ?_⟩
+        isSupported_mul (isSupported_upwards hxs Set.subset_union_left)
+          (isSupported_upwards hyt Set.subset_union_right), fun [_] => ?_⟩
     -- Porting note: RingHom.map_mul was `(restriction _).map_mul`
     classical rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
-      of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
+      of.zero_exact_aux2 G f' hyt hj this hjk Set.subset_union_right, iht,
       (f' j k hjk).map_zero, mul_zero]
 #align ring.direct_limit.of.zero_exact_aux Ring.DirectLimit.of.zero_exact_aux
 

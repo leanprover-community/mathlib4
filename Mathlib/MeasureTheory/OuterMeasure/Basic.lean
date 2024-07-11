@@ -94,7 +94,7 @@ theorem measure_le_inter_add_diff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t
   simpa using measure_union_le (s ∩ t) (s \ t)
 
 theorem measure_diff_null (ht : μ t = 0) : μ (s \ t) = μ s :=
-  (measure_mono <| diff_subset _ _).antisymm <| calc
+  (measure_mono diff_subset).antisymm <| calc
     μ s ≤ μ (s ∩ t) + μ (s \ t) := measure_le_inter_add_diff _ _ _
     _ ≤ μ t + μ (s \ t) := by gcongr; apply inter_subset_right
     _ = μ (s \ t) := by simp [ht]
@@ -313,3 +313,7 @@ theorem ext_nonempty {μ₁ μ₂ : OuterMeasure α} (h : ∀ s : Set α, s.None
     μ₁ = μ₂ :=
   ext fun s => s.eq_empty_or_nonempty.elim (fun he => by simp [he]) (h s)
 #align measure_theory.outer_measure.ext_nonempty MeasureTheory.OuterMeasure.ext_nonempty
+
+end OuterMeasure
+
+end MeasureTheory

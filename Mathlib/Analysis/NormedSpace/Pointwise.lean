@@ -400,12 +400,12 @@ variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 theorem smul_closedBall (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     c • closedBall x r = closedBall (c • x) (‖c‖ * r) := by
   rcases eq_or_ne c 0 with (rfl | hc)
-  · simp [hr, zero_smul_set, Set.singleton_zero, ← nonempty_closedBall]
+  · simp [hr, zero_smul_set, Set.singleton_zero, nonempty_closedBall]
   · exact smul_closedBall' hc x r
 #align smul_closed_ball smul_closedBall
 
-theorem smul_closedUnitBall (c : 𝕜) : c • closedBall (0 : E) (1 : ℝ) = closedBall (0 : E) ‖c‖ :=
-  by rw [smul_closedBall _ _ zero_le_one, smul_zero, mul_one]
+theorem smul_closedUnitBall (c : 𝕜) : c • closedBall (0 : E) (1 : ℝ) = closedBall (0 : E) ‖c‖ := by
+  rw [smul_closedBall _ _ zero_le_one, smul_zero, mul_one]
 #align smul_closed_unit_ball smul_closedUnitBall
 
 variable [NormedSpace ℝ E]

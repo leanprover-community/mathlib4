@@ -113,8 +113,9 @@ theorem one_right (a : ℤ) : J(a | 1) = 1 := by
 
 /-- The Legendre symbol `legendreSym p a` with an integer `a` and a prime number `p`
 is the same as the Jacobi symbol `J(a | p)`. -/
-theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) : legendreSym p a = J(a | p) :=
-  by simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
+theorem legendreSym.to_jacobiSym (p : ℕ) [fp : Fact p.Prime] (a : ℤ) :
+    legendreSym p a = J(a | p) := by
+  simp only [jacobiSym, factors_prime fp.1, List.prod_cons, List.prod_nil, mul_one, List.pmap]
 #align legendre_sym.to_jacobi_sym jacobiSym.legendreSym.to_jacobiSym
 
 /-- The Jacobi symbol is multiplicative in its second argument. -/
@@ -134,7 +135,7 @@ theorem mul_right (a : ℤ) (b₁ b₂ : ℕ) [NeZero b₁] [NeZero b₂] :
 /-- The Jacobi symbol takes only the values `0`, `1` and `-1`. -/
 theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a | b) = -1 :=
   ((@SignType.castHom ℤ _ _).toMonoidHom.mrange.copy {0, 1, -1} <| by
-    rw [Set.pair_comm];
+    rw [Set.pair_comm]
     exact (SignType.range_eq SignType.castHom).symm).list_prod_mem
       (by
         intro _ ha'
@@ -156,7 +157,7 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
 
 /-- The Jacobi symbol is multiplicative in its first argument. -/
 theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
-  simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _];
+  simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _]
   exact List.prod_map_mul (α := ℤ) (l := (factors b).attach)
     (f := fun x ↦ @legendreSym x {out := prime_of_mem_factors x.2} a₁)
     (g := fun x ↦ @legendreSym x {out := prime_of_mem_factors x.2} a₂)
@@ -306,7 +307,7 @@ theorem nonsquare_of_jacobiSym_eq_neg_one {a : ℤ} {b : ℕ} (h : J(a | b) = -1
 /-- If `p` is prime, then `J(a | p)` is `-1` iff `a` is not a square modulo `p`. -/
 theorem nonsquare_iff_jacobiSym_eq_neg_one {a : ℤ} {p : ℕ} [Fact p.Prime] :
     J(a | p) = -1 ↔ ¬IsSquare (a : ZMod p) := by
-  rw [← legendreSym.to_jacobiSym];
+  rw [← legendreSym.to_jacobiSym]
   exact legendreSym.eq_neg_one_iff p
 #align zmod.nonsquare_iff_jacobi_sym_eq_neg_one ZMod.nonsquare_iff_jacobiSym_eq_neg_one
 
@@ -508,7 +509,7 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
   rw [Nat.cast_mul, mul_left, mul_left, quadratic_reciprocity' ha₁ hb,
     quadratic_reciprocity' ha₁ hb', Nat.cast_pow, pow_left, pow_left, Nat.cast_two, at_two hb,
     at_two hb']
-  congr 1; swap;
+  congr 1; swap
   · congr 1
     · simp_rw [qrSign]
       rw [χ₄_nat_mod_four, χ₄_nat_mod_four (b % (4 * a)), mod_mod_of_dvd b (dvd_mul_right 4 a)]

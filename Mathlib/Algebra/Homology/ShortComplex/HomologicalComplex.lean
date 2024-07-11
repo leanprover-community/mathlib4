@@ -77,12 +77,6 @@ variable [K.HasHomology i]
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
 
-/-- Comparison isomorphism between the homology for the two homology API. -/
-noncomputable def homology'IsoHomology {A : Type*} [Category A] [Abelian A]
-    (K : HomologicalComplex A c) (i : ι) :
-    K.homology' i ≅ K.homology i :=
-  (K.sc i).homology'IsoHomology
-
 /-- The cycles in degree `i` of a homological complex. -/
 noncomputable def cycles := (K.sc i).cycles
 
@@ -462,7 +456,7 @@ end
 
 end
 
-variable (K : HomologicalComplex C c) (i j k : ι)
+variable (K L : HomologicalComplex C c) (i j k : ι)
 
 section
 
@@ -553,6 +547,28 @@ lemma isoHomologyπ_hom_inv_id :
 lemma isoHomologyπ_inv_hom_id :
     (K.isoHomologyπ i j hi h).inv ≫ K.homologyπ j = 𝟙 _ :=
   (K.isoHomologyπ i j hi h).inv_hom_id
+
+end
+
+section
+
+variable {K L}
+
+lemma epi_homologyMap_of_epi_of_not_rel (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [Epi (φ.f i)] (hi : ∀ j, ¬ c.Rel i j) :
+    Epi (homologyMap φ i) :=
+  ((MorphismProperty.epimorphisms C).arrow_mk_iso_iff
+    (Arrow.isoMk (K.isoHomologyι i _ rfl (shape _ _ _ (by tauto)))
+      (L.isoHomologyι i _ rfl (shape _ _ _ (by tauto))))).2
+      (MorphismProperty.epimorphisms.infer_property (opcyclesMap φ i))
+
+lemma mono_homologyMap_of_mono_of_not_rel (φ : K ⟶ L) (j : ι)
+    [K.HasHomology j] [L.HasHomology j] [Mono (φ.f j)] (hj : ∀ i, ¬ c.Rel i j) :
+    Mono (homologyMap φ j) :=
+  ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff
+    (Arrow.isoMk (K.isoHomologyπ _ j rfl (shape _ _ _ (by tauto)))
+      (L.isoHomologyπ _ j rfl (shape _ _ _ (by tauto))))).1
+      (MorphismProperty.monomorphisms.infer_property (cyclesMap φ j))
 
 end
 

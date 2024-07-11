@@ -269,12 +269,12 @@ lemma hf_modif_int :
     refine ⟨s, hs, ?_⟩
     rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioi, IntegrableOn,
       Measure.restrict_restrict measurableSet_Ioi, ← IntegrableOn]
-    exact hs'.mono_set (Set.inter_subset_right _ _)
+    exact hs'.mono_set Set.inter_subset_right
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub this x hx
     refine ⟨s, hs, ?_⟩
     rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioo, IntegrableOn,
       Measure.restrict_restrict measurableSet_Ioo, ← IntegrableOn]
-    exact hs'.mono_set (Set.inter_subset_right _ _)
+    exact hs'.mono_set Set.inter_subset_right
 
 lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     P.f_modif (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_modif x := by
@@ -461,3 +461,5 @@ theorem Λ_residue_zero :
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
       (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
+
+end WeakFEPair

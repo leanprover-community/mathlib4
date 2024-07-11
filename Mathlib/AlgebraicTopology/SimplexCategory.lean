@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
@@ -614,7 +615,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
 
 instance : (forget SimplexCategory).ReflectsIsomorphisms :=
   ⟨fun f hf =>
-    IsIso.of_iso
+    Iso.isIso_hom
       { hom := f
         inv := Hom.mk
             { toFun := inv ((forget SimplexCategory).map f)

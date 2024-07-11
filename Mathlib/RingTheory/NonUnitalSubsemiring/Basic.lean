@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Membership
+import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Equiv
@@ -477,7 +478,7 @@ variable (R) [NonUnitalNonAssocSemiring R]
 in `R` -/
 def center : NonUnitalSubsemiring R :=
   { Subsemigroup.center R with
-    zero_mem' := Set.zero_mem_center R
+    zero_mem' := Set.zero_mem_center
     add_mem' := Set.add_mem_center }
 #align non_unital_subsemiring.center NonUnitalSubsemiring.center
 
@@ -515,8 +516,8 @@ section NonUnitalSemiring
 -- no instance diamond, unlike the unital version
 example {R} [NonUnitalSemiring R] :
     (center.instNonUnitalCommSemiring _).toNonUnitalSemiring =
-      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) :=
-  by with_reducible_and_instances rfl
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R) := by
+  with_reducible_and_instances rfl
 
 theorem mem_center_iff {R} [NonUnitalSemiring R] {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
@@ -540,7 +541,7 @@ section Centralizer
 def centralizer {R} [NonUnitalSemiring R] (s : Set R) : NonUnitalSubsemiring R :=
   { Subsemigroup.centralizer s with
     carrier := s.centralizer
-    zero_mem' := Set.zero_mem_centralizer _
+    zero_mem' := Set.zero_mem_centralizer
     add_mem' := Set.add_mem_centralizer }
 #align non_unital_subsemiring.centralizer NonUnitalSubsemiring.centralizer
 

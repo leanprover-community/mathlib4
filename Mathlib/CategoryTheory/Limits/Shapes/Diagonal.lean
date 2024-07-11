@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 import Mathlib.CategoryTheory.Adjunction.Over
 
 #align_import category_theory.limits.shapes.diagonal from "leanprover-community/mathlib"@"f6bab67886fb92c3e2f539cc90a83815f69a189d"
@@ -115,11 +116,13 @@ set_option maxHeartbeats 400000 in
 /-- This iso witnesses the fact that
 given `f : X ⟶ Y`, `i : U ⟶ Y`, and `i₁ : V₁ ⟶ X ×[Y] U`, `i₂ : V₂ ⟶ X ×[Y] U`, the diagram
 
+```
 V₁ ×[X ×[Y] U] V₂ ⟶ V₁ ×[U] V₂
         |                 |
         |                 |
         ↓                 ↓
-        X        ⟶ X ×[Y] X
+        X         ⟶   X ×[Y] X
+```
 
 is a pullback square.
 Also see `pullback_fst_map_snd_isPullback`.
@@ -206,11 +209,13 @@ variable
 /-- This iso witnesses the fact that
 given `f : X ⟶ T`, `g : Y ⟶ T`, and `i : T ⟶ S`, the diagram
 
+```
 X ×ₜ Y ⟶ X ×ₛ Y
   |         |
   |         |
   ↓         ↓
-  T  ⟶  T ×ₛ T
+  T    ⟶  T ×ₛ T
+```
 
 is a pullback square.
 Also see `pullback_map_diagonal_isPullback`.
@@ -362,19 +367,23 @@ end
 
 /-- Given the following diagram with `S ⟶ S'` a monomorphism,
 
+```
     X ⟶ X'
       ↘      ↘
         S ⟶ S'
       ↗      ↗
     Y ⟶ Y'
+```
 
 This iso witnesses the fact that
 
+```
       X ×[S] Y ⟶ (X' ×[S'] Y') ×[Y'] Y
           |                  |
           |                  |
           ↓                  ↓
 (X' ×[S'] Y') ×[X'] X ⟶ X' ×[S'] Y'
+```
 
 is a pullback square. The diagonal map of this square is `pullback.map`.
 Also see `pullback_lift_map_is_pullback`.

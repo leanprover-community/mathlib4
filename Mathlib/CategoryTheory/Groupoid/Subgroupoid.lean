@@ -228,10 +228,9 @@ instance : InfSet (Subgroupoid C) :=
     { arrows := fun c d => ⋂ S ∈ s, Subgroupoid.arrows S c d
       inv := fun hp ↦ by rw [mem_iInter₂] at hp ⊢; exact fun S hS => S.inv (hp S hS)
       mul := fun hp _ hq ↦ by
-        rw [mem_iInter₂] at hp hq ⊢;
+        rw [mem_iInter₂] at hp hq ⊢
         exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
 
--- Porting note (#10756): new lemma
 theorem mem_sInf_arrows {s : Set (Subgroupoid C)} {c d : C} {p : c ⟶ d} :
     p ∈ (sInf s).arrows c d ↔ ∀ S ∈ s, p ∈ S.arrows c d :=
   mem_iInter₂
@@ -554,8 +553,8 @@ def im (hφ : Function.Injective φ.obj) :=
 theorem mem_im_iff (hφ : Function.Injective φ.obj) {c d : D} (f : c ⟶ d) :
     f ∈ (im φ hφ).arrows c d ↔
       ∃ (a b : C) (g : a ⟶ b) (ha : φ.obj a = c) (hb : φ.obj b = d),
-        f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb :=
-  by convert Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
+        f = eqToHom ha.symm ≫ φ.map g ≫ eqToHom hb := by
+  convert Map.arrows_iff φ hφ ⊤ f; simp only [Top.top, mem_univ, exists_true_left]
 #align category_theory.subgroupoid.mem_im_iff CategoryTheory.Subgroupoid.mem_im_iff
 
 theorem mem_im_objs_iff (hφ : Function.Injective φ.obj) (d : D) :

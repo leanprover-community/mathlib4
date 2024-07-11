@@ -8,7 +8,6 @@ import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
-import Batteries.Data.RBMap.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
@@ -454,7 +453,7 @@ def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : L
 
 
 /-- Left-biased version of `List.map₂`. `map₂Left f as bs` applies `f` to each pair
-`aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
+`aᵢ ∈ as` and `bᵢ ∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
 for the remaining `aᵢ`.
 
 ```
@@ -473,7 +472,7 @@ def map₂Left (f : α → Option β → γ) : List α → List β → List γ
 #align list.map₂_left List.map₂Left
 
 /-- Right-biased version of `List.map₂`. `map₂Right f as bs` applies `f` to each
-pair `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `as` is shorter than `bs`, `f` is applied to
+pair `aᵢ ∈ as` and `bᵢ ∈ bs`. If `as` is shorter than `bs`, `f` is applied to
 `none` for the remaining `bᵢ`.
 
 ```

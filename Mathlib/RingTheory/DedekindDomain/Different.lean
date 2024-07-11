@@ -37,7 +37,7 @@ variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
 variable [IsScalarTower A K L] [IsScalarTower A B L]
 variable [IsDomain A] [IsDomain B]
 variable [IsFractionRing A K] [IsIntegralClosure B A L] [IsFractionRing B L]
-variable [FiniteDimensional K L] [IsSeparable K L]
+variable [FiniteDimensional K L] [Algebra.IsSeparable K L]
 
 open nonZeroDivisors IsLocalization Matrix Algebra
 
@@ -185,11 +185,7 @@ lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRin
     rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
   simp only [AlgEquiv.toRingEquiv_eq_coe, _root_.map_mul, AlgEquiv.coe_ringEquiv,
-    AlgEquiv.apply_symm_apply]
-  show (FractionRing.algEquiv A K).symm _ ∈ (algebraMap A (FractionRing A)).range ↔ _
-  rw [← (FractionRing.algEquiv A K).symm.toAlgHom.comp_algebraMap, ← RingHom.map_range,
-    AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_ringHom_commutes, Subring.mem_map_equiv]
-  simp
+    AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, mem_one, AlgEquiv.algebraMap_eq_apply]
 
 open scoped Classical
 
@@ -217,7 +213,7 @@ def dual (I : FractionalIdeal B⁰ L) :
 variable [IsDedekindDomain B] {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0)
 
 lemma coe_dual :
-    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI]; rfl
+    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI, coe_mk]
 
 variable (B L)
 
@@ -372,7 +368,7 @@ def differentIdeal [NoZeroSMulDivisors A B] : Ideal B :=
 
 lemma coeSubmodule_differentIdeal_fractionRing
     [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B]
-    [IsSeparable (FractionRing A) (FractionRing B)]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     [FiniteDimensional (FractionRing A) (FractionRing B)] :
     coeSubmodule (FractionRing B) (differentIdeal A B) =
       1 / Submodule.traceDual A (FractionRing A) 1 := by
@@ -403,7 +399,8 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
     rw [IsScalarTower.algebraMap_apply A B L, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
-  have : IsSeparable (FractionRing A) (FractionRing B) := IsSeparable.of_equiv_equiv _ _ H
+  have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
+    Algebra.IsSeparable.of_equiv_equiv _ _ H
   have : FiniteDimensional (FractionRing A) (FractionRing B) := Module.Finite.of_equiv_equiv _ _ H
   have : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra _ L
   simp only [AlgEquiv.toLinearEquiv_toLinearMap, Submodule.map_comp]
@@ -505,7 +502,7 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
     FractionalIdeal.coe_spanSingleton, Submodule.span_singleton_mul]
   ext y
   have hne₁ : aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))) ≠ 0 :=
-    (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+    (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   have : algebraMap B L (aeval x (derivative (minpoly A x))) ≠ 0 := by
     rwa [minpoly.isIntegrallyClosed_eq_field_fractions K L hAx, derivative_map,
       aeval_map_algebraMap, aeval_algebraMap_apply] at hne₁

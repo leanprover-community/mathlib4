@@ -99,8 +99,8 @@ theorem iff_adjoin_eq_top :
 /-- A reformulation of `IsCyclotomicExtension` in the case `S` is a singleton. -/
 theorem iff_singleton :
     IsCyclotomicExtension {n} A B ↔
-      (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ (n : ℕ) = 1} :=
-  by simp [isCyclotomicExtension_iff]
+      (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ (n : ℕ) = 1} := by
+  simp [isCyclotomicExtension_iff]
 #align is_cyclotomic_extension.iff_singleton IsCyclotomicExtension.iff_singleton
 
 /-- If `IsCyclotomicExtension ∅ A B`, then the image of `A` in `B` equals `B`. -/
@@ -147,7 +147,7 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
     rw [IsScalarTower.toAlgHom_apply, ← adjoin_image] at hb
     refine adjoin_mono (fun y hy => ?_) hb
     obtain ⟨b₁, ⟨⟨n, hn⟩, h₁⟩⟩ := hy
-    exact ⟨n, ⟨mem_union_left T hn.1, by rw [← h₁, ← AlgHom.map_pow, hn.2, AlgHom.map_one]⟩⟩
+    exact ⟨n, ⟨mem_union_left T hn.1, by rw [← h₁, ← map_pow, hn.2, map_one]⟩⟩
 #align is_cyclotomic_extension.trans IsCyclotomicExtension.trans
 
 @[nontriviality]
@@ -232,7 +232,7 @@ theorem iff_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {n}) A B := by
   refine
     ⟨fun H => of_union_of_dvd A B h hS, fun H => (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => ?_, ?_⟩⟩
-  · exact H.exists_prim_root (subset_union_left _ _ hs)
+  · exact H.exists_prim_root (subset_union_left hs)
   · rw [_root_.eq_top_iff, ← ((iff_adjoin_eq_top _ A B).1 H).2]
     refine adjoin_mono fun x hx => ?_
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢

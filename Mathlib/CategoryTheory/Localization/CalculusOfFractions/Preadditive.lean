@@ -33,7 +33,7 @@ a preadditive structure, but only one of these two constructions can be made an 
 
 namespace CategoryTheory
 
-open MorphismProperty Preadditive
+open MorphismProperty Preadditive Limits Category
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] (L : C ⥤ D)
   {W : MorphismProperty C} [L.IsLocalization W] [W.HasLeftCalculusOfFractions]
@@ -64,6 +64,13 @@ lemma symm_add : φ.symm.add = φ.add := by
   dsimp [add, symm]
   congr 1
   apply add_comm
+
+@[simp]
+lemma map_add (F : C ⥤ D) (hF : W.IsInvertedBy F) [Preadditive D] [F.Additive] :
+    φ.add.map F hF = φ.fst.map F hF + φ.snd.map F hF := by
+  have := hF φ.s φ.hs
+  rw [← cancel_mono (F.map φ.s), add_comp, LeftFraction.map_comp_map_s,
+    LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, F.map_add]
 
 end LeftFraction₂
 
@@ -266,8 +273,8 @@ lemma add_eq_add {X'' Y'' : C} (eX' : L.obj X'' ≅ X') (eY' : L.obj Y'' ≅ Y')
     add W eX eY f₁ f₂ = add W eX' eY' f₁ f₂ := by
   have h₁ := comp_add W eX' eX eY (𝟙 _) f₁ f₂
   have h₂ := add_comp W eX' eY eY' f₁ f₂ (𝟙 _)
-  simp only [Category.id_comp] at h₁
-  simp only [Category.comp_id] at h₂
+  simp only [id_comp] at h₁
+  simp only [comp_id] at h₂
   rw [h₁, h₂]
 
 variable (L X' Y') in
@@ -310,15 +317,39 @@ lemma functor_additive :
 
 attribute [irreducible] preadditive
 
-noncomputable instance : Preadditive W.Localization := preadditive W.Q W
+lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
+    (G : D ⥤ E) :
+    G.Additive ↔ (L ⋙ G).Additive := by
+  constructor
+  · intro
+    infer_instance
+  · intro h
+    suffices ∀ ⦃X Y : C⦄ (f g : L.obj X ⟶ L.obj Y), G.map (f + g) = G.map f + G.map g by
+      refine ⟨fun {X Y f g} => ?_⟩
+      have hL := essSurj L W
+      have eq := this ((L.objObjPreimageIso X).hom ≫ f ≫ (L.objObjPreimageIso Y).inv)
+        ((L.objObjPreimageIso X).hom ≫ g ≫ (L.objObjPreimageIso Y).inv)
+      rw [Functor.map_comp, Functor.map_comp, Functor.map_comp, Functor.map_comp,
+        ← comp_add, ← comp_add, ← add_comp, ← add_comp, Functor.map_comp, Functor.map_comp] at eq
+      rw [← cancel_mono (G.map (L.objObjPreimageIso Y).inv),
+        ← cancel_epi (G.map (L.objObjPreimageIso X).hom), eq]
+    intros X Y f g
+    obtain ⟨φ, rfl, rfl⟩ := exists_leftFraction₂ L W f g
+    have := Localization.inverts L W φ.s φ.hs
+    rw [← φ.map_add L (inverts L W), ← cancel_mono (G.map (L.map φ.s)), ← G.map_comp,
+      add_comp, ← G.map_comp, ← G.map_comp, LeftFraction.map_comp_map_s,
+      LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, ← Functor.comp_map,
+      Functor.map_add, Functor.comp_map, Functor.comp_map]
 
+noncomputable instance : Preadditive W.Localization := preadditive W.Q W
 instance : W.Q.Additive := functor_additive W.Q W
+instance [HasZeroObject C] : HasZeroObject W.Localization := W.Q.hasZeroObject_of_additive
 
 variable [W.HasLocalization]
 
 noncomputable instance : Preadditive W.Localization' := preadditive W.Q' W
-
 instance : W.Q'.Additive := functor_additive W.Q' W
+instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject_of_additive
 
 end Localization
 

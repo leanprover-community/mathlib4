@@ -19,12 +19,12 @@ A key result is the orthogonality of characters for irreducible representations 
 over an algebraically closed field whose characteristic doesn't divide the order of the group. It
 is the theorem `char_orthonormal`
 
-# Implementation notes
+## Implementation notes
 
 Irreducible representations are implemented categorically, using the `Simple` class defined in
 `Mathlib.CategoryTheory.Simple`
 
-# TODO
+## TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid
 structure, `char_dual` and `char_linHom` should probably be stated in terms of `Vᘁ` and `ihom V W`.
 -/
@@ -51,8 +51,8 @@ def character (V : FdRep k G) (g : G) :=
   LinearMap.trace k V (V.ρ g)
 #align fdRep.character FdRep.character
 
-theorem char_mul_comm (V : FdRep k G) (g : G) (h : G) : V.character (h * g) = V.character (g * h) :=
-  by simp only [trace_mul_comm, character, map_mul]
+theorem char_mul_comm (V : FdRep k G) (g : G) (h : G) :
+    V.character (h * g) = V.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
 #align fdRep.char_mul_comm FdRep.char_mul_comm
 
 @[simp]
@@ -113,7 +113,7 @@ end Group
 
 section Orthogonality
 
-variable {G : GroupCat.{u}} [IsAlgClosed k]
+variable {G : Grp.{u}} [IsAlgClosed k]
 
 open scoped Classical
 

@@ -109,7 +109,7 @@ instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α
   letI := upgradePolishSpace α
   infer_instance
 
-@[deprecated] -- 2024-02-23
+@[deprecated (since := "2024-02-23")]
 theorem t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] : T2Space α := inferInstance
 #align polish_space.t2_space PolishSpace.t2Space
 
@@ -271,7 +271,7 @@ theorem dist_eq (x y : CompleteCopy s) :
 #align polish_space.dist_complete_copy_eq TopologicalSpace.Opens.CompleteCopy.dist_eqₓ
 
 theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
-  (le_add_iff_nonneg_right _).2 (abs_nonneg _)
+  le_add_of_nonneg_right (abs_nonneg _)
 #align polish_space.dist_le_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.dist_val_le_distₓ
 
 instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
@@ -404,7 +404,6 @@ theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : S
   simpa using hs.isClosed_compl.isClopenable.compl
 #align is_open.is_clopenable IsOpen.isClopenable
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- Porting note (#11215): TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
 theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by

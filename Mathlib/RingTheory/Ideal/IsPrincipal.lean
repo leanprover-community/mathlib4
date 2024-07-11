@@ -149,3 +149,5 @@ noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :
   map_mul' _ _ := by
     erw [Subtype.ext_iff, Subtype.ext_iff, associatesNonZeroDivisorsEquivIsPrincipal_mul]
     rfl
+
+end Ideal

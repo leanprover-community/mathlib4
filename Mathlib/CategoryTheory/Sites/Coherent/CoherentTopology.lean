@@ -55,8 +55,8 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α 
     exact fun W => coherentTopology.isSheaf_yoneda_obj W _ h₂
   -- Show that a covering sieve is a colimit, which implies the original set of arrows is regular
   -- epimorphic. We use the transitivity property of saturation
-  apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
-  · apply Coverage.saturate.of
+  apply Coverage.Saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
+  · apply Coverage.Saturate.of
     use α, inferInstance, Y, π
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]

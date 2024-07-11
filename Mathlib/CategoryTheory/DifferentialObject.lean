@@ -274,7 +274,7 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
 @[simps!]
 nonrec def shiftFunctorAdd (m n : S) :
     shiftFunctor C (m + n) ≅ shiftFunctor C m ⋙ shiftFunctor C n := by
-  refine' NatIso.ofComponents (fun X => mkIso (shiftAdd X.obj _ _) _) (fun f => _)
+  refine NatIso.ofComponents (fun X => mkIso (shiftAdd X.obj _ _) ?_) (fun f => ?_)
   · dsimp
     rw [← cancel_epi ((shiftFunctorAdd C m n).inv.app X.obj)]
     simp only [Category.assoc, Iso.inv_hom_id_app_assoc]

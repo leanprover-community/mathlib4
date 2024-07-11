@@ -791,8 +791,8 @@ theorem isUnit_iff_ker_eq_bot [FiniteDimensional K V] (f : V →ₗ[K] V) :
 #align linear_map.is_unit_iff_ker_eq_bot LinearMap.isUnit_iff_ker_eq_bot
 
 theorem isUnit_iff_range_eq_top [FiniteDimensional K V] (f : V →ₗ[K] V) :
-    IsUnit f ↔ (LinearMap.range f) = ⊤ :=
-  by rw [isUnit_iff_ker_eq_bot, ker_eq_bot_iff_range_eq_top]
+    IsUnit f ↔ (LinearMap.range f) = ⊤ := by
+  rw [isUnit_iff_ker_eq_bot, ker_eq_bot_iff_range_eq_top]
 #align linear_map.is_unit_iff_range_eq_top LinearMap.isUnit_iff_range_eq_top
 
 end LinearMap
@@ -1113,7 +1113,7 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
-@[deprecated Subalgebra.finite_bot] -- 2024-04-11
+@[deprecated Subalgebra.finite_bot (since := "2024-04-11")]
 theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
   Subalgebra.finite_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot

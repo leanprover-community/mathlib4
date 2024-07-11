@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
 import Mathlib.Data.Finset.Order
-import Mathlib.Order.Atoms.Finite
+import Mathlib.Order.Atoms
+import Mathlib.Data.Set.Finite
 
 #align_import data.fintype.order from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -118,7 +119,7 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
 /-- A finite bounded linear order is complete. -/
 noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
-  { toCompleteLattice α, ‹LinearOrder α› with }
+  { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
 #align fintype.to_complete_linear_order Fintype.toCompleteLinearOrder
 
 -- See note [reducible non-instances]
@@ -151,8 +152,9 @@ noncomputable abbrev toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice 
 /-- A nonempty finite linear order is complete. If the linear order is already a `BoundedOrder`,
 then use `Fintype.toCompleteLinearOrder` instead, as this gives definitional equality for `⊥` and
 `⊤`. -/
-noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α :=
-  { toCompleteLatticeOfNonempty α, ‹LinearOrder α› with }
+noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α := by
+  let _ := toBoundedOrder α
+  exact { toCompleteLatticeOfNonempty α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
 #align fintype.to_complete_linear_order_of_nonempty Fintype.toCompleteLinearOrderOfNonempty
 
 end Nonempty
@@ -161,8 +163,7 @@ end Fintype
 
 /-! ### Concrete instances -/
 
-
-noncomputable instance Fin.completeLinearOrder {n : ℕ} : CompleteLinearOrder (Fin (n + 1)) :=
+noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=
   Fintype.toCompleteLinearOrder _
 
 noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
@@ -219,8 +220,8 @@ theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddB
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
-@[deprecated] alias Directed.fintype_le := Directed.finite_le
-@[deprecated] alias Fintype.exists_le := Finite.exists_le
-@[deprecated] alias Fintype.exists_ge := Finite.exists_ge
-@[deprecated] alias Fintype.bddAbove_range := Finite.bddAbove_range
-@[deprecated] alias Fintype.bddBelow_range := Finite.bddBelow_range
+@[deprecated (since := "2024-01-16")] alias Directed.fintype_le := Directed.finite_le
+@[deprecated (since := "2024-01-16")] alias Fintype.exists_le := Finite.exists_le
+@[deprecated (since := "2024-01-16")] alias Fintype.exists_ge := Finite.exists_ge
+@[deprecated (since := "2024-01-16")] alias Fintype.bddAbove_range := Finite.bddAbove_range
+@[deprecated (since := "2024-01-16")] alias Fintype.bddBelow_range := Finite.bddBelow_range
