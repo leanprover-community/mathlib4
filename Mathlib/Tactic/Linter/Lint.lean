@@ -48,6 +48,8 @@ Linter that checks whether a structure should be in Prop.
 
 end Std.Tactic.Lint
 
+namespace Mathlib.Linter
+
 /-!
 #  `dupNamespace` linter
 
@@ -56,8 +58,6 @@ at least twice consecutively.
 
 For instance, `Nat.Nat.foo` and `One.two.two` trigger a warning, while `Nat.One.Nat` does not.
 -/
-
-namespace Mathlib.Linter
 
 /--
 The `dupNamespace` linter is set on by default.  Lean emits a warning on any declaration that
@@ -108,6 +108,45 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter dupNamespace
 
 end DupNamespaceLinter
+
+/-!
+#  `oneLineAlign` linter
+
+The `oneLineAlign` linter checks that `#align` statements span a single line,
+which is desirable as it allows them to be parsed by very simple parsers.
+-/
+
+/--
+The `oneLineAlign` linter is set on by default.  Lean emits a warning on `#align` statements
+spanning more than one line.
+-/
+register_option linter.oneLineAlign : Bool := {
+  defValue := true
+  descr := "enable the one-line align linter"
+}
+
+namespace OneLineAlignLinter
+
+open Lean
+
+/-- Gets the value of the `linter.oneLineAlign` option. -/
+def getLinterOneLineAlign (o : Options) : Bool := Linter.getLinterValue linter.oneLineAlign o
+
+@[inherit_doc linter.oneLineAlign]
+def oneLineAlign : Linter where run := withSetOptionIn fun stx => do
+  if getLinterOneLineAlign (← getOptions) then
+    if stx.isOfKind `Mathlib.Prelude.Rename.align then
+      if let some spos := stx.getRange? then
+        let fm ← getFileMap
+        let lines := (fm.toPosition spos.stop).line - (fm.toPosition spos.start).line + 1
+        if lines != 1 then
+          Linter.logLint linter.oneLineAlign stx
+            m!"This `#align` spans {lines} lines, instead of just one.\n\
+              Do not worry, the 100 character limit does not apply to `#align` statements!"
+
+initialize addLinter oneLineAlign
+
+end OneLineAlignLinter
 
 /-!
 # The "EndOf" linter
