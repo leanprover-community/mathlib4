@@ -19,7 +19,7 @@ that the `Rⱼ`-action is compatible, then `M` is an `Rⱼ`-module for all `j` a
 
 We choose not to use `PresheafOfModules` to avoid code duplication:
 consider `R : J ⥤ CommRingCat` and `M : J ⥤ AddCommGrp`, then `colimit M` is both a
-`colimit R`-module and a `colimt (R ⋙ forget₂ CommRingCat RingCat)`-module; the two module
+`colimit R`-module and a `colimit (R ⋙ forget₂ CommRingCat RingCat)`-module; the two module
 structures are virtually the same. This situation manifests in stalks of sheaves of modules:
 for any ringed space `X` and a sheaf of `𝒪_X`-module `ℳ`, we want to think the stalk `ℳₓ` as an
 `𝒪_{X,x}`-module. But since `PresheafOfModules` requires a presheaf of `RingCat` not `CommRingCat`,
