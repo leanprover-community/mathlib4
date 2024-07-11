@@ -180,30 +180,6 @@ def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
 
 variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
 
-section Partitions
-
-/-! ### Multiplicativity on partitions -/
-
-/-- Given a sequence of `MvPolynomial` functions `f` and a partition `μ` of size `n`,
-`muProduct` computes the product of applying each function in `f` to the parts of `μ`. -/
-def muProduct {n : ℕ} (f : ℕ → MvPolynomial σ R) (μ : n.Partition) : MvPolynomial σ R :=
-    (μ.parts.map f).prod
-
-lemma muProduct_def {n : ℕ} (f : ℕ → MvPolynomial σ R) (μ : n.Partition) :
-    muProduct σ R f μ = (μ.parts.map f).prod := rfl
-
-@[simp]
-theorem muProduct_indiscrete_zero (f : ℕ → MvPolynomial σ R) :
-    muProduct σ R f (.indiscrete 0) = 1 := by simp [muProduct]
-
-@[simp]
-theorem muProduct_indiscrete_of_pos {n : ℕ} (npos : n ≠ 0) (f : ℕ → MvPolynomial σ R) :
-    muProduct σ R f (.indiscrete n) = f n := by
-  rw [muProduct, Nat.Partition.indiscrete_parts, Multiset.map_singleton, Multiset.prod_singleton]
-  exact npos
-
-end Partitions
-
 section ElementarySymmetric
 
 open Finset
@@ -219,8 +195,7 @@ lemma esymm_def (n : ℕ) : esymm σ R n = ∑ t in powersetCard n univ, ∏ i i
 `esymmPart` is the product of the symmetric polynomials `esymm μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition.
 -/
-def esymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
-  muProduct σ R (esymm σ R) μ
+def esymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (esymm σ R)).prod
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
@@ -348,11 +323,11 @@ variable [DecidableEq σ] [DecidableEq τ]
 /-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`. -/
 def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 
-lemma hsymm_def (n : ℕ) : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
+lemma hsymm_def {n : ℕ} : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
 
 /-- `hsymmPart` is the product of the symmetric polynomials `hsymm μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
-def hsymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := muProduct σ R (hsymm σ R) μ
+def hsymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (hsymm σ R)).prod
 
 lemma hsymmPart_def {n : ℕ} (μ : n.Partition) : hsymmPart σ R μ = (μ.parts.map (hsymm σ R)).prod :=
   rfl
@@ -395,11 +370,9 @@ lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
 
 /-- `psumPart` is the product of the symmetric polynomials `psum μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
-def psumPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R :=
-  muProduct σ R (psum σ R) μ
+def psumPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (psum σ R)).prod
 
-lemma psumPart_def {n : ℕ} (μ : n.Partition) : psumPart σ R μ =
-    (μ.parts.map (psum σ R)).prod := rfl
+lemma psumPart_def {n : ℕ} (μ : n.Partition) : psumPart σ R μ = (μ.parts.map (psum σ R)).prod := rfl
 
 @[simp]
 theorem psum_zero : psum σ R 0 = Fintype.card σ := by simp [psum]
@@ -408,8 +381,7 @@ theorem psum_zero : psum σ R 0 = Fintype.card σ := by simp [psum]
 theorem psum_one : psum σ R 1 = ∑ i, X i := by simp [psum]
 
 @[simp]
-theorem psumPart_zero : psumPart σ R (.indiscrete 0) = 1 := by
-  rw [psumPart, muProduct_indiscrete_zero]
+theorem psumPart_zero : psumPart σ R (.indiscrete 0) = 1 := by simp [psumPart]
 
 @[simp]
 theorem psumPart_indiscrete {n : ℕ} (npos : n ≠ 0) :
