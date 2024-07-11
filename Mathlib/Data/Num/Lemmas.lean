@@ -989,15 +989,14 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     rw [show (Num.zero : Nat) = 0 from rfl, Nat.zero_testBit]
   | pos m =>
     rw [cast_pos]
-    sorry
-    -- induction' n with n IH generalizing m <;> cases' m with m m
-    --     <;> dsimp only [PosNum.testBit, Nat.zero_eq]
-    -- · rfl
-    -- · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_zero]
-    -- · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_zero]
-    -- · simp
-    -- · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
-    -- · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_succ, IH]
+    induction' n with n IH generalizing m <;> cases' m with m m
+        <;> dsimp only [PosNum.testBit, Nat.zero_eq]
+    · rfl
+    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
+    · simp
+    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
+    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
 
 end Num
@@ -1089,16 +1088,16 @@ theorem cast_to_int [AddGroupWithOne α] : ∀ n : ZNum, ((n : ℤ) : α) = n
   | neg p => by rw [cast_neg, cast_neg, Int.cast_neg, PosNum.cast_to_int]
 #align znum.cast_to_int ZNum.cast_to_int
 
-theorem bit0_of_bit0 : ∀ n : ZNum, ZNum.bit0 n = n.bit0 := sorry
-  -- | 0 => rfl
-  -- | pos a => congr_arg pos a.bit0_of_bit0
-  -- | neg a => congr_arg neg a.bit0_of_bit0
+theorem bit0_of_bit0 : ∀ n : ZNum, ZNum.bit0 n = n.bit0 := fun _ ↦ rfl
+  /- | 0 => rfl -/
+  /- | pos _ => rfl -/
+  /- | neg _ => rfl -/
 #align znum.bit0_of_bit0 ZNum.bit0_of_bit0
 
-theorem bit1_of_bit1 : ∀ n : ZNum, ZNum.bit1 n = n.bit1 := sorry
-  -- | 0 => rfl
-  -- | pos a => congr_arg pos a.bit1_of_bit1
-  -- | neg a => show PosNum.sub' 1 (_root_.bit0 a) = _ by rw [PosNum.one_sub', a.bit0_of_bit0]; rfl
+theorem bit1_of_bit1 : ∀ n : ZNum, ZNum.bit1 n = n.bit1
+  | 0 => rfl
+  | pos _ => rfl
+  | neg _ => rfl
 #align znum.bit1_of_bit1 ZNum.bit1_of_bit1
 
 @[simp, norm_cast]
@@ -1155,10 +1154,17 @@ namespace PosNum
 
 variable {α : Type*}
 
-theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n := sorry
-  -- | 1 => rfl
-  -- | bit0 p => (ZNum.bit0_of_bit0 p).trans <| congr_arg _ (cast_to_znum p)
-  -- | bit1 p => (ZNum.bit1_of_bit1 p).trans <| congr_arg _ (cast_to_znum p)
+theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
+  | 1 => rfl
+  | bit0 p => by
+      have := congr_arg ZNum.bit0 (cast_to_znum p)
+      have := (ZNum.bit0_of_bit0 p).trans <| congr_arg _ (cast_to_znum p)
+      simp
+      sorry
+  | bit1 p => by
+      convert (ZNum.bit1_of_bit1 p).trans <| congr_arg _ (cast_to_znum p)
+      simp
+      sorry
 #align pos_num.cast_to_znum PosNum.cast_to_znum
 
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
