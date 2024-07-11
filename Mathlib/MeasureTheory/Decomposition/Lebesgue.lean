@@ -932,12 +932,25 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         add_tsub_cancel_of_le (hle A)]⟩
 #align measure_theory.measure.have_lebesgue_decomposition_of_finite_measure MeasureTheory.Measure.haveLebesgueDecomposition_of_finiteMeasure
 
+/-- If any finite measure has a Lebesgue decomposition with respect to `ν`,
+then the same is true for any s-finite measure. -/
+theorem HaveLebesgueDecomposition.sfinite_of_isFiniteMeasure [SFinite μ]
+    (h : ∀ (μ : Measure α) [IsFiniteMeasure μ], HaveLebesgueDecomposition μ ν) :
+    HaveLebesgueDecomposition μ ν := by
+  refine ⟨⟨.sum fun n ↦ (sFiniteSeq μ n).singularPart ν, ∑' n, rnDeriv (sFiniteSeq μ n) ν⟩,
+    by measurability, by simp [mutuallySingular_singularPart], ?_⟩
+  simp only [withDensity_tsum fun _ ↦ measurable_rnDeriv _ _, Measure.sum_add_sum,
+    singularPart_add_rnDeriv, sum_sFiniteSeq]
+
+theorem HaveLebesgueDecomposition.sigmaFinite_of_isFiniteMeasure [SigmaFinite ν]
+
 attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
 
 instance restrict.instIsFiniteMeasure {S : μ.FiniteSpanningSetsIn {s : Set α | MeasurableSet s}}
     (n : ℕ) : IsFiniteMeasure (μ.restrict <| S.set n) :=
   ⟨by rw [restrict_apply MeasurableSet.univ, univ_inter]; exact S.finite _⟩
 #align measure_theory.measure.restrict.measure_theory.is_finite_measure MeasureTheory.Measure.restrict.instIsFiniteMeasure
+  
 
 -- see Note [lower instance priority]
 /-- **The Lebesgue decomposition theorem**: Any pair of σ-finite measures `μ` and `ν`

@@ -591,17 +591,15 @@ lemma sfinite_sum_of_countable [Countable ι]
   · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply]
     infer_instance
 
-instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite (Measure.sum m) := by
+protected instance SFinite.sum [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
+    SFinite (Measure.sum m) := by
   change SFinite (Measure.sum (fun i ↦ m i))
   simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
   apply sfinite_sum_of_countable
 
 instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
-  refine ⟨fun n ↦ sFiniteSeq μ n + sFiniteSeq ν n, inferInstance, ?_⟩
-  ext s hs
-  simp only [Measure.add_apply, sum_apply _ hs]
-  rw [tsum_add ENNReal.summable ENNReal.summable, ← sum_apply _ hs, ← sum_apply _ hs,
-    sum_sFiniteSeq, sum_sFiniteSeq]
+  have : ∀ b : Bool, SFinite (cond b μ ν) := by simp [*]
+  simpa using SFinite.sum (cond · μ ν)
 
 instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
   ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance,
