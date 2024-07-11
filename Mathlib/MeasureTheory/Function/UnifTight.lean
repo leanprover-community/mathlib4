@@ -54,9 +54,7 @@ from `MeasureTheory.Functions.UniformIntegrable`.-/
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
 
-/-- Definition of being Uniformly Tight.
-
-A sequence of functions `f` is uniformly tight in `L^p` if for all `ε > 0`, there
+/-- A sequence of functions `f` is uniformly tight in `L^p` if for all `ε > 0`, there
 exists some measurable set `s` with finite measure such that the Lp-norm of
 `f i` restricted to `sᶜ` is smaller than `ε` for all `i`. -/
 def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
@@ -359,7 +357,7 @@ theorem tendsto_Lp_notFinite_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞
 /-- **Vitali's convergence theorem** (non-finite measure version).
 
 A sequence of functions `f` converges to `g` in Lp
-if and only if it is uniformly integrable, uniformly tight and to `g` in measure. -/
+if and only if it is uniformly integrable, uniformly tight and converges to `g` in measure. -/
 -- XXX: logically, this should be renamed to `tendstoInMeasure_iff_tendsto_Lp`, while
 --  the current version of that could be renamed to `tendstoInMeasure_iff_tendsto_Lp_of_isFinite`.
 theorem tendstoInMeasure_notFinite_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞)
