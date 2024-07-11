@@ -244,7 +244,7 @@ theorem map_add_self (x : M) : Q (x + x) = 4 • Q x := by
 #align quadratic_form.map_add_self QuadraticMap.map_add_self
 
 -- not @[simp] because it is superseded by `ZeroHomClass.map_zero`
-theorem map_zero : Q 0 = 0 := by
+protected theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_smul]
 #align quadratic_form.map_zero QuadraticMap.map_zero
 
