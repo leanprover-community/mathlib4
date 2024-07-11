@@ -152,18 +152,19 @@ def getStartPos (stx : Syntax) : Array String.Pos :=
 
 /-- `inappropriateSpacing file stx` takes as input the text `file` of a file and
 the `stx` of a binder.
-It returns an array of characters that should be empty if the binder has the correct spacing.
-It returns:
-* the two characters neighbouring the `:`, if they are not spaces ` `;
-* the two characters at distance 2 from the `:`, if they are spaces ` `;
-* the characters two positions before each variable in the binder from the second onwards,
-  unless it is a space;
-* the character following the opening binder and the character preceding the closing binder,
-  if they are spaces.
+It returns the substring of `file` corresponding to `stx`, assuming that it is incorrectly
+formatted.
+The format is "incorrect" if
+* either one of the two characters neighbouring the `:` is not a space ` `;
+* either one of the two characters at distance 2 from the `:` is a space ` `;
+* either one of the two characters two positions before each variable in the binder
+  from the second onwards is a space;
+* the character following the opening binder or the character preceding the closing binder
+  is not a space.
 -/
-def inappropriateSpacing (file : String) (stx : Syntax) : Array Char :=
+def inappropriateSpacing (file : String) (stx : Syntax) : Substring :=
   let startPos := getStartPos stx
-  if startPos.isEmpty then #[] else
+  if startPos.isEmpty then default else
   let closedBracketPos := startPos.back
   let colonPos := startPos.pop.pop.back
   -- this should not be a space
@@ -180,7 +181,9 @@ def inappropriateSpacing (file : String) (stx : Syntax) : Array Char :=
   let spaces := charAroundColon
   let nonspaces := ((charsTwoBeforeAVar ++ charAroundColonPlusOne).push
     charFollowingOpenBracket).push charPrecedingClosedBracket
-  spaces.filter (· != ' ') ++ nonspaces.filter (· == ' ')
+  if !(spaces.filter (· != ' ') ++ nonspaces.filter (· == ' ')).isEmpty then
+    { str := file, startPos := startPos[0]!, stopPos:= startPos.back + ⟨1⟩ }
+  else default
 
 /-- `getBinders stx` returns the array of all the im/ex-plicit binders contained in `stx`. -/
 partial
@@ -224,7 +227,9 @@ def noInitialWhitespaceLinter : Linter where
       for binder in binders do
         let shouldBeEmpty := inappropriateSpacing file binder
         if ! shouldBeEmpty.isEmpty then
-          Linter.logLint linter.noInitialWhitespace binder m!"{shouldBeEmpty} spaces!"
+          let var ← `(command| variable $(⟨binder⟩))
+          Linter.logLint linter.noInitialWhitespace binder
+            m!"'{shouldBeEmpty}' should be printed as '{var}'"
 
 initialize addLinter noInitialWhitespaceLinter
 
