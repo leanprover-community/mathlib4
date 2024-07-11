@@ -156,12 +156,12 @@ theorem compatible_iff (x : FirstObj P S) :
 theorem equalizer_sheaf_condition :
     Presieve.IsSheafFor P (S : Presieve X) ↔ Nonempty (IsLimit (Fork.ofι _ (w P S))) := by
   rw [Types.type_equalizer_iff_unique,
-    ← Equiv.forall_congr_left (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
+    ← Equiv.forall_congr_right (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
   simp_rw [← compatible_iff]
   simp only [inv_hom_id_apply, Iso.toEquiv_symm_fun]
   apply forall₂_congr
   intro x _
-  apply exists_unique_congr
+  apply existsUnique_congr
   intro t
   rw [← Iso.toEquiv_symm_fun]
   rw [Equiv.eq_symm_apply]
@@ -200,7 +200,7 @@ contains the data used to check a family of elements for a presieve is compatibl
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
-    Pi.π _ _ ≫ P.map pullback.fst.op
+    Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 #align category_theory.equalizer.presieve.first_map CategoryTheory.Equalizer.Presieve.firstMap
 
 instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
@@ -210,7 +210,7 @@ instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
-    Pi.π _ _ ≫ P.map pullback.snd.op
+    Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 #align category_theory.equalizer.presieve.second_map CategoryTheory.Equalizer.Presieve.secondMap
 
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
@@ -245,11 +245,11 @@ See <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
   rw [Types.type_equalizer_iff_unique]
-  erw [← Equiv.forall_congr_left (firstObjEqFamily P R).toEquiv.symm]
+  erw [← Equiv.forall_congr_right (firstObjEqFamily P R).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
   apply forall₂_congr
   intro x _
-  apply exists_unique_congr
+  apply existsUnique_congr
   intro t
   rw [Equiv.eq_symm_apply]
   constructor
@@ -309,13 +309,15 @@ def forkMap : P.obj (op B) ⟶ FirstObj P X := Pi.lift (fun i ↦ P.map (π i).o
 The first of the two parallel morphisms of the fork diagram, induced by the first projection in
 each pullback.
 -/
-def firstMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
+def firstMap : FirstObj P X ⟶ SecondObj P X π :=
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 
 /--
 The second of the two parallel morphisms of the fork diagram, induced by the second projection in
 each pullback.
 -/
-def secondMap : FirstObj P X ⟶ SecondObj P X π := Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
+def secondMap : FirstObj P X ⟶ SecondObj P X π :=
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 
 theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
   ext x ij
@@ -344,11 +346,11 @@ See <https://stacks.math.columbia.edu/tag/00VM>.
 theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
-  erw [← Equiv.forall_congr_left (Types.productIso _).toEquiv.symm]
+  erw [← Equiv.forall_congr_right (Types.productIso _).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
   apply forall₂_congr
   intro x _
-  apply exists_unique_congr
+  apply existsUnique_congr
   intro t
   erw [Equiv.eq_symm_apply]
   constructor
@@ -366,3 +368,5 @@ end Presieve
 end
 
 end Equalizer
+
+end CategoryTheory

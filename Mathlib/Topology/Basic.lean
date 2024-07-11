@@ -168,7 +168,6 @@ theorem TopologicalSpace.ext_iff_isClosed {t₁ t₂ : TopologicalSpace X} :
 
 alias ⟨_, TopologicalSpace.ext_isClosed⟩ := TopologicalSpace.ext_iff_isClosed
 
--- Porting note (#10756): new lemma
 theorem isClosed_const {p : Prop} : IsClosed { _x : X | p } := ⟨isOpen_const (p := ¬p)⟩
 
 @[simp] theorem isClosed_empty : IsClosed (∅ : Set X) := isClosed_const
@@ -1268,6 +1267,16 @@ theorem mem_closure_iff_nhdsWithin_neBot : x ∈ closure s ↔ NeBot (𝓝[s] x)
   mem_closure_iff_clusterPt
 #align mem_closure_iff_nhds_within_ne_bot mem_closure_iff_nhdsWithin_neBot
 
+lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t ∩ s).Nonempty := by
+  rw [nhdsWithin, inf_neBot_iff]
+  exact forall₂_congr fun U _ ↦
+    ⟨fun h ↦ h (mem_principal_self _), fun h u hsu ↦ h.mono $ inter_subset_inter_right _ hsu⟩
+
+@[gcongr]
+theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
+  inf_le_inf_left _ (principal_mono.mpr h)
+#align nhds_within_mono nhdsWithin_mono
+
 lemma not_mem_closure_iff_nhdsWithin_eq_bot : x ∉ closure s ↔ 𝓝[s] x = ⊥ := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot]
 
@@ -1739,7 +1748,6 @@ theorem image_closure_subset_closure_image (h : Continuous f) :
   ((mapsTo_image f s).closure h).image_subset
 #align image_closure_subset_closure_image image_closure_subset_closure_image
 
--- Porting note (#10756): new lemma
 theorem closure_image_closure (h : Continuous f) :
     closure (f '' closure s) = closure (f '' s) :=
   Subset.antisymm
@@ -1797,8 +1805,12 @@ theorem DenseRange.closure_range (h : DenseRange f) : closure (range f) = univ :
   h.closure_eq
 #align dense_range.closure_range DenseRange.closure_range
 
-theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) := by
-  simpa only [DenseRange, Subtype.range_coe_subtype]
+@[simp]
+lemma denseRange_subtype_val {p : X → Prop} : DenseRange (@Subtype.val _ p) ↔ Dense {x | p x} := by
+  simp [DenseRange]
+
+theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) :=
+  denseRange_subtype_val.2 h
 #align dense.dense_range_coe Dense.denseRange_val
 
 theorem Continuous.range_subset_closure_image_dense {f : X → Y} (hf : Continuous f)

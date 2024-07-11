@@ -171,14 +171,13 @@ def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ m
     | of x, star, _ => rfl
     | star, star, _ => rfl
 
-/-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`. -/
+-- Note: ...
+/-- The prelax functor from `Cat` to `Cat` defined with `WithTerminal`. -/
 @[simps]
-def pseudofunctor : Pseudofunctor Cat Cat where
+def prelaxfunctor : PrelaxFunctor Cat Cat where
   obj C := Cat.of (WithTerminal C)
   map := map
   map₂ := map₂
-  mapId C := mapId C
-  mapComp := mapComp
   map₂_id := by
     intros
     apply NatTrans.ext
@@ -189,15 +188,23 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     apply NatTrans.ext
     funext X
     cases X <;> rfl
+
+/-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`. -/
+@[simps]
+def pseudofunctor : Pseudofunctor Cat Cat where
+  toPrelaxFunctor := prelaxfunctor
+  mapId C := mapId C
+  mapComp := mapComp
   map₂_whisker_left := by
     intros
     apply NatTrans.ext
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, map₂, mapComp_hom_app, Iso.refl_hom,
-        mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
-      rfl
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, Cat.whiskerLeft_app, mapComp_hom_app,
+        Iso.refl_hom, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
     · rfl
   map₂_whisker_right := by
     intros
@@ -205,22 +212,28 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, map₂, mapComp_hom_app, Iso.refl_hom,
-        mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, Cat.whiskerRight_app, mapComp_hom_app,
+        Iso.refl_hom, map_map, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
       rfl
     · rfl
   map₂_associator := by
     intros
+    dsimp
     apply NatTrans.ext
     funext X
     cases X
     · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, map₂, Bicategory.Strict.associator_eqToIso,
-        eqToIso_refl, Iso.refl_hom, mapComp_hom_app, mapComp_inv_app, Iso.refl_inv,
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
+        map_map, down_id, Functor.map_id, Cat.whiskerLeft_app, mapComp_inv_app, Iso.refl_inv,
         Category.comp_id, Category.id_comp]
       rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, Bicategory.whiskerRight, whiskerRight_app, mapComp_hom_app,
-        Iso.refl_hom, down_id, Functor.map_id, Bicategory.whiskerLeft, whiskerLeft_app,
+      simp only [Cat.comp_obj, Bicategory.whiskerRight, whiskerRight_app, map_obj, mapComp_hom_app,
+        Iso.refl_hom, map_map, down_id, Functor.map_id, Bicategory.whiskerLeft, whiskerLeft_app,
         mapComp_inv_app, Iso.refl_inv, Category.comp_id]
     · rfl
   map₂_left_unitor := by
@@ -229,11 +242,13 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, Cat.id_map, map₂,
-        Bicategory.Strict.leftUnitor_eqToIso, eqToIso_refl, Iso.refl_hom, mapComp_hom_app,
-        Bicategory.whiskerRight, whiskerRight_app, mapId_hom_app, Category.id_comp]
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        Bicategory.Strict.leftUnitor_eqToIso, eqToIso_refl, Iso.refl_hom,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
+        mapId_hom_app, map_map, Category.id_comp]
       rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, Category.comp_id]
+      simp only [Cat.comp_obj, map_obj, Category.comp_id]
       rw [← Functor.map_id]
       rfl
     · rfl
@@ -243,11 +258,13 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, Cat.id_map, map₂,
-        Bicategory.Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom, mapComp_hom_app,
-        Bicategory.whiskerLeft, whiskerLeft_app, mapId_hom_app, Category.id_comp]
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        Bicategory.Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerLeft_app,
+        mapId_hom_app, Category.id_comp]
       rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, Category.comp_id]
+      simp only [Cat.comp_obj, map_obj, Category.comp_id]
       rw [← Functor.map_id]
       rfl
     · rfl
@@ -470,14 +487,12 @@ def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ m
     | star, of x, _ => rfl
     | star, star, _ => rfl
 
-/-- The pseudofunctor from `Cat` to `Cat` defined with `WithInitial`. -/
+/-- The prelax functor from `Cat` to `Cat` defined with `WithInitial`. -/
 @[simps]
-def pseudofunctor : Pseudofunctor Cat Cat where
+def prelaxfunctor : PrelaxFunctor Cat Cat where
   obj C := Cat.of (WithInitial C)
   map := map
   map₂ := map₂
-  mapId C := mapId C
-  mapComp := mapComp
   map₂_id := by
     intros
     apply NatTrans.ext
@@ -488,15 +503,23 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     apply NatTrans.ext
     funext X
     cases X <;> rfl
+
+/-- The pseudofunctor from `Cat` to `Cat` defined with `WithInitial`. -/
+@[simps]
+def pseudofunctor : Pseudofunctor Cat Cat where
+  toPrelaxFunctor := prelaxfunctor
+  mapId C := mapId C
+  mapComp := mapComp
   map₂_whisker_left := by
     intros
     apply NatTrans.ext
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, map₂, mapComp_hom_app, Iso.refl_hom,
-        mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
-      rfl
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, Cat.whiskerLeft_app, mapComp_hom_app,
+        Iso.refl_hom, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
     · rfl
   map₂_whisker_right := by
     intros
@@ -504,8 +527,10 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, map₂, mapComp_hom_app, Iso.refl_hom,
-        mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, Cat.whiskerRight_app, mapComp_hom_app,
+        Iso.refl_hom, map_map, mapComp_inv_app, Iso.refl_inv, Category.comp_id, Category.id_comp]
       rfl
     · rfl
   map₂_associator := by
@@ -514,13 +539,14 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, map₂, Bicategory.Strict.associator_eqToIso,
-        eqToIso_refl, Iso.refl_hom, mapComp_hom_app, mapComp_inv_app, Iso.refl_inv,
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
+        map_map, down_id, Functor.map_id, Cat.whiskerLeft_app, mapComp_inv_app, Iso.refl_inv,
         Category.comp_id, Category.id_comp]
       rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, Bicategory.whiskerRight, whiskerRight_app, mapComp_hom_app,
-        Iso.refl_hom, down_id, Functor.map_id, Bicategory.whiskerLeft, whiskerLeft_app,
-        mapComp_inv_app, Iso.refl_inv, Category.comp_id]
+      simp only [Cat.comp_obj, map_obj, Category.comp_id]
     · rfl
   map₂_left_unitor := by
     intros
@@ -528,11 +554,13 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, Cat.id_map, map₂,
-        Bicategory.Strict.leftUnitor_eqToIso, eqToIso_refl, Iso.refl_hom, mapComp_hom_app,
-        Bicategory.whiskerRight, whiskerRight_app, mapId_hom_app, Category.id_comp]
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        Bicategory.Strict.leftUnitor_eqToIso, eqToIso_refl, Iso.refl_hom,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerRight_app,
+        mapId_hom_app, map_map, Category.id_comp]
       rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, Category.comp_id]
+      simp only [Cat.comp_obj, map_obj, Category.comp_id]
       rw [← Functor.map_id]
       rfl
     · rfl
@@ -542,12 +570,14 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     funext X
     cases X
     · rw [NatTrans.comp_app, NatTrans.comp_app]
-      simp only [map, Cat.comp_obj, Cat.comp_map, Cat.id_map, map₂,
-        Bicategory.Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom, mapComp_hom_app,
-        Bicategory.whiskerLeft, whiskerLeft_app, mapId_hom_app, Category.id_comp]
+      simp only [prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_obj,
+        prelaxfunctor_toPrelaxFunctorStruct_toPrefunctor_map, map_obj, Cat.comp_obj,
+        Bicategory.Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom,
+        prelaxfunctor_toPrelaxFunctorStruct_map₂, map₂_app, mapComp_hom_app, Cat.whiskerLeft_app,
+        mapId_hom_app, Category.id_comp]
       rw [NatTrans.id_app, NatTrans.id_app]
-      simp only [Cat.comp_obj, Category.comp_id]
-      rw [← Functor.map_id]
+      simp only [Cat.comp_obj, map_obj, Category.comp_id]
+      rw [← Functor.map_id, Cat.id_map]
       rfl
     · rfl
 

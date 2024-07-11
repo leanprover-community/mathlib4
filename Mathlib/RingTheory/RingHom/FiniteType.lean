@@ -31,7 +31,7 @@ theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteTy
   introv R _
   suffices Algebra.FiniteType R S by
     rw [RingHom.FiniteType]
-    convert this; ext;
+    convert this; ext
     rw [Algebra.smul_def]; rfl
   exact IsLocalization.finiteType_of_monoid_fg (Submonoid.powers r) S
 #align ring_hom.finite_type_holds_for_localization_away RingHom.finiteType_holdsForLocalizationAway
@@ -108,7 +108,7 @@ theorem finiteType_stableUnderBaseChange : StableUnderBaseChange @FiniteType := 
     replace h : Algebra.FiniteType R T := by
       rw [RingHom.FiniteType] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
     suffices Algebra.FiniteType S (S ⊗[R] T) by
-      rw [RingHom.FiniteType]; convert this; congr; ext; simp_rw [Algebra.smul_def]; rfl
+      rw [RingHom.FiniteType]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
     infer_instance
 
 end RingHom

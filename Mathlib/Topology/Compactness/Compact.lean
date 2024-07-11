@@ -494,7 +494,6 @@ theorem isCompact_accumulate {K : ℕ → Set X} (hK : ∀ n, IsCompact (K n)) (
   (finite_le_nat n).isCompact_biUnion fun k _ => hK k
 #align is_compact_accumulate isCompact_accumulate
 
--- Porting note (#10756): new lemma
 theorem Set.Finite.isCompact_sUnion {S : Set (Set X)} (hf : S.Finite) (hc : ∀ s ∈ S, IsCompact s) :
     IsCompact (⋃₀ S) := by
   rw [sUnion_eq_biUnion]; exact hf.isCompact_biUnion hc
@@ -1018,7 +1017,7 @@ lemma Inducing.isCompact_preimage_iff {f : X → Y} (hf : Inducing f) {K : Set Y
 
 /-- The preimage of a compact set in the image of an inducing map is compact. -/
 lemma Inducing.isCompact_preimage' {f : X → Y} (hf : Inducing f) {K : Set Y}
-    (hK: IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) :=
+    (hK : IsCompact K) (Kf : K ⊆ range f) : IsCompact (f ⁻¹' K) :=
   (hf.isCompact_preimage_iff Kf).2 hK
 
 /-- The preimage of a compact set under a closed embedding is a compact set. -/
@@ -1238,3 +1237,5 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
     · simp only [compl_compl, V'ne]
   rw [← this, compl_compl]
 #align is_closed.exists_minimal_nonempty_closed_subset IsClosed.exists_minimal_nonempty_closed_subset
+
+end Compact

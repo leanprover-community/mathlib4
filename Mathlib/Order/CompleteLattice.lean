@@ -308,7 +308,7 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup
 -- Instead we add the fields by hand, and write a manual instance.
 
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
-class CompleteLinearOrder (α : Type*) extends CompleteLattice α where
+class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -344,6 +344,7 @@ instance instCompleteLattice [CompleteLattice α] : CompleteLattice αᵒᵈ whe
 
 instance instCompleteLinearOrder [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ where
   __ := instCompleteLattice
+  __ := instBiheytingAlgebra
   __ := instLinearOrder α
 
 end OrderDual
@@ -482,6 +483,9 @@ theorem sSup_eq_bot : sSup s = ⊥ ↔ ∀ a ∈ s, a = ⊥ :=
 theorem sInf_eq_top : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
   @sSup_eq_bot αᵒᵈ _ _
 #align Inf_eq_top sInf_eq_top
+
+lemma sSup_eq_bot' [CompleteLattice α] {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
+  rw [sSup_eq_bot, ← subset_singleton_iff_eq, subset_singleton_iff]
 
 theorem eq_singleton_bot_of_sSup_eq_bot_of_nonempty {s : Set α} (h_sup : sSup s = ⊥)
     (hne : s.Nonempty) : s = {⊥} := by
@@ -1698,6 +1702,7 @@ instance Prop.instCompleteLattice : CompleteLattice Prop where
 noncomputable instance Prop.instCompleteLinearOrder : CompleteLinearOrder Prop where
   __ := Prop.instCompleteLattice
   __ := Prop.linearOrder
+  __ := BooleanAlgebra.toBiheytingAlgebra
 #align Prop.complete_linear_order Prop.instCompleteLinearOrder
 
 @[simp]
@@ -1989,3 +1994,14 @@ instance instCompleteLattice [CompleteLattice α] : CompleteLattice (ULift.{v} �
     (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot
 
 end ULift
+
+namespace PUnit
+
+instance instCompleteLinearOrder : CompleteLinearOrder PUnit := by
+  refine'
+    { instBooleanAlgebra, instLinearOrder with
+      sSup := fun _ => unit
+      sInf := fun _ => unit
+      .. } <;> intros <;> trivial
+
+end PUnit
