@@ -189,9 +189,6 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
   ∑ t ∈ powersetCard n univ, ∏ i ∈ t, X i
 #align mv_polynomial.esymm MvPolynomial.esymm
 
-lemma esymm_def (n : ℕ) :
-    esymm n = ∑ t in powersetCard n univ, ∏ i in t, (X i : MvPolynomial σ R) := rfl
-
 /--
 `esymmPart` is the product of the symmetric polynomials `esymm μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition.
@@ -328,9 +325,6 @@ def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
 def hsymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map hsymm).prod
 
-lemma hsymmPart_def {n : ℕ} (μ : n.Partition) :
-    (hsymmPart μ : MvPolynomial σ R) = (μ.parts.map hsymm).prod := rfl
-
 @[simp]
 theorem hsymm_zero : hsymm 0 = (1 : MvPolynomial σ R) := by simp [hsymm, eq_nil_of_card_zero]
 
@@ -369,9 +363,6 @@ def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
 def psumPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map psum).prod
 
-lemma psumPart_def {n : ℕ} (μ : n.Partition) :
-    (psumPart μ : MvPolynomial σ R) = (μ.parts.map psum).prod := rfl
-
 @[simp]
 theorem psum_zero : psum 0 = (Fintype.card σ : MvPolynomial σ R) := by simp [psum]
 
@@ -400,9 +391,6 @@ variable [DecidableEq σ] [DecidableEq τ] {n : ℕ}
 /-- The monomial symmetric `MvPolynomial σ R` with exponent set μ. -/
 def msymm  (μ : n.Partition) : MvPolynomial σ R :=
   ∑ s : {a : Sym σ n // .ofSym a = μ},  (s.1.1.map X).prod
-
-lemma msymm_def (μ : n.Partition) : (msymm μ : MvPolynomial σ R) =
-    ∑ s : {a : Sym σ n // .ofSym a = μ}, (s.1.1.map X).prod := rfl
 
 @[simp]
 theorem msymm_zero : msymm (.indiscrete 0) = (1 : MvPolynomial σ R) := by
