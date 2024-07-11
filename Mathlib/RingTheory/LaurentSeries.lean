@@ -490,7 +490,27 @@ end PowerSeries
 
 namespace LaurentSeries
 
-open IsDedekindDomain.HeightOneSpectrum PowerSeries
+open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc
+
+theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
+    (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (↑P : LaurentSeries K) := by
+  refine' RatFunc.induction_on' P _
+  intro f g h
+  convert Polynomial.valuation_of_mk K f h
+  rw [RatFunc.mk_eq_mk' f h]
+  have aux :
+    (↑(IsLocalization.mk' (RatFunc K) f ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 h⟩) :
+        LaurentSeries K) =
+      (IsLocalization.mk' (LaurentSeries K) (↑f : PowerSeries K)
+          ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ :
+        LaurentSeries K) := by
+    simp only [IsFractionRing.mk'_eq_div, coe_div]
+    congr
+    exacts [(RatFunc.coe_coe f).symm, (RatFunc.coe_coe g).symm]
+  rw [aux]
+  convert @valuation_of_mk' (PowerSeries K) _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) f
+        ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ <;>
+    apply PowerSeries.intValuation_eq_of_coe
 
 instance : Valued (LaurentSeries K) ℤₘ₀ :=
   Valued.mk' (PowerSeries.idealX K).valuation
@@ -608,10 +628,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : LaurentSeries K} :
       linarith
     · rw [not_le] at hDs
       obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt hDs)
-      rw [← neg_neg (-D + ↑s)]
-      rw [← sub_eq_neg_add]
-      rw [neg_sub]
-      rw [hd]
+      rw [← neg_neg (-D + ↑s), ← sub_eq_neg_add, neg_sub, hd]
       apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
       intro n hn
       rw [powerSeriesPart_coeff f n, hs]
