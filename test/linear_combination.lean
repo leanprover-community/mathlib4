@@ -240,6 +240,29 @@ example (a b : ℚ) (h1 : a ≤ 1) (h2 : b = 1) : (a + b) / 2 ≤ 1 := by linear
 
 example {x y : ℤ} (hx : x + 3 ≤ 2) (hy : y + 2 * x ≥ 3) : y > 3 := by linear_combination hy + 2 * hx
 
+example {x y z : ℚ} (h1 : 4 * x + y + 3 * z ≤ 25) (h2 : -x + 2 * y + z = 3)
+    (h3 : 5 * x + 7 * z = 43) :
+    x < 4 := by
+  linear_combination (14 * h1 - 7 * h2 - 5 * h3) / 38
+
+example {a b c d e : ℚ}
+    (h1 : 3 * a + 4 * b - 2 * c + d = 15)
+    (h2 : a + 2 * b + c - 2 * d + 2 * e ≤ 3)
+    (h3 : 5 * a + 5 * b - c + d + 4 * e = 31)
+    (h4 : 8 * a + b - c - 2 * d + 2 * e = 8)
+    (h5 : 1 - 2 * b + 3 * c - 4 * d + 5 * e = -4) :
+    a ≤ 1 := by
+  linear_combination (-155 * h1 + 68 * h2 + 49 * h3 + 59 * h4 - 90 * h5) / 320
+
+example {a b c d e : ℚ}
+    (h1 : 3 * a + 4 * b - 2 * c + d = 15)
+    (h2 : a + 2 * b + c - 2 * d + 2 * e ≤ 3)
+    (h3 : 5 * a + 5 * b - c + d + 4 * e = 31)
+    (h4 : 8 * a + b - c - 2 * d + 2 * e = 8)
+    (h5 : 1 - 2 * b + 3 * c - 4 * d + 5 * e > -4) :
+    a < 1 := by
+  linear_combination (-155 * h1 + 68 * h2 + 49 * h3 + 59 * h4 + 90 * h5) / 320
+
 /-! ### Nonlinear inequalities -/
 
 -- FIXME should permit writing just `hb`, not `hb.le`
