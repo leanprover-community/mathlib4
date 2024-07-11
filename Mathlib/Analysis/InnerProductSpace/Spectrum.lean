@@ -505,6 +505,20 @@ theorem inf_restrict'' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
     pre_exhaust fun x y ↦
       hT i ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)).subtype x) ↑y
 
+/-Do we need an analogue of the following?
+
+theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtype (eigenspace A α))
+    (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ) → x ∈ eigenspace B γ := by
+  intro h
+  simp only [mem_ker, sub_apply, Module.algebraMap_end_apply, Submodule.mem_map, mem_ker, sub_apply,
+  Module.algebraMap_end_apply, Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk, exists_and_right,
+  exists_eq_right] at *
+  obtain ⟨y, hy⟩ := h
+  exact (AddSubmonoid.mk_eq_zero
+  (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
+
+-/
+
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
