@@ -143,7 +143,8 @@ lemma associated_den_num_inv
 lemma associated_num_den_inv
     (x : K) (hx : x ≠ 0) :
     Associated (num A x : A) (den A x⁻¹) := by
-  have : Associated (num A x⁻¹⁻¹ : A) (den A x⁻¹) := (associated_den_num_inv x⁻¹ (inv_ne_zero hx)).symm
+  have : Associated (num A x⁻¹⁻¹ : A) (den A x⁻¹) :=
+    (associated_den_num_inv x⁻¹ (inv_ne_zero hx)).symm
   rw [inv_inv] at this
   exact this
 
