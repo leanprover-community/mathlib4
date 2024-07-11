@@ -351,6 +351,14 @@ theorem convexHull_eq (s : Set E) : convexHull R s =
     exact t.centerMass_mem_convexHull hw₀ (hw₁.symm ▸ zero_lt_one) hz
 #align convex_hull_eq convexHull_eq
 
+/-- Universe polymorphic version of the reverse implication of `mem_convexHull_iff_exists_fintype`.
+-/
+lemma mem_convexHull_of_exists_fintype {s : Set E} {x : E} [Fintype ι] (w : ι → R) (z : ι → E)
+    (hw₀ : ∀ i, 0 ≤ w i) (hw₁ : ∑ i, w i = 1) (hz : ∀ i, z i ∈ s) (hx : ∑ i, w i • z i = x) :
+    x ∈ convexHull R s := by
+  rw [← hx, ← centerMass_eq_of_sum_1 _ _ hw₁]
+  exact centerMass_mem_convexHull _ (by simpa using hw₀) (by simp [hw₁]) (by simpa using hz)
+
 /-- The convex hull of `s` is equal to the set of centers of masses of finite families of points in
 `s`.
 
@@ -359,21 +367,13 @@ to the convex hull. Use `mem_convexHull_of_exists_fintype` of the convex hull in
 lemma mem_convexHull_iff_exists_fintype {s : Set E} {x : E} :
     x ∈ convexHull R s ↔ ∃ (ι : Type) (_ : Fintype ι) (w : ι → R) (z : ι → E), (∀ i, 0 ≤ w i) ∧
       ∑ i, w i = 1 ∧ (∀ i, z i ∈ s) ∧ ∑ i, w i • z i = x := by
-  simp only [convexHull_eq, mem_setOf_eq]
   constructor
-  · rintro ⟨ι, t, w, z, h⟩
+  · simp only [convexHull_eq, mem_setOf_eq]
+    rintro ⟨ι, t, w, z, h⟩
     refine ⟨t, inferInstance, w ∘ (↑), z ∘ (↑), ?_⟩
     simpa [← sum_attach t, centerMass_eq_of_sum_1 _ _ h.2.1] using h
-  · rintro ⟨ι, _, w, z, h⟩
-    exact ⟨ι, Finset.univ, w, z, by simpa [centerMass_eq_of_sum_1 _ _ h.2.1] using h⟩
-
-/-- Universe polymorphic version of the reverse implication of `mem_convexHull_iff_exists_fintype`.
--/
-lemma mem_convexHull_of_exists_fintype {s : Set E} {x : E} [Fintype ι] (w : ι → R) (z : ι → E)
-    (hw₀ : ∀ i, 0 ≤ w i) (hw₁ : ∑ i, w i = 1) (hz : ∀ i, z i ∈ s) (hx : ∑ i, w i • z i = x) :
-    x ∈ convexHull R s := by
-  rw [← hx, ← centerMass_eq_of_sum_1 _ _ hw₁]
-  exact centerMass_mem_convexHull _ (by simpa using hw₀) (by simp [hw₁]) (by simpa using hz)
+  · rintro ⟨ι, _, w, z, hw₀, hw₁, hz, hx⟩
+    exact mem_convexHull_of_exists_fintype w z hw₀ hw₁ hz hx
 
 theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     { x : E | ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y ∈ s, w y = 1 ∧ s.centerMass w id = x } := by
