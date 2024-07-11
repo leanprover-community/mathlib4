@@ -96,18 +96,35 @@ def polar (f : M → R) (x y : M) :=
   f (x + y) - f x - f y
 #align quadratic_form.polar QuadraticForm.polar
 
-theorem polar_add (f g : M → R) (x y : M) : polar (f + g) x y = polar f x y + polar g x y := by
+@[simp] theorem polar_zero : polar (0 : M → R) = 0 := by
+  ext
+  simp only [polar, Pi.zero_apply, sub_zero]
+
+theorem polar_add (f g : M → R) : polar (f + g) = polar f + polar g := by
+  ext
   simp only [polar, Pi.add_apply]
   abel
 #align quadratic_form.polar_add QuadraticForm.polar_add
 
-theorem polar_neg (f : M → R) (x y : M) : polar (-f) x y = -polar f x y := by
+theorem polar_neg (f : M → R) : polar (-f) = -polar f := by
+  ext
   simp only [polar, Pi.neg_apply, sub_eq_add_neg, neg_add]
 #align quadratic_form.polar_neg QuadraticForm.polar_neg
 
-theorem polar_smul [Monoid S] [DistribMulAction S R] (f : M → R) (s : S) (x y : M) :
-    polar (s • f) x y = s • polar f x y := by simp only [polar, Pi.smul_apply, smul_sub]
+theorem polar_smul [Monoid S] [DistribMulAction S R] (f : M → R) (s : S) :
+    polar (s • f) = s • polar f := by
+      ext
+      simp only [polar, Pi.smul_apply, smul_sub]
 #align quadratic_form.polar_smul QuadraticForm.polar_smul
+
+/-- `polar` as an `AddMonoidHom` -/
+@[simps]
+def polarAddMonoidHom : (M → R) →+ (M → M → R) where
+  toFun := polar; map_zero' := polar_zero; map_add' := polar_add;
+
+theorem polar_sum {ι} (s : Finset ι) (f : ι → M → R) :
+    polar (∑ i ∈ s, f i) = ∑ i ∈ s, polar (f i) :=
+  map_sum polarAddMonoidHom f s
 
 theorem polar_comm (f : M → R) (x y : M) : polar f x y = polar f y x := by
   rw [polar, polar, add_comm, sub_sub, sub_sub, add_comm (f x) (f y)]
@@ -855,8 +872,8 @@ def associatedHom : QuadraticForm R M →ₗ[S] BilinForm R M :=
   -- it behind to make a future refactor to a *correct* non-commutative version easier in future.
   (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
     { toFun := polarBilin
-      map_add' := fun _x _y => LinearMap.ext₂ <| polar_add _ _
-      map_smul' := fun _c _x => LinearMap.ext₂ <| polar_smul _ _ }
+      map_add' := fun _x _y => LinearMap.ext₂ <| congr_fun₂ <| polar_add _ _
+      map_smul' := fun _c _x => LinearMap.ext₂ <| congr_fun₂ <| polar_smul _ _ }
 #align quadratic_form.associated_hom QuadraticForm.associatedHom
 
 variable (Q : QuadraticForm R M)

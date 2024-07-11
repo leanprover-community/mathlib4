@@ -12,6 +12,10 @@ import Mathlib.Data.Finset.Sym
 This file provides an alternative to `QuadraticForm.associated`; unlike that definition, this one
 does not require `Invertible (2 : R)`. Unlike that definition, this only works in the presence of
 a basis.
+
+## TODO
+
+Show that `Q
 -/
 
 namespace Sym2
@@ -63,10 +67,103 @@ theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoi
   · rintro ⟨⟨i₁, j₁⟩, hij₁⟩
     simp
 
+-- def Finsupp.sym2 {ι α β} [Zero α] [Zero β] (f : ι →₀ α) : Sym2 ι →₀ β where
+--   { support := f.support.sym2 (Sym2.map f, _⟩
+
+
 namespace QuadraticForm
 
 variable {ι R M} [LinearOrder ι] [CommRing R] [AddCommGroup M] [Module R M]
 
+noncomputable def aux (Q : QuadraticForm R M) (b : Basis ι R M) : Sym2 ι → R :=
+  Sym2.lift ⟨fun i j => if i = j then Q (b i) else polar Q (b i) (b j), fun i j => by
+    dsimp
+    obtain rfl | hij := eq_or_ne i j
+    · rw [if_pos rfl]
+    · rw [if_neg hij, if_neg hij.symm, polar_comm]⟩
+
+noncomputable def equivCoeffs [Fintype ι] (b : Basis ι R M) :
+    QuadraticForm R M ≃ₗ[R] (Sym2 ι → R) where
+  toFun Q :=
+    Sym2.lift ⟨fun i j => if i = j then Q (b i) else polar Q (b i) (b j), fun i j => by
+      dsimp
+      obtain rfl | hij := eq_or_ne i j
+      · rw [if_pos rfl]
+      · rw [if_neg hij, if_neg hij.symm, polar_comm]⟩
+  invFun coeffs :=
+    ∑ ij, coeffs ij • Sym2.lift ⟨fun i j => linMulLin (b.coord i) (b.coord j), fun i j => by
+      ext; simp [mul_comm]⟩ ij
+  map_add' Q₁ Q₂ := by
+    ext ij
+    -- induction ij using Sym2.ind with | _ i j => ?_
+    -- simp only [add_apply, coeFn_add, Sym2.lift_mk, Pi.add_apply]
+    -- obtain rfl | hij := eq_or_ne i j
+    -- · simp
+    -- · simp [hij, polar_add]
+  map_smul' c Q :=by
+    ext ij
+    -- induction ij using Sym2.ind with | _ i j => ?_
+    -- simp only [add_apply, coeFn_add, Sym2.lift_mk, Pi.add_apply]
+    -- obtain rfl | hij := eq_or_ne i j
+    -- · simp
+    -- · simp [hij, polar_smul]
+  left_inv Q := by
+    dsimp
+    sorry
+  right_inv coeffs := by
+    ext ij
+    induction ij using Sym2.ind with | _ i j => ?_
+    dsimp
+    simp_rw [sum_apply, smul_apply, smul_eq_mul]
+    obtain rfl | hij := eq_or_ne i j
+    · rw [if_pos rfl, Fintype.sum_eq_single s(i, i), Sym2.lift_mk, Subtype.coe_mk,
+        linMulLin_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_eq_same,
+        mul_one, mul_one]
+      simp_rw [Sym2.forall]
+      simp only [ne_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, or_self,
+        Sym2.lift_mk, linMulLin_apply, not_and_or, Basis.coord_apply, Basis.repr_self]
+      rintro x y (hx | hy)
+      · rw [Finsupp.single_eq_of_ne (Ne.symm hx), zero_mul, mul_zero]
+      · rw [Finsupp.single_eq_of_ne (Ne.symm hy), mul_zero, mul_zero]
+    · simp_rw [if_neg hij, coeFn_sum, polar_sum, coeFn_smul, polar_smul]
+      rw [Fintype.sum_eq_single s(i, j), Pi.smul_apply, Sym2.lift_mk, Subtype.coe_mk, Pi.smul_apply,
+        polar]
+      simp_rw[linMulLin_apply, Basis.coord_apply, map_add,
+        Finsupp.add_apply, Basis.repr_self,
+        Finsupp.single_eq_same, Finsupp.single_eq_of_ne hij,Finsupp.single_eq_of_ne hij.symm,
+          mul_zero, sub_zero, zero_add, add_zero, zero_mul, mul_one, sub_zero, smul_eq_mul, mul_one]
+      simp_rw [Sym2.forall]
+      simp only [ne_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, or_self,
+        Sym2.lift_mk, linMulLin_apply, not_and_or, not_or, Basis.coord_apply, Basis.repr_self,
+        polar, Function.funext_iff, Pi.smul_apply]
+      rintro x y ⟨hx | hy, hx | hy⟩ <;> (simp; intros; ring_nf)
+      · rw [Finsupp.single_eq_of_ne (Ne.symm hx), zero_mul, mul_zero]
+      · rw [Finsupp.single_eq_of_ne (Ne.symm hy), mul_zero, mul_zero]
+
+def __root__.Basis.quadraticForm [Fintype ι] (b : Basis ι R M) : Basis (Sym2 ι) R (QuadraticForm R M) :=
+  .ofRepr <|
+    .ofLinear
+      { toFun := fun Q => ∑ i, Finsupp.single i (aux Q b i)
+        map_add' := _
+        map_smul' := _ }
+      { toFun := fun f =>
+          ∑ ij in f.support, f ij • Sym2.lift ⟨fun i j =>
+            if i = j then
+              (QuadraticForm.sq (R := R)).comp (b.coord i)
+            else
+              (QuadraticForm.sq (R := R)).comp (b.coord i + b.coord j), sorry⟩ ij
+        map_add' := _
+        map_smul' := _ }
+      (by
+        ext
+        dsimp
+        sorry)
+        -- simp [Finsupp.univ_sum_single_apply])
+      (by
+          simp [aux]
+          }
+
+#exit
 /-- Given an ordered basis, produce a bilinear form associated with the quadratic form.
 
 Unlike `QuadraticForm.associated`, this is not symmetric; however, as a result it can be used even
