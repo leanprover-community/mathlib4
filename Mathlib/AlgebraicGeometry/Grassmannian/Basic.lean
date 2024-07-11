@@ -15,24 +15,29 @@ universe u v w
 
 section
 
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
+
+lemma Algebra.TensorProduct.algebraMap : algebraMap R (TensorProduct R A B) =
+    Algebra.TensorProduct.includeLeftRingHom.comp (algebraMap R A) := by
+  ext _
+  simp only [algebraMap_apply, RingHom.coe_comp, Function.comp_apply, includeLeftRingHom_apply]
+
+/-
+lemma Algebra.TensorProduct.algebraMap' : algebraMap R (TensorProduct R A B) =
+    Algebra.TensorProduct.includeRight.toRingHom.comp (algebraMap R B) := sorry
+-/
+
+end
+
+section
+
 open Function
 
 variable {X Y : Scheme}
 
 lemma SchemeIsoToBijective (f : X ≅ Y) : Bijective f.hom.val.base := by
-  rw [bijective_iff_has_inverse]
-  existsi f.inv.val.base
-  constructor
-  · intro x
-    rw [← Function.comp_apply (f := f.inv.val.base)]
-    change (f.hom ≫ _).val.base x = x
-    rw [Iso.hom_inv_id]
-    simp only [id_val_base, TopCat.coe_id, id_eq]
-  · intro x
-    rw [← Function.comp_apply (f := f.hom.val.base)]
-    change (f.inv ≫ _).val.base x = x
-    rw [Iso.inv_hom_id]
-    simp only [id_val_base, TopCat.coe_id, id_eq]
+  change Bijective ((Scheme.forgetToTop ⋙ forget TopCat).mapIso f).toEquiv
+  exact Equiv.bijective _
 
 end
 
@@ -49,6 +54,7 @@ noncomputable
 nonrec abbrev Spec.algebraMap : Spec (.of S) ⟶ Spec (.of R) :=
   Spec.map (CommRingCat.ofHom (algebraMap R S))
 
+/-
 lemma basicOpen_range [IsLocalization.Away f S] :
     Set.range (Spec.map (CommRingCat.ofHom (algebraMap R S))).val.base =
     Scheme.basicOpen (X := Spec (.of R)) (U := ⊤) ((Scheme.ΓSpecIso (.of R)).inv f) := by
@@ -61,7 +67,7 @@ lemma basicOpen_range [IsLocalization.Away f S] :
     (ΓSpecIso (CommRingCat.of R)).hom) f))
   rw [Iso.inv_hom_id]
   simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, coe_id_of, RingHom.id_apply]
-
+-/
 
 noncomputable
 def pullbackSpecIso (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
@@ -81,9 +87,11 @@ def pullbackSpecIso (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Alg
   · apply (config := { allowSynthFailures := true, newGoals := .all }) AlgEquiv.mk
     exacts [Equiv.refl _, fun _ _ ↦ rfl, fun _ _ ↦ rfl, fun _ ↦ rfl]
 
+/-
 noncomputable def pullbackLocalizationIso [IsLocalization.Away f S] [IsLocalization.Away g T]
     [IsLocalization.Away (f * g) U] : pullback (Spec.algebraMap R S)
     (Spec.algebraMap R T) ≅ Spec (.of U) := sorry
+-/
 
 lemma pullbackSpecIso_inv_fst
     {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
@@ -104,9 +112,11 @@ lemma pullbackSpecIso_inv_fst
     CommRingCat.pushoutCocone_inr, AlgHom.toRingHom_eq_coe]
   ext; rfl
 
+/-
 lemma pullbackLocalizationIso_inv_fst [IsLocalization.Away f S] [IsLocalization.Away g T]
     [IsLocalization.Away (f * g) U] : (pullbackLocalizationIso R S T U f g).inv ≫ pullback.fst =
     Spec.algebraMap _ _ := sorry
+-/
 
 lemma pullbackSpecIso_inv_snd
     {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
@@ -128,10 +138,13 @@ lemma pullbackSpecIso_inv_snd
     CommRingCat.pushoutCocone_inr, AlgHom.toRingHom_eq_coe]
   ext; rfl
 
+/-
 lemma pullbackLocalizationIso_inv_snd [IsLocalization.Away f S] [IsLocalization.Away g T]
     [IsLocalization.Away (f * g) U] : (pullbackLocalizationIso R S T U f g).inv ≫ pullback.snd =
     Spec.algebraMap _ _ := sorry
+-/
 
+/-
 noncomputable def localizationAlgebraOfMulRight [IsLocalization.Away f S]
     [IsLocalization.Away (f * g) U] : Algebra S U :=
   RingHom.toAlgebra (IsLocalization.Away.awayToAwayRight f g)
@@ -167,6 +180,7 @@ lemma isLocalizationAway_of_mul_left [IsLocalization.Away g T] [Algebra T U] [Is
     [IsLocalization.Away (f * g) U] :
     IsLocalization.Away (algebraMap R T f) U := by
   sorry
+-/
 
 end
 
@@ -185,14 +199,19 @@ end
 
 section
 variable {m α β : Type*} [Fintype m] [DecidableEq m]
-  [CommRing α] [CommRing β] (M : Matrix m m α) (f : α →+* β)
+  [Ring α] [Ring β] (M : Matrix m m α) (f : α →+* β)
 
 theorem RingHom.map_inv (x : α) (hx : IsUnit x) :
-    f (Ring.inverse x) = Ring.inverse (f x) := sorry
+    f (Ring.inverse x) = Ring.inverse (f x) := by
+  change f (Ring.inverse (IsUnit.unit hx).1) = _
+  rw [Ring.inverse_unit]; erw [← Units.coe_map_inv]; rw [← Ring.inverse_unit, Units.coe_map]
+  rfl
 
+/-
 theorem RingHom.mapMatrix_inv : f.mapMatrix M⁻¹ = (f.mapMatrix M)⁻¹ := sorry
 
 theorem RingHom.map_matrix_inv : M⁻¹.map f = (M.map f)⁻¹ := sorry
+-/
 
 end
 
@@ -200,12 +219,14 @@ section
 
 lemma AlgHom.map_inv {R : Type*} {α : Type*} {β : Type*} [CommRing R] [Ring α] [Ring β]
     [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) (x : α) (hx : IsUnit x) :
-    f (Ring.inverse x) = Ring.inverse (f x) := sorry
+    f (Ring.inverse x) = Ring.inverse (f x) := by
+  erw [RingHom.map_inv _ _ hx]; rfl
 
-
+/-
 lemma AlgHom.mapMatrix_inv {m : Type*} {R : Type*} {α : Type*} {β : Type*} [Fintype m]
     [DecidableEq m] [CommRing R] [CommRing α] [CommRing β] [Algebra R α] [Algebra R β]
     (f : α →ₐ[R] β) (M : Matrix m m α) : f.mapMatrix M⁻¹ = (f.mapMatrix M)⁻¹ := sorry
+-/
 
 end
 
@@ -398,7 +419,11 @@ abbrev transition_aux (i j : Basis (Fin (finrank K V)) K V) :
 
 lemma transition_aux_matrix_X (i j : Basis (Fin (finrank K V)) K V) :
      Matrix.map (matrix_X K V) (transition_aux hr i j) =
-    (matrix_G' hr i j) * (matrix_F' hr i j)⁻¹ := by sorry
+    (matrix_G' hr i j) * (matrix_F' hr i j)⁻¹ := by
+  conv_rhs => congr; change matrix_G' hr i j
+  apply Matrix.ext; intro _ _
+  simp only [AlgHom.coe_mk, RingHom.mapMatrix_apply, MvPolynomial.coe_eval₂Hom, map_apply,
+      of_apply, MvPolynomial.eval₂_X]
 
 lemma transition_aux_matrix_coord (i j : Basis (Fin (finrank K V)) K V) :
     Matrix.map (matrix_coord K V hr) (transition_aux hr i j) =
@@ -418,10 +443,7 @@ lemma transition_aux_matrix_coord (i j : Basis (Fin (finrank K V)) K V) :
   · rw [Matrix.submatrix_mul _ _ _ id id Function.bijective_id,
       Matrix.submatrix_id_id, Matrix.submatrix_map, matrix_coord_submatrix₂]
     rw [Matrix.submatrix_map]
-    conv_rhs => congr; change matrix_G' hr i j
-    apply Matrix.ext; intro _ _
-    simp only [AlgHom.coe_mk, RingHom.mapMatrix_apply, MvPolynomial.coe_eval₂Hom, map_apply,
-      of_apply, MvPolynomial.eval₂_X]
+    exact transition_aux_matrix_X _ _ _
   · intro i
     by_cases h : i.1 < r
     · left
@@ -559,10 +581,14 @@ lemma transition_F'_flip (i j : Basis (Fin (finrank K V)) K V) :
 lemma transition_F'_inv_flip (i j : Basis (Fin (finrank K V)) K V) :
     Matrix.map (matrix_F' hr j i)⁻¹ (transition hr i j) = matrix_F' hr i j := by
   rw [← AlgHom.coe_toRingHom]
-  rw [← RingHom.mapMatrix_apply, RingHom.mapMatrix_inv, RingHom.mapMatrix_apply]
+  rw [← RingHom.mapMatrix_apply, Matrix.nonsing_inv_eq_ring_inverse]
+  erw [RingHom.map_inv (f := (transition hr i j).toRingHom.mapMatrix)
+    (α := Matrix (Fin r) (Fin r) (Localization.Away (equation hr j i)))
+    (β := Matrix (Fin r) (Fin r) (Localization.Away (equation hr i j)))]
+  rw [RingHom.mapMatrix_apply]
   erw [transition_F'_flip]
-  rw [Matrix.nonsing_inv_nonsing_inv]
-  rw [← Matrix.isUnit_iff_isUnit_det]; exact isUnit_F' hr i j
+  rw [← Matrix.nonsing_inv_eq_ring_inverse (matrix_F' hr i j)⁻¹, Matrix.nonsing_inv_nonsing_inv]
+  rw [← Matrix.isUnit_iff_isUnit_det]; all_goals (exact isUnit_F' _ _ _)
 
 lemma transition_G'_flip (i j : Basis (Fin (finrank K V)) K V) :
     Matrix.map (matrix_G' hr j i) (transition hr i j) =
@@ -627,7 +653,20 @@ def transition'₁ (i j k : Basis (Fin (finrank K V)) K V) :
     Localization.Away (equation hr j k) →ₐ[K] (TensorProduct (MvPolynomial
     (Fin (finrank K V - r) × Fin r) K) (Localization.Away (equation hr i j))
     (Localization.Away (equation hr i k))) := by
-  exact {transition'₁RingHom hr i j k with commutes' := sorry}
+  exact
+  {
+    transition'₁RingHom hr i j k with
+    commutes' := by
+      intro x
+      simp only [transition'₁RingHom, AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply,
+        MvPolynomial.comp_eval₂Hom, Algebra.TensorProduct.includeLeftRingHom_apply,
+        RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe,
+        Algebra.TensorProduct.algebraMap_apply]
+      rw [IsScalarTower.algebraMap_apply (R := K) (S := functions_chart K V r)]
+      rw [IsLocalization.Away.AwayMap.lift_eq]
+      simp only [MvPolynomial.algebraMap_eq, MvPolynomial.eval₂Hom_C, RingHom.coe_comp,
+        Function.comp_apply, Algebra.TensorProduct.includeLeftRingHom_apply]
+  }
 
 def transition'₁_Spec (i j k : Basis (Fin (finrank K V)) K V) :
     Limits.pullback (open_immersion hr i j) (open_immersion hr i k) ⟶
@@ -651,6 +690,22 @@ abbrev matrix_F''ik (i j k : Basis (Fin (finrank K V)) K V) :=
   (algebraMap (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
   (TensorProduct (MvPolynomial (Fin (finrank K V - r) × Fin r) K) (Localization.Away
   (equation hr i j)) (Localization.Away (equation hr i k)))).mapMatrix (matrix_F hr i k)
+
+lemma matrix_F''ij_inv_eq (i j k : Basis (Fin (finrank K V)) K V) :
+    (matrix_F''ij hr i j k)⁻¹ =
+    RingHom.mapMatrix Algebra.TensorProduct.includeLeftRingHom (matrix_F' hr i j)⁻¹ := by
+  conv_rhs => rw [Matrix.nonsing_inv_eq_ring_inverse]
+              change AlgHom.mapMatrix (R := functions_chart K V r)
+                Algebra.TensorProduct.includeLeft (Ring.inverse (matrix_F' hr i j))
+              rw [AlgHom.map_inv (f := Algebra.TensorProduct.includeLeft.mapMatrix)
+              (α := Matrix (Fin r) (Fin r) (Localization.Away (equation hr i j)))
+              (β := Matrix (Fin r) (Fin r) (TensorProduct (MvPolynomial
+              (Fin (finrank K V - r) × Fin r) K) (Localization.Away (equation hr i j))
+              (Localization.Away (equation hr i k)))) _ (isUnit_F' hr i j)]
+  rw [Matrix.nonsing_inv_eq_ring_inverse, matrix_F']
+  conv_rhs => rw [AlgHom.mapMatrix_apply, RingHom.mapMatrix_apply, Matrix.map_map]
+              erw [← RingHom.coe_comp, ← Algebra.TensorProduct.algebraMap]
+              rw [← RingHom.mapMatrix_apply]
 
 lemma matrix_F''ik_inv_eq (i j k : Basis (Fin (finrank K V)) K V) :
     (matrix_F''ik hr i j k)⁻¹ =
@@ -680,27 +735,68 @@ abbrev matrix_G''ik (i j k : Basis (Fin (finrank K V)) K V) :=
   (equation hr i j)) (Localization.Away (equation hr i k))))
 
 lemma matrix_F''ij_isUnit (i j k : Basis (Fin (finrank K V)) K V) :
-    IsUnit (matrix_F''ij hr i j k) := sorry
+    IsUnit (matrix_F''ij hr i j k) := by
+  rw [matrix_F''ij, Algebra.TensorProduct.algebraMap, ← RingHom.mapMatrix_comp, RingHom.comp_apply]
+  apply IsUnit.map
+  exact isUnit_F' hr i j
 
+/-
 lemma matrix_F''ik_isUnit (i j k : Basis (Fin (finrank K V)) K V) :
     IsUnit (matrix_F''ik hr i j k) := sorry
+-/
+
+lemma transition'₁_algebraMap (i j k : Basis (Fin (finrank K V)) K V) :
+    (transition'₁RingHom hr i j k).comp (algebraMap (functions_chart K V r) _) =
+    Algebra.TensorProduct.includeLeftRingHom.comp (transition_aux hr i j) := by
+  rw [transition'₁RingHom, IsLocalization.Away.AwayMap.lift_comp]
 
 lemma transition'₁_F' (i j k : Basis (Fin (finrank K V)) K V) :
     (matrix_F' hr j k).map (transition'₁ hr i j k) =
     (matrix_F''ik hr i j k) * (matrix_F''ij hr i j k)⁻¹ := by
-  sorry
+  rw [matrix_F', transition'₁]; erw [← RingHom.mapMatrix_apply]
+  conv_lhs => change (transition'₁RingHom hr i j k).mapMatrix
+                ((algebraMap (functions_chart K V r) _).mapMatrix (matrix_F hr j k))
+              rw [RingHom.mapMatrix_apply, RingHom.mapMatrix_apply, Matrix.map_map]
+              rw [← RingHom.coe_comp]
+              rw [transition'₁_algebraMap, RingHom.coe_comp, ← Matrix.map_map]
+              erw [transition_aux_F]
+              rw [RingHom.map_matrix_mul']
+              congr; rw [Matrix.map_map]; erw [← RingHom.coe_comp]
+              rw [← Algebra.TensorProduct.algebraMap]; rfl
+              erw [← RingHom.mapMatrix_apply]; rw [← matrix_F''ij_inv_eq]
+  rfl
 
 lemma transition'₁_F'_inv (i j k : Basis (Fin (finrank K V)) K V) :
     (matrix_F' hr j k)⁻¹.map (transition'₁ hr i j k) =
     (matrix_F''ij hr i j k) * (matrix_F''ik hr i j k)⁻¹ := by
-  sorry
+  rw [← AlgHom.mapMatrix_apply, Matrix.nonsing_inv_eq_ring_inverse]
+  rw [AlgHom.map_inv (f := (transition'₁ hr i j k).mapMatrix)
+    (α := Matrix (Fin r) (Fin r) (Localization.Away (equation hr j k)))
+    (β := Matrix (Fin r) (Fin r) (TensorProduct (MvPolynomial (Fin (finrank K V - r) × Fin r) K)
+    (Localization.Away (equation hr i j)) (Localization.Away (equation hr i k))))
+    (hx := isUnit_F' hr j k)]
+  rw [AlgHom.mapMatrix_apply, transition'₁_F', ← Matrix.nonsing_inv_eq_ring_inverse
+  ((matrix_F''ik hr i j k * (matrix_F''ij hr i j k)⁻¹))]
+  rw [Matrix.mul_inv_rev (matrix_F''ik hr i j k)]
+  rw [Matrix.nonsing_inv_nonsing_inv]
+  rw [← Matrix.isUnit_iff_isUnit_det]
+  exact matrix_F''ij_isUnit hr i j k
 
 lemma transition'₁_G' (i j k : Basis (Fin (finrank K V)) K V) :
     (matrix_G' hr j k).map (transition'₁ hr i j k) =
     (matrix_G''ik hr i j k) * (matrix_F''ij hr i j k)⁻¹ := by
-  sorry
+  rw [matrix_G', transition'₁, Matrix.map_map]; erw [← RingHom.coe_comp]
+  conv_lhs => change (matrix_G hr j k).map ((transition'₁RingHom hr i j k).comp (algebraMap
+                (functions_chart K V r) _))
+              rw [transition'₁_algebraMap, RingHom.coe_comp, ← Matrix.map_map]
+              erw [transition_aux_G]
+              rw [RingHom.map_matrix_mul']
+              congr; rw [Matrix.map_map]; erw [← RingHom.coe_comp]
+              rw [← Algebra.TensorProduct.algebraMap]; rfl
+              erw [← RingHom.mapMatrix_apply]; rw [← matrix_F''ij_inv_eq]
 
-lemma immersion_transition'₁ (i j k : Basis (Fin (finrank K V)) K V) :
+
+lemma immersion_transition'₁_Spec (i j k : Basis (Fin (finrank K V)) K V) :
     transition'₁_Spec hr i j k ≫ open_immersion hr j k =
     (Limits.pullback.fst ≫ transition_Spec hr i j) ≫ open_immersion hr j i := by
   rw [transition'₁_Spec, transition'₁]
@@ -778,10 +874,7 @@ lemma transition'₁_transition (i j k : Basis (Fin (finrank K V)) K V) :
   conv_rhs => congr; rw [matrix_G', Matrix.map_map, heq]; change matrix_G''ik hr i j k
   conv_rhs => congr; rfl; erw [← RingHom.mapMatrix_apply]
               change Algebra.TensorProduct.includeRight.toRingHom.mapMatrix (matrix_F' hr i k)⁻¹
-              rw [← matrix_F''ik_inv_eq]
-
-
-#exit
+              erw [← matrix_F''ik_inv_eq]
 
 variable (K V r)
 
@@ -824,7 +917,7 @@ def glueData : GlueData where
   t' i j k := by
     refine Limits.pullback.lift (transition'₁_Spec hr i j k)
       (Limits.pullback.fst ≫ transition_Spec hr i j) ?_
-    exact immersion_transition'₁ _ _ _ _
+    exact immersion_transition'₁_Spec _ _ _ _
   t_fac i j k := by rw [Limits.pullback.lift_snd]
   cocycle i j k := by
     simp only
@@ -837,7 +930,6 @@ def glueData : GlueData where
     rw [transition'₁_transition, Category.id_comp, ← Category.assoc, Limits.pullback.lift_snd]
     slice_lhs 2 3 => rw [transition_transition_Spec]
     rw [Category.id_comp, Limits.pullback.condition]
-
   f_open _ _ := inferInstance
 
 
