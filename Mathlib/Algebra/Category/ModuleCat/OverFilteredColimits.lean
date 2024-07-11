@@ -164,11 +164,11 @@ end hsmul
 variable {ℛ ℳ} in
 /--
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}`  with the same indexing set `j ∈ J`, if for each `j ∈ J`, `Mⱼ` is an `Rⱼ` such
-that the `Rⱼ`-action is compatible, then there is a scalar multiplication
+abelian groups `{Mⱼ}`  with the same indexing set `j ∈ J`, if for each `j ∈ J`, `Mⱼ` is an `Rⱼ`-module such
+that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is a scalar multiplication
 `Rⱼ → M → M` for every `j ∈ J`.
 -/
-noncomputable def smulColimit {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
+noncomputable def sMulColimit {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimit (C := 𝔄𝔟) ℳ :=
   colimit.ι ℳ (IsFiltered.max c (Concrete.indexRepColimit ℳ m))
    (hsmul (IsFiltered.leftToMax _ _) (IsFiltered.rightToMax _ _)
@@ -180,7 +180,6 @@ lemma smul_rep (c₁ c₂ : J) (r : ℛ.obj c₁) (m : ℳ.obj c₂) :
     smulColimit r (colimit.ι ℳ c₂ m) =
     colimit.ι ℳ (IsFiltered.max c₁ c₂)
     (hsmul (IsFiltered.leftToMax _ _) (IsFiltered.rightToMax _ _) r m) := by
-  delta smulColimit
   apply hsmul.respect_ι
   · rfl
   · erw [Concrete.ι_repColimit_eq]
@@ -211,7 +210,6 @@ lemma smul_add (c : J) (r : ℛ.obj c) (m₁ m₂ : colimit (C := 𝔄𝔟) ℳ)
   classical
   let O : Finset J :=
     { c, Concrete.indexRepColimit ℳ m₁, Concrete.indexRepColimit ℳ m₂ }
-  let H : Finset ((X : J) ×' (Y : J) ×' (_ : X ∈ O) ×' (_ : Y ∈ O) ×' (X ⟶ Y)) := {}
   let j : J := IsFiltered.sup O H
 
   have eq₁ : m₁ = colimit.ι ℳ j
@@ -255,8 +253,8 @@ noncomputable instance moduleObjColimit (j : J) :
 variable {ℛ ℳ} in
 /--
 Let `R` be the filtered colimit of rings `{Rⱼ}` and `M` be the filtered colimit of
-abelian groups `{Mⱼ}`  with the same indexing set `j ∈ J`, if for each `j ∈ J`, `Mⱼ` is an `Rⱼ` such
-that the `Rⱼ`-action is compatible, then there is a scalar multiplication
+abelian groups `{Mⱼ}`  with the same indexing category `J`. If for each `j ∈ J`, `Mⱼ` is an `Rⱼ` such
+that the `Rⱼ`-actions are compatible with the morphisms in `J`, then there is a natural scalar multiplication
 `R → M → M`.
 -/
 noncomputable def colimitSMulColimit (r : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C := 𝔄𝔟) ℳ) :
@@ -267,12 +265,11 @@ namespace colimitSMulColimit
 
 lemma rep_smul {c : J} (r : ℛ.obj c) (m : colimit (C := 𝔄𝔟) ℳ) :
     colimitSMulColimit (colimit.ι ℛ c r) m = smulColimit r m := by
-  delta colimitSMulColimit
   rw [show m = colimit.ι ℳ (Concrete.indexRepColimit ℳ m) _ by
-    erw [Concrete.ι_repColimit_eq], smulColimit.smul_rep]
+    rw [Concrete.ι_repColimit_eq], smulColimit.smul_rep]
   apply hsmul.respect_ι
-  · erw [Concrete.ι_repColimit_eq]
-  · erw [Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
+  · rw [Concrete.ι_repColimit_eq]
+  · rw [Concrete.ι_repColimit_eq, Concrete.ι_repColimit_eq]
 
 protected lemma one_smul (m : colimit (C := 𝔄𝔟) ℳ) :
     colimitSMulColimit (1 : colimit (C := ℜ𝔦𝔫𝔤) ℛ) m = m := by
@@ -321,7 +318,7 @@ lemma add_smul (r₁ r₂ : colimit (C := ℜ𝔦𝔫𝔤) ℛ) (m : colimit (C 
   let j : J := IsFiltered.sup O H
   have eq₁ : r₁ = colimit.ι ℛ j
       (ℛ.map (IsFiltered.toSup O H $ by simp [O]) (Concrete.repColimit ℛ r₁)) := by
-    erw [colimit.w_apply, Concrete.ι_repColimit_eq]
+    rw [colimit.w_apply, Concrete.ι_repColimit_eq]
   have eq₂ : r₂ = colimit.ι ℛ j
       (ℛ.map (IsFiltered.toSup O H $ by simp [O]) (Concrete.repColimit ℛ r₂)) := by
     erw [colimit.w_apply, Concrete.ι_repColimit_eq]
