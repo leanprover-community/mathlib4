@@ -171,11 +171,11 @@ theorem withDensity_const (c : ℝ≥0∞) : μ.withDensity (fun _ ↦ c) = c �
   ext1 s hs
   simp [withDensity_apply _ hs]
 
-theorem withDensity_tsum {f : ℕ → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
+theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     μ.withDensity (∑' n, f n) = sum fun n => μ.withDensity (f n) := by
   ext1 s hs
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
-  change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i : ℕ, ∫⁻ x, f i x ∂μ.restrict s
+  change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
   exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 #align measure_theory.with_density_tsum MeasureTheory.withDensity_tsum

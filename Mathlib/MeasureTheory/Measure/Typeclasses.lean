@@ -706,8 +706,8 @@ theorem eventually_mem_spanningSets (μ : Measure α) [SigmaFinite μ] (x : α) 
   eventually_atTop.2 ⟨spanningSetsIndex μ x, fun _ => mem_spanningSets_of_index_le μ x⟩
 #align measure_theory.eventually_mem_spanning_sets MeasureTheory.eventually_mem_spanningSets
 
-theorem sum_restrict_disjointed_spanningSets (μ : Measure α) [SigmaFinite μ] :
-    sum (fun n ↦ μ.restrict (disjointed (spanningSets μ) n)) = μ := by
+theorem sum_restrict_disjointed_spanningSets (μ ν : Measure α) [SigmaFinite ν] :
+    sum (fun n ↦ μ.restrict (disjointed (spanningSets ν) n)) = μ := by
   rw [← restrict_iUnion (disjoint_disjointed _)
       (MeasurableSet.disjointed (measurable_spanningSets _)),
     iUnion_disjointed, iUnion_spanningSets, restrict_univ]
@@ -716,7 +716,7 @@ instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
   have : ∀ n, Fact (μ (disjointed (spanningSets μ) n) < ∞) :=
     fun n ↦ ⟨(measure_mono (disjointed_subset _ _)).trans_lt (measure_spanningSets_lt_top μ n)⟩
   exact ⟨⟨fun n ↦ μ.restrict (disjointed (spanningSets μ) n), fun n ↦ by infer_instance,
-    (sum_restrict_disjointed_spanningSets μ).symm⟩⟩
+    (sum_restrict_disjointed_spanningSets μ μ).symm⟩⟩
 
 namespace Measure
 
