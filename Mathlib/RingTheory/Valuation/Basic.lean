@@ -336,6 +336,14 @@ theorem map_add_eq_of_lt_left (h : v y < v x) : v (x + y) = v x := by
   rw [add_comm]; exact map_add_eq_of_lt_right _ h
 #align valuation.map_add_eq_of_lt_left Valuation.map_add_eq_of_lt_left
 
+theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
+  rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
+  rwa [map_neg]
+
+theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
+  rw [sub_eq_add_neg, map_add_eq_of_lt_left]
+  rwa [map_neg]
+
 theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
   have := Valuation.map_add_of_distinct_val v (ne_of_gt h).symm
   rw [max_eq_right (le_of_lt h)] at this
