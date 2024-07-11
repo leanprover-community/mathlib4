@@ -168,11 +168,11 @@ the symmetric polynomials `esymm σ R j`. -/
 theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i))) =
       ∑ j ∈ range (card σ + 1), Polynomial.C
-        (MvPolynomial.esymm σ R j) * Polynomial.X ^ (card σ - j) := by
+        (esymm j : MvPolynomial σ R) * Polynomial.X ^ (card σ - j) := by
   let s := Finset.univ.val.map fun i : σ => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
-  simp_rw [this, MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
+  simp_rw [this, MvPolynomial.esymm_eq_multiset_esymm, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_eq_sum_esymm s
   simp_rw [s, Multiset.map_map, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
@@ -180,12 +180,12 @@ set_option linter.uppercaseLean3 false in
 
 theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     (∏ i : σ, (Polynomial.X + Polynomial.C (MvPolynomial.X i)) : Polynomial _).coeff k =
-    MvPolynomial.esymm σ R (card σ - k) := by
+    (esymm (card σ - k) : MvPolynomial σ R) := by
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
     rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   rw [this] at h ⊢
-  rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
+  rw [MvPolynomial.esymm_eq_multiset_esymm, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_coeff s h
   dsimp
   simp_rw [s, Multiset.map_map, Function.comp_apply]
