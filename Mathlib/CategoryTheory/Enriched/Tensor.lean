@@ -85,9 +85,8 @@ def temp : CategoryTheory.Equivalence (ForgetEnrichment V C) C where
     map_comp := by
       dsimp
       intro A B C f g
+      dsimp [ForgetEnrichment.homOf]
       simp [homEquiv_comp]
-      congr 1
-      change ((λ_ (𝟙_ V)).inv ≫ ((homEquiv A B) f ⊗ (homEquiv B C) g) ≫ eComp _ _ _ _) = _
       sorry
   }
   unitIso := {
@@ -111,7 +110,7 @@ lemma whiskerRight_id (X Y : C) : whiskerRight (𝟙 X) Y = 𝟙 (X ⟶[V] Y) :=
 lemma whiskerRight_comp {X X' X'' : C} (f : X ⟶ X') (f' : X' ⟶ X'') (Y : C) :
     whiskerRight (f ≫ f') Y = (whiskerRight (V := V) f' Y) ≫ whiskerRight f Y := by
   dsimp [whiskerRight]
-  simp only [assoc, homEquiv_comp, comp_whiskerRight, leftUnitor_inv_whiskerRight, ← e_assoc']
+  simp [assoc, homEquiv_comp, comp_whiskerRight, leftUnitor_inv_whiskerRight, ← e_assoc']
   sorry --rfl
 
 noncomputable def whiskerLeft (X : C) {Y Y' : C} (g : Y ⟶ Y') :
@@ -144,21 +143,25 @@ variable (V C) in
 noncomputable def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   obj X :=
     { obj := fun Y => X.unop ⟶[V] Y
-      map := fun {A B} φ => by
-        dsimp
-        have := eComp V X.unop A B
-        sorry }
+      map := fun φ => whiskerLeft X.unop φ }
   map φ :=
-    { app := fun Y => sorry }
+    { app := fun Y => whiskerRight φ.unop Y }
 
 class copower (A : V) (X : C) where
   obj : C
   -- C(A ⊗ᵥ X, -) ≅ V(A, C(X, -))
   iso : (eHomFunctor V C).obj (Opposite.op obj) ≅
     (eHomFunctor V C).obj (Opposite.op X) ⋙ (eHomFunctor V V).obj (Opposite.op A)
-  α' : A ⟶ (X ⟶[V] obj) -- A ⟶ C(X, A⬝X)
-  fac (Y : C) : (homEquiv' _ _ _).symm (iso.hom.app Y) =
-    _ ◁ α' ≫ (β_ _ _).hom ≫ eComp V X obj Y
+  α' : A ⟶ (X ⟶[V] obj) -- A ⟶ C(X, A ⊗ᵥ X)
+  fac (Y : C) : (iso.hom.app Y) =
+    curry (α' ▷ _ ≫ eComp V X obj Y)
+
+-- iso.hom.app Y : C(A ⊗ᵥ X, Y) ⟶ V(A, C(X, Y))
+
+-- eComp V X obj Y : C(X, A ⊗ᵥ X) ⊗ C(A ⊗ᵥ X, Y)  ⟶ C(X, Y)
+-- α' ▷ _ : A ⊗ C(X, A ⊗ᵥ X) ⟶ C(X, A ⊗ᵥ X) ⊗ C(A ⊗ᵥ X, Y)
+-- α' ▷ _ ≫ eComp V X obj Y : A ⊗ C(X, A ⊗ᵥ X) ⟶ C(X, Y)
+-- curry (α' ▷ _ ≫ eComp V X obj Y) : C(X, A ⊗ᵥ X) ⟶ V(A, C(X, Y))
 
 variable (C) in
 class Copowered where
@@ -174,11 +177,11 @@ def copowerα : A ⟶ (X ⟶[V] (A ⊗ᵥ X)) := copower.α'
 noncomputable def copowerIso : ((A ⊗ᵥ X) ⟶[V] Y) ≅ (ihom A).obj (X ⟶[V] Y) :=
   copower.iso.app Y
 
-noncomputable def copowerEquiv : (A ⊗ᵥ X ⟶ Y) ≃ (A ⟶ (X ⟶[V] Y)) := by
-  have := (copowerIso A X Y)
-  sorry
-  --homEquiv.trans (((copowerIso A X Y).app (Opposite.op [0])).toEquiv.trans
-  --  homEquiv.symm)
+noncomputable def copowerEquiv : (A ⊗ᵥ X ⟶ Y) ≃ (A ⟶ (X ⟶[V] Y)) where
+  toFun f := (homEquiv _ _).symm ((homEquiv _ _ f) ≫ (copowerIso A X Y).hom)
+  invFun f := (homEquiv _ _).symm ((homEquiv _ _ f) ≫ (copowerIso A X Y).inv)
+  left_inv _ := by aesop
+  right_inv _ := by aesop
 
 variable {A X Y} in
 noncomputable abbrev copowerDesc (f : A ⟶ (X ⟶[V] Y)) : A ⊗ᵥ X ⟶ Y :=
