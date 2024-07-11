@@ -1062,7 +1062,7 @@ theorem erase_cons_head (a : α) (s : Multiset α) : (a ::ₘ s).erase a = s :=
 @[simp]
 theorem erase_cons_tail {a b : α} (s : Multiset α) (h : b ≠ a) :
     (b ::ₘ s).erase a = b ::ₘ s.erase a :=
-  Quot.inductionOn s fun l => congr_arg _ <| List.erase_cons_tail l (not_beq_of_ne h)
+  Quot.inductionOn s fun _ => congr_arg _ <| List.erase_cons_tail (not_beq_of_ne h)
 #align multiset.erase_cons_tail Multiset.erase_cons_tail
 
 @[simp]
@@ -2026,12 +2026,12 @@ variable {p}
 
 @[simp]
 theorem filter_cons_of_pos {a : α} (s) : p a → filter p (a ::ₘ s) = a ::ₘ filter p s :=
-  Quot.inductionOn s fun l h => congr_arg ofList <| List.filter_cons_of_pos l <| by simpa using h
+  Quot.inductionOn s fun l h => congr_arg ofList <| List.filter_cons_of_pos <| by simpa using h
 #align multiset.filter_cons_of_pos Multiset.filter_cons_of_pos
 
 @[simp]
 theorem filter_cons_of_neg {a : α} (s) : ¬p a → filter p (a ::ₘ s) = filter p s :=
-  Quot.inductionOn s fun l h => congr_arg ofList <| List.filter_cons_of_neg l <| by simpa using h
+  Quot.inductionOn s fun l h => congr_arg ofList <| List.filter_cons_of_neg <| by simpa using h
 #align multiset.filter_cons_of_neg Multiset.filter_cons_of_neg
 
 @[simp]
@@ -2199,13 +2199,13 @@ theorem filterMap_zero (f : α → Option β) : filterMap f 0 = 0 :=
 @[simp]
 theorem filterMap_cons_none {f : α → Option β} (a : α) (s : Multiset α) (h : f a = none) :
     filterMap f (a ::ₘ s) = filterMap f s :=
-  Quot.inductionOn s fun l => congr_arg ofList <| List.filterMap_cons_none a l h
+  Quot.inductionOn s fun _ => congr_arg ofList <| List.filterMap_cons_none h
 #align multiset.filter_map_cons_none Multiset.filterMap_cons_none
 
 @[simp]
 theorem filterMap_cons_some (f : α → Option β) (a : α) (s : Multiset α) {b : β}
     (h : f a = some b) : filterMap f (a ::ₘ s) = b ::ₘ filterMap f s :=
-  Quot.inductionOn s fun l => congr_arg ofList <| List.filterMap_cons_some f a l h
+  Quot.inductionOn s fun _ => congr_arg ofList <| List.filterMap_cons_some h
 #align multiset.filter_map_cons_some Multiset.filterMap_cons_some
 
 theorem filterMap_eq_map (f : α → β) : filterMap (some ∘ f) = map f :=
