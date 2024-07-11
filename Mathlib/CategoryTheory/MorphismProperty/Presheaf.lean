@@ -135,7 +135,7 @@ lemma hom_ext {Z : C} {a b : Z ⟶ hf.pullback g}
 /-- In the case of a representable morphism `f' : yoneda.obj Y ⟶ G`, whose codomain lies
 in the image of yoneda, we get that two morphism `a b : Z ⟶ hf.pullback g` are equal if
 * Their compositions (in `C`) with `hf'.snd g : hf.pullback  ⟶ X` are equal.
-* Their compositions (in `C`) with `hf'.fst' g : hf.pullback  ⟶ X` are equal. -/
+* Their compositions (in `C`) with `hf'.fst' g : hf.pullback  ⟶ Y` are equal. -/
 @[ext]
 lemma hom_ext' {Z : C} {a b : Z ⟶ hf'.pullback g} (h₁ : a ≫ hf'.fst' g = b ≫ hf'.fst' g)
     (h₂ : a ≫ hf'.snd g = b ≫ hf'.snd g) : a = b :=
