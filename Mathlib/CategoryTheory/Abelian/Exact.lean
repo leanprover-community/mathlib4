@@ -143,6 +143,10 @@ def Exact.isColimitImage (h : S.Exact) :
     (cancel_mono (Limits.image.ι S.g)).1 <| by simp
 #align category_theory.abelian.is_colimit_image CategoryTheory.ShortComplex.Exact.isColimitImage
 
+theorem exact_kernel {X Y : C} (f : X ⟶ Y) :
+    (ShortComplex.mk (kernel.ι f) f (by simp)).Exact :=
+  exact_of_f_is_kernel _ (kernelIsKernel f)
+
 theorem exact_cokernel {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk f (cokernel.π f) (by simp)).Exact :=
   exact_of_g_is_cokernel _ (cokernelIsCokernel f)
