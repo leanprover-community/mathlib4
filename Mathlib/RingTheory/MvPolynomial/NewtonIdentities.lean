@@ -198,7 +198,7 @@ private theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
 private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha : a ∈ antidiagonal k) :
     ∑ A ∈ powersetCard a.fst univ, ∑ j, weight σ R k (A, j) =
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
-  simp only [esymm, psum_def, weight, ← mul_assoc, mul_sum]
+  simp only [esymm, psum, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
   refine sum_congr rfl fun x _ ↦ ?_
   rw [sum_mul]
