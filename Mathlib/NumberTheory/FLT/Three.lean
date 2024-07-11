@@ -600,8 +600,10 @@ private lemma formula1 : S.X^3*S.u₁*λ^(3*S.multiplicity-2)+S.Y^3*S.u₂*λ*η
   calc _ = S.a+S.b+η^2*S.b-S.a+η^2*S.b+2*η*S.b+S.b := by ring
   _ = 0 := by rw [eta_sq]; ring
 
+/-- Let `u₄ := η * S.u₃ * S.u₂⁻¹` -/
 private noncomputable def u₄ := η * S.u₃ * S.u₂⁻¹
 private lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
+/-- Let `u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹` -/
 private noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
 private lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
 
