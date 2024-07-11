@@ -58,47 +58,50 @@ variable (F : C ⥤ D) [F.Additive]
 /--
 If a functor `F : C ⥤ D` preserves exact sequences, then it preserves monomorphism.
 -/
-lemma preservesMonomorphisms_of_preserves_shortComplex_exact
-    (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) :
+lemma preservesMonomorphisms_of_preserves_shortExact_left
+    (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f)) :
     F.PreservesMonomorphisms where
-  preserves {X Y} f m :=
-    ShortComplex.exact_iff_mono (hf := by simp) |>.1 $ h _ $
-      ShortComplex.exact_iff_mono (.mk (0 : 0 ⟶ X) f (by simp)) rfl |>.2 m
+  preserves {X Y} f m := by
+    let S : ShortComplex C := .mk f (cokernel.π f) $ by simp
+    have e : S.ShortExact :=
+    { exact := ShortComplex.exact_of_g_is_cokernel _ $ cokernelIsCokernel _
+      mono_f := inferInstance
+      epi_g := inferInstance }
+    exact h S e |>.2
 
-/--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves epimorphism.
--/
-lemma preservesEpimorphisms_of_preserves_shortComplex_exact
-    (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) :
-    F.PreservesEpimorphisms where
-  preserves {X Y} f e :=
-    ShortComplex.exact_iff_epi (hg := by simp) |>.1 $ h _ $
-      ShortComplex.exact_iff_epi (.mk f (0 : Y ⟶ 0) (by simp)) rfl |>.2 e
+lemma preserves_finite_limits_tfae : List.TFAE
+    [
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f),
+      ∀ (S : ShortComplex C), S.Exact ∧ Mono S.f → (S.map F).Exact ∧ Mono (F.map S.f),
+      ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty $ PreservesLimit (parallelPair f 0) F,
+      Nonempty $ PreservesFiniteLimits F
+    ] := by
+  tfae_have 1 → 2
+  · rintro h S ⟨e1, m1⟩
+    haveI := preservesMonomorphisms_of_preserves_shortExact_left F h
+    refine ⟨?_, inferInstance⟩
 
-/--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves short exact sequences.
--/
-lemma preserves_shortComplex_shortExact_of_preserves_shortComplex_exact
-    (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact)
-    (S : ShortComplex C) (hS : S.ShortExact) : (S.map F).ShortExact where
-  exact := h _ hS.exact
-  mono_f :=
-    letI := F.preservesMonomorphisms_of_preserves_shortComplex_exact h
-    letI : Mono S.f := hS.mono_f
-    map_mono _ _
-  epi_g :=
-    letI := F.preservesEpimorphisms_of_preserves_shortComplex_exact h
-    letI : Epi S.g := hS.epi_g
-    map_epi _ _
+    let s : ShortComplex C := .mk S.f (factorThruImage S.g) $
+      by simp [← cancel_mono (image.ι S.g)]
 
-set_option maxHeartbeats 500000 in
-/--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves kernels.
--/
-noncomputable def preservesKernelsOfPreservesShortComplexExact
-    (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact)
-    (X Y : C) (f : X ⟶ Y) : PreservesLimit (parallelPair f 0) F where
-  preserves {c} hc := by
+    have se : s.ShortExact :=
+    { exact := (by
+        rw [ShortComplex.exact_iff_kernel_ι_comp_cokernel_π_zero] at e1 ⊢
+        rw [show S.g = _ from image.fac S.g |>.symm] at e1
+        simpa using ((kernelCompMono _ _).inv) ≫= e1)
+      mono_f := inferInstance
+      epi_g := inferInstance }
+
+    have := (s.map F).exact_and_mono_f_iff_f_is_kernel.1 (h _ se) |>.some
+    apply ShortComplex.exact_of_f_is_kernel
+    simp only [ShortComplex.map_X₂, ShortComplex.map_X₃, ShortComplex.map_g, ShortComplex.map_X₁,
+      ShortComplex.map_f] at this ⊢
+    apply isKernelCompMono (i := this) (g := F.map $ image.ι S.g)
+    simp [← F.map_comp]
+
+  tfae_have 2 → 3
+  · intro h X Y f
+    refine ⟨⟨fun {c} hc => ?_⟩⟩
     have mono0 : Mono (c.π.app .zero) := mono_of_isLimit_fork hc
     let s : ShortComplex C := .mk (c.π.app .zero) f $ by simp
     have exact0 : s.Exact := by
@@ -111,16 +114,12 @@ noncomputable def preservesKernelsOfPreservesShortComplexExact
       · ext; simp
       · ext; simp
 
-    have : F.PreservesMonomorphisms := F.preservesMonomorphisms_of_preserves_shortComplex_exact h
-    have exact1 : (s.map F).Exact := h s exact0
-    have mono1 : Mono (F.map $ c.π.app .zero) := inferInstance
-
     refine Limits.IsLimit.equivOfNatIsoOfIso
       ⟨⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩,
         ⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩, ?_, ?_⟩ _ _
         ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ $
         ShortComplex.exact_and_mono_f_iff_f_is_kernel (s.map F) |>.1
-          ⟨exact1, mono1⟩ |>.some
+          (h s ⟨exact0, mono0⟩) |>.some
     · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
     · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
     · ext (⟨⟩|⟨⟩) <;> simp
@@ -132,24 +131,80 @@ noncomputable def preservesKernelsOfPreservesShortComplexExact
     · ext; simp
     · ext; simp
 
-/--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves finite limits.
--/
-noncomputable def preservesFiniteLimitOfPreservesShortComplexExact
-    (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) : PreservesFiniteLimits F := by
-  apply (config := {allowSynthFailures := true}) preservesFiniteLimitsOfPreservesKernels
-  apply preservesKernelsOfPreservesShortComplexExact
-  assumption
+  tfae_have 3 → 4
+  · intro h; refine ⟨?_⟩
+    apply (config := {allowSynthFailures := true}) preservesFiniteLimitsOfPreservesKernels
+    exact fun {X Y} f => (h f).some
 
-set_option maxHeartbeats 500000 in
+  tfae_have 4 → 1
+  · rintro ⟨inst⟩ S hS
+    refine (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨?_⟩
+    have := S.exact_and_mono_f_iff_f_is_kernel.1 ⟨hS.exact, hS.mono_f⟩ |>.some
+    have := isLimitOfPreserves F this
+    refine Limits.IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ this
+    · refine NatIso.ofComponents (fun
+      | .zero => Iso.refl _
+      | .one => Iso.refl _) ?_
+      · rintro (_|_) (_|_) (_|_|_) <;> simp
+    · refine ⟨?_, ?_, ?_, ?_⟩
+      · refine ⟨𝟙 _, ?_⟩
+        rintro (_|_) <;> simp [← F.map_comp]
+      · refine ⟨𝟙 _, ?_⟩
+        rintro (_|_) <;> simp [← F.map_comp]
+      · ext; simp
+      · ext; simp
+
+  tfae_finish
+
+
 /--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves cokernels.
+If a functor `F : C ⥤ D` preserves exact sequences, then it preserves monomorphism.
 -/
-noncomputable def preservesCokernelsOfPreservesShortComplexExact
-    (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact)
-    (X Y : C) (f : X ⟶ Y) :
-    PreservesColimit (parallelPair f 0) F where
-  preserves {c} hc := by
+lemma preservesEpimorphism_of_preserves_shortExact_right
+    (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g)) :
+    F.PreservesEpimorphisms where
+  preserves {X Y} f e := by
+    let S : ShortComplex C := .mk (kernel.ι f) f $ by simp
+    have e : S.ShortExact :=
+    { exact := ShortComplex.exact_of_f_is_kernel _ $ kernelIsKernel _
+      mono_f := inferInstance
+      epi_g := inferInstance }
+    exact h S e |>.2
+
+lemma preserves_finite_colimits_tfae : List.TFAE
+    [
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g),
+      ∀ (S : ShortComplex C), S.Exact ∧ Epi S.g → (S.map F).Exact ∧ Epi (F.map S.g),
+      ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty $ PreservesColimit (parallelPair f 0) F,
+      Nonempty $ PreservesFiniteColimits F
+    ] := by
+  tfae_have 1 → 2
+  · rintro h S ⟨e1, epi1⟩
+    haveI := preservesEpimorphism_of_preserves_shortExact_right F h
+    refine ⟨?_, inferInstance⟩
+    have := factorThruImage S.g
+    let s : ShortComplex C := .mk (image.ι S.f : image S.f ⟶ S.X₂) S.g $ by
+      simp [← cancel_epi (factorThruImage S.f)]
+
+    have se : s.ShortExact :=
+    { exact := (by
+
+        rw [ShortComplex.exact_iff_kernel_ι_comp_cokernel_π_zero] at e1 ⊢
+        rw [show S.f = _ from image.fac S.f |>.symm] at e1
+        simpa using e1 =≫ (cokernelEpiComp _ _).hom)
+      mono_f := inferInstance
+      epi_g := inferInstance }
+    have := (s.map F).exact_and_epi_g_iff_g_is_cokernel.1 (h _ se) |>.some
+    apply ShortComplex.exact_of_g_is_cokernel
+    simp only [ShortComplex.map_X₂, ShortComplex.map_X₃, ShortComplex.map_g, ShortComplex.map_X₁,
+      ShortComplex.map_f] at this ⊢
+    apply isCokernelEpiComp (i := this) (g := F.map $ factorThruImage S.f)
+    simp [← F.map_comp]
+
+  tfae_have 2 → 3
+  · intro h X Y f
+    refine ⟨⟨fun {c} hc => ?_⟩⟩
+
     have epi0 : Epi (c.ι.app .one) := epi_of_isColimit_cofork hc
     let s : ShortComplex C := .mk f (c.ι.app .one) $ by simp
     have exact0 : s.Exact := by
@@ -162,15 +217,12 @@ noncomputable def preservesCokernelsOfPreservesShortComplexExact
       · ext; simp
       · ext; simp
 
-    have : F.PreservesEpimorphisms := F.preservesEpimorphisms_of_preserves_shortComplex_exact h
-    have exact1 : (s.map F).Exact := h s exact0
-    have epi1 : Epi (F.map $ c.ι.app .one) := inferInstance
-    refine IsColimit.equivOfNatIsoOfIso
+    refine Limits.IsColimit.equivOfNatIsoOfIso
       ⟨⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩,
         ⟨fun | .zero => 𝟙 _ | .one => 𝟙 _, ?_⟩, ?_, ?_⟩ _ _
         ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ $
         ShortComplex.exact_and_epi_g_iff_g_is_cokernel (s.map F) |>.1
-          ⟨exact1, epi1⟩ |>.some
+          (h s ⟨exact0, epi0⟩) |>.some
     · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
     · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
     · ext (⟨⟩|⟨⟩) <;> simp
@@ -182,35 +234,50 @@ noncomputable def preservesCokernelsOfPreservesShortComplexExact
     · ext; simp
     · ext; simp
 
-/--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves finite colimits.
--/
-noncomputable def preservesFiniteColimitOfPreservesShortComplexExact
-    (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) : PreservesFiniteColimits F := by
-  apply (config := {allowSynthFailures := true}) preservesFiniteColimitsOfPreservesCokernels
-  apply preservesCokernelsOfPreservesShortComplexExact
-  assumption
+  tfae_have 3 → 4
+  · intro h; refine ⟨?_⟩
+    apply (config := {allowSynthFailures := true}) preservesFiniteColimitsOfPreservesCokernels
+    exact fun {X Y} f => (h f).some
 
-/--
-If a functor `F : C ⥤ D` preserves exact sequences, then it preserves homology.
--/
-noncomputable def preservesHomologyOfPreservesShortComplexExact
-    (h : ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) : F.PreservesHomology :=
-  ⟨preservesKernelsOfPreservesShortComplexExact F h,
-    preservesCokernelsOfPreservesShortComplexExact F h⟩
+  tfae_have 4 → 1
+  · rintro ⟨inst⟩ S hS
+    refine (S.map F).exact_and_epi_g_iff_g_is_cokernel |>.2 ⟨?_⟩
+    have := S.exact_and_epi_g_iff_g_is_cokernel.1 ⟨hS.exact, hS.epi_g⟩ |>.some
+    have := isColimitOfPreserves F this
+    refine Limits.IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ this
+    · refine NatIso.ofComponents (fun
+      | .zero => Iso.refl _
+      | .one => Iso.refl _) ?_
+      · rintro (_|_) (_|_) (_|_|_) <;> simp
+    · refine ⟨?_, ?_, ?_, ?_⟩
+      · refine ⟨𝟙 _, ?_⟩
+        rintro (_|_) <;> simp [← F.map_comp]
+      · refine ⟨𝟙 _, ?_⟩
+        rintro (_|_) <;> simp [← F.map_comp]
+      · ext; simp
+      · ext; simp
 
-lemma preserves_shortComplexExact_iff_preserves_homology :
-    (∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) ↔ Nonempty F.PreservesHomology :=
-  ⟨fun h => ⟨preservesHomologyOfPreservesShortComplexExact F h⟩, fun ⟨_⟩ _ h =>
-    ShortComplex.Exact.map_of_preservesRightHomologyOf h _⟩
+  tfae_finish
 
+open ZeroObject in
 lemma preserves_shortComplex_shortExact_iff_preserves_finite_limit_colimit :
     (∀ (S : ShortComplex C), S.Exact → (S.map F).Exact) ↔
-    Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F) :=
-  ⟨fun h => ⟨⟨preservesFiniteLimitOfPreservesShortComplexExact F h⟩,
-    ⟨preservesFiniteColimitOfPreservesShortComplexExact F h⟩⟩,
-    fun ⟨⟨_⟩, ⟨_⟩⟩ => preserves_shortComplexExact_iff_preserves_homology F |>.2
-      ⟨inferInstance⟩⟩
+    Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F) := by
+  constructor
+  · intro h
+    refine ⟨preserves_finite_limits_tfae F |>.out 1 3 |>.1 ?_,
+      preserves_finite_colimits_tfae F |>.out 1 3 |>.1 ?_⟩
+    · intro S ⟨hS1, hS2⟩
+      refine ⟨h _ hS1, ?_⟩
+      let s : ShortComplex C := .mk (0 : 0 ⟶ S.X₁) S.f $ by simp
+      exact (s.map F).exact_iff_mono (by simp) |>.1 $ h s (s.exact_iff_mono rfl |>.2 hS2)
+    · intro S ⟨hS1, hS2⟩
+      refine ⟨h _ hS1, ?_⟩
+      let s : ShortComplex C := .mk S.g (0 : S.X₃ ⟶ 0) $ by simp
+      exact (s.map F).exact_iff_epi (by simp) |>.1 $ h s (s.exact_iff_epi rfl |>.2 hS2)
+  · rintro ⟨⟨h1⟩, ⟨h2⟩⟩
+    haveI : PreservesHomology F := inferInstance
+    exact fun S hS => hS.map F
 
 end
 
