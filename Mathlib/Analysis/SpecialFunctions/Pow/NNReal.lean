@@ -244,6 +244,12 @@ theorem rpow_one_div_le_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ (1 / z)
   rw [← rpow_le_rpow_iff hz, rpow_self_rpow_inv hz.ne']
 #align nnreal.rpow_one_div_le_iff NNReal.rpow_one_div_le_iff
 
+theorem lt_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^z < y := by
+  simp only [← not_le, rpow_inv_le_iff hz]
+
+theorem rpow_inv_lt_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
+  simp only [← not_le, le_rpow_inv_iff hz]
+
 @[gcongr] theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0} {y z : ℝ} (hx : 1 < x) (hyz : y < z) :
     x ^ y < x ^ z :=
   Real.rpow_lt_rpow_of_exponent_lt hx hyz
@@ -756,6 +762,9 @@ theorem le_rpow_one_div_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ≤ y 
   rw [rpow_mul, ← one_div, @rpow_le_rpow_iff _ _ (1 / z) (by simp [hz])]
 #align ennreal.le_rpow_one_div_iff ENNReal.le_rpow_one_div_iff
 
+theorem rpow_inv_lt_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
+  simp only [← not_le, le_rpow_inv_iff hz]
+
 theorem lt_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y := by
   nth_rw 1 [← rpow_one x]
   nth_rw 1 [← @_root_.mul_inv_cancel _ _ z (ne_of_lt hz).symm]
@@ -771,7 +780,7 @@ theorem lt_rpow_one_div_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ 
 theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
   nth_rw 1 [← ENNReal.rpow_one y]
   nth_rw 1 [← @_root_.mul_inv_cancel _ _ z hz.ne.symm]
-  rw [ENNReal.rpow_mul, /-← one_div,-/ ENNReal.rpow_le_rpow_iff (inv_pos.2 hz)]
+  rw [ENNReal.rpow_mul, ENNReal.rpow_le_rpow_iff (inv_pos.2 hz)]
 
 @[deprecated rpow_inv_le_iff (since := "2024-07-10")]
 theorem rpow_one_div_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ (1 / z) ≤ y ↔ x ≤ y ^ z := by
