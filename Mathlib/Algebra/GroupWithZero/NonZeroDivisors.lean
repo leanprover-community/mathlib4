@@ -176,7 +176,6 @@ theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 :
   ne_of_mem_of_not_mem hx zero_not_mem_nonZeroDivisors
 #align non_zero_divisors.ne_zero nonZeroDivisors.ne_zero
 
-@[simp]
 theorem nonZeroDivisors.coe_ne_zero [Nontrivial M] (x : M⁰) : (x : M) ≠ 0 :=
   nonZeroDivisors.ne_zero x.2
 #align non_zero_divisors.coe_ne_zero nonZeroDivisors.coe_ne_zero
