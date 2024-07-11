@@ -6,6 +6,19 @@ Authors: Kyle Miller
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
+/-!
+# Counting walks of a given length
+
+## Main definitions
+- `walkLengthTwoEquivCommonNeighbors`: bijective correspondence between walks of length two
+from `u` to `v` and common neighbours of `u` and `v`. Note that `u` and `v` may be the same.
+- `finsetWalkLength`: the `Finset` of length-`n` walks from `u` to `v`.
+This is used to give `{p : G.walk u v | p.length = n}` a `Fintype` instance, and it
+can also be useful as a recursive description of this set when `V` is finite.
+
+TODO: should this be extended further?
+-/
+
 open Function
 
 universe u v w
