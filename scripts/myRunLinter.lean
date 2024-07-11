@@ -1,6 +1,9 @@
 import Batteries.Tactic.Lint
 import Batteries.Data.Array.Basic
 import Batteries.Lean.Util.Path
+import Cli.Basic
+
+set_option autoImplicit true
 
 /-!
 Michael's fork of the batteries `runLinter` script:
@@ -21,30 +24,17 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
 def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
   IO.FS.writeFile path <| toJson a |>.pretty
 
-/--
-Usage: `runLinter [--update] [Mathlib.Data.List.Basic]`
+open Cli
 
-Runs the linters on all declarations in the given module (or `Mathlib` by default).
-If `--update` is set, the `nolints` file is updated to remove any declarations that no longer need
-to be nolinted.
-
-If the `--only` flag is passed, only a given set of linters is applied.
-(In conjunction with the `--update` flag, this could lead to the nolints file being shorter
- than expected; use with care!)
--/
-unsafe def main (args : List String) : IO Unit := do
-  let (update, args) :=
-    match args with
-    | "--update" :: args => (true, args)
-    | _ => (false, args)
-  let some module :=
-      match args with
-      | [] => some `Mathlib
-      | [mod] => match mod.toName with
+unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
+  let update := args.hasFlag "update"
+  let some module := match args.flag? "module" with
+      | some mod =>
+        match mod.value.toName with
         | .anonymous => none
         | name => some name
-      | _ => none
-    | IO.eprintln "Usage: runLinter [--update] [Mathlib.Data.List.Basic]" *> IO.Process.exit 1
+      | none => some `Mathlib
+    | IO.eprintln "invalid input: --module must be an existing module, such as 'Mathlib.Data.List.Basic'" *> IO.Process.exit 1
   searchPathRef.set compile_time_search_path%
   let mFile ← findOLean module
   unless (← mFile.pathExists) do
@@ -84,3 +74,21 @@ unsafe def main (args : List String) : IO Unit := do
         IO.Process.exit 1
       else
         IO.println "-- Linting passed."
+  return 0
+
+/-- Setting up command line options and help text for `lake exe myRunLinter`. -/
+unsafe def runLinter : Cmd := `[Cli|
+  lint_style VIA runLinterCli; ["0.0.1"]
+  "Runs the linters on all declarations in the given module (or `Mathlib` by default)."
+
+  FLAGS:
+    update;     "Update the `nolints` file to remove any declarations \
+                that no longer need to be nolinted."
+    only : Array String;  "Only run these named linters. (In conjunction with the `--update` flag, \
+      this could lead to the nolints file missing entries for other linters: use with care!)"
+
+    module : String;   "Run the linters on a given module: if omitted, will run on all modules in Mathlib"
+]
+
+/-- The entry point to the `lake exe myRunLinter` command. -/
+unsafe def main (args : List String) : IO UInt32 := do runLinter.validate args
