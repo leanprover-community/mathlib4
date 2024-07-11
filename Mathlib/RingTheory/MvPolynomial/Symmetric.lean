@@ -197,10 +197,10 @@ theorem muProduct_indiscrete_zero (f : ℕ → MvPolynomial σ R) :
     muProduct σ R f (.indiscrete 0) = 1 := by simp [muProduct]
 
 @[simp]
-theorem muProduct_indiscrete_of_pos {n : ℕ} (npos : n > 0) (f : ℕ → MvPolynomial σ R) :
+theorem muProduct_indiscrete_of_pos {n : ℕ} (npos : n ≠ 0) (f : ℕ → MvPolynomial σ R) :
     muProduct σ R f (.indiscrete n) = f n := by
   rw [muProduct, Nat.Partition.indiscrete_parts, Multiset.map_singleton, Multiset.prod_singleton]
-  linarith
+  exact npos
 
 end Partitions
 
@@ -354,7 +354,8 @@ lemma hsymm_def (n : ℕ) : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod :=
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
 def hsymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := muProduct σ R (hsymm σ R) μ
 
-lemma hsymmPart_def {n : ℕ} (μ : n.Partition) : hsymmPart σ R μ = (μ.parts.map (hsymm σ R)).prod := rfl
+lemma hsymmPart_def {n : ℕ} (μ : n.Partition) : hsymmPart σ R μ = (μ.parts.map (hsymm σ R)).prod :=
+  rfl
 
 @[simp]
 theorem hsymm_zero : hsymm σ R 0 = 1 := by simp [hsymm, eq_nil_of_card_zero]
@@ -411,7 +412,7 @@ theorem psumPart_zero : psumPart σ R (.indiscrete 0) = 1 := by
   rw [psumPart, muProduct_indiscrete_zero]
 
 @[simp]
-theorem psumPart_indiscrete {n : ℕ} (npos : n > 0) :
+theorem psumPart_indiscrete {n : ℕ} (npos : n ≠ 0) :
     psumPart σ R (.indiscrete n) = psum σ R n := by simp [psumPart, npos]
 
 @[simp]
