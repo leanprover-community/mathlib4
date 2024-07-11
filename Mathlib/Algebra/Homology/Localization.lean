@@ -114,10 +114,10 @@ lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L)
 
 variable (C c)
 
-lemma respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
+instance respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
   apply MorphismProperty.RespectsIso.of_respects_arrow_iso
   intro f g e hf i
-  exact ((MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff
+  exact ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff
     ((homologyFunctor C c i).mapArrow.mapIso e)).1 (hf i)
 
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
@@ -133,7 +133,7 @@ lemma quasiIso_eq_quasiIso_map_quotient :
     exact MorphismProperty.map_mem_map _ _ _ hf
   · rintro ⟨K', L', g, h, ⟨e⟩⟩
     rw [← quotient_map_mem_quasiIso_iff] at h
-    exact ((respectsIso_quasiIso C c).arrow_mk_iso_iff e).1 h
+    exact ((quasiIso C c).arrow_mk_iso_iff e).1 h
 
 end HomotopyCategory
 

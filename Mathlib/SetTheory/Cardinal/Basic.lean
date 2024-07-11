@@ -5,11 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 #align_import set_theory.cardinal.basic from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 
@@ -82,6 +83,7 @@ assert_not_exists Field
 assert_not_exists Module
 
 open scoped Classical
+open Mathlib (Vector)
 open Function Set Order
 
 noncomputable section
@@ -2167,15 +2169,9 @@ theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β
 
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : s ⊆ range f) : lift.{u} #s ≤ lift.{v} #(f ⁻¹' s) := by
-  rw [lift_mk_le.{0}]
-  refine ⟨⟨?_, ?_⟩⟩
-  · rintro ⟨y, hy⟩
-    rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
-    exact ⟨x, hy⟩
-  rintro ⟨y, hy⟩ ⟨y', hy'⟩; dsimp
-  rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
-  rcases Classical.subtype_of_exists (h hy') with ⟨x', rfl⟩
-  simp; intro hxx'; rw [hxx']
+  rw [← image_preimage_eq_iff] at h
+  nth_rewrite 1 [← h]
+  apply mk_image_le_lift
 #align cardinal.mk_preimage_of_subset_range_lift Cardinal.mk_preimage_of_subset_range_lift
 
 theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → β) (s : Set β)

@@ -149,8 +149,8 @@ theorem map_self (h : IsAdjoinRoot S f) : h.map f = 0 := h.map_eq_zero_iff.mpr d
 @[simp]
 theorem aeval_eq (h : IsAdjoinRoot S f) (p : R[X]) : aeval h.root p = h.map p :=
   Polynomial.induction_on p (fun x => by rw [aeval_C, h.algebraMap_apply])
-    (fun p q ihp ihq => by rw [AlgHom.map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
-    rw [AlgHom.map_mul, aeval_C, AlgHom.map_pow, aeval_X, RingHom.map_mul, ← h.algebraMap_apply,
+    (fun p q ihp ihq => by rw [map_add, RingHom.map_add, ihp, ihq]) fun n x _ => by
+    rw [map_mul, aeval_C, map_pow, aeval_X, RingHom.map_mul, ← h.algebraMap_apply,
       RingHom.map_pow, map_X]
 #align is_adjoin_root.aeval_eq IsAdjoinRoot.aeval_eq
 

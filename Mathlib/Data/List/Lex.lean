@@ -87,9 +87,6 @@ instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTr
       · exact Or.inr (rel ab)
 #align list.lex.is_order_connected List.Lex.isOrderConnected
 
--- This can be removed after https://github.com/leanprover/lean4/pull/1866
-attribute [nolint defLemma] isOrderConnected.aux
-
 instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
     IsTrichotomous (List α) (Lex r) where
   trichotomous := aux where
@@ -104,9 +101,6 @@ instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
       · exact Or.inr (Or.inr (rel ab))
 #align list.lex.is_trichotomous List.Lex.isTrichotomous
 
--- This can be removed after https://github.com/leanprover/lean4/pull/1866
-attribute [nolint defLemma] isTrichotomous.aux
-
 instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
   asymm := aux where
     aux
@@ -115,9 +109,6 @@ instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Le
     | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
 #align list.lex.is_asymm List.Lex.isAsymm
-
--- This can be removed after https://github.com/leanprover/lean4/pull/1866
-attribute [nolint defLemma] isAsymm.aux
 
 instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
     IsStrictTotalOrder (List α) (Lex r) :=

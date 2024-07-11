@@ -49,7 +49,7 @@ Potentially also useful:
   a Hilbert space, without restrictions on its dimension.
 -/
 
-open scoped Classical BigOperators ENNReal NNReal Topology
+open scoped ENNReal NNReal
 open Set Function Finset MeasureTheory Measure Filter
 
 noncomputable section
@@ -134,7 +134,7 @@ theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι)
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
             refine (hf.pow_const _).mul <| Finset.measurable_prod _ ?_
             exact fun _ _ ↦ hf.lmarginal μ |>.pow_const _
-    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s:=s) (fun x ↦ ?_)
+    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (s := s) (fun x ↦ ?_)
   -- The remainder of the computation happens within an `|s|`-fold iterated integral
   simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
   set X := update x i
@@ -598,7 +598,7 @@ theorem snorm_le_snorm_fderiv_of_eq [FiniteDimensional ℝ F]
     {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
     (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
     snorm u p' μ ≤ SNormLESNormFDerivOfEqConst F μ p * snorm (fderiv ℝ u) p μ := by
-  /- Here we derive the GNS-inequality with a Hilbert space as codomain to the case with a
+  /- Here we reduce the GNS-inequality with a Hilbert space as codomain to the case with a
   finite-dimensional normed space as codomain, by transferring the result along the equivalence
   `F ≃ ℝᵐ`. -/
   let F' := EuclideanSpace ℝ <| Fin <| finrank ℝ F
