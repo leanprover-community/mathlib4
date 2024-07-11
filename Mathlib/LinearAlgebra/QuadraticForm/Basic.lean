@@ -592,7 +592,7 @@ theorem comp_apply (Q : QuadraticMap R M' N) (f : M →ₗ[R] M') (x : M) : (Q.c
 
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps (config := { simpRhs := true })]
-def _root_.LinearMap.compQuadraticMapAux (f : N →ₗ[R] M') (Q : QuadraticMap R M N) :
+def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] M') (Q : QuadraticMap R M N) :
     QuadraticMap R M M' where
   toFun x := f (Q x)
   toFun_smul b x := by simp only [map_smul, f.map_smul]
@@ -605,7 +605,7 @@ def _root_.LinearMap.compQuadraticMapAux (f : N →ₗ[R] M') (Q : QuadraticMap 
 def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
     [IsScalarTower S R N] [IsScalarTower S R M] [Module S M']
     (f : N →ₗ[S] M') (Q : QuadraticMap R M N) : QuadraticMap S M M' :=
-  _root_.LinearMap.compQuadraticMapAux f Q.restrictScalars
+  _root_.LinearMap.compQuadraticMap f Q.restrictScalars
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticMap'
 
 end Comp
