@@ -20,6 +20,23 @@ This file defines minimal and maximal of a set with respect to an arbitrary rela
 * `maximals r s`: Maximal elements of `s` with respect to `r`.
 * `minimals r s`: Minimal elements of `s` with respect to `r`.
 
+
+/-
+At the moment `Mathlib.Order.Minimal` defines `maximals r s : Set α` and `minimals r s : Set α`
+for `r : α → α → Prop` and `s : Set α`. I'd like to refactor things to have a predicate
+`Maximal r P : α → Prop` where `P : α → Prop` instead. This will allow dot notation,
+and can be later be used to unify ad hoc notions expressions of max/minimality in places like
+`LinearIndependent.Maximal` and `Set.Finite.exists_maximal_wrt`.
+
+I wanted to run a couple of questions by people.
+
+* Should the existing `maximals` and `minimals` remain, or should they be replaced by
+  `{x | Maximal r (· ∈ s) x}` instead?
+* Should `Maximal r P x` instead be `Maximal P x` with a `[Preorder α]`, as implemented in terms
+of an auxiliary `MaximalWrt r P x`? Most uses of `Maximal` are in practice with an existing
+preorder `(· ≤ ·)`; the exception of `α = Set β` can be easily smoothed over with API.
+-/
+
 ## TODO
 
 Do we need a `Finset` version?
@@ -27,17 +44,187 @@ Do we need a `Finset` version?
 
 open Function Set
 
-variable {α β : Type*} (r r₁ r₂ : α → α → Prop) (s t : Set α) (a b : α)
+variable {α β : Type*} {r r₁ r₂ : α → α → Prop} {P Q : α → Prop} {a b x y : α}
 
-/-- Turns a set into an antichain by keeping only the "maximal" elements. -/
-def maximals : Set α :=
-  { a ∈ s | ∀ ⦃b⦄, b ∈ s → r a b → r b a }
-#align maximals maximals
+@[mk_iff]
+structure Maximal (r : α → α → Prop) (P : α → Prop) (a : α) : Prop where
+  prop : P a
+  rel_of_rel : ∀ ⦃b⦄, P b → r a b → r b a
 
-/-- Turns a set into an antichain by keeping only the "minimal" elements. -/
-def minimals : Set α :=
-  { a ∈ s | ∀ ⦃b⦄, b ∈ s → r b a → r a b }
-#align minimals minimals
+@[mk_iff]
+structure Minimal (r : α → α → Prop) (P : α → Prop) (a : α) : Prop where
+  prop : P a
+  rel_of_rel : ∀ ⦃b⦄, P b → r b a → r a b
+
+section IsAntisymm
+
+variable [IsAntisymm α r]
+
+theorem Maximal.eq_of_rel (ha : Maximal r P a) (hb : P b) (h : r a b) : a = b :=
+  antisymm h <| ha.2 hb h
+
+theorem Minimal.eq_of_rel (ha : Minimal r P a) (hb : P b) (h : r b a) : a = b :=
+  antisymm (ha.2 hb h) h
+
+@[simp] theorem maximal_swap_iff : Maximal (swap r) P a ↔ Minimal r P a := by
+  rw [maximal_iff, minimal_iff]
+
+@[simp] theorem minimal_swap_iff : Minimal (swap r) P a ↔ Maximal r P a := by
+  rw [maximal_iff, minimal_iff]
+
+/-- This theorem can't be used to rewrite without specifying `rlt`, since `rlt` would have to be
+guessed. See `mem_minimals_iff_forall_ssubset_not_mem` and `mem_minimals_iff_forall_lt_not_mem`
+for `⊆` and `≤` versions.  -/
+theorem minimal_iff_forall_lt' (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
+    Minimal r P x ↔ P x ∧ ∀ ⦃y⦄, rlt y x → ¬ P y := by
+  simp [minimal_iff, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap]
+
+theorem maximal_iff_forall_lt' (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
+    Maximal r P x ↔ P x ∧ ∀ ⦃y⦄, rlt x y → ¬ P y := by
+  simp [maximal_iff, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap]
+
+theorem maximal_mem_iff {s : Set α} :
+    Maximal r (· ∈ s) x ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
+  refine ⟨fun h ↦ ⟨h.1, fun _ ↦ h.eq_of_rel⟩, fun h ↦ ⟨h.1, fun y hys hyr ↦ ?_⟩⟩
+  obtain rfl := h.2 hys hyr
+  assumption
+
+theorem minimal_mem_iff {s : Set α} :
+    Minimal r (· ∈ s) x ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y := by
+  have := IsAntisymm.swap r
+  rw [← maximal_swap_iff, maximal_mem_iff]
+
+theorem minimal_iff_minimal_of_imp_of_forall [IsTrans α r] (hPQ : ∀ ⦃x⦄, Q x → P x)
+    (h : ∀ ⦃x⦄, P x → ∃ y, r y x ∧ Q y) : Minimal r P x ↔ Minimal r Q x := by
+  refine ⟨fun h' ↦ ⟨?_, fun y hy hyx ↦ h'.rel_of_rel (hPQ hy) hyx⟩,
+    fun h' ↦ ⟨hPQ h'.prop, fun y hy hyx ↦ ?_⟩⟩
+  · obtain ⟨y, hyx, hy⟩ := h h'.prop
+    rwa [(antisymm <| h'.rel_of_rel (hPQ hy) hyx) hyx]
+  obtain ⟨z, hzy, hz⟩ := h hy
+  exact (Trans.trans <| h'.rel_of_rel hz (Trans.trans hzy hyx)) hzy
+
+theorem maximal_iff_maximal_of_imp_of_forall [IsTrans α r] (hPQ : ∀ ⦃x⦄, Q x → P x)
+    (h : ∀ ⦃x⦄, P x → ∃ y, r x y ∧ Q y) : Maximal r P x ↔ Maximal r Q x := by
+  have := IsAntisymm.swap r
+  have := IsTrans.swap r
+  rw [← minimal_swap_iff, ← minimal_swap_iff, minimal_iff_minimal_of_imp_of_forall hPQ h]
+
+end IsAntisymm
+
+section PartialOrder
+
+variable [PartialOrder α]
+
+theorem minimal_iff_forall_lt : Minimal (· ≤ ·) P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y :=
+  minimal_iff_forall_lt' (· < ·)
+
+theorem Minimal.not_prop_of_lt (h : Minimal (· ≤ ·) P x) (hy : y < x) : ¬ P y :=
+  (minimal_iff_forall_lt.1 h).2 hy
+
+theorem Minimal.not_lt (h : Minimal (· ≤ ·) P x) (hy : P y) : ¬ y < x := by
+  contrapose! hy
+  exact h.not_prop_of_lt hy
+
+theorem maximal_iff_forall_lt : Maximal (· ≤ ·) P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
+  maximal_iff_forall_lt' (· < ·)
+
+theorem Maximal.not_prop_of_lt (h : Maximal (· ≤ ·) P x) (hy : x < y) : ¬ P y :=
+  (maximal_iff_forall_lt.1 h).2 hy
+
+theorem Maximal.not_lt (h : Maximal (· ≤ ·) P x) (hy : P y) : ¬ x < y := by
+  contrapose! hy
+  exact h.not_prop_of_lt hy
+
+end PartialOrder
+
+section Subset
+
+variable {P : Set α → Prop} {s t : Set α}
+
+theorem minimal_iff_forall_ssubset : Minimal (· ⊆ ·) P s ↔ P s ∧ ∀ ⦃t⦄, t ⊂ s → ¬ P t :=
+  minimal_iff_forall_lt' (· ⊂ ·)
+
+theorem Minimal.not_prop_of_ssubset (h : Minimal (· ⊆ ·) P s) (ht : t < s) : ¬ P t :=
+  (minimal_iff_forall_lt.1 h).2 ht
+
+theorem Minimal.not_ssubset (h : Minimal (· ⊆ ·) P s) (ht : P t) : ¬ t ⊂ s :=
+  h.not_lt ht
+
+theorem minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
+    Minimal (· ⊆ ·) P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
+  ⟨fun h ↦ ⟨h.prop, fun x hxs hx ↦ by simpa using h.rel_of_rel hx diff_subset hxs⟩,
+    fun h ↦ ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
+        h.2 x hxs <| hP ht (subset_diff_singleton hts hxt)⟩⟩
+
+theorem maximal_iff_forall_ssubset : Maximal (· ⊆ ·) P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
+  maximal_iff_forall_lt' (· ⊂ ·)
+
+theorem Maximal.not_prop_of_ssubset (h : Maximal (· ⊆ ·) P s) (ht : s < t) : ¬ P t :=
+  (maximal_iff_forall_lt.1 h).2 ht
+
+theorem Maximal.not_ssubset (h : Maximal (· ⊆ ·) P s) (ht : P t) : ¬ s ⊂ t :=
+  h.not_lt ht
+
+theorem maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
+    Maximal (· ⊆ ·) P s ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
+  simp only [maximal_iff, and_congr_right_iff]
+  refine fun _ ↦ ⟨fun h x hxs hx ↦ hxs <| h hx (subset_insert _ _) (mem_insert _ _),
+    fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
+
+/- TODO : generalize `minimal_iff_forall_diff_singleton` and `maximal_iff_forall_insert`
+to `StronglyAtomic` orders. -/
+
+end Subset
+
+
+
+-- theorem mem_minimals_iff_forall_lt_not_mem'
+--     (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
+--     x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt y x → y ∉ s := by
+--   simp [minimals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
+
+-- theorem mem_maximals_iff_forall_lt_not_mem'
+--     (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
+--     x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt x y → y ∉ s := by
+--   simp [maximals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
+
+-- theorem minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
+--     (h : ∀ x ∈ s, ∃ y ∈ t, r y x) : minimals r s = minimals r t := by
+--   refine Set.ext fun a ↦ ⟨fun ⟨has, hmin⟩ ↦ ⟨?_,fun b hbt ↦ hmin (hts hbt)⟩,
+--     fun ⟨hat, hmin⟩ ↦ ⟨hts hat, fun b hbs hba ↦ ?_⟩⟩
+--   · obtain ⟨a', ha', haa'⟩ := h _ has
+--     rwa [antisymm (hmin (hts ha') haa') haa']
+--   obtain ⟨b', hb't, hb'b⟩ := h b hbs
+--   rwa [antisymm (hmin hb't (Trans.trans hb'b hba)) (Trans.trans hb'b hba)]
+
+-- theorem maximals_eq_maximals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
+--     (h : ∀ x ∈ s, ∃ y ∈ t, r x y) : maximals r s = maximals r t :=
+--   @minimals_eq_minimals_of_subset_of_forall _ _ _ _ (IsAntisymm.swap r) (IsTrans.swap r) hts h
+
+variable (r s)
+
+theorem maximals_antichain : IsAntichain r (maximals r s) := fun _a ha _b hb hab h =>
+  hab <| eq_of_mem_maximals ha hb.1 h
+#align maximals_antichain maximals_antichain
+
+theorem minimals_antichain : IsAntichain r (minimals r s) :=
+  haveI := IsAntisymm.swap r
+  (maximals_antichain _ _).swap
+#align minimals_antichain minimals_antichain
+
+end IsAntisymm
+
+section Set
+
+-- /-- Turns a set into an antichain by keeping only the "maximal" elements. -/
+-- def maximals : Set α :=
+--   { a ∈ s | ∀ ⦃b⦄, b ∈ s → r a b → r b a }
+-- #align maximals maximals
+
+-- /-- Turns a set into an antichain by keeping only the "minimal" elements. -/
+-- def minimals : Set α :=
+--   { a ∈ s | ∀ ⦃b⦄, b ∈ s → r b a → r a b }
+-- #align minimals minimals
 
 theorem maximals_subset : maximals r s ⊆ s :=
   sep_subset _ _
@@ -79,73 +266,8 @@ theorem minimals_swap : minimals (swap r) s = maximals r s :=
   rfl
 #align minimals_swap minimals_swap
 
-section IsAntisymm
+end Set
 
-variable {r s t a b} {x : α} [IsAntisymm α r]
-
-theorem eq_of_mem_maximals (ha : a ∈ maximals r s) (hb : b ∈ s) (h : r a b) : a = b :=
-  antisymm h <| ha.2 hb h
-#align eq_of_mem_maximals eq_of_mem_maximals
-
-theorem eq_of_mem_minimals (ha : a ∈ minimals r s) (hb : b ∈ s) (h : r b a) : a = b :=
-  antisymm (ha.2 hb h) h
-#align eq_of_mem_minimals eq_of_mem_minimals
-
-theorem mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
-  simp only [maximals, Set.mem_sep_iff, and_congr_right_iff]
-  refine fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ ?_⟩
-  convert hxy <;> rw [h hys hxy]
-
-theorem mem_maximals_setOf_iff {P : α → Prop} :
-    x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
-  mem_maximals_iff
-
-theorem mem_minimals_iff : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y := by
-  haveI := IsAntisymm.swap r
-  exact mem_maximals_iff
-
-theorem mem_minimals_setOf_iff {P : α → Prop} :
-    x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r y x → x = y :=
-  mem_minimals_iff
-
-/-- This theorem can't be used to rewrite without specifying `rlt`, since `rlt` would have to be
-  guessed. See `mem_minimals_iff_forall_ssubset_not_mem` and `mem_minimals_iff_forall_lt_not_mem`
-  for `⊆` and `≤` versions.  -/
-theorem mem_minimals_iff_forall_lt_not_mem'
-    (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
-    x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt y x → y ∉ s := by
-  simp [minimals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
-
-theorem mem_maximals_iff_forall_lt_not_mem'
-    (rlt : α → α → Prop) [IsNonstrictStrictOrder α r rlt] :
-    x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt x y → y ∉ s := by
-  simp [maximals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
-
-theorem minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
-    (h : ∀ x ∈ s, ∃ y ∈ t, r y x) : minimals r s = minimals r t := by
-  refine Set.ext fun a ↦ ⟨fun ⟨has, hmin⟩ ↦ ⟨?_,fun b hbt ↦ hmin (hts hbt)⟩,
-    fun ⟨hat, hmin⟩ ↦ ⟨hts hat, fun b hbs hba ↦ ?_⟩⟩
-  · obtain ⟨a', ha', haa'⟩ := h _ has
-    rwa [antisymm (hmin (hts ha') haa') haa']
-  obtain ⟨b', hb't, hb'b⟩ := h b hbs
-  rwa [antisymm (hmin hb't (Trans.trans hb'b hba)) (Trans.trans hb'b hba)]
-
-theorem maximals_eq_maximals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
-    (h : ∀ x ∈ s, ∃ y ∈ t, r x y) : maximals r s = maximals r t :=
-  @minimals_eq_minimals_of_subset_of_forall _ _ _ _ (IsAntisymm.swap r) (IsTrans.swap r) hts h
-
-variable (r s)
-
-theorem maximals_antichain : IsAntichain r (maximals r s) := fun _a ha _b hb hab h =>
-  hab <| eq_of_mem_maximals ha hb.1 h
-#align maximals_antichain maximals_antichain
-
-theorem minimals_antichain : IsAntichain r (minimals r s) :=
-  haveI := IsAntisymm.swap r
-  (maximals_antichain _ _).swap
-#align minimals_antichain minimals_antichain
-
-end IsAntisymm
 
 theorem mem_minimals_iff_forall_ssubset_not_mem {x : Set α} (s : Set (Set α)) :
     x ∈ minimals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ⊂ x → y ∉ s :=
