@@ -357,35 +357,32 @@ theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f
 section
 
 /-- Two morphisms in an exact sequence are exact on pseudoelements. -/
-theorem pseudo_exact_of_exact {P Q R : C} {f : P ⟶ Q} {g : Q ⟶ R} (h : Exact f g) :
-    (∀ a, g (f a) = 0) ∧ ∀ b, g b = 0 → ∃ a, f a = b :=
-  ⟨fun a => by
-    rw [← comp_apply, h.w]
-    exact zero_apply _ _, fun b' =>
+theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
+    ∀ b, S.g b = 0 → ∃ a, S.f a = b :=
+  fun b' =>
     Quotient.inductionOn b' fun b hb => by
-      have hb' : b.hom ≫ g = 0 := (pseudoZero_iff _).1 hb
+      have hb' : b.hom ≫ S.g = 0 := (pseudoZero_iff _).1 hb
       -- By exactness, `b` factors through `im f = ker g` via some `c`.
-      obtain ⟨c, hc⟩ := KernelFork.IsLimit.lift' (isLimitImage f g h) _ hb'
+      obtain ⟨c, hc⟩ := KernelFork.IsLimit.lift' hS.isLimitImage _ hb'
       -- We compute the pullback of the map into the image and `c`.
       -- The pseudoelement induced by the first pullback map will be our preimage.
-      use (pullback.fst (Abelian.factorThruImage f) c)
+      use (pullback.fst (Abelian.factorThruImage S.f) c ⟶ S.X₁)
       -- It remains to show that the image of this element under `f` is pseudo-equal to `b`.
       apply Quotient.sound
-      -- `pullback.snd` is an epimorphism because the map onto the image is!
-      refine ⟨pullback (Abelian.factorThruImage f) c, 𝟙 _,
+      refine ⟨pullback (Abelian.factorThruImage S.f) c, 𝟙 _,
               pullback.snd _ _, inferInstance, inferInstance, ?_⟩
       -- Now we can verify that the diagram commutes.
       calc
-        𝟙 (pullback (Abelian.factorThruImage f) c) ≫ pullback.fst _ _ ≫ f = pullback.fst _ _ ≫ f :=
+        𝟙 (pullback (Abelian.factorThruImage S.f) c) ≫ pullback.fst _ _ ≫ S.f =
+            pullback.fst _ _ ≫ S.f :=
           Category.id_comp _
-        _ = pullback.fst _ _ ≫ Abelian.factorThruImage f ≫ kernel.ι (cokernel.π f) := by
+        _ = pullback.fst _ _ ≫ Abelian.factorThruImage S.f ≫ kernel.ι (cokernel.π S.f) := by
           rw [Abelian.image.fac]
-        _ = (pullback.snd _ _ ≫ c) ≫ kernel.ι (cokernel.π f) := by
+        _ = (pullback.snd _ _ ≫ c) ≫ kernel.ι (cokernel.π S.f) := by
           rw [← Category.assoc, pullback.condition]
         _ = pullback.snd _ _ ≫ b.hom := by
           rw [Category.assoc]
           congr
-        ⟩
 #align category_theory.abelian.pseudoelement.pseudo_exact_of_exact CategoryTheory.Abelian.Pseudoelement.pseudo_exact_of_exact
 
 end
@@ -397,26 +394,25 @@ theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : 
 section
 
 /-- If two morphisms are exact on pseudoelements, they are exact. -/
-theorem exact_of_pseudo_exact {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) :
-    ((∀ a, g (f a) = 0) ∧ ∀ b, g b = 0 → ∃ a, f a = b) → Exact f g :=
-  fun ⟨h₁, h₂⟩ => (Abelian.exact_iff _ _).2
-    ⟨zero_morphism_ext _ fun a => by rw [comp_apply, h₁ a], by
+theorem exact_of_pseudo_exact (S : ShortComplex C)
+    (hS : ∀ b, S.g b = 0 → ∃ a, S.f a = b) : S.Exact :=
+  (S.exact_iff_kernel_ι_comp_cokernel_π_zero).2 (by
       -- If we apply `g` to the pseudoelement induced by its kernel, we get 0 (of course!).
-      have : g (kernel.ι g) = 0 := apply_eq_zero_of_comp_eq_zero _ _ (kernel.condition _)
+      have : S.g (kernel.ι S.g) = 0 := apply_eq_zero_of_comp_eq_zero _ _ (kernel.condition _)
       -- By pseudo-exactness, we get a preimage.
-      obtain ⟨a', ha⟩ := h₂ _ this
+      obtain ⟨a', ha⟩ := hS _ this
       obtain ⟨a, ha'⟩ := Quotient.exists_rep a'
       rw [← ha'] at ha
       obtain ⟨Z, r, q, _, eq, comm⟩ := Quotient.exact ha
       -- Consider the pullback of `kernel.ι (cokernel.π f)` and `kernel.ι g`.
       -- The commutative diagram given by the pseudo-equality `f a = b` induces
       -- a cone over this pullback, so we get a factorization `z`.
-      obtain ⟨z, _, hz₂⟩ := @pullback.lift' _ _ _ _ _ _ (kernel.ι (cokernel.π f)) (kernel.ι g) _
-        (r ≫ a.hom ≫ Abelian.factorThruImage f) q (by
+      obtain ⟨z, _, hz₂⟩ := @pullback.lift' _ _ _ _ _ _ (kernel.ι (cokernel.π S.f))
+        (kernel.ι S.g) _ (r ≫ a.hom ≫ Abelian.factorThruImage S.f) q (by
           simp only [Category.assoc, Abelian.image.fac]
           exact comm)
       -- Let's give a name to the second pullback morphism.
-      let j : pullback (kernel.ι (cokernel.π f)) (kernel.ι g) ⟶ kernel g := pullback.snd _ _
+      let j : pullback (kernel.ι (cokernel.π S.f)) (kernel.ι S.g) ⟶ kernel S.g := pullback.snd _ _
       -- Since `q` is an epimorphism, in particular this means that `j` is an epimorphism.
       haveI pe : Epi j := epi_of_epi_fac hz₂
       -- But it is also a monomorphism, because `kernel.ι (cokernel.π f)` is: A kernel is
@@ -426,12 +422,7 @@ theorem exact_of_pseudo_exact {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) :
       -- But then `kernel.ι g` can be expressed using all of the maps of the pullback square, and we
       -- are done.
       rw [(Iso.eq_inv_comp (asIso j)).2 pullback.condition.symm]
-      simp only [Category.assoc, kernel.condition, HasZeroMorphisms.comp_zero]⟩
-#align category_theory.abelian.pseudoelement.exact_of_pseudo_exact CategoryTheory.Abelian.Pseudoelement.exact_of_pseudo_exact
-
-end
-
-/-- If two pseudoelements `x` and `y` have the same image under some morphism `f`, then we can form
+      simp only [Category.assoc, kernel.condition, HasZeroMorphisms.comp_zero])
     their "difference" `z`. This pseudoelement has the properties that `f z = 0` and for all
     morphisms `g`, if `g y = 0` then `g z = g x`. -/
 theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
