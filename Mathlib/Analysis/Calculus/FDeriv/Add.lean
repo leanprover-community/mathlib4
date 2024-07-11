@@ -750,8 +750,8 @@ theorem DifferentiableAt.const_sub (hf : DifferentiableAt 𝕜 f x) (c : F) :
 
 @[deprecated DifferentiableAt.sub_iff_right]
 theorem differentiableAt_const_sub_iff (c : F) :
-    DifferentiableAt 𝕜 (fun y => c - f y) x ↔ DifferentiableAt 𝕜 f x := by simp only [differentiableAt_const,
-      DifferentiableAt.sub_iff_right]
+    DifferentiableAt 𝕜 (fun y => c - f y) x ↔ DifferentiableAt 𝕜 f x := by
+  simp only [differentiableAt_const, DifferentiableAt.sub_iff_right]
 #align differentiable_at_const_sub_iff differentiableAt_const_sub_iff
 
 @[fun_prop]
