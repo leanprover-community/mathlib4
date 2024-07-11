@@ -321,8 +321,6 @@ variable [DecidableEq σ] [DecidableEq τ]
 /-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`. -/
 def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 
-lemma hsymm_def {n : ℕ} : hsymm σ R n = ∑ s : Sym σ n, (s.1.map X).prod := rfl
-
 /-- `hsymmPart` is the product of the symmetric polynomials `hsymm μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
 def hsymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map (hsymm σ R)).prod
@@ -360,8 +358,6 @@ open Finset
 
 /-- The degree-`n` power sum -/
 def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
-
-lemma psum_def (n : ℕ) : psum σ R n = ∑ i, X i ^ n := rfl
 
 /-- `psumPart` is the product of the symmetric polynomials `psum μᵢ`,
 where `μ = (μ₁, μ₂, ...)` is a partition. -/
