@@ -118,10 +118,10 @@ printf $'<details>
   <summary>You can run this locally as follows</summary>\n\n
 ```bash
 ## summary with just the declaration names:
-./scripts/decls_diff.sh <optional_commit>
+./scripts/declarations_diff.sh <optional_commit>
 
 ## more verbose report:
-./scripts/decls_diff.sh long <optional_commit>
+./scripts/declarations_diff.sh long <optional_commit>
 ```
 </details>'
  : <<ReferenceTest
