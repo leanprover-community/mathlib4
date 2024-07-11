@@ -41,10 +41,6 @@ open Bicategory
 
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
-section
-
-variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
 /-- A lax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
@@ -87,6 +83,8 @@ structure LaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) 
 initialize_simps_projections LaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
 namespace LaxFunctor
+
+variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
 attribute [reassoc (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
@@ -182,3 +180,5 @@ attribute [nolint docBlame] CategoryTheory.LaxFunctor.PseudoCore.mapIdIso
 attribute [simp] PseudoCore.mapIdIso_inv PseudoCore.mapCompIso_inv
 
 end LaxFunctor
+
+end CategoryTheory
