@@ -475,8 +475,35 @@ theorem invariance_iInf [Nonempty n] {S : E →ₗ[𝕜] E} (h : ∀ (i : n), (T
   intro i
   exact eigenspace_invariant (h i) (γ i) v (hv i)
 
+theorem invariance_iInf' [Nonempty n] (i : n) :
+    ∀ γ : {x // i ≠ x} → 𝕜, ∀ v ∈ (⨅ (j : {x // i ≠ x}), eigenspace ((Subtype.restrict (fun x ↦ i ≠ x) T) j) (γ j)),
+    (T i) v ∈ (⨅ (j : {x // i ≠ x}), eigenspace ((Subtype.restrict (fun x ↦ i ≠ x) T) j) (γ j)) := by
+  intro γ v hv
+  simp only [Submodule.mem_iInf] at *
+  exact fun i_1 ↦ eigenspace_invariant (hC (↑i_1) i) (γ i_1) v (hv i_1)
+
+theorem invariance_iInf'' [Nonempty n] (i : n) :
+    ∀ γ : n → 𝕜, ∀ v ∈ (⨅ (j : n), eigenspace (T j) (γ j)),
+    (T i) v ∈ (⨅ (j : n), eigenspace (T j) (γ j)) := by
+  intro γ v hv
+  simp only [Submodule.mem_iInf] at *
+  exact fun i_1 ↦ eigenspace_invariant (hC i_1 i) (γ i_1) v (hv i_1)
+
 /-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
   some lemmas. -/
+
+theorem inf_restrict' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
+    (⨆ (μ : 𝕜) , eigenspace (LinearMap.restrict (T i)
+    ((invariance_iInf' T hC i γ))) μ)ᗮ = ⊥ := by
+  exact (LinearMap.IsSymmetric.restrict_invariant (hT i)
+    (invariance_iInf' T hC i γ)).orthogonalComplement_iSup_eigenspaces_eq_bot
+
+theorem inf_restrict'' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
+    (⨆ (μ : 𝕜) , eigenspace (LinearMap.restrict (T i)
+    ((invariance_iInf' T hC i γ))) μ) = ⊤ := by
+  exact
+    pre_exhaust fun x y ↦
+      hT i ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)).subtype x) ↑y
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
@@ -492,10 +519,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       exact Fintype.card_pos
     have D := H {x // i ≠ x} C (Subtype.restrict (fun x ↦ i ≠ x) T)
       (fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1) (fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j)
-    have F := invariance_iInf T (S := T i) (fun k ↦ (hC i ↑k).symm)
-
-
-    --now for invariance_iInf and Samyak's lemmas!
+    --the next problem is probably going to be reconciling the sup over
+    --functions with taking these individual sups over μ. There must be a way
+    --to do this, though...
     sorry
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
