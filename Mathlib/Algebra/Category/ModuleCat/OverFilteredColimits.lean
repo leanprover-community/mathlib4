@@ -64,7 +64,7 @@ abelian groups `{Mⱼ}`  with the same indexing set `j ∈ J`, if for each `j �
 that the `Rⱼ`-action is compatible, then there is a heterogeneous scalar multiplication
 `Rᵢ → Mⱼ → Mₖ` for every `i → j` and `i → k`.
 -/
-def hsmul {c₁ c₂ c₃ : J} (i₁ : c₁ ⟶ c₃) (i₂ : c₂ ⟶ c₃)
+def hSMul {c₁ c₂ c₃ : J} (i₁ : c₁ ⟶ c₃) (i₂ : c₂ ⟶ c₃)
     (r : ℛ.obj c₁) (m : ℳ.obj c₂) : ℳ.obj c₃ :=
   (ℛ.map i₁ r) • (ℳ.map i₂ m)
 
