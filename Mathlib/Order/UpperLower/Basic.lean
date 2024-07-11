@@ -511,7 +511,7 @@ section LE
 
 variable [LE α]
 
-/-- The type of upper sets of an order. -/
+@[inherit_doc IsUpperSet]
 structure UpperSet (α : Type*) [LE α] where
   /-- The carrier of an `UpperSet`. -/
   carrier : Set α
@@ -519,13 +519,17 @@ structure UpperSet (α : Type*) [LE α] where
   upper' : IsUpperSet carrier
 #align upper_set UpperSet
 
-/-- The type of lower sets of an order. -/
+extend_docs UpperSet before "The type of upper sets of an order."
+
+@[inherit_doc IsLowerSet]
 structure LowerSet (α : Type*) [LE α] where
   /-- The carrier of a `LowerSet`. -/
   carrier : Set α
   /-- The carrier of a `LowerSet` is a lower set. -/
   lower' : IsLowerSet carrier
 #align lower_set LowerSet
+
+extend_docs LowerSet before "The type of lower sets of an order."
 
 namespace UpperSet
 
