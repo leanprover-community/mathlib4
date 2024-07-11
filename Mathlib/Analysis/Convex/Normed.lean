@@ -8,6 +8,7 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Topological and metric properties of convex sets in normed spaces
@@ -26,9 +27,10 @@ We prove the following facts:
 
 variable {ι : Type*} {E P : Type*}
 
-open Metric Set
-open scoped Convex
+open AffineBasis FiniteDimensional Metric Set
+open scoped Convex Pointwise Topology
 
+section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
 variable {s t : Set E}
 
@@ -133,3 +135,51 @@ theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
   exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
+
+end SeminormedAddCommGroup
+
+section NormedAddCommGroup
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s : Set E} {x : E}
+
+/-- We can intercalate a polyhedron between a point and one of its neighborhoods. -/
+lemma exists_mem_interior_convexHull_finset (hs : s ∈ 𝓝 x) :
+    ∃ t : Finset E, x ∈ interior (convexHull ℝ t : Set E) ∧ convexHull ℝ t ⊆ s := by
+  clear P ι
+  classical
+  wlog hx : x = 0
+  · obtain ⟨t, ht⟩ := this (s := -x +ᵥ s) (by simpa using vadd_mem_nhds (-x) hs) rfl
+    use x +ᵥ t
+    simpa [subset_set_vadd_iff, mem_vadd_set_iff_neg_vadd_mem, convexHull_vadd, interior_vadd]
+      using ht
+  subst hx
+  obtain ⟨b⟩ := exists_affineBasis_of_finiteDimensional
+    (ι := Fin (finrank ℝ E + 1)) (k := ℝ) (P := E) (by simp)
+  obtain ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.1 hs
+  set u : Finset E := -Finset.univ.centroid ℝ b +ᵥ Finset.univ.image b
+  have hu₀ : 0 ∈ interior (convexHull ℝ u : Set E) := by
+    simpa [u, convexHull_vadd, interior_vadd, mem_vadd_set_iff_neg_vadd_mem]
+      using b.centroid_mem_interior_convexHull
+  have hu : u.Nonempty := Finset.nonempty_iff_ne_empty.2 fun h ↦ by simp [h] at hu₀
+  have hunorm : (u : Set E) ⊆ closedBall 0 (u.sup' hu (‖·‖) + 1) := by
+    simp only [subset_def, Finset.mem_coe, mem_closedBall, dist_zero_right, ← sub_le_iff_le_add,
+      Finset.le_sup'_iff]
+    exact fun x hx ↦ ⟨x, hx, by simp⟩
+  set ε' : ℝ := ε / 2 / (u.sup' hu (‖·‖) + 1)
+  have hε' : 0 < ε' := by
+    dsimp [ε']
+    obtain ⟨x, hx⟩ := id hu
+    have : 0 ≤ u.sup' hu (‖·‖) := Finset.le_sup'_of_le _ hx (norm_nonneg _)
+    positivity
+  set t : Finset E := ε' • u
+  have hε₀ : 0 < ε / 2 := by positivity
+  have htnorm : (t : Set E) ⊆ closedBall 0 (ε / 2) := by
+    simp [t, Set.set_smul_subset_iff₀ hε'.ne', hε₀.le, _root_.smul_closedBall, abs_of_nonneg hε'.le]
+    simpa [ε',  hε₀.ne'] using hunorm
+  refine ⟨t, ?_, ?_⟩
+  · simpa [t, interior_smul₀, convexHull_smul, zero_mem_smul_set_iff, hε'.ne']
+  calc
+    convexHull ℝ t ⊆ closedBall 0 (ε / 2) := convexHull_min htnorm (convex_closedBall ..)
+    _ ⊆ ball 0 ε := closedBall_subset_ball (by linarith)
+    _ ⊆ s := hεs
+
+end NormedAddCommGroup
