@@ -2892,13 +2892,13 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
   induction' l with hd tl IH
   · rfl
   · by_cases hp : p hd
-    · rw [filter_cons_of_pos _ hp, filter_cons_of_pos _ (h _ hp)]
+    · rw [filter_cons_of_pos hp, filter_cons_of_pos (h _ hp)]
       exact IH.cons_cons hd
-    · rw [filter_cons_of_neg _ hp]
+    · rw [filter_cons_of_neg hp]
       by_cases hq : q hd
-      · rw [filter_cons_of_pos _ hq]
+      · rw [filter_cons_of_pos hq]
         exact sublist_cons_of_sublist hd IH
-      · rw [filter_cons_of_neg _ hq]
+      · rw [filter_cons_of_neg hq]
         exact IH
 #align list.monotone_filter_right List.monotone_filter_right
 
@@ -2981,14 +2981,6 @@ theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by
   · simp [dropWhile]
   · by_cases hp : p x <;> simp [hp, dropWhile, IH]
 #align list.drop_while_eq_nil_iff List.dropWhile_eq_nil_iff
-
-theorem takeWhile_cons_of_pos {x : α} (h : p x) :
-    List.takeWhile p (x :: l) = x :: takeWhile p l := by
-  simp [takeWhile_cons, h]
-
-theorem takeWhile_cons_of_neg {x : α} (h : ¬ p x) :
-    List.takeWhile p (x :: l) = [] := by
-  simp [takeWhile_cons, h]
 
 @[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x := by
@@ -3183,7 +3175,7 @@ theorem erase_diff_erase_sublist_of_sublist {a : α} :
   | b :: l₁, l₂, h =>
     if heq : b = a then by simp only [heq, erase_cons_head, diff_cons]; rfl
     else by
-      simp only [erase_cons_head b l₁, erase_cons_tail l₁ (not_beq_of_ne heq),
+      simp only [erase_cons_head b l₁, erase_cons_tail (not_beq_of_ne heq),
         diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b, erase_comm a b l₂]
       have h' := h.erase b
       rw [erase_cons_head] at h'
