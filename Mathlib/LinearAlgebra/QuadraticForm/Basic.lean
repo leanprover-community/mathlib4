@@ -1357,8 +1357,8 @@ variable (R)
 
 The weights are applied using `•`; typically this definition is used either with `S = R` or
 `[Algebra S R]`, although this is stated more generally. -/
-def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass R S R]
-    (w : ι → S) : QuadraticMap R (ι → R) R :=
+def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] (w : ι → S) :
+    QuadraticMap R (ι → R) R :=
   ∑ i : ι, w i • (proj (R := R) (n := ι) i i)
 #align quadratic_form.weighted_sum_squares QuadraticMap.weightedSumSquares
 
@@ -1366,7 +1366,7 @@ end
 
 @[simp]
 theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
-    [SMulCommClass R S R] (w : ι → S) (v : ι → R) :
+    (w : ι → S) (v : ι → R) :
     weightedSumSquares R w v = ∑ i : ι, w i • (v i * v i) :=
   QuadraticMap.sum_apply _ _ _
 #align quadratic_form.weighted_sum_squares_apply QuadraticMap.weightedSumSquares_apply
