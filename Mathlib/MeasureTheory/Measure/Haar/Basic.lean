@@ -751,19 +751,21 @@ variable [SecondCountableTopology G]
   σ-finite left-invariant measure is a scalar multiple of the Haar measure.
   This is slightly weaker than assuming that `μ` is a Haar measure (in particular we don't require
   `μ ≠ 0`).
-  See also `isHaarMeasure_eq_smul_of_regular` for a statement not assuming second-countability. -/
+  See also `isMulLeftInvariant_eq_smul_of_regular`
+  for a statement not assuming second-countability. -/
 @[to_additive
 "**Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
   any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
   This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
   require `μ ≠ 0`).
-  See also `isAddHaarMeasure_eq_smul_of_regular` for a statement not assuming second-countability."]
+  See also `isAddLeftInvariant_eq_smul_of_regular`
+  for a statement not assuming second-countability."]
 theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
     (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ := by
   have A : Set.Nonempty (interior (closure (K₀ : Set G))) :=
     K₀.interior_nonempty.mono (interior_mono subset_closure)
-  have := measure_eq_div_smul μ (haarMeasure K₀) (isClosed_closure (s := K₀)).measurableSet
-    (measure_pos_of_nonempty_interior _ A).ne' K₀.isCompact.closure.measure_lt_top.ne
+  have := measure_eq_div_smul μ (haarMeasure K₀)
+    (measure_pos_of_nonempty_interior _ A).ne' K₀.isCompact.closure.measure_ne_top
   rwa [haarMeasure_closure_self, div_one, K₀.isCompact.measure_closure] at this
 #align measure_theory.measure.haar_measure_unique MeasureTheory.Measure.haarMeasure_unique
 #align measure_theory.measure.add_haar_measure_unique MeasureTheory.Measure.addHaarMeasure_unique
