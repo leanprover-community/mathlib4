@@ -127,6 +127,13 @@ register_option linter.noInitialWhitespace : Bool := {
   descr := "enable the noInitialWhitespace linter"
 }
 
+/-- `getStartPos stx` assumes that `stx` is an im/ex-plicit binder and returns the positions of
+* the first open bracket, `{` or `(`;
+* the starting positions of each variable declared within the same binder;
+* the position of the `:`;
+* the starting position of the Type of the collection of variables;
+* the position of the closing bracket , `}` or `)`.
+-/
 def getStartPos (stx : Syntax) : Array String.Pos :=
   if stx.isOfKind ``Lean.Parser.Term.implicitBinder ||
      stx.isOfKind ``Lean.Parser.Term.explicitBinder then
@@ -138,10 +145,22 @@ def getStartPos (stx : Syntax) : Array String.Pos :=
           .atom closedBracket _
         ] =>
         let vars := vars.map fun v => v.getHeadInfo.getPos?
-        (#[openBracket.getPos?] ++ vars ++ #[siColon.getPos?, type.getHeadInfo.getPos?, closedBracket.getPos?]).reduceOption
+        (#[openBracket.getPos?] ++ vars ++
+          #[siColon.getPos?, type.getHeadInfo.getPos?, closedBracket.getPos?]).reduceOption
       | _ => default
   else default
 
+/-- `inappropriateSpacing file stx` takes as input the text `file` of a file and
+the `stx` of a binder.
+It returns an array of characters that should be empty if the binder has the correct spacing.
+It returns:
+* the two characters neighbouring the `:`, if they are not spaces ` `;
+* the two characters at distance 2 from the `:`, if they are spaces ` `;
+* the characters two positions before each variable in the binder from the second onwards,
+  unless it is a space;
+* the character following the opening binder and the character preceding the closing binder,
+  if they are spaces.
+-/
 def inappropriateSpacing (file : String) (stx : Syntax) : Array Char :=
   let startPos := getStartPos stx
   if startPos.isEmpty then #[] else
@@ -159,12 +178,11 @@ def inappropriateSpacing (file : String) (stx : Syntax) : Array Char :=
   -- these should not be spaces
   let charAroundColonPlusOne := #[file.get ⟨colonPos.byteIdx-2⟩, file.get ⟨colonPos.byteIdx+2⟩]
   let spaces := charAroundColon
-  let nonspaces := (charsTwoBeforeAVar.push charFollowingOpenBracket ++ charAroundColonPlusOne).push charPrecedingClosedBracket
-  --dbg_trace "spaces: {spaces}"
-  --dbg_trace "nonspaces: {nonspaces}"
-  let errs := spaces.filter (· != ' ') ++ nonspaces.filter (· == ' ')
-  errs
+  let nonspaces := ((charsTwoBeforeAVar ++ charAroundColonPlusOne).push
+    charFollowingOpenBracket).push charPrecedingClosedBracket
+  spaces.filter (· != ' ') ++ nonspaces.filter (· == ' ')
 
+/-- `getBinders stx` returns the array of all the im/ex-plicit binders contained in `stx`. -/
 partial
 def getBinders : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
@@ -173,8 +191,10 @@ def getBinders : Syntax → Array Syntax
       fargs.push stx else fargs
   | _ => #[]
 
-def modNameToFilePath (mod : Name) : System.FilePath :=
-  let cmps := (mod.components.drop 1).foldl (init := mod.getRoot.toString) fun a b =>
+/-- `modNameToFilePath modName` takes as input the name of a file and it returns the corresponding
+`System.FilePath`.  There is no guarantee that the file exists. -/
+def modNameToFilePath (modName : Name) : System.FilePath :=
+  let cmps := (modName.components.drop 1).foldl (init := modName.getRoot.toString) fun a b =>
     ((a.toString : System.FilePath) / b.toString)
   cmps.addExtension "lean"
 
