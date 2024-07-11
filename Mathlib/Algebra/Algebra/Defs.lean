@@ -163,6 +163,11 @@ theorem coe_neg (x : R) : (↑(-x : R) : A) = -↑x :=
   map_neg (algebraMap R A) x
 #align algebra_map.coe_neg algebraMap.coe_neg
 
+@[norm_cast]
+theorem coe_sub (a b : R) :
+    (↑(a - b : R) : A) = ↑a - ↑b :=
+  map_sub (algebraMap R A) a b
+
 end CommRingRing
 
 section CommSemiringCommSemiring
@@ -409,5 +414,12 @@ end id
 end Semiring
 
 end Algebra
+
+@[norm_cast]
+theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semiring C] [Algebra B C]
+    [SMul A C] [IsScalarTower A B C] (a : A) (b : B) : (a • b : B) = a • (b : C) := calc
+  ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
+  _ = a • (b • 1) := smul_assoc ..
+  _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
 
 assert_not_exists Module.End
