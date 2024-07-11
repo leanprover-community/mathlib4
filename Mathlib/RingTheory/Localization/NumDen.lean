@@ -123,7 +123,9 @@ theorem isUnit_den_zero : IsUnit (den A (0 : K) : A) :=
   num_den_reduced A 0 (by simp) dvd_rfl
 #align is_fraction_ring.is_unit_denom_of_num_eq_zero IsFractionRing.isUnit_den_zero
 
-variable (A)
+@[deprecated (since := "2024-07-11")]
+theorem isUnit_den_of_num_eq_zero {x : K} (h : num A x = 0) : IsUnit (den A x : A) :=
+  eq_zero_of_num_eq_zero h ▸ isUnit_den_zero
 
 lemma associated_den_num_inv
     (x : K) (hx : x ≠ 0) :
@@ -141,7 +143,7 @@ lemma associated_den_num_inv
 lemma associated_num_den_inv
     (x : K) (hx : x ≠ 0) :
     Associated (num A x : A) (den A x⁻¹) := by
-  have := (associated_den_num_inv A x⁻¹ (inv_ne_zero hx)).symm
+  have : Associated (num A x⁻¹⁻¹ : A) (den A x⁻¹) := (associated_den_num_inv x⁻¹ (inv_ne_zero hx)).symm
   rw [inv_inv] at this
   exact this
 
