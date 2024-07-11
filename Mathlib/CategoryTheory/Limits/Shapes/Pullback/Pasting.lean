@@ -387,14 +387,14 @@ In this section we show that `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y`.
 -/
 
 variable {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (f' : W ⟶ X)
-variable [HasPullback f g] [HasPullback f' (pullback.fst : pullback f g ⟶ _)]
+variable [HasPullback f g] [HasPullback f' (pullback.fst f g)]
 variable [HasPullback (f' ≫ f) g]
 
 /-- The canonical isomorphism `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y` -/
 noncomputable def pullbackRightPullbackFstIso :
-    pullback f' (pullback.fst : pullback f g ⟶ _) ≅ pullback (f' ≫ f) g := by
+    pullback f' (pullback.fst f g) ≅ pullback (f' ≫ f) g := by
   let this :=
-    bigSquareIsPullback (pullback.snd : pullback f' (pullback.fst : pullback f g ⟶ _) ⟶ _)
+    bigSquareIsPullback (pullback.snd : pullback f' (pullback.fst f g) ⟶ _)
       pullback.snd f' f pullback.fst pullback.fst g pullback.condition pullback.condition
       (pullbackIsPullback _ _) (pullbackIsPullback _ _)
   exact (this.conePointUniqueUpToIso (pullbackIsPullback _ _) : _)
@@ -515,7 +515,7 @@ Y - inl -> Y ⨿[X] Z --inl--> (Y ⨿[X] Z) ⨿[Z] W
 In this section we show that `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ⨿[X] W`.
 -/
 variable {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (g' : Z ⟶ W)
-variable [HasPushout f g] [HasPushout (pushout.inr : _ ⟶ pushout f g) g']
+variable [HasPushout f g] [HasPushout (pushout.inr f g) g']
 variable [HasPushout f (g ≫ g')]
 
 /-- The canonical isomorphism `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ⨿[X] W` -/
