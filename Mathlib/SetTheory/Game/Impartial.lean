@@ -233,3 +233,5 @@ theorem exists_right_move_equiv_iff_fuzzy_zero : (∃ j, G.moveRight j ≈ 0) �
 end Impartial
 
 end PGame
+
+end SetTheory

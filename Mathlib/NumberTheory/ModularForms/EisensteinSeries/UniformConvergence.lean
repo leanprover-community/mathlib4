@@ -194,3 +194,5 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
     Set.mem_univ, forall_const]
 
 end summability
+
+end EisensteinSeries
