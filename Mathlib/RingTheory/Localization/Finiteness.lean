@@ -147,7 +147,9 @@ theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
     LocalizedModule.mkLinearMap (Submonoid.powers g.val) M
   of_localizationSpan' t ht f H
 
-end Module.Finite
+end Finite
+
+end Module
 
 variable {R : Type u} [CommRing R] {S : Type v} [CommRing S] {f : R →+* S}
 

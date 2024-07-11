@@ -188,15 +188,15 @@ private theorem add_comm' (x y : LocalizedModule S M) : x + y = y + x :=
 private theorem zero_add' (x : LocalizedModule S M) : 0 + x = x :=
   induction_on
     (fun m s => by
-      rw [← zero_mk s, mk_add_mk, smul_zero, zero_add, mk_eq];
-        exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
+      rw [← zero_mk s, mk_add_mk, smul_zero, zero_add, mk_eq]
+      exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
     x
 
 private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
   induction_on
     (fun m s => by
-      rw [← zero_mk s, mk_add_mk, smul_zero, add_zero, mk_eq];
-        exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
+      rw [← zero_mk s, mk_add_mk, smul_zero, add_zero, mk_eq]
+      exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
     x
 
 instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
@@ -1054,7 +1054,7 @@ theorem mk'_mul_mk'_of_map_mul {M M' : Type*} [Semiring M] [Semiring M'] [Module
 theorem mk'_mul_mk' {M M' : Type*} [Semiring M] [Semiring M'] [Algebra R M] [Algebra R M']
     (f : M →ₐ[R] M') [IsLocalizedModule S f.toLinearMap] (m₁ m₂ : M) (s₁ s₂ : S) :
     mk' f.toLinearMap m₁ s₁ * mk' f.toLinearMap m₂ s₂ = mk' f.toLinearMap (m₁ * m₂) (s₁ * s₂) :=
-  mk'_mul_mk'_of_map_mul f.toLinearMap f.map_mul m₁ m₂ s₁ s₂
+  mk'_mul_mk'_of_map_mul f.toLinearMap (map_mul f) m₁ m₂ s₁ s₂
 #align is_localized_module.mk'_mul_mk' IsLocalizedModule.mk'_mul_mk'
 
 variable {f}
