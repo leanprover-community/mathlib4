@@ -382,7 +382,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Modu
 section SMul
 
 variable [Monoid S] [Monoid T] [DistribMulAction S N] [DistribMulAction T N]
-variable [SMulCommClass R S N] [SMulCommClass S R N] [SMulCommClass T R N] [SMulCommClass R T N]
+variable [SMulCommClass S R N] [SMulCommClass T R N]
 
 /-- `QuadraticMap R M` inherits the scalar action from any algebra over `R`.
 
@@ -393,6 +393,7 @@ instance : SMul S (QuadraticMap R M N) :=
       toFun_smul := fun b x => by
         rw [Pi.smul_apply, map_smul, Pi.smul_apply, smul_comm]
       exists_companion' :=
+        letI : SMulCommClass R S N := .symm _ _ _
         let ⟨B, h⟩ := Q.exists_companion
         ⟨a • B, by simp [h]⟩ }⟩
 
@@ -487,7 +488,7 @@ theorem sum_apply {ι : Type*} (Q : ι → QuadraticMap R M N) (s : Finset ι) (
 
 end Sum
 
-instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] [SMulCommClass R S N] :
+instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] :
     DistribMulAction S (QuadraticMap R M N) where
   mul_smul a b Q := ext fun x => by simp only [smul_apply, mul_smul]
   one_smul Q := ext fun x => by simp only [QuadraticMap.smul_apply, one_smul]
@@ -498,7 +499,7 @@ instance [Monoid S] [DistribMulAction S N] [SMulCommClass S R N] [SMulCommClass 
     ext
     simp only [zero_apply, smul_apply, smul_zero]
 
-instance [Semiring S] [Module S N] [SMulCommClass S R N] [SMulCommClass R S N] :
+instance [Semiring S] [Module S N] [SMulCommClass S R N] :
     Module S (QuadraticMap R M N) where
   zero_smul Q := by
     ext
