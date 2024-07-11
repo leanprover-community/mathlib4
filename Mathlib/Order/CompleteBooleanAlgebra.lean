@@ -374,6 +374,9 @@ It is only completely distributive if it is also atomic.
 -/
 class CompleteBooleanAlgebra (α) extends BooleanAlgebra α, CompleteDistribLattice α
 
+-- TODO: this breaks things
+example {α} [CompleteBooleanAlgebra α] {a : α} : ￢a = aᶜ := rfl
+
 instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBooleanAlgebra β] :
     CompleteBooleanAlgebra (α × β) where
   __ := instBooleanAlgebra
