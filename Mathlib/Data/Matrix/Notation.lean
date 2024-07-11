@@ -114,29 +114,24 @@ macro_rules
 
 /-- Delaborator for the `!![]` notation. -/
 @[delab app.DFunLike.coe]
-def delabMatrixNotation : Delab := whenPPOption getPPNotation <| withOverApp 6 do
-  let em ← withAppFn <| withAppArg getExpr
-  let
-    .app
-      (.app
-        (.app (.const ``Matrix.of _) (.app (.const ``Fin _) em))
-        (.app (.const ``Fin _) en))
-      _:= em | failure
-  let some (m, n) ← withNatValue em fun m => withNatValue en fun n => pure (some (m, n)) | failure
-  if m = 0 then
-    withAppArg <| do
-      guard <| (← getExpr).isAppOf ``vecEmpty
-      let commas := mkArray n (Syntax.atom .none ",")
-      `(!![$[,%$commas]*])
-  else
-    if n = 0 then
-      withAppArg <| do
-        let `(![$[![]%$evecs],*]) ← delab | failure
-        `(!![$[;%$evecs]*])
-    else
-      withAppArg <| do
-        let `(![$[![$[$melems],*]],*]) ← delab | failure
-        `(!![$[$[$melems],*];*])
+def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <|
+  withOverApp 6 do
+    let mkApp3 (.const ``Matrix.of _) (.app (.const ``Fin _) em) (.app (.const ``Fin _) en) _ :=
+      (← getExpr).appFn!.appArg! | failure
+    let some m ← withNatValue em (pure ∘ some) | failure
+    let some n ← withNatValue en (pure ∘ some) | failure
+    withAppArg do
+      if m = 0 then
+        guard <| (← getExpr).isAppOfArity ``vecEmpty 1
+        let commas := mkArray n (mkAtom ",")
+        `(!![$[,%$commas]*])
+      else
+        if n = 0 then
+          let `(![$[![]%$evecs],*]) ← delab | failure
+          `(!![$[;%$evecs]*])
+        else
+          let `(![$[![$[$melems],*]],*]) ← delab | failure
+          `(!![$[$[$melems],*];*])
 
 end Parser
 
