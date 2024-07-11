@@ -335,7 +335,8 @@ section bits
 
 set_option linter.deprecated false
 
-theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ n + n) := by
+theorem vecAlt0_vecAppend (v : Fin n → α) :
+    vecAlt0 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ n + n) := by
   ext i
   simp_rw [Function.comp, vecAlt0, vecAppend_eq_ite]
   split_ifs with h <;> congr
@@ -347,7 +348,8 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
     omega
 #align matrix.vec_alt0_vec_append Matrix.vecAlt0_vecAppend
 
-theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ (n + n) + 1) := by
+theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
+    vecAlt1 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ (n + n) + 1) := by
   ext i
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
   cases n with

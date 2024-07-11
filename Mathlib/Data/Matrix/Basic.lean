@@ -645,7 +645,8 @@ theorem bit1_apply_eq (M : Matrix n n α) (i : n) : (M + M + 1) i i = (M i i) + 
 #align matrix.bit1_apply_eq Matrix.bit1_apply_eq
 
 @[deprecated (since := "2023-04-02"), simp]
-theorem bit1_apply_ne (M : Matrix n n α) {i j : n} (h : i ≠ j) : (M + M + 1) i j = (M i j) + (M i j) := by
+theorem bit1_apply_ne (M : Matrix n n α) {i j : n} (h : i ≠ j) :
+    (M + M + 1) i j = (M i j) + (M i j) := by
   simp [bit1_apply, h]
 #align matrix.bit1_apply_ne Matrix.bit1_apply_ne
 

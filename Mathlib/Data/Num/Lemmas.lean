@@ -560,7 +560,8 @@ theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
 theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | 1 => Nat.size_one.symm
   | bit0 n => by
-    rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, Nat.size_bit0 <| ne_of_gt <| to_nat_pos n]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul,
+        Nat.size_bit0 <| ne_of_gt <| to_nat_pos n]
   | bit1 n => by rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, Nat.size_bit1]
 #align pos_num.size_to_nat PosNum.size_to_nat
 
@@ -709,7 +710,8 @@ variable {α : Type*}
 
 open PosNum
 
-theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by cases b <;> cases n <;> simp [bit, two_mul] <;> rfl
+theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by
+  cases b <;> cases n <;> simp [bit, two_mul] <;> rfl
 #align num.bit_to_nat Num.bit_to_nat
 
 theorem cast_succ' [AddMonoidWithOne α] (n) : (succ' n : α) = n + 1 := by
@@ -1603,7 +1605,8 @@ theorem divMod_to_nat (d n : PosNum) :
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux <;> simp
-    · rw [← add_assoc, ← add_assoc, ← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
+    · rw [← add_assoc, ← add_assoc, ← two_mul, ← two_mul, add_right_comm,
+        mul_left_comm, ← mul_add, IH.1]
     · exact IH.2
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.

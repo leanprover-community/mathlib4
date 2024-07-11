@@ -426,7 +426,8 @@ lemma pow_bit1_pos_iff : 0 < a ^ (2 * n + 1) ↔ 0 < a := (odd_bit1 _).pow_pos_i
 #align pow_bit1_pos_iff pow_bit1_pos_iff
 
 @[deprecated Odd.strictMono_pow (since := "2024-04-06")]
-lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ (2 * n + 1) : R → R) := (odd_bit1 _).strictMono_pow
+lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ (2 * n + 1) : R → R) :=
+  (odd_bit1 _).strictMono_pow
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end deprecated
