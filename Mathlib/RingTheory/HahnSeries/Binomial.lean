@@ -75,10 +75,17 @@ theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single
   exact Units.isUnit (PowerSeries.invOneSubPow 0)⁻¹
 
 /-- An invertible binomial, i.e., one with invertible leading term. -/
-def UnitBinomial' {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
+def UnitBinomial {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
     (HahnSeries Γ R)ˣ :=
   (UnitSingle hg ha) *
-    IsUnit.unit (isUnit_one_sub_single (pos_addUnit_neg_add hg hgg') (ha.unit.inv * b))
+    IsUnit.unit (isUnit_one_sub_single (pos_addUnit_neg_add hg hgg') (ha.unit.inv * -b))
+
+theorem unitBinomial_eq_single_add_single {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R}
+    (ha : IsUnit a) (b : R) : UnitBinomial  hg hgg' ha b = single g a + single g' b := by
+  simp only [UnitBinomial, AddUnits.neg_eq_val_neg, Units.inv_eq_val_inv, Units.val_mul,
+    val_UnitSingle, IsUnit.unit_spec, mul_sub, mul_one, single_mul_single, sub_right_inj]
+  rw [← add_assoc, IsAddUnit.add_val_neg, zero_add, ← mul_assoc, IsUnit.mul_val_inv, one_mul,
+    sub_eq_iff_eq_add, add_assoc, ← single_add, add_neg_self, single_eq_zero, add_zero]
 
 -- coefficients of powers - use embDomain_coeff and embDomain_notin_range from Basic
 
@@ -130,12 +137,12 @@ theorem isUnit_single_add_single {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') 
       exact hg
 
 /-- A binomial Hahn series with unit leading coefficient -/
-abbrev UnitBinomial {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
+abbrev UnitBinomial' {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
     (HahnSeries Γ R)ˣ :=
   IsUnit.unit (isUnit_single_add_single hg hgg' (IsUnit.unit ha) b)
 
 theorem UnitBinomial_val {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a)
-    (b : R) : (UnitBinomial hg hgg' ha b).val = single g (IsUnit.unit ha).val + single g' b :=
+    (b : R) : (UnitBinomial' hg hgg' ha b).val = single g (IsUnit.unit ha).val + single g' b :=
   rfl
 /-!
 theorem UnitBinimial_inv_coeff {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a)

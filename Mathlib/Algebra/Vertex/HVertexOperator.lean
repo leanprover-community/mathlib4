@@ -137,7 +137,7 @@ end Coeff
 section Module
 
 variable {Γ Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [OrderedCancelVAdd Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
+  [MonoVAddReflectLE Γ Γ'] {R : Type*} [CommRing R] {V W : Type*} [AddCommGroup V]
   [Module R V] [AddCommGroup W] [Module R W]
 
 /-- The scalar multiplication of Hahn series on heterogeneous vertex operators. -/
@@ -303,7 +303,7 @@ def subLeft (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
 
 theorem subLeft_eq : (subLeft R).val = HahnSeries.single (toLex (1,0)) 1 +
     HahnSeries.single (toLex (0,1)) (-1 : R) := by
-  rw [subLeft, HahnSeries.UnitBinomial_val, add_comm, IsUnit.unit_spec]
+  rw [subLeft, HahnSeries.unitBinomial_eq_single_add_single, add_comm]
 
 @[simp]
 theorem subLeft_smul_eq {A : HVertexOperator (ℤ ×ₗ ℤ) R V W} :
@@ -338,7 +338,7 @@ def subRight (R : Type*) [CommRing R] : (HahnSeries (ℤ ×ₗ ℤ) R)ˣ :=
 
 theorem subRight_eq : (subRight R).val = HahnSeries.single (toLex (1,0)) (-1 : R) +
     HahnSeries.single (toLex (0,1)) (1 : R) := by
-  rw [subRight, HahnSeries.UnitBinomial_val, add_comm, IsUnit.unit_spec]
+  rw [subRight, HahnSeries.unitBinomial_eq_single_add_single, add_comm]
 
 theorem subRight_leadingCoeff [Nontrivial R] : (subRight R).val.leadingCoeff = (1 : R) := by
   rw [subRight_eq, add_comm, HahnSeries.leadingCoeff_single_add_single lex_basis_lt one_ne_zero]

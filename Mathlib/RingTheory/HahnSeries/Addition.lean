@@ -217,13 +217,15 @@ theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (x := addOppositeEquiv.symm (.op y))
     (y := addOppositeEquiv.symm (.op x))
 
+theorem single_add {g : Γ} {a b : R} : single g (a + b) = single g a + single g b := by
+  ext g'
+  by_cases h : g' = g <;> simp [h]
+
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
 def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
   { single a with
-    map_add' := fun x y => by
-      ext b
-      by_cases h : b = a <;> simp [h] }
+    map_add' := fun _ _ => single_add }
 #align hahn_series.single.add_monoid_hom HahnSeries.single.addMonoidHom
 
 /-- `coeff g` as an additive monoid/group homomorphism -/

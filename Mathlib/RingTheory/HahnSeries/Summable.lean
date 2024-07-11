@@ -370,7 +370,7 @@ end AddCommGroup
 
 section SMul
 
-variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [OrderedCancelVAdd Γ Γ'] [AddCommMonoid V]
+variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [MonoVAddReflectLE Γ Γ'] [AddCommMonoid V]
 
 theorem smul_support_subset_prod [AddCommMonoid R] [SMulWithZero R V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
@@ -391,7 +391,7 @@ theorem isPWO_iUnion_support_prod [AddCommMonoid R] [SMulWithZero R V] {s : α �
     {t : β → HahnSeries Γ' V} (hs : (⋃ a, (s a).support).IsPWO) (ht : (⋃ b, (t b).support).IsPWO) :
     (⋃ (a : α × β), ((fun a ↦ (HahnModule.of R).symm
       ((s a.1) • (HahnModule.of R) (t a.2))) a).support).IsPWO := by
-  apply (hs.vAdd ht).mono
+  apply (hs.VAdd ht).mono
   have hsupp : ∀ a : α × β, support ((fun a ↦ s a.1 • (HahnModule.of R) (t a.2)) a) ⊆
       (s a.1).support +ᵥ (t a.2).support := by
     intro a
@@ -407,7 +407,7 @@ theorem finite_co_support_prod [AddCommMonoid R] [SMulWithZero R V] (s : Summabl
     (t : SummableFamily Γ' V β) (g : Γ') :
     Finite {(a : α × β) | ((fun (a : α × β) ↦ (HahnModule.of R).symm (s a.1 • (HahnModule.of R)
       (t a.2))) a).coeff g ≠ 0} := by
-  apply ((vAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
+  apply ((VAddAntidiagonal s.isPWO_iUnion_support t.isPWO_iUnion_support g).finite_toSet.biUnion'
     _).subset _
   · exact fun ij _ => Function.support fun a =>
       ((s a.1).coeff ij.1) • ((t a.2).coeff ij.2)
@@ -415,10 +415,10 @@ theorem finite_co_support_prod [AddCommMonoid R] [SMulWithZero R V] (s : Summabl
   · exact fun a ha => by
       simp only [smul_coeff, ne_eq, Set.mem_setOf_eq] at ha
       obtain ⟨ij, hij⟩ := Finset.exists_ne_zero_of_sum_ne_zero ha
-      simp only [mem_coe, mem_vAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
+      simp only [mem_coe, mem_VAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
         Function.mem_support, exists_prop, Prod.exists]
       exact ⟨ij.1, ij.2, ⟨⟨a.1, left_ne_zero_of_smul hij.2⟩, ⟨a.2, right_ne_zero_of_smul hij.2⟩,
-        ((mem_vAddAntidiagonal _ _ _).mp hij.1).2.2⟩, hij.2⟩
+        ((mem_VAddAntidiagonal _ _ _).mp hij.1).2.2⟩, hij.2⟩
 
 /-- An elementwise scalar multiplication of one summable family on another. -/
 @[simps]
@@ -443,11 +443,11 @@ theorem cosupp_subset_iunion_cosupp_left [AddCommMonoid R] (s : SummableFamily �
 
 theorem sum_vAddAntidiagonal_eq [AddCommMonoid R] [SMulWithZero R V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (g : Γ') (a : α × β) :
-    ∑ x ∈ vAddAntidiagonal (s a.1).isPWO_support' (t a.2).isPWO_support' g, (s a.1).coeff x.1 •
-      (t a.2).coeff x.2 = ∑ x ∈ vAddAntidiagonal s.isPWO_iUnion_support' t.isPWO_iUnion_support' g,
+    ∑ x ∈ VAddAntidiagonal (s a.1).isPWO_support' (t a.2).isPWO_support' g, (s a.1).coeff x.1 •
+      (t a.2).coeff x.2 = ∑ x ∈ VAddAntidiagonal s.isPWO_iUnion_support' t.isPWO_iUnion_support' g,
       (s a.1).coeff x.1 • (t a.2).coeff x.2 := by
   refine sum_subset (fun gh hgh => ?_) fun gh hgh h => ?_
-  · simp_all only [mem_vAddAntidiagonal, Function.mem_support, Set.mem_iUnion, mem_support]
+  · simp_all only [mem_VAddAntidiagonal, Function.mem_support, Set.mem_iUnion, mem_support]
     refine ⟨Exists.intro a.1 hgh.1, Exists.intro a.2 hgh.2.1, trivial⟩
   · by_cases hs : (s a.1).coeff gh.1 = 0
     · exact smul_eq_zero_of_left hs ((t a.2).coeff gh.2)
@@ -455,7 +455,7 @@ theorem sum_vAddAntidiagonal_eq [AddCommMonoid R] [SMulWithZero R V] (s : Summab
 
 theorem family_smul_coeff [Semiring R] [Module R V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (g : Γ') :
-    (FamilySMul s t).hsum.coeff g = ∑ gh ∈ vAddAntidiagonal s.isPWO_iUnion_support
+    (FamilySMul s t).hsum.coeff g = ∑ gh ∈ VAddAntidiagonal s.isPWO_iUnion_support
       t.isPWO_iUnion_support g, (s.hsum.coeff gh.1) • (t.hsum.coeff gh.2) := by
   rw [hsum_coeff]
   simp only [hsum_coeff_sum, FamilySMul_toFun, HahnModule.smul_coeff, Equiv.symm_apply_apply]
@@ -465,7 +465,7 @@ theorem family_smul_coeff [Semiring R] [Module R V] (s : SummableFamily Γ R α)
   rw [finsum_eq_sum _ (smul_support_finite s t gh), ← sum_product_right']
   refine sum_subset (fun ab hab => ?_) (fun ab _ hab => by simp_all)
   have hsupp := smul_support_subset_prod s t gh
-  simp_all only [mem_vAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
+  simp_all only [mem_VAddAntidiagonal, Set.mem_iUnion, mem_support, ne_eq, Set.Finite.mem_toFinset,
     Function.mem_support, Set.Finite.coe_toFinset, support_subset_iff, Set.mem_prod,
     Set.mem_setOf_eq, Prod.forall, coeff_support, mem_product]
   exact hsupp ab.1 ab.2 hab
@@ -477,7 +477,7 @@ theorem hsum_family_smul [Semiring R] [Module R V] (s : SummableFamily Γ R α)
   rw [family_smul_coeff, HahnModule.smul_coeff, Equiv.symm_apply_apply]
   refine Eq.symm (sum_of_injOn (fun a ↦ a) (fun _ _ _ _ h ↦ h) ?_ ?_ fun _ _ => by simp)
   · intro gh hgh
-    simp_all only [mem_coe, mem_vAddAntidiagonal, mem_support, ne_eq, Set.mem_iUnion, and_true]
+    simp_all only [mem_coe, mem_VAddAntidiagonal, mem_support, ne_eq, Set.mem_iUnion, and_true]
     constructor
     · rw [hsum_coeff_sum] at hgh
       have h' := Finset.exists_ne_zero_of_sum_ne_zero hgh.1
@@ -485,7 +485,7 @@ theorem hsum_family_smul [Semiring R] [Module R V] (s : SummableFamily Γ R α)
     · by_contra hi
       simp_all
   · intro gh _ hgh'
-    simp only [Set.image_id', mem_coe, mem_vAddAntidiagonal, mem_support, ne_eq, not_and] at hgh'
+    simp only [Set.image_id', mem_coe, mem_VAddAntidiagonal, mem_support, ne_eq, not_and] at hgh'
     by_cases h : s.hsum.coeff gh.1 = 0
     · exact smul_eq_zero_of_left h (t.hsum.coeff gh.2)
     · simp_all
@@ -514,7 +514,7 @@ end SMul
 section Semiring
 
 variable {Γ' : Type*} [OrderedCancelAddCommMonoid Γ] [PartialOrder Γ'] [AddAction Γ Γ']
-  [OrderedCancelVAdd Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V] {α : Type*}
+  [MonoVAddReflectLE Γ Γ'] [Semiring R] [AddCommMonoid V] [Module R V] {α : Type*}
 
 instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
   smul := (· • ·)
