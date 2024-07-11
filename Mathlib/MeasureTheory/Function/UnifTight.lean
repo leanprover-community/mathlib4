@@ -34,7 +34,7 @@ is also proved later in the file.
 
 ## Tags
 
-uniform integrable, uniformly absolutely continuous integral, Vitali convergence theorem
+uniform integrable, uniformly tight, Vitali convergence theorem
 -/
 
 
