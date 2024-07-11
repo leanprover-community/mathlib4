@@ -147,7 +147,7 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
     rw [IsScalarTower.toAlgHom_apply, ← adjoin_image] at hb
     refine adjoin_mono (fun y hy => ?_) hb
     obtain ⟨b₁, ⟨⟨n, hn⟩, h₁⟩⟩ := hy
-    exact ⟨n, ⟨mem_union_left T hn.1, by rw [← h₁, ← AlgHom.map_pow, hn.2, AlgHom.map_one]⟩⟩
+    exact ⟨n, ⟨mem_union_left T hn.1, by rw [← h₁, ← map_pow, hn.2, map_one]⟩⟩
 #align is_cyclotomic_extension.trans IsCyclotomicExtension.trans
 
 @[nontriviality]

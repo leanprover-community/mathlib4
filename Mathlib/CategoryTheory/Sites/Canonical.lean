@@ -255,10 +255,10 @@ into the sheaf category.
 -/
 @[simps]
 def yoneda : C ⥤ Sheaf J (Type v) where
-  obj X := ⟨yoneda.obj X, by
+  obj X := ⟨CategoryTheory.yoneda.obj X, by
     rw [isSheaf_iff_isSheaf_of_type]
     apply hJ.isSheaf_of_representable⟩
-  map f := ⟨yoneda.map f⟩
+  map f := ⟨CategoryTheory.yoneda.map f⟩
 
 /--
 The yoneda embedding into the presheaf category factors through the one

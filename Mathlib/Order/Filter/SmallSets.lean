@@ -38,8 +38,8 @@ def smallSets (l : Filter α) : Filter (Set α) :=
 #align filter.small_sets Filter.smallSets
 
 theorem smallSets_eq_generate {f : Filter α} : f.smallSets = generate (powerset '' f.sets) := by
-  simp_rw [generate_eq_biInf, smallSets, iInf_image]
-  rfl
+  simp_rw [generate_eq_biInf, smallSets, iInf_image, Filter.lift', Filter.lift, Function.comp_apply,
+    Filter.mem_sets]
 #align filter.small_sets_eq_generate Filter.smallSets_eq_generate
 
 -- TODO: get more properties from the adjunction?
