@@ -482,9 +482,9 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
 
 end Stabilizer
 
-section Fintype
+section Finite
 
-theorem Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid.IsPartition c) :
+theorem _root_.Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid.IsPartition c) :
     (finsum fun x : c => Set.ncard (x : Set α)) = Nat.card α := by
   classical
   have := Fintype.ofFinite α
@@ -492,32 +492,34 @@ theorem Setoid.nat_sum {α : Type _} [Finite α] {c : Set (Set α)} (hc : Setoid
   rw [← Fintype.card_sigma]
   refine' Fintype.card_congr (Equiv.ofBijective (fun x => x.snd : (Σ a : ↥c, a) → α) _)
   constructor
-  -- injectivity
-  rintro ⟨⟨x, hx⟩, ⟨a, ha : a ∈ x⟩⟩ ⟨⟨y, hy⟩, ⟨b, hb : b ∈ y⟩⟩ hab
-  dsimp at hab
-  rw [hab] at ha
-  rw [Sigma.subtype_ext_iff]
-  simp only [Subtype.mk_eq_mk, Subtype.coe_mk]
-  apply And.intro _ hab
-  exact ExistsUnique.unique (hc.2 b) ⟨hx, ha⟩ ⟨hy, hb⟩
-  -- surjectivity
-  intro a
-  obtain ⟨x, ⟨hx, ha : a ∈ x⟩, _⟩ := hc.2 a
-  use ⟨⟨x, hx⟩, ⟨a, ha⟩⟩
+  · -- injectivity
+    rintro ⟨⟨x, hx⟩, ⟨a, ha : a ∈ x⟩⟩ ⟨⟨y, hy⟩, ⟨b, hb : b ∈ y⟩⟩ hab
+    dsimp at hab
+    rw [hab] at ha
+    rw [Sigma.subtype_ext_iff]
+    simp only [Subtype.mk_eq_mk, Subtype.coe_mk]
+    apply And.intro _ hab
+    exact ExistsUnique.unique (hc.2 b) ⟨hx, ha⟩ ⟨hy, hb⟩
+  · -- surjectivity
+    intro a
+    obtain ⟨x, ⟨hx, ha : a ∈ x⟩, _⟩ := hc.2 a
+    use ⟨⟨x, hx⟩, ⟨a, ha⟩⟩
 
-theorem Set.ncard_coe {α : Type*} (s : Set α) :
+theorem _root_.Set.ncard_coe {α : Type*} (s : Set α) :
     s.ncard = Set.ncard (Set.univ : Set (Set.Elem s)) := by
   apply Set.ncard_congr (fun a ha ↦ ⟨a, ha⟩)
   · exact fun a ha ↦ by simp only [Set.mem_univ]
   · simp [Subtype.mk_eq_mk]
   · exact fun ⟨a, ha⟩ _ ↦ ⟨a, ha, rfl⟩
 
+namespace IsBlock
+
+variable [IsPretransitive G X] [Finite X] {B : Set X} (hB : IsBlock G B)
+
 /-- The cardinality of the ambient is the product of
   of the cardinality of a block
   by the cardinality of the set of translates of that block -/
-theorem IsBlock.ncard_block_mul_ncard_orbit_eq
-    [Finite X] [IsPretransitive G X] {B : Set X}
-    (hB : IsBlock G B) (hB_ne : B.Nonempty) :
+theorem ncard_block_mul_ncard_orbit_eq (hB_ne : B.Nonempty) :
     Set.ncard B * Set.ncard (Set.range fun g : G => g • B) = Nat.card X := by
   classical
   have := Fintype.ofFinite X
@@ -531,14 +533,13 @@ theorem IsBlock.ncard_block_mul_ncard_orbit_eq
     exact Set.ncard_image_of_injective B (MulAction.injective g)
 
 /-- The cardinality of a block divides the cardinality of the ambient type -/
-theorem IsBlock.ncard_of_block_divides [Finite X] [IsPretransitive G X] {B : Set X}
-    (hB : IsBlock G B) (hB_ne : B.Nonempty) :
+theorem ncard_of_block_divides (hB_ne : B.Nonempty) :
     Set.ncard B ∣ Nat.card X :=
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
 /-- A too large block is equal to ⊤ -/
-theorem is_top_of_large_block [hfX : Finite X] [hGX : IsPretransitive G X] {B : Set X}
-    (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) : B = ⊤ := by
+theorem is_top_of_large_block (hB' : Nat.card X < Set.ncard B * 2) :
+    B = ⊤ := by
   classical
   letI := Fintype.ofFinite X
   cases' Set.eq_empty_or_nonempty B with hB_e hB_ne
@@ -562,8 +563,7 @@ theorem is_top_of_large_block [hfX : Finite X] [hGX : IsPretransitive G X] {B : 
   rwa [← Set.ncard_pos] at hB_ne
 
 /-- If a block has too many translates, then it is a (sub)singleton  -/
-theorem IsBlock.is_subsingleton [Finite X] [IsPretransitive G X]
-    {B : Set X} (hB : IsBlock G B)
+theorem is_subsingleton
     (hB' : Nat.card X < 2 * Set.ncard (Set.range fun g : G => (g • B : Set X))) :
     B.Subsingleton := by
   suffices Set.ncard B < 2 by
@@ -582,7 +582,7 @@ theorem IsBlock.is_subsingleton [Finite X] [IsPretransitive G X]
 -- TODO : Is the assumption B.finite necessary ?
 /-- The intersection of the translates of a *finite* subset which contain a given point
 is a block (Wielandt, th. 7.3 )-/
-theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Finite) :
+theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
   cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne
@@ -620,7 +620,7 @@ theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Fin
     rw [mem_stabilizer_of_finite_iff_smul_le B' hfB' g⁻¹]
     simp_rw [← Set.subset_set_smul_iff]
     exact hag g hg
-  rw [IsBlock.mk_notempty_one]
+  rw [mk_notempty_one]
   intro g hg
   rw [← Set.nonempty_iff_ne_empty] at hg
   obtain ⟨b : X, hb' : b ∈ g • B', hb : b ∈ B'⟩ := Set.nonempty_def.mp hg
@@ -637,7 +637,9 @@ theorem IsBlock.of_subset [IsPretransitive G X] (a : X) (B : Set X) (hfB : B.Fin
   rw [← smul_eq_iff_eq_inv_smul] at hkB' hgkB'
   rw [← hgkB', hkB']
 
-end Fintype
+end IsBlock
+
+end Finite
 
 end Group
 
