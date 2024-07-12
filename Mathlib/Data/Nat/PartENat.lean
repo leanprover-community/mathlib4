@@ -194,6 +194,8 @@ theorem coe_add_get {x : ℕ} {y : PartENat} (h : ((x : PartENat) + y).Dom) :
   rfl
 #align part_enat.coe_add_get PartENat.coe_add_get
 
+theorem dom_add (x y : PartENat) : (x + y).Dom ↔ x.Dom ∧ y.Dom := Iff.rfl
+
 @[simp]
 theorem get_add {x y : PartENat} (h : (x + y).Dom) : get (x + y) h = x.get h.1 + y.get h.2 :=
   rfl
