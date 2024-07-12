@@ -601,14 +601,16 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
         SetLike.mem_coe] at hgv
       have B : ∀ (μ : 𝕜), eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j) ≤ K := by
         intro μ
-        let γ : n → 𝕜 := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0)
+        let γ : n → 𝕜 := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 1)
           (Function.const n μ)
-        have C1 : γ i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0)
+        have C1 : γ i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 1)
             (Function.const n μ) fun a ↦ a rfl
         have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by
           intro j
           have := j.2
           simp only [ne_eq, Subtype.coe_prop, Set.piecewise_eq_of_mem, γ]
+          refine Function.Injective.extend_apply ?hf γ' _ j
+          exact Subtype.val_injective
         have C : eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j)
             = eigenspace (T i) (γ i) ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j) := by
           congr!
