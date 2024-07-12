@@ -641,19 +641,6 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
       exact B
     exact h K A
 
-
-
-
-
-
-
-
-
-
-      --rw [← indexing_nonsense0]
-
-
-
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
