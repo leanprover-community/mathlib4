@@ -505,27 +505,6 @@ theorem inf_restrict'' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
     pre_exhaust fun x y ↦
       hT i ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)).subtype x) ↑y
 
-/-Do we need an analogue of the following?
-
-theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtype (eigenspace A α))
-    (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ) → x ∈ eigenspace B γ := by
-  intro h
-  simp only [mem_ker, sub_apply, Module.algebraMap_end_apply, Submodule.mem_map, mem_ker, sub_apply,
-  Module.algebraMap_end_apply, Submodule.coeSubtype, Subtype.exists, SetLike.mk_smul_mk, exists_and_right,
-  exists_eq_right] at *
-  obtain ⟨y, hy⟩ := h
-  exact (AddSubmonoid.mk_eq_zero
-  (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
-
-Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
-       = (eigenspace B γ ⊓ eigenspace A α)
-
--/
---variable (γ : 𝕜)
---#check (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
--- removed `Subtype.restrict (fun x ↦ i ≠ x)` from T j in statement, but this may be needed if the proof
--- doesn't work...
-
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))) = Submodule.map (Submodule.subtype ((⨅ (j : {x // i ≠ x}),
     eigenspace (T j) (γ j))))
@@ -557,8 +536,7 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
 @[simp]
 theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) =
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := by
-  exact rfl
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := rfl
 
 theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
      ⨅ (j : n), eigenspace (T j) (γ j) = (eigenspace (T i) (γ i)) ⊓
@@ -626,8 +604,7 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
         let γ := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0) (Function.const n μ)
         have C1 : γ i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0)
             (Function.const n μ) fun a ↦ a rfl
-        have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by
-            sorry
+        have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by sorry
         have C : eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j)
             = eigenspace (T i) (γ i) ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j) := by
           congr!
