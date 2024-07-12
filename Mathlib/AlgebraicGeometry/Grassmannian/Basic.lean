@@ -734,6 +734,7 @@ variable (K V)
 
 /-- The gluing data defining the Grassmannian scheme. The type indexing the charts is
 `Basis (Fin (r + c)) K V`.
+
 If `i` is in `Basis (Fin (r + c)) K V`, then the corresponding chart `U i` is the spectrum of
 the `K`-algebra of multivariable polynomials with indeterminates indexed by `Fin c × Fin r`, or
 in other words `Spec (MvPolynomial (Fin c × Fin r) K)`.
@@ -742,21 +743,32 @@ the intersection of `U i` and `U j` (i.e. their fiber product over the Grassmann
 a subscheme of `U i`. We take `V i j` to be the basic open subset of `U i` defined by the
 function `equation r c i j`, with the canonical morphism `f i j` to `U i`, which is an open
 immersion.
+
 If `i` and `j` are in `Basis (Fin (r + c)) K V`, we have an isomorphism `t i j` from
-`V i j` to `V j i`, which we define in the following way: An element of `V i j` is a `c × r`
-matrix `A`. Consider the map `φ : V →ₗ[K] (Fin r → K)` whose matrix `M₁` in the basis `i` of
-`V` and the canonical basis of `Fin r → K` is obtained by stacking the `r × r` identity matrix
-on top of `A`. We multiply `M₁` on the left by the change of basis matrix `B j i` from `j` to
-`i`, in order to get the matrix `M₂` of `φ` in the basis `j` of `V` and the canonical basis
-of `Fin r → K`. Because we are in the open subscheme `V i j`, the top `r × r` submatrix `F`
-of `M₂` is invertible, and we divide `M₂` by `F`, then taken the bottom `c × r` matrix to get
-an element of `U j`, which happens to be in `V j i`.
+`V i j` to `V j i`, which we define in the following way: Consider the `c × r` matrix
+`matrix_X K r c`of functions on `U i` whose entries are the indeterminates in the ring
+`MvPolynomial (Fin c × Fin r)) K`. Let `matrix_coord K r c` be the `(r + c) × r` matrix that we
+obtain by stacking the `r × r` identity matrix on top of `matrix_X K r c`. Consider the map
+`φ : V  →ₗ[R] (Fin r → MvPolynomial (Fin c × Fin r) K)` whose in the basis `i` of
+`V` and the canonical basis of `Fin r → MvPolynomial (Fin c × Fin r K)` is `matrix_coord K r c`.
+Then the matrix of `φ` in the basis `j` of `V` and the canonical basis is the matrix
+`matrix K r c i j` that we obtain by multiplying `matrix_coord K r c` on the left by the change
+of basis matrix `B j i` from `j` to `i`. We denote by `matrix_F K r c i j` and `matrix_G K r c i j`
+its top `r × r` block and its bottom `c × r` block. The basic open subscheme `V i j` of
+`U i` is the locus where `det (matrix_F K r c i j)` does not vanish, so
+`(matrix_G K r c i j) * (matrix_F K r c i j)⁻¹` makes sense as a `c × r` matrix of functions on
+`V i j` (we actually use the notations `matrix_F'` and `matrix_G'` for the restrictions of the
+matrices to `V i j`). As `U j = Spec (MvPolynomial (Fin c × Fin r) K)`, this defines a morphism
+from `V i j` to `U j`, and we check that this morphism factors through the open subscheme
+`V j i`, given the desired morphism `t i j : V i j ⟶ V j i`.
+
 If `i`, `j` and `k` are in `Basis (Fin (r + c)) K V`, we need to define a gluing morphism
 `t' i j k` from `V i j × V i k` (fiber product over `U i`) to `V j k × V j i` (fiber product over
 `U j`). The condition `t_fac i j k` says that this morphism should be obtained by "restriction"
 (via the first projection on `V i j × V i k` and the second projection on `V j k × V j i`) of
-`t' i j : V i j ⟶ V j i`, so we just need to prove that `t' i j` does restrict to a morphism
-betweem the fiber products.
+`t i j : V i j ⟶ V j i`, so we just need to prove that `t i j` does restrict to a morphism
+between the fiber products.
+
 Finally, the cocycle condition on the gluing morphisms `t' i j k` is expressed by the
 field `cocycle i j k`.
 -/
