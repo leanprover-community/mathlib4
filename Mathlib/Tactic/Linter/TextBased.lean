@@ -128,7 +128,8 @@ instance : BEq ErrorContext where
       && (ctx.error).normalise == (ctx'.error).normalise
 
 /-- Output the formatted error message, containing its context.
-`style` specifies if the error should be formatted for humans or for github output matchers -/
+`style` specifies if the error should be formatted for humans to read, github problem matchers
+to consume or for the style exceptions file. -/
 def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
   let error_message := errctx.error.errorMessage style
   match style with
@@ -194,7 +195,8 @@ def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run d
   Array.filterMap (parse?_errorContext ·) (lines.filter (fun line ↦ !line.startsWith "--"))
 
 /-- Print information about all errors encountered to standard output.
-`style` specifies if we print errors for humand or github consumption. -/
+`style` specifies if the error should be formatted for humans to read, github problem matchers
+to consume or for the style exceptions file. -/
 def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit := do
   for e in errors do
     IO.println (outputMessage e style)
@@ -354,7 +356,8 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
 /-- Lint all files referenced in a given import-only file.
 Print formatted errors to standard output.
 Return the number of files which had new style errors.
-`style` specifies if errors should be formatted for github or human consumption. -/
+`style` specifies if the error should be formatted for humans to read, github problem matchers
+to consume or for the style exceptions file. -/
 def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
   -- Read all module names from the file at `path`.
   let allModules ← IO.FS.lines path
