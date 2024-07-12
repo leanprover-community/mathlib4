@@ -115,7 +115,7 @@ def StyleError.normalise (err : StyleError) : StyleError := match err with
   -- NB: keep this in sync with `parse?_errorContext` below.
   | StyleError.fileTooLong _ _ => StyleError.fileTooLong 0 0
   -- We do *not* care about the *kind* of wrong copyright.
-  | StyleError.copyright _ => StyleError.copyright ""
+  | StyleError.copyright _ => StyleError.copyright none
   | StyleError.lineLength _ => StyleError.lineLength 0
   | _ => err
 
@@ -161,7 +161,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
       let err : Option StyleError := match error_code with
         -- Use default values for parameters which are normalised.
         -- NB: keep this in sync with `normalise` above!
-        | "ERR_COP" => some (StyleError.copyright "")
+        | "ERR_COP" => some (StyleError.copyright none)
         | "ERR_LIN" => some (StyleError.lineLength 0)
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
