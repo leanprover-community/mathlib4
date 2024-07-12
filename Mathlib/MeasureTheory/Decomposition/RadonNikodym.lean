@@ -82,7 +82,7 @@ lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _  hμν]
   exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
 
-lemma rnDeriv_pos' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+lemma rnDeriv_pos' [SigmaFinite μ] [SFinite ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < ν.rnDeriv μ x := by
   refine (absolutelyContinuous_withDensity_rnDeriv hμν).ae_le ?_
   filter_upwards [Measure.rnDeriv_pos (withDensity_absolutelyContinuous μ (ν.rnDeriv μ)),
