@@ -99,7 +99,14 @@ variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
-@[simp]
+#adaptation_note
+/--
+After https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
+
+(It appears to also be unused in Mathlib.)
+-/
+@[simp, nolint simpNF]
 theorem zero_apply : (0 : PiLp p β) i = 0 :=
   rfl
 #align pi_Lp.zero_apply PiLp.zero_apply
@@ -182,9 +189,7 @@ theorem edist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p β) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 #align pi_Lp.edist_eq_sum PiLp.edist_eq_sum
 
-theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := by
-  dsimp [edist]
-  exact if_neg ENNReal.top_ne_zero
+theorem edist_eq_iSup (f g : PiLp ∞ β) : edist f g = ⨆ i, edist (f i) (g i) := rfl
 #align pi_Lp.edist_eq_supr PiLp.edist_eq_iSup
 
 end Edist
@@ -244,9 +249,7 @@ theorem dist_eq_sum {p : ℝ≥0∞} (hp : 0 < p.toReal) (f g : PiLp p α) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 #align pi_Lp.dist_eq_sum PiLp.dist_eq_sum
 
-theorem dist_eq_iSup (f g : PiLp ∞ α) : dist f g = ⨆ i, dist (f i) (g i) := by
-  dsimp [dist]
-  exact if_neg ENNReal.top_ne_zero
+theorem dist_eq_iSup (f g : PiLp ∞ α) : dist f g = ⨆ i, dist (f i) (g i) := rfl
 #align pi_Lp.dist_eq_csupr PiLp.dist_eq_iSup
 
 end Dist
@@ -273,9 +276,7 @@ theorem norm_eq_card (f : PiLp 0 β) : ‖f‖ = {i | ‖f i‖ ≠ 0}.toFinite.
   if_pos rfl
 #align pi_Lp.norm_eq_card PiLp.norm_eq_card
 
-theorem norm_eq_ciSup (f : PiLp ∞ β) : ‖f‖ = ⨆ i, ‖f i‖ := by
-  dsimp [Norm.norm]
-  exact if_neg ENNReal.top_ne_zero
+theorem norm_eq_ciSup (f : PiLp ∞ β) : ‖f‖ = ⨆ i, ‖f i‖ := rfl
 #align pi_Lp.norm_eq_csupr PiLp.norm_eq_ciSup
 
 theorem norm_eq_sum (hp : 0 < p.toReal) (f : PiLp p β) :
@@ -666,8 +667,8 @@ instance instBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (�
       exact nnnorm_smul_le c (WithLp.equiv ∞ (∀ i, β i) f)
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
-      rw [nnnorm_eq_sum hpt, nnnorm_eq_sum hpt, NNReal.rpow_one_div_le_iff hp0, NNReal.mul_rpow,
-        ← NNReal.rpow_mul, div_mul_cancel₀ 1 hp0.ne', NNReal.rpow_one, Finset.mul_sum]
+      rw [nnnorm_eq_sum hpt, nnnorm_eq_sum hpt, one_div, NNReal.rpow_inv_le_iff hp0, NNReal.mul_rpow,
+        ← NNReal.rpow_mul, inv_mul_cancel hp0.ne', NNReal.rpow_one, Finset.mul_sum]
       simp_rw [← NNReal.mul_rpow, smul_apply]
       exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
 

@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Subsingleton
 
 #align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -145,7 +146,7 @@ theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
 @[to_additive (attr := ext)]
 theorem ext : Function.Injective (val : αˣ → α)
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
-    simp only at e; subst v'; congr;
+    simp only at e; subst v'; congr
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
 #align units.ext Units.ext
 #align add_units.ext AddUnits.ext
@@ -672,7 +673,7 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
 
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
-  ⟨⟨a, a, Subsingleton.elim _ _, Subsingleton.elim _ _⟩, rfl⟩
+  ⟨⟨a, a, by subsingleton, by subsingleton⟩, rfl⟩
 #align is_unit_of_subsingleton isUnit_of_subsingleton
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
@@ -683,7 +684,7 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
-  uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
+  uniq _ := Units.val_eq_one.mp (by subsingleton)
 
 @[to_additive (attr := simp)]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -735,8 +736,7 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 #align is_unit.pow IsUnit.pow
 #align is_add_unit.nsmul IsAddUnit.nsmul
 
-theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 :=
-  Subsingleton.elim u 1
+theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 := by subsingleton
 #align units_eq_one units_eq_one
 
 @[to_additive] lemma isUnit_iff_eq_one [Unique Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
