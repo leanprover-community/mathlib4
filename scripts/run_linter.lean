@@ -27,17 +27,30 @@ def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
 
 -- TODO: replace by the code from Batteries.Tactic.Lint.Frontend;
 -- once PR batteries#881 has been merged
-/-- `getChecks slow runAlways` produces a list of linters.
+/-- `getChecks slow runOnly runAlways` produces a list of linters.
+`runOnly` is an optional list of names that should resolve to declarations with type `NamedLinter`.
+If populated, only these linters are run (regardless of the default configuration).
 `runAlways` is an optional list of names that should resolve to declarations with type `NamedLinter`.
 If populated, these linters are always run (regardless of their configuration).
+Specifying a linter in `runAlways` but not `runOnly` is an error.
 Otherwise, it uses all enabled linters in the environment tagged with `@[env_linter]`.
 If `slow` is false, it only uses the fast default tests. -/
-def getChecksNew (slow : Bool) (runAlways : Option (List Name)) : CoreM (Array NamedLinter) := do
+def getChecksNew (slow : Bool) (runOnly : Option (List Name)) (runAlways : Option (List Name)) :
+    CoreM (Array NamedLinter) := do
+  if let some always := runAlways then
+    if let some only := runOnly then
+      let contradictory := always.filter fun s ↦ !only.contains s
+      if contradictory.length > 0 then
+        IO.println s!"invalid arguments: the linter(s) {contradictory} are supposed to be \
+          both run and not run"
+        return #[]
   let mut result := #[]
   for (name, declName, default) in batteriesLinterExt.getState (← getEnv) do
-    let shouldRun := default || match runAlways with
-      | some extras => extras.contains name
-      | none => false
+    let shouldRun := match (runOnly, runAlways) with
+      | (some only, some always) => only.contains name && (always.contains name || default)
+      | (some only, none) => only.contains name
+      | (none, some always) => default || always.contains name
+      | _ => default
     if shouldRun then
       let linter ← getLinter name declName
       if slow || linter.isFast then
@@ -105,28 +118,18 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
     Prod.fst <$> (CoreM.toIO · ctx state) do
       let decls ← getDeclsInPackage module.getRoot
       -- Configure the list of linters to run, as needed.
-      let newNames := add.map fun names ↦ names.map (·.toName)
-      let defaultLinters ← getChecksNew (slow := true) (useAlso := newNames)
+      let defaultLinters ← getChecksNew (slow := true)
+        (runOnly := only.map fun names ↦ names.map (·.toName))
+        (runAlways := add.map fun names ↦ names.map (·.toName))
       let linters := if updateOnlyRemove then
         -- Determine all unique linters which are mentioned in the `nolints` file.
         let all := (nolints.map fun nol ↦ nol.1).qsort (·.toString < ·.toString)
         let uniqueLinters := (all.toList).pwFilter (·.toString ≠ ·.toString)
         defaultLinters.filter fun lint ↦ uniqueLinters.contains lint.name
       else
-        if let some only := only then
-          if let some extra := add then
-            defaultLinters.filter fun lint ↦
-              extra.contains lint.name.toString || only.contains lint.name.toString
-          else
-            defaultLinters.filter fun lint ↦ only.contains lint.name.toString
-        else if let some exclude := exclude then
-          if let some extra := add then
-            -- add takes priority over --exclude: a lint must be excluded and *not* added
-            defaultLinters.filter fun lint ↦
-              !exclude.contains lint.name.toString && !extra.contains lint.name.toString
-          else
-            defaultLinters.filter (fun lint ↦ !exclude.contains lint.name.toString)
-        else defaultLinters
+        match exclude with
+        | some exclude => defaultLinters.filter (!exclude.contains ·.name.toString)
+        | none => defaultLinters
       if print then
         IO.println s!"The following {linters.size} linter(s) were configured to run: \
           {linters.map fun l ↦ l.name}"
