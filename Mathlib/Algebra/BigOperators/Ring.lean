@@ -67,6 +67,10 @@ lemma sum_mul_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → α) (
   simp_rw [sum_mul, ← mul_sum]
 #align finset.sum_mul_sum Finset.sum_mul_sum
 
+lemma _root_.Fintype.sum_mul_sum {κ : Type*} [Fintype ι] [Fintype κ] (f : ι → α) (g : κ → α) :
+    (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
+  Finset.sum_mul_sum _ _ _ _
+
 lemma _root_.Commute.sum_right [NonUnitalNonAssocSemiring α] (s : Finset ι) (f : ι → α) (b : α)
     (h : ∀ i ∈ s, Commute b (f i)) : Commute b (∑ i ∈ s, f i) :=
   (Commute.multiset_sum_right _ _) fun b hb => by
@@ -306,9 +310,6 @@ variable {ι κ α : Type*} [DecidableEq ι] [Fintype ι] [Fintype κ] [CommSemi
 
 lemma sum_pow (f : ι → α) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
   simp [sum_pow']
-
-lemma sum_mul_sum (f : ι → α) (g : κ → α) : (∑ i, f i) * ∑ j, g j = ∑ i, ∑ j, f i * g j :=
-  Finset.sum_mul_sum _ _ _ _
 
 lemma prod_add (f g : ι → α) : ∏ a, (f a + g a) = ∑ t, (∏ a ∈ t, f a) * ∏ a ∈ tᶜ, g a := by
   simpa [compl_eq_univ_sdiff] using Finset.prod_add f g univ
