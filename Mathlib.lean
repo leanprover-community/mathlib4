@@ -859,7 +859,8 @@ import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
 import Mathlib.Analysis.BoxIntegral.Partition.Tagged
-import Mathlib.Analysis.Calculus.AffineMap
+import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+import Mathlib.Analysis.Calculus.AddTorsor.Coord
 import Mathlib.Analysis.Calculus.BumpFunction.Basic
 import Mathlib.Analysis.Calculus.BumpFunction.Convolution
 import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
@@ -1294,6 +1295,7 @@ import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Bicategory.Extension
 import Mathlib.CategoryTheory.Bicategory.Free
+import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
@@ -3579,7 +3581,7 @@ import Mathlib.RepresentationTheory.Action.Limits
 import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
-import Mathlib.RepresentationTheory.FdRep
+import Mathlib.RepresentationTheory.FDRep
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
@@ -3719,6 +3721,7 @@ import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
+import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
@@ -3774,6 +3777,7 @@ import Mathlib.RingTheory.Polynomial.Selmer
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.RingTheory.Polynomial.Wronskian
 import Mathlib.RingTheory.PolynomialAlgebra
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PowerSeries.Basic
@@ -3784,6 +3788,7 @@ import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Presentation
 import Mathlib.RingTheory.Prime
+import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.QuotientNilpotent
