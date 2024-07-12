@@ -109,28 +109,28 @@ structure ErrorContext where
   /-- The path to the file which was linted -/
   path : FilePath
 
-/-- Possible results of comparing to `ErrorContexts` for the purposes of
-updating a style exceptions file: two errors can be comparable
-(meaning the former would match the latter in a style exceptions file) or not. -/
+/-- Possible results of comparing an `ErrorContext` to an `existing` entry:
+most often, they are different --- if the existing entry covers the new exception,
+depending on the error, we prefer the new or the existing entry. -/
 inductive ComparisonResult
   /-- The contexts describe different errors: two separate style exceptions are required
   to cover both. -/
   | Different
-  /-- The errors can be covered by a single style exception,
-  and we prefer keeping the existing exception (the more common case). -/
-  | PreferExisting
-  /-- The errors can be covered by a single style exception,
-  and we prefer replacing by the new exception: this is more rare, and currently only happens
-  for particular file length errors. -/
-  | PreferNew
+  /-- The existing exception also covers the new error.
+  Indicate whether we prefer keeping the existing exception (the more common case)
+  or would rather replace it by the new exception
+  (this is more rare, and currently only happens for particular file length errors). -/
+  | Comparable (preferExisting : Bool)
   deriving BEq
 
-/-- Compare two `ErrorContexts` for the purposes of updating a style exceptions file. -/
+/-- Determine whether a `new` `ErrorContext` is covered by an `existing` exception,
+and, if it is, if we prefer replacing the new exception or keeping the previous one. -/
 def compare (existing new : ErrorContext) : ComparisonResult := Id.run do
   -- Two comparable error contexts must have the same path.
   if existing.path != new.path then
     return ComparisonResult.Different
   -- We entirely ignore their line numbers: not sure if this is best.
+
   -- NB: keep the following in sync with `parse?_errorContext` below.
   -- Generally, comparable errors must have equal `StyleError`s, but there are some exceptions.
   match (existing.error, new.error) with
@@ -139,18 +139,18 @@ def compare (existing new : ErrorContext) : ComparisonResult := Id.run do
   | (StyleError.fileTooLong n _nLimit, StyleError.fileTooLong m _mLimit) =>
     -- The only exception are "file too long" errors: generally, we prefer to keep the
     -- existing entry, *except* when a newer entry is much shorter.
-    if m < n + 200 then ComparisonResult.PreferNew else ComparisonResult.PreferExisting
+    ComparisonResult.Comparable (m >= n + 200)
   -- We do *not* care about the *kind* of wrong copyright,
   -- nor about the particular length of a too long line.
-  | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.PreferExisting
-  | (StyleError.lineLength _, StyleError.lineLength 0) => ComparisonResult.PreferExisting
+  | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable true
+  | (StyleError.lineLength _, StyleError.lineLength _) => ComparisonResult.Comparable true
   -- In all other cases, `StyleErrors` must compare equal.
-  | (a, b) => if a == b then ComparisonResult.PreferExisting else ComparisonResult.Different
+  | (a, b) => if a == b then ComparisonResult.Comparable true else ComparisonResult.Different
 
-/-- Whether a list of style exceptions contains an entry covering this error. -/
-def ErrorContext.isCoveredBy (e : ErrorContext) (exceptions : Array ErrorContext) : Bool :=
-    (exceptions.find? (fun new ↦
-      compare e new matches ComparisonResult.PreferExisting | ComparisonResult.PreferNew)).isSome
+/-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
+def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
+    Option ErrorContext :=
+  (exceptions).find? (fun new ↦ compare e new matches ComparisonResult.Comparable _)
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
@@ -393,7 +393,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
-  errors := errors.append (allOutput.flatten.filter (fun e ↦ !(e.isCoveredBy exceptions)))
+  errors := errors.append (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return errors
 
 /-- Lint a collection of modules for style violations.
@@ -444,8 +444,14 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
     -- Regenerate the style exceptions file, including the Python output.
     IO.FS.writeFile exceptionsFilePath ""
     let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
-    -- TODO: filter style exceptions to avoid changes unless necessary
-    let this_output := "\n".intercalate (allUnexpectedErrors.map
+    -- Combine style exception entries: for each new error, replace by a corresponding
+    -- previous exception if that is preferred.
+    let mut tweaked := allUnexpectedErrors.map fun err ↦
+      if let some existing := err.find?_comparable styleExceptions then
+        if let ComparisonResult.Comparable (true) := _root_.compare err existing then existing
+        else err
+      else err
+    let this_output := "\n".intercalate (tweaked.map
         (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
     IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
   return numberErrorFiles
