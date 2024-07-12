@@ -178,36 +178,4 @@ theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}
 
 end UnifTight
 
-
-section VitaliConvergence
-
-variable {μ : Measure α} {p : ℝ≥0∞}
-
-variable {f : ℕ → α → β} {g : α → β}
-
-/-- Intermediate lemma for `unifTight_of_tendsto_Lp`. -/
-theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
-    (hf_tendsto : Tendsto (fun n => snorm (f n) p μ) atTop (𝓝 0)) : UnifTight f p μ := fun ε hε ↦by
-  rw [ENNReal.tendsto_atTop_zero] at hf_tendsto
-  obtain ⟨N, hNε⟩ := hf_tendsto ε (by simpa only [gt_iff_lt, ofReal_pos])
-  let F : Fin N → α → β := fun n => f n
-  have hF : ∀ n, Memℒp (F n) p μ := fun n => hf n
-  obtain ⟨s, hμs, hFε⟩ := unifTight_fin hp' hF hε
-  refine ⟨s, hμs, fun n => ?_⟩
-  by_cases hn : n < N
-  · exact hFε ⟨n, hn⟩
-  · exact (snorm_indicator_le _).trans (hNε n (not_lt.mp hn))
-
-/-- Convergence in Lp implies uniform tightness. -/
-private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, Memℒp (f n) p μ)
-    (hg : Memℒp g p μ) (hfg : Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0)) :
-    UnifTight f p μ := by
-  have : f = (fun _ => g) + fun n => f n - g := by ext1 n; simp
-  rw [this]
-  refine UnifTight.add ?_ ?_ (fun _ => hg.aestronglyMeasurable)
-      fun n => (hf n).1.sub hg.aestronglyMeasurable
-  · exact unifTight_const hp' hg
-  · exact unifTight_of_tendsto_Lp_zero hp' (fun n => (hf n).sub hg) hfg
-
-end VitaliConvergence
 end MeasureTheory
