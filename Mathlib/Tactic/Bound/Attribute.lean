@@ -27,7 +27,6 @@ variable {u : Lean.Level} {α : Q(Type u)}
 /-- Check if an expression is zero -/
 def isZero (e : Q($α)) : MetaM Bool :=
   match e with
-  | ~q(@OfNat.ofNat.{u} _ 0 $i) => return true
   | ~q(@Zero.zero.{u} _ $i) => return true
   | _ => return false
 

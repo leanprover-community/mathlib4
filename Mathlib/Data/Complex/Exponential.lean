@@ -1259,7 +1259,7 @@ theorem exp_eq_one_iff : exp x = 1 ↔ x = 0 :=
 theorem one_lt_exp_iff {x : ℝ} : 1 < exp x ↔ 0 < x := by rw [← exp_zero, exp_lt_exp]
 #align real.one_lt_exp_iff Real.one_lt_exp_iff
 
-@[bound] alias ⟨_, Bound.one_lt_exp_of_pos⟩ := one_lt_exp_iff
+@[bound] private alias ⟨_, Bound.one_lt_exp_of_pos⟩ := one_lt_exp_iff
 
 @[simp]
 theorem exp_lt_one_iff {x : ℝ} : exp x < 1 ↔ x < 0 := by rw [← exp_zero, exp_lt_exp]

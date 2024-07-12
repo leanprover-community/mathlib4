@@ -376,12 +376,12 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 @[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 #align nnreal.coe_lt_coe NNReal.coe_lt_coe
 
-@[bound] alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
 
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
 #align nnreal.coe_pos NNReal.coe_pos
 
-@[bound] alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
+@[bound] private alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
 
 @[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
 @[simp, norm_cast] lemma one_lt_coe : 1 < (r : ℝ) ↔ 1 < r := by rw [← coe_lt_coe, coe_one]
@@ -1263,6 +1263,8 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
+private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
+
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
 def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
@@ -1271,7 +1273,7 @@ def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
     let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
-    | .positive pa => pure (.positive q(Bound.coe_pos_of_pos $pa))
+    | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
 
