@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Sym.Sym2.Order
 
 /-!
 # Constructing a bilinear form from a quadratic form, given a basis
@@ -14,43 +15,7 @@ does not require `Invertible (2 : R)`. Unlike that definition, this only works i
 a basis.
 -/
 
-namespace Sym2
-variable {α}
-
-def sup [SemilatticeSup α] (x : Sym2 α) : α := Sym2.lift ⟨(· ⊔ ·), sup_comm⟩ x
-
-@[simp] theorem sup_mk [SemilatticeSup α] (a b : α) : s(a, b).sup = a ⊔ b := rfl
-
-def inf [SemilatticeInf α] (x : Sym2 α) : α := Sym2.lift ⟨(· ⊓ ·), inf_comm⟩ x
-
-@[simp] theorem inf_mk [SemilatticeInf α] (a b : α) : s(a, b).inf = a ⊓ b := rfl
-
-theorem inf_le_sup [Lattice α] (s : Sym2 α) : s.inf ≤ s.sup := by
-  cases s using Sym2.ind; simp [_root_.inf_le_sup]
-
-@[simps!]
-def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } where
-  toFun s := ⟨(s.inf, s.sup), inf_le_sup _⟩
-  invFun p := Sym2.mk p
-  left_inv := Sym2.ind fun a b => mk_eq_mk_iff.mpr <| by
-    cases le_total a b with
-    | inl h => simp [h]
-    | inr h => simp [h]
-  right_inv := Subtype.rec <| Prod.rec fun x y hxy => Subtype.ext <| Prod.ext (by simp [hxy]) (by simp [hxy])
-
-end Sym2
-
-theorem Finset.offDiag_filter_lt_eq_filter_le {ι}
-    [PartialOrder ι]
-    [DecidableEq ι] [DecidableRel (LE.le (α := ι))] [DecidableRel (LT.lt (α := ι))]
-    (s : Finset ι) :
-    s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
-  ext ⟨i, j⟩
-  simp only [mem_filter, mem_offDiag, ne_eq, and_congr_right_iff, and_imp]
-  rintro _ _ h
-  rw [Ne.le_iff_lt h]
-
-
+-- TODO: move
 theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
     (s : Finset ι) (p : Sym2 ι → α) :
     ∑ i in s.sym2.filter (¬ ·.IsDiag), p i =
