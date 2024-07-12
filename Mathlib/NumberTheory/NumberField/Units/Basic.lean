@@ -93,6 +93,11 @@ end coe
 
 open NumberField.InfinitePlace
 
+@[simp]
+protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
+    |Algebra.norm ℚ (x : K)| = 1 := by
+  rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
+
 section torsion
 
 /-- The torsion subgroup of the group of units. -/
@@ -152,3 +157,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
 
 end torsion
+
+end Units
+
+end NumberField

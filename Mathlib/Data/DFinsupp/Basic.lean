@@ -5,10 +5,12 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 #align_import data.dfinsupp.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -78,7 +80,7 @@ instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
   ⟨fun f => f.toFun, fun ⟨f₁, s₁⟩ ⟨f₂, s₁⟩ ↦ fun (h : f₁ = f₂) ↦ by
     subst h
     congr
-    apply Subsingleton.elim ⟩
+    subsingleton ⟩
 #align dfinsupp.fun_like DFinsupp.instDFunLike
 
 /-- Helper instance for when there are too many metavariables to apply `DFunLike.coeFunForall`
@@ -2343,8 +2345,8 @@ instance DFinsupp.fintype {ι : Sort _} {π : ι → Sort _} [DecidableEq ι] [�
 
 instance DFinsupp.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial (π i)]
     [∀ i, Zero (π i)] [Infinite ι] : Infinite (Π₀ i, π i) := by
-  letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i);
-    exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
+  letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i)
+  exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
 #align dfinsupp.infinite_of_left DFinsupp.infinite_of_left
 
 /-- See `DFinsupp.infinite_of_right` for this in instance form, with the drawback that

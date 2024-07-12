@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Instances.Rat
+import Mathlib.Algebra.Module.Rat
 
 #align_import topology.instances.real_vector_space from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

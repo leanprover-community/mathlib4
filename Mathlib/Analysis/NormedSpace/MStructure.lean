@@ -64,7 +64,6 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 variable (X : Type*) [NormedAddCommGroup X]
 variable {M : Type*} [Ring M] [Module M X]
 
--- Porting note: Mathlib3 uses names with uppercase 'L' for L-projections
 set_option linter.uppercaseLean3 false
 
 /-- A projection on a normed space `X` is said to be an L-projection if, for all `x` in `X`,
@@ -306,7 +305,7 @@ instance Subtype.distribLattice [FaithfulSMul M X] :
   le_sup_inf P Q R := by
     have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑Pᶜ := by
       rw [coe_inf, coe_sup, coe_sup, ← add_sub, ← add_sub, ← compl_mul, ← compl_mul, add_mul,
-        mul_add, (Pᶜ.prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q: M),
+        mul_add, (Pᶜ.prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q : M),
         (Pᶜ.prop.commute P.prop).eq, mul_compl_self, zero_mul, mul_zero,
         zero_add, add_zero, ← mul_assoc, mul_assoc (Q : M), P.prop.proj.eq, Pᶜ.prop.proj.eq,
         mul_assoc, (Pᶜ.prop.commute R.prop).eq, ← mul_assoc]

@@ -16,7 +16,6 @@ Further, these limits and colimits are preserved by the forgetful functor --- th
 underlying types are just the limits in the category of types.
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open TopologicalSpace CategoryTheory CategoryTheory.Limits Opposite
@@ -111,7 +110,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{
   · rfl
 #align Top.limit_cone_infi_is_limit TopCat.limitConeInfiIsLimit
 
-instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v} TopCat.{max v u} where
+instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v, v} TopCat.{max v u} where
   has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk
@@ -222,3 +221,5 @@ def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
 def initialIsoPEmpty : ⊥_ TopCat.{u} ≅ TopCat.of PEmpty :=
   initialIsInitial.uniqueUpToIso isInitialPEmpty
 #align Top.initial_iso_pempty TopCat.initialIsoPEmpty
+
+end TopCat
