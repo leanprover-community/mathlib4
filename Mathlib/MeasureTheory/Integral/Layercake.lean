@@ -212,7 +212,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       simp [this]
     have B : ∫⁻ t in Ioi 0, μ {a : α | t ≤ f a} * ENNReal.ofReal (g t) = 0 := by
       have : (fun t ↦ μ {a : α | t ≤ f a} * ENNReal.ofReal (g t))
-        =ᵐ[volume.restrict (Ioi (0:ℝ))] 0 := by
+        =ᵐ[volume.restrict (Ioi (0 : ℝ))] 0 := by
           filter_upwards [H1] with t ht using by simp [ht]
       simp [lintegral_congr_ae this]
     rw [A, B]

@@ -24,10 +24,10 @@ and provides lemmas that deal with this function and its connection to `Nat.coun
 
 ## Main results
 
-* `Nat.nth_eq_orderEmbOfFin`: For a fintely-often true `p`, gives the cardinality of the set of
+* `Nat.nth_eq_orderEmbOfFin`: For a finitely-often true `p`, gives the cardinality of the set of
   numbers satisfying `p` above particular values of `nth p`
 * `Nat.gc_count_nth`: Establishes a Galois connection between `Nat.nth p` and `Nat.count p`.
-* `Nat.nth_eq_orderIsoOfNat`: For an infinitely-ofter true predicate, `nth` agrees with the
+* `Nat.nth_eq_orderIsoOfNat`: For an infinitely-often true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
 
 There has been some discussion on the subject of whether both of `nth` and
