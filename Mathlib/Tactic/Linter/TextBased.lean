@@ -339,6 +339,18 @@ def allLinters : Array TextbasedLinter := #[
     copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, lineLengthLinter
   ]
 
+/-- Controls what kind of output this programme produces. -/
+inductive OutputSetting : Type
+  /-- Print any style error to standard output (the default) -/
+  | print (style : ErrorFormat)
+  /-- Update the style exceptions file (and still print style errors to standard output).
+  This adds entries for any new exceptions, removes any entries which are no longer necessary,
+  and tries to not modify exception entries unless necessary.
+  To fully regenerate the exceptions file, delete `style-exceptions.txt` and run again in this mode.
+  -/
+  | update
+  deriving BEq
+
 /-- Read a file and apply all text-based linters. Return a list of all unexpected errors.
 `sizeLimit` is any pre-existing limit on this file's size.
 `exceptions` are any other style exceptions. -/
@@ -359,11 +371,12 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   return errors
 
 /-- Lint a collection of modules for style violations.
-Print formatted errors for all unexpected style violations to standard output.
+Print formatted errors for all unexpected style violations to standard output;
+update the list of style exceptions if configured so.
 Return the number of files which had new style errors.
-`style` specifies if the error should be formatted for humans to read, github problem matchers
-to consume or for the style exceptions file. -/
-def lintModules (moduleNames : Array String) (style : ErrorFormat) : IO UInt32 := do
+`moduleNames` are all the modules to lint,
+`mode` specifies what kind of output this script should produce. -/
+def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 := do
   -- Read the style exceptions file.
   -- We also have a `nolints` file with manual exceptions for the linter.
   let exceptions ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
@@ -372,19 +385,24 @@ def lintModules (moduleNames : Array String) (style : ErrorFormat) : IO UInt32 :
   styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
 
   let mut numberErrorFiles := 0
-  let mut allUnexpectedErrors := #[]
-  for module in moduleNames do
-    -- Convert the module name to a file name, then lint that file.
-    let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
-    -- Find all size limits for this given file.
-    -- If several size limits are given (unlikely in practice), we use the first one.
-    let sizeLimits := (styleExceptions.filter (·.path == path)).filterMap (fun errctx ↦
-      match errctx.error with
-      | StyleError.fileTooLong _ limit => some limit
-      | _ => none)
-    let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
-    if errors.size > 0 then
-      allUnexpectedErrors := allUnexpectedErrors.append errors
-      numberErrorFiles := numberErrorFiles + 1
-    formatErrors allUnexpectedErrors style
+  if let OutputSetting.print style := mode then
+    let mut allUnexpectedErrors := #[]
+    for module in moduleNames do
+      -- Convert the module name to a file name, then lint that file.
+      let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
+      -- Find all size limits for this given file.
+      -- If several size limits are given (unlikely in practice), we use the first one.
+      let sizeLimits := (styleExceptions.filter (·.path == path)).filterMap (fun errctx ↦
+        match errctx.error with
+        | StyleError.fileTooLong _ limit => some limit
+        | _ => none)
+      let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
+      if errors.size > 0 then
+        allUnexpectedErrors := allUnexpectedErrors.append errors
+        numberErrorFiles := numberErrorFiles + 1
+      formatErrors allUnexpectedErrors style
+      return numberErrorFiles
+  else
+    -- TODO: implement this!
+    IO.println "TODO: --update mode is not implemented yet"
   return numberErrorFiles
