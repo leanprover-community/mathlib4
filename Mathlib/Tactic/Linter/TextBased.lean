@@ -353,14 +353,12 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
   return errors
 
-/-- Lint all files referenced in a given import-only file.
-Print formatted errors to standard output.
+/-- Lint a collection of modules for style violations.
+Print formatted errors for all unexpected style violations to standard output.
 Return the number of files which had new style errors.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
 to consume or for the style exceptions file. -/
-def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
-  -- Read all module names from the file at `path`.
-  let allModules ← IO.FS.lines path
+def lintModules (moduleNames : Array String) (style : ErrorFormat) : IO UInt32 := do
   -- Read the style exceptions file.
   -- We also have a `nolints` file with manual exceptions for the linter.
   let exceptions ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
@@ -370,8 +368,7 @@ def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
 
   let mut numberErrorFiles := 0
   let mut allUnexpectedErrors := #[]
-  for module in allModules do
-    let module := module.stripPrefix "import "
+  for module in moduleNames do
     -- Convert the module name to a file name, then lint that file.
     let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
     -- Find all size limits for this given file.
