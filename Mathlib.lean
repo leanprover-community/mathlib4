@@ -2943,6 +2943,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
+import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
@@ -3590,6 +3591,7 @@ import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RingTheory.AdicCompletion.Algebra
+import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.AdicCompletion.Exactness
 import Mathlib.RingTheory.AdicCompletion.Functoriality
