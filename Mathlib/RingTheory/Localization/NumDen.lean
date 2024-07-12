@@ -119,8 +119,32 @@ theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A
   rw [← mul_assoc, mul_inv_cancel d_ne_zero, one_mul, mk'_spec']
 #align is_fraction_ring.is_integer_of_is_unit_denom IsFractionRing.isInteger_of_isUnit_den
 
-theorem isUnit_den_zero : IsUnit (den A (0 : K) : A) :=
-  num_den_reduced A 0 (by simp) dvd_rfl
+theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteger A x where
+  mp h := by
+    obtain ⟨den, hd⟩ := IsUnit.exists_right_inv h
+    use (num A x) * den
+    conv => rhs; rw [← mk'_num_den' A x]
+    rw [map_mul, div_eq_mul_inv]
+    congr 1
+    apply eq_inv_of_mul_eq_one_right
+    rw [← map_mul]
+    norm_cast
+    simp only [hd, OneMemClass.coe_one, map_one]
+  mpr h := by
+    have ⟨v, h⟩ := h
+    apply IsRelPrime.isUnit_of_dvd (num_den_reduced A x).symm
+    use v
+    apply_fun algebraMap A K
+    · simp only [map_mul, h]
+      rw [mul_comm, ← div_eq_iff]
+      · simp only [mk'_num_den']
+      intro h
+      replace h : algebraMap A K (den A x : A) = algebraMap A K 0 := by convert h; simp
+      exact nonZeroDivisors.coe_ne_zero _ <| NoZeroSMulDivisors.algebraMap_injective A K h
+    exact NoZeroSMulDivisors.algebraMap_injective A K
+
+theorem isUnit_den_zero : IsUnit (den A (0 : K) : A) := by
+  simp [isUnit_den_iff, IsLocalization.isInteger_zero]
 
 @[deprecated isUnit_den_zero (since := "2024-07-11")]
 theorem isUnit_den_of_num_eq_zero {x : K} (h : num A x = 0) : IsUnit (den A x : A) :=
