@@ -112,12 +112,11 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
     -- Porting note: case nil was not covered.
     | nil => simp
     | cons' b a _ IH =>
-      intro l'
       -- Porting note: Previous code was:
       -- change l' with cons' a l
       --
       -- This can be removed.
-      simpa [cons, l'] using IH rfl
+      simpa [cons] using IH rfl
 #align lists'.of_to_list Lists'.of_toList
 
 end Lists'

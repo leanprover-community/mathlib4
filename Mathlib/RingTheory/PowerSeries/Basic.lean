@@ -893,18 +893,8 @@ theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C R a := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.coe_C Polynomial.coe_C
 
-
-set_option linter.deprecated false in
-@[simp, norm_cast]
-theorem coe_bit0 : ((bit0 φ : R[X]) : PowerSeries R) = bit0 (φ : PowerSeries R) :=
-  coe_add φ φ
-#align polynomial.coe_bit0 Polynomial.coe_bit0
-
-set_option linter.deprecated false in
-@[simp, norm_cast]
-theorem coe_bit1 : ((bit1 φ : R[X]) : PowerSeries R) = bit1 (φ : PowerSeries R) := by
-  rw [bit1, bit1, coe_add, coe_one, coe_bit0]
-#align polynomial.coe_bit1 Polynomial.coe_bit1
+#noalign polynomial.coe_bit0
+#noalign polynomial.coe_bit1
 
 @[simp, norm_cast]
 theorem coe_X : ((X : R[X]) : PowerSeries R) = PowerSeries.X :=

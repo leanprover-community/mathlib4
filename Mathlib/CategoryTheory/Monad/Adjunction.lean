@@ -379,7 +379,7 @@ instance comparison_essSurj [Coreflective R] :
   erw [X.counit]
   simp
 
-lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L):
+lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :
     (Comonad.comparison adj).Full where
   map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
 
