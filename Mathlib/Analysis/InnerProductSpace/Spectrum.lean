@@ -560,16 +560,16 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
 
 theorem indexing_nonsense : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
     = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))))) := by sorry
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) := by sorry
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
   refine' Fintype.induction_subsingleton_or_nontrivial n _ _
-  · intro m hm hhm T hT hC
+  · intro m _ hhm T hT _
     exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base T hT
   · intro m hm hmm H T hT hC
-    obtain ⟨i, j, hij⟩ := exists_pair_ne m
+    obtain ⟨i, _, _⟩ := exists_pair_ne m
     have C : Fintype.card { x // i ≠ x } < Fintype.card m := by
       simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, tsub_lt_self_iff, zero_lt_one,
       and_true]
@@ -578,7 +578,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       (fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1) (fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
     rw [← index_post_exhaust] at D
-    sorry
+    rw [indexing_nonsense]
+    exact D
+    exact fun i j ↦ hC i j
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
