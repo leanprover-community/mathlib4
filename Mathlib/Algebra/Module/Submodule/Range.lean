@@ -139,7 +139,7 @@ end
 def iterateRange (f : M →ₗ[R] M) : ℕ →o (Submodule R M)ᵒᵈ where
   toFun n := LinearMap.range (f ^ n)
   monotone' n m w x h := by
-    obtain ⟨c, rfl⟩ := le_iff_exists_add.mp w
+    obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le  w
     rw [LinearMap.mem_range] at h
     obtain ⟨m, rfl⟩ := h
     rw [LinearMap.mem_range]

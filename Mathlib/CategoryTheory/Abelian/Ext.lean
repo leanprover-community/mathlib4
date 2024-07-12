@@ -67,7 +67,7 @@ variable {R C}
 which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
 @[simps! X d]
 def ChainComplex.linearYonedaObj {α : Type*} [AddRightCancelSemigroup α] [One α]
-    (X : ChainComplex C α) (A : Type*) [Ring A] [Linear A C] (Y : C):
+    (X : ChainComplex C α) (A : Type*) [Ring A] [Linear A C] (Y : C) :
     CochainComplex (ModuleCat A) α :=
   ((((linearYoneda A C).obj Y).rightOp.mapHomologicalComplex _).obj X).unop
 
