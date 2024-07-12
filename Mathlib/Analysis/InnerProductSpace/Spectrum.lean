@@ -601,10 +601,14 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
         SetLike.mem_coe] at hgv
       have B : ∀ (μ : 𝕜), eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j) ≤ K := by
         intro μ
-        let γ := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0) (Function.const n μ)
+        let γ : n → 𝕜 := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0)
+          (Function.const n μ)
         have C1 : γ i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0)
             (Function.const n μ) fun a ↦ a rfl
-        have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by sorry
+        have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by
+          intro j
+          have := j.2
+          simp only [ne_eq, Subtype.coe_prop, Set.piecewise_eq_of_mem, γ]
         have C : eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j)
             = eigenspace (T i) (γ i) ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j) := by
           congr!
@@ -625,7 +629,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
   · intro m _ hhm T hT _
     exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot_base T hT
   · intro m hm hmm H T hT hC
-    obtain ⟨i, _, _⟩ := exists_pair_ne m
+    obtain ⟨i, _ , _ ⟩ := exists_pair_ne m
     have C : Fintype.card { x // i ≠ x } < Fintype.card m := by
       simp only [ne_eq, Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, tsub_lt_self_iff, zero_lt_one,
       and_true]
