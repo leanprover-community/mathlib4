@@ -593,6 +593,14 @@ theorem isSheaf_iff_multifork :
       apply he
 #align category_theory.presheaf.is_sheaf_iff_multifork CategoryTheory.Presheaf.isSheaf_iff_multifork
 
+variable {J P} in
+/-- If `F : Cᵒᵖ ⥤ A` is a sheaf for a Grothendieck topology `J` on `C`,
+and `S` is a cover of `X : C`, then the multifork `S.multifork F` is limit. -/
+def IsSheaf.isLimitMultifork
+    (hP : Presheaf.IsSheaf J P) {X : C} (S : J.Cover X) : IsLimit (S.multifork P) := by
+  rw [Presheaf.isSheaf_iff_multifork] at hP
+  exact (hP X S).some
+
 theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)] :
     IsSheaf J P ↔ ∀ (X : C) (S : J.Cover X), IsIso (S.toMultiequalizer P) := by
   rw [isSheaf_iff_multifork]
@@ -646,12 +654,12 @@ def secondObj : A :=
 
 /-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
 def firstMap : firstObj R P ⟶ secondObj R P :=
-  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.fst.op
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.fst _ _).op
 #align category_theory.presheaf.first_map CategoryTheory.Presheaf.firstMap
 
 /-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VM>. -/
 def secondMap : firstObj R P ⟶ secondObj R P :=
-  Pi.lift fun _ => Pi.π _ _ ≫ P.map pullback.snd.op
+  Pi.lift fun _ => Pi.π _ _ ≫ P.map (pullback.snd _ _).op
 #align category_theory.presheaf.second_map CategoryTheory.Presheaf.secondMap
 
 theorem w : forkMap R P ≫ firstMap R P = forkMap R P ≫ secondMap R P := by

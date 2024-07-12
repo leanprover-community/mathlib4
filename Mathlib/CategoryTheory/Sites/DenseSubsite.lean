@@ -537,9 +537,11 @@ variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (Structu
 variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
-    let α := G.sheafAdjunctionCocontinuous A J K
-    haveI : IsIso ((sheafToPresheaf J A).map (α.counit.app Y)) :=
-      ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val).isIso_hom
+    haveI : IsIso ((sheafToPresheaf J A).map
+        ((G.sheafAdjunctionCocontinuous A J K).counit.app Y)) := by
+      dsimp
+      rw [sheafAdjunctionCocontinuous_counit_app_val]
+      infer_instance
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
 
 variable (A)

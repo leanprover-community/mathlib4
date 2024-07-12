@@ -315,7 +315,7 @@ noncomputable def uniqueExtensionAlongYoneda (L : (Cᵒᵖ ⥤ Type v₁) ⥤ �
 #align category_theory.unique_extension_along_yoneda CategoryTheory.Presheaf.uniqueExtensionAlongYoneda
 
 instance (L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ) [PreservesColimitsOfSize.{v₁, max u₁ v₁} L]
-    [yoneda.HasPointwiseLeftKanExtension (yoneda ⋙ L)]:
+    [yoneda.HasPointwiseLeftKanExtension (yoneda ⋙ L)] :
     L.IsLeftKanExtension (𝟙 _ : yoneda ⋙ L ⟶ _) :=
   isLeftKanExtension_of_preservesColimits _ (Iso.refl _)
 

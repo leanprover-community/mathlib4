@@ -503,3 +503,5 @@ theorem nondegenerate_of_det_ne_zero (b : Basis ι A M₃) (h : (BilinForm.toMat
 end Det
 
 end BilinForm
+
+end LinearMap
