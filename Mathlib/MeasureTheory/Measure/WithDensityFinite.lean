@@ -253,9 +253,7 @@ instance (μ : Measure α) [SFinite μ] : SigmaFinite (μ.restrict μ.sigmaFinit
   rw [← toFinite_withDensity_restrict_sigmaFiniteSet]
   have : SigmaFinite (μ.toFinite.withDensity
       (fun x ↦ if μ.densityToFinite x ≠ ∞ then μ.densityToFinite x else 1)) := by
-    refine SigmaFinite.withDensity_of_ne_top ?_ ?_
-    · exact (Measurable.ite (measurable_densityToFinite μ (measurableSet_singleton _)).compl
-        (measurable_densityToFinite μ) measurable_const).aemeasurable
+    refine SigmaFinite.withDensity_of_ne_top ?_
     · refine ae_of_all _ (fun x ↦ ?_)
       split_ifs with h <;> simp [h]
   exact Restrict.sigmaFinite _ _
