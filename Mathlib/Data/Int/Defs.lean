@@ -169,18 +169,8 @@ protected lemma two_mul : ∀ n : ℤ, 2 * n = n + n
     rw [Int.ofNat_mul_negSucc, Nat.two_mul, ofNat_add, Int.neg_add]
     rfl
 
-section deprecated
-set_option linter.deprecated false
-
-@[norm_cast, deprecated (since := "2022-11-23")]
-lemma ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n := rfl
-#align int.coe_nat_bit0 Int.ofNat_bit0
-
-@[norm_cast, deprecated (since := "2022-11-23")]
-lemma ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n := rfl
-#align int.coe_nat_bit1 Int.ofNat_bit1
-
-end deprecated
+#noalign int.coe_nat_bit0
+#noalign int.coe_nat_bit1
 
 protected lemma mul_le_mul_iff_of_pos_right (ha : 0 < a) : b * a ≤ c * a ↔ b ≤ c :=
   ⟨(le_of_mul_le_mul_right · ha), (Int.mul_le_mul_of_nonneg_right · (Int.le_of_lt ha))⟩
