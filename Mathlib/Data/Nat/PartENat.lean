@@ -144,6 +144,9 @@ instance : LE PartENat :=
 instance : Top PartENat :=
   ⟨none⟩
 
+@[simp]
+theorem not_dom_top : ¬(⊤ : PartENat).Dom := id
+
 instance : Bot PartENat :=
   ⟨0⟩
 
@@ -201,6 +204,9 @@ theorem get_add {x y : PartENat} (h : (x + y).Dom) : get (x + y) h = x.get h.1 +
   rfl
 #align part_enat.get_add PartENat.get_add
 
+lemma get_add' {x y : PartENat} {hx : x.Dom} {hy : y.Dom} :
+    x.get hx + y.get hy = (x + y).get ⟨hx, hy⟩ := rfl
+
 @[simp]
 theorem get_zero (h : (0 : PartENat).Dom) : (0 : PartENat).get h = 0 :=
   rfl
@@ -225,6 +231,14 @@ theorem get_eq_iff_eq_coe {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b �
   rw [get_eq_iff_eq_some]
   rfl
 #align part_enat.get_eq_iff_eq_coe PartENat.get_eq_iff_eq_coe
+
+@[simp]
+lemma get_eq_zero_iff_eq_zero {a : PartENat} {ha : a.Dom} :
+    a.get ha = 0 ↔ a = 0 := get_eq_iff_eq_coe
+
+@[simp]
+lemma get_eq_one_iff_eq_one {a : PartENat} {ha : a.Dom} :
+    a.get ha = 1 ↔ a = 1 := get_eq_iff_eq_coe
 
 theorem dom_of_le_of_dom {x y : PartENat} : x ≤ y → y.Dom → x.Dom := fun ⟨h, _⟩ => h
 #align part_enat.dom_of_le_of_dom PartENat.dom_of_le_of_dom
@@ -343,6 +357,15 @@ theorem coe_lt_iff (n : ℕ) (x : PartENat) : (n : PartENat) < x ↔ ∀ h : x.D
   simp only [lt_def, exists_prop_of_true, dom_some, forall_true_iff]
   rfl
 #align part_enat.coe_lt_iff PartENat.coe_lt_iff
+
+theorem get_lt_get' {x y : PartENat} {hx : x.Dom} :
+    (∀ hy, x.get hx < y.get hy) ↔ x < y := by
+  convert (PartENat.coe_lt_iff ..).symm
+  simp only [natCast_get]
+
+theorem get_lt_get {x y : PartENat} {hx : x.Dom} {hy : y.Dom} :
+    x.get hx < y.get hy ↔ x < y :=
+  (forall_prop_of_true hy).symm.trans <| PartENat.get_lt_get'
 
 nonrec theorem eq_zero_iff {x : PartENat} : x = 0 ↔ x ≤ 0 :=
   eq_bot_iff
@@ -890,5 +913,80 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
     linearOrder, LinearOrder.toBiheytingAlgebra with }
+
+/--
+The additive homorophism from PartENat to WithTop ℤ. This is needed for the definition of
+p-adic valuations in fraction rings over UFDs.
+-/
+noncomputable def toWithTopInt : PartENat →+ WithTop ℤ :=
+    (Nat.castAddMonoidHom ℤ).withTopMap.comp withTopAddEquiv.toAddMonoidHom
+
+open Classical in
+lemma toWithTopInt_def (x : PartENat) :
+    toWithTopInt x = if h : x.Dom then (x.get h : WithTop ℤ) else ⊤ := by
+  change (toWithTop x).map Nat.cast = _
+  cases x using PartENat.casesOn
+  · simp only [toWithTop_top', not_dom_top, ↓reduceDIte]
+    apply WithTop.map_top
+  · simp only [toWithTop_natCast', dom_natCast, ↓reduceDIte, get_natCast']
+    apply WithTop.map_coe
+
+lemma toWithTopInt_injective : Function.Injective PartENat.toWithTopInt := by
+  intro x y h
+  simp only [toWithTopInt_def] at h
+  apply (fun (x : And _ _) ↦  Part.ext' x.1 x.2)
+  split at h <;> split at h <;> simp_all
+
+@[simp]
+lemma toWithTopInt_zero : PartENat.toWithTopInt 0 = 0 := by
+  simp [toWithTopInt_def]
+
+@[simp]
+lemma toWithTopInt_eq_zero_iff (x : PartENat) : PartENat.toWithTopInt x = 0 ↔ x = 0 where
+  mp h := by
+    apply_fun PartENat.toWithTopInt
+    simp [h]
+    exact toWithTopInt_injective
+  mpr h := by simp [h]
+
+@[simp]
+lemma toWithTopInt_one : PartENat.toWithTopInt 1 = 1 := by
+  simp [toWithTopInt_def]
+
+@[simp]
+lemma toWithTopInt_eq_one_iff (x : PartENat) : PartENat.toWithTopInt x = 1 ↔ x = 1 where
+  mp h := by
+    apply_fun PartENat.toWithTopInt
+    simp [h]
+    exact toWithTopInt_injective
+  mpr h := by simp [h]
+
+@[simp]
+lemma toWithTopInt_top : PartENat.toWithTopInt ⊤ = ⊤ := by
+  simp [toWithTopInt_def]
+
+@[simp]
+lemma toWithTopInt_eq_top_iff (x : PartENat) : PartENat.toWithTopInt x = ⊤ ↔ x = ⊤ where
+  mp h := by
+    apply_fun PartENat.toWithTopInt
+    simp [h]
+    exact toWithTopInt_injective
+  mpr h := by simp [h]
+
+lemma toWithTopInt_monotone : Monotone PartENat.toWithTopInt := by
+  intro x y h
+  rw [toWithTopInt_def, toWithTopInt_def]
+  split <;> split <;> simp_all
+  rename_i h1 h2
+  exact h1 <| PartENat.dom_of_le_of_dom h h2
+
+lemma toWithTopInt_nonneg (x : PartENat) : 0 ≤ PartENat.toWithTopInt x := by
+  rw [toWithTopInt_def]
+  split <;> simp
+
+lemma coe_get_eq_toWithTopInt (x : PartENat) {h : x.Dom} :
+    (x.get h : ℤ) = PartENat.toWithTopInt x := by
+  simp [toWithTopInt_def, h]
+
 
 end PartENat
