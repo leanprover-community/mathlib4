@@ -68,3 +68,27 @@ note: this linter can be disabled with `set_option linter.oneLineAlign false`
 #guard_msgs in
 #align to_align
   toAlign
+
+set_option linter.noInitialWhitespace false
+/--
+warning: '{ a : Option Nat}' should be printed as 'variable {a : Option Nat}'
+note: this linter can be disabled with `set_option linter.noInitialWhitespace false`
+---
+warning: '{a  : Option Nat}' should be printed as 'variable {a : Option Nat}'
+note: this linter can be disabled with `set_option linter.noInitialWhitespace false`
+---
+warning: '{a :  Option Nat}' should be printed as 'variable {a : Option Nat}'
+note: this linter can be disabled with `set_option linter.noInitialWhitespace false`
+---
+warning: '{a : Option Nat }' should be printed as 'variable {a : Option Nat}'
+note: this linter can be disabled with `set_option linter.noInitialWhitespace false`
+-/
+#guard_msgs in
+set_option linter.noInitialWhitespace true in
+variable {a : Option Nat} { a : Option Nat} {a  : Option Nat} {a :  Option Nat} {a : Option Nat }
+
+#guard_msgs in
+set_option linter.noInitialWhitespace true in
+-- a line break after a colon (`:`) is allowed
+variable {a :
+  Option Nat}
