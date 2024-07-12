@@ -1610,8 +1610,7 @@ theorem limsup_max [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : 
   · refine (limsup_le_iff cobddmax bddmax).2 (fun b hb ↦ ?_)
     have hu := eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_left _ _) hb) h₃
     have hv := eventually_lt_of_limsup_lt (lt_of_le_of_lt (le_max_right _ _) hb) h₄
-    refine mem_of_superset (inter_mem hu hv) (fun _ ↦ ?_)
-    simp
+    refine mem_of_superset (inter_mem hu hv) (fun _ ↦ by simp)
   · exact max_le (c := limsup (fun a ↦ max (u a) (v a)) f)
       (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_left (u a) (v a))) h₁ bddmax)
       (limsup_le_limsup (eventually_of_forall (fun a : α ↦ le_max_right (u a) (v a))) h₂ bddmax)
@@ -1626,18 +1625,9 @@ theorem liminf_min [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : 
 
 open Finset
 
-theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter α} {F : ι → α → β}
-    {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
-    f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup s F a) := by
-  choose! m hm using h
-  use sup s m
-  simp only [eventually_map] at hm ⊢
-  rw [← eventually_all_finset s] at hm
-  exact hm.mono fun _ h ↦ le_of_eq_of_le (Finset.sup_apply s F _) (sup_mono_fun h)
-
 theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
-    f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup' s hs F a) := by
+    f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup' s hs (fun i ↦ F i a)) := by
   choose! m hm using h
   use sup' s hs m
   simp only [eventually_map] at hm ⊢
@@ -1648,7 +1638,7 @@ theorem isBoundedUnder_le_finset_sup' [LinearOrder β] [Nonempty β] {f : Filter
 
 theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∃ i ∈ s, f.IsCoboundedUnder (· ≤ ·) (F i)) :
-    f.IsCoboundedUnder (· ≤ ·) (fun a ↦ sup' s hs F a) := by
+    f.IsCoboundedUnder (· ≤ ·) (fun a ↦ sup' s hs (fun i ↦ F i a)) := by
   rcases h with ⟨i, i_s, b, hb⟩
   use b
   refine fun c hc ↦ hb c ?_
@@ -1657,56 +1647,35 @@ theorem isCoboundedUnder_le_finset_sup' [LinearOrder β] {f : Filter α} {F : ι
   simp only [Finset.sup'_apply, sup'_le_iff] at h ⊢
   exact h i i_s
 
-theorem isBoundedUnder_ge_finset_inf [LinearOrder β] [OrderTop β] {f : Filter α} {F : ι → α → β}
-    {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
-    f.IsBoundedUnder (· ≥ ·) (fun a ↦ inf s F a) :=
-  isBoundedUnder_le_finset_sup (β := βᵒᵈ) h
+theorem isBoundedUnder_le_finset_sup [LinearOrder β] [OrderBot β] {f : Filter α} {F : ι → α → β}
+    {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
+    f.IsBoundedUnder (· ≤ ·) (fun a ↦ sup s (fun i ↦ F i a)) := by
+  choose! m hm using h
+  use sup s m
+  simp only [eventually_map] at hm ⊢
+  rw [← eventually_all_finset s] at hm
+  exact hm.mono fun _ h ↦ sup_mono_fun h
 
 theorem isBoundedUnder_ge_finset_inf' [LinearOrder β] [Nonempty β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∀ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
-    f.IsBoundedUnder (· ≥ ·) (fun a ↦ inf' s hs F a) :=
+    f.IsBoundedUnder (· ≥ ·) (fun a ↦ inf' s hs (fun i ↦ F i a)) :=
   isBoundedUnder_le_finset_sup' (β := βᵒᵈ) hs h
 
 theorem isCoboundedUnder_ge_finset_inf' [LinearOrder β] {f : Filter α} {F : ι → α → β}
     {s : Finset ι} (hs : s.Nonempty) (h : ∃ i ∈ s, f.IsCoboundedUnder (· ≥ ·) (F i)) :
-    f.IsCoboundedUnder (· ≥ ·) (fun a ↦ inf' s hs F a) :=
+    f.IsCoboundedUnder (· ≥ ·) (fun a ↦ inf' s hs (fun i ↦ F i a)) :=
   isCoboundedUnder_le_finset_sup' (β := βᵒᵈ) hs h
 
-theorem limsup_finset_sup [ConditionallyCompleteLinearOrderBot β] {f : Filter α}
-    {F : ι → α → β} {s : Finset ι}
-    (h₁ : ∀ i ∈ s, f.IsCoboundedUnder (· ≤ ·) (F i))
-    (h₂ : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
-    limsup (fun a ↦ sup s F a) f = sup s (fun i ↦ limsup (F i) f) := by
-  rcases eq_or_neBot f with (rfl | _)
-  · simp [limsup_eq, csInf_univ]
-  rcases Finset.eq_empty_or_nonempty s with (rfl | s_nemp)
-  · simp only [Finset.sup_apply, sup_empty, limsup_const]
-  have bddsup := isBoundedUnder_le_finset_sup h₂
-  apply le_antisymm
-  · have cobddsup : f.IsCoboundedUnder (· ≤ ·) (fun a ↦ sup s F a) := by use ⊥; simp
-    refine (limsup_le_iff cobddsup bddsup).2 (fun b hb ↦ ?_)
-    rw [eventually_iff_exists_mem]
-    use ⋂ i ∈ s, {a | F i a < b}
-    split_ands
-    · rw [biInter_finset_mem]
-      suffices key : ∀ i ∈ s, ∀ᶠ a in f, F i a < b from fun i i_s ↦ eventually_iff.1 (key i i_s)
-      exact fun i i_s ↦ eventually_lt_of_limsup_lt (lt_of_le_of_lt
-        (Finset.le_sup (f := fun i ↦ limsup (F i) f) i_s) hb) (h₂ i i_s)
-    · simp only [mem_iInter, mem_setOf_eq, Finset.sup_apply]
-      intro a h
-      rcases s_nemp with ⟨i, i_s⟩
-      rw [Finset.sup_lt_iff (lt_of_le_of_lt bot_le (h i i_s))]
-      exact h
-  · refine Finset.sup_le (fun i i_s ↦ ?_)
-    refine limsup_le_limsup (eventually_of_forall (fun a ↦ ?_)) (h₁ i i_s) bddsup
-    simp only [Finset.sup_apply]
-    exact le_sup (f := fun j ↦ F j a) i_s
+theorem isBoundedUnder_ge_finset_inf [LinearOrder β] [OrderTop β] {f : Filter α} {F : ι → α → β}
+    {s : Finset ι} (h : ∀ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
+    f.IsBoundedUnder (· ≥ ·) (fun a ↦ inf s (fun i ↦ F i a)) :=
+  isBoundedUnder_le_finset_sup (β := βᵒᵈ) h
 
 theorem limsup_finset_sup' [ConditionallyCompleteLinearOrder β] {f : Filter α}
     {F : ι → α → β} {s : Finset ι} (hs : s.Nonempty)
     (h₁ : ∀ i ∈ s, f.IsCoboundedUnder (· ≤ ·) (F i))
     (h₂ : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
-    limsup (fun a ↦ sup' s hs F a) f = sup' s hs (fun i ↦ limsup (F i) f) := by
+    limsup (fun a ↦ sup' s hs (fun i ↦ F i a)) f = sup' s hs (fun i ↦ limsup (F i) f) := by
   have bddsup := isBoundedUnder_le_finset_sup' hs h₂
   apply le_antisymm
   · have h₃ : ∃ i ∈ s, f.IsCoboundedUnder (· ≤ ·) (F i) := by
@@ -1729,11 +1698,25 @@ theorem limsup_finset_sup' [ConditionallyCompleteLinearOrder β] {f : Filter α}
     simp only [Finset.sup'_apply, le_sup'_iff]
     use i, i_s
 
+theorem limsup_finset_sup [ConditionallyCompleteLinearOrderBot β] {f : Filter α}
+    {F : ι → α → β} {s : Finset ι}
+    (h₁ : ∀ i ∈ s, f.IsCoboundedUnder (· ≤ ·) (F i))
+    (h₂ : ∀ i ∈ s, f.IsBoundedUnder (· ≤ ·) (F i)) :
+    limsup (fun a ↦ sup s (fun i ↦ F i a)) f = sup s (fun i ↦ limsup (F i) f) := by
+  rcases eq_or_neBot f with (rfl | _)
+  · simp [limsup_eq, csInf_univ]
+  rcases Finset.eq_empty_or_nonempty s with (rfl | s_nemp)
+  · simp only [Finset.sup_apply, sup_empty, limsup_const]
+  rw [← Finset.sup'_eq_sup s_nemp fun i ↦ limsup (F i) f, ← limsup_finset_sup' s_nemp h₁ h₂]
+  congr
+  ext a
+  exact Eq.symm (Finset.sup'_eq_sup s_nemp (fun i ↦ F i a))
+
 theorem liminf_finset_inf' [ConditionallyCompleteLinearOrder β] {f : Filter α}
     {F : ι → α → β} {s : Finset ι} (hs : s.Nonempty)
     (h₁ : ∀ i ∈ s, f.IsCoboundedUnder (· ≥ ·) (F i))
     (h₂ : ∀ i ∈ s, f.IsBoundedUnder (· ≥ ·) (F i)) :
-    liminf (fun a ↦ inf' s hs F a) f = inf' s hs (fun i ↦ liminf (F i) f) :=
+    liminf (fun a ↦ inf' s hs (fun i ↦ F i a)) f = inf' s hs (fun i ↦ liminf (F i) f) :=
   limsup_finset_sup' (β := βᵒᵈ) hs h₁ h₂
 
 end MinMax
