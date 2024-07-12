@@ -602,8 +602,18 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
     intro H
     apply h K
     intro a w hw
-    --#check Subtype.restrict (fun x ↦ i ≠ x) a
-    --have : ∀ (a : { x // ¬i = x } → 𝕜), eigenspace (T i) i_1 ⊓ ⨅ j, eigenspace (T ↑j) (a j)
+    rw [indexing_nonsense0 T (i := i) (γ := a)] at hw
+    simp only [ne_eq, Submodule.mem_inf] at hw
+    have A : ∀ (a : n → 𝕜), ⨅ j, eigenspace (T j) (a j) ≤ K := by
+      intro f
+      rw [indexing_nonsense0 T i]
+      apply H
+    exact H (fun j ↦ a ↑j) (a i) hw
+
+
+
+    --have KK : ∀ (a : n → 𝕜), ⨅ j, eigenspace (T j) (a j) ≤ K := by
+     --   exact?
     sorry
   · sorry
 
