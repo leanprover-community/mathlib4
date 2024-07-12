@@ -227,7 +227,6 @@ nonrec theorem get_eq_iff_eq_some {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get 
   get_eq_iff_eq_some
 #align part_enat.get_eq_iff_eq_some PartENat.get_eq_iff_eq_some
 
-@[simp]
 theorem get_eq_iff_eq_coe {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b ↔ a = b := by
   rw [get_eq_iff_eq_some]
   rfl
