@@ -68,7 +68,7 @@ def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
 { toFun     := fun x : ℚ ↦ (padicNorm p x : ℝ),
   map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
   add_le'   := by simp only; norm_cast; exact fun r s ↦ padicNorm.triangle_ineq r s
-  neg'      := by simp only [forall_const, padicNorm.neg];
+  neg'      := by simp only [forall_const, padicNorm.neg]
   eq_zero_of_map_eq_zero' := by
     simp only [Rat.cast_eq_zero]
     apply padicNorm.zero_of_padicNorm_eq_zero
