@@ -9,18 +9,19 @@ open Category MonoidalCategory MonoidalClosed
 
 variable {V : Type (u' + 1)} [Category.{u'} V] [MonoidalCategory V] [MonoidalClosed V]
 
-variable [SymmetricCategory V]
-
 namespace MonoidalClosed
+
+variable [SymmetricCategory V]
 
 @[simp]
 def comp (X Y Z : V) : ((ihom X).obj Y) ⊗ ((ihom Y).obj Z) ⟶ ((ihom X).obj Z) :=
-  curry ((α_ X _ _).inv ≫ (ihom.ev X).app Y ▷ (ihom Y).obj Z ≫ (ihom.ev Y).app Z)
---uncurry_pre
--- uncurry ((pre ((ihom.ev X).app Y)).app Z))
+  curry ((α_ X _ _).inv ≫ uncurry ((pre ((ihom.ev X).app Y)).app Z))
+-- uncurry_pre
+-- uncurry ((pre ((ihom.ev X).app Y)).app Z)) =
+-- (ihom.ev X).app Y ▷ (ihom Y).obj Z ≫ (ihom.ev Y).app Z)
 
 
--- MonoidalClosed category is enriched over itself
+-- Symmetric MonoidalClosed category is enriched over itself
 -- need more api for proofs
 instance : EnrichedCategory V V where
   Hom X Y := (ihom X).obj Y
@@ -44,13 +45,14 @@ def homEquiv_comp {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) :
   simp [homEquiv, curry]
   sorry
 
+def homEquiv' (A X : V) : (ihom (A ⊗ X)) ≅ (ihom X) ⋙ (ihom A) := sorry
+
 end MonoidalClosed
 
 section
 
 variable {C : Type u} [Category.{v} C]
 
--- when an enriched category is already a category, we should have more data
 variable (V C) in
 class EnrichedCategoryCategory extends EnrichedCategory V C where
   homEquiv (X Y : C) : (X ⟶ Y) ≃ (𝟙_ V ⟶ EnrichedCategory.Hom X Y)
@@ -66,7 +68,7 @@ instance : EnrichedCategoryCategory V V where
   homEquiv_id := MonoidalClosed.homEquiv_id
   homEquiv_comp := MonoidalClosed.homEquiv_comp
 
-variable [h : EnrichedCategoryCategory V C]
+variable [EnrichedCategoryCategory V C]
 
 noncomputable
 def temp : CategoryTheory.Equivalence (ForgetEnrichment V C) C where
@@ -76,7 +78,7 @@ def temp : CategoryTheory.Equivalence (ForgetEnrichment V C) C where
     map_id := fun A ↦ by
       simp only [forgetEnrichment_id, ← homEquiv_id, Equiv.symm_apply_apply]
     map_comp := fun f g ↦ by
-      apply_fun (fun f ↦ (h.homEquiv _ _) f)
+      apply_fun (fun f ↦ (homEquiv (V := V) _ _) f)
       simp [homEquiv_comp] }
   inverse := {
     obj := fun A ↦ ForgetEnrichment.of V A
@@ -95,8 +97,6 @@ def temp : CategoryTheory.Equivalence (ForgetEnrichment V C) C where
   counitIso := {
     hom := { app := fun X ↦ 𝟙 X }
     inv := { app := fun X ↦ 𝟙 X } }
-
-section Tensor
 
 noncomputable def whiskerRight {X X' : C} (f : X ⟶ X') (Y : C) :
     (X' ⟶[V] Y) ⟶ (X ⟶[V] Y) :=
@@ -142,36 +142,50 @@ variable (V C) in
 @[simps]
 noncomputable def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   obj X :=
-    { obj := fun Y => X.unop ⟶[V] Y
-      map := fun φ => whiskerLeft X.unop φ }
+    { obj := EnrichedCategory.Hom X.unop
+      map := whiskerLeft X.unop }
   map φ :=
-    { app := fun Y => whiskerRight φ.unop Y }
+    { app := whiskerRight φ.unop }
+
+section Copower
 
 class copower (A : V) (X : C) where
+  -- A ⊗ᵥ X
   obj : C
   -- C(A ⊗ᵥ X, -) ≅ V(A, C(X, -))
   iso : (eHomFunctor V C).obj (Opposite.op obj) ≅
-    (eHomFunctor V C).obj (Opposite.op X) ⋙ (eHomFunctor V V).obj (Opposite.op A)
-  α' : A ⟶ (X ⟶[V] obj) -- A ⟶ C(X, A ⊗ᵥ X)
-  fac (Y : C) : (iso.hom.app Y) =
-    curry (α' ▷ _ ≫ eComp V X obj Y)
+    (eHomFunctor V C).obj (.op X) ⋙ (eHomFunctor V V).obj (.op A)
+  -- A ⟶ C(X, A ⊗ᵥ X)
+--  α' : A ⟶ (X ⟶[V] obj)
+--  fac (Y : C) : (iso.hom.app Y) =
+--    curry (α' ▷ _ ≫ eComp V X obj Y)
 
 -- iso.hom.app Y : C(A ⊗ᵥ X, Y) ⟶ V(A, C(X, Y))
 
 -- eComp V X obj Y : C(X, A ⊗ᵥ X) ⊗ C(A ⊗ᵥ X, Y)  ⟶ C(X, Y)
--- α' ▷ _ : A ⊗ C(X, A ⊗ᵥ X) ⟶ C(X, A ⊗ᵥ X) ⊗ C(A ⊗ᵥ X, Y)
+-- α' ▷ _ : A ⊗ C(A ⊗ᵥ X, Y) ⟶ C(X, A ⊗ᵥ X) ⊗ C(A ⊗ᵥ X, Y)
 -- α' ▷ _ ≫ eComp V X obj Y : A ⊗ C(X, A ⊗ᵥ X) ⟶ C(X, Y)
 -- curry (α' ▷ _ ≫ eComp V X obj Y) : C(X, A ⊗ᵥ X) ⟶ V(A, C(X, Y))
 
-variable (C) in
+variable (V C) in
 class Copowered where
   copower (A : V) (X : C) : copower A X
+
+attribute [instance 100] Copowered.copower
+
+instance [SymmetricCategory V] : Copowered V V where
+  copower A X := {
+    obj := A ⊗ X
+    iso := sorry
+--    α' := curry ((β_ X) A).hom
+--    fac := sorry
+  }
 
 variable (A : V) (X Y : C) [copower A X]
 
 scoped infixr:70 " ⊗ᵥ " => copower.obj
 
-def copowerα : A ⟶ (X ⟶[V] (A ⊗ᵥ X)) := copower.α'
+--def copowerα : A ⟶ (X ⟶[V] (A ⊗ᵥ X)) := copower.α'
 
 -- C(A ⊗ᵥ X, Y) ≅ V(A, C(X, Y))
 noncomputable def copowerIso : ((A ⊗ᵥ X) ⟶[V] Y) ≅ (ihom A).obj (X ⟶[V] Y) :=
@@ -187,14 +201,94 @@ variable {A X Y} in
 noncomputable abbrev copowerDesc (f : A ⟶ (X ⟶[V] Y)) : A ⊗ᵥ X ⟶ Y :=
   (copowerEquiv _ _ _).symm f
 
-section
-
 variable {A B : V} (f : A ⟶ B) {X Y : C} (g : X ⟶ Y)
   [copower A X] [copower B Y]
 
-noncomputable def copowerMap :
-    A ⊗ᵥ X ⟶ B ⊗ᵥ Y := copowerDesc (f ≫ copowerα B Y ≫ whiskerRight g _)
+--noncomputable def copowerMap :
+--    A ⊗ᵥ X ⟶ B ⊗ᵥ Y := copowerDesc (f ≫ copowerα B Y ≫ whiskerRight g _)
 
-scoped infixr:70 " ⊗ₛ " => copowerMap
+--scoped infixr:70 " ⊗ᵥ " => copowerMap
 
-end
+variable (V C) in
+@[simp]
+def copowerFunctor [Copowered V C] : V ⥤ C ⥤ C where
+  obj A := {
+    obj := fun X ↦ (Copowered.copower A X).obj
+    map := fun {X Y} f ↦ sorry
+  }
+  map := sorry
+
+end Copower
+
+section Power
+
+variable (V C) in
+/-- The bifunctor `C ⥤ Cᵒᵖ ⥤ V` which sends `X : C` and `Y : Cᵒᵖ` to `Y.unop ⟶[V] X`. -/
+@[simps]
+noncomputable def eHomFunctor' : C ⥤ Cᵒᵖ ⥤ V where
+  obj X :=
+    { obj := fun Y ↦ (Y.unop ⟶[V] X)
+      map := fun f ↦ whiskerRight (V := V) f.unop X }
+  map φ :=
+    { app := fun Y ↦ whiskerLeft Y.unop φ }
+
+class power (A : V) (X : C) where
+  -- A ⊕ᵥ X
+  obj : C
+  -- C(-, A ⊕ᵥ X) ≅ V(A, C(-, X))
+  iso : (eHomFunctor' V C).obj obj ≅
+    (eHomFunctor' V C).obj X ⋙ (eHomFunctor V V).obj (.op A)
+
+variable (V C) in
+class Powered where
+  power (A : V) (X : C) : power A X := by infer_instance
+
+attribute [instance 100] Powered.power
+
+instance [SymmetricCategory V] : Powered V V where
+  power A X := {
+    obj := (ihom A).obj X
+    iso := sorry }
+
+variable (A : V) (X Y : C) [power A Y]
+
+scoped infixr:70 " ⊕ᵥ " => power.obj
+
+-- C(A ⊗ᵥ X, Y) ≅ V(A, C(X, Y))
+noncomputable def powerIso : (X ⟶[V] (A ⊕ᵥ Y)) ≅ (ihom A).obj (X ⟶[V] Y) :=
+  power.iso.app (.op X)
+
+noncomputable def powerEquiv : (X ⟶ A ⊕ᵥ Y) ≃ (A ⟶ (X ⟶[V] Y)) where
+  toFun f := (homEquiv _ _).symm ((homEquiv _ _ f) ≫ (powerIso A X Y).hom)
+  invFun f := (homEquiv _ _).symm ((homEquiv _ _ f) ≫ (powerIso A X Y).inv)
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
+variable {A X Y} in
+noncomputable abbrev powerDesc (f : A ⟶ (X ⟶[V] Y)) : X ⟶ A ⊕ᵥ Y :=
+  (powerEquiv _ _ _).symm f
+
+variable (V C) in
+@[simp]
+def powerFunctor [Powered V C] : Vᵒᵖ ⥤ C ⥤ C where
+  obj A := {
+    obj := fun X ↦ (Powered.power A.unop X).obj
+    map := fun {X Y} f ↦ sorry
+  }
+  map := sorry
+
+end Power
+
+variable [Powered V C] [Copowered V C]
+
+noncomputable
+def adj (A : V) : ((copowerFunctor V C).obj A) ⊣ ((powerFunctor V C).obj (.op A)) where
+  homEquiv X Y := (copowerEquiv A X Y).trans (powerEquiv A X Y).symm
+  unit := {
+    app := fun X ↦ (copowerEquiv _ _ _).trans (powerEquiv _ _ _).symm (𝟙 _)
+    naturality := sorry
+  }
+  counit := {
+    app := fun X ↦ (powerEquiv _ _ _).trans (copowerEquiv _ _ _).symm (𝟙 _)
+    naturality := sorry
+  }
