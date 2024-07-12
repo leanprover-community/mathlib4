@@ -560,6 +560,10 @@ theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := by
   exact rfl
 
+theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
+     ⨅ (j : n), eigenspace (T j) (γ j) = (eigenspace (T i) (γ i)) ⊓
+     ⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j) := by
+
 theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
     = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) := by
@@ -580,7 +584,8 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
     intro H
     apply h K
     intro a w hw
-
+    --#check Subtype.restrict (fun x ↦ i ≠ x) a
+    --have : ∀ (a : { x // ¬i = x } → 𝕜), eigenspace (T i) i_1 ⊓ ⨅ j, eigenspace (T ↑j) (a j)
     sorry
   · sorry
 
