@@ -536,9 +536,6 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
 
-variable (μ : 𝕜) (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
-#check Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)
-
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) = ⨆ (γ : {x // i ≠ x} → 𝕜),
@@ -558,7 +555,7 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
    rw [prelim_sub_exhaust T hC]
 
 
-theorem indexing_nonsense : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
+theorem indexing_nonsense (i : n) : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
     = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) := by sorry
 
