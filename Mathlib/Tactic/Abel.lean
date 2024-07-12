@@ -564,3 +564,9 @@ macro (name := abelConv) "abel" : conv =>
   `(conv| first | discharge => abel1 | try_this abel_nf)
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
+
+end Abel
+
+end Tactic
+
+end Mathlib
