@@ -149,6 +149,18 @@ namespace NoRepeatedVariable
 /-- Gets the value of the `linter.noRepeatedVariable` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.noRepeatedVariable o
 
+variable {α} [BEq α] in
+/--
+`largestSublist a b` extracts the largest initial segment of `a` that is an ordered sublist of `b`.
+-/
+def largestSublist : List α → List α → List α
+  | [], _ => []
+  | a::as, l =>
+    let l_until_a := l.dropWhile (· != a)
+    if ! l_until_a.isEmpty then
+      a :: largestSublist as (l_until_a.drop 1)
+    else []
+
 open Command in
 @[inherit_doc Mathlib.Linter.linter.noRepeatedVariable]
 def noRepeatedVariableLinter : Linter where
@@ -161,7 +173,7 @@ def noRepeatedVariableLinter : Linter where
     let binders := getDeclBinders stx
     let sc ← getScope
     let vars := sc.varDecls.map (·.raw)
-    let repeatedBinders := binders.filter vars.contains
+    let repeatedBinders := largestSublist binders.toList vars.toList --binders.filter vars.contains
     for d in repeatedBinders do
       Linter.logLint linter.noRepeatedVariable d m!"repeated: {← `(command| variable $(⟨d⟩))}"
 
