@@ -929,9 +929,7 @@ lemma toWithTopInt_injective : Function.Injective PartENat.toWithTopInt := by
   apply (fun (x : And _ _) ↦  Part.ext' x.1 x.2)
   split at h <;> split at h <;> simp_all
 
-@[simp]
-lemma toWithTopInt_zero : PartENat.toWithTopInt 0 = 0 := by
-  simp [toWithTopInt_def]
+lemma toWithTopInt_zero : PartENat.toWithTopInt 0 = 0 := by simp
 
 @[simp]
 lemma toWithTopInt_eq_zero_iff (x : PartENat) : PartENat.toWithTopInt x = 0 ↔ x = 0 where
