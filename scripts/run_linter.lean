@@ -163,5 +163,5 @@ unsafe def runLinter : Cmd := `[Cli|
     module : String;   "Run the linters on a given module: if omitted, will run on all modules in Mathlib"
 ]
 
-/-- The entry point to the `lake exe myRunLinter` command. -/
+/-- The entry point to the `lake exe run_linter` command. -/
 unsafe def main (args : List String) : IO UInt32 := do runLinter.validate args
