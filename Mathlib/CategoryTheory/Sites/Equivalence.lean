@@ -274,7 +274,7 @@ namespace GrothendieckTopology
 
 variable {A}
 variable [G.IsCoverDense J] [Functor.IsContinuous.{v₃} G K J]
-  [G.Full][(G.sheafPushforwardContinuous A K J).EssSurj]
+  [G.Full] [(G.sheafPushforwardContinuous A K J).EssSurj]
 
 open Localization
 
