@@ -2,6 +2,8 @@
 Copyright (c) 2024 Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu.
 All rights reserved. Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu
+This contribution was created as part of the AIM workshop "Formalizing algebraic geometry" in
+June 2024.
 -/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Pullbacks
@@ -95,7 +97,8 @@ nonrec abbrev Spec.algebraMap : Spec (.of S) ⟶ Spec (.of R) :=
 /-- The isomorphism between the fiber product of two affine schemes `Spec B` and `Spec C`
 over an affine scheme `Spec A` and the `Spec` of the tensor product `B ⊗[A] C`.-/
 noncomputable
-def pullbackSpecIso (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
+def pullbackSpecIso (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
+    [Algebra R T] :
     (pullback (Spec.algebraMap R S) (Spec.algebraMap R T)) ≅ Spec (.of <| S ⊗[R] T) := by
   refine (PreservesPullback.iso (Scheme.Spec) _ _).symm ≪≫ Scheme.Spec.mapIso ?_
   refine (pushoutIsoUnopPullback _ _).op ≪≫ (Iso.op ?_)
