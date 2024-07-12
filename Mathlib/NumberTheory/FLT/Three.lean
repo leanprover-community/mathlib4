@@ -33,7 +33,8 @@ The strategy is the following:
   We then prove that, given `S' : Solution'`, there is `S : Solution` such that the multiplicity of
   `λ = ζ₃ - 1` in `c` is the same in `S'` and `S` (see `exists_Solution_of_Solution'`).
   In particular it is enough to prove that no `Solution` exists. The key point is a descent argument
-  on the multiplicity of `λ` in `c`: starting with `S : Solution` we can find `S₁ : Solution` with multiplicity strictly smaller (see `exists_Solution_multiplicity_lt`) and this finishes the proof.
+  on the multiplicity of `λ` in `c`: starting with `S : Solution` we can find `S₁ : Solution` with
+  multiplicity strictly smaller (see `exists_Solution_multiplicity_lt`) and this finishes the proof.
   To construct `S₁` we go through a `Solution'` and then back to a `Solution`. More importantly, we
   cannot control the unit `u`, and this is the reason why we need to consider the generalized
   equation `a ^ 3 + b ^ 3 = u * c ^ 3`. The construction is completely explicit, but it depends
