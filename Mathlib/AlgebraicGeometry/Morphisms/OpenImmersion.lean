@@ -76,12 +76,12 @@ theorem isOpenImmersion_isLocalAtTarget : PropertyIsLocalAtTarget @IsOpenImmersi
 theorem IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.TFAE
     [IsOpenImmersion f,
     ∃ 𝒰 : Scheme.OpenCover.{u} Y,
-      ∀ i : 𝒰.J, IsOpenImmersion (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
+      ∀ i : 𝒰.J, IsOpenImmersion (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
     ∀ (𝒰 : Scheme.OpenCover.{u} Y) (i : 𝒰.J),
-      IsOpenImmersion (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
+      IsOpenImmersion (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
     ∀ U : Opens Y.carrier, IsOpenImmersion (f ∣_ U),
     ∀ {U : Scheme} (g : U ⟶ Y) [IsOpenImmersion g],
-      IsOpenImmersion (pullback.snd : pullback f g ⟶ _),
+      IsOpenImmersion (pullback.snd f g),
     ∃ (ι : Type u) (U : ι → Opens Y.carrier) (_ : iSup U = ⊤),
       ∀ i, IsOpenImmersion (f ∣_ U i)] :=
   isOpenImmersion_isLocalAtTarget.openCover_TFAE f
@@ -89,7 +89,7 @@ theorem IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.T
 
 theorem IsOpenImmersion.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y)
     (f : X ⟶ Y) :
-    IsOpenImmersion f ↔ ∀ i, IsOpenImmersion (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
+    IsOpenImmersion f ↔ ∀ i, IsOpenImmersion (pullback.snd f (𝒰.map i)) :=
   isOpenImmersion_isLocalAtTarget.openCover_iff f 𝒰
 #align algebraic_geometry.is_open_immersion.open_cover_iff AlgebraicGeometry.IsOpenImmersion.openCover_iff
 

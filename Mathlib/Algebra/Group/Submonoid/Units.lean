@@ -120,7 +120,7 @@ lemma mk_mul_mk_inv_eq_one (S : Submonoid M) {x : Mˣ} (h : x ∈ S.units) :
     (⟨_, h.1⟩ : S) * ⟨_, h.2⟩ = 1 := Subtype.ext x.mul_inv
 
 @[to_additive]
-lemma mul_mem_units (S : Submonoid M) {x y : Mˣ} (h₁ : x ∈ S.units) (h₂ : y ∈ S.units):
+lemma mul_mem_units (S : Submonoid M) {x y : Mˣ} (h₁ : x ∈ S.units) (h₂ : y ∈ S.units) :
     x * y ∈ S.units := mul_mem h₁ h₂
 
 @[to_additive]
@@ -143,11 +143,11 @@ def unitsEquivUnitsType (S : Submonoid M) : S.units ≃* Sˣ where
 lemma units_top : (⊤ : Submonoid M).units = ⊤ := ofUnits_units_gc.u_top
 
 @[to_additive]
-lemma units_inf (S T : Submonoid M): (S ⊓ T).units = S.units ⊓ T.units :=
+lemma units_inf (S T : Submonoid M) : (S ⊓ T).units = S.units ⊓ T.units :=
   ofUnits_units_gc.u_inf
 
 @[to_additive]
-lemma units_sInf {s: Set (Submonoid M)} : (sInf s).units = ⨅ S ∈ s, S.units :=
+lemma units_sInf {s : Set (Submonoid M)} : (sInf s).units = ⨅ S ∈ s, S.units :=
   ofUnits_units_gc.u_sInf
 
 @[to_additive]
@@ -259,11 +259,11 @@ noncomputable def ofUnitsEquivType (S : Subgroup Mˣ) : S.ofUnits ≃* S where
 lemma ofUnits_bot : (⊥ : Subgroup Mˣ).ofUnits = ⊥ := ofUnits_units_gc.l_bot
 
 @[to_additive]
-lemma ofUnits_inf (S T : Subgroup Mˣ): (S ⊔ T).ofUnits = S.ofUnits ⊔ T.ofUnits :=
+lemma ofUnits_inf (S T : Subgroup Mˣ) : (S ⊔ T).ofUnits = S.ofUnits ⊔ T.ofUnits :=
 ofUnits_units_gc.l_sup
 
 @[to_additive]
-lemma ofUnits_sSup (s: Set (Subgroup Mˣ)) : (sSup s).ofUnits = ⨆ S ∈ s, S.ofUnits :=
+lemma ofUnits_sSup (s : Set (Subgroup Mˣ)) : (sSup s).ofUnits = ⨆ S ∈ s, S.ofUnits :=
 ofUnits_units_gc.l_sSup
 
 @[to_additive]
@@ -280,11 +280,11 @@ lemma ofUnits_injective : Function.Injective (ofUnits (M := M)) :=
   ofUnits_units_gci.l_injective
 
 @[to_additive (attr := simp)]
-lemma ofUnits_sup_units (S T : Subgroup Mˣ): (S.ofUnits ⊔ T.ofUnits).units = S ⊔ T :=
+lemma ofUnits_sup_units (S T : Subgroup Mˣ) : (S.ofUnits ⊔ T.ofUnits).units = S ⊔ T :=
   ofUnits_units_gci.u_sup_l _ _
 
 @[to_additive (attr := simp)]
-lemma ofUnits_inf_units (S T : Subgroup Mˣ): (S.ofUnits ⊓ T.ofUnits).units = S ⊓ T :=
+lemma ofUnits_inf_units (S T : Subgroup Mˣ) : (S.ofUnits ⊓ T.ofUnits).units = S ⊓ T :=
   ofUnits_units_gci.u_inf_l _ _
 
 @[to_additive]
@@ -308,11 +308,11 @@ noncomputable def ofUnitsTopEquiv : (⊤ : Subgroup Mˣ).ofUnits ≃* Mˣ :=
 variable {G : Type*}  [Group G]
 
 @[to_additive]
-lemma mem_units_iff_val_mem (H : Subgroup G) (x : Gˣ): x ∈ H.units ↔ (x : G) ∈ H := by
+lemma mem_units_iff_val_mem (H : Subgroup G) (x : Gˣ) : x ∈ H.units ↔ (x : G) ∈ H := by
   simp_rw [Submonoid.mem_units_iff, mem_toSubmonoid, val_inv_eq_inv_val, inv_mem_iff, and_self]
 
 @[to_additive]
-lemma mem_ofUnits_iff_toUnits_mem (H : Subgroup Gˣ) (x : G): x ∈ H.ofUnits ↔ (toUnits x) ∈ H := by
+lemma mem_ofUnits_iff_toUnits_mem (H : Subgroup Gˣ) (x : G) : x ∈ H.ofUnits ↔ (toUnits x) ∈ H := by
   simp_rw [mem_ofUnits_iff, toUnits.surjective.exists, val_toUnits_apply, exists_eq_right]
 
 @[to_additive (attr := simp)]
