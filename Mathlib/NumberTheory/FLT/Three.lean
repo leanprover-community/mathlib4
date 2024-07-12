@@ -611,18 +611,20 @@ private lemma u₄_def : S.u₄ = η * S.u₃ * S.u₂⁻¹ := rfl
 private noncomputable def u₅ := -η ^ 2 * S.u₁ * S.u₂⁻¹
 private lemma u₅_def : S.u₅ = -η ^ 2 * S.u₁ * S.u₂⁻¹ := rfl
 
+example (a b : 𝓞 K) (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 := by
+  exact mul_ne_zero ha hb
+
 private lemma formula2 :
     S.Y ^ 3 + S.u₄ * S.Z ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
   rw [u₅_def, neg_mul, neg_mul, Units.val_neg, neg_mul, eq_neg_iff_add_eq_zero, add_assoc,
     add_comm (S.u₄ * S.Z ^ 3), ← add_assoc, add_comm (S.Y ^ 3)]
-  apply mul_right_cancel₀ hζ.zeta_sub_one_prime'.ne_zero
-  apply mul_right_cancel₀ S.u₂.isUnit.ne_zero
-  apply mul_right_cancel₀ (Units.isUnit η).ne_zero
+  apply mul_right_cancel₀ <| mul_ne_zero
+    (mul_ne_zero hζ.zeta_sub_one_prime'.ne_zero S.u₂.isUnit.ne_zero) (Units.isUnit η).ne_zero
   simp only [zero_mul, add_mul]
   rw [← formula1 S]
-  have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; omega
   congrm ?_ + ?_ + ?_
-  · calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ):= by push_cast; ring
+  · have : (S.multiplicity-1)*3+1 = 3*S.multiplicity-2 := by have := S.two_le_multiplicity; omega
+    calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ):= by push_cast; ring
     _ = S.X^3*S.u₁*λ^(3*S.multiplicity-2) := by simp [hζ.toInteger_cube_eq_one, ← pow_succ, this]
   · ring
   · field_simp [u₄_def]
@@ -641,26 +643,22 @@ private lemma u₄_eq_one_or_neg_one : S.u₄ = 1 ∨ S.u₄ = -1 := by
   have : λ^2 ∣ λ^4  := ⟨λ^2, by ring⟩
   have h := S.lambda_sq_div_u₅_mul
   apply IsCyclotomicExtension.Rat.Three.eq_one_or_neg_one_of_unit_of_congruent hζ
-  rcases h with ⟨kX, hkX⟩
+  rcases h with ⟨X, hX⟩
   rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd hζ S.lambda_not_dvd_Y with
     HY | HY <;> rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd
       hζ S.lambda_not_dvd_Z with HZ | HZ <;> replace HY := this.trans HY <;> replace HZ :=
-      this.trans HZ <;> rcases HY with ⟨kY, hkY⟩ <;> rcases HZ with ⟨kZ, hkZ⟩
-  · refine ⟨-1, kX-kY-S.u₄*kZ, ?_⟩
-    rw [show λ^2*(kX-kY-S.u₄*kZ)=λ^2*kX-λ^2*kY-S.u₄*(λ^2*kZ) by ring, ← hkX, ← hkY, ← hkZ,
-      ← S.formula2]
+      this.trans HZ <;> rcases HY with ⟨Y, hY⟩ <;> rcases HZ with ⟨Z, hZ⟩
+  · refine ⟨-1, X-Y-S.u₄*Z, ?_⟩
+    rw [show λ^2*(X-Y-S.u₄*Z)=λ^2*X-λ^2*Y-S.u₄*(λ^2*Z) by ring, ← hX, ← hY, ← hZ, ← formula2]
     ring
-  · refine ⟨1, -kX+kY+S.u₄*kZ, ?_⟩
-    rw [show λ^2*(-kX+kY+S.u₄*kZ)=-(λ^2*kX-λ^2*kY-S.u₄*(λ^2*kZ)) by ring, ← hkX, ← hkY, ← hkZ,
-      ← S.formula2]
+  · refine ⟨1, -X+Y+S.u₄*Z, ?_⟩
+    rw [show λ^2*(-X+Y+S.u₄*Z)=-(λ^2*X-λ^2*Y-S.u₄*(λ^2*Z)) by ring, ← hX, ← hY, ← hZ, ← formula2]
     ring
-  · refine ⟨1, kX-kY-S.u₄*kZ, ?_⟩
-    rw [show λ^2*(kX-kY-S.u₄*kZ)=λ^2*kX-λ^2*kY-S.u₄*(λ^2*kZ) by ring, ← hkX, ← hkY, ← hkZ,
-      ← S.formula2]
+  · refine ⟨1, X-Y-S.u₄*Z, ?_⟩
+    rw [show λ^2*(X-Y-S.u₄*Z)=λ^2*X-λ^2*Y-S.u₄*(λ^2*Z) by ring, ← hX, ← hY, ← hZ, ← formula2]
     ring
-  · refine ⟨-1, -kX+kY+S.u₄*kZ, ?_⟩
-    rw [show λ^2*(-kX+kY+S.u₄*kZ)=-(λ^2*kX-λ^2*kY-S.u₄*(λ^2*kZ)) by ring, ← hkX, ← hkY, ← hkZ,
-      ← S.formula2]
+  · refine ⟨-1, -X+Y+S.u₄*Z, ?_⟩
+    rw [show λ^2*(-X+Y+S.u₄*Z)=-(λ^2*X-λ^2*Y-S.u₄*(λ^2*Z)) by ring, ← hX, ← hY, ← hZ, ← formula2]
     ring
 
 private lemma u₄_sq : S.u₄ ^ 2 = 1 := by
