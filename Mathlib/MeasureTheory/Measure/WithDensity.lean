@@ -171,11 +171,11 @@ theorem withDensity_const (c : ℝ≥0∞) : μ.withDensity (fun _ ↦ c) = c �
   ext1 s hs
   simp [withDensity_apply _ hs]
 
-theorem withDensity_tsum {f : ℕ → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
+theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     μ.withDensity (∑' n, f n) = sum fun n => μ.withDensity (f n) := by
   ext1 s hs
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
-  change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i : ℕ, ∫⁻ x, f i x ∂μ.restrict s
+  change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
   exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 #align measure_theory.with_density_tsum MeasureTheory.withDensity_tsum
@@ -602,24 +602,8 @@ theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
   (fun h ↦ Measure.AbsolutelyContinuous.ae_eq
     (withDensity_absolutelyContinuous μ d) h)
 
-/-- A sigma-finite measure is absolutely continuous with respect to some finite measure. -/
-theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ : Measure α)
-    [SigmaFinite μ] : ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
-  obtain ⟨g, gpos, gmeas, hg⟩ :
-    ∃ g : α → ℝ≥0, (∀ x : α, 0 < g x) ∧ Measurable g ∧ ∫⁻ x : α, ↑(g x) ∂μ < 1 :=
-    exists_pos_lintegral_lt_of_sigmaFinite μ one_ne_zero
-  refine ⟨μ.withDensity fun x => g x, isFiniteMeasure_withDensity hg.ne_top, ?_⟩
-  have : μ = (μ.withDensity fun x => g x).withDensity fun x => (g x)⁻¹ := by
-    have A : ((fun x : α => (g x : ℝ≥0∞)) * fun x : α => (g x : ℝ≥0∞)⁻¹) = 1 := by
-      ext1 x
-      exact ENNReal.mul_inv_cancel (ENNReal.coe_ne_zero.2 (gpos x).ne') ENNReal.coe_ne_top
-    rw [← withDensity_mul _ gmeas.coe_nnreal_ennreal gmeas.coe_nnreal_ennreal.inv, A,
-      withDensity_one]
-  nth_rw 1 [this]
-  exact withDensity_absolutelyContinuous _ _
-#align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
-
-/-- If `μ` is a σ-finite measure, then -/
+/-- If `μ` is a σ-finite measure, then so is `μ.withDensity fun x ↦ f x`
+for any `ℝ≥0`-valued function `f`. -/
 protected instance SigmaFinite.withDensity [SigmaFinite μ] (f : α → ℝ≥0) :
     SigmaFinite (μ.withDensity (fun x ↦ f x)) := by
   refine ⟨⟨⟨fun n ↦ spanningSets μ n ∩ f ⁻¹' (Iic n), fun _ ↦ trivial, fun n ↦ ?_, ?_⟩⟩⟩
