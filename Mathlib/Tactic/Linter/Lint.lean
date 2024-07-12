@@ -174,10 +174,13 @@ def inappropriateSpacing (file : String) (stx : Syntax) : Substring :=
   let varPos := (startPos.pop.pop.pop.eraseIdx 0).eraseIdx 0
   -- these should not be spaces
   let charsTwoBeforeAVar := varPos.map (file.get ⟨·.byteIdx-2⟩)
-  -- these should be spaces
-  let charAroundColon := #[file.get ⟨colonPos.byteIdx-1⟩, file.get ⟨colonPos.byteIdx+1⟩]
+  let afterColon := file.get ⟨colonPos.byteIdx+1⟩
+  -- these should be spaces -- we allow a line break after `:`
+  let charAroundColon := #[file.get ⟨colonPos.byteIdx-1⟩].push <|
+    if afterColon == '\n' then ' ' else afterColon
   -- these should not be spaces
-  let charAroundColonPlusOne := #[file.get ⟨colonPos.byteIdx-2⟩, file.get ⟨colonPos.byteIdx+2⟩]
+  let charAroundColonPlusOne := #[file.get ⟨colonPos.byteIdx-2⟩].push <|
+    if afterColon == '\n' then 'A' else file.get ⟨colonPos.byteIdx+2⟩
   let spaces := charAroundColon
   let nonspaces := ((charsTwoBeforeAVar ++ charAroundColonPlusOne).push
     charFollowingOpenBracket).push charPrecedingClosedBracket
