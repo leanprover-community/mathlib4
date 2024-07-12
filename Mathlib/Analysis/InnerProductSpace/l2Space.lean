@@ -84,7 +84,7 @@ Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric is
 
 open RCLike Submodule Filter
 
-open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
+open scoped NNReal ENNReal Classical ComplexConjugate Topology
 
 noncomputable section
 
@@ -105,7 +105,7 @@ namespace lp
 
 theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Apply the Direct Comparison Test, comparing with ∑' i, ‖f i‖ * ‖g i‖ (summable by Hölder)
-  refine' .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul _ f g) _
+  refine .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul ?_ f g) ?_
   · rw [Real.isConjExponent_iff]; norm_num
   intro i
   -- Then apply Cauchy-Schwarz pointwise
@@ -162,7 +162,7 @@ theorem hasSum_inner (f g : lp G 2) : HasSum (fun i => ⟪f i, g i⟫) ⟪f, g�
 #align lp.has_sum_inner lp.hasSum_inner
 
 theorem inner_single_left (i : ι) (a : G i) (f : lp G 2) : ⟪lp.single 2 i a, f⟫ = ⟪a, f i⟫ := by
-  refine' (hasSum_inner (lp.single 2 i a) f).unique _
+  refine (hasSum_inner (lp.single 2 i a) f).unique ?_
   convert hasSum_ite_eq i ⟪a, f i⟫ using 1
   ext j
   rw [lp.single_apply]
@@ -207,7 +207,7 @@ protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
       have H : 0 < (2 : ℝ≥0∞).toReal := by norm_num
       suffices ‖∑' i : ι, V i (f i)‖ ^ (2 : ℝ≥0∞).toReal = ‖f‖ ^ (2 : ℝ≥0∞).toReal by
         exact Real.rpow_left_injOn H.ne' (norm_nonneg _) (norm_nonneg _) this
-      refine' tendsto_nhds_unique _ (lp.hasSum_norm H f)
+      refine tendsto_nhds_unique ?_ (lp.hasSum_norm H f)
       convert (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
       ext s
       exact mod_cast (hV.norm_sum f s).symm
@@ -245,17 +245,17 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
     LinearMap.range hV.linearIsometry.toLinearMap =
       (⨆ i, LinearMap.range (V i).toLinearMap).topologicalClosure := by
     -- Porting note: dot notation broken
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · rintro x ⟨f, rfl⟩
-    refine' mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall _)
+    refine mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall ?_)
     intro s
     rw [SetLike.mem_coe]
-    refine' sum_mem _
+    refine sum_mem ?_
     intro i _
-    refine' mem_iSup_of_mem i _
+    refine mem_iSup_of_mem i ?_
     exact LinearMap.mem_range_self _ (f i)
   · apply topologicalClosure_minimal
-    · refine' iSup_le _
+    · refine iSup_le ?_
       rintro i x ⟨x, rfl⟩
       use lp.single 2 i x
       exact hV.linearIsometry_apply_single x
@@ -376,10 +376,10 @@ theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSp
   have : ∀ b, CompleteSpace (↥(cond b K Kᗮ)) := by
     intro b
     cases b <;> first | exact instOrthogonalCompleteSpace K | assumption
-  refine' IsHilbertSum.mkInternal _ K.orthogonalFamily_self _
-  refine' le_trans _ (Submodule.le_topologicalClosure _)
+  refine IsHilbertSum.mkInternal _ K.orthogonalFamily_self ?_
+  refine le_trans ?_ (Submodule.le_topologicalClosure _)
   rw [iSup_bool_eq, cond, cond]
-  refine' Codisjoint.top_le _
+  refine Codisjoint.top_le ?_
   exact Submodule.isCompl_orthogonal_of_completeSpace.codisjoint
 #align submodule.is_hilbert_sum_orthogonal Submodule.isHilbertSumOrthogonal
 
@@ -464,18 +464,18 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
   classical
     rw [eq_top_iff]
     rintro x -
-    refine' mem_closure_of_tendsto (b.hasSum_repr x) (eventually_of_forall _)
+    refine mem_closure_of_tendsto (b.hasSum_repr x) (eventually_of_forall ?_)
     intro s
     simp only [SetLike.mem_coe]
-    refine' sum_mem _
+    refine sum_mem ?_
     rintro i -
-    refine' smul_mem _ _ _
+    refine smul_mem _ _ ?_
     exact subset_span ⟨i, rfl⟩
 #align hilbert_basis.dense_span HilbertBasis.dense_span
 
 protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
-  convert (b.hasSum_repr y).mapL (innerSL _ x) using 1
+  convert (b.hasSum_repr y).mapL (innerSL 𝕜 x) using 1
   ext i
   rw [innerSL_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
 #align hilbert_basis.has_sum_inner_mul_inner HilbertBasis.hasSum_inner_mul_inner
@@ -496,7 +496,7 @@ protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
 protected def toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) : OrthonormalBasis ι 𝕜 E :=
   OrthonormalBasis.mk b.orthonormal
     (by
-      refine' Eq.ge _
+      refine Eq.ge ?_
       have := (span 𝕜 (Finset.univ.image b : Set E)).closed_of_finiteDimensional
       simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ, HilbertBasis.dense_span] using
         this.submodule_topologicalClosure_eq.symm)

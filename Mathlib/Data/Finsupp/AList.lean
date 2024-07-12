@@ -59,8 +59,7 @@ open List
 
 /-- Converts an association list into a finitely supported function via `AList.lookup`, sending
 absent keys to zero. -/
-noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
-    where
+noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M where
   support := by
     haveI := Classical.decEq α; haveI := Classical.decEq M
     exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
@@ -82,9 +81,8 @@ theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun _x : α => M) (a : �
 @[simp]
 theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x : α => M) :
     l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
-  convert rfl; congr
-  · apply Subsingleton.elim
-  · funext; congr
+  dsimp only [lookupFinsupp]
+  congr!
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun _x : α => M} {a : α} {x : M}

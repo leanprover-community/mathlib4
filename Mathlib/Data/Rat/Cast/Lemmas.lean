@@ -45,7 +45,7 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
     ((q : ℚ) : K) = (q : K) := by
   rw [Rat.cast_def, NNRat.cast_def, NNRat.cast_def]
   have hn := @num_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
-  have hd := @den_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
+  on_goal 1 => have hd := @den_div_eq_of_coprime q.num q.den ?hdp q.coprime_num_den
   case hdp => simpa only [Nat.cast_pos] using q.den_pos
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]
@@ -77,3 +77,5 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
 open OfScientific in
 theorem Nonneg.coe_ofScientific {K} [LinearOrderedField K] (m : ℕ) (s : Bool) (e : ℕ) :
     (ofScientific m s e : {x : K // 0 ≤ x}).val = ofScientific m s e := rfl
+
+end NNRat

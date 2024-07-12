@@ -8,11 +8,22 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
-import Std.Classes.Order
+import Batteries.Classes.Order
 
 #align_import init.algebra.order from "leanprover-community/lean"@"c2bcdbcbe741ed37c361a30d38e179182b989f76"
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Orders
 
 Defines classes for preorders, partial orders, and linear orders
@@ -389,8 +400,7 @@ theorem eq_or_lt_of_not_lt {a b : α} (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 #align eq_or_lt_of_not_lt eq_or_lt_of_not_lt
 
-instance : IsTotalPreorder α (· ≤ ·)
-    where
+instance : IsTotalPreorder α (· ≤ ·) where
   trans := @le_trans _ _
   total := le_total
 
@@ -455,7 +465,7 @@ theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b 
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-instance : Std.TransCmp (compare (α := α)) where
+instance : Batteries.TransCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm

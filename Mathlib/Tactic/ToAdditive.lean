@@ -12,8 +12,8 @@ import Mathlib.Lean.Meta.Simp
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
-import Std.Lean.NameMapAttribute
-import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
+import Batteries.Lean.NameMapAttribute
+import Batteries.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -491,7 +491,7 @@ open Lean.Expr.FindImpl in
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
-  let rec visit (e : Expr) (inApp := false) : OptionT (FindM Id) Name := do
+  let rec visit (e : Expr) (inApp := false) : OptionT FindM Name := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
@@ -942,6 +942,8 @@ def nameDict : String → List String
   | "units"       => ["add", "Units"]
   | "cyclic"      => ["add", "Cyclic"]
   | "rootable"    => ["divisible"]
+  | "semigrp"     => ["add", "Semigrp"]
+  | "grp"         => ["add", "Grp"]
   | "commute"     => ["add", "Commute"]
   | "semiconj"    => ["add", "Semiconj"]
   | "zpowers"     => ["zmultiples"]
@@ -1095,7 +1097,7 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
       return #[]
   aux fun declName ↦ do match (← getEnv).find? declName with
     | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
-        return ctors.toArray.map (.mkSimple ·.getString)
+        return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
     | _ => pure #[]
 
 /-- Elaboration of the configuration options for `to_additive`. -/

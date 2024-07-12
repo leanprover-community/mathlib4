@@ -6,7 +6,7 @@ Authors: Benjamin Davidson
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Group.Subgroup.ZPowers
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.GroupPower.NegOnePow
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.GroupTheory.Coset
 
@@ -35,7 +35,7 @@ period, periodic, periodicity, antiperiodic
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
 
-open Set BigOperators
+open Set
 
 namespace Function
 
@@ -92,7 +92,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 
 @[to_additive]
 theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
-    (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i in s, f i) c :=
+    (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i ∈ s, f i) c :=
   s.prod_to_list f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
 #align finset.periodic_prod Finset.periodic_prod
 #align finset.periodic_sum Finset.periodic_sum
@@ -194,7 +194,7 @@ theorem Periodic.sub_const [AddCommGroup α] (h : Periodic f c) (a : α) :
 #align function.periodic.sub_const Function.Periodic.sub_const
 
 theorem Periodic.nsmul [AddMonoid α] (h : Periodic f c) (n : ℕ) : Periodic f (n • c) := by
-  induction n <;> simp_all [Nat.succ_eq_add_one, add_nsmul, ← add_assoc, zero_nsmul]
+  induction n <;> simp_all [add_nsmul, ← add_assoc, zero_nsmul]
 #align function.periodic.nsmul Function.Periodic.nsmul
 
 theorem Periodic.nat_mul [Semiring α] (h : Periodic f c) (n : ℕ) : Periodic f (n * c) := by

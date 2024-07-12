@@ -60,19 +60,17 @@ set_option synthInstance.checkSynthOrder false in
 This instance generates the type-class problem `BundledHom ?m`.
 Currently that is not a problem, as there are almost no instances of `BundledHom`.
 -/
-instance category : Category (Bundled c) := by
-  refine' { Hom := fun X Y => @hom X Y X.str Y.str
-            id := fun X => @BundledHom.id c hom 𝒞 X X.str
-            comp := @fun X Y Z f g => @BundledHom.comp c hom 𝒞 X Y Z X.str Y.str Z.str g f
-            comp_id := _
-            id_comp := _
-            assoc := _ } <;> intros <;> apply 𝒞.hom_ext <;>
-    aesop_cat
+instance category : Category (Bundled c) where
+  Hom := fun X Y => hom X.str Y.str
+  id := fun X => BundledHom.id 𝒞 (α := X) X.str
+  comp := fun {X Y Z} f g => BundledHom.comp 𝒞 (α := X) (β := Y) (γ := Z) X.str Y.str Z.str g f
+  comp_id _ := by apply 𝒞.hom_ext; simp
+  assoc _ _ _ := by apply 𝒞.hom_ext; aesop_cat
+  id_comp _ := by apply 𝒞.hom_ext; simp
 #align category_theory.bundled_hom.category CategoryTheory.BundledHom.category
 
 /-- A category given by `BundledHom` is a concrete category. -/
-instance concreteCategory : ConcreteCategory.{u} (Bundled c)
-    where
+instance concreteCategory : ConcreteCategory.{u} (Bundled c) where
   forget :=
     { obj := fun X => X
       map := @fun X Y f => 𝒞.toFun X.str Y.str f
@@ -114,8 +112,7 @@ end
 /-- Construct the `CategoryTheory.BundledHom` induced by a map between type classes.
 This is useful for building categories such as `CommMonCat` from `MonCat`.
 -/
-def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
-    where
+def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F) where
   toFun α β {iα} {iβ} f := 𝒞.toFun (F iα) (F iβ) f
   id α {iα} := 𝒞.id (F iα)
   comp := @fun α β γ iα iβ iγ f g => 𝒞.comp (F iα) (F iβ) (F iγ) f g

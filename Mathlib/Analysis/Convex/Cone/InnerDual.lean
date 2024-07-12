@@ -109,7 +109,7 @@ theorem innerDualCone_insert (x : H) (s : Set H) :
 
 theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
-  refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) _
+  refine le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) ?_
   intro x hx y hy
   rw [ConvexCone.mem_iInf] at hx
   obtain ⟨j, hj⟩ := mem_iUnion.mp hy

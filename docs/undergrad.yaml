@@ -61,13 +61,13 @@ Linear algebra:
     diagonalization: 'https://en.wikipedia.org/wiki/Diagonalizable_matrix'
     triangularization: 'https://en.wikipedia.org/wiki/Triangular_matrix#Triangularisability'
     invariant subspaces of an endomorphism: 'https://en.wikipedia.org/wiki/Invariant_subspace'
-    generalized eigenspaces: 'Module.End.generalizedEigenspace'
+    generalized eigenspaces: 'Module.End.genEigenspace'
     kernels lemma: 'https://fr.wikipedia.org/wiki/Lemme_des_noyaux'
     Jordan-Chevalley-Dunford decomposition: 'Module.End.exists_isNilpotent_isSemisimple'
     Jordan normal form: 'https://en.wikipedia.org/wiki/Jordan_normal_form'
   Linear representations:
     irreducible representation: 'https://en.wikipedia.org/wiki/Irreducible_representation'
-    Schur's lemma: 'FdRep.finrank_hom_simple_simple'
+    Schur's lemma: 'FDRep.finrank_hom_simple_simple'
     examples: ''
   Exponential:
     endomorphism exponential: ''
@@ -112,11 +112,11 @@ Group Theory:
     representations of abelian groups: 'https://proofwiki.org/wiki/Irreducible_Representations_of_Abelian_Group'
     dual groups: 'https://kconrad.math.uconn.edu/blurbs/grouptheory/charthy.pdf'
     Maschke theorem: 'MonoidAlgebra.Submodule.exists_isCompl'
-    orthogonality of irreducible characters: 'FdRep.char_orthonormal'
+    orthogonality of irreducible characters: 'FDRep.char_orthonormal'
     Fourier transform for finite abelian groups: 'https://en.wikipedia.org/wiki/Fourier_transform_on_finite_groups#Fourier_transform_for_finite_abelian_groups'
     convolution: 'https://en.wikipedia.org/wiki/Fourier_transform_on_finite_groups#Transform_of_a_convolution'
     class function over a group: 'https://en.wikipedia.org/wiki/Class_function'
-    characters of a finite dimensional representation: 'FdRep.character'
+    characters of a finite dimensional representation: 'FDRep.character'
     orthonormal basis of irreducible characters: 'https://en.wikipedia.org/wiki/Character_theory#Orthogonality_relations'
     examples of groups with small cardinality: ''
 
@@ -573,7 +573,7 @@ Probability Theory:
   Convergence of a sequence of random variables:
     convergence in probability: 'MeasureTheory.TendstoInMeasure'
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
-    almost surely convergence: 'MeasureTheory.Measure.ae'
+    almost surely convergence: 'MeasureTheory.ae'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
     Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
     Levy's theorem: ''

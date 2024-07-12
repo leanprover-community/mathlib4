@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Norm.Defs
+import Mathlib.RingTheory.AdjoinRoot
 
 #align_import linear_algebra.free_module.norm from "leanprover-community/mathlib"@"90b0d53ee6ffa910e5c2a977ce7e2fc704647974"
 
@@ -15,7 +16,7 @@ import Mathlib.RingTheory.Norm
 
 open Ideal Polynomial
 
-open scoped BigOperators Polynomial
+open scoped Polynomial
 
 variable {R S ι : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [CommRing S]
   [IsDomain S] [Algebra R S]

@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Tactic.Attr.Register
-import Std.Logic
+import Batteries.Logic
 
 /-!
 # Simp tags for core lemmas
 
 In Lean 4, an attribute declared with `register_simp_attr` cannot be used in the same file. So, we
 declare all `simp` attributes used in `Mathlib` in `Mathlib/Tactic/Attr/Register` and tag lemmas
-from the core library and the `Std` library with these attributes in this file.
+from the core library and the `Batteries` library with these attributes in this file.
 -/
 
 attribute [simp] id_map'

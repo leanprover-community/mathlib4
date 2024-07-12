@@ -217,9 +217,8 @@ variable [ClosedPredicate P]
 
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
-  { isAdj :=
-    { right :=
-        FullSubcategory.lift P (fullSubcategoryInclusion P ⋙ ihom X.1) fun Y => prop_ihom X.2 Y.2
+    { rightAdj := FullSubcategory.lift P (fullSubcategoryInclusion P ⋙ ihom X.1)
+        fun Y => prop_ihom X.2 Y.2
       adj :=
         Adjunction.mkOfUnitCounit
         { unit :=
@@ -229,7 +228,7 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
           left_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def]
-          right_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def] } } }
+          right_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def] } }
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]

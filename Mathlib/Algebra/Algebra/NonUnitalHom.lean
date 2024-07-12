@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.GroupTheory.GroupAction.Prod
 
 #align_import algebra.hom.non_unital_alg from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
@@ -59,17 +60,17 @@ structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S) (A : Type v) (B 
 infixr:25 " →ₙₐ " => NonUnitalAlgHom _
 
 @[inherit_doc]
-notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
+notation:25 A " →ₛₙₐ[" φ "] " B => NonUnitalAlgHom φ A B
 
 @[inherit_doc]
-notation:25 A " →ₛₙₐ[" φ "] " B => NonUnitalAlgHom φ A B
+notation:25 A " →ₙₐ[" R "] " B => NonUnitalAlgHom (MonoidHom.id R) A B
 
 attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are equivariant with respect to `φ`.  -/
-class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} [Monoid R] [Monoid S]
-    (φ : outParam (R →* S)) (A B : outParam (Type*))
+class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
+    (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
@@ -79,7 +80,7 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} [Monoid R] [
 from `A` to `B` which are `R`-linear.
 
   This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
-abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam (Type*))
+abbrev NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
     [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B
@@ -116,7 +117,7 @@ instance (priority := 100) {F : Type*} [FunLike F A B] [Module R B] [NonUnitalAl
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
 
 /-- Turn an element of a type `F` satisfying `NonUnitalAlgSemiHomClass F φ A B` into an actual
-`NonUnitalAlgSemiHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
+`NonUnitalAlgHom`. This is declared as the default coercion from `F` to `A →ₛₙₐ[φ] B`. -/
 @[coe]
 def toNonUnitalAlgSemiHom {F R S : Type*} [Monoid R] [Monoid S] {φ : R →* S} {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
@@ -193,13 +194,11 @@ theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (�
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
-instance : FunLike (A →ₛₙₐ[φ] B) A B
-    where
+instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective' := coe_injective
 
-instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B
-    where
+instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -341,7 +340,7 @@ variable {φ' : S →* R} {ψ : S →* T} {χ : R →* T}
 
 set_option linter.unusedVariables false in
 /-- The composition of morphisms is a morphism. -/
-def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.CompTriple φ ψ χ]:
+def comp (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [κ : MonoidHom.CompTriple φ ψ χ] :
     A →ₛₙₐ[χ] C :=
   { (f : B →ₙ* C).comp (g : A →ₙ* B), (f : B →ₑ+[ψ] C).comp (g : A →ₑ+[φ] B) with }
 #align non_unital_alg_hom.comp NonUnitalAlgHom.comp
@@ -355,7 +354,7 @@ theorem comp_apply (f : B →ₛₙₐ[ψ] C) (g : A →ₛₙₐ[φ] B) [Monoid
     f.comp g x = f (g x) := rfl
 #align non_unital_alg_hom.comp_apply NonUnitalAlgHom.comp_apply
 
-variable {B₁: Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
+variable {B₁ : Type*} [NonUnitalNonAssocSemiring B₁] [DistribMulAction R B₁]
 
 /-- The inverse of a bijective morphism is a morphism. -/
 def inverse (f : A →ₙₐ[R] B₁) (g : B₁ → A)
@@ -425,8 +424,7 @@ variable [DistribMulAction R C]
 
 /-- The prod of two morphisms is a morphism. -/
 @[simps]
-def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C
-    where
+def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
   toFun := Pi.prod f g
   map_zero' := by simp only [Pi.prod, Prod.zero_eq_mk, map_zero]
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
@@ -456,8 +454,7 @@ theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
 @[simps]
-def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B × C)
-    where
+def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv _ := rfl

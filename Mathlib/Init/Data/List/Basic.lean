@@ -5,17 +5,27 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
+
 /-!
-Definitions for `List` not (yet) in `Std`
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
+## Definitions for `List` not (yet) in `Batteries`
 -/
-
-set_option autoImplicit true
-
 
 open Decidable List
 
 universe u v w
+variable {α : Type u}
 
 namespace List
 
@@ -57,11 +67,14 @@ def getLastI [Inhabited α] : List α → α
 #align list.init List.dropLast
 
 /-- List with a single given element. -/
-@[inline, deprecated List.pure] protected def ret {α : Type u} (a : α) : List α := [a] -- 2024-03-24
+@[inline, deprecated List.pure (since := "2024-03-24")]
+protected def ret {α : Type u} (a : α) : List α := [a]
 #align list.ret List.pure
 
 /-- `≤` implies not `>` for lists. -/
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt
+
+@[deprecated (since := "2024-06-07")] alias toArray_data := Array.data_toArray
 
 end List

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.ULift
 import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Tactic.NormNum
 
 #align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 

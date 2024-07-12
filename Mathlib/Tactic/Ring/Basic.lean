@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
-import Mathlib.Data.Rat.Order
 
 /-!
 # `ring` tactic
@@ -1173,3 +1173,9 @@ elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
   AtomM.run (if tk.isSome then .default else .reducible) (proveEq g)
 
 @[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)
+
+end Ring
+
+end Tactic
+
+end Mathlib

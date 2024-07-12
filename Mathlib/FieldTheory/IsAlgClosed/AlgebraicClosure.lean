@@ -33,7 +33,7 @@ universe u v w
 
 noncomputable section
 
-open scoped Classical BigOperators Polynomial
+open scoped Classical Polynomial
 
 open Polynomial
 
@@ -64,7 +64,7 @@ def spanEval : Ideal (MvPolynomial (MonicIrreducible k) k) :=
 splitting field of the product of the polynomials sending each indeterminate `x_f` represented by
 the polynomial `f` in the finset to a root of `f`. -/
 def toSplittingField (s : Finset (MonicIrreducible k)) :
-    MvPolynomial (MonicIrreducible k) k →ₐ[k] SplittingField (∏ x in s, x : k[X]) :=
+    MvPolynomial (MonicIrreducible k) k →ₐ[k] SplittingField (∏ x ∈ s, x : k[X]) :=
   MvPolynomial.aeval fun f =>
     if hf : f ∈ s then
       rootOfSplits _
@@ -87,10 +87,10 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
     Finsupp.mem_span_image_iff_total]
   rintro ⟨v, _, hv⟩
   replace hv := congr_arg (toSplittingField k v.support) hv
-  rw [AlgHom.map_one, Finsupp.total_apply, Finsupp.sum, AlgHom.map_sum, Finset.sum_eq_zero] at hv
+  rw [map_one, Finsupp.total_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
   · exact zero_ne_one hv
   intro j hj
-  rw [smul_eq_mul, AlgHom.map_mul, toSplittingField_evalXSelf (s := v.support) hj,
+  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf (s := v.support) hj,
     mul_zero]
 #align algebraic_closure.span_eval_ne_top AlgebraicClosure.spanEval_ne_top
 
@@ -129,7 +129,6 @@ instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
   (toAdjoinMonic k).toAlgebra
 #align algebraic_closure.adjoin_monic.algebra AlgebraicClosure.AdjoinMonic.algebra
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 -- Porting note: In the statement, the type of `C` had to be made explicit.
 theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk _).comp
     (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl
@@ -142,10 +141,10 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
     | h_C => exact isIntegral_algebraMap
     | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
     | h_X p f ih =>
-      · refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
-        refine ⟨f, f.2.1, ?_⟩
-        erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
-        exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
+      refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
+      refine ⟨f, f.2.1, ?_⟩
+      erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
+      exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
 #align algebraic_closure.adjoin_monic.is_integral AlgebraicClosure.AdjoinMonic.isIntegral
 
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
@@ -354,7 +353,7 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
   rw [monic_map_iff] at hfm
   have := hfm.irreducible_of_irreducible_map (ofStep k n) p hfi
   obtain ⟨x, hx⟩ := toStepSucc.exists_root k hfm this
-  refine' ⟨ofStep k (n + 1) x, _⟩
+  refine ⟨ofStep k (n + 1) x, ?_⟩
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
 #noalign algebraic_closure.exists_root
 
@@ -380,10 +379,11 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
           0 n n.zero_le x }
 #noalign algebraic_closure.of_step_hom
 
-theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
-  IsIntegral.isAlgebraic <|
-    let ⟨n, x, hx⟩ := exists_ofStep k z
-    hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)
+instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) :=
+  ⟨fun z =>
+    IsIntegral.isAlgebraic <|
+      let ⟨n, x, hx⟩ := exists_ofStep k z
+      hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)⟩
 
 @[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
   ⟨AlgebraicClosureAux.instIsAlgClosed k, isAlgebraic k⟩
@@ -451,10 +451,9 @@ instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
 
 instance : IsAlgClosure k (AlgebraicClosure k) := by
   rw [isAlgClosure_iff]
-  refine ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic <|
-    AlgebraicClosureAux.isAlgebraic _⟩
+  exact ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic⟩
 
-theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
+instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   IsAlgClosure.algebraic
 #align algebraic_closure.is_algebraic AlgebraicClosure.isAlgebraic
 

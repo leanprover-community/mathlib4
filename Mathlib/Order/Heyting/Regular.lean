@@ -75,12 +75,12 @@ theorem isRegular_compl (a : α) : IsRegular aᶜ :=
   compl_compl_compl _
 #align heyting.is_regular_compl Heyting.isRegular_compl
 
-protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint aᶜ b ↔ b ≤ a :=
-  by rw [← le_compl_iff_disjoint_left, ha.eq]
+protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) :
+    Disjoint aᶜ b ↔ b ≤ a := by rw [← le_compl_iff_disjoint_left, ha.eq]
 #align heyting.is_regular.disjoint_compl_left_iff Heyting.IsRegular.disjoint_compl_left_iff
 
-protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a bᶜ ↔ a ≤ b :=
-  by rw [← le_compl_iff_disjoint_right, hb.eq]
+protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) :
+    Disjoint a bᶜ ↔ a ≤ b := by rw [← le_compl_iff_disjoint_right, hb.eq]
 #align heyting.is_regular.disjoint_compl_right_iff Heyting.IsRegular.disjoint_compl_right_iff
 
 -- See note [reducible non-instances]
@@ -202,8 +202,7 @@ theorem toRegular_coe (a : Regular α) : toRegular (a : α) = a :=
 #align heyting.regular.to_regular_coe Heyting.Regular.toRegular_coe
 
 /-- The Galois insertion between `Regular.toRegular` and `coe`. -/
-def gi : GaloisInsertion toRegular ((↑) : Regular α → α)
-    where
+def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
     coe_le_coe.symm.trans <|
@@ -237,7 +236,7 @@ instance : BooleanAlgebra (Regular α) :=
         (by
           dsimp
           rw [compl_sup, a.prop.eq]
-          refine' eq_of_forall_le_iff fun c => le_himp_iff.trans _
+          refine eq_of_forall_le_iff fun c => le_himp_iff.trans ?_
           rw [le_compl_iff_disjoint_right, disjoint_left_comm]
           rw [b.prop.disjoint_compl_left_iff]) }
 

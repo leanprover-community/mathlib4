@@ -137,7 +137,10 @@ theorem verschiebung_isPoly : IsPoly p fun R _Rcr => @verschiebung p R hp _Rcr :
 /-- verschiebung is a natural transformation -/
 @[simp]
 theorem map_verschiebung (f : R →+* S) (x : 𝕎 R) :
-    map f (verschiebung x) = verschiebung (map f x) := by ext ⟨-, -⟩; exact f.map_zero; rfl
+    map f (verschiebung x) = verschiebung (map f x) := by
+  ext ⟨-, -⟩
+  · exact f.map_zero
+  · rfl
 #align witt_vector.map_verschiebung WittVector.map_verschiebung
 
 @[ghost_simps]
@@ -187,8 +190,8 @@ theorem bind₁_verschiebungPoly_wittPolynomial (n : ℕ) :
     calc
       _ = ghostComponent (n + 1) (verschiebung <| mk p x) := by
        apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-       simp only [← aeval_verschiebungPoly, coeff_mk]
        funext k
+       simp only [← aeval_verschiebungPoly]
        exact eval₂Hom_congr (RingHom.ext_int _ _) rfl rfl
       _ = _ := by rw [ghostComponent_verschiebung]; rfl
 #align witt_vector.bind₁_verschiebung_poly_witt_polynomial WittVector.bind₁_verschiebungPoly_wittPolynomial

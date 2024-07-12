@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Meta.Tactic.Rewrites
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
-import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # The `rw_search` tactic
@@ -325,3 +326,9 @@ elab_rules : tactic |
   let type? ← if min.rfl? = some true then pure none else do pure <| some (← min.goal.getType)
   addRewriteSuggestion tk (min.history.toList.map (·.2))
     type? (origSpan? := ← getRef)
+
+end RewriteSearch
+
+end Tactic
+
+end Mathlib

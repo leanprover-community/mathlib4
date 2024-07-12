@@ -134,7 +134,7 @@ noncomputable instance [Small.{v} α] (R : Type*) [SMul R α] : SMul R (Shrink.{
   (equivShrink α).symm.smul R
 
 /-- Transfer `Pow` across an `Equiv` -/
-@[to_additive (attr := reducible) existing smul]
+@[reducible, to_additive existing smul]
 protected def pow (N : Type*) [Pow β N] : Pow α N :=
   ⟨fun x n => e.symm (e x ^ n)⟩
 #align equiv.has_pow Equiv.pow
@@ -538,7 +538,7 @@ protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) :
 #align equiv.is_domain Equiv.isDomain
 
 noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
-  Equiv.isDomain  (Shrink.ringEquiv α)
+  Equiv.isDomain (Shrink.ringEquiv α)
 
 /-- Transfer `NNRatCast` across an `Equiv` -/
 protected abbrev nnratCast [NNRatCast β] : NNRatCast α where nnratCast q := e.symm q
@@ -728,7 +728,7 @@ theorem algEquiv_apply (e : α ≃ β) [Semiring β] [Algebra R β] (a : α) : (
 theorem algEquiv_symm_apply (e : α ≃ β) [Semiring β] [Algebra R β] (b : β) : by
     letI := Equiv.semiring e
     letI := Equiv.algebra R e
-    exact (algEquiv R e).symm b = e.symm b := by intros; rfl
+    exact (algEquiv R e).symm b = e.symm b := rfl
 
 variable (α) in
 /-- Shrink `α` to a smaller universe preserves algebra structure. -/

@@ -91,7 +91,7 @@ cohomologie bornée][ghys87:groupes]. -/
 theorem Semiconj.symm_adjoint [PartialOrder α] [Preorder β] {fa : α ≃o α} {fb : β ↪o β} {g : α → β}
     (h : Function.Semiconj g fa fb) {g' : β → α} (hg' : IsOrderRightAdjoint g g') :
     Function.Semiconj g' fb fa := by
-  refine' fun y => (hg' _).unique _
+  refine fun y => (hg' _).unique ?_
   rw [← fa.surjective.image_preimage { x | g x ≤ fb y }, preimage_setOf_eq]
   simp only [h.eq, fb.le_iff_le, fa.leftOrdContinuous (hg' _)]
 #align function.semiconj.symm_adjoint Function.Semiconj.symm_adjoint
@@ -101,7 +101,7 @@ variable {G : Type*}
 theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃o α) {h : α → α}
     (H : ∀ x, IsLUB (range fun g' => (f₁ g')⁻¹ (f₂ g' x)) (h x)) (g : G) :
     Function.Semiconj h (f₂ g) (f₁ g) := by
-  refine' fun y => (H _).unique _
+  refine fun y => (H _).unique ?_
   have := (f₁ g).leftOrdContinuous (H y)
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
   simpa [(· ∘ ·)] using this
@@ -131,3 +131,5 @@ theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f�
 
 -- Guard against import creep
 assert_not_exists Finset
+
+end Function

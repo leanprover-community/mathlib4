@@ -71,6 +71,8 @@ theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
 
 variable {K}
 
+theorem coe_coe (u : (𝓞 K)ˣ) : ((u : 𝓞 K) : K) = (u : K) := rfl
+
 theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
 theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : ((x ^ n : (𝓞 K)ˣ) : K) = (x : K) ^ n := by
@@ -91,6 +93,11 @@ end coe
 
 open NumberField.InfinitePlace
 
+@[simp]
+protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
+    |Algebra.norm ℚ (x : K)| = 1 := by
+  rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
+
 section torsion
 
 /-- The torsion subgroup of the group of units. -/
@@ -108,7 +115,7 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
   refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
-  refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
+  refine Set.Finite.of_finite_image ?_ (coe_injective K).injOn
   refine (Embeddings.finite_of_norm_le K ℂ 1).subset
     (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
   · rw [← h_ua]
@@ -150,3 +157,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
 
 end torsion
+
+end Units
+
+end NumberField

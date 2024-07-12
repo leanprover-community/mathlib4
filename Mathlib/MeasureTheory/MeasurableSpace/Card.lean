@@ -117,7 +117,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
 theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     { t | GenerateMeasurable s t } =
         ⋃ (i : (Quotient.out (aleph 1).ord).α), generateMeasurableRec s i := by
-  ext t; refine' ⟨fun ht => _, fun ht => _⟩
+  ext t; refine ⟨fun ht => ?_, fun ht => ?_⟩
   · inhabit ω₁
     induction' ht with u hu u _ IH f _ IH
     · exact mem_iUnion.2 ⟨default, self_subset_generateMeasurableRec s _ hu⟩
@@ -128,11 +128,11 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     · have : ∀ n, ∃ i, f n ∈ generateMeasurableRec s i := fun n => by simpa using IH n
       choose I hI using this
       have : IsWellOrder (ω₁ : Type u) (· < ·) := isWellOrder_out_lt _
-      refine' mem_iUnion.2
-        ⟨Ordinal.enum (· < ·) (Ordinal.lsub fun n => Ordinal.typein.{u} (· < ·) (I n)) _,
-          iUnion_mem_generateMeasurableRec fun n => ⟨I n, _, hI n⟩⟩
+      refine mem_iUnion.2
+        ⟨Ordinal.enum (· < ·) (Ordinal.lsub fun n => Ordinal.typein.{u} (· < ·) (I n)) ?_,
+          iUnion_mem_generateMeasurableRec fun n => ⟨I n, ?_, hI n⟩⟩
       · rw [Ordinal.type_lt]
-        refine' Ordinal.lsub_lt_ord_lift _ fun i => Ordinal.typein_lt_self _
+        refine Ordinal.lsub_lt_ord_lift ?_ fun i => Ordinal.typein_lt_self _
         rw [mk_denumerable, lift_aleph0, isRegular_aleph_one.cof_eq]
         exact aleph0_lt_aleph_one
       · rw [← Ordinal.typein_lt_typein (· < ·), Ordinal.typein_enum]

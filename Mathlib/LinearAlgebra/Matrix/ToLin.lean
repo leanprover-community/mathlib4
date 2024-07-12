@@ -66,7 +66,6 @@ linear_map, matrix, linear_equiv, diagonal, det, trace
 noncomputable section
 
 open LinearMap Matrix Set Submodule
-open scoped BigOperators
 
 section ToMatrixRight
 
@@ -904,16 +903,16 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [AlgHom.map_zero, LinearEquiv.map_zero]
+    rw [_root_.map_zero, LinearEquiv.map_zero]
   map_one' := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [AlgHom.map_one, LinearMap.toMatrix_one]
+    rw [_root_.map_one, LinearMap.toMatrix_one]
   map_add' x y := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [AlgHom.map_add, LinearEquiv.map_add]
+    rw [map_add, LinearEquiv.map_add]
   map_mul' x y := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [AlgHom.map_mul, LinearMap.toMatrix_mul]
+    rw [_root_.map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
     dsimp only  -- porting node: needed due to new-style structures
     ext
@@ -1049,6 +1048,7 @@ lemma linearMap_apply (ij : ι₂ × ι₁) :
 
 lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
     (b₁.linearMap b₂ ij) (b₁ k) = if ij.2 = k then b₂ ij.1 else 0 := by
+  have := Classical.decEq ι₂
   rcases ij with ⟨i, j⟩
   rw [linearMap_apply, Matrix.stdBasis_eq_stdBasisMatrix, Matrix.toLin_self]
   dsimp only [Matrix.stdBasisMatrix]

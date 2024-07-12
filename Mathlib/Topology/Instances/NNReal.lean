@@ -3,9 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.MetricSpace.Isometry
 
 #align_import topology.instances.nnreal from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
@@ -22,6 +24,7 @@ Instances for the following typeclasses are defined:
 * `TopologicalSemiring ℝ≥0`
 * `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
+* `ProperSpace ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
 * `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
@@ -52,11 +55,9 @@ noncomputable section
 
 open Set TopologicalSpace Metric Filter
 
-open Topology
+open scoped Topology
 
 namespace NNReal
-
-open NNReal BigOperators Filter
 
 instance : TopologicalSpace ℝ≥0 := inferInstance
 
@@ -121,6 +122,7 @@ theorem tendsto_coe' {f : Filter α} [NeBot f] {m : α → ℝ≥0} {x : ℝ} :
 @[simp] theorem map_coe_atTop : map toReal atTop = atTop := map_val_Ici_atTop 0
 #align nnreal.map_coe_at_top NNReal.map_coe_atTop
 
+@[simp]
 theorem comap_coe_atTop : comap toReal atTop = atTop := (atTop_Ici_eq 0).symm
 #align nnreal.comap_coe_at_top NNReal.comap_coe_atTop
 
@@ -135,10 +137,28 @@ theorem _root_.tendsto_real_toNNReal {f : Filter α} {m : α → ℝ} {x : ℝ} 
   (continuous_real_toNNReal.tendsto _).comp h
 #align tendsto_real_to_nnreal tendsto_real_toNNReal
 
-theorem _root_.tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop := by
-  rw [← tendsto_coe_atTop]
-  exact tendsto_atTop_mono Real.le_coe_toNNReal tendsto_id
+@[simp]
+theorem _root_.Real.map_toNNReal_atTop : map Real.toNNReal atTop = atTop := by
+  rw [← map_coe_atTop, Function.LeftInverse.filter_map @Real.toNNReal_coe]
+
+theorem _root_.tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :=
+  Real.map_toNNReal_atTop.le
 #align tendsto_real_to_nnreal_at_top tendsto_real_toNNReal_atTop
+
+@[simp]
+theorem _root_.Real.comap_toNNReal_atTop : comap Real.toNNReal atTop = atTop := by
+  refine le_antisymm ?_ tendsto_real_toNNReal_atTop.le_comap
+  refine (atTop_basis_Ioi' 0).ge_iff.2 fun a ha ↦ ?_
+  filter_upwards [preimage_mem_comap (Ioi_mem_atTop a.toNNReal)] with x hx
+  exact (Real.toNNReal_lt_toNNReal_iff_of_nonneg ha.le).1 hx
+
+@[simp]
+theorem _root_.Real.tendsto_toNNReal_atTop_iff {l : Filter α} {f : α → ℝ} :
+    Tendsto (fun x ↦ (f x).toNNReal) l atTop ↔ Tendsto f l atTop := by
+  rw [← Real.comap_toNNReal_atTop, tendsto_comap_iff, Function.comp_def]
+
+theorem _root_.Real.tendsto_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :=
+  Real.tendsto_toNNReal_atTop_iff.2 tendsto_id
 
 theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]; rfl
@@ -223,12 +243,12 @@ nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
 #align nnreal.summable_nat_add_iff NNReal.summable_nat_add_iff
 
 nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
-    HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i in range k, f i) := by
+    HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by
   rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
-    ∑' i, f i = (∑ i in range k, f i) + ∑' i, f (i + k) :=
+    ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
   (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
@@ -265,5 +285,39 @@ def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 #align nnreal.pow_order_iso NNReal.powOrderIso
+
+section Monotone
+
+/-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
+theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
+    (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
+  obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
+  exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
+
+/-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
+theorem _root_.Real.tendsto_of_bddBelow_antitone {f : ℕ → ℝ} (h_bdd : BddBelow (Set.range f))
+    (h_ant : Antitone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
+  obtain ⟨B, hB⟩ := Real.exists_isGLB (Set.range_nonempty f) h_bdd
+  exact ⟨B, tendsto_atTop_isGLB h_ant hB⟩
+
+/-- An antitone sequence `f : ℕ → ℝ≥0` has a finite limit. -/
+theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
+    ∃ r : ℝ≥0, Tendsto f atTop (𝓝 r) := by
+  have h_bdd_0 : (0 : ℝ) ∈ lowerBounds (Set.range fun n : ℕ => (f n : ℝ)) := by
+    rintro r ⟨n, hn⟩
+    simp_rw [← hn]
+    exact NNReal.coe_nonneg _
+  obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
+  have hL0 : 0 ≤ L :=
+    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
+    (le_isGLB_iff h_glb).mpr h_bdd_0
+  exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
+
+end Monotone
+
+instance instProperSpace : ProperSpace ℝ≥0 where
+  isCompact_closedBall x r := by
+    have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
+    exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 end NNReal

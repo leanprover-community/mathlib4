@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 -/
-import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Prod
@@ -110,7 +110,9 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
 theorem card_sym_eq_multichoose (α : Type*) (k : ℕ) [Fintype α] [Fintype (Sym α k)] :
     card (Sym α k) = multichoose (card α) k := by
   rw [← card_sym_fin_eq_multichoose]
-  exact card_congr (equivCongr (equivFin α))
+  -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
+  -- deprecated?
+  exact Fintype.card_congr (equivCongr (equivFin α))
 #align sym.card_sym_eq_multichoose Sym.card_sym_eq_multichoose
 
 /-- The *stars and bars* lemma: the cardinality of `Sym α k` is equal to
@@ -146,7 +148,7 @@ theorem two_mul_card_image_offDiag (s : Finset α) :
   obtain ⟨a, ⟨ha₁, ha₂, ha⟩, h⟩ := hxy
   replace h := Sym2.eq.1 h
   obtain ⟨hx, hy, hxy⟩ : x ∈ s ∧ y ∈ s ∧ x ≠ y := by
-    cases h <;> refine' ⟨‹_›, ‹_›, _⟩ <;> [exact ha; exact ha.symm]
+    cases h <;> refine ⟨‹_›, ‹_›, ?_⟩ <;> [exact ha; exact ha.symm]
   have hxy' : y ≠ x := hxy.symm
   have : (s.offDiag.filter fun z => Sym2.mk z = s(x, y)) = ({(x, y), (y, x)} : Finset _) := by
     ext ⟨x₁, y₁⟩
@@ -164,8 +166,8 @@ This is because every element `s(x, y)` of `Sym2 α` not on the diagonal comes f
 pairs: `(x, y)` and `(y, x)`. -/
 theorem card_image_offDiag (s : Finset α) :
     (s.offDiag.image Sym2.mk).card = s.card.choose 2 := by
-  rw [Nat.choose_two_right, mul_tsub, mul_one, ← offDiag_card,
-    Nat.div_eq_of_eq_mul_right zero_lt_two (two_mul_card_image_offDiag s).symm]
+  rw [Nat.choose_two_right, Nat.mul_sub_left_distrib, mul_one, ← offDiag_card,
+    Nat.div_eq_of_eq_mul_right Nat.zero_lt_two (two_mul_card_image_offDiag s).symm]
 #align sym2.card_image_off_diag Sym2.card_image_offDiag
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by

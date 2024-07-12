@@ -65,7 +65,7 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
     apply (hμ.powerBasis K).algHom_ext
     exact this
   rw [ZMod.eq_iff_modEq_nat] at hfg
-  refine' (hf.trans _).trans hg.symm
+  refine (hf.trans ?_).trans hg.symm
   rw [← rootsOfUnity.coe_pow _ hf'.choose, ← rootsOfUnity.coe_pow _ hg'.choose]
   congr 2
   rw [pow_eq_pow_iff_modEq]

@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 
@@ -79,8 +79,6 @@ universe u v w
 variable {S T : Type*}
 variable {R : Type*} {M N : Type*}
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 section Polar
@@ -138,8 +136,8 @@ end Polar
 /-- A quadratic form over a module.
 
 For a more familiar constructor when `R` is a ring, see `QuadraticForm.ofPolar`. -/
-structure QuadraticForm (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    where
+structure QuadraticForm (R : Type u) (M : Type v)
+    [CommSemiring R] [AddCommMonoid M] [Module R M] where
   toFun : M → R
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = a * a * toFun x
   exists_companion' :
@@ -234,13 +232,13 @@ theorem map_add_self (x : M) : Q (x + x) = 4 * Q x := by
   norm_num
 #align quadratic_form.map_add_self QuadraticForm.map_add_self
 
--- Porting note: removed @[simp] because it is superseded by `ZeroHomClass.map_zero`
-theorem map_zero : Q 0 = 0 := by
+-- not @[simp] because it is superseded by `ZeroHomClass.map_zero`
+protected theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_mul]
 #align quadratic_form.map_zero QuadraticForm.map_zero
 
 instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R where
-  map_zero := map_zero
+  map_zero := QuadraticForm.map_zero
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] (a : S)
@@ -464,13 +462,13 @@ section Sum
 
 @[simp]
 theorem coeFn_sum {ι : Type*} (Q : ι → QuadraticForm R M) (s : Finset ι) :
-    ⇑(∑ i in s, Q i) = ∑ i in s, ⇑(Q i) :=
+    ⇑(∑ i ∈ s, Q i) = ∑ i ∈ s, ⇑(Q i) :=
   map_sum coeFnAddMonoidHom Q s
 #align quadratic_form.coe_fn_sum QuadraticForm.coeFn_sum
 
 @[simp]
 theorem sum_apply {ι : Type*} (Q : ι → QuadraticForm R M) (s : Finset ι) (x : M) :
-    (∑ i in s, Q i) x = ∑ i in s, Q i x :=
+    (∑ i ∈ s, Q i) x = ∑ i ∈ s, Q i x :=
   map_sum (evalAddMonoidHom x : _ →+ R) Q s
 #align quadratic_form.sum_apply QuadraticForm.sum_apply
 
@@ -733,7 +731,7 @@ theorem toQuadraticForm_multiset_sum (B : Multiset (BilinForm R M)) :
 
 @[simp]
 theorem toQuadraticForm_sum {ι : Type*} (s : Finset ι) (B : ι → BilinForm R M) :
-    (∑ i in s, B i).toQuadraticForm = ∑ i in s, (B i).toQuadraticForm :=
+    (∑ i ∈ s, B i).toQuadraticForm = ∑ i ∈ s, (B i).toQuadraticForm :=
   map_sum (toQuadraticFormAddMonoidHom R M) B s
 #align bilin_form.to_quadratic_form_sum LinearMap.BilinForm.toQuadraticForm_sum
 
@@ -972,7 +970,7 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
 theorem _root_.LinearMap.BilinForm.toQuadraticForm_isOrtho [IsCancelAdd R]
-    [NoZeroDivisors R] [CharZero R] {B : BilinForm R M} {x y : M} (h : B.IsSymm):
+    [NoZeroDivisors R] [CharZero R] {B : BilinForm R M} {x y : M} (h : B.IsSymm) :
     B.toQuadraticForm.IsOrtho x y ↔ B.IsOrtho x y := by
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, toQuadraticForm_apply, map_add,
@@ -1240,20 +1238,20 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : BilinForm K V} (h
         exact (smul_eq_zero.1 this).resolve_right fun h => hx <| h.symm ▸ map_zero _)
       (by
         intro y
-        refine' ⟨-B x y / B x x, fun z hz => _⟩
+        refine ⟨-B x y / B x x, fun z hz => ?_⟩
         obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hz
         rw [IsOrtho, map_smul, smul_apply, map_add, map_smul, smul_eq_mul, smul_eq_mul,
           div_mul_cancel₀ _ hx, add_neg_self, mul_zero])
-  refine' ⟨b, _⟩
-  · rw [Basis.coe_mkFinCons]
-    intro j i
-    refine' Fin.cases _ (fun i => _) i <;> refine' Fin.cases _ (fun j => _) j <;> intro hij <;>
-      simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
-    · exact (hij rfl).elim
-    · rw [IsOrtho, ← hB₂]
-      exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
-    · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
-    · exact hv₁ (ne_of_apply_ne _ hij)
+  refine ⟨b, ?_⟩
+  rw [Basis.coe_mkFinCons]
+  intro j i
+  refine Fin.cases ?_ (fun i => ?_) i <;> refine Fin.cases ?_ (fun j => ?_) j <;> intro hij <;>
+    simp only [Function.onFun, Fin.cons_zero, Fin.cons_succ, Function.comp_apply]
+  · exact (hij rfl).elim
+  · rw [IsOrtho, ← hB₂]
+    exact (v' j).prop _ (Submodule.mem_span_singleton_self x)
+  · exact (v' i).prop _ (Submodule.mem_span_singleton_self x)
+  · exact hv₁ (ne_of_apply_ne _ hij)
 #align bilin_form.exists_orthogonal_basis LinearMap.BilinForm.exists_orthogonal_basis
 
 end BilinForm
@@ -1311,7 +1309,7 @@ theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M
     Q.basisRepr v = weightedSumSquares _ fun i => Q (v i) := by
   ext w
   rw [basisRepr_apply, ← @associated_eq_self_apply R, map_sum, weightedSumSquares_apply]
-  refine' sum_congr rfl fun j hj => _
+  refine sum_congr rfl fun j hj => ?_
   rw [← @associated_eq_self_apply R, LinearMap.map_sum₂, sum_eq_single_of_mem j hj]
   · rw [LinearMap.map_smul, LinearMap.map_smul₂, smul_eq_mul, associated_apply, smul_eq_mul,
       smul_eq_mul]

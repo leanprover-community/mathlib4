@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 #align_import topology.category.CompHaus.projective from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
@@ -37,8 +38,7 @@ namespace CompHaus
 
 attribute [local instance] ConcreteCategory.instFunLike
 
-instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
-    where
+instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
     obtain ⟨g', hg'⟩ := hg.hasRightInverse

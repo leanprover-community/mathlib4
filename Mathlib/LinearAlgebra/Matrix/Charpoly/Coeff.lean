@@ -37,7 +37,7 @@ noncomputable section
 
 universe u v w z
 
-open BigOperators Finset Matrix Polynomial
+open Finset Matrix Polynomial
 
 variable {R : Type u} [CommRing R]
 variable {n G : Type v} [DecidableEq n] [Fintype n]
@@ -105,12 +105,12 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   -- Porting note: added `↑` in front of `Fintype.card n`
   have h1 : (∏ i : n, (X - C (M i i))).degree = ↑(Fintype.card n) := by
     rw [degree_eq_iff_natDegree_eq_of_pos (Nat.pos_of_ne_zero h), natDegree_prod']
-    simp_rw [natDegree_X_sub_C]
-    rw [← Finset.card_univ, sum_const, smul_eq_mul, mul_one]
+    · simp_rw [natDegree_X_sub_C]
+      rw [← Finset.card_univ, sum_const, smul_eq_mul, mul_one]
     simp_rw [(monic_X_sub_C _).leadingCoeff]
     simp
   rw [degree_add_eq_right_of_degree_lt]
-  exact h1
+  · exact h1
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
@@ -265,11 +265,10 @@ theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Field K] (M : Matrix 
   rw [coeff_sub, coeff_C, matPolyEquiv_coeff_apply, RingHom.mapMatrix_apply, Matrix.map_apply,
     AlgHom.coe_toRingHom, DMatrix.sub_apply, coeff_X_pow]
   by_cases hij : i = j
-  · rw [hij, charmatrix_apply_eq, AlgHom.map_sub, expand_C, expand_X, coeff_sub, coeff_X_pow,
-      coeff_C]
+  · rw [hij, charmatrix_apply_eq, map_sub, expand_C, expand_X, coeff_sub, coeff_X_pow, coeff_C]
                              -- Porting note: the second `Matrix.` was `DMatrix.`
     split_ifs with mp m0 <;> simp only [Matrix.one_apply_eq, Matrix.zero_apply]
-  · rw [charmatrix_apply_ne _ _ _ hij, AlgHom.map_neg, expand_C, coeff_neg, coeff_C]
+  · rw [charmatrix_apply_ne _ _ _ hij, map_neg, expand_C, coeff_neg, coeff_C]
     split_ifs with m0 mp <;>
       -- Porting note: again, the first `Matrix.` that was `DMatrix.`
       simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne,
@@ -343,8 +342,8 @@ lemma reverse_charpoly (M : Matrix n n R) :
   suffices t_inv ^ Fintype.card n * p = invert q by
     apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
-      invert.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
-      ← mul_one (Fintype.card n : ℤ), ← T_pow, invert.map_pow, invert_T, mul_comm]
+      _root_.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
+      ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
   simp [t, map_smul', smul_eq_diagonal_mul]
@@ -353,7 +352,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
     eval 0 M.charpolyRev = 1 := by
   rw [charpolyRev, ← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
   have : (1 - (X : R[X]) • M.map C).map (eval 0) = 1 := by
-    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij]
+    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij, one_apply]
   congr
 
 @[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :

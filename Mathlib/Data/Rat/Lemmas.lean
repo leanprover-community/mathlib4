@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Int.Div
+import Mathlib.Algebra.Ring.Rat
 import Mathlib.Data.PNat.Defs
-import Mathlib.Data.Rat.Defs
 
 #align_import data.rat.lemmas from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
@@ -34,7 +32,7 @@ theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
   by_cases b0 : b = 0; · simp [b0]
   cases' e : a /. b with n d h c
   rw [mk'_eq_divInt, divInt_eq_iff b0 (ne_of_gt (Int.natCast_pos.2 (Nat.pos_of_ne_zero h)))] at e
-  refine' Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <| c.symm.dvd_of_dvd_mul_left _
+  refine Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <| c.symm.dvd_of_dvd_mul_left ?_
   rw [← Int.natAbs_mul, ← Int.natCast_dvd_natCast, Int.dvd_natAbs, ← e]; simp
 #align rat.denom_dvd Rat.den_dvd
 
@@ -43,15 +41,15 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
   obtain rfl | hn := eq_or_ne n 0
   · simp [qdf]
   have : q.num * d = n * ↑q.den := by
-    refine' (divInt_eq_iff _ hd).mp _
+    refine (divInt_eq_iff ?_ hd).mp ?_
     · exact Int.natCast_ne_zero.mpr (Rat.den_nz _)
     · rwa [num_divInt_den]
   have hqdn : q.num ∣ n := by
     rw [qdf]
     exact Rat.num_dvd _ hd
-  refine' ⟨n / q.num, _, _⟩
+  refine ⟨n / q.num, ?_, ?_⟩
   · rw [Int.ediv_mul_cancel hqdn]
-  · refine' Int.eq_mul_div_of_mul_eq_mul_of_dvd_left _ hqdn this
+  · refine Int.eq_mul_div_of_mul_eq_mul_of_dvd_left ?_ hqdn this
     rw [qdf]
     exact Rat.num_ne_zero.2 ((divInt_ne_zero hd).mpr hn)
 #align rat.num_denom_mk Rat.num_den_mk
@@ -119,6 +117,30 @@ theorem add_num_den (q r : ℚ) :
   rw [mul_comm r.num q.den]
 #align rat.add_num_denom Rat.add_num_den
 
+
+theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.den := by
+  constructor
+  · rintro ⟨qr, rfl⟩
+    rw [Rat.mul_self_num, mul_self_den]
+    simp only [isSquare_mul_self, and_self]
+  · rintro ⟨⟨nr, hnr⟩, ⟨dr, hdr⟩⟩
+    refine ⟨nr / dr, ?_⟩
+    rw [div_mul_div_comm, ← Int.cast_mul, ← Nat.cast_mul, ← hnr, ← hdr, num_div_den]
+
+@[norm_cast, simp]
+theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℚ) ↔ IsSquare n := by
+  simp_rw [isSquare_iff, num_natCast, den_natCast, isSquare_one, and_true, Int.isSquare_natCast_iff]
+
+@[norm_cast, simp]
+theorem isSquare_intCast_iff {z : ℤ} : IsSquare (z : ℚ) ↔ IsSquare z := by
+  simp_rw [isSquare_iff, intCast_num, intCast_den, isSquare_one, and_true]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem isSquare_ofNat_iff {n : ℕ} :
+    IsSquare (no_index (OfNat.ofNat n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
+  isSquare_natCast_iff
+
 section Casts
 
 theorem exists_eq_mul_div_num_and_eq_mul_div_den (n : ℤ) {d : ℤ} (d_ne_zero : d ≠ 0) :
@@ -130,14 +152,12 @@ theorem exists_eq_mul_div_num_and_eq_mul_div_den (n : ℤ) {d : ℤ} (d_ne_zero 
 theorem mul_num_den' (q r : ℚ) :
     (q * r).num * q.den * r.den = q.num * r.num * (q * r).den := by
   let s := q.num * r.num /. (q.den * r.den : ℤ)
-  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
+  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (Nat.mul_pos q.pos r.pos)
   obtain ⟨c, ⟨c_mul_num, c_mul_den⟩⟩ :=
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.num) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat rw [Int.mul_assoc]
-  apply mul_eq_mul_left_iff.2
-  rw [or_iff_not_imp_right]
+  rw [Int.mul_assoc, Int.mul_assoc, mul_eq_mul_left_iff, or_iff_not_imp_right]
   intro
   have h : _ = s := divInt_mul_divInt q.num r.num (mod_cast q.den_ne_zero) (mod_cast r.den_ne_zero)
   rw [num_divInt_den, num_divInt_den] at h
@@ -147,7 +167,7 @@ theorem mul_num_den' (q r : ℚ) :
 theorem add_num_den' (q r : ℚ) :
     (q + r).num * q.den * r.den = (q.num * r.den + r.num * q.den) * (q + r).den := by
   let s := divInt (q.num * r.den + r.num * q.den) (q.den * r.den : ℤ)
-  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
+  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (Nat.mul_pos q.pos r.pos)
   obtain ⟨c, ⟨c_mul_num, c_mul_den⟩⟩ :=
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.den + r.num * q.den) hs
   rw [c_mul_num, mul_assoc, mul_comm]
@@ -176,28 +196,6 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
   rw [← num_divInt_den q]
   simp only [Rat.neg_divInt, Rat.inv_divInt', eq_self_iff_true, Rat.divInt_neg]
 #align rat.inv_neg Rat.inv_neg
-
-@[simp]
-theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
-  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
-    conv => pattern (occs := 1) q; (rw [← num_divInt_den q])
-    simp only [intCast_eq_divInt, natCast_eq_divInt, num_divInt_den] at this ⊢; assumption
-  have : (q.den : ℤ) ≠ 0 := ne_of_gt (mod_cast q.pos)
-  rw [Rat.divInt_mul_divInt _ _ this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
-#align rat.mul_denom_eq_num Rat.mul_den_eq_num
-
-theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
-  replace hn : (n : ℚ) ≠ 0 := by rwa [Ne, ← Int.cast_zero, coe_int_inj]
-  constructor
-  · intro h
-    -- Porting note: was `lift (m : ℚ) / n to ℤ using h with k hk`
-    use ((m : ℚ) / n).num
-    have hk := Rat.coe_int_num_of_den_eq_one h
-    simp_rw [eq_div_iff_mul_eq hn, ← Int.cast_mul] at hk
-    rwa [mul_comm, eq_comm, coe_int_inj] at hk
-  · rintro ⟨d, rfl⟩
-    rw [Int.cast_mul, mul_comm, mul_div_cancel_right₀ _ hn, Rat.den_intCast]
-#align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
@@ -240,11 +238,22 @@ theorem intCast_div (a b : ℤ) (h : b ∣ a) : ((a / b : ℤ) : ℚ) = a / b :=
     intCast_div_self, Int.cast_mul, mul_div_assoc]
 #align rat.coe_int_div Rat.intCast_div
 
-theorem natCast_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b := by
-  rcases h with ⟨c, rfl⟩
-  simp only [mul_comm b, Nat.mul_div_assoc c (dvd_refl b), Nat.cast_mul, mul_div_assoc,
-    natCast_div_self]
+theorem natCast_div (a b : ℕ) (h : b ∣ a) : ((a / b : ℕ) : ℚ) = a / b :=
+  intCast_div a b (Int.ofNat_dvd.mpr h)
 #align rat.coe_nat_div Rat.natCast_div
+
+theorem den_div_intCast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
+  replace hn : (n : ℚ) ≠ 0 := num_ne_zero.mp hn
+  constructor
+  · rw [Rat.den_eq_one_iff, eq_div_iff hn]
+    exact mod_cast (Dvd.intro_left _)
+  · exact (intCast_div _ _ · ▸ rfl)
+#align rat.denom_div_cast_eq_one_iff Rat.den_div_intCast_eq_one_iff
+
+theorem den_div_natCast_eq_one_iff (m n : ℕ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m :=
+  (den_div_intCast_eq_one_iff m n (Int.ofNat_ne_zero.mpr hn)).trans Int.ofNat_dvd
+
+@[deprecated (since := "2024-05-11")] alias den_div_cast_eq_one_iff := den_div_intCast_eq_one_iff
 
 theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
   rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt', divInt_eq_div, Nat.cast_one]
@@ -266,7 +275,7 @@ theorem inv_intCast_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : �
 
 theorem inv_natCast_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
   rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_intCast_den_of_pos]
-  rwa [Nat.cast_pos]
+  rwa [Int.natCast_pos]
 #align rat.inv_coe_nat_denom_of_pos Rat.inv_natCast_den_of_pos
 
 @[simp]
@@ -286,7 +295,7 @@ theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
 
 @[simp]
 theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
-  inv_natCast_num_of_pos (NeZero.pos a)
+  inv_natCast_num_of_pos (Nat.pos_of_neZero a)
 
 @[simp]
 theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
@@ -295,10 +304,12 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
   · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
     simp at lt
     rw [if_neg (by omega)]
-    simp [Rat.inv_neg, inv_intCast_den_of_pos lt, abs_of_pos lt]
+    simp only [Int.cast_neg, Rat.inv_neg, neg_den, inv_intCast_den_of_pos lt, Int.natAbs_neg]
+    exact Int.eq_natAbs_of_zero_le (by omega)
   · rfl
   · rw [if_neg (by omega)]
-    simp [inv_intCast_den_of_pos gt, abs_of_pos gt]
+    simp only [inv_intCast_den_of_pos gt]
+    exact Int.eq_natAbs_of_zero_le (by omega)
 #align rat.inv_coe_int_denom Rat.inv_intCast_den
 
 @[simp]
@@ -306,24 +317,23 @@ theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
   simpa [-inv_intCast_den, ofInt_eq_cast] using inv_intCast_den a
 #align rat.inv_coe_nat_denom Rat.inv_natCast_den
 
--- 2024-04-05
-@[deprecated] alias coe_int_div_self := intCast_div_self
-@[deprecated] alias coe_nat_div_self := natCast_div_self
-@[deprecated] alias coe_int_div := intCast_div
-@[deprecated] alias coe_nat_div := natCast_div
-@[deprecated] alias inv_coe_int_num_of_pos := inv_intCast_num_of_pos
-@[deprecated] alias inv_coe_nat_num_of_pos := inv_natCast_num_of_pos
-@[deprecated] alias inv_coe_int_den_of_pos := inv_intCast_den_of_pos
-@[deprecated] alias inv_coe_nat_den_of_pos := inv_natCast_den_of_pos
-@[deprecated] alias inv_coe_int_num := inv_intCast_num
-@[deprecated] alias inv_coe_nat_num := inv_natCast_num
-@[deprecated] alias inv_coe_int_den := inv_intCast_den
-@[deprecated] alias inv_coe_nat_den := inv_natCast_den
+@[deprecated (since := "2024-04-05")] alias coe_int_div_self := intCast_div_self
+@[deprecated (since := "2024-04-05")] alias coe_nat_div_self := natCast_div_self
+@[deprecated (since := "2024-04-05")] alias coe_int_div := intCast_div
+@[deprecated (since := "2024-04-05")] alias coe_nat_div := natCast_div
+@[deprecated (since := "2024-04-05")] alias inv_coe_int_num_of_pos := inv_intCast_num_of_pos
+@[deprecated (since := "2024-04-05")] alias inv_coe_nat_num_of_pos := inv_natCast_num_of_pos
+@[deprecated (since := "2024-04-05")] alias inv_coe_int_den_of_pos := inv_intCast_den_of_pos
+@[deprecated (since := "2024-04-05")] alias inv_coe_nat_den_of_pos := inv_natCast_den_of_pos
+@[deprecated (since := "2024-04-05")] alias inv_coe_int_num := inv_intCast_num
+@[deprecated (since := "2024-04-05")] alias inv_coe_nat_num := inv_natCast_num
+@[deprecated (since := "2024-04-05")] alias inv_coe_int_den := inv_intCast_den
+@[deprecated (since := "2024-04-05")] alias inv_coe_nat_den := inv_natCast_den
 
 @[simp]
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
     (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
-  inv_natCast_den_of_pos (NeZero.pos a)
+  inv_natCast_den_of_pos (Nat.pos_of_neZero a)
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
   ⟨fun h _ _ => h _,
