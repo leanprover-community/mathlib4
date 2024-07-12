@@ -582,7 +582,7 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
     intro a w hw
     rw [indexing_nonsense0 T (i := i) (γ := a)] at hw
     simp only [ne_eq, Submodule.mem_inf] at hw
-    have A : ∀ (a : n → 𝕜), ⨅ j, eigenspace (T j) (a j) ≤ K := by
+    have : ∀ (a : n → 𝕜), ⨅ j, eigenspace (T j) (a j) ≤ K := by
       intro f
       rw [indexing_nonsense0 T i]
       apply H
