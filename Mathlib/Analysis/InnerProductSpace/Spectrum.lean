@@ -563,6 +563,24 @@ theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
 theorem indexing_nonsense0 (i : n) [Nontrivial n] (γ : n → 𝕜) :
      ⨅ (j : n), eigenspace (T j) (γ j) = (eigenspace (T i) (γ i)) ⊓
      ⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j) := by
+  ext v
+  constructor
+  · intro h
+    constructor
+    · simp [iInf, sInf] at h
+      exact h i
+    · simp [iInf, sInf] at *
+      exact fun i_1 _ ↦ h i_1
+  · intro h
+    simp [iInf, sInf]
+    intro k
+    by_cases H : k = i
+    · rw [H]
+      exact h.1
+    · have F := h.2
+      simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall] at F
+      exact F k fun a ↦ H (_root_.id (Eq.symm a))
+
 
 theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
     = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
