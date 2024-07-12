@@ -41,7 +41,11 @@ def lint_style : Cmd := `[Cli|
   FLAGS:
     github;     "Print errors in a format suitable for github problem matchers\n\
                  otherwise, produce human-readable output"
-    update;     "Print errors solely for the style exceptions file"
+    update;     "Also update the style exceptions file.\
+      This adds entries for any new exceptions, removes any entries which are no longer necessary,\
+      and tries to not modify exception entries unless necessary.
+      To fully regenerate the list of style exceptions, delete `style-exceptions.txt`
+      and run this script again with this flag."
 ]
 
 /-- The entry point to the `lake exe lint_style` command. -/
