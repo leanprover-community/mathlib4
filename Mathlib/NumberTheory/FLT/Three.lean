@@ -669,7 +669,7 @@ private lemma u₄_sq : S.u₄ ^ 2 = 1 := by
 /-- Given `S : Solution`, we have that
 `S.Y ^ 3 + (S.u₄ * S.Z) ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3`. -/
 private lemma formula3 :
-    S.Y ^ 3 + (S.u₄ * S.Z) ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
+    S.Y ^ 3 + (S.u₄ * S.Z) ^ 3 = S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 :=
   calc S.Y^3+(S.u₄*S.Z)^3=S.Y^3+S.u₄^2*S.u₄*S.Z^3 := by ring
   _ = S.Y^3+S.u₄*S.Z^3 := by simp [← Units.val_pow_eq_pow_val, S.u₄_sq]
   _ = S.u₅*(λ^(S.multiplicity-1)*S.X)^3 := S.formula2
