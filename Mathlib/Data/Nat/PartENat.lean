@@ -227,18 +227,11 @@ nonrec theorem get_eq_iff_eq_some {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get 
   get_eq_iff_eq_some
 #align part_enat.get_eq_iff_eq_some PartENat.get_eq_iff_eq_some
 
+@[simp]
 theorem get_eq_iff_eq_coe {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b ↔ a = b := by
   rw [get_eq_iff_eq_some]
   rfl
 #align part_enat.get_eq_iff_eq_coe PartENat.get_eq_iff_eq_coe
-
-@[simp]
-lemma get_eq_zero_iff_eq_zero {a : PartENat} {ha : a.Dom} :
-    a.get ha = 0 ↔ a = 0 := get_eq_iff_eq_coe
-
-@[simp]
-lemma get_eq_one_iff_eq_one {a : PartENat} {ha : a.Dom} :
-    a.get ha = 1 ↔ a = 1 := get_eq_iff_eq_coe
 
 theorem dom_of_le_of_dom {x y : PartENat} : x ≤ y → y.Dom → x.Dom := fun ⟨h, _⟩ => h
 #align part_enat.dom_of_le_of_dom PartENat.dom_of_le_of_dom
@@ -915,7 +908,7 @@ noncomputable instance : CompleteLinearOrder PartENat :=
     linearOrder, LinearOrder.toBiheytingAlgebra with }
 
 /--
-The additive homorophism from PartENat to WithTop ℤ. This is needed for the definition of
+The additive homomorophism from PartENat to WithTop ℤ. This is needed for the definition of
 p-adic valuations in fraction rings over UFDs.
 -/
 noncomputable def toWithTopInt : PartENat →+ WithTop ℤ :=
