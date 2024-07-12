@@ -406,7 +406,6 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 #align list.replicate_zero List.replicate_zero
 
-attribute [simp] replicate_succ
 #align list.replicate_succ List.replicate_succ
 
 #align list.replicate_one List.replicate_one
@@ -417,7 +416,7 @@ attribute [simp] replicate_succ
 
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
-  | (b :: l) => by simp [eq_replicate_length]
+  | (b :: l) => by simp [eq_replicate_length, replicate_succ]
 #align list.eq_replicate_length List.eq_replicate_length
 
 #align list.eq_replicate_of_mem List.eq_replicate_of_mem
