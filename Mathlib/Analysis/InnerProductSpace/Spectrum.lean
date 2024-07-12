@@ -523,16 +523,36 @@ Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eig
 -/
 --variable (γ : 𝕜)
 --#check (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
+-- removed `Subtype.restrict (fun x ↦ i ≠ x)` from T j in statement, but this may be needed if the proof
+-- doesn't work...
 
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))) = Submodule.map (Submodule.subtype ((⨅ (j : {x // i ≠ x}),
-    eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))
+    eigenspace (T j) (γ j))))
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) := by sorry
+
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
     (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)))))ᗮ = ⊥ := by
+  simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
+  conv =>
+   lhs
+   rhs
+   ext γ
+   rhs
+   ext μ
+   rw [index_convert T hC i]
+
+  ext v
+  simp only [iSup, ne_eq, Submodule.mem_bot]
+  constructor
+  intro H
+
   sorry
+
+
+#exit
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
