@@ -249,6 +249,11 @@ theorem ofMul_eq_zero {A : Type*} [One A] {x : A} : Additive.ofMul x = 0 ↔ x =
 theorem toMul_zero [One α] : toMul (0 : Additive α) = 1 := rfl
 #align to_mul_zero toMul_zero
 
+@[simp]
+lemma toMul_eq_one {α : Type*} [One α] {x : Additive α} :
+    Additive.toMul x = 1 ↔ x = 0 :=
+  Iff.rfl
+
 instance [Zero α] : One (Multiplicative α) :=
   ⟨Multiplicative.ofAdd 0⟩
 
@@ -266,6 +271,11 @@ theorem ofAdd_eq_one {A : Type*} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 �
 theorem toAdd_one [Zero α] : toAdd (1 : Multiplicative α) = 0 :=
   rfl
 #align to_add_one toAdd_one
+
+@[simp]
+lemma toAdd_eq_zero {α : Type*} [Zero α] {x : Multiplicative α} :
+    Multiplicative.toAdd x = 0 ↔ x = 1 :=
+  Iff.rfl
 
 instance Additive.addZeroClass [MulOneClass α] : AddZeroClass (Additive α) where
   zero := 0

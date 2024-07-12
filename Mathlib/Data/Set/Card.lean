@@ -79,7 +79,8 @@ theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFi
   have h := toFinite s
   rw [h.encard_eq_coe_toFinset_card, toFinite_toFinset]
 
-theorem encard_coe_eq_coe_finsetCard (s : Finset α) : encard (s : Set α) = s.card := by
+@[simp, norm_cast] theorem encard_coe_eq_coe_finsetCard (s : Finset α) :
+    encard (s : Set α) = s.card := by
   rw [Finite.encard_eq_coe_toFinset_card (Finset.finite_toSet s)]; simp
 
 theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
@@ -521,7 +522,7 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
   rw [← Nat.cast_inj (R := ℕ∞), hs.cast_ncard_eq, Nat.cast_zero, encard_eq_zero]
 #align set.ncard_eq_zero Set.ncard_eq_zero
 
-@[simp] theorem ncard_coe_Finset (s : Finset α) : (s : Set α).ncard = s.card := by
+@[simp, norm_cast] theorem ncard_coe_Finset (s : Finset α) : (s : Set α).ncard = s.card := by
   rw [ncard_eq_toFinset_card _, Finset.finite_toSet_toFinset]
 #align set.ncard_coe_finset Set.ncard_coe_Finset
 
@@ -558,7 +559,7 @@ theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
 #align set.nonempty_of_ncard_ne_zero Set.nonempty_of_ncard_ne_zero
 
 @[simp] theorem ncard_singleton (a : α) : ({a} : Set α).ncard = 1 := by
-  simp [ncard, ncard_eq_toFinset_card]
+  simpa [ncard, encard_singleton] using ENat.toNat_coe 1
 #align set.ncard_singleton Set.ncard_singleton
 
 theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 := by
@@ -938,35 +939,40 @@ theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
 
 end Lattice
 
+/-- Given a subset `s` of a set `t`, of sizes at most and at least `n` respectively, there exists a
+set `u` of size `n` which is both a superset of `s` and a subset of `t`. -/
+lemma exists_subsuperset_card_eq {n : ℕ} (hst : s ⊆ t) (hsn : s.ncard ≤ n) (hnt : n ≤ t.ncard) :
+    ∃ u, s ⊆ u ∧ u ⊆ t ∧ u.ncard = n := by
+  obtain ht | ht := t.infinite_or_finite
+  · rw [ht.ncard, Nat.le_zero, ← ht.ncard] at hnt
+    exact ⟨t, hst, Subset.rfl, hnt.symm⟩
+  lift s to Finset α using ht.subset hst
+  lift t to Finset α using ht
+  obtain ⟨u, hsu, hut, hu⟩ := Finset.exists_subsuperset_card_eq (mod_cast hst) (by simpa using hsn)
+    (mod_cast hnt)
+  exact ⟨u, mod_cast hsu, mod_cast hut, mod_cast hu⟩
+
+/-- We can shrink a set to any smaller size. -/
+lemma exists_subset_card_eq {n : ℕ} (hns : n ≤ s.ncard) : ∃ t ⊆ s, t.ncard = n := by
+  simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
+
 /-- Given a set `t` and a set `s` inside it, we can shrink `t` to any appropriate size, and keep `s`
     inside it. -/
+@[deprecated exists_subsuperset_card_eq (since := "2024-06-24")]
 theorem exists_intermediate_Set (i : ℕ) (h₁ : i + s.ncard ≤ t.ncard) (h₂ : s ⊆ t) :
-    ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = i + s.ncard := by
-  cases' t.finite_or_infinite with ht ht
-  · rw [ncard_eq_toFinset_card _ (ht.subset h₂)] at h₁ ⊢
-    rw [ncard_eq_toFinset_card t ht] at h₁
-    obtain ⟨r', hsr', hr't, hr'⟩ := Finset.exists_intermediate_set _ h₁ (by simpa)
-    exact ⟨r', by simpa using hsr', by simpa using hr't, by rw [← hr', ncard_coe_Finset]⟩
-  rw [ht.ncard] at h₁
-  have h₁' := Nat.eq_zero_of_le_zero h₁
-  rw [add_eq_zero_iff] at h₁'
-  refine ⟨t, h₂, rfl.subset, ?_⟩
-  rw [h₁'.2, h₁'.1, ht.ncard, add_zero]
+    ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = i + s.ncard :=
+  exists_subsuperset_card_eq h₂ (Nat.le_add_left ..) h₁
 #align set.exists_intermediate_set Set.exists_intermediate_Set
 
+@[deprecated exists_subsuperset_card_eq (since := "2024-06-24")]
 theorem exists_intermediate_set' {m : ℕ} (hs : s.ncard ≤ m) (ht : m ≤ t.ncard) (h : s ⊆ t) :
-    ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = m := by
-  obtain ⟨r, hsr, hrt, hc⟩ :=
-    exists_intermediate_Set (m - s.ncard) (by rwa [tsub_add_cancel_of_le hs]) h
-  rw [tsub_add_cancel_of_le hs] at hc
-  exact ⟨r, hsr, hrt, hc⟩
+    ∃ r : Set α, s ⊆ r ∧ r ⊆ t ∧ r.ncard = m := exists_subsuperset_card_eq h hs ht
 #align set.exists_intermediate_set' Set.exists_intermediate_set'
 
 /-- We can shrink `s` to any smaller size. -/
+@[deprecated exists_subset_card_eq (since := "2024-06-23")]
 theorem exists_smaller_set (s : Set α) (i : ℕ) (h₁ : i ≤ s.ncard) :
-    ∃ t : Set α, t ⊆ s ∧ t.ncard = i :=
-  (exists_intermediate_Set i (by simpa) (empty_subset s)).imp fun t ht ↦
-    ⟨ht.2.1, by simpa using ht.2.2⟩
+    ∃ t : Set α, t ⊆ s ∧ t.ncard = i := exists_subset_card_eq h₁
 #align set.exists_smaller_set Set.exists_smaller_set
 
 theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ) :
@@ -1123,3 +1129,5 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
 end ncard
 
 @[deprecated (since := "2023-12-27")] alias ncard_le_of_subset := ncard_le_ncard
+
+end Set
