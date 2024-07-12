@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu
+Authors: Patricio Gallardo Candela, Johan Commelin, Yun Liu, Sophie Morel, David Swinarski,
+Weihong Xu
 -/
 import Mathlib.AlgebraicGeometry.Grassmannian.Lemmas
 import Mathlib.AlgebraicGeometry.Gluing
