@@ -272,7 +272,7 @@ theorem comp_tail {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → 
 
 theorem le_cons [∀ i, Preorder (α i)] {x : α 0} {q : ∀ i, α i} {p : ∀ i : Fin n, α i.succ} :
     q ≤ cons x p ↔ q 0 ≤ x ∧ tail q ≤ p :=
-  forall_fin_succ.trans <| and_congr Iff.rfl <| forall_congr' fun j ↦ by simp [tail]
+  forall_iff_succ.trans <| and_congr Iff.rfl <| forall_congr' fun j ↦ by simp [tail]
 
 theorem cons_le [∀ i, Preorder (α i)] {x : α 0} {q : ∀ i, α i} {p : ∀ i : Fin n, α i.succ} :
     cons x p ≤ q ↔ x ≤ q 0 ∧ p ≤ tail q :=
@@ -280,7 +280,7 @@ theorem cons_le [∀ i, Preorder (α i)] {x : α 0} {q : ∀ i, α i} {p : ∀ i
 
 theorem cons_le_cons [∀ i, Preorder (α i)] {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
     cons x₀ x ≤ cons y₀ y ↔ x₀ ≤ y₀ ∧ x ≤ y :=
-  forall_fin_succ.trans <| and_congr_right' <| by simp only [cons_succ, Pi.le_def]
+  forall_iff_succ.trans <| and_congr_right' <| by simp only [cons_succ, Pi.le_def]
 
 theorem range_fin_succ {α} (f : Fin (n + 1) → α) :
     Set.range f = insert (f 0) (Set.range (Fin.tail f)) :=
@@ -724,9 +724,44 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred_of_lt _ _ <|
     (Fin.lt_or_lt_of_ne hj).resolve_left hlt) (p _)
 
-theorem forall_iff_succAbove {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
-    (∀ j, p j) ↔ p i ∧ ∀ j, p (i.succAbove j) :=
-  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases i h.1 h.2⟩
+/-- This is a duplicate of `Fin.forall_fin_succ` in Core. We should upstream the name change. -/
+lemma forall_iff_succ {P : Fin (n + 1) → Prop} : (∀ i, P i) ↔ P 0 ∧ ∀ i, P (succ i) :=
+  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ cases h.1 h.2⟩
+
+/-- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change. -/
+lemma exists_iff_succ {P : Fin (n + 1) → Prop} : (∃ i, P i) ↔ P 0 ∨ ∃ i, P (succ i) where
+  mp := by
+    rintro ⟨i, hi⟩
+    induction' i using cases
+    · exact .inl hi
+    · exact .inr ⟨_, hi⟩
+  mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
+
+lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
+    (∀ i, P i) ↔ P (last n) ∧ ∀ i, P (castSucc i) :=
+  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ lastCases h.1 h.2⟩
+
+lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
+    (∃ i, P i) ↔ P (last n) ∨ ∃ i, P (castSucc i) where
+  mp := by
+    rintro ⟨i, hi⟩
+    induction' i using lastCases
+    · exact .inl hi
+    · exact .inr ⟨_, hi⟩
+  mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
+
+theorem forall_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
+    (∀ i, P i) ↔ P p ∧ ∀ i, P (p.succAbove i) :=
+  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases p h.1 h.2⟩
+
+lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
+    (∃ i, P i) ↔ P p ∨ ∃ i, P (p.succAbove i) where
+  mp := by
+    rintro ⟨i, hi⟩
+    induction' i using p.succAboveCases
+    · exact .inl hi
+    · exact .inr ⟨_, hi⟩
+  mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
 /-- Remove the `p`-th entry of a tuple. -/
 def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) := fun i ↦ f (p.succAbove i)
