@@ -35,8 +35,14 @@ the underlying `RatFunc.coeAlgHom`.
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
 `intValuation_le_iff_coeff_lt_eq_zero`.
 * The valuation of a laurent series is the order of the first non-zero coefficient, see
-`valuation_le_iff_coeff_lt_eq_zero`.-/
+`valuation_le_iff_coeff_lt_eq_zero`.
 
+## Implementation details
+* Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
+coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go back-and-forth
+from `X : LaurentSeries _` to `single 1 1 : HahnSeries ℤ _`.
+
+-/
 universe u
 
 open scoped Classical
@@ -279,9 +285,6 @@ theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPow
 end PowerSeries
 
 namespace RatFunc
-section RatFunc
-
-open RatFunc
 
 variable {F : Type u} [Field F] (p q : F[X]) (f g : RatFunc F)
 
@@ -434,9 +437,6 @@ instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
     simp⟩
 
 end RatFunc
-
-end RatFunc
-
 section AdicValuation
 
 open scoped DiscreteValuation
@@ -488,57 +488,74 @@ theorem intValuation_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd
 
 end PowerSeries
 
+namespace RatFunc
+
+open IsDedekindDomain.HeightOneSpectrum PowerSeries
+
+theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
+    (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (P : LaurentSeries K) := by
+  refine' RatFunc.induction_on' P _
+  intro f g h
+  rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
+  convert @valuation_of_mk' (PowerSeries K) _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) f
+        ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩
+  · simp only [IsFractionRing.mk'_eq_div, coe_div, LaurentSeries.coe_algebraMap, coe_coe]
+    rfl
+  exacts [intValuation_eq_of_coe _, intValuation_eq_of_coe _]
+
+end RatFunc
+
 namespace LaurentSeries
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc
 
-theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
-    (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (↑P : LaurentSeries K) := by
-  refine' RatFunc.induction_on' P _
-  intro f g h
-  convert Polynomial.valuation_of_mk K f h
-  rw [RatFunc.mk_eq_mk' f h]
-  have aux :
-    (↑(IsLocalization.mk' (RatFunc K) f ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 h⟩) :
-        LaurentSeries K) =
-      (IsLocalization.mk' (LaurentSeries K) (↑f : PowerSeries K)
-          ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ :
-        LaurentSeries K) := by
-    simp only [IsFractionRing.mk'_eq_div, coe_div]
-    congr
-    exacts [(RatFunc.coe_coe f).symm, (RatFunc.coe_coe g).symm]
-  rw [aux]
-  convert @valuation_of_mk' (PowerSeries K) _ _ (LaurentSeries K) _ _ _ (PowerSeries.idealX K) f
-        ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩ <;>
-    apply PowerSeries.intValuation_eq_of_coe
+instance : Valued (LaurentSeries K) ℤₘ₀ := Valued.mk' (PowerSeries.idealX K).valuation
 
-instance : Valued (LaurentSeries K) ℤₘ₀ :=
-  Valued.mk' (PowerSeries.idealX K).valuation
-
-theorem valuation_X_zpow (s : ℕ) :
-    Valued.v (((PowerSeries.X : K⟦X⟧) : LaurentSeries K) ^ s) =
-      Multiplicative.ofAdd (-(s : ℤ)) := by
-  have : Valued.v ((PowerSeries.X : K⟦X⟧) : LaurentSeries K) =
-     (↑(Multiplicative.ofAdd (-(1 : ℤ))) : ℤₘ₀) := by
-    erw [valuation_of_algebraMap]; apply intValuation_X
-  rw [map_pow, this, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul, WithZero.coe_zpow,
-    ofAdd_neg, WithZero.coe_inv, zpow_natCast]
+theorem valuation_X_pow (s : ℕ) :
+    Valued.v (((X : K⟦X⟧) : LaurentSeries K) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
+  erw [map_pow,/-  this, -/ ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul,
+    WithZero.coe_zpow, ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_of_algebraMap,
+    intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv, inv_pow]
 
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : LaurentSeries K) =
       Multiplicative.ofAdd (-(s : ℤ)) := by
-  have aux_mul :
-    HahnSeries.single s (1 : K) * HahnSeries.single (-s) (1 : K) = (1 : LaurentSeries K) := by
-    simp only [single_mul_single, add_right_neg, mul_one, single_zero_one]
-  have H : Valued.v (1 : LaurentSeries K) = (1 : ℤₘ₀) := Valued.v.map_one
-  rw [← aux_mul, map_mul, mul_eq_one_iff_eq_inv₀] at H
-  · rw [H]
-    induction' s with s s
-    · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow] at H
-      rw [Int.ofNat_eq_coe, ← H, PowerSeries.coe_pow, valuation_X_zpow]
-    · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
-        valuation_X_zpow, ofAdd_neg, WithZero.coe_inv, inv_inv]
-  · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
+  induction' s with s s
+  · erw [← valuation_X_pow K s]
+    simp only [Int.ofNat_eq_coe, ofPowerSeries_X, single_pow, nsmul_eq_mul, mul_one, one_pow]
+  · have : (single (Int.negSucc s) (1 : K)) = (single ((s + 1 : ℤ) ) (1 : K))⁻¹ := by
+      rw [← mul_eq_one_iff_eq_inv₀, Int.negSucc_coe, Nat.cast_add, Nat.cast_one, neg_add_rev,
+        single_mul_single, mul_one, ← single_zero_one]
+      · ring_nf
+      · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff,
+          HahnSeries.single_ne_zero]
+    rw_mod_cast [this]
+    rw [← @HahnSeries.ofPowerSeries_X_pow ℤ _ K _ (s + 1)]
+    simp?
+    sorry
+    -- erw [← valuation_X_pow K (s+1)]
+    -- rw [PowerSeries.coe]
+  -- //rw_mod_cast [this]
+    --erw [← valuation_X_pow K (]
+      -- exact single_zero_one
+      -- simp only [single_mul_single, add_right_neg, mul_one, single_zero_one]
+      -- simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg]
+      -- norm_num
+      -- ring
+
+
+  -- have aux_mul :
+  --   HahnSeries.single s (1 : K) * HahnSeries.single (-s) (1 : K) = (1 : LaurentSeries K) := by
+  --   simp only [single_mul_single, add_right_neg, mul_one, single_zero_one]
+  -- have H : Valued.v (1 : LaurentSeries K) = (1 : ℤₘ₀) := Valued.v.map_one
+  -- rw [← aux_mul, map_mul, mul_eq_one_iff_eq_inv₀] at H
+  -- · rw [H]
+  --   induction' s with s s
+  --   · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow] at H
+  --     rw [Int.ofNat_eq_coe, ← H, PowerSeries.coe_pow, valuation_X_pow]
+  --   · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
+  --       valuation_X_pow, ofAdd_neg, WithZero.coe_inv, inv_inv]
+  -- · simp only [Valuation.ne_zero_iff, ne_eq, one_ne_zero, not_false_iff, HahnSeries.single_ne_zero]
 
 /- The coefficients of a power series vanish in degree strictly less than its valuation-/
 theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
@@ -576,7 +593,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : LaurentSeries K}
     rw [eq_add_neg_of_add_eq hm, add_comm, ← hs, ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
     rwa [hF, ofPowerSeries_powerSeriesPart f, hs, neg_neg, ← hd, neg_add_rev, ofAdd_add, map_mul,
-      ← ofPowerSeries_X_pow s, PowerSeries.coe_pow,  WithZero.coe_mul, valuation_X_zpow K s,
+      ← ofPowerSeries_X_pow s, PowerSeries.coe_pow,  WithZero.coe_mul, valuation_X_pow K s,
       mul_le_mul_left₀ (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff])]
   · rw [not_le] at ord_nonpos
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
