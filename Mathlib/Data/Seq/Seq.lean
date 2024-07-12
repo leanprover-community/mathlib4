@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.LazyList
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
 
@@ -328,7 +327,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     · rfl
     dsimp [Corec.f] at h
     dsimp [Corec.f]
-    revert h; cases' h₁: f b with s <;> intro h
+    revert h; cases' h₁ : f b with s <;> intro h
     · rfl
     · cases' s with a b'
       contradiction
@@ -341,7 +340,7 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, get]
   -- Porting note: next two lines were `change`...`with`...
-  have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
+  have h : Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
   rw [h]
   dsimp [Corec.f]
   induction' h : f b with s; · rfl
@@ -914,7 +913,6 @@ def map (f : α → β) : Seq1 α → Seq1 β
   | (a, s) => (f a, Seq.map f s)
 #align stream.seq1.map Stream'.Seq1.map
 
--- Porting note (#10756): new theorem.
 theorem map_pair {f : α → β} {a s} : map f (a, s) = (f a, Seq.map f s) := rfl
 
 theorem map_id : ∀ s : Seq1 α, map id s = s

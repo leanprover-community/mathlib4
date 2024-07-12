@@ -7,7 +7,7 @@ This file is to a certain extent based on `quotient_module.lean` by Johannes Hö
 -/
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.Coset
 
 #align_import group_theory.quotient_group from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
@@ -627,7 +627,7 @@ noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [N.Norma
     (mk' <| N.subgroupOf (H ⊔ N)).comp (inclusion le_sup_left)
   have φ_surjective : Surjective φ := fun x =>
     x.inductionOn' <| by
-      rintro ⟨y, hy : y ∈ (H ⊔ N)⟩;
+      rintro ⟨y, hy : y ∈ (H ⊔ N)⟩
       rw [← SetLike.mem_coe] at hy
       rw [mul_normal H N] at hy
       rcases hy with ⟨h, hh, n, hn, rfl⟩

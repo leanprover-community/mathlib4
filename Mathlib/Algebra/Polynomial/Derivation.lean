@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Richard Hill
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Module.Basic
+import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.RingTheory.Derivation.Basic
 /-!
 # Derivations of univariate polynomials
@@ -147,3 +147,5 @@ theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
   calc
     _ = (AEval.of R M a).symm (d.compAEval a f) := rfl
     _ = _ := by simp [-compAEval_apply, compAEval_eq]
+
+end Derivation

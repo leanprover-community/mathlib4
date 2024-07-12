@@ -89,7 +89,6 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
     · rwa [sq_le_sq]
   -- now main proof
   apply (intervalIntegral.norm_integral_le_of_norm_le_const _).trans
-  pick_goal 1
   · rw [sub_zero]
     conv_lhs => simp only [mul_comm _ |c|]
     conv_rhs =>
@@ -103,7 +102,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       · rw [uIoc_of_le h] at hy
         rw [abs_of_nonneg h, abs_of_pos hy.1]
         exact hy.2
-      · rw [uIoc_of_lt h] at hy
+      · rw [uIoc_of_ge h.le] at hy
         rw [abs_of_neg h, abs_of_nonpos hy.2, neg_le_neg_iff]
         exact hy.1.le
     rw [norm_mul, Complex.norm_eq_abs, abs_I, one_mul, two_mul]
@@ -223,7 +222,8 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
     mul_neg, div_neg, neg_neg, mul_pow, I_sq, neg_one_mul, mul_comm]
 #align fourier_transform_gaussian fourierIntegral_gaussian
 
-@[deprecated] alias _root_.fourier_transform_gaussian := fourierIntegral_gaussian -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
+alias _root_.fourier_transform_gaussian := fourierIntegral_gaussian
 
 theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
@@ -245,7 +245,7 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     simp only [I_sq]
     ring
 
-@[deprecated] -- deprecated on 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias _root_.fourier_transform_gaussian_pi' := _root_.fourierIntegral_gaussian_pi'
 
 theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
@@ -254,7 +254,7 @@ theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
 #align fourier_transform_gaussian_pi fourierIntegral_gaussian_pi
 
-@[deprecated] -- 2024-02-21
+@[deprecated (since := "2024-02-21")]
 alias root_.fourier_transform_gaussian_pi := _root_.fourierIntegral_gaussian_pi
 
 section InnerProductSpace
@@ -316,10 +316,9 @@ theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
 theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
     ∫ v : ι → ℝ, cexp (- b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)
       = (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp ((∑ i, c i ^ 2) / (4 * b)) := by
-  simp_rw [neg_mul, Finset.mul_sum, integral_cexp_neg_sum_mul_add (fun _ ↦ hb) c]
-  simp only [one_div, Finset.prod_mul_distrib, Finset.prod_const, ← cpow_nat_mul, ← Complex.exp_sum,
-    Fintype.card, Finset.sum_div]
-  rfl
+  simp_rw [neg_mul, Finset.mul_sum, integral_cexp_neg_sum_mul_add (fun _ ↦ hb) c, one_div,
+    Finset.prod_mul_distrib, Finset.prod_const, ← cpow_nat_mul, ← Complex.exp_sum, Fintype.card,
+    Finset.sum_div, div_eq_mul_inv]
 
 theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :

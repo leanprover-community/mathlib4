@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Andrew Yang, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Monad.Products
 
 #align_import category_theory.adjunction.over from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
@@ -40,7 +40,7 @@ open Limits
 over `X` via pullbacks. -/
 @[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
 def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
-  obj g := Over.mk (pullback.snd : pullback g.hom f ⟶ _)
+  obj g := Over.mk (pullback.snd g.hom f)
   map i := Over.homMk (pullback.map _ _ _ _ i.left (𝟙 _) (𝟙 _) (by simp) (by simp))
   map_id Z := by
     apply Over.OverMorphism.ext; apply pullback.hom_ext
@@ -52,8 +52,7 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
     · dsimp; simp
 #align category_theory.limits.base_change CategoryTheory.Over.baseChange
 
--- deprecated on 2024-05-15
-@[deprecated] noncomputable alias Limits.baseChange := Over.baseChange
+@[deprecated (since := "2024-05-15")] noncomputable alias Limits.baseChange := Over.baseChange
 
 /-- The adjunction `Over.map ⊣ baseChange` -/
 @[simps! unit_app counit_app]
@@ -61,7 +60,7 @@ def mapAdjunction [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ base
   .mkOfHomEquiv <| {
     homEquiv := fun X Y => {
       toFun := fun u => Over.homMk (pullback.lift u.left X.hom <| by simp)
-      invFun := fun v => Over.homMk (v.left ≫ pullback.fst) <|
+      invFun := fun v => Over.homMk (v.left ≫ pullback.fst _ _) <|
         by simp [← Over.w v, pullback.condition]
       left_inv := by aesop_cat
       right_inv := by

@@ -85,8 +85,10 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
   convert A.union B
   simp only [diff_union_inter]
 #align integrable_on_peak_smul_of_integrable_on_of_continuous_within_at integrableOn_peak_smul_of_integrableOn_of_tendsto
-@[deprecated] alias integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt :=
-  integrableOn_peak_smul_of_integrableOn_of_tendsto -- deprecated on 2024-02-20
+
+@[deprecated (since := "2024-02-20")]
+alias integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt :=
+  integrableOn_peak_smul_of_integrableOn_of_tendsto
 
 variable [CompleteSpace E]
 
@@ -103,7 +105,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
     (hmg : IntegrableOn g s μ) (hcg : Tendsto g (𝓝[s] x₀) (𝓝 0)) :
     Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 0) := by
   refine Metric.tendsto_nhds.2 fun ε εpos => ?_
-  obtain ⟨δ, hδ, δpos, δone⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ < ε ∧ 0 < δ ∧ δ < 1:= by
+  obtain ⟨δ, hδ, δpos, δone⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ < ε ∧ 0 < δ ∧ δ < 1 := by
     have A :
       Tendsto (fun δ => (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ) (𝓝[>] 0)
         (𝓝 ((0 * ∫ x in s, ‖g x‖ ∂μ) + 2 * 0)) := by
@@ -179,8 +181,10 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
     _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le _ _
     _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ := add_le_add C B
 #align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at_aux tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
-@[deprecated] alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
-  tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux -- deprecated on 2024-02-20
+
+@[deprecated (since := "2024-02-20")]
+alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt_aux :=
+  tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -220,8 +224,10 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
   rw [restrict_restrict ht, inter_eq_left.mpr hts]
   exact .of_integral_ne_zero (fun h ↦ by simp [h] at h'i)
 #align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
-@[deprecated] alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt :=
-  tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto -- deprecated on 2024-02-20
+
+@[deprecated (since := "2024-02-20")]
+alias tendsto_setIntegral_peak_smul_of_integrableOn_of_continuousWithinAt :=
+  tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
@@ -473,8 +479,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
       atTop (𝓝 (f 0)) := by
     apply tendsto_integral_comp_smul_smul_of_integrable hφ h'φ h If
     have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
-    have B : ContinuousAt (fun x ↦ x₀ - x) 0 := Continuous.continuousAt (by continuity)
-    exact A.comp B
+    exact A.comp <| by fun_prop
   simp only [f, sub_zero] at this
   convert this using 2 with c
   conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)

@@ -123,10 +123,13 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
 end Lists'
 
 mutual
+  /-- Equivalence of ZFA lists. Defined inductively. -/
   inductive Lists.Equiv : Lists α → Lists α → Prop
     | refl (l) : Lists.Equiv l l
     | antisymm {l₁ l₂ : Lists' α true} :
       Lists'.Subset l₁ l₂ → Lists'.Subset l₂ l₁ → Lists.Equiv ⟨_, l₁⟩ ⟨_, l₂⟩
+
+  /-- Subset relation for ZFA lists. Defined inductively. -/
   inductive Lists'.Subset : Lists' α true → Lists' α true → Prop
     | nil {l} : Lists'.Subset Lists'.nil l
     | cons {a a' l l'} :
@@ -137,12 +140,6 @@ end
 #align lists'.subset Lists'.Subset
 
 local infixl:50 " ~ " => Lists.Equiv
-
-/-- Equivalence of ZFA lists. Defined inductively. -/
-add_decl_doc Lists.Equiv
-
-/-- Subset relation for ZFA lists. Defined inductively. -/
-add_decl_doc Lists'.Subset
 
 namespace Lists'
 
@@ -166,7 +163,7 @@ theorem mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
 theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
   refine ⟨fun h => ?_, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
   generalize h' : Lists'.cons a l₁ = l₁' at h
-  cases' h with l a' a'' l l' e m s;
+  cases' h with l a' a'' l l' e m s
   · cases a
     cases h'
   cases a; cases a'; cases h'; exact ⟨⟨_, m, e⟩, s⟩
@@ -358,7 +355,7 @@ instance instSetoidLists : Setoid (Lists α) :=
 section Decidable
 
 /-- Auxiliary function to prove termination of decidability checking -/
-@[simp, deprecated]
+@[simp, deprecated (since := "2023-06-24")]
 def Equiv.decidableMeas :
     (PSum (Σ' _l₁ : Lists α, Lists α) <|
         PSum (Σ' _l₁ : Lists' α true, Lists' α true) (Σ' _a : Lists α, Lists' α true)) →

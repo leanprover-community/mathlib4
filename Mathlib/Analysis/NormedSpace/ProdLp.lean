@@ -32,7 +32,7 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`.
+This file is a straight-forward adaptation of `Mathlib.Analysis.NormedSpace.PiLp`.
 
 -/
 
@@ -169,9 +169,7 @@ theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
 theorem prod_edist_eq_sup (f g : WithLp ∞ (α × β)) :
-    edist f g = edist f.fst g.fst ⊔ edist f.snd g.snd := by
-  dsimp [edist]
-  exact if_neg ENNReal.top_ne_zero
+    edist f g = edist f.fst g.fst ⊔ edist f.snd g.snd := rfl
 
 end EDist
 
@@ -238,9 +236,7 @@ theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
 theorem prod_dist_eq_sup (f g : WithLp ∞ (α × β)) :
-    dist f g = dist f.fst g.fst ⊔ dist f.snd g.snd := by
-  dsimp [dist]
-  exact if_neg ENNReal.top_ne_zero
+    dist f g = dist f.fst g.fst ⊔ dist f.snd g.snd := rfl
 
 end Dist
 
@@ -271,9 +267,7 @@ theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
   convert if_pos rfl
 
-theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := by
-  dsimp [Norm.norm]
-  exact if_neg ENNReal.top_ne_zero
+theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := rfl
 
 theorem prod_norm_eq_add (hp : 0 < p.toReal) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal) :=
@@ -749,8 +743,8 @@ instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
       exact norm_smul_le _ _
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
-      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, NNReal.rpow_one_div_le_iff hp0,
-        NNReal.mul_rpow, ← NNReal.rpow_mul, div_mul_cancel₀ 1 hp0.ne', NNReal.rpow_one, mul_add,
+      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
+        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
       exact add_le_add
         (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)

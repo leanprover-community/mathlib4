@@ -5,7 +5,6 @@ Authors: Bhavik Mehta, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
@@ -45,11 +44,11 @@ abbrev constructEqualizer (F : WalkingParallelPair ⥤ C) : C :=
 /-- Define the equalizing morphism -/
 abbrev pullbackFst (F : WalkingParallelPair ⥤ C) :
     constructEqualizer F ⟶ F.obj WalkingParallelPair.zero :=
-  pullback.fst
+  pullback.fst _ _
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst
 
 theorem pullbackFst_eq_pullback_snd (F : WalkingParallelPair ⥤ C) :
-    pullbackFst F = pullback.snd := by
+    pullbackFst F = pullback.snd _ _ := by
   convert (eq_whisker pullback.condition Limits.prod.fst :
       (_ : constructEqualizer F ⟶ F.obj WalkingParallelPair.zero) = _) <;> simp
 #align category_theory.limits.has_equalizers_of_has_pullbacks_and_binary_products.pullback_fst_eq_pullback_snd CategoryTheory.Limits.HasEqualizersOfHasPullbacksAndBinaryProducts.pullbackFst_eq_pullback_snd
@@ -143,10 +142,11 @@ abbrev constructCoequalizer (F : WalkingParallelPair ⥤ C) : C :=
 /-- Define the equalizing morphism -/
 abbrev pushoutInl (F : WalkingParallelPair ⥤ C) :
     F.obj WalkingParallelPair.one ⟶ constructCoequalizer F :=
-  pushout.inl
+  pushout.inl _ _
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.pushout_inl CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.pushoutInl
 
-theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) : pushoutInl F = pushout.inr := by
+theorem pushoutInl_eq_pushout_inr (F : WalkingParallelPair ⥤ C) :
+    pushoutInl F = pushout.inr _ _ := by
   convert (whisker_eq Limits.coprod.inl pushout.condition :
     (_ : F.obj _ ⟶ constructCoequalizer _) = _) <;> simp
 #align category_theory.limits.has_coequalizers_of_has_pushouts_and_binary_coproducts.pushout_inl_eq_pushout_inr CategoryTheory.Limits.HasCoequalizersOfHasPushoutsAndBinaryCoproducts.pushoutInl_eq_pushout_inr

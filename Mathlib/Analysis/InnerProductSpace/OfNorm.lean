@@ -120,8 +120,7 @@ theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
 theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold inner_
-  have := Continuous.const_smul (M := 𝕜) hf I
-  continuity
+  fun_prop
 #align inner_product_spaceable.continuous.inner_ Continuous.inner_
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
@@ -141,7 +140,7 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   have h4 : conj (4⁻¹ : 𝕜) = 4⁻¹ := by norm_num
   rw [map_mul, h4]
   congr 1
-  simp only [map_sub, map_add, algebraMap_eq_ofReal, ← ofReal_mul, conj_ofReal, map_mul, conj_I]
+  simp only [map_sub, map_add, conj_ofReal, map_mul, conj_I]
   rw [add_comm y x, norm_sub_rev]
   by_cases hI : (I : 𝕜) = 0
   · simp only [hI, neg_zero, zero_mul]

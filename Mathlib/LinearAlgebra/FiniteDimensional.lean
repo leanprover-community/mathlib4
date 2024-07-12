@@ -873,7 +873,7 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
     if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
   mul_inv_cancel x hx := show x * dite _ (h := _) _ = _ by
     rw [dif_neg hx]
-    exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
+    exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx):)
   inv_zero := dif_pos rfl
   nnqsmul := _
   qsmul := _
@@ -1113,7 +1113,7 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
-@[deprecated Subalgebra.finite_bot] -- 2024-04-11
+@[deprecated Subalgebra.finite_bot (since := "2024-04-11")]
 theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
   Subalgebra.finite_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
