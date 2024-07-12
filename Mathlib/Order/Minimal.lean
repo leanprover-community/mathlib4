@@ -229,6 +229,20 @@ theorem maximal_iff_maximal_of_imp_of_forall (hPQ : ∀ ⦃x⦄, Q x → P x)
 @[simp] theorem maximal_true : Maximal (fun _ ↦ True) x ↔ IsMax x :=
   minimal_true (α := αᵒᵈ)
 
+theorem not_minimal_iff (hx : P x) : ¬ Minimal P x ↔ ∃ y, y < x ∧ P y := by
+  rw [← not_iff_not, not_not, not_exists]
+  simp only [Minimal, hx, true_and, lt_iff_le_not_le, not_and, and_imp, not_imp_not]
+  tauto
+
+theorem not_maximal_iff (hx : P x) : ¬ Maximal P x ↔ ∃ y, x < y ∧ P y :=
+  not_minimal_iff (α := αᵒᵈ) hx
+
+theorem exists_of_not_minimal (hx : P x) (h : ¬ Minimal P x) : ∃ y, y < x ∧ P y :=
+  (not_minimal_iff hx).1 h
+
+theorem exists_of_not_maximal (hx : P x) (h : ¬ Maximal P x) : ∃ y, x < y ∧ P y :=
+  (not_maximal_iff hx).1 h
+
 end PartialOrder
 
 section Subset
@@ -247,6 +261,12 @@ theorem minimal_subset_iff' : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, P t → t ⊆
 theorem maximal_subset_iff' : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, P t → s ⊆ t → t ⊆ s :=
   Iff.rfl
 
+theorem not_minimal_subset_iff (hs : P s) : ¬ Minimal P s ↔ ∃ t, t ⊂ s ∧ P t :=
+  not_minimal_iff hs
+
+theorem not_maximal_subset_iff (hs : P s) : ¬ Maximal P s ↔ ∃ t, s ⊂ t ∧ P t :=
+  not_maximal_iff hs
+
 theorem Set.minimal_iff_forall_ssubset : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, t ⊂ s → ¬ P t :=
   minimal_iff_forall_lt
 
@@ -262,6 +282,10 @@ theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆
     fun h ↦ ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
         h.2 x hxs <| hP ht (subset_diff_singleton hts hxt)⟩⟩
 
+theorem Set.exists_diff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
+    (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
+  simpa [Set.minimal_iff_forall_diff_singleton hP, hs] using h
+
 theorem Set.maximal_iff_forall_ssubset : Maximal P s ↔ P s ∧ ∀ ⦃t⦄, s ⊂ t → ¬ P t :=
   maximal_iff_forall_lt
 
@@ -276,6 +300,11 @@ theorem Set.maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P
   simp only [Maximal, and_congr_right_iff]
   exact fun _ ↦ ⟨fun h x hxs hx ↦ hxs <| h hx (subset_insert _ _) (mem_insert _ _),
     fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
+
+theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) (hs : P s)
+    (h : ¬ Maximal P s) : ∃ x ∉ s, P (insert x s) := by
+  simpa [Set.maximal_iff_forall_insert hP, hs] using h
+
 
 /- TODO : generalize `minimal_iff_forall_diff_singleton` and `maximal_iff_forall_insert`
 to `StronglyAtomic` orders. -/

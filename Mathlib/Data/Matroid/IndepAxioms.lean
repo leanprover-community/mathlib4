@@ -97,8 +97,8 @@ structure IndepMatroid (α : Type*) where
   (Indep : Set α → Prop)
   (indep_empty : Indep ∅)
   (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
-  (indep_aug : ∀⦃I B⦄, Indep I → I ∉ maximals (· ⊆ ·) {I | Indep I} →
-      B ∈ maximals (· ⊆ ·) {I | Indep I} → ∃ x ∈ B \ I, Indep (insert x I))
+  (indep_aug : ∀⦃I B⦄, Indep I → ¬ Maximal Indep I →
+    Maximal Indep B → ∃ x ∈ B \ I, Indep (insert x I))
   (indep_maximal : ∀ X, X ⊆ E → ExistsMaximalSubsetProperty Indep X)
   (subset_ground : ∀ I, Indep I → I ⊆ E)
 
@@ -107,36 +107,29 @@ namespace IndepMatroid
 /-- An `M : IndepMatroid α` gives a `Matroid α` whose bases are the maximal `M`-independent sets. -/
 @[simps] protected def matroid (M : IndepMatroid α) : Matroid α where
   E := M.E
-  Base := (· ∈ maximals (· ⊆ ·) {I | M.Indep I})
+  Base := Maximal M.Indep
   Indep := M.Indep
   indep_iff' := by
     refine fun I ↦ ⟨fun h ↦ ?_, fun ⟨B, ⟨h, _⟩, hIB'⟩ ↦ M.indep_subset h hIB'⟩
-    obtain ⟨B, hB⟩ := M.indep_maximal M.E Subset.rfl I h (M.subset_ground I h)
-    simp only [mem_maximals_iff, mem_setOf_eq, and_imp] at hB ⊢
-    exact ⟨B, ⟨hB.1.1,fun J hJ hBJ ↦ hB.2 hJ (hB.1.2.1.trans hBJ) (M.subset_ground J hJ) hBJ⟩,
-      hB.1.2.1⟩
+    obtain ⟨J, hIJ, hmax⟩ := M.indep_maximal M.E rfl.subset I h (M.subset_ground I h)
+    rw [maximal_and_iff_right_of_imp M.subset_ground] at hmax
+    exact ⟨J, hmax.1, hIJ⟩
   exists_base := by
-    obtain ⟨B, ⟨hB,-,-⟩, hB₁⟩ :=
-      M.indep_maximal M.E rfl.subset ∅ M.indep_empty (empty_subset _)
-    exact ⟨B, ⟨hB, fun B' hB' h' ↦ hB₁ ⟨hB', empty_subset _,M.subset_ground B' hB'⟩ h'⟩⟩
-  base_exchange := by
-    rintro B B' ⟨hB, hBmax⟩ ⟨hB',hB'max⟩ e he
-    have hnotmax : B \ {e} ∉ maximals (· ⊆ ·) {I | M.Indep I} := by
-      simp only [mem_maximals_setOf_iff, diff_singleton_subset_iff, not_and, not_forall,
-        exists_prop, exists_and_left]
-      exact fun _ ↦ ⟨B, hB, subset_insert _ _, by simpa using he.1⟩
+    obtain ⟨B, -, hB⟩ := M.indep_maximal M.E rfl.subset ∅ M.indep_empty <| empty_subset _
+    rw [maximal_and_iff_right_of_imp M.subset_ground] at hB
+    exact ⟨B, hB.1⟩
+  base_exchange B B' hB hB' e he := by
+    have hnotmax : ¬ Maximal M.Indep (B \ {e}) :=
+      fun h ↦ h.not_prop_of_ssubset (diff_singleton_sSubset.2 he.1) hB.prop
 
-    obtain ⟨f,hf,hfB⟩ := M.indep_aug (M.indep_subset hB diff_subset) hnotmax ⟨hB',hB'max⟩
-    simp only [mem_diff, mem_singleton_iff, not_and, not_not] at hf
-
-    have hfB' : f ∉ B := by (intro hfB; obtain rfl := hf.2 hfB; exact he.2 hf.1)
-
-    refine ⟨f, ⟨hf.1, hfB'⟩, by_contra (fun hnot ↦ ?_)⟩
-    obtain ⟨x,hxB, hind⟩ := M.indep_aug hfB hnot ⟨hB, hBmax⟩
-    simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or, not_and, not_not] at hxB
-    obtain rfl := hxB.2.2 hxB.1
-    rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1] at hind
-    exact not_mem_subset (hBmax hind (subset_insert _ _)) hfB' (mem_insert _ _)
+    obtain ⟨f, hf, hfB⟩ := M.indep_aug (M.indep_subset hB.prop diff_subset) hnotmax hB'
+    replace hf := show f ∈ B' \ B by simpa [show f ≠ e by rintro rfl; exact he.2 hf.1] using hf
+    refine ⟨f, hf, by_contra fun hnot ↦ ?_⟩
+    obtain ⟨x, hxB, hind⟩ := M.indep_aug hfB hnot hB
+    obtain ⟨-, rfl⟩ : _ ∧ x = e := by simpa [hxB.1] using hxB
+    refine hB.not_prop_of_ssubset ?_ hind
+    rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1]
+    exact ssubset_insert hf.2
   maximality := M.indep_maximal
   subset_ground B hB := M.subset_ground B hB.1
 
@@ -167,20 +160,24 @@ namespace IndepMatroid
   (indep_subset := indep_subset)
   (indep_aug := by
     intro I B hI hImax hBmax
-    simp only [mem_maximals_iff, mem_setOf_eq, not_and, not_forall, exists_prop,
-      exists_and_left, iff_true_intro hI, true_imp_iff] at hImax hBmax
-    obtain ⟨I', hI', hII', hne⟩ := hImax
-    obtain ⟨e, heI', heI⟩ := exists_of_ssubset (hII'.ssubset_of_ne hne)
-    have hins : Indep (insert e I) := indep_subset hI' (insert_subset heI' hII')
-    obtain (heB | heB) := em (e ∈ B)
+    -- simp only [mem_maximals_iff, mem_setOf_eq, not_and, not_forall, exists_prop,
+    --   exists_and_left, iff_true_intro hI, true_imp_iff] at hImax hBmax
+    -- obtain ⟨I', hI', hII', hne⟩ := hImax
+    obtain ⟨e, heI, hins⟩ := exists_insert_of_not_maximal indep_subset hI hImax
+    by_cases heB : e ∈ B
     · exact ⟨e, ⟨heB, heI⟩, hins⟩
+
     by_contra hcon; push_neg at hcon
 
-    have heBdep : ¬Indep (insert e B) :=
-      fun hi ↦ heB <| insert_eq_self.1 (hBmax.2 hi (subset_insert _ _)).symm
+    -- -- obtain ⟨e, heI', heI⟩ := exists_of_ssubset (hII'.ssubset_of_ne hne)
+    -- -- have hins : Indep (insert e I) := indep_subset hI' (insert_subset heI' hII')
+    -- obtain (heB | heB) := em (e ∈ B)
+    -- · exact ⟨e, ⟨heB, heI⟩, hins⟩
+    -- by_contra hcon; push_neg at hcon
+    have heBdep := hBmax.not_prop_of_ssubset (ssubset_insert heB)
 
     -- There is a finite subset `B₀` of `B` so that `B₀ + e` is dependent
-    obtain ⟨B₀, hB₀B, hB₀fin, hB₀e⟩ := htofin B e hBmax.1  heBdep
+    obtain ⟨B₀, hB₀B, hB₀fin, hB₀e⟩ := htofin B e hBmax.1 heBdep
     have hB₀ := indep_subset hBmax.1 hB₀B
 
     -- There is a finite subset `I₀` of `I` so that `I₀` doesn't extend into `B₀`
@@ -232,8 +229,9 @@ namespace IndepMatroid
   (indep_maximal := by
       rintro X - I hI hIX
       have hzorn := zorn_subset_nonempty {Y | Indep Y ∧ I ⊆ Y ∧ Y ⊆ X} ?_ I ⟨hI, Subset.rfl, hIX⟩
-      · obtain ⟨J, hJ, -, hJmax⟩ := hzorn
-        exact ⟨J, hJ, fun K hK hJK ↦ (hJmax K hK hJK).subset⟩
+      · obtain ⟨J, ⟨hJi, hIJ, hJX⟩, -, hJmax⟩ := hzorn
+        simp_rw [maximal_subset_iff]
+        exact ⟨J, hIJ, ⟨hJi, hJX⟩, fun K hK hJK ↦ (hJmax K ⟨hK.1, hIJ.trans hJK, hK.2⟩ hJK).symm⟩
 
       refine fun Is hIs hchain ⟨K, hK⟩ ↦ ⟨⋃₀ Is, ⟨?_,?_,?_⟩, fun _ ↦ subset_sUnion_of_mem⟩
       · refine indep_compact _ fun J hJ hJfin ↦ ?_
