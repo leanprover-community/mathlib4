@@ -517,11 +517,25 @@ theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtyp
   exact (AddSubmonoid.mk_eq_zero
   (ker (A - (algebraMap 𝕜 (Module.End 𝕜 E)) α)).toAddSubgroup.toAddSubmonoid).mp hy
 
--/
-variable (γ : 𝕜) (x : E)
+Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
+       = (eigenspace B γ ⊓ eigenspace A α)
 
-#check Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
---theorem indexed_eigen_extend : x ∈ Submodule.map (Submodule.subtype )
+-/
+--variable (γ : 𝕜)
+--#check (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ)
+variable (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 𝕜)
+#check Submodule.subtype ((⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)))
+#check (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)
+
+theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 𝕜) : (eigenspace (T i) μ ⊓
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))) = Submodule.subtype ((⨅ (j : {x // i ≠ x}),
+    eigenspace (T j) (γ j))) (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) := by sorry
+
+
+theorem indexex_post_exhaust (i : n) :
+    (⨆ μ : 𝕜 , (⨆ (γ : {x // i ≠ x} → 𝕜), (eigenspace (T i) μ ⊓
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)))))ᗮ = ⊥ := by
+  sorry
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
