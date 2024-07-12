@@ -1065,6 +1065,17 @@ theorem IsOpenMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : 
   isOpenMap_sum_elim.2 ⟨hf, hg⟩
 #align is_open_map.sum_elim IsOpenMap.sum_elim
 
+theorem isClosedMap_sum {f : X ⊕ Y → Z} :
+    IsClosedMap f ↔ (IsClosedMap fun a => f (.inl a)) ∧ IsClosedMap fun b => f (.inr b) := by
+  constructor
+  · intro h
+    exact ⟨h.comp closedEmbedding_inl.isClosedMap, h.comp closedEmbedding_inr.isClosedMap⟩
+  · rintro h Z hZ
+    rw [isClosed_sum_iff] at hZ
+    convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
+    ext
+    simp only [mem_image, Sum.exists, mem_union, mem_preimage]
+
 end Sum
 
 section Subtype

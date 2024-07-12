@@ -136,6 +136,7 @@
   "Mathlib.Tactic.Polyrith",
   "Mathlib.Tactic.Positivity",
   "Mathlib.Tactic.Positivity.Basic",
+  "Mathlib.Tactic.Positivity.Finset",
   "Mathlib.Tactic.ProjectionNotation",
   "Mathlib.Tactic.PushNeg",
   "Mathlib.Tactic.Qify",
@@ -210,7 +211,8 @@
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
-  "Mathlib.Tactic.Positivity.Finset": ["Mathlib.Data.Fintype.Card"],
+  "Mathlib.Tactic.Positivity.Finset":
+  ["Mathlib.Data.Finset.Density", "Mathlib.Data.Fintype.Card"],
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
