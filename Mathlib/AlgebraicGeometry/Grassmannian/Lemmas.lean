@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu. All rights reserved.
+Copyright (c) Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry" in
