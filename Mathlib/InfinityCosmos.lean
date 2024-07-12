@@ -4,6 +4,8 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Monad.Limits
 
+noncomputable section
+
 namespace CategoryTheory
 open Category Limits Functor
 universe v v₁ v₂ u u₁ u₂
@@ -39,6 +41,11 @@ def Adjunction.ofHomRestrictionIso (L : C ⥤ D) (R : D ⥤ C)
 
 theorem Functor.id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
 theorem Functor.comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
+
+theorem Quiv.id_eq_id (X : Quiv) : 𝟙 X = 𝟭q X := rfl
+theorem Quiv.comp_eq_comp {X Y Z : Quiv} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙q G := rfl
+
+@[simp] theorem Cat.of_α (C) [Category C] : (of C).α = C := rfl
 
 end
 
@@ -168,6 +175,11 @@ end ReflPrefunctor
 
 def Functor.toReflPrefunctor {C D} [Category C] [Category D] (F : C ⥤ D) : C ⥤rq D := { F with }
 
+/-- ER: Rename if this is useful. -/
+@[simp]
+theorem Functor.toReflPrefunctor_toPrefunctor {C D : Cat} (F : C ⥤ D) :
+    (Functor.toReflPrefunctor F).toPrefunctor = F.toPrefunctor := rfl
+
 namespace ReflQuiver
 open Opposite
 
@@ -226,18 +238,18 @@ def forgetToQuiv : ReflQuiv.{v, u} ⥤ Quiv.{v, u} where
 
 theorem forgetToQuiv_faithful {V W : ReflQuiv} (F G : V ⥤rq W)
     (hyp : forgetToQuiv.map F = forgetToQuiv.map G) : F = G := by
-  ext
-  · exact congrFun (congrArg Prefunctor.obj hyp) _
-  · sorry
+  cases F
+  cases G
+  cases hyp
+  rfl
 
 theorem forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
   map_injective := by
     intro V W f g hyp
-    sorry
+    exact forgetToQuiv_faithful _ _ hyp
 
 
-
-
+theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 
 end ReflQuiv
 
@@ -246,11 +258,24 @@ namespace Cat
 inductive FreeReflRel {V} [ReflQuiver V] : (X Y : Paths V) → (f g : X ⟶ Y) → Prop
   | mk {X : V} : FreeReflRel X X (Quiver.Hom.toPath (𝟙rq X)) .nil
 
-/-- The functor sending each quiver to its path category. -/
+def FreeReflObj (V) [ReflQuiver V] :=
+  Quotient (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V))
+
+instance (V) [ReflQuiver V] : Category (FreeReflObj V) :=
+  inferInstanceAs (Category (Quotient _))
+
+def FreeReflObj.quotientFunctor (V) [ReflQuiver V] : Cat.free.obj (Quiv.of V) ⥤ FreeReflObj V :=
+  Quotient.functor (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V))
+
+theorem FreeReflObj.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : FreeReflObj V ⥤ D)
+    (h : quotientFunctor V ⋙ F₁ = quotientFunctor V ⋙ F₂) :
+    F₁ = F₂ :=
+  Quotient.lift_unique' (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V)) _ _ h
+
 @[simps!]
 def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
-  obj V := Cat.of (Quotient (C := Cat.free.obj V.toQuiv) (FreeReflRel (V := V)))
-  map f := Quotient.lift _ ((by exact Cat.free.map f.toPrefunctor) ⋙ Quotient.functor _)
+  obj V := Cat.of (FreeReflObj V)
+  map f := Quotient.lift _ ((by exact Cat.free.map f.toPrefunctor) ⋙ FreeReflObj.quotientFunctor _)
     (fun X Y f g hfg => by
       apply Quotient.sound
       cases hfg
@@ -274,7 +299,19 @@ def freeRefl : ReflQuiv.{v, u} ⥤ Cat.{max u v, u} where
       rw [← Functor.map_comp]; rfl
     rw [this]; simp [Functor.assoc]
     show _ ⋙ _ ⋙ _ = _
-    rw [← Functor.assoc, Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
+    rw [← Functor.assoc, Quotient.lift_spec, Functor.assoc,
+      FreeReflObj.quotientFunctor, Quotient.lift_spec]
+
+theorem freeRefl_naturality {X Y} [ReflQuiver X] [ReflQuiver Y] (f : X ⥤rq Y) :
+    free.map (X := Quiv.of X) (Y := Quiv.of Y) f.toPrefunctor ⋙
+    FreeReflObj.quotientFunctor ↑Y =
+    FreeReflObj.quotientFunctor ↑X ⋙ freeRefl.map (X := ReflQuiv.of X) (Y := ReflQuiv.of Y) f := by
+  simp [freeRefl, FreeReflObj.quotientFunctor]
+  rw [Quotient.lift_spec]
+
+def freeReflNatTrans : ReflQuiv.forgetToQuiv ⋙ Cat.free ⟶ freeRefl where
+  app V := FreeReflObj.quotientFunctor V
+  naturality _ _ f := freeRefl_naturality f
 
 end Cat
 
@@ -285,10 +322,10 @@ namespace ReflQuiv
 -- but it would require lifting quite a bit of machinery to quivers!
 
 /-- ER: An attempt to build the adjunction data. Universe error is why this is for u u.-/
-def adj.unit.app (V : ReflQuiv.{u, u}) : V ⟶ (Cat.freeRefl ⋙ forget).obj V where
-  obj := fun X => { as := X }
-  map := fun f =>
-    (Quotient.functor (Cat.FreeReflRel (V := V))).map (Paths.of.map f)
+@[simps! toPrefunctor obj map]
+def adj.unit.app (V : ReflQuiv.{u, u}) : V ⥤rq forget.obj (Cat.freeRefl.obj V) where
+  toPrefunctor := Quiv.adj.unit.app (V.toQuiv) ⋙q
+    Quiv.forget.map (Cat.FreeReflObj.quotientFunctor V)
   map_id := fun X => by
     apply Quotient.sound
     simp [ReflPrefunctor.map_id]
@@ -298,15 +335,13 @@ def adj.unit.app (V : ReflQuiv.{u, u}) : V ⟶ (Cat.freeRefl ⋙ forget).obj V w
 theorem adj.unit.app_eq (V : ReflQuiv.{u, u}) :
     forgetToQuiv.map (adj.unit.app V) =
     Quiv.adj.unit.app (V.toQuiv) ≫
-    (Quiv.forget.map (Quotient.functor (Cat.FreeReflRel (V := V)))
-      : Quiv.of ↑(Cat.of (Paths ↑V.toQuiv)) ⟶ forgetToQuiv.obj ((Cat.freeRefl ⋙ forget).obj V))
+    Quiv.forget.map (Y := Cat.of _) (Cat.FreeReflObj.quotientFunctor V)
       := rfl
 
--- Quiv.adj.unit.app (V.toQuiv) ≫ (Quiv.forget.map (Quotient.functor (C := Cat.free.obj V.toQuiv) (Cat.FreeReflRel (V := V)))) := by sorry
-
-def adj.counit.app (C : Cat) : (forget ⋙ Cat.freeRefl).obj C ⟶ (𝟭 Cat).obj C := by
+@[simps!]
+def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C := by
   fapply Quotient.lift
-  · exact (Quiv.adj.counit.app C)
+  · exact Quiv.adj.counit.app C
   · intro x y f g rel
     cases rel
     unfold Quiv.adj
@@ -317,83 +352,72 @@ def adj.counit.app (C : Cat) : (forget ⋙ Cat.freeRefl).obj C ⟶ (𝟭 Cat).ob
     exact rfl
 
 /-- ER: This is used in the proof of both triangle equalities. Should we simp?-/
-theorem adj.counit.app_eq (C : Cat) : (Quotient.functor (Cat.FreeReflRel (V := forget.obj C))) ⋙ (adj.counit.app C) = Quiv.adj.counit.app C := rfl
-
-/-- ER: Rename if this is useful. -/
-theorem missing_lemma {C D : Cat} (F : C ⥤ D) :
-    (Functor.toReflPrefunctor F).toPrefunctor = Quiv.forget.map F := rfl
+@[simp]
+theorem adj.counit.app_eq (C : Cat) :
+    Cat.FreeReflObj.quotientFunctor C ⋙ adj.counit.app C =
+    Quiv.adj.counit.app C := rfl
+@[simp]
+theorem adj.counit.app_eq' (C) [Category C] :
+    Cat.FreeReflObj.quotientFunctor C ⋙ adj.counit.app (Cat.of C) =
+    Quiv.adj.counit.app (Cat.of C) := rfl
 
 /--
 The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
 -/
-def adj : Cat.freeRefl ⊣ ReflQuiv.forget :=
-  Adjunction.mkOfUnitCounit {
-    unit := {
-      app := adj.unit.app
-      naturality := by
-        intro V W f
-        unfold adj.unit.app
-        exact rfl
+nonrec def adj : Cat.freeRefl ⊣ ReflQuiv.forget := by
+  refine
+    Adjunction.mkOfUnitCounit {
+      unit := {
+        app := adj.unit.app
+        naturality := by
+          intro V W f
+          exact rfl
+      }
+      counit := {
+        app := adj.counit.app
+        naturality := by
+          intro C D F
+          apply Quotient.lift_unique'
+          unfold adj.counit.app
+          exact (Quiv.adj.counit.naturality F)
+      }
+      left_triangle := ?_
+      right_triangle := ?_
     }
-    counit := {
-      app := adj.counit.app
-      naturality := by
-        intro C D F
-        apply Quotient.lift_unique'
-        unfold adj.counit.app
-        exact (Quiv.adj.counit.naturality F)
-    }
-    left_triangle := by
-      ext V
-      simp
-      fapply Functor.ext
-      · intro X
-        exact rfl
-      · intro X Y f
-        simp
-        sorry
-    right_triangle := by
-      ext C
-      simp
-      apply forgetToQuiv_faithful
-      rw [forgetToQuiv.map_comp, adj.unit.app_eq, assoc]
-      have := adj.counit.app_eq C
-      sorry -- next step is to use that the composite of the forgetful functors is the forgetful functor; morally this is missing lemma but I couldn't get it to work with forgetToQuiv.map instead of .toPrefunctor
-      -- Quiv.forget.map F = forgetToQuiv.map (toReflPrefunctor F)
-
-
-      -- fapply ReflPrefunctor.ext
-      -- · intro X
-      --   exact rfl
-      -- · intro X Y f
-      --   unfold adj.unit.app adj.counit.app
-      --   simp
-      --   sorry
-  }
-
-def adj.homEquiv (V : ReflQuiv) (C : Cat) : (Cat.freeRefl.obj V ⟶ C) ≃ (V ⟶ forget.obj C) where
-  toFun F := {
-    obj := sorry
-    map := sorry
-  }
-  invFun G := by
-    fapply Quotient.lift
-    · exact (Quiv.adj.homEquiv _ _).symm (forgetToQuiv.map G)
-    · intro x y f g rel
-      cases rel
-      unfold Quiv.adj
-      simp only [Cat.free_obj, Quiv.forget_obj, Adjunction.mkOfHomEquiv_homEquiv, forget_obj,
-        forgetToQuiv_map, of_val, Equiv.coe_fn_symm_mk, Quiv.lift_obj, Quiv.lift_map,
-        Prefunctor.mapPath_toPath, composePath_toPath, Prefunctor.mapPath_nil, composePath_nil]
-      exact (G.map_id x)
-  left_inv := sorry
-  right_inv := sorry
-
-def adj' : Cat.freeRefl ⊣ ReflQuiv.forget :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := sorry
-      homEquiv_naturality_left_symm := sorry }
-
+  · ext V
+    apply Cat.FreeReflObj.lift_unique'
+    simp only [id_obj, Cat.free_obj, Cat.of_α, comp_obj, NatTrans.comp_app,
+      forget_obj, of_val, whiskerRight_app, adj.unit.app_toPrefunctor, associator_hom_app,
+      whiskerLeft_app, id_comp, NatTrans.id_app']
+    rw [Functor.id_eq_id, Functor.comp_eq_comp]
+    simp only [Cat.freeRefl_obj_α, Functor.comp_id]
+    conv => enter [1, 1]; simp only [Cat.freeRefl]
+    rw [← Functor.assoc, ← Cat.freeRefl_naturality, Functor.assoc]
+    dsimp [Cat.freeRefl]
+    rw [adj.counit.app_eq' (Cat.FreeReflObj V)]
+    conv =>
+      enter [1, 1, 2]
+      apply (Quiv.comp_eq_comp (X := Quiv.of _) (Y := Quiv.of _) (Z := Quiv.of _) ..).symm
+    rw [Cat.free.map_comp]
+    show (_ ⋙ ((Quiv.forget ⋙ Cat.free).map (X := Cat.of _) (Y := Cat.of _)
+      (Cat.FreeReflObj.quotientFunctor V))) ⋙ _ = _
+    rw [Functor.assoc, ← Functor.comp_eq_comp]
+    conv => enter [1, 2]; apply Quiv.adj.counit.naturality
+    rw [Functor.comp_eq_comp, ← Functor.assoc, ← Functor.comp_eq_comp]
+    conv => enter [1, 1]; apply  Quiv.adj.left_triangle_components V.toQuiv
+    simp [Functor.id_eq_id]
+    exact Functor.id_comp _
+  · ext C
+    simp only [comp_obj, forget_obj, id_obj, NatTrans.comp_app, Cat.freeRefl_obj_α, of_val,
+      whiskerLeft_app, associator_inv_app, whiskerRight_app, forget_map, id_comp,
+      NatTrans.id_app']
+    apply forgetToQuiv_faithful
+    rw [forgetToQuiv.map_comp, adj.unit.app_eq, assoc]
+    dsimp
+    rw [Functor.toReflPrefunctor_toPrefunctor, Quiv.comp_eq_comp, Quiv.comp_eq_comp]
+    dsimp
+    rw [adj.counit.app_eq C]
+    exact Quiv.adj.right_triangle_components C
 
 end ReflQuiv
 
@@ -414,8 +438,8 @@ def Δ.ι_fullyFaithful (k) : (Δ.ι k).FullyFaithful := fullyFaithfulFullSubcat
 
 def truncation (k) : SSet ⥤ (Δ k)ᵒᵖ ⥤ Type _ := (whiskeringLeft _ _ _).obj (Δ.ι k).op
 
-noncomputable def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
-noncomputable def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
+def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
+def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
 
 end SimplexCategory
 
@@ -423,12 +447,11 @@ end SimplexCategory
 namespace Nerve
 
 /-- ER: Fails because cannot infer that types have limits; maybe this is a universe issue? -/
-def cosk₂ : SSet ⥤ SSet := by sorry
--- SimplexCategory.truncation 2 ⋙ ran (SimplexCategory.Δ.ι 2).op
+def cosk₂ : SSet ⥤ SSet :=
+  SimplexCategory.truncation 2 ⋙ ran (SimplexCategory.Δ.ι 2).op
 
 /-- ER: The natural map from a nerve. I don't know why this succeeds where the previous definition failed, but with it this has the form nerveFunctor ⟶ nerveFunctor ⋙ cosk₂ -/
-noncomputable def nerve2coskNatMap :
-    nerveFunctor ⟶ nerveFunctor ⋙ SimplexCategory.truncation 2 ⋙ ran (SimplexCategory.Δ.ι 2).op :=
+def nerve2coskNatMap : nerveFunctor ⟶ nerveFunctor ⋙ cosk₂ :=
   whiskerLeft nerveFunctor (SimplexCategory.coskeletonAdj 2).unit
 
 -- ER: Because the above is "noncomputable" --- whatever that means --- we'll obtain the same map a second way.
@@ -446,8 +469,9 @@ def nerve2truncatedNatTrans (C : Type u) [Category.{v} C] :
 /-- ER: The following should define a natural comparison map from the nerve of C to the right Kan
 extension but I need Lean to infer existence of limits that definitely exist.-/
 def nerve2coskMap (C : Type u) [Category.{v} C] :
-    ((nerve C) ⟶ Ran.loc (SimplexCategory.Δ.ι 2).op (nerve2truncated C)) := by sorry
---  (Ran.equiv (nerve2truncated C) (nerve C)).symm (nerve2truncatedNatTrans C)
+    (nerve C) ⟶ Ran.loc (SimplexCategory.Δ.ι 2).op (nerve2truncated C) :=
+  (Ran.equiv (SimplexCategory.Δ.ι 2).op (nerve2truncated C) (nerve C)).symm
+    (nerve2truncatedNatTrans C)
 
 /-- ER: A component of the above. -/
 def nerve2coskMapApp (C : Type u) [Category.{v} C] (n : ℕ) :
@@ -461,7 +485,17 @@ that this cone is a limit cone directly: showing any other cone factors uniquely
 The factorization will involve the explicit consruction of an n-simplex in the nerve of C from the
 data in the cone. -/
 theorem nerve2coskMapApp.isIso (C : Type u) [Category.{v} C] (n : ℕ) :
-    IsIso (nerve2coskMapApp C n) := by sorry
+    IsIso (nerve2coskMapApp C n) := by
+  simp [nerve2coskMapApp, nerve2coskMap, Ran.equiv]
+  let Δ2 := StructuredArrow { unop := [n] } (SimplexCategory.Δ.ι 2).op
+  let D : Δ2 ⥤ Type (max u v) := Ran.diagram (SimplexCategory.Δ.ι 2).op (nerve2truncated C) { unop := [n] }
+  show IsIso
+    (limit.lift D
+      { pt := ComposableArrows C n,
+        π := { app := fun i ↦ (nerve C).map i.hom ≫ (nerve2truncatedNatTrans C).app i.right, naturality := _ } })
+  -- let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerve2truncated C) { unop := [n] }) := inferInstance
+  -- refine' IsLimit.hom_isIso _ (limit.isLimit _) _
+  sorry
 
 /-- ER: Since a natural transformation is a natural isomorphism iff its components are isomorphisms: -/
 theorem nerve2coskMap.isIso (C : Type u) [Category.{v} C] : IsIso (nerve2coskMap C) := by sorry
@@ -671,6 +705,7 @@ def reflectiveOfCounitIso {C D} [Category C] [Category D] (R : D ⥤ C) (L : C �
   map_surjective := sorry
 
 def nerveCounitApp (C : Type u) [Category.{u} C] : SSet.hoFunctorObj (nerve C) ⥤ C := by
+  stop
   refine Quotient.lift _ ((ReflQuiv.adj.homEquiv _ (Cat.of C)).symm OneTruncation.ofNerve.hom) ?_
   rintro _ _ _ _ ⟨φ⟩
   simp
@@ -701,6 +736,7 @@ def nerveCounitNatIso : nerveFunctor ⋙ SSet.hoFunctor ≅ 𝟭 Cat :=
 def nerveAdjunction : SSet.hoFunctor ⊣ nerveFunctor where
   homEquiv V C := {
     toFun := fun F => by
+      stop
       have : _ ⟶ (_ : Cat) := Quotient.functor _ ⋙ F
       have : OneTruncation V ⥤rq C := ReflQuiv.adj.homEquiv (ReflQuiv.of (OneTruncation V)) C this
       have : ReflQuiv.of (OneTruncation (nerveFunctor.obj C)) ≅ ReflQuiv.of C := OneTruncation.ofNerve _
