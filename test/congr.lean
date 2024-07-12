@@ -220,13 +220,13 @@ example {α β γ δ} {F : ∀{α β}, (α → β) → γ → δ} {f g : α → 
   funext
   apply h
 
-example {α β} {f : _ → β} {x y : {x : {x : α // x = x} // x = x} } (h : x.1 = y.1) :
+example {α β} {f : _ → β} {x y : {x : {x : α // x = x} // x = x}} (h : x.1 = y.1) :
     f x = f y := by
   congr! 1
   ext1
   exact h
 
-example {α β} {F : _ → β} {f g : {f : α → β // f = f} }
+example {α β} {F : _ → β} {f g : {f : α → β // f = f}}
     (h : ∀ x : α, (f : α → β) x = (g : α → β) x) :
     F f = F g := by
   congr!
