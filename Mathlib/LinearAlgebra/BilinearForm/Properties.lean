@@ -157,6 +157,9 @@ theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := LinearMap
 theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := LinearMap.IsAlt.isRefl H
 #align bilin_form.is_alt.is_refl LinearMap.BilinForm.IsAlt.isRefl
 
+theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : a + b + c = 0) :
+    B a b = B b c := LinearMap.IsAlt.eq_of_add_add_eq_zero H hAdd
+
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
   fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
 #align bilin_form.is_alt.add LinearMap.BilinForm.IsAlt.add

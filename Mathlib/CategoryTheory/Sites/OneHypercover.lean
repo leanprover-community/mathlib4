@@ -164,7 +164,7 @@ check that the data provides a covering of `S` and of the fibre products. -/
 @[simps toPreOneHypercover]
 def mk' {S : C} (E : PreOneHypercover S) [E.HasPullbacks]
     (mem₀ : E.sieve₀ ∈ J S) (mem₁' : ∀ (i₁ i₂ : E.I₀), E.sieve₁' i₁ i₂ ∈ J _) :
-        J.OneHypercover S where
+    J.OneHypercover S where
   toPreOneHypercover := E
   mem₀ := mem₀
   mem₁ i₁ i₂ W p₁ p₂ w := by
