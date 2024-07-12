@@ -384,26 +384,42 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
   let mut styleExceptions := parseStyleExceptions exceptions
   let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
   styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
+  let errorStyle := match mode with
+  | OutputSetting.print style => style
+  | OutputSetting.update => ErrorFormat.humanReadable
 
-  let mut numberErrorFiles := 0
-  if let OutputSetting.print style := mode then
-    let mut allUnexpectedErrors := #[]
-    for module in moduleNames do
-      -- Convert the module name to a file name, then lint that file.
-      let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
-      -- Find all size limits for this given file.
-      -- If several size limits are given (unlikely in practice), we use the first one.
-      let sizeLimits := (styleExceptions.filter (·.path == path)).filterMap (fun errctx ↦
-        match errctx.error with
-        | StyleError.fileTooLong _ limit => some limit
-        | _ => none)
-      let errors := ← lintFile path (sizeLimits.get? 0) styleExceptions
-      if errors.size > 0 then
-        allUnexpectedErrors := allUnexpectedErrors.append errors
-        numberErrorFiles := numberErrorFiles + 1
-      formatErrors allUnexpectedErrors style
-      return numberErrorFiles
-  else
-    -- TODO: implement this!
-    IO.println "TODO: --update mode is not implemented yet"
+  let mut numberErrorFiles : UInt32 := 0
+  let mut allUnexpectedErrors := #[]
+  for module in moduleNames do
+    -- Convert the module name to a file name, then lint that file.
+    let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
+    -- Find all size limits for this given file.
+    -- If several size limits are given (unlikely in practice), we use the first one.
+    let sizeLimits := (styleExceptions.filter (fun ex ↦ ex.path == path)).filterMap (fun errctx ↦
+      match errctx.error with
+      | StyleError.fileTooLong _ limit => some limit
+      | _ => none)
+    let errors :=
+    if let OutputSetting.print _ := mode then
+      ← lintFile path (sizeLimits.get? 0) styleExceptions
+    else
+      -- In "update" mode, we ignore the exceptions file (and only take `nolints` into account).
+      ← lintFile path none (parseStyleExceptions nolints)
+    if errors.size > 0 then
+      allUnexpectedErrors := allUnexpectedErrors.append errors
+      numberErrorFiles := numberErrorFiles + 1
+  formatErrors allUnexpectedErrors errorStyle
+  match mode with
+  | OutputSetting.print _ =>
+    if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
+      IO.println s!"error: found {numberErrorFiles} new style errors\n\
+        run `lake exe lint_style --update` to ignore all of them"
+  | OutputSetting.update =>
+    -- Regenerate the style exceptions file, including the Python output.
+    IO.FS.writeFile exceptionsFilePath ""
+    let python_output ← IO.Process.run { cmd := "./scripts/print-style-errors.sh" }
+    -- TODO: filter style exceptions to avoid changes unless necessary
+    let this_output := "\n".intercalate (allUnexpectedErrors.map
+        (fun err ↦ outputMessage err ErrorFormat.exceptionsFile)).toList
+    IO.FS.writeFile exceptionsFilePath s!"{python_output}{this_output}\n"
   return numberErrorFiles
