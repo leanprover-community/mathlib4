@@ -26,16 +26,18 @@ def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
 
 -- TODO: this was copy-pasted from Batteries.Tactic.Lint.Frontend;
 -- this modification should be changed back there
-/-- `getChecks slow extra use_only` produces a list of linters.
-`extras` is a list of names that should resolve to declarations with type `linter`.
-If `useOnly` is true, it only uses the linters in `extra`.
-Otherwise, it uses all linters in the environment tagged with `@[env_linter]`.
+/-- `getChecks slow useOnly` produces a list of linters.
+`useAlso` is an optional list of names that should resolve to declarations with type `NamedLinter`.
+If populated, these linters are always run (regardless of their configuration).
+Otherwise, it uses all enabled linters in the environment tagged with `@[env_linter]`.
 If `slow` is false, it only uses the fast default tests. -/
-def getChecksNew (slow : Bool) (useOnly : Bool) : CoreM (Array NamedLinter) := do
+def getChecksNew (slow : Bool) (useAlso : Option (List Name)) : CoreM (Array NamedLinter) := do
   let mut result := #[]
-  unless useOnly do
-    for (name, declName, dflt) in batteriesLinterExt.getState (← getEnv) do
-      if dflt then
+  for (name, declName, default) in batteriesLinterExt.getState (← getEnv) do
+      let shouldRun := default || match useAlso with
+      | some extras => extras.contains name
+      | none => false
+      if shouldRun then
         let linter ← getLinter name declName
         if slow || linter.isFast then
           let _ := Inhabited.mk linter
@@ -57,9 +59,6 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
     IO.println "The options '--only_linters' and '--exclude_linters' are incompatible:\
       please do not specify both"
     IO.Process.exit 2
-  if add.isSome then
-    IO.println "Attention: the --add_linters flag has not been implemente yet, at it requires \
-      some changes to 'batteries'"
   let print := args.hasFlag "print_linters"
   let update := args.hasFlag "update"
   let some module := match args.flag? "module" with
@@ -90,13 +89,13 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
     let state := { env }
     Prod.fst <$> (CoreM.toIO · ctx state) do
       let decls ← getDeclsInPackage module.getRoot
-      let mut linters ← getChecksNew (slow := true) (useOnly := false)
-      -- Modify the list of linters to run, if configured so.
+      -- Configure the list of linters to run, as needed.
+      let newNames := add.map fun names ↦ names.map (·.toName)
+      let mut linters ← getChecksNew (slow := true) (useAlso := newNames)
       if let some only := only then
         linters := linters.filter fun lint ↦ only.contains lint.name.toString
       else if let some exclude := exclude then
         linters := linters.filter fun lint ↦ !exclude.contains lint.name.toString
-      -- TODO: add_linters is not implemented yet; requires re-adding an `extra` parameter to `getChecks`
       if print then
         IO.println s!"The following {linters.size} linter(s) were configured to run: \
           {linters.map fun l ↦ l.name}"
