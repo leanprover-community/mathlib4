@@ -15,6 +15,30 @@ universe u v w
 
 section
 
+def AlgebraicGeometry.Scheme.GlueData.glueMorphisms (GD : Scheme.GlueData)
+    {Y : Scheme} (f : (i : GD.J) → GD.U i ⟶ Y) (hf : ∀ (i j : GD.J),
+    GD.f i j ≫ (f i) = GD.t i j ≫ GD.f j i ≫ (f j)) :
+    GD.glued ⟶ Y := by
+  refine Limits.Multicoequalizer.desc _ Y f ?_
+  simp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_right, Prod.forall,
+    GlueData.diagram_fstFrom, GlueData.diagram_fst, GlueData.diagram_sndFrom, GlueData.diagram_snd,
+    Category.assoc]
+  exact hf
+
+@[simp, reassoc]
+theorem AlgebraicGeometry.Scheme.GlueData.ι_glueMorphisms (GD : Scheme.GlueData) {Y : Scheme}
+    (f : (i : GD.J) → GD.U i ⟶ Y) (hf : ∀ (i j : GD.J), GD.f i j ≫ (f i) =
+    GD.t i j ≫ GD.f j i ≫ (f j)) (i : GD.J) : GD.ι i ≫ GD.glueMorphisms f hf = f i := by
+  erw [Limits.Multicoequalizer.π_desc]
+
+theorem AlgebraicGeometry.Scheme.GlueData.hom_ext (GD : Scheme.GlueData) {Y : Scheme}
+    (f₁ f₂ : GD.glued ⟶ Y) (h : ∀ (i : GD.J), GD.ι i ≫ f₁ = GD.ι i ≫ f₂) : f₁ = f₂ :=
+  GD.openCover.hom_ext f₁ f₂ h
+
+end
+
+section
+
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 lemma Algebra.TensorProduct.algebraMap : algebraMap R (TensorProduct R A B) =
@@ -936,3 +960,25 @@ def glueData : GlueData where
 end Grassmannian
 
 def Grassmannian := (Grassmannian.glueData K V r hr).glued
+
+namespace Grassmannian
+
+def structMorphism : Grassmannian K V r hr ⟶ Spec (CommRingCat.of K) := by
+  refine Scheme.GlueData.glueMorphisms (Grassmannian.glueData K V r hr)
+    (fun _ ↦ Spec.map (CommRingCat.ofHom (algebraMap _ _))) ?_
+  intro i j
+  simp only [glueData, open_immersion, transition_Spec]
+  rw [← Spec.map_comp, ← Spec.map_comp, ← Spec.map_comp]
+  congr 1
+  conv_lhs =>  change (algebraMap _ (Localization.Away (equation hr i j))).comp
+                 (algebraMap K (functions_chart K V r))
+               rw [← IsScalarTower.algebraMap_eq K]
+  conv_rhs => congr; change (algebraMap _ (Localization.Away (equation hr j i))).comp
+                 (algebraMap K (functions_chart K V r))
+              rw [← IsScalarTower.algebraMap_eq K]
+  conv_rhs => change (transitionRingHom hr i j).comp (algebraMap K _)
+  simp only [CommRingCat.coe_of, transitionRingHom, AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply]
+  conv_rhs => rw [IsScalarTower.algebraMap_eq K (functions_chart K V r), ← RingHom.comp_assoc,
+                IsLocalization.Away.AwayMap.lift_comp, AlgHom.comp_algebraMap]
+  
+end Grassmannian
