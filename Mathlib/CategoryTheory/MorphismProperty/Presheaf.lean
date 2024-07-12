@@ -94,7 +94,8 @@ denotes the first projection in the choice of a pullback square given by the def
 noncomputable abbrev fst : yoneda.obj (hf.pullback g) ⟶ F :=
   (hf g).choose_spec.choose_spec.choose
 
-/-- The preimage under yoneda of `hf.fst g`, whenever this makes sense. -/
+/-- Given a representable morphism `f' : yoneda.obj Y ⟶ G`, `hf'.fst' g` denotes the preimage of
+`hf'.fst g` under yoneda. -/
 noncomputable abbrev fst' : hf'.pullback g ⟶ Y :=
   Yoneda.fullyFaithful.preimage (hf'.fst g)
 
@@ -146,7 +147,7 @@ section
 variable {Z : C} (i : yoneda.obj Z ⟶ F) (h : Z ⟶ X) (hi : i ≫ f = yoneda.map h ≫ g)
 
 /-- The lift (in `C`) obtained from the universal property of `yoneda.obj (hf.pullback g)`, in the
-case when one of the morphisms lies in the image of `yoneda.map`. -/
+case when the cone point is in the image of `yoneda.obj`. -/
 noncomputable def lift : Z ⟶ hf.pullback g :=
   Yoneda.fullyFaithful.preimage <| PullbackCone.IsLimit.lift (hf.isPullback g).isLimit _ _ hi
 
@@ -165,7 +166,8 @@ section
 
 variable {Z : C} (i : Z ⟶ Y) (h : Z ⟶ X) (hi : (yoneda.map i) ≫ f' = yoneda.map h ≫ g)
 
-/-- TODO -/
+/-- Variant of `lift` in the case when the domain of `f` lies in the image of `yoneda.obj`. Thus,
+in this case, one can obtain the lift directly by giving two morphisms in `C`. -/
 noncomputable def lift' : Z ⟶ hf'.pullback g := hf'.lift _ _ hi
 
 @[reassoc (attr := simp)]
@@ -178,7 +180,8 @@ lemma lift'_snd : hf'.lift' i h hi ≫ hf'.snd g = h := by
 
 end
 
-/-- TODO -/
+/-- Given two representable morphisms `f' : yoneda.obj Y ⟶ G` and `g : yoneda.obj X ⟶ G`, we
+obtain an isomorphism `hf'.pullback g ⟶ hg.pullback f'`. -/
 noncomputable def symmetry : hf'.pullback g ⟶ hg.pullback f' :=
   hg.lift' (hf'.snd g) (hf'.fst' g) (hf'.isPullback' _).w.symm
 
@@ -191,7 +194,7 @@ lemma symmetry_snd : hf'.symmetry hg ≫ hg.snd f' = hf'.fst' g := by simp [symm
 @[reassoc (attr := simp)]
 lemma symmetry_symmetry : hf'.symmetry hg ≫ hg.symmetry hf' = 𝟙 _ := by aesop_cat
 
-/-- TODO -/
+/-- The isomorphism given by `Presheaf.representable.symmetry`. -/
 @[simps]
 noncomputable def symmetryIso : hf'.pullback g ≅ hg.pullback f' where
   hom := hf'.symmetry hg
@@ -218,7 +221,11 @@ variable {F G : Cᵒᵖ ⥤ Type v} (P : MorphismProperty C)
 /-- Given a morphism property `P` in a category `C`, a morphism `f : F ⟶ G` of presheaves in the
 category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 * The morphism is representable.
-* The property `P` holds for the pullback of `f` by any morphism `g : yoneda.obj X ⟶ G`. -/
+* The property `P` holds for the (choice of a) representable pullback of `f`, along any morphism
+`g : yoneda.obj X ⟶ G`.
+
+See `presheaf.property'` for the fact that `P` holds for *any* representable pullback of `f` by a
+morphism `g : yoneda.obj X ⟶ G`. -/
 def presheaf : MorphismProperty (Cᵒᵖ ⥤ Type v) :=
   fun _ G f ↦ ∃ (hf : Presheaf.representable f), ∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), P (hf.snd g)
 
@@ -232,7 +239,6 @@ lemma presheaf.property {f : F ⟶ G} (hf : P.presheaf f) {X : C} (g : yoneda.ob
     P (hf.choose.snd g) :=
   hf.choose_spec g
 
--- possibly this should be the definition, and the weaker condition should be derived from this?
 lemma presheaf.property' (hP : P.RespectsIso) {f : F ⟶ G} (hf : P.presheaf f) :
     ∀ ⦃X Y : C⦄ (g : yoneda.obj X ⟶ G) (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X)
     (_ : IsPullback fst (yoneda.map snd) f g), P snd := by
@@ -246,12 +252,14 @@ lemma presheaf.property' (hP : P.RespectsIso) {f : F ⟶ G} (hf : P.presheaf f) 
   simpa using hP.1 (Yoneda.fullyFaithful.preimageIso <|
     h.isoIsPullback (hf.rep.isPullback g)) _ (hf.property g)
 
+-- (Calle) This should possibly be the definition?
 lemma presheaf_mk' (hP : P.RespectsIso) {f : F ⟶ G} (hf : Presheaf.representable f)
     (h : (∀ ⦃X : C⦄ (g : yoneda.obj X ⟶ G), ∃ (Y : C)
     (fst : yoneda.obj Y ⟶ F) (snd : Y ⟶ X) (_ : IsPullback fst (yoneda.map snd) f g),
     P snd)) : P.presheaf f := by
   use hf
   intro X g
+
   obtain ⟨Y, fst, snd, ⟨h, P_snd⟩⟩ := h g
 
   have comp := (hf.isPullback g).isoIsPullback_hom_snd h
