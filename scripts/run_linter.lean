@@ -94,7 +94,7 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
       stdin := .null
     }
     _ ← child.wait
-  let nolintsFile : FilePath := "scripts/nolints.json"
+  let nolintsFile : FilePath := "scripts" / "nolints.json"
   let nolints ← if ← nolintsFile.pathExists then
     readJsonFile NoLints nolintsFile
   else
