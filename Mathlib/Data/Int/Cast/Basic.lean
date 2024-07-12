@@ -125,20 +125,8 @@ theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
 #align int.cast_sub Int.cast_subₓ
 -- type had `HasLiftT`
 
-section deprecated
-set_option linter.deprecated false
-
-@[norm_cast, deprecated (since := "2022-11-22")]
-theorem cast_bit0 (n : ℤ) : ((n + n : ℤ) : R) = (n : R) + n :=
-  Int.cast_add _ _
-#align int.cast_bit0 Int.cast_bit0
-
-@[norm_cast, deprecated (since := "2022-11-22")]
-theorem cast_bit1 (n : ℤ) : (((n + n) + 1 : ℤ) : R) = ((n : R) + n) + 1 := by
-  rw [Int.cast_add, Int.cast_one, cast_bit0]
+#noalign int.cast_bit0
 #noalign int.cast_bit1
-
-end deprecated
 
 theorem cast_two : ((2 : ℤ) : R) = 2 := cast_ofNat _
 #align int.cast_two Int.cast_two

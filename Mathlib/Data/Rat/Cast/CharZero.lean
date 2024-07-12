@@ -65,19 +65,8 @@ theorem cast_mul [CharZero α] (m n) : ((m * n : ℚ) : α) = m * n :=
   cast_mul_of_ne_zero (Nat.cast_ne_zero.2 <| ne_of_gt m.pos) (Nat.cast_ne_zero.2 <| ne_of_gt n.pos)
 #align rat.cast_mul Rat.cast_mul
 
-section
-
-set_option linter.deprecated false
-
-theorem cast_bit0 [CharZero α] (n : ℚ) : ((2 * n : ℚ) : α) = (2 * n : α) := by
-  norm_cast
-#align rat.cast_bit0 Rat.cast_bit0
-
-theorem cast_bit1 [CharZero α] (n : ℚ) : ((2 * n + 1 : ℚ) : α) = (2 * n + 1 : α) := by
-  norm_cast
-#align rat.cast_bit1 Rat.cast_bit1
-
-end
+#noalign rat.cast_bit0
+#noalign rat.cast_bit1
 
 variable (α)
 variable [CharZero α]
