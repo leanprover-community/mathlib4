@@ -609,13 +609,46 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
       rw [indexing_nonsense0 T i]
       apply H
     exact H (fun j ↦ a ↑j) (a i) hw
+  · intro h
+    simp only [ne_eq, ultra_silly_lemma] at h
+    rw [iSup] at *
+    simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, Submodule.mem_mk,
+      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe] at *
+    intro K hK
+    have A : ∀ (a : {x // ¬i = x} → 𝕜), ⨆ μ, eigenspace (T i) μ ⊓
+        ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (a j) ≤ K := by
+      intro γ' v hgv
+      simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+        Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+        SetLike.mem_coe] at hgv
+      have B : ∀ (μ : 𝕜), eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j) ≤ K := by
+        intro μ
+        let γ := Set.piecewise (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0) (Function.const n μ)
+        have C1 : γ i = μ := Set.piecewise_eq_of_not_mem (fun x ↦ i ≠ x) (Function.extend Subtype.val γ' 0)
+            (Function.const n μ) fun a ↦ a rfl
+        have C2 : ∀ (j : {x // i ≠ x}), γ j = γ' j:= by
+            sorry
+        have C : eigenspace (T i) μ ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ' j)
+            = eigenspace (T i) (γ i) ⊓ ⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j) := by
+          congr!
+          exact _root_.id (Eq.symm C1)
+          congr!
+          simp only [ne_eq, C2]
+        rw [C]
+        rw [← indexing_nonsense0]
+        exact hK fun j ↦ γ j
 
 
 
-    --have KK : ∀ (a : n → 𝕜), ⨅ j, eigenspace (T j) (a j) ≤ K := by
-     --   exact?
-    sorry
-  · sorry
+
+
+
+
+
+
+      --rw [← indexing_nonsense0]
+
+
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
