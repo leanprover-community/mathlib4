@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 import Mathlib.LinearAlgebra.Basis
 
 #align_import linear_algebra.affine_space.basis from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
@@ -279,6 +280,18 @@ noncomputable def coords : P →ᵃ[k] ι → k where
 theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 #align affine_basis.coords_apply AffineBasis.coords_apply
+
+instance instVAdd : VAdd V (AffineBasis ι k P) where
+  vadd x b :=
+    { toFun := x +ᵥ ⇑b,
+      ind' := b.ind'.vadd,
+      tot' := by rw [Pi.vadd_def, ← vadd_set_range, ← AffineSubspace.pointwise_vadd_span, b.tot,
+        AffineSubspace.pointwise_vadd_top] }
+
+@[simp, norm_cast] lemma coe_vadd (v : V) (b : AffineBasis ι k P) : ⇑(v +ᵥ b) = v +ᵥ ⇑b := rfl
+
+instance instAddAction : AddAction V (AffineBasis ι k P) :=
+  DFunLike.coe_injective.addAction _ coe_vadd
 
 end Ring
 
