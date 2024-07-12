@@ -393,8 +393,8 @@ instance : SMul S (QuadraticMap R M N) :=
       toFun_smul := fun b x => by
         rw [Pi.smul_apply, map_smul, Pi.smul_apply, smul_comm]
       exists_companion' :=
-        letI : SMulCommClass R S N := .symm _ _ _
         let ⟨B, h⟩ := Q.exists_companion
+        letI := SMulCommClass.symm S R N
         ⟨a • B, by simp [h]⟩ }⟩
 
 @[simp]
@@ -408,10 +408,10 @@ theorem smul_apply (a : S) (Q : QuadraticMap R M N) (x : M) : (a • Q) x = a �
 #align quadratic_form.smul_apply QuadraticMap.smul_apply
 
 instance [SMulCommClass S T N] : SMulCommClass S T (QuadraticMap R M N) where
-  smul_comm _s _t _q := ext <| fun _ => smul_comm _ _ _
+  smul_comm _s _t _q := ext fun _ => smul_comm _ _ _
 
 instance [SMul S T] [IsScalarTower S T N] : IsScalarTower S T (QuadraticMap R M N) where
-  smul_assoc _s _t _q := ext <| fun _ => smul_assoc _ _ _
+  smul_assoc _s _t _q := ext fun _ => smul_assoc _ _ _
 
 end SMul
 
@@ -476,13 +476,13 @@ section Sum
 
 @[simp]
 theorem coeFn_sum {ι : Type*} (Q : ι → QuadraticMap R M N) (s : Finset ι) :
-    ⇑(∑ i in s, Q i) = ∑ i in s, ⇑(Q i) :=
+    ⇑(∑ i ∈ s, Q i) = ∑ i ∈ s, ⇑(Q i) :=
   map_sum coeFnAddMonoidHom Q s
 #align quadratic_form.coe_fn_sum QuadraticMap.coeFn_sum
 
 @[simp]
 theorem sum_apply {ι : Type*} (Q : ι → QuadraticMap R M N) (s : Finset ι) (x : M) :
-    (∑ i in s, Q i) x = ∑ i in s, Q i x :=
+    (∑ i ∈ s, Q i) x = ∑ i ∈ s, Q i x :=
   map_sum (evalAddMonoidHom x : _ →+ N) Q s
 #align quadratic_form.sum_apply QuadraticMap.sum_apply
 
@@ -774,7 +774,7 @@ theorem toQuadraticMap_multiset_sum (B : Multiset (BilinMap R M N)) :
 
 @[simp]
 theorem toQuadraticMap_sum {ι : Type*} (s : Finset ι) (B : ι → (BilinMap R M N)) :
-    (∑ i in s, B i).toQuadraticMap = ∑ i in s, (B i).toQuadraticMap :=
+    (∑ i ∈ s, B i).toQuadraticMap = ∑ i ∈ s, (B i).toQuadraticMap :=
   map_sum (toQuadraticMapAddMonoidHom R M) B s
 #align bilin_form.to_quadratic_form_sum LinearMap.BilinMap.toQuadraticMap_sum
 
