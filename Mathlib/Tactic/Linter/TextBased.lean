@@ -113,6 +113,9 @@ structure ErrorContext where
   style exceptions: for example, we ignore the particular line length of a "line too long" error. -/
 def StyleError.normalise (err : StyleError) : StyleError := match err with
   -- NB: keep this in sync with `parse?_errorContext` below.
+  | StyleError.fileTooLong _ _ => StyleError.fileTooLong 0 0
+  -- We do *not* care about the *kind* of wrong copyright.
+  | StyleError.copyright _ => StyleError.copyright ""
   | StyleError.lineLength _ => StyleError.lineLength 0
   | _ => err
 
@@ -148,7 +151,7 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: line_number :: ":" :: error_code :: ":" :: error_message =>
+    | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
@@ -158,10 +161,10 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
       let err : Option StyleError := match error_code with
         -- Use default values for parameters which are normalised.
         -- NB: keep this in sync with `normalise` above!
+        | "ERR_COP" => some (StyleError.copyright "")
         | "ERR_LIN" => some (StyleError.lineLength 0)
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
-        | "ERR_COP" => some (StyleError.copyright (some (" ".intercalate error_message)))
         | "ERR_IMP" =>
           -- XXX tweak exceptions messages to ease parsing?
           if (error_message.get! 0).containsSubstr "tactic" then
@@ -178,9 +181,8 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
             | _ => none
           | _ => none
         | _ => none
-      match String.toNat? line_number with
-      | some n => err.map fun e ↦ (ErrorContext.mk e n path)
-      | _ => none
+      -- Omit the line number, as we don't use it anyway.
+      err.map fun e ↦ (ErrorContext.mk e 0 path)
     -- It would be nice to print an error on any line which doesn't match the above format,
     -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
     -- anyway as the style exceptions file is mostly automatically generated.
