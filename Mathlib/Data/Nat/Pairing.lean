@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Lattice
 #align_import data.nat.pairing from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
-#  Naturals pairing function
+# Naturals pairing function
 
 This file defines a pairing function for the naturals as follows:
 ```text
