@@ -219,7 +219,7 @@ lemma transition_aux_matrix_coord (i j : Basis (Fin (r + c)) K V) :
     (matrix r c i j).map (algebraMap (MvPolynomial (Fin c × Fin r) K)
     (Localization.Away (equation r c i j))) * (matrix_F' r c i j)⁻¹ := by
   refine Matrix.eq_of_submatrix_eq (Fin.castLE (Nat.le_add_right r c))
-    (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩ : Fin c → Fin (r + c))
+    (fun i ↦ ⟨i.1 + r, by omega⟩ : Fin c → Fin (r + c))
     _ _ ?_ ?_ ?_
   · rw [Matrix.submatrix_mul _ _ (Fin.castLE (Nat.le_add_right r c)) id id Function.bijective_id,
       Matrix.submatrix_id_id, Matrix.submatrix_map, matrix_coord_submatrix₁]
@@ -239,7 +239,7 @@ lemma transition_aux_matrix_coord (i j : Basis (Fin (r + c)) K V) :
       existsi ⟨i.1, h⟩
       simp only [Fin.castLE_mk, Fin.eta]
     · right
-      existsi ⟨i - r, by have := i.2; omega⟩
+      existsi ⟨i - r, by omega⟩
       simp only; rw [Fin.ext_iff]
       rw [lt_iff_not_le, not_not] at h
       simp only [h, Nat.sub_add_cancel]
