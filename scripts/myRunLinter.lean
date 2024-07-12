@@ -1,5 +1,6 @@
 import Batteries.Tactic.Lint
 import Batteries.Data.Array.Basic
+import Batteries.Data.List.Basic
 import Batteries.Lean.Util.Path
 import Cli.Basic
 
@@ -58,6 +59,11 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
     IO.Process.exit 2
   let print := args.hasFlag "print_linters"
   let update := args.hasFlag "update"
+  let updateOnlyRemove := args.hasFlag "update_only_remove"
+  if update && updateOnlyRemove then
+    IO.println "The options '--update' and '--update_only_remove' are mutually exclusive: \
+      please do not specify both"
+    IO.Process.exit 2
   let some module := match args.flag? "module" with
       | some mod =>
         match mod.value.toName with
@@ -88,24 +94,32 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
       let decls ← getDeclsInPackage module.getRoot
       -- Configure the list of linters to run, as needed.
       let newNames := add.map fun names ↦ names.map (·.toName)
-      let mut linters ← getChecksNew (slow := true) (useAlso := newNames)
-      if let some only := only then
-        if let some extra := add then
-          linters := linters.filter fun lint ↦
-            extra.contains lint.name.toString || only.contains lint.name.toString
-        else
-          linters := linters.filter fun lint ↦ only.contains lint.name.toString
-      else if let some exclude := exclude then
-        if let some extra := add then
-          -- add takes priority over --exclude: a lint must be excluded and *not* added
-          linters := linters.filter fun lint ↦
-            !exclude.contains lint.name.toString && !extra.contains lint.name.toString
-        else
-          linters := linters.filter fun lint ↦ !exclude.contains lint.name.toString
+      let defaultLinters ← getChecksNew (slow := true) (useAlso := newNames)
+      let linters := if updateOnlyRemove then
+        -- Determine all unique linters which are mentioned in the `nolints` file.
+        let all := (nolints.map fun nol ↦ nol.1).qsort (·.toString < ·.toString)
+        let uniqueLinters := (all.toList).pwFilter (·.toString ≠ ·.toString)
+        defaultLinters.filter fun lint ↦ uniqueLinters.contains lint.name
+      else
+        if let some only := only then
+          if let some extra := add then
+            defaultLinters.filter fun lint ↦
+              extra.contains lint.name.toString || only.contains lint.name.toString
+          else
+            defaultLinters.filter fun lint ↦ only.contains lint.name.toString
+        else if let some exclude := exclude then
+          if let some extra := add then
+            -- add takes priority over --exclude: a lint must be excluded and *not* added
+            defaultLinters.filter fun lint ↦
+              !exclude.contains lint.name.toString && !extra.contains lint.name.toString
+          else
+            defaultLinters.filter (fun lint ↦ !exclude.contains lint.name.toString)
+        else defaultLinters
       if print then
         IO.println s!"The following {linters.size} linter(s) were configured to run: \
           {linters.map fun l ↦ l.name}"
         IO.Process.exit 0
+
       let results ← lintCore decls linters
       if update then
         writeJsonFile (α := NoLints) nolintsFile <|
@@ -143,6 +157,8 @@ unsafe def runLinter : Cmd := `[Cli|
                 If the 'only_linters', 'exclude_linters' or 'add_linters' flags are passed,
                 this will only add entries for these linters: the nolints file could be missing
                 further entries. Use with care!"
+    update_only_remove; "Like --update, but only run linters which have entries in the nolints file\
+      This can be much faster, but will by design only *remove* entries, never add any."
 
     module : String;   "Run the linters on a given module: if omitted, will run on all modules in Mathlib"
 ]
