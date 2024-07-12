@@ -23,10 +23,16 @@ namespace LanguageGreedoid
 
 variable {α : Type*}
 
+/-- TODO: Remove `DecidableEq`. Check Mathlib.Data.Fintype.List.-/
 theorem language_Finite [DecidableEq α] {L : LanguageGreedoid α} : L.language.Finite := by
-  let s := L.ground_set.powerset.map ⟨λ s ↦ s.val.lists, by sorry⟩
+  let s := L.ground_set.powerset.map ⟨λ s ↦ s.val.lists, by
+    intro s t h
+    simp only at h
+    
+    sorry⟩
   apply Set.Finite.ofFinset
-  sorry
+  · sorry
+  · sorry
 
 protected def toGreedoid (L : LanguageGreedoid α) : Greedoid α where
   ground_set := L.ground_set
