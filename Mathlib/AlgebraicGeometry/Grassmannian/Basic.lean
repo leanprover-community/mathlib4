@@ -6,7 +6,6 @@ Authors: Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weih
 import Mathlib.AlgebraicGeometry.Grassmannian.Lemmas
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.AlgebraicGeometry.OpenImmersion
