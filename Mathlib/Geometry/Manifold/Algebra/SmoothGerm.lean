@@ -126,6 +126,13 @@ lemma toSubring_eq_range [SmoothRing I' R] (x : M) :
     smoothGerm.subring I I' R x = (germOfContMDiffMap I I' R x).range := by
   rfl
 
+variable [SmoothAdd I' R] [SmoothRing I' R]
+
+@[simp]
+lemma coe_sum {ι} (f : ι → C^∞⟮I, M; I', R⟯) (s : Finset ι) (x : M) :
+    ((∑ i in s, f i : C^∞⟮I, M; I', R⟯) : smoothGerm I I' R x) = ∑ i in s, (f i : smoothGerm I I' R x) :=
+  map_sum (RingHom.rangeRestrict (germOfContMDiffMap I I' R x)) f s
+
 end subring
 
 end smoothGerm
