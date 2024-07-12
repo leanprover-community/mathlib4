@@ -109,7 +109,7 @@ private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : �
   have h3b : 3 ∣ b := by
     refine three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 ha ?_ h3a HF H
     simp only [← Hgcd, gcd_insert, gcd_singleton, id_eq, ← Int.abs_eq_normalize, abs_neg]
-  rcases hx with (hx | hx | hx)
+  rcases hx with hx | hx | hx
   · exact hx ▸ h3a
   · exact hx ▸ h3b
   · simpa [hx] using dvd_c_of_prime_of_dvd_a_of_dvd_b_of_FLT Int.prime_three h3a h3b HF
@@ -130,7 +130,7 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   · exact fermatLastTheoremThree_case_1 h1 hF
   rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
-  rcases h1 with ((h3a | h3b) | h3c)
+  rcases h1 with (h3a | h3b) | h3c
   · refine fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 ha h3a ?_ H hF
     simp only [← Hgcd, Insert.comm, gcd_insert, gcd_singleton, id_eq, ← abs_eq_normalize, abs_neg]
   · rw [add_comm (a ^ 3)] at hF
@@ -234,9 +234,9 @@ lemma a_cube_b_cube_congr_one_or_neg_one :
     λ ^ 4 ∣ S'.a ^ 3 - 1 ∧ λ ^ 4 ∣ S'.b ^ 3 + 1 ∨ λ ^ 4 ∣ S'.a ^ 3 + 1 ∧ λ ^ 4 ∣ S'.b ^ 3 - 1 := by
   obtain ⟨z, hz⟩ := S'.hcdvd
   rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd hζ S'.ha with
-    (⟨x, hx⟩ | ⟨x, hx⟩) <;>
+    ⟨x, hx⟩ | ⟨x, hx⟩ <;>
   rcases lambda_pow_four_dvd_cube_sub_one_or_add_one_of_lambda_not_dvd hζ S'.hb with
-    (⟨y, hy⟩ | ⟨y, hy⟩)
+    ⟨y, hy⟩ | ⟨y, hy⟩
   · exfalso
     replace hζ : IsPrimitiveRoot ζ ((3 : ℕ+) ^ 1) := by rwa [pow_one]
     refine hζ.toInteger_sub_one_not_dvd_two (by decide) ⟨S'.u * λ ^ 2 * z ^ 3 - λ ^ 3 * (x + y), ?_⟩
@@ -259,7 +259,7 @@ lemma a_cube_b_cube_congr_one_or_neg_one :
 /-- Given `S' : Solution'`, we have that `λ ^ 4` divides `S'.c ^ 3`. -/
 lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
   rcases a_cube_b_cube_congr_one_or_neg_one S' with
-    (⟨⟨x, hx⟩, ⟨y, hy⟩⟩ | ⟨⟨x, hx⟩, ⟨y, hy⟩⟩) <;>
+    ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ | ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ <;>
   · refine ⟨S'.u⁻¹ * (x + y), ?_⟩
     symm
     calc _ = S'.u⁻¹ * (λ ^ 4 * x + λ ^ 4 * y) := by ring
@@ -339,7 +339,7 @@ result below). -/
 lemma ex_cube_add_cube_eq_and_isCoprime_and_not_dvd_and_dvd :
     ∃ (a' b' : 𝓞 K), a' ^ 3 + b' ^ 3 = S'.u * S'.c ^ 3 ∧ IsCoprime a' b' ∧ ¬ λ ∣ a' ∧
       ¬ λ ∣ b' ∧ λ ^ 2 ∣ a' + b' := by
-  rcases lambda_sq_dvd_or_dvd_or_dvd S' with (h | h | h)
+  rcases lambda_sq_dvd_or_dvd_or_dvd S' with h | h | h
   · exact ⟨S'.a, S'.b, S'.H, S'.coprime, S'.ha, S'.hb, h⟩
   · refine ⟨S'.a, η * S'.b, ?_, ?_, S'.ha, fun ⟨x, hx⟩ ↦ S'.hb ⟨η ^ 2 * x, ?_⟩, h⟩
     · simp [mul_pow, ← val_pow_eq_pow_val, hζ.toInteger_cube_eq_one, val_one, one_mul, S'.H]
