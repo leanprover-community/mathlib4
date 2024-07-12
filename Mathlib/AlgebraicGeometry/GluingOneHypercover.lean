@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 import Mathlib.AlgebraicGeometry.Gluing
-import Mathlib.CategoryTheory.Sites.OneHypercover
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
+import Mathlib.CategoryTheory.Sites.OneHypercover
 
 /-!
 # The 1-hypercover of a glue data
@@ -28,7 +28,7 @@ variable (D : Scheme.GlueData.{u})
 /-- The 1-hypercover of `D.glued` in the big Zariski site that is given by the
 open cover `D.U` from the glue data `D`.
 The "covering of the intersection of two such open subsets" is the trivial
-covering provided by the `D.V`. -/
+covering given by `D.V`. -/
 @[simps]
 noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued where
   I₀ := D.J
