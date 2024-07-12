@@ -1,5 +1,5 @@
 /-
-Copyright 2024 (c) Sophie Morel. All rights reserved.
+Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu
 -/
