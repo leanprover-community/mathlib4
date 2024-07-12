@@ -9,13 +9,14 @@ import Mathlib.Order.Filter.Germ
 /-!
 # Germs of smooth functions
 
-Germs of smooth functions between manifolds.
+Germs of smooth functions between smooth manifolds.
 
 ## Main definitions and results
 
 * `smoothGerm I I' N x`: the set of germs of smooth functions `f : M → N` at `x : M`
-* `smoothGerm.toSubring` and friends: if `R` is a smooth ring,
-the space of germs of smooth functions `M → R` is a subring of `Germ (𝓝 x) R`
+* `smoothGerm.subring` and friends: if `R` is a smooth ring,
+the space of germs of smooth functions `M → R` is a subring of `Germ (𝓝 x) R`.
+There are analogous versions for additive and multiplicative monoids and groups.
 
 ## Tags
 
@@ -38,16 +39,17 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
 
-namespace smoothGerm
-
-/-! Definition of germs of smooth maps, between any two manifolds. -/
-section definition
-
 variable (N) in
 /-- The set of all germs of smooth functions `M → N` at `x : N`. -/
 def _root_.smoothGerm (x : M) : Set (Germ (𝓝 x) N) :=
   { Filter.Germ.ofFun f | f : SmoothMap I I' M N }
 
+@[simp]
+lemma mem_smoothGerm {x : M} (a : Germ (𝓝 x) N) :
+    a ∈ smoothGerm I I' N x ↔ ∃ f : SmoothMap I I' M N, Germ.ofFun f = a := by
+  rfl
+
+namespace smoothGerm
 instance (x : M) [ChartedSpace H' N] : Coe C^∞⟮I, M; I', N⟯ (smoothGerm I I' N x) :=
   ⟨fun f ↦ ⟨(f : M → N), ⟨f, rfl⟩⟩⟩
 
@@ -60,13 +62,6 @@ theorem coe_eq_coe (f g : C^∞⟮I, M; I', N⟯) {x : M} (h : ∀ᶠ y in 𝓝 
     (f : smoothGerm I I' N x) = (g : smoothGerm I I' N x) := by
   ext
   rwa [Germ.coe_eq]
-
-@[simp]
-lemma mem_smoothGerm {x : M} (a : Germ (𝓝 x) N) :
-    a ∈ smoothGerm I I' N x ↔ ∃ f : SmoothMap I I' M N, Germ.ofFun f = a := by
-  rfl
-
-end definition
 
 -- If `R` has the appropriate structure, `smoothGerm I I' R x` is a subgroup etc.
 -- All respective axioms are easy to prove by choosing explicit representatives.
