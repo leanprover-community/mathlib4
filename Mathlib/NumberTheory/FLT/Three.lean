@@ -705,7 +705,7 @@ lemma Solution'_descent_multiplicity_lt :
 /-- Given any `S : Solution`, there is another `S₁ : Solution` such that
   `S₁.multiplicity < S.multiplicity` -/
 theorem exists_Solution_multiplicity_lt :
-    ∃ (S₁ : Solution hζ), S₁.multiplicity < S.multiplicity := by
+    ∃ S₁ : Solution hζ, S₁.multiplicity < S.multiplicity := by
   obtain ⟨S', hS'⟩ := exists_Solution_of_Solution' (Solution'_descent S)
   exact ⟨S', hS' ▸ Solution'_descent_multiplicity_lt S⟩
 
