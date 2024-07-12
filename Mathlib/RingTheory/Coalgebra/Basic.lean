@@ -222,7 +222,7 @@ namespace Finsupp
 variable (R : Type u) (ι : Type v) (A : Type w)
 variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
-open LinearMap CoalgebraStruct
+open LinearMap
 
 instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
   comul := Finsupp.lsum R fun i =>
