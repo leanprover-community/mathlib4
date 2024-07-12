@@ -531,10 +531,18 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
     eigenspace (T j) (γ j))))
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) := by sorry
 
+theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
+    ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
+    (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := by sorry
+
+variable (μ : 𝕜) (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
+#check Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)))))ᗮ = ⊥ := by
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))))) = ⨆ (γ : {x // i ≠ x} → 𝕜),
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := by
   simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
   conv =>
    lhs
@@ -543,14 +551,11 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
    rhs
    ext μ
    rw [index_convert T hC i]
-
-  ext v
-  simp only [iSup, ne_eq, Submodule.mem_bot]
-  constructor
-  intro H
-
-  sorry
-
+  conv =>
+   lhs
+   rhs
+   ext γ
+   rw [prelim_sub_exhaust T hC]
 
 #exit
 
