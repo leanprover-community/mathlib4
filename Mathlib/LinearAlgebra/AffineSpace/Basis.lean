@@ -298,7 +298,7 @@ instance instAddAction : AddAction V (AffineBasis ι k P) :=
   DFunLike.coe_injective.addAction _ coe_vadd
 
 @[simp] lemma coord_vadd (v : V) (b : AffineBasis ι k P) :
-  (v +ᵥ b).coord i = (b.coord i).comp (AffineEquiv.constVAdd k P v).symm := by
+    (v +ᵥ b).coord i = (b.coord i).comp (AffineEquiv.constVAdd k P v).symm := by
   ext p
   simp only [coord, ne_eq, basisOf_vadd, coe_vadd, Pi.vadd_apply, Basis.coe_sumCoords,
     AffineMap.coe_mk, AffineEquiv.constVAdd_symm, AffineMap.coe_comp, AffineEquiv.coe_toAffineMap,

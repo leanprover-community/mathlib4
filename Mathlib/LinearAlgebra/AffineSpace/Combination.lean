@@ -81,9 +81,9 @@ theorem weightedVSubOfPoint_apply_const (w : ι → k) (p : P) (b : P) :
   rw [weightedVSubOfPoint_apply, sum_smul]
 #align finset.weighted_vsub_of_point_apply_const Finset.weightedVSubOfPoint_apply_const
 
-@[simp] lemma weightedVSubOfPoint_vadd (s : Finset ι) (w : ι → k) (p : ι → P) (b : P) (v : V) :
+lemma weightedVSubOfPoint_vadd (s : Finset ι) (w : ι → k) (p : ι → P) (b : P) (v : V) :
     s.weightedVSubOfPoint (v +ᵥ p) b w = s.weightedVSubOfPoint p (-v +ᵥ b) w := by
-  simp [weightedVSubOfPoint, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, add_comm]
+  simp [vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, add_comm]
 
 /-- `weightedVSubOfPoint` gives equal results for two families of weights and two families of
 points that are equal on `s`. -/
