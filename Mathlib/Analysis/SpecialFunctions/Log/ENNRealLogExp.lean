@@ -122,7 +122,7 @@ lemma measurable_log : Measurable log := continuous_log.measurable
 lemma _root_.EReal.measurable_exp : Measurable exp := continuous_exp.measurable
 
 @[measurability, fun_prop]
-lemma _root_.Measurable.ereal_log {α : Type*} {_ : MeasurableSpace α}
+lemma _root_.Measurable.ennreal_log {α : Type*} {_ : MeasurableSpace α}
     {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x ↦ log (f x) := measurable_log.comp hf
 
