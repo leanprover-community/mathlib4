@@ -527,22 +527,22 @@ Submodule.map (Submodule.subtype (eigenspace A α)) (eigenspace (B.restrict (eig
 -- doesn't work...
 
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 𝕜) : (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))) = Submodule.map (Submodule.subtype ((⨅ (j : {x // i ≠ x}),
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))) = Submodule.map (Submodule.subtype ((⨅ (j : {x // i ≠ x}),
     eigenspace (T j) (γ j))))
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) := by sorry
 
 theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := by sorry
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
 
 variable (μ : 𝕜) (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
 #check Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))))) = ⨆ (γ : {x // i ≠ x} → 𝕜),
-    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := by
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) = ⨆ (γ : {x // i ≠ x} → 𝕜),
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
   simp only [ne_eq, Submodule.orthogonal_eq_bot_iff]
   conv =>
    lhs
@@ -557,7 +557,10 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
    ext γ
    rw [prelim_sub_exhaust T hC]
 
-#exit
+
+theorem indexing_nonsense : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
+    = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))))) := by sorry
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
@@ -573,9 +576,8 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
       exact Fintype.card_pos
     have D := H {x // i ≠ x} C (Subtype.restrict (fun x ↦ i ≠ x) T)
       (fun (i_1 : {x // i ≠ x}) ↦ hT ↑i_1) (fun (i_1 j : { x // i ≠ x }) ↦ hC ↑i_1 ↑j)
-    --the next problem is probably going to be reconciling the sup over
-    --functions with taking these individual sups over μ. There must be a way
-    --to do this, though...
+    simp only [Submodule.orthogonal_eq_bot_iff] at *
+    rw [← index_post_exhaust] at D
     sorry
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
