@@ -379,9 +379,10 @@ Return the number of files which had new style errors.
 def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 := do
   -- Read the style exceptions file.
   -- We also have a `nolints` file with manual exceptions for the linter.
-  let exceptions ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
+  let exceptionsFilePath : FilePath := "scripts" / "style-exceptions.txt"
+  let exceptions ← IO.FS.lines exceptionsFilePath
   let mut styleExceptions := parseStyleExceptions exceptions
-  let nolints ← IO.FS.lines (mkFilePath ["scripts", "nolints-style.txt"])
+  let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
   styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
 
   let mut numberErrorFiles := 0
