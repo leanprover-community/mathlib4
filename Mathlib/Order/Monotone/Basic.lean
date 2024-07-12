@@ -650,10 +650,10 @@ protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : �
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → f x < g y) :
     StrictMono fun x ↦ if p x then f x else g x := by
   intro x y h
-  by_cases hy:p y
+  by_cases hy : p y
   · have hx : p x := hp h hy
     simpa [hx, hy] using hf h
-  by_cases hx:p x
+  by_cases hx : p x
   · simpa [hx, hy] using hfg hx hy h
   · simpa [hx, hy] using hg h
 #align strict_mono.ite' StrictMono.ite'

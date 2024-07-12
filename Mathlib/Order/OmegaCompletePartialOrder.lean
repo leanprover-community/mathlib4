@@ -369,7 +369,7 @@ theorem continuous_id : Continuous (@OrderHom.id α _) := by intro c; rw [c.map_
 
 @[deprecated ωScottContinuous.comp (since := "2024-05-29")]
 theorem continuous_comp (hfc : Continuous f) (hgc : Continuous g) : Continuous (g.comp f) := by
-  dsimp [Continuous] at *; intro;
+  dsimp [Continuous] at *; intro
   rw [hfc, hgc, Chain.map_comp]
 #align omega_complete_partial_order.continuous_comp OmegaCompletePartialOrder.continuous_comp
 
