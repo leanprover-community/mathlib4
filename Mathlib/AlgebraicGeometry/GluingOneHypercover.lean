@@ -8,11 +8,15 @@ import Mathlib.CategoryTheory.Sites.OneHypercover
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 
 /-!
-# Gluing Hypercovers
+# The 1-hypercover of a glue data
 
-In this file ...
+In this file, given `D : Scheme.GlueData`, we construct a 1-hypercover
+`D.openHypercover` of the scheme `D.glued` in the big Zariski site.
+We use this 1-hypercover in order to define a constructor `D.sheafValGluedMk`
+for sections over `D.glued` of a sheaf of types over the big Zariski site.
 
 -/
+
 universe v u
 
 open CategoryTheory Opposite Limits
@@ -21,7 +25,10 @@ namespace AlgebraicGeometry.Scheme.GlueData
 
 variable (D : Scheme.GlueData.{u})
 
-/-- TODO -/
+/-- The 1-hypercover of `D.glued` in the big Zariski site that is given by the
+open cover `D.U` from the glue data `D`.
+The "covering of the intersection of two such open subsets" is the trivial
+covering provided by the `D.V`. -/
 @[simps]
 noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued where
   I₀ := D.J
@@ -34,27 +41,23 @@ noncomputable def oneHypercover : Scheme.zariskiTopology.OneHypercover D.glued w
   w i₁ i₂ _ := by simp only [Category.assoc, Scheme.GlueData.glue_condition]
   mem₀ := by
     refine zariskiTopology.superset_covering ?_ (zariskiTopology_openCover D.openCover)
-    rw [Sieve.sets_iff_generate] -- the name of this lemma should be changed!
+    rw [Sieve.generate_le_iff]
     rintro W _ ⟨i⟩
     exact ⟨_, 𝟙 _, _, ⟨i⟩, by simp; rfl⟩
   mem₁ i₁ i₂ W p₁ p₂ fac := by
-    dsimp at p₁ p₂ fac ⊢
-    refine zariskiTopology.superset_covering ?_ (zariskiTopology.top_mem _)
-    intro T g _
-    dsimp
+    refine zariskiTopology.superset_covering (fun T g _ ↦ ?_) (zariskiTopology.top_mem _)
     have ⟨φ, h₁, h₂⟩ := PullbackCone.IsLimit.lift' (D.vPullbackConeIsLimit i₁ i₂)
       (g ≫ p₁) (g ≫ p₂) (by simpa using g ≫= fac)
     exact ⟨⟨⟩, φ, h₁.symm, h₂.symm⟩
 
-variable {F : Sheaf Scheme.zariskiTopology (Type v)}
-
 section
 
-variable (s : ∀ (j : D.J), F.val.obj (op (D.U j)))
+variable {F : Sheaf Scheme.zariskiTopology (Type v)}
+  (s : ∀ (j : D.J), F.val.obj (op (D.U j)))
   (h : ∀ (i j : D.J), F.val.map (D.f i j).op (s i) =
     F.val.map ((D.f j i).op ≫ (D.t i j).op) (s j))
 
-/-- TODO -/
+/-- Constructor for sections over `D.glued` of a sheaf of types on the big Zariski site. -/
 noncomputable def sheafValGluedMk : F.val.obj (op D.glued) :=
   Multifork.IsLimit.sectionsEquiv (D.oneHypercover.isLimitMultifork F)
     { val := s
@@ -65,6 +68,5 @@ lemma sheafValGluedMk_val (j : D.J) : F.val.map (D.ι j).op (D.sheafValGluedMk s
   Multifork.IsLimit.sectionsEquiv_apply_val (D.oneHypercover.isLimitMultifork F) _ _
 
 end
-
 
 end AlgebraicGeometry.Scheme.GlueData
