@@ -2,8 +2,6 @@
 Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu
-This contribution was created as part of the AIM workshop "Formalizing algebraic geometry" in
-June 2024.
 -/
 import Mathlib.AlgebraicGeometry.Grassmannian.Lemmas
 import Mathlib.AlgebraicGeometry.Gluing
@@ -59,10 +57,15 @@ trouble because of the way subtraction works on `ℕ`, we introduce the codimens
 auxiliary variable, and our constructions are only interesting when `r + c` is equal to
 `FiniteDimensional.finrank K V`.
 
-## TODO
+# TODO
 
 Describe the functor of points of the Grassmannian scheme. (We need more about quasi-coherent
 sheaves in mathlib before we can do that.)
+
+# Notes.
+
+This contribution was created as part of the AIM workshop "Formalizing algebraic geometry" in
+June 2024.
 -/
 
 open AlgebraicGeometry Scheme FiniteDimensional CategoryTheory Matrix

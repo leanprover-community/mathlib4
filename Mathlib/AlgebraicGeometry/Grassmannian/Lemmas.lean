@@ -2,8 +2,6 @@
 Copyright (c) Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu
-This contribution was created as part of the AIM workshop "Formalizing algebraic geometry" in
-June 2024.
 -/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Pullbacks
@@ -20,6 +18,11 @@ import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 This is a collection of lemmas that are used in the formalization of the Grassmannian schemes.
 They should be included in various other files.
+
+# Notes.
+
+This contribution was created as part of the AIM workshop "Formalizing algebraic geometry" in
+June 2024.
 -/
 
 open AlgebraicGeometry Scheme FiniteDimensional CategoryTheory Matrix
