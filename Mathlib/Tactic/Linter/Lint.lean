@@ -111,6 +111,57 @@ initialize addLinter dupNamespace
 end DupNamespaceLinter
 
 /-!
+#  The "noRepeatedVariable" linter
+
+The "noRepeatedVariable" linter emits a warning somewhere.
+-/
+
+open Lean Elab
+
+namespace Mathlib.Linter
+
+/-- The "noRepeatedVariable" linter emits a warning when a variable in scope is repeated in a
+command. -/
+register_option linter.noRepeatedVariable : Bool := {
+  defValue := true
+  descr := "enable the noRepeatedVariable linter"
+}
+
+/-- `getBinders stx` returns the array of all the im/ex-plicit binders contained in `stx`. -/
+partial
+def getBinders : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let fargs := (args.map getBinders).flatten
+    if kind == ``Lean.Parser.Term.implicitBinder || kind == ``Lean.Parser.Term.explicitBinder then
+      fargs.push stx else fargs
+  | _ => #[]
+
+namespace NoRepeatedVariable
+
+/-- Gets the value of the `linter.noRepeatedVariable` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.noRepeatedVariable o
+
+open Command in
+@[inherit_doc Mathlib.Linter.linter.noRepeatedVariable]
+def noRepeatedVariableLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    unless getLinterHash (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    if stx.isOfKind ``Lean.Parser.Command.variable then return
+    let binders := getBinders stx
+    let sc ← getScope
+    let vars := sc.varDecls.map (·.raw)
+    let repeatedBinders := binders.filter vars.contains
+    for d in repeatedBinders do
+      Linter.logLint linter.noRepeatedVariable d m!"repeated: {← `(command| variable $(⟨d⟩))}"
+
+initialize addLinter noRepeatedVariableLinter
+
+end NoRepeatedVariable
+
+/-!
 #  `oneLineAlign` linter
 
 The `oneLineAlign` linter checks that `#align` statements span a single line,
