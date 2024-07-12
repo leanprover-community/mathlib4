@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.PNat.Basic
 
 #align_import data.pnat.prime from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
@@ -231,13 +231,13 @@ theorem Coprime.gcd_mul_right_cancel (m : ℕ+) {n k : ℕ+} :
 
 theorem Coprime.gcd_mul_left_cancel_right (m : ℕ+) {n k : ℕ+} :
     k.Coprime m → m.gcd (k * n) = m.gcd n := by
-  intro h; iterate 2 rw [gcd_comm]; symm;
+  intro h; iterate 2 rw [gcd_comm]; symm
   apply Coprime.gcd_mul_left_cancel _ h
 #align pnat.coprime.gcd_mul_left_cancel_right PNat.Coprime.gcd_mul_left_cancel_right
 
 theorem Coprime.gcd_mul_right_cancel_right (m : ℕ+) {n k : ℕ+} :
     k.Coprime m → m.gcd (n * k) = m.gcd n := by
-  rw [mul_comm];
+  rw [mul_comm]
   apply Coprime.gcd_mul_left_cancel_right
 #align pnat.coprime.gcd_mul_right_cancel_right PNat.Coprime.gcd_mul_right_cancel_right
 

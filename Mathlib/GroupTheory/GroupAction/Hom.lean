@@ -7,7 +7,6 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
 #align_import algebra.hom.group_action from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
@@ -331,7 +330,7 @@ section DistribMulAction
 variable {M : Type*} [Monoid M]
 variable {N : Type*} [Monoid N]
 variable {P : Type*} [Monoid P]
-variable (φ: M →* N) (φ' : N →* M) (ψ : N →* P) (χ : M →* P)
+variable (φ : M →* N) (φ' : N →* M) (ψ : N →* P) (χ : M →* P)
 variable (A : Type*) [AddMonoid A] [DistribMulAction M A]
 variable (B : Type*) [AddMonoid B] [DistribMulAction N B]
 variable (B₁ : Type*) [AddMonoid B₁] [DistribMulAction M B₁]
@@ -851,3 +850,5 @@ def inverse {S₁ : Type*} [Semiring S₁] [MulSemiringAction M S₁]
 #align mul_semiring_action_hom.inverse MulSemiringActionHom.inverse
 
 end MulSemiringActionHom
+
+end DistribMulAction

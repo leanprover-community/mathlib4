@@ -334,11 +334,11 @@ lemma divInt_zero_one : 0 /. 1 = 0 := zero_divInt _
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
 @[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt]
 
-lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one]; rfl
+lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, intCast_one]
 #align rat.mk_one_one Rat.divInt_one_one
 
 @[deprecated divInt_one (since := "2024-03-18")]
-lemma divInt_neg_one_one : -1 /. 1 = -1 := by rw [divInt_one]; rfl
+lemma divInt_neg_one_one : -1 /. 1 = -1 := by rw [divInt_one, intCast_neg, intCast_one]
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
 #align rat.mul_one Rat.mul_one
@@ -372,7 +372,7 @@ attribute [simp] mkRat_eq_zero
 
 protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
   numDenCasesOn' a fun n d hd hn ↦ by
-    simp [hd] at hn;
+    simp [hd] at hn
     simp [-divInt_ofNat, mkRat_eq_divInt, Int.mul_comm, Int.mul_ne_zero hn (Int.ofNat_ne_zero.2 hd)]
 #align rat.mul_inv_cancel Rat.mul_inv_cancel
 

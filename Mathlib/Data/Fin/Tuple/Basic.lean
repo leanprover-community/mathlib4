@@ -65,7 +65,9 @@ For a **pivot** `p : Fin (n + 1)`,
   `Fin.insertNth f a : Fin (n + 1) → α` by adding `a` in position `p`. In general, tuples can be
   dependent functions, in which case `f : ∀ i : Fin n, α (p.succAbove i)` and `a : α p`. This is a
   special case of `Fin.succAboveCases`.
-* **There is currently no equivalent of `Fin.tail`/`Fin.init` for adding in the middle.**
+* `Fin.removeNth`: Turn a tuple `f : Fin (n + 1) → α` into a tuple `Fin.removeNth p f : Fin n → α`
+  by forgetting the `p`-th value. In general, tuples can be dependent functions,
+  in which case `Fin.removeNth f : ∀ i : Fin n, α (succAbove p i)`.
 
 `p = 0` means we add at the start. `p = last n` means we add at the end.
 
@@ -806,6 +808,9 @@ theorem forall_iff_succAbove {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases i h.1 h.2⟩
 #align fin.forall_iff_succ_above Fin.forall_iff_succAbove
 
+/-- Remove the `p`-th entry of a tuple. -/
+def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) := fun i ↦ f (p.succAbove i)
+
 /-- Insert an element into a tuple at a given position. For `i = 0` see `Fin.cons`,
 for `i = Fin.last n` see `Fin.snoc`. See also `Fin.succAboveCases` for a version elaborated
 as an eliminator. -/
@@ -839,6 +844,15 @@ theorem succAbove_cases_eq_insertNth : @succAboveCases.{u + 1} = @insertNth.{u} 
   rfl
 #align fin.succ_above_cases_eq_insert_nth Fin.succAbove_cases_eq_insertNth
 
+@[simp] lemma removeNth_insertNth (p : Fin (n + 1)) (a : α p) (f : ∀ i, α (succAbove p i)) :
+    removeNth p (insertNth p a f) = f := by ext; unfold removeNth; simp
+
+@[simp] lemma removeNth_zero (f : ∀ i, α i) : removeNth 0 f = tail f := by
+  ext; simp [tail, removeNth]
+
+@[simp] lemma removeNth_last {α : Type*} (f : Fin (n + 1) → α) : removeNth (last n) f = init f := by
+  ext; simp [init, removeNth]
+
 /- Porting note: Had to `unfold comp`. Sometimes, when I use a placeholder, if I try to insert
 what Lean says it synthesized, it gives me a type error anyway. In this case, it's `x` and `p`. -/
 @[simp]
@@ -847,14 +861,14 @@ theorem insertNth_comp_succAbove (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
   funext (by unfold comp; exact insertNth_apply_succAbove i _ _)
 #align fin.insert_nth_comp_succ_above Fin.insertNth_comp_succAbove
 
-theorem insertNth_eq_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
-    i.insertNth x p = q ↔ q i = x ∧ p = fun j ↦ q (i.succAbove j) := by
-  simp [funext_iff, forall_iff_succAbove i, eq_comm]
+theorem insertNth_eq_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
+    insertNth p a f = g ↔ a = g p ∧ f = removeNth p g := by
+  simp [funext_iff, forall_iff_succAbove p, removeNth]
 #align fin.insert_nth_eq_iff Fin.insertNth_eq_iff
 
-theorem eq_insertNth_iff {i : Fin (n + 1)} {x : α i} {p : ∀ j, α (i.succAbove j)} {q : ∀ j, α j} :
-    q = i.insertNth x p ↔ q i = x ∧ p = fun j ↦ q (i.succAbove j) :=
-  eq_comm.trans insertNth_eq_iff
+theorem eq_insertNth_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
+    g = insertNth p a f ↔ g p = a ∧ removeNth p g = f := by
+  simpa [eq_comm] using insertNth_eq_iff
 #align fin.eq_insert_nth_iff Fin.eq_insertNth_iff
 
 /- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
@@ -909,7 +923,7 @@ theorem insertNth_last' (x : β) (p : Fin n → β) :
 @[simp]
 theorem insertNth_zero_right [∀ j, Zero (α j)] (i : Fin (n + 1)) (x : α i) :
     i.insertNth x 0 = Pi.single i x :=
-  insertNth_eq_iff.2 <| by simp [succAbove_ne, Pi.zero_def]
+  insertNth_eq_iff.2 <| by unfold removeNth; simp [succAbove_ne, Pi.zero_def]
 #align fin.insert_nth_zero_right Fin.insertNth_zero_right
 
 lemma insertNth_rev {α : Type*} (i : Fin (n + 1)) (a : α) (f : Fin n → α) (j : Fin (n + 1)) :
@@ -944,7 +958,7 @@ theorem insertNth_binop (op : ∀ j, α j → α j → α j) (i : Fin (n + 1)) (
     (p q : ∀ j, α (i.succAbove j)) :
     (i.insertNth (op i x y) fun j ↦ op _ (p j) (q j)) = fun j ↦
       op j (i.insertNth x p j) (i.insertNth y q j) :=
-  insertNth_eq_iff.2 <| by simp
+  insertNth_eq_iff.2 <| by unfold removeNth; simp
 #align fin.insert_nth_binop Fin.insertNth_binop
 
 @[simp]
@@ -1014,21 +1028,21 @@ theorem preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q�
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and_iff, mem_empty_iff_false]
 #align fin.preimage_insert_nth_Icc_of_not_mem Fin.preimage_insertNth_Icc_of_not_mem
 
+@[simp] lemma removeNth_update (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
+    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth, succAbove_ne]
+
+@[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
+    insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
+
+lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
+    insertNth p (f p) (removeNth p f) = f := by simp
+
 /-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
 Functional form of `Equiv.piFinSuccAbove`. -/
+@[deprecated removeNth (since := "2024-06-19")]
 def extractNth (i : Fin (n + 1)) (f : (∀ j, α j)) :
     α i × ∀ j, α (i.succAbove j) :=
-  (f i, fun j => f (i.succAbove j))
-
-@[simp]
-theorem extractNth_insertNth {i : Fin (n + 1)} (x : α i) (p : ∀ j : Fin n, α (i.succAbove j)) :
-    i.extractNth (i.insertNth x p) = (x, p) := by
-  simp [extractNth]
-
-@[simp]
-theorem insertNth_extractNth {i : Fin (n + 1)} (f : ∀ j, α j) :
-    i.insertNth (i.extractNth f).1 (i.extractNth f).2 = f := by
-  simp [Fin.extractNth, Fin.insertNth_eq_iff]
+  (f i, removeNth i f)
 
 end InsertNth
 

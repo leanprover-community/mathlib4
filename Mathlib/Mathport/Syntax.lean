@@ -31,7 +31,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
@@ -39,7 +39,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
@@ -253,12 +253,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 
 /- E -/ syntax (name := wittTruncateFunTac) "witt_truncate_fun_tac" : tactic
 
-/- M -/ syntax (name := moveOp) "move_op " term:max ppSpace rwRule,+ (location)? : tactic
-macro (name := moveMul) "move_mul " pats:rwRule,+ loc:(location)? : tactic =>
-  `(tactic| move_op (·*·) $pats,* $(loc)?)
-macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
-  `(tactic| move_op (·+·) $pats,* $(loc)?)
-
 /- S -/ syntax (name := intro) "intro" : attr
 /- S -/ syntax (name := intro!) "intro!" : attr
 
@@ -287,3 +281,7 @@ macro (name := moveAdd) "move_add " pats:rwRule,+ loc:(location)? : tactic =>
 
 /- E -/ syntax (name := assertInstance) "assert_instance " term : command
 /- E -/ syntax (name := assertNoInstance) "assert_no_instance " term : command
+
+end Tactic
+
+end Mathlib

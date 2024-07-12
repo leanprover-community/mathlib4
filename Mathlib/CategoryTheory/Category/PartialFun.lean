@@ -162,12 +162,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
       fun {X Y} f ↦ Pointed.Hom.ext _ _ <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
-        classical
-        simp [Option.casesOn'_eq_elim, -Option.elim,
-          @Part.elim_toOption _ _ _ (Classical.propDecidable _), ha]
-        split_ifs with h
-        · simpa [eq_comm] using h
-        · simp
+        simp_all [Option.casesOn'_eq_elim, Part.elim_toOption]
 #align PartialFun_equiv_Pointed partialFunEquivPointed
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
