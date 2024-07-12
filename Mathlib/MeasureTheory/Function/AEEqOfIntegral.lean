@@ -635,40 +635,38 @@ alias ae_eq_zero_of_forall_set_integral_isClosed_eq_zero :=
 /-- If an integrable function has zero integral on all compact sets in a sigma-compact space, then
 it is zero almost everwhere. -/
 lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
-    [SigmaCompactSpace β] [R1Space β] {μ : Measure β} {f : β → E} (hf : Integrable f μ)
+    [SigmaCompactSpace β] [T2Space β] {μ : Measure β} {f : β → E} (hf : Integrable f μ)
     (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by
   apply ae_eq_zero_of_forall_setIntegral_isClosed_eq_zero hf (fun s hs ↦ ?_)
-  let t : ℕ → Set β := fun n ↦ closure (compactCovering β n) ∩ s
+  let t : ℕ → Set β := fun n ↦ compactCovering β n ∩ s
   suffices H : Tendsto (fun n ↦ ∫ x in t n, f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ)) by
     have A : ∀ n, ∫ x in t n, f x ∂μ = 0 :=
-      fun n ↦ h'f _ ((isCompact_compactCovering β n).closure.inter_right hs)
+      fun n ↦ h'f _ (IsCompact.inter_right (isCompact_compactCovering β n) hs)
     simp_rw [A, tendsto_const_nhds_iff] at H
     exact H.symm
-  have B : s = ⋃ n, t n := by
-    rw [← Set.iUnion_inter, iUnion_closure_compactCovering, Set.univ_inter]
+  have B : s = ⋃ n, t n := by rw [← Set.iUnion_inter, iUnion_compactCovering, Set.univ_inter]
   rw [B]
   apply tendsto_setIntegral_of_monotone
   · intros n
-    exact (isClosed_closure.inter hs).measurableSet
+    exact ((isCompact_compactCovering β n).inter_right hs).isClosed.measurableSet
   · intros m n hmn
-    simp only [t, Set.le_iff_subset]
-    gcongr
+    exact Set.inter_subset_inter_left _ (compactCovering_subset β hmn)
   · exact hf.integrableOn
 
 /-- If a locally integrable function has zero integral on all compact sets in a sigma-compact space,
 then it is zero almost everwhere. -/
 lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero'
-    [SigmaCompactSpace β] [R1Space β] {μ : Measure β} {f : β → E} (hf : LocallyIntegrable f μ)
+    [SigmaCompactSpace β] [T2Space β] {μ : Measure β} {f : β → E} (hf : LocallyIntegrable f μ)
     (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by
-  rw [← μ.restrict_univ, ← iUnion_closure_compactCovering]
+  rw [← Measure.restrict_univ (μ := μ), ← iUnion_compactCovering]
   apply (ae_restrict_iUnion_iff _ _).2 (fun n ↦ ?_)
   apply ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
-  · exact hf.integrableOn_isCompact (isCompact_compactCovering β n).closure
+  · exact hf.integrableOn_isCompact (isCompact_compactCovering β n)
   · intro s hs
-    rw [Measure.restrict_restrict' measurableSet_closure]
-    exact h'f _ (hs.inter_right isClosed_closure)
+    rw [Measure.restrict_restrict hs.measurableSet]
+    exact h'f _ (hs.inter (isCompact_compactCovering β n))
 
 end AeEqOfForallSetIntegralEq
 
