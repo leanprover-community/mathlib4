@@ -24,9 +24,9 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
 def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
   IO.FS.writeFile path <| toJson a |>.pretty
 
--- TODO: this was copy-pasted from Batteries.Tactic.Lint.Frontend;
--- this modification should be changed back there
-/-- `getChecks slow useOnly` produces a list of linters.
+-- TODO: replace by the code from Batteries.Tactic.Lint.Frontend;
+-- once PR batteries#881 has been merged
+/-- `getChecks slow useAlso` produces a list of linters.
 `useAlso` is an optional list of names that should resolve to declarations with type `NamedLinter`.
 If populated, these linters are always run (regardless of their configuration).
 Otherwise, it uses all enabled linters in the environment tagged with `@[env_linter]`.
@@ -34,14 +34,14 @@ If `slow` is false, it only uses the fast default tests. -/
 def getChecksNew (slow : Bool) (useAlso : Option (List Name)) : CoreM (Array NamedLinter) := do
   let mut result := #[]
   for (name, declName, default) in batteriesLinterExt.getState (← getEnv) do
-      let shouldRun := default || match useAlso with
+    let shouldRun := default || match useAlso with
       | some extras => extras.contains name
       | none => false
-      if shouldRun then
-        let linter ← getLinter name declName
-        if slow || linter.isFast then
-          let _ := Inhabited.mk linter
-          result := result.binInsert (·.name.lt ·.name) linter
+    if shouldRun then
+      let linter ← getLinter name declName
+      if slow || linter.isFast then
+        let _ := Inhabited.mk linter
+        result := result.binInsert (·.name.lt ·.name) linter
   pure result
 
 open Cli
@@ -50,13 +50,10 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
   let only := (args.flag? "only_linters").map fun val ↦ (val.value.splitOn " ")
   let exclude := (args.flag? "exclude_linters").map fun val ↦ (val.value.splitOn " ")
   let add := (args.flag? "add_linters").map fun val ↦ (val.value.splitOn " ")
-  -- "only" and "add" are contradictory: error if both are provided
-  if only.isSome && add.isSome then
-    IO.println "The options '--only_linters' and '--add_linters' are incompatible:\
-      please do not specify both"
-    IO.Process.exit 2
-  else if only.isSome && exclude.isSome then
-    IO.println "The options '--only_linters' and '--exclude_linters' are incompatible:\
+  -- "only" and "exclude" are contradictory: error if both are provided
+  -- "add" takes priority over "only" or "exclude": this is documented, hence fine
+  if only.isSome && exclude.isSome then
+    IO.println "The options '--only_linters' and '--exclude_linters' are incompatible: \
       please do not specify both"
     IO.Process.exit 2
   let print := args.hasFlag "print_linters"
@@ -93,9 +90,18 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
       let newNames := add.map fun names ↦ names.map (·.toName)
       let mut linters ← getChecksNew (slow := true) (useAlso := newNames)
       if let some only := only then
-        linters := linters.filter fun lint ↦ only.contains lint.name.toString
+        if let some extra := add then
+          linters := linters.filter fun lint ↦
+            extra.contains lint.name.toString || only.contains lint.name.toString
+        else
+          linters := linters.filter fun lint ↦ only.contains lint.name.toString
       else if let some exclude := exclude then
-        linters := linters.filter fun lint ↦ !exclude.contains lint.name.toString
+        if let some extra := add then
+          -- add takes priority over --exclude: a lint must be excluded and *not* added
+          linters := linters.filter fun lint ↦
+            !exclude.contains lint.name.toString && !extra.contains lint.name.toString
+        else
+          linters := linters.filter fun lint ↦ !exclude.contains lint.name.toString
       if print then
         IO.println s!"The following {linters.size} linter(s) were configured to run: \
           {linters.map fun l ↦ l.name}"
@@ -128,7 +134,8 @@ unsafe def runLinter : Cmd := `[Cli|
   FLAGS:
     only_linters : Array String;  "Only run these named linters"
     exclude_linters : Array String; "Do not run these named linters"
-    add_linters : Array String; "Run these linters *in addition* to the default set"
+    add_linters : Array String; "Run these linters *in addition* to the default set\n\
+      Takes priority over the --only_linters or --exclude_linters flags."
     print_linters; "Print the list of all discovered/configured linters and exit"
 
     update;     "Update the `nolints` file to remove any declarations \
