@@ -292,7 +292,6 @@ theorem snorm_indicator_eq_restrict {f : α → E} {s : Set α} (hs : Measurable
     congr with x
     by_cases hx : x ∈ s <;> simp [ENNReal.toReal_pos, *]
 
-
 section Const
 
 theorem snorm'_const (c : F) (hq_pos : 0 < q) :
