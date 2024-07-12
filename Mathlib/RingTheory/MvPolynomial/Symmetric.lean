@@ -184,7 +184,8 @@ section ElementarySymmetric
 
 open Finset
 
-/-- The `n`th elementary symmetric `MvPolynomial σ R`. -/
+/-- The `n`th elementary symmetric `MvPolynomial σ R`.
+It is the sum over all the degree n squarefree monomials in `MvPolynomial σ R`. -/
 def esymm (n : ℕ) : MvPolynomial σ R :=
   ∑ t ∈ powersetCard n univ, ∏ i ∈ t, X i
 #align mv_polynomial.esymm MvPolynomial.esymm
@@ -229,7 +230,7 @@ theorem esymm_one : esymm σ R 1 = ∑ i, X i := by simp [esymm, powersetCard_on
 theorem esymmPart_zero : esymmPart σ R (.indiscrete 0) = 1 := by simp [esymmPart]
 
 @[simp]
-theorem esymmPart_onePart (n : ℕ) : esymmPart σ R (.indiscrete n) = esymm σ R n := by
+theorem esymmPart_indiscrete (n : ℕ) : esymmPart σ R (.indiscrete n) = esymm σ R n := by
   cases n <;> simp [esymmPart]
 
 theorem map_esymm (n : ℕ) (f : R →+* S) : map f (esymm σ R n) = esymm σ S n := by
@@ -318,7 +319,8 @@ open Finset Multiset Sym
 
 variable [DecidableEq σ] [DecidableEq τ]
 
-/-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`. -/
+/-- The `n`th complete homogeneous symmetric `MvPolynomial σ R`.
+It is the sum over all the degree n monomials in `MvPolynomial σ R`. -/
 def hsymm (n : ℕ) : MvPolynomial σ R := ∑ s : Sym σ n, (s.1.map X).prod
 
 /-- `hsymmPart` is the product of the symmetric polynomials `hsymm μᵢ`,
@@ -337,7 +339,7 @@ theorem hsymm_one : hsymm σ R 1 = ∑ i, X i := by
 theorem hsymmPart_zero : hsymmPart σ R (.indiscrete 0) = 1 := by simp [hsymmPart]
 
 @[simp]
-theorem hsymmPart_onePart (n : ℕ) : hsymmPart σ R (.indiscrete n) = hsymm σ R n := by
+theorem hsymmPart_indiscrete (n : ℕ) : hsymmPart σ R (.indiscrete n) = hsymm σ R n := by
   cases n <;> simp [hsymmPart]
 
 theorem map_hsymm (n : ℕ) (f : R →+* S) : map f (hsymm σ R n) = hsymm σ S n := by
@@ -356,7 +358,8 @@ section PowerSum
 
 open Finset
 
-/-- The degree-`n` power sum -/
+/-- The degree-`n` power sum symmetric `MvPolynomial σ R`.
+It is the sum over all the `n`-th powers of the variables. -/
 def psum (n : ℕ) : MvPolynomial σ R := ∑ i, X i ^ n
 
 /-- `psumPart` is the product of the symmetric polynomials `psum μᵢ`,
@@ -388,7 +391,9 @@ section MonomialSymmetric
 
 variable [DecidableEq σ] [DecidableEq τ] {n : ℕ}
 
-/-- The monomial symmetric `MvPolynomial σ R` with exponent set μ. -/
+/-- The monomial symmetric `MvPolynomial σ R` with exponent set μ.
+It is the sum over all the monomials in `MvPolynomial σ R` such that
+the multiset of exponents is equal to the multiset of parts of μ. -/
 def msymm  (μ : n.Partition) : MvPolynomial σ R :=
   ∑ s : {a : Sym σ n // .ofSym a = μ},  (s.1.1.map X).prod
 
@@ -400,7 +405,7 @@ theorem msymm_zero : msymm σ R (.indiscrete 0) = 1 := by
 @[simp]
 theorem msymm_one : msymm σ R (.indiscrete 1) = ∑ i, X i := by
   symm
-  apply Fintype.sum_equiv (Nat.Partition.ofSym_equiv_onePart σ)
+  apply Fintype.sum_equiv (Nat.Partition.ofSym_equiv_indiscrete σ)
   simp
 
 @[simp]
