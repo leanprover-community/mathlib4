@@ -546,8 +546,7 @@ variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 /-- Given bases of two modules `M₁` and `M₂` over a commutative ring `R`, we get a linear
 equivalence between linear maps `M₁ →ₗ M₂` and matrices over `R` indexed by the bases. -/
 def LinearMap.toMatrix : (M₁ →ₗ[R] M₂) ≃ₗ[R] Matrix m n R :=
-  LinearEquiv.trans (LinearEquiv.arrowCongr v₁.equivFun v₂.equivFun (map_smul _))
-    LinearMap.toMatrix'
+  LinearEquiv.trans (LinearEquiv.arrowCongr v₁.equivFun v₂.equivFun) LinearMap.toMatrix'
 #align linear_map.to_matrix LinearMap.toMatrix
 
 /-- `LinearMap.toMatrix'` is a particular case of `LinearMap.toMatrix`, for the standard basis
@@ -904,16 +903,16 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [AlgHom.map_zero, LinearEquiv.map_zero]
+    rw [_root_.map_zero, LinearEquiv.map_zero]
   map_one' := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [AlgHom.map_one, LinearMap.toMatrix_one]
+    rw [_root_.map_one, LinearMap.toMatrix_one]
   map_add' x y := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [AlgHom.map_add, LinearEquiv.map_add]
+    rw [map_add, LinearEquiv.map_add]
   map_mul' x y := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [AlgHom.map_mul, LinearMap.toMatrix_mul]
+    rw [_root_.map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
     dsimp only  -- porting node: needed due to new-style structures
     ext

@@ -70,8 +70,11 @@ example [Category C] [ConcreteCategory C]
   exact this x
 
 -- `elementwise_of%` allows a level metavariable for its `ConcreteCategory` instance.
-example [Category C] [ConcreteCategory C]
-    (h : ∀ D [Category D] (X Y : D) (f : X ⟶ Y) (g : Y ⟶ X), f ≫ g = 𝟙 X)
+-- Previously this example did not specify that the universe levels of `C` and `D` (inside `h`)
+-- were the same, and this constraint was added post-hoc by the proof term.
+-- After https://github.com/leanprover/lean4/pull/4493 this no longer works (happily!).
+example {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
+    (h : ∀ (D : Type u) [Category.{v} D] (X Y : D) (f : X ⟶ Y) (g : Y ⟶ X), f ≫ g = 𝟙 X)
     {M N : C} {f : M ⟶ N} {g : N ⟶ M} (x : M) : g (f x) = x := by
   have := elementwise_of% h
   guard_hyp this : ∀ D [Category D] (X Y : D) (f : X ⟶ Y) (g : Y ⟶ X)

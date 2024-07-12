@@ -280,14 +280,14 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
+#adaptation_note /-- 2024-04-23
+After https://github.com/leanprover/lean4/pull/3965,
+we need to either write `@inv_zero (G₀ := α) (_)` in `neg_top`,
+or use `set_option backward.isDefEq.lazyProjDelta false`.
+See https://github.com/leanprover-community/mathlib4/issues/12535 -/
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
-    -- Adaptation note: 2024-04-23
-    -- After https://github.com/leanprover/lean4/pull/3965,
-    -- we need to either write `@inv_zero (G₀ := α) (_)` here,
-    -- or use `set_option backward.isDefEq.lazyProjDelta false`.
-    -- See https://github.com/leanprover-community/mathlib4/issues/12535
     neg_top := set_option backward.isDefEq.lazyProjDelta false in @inv_zero _ (_)
     add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
@@ -300,7 +300,7 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 #align pow_lt_pow₀ pow_lt_pow_right₀
 
-@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀ -- 2023-12-23
+@[deprecated (since := "2023-12-23")] alias pow_lt_pow₀ := pow_lt_pow_right₀
 
 end LinearOrderedCommGroupWithZero
 
@@ -344,6 +344,14 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
 @[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := WithBot.coe_le_coe
 #align with_zero.coe_le_coe WithZero.coe_le_coe
+
+@[simp, norm_cast] lemma one_lt_coe [One α] : 1 < (a : WithZero α) ↔ 1 < a := coe_lt_coe
+
+@[simp, norm_cast] lemma one_le_coe [One α] : 1 ≤ (a : WithZero α) ↔ 1 ≤ a := coe_le_coe
+
+@[simp, norm_cast] lemma coe_lt_one [One α] : (a : WithZero α) < 1 ↔ a < 1 := coe_lt_coe
+
+@[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
 
 theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff

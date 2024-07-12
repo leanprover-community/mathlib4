@@ -47,7 +47,7 @@ scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
 theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
    rw [nhds_nhdsAdjoint, sup_of_le_right]
    exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
- #align with_zero_topology.nhds_eq_update WithZeroTopology.nhds_eq_update
+#align with_zero_topology.nhds_eq_update WithZeroTopology.nhds_eq_update
 
 /-!
 ### Neighbourhoods of zero
@@ -172,9 +172,7 @@ scoped instance (priority := 100) t5Space : T5Space Γ₀ where
       rwa [(isOpen_iff.2 (.inl ht)).nhdsSet_eq, disjoint_nhdsSet_principal]
     · rwa [(isOpen_iff.2 (.inl hs)).nhdsSet_eq, disjoint_principal_nhdsSet]
 
-/-- The topology on a linearly ordered group with zero element adjoined is T₃. -/
-@[deprecated t5Space] lemma t3Space : T3Space Γ₀ := inferInstance
-#align with_zero_topology.t3_space WithZeroTopology.t3Space
+#align with_zero_topology.t3_space WithZeroTopology.t5Space
 
 /-- The topology on a linearly ordered group with zero element adjoined makes it a topological
 monoid. -/

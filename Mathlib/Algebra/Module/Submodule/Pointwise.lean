@@ -182,7 +182,9 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
   rfl
 #align submodule.add_eq_sup Submodule.add_eq_sup
 
-@[simp]
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+@[simp, nolint simpNF]
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
@@ -426,7 +428,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
       motive (r • n) (mem_set_smul_of_mem_mem mem₁ mem₂))
     (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N) ,
       motive m mem → motive (r • m) (Submodule.smul_mem _ r mem)) --
-    (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁: m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
+    (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁ : m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
       motive m₁ mem₁ → motive m₂ mem₂ → motive (m₁ + m₂) (Submodule.add_mem _ mem₁ mem₂))
     (zero : motive 0 (Submodule.zero_mem _)) :
     motive x hx :=

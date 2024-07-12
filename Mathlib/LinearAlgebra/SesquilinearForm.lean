@@ -3,8 +3,6 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
 
@@ -276,6 +274,13 @@ variable (H : B.IsAlt)
 theorem IsAlt.self_eq_zero (x : M₁) : B x x = 0 :=
   H x
 #align linear_map.is_alt.self_eq_zero LinearMap.IsAlt.self_eq_zero
+
+theorem IsAlt.eq_of_add_add_eq_zero [IsCancelAdd M] {a b c : M₁} (hAdd : a + b + c = 0) :
+    B a b = B b c := by
+  have : B a a + B a b + B a c = B a c + B b c + B c c := by
+    simp_rw [← map_add, ← map_add₂, hAdd, map_zero, LinearMap.zero_apply]
+  rw [H, H, zero_add, add_zero, add_comm] at this
+  exact add_left_cancel this
 
 end AddCommMonoid
 
@@ -658,8 +663,7 @@ variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R M�
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
-    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M) (map_smul _))
-      (map_smul _) B).SeparatingLeft := by
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft := by
   intro x hx
   rw [← e₁.symm.map_eq_zero_iff]
   refine h (e₁.symm x) fun y ↦ ?_
@@ -671,8 +675,7 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
 
 @[simp]
 theorem separatingLeft_congr_iff :
-    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M) (map_smul _))
-      (map_smul _) B).SeparatingLeft ↔ B.SeparatingLeft :=
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
     convert h.congr e₁.symm e₂.symm
     ext x y

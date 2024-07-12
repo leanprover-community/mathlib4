@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Data.Set.UnionLift
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.NonUnitalSubring.Basic
 

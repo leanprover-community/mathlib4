@@ -91,6 +91,11 @@ theorem aeval : aeval x (minpoly A x) = 0 := by
   · exact aeval_zero _
 #align minpoly.aeval minpoly.aeval
 
+/-- Given any `f : B →ₐ[A] B'` and any `x : L`, the minimal polynomial of `x` vanishes at `f x`. -/
+@[simp]
+theorem aeval_algHom (f : B →ₐ[A] B') (x : B) : (Polynomial.aeval (f x)) (minpoly A x) = 0 := by
+  rw [Polynomial.aeval_algHom, AlgHom.coe_comp, comp_apply, aeval, map_zero]
+
 /-- A minimal polynomial is not `1`. -/
 theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   intro h
@@ -191,7 +196,7 @@ theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minp
     rw [eq_C_of_natDegree_eq_zero ndeg_eq_zero]
     convert C_1 (R := A)
     simpa only [ndeg_eq_zero.symm] using (monic hx).leadingCoeff
-  simpa only [eq_one, AlgHom.map_one, one_ne_zero] using aeval A x
+  simpa only [eq_one, map_one, one_ne_zero] using aeval A x
 #align minpoly.nat_degree_pos minpoly.natDegree_pos
 
 /-- The degree of a minimal polynomial is positive. -/

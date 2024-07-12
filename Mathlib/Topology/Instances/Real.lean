@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Real.Star
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Algebra.Order.Field
@@ -77,11 +78,11 @@ theorem Real.isTopologicalBasis_Ioo_rat :
 theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
   simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
 
-@[deprecated] alias Real.cocompact_eq := cocompact_eq_atBot_atTop
+@[deprecated (since := "2024-02-07")] alias Real.cocompact_eq := cocompact_eq_atBot_atTop
 #align real.cocompact_eq Real.cocompact_eq
 
-@[deprecated] alias Real.atBot_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
-@[deprecated] alias Real.atTop_le_cocompact := atTop_le_cocompact -- deprecated on 2024-02-07
+@[deprecated (since := "2024-02-07")] alias Real.atBot_le_cocompact := atBot_le_cocompact
+@[deprecated (since := "2024-02-07")] alias Real.atTop_le_cocompact := atTop_le_cocompact
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
@@ -106,20 +107,13 @@ theorem Real.uniformContinuous_abs : UniformContinuous (abs : ℝ → ℝ) :=
     ⟨ε, ε0, lt_of_le_of_lt (abs_abs_sub_abs_le_abs_sub _ _)⟩
 #align real.uniform_continuous_abs Real.uniformContinuous_abs
 
-@[deprecated continuousAt_inv₀]
-theorem Real.tendsto_inv {r : ℝ} (r0 : r ≠ 0) : Tendsto (fun q => q⁻¹) (𝓝 r) (𝓝 r⁻¹) :=
-  continuousAt_inv₀ r0
-#align real.tendsto_inv Real.tendsto_inv
+#align real.tendsto_inv HasContinuousInv₀.continuousAt_inv₀
 
 theorem Real.continuous_inv : Continuous fun a : { r : ℝ // r ≠ 0 } => a.val⁻¹ :=
   continuousOn_inv₀.restrict
 #align real.continuous_inv Real.continuous_inv
 
-@[deprecated Continuous.inv₀]
-theorem Real.Continuous.inv [TopologicalSpace α] {f : α → ℝ} (h : ∀ a, f a ≠ 0)
-    (hf : Continuous f) : Continuous fun a => (f a)⁻¹ :=
-  hf.inv₀ h
-#align real.continuous.inv Real.Continuous.inv
+#align real.continuous.inv Continuous.inv₀
 
 theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
   uniformContinuous_const_smul x
@@ -135,9 +129,7 @@ theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
       Hδ (H _ a.2).1 (H _ b.2).2 h₁ h₂⟩
 #align real.uniform_continuous_mul Real.uniformContinuous_mul
 
-@[deprecated continuous_mul]
-protected theorem Real.continuous_mul : Continuous fun p : ℝ × ℝ => p.1 * p.2 := continuous_mul
-#align real.continuous_mul Real.continuous_mul
+#align real.continuous_mul continuous_mul
 
 -- Porting note: moved `TopologicalRing` instance up
 
@@ -197,12 +189,7 @@ theorem Periodic.compact_of_continuous [TopologicalSpace α] {f : ℝ → α} {c
   rw [← hp.image_uIcc hc 0]
   exact isCompact_uIcc.image hf
 #align function.periodic.compact_of_continuous Function.Periodic.compact_of_continuous
-
-@[deprecated Function.Periodic.compact_of_continuous]
-theorem Periodic.compact_of_continuous' [TopologicalSpace α] {f : ℝ → α} {c : ℝ} (hp : Periodic f c)
-    (hc : 0 < c) (hf : Continuous f) : IsCompact (range f) :=
-  hp.compact_of_continuous hc.ne' hf
-#align function.periodic.compact_of_continuous' Function.Periodic.compact_of_continuous'
+#align function.periodic.compact_of_continuous' Function.Periodic.compact_of_continuous
 
 /-- A continuous, periodic function is bounded. -/
 theorem Periodic.isBounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α} {c : ℝ}

@@ -235,50 +235,51 @@ theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R 
   RingHom.ext <| φ.commutes
 #align alg_hom.comp_algebra_map AlgHom.comp_algebraMap
 
+@[deprecated map_add (since := "2024-06-26")]
 protected theorem map_add (r s : A) : φ (r + s) = φ r + φ s :=
   map_add _ _ _
 #align alg_hom.map_add AlgHom.map_add
 
+@[deprecated map_zero (since := "2024-06-26")]
 protected theorem map_zero : φ 0 = 0 :=
   map_zero _
 #align alg_hom.map_zero AlgHom.map_zero
 
+@[deprecated map_mul (since := "2024-06-26")]
 protected theorem map_mul (x y) : φ (x * y) = φ x * φ y :=
   map_mul _ _ _
 #align alg_hom.map_mul AlgHom.map_mul
 
+@[deprecated map_one (since := "2024-06-26")]
 protected theorem map_one : φ 1 = 1 :=
   map_one _
 #align alg_hom.map_one AlgHom.map_one
 
+@[deprecated map_pow (since := "2024-06-26")]
 protected theorem map_pow (x : A) (n : ℕ) : φ (x ^ n) = φ x ^ n :=
   map_pow _ _ _
 #align alg_hom.map_pow AlgHom.map_pow
 
 -- @[simp] -- Porting note (#10618): simp can prove this
+@[deprecated map_smul (since := "2024-06-26")]
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
 #align alg_hom.map_smul AlgHom.map_smul
 
+@[deprecated map_sum (since := "2024-06-26")]
 protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
     φ (∑ x ∈ s, f x) = ∑ x ∈ s, φ (f x) :=
   map_sum _ _ _
 #align alg_hom.map_sum AlgHom.map_sum
 
+@[deprecated map_finsupp_sum (since := "2024-06-26")]
 protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
     φ (f.sum g) = f.sum fun i a => φ (g i a) :=
   map_finsupp_sum _ _ _
 #align alg_hom.map_finsupp_sum AlgHom.map_finsupp_sum
 
-set_option linter.deprecated false in
-protected theorem map_bit0 (x) : φ (bit0 x) = bit0 (φ x) :=
-  map_bit0 _ _
-#align alg_hom.map_bit0 AlgHom.map_bit0
-
-set_option linter.deprecated false in
-protected theorem map_bit1 (x) : φ (bit1 x) = bit1 (φ x) :=
-  map_bit1 _ _
-#align alg_hom.map_bit1 AlgHom.map_bit1
+#noalign alg_hom.map_bit0
+#noalign alg_hom.map_bit1
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
@@ -416,7 +417,8 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
   φ.toLinearMap.map_smul_of_tower r x
 #align alg_hom.map_smul_of_tower AlgHom.map_smul_of_tower
 
-nonrec theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
+@[deprecated map_list_prod (since := "2024-06-26")]
+protected theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
   map_list_prod φ s
 #align alg_hom.map_list_prod AlgHom.map_list_prod
 
@@ -451,15 +453,18 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
+@[deprecated map_multiset_prod (since := "2024-06-26")]
 protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
   map_multiset_prod _ _
 #align alg_hom.map_multiset_prod AlgHom.map_multiset_prod
 
+@[deprecated map_prod (since := "2024-06-26")]
 protected theorem map_prod {ι : Type*} (f : ι → A) (s : Finset ι) :
     φ (∏ x ∈ s, f x) = ∏ x ∈ s, φ (f x) :=
   map_prod _ _ _
 #align alg_hom.map_prod AlgHom.map_prod
 
+@[deprecated map_finsupp_prod (since := "2024-06-26")]
 protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
     φ (f.prod g) = f.prod fun i a => φ (g i a) :=
   map_finsupp_prod _ _ _
@@ -472,10 +477,12 @@ section Ring
 variable [CommSemiring R] [Ring A] [Ring B]
 variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
 
+@[deprecated map_neg (since := "2024-06-26")]
 protected theorem map_neg (x) : φ (-x) = -φ x :=
   map_neg _ _
 #align alg_hom.map_neg AlgHom.map_neg
 
+@[deprecated map_sub (since := "2024-06-26")]
 protected theorem map_sub (x y) : φ (x - y) = φ x - φ y :=
   map_sub _ _ _
 #align alg_hom.map_sub AlgHom.map_sub
@@ -570,8 +577,8 @@ instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
   smul := fun f => Units.map f
   one_smul := fun x => by ext; rfl
   mul_smul := fun x y z => by ext; rfl
-  smul_mul := fun x y z => by ext; exact x.map_mul _ _
-  smul_one := fun x => by ext; exact x.map_one
+  smul_mul := fun x y z => by ext; exact map_mul _ _ _
+  smul_one := fun x => by ext; exact map_one _
 
 @[simp]
 theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
