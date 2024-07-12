@@ -163,7 +163,8 @@ theorem mk_mem' [htGX : IsPretransitive G X] (a : X)
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
     rw [← IsTrivialBlock.smul_iff g]
-    refine' H (g • B) _ (hB.smul g)
+    apply H (g • B) _ (hB.translate g)
+    rw [← hg]
     use b
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
@@ -173,7 +174,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     IsPreprimitive G X := by
   have : IsPretransitive G X := by
     rw [IsPretransitive.mk_base_iff a]
-    cases' H (orbit G a) (mem_orbit_self a) (IsBlock_of_orbit a) with H H
+    cases' H (orbit G a) (mem_orbit_self a) (isBlock_orbit a) with H H
     · exfalso; apply ha
       rw [Set.subsingleton_iff_singleton (mem_orbit_self a)] at H
       simp only [mem_fixedPoints]
@@ -189,7 +190,7 @@ theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
     rw [← IsTrivialBlock.smul_iff g]
-    exact H (g • B) ⟨b, hb, hg⟩ (IsBlock.smul g hB)
+    exact H (g • B) ⟨b, hb, hg⟩ (hB.translate g)
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
@@ -206,7 +207,7 @@ section EquivariantMap
 
 variable {M : Type*} [Group M] {α : Type*} [MulAction M α]
 variable {N β : Type*} [Group N] [MulAction N β]
-variable {φ : M → N} {f : α →ₑ[φ] β}
+variable {φ : M →* N} {f : α →ₑ[φ] β}
 
 theorem IsPreprimitive.of_surjective
     (hf : Function.Surjective f) (h : IsPreprimitive M α) :
@@ -242,7 +243,7 @@ open scoped BigOperators Pointwise
 
 instance Block.boundedOrderOfMem (a : X) :
     BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
-  top := ⟨⊤, by rw [Set.top_eq_univ]; apply Set.mem_univ, top_IsBlock X⟩
+  top := ⟨⊤, by rw [Set.top_eq_univ]; apply Set.mem_univ, isBlock_top X⟩
   le_top := by
     rintro ⟨B, ha, hB⟩
     simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
@@ -349,7 +350,7 @@ theorem IsPreprimitive.isQuasipreprimitive (hGX : IsPreprimitive M α) :
   rw [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at hNX
   obtain ⟨a, ha⟩ := hNX
   rw [IsPretransitive.iff_orbit_eq_top a]
-  apply Or.resolve_left (hGX.has_trivial_blocks (orbit.isBlock_of_normal hN a))
+  apply Or.resolve_left (hGX.has_trivial_blocks (orbit.isBlock_of_normal a))
   intro h
   apply ha; simp only [mem_fixedPoints]; intro n
   rw [← Set.mem_singleton_iff]
@@ -358,3 +359,5 @@ theorem IsPreprimitive.isQuasipreprimitive (hGX : IsPreprimitive M α) :
     rw [Set.Subsingleton.eq_singleton_of_mem h (MulAction.mem_orbit_self a)]
 
 end Normal
+
+end Primitive
