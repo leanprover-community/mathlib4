@@ -24,6 +24,24 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
 def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
   IO.FS.writeFile path <| toJson a |>.pretty
 
+-- TODO: this was copy-pasted from Batteries.Tactic.Lint.Frontend;
+-- this modification should be changed back there
+/-- `getChecks slow extra use_only` produces a list of linters.
+`extras` is a list of names that should resolve to declarations with type `linter`.
+If `useOnly` is true, it only uses the linters in `extra`.
+Otherwise, it uses all linters in the environment tagged with `@[env_linter]`.
+If `slow` is false, it only uses the fast default tests. -/
+def getChecksNew (slow : Bool) (useOnly : Bool) : CoreM (Array NamedLinter) := do
+  let mut result := #[]
+  unless useOnly do
+    for (name, declName, dflt) in batteriesLinterExt.getState (← getEnv) do
+      if dflt then
+        let linter ← getLinter name declName
+        if slow || linter.isFast then
+          let _ := Inhabited.mk linter
+          result := result.binInsert (·.name.lt ·.name) linter
+  pure result
+
 open Cli
 
 unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
@@ -72,7 +90,7 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
     let state := { env }
     Prod.fst <$> (CoreM.toIO · ctx state) do
       let decls ← getDeclsInPackage module.getRoot
-      let mut linters ← getChecks (slow := true) (useOnly := false)
+      let mut linters ← getChecksNew (slow := true) (useOnly := false)
       -- Modify the list of linters to run, if configured so.
       if let some only := only then
         linters := linters.filter fun lint ↦ only.contains lint.name.toString
