@@ -14,28 +14,26 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 -/
 
 namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α} {n : ℕ∞}
+variable {α : Type*} {G : SimpleGraph α}
+
+section egirth
+
+variable {n : ℕ∞}
 
 /--
 The extended girth of a simple graph is the length of its smallest cycle, or `∞` if the graph is
 acyclic.
 -/
 noncomputable def egirth (G : SimpleGraph α) : ℕ∞ :=
-⨅ a, ⨅ w : G.Walk a a, ⨅ _ : w.IsCycle, w.length
-
-/--
-The girth of a simple graph is the length of its smallest cycle, or junk value `0` if the graph is
-acyclic.
--/
-noncomputable def girth (G : SimpleGraph α) : ℕ :=
-ENat.toNat G.egirth
+  ⨅ a, ⨅ w : G.Walk a a, ⨅ _ : w.IsCycle, w.length
 
 @[simp] lemma le_egirth : n ≤ G.egirth ↔ ∀ a (w : G.Walk a a), w.IsCycle → n ≤ w.length := by
-  simp [egirth]
+  rw [egirth, le_iInf_iff]
+  refine forall_congr' fun a ↦ le_iInf₂_iff
 
 @[simp] lemma egirth_eq_top : G.egirth = ⊤ ↔ G.IsAcyclic := by simp [egirth, IsAcyclic]
 
-protected alias ⟨_, IsAcyclic.girth_eq_top⟩ := egirth_eq_top
+protected alias ⟨_, IsAcyclic.egirth_eq_top⟩ := egirth_eq_top
 
 lemma egirth_anti : Antitone (egirth : SimpleGraph α → ℕ∞) :=
   fun G H h ↦ iInf_mono fun a ↦ iInf₂_mono' fun w hw ↦ ⟨w.mapLe h, hw.mapLe _, by simp⟩
@@ -59,5 +57,26 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
     simp_all only [Nat.cast_inj, Nat.ofNat_le_cast, Walk.IsCycle.three_le_length]
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
+
+end egirth
+
+section girth
+
+variable {n : ℕ}
+
+/--
+The girth of a simple graph is the length of its smallest cycle, or junk value `0` if the graph is
+acyclic.
+-/
+noncomputable def girth (G : SimpleGraph α) : ℕ :=
+  G.egirth.toNat
+
+@[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
+  simp [girth]
+
+lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
+  ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
+
+end girth
 
 end SimpleGraph
