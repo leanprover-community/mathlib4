@@ -222,6 +222,23 @@ def forgetToQuiv : ReflQuiv.{v, u} ⥤ Quiv.{v, u} where
   obj V := Quiv.of V
   map F := F.toPrefunctor
 
+/-- ER: For use for triangle identities below.-/
+
+theorem forgetToQuiv_faithful {V W : ReflQuiv} (F G : V ⥤rq W)
+    (hyp : forgetToQuiv.map F = forgetToQuiv.map G) : F = G := by
+  ext
+  · exact congrFun (congrArg Prefunctor.obj hyp) _
+  · sorry
+
+theorem forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
+  map_injective := by
+    intro V W f g hyp
+    sorry
+
+
+
+
+
 end ReflQuiv
 
 namespace Cat
@@ -271,11 +288,21 @@ namespace ReflQuiv
 def adj.unit.app (V : ReflQuiv.{u, u}) : V ⟶ (Cat.freeRefl ⋙ forget).obj V where
   obj := fun X => { as := X }
   map := fun f =>
-    (Quotient.functor (C := Cat.free.obj V.toQuiv) (Cat.FreeReflRel (V := V))).map (Paths.of.map f)
+    (Quotient.functor (Cat.FreeReflRel (V := V))).map (Paths.of.map f)
   map_id := fun X => by
     apply Quotient.sound
     simp [ReflPrefunctor.map_id]
     constructor
+
+/-- ER: This is used in the proof of both triangle equalities. Should we simp?-/
+theorem adj.unit.app_eq (V : ReflQuiv.{u, u}) :
+    forgetToQuiv.map (adj.unit.app V) =
+    Quiv.adj.unit.app (V.toQuiv) ≫
+    (Quiv.forget.map (Quotient.functor (Cat.FreeReflRel (V := V)))
+      : Quiv.of ↑(Cat.of (Paths ↑V.toQuiv)) ⟶ forgetToQuiv.obj ((Cat.freeRefl ⋙ forget).obj V))
+      := rfl
+
+-- Quiv.adj.unit.app (V.toQuiv) ≫ (Quiv.forget.map (Quotient.functor (C := Cat.free.obj V.toQuiv) (Cat.FreeReflRel (V := V)))) := by sorry
 
 def adj.counit.app (C : Cat) : (forget ⋙ Cat.freeRefl).obj C ⟶ (𝟭 Cat).obj C := by
   fapply Quotient.lift
@@ -288,6 +315,13 @@ def adj.counit.app (C : Cat) : (forget ⋙ Cat.freeRefl).obj C ⟶ (𝟭 Cat).ob
       ReflQuiver.id_eq_id, Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath,
       Prefunctor.mapPath_nil, composePath_nil]
     exact rfl
+
+/-- ER: This is used in the proof of both triangle equalities. Should we simp?-/
+theorem adj.counit.app_eq (C : Cat) : (Quotient.functor (Cat.FreeReflRel (V := forget.obj C))) ⋙ (adj.counit.app C) = Quiv.adj.counit.app C := rfl
+
+/-- ER: Rename if this is useful. -/
+theorem missing_lemma {C D : Cat} (F : C ⥤ D) :
+    (Functor.toReflPrefunctor F).toPrefunctor = Quiv.forget.map F := rfl
 
 /--
 The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
@@ -321,13 +355,20 @@ def adj : Cat.freeRefl ⊣ ReflQuiv.forget :=
     right_triangle := by
       ext C
       simp
-      fapply ReflPrefunctor.ext
-      · intro X
-        exact rfl
-      · intro X Y f
-        unfold adj.unit.app adj.counit.app
-        simp
-        sorry
+      apply forgetToQuiv_faithful
+      rw [forgetToQuiv.map_comp, adj.unit.app_eq, assoc]
+      have := adj.counit.app_eq C
+      sorry -- next step is to use that the composite of the forgetful functors is the forgetful functor; morally this is missing lemma but I couldn't get it to work with forgetToQuiv.map instead of .toPrefunctor
+      -- Quiv.forget.map F = forgetToQuiv.map (toReflPrefunctor F)
+
+
+      -- fapply ReflPrefunctor.ext
+      -- · intro X
+      --   exact rfl
+      -- · intro X Y f
+      --   unfold adj.unit.app adj.counit.app
+      --   simp
+      --   sorry
   }
 
 def adj.homEquiv (V : ReflQuiv) (C : Cat) : (Cat.freeRefl.obj V ⟶ C) ≃ (V ⟶ forget.obj C) where
