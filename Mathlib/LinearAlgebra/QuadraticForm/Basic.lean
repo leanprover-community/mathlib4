@@ -381,7 +381,7 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticForm R M) (s : Fin
     congr! with i hi
     rw [if_pos (ne_of_mem_of_not_mem hi ha).symm]
 
-protected theorem map_sum' {ι} [DecidableEq ι] (Q : QuadraticForm R M) (s : Finset ι) (f : ι → M) :
+protected theorem map_sum' {ι} (Q : QuadraticForm R M) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) =
       ∑ ij in s.sym2,
         Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij
