@@ -58,3 +58,5 @@ lemma limit_of_surjections_surjective : Function.Surjective (c.π.app ⟨0⟩) :
   · exact limit_of_surjections_surjective' hF
   · rw [← epi_iff_surjective]
     infer_instance
+
+end LightProfinite
