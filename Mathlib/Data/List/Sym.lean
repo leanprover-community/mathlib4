@@ -126,11 +126,11 @@ theorem map_mk_sublist_sym2 (x : α) (xs : List α) (h : x ∈ xs) :
     simp [List.sym2]
     cases h with
     | head =>
-      exact Sublist.cons₂ _ (sublist_append_left _ _)
+      exact (sublist_append_left _ _).cons₂ _
     | tail _ h =>
-      apply Sublist.cons
+      refine .cons _ ?_
       rw [← singleton_append]
-      refine Sublist.append ?_ (ih h)
+      refine .append ?_ (ih h)
       rw [singleton_sublist, mem_map]
       exact ⟨_, h, Sym2.eq_swap⟩
 
@@ -142,7 +142,7 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
     simp only [mem_cons, not_or] at h
     rw [List.sym2, map_cons, map_cons, disjoint_cons_left, disjoint_append_right,
       disjoint_cons_right]
-    refine ⟨?_, ⟨⟨?_, ?_⟩, ?_⟩⟩
+    refine ⟨?_, ⟨?_, ?_⟩, ?_⟩
     · refine not_mem_cons_of_ne_of_not_mem ?_ (not_mem_append ?_ ?_)
       · simp [h.1]
       · simp_rw [mem_map, not_exists, not_and]
