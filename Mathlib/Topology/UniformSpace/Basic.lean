@@ -165,7 +165,7 @@ theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monot
     Monotone fun x => f x ○ g x := fun _ _ h _ ⟨z, h₁, h₂⟩ => ⟨z, hf h h₁, hg h h₂⟩
 #align monotone.comp_rel Monotone.compRel
 
-@[mono]
+@[mono, gcongr]
 theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
   fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h₂ h'⟩
 #align comp_rel_mono compRel_mono
@@ -590,7 +590,6 @@ theorem uniformity_lift_le_comp {f : Set (α × α) → Filter β} (h : Monotone
     _ ≤ (𝓤 α).lift f := lift_mono comp_le_uniformity le_rfl
 #align uniformity_lift_le_comp uniformity_lift_le_comp
 
--- Porting note (#10756): new lemma
 theorem comp3_mem_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃ t ∈ 𝓤 α, t ○ (t ○ t) ⊆ s :=
   let ⟨_t', ht', ht's⟩ := comp_mem_uniformity_sets hs
   let ⟨t, ht, htt'⟩ := comp_mem_uniformity_sets ht'
@@ -609,7 +608,7 @@ theorem comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) 
   use symmetrizeRel w, symmetrize_mem_uniformity w_in, symmetric_symmetrizeRel w
   have : symmetrizeRel w ⊆ w := symmetrizeRel_subset_self w
   calc symmetrizeRel w ○ symmetrizeRel w
-    _ ⊆ w ○ w := by mono
+    _ ⊆ w ○ w := by gcongr
     _ ⊆ s     := w_sub
 #align comp_symm_mem_uniformity_sets comp_symm_mem_uniformity_sets
 
@@ -1121,6 +1120,14 @@ nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : �
   hg.comp hf
 #align uniform_continuous.comp UniformContinuous.comp
 
+/--If a function `T` is uniformly continuous in a uniform space `β`,
+then its `n`-th iterate `T^[n]` is also uniformly continuous.-/
+theorem UniformContinuous.iterate [UniformSpace β] (T : β → β) (n : ℕ) (h : UniformContinuous T) :
+    UniformContinuous T^[n] := by
+  induction n with
+  | zero => exact uniformContinuous_id
+  | succ n hn => exact Function.iterate_succ _ _ ▸ UniformContinuous.comp hn h
+
 theorem Filter.HasBasis.uniformContinuous_iff {ι'} [UniformSpace β] {p : ι → Prop}
     {s : ι → Set (α × α)} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} :
@@ -1323,6 +1330,14 @@ theorem toTopologicalSpace_comap {f : α → β} {u : UniformSpace β} :
   rfl
 #align to_topological_space_comap UniformSpace.toTopologicalSpace_comap
 
+lemma uniformSpace_eq_bot {u : UniformSpace α} : u = ⊥ ↔ idRel ∈ 𝓤[u] :=
+  le_bot_iff.symm.trans le_principal_iff
+
+protected lemma _root_.Filter.HasBasis.uniformSpace_eq_bot {ι p} {s : ι → Set (α × α)}
+    {u : UniformSpace α} (h : 𝓤[u].HasBasis p s) :
+    u = ⊥ ↔ ∃ i, p i ∧ Pairwise fun x y : α ↦ (x, y) ∉ s i := by
+  simp [uniformSpace_eq_bot, h.mem_iff, subset_def, Pairwise, not_imp_not]
+
 theorem toTopologicalSpace_bot : @UniformSpace.toTopologicalSpace α ⊥ = ⊥ := rfl
 #align to_topological_space_bot UniformSpace.toTopologicalSpace_bot
 
@@ -1467,7 +1482,6 @@ theorem uniformity_setCoe {s : Set α} [UniformSpace α] :
   rfl
 #align uniformity_set_coe uniformity_setCoe
 
--- Porting note (#10756): new lemma
 theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
     map (Prod.map (↑) (↑)) (𝓤 s) = 𝓤 α ⊓ 𝓟 (s ×ˢ s) := by
   rw [uniformity_setCoe, map_comap, range_prod_map, Subtype.range_val]
@@ -1641,8 +1655,8 @@ theorem toTopologicalSpace_prod {α} {β} [u : UniformSpace α] [v : UniformSpac
 theorem uniformContinuous_inf_dom_left₂ {α β γ} {f : α → β → γ} {ua1 ua2 : UniformSpace α}
     {ub1 ub2 : UniformSpace β} {uc1 : UniformSpace γ}
     (h : by haveI := ua1; haveI := ub1; exact UniformContinuous fun p : α × β => f p.1 p.2) : by
-      haveI := ua1 ⊓ ua2; haveI := ub1 ⊓ ub2;
-        exact UniformContinuous fun p : α × β => f p.1 p.2 := by
+      haveI := ua1 ⊓ ua2; haveI := ub1 ⊓ ub2
+      exact UniformContinuous fun p : α × β => f p.1 p.2 := by
   -- proof essentially copied from `continuous_inf_dom_left₂`
   have ha := @UniformContinuous.inf_dom_left _ _ id ua1 ua2 ua1 (@uniformContinuous_id _ (id _))
   have hb := @UniformContinuous.inf_dom_left _ _ id ub1 ub2 ub1 (@uniformContinuous_id _ (id _))
@@ -1655,8 +1669,8 @@ theorem uniformContinuous_inf_dom_left₂ {α β γ} {f : α → β → γ} {ua1
 theorem uniformContinuous_inf_dom_right₂ {α β γ} {f : α → β → γ} {ua1 ua2 : UniformSpace α}
     {ub1 ub2 : UniformSpace β} {uc1 : UniformSpace γ}
     (h : by haveI := ua2; haveI := ub2; exact UniformContinuous fun p : α × β => f p.1 p.2) : by
-      haveI := ua1 ⊓ ua2; haveI := ub1 ⊓ ub2;
-        exact UniformContinuous fun p : α × β => f p.1 p.2 := by
+      haveI := ua1 ⊓ ua2; haveI := ub1 ⊓ ub2
+      exact UniformContinuous fun p : α × β => f p.1 p.2 := by
   -- proof essentially copied from `continuous_inf_dom_right₂`
   have ha := @UniformContinuous.inf_dom_right _ _ id ua1 ua2 ua2 (@uniformContinuous_id _ (id _))
   have hb := @UniformContinuous.inf_dom_right _ _ id ub1 ub2 ub2 (@uniformContinuous_id _ (id _))
@@ -1669,8 +1683,8 @@ theorem uniformContinuous_inf_dom_right₂ {α β γ} {f : α → β → γ} {ua
 theorem uniformContinuous_sInf_dom₂ {α β γ} {f : α → β → γ} {uas : Set (UniformSpace α)}
     {ubs : Set (UniformSpace β)} {ua : UniformSpace α} {ub : UniformSpace β} {uc : UniformSpace γ}
     (ha : ua ∈ uas) (hb : ub ∈ ubs) (hf : UniformContinuous fun p : α × β => f p.1 p.2) : by
-      haveI := sInf uas; haveI := sInf ubs;
-        exact @UniformContinuous _ _ _ uc fun p : α × β => f p.1 p.2 := by
+      haveI := sInf uas; haveI := sInf ubs
+      exact @UniformContinuous _ _ _ uc fun p : α × β => f p.1 p.2 := by
   -- proof essentially copied from `continuous_sInf_dom`
   let _ : UniformSpace (α × β) := instUniformSpaceProd
   have ha := uniformContinuous_sInf_dom ha uniformContinuous_id

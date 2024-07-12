@@ -64,13 +64,13 @@ theorem foldr_algebraMap (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (r : R) :
 
 @[simp]
 theorem foldr_one (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) : foldr Q f hf n 1 = n :=
-  LinearMap.congr_fun (AlgHom.map_one _) n
+  LinearMap.congr_fun (map_one (lift Q _)) n
 #align clifford_algebra.foldr_one CliffordAlgebra.foldr_one
 
 @[simp]
 theorem foldr_mul (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (a b : CliffordAlgebra Q) :
     foldr Q f hf n (a * b) = foldr Q f hf (foldr Q f hf n b) a :=
-  LinearMap.congr_fun (AlgHom.map_mul _ _ _) n
+  LinearMap.congr_fun (map_mul (lift Q _) _ _) n
 #align clifford_algebra.foldr_mul CliffordAlgebra.foldr_mul
 
 /-- This lemma demonstrates the origin of the `foldr` name. -/

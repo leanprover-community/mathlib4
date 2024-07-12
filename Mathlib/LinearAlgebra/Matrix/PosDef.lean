@@ -74,7 +74,7 @@ lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
     simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 (B *ᵥ x)
 
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A)
-    {m : Type*} [Fintype m] (B : Matrix m n R):
+    {m : Type*} [Fintype m] (B : Matrix m n R) :
     PosSemidef (B * A * Bᴴ) := by
   simpa only [conjTranspose_conjTranspose] using hA.conjTranspose_mul_mul_same Bᴴ
 
@@ -122,6 +122,12 @@ protected lemma zpow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (z :
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · simpa using hM.pow n
   · simpa using (hM.pow n).inv
+
+protected lemma add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) : (A + B).PosSemidef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_nonneg (hA.2 x) (hB.2 x)⟩
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
@@ -315,6 +321,22 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
 
+protected lemma add_posSemidef {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_pos_of_pos_of_nonneg (hA.2 x hx) (hB.2 x)⟩
+
+protected lemma posSemidef_add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
+
+protected lemma add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
+  hA.add_posSemidef hB.posSemidef
+
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
   refine ⟨hM, fun x hx => ?_⟩
@@ -337,11 +359,11 @@ lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
   simp only [hA.1.eigenvalues_eq]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
-theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M := by
-   rw [hM.isHermitian.det_eq_prod_eigenvalues]
-   apply Finset.prod_pos
-   intro i _
-   exact hM.eigenvalues_pos i
+theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det M := by
+  rw [hM.isHermitian.det_eq_prod_eigenvalues]
+  apply Finset.prod_pos
+  intro i _
+  simpa using hM.eigenvalues_pos i
 #align matrix.pos_def.det_pos Matrix.PosDef.det_pos
 
 end PosDef

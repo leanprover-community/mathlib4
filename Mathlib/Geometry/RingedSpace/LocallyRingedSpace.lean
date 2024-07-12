@@ -299,6 +299,30 @@ theorem Γ_map_op {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) : Γ.map f.op = f
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.Γ_map_op AlgebraicGeometry.LocallyRingedSpace.Γ_map_op
 
+/-- The empty locally ringed space. -/
+def empty : LocallyRingedSpace.{u} where
+  carrier := TopCat.of PEmpty
+  presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
+  IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
+  localRing x := PEmpty.elim x
+
+instance : EmptyCollection LocallyRingedSpace.{u} := ⟨LocallyRingedSpace.empty⟩
+
+/-- The canonical map from the empty locally ringed space. -/
+def emptyTo (X : LocallyRingedSpace) : ∅ ⟶ X :=
+  ⟨⟨⟨fun x => PEmpty.elim x, by fun_prop⟩,
+    { app := fun U => by refine ⟨⟨⟨0, ?_⟩, ?_⟩, ?_, ?_⟩ <;> intros <;> rfl }⟩,
+    fun x => PEmpty.elim x⟩
+
+noncomputable
+instance {X : LocallyRingedSpace} : Unique (∅ ⟶ X) where
+  default := LocallyRingedSpace.emptyTo X
+  uniq f := by ext ⟨⟩ x; aesop_cat
+
+/-- The empty space is initial in `LocallyRingedSpace`. -/
+noncomputable
+def emptyIsInitial : Limits.IsInitial (∅ : LocallyRingedSpace.{u}) := Limits.IsInitial.ofUnique _
+
 theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Opens Y}
     (s : Y.presheaf.obj (op U)) :
     (Opens.map f.1.base).obj (Y.toRingedSpace.basicOpen s) =
@@ -317,7 +341,6 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.preimage_basic_open AlgebraicGeometry.LocallyRingedSpace.preimage_basicOpen
 
 -- This actually holds for all ringed spaces with nontrivial stalks.
-@[simp]
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
     X.toRingedSpace.basicOpen (0 : X.presheaf.obj <| op U) = ⊥ := by
   ext x
@@ -330,6 +353,19 @@ theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
   exact zero_ne_one
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.basic_open_zero AlgebraicGeometry.LocallyRingedSpace.basicOpen_zero
+
+@[simp]
+lemma basicOpen_eq_bot_of_isNilpotent (X : LocallyRingedSpace.{u}) (U : Opens X.carrier)
+    (f : (X.presheaf.obj <| op U)) (hf : IsNilpotent f) :
+    X.toRingedSpace.basicOpen f = ⊥ := by
+  obtain ⟨n, hn⟩ := hf
+  cases n.eq_zero_or_pos with
+  | inr h =>
+    rw [←  X.toRingedSpace.basicOpen_pow f n h, hn]
+    simp [basicOpen_zero]
+  | inl h =>
+    rw [h, pow_zero] at hn
+    simp [eq_zero_of_zero_eq_one hn.symm f, basicOpen_zero]
 
 instance component_nontrivial (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) [hU : Nonempty U] :
     Nontrivial (X.presheaf.obj <| op U) :=
