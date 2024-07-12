@@ -1610,6 +1610,11 @@ theorem mem_uniform_prod [t₁ : UniformSpace α] [t₂ : UniformSpace β] {a : 
   rw [uniformity_prod]; exact inter_mem_inf (preimage_mem_comap ha) (preimage_mem_comap hb)
 #align mem_uniform_prod mem_uniform_prod
 
+theorem ball_prod (a : Set (α × α)) (b : Set (β × β)) (x : α × β) :
+    ball x (UniformityProd U V) = ball x.1 a ×ˢ ball xy.2 b := by
+  ext p
+  simp only [ball, UniformityProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
+
 theorem UniformityProd_of_uniform_prod [UniformSpace α] [UniformSpace β] {s : Set ((α × β) × α × β)}
     (h : s ∈ 𝓤 (α × β)) :
     ∃ a ∈ 𝓤 α, ∃ b ∈ 𝓤 β, UniformityProd a b ⊆ s := by
