@@ -545,14 +545,12 @@ lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
 @[simp]
 lemma DifferentiableAt.sub_iff_left (hg : DifferentiableAt 𝕜 g x) :
     DifferentiableAt 𝕜 (fun y => f y - g y) x ↔ DifferentiableAt 𝕜 f x := by
-  refine ⟨fun h ↦ ?_, fun hf ↦ hf.sub hg⟩
-  simpa only [sub_add_cancel] using h.add hg
+  simp only [sub_eq_add_neg, differentiableAt_neg_iff, hg, add_iff_left]
 
 @[simp]
 lemma DifferentiableAt.sub_iff_right (hg : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (fun y => f y - g y) x ↔ DifferentiableAt 𝕜 g x := by
-  refine ⟨fun h ↦ ?_, fun hf ↦ hg.sub hf⟩
-  simpa only [sub_sub_cancel_left, differentiableAt_neg_iff] using h.sub hg
+  simp only [sub_eq_add_neg, hg, add_iff_right, differentiableAt_neg_iff]
 
 @[fun_prop]
 theorem DifferentiableOn.sub (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s) :
@@ -573,14 +571,12 @@ lemma DifferentiableOn.add_iff_right (hg : DifferentiableOn 𝕜 f s) :
 @[simp]
 lemma DifferentiableOn.sub_iff_left (hg : DifferentiableOn 𝕜 g s) :
     DifferentiableOn 𝕜 (fun y => f y - g y) s ↔ DifferentiableOn 𝕜 f s := by
-  refine ⟨fun h ↦ ?_, fun hf ↦ hf.sub hg⟩
-  simpa only [sub_add_cancel] using h.add hg
+  simp only [sub_eq_add_neg, differentiableOn_neg_iff, hg, add_iff_left]
 
 @[simp]
 lemma DifferentiableOn.sub_iff_right (hg : DifferentiableOn 𝕜 f s) :
     DifferentiableOn 𝕜 (fun y => f y - g y) s ↔ DifferentiableOn 𝕜 g s := by
-  refine ⟨fun h ↦ ?_, fun hf ↦ hg.sub hf⟩
-  simpa only [sub_sub_cancel_left, differentiableOn_neg_iff] using h.sub hg
+  simp only [sub_eq_add_neg, differentiableOn_neg_iff, hg, add_iff_right]
 
 @[simp, fun_prop]
 theorem Differentiable.sub (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g) :
@@ -601,14 +597,12 @@ lemma Differentiable.add_iff_right (hg : Differentiable 𝕜 f) :
 @[simp]
 lemma Differentiable.sub_iff_left (hg : Differentiable 𝕜 g) :
     Differentiable 𝕜 (fun y => f y - g y) ↔ Differentiable 𝕜 f := by
-  refine ⟨fun h ↦ ?_, fun hf ↦ hf.sub hg⟩
-  simpa only [sub_add_cancel] using h.add hg
+  simp only [sub_eq_add_neg, differentiable_neg_iff, hg, add_iff_left]
 
 @[simp]
 lemma Differentiable.sub_iff_right (hg : Differentiable 𝕜 f) :
     Differentiable 𝕜 (fun y => f y - g y) ↔ Differentiable 𝕜 g := by
-  refine ⟨fun h ↦ ?_, fun hf ↦ hg.sub hf⟩
-  simpa only [sub_sub_cancel_left, differentiable_neg_iff] using h.sub hg
+  simp only [sub_eq_add_neg, differentiable_neg_iff, hg, add_iff_right]
 
 theorem fderivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
     (hg : DifferentiableWithinAt 𝕜 g s x) :
