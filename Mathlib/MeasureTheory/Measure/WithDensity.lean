@@ -605,23 +605,6 @@ theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
   (fun h ↦ Measure.AbsolutelyContinuous.ae_eq
     (withDensity_absolutelyContinuous μ d) h)
 
-/-- A sigma-finite measure is absolutely continuous with respect to some finite measure. -/
-theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ : Measure α)
-    [SigmaFinite μ] : ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
-  obtain ⟨g, gpos, gmeas, hg⟩ :
-    ∃ g : α → ℝ≥0, (∀ x : α, 0 < g x) ∧ Measurable g ∧ ∫⁻ x : α, ↑(g x) ∂μ < 1 :=
-    exists_pos_lintegral_lt_of_sigmaFinite μ one_ne_zero
-  refine ⟨μ.withDensity fun x => g x, isFiniteMeasure_withDensity hg.ne_top, ?_⟩
-  have : μ = (μ.withDensity fun x => g x).withDensity fun x => (g x)⁻¹ := by
-    have A : ((fun x : α => (g x : ℝ≥0∞)) * fun x : α => (g x : ℝ≥0∞)⁻¹) = 1 := by
-      ext1 x
-      exact ENNReal.mul_inv_cancel (ENNReal.coe_ne_zero.2 (gpos x).ne') ENNReal.coe_ne_top
-    rw [← withDensity_mul _ gmeas.coe_nnreal_ennreal gmeas.coe_nnreal_ennreal.inv, A,
-      withDensity_one]
-  nth_rw 1 [this]
-  exact withDensity_absolutelyContinuous _ _
-#align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
-
 lemma SigmaFinite.withDensity [SigmaFinite μ] {f : α → ℝ≥0} (hf : AEMeasurable f μ) :
     SigmaFinite (μ.withDensity (fun x ↦ f x)) := by
   have h : (fun x ↦ (f x : ℝ≥0∞)) =ᵐ[μ] fun x ↦ ((hf.mk f x : ℝ≥0) : ℝ≥0∞) := by

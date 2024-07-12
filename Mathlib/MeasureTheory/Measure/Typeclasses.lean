@@ -604,6 +604,20 @@ instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
   ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance,
     by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
 
+variable (μ) in
+/-- An s-finite measure is absolutely continuous with respect to some finite measure. -/
+theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
+    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
+  rcases ENNReal.exists_pos_tsum_mul_lt_of_countable top_ne_zero (sFiniteSeq μ · univ)
+    fun _ ↦ measure_ne_top _ _ with ⟨c, hc₀, hc⟩
+  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨?_⟩, ?_⟩
+  · simpa [mul_comm] using hc
+  · refine AbsolutelyContinuous.mk fun s hsm hs ↦ ?_
+    have : ∀ n, (sFiniteSeq μ n) s = 0 := by simpa [hsm, (hc₀ _).ne'] using hs
+    rw [← sum_sFiniteSeq μ, sum_apply _ hsm]
+    simp [this]
+#align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
+
 end SFinite
 
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
