@@ -16,14 +16,14 @@ import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Algebra.Order.ZeroLEOne
 
 /-!
-# Linearly ordered commutative additive groups and monoids with a bottom/top element adjoined
+# Linearly ordered commutative additive groups and monoids with a top element adjoined
 
 This file sets up a special class of linearly ordered commutative additive monoids
 that show up as the target of so-called “valuations” in algebraic number theory.
 
 Usually, in the informal literature, these objects are constructed
 by taking a linearly ordered commutative additive group Γ and formally adjoining a
-top or botton element: Γ ∪ {⊤} or Γ ∪ {⊥}.
+top element: Γ ∪ {⊤}.
 
 The disadvantage is that a type such as `ENNReal` is not of that form,
 whereas it is a very common target for valuations.
