@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Algebra.Field.Basic
 
