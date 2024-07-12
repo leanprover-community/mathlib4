@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Order.Atoms
 
 /-! # Maximal subgroups
 
