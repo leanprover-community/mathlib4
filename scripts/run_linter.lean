@@ -48,16 +48,16 @@ def getChecksNew (slow : Bool) (useAlso : Option (List Name)) : CoreM (Array Nam
 open Cli
 
 unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
-  let only := (args.flag? "only_linters").map fun val ↦ (val.value.splitOn " ")
-  let exclude := (args.flag? "exclude_linters").map fun val ↦ (val.value.splitOn " ")
-  let add := (args.flag? "add_linters").map fun val ↦ (val.value.splitOn " ")
+  let only := (args.flag? "only_run").map fun val ↦ (val.value.splitOn " ")
+  let exclude := (args.flag? "never_run").map fun val ↦ (val.value.splitOn " ")
+  let add := (args.flag? "always_run").map fun val ↦ (val.value.splitOn " ")
   let print := args.hasFlag "print_linters"
   let update := args.hasFlag "update"
   let updateOnlyRemove := args.hasFlag "update_only_remove"
   -- "only" and "exclude" are contradictory: error if both are provided
   -- also error if "add" and "exclude" overlap.
   if only.isSome && exclude.isSome then
-    IO.println "invalid arguments: the options '--only_linters' and '--exclude_linters' \
+    IO.println "invalid arguments: the options '--only_run' and '--never_run' \
       are incompatible: please do not specify both"
     IO.Process.exit 2
   else if let some add := add then
@@ -158,10 +158,10 @@ unsafe def runLinter : Cmd := `[Cli|
   "Runs the linters on all declarations in the given module (or `Mathlib` by default)."
 
   FLAGS:
-    only_linters : Array String;  "Only run these named linters"
-    exclude_linters : Array String; "Do not run these named linters"
-    add_linters : Array String;
-      "Always run these linters, regardless of whether they are enabled by default"
+    only_run : Array String;  "Only run these named linters"
+    never_run : Array String; "Do not run these named linters"
+    always_run : Array String;
+      "Always run these named linters, regardless of whether they are enabled by default"
     print_linters; "Print the list of all discovered/configured linters and exit"
 
     update;     "Update the `nolints` file to remove any declarations \
