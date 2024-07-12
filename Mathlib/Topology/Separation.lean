@@ -2326,7 +2326,7 @@ theorem Embedding.t25Space [TopologicalSpace Y] [T25Space Y] {f : X → Y} (hf :
 instance Subtype.instT25Space [T25Space X] {p : X → Prop} : T25Space {x // p x} :=
   embedding_subtype_val.t25Space
 
-section T25
+end T25
 
 section T3
 
@@ -2772,7 +2772,3 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   refine ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, ?_, hb mem_connectedComponent, disjoint_compl_left⟩
   exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 #align connected_components.t2 ConnectedComponents.t2
-
-end T25
-
-end T25
