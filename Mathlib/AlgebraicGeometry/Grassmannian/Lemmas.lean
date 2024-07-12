@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu.
+All rights reserved. Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patricio Gallardo Candela, Yun Liu, Sophie Morel, David Swinarski, Weihong Xu
+-/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.Algebra.Category.ModuleCat.Basic
@@ -7,6 +12,14 @@ import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 
+/-!
+
+# Lemmas for the Grassmannian scheme
+
+This is a collection of lemmas that are used in the formalization of the Grassmannian schemes.
+They should be included in various other files.
+-/
+
 open AlgebraicGeometry Scheme FiniteDimensional CategoryTheory Matrix
 
 noncomputable section
@@ -15,6 +28,11 @@ universe u v w
 
 section
 
+/-- If we give ourselves a scheme gluing data `GD`, and if we have morphisms from the charts
+`GD.U i` of the gluing data to a scheme `Y` that are compatible with the transition morphisms
+between charts, then we get a morphism from the glued scheme `GD.glued` to `Y`. This is an easy
+consequence of the definition of `GD.glued` as a `Multicoequalized`, but is included here for
+convenience.-/
 def AlgebraicGeometry.Scheme.GlueData.glueMorphisms (GD : Scheme.GlueData)
     {Y : Scheme} (f : (i : GD.J) → GD.U i ⟶ Y) (hf : ∀ (i j : GD.J),
     GD.f i j ≫ (f i) = GD.t i j ≫ GD.f j i ≫ (f j)) :
@@ -74,6 +92,8 @@ noncomputable
 nonrec abbrev Spec.algebraMap : Spec (.of S) ⟶ Spec (.of R) :=
   Spec.map (CommRingCat.ofHom (algebraMap R S))
 
+/-- The isomorphism between the fiber product of two affine schemes `Spec B` and `Spec C`
+over an affine scheme `Spec A` and the `Spec` of the tensor product `B ⊗[A] C`.-/
 noncomputable
 def pullbackSpecIso (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T] :
     (pullback (Spec.algebraMap R S) (Spec.algebraMap R T)) ≅ Spec (.of <| S ⊗[R] T) := by
@@ -217,4 +237,3 @@ end
 instance basic_open_isOpenImmersion' {R : Type*} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
   @basic_open_isOpenImmersion (CommRingCat.of R) _
-
