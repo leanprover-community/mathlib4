@@ -1344,3 +1344,13 @@ lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fa
   obtain rfl : i = n := hR i hi $ by rw [← Nat.cast_pow, CharP.cast_eq_zero]
   assumption
 #align char_p_of_prime_pow_injective charP_of_prime_pow_injective
+
+namespace SemiconjBy
+
+variable [Group G] (a:G) {x y : G} (h:SemiconjBy a x y) in
+@[to_additive] lemma orderOf_eq : orderOf x = orderOf y := by
+  rw [orderOf_eq_orderOf_iff]
+  intro n
+  exact (h.pow_right n).eq_one_iff
+
+end SemiconjBy
