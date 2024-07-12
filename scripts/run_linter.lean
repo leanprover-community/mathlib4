@@ -51,18 +51,30 @@ unsafe def runLinterCli (args : Cli.Parsed) : IO UInt32 := do
   let only := (args.flag? "only_linters").map fun val ↦ (val.value.splitOn " ")
   let exclude := (args.flag? "exclude_linters").map fun val ↦ (val.value.splitOn " ")
   let add := (args.flag? "add_linters").map fun val ↦ (val.value.splitOn " ")
-  -- "only" and "exclude" are contradictory: error if both are provided
-  -- "add" takes priority over "only" or "exclude": this is documented, hence fine
-  if only.isSome && exclude.isSome then
-    IO.println "The options '--only_linters' and '--exclude_linters' are incompatible: \
-      please do not specify both"
-    IO.Process.exit 2
   let print := args.hasFlag "print_linters"
   let update := args.hasFlag "update"
   let updateOnlyRemove := args.hasFlag "update_only_remove"
+  -- "only" and "exclude" are contradictory: error if both are provided
+  -- also error if "add" and "exclude" overlap.
+  if only.isSome && exclude.isSome then
+    IO.println "invalid arguments: the options '--only_linters' and '--exclude_linters' \
+      are incompatible: please do not specify both"
+    IO.Process.exit 2
+  else if let some add := add then
+    if let some exclude := exclude then
+      let overlap := add.filter fun s ↦ exclude.contains s
+      if overlap.length > 0 then
+        IO.println s!"invalid arguments: the linter(s) {overlap} cannot be both added and excluded"
+        IO.Process.exit 2
+    else if let some only := only then
+      let contradictory := add.filter fun s ↦ !only.contains s
+      if contradictory.length > 0 then
+        IO.println s!"invalid arguments: the linter(s) {contradictory} are supposed to be \
+          both always and not run"
+        IO.Process.exit 2
   if update && updateOnlyRemove then
-    IO.println "The options '--update' and '--update_only_remove' are mutually exclusive: \
-      please do not specify both"
+    IO.println "invalid arguments: the options '--update' and '--update_only_remove' \
+      are mutually exclusive: please do not specify both"
     IO.Process.exit 2
   let some module := match args.flag? "module" with
       | some mod =>
@@ -148,8 +160,8 @@ unsafe def runLinter : Cmd := `[Cli|
   FLAGS:
     only_linters : Array String;  "Only run these named linters"
     exclude_linters : Array String; "Do not run these named linters"
-    add_linters : Array String; "Run these linters *in addition* to the default set\n\
-      Takes priority over the --only_linters or --exclude_linters flags."
+    add_linters : Array String;
+      "Always run these linters, regardless of whether they are enabled by default"
     print_linters; "Print the list of all discovered/configured linters and exit"
 
     update;     "Update the `nolints` file to remove any declarations \
@@ -160,7 +172,7 @@ unsafe def runLinter : Cmd := `[Cli|
     update_only_remove; "Like --update, but only run linters which have entries in the nolints file\
       This can be much faster, but will by design only *remove* entries, never add any."
 
-    module : String;   "Run the linters on a given module: if omitted, will run on all modules in Mathlib"
+    module : String; "Run the linters on a given module: if omitted, will run on all modules in Mathlib"
 ]
 
 /-- The entry point to the `lake exe run_linter` command. -/
