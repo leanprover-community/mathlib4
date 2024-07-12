@@ -637,6 +637,10 @@ theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j 
         rw [C]
         rw [← indexing_nonsense0]
         exact hK fun j ↦ γ j
+      apply hgv
+      exact B
+    exact h K A
+
 
 
 
