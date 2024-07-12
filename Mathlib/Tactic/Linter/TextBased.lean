@@ -109,22 +109,48 @@ structure ErrorContext where
   /-- The path to the file which was linted -/
   path : FilePath
 
-/-- The parts of a `StyleError` which are considered when matching against the existing
-  style exceptions: for example, we ignore the particular line length of a "line too long" error. -/
-def StyleError.normalise (err : StyleError) : StyleError := match err with
-  -- NB: keep this in sync with `parse?_errorContext` below.
-  | StyleError.fileTooLong _ _ => StyleError.fileTooLong 0 0
-  -- We do *not* care about the *kind* of wrong copyright.
-  | StyleError.copyright _ => StyleError.copyright none
-  | _ => err
+/-- Possible results of comparing to `ErrorContexts` for the purposes of
+updating a style exceptions file: two errors can be comparable
+(meaning the former would match the latter in a style exceptions file) or not. -/
+inductive ComparisonResult
+  /-- The contexts describe different errors: two separate style exceptions are required
+  to cover both. -/
+  | Different
+  /-- The errors can be covered by a single style exception,
+  and we prefer keeping the existing exception (the more common case). -/
+  | PreferExisting
+  /-- The errors can be covered by a single style exception,
+  and we prefer replacing by the new exception: this is more rare, and currently only happens
+  for particular file length errors. -/
+  | PreferNew
+  deriving BEq
 
-/-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
-instance : BEq ErrorContext where
-  beq ctx ctx' :=
-      ctx.path == ctx'.path
-      -- We completely ignore line numbers of errors. Not sure if this is best.
-      -- We normalise errors before comparing them.
-      && (ctx.error).normalise == (ctx'.error).normalise
+/-- Compare two `ErrorContexts` for the purposes of updating a style exceptions file. -/
+def compare (existing new : ErrorContext) : ComparisonResult := Id.run do
+  -- Two comparable error contexts must have the same path.
+  if existing.path != new.path then
+    return ComparisonResult.Different
+  -- We entirely ignore their line numbers: not sure if this is best.
+  -- NB: keep the following in sync with `parse?_errorContext` below.
+  -- Generally, comparable errors must have equal `StyleError`s, but there are some exceptions.
+  match (existing.error, new.error) with
+  -- File length errors are the biggest exceptions: generally, we prefer to keep the
+    -- existing entry, *except* when a newer entry is much shorter.
+  | (StyleError.fileTooLong n _nLimit, StyleError.fileTooLong m _mLimit) =>
+    -- The only exception are "file too long" errors: generally, we prefer to keep the
+    -- existing entry, *except* when a newer entry is much shorter.
+    if m < n + 200 then ComparisonResult.PreferNew else ComparisonResult.PreferExisting
+  -- We do *not* care about the *kind* of wrong copyright,
+  -- nor about the particular length of a too long line.
+  | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.PreferExisting
+  | (StyleError.lineLength _, StyleError.lineLength 0) => ComparisonResult.PreferExisting
+  -- In all other cases, `StyleErrors` must compare equal.
+  | (a, b) => if a == b then ComparisonResult.PreferExisting else ComparisonResult.Different
+
+/-- Whether a list of style exceptions contains an entry covering this error. -/
+def ErrorContext.isCoveredBy (e : ErrorContext) (exceptions : Array ErrorContext) : Bool :=
+    (exceptions.find? (fun new ↦
+      compare e new matches ComparisonResult.PreferExisting | ComparisonResult.PreferNew)).isSome
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
@@ -158,8 +184,8 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
       let err : Option StyleError := match error_code with
-        -- Use default values for parameters which are normalised.
-        -- NB: keep this in sync with `normalise` above!
+        -- Use default values for parameters which are ignored for comparing style exceptions.
+        -- NB: keep this in sync with `compare` above!
         | "ERR_COP" => some (StyleError.copyright none)
         | "ERR_LIN" =>
           if let some n := error_message.get? 2 then
@@ -367,7 +393,7 @@ def lintFile (path : FilePath) (sizeLimit : Option ℕ) (exceptions : Array Erro
   let allOutput := (Array.map (fun lint ↦
     (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
   -- This this list is not sorted: for github, this is fine.
-  errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
+  errors := errors.append (allOutput.flatten.filter (fun e ↦ !(e.isCoveredBy exceptions)))
   return errors
 
 /-- Lint a collection of modules for style violations.
