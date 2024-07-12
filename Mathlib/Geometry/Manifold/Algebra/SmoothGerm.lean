@@ -6,18 +6,20 @@ Authors: Patrick Massot
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 import Mathlib.Order.Filter.Germ
 
-/-! # Germs of smooth functions
+/-!
+# Germs of smooth functions
 
 Germs of smooth functions between manifolds.
 
 ## Main definitions and results
+
 * `smoothGerm I I' N x`: the set of germs of smooth functions `f : M → N` at `x : M`
 * `smoothGerm.toSubring` and friends: if `R` is a smooth ring,
 the space of germs of smooth functions `M → R` is a subring of `Germ (𝓝 x) R`
 
 ## Tags
-germ, smooth function, manifold
 
+germ, smooth function, manifold
 -/
 
 noncomputable section
