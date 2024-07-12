@@ -74,7 +74,7 @@ theorem dynamical_uni_of_comp_is_comp (T : X → X) (U V : Set (X × X)) (n : �
   rcases xy_comp with ⟨z, hz1, hz2⟩
   exact mem_ball_comp (hz1 k k_n) (hz2 k k_n)
 
-theorem dynamical_of_open_is_open [TopologicalSpace X] {T : X → X} (T_cont : Continuous T)
+theorem dynamical_uni_of_open_is_open [TopologicalSpace X] {T : X → X} (T_cont : Continuous T)
     {U : Set (X × X)} (U_open : IsOpen U) (n : ℕ) :
     IsOpen (DynamicalUni T U n) := by
   rw [dynamical_uni_inter_Ico T U n]
@@ -92,7 +92,7 @@ theorem dynamical_uni_antitone_time (T : X → X) (U : Set (X × X)) :
   use k, lt_of_lt_of_le k_m m_n
 
 @[simp]
-theorem dynamical_time_zero {T : X → X} {U : Set (X × X)} :
+theorem dynamical_uni_time_zero {T : X → X} {U : Set (X × X)} :
     DynamicalUni T U 0 = Set.univ := by
   simp only [DynamicalUni, not_lt_zero', Set.iInter_of_empty, Set.iInter_univ]
 
