@@ -202,7 +202,7 @@ abbrev transition_aux (i j : Basis (Fin (r + c)) K V) :
         MonoidHom.toOneHom_coe, MonoidHom.coe_coe, MvPolynomial.eval₂Hom_C]}
 
 lemma transition_aux_matrix_X (i j : Basis (Fin (r + c)) K V) :
-     Matrix.map (matrix_X K r c) (transition_aux r c i j) =
+    Matrix.map (matrix_X K r c) (transition_aux r c i j) =
     (matrix_G' r c i j) * (matrix_F' r c i j)⁻¹ := by
   conv_rhs => congr; change matrix_G' r c i j
   apply Matrix.ext; intro _ _
