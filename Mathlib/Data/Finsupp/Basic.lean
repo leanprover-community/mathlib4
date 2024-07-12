@@ -1073,7 +1073,7 @@ def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M where
 #align finsupp.subtype_domain_add_monoid_hom Finsupp.subtypeDomainAddMonoidHom
 
 /-- `Finsupp.filter` as an `AddMonoidHom`. -/
-def filterAddHom (p : α → Prop) [DecidablePred p]: (α →₀ M) →+ α →₀ M where
+def filterAddHom (p : α → Prop) [DecidablePred p] : (α →₀ M) →+ α →₀ M where
   toFun := filter p
   map_zero' := filter_zero p
   map_add' f g := DFunLike.coe_injective <| by

@@ -58,7 +58,7 @@ structure GlueData where
   t : ∀ i j, V (i, j) ⟶ V (j, i)
   t_id : ∀ i, t i i = 𝟙 _
   t' : ∀ i j k, pullback (f i j) (f i k) ⟶ pullback (f j k) (f j i)
-  t_fac : ∀ i j k, t' i j k ≫ pullback.snd = pullback.fst ≫ t i j
+  t_fac : ∀ i j k, t' i j k ≫ pullback.snd _ _ = pullback.fst _ _ ≫ t i j
   cocycle : ∀ i j k, t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _
 #align category_theory.glue_data CategoryTheory.GlueData
 
@@ -85,19 +85,20 @@ theorem t'_iij (i j : D.J) : D.t' i i j = (pullbackSymmetry _ _).hom := by
       ((Mono.right_cancellation _ _ eq₃).trans (pullbackSymmetry_hom_comp_fst _ _).symm)
 #align category_theory.glue_data.t'_iij CategoryTheory.GlueData.t'_iij
 
-theorem t'_jii (i j : D.J) : D.t' j i i = pullback.fst ≫ D.t j i ≫ inv pullback.snd := by
+theorem t'_jii (i j : D.J) : D.t' j i i = pullback.fst _ _ ≫ D.t j i ≫ inv (pullback.snd _ _) := by
   rw [← Category.assoc, ← D.t_fac]
   simp
 #align category_theory.glue_data.t'_jii CategoryTheory.GlueData.t'_jii
 
-theorem t'_iji (i j : D.J) : D.t' i j i = pullback.fst ≫ D.t i j ≫ inv pullback.snd := by
+theorem t'_iji (i j : D.J) : D.t' i j i = pullback.fst _ _ ≫ D.t i j ≫ inv (pullback.snd _ _) := by
   rw [← Category.assoc, ← D.t_fac]
   simp
 #align category_theory.glue_data.t'_iji CategoryTheory.GlueData.t'_iji
 
 @[reassoc, elementwise (attr := simp)]
 theorem t_inv (i j : D.J) : D.t i j ≫ D.t j i = 𝟙 _ := by
-  have eq : (pullbackSymmetry (D.f i i) (D.f i j)).hom = pullback.snd ≫ inv pullback.fst := by simp
+  have eq : (pullbackSymmetry (D.f i i) (D.f i j)).hom =
+      pullback.snd _ _ ≫ inv (pullback.fst _ _) := by simp
   have := D.cocycle i j i
   rw [D.t'_iij, D.t'_jii, D.t'_iji, fst_eq_snd_of_mono_eq, eq] at this
   simp only [Category.assoc, IsIso.inv_hom_id_assoc] at this
@@ -107,7 +108,7 @@ theorem t_inv (i j : D.J) : D.t i j ≫ D.t j i = 𝟙 _ := by
 
 theorem t'_inv (i j k : D.J) :
     D.t' i j k ≫ (pullbackSymmetry _ _).hom ≫ D.t' j i k ≫ (pullbackSymmetry _ _).hom = 𝟙 _ := by
-  rw [← cancel_mono (pullback.fst : pullback (D.f i j) (D.f i k) ⟶ _)]
+  rw [← cancel_mono (pullback.fst (D.f i j) (D.f i k))]
   simp [t_fac, t_fac_assoc]
 #align category_theory.glue_data.t'_inv CategoryTheory.GlueData.t'_inv
 
@@ -125,7 +126,7 @@ theorem t'_comp_eq_pullbackSymmetry (i j k : D.J) :
       (pullbackSymmetry _ _).hom ≫ D.t' j i k ≫ (pullbackSymmetry _ _).hom := by
   trans inv (D.t' i j k)
   · exact IsIso.eq_inv_of_hom_inv_id (D.cocycle _ _ _)
-  · rw [← cancel_mono (pullback.fst : pullback (D.f i j) (D.f i k) ⟶ _)]
+  · rw [← cancel_mono (pullback.fst (D.f i j) (D.f i k))]
     simp [t_fac, t_fac_assoc]
 #align category_theory.glue_data.t'_comp_eq_pullback_symmetry CategoryTheory.GlueData.t'_comp_eq_pullbackSymmetry
 

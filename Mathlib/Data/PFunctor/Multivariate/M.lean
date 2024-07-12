@@ -133,7 +133,7 @@ def M.corecContents {α : TypeVec.{u} n}
     (g₂ : ∀ b : β, P.last.B (g₀ b) → β)
     (x : _)
     (b : β)
-    (h: x = M.corecShape P g₀ g₂ b) :
+    (h : x = M.corecShape P g₀ g₂ b) :
     M.Path P x ⟹ α
   | _, M.Path.root x a f h' i c =>
     have : a = g₀ b := by
