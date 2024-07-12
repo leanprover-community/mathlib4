@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 import Lean.Linter.Util
 import Batteries.Data.Array.Basic
 import Batteries.Tactic.Lint
+import Mathlib.Tactic.Lemma
 
 /-!
 # Linters for Mathlib
@@ -118,8 +119,6 @@ The "noRepeatedVariable" linter emits a warning somewhere.
 
 open Lean Elab
 
-namespace Mathlib.Linter
-
 /-- The "noRepeatedVariable" linter emits a warning when a variable in scope is repeated in a
 command. -/
 register_option linter.noRepeatedVariable : Bool := {
@@ -136,6 +135,15 @@ def getBinders : Syntax → Array Syntax
       fargs.push stx else fargs
   | _ => #[]
 
+/-- `getDeclBinders stx` returns the array of all the binders contained in `stx`, assuming that
+`stx` is a `theorem`, `lemma`, `example` and the binders are the ones appearing "before the `:`". -/
+def getDeclBinders : Syntax → (Array Syntax)
+  | `($_dm:declModifiers theorem $_did:declId $ds* : $_t $_dv:declVal) => ds
+  | `($_dm:declModifiers lemma   $_did:declId $ds* : $_t $_dv:declVal) => ds
+  | `($_dm:declModifiers example              $ds* : $_t $_dv:declVal) => ds
+  | `($_dm:declModifiers example              $ds*       $_dv:declVal) => ds
+  | _ => #[]
+
 namespace NoRepeatedVariable
 
 /-- Gets the value of the `linter.noRepeatedVariable` option. -/
@@ -150,7 +158,7 @@ def noRepeatedVariableLinter : Linter where
     if (← MonadState.get).messages.hasErrors then
       return
     if stx.isOfKind ``Lean.Parser.Command.variable then return
-    let binders := getBinders stx
+    let binders := getDeclBinders stx
     let sc ← getScope
     let vars := sc.varDecls.map (·.raw)
     let repeatedBinders := binders.filter vars.contains
