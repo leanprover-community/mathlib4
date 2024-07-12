@@ -292,3 +292,23 @@ def adj (A : V) : ((copowerFunctor V C).obj A) ⊣ ((powerFunctor V C).obj (.op 
     app := fun X ↦ (powerEquiv _ _ _).trans (copowerEquiv _ _ _).symm (𝟙 _)
     naturality := sorry
   }
+
+variable (D : Type (u + 1)) [Category.{u} D]
+
+instance : MonoidalClosed (Type u) where
+  closed X := {
+    rightAdj := sorry
+    adj := sorry
+  }
+
+instance : EnrichedCategoryCategory (Type u) D where
+  Hom X Y := X ⟶ Y
+  id X _ := 𝟙 X
+  comp _ _ _ := fun ⟨f, g⟩ ↦ f ≫ g
+  homEquiv X Y := sorry
+
+  instance : Copowered (Type u) D where
+    copower A X := {
+      obj := sorry
+      iso := sorry
+    }
