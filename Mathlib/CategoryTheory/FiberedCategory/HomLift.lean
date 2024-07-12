@@ -169,7 +169,7 @@ instance lift_eqToHom_comp {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a �
     [p.IsHomLift f φ] : p.IsHomLift (eqToHom h ≫ f) φ := by
   subst h; simp_all
 
-instance lift_comp_eqToHom {R S S': 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S')
+instance lift_comp_eqToHom {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S')
     [p.IsHomLift f φ] : p.IsHomLift (f ≫ eqToHom h) φ := by
   subst h; simp_all
 

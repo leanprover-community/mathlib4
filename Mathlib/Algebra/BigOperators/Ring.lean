@@ -311,6 +311,10 @@ variable {ι κ α : Type*} [DecidableEq ι] [Fintype ι] [Fintype κ] [CommSemi
 lemma sum_pow (f : ι → α) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
   simp [sum_pow']
 
+/-- A product of sums can be written as a sum of products. -/
+lemma prod_sum {κ : ι → Type*} [Fintype ι] [∀ i, Fintype (κ i)] (f : ∀ i, κ i → α) :
+    ∏ i, ∑ j, f i j = ∑ x : ∀ i, κ i, ∏ i, f i (x i) := Finset.prod_univ_sum _ _
+
 lemma prod_add (f g : ι → α) : ∏ a, (f a + g a) = ∑ t, (∏ a ∈ t, f a) * ∏ a ∈ tᶜ, g a := by
   simpa [compl_eq_univ_sdiff] using Finset.prod_add f g univ
 
