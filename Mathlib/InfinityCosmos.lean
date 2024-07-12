@@ -175,7 +175,6 @@ end ReflPrefunctor
 
 def Functor.toReflPrefunctor {C D} [Category C] [Category D] (F : C ⥤ D) : C ⥤rq D := { F with }
 
-/-- ER: Rename if this is useful. -/
 @[simp]
 theorem Functor.toReflPrefunctor_toPrefunctor {C D : Cat} (F : C ⥤ D) :
     (Functor.toReflPrefunctor F).toPrefunctor = F.toPrefunctor := rfl
@@ -234,8 +233,6 @@ def forgetToQuiv : ReflQuiv.{v, u} ⥤ Quiv.{v, u} where
   obj V := Quiv.of V
   map F := F.toPrefunctor
 
-/-- ER: For use for triangle identities below.-/
-
 theorem forgetToQuiv_faithful {V W : ReflQuiv} (F G : V ⥤rq W)
     (hyp : forgetToQuiv.map F = forgetToQuiv.map G) : F = G := by
   cases F
@@ -247,7 +244,6 @@ theorem forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
   map_injective := by
     intro V W f g hyp
     exact forgetToQuiv_faithful _ _ hyp
-
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 
@@ -321,7 +317,7 @@ namespace ReflQuiv
 -- (and then show that `lift F` is initial amongst such functors)
 -- but it would require lifting quite a bit of machinery to quivers!
 
-/-- ER: An attempt to build the adjunction data. Universe error is why this is for u u.-/
+/-- ER: Universe error is why this is for u u.-/
 @[simps! toPrefunctor obj map]
 def adj.unit.app (V : ReflQuiv.{u, u}) : V ⥤rq forget.obj (Cat.freeRefl.obj V) where
   toPrefunctor := Quiv.adj.unit.app (V.toQuiv) ⋙q
@@ -356,6 +352,7 @@ def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C := by
 theorem adj.counit.app_eq (C : Cat) :
     Cat.FreeReflObj.quotientFunctor C ⋙ adj.counit.app C =
     Quiv.adj.counit.app C := rfl
+
 @[simp]
 theorem adj.counit.app_eq' (C) [Category C] :
     Cat.FreeReflObj.quotientFunctor C ⋙ adj.counit.app (Cat.of C) =
@@ -421,88 +418,135 @@ nonrec def adj : Cat.freeRefl ⊣ ReflQuiv.forget := by
 
 end ReflQuiv
 
-
 open Opposite Simplicial
 local notation3:1000 (priority := high) X " _[" n "]" =>
     (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
 
 namespace SimplexCategory
-
 def Δ (k : ℕ) := FullSubcategory fun n : SimplexCategory => n.len ≤ k
 
 instance (k : ℕ) : Category (Δ k) := inferInstanceAs (Category (FullSubcategory ..))
+
+end SimplexCategory
+
+open SimplexCategory
+/-- ER: The category of k-truncated simplicial sets is the category of contravariant functors from `SimplexCategory` to `Type u`. -/
+def truncSSet (k : ℕ)  : Type (u + 1) := (Δ k)ᵒᵖ ⥤ Type u
+
+namespace truncSSet
+
+instance largeCategory {k : ℕ} : LargeCategory (truncSSet k) := by
+  dsimp only [truncSSet]
+  infer_instance
+
+instance hasLimits {k : ℕ} : HasLimits (truncSSet k) := by
+  dsimp only [truncSSet]
+  infer_instance
+
+instance hasColimits {k : ℕ} : HasColimits (truncSSet k) := by
+  dsimp only [truncSSet]
+  infer_instance
+
+@[ext]
+lemma hom_ext {k : ℕ} {X Y : truncSSet k} {f g : X ⟶ Y} (hyp : ∀ (n : (Δ k)ᵒᵖ), f.app n = g.app n) : f = g := NatTrans.ext f g (funext hyp)
+
+/-- The ulift functor `truncSSet.{u} ⥤ truncSSet.{max u v}` on truncated simplicial sets. -/
+def uliftFunctor (k : ℕ) : truncSSet.{u} k ⥤ truncSSet.{max u v} k :=
+  (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
+
+end truncSSet
+
+namespace SimplexCategory
 
 def Δ.ι (k) : Δ k ⥤ SimplexCategory := fullSubcategoryInclusion _
 
 def Δ.ι_fullyFaithful (k) : (Δ.ι k).FullyFaithful := fullyFaithfulFullSubcategoryInclusion _
 
-def truncation (k) : SSet ⥤ (Δ k)ᵒᵖ ⥤ Type _ := (whiskeringLeft _ _ _).obj (Δ.ι k).op
+def truncation (k) : SSet ⥤ truncSSet k := (whiskeringLeft _ _ _).obj (Δ.ι k).op
 
 def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
 def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
 
 end SimplexCategory
 
--- ER: Moved this down because I need opposite and [n].
-namespace Nerve
-
-/-- ER: Fails because cannot infer that types have limits; maybe this is a universe issue? -/
+/- ER: Should these generalize to arbitrary k?-/
 def cosk₂ : SSet ⥤ SSet :=
   SimplexCategory.truncation 2 ⋙ ran (SimplexCategory.Δ.ι 2).op
 
-/-- ER: The natural map from a nerve. I don't know why this succeeds where the previous definition failed, but with it this has the form nerveFunctor ⟶ nerveFunctor ⋙ cosk₂ -/
-def nerve2coskNatMap : nerveFunctor ⟶ nerveFunctor ⋙ cosk₂ :=
+def nerveFunctor₂ : Cat ⥤ truncSSet 2 := nerveFunctor ⋙ SimplexCategory.truncation 2
+
+namespace Nerve
+
+/-- ER: The natural map from a nerve. -/
+def nerve2coskNatTrans : nerveFunctor ⟶ nerveFunctor₂ ⋙ ran (SimplexCategory.Δ.ι 2).op :=
   whiskerLeft nerveFunctor (SimplexCategory.coskeletonAdj 2).unit
 
--- ER: Because the above is "noncomputable" --- whatever that means --- we'll obtain the same map a second way.
-
-/-- ER: The truncated nerve of a category. -/
-def nerve2truncated (C : Type u) [Category.{v} C] : (SimplexCategory.Δ 2)ᵒᵖ ⥤ Type (max u v) :=
-  (SimplexCategory.truncation 2).obj (nerve C)
-
-
-/-- ER: A trivial natural transformation that induces something non-trivial. -/
-def nerve2truncatedNatTrans (C : Type u) [Category.{v} C] :
-    ((whiskeringLeft _ _ _).obj (SimplexCategory.Δ.ι 2).op).obj (nerve C) ⟶ (nerve2truncated C) :=
-  𝟙 (nerve2truncated C)
-
-/-- ER: The following should define a natural comparison map from the nerve of C to the right Kan
-extension but I need Lean to infer existence of limits that definitely exist.-/
-def nerve2coskMap (C : Type u) [Category.{v} C] :
-    (nerve C) ⟶ Ran.loc (SimplexCategory.Δ.ι 2).op (nerve2truncated C) :=
-  (Ran.equiv (SimplexCategory.Δ.ι 2).op (nerve2truncated C) (nerve C)).symm
-    (nerve2truncatedNatTrans C)
-
-/-- ER: A component of the above. -/
-def nerve2coskMapApp (C : Type u) [Category.{v} C] (n : ℕ) :
-    ((nerve C) _[n] ⟶ (Ran.loc (SimplexCategory.Δ.ι 2).op (nerve2truncated C)) _[n]) :=
-  (nerve2coskMap C).app (op [n])
+/-- ER: A component of the above; universe error! -/
+def nerve2coskNatTrans.component (C : Type 0) [Category.{0} C] (n : ℕ) :
+    ((nerve C) _[n] ⟶ (Ran.loc (SimplexCategory.Δ.ι 2).op (nerveFunctor₂.obj (Cat.of C))) _[n]) :=
+  (nerve2coskNatTrans.app (Cat.of C)).app (op [n])
 
 /-- ER: The nerve is 2-coskeletal because the following map is an isomorphism making the
 natural transformation a natural isomorphism. By construction this is a map from the type
 (nerve C) _[n] into an object defined by a limit. To prove that this is an isomorphism, we will show
 that this cone is a limit cone directly: showing any other cone factors uniquely through it.
 The factorization will involve the explicit consruction of an n-simplex in the nerve of C from the
-data in the cone. -/
-theorem nerve2coskMapApp.isIso (C : Type u) [Category.{v} C] (n : ℕ) :
-    IsIso (nerve2coskMapApp C n) := by
-  simp [nerve2coskMapApp, nerve2coskMap, Ran.equiv]
-  let Δ2 := StructuredArrow { unop := [n] } (SimplexCategory.Δ.ι 2).op
-  let D : Δ2 ⥤ Type (max u v) := Ran.diagram (SimplexCategory.Δ.ι 2).op (nerve2truncated C) { unop := [n] }
-  show IsIso
-    (limit.lift D
-      { pt := ComposableArrows C n,
-        π := { app := fun i ↦ (nerve C).map i.hom ≫ (nerve2truncatedNatTrans C).app i.right, naturality := _ } })
-  -- let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerve2truncated C) { unop := [n] }) := inferInstance
-  -- refine' IsLimit.hom_isIso _ (limit.isLimit _) _
-  sorry
+data in the cone. UNIVERSE ERROR!-/
+theorem nerve2coskNatTrans.component_isIso (C : Type 0) [Category.{0} C] (n : ℕ) :
+    IsIso (nerve2coskNatTrans.component C n) := by sorry
 
 /-- ER: Since a natural transformation is a natural isomorphism iff its components are isomorphisms: -/
-theorem nerve2coskMap.isIso (C : Type u) [Category.{v} C] : IsIso (nerve2coskMap C) := by sorry
+theorem nerve2coskNatTrans.app_isIso (C : Type 0) [Category.{0} C] : IsIso (nerve2coskNatTrans.app (Cat.of C)) := by sorry
+  -- refine Iso.isIso_hom (C := SSet) ?_
+  -- apply NatIso.ofComponents
+
 
 /-- ER: It follows that we have a natural isomorphism between nerveFunctor and nerveFunctor ⋙ cosk₂
 whose components are the isomorphisms just established. -/
-def nerve2coskIso : nerveFunctor ≅ nerveFunctor ⋙ cosk₂ := by sorry
+def nerve2coskIso : nerveFunctor ≅ nerveFunctor₂ ⋙ ran (SimplexCategory.Δ.ι 2).op := by sorry
+--  refine asIso nerve2coskNatTrans ?_
+
+--  refine IsIso.asIso nerve2coskNatTrans ?_
+
+
+
+-- /-- ER: The truncated nerve of a category. -/
+-- def nerve2truncated (C : Type u) [Category.{v} C] : (SimplexCategory.Δ 2)ᵒᵖ ⥤ Type (max u v) :=
+--   (SimplexCategory.truncation 2).obj (nerve C)
+
+-- /-- ER: A trivial natural transformation that induces something non-trivial. -/
+-- def nerve2truncatedNatTrans (C : Type u) [Category.{v} C] :
+--     ((whiskeringLeft _ _ _).obj (SimplexCategory.Δ.ι 2).op).obj (nerve C) ⟶ (nerve2truncated C) :=
+--   𝟙 (nerve2truncated C)
+
+-- def nerve2coskMap (C : Type u) [Category.{v} C] :
+--     (nerve C) ⟶ Ran.loc (SimplexCategory.Δ.ι 2).op (nerve2truncated C) :=
+--   (Ran.equiv (SimplexCategory.Δ.ι 2).op (nerve2truncated C) (nerve C)).symm
+--     (nerve2truncatedNatTrans C)
+
+-- /-- ER: A component of the above. -/
+-- def nerve2coskMapApp (C : Type u) [Category.{v} C] (n : ℕ) :
+--     ((nerve C) _[n] ⟶ (Ran.loc (SimplexCategory.Δ.ι 2).op (nerve2truncated C)) _[n]) :=
+--   (nerve2coskMap C).app (op [n])
+
+-- /-- ER: The nerve is 2-coskeletal because the following map is an isomorphism making the
+-- natural transformation a natural isomorphism. By construction this is a map from the type
+-- (nerve C) _[n] into an object defined by a limit. To prove that this is an isomorphism, we will show
+-- that this cone is a limit cone directly: showing any other cone factors uniquely through it.
+-- The factorization will involve the explicit consruction of an n-simplex in the nerve of C from the
+-- data in the cone. -/
+-- theorem nerve2coskMapApp.isIso (C : Type u) [Category.{v} C] (n : ℕ) :
+--     IsIso (nerve2coskMapApp C n) := by
+--   simp [nerve2coskMapApp, nerve2coskMap, Ran.equiv]
+--   let Δ2 := StructuredArrow { unop := [n] } (SimplexCategory.Δ.ι 2).op
+--   let D : Δ2 ⥤ Type (max u v) := Ran.diagram (SimplexCategory.Δ.ι 2).op (nerve2truncated C) { unop := [n] }
+--   show IsIso
+--     (limit.lift D
+--       { pt := ComposableArrows C n,
+--         π := { app := fun i ↦ (nerve C).map i.hom ≫ (nerve2truncatedNatTrans C).app i.right, naturality := _ } })
+--   -- let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerve2truncated C) { unop := [n] }) := inferInstance
+--   -- refine' IsLimit.hom_isIso _ (limit.isLimit _) _
+--   sorry
 
 end Nerve
 
