@@ -817,11 +817,18 @@ def glueData : GlueData where
 
 end Grassmannian
 
+/-- The Grassmannian scheme of locally free of rank `r` quotients of a finite free `R`-module `V`.
+(Here `c` is supposed to play the role of `FiniteDimensional.finrank K V - r`; we avoid using
+substraction on natural numbers for technical reasons. Note that the Grassmannian as defined here
+is empty unless `V` is free and `r + c = FinitDimensional.finrank K V`.)
+-/
 def Grassmannian := (Grassmannian.glueData K V r c).glued
--- Note that this is empty unless `finrank K v = r + c`.
 
 namespace Grassmannian
 
+/-- The structural morphism from the Grassmannian of locally free of rank `r` quotients of a finite
+free `R`-module `V` to `Spec R`.
+-/
 def structMorphism : Grassmannian K V r c ⟶ Spec (CommRingCat.of K) := by
   refine Scheme.GlueData.glueMorphisms (Grassmannian.glueData K V r c)
     (fun _ ↦ Spec.map (CommRingCat.ofHom (algebraMap _ _))) ?_
