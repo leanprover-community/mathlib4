@@ -170,6 +170,14 @@ instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
 
 end CommShift
 
+@[simp]
+lemma commShiftIso_id_hom_app (a : A) (X : C) :
+    (commShiftIso (𝟭 C) a).hom.app X = 𝟙 _ := comp_id _
+
+@[simp]
+lemma commShiftIso_id_inv_app (a : A) (X : C) :
+    (commShiftIso (𝟭 C) a).inv.app X = 𝟙 _ := comp_id _
+
 lemma commShiftIso_comp_hom_app [F.CommShift A] [G.CommShift A] (a : A) (X : C) :
     (commShiftIso (F ⋙ G) a).hom.app X =
       G.map ((commShiftIso F a).hom.app X) ≫ (commShiftIso G a).hom.app (F.obj X) := by
@@ -228,12 +236,12 @@ end Functor
 
 namespace NatTrans
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E J : Type*} [Category C] [Category D] [Category E] [Category J]
   {F₁ F₂ F₃ : C ⥤ D} (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) (e : F₁ ≅ F₂)
-    (G G' : D ⥤ E) (τ'' : G ⟶ G')
-  (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A] [HasShift E A]
+    (G G' : D ⥤ E) (τ'' : G ⟶ G') (H : E ⥤ J)
+  (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A] [HasShift E A] [HasShift J A]
   [F₁.CommShift A] [F₂.CommShift A] [F₃.CommShift A]
-    [G.CommShift A] [G'.CommShift A]
+    [G.CommShift A] [G'.CommShift A] [H.CommShift A]
 
 /-- If `τ : F₁ ⟶ F₂` is a natural transformation between two functors
 which commute with a shift by an additive monoid `A`, this typeclass
@@ -315,6 +323,15 @@ instance whiskerLeft [NatTrans.CommShift τ'' A] :
   simp only [Functor.comp_obj, comp_app, whiskerRight_app, whiskerLeft_app, whiskerLeft_twice,
     Functor.commShiftIso_comp_hom_app, Category.assoc, ← NatTrans.naturality_assoc, comm_app]⟩
 
+instance associator : CommShift (Functor.associator F₁ G H).hom A where
+  comm' a := by ext X; simp [Functor.commShiftIso_comp_hom_app]
+
+instance leftUnitor : CommShift F₁.leftUnitor.hom A where
+  comm' a := by ext X; simp [Functor.commShiftIso_comp_hom_app]
+
+instance rightUnitor : CommShift F₁.rightUnitor.hom A where
+  comm' a := by ext X; simp [Functor.commShiftIso_comp_hom_app]
+
 end CommShift
 
 end NatTrans
@@ -359,5 +376,46 @@ lemma ofIso_compatibility :
 end CommShift
 
 end Functor
+
+/--
+Assume that we have a diagram of categories
+```
+C₁ ⥤ D₁
+‖     ‖
+v     v
+C₂ ⥤ D₂
+‖     ‖
+v     v
+C₃ ⥤ D₃
+```
+with functors `F₁₂ : C₁ ⥤ C₂`, `F₂₃ : C₂ ⥤ C₃` and `F₁₃ : C₁ ⥤ C₃` on the first
+column that are related by a natural transformation `α : F₁₃ ⟶ F₁₂ ⋙ F₂₃`
+and similarly `β : G₁₂ ⋙ G₂₃ ⟶ G₁₃` on the second column. Assume that we have
+natural transformations
+`e₁₂ : F₁₂ ⋙ L₂ ⟶ L₁ ⋙ G₁₂` (top square), `e₂₃ : F₂₃ ⋙ L₃ ⟶ L₂ ⋙ G₂₃` (bottom square),
+and `e₁₃ : F₁₃ ⋙ L₃ ⟶ L₁ ⋙ G₁₃` (outer square), where the horizontal functors
+are denoted `L₁`, `L₂` and `L₃`. Assume that `e₁₃` is determined by the other
+natural transformations `α`, `e₂₃`, `e₁₂` and `β`. Then, if all these categories
+are equipped with a shift by an additive monoid `A`, and all these functors commute with
+these shifts, then the natural transformation `e₁₃` of the outer square commutes with the
+shift if all `α`, `e₂₃`, `e₁₂` and `β` do. -/
+lemma NatTrans.CommShift.verticalComposition {C₁ C₂ C₃ D₁ D₂ D₃ : Type*}
+    [Category C₁] [Category C₂] [Category C₃] [Category D₁] [Category D₂] [Category D₃]
+    {F₁₂ : C₁ ⥤ C₂} {F₂₃ : C₂ ⥤ C₃} {F₁₃ : C₁ ⥤ C₃} (α : F₁₃ ⟶ F₁₂ ⋙ F₂₃)
+    {G₁₂ : D₁ ⥤ D₂} {G₂₃ : D₂ ⥤ D₃} {G₁₃ : D₁ ⥤ D₃} (β : G₁₂ ⋙ G₂₃ ⟶ G₁₃)
+    {L₁ : C₁ ⥤ D₁} {L₂ : C₂ ⥤ D₂} {L₃ : C₃ ⥤ D₃}
+    (e₁₂ : F₁₂ ⋙ L₂ ⟶ L₁ ⋙ G₁₂) (e₂₃ : F₂₃ ⋙ L₃ ⟶ L₂ ⋙ G₂₃) (e₁₃ : F₁₃ ⋙ L₃ ⟶ L₁ ⋙ G₁₃)
+    (A : Type*) [AddMonoid A] [HasShift C₁ A] [HasShift C₂ A] [HasShift C₃ A]
+    [HasShift D₁ A] [HasShift D₂ A] [HasShift D₃ A]
+    [F₁₂.CommShift A] [F₂₃.CommShift A] [F₁₃.CommShift A] [CommShift α A]
+    [G₁₂.CommShift A] [G₂₃.CommShift A] [G₁₃.CommShift A] [CommShift β A]
+    [L₁.CommShift A] [L₂.CommShift A] [L₃.CommShift A]
+    [CommShift e₁₂ A] [CommShift e₂₃ A]
+    (h₁₃ : e₁₃ = CategoryTheory.whiskerRight α L₃ ≫ (Functor.associator _ _ _).hom ≫
+      CategoryTheory.whiskerLeft F₁₂ e₂₃ ≫ (Functor.associator _ _ _).inv ≫
+        CategoryTheory.whiskerRight e₁₂ G₂₃ ≫ (Functor.associator _ _ _).hom ≫
+          CategoryTheory.whiskerLeft L₁ β) : CommShift e₁₃ A := by
+  subst h₁₃
+  infer_instance
 
 end CategoryTheory

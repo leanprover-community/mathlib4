@@ -70,7 +70,7 @@ theorem snorm_one_condexp_le_snorm (f : α → ℝ) : snorm (μ[f|m]) 1 μ ≤ s
         (ae_of_all μ (fun x => le_abs_self (f x) : ∀ x, f x ≤ |f x|)),
         EventuallyLE.trans (condexp_neg f).symm.le
           (condexp_mono hf.neg hf.abs
-          (ae_of_all μ (fun x => neg_le_abs (f x): ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
+          (ae_of_all μ (fun x => neg_le_abs (f x) : ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
       exact abs_le_abs hx₁ hx₂
     _ = snorm f 1 μ := by
       rw [snorm_one_eq_lintegral_nnnorm, snorm_one_eq_lintegral_nnnorm, ←
@@ -173,7 +173,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   refine setIntegral_mono_ae hfint.abs.integrableOn ?_ hbdd
   refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
     (integrable_condexp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
-  refine set_lintegral_mono measurable_const.nnnorm.coe_nnreal_ennreal
+  refine setLIntegral_mono measurable_const.nnnorm.coe_nnreal_ennreal
     (stronglyMeasurable_condexp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => ?_
   rw [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
   exact Subtype.mk_le_mk.2 (le_of_lt hx)

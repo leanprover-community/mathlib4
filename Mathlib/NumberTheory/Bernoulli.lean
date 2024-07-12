@@ -248,12 +248,11 @@ theorem sum_bernoulli (n : ℕ) :
 theorem bernoulli_spec' (n : ℕ) :
     (∑ k ∈ antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli k.1) =
       if n = 0 then 1 else 0 := by
-  cases' n with n n;
+  cases' n with n n
   · simp
   rw [if_neg (succ_ne_zero _)]
   -- algebra facts
-  have h₁ : (1, n) ∈ antidiagonal n.succ := by
-    simp [mem_antidiagonal, add_comm, Nat.succ_eq_add_one]
+  have h₁ : (1, n) ∈ antidiagonal n.succ := by simp [mem_antidiagonal, add_comm]
   have h₂ : (n : ℚ) + 1 ≠ 0 := by norm_cast
   have h₃ : (1 + n).choose n = n + 1 := by simp [add_comm]
   -- key equation: the corresponding fact for `bernoulli'`
@@ -277,7 +276,7 @@ def bernoulliPowerSeries :=
 theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A - 1) = X := by
   ext n
   -- constant coefficient is a special case
-  cases' n with n n;
+  cases' n with n n
   · simp
   simp only [bernoulliPowerSeries, coeff_mul, coeff_X, sum_antidiagonal_succ', one_div, coeff_mk,
     coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_one, cast_mul,
