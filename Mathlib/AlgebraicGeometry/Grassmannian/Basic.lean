@@ -80,18 +80,18 @@ variable {A : Type*} [CommRing A] [Algebra K A]
 
 namespace Grassmannian
 
-abbrev functions_chart := MvPolynomial (Fin c × Fin r) K
-
-abbrev chart :=
-  Spec (CommRingCat.of (MvPolynomial (Fin c × Fin r) K))
-
-abbrev matrix_coord : Matrix (Fin (r + c)) (Fin r) (functions_chart K r c) :=
+/-- The `(r + c) × r` matrix with ceofficients in `MvPolynomial (Fin c × Fin r) K` obtained by
+stacking the `r × r` identity matrix on top of the `c × r` matrix of indeterminates.
+-/
+abbrev matrix_coord : Matrix (Fin (r + c)) (Fin r) (MvPolynomial (Fin c × Fin r) K) :=
   Matrix.of
     (fun x y ↦
       if h : x < r then if x.1 = y.1 then 1 else 0
       else MvPolynomial.X (⟨x.1 - r, by have := x.2; rw [lt_iff_not_le, not_not] at h; omega⟩, y))
 
-abbrev matrix_X : Matrix (Fin c) (Fin r) (functions_chart K r c) :=
+/-- The `c × r` matrix of indeterminates in `MvPolynomial (Fin c × Fin r) K`.
+-/
+abbrev matrix_X : Matrix (Fin c) (Fin r) (MvPolynomial (Fin c × Fin r) K) :=
   Matrix.of (fun p q ↦ MvPolynomial.X (p,q))
 
 lemma matrix_coord_submatrix₁ :
@@ -112,20 +112,38 @@ lemma matrix_coord_submatrix₂ : (matrix_coord K r c).submatrix
 
 variable {K V r c}
 
+/-- If `i` and `j` are two bases of `V` indexed by `Fin (r + c)`, this is the change of basis
+matrix from `i` to `j`.
+-/
 abbrev B (i j : Basis (Fin (r + c)) K V) := i.toMatrix j
 
 variable (r c)
 
+/-- Take the `(r + c) × r` matrix with ceofficients in `MvPolynomial (Fin c × Fin r) K` obtained by
+stacking the `r × r` identity matrix on top of the `c × r` matrix of indeterminates, multiply on
+the left by the change of basis matrix from `j` to `i`.
+-/
 abbrev matrix (i j : Basis (Fin (r + c)) K V) :=
   (B j i).map (algebraMap K _) * matrix_coord K r c
 
+/-- Take the `(r + c) × r` matrix with ceofficients in `MvPolynomial (Fin c × Fin r) K` obtained by
+stacking the `r × r` identity matrix on top of the `c × r` matrix of indeterminates, multiply on
+the left by the change of basis matrix from `j` to `i`, take the top `r × r` submatrix.
+-/
 abbrev matrix_F (i j : Basis (Fin (r + c)) K V) :
-    Matrix (Fin r) (Fin r) (functions_chart K r c) :=
+    Matrix (Fin r) (Fin r) (MvPolynomial (Fin c × Fin r) K) :=
   Matrix.submatrix ((B j i).map (algebraMap K _) * matrix_coord K r c)
   (Fin.castLE (Nat.le_add_right r c)) id
 
+/-- Take the `(r + c) × r` matrix with ceofficients in `MvPolynomial (Fin c × Fin r) K` obtained by
+stacking the `r × r` identity matrix on top of the `c × r` matrix of indeterminates, multiply on
+the left by the change of basis matrix from `j` to `i`, take the bottom `c × r` submatrix.
+After multiplying on the right by the inverse of the `matrix_F i j` of the previous definition,
+we get a matrix whose entries are the images of the indeterminates by the transition map
+`t i j` in `Grassmannian.glueData`.
+-/
 abbrev matrix_G (i j : Basis (Fin (r + c)) K V) :
-    Matrix (Fin c) (Fin r) (functions_chart K r c) :=
+    Matrix (Fin c) (Fin r) (MvPolynomial (Fin c × Fin r) K) :=
   Matrix.submatrix ((B j i).map (algebraMap K _) * matrix_coord K r c)
     (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩) id
 
@@ -154,14 +172,30 @@ the charts `U i` and `U j`, seen as a basic open subscheme of `U i`.
 def equation (i j : Basis (Fin (r + c)) K V) :
     (MvPolynomial ((Fin c) × Fin r) K) := (matrix_F r c i j).det
 
+/-- Take the `(r + c) × r` matrix with ceofficients in `MvPolynomial (Fin c × Fin r) K` obtained by
+stacking the `r × r` identity matrix on top of the `c × r` matrix of indeterminates, multiply on
+the left by the change of basis matrix from `j` to `i`, take the top `r × r` submatrix, and see
+the result as a matrix with entries in the localization of `MvPolynomial (Fin (c × r)) K`
+defining the "intersection of charts" `V i j`.
+-/
 abbrev matrix_F' (i j : Basis (Fin (r + c)) K V) :=
   (algebraMap (MvPolynomial (Fin c × Fin r) K)
     (Localization.Away (equation r c i j))).mapMatrix (matrix_F r c i j)
 
+/-- Take the `(r + c) × r` matrix with ceofficients in `MvPolynomial (Fin c × Fin r) K` obtained by
+stacking the `r × r` identity matrix on top of the `c × r` matrix of indeterminates, multiply on
+the left by the change of basis matrix from `j` to `i`, take the bottom `c × r` submatrix, and see
+the result as a matrix with entries in the localization of `MvPolynomial (Fin (c × r)) K`
+defining the "intersection of charts" `V i j`.
+-/
 abbrev matrix_G' (i j : Basis (Fin (r + c)) K V) :=
   (matrix_G r c i j).map
   (algebraMap (MvPolynomial (Fin c × Fin r) K) (Localization.Away (equation r c i j)))
 
+/-- The `c × r` matrix of indeterminates in `MvPolynomial (Fin c × Fin r) K`,
+seen as a matrix with entries in the localization of `MvPolynomial (Fin (c × r)) K`
+defining the "intersection of charts" `V i j`.
+-/
 abbrev matrix_X' (i j : Basis (Fin (r + c)) K V) :=
   (matrix_X K r c).map
   (algebraMap (MvPolynomial (Fin c × Fin r) K) (Localization.Away (equation r c i j)))
@@ -178,7 +212,7 @@ lemma matrix_G'_eq_X_of_diagonal (i : Basis (Fin (r + c)) K V) :
   ext _ _
   simp only [map_apply, of_apply]
 
-local instance isUnit_F' (i j : Basis (Fin (r + c)) K V) :
+lemma isUnit_F' (i j : Basis (Fin (r + c)) K V) :
     IsUnit (matrix_F' r c i j) := by
     rw [Matrix.isUnit_iff_isUnit_det]
     rw [← RingHom.map_det]
@@ -193,12 +227,16 @@ lemma equation_eq_one_of_diagonal (i : Basis (Fin (r + c)) K V) :
   rw [matrix_F_eq_id_of_diagonal]
   simp only [det_one]
 
+/-- The open immersion from `V i j` (the "intersection" of the charts `U i` and `U j`) into
+the chart `U i`.
+-/
 abbrev open_immersion (i j : Basis (Fin (r + c)) K V) :=
   Spec.map (CommRingCat.ofHom (algebraMap (MvPolynomial ((Fin c) × Fin r) K)
     (Localization.Away (equation r c i j))))
 
+/-- Auxiliary function to defined the transition map `t i j` between `V i j` and `V j i`.-/
 abbrev transition_aux (i j : Basis (Fin (r + c)) K V) :
-    functions_chart K r c →ₐ[K] Localization.Away (equation r c i j) :=
+    MvPolynomial (Fin c × Fin r) K →ₐ[K] Localization.Away (equation r c i j) :=
   {MvPolynomial.eval₂Hom (algebraMap K (Localization.Away (equation r c i j)))
   (fun pq ↦ ((matrix_G' r c i j) * (matrix_F' r c i j)⁻¹) pq.1 pq.2) with
     commutes' := by
@@ -252,8 +290,8 @@ lemma transition_aux_matrix (i j k l : Basis (Fin (r + c)) K V) :
     (Localization.Away (equation r c i j))) * (matrix_F' r c i j)⁻¹ := by
   simp only [matrix]
   erw [RingHom.map_matrix_mul']; rw [Matrix.map_map]
-  have : (transition_aux r c i j).toRingHom.toFun ∘ (algebraMap K (functions_chart K r c)) =
-      algebraMap K _ := by
+  have : (transition_aux r c i j).toRingHom.toFun ∘
+      (algebraMap K (MvPolynomial (Fin c × Fin r) K)) = algebraMap K _ := by
     ext _
     simp only [RingHom.mapMatrix_apply, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
       MonoidHom.toOneHom_coe, MonoidHom.coe_coe, MvPolynomial.coe_eval₂Hom,
@@ -340,11 +378,17 @@ lemma transition_aux_equation_isUnit (i j : Basis (Fin (r + c)) K V) :
   erw [transition_aux_equation_flip]
   exact IsLocalization.Away.invSelf_unit _ (equation r c i j)
 
+/-- The action on functions of the transition map `t i j` between `V i j` and `V j i`, seen as
+a `RingHom`.
+-/
 abbrev transitionRingHom (i j : Basis (Fin (r + c)) K V) :
     Localization.Away (equation r c j i) →+* Localization.Away (equation r c i j) := by
   apply Localization.awayLift (r := equation r c j i) (transition_aux r c i j)
   exact transition_aux_equation_isUnit _ _ _ _
 
+/-- The action on functions of the transition map `t i j` between `V i j` and `V j i`, seen as
+an `AlgHom`.
+-/
 abbrev transition (i j : Basis (Fin (r + c)) K V) :
     Localization.Away (equation r c j i) →ₐ[K] Localization.Away (equation r c i j) :=
   {
@@ -353,7 +397,7 @@ abbrev transition (i j : Basis (Fin (r + c)) K V) :
      intro x
      dsimp
      rw [transitionRingHom]
-     rw [IsScalarTower.algebraMap_apply _ (functions_chart K r c) _]
+     rw [IsScalarTower.algebraMap_apply _ (MvPolynomial (Fin c × Fin r) K) _]
      rw [IsLocalization.Away.AwayMap.lift_eq]
      simp only [AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply, MvPolynomial.algebraMap_eq,
        MvPolynomial.eval₂Hom_C]
@@ -412,6 +456,9 @@ lemma transition_transition (i j : Basis (Fin (r + c)) K V) :
     simp only [map_apply, of_apply, Prod.mk.eta]
     rw [← Matrix.isUnit_iff_isUnit_det]; exact isUnit_F' r c i j
 
+/--
+The transition map `t i j` from `V i j` to `V j i`.
+-/
 abbrev transition_Spec (i j : Basis (Fin (r + c)) K V) :=
   Spec.map (CommRingCat.ofHom (transition r c i j).toRingHom)
 
@@ -457,7 +504,7 @@ def transition'₁ (i j k : Basis (Fin (r + c)) K V) :
         MvPolynomial.comp_eval₂Hom, Algebra.TensorProduct.includeLeftRingHom_apply,
         RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe,
         Algebra.TensorProduct.algebraMap_apply]
-      rw [IsScalarTower.algebraMap_apply (R := K) (S := functions_chart K r c)]
+      rw [IsScalarTower.algebraMap_apply (R := K) (S := MvPolynomial (Fin c × Fin r) K)]
       rw [IsLocalization.Away.AwayMap.lift_eq]
       simp only [MvPolynomial.algebraMap_eq, MvPolynomial.eval₂Hom_C, RingHom.coe_comp,
         Function.comp_apply, Algebra.TensorProduct.includeLeftRingHom_apply]
@@ -472,17 +519,29 @@ def transition'₁_Spec (i j k : Basis (Fin (r + c)) K V) :
     (Localization.Away (equation r c i j)) (Localization.Away (equation r c i k))).hom ≫
     Spec.map (CommRingCat.ofHom (transition'₁ r c i j k))
 
+/--
+The matrix `matrix_F i j`, seen as a matrix with entries in a tensor product of localizations
+of `MvPolynomial (Fin (c × r)) K`.
+-/
 abbrev matrix_F''ij (i j k : Basis (Fin (r + c)) K V) :=
   (algebraMap (MvPolynomial (Fin c × Fin r) K)
   (TensorProduct (MvPolynomial (Fin c × Fin r) K) (Localization.Away
   (equation r c i j)) (Localization.Away (equation r c i k)))).mapMatrix (matrix_F r c i j)
 
+/--
+The matrix `matrix_G i j`, seen as a matrix with entries in a tensor product of localizations
+of `MvPolynomial (Fin (c × r)) K`.
+-/
 abbrev matrix_G''ij (i j k : Basis (Fin (r + c)) K V) :=
   (matrix_G r c i j).map
   (algebraMap (MvPolynomial (Fin c × Fin r) K)
   (TensorProduct (MvPolynomial (Fin c × Fin r) K) (Localization.Away
   (equation r c i j)) (Localization.Away (equation r c i k))))
 
+/--
+The matrix `matrix_F i k`, seen as a matrix with entries in a tensor product of localizations
+of `MvPolynomial (Fin (c × r)) K`.
+-/
 abbrev matrix_F''ik (i j k : Basis (Fin (r + c)) K V) :=
   (algebraMap (MvPolynomial (Fin c × Fin r) K)
   (TensorProduct (MvPolynomial (Fin c × Fin r) K) (Localization.Away
@@ -492,7 +551,7 @@ lemma matrix_F''ij_inv_eq (i j k : Basis (Fin (r + c)) K V) :
     (matrix_F''ij r c i j k)⁻¹ =
     RingHom.mapMatrix Algebra.TensorProduct.includeLeftRingHom (matrix_F' r c i j)⁻¹ := by
   conv_rhs => rw [Matrix.nonsing_inv_eq_ring_inverse]
-              change AlgHom.mapMatrix (R := functions_chart K r c)
+              change AlgHom.mapMatrix (R := MvPolynomial (Fin c × Fin r) K)
                 Algebra.TensorProduct.includeLeft (Ring.inverse (matrix_F' r c i j))
               rw [AlgHom.map_inv (f := Algebra.TensorProduct.includeLeft.mapMatrix)
               (α := Matrix (Fin r) (Fin r) (Localization.Away (equation r c i j)))
@@ -525,6 +584,10 @@ lemma matrix_F''ik_inv_eq (i j k : Basis (Fin (r + c)) K V) :
   rw [AlgHom.mapMatrix_apply, RingHom.mapMatrix_apply, Matrix.map_map, heq]
   rw [matrix_F''ik, RingHom.mapMatrix_apply]
 
+/--
+The matrix `matrix_G i k`, seen as a matrix with entries in a tensor product of localizations
+of `MvPolynomial (Fin (c × r)) K`.
+-/
 abbrev matrix_G''ik (i j k : Basis (Fin (r + c)) K V) :=
   (matrix_G r c i k).map
   (algebraMap (MvPolynomial (Fin c × Fin r) K)
@@ -538,7 +601,7 @@ lemma matrix_F''ij_isUnit (i j k : Basis (Fin (r + c)) K V) :
   exact isUnit_F' r c i j
 
 lemma transition'₁_algebraMap (i j k : Basis (Fin (r + c)) K V) :
-    (transition'₁RingHom r c i j k).comp (algebraMap (functions_chart K r c) _) =
+    (transition'₁RingHom r c i j k).comp (algebraMap (MvPolynomial (Fin c × Fin r) K) _) =
     Algebra.TensorProduct.includeLeftRingHom.comp (transition_aux r c i j) := by
   rw [transition'₁RingHom, IsLocalization.Away.AwayMap.lift_comp]
 
@@ -547,7 +610,7 @@ lemma transition'₁_F' (i j k : Basis (Fin (r + c)) K V) :
     (matrix_F''ik r c i j k) * (matrix_F''ij r c i j k)⁻¹ := by
   rw [matrix_F', transition'₁]; erw [← RingHom.mapMatrix_apply]
   conv_lhs => change (transition'₁RingHom r c i j k).mapMatrix
-                ((algebraMap (functions_chart K r c) _).mapMatrix (matrix_F r c j k))
+                ((algebraMap (MvPolynomial (Fin c × Fin r) K) _).mapMatrix (matrix_F r c j k))
               rw [RingHom.mapMatrix_apply, RingHom.mapMatrix_apply, Matrix.map_map]
               rw [← RingHom.coe_comp]
               rw [transition'₁_algebraMap, RingHom.coe_comp, ← Matrix.map_map]
@@ -579,7 +642,7 @@ lemma transition'₁_G' (i j k : Basis (Fin (r + c)) K V) :
     (matrix_G''ik r c i j k) * (matrix_F''ij r c i j k)⁻¹ := by
   rw [matrix_G', transition'₁, Matrix.map_map]; erw [← RingHom.coe_comp]
   conv_lhs => change (matrix_G r c j k).map ((transition'₁RingHom r c i j k).comp (algebraMap
-                (functions_chart K r c) _))
+                (MvPolynomial (Fin c × Fin r) K) _))
               rw [transition'₁_algebraMap, RingHom.coe_comp, ← Matrix.map_map]
               erw [transition_aux_G]
               rw [RingHom.map_matrix_mul']
@@ -635,7 +698,7 @@ lemma transition'₁_transition (i j k : Basis (Fin (r + c)) K V) :
                 (φ₁ := Algebra.TensorProduct.includeRight.restrictScalars (R := K))
                 (φ₂ := transition_aux r c i k)]
   rw [← AlgHom.toRingHom_eq_coe, ← AlgHom.toRingHom_eq_coe]
-  apply congrArg (fun (s : functions_chart K r c →ₐ[K]
+  apply congrArg (fun (s : MvPolynomial (Fin c × Fin r) K →ₐ[K]
     TensorProduct (MvPolynomial (Fin c × Fin r) K)
     (Localization.Away (equation r c i j)) (Localization.Away (equation r c i k))) ↦ s.toRingHom)
   refine MvPolynomial.algHom_ext (fun pq ↦ ?_)
@@ -700,7 +763,7 @@ field `cocycle i j k`.
 -/
 def glueData : GlueData where
   J := Basis (Fin (r + c)) K V
-  U _ := chart K r c
+  U _ := Spec (CommRingCat.of (MvPolynomial (Fin c × Fin r) K))
   V ij := Spec (CommRingCat.of (Localization.Away (equation r c ij.1 ij.2)))
   f i j := open_immersion r c i j
   f_mono _ _ := inferInstance
@@ -767,14 +830,14 @@ def structMorphism : Grassmannian K V r c ⟶ Spec (CommRingCat.of K) := by
   rw [← Spec.map_comp, ← Spec.map_comp, ← Spec.map_comp]
   congr 1
   conv_lhs =>  change (algebraMap _ (Localization.Away (equation r c i j))).comp
-                 (algebraMap K (functions_chart K r c))
+                 (algebraMap K (MvPolynomial (Fin c × Fin r) K))
                rw [← IsScalarTower.algebraMap_eq K]
   conv_rhs => congr; change (algebraMap _ (Localization.Away (equation r c j i))).comp
-                 (algebraMap K (functions_chart K r c))
+                 (algebraMap K (MvPolynomial (Fin c × Fin r) K))
               rw [← IsScalarTower.algebraMap_eq K]
   conv_rhs => change (transitionRingHom r c i j).comp (algebraMap K _)
   simp only [CommRingCat.coe_of, transitionRingHom, AlgHom.coe_ringHom_mk, RingHom.mapMatrix_apply]
-  conv_rhs => rw [IsScalarTower.algebraMap_eq K (functions_chart K r c), ← RingHom.comp_assoc,
-                IsLocalization.Away.AwayMap.lift_comp, AlgHom.comp_algebraMap]
+  conv_rhs => rw [IsScalarTower.algebraMap_eq K (MvPolynomial (Fin c × Fin r) K),
+                ← RingHom.comp_assoc, IsLocalization.Away.AwayMap.lift_comp, AlgHom.comp_algebraMap]
 
 end Grassmannian

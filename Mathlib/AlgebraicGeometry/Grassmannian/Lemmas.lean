@@ -90,6 +90,8 @@ variable (R S T U : Type u) [CommRing R] [CommRing S] [CommRing T] [CommRing U]
   [IsScalarTower R T U]
   (f g : R)
 
+/-- If `S` is an `R`-algebra, this is the morphism of schemes from `Spec S` to `Spec R` defined
+by the structural map from `R` to `S`.-/
 noncomputable
 nonrec abbrev Spec.algebraMap : Spec (.of S) ⟶ Spec (.of R) :=
   Spec.map (CommRingCat.ofHom (algebraMap R S))
