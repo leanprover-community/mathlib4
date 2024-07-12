@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.RingTheory.Flat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.CategoryTheory.Monoidal.Tor
 import Mathlib.Algebra.Homology.ShortComplex.Exact
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 
 /-!
 # Tensoring with a flat module is an exact functor
