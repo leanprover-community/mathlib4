@@ -3,17 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
-import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Algebra.Order.Monoid.TypeTags
-import Mathlib.Algebra.Order.ZeroLEOne
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined
