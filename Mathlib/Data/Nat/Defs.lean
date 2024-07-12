@@ -753,7 +753,7 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_left hn]
 #align nat.pow_left_injective Nat.pow_left_injective
 
-protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) :=by
+protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 #align nat.pow_right_injective Nat.pow_right_injective
 
@@ -1666,8 +1666,8 @@ lemma sqrt_add_eq (n : ℕ) (h : a ≤ n + n) : sqrt (n * n + a) = n :=
   le_antisymm
     (le_of_lt_succ <|
       sqrt_lt.2 <| by
-        rw [succ_mul, mul_succ, add_succ, Nat.add_assoc];
-          exact lt_succ_of_le (Nat.add_le_add_left h _))
+        rw [succ_mul, mul_succ, add_succ, Nat.add_assoc]
+        exact lt_succ_of_le (Nat.add_le_add_left h _))
     (le_sqrt.2 <| Nat.le_add_right _ _)
 #align nat.sqrt_add_eq Nat.sqrt_add_eq
 

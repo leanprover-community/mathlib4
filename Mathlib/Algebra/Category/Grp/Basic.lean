@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.GroupTheory.Perm.Basic
 
 #align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"

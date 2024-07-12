@@ -133,7 +133,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
     exact ContinuousAt.continuousOn fun x hx =>
       Complex.continuousAt_ofReal_cpow_const x r (Or.inr hx)
   -- reduce to case of integral over `[0, c]`
-  suffices ∀ c : ℝ, IntervalIntegrable (fun x : ℝ => ‖(x:ℂ) ^ r‖) μ 0 c from
+  suffices ∀ c : ℝ, IntervalIntegrable (fun x : ℝ => ‖(x : ℂ) ^ r‖) μ 0 c from
     (this a).symm.trans (this b)
   intro c
   rcases le_or_lt 0 c with (hc | hc)
@@ -346,7 +346,7 @@ open intervalIntegral
 
 
 theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
-    (∫ x : ℝ in a..b, (x : ℂ) ^ r) = ((b:ℂ) ^ (r + 1) - (a:ℂ) ^ (r + 1)) / (r + 1) := by
+    (∫ x : ℝ in a..b, (x : ℂ) ^ r) = ((b : ℂ) ^ (r + 1) - (a : ℂ) ^ (r + 1)) / (r + 1) := by
   rw [sub_div]
   have hr : r + 1 ≠ 0 := by
     cases' h with h h
@@ -361,7 +361,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
     contrapose! hr; rwa [add_eq_zero_iff_eq_neg]
   replace h : -1 < r.re := by tauto
   suffices ∀ c : ℝ, (∫ x : ℝ in (0)..c, (x : ℂ) ^ r) =
-      (c:ℂ) ^ (r + 1) / (r + 1) - (0:ℂ) ^ (r + 1) / (r + 1) by
+      (c : ℂ) ^ (r + 1) / (r + 1) - (0 : ℂ) ^ (r + 1) / (r + 1) by
     rw [← integral_add_adjacent_intervals (@intervalIntegrable_cpow' a 0 r h)
       (@intervalIntegrable_cpow' 0 b r h), integral_symm, this a, this b, Complex.zero_cpow hr]
     ring
@@ -586,9 +586,9 @@ section RpowCpow
 open Complex
 
 theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
-    (∫ x : ℝ in a..b, (x : ℂ) * ((1:ℂ) + ↑x ^ 2) ^ t) =
-      ((1:ℂ) + (b:ℂ) ^ 2) ^ (t + 1) / (2 * (t + ↑1)) -
-      ((1:ℂ) + (a:ℂ) ^ 2) ^ (t + 1) / (2 * (t + ↑1)) := by
+    (∫ x : ℝ in a..b, (x : ℂ) * ((1 : ℂ) + ↑x ^ 2) ^ t) =
+      ((1 : ℂ) + (b : ℂ) ^ 2) ^ (t + 1) / (2 * (t + ↑1)) -
+      ((1 : ℂ) + (a : ℂ) ^ 2) ^ (t + 1) / (2 * (t + ↑1)) := by
   have : t + 1 ≠ 0 := by contrapose! ht; rwa [add_eq_zero_iff_eq_neg] at ht
   apply integral_eq_sub_of_hasDerivAt
   · intro x _
@@ -618,7 +618,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
 theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
     (∫ x : ℝ in a..b, x * (↑1 + x ^ 2) ^ t) =
       (↑1 + b ^ 2) ^ (t + 1) / (↑2 * (t + ↑1)) - (↑1 + a ^ 2) ^ (t + 1) / (↑2 * (t + ↑1)) := by
-  have : ∀ x s : ℝ, (((↑1 + x ^ 2) ^ s : ℝ) : ℂ) = (1 + (x : ℂ) ^ 2) ^ (s:ℂ) := by
+  have : ∀ x s : ℝ, (((↑1 + x ^ 2) ^ s : ℝ) : ℂ) = (1 + (x : ℂ) ^ 2) ^ (s : ℂ) := by
     intro x s
     norm_cast
     rw [ofReal_cpow, ofReal_add, ofReal_pow, ofReal_one]
@@ -679,7 +679,7 @@ theorem integral_sin_sq : ∫ x in a..b, sin x ^ 2 = (sin a * cos a - sin b * co
 #align integral_sin_sq integral_sin_sq
 
 theorem integral_sin_pow_odd :
-    (∫ x in (0)..π, sin x ^ (2 * n + 1)) = 2 * ∏ i ∈ range n, (2 * (i:ℝ) + 2) / (2 * i + 3) := by
+    (∫ x in (0)..π, sin x ^ (2 * n + 1)) = 2 * ∏ i ∈ range n, (2 * (i : ℝ) + 2) / (2 * i + 3) := by
   induction' n with k ih; · norm_num
   rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
   norm_cast
@@ -687,7 +687,7 @@ theorem integral_sin_pow_odd :
 #align integral_sin_pow_odd integral_sin_pow_odd
 
 theorem integral_sin_pow_even :
-    (∫ x in (0)..π, sin x ^ (2 * n)) = π * ∏ i ∈ range n, (2 * (i:ℝ) + 1) / (2 * i + 2) := by
+    (∫ x in (0)..π, sin x ^ (2 * n)) = π * ∏ i ∈ range n, (2 * (i : ℝ) + 1) / (2 * i + 2) := by
   induction' n with k ih; · simp
   rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
   norm_cast

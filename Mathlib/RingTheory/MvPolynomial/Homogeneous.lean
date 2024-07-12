@@ -278,7 +278,7 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
   exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
 
-theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
+theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by
   rw [← φ.support_sum_monomial_coeff, map_sum]; simp_rw [rename_monomial]
   apply IsHomogeneous.sum _ _ _ fun d hd ↦ isHomogeneous_monomial _ _
