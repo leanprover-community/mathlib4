@@ -554,10 +554,35 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
    ext γ
    rw [prelim_sub_exhaust T hC]
 
+@[simp]
+theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) =
+    (⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j)) := by
+  exact rfl
 
-theorem indexing_nonsense (i : n) : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
+theorem indexing_nonsense (i : n) [Nontrivial n] : ⨆ (γ : n → 𝕜), ⨅ j : n, eigenspace (T j) (γ j)
     = (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) := by sorry
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))) := by
+  ext v
+  constructor
+  · intro h
+    simp only [ne_eq, ultra_silly_lemma]
+    conv =>
+     rhs
+     rw [iSup]
+    simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, iSup_le_iff,
+      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe]
+    intro K
+    rw [iSup] at h
+    simp only [sSup, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff, Submodule.mem_mk,
+      AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe] at h
+    intro H
+    apply h K
+    intro a w hw
+
+    sorry
+  · sorry
 
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
