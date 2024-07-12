@@ -27,15 +27,15 @@ def writeJsonFile [ToJson α] (path : System.FilePath) (a : α) : IO Unit :=
 
 -- TODO: replace by the code from Batteries.Tactic.Lint.Frontend;
 -- once PR batteries#881 has been merged
-/-- `getChecks slow useAlso` produces a list of linters.
-`useAlso` is an optional list of names that should resolve to declarations with type `NamedLinter`.
+/-- `getChecks slow runAlways` produces a list of linters.
+`runAlways` is an optional list of names that should resolve to declarations with type `NamedLinter`.
 If populated, these linters are always run (regardless of their configuration).
 Otherwise, it uses all enabled linters in the environment tagged with `@[env_linter]`.
 If `slow` is false, it only uses the fast default tests. -/
-def getChecksNew (slow : Bool) (useAlso : Option (List Name)) : CoreM (Array NamedLinter) := do
+def getChecksNew (slow : Bool) (runAlways : Option (List Name)) : CoreM (Array NamedLinter) := do
   let mut result := #[]
   for (name, declName, default) in batteriesLinterExt.getState (← getEnv) do
-    let shouldRun := default || match useAlso with
+    let shouldRun := default || match runAlways with
       | some extras => extras.contains name
       | none => false
     if shouldRun then
