@@ -244,3 +244,5 @@ theorem _root_.Polynomial.algebraMap_hahnSeries_injective :
 #align polynomial.algebra_map_hahn_series_injective Polynomial.algebraMap_hahnSeries_injective
 
 end Algebra
+
+end HahnSeries
