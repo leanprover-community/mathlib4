@@ -682,7 +682,7 @@ scoped notation3:max W "⟮" S "⟯" => Affine.Point <| baseChange W S
 variable {W}
 
 /-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` satisfying a
-predicate `p` with the union of zero and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y`. -/
+predicate `p` and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
 def pointEquivNonsingularSubtype {p : W.Point → Prop} (p0 : p .zero) : {P : W.Point // p P} ≃
     WithZero {xy : R × R // ∃ h : W.Nonsingular xy.fst xy.snd, p <| .some h} where
   toFun P := match P with
@@ -715,8 +715,8 @@ lemma pointEquivNonsingularSubtype_symm_some {x y : R} {h : W.Nonsingular x y} {
   rfl
 
 variable (W) in
-/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` with the
-union of zero and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y`. -/
+/-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` and the set of
+pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
 def pointEquivNonsingular : W.Point ≃ WithZero {xy : R × R // W.Nonsingular xy.fst xy.snd} :=
   (Equiv.Set.univ W.Point).symm.trans <| (pointEquivNonsingularSubtype trivial).trans
     (Equiv.setCongr <| Set.ext fun _ => exists_iff_of_forall fun _ => trivial).optionCongr
@@ -1168,7 +1168,7 @@ def Point.mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
 #align elliptic_curve.point.mk EllipticCurve.Affine.Point.mk
 
 /-- The equivalence between the rational points on an elliptic curve `E` satisfying a predicate `p`
-with the union of zero and the set of pairs `⟨x, y⟩` satisfying `E.Equation x y`. -/
+and the set of pairs `⟨x, y⟩` satisfying `E.Equation x y` with zero. -/
 def pointEquivEquationSubtype {p : E.toAffine.Point → Prop} (p0 : p .zero) :
     {P : E.toAffine.Point // p P} ≃
       WithZero {xy : R × R // ∃ h : E.toAffine.Equation xy.fst xy.snd, p <| Point.mk h} :=
@@ -1198,8 +1198,8 @@ lemma pointEquivEquationSubtype_symm_some {x y : R} {h : E.toAffine.Equation x y
   rfl
 
 variable (E) in
-/-- The equivalence between the rational points on an elliptic curve `E` with the union of zero and
-the set of pairs `⟨x, y⟩` satisfying `E.Equation x y`. -/
+/-- The equivalence between the rational points on an elliptic curve `E` and the set of pairs
+`⟨x, y⟩` satisfying `E.Equation x y` with zero. -/
 def pointEquivEquation :
     E.toAffine.Point ≃ WithZero {xy : R × R // E.toAffine.Equation xy.fst xy.snd} :=
   (Equiv.Set.univ E.toAffine.Point).symm.trans <| (pointEquivEquationSubtype trivial).trans
