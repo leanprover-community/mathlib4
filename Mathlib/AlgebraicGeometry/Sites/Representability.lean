@@ -57,7 +57,7 @@ noncomputable abbrev symmetryIso : V hf i j ≅ V hf j i :=
   ((hf i).rep.symmetryIso (hf j).rep)
 
 lemma isOpenImmersion_p₂ (i j : ι) :
-    IsOpenImmersion (p₂ hf i j) := (hf i).property (f j)
+    IsOpenImmersion (p₂ hf i j) := (hf i).property_snd (f j)
 
 lemma symmetryIso_hom_comp_p₂ (i j : ι) :
     (symmetryIso hf i j).hom ≫ p₂ hf j i = p₁ hf i j := by
@@ -73,11 +73,11 @@ lemma p₁_self_eq_p₂ (i : ι) :
     p₁ hf i i = p₂ hf i i := by
   have := mono_of_openImmersion_presheaf (hf i)
   apply yoneda.map_injective
-  rw [← cancel_mono (f i), (hf i).rep.condition (f i)]
+  rw [← cancel_mono (f i), ((hf i).rep.isPullback' (f i)).w]
 
 @[reassoc]
 lemma condition (i j : ι) : yoneda.map (p₁ hf i j) ≫ f i = yoneda.map (p₂ hf i j) ≫ f j :=
-  (hf i).rep.condition (f j)
+  ((hf i).rep.isPullback' (f j)).w
 
 lemma isIso_p₁_self (i : ι) :
     IsIso (p₁ hf i i) := by
