@@ -64,44 +64,11 @@ theorem locallyCoverDense : LocallyCoverDense J e.inverse := by
       exact T.val.downward_closed hf _
     · simp
 
-theorem functorPushforward_eq_pullback {U : C} (S : Sieve U) :
-    Sieve.functorPushforward e.inverse (Sieve.functorPushforward e.functor S) =
-      Sieve.pullback (e.unitInv.app U) S := by
-  ext Z f
-  rw [← Sieve.functorPushforward_comp]
-  simp only [Sieve.functorPushforward_apply, Presieve.functorPushforward, exists_and_left, id_obj,
-    comp_obj, Sieve.pullback_apply]
-  constructor
-  · rintro ⟨W, g, hg, x, rfl⟩
-    rw [Category.assoc]
-    apply S.downward_closed
-    simpa using S.downward_closed hg _
-  · intro hf
-    exact ⟨_, e.unitInv.app Z ≫ f ≫ e.unitInv.app U, S.downward_closed hf _,
-      e.unit.app Z ≫ e.unit.app _, by simp⟩
-
-theorem pullback_functorPushforward_eq {X : C} (S : Sieve X) :
-    Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
-      (Sieve.functorPushforward e.functor S)) = S := by
-  ext Z f
-  rw [← Sieve.functorPushforward_comp]
-  simp only [id_obj, comp_obj, Sieve.pullback_apply, Sieve.functorPushforward_apply,
-    Presieve.functorPushforward, Functor.comp_map, inv_fun_map, exists_and_left]
-  constructor
-  · intro ⟨W, g, hg, x, h⟩
-    simp only [← Category.assoc] at h
-    change _ ≫ (e.unitIso.app _).hom = _ ≫ (e.unitIso.app _).hom at h
-    rw [Iso.cancel_iso_hom_right] at h
-    rw [h]
-    exact S.downward_closed hg _
-  · intro hf
-    exact ⟨_, e.unitInv.app Z ≫ f, S.downward_closed hf _, e.unit.app Z ≫ e.unit.app _, by simp⟩
-
 theorem coverPreserving' : CoverPreserving J (e.locallyCoverDense J).inducedTopology e.functor where
   cover_preserve {U S} h := by
     change _ ∈ J.sieves (e.inverse.obj (e.functor.obj U))
     convert J.pullback_stable (e.unitInv.app U) h
-    exact e.functorPushforward_eq_pullback S
+    exact Sieve.functorPushforward_equivalence_eq_pullback e S
 
 instance : IsCoverDense e.functor (e.locallyCoverDense J).inducedTopology where
   is_cover U := by
@@ -145,10 +112,10 @@ instance : e.symm.TransportsGrothendieckTopology K J where
     constructor
     · intro h
       convert J.pullback_stable (e.unitInv.app X) h
-      exact e.functorPushforward_eq_pullback S
+      exact Sieve.functorPushforward_equivalence_eq_pullback e S
     · intro h
       convert J.pullback_stable (e.unit.app X) h
-      exact (e.pullback_functorPushforward_eq S).symm
+      exact (Sieve.pullback_functorPushforward_equivalence_eq e S).symm
 
 theorem coverPreserving : CoverPreserving J K e.functor := by
   rw [e.eq_inducedTopology_of_transports J K]
