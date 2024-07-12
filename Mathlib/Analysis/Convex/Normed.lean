@@ -144,17 +144,20 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s
 /-- We can intercalate a polyhedron between a point and one of its neighborhoods. -/
 lemma exists_mem_interior_convexHull_finset (hs : s ∈ 𝓝 x) :
     ∃ t : Finset E, x ∈ interior (convexHull ℝ t : Set E) ∧ convexHull ℝ t ⊆ s := by
+  -- Lean nonsense
   clear P ι
   classical
+  -- By translating, WLOG `x` is the origin.
   wlog hx : x = 0
   · obtain ⟨t, ht⟩ := this (s := -x +ᵥ s) (by simpa using vadd_mem_nhds (-x) hs) rfl
     use x +ᵥ t
     simpa [subset_set_vadd_iff, mem_vadd_set_iff_neg_vadd_mem, convexHull_vadd, interior_vadd]
       using ht
   subst hx
+  -- The strategy is now to find an arbitrary maximal spanning simplex (aka an affine basis)...
   obtain ⟨b⟩ := exists_affineBasis_of_finiteDimensional
     (ι := Fin (finrank ℝ E + 1)) (k := ℝ) (P := E) (by simp)
-  obtain ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.1 hs
+  -- ... translate it to contain the origin...
   set u : Finset E := -Finset.univ.centroid ℝ b +ᵥ Finset.univ.image b
   have hu₀ : 0 ∈ interior (convexHull ℝ u : Set E) := by
     simpa [u, convexHull_vadd, interior_vadd, mem_vadd_set_iff_neg_vadd_mem]
@@ -164,6 +167,8 @@ lemma exists_mem_interior_convexHull_finset (hs : s ∈ 𝓝 x) :
     simp only [subset_def, Finset.mem_coe, mem_closedBall, dist_zero_right, ← sub_le_iff_le_add,
       Finset.le_sup'_iff]
     exact fun x hx ↦ ⟨x, hx, by simp⟩
+  -- ... and finally scale it to fit inside the neighborhood `s`.
+  obtain ⟨ε, hε, hεs⟩ := Metric.mem_nhds_iff.1 hs
   set ε' : ℝ := ε / 2 / (u.sup' hu (‖·‖) + 1)
   have hε' : 0 < ε' := by
     dsimp [ε']
