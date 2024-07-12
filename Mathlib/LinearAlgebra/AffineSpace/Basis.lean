@@ -290,6 +290,10 @@ instance instVAdd : VAdd V (AffineBasis ι k P) where
 
 @[simp, norm_cast] lemma coe_vadd (v : V) (b : AffineBasis ι k P) : ⇑(v +ᵥ b) = v +ᵥ ⇑b := rfl
 
+@[simp] lemma basisOf_vadd (v : V) (b : AffineBasis ι k P) : (v +ᵥ b).basisOf = b.basisOf := by
+  ext
+  simp
+
 instance instAddAction : AddAction V (AffineBasis ι k P) :=
   DFunLike.coe_injective.addAction _ coe_vadd
 
