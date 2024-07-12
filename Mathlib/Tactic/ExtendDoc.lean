@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.ElabRules
+import Lean.DocString
 
 /-!
 #  `extend_doc` command

@@ -66,7 +66,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
   haveI hne := IsCyclotomicExtension.neZero' (p ^ (k + 1)) K L
   -- Porting note: these two instances are not automatically synthesised and must be constructed
   haveI mf : Module.Finite K L := finiteDimensional {p ^ (k + 1)} K L
-  haveI se : IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
+  haveI se : Algebra.IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _, ←
     hζ.minpoly_eq_cyclotomic_of_irreducible hirr, PNat.pow_coe,
     totient_prime_pow hp.out (succ_pos k), Nat.add_one_sub_one]
@@ -210,7 +210,7 @@ theorem discr_odd_prime [IsCyclotomicExtension {p} K L] [hp : Fact (p : ℕ).Pri
   have : IsCyclotomicExtension {p ^ (0 + 1)} K L := by
     rw [zero_add, pow_one]
     infer_instance
-  have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1) :) := by simpa using hζ
+  have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1):) := by simpa using hζ
   convert discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
   · rw [zero_add, pow_one, totient_prime hp.out]
   · rw [_root_.pow_zero, one_mul, zero_add, mul_one, Nat.sub_sub]

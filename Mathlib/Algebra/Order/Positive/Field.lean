@@ -29,7 +29,7 @@ theorem coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
 #align positive.coe_inv Positive.coe_inv
 
 instance : Pow { x : K // 0 < x } ℤ :=
-  ⟨fun x n => ⟨(x: K) ^ n, zpow_pos_of_pos x.2 _⟩⟩
+  ⟨fun x n => ⟨(x : K) ^ n, zpow_pos_of_pos x.2 _⟩⟩
 
 @[simp]
 theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :=
