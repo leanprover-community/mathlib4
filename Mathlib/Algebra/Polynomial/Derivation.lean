@@ -158,6 +158,10 @@ section coeffwise
 variable {R A M : Type*} [CommSemiring R] [CommRing A] [Algebra R A] [AddCommGroup M]
   [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
 
+/--
+The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
+of the coefficients.
+-/
 def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
   Derivation.mk' ({
     toFun := fun x ↦ x.sum fun n v ↦ PolynomialModule.single A n (d v)
