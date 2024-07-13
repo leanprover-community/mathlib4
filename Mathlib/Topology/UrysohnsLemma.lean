@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
-import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.GDelta
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Ordered
+import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.GDelta
+import Mathlib.Topology.UnitInterval
 
 #align_import topology.urysohns_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -627,7 +628,8 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
           have honeaddm: 1+m < Nat.succ n := by
             rw [add_comm 1 m]
             exact hm
-          have hxlem : Finset.filter (fun (x : Fin (Nat.succ n)) => x < { val := 1+m, isLt := honeaddm })
+          have hxlem : Finset.filter (fun (x : Fin (Nat.succ n)) =>
+              x < { val := 1+m, isLt := honeaddm })
               = Finset.filter (fun (x : Fin (Nat.succ n)) => x ≤ { val := m, isLt := hmlt }) := by
             ext Finset.univ a
             simp only [Finset.mem_filter, and_congr_right_iff]
@@ -697,23 +699,21 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       simp only [mem_setOf_eq, toFinset_setOf, ContinuousMap.mul_apply, ContinuousMap.coe_prod,
         ContinuousMap.coe_sub, ContinuousMap.coe_one, Finset.prod_apply]
       apply unitInterval.mul_mem
-      · sorry
-      -- apply prod_mem  gives an error "tactic 'apply' failed, failed to unify". `(1 - g c) x` needs to be understood as `fun c => (1 - g c) x
-      -- leaving a code using an ad hoc lemma icc_prod_Icc in https://github.com/yoh-tanimoto/mathlib4/blob/yoh/yoh/RMK/urysohn.lean
-      -- · apply icc_prod_Icc i.val
-      --   constructor
-      --   · rw [hg]
-      --     simp only [Finset.mem_filter, Finset.mem_univ, true_and, sub_nonneg,
-      --       tsub_le_iff_right, le_add_iff_nonneg_right]
-      --     intro j _
-      --     apply Set.Icc.one_sub_mem
-      --     exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed
-      --       (hs j) (IsClosedH j) (IsHSubS j))).2.2 x
-      --   · have hFinIcc: Finset.filter (fun x => x < i) Finset.univ = Finset.Ico 0 i := by
-      --       ext j
-      --       simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Ico, Fin.zero_le]
-      --     rw [hFinIcc]
-      --     simp only [Fin.card_Ico, Fin.val_zero, tsub_zero]
+      · set g' : Fin (n.succ) → ℝ := fun c => (1 - (g c)) x
+        have hg' : ∀ (c : Fin (n.succ)), ((1 : X → ℝ) - (g c)) x = g' c := by
+          intro c
+          rfl
+        simp_rw [hg']
+        refine prod_mem (S := unitInterval.unitIntervalSubmonoid) ?_
+        intro c _
+        simp only [unitInterval.mem_unitIntervalSubmonoid]
+        rw [← hg' c]
+        simp only [Pi.sub_apply, Pi.one_apply, sub_nonneg, tsub_le_iff_right,
+          le_add_iff_nonneg_right]
+        rw [hg, ← unitInterval.mem_iff_one_sub_mem]
+        exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed (hs c) (IsClosedH c)
+          (IsHSubS c))).2.2 x
       · rw [hg]
         simp only
-        exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed (hs i) (IsClosedH i) (IsHSubS i))).2.2 x
+        exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed (hs i) (IsClosedH i)
+          (IsHSubS i))).2.2 x
