@@ -83,8 +83,8 @@ attribute [nolint docBlame] CategoryTheory.StrongOplaxNatTrans.app
   CategoryTheory.StrongOplaxNatTrans.naturality_id
   CategoryTheory.StrongOplaxNatTrans.naturality_comp
 
-attribute [reassoc (attr := simp)] StrongOplaxNatTrans.naturality_naturality StrongOplaxNatTrans.naturality_id
-  StrongOplaxNatTrans.naturality_comp
+attribute [reassoc (attr := simp)] StrongOplaxNatTrans.naturality_naturality
+  StrongOplaxNatTrans.naturality_id StrongOplaxNatTrans.naturality_comp
 
 namespace StrongOplaxNatTrans
 
