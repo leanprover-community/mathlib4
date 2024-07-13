@@ -25,7 +25,7 @@ and some form of 'augmentation' axiom, which allows one to enlarge a non-maximal
 This augmentation axiom is still required when there are finiteness assumptions, but is simpler.
 It just states that if `I` is a finite independent set and `J` is a larger finite
 independent set, then there exists `e ∈ J \ I` for which `insert e I` is independent.
-This is the axiom that appears in all most of the definitions.
+This is the axiom that appears in most of the definitions.
 
 ## Implementation Details
 
@@ -160,27 +160,19 @@ namespace IndepMatroid
   (indep_subset := indep_subset)
   (indep_aug := by
     intro I B hI hImax hBmax
-    -- simp only [mem_maximals_iff, mem_setOf_eq, not_and, not_forall, exists_prop,
-    --   exists_and_left, iff_true_intro hI, true_imp_iff] at hImax hBmax
-    -- obtain ⟨I', hI', hII', hne⟩ := hImax
     obtain ⟨e, heI, hins⟩ := exists_insert_of_not_maximal indep_subset hI hImax
     by_cases heB : e ∈ B
     · exact ⟨e, ⟨heB, heI⟩, hins⟩
 
     by_contra hcon; push_neg at hcon
 
-    -- -- obtain ⟨e, heI', heI⟩ := exists_of_ssubset (hII'.ssubset_of_ne hne)
-    -- -- have hins : Indep (insert e I) := indep_subset hI' (insert_subset heI' hII')
-    -- obtain (heB | heB) := em (e ∈ B)
-    -- · exact ⟨e, ⟨heB, heI⟩, hins⟩
-    -- by_contra hcon; push_neg at hcon
     have heBdep := hBmax.not_prop_of_ssubset (ssubset_insert heB)
 
     -- There is a finite subset `B₀` of `B` so that `B₀ + e` is dependent
     obtain ⟨B₀, hB₀B, hB₀fin, hB₀e⟩ := htofin B e hBmax.1 heBdep
     have hB₀ := indep_subset hBmax.1 hB₀B
 
-    -- There is a finite subset `I₀` of `I` so that `I₀` doesn't extend into `B₀`
+    -- `I` has a finite subset `I₀` that doesn't extend into `B₀`
     have hexI₀ : ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ∀ x, x ∈ B₀ \ I₀ → ¬Indep (insert x I₀) := by
       have hchoose : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib) := by
         rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
@@ -271,20 +263,22 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
     rintro x ⟨Y, ⟨hY,-,-⟩, rfl⟩
     obtain ⟨n₀, heq, hle⟩ := hP Y hY
     rwa [ncard_def, heq, ENat.toNat_coe]
-    -- have := (hP Y hY).2
-  obtain ⟨Y, hY, hY'⟩ := Finite.exists_maximal_wrt' ncard _ hfin ⟨I, hI, rfl.subset, hIX⟩
-  refine ⟨Y, hY, fun J ⟨hJ, hIJ, hJX⟩ (hYJ : Y ⊆ J) ↦ (?_ : J ⊆ Y)⟩
-  have hJfin := finite_of_encard_le_coe (hP J hJ)
-  refine (eq_of_subset_of_ncard_le hYJ ?_ hJfin).symm.subset
-  rw [hY' J ⟨hJ, hIJ, hJX⟩ (ncard_le_ncard hYJ hJfin)]
+  obtain ⟨Y, ⟨hY, hIY, hYX⟩, hY'⟩ :=
+    Finite.exists_maximal_wrt' ncard _ hfin ⟨I, hI, rfl.subset, hIX⟩
+
+  refine ⟨Y, hIY, ⟨hY, hYX⟩, fun K ⟨hPK, hKX⟩ hYK ↦ ?_⟩
+  have hKfin : K.Finite := finite_of_encard_le_coe (hP K hPK)
+
+  refine (eq_of_subset_of_ncard_le hYK ?_ hKfin).symm.subset
+  rw [hY' K ⟨hPK, hIY.trans hYK, hKX⟩ (ncard_le_ncard hYK hKfin)]
 
 /-- If there is an absolute upper bound on the size of an independent set, then the maximality axiom
   isn't needed to define a matroid by independent sets. -/
 @[simps E] protected def ofBdd (E : Set α) (Indep : Set α → Prop)
     (indep_empty : Indep ∅)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
-    (indep_aug : ∀⦃I B⦄, Indep I → I ∉ maximals (· ⊆ ·) {I | Indep I} →
-      B ∈ maximals (· ⊆ ·) {I | Indep I} → ∃ x ∈ B \ I, Indep (insert x I))
+    (indep_aug : ∀⦃I B⦄, Indep I → ¬ Maximal Indep I → Maximal Indep B →
+      ∃ x ∈ B \ I, Indep (insert x I))
     (subset_ground : ∀ I, Indep I → I ⊆ E)
     (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n ) : IndepMatroid α where
   E := E
@@ -322,20 +316,19 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
     (indep_empty := indep_empty)
     (indep_subset := indep_subset)
     (indep_aug := by
-      simp_rw [mem_maximals_setOf_iff, not_and, not_forall, exists_prop,  mem_diff,
-        and_imp, and_assoc]
-      rintro I B hI hImax hB hBmax
-      obtain ⟨J, hJ, hIJ, hne⟩ := hImax hI
-      obtain ⟨n, h_bdd⟩ := indep_bdd
-
-      have hlt : I.encard < J.encard :=
-        (finite_of_encard_le_coe (h_bdd J hJ)).encard_lt_encard (hIJ.ssubset_of_ne hne)
-      have hle : J.encard ≤ B.encard := by
-        refine le_of_not_lt (fun hlt' ↦ ?_)
-        obtain ⟨e, he⟩ := indep_aug hB hJ hlt'
-        rw [hBmax he.2.2 (subset_insert _ _)] at he
-        exact he.2.1 (mem_insert _ _)
-      exact indep_aug hI hB (hlt.trans_le hle))
+      rintro I B hI hImax hBmax
+      suffices hcard : I.encard < B.encard by
+        obtain ⟨e, heB, heI, hi⟩ := indep_aug hI hBmax.prop hcard
+        exact ⟨e, ⟨heB, heI⟩, hi⟩
+      refine lt_of_not_le fun hle ↦ ?_
+      obtain ⟨x, hxnot, hxI⟩ := exists_insert_of_not_maximal indep_subset hI hImax
+      have hlt : B.encard < (insert x I).encard := by
+        rwa [encard_insert_of_not_mem hxnot, ← not_le, ENat.add_one_le_iff, not_lt]
+        rw [encard_ne_top_iff]
+        obtain ⟨n, hn⟩ := indep_bdd
+        exact finite_of_encard_le_coe (hn _ hI)
+      obtain ⟨y, -, hyB, hi⟩ := indep_aug hBmax.prop hxI hlt
+      exact hBmax.not_prop_of_ssubset (ssubset_insert hyB) hi)
     (indep_bdd := indep_bdd) (subset_ground := subset_ground)
 
 @[simp] theorem ofBddAugment_E (E : Set α) Indep indep_empty indep_subset indep_aug
@@ -442,7 +435,7 @@ namespace Matroid
   IndepMatroid.mk (E := E) (Indep := Indep)
   (indep_empty := by obtain ⟨M, -, rfl⟩ := hex; exact M.empty_indep)
   (indep_subset := by obtain ⟨M, -, rfl⟩ := hex; exact fun I J hJ hIJ ↦ hJ.subset hIJ)
-  (indep_aug := by obtain ⟨M, -, rfl⟩ := hex; exact Indep.exists_insert_of_not_mem_maximals M)
+  (indep_aug := by obtain ⟨M, -, rfl⟩ := hex; exact Indep.exists_insert_of_not_maximal M)
   (indep_maximal := by obtain ⟨M, rfl, rfl⟩ := hex; exact M.existsMaximalSubsetProperty_indep)
   (subset_ground := by obtain ⟨M, rfl, rfl⟩ := hex; exact fun I ↦ Indep.subset_ground)
 
