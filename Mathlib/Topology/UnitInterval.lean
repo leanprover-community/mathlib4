@@ -208,8 +208,8 @@ def unitIntervalSubmonoid : Submonoid ℝ where
   mul_mem' := unitInterval.mul_mem
 
 @[simp] theorem coe_unitIntervalSubmonoid : unitIntervalSubmonoid = unitInterval := rfl
-@[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ unitIntervalSubmonoid ↔ x ∈ unitInterval
-  := Iff.rfl
+@[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ unitIntervalSubmonoid ↔ x ∈ unitInterval :=
+  Iff.rfl
 
 end unitInterval
 
