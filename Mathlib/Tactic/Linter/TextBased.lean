@@ -128,7 +128,7 @@ instance : BEq ErrorContext where
 
 /-- Output the formatted error message, containing its context.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
-to consume or for the style exceptions file. -/
+to consume, or for the style exceptions file. -/
 def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
   let error_message := errctx.error.errorMessage style
   match style with
@@ -201,7 +201,7 @@ def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run d
 
 /-- Print information about all errors encountered to standard output.
 `style` specifies if the error should be formatted for humans to read, github problem matchers
-to consume or for the style exceptions file. -/
+to consume, or for the style exceptions file. -/
 def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit := do
   for e in errors do
     IO.println (outputMessage e style)
