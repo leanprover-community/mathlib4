@@ -523,6 +523,8 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     simp only [iInf, sInf, Set.mem_range, Subtype.exists, Set.iInter_exists, Submodule.mem_mk,
       AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
     intro K j hj HH
+    apply h
+    rw [← HH]
     sorry
   · sorry
 
