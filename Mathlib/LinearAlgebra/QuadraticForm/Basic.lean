@@ -466,7 +466,7 @@ def coeFnAddMonoidHom : QuadraticMap R M N →+ M → N where
   map_add' := coeFn_add
 #align quadratic_form.coe_fn_add_monoid_hom QuadraticMap.coeFnAddMonoidHom
 
-/-- Evaluation on a particular element of the module `M` is an additive map over quadratic maps. -/
+/-- Evaluation on a particular element of the module `M` is an additive map on quadratic maps. -/
 @[simps! apply]
 def evalAddMonoidHom (m : M) : QuadraticMap R M N →+ N :=
   (Pi.evalAddMonoidHom _ m).comp coeFnAddMonoidHom
