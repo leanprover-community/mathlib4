@@ -971,6 +971,11 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
       exact hf j hj h
 #align set.update_preimage_pi Set.update_preimage_pi
 
+theorem update_image [DecidableEq ι] (x : (i : ι) → β i) (i : ι) (s : Set (β i)) :
+    update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
+  ext y
+  simp [update_eq_iff, and_left_comm (a := _ ∈ s), forall_update_iff, eq_comm (a := y _)]
+
 theorem update_preimage_univ_pi [DecidableEq ι] {f : ∀ i, α i} (hf : ∀ j ≠ i, f j ∈ t j) :
     update f i ⁻¹' pi univ t = t i :=
   update_preimage_pi (mem_univ i) fun j _ => hf j
@@ -1007,8 +1012,8 @@ theorem piCongrLeft_symm_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i
 
 theorem piCongrLeft_preimage_pi (f : ι' ≃ ι) (s : Set ι') (t : ∀ i, Set (α i)) :
     f.piCongrLeft α ⁻¹' (f '' s).pi t = s.pi fun i => t (f i) := by
-  apply Set.ext;
-  rw [← (f.piCongrLeft α).symm.forall_congr_left]
+  apply Set.ext
+  rw [← (f.piCongrLeft α).symm.forall_congr_right]
   simp
 
 theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :

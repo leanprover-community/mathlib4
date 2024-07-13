@@ -7,7 +7,7 @@ import Mathlib.Data.Fintype.Parity
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.LinearCombination
 
@@ -243,10 +243,6 @@ def smulAux' (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ :=
   num g z / denom g z
 #align upper_half_plane.smul_aux' UpperHalfPlane.smulAux'
 
-#adaptation_note /-- after v4.7.0-rc1, there is a performance problem in `field_simp`.
-(Part of the code was ignoring the `maxDischargeDepth` setting:
- now that we have to increase it, other paths become slow.) -/
-set_option maxHeartbeats 400000 in
 theorem smulAux'_im (g : GL(2, ℝ)⁺) (z : ℍ) :
     (smulAux' g z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) := by
   rw [smulAux', Complex.div_im]
@@ -563,7 +559,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑�
     exact mul_ne_zero hc h_denom
   replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
   field_simp
-  linear_combination (-(z * (c:ℂ) ^ 2) - c * d) * h
+  linear_combination (-(z * (c : ℂ) ^ 2) - c * d) * h
 #align upper_half_plane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero UpperHalfPlane.exists_SL2_smul_eq_of_apply_zero_one_ne_zero
 
 end UpperHalfPlane

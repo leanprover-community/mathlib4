@@ -3,6 +3,7 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
@@ -94,9 +95,6 @@ theorem periodic_expMapCircle : Periodic expMapCircle (2 * π) := fun z =>
   expMapCircle_eq_expMapCircle.2 ⟨1, by rw [Int.cast_one, one_mul]⟩
 #align periodic_exp_map_circle periodic_expMapCircle
 
-#adaptation_note /-- nightly-2024-04-14
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12229 -/
 @[simp]
 theorem expMapCircle_two_pi : expMapCircle (2 * π) = 1 :=
   periodic_expMapCircle.eq.trans expMapCircle_zero
@@ -123,7 +121,7 @@ theorem Real.Angle.expMapCircle_coe (x : ℝ) : Real.Angle.expMapCircle x = _roo
 theorem Real.Angle.coe_expMapCircle (θ : Real.Angle) :
     (θ.expMapCircle : ℂ) = θ.cos + θ.sin * I := by
   induction θ using Real.Angle.induction_on
-  simp [Complex.exp_mul_I]
+  simp [exp_mul_I]
 #align real.angle.coe_exp_map_circle Real.Angle.coe_expMapCircle
 
 @[simp]
@@ -235,3 +233,52 @@ open AddCircle
 lemma isLocalHomeomorph_expMapCircle : IsLocalHomeomorph expMapCircle := by
   have : Fact (0 < 2 * π) := ⟨by positivity⟩
   exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
+
+namespace ZMod
+
+/-!
+### Additive characters valued in the complex circle
+-/
+
+open scoped Real
+
+variable {N : ℕ} [NeZero N]
+
+/-- The additive character from `ZMod N` to the unit circle in `ℂ`, sending `j mod N` to
+`exp (2 * π * I * j / N)`. -/
+noncomputable def toCircle : AddChar (ZMod N) circle where
+  toFun := fun j ↦ (toAddCircle j).toCircle
+  map_add_eq_mul' a b := by simp_rw [map_add, AddCircle.toCircle_add]
+  map_zero_eq_one' := by simp_rw [map_zero, AddCircle.toCircle, ← QuotientAddGroup.mk_zero,
+    Function.Periodic.lift_coe, mul_zero, expMapCircle_zero]
+
+lemma toCircle_intCast (j : ℤ) :
+    toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
+  rw [toCircle, AddChar.coe_mk, AddCircle.toCircle, toAddCircle_intCast,
+    Function.Periodic.lift_coe, expMapCircle_apply]
+  push_cast
+  ring_nf
+
+lemma toCircle_natCast (j : ℕ) :
+    toCircle (j : ZMod N) = exp (2 * π * I * j / N) := by
+  simpa using toCircle_intCast (N := N) j
+
+/--
+Explicit formula for `toCircle j`. Note that this is "evil" because it uses `ZMod.val`. Where
+possible, it is recommended to lift `j` to `ℤ` and use `toCircle_intCast` instead.
+-/
+lemma toCircle_apply (j : ZMod N) :
+    toCircle j = exp (2 * π * I * j.val / N) := by
+  rw [← toCircle_natCast, natCast_zmod_val]
+
+/-- The additive character from `ZMod N` to `ℂ`, sending `j mod N` to `exp (2 * π * I * j / N)`. -/
+noncomputable def stdAddChar : AddChar (ZMod N) ℂ := circle.subtype.compAddChar toCircle
+
+lemma stdAddChar_coe (j : ℤ) :
+    stdAddChar (j : ZMod N) = exp (2 * π * I * j / N) := by
+  simp only [stdAddChar, MonoidHom.coe_compAddChar, Function.comp_apply,
+    Submonoid.coe_subtype, toCircle_intCast]
+
+lemma stdAddChar_apply (j : ZMod N) : stdAddChar j = ↑(toCircle j) := rfl
+
+end ZMod

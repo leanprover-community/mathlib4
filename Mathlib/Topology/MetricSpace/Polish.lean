@@ -229,6 +229,10 @@ theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : Topologica
     .iInf ⟨none, Option.forall.2 ⟨le_rfl, hm⟩⟩ <| Option.forall.2 ⟨p, h'm⟩⟩
 #align polish_space.exists_polish_space_forall_le PolishSpace.exists_polishSpace_forall_le
 
+instance : PolishSpace ENNReal :=
+  ClosedEmbedding.polishSpace ⟨ENNReal.orderIsoUnitIntervalBirational.toHomeomorph.embedding,
+    ENNReal.orderIsoUnitIntervalBirational.range_eq ▸ isClosed_univ⟩
+
 end PolishSpace
 
 /-!
@@ -404,7 +408,6 @@ theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : S
   simpa using hs.isClosed_compl.isClopenable.compl
 #align is_open.is_clopenable IsOpen.isClopenable
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- Porting note (#11215): TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
 theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
