@@ -15,6 +15,11 @@ In this file, given `D : Scheme.GlueData`, we construct a 1-hypercover
 We use this 1-hypercover in order to define a constructor `D.sheafValGluedMk`
 for sections over `D.glued` of a sheaf of types over the big Zariski site.
 
+## Notes
+
+This contribution was created as part of the AIM workshop
+"Formalizing algebraic geometry" in June 2024.
+
 -/
 
 universe v u
