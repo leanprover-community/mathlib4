@@ -384,7 +384,7 @@ section SMul
 variable [Monoid S] [Monoid T] [DistribMulAction S N] [DistribMulAction T N]
 variable [SMulCommClass S R N] [SMulCommClass T R N]
 
-/-- `QuadraticMap R M` inherits the scalar action from any algebra over `R`.
+/-- `QuadraticMap R M N` inherits the scalar action from any algebra over `R`.
 
 This provides an `R`-action via `Algebra.id`. -/
 instance : SMul S (QuadraticMap R M N) :=
