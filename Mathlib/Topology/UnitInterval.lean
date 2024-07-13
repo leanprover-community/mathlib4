@@ -202,6 +202,15 @@ theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 #align unit_interval.two_mul_sub_one_mem_iff unitInterval.two_mul_sub_one_mem_iff
 
+def unitIntervalSubmonoid : Submonoid ℝ where
+  carrier := unitInterval
+  one_mem' := unitInterval.one_mem
+  mul_mem' := unitInterval.mul_mem
+
+@[simp] theorem coe_unitIntervalSubmonoid : unitIntervalSubmonoid = unitInterval := rfl
+@[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ unitIntervalSubmonoid ↔ x ∈ unitInterval
+  := Iff.rfl
+
 end unitInterval
 
 section partition
