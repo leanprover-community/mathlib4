@@ -3,10 +3,12 @@ Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 #align_import algebra.order.kleene from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 

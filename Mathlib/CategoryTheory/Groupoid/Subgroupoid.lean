@@ -228,10 +228,9 @@ instance : InfSet (Subgroupoid C) :=
     { arrows := fun c d => ⋂ S ∈ s, Subgroupoid.arrows S c d
       inv := fun hp ↦ by rw [mem_iInter₂] at hp ⊢; exact fun S hS => S.inv (hp S hS)
       mul := fun hp _ hq ↦ by
-        rw [mem_iInter₂] at hp hq ⊢;
+        rw [mem_iInter₂] at hp hq ⊢
         exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
 
--- Porting note (#10756): new lemma
 theorem mem_sInf_arrows {s : Set (Subgroupoid C)} {c d : C} {p : c ⟶ d} :
     p ∈ (sInf s).arrows c d ↔ ∀ S ∈ s, p ∈ S.arrows c d :=
   mem_iInter₂

@@ -5,7 +5,7 @@ Authors: Jakob Scholbach
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 
 #align_import algebra.char_p.exp_char from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

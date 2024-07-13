@@ -310,13 +310,8 @@ theorem mem_upShadow_iff_exists_mem_card_add :
     rw [← hcardst, hcardtu, add_right_comm]
     rfl
   · rintro ⟨t, ht, hts, hcard⟩
-    obtain ⟨u, htu, hus, hu⟩ :=
-      Finset.exists_intermediate_set 1
-        (by
-          rw [add_comm, ← hcard]
-          exact add_le_add_left (succ_le_of_lt (zero_lt_succ _)) _)
-        hts
-    rw [add_comm] at hu
+    obtain ⟨u, htu, hus, hu⟩ := Finset.exists_subsuperset_card_eq hts (Nat.le_add_right _ 1)
+      (by omega)
     refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
     rw [hu, ← hcard, add_right_comm]
     rfl
