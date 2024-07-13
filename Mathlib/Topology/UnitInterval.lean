@@ -212,6 +212,9 @@ def unitIntervalSubmonoid : Submonoid ℝ where
 @[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ unitIntervalSubmonoid ↔ x ∈ unitInterval :=
   Iff.rfl
 
+theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ} (h : ∀ c ∈ t, f c ∈ unitInterval) :
+    ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.unitIntervalSubmonoid) h
+
 end unitInterval
 
 section partition
