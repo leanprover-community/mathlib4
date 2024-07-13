@@ -69,16 +69,16 @@ theorem IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s
       ?_ (h.continuous.1 _ hU') ?_ ?_ (h.continuous.1 _ hV') ?_).image h.continuous
   · symm
     rw [← Set.preimage_inter, Set.image_preimage_eq_inter_range, Set.inter_eq_left]
-    exact (Set.inter_subset_left _ _).trans (hU.trans (Set.image_subset_range _ _))
+    exact Set.inter_subset_left.trans (hU.trans (Set.image_subset_range _ _))
   · intro x hx
-    rw [← (h.inj.injOn _).mem_image_iff (Set.subset_univ _) trivial]
+    rw [← h.inj.injOn.mem_image_iff (Set.subset_univ _) trivial]
     exact hU hx
   · rw [h.isCompact_iff]
     convert hU''
     rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left]
     exact hU.trans (Set.image_subset_range _ _)
   · intro x hx
-    rw [← (h.inj.injOn _).mem_image_iff (Set.subset_univ _) trivial]
+    rw [← h.inj.injOn.mem_image_iff (Set.subset_univ _) trivial]
     exact hV hx
   · rw [h.isCompact_iff]
     convert hV''
@@ -88,7 +88,7 @@ theorem IsQuasiSeparated.image_of_embedding {s : Set α} (H : IsQuasiSeparated s
 
 theorem OpenEmbedding.isQuasiSeparated_iff (h : OpenEmbedding f) {s : Set α} :
     IsQuasiSeparated s ↔ IsQuasiSeparated (f '' s) := by
-  refine' ⟨fun hs => hs.image_of_embedding h.toEmbedding, _⟩
+  refine ⟨fun hs => hs.image_of_embedding h.toEmbedding, ?_⟩
   intro H U V hU hU' hU'' hV hV' hV''
   rw [h.toEmbedding.isCompact_iff, Set.image_inter h.inj]
   exact

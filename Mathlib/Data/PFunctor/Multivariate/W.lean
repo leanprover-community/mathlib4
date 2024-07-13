@@ -74,7 +74,7 @@ set_option linter.uppercaseLean3 false in
 /-- Specialized destructor on `WPath` -/
 def wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W} (g' : P.drop.B a ⟹ α)
     (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) : P.WPath ⟨a, f⟩ ⟹ α := by
-  intro i x;
+  intro i x
   match x with
   | WPath.root _ _ i c => exact g' i c
   | WPath.child _ _ i j c => exact g j i c
@@ -279,8 +279,8 @@ abbrev objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ 
 theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) :
     appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
-      P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) :=
-  by rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
+      P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) := by
+  rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
 #align mvpfunctor.map_obj_append1 MvPFunctor.map_objAppend1
 
 /-!

@@ -1,5 +1,5 @@
 /-
-Copyright © 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam
 -/
@@ -26,8 +26,7 @@ on continuous functions.
 -/
 
 instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
-  PartialOrder.lift (fun f => f.toFun) (fun f g _ => by cases f; cases g; congr)
-  -- Porting note: was `by tidy`, and `by aesop` alone didn't work
+  PartialOrder.lift (fun f => f.toFun) (fun f g _ => by aesop)
 #align continuous_map.partial_order ContinuousMap.partialOrder
 
 theorem le_def [PartialOrder β] {f g : C(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=

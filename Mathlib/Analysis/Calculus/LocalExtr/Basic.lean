@@ -87,10 +87,10 @@ theorem mem_posTangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segmen
     y - x ∈ posTangentConeAt s x := by
   let c := fun n : ℕ => (2 : ℝ) ^ n
   let d := fun n : ℕ => (c n)⁻¹ • (y - x)
-  refine' ⟨c, d, Filter.univ_mem' fun n => h _, tendsto_pow_atTop_atTop_of_one_lt one_lt_two, _⟩
+  refine ⟨c, d, Filter.univ_mem' fun n => h ?_, tendsto_pow_atTop_atTop_of_one_lt one_lt_two, ?_⟩
   · show x + d n ∈ segment ℝ x y
     rw [segment_eq_image']
-    refine' ⟨(c n)⁻¹, ⟨_, _⟩, rfl⟩
+    refine ⟨(c n)⁻¹, ⟨?_, ?_⟩, rfl⟩
     exacts [inv_nonneg.2 (pow_nonneg zero_le_two _), inv_le_one (one_le_pow_of_one_le one_le_two _)]
   · show Tendsto (fun n => c n • d n) atTop (𝓝 (y - x))
     exact tendsto_const_nhds.congr fun n ↦ (smul_inv_smul₀ (pow_ne_zero _ two_ne_zero) _).symm

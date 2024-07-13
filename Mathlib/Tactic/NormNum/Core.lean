@@ -56,9 +56,9 @@ abbrev Entry := Array (Array DiscrTree.Key) × Name
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
   /-- The tree of `norm_num` extensions. -/
-  tree   : DiscrTree NormNumExt := {}
+  tree : DiscrTree NormNumExt := {}
   /-- Erased `norm_num`s. -/
-  erased  : PHashSet Name := {}
+  erased : PHashSet Name := {}
   deriving Inhabited
 
 /-- Configuration for `DiscrTree`. -/
@@ -116,7 +116,7 @@ def deriveInt {α : Q(Type u)} (e : Q($α))
   pure ⟨lit, proof⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a rational number, typed expressions `n : ℚ` and `d : ℚ` for the numerator and
+returning a rational number, typed expressions `n : ℤ` and `d : ℕ` for the numerator and
 denominator, and a proof of `IsRat e n d` in expression form. -/
 def deriveRat {α : Q(Type u)} (e : Q($α))
     (_inst : Q(DivisionRing $α) := by with_reducible assumption) :

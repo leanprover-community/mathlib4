@@ -72,7 +72,7 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     have : ‖x‖ ≠ 0 := by simp [hx]
     let c : 𝕜 := ↑‖x‖⁻¹ * r
     have : c ≠ 0 := by simp [c, hx, hr.ne']
-    refine' ⟨c • x, _, _⟩
+    refine ⟨c • x, ?_, ?_⟩
     · field_simp [c, norm_smul, abs_of_pos hr]
     · rw [T.rayleigh_smul x this]
       exact hxT
@@ -195,7 +195,7 @@ theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x�
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iSup_rayleigh_eq_iSup_rayleigh_sphere hx₀']
-  refine' IsMaxOn.iSup_eq hx₀'' _
+  refine IsMaxOn.iSup_eq hx₀'' ?_
   intro x hx
   dsimp
   have : ‖x‖ = ‖x₀‖ := by simpa using hx
@@ -215,7 +215,7 @@ theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x�
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iInf_rayleigh_eq_iInf_rayleigh_sphere hx₀']
-  refine' IsMinOn.iInf_eq hx₀'' _
+  refine IsMinOn.iInf_eq hx₀'' ?_
   intro x hx
   dsimp
   have : ‖x‖ = ‖x₀‖ := by simpa using hx

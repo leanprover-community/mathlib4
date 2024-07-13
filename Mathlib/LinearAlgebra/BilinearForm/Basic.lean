@@ -46,8 +46,6 @@ Bilinear form,
 
 export LinearMap (BilinForm)
 
-open BigOperators
-
 open LinearMap (BilinForm)
 
 universe u v w

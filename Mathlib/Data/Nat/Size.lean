@@ -23,10 +23,8 @@ theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftLeft', pow_zero, Nat.one_mul]
   | k + 1 => by
-    change bit1 (shiftLeft' true m k) + 1 = (m + 1) * (2 ^ k * 2)
-    rw [bit1_val]
-    change 2 * (shiftLeft' true m k + 1) = _
-    rw [shiftLeft'_tt_eq_mul_pow m k, mul_left_comm, mul_comm 2]
+    rw [shiftLeft', bit_val, cond_true, add_assoc, ← Nat.mul_add_one, shiftLeft'_tt_eq_mul_pow m k,
+      mul_left_comm, mul_comm 2, pow_succ]
 #align nat.shiftl'_tt_eq_mul_pow Nat.shiftLeft'_tt_eq_mul_pow
 
 end
@@ -84,9 +82,12 @@ end
 @[simp]
 theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
     size (shiftLeft' b m n) = size m + n := by
-  induction' n with n IH <;> simp [shiftLeft'] at h ⊢
+  induction' n with n IH
+  · simp [shiftLeft']
+  simp only [shiftLeft', ne_eq] at h ⊢
   rw [size_bit h, Nat.add_succ]
-  by_cases s0 : shiftLeft' b m n = 0 <;> [skip; rw [IH s0]]
+  by_cases s0 : shiftLeft' b m n = 0
+  case neg => rw [IH s0]
   rw [s0] at h ⊢
   cases b; · exact absurd rfl h
   have : shiftLeft' true m n + 1 = 1 := congr_arg (· + 1) s0
@@ -94,14 +95,14 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
   obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
   simp only [zero_add, one_mul] at this
   obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_gt (Nat.one_lt_pow hn (by decide)) this
-  rfl
+  rw [add_zero]
 #align nat.size_shiftl' Nat.size_shiftLeft'
 
 -- TODO: decide whether `Nat.shiftLeft_eq` (which rewrites the LHS into a power) should be a simp
 -- lemma; it was not in mathlib3. Until then, tell the simpNF linter to ignore the issue.
 @[simp, nolint simpNF]
-theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n :=
-  by simp only [size_shiftLeft' (shiftLeft'_ne_zero_left _ h _), ← shiftLeft'_false]
+theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n := by
+  simp only [size_shiftLeft' (shiftLeft'_ne_zero_left _ h _), ← shiftLeft'_false]
 #align nat.size_shiftl Nat.size_shiftLeft
 
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by

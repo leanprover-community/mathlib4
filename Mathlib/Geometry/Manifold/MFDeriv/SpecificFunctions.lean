@@ -121,7 +121,7 @@ section id
 
 theorem hasMFDerivAt_id (x : M) :
     HasMFDerivAt I I (@id M) x (ContinuousLinearMap.id 𝕜 (TangentSpace I x)) := by
-  refine' ⟨continuousAt_id, _⟩
+  refine ⟨continuousAt_id, ?_⟩
   have : ∀ᶠ y in 𝓝[range I] (extChartAt I x) x, (extChartAt I x ∘ (extChartAt I x).symm) y = y := by
     apply Filter.mem_of_superset (extChartAt_target_mem_nhdsWithin I x)
     mfld_set_tac
@@ -183,7 +183,7 @@ variable {c : M'}
 
 theorem hasMFDerivAt_const (c : M') (x : M) :
     HasMFDerivAt I I' (fun _ : M => c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) := by
-  refine' ⟨continuous_const.continuousAt, _⟩
+  refine ⟨continuous_const.continuousAt, ?_⟩
   simp only [writtenInExtChartAt, (· ∘ ·), hasFDerivWithinAt_const]
 #align has_mfderiv_at_const hasMFDerivAt_const
 
@@ -228,7 +228,7 @@ section Prod
 theorem hasMFDerivAt_fst (x : M × M') :
     HasMFDerivAt (I.prod I') I Prod.fst x
       (ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) := by
-  refine' ⟨continuous_fst.continuousAt, _⟩
+  refine ⟨continuous_fst.continuousAt, ?_⟩
   have :
     ∀ᶠ y in 𝓝[range (I.prod I')] extChartAt (I.prod I') x x,
       (extChartAt I x.1 ∘ Prod.fst ∘ (extChartAt (I.prod I') x).symm) y = y.1 := by
@@ -277,8 +277,8 @@ theorem mfderiv_fst {x : M × M'} :
 theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
     (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
     mfderivWithin (I.prod I') I Prod.fst s x =
-      ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) :=
-  by rw [MDifferentiable.mfderivWithin (mdifferentiableAt_fst I I') hxs]; exact mfderiv_fst I I'
+      ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
+  rw [MDifferentiable.mfderivWithin (mdifferentiableAt_fst I I') hxs]; exact mfderiv_fst I I'
 #align mfderiv_within_fst mfderivWithin_fst
 
 @[simp, mfld_simps]
@@ -300,7 +300,7 @@ theorem tangentMapWithin_prod_fst {s : Set (M × M')} {p : TangentBundle (I.prod
 theorem hasMFDerivAt_snd (x : M × M') :
     HasMFDerivAt (I.prod I') I' Prod.snd x
       (ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) := by
-  refine' ⟨continuous_snd.continuousAt, _⟩
+  refine ⟨continuous_snd.continuousAt, ?_⟩
   have :
     ∀ᶠ y in 𝓝[range (I.prod I')] extChartAt (I.prod I') x x,
       (extChartAt I' x.2 ∘ Prod.snd ∘ (extChartAt (I.prod I') x).symm) y = y.2 := by
@@ -349,8 +349,8 @@ theorem mfderiv_snd {x : M × M'} :
 theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
     (hxs : UniqueMDiffWithinAt (I.prod I') s x) :
     mfderivWithin (I.prod I') I' Prod.snd s x =
-      ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) :=
-  by rw [MDifferentiable.mfderivWithin (mdifferentiableAt_snd I I') hxs]; exact mfderiv_snd I I'
+      ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
+  rw [MDifferentiable.mfderivWithin (mdifferentiableAt_snd I I') hxs]; exact mfderiv_snd I I'
 #align mfderiv_within_snd mfderivWithin_snd
 
 @[simp, mfld_simps]
@@ -386,14 +386,14 @@ variable (I I' I'')
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv I (I.prod I') (fun x => (x, y₀)) x₀ =
       ContinuousLinearMap.inl 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
-  refine' ((mdifferentiableAt_id I).mfderiv_prod (mdifferentiableAt_const I I')).trans _
+  refine ((mdifferentiableAt_id I).mfderiv_prod (mdifferentiableAt_const I I')).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inl]
 #align mfderiv_prod_left mfderiv_prod_left
 
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv I' (I.prod I') (fun y => (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
-  refine' ((mdifferentiableAt_const I' I).mfderiv_prod (mdifferentiableAt_id I')).trans _
+  refine ((mdifferentiableAt_const I' I).mfderiv_prod (mdifferentiableAt_id I')).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
 #align mfderiv_prod_right mfderiv_prod_right
 
@@ -432,7 +432,8 @@ canonical, but in this case (the tangent space of a vector space) it is canonica
 
 section Group
 
-variable {I} {z : M} {f g : M → E'} {f' g' : TangentSpace I z →L[𝕜] E'}
+variable {I}
+variable {z : M} {f g : M → E'} {f' g' : TangentSpace I z →L[𝕜] E'}
 
 theorem HasMFDerivAt.add (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f')
     (hg : HasMFDerivAt I 𝓘(𝕜, E') g z g') : HasMFDerivAt I 𝓘(𝕜, E') (f + g) z (f' + g') :=
@@ -535,7 +536,8 @@ end Group
 
 section AlgebraOverRing
 
-variable {I} {z : M} {F' : Type*} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {I}
+variable {z : M} {F' : Type*} [NormedRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul' (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
@@ -575,7 +577,8 @@ end AlgebraOverRing
 
 section AlgebraOverCommRing
 
-variable {I} {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
+variable {I}
+variable {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
 theorem HasMFDerivWithinAt.mul (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')

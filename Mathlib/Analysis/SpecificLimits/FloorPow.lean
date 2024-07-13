@@ -21,7 +21,7 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
 
 open Filter Finset
 
-open Topology BigOperators
+open Topology
 
 /-- If a monotone sequence `u` is such that `u n / n` tends to a limit `l` along subsequences with
 exponential growth rate arbitrarily close to `1`, then `u n / n` tends to `l`. -/
@@ -151,7 +151,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := add_le_add (ha _ aN').2 le_rfl
       _ = ε * (1 + l) * c (N - 1) := by ring
       _ ≤ ε * (1 + l) * n := by gcongr
-  refine' tendsto_order.2 ⟨fun d hd => _, fun d hd => _⟩
+  refine tendsto_order.2 ⟨fun d hd => ?_, fun d hd => ?_⟩
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, d + ε * (1 + l) < l ∧ 0 < ε := by
       have L : Tendsto (fun ε => d + ε * (1 + l)) (𝓝[>] 0) (𝓝 (d + 0 * (1 + l))) := by
         apply Tendsto.mono_left _ nhdsWithin_le_nhds
@@ -192,21 +192,21 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
   apply tendsto_div_of_monotone_of_exists_subseq_tendsto_div u l hmono
   intro a ha
   obtain ⟨k, hk⟩ : ∃ k, c k < a := ((tendsto_order.1 clim).2 a ha).exists
-  refine'
-    ⟨fun n => ⌊c k ^ n⌋₊, _,
+  refine
+    ⟨fun n => ⌊c k ^ n⌋₊, ?_,
       (tendsto_nat_floor_atTop (α := ℝ)).comp (tendsto_pow_atTop_atTop_of_one_lt (cone k)), hc k⟩
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c k ^ n⌋₊ := by
     intro n
-    refine' zero_lt_one.trans_le _
+    refine zero_lt_one.trans_le ?_
     simp only [Real.rpow_natCast, Nat.one_le_cast, Nat.one_le_floor_iff,
       one_le_pow_of_one_le (cone k).le n]
   have A :
     Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / c k ^ (n + 1) * c k / (⌊c k ^ n⌋₊ / c k ^ n))
       atTop (𝓝 (1 * c k / 1)) := by
-    refine' Tendsto.div (Tendsto.mul _ tendsto_const_nhds) _ one_ne_zero
-    · refine' tendsto_nat_floor_div_atTop.comp _
+    refine Tendsto.div (Tendsto.mul ?_ tendsto_const_nhds) ?_ one_ne_zero
+    · refine tendsto_nat_floor_div_atTop.comp ?_
       exact (tendsto_pow_atTop_atTop_of_one_lt (cone k)).comp (tendsto_add_atTop_nat 1)
-    · refine' tendsto_nat_floor_div_atTop.comp _
+    · refine tendsto_nat_floor_div_atTop.comp ?_
       exact tendsto_pow_atTop_atTop_of_one_lt (cone k)
   have B : Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / ⌊c k ^ n⌋₊) atTop (𝓝 (c k)) := by
     simp only [one_mul, div_one] at A
@@ -221,7 +221,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
 /-- The sum of `1/(c^i)^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
 constant. -/
 theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc : 1 < c) :
-    (∑ i in (range N).filter (j < c ^ ·), (1 : ℝ) / (c ^ i) ^ 2) ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by
+    (∑ i ∈ (range N).filter (j < c ^ ·), (1 : ℝ) / (c ^ i) ^ 2) ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by
   have cpos : 0 < c := zero_lt_one.trans hc
   have A : (0 : ℝ) < c⁻¹ ^ 2 := sq_pos_of_pos (inv_pos.2 cpos)
   have B : c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ ≤ c ^ 3 * (c - 1)⁻¹ := by
@@ -234,8 +234,8 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
     simpa using pow_le_pow_right hc.le one_le_two
   have C : c⁻¹ ^ 2 < 1 := pow_lt_one (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero
   calc
-    (∑ i in (range N).filter (j < c ^ ·), (1 : ℝ) / (c ^ i) ^ 2) ≤
-        ∑ i in Ico ⌊Real.log j / Real.log c⌋₊ N, (1 : ℝ) / (c ^ i) ^ 2 := by
+    (∑ i ∈ (range N).filter (j < c ^ ·), (1 : ℝ) / (c ^ i) ^ 2) ≤
+        ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (1 : ℝ) / (c ^ i) ^ 2 := by
       refine sum_le_sum_of_subset_of_nonneg (fun i hi ↦ ?_) (by intros; positivity)
       simp only [mem_filter, mem_range] at hi
       simp only [hi.1, mem_Ico, and_true_iff]
@@ -243,7 +243,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       apply le_of_lt
       rw [div_lt_iff (Real.log_pos hc), ← Real.log_pow]
       exact Real.log_lt_log hj hi.2
-    _ = ∑ i in Ico ⌊Real.log j / Real.log c⌋₊ N, (c⁻¹ ^ 2) ^ i := by
+    _ = ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (c⁻¹ ^ 2) ^ i := by
       congr 1 with i
       simp [← pow_mul, mul_comm]
     _ ≤ (c⁻¹ ^ 2) ^ ⌊Real.log j / Real.log c⌋₊ / ((1 : ℝ) - c⁻¹ ^ 2) :=
@@ -283,21 +283,21 @@ theorem mul_pow_le_nat_floor_pow {c : ℝ} (hc : 1 < c) (i : ℕ) : (1 - c⁻¹)
 /-- The sum of `1/⌊c^i⌋₊^2` above a threshold `j` is comparable to `1/j^2`, up to a multiplicative
 constant. -/
 theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc : 1 < c) :
-    (∑ i in (range N).filter (j < ⌊c ^ ·⌋₊), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
+    (∑ i ∈ (range N).filter (j < ⌊c ^ ·⌋₊), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
       c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
   have cpos : 0 < c := zero_lt_one.trans hc
   have A : 0 < 1 - c⁻¹ := sub_pos.2 (inv_lt_one hc)
   calc
-    (∑ i in (range N).filter (j < ⌊c ^ ·⌋₊), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
-        ∑ i in (range N).filter (j < c ^ ·), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2 := by
+    (∑ i ∈ (range N).filter (j < ⌊c ^ ·⌋₊), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
+        ∑ i ∈ (range N).filter (j < c ^ ·), (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2 := by
       apply sum_le_sum_of_subset_of_nonneg
       · exact monotone_filter_right _ fun k hk ↦ hk.trans_le <| Nat.floor_le (by positivity)
       · intros; positivity
-    _ ≤ ∑ i in (range N).filter (j < c ^ ·), (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
-      refine' sum_le_sum fun i _hi => _
+    _ ≤ ∑ i ∈ (range N).filter (j < c ^ ·), (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
+      refine sum_le_sum fun i _hi => ?_
       rw [mul_div_assoc', mul_one, div_le_div_iff]; rotate_left
       · apply sq_pos_of_pos
-        refine' zero_lt_one.trans_le _
+        refine zero_lt_one.trans_le ?_
         simp only [Nat.le_floor, one_le_pow_of_one_le, hc.le, Nat.one_le_cast, Nat.cast_one]
       · exact sq_pos_of_pos (pow_pos cpos _)
       rw [one_mul, ← mul_pow]

@@ -140,7 +140,7 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
 
 theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
-  refine' (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) _ fun q qmo hq => _).symm
+  refine (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) ?_ fun q qmo hq => ?_).symm
   · simp [aeval_comp]
   · have : (Polynomial.aeval x) (q.comp (X + C a)) = 0 := by simpa [aeval_comp] using hq
     have H := minpoly.min A x (qmo.comp_X_add_C _) this
@@ -236,7 +236,7 @@ variable {A} {x : B}
 
 /-- A minimal polynomial is prime. -/
 theorem prime (hx : IsIntegral A x) : Prime (minpoly A x) := by
-  refine' ⟨minpoly.ne_zero hx, not_isUnit A x, _⟩
+  refine ⟨minpoly.ne_zero hx, not_isUnit A x, ?_⟩
   rintro p q ⟨d, h⟩
   have : Polynomial.aeval x (p * q) = 0 := by simp [h, aeval A x]
   replace : Polynomial.aeval x p = 0 ∨ Polynomial.aeval x q = 0 := by simpa
@@ -251,7 +251,7 @@ theorem root {x : B} (hx : IsIntegral A x) {y : A} (h : IsRoot (minpoly A x) y) 
     (associated_of_dvd_dvd ((irreducible_X_sub_C y).dvd_symm (irreducible hx) (dvd_iff_isRoot.2 h))
       (dvd_iff_isRoot.2 h))
   have := aeval A x
-  rwa [key, AlgHom.map_sub, aeval_X, aeval_C, sub_eq_zero, eq_comm] at this
+  rwa [key, map_sub, aeval_X, aeval_C, sub_eq_zero, eq_comm] at this
 #align minpoly.root minpoly.root
 
 /-- The constant coefficient of the minimal polynomial of `x` is `0` if and only if `x = 0`. -/
@@ -284,7 +284,7 @@ variable {K L} [Field K] [CommRing L] [IsDomain L] [Algebra K L]
 lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
-  · rw [(aeval σ.toLinearMap).map_sub (X ^ orderOf σ) (C (1 : K))]
+  · rw [map_sub]
     simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
   · intros q hq hs
     rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]

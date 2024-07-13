@@ -66,16 +66,12 @@ theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False 
 theorem hom_inr_inl_false {X : C} {Y : D} (f : Sum.inr X ⟶ Sum.inl Y) : False := by
   cases f
 
-/- Porting note: seems similar to Mathlib4#1036 issue so marked as nolint  -/
-@[simp, nolint simpComm]
 theorem sum_comp_inl {P Q R : C} (f : (inl P : Sum C D) ⟶ inl Q) (g : (inl Q : Sum C D) ⟶ inl R) :
     @CategoryStruct.comp _ _ P Q R (f : P ⟶ Q) (g : Q ⟶ R) =
       @CategoryStruct.comp _ _ (inl P) (inl Q) (inl R) (f : P ⟶ Q) (g : Q ⟶ R) :=
   rfl
 #align category_theory.sum_comp_inl CategoryTheory.sum_comp_inl
 
-/- Porting note: seems similar to Mathlib4#1036 issue so marked as nolint  -/
-@[simp, nolint simpComm]
 theorem sum_comp_inr {P Q R : D} (f : (inr P : Sum C D) ⟶ inr Q) (g : (inr Q : Sum C D) ⟶ inr R) :
     @CategoryStruct.comp _ _ P Q R (f : P ⟶ Q) (g : Q ⟶ R) =
       @CategoryStruct.comp _ _ (inr P) (inr Q) (inr R) (f : P ⟶ Q) (g : Q ⟶ R) :=
@@ -180,7 +176,7 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D where
     | inl X, inl Y, f => F.map f
     | inr X, inr Y, f => G.map f
   map_id {X} := by cases X <;> (erw [Functor.map_id]; rfl)
-  map_comp {X Y Z} f g:=
+  map_comp {X Y Z} f g :=
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => by erw [F.map_comp]; rfl
     | inr X, inr Y, inr Z, f, g => by erw [G.map_comp]; rfl

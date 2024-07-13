@@ -11,11 +11,11 @@ import Mathlib.MeasureTheory.Function.LpSpace
 /-!
 # Order related properties of Lp spaces
 
-### Results
+## Results
 
 - `Lp E p μ` is an `OrderedAddCommGroup` when `E` is a `NormedLatticeAddCommGroup`.
 
-### TODO
+## TODO
 
 - move definitions of `Lp.posPart` and `Lp.negPart` to this file, and define them as
   `PosPart.pos` and `NegPart.neg` given by the lattice structure.
@@ -108,7 +108,7 @@ noncomputable instance instNormedLatticeAddCommGroup [Fact (1 ≤ p)] :
     solid := fun f g hfg => by
       rw [← coeFn_le] at hfg
       simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top f) (Lp.snorm_ne_top g)]
-      refine' snorm_mono_ae _
+      refine snorm_mono_ae ?_
       filter_upwards [hfg, Lp.coeFn_abs f, Lp.coeFn_abs g] with x hx hxf hxg
       rw [hxf, hxg] at hx
       exact HasSolidNorm.solid hx }

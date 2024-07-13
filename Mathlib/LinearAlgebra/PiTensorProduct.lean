@@ -3,8 +3,7 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
 -/
-import Mathlib.GroupTheory.Congruence
-import Mathlib.LinearAlgebra.Basic
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.AdaptationNote
 
@@ -208,9 +207,9 @@ protected theorem induction_on' {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] 
   have C0 : motive 0 := by
     have h₁ := tprodCoeff 0 0
     rwa [zero_tprodCoeff] at h₁
-  refine' AddCon.induction_on z fun x ↦ FreeAddMonoid.recOn x C0 _
+  refine AddCon.induction_on z fun x ↦ FreeAddMonoid.recOn x C0 ?_
   simp_rw [AddCon.coe_add]
-  refine' fun f y ih ↦ add _ _ _ ih
+  refine fun f y ih ↦ add _ _ ?_ ih
   convert tprodCoeff f.1 f.2
 #align pi_tensor_product.induction_on' PiTensorProduct.induction_on'
 
@@ -310,7 +309,6 @@ unsuppress_compilation in
 @[inherit_doc tprod]
 notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
--- Porting note (#10756): new theorem
 theorem tprod_eq_tprodCoeff_one :
     ⇑(tprod R : MultilinearMap R s (⨂[R] i, s i)) = tprodCoeff R 1 := rfl
 
@@ -361,7 +359,7 @@ lemma lifts_zero : 0 ∈ lifts (0 : ⨂[R] i, s i) := by
 respectively, then `p + q` lifts `x + y`.
 -/
 lemma lifts_add {x y : ⨂[R] i, s i} {p q : FreeAddMonoid (R × Π i, s i)}
-    (hp : p ∈ lifts x) (hq : q ∈ lifts y): p + q ∈ lifts (x + y) := by
+    (hp : p ∈ lifts x) (hq : q ∈ lifts y) : p + q ∈ lifts (x + y) := by
   simp only [lifts, Set.mem_setOf_eq, AddCon.coe_add]
   rw [hp, hq]
 
@@ -391,8 +389,8 @@ protected theorem induction_on {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] i
 theorem ext {φ₁ φ₂ : (⨂[R] i, s i) →ₗ[R] E}
     (H : φ₁.compMultilinearMap (tprod R) = φ₂.compMultilinearMap (tprod R)) : φ₁ = φ₂ := by
   refine LinearMap.ext ?_
-  refine' fun z ↦
-    PiTensorProduct.induction_on' z _ fun {x y} hx hy ↦ by rw [φ₁.map_add, φ₂.map_add, hx, hy]
+  refine fun z ↦
+    PiTensorProduct.induction_on' z ?_ fun {x y} hx hy ↦ by rw [φ₁.map_add, φ₂.map_add, hx, hy]
   · intro r f
     rw [tprodCoeff_eq_smul_tprod, φ₁.map_smul, φ₂.map_smul]
     apply _root_.congr_arg
@@ -453,7 +451,7 @@ theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :
 
 theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
     liftAux φ (r • x) = r • liftAux φ x := by
-  refine' PiTensorProduct.induction_on' x _ _
+  refine PiTensorProduct.induction_on' x ?_ ?_
   · intro z f
     rw [smul_tprodCoeff' r z f, liftAux_tprodCoeff, liftAux_tprodCoeff, smul_assoc]
   · intro z y ihz ihy
@@ -667,7 +665,7 @@ This is `PiTensorProduct.map` for two arbitrary families of modules.
 This is `TensorProduct.map₂` for families of modules.
 -/
 def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
-    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=
+    (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i :=
   lift <| LinearMap.compMultilinearMap piTensorHomMap <| (tprod R).compLinearMap f
 
 lemma map₂_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : Π i, s i) (y : Π i, t i) :

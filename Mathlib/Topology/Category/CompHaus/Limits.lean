@@ -5,7 +5,6 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
@@ -23,6 +22,12 @@ So far, we have the following:
 -/
 
 namespace CompHaus
+
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 universe u w
 
@@ -123,12 +128,12 @@ def pullbackHomeoPullback : (CompHaus.pullback f g).toTop ≃ₜ (Limits.pullbac
   CompHaus.homeoOfIso (pullbackIsoPullback f g)
 
 theorem pullback_fst_eq :
-    CompHaus.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
+    CompHaus.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst f g := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
 theorem pullback_snd_eq :
-    CompHaus.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd := by
+    CompHaus.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd f g := by
   dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 

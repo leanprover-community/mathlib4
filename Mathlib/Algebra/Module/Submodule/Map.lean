@@ -23,7 +23,7 @@ import Mathlib.Algebra.Module.Submodule.LinearMap
 submodule, subspace, linear map, pushforward, pullback
 -/
 
-open Function BigOperators Pointwise Set
+open Function Pointwise Set
 
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}

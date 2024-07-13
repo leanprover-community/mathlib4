@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import category_theory.adhesive from "leanprover-community/mathlib"@"afff1f24a6b68d0077c9d63782a1d093e337758c"
 
@@ -26,7 +27,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
   monomorphisms are stable under pushouts.
 - `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
   regular (this implies that adhesive categories are balanced).
-- `CategoryTHeory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
+- `CategoryTheory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
   has all pullbacks and all pushouts and is adhesive
 
 ## References
@@ -77,7 +78,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       rw [(IsColimit.equivOfNatIsoOfIso (diagramIsoSpan F') c' (PushoutCocone.mk _ _ this)
             _).nonempty_congr]
       · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.2⟩
-      · refine' Cocones.ext (Iso.refl c'.pt) _
+      · refine Cocones.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.assoc, Category.id_comp, Category.comp_id]
     · exact ⟨NatTrans.congr_app eα.symm _⟩
@@ -89,8 +90,8 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       exacts [h₁, h₂]
     · intro h; exact ⟨h _, h _⟩
   · introv H W' hf hg hh hi w
-    refine'
-      Iff.trans _ ((H w.cocone ⟨by rintro (_ | _ | _); exacts [αW, αX, αY], _⟩ αZ _ _).trans _)
+    refine
+      Iff.trans ?_ ((H w.cocone ⟨by rintro (_ | _ | _); exacts [αW, αX, αY], ?_⟩ αZ ?_ ?_).trans ?_)
     rotate_left
     · rintro i _ (_ | _ | _)
       · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]
@@ -115,10 +116,10 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
     Nonempty (IsColimit (BinaryCofan.mk (c.inr ≫ fE) iY)) ↔ IsPushout f c.inl iY fE := by
   constructor
   · rintro ⟨h⟩
-    refine' ⟨H, ⟨Limits.PushoutCocone.isColimitAux' _ _⟩⟩
+    refine ⟨H, ⟨Limits.PushoutCocone.isColimitAux' _ ?_⟩⟩
     intro s
     dsimp only [PushoutCocone.inr, PushoutCocone.mk] -- Porting note: Originally `dsimp`
-    refine' ⟨h.desc (BinaryCofan.mk (c.inr ≫ s.inr) s.inl), h.fac _ ⟨WalkingPair.right⟩, _, _⟩
+    refine ⟨h.desc (BinaryCofan.mk (c.inr ≫ s.inr) s.inl), h.fac _ ⟨WalkingPair.right⟩, ?_, ?_⟩
     · apply BinaryCofan.IsColimit.hom_ext hc
       · rw [← H.w_assoc]; erw [h.fac _ ⟨WalkingPair.right⟩]; exact s.condition
       · rw [← Category.assoc]; exact h.fac _ ⟨WalkingPair.left⟩
@@ -126,8 +127,8 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
       apply BinaryCofan.IsColimit.hom_ext h
       · dsimp only [BinaryCofan.mk, id] -- Porting note: Originally `dsimp`
         rw [Category.assoc, e₂, eq_comm]; exact h.fac _ ⟨WalkingPair.left⟩
-      · refine' e₁.trans (Eq.symm _); exact h.fac _ _
-  · refine' fun H => ⟨_⟩
+      · refine e₁.trans (Eq.symm ?_); exact h.fac _ _
+  · refine fun H => ⟨?_⟩
     fapply Limits.BinaryCofan.isColimitMk
     · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _ <|
         (hc.fac (BinaryCofan.mk (f ≫ s.inr) s.inl) ⟨WalkingPair.left⟩).symm)
@@ -140,7 +141,7 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
       · erw [H.isColimit.fac _ WalkingSpan.right]
         apply BinaryCofan.IsColimit.hom_ext hc
         · erw [hc.fac, ← H.w_assoc, e₂]; rfl
-        · refine' ((Category.assoc _ _ _).symm.trans e₁).trans _; symm; exact hc.fac _ _
+        · refine ((Category.assoc _ _ _).symm.trans e₁).trans ?_; symm; exact hc.fac _ _
 #align category_theory.is_coprod_iff_is_pushout CategoryTheory.is_coprod_iff_isPushout
 
 theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryExtensive C]
@@ -149,21 +150,22 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
   obtain ⟨hc₁⟩ := (is_coprod_iff_isPushout c hc H.1).mpr H
   introv W' hf hg hh hi w
   obtain ⟨hc₂⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
-    (BinaryCofan.mk _ pullback.fst) _ _ _ hg.w.symm pullback.condition.symm).mpr
+    (BinaryCofan.mk _ (pullback.fst _ _)) _ _ _ hg.w.symm pullback.condition.symm).mpr
     ⟨hg, IsPullback.of_hasPullback αY c.inr⟩
-  refine' (is_coprod_iff_isPushout _ hc₂ w).symm.trans _
-  refine' ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen _ hc₁)
-    (BinaryCofan.mk _ _) pullback.snd _ _ _ hh.w.symm).trans _
+  refine (is_coprod_iff_isPushout _ hc₂ w).symm.trans ?_
+  refine ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen _ hc₁)
+    (BinaryCofan.mk _ _) (pullback.snd _ _) _ _ ?_ hh.w.symm).trans ?_
   · dsimp; rw [← pullback.condition_assoc, Category.assoc, hi.w]
   constructor
   · rintro ⟨hc₃, hc₄⟩
     refine ⟨hc₄, ?_⟩
     let Y'' := pullback αZ i
     let cmp : Y' ⟶ Y'' := pullback.lift i' αY hi.w
-    have e₁ : (g' ≫ cmp) ≫ pullback.snd = αW ≫ c.inl := by
+    have e₁ : (g' ≫ cmp) ≫ pullback.snd _ _ = αW ≫ c.inl := by
       rw [Category.assoc, pullback.lift_snd, hg.w]
-    have e₂ : (pullback.fst ≫ cmp : pullback αY c.inr ⟶ _) ≫ pullback.snd = pullback.snd ≫ c.inr :=
-      by rw [Category.assoc, pullback.lift_snd, pullback.condition]
+    have e₂ : (pullback.fst _ _ ≫ cmp : pullback αY c.inr ⟶ _) ≫ pullback.snd _ _ =
+        pullback.snd _ _ ≫ c.inr := by
+      rw [Category.assoc, pullback.lift_snd, pullback.condition]
     obtain ⟨hc₄⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
       (BinaryCofan.mk _ _) αW _ _ e₁.symm e₂.symm).mpr <| by
         constructor
@@ -171,7 +173,7 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
           rw [Category.assoc, pullback.lift_fst, ← H.w, ← w.w]; exact hf.paste_horiz hc₄
         · apply IsPullback.of_right _ e₂ (IsPullback.of_hasPullback _ _)
           rw [Category.assoc, pullback.lift_fst]; exact hc₃
-    rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd = αY from pullback.lift_snd _ _ _]
+    rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd _ _ = αY from pullback.lift_snd _ _ _]
     apply IsPullback.paste_vert _ (IsPullback.of_hasPullback αZ i)
     have : cmp = (hc₂.coconePointUniqueUpToIso hc₄).hom := by
       apply BinaryCofan.IsColimit.hom_ext hc₂
@@ -257,8 +259,8 @@ noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesiv
     RegularMonoCategory C :=
   ⟨fun f _ =>
     { Z := pushout f f
-      left := pushout.inl
-      right := pushout.inr
+      left := pushout.inl _ _
+      right := pushout.inr _ _
       w := pushout.condition
       isLimit := (Adhesive.isPullback_of_isPushout_of_mono_left
         (IsPushout.of_hasPushout f f)).isLimitFork }⟩

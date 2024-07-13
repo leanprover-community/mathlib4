@@ -93,7 +93,7 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * (m + 1) ^ n ≤ 
 #align nat.factorial_mul_pow_le_factorial Nat.factorial_mul_pow_le_factorial
 
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
-  refine' ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_lt h (factorial_le hmn), fun h => _⟩
+  refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_lt h (factorial_le hmn), fun h => ?_⟩
   have : ∀ {n}, 0 < n → n ! < (n + 1)! := by
     intro k hk
     rw [factorial_succ, succ_mul, Nat.lt_add_left_iff_pos]
@@ -119,7 +119,7 @@ theorem factorial_eq_one : n ! = 1 ↔ n ≤ 1 := by
 #align nat.factorial_eq_one Nat.factorial_eq_one
 
 theorem factorial_inj (hn : 1 < n) : n ! = m ! ↔ n = m := by
-  refine' ⟨fun h => _, congr_arg _⟩
+  refine ⟨fun h => ?_, congr_arg _⟩
   obtain hnm | rfl | hnm := lt_trichotomy n m
   · rw [← factorial_lt <| lt_of_succ_lt hn, h] at hnm
     cases lt_irrefl _ hnm
@@ -269,7 +269,7 @@ theorem ascFactorial_eq_div' (n k : ℕ) (h : 0 < n) :
   Nat.eq_div_of_mul_eq_right (n - 1).factorial_ne_zero (factorial_mul_ascFactorial' _ _ h)
 #align nat.asc_factorial_eq_div Nat.ascFactorial_eq_div
 
-theorem ascFactorial_of_sub {n k : ℕ}:
+theorem ascFactorial_of_sub {n k : ℕ} :
     (n - k) * (n - k + 1).ascFactorial k = (n - k).ascFactorial (k + 1) := by
   rw [succ_ascFactorial, ascFactorial_succ]
 #align nat.asc_factorial_of_sub Nat.ascFactorial_of_sub

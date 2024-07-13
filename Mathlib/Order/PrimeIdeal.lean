@@ -162,7 +162,7 @@ instance (priority := 100) IsMaximal.isPrime [IsMaximal I] : IsPrime I := by
   rw [coe_sup_eq] at hyJ
   rcases hyJ with ⟨a, ha, b, hb, hy⟩
   rw [hy]
-  refine' sup_mem ha (I.lower (le_inf hb _) hxy)
+  refine sup_mem ha (I.lower (le_inf hb ?_) hxy)
   rw [hy]
   exact le_sup_right
 #align order.ideal.is_maximal.is_prime Order.Ideal.IsMaximal.isPrime

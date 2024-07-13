@@ -372,7 +372,7 @@ theorem cospherical_of_two_zsmul_oangle_eq_of_not_collinear {p₁ p₂ p₃ p₄
   rw [cospherical_iff_exists_sphere]
   refine ⟨t₂.circumsphere, ?_⟩
   simp_rw [Set.insert_subset_iff, Set.singleton_subset_iff]
-  refine' ⟨t₂.mem_circumsphere 0, _, t₂.mem_circumsphere 1, t₂.mem_circumsphere 2⟩
+  refine ⟨t₂.mem_circumsphere 0, ?_, t₂.mem_circumsphere 1, t₂.mem_circumsphere 2⟩
   rw [Affine.Triangle.circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq
     (by decide : (0 : Fin 3) ≠ 1) (by decide : (0 : Fin 3) ≠ 2) (by decide)
     (show t₂.points 0 = t₁.points 0 from rfl) rfl h.symm]

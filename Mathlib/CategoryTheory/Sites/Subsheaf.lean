@@ -184,7 +184,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
   obj U := { s | G.sieveOfSection s ∈ J (unop U) }
   map := by
     rintro U V i s hs
-    refine' J.superset_covering _ (J.pullback_stable i.unop hs)
+    refine J.superset_covering ?_ (J.pullback_stable i.unop hs)
     intro _ _ h
     dsimp at h ⊢
     rwa [← FunctorToTypes.map_comp_apply]
@@ -247,8 +247,8 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
         (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
         (by simp only [Category.assoc, h₂, e]))
   obtain ⟨t, ht, ht'⟩ := hF _ (J.bind_covering hS fun V i hi => (x i hi).2) _ this
-  refine' ⟨⟨t, _⟩, (H ⟨t, _⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
-  refine' J.superset_covering _ (J.bind_covering hS fun V i hi => (x i hi).2)
+  refine ⟨⟨t, _⟩, (H ⟨t, ?_⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
+  refine J.superset_covering ?_ (J.bind_covering hS fun V i hi => (x i hi).2)
   intro V i hi
   dsimp
   rw [ht _ hi]
@@ -283,13 +283,13 @@ noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presie
     ext s
     apply (h _ ((Subpresheaf.sheafify J G).toPresheaf.map i s).prop).isSeparatedFor.ext
     intro W j hj
-    refine' (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
-      ((G.family_of_elements_compatible _).compPresheafMap _) _ hj).trans _
+    refine (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
+      ((G.family_of_elements_compatible _).compPresheafMap _) _ hj).trans ?_
     dsimp
     conv_rhs => rw [← FunctorToTypes.map_comp_apply]
     change _ = F'.map (j ≫ i.unop).op _
-    refine' Eq.trans _ (Presieve.IsSheafFor.valid_glue (h _ s.2)
-      ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) _).symm
+    refine Eq.trans ?_ (Presieve.IsSheafFor.valid_glue (h _ s.2)
+      ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) ?_).symm
     swap -- Porting note: need to swap two goals otherwise the first goal needs to be proven
     -- inside the second goal any way
     · dsimp [Presieve.FamilyOfElements.compPresheafMap] at hj ⊢

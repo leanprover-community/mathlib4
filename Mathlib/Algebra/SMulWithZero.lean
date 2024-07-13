@@ -3,10 +3,11 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.Group.Action.Opposite
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.Opposite
-import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.smul_with_zero from "leanprover-community/mathlib"@"966e0cf0685c9cedf8a3283ac69eef4d5f2eaca2"
 
@@ -176,6 +177,10 @@ lemma ite_zero_smul (a : R) (b : M) : (if p then a else 0 : R) • b = if p then
 
 lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 := by simp
 
+lemma Pi.single_apply_smul {ι : Type*} [DecidableEq ι] (x : M) (i j : ι) :
+    (Pi.single i 1 : ι → R) j • x = (Pi.single i x : ι → M) j := by
+  rw [single_apply, ite_smul, one_smul, zero_smul, single_apply]
+
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : Function.Injective f)
@@ -212,7 +217,7 @@ theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (
   · simp only [inv_zero, zero_smul]
   obtain rfl | hx := eq_or_ne x 0
   · simp only [inv_zero, smul_zero]
-  · refine' inv_eq_of_mul_eq_one_left _
+  · refine inv_eq_of_mul_eq_one_left ?_
     rw [smul_mul_smul, inv_mul_cancel hc, inv_mul_cancel hx, one_smul]
 #align smul_inv₀ smul_inv₀
 

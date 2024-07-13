@@ -41,7 +41,7 @@ theorem card_le : #L ≤ #R := by
     · exact Cardinal.mk_le_of_surjective (IsArtinianRing.localization_surjective S _)
     erw [← Cardinal.mul_eq_self <| Cardinal.aleph0_le_mk R]
     set f : R × R → L := fun aa => IsLocalization.mk' _ aa.1 (if h : aa.2 ∈ S then ⟨aa.2, h⟩ else 1)
-    refine' @Cardinal.mk_le_of_surjective _ _ f fun a => _
+    refine @Cardinal.mk_le_of_surjective _ _ f fun a => ?_
     obtain ⟨x, y, h⟩ := IsLocalization.mk'_surjective S a
     use (x, y)
     dsimp [f]

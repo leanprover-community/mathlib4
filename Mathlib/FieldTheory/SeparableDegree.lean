@@ -106,10 +106,11 @@ This file contains basics about the separable degree of a field extension.
 - `Field.finSepDegree_eq_finrank_iff`: if `E / F` is a finite extension, then its separable degree
   is equal to its degree if and only if it is a separable extension.
 
-- `IntermediateField.isSeparable_adjoin_simple_iff_separable`: `F⟮x⟯ / F` is a separable extension
+- `IntermediateField.isSeparable_adjoin_simple_iff_isSeparable`: `F⟮x⟯ / F` is a separable extension
   if and only if `x` is a separable element.
 
-- `IsSeparable.trans`: if `E / F` and `K / E` are both separable, then `K / F` is also separable.
+- `Algebra.IsSeparable.trans`: if `E / F` and `K / E` are both separable, then `K / F` is also
+  separable.
 
 ## Tags
 
@@ -666,9 +667,9 @@ theorem finSepDegree_adjoin_simple_le_finrank (α : E) (halg : IsAlgebraic F α)
 /-- If `α` is algebraic over `F`, then the separable degree of `F⟮α⟯ / F` is equal to the degree
 of `F⟮α⟯ / F` if and only if `α` is a separable element. -/
 theorem finSepDegree_adjoin_simple_eq_finrank_iff (α : E) (halg : IsAlgebraic F α) :
-    finSepDegree F F⟮α⟯ = finrank F F⟮α⟯ ↔ (minpoly F α).Separable := by
+    finSepDegree F F⟮α⟯ = finrank F F⟮α⟯ ↔ IsSeparable F α := by
   rw [finSepDegree_adjoin_simple_eq_natSepDegree F E halg, adjoin.finrank halg.isIntegral,
-    natSepDegree_eq_natDegree_iff _ (minpoly.ne_zero halg.isIntegral)]
+    natSepDegree_eq_natDegree_iff _ (minpoly.ne_zero halg.isIntegral), IsSeparable]
 
 end IntermediateField
 
@@ -696,13 +697,13 @@ theorem finSepDegree_le_finrank [FiniteDimensional F E] :
 /-- If `E / F` is a separable extension, then its separable degree is equal to its degree.
 When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elements.
 (But the cardinality of `Field.Emb F E` is not equal to `Module.rank F E` in general!) -/
-theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
+theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
     finSepDegree F E = finrank F E := by
   wlog hfd : FiniteDimensional F E generalizing E with H
   · rw [finrank_of_infinite_dimensional hfd]
-    have halg := IsSeparable.isAlgebraic F E
+    have halg := Algebra.IsSeparable.isAlgebraic F E
     obtain ⟨L, h, h'⟩ := exists_lt_finrank_of_infinite_dimensional hfd (finSepDegree F E)
-    have : IsSeparable F L := isSeparable_tower_bot_of_isSeparable F L E
+    have : Algebra.IsSeparable F L := Algebra.isSeparable_tower_bot_of_isSeparable F L E
     have := (halg.tower_top L)
     have hd := finSepDegree_mul_finSepDegree_of_isAlgebraic F L E
     rw [H L h] at hd
@@ -715,18 +716,18 @@ theorem finSepDegree_eq_finrank_of_isSeparable [IsSeparable F E] :
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      (IsSeparable.separable F x).map_minpoly L
+      IsSeparable.of_isScalarTower L (Algebra.IsSeparable.isSeparable F x)
   set M := L⟮x⟯
   have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
     FiniteDimensional.finrank_mul_finrank F L M] at heq
 
-alias _root_.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
+alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
 
 /-- If `E / F` is a finite extension, then its separable degree is equal to its degree if and
 only if it is a separable extension. -/
 theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
-    finSepDegree F E = finrank F E ↔ IsSeparable F E :=
+    finSepDegree F E = finrank F E ↔ Algebra.IsSeparable F E :=
   ⟨fun heq ↦ ⟨fun x ↦ by
     have halg := IsAlgebraic.of_finite F x
     refine (finSepDegree_adjoin_simple_eq_finrank_iff F E x halg).1 <| le_antisymm
@@ -738,17 +739,17 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
 
 end Field
 
-lemma IntermediateField.separable_of_mem_isSeparable {L : IntermediateField F E} [IsSeparable F L]
-    {x : E} (h : x ∈ L) : (minpoly F x).Separable := by
-  simpa only [minpoly_eq] using IsSeparable.separable F (K := L) ⟨x, h⟩
+lemma IntermediateField.isSeparable_of_mem_isSeparable {L : IntermediateField F E}
+    [Algebra.IsSeparable F L] {x : E} (h : x ∈ L) : IsSeparable F x := by
+  simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (K := L) ⟨x, h⟩
 
 /-- `F⟮x⟯ / F` is a separable extension if and only if `x` is a separable element.
 As a consequence, any rational function of `x` is also a separable element. -/
-theorem IntermediateField.isSeparable_adjoin_simple_iff_separable {x : E} :
-    IsSeparable F F⟮x⟯ ↔ (minpoly F x).Separable := by
+theorem IntermediateField.isSeparable_adjoin_simple_iff_isSeparable {x : E} :
+    Algebra.IsSeparable F F⟮x⟯ ↔ IsSeparable F x := by
   refine ⟨fun _ ↦ ?_, fun hsep ↦ ?_⟩
-  · exact separable_of_mem_isSeparable F E <| mem_adjoin_simple_self F x
-  · have h := hsep.isIntegral
+  · exact isSeparable_of_mem_isSeparable F E <| mem_adjoin_simple_self F x
+  · have h := IsSeparable.isIntegral hsep
     haveI := adjoin.finiteDimensional h
     rwa [← finSepDegree_eq_finrank_iff,
       finSepDegree_adjoin_simple_eq_finrank_iff F E x h.isAlgebraic]
@@ -756,11 +757,12 @@ theorem IntermediateField.isSeparable_adjoin_simple_iff_separable {x : E} :
 variable {E K} in
 /-- If `K / E / F` is an extension tower such that `E / F` is separable,
 `x : K` is separable over `E`, then it's also separable over `F`. -/
-theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScalarTower F E K]
-    [IsSeparable F E] {x : K} (hsep : (minpoly E x).Separable) : (minpoly F x).Separable := by
+theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScalarTower F E K]
+    [Algebra.IsSeparable F E] {x : K} (hsep : IsSeparable E x) : IsSeparable F x := by
   set f := minpoly E x with hf
   let E' : IntermediateField F E := adjoin F f.coeffs
-  haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
+  haveI : FiniteDimensional F E' :=
+    finiteDimensional_adjoin fun x _ ↦ Algebra.IsSeparable.isIntegral F x
   let g : E'[X] := f.toSubring E'.toSubring (subset_adjoin F _)
   have h : g.map (algebraMap E' E) = f := f.map_toSubring E'.toSubring (subset_adjoin F _)
   clear_value g
@@ -768,66 +770,67 @@ theorem Polynomial.Separable.comap_minpoly_of_isSeparable [Algebra E K] [IsScala
   have hzero : aeval x g = 0 := by
     simpa only [← hf, ← h, aeval_map_algebraMap] using minpoly.aeval E x
   have halg : IsIntegral E' x :=
-    isIntegral_trans (R := F) (A := E) _ hsep.isIntegral |>.tower_top
-  simp_rw [← h, separable_map] at hsep
-  replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
-  haveI : IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
-  haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 hsep
+    isIntegral_trans (R := F) (A := E) _ (IsSeparable.isIntegral hsep) |>.tower_top
+  simp only [IsSeparable, ← hf, ← h, separable_map] at hsep
+  replace hsep := hsep.of_dvd <| minpoly.dvd E' x hzero
+  haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
+  haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := adjoin.finiteDimensional halg
   haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
-  have : Algebra.IsAlgebraic E' E'⟮x⟯ := IsSeparable.isAlgebraic _ _
+  have : Algebra.IsAlgebraic E' E'⟮x⟯ := Algebra.IsSeparable.isAlgebraic _ _
   have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
   rw [finSepDegree_eq_finrank_of_isSeparable F E',
     finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
     FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
     eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
-  change IsSeparable F (restrictScalars F E'⟮x⟯) at this
-  exact separable_of_mem_isSeparable F K hx
+  change Algebra.IsSeparable F (restrictScalars F E'⟮x⟯) at this
+  exact isSeparable_of_mem_isSeparable F K hx
 
 /-- If `E / F` and `K / E` are both separable extensions, then `K / F` is also separable. -/
-theorem IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
-    [IsSeparable F E] [IsSeparable E K] : IsSeparable F K :=
-  ⟨fun x ↦ (IsSeparable.separable E x).comap_minpoly_of_isSeparable F⟩
+theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
+    [Algebra.IsSeparable F E] [Algebra.IsSeparable E K] : Algebra.IsSeparable F K :=
+  ⟨fun x ↦ IsSeparable.of_algebra_isSeparable_of_isSeparable F
+    (Algebra.IsSeparable.isSeparable E x)⟩
 
 /-- If `x` and `y` are both separable elements, then `F⟮x, y⟯ / F` is a separable extension.
 As a consequence, any rational function of `x` and `y` is also a separable element. -/
-theorem IntermediateField.isSeparable_adjoin_pair_of_separable {x y : E}
-    (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
-    IsSeparable F F⟮x, y⟯ := by
+theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
+    (hx : IsSeparable F x) (hy : IsSeparable F y) :
+    Algebra.IsSeparable F F⟮x, y⟯ := by
   rw [← adjoin_simple_adjoin_simple]
-  replace hy := hy.map_minpoly F⟮x⟯
-  rw [← isSeparable_adjoin_simple_iff_separable] at hx hy
-  exact IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
+  replace hy := IsSeparable.of_isScalarTower F⟮x⟯ hy
+  rw [← isSeparable_adjoin_simple_iff_isSeparable] at hx hy
+  exact Algebra.IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 
 namespace Field
 
 variable {F}
 
 /-- Any element `x` of `F` is a separable element of `E / F` when embedded into `E`. -/
-theorem separable_algebraMap (x : F) : (minpoly F ((algebraMap F E) x)).Separable := by
-  rw [minpoly.algebraMap_eq (algebraMap F E).injective]
-  exact IsSeparable.separable F x
+theorem isSeparable_algebraMap (x : F) : IsSeparable F ((algebraMap F E) x) := by
+  rw [IsSeparable, minpoly.algebraMap_eq (algebraMap F E).injective]
+  exact Algebra.IsSeparable.isSeparable F x
 
 variable {E}
 
 /-- If `x` and `y` are both separable elements, then `x * y` is also a separable element. -/
-theorem separable_mul {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
-    (minpoly F (x * y)).Separable :=
-  haveI := isSeparable_adjoin_pair_of_separable F E hx hy
-  separable_of_mem_isSeparable F E <| F⟮x, y⟯.mul_mem (subset_adjoin F _ (.inl rfl))
+theorem isSeparable_mul {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) :
+    IsSeparable F (x * y) :=
+  haveI := isSeparable_adjoin_pair_of_isSeparable F E hx hy
+  isSeparable_of_mem_isSeparable F E <| F⟮x, y⟯.mul_mem (subset_adjoin F _ (.inl rfl))
     (subset_adjoin F _ (.inr rfl))
 
 /-- If `x` and `y` are both separable elements, then `x + y` is also a separable element. -/
-theorem separable_add {x y : E} (hx : (minpoly F x).Separable) (hy : (minpoly F y).Separable) :
-    (minpoly F (x + y)).Separable :=
-  haveI := isSeparable_adjoin_pair_of_separable F E hx hy
-  separable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (.inl rfl))
+theorem isSeparable_add {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) :
+    IsSeparable F (x + y) :=
+  haveI := isSeparable_adjoin_pair_of_isSeparable F E hx hy
+  isSeparable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (.inl rfl))
     (subset_adjoin F _ (.inr rfl))
 
 /-- If `x` is a separable element, then `x⁻¹` is also a separable element. -/
-theorem separable_inv (x : E) (hx : (minpoly F x).Separable) : (minpoly F x⁻¹).Separable :=
-  haveI := (isSeparable_adjoin_simple_iff_separable F E).2 hx
-  separable_of_mem_isSeparable F E <| F⟮x⟯.inv_mem <| mem_adjoin_simple_self F x
+theorem isSeparable_inv {x : E} (hx : IsSeparable F x) : IsSeparable F x⁻¹ :=
+  haveI := (isSeparable_adjoin_simple_iff_isSeparable F E).2 hx
+  isSeparable_of_mem_isSeparable F E <| F⟮x⟯.inv_mem <| mem_adjoin_simple_self F x
 
 end Field
 

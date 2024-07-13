@@ -97,7 +97,7 @@ def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
     (comparisonLeftAdjointObj adj A ⟶ B) ≃ { f : F.obj A.A ⟶ B // _ } :=
       Cofork.IsColimit.homIso (colimit.isColimit _) B
     _ ≃ { g : A.A ⟶ G.obj B // G.map (F.map g) ≫ G.map (adj.counit.app B) = A.a ≫ g } := by
-      refine' (adj.homEquiv _ _).subtypeEquiv _
+      refine (adj.homEquiv _ _).subtypeEquiv ?_
       intro f
       rw [← (adj.homEquiv _ _).injective.eq_iff, Adjunction.homEquiv_naturality_left,
         adj.homEquiv_unit, adj.homEquiv_unit, G.map_comp]
@@ -120,9 +120,9 @@ def leftAdjointComparison
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a)
       (adj.counit.app (F.obj A.A))] :
     adj.toMonad.Algebra ⥤ D := by
-  refine'
+  refine
     Adjunction.leftAdjointOfEquiv (G := comparison adj)
-      (F_obj := fun A => comparisonLeftAdjointObj adj A) (fun A B => _) _
+      (F_obj := fun A => comparisonLeftAdjointObj adj A) (fun A B => ?_) ?_
   · apply comparisonLeftAdjointHomEquiv
   · intro A B B' g h
     ext1
@@ -323,7 +323,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
           IsIso
             (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
                 (unitColimitOfPreservesCoequalizer X)).hom
-        exact IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
+        exact (IsColimit.coconePointUniqueUpToIso _ _).isIso_hom
     have : ∀ (Y : D), IsIso ((comparisonAdjunction adj).counit.app Y) := by
       intro Y
       rw [comparisonAdjunction_counit_app]
@@ -417,11 +417,8 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
         @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget adj.toMonad) ?_ _
       · change IsIso ((comparisonAdjunction adj).unit.app X).f
         rw [comparisonAdjunction_unit_f]
-        change
-          IsIso
-            (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
-                (unitColimitOfPreservesCoequalizer X)).hom
-        apply IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
+        exact (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
+          (unitColimitOfPreservesCoequalizer X)).isIso_hom
     have : ∀ (Y : D), IsIso ((comparisonAdjunction adj).counit.app Y) := by
       intro Y
       rw [comparisonAdjunction_counit_app]

@@ -70,7 +70,7 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
   rw [Subtype.forall', Algebra.isAlgebraic_def]
   refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
   have h : Function.Injective S.val := Subtype.val_injective
-  conv_rhs => rw [← h.eq_iff, AlgHom.map_zero]
+  conv_rhs => rw [← h.eq_iff, map_zero]
   rw [← aeval_algHom_apply, S.val_apply]
 #align subalgebra.is_algebraic_iff Subalgebra.isAlgebraic_iff
 
@@ -222,8 +222,8 @@ variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
   refine ⟨?_, IsIntegral.isAlgebraic⟩
   rintro ⟨p, hp, hpx⟩
-  refine' ⟨_, monic_mul_leadingCoeff_inv hp, _⟩
-  rw [← aeval_def, AlgHom.map_mul, hpx, zero_mul]
+  refine ⟨_, monic_mul_leadingCoeff_inv hp, ?_⟩
+  rw [← aeval_def, map_mul, hpx, zero_mul]
 #align is_algebraic_iff_is_integral isAlgebraic_iff_isIntegral
 
 protected theorem Algebra.isAlgebraic_iff_isIntegral :
@@ -415,8 +415,8 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S]
   obtain ⟨c, d, d_ne, hx⟩ :=
     exists_integral_multiple (Algebra.IsAlgebraic.isAlgebraic (algebraMap _ L a / algebraMap _ L b))
       ((injective_iff_map_eq_zero _).mp inj)
-  refine'
-    ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L _⟩
+  refine
+    ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L ?_⟩
   simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
     IsScalarTower.algebraMap_apply]
   rw [← mul_assoc _ (_ / _), mul_div_cancel₀ (algebraMap S L a), mul_comm]
@@ -431,7 +431,7 @@ theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (div
     x⁻¹ = aeval x (divX p) / (aeval x p - algebraMap _ _ (p.coeff 0)) := by
   rw [inv_eq_iff_eq_inv, inv_div, eq_comm, div_eq_iff, sub_eq_iff_eq_add, mul_comm]
   conv_lhs => rw [← divX_mul_X_add p]
-  · rw [AlgHom.map_add, AlgHom.map_mul, aeval_X, aeval_C]
+  · rw [map_add, map_mul, aeval_X, aeval_C]
   · exact aeval_ne
 set_option linter.uppercaseLean3 false in
 #align inv_eq_of_aeval_div_X_ne_zero inv_eq_of_aeval_divX_ne_zero
@@ -444,7 +444,7 @@ theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeva
   rw [RingHom.map_zero]
   convert aeval_eq
   conv_rhs => rw [← divX_mul_X_add p]
-  rw [AlgHom.map_add, AlgHom.map_mul, h, zero_mul, zero_add, aeval_C]
+  rw [map_add, map_mul, h, zero_mul, zero_add, aeval_C]
 #align inv_eq_of_root_of_coeff_zero_ne_zero inv_eq_of_root_of_coeff_zero_ne_zero
 
 theorem Subalgebra.inv_mem_of_root_of_coeff_zero_ne_zero {x : A} {p : K[X]}
@@ -465,14 +465,14 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
   obtain ⟨p, ne_zero, aeval_eq⟩ := hx
   rw [Subalgebra.aeval_coe, Subalgebra.coe_eq_zero] at aeval_eq
   revert ne_zero aeval_eq
-  refine' p.recOnHorner _ _ _
+  refine p.recOnHorner ?_ ?_ ?_
   · intro h
     contradiction
   · intro p a hp ha _ih _ne_zero aeval_eq
-    refine' A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq _
+    refine A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq ?_
     rwa [coeff_add, hp, zero_add, coeff_C, if_pos rfl]
   · intro p hp ih _ne_zero aeval_eq
-    rw [AlgHom.map_mul, aeval_X, mul_eq_zero] at aeval_eq
+    rw [map_mul, aeval_X, mul_eq_zero] at aeval_eq
     cases' aeval_eq with aeval_eq x_eq
     · exact ih hp aeval_eq
     · rw [x_eq, Subalgebra.coe_zero, inv_zero]
