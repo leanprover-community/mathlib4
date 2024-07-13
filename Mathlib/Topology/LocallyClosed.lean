@@ -67,9 +67,8 @@ alias ⟨_, IsClosed.coborder_eq⟩ := coborder_eq_univ_iff
 
 lemma coborder_eq_compl_frontier_iff :
     coborder s = (frontier s)ᶜ ↔ IsOpen s := by
-  simp only [coborder, compl_inj_iff, frontier, sdiff_eq_sdiff_iff_inf_eq_inf, Set.inf_eq_inter]
-  rw [Set.inter_eq_right.mpr (interior_subset.trans subset_closure),
-    Set.inter_eq_right.mpr subset_closure, eq_comm, interior_eq_iff_isOpen]
+  simp_rw [coborder_eq_union_frontier_compl, union_eq_right, subset_compl_iff_disjoint_left,
+    disjoint_frontier_iff_isOpen]
 
 alias ⟨_, IsOpen.coborder_eq⟩ := coborder_eq_compl_frontier_iff
 

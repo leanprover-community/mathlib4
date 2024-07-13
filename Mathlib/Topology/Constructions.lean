@@ -1229,6 +1229,14 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
   DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
     (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr hinj.injOn)
 
+open scoped Topology Set.Notation in
+lemma isClosed_preimage_val {s t : Set X} : IsClosed (s ↓∩ t) ↔ s ∩ closure (s ∩ t) ⊆ t := by
+  rw [← closure_eq_iff_isClosed, embedding_subtype_val.closure_eq_preimage_closure_image,
+    ← Subtype.val_injective.image_injective.eq_iff, Subtype.image_preimage_coe,
+    Subtype.image_preimage_coe, subset_antisymm_iff, and_iff_left, Set.subset_inter_iff,
+    and_iff_right]
+  exacts [Set.inter_subset_left, Set.subset_inter Set.inter_subset_left subset_closure]
+
 end Subtype
 
 section Quotient
