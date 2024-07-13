@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.BoundedOrder
 
 #align_import algebra.order.monoid.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -136,31 +135,6 @@ class LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid
 #align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
 
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
-
-/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    OrderTop α where
-  /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
-  protected top_add' : ∀ x : α, ⊤ + x = ⊤
-#align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
-#align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
-
-section LinearOrderedAddCommMonoidWithTop
-
-variable [LinearOrderedAddCommMonoidWithTop α] {a b : α}
-
-@[simp]
-theorem top_add (a : α) : ⊤ + a = ⊤ :=
-  LinearOrderedAddCommMonoidWithTop.top_add' a
-#align top_add top_add
-
-@[simp]
-theorem add_top (a : α) : a + ⊤ = ⊤ :=
-  Trans.trans (add_comm _ _) (top_add _)
-#align add_top add_top
-
-end LinearOrderedAddCommMonoidWithTop
 
 variable [LinearOrderedCommMonoid α] {a : α}
 
