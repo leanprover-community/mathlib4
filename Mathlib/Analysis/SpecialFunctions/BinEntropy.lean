@@ -219,8 +219,6 @@ section general
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {f g : E → F}
 variable {x : E}
 
 lemma DifferentiableAt.iff_comp_mul_add
@@ -241,7 +239,6 @@ lemma DifferentiableAt.iff_comp_mul_add
     rw [this]
     apply DifferentiableAt.comp _ ?_ (by fun_prop)
     exact h
-
 
 end general
 
@@ -304,8 +301,7 @@ private lemma deriv_log_one_sub {x : ℝ} : deriv (fun p ↦ log (1 - p)) x = -(
         by_contra h_contra
         have h₁ : ¬ DifferentiableAt ℝ log 0 := by simp [Real.differentiableAt_log_iff]
         have h₂ : DifferentiableAt ℝ log 0 := by
-          have : Real.log = (fun p ↦ log (1 - p)) ∘ (fun x => 1 - x) := by ext; simp
-          rw [this]
+          rw [show Real.log = (fun p ↦ log (1 - p)) ∘ (fun x => 1 - x) by ext; simp]
           refine DifferentiableAt.comp _ ?_ (by fun_prop)
           simp only [sub_zero, h_contra]
         contradiction
@@ -326,20 +322,18 @@ lemma deriv_binaryEntropy' {x : ℝ} :
     have : DifferentiableAt ℝ (fun p ↦ log (1 - p)) x :=
       DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr hh.symm)
     rw [deriv_sub ?_ (by fun_prop)]
-    simp only [← neg_mul_eq_neg_mul]
-    rw [deriv.neg , deriv_mul_log h]
-    simp only [mul_sub_right_distrib, one_mul]
-    rw [deriv_sub this (by fun_prop), deriv_log_one_sub]
-    · rw [deriv_mul (by fun_prop) this, deriv_id'']
-      rw [deriv.log (by fun_prop) (sub_ne_zero_of_ne (hh.symm)), deriv_const_sub 1, deriv_id'']
-      simp only [one_mul]
-      field_simp [sub_ne_zero.mpr hh.symm]
+    · simp only [← neg_mul_eq_neg_mul]
+      rw [deriv.neg , deriv_mul_log h]
+      simp only [mul_sub_right_distrib, one_mul]
+      rw [deriv_sub this (by fun_prop), deriv_log_one_sub]
+      rw [deriv_mul (by fun_prop) this, deriv_id'',
+          deriv.log (by fun_prop) (sub_ne_zero_of_ne (hh.symm)), deriv_const_sub 1, deriv_id'']
+      field_simp [one_mul, sub_ne_zero.mpr hh.symm]
       ring
     · exact (hasDerivAt_negMulLog h).differentiableAt
   -- pathological case where `deriv = 0` since function is not differentiable there
   · have : x = 0 ∨ x = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
-    rw [← binaryEntropy_eq]
-    rw [deriv_zero_of_not_differentiableAt]
+    rw [← binaryEntropy_eq, deriv_zero_of_not_differentiableAt]
     · cases this with  -- surely this can be shortened?
         | inl xis0 => simp only [xis0, sub_zero, log_one, log_zero, sub_self]
         | inr xis1 => simp only [xis1, sub_zero, log_one, log_zero, sub_self]
@@ -366,7 +360,7 @@ lemma deriv_qaryEntropy {q : ℕ} {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
   · apply DifferentiableAt.sub
     · exact DifferentiableAt.neg
         ((DifferentiableAt.mul differentiableAt_id') (DifferentiableAt.log differentiableAt_id' h))
-    · apply DifferentiableAt.mul (differentiable_const_minus x)
+    · exact DifferentiableAt.mul (differentiable_const_minus x)
         (DifferentiableAt.log (differentiable_const_minus x) (sub_ne_zero_of_ne hh.symm))
 
 /-- Binary entropy has derivative `log (1 - p) - log p`.
@@ -403,8 +397,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
   · have h₁ : (0 : ℝ) < 1 / 2 := by norm_num
     filter_upwards [Ioc_mem_nhdsWithin_Ioi' h₁] with x hx
     gcongr
-    have : x ≤ 1/2 := hx.2
-    linarith
+    linarith [hx.2]
   · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsWithin_zero_right
 
 private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
