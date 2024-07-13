@@ -202,6 +202,19 @@ theorem numeric_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves]
   Numeric.mk (fun _ => isEmptyElim) H isEmptyElim
 #align pgame.numeric_of_is_empty_right_moves SetTheory.PGame.numeric_of_isEmpty_rightMoves
 
+theorem numeric_zero : Numeric 0 :=
+  numeric_of_isEmpty 0
+#align pgame.numeric_zero SetTheory.PGame.numeric_zero
+
+theorem numeric_one : Numeric 1 :=
+  numeric_of_isEmpty_rightMoves 1 fun _ => numeric_zero
+#align pgame.numeric_one SetTheory.PGame.numeric_one
+
+theorem Numeric.neg : ∀ {x : PGame} (_ : Numeric x), Numeric (-x)
+  | ⟨_, _, _, _⟩, o =>
+    ⟨fun j i => neg_lt_neg_iff.2 (o.1 i j), fun j => (o.2.2 j).neg, fun i => (o.2.1 i).neg⟩
+#align pgame.numeric.neg SetTheory.PGame.Numeric.neg
+
 /-- Inserting a smaller numeric left option into a numeric game results in a numeric game. -/
 theorem insertLeft_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
     (h : x' ≤ x) : (insertLeft x x').Numeric := by
@@ -218,28 +231,9 @@ theorem insertLeft_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numer
 /-- Inserting a larger numeric right option into a numeric game results in a numeric game. -/
 theorem insertRight_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
     (h : x ≤ x') : (insertRight x x').Numeric := by
-  rw [le_iff_forall_lt x_num x'_num] at h
-  unfold Numeric at x_num ⊢
-  rcases x with ⟨xl, xr, xL, xR⟩
-  simp only [insertRight, Sum.forall, forall_const, Sum.elim_inl, Sum.elim_inr] at x_num ⊢
-  constructor
-  · simp only [x_num.1, implies_true, true_and]
-    simp only [leftMoves_mk, moveLeft_mk] at h
-    exact h.1
-  · simp only [x_num, implies_true, x'_num, and_self]
-
-theorem numeric_zero : Numeric 0 :=
-  numeric_of_isEmpty 0
-#align pgame.numeric_zero SetTheory.PGame.numeric_zero
-
-theorem numeric_one : Numeric 1 :=
-  numeric_of_isEmpty_rightMoves 1 fun _ => numeric_zero
-#align pgame.numeric_one SetTheory.PGame.numeric_one
-
-theorem Numeric.neg : ∀ {x : PGame} (_ : Numeric x), Numeric (-x)
-  | ⟨_, _, _, _⟩, o =>
-    ⟨fun j i => neg_lt_neg_iff.2 (o.1 i j), fun j => (o.2.2 j).neg, fun i => (o.2.1 i).neg⟩
-#align pgame.numeric.neg SetTheory.PGame.Numeric.neg
+  rw [← neg_neg (x.insertRight x'), ← neg_insertLeft_neg]
+  apply Numeric.neg
+  exact insertLeft_numeric (Numeric.neg x_num) (Numeric.neg x'_num) (neg_le_neg_iff.mpr h)
 
 namespace Numeric
 
