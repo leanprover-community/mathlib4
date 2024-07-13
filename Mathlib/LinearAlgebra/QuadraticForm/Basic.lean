@@ -78,7 +78,7 @@ quadratic map, homogeneous polynomial, quadratic polynomial
 universe u v w
 
 variable {S T : Type*}
-variable {R : Type*} {M N A : Type*}
+variable {R : Type*} {M N P A : Type*}
 
 open LinearMap (BilinMap)
 open LinearMap (BilinForm)
@@ -574,10 +574,10 @@ end restrictScalars
 section Comp
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-variable {M' : Type v} [AddCommMonoid M'] [Module R M']
+variable [AddCommMonoid P] [Module R P]
 
 /-- Compose the quadratic map with a linear function on the right. -/
-def comp (Q : QuadraticMap R M' N) (f : M →ₗ[R] M') : QuadraticMap R M N where
+def comp (Q : QuadraticMap R N P) (f : M →ₗ[R] N) : QuadraticMap R M P where
   toFun x := Q (f x)
   toFun_smul a x := by simp only [map_smul, f.map_smul]
   exists_companion' :=
@@ -586,14 +586,14 @@ def comp (Q : QuadraticMap R M' N) (f : M →ₗ[R] M') : QuadraticMap R M N whe
 #align quadratic_form.comp QuadraticMap.comp
 
 @[simp]
-theorem comp_apply (Q : QuadraticMap R M' N) (f : M →ₗ[R] M') (x : M) : (Q.comp f) x = Q (f x) :=
+theorem comp_apply (Q : QuadraticMap R N P) (f : M →ₗ[R] N) (x : M) : (Q.comp f) x = Q (f x) :=
   rfl
 #align quadratic_form.comp_apply QuadraticMap.comp_apply
 
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps (config := { simpRhs := true })]
-def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] M') (Q : QuadraticMap R M N) :
-    QuadraticMap R M M' where
+def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M N) :
+    QuadraticMap R M P where
   toFun x := f (Q x)
   toFun_smul b x := by simp only [map_smul, f.map_smul]
   exists_companion' :=
