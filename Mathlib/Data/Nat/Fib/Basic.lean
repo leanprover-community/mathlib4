@@ -254,7 +254,7 @@ theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
     cases b <;>
           simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
             congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
-          simp [bit_false, bit_true, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
+          simp [bit_val, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 #align nat.fast_fib_aux_eq Nat.fast_fib_aux_eq
 
 theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]
