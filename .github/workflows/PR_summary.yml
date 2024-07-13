@@ -45,7 +45,7 @@ jobs:
         # Compute the counts for the merge base
         python ./scripts/count-trans-deps.py "Mathlib/" > base.json
 
-        # switch back to the current branch: the `no_lost_declarations` script should be here
+        # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}"
     - name: Post or update the summary comment
       env:
@@ -69,7 +69,7 @@ jobs:
         fi
 
         ## Declarations' diff comment
-        declDiff=$(./scripts/no_lost_declarations.sh short)
+        declDiff=$(./scripts/declarations_diff.sh)
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
