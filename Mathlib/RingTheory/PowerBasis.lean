@@ -145,7 +145,7 @@ theorem algHom_ext {S' : Type*} [Semiring S'] [Algebra R S'] (pb : PowerBasis R 
 #align power_basis.alg_hom_ext PowerBasis.algHom_ext
 
 open Ideal Finset Submodule in
-theorem exists_sModEq (pb : PowerBasis A B) (b : B) :
+theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
     ∃ a, SModEq (Ideal.span ({pb.gen})) b (algebraMap A B a) := by
   rcases subsingleton_or_nontrivial B
   · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, _root_.map_zero]⟩
