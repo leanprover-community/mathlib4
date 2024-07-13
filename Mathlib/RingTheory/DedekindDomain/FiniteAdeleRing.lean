@@ -381,15 +381,10 @@ lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat 
 
 section Topology
 
-open Classical
-
-open nonZeroDivisors
+open Classical nonZeroDivisors Multiplicative Additive
 
 open scoped algebraMap -- coercion from R to FiniteAdeleRing R K
-
 open scoped DiscreteValuation
-
-open Multiplicative Additive
 
 variable {R K} in
 lemma clear_local_denominator (v : HeightOneSpectrum R)
