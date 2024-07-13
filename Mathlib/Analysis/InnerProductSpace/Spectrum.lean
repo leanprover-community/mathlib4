@@ -525,6 +525,7 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     intro K j hj HH
     apply h
     rw [← HH]
+    intro a
     sorry
   · sorry
 
