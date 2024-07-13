@@ -13,8 +13,9 @@ import Mathlib.LinearAlgebra.BilinearMap
 /-!
 # Quadratic maps
 
-This file defines quadratic maps on an `R`-module `M`.
-A quadratic map over a commutative ring `R` is a map `Q : M → N` such that:
+This file defines quadratic maps on an `R`-module `M`, taking values in an `R`-module `N`.
+An `N`-valued quadratic map on a module `M` over a commutative ring `R` is a map `Q : M → N` such
+that:
 
 * `QuadraticMap.map_smul`: `Q (a • x) = (a * a) • Q x`
 * `QuadraticMap.polar_add_left`, `QuadraticMap.polar_add_right`,
