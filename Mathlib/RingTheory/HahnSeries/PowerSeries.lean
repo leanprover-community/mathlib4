@@ -256,60 +256,6 @@ def meval [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) : PowerSeries R →+* H
       (fun _ _ => StrictMono.le_iff_le (nsmul_left_strictMono hg))).comp
       (toPowerSeries (R := R)).symm).comp (PowerSeries.rescale r)
 
---delete
-theorem meval_add [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a b : PowerSeries R) :
-    meval hg r (a + b) = meval hg r a + meval hg r b :=
-  RingHom.map_add (meval hg r) a b
-
---delete
-theorem meval_sub [CommRing R] {g : Γ} (hg : 0 < g) (r : R) (a b : PowerSeries R) :
-    meval hg r (a - b) = meval hg r a - meval hg r b :=
-  RingHom.map_sub (meval hg r) a b
-
---delete
-theorem meval_pow [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R) (n : ℕ) :
-    meval hg r (a ^ n) = (meval hg r a) ^ n :=
-  RingHom.map_pow (meval hg r) a n
-
-theorem meval_X [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) :
-    meval hg r PowerSeries.X = single g r := by
-  let f : ℕ ↪o Γ := ⟨⟨multiplesHom Γ g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
-      (StrictMono.le_iff_le (nsmul_left_strictMono hg))⟩
-  have hemb : single g r = embDomain f (single 1 r) := by
-    rw [show g = (f 1) by simp [f, multiplesHom]]
-    exact (embDomain_single (f := f) (g := (1 : ℕ)) (r := r)).symm
-  rw [hemb, meval, RingHom.comp_assoc]
-  simp only [RingHom.coe_comp, RingHom.coe_coe, comp_apply, embDomainRingHom_apply]
-  congr 1
-  ext n
-  by_cases hn : n = 1
-  · rw [hn, toPowerSeries_symm_apply_coeff, PowerSeries.coeff_rescale, PowerSeries.coeff_one_X,
-      single_coeff_same, pow_one, mul_one]
-  · rw [toPowerSeries_symm_apply_coeff, PowerSeries.coeff_rescale, PowerSeries.coeff_X,
-      single_coeff_of_ne hn]
-    simp_all only [ite_false, mul_zero]
-
-theorem meval_X_npow [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (n : ℕ) :
-    meval hg r (PowerSeries.X ^ n) = single (n • g) (r ^ n) := by
-  rw [RingHom.map_pow (meval hg r) _ n, meval_X, single_pow g n r]
-
-theorem meval_C [CommSemiring R] {g : Γ} (hg : 0 < g) (r s : R) :
-    meval hg r (PowerSeries.C R s) = C s := by
-  let f : ℕ ↪o Γ := ⟨⟨multiplesHom Γ g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
-      (StrictMono.le_iff_le (nsmul_left_strictMono hg))⟩
-  have hemb : single 0 s = embDomain f (single 0 s) := by
-    rw [show 0 = f 0 by simp [f]]
-    exact (embDomain_single (f := f) (g := (0 : ℕ)) (r := s)).symm
-  rw [C_apply, hemb, meval]
-  simp only [RingHom.coe_comp, RingHom.coe_coe, comp_apply, embDomainRingHom_apply]
-  congr 1
-  ext n
-  by_cases hn : n = 0
-  · rw [hn, toPowerSeries_symm_apply_coeff, PowerSeries.coeff_rescale, single_coeff_same,
-      PowerSeries.coeff_zero_C, pow_zero, one_mul]
-  · rw [toPowerSeries_symm_apply_coeff, PowerSeries.coeff_rescale, PowerSeries.coeff_ne_zero_C hn,
-      single_coeff_of_ne hn, mul_zero]
-
 theorem meval_apply_coeff [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (a : PowerSeries R)
     (n : ℕ) : (meval hg r a).coeff (n • g) = r ^ n * PowerSeries.coeff R n a := by
   let f : ℕ ↪o Γ := ⟨⟨multiplesHom Γ g, StrictMono.injective (nsmul_left_strictMono hg)⟩,
@@ -322,6 +268,39 @@ theorem meval_notin_range [CommSemiring R] {g g' : Γ} (hg : 0 < g) (r : R) (a :
     (hg' : g' ∉ Set.range (multiplesHom Γ g)) : (meval hg r a).coeff g' = 0 := by
   rw [meval, RingHom.comp_apply, RingHom.comp_apply, embDomainRingHom_apply]
   exact embDomain_notin_range hg'
+
+theorem meval_X [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) :
+    meval hg r PowerSeries.X = single g r := by
+  ext g'
+  by_cases h : g' ∈ Set.range (multiplesHom Γ g)
+  · obtain ⟨n, hn⟩ := h
+    rw [@multiplesHom_apply] at hn
+    rw [← hn, meval_apply_coeff]
+    by_cases h1 : n = 1; simp [h1]
+    have hng : ¬ n • g = g := by
+      nth_rw 2 [← one_nsmul g]
+      exact fun hn1 => h1 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
+    simp_all [PowerSeries.coeff_X, single_coeff]
+  · rw [meval_notin_range hg r _ h, single_coeff_of_ne
+      fun hgg' => h (Exists.intro 1 (by simp [hgg']))]
+
+theorem meval_X_npow [CommSemiring R] {g : Γ} (hg : 0 < g) (r : R) (n : ℕ) :
+    meval hg r (PowerSeries.X ^ n) = single (n • g) (r ^ n) := by
+  rw [RingHom.map_pow (meval hg r) _ n, meval_X, single_pow g n r]
+
+theorem meval_C [CommSemiring R] {g : Γ} (hg : 0 < g) (r s : R) :
+    meval hg r (PowerSeries.C R s) = C s := by
+  ext g'
+  by_cases h : g' ∈ Set.range (multiplesHom Γ g)
+  · obtain ⟨n, hn⟩ := h
+    rw [@multiplesHom_apply] at hn
+    rw [← hn, meval_apply_coeff]
+    by_cases h0 : n = 0; simp [h0]
+    have hng : ¬ n • g = 0 • g :=
+      fun hn1 => h0 (StrictMono.injective (nsmul_left_strictMono hg) hn1)
+    simp_all [PowerSeries.coeff_C, single_coeff]
+  · rw [meval_notin_range hg r _ h, C_apply, single_coeff_of_ne
+      fun hgg' => h (Exists.intro 0 (by simp [hgg']))]
 
 end meval
 

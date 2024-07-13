@@ -65,14 +65,34 @@ theorem pos_addUnit_neg_add [AddMonoid Γ] [LT Γ]
 variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 
 theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
-  have hm : meval hg r (1 - PowerSeries.X) = 1 - single g r := by
-    rw [RingHom.map_sub (meval hg r) 1 PowerSeries.X, meval_X, RingHom.map_one]
-  rw [← hm]
+  rw [← meval_X hg, ← RingHom.map_one (meval hg r), ← RingHom.map_sub]
   refine RingHom.isUnit_map (meval hg r) ?_
   rw [← pow_one (1 - PowerSeries.X)]
-  nth_rw 2[← zero_add 1]
+  nth_rw 2 [← zero_add 1]
   rw [← PowerSeries.invOneSubPow_inv_eq_one_sub_pow 0]
   exact Units.isUnit (PowerSeries.invOneSubPow 0)⁻¹
+
+theorem one_sub_single_npow_coeff_nsmul {g : Γ} (hg : 0 < g) (r : R) (n k : ℕ) :
+    ((1 - single g r) ^ n).coeff (k • g) = (-1) ^ k • Nat.choose n k • r ^ k := by
+  rw [← meval_X hg, ← RingHom.map_one (meval hg r), ← RingHom.map_sub, ← RingHom.map_pow]
+  by_cases hn : n = 0
+  · by_cases hk : k = 0
+    · simp [hn, hk]
+    · rw [hn, Nat.choose_eq_zero_of_lt (Nat.zero_lt_of_ne_zero hk)]
+      have hkg : k • g ≠ 0 • g := fun h => hk (StrictMono.injective (nsmul_left_strictMono hg) h)
+      simp_all [hk, hkg]
+  · have hm : (1 : PowerSeries R) - PowerSeries.X = PowerSeries.rescale (-1 : R)
+        ((1 : PowerSeries R) + PowerSeries.X) := by
+      simp [Mathlib.Tactic.RingNF.add_neg]
+    rw [meval_apply_coeff, hm, ← RingHom.map_pow, PowerSeries.coeff_rescale, show 1 +
+      PowerSeries.X = Polynomial.coeToPowerSeries.ringHom ((1 : Polynomial R) + Polynomial.X) by
+      simp, ← RingHom.map_pow, Polynomial.coeToPowerSeries.ringHom_apply, Polynomial.coeff_coe,
+      Polynomial.coeff_one_add_X_pow R n k, mul_rotate']
+    simp
+
+-- theorem one_sub_single_negSuccPow_coeff_nsmul
+
+-- theorem one_sub_single_npow_coeff_notin_range
 
 /-- An invertible binomial, i.e., one with invertible leading term. -/
 def UnitBinomial {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
@@ -80,12 +100,33 @@ def UnitBinomial {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R} (ha : Is
   (UnitSingle hg ha) *
     IsUnit.unit (isUnit_one_sub_single (pos_addUnit_neg_add hg hgg') (ha.unit.inv * -b))
 
-theorem unitBinomial_eq_single_add_single {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R}
-    (ha : IsUnit a) (b : R) : UnitBinomial  hg hgg' ha b = single g a + single g' b := by
+theorem unitBinomial_eq_single_add_single {g g' : Γ} {hg : IsAddUnit g} {hgg' : g < g'} {a : R}
+    {ha : IsUnit a} {b : R} : UnitBinomial hg hgg' ha b = single g a + single g' b := by
   simp only [UnitBinomial, AddUnits.neg_eq_val_neg, Units.inv_eq_val_inv, Units.val_mul,
     val_UnitSingle, IsUnit.unit_spec, mul_sub, mul_one, single_mul_single, sub_right_inj]
   rw [← add_assoc, IsAddUnit.add_val_neg, zero_add, ← mul_assoc, IsUnit.mul_val_inv, one_mul,
     sub_eq_iff_eq_add, add_assoc, ← single_add, add_neg_self, single_eq_zero, add_zero]
+
+theorem orderTop_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R}
+    (ha : IsUnit a) (b : R) : (UnitBinomial hg hgg' ha b).val.orderTop = g := by
+  rw [unitBinomial_eq_single_add_single, orderTop_add_eq_left, orderTop_single (IsUnit.ne_zero ha)]
+  · refine lt_of_lt_of_le ?_ orderTop_single_le
+    rw [(orderTop_single (IsUnit.ne_zero ha))]
+    exact WithTop.coe_lt_coe.mpr hgg'
+
+theorem order_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a : R}
+    (ha : IsUnit a) (b : R) : (UnitBinomial hg hgg' ha b).val.order = g := by
+  rw [← WithTop.coe_eq_coe, order_eq_orderTop_of_ne (Units.ne_zero (UnitBinomial hg hgg' ha b))]
+  exact orderTop_unitBinomial hg hgg' ha b
+
+theorem leadingCoeff_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g')
+    {a : R} (ha : IsUnit a) (b : R) : (UnitBinomial hg hgg' ha b).val.leadingCoeff = a := by
+  rw [leadingCoeff_eq, order_unitBinomial, unitBinomial_eq_single_add_single, add_coeff,
+    single_coeff_same, single_coeff_of_ne (ne_of_lt hgg'), add_zero]
+
+
+
+--theorem unitBinomial_npow_coeff
 
 -- coefficients of powers - use embDomain_coeff and embDomain_notin_range from Basic
 
