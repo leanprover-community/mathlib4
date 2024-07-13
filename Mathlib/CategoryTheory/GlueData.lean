@@ -423,7 +423,8 @@ structure GlueData' where
   /-- The transition maps between the intersection of intersections. -/
   t' : ∀ i j k hij hik hjk,
     pullback (f i j hij) (f i k hik) ⟶ pullback (f j k hjk) (f j i hij.symm)
-  t_fac : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫ pullback.snd = pullback.fst ≫ t i j hij
+  t_fac : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫ pullback.snd _ _ =
+    pullback.fst _ _ ≫ t i j hij
   t_inv : ∀ i j hij, t i j hij ≫ t j i hij.symm = 𝟙 _
   cocycle : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫
     t' j k i hjk hij.symm hik.symm ≫ t' k i j hik.symm hjk.symm hij = 𝟙 _
@@ -469,17 +470,17 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
       pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by aesop))
         (by aesop) (by aesop)
   else if hik : i = k then
-    have : IsIso (pullback.snd : pullback (D.f' j k) (D.f' j i) ⟶ _) := by
+    have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
       subst hik; infer_instance
-    pullback.fst ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
-      eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv pullback.snd
+    pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
+      eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else if hjk : j = k then
-    have : IsIso (pullback.snd : pullback (D.f' j k) (D.f' j i) ⟶ _) := by
+    have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
       apply (config := { allowSynthFailures := true}) pullback_snd_iso_of_left_iso
       simp only [hjk, GlueData'.f', ↓reduceDIte]
       infer_instance
-    pullback.fst ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
-      eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv pullback.snd
+    pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
+      eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
   else
     haveI := Ne.symm hij
     pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by rw [dif_neg hik]))
