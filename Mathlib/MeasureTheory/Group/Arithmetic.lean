@@ -36,7 +36,7 @@ For the heuristics of `@[to_additive]` it is important that the type with a mult
 
 measurable function, arithmetic operator
 
-## Todo
+## TODO
 
 * Uniformize the treatment of `pow` and `smul`.
 * Use `@[to_additive]` to send `MeasurablePow` to `MeasurableSMul₂`.

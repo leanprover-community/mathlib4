@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Algebra.Order.Monoid.OrderDual
 
 /-!
 # Big operators on a multiset in ordered groups
@@ -189,3 +190,5 @@ lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero abs_add s
 #align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
+
+end Multiset

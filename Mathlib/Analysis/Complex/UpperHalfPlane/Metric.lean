@@ -128,7 +128,6 @@ def metricSpaceAux : MetricSpace ℍ where
   dist_triangle := UpperHalfPlane.dist_triangle
   eq_of_dist_eq_zero {z w} h := by
     simpa [dist_eq, Real.sqrt_eq_zero', (mul_pos z.im_pos w.im_pos).not_le, ext_iff] using h
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 #align upper_half_plane.metric_space_aux UpperHalfPlane.metricSpaceAux
 
 open Complex

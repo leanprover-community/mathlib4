@@ -8,7 +8,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
-import Mathlib.RingTheory.Trace
+import Mathlib.RingTheory.Trace.Basic
 
 #align_import ring_theory.dedekind_domain.integral_closure from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 
@@ -82,7 +82,7 @@ theorem IsIntegralClosure.isLocalization [Algebra.IsAlgebraic K L] :
       smul_def]
   · simp only [IsIntegralClosure.algebraMap_injective C A L h]
 
-theorem IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
+theorem IsIntegralClosure.isLocalization_of_isSeparable [Algebra.IsSeparable K L] :
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
   IsIntegralClosure.isLocalization A K L C
 #align is_integral_closure.is_localization IsIntegralClosure.isLocalization_of_isSeparable
@@ -90,7 +90,7 @@ theorem IsIntegralClosure.isLocalization_of_isSeparable [IsSeparable K L] :
 variable [FiniteDimensional K L]
 variable {A K L}
 
-theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι]
+theorem IsIntegralClosure.range_le_span_dualBasis [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     LinearMap.range ((Algebra.linearMap C L).restrictScalars A) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
@@ -103,8 +103,8 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*}
   exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
 
-theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
-    (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
+theorem integralClosure_le_span_dualBasis [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι]
+    [DecidableEq ι] (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     Subalgebra.toSubmodule (integralClosure A L) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
   refine le_trans ?_ (IsIntegralClosure.range_le_span_dualBasis (integralClosure A L) b hb_int)
@@ -167,7 +167,7 @@ theorem FiniteDimensional.exists_is_basis_integral :
     exact his' _ ⟨_, rfl⟩
 #align finite_dimensional.exists_is_basis_integral FiniteDimensional.exists_is_basis_integral
 
-variable [IsSeparable K L]
+variable [Algebra.IsSeparable K L]
 
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
 integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
@@ -256,7 +256,7 @@ theorem integralClosure.isDedekindDomain [IsDedekindDomain A] :
 #align integral_closure.is_dedekind_domain integralClosure.isDedekindDomain
 
 variable [Algebra (FractionRing A) L] [IsScalarTower A (FractionRing A) L]
-variable [FiniteDimensional (FractionRing A) L] [IsSeparable (FractionRing A) L]
+variable [FiniteDimensional (FractionRing A) L] [Algebra.IsSeparable (FractionRing A) L]
 
 /-- If `L` is a finite separable extension of `Frac(A)`, where `A` is a Dedekind domain,
 the integral closure of `A` in `L` is a Dedekind domain.

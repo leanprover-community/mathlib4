@@ -12,7 +12,21 @@ import Batteries.Tactic.Alias
 import Batteries.Tactic.Lint.Misc
 import Batteries.Logic -- Only needed for #align
 
-set_option autoImplicit true
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+-/
+
+universe u v
+variable {α : Sort u}
 
 #align opt_param_eq optParam_eq
 
@@ -22,7 +36,7 @@ set_option autoImplicit true
 
 theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
 
-theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
+theorem cast_proof_irrel {β : Sort u} (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h₂ a := rfl
 
 attribute [symm] Eq.symm
 
@@ -326,7 +340,8 @@ alias decidableFalse := instDecidableFalse
 #align not.decidable Not.decidable
 #align iff.decidable Iff.decidable
 
-instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
+instance {q : Prop} [Decidable p] [Decidable q] : Decidable (Xor' p q) :=
+    inferInstanceAs (Decidable (Or ..))
 
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
 def IsDecRefl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true
