@@ -103,7 +103,7 @@ See `MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul` and
 `MeasureTheory.lintegral_comp_eq_lintegral_meas_lt_mul` for the main formulations of the layer
 cake formula. -/
 theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
-    (μ : Measure α) [SigmaFinite μ]
+    (μ : Measure α) [SFinite μ]
     (f_nn : 0 ≤ f) (f_mble : Measurable f)
     (g_intble : ∀ t > 0, IntervalIntegrable g volume 0 t) (g_mble : Measurable g)
     (g_nn : ∀ t > 0, 0 ≤ g t) :
