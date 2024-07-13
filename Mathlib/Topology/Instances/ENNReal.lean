@@ -1676,76 +1676,6 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
 
 variable {F}
 
--- The following are generalizations of lemmas in `Topology.Algebra.Order.LiminfLimsup`,
--- which are needed for the generalization requested in this PR. I will make a separate PR about
--- these generalizations (in the appropriate file), which are indeed natural and important. I will
--- then return to the current PR.
-
-theorem _root_.Antitone.map_limsSup_of_continuousAt'' {R S : Type*} {F : Filter R} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
-    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup)
-    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
-    (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) :
-    f F.limsSup = F.liminf f := by sorry
-
-theorem _root_.Antitone.map_limsInf_of_continuousAt'' {R S : Type*} {F : Filter R} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
-    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsInf)
-    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault)
-    (cobdd : F.IsCobounded (· ≥ ·) := by isBoundedDefault) :
-    f F.limsInf = F.limsup f :=
-  Antitone.map_limsSup_of_continuousAt'' (R := Rᵒᵈ) (S := Sᵒᵈ) f_decr.dual f_cont bdd_below cobdd
-
-theorem _root_.Monotone.map_limsSup_of_continuousAt'' {R S : Type*} {F : Filter R} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
-    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsSup)
-    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
-    (cobdd : F.IsCobounded (· ≤ ·) := by isBoundedDefault) :
-    f F.limsSup = F.limsup f :=
-  Antitone.map_limsSup_of_continuousAt'' (S := Sᵒᵈ) f_incr f_cont bdd_above cobdd
-
-theorem _root_.Monotone.map_limsInf_of_continuousAt'' {R S : Type*} {F : Filter R} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
-    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsInf)
-    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault)
-    (cobdd : F.IsCobounded (· ≥ ·) := by isBoundedDefault) :
-    f F.limsInf = F.liminf f :=
-  Antitone.map_limsSup_of_continuousAt'' (R := Rᵒᵈ) f_incr.dual f_cont bdd_below cobdd
-
-theorem _root_.Monotone.map_liminf_of_continuousAt' {ι R S : Type*} {F : Filter ι} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-    [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S] {f : R → S}
-    (f_incr : Monotone f) (a : ι → R) (f_cont : ContinuousAt f (F.liminf a))
-    (cobdd_above : F.IsCoboundedUnder (· ≥ ·) a := by isBoundedDefault)
-    (bdd_below : F.IsBoundedUnder (· ≥ ·) a := by isBoundedDefault) :
-    f (F.liminf a) = F.liminf (f ∘ a) :=
-  Monotone.map_limsInf_of_continuousAt'' (F := F.map a) f_incr f_cont bdd_below cobdd_above
-
-theorem _root_.isCobounded_ge_of_frequently_le {R : Type*} {F : Filter R} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-    (frbdd : ∃ l, ∃ᶠ r in F, r ≤ l) :
-    IsCobounded (· ≥ ·) F := sorry
-
-/-- For nontrivial filters in linear orders, coboundedness for `≤` implies frequently boundedness
-from below. -/
-lemma IsCobounded.frequently_ge {R : Type*} {F : Filter R} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-    (cobdd : IsCobounded (· ≤ ·) F) :
-    ∃ l, ∃ᶠ x in F, l ≤ x := by sorry
-
-lemma isCobounded_iff_frequently_le {R : Type*} {F : Filter R} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R] :
-    IsCobounded (· ≤ ·) F ↔ ∃ l, ∃ᶠ x in F, l ≤ x := by sorry
-
-lemma isCobounded_iff_frequently_ge {R : Type*} {F : Filter R} [NeBot F]
-    [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R] :
-    IsCobounded (· ≥ ·) F ↔ ∃ u, ∃ᶠ x in F, x ≤ u := by sorry
-
-
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
 lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
     {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
@@ -1769,8 +1699,7 @@ lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   rfl
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma limsup_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
-    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+lemma limsup_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
     F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
   have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
     filter_upwards [le_b] with i i_le_b
@@ -1800,9 +1729,9 @@ lemma isCoboundedUnder_toReal_of_liminf_ne_top {xs : ι → ℝ≥0∞} (liminf_
     nth_rw 1 [hi]
     refine toReal_min ?_ b_ne_top
     exact ne_top_of_le_ne_top b_ne_top <| hi ▸ min_le_right (xs i) b
-  apply isCobounded_ge_of_frequently_le
+  apply isCobounded_ge_of_frequently_le (u := b.toReal)
   simp only [frequently_map]
-  refine ⟨b.toReal, freq_eq_min'.mono fun i hi ↦ hi ▸ min_le_right (xs i).toReal b.toReal⟩
+  exact freq_eq_min'.mono fun i hi ↦ hi ▸ min_le_right (xs i).toReal b.toReal
 
 lemma isCoboundedUnder_toNNReal_of_liminf_ne_top {xs : ι → ℝ≥0∞} (liminf_ne_top : F.liminf xs ≠ ∞) :
     IsCoboundedUnder (· ≥ ·) F (fun i ↦ (xs i).toNNReal) := by
@@ -1839,15 +1768,14 @@ lemma liminf_toReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq
       · apply le_liminf_of_le
         · obtain ⟨b, hb⟩ := bdd
           simp only [upperBounds, mem_setOf_eq] at hb
-          apply isCobounded_ge_of_frequently_le
-          refine ⟨b+1, ?_⟩
+          apply isCobounded_ge_of_frequently_le (u := b+1)
           simp only [frequently_map]
           by_contra con
           simp at con
           specialize hb <| con.mono fun i hi ↦ hi.le
           linarith
         · exact eventually_of_forall fun i ↦ toReal_nonneg
-    · simp only [liminf, limsInf, sSup, eventually_map, bdd, and_false, ↓reduceDite]
+    · simp only [liminf, limsInf, sSup, eventually_map, bdd, and_false, ↓reduceDIte]
 
 lemma liminf_toNNReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq_top : F.liminf xs = ∞) :
     F.liminf (fun i ↦ (xs i).toNNReal) = 0 := by
@@ -1878,7 +1806,7 @@ lemma liminf_toReal_eq' {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs 
       filter_upwards [ev_ne_top] with i hi
       simp [toReal_min hi b_ne_top]
     rw [obs₁, ← liminf_toReal_eq b_ne_top (eventually_of_forall bdd), liminf_congr aux]
-    have obs₃ := @Monotone.map_liminf_of_continuousAt' ι ℝ ℝ F _ _ _ _ _ _ _ (fun z => min z b.toReal)
+    have obs₃ := @Monotone.map_liminf_of_continuousAt ι ℝ ℝ F _ _ _ _ _ _ _ (fun z => min z b.toReal)
               ?_ (fun i ↦ (xs i).toReal) ?_ ?_ ⟨0, by simp⟩
     · simp only at obs₃
       have rwr : min (liminf (fun i ↦ (xs i).toReal) F) b.toReal
@@ -1903,7 +1831,7 @@ lemma liminf_toNNReal_eq {xs : ι → ℝ≥0∞}  (ev_ne_top : ∀ᶠ i in F, x
   by_cases infty : F.liminf xs = ∞
   · simpa only [infty, top_toReal] using liminf_toNNReal_eq_zero_of_liminf_eq_top infty
   · have obs : (liminf (fun i ↦ (xs i).toReal) F).toNNReal = liminf (fun i ↦ (xs i).toNNReal) F := by
-      rw [Real.toNNReal_mono.map_liminf_of_continuousAt'
+      rw [Real.toNNReal_mono.map_liminf_of_continuousAt
             (fun i ↦ (xs i).toReal) continuous_real_toNNReal.continuousAt ?_ ?_]
       · congr; funext i; simp
       · exact isCoboundedUnder_toReal_of_liminf_ne_top infty
@@ -1923,7 +1851,11 @@ lemma limsup_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
       filter_upwards [le_b] with i xs_bdd
       exact ((toReal_le_toReal (ne_top_of_le_ne_top b_ne_top xs_bdd) b_ne_top).mpr xs_bdd).trans
           (Preorder.le_refl b.toReal)
-    · refine ⟨0, by simp only [ge_iff_le, eventually_map, toReal_nonneg, eventually_true]⟩
+    · refine ⟨0, ?_⟩
+      simp only [eventually_map]
+      intro a ha
+      obtain ⟨x, hx⟩ := ha.exists
+      exact le_trans toReal_nonneg hx
   simp [← obs, limsup_toReal_eq b_ne_top le_b]
 
 end LimsupLiminf
