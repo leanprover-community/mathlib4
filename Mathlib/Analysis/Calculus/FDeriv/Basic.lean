@@ -1200,7 +1200,7 @@ theorem differentiable_const (c : F) : Differentiable 𝕜 fun _ : E => c := fun
   differentiableAt_const _
 #align differentiable_const differentiable_const
 
-@[fun_prop]
+@[simp, fun_prop]
 theorem differentiableOn_const (c : F) : DifferentiableOn 𝕜 (fun _ => c) s :=
   (differentiable_const _).differentiableOn
 #align differentiable_on_const differentiableOn_const

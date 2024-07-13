@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.Data.Matroid.Constructions
-import Mathlib.Data.Set.Subset
+import Mathlib.Data.Set.Notation
 
 /-!
 # Maps between matroids
@@ -670,3 +670,7 @@ instance [M.RkPos] : (M.restrictSubtype M.E).RkPos := by
   exact hB.rkPos_of_nonempty <| by simpa using hB'.nonempty
 
 end restrictSubtype
+
+end mapSetEquiv
+
+end Matroid

@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
+import Mathlib.Algebra.Module.Pi
+import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import algebra.module.equiv from "leanprover-community/mathlib"@"ea94d7cd54ad9ca6b7710032868abb7c6a104c9c"
 
