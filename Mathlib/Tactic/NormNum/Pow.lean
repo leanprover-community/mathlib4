@@ -10,14 +10,14 @@ import Mathlib.Tactic.NormNum.Basic
 ## `norm_num` plugin for `^`.
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib
 open Lean hiding Rat mkRat
 open Meta
 
 namespace Meta.NormNum
 open Qq
+
+variable {a b c : ℕ}
 
 theorem natPow_zero : Nat.pow a (nat_lit 0) = nat_lit 1 := rfl
 theorem natPow_one : Nat.pow a (nat_lit 1) = a := Nat.pow_one _
@@ -37,8 +37,9 @@ theorem IsNatPowT.run
 
 /-- This is the key to making the proof proceed as a balanced tree of applications instead of
 a linear sequence. It is just modus ponens after unwrapping the definitions. -/
-theorem IsNatPowT.trans (h1 : IsNatPowT p a b c) (h2 : IsNatPowT (Nat.pow a b = c) a b' c') :
-    IsNatPowT p a b' c' := ⟨h2.run' ∘ h1.run'⟩
+theorem IsNatPowT.trans {p : Prop} {b' c' : ℕ} (h1 : IsNatPowT p a b c)
+    (h2 : IsNatPowT (Nat.pow a b = c) a b' c') : IsNatPowT p a b' c' :=
+  ⟨h2.run' ∘ h1.run'⟩
 
 theorem IsNatPowT.bit0 : IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b) (Nat.mul c c) :=
   ⟨fun h1 => by simp [two_mul, pow_add, ← h1]⟩
@@ -102,14 +103,14 @@ where
 theorem intPow_ofNat (h1 : Nat.pow a b = c) :
     Int.pow (Int.ofNat a) b = Int.ofNat c := by simp [← h1]
 
-theorem intPow_negOfNat_bit0 (h1 : Nat.pow a b' = c')
+theorem intPow_negOfNat_bit0 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' = b) (hc : c' * c' = c) :
     Int.pow (Int.negOfNat a) b = Int.ofNat c := by
   rw [← hb, Int.negOfNat_eq, Int.pow_eq, pow_mul, neg_pow_two, ← pow_mul, two_mul, pow_add, ← hc,
     ← h1]
   simp
 
-theorem intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
+theorem intPow_negOfNat_bit1 {b' c' : ℕ} (h1 : Nat.pow a b' = c')
     (hb : nat_lit 2 * b' + nat_lit 1 = b) (hc : c' * (c' * a) = c) :
     Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
   rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, Int.pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,
@@ -160,6 +161,7 @@ theorem isRat_pow {α} [Ring α] {f : α → ℕ → α} {a : α} {an cn : ℤ} 
   rw [← Nat.cast_pow] at this
   use this; simp [invOf_pow, Commute.mul_pow]
 
+set_option autoImplicit true in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℕ`. -/
 @[norm_num (_ : α) ^ (_ : ℕ)]
@@ -235,6 +237,7 @@ h.check
 ```
 blocks below were not necessary: we just did it once outside the `match rb with` block.
 -/
+set_option autoImplicit true in
 /-- The `norm_num` extension which identifies expressions of the form `a ^ b`,
 such that `norm_num` successfully recognises both `a` and `b`, with `b : ℤ`. -/
 @[norm_num (_ : α) ^ (_ : ℤ)]
