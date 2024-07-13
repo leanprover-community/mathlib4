@@ -202,8 +202,8 @@ theorem numeric_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves]
   Numeric.mk (fun _ => isEmptyElim) H isEmptyElim
 #align pgame.numeric_of_is_empty_right_moves SetTheory.PGame.numeric_of_isEmpty_rightMoves
 
-/-- Inserting a smaller numeric left option into a numeric results in a numeric. -/
-theorem numeric_of_insertLeft_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
+/-- Inserting a smaller numeric left option into a numeric game results in a numeric game. -/
+theorem insertLeft_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
     (h : x' ≤ x) : (insertLeft x x').Numeric := by
   rw [le_iff_forall_lt x'_num x_num] at h
   unfold Numeric at x_num ⊢
@@ -215,8 +215,8 @@ theorem numeric_of_insertLeft_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num
     exact h.2
   · simp only [x_num, implies_true, x'_num, and_self]
 
-/-- Inserting a larger numeric right option into a numeric results in a numeric. -/
-theorem numeric_of_insertRight_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
+/-- Inserting a larger numeric right option into a numeric game results in a numeric game. -/
+theorem insertRight_numeric {x x' : PGame} (x_num : x.Numeric) (x'_num : x'.Numeric)
     (h : x ≤ x') : (insertRight x x').Numeric := by
   rw [le_iff_forall_lt x_num x'_num] at h
   unfold Numeric at x_num ⊢
