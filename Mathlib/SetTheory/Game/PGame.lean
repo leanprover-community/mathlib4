@@ -1958,47 +1958,26 @@ def insertRight (x x' : PGame.{u}) : PGame :=
   match x with
   | mk xl xr xL xR => mk xl (Sum xr PUnit) xL (Sum.elim xR fun _ => x')
 
+theorem neg_insertRight_neg (x x' : PGame.{u}) : (-x).insertRight (-x') = -x.insertLeft x' := by
+  cases x
+  cases x'
+  dsimp [insertRight, insertLeft]
+  congr! with (i | j)
+
+theorem neg_insertLeft_neg (x x' : PGame.{u}) : (-x).insertLeft (-x') = -x.insertRight x' := by
+  rw [← neg_eq_iff_eq_neg, ← neg_insertRight_neg, neg_neg, neg_neg]
+
 /-- A new right option cannot hurt Right. -/
 lemma insertRight_le (x x' : PGame) : insertRight x x' ≤ x := by
-  rw [le_def]
-  constructor
-  · intro i
-    left
-    rcases x with ⟨xl, xr, xL, xR⟩
-    simp only [leftMoves_mk, insertRight, moveLeft_mk]
-    use i
-  · intro j
-    right
-    rcases x with ⟨xl, xr, xL, xR⟩
-    simp only [insertRight, rightMoves_mk, moveRight_mk, Sum.exists, Sum.elim_inl]
-    left
-    use j
+  rw [← neg_le_neg_iff, ← neg_insertLeft_neg]
+  exact le_insertLeft _ _
 
 /-- Adding a gift horse right option does not change the value of `x`. A gift horse right option is
  a game `x'` with `x ⧏ x'`. It is called "gift horse" because it seems like Right has gotten the
  "gift" of a new option, but actually the value of the game did not change. -/
 lemma equiv_insertRight_of_lf {x x' : PGame} (h : x ⧏ x') : x ≈ insertRight x x' := by
-  rw [equiv_def]
-  constructor
-  · rw [le_def]
-    constructor
-    · intro i
-      rcases x with ⟨xl, xr, xL, xR⟩
-      simp only [insertRight, leftMoves_mk, moveLeft_mk]
-      left
-      use i
-    · intro j
-      rcases x with ⟨xl, xr, xL, xR⟩
-      simp only [insertRight, moveRight_mk, rightMoves_mk]
-      rcases j with j | _
-      · simp only [Sum.elim_inl]
-        right
-        use j
-      · simp only [Sum.elim_inr]
-        rw [lf_iff_exists_le] at h
-        simp only [rightMoves_mk, moveRight_mk] at h
-        exact h
-  · apply insertRight_le
+  rw [← neg_equiv_neg_iff, ← neg_insertLeft_neg]
+  exact equiv_insertLeft_of_lf (neg_lf_neg_iff.mpr h)
 
 /-! ### Special pre-games -/
 
