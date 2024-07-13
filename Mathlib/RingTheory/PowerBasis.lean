@@ -165,7 +165,7 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
 
 open Submodule.Quotient in
 theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
-  simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using pb.exists_sModEq b
+  simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using pb.exists_smodEq b
 section minpoly
 
 variable [Algebra A S]
