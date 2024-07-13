@@ -180,7 +180,6 @@ def glueMetricApprox (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε)
   dist_self := glueDist_self Φ Ψ ε
   dist_comm := glueDist_comm Φ Ψ ε
   dist_triangle := glueDist_triangle Φ Ψ ε H
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   eq_of_dist_eq_zero := eq_of_glueDist_eq_zero Φ Ψ ε ε0 _ _
   toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ <| Sum.mem_uniformity_iff_glueDist ε0
@@ -278,7 +277,6 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist p q).symm.trans h)
     · exact eq_of_glueDist_eq_zero _ _ _ one_pos _ _ ((Sum.dist_eq_glueDist q p).symm.trans h)
     · rw [eq_of_dist_eq_zero h]
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   toUniformSpace := Sum.instUniformSpace
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ Sum.mem_uniformity
 #align metric.metric_space_sum Metric.metricSpaceSum
@@ -479,7 +477,6 @@ def gluePremetric (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : PseudoMetricSpace (X
   dist_self := glueDist_self Φ Ψ 0
   dist_comm := glueDist_comm Φ Ψ 0
   dist_triangle := glueDist_triangle Φ Ψ 0 fun p q => by rw [hΦ.dist_eq, hΨ.dist_eq]; simp
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 #align metric.glue_premetric Metric.gluePremetric
 
 /-- Given two isometric embeddings `Φ : Z → X` and `Ψ : Z → Y`, we define a
@@ -609,7 +606,6 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n
         (dist_triangle _ _ _)
       _ = inductiveLimitDist f x y + inductiveLimitDist f y z := by
         rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y z m hy hz]
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 #align metric.inductive_premetric Metric.inductivePremetric
 
 attribute [local instance] inductivePremetric
