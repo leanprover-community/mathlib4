@@ -9,6 +9,9 @@ import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
+--import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 #align_import algebra.order.kleene from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -416,3 +419,69 @@ protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [M
 #align function.injective.kleene_algebra Function.Injective.kleeneAlgebra
 
 end Function.Injective
+
+
+namespace AddOpposite
+
+instance instIdemSemiring [IdemSemiring α] : IdemSemiring (AddOpposite α) := sorry
+
+instance [IdemCommSemiring α] : IdemCommSemiring (AddOpposite α) := sorry
+
+instance [KleeneAlgebra α] : KleeneAlgebra (AddOpposite α) := sorry
+
+end AddOpposite
+
+namespace MulOpposite
+
+instance instIdemSemiring [IdemSemiring α] : IdemSemiring (MulOpposite α) := sorry
+
+instance [IdemCommSemiring α] : IdemCommSemiring (MulOpposite α) := sorry
+
+instance [KleeneAlgebra α] : KleeneAlgebra (MulOpposite α) := sorry
+
+end MulOpposite
+
+namespace ULift
+
+instance instIdemSemiring [IdemSemiring α] : IdemSemiring (ULift α) := sorry
+
+instance [IdemCommSemiring α] : IdemCommSemiring (ULift α) := sorry
+
+instance [KleeneAlgebra α] : KleeneAlgebra (ULift α) := sorry
+
+end ULift
+
+namespace Subsemiring
+
+instance instIdemSemiring [IdemSemiring α] : IdemSemiring (Subsemiring α) := sorry
+
+instance [IdemCommSemiring α] (S : Subsemiring α) : IdemCommSemiring S := sorry
+
+instance [KleeneAlgebra α] (S : Subsemiring α) : KleeneAlgebra S := sorry
+
+end Subsemiring
+
+
+
+namespace Subring
+
+instance instIdemSemiring [IdemSemiring α] [Ring α] : IdemSemiring (Subring α) := sorry
+
+instance [IdemCommSemiring α] [S : Ring α] (S : Subring α) : IdemCommSemiring S :=
+  {Subring.instCommSemiring, Subring.instIdemSemiring}
+
+instance [KleeneAlgebra α] [S : Ring α] (S : Subring α) : KleeneAlgebra S := sorry
+
+end Subring
+
+/-
+namespace Subalgebra
+
+instance instIdemSemiring [IdemSemiring α] : IdemSemiring (Subalgebra α) := sorry
+
+instance [IdemCommSemiring α] (S : Subalgebra α) : IdemCommSemiring S := sorry
+
+instance [KleeneAlgebra α] (S : Subalgebra α) : KleeneAlgebra S := sorry
+
+end Subalgebra
+-/
