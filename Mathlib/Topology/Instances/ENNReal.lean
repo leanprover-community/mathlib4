@@ -1777,9 +1777,43 @@ lemma liminf_toReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq
         · exact eventually_of_forall fun i ↦ toReal_nonneg
     · simp only [liminf, limsInf, sSup, eventually_map, bdd, and_false, ↓reduceDIte]
 
+-- TODO: Move.
+lemma isCobounded_le_iff_frequently_ge {R : Type*} [LinearOrder R] {F : Filter R} [NeBot F] :
+    IsCobounded (· ≤ ·) F ↔ ∃ l, ∃ᶠ x in F, l ≤ x := by
+  constructor
+  · exact fun a ↦ IsCobounded.frequently_ge a
+  · intro ⟨b, hb⟩
+    exact isCobounded_le_of_frequently_ge hb
+
+-- TODO: Move.
+lemma isCobounded_ge_iff_frequently_le {R : Type*} [LinearOrder R] {F : Filter R} [NeBot F] :
+    IsCobounded (· ≥ ·) F ↔ ∃ u, ∃ᶠ x in F, x ≤ u := by
+  constructor
+  · exact fun a ↦ IsCobounded.frequently_le a
+  · intro ⟨b, hb⟩
+    exact isCobounded_ge_of_frequently_le hb
+
 lemma liminf_toNNReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq_top : F.liminf xs = ∞) :
     F.liminf (fun i ↦ (xs i).toNNReal) = 0 := by
-  sorry
+  by_cases cobdd : IsCoboundedUnder (· ≥ ·) F (fun i ↦ (xs i).toReal)
+  · have same := liminf_toReal_eq_zero_of_liminf_eq_top liminf_eq_top
+    have key := @Monotone.map_liminf_of_continuousAt  ι ℝ ℝ≥0 F _ _ _ _ _ _ _
+              Real.toNNReal Real.toNNReal_mono (fun i ↦ (xs i).toReal)
+              continuous_real_toNNReal.continuousAt cobdd ⟨0, by simp⟩
+    simp_rw [← toNNReal_toReal_eq _]
+    rw [← show ((liminf (fun i ↦ (xs i).toReal) F).toNNReal
+                  = liminf (fun i ↦ (xs i).toReal.toNNReal) F) from key]
+    simp [same]
+  · simp only [IsCoboundedUnder, ge_iff_le] at cobdd
+    rw [isCobounded_ge_iff_frequently_le] at cobdd
+    simp only [frequently_map, not_exists, not_frequently, not_le] at cobdd
+    simp [liminf, limsInf]
+    refine NNReal.sSup_of_not_bddAbove ?_
+    rw [not_bddAbove_iff]
+    intro x
+    simp only [mem_setOf_eq]
+    refine ⟨x + 1, ?_, lt_add_one x⟩
+    filter_upwards [cobdd (x + 1)] with i hi using hi.le
 
 /-- If `xs : ι → ℝ≥0∞` is eventually finite, then we have
 `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
