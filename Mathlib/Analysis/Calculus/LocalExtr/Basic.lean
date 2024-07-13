@@ -60,11 +60,12 @@ universe u v
 
 open Filter Set
 
-open scoped Topology Classical
+open scoped Topology Classical Convex
 
 section Module
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {a : E} {f' : E →L[ℝ] ℝ}
+variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {f : E → ℝ} {f' : E →L[ℝ] ℝ} {s : Set E} {a x y : E}
 
 /-!
 ### Positive tangent cone
@@ -83,32 +84,40 @@ theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
   exact ⟨c, d, mem_of_superset hd fun h hn => hst hn, hc, hcd⟩
 #align pos_tangent_cone_at_mono posTangentConeAt_mono
 
-theorem mem_posTangentConeAt_of_frequently_mem {s : Set E} {x y : E}
-    (h : ∃ᶠ t : ℝ in 𝓝[>] 0, x + t • y ∈ s) : y ∈ posTangentConeAt s x := by
+theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0, x + t • y ∈ s) :
+    y ∈ posTangentConeAt s x := by
   obtain ⟨a, ha, has⟩ := Filter.exists_seq_forall_of_frequently h
   refine ⟨a⁻¹, (a · • y), eventually_of_forall has, tendsto_inv_zero_atTop.comp ha, ?_⟩
   refine tendsto_const_nhds.congr' ?_
   filter_upwards [(tendsto_nhdsWithin_iff.1 ha).2] with n (hn : 0 < a n)
   simp [ne_of_gt hn]
 
-theorem mem_posTangentConeAt_of_segment_subset' {s : Set E} {x y : E}
-    (h : segment ℝ x (x + y) ⊆ s) : y ∈ posTangentConeAt s x := by
+/-- If `[x -[ℝ] x + y] ⊆ s`, then `y` belongs to the positive tangnet cone of `s`.
+
+Before 2024-07-13, this lemma used to be callsed `mem_posTangentConeAt_of_segment_subset`.
+See also `sub_mem_posTangentConeAt_of_segment_subset`
+for the lemma that used to be called `mem_posTangentConeAt_of_segment_subset`. -/
+theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
+    y ∈ posTangentConeAt s x := by
   refine mem_posTangentConeAt_of_frequently_mem (Eventually.frequently ?_)
   rw [eventually_nhdsWithin_iff]
   filter_upwards [ge_mem_nhds one_pos] with t ht₁ ht₀
   apply h
   rw [segment_eq_image', add_sub_cancel_left]
   exact mem_image_of_mem _ ⟨le_of_lt ht₀, ht₁⟩
-#align mem_pos_tangent_cone_at_of_segment_subset' mem_posTangentConeAt_of_segment_subset'
+#align mem_pos_tangent_cone_at_of_segment_subset' mem_posTangentConeAt_of_segment_subset
 
-theorem mem_posTangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segment ℝ x y ⊆ s) :
+@[deprecated (since := "2024-07-13")] -- cleanup docstrings when we drop this alias
+alias mem_posTangentConeAt_of_segment_subset' := mem_posTangentConeAt_of_segment_subset
+
+theorem sub_mem_posTangentConeAt_of_segment_subset (h : segment ℝ x y ⊆ s) :
     y - x ∈ posTangentConeAt s x :=
-  mem_posTangentConeAt_of_segment_subset' <| by rwa [add_sub_cancel]
+  mem_posTangentConeAt_of_segment_subset <| by rwa [add_sub_cancel]
 #align mem_pos_tangent_cone_at_of_segment_subset mem_posTangentConeAt_of_segment_subset
 
 @[simp]
 theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
-  eq_univ_of_forall fun _ => mem_posTangentConeAt_of_segment_subset' (subset_univ _)
+  eq_univ_of_forall fun _ => mem_posTangentConeAt_of_segment_subset (subset_univ _)
 #align pos_tangent_cone_at_univ posTangentConeAt_univ
 
 /-!
@@ -117,8 +126,8 @@ theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
 
 /-- If `f` has a local max on `s` at `a`, `f'` is the derivative of `f` at `a` within `s`, and
 `y` belongs to the positive tangent cone of `s` at `a`, then `f' y ≤ 0`. -/
-theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos {s : Set E} (h : IsLocalMaxOn f s a)
-    (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a) : f' y ≤ 0 := by
+theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos (h : IsLocalMaxOn f s a)
+    (hf : HasFDerivWithinAt f f' s a) (hy : y ∈ posTangentConeAt s a) : f' y ≤ 0 := by
   rcases hy with ⟨c, d, hd, hc, hcd⟩
   have hc' : Tendsto (‖c ·‖) atTop atTop := tendsto_abs_atTop_atTop.comp hc
   suffices ∀ᶠ n in atTop, c n • (f (a + d n) - f a) ≤ 0 from
@@ -132,7 +141,7 @@ theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos {s : Set E} (h : IsLocalMaxOn f s 
 
 /-- If `f` has a local max on `s` at `a` and `y` belongs to the positive tangent cone
 of `s` at `a`, then `f' y ≤ 0`. -/
-theorem IsLocalMaxOn.fderivWithin_nonpos {s : Set E} (h : IsLocalMaxOn f s a) {y}
+theorem IsLocalMaxOn.fderivWithin_nonpos (h : IsLocalMaxOn f s a)
     (hy : y ∈ posTangentConeAt s a) : (fderivWithin ℝ f s a : E → ℝ) y ≤ 0 :=
   if hf : DifferentiableWithinAt ℝ f s a then h.hasFDerivWithinAt_nonpos hf.hasFDerivWithinAt hy
   else by rw [fderivWithin_zero_of_not_differentiableWithinAt hf]; rfl
@@ -140,15 +149,15 @@ theorem IsLocalMaxOn.fderivWithin_nonpos {s : Set E} (h : IsLocalMaxOn f s a) {y
 
 /-- If `f` has a local max on `s` at `a`, `f'` is a derivative of `f` at `a` within `s`, and
 both `y` and `-y` belong to the positive tangent cone of `s` at `a`, then `f' y ≤ 0`. -/
-theorem IsLocalMaxOn.hasFDerivWithinAt_eq_zero {s : Set E} (h : IsLocalMaxOn f s a)
-    (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a)
+theorem IsLocalMaxOn.hasFDerivWithinAt_eq_zero (h : IsLocalMaxOn f s a)
+    (hf : HasFDerivWithinAt f f' s a) (hy : y ∈ posTangentConeAt s a)
     (hy' : -y ∈ posTangentConeAt s a) : f' y = 0 :=
   le_antisymm (h.hasFDerivWithinAt_nonpos hf hy) <| by simpa using h.hasFDerivWithinAt_nonpos hf hy'
 #align is_local_max_on.has_fderiv_within_at_eq_zero IsLocalMaxOn.hasFDerivWithinAt_eq_zero
 
 /-- If `f` has a local max on `s` at `a` and both `y` and `-y` belong to the positive tangent cone
 of `s` at `a`, then `f' y = 0`. -/
-theorem IsLocalMaxOn.fderivWithin_eq_zero {s : Set E} (h : IsLocalMaxOn f s a) {y}
+theorem IsLocalMaxOn.fderivWithin_eq_zero (h : IsLocalMaxOn f s a)
     (hy : y ∈ posTangentConeAt s a) (hy' : -y ∈ posTangentConeAt s a) :
     (fderivWithin ℝ f s a : E → ℝ) y = 0 :=
   if hf : DifferentiableWithinAt ℝ f s a then
@@ -158,14 +167,14 @@ theorem IsLocalMaxOn.fderivWithin_eq_zero {s : Set E} (h : IsLocalMaxOn f s a) {
 
 /-- If `f` has a local min on `s` at `a`, `f'` is the derivative of `f` at `a` within `s`, and
 `y` belongs to the positive tangent cone of `s` at `a`, then `0 ≤ f' y`. -/
-theorem IsLocalMinOn.hasFDerivWithinAt_nonneg {s : Set E} (h : IsLocalMinOn f s a)
-    (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a) : 0 ≤ f' y := by
+theorem IsLocalMinOn.hasFDerivWithinAt_nonneg (h : IsLocalMinOn f s a)
+    (hf : HasFDerivWithinAt f f' s a) (hy : y ∈ posTangentConeAt s a) : 0 ≤ f' y := by
   simpa using h.neg.hasFDerivWithinAt_nonpos hf.neg hy
 #align is_local_min_on.has_fderiv_within_at_nonneg IsLocalMinOn.hasFDerivWithinAt_nonneg
 
 /-- If `f` has a local min on `s` at `a` and `y` belongs to the positive tangent cone
 of `s` at `a`, then `0 ≤ f' y`. -/
-theorem IsLocalMinOn.fderivWithin_nonneg {s : Set E} (h : IsLocalMinOn f s a) {y}
+theorem IsLocalMinOn.fderivWithin_nonneg (h : IsLocalMinOn f s a)
     (hy : y ∈ posTangentConeAt s a) : (0 : ℝ) ≤ (fderivWithin ℝ f s a : E → ℝ) y :=
   if hf : DifferentiableWithinAt ℝ f s a then h.hasFDerivWithinAt_nonneg hf.hasFDerivWithinAt hy
   else by rw [fderivWithin_zero_of_not_differentiableWithinAt hf]; rfl
@@ -173,15 +182,15 @@ theorem IsLocalMinOn.fderivWithin_nonneg {s : Set E} (h : IsLocalMinOn f s a) {y
 
 /-- If `f` has a local max on `s` at `a`, `f'` is a derivative of `f` at `a` within `s`, and
 both `y` and `-y` belong to the positive tangent cone of `s` at `a`, then `f' y ≤ 0`. -/
-theorem IsLocalMinOn.hasFDerivWithinAt_eq_zero {s : Set E} (h : IsLocalMinOn f s a)
-    (hf : HasFDerivWithinAt f f' s a) {y} (hy : y ∈ posTangentConeAt s a)
+theorem IsLocalMinOn.hasFDerivWithinAt_eq_zero (h : IsLocalMinOn f s a)
+    (hf : HasFDerivWithinAt f f' s a) (hy : y ∈ posTangentConeAt s a)
     (hy' : -y ∈ posTangentConeAt s a) : f' y = 0 := by
   simpa using h.neg.hasFDerivWithinAt_eq_zero hf.neg hy hy'
 #align is_local_min_on.has_fderiv_within_at_eq_zero IsLocalMinOn.hasFDerivWithinAt_eq_zero
 
 /-- If `f` has a local min on `s` at `a` and both `y` and `-y` belong to the positive tangent cone
 of `s` at `a`, then `f' y = 0`. -/
-theorem IsLocalMinOn.fderivWithin_eq_zero {s : Set E} (h : IsLocalMinOn f s a) {y}
+theorem IsLocalMinOn.fderivWithin_eq_zero (h : IsLocalMinOn f s a)
     (hy : y ∈ posTangentConeAt s a) (hy' : -y ∈ posTangentConeAt s a) :
     (fderivWithin ℝ f s a : E → ℝ) y = 0 :=
   if hf : DifferentiableWithinAt ℝ f s a then
