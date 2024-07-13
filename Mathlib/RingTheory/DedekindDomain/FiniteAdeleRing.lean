@@ -302,7 +302,7 @@ theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele 
     contrapose! this
     change 1 < v.intValuation n
     rw [← hk, mul_comm]
-    exact lt_mul_of_le_of_one_lt' this hv (by simp) (by simp)
+    exact one_lt_mul_of_le_of_lt this hv
   simp_rw [valuation_of_algebraMap]
   change {v : HeightOneSpectrum R | v.intValuationDef d < 1}.Finite
   simp_rw [intValuation_lt_one_iff_dvd]
