@@ -162,7 +162,8 @@ open Ideal
 -- This section is to construct the forward direction :
 -- So for any `x` in `Proj| (pbo f)`, we need some point in `Spec A⁰_f`, i.e. a prime ideal,
 -- and we need this correspondence to be continuous in their Zariski topology.
-variable {𝒜} {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x : Proj| (pbo f))
+variable {𝒜}
+variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x : Proj| (pbo f))
 
 /--
 For any `x` in `Proj| (pbo f)`, the corresponding ideal in `Spec A⁰_f`. This fact that this ideal
@@ -245,7 +246,8 @@ open Finset hiding mk_zero
 -- Porting note: _root_ doesn't work here
 open HomogeneousLocalization
 
-variable {𝒜} {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
+variable {𝒜}
+variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 
 open Lean Meta Elab Tactic
 
@@ -412,14 +414,14 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
             HomogeneousLocalization.val_mk]
           · simp_rw [mul_pow]; rw [Localization.mk_mul]
             · congr; erw [← pow_add, Nat.add_sub_of_le h]
-            · rw [(_ : m • n = _)]
-              · mem_tac
-              · simp only [smul_eq_mul, mul_comm]
-            · rw [(_ : m • (i - n) = _)]
-              · mem_tac
-              · simp only [smul_eq_mul, mul_comm]
         · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
+          rw [(_ : m • n = _)]
+          · mem_tac
+          · simp only [smul_eq_mul, mul_comm]
       · simpa only [map_zero, zero_pow hm.ne'] using zero_mem f_deg hm q i
+    rw [(_ : m • (i - n) = _)]
+    · mem_tac
+    · simp only [smul_eq_mul, mul_comm]
   · simp_rw [add_smul]; exact fun _ _ => carrier.add_mem f_deg q
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.smul_mem AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.smul_mem
 
@@ -532,7 +534,7 @@ lemma toSpec_surjective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
   Function.surjective_iff_hasRightInverse |>.mpr
     ⟨FromSpec.toFun f_deg hm, toSpec_fromSpec 𝒜 f_deg hm⟩
 
-lemma toSpec_bijective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m):
+lemma toSpec_bijective {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     Function.Bijective (toSpec (𝒜 := 𝒜) (f := f)) :=
   ⟨toSpec_injective 𝒜 f_deg hm, toSpec_surjective 𝒜 f_deg hm⟩
 

@@ -55,6 +55,8 @@ In the definitions below, we use the following notation:
   returning a term of type `R`
 * `map (f : R → S₁) p` : returns the multivariate polynomial obtained from `p` by the change of
   coefficient semiring corresponding to `f`
+* `aeval (g : σ → S₁) p` : evaluates the multivariate polynomial obtained from `p` by the change
+  of coefficient semiring corresponding to `g` (`a` stands for `algebra`)
 
 ## Implementation notes
 
@@ -270,7 +272,7 @@ instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiri
 #align mv_polynomial.infinite_of_nonempty MvPolynomial.infinite_of_nonempty
 
 theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
-  induction n <;> simp [Nat.succ_eq_add_one, *]
+  induction n <;> simp [*]
 #align mv_polynomial.C_eq_coe_nat MvPolynomial.C_eq_coe_nat
 
 theorem C_mul' : MvPolynomial.C a * p = a • p :=
@@ -1645,13 +1647,13 @@ theorem aeval_eq_zero [Algebra R S₂] (f : σ → S₂) (φ : MvPolynomial σ R
 
 theorem aeval_sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
     aeval f (∑ i ∈ s, φ i) = ∑ i ∈ s, aeval f (φ i) :=
-  (MvPolynomial.aeval f).map_sum _ _
+  map_sum (MvPolynomial.aeval f) _ _
 #align mv_polynomial.aeval_sum MvPolynomial.aeval_sum
 
 @[to_additive existing]
 theorem aeval_prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
     aeval f (∏ i ∈ s, φ i) = ∏ i ∈ s, aeval f (φ i) :=
-  (MvPolynomial.aeval f).map_prod _ _
+  map_prod (MvPolynomial.aeval f) _ _
 #align mv_polynomial.aeval_prod MvPolynomial.aeval_prod
 
 variable (R)

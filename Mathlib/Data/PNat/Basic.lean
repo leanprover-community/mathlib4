@@ -212,39 +212,25 @@ theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
   cases n <;> [exact absurd h (by decide); rfl]
 #align pnat.rec_on_succ PNat.recOn_succ
 
--- Porting note (#11229): deprecated
-section deprecated
+@[simp]
+theorem ofNat_le_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
+    (no_index (OfNat.ofNat m) : ℕ+) ≤ no_index (OfNat.ofNat n) ↔ OfNat.ofNat m ≤ OfNat.ofNat n :=
+  .rfl
 
-set_option linter.deprecated false
+@[simp]
+theorem ofNat_lt_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
+    (no_index (OfNat.ofNat m) : ℕ+) < no_index (OfNat.ofNat n) ↔ OfNat.ofNat m < OfNat.ofNat n :=
+  .rfl
 
--- Some lemmas that rewrite inequalities between explicit numerals in `ℕ+`
--- into the corresponding inequalities in `ℕ`.
--- TODO: perhaps this should not be attempted by `simp`,
--- and instead we should expect `norm_num` to take care of these directly?
--- TODO: these lemmas are perhaps incomplete:
--- * 1 is not represented as a bit0 or bit1
--- * strict inequalities?
-@[simp, deprecated (since := "2022-12-23")]
-theorem bit0_le_bit0 (n m : ℕ+) : bit0 n ≤ bit0 m ↔ bit0 (n : ℕ) ≤ bit0 (m : ℕ) :=
-  Iff.rfl
-#align pnat.bit0_le_bit0 PNat.bit0_le_bit0
+@[simp]
+theorem ofNat_inj {m n : ℕ} [NeZero m] [NeZero n] :
+    (no_index (OfNat.ofNat m) : ℕ+) = no_index (OfNat.ofNat n) ↔ OfNat.ofNat m = OfNat.ofNat n :=
+  Subtype.mk_eq_mk
 
-@[simp, deprecated (since := "2022-12-23")]
-theorem bit0_le_bit1 (n m : ℕ+) : bit0 n ≤ bit1 m ↔ bit0 (n : ℕ) ≤ bit1 (m : ℕ) :=
-  Iff.rfl
-#align pnat.bit0_le_bit1 PNat.bit0_le_bit1
-
-@[simp, deprecated (since := "2022-12-23")]
-theorem bit1_le_bit0 (n m : ℕ+) : bit1 n ≤ bit0 m ↔ bit1 (n : ℕ) ≤ bit0 (m : ℕ) :=
-  Iff.rfl
-#align pnat.bit1_le_bit0 PNat.bit1_le_bit0
-
-@[simp, deprecated (since := "2022-12-23")]
-theorem bit1_le_bit1 (n m : ℕ+) : bit1 n ≤ bit1 m ↔ bit1 (n : ℕ) ≤ bit1 (m : ℕ) :=
-  Iff.rfl
-#align pnat.bit1_le_bit1 PNat.bit1_le_bit1
-
-end deprecated
+#noalign pnat.bit0_le_bit0
+#noalign pnat.bit0_le_bit1
+#noalign pnat.bit1_le_bit0
+#noalign pnat.bit1_le_bit1
 
 @[simp, norm_cast]
 theorem mul_coe (m n : ℕ+) : ((m * n : ℕ+) : ℕ) = m * n :=
@@ -308,7 +294,7 @@ theorem sub_le (a b : ℕ+) : a - b ≤ a := by
   · exact Nat.sub_le a b
   · exact a.2
 
-theorem le_sub_one_of_lt {a b : ℕ+} (hab: a < b) : a ≤ b - (1 : ℕ+) := by
+theorem le_sub_one_of_lt {a b : ℕ+} (hab : a < b) : a ≤ b - (1 : ℕ+) := by
   rw [← coe_le_coe, sub_coe]
   split_ifs with h
   · exact Nat.le_pred_of_lt hab

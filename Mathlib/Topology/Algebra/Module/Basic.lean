@@ -1467,7 +1467,7 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   zsmul := (· • ·)
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
-  zsmul_neg' n f := by ext; simp [Nat.succ_eq_add_one, add_smul]
+  zsmul_neg' n f := by ext; simp [add_smul]
   add_left_neg _ := by ext; apply add_left_neg
 #align continuous_linear_map.add_comm_group ContinuousLinearMap.addCommGroup
 

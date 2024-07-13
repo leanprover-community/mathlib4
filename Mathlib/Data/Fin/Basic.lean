@@ -509,7 +509,7 @@ theorem val_bit0 {n : ℕ} (k : Fin n) : ((bit0 k : Fin n) : ℕ) = bit0 (k : �
 @[deprecated (since := "2023-01-12")]
 theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
     ((bit1 k : Fin n) : ℕ) = bit1 (k : ℕ) % n := by
-  cases n;
+  cases n
   · cases' k with k h
     cases k
     · show _ % _ = _
@@ -1628,7 +1628,7 @@ lemma predAbove_castSucc_of_lt (p i : Fin n) (h : p < i) (hi := castSucc_ne_zero
     p.predAbove (castSucc i) = i.castSucc.pred hi := by
   rw [predAbove_of_castSucc_lt _ _ (castSucc_lt_castSucc_iff.2 h)]
 
-lemma predAbove_castSucc_of_le (p i : Fin n) (h : i ≤ p) :p.predAbove (castSucc i) = i := by
+lemma predAbove_castSucc_of_le (p i : Fin n) (h : i ≤ p) : p.predAbove (castSucc i) = i := by
   rw [predAbove_of_le_castSucc _ _ (castSucc_le_castSucc_iff.mpr h), castPred_castSucc]
 
 @[simp] lemma predAbove_castSucc_self (p : Fin n) : p.predAbove (castSucc p) = p :=
@@ -1850,6 +1850,8 @@ open Nat Int
 /-- Negation on `Fin n` -/
 instance neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
+
+theorem neg_def (a : Fin n) : -a = ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩ := rfl
 
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
