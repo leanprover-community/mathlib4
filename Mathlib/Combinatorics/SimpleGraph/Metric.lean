@@ -257,11 +257,9 @@ end dist
 
 section Topology
 
-def Verts {V : Type*} (_ : SimpleGraph V) := V
-
 variable (V : Type*) (G : SimpleGraph V)
 
-noncomputable instance (h : Connected G) : MetricSpace (Verts G) where
+noncomputable instance (h : Connected G) : MetricSpace V where
   dist x y := (G.dist x y : ℝ)
   dist_self := by simp
   dist_comm x y := by push_cast; norm_cast; exact dist_comm
