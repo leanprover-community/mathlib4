@@ -620,4 +620,43 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
   rw [pullback_map_eq_pullbackFstFstIso_inv]
   infer_instance
 
+section Spec
+
+variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+
+open TensorProduct Algebra.TensorProduct CommRingCat
+
+/-- The isomorphism between the fiber product of two affine schemes `Spec B` and `Spec C`
+over an affine scheme `Spec A` and the `Spec` of the tensor product `B ⊗[A] C`.-/
+noncomputable
+def pullbackSpecIso :
+    pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))
+      (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec (.of <| S ⊗[R] T) :=
+  letI H := IsLimit.equivIsoLimit (PullbackCone.eta _)
+    (PushoutCocone.isColimitEquivIsLimitOp _ (CommRingCat.pushoutCoconeIsColimit R S T))
+  limit.isoLimitCone ⟨_, isLimitPullbackConeMapOfIsLimit Scheme.Spec _ H⟩
+
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_inv_fst :
+    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom includeLeftRingHom) :=
+  limit.isoLimitCone_inv_π _ _
+
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_inv_snd :
+    (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ = Spec.map (ofHom includeRight.toRingHom) :=
+  limit.isoLimitCone_inv_π _ _
+
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_fst :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom includeLeftRingHom) = pullback.fst _ _ := by
+  rw [← pullbackSpecIso_inv_fst, Iso.hom_inv_id_assoc]
+
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_snd :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom includeRight.toRingHom) = pullback.snd _ _ := by
+  rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
+
+end Spec
+
+
 end AlgebraicGeometry
