@@ -46,8 +46,8 @@ If we further assume that `C` and `D` are abelian categories, then we have:
   1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
     `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C`, `F(A) ⟶ F(B) ⟶ F(C)` is exact.
-  3. `F` preserves both finite limits and finite colimits.
-  4. `F` preserves homology.
+  3. `F` preserves homology.
+  4. `F` preserves both finite limits and finite colimits.
 
 -/
 
@@ -65,7 +65,7 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 /-- An additive functor which preserves homology preserves finite limits. -/
 noncomputable def preservesFiniteLimitsOfPreservesHomology
     [HasFiniteProducts C] [HasKernels C] : PreservesFiniteLimits F := by
-  have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesKernel F f
+  have := fun {X Y : C} (f : X ⟶ Y) ↦ PreservesHomology.preservesKernel F f
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
   have : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
   have : HasZeroObject D :=
@@ -75,7 +75,7 @@ noncomputable def preservesFiniteLimitsOfPreservesHomology
 /-- An additive which preserves homology preserves finite colimits. -/
 noncomputable def preservesFiniteColimitsOfPreservesHomology
     [HasFiniteCoproducts C] [HasCokernels C] : PreservesFiniteColimits F := by
-  have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesCokernel F f
+  have := fun {X Y : C} (f : X ⟶ Y) ↦ PreservesHomology.preservesCokernel F f
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryCoproducts
   have : HasCoequalizers C := Preadditive.hasCoequalizers_of_hasCokernels
   have : HasZeroObject D :=
@@ -142,7 +142,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
   tfae_have 3 → 4
   · intro hF
     have := fun X Y (f : X ⟶ Y) ↦ (hF f).some
-    exact ⟨by apply preservesFiniteLimitsOfPreservesKernels⟩
+    exact ⟨preservesFiniteLimitsOfPreservesKernels F⟩
 
   tfae_have 4 → 1
   · rintro ⟨_⟩ S hS
@@ -204,7 +204,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
   tfae_have 3 → 4
   · intro hF
     have := fun X Y (f : X ⟶ Y) ↦ (hF f).some
-    exact ⟨by apply preservesFiniteColimitsOfPreservesCokernels⟩
+    exact ⟨preservesFiniteColimitsOfPreservesCokernels F⟩
 
   tfae_have 4 → 1
   · rintro ⟨_⟩ S hS
@@ -231,11 +231,11 @@ lemma exact_tfae : List.TFAE
     ] := by
   tfae_have 1 → 3
   · intro hF
-    refine ⟨fun {X Y} f => ?_, fun {X Y} f => ?_⟩
-    · have h := (preservesFiniteLimits_tfae F |>.out 0 2 |>.1 fun S hS =>
+    refine ⟨fun {X Y} f ↦ ?_, fun {X Y} f ↦ ?_⟩
+    · have h := (preservesFiniteLimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).mono_f)
       exact h f |>.some
-    · have h := (preservesFiniteColimits_tfae F |>.out 0 2 |>.1 fun S hS =>
+    · have h := (preservesFiniteColimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).epi_g)
       exact h f |>.some
 
@@ -256,7 +256,7 @@ lemma exact_tfae : List.TFAE
 
   tfae_have 4 → 2
   · rintro ⟨⟨h1⟩, ⟨h2⟩⟩
-    exact fun _ h => h.map F
+    exact fun _ h ↦ h.map F
 
   tfae_finish
 
