@@ -124,7 +124,7 @@ Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notations
 
-* `α →ₛ E`  : simple functions (defined in `MeasureTheory/Integration`)
+* `α →ₛ E` : simple functions (defined in `MeasureTheory/Integration`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
                 `MeasureTheory/LpSpace`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple

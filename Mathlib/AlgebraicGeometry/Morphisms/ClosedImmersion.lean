@@ -70,7 +70,7 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
 
 /-- Composition with an isomorphism preserves closed immersions. -/
-lemma respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
+instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
   constructor <;> intro X Y Z e f hf <;> infer_instance
 
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
