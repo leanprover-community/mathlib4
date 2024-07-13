@@ -466,7 +466,7 @@ theorem add_nfBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
     simp [oadd_add]; revert h'; cases' a + o with e' n' a' <;> intro h'
     · exact NFBelow.oadd h₁.fst NFBelow.zero h₁.lt
     have : ((e.cmp e').Compares e e') := @cmp_compares _ _ h₁.fst h'.fst
-    cases h: cmp e e' <;> dsimp [addAux] <;> simp [h]
+    cases h : cmp e e' <;> dsimp [addAux] <;> simp [h]
     · exact h'
     · simp [h] at this
       subst e'
@@ -493,12 +493,12 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     cases' h : add a o with e' n' a' <;>
       simp only [Add.add, add, addAux, h'.symm, h, add_assoc, repr] at nf h₁ ⊢
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
-    cases he: cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
+    cases he : cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
         Ordering.compares_eq, repr, gt_iff_lt, PNat.add_coe, Nat.cast_add] at ee ⊢
     · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
       · have := (h₁.below_of_lt ee).repr_lt
         unfold repr at this
-        cases he': e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>
+        cases he' : e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>
         exact lt_of_le_of_lt (le_add_right _ _) this
       · simpa using (Ordinal.mul_le_mul_iff_left <| opow_pos (repr e') omega_pos).2
           (natCast_le.2 n'.pos)

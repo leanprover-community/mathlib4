@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 import Mathlib.LinearAlgebra.Basis
 
 #align_import linear_algebra.affine_space.basis from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
@@ -279,6 +280,31 @@ noncomputable def coords : P →ᵃ[k] ι → k where
 theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 #align affine_basis.coords_apply AffineBasis.coords_apply
+
+instance instVAdd : VAdd V (AffineBasis ι k P) where
+  vadd x b :=
+    { toFun := x +ᵥ ⇑b,
+      ind' := b.ind'.vadd,
+      tot' := by rw [Pi.vadd_def, ← vadd_set_range, ← AffineSubspace.pointwise_vadd_span, b.tot,
+        AffineSubspace.pointwise_vadd_top] }
+
+@[simp, norm_cast] lemma coe_vadd (v : V) (b : AffineBasis ι k P) : ⇑(v +ᵥ b) = v +ᵥ ⇑b := rfl
+
+@[simp] lemma basisOf_vadd (v : V) (b : AffineBasis ι k P) : (v +ᵥ b).basisOf = b.basisOf := by
+  ext
+  simp
+
+instance instAddAction : AddAction V (AffineBasis ι k P) :=
+  DFunLike.coe_injective.addAction _ coe_vadd
+
+@[simp] lemma coord_vadd (v : V) (b : AffineBasis ι k P) :
+    (v +ᵥ b).coord i = (b.coord i).comp (AffineEquiv.constVAdd k P v).symm := by
+  ext p
+  simp only [coord, ne_eq, basisOf_vadd, coe_vadd, Pi.vadd_apply, Basis.coe_sumCoords,
+    AffineMap.coe_mk, AffineEquiv.constVAdd_symm, AffineMap.coe_comp, AffineEquiv.coe_toAffineMap,
+    Function.comp_apply, AffineEquiv.constVAdd_apply, sub_right_inj]
+  congr! 1
+  rw [vadd_vsub_assoc, neg_add_eq_sub, vsub_vadd_eq_vsub_sub]
 
 end Ring
 
