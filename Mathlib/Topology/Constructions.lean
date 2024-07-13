@@ -1065,6 +1065,17 @@ theorem IsOpenMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : 
   isOpenMap_sum_elim.2 ⟨hf, hg⟩
 #align is_open_map.sum_elim IsOpenMap.sum_elim
 
+theorem isClosedMap_sum {f : X ⊕ Y → Z} :
+    IsClosedMap f ↔ (IsClosedMap fun a => f (.inl a)) ∧ IsClosedMap fun b => f (.inr b) := by
+  constructor
+  · intro h
+    exact ⟨h.comp closedEmbedding_inl.isClosedMap, h.comp closedEmbedding_inr.isClosedMap⟩
+  · rintro h Z hZ
+    rw [isClosed_sum_iff] at hZ
+    convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
+    ext
+    simp only [mem_image, Sum.exists, mem_union, mem_preimage]
+
 end Sum
 
 section Subtype
@@ -1228,6 +1239,15 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
     (hinj : Function.Injective f) : DiscreteTopology (f ⁻¹' s) :=
   DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
     (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr hinj.injOn)
+
+/-- If `f : X → Y` is a quotient map,
+then its restriction to the preimage of an open set is a quotient map too. -/
+theorem QuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : QuotientMap f)
+    {s : Set Y} (hs : IsOpen s) : QuotientMap (s.restrictPreimage f) := by
+  refine quotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
+  rw [hs.openEmbedding_subtype_val.open_iff_image_open, ← hf.isOpen_preimage,
+    (hs.preimage hf.continuous).openEmbedding_subtype_val.open_iff_image_open,
+    image_val_preimage_restrictPreimage]
 
 end Subtype
 

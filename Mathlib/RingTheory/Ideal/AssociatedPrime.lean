@@ -27,7 +27,7 @@ We provide the definition and related lemmas about associated primes of modules.
 - `associatedPrimes.eq_singleton_of_isPrimary`: In a noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
-## Todo
+## TODO
 
 Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
 
