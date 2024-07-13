@@ -31,7 +31,7 @@ class SimpleExtension (F K : Type*) [CommSemiring F] [Field K] [Algebra F K] whe
 /--
 We can use `Field.exists_primitive_element` to noncomputable create a simple extension.
 -/
-noncomputable def SimpleExtesion_of_primitive (F K : Type*) [Field F] [Field K] [Algebra F K]
+noncomputable def SimpleExtesion_of_finite_seperable (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [Algebra.IsSeparable F K] : SimpleExtension F K where
   k := (Field.exists_primitive_element F K).choose
   is_adjoin' x := by
