@@ -103,7 +103,8 @@ open scoped Witt
 
 section PPrime
 
-variable (p) [hp : Fact p.Prime]
+variable (p)
+variable [hp : Fact p.Prime]
 
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
@@ -167,11 +168,11 @@ theorem wittStructureRat_rec_aux (Φ : MvPolynomial idx ℚ) (n : ℕ) :
         ∑ i ∈ range n, C ((p : ℚ) ^ i) * wittStructureRat p Φ i ^ p ^ (n - i) := by
   have := xInTermsOfW_aux p ℚ n
   replace := congr_arg (bind₁ fun k : ℕ => bind₁ (fun i => rename (Prod.mk i) (W_ ℚ k)) Φ) this
-  rw [AlgHom.map_mul, bind₁_C_right] at this
+  rw [map_mul, bind₁_C_right] at this
   rw [wittStructureRat, this]; clear this
-  conv_lhs => simp only [AlgHom.map_sub, bind₁_X_right]
+  conv_lhs => simp only [map_sub, bind₁_X_right]
   rw [sub_right_inj]
-  simp only [AlgHom.map_sum, AlgHom.map_mul, bind₁_C_right, AlgHom.map_pow]
+  simp only [map_sum, map_mul, bind₁_C_right, map_pow]
   rfl
 #align witt_structure_rat_rec_aux wittStructureRat_rec_aux
 

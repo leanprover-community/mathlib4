@@ -254,9 +254,7 @@ instance (priority := 200) OrderedSemiring.toMulPosMono : MulPosMono α :=
   ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
 #align ordered_semiring.to_mul_pos_mono OrderedSemiring.toMulPosMono
 
-set_option linter.deprecated false in
-theorem bit1_mono : Monotone (bit1 : α → α) := fun _ _ h => add_le_add_right (bit0_mono h) _
-#align bit1_mono bit1_mono
+#noalign bit1_mono
 
 @[simp]
 theorem pow_nonneg (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
@@ -328,19 +326,8 @@ theorem Monotone.mul (hf : Monotone f) (hg : Monotone g) (hf₀ : ∀ x, 0 ≤ f
 
 end Monotone
 
-section
-set_option linter.deprecated false
-
-theorem bit1_pos [Nontrivial α] (h : 0 ≤ a) : 0 < bit1 a :=
-  zero_lt_one.trans_le <| bit1_zero.symm.trans_le <| bit1_mono h
-#align bit1_pos bit1_pos
-
-theorem bit1_pos' (h : 0 < a) : 0 < bit1 a := by
-  nontriviality
-  exact bit1_pos h.le
-#align bit1_pos' bit1_pos'
-
-end
+#noalign bit1_pos
+#noalign bit1_pos'
 
 theorem mul_le_one (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
   one_mul (1 : α) ▸ mul_le_mul ha hb hb' zero_le_one
@@ -963,50 +950,14 @@ theorem add_le_mul' (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ b * a :=
   (le_of_eq (add_comm _ _)).trans (add_le_mul b2 a2)
 #align add_le_mul' add_le_mul'
 
-set_option linter.deprecated false in
-section
-
-@[simp]
-theorem bit0_le_bit0 : bit0 a ≤ bit0 b ↔ a ≤ b := by
-  rw [bit0, bit0, ← two_mul, ← two_mul, mul_le_mul_left (zero_lt_two : 0 < (2 : α))]
-#align bit0_le_bit0 bit0_le_bit0
-
-@[simp]
-theorem bit0_lt_bit0 : bit0 a < bit0 b ↔ a < b := by
-  rw [bit0, bit0, ← two_mul, ← two_mul, mul_lt_mul_left (zero_lt_two : 0 < (2 : α))]
-#align bit0_lt_bit0 bit0_lt_bit0
-
-@[simp]
-theorem bit1_le_bit1 : bit1 a ≤ bit1 b ↔ a ≤ b :=
-  (add_le_add_iff_right 1).trans bit0_le_bit0
-#align bit1_le_bit1 bit1_le_bit1
-
-@[simp]
-theorem bit1_lt_bit1 : bit1 a < bit1 b ↔ a < b :=
-  (add_lt_add_iff_right 1).trans bit0_lt_bit0
-#align bit1_lt_bit1 bit1_lt_bit1
-
-@[simp]
-theorem one_le_bit1 : (1 : α) ≤ bit1 a ↔ 0 ≤ a := by
-  rw [bit1, le_add_iff_nonneg_left, bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two' α)]
-#align one_le_bit1 one_le_bit1
-
-@[simp]
-theorem one_lt_bit1 : (1 : α) < bit1 a ↔ 0 < a := by
-  rw [bit1, lt_add_iff_pos_left, bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two' α)]
-#align one_lt_bit1 one_lt_bit1
-
-@[simp]
-theorem zero_le_bit0 : (0 : α) ≤ bit0 a ↔ 0 ≤ a := by
-  rw [bit0, ← two_mul, mul_nonneg_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
-#align zero_le_bit0 zero_le_bit0
-
-@[simp]
-theorem zero_lt_bit0 : (0 : α) < bit0 a ↔ 0 < a := by
-  rw [bit0, ← two_mul, mul_pos_iff_of_pos_left (zero_lt_two : 0 < (2 : α))]
-#align zero_lt_bit0 zero_lt_bit0
-
-end
+#noalign bit0_le_bit0
+#noalign bit0_lt_bit0
+#noalign bit1_le_bit1
+#noalign bit1_lt_bit1
+#noalign one_le_bit1
+#noalign one_lt_bit1
+#noalign zero_le_bit0
+#noalign zero_lt_bit0
 
 theorem mul_nonneg_iff_right_nonneg_of_pos (ha : 0 < a) : 0 ≤ a * b ↔ 0 ≤ b :=
   ⟨fun h => nonneg_of_mul_nonneg_right h ha, mul_nonneg ha.le⟩
@@ -1272,6 +1223,14 @@ lemma max_mul_mul_le_max_mul_max (b c : α) (ha : 0 ≤ a) (hd : 0 ≤ d) :
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
 #align max_mul_mul_le_max_mul_max max_mul_mul_le_max_mul_max
 
+lemma min_mul_min_le_mul_min_min {b c} (ha : 0 ≤ a) (hb : 0 ≤ b) (hc : 0 ≤ c) (hd : 0 ≤ d) :
+    min a c * min b d ≤ min (a * b) (c * d) :=
+  have ab : min a c * min b d ≤ a * b :=
+    mul_le_mul (min_le_left a c) (min_le_left b d) (le_min hb hd) ha
+  have cd : min a c * min b d ≤ c * d :=
+    mul_le_mul (min_le_right a c) (min_le_right b d) (le_min hb hd) (hc)
+  le_min ab cd
+
 variable [ExistsAddOfLE α]
 
 /-- Binary **arithmetic mean-geometric mean inequality** (aka AM-GM inequality) for linearly ordered
@@ -1349,10 +1308,9 @@ instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
 #align linear_ordered_comm_ring.to_linear_ordered_comm_semiring LinearOrderedCommRing.toLinearOrderedCommSemiring
 
--- 2023-12-23
-@[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
-@[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
-@[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
-@[deprecated] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
+@[deprecated (since := "2023-12-23")] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
+@[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
+@[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
 
 assert_not_exists MonoidHom

@@ -177,7 +177,7 @@ instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunction
         continuous_toFun := continuous_coe.subtype_map (by simp [s'])
         continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
     have (ξ : C(s, ℝ≥0) →⋆ₐ[ℝ≥0] A) (hξ : Continuous ξ) :
-        (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e;
+        (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
       intro ξ'
       refine ⟨ξ.continuous_realContinuousMapOfNNReal hξ |>.comp <|
@@ -267,8 +267,8 @@ lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)₀) :
     ((f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal) =
     ((-(f * g)).toNNReal + f.toNNReal * g.toNNReal + (-f).toNNReal * (-g).toNNReal) := by
   -- Without this, Lean fails to find the instance in time
-  haveI : LinearMapClass (C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] C(X, ℝ≥0)) ℝ≥0 C(X, ℝ≥0)₀ C(X, ℝ≥0) :=
-    NonUnitalAlgHomClass.instLinearMapClass
+  have : SemilinearMapClass (C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] C(X, ℝ≥0)) (RingHom.id ℝ≥0)
+    C(X, ℝ≥0)₀ C(X, ℝ≥0) := NonUnitalAlgHomClass.instLinearMapClass
   apply toContinuousMap_injective
   simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
     using (f : C(X, ℝ)).toNNReal_mul_add_neg_mul_add_mul_neg_eq g
@@ -277,8 +277,8 @@ lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
     ((f + g).toNNReal + (-f).toNNReal + (-g).toNNReal) =
       ((-(f + g)).toNNReal + f.toNNReal + g.toNNReal) := by
   -- Without this, Lean fails to find the instance in time
-  haveI : LinearMapClass (C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] C(X, ℝ≥0)) ℝ≥0 C(X, ℝ≥0)₀ C(X, ℝ≥0) :=
-    NonUnitalAlgHomClass.instLinearMapClass
+  have : SemilinearMapClass (C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] C(X, ℝ≥0)) (RingHom.id ℝ≥0)
+    C(X, ℝ≥0)₀ C(X, ℝ≥0) := NonUnitalAlgHomClass.instLinearMapClass
   apply toContinuousMap_injective
   simpa only [← toContinuousMapHom_apply, map_add, map_mul, map_neg, toContinuousMapHom_toNNReal]
     using (f : C(X, ℝ)).toNNReal_add_add_neg_add_neg_eq g

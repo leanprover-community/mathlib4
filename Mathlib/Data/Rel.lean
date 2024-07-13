@@ -32,7 +32,7 @@ Relations are also known as set-valued functions, or partial multifunctions.
 * `Rel.restrict_domain`: Domain-restriction of a relation to a subtype.
 * `Function.graph`: Graph of a function as a relation.
 
-## TODOs
+## TODO
 
 The `Rel.comp` function uses the notation `r • s`, rather than the more common `r ∘ s` for things
 named `comp`. This is because the latter is already used for function composition, and causes a

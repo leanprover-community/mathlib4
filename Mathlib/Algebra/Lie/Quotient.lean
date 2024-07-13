@@ -127,7 +127,6 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
     · apply lie_mem_left R L I (x₁ - y₁) y₂ h₁⟩
 #align lie_submodule.quotient.lie_quotient_has_bracket LieSubmodule.Quotient.lieQuotientHasBracket
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L ⧸ I)⁆ :=
   rfl

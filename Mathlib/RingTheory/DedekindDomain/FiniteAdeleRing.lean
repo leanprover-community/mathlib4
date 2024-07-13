@@ -197,6 +197,10 @@ def IsFiniteAdele (x : K_hat R K) :=
   ∀ᶠ v : HeightOneSpectrum R in Filter.cofinite, x v ∈ v.adicCompletionIntegers K
 #align dedekind_domain.prod_adic_completions.is_finite_adele DedekindDomain.ProdAdicCompletions.IsFiniteAdele
 
+@[simp]
+lemma isFiniteAdele_iff (x : K_hat R K) :
+    x.IsFiniteAdele ↔ {v | x v ∉ adicCompletionIntegers K v}.Finite := Iff.rfl
+
 namespace IsFiniteAdele
 
 /-- The sum of two finite adèles is a finite adèle. -/
@@ -294,14 +298,14 @@ theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele 
     apply_fun v.valuation at hk
     simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
     rw [mem_setOf_eq, valuation_of_algebraMap]
-    have := int_valuation_le_one v n
+    have := intValuation_le_one v n
     contrapose! this
     change 1 < v.intValuation n
     rw [← hk, mul_comm]
     exact lt_mul_of_le_of_one_lt' this hv (by simp) (by simp)
   simp_rw [valuation_of_algebraMap]
   change {v : HeightOneSpectrum R | v.intValuationDef d < 1}.Finite
-  simp_rw [int_valuation_lt_one_iff_dvd]
+  simp_rw [intValuation_lt_one_iff_dvd]
   apply Ideal.finite_factors
   simpa only [Submodule.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
 
@@ -312,22 +316,35 @@ end ProdAdicCompletions
 open ProdAdicCompletions.IsFiniteAdele
 
 /-- The finite adèle ring of `R` is the restricted product over all maximal ideals `v` of `R`
-of `adicCompletion` with respect to `adicCompletionIntegers`. -/
-def FiniteAdeleRing : Type _ := (
-  { carrier := {x : K_hat R K | x.IsFiniteAdele}
-    mul_mem' := mul
-    one_mem' := one
-    add_mem' := add
-    zero_mem' := zero
-    algebraMap_mem' := algebraMap'
-  } : Subalgebra K (K_hat R K))
+of `adicCompletion`, with respect to `adicCompletionIntegers`.
+
+Note that we make this a `Type` rather than a `Subtype` (e.g., a `subalgebra`) since we wish
+to endow it with a finer topology than that of the subspace topology. -/
+def FiniteAdeleRing : Type _ := {x : K_hat R K // x.IsFiniteAdele}
 #align dedekind_domain.finite_adele_ring DedekindDomain.FiniteAdeleRing
 
 namespace FiniteAdeleRing
 
-instance : CommRing (FiniteAdeleRing R K) := Subalgebra.toCommRing _
+/-- The finite adèle ring of `R`, regarded as a `K`-subalgebra of the
+product of the local completions of `K`.
 
-instance : Algebra K (FiniteAdeleRing R K) := Subalgebra.algebra _
+Note that this definition exists to streamline the proof that the finite adèles are an algebra
+over `K`, rather than to express their relationship to `K_hat R K` which is essentially a
+detail of their construction.
+-/
+def subalgebra : Subalgebra K (K_hat R K) where
+  carrier := {x : K_hat R K | x.IsFiniteAdele}
+  mul_mem' := mul
+  one_mem' := one
+  add_mem' := add
+  zero_mem' := zero
+  algebraMap_mem' := algebraMap'
+
+instance : CommRing (FiniteAdeleRing R K) :=
+  Subalgebra.toCommRing (subalgebra R K)
+
+instance : Algebra K (FiniteAdeleRing R K) :=
+  Subalgebra.algebra (subalgebra R K)
 
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
   coe := fun x ↦ x.1
@@ -335,6 +352,20 @@ instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
   Subtype.ext h
+
+/-- The finite adele ring is an algebra over the finite integral adeles. -/
+instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
+  smul rhat fadele := ⟨fun v ↦ rhat v * fadele.1 v, Finite.subset fadele.2 <| fun v hv ↦ by
+    simp only [mem_adicCompletionIntegers, mem_compl_iff, mem_setOf_eq, map_mul] at hv ⊢
+    exact mt (mul_le_one₀ (rhat v).2) hv
+    ⟩
+  toFun r := ⟨r, by simp_all⟩
+  map_one' := by ext; rfl
+  map_mul' _ _ := by ext; rfl
+  map_zero' := by ext; rfl
+  map_add' _ _ := by ext; rfl
+  commutes' _ _ := mul_comm _ _
+  smul_def' r x := rfl
 
 end FiniteAdeleRing
 

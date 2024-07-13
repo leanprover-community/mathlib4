@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.Topology.MetricSpace.IsometricSMul
 
 #align_import analysis.normed.group.add_torsor from "leanprover-community/mathlib"@"837f72de63ad6cd96519cde5f1ffd5ed8d280ad0"
 
@@ -96,7 +98,6 @@ theorem dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = d
   dist_vadd _ _ _
 #align dist_vadd_cancel_left dist_vadd_cancel_left
 
--- Porting note (#10756): new theorem
 theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
   NNReal.eq <| dist_vadd_cancel_left _ _ _
 
@@ -143,7 +144,6 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
   rw [dist_eq_norm, vsub_sub_vsub_cancel_left, dist_comm, dist_eq_norm_vsub V]
 #align dist_vsub_cancel_left dist_vsub_cancel_left
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
   NNReal.eq <| dist_vsub_cancel_left _ _ _
@@ -206,8 +206,6 @@ is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
-  -- Porting note: `edist_dist` is no longer an `autoParam`
-  edist_dist _ _ := by simp only [← ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
@@ -221,7 +219,6 @@ is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
-  edist_dist _ _ := by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   eq_of_dist_eq_zero h := by simpa using h
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]

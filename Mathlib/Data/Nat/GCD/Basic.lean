@@ -134,7 +134,8 @@ theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
   apply dvd_antisymm
   · exact lcm_dvd (mul_dvd_mul_left m (dvd_lcm_left n k)) (mul_dvd_mul_left m (dvd_lcm_right n k))
   · have h : m ∣ lcm (m * n) (m * k) := (dvd_mul_right m n).trans (dvd_lcm_left (m * n) (m * k))
-    rw [← dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ← lcm_dvd_iff]
+    rw [← dvd_div_iff_mul_dvd h, lcm_dvd_iff, dvd_div_iff_mul_dvd h, dvd_div_iff_mul_dvd h,
+      ← lcm_dvd_iff]
 
 theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
  rw [mul_comm, mul_comm k n, lcm_mul_left, mul_comm]

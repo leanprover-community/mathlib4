@@ -66,12 +66,8 @@ noncomputable def cardQuot (S : Submodule R M) : ℕ :=
   AddSubgroup.index S.toAddSubgroup
 #align submodule.card_quot Submodule.cardQuot
 
-@[simp]
-theorem cardQuot_apply (S : Submodule R M) [h : Fintype (M ⧸ S)] :
-    cardQuot S = Fintype.card (M ⧸ S) := by
-  -- Porting note: original proof was AddSubgroup.index_eq_card _
-  suffices Fintype (M ⧸ S.toAddSubgroup) by convert AddSubgroup.index_eq_card S.toAddSubgroup
-  convert h
+theorem cardQuot_apply (S : Submodule R M) : cardQuot S = Nat.card (M ⧸ S) := by
+  rfl
 #align submodule.card_quot_apply Submodule.cardQuot_apply
 
 variable (R M)
@@ -81,7 +77,7 @@ theorem cardQuot_bot [Infinite M] : cardQuot (⊥ : Submodule R M) = 0 :=
   AddSubgroup.index_bot.trans Nat.card_eq_zero_of_infinite
 #align submodule.card_quot_bot Submodule.cardQuot_bot
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem cardQuot_top : cardQuot (⊤ : Submodule R M) = 1 :=
   AddSubgroup.index_top
 #align submodule.card_quot_top Submodule.cardQuot_top
@@ -106,27 +102,11 @@ open Submodule
 /-- Multiplicity of the ideal norm, for coprime ideals.
 This is essentially just a repackaging of the Chinese Remainder Theorem.
 -/
-theorem cardQuot_mul_of_coprime [Module.Free ℤ S] [Module.Finite ℤ S]
+theorem cardQuot_mul_of_coprime
     {I J : Ideal S} (coprime : IsCoprime I J) : cardQuot (I * J) = cardQuot I * cardQuot J := by
-  let b := Module.Free.chooseBasis ℤ S
-  cases isEmpty_or_nonempty (Module.Free.ChooseBasisIndex ℤ S)
-  · haveI : Subsingleton S := Function.Surjective.subsingleton b.repr.toEquiv.symm.surjective
-    nontriviality S
-    exfalso
-    exact not_nontrivial_iff_subsingleton.mpr ‹Subsingleton S› ‹Nontrivial S›
-  haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
-  by_cases hI : I = ⊥
-  · rw [hI, Submodule.bot_mul, cardQuot_bot, zero_mul]
-  by_cases hJ : J = ⊥
-  · rw [hJ, Submodule.mul_bot, cardQuot_bot, mul_zero]
-  have hIJ : I * J ≠ ⊥ := mt Ideal.mul_eq_bot.mp (not_or_of_not hI hJ)
-  letI := Classical.decEq (Module.Free.ChooseBasisIndex ℤ S)
-  letI := I.fintypeQuotientOfFreeOfNeBot hI
-  letI := J.fintypeQuotientOfFreeOfNeBot hJ
-  letI := (I * J).fintypeQuotientOfFreeOfNeBot hIJ
   rw [cardQuot_apply, cardQuot_apply, cardQuot_apply,
-    Fintype.card_eq.mpr ⟨(Ideal.quotientMulEquivQuotientProd I J coprime).toEquiv⟩,
-    Fintype.card_prod]
+    Nat.card_congr (Ideal.quotientMulEquivQuotientProd I J coprime).toEquiv,
+    Nat.card_prod]
 #align card_quot_mul_of_coprime cardQuot_mul_of_coprime
 
 /-- If the `d` from `Ideal.exists_mul_add_mem_pow_succ` is unique, up to `P`,
@@ -184,23 +164,15 @@ theorem Ideal.mul_add_mem_pow_succ_unique [IsDedekindDomain S] {i : ℕ} (a d d'
 #align ideal.mul_add_mem_pow_succ_unique Ideal.mul_add_mem_pow_succ_unique
 
 /-- Multiplicity of the ideal norm, for powers of prime ideals. -/
-theorem cardQuot_pow_of_prime [IsDedekindDomain S] [Module.Finite ℤ S] [Module.Free ℤ S] {i : ℕ} :
+theorem cardQuot_pow_of_prime [IsDedekindDomain S] {i : ℕ} :
     cardQuot (P ^ i) = cardQuot P ^ i := by
-  let _ := Module.Free.chooseBasis ℤ S
-  classical
   induction' i with i ih
   · simp
-  letI := Ideal.fintypeQuotientOfFreeOfNeBot (P ^ i.succ) (pow_ne_zero _ hP)
-  letI := Ideal.fintypeQuotientOfFreeOfNeBot (P ^ i) (pow_ne_zero _ hP)
-  letI := Ideal.fintypeQuotientOfFreeOfNeBot P hP
   have : P ^ (i + 1) < P ^ i := Ideal.pow_succ_lt_pow hP i
   suffices hquot : map (P ^ i.succ).mkQ (P ^ i) ≃ S ⧸ P by
     rw [pow_succ' (cardQuot P), ← ih, cardQuot_apply (P ^ i.succ), ←
       card_quotient_mul_card_quotient (P ^ i) (P ^ i.succ) this.le, cardQuot_apply (P ^ i),
-      cardQuot_apply P]
-    congr 1
-    rw [Fintype.card_eq]
-    exact ⟨hquot⟩
+      cardQuot_apply P, Nat.card_congr hquot]
   choose a a_mem a_not_mem using SetLike.exists_of_lt this
   choose f g hg hf using fun c (hc : c ∈ P ^ i) =>
     Ideal.exists_mul_add_mem_pow_succ hP a c a_mem a_not_mem hc
@@ -228,14 +200,9 @@ theorem cardQuot_pow_of_prime [IsDedekindDomain S] [Module.Finite ℤ S] [Module
 end PPrime
 
 /-- Multiplicativity of the ideal norm in number rings. -/
-theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ S] (I J : Ideal S) :
+theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
     cardQuot (I * J) = cardQuot I * cardQuot J := by
   let b := Module.Free.chooseBasis ℤ S
-  cases isEmpty_or_nonempty (Module.Free.ChooseBasisIndex ℤ S)
-  · haveI : Subsingleton S := Function.Surjective.subsingleton b.repr.toEquiv.symm.surjective
-    nontriviality S
-    exfalso
-    exact not_nontrivial_iff_subsingleton.mpr ‹Subsingleton S› ‹Nontrivial S›
   haveI : Infinite S := Infinite.of_surjective _ b.repr.toEquiv.surjective
   exact UniqueFactorizationMonoid.multiplicative_of_coprime cardQuot I J (cardQuot_bot _ _)
       (fun {I J} hI => by simp [Ideal.isUnit_iff.mp hI, Ideal.mul_top])
@@ -248,8 +215,8 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ
 #align card_quot_mul cardQuot_mul
 
 /-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
-noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
-    [Module.Finite ℤ S] : Ideal S →*₀ ℕ where
+noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S] :
+    Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
   map_mul' I J := by dsimp only; rw [cardQuot_mul]
   map_one' := by dsimp only; rw [Ideal.one_eq_top, cardQuot_top]
@@ -331,7 +298,7 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
     _ = Int.natAbs (Matrix.diagonal a).det := ?_
     _ = Int.natAbs (∏ i, a i) := by rw [Matrix.det_diagonal]
     _ = ∏ i, Int.natAbs (a i) := map_prod Int.natAbsHom a Finset.univ
-    _ = Fintype.card (S ⧸ I) := ?_
+    _ = Nat.card (S ⧸ I) := ?_
     _ = absNorm I := (Submodule.cardQuot_apply _).symm
   -- since `LinearMap.toMatrix b' b' f` is the diagonal matrix with `a` along the diagonal.
   · congr 2; ext i j
@@ -344,8 +311,8 @@ theorem natAbs_det_equiv (I : Ideal S) {E : Type*} [EquivLike E S I] [AddEquivCl
   -- which maps `(S ⧸ I)` to `Π i, ZMod (a i).nat_abs`.
   haveI : ∀ i, NeZero (a i).natAbs := fun i =>
     ⟨Int.natAbs_ne_zero.mpr (Ideal.smithCoeffs_ne_zero b I hI i)⟩
-  simp_rw [Fintype.card_eq.mpr ⟨(Ideal.quotientEquivPiZMod I b hI).toEquiv⟩, Fintype.card_pi,
-    ZMod.card]
+  simp_rw [Nat.card_congr (Ideal.quotientEquivPiZMod I b hI).toEquiv, Nat.card_pi,
+    Nat.card_zmod]
 #align ideal.nat_abs_det_equiv Ideal.natAbs_det_equiv
 
 /-- Let `b` be a basis for `S` over `ℤ` and `bI` a basis for `I` over `ℤ` of the same dimension.
