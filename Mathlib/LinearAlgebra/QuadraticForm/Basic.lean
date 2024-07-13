@@ -27,7 +27,7 @@ requires that there be a (possibly non-unique) companion bilinear map `B` such t
 
 To build a `QuadraticMap` from the `polar` axioms, use `QuadraticMap.ofPolar`.
 
-Quadratic maps come with a scalar multiplication, `(a • Q) x = Q (a • x) = a * a * Q x`,
+Quadratic maps come with a scalar multiplication, `(a • Q) x = a • Q x`,
 and composition with linear maps `f`, `Q.comp f x = Q (f x)`.
 
 ## Main definitions
