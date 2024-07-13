@@ -78,8 +78,8 @@ This is then used to define `Fintype.card`, the size of a type.
 
 There is a natural lattice structure on the subsets of a set.
 In Lean, we use lattice notation to talk about things involving unions and intersections. See
-`Mathlib/Order/Lattice.lean`. For the lattice structure on finsets, `⊥` is called `bot` with `⊥ = ∅` and
-`⊤` is called `top` with `⊤ = univ`.
+`Mathlib/Order/Lattice.lean`. For the lattice structure on finsets, `⊥` is called `bot` with
+`⊥ = ∅` and `⊤` is called `top` with `⊤ = univ`.
 
 * `Finset.instHasSubsetFinset`: Lots of API about lattices, otherwise behaves as one would expect.
 * `Finset.instUnionFinset`: Defines `s ∪ t` (or `s ⊔ t`) as the union of `s` and `t`.
@@ -107,8 +107,8 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 ### Equivalences between finsets
 
-* The `Mathlib/Data/Equiv.lean` files describe a general type of equivalence, so look in there for any
-  lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
+* The `Mathlib/Data/Equiv.lean` files describe a general type of equivalence, so look in there for
+  any lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
   TODO: examples
 
 ## Tags
