@@ -31,7 +31,7 @@ jobs:
 
       - name: Generate PR title
         run: |
-          timestamp=$(date -u +"%Y-%m-%d-%H-%M")
+          echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
