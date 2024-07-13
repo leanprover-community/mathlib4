@@ -23,9 +23,9 @@ open Polynomial IntermediateField algebraMap
 A typeclass for K being a simple extension of F, F⟮k⟯ = K.
 -/
 class SimpleExtension (F K : Type*) [CommSemiring F] [Field K] [Algebra F K] where
-  /- The element of K which is adjoined to F. -/
+  /-- The element of K which is adjoined to F. -/
   k : K
-  /- Every value in K is a fraction of two polynomials with coefficients in F, evaluated at k. -/
+  /-- Every value in K is a fraction of two polynomials with coefficients in F, evaluated at k. -/
   is_adjoin' : ∀ (x : K), ∃ (r s : Polynomial F), x = (aeval k) r / (aeval k) s
 
 /--
