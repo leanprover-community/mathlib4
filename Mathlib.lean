@@ -2510,6 +2510,7 @@ import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.FieldTheory.SeparableDegree
+import Mathlib.FieldTheory.SimpleExtension
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Tower
