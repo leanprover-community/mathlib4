@@ -96,6 +96,7 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℝ A] 
 
 namespace StarAlgHom
 
+set_option synthInstance.maxHeartbeats 21000 in
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
 @[simps]
