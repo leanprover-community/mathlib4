@@ -82,7 +82,7 @@ theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S 
       (((IsLocalization.map (Localization.Away (f r)) f
             (by rintro x ⟨n, rfl⟩; use n; simp : Submonoid.powers r ≤ Submonoid.comap f
                 (Submonoid.powers (f r)))) : Localization.Away r →+* Localization.Away (f r)).comp
-                (e₁: R' →+* Localization.Away r))
+                (e₁ : R' →+* Localization.Away r))
   suffices e = IsLocalization.Away.map R' S' f r by
     convert this
   apply IsLocalization.ringHom_ext (Submonoid.powers r) _
@@ -167,9 +167,9 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
 theorem StableUnderBaseChange.pushout_inl (hP : RingHom.StableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g) :
-    P (pushout.inl : S ⟶ pushout f g) := by
+    P (pushout.inl _ _ : S ⟶ pushout f g) := by
   rw [←
-    show _ = pushout.inl from
+    show _ = pushout.inl _ _ from
       colimit.isoColimitCocone_ι_inv ⟨_, CommRingCat.pushoutCoconeIsColimit f g⟩
         WalkingSpan.left,
     hP'.cancel_right_isIso]

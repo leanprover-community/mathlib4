@@ -427,7 +427,7 @@ theorem liftR_map_last' [LawfulMvFunctor F] {α : TypeVec n} {ι} (R : ι → ι
 
 end LiftRMap
 
-variable {F: TypeVec (n + 1) → Type u} [q : MvQPF F]
+variable {F : TypeVec (n + 1) → Type u} [q : MvQPF F]
 
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x

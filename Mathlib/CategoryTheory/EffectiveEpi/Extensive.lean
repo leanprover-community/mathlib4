@@ -45,3 +45,5 @@ instance [F.PreservesEffectiveEpis] : F.PreservesFiniteEffectiveEpiFamilies wher
     convert (inferInstance :
       EffectiveEpi ((sigmaComparison F X) ≫ (F.map (Sigma.desc π))))
     simp
+
+end CategoryTheory
