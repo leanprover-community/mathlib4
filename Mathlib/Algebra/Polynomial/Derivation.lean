@@ -165,10 +165,9 @@ def coeffwise : Derivation R A[X] (PolynomialModule A M) where
     dsimp only
     apply sum_add_index <;> simp
   map_smul' a b := by
-    dsimp only
-    conv =>
-      lhs
-      apply sum_smul_index
+    dsimp only [RingHom.id_apply]
+    rw [sum_smul_index']
+    simp only [map_smul]
     sorry
 
 end coeffwise
