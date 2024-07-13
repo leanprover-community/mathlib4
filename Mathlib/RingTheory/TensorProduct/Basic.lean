@@ -168,17 +168,11 @@ variable [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower
 
 /--
 If `M` is an `R`-module and `N` is an `A`-module, then `A`-linear maps `A ⊗[R] M →ₗ[A] N`
-correspond to `R` linear maps `M →ₗ[R] N`.
+correspond to `R` linear maps `M →ₗ[R] N` by composing with `M → A ⊗ M`, `x ↦ 1 ⊗ x`.
 -/
 noncomputable
-def liftBaseChangeEquiv : (M →ₗ[R] N) ≃ₗ[A] A ⊗[R] M →ₗ[A] N :=
-  LinearEquiv.symm
-  { toFun := fun l ↦ (l.restrictScalars R) ∘ₗ TensorProduct.mk _ _ _ 1
-    invFun := fun l ↦ AlgebraTensorModule.lift ((LinearMap.lsmul _ _).flip l)
-    map_add' := fun f g ↦ rfl
-    map_smul' := fun f g ↦ rfl
-    left_inv := fun l ↦ by ext; simp
-    right_inv := fun l ↦ by ext; simp }
+def liftBaseChangeEquiv : (M →ₗ[R] N) ≃ₗ[A] (A ⊗[R] M →ₗ[A] N) :=
+  (LinearMap.ringLmapEquivSelf _ _ _).symm.trans (AlgebraTensorModule.lift.equiv _ _ _ _ _ _)
 
 /-- If `N` is an `A` module, we may lift a linear map `M →ₗ[R] N` to `A ⊗[R] M →ₗ[A] N` -/
 noncomputable
