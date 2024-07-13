@@ -6,9 +6,10 @@ Authors: Yury G. Kudryashov
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
+import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.UnitInterval
 
