@@ -513,7 +513,15 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
 theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
-    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
+    (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
+  simp only [iSup, sSup, ne_eq, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+  ext v
+  constructor
+  · intro h
+    simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe] at h
+    sorry
+  · sorry
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
