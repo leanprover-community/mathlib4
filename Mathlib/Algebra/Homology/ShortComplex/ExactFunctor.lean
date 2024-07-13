@@ -92,8 +92,7 @@ variable (F : C ⥤ D) [F.Additive]
 /--
 If a functor `F : C ⥤ D` preserves short exact sequences on the left hand side, (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact)
-then it preserves
-monomorphism.
+then it preserves monomorphism.
 -/
 lemma preservesMonomorphisms_of_preserves_shortExact_left
     (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f)) :
@@ -157,7 +156,7 @@ If a functor `F : C ⥤ D` preserves exact sequences on the right hand side (i.e
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact),
 then it preserves epimorphisms.
 -/
-lemma preservesEpimorphism_of_preserves_shortExact_right
+lemma preservesEpimorphisms_of_preserves_shortExact_right
     (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g)) :
     F.PreservesEpimorphisms where
   preserves f := h _ { exact := ShortComplex.exact_kernel f } |>.2
@@ -250,22 +249,6 @@ lemma exact_tfae : List.TFAE
           (ShortComplex.exact_iff_epi _ (by simp) |>.2 hS.epi_g)
     exact ⟨hF S hS.exact⟩
 
-  tfae_have 2 → 3
-  · intro hF
-    refine ⟨preservesFiniteLimits_tfae F |>.out 1 3 |>.1 ?_,
-      preservesFiniteColimits_tfae F |>.out 1 3 |>.1 ?_⟩
-    · intro S ⟨hS1, hS2⟩
-      refine ⟨hF _ hS1, ?_⟩
-      let s : ShortComplex C := .mk (0 : 0 ⟶ S.X₁) S.f $ by simp
-      exact (s.map F).exact_iff_mono (by simp) |>.1 $ hF s (s.exact_iff_mono rfl |>.2 hS2)
-    · intro S ⟨hS1, hS2⟩
-      refine ⟨hF _ hS1, ?_⟩
-      let s : ShortComplex C := .mk S.g (0 : S.X₃ ⟶ 0) $ by simp
-      exact (s.map F).exact_iff_epi (by simp) |>.1 $ hF s (s.exact_iff_epi rfl |>.2 hS2)
-
-  tfae_have 3 → 4
-  · rintro ⟨⟨_⟩, ⟨_⟩⟩
-    exact ⟨inferInstance⟩
   tfae_have 4 → 3
   · rintro ⟨h⟩
     exact ⟨⟨preservesFiniteLimitsOfPreservesHomology F⟩,
@@ -273,7 +256,6 @@ lemma exact_tfae : List.TFAE
 
   tfae_have 3 → 2
   · rintro ⟨⟨h1⟩, ⟨h2⟩⟩
-    haveI : PreservesHomology F := inferInstance
     exact fun _ h => h.map F
 
   tfae_finish
