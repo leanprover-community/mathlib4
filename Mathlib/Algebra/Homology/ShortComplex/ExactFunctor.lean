@@ -53,7 +53,7 @@ If we further assume that `C` and `D` are abelian categories, then we have:
 
 namespace CategoryTheory
 
-open Limits ZeroObject
+open Limits ZeroObject ShortComplex
 
 namespace Functor
 
@@ -97,7 +97,7 @@ then it preserves monomorphism.
 lemma preservesMonomorphisms_of_preserves_shortExact_left
     (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f)) :
     F.PreservesMonomorphisms where
-  preserves f := h _ { exact := ShortComplex.exact_cokernel f } |>.2
+  preserves f := h _ { exact := exact_cokernel f } |>.2
 
 /--
 For an addivite functor `F : C ⥤ D` between abelian categories, the following are equivalent:
@@ -123,19 +123,17 @@ lemma preservesFiniteLimits_tfae : List.TFAE
     let φ : T.map F ⟶ S.map F :=
       { τ₁ := 𝟙 _
         τ₂ := 𝟙 _
-        τ₃ := F.map (Abelian.factorThruCoimage S.g)
-        comm₂₃ := by
-          dsimp
+        τ₃ := F.map $ Abelian.factorThruCoimage S.g
+        comm₂₃ := show 𝟙 _ ≫ F.map _ = F.map (cokernel.π _) ≫ _ by
           rw [Category.id_comp, ← F.map_comp, cokernel.π_desc] }
-    exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).1
-      (hF T { exact := (S.exact_iff_exact_coimage_π).1 hS }).1
+    exact (exact_iff_of_epi_of_isIso_of_mono φ).1 (hF T ⟨(S.exact_iff_exact_coimage_π).1 hS⟩).1
 
   tfae_have 2 → 3
   · intro hF X Y f
     refine ⟨preservesLimitOfPreservesLimitCone (kernelIsKernel f) ?_⟩
     apply (KernelFork.isLimitMapConeEquiv _ F).2
     let S := ShortComplex.mk _ _ (kernel.condition f)
-    let hS := hF S ⟨ShortComplex.exact_kernel f, by infer_instance⟩
+    let hS := hF S ⟨exact_kernel f, inferInstance⟩
     have : Mono (S.map F).f := hS.2
     exact hS.1.fIsKernel
 
@@ -146,8 +144,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
 
   tfae_have 4 → 1
   · rintro ⟨_⟩ S hS
-    exact (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2
-      ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
+    exact (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
 
   tfae_finish
 
@@ -159,7 +156,7 @@ then it preserves epimorphisms.
 lemma preservesEpimorphisms_of_preserves_shortExact_right
     (h : ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g)) :
     F.PreservesEpimorphisms where
-  preserves f := h _ { exact := ShortComplex.exact_kernel f } |>.2
+  preserves f := h _ { exact := exact_kernel f } |>.2
 
 /--
 For an addivite functor `F : C ⥤ D` between abelian categories, the following are equivalent:
@@ -183,21 +180,19 @@ lemma preservesFiniteColimits_tfae : List.TFAE
     refine ⟨?_, inferInstance⟩
     let T := ShortComplex.mk (Abelian.image.ι S.f) S.g (Abelian.image_ι_comp_eq_zero S.zero)
     let φ : S.map F ⟶ T.map F :=
-      { τ₁ := F.map $ (Abelian.factorThruImage S.f)
+      { τ₁ := F.map $ Abelian.factorThruImage S.f
         τ₂ := 𝟙 _
         τ₃ := 𝟙 _
-        comm₁₂ := by
-          dsimp
+        comm₁₂ := show _ ≫ F.map (kernel.ι _) = F.map _ ≫ 𝟙 _ by
           rw [← F.map_comp, Abelian.image.fac, Category.comp_id] }
-    exact (ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ).2
-      (hF T { exact := (S.exact_iff_exact_image_ι).1 hS }).1
+    exact (exact_iff_of_epi_of_isIso_of_mono φ).2 (hF T ⟨(S.exact_iff_exact_image_ι).1 hS⟩).1
 
   tfae_have 2 → 3
   · intro hF X Y f
     refine ⟨preservesColimitOfPreservesColimitCocone (cokernelIsCokernel f) ?_⟩
     apply (CokernelCofork.isColimitMapCoconeEquiv _ F).2
     let S := ShortComplex.mk _ _ (cokernel.condition f)
-    let hS := hF S ⟨ShortComplex.exact_cokernel f, by infer_instance⟩
+    let hS := hF S ⟨exact_cokernel f, inferInstance⟩
     have : Epi (S.map F).g := hS.2
     exact hS.1.gIsCokernel
 
@@ -213,7 +208,6 @@ lemma preservesFiniteColimits_tfae : List.TFAE
 
   tfae_finish
 
-open ZeroObject in
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
 - `F` preserves short exact sequences, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then
@@ -241,12 +235,10 @@ lemma exact_tfae : List.TFAE
 
   tfae_have 2 → 1
   · intro hF S hS
-    have : Mono (S.map F).f := ShortComplex.exact_iff_mono _ (by simp) |>.1 $
-        hF (.mk (0 : 0 ⟶ S.X₁) S.f $ by simp)
-          (ShortComplex.exact_iff_mono _ (by simp) |>.2 hS.mono_f)
-    have : Epi (S.map F).g := ShortComplex.exact_iff_epi _ (by simp) |>.1 $
-        hF (.mk S.g (0 : S.X₃ ⟶ 0) $ by simp)
-          (ShortComplex.exact_iff_epi _ (by simp) |>.2 hS.epi_g)
+    have : Mono (S.map F).f := exact_iff_mono _ (by simp) |>.1 $
+      hF (.mk (0 : 0 ⟶ S.X₁) S.f $ by simp) (exact_iff_mono _ (by simp) |>.2 hS.mono_f)
+    have : Epi (S.map F).g := exact_iff_epi _ (by simp) |>.1 $
+      hF (.mk S.g (0 : S.X₃ ⟶ 0) $ by simp) (exact_iff_epi _ (by simp) |>.2 hS.epi_g)
     exact ⟨hF S hS.exact⟩
 
   tfae_have 3 → 4
