@@ -199,14 +199,13 @@ def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
 lemma coeffwise_apply (p : A[X]) :
     d.coeffwise p = p.sum fun n v ↦ (PolynomialModule.single A n) (d v) := rfl
 
-theorem apply_aeval_eq (x : A) (p : A[X]) :
-    d (aeval x p) = PolynomialModule.eval x (d.coeffwise p) + aeval x (derivative p) • d x := by
+theorem apply_eval_eq (x : A) (p : A[X]) :
+    d (eval x p) = PolynomialModule.eval x (d.coeffwise p) + eval x (derivative p) • d x := by
   induction p using Polynomial.induction_on' with
-  | h_add => simp_all only [map_add, add_smul]; abel
+  | h_add => simp_all only [eval_add, map_add, add_smul]; abel
   | h_monomial =>
-  simp only [aeval_monomial, Algebra.id.map_eq_id, RingHom.id_apply, leibniz, leibniz_pow,
-    coeffwise_apply, map_zero, sum_monomial_index, PolynomialModule.eval_single,
-    derivative_monomial, map_mul, _root_.map_natCast]
+  simp only [eval_monomial, leibniz, leibniz_pow, coeffwise_apply, map_zero, sum_monomial_index,
+    PolynomialModule.eval_single, derivative_monomial]
   rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
 
 end coeffwise
