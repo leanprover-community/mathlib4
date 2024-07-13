@@ -1554,6 +1554,8 @@ end MulOpposite
 
 section Prod
 
+open UniformSpace
+
 /- a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
 instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
@@ -1566,8 +1568,8 @@ example [UniformSpace α] [UniformSpace β] :
 
 theorem uniformity_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
-      ((𝓤 α).comap fun p : (α × β) × α × β => (p.1.1, p.2.1)) ⊓
-        (𝓤 β).comap fun p : (α × β) × α × β => (p.1.2, p.2.2) :=
+      ((𝓤 α).comap fun ((a₁, _), (a₂, _)) ↦ (a₁, a₂)) ⊓
+        (𝓤 β).comap fun ((_, b₁), (_, b₂)) ↦ (b₁, b₂) :=
   rfl
 #align uniformity_prod uniformity_prod
 
@@ -1578,13 +1580,13 @@ instance [UniformSpace α] [IsCountablyGenerated (𝓤 α)]
 
 theorem uniformity_prod_eq_comap_prod [UniformSpace α] [UniformSpace β] :
     𝓤 (α × β) =
-      comap (fun p : (α × β) × α × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
+      comap (fun ((a₁, b₁), (a₂, b₂)) ↦ ((a₁, a₂), (b₁, b₂))) (𝓤 α ×ˢ 𝓤 β) := by
   dsimp [SProd.sprod]
-  rw [uniformity_prod, Filter.prod, comap_inf, comap_comap, comap_comap]; rfl
+  rw [uniformity_prod, Filter.prod, Filter.comap_inf, Filter.comap_comap, Filter.comap_comap]; rfl
 #align uniformity_prod_eq_comap_prod uniformity_prod_eq_comap_prod
 
 theorem uniformity_prod_eq_prod [UniformSpace α] [UniformSpace β] :
-    𝓤 (α × β) = map (fun p : (α × α) × β × β => ((p.1.1, p.2.1), (p.1.2, p.2.2))) (𝓤 α ×ˢ 𝓤 β) := by
+    𝓤 (α × β) = map (fun ((a₁, a₂), (b₁, b₂)) ↦ ((a₁, b₁), (a₂, b₂))) (𝓤 α ×ˢ 𝓤 β) := by
   rw [map_swap4_eq_comap, uniformity_prod_eq_comap_prod]
 #align uniformity_prod_eq_prod uniformity_prod_eq_prod
 
@@ -1598,8 +1600,8 @@ theorem mem_uniformity_of_uniformContinuous_invariant [UniformSpace α] [Uniform
 
 /-- An entourage of the diagonal in α and an entourage in β yield an entourage in α × β once we
 permute coordinates.-/
-def UniformityProd (a : Set (α × α)) (b : Set (β × β)) : Set ((α × β) × α × β) :=
-    { x | (x.1.1, x.2.1) ∈ a ∧ (x.1.2, x.2.2) ∈ b }
+def UniformityProd (u : Set (α × α)) (v : Set (β × β)) : Set ((α × β) × α × β) :=
+    { ((a₁, b₁), (a₂, b₂)) | (a₁, a₂) ∈ u ∧ (b₁, b₂) ∈ v }
 
 theorem UniformityProd_def {a : Set (α × α)} {b : Set (β × β)} {x : (α × β) × α × β} :
     x ∈ UniformityProd a b ↔ (x.1.1, x.2.1) ∈ a ∧ (x.1.2, x.2.2) ∈ b := by rfl
@@ -1611,23 +1613,17 @@ theorem mem_uniform_prod [t₁ : UniformSpace α] [t₂ : UniformSpace β] {a : 
 #align mem_uniform_prod mem_uniform_prod
 
 theorem ball_prod (a : Set (α × α)) (b : Set (β × β)) (x : α × β) :
-    ball x (UniformityProd U V) = ball x.1 a ×ˢ ball xy.2 b := by
-  ext p
-  simp only [ball, UniformityProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
+    ball x (UniformityProd a b) = ball x.1 a ×ˢ ball x.2 b := by
+  ext p; simp only [ball, UniformityProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
 
 theorem UniformityProd_of_uniform_prod [UniformSpace α] [UniformSpace β] {s : Set ((α × β) × α × β)}
     (h : s ∈ 𝓤 (α × β)) :
     ∃ a ∈ 𝓤 α, ∃ b ∈ 𝓤 β, UniformityProd a b ⊆ s := by
-  rw [uniformity_prod, mem_inf_iff_superset] at h
-  rcases h with ⟨u, hu, v, hv, uv_sub⟩
-  rw [mem_comap] at hu hv
-  rcases hu with ⟨a, a_uni, a_sub⟩
-  rcases hv with ⟨b, b_uni, b_sub⟩
+  simp only [uniformity_prod, mem_inf_iff_superset, mem_comap] at h
+  rcases h with ⟨u, ⟨a, a_uni, a_sub⟩, v, ⟨b, b_uni, b_sub⟩, uv_sub⟩
   use a, a_uni, b, b_uni
-  apply subset_trans _ uv_sub
-  apply subset_trans _ (inter_subset_inter a_sub b_sub)
-  intro x
-  simp [UniformityProd]
+  refine subset_trans (subset_trans (fun _ ↦ ?_) (inter_subset_inter a_sub b_sub)) uv_sub
+  simp [UniformityProd_def]
 
 theorem tendsto_prod_uniformity_fst [UniformSpace α] [UniformSpace β] :
     Tendsto (fun p : (α × β) × α × β => (p.1.1, p.2.1)) (𝓤 (α × β)) (𝓤 α) :=
