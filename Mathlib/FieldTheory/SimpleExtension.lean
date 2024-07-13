@@ -46,7 +46,6 @@ instance (priority := 100) toAlgebra : Algebra F[X] K := (aeval se.k).toAlgebra
 
 lemma SimpleExtension.is_adjoin : ∀ (x : K), ∃ (r s : Polynomial F), x = r / s := se.is_adjoin'
 
-@[simp]
 lemma algebraMap_eq_aeval : algebraMap F[X] K = aeval (R := F) se.k := rfl
 
 lemma SimpleExtension.X_eq_k : algebraMap F[X] K X = se.k := aeval_X _
@@ -90,7 +89,6 @@ instance (priority := 100) toIsFractionRing : IsFractionRing F[X] K where
       exact h
     rw [h]
     field_simp
-    rfl
   exists_of_eq {x y h} := by
     exists 1
     simp only [OneMemClass.coe_one, one_mul]
