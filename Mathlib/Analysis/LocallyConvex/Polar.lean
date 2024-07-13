@@ -154,9 +154,8 @@ theorem polar_subMulAction (m : SubMulAction 𝕜 E) : B.polar m = { y | ∀ x �
   apply le_antisymm
   · intro y hy
     rw [Set.mem_setOf_eq]
-    by_contra hc
-    cases' (not_forall.mp hc) with x hx
-    rw [Classical.not_imp] at hx
+    by_contra! hc
+    cases' hc with x hx
     cases' (NormedField.exists_lt_norm 𝕜 ‖(B x) y‖⁻¹ ) with r hr
     let he := hy _ (SubMulAction.smul_mem m r hx.1)
     simp only [LinearMapClass.map_smul, smul_apply, smul_eq_mul, norm_mul, norm_inv] at he
