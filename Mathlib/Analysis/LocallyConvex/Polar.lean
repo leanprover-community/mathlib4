@@ -150,7 +150,8 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
     _ = ε := mul_one _
 #align linear_map.polar_univ LinearMap.polar_univ
 
-theorem polar_subMulAction (m : SubMulAction 𝕜 E) : B.polar m = { y | ∀ x ∈ m, B x y = 0 } := by
+theorem polar_subMulAction {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    B.polar m = { y | ∀ x ∈ m, B x y = 0 } := by
   apply le_antisymm
   · intro y hy
     rw [Set.mem_setOf_eq]
@@ -167,7 +168,7 @@ theorem polar_subMulAction (m : SubMulAction 𝕜 E) : B.polar m = { y | ∀ x �
     exact zero_le_one
 
 /-- The polar of a set closed under scalar multiplication as a submodule -/
-def polarSubmodule (m : SubMulAction 𝕜 E) : Submodule 𝕜 F :=
+def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : Submodule 𝕜 F :=
   ⟨⟨⟨B.polar m, by
     intro _ _ ha hb
     rw [polar_subMulAction, Set.mem_setOf_eq] at *
