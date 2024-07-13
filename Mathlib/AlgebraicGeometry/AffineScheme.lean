@@ -223,7 +223,7 @@ theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   exact isAffineOpen_opensRange _
 #align algebraic_geometry.is_basis_affine_open AlgebraicGeometry.isBasis_affine_open
 
-theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i: Opens X) = ⊤ := by
+theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : Opens X) = ⊤ := by
   apply Opens.ext
   rw [Opens.coe_iSup]
   apply IsTopologicalBasis.sUnion_eq

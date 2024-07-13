@@ -3,15 +3,9 @@ Copyright (c) 2024 Geno Racklin Asher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geno Racklin Asher
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
-import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.Topology.NoetherianSpace
-import Mathlib.Topology.QuasiSeparated
 
 /-!
 # Noetherian and Locally Noetherian Schemes
@@ -25,7 +19,7 @@ giving definitions, equivalent conditions, and basic properties.
   if the components of the structure sheaf at each affine open are Noetherian rings.
 
 * `AlgebraicGeometry.IsNoetherian`: A scheme is Noetherian if it is locally Noetherian
-  and compact as a topological space.
+  and quasi-compact as a topological space.
 
 ## Main results
 
@@ -115,8 +109,7 @@ theorem isLocallyNoetherian_of_affine_cover {S : Set X.affineOpens}
     have := U.prop.isLocalization_basicOpen f
     exact IsLocalization.isNoetherianRing (.powers f) Γ(X, X.basicOpen f) hN
   · intro U s _ hN
-    let R := Γ(X, U)
-    have : ∀ f : s, IsNoetherianRing (Away (M := R) f) := by
+    have : ∀ f : s, IsNoetherianRing (Away (M := Γ(X, U)) f) := by
       intro ⟨f, hf⟩
       have : IsNoetherianRing Γ(X, X.basicOpen f) := hN ⟨f, hf⟩
       apply isNoetherianRing_of_ringEquiv Γ(X, X.basicOpen f)
@@ -151,8 +144,7 @@ theorem isLocallyNoetherian_iff_of_affine_openCover {𝒰 : Scheme.OpenCover.{v,
     exact (Scheme.openImmersionΓ (𝒰.map i)).symm
   · intro hCNoeth
     let fS i : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.map i), isAffineOpen_opensRange _⟩
-    let S : Set X.affineOpens := Set.range fS
-    apply isLocallyNoetherian_of_affine_cover (S := S)
+    apply isLocallyNoetherian_of_affine_cover (S := Set.range fS)
     rw [← Scheme.OpenCover.iSup_opensRange 𝒰, iSup_range]
     rintro _ ⟨i, rfl⟩
     apply isNoetherianRing_of_ringEquiv (R := Γ(𝒰.obj i, ⊤))
@@ -216,13 +208,13 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
   intro U hU
   rw [Opens.map_coe, ← Set.preimage_inter_range]
   apply Inducing.isCompact_preimage'
-  constructor
-  exact h.base_open.induced
-  apply (noetherianSpace_set_iff _).mp
-  apply noetherianSpace_of_affineOpen ⟨U, hU⟩
-  apply IsLocallyNoetherian.component_noetherian
-  exact Set.inter_subset_left
-  exact Set.inter_subset_right
+  · constructor
+    exact h.base_open.induced
+  · apply (noetherianSpace_set_iff _).mp
+    apply noetherianSpace_of_affineOpen ⟨U, hU⟩
+    apply IsLocallyNoetherian.component_noetherian
+    exact Set.inter_subset_left
+  · exact Set.inter_subset_right
 
 /-- A locally Noetherian scheme is quasi-separated.
 
@@ -234,21 +226,21 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
   let f := U.prop.fromSpec.val.base
   have hInd := (IsAffineOpen.isOpenImmersion_fromSpec U.prop).base_open.induced
   apply Iff.mp
-  apply Inducing.isCompact_preimage_iff (f := f)
-  constructor
-  exact hInd
-  rw [IsAffineOpen.range_fromSpec]
-  exact Set.inter_subset_left
-  rw [← Set.preimage_inter_range, IsAffineOpen.range_fromSpec, Set.inter_comm]
-  apply Inducing.isCompact_preimage'
-  constructor
-  exact hInd
-  apply (noetherianSpace_set_iff _).mp
-  apply noetherianSpace_of_affineOpen U
-  apply IsLocallyNoetherian.component_noetherian
-  exact Set.inter_subset_left
-  rw [IsAffineOpen.range_fromSpec]
-  exact Set.inter_subset_left
+  · apply Inducing.isCompact_preimage_iff (f := f)
+    · constructor
+      exact hInd
+    · rw [IsAffineOpen.range_fromSpec]
+      exact Set.inter_subset_left
+  · rw [← Set.preimage_inter_range, IsAffineOpen.range_fromSpec, Set.inter_comm]
+    apply Inducing.isCompact_preimage'
+    · constructor
+      exact hInd
+    · apply (noetherianSpace_set_iff _).mp
+      apply noetherianSpace_of_affineOpen U
+      apply IsLocallyNoetherian.component_noetherian
+      exact Set.inter_subset_left
+    · rw [IsAffineOpen.range_fromSpec]
+      exact Set.inter_subset_left
 
 /-- A scheme `X` is Noetherian if it is locally Noetherian and compact. -/
 @[mk_iff]
@@ -263,18 +255,18 @@ theorem isNoetherian_iff_of_finite_iSup_eq_top {S : Finset X.affineOpens}
   constructor
   · intro h _ hU
     apply (isLocallyNoetherian_iff_of_iSup_eq_top hS).mp
-    exact h.toIsLocallyNoetherian
-    exact hU
+    · exact h.toIsLocallyNoetherian
+    · exact hU
   · intro h
     convert IsNoetherian.mk
-    exact isLocallyNoetherian_of_affine_cover hS h
-    constructor
-    rw [← Opens.coe_top, ← hS, iSup_subtype', Opens.iSup_mk]
-    apply isCompact_iUnion
-    intro U
-    apply isCompact_iff_isCompact_univ.mpr
-    have := noetherianSpace_of_affineOpen U.val (h U.1 U.2)
-    apply CompactSpace.isCompact_univ
+    · exact isLocallyNoetherian_of_affine_cover hS h
+    · constructor
+      rw [← Opens.coe_top, ← hS, iSup_subtype', Opens.iSup_mk]
+      apply isCompact_iUnion
+      intro U
+      apply isCompact_iff_isCompact_univ.mpr
+      have := noetherianSpace_of_affineOpen U.val (h U.1 U.2)
+      apply CompactSpace.isCompact_univ
 
 /-- A version of `isNoetherian_iff_of_finite_iSup_eq_top` using `Scheme.OpenCover`. -/
 theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v, u} X}
@@ -286,8 +278,8 @@ theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v,
     exact h.toIsLocallyNoetherian
   · intro hNoeth
     convert IsNoetherian.mk
-    exact (isLocallyNoetherian_iff_of_affine_openCover hAff).mpr hNoeth
-    exact Scheme.OpenCover.compactSpace 𝒰
+    · exact (isLocallyNoetherian_iff_of_affine_openCover hAff).mpr hNoeth
+    · exact Scheme.OpenCover.compactSpace 𝒰
 
 open CategoryTheory in
 /-- A Noetherian scheme has a Noetherian underlying topological space.
