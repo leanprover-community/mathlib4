@@ -158,7 +158,6 @@ section coeffwise
 variable {R A M : Type*} [CommSemiring R] [CommRing A] [Algebra R A] [AddCommGroup M]
   [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
 
-@[simps!]
 def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
   Derivation.mk' ({
     toFun := fun x ↦ x.sum fun n v ↦ PolynomialModule.single A n (d v)
@@ -168,7 +167,7 @@ def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
     map_smul' := fun a b ↦ by
       dsimp only [RingHom.id_apply]
       rw [sum_smul_index']
-      simp only [map_smul, smul_sum]
+      simp only [map_smul, Polynomial.smul_sum]
       congr
       ext i c
       let val : M →ₗ[R] PolynomialModule A M := (PolynomialModule.lsingle A i).restrictScalars R
@@ -193,7 +192,18 @@ def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
     ring_nf
   )
 
+lemma coeffwise_apply (p : A[X]) :
+    d.coeffwise p = p.sum fun n v ↦ (PolynomialModule.single A n) (d v) := rfl
 
+theorem apply_aeval_eq (x : A) (p : A[X]) :
+    d (aeval x p) = PolynomialModule.eval x (d.coeffwise p) + aeval x (derivative p) • d x := by
+  induction p using Polynomial.induction_on' with
+  | h_add => simp_all only [map_add, add_smul]; abel
+  | h_monomial =>
+  simp only [aeval_monomial, Algebra.id.map_eq_id, RingHom.id_apply, leibniz, leibniz_pow,
+    coeffwise_apply, map_zero, sum_monomial_index, PolynomialModule.eval_single,
+    derivative_monomial, map_mul, _root_.map_natCast]
+  rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
 
 end coeffwise
 
