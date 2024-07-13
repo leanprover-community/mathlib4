@@ -135,7 +135,7 @@ end QuadraticMap
 
 end Polar
 
-/-- A quadratic map over a module.
+/-- A quadratic map on a module.
 
 For a more familiar constructor when `R` is a ring, see `QuadraticMap.ofPolar`. -/
 structure QuadraticMap (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] [AddCommMonoid M]
