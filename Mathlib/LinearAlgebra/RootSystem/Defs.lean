@@ -30,7 +30,7 @@ imposed, the property that the set of roots is closed under reflection forces th
  * `RootPairing.IsReduced`: A root pairing is said to be reduced if it never contains the double of
    a root.
 
-## Todo
+## TODO
 
 * Put more API theorems in the Defs file.
 * Introduce the Weyl Group, and its action on the indexing set.
@@ -143,8 +143,7 @@ lemma flip_flip : P.flip.flip = P :=
   rfl
 
 /-- This is the pairing between roots and coroots. -/
-def pairing : R :=
-    P.toLin (P.root i) (P.coroot j)
+def pairing : R := P.toLin (P.root i) (P.coroot j)
 
 @[simp]
 lemma root_coroot_eq_pairing : P.toLin (P.root i) (P.coroot j) = P.pairing i j :=
