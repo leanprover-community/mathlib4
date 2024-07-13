@@ -150,7 +150,7 @@ section QuadraticForm
 variable (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable (R M) in
-/-- A quadratic form over a module. -/
+/-- A quadratic form on a module. -/
 abbrev QuadraticForm : Type _ := QuadraticMap R M R
 
 end QuadraticForm
