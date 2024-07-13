@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Peter Nelson
 import Mathlib.Order.Antichain
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.RelIso.Set
 
 #align_import order.minimal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
