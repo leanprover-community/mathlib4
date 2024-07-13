@@ -1037,6 +1037,10 @@ theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ
   Finsupp.sum_smul_index hf
 #align polynomial.sum_smul_index Polynomial.sum_smul_index
 
+theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : R[X]) (b : T)
+    (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b • a) :=
+  Finsupp.sum_smul_index' hf
+
 @[simp]
 theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
   | ⟨_p⟩ => (ofFinsupp_sum _ _).symm.trans (congr_arg _ <| Finsupp.sum_single _)
