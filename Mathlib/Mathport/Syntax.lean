@@ -225,7 +225,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 /- E -/ syntax (name := nthRwLHS) "nth_rw_lhs " num rwRuleSeq (location)? : tactic
 /- E -/ syntax (name := nthRwRHS) "nth_rw_rhs " num rwRuleSeq (location)? : tactic
 
-/- S -/ syntax (name := rwSearch) "rw_search" (config)? rwRuleSeq : tactic
 /- S -/ syntax (name := rwSearch?) "rw_search?" (config)? rwRuleSeq : tactic
 
 /- M -/ syntax (name := piInstanceDeriveField) "pi_instance_derive_field" : tactic
