@@ -41,6 +41,7 @@ semimodule, module, vector space
 assert_not_exists Multiset
 assert_not_exists Set.indicator
 assert_not_exists Pi.single_smul₀
+assert_not_exists Field
 
 open Function Set
 
@@ -105,7 +106,7 @@ theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_s
 #align two_smul two_smul
 
 set_option linter.deprecated false in
-@[deprecated]
+@[deprecated (since := "2022-12-31")]
 theorem two_smul' : (2 : R) • x = bit0 x :=
   two_smul R x
 #align two_smul' two_smul'
@@ -176,7 +177,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
-    map_zero' := AddMonoidHom.ext fun r => show (0:R) • r = 0 by simp
+    map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp
     map_add' := fun x y =>
       AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
 #align module.to_add_monoid_End Module.toAddMonoidEnd
@@ -634,13 +635,13 @@ end NoZeroSMulDivisors
 
 -- Porting note (#10618): simp can prove this
 --@[simp]
-theorem Nat.smul_one_eq_cast {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
+theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 #align nat.smul_one_eq_coe Nat.smul_one_eq_cast
 
 -- Porting note (#10618): simp can prove this
 --@[simp]
-theorem Int.smul_one_eq_cast {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
+theorem Int.smul_one_eq_cast {R : Type*} [NonAssocRing R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_cast
 

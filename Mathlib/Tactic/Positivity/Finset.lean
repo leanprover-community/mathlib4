@@ -3,7 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Density
 import Mathlib.Tactic.Positivity.Core
 
 /-!
@@ -40,11 +40,33 @@ def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
     return .positive q(@Fintype.card_pos $β $instβ $instβno)
   | _ => throwError "not Fintype.card"
 
-example {α : Type*} {s : Finset α} (hs : s.Nonempty) : 0 < s.card := by positivity
-example {α : Type*} {s : Finset α} : 0 ≤ s.card := by positivity
-example {α : Type*} [Fintype α] [Nonempty α] : 0 < (univ : Finset α).card := by positivity
-example {α : Type*} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
-example {α : Type*} [Fintype α] : 0 ≤ Fintype.card α := by positivity
+/-- Extension for `Finset.dens`. `s.card` is positive if `s` is nonempty.
+
+It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
+@[positivity Finset.dens _]
+def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
+  match u, 𝕜, e with
+  | 0, ~q(ℚ≥0), ~q(@Finset.dens $α $instα $s) =>
+    let some ps ← proveFinsetNonempty s | return .none
+    assumeInstancesCommute
+    return .positive q(@Nonempty.dens_pos $α $instα $s $ps)
+  | _, _, _ => throwError "not Finset.dens"
+
+variable {α : Type*} {s : Finset α}
+
+example : 0 ≤ s.card := by positivity
+example (hs : s.Nonempty) : 0 < s.card := by positivity
+
+variable [Fintype α]
+
+example : 0 ≤ Fintype.card α := by positivity
+example : 0 ≤ dens s := by positivity
+example (hs : s.Nonempty) : 0 < dens s := by positivity
+example (hs : s.Nonempty) : dens s ≠ 0 := by positivity
+example [Nonempty α] : 0 < (univ : Finset α).card := by positivity
+example [Nonempty α] : 0 < Fintype.card α := by positivity
+example [Nonempty α] : 0 < dens (univ : Finset α) := by positivity
+example [Nonempty α] : dens (univ : Finset α) ≠ 0 := by positivity
 
 example {G : Type*} {A : Finset G} :
   let f := fun _ : G ↦ 1; (∀ s, f s ^ 2 = 1) → 0 ≤ A.card := by

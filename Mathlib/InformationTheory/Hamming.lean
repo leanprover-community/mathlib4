@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Instances.Discrete
 
 #align_import information_theory.hamming from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
@@ -424,7 +425,6 @@ instance : PseudoMetricSpace (Hamming β) where
   dist_triangle := by
     push_cast
     exact mod_cast hammingDist_triangle
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast

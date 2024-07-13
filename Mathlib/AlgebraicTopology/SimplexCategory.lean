@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
@@ -157,7 +158,7 @@ lemma id_toOrderHom (a : SimplexCategory) :
     Hom.toOrderHom (𝟙 a) = OrderHom.id := rfl
 
 @[simp]
-lemma comp_toOrderHom {a b c: SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
+lemma comp_toOrderHom {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c) :
     (f ≫ g).toOrderHom = g.toOrderHom.comp f.toOrderHom := rfl
 
 -- Porting note: added because `Hom.ext'` is not triggered automatically

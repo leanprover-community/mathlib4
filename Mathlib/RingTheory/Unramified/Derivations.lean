@@ -3,7 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler
+import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Unramified.Basic
 
 /-!
@@ -46,3 +46,5 @@ theorem FormallyUnramified.iff_subsingleton_kaehlerDifferential :
             (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
     exact Subtype.ext_iff.mp (@Subsingleton.elim _ this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
 #align algebra.formally_unramified.iff_subsingleton_kaehler_differential Algebra.FormallyUnramified.iff_subsingleton_kaehlerDifferential
+
+end Algebra

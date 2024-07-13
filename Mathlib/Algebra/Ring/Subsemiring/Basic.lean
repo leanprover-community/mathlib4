@@ -41,8 +41,7 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 #align nat_cast_mem natCast_mem
 #align coe_nat_mem natCast_mem
 
--- 2024-04-05
-@[deprecated] alias coe_nat_mem := natCast_mem
+@[deprecated (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
@@ -632,7 +631,7 @@ variable (R) [NonAssocSemiring R]
 with everything in `R` -/
 def center : Subsemiring R :=
   { NonUnitalSubsemiring.center R with
-    one_mem' := Set.one_mem_center R }
+    one_mem' := Set.one_mem_center }
 #align subsemiring.center Subsemiring.center
 
 theorem coe_center : ↑(center R) = Set.center R :=
@@ -686,7 +685,7 @@ section Centralizer
 def centralizer {R} [Semiring R] (s : Set R) : Subsemiring R :=
   { Submonoid.centralizer s with
     carrier := s.centralizer
-    zero_mem' := Set.zero_mem_centralizer _
+    zero_mem' := Set.zero_mem_centralizer
     add_mem' := Set.add_mem_centralizer }
 #align subsemiring.centralizer Subsemiring.centralizer
 

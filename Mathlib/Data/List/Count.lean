@@ -86,7 +86,7 @@ variable [DecidableEq α]
 
 #align list.count_nil List.count_nil
 
-@[deprecated] -- 2023-08-23
+@[deprecated (since := "2023-08-23")]
 theorem count_cons' (a b : α) (l : List α) :
     count a (b :: l) = count a l + if a = b then 1 else 0 := by
   simp only [count, beq_iff_eq, countP_cons, Nat.add_right_inj]

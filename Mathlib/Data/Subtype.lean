@@ -81,7 +81,7 @@ theorem ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
 
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
-  Eq.rec (motive := fun (pp: (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
+  Eq.rec (motive := fun (pp : (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
          (fun _ ↦ heq_iff_eq.trans ext_iff) (funext <| fun x ↦ propext (h x)) a2
 #align subtype.heq_iff_coe_eq Subtype.heq_iff_coe_eq
 
@@ -142,7 +142,7 @@ theorem val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
 
 lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective.ne_iff
 
-@[deprecated] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe -- 2024-04-04
+@[deprecated (since := "2024-04-04")] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe
 #align subtype.ne_of_val_ne Subtype.ne_of_val_ne
 
 -- Porting note: it is unclear why the linter doesn't like this.

@@ -3,7 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Int
+import Mathlib.Analysis.Normed.Group.Uniform
 
 #align_import analysis.normed.group.hom from "leanprover-community/mathlib"@"3c4225288b55380a90df078ebae0991080b12393"
 

@@ -5,10 +5,12 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 #align_import data.dfinsupp.basic from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -78,7 +80,7 @@ instance instDFunLike : DFunLike (Π₀ i, β i) ι β :=
   ⟨fun f => f.toFun, fun ⟨f₁, s₁⟩ ⟨f₂, s₁⟩ ↦ fun (h : f₁ = f₂) ↦ by
     subst h
     congr
-    apply Subsingleton.elim ⟩
+    subsingleton ⟩
 #align dfinsupp.fun_like DFinsupp.instDFunLike
 
 /-- Helper instance for when there are too many metavariables to apply `DFunLike.coeFunForall`
@@ -96,17 +98,10 @@ theorem ext {f g : Π₀ i, β i} (h : ∀ i, f i = g i) : f = g :=
   DFunLike.ext _ _ h
 #align dfinsupp.ext DFinsupp.ext
 
-@[deprecated DFunLike.ext_iff (since := "2023-01-27")]
-theorem ext_iff {f g : Π₀ i, β i} : f = g ↔ ∀ i, f i = g i :=
-  DFunLike.ext_iff
-#align dfinsupp.ext_iff DFinsupp.ext_iff
+#align dfinsupp.ext_iff DFunLike.ext_iff
+#align dfinsupp.coe_fn_injective DFunLike.coe_injective
 
 lemma ne_iff {f g : Π₀ i, β i} : f ≠ g ↔ ∃ i, f i ≠ g i := DFunLike.ne_iff
-
-@[deprecated DFunLike.coe_injective (since := "2023-01-27")]
-theorem coeFn_injective : @Function.Injective (Π₀ i, β i) (∀ i, β i) (⇑) :=
-  DFunLike.coe_injective
-#align dfinsupp.coe_fn_injective DFinsupp.coeFn_injective
 
 instance : Zero (Π₀ i, β i) :=
   ⟨⟨0, Trunc.mk <| ⟨∅, fun _ => Or.inr rfl⟩⟩⟩
@@ -2350,8 +2345,8 @@ instance DFinsupp.fintype {ι : Sort _} {π : ι → Sort _} [DecidableEq ι] [�
 
 instance DFinsupp.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial (π i)]
     [∀ i, Zero (π i)] [Infinite ι] : Infinite (Π₀ i, π i) := by
-  letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i);
-    exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
+  letI := Classical.decEq ι; choose m hm using fun i => exists_ne (0 : π i)
+  exact Infinite.of_injective _ (DFinsupp.single_left_injective hm)
 #align dfinsupp.infinite_of_left DFinsupp.infinite_of_left
 
 /-- See `DFinsupp.infinite_of_right` for this in instance form, with the drawback that

@@ -206,7 +206,7 @@ lemma _root_.MvPolynomial.isHomogeneous_C_mul_X (r : R) (i : σ) :
     (C r * X i).IsHomogeneous 1 :=
   (isHomogeneous_X _ _).C_mul _
 
-@[deprecated] -- 2024-03-21
+@[deprecated (since := "2024-03-21")]
 alias _root_.MvPolynomial.C_mul_X := _root_.MvPolynomial.isHomogeneous_C_mul_X
 
 lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
@@ -278,7 +278,7 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
   exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
 #align mv_polynomial.is_homogeneous.total_degree MvPolynomial.IsHomogeneous.totalDegree
 
-theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n):
+theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by
   rw [← φ.support_sum_monomial_coeff, map_sum]; simp_rw [rename_monomial]
   apply IsHomogeneous.sum _ _ _ fun d hd ↦ isHomogeneous_monomial _ _

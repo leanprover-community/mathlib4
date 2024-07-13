@@ -165,7 +165,7 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   ext_iff.symm
 #align fin.coe_eq_coe Fin.val_eq_val
 
-@[deprecated ext_iff] -- 2024-02-20
+@[deprecated ext_iff (since := "2024-02-20")]
 theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
   ext_iff
 #align fin.eq_iff_veq Fin.eq_iff_veq
@@ -335,10 +335,7 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 
 @[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
 
-theorem rev_involutive : Involutive (rev : Fin n → Fin n) := fun i =>
-  ext <| by
-    dsimp only [rev]
-    rw [← Nat.sub_sub, Nat.sub_sub_self (Nat.add_one_le_iff.2 i.is_lt), Nat.add_sub_cancel_right]
+theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 #align fin.rev_involutive Fin.rev_involutive
 
 /-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
@@ -405,12 +402,16 @@ theorem le_rev_iff {i j : Fin n} : i ≤ rev j ↔ j ≤ rev i := by
 #align fin.last_val Fin.val_last
 #align fin.le_last Fin.le_last
 
+@[simp] theorem val_rev_zero [NeZero n] : ((rev 0 : Fin n) : ℕ) = n.pred := rfl
+
 #align fin.last_pos Fin.last_pos
 #align fin.eq_last_of_not_lt Fin.eq_last_of_not_lt
 
 theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
-theorem one_lt_last [NeZero n] : 1 < last (n + 1) := Nat.lt_add_left_iff_pos.2 n.pos_of_neZero
+theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
+  rw [lt_iff_val_lt_val, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
+  exact NeZero.ne n
 
 end Order
 
@@ -496,55 +497,14 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 #align fin.coe_add_eq_ite Fin.val_add_eq_ite
 
-section deprecated
-set_option linter.deprecated false
-
-@[deprecated]
-theorem val_bit0 {n : ℕ} (k : Fin n) : ((bit0 k : Fin n) : ℕ) = bit0 (k : ℕ) % n := by
-  cases k
-  rfl
-#align fin.coe_bit0 Fin.val_bit0
-
-@[deprecated]
-theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
-    ((bit1 k : Fin n) : ℕ) = bit1 (k : ℕ) % n := by
-  cases n;
-  · cases' k with k h
-    cases k
-    · show _ % _ = _
-      simp at h
-    cases' h with _ h
-  simp [bit1, Fin.val_bit0, Fin.val_add, Fin.val_one]
-#align fin.coe_bit1 Fin.val_bit1
-
-end deprecated
-
+#noalign fin.coe_bit0
+#noalign fin.coe_bit1
 #align fin.coe_add_one_of_lt Fin.val_add_one_of_lt
 #align fin.last_add_one Fin.last_add_one
 #align fin.coe_add_one Fin.val_add_one
-
-section Bit
-set_option linter.deprecated false
-
-@[simp, deprecated]
-theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
-    (⟨bit0 m, h⟩ : Fin n) = (bit0 ⟨m, (Nat.le_add_right m m).trans_lt h⟩ : Fin _) :=
-  eq_of_val_eq (Nat.mod_eq_of_lt h).symm
-#align fin.mk_bit0 Fin.mk_bit0
-
-@[simp, deprecated]
-theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
-    (⟨bit1 m, h⟩ : Fin n) =
-      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) := by
-  ext
-  simp only [bit1, bit0] at h
-  simp only [bit1, bit0, val_add, val_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
-#align fin.mk_bit1 Fin.mk_bit1
-
-end Bit
-
+#noalign fin.mk_bit0
+#noalign fin.mk_bit1
 #align fin.val_two Fin.val_two
-
 --- Porting note: syntactically the same as the above
 #align fin.coe_two Fin.val_two
 
@@ -923,7 +883,7 @@ theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p �
   simp [Fin.lt_def, -val_fin_lt]; omega
 #align fin.succ_above_lt_gt Fin.castSucc_lt_or_lt_succ
 
-@[deprecated] alias succAbove_lt_gt := castSucc_lt_or_lt_succ
+@[deprecated (since := "2024-05-30")] alias succAbove_lt_gt := castSucc_lt_or_lt_succ
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -1443,7 +1403,8 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 #align fin.succ_above_last_apply Fin.succAbove_last_apply
 
-@[deprecated] lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
+@[deprecated (since := "2024-05-30")]
+lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
 #align fin.succ_above_lt_ge Fin.succAbove_lt_ge
 
@@ -1626,7 +1587,7 @@ lemma predAbove_castSucc_of_lt (p i : Fin n) (h : p < i) (hi := castSucc_ne_zero
     p.predAbove (castSucc i) = i.castSucc.pred hi := by
   rw [predAbove_of_castSucc_lt _ _ (castSucc_lt_castSucc_iff.2 h)]
 
-lemma predAbove_castSucc_of_le (p i : Fin n) (h : i ≤ p) :p.predAbove (castSucc i) = i := by
+lemma predAbove_castSucc_of_le (p i : Fin n) (h : i ≤ p) : p.predAbove (castSucc i) = i := by
   rw [predAbove_of_le_castSucc _ _ (castSucc_le_castSucc_iff.mpr h), castPred_castSucc]
 
 @[simp] lemma predAbove_castSucc_self (p : Fin n) : p.predAbove (castSucc p) = p :=
@@ -1848,6 +1809,8 @@ open Nat Int
 /-- Negation on `Fin n` -/
 instance neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
+
+theorem neg_def (a : Fin n) : -a = ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩ := rfl
 
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl

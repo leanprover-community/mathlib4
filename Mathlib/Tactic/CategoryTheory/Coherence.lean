@@ -295,3 +295,9 @@ elab_rules : tactic
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop
+
+end Coherence
+
+end Tactic
+
+end Mathlib

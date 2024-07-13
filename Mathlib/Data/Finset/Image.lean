@@ -86,10 +86,7 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
       simpa, fun h => ⟨_, h, by simp⟩⟩
 #align finset.mem_map_equiv Finset.mem_map_equiv
 
--- The simpNF linter says that the LHS can be simplified via `Finset.mem_map`.
--- However this is a higher priority lemma.
--- https://github.com/leanprover/std4/issues/207
-@[simp 1100, nolint simpNF]
+@[simp 1100]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
   mem_map_of_injective f.2
 #align finset.mem_map' Finset.mem_map'
@@ -210,7 +207,7 @@ theorem mapEmbedding_apply : mapEmbedding f s = map f s :=
 
 theorem filter_map {p : β → Prop} [DecidablePred p] :
     (s.map f).filter p = (s.filter (p ∘ f)).map f :=
-  eq_of_veq (map_filter _ _ _)
+  eq_of_veq (Multiset.filter_map _ _ _)
 #align finset.filter_map Finset.filter_map
 
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
@@ -326,7 +323,7 @@ end Map
 
 theorem range_add_one' (n : ℕ) :
     range (n + 1) = insert 0 ((range n).map ⟨fun i => i + 1, fun i j => by simp⟩) := by
-  ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.succ_eq_add_one, Nat.zero_lt_succ n]
+  ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.zero_lt_succ n]
 #align finset.range_add_one' Finset.range_add_one'
 
 /-! ### image -/
@@ -431,7 +428,7 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
 
-@[deprecated image_nonempty] -- 2023-12-29
+@[deprecated image_nonempty (since := "2023-12-29")]
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
   image_nonempty
 
@@ -884,6 +881,6 @@ end Equiv
 
 namespace Finset
 
-@[deprecated] alias image_filter := filter_image -- 2023-12-27
+@[deprecated (since := "2023-12-27")] alias image_filter := filter_image
 
 end Finset
