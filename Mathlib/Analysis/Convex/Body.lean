@@ -71,7 +71,6 @@ protected theorem isCompact (K : ConvexBody V) : IsCompact (K : Set V) :=
   K.isCompact'
 #align convex_body.is_compact ConvexBody.isCompact
 
--- Porting note (#10756): new theorem
 protected theorem isClosed [T2Space V] (K : ConvexBody V) : IsClosed (K : Set V) :=
   K.isCompact.isClosed
 
@@ -197,7 +196,6 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
   dist_triangle K L M := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=
@@ -234,7 +232,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     refine lt_of_le_of_lt ?_ hn
     exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
-    exact (le_add_iff_nonneg_right _).mpr (by positivity)
+    exact le_add_of_nonneg_right (by positivity)
 
 end SeminormedAddCommGroup
 

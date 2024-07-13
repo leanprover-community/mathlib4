@@ -116,7 +116,7 @@ def functor : C ⥤ Quotient r where
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
 instance full_functor : (functor r).Full where
-  map_surjective f:= ⟨Quot.out f, by simp [functor]⟩
+  map_surjective f := ⟨Quot.out f, by simp [functor]⟩
 
 instance essSurj_functor : (functor r).EssSurj where
   mem_essImage Y :=
@@ -219,6 +219,9 @@ theorem lift.isLift_hom (X : C) : (lift.isLift r F H).hom.app X = 𝟙 (F.obj X)
 theorem lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X) :=
   rfl
 #align category_theory.quotient.lift.is_lift_inv CategoryTheory.Quotient.lift.isLift_inv
+
+theorem lift_obj_functor_obj (X : C) :
+    (lift r F H).obj ((functor r).obj X) = F.obj X := rfl
 
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
     (lift r F H).map ((functor r).map f) = F.map f := by

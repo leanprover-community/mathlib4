@@ -254,8 +254,8 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
       exact ENNReal.mul_le_of_le_div ha.le
   have B : ∀ᵐ x ∂μ, ∀ c ∈ w, ∀ d ∈ w, c < d →
       ¬((∃ᶠ a in v.filterAt x, ρ a / μ a < c) ∧ ∃ᶠ a in v.filterAt x, d < ρ a / μ a) := by
-    -- Adaptation note: 2024-04-23
-    -- The next two lines were previously just `simpa only [ae_ball_iff w_count, ae_all_iff]`
+    #adaptation_note /-- 2024-04-23
+    The next two lines were previously just `simpa only [ae_ball_iff w_count, ae_all_iff]` -/
     rw [ae_ball_iff w_count]; intro x hx; rw [ae_ball_iff w_count]; revert x
     simpa only [ae_all_iff]
   filter_upwards [B]
@@ -808,8 +808,8 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
       ∀ᵉ (n : ℕ) (c ∈ t),
         Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖₊ ∂μ) / μ a)
           (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖₊) := by
-    -- Adaptation note: 2024-04-23
-    -- The next two lines were previously just `simp_rw [ae_all_iff, ae_ball_iff t_count]`.
+    #adaptation_note /-- 2024-04-23
+    The next two lines were previously just `simp_rw [ae_all_iff, ae_ball_iff t_count]`. -/
     simp_rw [ae_all_iff]
     intro x; rw [ae_ball_iff t_count]; revert x
     intro n c _
@@ -844,7 +844,7 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div'_of_integrable {f : α → E} (hf : 
     filter_upwards [v.eventually_filterAt_subset_of_nhds (IsOpen.mem_nhds (A.set_mem n) xn),
       v.eventually_filterAt_measurableSet x] with a ha h'a
     congr 1
-    apply set_lintegral_congr_fun h'a
+    apply setLIntegral_congr_fun h'a
     filter_upwards with y hy using (by simp only [ha hy, indicator_of_mem])
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
   obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, (‖f x - c‖₊ : ℝ≥0∞) < ε / 2 := by
@@ -898,7 +898,7 @@ theorem ae_tendsto_lintegral_nnnorm_sub_div {f : α → E} (hf : LocallyIntegrab
   filter_upwards [v.eventually_filterAt_subset_of_nhds ((u_open n).mem_nhds hn),
     v.eventually_filterAt_measurableSet x] with a ha h'a
   congr 1
-  refine set_lintegral_congr_fun h'a (eventually_of_forall (fun y hy ↦ ?_))
+  refine setLIntegral_congr_fun h'a (eventually_of_forall (fun y hy ↦ ?_))
   rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]
 
 theorem eventually_filterAt_integrableOn (x : α) {f : α → E} (hf : LocallyIntegrable f μ) :

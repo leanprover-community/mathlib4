@@ -593,3 +593,9 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     have nc : Q(ℕ) := mkRawNatLit c
     have : Q(Nat.mod $nb $na = Nat.succ $nc) := (q(Eq.refl (Nat.succ $nc)) : Expr)
     return .isFalse q(isNat_dvd_false $pa $pb $this)
+
+end NormNum
+
+end Meta
+
+end Mathlib

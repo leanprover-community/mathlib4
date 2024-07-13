@@ -77,6 +77,10 @@ attribute [simp] IsRegular.left IsRegular.right
 attribute [to_additive] IsRegular
 
 @[to_additive]
+theorem isRegular_iff {c : R} : IsRegular c ↔ IsLeftRegular c ∧ IsRightRegular c :=
+  ⟨fun ⟨h1, h2⟩ => ⟨h1, h2⟩, fun ⟨h1, h2⟩ => ⟨h1, h2⟩⟩
+
+@[to_additive]
 protected theorem MulLECancellable.isLeftRegular [PartialOrder R] {a : R}
     (ha : MulLECancellable a) : IsLeftRegular a :=
   ha.Injective
@@ -122,6 +126,12 @@ theorem IsRightRegular.mul (rra : IsRightRegular a) (rrb : IsRightRegular b) :
   show Function.Injective (· * (a * b)) from comp_mul_right b a ▸ rrb.comp rra
 #align is_right_regular.mul IsRightRegular.mul
 #align is_add_right_regular.add IsAddRightRegular.add
+
+/-- In a semigroup, the product of regular elements is regular. -/
+@[to_additive "In an additive semigroup, the sum of add-regular elements is add-regular."]
+theorem IsRegular.mul (rra : IsRegular a) (rrb : IsRegular b) :
+    IsRegular (a * b) :=
+  ⟨rra.left.mul rrb.left, rra.right.mul rrb.right⟩
 
 /-- If an element `b` becomes left-regular after multiplying it on the left by a left-regular
 element, then `b` is left-regular. -/
@@ -176,11 +186,7 @@ theorem isRegular_mul_and_mul_iff :
       ⟨⟨IsLeftRegular.of_mul ba.left, IsRightRegular.of_mul ab.right⟩,
         ⟨IsLeftRegular.of_mul ab.left, IsRightRegular.of_mul ba.right⟩⟩
   · rintro ⟨ha, hb⟩
-    exact
-      ⟨⟨(mul_isLeftRegular_iff _ ha.left).mpr hb.left,
-          (mul_isRightRegular_iff _ hb.right).mpr ha.right⟩,
-        ⟨(mul_isLeftRegular_iff _ hb.left).mpr ha.left,
-          (mul_isRightRegular_iff _ ha.right).mpr hb.right⟩⟩
+    exact ⟨ha.mul hb, hb.mul ha⟩
 #align is_regular_mul_and_mul_iff isRegular_mul_and_mul_iff
 #align is_add_regular_add_and_add_iff isAddRegular_add_and_add_iff
 
@@ -375,11 +381,11 @@ theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g :=
 
 section CancelMonoidWithZero
 
-variable [CancelMonoidWithZero R] {a : R}
+variable [MulZeroClass R] [IsCancelMulZero R] {a : R}
 
 /-- Non-zero elements of an integral domain are regular. -/
 theorem isRegular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
-  ⟨fun _ _ => (mul_right_inj' a0).mp, fun _ _ => (mul_left_inj' a0).mp⟩
+  ⟨fun _ _ => mul_left_cancel₀ a0, fun _ _ => mul_right_cancel₀ a0⟩
 #align is_regular_of_ne_zero isRegular_of_ne_zero
 
 /-- In a non-trivial integral domain, an element is regular iff it is non-zero. -/

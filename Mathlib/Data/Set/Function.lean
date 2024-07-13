@@ -413,6 +413,9 @@ theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 #align set.maps_to_empty Set.mapsTo_empty
 
+@[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
+  simp [mapsTo', subset_empty_iff]
+
 /-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
 theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
   (hs.image f).mono (mapsTo'.mp h)
@@ -579,6 +582,19 @@ variable (f) in
 theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻¹' range f := by
   simp only [← image_univ, ← image_restrictPreimage, preimage_univ]
 #align set.range_restrict_preimage Set.range_restrictPreimage
+
+@[simp]
+theorem restrictPreimage_mk (h : a ∈ f ⁻¹' t) : t.restrictPreimage f ⟨a, h⟩ = ⟨f a, h⟩ := rfl
+
+theorem image_val_preimage_restrictPreimage {u : Set t} :
+    Subtype.val '' (t.restrictPreimage f ⁻¹' u) = f ⁻¹' (Subtype.val '' u) := by
+  ext
+  simp
+
+theorem preimage_restrictPreimage {u : Set t} :
+    t.restrictPreimage f ⁻¹' u = (fun a : f ⁻¹' t ↦ f a) ⁻¹' (Subtype.val '' u) := by
+  rw [← preimage_preimage (g := f) (f := Subtype.val), ← image_val_preimage_restrictPreimage,
+    preimage_image_eq _ Subtype.val_injective]
 
 variable {U : ι → Set β}
 
@@ -760,7 +776,22 @@ lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t
   exact ⟨y, ⟨ys, zt⟩, hy⟩
 #align set.inj_on.image_inter Set.InjOn.image_inter
 
-end injOn
+lemma InjOn.image (h : s.InjOn f) : s.powerset.InjOn (image f) :=
+  fun s₁ hs₁ s₂ hs₂ h' ↦ by rw [← h.preimage_image_inter hs₁, h', h.preimage_image_inter hs₂]
+
+theorem InjOn.image_eq_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
+    f '' s₁ = f '' s₂ ↔ s₁ = s₂ :=
+  h.image.eq_iff h₁ h₂
+
+lemma InjOn.image_subset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
+    f '' s₁ ⊆ f '' s₂ ↔ s₁ ⊆ s₂ := by
+  refine' ⟨fun h' ↦ _, image_subset _⟩
+  rw [← h.preimage_image_inter h₁, ← h.preimage_image_inter h₂]
+  exact inter_subset_inter_left _ (preimage_mono h')
+
+lemma InjOn.image_ssubset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
+    f '' s₁ ⊂ f '' s₂ ↔ s₁ ⊂ s₂ := by
+  simp_rw [ssubset_def, h.image_subset_image_iff h₁ h₂, h.image_subset_image_iff h₂ h₁]
 
 -- TODO: can this move to a better place?
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
@@ -768,6 +799,25 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
   rw [disjoint_iff_inter_eq_empty] at h ⊢
   rw [← hf.image_inter hs ht, h, image_empty]
 #align disjoint.image Disjoint.image
+
+lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f '' (s ∩ t) := by
+  refine subset_antisymm (subset_diff.2 ⟨image_subset f diff_subset, ?_⟩)
+    (diff_subset_iff.2 (by rw [← image_union, inter_union_diff]))
+  exact Disjoint.image disjoint_sdiff_inter h diff_subset inter_subset_left
+
+lemma InjOn.image_diff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
+    f '' (s \ t) = f '' s \ f '' t := by
+  rw [h.image_diff, inter_eq_self_of_subset_right hst]
+
+theorem InjOn.imageFactorization_injective (h : InjOn f s) :
+    Injective (s.imageFactorization f) :=
+  fun ⟨x, hx⟩ ⟨y, hy⟩ h' ↦ by simpa [imageFactorization, h.eq_iff hx hy] using h'
+
+@[simp] theorem imageFactorization_injective_iff : Injective (s.imageFactorization f) ↔ InjOn f s :=
+  ⟨fun h x hx y hy _ ↦ by simpa using @h ⟨x, hx⟩ ⟨y, hy⟩ (by simpa [imageFactorization]),
+    InjOn.imageFactorization_injective⟩
+
+end injOn
 
 section graphOn
 
@@ -829,6 +879,9 @@ theorem surjOn_iff_exists_map_subtype :
 theorem surjOn_empty (f : α → β) (s : Set α) : SurjOn f s ∅ :=
   empty_subset _
 #align set.surj_on_empty Set.surjOn_empty
+
+@[simp] theorem surjOn_empty_iff : SurjOn f ∅ t ↔ t = ∅ := by
+  simp [SurjOn, subset_empty_iff]
 
 @[simp] lemma surjOn_singleton : SurjOn f s {b} ↔ b ∈ f '' s := singleton_subset_iff
 #align set.surj_on_singleton Set.surjOn_singleton
@@ -999,6 +1052,12 @@ theorem bijOn_empty (f : α → β) : BijOn f ∅ ∅ :=
   ⟨mapsTo_empty f ∅, injOn_empty f, surjOn_empty f ∅⟩
 #align set.bij_on_empty Set.bijOn_empty
 
+@[simp] theorem bijOn_empty_iff_left : BijOn f s ∅ ↔ s = ∅ :=
+  ⟨fun h ↦ by simpa using h.mapsTo, by rintro rfl; exact bijOn_empty f⟩
+
+@[simp] theorem bijOn_empty_iff_right : BijOn f ∅ t ↔ t = ∅ :=
+  ⟨fun h ↦ by simpa using h.surjOn, by rintro rfl; exact bijOn_empty f⟩
+
 @[simp] lemma bijOn_singleton : BijOn f {a} {b} ↔ f a = b := by simp [BijOn, eq_comm]
 #align set.bij_on_singleton Set.bijOn_singleton
 
@@ -1100,6 +1159,16 @@ alias ⟨_root_.Function.Bijective.bijOn_univ, _⟩ := bijective_iff_bijOn_univ
 theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :=
   ⟨hst.surjOn.mapsTo_compl hf.1, hf.1.injOn, hst.mapsTo.surjOn_compl hf.2⟩
 #align set.bij_on.compl Set.BijOn.compl
+
+theorem BijOn.subset_right {r : Set β} (hf : BijOn f s t) (hrt : r ⊆ t) :
+    BijOn f (s ∩ f ⁻¹' r) r := by
+  refine ⟨inter_subset_right, hf.injOn.mono inter_subset_left, fun x hx ↦ ?_⟩
+  obtain ⟨y, hy, rfl⟩ := hf.surjOn (hrt hx)
+  exact ⟨y, ⟨hy, hx⟩, rfl⟩
+
+theorem BijOn.subset_left {r : Set α} (hf : BijOn f s t) (hrs : r ⊆ s) :
+    BijOn f r (f '' r) :=
+  (hf.injOn.mono hrs).bijOn_image
 
 end bijOn
 
@@ -1372,6 +1441,18 @@ theorem SurjOn.mapsTo_invFunOn [Nonempty α] (h : SurjOn f s t) : MapsTo (invFun
   fun _y hy => mem_preimage.2 <| invFunOn_mem <| h hy
 #align set.surj_on.maps_to_inv_fun_on Set.SurjOn.mapsTo_invFunOn
 
+/-- This lemma is a special case of `rightInvOn_invFunOn.image_image'`; it may make more sense
+to use the other lemma directly in an application. -/
+theorem SurjOn.image_invFunOn_image_of_subset [Nonempty α] {r : Set β} (hf : SurjOn f s t)
+    (hrt : r ⊆ t) : f '' (f.invFunOn s '' r) = r :=
+  hf.rightInvOn_invFunOn.image_image' hrt
+
+/-- This lemma is a special case of `rightInvOn_invFunOn.image_image`; it may make more sense
+to use the other lemma directly in an application. -/
+theorem SurjOn.image_invFunOn_image [Nonempty α] (hf : SurjOn f s t) :
+    f '' (f.invFunOn s '' t) = t :=
+  hf.rightInvOn_invFunOn.image_image
+
 theorem SurjOn.bijOn_subset [Nonempty α] (h : SurjOn f s t) : BijOn f (invFunOn f s '' t) t := by
   refine h.invOn_invFunOn.bijOn ?_ (mapsTo_image _ _)
   rintro _ ⟨y, hy, rfl⟩
@@ -1405,6 +1486,36 @@ variable {f s}
 lemma exists_image_eq_injOn_of_subset_range (ht : t ⊆ range f) :
     ∃ s, f '' s = t ∧ InjOn f s :=
   image_preimage_eq_of_subset ht ▸ exists_image_eq_and_injOn _ _
+
+/-- If `f` maps `s` bijectively to `t` and a set `t'` is contained in the image of some `s₁ ⊇ s`,
+then `s₁` has a subset containing `s` that `f` maps bijectively to `t'`.-/
+theorem BijOn.exists_extend_of_subset {t' : Set β} (h : BijOn f s t) (hss₁ : s ⊆ s₁) (htt' : t ⊆ t')
+    (ht' : SurjOn f s₁ t') : ∃ s', s ⊆ s' ∧ s' ⊆ s₁ ∧ Set.BijOn f s' t' := by
+  obtain ⟨r, hrss, hbij⟩ := exists_subset_bijOn ((s₁ ∩ f ⁻¹' t') \ f ⁻¹' t) f
+  rw [image_diff_preimage, image_inter_preimage] at hbij
+  refine ⟨s ∪ r, subset_union_left, ?_, ?_, ?_, fun y hyt' ↦ ?_⟩
+  · exact union_subset hss₁ <| hrss.trans <| diff_subset.trans inter_subset_left
+  · rw [mapsTo', image_union, hbij.image_eq, h.image_eq, union_subset_iff]
+    exact ⟨htt', diff_subset.trans inter_subset_right⟩
+  · rw [injOn_union, and_iff_right h.injOn, and_iff_right hbij.injOn]
+    · refine fun x hxs y hyr hxy ↦ (hrss hyr).2 ?_
+      rw [← h.image_eq]
+      exact ⟨x, hxs, hxy⟩
+    exact (subset_diff.1 hrss).2.symm.mono_left h.mapsTo
+  rw [image_union, h.image_eq, hbij.image_eq, union_diff_self]
+  exact .inr ⟨ht' hyt', hyt'⟩
+
+/-- If `f` maps `s` bijectively to `t`, and `t'` is a superset of `t` contained in the range of `f`,
+then `f` maps some superset of `s` bijectively to `t'`. -/
+theorem BijOn.exists_extend {t' : Set β} (h : BijOn f s t) (htt' : t ⊆ t') (ht' : t' ⊆ range f) :
+    ∃ s', s ⊆ s' ∧ BijOn f s' t' := by
+  simpa using h.exists_extend_of_subset (subset_univ s) htt' (by simpa [SurjOn])
+
+theorem InjOn.exists_subset_injOn_subset_range_eq {r : Set α} (hinj : InjOn f r) (hrs : r ⊆ s) :
+    ∃ u : Set α, r ⊆ u ∧ u ⊆ s ∧ f '' u = f '' s ∧ InjOn f u := by
+  obtain ⟨u, hru, hus, h⟩ := hinj.bijOn_image.exists_extend_of_subset hrs
+    (image_subset f hrs) Subset.rfl
+  exact ⟨u, hru, hus, h.image_eq, h.injOn⟩
 
 theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
     (h : Classical.choice n ∈ s) : invFun f ⁻¹' s = f '' s ∪ (range f)ᶜ := by
@@ -1640,7 +1751,6 @@ theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : �
   pi_if _ _ _
 #align set.pi_piecewise Set.pi_piecewise
 
--- Porting note (#10756): new lemma
 theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
     [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
   simp [compl_eq_univ_diff]

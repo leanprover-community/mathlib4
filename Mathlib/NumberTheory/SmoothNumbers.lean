@@ -212,7 +212,7 @@ open List Perm in
 /-- We establish the bijection from `ℕ × factoredNumbers s` to `factoredNumbers (s ∪ {p})`
 given by `(e, n) ↦ p^e * n` when `p ∉ s` is a prime. See `Nat.factoredNumbers_insert` for
 when `p` is not prime. -/
-def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p ∉ s) :
+def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : p ∉ s) :
     ℕ × factoredNumbers s ≃ factoredNumbers (insert p s) where
   toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_factoredNumbers hp e n.2⟩
   invFun := fun ⟨m, _⟩  ↦ (m.factorization p,
@@ -239,23 +239,23 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p
     rw [← factors_count_eq, ← prod_replicate, ← prod_append]
     nth_rewrite 3 [← prod_factors hm₀]
     have : m.factors.filter (· = p) = m.factors.filter (¬ · ∈ s) := by
-      refine (filter_congr' fun q hq ↦ ?_).symm
+      refine (filter_congr fun q hq ↦ ?_).symm
       simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, decide_eq_true_eq]
       rcases Finset.mem_insert.mp <| hm _ hq with h | h
-      · simp only [h, hs, not_false_eq_true]
-      · simp only [h, not_true_eq_false, false_iff]
+      · simp only [h, hs, decide_False, Bool.not_false, decide_True]
+      · simp only [h, decide_True, Bool.not_true, false_eq_decide_iff]
         exact fun H ↦ hs <| H ▸ h
     refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
     simp only [decide_not]
     exact filter_append_perm (· ∈ s) (factors m)
 
 @[simp]
-lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp: p.Prime) (hs : p ∉ s)
+lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp : p.Prime) (hs : p ∉ s)
     (hm : m ∈ factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 @[simp]
-lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p ∉ s)
+lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : p ∉ s)
     (x : ℕ × factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs x = p ^ x.1 * x.2 := rfl
 
@@ -392,18 +392,18 @@ open List Perm Equiv in
 /-- We establish the bijection from `ℕ × smoothNumbers p` to `smoothNumbers (p+1)`
 given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` for
 when `p` is not prime. -/
-def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
+def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers p.succ :=
   ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
     equivProdNatFactoredNumbers hp Finset.not_mem_range_self).trans <|
     setCongr <| (smoothNumbers_eq_factoredNumbers p.succ) ▸ Finset.range_succ ▸ rfl
 
 @[simp]
-lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp: p.Prime) (hm : m ∈ p.smoothNumbers) :
+lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
     equivProdNatSmoothNumbers hp (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 @[simp]
-lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp: p.Prime) (x : ℕ × p.smoothNumbers) :
+lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp : p.Prime) (x : ℕ × p.smoothNumbers) :
     equivProdNatSmoothNumbers hp x = p ^ x.1 * x.2 := rfl
 
 

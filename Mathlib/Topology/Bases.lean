@@ -46,7 +46,7 @@ conditions are equivalent in this case).
 For our applications we are interested that there exists a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 
-### TODO:
+## TODO
 
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
@@ -298,7 +298,7 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
 
-@[deprecated]
+@[deprecated (since := "2023-12-24")]
 protected theorem IsTopologicalBasis.continuous {β : Type*} [TopologicalSpace β] {B : Set (Set β)}
     (hB : IsTopologicalBasis B) (f : α → β) (hf : ∀ s ∈ B, IsOpen (f ⁻¹' s)) : Continuous f :=
   hB.continuous_iff.2 hf
@@ -617,6 +617,23 @@ theorem isTopologicalBasis_subtype
     IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
   h.inducing ⟨rfl⟩
 
+section
+variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+
+lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → π i) := by
+  classical
+  refine (isTopologicalBasis_pi fun _ ↦ isTopologicalBasis_opens).isOpenMap_iff.2 ?_
+  rintro _ ⟨U, s, hU, rfl⟩
+  obtain h | h := ((s : Set ι).pi U).eq_empty_or_nonempty
+  · simp [h]
+  by_cases hi : i ∈ s
+  · rw [eval_image_pi (mod_cast hi) h]
+    exact hU _ hi
+  · rw [eval_image_pi_of_not_mem (mod_cast hi), if_pos h]
+    exact isOpen_univ
+
+end
+
 -- Porting note: moved `DenseRange.separableSpace` up
 
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
@@ -677,7 +694,7 @@ attribute [instance] FirstCountableTopology.nhds_generated_countable
 first-countable. -/
 theorem firstCountableTopology_induced (α β : Type*) [t : TopologicalSpace β]
     [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) :=
-  let _ := t.induced f;
+  let _ := t.induced f
   ⟨fun x ↦ nhds_induced f x ▸ inferInstance⟩
 
 variable {α}
