@@ -1161,7 +1161,7 @@ The determinant of the matrix is the discriminant of the quadratic form.
 variable {n : Type w} [Fintype n] [DecidableEq n]
 variable [CommRing R] [AddCommMonoid M] [Module R M]
 
-/-- `M.toQuadraticMap'` is the map `fun x ↦ col x * M * row x` as a quadratic form. -/
+/-- `M.toQuadraticMap'` is the map `fun x ↦ row x * M * col x` as a quadratic form. -/
 def Matrix.toQuadraticMap' (M : Matrix n n R) : QuadraticMap R (n → R) R :=
   LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' M)
 #align matrix.to_quadratic_form' Matrix.toQuadraticMap'
