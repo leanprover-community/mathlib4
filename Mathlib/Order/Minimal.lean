@@ -59,6 +59,14 @@ lemma Maximal.le_of_le (h : Maximal P x) (hy : P y) (hle : x ≤ y) : y ≤ x :=
 @[simp] theorem maximal_toDual_iff : Maximal (fun x ↦ P (ofDual x)) (toDual x) ↔ Minimal P x :=
   Iff.rfl
 
+theorem minimal_congr (hPQ : ∀ x, P x ↔ Q x) : Minimal P = Minimal Q := by
+  ext
+  simp_rw [Minimal, hPQ]
+
+theorem maximal_congr (hPQ : ∀ x, P x ↔ Q x) : Maximal P = Maximal Q := by
+  ext
+  simp_rw [Maximal, hPQ]
+
 end LE
 
 section Preorder
@@ -138,13 +146,11 @@ theorem maximal_and_iff_left_of_imp (hPQ : ∀ ⦃x⦄, P x → Q x) :
 @[simp] theorem maximal_maximal : Maximal (Maximal P) x ↔ Maximal P x :=
   minimal_minimal (α := αᵒᵈ)
 
-@[simp] theorem maximal_true_subtype {x : Subtype P} :
-    Maximal (fun _ ↦ True) x ↔ Maximal P x := by
+theorem maximal_true_subtype {x : Subtype P} : Maximal (fun _ ↦ True) x ↔ Maximal P x := by
   obtain ⟨x, hx⟩ := x
   simp [Maximal, hx]
 
-@[simp] theorem minimal_true_subtype {x : Subtype P} :
-    Minimal (fun _ ↦ True) x ↔ Minimal P x := by
+theorem minimal_true_subtype {x : Subtype P} : Minimal (fun _ ↦ True) x ↔ Minimal P x := by
   obtain ⟨x, hx⟩ := x
   simp [Minimal, hx]
 
@@ -248,6 +254,12 @@ end PartialOrder
 section Subset
 
 variable {P : Set α → Prop} {s t : Set α}
+
+theorem Minimal.eq_of_subset (h : Minimal P s) (ht : P t) (hts : t ⊆ s) : s = t :=
+  h.eq_of_le ht hts
+
+theorem Maximal.eq_of_subset (h : Maximal P s) (ht : P t) (hst : s ⊆ t) : s = t :=
+  h.eq_of_le ht hst
 
 theorem minimal_subset_iff : Minimal P s ↔ P s ∧ ∀ ⦃t⦄, P t → t ⊆ s → s = t :=
   _root_.minimal_iff
@@ -418,6 +430,24 @@ theorem maximal_mem_image_iff (ha : a ∈ s) (hf : ∀ ⦃x y⦄, x ∈ s → y 
     Maximal (· ∈ f '' s) (f a) ↔ Maximal (· ∈ s) a :=
   minimal_mem_image_iff (α := αᵒᵈ) (β := βᵒᵈ) (s := s) ha fun _ _ hx hy ↦ hf hy hx
 
+theorem minimal_mem_image_antitone (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x))
+    (hx : Minimal (· ∈ s) x) : Maximal (· ∈ f '' s) (f x) :=
+  minimal_mem_image (β := βᵒᵈ) (fun _ _ h h' ↦ hf h' h) hx
+
+theorem maximal_mem_image_antitone (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x))
+    (hx : Maximal (· ∈ s) x) : Minimal (· ∈ f '' s) (f x) :=
+  maximal_mem_image (β := βᵒᵈ) (fun _ _ h h' ↦ hf h' h) hx
+
+theorem minimal_mem_image_antitone_iff (ha : a ∈ s)
+    (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
+    Minimal (· ∈ f '' s) (f a) ↔ Maximal (· ∈ s) a :=
+  maximal_mem_image_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
+
+theorem maximal_mem_image_antitone_iff (ha : a ∈ s)
+    (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
+    Maximal (· ∈ f '' s) (f a) ↔ Minimal (· ∈ s) a :=
+  minimal_mem_image_iff (β := βᵒᵈ) ha (fun _ _ h h' ↦ hf h' h)
+
 theorem image_setOf_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Minimal P x} = {x | Minimal (∃ x₀, P x₀ ∧ f x₀ = ·) x} := by
   refine Set.ext fun x ↦ ⟨?_, fun h ↦ ?_⟩
@@ -430,6 +460,14 @@ theorem image_setOf_maximal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y �
     f '' {x | Maximal P x} = {x | Maximal (∃ x₀, P x₀ ∧ f x₀ = ·) x} :=
   image_setOf_minimal (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
 
+theorem image_antitone_setOf_minimal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ y ≤ x)) :
+    f '' {x | Minimal P x} = {x | Maximal (∃ x₀, P x₀ ∧ f x₀ = ·) x} :=
+  image_setOf_minimal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
+
+theorem image_antitone_setOf_maximal (hf : ∀ ⦃x y⦄, P x → P y → (f x ≤ f y ↔ y ≤ x)) :
+    f '' {x | Maximal P x} = {x | Minimal (∃ x₀, P x₀ ∧ f x₀ = ·) x} :=
+  image_setOf_maximal (β := βᵒᵈ) (fun _ _ hx hy ↦ hf hy hx)
+
 theorem image_setOf_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Minimal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
   image_setOf_minimal hf
@@ -437,6 +475,14 @@ theorem image_setOf_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f 
 theorem image_setOf_maximal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ x ≤ y)) :
     f '' {x | Maximal (· ∈ s) x} = {x | Maximal (· ∈ f '' s) x} :=
   image_setOf_maximal hf
+
+theorem image_antitone_setOf_minimal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
+    f '' {x | Minimal (· ∈ s) x} = {x | Maximal (· ∈ f '' s) x} :=
+  image_antitone_setOf_minimal hf
+
+theorem image_antitone_setOf_maximal_mem (hf : ∀ ⦃x y⦄, x ∈ s → y ∈ s → (f x ≤ f y ↔ y ≤ x)) :
+    f '' {x | Maximal (· ∈ s) x} = {x | Minimal (· ∈ f '' s) x} :=
+  image_antitone_setOf_maximal hf
 
 end Function
 

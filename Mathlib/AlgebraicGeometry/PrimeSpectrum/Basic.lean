@@ -657,9 +657,10 @@ lemma vanishingIdeal_irreducibleComponents :
     vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
     minimalPrimes R := by
   rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals,
-    image_setOf_maximal,
-    ← minimals_swap, ← vanishingIdeal_isClosed_isIrreducible, image_minimals_of_rel_iff_rel]
-  exact fun s t hs _ ↦ vanishingIdeal_anti_mono_iff hs.1
+    image_antitone_setOf_maximal (fun s t hs _ ↦ (vanishingIdeal_anti_mono_iff hs.1).symm),
+    minimal_congr (P := Ideal.IsPrime) (Q := fun x ↦ x ∈ {x | Ideal.IsPrime x}) (by simp),
+    ← vanishingIdeal_isClosed_isIrreducible]
+  rfl
 
 lemma zeroLocus_minimalPrimes :
     zeroLocus ∘ (↑) '' minimalPrimes R =
