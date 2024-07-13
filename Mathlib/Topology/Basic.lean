@@ -754,7 +754,7 @@ theorem IsOpen.inter_frontier_eq (hs : IsOpen s) : s ∩ frontier s = ∅ := by
   rw [hs.frontier_eq, inter_diff_self]
 #align is_open.inter_frontier_eq IsOpen.inter_frontier_eq
 
-theorem disjoint_frontier_iff_iff_isClosed : Disjoint (frontier s) s ↔ IsOpen s := by
+theorem disjoint_frontier_iff_isOpen : Disjoint (frontier s) s ↔ IsOpen s := by
   rw [← isClosed_compl_iff, ← frontier_subset_iff_isClosed,
     frontier_compl, subset_compl_iff_disjoint_right]
 
