@@ -179,7 +179,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
     ] := by
   tfae_have 1 → 2
   · rintro hF S ⟨hS, hf⟩
-    have := preservesEpimorphism_of_preserves_shortExact_right F hF
+    have := preservesEpimorphisms_of_preserves_shortExact_right F hF
     refine ⟨?_, inferInstance⟩
     let T := ShortComplex.mk (Abelian.image.ι S.f) S.g (Abelian.image_ι_comp_eq_zero S.zero)
     let φ : S.map F ⟶ T.map F :=
@@ -219,17 +219,17 @@ For an additive functor `F : C ⥤ D` between abelian categories, the following 
 - `F` preserves short exact sequences, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then
   `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
 - `F` preserves exact sequences, i.e. if `A ⟶ B ⟶ C` is exact then `F(A) ⟶ F(B) ⟶ F(C)` is exact.
-- `F` preserves both finite limits and finite colimits.
 - `F` preserves homology.
+- `F` preserves both finite limits and finite colimits.
 -/
 lemma exact_tfae : List.TFAE
     [
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).ShortExact,
       ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact,
-      Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F),
-      Nonempty (PreservesHomology F)
+      Nonempty (PreservesHomology F),
+      Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F)
     ] := by
-  tfae_have 1 → 4
+  tfae_have 1 → 3
   · intro hF
     refine ⟨fun {X Y} f => ?_, fun {X Y} f => ?_⟩
     · have h := (preservesFiniteLimits_tfae F |>.out 0 2 |>.1 fun S hS =>
@@ -249,12 +249,12 @@ lemma exact_tfae : List.TFAE
           (ShortComplex.exact_iff_epi _ (by simp) |>.2 hS.epi_g)
     exact ⟨hF S hS.exact⟩
 
-  tfae_have 4 → 3
+  tfae_have 3 → 4
   · rintro ⟨h⟩
     exact ⟨⟨preservesFiniteLimitsOfPreservesHomology F⟩,
       ⟨preservesFiniteColimitsOfPreservesHomology F⟩⟩
 
-  tfae_have 3 → 2
+  tfae_have 4 → 2
   · rintro ⟨⟨h1⟩, ⟨h2⟩⟩
     exact fun _ h => h.map F
 
