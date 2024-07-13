@@ -91,7 +91,7 @@ deriving Inhabited
 structure State where
   /-- Simp's cache is used as the `funProp` tactic is designed to be used inside of simp and utilize
   its cache -/
-  cache        : Simp.Cache := {}
+  cache : Simp.Cache := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
