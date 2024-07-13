@@ -38,9 +38,6 @@ import re
 import shutil
 
 ERR_MOD = 2 # module docstring
-ERR_LIN = 3 # line length
-ERR_TAC = 9 # imported Mathlib.Tactic
-ERR_TAC2 = 10 # imported Lake in Mathlib
 ERR_IBY = 11 # isolated by
 ERR_IWH = 22 # isolated where
 ERR_DOT = 12 # isolated or low focusing dot
@@ -64,15 +61,7 @@ with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
         path = ROOT_DIR / filename
         if errno == "ERR_MOD":
             exceptions += [(ERR_MOD, path, None)]
-        elif errno == "ERR_LIN":
-            exceptions += [(ERR_LIN, path, None)]
-        elif errno == "ERR_ADN":
-            pass # maintained by the Lean style linter now
-        elif errno == "ERR_TAC":
-            exceptions += [(ERR_TAC, path, None)]
-        elif errno == "ERR_TAC2":
-            exceptions += [(ERR_TAC2, path, None)]
-        elif errno == "ERR_NUM_LIN":
+        elif errno in ["ERR_LIN", "ERR_ADN", "ERR_NUM_LIN"]:
             pass # maintained by the Lean style linter now
         else:
             print(f"Error: unexpected errno in style-exceptions.txt: {errno}")
@@ -215,17 +204,6 @@ def nonterminal_simp_check(lines, path):
     newlines.append(lines[-1])
     return errors, newlines
 
-def long_lines_check(lines, path):
-    errors = []
-    # TODO: find a good way to break long lines
-    # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
-    for line_nr, line in lines:
-        if "http" in line or "#align" in line:
-            continue
-        if len(line) > 101:
-            errors += [(ERR_LIN, line_nr, path)]
-    return errors, lines
-
 def import_only_check(lines, path):
     for _, line, is_comment in annotate_comments(lines):
         if is_comment:
@@ -259,20 +237,6 @@ def regular_check(lines, path):
             break
         if words[0] == "/-!":
             break
-    return errors, lines
-
-def banned_import_check(lines, path):
-    errors = []
-    for line_nr, line, is_comment in annotate_comments(lines):
-        if is_comment:
-            continue
-        imports = line.split()
-        if imports[0] != "import":
-            break
-        if imports[1] in ["Mathlib.Tactic"]:
-            errors += [(ERR_TAC, line_nr, path)]
-        elif imports[1] == "Lake" or imports[1].startswith("Lake."):
-            errors += [(ERR_TAC2, line_nr, path)]
     return errors, lines
 
 def isolated_by_dot_semicolon_check(lines, path):
@@ -350,12 +314,6 @@ def format_errors(errors):
         new_exceptions = True
         if errno == ERR_MOD:
             output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
-        if errno == ERR_LIN:
-            output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_TAC:
-            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
-        if errno == ERR_TAC2:
-            output_message(path, line_nr, "ERR_TAC2", "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to allow this linter.")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_IWH:
@@ -387,7 +345,6 @@ def lint(path, fix=False):
         newlines = enum_lines
         for error_check in [line_endings_check,
                             four_spaces_in_second_line,
-                            long_lines_check,
                             isolated_by_dot_semicolon_check,
                             left_arrow_check,
                             nonterminal_simp_check]:
@@ -396,8 +353,6 @@ def lint(path, fix=False):
 
         if not import_only_check(newlines, path):
             errs, newlines = regular_check(newlines, path)
-            format_errors(errs)
-            errs, newlines = banned_import_check(newlines, path)
             format_errors(errs)
     # if we haven't been asked to fix errors, or there are no errors or no fixes, we're done
     if fix and new_exceptions and enum_lines != newlines:

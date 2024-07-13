@@ -43,7 +43,10 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally smooth if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`. -/
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`.
+
+See <https://stacks.math.columbia.edu/tag/00TI>.
+-/
 @[mk_iff]
 class FormallySmooth : Prop where
   comp_surjective :
@@ -202,7 +205,6 @@ variable {R S : Type u} [CommRing R] [CommSemiring S]
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
 variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
     (hg : f.kerSquareLift.comp g = AlgHom.id R A) : FormallySmooth R A := by
   constructor
@@ -354,7 +356,12 @@ section
 variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
-/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
+/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation.
+
+In the stacks project, the definition of smooth is completely different, and tag
+<https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent
+to this.
+-/
 class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
   formallySmooth : FormallySmooth R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance
