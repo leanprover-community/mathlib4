@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Data.ENat.Lattice
 
 #align_import combinatorics.simple_graph.metric from "leanprover-community/mathlib"@"352ecfe114946c903338006dd3287cb5a9955ff2"
@@ -37,11 +38,11 @@ graph metric, distance
 
 namespace SimpleGraph
 
-variable {V : Type*} (G : SimpleGraph V)
-
 /-! ## Metric -/
 
 section edist
+
+variable {V : Type*} (G : SimpleGraph V)
 
 /--
 The extended distance between two vertices is the length of the shortest walk between them.
@@ -133,6 +134,8 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
 end edist
 
 section dist
+
+variable {V : Type*} (G : SimpleGraph V)
 
 /--
 The distance between two vertices is the length of the shortest walk between them.
@@ -251,5 +254,27 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
 
 end dist
+
+section Topology
+
+def Verts {V : Type*} (_ : SimpleGraph V) := V
+
+variable (V : Type*) (G : SimpleGraph V)
+
+noncomputable instance (h : Connected G) : MetricSpace (Verts G) where
+  dist x y := (G.dist x y : ℝ)
+  dist_self := by simp
+  dist_comm x y := by push_cast; norm_cast; exact dist_comm
+  dist_triangle x y z := by push_cast; norm_cast; exact h.dist_triangle
+  edist_dist x y := by push_cast; norm_cast
+  eq_of_dist_eq_zero := by
+    intro x y h
+    push_cast at h
+    rw [Nat.cast_eq_zero, dist_eq_zero_iff_eq_or_not_reachable] at h
+    cases h with
+    | inl => assumption
+    | inr h' => exfalso; exact h' <| h x y
+
+end Topology
 
 end SimpleGraph
