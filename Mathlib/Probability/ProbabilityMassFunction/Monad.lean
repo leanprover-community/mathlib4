@@ -287,7 +287,7 @@ theorem bindOnSupport_bindOnSupport (p : PMF α) (f : ∀ a ∈ p.support, PMF �
   split_ifs with h _ h_1 _ h_2
   any_goals ring1
   · have := h_1 a'
-    simp? [h] at this says simp only [h, ↓reduceDite, mul_eq_zero, false_or] at this
+    simp? [h] at this says simp only [h, ↓reduceDIte, mul_eq_zero, false_or] at this
     contradiction
   · simp [h_2]
 #align pmf.bind_on_support_bind_on_support PMF.bindOnSupport_bindOnSupport

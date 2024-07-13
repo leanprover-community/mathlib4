@@ -201,13 +201,13 @@ def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
 variable {C A}
 
 lemma ShiftMkCore.shiftFunctor_eq (h : ShiftMkCore C A) (a : A) :
-    letI := hasShiftMk C A h;
+    letI := hasShiftMk C A h
     shiftFunctor C a = h.F a := by
   rfl
 #align category_theory.shift_mk_core.shift_functor_eq CategoryTheory.ShiftMkCore.shiftFunctor_eq
 
 lemma ShiftMkCore.shiftFunctorZero_eq (h : ShiftMkCore C A) :
-    letI := hasShiftMk C A h;
+    letI := hasShiftMk C A h
     shiftFunctorZero C A = h.zero := by
   letI := hasShiftMk C A h
   dsimp [shiftFunctorZero]
@@ -218,7 +218,7 @@ lemma ShiftMkCore.shiftFunctorZero_eq (h : ShiftMkCore C A) :
 #align category_theory.shift_mk_core.shift_functor_zero_eq CategoryTheory.ShiftMkCore.shiftFunctorZero_eq
 
 lemma ShiftMkCore.shiftFunctorAdd_eq (h : ShiftMkCore C A) (a b : A) :
-    letI := hasShiftMk C A h;
+    letI := hasShiftMk C A h
     shiftFunctorAdd C a b = h.add a b := by
   letI := hasShiftMk C A h
   change (shiftFunctorAdd C a b).symm.symm = (h.add a b).symm.symm

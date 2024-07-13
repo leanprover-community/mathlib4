@@ -349,7 +349,7 @@ theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M)
 #align finsupp.equiv_map_domain_zero Finsupp.equivMapDomain_zero
 
 @[to_additive (attr := simp)]
-theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N):
+theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
     prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
   simp [prod, equivMapDomain]
 
@@ -1073,7 +1073,7 @@ def subtypeDomainAddMonoidHom : (α →₀ M) →+ Subtype p →₀ M where
 #align finsupp.subtype_domain_add_monoid_hom Finsupp.subtypeDomainAddMonoidHom
 
 /-- `Finsupp.filter` as an `AddMonoidHom`. -/
-def filterAddHom (p : α → Prop) [DecidablePred p]: (α →₀ M) →+ α →₀ M where
+def filterAddHom (p : α → Prop) [DecidablePred p] : (α →₀ M) →+ α →₀ M where
   toFun := filter p
   map_zero' := filter_zero p
   map_add' f g := DFunLike.coe_injective <| by
@@ -1741,7 +1741,10 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
   ext a
   by_cases h : P a
   · exact dif_pos h
-  · dsimp
+  · #adaptation_note
+    /-- Prior to nightly-2024-06-18, this `rw` was done by `dsimp`. -/
+    rw [extendDomain_toFun]
+    dsimp
     rw [if_neg h, eq_comm, ← not_mem_support_iff]
     refine mt ?_ h
     exact @hf _
@@ -1750,7 +1753,9 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
 theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
-  dsimp only [extendDomain_toFun]
+  #adaptation_note
+  /-- Prior to nightly-2024-06-18, this `rw` was instead `dsimp only`. -/
+  rw [extendDomain_toFun]
   obtain rfl | ha := eq_or_ne a.val a'
   · simp_rw [single_eq_same, dif_pos a.prop]
   · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]

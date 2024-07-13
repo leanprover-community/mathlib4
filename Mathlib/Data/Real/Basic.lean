@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Order.CauSeq.Completion
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
@@ -19,6 +18,9 @@ The facts that the real numbers are an Archimedean floor ring,
 and a conditionally complete linear order,
 have been deferred to the file `Mathlib/Data/Real/Archimedean.lean`,
 in order to keep the imports here simple.
+
+The fact that the real numbers are a (trivial) *-ring has similarly been deferred to
+`Mathlib/Data/Real/Star.lean`.
 -/
 
 
@@ -278,13 +280,6 @@ instance : Semigroup ℝ := by infer_instance
 instance : Inhabited ℝ :=
   ⟨0⟩
 
-/-- The real numbers are a `*`-ring, with the trivial `*`-structure. -/
-instance : StarRing ℝ :=
-  starRingOfComm
-
-instance : TrivialStar ℝ :=
-  ⟨fun _ => rfl⟩
-
 /-- Make a real number from a Cauchy sequence of rationals (by taking the equivalence class). -/
 def mk (x : CauSeq ℚ abs) : ℝ :=
   ⟨CauSeq.Completion.mk x⟩
@@ -341,7 +336,7 @@ instance : LE ℝ :=
   ⟨le⟩
 
 private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
-  show le _ _ ↔ _ by rw [le_def]
+  iff_of_eq <| le_def _ _
 
 @[simp]
 theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
