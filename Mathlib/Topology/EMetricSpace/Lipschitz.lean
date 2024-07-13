@@ -66,7 +66,7 @@ has a neighourhood on which `f` is Lipschitz. -/
 def LocallyLipschitz (f : α → β) : Prop := ∀ x, ∃ K, ∃ t ∈ 𝓝 x, LipschitzOnWith K f t
 
 /-- `f : α → β` is called **locally Lipschitz continuous** on `s ` iff every point `x`
-has a neighourhood on which `f` is Lipschitz. -/
+has a neighourhood within `s` on which `f` is Lipschitz. -/
 def LocallyLipschitzOn (s : Set α) (f : α → β) : Prop :=
   ∀ ⦃x⦄, x ∈ s → ∃ K, ∃ t ∈ 𝓝[s] x, LipschitzOnWith K f t
 
