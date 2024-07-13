@@ -145,13 +145,11 @@ theorem bit_true : bit true = bit1 :=
   rfl
 #align nat.bit_tt Nat.bit_true
 
-@[simp]
-theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false := by
-  cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
-#align nat.bit_eq_zero Nat.bit_eq_zero
+@[deprecated (since := "2024-07-13")] alias bit_eq_zero := bit_eq_zero_iff
+#align nat.bit_eq_zero Nat.bit_eq_zero_iff
 
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
-  simpa only [not_and, Bool.not_eq_false] using (@bit_eq_zero n b).not
+  simpa only [not_and, Bool.not_eq_false] using bit_eq_zero_iff.not
 
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
 with assumptions that neither `bit a m` nor `bit b n` are `0`

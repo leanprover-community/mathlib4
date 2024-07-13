@@ -619,7 +619,6 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 
 /-! ### Binary -/
 
-
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
@@ -627,12 +626,9 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
-    · simpa [bit_false, bit0_val n]
-    · simpa [pos_iff_ne_zero, bit_eq_zero_iff, - bit_false]
-  · simpa [bit_true, bit1_val n, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
-    · simpa [Nat.bit, Nat.bit0_val n]
-    · simpa [Nat.bit, pos_iff_ne_zero, Nat.bit0_eq_zero]
-  · simpa [Nat.bit, Nat.bit1_val n, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
+    · simpa [bit_val]
+    · simpa [pos_iff_ne_zero, bit_eq_zero_iff]
+  · simpa [bit_val, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 #align nat.digits_two_eq_bits Nat.digits_two_eq_bits
 
 /-! ### Modular Arithmetic -/
