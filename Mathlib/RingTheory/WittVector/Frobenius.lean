@@ -182,7 +182,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   rw [Rat.natCast_div _ _ (map_frobeniusPoly.key₁ p (n - i) j hj)]
   simp only [Nat.cast_pow, pow_add, pow_one]
   suffices
-    (((p ^ (n - i)).choose (j + 1): ℚ) * (p : ℚ) ^ (j - v p ⟨j + 1, j.succ_pos⟩) * ↑p * (p ^ n : ℚ))
+    (((p ^ (n - i)).choose (j + 1) : ℚ) * (p : ℚ) ^ (j - v p ⟨j + 1, j.succ_pos⟩) * ↑p * (p ^ n : ℚ))
       = (p : ℚ) ^ j * p * ↑((p ^ (n - i)).choose (j + 1) * p ^ i) *
         (p : ℚ) ^ (n - i - v p ⟨j + 1, j.succ_pos⟩) by
     have aux : ∀ k : ℕ, (p : ℚ)^ k ≠ 0 := by

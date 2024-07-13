@@ -1294,6 +1294,7 @@ import Mathlib.CategoryTheory.Bicategory.Coherence
 import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Bicategory.Extension
 import Mathlib.CategoryTheory.Bicategory.Free
+import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
@@ -3579,7 +3580,7 @@ import Mathlib.RepresentationTheory.Action.Limits
 import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
-import Mathlib.RepresentationTheory.FdRep
+import Mathlib.RepresentationTheory.FDRep
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
