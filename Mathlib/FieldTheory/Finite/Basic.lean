@@ -94,8 +94,8 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
             (mt (congr_arg (· % 2)) (by simp [natDegree_eq_of_degree_eq_some hf2, hR])))
           (card_image_polynomial_eval (by rw [degree_neg, hg2]; decide)))
       _ = 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card := by
-        rw [card_union_of_disjoint hd];
-          simp [natDegree_eq_of_degree_eq_some hf2, natDegree_eq_of_degree_eq_some hg2, mul_add]
+        rw [card_union_of_disjoint hd]
+        simp [natDegree_eq_of_degree_eq_some hf2, natDegree_eq_of_degree_eq_some hg2, mul_add]
 
 #align finite_field.exists_root_sum_quadratic FiniteField.exists_root_sum_quadratic
 

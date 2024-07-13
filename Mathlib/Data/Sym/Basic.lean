@@ -30,9 +30,6 @@ symmetric powers
 -/
 
 assert_not_exists MonoidWithZero
-
-set_option autoImplicit true
-
 open Mathlib (Vector)
 open Function
 
@@ -55,7 +52,7 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 #align sym.has_coe Sym.hasCoe
 
 -- Porting note: instance needed for Data.Finset.Sym
-instance [DecidableEq α] : DecidableEq (Sym α n) :=
+instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
   inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.

@@ -282,7 +282,7 @@ theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (�
 /-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
 from the more general `EMetric.subset_countable_closure_of_almost_dense_set`.-/
 lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (𝓤 X)]
-    {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s:= by
+    {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s := by
   letI := (UniformSpace.pseudoMetricSpace (X := X)).toPseudoEMetricSpace
   rw [EMetric.totallyBounded_iff] at h
   have h' : ∀ ε > 0, ∃ t, Set.Countable t ∧ s ⊆ ⋃ y ∈ t, EMetric.closedBall y ε := by
