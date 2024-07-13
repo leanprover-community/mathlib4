@@ -108,3 +108,7 @@ theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (ra
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank])
   simp_rw [regulator_eq_det' K e', logEmbedding, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   exact abs_det_eq_abs_det K (fun i ↦ fundSystem K i) e' e
+
+end Units
+
+end NumberField

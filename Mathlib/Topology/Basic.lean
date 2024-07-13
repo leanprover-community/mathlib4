@@ -1811,8 +1811,12 @@ theorem DenseRange.closure_range (h : DenseRange f) : closure (range f) = univ :
   h.closure_eq
 #align dense_range.closure_range DenseRange.closure_range
 
-theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) := by
-  simpa only [DenseRange, Subtype.range_coe_subtype]
+@[simp]
+lemma denseRange_subtype_val {p : X → Prop} : DenseRange (@Subtype.val _ p) ↔ Dense {x | p x} := by
+  simp [DenseRange]
+
+theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) :=
+  denseRange_subtype_val.2 h
 #align dense.dense_range_coe Dense.denseRange_val
 
 theorem Continuous.range_subset_closure_image_dense {f : X → Y} (hf : Continuous f)

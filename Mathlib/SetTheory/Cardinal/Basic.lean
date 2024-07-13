@@ -83,6 +83,7 @@ assert_not_exists Field
 assert_not_exists Module
 
 open scoped Classical
+open Mathlib (Vector)
 open Function Set Order
 
 noncomputable section
@@ -540,21 +541,8 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   natCast_zero := rfl
   natCast_succ := Cardinal.cast_succ
 
-/-! Porting note (#11229): Deprecated section. Remove. -/
-section deprecated
-set_option linter.deprecated false
-
-@[deprecated (since := "2023-02-11")]
-theorem power_bit0 (a b : Cardinal) : a ^ bit0 b = a ^ b * a ^ b :=
-  power_add
-#align cardinal.power_bit0 Cardinal.power_bit0
-
-@[deprecated (since := "2023-02-11")]
-theorem power_bit1 (a b : Cardinal) : a ^ bit1 b = a ^ b * a ^ b * a := by
-  rw [bit1, ← power_bit0, power_add, power_one]
-#align cardinal.power_bit1 Cardinal.power_bit1
-
-end deprecated
+#noalign cardinal.power_bit0
+#noalign cardinal.power_bit1
 
 @[simp]
 theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
@@ -620,20 +608,8 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
     mk_congr <| Equiv.ulift.trans (Equiv.prodCongr Equiv.ulift Equiv.ulift).symm
 #align cardinal.lift_mul Cardinal.lift_mul
 
-/-! Porting note (#11229): Deprecated section. Remove. -/
-section deprecated
-set_option linter.deprecated false
-
-@[simp, deprecated (since := "2023-02-11")]
-theorem lift_bit0 (a : Cardinal) : lift.{v} (bit0 a) = bit0 (lift.{v} a) :=
-  lift_add a a
-#align cardinal.lift_bit0 Cardinal.lift_bit0
-
-@[simp, deprecated (since := "2023-02-11")]
-theorem lift_bit1 (a : Cardinal) : lift.{v} (bit1 a) = bit1 (lift.{v} a) := by simp [bit1]
-#align cardinal.lift_bit1 Cardinal.lift_bit1
-
-end deprecated
+#noalign cardinal.lift_bit0
+#noalign cardinal.lift_bit1
 
 -- Porting note: Proof used to be simp, needed to remind simp that 1 + 1 = 2
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
@@ -2168,15 +2144,9 @@ theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β
 
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : s ⊆ range f) : lift.{u} #s ≤ lift.{v} #(f ⁻¹' s) := by
-  rw [lift_mk_le.{0}]
-  refine ⟨⟨?_, ?_⟩⟩
-  · rintro ⟨y, hy⟩
-    rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
-    exact ⟨x, hy⟩
-  rintro ⟨y, hy⟩ ⟨y', hy'⟩; dsimp
-  rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩
-  rcases Classical.subtype_of_exists (h hy') with ⟨x', rfl⟩
-  simp; intro hxx'; rw [hxx']
+  rw [← image_preimage_eq_iff] at h
+  nth_rewrite 1 [← h]
+  apply mk_image_le_lift
 #align cardinal.mk_preimage_of_subset_range_lift Cardinal.mk_preimage_of_subset_range_lift
 
 theorem mk_preimage_of_injective_of_subset_range_lift {β : Type v} (f : α → β) (s : Set β)
