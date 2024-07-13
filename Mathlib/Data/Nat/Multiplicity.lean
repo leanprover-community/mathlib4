@@ -292,20 +292,18 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
     by_cases hn : n = 0
     · subst hn
       simp only [ne_eq, bit_eq_zero_iff, true_and, Bool.not_eq_false] at h
-      simp only [h, bit_true, bit1_zero, factorial, mul_one, Nat.isUnit_iff, cast_one]
-      rw [Prime.multiplicity_one]
-      · simp only [zero_lt_one]
-      · decide
+      simp only [h, bit_val, mul_zero, Bool.toNat_true, zero_add, factorial_one, cast_one]
+      rw [Prime.multiplicity_one (by decide)]
+      exact zero_lt_one
     have : multiplicity 2 (2 * n)! < (2 * n : ℕ) := by
       rw [prime_two.multiplicity_factorial_mul]
       refine (PartENat.add_lt_add_right (ih hn) (PartENat.natCast_ne_top _)).trans_le ?_
       rw [two_mul]
       norm_cast
     cases b
-    · simpa [bit0_eq_two_mul n]
+    · simpa [bit_val]
     · suffices multiplicity 2 (2 * n + 1) + multiplicity 2 (2 * n)! < ↑(2 * n) + 1 by
-        simpa [multiplicity.mul, h2, ← two_mul, Nat.bit1_eq_succ_bit0,
-          bit0_eq_two_mul n, factorial]
+        simpa [multiplicity.mul, h2, ← two_mul, bit_val, factorial]
       rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
       refine this.trans ?_
       exact mod_cast lt_succ_self _
