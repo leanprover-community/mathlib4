@@ -1979,6 +1979,12 @@ lemma equiv_insertRight_of_lf {x x' : PGame} (h : x ⧏ x') : x ≈ insertRight 
   rw [← neg_equiv_neg_iff, ← neg_insertLeft_neg]
   exact equiv_insertLeft_of_lf (neg_lf_neg_iff.mpr h)
 
+/-- Inserting on the left and right commutes. -/
+theorem insertRight_insertLeft {x x' x'' : PGame} :
+    insertRight (insertLeft x x') x'' = insertLeft (insertRight x x'') x' := by
+  cases x; cases x'; cases x''
+  dsimp [insertLeft, insertRight]
+
 /-! ### Special pre-games -/
 
 
