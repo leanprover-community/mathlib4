@@ -233,8 +233,6 @@ that the new name differs from the original one.
 
 -/
 
-set_option autoImplicit true
-
 open Lean Meta Elab Command Std
 
 /-- The `to_additive_ignore_args` attribute. -/
@@ -477,7 +475,8 @@ structure Config : Type where
   existing : Option Bool := none
   deriving Repr
 
-variable [Monad M] [MonadOptions M] [MonadEnv M]
+--set_option autoImplicit true
+--variable [Monad M] [MonadOptions M] [MonadEnv M]
 
 open Lean.Expr.FindImpl in
 /-- Implementation function for `additiveTest`.
@@ -819,7 +818,7 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
     addInstance tgt attr_kind prio |>.run'
 
 /-- Warn the user when the multiplicative declaration has an attribute. -/
-def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
+def warnExt {σ α β : Type} [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
     (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (ext.getState (← getEnv)) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
@@ -833,19 +832,19 @@ def warnExt [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ
       else ""
 
 /-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
-def warnAttr [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
+def warnAttr {α β : Type} [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
     (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (f ·.stateStack.head!.state ·) thisAttr attrName src tgt
 
 /-- Warn the user when the multiplicative declaration has a parametric attribute. -/
-def warnParametricAttr (stx : Syntax) (attr : ParametricAttribute β)
+def warnParametricAttr {β : Type} (stx : Syntax) (attr : ParametricAttribute β)
     (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 
 /-- `runAndAdditivize names desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
-def additivizeLemmas [Monad m] [MonadError m] [MonadLiftT CoreM m]
+def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
     (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM t
   let nLemmas := auxLemmas[0]!.size

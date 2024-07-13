@@ -9,8 +9,6 @@ import Lean.Meta.Tactic.Symm
 # `relSidesIfSymm?`
 -/
 
-set_option autoImplicit true
-
 open Lean Meta Symm
 
 namespace Mathlib.Tactic
