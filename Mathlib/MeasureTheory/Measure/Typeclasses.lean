@@ -597,15 +597,26 @@ instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite
   apply sfinite_sum_of_countable
 
 instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
-  refine ⟨fun n ↦ sFiniteSeq μ n + sFiniteSeq ν n, inferInstance, ?_⟩
-  ext s hs
-  simp only [Measure.add_apply, sum_apply _ hs]
-  rw [tsum_add ENNReal.summable ENNReal.summable, ← sum_apply _ hs, ← sum_apply _ hs,
-    sum_sFiniteSeq, sum_sFiniteSeq]
+  have : ∀ b : Bool, SFinite (cond b μ ν) := by simp [*]
+  simpa using inferInstanceAs (SFinite (.sum (cond · μ ν)))
 
 instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
   ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance,
     by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
+
+variable (μ) in
+/-- An s-finite measure is absolutely continuous with respect to some finite measure. -/
+theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
+    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
+  rcases ENNReal.exists_pos_tsum_mul_lt_of_countable top_ne_zero (sFiniteSeq μ · univ)
+    fun _ ↦ measure_ne_top _ _ with ⟨c, hc₀, hc⟩
+  refine ⟨.sum fun n ↦ c n • sFiniteSeq μ n, ⟨?_⟩, ?_⟩
+  · simpa [mul_comm] using hc
+  · refine AbsolutelyContinuous.mk fun s hsm hs ↦ ?_
+    have : ∀ n, (sFiniteSeq μ n) s = 0 := by simpa [hsm, (hc₀ _).ne'] using hs
+    rw [← sum_sFiniteSeq μ, sum_apply _ hsm]
+    simp [this]
+#align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
 
 end SFinite
 
@@ -708,8 +719,8 @@ theorem eventually_mem_spanningSets (μ : Measure α) [SigmaFinite μ] (x : α) 
   eventually_atTop.2 ⟨spanningSetsIndex μ x, fun _ => mem_spanningSets_of_index_le μ x⟩
 #align measure_theory.eventually_mem_spanning_sets MeasureTheory.eventually_mem_spanningSets
 
-theorem sum_restrict_disjointed_spanningSets (μ : Measure α) [SigmaFinite μ] :
-    sum (fun n ↦ μ.restrict (disjointed (spanningSets μ) n)) = μ := by
+theorem sum_restrict_disjointed_spanningSets (μ ν : Measure α) [SigmaFinite ν] :
+    sum (fun n ↦ μ.restrict (disjointed (spanningSets ν) n)) = μ := by
   rw [← restrict_iUnion (disjoint_disjointed _)
       (MeasurableSet.disjointed (measurable_spanningSets _)),
     iUnion_disjointed, iUnion_spanningSets, restrict_univ]
@@ -718,7 +729,7 @@ instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
   have : ∀ n, Fact (μ (disjointed (spanningSets μ) n) < ∞) :=
     fun n ↦ ⟨(measure_mono (disjointed_subset _ _)).trans_lt (measure_spanningSets_lt_top μ n)⟩
   exact ⟨⟨fun n ↦ μ.restrict (disjointed (spanningSets μ) n), fun n ↦ by infer_instance,
-    (sum_restrict_disjointed_spanningSets μ).symm⟩⟩
+    (sum_restrict_disjointed_spanningSets μ μ).symm⟩⟩
 
 namespace Measure
 
