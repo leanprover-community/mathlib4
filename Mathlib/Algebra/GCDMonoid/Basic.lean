@@ -18,10 +18,10 @@ This file defines extra structures on `CancelCommMonoidWithZero`s, including `Is
 * `NormalizationMonoid`
 * `GCDMonoid`
 * `NormalizedGCDMonoid`
-* `gcdMonoid_of_gcd`, `gcdMonoid_of_exists_gcd`, `normalizedGCDMonoid_of_gcd`,
-  `normalizedGCDMonoid_of_exists_gcd`
-* `gcdMonoid_of_lcm`, `gcdMonoid_of_exists_lcm`, `normalizedGCDMonoid_of_lcm`,
-  `normalizedGCDMonoid_of_exists_lcm`
+* `gcdMonoidOfGCD`, `gcdMonoidOfExistsGCD`, `normalizedGCDMonoidOfGCD`,
+  `normalizedGCDMonoidOfExistsGCD`
+* `gcdMonoidOfLCM`, `gcdMonoidOfExistsLCM`, `normalizedGCDMonoidOfLCM`,
+  `normalizedGCDMonoidOfExistsLCM`
 
 For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib.Algebra.GCDMonoid.Nat`.
 
@@ -38,17 +38,17 @@ definition as currently implemented does casework on `0`.
   normalized. This makes `gcd`s of polynomials easier to work with, but excludes Euclidean domains,
   and monoids without zero.
 
-* `gcdMonoid_of_gcd` and `normalizedGCDMonoid_of_gcd` noncomputably construct a `GCDMonoid`
+* `gcdMonoidOfGCD` and `normalizedGCDMonoidOfGCD` noncomputably construct a `GCDMonoid`
   (resp. `NormalizedGCDMonoid`) structure just from the `gcd` and its properties.
 
-* `gcdMonoid_of_exists_gcd` and `normalizedGCDMonoid_of_exists_gcd` noncomputably construct a
+* `gcdMonoidOfExistsGCD` and `normalizedGCDMonoidOfExistsGCD` noncomputably construct a
   `GCDMonoid` (resp. `NormalizedGCDMonoid`) structure just from a proof that any two elements
   have a (not necessarily normalized) `gcd`.
 
-* `gcdMonoid_of_lcm` and `normalizedGCDMonoid_of_lcm` noncomputably construct a `GCDMonoid`
+* `gcdMonoidOfLCM` and `normalizedGCDMonoidOfLCM` noncomputably construct a `GCDMonoid`
   (resp. `NormalizedGCDMonoid`) structure just from the `lcm` and its properties.
 
-* `gcdMonoid_of_exists_lcm` and `normalizedGCDMonoid_of_exists_lcm` noncomputably construct a
+* `gcdMonoidOfExistsLCM` and `normalizedGCDMonoidOfExistsLCM` noncomputably construct a
   `GCDMonoid` (resp. `NormalizedGCDMonoid`) structure just from a proof that any two elements
   have a (not necessarily normalized) `lcm`.
 
