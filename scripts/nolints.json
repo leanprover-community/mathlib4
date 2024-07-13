@@ -559,7 +559,6 @@
  ["docBlame", "Mathlib.ProjectionNotation.getPPCollapseStructureProjections"],
  ["docBlame", "Mathlib.Tactic.abstract"],
  ["docBlame", "Mathlib.Tactic.acMono"],
- ["docBlame", "Mathlib.Tactic.addHintTactic"],
  ["docBlame", "Mathlib.Tactic.addTacticDoc"],
  ["docBlame", "Mathlib.Tactic.applyField"],
  ["docBlame", "Mathlib.Tactic.applyNormed"],

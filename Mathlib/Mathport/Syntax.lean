@@ -266,8 +266,6 @@ syntax generalizingClause := " generalizing" (ppSpace ident)+
 
 /- N -/ syntax (name := addTacticDoc) (docComment)? "add_tactic_doc " term : command
 
-/- M -/ syntax (name := addHintTactic) "add_hint_tactic " tactic : command
-
 /- S -/ syntax (name := listUnusedDecls) "#list_unused_decls" : command
 
 /- N -/ syntax (name := defReplacer) "def_replacer " ident Parser.Term.optType : command
