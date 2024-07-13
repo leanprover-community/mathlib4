@@ -603,20 +603,15 @@ def _root_.LinearMap.compQuadraticMap (f : N →ₗ[R] P) (Q : QuadraticMap R M 
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps! (config := { simpRhs := true })]
 def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
-    [IsScalarTower S R N] [IsScalarTower S R M] [Module S M']
-    (f : N →ₗ[S] M') (Q : QuadraticMap R M N) : QuadraticMap S M M' :=
+    [IsScalarTower S R N] [IsScalarTower S R M] [Module S P]
+    (f : N →ₗ[S] P) (Q : QuadraticMap R M N) : QuadraticMap S M P :=
   _root_.LinearMap.compQuadraticMap f Q.restrictScalars
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticMap'
 
 end Comp
+section NonUnitalNonAssocSemiring
 
-section CommSemiring
-
--- TODO `A` here should be a `NonUnitalNonAssocCommSemiring`, but then we break
--- `linMulLinSelfPosDef` below. A fix is being worked on in
--- https://github.com/leanprover-community/mathlib4/pull/12617
-
-variable [CommSemiring R]  [CommSemiring A]  [AddCommMonoid M] [Module R M]
+variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [AddCommMonoid M] [Module R M]
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The product of linear forms is a quadratic form. -/
@@ -626,10 +621,9 @@ def linMulLin (f g : M →ₗ[R] A) : QuadraticMap R M A where
     rw [Pi.mul_apply, Pi.mul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply, LinearMap.map_smulₛₗ,
       RingHom.id_apply, smul_mul_assoc, mul_smul_comm, ← smul_assoc, (smul_eq_mul R)]
   exists_companion' :=
-    ⟨(LinearMap.mul R A).compl₁₂ f g + (LinearMap.mul R A).compl₁₂ g f, fun x y => by
+    ⟨(LinearMap.mul R A).compl₁₂ f g + (LinearMap.mul R A).flip.compl₁₂ g f, fun x y => by
       simp only [Pi.mul_apply, map_add, left_distrib, right_distrib, LinearMap.add_apply,
-        LinearMap.compl₁₂_apply, LinearMap.mul_apply']
-      rw [mul_comm (g x) (f y)]
+        LinearMap.compl₁₂_apply, LinearMap.mul_apply', LinearMap.flip_apply]
       abel_nf⟩
 #align quadratic_form.lin_mul_lin QuadraticMap.linMulLin
 
@@ -674,7 +668,7 @@ theorem proj_apply (i j : n) (x : n → A) : proj (R := R) i j x = x i * x j :=
   rfl
 #align quadratic_form.proj_apply QuadraticMap.proj_apply
 
-end CommSemiring
+end NonUnitalNonAssocSemiring
 
 end QuadraticMap
 
