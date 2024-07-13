@@ -469,40 +469,40 @@ instance hasPullbackVertPaste : HasPullback f (g' ≫ g) :=
   }
 
 /-- The canonical isomorphism `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W` -/
-def pullbackRightPullbackSndIso :
+def pullbackLeftPullbackSndIso :
     pullback (pullback.snd f g) g' ≅ pullback f (g' ≫ g) :=
   IsLimit.conePointUniqueUpToIso
       (pasteVertIsPullback rfl (pullback.isLimit f g) (pullback.isLimit (pullback.snd f g) g'))
       (pullback.isLimit f (g' ≫ g))
 
 @[reassoc (attr := simp)]
-theorem pullbackRightPullbackSndIso_hom_fst :
-    (pullbackRightPullbackSndIso f g g').hom ≫ pullback.fst _ _ =
+theorem pullbackLeftPullbackSndIso_hom_fst :
+    (pullbackLeftPullbackSndIso f g g').hom ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ pullback.fst _ _ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left
 
 @[reassoc (attr := simp)]
-theorem pullbackRightPullbackSndIso_hom_snd :
-    (pullbackRightPullbackSndIso f g g').hom ≫ pullback.snd _ _ = pullback.snd _ _ :=
+theorem pullbackLeftPullbackSndIso_hom_snd :
+    (pullbackLeftPullbackSndIso f g g').hom ≫ pullback.snd _ _ = pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right
 
 @[reassoc (attr := simp)]
-theorem pullbackRightPullbackSndIso_inv_fst :
-    (pullbackRightPullbackSndIso f g g').inv ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
+theorem pullbackLeftPullbackSndIso_inv_fst :
+    (pullbackLeftPullbackSndIso f g g').inv ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.left
 
 @[reassoc (attr := simp)]
-theorem pullbackRightPullbackSndIso_inv_snd_snd :
-    (pullbackRightPullbackSndIso f g g').inv ≫ pullback.snd _ _ = pullback.snd _ _ :=
+theorem pullbackLeftPullbackSndIso_inv_snd_snd :
+    (pullbackLeftPullbackSndIso f g g').inv ≫ pullback.snd _ _ = pullback.snd _ _ :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ WalkingCospan.right
 
 @[reassoc (attr := simp)]
-theorem pullbackRightPullbackSndIso_inv_fst_snd :
-    (pullbackRightPullbackSndIso f g g').inv ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
+theorem pullbackLeftPullbackSndIso_inv_fst_snd :
+    (pullbackLeftPullbackSndIso f g g').inv ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ g' := by
   rw [pullback.condition]
-  exact pullbackRightPullbackSndIso_inv_snd_snd_assoc f g g' g'
+  exact pullbackLeftPullbackSndIso_inv_snd_snd_assoc f g g' g'
 
 end
 

@@ -51,7 +51,6 @@ theorem mono_snd_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) 
   refine ⟨fun {W} h k i => IsLimit.hom_ext ht ?_ i⟩
   rw [← cancel_mono f, Category.assoc, Category.assoc, condition]
   apply reassoc_of% i
-  apply reassoc_of% i
 #align category_theory.limits.pullback_cone.mono_snd_of_is_pullback_of_mono CategoryTheory.Limits.PullbackCone.mono_snd_of_is_pullback_of_mono
 
 /-- Monomorphisms are stable under pullback in the second argument. -/
@@ -59,7 +58,6 @@ theorem mono_fst_of_is_pullback_of_mono {t : PullbackCone f g} (ht : IsLimit t) 
     Mono t.fst := by
   refine ⟨fun {W} h k i => IsLimit.hom_ext ht i ?_⟩
   rw [← cancel_mono g, Category.assoc, Category.assoc, ← condition]
-  apply reassoc_of% i
   apply reassoc_of% i
 #align category_theory.limits.pullback_cone.mono_fst_of_is_pullback_of_mono CategoryTheory.Limits.PullbackCone.mono_fst_of_is_pullback_of_mono
 
@@ -131,13 +129,11 @@ end Monomorphisms
 /-- The pullback of a monomorphism is a monomorphism -/
 instance pullback.fst_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] [Mono g] :
     Mono (pullback.fst f g) :=
-    Mono (pullback.fst f g) :=
   PullbackCone.mono_fst_of_is_pullback_of_mono (limit.isLimit _)
 #align category_theory.limits.pullback.fst_of_mono CategoryTheory.Limits.pullback.fst_of_mono
 
 /-- The pullback of a monomorphism is a monomorphism -/
 instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] [Mono f] :
-    Mono (pullback.snd f g) :=
     Mono (pullback.snd f g) :=
   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
 #align category_theory.limits.pullback.snd_of_mono CategoryTheory.Limits.pullback.snd_of_mono
@@ -145,7 +141,6 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
 /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
 instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :
-    Mono (prod.lift (pullback.fst f g) (pullback.snd f g)) :=
     Mono (prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨fun {W} i₁ i₂ h => by
     ext
@@ -156,9 +151,6 @@ instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z
 
 /-- The pullback of `f, g` is also the pullback of `f ≫ i, g ≫ i` for any mono `i`. -/
 noncomputable def pullbackIsPullbackOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i]
-    [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst _ _) (pullback.snd _ _)
-      -- Porting note: following used to be _
-      (show (pullback.fst _ _) ≫ f ≫ i = (pullback.snd _ _) ≫ g ≫ i from by
     [HasPullback f g] : IsLimit (PullbackCone.mk (pullback.fst _ _) (pullback.snd _ _)
       -- Porting note: following used to be _
       (show (pullback.fst _ _) ≫ f ≫ i = (pullback.snd _ _) ≫ g ≫ i from by
@@ -179,18 +171,15 @@ variable (f : X ⟶ Z) (i : Z ⟶ W) [Mono i]
 
 instance hasPullback_of_right_factors_mono : HasPullback i (f ≫ i) := by
   simpa only [Category.id_comp] using hasPullback_of_comp_mono (𝟙 Z) f i
-  simpa only [Category.id_comp] using hasPullback_of_comp_mono (𝟙 Z) f i
 #align category_theory.limits.has_pullback_of_right_factors_mono CategoryTheory.Limits.hasPullback_of_right_factors_mono
 
 instance pullback_snd_iso_of_right_factors_mono :
-    IsIso (pullback.snd i (f ≫ i)) := by
     IsIso (pullback.snd i (f ≫ i)) := by
   #adaptation_note /-- nightly-testing 2024-04-01
   this could not be placed directly in the `show from` without `dsimp` -/
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right
   dsimp only [cospan_right, id_eq, eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app,
     Functor.const_obj_obj, cospan_one] at this
-  convert (congrArg IsIso (show _ ≫ pullback.snd (𝟙 Z) f = _ from this)).mp inferInstance
   convert (congrArg IsIso (show _ ≫ pullback.snd (𝟙 Z) f = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
@@ -200,18 +189,15 @@ attribute [local instance] hasPullback_of_right_iso
 
 instance hasPullback_of_left_factors_mono : HasPullback (f ≫ i) i := by
   simpa only [Category.id_comp] using hasPullback_of_comp_mono f (𝟙 Z) i
-  simpa only [Category.id_comp] using hasPullback_of_comp_mono f (𝟙 Z) i
 #align category_theory.limits.has_pullback_of_left_factors_mono CategoryTheory.Limits.hasPullback_of_left_factors_mono
 
 instance pullback_snd_iso_of_left_factors_mono :
-    IsIso (pullback.fst (f ≫ i) i) := by
     IsIso (pullback.fst (f ≫ i) i) := by
   #adaptation_note /-- nightly-testing 2024-04-01
   this could not be placed directly in the `show from` without `dsimp` -/
   have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left
   dsimp only [cospan_left, id_eq, eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app,
     Functor.const_obj_obj, cospan_one] at this
-  convert (congrArg IsIso (show _ ≫ pullback.fst f (𝟙 Z) = _ from this)).mp inferInstance
   convert (congrArg IsIso (show _ ≫ pullback.fst f (𝟙 Z) = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
@@ -230,7 +216,6 @@ instance has_kernel_pair_of_mono [Mono f] : HasPullback f f :=
 #align category_theory.limits.has_kernel_pair_of_mono CategoryTheory.Limits.has_kernel_pair_of_mono
 
 theorem fst_eq_snd_of_mono_eq [Mono f] : pullback.fst f f = pullback.snd f f :=
-theorem fst_eq_snd_of_mono_eq [Mono f] : pullback.fst f f = pullback.snd f f :=
   ((PullbackCone.isLimitMkIdId f).fac (getLimitCone (cospan f f)).cone left).symm.trans
     ((PullbackCone.isLimitMkIdId f).fac (getLimitCone (cospan f f)).cone right : _)
 #align category_theory.limits.fst_eq_snd_of_mono_eq CategoryTheory.Limits.fst_eq_snd_of_mono_eq
@@ -242,7 +227,6 @@ theorem pullbackSymmetry_hom_of_mono_eq [Mono f] : (pullbackSymmetry f f).hom = 
   · simp [fst_eq_snd_of_mono_eq]
 #align category_theory.limits.pullback_symmetry_hom_of_mono_eq CategoryTheory.Limits.pullbackSymmetry_hom_of_mono_eq
 
-instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst f f) := by
 instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst f f) := by
   refine ⟨⟨pullback.lift (𝟙 _) (𝟙 _) (by simp), ?_, by simp⟩⟩
   ext
@@ -339,13 +323,11 @@ end PushoutCocone
 /-- The pushout of an epimorphism is an epimorphism -/
 instance pushout.inl_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi g] :
     Epi (pushout.inl f g) :=
-    Epi (pushout.inl f g) :=
   PushoutCocone.epi_inl_of_is_pushout_of_epi (colimit.isColimit _)
 #align category_theory.limits.pushout.inl_of_epi CategoryTheory.Limits.pushout.inl_of_epi
 
 /-- The pushout of an epimorphism is an epimorphism -/
 instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] [Epi f] :
-    Epi (pushout.inr _ _ : Z ⟶ pushout f g) :=
     Epi (pushout.inr _ _ : Z ⟶ pushout f g) :=
   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
 #align category_theory.limits.pushout.inr_of_epi CategoryTheory.Limits.pushout.inr_of_epi
@@ -353,7 +335,6 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
 instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
-    Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
     Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
   ⟨fun {W} i₁ i₂ h => by
     ext
@@ -363,8 +344,6 @@ instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y
 
 /-- The pushout of `f, g` is also the pullback of `h ≫ f, h ≫ g` for any epi `h`. -/
 noncomputable def pushoutIsPushoutOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h]
-    [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl _ _) (pushout.inr _ _)
-    (show (h ≫ f) ≫ pushout.inl _ _ = (h ≫ g) ≫ pushout.inr _ _ from by
     [HasPushout f g] : IsColimit (PushoutCocone.mk (pushout.inl _ _) (pushout.inr _ _)
     (show (h ≫ f) ≫ pushout.inl _ _ = (h ≫ g) ≫ pushout.inr _ _ from by
     simp only [Category.assoc]; rw [cancel_epi]; exact pushout.condition)) :=
@@ -384,12 +363,9 @@ variable (f : X ⟶ Z) (h : W ⟶ X) [Epi h]
 
 instance hasPushout_of_right_factors_epi : HasPushout h (h ≫ f) := by
   simpa only [Category.comp_id] using hasPushout_of_epi_comp (𝟙 X) f h
-  simpa only [Category.comp_id] using hasPushout_of_epi_comp (𝟙 X) f h
 #align category_theory.limits.has_pushout_of_right_factors_epi CategoryTheory.Limits.hasPushout_of_right_factors_epi
 
 instance pushout_inr_iso_of_right_factors_epi :
-    IsIso (pushout.inr _ _ : _ ⟶ pushout h (h ≫ f)) := by
-  convert (congrArg IsIso (show pushout.inr _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     IsIso (pushout.inr _ _ : _ ⟶ pushout h (h ≫ f)) := by
   convert (congrArg IsIso (show pushout.inr _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp (𝟙 _) f h⟩ WalkingSpan.right)).mp
@@ -402,12 +378,9 @@ attribute [local instance] hasPushout_of_right_iso
 
 instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h := by
   simpa only [Category.comp_id] using hasPushout_of_epi_comp f (𝟙 X) h
-  simpa only [Category.comp_id] using hasPushout_of_epi_comp f (𝟙 X) h
 #align category_theory.limits.has_pushout_of_left_factors_epi CategoryTheory.Limits.hasPushout_of_left_factors_epi
 
 instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
-    IsIso (pushout.inl _ _ : _ ⟶ pushout (h ≫ f) h) := by
-  convert (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     IsIso (pushout.inl _ _ : _ ⟶ pushout (h ≫ f) h) := by
   convert (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
     ⟨_, pushoutIsPushoutOfEpiComp f (𝟙 _) h⟩ WalkingSpan.left)).mp
@@ -429,7 +402,6 @@ instance has_cokernel_pair_of_epi [Epi f] : HasPushout f f :=
 #align category_theory.limits.has_cokernel_pair_of_epi CategoryTheory.Limits.has_cokernel_pair_of_epi
 
 theorem inl_eq_inr_of_epi_eq [Epi f] : (pushout.inl _ _ : _ ⟶ pushout f f) = pushout.inr _ _ :=
-theorem inl_eq_inr_of_epi_eq [Epi f] : (pushout.inl _ _ : _ ⟶ pushout f f) = pushout.inr _ _ :=
   ((PushoutCocone.isColimitMkIdId f).fac (getColimitCocone (span f f)).cocone left).symm.trans
     ((PushoutCocone.isColimitMkIdId f).fac (getColimitCocone (span f f)).cocone right : _)
 #align category_theory.limits.inl_eq_inr_of_epi_eq CategoryTheory.Limits.inl_eq_inr_of_epi_eq
@@ -439,7 +411,6 @@ theorem pullback_symmetry_hom_of_epi_eq [Epi f] : (pushoutSymmetry f f).hom = �
   ext <;> simp [inl_eq_inr_of_epi_eq]
 #align category_theory.limits.pullback_symmetry_hom_of_epi_eq CategoryTheory.Limits.pullback_symmetry_hom_of_epi_eq
 
-instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl _ _ : _ ⟶ pushout f f) := by
 instance inl_iso_of_epi_eq [Epi f] : IsIso (pushout.inl _ _ : _ ⟶ pushout f f) := by
   refine ⟨⟨pushout.desc (𝟙 _) (𝟙 _) (by simp), by simp, ?_⟩⟩
   apply pushout.hom_ext
