@@ -171,11 +171,11 @@ theorem withDensity_const (c : ℝ≥0∞) : μ.withDensity (fun _ ↦ c) = c �
   ext1 s hs
   simp [withDensity_apply _ hs]
 
-theorem withDensity_tsum {f : ℕ → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
+theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     μ.withDensity (∑' n, f n) = sum fun n => μ.withDensity (f n) := by
   ext1 s hs
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
-  change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i : ℕ, ∫⁻ x, f i x ∂μ.restrict s
+  change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
   exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 #align measure_theory.with_density_tsum MeasureTheory.withDensity_tsum
@@ -230,16 +230,13 @@ lemma Measure.MutuallySingular.withDensity {ν : Measure α} {f : α → ℝ≥0
     μ.withDensity f ⟂ₘ ν :=
   MutuallySingular.mono_ac h (withDensity_absolutelyContinuous _ _) AbsolutelyContinuous.rfl
 
-theorem withDensity_eq_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h : μ.withDensity f = 0) :
-    f =ᵐ[μ] 0 := by
-  rw [← lintegral_eq_zero_iff' hf, ← setLIntegral_univ, ← withDensity_apply _ MeasurableSet.univ,
-    h, Measure.coe_zero, Pi.zero_apply]
-#align measure_theory.with_density_eq_zero MeasureTheory.withDensity_eq_zero
-
 @[simp]
 theorem withDensity_eq_zero_iff {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) :
-    μ.withDensity f = 0 ↔ f =ᵐ[μ] 0 :=
-  ⟨withDensity_eq_zero hf, fun h => withDensity_zero (μ := μ) ▸ withDensity_congr_ae h⟩
+    μ.withDensity f = 0 ↔ f =ᵐ[μ] 0 := by
+  rw [← measure_univ_eq_zero, withDensity_apply _ .univ, restrict_univ, lintegral_eq_zero_iff' hf]
+
+alias ⟨withDensity_eq_zero, _⟩ := withDensity_eq_zero_iff
+#align measure_theory.with_density_eq_zero MeasureTheory.withDensity_eq_zero
 
 theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AEMeasurable f μ) :
     μ.withDensity f s = 0 ↔ μ ({ x | f x ≠ 0 } ∩ s) = 0 := by
@@ -605,61 +602,33 @@ theorem withDensity_ae_eq {β : Type} {f g : α → β} {d : α → ℝ≥0∞}
   (fun h ↦ Measure.AbsolutelyContinuous.ae_eq
     (withDensity_absolutelyContinuous μ d) h)
 
-/-- A sigma-finite measure is absolutely continuous with respect to some finite measure. -/
-theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ : Measure α)
-    [SigmaFinite μ] : ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν := by
-  obtain ⟨g, gpos, gmeas, hg⟩ :
-    ∃ g : α → ℝ≥0, (∀ x : α, 0 < g x) ∧ Measurable g ∧ ∫⁻ x : α, ↑(g x) ∂μ < 1 :=
-    exists_pos_lintegral_lt_of_sigmaFinite μ one_ne_zero
-  refine ⟨μ.withDensity fun x => g x, isFiniteMeasure_withDensity hg.ne_top, ?_⟩
-  have : μ = (μ.withDensity fun x => g x).withDensity fun x => (g x)⁻¹ := by
-    have A : ((fun x : α => (g x : ℝ≥0∞)) * fun x : α => (g x : ℝ≥0∞)⁻¹) = 1 := by
-      ext1 x
-      exact ENNReal.mul_inv_cancel (ENNReal.coe_ne_zero.2 (gpos x).ne') ENNReal.coe_ne_top
-    rw [← withDensity_mul _ gmeas.coe_nnreal_ennreal gmeas.coe_nnreal_ennreal.inv, A,
-      withDensity_one]
-  nth_rw 1 [this]
-  exact withDensity_absolutelyContinuous _ _
-#align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
-
-lemma SigmaFinite.withDensity [SigmaFinite μ] {f : α → ℝ≥0} (hf : AEMeasurable f μ) :
+/-- If `μ` is a σ-finite measure, then so is `μ.withDensity fun x ↦ f x`
+for any `ℝ≥0`-valued function `f`. -/
+protected instance SigmaFinite.withDensity [SigmaFinite μ] (f : α → ℝ≥0) :
     SigmaFinite (μ.withDensity (fun x ↦ f x)) := by
-  have h : (fun x ↦ (f x : ℝ≥0∞)) =ᵐ[μ] fun x ↦ ((hf.mk f x : ℝ≥0) : ℝ≥0∞) := by
-    filter_upwards [hf.ae_eq_mk] with x hx using by rw [hx]
-  rw [withDensity_congr_ae h]
-  obtain ⟨s, hs, h⟩ := exists_spanning_measurableSet_le
-    hf.measurable_mk μ
-  constructor
-  refine ⟨s, by simp, fun i ↦ ?_, h⟩
-  rw [withDensity_apply _ (hs i).1]
-  calc ∫⁻ a in s i, ((hf.mk f a : ℝ≥0) : ℝ≥0∞) ∂μ
-    ≤ ∫⁻ _ in s i, i ∂μ := by
-        refine setLIntegral_mono hf.measurable_mk.coe_nnreal_ennreal
-          measurable_const (fun x hxs ↦ ?_)
-        norm_cast
-        exact (hs i).2.2 x hxs
-  _ = i * μ (s i) := by rw [setLIntegral_const]
-  _ < ∞ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
-
-lemma SigmaFinite.withDensity_of_ne_top' [SigmaFinite μ] {f : α → ℝ≥0∞}
-    (hf : AEMeasurable f μ) (hf_ne_top : ∀ x, f x ≠ ∞) :
-    SigmaFinite (μ.withDensity f) := by
-  lift f to (α → ℝ≥0) using hf_ne_top
-  rw [aemeasurable_coe_nnreal_ennreal_iff] at hf
-  exact SigmaFinite.withDensity hf
+  refine ⟨⟨⟨fun n ↦ spanningSets μ n ∩ f ⁻¹' (Iic n), fun _ ↦ trivial, fun n ↦ ?_, ?_⟩⟩⟩
+  · rw [withDensity_apply']
+    apply setLIntegral_lt_top_of_bddAbove
+    · exact ((measure_mono inter_subset_left).trans_lt (measure_spanningSets_lt_top μ n)).ne
+    · exact ⟨n, forall_mem_image.2 fun x hx ↦ hx.2⟩
+  · rw [iUnion_eq_univ_iff]
+    refine fun x ↦ ⟨max (spanningSetsIndex μ x) ⌈f x⌉₊, ?_, ?_⟩
+    exact mem_spanningSets_of_index_le _ _ (le_max_left ..)
+    simp [Nat.le_ceil]
 
 lemma SigmaFinite.withDensity_of_ne_top [SigmaFinite μ] {f : α → ℝ≥0∞}
-    (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
-    SigmaFinite (μ.withDensity f) := by
-  let f' := fun x ↦ if f x = ∞ then 0 else f x
-  have hff' : f =ᵐ[μ] f' := by filter_upwards [hf_ne_top] with x hx using by simp [f', hx]
-  have hf'_ne_top : ∀ x, f' x ≠ ∞ := fun x ↦ by by_cases hfx : f x = ∞ <;> simp [f', hfx]
-  rw [withDensity_congr_ae hff']
-  exact SigmaFinite.withDensity_of_ne_top' (hf.congr hff') hf'_ne_top
+    (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) : SigmaFinite (μ.withDensity f) := by
+  have : f =ᵐ[μ] fun x ↦ (f x).toNNReal := hf_ne_top.mono fun x hx ↦ (ENNReal.coe_toNNReal hx).symm
+  rw [withDensity_congr_ae this]
+  infer_instance
 
-lemma SigmaFinite.withDensity_ofReal [SigmaFinite μ] {f : α → ℝ} (hf : AEMeasurable f μ) :
-    SigmaFinite (μ.withDensity (fun x ↦ ENNReal.ofReal (f x))) := by
-  exact SigmaFinite.withDensity_of_ne_top hf.ennreal_ofReal (ae_of_all _ (by simp))
+lemma SigmaFinite.withDensity_of_ne_top' [SigmaFinite μ] {f : α → ℝ≥0∞} (hf_ne_top : ∀ x, f x ≠ ∞) :
+    SigmaFinite (μ.withDensity f) :=
+  SigmaFinite.withDensity_of_ne_top <| ae_of_all _ hf_ne_top
+
+instance SigmaFinite.withDensity_ofReal [SigmaFinite μ] (f : α → ℝ) :
+    SigmaFinite (μ.withDensity (fun x ↦ ENNReal.ofReal (f x))) :=
+  .withDensity _
 
 section SFinite
 
@@ -683,13 +652,12 @@ lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaF
       · simp
     rw [h_eq_sum, withDensity_tsum (fun _ ↦ measurable_one.indicator hs)]
     have : SigmaFinite (μ.withDensity (s.indicator 1)) := by
-      refine SigmaFinite.withDensity_of_ne_top' (measurable_one.indicator hs).aemeasurable
-        (fun x ↦ ?_)
+      refine SigmaFinite.withDensity_of_ne_top' (fun x ↦ ?_)
       simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
       split_ifs with h <;> simp [h]
     infer_instance
   have h2 : SigmaFinite (μ.withDensity (sᶜ.indicator f)) := by
-    refine SigmaFinite.withDensity_of_ne_top' (hf.indicator hs.compl).aemeasurable (fun x ↦ ?_)
+    refine SigmaFinite.withDensity_of_ne_top' (fun x ↦ ?_)
     simp only [Set.indicator_apply, Set.mem_compl_iff, Set.mem_setOf_eq, ite_not, ne_eq, s]
     split_ifs with h <;> simp [h]
   infer_instance
@@ -715,7 +683,7 @@ lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuo
     (eventually_le_of_tendsto_lt (lt_add_one _) (hf.tendsto x))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
   refine ⟨U, hUx, ?_⟩
   rw [withDensity_apply _ hUo.measurableSet]
-  exact setLIntegral_lt_top_of_bddAbove hμU.ne hf.measurable ⟨f x + 1, forall_mem_image.2 hUf⟩
+  exact setLIntegral_lt_top_of_bddAbove hμU.ne ⟨f x + 1, forall_mem_image.2 hUf⟩
 
 lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuous f) :
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ .ofReal (f x)) :=
