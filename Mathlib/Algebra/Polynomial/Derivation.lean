@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Richard Hill
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Polynomial.Module.AEval
 import Mathlib.RingTheory.Derivation.Basic
 /-!
@@ -96,10 +97,12 @@ end Polynomial
 
 namespace Derivation
 
+open Polynomial Module
+
+section compAEval
+
 variable {R A M : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
   [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
-
-open Polynomial Module
 
 /--
 For a derivation `d : A → M` and an element `a : A`, `d.compAEval a` is the
@@ -147,5 +150,27 @@ theorem comp_aeval_eq (d : Derivation R A M) (f : R[X]) :
   calc
     _ = (AEval.of R M a).symm (d.compAEval a f) := rfl
     _ = _ := by simp [-compAEval_apply, compAEval_eq]
+
+end compAEval
+
+section coeffwise
+
+variable {R A M : Type*} [CommSemiring R] [CommRing A] [Algebra R A] [AddCommGroup M]
+  [Module A M] [Module R M] (d : Derivation R A M) (a : A)
+
+-- @[simps]
+def coeffwise : Derivation R A[X] (PolynomialModule A M) where
+  toFun x := x.sum fun n v ↦ PolynomialModule.single A n (d v)
+  map_add' a b := by
+    dsimp only
+    apply sum_add_index <;> simp
+  map_smul' a b := by
+    dsimp only
+    conv =>
+      lhs
+      apply sum_smul_index
+    sorry
+
+end coeffwise
 
 end Derivation
