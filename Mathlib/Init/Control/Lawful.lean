@@ -9,9 +9,20 @@ import Mathlib.Tactic.Basic
 
 #align_import init.control.lawful from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
 
-/-! ## Functor Laws, applicative laws, and monad Laws -/
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
 
-set_option autoImplicit true
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
+## Functor Laws, applicative laws, and monad Laws
+-/
 
 universe u v
 
@@ -140,7 +151,7 @@ section
 
 variable {ρ : Type u}
 variable {m : Type u → Type v}
-variable {α : Type u}
+variable {α σ : Type u}
 
 /-
 Porting note:
@@ -256,6 +267,7 @@ These are not in Batteries because Batteries does not want to deal with the chur
 refactor.
 -/
 
+variable {ε σ : Type}
 instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
 instance : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
 instance : LawfulMonad IO := inferInstance

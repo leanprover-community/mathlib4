@@ -463,7 +463,7 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
 theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
     digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
   rcases eq_or_lt_of_le (Nat.succ_le_of_lt hb) with (rfl | hb)
-  · simp [List.replicate_add]
+  · simp
   rw [← ofDigits_digits_append_digits]
   refine (digits_ofDigits b hb _ (fun l hl => ?_) (fun h_append => ?_)).symm
   · rcases (List.mem_append.mp hl) with (h | h) <;> exact digits_lt_base hb h
@@ -560,7 +560,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 
 /-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
 -/
-lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p):
+lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p) :
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
   convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
@@ -628,7 +628,7 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
   cases b
   · rw [digits_def' one_lt_two]
     · simpa [Nat.bit, Nat.bit0_val n]
-    · simpa [pos_iff_ne_zero, Nat.bit0_eq_zero]
+    · simpa [Nat.bit, pos_iff_ne_zero, Nat.bit0_eq_zero]
   · simpa [Nat.bit, Nat.bit1_val n, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 #align nat.digits_two_eq_bits Nat.digits_two_eq_bits
 

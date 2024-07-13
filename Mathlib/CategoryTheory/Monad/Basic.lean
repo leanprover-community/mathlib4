@@ -396,4 +396,66 @@ instance : Inhabited (Comonad C) :=
 
 end Comonad
 
+open Iso Functor
+
+variable {C}
+
+namespace Monad
+
+/-- Transport a monad structure on a functor along an isomorphism of functors. -/
+def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C where
+  toFunctor := F
+  η' := T.η ≫ i.hom
+  μ' := (i.inv ◫ i.inv) ≫ T.μ ≫ i.hom
+  left_unit' X := by
+    simp only [Functor.id_obj, NatTrans.comp_app, comp_obj, NatTrans.hcomp_app, Category.assoc,
+      hom_inv_id_app_assoc]
+    slice_lhs 1 2 => rw [← T.η.naturality (i.inv.app X), ]
+    simp
+  right_unit' X := by
+    simp only [id_obj, NatTrans.comp_app, Functor.map_comp, comp_obj, NatTrans.hcomp_app,
+      Category.assoc, NatTrans.naturality_assoc]
+    slice_lhs 2 4 =>
+      simp only [← T.map_comp]
+    simp
+  assoc' X := by
+    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Category.assoc, Functor.map_comp,
+      NatTrans.naturality_assoc, hom_inv_id_app_assoc, NatIso.cancel_natIso_inv_left]
+    slice_lhs 4 5 => rw [← T.map_comp]
+    simp only [hom_inv_id_app, Functor.map_id, id_comp]
+    slice_lhs 1 2 => rw [← T.map_comp]
+    simp only [Functor.map_comp, Category.assoc]
+    congr 1
+    simp only [← Category.assoc, NatIso.cancel_natIso_hom_right]
+    rw [← T.μ.naturality]
+    simp [T.assoc X]
+
+end Monad
+
+namespace Comonad
+
+/-- Transport a comonad structure on a functor along an isomorphism of functors. -/
+def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad C where
+  toFunctor := F
+  ε' := i.inv ≫ T.ε
+  δ' := i.inv ≫ T.δ ≫ (i.hom ◫ i.hom)
+  right_counit' X := by
+    simp only [id_obj, comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc]
+    slice_lhs 4 5 => rw [← F.map_comp]
+    simp only [hom_inv_id_app, Functor.map_id, id_comp, ← i.hom.naturality]
+    slice_lhs 2 3 => rw [T.right_counit]
+    simp
+  coassoc' X := by
+    simp only [comp_obj, NatTrans.comp_app, NatTrans.hcomp_app, Functor.map_comp, assoc,
+      NatTrans.naturality_assoc, Functor.comp_map, hom_inv_id_app_assoc,
+      NatIso.cancel_natIso_inv_left]
+    slice_lhs 3 4 => rw [← F.map_comp]
+    simp only [hom_inv_id_app, Functor.map_id, id_comp, assoc]
+    rw [← i.hom.naturality_assoc, ← T.coassoc_assoc]
+    simp only [NatTrans.naturality_assoc]
+    congr 3
+    simp only [← Functor.map_comp, i.hom.naturality]
+
+end Comonad
+
 end CategoryTheory

@@ -206,16 +206,11 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           rw [h₂]
           rfl }
 
+set_option maxSynthPendingDepth 2 in
 instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
   norm_smul_le t f := by
-    simp only [SMul.smul, norm_def, smul_contLinear, norm_smul]
-    -- Porting note: previously all these rewrites were in the `simp only`,
-    -- but now they don't fire.
-    -- (in fact, `norm_smul` fires, but only once rather than twice!)
-    have : NormedAddCommGroup (V →ᴬ[𝕜] W) := inferInstance -- this is necessary for `norm_smul`
-    rw [coe_smul, Pi.smul_apply, norm_smul, norm_smul _ (f.contLinear),
-      ← mul_max_of_nonneg _ _ (norm_nonneg t)]
-
+    simp only [norm_def, coe_smul, Pi.smul_apply, norm_smul, smul_contLinear,
+      ← mul_max_of_nonneg _ _ (norm_nonneg t), le_refl]
 
 theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]

@@ -7,6 +7,7 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.Field.IsField
+import Mathlib.Tactic.Abel
 
 #align_import ring_theory.ideal.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -309,12 +310,12 @@ theorem isMaximal_iff {I : Ideal α} :
   isMaximal_def.trans <|
     and_congr I.ne_top_iff_one <|
       forall_congr' fun J => by
-        rw [lt_iff_le_not_le];
-          exact
-            ⟨fun H x h hx₁ hx₂ => J.eq_top_iff_one.1 <| H ⟨h, not_subset.2 ⟨_, hx₂, hx₁⟩⟩,
-              fun H ⟨h₁, h₂⟩ =>
-              let ⟨x, xJ, xI⟩ := not_subset.1 h₂
-              J.eq_top_iff_one.2 <| H x h₁ xI xJ⟩
+        rw [lt_iff_le_not_le]
+        exact
+          ⟨fun H x h hx₁ hx₂ => J.eq_top_iff_one.1 <| H ⟨h, not_subset.2 ⟨_, hx₂, hx₁⟩⟩,
+            fun H ⟨h₁, h₂⟩ =>
+            let ⟨x, xJ, xI⟩ := not_subset.1 h₂
+            J.eq_top_iff_one.2 <| H x h₁ xI xJ⟩
 #align ideal.is_maximal_iff Ideal.isMaximal_iff
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=

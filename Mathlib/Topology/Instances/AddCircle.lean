@@ -385,7 +385,6 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by
@@ -693,3 +692,45 @@ end ZeroBased
 end AddCircle
 
 end IdentifyIccEnds
+
+namespace ZMod
+
+variable {N : ℕ} [NeZero N]
+
+/-- The `AddMonoidHom` from `ZMod N` to `ℝ / ℤ` sending `j mod N` to `j / N mod 1`. -/
+noncomputable def toAddCircle : ZMod N →+ UnitAddCircle :=
+  lift N ⟨AddMonoidHom.mk' (fun j ↦ ↑(j / N : ℝ)) (by simp [add_div]),
+    by simp [div_self (NeZero.ne _)]⟩
+
+lemma toAddCircle_intCast (j : ℤ) :
+    toAddCircle (j : ZMod N) = ↑(j / N : ℝ) := by
+  simp [toAddCircle]
+
+lemma toAddCircle_natCast (j : ℕ) :
+    toAddCircle (j : ZMod N) = ↑(j / N : ℝ) := by
+  simpa using toAddCircle_intCast (N := N) j
+
+/--
+Explicit formula for `toCircle j`. Note that this is "evil" because it uses `ZMod.val`. Where
+possible, it is recommended to lift `j` to `ℤ` and use `toAddCircle_intCast` instead.
+-/
+lemma toAddCircle_apply (j : ZMod N) :
+    toAddCircle j = ↑(j.val / N : ℝ) := by
+  rw [← toAddCircle_natCast, natCast_zmod_val]
+
+variable (N) in
+lemma toAddCircle_injective : Function.Injective (toAddCircle : ZMod N → _) := by
+  intro x y hxy
+  have : (0 : ℝ) < N := Nat.cast_pos.mpr (NeZero.pos _)
+  rwa [toAddCircle_apply, toAddCircle_apply, AddCircle.coe_eq_coe_iff_of_mem_Ico
+    (hp := Real.fact_zero_lt_one) (a := 0), div_left_inj' this.ne', Nat.cast_inj,
+    (val_injective N).eq_iff] at hxy <;>
+  exact ⟨by positivity, by simpa only [zero_add, div_lt_one this, Nat.cast_lt] using val_lt _⟩
+
+@[simp] lemma toAddCircle_inj {j k : ZMod N} : toAddCircle j = toAddCircle k ↔ j = k :=
+  (toAddCircle_injective N).eq_iff
+
+@[simp] lemma toAddCircle_eq_zero {j : ZMod N} : toAddCircle j = 0 ↔ j = 0 :=
+  map_eq_zero_iff _ (toAddCircle_injective N)
+
+end ZMod
