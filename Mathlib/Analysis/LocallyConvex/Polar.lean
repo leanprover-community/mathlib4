@@ -151,8 +151,7 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
 #align linear_map.polar_univ LinearMap.polar_univ
 
 theorem polar_subMulAction (m : SubMulAction 𝕜 E) : B.polar m = { y | ∀ x ∈ m, B x y = 0 } := by
-  rw [le_antisymm_iff]
-  constructor
+  apply le_antisymm
   · intro y hy
     rw [Set.mem_setOf_eq]
     by_contra hc
