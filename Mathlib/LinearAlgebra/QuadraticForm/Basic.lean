@@ -16,7 +16,7 @@ import Mathlib.LinearAlgebra.BilinearMap
 This file defines quadratic maps on an `R`-module `M`.
 A quadratic map on a commutative ring `R` is a map `Q : M → N` such that:
 
-* `QuadraticMap.map_smul`: `Q (a • x) = a * a * Q x`
+* `QuadraticMap.map_smul`: `Q (a • x) = (a * a) • Q x`
 * `QuadraticMap.polar_add_left`, `QuadraticMap.polar_add_right`,
   `QuadraticMap.polar_smul_left`, `QuadraticMap.polar_smul_right`:
   the map `QuadraticMap.polar Q := fun x y ↦ Q (x + y) - Q x - Q y` is bilinear.
