@@ -392,7 +392,8 @@ variable [HasPullback f g] [HasPullback f' (pullback.fst f g)]
 instance hasPullbackHorizPaste : HasPullback (f' ≫ f) g :=
   HasLimit.mk {
     cone := (pullback.cone f g).pasteHoriz (pullback.cone f' (pullback.fst f g)) rfl
-    isLimit := pasteHorizIsPullback rfl (pullback.isLimit f g) (pullback.isLimit f' (pullback.fst f g))
+    isLimit := pasteHorizIsPullback rfl (pullback.isLimit f g)
+      (pullback.isLimit f' (pullback.fst f g))
   }
 
 /-- The canonical isomorphism `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y` -/
@@ -524,7 +525,8 @@ variable [HasPushout f g] [HasPushout (pushout.inr f g) g']
 instance : HasPushout f (g ≫ g') :=
   HasColimit.mk {
     cocone := (pushout.cocone f g).pasteHoriz (pushout.cocone (pushout.inr f g) g') rfl
-    isColimit := pasteHorizIsPushout rfl (pushout.isColimit f g) (pushout.isColimit (pushout.inr f g) g')
+    isColimit := pasteHorizIsPushout rfl (pushout.isColimit f g)
+      (pushout.isColimit (pushout.inr f g) g')
   }
 
 /-- The canonical isomorphism `(Y ⨿[X] Z) ⨿[Z] W ≅ Y ⨿[X] W` -/
