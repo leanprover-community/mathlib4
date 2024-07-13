@@ -428,7 +428,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
       motive (r • n) (mem_set_smul_of_mem_mem mem₁ mem₂))
     (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N) ,
       motive m mem → motive (r • m) (Submodule.smul_mem _ r mem)) --
-    (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁: m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
+    (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁ : m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
       motive m₁ mem₁ → motive m₂ mem₂ → motive (m₁ + m₂) (Submodule.add_mem _ mem₁ mem₂))
     (zero : motive 0 (Submodule.zero_mem _)) :
     motive x hx :=
@@ -516,8 +516,7 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
       rcases h₂ with ⟨m₂, h₂, rfl⟩
       exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by aesop⟩
     · exact ⟨0, Submodule.zero_mem _, by aesop⟩
-  · rintro ⟨m, hm, rfl⟩
-    aesop
+  · aesop
 
 -- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`
