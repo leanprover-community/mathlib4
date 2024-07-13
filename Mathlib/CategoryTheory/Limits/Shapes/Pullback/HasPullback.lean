@@ -274,8 +274,8 @@ X ⟶ Z
 abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
     (g₂ : Z ⟶ T) [HasPullback g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T)
     (eq₁ : f₁ ≫ i₃ = i₁ ≫ g₁) (eq₂ : f₂ ≫ i₃ = i₂ ≫ g₂) : pullback f₁ f₂ ⟶ pullback g₁ g₂ :=
-  pullback.lift (pullback.fst ≫ i₁) (pullback.snd ≫ i₂)
-    (by simp [← eq₁, ← eq₂, pullback.condition_assoc])
+  pullback.lift (pullback.fst f₁ f₂ ≫ i₁) (pullback.snd f₁ f₂ ≫ i₂)
+    (by simp only [Category.assoc, ← eq₁, ← eq₂, pullback.condition_assoc])
 #align category_theory.limits.pullback.map CategoryTheory.Limits.pullback.map
 
 /-- The canonical map `X ×ₛ Y ⟶ X ×ₜ Y` given `S ⟶ T`. -/
@@ -313,10 +313,8 @@ S ⟶ T
 abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
     (g₂ : T ⟶ Z) [HasPushout g₁ g₂] (i₁ : W ⟶ Y) (i₂ : X ⟶ Z) (i₃ : S ⟶ T) (eq₁ : f₁ ≫ i₁ = i₃ ≫ g₁)
     (eq₂ : f₂ ≫ i₂ = i₃ ≫ g₂) : pushout f₁ f₂ ⟶ pushout g₁ g₂ :=
-  pushout.desc (i₁ ≫ pushout.inl) (i₂ ≫ pushout.inr)
-    (by
-      simp only [← Category.assoc, eq₁, eq₂]
-      simp [pushout.condition])
+  pushout.desc (i₁ ≫ pushout.inl _ _) (i₂ ≫ pushout.inr _ _)
+    (by simp only [reassoc_of% eq₁, reassoc_of% eq₂, condition])
 #align category_theory.limits.pushout.map CategoryTheory.Limits.pushout.map
 
 /-- The canonical map `X ⨿ₛ Y ⟶ X ⨿ₜ Y` given `S ⟶ T`. -/
