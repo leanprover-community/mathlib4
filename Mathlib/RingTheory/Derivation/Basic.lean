@@ -513,6 +513,8 @@ class DifferentialAlgebra (A : Type*) (B : Type*) [CommDifferentialRing A] [Comm
     extends Algebra A B where
   deriv_algebraMap : ∀ a : A, (algebraMap A B a)′ = algebraMap A B a′
 
+export DifferentialAlgebra (deriv_algebraMap)
+
 instance (A : Type*) [CommDifferentialRing A] : DifferentialAlgebra A A where
   deriv_algebraMap _ := rfl
 
