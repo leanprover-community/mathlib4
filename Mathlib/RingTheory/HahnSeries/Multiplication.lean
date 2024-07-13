@@ -80,20 +80,25 @@ def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
 
 namespace HahnModule
 
+section
+
+variable [PartialOrder Γ] [Zero V] [SMul R V]
+
 /-- The casting function to the type synonym. -/
-def of (R : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :
+def of (R : Type*) [SMul R V] :
     HahnSeries Γ V ≃ HahnModule Γ R V := Equiv.refl _
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
 @[elab_as_elim]
-def rec [PartialOrder Γ] [Zero V] [SMul R V] {motive : HahnModule Γ R V → Sort*}
-    (h : ∀ x : HahnSeries Γ V, motive (of R x)) : ∀ x, motive x :=
+def rec {motive : HahnModule Γ R V → Sort*} (h : ∀ x : HahnSeries Γ V, motive (of R x)) :
+    ∀ x, motive x :=
   fun x => h <| (of R).symm x
 
 @[ext]
-theorem ext [PartialOrder Γ] [Zero V] [SMul R V] (x y : HahnModule Γ R V)
-    (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
+theorem ext (x y : HahnModule Γ R V) (h : ((of R).symm x).coeff = ((of R).symm y).coeff) : x = y :=
   (of R).symm.injective <| HahnSeries.coeff_inj.1 h
+
+end
 
 section SMul
 
