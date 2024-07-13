@@ -83,12 +83,12 @@ lemma Continuous.preimage_coborder_subset (hf : Continuous f) (s : Set β) :
 
 lemma coborder_preimage (hf : IsOpenMap f) (hf' : Continuous f) (s : Set β) :
     coborder (f ⁻¹' s) = f ⁻¹' (coborder s) :=
-(hf.coborder_preimage_subset s).antisymm (hf'.preimage_coborder_subset s)
+  (hf.coborder_preimage_subset s).antisymm (hf'.preimage_coborder_subset s)
 
 protected
 lemma OpenEmbedding.coborder_preimage (hf : OpenEmbedding f) (s : Set β) :
     coborder (f ⁻¹' s) = f ⁻¹' (coborder s) :=
-coborder_preimage hf.isOpenMap hf.continuous s
+  coborder_preimage hf.isOpenMap hf.continuous s
 
 lemma isClosed_preimage_val : IsClosed (s ↓∩ t) ↔ s ∩ closure (s ∩ t) ⊆ t := by
   rw [← closure_eq_iff_isClosed, embedding_subtype_val.closure_eq_preimage_closure_image,
