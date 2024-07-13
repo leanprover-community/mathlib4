@@ -8,9 +8,13 @@ import Mathlib.Topology.LocalAtTarget
 /-!
 # Locally closed sets
 
+## Main definitions
+
+* `IsLocallyClosed`: Predicate saying that a set is locally closed
+
 ## Main results
-- `IsLocallyClosed`: Predicate saying that a set is locally closed
-- `isLocallyClosed_tfae`:
+
+* `isLocallyClosed_tfae`:
   A set `s` is locally closed if one of the equivalent conditions below hold
   1. It is the intersection of some open set and some closed set.
   2. The coborder `(closure s \ s)ᶜ` is open.
@@ -92,7 +96,7 @@ lemma OpenEmbedding.coborder_preimage (hf : OpenEmbedding f) (s : Set β) :
 
 lemma isClosed_preimage_val : IsClosed (s ↓∩ t) ↔ s ∩ closure (s ∩ t) ⊆ t := by
   rw [← closure_eq_iff_isClosed, embedding_subtype_val.closure_eq_preimage_closure_image,
-    ← (Set.image_injective.mpr Subtype.val_injective).eq_iff, Subtype.image_preimage_coe,
+    ← Subtype.val_injective.image_injective.eq_iff, Subtype.image_preimage_coe,
     Subtype.image_preimage_coe, subset_antisymm_iff, and_iff_left, Set.subset_inter_iff,
     and_iff_right]
   exacts [Set.inter_subset_left, Set.subset_inter Set.inter_subset_left subset_closure]
