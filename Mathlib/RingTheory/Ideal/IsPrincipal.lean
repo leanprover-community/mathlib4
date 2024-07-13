@@ -110,7 +110,7 @@ variable (R) in
 /-- A version of `Ideal.associatesEquivIsPrincipal` for non-zero-divisors generators. -/
 noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
     Associates R⁰ ≃ {I : (Ideal R)⁰ // IsPrincipal (I : Ideal R)} :=
-  calc Associates R⁰ ≃ (Associates R)⁰ := associatesNonZeroDivisorsEquiv.toEquiv.symm
+  calc Associates R⁰ ≃ (Associates R)⁰ := associatesNonZeroDivisorsEquiv (M₀ := R).toEquiv.symm
     _ ≃ {I : {I : Ideal R // IsPrincipal I} // I.1 ∈ (Ideal R)⁰} :=
       Equiv.subtypeEquiv (associatesEquivIsPrincipal R)
         (fun x ↦ by rw [← quot_out x, mk_mem_nonZeroDivisors_associates,
