@@ -338,17 +338,17 @@ protected lemma add {A : Matrix m m R} {B : Matrix m m R}
   hA.add_posSemidef hB.posSemidef
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
-    (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
-  refine ⟨hM, fun x hx => ?_⟩
-  simp only [toQuadraticForm', QuadraticForm.PosDef, LinearMap.BilinForm.toQuadraticForm_apply,
+    (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
+  refine' ⟨hM, fun x hx => _⟩
+  simp only [toQuadraticMap', QuadraticMap.PosDef, LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply'] at hMq
   apply hMq x hx
 #align matrix.pos_def_of_to_quadratic_form' Matrix.PosDef.of_toQuadraticForm'
 
 theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
-    M.toQuadraticForm'.PosDef := by
+    M.toQuadraticMap'.PosDef := by
   intro x hx
-  simp only [Matrix.toQuadraticForm', LinearMap.BilinForm.toQuadraticForm_apply,
+  simp only [Matrix.toQuadraticMap', LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply']
   apply hM.2 x hx
 #align matrix.pos_def_to_quadratic_form' Matrix.PosDef.toQuadraticForm'
@@ -372,19 +372,21 @@ end Matrix
 
 namespace QuadraticForm
 
+open QuadraticMap
+
 variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
-  rw [← toQuadraticForm_associated ℝ Q,
-    ← (LinearMap.toMatrix₂' (R := ℝ)).left_inv ((associatedHom (R := ℝ) ℝ) Q)]
+  rw [← toQuadraticMap_associated ℝ Q,
+    ← LinearMap.toMatrix₂'.left_inv ((associatedHom (R := ℝ) ℝ) Q)]
   exact hQ.toQuadraticForm'
 #align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
-  rw [← toQuadraticForm_associated ℝ Q, ←
-    (LinearMap.toMatrix₂' (R := ℝ)).left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
+  rw [← toQuadraticMap_associated ℝ Q, ←
+    LinearMap.toMatrix₂'.left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 #align quadratic_form.pos_def_to_matrix' QuadraticForm.posDef_toMatrix'
 
