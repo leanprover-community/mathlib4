@@ -23,6 +23,8 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
+assert_not_exists Star.star
+
 universe uR uS uT uA u₄
 
 variable {R : Type uR} [Semiring R]
@@ -436,7 +438,7 @@ theorem ringQuot_ext [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+*
 
 variable [Semiring T]
 
-irreducible_def preLift {r : R → R → Prop} { f : R →+* T } (h : ∀ ⦃x y⦄, r x y → f x = f y) :
+irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
   RingQuot r →+* T :=
   { toFun := fun x ↦ Quot.lift f
         (by
@@ -562,45 +564,6 @@ def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ I
 
 end CommRing
 
-section StarRing
-
-variable [StarRing R] (hr : ∀ a b, r a b → r (star a) (star b))
-
-theorem Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
-  induction h with
-  | of h          => exact Rel.of (hr _ _ h)
-  | add_left _ h  => rw [star_add, star_add]
-                     exact Rel.add_left h
-  | mul_left _ h  => rw [star_mul, star_mul]
-                     exact Rel.mul_right h
-  | mul_right _ h => rw [star_mul, star_mul]
-                     exact Rel.mul_left h
-#align ring_quot.rel.star RingQuot.Rel.star
-
-private irreducible_def star' : RingQuot r → RingQuot r
-  | ⟨a⟩ => ⟨Quot.map (star : R → R) (Rel.star r hr) a⟩
-
-theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
-    (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
-#align ring_quot.star'_quot RingQuot.star'_quot
-
-/-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/
-def starRing {R : Type uR} [Semiring R] [StarRing R] (r : R → R → Prop)
-    (hr : ∀ a b, r a b → r (star a) (star b)) : StarRing (RingQuot r) where
-  star := star' r hr
-  star_involutive := by
-    rintro ⟨⟨⟩⟩
-    simp [star'_quot]
-  star_mul := by
-    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp [star'_quot, mul_quot, star_mul]
-  star_add := by
-    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
-    simp [star'_quot, add_quot, star_add]
-#align ring_quot.star_ring RingQuot.starRing
-
-end StarRing
-
 section Algebra
 
 variable (S)
@@ -640,7 +603,7 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
   exact AlgHom.congr_fun w x
 #align ring_quot.ring_quot_ext' RingQuot.ringQuot_ext'
 
-irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
+irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=
 { toFun := fun x ↦ Quot.lift f
             (by
@@ -651,14 +614,14 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
               | mul_left _ r' => simp only [map_mul, r']
               | mul_right _ r' => simp only [map_mul, r'])
             x.toQuot
-  map_zero' := by simp only [← zero_quot, f.map_zero]
+  map_zero' := by simp only [← zero_quot, map_zero]
   map_add' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [add_quot, f.map_add x y]
-  map_one' := by simp only [← one_quot, f.map_one]
+    simp only [add_quot, map_add _ x y]
+  map_one' := by simp only [← one_quot, map_one]
   map_mul' := by
     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-    simp only [mul_quot, f.map_mul x y]
+    simp only [mul_quot, map_mul _ x y]
   commutes' := by
     rintro x
     simp [← one_quot, smul_quot, Algebra.algebraMap_eq_smul_one] }

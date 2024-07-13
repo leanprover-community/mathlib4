@@ -59,7 +59,7 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
 
 @[simp]
 theorem antidiagonal_map_fst (s : Multiset α) : (antidiagonal s).map Prod.fst = powerset s :=
-  Quotient.inductionOn s fun l ↦ by simp [powersetAux'];
+  Quotient.inductionOn s fun l ↦ by simp [powersetAux']
 #align multiset.antidiagonal_map_fst Multiset.antidiagonal_map_fst
 
 @[simp]

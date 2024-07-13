@@ -31,16 +31,16 @@ Finsets give a basic foundation for defining finite sums and products over types
   2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
-More information can be found in `Mathlib.Algebra.BigOperators.Group.Finset`.
+More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset.lean`.
 
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
-`α`, called `univ`. See `Mathlib.Data.Fintype.Basic`.
+`α`, called `univ`. See `Mathlib/Data/Fintype/Basic.lean`.
 There is also `univ'`, the noncomputable partner to `univ`,
 which is defined to be `α` as a finset if `α` is finite,
-and the empty finset otherwise. See `Mathlib.Data.Fintype.Basic`.
+and the empty finset otherwise. See `Mathlib/Data/Fintype/Basic.lean`.
 
-`Finset.card`, the size of a finset is defined in `Mathlib.Data.Finset.Card`.
+`Finset.card`, the size of a finset is defined in `Mathlib/Data/Finset/Card.lean`.
 This is then used to define `Fintype.card`, the size of a type.
 
 ## Main declarations
@@ -78,8 +78,8 @@ This is then used to define `Fintype.card`, the size of a type.
 
 There is a natural lattice structure on the subsets of a set.
 In Lean, we use lattice notation to talk about things involving unions and intersections. See
-`Mathlib.Order.Lattice`. For the lattice structure on finsets, `⊥` is called `bot` with `⊥ = ∅` and
-`⊤` is called `top` with `⊤ = univ`.
+`Mathlib/Order/Lattice.lean`. For the lattice structure on finsets, `⊥` is called `bot` with
+`⊥ = ∅` and `⊤` is called `top` with `⊤ = univ`.
 
 * `Finset.instHasSubsetFinset`: Lots of API about lattices, otherwise behaves as one would expect.
 * `Finset.instUnionFinset`: Defines `s ∪ t` (or `s ⊔ t`) as the union of `s` and `t`.
@@ -97,7 +97,7 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 * `Finset.erase`: For any `a : α`, `erase s a` returns `s` with the element `a` removed.
 * `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.product`: Given finsets of `α` and `β`, defines finsets of `α × β`.
-  For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
+  For arbitrary dependent products, see `Mathlib/Data/Finset/Pi.lean`.
 
 ### Predicates on finsets
 
@@ -107,8 +107,8 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 ### Equivalences between finsets
 
-* The `Mathlib.Data.Equiv` files describe a general type of equivalence, so look in there for any
-  lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
+* The `Mathlib/Data/Equiv.lean` files describe a general type of equivalence, so look in there for
+  any lemmas. There is some API for rewriting sums and products from `s` to `t` given that `s ≃ t`.
   TODO: examples
 
 ## Tags
@@ -504,7 +504,7 @@ alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
 #align finset.nonempty.bex Finset.Nonempty.exists_mem
-@[deprecated] alias Nonempty.bex := Nonempty.exists_mem -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias Nonempty.bex := Nonempty.exists_mem
 
 theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs
@@ -850,7 +850,6 @@ instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
   uniq j := Subtype.ext <| mem_singleton.mp j.2
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
@@ -1131,8 +1130,8 @@ theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b =
   (mem_insert.1 ha).resolve_right hb
 #align finset.eq_of_not_mem_of_mem_insert Finset.eq_of_not_mem_of_mem_insert
 
-/-- A version of `IsLawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
-@[simp, nolint simpNF] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
+/-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
+@[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
 
 @[simp]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
@@ -1148,7 +1147,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 #align finset.mem_insert_coe Finset.mem_insert_coe
 
-instance : IsLawfulSingleton α (Finset α) :=
+instance : LawfulSingleton α (Finset α) :=
   ⟨fun a => by ext; simp⟩
 
 @[simp]
@@ -1788,11 +1787,10 @@ theorem inter_union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u
   sup_inf_right _ _ _
 #align finset.union_distrib_right Finset.inter_union_distrib_right
 
--- 2024-03-22
-@[deprecated] alias inter_distrib_left := inter_union_distrib_left
-@[deprecated] alias inter_distrib_right := union_inter_distrib_right
-@[deprecated] alias union_distrib_left := union_inter_distrib_left
-@[deprecated] alias union_distrib_right := inter_union_distrib_right
+@[deprecated (since := "2024-03-22")] alias inter_distrib_left := inter_union_distrib_left
+@[deprecated (since := "2024-03-22")] alias inter_distrib_right := union_inter_distrib_right
+@[deprecated (since := "2024-03-22")] alias union_distrib_left := union_inter_distrib_left
+@[deprecated (since := "2024-03-22")] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Finset α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -1902,8 +1900,7 @@ theorem not_mem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
   s.2.not_mem_erase
 #align finset.not_mem_erase Finset.not_mem_erase
 
--- While this can be solved by `simp`, this lemma is eligible for `dsimp`
-@[nolint simpNF, simp]
+@[simp]
 theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
 #align finset.erase_empty Finset.erase_empty
@@ -2137,7 +2134,7 @@ theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂
 lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := by
   ext x; simp [and_assoc]
 
-@[deprecated inter_sdiff_assoc] -- 2024-05-01
+@[deprecated inter_sdiff_assoc (since := "2024-05-01")]
 theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := (inter_sdiff_assoc _ _ _).symm
 #align finset.inter_sdiff Finset.inter_sdiff
 
@@ -3115,7 +3112,7 @@ theorem toFinset_cons (a : α) (s : Multiset α) : toFinset (a ::ₘ s) = insert
 
 @[simp]
 theorem toFinset_singleton (a : α) : toFinset ({a} : Multiset α) = {a} := by
-  rw [← cons_zero, toFinset_cons, toFinset_zero, IsLawfulSingleton.insert_emptyc_eq]
+  rw [← cons_zero, toFinset_cons, toFinset_zero, LawfulSingleton.insert_emptyc_eq]
 #align multiset.to_finset_singleton Multiset.toFinset_singleton
 
 @[simp]
@@ -3357,7 +3354,7 @@ theorem mem_toList {a : α} {s : Finset α} : a ∈ s.toList ↔ a ∈ s :=
 
 @[simp]
 theorem toList_eq_nil {s : Finset α} : s.toList = [] ↔ s = ∅ :=
-  toList_eq_nil.trans val_eq_zero
+  Multiset.toList_eq_nil.trans val_eq_zero
 #align finset.to_list_eq_nil Finset.toList_eq_nil
 
 @[simp]
@@ -3563,10 +3560,11 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   -- We want this to be fast, so use only the basic and `Finset.Nonempty`-specific rules.
   let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `finsetNonempty]
   let options : Aesop.Options' :=
-    { terminal := true, -- Fail if the new goal is not closed.
-      generateScript := false,
-      useDefaultSimpSet := false, -- Avoiding the whole simp set to speed up the tactic.
-      warnOnNonterminal := false } -- Don't show a warning on failure, simply return `none`.
+    { terminal := true -- Fail if the new goal is not closed.
+      generateScript := false
+      useDefaultSimpSet := false -- Avoiding the whole simp set to speed up the tactic.
+      warnOnNonterminal := false -- Don't show a warning on failure, simply return `none`.
+      forwardMaxDepth? := none }
   let rules ← Aesop.mkLocalRuleSet rulesets options
   let (remainingGoals, _) ←
     try Aesop.search (options := options.toOptions) mvar (.some rules)

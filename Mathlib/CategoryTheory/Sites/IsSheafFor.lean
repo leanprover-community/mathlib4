@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.Sieves
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 
 #align_import category_theory.sites.sheaf_of_types from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -101,6 +102,20 @@ def FamilyOfElements.restrict {R₁ R₂ : Presieve X} (h : R₁ ≤ R₂) :
     FamilyOfElements P R₂ → FamilyOfElements P R₁ := fun x _ f hf => x f (h _ hf)
 #align category_theory.presieve.family_of_elements.restrict CategoryTheory.Presieve.FamilyOfElements.restrict
 
+/-- The image of a family of elements by a morphism of presheaves. -/
+def FamilyOfElements.map (p : FamilyOfElements P R) (φ : P ⟶ Q) :
+    FamilyOfElements Q R :=
+  fun _ f hf => φ.app _ (p f hf)
+
+@[simp]
+lemma FamilyOfElements.map_apply
+    (p : FamilyOfElements P R) (φ : P ⟶ Q) {Y : C} (f : Y ⟶ X) (hf : R f) :
+    p.map φ f hf = φ.app _ (p f hf) := rfl
+
+lemma FamilyOfElements.restrict_map
+    (p : FamilyOfElements P R) (φ : P ⟶ Q) {R' : Presieve X} (h : R' ≤ R) :
+    (p.restrict h).map φ = (p.map φ).restrict h := rfl
+
 /-- A family of elements for the arrow set `R` is *compatible* if for any `f₁ : Y₁ ⟶ X` and
 `f₂ : Y₂ ⟶ X` in `R`, and any `g₁ : Z ⟶ Y₁` and `g₂ : Z ⟶ Y₂`, if the square `g₁ ≫ f₁ = g₂ ≫ f₂`
 commutes then the elements of `P Z` obtained by restricting the element of `P Y₁` along `g₁` and
@@ -138,7 +153,7 @@ For a more explicit version in the case where `R` is of the form `Presieve.ofAr
 def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbacks] : Prop :=
   ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
     haveI := hasPullbacks.has_pullbacks h₁ h₂
-    P.map (pullback.fst : Limits.pullback f₁ f₂ ⟶ _).op (x f₁ h₁) = P.map pullback.snd.op (x f₂ h₂)
+    P.map (pullback.fst f₁ f₂).op (x f₁ h₁) = P.map (pullback.snd f₁ f₂).op (x f₂ h₂)
 #align category_theory.presieve.family_of_elements.pullback_compatible CategoryTheory.Presieve.FamilyOfElements.PullbackCompatible
 
 theorem pullbackCompatible_iff (x : FamilyOfElements P R) [R.hasPullbacks] :
@@ -503,12 +518,9 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
     IsSheafFor P (S : Presieve X) ↔ YonedaSheafCondition P S := by
   rw [IsSheafFor, YonedaSheafCondition]
   simp_rw [extension_iff_amalgamation]
-  rw [Equiv.forall_congr_left' natTransEquivCompatibleFamily]
+  rw [Equiv.forall_congr_left natTransEquivCompatibleFamily]
   rw [Subtype.forall]
-  apply forall₂_congr
-  intro x hx
-  rw [Equiv.exists_unique_congr_left _]
-  simp
+  exact forall₂_congr fun x hx ↦ by simp [Equiv.existsUnique_congr_right]
 #align category_theory.presieve.is_sheaf_for_iff_yoneda_sheaf_condition CategoryTheory.Presieve.isSheafFor_iff_yonedaSheafCondition
 
 /--
@@ -767,8 +779,8 @@ variable [(ofArrows X π).hasPullbacks]
 A more explicit version of `FamilyOfElements.PullbackCompatible` for a `Presieve.ofArrows`.
 -/
 def Arrows.PullbackCompatible (x : (i : I) → P.obj (op (X i))) : Prop :=
-  ∀ i j, P.map (pullback.fst (f := π i) (g := π j)).op (x i) =
-    P.map (pullback.snd (f := π i) (g := π j)).op (x j)
+  ∀ i j, P.map (pullback.fst (π i) (π j)).op (x i) =
+    P.map (pullback.snd (π i) (π j)).op (x j)
 
 theorem Arrows.pullbackCompatible_iff (x : (i : I) → P.obj (op (X i))) :
     Compatible P π x ↔ PullbackCompatible P π x := by
@@ -786,3 +798,5 @@ theorem isSheafFor_arrows_iff_pullbacks : (ofArrows X π).IsSheafFor P ↔
 end Arrows
 
 end Presieve
+
+end CategoryTheory
