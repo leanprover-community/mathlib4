@@ -134,39 +134,12 @@ theorem nat_mul_inj' {n : ℕ} {a b : R} (h : (n : R) * a = (n : R) * b) (w : n 
   simpa [w] using nat_mul_inj h
 #align nat_mul_inj' nat_mul_inj'
 
-set_option linter.deprecated false
-
-theorem bit0_injective : Function.Injective ((2 * ·) : R → R) := fun a b h => by
-  dsimp at h
-  refine nat_mul_inj' ?_ two_ne_zero
-  exact mod_cast h
-#align bit0_injective bit0_injective
-
-theorem bit1_injective : Function.Injective ((2 * · + 1) : R → R) := fun a b h => by
-  simp only [add_left_inj] at h
-  exact bit0_injective h
-#align bit1_injective bit1_injective
-
-@[simp]
-theorem bit0_eq_bit0 {a b : R} : 2 * a = 2 * b ↔ a = b :=
-  bit0_injective.eq_iff
-#align bit0_eq_bit0 bit0_eq_bit0
-
-@[simp]
-theorem bit1_eq_bit1 {a b : R} : 2 * a + 1 = 2 * b + 1 ↔ a = b :=
-  bit1_injective.eq_iff
-#align bit1_eq_bit1 bit1_eq_bit1
-
-@[simp]
-theorem bit1_eq_one {a : R} : 2 * a + 1 = 1 ↔ a = 0 := by
-  rw [← bit1_eq_bit1 (a := a) (b := 0), mul_zero, zero_add]
-#align bit1_eq_one bit1_eq_one
-
-@[simp]
-theorem one_eq_bit1 {a : R} : 1 = 2 * a + 1 ↔ a = 0 := by
-  rw [eq_comm]
-  exact bit1_eq_one
-#align one_eq_bit1 one_eq_bit1
+#noalign bit0_injective
+#noalign bit1_injective
+#noalign bit0_eq_bit0
+#noalign bit1_eq_bit1
+#noalign bit1_eq_one
+#noalign one_eq_bit1
 
 end
 

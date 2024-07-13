@@ -497,57 +497,14 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 #align fin.coe_add_eq_ite Fin.val_add_eq_ite
 
-section deprecated
-set_option linter.deprecated false
-
-@[deprecated (since := "2023-01-12")]
-theorem val_bit0 {n : ℕ} (k : Fin n) : ((k + k : Fin n) : ℕ) = (k + k : ℕ) % n := by
-  cases k
-  rfl
-#align fin.coe_bit0 Fin.val_bit0
-
-@[deprecated (since := "2023-01-12")]
-theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
-    (((k + k) + 1 : Fin n) : ℕ) = ((k + k) + 1 : ℕ) % n := by
-  cases n
-  · cases' k with k h
-    cases k
-    · show _ % _ = _
-      simp at h
-    cases' h with _ h
-  simp [Fin.val_bit0, Fin.val_add, Fin.val_one]
-#align fin.coe_bit1 Fin.val_bit1
-
-end deprecated
-
+#noalign fin.coe_bit0
+#noalign fin.coe_bit1
 #align fin.coe_add_one_of_lt Fin.val_add_one_of_lt
 #align fin.last_add_one Fin.last_add_one
 #align fin.coe_add_one Fin.val_add_one
-
-section Bit
-set_option linter.deprecated false
-
-@[simp, deprecated (since := "2023-01-12")]
-theorem mk_bit0 {m n : ℕ} (h : m + m < n) :
-    (⟨m + m, h⟩ : Fin n) =
-      (⟨m, (Nat.le_add_right m m).trans_lt h⟩ : Fin _) +
-      (⟨m, (Nat.le_add_right m m).trans_lt h⟩ : Fin _) :=
-  eq_of_val_eq (Nat.mod_eq_of_lt h).symm
-#align fin.mk_bit0 Fin.mk_bit0
-
-@[simp, deprecated (since := "2023-01-12")]
-theorem mk_bit1 {m n : ℕ} [NeZero n] (h : m + m + 1 < n) :
-    (⟨m + m + 1, h⟩ : Fin n) =
-      (⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) +
-      (⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) + 1 := by
-  ext
-  simp only [val_add, val_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
-#align fin.mk_bit1 Fin.mk_bit1
-
-end Bit
-
+#noalign fin.mk_bit0
+#noalign fin.mk_bit1
 #align fin.val_two Fin.val_two
-
 --- Porting note: syntactically the same as the above
 #align fin.coe_two Fin.val_two
 

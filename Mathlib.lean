@@ -764,6 +764,7 @@ import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
+import Mathlib.AlgebraicGeometry.Modules.Tilde
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
@@ -1214,7 +1215,9 @@ import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-import Mathlib.Analysis.SpecialFunctions.Log.ENNReal
+import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
+import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
+import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
@@ -1993,6 +1996,7 @@ import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Density
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Finsupp
 import Mathlib.Data.Finset.Fold
@@ -4215,6 +4219,7 @@ import Mathlib.Topology.Category.FinTopCat
 import Mathlib.Topology.Category.LightProfinite.Basic
 import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.Limits
+import Mathlib.Topology.Category.LightProfinite.Sequence
 import Mathlib.Topology.Category.Locale
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.Basic
