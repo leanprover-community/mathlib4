@@ -156,19 +156,44 @@ end compAEval
 section coeffwise
 
 variable {R A M : Type*} [CommSemiring R] [CommRing A] [Algebra R A] [AddCommGroup M]
-  [Module A M] [Module R M] (d : Derivation R A M) (a : A)
+  [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
 
--- @[simps]
-def coeffwise : Derivation R A[X] (PolynomialModule A M) where
-  toFun x := x.sum fun n v ↦ PolynomialModule.single A n (d v)
-  map_add' a b := by
-    dsimp only
-    apply sum_add_index <;> simp
-  map_smul' a b := by
-    dsimp only [RingHom.id_apply]
-    rw [sum_smul_index']
-    simp only [map_smul]
-    sorry
+@[simps!]
+def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
+  Derivation.mk' ({
+    toFun := fun x ↦ x.sum fun n v ↦ PolynomialModule.single A n (d v)
+    map_add' := fun a b ↦ by
+      dsimp only
+      apply sum_add_index <;> simp
+    map_smul' := fun a b ↦ by
+      dsimp only [RingHom.id_apply]
+      rw [sum_smul_index']
+      simp only [map_smul, smul_sum]
+      congr
+      ext i c
+      let val : M →ₗ[R] PolynomialModule A M := (PolynomialModule.lsingle A i).restrictScalars R
+      change val (a • d c) = a • val (d c)
+      apply LinearMapClass.map_smul
+      simp
+  }) (fun a b ↦ by
+    induction a using Polynomial.induction_on' with
+    | h_add _ _ h1 h2 =>
+      simp only [add_mul, add_smul, smul_add, LinearMap.map_add, h1, h2]
+      simp only [LinearMap.coe_mk, AddHom.coe_mk]
+      abel
+    | h_monomial m a =>
+    induction b using Polynomial.induction_on' with
+    | h_add _ _ h1 h2 =>
+      simp only [mul_add, add_smul, smul_add, LinearMap.map_add, h1, h2]
+      simp only [LinearMap.coe_mk, AddHom.coe_mk]
+      abel
+    | h_monomial m2 b =>
+    simp only [monomial_mul_monomial, LinearMap.coe_mk, AddHom.coe_mk, map_zero, sum_monomial_index,
+      leibniz, map_add, PolynomialModule.monomial_smul_single]
+    ring_nf
+  )
+
+
 
 end coeffwise
 
