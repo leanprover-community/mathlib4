@@ -40,6 +40,9 @@ def AlgebraicGeometry.Scheme.GlueData.glueMorphisms (GD : Scheme.GlueData)
     {Y : Scheme} (f : (i : GD.J) → GD.U i ⟶ Y) (hf : ∀ (i j : GD.J),
     GD.f i j ≫ (f i) = GD.t i j ≫ GD.f j i ≫ (f j)) :
     GD.glued ⟶ Y := by
+/-  refine Scheme.OpenCover.glueMorphisms GD.openCover f ?_
+  intro i j
+  simp? [Scheme.GlueData.openCover, hf]-/
   refine Limits.Multicoequalizer.desc _ Y f ?_
   simp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_right, Prod.forall,
     GlueData.diagram_fstFrom, GlueData.diagram_fst, GlueData.diagram_sndFrom, GlueData.diagram_snd,
@@ -66,18 +69,6 @@ lemma Algebra.TensorProduct.algebraMap : algebraMap R (TensorProduct R A B) =
     Algebra.TensorProduct.includeLeftRingHom.comp (algebraMap R A) := by
   ext _
   simp only [algebraMap_apply, RingHom.coe_comp, Function.comp_apply, includeLeftRingHom_apply]
-
-end
-
-section
-
-open Function
-
-variable {X Y : Scheme}
-
-lemma SchemeIsoToBijective (f : X ≅ Y) : Bijective f.hom.val.base := by
-  change Bijective ((Scheme.forgetToTop ⋙ forget TopCat).mapIso f).toEquiv
-  exact Equiv.bijective _
 
 end
 
