@@ -906,9 +906,9 @@ theorem associated_toQuadraticMap (B : BilinMap R M R) (x y : M) :
 #align quadratic_form.associated_to_quadratic_form QuadraticMap.associated_toQuadraticMap
 
 theorem associated_left_inverse (h : B₁.IsSymm) : associatedHom S B₁.toQuadraticMap = B₁ :=
-    LinearMap.ext₂ fun x y => by
-  rw [associated_toQuadraticMap, ← h.eq x y, RingHom.id_apply, ← two_mul, ← smul_mul_assoc,
-    smul_eq_mul, invOf_mul_self, one_mul]
+  LinearMap.ext₂ fun x y => by
+    rw [associated_toQuadraticMap, ← h.eq x y, RingHom.id_apply, ← two_mul, ← smul_mul_assoc,
+      smul_eq_mul, invOf_mul_self, one_mul]
 #align quadratic_form.associated_left_inverse QuadraticMap.associated_left_inverse
 
 -- Porting note: moved from below to golf the next theorem
