@@ -700,17 +700,9 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       simp only [mem_setOf_eq, toFinset_setOf, ContinuousMap.mul_apply, ContinuousMap.coe_prod,
         ContinuousMap.coe_sub, ContinuousMap.coe_one, Finset.prod_apply]
       apply unitInterval.mul_mem
-      · set g' : Fin (n.succ) → ℝ := fun c => (1 - (g c)) x
-        have hg' : ∀ (c : Fin (n.succ)), ((1 : X → ℝ) - (g c)) x = g' c := by
-          intro c
-          rfl
-        simp_rw [hg']
-        refine prod_mem (S := unitInterval.unitIntervalSubmonoid) ?_
+      · apply unitInterval.prod_mem
         intro c _
-        simp only [unitInterval.mem_unitIntervalSubmonoid]
-        rw [← hg' c]
-        simp only [Pi.sub_apply, Pi.one_apply, sub_nonneg, tsub_le_iff_right,
-          le_add_iff_nonneg_right]
+        simp only [Pi.sub_apply, Pi.one_apply]
         rw [hg, ← unitInterval.mem_iff_one_sub_mem]
         exact (Classical.choose_spec (exists_tsupport_one_of_isOpen_isClosed (hs c) (IsClosedH c)
           (IsHSubS c))).2.2 x
