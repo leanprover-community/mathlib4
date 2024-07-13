@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, E. W. Ayers
 -/
 import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.CompleteLattice
@@ -119,11 +119,11 @@ This is not the same as the arrow set of `Sieve.pullback`, but there is a relati
 in `pullbackArrows_comm`.
 -/
 inductive pullbackArrows [HasPullbacks C] (R : Presieve X) : Presieve Y
-  | mk (Z : C) (h : Z ⟶ X) : R h → pullbackArrows _ (pullback.snd : pullback h f ⟶ Y)
+  | mk (Z : C) (h : Z ⟶ X) : R h → pullbackArrows _ (pullback.snd h f)
 #align category_theory.presieve.pullback_arrows CategoryTheory.Presieve.pullbackArrows
 
 theorem pullback_singleton [HasPullbacks C] (g : Z ⟶ X) :
-    pullbackArrows f (singleton g) = singleton (pullback.snd : pullback g f ⟶ _) := by
+    pullbackArrows f (singleton g) = singleton (pullback.snd g f) := by
   funext W
   ext h
   constructor
@@ -149,7 +149,7 @@ theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
 #align category_theory.presieve.of_arrows_punit CategoryTheory.Presieve.ofArrows_pUnit
 
 theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X) :
-    (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd) =
+    (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd _ _) =
       pullbackArrows f (ofArrows Z g) := by
   funext T
   ext h
@@ -504,7 +504,7 @@ lemma ofArrows_le_ofObjects
 lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
     {I : Type*} (Y : I → C) (f : ∀ i, Y i ⟶ X) :
     ofArrows Y f = ofObjects Y X := by
-  refine' le_antisymm (ofArrows_le_ofObjects Y f) (fun W g => _)
+  refine le_antisymm (ofArrows_le_ofObjects Y f) (fun W g => ?_)
   rw [mem_ofArrows_iff, mem_ofObjects_iff]
   rintro ⟨i, ⟨h⟩⟩
   exact ⟨i, h, hX.hom_ext _ _⟩
@@ -633,9 +633,9 @@ theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presie
   constructor
   · rintro ⟨_, h, k, hk, rfl⟩
     cases' hk with W g hg
-    change (Sieve.generate R).pullback f (h ≫ pullback.snd)
+    change (Sieve.generate R).pullback f (h ≫ pullback.snd g f)
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
-    exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst)
+    exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst g f)
   · rintro ⟨W, h, k, hk, comm⟩
     exact ⟨_, _, _, Presieve.pullbackArrows.mk _ _ hk, pullback.lift_snd _ _ comm⟩
 #align category_theory.sieve.pullback_arrows_comm CategoryTheory.Sieve.pullbackArrows_comm
@@ -720,7 +720,7 @@ theorem functor_galoisConnection (X : C) :
   constructor
   · intro hle X f hf
     apply hle
-    refine' ⟨X, f, 𝟙 _, hf, _⟩
+    refine ⟨X, f, 𝟙 _, hf, ?_⟩
     rw [id_comp]
   · rintro hle Y f ⟨X, g, h, hg, rfl⟩
     apply Sieve.downward_closed S
@@ -769,7 +769,7 @@ theorem functorPushforward_bot (F : C ⥤ D) (X : C) : (⊥ : Sieve X).functorPu
 
 @[simp]
 theorem functorPushforward_top (F : C ⥤ D) (X : C) : (⊤ : Sieve X).functorPushforward F = ⊤ := by
-  refine' (generate_sieve _).symm.trans _
+  refine (generate_sieve _).symm.trans ?_
   apply generate_of_contains_isSplitEpi (𝟙 (F.obj X))
   exact ⟨X, 𝟙 _, 𝟙 _, trivial, by simp⟩
 #align category_theory.sieve.functor_pushforward_top CategoryTheory.Sieve.functorPushforward_top
@@ -795,7 +795,7 @@ def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
       (Sieve.functorPullback F) := by
   apply (functor_galoisConnection F X).toGaloisInsertion
   intro S Y f hf
-  refine' ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, _⟩
+  refine ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, ?_⟩
   simpa using S.downward_closed hf _
 #align category_theory.sieve.ess_surj_full_functor_galois_insertion CategoryTheory.Sieve.essSurjFullFunctorGaloisInsertion
 

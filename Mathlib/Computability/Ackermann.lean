@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Computability.Primrec
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
@@ -314,23 +314,23 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   -- Zero function:
   · exact ⟨0, ack_pos 0⟩
   -- Successor function:
-  · refine' ⟨1, fun n => _⟩
+  · refine ⟨1, fun n => ?_⟩
     rw [succ_eq_one_add]
     apply add_lt_ack
   -- Left projection:
-  · refine' ⟨0, fun n => _⟩
+  · refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_left_le n
   -- Right projection:
-  · refine' ⟨0, fun n => _⟩
+  · refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
   all_goals cases' IHf with a ha; cases' IHg with b hb
   -- Pairing:
-  · refine'
+  · refine
       ⟨max a b + 3, fun n =>
         (pair_lt_max_add_one_sq _ _).trans_le <|
-          (Nat.pow_le_pow_left (add_le_add_right _ _) 2).trans <|
+          (Nat.pow_le_pow_left (add_le_add_right ?_ _) 2).trans <|
             ack_add_one_sq_lt_ack_add_three _ _⟩
     rw [max_ack_left]
     exact max_le_max (ha n).le (hb n).le

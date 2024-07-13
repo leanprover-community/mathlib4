@@ -34,6 +34,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 assert_not_exists MonoidWithZero
 -- TODO:
 -- assert_not_exists AddMonoidWithOne
+assert_not_exists DenselyOrdered
 
 variable {A : Type*} {B : Type*} {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -76,15 +77,15 @@ theorem mul_def [Mul M] [Mul N] (p q : M × N) : p * q = (p.1 * q.1, p.2 * q.2) 
 
 @[to_additive]
 theorem one_mk_mul_one_mk [Monoid M] [Mul N] (b₁ b₂ : N) :
-    ((1 : M), b₁) * (1, b₂) = (1, b₁ * b₂) :=
-  by rw [mk_mul_mk, mul_one]
+    ((1 : M), b₁) * (1, b₂) = (1, b₁ * b₂) := by
+  rw [mk_mul_mk, mul_one]
 #align prod.one_mk_mul_one_mk Prod.one_mk_mul_one_mk
 #align prod.zero_mk_add_zero_mk Prod.zero_mk_add_zero_mk
 
 @[to_additive]
 theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
-    (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) :=
-  by rw [mk_mul_mk, mul_one]
+    (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) := by
+  rw [mk_mul_mk, mul_one]
 #align prod.mk_one_mul_mk_one Prod.mk_one_mul_mk_one
 #align prod.mk_zero_add_mk_zero Prod.mk_zero_add_mk_zero
 
@@ -387,7 +388,7 @@ theorem prod_unique (f : M →ₙ* N × P) : ((fst N P).comp f).prod ((snd N P).
 
 end Prod
 
-section Prod_map
+section prodMap
 
 variable {M' : Type*} {N' : Type*} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f : M →ₙ* M')
   (g : N →ₙ* N')
@@ -418,7 +419,7 @@ theorem prod_comp_prodMap (f : P →ₙ* M) (g : P →ₙ* N) (f' : M →ₙ* M'
 #align mul_hom.prod_comp_prod_map MulHom.prod_comp_prodMap
 #align add_hom.prod_comp_prod_map AddHom.prod_comp_prodMap
 
-end Prod_map
+end prodMap
 
 section Coprod
 
@@ -604,7 +605,7 @@ theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).com
 
 end Prod
 
-section Prod_map
+section prodMap
 
 variable {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] [MulOneClass P]
   (f : M →* M') (g : N →* N')
@@ -635,7 +636,7 @@ theorem prod_comp_prodMap (f : P →* M) (g : P →* N) (f' : M →* M') (g' : N
 #align monoid_hom.prod_comp_prod_map MonoidHom.prod_comp_prodMap
 #align add_monoid_hom.prod_comp_prod_map AddMonoidHom.prod_comp_prodMap
 
-end Prod_map
+end prodMap
 
 section Coprod
 

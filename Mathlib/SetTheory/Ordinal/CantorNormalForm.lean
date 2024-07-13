@@ -65,13 +65,13 @@ theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o �
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec_pos Ordinal.CNFRec_pos
 
--- Porting note: unknown attribute @[pp_nodot]
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
 
 We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 
 `CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]` -/
+@[pp_nodot]
 def CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
   CNFRec b [] (fun o _ho IH ↦ (log b o, o / b ^ log b o)::IH) o
 set_option linter.uppercaseLean3 false in
@@ -120,7 +120,7 @@ set_option linter.uppercaseLean3 false in
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `log b o`. -/
 theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} :
     x ∈ CNF b o → x.1 ≤ log b o := by
-  refine' CNFRec b _ (fun o ho H ↦ _) o
+  refine CNFRec b ?_ (fun o ho H ↦ ?_) o
   · rw [CNF_zero]
     intro contra; contradiction
   · rw [CNF_ne_zero ho, mem_cons]
@@ -149,7 +149,7 @@ set_option linter.uppercaseLean3 false in
 /-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
 theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
     x ∈ CNF b o → x.2 < b := by
-  refine' CNFRec b _ (fun o ho IH ↦ _) o
+  refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
   · simp only [CNF_zero, not_mem_nil, IsEmpty.forall_iff]
   · rw [CNF_ne_zero ho]
     intro h
@@ -161,7 +161,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The exponents of the Cantor normal form are decreasing. -/
 theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
-  refine' CNFRec b _ (fun o ho IH ↦ _) o
+  refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
   · simp only [gt_iff_lt, CNF_zero, map_nil, sorted_nil]
   · rcases le_or_lt b 1 with hb | hb
     · simp only [CNF_of_le_one hb ho, gt_iff_lt, map_cons, map, sorted_singleton]

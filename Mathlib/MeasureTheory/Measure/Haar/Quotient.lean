@@ -174,7 +174,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
     rw [this]
     rfl
   have : SigmaFinite μ' := i.sigmaFiniteQuotient
-  rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
+  rw [measure_eq_div_smul μ' μ neZeroV neTopV, hV]
   symm
   suffices (μ' V / ν (QuotientGroup.mk ⁻¹' V ∩ s)) = 1 by rw [this, one_smul]
   rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
@@ -254,7 +254,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     apply ne_of_lt
     refine lt_of_le_of_lt ?_ finiteCovol.lt_top
     apply measure_mono
-    exact inter_subset_right _ s
+    exact inter_subset_right
 
 /-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
@@ -299,7 +299,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
   set c := ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
   have c_ne_top : c ≠ ∞ := by
     contrapose! h𝓕_finite
-    have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right _ _)
+    have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right)
     rw [h𝓕_finite] at this
     exact top_unique this
   set μ := c • haarMeasure K

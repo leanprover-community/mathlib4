@@ -31,7 +31,6 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open CategoryTheory
@@ -89,7 +88,7 @@ theorem partialSections.directed :
     ⟨f.1, f.2.1, Finset.mem_union_left _ f.2.2.1, Finset.mem_union_left _ f.2.2.2.1, f.2.2.2.2⟩
   let ιB : FiniteDiagramArrow B.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>
     ⟨f.1, f.2.1, Finset.mem_union_right _ f.2.2.1, Finset.mem_union_right _ f.2.2.2.1, f.2.2.2.2⟩
-  refine' ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, _, _⟩
+  refine ⟨⟨A.1 ⊔ B.1, A.2.image ιA ⊔ B.2.image ιB⟩, ?_, ?_⟩
   · rintro u hu f hf
     have : ιA f ∈ A.2.image ιA ⊔ B.2.image ιB := by
       apply Finset.mem_union_left

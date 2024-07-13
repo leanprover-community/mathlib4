@@ -7,7 +7,7 @@ import Batteries.Tactic.Lint.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Init.Data.Int.Order
 
 /-!
@@ -69,6 +69,9 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
 
 lemma natCast_nonneg (α : Type u) [OrderedSemiring α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
 
+@[deprecated (since := "2024-04-17")]
+alias nat_cast_nonneg := natCast_nonneg
+
 end Linarith
 
 section
@@ -78,3 +81,5 @@ open Function
 theorem lt_zero_of_zero_gt [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
 
 theorem le_zero_of_zero_ge [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
+
+end

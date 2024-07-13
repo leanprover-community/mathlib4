@@ -48,7 +48,7 @@ instance : SetLike.GradedMonoid fun i : ℕ ↦ ⋀[R]^i M :=
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
 -- synthesize 0 in the next theorem
-attribute [instance 1100] MulZeroClass.toZero in
+attribute [local instance 1100] MulZeroClass.toZero in
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
   exact DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
@@ -61,6 +61,7 @@ def GradedAlgebra.liftι :
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
+set_option linter.deprecated false in
 theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
     GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
   cases' x with x hx

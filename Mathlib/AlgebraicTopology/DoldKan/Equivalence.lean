@@ -90,7 +90,7 @@ obtained by composing the previous equivalence with the equivalences
 `SimplicialObject C ≌ Karoubi (SimplicialObject C)` and
 `Karoubi (ChainComplex C ℕ) ≌ ChainComplex C ℕ`. Instead, we polish this construction
 in `Compatibility.lean` by ensuring good definitional properties of the equivalence (e.g.
-the inverse functor is definitionallly equal to
+the inverse functor is definitionally equal to
 `Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject C`) and
 showing compatibilities for the unit and counit isomorphisms.
 

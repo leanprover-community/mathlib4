@@ -61,8 +61,7 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 -- Porting note: this definition is already in `Topology.Homotopy.Basic`
 -- /-- The product homotopy of `homotopies` between functions `f` and `g` -/
 -- @[simps]
--- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g)
---     where
+-- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g) where
 --   toFun t i := homotopies i t
 --   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
 --   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
@@ -140,7 +139,7 @@ theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
 /-- Composition and products commute.
   This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
 theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i))
-    (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)): pi γ₀ ⬝ pi γ₁ = pi fun i => γ₀ i ⬝ γ₁ i := by
+    (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)) : pi γ₀ ⬝ pi γ₁ = pi fun i => γ₀ i ⬝ γ₁ i := by
   apply Quotient.induction_on_pi (p := _) γ₁
   intro a
   apply Quotient.induction_on_pi (p := _) γ₀

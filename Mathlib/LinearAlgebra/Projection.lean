@@ -58,7 +58,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   · rw [codisjoint_iff_le_sup]
     intro x _
     rw [mem_sup']
-    refine' ⟨f x, ⟨x - f x, _⟩, add_sub_cancel _ _⟩
+    refine ⟨f x, ⟨x - f x, ?_⟩, add_sub_cancel _ _⟩
     rw [mem_ker, LinearMap.map_sub, hf, sub_self]
 #align linear_map.is_compl_of_proj LinearMap.isCompl_of_proj
 
@@ -79,7 +79,7 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
 @[simp]
 theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
     -- Porting note: type ascriptions needed on the RHS
-    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk (x:E) : E ⧸ p) := rfl
+    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk (x : E) : E ⧸ p) := rfl
 #align submodule.quotient_equiv_of_is_compl_symm_apply Submodule.quotientEquivOfIsCompl_symm_apply
 
 @[simp]

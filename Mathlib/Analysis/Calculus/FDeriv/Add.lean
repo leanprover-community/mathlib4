@@ -340,20 +340,18 @@ section Sum
 /-! ### Derivative of a finite sum of functions -/
 
 
-open BigOperators
-
 variable {ι : Type*} {u : Finset ι} {A : ι → E → F} {A' : ι → E →L[𝕜] F}
 
 @[fun_prop]
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
-    HasStrictFDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x := by
+    HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
   dsimp [HasStrictFDerivAt] at *
   convert IsLittleO.sum h
   simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
 #align has_strict_fderiv_at.sum HasStrictFDerivAt.sum
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) x L) :
-    HasFDerivAtFilter (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x L := by
+    HasFDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x L := by
   simp only [hasFDerivAtFilter_iff_isLittleO] at *
   convert IsLittleO.sum h
   simp [ContinuousLinearMap.sum_apply]
@@ -361,48 +359,48 @@ theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) x
 
 @[fun_prop]
 theorem HasFDerivWithinAt.sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s x) :
-    HasFDerivWithinAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) s x :=
+    HasFDerivWithinAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) s x :=
   HasFDerivAtFilter.sum h
 #align has_fderiv_within_at.sum HasFDerivWithinAt.sum
 
 @[fun_prop]
 theorem HasFDerivAt.sum (h : ∀ i ∈ u, HasFDerivAt (A i) (A' i) x) :
-    HasFDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x :=
+    HasFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x :=
   HasFDerivAtFilter.sum h
 #align has_fderiv_at.sum HasFDerivAt.sum
 
 @[fun_prop]
 theorem DifferentiableWithinAt.sum (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
-    DifferentiableWithinAt 𝕜 (fun y => ∑ i in u, A i y) s x :=
+    DifferentiableWithinAt 𝕜 (fun y => ∑ i ∈ u, A i y) s x :=
   HasFDerivWithinAt.differentiableWithinAt <|
     HasFDerivWithinAt.sum fun i hi => (h i hi).hasFDerivWithinAt
 #align differentiable_within_at.sum DifferentiableWithinAt.sum
 
 @[simp, fun_prop]
 theorem DifferentiableAt.sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
-    DifferentiableAt 𝕜 (fun y => ∑ i in u, A i y) x :=
+    DifferentiableAt 𝕜 (fun y => ∑ i ∈ u, A i y) x :=
   HasFDerivAt.differentiableAt <| HasFDerivAt.sum fun i hi => (h i hi).hasFDerivAt
 #align differentiable_at.sum DifferentiableAt.sum
 
 @[fun_prop]
 theorem DifferentiableOn.sum (h : ∀ i ∈ u, DifferentiableOn 𝕜 (A i) s) :
-    DifferentiableOn 𝕜 (fun y => ∑ i in u, A i y) s := fun x hx =>
+    DifferentiableOn 𝕜 (fun y => ∑ i ∈ u, A i y) s := fun x hx =>
   DifferentiableWithinAt.sum fun i hi => h i hi x hx
 #align differentiable_on.sum DifferentiableOn.sum
 
 @[simp, fun_prop]
 theorem Differentiable.sum (h : ∀ i ∈ u, Differentiable 𝕜 (A i)) :
-    Differentiable 𝕜 fun y => ∑ i in u, A i y := fun x => DifferentiableAt.sum fun i hi => h i hi x
+    Differentiable 𝕜 fun y => ∑ i ∈ u, A i y := fun x => DifferentiableAt.sum fun i hi => h i hi x
 #align differentiable.sum Differentiable.sum
 
 theorem fderivWithin_sum (hxs : UniqueDiffWithinAt 𝕜 s x)
     (h : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (A i) s x) :
-    fderivWithin 𝕜 (fun y => ∑ i in u, A i y) s x = ∑ i in u, fderivWithin 𝕜 (A i) s x :=
+    fderivWithin 𝕜 (fun y => ∑ i ∈ u, A i y) s x = ∑ i ∈ u, fderivWithin 𝕜 (A i) s x :=
   (HasFDerivWithinAt.sum fun i hi => (h i hi).hasFDerivWithinAt).fderivWithin hxs
 #align fderiv_within_sum fderivWithin_sum
 
 theorem fderiv_sum (h : ∀ i ∈ u, DifferentiableAt 𝕜 (A i) x) :
-    fderiv 𝕜 (fun y => ∑ i in u, A i y) x = ∑ i in u, fderiv 𝕜 (A i) x :=
+    fderiv 𝕜 (fun y => ∑ i ∈ u, A i y) x = ∑ i ∈ u, fderiv 𝕜 (A i) x :=
   (HasFDerivAt.sum fun i hi => (h i hi).hasFDerivAt).fderiv
 #align fderiv_sum fderiv_sum
 
@@ -533,15 +531,78 @@ theorem DifferentiableAt.sub (hf : DifferentiableAt 𝕜 f x) (hg : Differentiab
   (hf.hasFDerivAt.sub hg.hasFDerivAt).differentiableAt
 #align differentiable_at.sub DifferentiableAt.sub
 
+@[simp]
+lemma DifferentiableAt.add_iff_left (hg : DifferentiableAt 𝕜 g x) :
+    DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 f x := by
+  refine ⟨fun h ↦ ?_, fun hf ↦ hf.add hg⟩
+  simpa only [add_sub_cancel_right] using h.sub hg
+
+@[simp]
+lemma DifferentiableAt.add_iff_right (hg : DifferentiableAt 𝕜 f x) :
+    DifferentiableAt 𝕜 (fun y => f y + g y) x ↔ DifferentiableAt 𝕜 g x := by
+  simp only [add_comm (f _), hg.add_iff_left]
+
+@[simp]
+lemma DifferentiableAt.sub_iff_left (hg : DifferentiableAt 𝕜 g x) :
+    DifferentiableAt 𝕜 (fun y => f y - g y) x ↔ DifferentiableAt 𝕜 f x := by
+  simp only [sub_eq_add_neg, differentiableAt_neg_iff, hg, add_iff_left]
+
+@[simp]
+lemma DifferentiableAt.sub_iff_right (hg : DifferentiableAt 𝕜 f x) :
+    DifferentiableAt 𝕜 (fun y => f y - g y) x ↔ DifferentiableAt 𝕜 g x := by
+  simp only [sub_eq_add_neg, hg, add_iff_right, differentiableAt_neg_iff]
+
 @[fun_prop]
 theorem DifferentiableOn.sub (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s) :
     DifferentiableOn 𝕜 (fun y => f y - g y) s := fun x hx => (hf x hx).sub (hg x hx)
 #align differentiable_on.sub DifferentiableOn.sub
 
+@[simp]
+lemma DifferentiableOn.add_iff_left (hg : DifferentiableOn 𝕜 g s) :
+    DifferentiableOn 𝕜 (fun y => f y + g y) s ↔ DifferentiableOn 𝕜 f s := by
+  refine ⟨fun h ↦ ?_, fun hf ↦ hf.add hg⟩
+  simpa only [add_sub_cancel_right] using h.sub hg
+
+@[simp]
+lemma DifferentiableOn.add_iff_right (hg : DifferentiableOn 𝕜 f s) :
+    DifferentiableOn 𝕜 (fun y => f y + g y) s ↔ DifferentiableOn 𝕜 g s := by
+  simp only [add_comm (f _), hg.add_iff_left]
+
+@[simp]
+lemma DifferentiableOn.sub_iff_left (hg : DifferentiableOn 𝕜 g s) :
+    DifferentiableOn 𝕜 (fun y => f y - g y) s ↔ DifferentiableOn 𝕜 f s := by
+  simp only [sub_eq_add_neg, differentiableOn_neg_iff, hg, add_iff_left]
+
+@[simp]
+lemma DifferentiableOn.sub_iff_right (hg : DifferentiableOn 𝕜 f s) :
+    DifferentiableOn 𝕜 (fun y => f y - g y) s ↔ DifferentiableOn 𝕜 g s := by
+  simp only [sub_eq_add_neg, differentiableOn_neg_iff, hg, add_iff_right]
+
 @[simp, fun_prop]
 theorem Differentiable.sub (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g) :
     Differentiable 𝕜 fun y => f y - g y := fun x => (hf x).sub (hg x)
 #align differentiable.sub Differentiable.sub
+
+@[simp]
+lemma Differentiable.add_iff_left (hg : Differentiable 𝕜 g) :
+    Differentiable 𝕜 (fun y => f y + g y) ↔ Differentiable 𝕜 f := by
+  refine ⟨fun h ↦ ?_, fun hf ↦ hf.add hg⟩
+  simpa only [add_sub_cancel_right] using h.sub hg
+
+@[simp]
+lemma Differentiable.add_iff_right (hg : Differentiable 𝕜 f) :
+    Differentiable 𝕜 (fun y => f y + g y) ↔ Differentiable 𝕜 g := by
+  simp only [add_comm (f _), hg.add_iff_left]
+
+@[simp]
+lemma Differentiable.sub_iff_left (hg : Differentiable 𝕜 g) :
+    Differentiable 𝕜 (fun y => f y - g y) ↔ Differentiable 𝕜 f := by
+  simp only [sub_eq_add_neg, differentiable_neg_iff, hg, add_iff_left]
+
+@[simp]
+lemma Differentiable.sub_iff_right (hg : Differentiable 𝕜 f) :
+    Differentiable 𝕜 (fun y => f y - g y) ↔ Differentiable 𝕜 g := by
+  simp only [sub_eq_add_neg, differentiable_neg_iff, hg, add_iff_right]
 
 theorem fderivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : DifferentiableWithinAt 𝕜 f s x)
     (hg : DifferentiableWithinAt 𝕜 g s x) :
@@ -603,10 +664,10 @@ theorem DifferentiableAt.sub_const (hf : DifferentiableAt 𝕜 f x) (c : F) :
   (hf.hasFDerivAt.sub_const c).differentiableAt
 #align differentiable_at.sub_const DifferentiableAt.sub_const
 
-@[simp]
+@[deprecated DifferentiableAt.sub_iff_left (since := "2024-07-11")]
 theorem differentiableAt_sub_const_iff (c : F) :
-    DifferentiableAt 𝕜 (fun y => f y - c) x ↔ DifferentiableAt 𝕜 f x := by
-  simp only [sub_eq_add_neg, differentiableAt_add_const_iff]
+    DifferentiableAt 𝕜 (fun y => f y - c) x ↔ DifferentiableAt 𝕜 f x :=
+  (differentiableAt_const _).sub_iff_left
 #align differentiable_at_sub_const_iff differentiableAt_sub_const_iff
 
 @[fun_prop]
@@ -614,10 +675,10 @@ theorem DifferentiableOn.sub_const (hf : DifferentiableOn 𝕜 f s) (c : F) :
     DifferentiableOn 𝕜 (fun y => f y - c) s := fun x hx => (hf x hx).sub_const c
 #align differentiable_on.sub_const DifferentiableOn.sub_const
 
-@[simp]
+@[deprecated DifferentiableOn.sub_iff_left (since := "2024-07-11")]
 theorem differentiableOn_sub_const_iff (c : F) :
-    DifferentiableOn 𝕜 (fun y => f y - c) s ↔ DifferentiableOn 𝕜 f s := by
-  simp only [sub_eq_add_neg, differentiableOn_add_const_iff]
+    DifferentiableOn 𝕜 (fun y => f y - c) s ↔ DifferentiableOn 𝕜 f s :=
+  (differentiableOn_const _).sub_iff_left
 #align differentiable_on_sub_const_iff differentiableOn_sub_const_iff
 
 @[fun_prop]
@@ -625,10 +686,10 @@ theorem Differentiable.sub_const (hf : Differentiable 𝕜 f) (c : F) :
     Differentiable 𝕜 fun y => f y - c := fun x => (hf x).sub_const c
 #align differentiable.sub_const Differentiable.sub_const
 
-@[simp]
+@[deprecated Differentiable.sub_iff_left (since := "2024-07-11")]
 theorem differentiable_sub_const_iff (c : F) :
-    (Differentiable 𝕜 fun y => f y - c) ↔ Differentiable 𝕜 f := by
-  simp only [sub_eq_add_neg, differentiable_add_const_iff]
+    (Differentiable 𝕜 fun y => f y - c) ↔ Differentiable 𝕜 f :=
+  (differentiable_const _).sub_iff_left
 #align differentiable_sub_const_iff differentiable_sub_const_iff
 
 theorem fderivWithin_sub_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
@@ -681,9 +742,10 @@ theorem DifferentiableAt.const_sub (hf : DifferentiableAt 𝕜 f x) (c : F) :
   (hf.hasFDerivAt.const_sub c).differentiableAt
 #align differentiable_at.const_sub DifferentiableAt.const_sub
 
-@[simp]
+@[deprecated DifferentiableAt.sub_iff_right (since := "2024-07-11")]
 theorem differentiableAt_const_sub_iff (c : F) :
-    DifferentiableAt 𝕜 (fun y => c - f y) x ↔ DifferentiableAt 𝕜 f x := by simp [sub_eq_add_neg]
+    DifferentiableAt 𝕜 (fun y => c - f y) x ↔ DifferentiableAt 𝕜 f x :=
+  (differentiableAt_const _).sub_iff_right
 #align differentiable_at_const_sub_iff differentiableAt_const_sub_iff
 
 @[fun_prop]
@@ -691,9 +753,10 @@ theorem DifferentiableOn.const_sub (hf : DifferentiableOn 𝕜 f s) (c : F) :
     DifferentiableOn 𝕜 (fun y => c - f y) s := fun x hx => (hf x hx).const_sub c
 #align differentiable_on.const_sub DifferentiableOn.const_sub
 
-@[simp]
+@[deprecated DifferentiableOn.sub_iff_right (since := "2024-07-11")]
 theorem differentiableOn_const_sub_iff (c : F) :
-    DifferentiableOn 𝕜 (fun y => c - f y) s ↔ DifferentiableOn 𝕜 f s := by simp [sub_eq_add_neg]
+    DifferentiableOn 𝕜 (fun y => c - f y) s ↔ DifferentiableOn 𝕜 f s :=
+  (differentiableOn_const _).sub_iff_right
 #align differentiable_on_const_sub_iff differentiableOn_const_sub_iff
 
 @[fun_prop]
@@ -701,9 +764,10 @@ theorem Differentiable.const_sub (hf : Differentiable 𝕜 f) (c : F) :
     Differentiable 𝕜 fun y => c - f y := fun x => (hf x).const_sub c
 #align differentiable.const_sub Differentiable.const_sub
 
-@[simp]
+@[deprecated Differentiable.sub_iff_right (since := "2024-07-11")]
 theorem differentiable_const_sub_iff (c : F) :
-    (Differentiable 𝕜 fun y => c - f y) ↔ Differentiable 𝕜 f := by simp [sub_eq_add_neg]
+    (Differentiable 𝕜 fun y => c - f y) ↔ Differentiable 𝕜 f :=
+  (differentiable_const _).sub_iff_right
 #align differentiable_const_sub_iff differentiable_const_sub_iff
 
 theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :

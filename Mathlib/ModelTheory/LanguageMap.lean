@@ -323,12 +323,12 @@ theorem Injective.isExpansionOn_default {ϕ : L →ᴸ L'}
     (h : ϕ.Injective) (M : Type*) [Inhabited M] [L.Structure M] :
     @IsExpansionOn L L' ϕ M _ (ϕ.defaultExpansion M) := by
   letI := ϕ.defaultExpansion M
-  refine' ⟨fun {n} f xs => _, fun {n} r xs => _⟩
+  refine ⟨fun {n} f xs => ?_, fun {n} r xs => ?_⟩
   · have hf : ϕ.onFunction f ∈ Set.range fun f : L.Functions n => ϕ.onFunction f := ⟨f, rfl⟩
-    refine' (dif_pos hf).trans _
+    refine (dif_pos hf).trans ?_
     rw [h.onFunction hf.choose_spec]
   · have hr : ϕ.onRelation r ∈ Set.range fun r : L.Relations n => ϕ.onRelation r := ⟨r, rfl⟩
-    refine' (dif_pos hr).trans _
+    refine (dif_pos hr).trans ?_
     rw [h.onRelation hr.choose_spec]
 #align first_order.language.Lhom.injective.is_expansion_on_default FirstOrder.Language.LHom.Injective.isExpansionOn_default
 

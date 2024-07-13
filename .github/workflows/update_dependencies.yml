@@ -1,0 +1,48 @@
+name: Update Mathlib Dependencies
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # This will run every hour
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install elan
+        run: |
+          set -o pipefail
+          curl -sSfL "https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz" | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.NIGHTLY_TESTING }}"
+
+      - name: Configure Git User
+        run: |
+          git config user.name "leanprover-community-mathlib4-bot"
+          git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+
+      - name: Update dependencies
+        run: lake update
+
+      - name: Generate branch name
+        id: generate_branch_name
+        run: |
+          timestamp=$(date -u +"%Y-%m-%d-%H-%M")
+          echo "branch_name=update-dependencies-$timestamp" >> "$GITHUB_ENV"
+          echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: "${{ secrets.NIGHTLY_TESTING }}"
+          commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"
+          branch: "${{ env.branch_name }}"
+          base: master
+          title: "${{ env.pr_title }}"
+          body: "This PR updates the Mathlib dependencies."
+          labels: "auto-merge-after-CI"

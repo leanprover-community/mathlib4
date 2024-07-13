@@ -220,7 +220,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
   apply Fin.strictMono_unique hmono (s.orderEmbOfFin h).strictMono
   rw [range_orderEmbOfFin, ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
-  refine' eq_of_subset_of_card_le (fun x hx => _) _
+  refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
   · rw [h, card_image_of_injective _ hmono.injective, card_univ, Fintype.card_fin]

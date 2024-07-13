@@ -3,7 +3,6 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
-import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakDual
@@ -105,7 +104,7 @@ theorem polar_empty : B.polar ∅ = Set.univ :=
 
 @[simp]
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
-  refine' Set.eq_univ_iff_forall.mpr fun y x hx => _
+  refine Set.eq_univ_iff_forall.mpr fun y x hx => ?_
   rw [Set.mem_singleton_iff.mp hx, map_zero, LinearMap.zero_apply, norm_zero]
   exact zero_le_one
 #align linear_map.polar_zero LinearMap.polar_zero
@@ -124,7 +123,7 @@ theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.p
 theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
     (B.polar s) := by
   rw [polar_eq_iInter]
-  refine' isClosed_iInter fun x => isClosed_iInter fun _ => _
+  refine isClosed_iInter fun x => isClosed_iInter fun _ => ?_
   exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
 #align linear_map.polar_weak_closed LinearMap.polar_weak_closed
 
@@ -140,8 +139,8 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
-  refine' ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => _⟩
-  refine' norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => _)
+  refine ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => ?_⟩
+  refine norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => ?_)
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
   calc
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by

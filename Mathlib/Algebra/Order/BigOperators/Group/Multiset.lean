@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Algebra.Order.Monoid.OrderDual
 
 /-!
 # Big operators on a multiset in ordered groups
@@ -98,7 +99,7 @@ lemma le_prod_of_submultiplicative_on_pred (f : α → β)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
   revert s
-  refine' Multiset.induction _ _
+  refine Multiset.induction ?_ ?_
   · simp [le_of_eq h_one]
   intro a s hs hpsa
   have hps : ∀ x, x ∈ s → p x := fun x hx => hpsa x (mem_cons_of_mem hx)
@@ -121,7 +122,7 @@ lemma le_prod_nonempty_of_submultiplicative_on_pred (f : α → β) (p : α → 
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
     (s : Multiset α) (hs_nonempty : s ≠ ∅) (hs : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
   revert s
-  refine' Multiset.induction _ _
+  refine Multiset.induction ?_ ?_
   · simp
   rintro a s hs - hsa_prop
   rw [prod_cons, map_cons, prod_cons]
@@ -189,3 +190,5 @@ lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero abs_add s
 #align multiset.abs_sum_le_sum_abs Multiset.abs_sum_le_sum_abs
+
+end Multiset

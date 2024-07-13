@@ -21,7 +21,7 @@ In this file we define the product of two subalgebras as a subalgebra of the pro
 
 namespace Subalgebra
 
-open BigOperators Algebra
+open Algebra
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 variable (S : Subalgebra R A) (S₁ : Subalgebra R B)
@@ -61,3 +61,5 @@ theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
     S.prod S₁ ⊓ T.prod T₁ = (S ⊓ T).prod (S₁ ⊓ T₁) :=
   SetLike.coe_injective Set.prod_inter_prod
 #align subalgebra.prod_inf_prod Subalgebra.prod_inf_prod
+
+end Subalgebra

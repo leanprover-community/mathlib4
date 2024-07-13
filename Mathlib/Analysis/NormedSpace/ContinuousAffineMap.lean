@@ -102,12 +102,12 @@ theorem const_contLinear (q : Q) : (const R P q).contLinear = 0 :=
 theorem contLinear_eq_zero_iff_exists_const (f : P →ᴬ[R] Q) :
     f.contLinear = 0 ↔ ∃ q, f = const R P q := by
   have h₁ : f.contLinear = 0 ↔ (f : P →ᵃ[R] Q).linear = 0 := by
-    refine' ⟨fun h => _, fun h => _⟩ <;> ext
+    refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
     · rw [← coe_contLinear_eq_linear, h]; rfl
     · rw [← coe_linear_eq_coe_contLinear, h]; rfl
   have h₂ : ∀ q : Q, f = const R P q ↔ (f : P →ᵃ[R] Q) = AffineMap.const R P q := by
     intro q
-    refine' ⟨fun h => _, fun h => _⟩ <;> ext
+    refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
     · rw [h]; rfl
     · rw [← coe_to_affineMap, h]; rfl
   simp_rw [h₁, h₂]
@@ -206,16 +206,11 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           rw [h₂]
           rfl }
 
+set_option maxSynthPendingDepth 2 in
 instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
   norm_smul_le t f := by
-    simp only [SMul.smul, norm_def, smul_contLinear, norm_smul]
-    -- Porting note: previously all these rewrites were in the `simp only`,
-    -- but now they don't fire.
-    -- (in fact, `norm_smul` fires, but only once rather than twice!)
-    have : NormedAddCommGroup (V →ᴬ[𝕜] W) := inferInstance -- this is necessary for `norm_smul`
-    rw [coe_smul, Pi.smul_apply, norm_smul, norm_smul _ (f.contLinear),
-      ← mul_max_of_nonneg _ _ (norm_nonneg t)]
-
+    simp only [norm_def, coe_smul, Pi.smul_apply, norm_smul, smul_contLinear,
+      ← mul_max_of_nonneg _ _ (norm_nonneg t), le_refl]
 
 theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]

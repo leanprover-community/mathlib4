@@ -191,7 +191,8 @@ theorem dual_ordSeparatingSet :
     dual_ordConnectedComponent, ← preimage_compl, preimage_inter, preimage_iUnion]
 #align set.dual_ord_separating_set Set.dual_ordSeparatingSet
 
-/-- An auxiliary neighborhood that will be used in the proof of `OrderTopology.t5Space`. -/
+/-- An auxiliary neighborhood that will be used in the proof of
+    `OrderTopology.CompletelyNormalSpace`. -/
 def ordT5Nhd (s t : Set α) : Set α :=
   ⋃ x ∈ s, ordConnectedComponent (tᶜ ∩ (ordConnectedSection <| ordSeparatingSet s t)ᶜ) x
 #align set.ord_t5_nhd Set.ordT5Nhd
@@ -232,3 +233,5 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
         (hy <| Icc_subset_uIcc ⟨hxb, hby.le⟩)
   exact ⟨sol1, sol2⟩
 #align set.disjoint_ord_t5_nhd Set.disjoint_ordT5Nhd
+
+end Set

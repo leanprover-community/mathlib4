@@ -150,7 +150,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
     φ = ψ := by
   rw [DFunLike.ext'_iff]
   have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
-    refine' embedding_subtype_val.toInducing.dense_iff.2 fun x => _
+    refine embedding_subtype_val.toInducing.dense_iff.2 fun x => ?_
     convert show ↑x ∈ closure (S : Set A) from x.prop
     rw [← Set.range_comp]
     exact
@@ -158,7 +158,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
         ⟨by
           rintro ⟨y, rfl⟩
           exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩
-  refine' Continuous.ext_on this hφ hψ _
+  refine Continuous.ext_on this hφ hψ ?_
   rintro _ ⟨x, rfl⟩
   simpa only using DFunLike.congr_fun h x
 #align star_alg_hom.ext_topological_closure StarAlgHom.ext_topologicalClosure

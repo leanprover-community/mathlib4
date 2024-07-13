@@ -20,8 +20,6 @@ This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the ea
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w
 
 variable {R A B C : Type*}

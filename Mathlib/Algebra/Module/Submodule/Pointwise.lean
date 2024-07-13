@@ -35,11 +35,11 @@ These actions are available in the `Pointwise` locale.
 ## Implementation notes
 
 For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
-section `set_acting_on_submodules` does not have a counterpart in
-`Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+section `set_acting_on_submodules` does not have a counterpart in the file
+`Mathlib.Algebra.Group.Submonoid.Pointwise`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
-lemmas from `Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
 -/
 
 
@@ -182,7 +182,9 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
   rfl
 #align submodule.add_eq_sup Submodule.add_eq_sup
 
-@[simp]
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+@[simp, nolint simpNF]
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
@@ -311,7 +313,7 @@ to prove:
 - for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
 - `P 0`.
 
-To invoke this induction principal, use `induction x, hx using Submodule.set_smul_inductionOn` where
+To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`
 
 When we consider subset of `R` acting on `M`
@@ -379,8 +381,8 @@ instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 
--- 2024-03-31
-@[deprecated smul_mono_right] theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
+@[deprecated smul_mono_right (since := "2024-03-31")]
+theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
     s • p ≤ s • q :=
   smul_mono_right s le
 
@@ -408,14 +410,14 @@ theorem span_set_smul [SMulCommClass S R M] (s : Set S) (t : Set M) :
 
 variable {s N} in
 /--
-Induction principal for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
+Induction principle for set acting on submodules. To prove `P` holds for all `s • N`, it is enough
 to prove:
 - for all `r ∈ s` and `n ∈ N`, `P (r • n)`;
 - for all `r` and `m ∈ s • N`, `P (r • n)`;
 - for all `m₁, m₂`, `P m₁` and `P m₂` implies `P (m₁ + m₂)`;
 - `P 0`.
 
-To invoke this induction principal, use `induction x, hx using Submodule.set_smul_inductionOn` where
+To invoke this induction principle, use `induction x, hx using Submodule.set_smul_inductionOn` where
 `x : M` and `hx : x ∈ s • N`
 -/
 @[elab_as_elim]
@@ -426,7 +428,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
       motive (r • n) (mem_set_smul_of_mem_mem mem₁ mem₂))
     (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N) ,
       motive m mem → motive (r • m) (Submodule.smul_mem _ r mem)) --
-    (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁: m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
+    (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁ : m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
       motive m₁ mem₁ → motive m₂ mem₂ → motive (m₁ + m₂) (Submodule.add_mem _ mem₁ mem₂))
     (zero : motive 0 (Submodule.zero_mem _)) :
     motive x hx :=
@@ -514,8 +516,7 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
       rcases h₂ with ⟨m₂, h₂, rfl⟩
       exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by aesop⟩
     · exact ⟨0, Submodule.zero_mem _, by aesop⟩
-  · rintro ⟨m, hm, rfl⟩
-    aesop
+  · aesop
 
 -- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`
