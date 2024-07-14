@@ -77,13 +77,13 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 `F` is a cartesian closed functor if this is an iso for all `A`.
 -/
 def expComparison (A : C) : exp A ⋙ F ⟶ F ⋙ exp (F.obj A) :=
-  transferNatTrans (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
+  mateEquiv (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 #align category_theory.exp_comparison CategoryTheory.expComparison
 
 theorem expComparison_ev (A B : C) :
     Limits.prod.map (𝟙 (F.obj A)) ((expComparison F A).app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
-  convert transferNatTrans_counit _ _ (prodComparisonNatIso F A).inv B using 2
+  convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
   simp only [Limits.prodComparisonNatIso_inv, asIso_inv, NatIso.isIso_inv_app, IsIso.hom_inv_id]
 #align category_theory.exp_comparison_ev CategoryTheory.expComparison_ev
@@ -91,7 +91,7 @@ theorem expComparison_ev (A B : C) :
 theorem coev_expComparison (A B : C) :
     F.map ((exp.coev A).app B) ≫ (expComparison F A).app (A ⨯ B) =
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
-  convert unit_transferNatTrans _ _ (prodComparisonNatIso F A).inv B using 3
+  convert unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
   dsimp
   simp
@@ -107,13 +107,23 @@ theorem uncurry_expComparison (A B : C) :
 theorem expComparison_whiskerLeft {A A' : C} (f : A' ⟶ A) :
     expComparison F A ≫ whiskerLeft _ (pre (F.map f)) =
       whiskerRight (pre f) _ ≫ expComparison F A' := by
+  unfold expComparison pre
+  have vcomp1 := mateEquiv_conjugateEquiv_vcomp
+    (exp.adjunction A) (exp.adjunction (F.obj A)) (exp.adjunction (F.obj A'))
+    ((prodComparisonNatIso F A).inv) ((prod.functor.map (F.map f)))
+  have vcomp2 := conjugateEquiv_mateEquiv_vcomp
+    (exp.adjunction A) (exp.adjunction A') (exp.adjunction (F.obj A'))
+    ((prod.functor.map f)) ((prodComparisonNatIso F A').inv)
+  unfold leftAdjointSquareConjugate.vcomp rightAdjointSquareConjugate.vcomp at vcomp1
+  unfold leftAdjointConjugateSquare.vcomp rightAdjointConjugateSquare.vcomp at vcomp2
+  rw [← vcomp1, ← vcomp2]
+  apply congr_arg
   ext B
-  dsimp
-  apply uncurry_injective
-  rw [uncurry_natural_left, uncurry_natural_left, uncurry_expComparison, uncurry_pre,
-    prod.map_swap_assoc, ← F.map_id, expComparison_ev, ← F.map_id, ←
-    prodComparison_inv_natural_assoc, ← prodComparison_inv_natural_assoc, ← F.map_comp, ←
-    F.map_comp, prod_map_pre_app_comp_ev]
+  simp only [Functor.comp_obj, prod.functor_obj_obj, prodComparisonNatIso_inv, asIso_inv,
+    NatTrans.comp_app, whiskerLeft_app, prod.functor_map_app, NatIso.isIso_inv_app,
+    whiskerRight_app]
+  rw [← F.map_id]
+  exact (prodComparison_inv_natural F f (𝟙 B)).symm
 #align category_theory.exp_comparison_whisker_left CategoryTheory.expComparison_whiskerLeft
 
 /-- The functor `F` is cartesian closed (ie preserves exponentials) if each natural transformation
@@ -126,27 +136,39 @@ class CartesianClosedFunctor : Prop where
 attribute [instance] CartesianClosedFunctor.comparison_iso
 
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
-    transferNatTransSelf (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
+    conjugateEquiv (h.comp (exp.adjunction A)) ((exp.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A) =
       expComparison F A := by
-  rw [← Equiv.eq_symm_apply]
-  ext B : 2
-  dsimp [frobeniusMorphism, transferNatTransSelf, transferNatTrans, Adjunction.comp]
-  simp only [id_comp, comp_id]
-  rw [← L.map_comp_assoc, prod.map_id_comp, assoc]
-  -- Porting note: need to use `erw` here.
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [expComparison_ev]
-  rw [prod.map_id_comp, assoc, ← F.map_id, ← prodComparison_inv_natural_assoc, ← F.map_comp]
-  -- Porting note: need to use `erw` here.
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [exp.ev_coev]
-  rw [F.map_id (A ⨯ L.obj B), comp_id]
-  ext
-  · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_fst]
-    simp
-  · rw [assoc, assoc, ← h.counit_naturality, ← L.map_comp_assoc, assoc, inv_prodComparison_map_snd]
-    simp
+  unfold expComparison frobeniusMorphism
+  have conjeq := iterated_mateEquiv_conjugateEquiv h h
+    (exp.adjunction (F.obj A)) (exp.adjunction A)
+    (prodComparisonNatTrans L (F.obj A) ≫ whiskerLeft L (prod.functor.map (h.counit.app A)))
+  rw [← conjeq]
+  apply congr_arg
+  ext B
+  unfold mateEquiv
+  simp only [Functor.comp_obj, prod.functor_obj_obj, Functor.id_obj, Equiv.coe_fn_mk,
+    whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp, assoc, NatTrans.comp_app,
+    whiskerLeft_app, whiskerRight_app, prodComparisonNatTrans_app, prod.functor_map_app,
+    Functor.comp_map, prod.functor_obj_map, prodComparisonNatIso_inv, asIso_inv,
+    NatIso.isIso_inv_app]
+  rw [← F.map_comp, ← F.map_comp]
+  simp only [prod.map_map, comp_id, id_comp]
+  apply IsIso.eq_inv_of_inv_hom_id
+  rw [F.map_comp, assoc, assoc, prodComparison_natural]
+  slice_lhs 2 3 =>
+    {
+      rw [← prodComparison_comp]
+    }
+  rw [← assoc]
+  unfold prodComparison
+  have ηlemma : (h.unit.app (F.obj A ⨯ F.obj B) ≫
+    prod.lift ((L ⋙ F).map prod.fst) ((L ⋙ F).map prod.snd)) =
+    prod.map (h.unit.app (F.obj A)) (h.unit.app (F.obj B)) := by
+    ext <;> simp
+  rw [ηlemma]
+  simp only [Functor.id_obj, Functor.comp_obj, prod.map_map, Adjunction.right_triangle_components,
+    prod.map_id_id]
 #align category_theory.frobenius_morphism_mate CategoryTheory.frobeniusMorphism_mate
 
 /--
@@ -156,7 +178,7 @@ at `A` is an isomorphism.
 theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
     [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobeniusMorphism_mate F h] at i
-  exact @transferNatTransSelf_of_iso _ _ _ _ _ _ _ _ _ _ _ i
+  exact @conjugateEquiv_of_iso _ _ _ _ _ _ _ _ _ _ _ i
 #align category_theory.frobenius_morphism_iso_of_exp_comparison_iso CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
 
 /--

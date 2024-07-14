@@ -6,6 +6,7 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Bits
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
@@ -62,8 +63,7 @@ namespace Nat
 implementation.
 -/
 
--- Porting note: Lean cannot find pp_nodot at the time of this port.
--- @[pp_nodot]
+@[pp_nodot]
 def fib (n : ℕ) : ℕ :=
   ((fun p : ℕ × ℕ => (p.snd, p.fst + p.snd))^[n] (0, 1)).fst
 #align nat.fib Nat.fib

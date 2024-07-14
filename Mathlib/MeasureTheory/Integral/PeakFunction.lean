@@ -105,7 +105,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
     (hmg : IntegrableOn g s μ) (hcg : Tendsto g (𝓝[s] x₀) (𝓝 0)) :
     Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 0) := by
   refine Metric.tendsto_nhds.2 fun ε εpos => ?_
-  obtain ⟨δ, hδ, δpos, δone⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ < ε ∧ 0 < δ ∧ δ < 1:= by
+  obtain ⟨δ, hδ, δpos, δone⟩ : ∃ δ, (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ < ε ∧ 0 < δ ∧ δ < 1 := by
     have A :
       Tendsto (fun δ => (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ) (𝓝[>] 0)
         (𝓝 ((0 * ∫ x in s, ‖g x‖ ∂μ) + 2 * 0)) := by
@@ -479,8 +479,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
       atTop (𝓝 (f 0)) := by
     apply tendsto_integral_comp_smul_smul_of_integrable hφ h'φ h If
     have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
-    have B : ContinuousAt (fun x ↦ x₀ - x) 0 := Continuous.continuousAt (by continuity)
-    exact A.comp B
+    exact A.comp <| by fun_prop
   simp only [f, sub_zero] at this
   convert this using 2 with c
   conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)

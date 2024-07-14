@@ -74,7 +74,7 @@ lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
     simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 (B *ᵥ x)
 
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A)
-    {m : Type*} [Fintype m] (B : Matrix m n R):
+    {m : Type*} [Fintype m] (B : Matrix m n R) :
     PosSemidef (B * A * Bᴴ) := by
   simpa only [conjTranspose_conjTranspose] using hA.conjTranspose_mul_mul_same Bᴴ
 
@@ -122,6 +122,12 @@ protected lemma zpow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (z :
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · simpa using hM.pow n
   · simpa using (hM.pow n).inv
+
+protected lemma add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) : (A + B).PosSemidef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_nonneg (hA.2 x) (hB.2 x)⟩
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
@@ -315,18 +321,34 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
 #align matrix.pos_def.transpose Matrix.PosDef.transpose
 
+protected lemma add_posSemidef {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_pos_of_pos_of_nonneg (hA.2 x hx) (hB.2 x)⟩
+
+protected lemma posSemidef_add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
+  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
+    rw [add_mulVec, dotProduct_add]
+    exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
+
+protected lemma add {A : Matrix m m R} {B : Matrix m m R}
+    (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
+  hA.add_posSemidef hB.posSemidef
+
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
-    (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
-  refine ⟨hM, fun x hx => ?_⟩
-  simp only [toQuadraticForm', QuadraticForm.PosDef, LinearMap.BilinForm.toQuadraticForm_apply,
+    (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
+  refine' ⟨hM, fun x hx => _⟩
+  simp only [toQuadraticMap', QuadraticMap.PosDef, LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply'] at hMq
   apply hMq x hx
 #align matrix.pos_def_of_to_quadratic_form' Matrix.PosDef.of_toQuadraticForm'
 
 theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
-    M.toQuadraticForm'.PosDef := by
+    M.toQuadraticMap'.PosDef := by
   intro x hx
-  simp only [Matrix.toQuadraticForm', LinearMap.BilinForm.toQuadraticForm_apply,
+  simp only [Matrix.toQuadraticMap', LinearMap.BilinMap.toQuadraticMap_apply,
     toLinearMap₂'_apply']
   apply hM.2 x hx
 #align matrix.pos_def_to_quadratic_form' Matrix.PosDef.toQuadraticForm'
@@ -350,18 +372,20 @@ end Matrix
 
 namespace QuadraticForm
 
+open QuadraticMap
+
 variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
-  rw [← toQuadraticForm_associated ℝ Q,
+  rw [← toQuadraticMap_associated ℝ Q,
     ← LinearMap.toMatrix₂'.left_inv ((associatedHom (R := ℝ) ℝ) Q)]
   exact hQ.toQuadraticForm'
 #align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
-  rw [← toQuadraticForm_associated ℝ Q, ←
+  rw [← toQuadraticMap_associated ℝ Q, ←
     LinearMap.toMatrix₂'.left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 #align quadratic_form.pos_def_to_matrix' QuadraticForm.posDef_toMatrix'

@@ -44,10 +44,6 @@ variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
 
 section Constructions
 
-instance instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
-    TopologicalSpace (Subtype p) :=
-  induced (↑) t
-
 instance {r : X → X → Prop} [t : TopologicalSpace X] : TopologicalSpace (Quot r) :=
   coinduced (Quot.mk r) t
 
@@ -498,7 +494,7 @@ theorem continuous_sInf_dom₂ {X Y Z} {f : X → Y → Z} {tas : Set (Topologic
     {tc : TopologicalSpace Z} (hX : tX ∈ tas) (hY : tY ∈ tbs)
     (hf : Continuous fun p : X × Y => f p.1 p.2) : by
     haveI := sInf tas; haveI := sInf tbs;
-      exact @Continuous _ _ _ tc fun p : X × Y => f p.1 p.2 := by
+    exact @Continuous _ _ _ tc fun p : X × Y => f p.1 p.2 := by
   have hX := continuous_sInf_dom hX continuous_id
   have hY := continuous_sInf_dom hY continuous_id
   have h_continuous_id := @Continuous.prod_map _ _ _ _ tX tY (sInf tas) (sInf tbs) _ _ hX hY
@@ -978,7 +974,6 @@ theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) 
   Iff.rfl
 #align is_open_sum_iff isOpen_sum_iff
 
--- Porting note (#10756): new theorem
 theorem isClosed_sum_iff {s : Set (X ⊕ Y)} :
     IsClosed s ↔ IsClosed (inl ⁻¹' s) ∧ IsClosed (inr ⁻¹' s) := by
   simp only [← isOpen_compl_iff, isOpen_sum_iff, preimage_compl]
@@ -1070,6 +1065,17 @@ theorem IsOpenMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : 
   isOpenMap_sum_elim.2 ⟨hf, hg⟩
 #align is_open_map.sum_elim IsOpenMap.sum_elim
 
+theorem isClosedMap_sum {f : X ⊕ Y → Z} :
+    IsClosedMap f ↔ (IsClosedMap fun a => f (.inl a)) ∧ IsClosedMap fun b => f (.inr b) := by
+  constructor
+  · intro h
+    exact ⟨h.comp closedEmbedding_inl.isClosedMap, h.comp closedEmbedding_inr.isClosedMap⟩
+  · rintro h Z hZ
+    rw [isClosed_sum_iff] at hZ
+    convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
+    ext
+    simp only [mem_image, Sum.exists, mem_union, mem_preimage]
+
 end Sum
 
 section Subtype
@@ -1148,7 +1154,6 @@ theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((
   rfl
 #align subtype.dense_iff Subtype.dense_iff
 
--- Porting note (#10756): new lemma
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [inducing_subtype_val.map_nhds_eq, Subtype.range_val]
 
@@ -1234,6 +1239,15 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
     (hinj : Function.Injective f) : DiscreteTopology (f ⁻¹' s) :=
   DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
     (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr hinj.injOn)
+
+/-- If `f : X → Y` is a quotient map,
+then its restriction to the preimage of an open set is a quotient map too. -/
+theorem QuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : QuotientMap f)
+    {s : Set Y} (hs : IsOpen s) : QuotientMap (s.restrictPreimage f) := by
+  refine quotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
+  rw [hs.openEmbedding_subtype_val.open_iff_image_open, ← hf.isOpen_preimage,
+    (hs.preimage hf.continuous).openEmbedding_subtype_val.open_iff_image_open,
+    image_val_preimage_restrictPreimage]
 
 end Subtype
 

@@ -108,7 +108,6 @@ instance : ContinuousOrderHomClass (α →Co β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 
--- Porting note (#10756): new lemma
 @[simp] theorem coe_toOrderHom (f : α →Co β) : ⇑f.toOrderHom = f := rfl
 
 theorem toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl
@@ -208,3 +207,5 @@ instance [PartialOrder β] : PartialOrder (α →Co β) :=
   PartialOrder.lift ((↑) : (α →Co β) → α → β) DFunLike.coe_injective
 
 end ContinuousOrderHom
+
+end
