@@ -31,7 +31,7 @@ Penrose (https://github.com/penrose) via ProofWidget. However, it should be note
 normalization procedure in this file does not rely on specific settings, allowing for broader
 application.
 
-Future plans include the following. At least I (Yuma) would like to work on tehse in the future,
+Future plans include the following. At least I (Yuma) would like to work on these in the future,
 but it might not be immediate. If anyone is interested, I would be happy to discuss.
 
 - Currently (#10581), the string diagrams only do drawing. It would be better they also generate
