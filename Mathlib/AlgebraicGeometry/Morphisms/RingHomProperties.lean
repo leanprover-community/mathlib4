@@ -105,7 +105,7 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
 
 theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (hP' : RespectsIso @P)
     {X Y S : Scheme} [IsAffine X] [IsAffine Y] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S)
-    (H : P (Scheme.Γ.map g.op)) : P (Scheme.Γ.map (pullback.fst : pullback f g ⟶ _).op) := by
+    (H : P (Scheme.Γ.map g.op)) : P (Scheme.Γ.map (pullback.fst f g).op) := by
   -- Porting note (#11224): change `rw` to `erw`
   erw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
       (AffineScheme.ofHom g)]
@@ -118,9 +118,7 @@ theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (h
   delta AffineScheme.Γ at this
   simp only [Quiver.Hom.unop_op, Functor.comp_map, AffineScheme.forgetToScheme_map,
     Functor.op_map] at this
-  rw [← this, hP'.cancel_right_isIso,
-    ← pushoutIsoUnopPullback_inl_hom (Quiver.Hom.unop _) (Quiver.Hom.unop _),
-    hP'.cancel_right_isIso]
+  rw [← this, hP'.cancel_right_isIso, ← pushoutIsoUnopPullback_inl_hom, hP'.cancel_right_isIso]
   exact hP.pushout_inl _ hP' _ _ H
 #align ring_hom.stable_under_base_change.Γ_pullback_fst RingHom.StableUnderBaseChange.Γ_pullback_fst
 
@@ -562,8 +560,8 @@ theorem affineLocally_isStableUnderComposition : (affineLocally @P).IsStableUnde
           ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst)) hf
         -- Porting note: again strange behavior of TFAE
         have := (hP.affine_openCover_TFAE
-          (pullback.snd : pullback f ((pullback g (S.affineCover.map i)).affineCover.map j ≫
-          pullback.fst) ⟶ _)).out 0 3
+          (pullback.snd f ((pullback g (S.affineCover.map i)).affineCover.map j ≫
+            pullback.fst _ _))).out 0 3
         apply this.mp hf
 #align ring_hom.property_is_local.affine_locally_stable_under_composition RingHom.PropertyIsLocal.affineLocally_isStableUnderComposition
 

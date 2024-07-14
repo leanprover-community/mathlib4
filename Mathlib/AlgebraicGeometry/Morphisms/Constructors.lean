@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.RingTheory.RingHomProperties
 
 /-!
 
@@ -15,8 +16,14 @@ properties:
 - `AffineTargetMorphismProperty.diagonal` : Given an affine target morphism property `P`,
   `P.diagonal f` holds if `P (pullback.mapDesc f₁ f₂ f)` holds for two affine open
   immersions `f₁` and `f₂`.
+- `AffineTargetMorphismProperty.of`: Given a morphism property `P` of schemes,
+  this is the restriction of `P` to morphisms with affine target. If `P` is local at the
+  target, we have `(toAffineTargetMorphismProperty P).targetAffineLocally = P`
+  (see `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isLocalAtTarget`).
 - `MorphismProperty.topologically`: Given a property `P` of maps of topological spaces,
   `(topologically P) f` holds if `P` holds for the underlying continuous map of `f`.
+- `MorphismProperty.stalkwise`: Given a property `P` of ring homs,
+  `(stalkwise P) f` holds if `P` holds for all stalk maps.
 
 Also provides API for showing the standard locality and stability properties for these
 types of properties.
@@ -63,7 +70,7 @@ theorem HasAffineProperty.diagonal_of_openCover
       P.affineProperty (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) (𝒰.pullbackHom f i))) :
     P.diagonal f := by
   let 𝒱 := (Scheme.Pullback.openCoverOfBase 𝒰 f f).bind fun i =>
-    Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) pullback.snd pullback.snd
+    Scheme.Pullback.openCoverOfLeftRight.{u} (𝒰' i) (𝒰' i) (pullback.snd _ _) (pullback.snd _ _)
   have i1 : ∀ i, IsAffine (𝒱.obj i) := fun i => by dsimp [𝒱]; infer_instance
   apply of_openCover 𝒱
   rintro ⟨i, j, k⟩
@@ -196,10 +203,12 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
 
 end Universally
 
+namespace MorphismProperty
+
 section Topologically
 
 /-- `topologically P` holds for a morphism if the underlying topological map satisfies `P`. -/
-def MorphismProperty.topologically
+def topologically
     (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop) :
     MorphismProperty Scheme.{u} := fun _ _ f => P f.1.base
 #align algebraic_geometry.morphism_property.topologically AlgebraicGeometry.MorphismProperty.topologically
@@ -208,7 +217,7 @@ variable (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (
 
 /-- If a property of maps of topological spaces is stable under composition, the induced
 morphism property of schemes is stable under composition. -/
-lemma MorphismProperty.topologically_isStableUnderComposition
+lemma topologically_isStableUnderComposition
     (hP : ∀ {α β γ : Type u} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
       (f : α → β) (g : β → γ) (_ : P f) (_ : P g), P (g ∘ f)) :
     (MorphismProperty.topologically P).IsStableUnderComposition where
@@ -218,7 +227,7 @@ lemma MorphismProperty.topologically_isStableUnderComposition
 
 /-- If a property of maps of topological spaces is satisfied by all homeomorphisms,
 every isomorphism of schemes satisfies the induced property. -/
-lemma MorphismProperty.topologically_iso_le
+lemma topologically_iso_le
     (hP : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α ≃ₜ β), P f) :
     MorphismProperty.isomorphisms Scheme ≤ (MorphismProperty.topologically P) := by
   intro X Y e (he : IsIso e)
@@ -227,7 +236,7 @@ lemma MorphismProperty.topologically_iso_le
 
 /-- If a property of maps of topological spaces is satisfied by homeomorphisms and is stable
 under composition, the induced property on schemes respects isomorphisms. -/
-lemma MorphismProperty.topologically_respectsIso
+lemma topologically_respectsIso
     (hP₁ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α ≃ₜ β), P f)
     (hP₂ : ∀ {α β γ : Type u} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
       (f : α → β) (g : β → γ) (_ : P f) (_ : P g), P (g ∘ f)) :
@@ -238,7 +247,7 @@ lemma MorphismProperty.topologically_respectsIso
 
 /-- To check that a topologically defined morphism property is local at the target,
 we may check the corresponding properties on topological spaces. -/
-lemma MorphismProperty.topologically_propertyIsLocalAtTarget
+lemma topologically_propertyIsLocalAtTarget
     [(MorphismProperty.topologically P).RespectsIso]
     (hP₂ : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β) (s : Set β),
       P f → P (s.restrictPreimage f))
@@ -257,6 +266,113 @@ lemma MorphismProperty.topologically_propertyIsLocalAtTarget
     exact hf i i.2
 
 end Topologically
+
+/-- `stalkwise P` holds for a morphism if all stalks satisfy `P`. -/
+def stalkwise (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) :
+    MorphismProperty Scheme.{u} :=
+  fun _ _ f => ∀ x, P (PresheafedSpace.stalkMap f.val x)
+
+section Stalkwise
+
+variable {P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+
+/-- If `P` respects isos, then `stalkwise P` respects isos. -/
+lemma stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
+    (MorphismProperty.stalkwise P).RespectsIso where
+  precomp {X Y Z} e f hf := by
+    simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
+    intro x
+    erw [PresheafedSpace.stalkMap.comp]
+    exact (RingHom.RespectsIso.cancel_right_isIso hP _ _).mpr <| hf (e.hom.val.base x)
+  postcomp {X Y Z} e f hf := by
+    simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
+    intro x
+    erw [PresheafedSpace.stalkMap.comp]
+    exact (RingHom.RespectsIso.cancel_left_isIso hP _ _).mpr <| hf x
+
+/-- If `P` respects isos, then `stalkwise P` is local at the target. -/
+lemma stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
+    PropertyIsLocalAtTarget (MorphismProperty.stalkwise P) := by
+  have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
+    RingHom.toMorphismProperty_respectsIso_iff.mp hP
+  letI := stalkwise_respectsIso hP
+  apply propertyIsLocalAtTarget_of_morphismRestrict
+  · intro X Y f U hf x
+    apply ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
+      morphismRestrictStalkMap f U x).mpr <| hf _
+  · intro X Y f ι U hU hf x
+    have hy : f.val.base x ∈ iSup U := by rw [hU]; trivial
+    obtain ⟨i, hi⟩ := Opens.mem_iSup.mp hy
+    exact ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
+      morphismRestrictStalkMap f (U i) ⟨x, hi⟩).mp <| hf i ⟨x, hi⟩
+
+end Stalkwise
+
+end MorphismProperty
+
+section Restriction
+
+/-- If `P` is a property of scheme morphisms, we may restrict `P` to morphisms with affine target
+to obtain an `AffineTargetMorphismProperty`. -/
+def AffineTargetMorphismProperty.of (P : MorphismProperty Scheme) :
+    AffineTargetMorphismProperty := fun _ _ f ↦ P f
+
+namespace AffineTargetMorphismProperty
+
+/-- Restricting a local at the target morphism property of schemes `P` to morphisms with affine
+target and extending to a global property with `targetAffineLocally` yields `P` again,
+if `P` is local at the target. -/
+lemma targetAffineLocally_of_eq_of_isLocalAtTarget
+    (P : MorphismProperty Scheme) (hP : PropertyIsLocalAtTarget P) :
+    targetAffineLocally (of P) = P := by
+  ext X Y f
+  constructor
+  · intro hf
+    simp only [targetAffineLocally, Subtype.forall] at hf
+    let 𝒰 : Y.OpenCover := Y.affineCover
+    apply hP.of_openCover f 𝒰
+    intro i
+    have hiao : IsAffineOpen (Scheme.Hom.opensRange (𝒰.map i)) :=
+      AlgebraicGeometry.isAffineOpen_opensRange _
+    letI : P.RespectsIso := hP.RespectsIso
+    rw [← P.arrow_mk_iso_iff <| morphismRestrictOpensRange f (𝒰.map i)]
+    exact hf (Scheme.Hom.opensRange (𝒰.map i)) hiao
+  · intro hf ⟨U, hU⟩
+    exact hP.restrict _ _ hf
+
+/-- The restriction of a morphism property of schemes that is local at the target to morphisms
+with affine target, is local. -/
+lemma of_isLocal_of_isLocalAtTarget (P : MorphismProperty Scheme)
+    (hP : PropertyIsLocalAtTarget P) : (of P).IsLocal where
+  RespectsIso := by
+    apply AffineTargetMorphismProperty.respectsIso_mk
+    · intro X Y Z e f _ hf
+      apply hP.RespectsIso.precomp e f hf
+    · intro X Y Z e f _ hf
+      apply hP.RespectsIso.postcomp e f hf
+  toBasicOpen {X Y} _ f hf := hP.restrict f _
+  ofBasicOpenCover {X Y} _ f s hs hf := by
+    apply ((hP.openCover_TFAE f).out 0 5).mpr
+    let U (r : s) : Opens Y.carrier := Y.basicOpen r.val
+    have hiao : IsAffineOpen (⊤ : Opens Y.carrier) := isAffineOpen_top Y
+    have hU : iSup U = ⊤ := by
+      erw [hiao.basicOpen_union_eq_self_iff]
+      exact hs
+    use s, U, hU, hf
+
+/-- If `P` is local at the target, to show that `P` is stable under base change, it suffices to
+check this for base change along a morphism of affine schemes. -/
+lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
+    (P : MorphismProperty Scheme) (hP₁ : PropertyIsLocalAtTarget P)
+    (hP₂ : (of P).StableUnderBaseChange) :
+    P.StableUnderBaseChange := by
+  rw [← targetAffineLocally_of_eq_of_isLocalAtTarget P hP₁]
+  apply (of_isLocal_of_isLocalAtTarget P hP₁).stableUnderBaseChange
+  exact hP₂
+
+end AffineTargetMorphismProperty
+
+end Restriction
 
 @[deprecated (since := "2024-06-22")]
 alias diagonalTargetAffineLocallyOfOpenCover := HasAffineProperty.diagonal_of_openCover

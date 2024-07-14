@@ -76,12 +76,12 @@ instance topologically_isClosedMap_respectsIso : RespectsIso (topologically @IsC
   exact (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso (asIso f))).isClosedMap
 
 instance universallyClosed_fst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
-    UniversallyClosed (pullback.fst : pullback f g ⟶ _) :=
+    UniversallyClosed (pullback.fst f g) :=
   universallyClosed_stableUnderBaseChange.fst f g hg
 #align algebraic_geometry.universally_closed_fst AlgebraicGeometry.universallyClosed_fst
 
 instance universallyClosed_snd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
-    UniversallyClosed (pullback.snd : pullback f g ⟶ _) :=
+    UniversallyClosed (pullback.snd f g) :=
   universallyClosed_stableUnderBaseChange.snd f g hf
 #align algebraic_geometry.universally_closed_snd AlgebraicGeometry.universallyClosed_snd
 

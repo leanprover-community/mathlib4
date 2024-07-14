@@ -427,7 +427,7 @@ theorem HasAffineProperty.pullback_fst_of_right (hP' : P.affineProperty.StableUn
   rw [iff_of_openCover (P := P) X.affineCover]
   intro i
   let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.map i)
-  have : e.hom ≫ pullback.fst = X.affineCover.pullbackHom pullback.fst i := by
+  have : e.hom ≫ pullback.fst _ _ = X.affineCover.pullbackHom (pullback.fst _ _) i := by
     simp [e, Scheme.OpenCover.pullbackHom]
   rw [← this, P.affineProperty.cancel_left_of_respectsIso]
   apply hP' _ _
@@ -440,15 +440,15 @@ theorem HasAffineProperty.stableUnderBaseChange_mk (hP' : P.affineProperty.Stabl
     (fun X Y S f g H => by
       rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
       intro i
-      let e : pullback (pullback.fst : pullback f g ⟶ _) ((S.affineCover.pullbackCover f).map i) ≅
+      let e : pullback (pullback.fst f g) ((S.affineCover.pullbackCover f).map i) ≅
           _ := by
         refine pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g _ ≪≫ ?_ ≪≫
           (pullbackRightPullbackFstIso (S.affineCover.map i) g
-            (pullback.snd : pullback f (S.affineCover.map i) ⟶ _)).symm
+            (pullback.snd f (S.affineCover.map i))).symm
         exact asIso
           (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
-      have : e.hom ≫ pullback.fst =
-          (S.affineCover.pullbackCover f).pullbackHom pullback.fst i := by
+      have : e.hom ≫ pullback.fst _ _ =
+          (S.affineCover.pullbackCover f).pullbackHom (pullback.fst _ _) i := by
         simp [e, Scheme.OpenCover.pullbackHom]
       rw [← this, P.cancel_left_of_respectsIso]
       apply HasAffineProperty.pullback_fst_of_right hP'

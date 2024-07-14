@@ -243,7 +243,7 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
   have := ext_iff.mpr hM i j
   aesop
 
-/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
+/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. -/
 theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
     (hM : Pairwise fun i j => Commute (stdBasisMatrix i j 1) M) :
     M ∈ Set.range (Matrix.scalar n) := by
@@ -268,7 +268,7 @@ theorem mem_range_scalar_iff_commute_stdBasisMatrix {M : Matrix n n α} :
   rw [scalar_commute_iff]
   simp
 
-/-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`.​ -/
+/-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`. -/
 theorem mem_range_scalar_iff_commute_stdBasisMatrix' {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (stdBasisMatrix i j 1) M := by
   refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
