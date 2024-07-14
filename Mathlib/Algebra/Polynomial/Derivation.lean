@@ -196,17 +196,51 @@ def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
     ring_nf
   )
 
-lemma coeffwise_apply (p : A[X]) :
-    d.coeffwise p = p.sum fun n v ↦ (PolynomialModule.single A n) (d v) := rfl
+lemma coeffwise_def (p : A[X]) :
+    d.coeffwise p = p.sum fun n v ↦ PolynomialModule.single A n (d v) := rfl
+
+@[simp]
+lemma coeffwise_apply (p : A[X]) (i : ℕ) :
+    d.coeffwise p i = d (coeff p i) := by
+  rw [coeffwise_def, sum_def, Finset.sum_apply']
+  simp only [PolynomialModule.single_apply, Finset.sum_ite_eq', mem_support_iff, ne_eq,
+    ite_eq_left_iff, not_not]
+  intro h
+  simp [h]
+
+@[simp]
+lemma coeffwise_monomial (n) (x : A) :
+    d.coeffwise (monomial n x) = .single A n (d x) := Finsupp.ext fun _ ↦ by
+  simp [coeff_monomial, apply_ite d, PolynomialModule.single_apply]
+
+@[simp]
+lemma coeffwise_X :
+    d.coeffwise (X : A[X]) = 0 := Finsupp.ext fun _ ↦ by
+  simp [← monomial_one_one_eq_X]
+
 
 theorem apply_eval_eq (x : A) (p : A[X]) :
     d (eval x p) = PolynomialModule.eval x (d.coeffwise p) + eval x (derivative p) • d x := by
   induction p using Polynomial.induction_on' with
   | h_add => simp_all only [eval_add, map_add, add_smul]; abel
   | h_monomial =>
-  simp only [eval_monomial, leibniz, leibniz_pow, coeffwise_apply, map_zero, sum_monomial_index,
-    PolynomialModule.eval_single, derivative_monomial]
-  rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
+    simp only [eval_monomial, leibniz, leibniz_pow, coeffwise_monomial, PolynomialModule.eval_single,
+      derivative_monomial]
+    rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
+
+variable {K : Type*} [CommRing K] [Algebra A K] [Algebra R K] [IsScalarTower R A K]
+    [Module K M] [IsScalarTower A K M]
+
+theorem apply_aeval_eq (d : Derivation R K M) (x : K) (p : A[X]) :
+    d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).coeffwise p) +
+      aeval x (derivative p) • d x := by
+  induction p using Polynomial.induction_on' with
+  | h_add => simp_all only [eval_add, map_add, add_smul]; abel
+  | h_monomial =>
+    simp only [aeval_monomial, leibniz, leibniz_pow, algebraMap_smul, coeffwise_monomial,
+      compAlgebraMap_apply, derivative_monomial, map_mul, _root_.map_natCast]
+    erw [PolynomialModule.eval_single]
+    rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast, algebraMap_smul]
 
 end coeffwise
 
