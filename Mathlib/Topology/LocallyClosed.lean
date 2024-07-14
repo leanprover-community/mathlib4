@@ -16,7 +16,7 @@ import Mathlib.Topology.LocalAtTarget
 
 * `isLocallyClosed_tfae`:
   A set `s` is locally closed if one of the equivalent conditions below hold
-  1. It is the intersection of some open set and some closed
+  1. It is the intersection of some open set and some closed set.
   2. The coborder `(closure s \ s)ᶜ` is open.
   3. `s` is closed in some neighborhood of `x` for all `x ∈ s`.
   4. Every `x ∈ s` has some open neighborhood `U` such that `U ∩ closure s ⊆ s`.
@@ -100,7 +100,7 @@ lemma isClosed_preimage_val_coborder :
   rw [isClosed_preimage_val, inter_eq_right.mpr subset_coborder, coborder_inter_closure]
 
 /--
-A set is locally closed if it is the intersection of some open set and some closed
+A set is locally closed if it is the intersection of some open set and some closed set.
 Also see `isLocallyClosed_tfae`.
 -/
 def IsLocallyClosed (s : Set α) : Prop := ∃ (U Z : Set α), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
@@ -149,7 +149,7 @@ lemma IsLocallyClosed.image {s : Set α} (hs : IsLocallyClosed s)
 
 /--
 A set `s` is locally closed if one of the equivalent conditions below hold
-1. It is the intersection of some open set and some closed
+1. It is the intersection of some open set and some closed set.
 2. The coborder `(closure s \ s)ᶜ` is open.
 3. `s` is closed in some neighborhood of `x` for all `x ∈ s`.
 4. Every `x ∈ s` has some open neighborhood `U` such that `U ∩ closure s ⊆ s`.
