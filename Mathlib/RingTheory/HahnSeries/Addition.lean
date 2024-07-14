@@ -319,7 +319,9 @@ instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
 end Addition
 
 section SMulZeroClass
+section SMulZeroClass
 
+variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
 variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
 
 instance : SMul R (HahnSeries Γ V) :=
@@ -337,7 +339,15 @@ instance : SMulZeroClass R (HahnSeries Γ V) :=
     smul_zero := by
       intro
       ext
-      simp only [smul_coeff, zero_coeff, smul_zero] }
+      simp only [smul_coeff, zero_coeff, smul_zero]}
+
+theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderTop < x.orderTop := by
+  by_cases hrx : r • x = 0
+  · rw [hrx, orderTop_zero]
+    exact not_top_lt
+  · simp only [orderTop_of_ne hrx, orderTop_of_ne <| right_ne_zero_of_smul hrx, WithTop.coe_lt_coe]
+    exact Set.IsWF.min_of_subset_not_lt_min
+      (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
 theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     ¬ (r • x).order < x.order := by
@@ -346,7 +356,8 @@ theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x �
   exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
 theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
-    x.order ≤ (r • x).order := le_of_not_lt (order_smul_not_lt r x h)
+    x.order ≤ (r • x).order :=
+  le_of_not_lt (order_smul_not_lt r x h)
 
 end SMulZeroClass
 
@@ -435,3 +446,5 @@ def embDomainLinearMap (f : Γ ↪o Γ') : HahnSeries Γ R →ₗ[R] HahnSeries 
 end Domain
 
 end Module
+
+end HahnSeries
