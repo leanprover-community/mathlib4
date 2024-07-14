@@ -5,7 +5,7 @@ Authors: Jujian Zhang
 -/
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.RightExact
 
 /-!
 # Tensoring with a flat module is an exact functor
@@ -19,6 +19,12 @@ In this file we prove that tensoring with a flat module is an exact functor.
 
 - `Module.Flat.iff_rTensor_preserves_shortComplex_exact`: an `R`-module `M` is flat if and only if
   for every short exact sequence `A ⟶ B ⟶ C`, `A ⊗ M ⟶ B ⊗ M ⟶ C ⊗ M` is also exact.
+
+- `Module.Flat.iff_lTensor_preservesFiniteLimits`: an `R`-module `M` is flat if and only if
+  tensoring with `M` on the left preserves finite limits.
+
+- `Module.Flat.iff_rTensor_preservesFiniteLimits`: an `R`-module `M` is flat if and only if
+  tensoring with `M` on the right preserves finite limits.
 
 ## TODO
 
@@ -65,5 +71,21 @@ lemma iff_rTensor_preserves_shortComplex_exact :
       H (.mk (ModuleCat.ofHom f) (ModuleCat.ofHom g)
         (DFunLike.ext _ _ h.apply_apply_eq_zero))
           (moduleCat_exact_iff_function_exact _ |>.2 h)⟩
+
+lemma iff_lTensor_preservesFiniteLimits :
+    Flat R M ↔
+    Nonempty (Limits.PreservesFiniteLimits (tensorLeft M)) := by
+  have : Nonempty (Limits.PreservesFiniteColimits (tensorLeft M)) := ⟨inferInstance⟩
+  have := Functor.exact_tfae (tensorLeft M) |>.out 1 3
+  rw [iff_lTensor_preserves_shortComplex_exact, this]
+  aesop
+
+lemma iff_rTensor_preservesFiniteLimits :
+    Flat R M ↔
+    Nonempty (Limits.PreservesFiniteLimits (tensorRight M)) := by
+  have : Nonempty (Limits.PreservesFiniteColimits (tensorRight M)) := ⟨inferInstance⟩
+  have := Functor.exact_tfae (tensorRight M) |>.out 1 3
+  rw [iff_rTensor_preserves_shortComplex_exact, this]
+  aesop
 
 end Module.Flat
