@@ -404,7 +404,7 @@ protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
-    simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
+    simp_rw [Finset.sum_cons, QuadraticMap.map_add Q, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply, Sym2.lift_mk,
       ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply, polar_self]
     abel_nf
