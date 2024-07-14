@@ -407,29 +407,28 @@ lemma transition_F'_flip (i j : Basis (Fin (r + c)) K V) :
     Matrix.map (matrix_F' r c j i) (transition r c i j) = (matrix_F' r c i j)⁻¹ := by
   rw [transition, matrix_F', RingHom.mapMatrix_apply, Matrix.map_map]
   rw [← AlgHom.coe_toRingHom]
-  rw [← RingHom.coe_comp]; erw [IsLocalization.Away.AwayMap.lift_comp]
-  erw [transition_aux_F_flip]; erw [transition_aux_equation_flip]
-  apply IsLocalization.Away.invSelf_unit
+  rw [← RingHom.coe_comp]
+  change (matrix_F r c j i).map ((transitionRingHom r c i j).comp (algebraMap _ _)) = _
+  rw [IsLocalization.Away.AwayMap.lift_comp]
+  erw [transition_aux_F_flip]
 
 lemma transition_F'_inv_flip (i j : Basis (Fin (r + c)) K V) :
     Matrix.map (matrix_F' r c j i)⁻¹ (transition r c i j) = matrix_F' r c i j := by
   rw [← AlgHom.coe_toRingHom]
-  rw [← RingHom.mapMatrix_apply, Matrix.nonsing_inv_eq_ring_inverse]
-  erw [RingHom.map_inv (f := (transition r c i j).toRingHom.mapMatrix)
-    (α := Matrix (Fin r) (Fin r) (Localization.Away (equation r c j i)))
-    (β := Matrix (Fin r) (Fin r) (Localization.Away (equation r c i j)))]
-  rw [RingHom.mapMatrix_apply]
-  erw [transition_F'_flip]
-  rw [← Matrix.nonsing_inv_eq_ring_inverse (matrix_F' r c i j)⁻¹, Matrix.nonsing_inv_nonsing_inv]
-  rw [← Matrix.isUnit_iff_isUnit_det]; all_goals (exact isUnit_F' _ _ _ _)
+  erw [← AlgHom.mapMatrix_apply]
+  rw [Matrix.nonsing_inv_eq_ring_inverse, AlgHom.map_inv, AlgHom.mapMatrix_apply,
+    transition_F'_flip, ← Matrix.nonsing_inv_eq_ring_inverse (matrix_F' r c i j)⁻¹,
+    Matrix.nonsing_inv_nonsing_inv]
+  rw [← Matrix.isUnit_iff_isUnit_det]
+  all_goals (exact isUnit_F' _ _ _ _)
 
 lemma transition_G'_flip (i j : Basis (Fin (r + c)) K V) :
     Matrix.map (matrix_G' r c j i) (transition r c i j) =
     (matrix_X' r c i j) * (matrix_F' r c i j)⁻¹ := by
   rw [transition, matrix_G', Matrix.map_map]
-  rw [← AlgHom.coe_toRingHom, ← RingHom.coe_comp]; erw [IsLocalization.Away.AwayMap.lift_comp]
-  erw [transition_aux_G_flip]
-  exact transition_aux_equation_isUnit _ _ _ _
+  rw [← AlgHom.coe_toRingHom, ← RingHom.coe_comp]
+  change (matrix_G r c j i).map ((transitionRingHom r c i j).comp (algebraMap _ _)) = _
+  rw [IsLocalization.Away.AwayMap.lift_comp]; erw [transition_aux_G_flip]
 
 lemma transition_transition (i j : Basis (Fin (r + c)) K V) :
     (transition r c i j).comp (transition r c j i) = AlgHom.id _ _ := by
@@ -438,8 +437,9 @@ lemma transition_transition (i j : Basis (Fin (r + c)) K V) :
     (M := Submonoid.powers (equation r c i j))
   simp only [AlgHom.id_toRingHom, RingHomCompTriple.comp_eq]
   rw [AlgHom.comp_toRingHom, RingHom.comp_assoc]
-  conv_lhs => congr; rfl; rw [transition]; erw [IsLocalization.Away.AwayMap.lift_comp]; rfl;
-              exact transition_aux_equation_isUnit _ _ _ _
+  conv_lhs => congr; rfl; rw [transition]
+              change (transitionRingHom r c j i).comp (algebraMap _ _)
+              rw [IsLocalization.Away.AwayMap.lift_comp]
   ext x
   · rw [← MvPolynomial.algebraMap_eq]
     rw [← AlgHom.comp_toRingHom]

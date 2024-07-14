@@ -40,9 +40,6 @@ def AlgebraicGeometry.Scheme.GlueData.glueMorphisms (GD : Scheme.GlueData)
     {Y : Scheme} (f : (i : GD.J) → GD.U i ⟶ Y) (hf : ∀ (i j : GD.J),
     GD.f i j ≫ (f i) = GD.t i j ≫ GD.f j i ≫ (f j)) :
     GD.glued ⟶ Y := by
-/-  refine Scheme.OpenCover.glueMorphisms GD.openCover f ?_
-  intro i j
-  simp? [Scheme.GlueData.openCover, hf]-/
   refine Limits.Multicoequalizer.desc _ Y f ?_
   simp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_right, Prod.forall,
     GlueData.diagram_fstFrom, GlueData.diagram_fst, GlueData.diagram_sndFrom, GlueData.diagram_snd,
