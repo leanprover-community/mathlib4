@@ -98,7 +98,7 @@ Mathlib/RingTheory/DedekindDomain/Ideal.lean : line 1 : ERR_NUM_LIN : 1700 file 
 Mathlib/RingTheory/UniqueFactorizationDomain.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2153 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2360 lines, try to split it up
 Mathlib/SetTheory/Cardinal/Ordinal.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1670 lines, try to split it up
-Mathlib/SetTheory/Game/PGame.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1958 lines, try to split it up
+Mathlib/SetTheory/Game/PGame.lean : line 1 : ERR_NUM_LIN : 2600 file contains 2464 lines, try to split it up
 Mathlib/SetTheory/Ordinal/Arithmetic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2640 lines, try to split it up
 Mathlib/SetTheory/Ordinal/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1663 lines, try to split it up
 Mathlib/SetTheory/ZFC/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1802 lines, try to split it up
