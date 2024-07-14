@@ -698,12 +698,7 @@ lemma onag_1_10 :
           · specialize this (Sum.inr ⟨i, j⟩)
             simp only at this
             simp only [normalization, insertLeft]
-            conv_lhs at this => {
-              lhs
-              rhs
-              lhs
-              rw [pos_num_eq_normalization x_num x_pos]
-            }
+            rw [pos_num_eq_normalization x_num x_pos] at this
             simp only [← mk_mul, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveLeft_inr]
             simp only [inv', one_def, mk_lt_mk] at this
@@ -740,12 +735,7 @@ lemma onag_1_10 :
           · specialize this (Sum.inr ⟨i, j⟩)
             simp only at this
             simp only [normalization, insertLeft]
-            conv_rhs at this => {
-              lhs
-              rhs
-              lhs
-              rw [pos_num_eq_normalization x_num x_pos]
-            }
+            rw [pos_num_eq_normalization x_num x_pos] at this
             simp only [← mk_mul, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveRight_inr]
             simp only [one_def, inv', mk_lt_mk] at this
