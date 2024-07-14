@@ -156,8 +156,8 @@ theorem polar_subMulAction {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m 
   · intro y hy
     rw [Set.mem_setOf_eq]
     by_contra! hc
-    cases' hc with x hx
-    cases' (NormedField.exists_lt_norm 𝕜 ‖(B x) y‖⁻¹ ) with r hr
+    obtain ⟨x, hx⟩ := hc
+    obtain ⟨r,hr⟩ := (NormedField.exists_lt_norm 𝕜 ‖(B x) y‖⁻¹ )
     let he := hy _ (SMulMemClass.smul_mem r hx.1)
     simp only [LinearMapClass.map_smul, smul_apply, smul_eq_mul, norm_mul, norm_inv] at he
     apply (lt_self_iff_false (1 : ℝ)).mp
