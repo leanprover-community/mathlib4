@@ -670,7 +670,8 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot:
     rw [← index_post_exhaust] at D
     rw [indexing_nonsense]
     exact D
-    exact fun i j ↦ hC i j
+    exact fun i ↦ hT i
+    exact hC
 
 theorem orthogonalFamily_iInf_eigenspaces : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
     (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
