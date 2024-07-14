@@ -523,7 +523,34 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
         AddSubgroupClass.coe_sub, restrict_coe_apply, ZeroMemClass.coe_zero]
       exact A
     · rfl
-  · sorry
+  · intro h
+    constructor
+    · simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at h
+      obtain ⟨w, hw, hhw⟩ := h
+      obtain ⟨A, B⟩ := hhw
+      simp only [SetLike.mem_coe, eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply]
+      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, SetLike.mk_smul_mk] at A
+      rw [← B]
+      exact
+        (AddSubmonoid.mk_eq_zero
+              (⨅ j,
+                    ker
+                      (Subtype.restrict (fun x ↦ ¬i = x) T j -
+                        (algebraMap 𝕜 (Module.End 𝕜 E)) (γ j))).toAddSubgroup.toAddSubmonoid).mp
+          A
+    · simp only [ne_eq, Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, Subtype.forall]
+      intro j hj
+      simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply] at *
+      simp only [ne_eq, Submodule.mem_map, mem_ker, sub_apply, Module.algebraMap_end_apply,
+        Subtype.exists, SetLike.mk_smul_mk, Submodule.mem_iInf, Subtype.forall] at h
+      obtain ⟨w, hw, hhw⟩ := h
+      sorry
+
+
+
+
+
+
 
 theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
