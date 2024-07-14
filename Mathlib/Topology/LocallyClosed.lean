@@ -26,7 +26,7 @@ import Mathlib.Topology.LocalAtTarget
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {s t : Set α} {f : α → β}
 
-open scoped Topology Notation
+open scoped Topology Set.Notation
 
 open Set
 
