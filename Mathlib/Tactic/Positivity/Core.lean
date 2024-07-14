@@ -19,19 +19,17 @@ The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivi
 and elsewhere.
 -/
 
-set_option autoImplicit true
-
 open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/
 syntax (name := positivity) "positivity " term,+ : attr
 
-lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
+lemma ne_of_ne_of_eq' {α : Sort*} {a c b : α} (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
 namespace Mathlib.Meta.Positivity
 
-variable {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
+variable {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α))
 
 /-- The result of `positivity` running on an expression `e` of type `α`. -/
 inductive Strictness (e : Q($α)) where
@@ -41,6 +39,7 @@ inductive Strictness (e : Q($α)) where
   | none
   deriving Repr
 
+set_option autoImplicit true in
 /-- Gives a generic description of the `positivity` result. -/
 def Strictness.toString : Strictness zα pα e → String
   | positive _ => "positive"
@@ -119,7 +118,10 @@ initialize registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
 }
 
-lemma lt_of_le_of_ne' [PartialOrder A] :
+variable {A : Type*}
+set_option autoImplicit true
+
+lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
 lemma pos_of_isNat [StrictOrderedSemiring A]
