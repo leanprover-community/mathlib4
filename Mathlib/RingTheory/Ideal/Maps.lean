@@ -908,3 +908,16 @@ lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
 
 end AlgHom
+
+namespace Algebra
+
+variable {R : Type*} [CommSemiring R] (S : Type*) [Semiring S] [Algebra R S]
+
+/-- The induced linear map from `I` to the span of `I` in an `R`-algebra `S`. -/
+@[simps]
+def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) where
+  toFun x := ⟨algebraMap R S x, Ideal.apply_coe_mem_map (algebraMap R S) I x⟩
+  map_add' x y := by simp
+  map_smul' a x := by simp [Algebra.smul_def]
+
+end Algebra

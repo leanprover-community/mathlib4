@@ -151,6 +151,22 @@ end Finite
 
 end Module
 
+namespace Ideal
+
+variable {R : Type u} [CommRing R]
+
+/-- If `I` is an ideal such that there exists a set `{ r }` of `R` such
+that the image of `I` in `Rᵣ` is finitely generated for each `r`, then `I` is finitely
+generated. -/
+lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
+    (H : ∀ (g : t), (I.map (algebraMap R (Localization.Away g.val))).FG) : I.FG := by
+  apply Module.Finite.iff_fg.mp
+  let k (g : t) : I →ₗ[R] (I.map (algebraMap R (Localization.Away g.val))) :=
+    Algebra.idealMap I (S := Localization.Away g.val)
+  apply Module.Finite.of_localizationSpan' t ht k (fun g ↦ Module.Finite.iff_fg.mpr (H g))
+
+end Ideal
+
 variable {R : Type u} [CommRing R] {S : Type v} [CommRing S] {f : R →+* S}
 
 /--
@@ -160,16 +176,7 @@ it suffices to check this after localizing at a spanning set of the source.
 lemma RingHom.ker_fg_of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
     (H : ∀ g : t, (RingHom.ker (Localization.awayMap f g.val)).FG) :
     (RingHom.ker f).FG := by
-  apply Module.Finite.iff_fg.mp
-  have hfin (g : t) :
-    Module.Finite (Localization.Away g.val) (RingHom.ker (Localization.awayMap f g.val)) :=
-      Module.Finite.iff_fg.mpr (H g)
-  have hT (g : t) : Submonoid.map f (Submonoid.powers g.val) = Submonoid.powers (f g.val) :=
-    Submonoid.map_powers f g.val
-  have hy (g : t) : Submonoid.powers g.val ≤ Submonoid.comap f (Submonoid.powers (f g.val)) :=
-    (hT g).symm ▸ Submonoid.le_comap_map (Submonoid.powers g.val)
-  let k (g : t) :=
-    RingHom.toKerIsLocalization (Localization.Away g.val) (Localization.Away (f g.val)) f (hy g)
-  have (g : t) := RingHom.toKerIsLocalization_isLocalizedModule (Localization.Away (f g.val)) f
-    (S := Localization.Away g.val) (hT g)
-  exact Module.Finite.of_localizationSpan' t ht k hfin
+  apply Ideal.fg_of_localizationSpan t ht
+  intro g
+  rw [← IsLocalization.ker_map (Localization.Away (f g.val)) f (Submonoid.map_powers f g.val)]
+  exact H g

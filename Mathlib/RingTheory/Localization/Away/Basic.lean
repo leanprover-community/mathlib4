@@ -124,6 +124,9 @@ variable {B : Type*} [CommRing B] [Algebra R B]
 variable (Aₚ : Type*) [CommRing Aₚ] [Algebra A Aₚ] [Algebra R Aₚ] [IsScalarTower R A Aₚ]
 variable (Bₚ : Type*) [CommRing Bₚ] [Algebra B Bₚ] [Algebra R Bₚ] [IsScalarTower R B Bₚ]
 
+instance {f : A →+* B} (a : A) [Away (f a) Bₚ] : IsLocalization (.map f (.powers a)) Bₚ := by
+  simpa
+
 /-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
@@ -142,9 +145,6 @@ variable {Aₚ} {Bₚ}
 
 lemma mapₐ_injective_of_injective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]
     (hf : Function.Injective f) : Function.Injective (mapₐ Aₚ Bₚ f a) :=
-  have : IsLocalization (Submonoid.map f.toRingHom (Submonoid.powers a)) Bₚ := by
-    simp only [AlgHom.toRingHom_eq_coe, Submonoid.map_powers, RingHom.coe_coe]
-    infer_instance
   IsLocalization.map_injective_of_injective _ _ _ hf
 
 lemma mapₐ_surjective_of_surjective {f : A →ₐ[R] B} (a : A) [Away a Aₚ] [Away (f a) Bₚ]

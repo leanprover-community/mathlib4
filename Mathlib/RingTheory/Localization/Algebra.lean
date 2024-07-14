@@ -3,9 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Ideal
 
 /-!
 # Localization of algebra maps
@@ -28,6 +29,41 @@ variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemi
   [Algebra R S] [Algebra P Q] [IsLocalization M S] [IsLocalization T Q]
   (g : R →+* P)
 
+variable (M S) in
+/-- The span of `I` in a localization of `R` at `M` is the localization of `I` at `M`. -/
+instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
+    IsLocalizedModule M (Algebra.idealMap I (S := S)) where
+  map_units x := by
+    rw [isUnit_iff_exists]
+    have hu : IsUnit (algebraMap R S x) := IsLocalization.map_units S x
+    let φ : Module.End R
+        (I.map (algebraMap R S)) := {
+      toFun := fun y ↦ ⟨hu.unit⁻¹ * y, by simp⟩
+      map_add' := fun x y ↦ by simp [mul_add]
+      map_smul' := fun a x ↦ by simp
+    }
+    refine ⟨φ, ?_, ?_⟩
+    · ext y
+      simp [φ, Algebra.smul_def, ← mul_assoc]
+    · ext y
+      simp [φ, Algebra.smul_def, ← mul_assoc]
+  surj' y := by
+    obtain ⟨x, hx⟩ := (IsLocalization.mem_map_algebraMap_iff M S).mp y.property
+    use x
+    apply Subtype.ext
+    simp [Submonoid.smul_def, Algebra.smul_def, mul_comm, hx]
+  exists_of_eq h := by
+    obtain ⟨c, hc⟩ := IsLocalization.exists_of_eq (M := M) (congrArg Subtype.val h)
+    exact ⟨c, Subtype.ext hc⟩
+
+lemma IsLocalization.ker_map (hT : Submonoid.map g M = T) :
+    RingHom.ker (IsLocalization.map Q g (hT.symm ▸ M.le_comap_map) : S →+* Q) =
+      (RingHom.ker g).map (algebraMap R S) := by
+  ext x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  simp [RingHom.mem_ker, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
+    IsLocalization.mk'_mem_map_algebraMap_iff, ← hT]
+
 variable (S) in
 /-- The canonical linear map from the kernel of `g` to the kernel of its localization. -/
 def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
@@ -47,40 +83,11 @@ lemma RingHom.toKerIsLocalization_apply (hy : M ≤ Submonoid.comap g T) (r : Ri
 /-- The canonical linear map from the kernel of `g` to the kernel of its localization
 is localizing. In other words, localization commutes with taking kernels. -/
 lemma RingHom.toKerIsLocalization_isLocalizedModule (hT : Submonoid.map g M = T) :
-    IsLocalizedModule M (toKerIsLocalization S Q g (hT.symm ▸ Submonoid.le_comap_map M)) where
-  map_units x := by
-    rw [isUnit_iff_exists]
-    have hu : IsUnit (algebraMap R S x) := IsLocalization.map_units S x
-    let φ : Module.End R
-        (RingHom.ker (IsLocalization.map Q g (hT.symm ▸ Submonoid.le_comap_map M) : S →+* Q)) := {
-      toFun := fun y ↦ ⟨hu.unit⁻¹ * y, by
-        simp [RingHom.mem_ker, (RingHom.mem_ker _).mp y.property]⟩
-      map_add' := fun x y ↦ by simp [mul_add]
-      map_smul' := fun a x ↦ by simp
-    }
-    refine ⟨φ, ?_, ?_⟩
-    · ext y
-      simp [φ, Algebra.smul_def, ← mul_assoc]
-    · ext y
-      simp [φ, Algebra.smul_def, ← mul_assoc]
-  surj' y := by
-    subst hT
-    obtain ⟨⟨r, m⟩, hx⟩ := IsLocalization.surj (M := M) y.val
-    rw [mul_comm] at hx
-    have heq : algebraMap P Q (g r) = algebraMap P Q 0 := by
-      rw [← IsLocalization.map_eq (S := S) (Submonoid.le_comap_map M), ← hx]
-      simp [(RingHom.mem_ker _).mp y.property]
-    obtain ⟨⟨_, t, tM, rfl⟩, ht⟩ := (IsLocalization.eq_iff_exists (Submonoid.map g M) _).mp heq
-    simp only [mul_zero] at ht
-    have hr : t * r ∈ RingHom.ker g := by
-      simp only [RingHom.mem_ker, map_mul]
-      exact ht
-    refine ⟨⟨⟨t * r, hr⟩, ⟨t, tM⟩ * m⟩, Subtype.ext ?_⟩
-    rw [SetLike.val_smul_of_tower, toKerIsLocalization_apply, Submonoid.smul_def, Algebra.smul_def]
-    simp [mul_assoc, hx]
-  exists_of_eq {x y} h := by
-    obtain ⟨c, hc⟩ := IsLocalization.exists_of_eq (M := M) (congrArg Subtype.val h)
-    exact ⟨c, Subtype.ext hc⟩
+    IsLocalizedModule M (toKerIsLocalization S Q g (hT.symm ▸ Submonoid.le_comap_map M)) := by
+  let e := LinearEquiv.ofEq _ _ (IsLocalization.ker_map (S := S) Q g hT).symm
+  convert_to IsLocalizedModule M ((e.restrictScalars R).toLinearMap ∘ₗ
+    Algebra.idealMap S (RingHom.ker g))
+  apply IsLocalizedModule.of_linearEquiv
 
 section Algebra
 
@@ -102,12 +109,7 @@ namespace IsLocalization
 noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
   ⟨IsLocalization.map Bₚ f.toRingHom (Algebra.algebraMapSubmonoid_le_comap M f), fun r ↦ by
     obtain ⟨a, m, rfl⟩ := IsLocalization.mk'_surjective M r
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, MonoidHom.coe_coe]
-    rw [IsLocalization.algebraMap_mk' (S := A)]
-    rw [IsLocalization.algebraMap_mk' (S := B)]
-    rw [IsLocalization.map_mk']
-    simp⟩
+    simp [algebraMap_mk' (S := A), algebraMap_mk' (S := B), map_mk']⟩
 
 @[simp]
 lemma mapₐ_apply (f : A →ₐ[R] B) (x : Aₚ) :
@@ -135,6 +137,8 @@ end IsLocalization
 
 open IsLocalization
 
+variable (Rₚ) (Aₚ) (Bₚ)
+
 /-- The canonical linear map from the kernel of an algebra homomorphism to its localization. -/
 def AlgHom.toKerIsLocalization (f : A →ₐ[R] B) :
     RingHom.ker f →ₗ[A] RingHom.ker (mapₐ M f : Aₚ →ₐ[Rₚ] Bₚ) :=
@@ -142,7 +146,7 @@ def AlgHom.toKerIsLocalization (f : A →ₐ[R] B) :
 
 @[simp]
 lemma AlgHom.toKerIsLocalization_apply (f : A →ₐ[R] B) (x : RingHom.ker f) :
-    AlgHom.toKerIsLocalization M f (Rₚ := Rₚ) (Aₚ := Aₚ) (Bₚ := Bₚ) x =
+    AlgHom.toKerIsLocalization M Rₚ Aₚ Bₚ f x =
       RingHom.toKerIsLocalization Aₚ Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f) x :=
   rfl
 
@@ -150,7 +154,7 @@ lemma AlgHom.toKerIsLocalization_apply (f : A →ₐ[R] B) (x : RingHom.ker f) :
 is localizing. -/
 lemma AlgHom.toKerIsLocalization_isLocalizedModule (f : A →ₐ[R] B) :
     IsLocalizedModule (Algebra.algebraMapSubmonoid A M)
-      (AlgHom.toKerIsLocalization M f (Rₚ := Rₚ) (Aₚ := Aₚ) (Bₚ := Bₚ)) :=
+      (AlgHom.toKerIsLocalization M Rₚ Aₚ Bₚ f) :=
   RingHom.toKerIsLocalization_isLocalizedModule Bₚ f.toRingHom
     (algebraMapSubmonoid_map_eq M f)
 
