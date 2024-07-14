@@ -70,7 +70,7 @@ theorem snorm_one_condexp_le_snorm (f : α → ℝ) : snorm (μ[f|m]) 1 μ ≤ s
         (ae_of_all μ (fun x => le_abs_self (f x) : ∀ x, f x ≤ |f x|)),
         EventuallyLE.trans (condexp_neg f).symm.le
           (condexp_mono hf.neg hf.abs
-          (ae_of_all μ (fun x => neg_le_abs (f x): ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
+          (ae_of_all μ (fun x => neg_le_abs (f x) : ∀ x, -f x ≤ |f x|)))] with x hx₁ hx₂
       exact abs_le_abs hx₁ hx₂
     _ = snorm f 1 μ := by
       rw [snorm_one_eq_lintegral_nnnorm, snorm_one_eq_lintegral_nnnorm, ←
@@ -160,10 +160,8 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   simp only [← zero_lt_iff, Set.compl_def, Set.mem_setOf_eq, not_le] at h
   suffices (μ {x | ↑R < |(μ[f|m]) x|}).toReal * ↑R < (μ {x | ↑R < |(μ[f|m]) x|}).toReal * ↑R by
     exact this.ne rfl
-  refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ ?_ h.ne.symm) ?_
-  · simp_rw [← Real.norm_eq_abs]
-    exact (stronglyMeasurable_condexp.mono hnm).measurable.norm
-  · exact integrable_condexp.abs.integrableOn
+  refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ h.ne.symm) ?_
+  exact integrable_condexp.abs.integrableOn
   refine (setIntegral_abs_condexp_le ?_ _).trans ?_
   · simp_rw [← Real.norm_eq_abs]
     exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
@@ -173,7 +171,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   refine setIntegral_mono_ae hfint.abs.integrableOn ?_ hbdd
   refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
     (integrable_condexp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
-  refine setLIntegral_mono measurable_const.nnnorm.coe_nnreal_ennreal
+  refine setLIntegral_mono
     (stronglyMeasurable_condexp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => ?_
   rw [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
   exact Subtype.mk_le_mk.2 (le_of_lt hx)

@@ -627,7 +627,7 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
   | 0 => default
   | n + 1 =>
     let p := Directed.sequence f hf n
-    match (decode n: Option α) with
+    match (decode n : Option α) with
     | none => Classical.choose (hf p p)
     | some a => Classical.choose (hf p a)
 #align directed.sequence Directed.sequence

@@ -155,7 +155,7 @@ theorem formPerm_apply_getLast (x : α) (xs : List α) :
 @[simp]
 theorem formPerm_apply_getElem_length (x : α) (xs : List α) :
     formPerm (x :: xs) ((x :: xs)[xs.length]) = x := by
-  rw [getElem_cons_length, formPerm_apply_getLast]; rfl;
+  rw [getElem_cons_length _ _ _ rfl, formPerm_apply_getLast]
 
 theorem formPerm_apply_get_length (x : α) (xs : List α) :
     formPerm (x :: xs) ((x :: xs).get (Fin.mk xs.length (by simp))) = x := by
@@ -177,8 +177,7 @@ theorem formPerm_apply_getElem_zero (l : List α) (h : Nodup l) (hl : 1 < l.leng
   rcases l with (_ | ⟨x, _ | ⟨y, tl⟩⟩)
   · simp at hl
   · simp at hl
-  · rw [getElem_cons_zero, formPerm_apply_head _ _ _ h]
-    rfl
+  · rw [getElem_cons_zero, formPerm_apply_head _ _ _ h, getElem_cons_succ, getElem_cons_zero]
 
 theorem formPerm_apply_get_zero (l : List α) (h : Nodup l) (hl : 1 < l.length) :
     formPerm l (l.get (Fin.mk 0 (by omega))) = l.get (Fin.mk 1 hl) := by
@@ -204,8 +203,7 @@ theorem formPerm_apply_lt_getElem (xs : List α) (h : Nodup xs) (n : ℕ) (hn : 
   · simpa using formPerm_apply_getElem_zero _ h _
   · rcases xs with (_ | ⟨x, _ | ⟨y, l⟩⟩)
     · simp at hn
-    · rw [formPerm_singleton, getElem_singleton, getElem_singleton]
-      rfl
+    · rw [formPerm_singleton, getElem_singleton, getElem_singleton, one_apply]
     · specialize IH (y :: l) h.of_cons _
       · simpa [Nat.succ_lt_succ_iff] using hn
       simp only [swap_apply_eq_iff, coe_mul, formPerm_cons_cons, Function.comp]
