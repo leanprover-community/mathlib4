@@ -518,7 +518,10 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
     use v
     use B
     constructor
-    · sorry
+    · ext
+      simp only [sub_apply, Module.algebraMap_end_apply, SetLike.mk_smul_mk,
+        AddSubgroupClass.coe_sub, restrict_coe_apply, ZeroMemClass.coe_zero]
+      exact A
     · rfl
   · sorry
 
