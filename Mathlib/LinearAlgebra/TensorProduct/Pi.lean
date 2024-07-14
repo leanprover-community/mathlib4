@@ -90,3 +90,5 @@ lemma piScalarRight_apply (x : N ⊗[R] (ι → R)) :
 lemma piScalarRight_symm_single (x : N) (i : ι) :
     (piScalarRight R S N ι).symm (Pi.single i x) = x ⊗ₜ Pi.single i 1 := by
   simp [piScalarRight]
+
+end TensorProduct

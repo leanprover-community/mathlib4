@@ -269,13 +269,14 @@ def pullbackIsoPullback : Stonean.pullback f hi ≅
   { hom :=
       Limits.pullback.lift (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi)
     inv :=
-      pullback.lift f hi Limits.pullback.fst Limits.pullback.snd Limits.pullback.condition
+      pullback.lift f hi (Limits.pullback.fst _ _) (Limits.pullback.snd _ _)
+        Limits.pullback.condition
     hom_inv_id :=
       pullback.hom_ext f hi _ _ (by simp only [pullback.cone_pt, Category.assoc, pullback.lift_fst,
         limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.id_comp])
     inv_hom_id := by
-      refine Limits.pullback.hom_ext (k := (pullback.lift f hi Limits.pullback.fst
-        Limits.pullback.snd Limits.pullback.condition ≫ Limits.pullback.lift
+      refine Limits.pullback.hom_ext (k := (pullback.lift f hi (Limits.pullback.fst _ _)
+        (Limits.pullback.snd _ _) Limits.pullback.condition ≫ Limits.pullback.lift
         (pullback.fst _ hi) (pullback.snd _ hi) (pullback.condition f hi))) ?_ ?_
       · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
           pullback.lift_fst, Category.id_comp]

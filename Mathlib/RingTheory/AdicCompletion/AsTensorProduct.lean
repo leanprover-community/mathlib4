@@ -36,6 +36,8 @@ As a corollary we obtain
 
 -/
 
+suppress_compilation
+
 universe u v
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
@@ -55,9 +57,8 @@ def ofTensorProductBil : AdicCompletion I R →ₗ[AdicCompletion I R] M →ₗ[
   map_smul' r x := by
     apply LinearMap.ext
     intro y
-    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
-      LinearMap.lsmul_apply, RingHom.id_apply, LinearMap.smul_apply]
-    rw [smul_eq_mul, mul_smul]
+    ext n
+    simp [mul_smul (r.val n)]
 
 @[simp]
 private lemma ofTensorProductBil_apply_apply (r : AdicCompletion I R) (x : M) :
@@ -66,7 +67,6 @@ private lemma ofTensorProductBil_apply_apply (r : AdicCompletion I R) (x : M) :
 
 /-- The natural `AdicCompletion I R`-linear map from `AdicCompletion I R ⊗[R] M` to
 the adic completion of `M`. -/
-noncomputable
 def ofTensorProduct : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I M :=
   TensorProduct.AlgebraTensorModule.lift (ofTensorProductBil I M)
 
@@ -97,16 +97,16 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
   ext i j k
   suffices h : (if j = i then 1 else 0) = (if j = i then 1 else 0 : AdicCompletion I R).val k by
     simpa [Pi.single_apply, -smul_eq_mul, -Algebra.id.smul_eq_mul]
-  split <;> simp
+  split <;> simp only [smul_eq_mul, val_zero, val_one]
 
 private lemma ofTensorProduct_eq :
-    ofTensorProduct I (ι → R) = (piEquivOfFintype I (fun _ : ι ↦ R)).symm.toLinearMap
-      ∘ₗ (TensorProduct.piScalarRight R (AdicCompletion I R) _ ι).toLinearMap := by
-  rw [← piEquivOfFintype_comp_ofTensorProduct_eq, ← LinearMap.comp_assoc]
+    ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
+      (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
+  rw [← piEquivOfFintype_comp_ofTensorProduct_eq I ι, ← LinearMap.comp_assoc]
   simp
 
 /- If `M = R^ι` and `ι` is finite, we may construct an inverse to `ofTensorProduct I (ι → R)`. -/
-private noncomputable def ofTensorProductInvOfPiFintype :
+private def ofTensorProductInvOfPiFintype :
     AdicCompletion I (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] (ι → R) :=
   letI f := piEquivOfFintype I (fun _ : ι ↦ R)
   letI g := (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).symm
@@ -114,7 +114,7 @@ private noncomputable def ofTensorProductInvOfPiFintype :
 
 private lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
     ofTensorProductInvOfPiFintype I ι ∘ₗ ofTensorProduct I (ι → R) = LinearMap.id := by
-  simp only [ofTensorProductInvOfPiFintype]
+  dsimp only [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, LinearMap.comp_assoc, piEquivOfFintype_comp_ofTensorProduct_eq]
   simp
 
@@ -126,7 +126,7 @@ private lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
   simp
 
 /-- `ofTensorProduct` as an equiv in the case of `M = R^ι` where `ι` is finite. -/
-noncomputable def ofTensorProductEquivOfPiFintype :
+def ofTensorProductEquivOfPiFintype :
     AdicCompletion I R ⊗[R] (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I (ι → R) :=
   LinearEquiv.ofLinear
     (ofTensorProduct I (ι → R))
@@ -196,13 +196,13 @@ section
 variable {ι : Type} [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M) (hf : Function.Surjective f)
 
 /- The first horizontal arrow in the top row. -/
-private noncomputable
+private
 def lTensorKerIncl : AdicCompletion I R ⊗[R] LinearMap.ker f →ₗ[AdicCompletion I R]
     AdicCompletion I R ⊗[R] (ι → R) :=
   AlgebraTensorModule.map LinearMap.id (LinearMap.ker f).subtype
 
 /- The second horizontal arrow in the top row. -/
-private noncomputable def lTensorf :
+private def lTensorf :
     AdicCompletion I R ⊗[R] (ι → R) →ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] M :=
   AlgebraTensorModule.map LinearMap.id f
 
@@ -227,10 +227,10 @@ private lemma adic_surj : Function.Surjective (map I f) :=
   map_surjective I hf
 
 /- Instance to speed up instance inference. -/
-private noncomputable instance : AddCommGroup (AdicCompletion I R ⊗[R] (LinearMap.ker f)) :=
+private instance : AddCommGroup (AdicCompletion I R ⊗[R] (LinearMap.ker f)) :=
   inferInstance
 
-private noncomputable def firstRow : ComposableArrows (ModuleCat (AdicCompletion I R)) 4 :=
+private def firstRow : ComposableArrows (ModuleCat (AdicCompletion I R)) 4 :=
   ComposableArrows.mk₄
     (ModuleCat.ofHom <| lTensorKerIncl I M f)
     (ModuleCat.ofHom <| lTensorf I M f)
@@ -269,7 +269,7 @@ private lemma secondRow_exact : (secondRow I M f).Exact where
     | 2 => intro _ _; exact ⟨0, rfl⟩
 
 /- The compatible vertical maps between the first and the second row. -/
-private noncomputable def firstRowToSecondRow : firstRow I M f ⟶ secondRow I M f :=
+private def firstRowToSecondRow : firstRow I M f ⟶ secondRow I M f :=
   ComposableArrows.homMk₄
     (ModuleCat.ofHom (ofTensorProduct I (LinearMap.ker f)))
     (ModuleCat.ofHom (ofTensorProduct I (ι → R)))
@@ -312,7 +312,7 @@ theorem ofTensorProduct_bijective_of_finite_of_isNoetherian [Module.Finite R M] 
 
 /-- `ofTensorProduct` packaged as linear equiv if `M` is a finite `R`-module and `R` is
 Noetherian. -/
-noncomputable def ofTensorProductEquivOfFiniteNoetherian [Module.Finite R M] :
+def ofTensorProductEquivOfFiniteNoetherian [Module.Finite R M] :
     AdicCompletion I R ⊗[R] M ≃ₗ[AdicCompletion I R] AdicCompletion I M :=
   LinearEquiv.ofBijective (ofTensorProduct I M)
     (ofTensorProduct_bijective_of_finite_of_isNoetherian I M)

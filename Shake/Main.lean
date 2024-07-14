@@ -93,8 +93,10 @@ structure State where
   /-- `j ∈ needs[i]` if module `i` uses a constant declared in module `j`.
   Note: this is left empty if `args.downstream` is false, we calculate `needs` on demand -/
   needs : Array Bitset := #[]
-  /-- Maps a constant name to the module index containing it. -/
-  constToIdx : HashMap Name USize := {}
+  /-- Maps a constant name to the module index containing it.
+  A value of `none` means the constant was found in multiple modules,
+  in which case we do not track it. -/
+  constToIdx : HashMap Name (Option USize) := {}
 
 /-- Returns `true` if this is a constant whose body should not be considered for dependency
 tracking purposes. -/
@@ -108,7 +110,7 @@ def isBlacklisted (name : Name) : Bool :=
 
 /-- Calculates the value of the `needs[i]` bitset for a given module `mod`.
 Bit `j` is set in the result if some constant from module `j` is used in this module. -/
-def calcNeeds (constToIdx : HashMap Name USize) (mod : ModuleData) : Bitset :=
+def calcNeeds (constToIdx : HashMap Name (Option USize)) (mod : ModuleData) : Bitset :=
   mod.constants.foldl (init := 0) fun deps ci =>
     if isBlacklisted ci.name then deps else
     let deps := visitExpr ci.type deps
@@ -119,11 +121,11 @@ where
   /-- Accumulate the results from expression `e` into `deps`. -/
   visitExpr e deps :=
     Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
-      | some i => deps ||| (1 <<< i.toNat)
-      | none => deps
+      | some (some i) => deps ||| (1 <<< i.toNat)
+      | _ => deps
 
 /-- Calculates the same as `calcNeeds` but tracing each module to a specific constant. -/
-def getExplanations (constToIdx : HashMap Name USize) (mod : ModuleData) :
+def getExplanations (constToIdx : HashMap Name (Option USize)) (mod : ModuleData) :
     HashMap USize (Name × Name) :=
   mod.constants.foldl (init := {}) fun deps ci =>
     if isBlacklisted ci.name then deps else
@@ -135,7 +137,7 @@ where
   /-- Accumulate the results from expression `e` into `deps`. -/
   visitExpr name e deps :=
     Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
-      | some i =>
+      | some (some i) =>
         if
           if let some (name', _) := deps.find? i then
             decide (name.toString.length < name'.toString.length)
@@ -144,7 +146,7 @@ where
           deps.insert i (name, c)
         else
           deps
-      | none => deps
+      | _ => deps
 
 /-- Load all the modules in `imports` into the `State`, as well as their transitive dependencies.
 Returns a pair `(imps, transImps)` where:
@@ -178,7 +180,15 @@ partial def loadModules (imports : Array Import) : StateT State IO (Array USize 
         deps := s.deps.push deps
         transDeps := s.transDeps.push transDeps
         needs := s.needs
-        constToIdx := mod.constNames.foldl (·.insert · n) s.constToIdx
+        constToIdx := mod.constNames.foldl (init := s.constToIdx) fun m a =>
+          match m.insertIfNew a n with
+          | (m, some (some _)) =>
+            -- Note: If a constant is found in multiple modules, we assume it is an auto-generated
+            -- definition which is created on demand, and therefore it is safe to ignore any
+            -- dependencies via this definition because it will just be re-created in the current
+            -- module if we don't import it.
+            m.insert a none
+          | (m, _) => m
       }
   return (imps, transImps)
 

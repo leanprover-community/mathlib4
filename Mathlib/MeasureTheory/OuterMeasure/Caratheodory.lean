@@ -239,3 +239,5 @@ theorem dirac_caratheodory (a : α) : (dirac a).caratheodory = ⊤ :=
 #align measure_theory.outer_measure.dirac_caratheodory MeasureTheory.OuterMeasure.dirac_caratheodory
 
 end OuterMeasure
+
+end MeasureTheory

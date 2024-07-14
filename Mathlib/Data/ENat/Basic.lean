@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 #align_import data.enat.basic from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
 
@@ -82,7 +83,6 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
   rfl
 #align enat.coe_sub ENat.coe_sub
 
--- Eligible for dsimp
 @[simp] lemma coe_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl
 #align enat.coe_mul ENat.coe_mul
 
@@ -261,6 +261,9 @@ theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   one_le_iff_pos.trans pos_iff_ne_zero
 #align enat.one_le_iff_ne_zero ENat.one_le_iff_ne_zero
+
+lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
+  not_le.symm.trans one_le_iff_ne_zero.not_left
 
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h

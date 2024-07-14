@@ -412,7 +412,8 @@ macro "isBoundedDefault" : tactic =>
     | apply isCobounded_le_of_bot
     | apply isCobounded_ge_of_top
     | apply isBounded_le_of_top
-    | apply isBounded_ge_of_bot)
+    | apply isBounded_ge_of_bot
+    | assumption)
 
 -- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
 -- unsafe def is_bounded_default : tactic Unit :=
@@ -576,7 +577,7 @@ theorem liminf_le_of_le {f : Filter β} {u : β → α} {a}
 
 theorem limsInf_le_limsSup {f : Filter α} [NeBot f]
     (h₁ : f.IsBounded (· ≤ ·) := by isBoundedDefault)
-    (h₂ : f.IsBounded (· ≥ ·) := by isBoundedDefault):
+    (h₂ : f.IsBounded (· ≥ ·) := by isBoundedDefault) :
     limsInf f ≤ limsSup f :=
   liminf_le_of_le h₂ fun a₀ ha₀ =>
     le_limsup_of_le h₁ fun a₁ ha₁ =>
@@ -588,7 +589,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem liminf_le_limsup {f : Filter β} [NeBot f] {u : β → α}
     (h : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
-    (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault):
+    (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     liminf u f ≤ limsup u f :=
   limsInf_le_limsSup h h'
 #align filter.liminf_le_limsup Filter.liminf_le_limsup
@@ -1404,7 +1405,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
 linear order. A reparametrization trick is needed to avoid taking the infimum of sets which are
 not bounded below. -/
 theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → Set ι}
-    [Countable (Subtype p)] [Nonempty (Subtype p)] (hv : v.HasBasis p s) (f : ι → α):
+    [Countable (Subtype p)] [Nonempty (Subtype p)] (hv : v.HasBasis p s) (f : ι → α) :
     liminf f v = if ∃ (j : Subtype p), s j = ∅ then sSup univ else
       if ∀ (j : Subtype p), ¬BddBelow (range (fun (i : s j) ↦ f i)) then sSup ∅
       else ⨆ (j : Subtype p), ⨅ (i : s (liminf_reparam f s p j)), f i := by
