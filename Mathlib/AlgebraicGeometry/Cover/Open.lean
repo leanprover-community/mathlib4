@@ -195,7 +195,7 @@ def OpenCover.pullbackCover {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X
 /-- The family of morphisms from the pullback cover to the original cover. -/
 def OpenCover.pullbackHom {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) :
     (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i :=
-  pullback.snd
+  pullback.snd f (𝒰.map i)
 
 @[reassoc (attr := simp)]
 lemma OpenCover.pullbackHom_map {X W : Scheme.{u}} (𝒰 : X.OpenCover) (f : W ⟶ X) (i) :
