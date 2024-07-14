@@ -123,17 +123,16 @@ theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
 
 open CategoryTheory in
 /-- A version of `isLocallyNoetherian_iff_of_iSup_eq_top` using `Scheme.OpenCover`. -/
-theorem isLocallyNoetherian_iff_of_affine_openCover {𝒰 : Scheme.OpenCover.{v, u} X}
+theorem isLocallyNoetherian_iff_of_affine_openCover (𝒰 : Scheme.OpenCover.{v, u} X)
     [∀ i, IsAffine (𝒰.obj i)] :
-    IsLocallyNoetherian X ↔
-    ∀ (i : 𝒰.J), IsNoetherianRing Γ(𝒰.obj i, ⊤) := by
+    IsLocallyNoetherian X ↔ ∀ (i : 𝒰.J), IsNoetherianRing Γ(𝒰.obj i, ⊤) := by
   constructor
   · intro h i
     let U := Scheme.Hom.opensRange (𝒰.map i)
     have := h.component_noetherian ⟨U, isAffineOpen_opensRange _⟩
     apply isNoetherianRing_of_ringEquiv (R := Γ(X, U))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
-    exact (IsOpenImmersion.ΓIso_top (𝒰.map i)).symm
+    exact (IsOpenImmersion.ΓIsoTop (𝒰.map i)).symm
   · intro hCNoeth
     let fS i : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.map i), isAffineOpen_opensRange _⟩
     apply isLocallyNoetherian_of_affine_cover (S := fS)
@@ -141,7 +140,26 @@ theorem isLocallyNoetherian_iff_of_affine_openCover {𝒰 : Scheme.OpenCover.{v,
     intro i
     apply isNoetherianRing_of_ringEquiv (R := Γ(𝒰.obj i, ⊤))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
-    exact IsOpenImmersion.ΓIso_top (𝒰.map i)
+    exact IsOpenImmersion.ΓIsoTop (𝒰.map i)
+
+lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
+    [IsLocallyNoetherian Y] : IsLocallyNoetherian X := by
+  refine ⟨fun U => ?_⟩
+  let V : Y.affineOpens := ⟨f ''ᵁ U, IsAffineOpen.image_of_isOpenImmersion U.prop _⟩
+  suffices Γ(X, U) ≅ Γ(Y, V) by
+    convert isNoetherianRing_of_ringEquiv (R := Γ(Y, V)) _
+    · apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
+      exact this.symm
+    · exact IsLocallyNoetherian.component_noetherian V
+  rw [← Scheme.Hom.preimage_image_eq f U]
+  trans
+  · apply IsOpenImmersion.ΓIso
+  · suffices Scheme.Hom.opensRange f ⊓ V = V by
+      rw [this]
+    rw [← Opens.coe_inj]
+    rw [Opens.coe_inf, Scheme.Hom.opensRange_coe, IsOpenMap.functor_obj_coe,
+      Set.inter_eq_right, Set.image_subset_iff, Set.preimage_range]
+    exact Set.subset_univ _
 
 /-- If `𝒰` is an open cover of a scheme `X`, then `X` is locally noetherian if and only if
 `𝒰.obj i` are all locally noetherian. -/
@@ -149,31 +167,11 @@ theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
     IsLocallyNoetherian X ↔ ∀ (i : 𝒰.J), IsLocallyNoetherian (𝒰.obj i) := by
   constructor
   · intro h i
-    constructor
-    intro U
-    let V : X.affineOpens := ⟨𝒰.map i ''ᵁ U, IsAffineOpen.image_of_isOpenImmersion U.prop _⟩
-    suffices Γ(𝒰.obj i, U) ≅ Γ(X, V) by
-      convert isNoetherianRing_of_ringEquiv (R := Γ(X, V)) _
-      · apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
-        exact this.symm
-      · exact h.component_noetherian V
-    rw [← Scheme.Hom.preimage_image_eq (𝒰.map i) U]
-    trans
-    · apply IsOpenImmersion.ΓIso
-    · suffices Scheme.Hom.opensRange (𝒰.map i) ⊓ V = V by
-        rw [this]
-      rw [← Opens.coe_inj]
-      rw [Opens.coe_inf, Scheme.Hom.opensRange_coe, IsOpenMap.functor_obj_coe,
-        Set.inter_eq_right, Set.image_subset_iff, Set.preimage_range]
-      exact Set.subset_univ _
-  · have : ∀ i, IsAffine (𝒰.affineRefinement.openCover.obj i) := by
-      intro i
-      rw [Scheme.AffineOpenCover.openCover_obj]
-      infer_instance
-    rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
+    exact isLocallyNoetherian_of_isOpenImmersion (𝒰.map i)
+  · rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
     intro h i
     exact @isNoetherianRing_of_ringEquiv _ _ _ _
-      (IsOpenImmersion.ΓIso_top (Scheme.OpenCover.map _ i.2)).symm.commRingCatIsoToRingEquiv
+      (IsOpenImmersion.ΓIsoTop (Scheme.OpenCover.map _ i.2)).symm.commRingCatIsoToRingEquiv
       (IsLocallyNoetherian.component_noetherian ⟨_, isAffineOpen_opensRange _⟩)
 
 /-- If `R` is a noetherian ring, `Spec R` is a noetherian topological space. -/
@@ -196,7 +194,7 @@ lemma noetherianSpace_of_isAffineOpen (U : Opens X) (hU : IsAffineOpen U)
 
 [Stacks: Lemma 01OX](https://stacks.math.columbia.edu/tag/01OX) -/
 instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
-    {f : Z ⟶ X} [h : IsOpenImmersion f] : QuasiCompact f := by
+    {f : Z ⟶ X} [IsOpenImmersion f] : QuasiCompact f := by
   apply (quasiCompact_iff_forall_affine f).mpr
   intro U hU
   rw [Opens.map_coe, ← Set.preimage_inter_range]
@@ -259,11 +257,11 @@ theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v,
     IsNoetherian X ↔ ∀ (i : 𝒰.J), IsNoetherianRing Γ(𝒰.obj i, ⊤) := by
   constructor
   · intro h i
-    apply isLocallyNoetherian_iff_of_affine_openCover.mp
+    apply (isLocallyNoetherian_iff_of_affine_openCover _).mp
     exact h.toIsLocallyNoetherian
   · intro hNoeth
     convert IsNoetherian.mk
-    · exact isLocallyNoetherian_iff_of_affine_openCover.mpr hNoeth
+    · exact (isLocallyNoetherian_iff_of_affine_openCover _).mpr hNoeth
     · exact Scheme.OpenCover.compactSpace 𝒰
 
 open CategoryTheory in
@@ -304,8 +302,8 @@ instance {R : CommRingCat} [IsNoetherianRing R] :
     exact (Scheme.ΓSpecIso R).symm
 
 instance (priority := 100) {R : CommRingCat}
-    [h : IsLocallyNoetherian <| Spec R] : IsNoetherianRing R := by
-  have := h.component_noetherian ⟨⊤, AlgebraicGeometry.isAffineOpen_top (Spec R)⟩
+    [IsLocallyNoetherian (Spec R)] : IsNoetherianRing R := by
+  have := IsLocallyNoetherian.component_noetherian ⟨⊤, AlgebraicGeometry.isAffineOpen_top (Spec R)⟩
   apply isNoetherianRing_of_ringEquiv Γ(Spec R, ⊤)
   apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
   exact Scheme.ΓSpecIso R
@@ -323,8 +321,8 @@ instance {R} [CommRing R] [IsNoetherianRing R] :
 /-- `R` is a Noetherian ring if and only if `Spec R` is a Noetherian scheme. -/
 theorem isNoetherian_Spec {R : CommRingCat} :
     IsNoetherian (Spec R) ↔ IsNoetherianRing R :=
-  ⟨fun _ => by infer_instance,
-   fun _ => by infer_instance⟩
+  ⟨fun _ => inferInstance,
+   fun _ => inferInstance⟩
 
 /-- A Noetherian scheme has a finite number of irreducible components.
 

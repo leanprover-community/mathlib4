@@ -225,6 +225,10 @@ instance Scheme.isAffine_affineBasisCover (X : Scheme) (i : X.affineBasisCover.J
   isAffine_Spec _
 #align algebraic_geometry.Scheme.affine_basis_cover_is_affine AlgebraicGeometry.Scheme.isAffine_affineBasisCover
 
+instance Scheme.isAffine_affineOpenCover (X : Scheme) (𝒰 : X.AffineOpenCover) (i: 𝒰.J) :
+    IsAffine (𝒰.openCover.obj i) :=
+  inferInstanceAs (IsAffine (Spec (𝒰.obj i)))
+
 theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rw [Opens.isBasis_iff_nbhd]
   rintro U x (hU : x ∈ (U : Set X))

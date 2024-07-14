@@ -611,10 +611,9 @@ lemma ΓIso_hom_map {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Op
 /-- Given an open immersion `f : U ⟶ X`, the isomorphism between global sections
   of `U` and the sections of `X` at the image of `f`. -/
 noncomputable
-def ΓIso_top {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
-    Γ(X, ⊤) ≅ Γ(Y, f.opensRange) := by
-  rw [← inf_top_eq (f.opensRange)]
-  exact IsOpenImmersion.ΓIso f ⊤
+def ΓIsoTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
+    Γ(X, ⊤) ≅ Γ(Y, f.opensRange) :=
+  IsOpenImmersion.ΓIso f ⊤ ≪≫ (Y.presheaf.mapIso (eqToIso (inf_top_eq f.opensRange)).op).symm
 
 end IsOpenImmersion
 
