@@ -399,3 +399,5 @@ def baseChange : RootPairing ι S (S ⊗[R] M) (S ⊗[R] N) :=
 -/
 
 end BaseChange
+
+end RootPairing

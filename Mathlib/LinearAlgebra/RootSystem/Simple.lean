@@ -154,3 +154,4 @@ structure Base extends Basis α R (Submodule.span R (Set.range P.root)) where
   /-- Any root has same-sign coordinates with respect to the basis. -/
   same_sign : ∀(i : ι) (j k : α), 0 ≤ (repr (P.root' i) j) * (repr (P.root' i) k)
 -/
+end RootPairing

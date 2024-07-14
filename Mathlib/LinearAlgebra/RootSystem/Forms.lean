@@ -101,3 +101,5 @@ symmetric, positive definite on R-span of roots, Weyl-invariant.  If `P` is crys
 then this takes integer values. `(α,α)α^* = 2P.Polarization α` -/
 
 -- faithful Weyl action, finiteness of Weyl
+
+end RootPairing
