@@ -358,7 +358,7 @@ lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedS
 
 lemma proj_apply (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)) (hP : IsIdempotentElem P)
     (a : (NormedSpace.Dual 𝕜 A)) (ha: a ∈ Set.range P) : P a = a := by
-  cases' ha with c hc
+  obtain ⟨c,hc⟩ := ha
   rw [← hc]
   have e2 : P (P c) = (P * P) c := rfl
   rw [e2]
@@ -395,8 +395,8 @@ lemma IsLprojection.range_sum (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
   · intro z hz
     rw [Submodule.add_eq_sup, Submodule.mem_sup] at hz
     simp only [LinearMap.mem_range, exists_exists_eq_and] at hz
-    cases' hz with x hx
-    cases' hx with y hxy
+    obtain ⟨x,⟨y,hxy⟩⟩ := hz
+    --obtain  := hx
     simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
       ContinuousLinearMap.coe_mul, Pi.sub_apply, ContinuousLinearMap.add_apply, Function.comp_apply]
     use z
@@ -414,7 +414,7 @@ lemma IsLprojection.range_sum (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
     simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
       ContinuousLinearMap.coe_mul, Pi.sub_apply, ContinuousLinearMap.add_apply,
       Function.comp_apply] at hz
-    cases' hz with x hx
+    obtain ⟨x,hx⟩ := hz
     have e1 : z = P.val (x - Q.val x) + Q.val x := by
       rw [map_sub, ← hx]
       abel
@@ -429,7 +429,7 @@ structure IsMideal (m : Submodule 𝕜 A) : Prop where
   Closed: IsClosed (m : Set A)
   Lproj:  ∃ (P : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
     (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P }),
-    (LinearMap.range P.val) = NormedSpace.polarSubmodule (E := A) 𝕜 m.toSubMulAction
+    (LinearMap.range P.val) = NormedSpace.polarSubmodule (E := A) 𝕜 m
 
 set_option maxHeartbeats 400000
 open NormedSpace in
@@ -437,20 +437,16 @@ open Metric in
 open Submodule in
 open scoped ComplexOrder in
 lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
-    ↑(polarSubmodule 𝕜 m₁.toSubMulAction + polarSubmodule 𝕜 m₂.toSubMulAction) ∩ closedBall 0 1 =
+    ↑(polarSubmodule 𝕜 m₁ + polarSubmodule 𝕜 m₂) ∩ closedBall 0 1 =
     convexHull ℝ (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) := by
   rw [le_antisymm_iff]
   constructor
-  · cases' h₁.Lproj with P₁ hE₁
-    cases' h₂.Lproj with P₂ hE₂
-    --let P₁ : { P : (Dual 𝕜 A →L[𝕜] Dual 𝕜 A) // IsLprojection (Dual 𝕜 A) P } := ⟨E₁,hE₁.1⟩
-    --let P₂ : { P : (Dual 𝕜 A →L[𝕜] Dual 𝕜 A) // IsLprojection (Dual 𝕜 A) P } := ⟨E₂,hE₂.1⟩
+  · obtain ⟨P₁,hE₁⟩ := h₁.Lproj
+    obtain ⟨P₂,hE₂⟩ := h₂.Lproj
     let E := P₁ ⊔ P₂
-    rw [ ← hE₁, ← hE₂ ]
-    rw [ (IsLprojection.range_sum P₁ P₂)]
+    rw [ ← hE₁, ← hE₂, (IsLprojection.range_sum P₁ P₂)]
     intro x hx
-    rw [Set.mem_inter_iff] at hx
-    rw [IsLprojection.coe_sup] at hx
+    rw [Set.mem_inter_iff, IsLprojection.coe_sup] at hx
     have ex : E.val x = x := by
       apply proj_apply _ _
       exact Set.mem_of_mem_inter_left hx
@@ -458,8 +454,6 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     simp only [IsLprojection.coe_sup, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
       ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_mul, Pi.sub_apply,
       ContinuousLinearMap.add_apply, Function.comp_apply, mem_closedBall, dist_zero_right] at hx
-    --cases' hx'.1 with x hx
-    --rw [← hx]
     let E₁ := P₁.val
     let E₂ := P₂.val
     let y := E₁ x
@@ -532,7 +526,6 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           exact Set.mem_union_left (polar 𝕜 ↑m₂ ∩ closedBall 0 1) e1
         · let y₁ := (‖x‖/‖y‖) • y
           let z₁ := (‖x‖/‖z‖) • z
-
           have t₁ : y₁ ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
             apply Set.mem_union_left
             simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
@@ -619,10 +612,10 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       exact fun _ hx _ hy _ _ _ _ _ => add_mem (smul_of_tower_mem _ _ hx) (smul_of_tower_mem _ _ hy)
       simp only [Set.union_subset_iff]
       exact ⟨subset_trans
-          (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₁.toSubMulAction)))
+          (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₁)))
           (SetLike.coe_subset_coe.mpr le_sup_left),
         subset_trans
-          (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₂.toSubMulAction)))
+          (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₂)))
           (SetLike.coe_subset_coe.mpr le_sup_right)⟩
     · apply convexHull_min
       rw [← Set.union_inter_distrib_right]

@@ -169,8 +169,8 @@ def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedA
  the polar `polarSubmodule 𝕜 s` is the submodule of `Dual 𝕜 E` consisting of those functionals which
 evaluate to zero at all points `z ∈ s`. -/
 def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
-    [NormedSpace 𝕜 E] : SubMulAction 𝕜 E → Submodule 𝕜 (Dual 𝕜 E) :=
-  (dualPairing 𝕜 E).flip.polarSubmodule
+    [NormedSpace 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    Submodule 𝕜 (Dual 𝕜 E) := (dualPairing 𝕜 E).flip.polarSubmodule m
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
