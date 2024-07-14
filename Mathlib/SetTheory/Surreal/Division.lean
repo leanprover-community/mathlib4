@@ -716,45 +716,24 @@ lemma onag_1_10 :
       intro i
       cases i
       · case _ val =>
-          rcases val with ⟨i | val, j⟩
+          rcases val with ⟨i | val, j⟩ <;>
+              simp only [normalization, insertLeft, inv', mk_mul_moveRight_inl]
           · specialize this (Sum.inl ⟨i, j⟩)
             simp only at this
-            simp only [normalization, insertLeft]
-            conv_rhs at this => {
-              lhs
-              rhs
-              lhs
-              rw [pos_num_eq_normalization x_num x_pos]
-            }
+            rw [pos_num_eq_normalization x_num x_pos] at this
             simp only [← mk_mul, ← mk_add, ← mk_sub] at this
-            simp only [inv', mk_mul_moveRight_inl]
-            simp only [one_def, inv', mk_lt_mk] at this
+            simp only [inv', one_def, mk_lt_mk] at this
             exact this
           · cases val
-            simp only [normalization, insertLeft, inv', mk_mul_moveRight_inl]
             rw [Game.PGame.lt_iff_game_lt]
             simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
             have := onag_1_10_i.2
             rw [x_rfl] at this
             specialize this j
-            rw [← mk_lt_mk, mk_mul x_num] at this
+            rw [← mk_lt_mk, mk_mul x_num (inv'_numeric_right x_num x_pos h3 h4 j)] at this
             on_goal 2 => exact numeric_one
-            have : 1 < (normalization x) * (PGame.mk xl xr xL xR).inv'.moveRight j := by
-              rw [← mk_lt_mk]
-              on_goal 2 => exact numeric_one
-              on_goal 2 =>
-                apply Numeric.mul
-                · exact num_of_normalization_num x_num x_pos
-                · exact inv'_numeric_right x_num x_pos h3 h4 j
-              rw [mk_mul]
-              on_goal 2 => exact num_of_normalization_num x_num x_pos
-              on_goal 2 =>
-                apply inv'_numeric_right x_num x_pos
-                · exact h3
-                · exact h4
-              have eq_norm := pos_num_eq_normalization x_num x_pos
-              rwa [← eq_norm]
-            simp only [normalization, insertLeft, inv', moveRight_mk] at this
+            rw [pos_num_eq_normalization x_num x_pos] at this
+            simp only [normalization, insertLeft, inv', moveLeft_mk] at this
             exact this
       · case _ val =>
           rcases val with ⟨i, j⟩
