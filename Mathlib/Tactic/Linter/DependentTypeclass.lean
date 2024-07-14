@@ -58,10 +58,10 @@ def dependentTypeclassLinter : Linter where
               elabCommand (← `(command| #synth $(⟨d.raw[2]⟩)))
             if (← get).messages.hasErrors then
               set s
-            else implied := implied.push d
+            else implied := implied.push (d, insts.filter (· != d))
           set s
-          for d in implied do
-            Linter.logLint linter.dependentTypeclass d m!"Typeclass '{d}' is implied"
+          for (d, ctx) in implied do
+            Linter.logLint linter.dependentTypeclass d m!"Typeclass '{d}' is implied by {ctx}"
         | _=> return
 initialize addLinter dependentTypeclassLinter
 
