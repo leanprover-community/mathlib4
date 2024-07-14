@@ -93,8 +93,8 @@ termination_by G H => (G, H)
 instance impartial_add : ∀ (G H : PGame) [G.Impartial] [H.Impartial], (G + H).Impartial
   | G, H, _, _ => by
     rw [impartial_def]
-    refine ⟨((neg_identical_self G).add (neg_identical_self _)).trans <| of_eq (neg_add _ _).symm,
-      fun k => ?_, fun k => ?_⟩
+    refine ⟨((neg_identical_self G).add (neg_identical_self _)).trans <|
+      of_eq (PGame.neg_add _ _).symm, fun k => ?_, fun k => ?_⟩
     · apply leftMoves_add_cases k
       all_goals
         intro i; simp only [add_moveLeft_inl, add_moveLeft_inr]
