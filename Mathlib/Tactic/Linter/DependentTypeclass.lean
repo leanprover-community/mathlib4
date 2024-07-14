@@ -37,20 +37,32 @@ def dependentTypeclassLinter : Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if stx.isOfKind ``Lean.Parser.Command.variable then
-      let sc ← getScope
-      let varDecls := sc.varDecls
-      let mut implied := #[]
-      let s ← get
-      for d in varDecls do
-        if d.raw.isOfKind ``Lean.Parser.Term.instBinder then
-          withScope (fun s => { s with varDecls := varDecls.erase d }) <|
-            elabCommand (← `(command| #synth $(⟨d.raw[2]⟩)))
-          if (← get).messages.hasErrors then set s else implied := implied.push d
-      set s
-      for d in implied do
-        Linter.logLint linter.dependentTypeclass d m!"Typeclass '{d}' is implied"
-
+    -- we first find `variable`s that could be inside an `in`
+    if let some stx := stx.find? (·.isOfKind ``Lean.Parser.Command.variable) then
+      -- and then we extract the actual "variables" in `variable <vars*>`
+      match stx with
+        | `(variable $vars*) =>
+          let sc ← getScope
+          -- we add the "current" variables to the ones in scope, since otherwise the linter
+          -- would "miss", as they are already outside of scope when the linter runs
+          let varDecls := sc.varDecls ++ vars
+          let insts := varDecls.filter (·.raw.isOfKind ``Lean.Parser.Term.instBinder)
+          if insts.size ≤ 1 then return else
+          let mut implied := #[]
+          let s ← get
+          for d in insts do
+            -- we remove "all" `d`s, to deal better with the variable update
+            -- `variable (α : Type) [Add α] variable {α} [Add α]`
+            let noDvar := varDecls.filter (· != d)
+            withScope (fun s => { s with varDecls := noDvar }) <|
+              elabCommand (← `(command| #synth $(⟨d.raw[2]⟩)))
+            if (← get).messages.hasErrors then
+              set s
+            else implied := implied.push d
+          set s
+          for d in implied do
+            Linter.logLint linter.dependentTypeclass d m!"Typeclass '{d}' is implied"
+        | _=> return
 initialize addLinter dependentTypeclassLinter
 
 end DependentTypeclass
