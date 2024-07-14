@@ -775,6 +775,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
+import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.IsOpenComapC
@@ -4345,6 +4346,7 @@ import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.LocallyClosed
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
