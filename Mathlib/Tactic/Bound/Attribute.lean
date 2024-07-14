@@ -109,7 +109,9 @@ between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
   `0 ≤ c → b ≤ a → 0 ≤ a * c - b * c`
 by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_right`.  `bound` also
 uses specialized lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.
--/
+
+See also `@[bound_forward]` which marks a lemma as a forward rule for `bound`: these lemmas are
+applied to hypotheses to extract inequalities (e.g. `HasPowerSeriesOnBall.r_pos`). -/
 initialize Lean.registerBuiltinAttribute {
   name := `bound
   descr := "Register a theorem as an apply rule for the `bound` tactic."
