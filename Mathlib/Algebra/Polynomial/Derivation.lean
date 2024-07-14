@@ -181,14 +181,14 @@ def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
   }) (fun a b ↦ by
     induction a using Polynomial.induction_on' with
     | h_add _ _ h1 h2 =>
-      simp only [add_mul, add_smul, smul_add, LinearMap.map_add, h1, h2]
-      simp only [LinearMap.coe_mk, AddHom.coe_mk]
+      simp only [add_mul, LinearMap.map_add, h1, LinearMap.coe_mk, AddHom.coe_mk, h2, add_smul,
+        smul_add]
       abel
     | h_monomial m a =>
     induction b using Polynomial.induction_on' with
     | h_add _ _ h1 h2 =>
-      simp only [mul_add, add_smul, smul_add, LinearMap.map_add, h1, h2]
-      simp only [LinearMap.coe_mk, AddHom.coe_mk]
+      simp only [mul_add, LinearMap.map_add, h1, LinearMap.coe_mk, AddHom.coe_mk, h2, smul_add,
+        add_smul]
       abel
     | h_monomial m2 b =>
     simp only [monomial_mul_monomial, LinearMap.coe_mk, AddHom.coe_mk, map_zero, sum_monomial_index,
@@ -209,15 +209,17 @@ lemma coeffwise_apply (p : A[X]) (i : ℕ) :
   simp [h]
 
 @[simp]
-lemma coeffwise_monomial (n) (x : A) :
+lemma coeffwise_monomial (n : ℕ) (x : A) :
     d.coeffwise (monomial n x) = .single A n (d x) := Finsupp.ext fun _ ↦ by
   simp [coeff_monomial, apply_ite d, PolynomialModule.single_apply]
 
 @[simp]
 lemma coeffwise_X :
-    d.coeffwise (X : A[X]) = 0 := Finsupp.ext fun _ ↦ by
-  simp [← monomial_one_one_eq_X]
+    d.coeffwise (X : A[X]) = 0 := by simp [← monomial_one_one_eq_X]
 
+@[simp]
+lemma coeffwise_C (x : A) :
+    d.coeffwise (C x) = .single A 0 (d x) := by simp [← monomial_zero_left]
 
 theorem apply_eval_eq (x : A) (p : A[X]) :
     d (eval x p) = PolynomialModule.eval x (d.coeffwise p) + eval x (derivative p) • d x := by
