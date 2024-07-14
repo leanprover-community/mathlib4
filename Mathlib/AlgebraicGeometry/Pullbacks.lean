@@ -624,7 +624,7 @@ section Spec
 
 variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 
-open TensorProduct Algebra.TensorProduct CommRingCat
+open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 
 /-- The isomorphism between the fiber product of two affine schemes `Spec B` and `Spec C`
 over an affine scheme `Spec A` and the `Spec` of the tensor product `B ⊗[A] C`.-/
@@ -643,7 +643,7 @@ lemma pullbackSpecIso_inv_fst :
 
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_inv_snd :
-    (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ = Spec.map (ofHom includeRight.toRingHom) :=
+    (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ = Spec.map (ofHom (toRingHom includeRight)) :=
   limit.isoLimitCone_inv_π _ _
 
 @[reassoc (attr := simp)]
@@ -653,7 +653,7 @@ lemma pullbackSpecIso_hom_fst :
 
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_hom_snd :
-    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom includeRight.toRingHom) = pullback.snd _ _ := by
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
 
 end Spec
