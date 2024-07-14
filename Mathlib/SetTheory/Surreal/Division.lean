@@ -268,13 +268,13 @@ lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
     ring_nf
     rw [sub_eq_add_neg, add_assoc, add_left_cancel_iff]
     simp only [inv', moveLeft_mk, invVal, moveRight_mk]
-    rw [← mul_def, mk_add, ← mul_def, mk_sub]
+    rw [mk_mul, mk_add, mk_mul, mk_sub]
     any_goals
       tauto
     on_goal 2 =>
       apply invVal_numeric <;> tauto
     on_goal 2 => exact numeric_one
-    simp only [one_def]
+    simp only [← one_def]
     ring_nf
   · conv in _ * mk (R j) _ * _ * mk (R j).inv' _ => {
       rw [mul_assoc _ (mk (R j) _) _, mul_assoc, mul_comm (mk (R j) _) _, mul_assoc]
@@ -395,7 +395,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
   cases i'' <;> simp only [components]
   all_goals
     simp only [invVal]
-    rw [← mul_def, mk_add, ← mul_def, mk_sub]
+    rw [mk_mul, mk_add, mk_mul, mk_sub]
   any_goals
     tauto
   any_goals
@@ -407,7 +407,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
   on_goal 4 =>
     case _ j _ => exact h3 j j.2
   all_goals
-    simp
+    simp only [← one_def]
     ring_nf
     first | simp only [inv_r] | simp only [inv_l]
   · case _ j i1 =>
@@ -631,12 +631,12 @@ lemma onag_1_10 :
       intro i
       specialize ih_xl i i.2
       have := ih_xl.2.2.2.2.2
-      simpa [mul_def, ← one_def, mk_eq_mk]
+      simpa [← mk_mul, one_def, mk_eq_mk]
     have inv_r : ∀ (j : xr), mk (xR j) (xr_num _) * mk (xR j).inv' (h4 j) = 1 := by
       intro i
       specialize ih_xr i (right_pos_of_pos x_num x_pos i)
       have := ih_xr.2.2.2.2.2
-      simpa [mul_def, ← one_def, mk_eq_mk]
+      simpa [← mk_mul, one_def, mk_eq_mk]
 
     have onag_1_10_i :
         (∀ i, x * ((x.inv').moveLeft i) < 1) ∧ (∀ j, 1 < x * ((x.inv').moveRight j)) := by
@@ -644,11 +644,11 @@ lemma onag_1_10 :
       constructor
       · have := onag_1_10_i' xL xR xl_num xr_num h3 h4 x_num false inv_l inv_r x_pos
         rw [x_rfl]
-        simp only [mul_def, ← one_def, mk_lt_mk] at this
+        simp only [← mk_mul, one_def, mk_lt_mk] at this
         exact this
       · have := onag_1_10_i' xL xR xl_num xr_num h3 h4 x_num true inv_l inv_r x_pos
         rw [x_rfl]
-        simp only [← one_def, mul_def, mk_lt_mk] at this
+        simp only [one_def, ← mk_mul, mk_lt_mk] at this
         exact this
 
     have onag_1_10_ii : (x.inv').Numeric := by
@@ -684,9 +684,9 @@ lemma onag_1_10 :
               lhs
               rw [pos_num_eq_normalization x_num x_pos]
             }
-            simp only [mul_def, ← mk_add, ← mk_sub] at this
+            simp only [← mk_mul, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveLeft_inl]
-            simp only [inv', ← one_def, mk_lt_mk] at this
+            simp only [inv', one_def, mk_lt_mk] at this
             exact this
           · cases val
             simp only [normalization, insertLeft, inv', mk_mul_moveLeft_inl]
@@ -695,7 +695,7 @@ lemma onag_1_10 :
             have := onag_1_10_i.1
             rw [x_rfl] at this
             specialize this j
-            rw [← mk_lt_mk, ← mul_def x_num] at this
+            rw [← mk_lt_mk, mk_mul x_num] at this
             on_goal 2 => exact numeric_one
             have : (normalization x) * (PGame.mk xl xr xL xR).inv'.moveLeft j < 1 := by
               rw [← mk_lt_mk]
@@ -704,7 +704,7 @@ lemma onag_1_10 :
                 apply Numeric.mul
                 · exact num_of_normalization_num x_num x_pos
                 · exact inv'_numeric_left x_num x_pos h3 h4 j
-              rw [← mul_def]
+              rw [mk_mul]
               on_goal 2 => exact num_of_normalization_num x_num x_pos
               on_goal 2 =>
                 apply inv'_numeric_left x_num x_pos
@@ -725,9 +725,9 @@ lemma onag_1_10 :
               lhs
               rw [pos_num_eq_normalization x_num x_pos]
             }
-            simp only [mul_def, ← mk_add, ← mk_sub] at this
+            simp only [← mk_mul, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveLeft_inr]
-            simp only [inv', ← one_def, mk_lt_mk] at this
+            simp only [inv', one_def, mk_lt_mk] at this
             exact this
 
     have onag_1_10_iii_right : ∀ j, 1 < ((normalization x) * x.inv').moveRight j := by
@@ -747,9 +747,9 @@ lemma onag_1_10 :
               lhs
               rw [pos_num_eq_normalization x_num x_pos]
             }
-            simp only [mul_def, ← mk_add, ← mk_sub] at this
+            simp only [← mk_mul, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveRight_inl]
-            simp only [← one_def, inv', mk_lt_mk] at this
+            simp only [one_def, inv', mk_lt_mk] at this
             exact this
           · cases val
             simp only [normalization, insertLeft, inv', mk_mul_moveRight_inl]
@@ -758,7 +758,7 @@ lemma onag_1_10 :
             have := onag_1_10_i.2
             rw [x_rfl] at this
             specialize this j
-            rw [← mk_lt_mk, ← mul_def x_num] at this
+            rw [← mk_lt_mk, mk_mul x_num] at this
             on_goal 2 => exact numeric_one
             have : 1 < (normalization x) * (PGame.mk xl xr xL xR).inv'.moveRight j := by
               rw [← mk_lt_mk]
@@ -767,7 +767,7 @@ lemma onag_1_10 :
                 apply Numeric.mul
                 · exact num_of_normalization_num x_num x_pos
                 · exact inv'_numeric_right x_num x_pos h3 h4 j
-              rw [← mul_def]
+              rw [mk_mul]
               on_goal 2 => exact num_of_normalization_num x_num x_pos
               on_goal 2 =>
                 apply inv'_numeric_right x_num x_pos
@@ -788,15 +788,15 @@ lemma onag_1_10 :
               lhs
               rw [pos_num_eq_normalization x_num x_pos]
             }
-            simp only [mul_def, ← mk_add, ← mk_sub] at this
+            simp only [← mk_mul, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveRight_inr]
-            simp only [← one_def, inv', mk_lt_mk] at this
+            simp only [one_def, inv', mk_lt_mk] at this
             exact this
 
     have onag_1_10_iv' :
         Surreal.mk (normalization x) (num_of_normalization_num x_num x_pos) *
           Surreal.mk (x.inv') onag_1_10_ii = 1 := by
-      simp only [mul_def, ← one_def, mk_eq_mk]
+      simp only [← mk_mul, one_def, mk_eq_mk]
       rw [equiv_def]
       constructor <;> rw [le_iff_forall_lf]
       · simp only [one_rightMoves, IsEmpty.forall_iff, and_true]
@@ -820,7 +820,7 @@ lemma onag_1_10 :
 
     have onag_1_10_iv : x * x.inv' ≈ 1 := by
       suffices Surreal.mk x x_num * Surreal.mk x.inv' onag_1_10_ii = 1 by
-        simp only [mul_def, ← one_def, mk_eq_mk] at this
+        simp only [← mk_mul, one_def, mk_eq_mk] at this
         exact this
       rwa [pos_num_eq_normalization x_num x_pos]
 

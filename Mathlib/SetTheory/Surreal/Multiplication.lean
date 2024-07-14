@@ -526,23 +526,22 @@ noncomputable instance : LinearOrderedCommRing Surreal where
   mul_pos := by rintro ⟨x⟩ ⟨y⟩; exact x.2.mul_pos y.2
   decidableLE := Classical.decRel _
 
-@[simp]
-lemma one_def : mk 1 numeric_one = 1 := by rfl
+lemma one_def : 1 = mk 1 numeric_one := by rfl
 
-lemma mul_def {x y: PGame} (hx: x.Numeric) (hy: y.Numeric):
-    Surreal.mk x hx * Surreal.mk y hy = Surreal.mk (x * y) (hx.mul hy) := by rfl
+lemma mk_mul {x y: PGame} (hx: x.Numeric) (hy: y.Numeric):
+    Surreal.mk (x * y) (hx.mul hy) = Surreal.mk x hx * Surreal.mk y hy := by rfl
 
 lemma mul_left_cancel {x y z: PGame} (hx: x.Numeric) (hy: y.Numeric) (hz: z.Numeric)
     (nz : ¬ x ≈ 0) (h: x * y ≈ x * z): y ≈ z := by
   have: Surreal.mk x hx * Surreal.mk y hy = Surreal.mk x hx * Surreal.mk z hz := by
-    simpa only [mul_def, mk_eq_mk]
+    simpa only [← mk_mul, mk_eq_mk]
   apply mul_left_cancel₀ (by simpa only [ne_eq, mk_eq_zero]) at this
   rwa [mk_eq_mk] at this
 
 lemma mul_lt_mul_left' {x y z: PGame} (hx: x.Numeric) (hy: y.Numeric) (hz: z.Numeric)
     (h : 0 < x) (h' : x * y < x * z) : y < z := by
   have: Surreal.mk x hx * Surreal.mk y hy < Surreal.mk x hx * Surreal.mk z hz := by
-    simpa [mk_lt_mk, mul_def]
+    simpa [mk_lt_mk, ← mk_mul]
   apply (mul_lt_mul_left (by simpa only [zero_lt_mk])).mp at this
   rwa [mk_lt_mk] at this
 
