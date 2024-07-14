@@ -530,12 +530,15 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
       Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
       SetLike.mem_coe] at hw
     obtain ⟨a, ⟨ha, hb⟩⟩ := hw
-    have A := hb.1
-    have B := hb.2
-    simp only at B
-    rw [←B]
+    rw [← hb.2]
     exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
-  · sorry
+  · intro h
+    simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe]
+    intro K hK
+    simp only [iInf, sInf] at *
+    sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
+         --result...
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
