@@ -12,7 +12,8 @@ This file defines ordered scalar multiplication and vector addition, and proves 
 In the additive case, a motivating example is given by the additive action of `ℤ` on subsets of
 reals that are closed under integer translation.  The order compatibility allows for a treatment of
 the `R((z))`-module structure on `(z ^ s) V((z))` for an `R`-module `V`, using the formalism of Hahn
-series.
+series.  In the multiplicative case, a standard example is the action of non-negative rationals on
+an ordered field.
 
 ## Implementation notes
 
@@ -29,19 +30,21 @@ series.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
+* OrderedCommMonoid.toIsOrderedSMul
 * OrderedAddCommMonoid.toIsOrderedVAdd
+* IsOrderedSMul.toCovariantClassLeft
 * IsOrderedVAdd.toCovariantClassLeft
+* IsOrderedCancelSMul.toCancelSMul
 * IsOrderedCancelVAdd.toCancelVAdd
+* OrderedCancelCommMonoid.toIsOrderedCancelSMul
 * OrderedCancelAddCommMonoid.toIsOrderedCancelVAdd
+* IsOrderedCancelSMul.toContravariantClassLeft
 * IsOrderedCancelVAdd.toContravariantClassLeft
 
 ## TODO
-* `OrderedAddTorsor `: An additive torsor over an additive commutative group with compatible order.
-* `Set.vAddAntidiagonal`
+* definitions and finiteness results for antidiagonals
 * (lex) prod instances
 * Pi instances
-* `vAddAntidiagonal.finite_of_isPWO`
-* `Finset.vAddAntidiagonal`
 
 -/
 
