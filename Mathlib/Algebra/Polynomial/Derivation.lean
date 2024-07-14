@@ -236,9 +236,8 @@ theorem apply_aeval_eq (d : Derivation R K M) (x : K) (p : A[X]) :
     rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast, algebraMap_smul]
 
 theorem apply_eval_eq (x : A) (p : A[X]) :
-    d (eval x p) = PolynomialModule.eval x (d.coeffwise p) + eval x (derivative p) • d x := by
-  rw [← coe_aeval_eq_eval]
-  apply apply_aeval_eq
+    d (eval x p) = PolynomialModule.eval x (d.coeffwise p) + eval x (derivative p) • d x :=
+  apply_aeval_eq d x p
 
 end coeffwise
 
