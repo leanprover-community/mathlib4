@@ -221,15 +221,6 @@ lemma coeffwise_X :
 lemma coeffwise_C (x : A) :
     d.coeffwise (C x) = .single A 0 (d x) := by simp [← monomial_zero_left]
 
-theorem apply_eval_eq (x : A) (p : A[X]) :
-    d (eval x p) = PolynomialModule.eval x (d.coeffwise p) + eval x (derivative p) • d x := by
-  induction p using Polynomial.induction_on' with
-  | h_add => simp_all only [eval_add, map_add, add_smul]; abel
-  | h_monomial =>
-    simp only [eval_monomial, leibniz, leibniz_pow, coeffwise_monomial, PolynomialModule.eval_single,
-      derivative_monomial]
-    rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast]
-
 variable {K : Type*} [CommRing K] [Algebra A K] [Algebra R K] [IsScalarTower R A K]
     [Module K M] [IsScalarTower A K M]
 
@@ -243,6 +234,11 @@ theorem apply_aeval_eq (d : Derivation R K M) (x : K) (p : A[X]) :
       compAlgebraMap_apply, derivative_monomial, map_mul, _root_.map_natCast]
     erw [PolynomialModule.eval_single]
     rw [add_comm, ← smul_smul, ← smul_smul, ← nsmul_eq_smul_cast, algebraMap_smul]
+
+theorem apply_eval_eq (x : A) (p : A[X]) :
+    d (eval x p) = PolynomialModule.eval x (d.coeffwise p) + eval x (derivative p) • d x := by
+  rw [← coe_aeval_eq_eval]
+  apply apply_aeval_eq
 
 end coeffwise
 
