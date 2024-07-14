@@ -1051,6 +1051,10 @@ theorem lintegral_zero [MeasurableSpace α] (f : α →ₛ ℝ≥0∞) : f.linte
   (lintegralₗ f).map_zero
 #align measure_theory.simple_func.lintegral_zero MeasureTheory.SimpleFunc.lintegral_zero
 
+theorem lintegral_finset_sum {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) (s : Finset ι) :
+    f.lintegral (∑ i ∈ s, μ i) = ∑ i ∈ s, f.lintegral (μ i) :=
+  map_sum (lintegralₗ f) ..
+
 theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) :
     f.lintegral (Measure.sum μ) = ∑' i, f.lintegral (μ i) := by
   simp only [lintegral, Measure.sum_apply, f.measurableSet_preimage, ← Finset.tsum_subtype, ←
@@ -1100,28 +1104,29 @@ theorem restrict_const_lintegral (c : ℝ≥0∞) {s : Set α} (hs : MeasurableS
   rw [restrict_lintegral_eq_lintegral_restrict _ hs, const_lintegral_restrict]
 #align measure_theory.simple_func.restrict_const_lintegral MeasureTheory.SimpleFunc.restrict_const_lintegral
 
+@[gcongr]
+theorem lintegral_mono_fun {f g : α →ₛ ℝ≥0∞} (h : f ≤ g) : f.lintegral μ ≤ g.lintegral μ := by
+  refine Monotone.of_left_le_map_sup (f := (lintegral · μ)) (fun f g ↦ ?_) h
+  change ((pair f g).map Prod.fst).lintegral μ ≤ ((pair f g).map fun p ↦ p.1 ⊔ p.2).lintegral μ
+  simp only [map_lintegral]
+  gcongr
+  exact le_sup_left
+
 theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lintegral μ ≤ (f ⊔ g).lintegral μ :=
-  calc
-    f.lintegral μ ⊔ g.lintegral μ =
-        ((pair f g).map Prod.fst).lintegral μ ⊔ ((pair f g).map Prod.snd).lintegral μ :=
-      rfl
-    _ ≤ ∑ x ∈ (pair f g).range, (x.1 ⊔ x.2) * μ (pair f g ⁻¹' {x}) := by
-      rw [map_lintegral, map_lintegral]
-      refine sup_le ?_ ?_ <;> refine Finset.sum_le_sum fun a _ => mul_le_mul_right' ?_ _
-      · exact le_sup_left
-      · exact le_sup_right
-    _ = (f ⊔ g).lintegral μ := by rw [sup_eq_map₂, map_lintegral]
+  Monotone.le_map_sup (fun _ _ ↦ lintegral_mono_fun) f g
 #align measure_theory.simple_func.le_sup_lintegral MeasureTheory.SimpleFunc.le_sup_lintegral
 
+@[gcongr]
+theorem lintegral_mono_measure {f : α →ₛ ℝ≥0∞} (h : μ ≤ ν) : f.lintegral μ ≤ f.lintegral ν := by
+  simp only [lintegral]
+  gcongr
+  apply h
+
 /-- `SimpleFunc.lintegral` is monotone both in function and in measure. -/
-@[mono]
+@[mono, gcongr]
 theorem lintegral_mono {f g : α →ₛ ℝ≥0∞} (hfg : f ≤ g) (hμν : μ ≤ ν) :
     f.lintegral μ ≤ g.lintegral ν :=
-  calc
-    f.lintegral μ ≤ f.lintegral μ ⊔ g.lintegral μ := le_sup_left
-    _ ≤ (f ⊔ g).lintegral μ := le_sup_lintegral _ _
-    _ = g.lintegral μ := by rw [sup_of_le_right hfg]
-    _ ≤ g.lintegral ν := Finset.sum_le_sum fun y _ => ENNReal.mul_left_mono <| hμν _
+  (lintegral_mono_fun hfg).trans (lintegral_mono_measure hμν)
 #align measure_theory.simple_func.lintegral_mono MeasureTheory.SimpleFunc.lintegral_mono
 
 /-- `SimpleFunc.lintegral` depends only on the measures of `f ⁻¹' {y}`. -/
