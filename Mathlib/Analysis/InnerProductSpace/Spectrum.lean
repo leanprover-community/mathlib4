@@ -526,7 +526,15 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     apply h
     rw [← HH]
     intro a w hw
-    sorry
+    simp only [iInf, sInf, Submodule.mem_map, Subtype.exists, Set.mem_range, Set.iInter_exists,
+      Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
+      SetLike.mem_coe] at hw
+    obtain ⟨a, ⟨ha, hb⟩⟩ := hw
+    have A := hb.1
+    have B := hb.2
+    simp only at B
+    rw [←B]
+    exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
   · sorry
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
