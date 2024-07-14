@@ -532,13 +532,16 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     obtain ⟨a, ⟨ha, hb⟩⟩ := hw
     rw [← hb.2]
     exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
-  · intro h
-    simp only [Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_iInter,
-      SetLike.mem_coe]
-    intro K hK
+  · have B := inf_restrict'' T hT hC i γ
+    simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
+      AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
+    intro h F H
     simp only [iInf, sInf] at *
+    simp only [ne_eq, iSup, Set.range] at B
+    rw [sSup] at B
     sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
-         --result...
+         --result...probably need to rewrite the approach.
+         --the whole result may need revisiting...
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓
@@ -556,7 +559,7 @@ theorem index_post_exhaust (i : n) [Nontrivial n] :
    lhs
    rhs
    ext γ
-   rw [prelim_sub_exhaust T hC]
+   rw [prelim_sub_exhaust T hT hC]
 
 @[simp]
 theorem ultra_silly_lemma (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
