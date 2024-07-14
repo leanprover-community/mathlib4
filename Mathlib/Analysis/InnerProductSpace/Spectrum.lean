@@ -489,9 +489,6 @@ theorem invariance_iInf'' [Nonempty n] (i : n) :
   simp only [Submodule.mem_iInf] at *
   exact fun i_1 ↦ eigenspace_invariant (hC i_1 i) (γ i_1) v (hv i_1)
 
-/-COMMENT: This is where the *reasoning* from Samyak's proof is going to appear, maybe needing
-  some lemmas. -/
-
 theorem inf_restrict' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
     (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
     ((invariance_iInf' T hC i γ))) μ)ᗮ = ⊥ := by
@@ -542,7 +539,7 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
       simp only [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply] at *
       simp only [ne_eq, Submodule.mem_map, mem_ker, sub_apply, Module.algebraMap_end_apply,
         Subtype.exists, SetLike.mk_smul_mk, Submodule.mem_iInf, Subtype.forall] at h
-      obtain ⟨w, hw, A, B⟩ := h
+      obtain ⟨w, hw, _, B⟩ := h
       rw [← B]
       exact hw j hj
 
@@ -573,8 +570,10 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
       AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
     intro h F H
     simp only [iInf, sInf] at *
-    simp only [ne_eq, iSup, Set.range] at B
-    rw [sSup] at B
+    simp only [ne_eq, iSup, Set.range, Set.mem_setOf_eq] at B
+    simp only [Submodule.map] at H --maybe `matching` version is needed.
+
+    --have C : ↑v ∈ sSup {x | ∃ y, eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) y = x} := by sorry
     sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
          --result...probably need to rewrite the approach.
          --the whole result may need revisiting...
