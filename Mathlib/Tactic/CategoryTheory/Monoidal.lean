@@ -233,7 +233,7 @@ def src (η : Expr) : MetaM Mor₁ := do
   | _ => throwError "{η} is not a morphism"
 
 /-- The codomain of a morphism. -/
-def tar (η : Expr) : MetaM Mor₁ := do
+def tgt (η : Expr) : MetaM Mor₁ := do
   match (← inferType η).getAppFnArgs with
   | (``Quiver.Hom, #[_, _, _, g]) => toMor₁ g
   | _ => throwError "{η} is not a morphism"
@@ -242,7 +242,7 @@ def tar (η : Expr) : MetaM Mor₁ := do
 def Atom.src (η : Atom) : MetaM Mor₁ := do Monoidal.src η.e
 
 /-- The codomain of a 2-morphism. -/
-def Atom.tar (η : Atom) : MetaM Mor₁ := do Monoidal.tar η.e
+def Atom.tgt (η : Atom) : MetaM Mor₁ := do Monoidal.tgt η.e
 
 /-- The domain of a 2-morphism. -/
 def WhiskerRightExpr.src : WhiskerRightExpr → MetaM Mor₁
@@ -250,9 +250,9 @@ def WhiskerRightExpr.src : WhiskerRightExpr → MetaM Mor₁
   | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.src η).comp (Mor₁.of f)
 
 /-- The codomain of a 2-morphism. -/
-def WhiskerRightExpr.tar : WhiskerRightExpr → MetaM Mor₁
-  | WhiskerRightExpr.of η => η.tar
-  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tar η).comp (Mor₁.of f)
+def WhiskerRightExpr.tgt : WhiskerRightExpr → MetaM Mor₁
+  | WhiskerRightExpr.of η => η.tgt
+  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tgt η).comp (Mor₁.of f)
 
 /-- The domain of a 2-morphism. -/
 def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
@@ -260,9 +260,9 @@ def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
   | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.src η)
 
 /-- The codomain of a 2-morphism. -/
-def WhiskerLeftExpr.tar : WhiskerLeftExpr → MetaM Mor₁
-  | WhiskerLeftExpr.of η => WhiskerRightExpr.tar η
-  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tar η)
+def WhiskerLeftExpr.tgt : WhiskerLeftExpr → MetaM Mor₁
+  | WhiskerLeftExpr.of η => WhiskerRightExpr.tgt η
+  | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tgt η)
 
 /-- The domain of a 2-morphism. -/
 def StructuralAtom.src : StructuralAtom → Mor₁
@@ -274,7 +274,7 @@ def StructuralAtom.src : StructuralAtom → Mor₁
   | .rightUnitorInv f => f
 
 /-- The codomain of a 2-morphism. -/
-def StructuralAtom.tar : StructuralAtom → Mor₁
+def StructuralAtom.tgt : StructuralAtom → Mor₁
   | .associator f g h => f.comp (g.comp h)
   | .associatorInv f g h => (f.comp g).comp h
   | .leftUnitor f => f
@@ -292,12 +292,12 @@ def Structural.src : Structural → Mor₁
   | .monoidalCoherence f _ _ => f
 
 /-- The codomain of a 2-morphism. -/
-def Structural.tar : Structural → Mor₁
-  | .atom η => η.tar
+def Structural.tgt : Structural → Mor₁
+  | .atom η => η.tgt
   | .id f => f
-  | .comp _ β => β.tar
-  | .whiskerLeft f η => f.comp η.tar
-  | .whiskerRight η f => η.tar.comp f
+  | .comp _ β => β.tgt
+  | .whiskerLeft f η => f.comp η.tgt
+  | .whiskerRight η f => η.tgt.comp f
   | .monoidalCoherence _ g _ => g
 
 /-- The domain of a 2-morphism. -/
@@ -306,9 +306,9 @@ def NormalExpr.src : NormalExpr → Mor₁
   | NormalExpr.cons α _ _ => α.src
 
 /-- The codomain of a 2-morphism. -/
-def NormalExpr.tar : NormalExpr → Mor₁
-  | NormalExpr.nil η => η.tar
-  | NormalExpr.cons _ _ ηs => ηs.tar
+def NormalExpr.tgt : NormalExpr → Mor₁
+  | NormalExpr.nil η => η.tgt
+  | NormalExpr.cons _ _ ηs => ηs.tgt
 
 /-- The associator as a term of `normalExpr`. -/
 def NormalExpr.associator (f g h : Mor₁) : NormalExpr :=
@@ -362,7 +362,7 @@ partial def structural? (e : Expr) : MetaM Structural := do
 
 /-- Construct a `NormalExpr` expression from a `WhiskerLeftExpr` expression. -/
 def NormalExpr.of (η : WhiskerLeftExpr) : MetaM NormalExpr := do
-  return .cons (.id (← η.src)) η (.nil (.id (← η.tar)))
+  return .cons (.id (← η.src)) η (.nil (.id (← η.tgt)))
 
 /-- Construct a `NormalExpr` expression from a Lean expression for an atomic 2-morphism. -/
 def NormalExpr.ofExpr (η : Expr) : MetaM NormalExpr :=
@@ -592,14 +592,14 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MonoidalM Result
     let ⟨θ, pf_θ⟩ ← evalWhiskerLeftExpr g η
     let ⟨ι, pf_ι⟩ ← evalWhiskerLeftExpr f θ
     let h := η.src
-    let h' := η.tar
+    let h' := η.tgt
     let ⟨ι', pf_ι'⟩ ← evalComp ι (NormalExpr.associatorInv f g h')
     let ⟨ι'', pf_ι''⟩ ← evalComp (NormalExpr.associator f g h) ι'
     try return ⟨ι'', ← mkAppM ``evalWhiskerLeft_comp #[pf_θ, pf_ι, pf_ι', pf_ι'']⟩
     catch _ => return ⟨ι'', mkConst ``True⟩
   | .id, η => do
     let f := η.src
-    let g := η.tar
+    let g := η.tgt
     let ⟨η', pf_η'⟩ ← evalComp η (NormalExpr.leftUnitorInv g)
     let ⟨η'', pf_η''⟩ ← evalComp (NormalExpr.leftUnitor f) η'
     try return ⟨η'', ← mkAppM ``evalWhiskerLeft_id #[pf_η', pf_η'']⟩
@@ -617,7 +617,7 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
     catch _ => return ⟨η', mkConst ``True⟩
   | .cons α (.whisker f η) ηs, h => do
     let g ← η.src
-    let g' ← η.tar
+    let g' ← η.tgt
     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr (.cons (.id g) η (.nil (.id g'))) h
     let ⟨η₂, pf_η₂⟩ ← evalWhiskerLeftExpr (.of f) η₁
     let ⟨ηs₁, pf_ηs₁⟩ ← evalWhiskerRightExpr ηs h
@@ -634,14 +634,14 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MonoidalM Result
     let ⟨η₁, pf_η₁⟩ ← evalWhiskerRightExpr η g
     let ⟨η₂, pf_η₂⟩ ← evalWhiskerRightExpr η₁ h
     let f := η.src
-    let f' := η.tar
+    let f' := η.tgt
     let ⟨η₃, pf_η₃⟩ ← evalComp η₂ (.associator f' g h)
     let ⟨η₄, pf_η₄⟩ ← evalComp (.associatorInv f g h) η₃
     try return ⟨η₄, ← mkAppM ``evalWhiskerRight_comp #[pf_η₁, pf_η₂, pf_η₃, pf_η₄]⟩
     catch _ => return ⟨η₄, mkConst ``True⟩
   | η, .id => do
     let f := η.src
-    let g := η.tar
+    let g := η.tgt
     let ⟨η₁, pf_η₁⟩ ← evalComp η (.rightUnitorInv g)
     let ⟨η₂, pf_η₂⟩ ← evalComp (.rightUnitor f) η₁
     try return ⟨η₂, ← mkAppM ``evalWhiskerRight_id #[pf_η₁, pf_η₂]⟩
