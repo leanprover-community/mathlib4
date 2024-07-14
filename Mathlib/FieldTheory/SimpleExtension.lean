@@ -84,7 +84,8 @@ lemma gen_transcendental [t : Algebra.Transcendental F K] : Transcendental F se.
   have := (finiteDimensional_iff_isAlgebraic_gen F K).mpr h
   Algebra.transcendental_iff_not_isAlgebraic.mp t inferInstance
 
-instance (priority := 100) toIsFractionRing [Algebra.Transcendental F K] : IsFractionRing F[X] K where
+instance (priority := 100) toIsFractionRing [Algebra.Transcendental F K] :
+    IsFractionRing F[X] K where
   map_units' := by
     simp only [isUnit_iff_ne_zero, ne_eq, Subtype.forall]
     intro a ha
