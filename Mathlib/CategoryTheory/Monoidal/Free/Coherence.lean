@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
-import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.DiscreteCategory
 
 #align_import category_theory.monoidal.free.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
