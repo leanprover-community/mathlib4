@@ -152,10 +152,10 @@ def disjointGlueData' : GlueData' Scheme where
   V _ _ _ := ∅
   f _ _ _ := Scheme.emptyTo _
   t _ _ _ := 𝟙 _
-  t' _ _ _ _ _ _ := Limits.pullback.fst ≫ Scheme.emptyTo _
+  t' _ _ _ _ _ _ := Limits.pullback.fst _ _ ≫ Scheme.emptyTo _
   t_fac _ _ _ _ _ _ := emptyIsInitial.strict_hom_ext _ _
   t_inv _ _ _ := Category.comp_id _
-  cocycle _ _ _ _ _ _ := (emptyIsInitial.ofStrict pullback.fst).hom_ext _ _
+  cocycle _ _ _ _ _ _ := (emptyIsInitial.ofStrict (pullback.fst _ _)).hom_ext _ _
   f_mono _ _ := by dsimp only; infer_instance
 
 /-- (Implementation Detail) The glue data associated to a disjoint union. -/
