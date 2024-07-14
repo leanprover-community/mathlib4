@@ -757,7 +757,7 @@ protected lemma one_mul : ∀ (x : PGame), 1 * x ≡ x
         (PGame.zero_mul _)).trans (PGame.sub_zero _)
 
 /-- `x * 1` has the same moves as `x`. -/
-lemma mul_one (x : PGame) : x * 1 ≡ x := (x.mul_comm _).trans x.one_mul
+protected lemma mul_one (x : PGame) : x * 1 ≡ x := (x.mul_comm _).trans x.one_mul
 
 @[simp]
 theorem quot_mul_one (x : PGame) : (⟦x * 1⟧ : Game) = ⟦x⟧ :=
