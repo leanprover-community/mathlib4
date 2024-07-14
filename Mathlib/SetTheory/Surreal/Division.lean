@@ -95,7 +95,7 @@ def normalization (x : PGame) : PGame :=
 lemma num_of_normalization_num : (normalization x).Numeric := by
   rcases x with ⟨xl, xr, xL, xR⟩
   simp only [normalization]
-  apply numeric_of_insertLeft_numeric
+  apply insertLeft_numeric
   · rw [numeric_def] at x_num ⊢
     simp only [leftMoves_mk, rightMoves_mk, moveLeft_mk, moveRight_mk, Subtype.forall] at x_num ⊢
     simp only [x_num, implies_true, and_self]
@@ -268,7 +268,7 @@ lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
     ring_nf
     rw [sub_eq_add_neg, add_assoc, add_left_cancel_iff]
     simp only [inv', moveLeft_mk, invVal, moveRight_mk]
-    rw [← mul_def, ← add_def, ← mul_def, ← sub_def]
+    rw [← mul_def, mk_add, ← mul_def, mk_sub]
     any_goals
       tauto
     on_goal 2 =>
@@ -319,7 +319,7 @@ lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
     intro i
     exact inv_pos_of_pos (inv_l i) i.2
   induction i' <;> simp only
-  · simp [invVal]
+  · simp [invVal, ← zero_def]
   · case _ j i1 ih =>
       have := eq1 L R h1 h2 h3 h4 h5 x_pos inv_l inv_r (InvTy.left₁ j i1)
       simp only [inv', moveLeft_mk, components] at this
@@ -395,7 +395,7 @@ lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
   cases i'' <;> simp only [components]
   all_goals
     simp only [invVal]
-    rw [← mul_def, ← add_def, ← mul_def, ← sub_def]
+    rw [← mul_def, mk_add, ← mul_def, mk_sub]
   any_goals
     tauto
   any_goals
@@ -511,7 +511,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
       apply mul_neg_of_pos_of_neg
       · exact i.2
       · apply sub_neg.mpr
-        have := Surreal.lt_moveRight' inv_numeric (InvTy.right₁ i j)
+        have := Surreal.mk_lt_mk_moveRight inv_numeric (InvTy.right₁ i j)
         conv_rhs at this => {
           simp [inv']
         }
@@ -530,7 +530,7 @@ lemma onag_1_10_iii_left' {l r} (L : l → PGame) (R : r → PGame)
       apply mul_neg_of_pos_of_neg
       · exact right_pos_of_pos h5 x_pos i
       · apply sub_neg.mpr
-        have := Surreal.lt_moveRight' inv_numeric (InvTy.right₂ i j)
+        have := Surreal.mk_lt_mk_moveRight inv_numeric (InvTy.right₂ i j)
         conv_rhs at this => {
           simp [inv']
         }
@@ -576,7 +576,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
       apply Left.mul_pos
       · exact i.2
       · apply sub_pos.mpr
-        have := Surreal.moveLeft_lt' inv_numeric (InvTy.left₂ i j)
+        have := Surreal.mk_moveLeft_lt_mk inv_numeric (InvTy.left₂ i j)
         conv_rhs at this => {
           simp [inv']
         }
@@ -595,7 +595,7 @@ lemma onag_1_10_iii_right' {l r} (L : l → PGame) (R : r → PGame)
       apply Left.mul_pos
       · exact right_pos_of_pos h5 x_pos i
       · apply sub_pos.mpr
-        have := Surreal.moveLeft_lt' inv_numeric (InvTy.left₁ i j)
+        have := Surreal.mk_moveLeft_lt_mk inv_numeric (InvTy.left₁ i j)
         conv_rhs at this => {
           simp [inv']
         }
@@ -684,14 +684,14 @@ lemma onag_1_10 :
               lhs
               rw [pos_num_eq_normalization x_num x_pos]
             }
-            simp only [mul_def, add_def, sub_def] at this
+            simp only [mul_def, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveLeft_inl]
             simp only [inv', ← one_def, mk_lt_mk] at this
             exact this
           · cases val
             simp only [normalization, insertLeft, inv', mk_mul_moveLeft_inl]
             rw [Game.PGame.lt_iff_game_lt]
-            simp only [quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
+            simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
             have := onag_1_10_i.1
             rw [x_rfl] at this
             specialize this j
@@ -725,7 +725,7 @@ lemma onag_1_10 :
               lhs
               rw [pos_num_eq_normalization x_num x_pos]
             }
-            simp only [mul_def, add_def, sub_def] at this
+            simp only [mul_def, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveLeft_inr]
             simp only [inv', ← one_def, mk_lt_mk] at this
             exact this
@@ -747,14 +747,14 @@ lemma onag_1_10 :
               lhs
               rw [pos_num_eq_normalization x_num x_pos]
             }
-            simp only [mul_def, add_def, sub_def] at this
+            simp only [mul_def, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveRight_inl]
             simp only [← one_def, inv', mk_lt_mk] at this
             exact this
           · cases val
             simp only [normalization, insertLeft, inv', mk_mul_moveRight_inl]
             rw [Game.PGame.lt_iff_game_lt]
-            simp only [quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
+            simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
             have := onag_1_10_i.2
             rw [x_rfl] at this
             specialize this j
@@ -788,7 +788,7 @@ lemma onag_1_10 :
               lhs
               rw [pos_num_eq_normalization x_num x_pos]
             }
-            simp only [mul_def, add_def, sub_def] at this
+            simp only [mul_def, ← mk_add, ← mk_sub] at this
             simp only [inv', mk_mul_moveRight_inr]
             simp only [← one_def, inv', mk_lt_mk] at this
             exact this

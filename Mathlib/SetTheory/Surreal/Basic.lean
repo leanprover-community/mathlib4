@@ -201,19 +201,6 @@ theorem numeric_of_isEmpty_rightMoves (x : PGame) [IsEmpty x.RightMoves]
   Numeric.mk (fun _ => isEmptyElim) H isEmptyElim
 #align pgame.numeric_of_is_empty_right_moves SetTheory.PGame.numeric_of_isEmpty_rightMoves
 
-/-- Inserting a smaller numeric left option into a numeric results in a numeric. -/
-theorem numeric_of_insertLeft_numeric (x : PGame) (x_num : x.Numeric)
-    (x' : PGame) (x'_num : x'.Numeric) (h : x' ≤ x) : (insertLeft x x').Numeric := by
-  rw [le_iff_forall_lt x'_num x_num] at h
-  unfold Numeric at x_num ⊢
-  rcases x with ⟨xl, xr, xL, xR⟩
-  simp only [insertLeft, Sum.forall, forall_const] at x_num ⊢
-  constructor
-  · simp only [x_num.1, implies_true, true_and]
-    simp only [rightMoves_mk, moveRight_mk] at h
-    exact h.2
-  · simp only [x_num, implies_true, x'_num, and_self]
-
 theorem numeric_zero : Numeric 0 :=
   numeric_of_isEmpty 0
 #align pgame.numeric_zero SetTheory.PGame.numeric_zero
