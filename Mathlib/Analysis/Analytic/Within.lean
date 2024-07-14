@@ -7,10 +7,9 @@ import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
-# Analyticity restricted to a set
+# Properties of analyticity restricted to a set
 
-We define analyticity restricted to a set, meaning that there is a power series which converges
-to the function at that set:
+From `Mathlib.Analysis.Analytic.Basic`, we have the definitons
 
 1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s] x`, and
     `f` is continuous within `s` at `x`.
@@ -20,6 +19,9 @@ This means there exists an extension of `f` which is analytic and agrees with `f
 `f` is allowed to be arbitrary elsewhere.  Requiring `ContinuousWithinAt` is essential if `x ∉ s`:
 it is required for composition and smoothness to follow without extra hypotheses (we could
 alternately require convergence at `x` even if `x ∉ s`).
+
+Here we prove basic properties of these definitions. Where convenient we assume completeness of the
+ambient space, which allows us to related `AnalyticWithinAt` to analyticity of a local extension.
 -/
 
 noncomputable section
@@ -35,42 +37,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
-
-/-!
-### Definitions of analyticity restricted to a set
--/
-
-section defs
-
-/-- Analogue of `HasFPowerSeriesOnBall` where convergence is required only on a set `s`. -/
-structure HasFPowerSeriesWithinOnBall (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (s : Set E)
-    (x : E) (r : ℝ≥0∞) : Prop where
-  /-- `p` converges on `ball 0 r` -/
-  r_le : r ≤ p.radius
-  /-- The radius of convergence is positive -/
-  r_pos : 0 < r
-  /-- `p converges to f` within `s` -/
-  hasSum : ∀ {y}, x + y ∈ s → y ∈ EMetric.ball (0 : E) r →
-    HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y))
-  /-- We require `ContinuousWithinAt f s x` to ensure `f x` is nice -/
-  continuousWithinAt : ContinuousWithinAt f s x
-
-/-- Analogue of `HasFPowerSeriesAt` where convergence is required only on a set `s`. -/
-def HasFPowerSeriesWithinAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (s : Set E) (x : E) :=
-  ∃ r, HasFPowerSeriesWithinOnBall f p s x r
-
-variable (𝕜)
-
-/-- `f` is analytic within `s` at `x` if it has a power series at `x` that converges on `𝓝[s] x` -/
-def AnalyticWithinAt (f : E → F) (s : Set E) (x : E) : Prop :=
-  ∃ p : FormalMultilinearSeries 𝕜 E F, HasFPowerSeriesWithinAt f p s x
-
-/-- `f` is analytic within `s` if it is analytic within `s` at each point of `t`.  Note that
-this is weaker than `AnalyticOn 𝕜 f s`, as `f` is allowed to be arbitrary outside `s`. -/
-def AnalyticWithinOn (f : E → F) (s : Set E) : Prop :=
-  ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
-
-end defs
 
 /-!
 ### Basic properties
