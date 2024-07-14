@@ -57,7 +57,6 @@ supremum helps define the meaning of recursive procedures.
 assert_not_exists OrderedCommMonoid
 
 universe u v
-variable {ι : Sort*} {α β γ δ : Type*}
 
 open scoped Classical
 
