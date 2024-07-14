@@ -771,7 +771,6 @@ theorem dlookup_kunion_right {a} {l₁ l₂ : List (Sigma β)} (h : a ∉ l₁.k
   | cons _ _ ih => simp_all [not_or]
 #align list.lookup_kunion_right List.dlookup_kunion_right
 
--- Porting note: removing simp, LHS not in normal form, added new version
 theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     b ∈ dlookup a (kunion l₁ l₂) ↔ b ∈ dlookup a l₁ ∨ a ∉ l₁.keys ∧ b ∈ dlookup a l₂ := by
   induction l₁ generalizing l₂ with
@@ -787,7 +786,6 @@ theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
       simp [h₁, h₂]
 #align list.mem_lookup_kunion List.mem_dlookup_kunion
 
--- Porting note (#10756): new theorem, alternative version of `mem_dlookup_kunion` for simp
 @[simp]
 theorem dlookup_kunion_eq_some {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     dlookup a (kunion l₁ l₂) = some b ↔

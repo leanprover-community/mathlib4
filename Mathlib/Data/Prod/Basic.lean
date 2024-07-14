@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Function
-import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Inhabit
 
 #align_import data.prod.basic from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
@@ -18,8 +18,6 @@ It also defines better delaborators for product projections.
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
-@[simp]
-theorem Prod.map_apply (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) := rfl
 #align prod_map Prod.map_apply
 
 @[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
@@ -63,20 +61,25 @@ theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b
   rfl
 #align prod.map_mk Prod.map_mk
 
-theorem map_fst (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).1 = f p.1 :=
+-- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.
+--  See `map_apply`, `map_fst`, and `map_snd` for slightly weaker lemmas in the `simp` set.
+theorem map_apply' (f : α → γ) (g : β → δ) (p : α × β) : map f g p = (f p.1, g p.2) :=
   rfl
-#align prod.map_fst Prod.map_fst
 
-theorem map_snd (f : α → γ) (g : β → δ) (p : α × β) : (map f g p).2 = g p.2 :=
-  rfl
+#align prod.map_fst Prod.map_fst
 #align prod.map_snd Prod.map_snd
 
+#adaptation_note
+/--
+After `nightly-2024-06-23`, the explicitness of `map_fst` and `map_snd` will be fixed and we can
+change this back to `funext <| map_fst f g`. Also in `map_snd'` below.
+-/
 theorem map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ Prod.fst :=
-  funext <| map_fst f g
+  funext <| @map_fst (f := f) (g := g)
 #align prod.map_fst' Prod.map_fst'
 
 theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
-  funext <| map_snd f g
+  funext <| @map_snd (f := f) (g := g)
 #align prod.map_snd' Prod.map_snd'
 
 /-- Composing a `Prod.map` with another `Prod.map` is equal to
@@ -95,7 +98,6 @@ theorem map_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε)
   rfl
 #align prod.map_map Prod.map_map
 
--- Porting note: mathlib3 proof uses `by cc` for the mpr direction
 -- Porting note: `@[simp]` tag removed because auto-generated `mk.injEq` simplifies LHS
 -- @[simp]
 theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=
@@ -133,10 +135,17 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
 #align prod.id_prod Prod.id_prod
 
-@[simp]
-theorem map_id : Prod.map (@id α) (@id β) = id :=
-  id_prod
+@[simp] lemma map_id : Prod.map (@id α) (@id β) = id := rfl
 #align prod.map_id Prod.map_id
+
+@[simp] lemma map_id' : Prod.map (fun a : α ↦ a) (fun b : β ↦ b) = fun x ↦ x := rfl
+
+@[simp]
+theorem map_iterate (f : α → α) (g : β → β) (n : ℕ) :
+    (Prod.map f g)^[n] = Prod.map f^[n] g^[n] := by induction n <;> simp [*, Prod.map_comp_map]
+#align function.iterate_prod_map Prod.map_iterate
+
+@[deprecated (since := "2024-07-03")] alias iterate_prod_map := Prod.map_iterate
 
 theorem fst_surjective [h : Nonempty β] : Function.Surjective (@fst α β) :=
   fun x ↦ h.elim fun y ↦ ⟨⟨x, y⟩, rfl⟩
@@ -209,6 +218,11 @@ theorem swap_bijective : Function.Bijective (@swap α β) :=
 theorem swap_inj {p q : α × β} : swap p = swap q ↔ p = q :=
   swap_injective.eq_iff
 #align prod.swap_inj Prod.swap_inj
+
+/--For two functions `f` and `g`, the composition of `Prod.map f g` with `Prod.swap`
+is equal to the composition of `Prod.swap` with `Prod.map g f`.-/
+theorem map_comp_swap (f : α → β) (g : γ → δ) :
+    Prod.map f g ∘ Prod.swap = Prod.swap ∘ Prod.map g f := rfl
 
 theorem eq_iff_fst_eq_snd_eq : ∀ {p q : α × β}, p = q ↔ p.1 = q.1 ∧ p.2 = q.2
   | ⟨p₁, p₂⟩, ⟨q₁, q₂⟩ => by simp

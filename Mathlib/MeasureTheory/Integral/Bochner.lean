@@ -124,7 +124,7 @@ Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notations
 
-* `α →ₛ E`  : simple functions (defined in `MeasureTheory/Integration`)
+* `α →ₛ E` : simple functions (defined in `MeasureTheory/Integration`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
                 `MeasureTheory/LpSpace`)
 * `α →₁ₛ[μ] E` : simple functions in L1 space, i.e., equivalence classes of integrable simple
@@ -662,8 +662,8 @@ def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
 
 -- Porting note: added `(E := E)` in several places below.
 /-- The Bochner integral in L1 space -/
-irreducible_def integral (f : α →₁[μ] E) : E :=
-  integralCLM (E := E) f
+irreducible_def integral : (α →₁[μ] E) → E :=
+  integralCLM (E := E)
 #align measure_theory.L1.integral MeasureTheory.L1.integral
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM (E := E) f := by
@@ -991,7 +991,7 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
   simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
     ENNReal.coe_zero]
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_set_lintegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
+    (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
     fun i => ennnorm_integral_le_lintegral_ennnorm _
 #align measure_theory.has_finite_integral.tendsto_set_integral_nhds_zero MeasureTheory.HasFiniteIntegral.tendsto_setIntegral_nhds_zero
 
