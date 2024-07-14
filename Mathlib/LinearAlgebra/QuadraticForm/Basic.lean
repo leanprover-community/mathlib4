@@ -99,6 +99,11 @@ def polar (f : M → N) (x y : M) :=
   f (x + y) - f x - f y
 #align quadratic_form.polar QuadraticMap.polar
 
+protected theorem map_add (f : M → N) (x y : M) :
+    f (x + y) = f x + f y + polar f x y := by
+  rw [polar]
+  abel
+
 theorem polar_add (f g : M → N) (x y : M) : polar (f + g) x y = polar f x y + polar g x y := by
   simp only [polar, Pi.add_apply]
   abel
@@ -374,10 +379,6 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
     rw [polarBilin_apply_apply, polar, Q.exists_companion.choose_spec, sub_sub,
       add_sub_cancel_left]
 #align quadratic_form.some_exists_companion QuadraticMap.choose_exists_companion
-
-protected theorem map_add (Q : QuadraticMap R M N) (x y : M):
-    Q (x + y) = Q x + Q y + polar Q x y := by
-  simp [polar]
 
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i) +
