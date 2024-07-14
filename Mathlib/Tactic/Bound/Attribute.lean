@@ -27,7 +27,7 @@ variable {u : Lean.Level} {α : Q(Type u)}
 /-- Check if an expression is zero -/
 def isZero (e : Q($α)) : MetaM Bool :=
   match e with
-  | ~q(@OfNat.ofNat.{u} _ 0 $i) => return true
+  | ~q(@OfNat.ofNat.{u} _ (nat_lit 0) $i) => return true
   | _ => return false
 
 /-- Map the arguments of an inequality expression to a score -/
