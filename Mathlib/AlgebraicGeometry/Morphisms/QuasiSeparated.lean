@@ -49,12 +49,6 @@ class QuasiSeparated (f : X ⟶ Y) : Prop where
   diagonalQuasiCompact : QuasiCompact (pullback.diagonal f) := by infer_instance
 #align algebraic_geometry.quasi_separated AlgebraicGeometry.QuasiSeparated
 
--- /-- The `AffineTargetMorphismProperty` corresponding to `QuasiSeparated`, asserting that the
--- domain is a quasi-separated scheme. -/
--- def QuasiSeparated.affineProperty : AffineTargetMorphismProperty := fun X _ _ _ =>
---   QuasiSeparatedSpace X
--- #align algebraic_geometry.quasi_separated.affine_property AlgebraicGeometry.QuasiSeparated.affineProperty
-
 theorem quasiSeparatedSpace_iff_affine (X : Scheme) :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
   rw [quasiSeparatedSpace_iff]
