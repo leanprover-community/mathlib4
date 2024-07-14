@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Embedding.Boundary
 import Mathlib.Algebra.Homology.Embedding.Extend
-import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # The canonical truncation
