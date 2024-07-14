@@ -444,7 +444,7 @@ theorem isLocal_sourceAffineLocally : (sourceAffineLocally @P).IsLocal :=
     (@RingHom.PropertyIsLocal.ofLocalizationSpan _ hP)
 #align ring_hom.property_is_local.is_local_source_affine_locally RingHom.PropertyIsLocal.isLocal_sourceAffineLocally
 
-abbrev hasAffinePropertyAffineLocally :
+theorem hasAffinePropertyAffineLocally :
     HasAffineProperty (affineLocally @P) (sourceAffineLocally @P) where
   isLocal_affineProperty := hP.isLocal_sourceAffineLocally
   eq_targetAffineLocally' := rfl

@@ -356,7 +356,7 @@ def OpenCover.pullbackCoverAffineRefinementObj (f : X ⟶ Y) (𝒰 : Y.OpenCover
   · simp [pullbackHom]
   · simp
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma OpenCover.pullbackCoverAffineRefinementObj_inv_map (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
     (𝒰.pullbackCoverAffineRefinementObj f i).inv ≫
       (𝒰.affineRefinement.openCover.pullbackCover f).map i =
@@ -370,7 +370,7 @@ lemma OpenCover.pullbackCoverAffineRefinementObj_inv_map (f : X ⟶ Y) (𝒰 : Y
     ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _) _ using 2
   exact pullbackRightPullbackFstIso_hom_snd _ _ _
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma OpenCover.pullbackCoverAffineRefinementObj_inv_pullbackHom
     (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
     (𝒰.pullbackCoverAffineRefinementObj f i).inv ≫
