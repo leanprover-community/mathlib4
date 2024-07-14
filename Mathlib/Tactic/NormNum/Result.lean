@@ -218,7 +218,8 @@ theorem IsRat.to_isInt {α} [Ring α] : ∀ {a : α} {n}, IsRat a n (nat_lit 1) 
 theorem IsInt.to_isRat {α} [Ring α] : ∀ {a : α} {n}, IsInt a n → IsRat a n (nat_lit 1)
   | _, _, ⟨rfl⟩ => ⟨⟨1, by simp, by simp⟩, by simp⟩
 
-theorem IsRat.to_raw_eq {n : ℤ} {d : ℕ} [DivisionRing α] : ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
+theorem IsRat.to_raw_eq {n : ℤ} {d : ℕ} [DivisionRing α] :
+    ∀ {a}, IsRat (a : α) n d → a = Rat.rawCast n d
   | _, ⟨inv, rfl⟩ => by simp [div_eq_mul_inv]
 
 theorem IsRat.neg_to_eq {α} [DivisionRing α] {n d} :
