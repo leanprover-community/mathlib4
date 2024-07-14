@@ -97,6 +97,7 @@ namespace HahnModule
 section
 
 variable [PartialOrder Γ] [Zero V] [SMul R V]
+variable [PartialOrder Γ] [Zero V] [SMul R V]
 
 /-- The casting function to the type synonym. -/
 def of (R : Type*) [SMul R V] : HahnSeries Γ V ≃ HahnModule Γ R V :=
