@@ -91,7 +91,8 @@ def scoreToConfig (decl : Lean.Name) (score : ℕ) : Aesop.Frontend.RuleConfig :
 A lemma is appropriate for `bound` if it proves an inequality using structurally simpler
 inequalities, "recursing" on the structure of the expressions involved, assuming positivity or
 nonnegativity where useful. Examples include
-1. `gcongr`-like inequalities such as `f x ≤ f y` where `f` is monotone
+1. `gcongr`-like inequalities over `<` and `≤` such as `f x ≤ f y` where `f` is monotone (note that
+   `gcongr` supports other relations).
 2. `mul_le_mul` which proves `a * b ≤ c * d` from `a ≤ c ∧ b ≤ d ∧ 0 ≤ b ∧ 0 ≤ c`
 3. Positivity or nonnegativity inequalities such as `sub_nonneg`: `a ≤ b → 0 ≤ b - a`
 4. Inequalities involving `1` such as `one_le_div` or `Real.one_le_exp`
