@@ -809,11 +809,10 @@ lemma onag_1_10 :
           left
           rcases x with ⟨xl, xr, xL, xR⟩
           use toLeftMovesMul (Sum.inl (Sum.inr (), InvTy.zero))
-          simp only [id_eq, mul_moveLeft_inl, mul_moveLeft_inl, insertLeft, moveLeft_mk, inv',
-            invVal]
+          simp only [mul_moveLeft_inl, inv', moveLeft_mk, invVal]
           rw [Game.PGame.le_iff_game_le]
           simp only [quot_sub, quot_add, quot_mul_zero, add_sub_cancel_right]
-          simp only [normalization, insertLeft, moveLeft_mk, quot_zero_mul, le_refl]
+          simp only [normalization, insertLeft, moveLeft_mk, Sum.elim_inr, quot_zero_mul, le_refl]
         · intro j
           have := onag_1_10_iii_right j
           exact lf_of_lt this
