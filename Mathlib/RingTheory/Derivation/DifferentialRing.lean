@@ -80,5 +80,4 @@ def DifferentialAlgebra.equiv {A : Type*} [CommDifferentialRing A]
       RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, LinearMap.coe_comp,
       AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_coe, RingHom.coe_coe, Derivation.coeFn_coe,
       Function.comp_apply, AlgEquiv.commutes, deriv_algebraMap]
-    change h.symm _ = _
-    rw [AlgEquiv.commutes]
+    apply h.symm.commutes
