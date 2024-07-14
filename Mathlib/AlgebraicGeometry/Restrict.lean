@@ -189,36 +189,6 @@ def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ S
       congr 1)
 #align algebraic_geometry.Scheme.restrict_functor_Γ AlgebraicGeometry.Scheme.restrictFunctorΓ
 
-/-- Given an open immersion `f : U ⟶ X`, the isomorphism between global sections
-  of `U` and the sections of `X` at the image of `f`. -/
-noncomputable
-def Scheme.openImmersionΓ {U X : Scheme} (f : U ⟶ X) [h : IsOpenImmersion f] :
-    Γ(U, ⊤) ≅ Γ(X, Scheme.Hom.opensRange f) := by
-  let U' := Scheme.Hom.opensRange f
-  symm
-  trans
-  exact ((restrictFunctorΓ X).app (op U')).symm
-  trans (X.restrict h.base_open).presheaf.obj (op ⊤)
-  swap
-  rw [← Scheme.Γ_obj]
-  apply Functor.mapIso
-  apply Iso.op
-  exact h.isoRestrict
-  rw [Scheme.restrict_presheaf_obj]
-  dsimp
-  convert Iso.refl _
-  apply Opens.ext
-  dsimp
-  simp only [Set.image_univ]
-  apply subset_antisymm
-  · rintro _ ⟨y, rfl⟩
-    unfold Opens.toTopCat
-    simp only [Subtype.range_coe_subtype, Set.mem_setOf_eq, U']
-    unfold Scheme.Hom.opensRange
-    simp only [Opens.mem_mk, Set.mem_range, exists_apply_eq_apply]
-  · rintro _ ⟨y, rfl⟩
-    exact Subtype.coe_prop y
-
 /-- `X ∣_ U ∣_ V` is isomorphic to `X ∣_ V ∣_ U` -/
 noncomputable
 def Scheme.restrictRestrictComm (X : Scheme.{u}) (U V : Opens X) :
