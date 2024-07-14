@@ -23,7 +23,9 @@ class CommDifferentialRing (R : Type*) extends CommRing R where
   deriv : Derivation ℤ R R
 
 @[inherit_doc]
-postfix:max "′" => CommDifferentialRing.deriv
+scoped[DifferentialRing] postfix:max "′" => CommDifferentialRing.deriv
+
+open scoped DifferentialRing
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
@@ -53,6 +55,7 @@ instance (A : Type*) [CommDifferentialRing A] : DifferentialAlgebra A A where
 /--
 Transfer a `CommDifferentialRing` instance accross a `RingEquiv`.
 -/
+@[reducible]
 def CommDifferentialRing.equiv {R R2 : Type*} [CommRing R] [CommDifferentialRing R2] (h : R ≃+* R2):
     CommDifferentialRing R where
   deriv := Derivation.mk' (h.symm.toAddMonoidHom.toIntLinearMap ∘ₗ
@@ -64,10 +67,10 @@ lemma algebraMap.coe_deriv {A : Type*} {B : Type*} [CommDifferentialRing A] [Com
     (a′ : A) = (a : B)′ :=
   (DifferentialAlgebra.deriv_algebraMap _).symm
 
-
 /--
 Transfer a `DifferentialAlgebra` instance accross a `AlgEquiv`.
 -/
+@[reducible]
 def DifferentialAlgebra.equiv {A : Type*} [CommDifferentialRing A]
     {R R2 : Type*} [CommRing R] [CommDifferentialRing R2] [Algebra A R] [DifferentialAlgebra A R2]
     (h : R ≃ₐ[A] R2) :
