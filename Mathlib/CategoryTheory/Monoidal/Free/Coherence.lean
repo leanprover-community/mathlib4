@@ -247,22 +247,6 @@ def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
       simp)
 #align category_theory.free_monoidal_category.normalize_iso_aux CategoryTheory.FreeMonoidalCategory.normalizeIsoAux
 
-section
-
-variable {D : Type u} [Category.{u} D] {I : Type u} (f : I → D) (X : Discrete I)
-
--- TODO: move to discrete_category.lean, decide whether this should be a global simp lemma
-@[simp]
-theorem discrete_functor_obj_eq_as : (Discrete.functor f).obj X = f X.as :=
-  rfl
-#align category_theory.free_monoidal_category.discrete_functor_obj_eq_as CategoryTheory.FreeMonoidalCategory.discrete_functor_obj_eq_as
-
--- TODO: move to discrete_category.lean, decide whether this should be a global simp lemma
-@[simp 1100]
-theorem discrete_functor_map_eq_id (g : X ⟶ X) : (Discrete.functor f).map g = 𝟙 _ := rfl
-#align category_theory.free_monoidal_category.discrete_functor_map_eq_id CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id
-
-end
 
 section
 
