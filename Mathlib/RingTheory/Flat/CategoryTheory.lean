@@ -80,7 +80,7 @@ section Tor
 
 open scoped ZeroObject
 
-/-
+/--
 For a flat module `M`, higher tor groups vanish.
 -/
 noncomputable def higherTorIsoZero [Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
