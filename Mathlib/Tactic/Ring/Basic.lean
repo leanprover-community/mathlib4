@@ -75,11 +75,11 @@ This feature wasn't needed yet, so it's not implemented yet.
 ring, semiring, exponent, power
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic
 namespace Ring
+
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
+
 open Lean (MetaM Expr mkRawNatLit)
 
 /-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
@@ -94,10 +94,12 @@ def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 -- In this file, we would like to use multi-character auto-implicits.
 set_option relaxedAutoImplicit true
 
+set_option autoImplicit true
+
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/
-inductive ExBase : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
+inductive ExBase : ∀ {u : Lean.Level} {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) → Type
   /--
   An atomic expression `e` with id `id`.
 
@@ -136,6 +138,8 @@ inductive ExSum : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) →
   | add {α : Q(Type u)} {sα : Q(CommSemiring $α)} {a b : Q($α)} :
     ExProd sα a → ExSum sα b → ExSum sα q($a + $b)
 end
+
+--set_option autoImplicit true
 
 mutual -- partial only to speed up compilation
 
@@ -207,6 +211,10 @@ partial def ExSum.cast : ExSum sα a → Σ a, ExSum sβ a
 
 end
 
+set_option autoImplicit false
+
+variable {u : Lean.Level}
+
 /--
 The result of evaluating an (unnormalized) expression `e` into the type family `E`
 (one of `ExSum`, `ExProd`, `ExBase`) is a (normalized) element `e'`
@@ -220,10 +228,11 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
   /-- A proof that the original expression is equal to the normalized result. -/
   proof : Q($e = $expr)
 
-instance [Inhabited (Σ e, E e)] : Inhabited (Result E e) :=
+instance {α : Q(Type u)} {E : Q(«$α») → Type} {e : Q(«$α»)} [Inhabited (Σ e, E e)] :
+    Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
-variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) [CommSemiring R]
+variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) {R : Type*} [CommSemiring R]
 
 /--
 Constructs the expression corresponding to `.const n`.
@@ -253,14 +262,14 @@ section
 variable {sα}
 
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
-def ExBase.toProd (va : ExBase sα a) (vb : ExProd sℕ b) :
+def ExBase.toProd {α : Q(Type u)} {sα : Q(CommSemiring «$α»)} {a : Q(«$α»)} {b : Q(ℕ)} (va : ExBase sα a) (vb : ExProd sℕ b) :
     ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
-def ExProd.toSum (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
+def ExProd.toSum {sα : Q(CommSemiring «$α»)} {e : Q(«$α»)} (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
 
 /-- Get the leading coefficient of an `ExProd`. -/
-def ExProd.coeff : ExProd sα e → ℚ
+def ExProd.coeff {sα : Q(CommSemiring «$α»)} {e : Q(«$α»)} : ExProd sα e → ℚ
   | .const q _ => q
   | .mul _ _ v => v.coeff
 end
@@ -276,6 +285,8 @@ inductive Overlap (e : Q($α)) where
   /-- The expression `e` (the sum of monomials) is equal to another monomial
   (with nonzero leading coefficient). -/
   | nonzero (_ : Result (ExProd sα) e)
+
+set_option autoImplicit true
 
 theorem add_overlap_pf (x : R) (e) (pq_pf : a + b = c) :
     x ^ e * a + x ^ e * b = x ^ e * c := by subst_vars; simp [mul_add]
