@@ -139,8 +139,6 @@ inductive ExSum : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) →
     ExProd sα a → ExSum sα b → ExSum sα q($a + $b)
 end
 
---set_option autoImplicit true
-
 mutual -- partial only to speed up compilation
 
 /-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
@@ -286,12 +284,12 @@ inductive Overlap (e : Q($α)) where
   (with nonzero leading coefficient). -/
   | nonzero (_ : Result (ExProd sα) e)
 
-set_option autoImplicit true
+-- TODO future! variable {a a₁ a₂ b b₁ b₂ c : R}
 
-theorem add_overlap_pf (x : R) (e) (pq_pf : a + b = c) :
+theorem add_overlap_pf {a b c : R} (x : R) (e) (pq_pf : a + b = c) :
     x ^ e * a + x ^ e * b = x ^ e * c := by subst_vars; simp [mul_add]
 
-theorem add_overlap_pf_zero (x : R) (e) :
+theorem add_overlap_pf_zero {a b : R} (x : R) (e) :
     IsNat (a + b) (nat_lit 0) → IsNat (x ^ e * a + x ^ e * b) (nat_lit 0)
   | ⟨h⟩ => ⟨by simp [h, ← mul_add]⟩
 
@@ -301,7 +299,7 @@ If the monomials are not compatible, returns `none`.
 For example, `xy + 2xy = 3xy` is a `.nonzero` overlap, while `xy + xz` returns `none`
 and `xy + -xy = 0` is a `.zero` overlap.
 -/
-def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα q($a + $b)) :=
+def evalAddOverlap {a b : Q(«$α»)} (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα q($a + $b)) :=
   match va, vb with
   | .const za ha, .const zb hb => do
     let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
@@ -324,19 +322,20 @@ theorem add_pf_zero_add (b : R) : 0 + b = b := by simp
 
 theorem add_pf_add_zero (a : R) : a + 0 = a := by simp
 
-theorem add_pf_add_overlap
+theorem add_pf_add_overlap {a₁ b₁ c₁ a₂ b₂ c₂ : R}
     (_ : a₁ + b₁ = c₁) (_ : a₂ + b₂ = c₂) : (a₁ + a₂ : R) + (b₁ + b₂) = c₁ + c₂ := by
   subst_vars; simp [add_assoc, add_left_comm]
 
-theorem add_pf_add_overlap_zero
+theorem add_pf_add_overlap_zero {a₁ b₁ a₂ b₂ c : R}
     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
   subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
 
-theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
+theorem add_pf_add_lt {a₂ b c : R} (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
 
-theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
+theorem add_pf_add_gt {a b₂ c : R} (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
   subst_vars; simp [add_left_comm]
 
+set_option autoImplicit true in
 /-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
 
 * `0 + b = b`
@@ -369,16 +368,19 @@ theorem one_mul (a : R) : (nat_lit 1).rawCast * a = a := by simp [Nat.rawCast]
 
 theorem mul_one (a : R) : a * (nat_lit 1).rawCast = a := by simp [Nat.rawCast]
 
+variable {a a₁ a₂ a₃ b b₁ b₂ b₃ c : R} in
 theorem mul_pf_left (a₁ : R) (a₂) (_ : a₃ * b = c) : (a₁ ^ a₂ * a₃ : R) * b = a₁ ^ a₂ * c := by
   subst_vars; rw [mul_assoc]
 
+variable {a a₁ a₂ a₃ b b₁ b₂ b₃ c : R} in
 theorem mul_pf_right (b₁ : R) (b₂) (_ : a * b₃ = c) : a * (b₁ ^ b₂ * b₃) = b₁ ^ b₂ * c := by
   subst_vars; rw [mul_left_comm]
 
-theorem mul_pp_pf_overlap (x : R) (_ : ea + eb = e) (_ : a₂ * b₂ = c) :
+theorem mul_pp_pf_overlap {ea eb e : ℕ} {a₂ b₂ c : R} (x : R) (_ : ea + eb = e) (_ : a₂ * b₂ = c) :
     (x ^ ea * a₂ : R) * (x ^ eb * b₂) = x ^ e * c := by
   subst_vars; simp [pow_add, mul_mul_mul_comm]
 
+set_option autoImplicit true in
 /-- Multiplies two monomials `va, vb` together to get a normalized result monomial.
 
 * `x * y = (x * y)` (for `x`, `y` coefficients)
@@ -423,9 +425,12 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
 
 theorem mul_zero (a : R) : a * 0 = 0 := by simp
 
+set_option autoImplicit true in
+--variable {a a₁ a₂ a₃ b b₁ b₂ b₃ c : R} in
 theorem mul_add (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c₁ + 0 + c₂ = d) :
     a * (b₁ + b₂) = d := by subst_vars; simp [_root_.mul_add]
 
+set_option autoImplicit true in
 /-- Multiplies a monomial `va` to a polynomial `vb` to get a normalized result polynomial.
 
 * `a * 0 = 0`
@@ -442,9 +447,11 @@ def evalMul₁ (va : ExProd sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a 
 
 theorem zero_mul (b : R) : 0 * b = 0 := by simp
 
+set_option autoImplicit true in
 theorem add_mul (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c₁ + c₂ = d) :
     (a₁ + a₂) * b = d := by subst_vars; simp [_root_.add_mul]
 
+set_option autoImplicit true in
 /-- Multiplies two polynomials `va, vb` together to get a normalized result polynomial.
 
 * `0 * b = 0`
@@ -461,13 +468,17 @@ def evalMul (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a * $b
 
 theorem natCast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
 
+set_option autoImplicit true in
 theorem natCast_mul (a₂) (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₃ : ℕ) : R) = b₃) :
     ((a₁ ^ a₂ * a₃ : ℕ) : R) = b₁ ^ a₂ * b₃ := by subst_vars; simp
 
 theorem natCast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
 
+set_option autoImplicit true in
 theorem natCast_add (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) :
     ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by subst_vars; simp
+
+set_option autoImplicit true
 
 mutual
 
