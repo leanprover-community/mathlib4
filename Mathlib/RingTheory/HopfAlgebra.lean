@@ -96,13 +96,11 @@ lemma sum_mul_antipode_eq_smul {a : A} (repr : Repr R a) :
 
 end HopfAlgebra
 
-section CommSemiring
+namespace CommSemiring
 
 variable (R : Type u) [CommSemiring R]
 
 open HopfAlgebra
-
-namespace CommSemiring
 
 /-- Every commutative (semi)ring is a Hopf algebra over itself -/
 instance toHopfAlgebra : HopfAlgebra R R where

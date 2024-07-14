@@ -297,16 +297,14 @@ attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 @[simps pt]
 def BinaryFan.mk {P : C} (π₁ : P ⟶ X) (π₂ : P ⟶ Y) : BinaryFan X Y where
   pt := P
-  π :=
-    { app := fun ⟨j⟩ => by cases j <;> simpa }
+  π := { app := fun | { as := j } => match j with | left => π₁ | right => π₂ }
 #align category_theory.limits.binary_fan.mk CategoryTheory.Limits.BinaryFan.mk
 
 /-- A binary cofan with vertex `P` consists of the two inclusions `ι₁ : X ⟶ P` and `ι₂ : Y ⟶ P`. -/
 @[simps pt]
 def BinaryCofan.mk {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : BinaryCofan X Y where
   pt := P
-  ι :=
-    { app := fun ⟨j⟩ => by cases j <;> simpa }
+  ι := { app := fun | { as := j } => match j with | left => ι₁ | right => ι₂ }
 #align category_theory.limits.binary_cofan.mk CategoryTheory.Limits.BinaryCofan.mk
 
 end
@@ -1238,12 +1236,15 @@ end CoprodFunctor
 
 section ProdComparison
 
-universe w
+universe w w' u₃
 
-variable {C} {D : Type u₂} [Category.{w} D]
-variable (F : C ⥤ D) {A A' B B' : C}
+variable {C} {D : Type u₂} [Category.{w} D] {E : Type u₃} [Category.{w'} E]
+variable (F : C ⥤ D) (G : D ⥤ E) {A A' B B' : C}
 variable [HasBinaryProduct A B] [HasBinaryProduct A' B']
-variable [HasBinaryProduct (F.obj A) (F.obj B)] [HasBinaryProduct (F.obj A') (F.obj B')]
+variable [HasBinaryProduct (F.obj A) (F.obj B)]
+variable [HasBinaryProduct (F.obj A') (F.obj B')]
+variable [HasBinaryProduct (G.obj (F.obj A)) (G.obj (F.obj B))]
+variable [HasBinaryProduct ((F ⋙ G).obj A) ((F ⋙ G).obj B)]
 
 /-- The product comparison morphism.
 
@@ -1323,6 +1324,12 @@ def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
   refine { @asIso _ _ _ _ _ (?_) with hom := prodComparisonNatTrans F A }
   apply NatIso.isIso_of_isIso_app
 #align category_theory.limits.prod_comparison_nat_iso CategoryTheory.Limits.prodComparisonNatIso
+
+theorem prodComparison_comp :
+    prodComparison (F ⋙ G) A B =
+      G.map (prodComparison F A B) ≫ prodComparison G (F.obj A) (F.obj B) := by
+  unfold prodComparison
+  ext <;> simp <;> rw [← G.map_comp] <;> simp
 
 end ProdComparison
 
