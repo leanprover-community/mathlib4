@@ -121,25 +121,21 @@ compile_inductive% PGame
 namespace PGame
 
 /-- The indexing type for allowable moves by Left. -/
-@[pp_dot]
 def LeftMoves : PGame → Type u
   | mk l _ _ _ => l
 #align pgame.left_moves SetTheory.PGame.LeftMoves
 
 /-- The indexing type for allowable moves by Right. -/
-@[pp_dot]
 def RightMoves : PGame → Type u
   | mk _ r _ _ => r
 #align pgame.right_moves SetTheory.PGame.RightMoves
 
 /-- The new game after Left makes an allowed move. -/
-@[pp_dot]
 def moveLeft : ∀ g : PGame, LeftMoves g → PGame
   | mk _l _ L _ => L
 #align pgame.move_left SetTheory.PGame.moveLeft
 
 /-- The new game after Right makes an allowed move. -/
-@[pp_dot]
 def moveRight : ∀ g : PGame, RightMoves g → PGame
   | mk _ _r _ R => R
 #align pgame.move_right SetTheory.PGame.moveRight
@@ -1749,13 +1745,13 @@ instance : Add PGame.{u} :=
     · exact fun i => IHxr i y
     · exact IHyr⟩
 
-@[nolint simpNF, simp] -- Porting note: simpNF linter complains, but this is a useful dsimp lemma
+@[simp]
 lemma leftMoves_mk_add {xl xr yl yr} {xL xR yL yR} :
     (mk xl xr xL xR + mk yl yr yL yR).LeftMoves =
       ((mk xl xr xL xR).LeftMoves ⊕ (mk yl yr yL yR).LeftMoves) :=
   rfl
 
-@[nolint simpNF, simp] -- Porting note: simpNF linter complains, but this is a useful dsimp lemma
+@[simp]
 lemma rightMoves_mk_add {xl xr yl yr} {xL xR yL yR} :
     (mk xl xr xL xR + mk yl yr yL yR).RightMoves =
       ((mk xl xr xL xR).RightMoves ⊕ (mk yl yr yL yR).RightMoves) :=
@@ -1823,12 +1819,10 @@ theorem zero_add_equiv (x : PGame.{u}) : 0 + x ≈ x :=
   (zeroAddRelabelling x).equiv
 #align pgame.zero_add_equiv SetTheory.PGame.zero_add_equiv
 
-@[simp]
 theorem leftMoves_add : ∀ x y : PGame.{u}, (x + y).LeftMoves = (x.LeftMoves ⊕ y.LeftMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 #align pgame.left_moves_add SetTheory.PGame.leftMoves_add
 
-@[simp]
 theorem rightMoves_add : ∀ x y : PGame.{u}, (x + y).RightMoves = (x.RightMoves ⊕ y.RightMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 #align pgame.right_moves_add SetTheory.PGame.rightMoves_add
@@ -1970,7 +1964,7 @@ protected lemma add_comm (x y : PGame) : x + y ≡ y + x :=
     refine Identical.of_equiv (Equiv.sumComm _ _) (Equiv.sumComm _ _) ?_ ?_ <;>
     · rintro (_ | _) <;>
       · dsimp; exact PGame.add_comm _ _
-  termination_by _ => (x, y)
+  termination_by (x, y)
 
 /-- `(x + y) + z` has exactly the same moves as `x + (y + z)`. -/
 protected lemma add_assoc (x y z : PGame) : x + y + z ≡ x + (y + z) :=
@@ -1981,7 +1975,7 @@ protected lemma add_assoc (x y z : PGame) : x + y + z ≡ x + (y + z) :=
       · exact PGame.add_assoc _ _ _
       · exact PGame.add_assoc (mk _ _ _ _) _ _
       · exact PGame.add_assoc (mk _ _ _ _) (mk _ _ _ _) _
-  termination_by _ => (x, y, z)
+  termination_by (x, y, z)
 
 /-- `x + 0` has exactly the same moves as `x`. -/
 protected lemma add_zero : ∀ (x : PGame), x + 0 ≡ x
@@ -1995,14 +1989,14 @@ protected lemma zero_add (x : PGame) : 0 + x ≡ x :=
   (PGame.add_comm _ _).trans x.add_zero
 
 /-- `-(x + y)` has exactly the same moves as `-x + -y`. -/
-lemma neg_add (x y : PGame) : -(x + y) = -x + -y :=
+protected lemma neg_add (x y : PGame) : -(x + y) = -x + -y :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
     refine ext rfl rfl ?_ ?_ <;>
     · rintro (i | i) _ ⟨rfl⟩
-      · exact neg_add _ _
+      · exact PGame.neg_add _ _
       · simpa [Equiv.refl] using PGame.neg_add _ _
-  termination_by _ => (x, y)
+  termination_by (x, y)
 
 /-- `-(x + y)` has exactly the same moves as `-y + -x`. -/
 protected lemma neg_add_rev (x y : PGame) : -(x + y) ≡ -y + -x :=
@@ -2041,7 +2035,7 @@ lemma Identical.add_right {x₁ x₂ y} : x₁ ≡ x₂ → x₁ + y ≡ x₂ + 
     · exact (h.1.2 _).elim (⟨.inl ·, ·.add_right⟩)
     · exact (h.2.1 _).elim (⟨.inl ·, ·.add_right⟩)
     · exact (h.2.2 _).elim (⟨.inl ·, ·.add_right⟩)
-  termination_by _ => (x₁, x₂, y)
+  termination_by (x₁, x₂, y)
 
 lemma Identical.add_left {x y₁ y₂} (hy : y₁ ≡ y₂) : x + y₁ ≡ x + y₂ :=
   (x.add_comm y₁).trans (hy.add_right.trans (y₂.add_comm x))

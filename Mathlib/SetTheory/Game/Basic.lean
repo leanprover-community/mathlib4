@@ -363,21 +363,21 @@ theorem mul_moveRight_inr {x y : PGame} {i j} :
   rfl
 #align pgame.mul_move_right_inr SetTheory.PGame.mul_moveRight_inr
 
-@[nolint simpNF, simp] -- Porting note: simpNF linter complains, but this is a useful dsimp lemma
+@[simp]
 theorem neg_mk_mul_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveLeft (Sum.inl (i, j)) =
       -(xL i * mk yl yr yL yR + mk xl xr xL xR * yR j - xL i * yR j) :=
   rfl
 #align pgame.neg_mk_mul_move_left_inl SetTheory.PGame.neg_mk_mul_moveLeft_inl
 
-@[nolint simpNF, simp] -- Porting note: simpNF linter complains, but this is a useful dsimp lemma
+@[simp]
 theorem neg_mk_mul_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveLeft (Sum.inr (i, j)) =
       -(xR i * mk yl yr yL yR + mk xl xr xL xR * yL j - xR i * yL j) :=
   rfl
 #align pgame.neg_mk_mul_move_left_inr SetTheory.PGame.neg_mk_mul_moveLeft_inr
 
-@[nolint simpNF, simp] -- Porting note: simpNF linter complains, but this is a useful dsimp lemma
+@[simp]
 theorem neg_mk_mul_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveRight (Sum.inl (i, j)) =
       -(xL i * mk yl yr yL yR + mk xl xr xL xR * yL j - xL i * yL j) :=
@@ -452,7 +452,7 @@ protected lemma mul_comm (x y : PGame) : x * y ≡ y * x :=
     · rintro (⟨_, _⟩ | ⟨_, _⟩) <;>
       exact ((((PGame.mul_comm _ (mk _ _ _ _)).add (PGame.mul_comm (mk _ _ _ _) _)).trans
         (PGame.add_comm _ _)).sub (PGame.mul_comm _ _))
-  termination_by _ => (x, y)
+  termination_by (x, y)
 
 /-- `x * y` and `y * x` have the same moves. -/
 def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
@@ -561,27 +561,27 @@ lemma mul_neg (x y : PGame) : x * -y = -(x * y) :=
     refine ext rfl rfl ?_ ?_
     · rintro (⟨i, j⟩ | ⟨i, j⟩) _ ⟨rfl⟩
       · refine (@mul_moveLeft_inl (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp [toLeftMovesNeg]
+        dsimp
         rw [PGame.neg_sub', PGame.neg_add]
         congr
         exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
       · refine (@mul_moveLeft_inr (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp [toLeftMovesNeg]
+        dsimp
         rw [PGame.neg_sub', PGame.neg_add]
         congr
         exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
     · rintro (⟨i, j⟩ | ⟨i, j⟩) _ ⟨rfl⟩
       · refine (@mul_moveRight_inl (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp [toLeftMovesNeg]
+        dsimp
         rw [PGame.neg_sub', PGame.neg_add]
         congr
         exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
       · refine (@mul_moveRight_inr (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp [toLeftMovesNeg]
+        dsimp
         rw [PGame.neg_sub', PGame.neg_add]
         congr
         exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-  termination_by _ => (x, y)
+  termination_by (x, y)
 
 /-- `-x * y` and `-(x * y)` have the same moves. -/
 lemma neg_mul (x y : PGame) : -x * y ≡ -(x * y) :=
@@ -1078,7 +1078,7 @@ lemma inv'_zero : inv' 0 ≡ (1 : PGame) := by
   refine ⟨?_, ?_⟩ <;> dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
   · simp_rw [Unique.forall_iff, Unique.exists_iff, and_self, PGame.invVal_isEmpty]
     exact identical_zero _
-  · simp_rw [IsEmpty.forall_iff]
+  · simp
 
 /-- `inv' 0` has exactly the same moves as `1`. -/
 def inv'Zero : inv' 0 ≡r 1 := by
@@ -1104,7 +1104,7 @@ lemma inv'_one : inv'.{u} 1 ≡ 1 := by
   refine ⟨?_, ?_⟩ <;> dsimp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
   · simp_rw [Unique.forall_iff, Unique.exists_iff, PGame.invVal_isEmpty, and_self]
     exact identical_zero _
-  · simp_rw [IsEmpty.forall_iff]
+  · simp
 
 /-- `inv' 1` has exactly the same moves as `1`. -/
 def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
