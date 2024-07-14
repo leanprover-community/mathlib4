@@ -70,6 +70,15 @@ theorem map_app (f : Q₁ →qᵢ Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :=
 theorem coe_toLinearMap (f : Q₁ →qᵢ Q₂) : ⇑f.toLinearMap = f :=
   rfl
 
+@[simp]
+theorem comp_toLinearMap_eq (f : Q₁ →qᵢ Q₂) : Q₂.comp f.toLinearMap = Q₁ :=
+  DFunLike.ext _ _ <| map_app f
+
+/-- Construct a quadratic isometry in a point-free way. -/
+def ofCompEq (f : M₁ →ₗ[R] M₂) (hf : Q₂.comp f = Q₁) : Q₁ →qᵢ Q₂ where
+  toLinearMap := f
+  map_app' := DFunLike.congr_fun hf
+
 /-- The identity isometry from a quadratic form to itself. -/
 @[simps!]
 def id (Q : QuadraticMap R M N) : Q →qᵢ Q where
