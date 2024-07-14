@@ -209,13 +209,12 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
       ⨆ (φ : α →ₛ ℝ≥0) (_ : ∀ x, ↑(φ x) ≤ f x), (φ.map ((↑) : ℝ≥0 → ℝ≥0∞)).lintegral μ := by
   rw [lintegral]
   refine
-    le_antisymm (iSup₂_le fun φ hφ => ?_) (iSup_mono' fun φ => ⟨φ.map ((↑) : ℝ≥0 → ℝ≥0∞), le_rfl⟩)
+    le_antisymm (iSup₂_le fun φ hφ ↦ ?_) (iSup_mono' fun φ ↦ ⟨φ.map ((↑) : ℝ≥0 → ℝ≥0∞), le_rfl⟩)
   by_cases h : ∀ᵐ a ∂μ, φ a ≠ ∞
   · let ψ := φ.map ENNReal.toNNReal
     replace h : ψ.map ((↑) : ℝ≥0 → ℝ≥0∞) =ᵐ[μ] φ := h.mono fun a => ENNReal.coe_toNNReal
     have : ∀ x, ↑(ψ x) ≤ f x := fun x => le_trans ENNReal.coe_toNNReal_le_self (hφ x)
-    exact
-      le_iSup_of_le (φ.map ENNReal.toNNReal) (le_iSup_of_le this (ge_of_eq <| lintegral_congr h))
+    exact le_iSup₂_of_le (φ.map ENNReal.toNNReal) this (ge_of_eq <| lintegral_congr h)
   · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_zero_iff_ae_nmem.1 h
     refine le_trans le_top (ge_of_eq <| (iSup_eq_top _).2 fun b hb => ?_)
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
@@ -288,17 +287,28 @@ theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤
     exact (hnt hat).elim
 #align measure_theory.lintegral_mono_ae MeasureTheory.lintegral_mono_ae
 
-theorem setLIntegral_mono_ae {s : Set α} {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g)
-    (hfg : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) : ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ :=
-  lintegral_mono_ae <| (ae_restrict_iff <| measurableSet_le hf hg).2 hfg
+/-- Lebesgue integral over a set is monotone in function.
+
+This version assumes that the upper estimate is an a.e. measurable function
+and the estimate holds a.e. on the set.
+See also `setLIntegral_mono_ae'` for a version that assumes measurability of the set
+but assumes no regularity of either function. -/
+theorem setLIntegral_mono_ae {s : Set α} {f g : α → ℝ≥0∞} (hg : AEMeasurable g (μ.restrict s))
+    (hfg : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) : ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ := by
+  rcases exists_measurable_le_lintegral_eq (μ.restrict s) f with ⟨f', hf'm, hle, hf'⟩
+  rw [hf']
+  apply lintegral_mono_ae
+  rw [ae_restrict_iff₀]
+  · exact hfg.mono fun x hx hxs ↦ (hle x).trans (hx hxs)
+  · exact nullMeasurableSet_le hf'm.aemeasurable hg
 #align measure_theory.set_lintegral_mono_ae MeasureTheory.setLIntegral_mono_ae
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_mono_ae := setLIntegral_mono_ae
 
-theorem setLIntegral_mono {s : Set α} {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g)
+theorem setLIntegral_mono {s : Set α} {f g : α → ℝ≥0∞} (hg : Measurable g)
     (hfg : ∀ x ∈ s, f x ≤ g x) : ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ :=
-  setLIntegral_mono_ae hf hg (ae_of_all _ hfg)
+  setLIntegral_mono_ae hg.aemeasurable (ae_of_all _ hfg)
 #align measure_theory.set_lintegral_mono MeasureTheory.setLIntegral_mono
 
 @[deprecated (since := "2024-06-29")]
@@ -1192,7 +1202,7 @@ theorem lintegral_liminf_le {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Mea
   lintegral_liminf_le' fun n => (h_meas n).aemeasurable
 #align measure_theory.lintegral_liminf_le MeasureTheory.lintegral_liminf_le
 
-theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf_meas : ∀ n, Measurable (f n))
+theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} (g : α → ℝ≥0∞) (hf_meas : ∀ n, Measurable (f n))
     (h_bound : ∀ n, f n ≤ᵐ[μ] g) (h_fin : ∫⁻ a, g a ∂μ ≠ ∞) :
     limsup (fun n => ∫⁻ a, f n a ∂μ) atTop ≤ ∫⁻ a, limsup (fun n => f n a) atTop ∂μ :=
   calc
@@ -1224,7 +1234,7 @@ theorem tendsto_lintegral_of_dominated_convergence {F : ℕ → α → ℝ≥0�
       )
     (calc
       limsup (fun n : ℕ => ∫⁻ a, F n a ∂μ) atTop ≤ ∫⁻ a, limsup (fun n => F n a) atTop ∂μ :=
-        limsup_lintegral_le hF_meas h_bound h_fin
+        limsup_lintegral_le _ hF_meas h_bound h_fin
       _ = ∫⁻ a, f a ∂μ := lintegral_congr_ae <| h_lim.mono fun a h => h.limsup_eq
       )
 #align measure_theory.tendsto_lintegral_of_dominated_convergence MeasureTheory.tendsto_lintegral_of_dominated_convergence
@@ -1718,44 +1728,40 @@ theorem lintegral_unique [Unique α] (f : α → ℝ≥0∞) : ∫⁻ x, f x ∂
 
 end Countable
 
-theorem ae_lt_top {f : α → ℝ≥0∞} (hf : Measurable f) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
+theorem ae_lt_top' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
     ∀ᵐ x ∂μ, f x < ∞ := by
   simp_rw [ae_iff, ENNReal.not_lt_top]
-  by_contra h
-  apply h2f.lt_top.not_le
-  have : (f ⁻¹' {∞}).indicator ⊤ ≤ f := by
-    intro x
-    by_cases hx : x ∈ f ⁻¹' {∞} <;> [simpa [indicator_of_mem hx]; simp [indicator_of_not_mem hx]]
-  convert lintegral_mono this
-  rw [lintegral_indicator _ (hf (measurableSet_singleton ∞))]
-  simp [ENNReal.top_mul', preimage, h]
-#align measure_theory.ae_lt_top MeasureTheory.ae_lt_top
-
-theorem ae_lt_top' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
-    ∀ᵐ x ∂μ, f x < ∞ :=
-  haveI h2f_meas : ∫⁻ x, hf.mk f x ∂μ ≠ ∞ := by rwa [← lintegral_congr_ae hf.ae_eq_mk]
-  (ae_lt_top hf.measurable_mk h2f_meas).mp (hf.ae_eq_mk.mono fun x hx h => by rwa [hx])
+  exact measure_eq_top_of_lintegral_ne_top hf h2f
 #align measure_theory.ae_lt_top' MeasureTheory.ae_lt_top'
 
-theorem setLIntegral_lt_top_of_bddAbove {s : Set α} (hs : μ s ≠ ∞) {f : α → ℝ≥0}
-    (hf : Measurable f) (hbdd : BddAbove (f '' s)) : ∫⁻ x in s, f x ∂μ < ∞ := by
+theorem ae_lt_top {f : α → ℝ≥0∞} (hf : Measurable f) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
+    ∀ᵐ x ∂μ, f x < ∞ :=
+  ae_lt_top' hf.aemeasurable h2f
+#align measure_theory.ae_lt_top MeasureTheory.ae_lt_top
+
+/-- Lebesgue integral of a bounded function over a set of finite measure is finite.
+Note that this lemma assumes no regularity of either `f` or `s`. -/
+theorem setLIntegral_lt_top_of_le_nnreal {s : Set α} (hs : μ s ≠ ∞) {f : α → ℝ≥0∞}
+    (hbdd : ∃ y : ℝ≥0, ∀ x ∈ s, f x ≤ y) : ∫⁻ x in s, f x ∂μ < ∞ := by
   obtain ⟨M, hM⟩ := hbdd
-  rw [mem_upperBounds] at hM
-  refine
-    lt_of_le_of_lt (setLIntegral_mono hf.coe_nnreal_ennreal (@measurable_const _ _ _ _ ↑M) ?_) ?_
-  · simpa using hM
-  · rw [lintegral_const]
-    refine ENNReal.mul_lt_top ENNReal.coe_lt_top.ne ?_
-    simp [hs]
+  refine lt_of_le_of_lt (setLIntegral_mono measurable_const hM) ?_
+  simp [ENNReal.mul_lt_top, hs]
+
+/-- Lebesgue integral of a bounded function over a set of finite measure is finite.
+Note that this lemma assumes no regularity of either `f` or `s`. -/
+theorem setLIntegral_lt_top_of_bddAbove {s : Set α} (hs : μ s ≠ ∞) {f : α → ℝ≥0}
+    (hbdd : BddAbove (f '' s)) : ∫⁻ x in s, f x ∂μ < ∞ :=
+  setLIntegral_lt_top_of_le_nnreal hs <| hbdd.imp fun _M hM _x hx ↦
+    ENNReal.coe_le_coe.2 <| hM (mem_image_of_mem f hx)
 #align measure_theory.set_lintegral_lt_top_of_bdd_above MeasureTheory.setLIntegral_lt_top_of_bddAbove
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_lt_top_of_bddAbove := setLIntegral_lt_top_of_bddAbove
 
-theorem setLIntegral_lt_top_of_isCompact [TopologicalSpace α] [OpensMeasurableSpace α] {s : Set α}
+theorem setLIntegral_lt_top_of_isCompact [TopologicalSpace α] {s : Set α}
     (hs : μ s ≠ ∞) (hsc : IsCompact s) {f : α → ℝ≥0} (hf : Continuous f) :
     ∫⁻ x in s, f x ∂μ < ∞ :=
-  setLIntegral_lt_top_of_bddAbove hs hf.measurable (hsc.image hf).bddAbove
+  setLIntegral_lt_top_of_bddAbove hs (hsc.image hf).bddAbove
 #align measure_theory.set_lintegral_lt_top_of_is_compact MeasureTheory.setLIntegral_lt_top_of_isCompact
 
 @[deprecated (since := "2024-06-29")]
@@ -1764,10 +1770,9 @@ alias set_lintegral_lt_top_of_isCompact := setLIntegral_lt_top_of_isCompact
 theorem _root_.IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal {α : Type*}
     [MeasurableSpace α] (μ : Measure α) [μ_fin : IsFiniteMeasure μ] {f : α → ℝ≥0∞}
     (f_bdd : ∃ c : ℝ≥0, ∀ x, f x ≤ c) : ∫⁻ x, f x ∂μ < ∞ := by
-  cases' f_bdd with c hc
-  apply lt_of_le_of_lt (@lintegral_mono _ _ μ _ _ hc)
-  rw [lintegral_const]
-  exact ENNReal.mul_lt_top ENNReal.coe_lt_top.ne μ_fin.measure_univ_lt_top.ne
+  rw [← μ.restrict_univ]
+  refine setLIntegral_lt_top_of_le_nnreal (measure_ne_top _ _) ?_
+  simpa using f_bdd
 #align is_finite_measure.lintegral_lt_top_of_bounded_to_ennreal IsFiniteMeasure.lintegral_lt_top_of_bounded_to_ennreal
 
 /-- If a monotone sequence of functions has an upper bound and the sequence of integrals of these

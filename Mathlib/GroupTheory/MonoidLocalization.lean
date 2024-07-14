@@ -744,7 +744,7 @@ theorem mk'_eq_of_eq' {a₁ b₁ : M} {a₂ b₂ : S} (H : b₁ * ↑a₂ = a₁
 @[to_additive]
 theorem mk'_cancel (a : M) (b c : S) :
     f.mk' (a * c) (b * c) = f.mk' a b :=
-  mk'_eq_of_eq' f (by rw [Submonoid.coe_mul, mul_comm (b:M), mul_assoc])
+  mk'_eq_of_eq' f (by rw [Submonoid.coe_mul, mul_comm (b : M), mul_assoc])
 
 @[to_additive]
 theorem mk'_eq_of_same {a b} {d : S} :
@@ -1861,7 +1861,7 @@ theorem leftCancelMulZero_of_le_isLeftRegular
       _ = a * g b.2 * (z * g x.2 * g y.2) := by
         rw [mul_assoc a, mul_comm z, ← mul_assoc a, mul_assoc, mul_assoc z]
       _ = g b.1 * g (y.2 * x.1) := by rw [hx, hb, mul_comm (g x.1), ← map_mul g]
-      _ = g (b.1 * (y.2 * x.1)):= by rw [← map_mul g]
+      _ = g (b.1 * (y.2 * x.1)) := by rw [← map_mul g]
  -- The hypothesis `h` gives that `f` (so, `g`) is injective, and we can cancel out `b.1`.
   exact (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero b1ne0
       ((LocalizationMap.toMap_injective_iff fl).mpr h main)).symm

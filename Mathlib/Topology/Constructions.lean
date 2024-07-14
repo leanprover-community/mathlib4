@@ -494,7 +494,7 @@ theorem continuous_sInf_dom₂ {X Y Z} {f : X → Y → Z} {tas : Set (Topologic
     {tc : TopologicalSpace Z} (hX : tX ∈ tas) (hY : tY ∈ tbs)
     (hf : Continuous fun p : X × Y => f p.1 p.2) : by
     haveI := sInf tas; haveI := sInf tbs;
-      exact @Continuous _ _ _ tc fun p : X × Y => f p.1 p.2 := by
+    exact @Continuous _ _ _ tc fun p : X × Y => f p.1 p.2 := by
   have hX := continuous_sInf_dom hX continuous_id
   have hY := continuous_sInf_dom hY continuous_id
   have h_continuous_id := @Continuous.prod_map _ _ _ _ tX tY (sInf tas) (sInf tbs) _ _ hX hY
@@ -1239,6 +1239,15 @@ theorem DiscreteTopology.preimage_of_continuous_injective {X Y : Type*} [Topolog
     (hinj : Function.Injective f) : DiscreteTopology (f ⁻¹' s) :=
   DiscreteTopology.of_continuous_injective (β := s) (Continuous.restrict
     (by exact fun _ x ↦ x) hc) ((MapsTo.restrict_inj _).mpr hinj.injOn)
+
+/-- If `f : X → Y` is a quotient map,
+then its restriction to the preimage of an open set is a quotient map too. -/
+theorem QuotientMap.restrictPreimage_isOpen {f : X → Y} (hf : QuotientMap f)
+    {s : Set Y} (hs : IsOpen s) : QuotientMap (s.restrictPreimage f) := by
+  refine quotientMap_iff.2 ⟨hf.surjective.restrictPreimage _, fun U ↦ ?_⟩
+  rw [hs.openEmbedding_subtype_val.open_iff_image_open, ← hf.isOpen_preimage,
+    (hs.preimage hf.continuous).openEmbedding_subtype_val.open_iff_image_open,
+    image_val_preimage_restrictPreimage]
 
 end Subtype
 

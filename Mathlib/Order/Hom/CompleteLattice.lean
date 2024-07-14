@@ -358,7 +358,7 @@ theorem cancel_left {g : sSupHom β γ} {f₁ f₂ : sSupHom α β} (hg : Inject
 
 end SupSet
 
-variable { _ : CompleteLattice β}
+variable {_ : CompleteLattice β}
 
 instance : PartialOrder (sSupHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective

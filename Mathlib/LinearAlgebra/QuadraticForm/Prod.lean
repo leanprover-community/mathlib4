@@ -39,6 +39,8 @@ variable {ι : Type*} {R : Type*} {M₁ M₂ N₁ N₂ : Type*} {Mᵢ Nᵢ : ι 
 
 namespace QuadraticForm
 
+open QuadraticMap
+
 section Prod
 
 section Semiring
@@ -188,7 +190,8 @@ theorem IsOrtho.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
 
 @[simp] theorem IsOrtho.inl_inr {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (m₁ : M₁) (m₂ : M₂) :
-    (Q₁.prod Q₂).IsOrtho (m₁, 0) (0, m₂) := .prod (.zero_right _) (.zero_left _)
+    (Q₁.prod Q₂).IsOrtho (m₁, 0) (0, m₂) :=
+      QuadraticForm.IsOrtho.prod (.zero_right _) (.zero_left _)
 
 @[simp] theorem IsOrtho.inr_inl {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     (m₁ : M₁) (m₂ : M₂) :

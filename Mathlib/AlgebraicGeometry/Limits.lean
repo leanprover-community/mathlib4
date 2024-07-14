@@ -20,7 +20,7 @@ We construct various limits and colimits in the category of schemes.
 * The disjoint union is the coproduct of a family of schemes, and the forgetful functor to
   `LocallyRingedSpace` and `TopCat` preserves them.
 
-## Todo
+## TODO
 
 * Spec preserves finite coproducts.
 
