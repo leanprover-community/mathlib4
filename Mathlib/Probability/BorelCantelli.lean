@@ -26,10 +26,8 @@ filtration.
 in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
 -/
 
-
-open scoped MeasureTheory ProbabilityTheory ENNReal Topology
-
-open MeasureTheory ProbabilityTheory MeasurableSpace TopologicalSpace
+open scoped ENNReal Topology
+open MeasureTheory
 
 namespace ProbabilityTheory
 
