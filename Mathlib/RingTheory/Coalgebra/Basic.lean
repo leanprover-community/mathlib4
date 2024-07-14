@@ -55,10 +55,11 @@ structure Coalgebra.Repr (R : Type u) {A : Type v}
   (eq : ∑ i ∈ index, left i ⊗ₜ[R] right i = CoalgebraStruct.comul a)
 
 /-- An arbitrarily chosen representation. -/
-def CoalgebraStruct.Repr.arbitrary (R : Type u) {A : Type v}
-    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) : Coalgebra.Repr R a where
-  index := TensorProduct.exists_finset (R := R) (comul a) |>.choose
-  eq := TensorProduct.exists_finset (R := R) (comul a) |>.choose_spec.symm
+def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
+    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
+    Coalgebra.Repr R a where
+  index := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose
+  eq := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose_spec.symm
 
 namespace Coalgebra
 export CoalgebraStruct (comul counit)
