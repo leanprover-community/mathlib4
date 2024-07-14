@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.NormedSpace.Completion
@@ -237,13 +238,13 @@ theorem inner_smul_left (x y : F) {r : 𝕜} : ⟪r • x, y⟫ = r† * ⟪x, y
 #align inner_product_space.core.inner_smul_left InnerProductSpace.Core.inner_smul_left
 
 theorem inner_smul_right (x y : F) {r : 𝕜} : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_smul_left];
-    simp only [conj_conj, inner_conj_symm, RingHom.map_mul]
+  rw [← inner_conj_symm, inner_smul_left]
+  simp only [conj_conj, inner_conj_symm, RingHom.map_mul]
 #align inner_product_space.core.inner_smul_right InnerProductSpace.Core.inner_smul_right
 
 theorem inner_zero_left (x : F) : ⟪0, x⟫ = 0 := by
-  rw [← zero_smul 𝕜 (0 : F), inner_smul_left];
-    simp only [zero_mul, RingHom.map_zero]
+  rw [← zero_smul 𝕜 (0 : F), inner_smul_left]
+  simp only [zero_mul, RingHom.map_zero]
 #align inner_product_space.core.inner_zero_left InnerProductSpace.Core.inner_zero_left
 
 theorem inner_zero_right (x : F) : ⟪x, 0⟫ = 0 := by
@@ -470,7 +471,6 @@ theorem real_inner_smul_left (x y : F) (r : ℝ) : ⟪r • x, y⟫_ℝ = r * �
 
 theorem inner_smul_real_left (x y : E) (r : ℝ) : ⟪(r : 𝕜) • x, y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_left, conj_ofReal, Algebra.smul_def]
-  rfl
 #align inner_smul_real_left inner_smul_real_left
 
 theorem inner_smul_right (x y : E) (r : 𝕜) : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
@@ -483,7 +483,6 @@ theorem real_inner_smul_right (x y : F) (r : ℝ) : ⟪x, r • y⟫_ℝ = r * �
 
 theorem inner_smul_real_right (x y : E) (r : ℝ) : ⟪x, (r : 𝕜) • y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_right, Algebra.smul_def]
-  rfl
 #align inner_smul_real_right inner_smul_real_right
 
 /-- The inner product as a sesquilinear form.

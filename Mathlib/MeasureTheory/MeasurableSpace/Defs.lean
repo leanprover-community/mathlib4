@@ -123,11 +123,7 @@ protected theorem MeasurableSet.iUnion [Countable ι] ⦃f : ι → Set α⦄
     exact m.measurableSet_iUnion _ fun _ => h _
 #align measurable_set.Union MeasurableSet.iUnion
 
-@[deprecated MeasurableSet.iUnion (since := "2023-02-06")]
-theorem MeasurableSet.biUnion_decode₂ [Encodable β] ⦃f : β → Set α⦄ (h : ∀ b, MeasurableSet (f b))
-    (n : ℕ) : MeasurableSet (⋃ b ∈ decode₂ β n, f b) :=
-  .iUnion fun _ => .iUnion fun _ => h _
-#align measurable_set.bUnion_decode₂ MeasurableSet.biUnion_decode₂
+#align measurable_set.bUnion_decode₂ MeasurableSet.iUnion
 
 protected theorem MeasurableSet.biUnion {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋃ b ∈ s, f b) := by
