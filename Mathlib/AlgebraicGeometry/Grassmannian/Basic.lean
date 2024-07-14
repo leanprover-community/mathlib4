@@ -97,9 +97,9 @@ abbrev matrix_X : Matrix (Fin c) (Fin r) (MvPolynomial (Fin c × Fin r) K) :=
 lemma matrix_coord_submatrix₁ :
     (matrix_coord K r c).submatrix (Fin.castLE (Nat.le_add_right r c)) id = 1 := by
   apply Matrix.ext; intro p q
-  simp only [submatrix_apply, id_eq, of_apply, Fin.coe_castLE, Fin.is_lt, ↓reduceDite]
+  simp only [submatrix_apply, id_eq, of_apply, Fin.coe_castLE, Fin.is_lt, ↓reduceDIte]
   by_cases h : p = q
-  · simp only [h, ↓reduceIte, one_apply_eq]
+  · simp only [h, ↓reduceIte]; rw [h, one_apply_eq]
   · simp only [ne_eq, h, not_false_eq_true, one_apply_ne, ite_eq_right_iff, one_ne_zero, imp_false]
     rw [← Fin.ext_iff]; intro h'; exfalso; exact h h'
 
@@ -107,7 +107,7 @@ lemma matrix_coord_submatrix₂ : (matrix_coord K r c).submatrix
     (fun i ↦ ⟨i.1 + r, by have := i.2; omega⟩ : Fin c → Fin (r + c)) id
     = matrix_X K r c := by
   apply Matrix.ext; intro p q
-  simp only [submatrix_apply, id_eq, of_apply, add_lt_iff_neg_right, not_lt_zero', ↓reduceDite,
+  simp only [submatrix_apply, id_eq, of_apply, add_lt_iff_neg_right, not_lt_zero', ↓reduceDIte,
     add_tsub_cancel_right, Fin.eta]
 
 variable {K V r c}
@@ -152,9 +152,9 @@ lemma matrix_F_eq_id_of_diagonal (i : Basis (Fin (r + c)) K V) :
   apply Matrix.ext; intro a b
   simp only [matrix_F, Basis.toMatrix_self, MvPolynomial.algebraMap_eq, map_zero, _root_.map_one,
     Matrix.map_one, Matrix.one_mul, submatrix_apply, id_eq, of_apply, Fin.coe_castLE, Fin.is_lt,
-    ↓reduceDite]
+    ↓reduceDIte]
   by_cases h : a = b
-  · simp only [h, ↓reduceIte, one_apply_eq]
+  · simp only [h, ↓reduceIte]; rw [h, one_apply_eq]
   · simp only [ne_eq, h, not_false_eq_true, one_apply_ne, ite_eq_right_iff]
     rw [← Fin.ext_iff]
     simp only [h, false_implies]
@@ -164,7 +164,7 @@ lemma matrix_G_eq_of_diagonal (i : Basis (Fin (r + c)) K V) :
   apply Matrix.ext; intro _ _
   simp only [matrix_G, Basis.toMatrix_self, MvPolynomial.algebraMap_eq, map_zero, _root_.map_one,
     Matrix.map_one, Matrix.one_mul, submatrix_apply, id_eq, of_apply, add_lt_iff_neg_right,
-    not_lt_zero', ↓reduceDite, add_tsub_cancel_right, Fin.eta]
+    not_lt_zero', ↓reduceDIte, add_tsub_cancel_right, Fin.eta]
 
 /-- If `i` and `j` are in the type indexing charts, this is the equation of the intersection of
 the charts `U i` and `U j`, seen as a basic open subscheme of `U i`.
@@ -478,9 +478,14 @@ def transition'₁RingHom (i j k : Basis (Fin (r + c)) K V) :
     Localization.Away (equation r c j k) →+* (TensorProduct (MvPolynomial
     (Fin c × Fin r) K) (Localization.Away (equation r c i j))
     (Localization.Away (equation r c i k))) := by
-  refine IsLocalization.Away.lift (equation r c j k) ?_
+  refine IsLocalization.Away.lift (equation r c j k) ?_ (S := Localization.Away (equation r c j k))
     (g := Algebra.TensorProduct.includeLeftRingHom.comp (transition_aux r c i j))
-  rw [RingHom.comp_apply]; erw [transition_aux_equation, RingHom.map_mul, IsUnit.mul_iff]
+    (P := TensorProduct (MvPolynomial (Fin c × Fin r) K) (Localization.Away (equation r c i j))
+    (Localization.Away (equation r c i k)))
+  rw [RingHom.comp_apply]; erw [transition_aux_equation]; rw [RingHom.map_mul]
+  change IsUnit (_ * _)
+  rw [IsUnit.mul_iff (M := TensorProduct (MvPolynomial (Fin c × Fin r) K) (Localization.Away
+    (equation r c i j)) (Localization.Away (equation r c i k)))]
   constructor
   · rw [← RingHom.comp_apply, Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap,
       RingHom.comp_apply]
@@ -653,7 +658,7 @@ lemma transition'₁_G' (i j k : Basis (Fin (r + c)) K V) :
 
 lemma immersion_transition'₁_Spec (i j k : Basis (Fin (r + c)) K V) :
     transition'₁_Spec r c i j k ≫ open_immersion r c j k =
-    (Limits.pullback.fst ≫ transition_Spec r c i j) ≫ open_immersion r c j i := by
+    (Limits.pullback.fst _ _ ≫ transition_Spec r c i j) ≫ open_immersion r c j i := by
   rw [transition'₁_Spec, transition'₁]
   conv_lhs => congr; congr; rfl; change Spec.map (CommRingCat.ofHom (transition'₁RingHom r c i j k))
   rw [transition'₁RingHom]
@@ -661,7 +666,7 @@ lemma immersion_transition'₁_Spec (i j k : Basis (Fin (r + c)) K V) :
     (Localization.Away (equation r c i j)) (Localization.Away (equation r c i k))).inv)]
   rw [← Category.assoc, ← Category.assoc, Iso.inv_hom_id, Category.id_comp, ← Category.assoc]
   rw [← Category.assoc, pullbackSpecIso_inv_fst]
-  conv_rhs => rw [Spec.algebraMap, open_immersion, ← Spec.map_comp, ← Spec.map_comp]
+  conv_rhs => rw [open_immersion, ← Spec.map_comp, ← Spec.map_comp]
   conv_lhs => rw [open_immersion, ← Spec.map_comp]
   apply congrArg Spec.map
   rw [← CommRingCat.ringHom_comp_eq_comp, ← Category.assoc, ← CommRingCat.ringHom_comp_eq_comp]
@@ -674,7 +679,7 @@ lemma immersion_transition'₁_Spec (i j k : Basis (Fin (r + c)) K V) :
 
 lemma transition'₁_transition (i j k : Basis (Fin (r + c)) K V) :
     transition'₁_Spec r c i j k ≫ transition_Spec r c j k ≫ open_immersion r c k j =
-    Limits.pullback.snd ≫ transition_Spec r c i k ≫ open_immersion r c k i := by
+    Limits.pullback.snd _ _ ≫ transition_Spec r c i k ≫ open_immersion r c k i := by
   rw [transition'₁_Spec]
   rw [← cancel_epi (f := (pullbackSpecIso (MvPolynomial (Fin c × Fin r) K)
     (Localization.Away (equation r c i j)) (Localization.Away (equation r c i k))).inv)]
@@ -713,9 +718,13 @@ lemma transition'₁_transition (i j k : Basis (Fin (r + c)) K V) :
       MvPolynomial.eval₂_X, Algebra.TensorProduct.includeRight_apply]
   rw [AlgHom.coe_comp, ← Matrix.map_map, transition_aux_matrix_X]; erw [RingHom.map_matrix_mul']
   erw [transition'₁_G', transition'₁_F'_inv]
-  rw [Matrix.mul_assoc, ← Matrix.mul_assoc (matrix_F''ij r c i j k)⁻¹]
+  rw [Matrix.mul_assoc (α := TensorProduct (MvPolynomial (Fin c × Fin r) K) (Localization.Away
+    (equation r c i j)) (Localization.Away (equation r c i k))),
+    ← Matrix.mul_assoc (matrix_F''ij r c i j k)⁻¹]
   rw [Matrix.nonsing_inv_mul _
-    (by rw [← Matrix.isUnit_iff_isUnit_det]; exact matrix_F''ij_isUnit r c i j k), Matrix.one_mul]
+    (by rw [← Matrix.isUnit_iff_isUnit_det]; exact matrix_F''ij_isUnit r c i j k), Matrix.one_mul
+    (α := TensorProduct (MvPolynomial (Fin c × Fin r) K) (Localization.Away (equation r c i j))
+      (Localization.Away (equation r c i k)))]
   rw [AlgHom.coe_comp, ← Matrix.map_map, transition_aux_matrix_X]; erw [RingHom.map_matrix_mul']
   have heq : ((AlgHom.restrictScalars K Algebra.TensorProduct.includeRight).toRingHom).toFun ∘
     (algebraMap (MvPolynomial (Fin c × Fin r) K) (Localization.Away
@@ -811,12 +820,12 @@ def glueData : GlueData where
         Prod.mk.eta]
   t' i j k := by
     refine Limits.pullback.lift (transition'₁_Spec r c i j k)
-      (Limits.pullback.fst ≫ transition_Spec r c i j) ?_
+      (Limits.pullback.fst _ _ ≫ transition_Spec r c i j) ?_
     exact immersion_transition'₁_Spec _ _ _ _ _
   t_fac i j k := by rw [Limits.pullback.lift_snd]
   cocycle i j k := by
     simp only
-    rw [← cancel_mono Limits.pullback.snd]
+    rw [← cancel_mono (Limits.pullback.snd _ _)]
     conv_lhs => rw [Category.assoc, Category.assoc]
                 congr; rfl; congr; rfl
                 rw [Limits.pullback.lift_snd]
