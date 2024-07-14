@@ -263,7 +263,7 @@ theorem sym_inter (s t : Finset α) (n : ℕ) : (s ∩ t).sym n = s.sym n ∩ t.
 
 @[simp]
 theorem sym_union (s t : Finset α) (n : ℕ) : s.sym n ∪ t.sym n ⊆ (s ∪ t).sym n :=
-  union_subset (sym_mono (subset_union_left s t) n) (sym_mono (subset_union_right s t) n)
+  union_subset (sym_mono subset_union_left n) (sym_mono subset_union_right n)
 #align finset.sym_union Finset.sym_union
 
 theorem sym_fill_mem (a : α) {i : Fin (n + 1)} {m : Sym α (n - i)} (h : m ∈ s.sym (n - i)) :

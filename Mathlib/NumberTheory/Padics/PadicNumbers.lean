@@ -6,6 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Tactic.Peel
 
 #align_import number_theory.padics.padic_numbers from "leanprover-community/mathlib"@"b9b2114f7711fec1c1e055d507f082f8ceb2c3b7"
 
@@ -60,7 +61,6 @@ Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic
 
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
-
 
 noncomputable section
 
@@ -600,7 +600,8 @@ variable {p : ℕ} [Fact p.Prime]
 theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
-  change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε
+  -- `change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε` also works, but is very slow
+  suffices hyp : ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε by peel hyp with N; use N
   by_contra! h
   cases' cauchy₂ f hε with N hN
   rcases h N with ⟨i, hi, hge⟩

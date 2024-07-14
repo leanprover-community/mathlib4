@@ -639,7 +639,7 @@ inductive Point
 #align weierstrass_curve.point WeierstrassCurve.Affine.Point
 
 /-- For an algebraic extension `S` of `R`, the type of nonsingular `S`-rational points on `W`. -/
-scoped notation3 W "⟮" S "⟯" => Affine.Point <| baseChange W S
+scoped notation3:max W "⟮" S "⟯" => Affine.Point <| baseChange W S
 
 namespace Point
 
@@ -727,6 +727,13 @@ set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_self_of_Yeq WeierstrassCurve.Affine.Point.add_self_of_Y_eq
 
 @[simp]
+lemma add_of_imp {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
+    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) := by
+  by_cases hx : x₁ = x₂
+  · simp only [← add_def, add, dif_pos hx, dif_neg <| hxy hx]
+  · simp only [← add_def, add, dif_neg hx]
+
+@[simp]
 lemma add_of_Y_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
     some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun _ => hy) := by
@@ -766,6 +773,15 @@ lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
   add_of_X_ne hx
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.point.some_add_some_of_Xne' WeierstrassCurve.Affine.Point.add_of_X_ne'
+
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yeq := add_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yeq := add_self_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne := add_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Yne' := add_of_Y_ne'
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne := add_self_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias some_add_self_of_Yne' := add_self_of_Y_ne'
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne := add_of_X_ne
+@[deprecated (since := "2024-06-03")] alias some_add_some_of_Xne' := add_of_X_ne'
 
 end Point
 
@@ -1043,6 +1059,20 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
 end Point
 
 end BaseChange
+
+@[deprecated (since := "2024-06-03")] alias addY' := negAddY
+@[deprecated (since := "2024-06-03")] alias
+  nonsingular_add_of_eval_derivative_ne_zero := nonsingular_negAdd_of_eval_derivative_ne_zero
+@[deprecated (since := "2024-06-03")] alias slope_of_Yeq := slope_of_Y_eq
+@[deprecated (since := "2024-06-03")] alias slope_of_Yne := slope_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias slope_of_Xne := slope_of_X_ne
+@[deprecated (since := "2024-06-03")] alias slope_of_Yne_eq_eval := slope_of_Y_ne_eq_eval
+@[deprecated (since := "2024-06-03")] alias Yeq_of_Xeq := Y_eq_of_X_eq
+@[deprecated (since := "2024-06-03")] alias Yeq_of_Yne := Y_eq_of_Y_ne
+@[deprecated (since := "2024-06-03")] alias equation_add' := equation_negAdd
+@[deprecated (since := "2024-06-03")] alias nonsingular_add' := nonsingular_negAdd
+@[deprecated (since := "2024-06-03")] alias baseChange_addY' := baseChange_negAddY
+@[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
 
 end WeierstrassCurve.Affine
 

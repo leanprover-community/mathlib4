@@ -375,11 +375,11 @@ theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g :=
 
 section CancelMonoidWithZero
 
-variable [CancelMonoidWithZero R] {a : R}
+variable [MulZeroClass R] [IsCancelMulZero R] {a : R} {a : R}
 
 /-- Non-zero elements of an integral domain are regular. -/
 theorem isRegular_of_ne_zero (a0 : a ≠ 0) : IsRegular a :=
-  ⟨fun _ _ => (mul_right_inj' a0).mp, fun _ _ => (mul_left_inj' a0).mp⟩
+  ⟨fun _ _ => mul_left_cancel₀ a0, fun _ _ => mul_right_cancel₀ a0⟩
 #align is_regular_of_ne_zero isRegular_of_ne_zero
 
 /-- In a non-trivial integral domain, an element is regular iff it is non-zero. -/

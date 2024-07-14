@@ -704,7 +704,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     apply
       AnalyticSet.measurablySeparable ((hb.isOpen p.1.1.2).analyticSet_image f_cont)
         ((hb.isOpen p.1.2.2).analyticSet_image f_cont)
-    exact Disjoint.image p.2 (f_inj.injOn univ) (subset_univ _) (subset_univ _)
+    exact Disjoint.image p.2 f_inj.injOn (subset_univ _) (subset_univ _)
   choose q hq1 hq2 q_meas using this
   -- define sets `E i` and `F n` as in the proof sketch above
   let E : b → Set β := fun s =>
@@ -882,7 +882,7 @@ theorem _root_.Continuous.measurableEmbedding [BorelSpace β]
   { injective := f_inj
     measurable := f_cont.measurable
     measurableSet_image' := fun _u hu =>
-      hu.image_of_continuousOn_injOn f_cont.continuousOn (f_inj.injOn _) }
+      hu.image_of_continuousOn_injOn f_cont.continuousOn f_inj.injOn }
 #align continuous.measurable_embedding Continuous.measurableEmbedding
 
 /-- If `s` is Borel-measurable in a Polish space and `f` is continuous injective on `s`, then
@@ -911,7 +911,7 @@ theorem _root_.Measurable.measurableEmbedding {f : γ → α}
     (f_meas : Measurable f) (f_inj : Injective f) : MeasurableEmbedding f :=
   { injective := f_inj
     measurable := f_meas
-    measurableSet_image' := fun _u hu => hu.image_of_measurable_injOn f_meas (f_inj.injOn _) }
+    measurableSet_image' := fun _u hu => hu.image_of_measurable_injOn f_meas f_inj.injOn }
 #align measurable.measurable_embedding Measurable.measurableEmbedding
 
 /-- If one Polish topology on a type refines another, they have the same Borel sets. -/
@@ -1081,15 +1081,12 @@ theorem exists_subset_real_measurableEquiv : ∃ s : Set ℝ, MeasurableSet s �
       refine ⟨_, ?_, h_nonempty_equiv⟩
       letI : MeasurableSpace (Fin n) := borel (Fin n)
       haveI : BorelSpace (Fin n) := ⟨rfl⟩
-      refine' MeasurableEmbedding.measurableSet_range _
-      · infer_instance
-      · exact
-          continuous_of_discreteTopology.measurableEmbedding
-            (Nat.cast_injective.comp Fin.val_injective)
+      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
+      exact continuous_of_discreteTopology.measurableEmbedding
+        (Nat.cast_injective.comp Fin.val_injective)
     · refine ⟨_, ?_, measurableEquiv_range_coe_nat_of_infinite_of_countable α⟩
-      refine' MeasurableEmbedding.measurableSet_range _
-      · infer_instance
-      · exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
+      apply MeasurableEmbedding.measurableSet_range (mα := by infer_instance)
+      exact continuous_of_discreteTopology.measurableEmbedding Nat.cast_injective
   · refine
       ⟨univ, MeasurableSet.univ,
         ⟨(PolishSpace.measurableEquivOfNotCountable hα ?_ : α ≃ᵐ (univ : Set ℝ))⟩⟩

@@ -110,11 +110,11 @@ lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
 @[simp]
 lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
   erw [sInter_image]
-  rw [sInter_eq_biInter, (Subtype.val_injective.injOn _).image_biInter_eq hT]
+  rw [sInter_eq_biInter, Subtype.val_injective.injOn.image_biInter_eq hT]
 
 @[simp]
 lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
-  (Subtype.val_injective.injOn _).image_iInter_eq
+  Subtype.val_injective.injOn.image_iInter_eq
 
 @[simp]
 lemma image_val_union_self_right_eq : A ∪ ↑D = A :=

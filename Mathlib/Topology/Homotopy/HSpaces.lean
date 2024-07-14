@@ -17,7 +17,7 @@ This file defines H-spaces mainly following the approach proposed by Serre in hi
 spaces with a binary operation `⋀ : X → X → X` that is a homotopic-theoretic weakening of an
 operation what would make `X` into a topological monoid.
 In particular, there exists a "neutral element" `e : X` such that `fun x ↦e ⋀ x` and
-`fun x ↦x ⋀ e` are homotopic to the identity on `X`, see
+`fun x ↦ x ⋀ e` are homotopic to the identity on `X`, see
 [the Wikipedia page of H-spaces](https://en.wikipedia.org/wiki/H-space).
 
 Some notable properties of `H-spaces` are

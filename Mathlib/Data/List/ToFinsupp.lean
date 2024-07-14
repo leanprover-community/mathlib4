@@ -73,7 +73,7 @@ theorem toFinsupp_apply_fin (n : Fin l.length) : l.toFinsupp n = l.get n :=
   getD_eq_get _ _ _
 
 set_option linter.deprecated false in
-@[deprecated] -- 2023-04-10
+@[deprecated (since := "2023-04-10")]
 theorem toFinsupp_apply_lt' (hn : n < l.length) : l.toFinsupp n = l.nthLe n hn :=
   getD_eq_get _ _ _
 #align list.to_finsupp_apply_lt List.toFinsupp_apply_lt'

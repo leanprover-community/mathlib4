@@ -504,10 +504,14 @@ theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
   e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
 #align trivialization.source_homeomorph_base_set_prod_apply Trivialization.sourceHomeomorphBaseSetProd_apply
 
+/-- Auxilliary definition to avoid looping in `dsimp`
+with `Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
+protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBaseSetProd.symm
+
 @[simp]
 theorem sourceHomeomorphBaseSetProd_symm_apply (p : e.baseSet × F) :
     e.sourceHomeomorphBaseSetProd.symm p =
-      ⟨e.symm (p.1, p.2), (e.sourceHomeomorphBaseSetProd.symm p).2⟩ :=
+      ⟨e.symm (p.1, p.2), (sourceHomeomorphBaseSetProd_symm_apply.aux e p).2⟩ :=
   rfl
 #align trivialization.source_homeomorph_base_set_prod_symm_apply Trivialization.sourceHomeomorphBaseSetProd_symm_apply
 

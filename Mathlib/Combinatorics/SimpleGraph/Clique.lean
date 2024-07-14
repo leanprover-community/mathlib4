@@ -444,7 +444,7 @@ theorem CliqueFreeOn.of_succ (hs : G.CliqueFreeOn s (n + 1)) (ha : a ∈ s) :
   classical
   refine fun t hts ht => hs ?_ (ht.insert fun b hb => (hts hb).2)
   push_cast
-  exact Set.insert_subset_iff.2 ⟨ha, hts.trans <| Set.inter_subset_left _ _⟩
+  exact Set.insert_subset_iff.2 ⟨ha, hts.trans Set.inter_subset_left⟩
 #align simple_graph.clique_free_on.of_succ SimpleGraph.CliqueFreeOn.of_succ
 
 end CliqueFreeOn
@@ -505,14 +505,14 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : SimpleGraph α) (f : α ↪ β) :
   ext s
   constructor
   · rintro ⟨hs, rfl⟩
-    have hs' : (s.preimage f <| f.injective.injOn _).map f = s := by
+    have hs' : (s.preimage f f.injective.injOn).map f = s := by
       classical
       rw [map_eq_image, image_preimage, filter_true_of_mem]
       rintro a ha
       obtain ⟨b, hb, hba⟩ := exists_mem_ne (hn.lt_of_le' <| Finset.card_pos.2 ⟨a, ha⟩) a
       obtain ⟨c, _, _, hc, _⟩ := hs ha hb hba.symm
       exact ⟨c, hc⟩
-    refine ⟨s.preimage f <| f.injective.injOn _, ⟨?_, by rw [← card_map f, hs']⟩, hs'⟩
+    refine ⟨s.preimage f f.injective.injOn, ⟨?_, by rw [← card_map f, hs']⟩, hs'⟩
     rw [coe_preimage]
     exact fun a ha b hb hab => map_adj_apply.1 (hs ha hb <| f.injective.ne hab)
   · rintro ⟨s, hs, rfl⟩

@@ -96,8 +96,8 @@ def ContDiffWithinAtProp (n : ℕ∞) (f : H → H') (s : Set H) (x : H) : Prop 
 
 theorem contDiffWithinAtProp_self_source {f : E → H'} {s : Set E} {x : E} :
     ContDiffWithinAtProp 𝓘(𝕜, E) I' n f s x ↔ ContDiffWithinAt 𝕜 n (I' ∘ f) s x := by
-  simp_rw [ContDiffWithinAtProp, modelWithCornersSelf_coe, range_id, inter_univ]
-  rfl
+  simp_rw [ContDiffWithinAtProp, modelWithCornersSelf_coe, range_id, inter_univ,
+    modelWithCornersSelf_coe_symm, CompTriple.comp_eq, preimage_id_eq, id_eq]
 #align cont_diff_within_at_prop_self_source contDiffWithinAtProp_self_source
 
 theorem contDiffWithinAtProp_self {f : E → E'} {s : Set E} {x : E} :
@@ -116,8 +116,7 @@ it will lift nicely to manifolds. -/
 theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     (contDiffGroupoid ∞ I).LocalInvariantProp (contDiffGroupoid ∞ I')
       (ContDiffWithinAtProp I I' n) where
-  is_local := by
-    intro s x u f u_open xu
+  is_local {s x u f} u_open xu := by
     have : I.symm ⁻¹' (s ∩ u) ∩ range I = I.symm ⁻¹' s ∩ range I ∩ I.symm ⁻¹' u := by
       simp only [inter_right_comm, preimage_inter]
     rw [ContDiffWithinAtProp, ContDiffWithinAtProp, this]
@@ -127,8 +126,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
       rw [ModelWithCorners.left_inv]
       exact u_open.mem_nhds xu
     apply ContinuousAt.preimage_mem_nhds I.continuous_symm.continuousAt this
-  right_invariance' := by
-    intro s x f e he hx h
+  right_invariance' {s x f e} he hx h := by
     rw [ContDiffWithinAtProp] at h ⊢
     have : I x = (I ∘ e.symm ∘ I.symm) (I (e x)) := by simp only [hx, mfld_simps]
     rw [this] at h
@@ -140,15 +138,13 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
         simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], ?_⟩
     mfld_set_tac
-  congr_of_forall := by
-    intro s x f g h hx hf
+  congr_of_forall {s x f g} h hx hf := by
     apply hf.congr
     · intro y hy
       simp only [mfld_simps] at hy
       simp only [h, hy, mfld_simps]
     · simp only [hx, mfld_simps]
-  left_invariance' := by
-    intro s x f e' he' hs hx h
+  left_invariance' {s x f e'} he' hs hx h := by
     rw [ContDiffWithinAtProp] at h ⊢
     have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ range I' := by
       simp only [hx, mfld_simps]
@@ -161,7 +157,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
 theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
     (h : ContDiffWithinAtProp I I' n f s x) : ContDiffWithinAtProp I I' n f t x := by
   refine h.mono_of_mem ?_
-  refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin <| inter_subset_right _ _)
+  refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin inter_subset_right)
   rwa [← Filter.mem_map, ← I.image_eq, I.symm_map_nhdsWithin_image]
 #align cont_diff_within_at_prop_mono_of_mem contDiffWithinAtProp_mono_of_mem
 
@@ -838,7 +834,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds {n : ℕ} :
       rintro _ ⟨y, hy, rfl⟩
       exact (hsub hy).2.2
     rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, PartialEquiv.image_symm_image_of_subset_target]
-    exact hsub.trans (inter_subset_left _ _)
+    exact hsub.trans inter_subset_left
 #align cont_mdiff_within_at_iff_cont_mdiff_on_nhds contMDiffWithinAt_iff_contMDiffOn_nhds
 
 /-- A function is `C^n` at a point, for `n : ℕ`, if and only if it is `C^n` on

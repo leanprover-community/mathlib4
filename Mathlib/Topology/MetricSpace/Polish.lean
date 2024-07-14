@@ -109,7 +109,7 @@ instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α
   letI := upgradePolishSpace α
   infer_instance
 
-@[deprecated] -- 2024-02-23
+@[deprecated (since := "2024-02-23")]
 theorem t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] : T2Space α := inferInstance
 #align polish_space.t2_space PolishSpace.t2Space
 

@@ -109,4 +109,11 @@ noncomputable instance evaluationPreservesLimitsOfSize (X : Cᵒᵖ) :
 noncomputable instance forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v₂, v} (forget.{v} R) where
 
+noncomputable instance :
+     PreservesFiniteLimits (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _) :=
+  compPreservesFiniteLimits (SheafOfModules.forget.{v} R) (PresheafOfModules.toPresheaf R.val)
+
+noncomputable instance : PreservesFiniteLimits (SheafOfModules.toSheaf.{v} R) :=
+  preservesFiniteLimitsOfReflectsOfPreserves _ (sheafToPresheaf _ _)
+
 end SheafOfModules

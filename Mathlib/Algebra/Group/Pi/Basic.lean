@@ -148,25 +148,9 @@ theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) �
 #align pi.smul_comp Pi.smul_comp
 #align pi.vadd_comp Pi.vadd_comp
 
-/-!
-Porting note: `bit0` and `bit1` are deprecated. This section can be removed entirely
-(without replacement?).
--/
-section deprecated -- since the port, 2022-11-28
-
-set_option linter.deprecated false
-
-@[simp, deprecated]
-theorem bit0_apply [∀ i, Add <| f i] : (bit0 x) i = bit0 (x i) :=
-  rfl
-#align pi.bit0_apply Pi.bit0_apply
-
-@[simp, deprecated]
-theorem bit1_apply [∀ i, Add <| f i] [∀ i, One <| f i] : (bit1 x) i = bit1 (x i) :=
-  rfl
-#align pi.bit1_apply Pi.bit1_apply
-
-end deprecated
+-- Use `Pi.ofNat_apply` instead
+#noalign pi.bit0_apply
+#noalign pi.bit1_apply
 
 @[to_additive]
 instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=

@@ -7,11 +7,8 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.ToDFinsupp
-import Batteries.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
-import Batteries.Data.LazyList
-import Batteries.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
 
@@ -191,7 +188,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
       have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval
       rw [(_ : List.dlookup a A = od)]
       · simpa using hod
-      · simpa [List.dlookup_dedupKeys, WithTop.some_eq_coe]
+      · simpa [List.dlookup_dedupKeys]
     · intro h
       use (A.dlookup a).getD (0 : β)
       rw [← List.dlookup_dedupKeys] at h ⊢

@@ -360,10 +360,14 @@ theorem mk_coe' (e : A₁ ≃ₐ[R] A₂) (f h₁ h₂ h₃ h₄ h₅) :
   symm_bijective.injective <| ext fun _ => rfl
 #align alg_equiv.mk_coe' AlgEquiv.mk_coe'
 
+/-- Auxilliary definition to avoid looping in `dsimp` with `AlgEquiv.symm_mk`. -/
+protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅) :=
+  (⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm
+
 @[simp]
 theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm =
-      {(⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂).symm with
+      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ with
         toFun := f'
         invFun := f } :=
   rfl
@@ -624,7 +628,8 @@ section OfLinearEquiv
 
 variable (l : A₁ ≃ₗ[R] A₂) (map_one : l 1 = 1) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
 
-/-- Upgrade a linear equivalence to an algebra equivalence,
+/--
+Upgrade a linear equivalence to an algebra equivalence,
 given that it distributes over multiplication and the identity
 -/
 @[simps apply]
@@ -636,11 +641,15 @@ def ofLinearEquiv : A₁ ≃ₐ[R] A₂ :=
     commutes' := (AlgHom.ofLinearMap l map_one map_mul : A₁ →ₐ[R] A₂).commutes }
 #align alg_equiv.of_linear_equiv AlgEquiv.ofLinearEquivₓ
 
+/-- Auxilliary definition to avoid looping in `dsimp` with `AlgEquiv.ofLinearEquiv_symm`. -/
+protected def ofLinearEquiv_symm.aux := (ofLinearEquiv l map_one map_mul).symm
+
 @[simp]
 theorem ofLinearEquiv_symm :
     (ofLinearEquiv l map_one map_mul).symm =
-      ofLinearEquiv l.symm (ofLinearEquiv l map_one map_mul).symm.map_one
-        (ofLinearEquiv l map_one map_mul).symm.map_mul :=
+      ofLinearEquiv l.symm
+        (ofLinearEquiv_symm.aux l map_one map_mul).map_one
+        (ofLinearEquiv_symm.aux l map_one map_mul).map_mul :=
   rfl
 #align alg_equiv.of_linear_equiv_symm AlgEquiv.ofLinearEquiv_symm
 

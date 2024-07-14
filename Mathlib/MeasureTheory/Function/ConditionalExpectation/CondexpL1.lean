@@ -441,7 +441,7 @@ theorem setIntegral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
     simp_rw [Set.inter_comm]
     rw [← Set.inter_iUnion, iUnion_spanningSets (μ.trim hm), Set.inter_univ]
   have hS_finite : ∀ i, μ (S i ∩ s) < ∞ := by
-    refine fun i => (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+    refine fun i => (measure_mono Set.inter_subset_left).trans_lt ?_
     have hS_finite_trim := measure_spanningSets_lt_top (μ.trim hm) i
     rwa [trim_measurableSet_eq hm (hS_meas i)] at hS_finite_trim
   have h_mono : Monotone fun i => S i ∩ s := by

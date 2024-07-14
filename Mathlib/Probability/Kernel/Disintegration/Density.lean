@@ -235,9 +235,8 @@ lemma setIntegral_densityProcess_of_mem (hκν : fst κ ≤ ν) [hν : IsFiniteK
   rw [div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel h0, mul_one]
   exact measure_ne_top _ _
 
-@[deprecated]
-alias set_integral_densityProcess_of_mem :=
-  setIntegral_densityProcess_of_mem -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_densityProcess_of_mem := setIntegral_densityProcess_of_mem
 
 lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ}
@@ -248,11 +247,11 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   simp_rw [sUnion_eq_iUnion]
   have h_disj : Pairwise (Disjoint on fun i : S ↦ (i : Set γ)) := by
     intro u v huv
-    -- Adaptation note: nightly-2024-03-16
-    -- Previously `Function.onFun` unfolded in the following `simp only`,
-    -- but now needs a `rw`.
-    -- This may be a bug: a no import minimization may be required.
-    -- simp only [Finset.coe_sort_coe, Function.onFun]
+    #adaptation_note /-- nightly-2024-03-16
+    Previously `Function.onFun` unfolded in the following `simp only`,
+    but now needs a `rw`.
+    This may be a bug: a no import minimization may be required.
+    simp only [Finset.coe_sort_coe, Function.onFun] -/
     rw [Function.onFun]
     refine disjoint_countablePartition (hS_subset (by simp)) (hS_subset (by simp)) ?_
     rwa [ne_eq, ← Subtype.ext_iff]
@@ -268,9 +267,8 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   · exact h_disj
   · exact (integrable_densityProcess hκν _ _ hs).integrableOn
 
-@[deprecated]
-alias set_integral_densityProcess :=
-  setIntegral_densityProcess -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_densityProcess := setIntegral_densityProcess
 
 lemma integral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -283,9 +281,8 @@ lemma setIntegral_densityProcess_of_le (hκν : fst κ ≤ ν)
     ∫ x in A, densityProcess κ ν m a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal :=
   setIntegral_densityProcess hκν m a hs ((countableFiltration γ).mono hnm A hA)
 
-@[deprecated]
-alias set_integral_densityProcess_of_le :=
-  setIntegral_densityProcess_of_le -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_densityProcess_of_le := setIntegral_densityProcess_of_le
 
 lemma condexp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     {i j : ℕ} (hij : i ≤ j) (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -537,9 +534,8 @@ lemma tendsto_setIntegral_densityProcess (hκν : fst κ ≤ ν)
   refine snorm_congr_ae ?_
   exact EventuallyEq.rfl.sub (density_ae_eq_limitProcess hκν a hs).symm
 
-@[deprecated]
-alias tendsto_set_integral_densityProcess :=
-  tendsto_setIntegral_densityProcess -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias tendsto_set_integral_densityProcess := tendsto_setIntegral_densityProcess
 
 /-- Auxiliary lemma for `setIntegral_density`. -/
 lemma setIntegral_density_of_measurableSet (hκν : fst κ ≤ ν)
@@ -560,9 +556,8 @@ lemma setIntegral_density_of_measurableSet (hκν : fst κ ≤ ν)
   have h := tendsto_setIntegral_densityProcess hκν a hs A
   rw [h.limsup_eq]
 
-@[deprecated]
-alias set_integral_density_of_measurableSet :=
-  setIntegral_density_of_measurableSet -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_density_of_measurableSet := setIntegral_density_of_measurableSet
 
 lemma integral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -609,9 +604,8 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
         exact fun i ↦ (hf i).prod hs
     · rwa [iSup_countableFiltration] at hf
 
-@[deprecated]
-alias set_integral_density :=
-  setIntegral_density -- deprecated on 2024-04-17
+@[deprecated (since := "2024-04-17")]
+alias set_integral_density := setIntegral_density
 
 lemma set_lintegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :

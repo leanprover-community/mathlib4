@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
-begs="(theorem|lemma|inductive|structure|def|class|instance)"
+begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
 
 if [ "${1}" == "short" ]
 then
@@ -82,8 +82,8 @@ else
       rest="instance"
       for(i=7; i<=NF-1; i++){rest=rest" "$i}
       # remove trailing `where` or `:=`
-      gsub(/ where.*/, "", rest)
-      gsub(/ :=.*/, "", rest)
+      gsub(/ where$/, "", rest)
+      gsub(/ :=$/, "", rest)
       # accumulate in `acc` the whole line with value the 4th field -- this is the +- field.
       acc[rest]=acc[rest] $4
       # if the line is not a nameless instance, accumulate the declaration name and +-
@@ -111,7 +111,8 @@ else
   echo "No declarations were harmed in the making of this PR! 🐙"
 fi
 
-printf $'\n---\n\nYou can run this locally as follows
+printf $'<details>
+  <summary>You can run this locally as follows</summary>\n\n
 ```bash
 ## summary with just the declaration names:
 ./scripts/no_lost_declarations.sh short <optional_commit>
@@ -119,11 +120,17 @@ printf $'\n---\n\nYou can run this locally as follows
 ## more verbose report:
 ./scripts/no_lost_declarations.sh <optional_commit>
 ```
-'
+</details>'
  : <<ReferenceTest
 theorem oh hello
-inductive counts even if it is not lean code
+inductive triggers the count even if it is not lean code
 instance [I pretend] {to be a nameless} instance where
 def ohMy im a def
 instance [I also pretend] {to be a nameless} instance :=
+instance withAName {to be a nameless} instance :=
+instance (priority := high) {to be a nameless} instance :=
+def testingLongDiff1 im a def
+def testingLongDiff2 im a def
+def testingLongDiff3 im a def
+def testingLongDiff4 im a def
 ReferenceTest

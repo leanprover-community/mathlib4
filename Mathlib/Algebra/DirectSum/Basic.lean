@@ -128,6 +128,9 @@ theorem of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
   DFinsupp.single_eq_of_ne h
 #align direct_sum.of_eq_of_ne DirectSum.of_eq_of_ne
 
+lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq.recOn h x else 0 :=
+  DFinsupp.single_apply
+
 @[simp]
 theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
   DFinsupp.support_zero
@@ -148,6 +151,12 @@ theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i
     (∑ i ∈ x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 #align direct_sum.sum_support_of DirectSum.sum_support_of
+
+theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
+    ∑ i ∈ Finset.univ, of β i (x i) = x := by
+  apply DFinsupp.ext (fun i ↦ ?_)
+  rw [DFinsupp.finset_sum_apply]
+  simp [of_apply]
 
 variable {β}
 

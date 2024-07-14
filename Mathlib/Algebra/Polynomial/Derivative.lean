@@ -137,15 +137,8 @@ theorem derivative_one : derivative (1 : R[X]) = 0 :=
   derivative_C
 #align polynomial.derivative_one Polynomial.derivative_one
 
-set_option linter.deprecated false in
--- Porting note (#10618): removed `simp`: `simp` can prove it.
-theorem derivative_bit0 {a : R[X]} : derivative (bit0 a) = bit0 (derivative a) := by simp [bit0]
-#align polynomial.derivative_bit0 Polynomial.derivative_bit0
-
-set_option linter.deprecated false in
--- Porting note (#10618): removed `simp`: `simp` can prove it.
-theorem derivative_bit1 {a : R[X]} : derivative (bit1 a) = bit0 (derivative a) := by simp [bit1]
-#align polynomial.derivative_bit1 Polynomial.derivative_bit1
+#noalign polynomial.derivative_bit0
+#noalign polynomial.derivative_bit1
 
 -- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_add {f g : R[X]} : derivative (f + g) = derivative f + derivative g :=

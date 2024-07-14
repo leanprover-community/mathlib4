@@ -724,7 +724,7 @@ def topEquiv : (⊤ : Submonoid M) ≃* M where
 #align submonoid.top_equiv_symm_apply_coe Submonoid.topEquiv_symm_apply_coe
 
 @[to_additive (attr := simp)]
-theorem topEquiv_toMonoidHom : (topEquiv : _ ≃* M).toMonoidHom = (⊤ : Submonoid M).subtype :=
+theorem topEquiv_toMonoidHom : ((topEquiv : _ ≃* M) : _ →* M) = (⊤ : Submonoid M).subtype :=
   rfl
 #align submonoid.top_equiv_to_monoid_hom Submonoid.topEquiv_toMonoidHom
 #align add_submonoid.top_equiv_to_add_monoid_hom AddSubmonoid.topEquiv_toAddMonoidHom
@@ -868,13 +868,13 @@ theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Submonoid M) :
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
-    K.comap f.toMonoidHom = K.map f.symm.toMonoidHom :=
+    K.comap f = K.map f.symm :=
   (map_equiv_eq_comap_symm f.symm K).symm
 #align submonoid.comap_equiv_eq_map_symm Submonoid.comap_equiv_eq_map_symm
 #align add_submonoid.comap_equiv_eq_map_symm AddSubmonoid.comap_equiv_eq_map_symm
 
 @[to_additive (attr := simp)]
-theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f.toMonoidHom = ⊤ :=
+theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f = ⊤ :=
   SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 #align submonoid.map_equiv_top Submonoid.map_equiv_top
 #align add_submonoid.map_equiv_top AddSubmonoid.map_equiv_top
@@ -1382,7 +1382,7 @@ See `MonoidHom.submonoidMap` for a variant for `MonoidHom`s. -/
       "An `AddEquiv` `φ` between two additive monoids `M` and `N` induces an `AddEquiv`
       between a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`. See
       `AddMonoidHom.addSubmonoidMap` for a variant for `AddMonoidHom`s."]
-def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map e.toMonoidHom :=
+def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map e :=
   { (e : M ≃ N).image S with map_mul' := fun _ _ => Subtype.ext (map_mul e _ _) }
 #align mul_equiv.submonoid_map MulEquiv.submonoidMap
 #align add_equiv.add_submonoid_map AddEquiv.addSubmonoidMap

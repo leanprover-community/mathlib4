@@ -39,10 +39,10 @@ info: Try this: rw [mul_left_eq_self]
 example [Group G] (h : G) : 1 * h = h := by
   rw?
 
--- Adaptation note: nightly-2024-03-27
--- `rw?` upstream no longer uses `MVarId.applyRefl`, so it can't deal with `Iff` goals.
--- I'm out of time to deal with this, so I'll just drop the test for now.
--- This may need to wait until the next release.
+#adaptation_note /-- nightly-2024-03-27
+`rw?` upstream no longer uses `MVarId.applyRefl`, so it can't deal with `Iff` goals.
+I'm out of time to deal with this, so I'll just drop the test for now.
+This may need to wait until the next release. -/
 -- /--
 -- info: Try this: rw [Nat.prime_iff]
 -- -- "no goals"

@@ -327,10 +327,11 @@ theorem inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass A] (x : Unitizatio
 /-- To show a property hold on all `Unitization R A` it suffices to show it holds
 on terms of the form `inl r + a`.
 
-This can be used as `induction x using Unitization.ind`. -/
+This can be used as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 theorem ind {R A} [AddZeroClass R] [AddZeroClass A] {P : Unitization R A → Prop}
-    (h : ∀ (r : R) (a : A), P (inl r + (a : Unitization R A))) (x) : P x :=
-  inl_fst_add_inr_snd_eq x ▸ h x.1 x.2
+    (inl_add_inr : ∀ (r : R) (a : A), P (inl r + (a : Unitization R A))) (x) : P x :=
+  inl_fst_add_inr_snd_eq x ▸ inl_add_inr x.1 x.2
 #align unitization.ind Unitization.ind
 
 /-- This cannot be marked `@[ext]` as it ends up being used instead of `LinearMap.prod_ext` when
@@ -600,11 +601,11 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
 instance instAlgebra : Algebra S (Unitization R A) :=
   { (Unitization.inlRingHom R A).comp (algebraMap S R) with
     commutes' := fun s x => by
-      induction' x using Unitization.ind with r a
+      induction' x with r a
       show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
       rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
     smul_def' := fun s x => by
-      induction' x using Unitization.ind with r a
+      induction' x with r a
       show _ = inl (algebraMap S R s) * _
       rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr, smul_one_mul,
         inl_smul, inr_smul, smul_one_smul] }
@@ -685,7 +686,7 @@ theorem algHom_ext {F : Type*}
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
     φ = ψ := by
   refine DFunLike.ext φ ψ (fun x ↦ ?_)
-  induction x using Unitization.ind
+  induction x
   simp only [map_add, ← algebraMap_eq_inl, h, h']
 #align unitization.alg_hom_ext Unitization.algHom_ext
 
@@ -717,8 +718,8 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →
   toFun := fun x => algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
   map_mul' := fun x y => by
-    induction' x using Unitization.ind with x_r x_a
-    induction' y using Unitization.ind with y_r y_a
+    induction' x with x_r x_a
+    induction' y with y_r y_a
     simp only [fst_mul, fst_add, fst_inl, fst_inr, snd_mul, snd_add, snd_inl, snd_inr, add_zero,
       map_mul, zero_add, map_add, map_smul φ]
     rw [add_mul, mul_add, mul_add]
@@ -726,8 +727,8 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →
     simp only [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
   map_zero' := by simp only [fst_zero, map_zero, snd_zero, φ.map_zero, add_zero]
   map_add' := fun x y => by
-    induction' x using Unitization.ind with x_r x_a
-    induction' y using Unitization.ind with y_r y_a
+    induction' x with x_r x_a
+    induction' y with y_r y_a
     simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
       zero_add, φ.map_add]
     rw [add_add_add_comm]
@@ -779,7 +780,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
     map_star' := fun x => by
-      induction x using Unitization.ind
+      induction x
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv := fun φ => by ext; simp,

@@ -159,13 +159,13 @@ theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ :=
 
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
     IntegrableOn f s (μ.restrict t) := by
-  rw [IntegrableOn, Measure.restrict_restrict hs]; exact h.mono_set (inter_subset_left _ _)
+  rw [IntegrableOn, Measure.restrict_restrict hs]; exact h.mono_set inter_subset_left
 #align measure_theory.integrable_on.restrict MeasureTheory.IntegrableOn.restrict
 
 theorem IntegrableOn.inter_of_restrict (h : IntegrableOn f s (μ.restrict t)) :
     IntegrableOn f (s ∩ t) μ := by
-  have := h.mono_set (inter_subset_left s t)
-  rwa [IntegrableOn, μ.restrict_restrict_of_subset (inter_subset_right s t)] at this
+  have := h.mono_set (inter_subset_left (t := t))
+  rwa [IntegrableOn, μ.restrict_restrict_of_subset inter_subset_right] at this
 
 lemma Integrable.piecewise [DecidablePred (· ∈ s)]
     (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
@@ -175,11 +175,11 @@ lemma Integrable.piecewise [DecidablePred (· ∈ s)]
   exact Memℒp.piecewise hs hf hg
 
 theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f s μ :=
-  h.mono_set <| subset_union_left _ _
+  h.mono_set subset_union_left
 #align measure_theory.integrable_on.left_of_union MeasureTheory.IntegrableOn.left_of_union
 
 theorem IntegrableOn.right_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f t μ :=
-  h.mono_set <| subset_union_right _ _
+  h.mono_set subset_union_right
 #align measure_theory.integrable_on.right_of_union MeasureTheory.IntegrableOn.right_of_union
 
 theorem IntegrableOn.union (hs : IntegrableOn f s μ) (ht : IntegrableOn f t μ) :
@@ -336,7 +336,7 @@ theorem IntegrableOn.of_ae_diff_eq_zero (hf : IntegrableOn f s μ) (ht : NullMea
     · exact (hxt ⟨hx.1, h'x⟩).symm
   apply (A.union B).mono_set _
   rw [union_diff_self]
-  exact subset_union_right _ _
+  exact subset_union_right
 #align measure_theory.integrable_on.of_ae_diff_eq_zero MeasureTheory.IntegrableOn.of_ae_diff_eq_zero
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
@@ -432,7 +432,7 @@ protected theorem IntegrableAtFilter.add {f g : α → E}
   rcases hf with ⟨s, sl, hs⟩
   rcases hg with ⟨t, tl, ht⟩
   refine ⟨s ∩ t, inter_mem sl tl, ?_⟩
-  exact (hs.mono_set (inter_subset_left _ _)).add (ht.mono_set (inter_subset_right _ _))
+  exact (hs.mono_set inter_subset_left).add (ht.mono_set inter_subset_right)
 
 protected theorem IntegrableAtFilter.neg {f : α → E} (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (-f) l μ := by
@@ -552,9 +552,9 @@ lemma IntegrableAtFilter.eq_zero_of_tendsto
   obtain ⟨ε, εpos, hε⟩ : ∃ (ε : ℝ), 0 < ε ∧ ε < ‖a‖ := exists_between (norm_pos_iff'.mpr H)
   rcases h with ⟨u, ul, hu⟩
   let v := u ∩ {b | ε < ‖f b‖}
-  have hv : IntegrableOn f v μ := hu.mono_set (inter_subset_left _ _)
+  have hv : IntegrableOn f v μ := hu.mono_set inter_subset_left
   have vl : v ∈ l := inter_mem ul ((tendsto_order.1 hf.norm).1 _ hε)
-  have : μ.restrict v v < ∞ := lt_of_le_of_lt (measure_mono (inter_subset_right _ _))
+  have : μ.restrict v v < ∞ := lt_of_le_of_lt (measure_mono inter_subset_right)
     (Integrable.measure_gt_lt_top hv.norm εpos)
   have : μ v ≠ ∞ := ne_of_lt (by simpa only [Measure.restrict_apply_self])
   exact this (h' v vl)

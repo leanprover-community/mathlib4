@@ -409,7 +409,7 @@ theorem prod_map (s : Finset α) (e : α ↪ γ) (f : γ → β) :
 
 @[to_additive]
 lemma prod_attach (s : Finset α) (f : α → β) : ∏ x ∈ s.attach, f x = ∏ x ∈ s, f x := by
-  classical rw [← prod_image $ Subtype.coe_injective.injOn _, attach_image_val]
+  classical rw [← prod_image Subtype.coe_injective.injOn, attach_image_val]
 #align finset.prod_attach Finset.prod_attach
 #align finset.sum_attach Finset.sum_attach
 
@@ -1005,7 +1005,7 @@ theorem prod_eq_single {s : Finset α} {f : α → β} (a : α) (h₀ : ∀ b �
 lemma prod_union_eq_left [DecidableEq α] (hs : ∀ a ∈ s₂, a ∉ s₁ → f a = 1) :
     ∏ a ∈ s₁ ∪ s₂, f a = ∏ a ∈ s₁, f a :=
   Eq.symm <|
-    prod_subset (subset_union_left _ _) fun _a ha ha' ↦ hs _ ((mem_union.1 ha).resolve_left ha') ha'
+    prod_subset subset_union_left fun _a ha ha' ↦ hs _ ((mem_union.1 ha).resolve_left ha') ha'
 
 @[to_additive]
 lemma prod_union_eq_right [DecidableEq α] (hs : ∀ a ∈ s₁, a ∉ s₂ → f a = 1) :
@@ -1978,7 +1978,7 @@ removing that point, if present, from a `Finset`."]
 theorem prod_erase [DecidableEq α] (s : Finset α) {f : α → β} {a : α} (h : f a = 1) :
     ∏ x ∈ s.erase a, f x = ∏ x ∈ s, f x := by
   rw [← sdiff_singleton_eq_erase]
-  refine prod_subset (sdiff_subset _ _) fun x hx hnx => ?_
+  refine prod_subset sdiff_subset fun x hx hnx => ?_
   rw [sdiff_singleton_eq_erase] at hnx
   rwa [eq_of_mem_of_not_mem_erase hx hnx]
 #align finset.prod_erase Finset.prod_erase
@@ -2282,7 +2282,7 @@ lemma _root_.Equiv.prod_comp (e : ι ≃ κ) (g : κ → α) : ∏ i, g (e i) = 
 @[to_additive]
 lemma prod_of_injective (e : ι → κ) (he : Injective e) (f : ι → α) (g : κ → α)
     (h' : ∀ i ∉ Set.range e, g i = 1) (h : ∀ i, f i = g (e i)) : ∏ i, f i = ∏ j, g j :=
-  prod_of_injOn e (he.injOn _) (by simp) (by simpa using h') (fun i _ ↦ h i)
+  prod_of_injOn e he.injOn (by simp) (by simpa using h') (fun i _ ↦ h i)
 
 @[to_additive]
 lemma prod_fiberwise [DecidableEq κ] (g : ι → κ) (f : ι → α) :
@@ -2407,6 +2407,11 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 #align list.prod_to_finset List.prod_toFinset
 #align list.sum_to_finset List.sum_toFinset
 
+@[simp]
+theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
+    ∑ a in l.toFinset, l.count a = l.length := by
+  simpa using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
+
 end List
 
 namespace Multiset
@@ -2450,11 +2455,8 @@ theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multi
 variable [DecidableEq α]
 
 @[simp]
-theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a ∈ s.toFinset, s.count a = card s :=
-  calc
-    ∑ a ∈ s.toFinset, s.count a = ∑ a ∈ s.toFinset, s.count a • 1 := by simp
-    _ = (s.map fun _ => 1).sum := (Finset.sum_multiset_map_count _ _).symm
-    _ = card s := by simp
+theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a = card s := by
+  simpa using (Finset.sum_multiset_map_count s (fun _ => (1 : ℕ))).symm
 #align multiset.to_finset_sum_count_eq Multiset.toFinset_sum_count_eq
 
 @[simp]

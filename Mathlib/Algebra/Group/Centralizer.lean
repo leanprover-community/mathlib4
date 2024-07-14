@@ -143,6 +143,22 @@ theorem centralizer_eq_univ [CommSemigroup M] : centralizer S = univ :=
 #align set.centralizer_eq_univ Set.centralizer_eq_univ
 #align set.add_centralizer_eq_univ Set.addCentralizer_eq_univ
 
+@[to_additive subset_addCentralizer_addCentralizer]
+lemma subset_centralizer_centralizer [Mul M] {s : Set M} : s ⊆ s.centralizer.centralizer := by
+  intro x hx
+  simp only [Set.mem_centralizer_iff]
+  exact fun y hy => (hy x hx).symm
+
+@[to_additive (attr := simp) addCentralizer_addCentralizer_addCentralizer]
+lemma centralizer_centralizer_centralizer [Mul M] {s : Set M} :
+    s.centralizer.centralizer.centralizer = s.centralizer := by
+  refine Set.Subset.antisymm ?_ Set.subset_centralizer_centralizer
+  intro x hx
+  rw [Set.mem_centralizer_iff]
+  intro y hy
+  rw [Set.mem_centralizer_iff] at hx
+  exact hx y <| Set.subset_centralizer_centralizer hy
+
 end Set
 
 -- Guard against import creep

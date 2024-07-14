@@ -17,6 +17,7 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
+assert_not_exists OrderedCommMonoid
 assert_not_exists Field
 assert_not_exists PNat
 assert_not_exists Nat.dvd_mul

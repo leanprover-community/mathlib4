@@ -90,7 +90,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     refine ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel hts), ?_, ?_, ?_⟩
     · simp only [extend_parts, mem_insert, forall_eq_or_imp, and_iff_left hR₁, htn, hn]
       exact ite_eq_or_eq _ _ _
-    · exact fun x hx => (card_le_card <| sdiff_subset _ _).trans (Nat.lt_succ_iff.1 <| h _ hx)
+    · exact fun x hx => (card_le_card sdiff_subset).trans (Nat.lt_succ_iff.1 <| h _ hx)
     simp_rw [extend_parts, filter_insert, htn, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
@@ -115,7 +115,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     refine ⟨?_, fun x hx => (card_le_card ?_).trans <| hR₂ x ?_⟩
     · simp only [filter_insert, if_pos htu, biUnion_insert, mem_erase, id]
       obtain rfl | hut := eq_or_ne u t
-      · rw [sdiff_eq_empty_iff_subset.2 (subset_union_left _ _)]
+      · rw [sdiff_eq_empty_iff_subset.2 subset_union_left]
         exact bot_le
       refine
         (card_le_card fun i => ?_).trans
@@ -124,7 +124,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
       simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
         id, not_or]
       exact fun hi₁ hi₂ hi₃ =>
-        ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans <| sdiff_subset _ _⟩
+        ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans sdiff_subset⟩
     · apply sdiff_subset_sdiff Subset.rfl (biUnion_subset_biUnion_of_subset_left _ _)
       exact filter_subset_filter _ (subset_insert _ _)
     simp only [avoid, ofErase, mem_erase, mem_image, bot_eq_empty]

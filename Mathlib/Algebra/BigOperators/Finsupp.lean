@@ -237,37 +237,12 @@ theorem map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
 #align map_finsupp_prod map_finsupp_prod
 #align map_finsupp_sum map_finsupp_sum
 
-/-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[to_additive (attr := deprecated (since := "2021-12-30"))
-  "Deprecated, use `_root_.map_finsupp_sum` instead."]
-protected theorem MulEquiv.map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] (h : N ≃* P)
-    (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  map_finsupp_prod h f g
-#align mul_equiv.map_finsupp_prod MulEquiv.map_finsupp_prod
-#align add_equiv.map_finsupp_sum AddEquiv.map_finsupp_sum
-
-/-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[to_additive (attr := deprecated (since := "2021-12-30"))
-  "Deprecated, use `_root_.map_finsupp_sum` instead."]
-protected theorem MonoidHom.map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] (h : N →* P)
-    (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  map_finsupp_prod h f g
-#align monoid_hom.map_finsupp_prod MonoidHom.map_finsupp_prod
-#align add_monoid_hom.map_finsupp_sum AddMonoidHom.map_finsupp_sum
-
-/-- Deprecated, use `_root_.map_finsupp_sum` instead. -/
-@[deprecated map_finsupp_sum (since := "2021-12-30")]
-protected theorem RingHom.map_finsupp_sum [Zero M] [Semiring R] [Semiring S] (h : R →+* S)
-    (f : α →₀ M) (g : α → M → R) : h (f.sum g) = f.sum fun a b => h (g a b) :=
-  map_finsupp_sum h f g
-#align ring_hom.map_finsupp_sum RingHom.map_finsupp_sum
-
-/-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[deprecated map_finsupp_prod (since := "2021-12-30")]
-protected theorem RingHom.map_finsupp_prod [Zero M] [CommSemiring R] [CommSemiring S] (h : R →+* S)
-    (f : α →₀ M) (g : α → M → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
-  map_finsupp_prod h f g
-#align ring_hom.map_finsupp_prod RingHom.map_finsupp_prod
+#align mul_equiv.map_finsupp_prod map_finsupp_prod
+#align add_equiv.map_finsupp_sum map_finsupp_sum
+#align monoid_hom.map_finsupp_prod map_finsupp_prod
+#align add_monoid_hom.map_finsupp_sum map_finsupp_sum
+#align ring_hom.map_finsupp_sum map_finsupp_sum
+#align ring_hom.map_finsupp_prod map_finsupp_prod
 
 -- Porting note: inserted ⇑ on the rhs
 @[to_additive]
@@ -392,8 +367,8 @@ theorem prod_add_index [DecidableEq α] [AddZeroClass M] [CommMonoid N] {f g : �
     {h : α → M → N} (h_zero : ∀ a ∈ f.support ∪ g.support, h a 0 = 1)
     (h_add : ∀ a ∈ f.support ∪ g.support, ∀ (b₁ b₂), h a (b₁ + b₂) = h a b₁ * h a b₂) :
     (f + g).prod h = f.prod h * g.prod h := by
-  rw [Finsupp.prod_of_support_subset f (subset_union_left _ g.support) h h_zero,
-    Finsupp.prod_of_support_subset g (subset_union_right f.support _) h h_zero, ←
+  rw [Finsupp.prod_of_support_subset f subset_union_left h h_zero,
+    Finsupp.prod_of_support_subset g subset_union_right h h_zero, ←
     Finset.prod_mul_distrib, Finsupp.prod_of_support_subset (f + g) Finsupp.support_add h h_zero]
   exact Finset.prod_congr rfl fun x hx => by apply h_add x hx
 #align finsupp.prod_add_index Finsupp.prod_add_index

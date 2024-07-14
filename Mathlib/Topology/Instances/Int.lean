@@ -77,7 +77,7 @@ theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
   simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,
     ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
 
-@[deprecated] alias cocompact_eq := cocompact_eq_atBot_atTop -- deprecated on 2024-02-07
+@[deprecated (since := "2024-02-07")] alias cocompact_eq := cocompact_eq_atBot_atTop
 #align int.cocompact_eq Int.cocompact_eq
 
 @[simp]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.ULift
 
@@ -125,6 +126,20 @@ instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
   uniq := fun a => by rfl
 #align category_theory.unique_from_bot CategoryTheory.uniqueFromBot
 
+variable (X) in
+/-- The equivalence of categories from the order dual of a preordered type `X`
+to the opposite category of the preorder `X`. -/
+@[simps]
+def orderDualEquivalence : Xᵒᵈ ≌ Xᵒᵖ where
+  functor :=
+    { obj := fun x => op (OrderDual.ofDual x)
+      map := fun f => (homOfLE (leOfHom f)).op }
+  inverse :=
+    { obj := fun x => OrderDual.toDual x.unop
+      map := fun f => (homOfLE (leOfHom f.unop)) }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
 end CategoryTheory
 
 section
@@ -148,6 +163,14 @@ theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f 
 -- Faithfulness is automatic because preorder categories are thin
 instance (f : X ↪o Y) : f.monotone.functor.Full where
   map_surjective h := ⟨homOfLE (f.map_rel_iff.1 h.le), rfl⟩
+
+/-- The equivalence of categories `X ≌ Y` induced by `e : X ≃o Y`. -/
+@[simps]
+def OrderIso.equivalence (e : X ≃o Y) : X ≌ Y where
+  functor := e.monotone.functor
+  inverse := e.symm.monotone.functor
+  unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
 
 end
 

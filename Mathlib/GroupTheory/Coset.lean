@@ -6,9 +6,8 @@ Authors: Mitchell Rowett, Scott Morrison
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import group_theory.coset from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -763,56 +762,49 @@ theorem quotientiInfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (g 
 #align add_subgroup.quotient_infi_embedding_apply_mk AddSubgroup.quotientiInfEmbedding_apply_mk
 
 @[to_additive AddSubgroup.card_eq_card_quotient_mul_card_addSubgroup]
-theorem card_eq_card_quotient_mul_card_subgroup [Fintype α] (s : Subgroup α) [Fintype s]
-    [DecidablePred fun a => a ∈ s] : Fintype.card α = Fintype.card (α ⧸ s) * Fintype.card s := by
-  rw [← Fintype.card_prod]; exact Fintype.card_congr Subgroup.groupEquivQuotientProdSubgroup
+theorem card_eq_card_quotient_mul_card_subgroup (s : Subgroup α) :
+    Nat.card α = Nat.card (α ⧸ s) * Nat.card s := by
+  rw [← Nat.card_prod]; exact Nat.card_congr Subgroup.groupEquivQuotientProdSubgroup
 #align subgroup.card_eq_card_quotient_mul_card_subgroup Subgroup.card_eq_card_quotient_mul_card_subgroup
 #align add_subgroup.card_eq_card_quotient_add_card_add_subgroup AddSubgroup.card_eq_card_quotient_mul_card_addSubgroup
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
 @[to_additive "**Lagrange's Theorem**: The order of an additive subgroup divides the order of its
  ambient additive group."]
-theorem card_subgroup_dvd_card [Fintype α] (s : Subgroup α) [Fintype s] :
-    Fintype.card s ∣ Fintype.card α := by
+theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 #align subgroup.card_subgroup_dvd_card Subgroup.card_subgroup_dvd_card
 #align add_subgroup.card_add_subgroup_dvd_card AddSubgroup.card_addSubgroup_dvd_card
 
 @[to_additive]
-theorem card_quotient_dvd_card [Fintype α] (s : Subgroup α) [DecidablePred (· ∈ s)] :
-    Fintype.card (α ⧸ s) ∣ Fintype.card α := by
+theorem card_quotient_dvd_card (s : Subgroup α) : Nat.card (α ⧸ s) ∣ Nat.card α := by
   simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_right ℕ]
 #align subgroup.card_quotient_dvd_card Subgroup.card_quotient_dvd_card
 #align add_subgroup.card_quotient_dvd_card AddSubgroup.card_quotient_dvd_card
 
-open Fintype
-
 variable {H : Type*} [Group H]
 
 @[to_additive]
-theorem card_dvd_of_injective [Fintype α] [Fintype H] (f : α →* H) (hf : Function.Injective f) :
-    card α ∣ card H := by
+theorem card_dvd_of_injective (f : α →* H) (hf : Function.Injective f) :
+    Nat.card α ∣ Nat.card H := by
   classical calc
-      card α = card (f.range : Subgroup H) := card_congr (Equiv.ofInjective f hf)
-      _ ∣ card H := card_subgroup_dvd_card _
+      Nat.card α = Nat.card (f.range : Subgroup H) := Nat.card_congr (Equiv.ofInjective f hf)
+      _ ∣ Nat.card H := card_subgroup_dvd_card _
 #align subgroup.card_dvd_of_injective Subgroup.card_dvd_of_injective
 #align add_subgroup.card_dvd_of_injective AddSubgroup.card_dvd_of_injective
 
 @[to_additive]
-theorem card_dvd_of_le {H K : Subgroup α} [Fintype H] [Fintype K] (hHK : H ≤ K) : card H ∣ card K :=
+theorem card_dvd_of_le {H K : Subgroup α} (hHK : H ≤ K) : Nat.card H ∣ Nat.card K :=
   card_dvd_of_injective (inclusion hHK) (inclusion_injective hHK)
 #align subgroup.card_dvd_of_le Subgroup.card_dvd_of_le
 #align add_subgroup.card_dvd_of_le AddSubgroup.card_dvd_of_le
 
 @[to_additive]
-theorem card_comap_dvd_of_injective (K : Subgroup H) [Fintype K] (f : α →* H) [Fintype (K.comap f)]
-    (hf : Function.Injective f) : Fintype.card (K.comap f) ∣ Fintype.card K := by
-  haveI : Fintype ((K.comap f).map f) :=
-      Fintype.ofEquiv _ (equivMapOfInjective _ _ hf).toEquiv;
-    calc
-      Fintype.card (K.comap f) = Fintype.card ((K.comap f).map f) :=
-        Fintype.card_congr (equivMapOfInjective _ _ hf).toEquiv
-      _ ∣ Fintype.card K := card_dvd_of_le (map_comap_le _ _)
+theorem card_comap_dvd_of_injective (K : Subgroup H) (f : α →* H)
+    (hf : Function.Injective f) : Nat.card (K.comap f) ∣ Nat.card K :=
+  calc Nat.card (K.comap f) = Nat.card ((K.comap f).map f) :=
+      Nat.card_congr (equivMapOfInjective _ _ hf).toEquiv
+    _ ∣ Nat.card K := card_dvd_of_le (map_comap_le _ _)
 #align subgroup.card_comap_dvd_of_injective Subgroup.card_comap_dvd_of_injective
 #align add_subgroup.card_comap_dvd_of_injective AddSubgroup.card_comap_dvd_of_injective
 

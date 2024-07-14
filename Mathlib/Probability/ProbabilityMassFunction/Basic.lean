@@ -225,8 +225,8 @@ theorem toOuterMeasure_mono {s t : Set α} (h : s ∩ p.support ⊆ t) :
 
 theorem toOuterMeasure_apply_eq_of_inter_support_eq {s t : Set α}
     (h : s ∩ p.support = t ∩ p.support) : p.toOuterMeasure s = p.toOuterMeasure t :=
-  le_antisymm (p.toOuterMeasure_mono (h.symm ▸ Set.inter_subset_left t p.support))
-    (p.toOuterMeasure_mono (h ▸ Set.inter_subset_left s p.support))
+  le_antisymm (p.toOuterMeasure_mono (h.symm ▸ Set.inter_subset_left))
+    (p.toOuterMeasure_mono (h ▸ Set.inter_subset_left))
 #align pmf.to_outer_measure_apply_eq_of_inter_support_eq PMF.toOuterMeasure_apply_eq_of_inter_support_eq
 
 @[simp]

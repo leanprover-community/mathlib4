@@ -303,7 +303,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       · rw [get_cons_succ]; exact get_mem _ _ _
 
 set_option linter.deprecated false in
-@[deprecated next_get] -- 2023-01-27
+@[deprecated next_get (since := "2023-01-27")]
 theorem next_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     next l (l.nthLe n hn) (nthLe_mem _ _ _) =
       l.nthLe ((n + 1) % l.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) :=
@@ -420,14 +420,13 @@ theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
   exact (reverse_reverse l).symm
 #align list.next_reverse_eq_prev List.next_reverse_eq_prev
 
-set_option linter.deprecated false in
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
     l.next x hx = l'.next x (h.mem_iff.mp hx) := by
-  obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
+  obtain ⟨k, hk, rfl⟩ := get_of_mem hx
   obtain ⟨n, rfl⟩ := id h
-  rw [next_nthLe _ hn]
-  simp_rw [← nthLe_rotate' _ n k]
-  rw [next_nthLe _ (h.nodup_iff.mp hn), ← nthLe_rotate' _ n]
+  rw [next_get _ hn]
+  simp_rw [get_eq_get_rotate _ n k]
+  rw [next_get _ (h.nodup_iff.mp hn), get_eq_get_rotate _ n]
   simp [add_assoc]
 #align list.is_rotated_next_eq List.isRotated_next_eq
 

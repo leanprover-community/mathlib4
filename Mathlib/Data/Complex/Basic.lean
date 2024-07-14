@@ -336,6 +336,15 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal']
 #align complex.equiv_real_prod_symm_apply Complex.equivRealProd_symm_apply
 
+/-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
+@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
+  { equivRealProd with map_add' := by simp }
+#align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
+
+theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
+    equivRealProdAddHom.symm p = p.1 + p.2 * I := equivRealProd_symm_apply p
+
 /-! ### Commutative ring instance and lemmas -/
 
 
@@ -708,9 +717,9 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12228
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma.
+See https://github.com/leanprover-community/mathlib4/issues/12228 -/
 @[simp, nolint simpNF]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg

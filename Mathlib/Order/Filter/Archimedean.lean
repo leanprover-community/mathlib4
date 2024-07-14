@@ -230,12 +230,12 @@ section LinearOrderedRing
 
 variable [LinearOrderedRing R] [Archimedean R]
 
-/-- See also `Filter.Tendsto.atTop_mul_neg_const` for a version of this lemma for
+/-- See also `Filter.Tendsto.atTop_mul_const_of_neg` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
-theorem Tendsto.atTop_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atTop) :
+theorem Tendsto.atTop_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atBot := by
   simpa only [tendsto_neg_atTop_iff, mul_neg] using hf.atTop_mul_const' (neg_pos.mpr hr)
-#align filter.tendsto.at_top_mul_neg_const' Filter.Tendsto.atTop_mul_neg_const'
+#align filter.tendsto.at_top_mul_neg_const' Filter.Tendsto.atTop_mul_const_of_neg'
 
 /-- See also `Filter.Tendsto.atBot_mul_const` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
@@ -245,12 +245,18 @@ theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
   exact hf.atTop_mul_const' hr
 #align filter.tendsto.at_bot_mul_const' Filter.Tendsto.atBot_mul_const'
 
-/-- See also `Filter.Tendsto.atBot_mul_neg_const` for a version of this lemma for
+/-- See also `Filter.Tendsto.atBot_mul_const_of_neg` for a version of this lemma for
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
-theorem Tendsto.atBot_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atBot) :
+theorem Tendsto.atBot_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop := by
   simpa only [mul_neg, tendsto_neg_atBot_iff] using hf.atBot_mul_const' (neg_pos.2 hr)
-#align filter.tendsto.at_bot_mul_neg_const' Filter.Tendsto.atBot_mul_neg_const'
+#align filter.tendsto.at_bot_mul_neg_const' Filter.Tendsto.atBot_mul_const_of_neg'
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.atTop_mul_neg_const' := Tendsto.atTop_mul_const_of_neg'
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.atBot_mul_neg_const' := Tendsto.atBot_mul_const_of_neg'
 
 end LinearOrderedRing
 

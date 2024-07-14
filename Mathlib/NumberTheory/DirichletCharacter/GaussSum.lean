@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.DirichletCharacter.Basic
-import Mathlib.NumberTheory.LegendreSymbol.GaussSum
+import Mathlib.NumberTheory.GaussSum
 
 /-!
 # Gauss sums for Dirichlet characters

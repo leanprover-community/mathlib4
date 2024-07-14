@@ -304,7 +304,7 @@ theorem Fix.dest_mk (x : F (append1 α (Fix F α))) : Fix.dest (Fix.mk x) = x :=
     rhs
     rw [← MvFunctor.id_map x]
   rw [← appendFun_comp, id_comp]
-  have : Fix.mk ∘ Fix.dest = _root_.id := by
+  have : Fix.mk ∘ Fix.dest (F := F) (α := α) = _root_.id := by
     ext (x : Fix F α)
     apply Fix.mk_dest
   rw [this, appendFun_id_id]

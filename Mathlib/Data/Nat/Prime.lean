@@ -242,10 +242,19 @@ theorem minFac_lemma (n k : ℕ) (h : ¬n < k * k) : sqrt n - k < sqrt n + 2 - k
   (tsub_lt_tsub_iff_right <| le_sqrt.2 <| le_of_not_gt h).2 <| Nat.lt_add_of_pos_right (by decide)
 #align nat.min_fac_lemma Nat.minFac_lemma
 
-/-- If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
-  Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
-  If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`. -/
-def minFacAux (n : ℕ) : ℕ → ℕ
+/--
+If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
+Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
+If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`.
+
+By default this well-founded recursion would be irreducible.
+This prevents use `decide` to resolve `Nat.prime n` for small values of `n`,
+so we mark this as `@[semireducible]`.
+
+In future, we may want to remove this annotation and instead use `norm_num` instead of `decide`
+in these situations.
+-/
+@[semireducible] def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
     if n < k * k then n
     else

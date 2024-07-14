@@ -188,4 +188,17 @@ instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, 
     J.HasSheafCompose F where
   isSheaf _ hP := Presheaf.isSheaf_comp_of_isSheaf J _ F hP
 
+variable {J}
+
+lemma Sheaf.isSeparated [ConcreteCategory A] [J.HasSheafCompose (forget A)]
+    (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
+  rintro X S hS x y h
+  exact (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1
+    ((sheafCompose J (forget A)).obj F).2) S hS).ext (fun _ _ hf => h _ _ hf)
+
+lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} [ConcreteCategory A]
+    [J.HasSheafCompose (forget A)] (hF : Presheaf.IsSheaf J F) :
+    Presheaf.IsSeparated J F :=
+  Sheaf.isSeparated ⟨F, hF⟩
+
 end CategoryTheory

@@ -675,7 +675,8 @@ nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]
 
-@[deprecated] alias RCLike.interval_integral_ofReal := RCLike.intervalIntegral_ofReal -- 2024-04-06
+@[deprecated (since := "2024-04-06")]
+alias RCLike.interval_integral_ofReal := RCLike.intervalIntegral_ofReal
 
 nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} :
     (∫ x in a..b, (f x : ℂ) ∂μ) = ↑(∫ x in a..b, f x ∂μ) :=

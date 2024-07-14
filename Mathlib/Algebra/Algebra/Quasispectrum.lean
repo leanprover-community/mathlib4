@@ -277,7 +277,7 @@ lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [CommSemiring R]
 
 lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
     (a : A) : spectrum R a ⊆ quasispectrum R a :=
-  quasispectrum_eq_spectrum_union R a ▸ Set.subset_union_left _ _
+  quasispectrum_eq_spectrum_union R a ▸ Set.subset_union_left
 
 lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
@@ -537,7 +537,7 @@ theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield 
     QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by
   rw [quasispectrumRestricts_iff, spectrumRestricts_iff, quasispectrum_eq_spectrum_union_zero]
   refine and_congr_left fun h ↦ ?_
-  refine ⟨(Set.RightInvOn.mono · (Set.subset_union_left _ _)), fun h' x hx ↦ ?_⟩
+  refine ⟨(Set.RightInvOn.mono · Set.subset_union_left), fun h' x hx ↦ ?_⟩
   simp only [Set.union_singleton, Set.mem_insert_iff] at hx
   obtain (rfl | hx) := hx
   · simpa using h 0

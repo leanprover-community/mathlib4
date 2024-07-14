@@ -325,9 +325,9 @@ theorem fromSpec_base_preimage :
   exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
 #align algebraic_geometry.is_affine_open.from_Spec_base_preimage AlgebraicGeometry.IsAffineOpen.fromSpec_base_preimage
 
--- Adaptation note: 2024-04-23
--- The backwards compatibility flags don't help here.
-set_option maxHeartbeats 800000 in
+#adaptation_note /-- 2024-04-23
+The backwards compatibility flags don't help here. -/
+set_option maxHeartbeats 400000 in
 -- Doesn't build without the `IsAffine` instance but the linter complains
 @[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :

@@ -1,0 +1,82 @@
+name: Update Mathlib Dependencies
+
+# This action currently uses the NIGHTLY_TESTING secret, but could be moved to a separate secret.
+# Despite this, this action is acting on the `master` branch, not the `nightly-testing` branch.
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # This will run every hour
+
+jobs:
+  update-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.NIGHTLY_TESTING }}
+
+      - name: Configure Git User
+        run: |
+          git config user.name "leanprover-community-mathlib4-bot"
+          git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+
+      - name: Check for existing PRs
+        id: check_pr
+        run: |
+          prs=$(gh pr list --search "author:leanprover-community-mathlib4-bot state:open" --json title,headRefName)
+          for pr in $(echo "$prs" | jq -c '.[]'); do
+            pr_title=$(echo "$pr" | jq -r '.title')
+            pr_branch=$(echo "$pr" | jq -r '.headRefName')
+            if [[ "$pr_title" == *"update Mathlib dependencies"* ]] || [[ "$pr_branch" == update-dependencies-* ]]; then
+              echo "Existing PR found with title or branch name indicating a dependency update. Stopping."
+              echo "existing_pr=true" >> "$GITHUB_ENV"
+              exit 0
+            fi
+          done
+          echo "existing_pr=false" >> "$GITHUB_ENV"
+
+      - name: Stop if PR exists
+        if: env.existing_pr == 'true'
+        run: echo "Stopping workflow due to existing PR."
+
+      - name: Update dependencies
+        if: env.existing_pr == 'false'
+        run: lake update
+
+      - name: Check for changes
+        id: check_changes
+        if: env.existing_pr == 'false'
+        run: |
+          if git diff-index --quiet HEAD --; then
+            echo "no_changes=true" >> "$GITHUB_ENV"
+          else
+            echo "no_changes=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Stop if no changes
+        if: env.no_changes == 'true'
+        run: echo "No changes detected. Stopping."
+
+      - name: Create new branch
+        if: env.no_changes == 'false'
+        id: create_new_branch
+        run: |
+          timestamp=$(date -u +"%Y-%m-%d-%H-%M")
+          branch_name="update-dependencies-$timestamp"
+          echo "branch_name=$branch_name" >> "$GITHUB_ENV"
+          git checkout -b "$branch_name"
+          git add .
+          git commit -m "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
+          git push origin "$branch_name"
+
+      - name: Create Pull Request
+        if: env.no_changes == 'false'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.NIGHTLY_TESTING }}
+          commit-message: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
+          branch: ${{ env.branch_name }}
+          title: "chore: update Mathlib dependencies $(date -u +\"%Y-%m-%d\")"
+          labels: "auto-merge-after-CI"

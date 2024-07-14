@@ -352,7 +352,7 @@ variable (C)
 to `F.obj X`, functorially in both `X` and `F`.
 -/
 def yonedaEvaluation : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
-  evaluationUncurried Cᵒᵖ (Type v₁) ⋙ uliftFunctor.{u₁}
+  evaluationUncurried Cᵒᵖ (Type v₁) ⋙ uliftFunctor
 #align category_theory.yoneda_evaluation CategoryTheory.yonedaEvaluation
 
 @[simp]
@@ -388,7 +388,7 @@ variable {C} in
 /-- A bijection `(yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X)` which is a variant
 of `yonedaEquiv` with heterogeneous universes. -/
 def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
-    (yoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) ≃ F.obj (op X) where
+    (yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X) where
   toFun φ := φ.app (op X) (ULift.up (𝟙 _))
   invFun f :=
     { app := fun Y x => F.map (ULift.down x).op f }
@@ -409,10 +409,10 @@ See <https://stacks.math.columbia.edu/tag/001P>.
 -/
 def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
   NatIso.ofComponents
-    (fun X ↦ Equiv.toIso (yonedaEquiv.trans Equiv.ulift.{u₁, v₁}.symm))
+    (fun X ↦ Equiv.toIso (yonedaEquiv.trans Equiv.ulift.symm))
     (by intro (X, F) (Y, G) f
         ext (a : yoneda.obj X.unop ⟶ F)
-        apply ULift.ext.{u₁, v₁}
+        apply ULift.ext
         simp only [Functor.prod_obj, Functor.id_obj, types_comp_apply, yonedaEvaluation_map_down]
         erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
         dsimp [yonedaEquiv]
@@ -504,7 +504,7 @@ variable (C)
 to `F.obj X`, functorially in both `X` and `F`.
 -/
 def coyonedaEvaluation : C × (C ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
-  evaluationUncurried C (Type v₁) ⋙ uliftFunctor.{u₁}
+  evaluationUncurried C (Type v₁) ⋙ uliftFunctor
 
 @[simp]
 theorem coyonedaEvaluation_map_down (P Q : C × (C ⥤ Type v₁)) (α : P ⟶ Q)
@@ -536,7 +536,7 @@ variable {C} in
 /-- A bijection `(coyoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (unop X)` which is a variant
 of `coyonedaEquiv` with heterogeneous universes. -/
 def coyonedaCompUliftFunctorEquiv (F : C ⥤ Type max v₁ w) (X : Cᵒᵖ) :
-    (coyoneda.obj X ⋙ uliftFunctor.{w} ⟶ F) ≃ F.obj X.unop where
+    (coyoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj X.unop where
   toFun φ := φ.app X.unop (ULift.up (𝟙 _))
   invFun f :=
     { app := fun Y x => F.map (ULift.down x) f }
@@ -557,10 +557,10 @@ See <https://stacks.math.columbia.edu/tag/001P>.
 -/
 def coyonedaLemma : coyonedaPairing C ≅ coyonedaEvaluation C :=
   NatIso.ofComponents
-    (fun X ↦ Equiv.toIso (coyonedaEquiv.trans Equiv.ulift.{u₁, v₁}.symm))
+    (fun X ↦ Equiv.toIso (coyonedaEquiv.trans Equiv.ulift.symm))
     (by intro (X, F) (Y, G) f
         ext (a : coyoneda.obj (op X) ⟶ F)
-        apply ULift.ext.{u₁, v₁}
+        apply ULift.ext
         simp only [Functor.prod_obj, Functor.id_obj, types_comp_apply, coyonedaEvaluation_map_down]
         erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
         simp [coyonedaEquiv, ← FunctorToTypes.naturality])

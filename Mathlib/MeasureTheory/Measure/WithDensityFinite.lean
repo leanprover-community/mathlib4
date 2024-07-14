@@ -206,7 +206,7 @@ lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
   _ = ∫⁻ _ in t ∩ μ.sigmaFiniteSetᶜ, ∞ ∂μ.toFinite := by
         refine set_lintegral_congr_fun (ht.inter (measurableSet_sigmaFiniteSet μ).compl)
           (ae_of_all _ (fun x hx ↦ ?_))
-        simpa [Measure.sigmaFiniteSet] using ((Set.inter_subset_right _ _) hx)
+        simpa [Measure.sigmaFiniteSet] using ((Set.inter_subset_right) hx)
   _ = ∞ * μ.toFinite (t ∩ μ.sigmaFiniteSetᶜ) := by simp
 
 /-- The measure `μ.restrict μ.sigmaFiniteSetᶜ` takes only two values: 0 and ∞ . -/

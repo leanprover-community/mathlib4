@@ -621,15 +621,15 @@ protected theorem subset (s : Set α) {t : Set α} [Finite s] (h : t ⊆ s) : Fi
 #align finite.set.subset Finite.Set.subset
 
 instance finite_inter_of_right (s t : Set α) [Finite t] : Finite (s ∩ t : Set α) :=
-  Finite.Set.subset t (inter_subset_right s t)
+  Finite.Set.subset t inter_subset_right
 #align finite.set.finite_inter_of_right Finite.Set.finite_inter_of_right
 
 instance finite_inter_of_left (s t : Set α) [Finite s] : Finite (s ∩ t : Set α) :=
-  Finite.Set.subset s (inter_subset_left s t)
+  Finite.Set.subset s inter_subset_left
 #align finite.set.finite_inter_of_left Finite.Set.finite_inter_of_left
 
 instance finite_diff (s t : Set α) [Finite s] : Finite (s \ t : Set α) :=
-  Finite.Set.subset s (diff_subset s t)
+  Finite.Set.subset s diff_subset
 #align finite.set.finite_diff Finite.Set.finite_diff
 
 instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := by
@@ -758,11 +758,11 @@ theorem Finite.sep {s : Set α} (hs : s.Finite) (p : α → Prop) : { a ∈ s | 
 #align set.finite.sep Set.Finite.sep
 
 theorem Finite.inter_of_left {s : Set α} (hs : s.Finite) (t : Set α) : (s ∩ t).Finite :=
-  hs.subset <| inter_subset_left _ _
+  hs.subset inter_subset_left
 #align set.finite.inter_of_left Set.Finite.inter_of_left
 
 theorem Finite.inter_of_right {s : Set α} (hs : s.Finite) (t : Set α) : (t ∩ s).Finite :=
-  hs.subset <| inter_subset_right _ _
+  hs.subset inter_subset_right
 #align set.finite.inter_of_right Set.Finite.inter_of_right
 
 theorem Finite.inf_of_left {s : Set α} (h : s.Finite) (t : Set α) : (s ⊓ t).Finite :=
@@ -778,7 +778,7 @@ protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.In
 #align set.infinite.mono Set.Infinite.mono
 
 theorem Finite.diff {s : Set α} (hs : s.Finite) (t : Set α) : (s \ t).Finite :=
-  hs.subset <| diff_subset _ _
+  hs.subset diff_subset
 #align set.finite.diff Set.Finite.diff
 
 theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
@@ -908,7 +908,7 @@ protected lemma Infinite.preimage (hs : s.Infinite) (hf : s ⊆ range f) : (f �
   fun h ↦ hs <| finite_of_finite_preimage h hf
 
 lemma Infinite.preimage' (hs : (s ∩ range f).Infinite) : (f ⁻¹' s).Infinite :=
-  (hs.preimage <| inter_subset_right _ _).mono <| preimage_mono <| inter_subset_left _ _
+  (hs.preimage inter_subset_right).mono <| preimage_mono inter_subset_left
 
 theorem Finite.preimage_embedding {s : Set β} (f : α ↪ β) (h : s.Finite) : (f ⁻¹' s).Finite :=
   h.preimage fun _ _ _ _ h' => f.injective h'
@@ -1018,7 +1018,7 @@ theorem Infinite.nontrivial {s : Set α} (hs : s.Infinite) : s.Nontrivial :=
 theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
     (Sum.inl ⁻¹' s).Finite ∧ (Sum.inr ⁻¹' s).Finite ↔ s.Finite :=
   ⟨fun h => image_preimage_inl_union_image_preimage_inr s ▸ (h.1.image _).union (h.2.image _),
-    fun h => ⟨h.preimage (Sum.inl_injective.injOn _), h.preimage (Sum.inr_injective.injOn _)⟩⟩
+    fun h => ⟨h.preimage Sum.inl_injective.injOn, h.preimage Sum.inr_injective.injOn⟩⟩
 #align set.finite_preimage_inl_and_inr Set.finite_preimage_inl_and_inr
 
 theorem exists_finite_iff_finset {p : Set α → Prop} :
@@ -1080,7 +1080,7 @@ instance Finite.inhabited : Inhabited { s : Set α // s.Finite } :=
 
 @[simp]
 theorem finite_union {s t : Set α} : (s ∪ t).Finite ↔ s.Finite ∧ t.Finite :=
-  ⟨fun h => ⟨h.subset (subset_union_left _ _), h.subset (subset_union_right _ _)⟩, fun ⟨hs, ht⟩ =>
+  ⟨fun h => ⟨h.subset subset_union_left, h.subset subset_union_right⟩, fun ⟨hs, ht⟩ =>
     hs.union ht⟩
 #align set.finite_union Set.finite_union
 
@@ -1163,8 +1163,8 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
       I.Finite ∧
         ∃ σ : { i | i ∈ I } → Set α, (∀ i, (σ i).Finite) ∧ (∀ i, σ i ⊆ s i) ∧ t = ⋃ i, σ i :=
   let ⟨I, Ifin, hI⟩ := finite_subset_iUnion tfin h
-  ⟨I, Ifin, fun x => s x ∩ t, fun i => tfin.subset (inter_subset_right _ _), fun i =>
-    inter_subset_left _ _, by
+  ⟨I, Ifin, fun x => s x ∩ t, fun i => tfin.subset inter_subset_right, fun i =>
+    inter_subset_left, by
     ext x
     rw [mem_iUnion]
     constructor
@@ -1395,7 +1395,7 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
 
 theorem infinite_range_iff {f : α → β} (hi : Injective f) :
     (range f).Infinite ↔ Infinite α := by
-  rw [← image_univ, infinite_image_iff (hi.injOn _), infinite_univ_iff]
+  rw [← image_univ, infinite_image_iff hi.injOn, infinite_univ_iff]
 
 alias ⟨_, Infinite.image⟩ := infinite_image_iff
 #align set.infinite.image Set.Infinite.image
@@ -1448,7 +1448,7 @@ theorem Infinite.exists_ne_map_eq_of_mapsTo {s : Set α} {t : Set β} {f : α �
 
 theorem infinite_range_of_injective [Infinite α] {f : α → β} (hi : Injective f) :
     (range f).Infinite := by
-  rw [← image_univ, infinite_image_iff (injOn_of_injective hi _)]
+  rw [← image_univ, infinite_image_iff hi.injOn]
   exact infinite_univ
 #align set.infinite_range_of_injective Set.infinite_range_of_injective
 

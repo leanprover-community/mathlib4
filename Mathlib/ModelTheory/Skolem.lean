@@ -138,13 +138,13 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
   rw [← hs'] at h1 h2 ⊢
   refine
     ⟨elementarySkolem₁Reduct (closure (L.sum L.skolem₁) (s ∪ Equiv.ulift '' s')),
-      (s.subset_union_left _).trans subset_closure, ?_⟩
+      (s.subset_union_left).trans subset_closure, ?_⟩
   have h := mk_image_eq_lift _ s' Equiv.ulift.injective
   rw [lift_umax.{w, w'}, lift_id'.{w, w'}] at h
   rw [coeSort_elementarySkolem₁Reduct, ← h, lift_inj]
   refine
     le_antisymm (lift_le.1 (lift_card_closure_le.trans ?_))
-      (mk_le_mk_of_subset ((Set.subset_union_right _ _).trans subset_closure))
+      (mk_le_mk_of_subset ((s.subset_union_right).trans subset_closure))
   rw [max_le_iff, aleph0_le_lift, ← aleph0_le_lift.{_, w'}, h, add_eq_max, max_le_iff, lift_le]
   · refine ⟨h1, (mk_union_le _ _).trans ?_, (lift_le.2 card_functions_sum_skolem₁_le).trans ?_⟩
     · rw [← lift_le, lift_add, h, add_comm, add_eq_max h1]
@@ -155,7 +155,7 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
       rw [← lift_lift.{w', w}]
       refine _root_.trans (lift_le.{w}.2 h3) ?_
       rw [lift_lift, ← lift_lift.{w, max u v}, ← hs', ← h, lift_lift]
-  · refine _root_.trans ?_ (lift_le.2 (mk_le_mk_of_subset (Set.subset_union_right _ _)))
+  · refine _root_.trans ?_ (lift_le.2 (mk_le_mk_of_subset Set.subset_union_right))
     rw [aleph0_le_lift, ← aleph0_le_lift, h]
     exact h1
 #align first_order.language.exists_elementary_substructure_card_eq FirstOrder.Language.exists_elementarySubstructure_card_eq

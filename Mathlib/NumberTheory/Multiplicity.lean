@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Int.Parity
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.NumberTheory.Padics.PadicVal
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import number_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Data.Int.AbsoluteValue
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 #align_import linear_algebra.matrix.absolute_value from "leanprover-community/mathlib"@"ab0a2959c83b06280ef576bc830d4aa5fe8c8e61"
 

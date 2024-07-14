@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # The forget functor is corepresentable

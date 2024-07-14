@@ -267,7 +267,7 @@ theorem chainHeight_eq_iSup_Ici : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Ici i)
       rename_i hi
       cases' chain'_iff_pairwise.mp h.1 with _ _ h'
       exact (h' _ hi).le
-  · exact iSup₂_le fun i _ ↦ chainHeight_mono <| Set.inter_subset_left _ _
+  · exact iSup₂_le fun i _ ↦ chainHeight_mono Set.inter_subset_left
 #align set.chain_height_eq_supr_Ici Set.chainHeight_eq_iSup_Ici
 
 theorem chainHeight_eq_iSup_Iic : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Iic i).chainHeight := by
@@ -334,7 +334,7 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
     (s ∪ t).chainHeight = s.chainHeight + t.chainHeight := by
   cases h : t.chainHeight
   · rw [add_top, eq_top_iff, ← h]
-    exact Set.chainHeight_mono (Set.subset_union_right _ _)
+    exact Set.chainHeight_mono subset_union_right
   apply le_antisymm
   · rw [← h]
     exact chainHeight_union_le
@@ -357,13 +357,9 @@ theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
   refine ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ ?_⟩⟩
   refine n.lt_succ_self.not_le (WithTop.coe_le_coe.1 <| hn.symm ▸ ?_)
-  refine'
-    le_iSup₂_of_le _
-      ⟨chain'_map_of_chain' ((↑) : {x // x ∈ s} → α) (fun _ _ ↦ id)
-          (chain'_iff_pairwise.2 <| pairwise_ofFn.2 fun i j ↦ f.map_rel_iff.2),
-        fun i h ↦ _⟩
-      ?_
-  · exact n.succ
+  refine le_iSup₂_of_le ((ofFn (n := n.succ) fun i ↦ f i).map Subtype.val)
+    ⟨chain'_map_of_chain' ((↑) : {x // x ∈ s} → α) (fun _ _ ↦ id)
+      (chain'_iff_pairwise.2 <| pairwise_ofFn.2 fun i j ↦ f.map_rel_iff.2), fun i h ↦ ?_⟩ ?_
   · obtain ⟨a, -, rfl⟩ := mem_map.1 h
     exact a.prop
   · rw [length_map, length_ofFn]

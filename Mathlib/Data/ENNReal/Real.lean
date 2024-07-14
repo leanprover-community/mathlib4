@@ -684,7 +684,7 @@ theorem iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 #align ennreal.supr_coe_nat ENNReal.iSup_natCast
 
-@[deprecated] alias iSup_coe_nat := iSup_natCast -- 2024-04-05
+@[deprecated (since := "2024-04-05")] alias iSup_coe_nat := iSup_natCast
 
 end iSup
 
