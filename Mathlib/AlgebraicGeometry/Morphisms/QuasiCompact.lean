@@ -127,8 +127,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X} (hU : IsCompact (U : Set 
 #align algebraic_geometry.is_compact_basic_open AlgebraicGeometry.isCompact_basicOpen
 
 @[reducible]
-instance : HasAffineProperty @QuasiCompact where
-  affineProperty X _ _ _ := CompactSpace X
+instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) where
   eq_targetAffineLocally' := by
     ext X Y f
     simp only [quasiCompact_iff_forall_affine, isCompact_iff_compactSpace, targetAffineLocally,

@@ -86,7 +86,7 @@ theorem quasiSeparatedSpace_iff_affine (X : Scheme) :
 
 theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAffine Y]
     (f : X ⟶ Y) :
-    (MorphismProperty.affineProperty @QuasiCompact).diagonal f ↔
+    AffineTargetMorphismProperty.diagonal (fun X _ _ _ ↦ CompactSpace X) f ↔
       QuasiSeparatedSpace X := by
   delta AffineTargetMorphismProperty.diagonal
   rw [quasiSeparatedSpace_iff_affine]
@@ -122,11 +122,10 @@ theorem quasiSeparated_eq_diagonal_is_quasiCompact :
 #align algebraic_geometry.quasi_separated_eq_diagonal_is_quasi_compact AlgebraicGeometry.quasiSeparated_eq_diagonal_is_quasiCompact
 
 @[reducible]
-instance : HasAffineProperty @QuasiSeparated where
-  affineProperty X _ _ _ := QuasiSeparatedSpace X
-  __ := HasAffineProperty.copy (MorphismProperty.diagonal @QuasiCompact)
-    quasiSeparated_eq_diagonal_is_quasiCompact
-    (by ext; exact (quasiCompact_affineProperty_iff_quasiSeparatedSpace _).symm)
+instance : HasAffineProperty @QuasiSeparated (fun X _ _ _ ↦ QuasiSeparatedSpace X) where
+  __ := HasAffineProperty.copy
+    quasiSeparated_eq_diagonal_is_quasiCompact.symm
+    (by ext; exact quasiCompact_affineProperty_iff_quasiSeparatedSpace _)
 
 instance (priority := 900) quasiSeparatedOfMono {X Y : Scheme} (f : X ⟶ Y) [Mono f] :
     QuasiSeparated f where

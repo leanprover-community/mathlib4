@@ -444,15 +444,15 @@ theorem isLocal_sourceAffineLocally : (sourceAffineLocally @P).IsLocal :=
     (@RingHom.PropertyIsLocal.ofLocalizationSpan _ hP)
 #align ring_hom.property_is_local.is_local_source_affine_locally RingHom.PropertyIsLocal.isLocal_sourceAffineLocally
 
-abbrev hasAffinePropertyAffineLocally : HasAffineProperty (affineLocally @P) where
-  affineProperty := sourceAffineLocally @P
+abbrev hasAffinePropertyAffineLocally :
+    HasAffineProperty (affineLocally @P) (sourceAffineLocally @P) where
   isLocal_affineProperty := hP.isLocal_sourceAffineLocally
   eq_targetAffineLocally' := rfl
 
 theorem affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y)
     [∀ i, IsAffine (𝒰.obj i)] (𝒰' : ∀ i, Scheme.OpenCover.{u} ((𝒰.pullbackCover f).obj i))
     [∀ i j, IsAffine ((𝒰' i).obj j)] :
-    affineLocally (@P) f ↔ ∀ i j, P (Scheme.Γ.map ((𝒰' i).map j ≫ pullback.snd).op) :=
+    affineLocally (@P) f ↔ ∀ i j, P (Scheme.Γ.map ((𝒰' i).map j ≫ pullback.snd _ _).op) :=
   letI := hP.hasAffinePropertyAffineLocally
   (HasAffineProperty.iff_of_openCover 𝒰).trans
     (forall_congr' fun i => hP.source_affine_openCover_iff _ (𝒰' i))
@@ -557,7 +557,7 @@ theorem affineLocally_isStableUnderComposition : (affineLocally @P).IsStableUnde
         exact hg
       · letI := hP.hasAffinePropertyAffineLocally
         replace hf := HasAffineProperty.of_isPullback (.of_hasPullback _
-          ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst)) hf
+          ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst _ _)) hf
         -- Porting note: again strange behavior of TFAE
         have := (hP.affine_openCover_TFAE
           (pullback.snd f ((pullback g (S.affineCover.map i)).affineCover.map j ≫
