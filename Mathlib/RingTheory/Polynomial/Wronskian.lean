@@ -112,3 +112,5 @@ theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   · exact Polynomial.degree_eq_natDegree hw
   · exact Polynomial.degree_eq_natDegree ha
   · exact Polynomial.degree_eq_natDegree hb
+
+end Polynomial
