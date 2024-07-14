@@ -129,13 +129,8 @@ theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : 
   exact hsi.finiteInter_mem g hgs
 
 theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = generateFrom r)
-    (hsi : ∀ ⦃s⦄, s ∈ r → ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) : IsTopologicalBasis (insert univ r) := by
-  apply isTopologicalBasis_of_subbasis_of_finiteInter _ (FiniteInter.mk₂ hsi)
-  rw [hsg]
-  apply le_antisymm _ (generateFrom_anti <| subset_insert univ r)
-  exact le_generateFrom fun _ hs => (by
-    rcases hs with h | h; simp only [h, isOpen_univ];
-    exact isOpen_generateFrom_of_mem h)
+    (hsi : ∀ ⦃s⦄, s ∈ r → ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) : IsTopologicalBasis (insert univ r) :=
+  isTopologicalBasis_of_subbasis_of_finiteInter (by simpa using hsg) (FiniteInter.mk₂ hsi)
 
 theorem IsTopologicalBasis.of_hasBasis_nhds {s : Set (Set α)}
     (h_nhds : ∀ a, (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) : IsTopologicalBasis s where
