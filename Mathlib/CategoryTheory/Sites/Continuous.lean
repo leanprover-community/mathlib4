@@ -176,15 +176,23 @@ instance [PreservesOneHypercovers.{max u₁ v₁} F J K] :
   isContinuous_of_preservesOneHypercovers.{max u₁ v₁} F J K
 
 variable (A)
+variable [Functor.IsContinuous.{t} F J K]
 
 /-- The induced functor `Sheaf K A ⥤ Sheaf J A` given by `F.op ⋙ _`
 if `F` is a continuous functor.
 -/
-def sheafPushforwardContinuous [Functor.IsContinuous.{t} F J K] :
-    Sheaf K A ⥤ Sheaf J A where
+@[simps!]
+def sheafPushforwardContinuous : Sheaf K A ⥤ Sheaf J A where
   obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
   map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
 #align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
+
+/-- The functor `F.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A`
+is induced by the precomposition with `F.op`. -/
+@[simps!]
+def sheafPushforwardContinuousCompSheafToPresheafIso :
+    F.sheafPushforwardContinuous A J K ⋙ sheafToPresheaf J A ≅
+      sheafToPresheaf K A ⋙ (whiskeringLeft _ _ _).obj F.op := Iso.refl _
 
 end Functor
 

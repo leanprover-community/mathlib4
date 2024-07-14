@@ -1050,6 +1050,12 @@ def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) :
   fun H ↦ contra H.elim
 #align classical.choice_of_by_contradiction' Classical.choice_of_byContradiction'
 
+@[simp] lemma choose_eq (a : α) : @Exists.choose _ (· = a) ⟨a, rfl⟩ = a := @choose_spec _ (· = a) _
+
+@[simp]
+lemma choose_eq' (a : α) : @Exists.choose _ (a = ·) ⟨a, rfl⟩ = a :=
+  (@choose_spec _ (a = ·) _).symm
+
 end Classical
 
 /-- This function has the same type as `Exists.recOn`, and can be used to case on an equality,
@@ -1283,7 +1289,7 @@ theorem apply_ite₂ {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decid
 /-- A 'dite' producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `dite` that applies
 either branch to `a`. -/
 theorem dite_apply (f : P → ∀ a, σ a) (g : ¬P → ∀ a, σ a) (a : α) :
-    (dite P f g) a = dite P (fun h ↦ f h a) fun h ↦ g h a := by by_cases h:P <;> simp [h]
+    (dite P f g) a = dite P (fun h ↦ f h a) fun h ↦ g h a := by by_cases h : P <;> simp [h]
 #align dite_apply dite_apply
 
 /-- A 'ite' producing a `Pi` type `Π a, σ a`, applied to a value `a : α` is a `ite` that applies
