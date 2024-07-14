@@ -156,7 +156,8 @@ def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
   Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
   found somewhere in the state's tree, and is not erased.
 -/
-def NormNums.erase {m : Type → Type} [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
+def NormNums.erase {m : Type → Type} [Monad m] [MonadError m] (d : NormNums) (declName : Name) :
+    m NormNums := do
   unless d.tree.values.any (·.name == declName) && ! d.erased.contains declName
   do
     throwError "'{declName}' does not have [norm_num] attribute"
