@@ -368,8 +368,7 @@ lemma IsIdempotentElem.range_prod__of_commute
     {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)} (hPQ : Commute P Q)
     (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q) :
     Set.range (P * Q) = Set.range P ∩ Set.range Q := by
-  rw [le_antisymm_iff]
-  constructor
+  apply le_antisymm
   · simp only [Set.le_eq_subset]
     exact range_prod_of_commute hPQ
   · intro a ha
@@ -390,13 +389,11 @@ lemma IsLprojection.range_inter (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜
 lemma IsLprojection.range_sum (P Q : { P : (NormedSpace.Dual 𝕜 A) →L[𝕜]
     (NormedSpace.Dual 𝕜 A) // IsLprojection (NormedSpace.Dual 𝕜 A) P }) :
     LinearMap.range P.val + LinearMap.range Q.val = LinearMap.range (P ⊔ Q).val := by
-  rw [le_antisymm_iff]
-  constructor
+  apply le_antisymm
   · intro z hz
     rw [Submodule.add_eq_sup, Submodule.mem_sup] at hz
     simp only [LinearMap.mem_range, exists_exists_eq_and] at hz
     obtain ⟨x,⟨y,hxy⟩⟩ := hz
-    --obtain  := hx
     simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
       ContinuousLinearMap.coe_mul, Pi.sub_apply, ContinuousLinearMap.add_apply, Function.comp_apply]
     use z
@@ -439,8 +436,7 @@ open scoped ComplexOrder in
 lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
     ↑(polarSubmodule 𝕜 m₁ + polarSubmodule 𝕜 m₂) ∩ closedBall 0 1 =
     convexHull ℝ (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) := by
-  rw [le_antisymm_iff]
-  constructor
+  apply le_antisymm
   · obtain ⟨P₁,hE₁⟩ := h₁.Lproj
     obtain ⟨P₂,hE₂⟩ := h₂.Lproj
     let E := P₁ ⊔ P₂
@@ -469,8 +465,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       _ = E₁ x + E₂ (x - E₁ x) := by rw [map_sub]
       _ = y + z := rfl
     have e4 :  ‖y‖ + ‖z‖ = ‖x‖ := by
-      rw [le_antisymm_iff]
-      constructor
+      apply le_antisymm
       · calc
         ‖y‖ + ‖z‖ = ‖E₁ x‖ + ‖E₂ ((1 - E₁) x)‖ := rfl
         _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by
