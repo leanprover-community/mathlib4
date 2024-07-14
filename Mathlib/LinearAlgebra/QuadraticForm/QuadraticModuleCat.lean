@@ -26,6 +26,7 @@ variable {R}
 namespace QuadraticModuleCat
 
 open QuadraticForm
+open QuadraticMap
 
 instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
@@ -146,7 +147,7 @@ def toIsometryEquiv (i : X ≅ Y) : X.form.IsometryEquiv Y.form where
     simp
   map_add' := map_add _
   map_smul' := map_smul _
-  map_app' := Isometry.map_app _
+  map_app' := QuadraticMap.Isometry.map_app _
 
 @[simp] theorem toIsometryEquiv_refl : toIsometryEquiv (.refl X) = .refl _ :=
   rfl
