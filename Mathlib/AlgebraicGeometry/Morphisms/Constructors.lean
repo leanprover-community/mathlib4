@@ -174,7 +174,7 @@ instance (P) {Q} [HasAffineProperty P Q] : HasAffineProperty P.diagonal Q.diagon
   eq_targetAffineLocally' := (HasAffineProperty.targetAffineLocally_diagonal_affineProperty P).symm
 
 instance (P) [IsLocalAtTarget P] : IsLocalAtTarget P.diagonal :=
-  letI := hasAffinePropertyOfIsLocalAtTarget P
+  letI := HasAffineProperty.of_isLocalAtTarget P
   inferInstance
 
 end Diagonal
@@ -323,7 +323,7 @@ lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
     (P : MorphismProperty Scheme) [IsLocalAtTarget P]
     (hP₂ : (of P).StableUnderBaseChange) :
     P.StableUnderBaseChange :=
-  letI := hasAffinePropertyOfIsLocalAtTarget P
+  letI := HasAffineProperty.of_isLocalAtTarget P
   HasAffineProperty.stableUnderBaseChange_mk hP₂
 
 end AffineTargetMorphismProperty
