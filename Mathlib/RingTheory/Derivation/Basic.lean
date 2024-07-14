@@ -358,6 +358,9 @@ protected def restrictScalars (d : Derivation S A M) : Derivation R A M where
   toLinearMap := d.toLinearMap.restrictScalars R
 #align derivation.restrict_scalars Derivation.restrictScalars
 
+@[simp]
+lemma coe_restrictScalars (d : Derivation S A M) : ⇑(d.restrictScalars R) = ⇑d := rfl
+
 end RestrictScalars
 
 end
