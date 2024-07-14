@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Theodore Hwa
 -/
 import Mathlib.SetTheory.Surreal.Multiplication
+import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # Surreal division
