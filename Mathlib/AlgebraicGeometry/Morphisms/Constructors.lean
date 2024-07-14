@@ -114,7 +114,7 @@ theorem HasAffineProperty.affineProperty_diagonal_of_diagonal_of_isPullback
 #align algebraic_geometry.affine_target_morphism_property.diagonal_of_target_affine_locally AlgebraicGeometry.HasAffineProperty.affineProperty_diagonal_of_diagonal_of_isPullback
 
 lemma _root_.CategoryTheory.IsPullback.of_id_fst {C} [Category C] {X Y : C} (f : X ⟶ Y) :
-  IsPullback (𝟙 _) f f (𝟙 _) := IsPullback.of_horiz_isIso ⟨by simp⟩
+    IsPullback (𝟙 _) f f (𝟙 _) := IsPullback.of_horiz_isIso ⟨by simp⟩
 
 lemma _root_.CategoryTheory.IsPullback.of_id_snd {C} [Category C] {X Y : C} (f : X ⟶ Y) :
   IsPullback f (𝟙 _) (𝟙 _) f := IsPullback.of_vert_isIso ⟨by simp⟩
