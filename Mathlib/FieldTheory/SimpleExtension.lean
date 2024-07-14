@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.RingTheory.Henselian
-import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Simple field extensions
@@ -21,6 +19,7 @@ open Polynomial IntermediateField algebraMap
 
 /--
 A typeclass for K being a simple extension of F, F⟮k⟯ = K.
+Note that this is data, and contains the value of `k`.
 -/
 class SimpleExtension (F K : Type*) [CommSemiring F] [Field K] [Algebra F K] where
   /-- The element of K which is adjoined to F. -/
@@ -29,7 +28,7 @@ class SimpleExtension (F K : Type*) [CommSemiring F] [Field K] [Algebra F K] whe
   is_adjoin' : ∀ (x : K), ∃ (r s : Polynomial F), x = (aeval k) r / (aeval k) s
 
 /--
-We can use `Field.exists_primitive_element` to noncomputable create a simple extension.
+We can use `Field.exists_primitive_element` to noncomputably create a simple extension.
 -/
 noncomputable def SimpleExtesion_of_finite_seperable (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [Algebra.IsSeparable F K] : SimpleExtension F K where
@@ -52,26 +51,46 @@ lemma SimpleExtension.X_eq_k : algebraMap F[X] K X = se.k := aeval_X _
 
 end CommSemiring
 
-section CommRing
+section Field
 
-variable (F K : Type*) [CommRing F] [Nontrivial F] [IsDomain F] [Field K] [Algebra F K]
+variable (F K : Type*) [Field F] [Field K] [Algebra F K]
     [se : SimpleExtension F K]
 
+variable (F K : Type*) [Field F] [Field K] [Algebra F K] [se : SimpleExtension F K]
+
+lemma SimpleExtension.adjoin_eq_top : F⟮se.k⟯ = ⊤ := by
+  ext x
+  simp only [mem_adjoin_simple_iff, mem_top, iff_true]
+  apply SimpleExtension.is_adjoin'
+
 /--
-A typeclass for K being a transcendental simple extension of F.
+If K is a finite extension of F then it's equivalent to adjoining to F a root of
+`minpoly F k`.
 -/
-class TranscendentalExtension : Prop where
-  is_transcendental : Transcendental F se.k
+noncomputable def SimpleExtension.equivAdjoinRoot [FiniteDimensional F K] :
+    AdjoinRoot (minpoly F se.k) ≃ₐ[F] K :=
+  IntermediateField.adjoinRootEquivAdjoin F (IsAlgebraic.of_finite ..).isIntegral
+  |>.trans <| IntermediateField.equivOfEq (SimpleExtension.adjoin_eq_top F K)
+  |>.trans <| IntermediateField.topEquiv
 
-variable [is_trans : TranscendentalExtension F K]
+lemma finiteDimensional_iff_isAlgebraic_gen : FiniteDimensional F K ↔ IsAlgebraic F se.k where
+  mp h := IsAlgebraic.of_finite ..
+  mpr h := by
+    have := adjoin.finiteDimensional h.isIntegral
+    rw [SimpleExtension.adjoin_eq_top] at this
+    apply IntermediateField.topEquiv.toLinearEquiv.finiteDimensional
 
-instance (priority := 100) toIsFractionRing : IsFractionRing F[X] K where
+lemma gen_transcendental [t : Algebra.Transcendental F K] : Transcendental F se.k := fun h ↦
+  have := (finiteDimensional_iff_isAlgebraic_gen F K).mpr h
+  Algebra.transcendental_iff_not_isAlgebraic.mp t inferInstance
+
+instance (priority := 100) toIsFractionRing [Algebra.Transcendental F K] : IsFractionRing F[X] K where
   map_units' := by
     simp only [isUnit_iff_ne_zero, ne_eq, Subtype.forall]
     intro a ha
     change (a : K) ≠ 0
     intro h
-    absurd is_trans.is_transcendental
+    absurd gen_transcendental F K
     exists a
     exact ⟨nonZeroDivisors.ne_zero ha, h⟩
   surj' z := by
@@ -94,27 +113,6 @@ instance (priority := 100) toIsFractionRing : IsFractionRing F[X] K where
     simp only [OneMemClass.coe_one, one_mul]
     by_contra! nh
     rw [algebraMap_eq_aeval, RingHom.coe_coe] at h
-    exact is_trans.is_transcendental ⟨x - y, sub_ne_zero_of_ne nh, by simp [h]⟩
-
-end CommRing
-
-section Field
-
-variable (F K : Type*) [Field F] [Field K] [Algebra F K] [se : SimpleExtension F K]
-
-lemma SimpleExtension.adjoin_eq_top : F⟮se.k⟯ = ⊤ := by
-  ext x
-  simp only [mem_adjoin_simple_iff, mem_top, iff_true]
-  apply SimpleExtension.is_adjoin'
-
-/--
-If K is a finite extension of F then it's equivalent to adjoining to F a root of
-`minpoly F k`.
--/
-noncomputable def SimpleExtension.equivAdjoinRoot [FiniteDimensional F K] :
-    AdjoinRoot (minpoly F se.k) ≃ₐ[F] K :=
-  IntermediateField.adjoinRootEquivAdjoin F (IsAlgebraic.of_finite ..).isIntegral
-  |>.trans <| IntermediateField.equivOfEq (SimpleExtension.adjoin_eq_top F K)
-  |>.trans <| IntermediateField.topEquiv
+    exact gen_transcendental F K ⟨x - y, sub_ne_zero_of_ne nh, by simp [h]⟩
 
 end Field
