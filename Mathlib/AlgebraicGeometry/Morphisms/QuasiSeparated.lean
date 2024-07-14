@@ -195,7 +195,7 @@ theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : Opens X} (hU : IsAffineO
   exacts [@AlgebraicGeometry.quasiSeparatedSpace_of_isAffine _ hU, U.isOpen]
 #align algebraic_geometry.is_affine_open.is_quasi_separated AlgebraicGeometry.IsAffineOpen.isQuasiSeparated
 
-theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : QuasiSeparated (f ≫ g)] :
+theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
   let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _
   have (i) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
@@ -203,7 +203,7 @@ theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H :
     ((Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _)
   rintro ⟨i, j⟩; dsimp at i j
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_
-    (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.map i)) H) ?_
+    (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.map i)) ‹_›) ?_
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
   · exact inferInstance
