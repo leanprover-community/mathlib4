@@ -16,22 +16,24 @@ Note that this statement does not need topology on the domain.
 In particular, it applies to discontinuous quadratic forms on infinite dimensional spaces.
 -/
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-namespace QuadraticForm
+namespace QuadraticMap
 
-theorem hasLineDerivAt (f : QuadraticForm 𝕜 E) (a b : E) :
+theorem hasLineDerivAt (f : QuadraticMap 𝕜 E F) (a b : E) :
     HasLineDerivAt 𝕜 f (polar f a b) a b := by
-  simpa [HasLineDerivAt, QuadraticForm.map_add, f.map_smul, mul_assoc]
-    using ((hasDerivAt_const (0 : 𝕜) (f a)).add
-      ((hasDerivAt_id _).mul (hasDerivAt_mul_const _))).add (hasDerivAt_mul_const _)
+  simpa [HasLineDerivAt, QuadraticMap.map_add, f.map_smul] using
+    ((hasDerivAt_const (0 : 𝕜) (f a)).add <|
+      ((hasDerivAt_id 0).mul (hasDerivAt_id 0)).smul (hasDerivAt_const 0 (f b))).add
+      ((hasDerivAt_id 0).smul (hasDerivAt_const 0 (polar f a b)))
 
-theorem lineDifferentiableAt (f : QuadraticForm 𝕜 E) (a b : E) : LineDifferentiableAt 𝕜 f a b :=
+theorem lineDifferentiableAt (f : QuadraticMap 𝕜 E F) (a b : E) : LineDifferentiableAt 𝕜 f a b :=
   (f.hasLineDerivAt a b).lineDifferentiableAt
 
 @[simp]
-protected theorem lineDeriv (f : QuadraticForm 𝕜 E) : lineDeriv 𝕜 f = polar f := by
+protected theorem lineDeriv (f : QuadraticMap 𝕜 E F) : lineDeriv 𝕜 f = polar f := by
   ext a b
   exact (f.hasLineDerivAt a b).lineDeriv
 
-end QuadraticForm
+end QuadraticMap
