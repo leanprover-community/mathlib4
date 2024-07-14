@@ -701,8 +701,10 @@ theorem frontier_subset_closure : frontier s ⊆ closure s :=
   diff_subset
 #align frontier_subset_closure frontier_subset_closure
 
-theorem IsClosed.frontier_subset (hs : IsClosed s) : frontier s ⊆ s :=
-  frontier_subset_closure.trans hs.closure_eq.subset
+theorem frontier_subset_iff_isClosed : frontier s ⊆ s ↔ IsClosed s := by
+  rw [frontier, diff_subset_iff, union_eq_right.mpr interior_subset, closure_subset_iff_isClosed]
+
+alias ⟨_, IsClosed.frontier_subset⟩ := frontier_subset_iff_isClosed
 #align is_closed.frontier_subset IsClosed.frontier_subset
 
 theorem frontier_closure_subset : frontier (closure s) ⊆ frontier s :=
@@ -751,6 +753,10 @@ theorem IsOpen.frontier_eq (hs : IsOpen s) : frontier s = closure s \ s := by
 theorem IsOpen.inter_frontier_eq (hs : IsOpen s) : s ∩ frontier s = ∅ := by
   rw [hs.frontier_eq, inter_diff_self]
 #align is_open.inter_frontier_eq IsOpen.inter_frontier_eq
+
+theorem disjoint_frontier_iff_isOpen : Disjoint (frontier s) s ↔ IsOpen s := by
+  rw [← isClosed_compl_iff, ← frontier_subset_iff_isClosed,
+    frontier_compl, subset_compl_iff_disjoint_right]
 
 /-- The frontier of a set is closed. -/
 theorem isClosed_frontier : IsClosed (frontier s) := by
