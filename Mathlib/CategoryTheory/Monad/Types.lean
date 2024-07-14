@@ -57,7 +57,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
         funext t
         -- Porting note: missing tactic `unfold_projs`, using `change` instead.
         change _ = joinM (g <$> (f t))
-        simp only [joinM, seq_bind_eq, Function.comp.left_id]
+        simp only [joinM, seq_bind_eq, Function.id_comp]
         rfl }
   inverse :=
     { obj := fun X => X
@@ -65,7 +65,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
       map_id := fun X => rfl
       map_comp := fun f g => by
         --unfold_projs
-        --Porting note: Need these instances for some lemmas below.
+        -- Porting note: Need these instances for some lemmas below.
         --Should they be added as actual instances elsewhere?
         letI : _root_.Monad (ofTypeMonad m).obj :=
           show _root_.Monad m from inferInstance
@@ -75,10 +75,10 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
         dsimp
         -- Porting note: missing tactic `unfold_projs`, using `change` instead.
         change joinM (g <$> (f t)) = _
-        simp only [joinM, seq_bind_eq, Function.comp.left_id]
+        simp only [joinM, seq_bind_eq, Function.id_comp]
         rfl }
   unitIso := by
-    refine' NatIso.ofComponents (fun X => Iso.refl X) fun f => _
+    refine NatIso.ofComponents (fun X => Iso.refl X) fun f => ?_
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X

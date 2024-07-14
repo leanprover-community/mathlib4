@@ -3,8 +3,9 @@ Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Subgroup.Actions
+import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.FixedPoints
 
 #align_import group_theory.group_action.fixing_subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -36,6 +37,8 @@ TODO :
 
 * Treat semigroups ?
 
+* add `to_additive` for the various lemmas
+
 -/
 
 
@@ -47,8 +50,7 @@ variable (M : Type*) {α : Type*} [Monoid M] [MulAction M α]
 
 /-- The submonoid fixing a set under a `MulAction`. -/
 @[to_additive " The additive submonoid fixing a set under an `AddAction`. "]
-def fixingSubmonoid (s : Set α) : Submonoid M
-    where
+def fixingSubmonoid (s : Set α) : Submonoid M where
   carrier := { ϕ : M | ∀ x : s, ϕ • (x : α) = x }
   one_mem' _ := one_smul _ _
   mul_mem' {x y} hx hy z := by rw [mul_smul, hy z, hx z]
@@ -120,6 +122,14 @@ theorem mem_fixingSubgroup_iff {s : Set α} {m : M} : m ∈ fixingSubgroup M s �
   ⟨fun hg y hy => hg ⟨y, hy⟩, fun h ⟨y, hy⟩ => h y hy⟩
 #align mem_fixing_subgroup_iff mem_fixingSubgroup_iff
 
+theorem mem_fixingSubgroup_iff_subset_fixedBy {s : Set α} {m : M} :
+    m ∈ fixingSubgroup M s ↔ s ⊆ fixedBy α m := by
+  simp_rw [mem_fixingSubgroup_iff, Set.subset_def, mem_fixedBy]
+
+theorem mem_fixingSubgroup_compl_iff_movedBy_subset {s : Set α} {m : M} :
+    m ∈ fixingSubgroup M sᶜ ↔ (fixedBy α m)ᶜ ⊆ s := by
+  rw [mem_fixingSubgroup_iff_subset_fixedBy, Set.compl_subset_comm]
+
 variable (α)
 
 /-- The Galois connection between fixing subgroups and fixed points of a group action -/
@@ -160,5 +170,14 @@ theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubgroup_fixedPoints_gc M α).u_iInf
 #align fixed_points_subgroup_supr fixedPoints_subgroup_iSup
+
+/-- The orbit of the fixing subgroup of `sᶜ` (ie. the moving subgroup of `s`) is a subset of `s` -/
+theorem orbit_fixingSubgroup_compl_subset {s : Set α} {a : α} (a_in_s : a ∈ s) :
+    MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by
+  intro b b_in_orbit
+  let ⟨⟨g, g_fixing⟩, g_eq⟩ := MulAction.mem_orbit_iff.mp b_in_orbit
+  rw [Submonoid.mk_smul] at g_eq
+  rw [mem_fixingSubgroup_compl_iff_movedBy_subset] at g_fixing
+  rwa [← g_eq, smul_mem_of_set_mem_fixedBy (set_mem_fixedBy_of_movedBy_subset g_fixing)]
 
 end Group

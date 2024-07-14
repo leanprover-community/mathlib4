@@ -3,17 +3,29 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Mathlib.Mathport.Rename
 
-import Mathlib.Init.Logic
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
 
-/-! # Quotient types
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
+# Quotient types
 
 These are ported from the Lean 3 standard library file `init/data/quot.lean`.
 -/
 
-set_option autoImplicit true
+universe u
 
 section
+
 variable {α : Type u}
 variable (r : α → α → Prop)
 
@@ -38,17 +50,17 @@ def EqvGen.Setoid : Setoid α :=
 #align eqv_gen.setoid EqvGen.Setoid
 
 theorem Quot.exact {a b : α} (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
-  @Quotient.exact _ (EqvGen.Setoid r) a b (congr_arg
-    (Quot.lift (Quotient.mk (EqvGen.Setoid r)) (λx y h => Quot.sound (EqvGen.rel x y h))) H)
+  @Quotient.exact _ (EqvGen.Setoid r) a b (congrArg
+    (Quot.lift (Quotient.mk (EqvGen.Setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
 #align quot.exact Quot.exact
 
 theorem Quot.EqvGen_sound {r : α → α → Prop} {a b : α} (H : EqvGen r a b) :
     Quot.mk r a = Quot.mk r b :=
   EqvGen.rec
-    (λ _ _ h => Quot.sound h)
-    (λ _ => rfl)
-    (λ _ _ _ IH => Eq.symm IH)
-    (λ _ _ _ _ _ IH₁ IH₂ => Eq.trans IH₁ IH₂)
+    (fun _ _ h ↦ Quot.sound h)
+    (fun _ ↦ rfl)
+    (fun _ _ _ IH ↦ Eq.symm IH)
+    (fun _ _ _ _ _ IH₁ IH₂ ↦ Eq.trans IH₁ IH₂)
     H
 #align quot.eqv_gen_sound Quot.EqvGen_sound
 
@@ -57,9 +69,9 @@ end
 open Decidable
 instance Quotient.decidableEq {α : Sort u} {s : Setoid α} [d : ∀ a b : α, Decidable (a ≈ b)] :
     DecidableEq (Quotient s) :=
-  λ q₁ q₂ : Quotient s =>
+  fun q₁ q₂ : Quotient s ↦
     Quotient.recOnSubsingleton₂ q₁ q₂
-      (λ a₁ a₂ =>
+      (fun a₁ a₂ ↦
         match (d a₁ a₂) with
         | (isTrue h₁)  => isTrue (Quotient.sound h₁)
-        | (isFalse h₂) => isFalse (λ h => absurd (Quotient.exact h) h₂))
+        | (isFalse h₂) => isFalse (fun h ↦ absurd (Quotient.exact h) h₂))

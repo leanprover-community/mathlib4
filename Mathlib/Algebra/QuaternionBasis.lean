@@ -43,7 +43,6 @@ structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c�
 #align quaternion_algebra.basis QuaternionAlgebra.Basis
 
 variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-
 variable {c₁ c₂ : R}
 
 namespace Basis
@@ -119,7 +118,7 @@ theorem lift_one : q.lift (1 : ℍ[R,c₁,c₂]) = 1 := by simp [lift]
 #align quaternion_algebra.basis.lift_one QuaternionAlgebra.Basis.lift_one
 
 theorem lift_add (x y : ℍ[R,c₁,c₂]) : q.lift (x + y) = q.lift x + q.lift y := by
-  simp [lift, add_smul]
+  simp only [lift, add_re, map_add, add_imI, add_smul, add_imJ, add_imK]
   abel
 #align quaternion_algebra.basis.lift_add QuaternionAlgebra.Basis.lift_add
 
@@ -132,7 +131,7 @@ theorem lift_mul (x y : ℍ[R,c₁,c₂]) : q.lift (x * y) = q.lift x * q.lift y
   simp only [mul_comm _ c₁, mul_right_comm _ _ c₁]
   simp only [mul_comm _ c₂, mul_right_comm _ _ c₂]
   simp only [← mul_comm c₁ c₂, ← mul_assoc]
-  simp [sub_eq_add_neg, add_smul, ← add_assoc]
+  simp only [mul_re, sub_eq_add_neg, add_smul, neg_smul, mul_imI, ← add_assoc, mul_imJ, mul_imK]
   abel
 #align quaternion_algebra.basis.lift_mul QuaternionAlgebra.Basis.lift_mul
 
@@ -155,12 +154,12 @@ def liftHom : ℍ[R,c₁,c₂] →ₐ[R] A :=
 @[simps i j k]
 def compHom (F : A →ₐ[R] B) : Basis B c₁ c₂ where
   i := F q.i
-  i_mul_i := by rw [← F.map_mul, q.i_mul_i, F.map_smul, F.map_one]
+  i_mul_i := by rw [← map_mul, q.i_mul_i, map_smul, map_one]
   j := F q.j
-  j_mul_j := by rw [← F.map_mul, q.j_mul_j, F.map_smul, F.map_one]
+  j_mul_j := by rw [← map_mul, q.j_mul_j, map_smul, map_one]
   k := F q.k
-  i_mul_j := by rw [← F.map_mul, q.i_mul_j]
-  j_mul_i := by rw [← F.map_mul, q.j_mul_i, F.map_neg]
+  i_mul_j := by rw [← map_mul, q.i_mul_j]
+  j_mul_i := by rw [← map_mul, q.j_mul_i, map_neg]
 #align quaternion_algebra.basis.comp_hom QuaternionAlgebra.Basis.compHom
 
 end Basis
@@ -175,9 +174,30 @@ def lift : Basis A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) where
     ext
     dsimp [Basis.lift]
     rw [← F.commutes]
-    simp only [← F.commutes, ← F.map_smul, ← F.map_add, mk_add_mk, smul_mk, smul_zero,
+    simp only [← F.commutes, ← map_smul, ← map_add, mk_add_mk, smul_mk, smul_zero,
       algebraMap_eq]
     congr <;> simp
 #align quaternion_algebra.lift QuaternionAlgebra.lift
 
+/-- Two `R`-algebra morphisms from a quaternion algebra are equal if they agree on `i` and `j`. -/
+@[ext]
+theorem hom_ext ⦃f g : ℍ[R,c₁,c₂] →ₐ[R] A⦄
+    (hi : f (Basis.self R).i = g (Basis.self R).i) (hj : f (Basis.self R).j = g (Basis.self R).j) :
+    f = g :=
+  lift.symm.injective <| Basis.ext hi hj
+
 end QuaternionAlgebra
+
+namespace Quaternion
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+
+open QuaternionAlgebra (Basis)
+
+/-- Two `R`-algebra morphisms from the quaternions are equal if they agree on `i` and `j`. -/
+@[ext]
+theorem hom_ext ⦃f g : ℍ[R] →ₐ[R] A⦄
+    (hi : f (Basis.self R).i = g (Basis.self R).i) (hj : f (Basis.self R).j = g (Basis.self R).j) :
+    f = g :=
+  QuaternionAlgebra.hom_ext hi hj
+
+end Quaternion

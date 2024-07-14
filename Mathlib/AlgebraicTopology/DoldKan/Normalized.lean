@@ -18,7 +18,7 @@ defined in `FunctorN.lean` and the composition of
 `normalizedMooreComplex A` with the inclusion
 `ChainComplex A ℕ ⥤ Karoubi (ChainComplex A ℕ)`.
 
-This isomorphism shall be used in `equivalence.lean` in order to obtain
+This isomorphism shall be used in `Equivalence.lean` in order to obtain
 the Dold-Kan equivalence
 `CategoryTheory.Abelian.DoldKan.equivalence : SimplicialObject A ≌ ChainComplex A ℕ`
 with a functor (definitionally) equal to `normalizedMooreComplex A`.
@@ -82,8 +82,8 @@ set_option linter.uppercaseLean3 false in
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
     AlternatingFaceMapComplex.map f ≫ PInftyToNormalizedMooreComplex Y =
-      PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f :=
-  by aesop_cat
+      PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f := by
+  aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_to_normalized_Moore_complex_naturality AlgebraicTopology.DoldKan.PInftyToNormalizedMooreComplex_naturality
 

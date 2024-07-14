@@ -3,14 +3,23 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-
-import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Init.IteSimp
+import Mathlib.Init.Data.Ordering.Basic
 
 #align_import init.data.ordering.lemmas from "leanprover-community/lean"@"4bd314f7bd5e0c9e813fc201f1279a23f13f9f1d"
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Some `Ordering` lemmas
 -/
 
@@ -45,26 +54,19 @@ variable {α : Type u} {lt : α → α → Prop} [DecidableRel lt]
 attribute [local simp] cmpUsing
 
 @[simp]
-theorem cmpUsing_eq_lt (a b : α) : (cmpUsing lt a b = Ordering.lt) = lt a b := by simp
+theorem cmpUsing_eq_lt (a b : α) : (cmpUsing lt a b = Ordering.lt) = lt a b := by
+  simp only [cmpUsing, Ordering.ite_eq_lt_distrib, ite_self, if_false_right, and_true]
 #align cmp_using_eq_lt cmpUsing_eq_lt
 
 @[simp]
-theorem cmpUsing_eq_gt [IsStrictOrder α lt] (a b : α) :
-    (cmpUsing lt a b = Ordering.gt) = lt b a := by
-  simp only [cmpUsing, Ordering.ite_eq_gt_distrib, if_false_right_eq_and, and_true,
-    if_false_left_eq_and]
-  apply propext
-  apply Iff.intro
-  · exact fun h => h.2
-  · intro hba
-    constructor
-    · intro hab
-      exact absurd (_root_.trans hab hba) (irrefl a)
-    · assumption
+theorem cmpUsing_eq_gt [IsStrictOrder α lt] (a b : α) : cmpUsing lt a b = Ordering.gt ↔ lt b a := by
+  simp only [cmpUsing, Ordering.ite_eq_gt_distrib, if_false_right, and_true, if_false_left,
+    and_iff_right_iff_imp]
+  exact fun hba hab ↦ (irrefl a) (_root_.trans hab hba)
 #align cmp_using_eq_gt cmpUsing_eq_gt
 
 @[simp]
-theorem cmpUsing_eq_eq (a b : α) : (cmpUsing lt a b = Ordering.eq) = (¬lt a b ∧ ¬lt b a) := by simp
+theorem cmpUsing_eq_eq (a b : α) : cmpUsing lt a b = Ordering.eq ↔ ¬lt a b ∧ ¬lt b a := by simp
 #align cmp_using_eq_eq cmpUsing_eq_eq
 
 end

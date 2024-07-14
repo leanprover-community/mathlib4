@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
+import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Logic.Equiv.Fin
 
@@ -23,15 +23,25 @@ universe v u
 
 namespace CategoryTheory
 
-noncomputable instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
-  monoidalOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
-#align category_theory.types_monoidal CategoryTheory.typesMonoidal
+instance typesChosenFiniteProducts : ChosenFiniteProducts (Type u) where
+  product := Types.binaryProductLimitCone
+  terminal := Types.terminalLimitCone
 
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
     (f ⊗ g) p = (f p.1, g p.2) :=
   rfl
 #align category_theory.tensor_apply CategoryTheory.tensor_apply
+
+@[simp]
+theorem whiskerLeft_apply (X : Type u) {Y Z : Type u} (f : Y ⟶ Z) (p : X ⊗ Y) :
+    (X ◁ f) p = (p.1, f p.2) :=
+  rfl
+
+@[simp]
+theorem whiskerRight_apply {Y Z : Type u} (f : Y ⟶ Z) (X : Type u) (p : Y ⊗ X) :
+    (f ▷ X) p = (f p.1, p.2) :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :
@@ -68,6 +78,30 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
     ((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) (x, (y, z)) = ((x, y), z) :=
   rfl
 #align category_theory.associator_inv_apply CategoryTheory.associator_inv_apply
+
+@[simp] theorem associator_hom_apply_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).1 = x.1.1 :=
+  rfl
+
+@[simp] theorem associator_hom_apply_2_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).2.1 = x.1.2 :=
+  rfl
+
+@[simp] theorem associator_hom_apply_2_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).2.2 = x.2 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_1_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).1.1 = x.1 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_1_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).1.2 = x.2.1 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).2 = x.2.2 :=
+  rfl
 
 -- We don't yet have an API for tensor products indexed by finite ordered types,
 -- but it would be nice to state how monoidal functors preserve these.

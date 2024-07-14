@@ -3,13 +3,27 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Std.Data.Nat.Lemmas
+import Batteries.Data.Nat.Lemmas
+import Batteries.WF
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Data.Nat.Div
-import Mathlib.Init.Order.LinearOrder
-import Mathlib.Tactic.Cases
+import Mathlib.Util.AssertExists
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
+
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+-/
+
+assert_not_exists Preorder
 
 universe u
 
@@ -65,7 +79,7 @@ namespace Nat
 
 #align nat.one_mul Nat.one_mul
 
-#align nat.succ_add_eq_succ_add Nat.succ_add_eq_succ_add
+#align nat.succ_add_eq_succ_add Nat.succ_add_eq_add_succ
 
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
   | 0, m => fun _ => Or.inl rfl
@@ -104,24 +118,9 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 
 #align nat.le_total Nat.le_total
 
-protected theorem lt_of_le_and_ne {m n : ℕ} (h1 : m ≤ n) : m ≠ n → m < n :=
-  Or.resolve_right (Or.symm (Nat.eq_or_lt_of_le h1))
-#align nat.lt_of_le_and_ne Nat.lt_of_le_and_ne
+#align nat.lt_of_le_and_ne Nat.lt_of_le_of_ne
 
 #align nat.lt_iff_le_not_le Nat.lt_iff_le_not_le
-
-instance linearOrder : LinearOrder ℕ where
-  le := Nat.le
-  le_refl := @Nat.le_refl
-  le_trans := @Nat.le_trans
-  le_antisymm := @Nat.le_antisymm
-  le_total := @Nat.le_total
-  lt := Nat.lt
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
-  decidableLT := inferInstance
-  decidableLE := inferInstance
-  decidableEq := inferInstance
-#align nat.linear_order Nat.linearOrder
 
 #align nat.eq_zero_of_le_zero Nat.eq_zero_of_le_zero
 
@@ -191,9 +190,9 @@ instance linearOrder : LinearOrder ℕ where
 
 #align nat.le_succ_of_pred_le Nat.le_succ_of_pred_le
 
-#align nat.le_lt_antisymm Nat.le_lt_antisymm
+#align nat.le_lt_antisymm Nat.le_lt_asymm
 
-#align nat.lt_le_antisymm Nat.lt_le_antisymm
+#align nat.lt_le_antisymm Nat.lt_le_asymm
 
 #align nat.lt_asymm Nat.lt_asymm
 
@@ -273,8 +272,8 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | n + 1, 0, h => by contradiction
   | n + 1, m + 1, h => by
     have : succ (succ (n + n)) = succ (succ (m + m)) := by
-      unfold bit0 at h; simp [add_one, add_succ, succ_add] at h
-      have aux : n + n = m + m := h; rw [aux]
+      unfold bit0 at h; simp only [add_one, add_succ, succ_add, succ_inj'] at h
+      rw [h]
     have : n + n = m + m := by repeat injection this with this
     have : n = m := Nat.bit0_inj this
     rw [this]
@@ -371,9 +370,9 @@ end bit
 #align nat.exists_eq_succ_of_ne_zero Nat.exists_eq_succ_of_ne_zero
 
 def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ m → B) : B := by
-  induction' h : n
-  · exact H1 h
-  · exact H2 _ h
+  induction n with
+  | zero => exact H1 rfl
+  | succ n _ => apply H2 _ rfl
 #align nat.discriminate Nat.discriminate
 
 theorem one_eq_succ_zero : 1 = succ 0 :=
@@ -414,15 +413,13 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.sub_self_add Nat.sub_self_add
 
-protected theorem le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔ x + k ≤ y := by
-  rw [← Nat.add_sub_cancel x k, Nat.sub_le_sub_iff_right h, Nat.add_sub_cancel]
-#align nat.le_sub_iff_right Nat.le_sub_iff_right
+#align nat.le_sub_iff_right Nat.le_sub_iff_add_le
 
 #align nat.sub_lt_of_pos_le Nat.sub_lt_of_pos_le
 
 #align nat.sub_one Nat.sub_one
 
-#align nat.succ_sub_one Nat.succ_sub_one
+#align nat.succ_sub_one Nat.add_one_sub_one
 
 #align nat.succ_pred_eq_of_pos Nat.succ_pred_eq_of_pos
 
@@ -446,9 +443,7 @@ protected theorem le_sub_iff_right {x y k : ℕ} (h : k ≤ y) : x ≤ y - k ↔
 
 #align nat.succ_sub_sub_succ Nat.succ_sub_sub_succ
 
-protected theorem sub.right_comm (m n k : ℕ) : m - n - k = m - k - n := by
-  rw [Nat.sub_sub, Nat.sub_sub, Nat.add_comm]
-#align nat.sub.right_comm Nat.sub.right_comm
+#align nat.sub.right_comm Nat.sub_right_comm
 
 #align nat.succ_sub Nat.succ_sub
 
@@ -470,7 +465,7 @@ protected theorem sub.right_comm (m n k : ℕ) : m - n - k = m - k - n := by
 
 #align nat.mul_self_sub_mul_self_eq Nat.mul_self_sub_mul_self_eq
 
-#align nat.succ_mul_succ_eq Nat.succ_mul_succ_eq
+#align nat.succ_mul_succ_eq Nat.succ_mul_succ
 
 /-! min -/
 
@@ -478,7 +473,7 @@ protected theorem sub.right_comm (m n k : ℕ) : m - n - k = m - k - n := by
 
 #align nat.min_zero Nat.min_zero
 
-#align nat.min_succ_succ Nat.min_succ_succ
+#align nat.succ_min_succ Nat.succ_min_succ
 
 #align nat.sub_eq_sub_min Nat.sub_eq_sub_min
 
@@ -503,7 +498,7 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
 
 #align nat.strong_rec_on Nat.strongRecOn
 
--- porting note: added `elab_as_elim`
+-- Porting note: added `elab_as_elim`
 @[elab_as_elim]
 protected theorem strong_induction_on {p : Nat → Prop} (n : Nat)
     (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
@@ -621,9 +616,7 @@ theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
 
 #align nat.div_div_eq_div_mul Nat.div_div_eq_div_mul
 
-protected theorem mul_div_mul {m : ℕ} (n k : ℕ) (H : 0 < m) : m * n / (m * k) = n / k := by
-  rw [← Nat.div_div_eq_div_mul, Nat.mul_div_cancel_left _ H]
-#align nat.mul_div_mul Nat.mul_div_mul
+#align nat.mul_div_mul Nat.mul_div_mul_left
 
 #align nat.div_lt_self Nat.div_lt_self
 
@@ -660,9 +653,7 @@ protected theorem mul_div_mul {m : ℕ} (n k : ℕ) (H : 0 < m) : m * n / (m * k
 
 #align nat.dvd_iff_mod_eq_zero Nat.dvd_iff_mod_eq_zero
 
-instance decidableDvd : @DecidableRel ℕ (· ∣ ·) := fun _m _n =>
-  decidable_of_decidable_of_iff (Nat.dvd_iff_mod_eq_zero _ _).symm
-#align nat.decidable_dvd Nat.decidableDvd
+#align nat.decidable_dvd Nat.decidable_dvd
 
 #align nat.mul_div_cancel' Nat.mul_div_cancel'ₓ
 
@@ -706,21 +697,21 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
       if pm : p m then ⟨m, pm, al⟩
       else
         have : ∀ n ≤ m, ¬p n := fun n h =>
-          Or.elim (Decidable.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
+          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
     0 fun n h => absurd h (Nat.not_lt_zero _)
 #align nat.find_x Nat.findX
 
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
-there exists some natural number satisfying `p`, then `nat.find hp` is the
-smallest natural number satisfying `p`. Note that `nat.find` is protected,
-meaning that you can't just write `find`, even if the `nat` namespace is open.
+there exists some natural number satisfying `p`, then `Nat.find hp` is the
+smallest natural number satisfying `p`. Note that `Nat.find` is protected,
+meaning that you can't just write `find`, even if the `Nat` namespace is open.
 
-The API for `nat.find` is:
+The API for `Nat.find` is:
 
-* `nat.find_spec` is the proof that `nat.find hp` satisfies `p`.
-* `nat.find_min` is the proof that if `m < nat.find hp` then `m` does not satisfy `p`.
-* `nat.find_min'` is the proof that if `m` does satisfy `p` then `nat.find hp ≤ m`.
+* `Nat.find_spec` is the proof that `Nat.find hp` satisfies `p`.
+* `Nat.find_min` is the proof that if `m < Nat.find hp` then `m` does not satisfy `p`.
+* `Nat.find_min'` is the proof that if `m` does satisfy `p` then `Nat.find hp ≤ m`.
 -/
 protected def find : ℕ :=
   (Nat.findX H).1
@@ -735,82 +726,8 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
 #align nat.find_min Nat.find_min
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-  le_of_not_lt fun l => Nat.find_min H l h
+  Nat.le_of_not_lt fun l => Nat.find_min H l h
 #align nat.find_min' Nat.find_min'
-
-lemma to_digits_core_lens_eq_aux (b f : Nat) :
-  ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
-    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
-  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
-  | zero => assumption
-  | succ f ih =>
-    by_cases hx : n / b = 0
-    case pos => simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
-    case neg =>
-      simp only [hx, if_false]
-      specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
-      simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
-      exact ih trivial
-
-lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
-    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
-  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
-  | succ f ih =>
-    by_cases hnb : (n / b) = 0
-    case pos => simp only [hnb, if_true, List.length]
-    case neg =>
-      generalize hx: Nat.digitChar (n % b) = x
-      simp only [hx, hnb, if_false] at ih
-      simp only [hnb, if_false]
-      specialize ih (n / b) c (x :: tl)
-      rw [← ih]
-      have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
-      apply to_digits_core_lens_eq_aux
-      exact lens_eq
-
-lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
-  simp only [Nat.pow_succ]
-  exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
-
-/-- The String representation produced by toDigitsCore has the proper length relative to
-the number of digits in `n < e` for some base `b`. Since this works with any base greater
-than one, it can be used for binary, decimal, and hex. -/
-lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
-    (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
-  induction f generalizing n e hlt h_e_pos with
-    simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
-  | succ f ih =>
-    cases e with
-    | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
-    | succ e =>
-      by_cases h_pred_pos : 0 < e
-      case pos =>
-        have _ : 0 < b := Nat.lt_trans (by decide) h
-        specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
-        by_cases hdiv_ten : n / b = 0
-        case pos => simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
-        case neg =>
-          simp only [hdiv_ten,
-            to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
-          exact Nat.succ_le_succ ih
-      case neg =>
-        have _ : e = 0 := Nat.eq_zero_of_nonpos e h_pred_pos
-        rw [‹e = 0›]
-        have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
-        have _ : n < b := ‹b ^ 1 = b› ▸ (‹e = 0› ▸ hlt : n < b ^ Nat.succ 0)
-        simp only [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0), if_true, List.length]
-
-/-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
-number of digits in the decimal number (represented by `e`). For example, the decimal string
-representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
-lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e := by
-  cases n with
-    (intro e0 he; simp only [Nat.repr, Nat.toDigits, String.length, List.asString])
-  | zero => assumption
-  | succ n =>
-    by_cases hterm : n.succ / 10 = 0
-    case pos => simp only [hterm, Nat.toDigitsCore]; assumption
-    case neg => exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 end Find
 

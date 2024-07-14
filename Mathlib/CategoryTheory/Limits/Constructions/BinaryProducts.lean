@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
@@ -77,15 +76,14 @@ def isPullbackOfIsTerminalIsProduct {W X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (h
 
 /-- Any category with pullbacks and a terminal object has a limit cone for each walking pair. -/
 noncomputable def limitConeOfTerminalAndPullbacks [HasTerminal C] [HasPullbacks C]
-    (F : Discrete WalkingPair ⥤ C) : LimitCone F
-    where
+    (F : Discrete WalkingPair ⥤ C) : LimitCone F where
   cone :=
     { pt :=
         pullback (terminal.from (F.obj ⟨WalkingPair.left⟩))
           (terminal.from (F.obj ⟨WalkingPair.right⟩))
       π :=
         Discrete.natTrans fun x =>
-          Discrete.casesOn x fun x => WalkingPair.casesOn x pullback.fst pullback.snd }
+          Discrete.casesOn x fun x => WalkingPair.casesOn x (pullback.fst _ _) (pullback.snd _ _) }
   isLimit :=
     isBinaryProductOfIsTerminalIsPullback F _ terminalIsTerminal _ _ (pullbackIsPullback _ _)
 #align limit_cone_of_terminal_and_pullbacks limitConeOfTerminalAndPullbacks
@@ -127,8 +125,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
       IsColimit
         (PushoutCocone.mk (c.ι.app ⟨WalkingPair.left⟩) (c.ι.app ⟨WalkingPair.right⟩ : _) <|
           hX.hom_ext (f ≫ _) (g ≫ _))) :
-    IsColimit c
-    where
+    IsColimit c where
   desc s :=
     hc.desc
       (PushoutCocone.mk (s.ι.app ⟨WalkingPair.left⟩) (s.ι.app ⟨WalkingPair.right⟩) (hX.hom_ext _ _))
@@ -143,7 +140,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
     apply hc.hom_ext
     rintro (_ | (_ | _)) <;>
       simp only [PushoutCocone.mk_ι_app_zero, PushoutCocone.mk_ι_app, Category.assoc]
-    congr 1
+    on_goal 1 => congr 1
     exacts [(hc.fac c' WalkingSpan.left).symm, (hc.fac c' WalkingSpan.left).symm,
       (hc.fac c' WalkingSpan.right).symm]
 #align is_binary_coproduct_of_is_initial_is_pushout isBinaryCoproductOfIsInitialIsPushout
@@ -180,7 +177,7 @@ noncomputable def colimitCoconeOfInitialAndPushouts [HasInitial C] [HasPushouts 
     { pt := pushout (initial.to (F.obj ⟨WalkingPair.left⟩)) (initial.to (F.obj ⟨WalkingPair.right⟩))
       ι :=
         Discrete.natTrans fun x =>
-          Discrete.casesOn x fun x => WalkingPair.casesOn x pushout.inl pushout.inr }
+          Discrete.casesOn x fun x => WalkingPair.casesOn x (pushout.inl _ _) (pushout.inr _ _) }
   isColimit := isBinaryCoproductOfIsInitialIsPushout F _ initialIsInitial _ _ (pushoutIsPushout _ _)
 #align colimit_cocone_of_initial_and_pushouts colimitCoconeOfInitialAndPushouts
 

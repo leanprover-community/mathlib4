@@ -61,8 +61,7 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 -- Porting note: this definition is already in `Topology.Homotopy.Basic`
 -- /-- The product homotopy of `homotopies` between functions `f` and `g` -/
 -- @[simps]
--- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g)
---     where
+-- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g) where
 --   toFun t i := homotopies i t
 --   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
 --   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
@@ -102,14 +101,9 @@ def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
   where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps!]
 def HomotopyRel.prod (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel g₀ g₁ S) :
-    HomotopyRel (prodMk f₀ g₀) (prodMk f₁ g₁) S :=
-  { Homotopy.prod F.toHomotopy G.toHomotopy with
-    prop' := by
-      intro t x hx
-      have hF := F.prop' t x hx
-      have hG := G.prop' t x hx
-      simp only [coe_mk, prod_eval, Prod.mk.inj_iff, Homotopy.prod] at hF hG⊢
-      exact ⟨⟨hF.1, hG.1⟩, ⟨hF.2, hG.2⟩⟩ }
+    HomotopyRel (prodMk f₀ g₀) (prodMk f₁ g₁) S where
+  toHomotopy := Homotopy.prod F.toHomotopy G.toHomotopy
+  prop' t x hx := Prod.ext (F.prop' t x hx) (G.prop' t x hx)
 #align continuous_map.homotopy_rel.prod ContinuousMap.HomotopyRel.prod
 
 end Prod
@@ -145,7 +139,7 @@ theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
 /-- Composition and products commute.
   This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
 theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i))
-    (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)): pi γ₀ ⬝ pi γ₁ = pi fun i => γ₀ i ⬝ γ₁ i := by
+    (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)) : pi γ₀ ⬝ pi γ₁ = pi fun i => γ₀ i ⬝ γ₁ i := by
   apply Quotient.induction_on_pi (p := _) γ₁
   intro a
   apply Quotient.induction_on_pi (p := _) γ₀
@@ -156,8 +150,7 @@ theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)
 #align path.homotopic.comp_pi_eq_pi_comp Path.Homotopic.comp_pi_eq_pi_comp
 
 /-- Abbreviation for projection onto the ith coordinate. -/
-@[reducible]
-def proj (i : ι) (p : Path.Homotopic.Quotient as bs) : Path.Homotopic.Quotient (as i) (bs i) :=
+abbrev proj (i : ι) (p : Path.Homotopic.Quotient as bs) : Path.Homotopic.Quotient (as i) (bs i) :=
   p.mapFn ⟨_, continuous_apply i⟩
 #align path.homotopic.proj Path.Homotopic.proj
 
@@ -210,7 +203,7 @@ theorem prod_lift : prod ⟦p₁⟧ ⟦p₂⟧ = ⟦p₁.prod p₂⟧ :=
 variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quotient b₂ b₃)
 
 /-- Products commute with path composition.
-    This is `trans_prod_eq_prod_trans` descended to the quotient.-/
+    This is `trans_prod_eq_prod_trans` descended to the quotient. -/
 theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
   apply Quotient.inductionOn₂ (motive := _) q₁ q₂
   intro a b
@@ -222,14 +215,12 @@ theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ 
 variable {c₁ c₂ : α × β}
 
 /-- Abbreviation for projection onto the left coordinate of a path class. -/
-@[reducible]
-def projLeft (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.1 c₂.1 :=
+abbrev projLeft (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.1 c₂.1 :=
   p.mapFn ⟨_, continuous_fst⟩
 #align path.homotopic.proj_left Path.Homotopic.projLeft
 
 /-- Abbreviation for projection onto the right coordinate of a path class. -/
-@[reducible]
-def projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.2 c₂.2 :=
+abbrev projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotient c₁.2 c₂.2 :=
   p.mapFn ⟨_, continuous_snd⟩
 #align path.homotopic.proj_right Path.Homotopic.projRight
 

@@ -37,9 +37,7 @@ lie algebra, derived series, derived length, solvable, radical
 universe u v w w₁ w₂
 
 variable (R : Type u) (L : Type v) (M : Type w) {L' : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
-
 variable (I J : LieIdeal R L) {f : L' →ₗ⁅R⁆ L}
 
 namespace LieAlgebra
@@ -91,11 +89,11 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by
   revert l; induction' k with k ih <;> intro l h₂
-  · rw [Nat.zero_eq, le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
+  · rw [le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
   · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
     cases' h with h h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
-      exact LieSubmodule.mono_lie _ _ _ _ (ih (le_refl k)) (ih (le_refl k))
+      exact LieSubmodule.mono_lie (ih (le_refl k)) (ih (le_refl k))
     · rw [derivedSeriesOfIdeal_succ]; exact le_trans (LieSubmodule.lie_le_left _ _) (ih h)
 #align lie_algebra.derived_series_of_ideal_le LieAlgebra.derivedSeriesOfIdeal_le
 
@@ -119,9 +117,9 @@ theorem derivedSeriesOfIdeal_add_le_add (J : LieIdeal R L) (k l : ℕ) :
     D (k + l) (I + J) ≤ D k I + D l J := by
   let D₁ : LieIdeal R L →o LieIdeal R L :=
     { toFun := fun I => ⁅I, I⁆
-      monotone' := fun I J h => LieSubmodule.mono_lie I J I J h h }
+      monotone' := fun I J h => LieSubmodule.mono_lie h h }
   have h₁ : ∀ I J : LieIdeal R L, D₁ (I ⊔ J) ≤ D₁ I ⊔ J := by
-    simp [LieSubmodule.lie_le_right, LieSubmodule.lie_le_left, le_sup_of_le_right]
+    simp [D₁, LieSubmodule.lie_le_right, LieSubmodule.lie_le_left, le_sup_of_le_right]
   rw [← D₁.iterate_sup_le_sup_iff] at h₁
   exact h₁ k l I J
 #align lie_algebra.derived_series_of_ideal_add_le_add LieAlgebra.derivedSeriesOfIdeal_add_le_add
@@ -182,7 +180,7 @@ theorem derivedSeries_map_le (k : ℕ) : (derivedSeries R L' k).map f ≤ derive
   induction' k with k ih
   · simp only [Nat.zero_eq, derivedSeries_def, derivedSeriesOfIdeal_zero, le_top]
   · simp only [derivedSeries_def, derivedSeriesOfIdeal_succ] at ih ⊢
-    exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie _ _ _ _ ih ih)
+    exact le_trans (map_bracket_le f) (LieSubmodule.mono_lie ih ih)
 #align lie_ideal.derived_series_map_le LieIdeal.derivedSeries_map_le
 
 theorem derivedSeries_map_eq (k : ℕ) (h : Function.Surjective f) :
@@ -193,6 +191,22 @@ theorem derivedSeries_map_eq (k : ℕ) (h : Function.Surjective f) :
     exact f.idealRange_eq_top_of_surjective h
   · simp only [derivedSeries_def, map_bracket_eq f h, ih, derivedSeriesOfIdeal_succ]
 #align lie_ideal.derived_series_map_eq LieIdeal.derivedSeries_map_eq
+
+theorem derivedSeries_succ_eq_top_iff (n : ℕ) :
+    derivedSeries R L (n + 1) = ⊤ ↔ derivedSeries R L 1 = ⊤ := by
+  simp only [derivedSeries_def]
+  induction' n with n ih; · simp
+  rw [derivedSeriesOfIdeal_succ]
+  refine ⟨fun h ↦ ?_, fun h ↦ by rwa [ih.mpr h]⟩
+  rw [← ih, eq_top_iff]
+  conv_lhs => rw [← h]
+  exact LieSubmodule.lie_le_right _ _
+
+theorem derivedSeries_eq_top (n : ℕ) (h : derivedSeries R L 1 = ⊤) :
+    derivedSeries R L n = ⊤ := by
+  cases n
+  · rfl
+  · rwa [derivedSeries_succ_eq_top_iff]
 
 end LieIdeal
 
@@ -212,6 +226,14 @@ instance isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvab
   obtain ⟨k, hk⟩ := id hI; obtain ⟨l, hl⟩ := id hJ
   exact ⟨⟨k + l, LieIdeal.derivedSeries_add_eq_bot hk hl⟩⟩
 #align lie_algebra.is_solvable_add LieAlgebra.isSolvableAdd
+
+theorem derivedSeries_lt_top_of_solvable [IsSolvable R L] [Nontrivial L] :
+    derivedSeries R L 1 < ⊤ := by
+  obtain ⟨n, hn⟩ := IsSolvable.solvable (R := R) (L := L)
+  rw [lt_top_iff_ne_top]
+  intro contra
+  rw [LieIdeal.derivedSeries_eq_top n contra] at hn
+  exact top_ne_bot hn
 
 end LieAlgebra
 
@@ -254,7 +276,7 @@ theorem solvable_iff_equiv_solvable (e : L' ≃ₗ⁅R⁆ L) : IsSolvable R L' �
 
 theorem le_solvable_ideal_solvable {I J : LieIdeal R L} (h₁ : I ≤ J) (_ : IsSolvable R J) :
     IsSolvable R I :=
-  (LieIdeal.homOfLe_injective h₁).lieAlgebra_isSolvable
+  (LieIdeal.inclusion_injective h₁).lieAlgebra_isSolvable
 #align lie_algebra.le_solvable_ideal_solvable LieAlgebra.le_solvable_ideal_solvable
 
 variable (R L)
@@ -274,7 +296,7 @@ def radical :=
 instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
   have hwf := LieSubmodule.wellFounded_of_noetherian R L L
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFounded] at hwf
-  refine' hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, _⟩ fun I hI J hJ => _
+  refine hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, ?_⟩ fun I hI J hJ => ?_
   · exact LieAlgebra.isSolvableBot R L
   · rw [Set.mem_setOf_eq] at hI hJ ⊢
     apply LieAlgebra.isSolvableAdd R L
@@ -290,6 +312,13 @@ theorem center_le_radical : center R L ≤ radical R L :=
   have h : IsSolvable R (center R L) := inferInstance
   le_sSup h
 #align lie_algebra.center_le_radical LieAlgebra.center_le_radical
+
+instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
+  rwa [solvable_iff_equiv_solvable LieSubalgebra.topEquiv]
+
+@[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :
+    radical R L = ⊤ := by
+  rw [eq_top_iff]; exact le_sSup <| inferInstanceAs (IsSolvable R (⊤ : LieIdeal R L))
 
 /-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 natural number `k` (the number of inclusions).
@@ -344,7 +373,7 @@ theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
   dsimp only [derivedAbelianOfIdeal]
   cases' h : derivedLengthOfIdeal R L I with k
-  · exact isLieAbelian_bot R L
+  · infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1
 #align lie_algebra.abelian_derived_abelian_of_ideal LieAlgebra.abelian_derivedAbelianOfIdeal
 
@@ -354,9 +383,9 @@ theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :
   change sInf s = 0 ↔ _
   have hne : s ≠ ∅ := by
     obtain ⟨k, hk⟩ := id hI
-    refine' Set.Nonempty.ne_empty ⟨k, _⟩
+    refine Set.Nonempty.ne_empty ⟨k, ?_⟩
     rw [derivedSeries_def, LieIdeal.derivedSeries_eq_bot_iff] at hk; exact hk
-  simp [hne]
+  simp [s, hne]
 #align lie_algebra.derived_length_zero LieAlgebra.derivedLength_zero
 
 theorem abelian_of_solvable_ideal_eq_bot_iff (I : LieIdeal R L) [h : IsSolvable R I] :

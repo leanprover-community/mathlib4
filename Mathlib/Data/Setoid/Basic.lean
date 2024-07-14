@@ -196,6 +196,24 @@ theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s.R
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
 #align setoid.eq_top_iff Setoid.eq_top_iff
 
+lemma sInf_equiv {S : Set (Setoid α)} {x y : α} :
+    letI := sInf S
+    x ≈ y ↔ ∀ s ∈ S, s.Rel x y := Iff.rfl
+
+lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
+    Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s.Rel x y := by
+  simp [sInf_equiv]
+
+/-- The map induced between quotients by a setoid inequality. -/
+def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
+  Quotient.map' id h
+
+/-- The map from the quotient of the infimum of a set of setoids into the quotient
+by an element of this set. -/
+def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
+    Quotient (sInf S) → Quotient s :=
+  Setoid.map_of_le fun _ _ a ↦ a s h
+
 /-- The inductively defined equivalence closure of a binary relation r is the infimum
     of the set of all equivalence relations containing r. -/
 theorem eqvGen_eq (r : α → α → Prop) :
@@ -386,8 +404,7 @@ theorem mapOfSurjective_eq_map (h : ker f ≤ r) (hf : Surjective f) :
 relation on `α` defined by '`x ≈ y` iff `f(x)` is related to `f(y)` by `r`'.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def comap (f : α → β) (r : Setoid β) : Setoid α :=
+abbrev comap (f : α → β) (r : Setoid β) : Setoid α :=
   ⟨r.Rel on f, r.iseqv.comap _⟩
 #align setoid.comap Setoid.comap
 
@@ -431,27 +448,26 @@ open Quotient
 /-- Given an equivalence relation `r` on `α`, the order-preserving bijection between the set of
 equivalence relations containing `r` and the equivalence relations on the quotient of `α` by `r`. -/
 def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) where
-  toFun s := mapOfSurjective s.1 Quotient.mk'' ((ker_mk_eq r).symm ▸ s.2) exists_rep
+  toFun s := ⟨Quotient.lift₂ s.1.1 fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
+      (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
+      (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
+    ⟨Quotient.ind s.1.2.1, @fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
+      @fun x y z ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, eq_rel.2 h]⟩
-  left_inv s := by
-    ext
-    refine ⟨?_, fun h => ⟨_, _, rfl, rfl, h⟩⟩
-    intro ⟨a, b, hx, hy, H⟩
-    refine s.1.trans' (s.1.symm' <| s.2 <| eq_rel.1 hx) (s.1.trans' H <| s.2 <| (eq_rel.1 hy))
-  right_inv s :=
-    ext' fun x y =>
-      ⟨fun h => let ⟨_, _, hx, hy, H⟩ := h; hx ▸ hy ▸ H,
-        Quotient.inductionOn₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
-  map_rel_iff' := by
-    intro s t
-    refine ⟨?_, ?_⟩
-    · intro h x y hs
-      let ⟨a, b, hx, hy, ht⟩ := h ⟨x, y, rfl, rfl, hs⟩
-      exact t.1.trans' (t.1.symm' <| t.2 <| eq_rel.1 hx) <| t.1.trans' ht <| t.2 <| eq_rel.1 hy
-    · intro h x y hs
-      let ⟨a, b, hx, hy, Hs⟩ := hs
-      exact ⟨a, b, hx, hy, h Hs⟩
+  left_inv s := rfl
+  right_inv s := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
+  map_rel_iff' :=
+    ⟨fun h x y hs ↦ @h ⟦x⟧ ⟦y⟧ hs, fun h x y ↦ Quotient.inductionOn₂ x y fun _ _ hs ↦ h hs⟩
 #align setoid.correspondence Setoid.correspondence
+
+/-- Given two equivalence relations with `r ≤ s`, a bijection between the sum of the quotients by
+`r` on each equivalence class by `s` and the quotient by `r`. -/
+def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
+    (Σ q : Quotient s, Quotient (r.comap (Subtype.val : Quotient.mk s ⁻¹' {q} → α))) ≃
+      Quotient r :=
+  .trans (.symm <| .sigmaCongrRight fun _ ↦ .subtypeQuotientEquivQuotientSubtype
+      (s₁ := r) (s₂ := r.comap Subtype.val) _ (fun _ ↦ Iff.rfl) fun _ _ ↦ Iff.rfl)
+    (.sigmaFiberEquiv fun a ↦ a.lift (Quotient.mk s) fun _ _ h ↦ Quotient.sound <| hle h)
 
 end Setoid
 
@@ -459,17 +475,16 @@ end Setoid
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
     forall_const]
-  refine' (surjective_quotient_mk' _).forall.trans (forall_congr' fun a => _)
-  refine' (surjective_quotient_mk' _).forall.trans (forall_congr' fun b => _)
+  refine (surjective_quotient_mk' _).forall.trans (forall_congr' fun a => ?_)
+  refine (surjective_quotient_mk' _).forall.trans (forall_congr' fun b => ?_)
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
   rfl
 #align quotient.subsingleton_iff Quotient.subsingleton_iff
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) ↔ EqvGen r = ⊤ := by
   simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
-  refine' (surjective_quot_mk _).forall.trans (forall_congr' fun a => _)
-  refine' (surjective_quot_mk _).forall.trans (forall_congr' fun b => _)
+  refine (surjective_quot_mk _).forall.trans (forall_congr' fun a => ?_)
+  refine (surjective_quot_mk _).forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq, OrderTop.toTop, Pi.orderTop, Pi.top_apply,
-             Prop.top_eq_true, true_implies]
+  simp only [forall_const, le_Prop_eq, Pi.top_apply, Prop.top_eq_true, true_implies]
 #align quot.subsingleton_iff Quot.subsingleton_iff

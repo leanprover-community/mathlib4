@@ -1,0 +1,20 @@
+name: Actionlint
+on:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.github/**'
+  pull_request:
+    paths:
+      - '.github/**'
+  merge_group:
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: actionlint
+      uses: raven-actions/actionlint@v1

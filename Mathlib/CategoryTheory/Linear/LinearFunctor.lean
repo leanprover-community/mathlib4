@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.Algebra.Module.LinearMap.Rat
 
 #align_import category_theory.linear.linear_functor from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
@@ -48,6 +49,10 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 theorem map_smul {X Y : C} (r : R) (f : X ⟶ Y) : F.map (r • f) = r • F.map f :=
   Functor.Linear.map_smul _ _
 #align category_theory.functor.map_smul CategoryTheory.Functor.map_smul
+
+@[simp]
+theorem map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r • F.map f := by
+  apply map_smul
 
 instance : Linear R (𝟭 C) where
 

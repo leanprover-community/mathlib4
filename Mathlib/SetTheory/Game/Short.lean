@@ -75,9 +75,9 @@ theorem subsingleton_short_example : ∀ x : PGame, Subsingleton (Short x)
         -- (In Lean 3 it was `(mk xl xr xL xR)` instead.)
       · funext x
         apply @Subsingleton.elim _ (subsingleton_short_example (xR x))⟩
-termination_by subsingleton_short_example x => x
+termination_by x => x
 -- We need to unify a bunch of hypotheses before `pgame_wf_tac` can work.
-decreasing_by {
+decreasing_by all_goals {
   subst_vars
   simp only [mk.injEq, heq_eq_eq, true_and] at *
   casesm* _ ∧ _
@@ -163,17 +163,19 @@ theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omeg
     constructor
     all_goals
       rw [← Cardinal.ord_aleph0]
-      refine'
+      refine
         Cardinal.lsub_lt_ord_of_isRegular.{u, u} Cardinal.isRegular_aleph0
-          (Cardinal.lt_aleph0_of_finite _) fun i => _
+          (Cardinal.lt_aleph0_of_finite _) fun i => ?_
       rw [Cardinal.ord_aleph0]
     · apply ihl
     · apply ihr
 #align pgame.short_birthday SetTheory.PGame.short_birthday
 
 /-- This leads to infinite loops if made into an instance. -/
-def Short.ofIsEmpty {l r xL xR} [IsEmpty l] [IsEmpty r] : Short (PGame.mk l r xL xR) :=
-  Short.mk isEmptyElim isEmptyElim
+def Short.ofIsEmpty {l r xL xR} [IsEmpty l] [IsEmpty r] : Short (PGame.mk l r xL xR) := by
+  have : Fintype l := Fintype.ofIsEmpty
+  have : Fintype r := Fintype.ofIsEmpty
+  exact Short.mk isEmptyElim isEmptyElim
 #align pgame.short.of_is_empty SetTheory.PGame.Short.ofIsEmpty
 
 instance short0 : Short 0 :=
@@ -201,25 +203,12 @@ instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd]
   cons' short_hd short_tl
 #align pgame.list_short.cons SetTheory.PGame.ListShort.cons
 
--- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 instance listShortGet :
-    ∀ (L : List PGame.{u}) [ListShort L] (i : Fin (List.length L)), Short (List.get L i)
-  | [], _, n => by
-    exfalso
-    rcases n with ⟨_, ⟨⟩⟩
-    -- Porting note: The proof errors unless `done` or a `;` is added after `rcases`
-    done
-  | _::_, ListShort.cons' S _, ⟨0, _⟩ => S
-  | hd::tl, ListShort.cons' _ S, ⟨n + 1, h⟩ =>
-    @listShortGet tl S ⟨n, (add_lt_add_iff_right 1).mp h⟩
-
-set_option linter.deprecated false in
-@[deprecated listShortGet]
-instance listShortNthLe (L : List PGame.{u}) [ListShort L] (i : Fin (List.length L)) :
-    Short (List.nthLe L i i.is_lt) := by
-  rw [List.nthLe_eq]
-  apply listShortGet
-#align pgame.list_short_nth_le SetTheory.PGame.listShortNthLe
+    ∀ (L : List PGame.{u}) [ListShort L] (i : Nat) (h : i < List.length L), Short L[i]
+  | _::_, ListShort.cons' S _, 0, _ => S
+  | _::tl, ListShort.cons' _ S, n + 1, h =>
+    @listShortGet tl S n ((add_lt_add_iff_right 1).mp h)
+#align pgame.list_short_nth_le SetTheory.PGame.listShortGet
 
 instance shortOfLists : ∀ (L R : List PGame) [ListShort L] [ListShort R], Short (PGame.ofLists L R)
   | L, R, _, _ => by
@@ -242,19 +231,16 @@ def shortOfRelabelling : ∀ {x y : PGame.{u}}, Relabelling x y → Short x → 
 instance shortNeg : ∀ (x : PGame.{u}) [Short x], Short (-x)
   | mk xl xr xL xR, _ => by
     exact Short.mk (fun i => shortNeg _) fun i => shortNeg _
--- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
 #align pgame.short_neg SetTheory.PGame.shortNeg
 
 instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
   | mk xl xr xL xR, mk yl yr yL yR, _, _ => by
-    apply Short.mk;
+    apply Short.mk
     all_goals
       rintro ⟨i⟩
       · apply shortAdd
       · change Short (mk xl xr xL xR + _); apply shortAdd
--- Porting note: In Lean 3 `using_well_founded` didn't need this to be explicit.
-termination_by shortAdd x y _ _ => Prod.mk x y
--- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
+termination_by x y => (x, y)
 #align pgame.short_add SetTheory.PGame.shortAdd
 
 instance shortNat : ∀ n : ℕ, Short n
@@ -280,7 +266,7 @@ Instances for the two projections separately are provided below.
 def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     constructor
-    · refine' @decidable_of_iff' _ _ mk_le_mk (id _)
+    · refine @decidable_of_iff' _ _ mk_le_mk (id ?_)
       apply @And.decidable _ _ ?_ ?_
       · apply @Fintype.decidableForallFintype xl _ ?_ _
         intro i
@@ -288,7 +274,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
       · apply @Fintype.decidableForallFintype yr _ ?_ _
         intro i
         apply (leLFDecidable _ _).2
-    · refine' @decidable_of_iff' _ _ mk_lf_mk (id _)
+    · refine @decidable_of_iff' _ _ mk_lf_mk (id ?_)
       apply @Or.decidable _ _ ?_ ?_
       · apply @Fintype.decidableExistsFintype yl _ ?_ _
         intro i
@@ -296,9 +282,7 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
       · apply @Fintype.decidableExistsFintype xr _ ?_ _
         intro i
         apply (leLFDecidable _ _).1
--- Porting note: In Lean 3 `using_well_founded` didn't need this to be explicit.
-termination_by leLFDecidable x y _ _ => Prod.mk x y
--- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
+termination_by x y => (x, y)
 #align pgame.le_lf_decidable SetTheory.PGame.leLFDecidable
 
 instance leDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≤ y) :=
@@ -337,3 +321,5 @@ example : Decidable ((1 : PGame) ≤ 1) := by infer_instance
 -- example : (0 : PGame.{u}) ≤ 0 := by decide
 -- example : (1 : PGame.{u}) ≤ 1 := by decide
 end PGame
+
+end SetTheory

@@ -48,15 +48,15 @@ lemma cons_ne_nil (p : Path a b) (e : b ⟶ a) : p.cons e ≠ Path.nil :=
 #align quiver.path.cons_ne_nil Quiver.Path.cons_ne_nil
 
 lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
 #align quiver.path.obj_eq_of_cons_eq_cons Quiver.Path.obj_eq_of_cons_eq_cons
 
 lemma heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq p p' := by injection h
 #align quiver.path.heq_of_cons_eq_cons Quiver.Path.heq_of_cons_eq_cons
 
 lemma hom_heq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
-  {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
+    {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : HEq e e' := by injection h
 #align quiver.path.hom_heq_of_cons_eq_cons Quiver.Path.hom_heq_of_cons_eq_cons
 
 /-- The length of a path is the number of arrows it uses. -/
@@ -122,7 +122,7 @@ theorem length_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).length =
 
 theorem comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length = q₂.length) :
     p₁.comp q₁ = p₂.comp q₂ ↔ p₁ = p₂ ∧ q₁ = q₂ := by
-  refine' ⟨fun h => _, by rintro ⟨rfl, rfl⟩; rfl⟩
+  refine ⟨fun h => ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   induction' q₁ with d₁ e₁ q₁ f₁ ih <;> obtain _ | ⟨q₂, f₂⟩ := q₂
   · exact ⟨h, rfl⟩
   · cases hq
@@ -188,7 +188,7 @@ theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List 
   | _, @cons _ _ _ c _ p f, @cons _ _ _ t _ C D, h => by
     simp only [toList, List.cons.injEq] at h
     obtain ⟨rfl, hAC⟩ := h
-    simp [toList_injective _ _ hAC]
+    simp [toList_injective _ _ hAC, eq_iff_true_of_subsingleton]
 #align quiver.path.to_list_injective Quiver.Path.toList_injective
 
 @[simp]

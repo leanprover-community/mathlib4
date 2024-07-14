@@ -35,7 +35,6 @@ section Matrices
 open scoped Matrix
 
 variable {R : Type u} [CommRing R]
-
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
@@ -46,7 +45,7 @@ def lieEquivMatrix' : Module.End R (n → R) ≃ₗ⁅R⁆ Matrix n n R :=
       let f := @LinearMap.toMatrix' R _ n n _ _
       change f (T.comp S - S.comp T) = f T * f S - f S * f T
       have h : ∀ T S : Module.End R _, f (T.comp S) = f T * f S := LinearMap.toMatrix'_comp
-      rw [LinearEquiv.map_sub, h, h] }
+      rw [map_sub, h, h] }
 #align lie_equiv_matrix' lieEquivMatrix'
 
 @[simp]

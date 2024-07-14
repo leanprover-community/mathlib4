@@ -92,7 +92,7 @@ theorem extentClosure_empty : extentClosure r ∅ = univ :=
 @[simp]
 theorem intentClosure_union (s₁ s₂ : Set α) :
     intentClosure r (s₁ ∪ s₂) = intentClosure r s₁ ∩ intentClosure r s₂ :=
-  Set.ext fun _ => ball_or_left
+  Set.ext fun _ => forall₂_or_left
 #align intent_closure_union intentClosure_union
 
 @[simp]
@@ -113,23 +113,15 @@ theorem extentClosure_iUnion (f : ι → Set β) :
   intentClosure_iUnion _ _
 #align extent_closure_Union extentClosure_iUnion
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: Can be proved by simp. so not marked as @[simp]
--- @[simp]
 theorem intentClosure_iUnion₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
   (gc_intentClosure_extentClosure r).l_iSup₂
 #align intent_closure_Union₂ intentClosure_iUnion₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note: Can be proved by simp. so not marked as @[simp]
--- @[simp]
-theorem extentClosure_Union₂ (f : ∀ i, κ i → Set β) :
+theorem extentClosure_iUnion₂ (f : ∀ i, κ i → Set β) :
     extentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), extentClosure r (f i j) :=
   intentClosure_iUnion₂ _ _
-#align extent_closure_Union₂ extentClosure_Union₂
+#align extent_closure_Union₂ extentClosure_iUnion₂
 
 theorem subset_extentClosure_intentClosure (s : Set α) :
     s ⊆ extentClosure r (intentClosure r s) :=
@@ -180,7 +172,8 @@ initialize_simps_projections Concept (+toProd, -fst, -snd)
 
 namespace Concept
 
-variable {r α β} {c d : Concept α β r}
+variable {r α β}
+variable {c d : Concept α β r}
 
 attribute [simp] closure_fst closure_snd
 
@@ -240,7 +233,7 @@ theorem fst_ssubset_fst_iff : c.fst ⊂ d.fst ↔ c < d :=
 
 @[simp]
 theorem snd_subset_snd_iff : c.snd ⊆ d.snd ↔ d ≤ c := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← fst_subset_fst_iff, ← c.closure_snd, ← d.closure_snd]
     exact extentClosure_anti _ h
   · rw [← c.closure_fst, ← d.closure_fst]
@@ -263,8 +256,8 @@ theorem strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → S
 instance instLatticeConcept : Lattice (Concept α β r) :=
   { Concept.instSemilatticeInfConcept with
     sup := (· ⊔ ·)
-    le_sup_left := fun c d => snd_subset_snd_iff.1 <| inter_subset_left _ _
-    le_sup_right := fun c d => snd_subset_snd_iff.1 <| inter_subset_right _ _
+    le_sup_left := fun c d => snd_subset_snd_iff.1 inter_subset_left
+    le_sup_right := fun c d => snd_subset_snd_iff.1 inter_subset_right
     sup_le := fun c d e => by
       simp_rw [← snd_subset_snd_iff]
       exact subset_inter }
@@ -290,7 +283,7 @@ instance : InfSet (Concept α β r) :=
       snd := intentClosure r (⋂ c ∈ S, (c : Concept _ _ _).fst)
       closure_fst := rfl
       closure_snd := by
-        simp_rw [← closure_snd, ← extentClosure_Union₂,
+        simp_rw [← closure_snd, ← extentClosure_iUnion₂,
           extentClosure_intentClosure_extentClosure] }⟩
 
 instance : CompleteLattice (Concept α β r) :=

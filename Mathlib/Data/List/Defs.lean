@@ -3,14 +3,11 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
-import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Basic
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
-import Std.Tactic.Lint.Basic
-import Std.Data.RBMap.Basic
+import Batteries.Tactic.Lint.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
@@ -21,10 +18,8 @@ This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
 
-set_option autoImplicit true
-
--- Porting notes
--- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
+-- Porting note
+-- Many of the definitions in `Data.List.Defs` were already defined upstream in `Batteries`
 -- These have been annotated with `#align`s
 -- To make this easier for review, the `#align`s have been placed in order of occurrence
 -- in `mathlib`
@@ -51,7 +46,7 @@ instance [DecidableEq α] : SDiff (List α) :=
 #noalign list.to_array
 
 #align list.nthd List.getD
--- porting notes: see
+-- Porting note: see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
 -- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
@@ -74,44 +69,13 @@ def takeI [Inhabited α] (n : Nat) (l : List α) : List α :=
 #align list.take_while List.takeWhile
 #align list.scanl List.scanl
 #align list.scanr List.scanr
-
-/-- Product of a list.
-
-     `List.prod [a, b, c] = ((1 * a) * b) * c` -/
-def prod [Mul α] [One α] : List α → α :=
-  foldl (· * ·) 1
-#align list.prod List.prod
-
--- Later this will be tagged with `to_additive`, but this can't be done yet because of imports.
--- dependencies.
-/-- Sum of a list.
-
-     `List.sum [a, b, c] = ((0 + a) + b) + c` -/
-def sum [Add α] [Zero α] : List α → α :=
-  foldl (· + ·) 0
-#align list.sum List.sum
-
-/-- The alternating sum of a list. -/
-def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
-  | [] => 0
-  | g :: [] => g
-  | g :: h :: t => g + -h + alternatingSum t
-#align list.alternating_sum List.alternatingSum
-
-/-- The alternating product of a list. -/
-def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
-  | [] => 1
-  | g :: [] => g
-  | g :: h :: t => g * h⁻¹ * alternatingProd t
-#align list.alternating_prod List.alternatingProd
-
 #align list.partition_map List.partitionMap
 #align list.find List.find?
 
 /-- `findM tac l` returns the first element of `l` on which `tac` succeeds, and
 fails otherwise. -/
 def findM {α} {m : Type u → Type v} [Alternative m] (tac : α → m PUnit) : List α → m α :=
-  List.firstM <| fun a => (tac a) $> a
+  List.firstM fun a => (tac a) $> a
 #align list.mfind List.findM
 
 /-- `findM? p l` returns the first element `a` of `l` for which `p a` returns
@@ -184,8 +148,8 @@ end foldIdxM
 
 section mapIdxM
 
--- porting notes: This was defined in `mathlib` with an `Applicative`
--- constraint on `m` and have been `#align`ed to the `Std` versions defined
+-- Porting note: This was defined in `mathlib` with an `Applicative`
+-- constraint on `m` and have been `#align`ed to the `Batteries` versions defined
 -- with a `Monad` typeclass constraint.
 -- Since all `Monad`s are `Applicative` this won't cause issues
 -- downstream & `Monad`ic code is more performant per Mario C
@@ -211,23 +175,23 @@ end mapIdxM
 #align list.lookmap List.lookmap
 #align list.countp List.countP
 #align list.count List.count
-#align list.is_prefix List.isPrefix
-#align list.is_suffix List.isSuffix
-#align list.is_infix List.isInfix
+#align list.is_prefix List.IsPrefix
+#align list.is_suffix List.IsSuffix
+#align list.is_infix List.IsInfix
 #align list.inits List.inits
 #align list.tails List.tails
 #align list.sublists' List.sublists'
 #align list.sublists List.sublists
 #align list.forall₂ List.Forall₂
 
-/-- `l.all₂ p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
-`List.All₂ p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
+/-- `l.Forall p` is equivalent to `∀ a ∈ l, p a`, but unfolds directly to a conjunction, i.e.
+`List.Forall p [0, 1, 2] = p 0 ∧ p 1 ∧ p 2`. -/
 @[simp]
-def All₂ (p : α → Prop) : List α → Prop
+def Forall (p : α → Prop) : List α → Prop
   | [] => True
   | x :: [] => p x
-  | x :: l => p x ∧ All₂ p l
-#align list.all₂ List.All₂
+  | x :: l => p x ∧ Forall p l
+#align list.all₂ List.Forall
 
 #align list.transpose List.transpose
 #align list.sections List.sections
@@ -246,11 +210,11 @@ defined) is the list of lists of the form `insert_nth n t (ys ++ ts)` for `0 ≤
 def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List α → β) → List α × List β
   | [], _ => (ts, r)
   | y :: ys, f =>
-    let (us, zs) := permutationsAux2 t ts r ys (fun x: List α => f (y :: x))
+    let (us, zs) := permutationsAux2 t ts r ys (fun x : List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 #align list.permutations_aux2 List.permutationsAux2
 
--- porting note: removed `[elab_as_elim]` per Mario C
+-- Porting note: removed `[elab_as_elim]` per Mario C
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
@@ -259,8 +223,8 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
   | [], is => H0 is
   | t :: ts, is =>
       H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
-  termination_by _ ts is => (length ts + length is, length ts)
-  decreasing_by simp_wf; simp [Nat.succ_add]; decreasing_tactic
+  termination_by ts is => (length ts + length is, length ts)
+  decreasing_by all_goals (simp_wf; omega)
 #align list.permutations_aux.rec List.permutationsAux.rec
 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
@@ -298,7 +262,7 @@ def permutations'Aux (t : α) : List α → List (List α)
 
 /-- List of all permutations of `l`. This version of `permutations` is less efficient but has
 simpler definitional equations. The permutations are in a different order,
-but are equal up to permutation, as shown by `list.permutations_perm_permutations'`.
+but are equal up to permutation, as shown by `List.permutations_perm_permutations'`.
 
      permutations [1, 2, 3] =
        [[1, 2, 3], [2, 1, 3], [2, 3, 1],
@@ -347,14 +311,15 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
 
 section Chain
 
-instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => simp only [List.Chain.nil]; infer_instance
   | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
+    Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 
@@ -392,7 +357,7 @@ def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
 #align list.reduce_option List.reduceOption
 -- Porting note: replace ilast' by getLastD
 #align list.ilast' List.ilast'
--- Porting note: remove last' from Std
+-- Porting note: remove last' from Batteries
 #align list.last' List.getLast?
 #align list.rotate List.rotate
 #align list.rotate' List.rotate'
@@ -410,10 +375,11 @@ def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l �
   | l :: ls, hp =>
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else
-      let ⟨a, ⟨a_mem_ls, pa⟩⟩ :=
+      -- pattern matching on `hx` too makes this not reducible!
+      let ⟨a, ha⟩ :=
         chooseX ls
           (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
-      ⟨a, ⟨mem_cons.mpr <| Or.inr a_mem_ls, pa⟩⟩
+      ⟨a, mem_cons.mpr <| Or.inr ha.1, ha.2⟩
 #align list.choose_x List.chooseX
 
 /-- Given a decidable predicate `p` and a proof of existence of `a ∈ l` such that `p a`,
@@ -436,25 +402,17 @@ Example: suppose `l = [1, 2, 3]`. `mapDiagM' f l` will evaluate, in this order,
 `f 1 1`, `f 1 2`, `f 1 3`, `f 2 2`, `f 2 3`, `f 3 3`.
 -/
 def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
--- as ported:
---   | [] => return ()
---   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
   | [] => return ()
   | h :: t => do
     _ ← f h h
     _ ← t.mapM' (f h)
     t.mapDiagM' f
+-- as ported:
+--   | [] => return ()
+--   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
 #align list.mmap'_diag List.mapDiagM'
 
-/-- Map each element of a `List` to an action, evaluate these actions in order,
-    and collect the results.
--/
-protected def traverse {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
-    List α → F (List β)
-  | [] => pure []
-  | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
-
 #align list.get_rest List.getRest
 #align list.slice List.dropSlice
 
@@ -495,7 +453,7 @@ def map₂Right' (f : Option α → β → γ) (as : List α) (bs : List β) : L
 
 
 /-- Left-biased version of `List.map₂`. `map₂Left f as bs` applies `f` to each pair
-`aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
+`aᵢ ∈ as` and `bᵢ ∈ bs`. If `bs` is shorter than `as`, `f` is applied to `none`
 for the remaining `aᵢ`.
 
 ```
@@ -514,7 +472,7 @@ def map₂Left (f : α → Option β → γ) : List α → List β → List γ
 #align list.map₂_left List.map₂Left
 
 /-- Right-biased version of `List.map₂`. `map₂Right f as bs` applies `f` to each
-pair `aᵢ ∈ as` and `bᵢ ‌∈ bs`. If `as` is shorter than `bs`, `f` is applied to
+pair `aᵢ ∈ as` and `bᵢ ∈ bs`. If `as` is shorter than `bs`, `f` is applied to
 `none` for the remaining `bᵢ`.
 
 ```
@@ -540,7 +498,7 @@ def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : Li
 #align list.to_chunks_aux List.toChunksAux
 #align list.to_chunks List.toChunks
 
--- porting notes -- was `unsafe` but removed for Lean 4 port
+-- porting note -- was `unsafe` but removed for Lean 4 port
 -- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/
@@ -555,7 +513,7 @@ These can also be written in terms of `List.zip` or `List.zipWith`.
 For example, `zipWith3 f xs ys zs` could also be written as
 `zipWith id (zipWith f xs ys) zs`
 or as
-`(zip xs $ zip ys zs).map $ λ ⟨x, y, z⟩, f x y z`.
+`(zip xs <| zip ys zs).map <| fun ⟨x, y, z⟩ ↦ f x y z`.
 -/
 
 /-- Ternary version of `List.zipWith`. -/
@@ -589,5 +547,32 @@ def replaceIf : List α → List Bool → List α → List α
 #align list.map_with_prefix_suffix_aux List.mapWithPrefixSuffixAux
 #align list.map_with_prefix_suffix List.mapWithPrefixSuffix
 #align list.map_with_complement List.mapWithComplement
+
+/-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
+@[simp]
+def iterate (f : α → α) (a : α) : (n : ℕ) → List α
+  | 0     => []
+  | n + 1 => a :: iterate f (f a) n
+
+/-- Tail-recursive version of `List.iterate`. -/
+@[inline]
+def iterateTR (f : α → α) (a : α) (n : ℕ) : List α :=
+  loop a n []
+where
+  /-- `iterateTR.loop f a n l := iterate f a n ++ reverse l`. -/
+  @[simp, specialize]
+  loop (a : α) (n : ℕ) (l : List α) : List α :=
+    match n with
+    | 0     => reverse l
+    | n + 1 => loop (f a) n (a :: l)
+
+theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
+    iterateTR.loop f a n l = reverse l ++ iterate f a n := by
+  induction n generalizing a l <;> simp [*]
+
+@[csimp]
+theorem iterate_eq_iterateTR : @iterate = @iterateTR := by
+  funext α f a n
+  exact Eq.symm <| iterateTR_loop_eq f a n []
 
 end List

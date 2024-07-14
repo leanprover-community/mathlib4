@@ -27,7 +27,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Born
 
-instance : CoeSort Born (Type*) :=
+instance : CoeSort Born Type* :=
   Bundled.coeSort
 
 instance (X : Born) : Bornology X :=
@@ -45,7 +45,7 @@ instance : Inhabited Born :=
 instance : BundledHom @LocallyBoundedMap where
   id := @LocallyBoundedMap.id
   comp := @LocallyBoundedMap.comp
-  hom_ext _ _ := FunLike.coe_injective
+  hom_ext _ _ := DFunLike.coe_injective
 
 instance : LargeCategory.{u} Born :=
   BundledHom.category LocallyBoundedMap

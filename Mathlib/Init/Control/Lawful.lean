@@ -9,9 +9,20 @@ import Mathlib.Tactic.Basic
 
 #align_import init.control.lawful from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
 
-/-! ## Functor Laws, applicative laws, and monad Laws -/
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
 
-set_option autoImplicit true
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
+## Functor Laws, applicative laws, and monad Laws
+-/
 
 universe u v
 
@@ -53,9 +64,7 @@ namespace StateT
 section
 
 variable {σ : Type u}
-
 variable {m : Type u → Type v}
-
 variable {α : Type u}
 
 /-
@@ -67,7 +76,7 @@ following theorem as a simp theorem.
 theorem run_fun (f : σ → m (α × σ)) (st : σ) : StateT.run (fun s => f s) st = f st :=
   rfl
 ```
-If we decleare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
+If we declare this theorem as a simp theorem, `StateT.run f st` is simplified to `f st` by eta
 reduction. This breaks the structure of `StateT`.
 So, we declare a constructor-like definition `StateT.mk` and a simp theorem for it.
 -/
@@ -141,10 +150,8 @@ namespace ReaderT
 section
 
 variable {ρ : Type u}
-
 variable {m : Type u → Type v}
-
-variable {α : Type u}
+variable {α σ : Type u}
 
 /-
 Porting note:
@@ -155,7 +162,7 @@ following theorem as a simp theorem.
 theorem run_fun (f : σ → m α) (r : σ) : ReaderT.run (fun r' => f r') r = f r :=
   rfl
 ```
-If we decleare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
+If we declare this theorem as a simp theorem, `ReaderT.run f st` is simplified to `f st` by eta
 reduction. This breaks the structure of `ReaderT`.
 So, we declare a constructor-like definition `ReaderT.mk` and a simp theorem for it.
 -/
@@ -189,7 +196,7 @@ namespace OptionT
 
 variable {α β : Type u} {m : Type u → Type v} (x : OptionT m α)
 
-theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
+@[ext] theorem ext {x x' : OptionT m α} (h : x.run = x'.run) : x = x' :=
   h
 #align option_t.ext OptionTₓ.ext
 
@@ -248,3 +255,22 @@ instance (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (Option
       rw [bind_congr]
       intro a; cases a <;> simp)
     (pure_bind := by intros; apply OptionT.ext; simp)
+
+/-! ### Lawfulness of `IO`
+
+At some point core intends to make `IO` opaque, which would break these proofs
+As discussed in https://github.com/leanprover/std4/pull/416,
+it should be possible for core to expose the lawfulness of `IO` as part of the opaque interface,
+which would remove the need for these proofs anyway.
+
+These are not in Batteries because Batteries does not want to deal with the churn from such a core
+refactor.
+-/
+
+variable {ε σ : Type}
+instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
+instance : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
+instance : LawfulMonad IO := inferInstance
+
+instance : LawfulMonad (EST ε σ) := inferInstanceAs <| LawfulMonad (EStateM _ _)
+instance : LawfulMonad (ST ε) := inferInstance

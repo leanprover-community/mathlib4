@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Scott Morrison
 -/
-import Mathlib.Data.List.Count
-import Mathlib.Data.List.Infix
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Data.List.Basic
 
 #align_import data.list.lattice from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -120,6 +118,13 @@ theorem forall_mem_of_forall_mem_union_right (h : ∀ x ∈ l₁ ∪ l₂, p x) 
   (forall_mem_union.1 h).2
 #align list.forall_mem_of_forall_mem_union_right List.forall_mem_of_forall_mem_union_right
 
+theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) : xs ∪ ys = ys := by
+  induction xs with
+  | nil => simp
+  | cons x xs ih =>
+    rw [cons_union, insert_of_mem <| mem_union_right _ <| h <| mem_cons_self _ _,
+      ih <| subset_of_cons_subset h]
+
 end Union
 
 /-! ### `inter` -/
@@ -134,13 +139,19 @@ theorem inter_nil (l : List α) : [] ∩ l = [] :=
 
 @[simp]
 theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l₂ = a :: l₁ ∩ l₂ := by
-  simp only [Inter.inter, List.inter, filter_cons_of_pos, h]
+  simp [Inter.inter, List.inter, h]
 #align list.inter_cons_of_mem List.inter_cons_of_mem
 
 @[simp]
 theorem inter_cons_of_not_mem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
-  simp only [Inter.inter, List.inter, filter_cons_of_neg, h]
+  simp [Inter.inter, List.inter, h]
 #align list.inter_cons_of_not_mem List.inter_cons_of_not_mem
+
+@[simp]
+theorem inter_nil' (l : List α) : l ∩ [] = [] := by
+  induction l with
+  | nil => rfl
+  | cons x xs ih => by_cases x ∈ xs <;> simp [ih]
 
 theorem mem_of_mem_inter_left : a ∈ l₁ ∩ l₂ → a ∈ l₁ :=
   mem_of_mem_filter
@@ -150,16 +161,16 @@ theorem mem_of_mem_inter_right (h : a ∈ l₁ ∩ l₂) : a ∈ l₂ := by simp
 #align list.mem_of_mem_inter_right List.mem_of_mem_inter_right
 
 theorem mem_inter_of_mem_of_mem (h₁ : a ∈ l₁) (h₂ : a ∈ l₂) : a ∈ l₁ ∩ l₂ :=
-  mem_filter_of_mem h₁ $ by simpa using h₂
+  mem_filter_of_mem h₁ <| by simpa using h₂
 #align list.mem_inter_of_mem_of_mem List.mem_inter_of_mem_of_mem
 
 #align list.mem_inter List.mem_inter_iff
 
-theorem inter_subset_left (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₁ :=
+theorem inter_subset_left {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₁ :=
   filter_subset _
 #align list.inter_subset_left List.inter_subset_left
 
-theorem inter_subset_right (l₁ l₂ : List α) : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
+theorem inter_subset_right {l₁ l₂ : List α} : l₁ ∩ l₂ ⊆ l₂ := fun _ => mem_of_mem_inter_right
 #align list.inter_subset_right List.inter_subset_right
 
 theorem subset_inter {l l₁ l₂ : List α} (h₁ : l ⊆ l₁) (h₂ : l ⊆ l₂) : l ⊆ l₁ ∩ l₂ := fun _ h =>
@@ -170,6 +181,8 @@ theorem inter_eq_nil_iff_disjoint : l₁ ∩ l₂ = [] ↔ Disjoint l₁ l₂ :=
   simp only [eq_nil_iff_forall_not_mem, mem_inter_iff, not_and]
   rfl
 #align list.inter_eq_nil_iff_disjoint List.inter_eq_nil_iff_disjoint
+
+alias ⟨_, Disjoint.inter_eq_nil⟩ := inter_eq_nil_iff_disjoint
 
 theorem forall_mem_inter_of_forall_left (h : ∀ x ∈ l₁, p x) (l₂ : List α) :
     ∀ x, x ∈ l₁ ∩ l₂ → p x :=
@@ -183,8 +196,11 @@ theorem forall_mem_inter_of_forall_right (l₁ : List α) (h : ∀ x ∈ l₂, p
 
 @[simp]
 theorem inter_reverse {xs ys : List α} : xs.inter ys.reverse = xs.inter ys := by
-  simp only [List.inter, mem_reverse]
+  simp only [List.inter, elem_eq_mem, mem_reverse]
 #align list.inter_reverse List.inter_reverse
+
+theorem Subset.inter_eq_left {xs ys : List α} (h : xs ⊆ ys) : xs ∩ ys = xs :=
+  List.filter_eq_self.mpr fun _ ha => elem_eq_true_of_mem (h ha)
 
 end Inter
 
@@ -239,16 +255,16 @@ theorem count_bagInter {a : α} :
   | l₁, [] => by simp
   | b :: l₁, l₂ => by
     by_cases hb : b ∈ l₂
-    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase, ←
-        min_add_add_right]
+    · rw [cons_bagInter_of_pos _ hb, count_cons, count_cons, count_bagInter, count_erase,
+        ← Nat.add_min_add_right]
       by_cases ab : a = b
-      · rw [if_pos ab, @tsub_add_cancel_of_le]
+      · rw [if_pos ab, Nat.sub_add_cancel]
         rwa [succ_le_iff, count_pos_iff_mem, ab]
-      · rw [if_neg ab, tsub_zero, add_zero, add_zero]
+      · rw [if_neg ab, Nat.sub_zero, Nat.add_zero, Nat.add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
       by_cases ab : a = b
       · rw [← ab] at hb
-        rw [count_eq_zero.2 hb, min_zero, min_zero]
+        rw [count_eq_zero.2 hb, Nat.min_zero, Nat.min_zero]
       · rw [count_cons_of_ne ab]
 #align list.count_bag_inter List.count_bagInter
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
 import Mathlib.RepresentationTheory.Basic
-import Mathlib.RepresentationTheory.FdRep
+import Mathlib.RepresentationTheory.FDRep
 
 #align_import representation_theory.invariants from "leanprover-community/mathlib"@"55b3f8206b8596db8bb1804d8a92814a0b6670c9"
 
@@ -20,8 +20,7 @@ In order for the definition of the average element to make sense, we need to ass
 results that the order of `G` is invertible in `k` (e. g. `k` has characteristic `0`).
 -/
 
-
-open scoped BigOperators
+suppress_compilation
 
 open MonoidAlgebra
 
@@ -30,7 +29,6 @@ open Representation
 namespace GroupAlgebra
 
 variable (k G : Type*) [CommSemiring k] [Group G]
-
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 /-- The average of all elements of the group `G`, considered as an element of `MonoidAlgebra k G`.
@@ -70,7 +68,6 @@ section Invariants
 open GroupAlgebra
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
-
 variable (ρ : Representation k G V)
 
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
@@ -89,6 +86,10 @@ theorem mem_invariants (v : V) : v ∈ invariants ρ ↔ ∀ g : G, ρ g v = v :
 theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixedPoints (ρ g) := by
   ext; simp [Function.IsFixedPt]
 #align representation.invariants_eq_inter Representation.invariants_eq_inter
+
+theorem invariants_eq_top [ρ.IsTrivial] :
+    invariants ρ = ⊤ :=
+eq_top_iff.2 (fun x _ g => ρ.apply_eq_self g x)
 
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
@@ -127,7 +128,7 @@ open CategoryTheory Action
 
 section Rep
 
-variable {k : Type u} [CommRing k] {G : GroupCat.{u}}
+variable {k : Type u} [CommRing k] {G : Grp.{u}}
 
 theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
@@ -153,22 +154,22 @@ set_option linter.uppercaseLean3 false in
 
 end Rep
 
-section FdRep
+section FDRep
 
-variable {k : Type u} [Field k] {G : GroupCat.{u}}
+variable {k : Type u} [Field k] {G : Grp.{u}}
 
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
-def invariantsEquivFdRepHom (X Y : FdRep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y := by
-  rw [← FdRep.forget₂_ρ, ← FdRep.forget₂_ρ]
+def invariantsEquivFDRepHom (X Y : FDRep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y := by
+  rw [← FDRep.forget₂_ρ, ← FDRep.forget₂_ρ]
   -- Porting note: The original version used `linHom.invariantsEquivRepHom _ _ ≪≫ₗ`
   exact linHom.invariantsEquivRepHom
-    ((forget₂ (FdRep k G) (Rep k G)).obj X) ((forget₂ (FdRep k G) (Rep k G)).obj Y) ≪≫ₗ
-    FdRep.forget₂HomLinearEquiv X Y
+    ((forget₂ (FDRep k G) (Rep k G)).obj X) ((forget₂ (FDRep k G) (Rep k G)).obj Y) ≪≫ₗ
+    FDRep.forget₂HomLinearEquiv X Y
 set_option linter.uppercaseLean3 false in
-#align representation.lin_hom.invariants_equiv_fdRep_hom Representation.linHom.invariantsEquivFdRepHom
+#align representation.lin_hom.invariants_equiv_fdRep_hom Representation.linHom.invariantsEquivFDRepHom
 
-end FdRep
+end FDRep
 
 end linHom
 

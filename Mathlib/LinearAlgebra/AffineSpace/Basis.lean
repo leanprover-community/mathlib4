@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 import Mathlib.LinearAlgebra.Basis
 
 #align_import linear_algebra.affine_space.basis from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
@@ -41,7 +42,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 -/
 
 
-open Affine BigOperators
+open Affine
 
 open Set
 
@@ -67,14 +68,14 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : �
 instance : Inhabited (AffineBasis PUnit k PUnit) :=
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
-instance funLike : FunLike (AffineBasis ι k P) ι fun _ => P where
+instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align affine_basis.fun_like AffineBasis.funLike
+#align affine_basis.fun_like AffineBasis.instFunLike
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
-  FunLike.coe_injective h
+  DFunLike.coe_injective h
 #align affine_basis.ext AffineBasis.ext
 
 theorem ind : AffineIndependent k b :=
@@ -180,7 +181,7 @@ theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
 #align affine_basis.coord_apply_ne AffineBasis.coord_apply_ne
 
 theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
-  cases' eq_or_ne i j with h h <;> simp [h]
+  rcases eq_or_ne i j with h | h <;> simp [h]
 #align affine_basis.coord_apply AffineBasis.coord_apply
 
 @[simp]
@@ -245,9 +246,10 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
     apply subsingleton_of_subsingleton
   haveI := AffineSubspace.subsingleton_of_subsingleton_span_eq_top hp b.tot
   let s : Finset ι := {i}
-  have hi : i ∈ s := by simp
-  have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp
-  have hq : q = s.affineCombination k b (Function.const ι (1 : k)) := by simp
+  have hi : i ∈ s := by simp [s]
+  have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp [s]
+  have hq : q = s.affineCombination k b (Function.const ι (1 : k)) := by
+    simp [eq_iff_true_of_subsingleton]
   rw [Pi.one_apply, hq, b.coord_apply_combination_of_mem hi hw, Function.const_apply]
 #align affine_basis.coe_coord_of_subsingleton_eq_one AffineBasis.coe_coord_of_subsingleton_eq_one
 
@@ -256,12 +258,12 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
     intro x
     obtain ⟨j, hij⟩ := exists_ne i
     let s : Finset ι := {i, j}
-    have hi : i ∈ s := by simp
-    have _ : j ∈ s := by simp
+    have hi : i ∈ s := by simp [s]
     let w : ι → k := fun j' => if j' = i then x else 1 - x
-    have hw : s.sum w = 1 := by simp [Finset.sum_ite, Finset.filter_insert, hij]
+    have hw : s.sum w = 1 := by simp [s, w, Finset.sum_ite, Finset.filter_insert, hij,
+      Finset.filter_true_of_mem, Finset.filter_false_of_mem]
     use s.affineCombination k b w
-    simp [b.coord_apply_combination_of_mem hi hw]
+    simp [w, b.coord_apply_combination_of_mem hi hw]
 #align affine_basis.surjective_coord AffineBasis.surjective_coord
 
 /-- Barycentric coordinates as an affine map. -/
@@ -269,30 +271,40 @@ noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
   linear :=
     { toFun := fun v i => -(b.basisOf i).sumCoords v
-      map_add' := fun v w => by
-        ext i
-        simp only [LinearMap.map_add, Pi.add_apply, neg_add]
-      map_smul' := fun t v => by
-        ext i
-        simp only [LinearMap.map_smul, Pi.smul_apply, smul_neg, RingHom.id_apply, mul_neg] }
-  map_vadd' p v := by
-    ext i
-    -- Porting note:
-    -- mathlib3 proof was:
-    -- simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
-    --   AffineMap.map_vadd]
-    -- but now we need to `dsimp` before `AffineMap.map_vadd` works.
-    rw [LinearMap.coe_mk, Pi.vadd_apply']
-    dsimp
-    rw [AffineMap.map_vadd, linear_eq_sumCoords,
-        LinearMap.neg_apply]
-    simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
+      map_add' := fun v w => by ext; simp only [LinearMap.map_add, Pi.add_apply, neg_add]
+      map_smul' := fun t v => by ext; simp }
+  map_vadd' p v := by ext; simp
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]
 theorem coords_apply (q : P) (i : ι) : b.coords q i = b.coord i q :=
   rfl
 #align affine_basis.coords_apply AffineBasis.coords_apply
+
+instance instVAdd : VAdd V (AffineBasis ι k P) where
+  vadd x b :=
+    { toFun := x +ᵥ ⇑b,
+      ind' := b.ind'.vadd,
+      tot' := by rw [Pi.vadd_def, ← vadd_set_range, ← AffineSubspace.pointwise_vadd_span, b.tot,
+        AffineSubspace.pointwise_vadd_top] }
+
+@[simp, norm_cast] lemma coe_vadd (v : V) (b : AffineBasis ι k P) : ⇑(v +ᵥ b) = v +ᵥ ⇑b := rfl
+
+@[simp] lemma basisOf_vadd (v : V) (b : AffineBasis ι k P) : (v +ᵥ b).basisOf = b.basisOf := by
+  ext
+  simp
+
+instance instAddAction : AddAction V (AffineBasis ι k P) :=
+  DFunLike.coe_injective.addAction _ coe_vadd
+
+@[simp] lemma coord_vadd (v : V) (b : AffineBasis ι k P) :
+    (v +ᵥ b).coord i = (b.coord i).comp (AffineEquiv.constVAdd k P v).symm := by
+  ext p
+  simp only [coord, ne_eq, basisOf_vadd, coe_vadd, Pi.vadd_apply, Basis.coe_sumCoords,
+    AffineMap.coe_mk, AffineEquiv.constVAdd_symm, AffineMap.coe_comp, AffineEquiv.coe_toAffineMap,
+    Function.comp_apply, AffineEquiv.constVAdd_apply, sub_right_inj]
+  congr! 1
+  rw [vadd_vsub_assoc, neg_add_eq_sub, vsub_vadd_eq_vsub_sub]
 
 end Ring
 
@@ -309,9 +321,9 @@ theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset �
 #align affine_basis.coord_apply_centroid AffineBasis.coord_apply_centroid
 
 theorem exists_affine_subbasis {t : Set P} (ht : affineSpan k t = ⊤) :
-    ∃ (s : _) (_ : s ⊆ t) (b : AffineBasis (↥s) k P), ⇑b = ((↑) : s → P) := by
+    ∃ s ⊆ t, ∃ b : AffineBasis s k P, ⇑b = ((↑) : s → P) := by
   obtain ⟨s, hst, h_tot, h_ind⟩ := exists_affineIndependent k V t
-  refine' ⟨s, hst, ⟨(↑), h_ind, _⟩, rfl⟩
+  refine ⟨s, hst, ⟨(↑), h_ind, ?_⟩, rfl⟩
   rw [Subtype.range_coe, h_tot, ht]
 #align affine_basis.exists_affine_subbasis AffineBasis.exists_affine_subbasis
 

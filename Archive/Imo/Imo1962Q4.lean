@@ -17,8 +17,6 @@ Since Lean does not have a concept of "simplest form", we just express what is
 in fact the simplest form of the set of solutions, and then prove it equals the set of solutions.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Real
 
 open scoped Real
@@ -81,7 +79,7 @@ theorem solve_cos2_half {x : ℝ} : cos x ^ 2 = 1 / 2 ↔ ∃ k : ℤ, x = (2 * 
 
 theorem solve_cos3x_0 {x : ℝ} : cos (3 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 6 := by
   rw [cos_eq_zero_iff]
-  refine' exists_congr fun k => _
+  refine exists_congr fun k => ?_
   constructor <;> intro <;> linarith
 #align imo1962_q4.solve_cos3x_0 Imo1962Q4.solve_cos3x_0
 
@@ -106,7 +104,7 @@ We now present a second solution.  The key to this solution is that, when the id
 converted to an identity which is polynomial in `a` := `cos x`, it can be rewritten as a product of
 terms, `a ^ 2 * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3)`, being equal to zero.
 -/
-theorem formula {R : Type _} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
+theorem formula {R : Type*} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
     a ^ 2 + ((2 : R) * a ^ 2 - (1 : R)) ^ 2 + ((4 : R) * a ^ 3 - 3 * a) ^ 2 = 1 ↔
       ((2 : R) * a ^ 2 - (1 : R)) * ((4 : R) * a ^ 3 - 3 * a) = 0 := by
   constructor <;> intro h
@@ -121,7 +119,7 @@ Again, we now can solve for `x` using basic-ish trigonometry.
 -/
 theorem solve_cos2x_0 {x : ℝ} : cos (2 * x) = 0 ↔ ∃ k : ℤ, x = (2 * ↑k + 1) * π / 4 := by
   rw [cos_eq_zero_iff]
-  refine' exists_congr fun k => _
+  refine exists_congr fun k => ?_
   constructor <;> intro <;> linarith
 #align imo1962_q4.solve_cos2x_0 Imo1962Q4.solve_cos2x_0
 

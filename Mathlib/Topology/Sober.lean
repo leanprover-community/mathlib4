@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Topology.Separation
+import Mathlib.Topology.Sets.Closeds
 
 #align_import topology.sober from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -116,7 +117,7 @@ end genericPoint
 section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
-@[mk_iff quasiSober_iff]
+@[mk_iff]
 class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 #align quasi_sober QuasiSober
@@ -145,8 +146,9 @@ noncomputable def genericPoint [QuasiSober α] [IrreducibleSpace α] : α :=
   (IrreducibleSpace.isIrreducible_univ α).genericPoint
 #align generic_point genericPoint
 
-theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] : IsGenericPoint (genericPoint α) ⊤ :=
-  by simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
+theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
+    IsGenericPoint (genericPoint α) ⊤ := by
+  simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
 #align generic_point_spec genericPoint_spec
 
 @[simp]
@@ -165,17 +167,21 @@ attribute [local instance] specializationOrder
 
 /-- The closed irreducible subsets of a sober space bijects with the points of the space. -/
 noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
-    { s : Set α | IsIrreducible s ∧ IsClosed s } ≃o α where
-  toFun s := s.prop.1.genericPoint
+    TopologicalSpace.IrreducibleCloseds α ≃o α where
+  toFun s := s.2.genericPoint
   invFun x := ⟨closure ({x} : Set α), isIrreducible_singleton.closure, isClosed_closure⟩
-  left_inv s := Subtype.eq <| Eq.trans s.prop.1.genericPoint_spec <|
-    closure_eq_iff_isClosed.mpr s.2.2
+  left_inv s := by
+    refine TopologicalSpace.IrreducibleCloseds.ext ?_
+    simp only [IsIrreducible.genericPoint_closure_eq, TopologicalSpace.IrreducibleCloseds.coe_mk,
+      closure_eq_iff_isClosed.mpr s.3]
+    rfl
   right_inv x := isIrreducible_singleton.closure.genericPoint_spec.eq
       (by rw [closure_closure]; exact isGenericPoint_closure)
   map_rel_iff' := by
-    rintro ⟨s, hs⟩ ⟨t, ht⟩
+    rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
-    simp [hs.2.closure_eq, ht.2.closure_eq]
+    simp [hs'.closure_eq, ht'.closure_eq]
+    rfl
 #align irreducible_set_equiv_points irreducibleSetEquivPoints
 
 theorem ClosedEmbedding.quasiSober {f : α → β} (hf : ClosedEmbedding f) [QuasiSober β] :
@@ -198,10 +204,10 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
     rw [image_preimage_eq_inter_range] at hx hS''
     have hxT : x ∈ T := by
       rw [← hT.closure_eq]
-      exact closure_mono (inter_subset_left _ _) hx.mem
+      exact closure_mono inter_subset_left hx.mem
     obtain ⟨y, rfl⟩ : x ∈ range f := by
-      rw [hx.mem_open_set_iff hf.open_range]
-      refine' Nonempty.mono _ hS''.1
+      rw [hx.mem_open_set_iff hf.isOpen_range]
+      refine Nonempty.mono ?_ hS''.1
       simpa using subset_closure
     use y
     change _ = _
@@ -209,7 +215,7 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
     apply image_injective.mpr hf.inj
     ext z
     simp only [image_preimage_eq_inter_range, mem_inter_iff, and_congr_left_iff]
-    exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono (inter_subset_left _ _) h,
+    exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
       fun h => subset_closure ⟨h, hy⟩⟩
 #align open_embedding.quasi_sober OpenEmbedding.quasiSober
 
@@ -233,9 +239,9 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
   · apply h'.closure_subset_iff.mpr
     simpa using this
   rw [← image_singleton, ← closure_image_closure continuous_subtype_val, H.genericPoint_spec.def]
-  refine' (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
-    (closure_mono _)
-  rw [← Subtype.image_preimage_coe]
+  refine (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
+    (closure_mono ?_)
+  rw [inter_comm t, ← Subtype.image_preimage_coe]
   exact Set.image_subset _ subset_closure
 #align quasi_sober_of_open_cover quasiSober_of_open_cover
 

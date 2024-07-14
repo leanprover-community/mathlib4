@@ -154,19 +154,19 @@ class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
     extends Language.ring.Structure R where
   /-- Addition in the `Language.ring.Structure` is the same as the addition given by the
     `Add` instance -/
-  ( funMap_add : ∀ x, funMap addFunc x = x 0 + x 1 )
+  funMap_add : ∀ x, funMap addFunc x = x 0 + x 1
   /-- Multiplication in the `Language.ring.Structure` is the same as the multiplication given by the
     `Mul` instance -/
-  ( funMap_mul : ∀ x, funMap mulFunc x = x 0 * x 1 )
+  funMap_mul : ∀ x, funMap mulFunc x = x 0 * x 1
   /-- Negation in the `Language.ring.Structure` is the same as the negation given by the
     `Neg` instance -/
-  ( funMap_neg : ∀ x, funMap negFunc x = -x 0 )
+  funMap_neg : ∀ x, funMap negFunc x = -x 0
   /-- The constant `0` in the `Language.ring.Structure` is the same as the constant given by the
     `Zero` instance -/
-  ( funMap_zero : ∀ x, funMap (zeroFunc : Language.ring.Constants) x = 0 )
+  funMap_zero : ∀ x, funMap (zeroFunc : Language.ring.Constants) x = 0
   /-- The constant `1` in the `Language.ring.Structure` is the same as the constant given by the
     `One` instance -/
-  ( funMap_one : ∀ x, funMap (oneFunc : Language.ring.Constants) x = 1 )
+  funMap_one : ∀ x, funMap (oneFunc : Language.ring.Constants) x = 1
 
 open CompatibleRing
 
@@ -259,35 +259,35 @@ variable (R : Type*) [Language.ring.Structure R]
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def addOfRingStructure : Add R :=
+abbrev addOfRingStructure : Add R :=
   { add := fun x y => funMap addFunc ![x, y] }
 
 /-- A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def mulOfRingStructure : Mul R :=
+abbrev mulOfRingStructure : Mul R :=
   { mul := fun x y => funMap mulFunc ![x, y] }
 
 /-- A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def negOfRingStructure : Neg R :=
+abbrev negOfRingStructure : Neg R :=
   { neg := fun x => funMap negFunc ![x] }
 
 /-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def zeroOfRingStructure : Zero R :=
+abbrev zeroOfRingStructure : Zero R :=
   { zero := funMap zeroFunc ![] }
 
 /-- A def to put an `One` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
 `[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
-@[reducible] def oneOfRingStructure : One R :=
+abbrev oneOfRingStructure : One R :=
   { one := funMap oneFunc ![] }
 
 attribute [local instance] addOfRingStructure mulOfRingStructure negOfRingStructure
@@ -300,22 +300,22 @@ Given a Type `R` with a `Language.ring.Structure R`, the instance given by
 This definition is only to be used when `addOfRingStructure`, `mulOfRingStructure` etc
 are local instances.
 -/
-@[reducible] def compatibleRingOfRingStructure : CompatibleRing R :=
+abbrev compatibleRingOfRingStructure : CompatibleRing R :=
   { funMap_add := by
-      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
       intros; rfl
     funMap_mul := by
-      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
       intros; rfl
     funMap_neg := by
-      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
       intros; rfl
     funMap_zero := by
-      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
-      intros; rfl
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
+      rfl
     funMap_one := by
-      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
-      intros; rfl  }
+      simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi]
+      rfl  }
 
 end Ring
 
