@@ -733,7 +733,7 @@ lemma onag_1_10 :
             rw [← mk_lt_mk, mk_mul x_num (inv'_numeric_right x_num x_pos h3 h4 j)] at this
             on_goal 2 => exact numeric_one
             rw [pos_num_eq_normalization x_num x_pos] at this
-            simp only [normalization, insertLeft, inv', moveLeft_mk] at this
+            simp only [normalization, insertLeft, inv', moveRight_mk] at this
             exact this
       · case _ val =>
           rcases val with ⟨i, j⟩
