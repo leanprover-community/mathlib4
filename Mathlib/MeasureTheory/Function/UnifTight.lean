@@ -50,7 +50,36 @@ variable {f g : ι → α → β} {p : ℝ≥0∞}
 exists some measurable set `s` with finite measure such that the Lp-norm of
 `f i` restricted to `sᶜ` is smaller than `ε` for all `i`. -/
 def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
-  ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε
+  ∀ ⦃ε : ℝ≥0⦄, 0 < ε → ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε
+
+theorem unifTight_ennreal_iff {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
+    UnifTight f p μ ↔ ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α,
+      μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε := by
+  constructor
+  · intro hut eε heε
+    by_cases heε_top : eε = ∞
+    · exact ⟨∅, (by measurability), fun _ => heε_top.symm ▸ le_top⟩
+    have hε := eε.toNNReal_pos heε.ne.symm heε_top
+    have hεeε := coe_toNNReal heε_top
+    obtain ⟨s, hμs, hfε⟩ := hut hε
+    use s, hμs; intro i
+    exact (hfε i).trans_eq hεeε
+  · intro hut ε hε
+    have heε := ENNReal.coe_pos.mpr hε
+    exact hut heε
+
+theorem unifTight_real_iff {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) :
+    UnifTight f p μ ↔ ∀ ⦃ε : ℝ⦄, 0 < ε → ∃ s : Set α,
+      μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ .ofReal ε := by
+  constructor
+  · intro hut rε hrε
+    have hrε : 0 < rε.toNNReal := Real.toNNReal_pos.mpr hrε
+    exact hut hrε
+  · intro hut ε hε
+    obtain ⟨s, hμs, hfε⟩ := hut hε
+    have hrεeε := ofReal_coe_nnreal (p := ε)
+    use s, hμs; intro i
+    exact (hfε i).trans_eq hrεeε
 
 namespace UnifTight
 
