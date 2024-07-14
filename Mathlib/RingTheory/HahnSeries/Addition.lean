@@ -319,9 +319,7 @@ instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
 end Addition
 
 section SMulZeroClass
-section SMulZeroClass
 
-variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
 variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
 
 instance : SMul R (HahnSeries Γ V) :=
