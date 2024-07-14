@@ -145,7 +145,7 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ R V) where
           intro a ha
           contrapose! ha
           simp [not_nonempty_iff_eq_empty.1 ha]
-        isPWO_support_addAntidiagonal.mono h } )
+        isPWO_support_addAntidiagonal.mono h }
 
 theorem smul_coeff [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ R V) (a : Γ) :
     ((of R).symm <| x • y).coeff a =
