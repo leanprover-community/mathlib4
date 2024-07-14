@@ -367,7 +367,7 @@ lemma OpenCover.pullbackCoverAffineRefinementObj_inv_map (f : X ⟶ Y) (𝒰 : Y
     pullbackCover_map, pullbackSymmetry_inv_comp_fst, IsIso.inv_comp_eq, limit.lift_π_assoc, id_eq,
     PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app, pullbackSymmetry_hom_comp_fst]
   convert pullbackSymmetry_inv_comp_snd_assoc
-    ((𝒰.obj i.1).affineCover.map i.2) pullback.fst _ using 2
+    ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _) _ using 2
   exact pullbackRightPullbackFstIso_hom_snd _ _ _
 
 @[reassoc (attr := simp)]
@@ -380,7 +380,7 @@ lemma OpenCover.pullbackCoverAffineRefinementObj_inv_pullbackHom
     AffineOpenCover.openCover_map, pullbackCoverAffineRefinementObj, Iso.trans_inv, asIso_inv,
     Iso.symm_inv, Category.assoc, pullbackSymmetry_inv_comp_snd, IsIso.inv_comp_eq, limit.lift_π,
     id_eq, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
-  convert pullbackSymmetry_inv_comp_fst ((𝒰.obj i.1).affineCover.map i.2) pullback.fst
+  convert pullbackSymmetry_inv_comp_fst ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _)
   exact pullbackRightPullbackFstIso_hom_fst _ _ _
 
 section category
