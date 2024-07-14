@@ -145,9 +145,9 @@ General algebra:
 
   Representation theory:
     representation : 'Representation'
-    category of finite dimensional representations : 'FdRep'
-    character : 'FdRep.character'
-    orthogonality of characters : 'FdRep.char_orthonormal'
+    category of finite dimensional representations : 'FDRep'
+    character : 'FDRep.character'
+    orthogonality of characters : 'FDRep.char_orthonormal'
 
 Linear algebra:
   Fundamentals:

@@ -1433,8 +1433,8 @@ theorem algEquivOfEq_apply_root {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
     algEquivOfEq hp h_eq (root p) = root q := by
   rw [← coe_algHom, algEquivOfEq_toAlgHom, liftHom_root]
 
-/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`, where
-  the two polynomial `p q : K[X]` are associated.-/
+/-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`,
+where the two polynomials `p q : K[X]` are associated.-/
 noncomputable def algEquivOfAssociated {p q : K[X]} (hp : p ≠ 0) (hpq : Associated p q) :
     AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
   ofAlgHom (liftHom p (root q) (by simp only [aeval_eq, mk_eq_zero, hpq.symm.dvd] ))

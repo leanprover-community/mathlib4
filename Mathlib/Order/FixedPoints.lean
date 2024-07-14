@@ -314,3 +314,5 @@ instance completeLattice : CompleteLattice (fixedPoints f) where
   bot := ⟨lfp f, f.isFixedPt_lfp⟩
   le_top x := f.le_gfp x.2.ge
   bot_le x := f.lfp_le x.2.le
+
+end fixedPoints

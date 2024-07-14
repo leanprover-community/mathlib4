@@ -291,7 +291,7 @@ theorem hasInitial_of_isCoseparating [WellPowered C] [HasLimits C] {𝒢 : Set C
   · let s := Pi.lift fun f : ΣG : 𝒢, A ⟶ (G : C) => id (Pi.π (Subtype.val : 𝒢 → C)) f.1
     let t := Pi.lift (@Sigma.snd 𝒢 fun G => A ⟶ (G : C))
     haveI : Mono t := (isCoseparating_iff_mono 𝒢).1 h𝒢 A
-    exact Subobject.ofLEMk _ (pullback.fst : pullback s t ⟶ _) bot_le ≫ pullback.snd
+    exact Subobject.ofLEMk _ (pullback.fst _ _ : pullback s t ⟶ _) bot_le ≫ pullback.snd _ _
   · suffices ∀ (g : Subobject.underlying.obj ⊥ ⟶ A), f = g by
       apply this
     intro g

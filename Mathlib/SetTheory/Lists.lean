@@ -112,12 +112,11 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
     -- Porting note: case nil was not covered.
     | nil => simp
     | cons' b a _ IH =>
-      intro l'
       -- Porting note: Previous code was:
       -- change l' with cons' a l
       --
       -- This can be removed.
-      simpa [cons, l'] using IH rfl
+      simpa [cons] using IH rfl
 #align lists'.of_to_list Lists'.of_toList
 
 end Lists'
@@ -163,7 +162,7 @@ theorem mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
 theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
   refine ⟨fun h => ?_, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
   generalize h' : Lists'.cons a l₁ = l₁' at h
-  cases' h with l a' a'' l l' e m s;
+  cases' h with l a' a'' l l' e m s
   · cases a
     cases h'
   cases a; cases a'; cases h'; exact ⟨⟨_, m, e⟩, s⟩
