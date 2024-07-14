@@ -387,7 +387,7 @@ noncomputable def pointwiseRightKanExtensionCounit :
     L ⋙ pointwiseRightKanExtension L F ⟶ F where
   app X := limit.π (StructuredArrow.proj (L.obj X) L ⋙ F)
     (StructuredArrow.mk (𝟙 (L.obj X)))
-  naturality {X₁ X₂} f:= by
+  naturality {X₁ X₂} f := by
     simp only [comp_obj, pointwiseRightKanExtension_obj, comp_map,
       pointwiseRightKanExtension_map, limit.lift_π, StructuredArrow.map_mk]
     rw [comp_id]

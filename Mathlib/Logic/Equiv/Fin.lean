@@ -264,7 +264,7 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 @[simps (config := .asFn)]
 def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
     (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
-  toFun f := i.extractNth f
+  toFun f := (f i, i.removeNth f)
   invFun f := i.insertNth f.1 f.2
   left_inv f := by simp
   right_inv f := by simp
