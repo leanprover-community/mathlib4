@@ -131,3 +131,5 @@ theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f�
 
 -- Guard against import creep
 assert_not_exists Finset
+
+end Function

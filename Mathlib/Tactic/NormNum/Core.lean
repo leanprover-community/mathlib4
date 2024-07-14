@@ -56,9 +56,9 @@ abbrev Entry := Array (Array DiscrTree.Key) × Name
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
   /-- The tree of `norm_num` extensions. -/
-  tree   : DiscrTree NormNumExt := {}
+  tree : DiscrTree NormNumExt := {}
   /-- Erased `norm_num`s. -/
-  erased  : PHashSet Name := {}
+  erased : PHashSet Name := {}
   deriving Inhabited
 
 /-- Configuration for `DiscrTree`. -/
