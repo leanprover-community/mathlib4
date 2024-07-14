@@ -19,7 +19,7 @@ import Qq
 This file sets up the basic `positivity` extensions tagged with the `@[positivity]` attribute.
 -/
 
-set_option autoImplicit true
+variable {α : Type*}
 
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
@@ -85,7 +85,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   | _, _ => pure .none
 
 section LinearOrder
-variable [LinearOrder R] {a b c : R}
+variable {R : Type*} [LinearOrder R] {a b c : R}
 
 private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
 private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
@@ -254,6 +254,7 @@ where `a` and `b` are integers. -/
 private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
+set_option autoImplicit true in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
 @[positivity (_ : α) ^ (0:ℕ)]
@@ -263,6 +264,7 @@ def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   _ ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
   pure (.positive (q(pow_zero_pos $a) : Expr))
 
+set_option autoImplicit true in
 set_option linter.deprecated false in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
@@ -308,6 +310,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
 private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
     [CovariantClass α α (·+·) (·≤·)] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
+set_option autoImplicit true in
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
 @[positivity |(_ : α)|]
 def evalAbs : PositivityExt where eval {u} (α : Q(Type u)) zα pα (e : Q($α)) := do

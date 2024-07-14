@@ -475,9 +475,6 @@ structure Config : Type where
   existing : Option Bool := none
   deriving Repr
 
---set_option autoImplicit true
---variable [Monad M] [MonadOptions M] [MonadEnv M]
-
 open Lean.Expr.FindImpl in
 /-- Implementation function for `additiveTest`.
   We cache previous applications of the function, using the same method that `Expr.find?` uses,
