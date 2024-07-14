@@ -155,58 +155,38 @@ end compAEval
 
 section coeffwise
 
-variable {R A M : Type*} [CommSemiring R] [CommRing A] [Algebra R A] [AddCommGroup M]
+variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
   [Module A M] [Module R M] [IsScalarTower R A M] (d : Derivation R A M) (a : A)
 
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each
 of the coefficients.
 -/
-def coeffwise : Derivation R A[X] (PolynomialModule A M) :=
-  Derivation.mk' ({
-    toFun := fun x ↦ x.sum fun n v ↦ PolynomialModule.single A n (d v)
-    map_add' := fun a b ↦ by
-      dsimp only
-      apply sum_add_index <;> simp
-    map_smul' := fun a b ↦ by
-      dsimp only [RingHom.id_apply]
-      rw [sum_smul_index']
-      simp only [map_smul, Polynomial.smul_sum]
-      congr
-      ext i c
-      let val : M →ₗ[R] PolynomialModule A M := (PolynomialModule.lsingle A i).restrictScalars R
-      change val (a • d c) = a • val (d c)
-      apply LinearMapClass.map_smul
-      simp
-  }) (fun a b ↦ by
-    induction a using Polynomial.induction_on' with
-    | h_add _ _ h1 h2 =>
-      simp only [add_mul, LinearMap.map_add, h1, LinearMap.coe_mk, AddHom.coe_mk, h2, add_smul,
-        smul_add]
-      abel
-    | h_monomial m a =>
-    induction b using Polynomial.induction_on' with
-    | h_add _ _ h1 h2 =>
-      simp only [mul_add, LinearMap.map_add, h1, LinearMap.coe_mk, AddHom.coe_mk, h2, smul_add,
-        add_smul]
-      abel
-    | h_monomial m2 b =>
-    simp only [monomial_mul_monomial, LinearMap.coe_mk, AddHom.coe_mk, map_zero, sum_monomial_index,
-      leibniz, map_add, PolynomialModule.monomial_smul_single]
-    ring_nf
-  )
-
-lemma coeffwise_def (p : A[X]) :
-    d.coeffwise p = p.sum fun n v ↦ PolynomialModule.single A n (d v) := rfl
+def coeffwise : Derivation R A[X] (PolynomialModule A M) where
+  __ := (PolynomialModule.map A d.toLinearMap).comp
+    PolynomialModule.equivPolynomial.symm.toLinearMap
+  map_one_eq_zero' := show (Finsupp.single 0 1).mapRange (d : A → M) d.map_zero = 0 by simp
+  leibniz' p q := by
+    dsimp
+    induction p using Polynomial.induction_on' with
+    | h_add => simp only [add_mul, map_add, add_smul, smul_add, add_add_add_comm, *]
+    | h_monomial n a =>
+      induction q using Polynomial.induction_on' with
+      | h_add => simp only [mul_add, map_add, add_smul, smul_add, add_add_add_comm, *]
+      | h_monomial m b =>
+        refine Finsupp.ext fun i ↦ ?_
+        dsimp [PolynomialModule.equivPolynomial, PolynomialModule.map]
+        simp only [toFinsupp_mul, toFinsupp_monomial, AddMonoidAlgebra.single_mul_single]
+        show d _ = _ + _
+        erw [Finsupp.mapRange.linearMap_apply, Finsupp.mapRange.linearMap_apply]
+        rw [Finsupp.mapRange_single, Finsupp.mapRange_single]
+        erw [PolynomialModule.monomial_smul_single, PolynomialModule.monomial_smul_single]
+        simp only [AddMonoidAlgebra.single_apply, apply_ite d, leibniz, map_zero, coeFn_coe,
+          PolynomialModule.single_apply, ite_add_zero, add_comm m n]
 
 @[simp]
-lemma coeffwise_apply (p : A[X]) (i : ℕ) :
-    d.coeffwise p i = d (coeff p i) := by
-  rw [coeffwise_def, sum_def, Finset.sum_apply']
-  simp only [PolynomialModule.single_apply, Finset.sum_ite_eq', mem_support_iff, ne_eq,
-    ite_eq_left_iff, not_not]
-  intro h
-  simp [h]
+lemma coeffwise_apply (p : A[X]) (i) :
+    d.coeffwise p i = d (coeff p i) := rfl
 
 @[simp]
 lemma coeffwise_monomial (n : ℕ) (x : A) :
