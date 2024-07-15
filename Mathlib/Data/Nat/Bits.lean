@@ -303,13 +303,13 @@ theorem pos_of_bit0_pos {n : ℕ} (h : 0 < 2 * n) : 0 < n := by
 
 @[simp]
 theorem bitCasesOn_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
-    bitCasesOn (bit false n) H = H false n :=
+    bitCasesOn (2 * n) H = H false n :=
   bitCasesOn_bit H false n
 #align nat.bit_cases_on_bit0 Nat.bitCasesOn_bit0
 
 @[simp]
 theorem bitCasesOn_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
-    bitCasesOn (bit true n) H = H true n :=
+    bitCasesOn (2 * n + 1) H = H true n :=
   bitCasesOn_bit H true n
 #align nat.bit_cases_on_bit1 Nat.bitCasesOn_bit1
 
