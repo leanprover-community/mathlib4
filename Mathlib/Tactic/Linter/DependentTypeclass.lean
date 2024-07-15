@@ -103,10 +103,14 @@ def dependentTypeclassLinter : Linter where
               dependentTypeclassRef.modify (·.push d)
               let preString := (← liftTermElabM (ppExpr decl)).pretty
               let fmtStr := (preString.replace "fun " "").replace " => inferInstance" ""
-              msgs := msgs.push (d, m!"Typeclass '{d}' follows from '{fmtStr}'")
+              msgs := msgs.push (d, fmtStr)
           set s
-          for (d, msg) in msgs do
-            Linter.logLint linter.dependentTypeclass d msg
+          for (d, fmtStr) in msgs do
+            Linter.logLint linter.dependentTypeclass d m!"Typeclass '{d}' follows from '{fmtStr}'"
+            let binderPos := d.raw.getPos?
+            let varsPos := stx.getPos?
+            if binderPos.getD default < varsPos.getD default then
+              logInfo m!"The assumptions '{fmtStr}' imply the earlier assumption '{d}'"
         | _=> return
 
 initialize addLinter dependentTypeclassLinter
