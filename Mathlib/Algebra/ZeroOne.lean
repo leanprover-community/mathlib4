@@ -42,9 +42,3 @@ set_option linter.deprecated false in
 def bit1 {α : Type u} [One α] [Add α] (a : α) : α := bit0 a + 1
 
 attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
-
-/- These attributes need to be in a low-level file where `@[to_additive]` exists. -/
-attribute [to_additive Empty] Empty
-attribute [to_additive PEmpty] PEmpty
-attribute [to_additive PUnit] PUnit
-attribute [to_additive existing Unit] Unit
