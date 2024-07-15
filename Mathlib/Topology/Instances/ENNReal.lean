@@ -1677,8 +1677,8 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
 variable {F}
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
-    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+lemma liminf_toReal_eq_of_eventually_le {ι : Type*} {F : Filter ι} [NeBot F]
+    {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
     F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
   have liminf_le : F.liminf xs ≤ b := by
     apply liminf_le_of_le ⟨0, by simp⟩
@@ -1699,7 +1699,8 @@ lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   rfl
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma limsup_toReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+lemma limsup_toReal_eq_of_eventually_le {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) {xs : ι → ℝ≥0∞}
+    (le_b : ∀ᶠ i in F, xs i ≤ b) :
     F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
   have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
     filter_upwards [le_b] with i i_le_b
@@ -1777,7 +1778,26 @@ lemma liminf_toReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq
         · exact eventually_of_forall fun i ↦ toReal_nonneg
     · simp only [liminf, limsInf, sSup, eventually_map, bdd, and_false, ↓reduceDIte]
 
--- TODO: Move.
+lemma limsup_toReal_eq_zero_of_limsup_eq_top {xs : ι → ℝ≥0∞}
+    (limsup_eq_top : F.limsup xs = ∞) (ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞) :
+    F.limsup (fun i ↦ (xs i).toReal) = 0 := by
+  simp [limsup, limsSup, sInf, sSup]
+  have not_bdd : {a | ∀ᶠ (a_1 : ι) in F, (xs a_1).toReal ≤ a} = ∅ := by
+    apply eq_empty_iff_forall_not_mem.mpr
+    intro b hb
+    simp only [mem_setOf_eq] at hb
+    have xs_bdd : ∀ᶠ i in F, xs i ≤ ENNReal.ofReal b := by
+      filter_upwards [ev_ne_top, hb] with i ne_top le_b
+      rw [ENNReal.le_ofReal_iff_toReal_le]
+      · exact le_b
+      · exact ne_top
+      · obtain ⟨j, hj⟩ := hb.exists
+        exact le_trans toReal_nonneg hj
+    have oops := limsup_le_of_le ⟨0, by simp⟩ xs_bdd
+    simp_all only [ne_eq, top_le_iff, ofReal_ne_top]
+  simp [not_bdd]
+
+-- TODO: Move to `Order/LiminfLimsup.lean`.
 lemma isCobounded_le_iff_frequently_ge {R : Type*} [LinearOrder R] {F : Filter R} [NeBot F] :
     IsCobounded (· ≤ ·) F ↔ ∃ l, ∃ᶠ x in F, l ≤ x := by
   constructor
@@ -1785,7 +1805,7 @@ lemma isCobounded_le_iff_frequently_ge {R : Type*} [LinearOrder R] {F : Filter R
   · intro ⟨b, hb⟩
     exact isCobounded_le_of_frequently_ge hb
 
--- TODO: Move.
+-- TODO: Move to `Order/LiminfLimsup.lean`.
 lemma isCobounded_ge_iff_frequently_le {R : Type*} [LinearOrder R] {F : Filter R} [NeBot F] :
     IsCobounded (· ≥ ·) F ↔ ∃ u, ∃ᶠ x in F, x ≤ u := by
   constructor
@@ -1815,9 +1835,24 @@ lemma liminf_toNNReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_
     refine ⟨x + 1, ?_, lt_add_one x⟩
     filter_upwards [cobdd (x + 1)] with i hi using hi.le
 
+lemma limsup_toNNReal_eq_zero_of_limsup_eq_top {xs : ι → ℝ≥0∞}
+    (limsup_eq_top : F.limsup xs = ∞) (ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞) :
+    F.limsup (fun i ↦ (xs i).toNNReal) = 0 := by
+  simp [limsup, limsSup, sInf, sSup]
+  have not_bdd : {a | ∀ᶠ (a_1 : ι) in F, (xs a_1).toNNReal ≤ a} = ∅ := by
+    apply eq_empty_iff_forall_not_mem.mpr
+    intro b hb
+    simp only [mem_setOf_eq] at hb
+    have xs_bdd : ∀ᶠ i in F, xs i ≤ b := by
+      filter_upwards [ev_ne_top, hb] with i ne_top le_b
+      exact (toNNReal_le_toNNReal ne_top coe_ne_top).mp le_b
+    have oops := limsup_le_of_le ⟨0, by simp⟩ xs_bdd
+    simp_all only [ne_eq, top_le_iff, coe_ne_top]
+  simp [not_bdd]
+
 /-- If `xs : ι → ℝ≥0∞` is eventually finite, then we have
 `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
-lemma liminf_toReal_eq' {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞) :
+lemma liminf_toReal_eq {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞) :
     F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
   by_cases infty : F.liminf xs = ∞
   · simp only [infty, top_toReal, liminf_toReal_eq_zero_of_liminf_eq_top infty]
@@ -1839,7 +1874,8 @@ lemma liminf_toReal_eq' {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs 
     have aux : ∀ᶠ i in F, (min (xs i) b).toReal = min (xs i).toReal b.toReal := by
       filter_upwards [ev_ne_top] with i hi
       simp [toReal_min hi b_ne_top]
-    rw [obs₁, ← liminf_toReal_eq b_ne_top (eventually_of_forall bdd), liminf_congr aux]
+    rw [obs₁, ← liminf_toReal_eq_of_eventually_le b_ne_top (eventually_of_forall bdd),
+        liminf_congr aux]
     have obs₃ := @Monotone.map_liminf_of_continuousAt ι ℝ ℝ F _ _ _ _ _ _ _ (fun z => min z b.toReal)
               ?_ (fun i ↦ (xs i).toReal) ?_ ?_ ⟨0, by simp⟩
     · simp only at obs₃
@@ -1859,21 +1895,66 @@ lemma liminf_toReal_eq' {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs 
     · exact cobdd
 
 /-- If `xs : ι → ℝ≥0∞` is eventually finite, then we have
+`limsup (toReal ∘ xs) = toReal (limsup xs)`. -/
+lemma limsup_toReal_eq {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞) :
+    F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
+  by_cases infty : F.limsup xs = ∞
+  · simp only [infty, top_toReal,
+               limsup_toReal_eq_zero_of_limsup_eq_top infty ev_ne_top]
+
+  · let b := F.limsup xs + 1
+    have b_lt_top : b < ∞ := by
+      simpa only [add_lt_top, one_lt_top, and_true, b] using lt_top_iff_ne_top.mpr infty
+    have limsup_lt_b : F.limsup xs < b := lt_add_right infty one_ne_zero
+    have ev_lt_b := eventually_lt_of_limsup_lt limsup_lt_b
+    rw [limsup_toReal_eq_of_eventually_le b_lt_top.ne]
+    filter_upwards [ev_lt_b] with i lt_b using lt_b.le
+
+/-- If `xs : ι → ℝ≥0∞` is eventually finite, then we have
 `liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
-lemma liminf_toNNReal_eq {xs : ι → ℝ≥0∞}  (ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞) :
+lemma liminf_toNNReal_eq {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞) :
     F.liminf (fun i ↦ (xs i).toNNReal) = (F.liminf xs).toNNReal := by
   by_cases infty : F.liminf xs = ∞
   · simpa only [infty, top_toReal] using liminf_toNNReal_eq_zero_of_liminf_eq_top infty
-  · have obs : (liminf (fun i ↦ (xs i).toReal) F).toNNReal = liminf (fun i ↦ (xs i).toNNReal) F := by
+  · have obs :
+        (liminf (fun i ↦ (xs i).toReal) F).toNNReal = liminf (fun i ↦ (xs i).toNNReal) F := by
       rw [Real.toNNReal_mono.map_liminf_of_continuousAt
             (fun i ↦ (xs i).toReal) continuous_real_toNNReal.continuousAt ?_ ?_]
       · congr; funext i; simp
       · exact isCoboundedUnder_toReal_of_liminf_ne_top infty
-      · refine ⟨0, by simp only [ge_iff_le, eventually_map, toReal_nonneg, eventually_true]⟩
-    simp [← obs, @liminf_toReal_eq' ι F _ xs ev_ne_top]
+      · exact ⟨0, by simp only [ge_iff_le, eventually_map, toReal_nonneg, eventually_true]⟩
+    simp [← obs, liminf_toReal_eq ev_ne_top]
 
-/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
-lemma limsup_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+/-- If `xs : ι → ℝ≥0∞`  is eventually finite, then we have
+`liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
+lemma limsup_toNNReal_eq {xs : ι → ℝ≥0∞} (ev_ne_top : ∀ᶠ i in F, xs i ≠ ∞) :
+    F.limsup (fun i ↦ (xs i).toNNReal) = (F.limsup xs).toNNReal := by
+  by_cases infty : F.limsup xs = ∞
+  · simpa only [infty, top_toNNReal] using limsup_toNNReal_eq_zero_of_limsup_eq_top infty ev_ne_top
+  · have obs :
+        (limsup (fun i ↦ (xs i).toReal) F).toNNReal = limsup (fun i ↦ (xs i).toNNReal) F := by
+      rw [Real.toNNReal_mono.map_limsup_of_continuousAt
+            (fun i ↦ (xs i).toReal) continuous_real_toNNReal.continuousAt ?_ ?_]
+      · congr; funext i; simp
+      · set b := F.limsup xs + 1
+        have b_lt_top : b < ∞ := by
+          simpa only [add_lt_top, one_lt_top, and_true, b] using lt_top_iff_ne_top.mpr infty
+        have limsup_lt_b : F.limsup xs < b := lt_add_right infty one_ne_zero
+        have key := eventually_lt_of_limsup_lt limsup_lt_b
+        simp [IsBoundedUnder, IsBounded]
+        refine ⟨b.toReal, ?_⟩
+        filter_upwards [key, ev_ne_top] with i lt_b ne_top
+        exact (toReal_le_toReal ne_top b_lt_top.ne).mpr lt_b.le
+      · refine ⟨0, ?_⟩
+        simp only [eventually_map]
+        intro b hb
+        obtain ⟨c, hc⟩ := hb.exists
+        apply le_trans toReal_nonneg hc
+    simp [← obs, limsup_toReal_eq ev_ne_top]
+
+/-- If `xs : ι → ℝ≥0∞`  is bounded, then we have
+`liminf (toNNReal ∘ xs) = toNNReal (liminf xs)`. -/
+lemma limsup_toNNReal_eq_of_eventually_le {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
     {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
     F.limsup (fun i ↦ (xs i).toNNReal) = (F.limsup xs).toNNReal := by
   have obs : (limsup (fun i ↦ (xs i).toReal) F).toNNReal = limsup (fun i ↦ (xs i).toNNReal) F := by
@@ -1890,7 +1971,7 @@ lemma limsup_toNNReal_eq {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
       intro a ha
       obtain ⟨x, hx⟩ := ha.exists
       exact le_trans toReal_nonneg hx
-  simp [← obs, limsup_toReal_eq b_ne_top le_b]
+  simp [← obs, limsup_toReal_eq_of_eventually_le b_ne_top le_b]
 
 end LimsupLiminf
 
