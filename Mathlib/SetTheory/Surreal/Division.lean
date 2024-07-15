@@ -46,9 +46,9 @@ Throughout the proof of lemmas (i) to (iv), we use the same notation as in ONAG:
 
 `x` : the positive number whose inverse we are constructing
 `x'` : a positive option of `x`, indexed by `i`
-`y` : the purported inverse of x, as defined by `x.inv'`
+`y` : the purported inverse of `x`, as defined by `x.inv'`
 `y'` : an option of `y`, indexed by `i'`
-`y''` : (1 + (x' - x) * y') / x' , the form of any option of `y` besides 0, indexed by `i''`
+`y''` : `(1 + (x' - x) * y') / x'` , the form of any option of `y` besides 0, indexed by `i''`
 
 ## References
 
@@ -149,8 +149,8 @@ lemma pos_num_eq_normalization :
 
 /-! ### Options of inv' are numeric
 
-  We prove by induction that if x is numeric, then the options of x.inv' are numeric. Note that
-  this does *not* prof that x.inv' is numeric, since we have not proven the other condition of
+  We prove by induction that if `x` is numeric, then the options of `x.inv'` are numeric. Note that
+  this does *not* prove that `x.inv'` is numeric, since we have not proven the other condition of
   numericity, that all Left options are less than all Right options. This other condition is
   proven later in `onag_1_10_ii`.
 -/
@@ -210,7 +210,7 @@ lemma inv'_numeric_right (ih_xl : ∀ i, 0 < x.moveLeft i → (x.moveLeft i).inv
 
 -/
 
-/-- Given `y''`, return (x', x'_inv, y') -/
+/-- Given `y''`, return `(x', x'_inv, y')` -/
 def components {l r} (L : l → PGame) (R : r → PGame)
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric)
     (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
@@ -232,7 +232,7 @@ def components {l r} (L : l → PGame) (R : r → PGame)
     (Surreal.mk (R i) (by tauto), Surreal.mk (R i).inv' (by tauto),
       Surreal.mk ((PGame.mk l r L R).inv'.moveRight j) (by apply inv'_numeric_right <;> tauto))
 
-/-- The identity 1 - x*y'' = (1 - x * y')*(x' - x)/x' -/
+/-- The identity `1 - x*y'' = (1 - x * y')*(x' - x)/x'` -/
 lemma eq1 {l r} (L : l → PGame) (R : r → PGame)
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < L i → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
@@ -367,7 +367,7 @@ lemma onag_1_10_i' {l r} (L : l → PGame) (R : r → PGame)
           exact h5
       · exact ihr_pos j
 
-/-- The identity x' * y + x * y' - x' * y' = 1 + x' * (y - y'') -/
+/-- The identity `x' * y + x * y' - x' * y' = 1 + x' * (y - y'')` -/
 lemma eq2 {l r} (L : l → PGame) (R : r → PGame)
     (h1 : ∀ i, (L i).Numeric) (h2 : ∀ j, (R j).Numeric) (h3 : ∀ i, 0 < (L i) → (L i).inv'.Numeric)
     (h4 : ∀ j, (R j).inv'.Numeric) (h5 : (PGame.mk l r L R).Numeric) {b : Bool}
