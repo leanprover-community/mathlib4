@@ -25,7 +25,7 @@ We provide another API for pullbacks and pushouts.
  snd         f
   |          |
   v          v
-  Y ---g---> Z
+  Y ---g---> Zfst
 
 ```
 is a pullback square.
@@ -33,7 +33,7 @@ is a pullback square.
 (And similarly for `IsPushout`.)
 
 We provide the glue to go back and forth to the usual `IsLimit` API for pullbacks, and prove
-`IsPullback (pullback.fst : pullback f g ⟶ X) (pullback.snd : pullback f g ⟶ Y) f g`
+`IsPullback (pullback.fst f g) (pullback.snd f g) f g`
 for the usual `pullback f g` provided by the `HasLimit` API.
 
 We don't attempt to restate everything we know about pullbacks in this language,
@@ -235,7 +235,7 @@ theorem of_isLimit' (w : CommSq fst snd f g) (h : Limits.IsLimit w.cone) :
 
 /-- The pullback provided by `HasPullback f g` fits into an `IsPullback`. -/
 theorem of_hasPullback (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
-    IsPullback (pullback.fst : pullback f g ⟶ X) (pullback.snd : pullback f g ⟶ Y) f g :=
+    IsPullback (pullback.fst f g) (pullback.snd f g) f g :=
   of_isLimit (limit.isLimit (cospan f g))
 #align category_theory.is_pullback.of_has_pullback CategoryTheory.IsPullback.of_hasPullback
 
@@ -285,30 +285,31 @@ noncomputable def isoPullback (h : IsPullback fst snd f g) [HasPullback f g] : P
 
 @[simp]
 theorem isoPullback_hom_fst (h : IsPullback fst snd f g) [HasPullback f g] :
-    h.isoPullback.hom ≫ pullback.fst = fst := by
+    h.isoPullback.hom ≫ pullback.fst _ _ = fst := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 #align category_theory.is_pullback.iso_pullback_hom_fst CategoryTheory.IsPullback.isoPullback_hom_fst
 
 @[simp]
 theorem isoPullback_hom_snd (h : IsPullback fst snd f g) [HasPullback f g] :
-    h.isoPullback.hom ≫ pullback.snd = snd := by
+    h.isoPullback.hom ≫ pullback.snd _ _ = snd := by
   dsimp [isoPullback, cone, CommSq.cone]
   simp
 #align category_theory.is_pullback.iso_pullback_hom_snd CategoryTheory.IsPullback.isoPullback_hom_snd
 
 @[simp]
 theorem isoPullback_inv_fst (h : IsPullback fst snd f g) [HasPullback f g] :
-    h.isoPullback.inv ≫ fst = pullback.fst := by simp [Iso.inv_comp_eq]
+    h.isoPullback.inv ≫ fst = pullback.fst _ _ := by simp [Iso.inv_comp_eq]
 #align category_theory.is_pullback.iso_pullback_inv_fst CategoryTheory.IsPullback.isoPullback_inv_fst
 
 @[simp]
 theorem isoPullback_inv_snd (h : IsPullback fst snd f g) [HasPullback f g] :
-    h.isoPullback.inv ≫ snd = pullback.snd := by simp [Iso.inv_comp_eq]
+    h.isoPullback.inv ≫ snd = pullback.snd _ _ := by simp [Iso.inv_comp_eq]
 #align category_theory.is_pullback.iso_pullback_inv_snd CategoryTheory.IsPullback.isoPullback_inv_snd
 
 theorem of_iso_pullback (h : CommSq fst snd f g) [HasPullback f g] (i : P ≅ pullback f g)
-    (w₁ : i.hom ≫ pullback.fst = fst) (w₂ : i.hom ≫ pullback.snd = snd) : IsPullback fst snd f g :=
+    (w₁ : i.hom ≫ pullback.fst _ _ = fst) (w₂ : i.hom ≫ pullback.snd _ _ = snd) :
+      IsPullback fst snd f g :=
   of_isLimit' h
     (Limits.IsLimit.ofIsoLimit (limit.isLimit _)
       (@PullbackCone.ext _ _ _ _ _ _ _ (PullbackCone.mk _ _ _) _ i w₁.symm w₂.symm).symm)
@@ -368,7 +369,7 @@ theorem of_isColimit' (w : CommSq f g inl inr) (h : Limits.IsColimit w.cocone) :
 
 /-- The pushout provided by `HasPushout f g` fits into an `IsPushout`. -/
 theorem of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :
-    IsPushout f g (pushout.inl : X ⟶ pushout f g) (pushout.inr : Y ⟶ pushout f g) :=
+    IsPushout f g (pushout.inl f g) (pushout.inr f g) :=
   of_isColimit (colimit.isColimit (span f g))
 #align category_theory.is_pushout.of_has_pushout CategoryTheory.IsPushout.of_hasPushout
 
@@ -418,30 +419,31 @@ noncomputable def isoPushout (h : IsPushout f g inl inr) [HasPushout f g] : P �
 
 @[simp]
 theorem inl_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
-    pushout.inl ≫ h.isoPushout.inv = inl := by
+    pushout.inl _ _ ≫ h.isoPushout.inv = inl := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 #align category_theory.is_pushout.inl_iso_pushout_inv CategoryTheory.IsPushout.inl_isoPushout_inv
 
 @[simp]
 theorem inr_isoPushout_inv (h : IsPushout f g inl inr) [HasPushout f g] :
-    pushout.inr ≫ h.isoPushout.inv = inr := by
+    pushout.inr _ _ ≫ h.isoPushout.inv = inr := by
   dsimp [isoPushout, cocone, CommSq.cocone]
   simp
 #align category_theory.is_pushout.inr_iso_pushout_inv CategoryTheory.IsPushout.inr_isoPushout_inv
 
 @[simp]
 theorem inl_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
-    inl ≫ h.isoPushout.hom = pushout.inl := by simp [← Iso.eq_comp_inv]
+    inl ≫ h.isoPushout.hom = pushout.inl _ _ := by simp [← Iso.eq_comp_inv]
 #align category_theory.is_pushout.inl_iso_pushout_hom CategoryTheory.IsPushout.inl_isoPushout_hom
 
 @[simp]
 theorem inr_isoPushout_hom (h : IsPushout f g inl inr) [HasPushout f g] :
-    inr ≫ h.isoPushout.hom = pushout.inr := by simp [← Iso.eq_comp_inv]
+    inr ≫ h.isoPushout.hom = pushout.inr _ _ := by simp [← Iso.eq_comp_inv]
 #align category_theory.is_pushout.inr_iso_pushout_hom CategoryTheory.IsPushout.inr_isoPushout_hom
 
 theorem of_iso_pushout (h : CommSq f g inl inr) [HasPushout f g] (i : P ≅ pushout f g)
-    (w₁ : inl ≫ i.hom = pushout.inl) (w₂ : inr ≫ i.hom = pushout.inr) : IsPushout f g inl inr :=
+    (w₁ : inl ≫ i.hom = pushout.inl _ _) (w₂ : inr ≫ i.hom = pushout.inr _ _) :
+      IsPushout f g inl inr :=
   of_isColimit' h
     (Limits.IsColimit.ofIsoColimit (colimit.isColimit _)
       (PushoutCocone.ext (s := PushoutCocone.mk ..) i w₁ w₂).symm)

@@ -518,11 +518,7 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
         change _ = _ + _
         dsimp
         simp }
-  inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by
-    -- Porting note (#10936): used to be `tidy`, but `aesop` can't do it
-    refine DFunLike.ext _ _ ?_
-    rintro ⟨x, (hx : f _ = 0)⟩
-    exact hx
+  inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by ext x; exact x.2
   hom_inv_id := by
     -- Porting note (#11041): it would be nice to do the next two steps by a single `ext`,
     -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
