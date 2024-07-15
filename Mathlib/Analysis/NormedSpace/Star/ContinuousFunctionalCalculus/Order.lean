@@ -45,7 +45,7 @@ instance instPartialOrder : PartialOrder (Unitization ℂ A) := CstarRing.spectr
 
 instance instStarOrderedRing : StarOrderedRing (Unitization ℂ A) := CstarRing.spectralOrderedRing _
 
-lemma inr_le_iff {a b : A} (ha : IsSelfAdjoint a := by cfc_tac)
+lemma inr_le_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
     (hb : IsSelfAdjoint b := by cfc_tac) :
     (a : Unitization ℂ A) ≤ (b : Unitization ℂ A) ↔ a ≤ b := by
   -- TODO: prove the more general result for star monomorphisms and use it here.
