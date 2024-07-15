@@ -30,17 +30,15 @@ The ring theoretic Krull dimension is the Krull dimension of its spectrum ordere
 noncomputable abbrev ringKrullDim (R : Type*) [CommRing R] : WithBot (WithTop ℕ) :=
   krullDim (PrimeSpectrum R)
 
-lemma ringKrullDim_eq_bot_of_subsingleton (R : Type*) [CommRing R] [Subsingleton R] :
+namespace ringKrullDim
+
+lemma eq_bot_of_subsingleton (R : Type*) [CommRing R] [Subsingleton R] :
     ringKrullDim R = ⊥ :=
   krullDim_eq_bot_of_isEmpty
 
-lemma ringKrullDim_gt_bot_of_nontrivial (R : Type*) [CommRing R] [Nontrivial R] :
-    ringKrullDim R > ⊥ :=
-  lt_of_lt_of_le
-    (Batteries.compareOfLessAndEq_eq_lt.mp $ show compareOfLessAndEq ⊥ 0 = Ordering.lt by rfl)
-    krullDim_nonneg_of_nonempty
-
-namespace ringKrullDim
+lemma nonneg_of_nontrivial (R : Type*) [CommRing R] [Nontrivial R] :
+    0 ≤ ringKrullDim R :=
+  krullDim_nonneg_of_nonempty
 
 theorem eq_topologicalKrullDim (R : Type*) [CommRing R] :
     ringKrullDim R = topologicalKrullDim (PrimeSpectrum R) :=
