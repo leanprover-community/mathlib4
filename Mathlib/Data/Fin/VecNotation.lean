@@ -333,8 +333,6 @@ def vecAlt1 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α :=
 
 section bits
 
-set_option linter.deprecated false
-
 theorem vecAlt0_vecAppend (v : Fin n → α) :
     vecAlt0 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ n + n) := by
   ext i
