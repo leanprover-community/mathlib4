@@ -6,6 +6,7 @@ Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 import Mathlib.RingTheory.LocalProperties
 
 /-!
@@ -113,6 +114,36 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
+
+section Affine
+
+open Opposite LocallyRingedSpace
+
+/-- If `f : X ⟶ Y` is a morphism of schemes with quasi-compact source and affine target, `f`
+has a closed image and `f` induces an injection on global sections, then
+`f` is surjective. -/
+lemma surjective_of_isClosed_range_of_injective {X Y : Scheme} [IsAffine Y] [CompactSpace X]
+    (f : X ⟶ Y) (hfcl : IsClosed (Set.range f.val.base))
+    (hfinj : Function.Injective (f.val.c.app (op ⊤))) :
+    Function.Surjective f.val.base := by
+  obtain ⟨I, hI⟩ := (Scheme.eq_zeroLocus_of_isClosed_of_isAffine Y (Set.range f.val.base)).mp hfcl
+  let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
+  haveI (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
+  apply Set.range_iff_surjective.mp
+  apply hI ▸ (Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_compactSpace _).mpr
+  intro s hs
+  simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+    Submodule.mem_toAddSubmonoid, SetLike.mem_coe, mem_nilradical, ← IsNilpotent.map_iff hfinj]
+  refine Scheme.isNilpotent_of_isNilpotent_cover _ 𝒰 (fun i ↦ ?_)
+  rw [Scheme.isNilpotent_iff_basicOpen_eq_bot_of_compactSpace]
+  erw [basicOpen_eq_bot_iff_forall_evaluation_eq_zero]
+  intro x
+  suffices h : f.val.base ((𝒰.map i).val.base x.val) ∉ Y.toRingedSpace.basicOpen s by
+    erw [← Γevaluation_naturality_apply (𝒰.map i ≫ f)]
+    simpa
+  exact (Y.mem_zeroLocus_iff I _).mp (hI ▸ Set.mem_range_self ((𝒰.map i).val.base x.val)) s hs
+
+end Affine
 
 end IsClosedImmersion
 
