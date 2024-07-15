@@ -21,7 +21,7 @@ The `congr!` tactic is used by the `convert` and `convert_to` tactics.
 See the syntax docstring for more details.
 -/
 
-set_option autoImplicit true
+universe u v
 
 open Lean Meta Elab Tactic
 
@@ -499,13 +499,13 @@ def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
     else
       (none, s)
 
-private theorem heq_imp_of_eq_imp {p : HEq x y → Prop} (h : (he : x = y) → p (heq_of_eq he))
-    (he : HEq x y) : p he := by
+private theorem heq_imp_of_eq_imp {α : Sort*} {x y : α} {p : HEq x y → Prop}
+    (h : (he : x = y) → p (heq_of_eq he)) (he : HEq x y) : p he := by
   cases he
   exact h rfl
 
-private theorem eq_imp_of_iff_imp {p : x = y → Prop} (h : (he : x ↔ y) → p (propext he))
-    (he : x = y) : p he := by
+private theorem eq_imp_of_iff_imp {x y : Prop} {p : x = y → Prop}
+    (h : (he : x ↔ y) → p (propext he)) (he : x = y) : p he := by
   cases he
   exact h Iff.rfl
 
