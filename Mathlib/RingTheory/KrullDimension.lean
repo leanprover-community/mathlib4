@@ -110,6 +110,6 @@ end ringKrullDim
 proof_wanted Polynomial.ringKrullDim_le (R : Type*) [CommRing R] :
   ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
 
-proof_wanted MvPolynomial.fin_ringKrullDim_eq_plus_of_isNoetherianRing
+proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
     (R : Type*) [CommRing R] [IsNoetherianRing R] (n : ℕ) :
   ringKrullDim (MvPolynomial (Fin n) R) = ringKrullDim R + n
