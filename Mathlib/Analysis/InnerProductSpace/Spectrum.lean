@@ -553,7 +553,16 @@ theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtyp
 theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) (x : E) :
     x ∈ Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) →
-    x ∈ (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
+    x ∈ (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
+  intro h
+  simp only [ne_eq, Submodule.mem_iInf, Subtype.forall]
+  simp only [ne_eq, Submodule.mem_map, Subtype.exists, Submodule.mem_iInf, Subtype.forall] at h
+  intro a b
+  obtain ⟨a', ⟨ha, ⟨h1, h2⟩⟩⟩ := h
+  have ha' := ha
+  specialize ha' a b
+  rw [← h2]
+  exact ha a b
 
 theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
