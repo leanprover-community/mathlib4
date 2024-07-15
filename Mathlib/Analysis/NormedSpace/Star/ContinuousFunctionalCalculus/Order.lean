@@ -178,16 +178,21 @@ variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [Nontrivial A]
 
 lemma CstarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
-  -- We use the corresponding fact for unital C⋆-algebras and apply it to the unitization
-  let a' : Unitization ℂ A := .inr a
-  let b' : Unitization ℂ A := .inr b
-  have ha' : IsSelfAdjoint a := IsSelfAdjoint.of_nonneg ha
-  have hb' : IsSelfAdjoint b := IsSelfAdjoint.of_nonneg <| ha.trans hab
-  have hmain : ‖a'‖ ≤ ‖b'‖ := by
-    refine norm_le_norm_of_nonneg_of_le_unital ?_ ?_
-    · rwa [Unitization.inr_nonneg_iff]
-    · simpa only [a', b', Unitization.inr_le_iff ha' hb'] using hab
-  simpa [a', b', Unitization.norm_inr] using hmain
+  suffices ∀ a b : Unitization ℂ A, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
+    have hb := ha.trans hab
+    simpa [Unitization.norm_inr] using this a b (by simpa) (by rwa [Unitization.inr_le_iff a b])
+  intro a b ha hab
+  have hb_nonneg : 0 ≤ b := ha.trans hab
+  have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
+    calc _ = a := by rw [cfc_id ℝ a]
+      _ ≤ cfc id b := (cfc_id ℝ b) ▸ hab
+      _ ≤ cfc (fun _ => ‖b‖) b := by
+          refine cfc_mono fun x hx => ?_
+          calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb_nonneg hx)).symm
+            _ ≤ ‖b‖ := spectrum.norm_le_norm_of_mem hx
+      _ = _ := by rw [cfc_const _ _, cfc_const _ _]
+  rw [cfc_le_iff id (fun _ => ‖b‖) a] at h₂
+  exact h₂ ‖a‖ <| norm_mem_spectrum_of_nonneg ha
 
 lemma CstarRing.conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
