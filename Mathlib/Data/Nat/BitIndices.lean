@@ -50,16 +50,16 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 @[simp] theorem bitIndices_two_mul_add_one (n : ℕ) :
     bitIndices (2 * n + 1) = 0 :: (bitIndices n).map (· + 1) := by
-  rw [← bitIndices_bit_true, bit_true, bit1_val]
+   rw [← bitIndices_bit_true, bit_true]
 
 @[simp] theorem bitIndices_two_mul (n : ℕ) :
     bitIndices (2 * n) = (bitIndices n).map (· + 1) := by
-  rw [← bitIndices_bit_false, bit_false, bit0_val]
+  rw [← bitIndices_bit_false, bit_false]
 
 @[simp] theorem bitIndices_sorted {n : ℕ} : n.bitIndices.Sorted (· < ·) := by
   induction' n using binaryRec with b n hs; simp
   suffices List.Pairwise (fun a b ↦ a < b) n.bitIndices by
-    cases b <;> simpa [List.Sorted, bit_false, bit0_val, bit_true, bit1_val, List.pairwise_map]
+    cases b <;> simpa [List.Sorted, bit_false, bit_true, List.pairwise_map]
   exact List.Pairwise.imp (by simp) hs
 
 @[simp] theorem bitIndices_two_pow_mul (k n : ℕ) :
@@ -76,8 +76,8 @@ theorem bitIndices_bit_false (n : ℕ) :
   have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
     ext i; simp [pow_add, mul_comm]
   cases b
-  · simpa [hrw, bit0_val, List.sum_map_mul_left]
-  simp [bit1_val, hrw, List.sum_map_mul_left, hs, add_comm (a := 1)]
+  · simpa [hrw, List.sum_map_mul_left]
+  simp [hrw, List.sum_map_mul_left, hs, add_comm (a := 1)]
 
 /-- Together with `Nat.twoPowSum_bitIndices`, this implies a bijection between `ℕ` and `Finset ℕ`.
 See `Finset.equivBitIndices` for this bijection. -/
