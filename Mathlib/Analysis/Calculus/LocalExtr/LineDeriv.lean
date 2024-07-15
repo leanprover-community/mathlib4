@@ -26,8 +26,10 @@ theorem IsExtrFilter.hasLineDerivAt_eq_zero {l : Filter E} (h : IsExtrFilter f l
 
 theorem IsExtrFilter.lineDeriv_eq_zero {l : Filter E} (h : IsExtrFilter f l a)
     (h' : Tendsto (fun t : ℝ ↦ a + t • b) (𝓝 0) l) : lineDeriv ℝ f a b = 0 :=
-  if hd : LineDifferentiableAt ℝ f a b then h.hasLineDerivAt_eq_zero hd.hasLineDerivAt h'
-  else lineDeriv_zero_of_not_lineDifferentiableAt hd
+  if hd : LineDifferentiableAt ℝ f a b then
+    h.hasLineDerivAt_eq_zero hd.hasLineDerivAt h'
+  else
+    lineDeriv_zero_of_not_lineDifferentiableAt hd
 
 theorem IsExtrOn.hasLineDerivAt_eq_zero (h : IsExtrOn f s a) (hd : HasLineDerivAt ℝ f f' a b)
     (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : f' = 0 :=
@@ -59,9 +61,10 @@ theorem IsExtrOn.hasLineDerivWithinAt_eq_zero (h : IsExtrOn f s a)
 
 theorem IsExtrOn.lineDerivWithin_eq_zero (h : IsExtrOn f s a)
     (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : lineDerivWithin ℝ f s a b = 0 :=
-  if hd : LineDifferentiableWithinAt ℝ f s a b
-    then h.hasLineDerivWithinAt_eq_zero hd.hasLineDerivWithinAt h'
-    else lineDerivWithin_zero_of_not_lineDifferentiableWithinAt hd
+  if hd : LineDifferentiableWithinAt ℝ f s a b then
+    h.hasLineDerivWithinAt_eq_zero hd.hasLineDerivWithinAt h'
+  else
+    lineDerivWithin_zero_of_not_lineDifferentiableWithinAt hd
 
 theorem IsMinOn.hasLineDerivWithinAt_eq_zero (h : IsMinOn f s a)
     (hd : HasLineDerivWithinAt ℝ f f' s a b) (h' : ∀ᶠ t : ℝ in 𝓝 0, a + t • b ∈ s) : f' = 0 :=
