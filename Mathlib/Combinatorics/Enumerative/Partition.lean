@@ -154,18 +154,6 @@ instance UniquePartitionOne : Unique (Partition 1) where
 lemma ofSym_one (s : Sym σ 1) : ofSym s = indiscrete 1 := by
   ext; simp
 
-/-- The equivalence between `σ` and `1`-tuples of elements of σ -/
-def ofSym_equiv_indiscrete (σ : Type*) [DecidableEq σ] : σ ≃
-    { a : Sym σ 1 // ofSym a = indiscrete 1 } where
-  toFun := fun a => ⟨Sym.oneEquiv a, by ext; simp⟩
-  invFun := fun a => Sym.oneEquiv.symm a.1
-  left_inv := by intro a; simp only [Sym.oneEquiv_apply]; rfl
-  right_inv := by intro a; simp only [Equiv.apply_symm_apply, Subtype.coe_eta]
-
-@[simp]
-lemma ofSym_equiv_indiscrete_apply (i : σ) :
-    ((ofSym_equiv_indiscrete σ) i : Multiset σ) = {i} := rfl
-
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
 as the number of times it appears in the multiset `l`.
 (For `i = 0`, `Partition.non_zero` combined with `Multiset.count_eq_zero_of_not_mem` gives that
