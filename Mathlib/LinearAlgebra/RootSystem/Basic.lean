@@ -92,22 +92,26 @@ lemma reflection_reflection (x : M) : P.reflection i (P.reflection j x) =
   simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, root_coroot_eq_pairing,
     smul_eq_mul]
 
-lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h₁ : ¬ (2 : R) = 0) :
-    ¬ LinearIndependent R ![P.root i, P.root j] := by
+lemma two_root_eq_pairing_root (h : P.reflection i = P.reflection j) :
+    (2 : R) • P.root i = (P.pairing i j) • P.root j := by
   have h₂ : ∀ (x : M), P.reflection i x = P.reflection j x := congrFun (congrArg DFunLike.coe h)
   have h₃ : ∀ (x : M), P.toLin x (P.coroot i) • P.root i = P.toLin x (P.coroot j) • P.root j := by
     intro x
     specialize h₂ x
     rw [reflection_apply, reflection_apply, sub_eq_sub_iff_add_eq_add, add_left_cancel_iff] at h₂
     exact id h₂.symm
-  have h₄ : (2 : R) • P.root i + (-P.pairing i j) • P.root j = 0 := by
-    specialize h₃ (P.root i)
-    rw [root_coroot_two, root_coroot_eq_pairing] at h₃
-    rw [h₃, neg_smul, add_neg_eq_zero]
+  specialize h₃ (P.root i)
+  rw [root_coroot_two, root_coroot_eq_pairing] at h₃
+  exact h₃
+
+lemma linearDependent_of_eq_reflection (h : P.reflection i = P.reflection j) (h₁ : ¬ (2 : R) = 0) :
+    ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [@LinearIndependent.pair_iff]
   intro h'
   specialize h' 2 (-P.pairing i j)
-  specialize h' h₄
+  have h₂ : (2 : R) • P.root i + (-P.pairing i j) • P.root j = 0 := by
+    simp [two_root_eq_pairing_root P i j h]
+  specialize h' h₂
   apply h₁ h'.left
 
 /-!
