@@ -2701,8 +2701,8 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Align
 import Mathlib.Init.Classes.Order
 import Mathlib.Init.Classical
-import Mathlib.Init.Control.Combinators
-import Mathlib.Init.Control.Lawful
+import Mathlib.Control.Combinators
+import Mathlib.Control.Lawful
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
