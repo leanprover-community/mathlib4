@@ -162,8 +162,7 @@ theorem norm_eq_sSup_norm_mul [Module ℝ E] [IsScalarTower ℝ E E] [BoundedSMu
   have h₁' : ‖x'‖ ≤ 1 := by
     by_cases htriv : x = 0
     · simp [x', htriv]
-    · have : ‖x‖ ≠ 0 := by exact norm_ne_zero_iff.mpr htriv
-      simp [x', norm_smul, inv_mul_cancel this]
+    · simp [x', norm_smul, inv_mul_cancel (norm_ne_zero_iff.mpr htriv)]
   apply Eq.symm
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ⟨‖x‖, x', ⟨h₁, h₁'⟩⟩ ?_ ?_
   · rintro c ⟨y, hy₁, hy₂⟩
