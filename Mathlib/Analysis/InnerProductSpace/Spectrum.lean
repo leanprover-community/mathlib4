@@ -499,6 +499,15 @@ theorem inf_restrict'' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
     pre_exhaust fun x y ↦
       hT i ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)).subtype x) ↑y
 
+theorem inf_restrict''' [Nonempty n] (i : n) (γ : {x // i ≠ x} → 𝕜) :
+    Submodule.map (Submodule.subtype (⨅ j, eigenspace (Subtype.restrict
+    (fun x ↦ i ≠ x) T j) (γ j))) (⨆ (μ : 𝕜) , eigenspace ((T i).restrict
+    ((invariance_iInf' T hC i γ))) μ) = Submodule.map (Submodule.subtype (⨅ j, eigenspace
+    (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))) ⊤ := by
+  congr!
+  congr!
+  exact inf_restrict'' T hT hC i fun j ↦ γ j
+
 theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 𝕜) : (eigenspace (T i) μ ⊓
     (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))) =
     Submodule.map (Submodule.subtype ((⨅ (j : {x // i ≠ x}), eigenspace (T j) (γ j))))
@@ -655,16 +664,6 @@ theorem indexed_matching (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ
        = (eigenspace (T i) μ ⊓ ⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by
   rw [← index_convert T hC i μ fun j ↦ γ j]
 
-/-
-theorem Blaaaah (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) :
-      Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
-      (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
-      Submodule.map ((⨅ (j: {x // i ≠ x}), (eigenspace (T ↑j) (γ j))).subtype)
-      (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) := by
-  rfl --rw [indexed_matching T hC i (fun j ↦ γ j) μ]
- -/
---Submodule.map (⨅ j, eigenspace (T ↑j) (γ j)).subtype (eigenspace ((T i).restrict ⋯) a)
-
 theorem Damnit (i : n) [h : Nontrivial n] : Nonempty {x | i ≠ x} := by
    simp only [ne_eq, Set.coe_setOf, nonempty_subtype]
    simp only [nontrivial_iff, ne_eq] at h
@@ -712,12 +711,7 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
     obtain ⟨j, hj⟩ := L
     have LQ := h j hj
 
-
-    --have HH := ext_experiment T hT hC i γ
-    --have C : ↑v ∈ sSup {x | ∃ y, eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) y = x} := by sorry
-    sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
-         --result...probably need to rewrite the approach.
-         --the whole result may need revisiting...
+    sorry
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // i ≠ x}),
