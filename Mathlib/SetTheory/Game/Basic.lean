@@ -384,7 +384,7 @@ theorem neg_mk_mul_moveRight_inl {xl xr yl yr} {xL xR yL yR} {i j} :
   rfl
 #align pgame.neg_mk_mul_move_right_inl SetTheory.PGame.neg_mk_mul_moveRight_inl
 
-@[nolint simpNF, simp] -- Porting note: simpNF linter complains, but this is a useful dsimp lemma
+@[simp]
 theorem neg_mk_mul_moveRight_inr {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveRight (Sum.inr (i, j)) =
       -(xR i * mk yl yr yL yR + mk xl xr xL xR * yR j - xR i * yR j) :=
