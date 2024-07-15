@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 
 import Mathlib.Init.Order.Defs
-import Mathlib.Init.Data.Int.Basic
+import Mathlib.Data.Int.Defs
 
 /-!
 # Note about `Mathlib/Init/`

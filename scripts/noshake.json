@@ -47,7 +47,7 @@
   "Mathlib.Data.Vector.Basic",
   "Mathlib.Geometry.Manifold.Instances.Real",
   "Mathlib.Init.Align",
-  "Mathlib.Init.Data.Int.Basic",
+  "Mathlib.Data.Int.Defs",
   "Mathlib.Init.Data.Nat.Notation",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
   "Mathlib.Mathport.Attributes",
@@ -302,7 +302,7 @@
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Init.Data.Nat.GCD": ["Batteries.Data.Nat.Gcd"],
   "Mathlib.Init.Data.List.Basic": ["Batteries.Data.List.Basic"],
-  "Mathlib.Init.Data.Int.Basic": ["Batteries.Data.Int.Order"],
+  "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
   "Mathlib.Init.Data.Bool.Lemmas": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.GroupTheory.MonoidLocalization": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
