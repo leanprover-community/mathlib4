@@ -19,8 +19,7 @@ of a manifold is a manifold again, might might need some hypotheses to be true).
 open scoped Manifold
 open Metric (sphere)
 
--- Let us start with some preliminaries, which should go in other files later.
-
+-- Some preliminaries, which should go in more basic files
 section ClosedManifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -29,7 +28,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
   (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M]
 
-/-- A topological manifold is closed iff it is compact without boundary. -/
+/-- A topological manifold is called **closed** iff it is compact without boundary. -/
 structure ClosedManifold [CompactSpace M] [I.Boundaryless]
 
 /-- An **n-manifold** is a smooth `n`-dimensional manifold. -/
@@ -46,12 +45,20 @@ structure ClosedNManifold (n : ℕ) [CompactSpace M] [I.Boundaryless] [FiniteDim
 
 end ClosedManifold
 
+-- Let M, M' and W be smooth manifolds.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (M : Type*) [hM : TopologicalSpace M] [ChartedSpace H M]
+  {E E' E'' : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E']
+    [NormedSpace 𝕜 E'] [NormedAddCommGroup E'']  [NormedSpace 𝕜 E'']
+  {H H' H'' : Type*} [TopologicalSpace H] [TopologicalSpace H'] [TopologicalSpace H'']
+  (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
   (I : ModelWithCorners 𝕜 E H) [SmoothManifoldWithCorners I M]
+  (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M']
+  (I' : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners I' M']
+  (W : Type*) [TopologicalSpace W] [ChartedSpace H'' W]
+  (J : ModelWithCorners 𝕜 E'' H'') [SmoothManifoldWithCorners J W]
 
--- current order is `SingularNManifold M I X n`, right? would prefer `SingularNManifold n X M I`...
+-- FIXME: current argument order is `SingularNManifold M I X n`;
+-- I would prefer `SingularNManifold n X M I`...
 /-- A **singular `n`-manifold** on a topological space `X` consists of a
 closed smooth `n`-manifold `M` and a continuous map `f : M → X`. -/
 structure SingularNManifold (X : Type*) [TopologicalSpace X] (n : ℕ)
@@ -67,5 +74,28 @@ def trivialSingularNManifold [I.Boundaryless] [CompactSpace M] [FiniteDimensiona
   hdim := hdim
   f := id
   hf := continuous_id (X := M)
+
+variable [CompactSpace M] [I.Boundaryless] [FiniteDimensional 𝕜 E]
+  [CompactSpace M'] [I'.Boundaryless] [FiniteDimensional 𝕜 E']
+
+variable {X : Type*} [TopologicalSpace X]
+variable (s : SingularNManifold M I X n) (t : SingularNManifold M' I' X n)
+
+/-- An **unoriented cobordism** between two singular `n`-manifolds (M,f) and (N,g) on `X`
+is a compact smooth `n`-manifold `W` with a continuous map `F: W→ X` whose boundary is diffeomorphic
+to the disjoint union M ⊔ N such that F restricts to f resp. g in the obvious way. -/
+structure UnorientedCobordism (s : SingularNManifold M I X n) (t : SingularNManifold M' I' X n) where
+  hW : CompactSpace W
+  hW' : FiniteDimensional.finrank W = n + 1
+  F : W → X
+  hF : Continuous F
+  -- φ : Diffeomorph (Boundary W) J-induced (disUnion) I.disjUnion I'
+  -- hFf : F.restrict ... = s.f
+  -- hFg : F.restrict (N) = t.f
+
+-- /-- Two singular `n`-manifolds are cobordant iff there exists a smooth cobordism between them. -/
+-- TODO: how in Lean?
+--def AreCobordant (s : SingularNManifold M I X n) (t : SingularNManifold M' I' X n) : Prop :=
+--  ∃ W : UnorientedCobordism s t
 
 -- Equivalence: two singular n-manifolds are bordant if there exists's a cobordism between them...
