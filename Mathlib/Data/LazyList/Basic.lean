@@ -122,5 +122,7 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
 #align lazy_list.mem_nil LazyList.mem_nil
 #align lazy_list.mem_cons LazyList.mem_cons
 #align lazy_list.forall_mem_cons LazyList.forall_mem_cons
+#align lazy_list.pmap LazyList.pmap
+#align lazy_list.attach LazyList.attach
 
 end LazyList
