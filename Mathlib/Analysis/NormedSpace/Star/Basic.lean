@@ -22,9 +22,13 @@ A C⋆-ring is a normed star group that is also a ring and that verifies the str
 condition `‖x⋆ * x‖ = ‖x‖^2` for all `x`.  If a C⋆-ring is also a star algebra, then it is a
 C⋆-algebra.
 
-To get a C⋆-algebra `E` over field `𝕜`, use
+To get a unital C⋆-algebra `E` over field `𝕜`, use
 `[NormedField 𝕜] [StarRing 𝕜] [NormedRing E] [StarRing E] [CstarRing E]
  [NormedAlgebra 𝕜 E] [StarModule 𝕜 E]`.
+
+For a non-unital C⋆-algebra, use
+`[NormedField 𝕜] [StarRing 𝕜] [NonUnitalNormedRing E] [StarRing E] [CstarRing E] [Module 𝕜 E]
+ [SMulCommClass 𝕜 E E] [IsScalarTower 𝕜 E E] [StarModule 𝕜 E]`.
 
 ## TODO
 
@@ -148,6 +152,27 @@ theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
 theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne, mul_star_self_eq_zero_iff]
 #align cstar_ring.mul_star_self_ne_zero_iff CstarRing.mul_star_self_ne_zero_iff
+
+theorem norm_eq_sSup_norm_mul [Module ℝ E] [SMulCommClass ℝ E E] [IsScalarTower ℝ E E]
+    [BoundedSMul ℝ E] (x : E) :
+    ‖x‖ = sSup { c | ∃ y, c = ‖y * x‖ ∧ ‖y‖ ≤ 1 } := by
+  let x' := ‖x⋆‖⁻¹ • x⋆
+  have h₁ : ‖x‖ = ‖x' * x‖ := by
+    simp [x', smul_mul_assoc, norm_smul, norm_inv, norm_norm, norm_star_mul_self,
+          ← mul_assoc, norm_star]
+  have h₁' : ‖x'‖ ≤ 1 := by
+    by_cases htriv : x = 0
+    · simp [x', htriv]
+    · have : ‖x‖ ≠ 0 := by exact norm_ne_zero_iff.mpr htriv
+      simp [x', norm_smul, inv_mul_cancel this]
+  apply Eq.symm
+  refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ⟨‖x‖, x', ⟨h₁, h₁'⟩⟩ ?_ ?_
+  · rintro c ⟨y, hy₁, hy₂⟩
+    rw [hy₁]
+    calc _ ≤ ‖y‖ * ‖x‖ := norm_mul_le _ _
+      _ ≤ 1 * ‖x‖ := by gcongr
+      _ = ‖x‖ := by simp
+  · exact fun c hc => ⟨‖x‖, ⟨x', h₁, h₁'⟩, hc⟩
 
 end NonUnital
 
