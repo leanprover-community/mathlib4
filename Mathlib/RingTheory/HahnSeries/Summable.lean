@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.Order.Group.WithTop
+import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.Valuation.Basic
 

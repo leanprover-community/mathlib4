@@ -229,8 +229,7 @@ theorem ofModule_asAlgebraHom_apply_apply (r : MonoidAlgebra k G)
   · intro f g fw gw
     simp only [fw, gw, map_add, add_smul, LinearMap.add_apply]
   · intro r f w
-    simp only [w, AlgHom.map_smul, LinearMap.smul_apply,
-      RestrictScalars.addEquiv_symm_map_smul_smul]
+    simp only [w, map_smul, LinearMap.smul_apply, RestrictScalars.addEquiv_symm_map_smul_smul]
 #align representation.of_module_as_algebra_hom_apply_apply Representation.ofModule_asAlgebraHom_apply_apply
 
 @[simp]

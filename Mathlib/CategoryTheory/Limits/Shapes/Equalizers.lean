@@ -86,7 +86,7 @@ open WalkingParallelPairHom
 /-- Composition of morphisms in the indexing diagram for (co)equalizers. -/
 def WalkingParallelPairHom.comp :
     -- Porting note: changed X Y Z to implicit to match comp fields in precategory
-    ∀ { X Y Z : WalkingParallelPair } (_ : WalkingParallelPairHom X Y)
+    ∀ {X Y Z : WalkingParallelPair} (_ : WalkingParallelPairHom X Y)
       (_ : WalkingParallelPairHom Y Z), WalkingParallelPairHom X Z
   | _, _, _, id _, h => h
   | _, _, _, left, id one => left
@@ -103,7 +103,7 @@ theorem WalkingParallelPairHom.comp_id
   cases f <;> rfl
 
 theorem WalkingParallelPairHom.assoc {X Y Z W : WalkingParallelPair}
-    (f : WalkingParallelPairHom X Y) (g: WalkingParallelPairHom Y Z)
+    (f : WalkingParallelPairHom X Y) (g : WalkingParallelPairHom Y Z)
     (h : WalkingParallelPairHom Z W) : comp (comp f g) h = comp f (comp g h) := by
   cases f <;> cases g <;> cases h <;> rfl
 
@@ -1369,3 +1369,5 @@ noncomputable def splitEpiOfIdempotentCoequalizer {X : C} {f : X ⟶ X} (hf : f 
 #align category_theory.limits.split_epi_of_idempotent_coequalizer CategoryTheory.Limits.splitEpiOfIdempotentCoequalizer
 
 end CategoryTheory.Limits
+
+end

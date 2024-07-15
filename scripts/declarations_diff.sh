@@ -3,11 +3,11 @@
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
 begs="(theorem|lemma|inductive|structure|def|class|instance|alias)"
 
-if [ "${1}" == "short" ]
+if [ "${1}" == "long" ]
 then
-  short=1
+  short=0
   shift
-else short=0
+else short=1
 fi
 
 ## if an input commit is given, compute the diff with that, otherwise, use the git-magic `...`
@@ -118,10 +118,10 @@ printf $'<details>
   <summary>You can run this locally as follows</summary>\n\n
 ```bash
 ## summary with just the declaration names:
-./scripts/no_lost_declarations.sh short <optional_commit>
+./scripts/declarations_diff.sh <optional_commit>
 
 ## more verbose report:
-./scripts/no_lost_declarations.sh <optional_commit>
+./scripts/declarations_diff.sh long <optional_commit>
 ```
 </details>'
  : <<ReferenceTest

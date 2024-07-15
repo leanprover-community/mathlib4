@@ -221,6 +221,11 @@ theorem HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineD
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
+theorem HasLineDerivWithinAt.hasLineDerivAt'
+    (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : ∀ᶠ t : 𝕜 in 𝓝 0, x + t • v ∈ s) :
+    HasLineDerivAt 𝕜 f f' x v :=
+  h.hasDerivAt hs
+
 end Module
 
 section NormedSpace
@@ -241,10 +246,8 @@ theorem HasLineDerivWithinAt.mono_of_mem
 
 theorem HasLineDerivWithinAt.hasLineDerivAt
     (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : s ∈ 𝓝 x) :
-    HasLineDerivAt 𝕜 f f' x v := by
-  rw [← hasLineDerivWithinAt_univ]
-  rw [← nhdsWithin_univ] at hs
-  exact h.mono_of_mem hs
+    HasLineDerivAt 𝕜 f f' x v :=
+  h.hasLineDerivAt' <| (Continuous.tendsto' (by fun_prop) 0 _ (by simp)).eventually hs
 
 theorem LineDifferentiableWithinAt.lineDifferentiableAt (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (hs : s ∈ 𝓝 x) : LineDifferentiableAt 𝕜 f x v :=
