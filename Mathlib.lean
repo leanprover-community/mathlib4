@@ -775,6 +775,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
+import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.IsOpenComapC
@@ -924,7 +925,9 @@ import Mathlib.Analysis.Calculus.LagrangeMultipliers
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 import Mathlib.Analysis.Calculus.LineDeriv.Measurable
+import Mathlib.Analysis.Calculus.LineDeriv.QuadraticMap
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
+import Mathlib.Analysis.Calculus.LocalExtr.LineDeriv
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Calculus.MeanValue
@@ -3488,6 +3491,7 @@ import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.PFilter
+import Mathlib.Order.Part
 import Mathlib.Order.PartialSups
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
@@ -3655,6 +3659,7 @@ import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat.Algebra
 import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.CategoryTheory
 import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.Flat.Stability
 import Mathlib.RingTheory.FractionalIdeal.Basic
@@ -3913,6 +3918,7 @@ import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.Monoidal
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
@@ -3926,7 +3932,7 @@ import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ComputeDegree
-import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.CongrExclamation
 import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Continuity
@@ -4343,6 +4349,7 @@ import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.List
 import Mathlib.Topology.LocalAtTarget
+import Mathlib.Topology.LocallyClosed
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
