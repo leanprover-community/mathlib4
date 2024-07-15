@@ -396,7 +396,7 @@ open ENNReal
 
 variable {Ω : Type*} [PseudoEMetricSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 
-theorem exists_null_frontier_thickening (μ : Measure Ω) [SigmaFinite μ] (s : Set Ω) {a b : ℝ}
+theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) {a b : ℝ}
     (hab : a < b) : ∃ r ∈ Ioo a b, μ (frontier (Metric.thickening r s)) = 0 := by
   have mbles : ∀ r : ℝ, MeasurableSet (frontier (Metric.thickening r s)) :=
     fun r => isClosed_frontier.measurableSet
@@ -410,7 +410,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SigmaFinite μ] (s : 
   simpa only [mem_setOf_eq, not_lt, le_zero_iff] using hr
 #align measure_theory.exists_null_frontier_thickening MeasureTheory.exists_null_frontier_thickening
 
-theorem exists_null_frontiers_thickening (μ : Measure Ω) [SigmaFinite μ] (s : Set Ω) :
+theorem exists_null_frontiers_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) :
     ∃ rs : ℕ → ℝ,
       Tendsto rs atTop (𝓝 0) ∧ ∀ n, 0 < rs n ∧ μ (frontier (Metric.thickening (rs n) s)) = 0 := by
   rcases exists_seq_strictAnti_tendsto (0 : ℝ) with ⟨Rs, ⟨_, ⟨Rs_pos, Rs_lim⟩⟩⟩

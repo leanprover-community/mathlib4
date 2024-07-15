@@ -53,9 +53,9 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
-set_option autoImplicit true in
+universe u in
 -- TODO: upstream into core/std
-instance [Inhabited α] : Inhabited (Thunk α) where
+instance {α : Type u} [Inhabited α] : Inhabited (Thunk α) where
   default := .pure default
 
 /-- This extension stores the lookup data generated from `#align` commands. -/
