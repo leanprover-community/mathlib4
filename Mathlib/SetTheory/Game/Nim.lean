@@ -192,11 +192,11 @@ theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 /-- `nim 1` has exactly the same moves as `star`. -/
 lemma nim_one : nim.{u} 1 ≡ star.{u} := by
   refine Identical.ext (fun z ↦ ?_) (fun z ↦ ?_)
-  · unfold memₗ
-    simp_rw [nim_one_moveLeft, Unique.exists_iff, star_moveLeft]
+  · dsimp [· ∈ₗ ·]
+    simp_rw [nim_one_moveLeft, Unique.exists_iff]
     exact Identical.congr_right nim_zero
-  · unfold memᵣ
-    simp_rw [nim_one_moveRight, Unique.exists_iff, star_moveRight]
+  · dsimp [· ∈ᵣ ·]
+    simp_rw [nim_one_moveRight, Unique.exists_iff]
     exact Identical.congr_right nim_zero
 #align pgame.nim_one_relabelling SetTheory.PGame.nim_one
 
