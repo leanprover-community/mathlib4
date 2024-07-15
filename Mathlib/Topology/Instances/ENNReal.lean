@@ -1797,22 +1797,6 @@ lemma limsup_toReal_eq_zero_of_limsup_eq_top {xs : ι → ℝ≥0∞}
     simp_all only [ne_eq, top_le_iff, ofReal_ne_top]
   simp [not_bdd]
 
--- TODO: Move to `Order/LiminfLimsup.lean`.
-lemma isCobounded_le_iff_frequently_ge {R : Type*} [LinearOrder R] {F : Filter R} [NeBot F] :
-    IsCobounded (· ≤ ·) F ↔ ∃ l, ∃ᶠ x in F, l ≤ x := by
-  constructor
-  · exact fun a ↦ IsCobounded.frequently_ge a
-  · intro ⟨b, hb⟩
-    exact isCobounded_le_of_frequently_ge hb
-
--- TODO: Move to `Order/LiminfLimsup.lean`.
-lemma isCobounded_ge_iff_frequently_le {R : Type*} [LinearOrder R] {F : Filter R} [NeBot F] :
-    IsCobounded (· ≥ ·) F ↔ ∃ u, ∃ᶠ x in F, x ≤ u := by
-  constructor
-  · exact fun a ↦ IsCobounded.frequently_le a
-  · intro ⟨b, hb⟩
-    exact isCobounded_ge_of_frequently_le hb
-
 lemma liminf_toNNReal_eq_zero_of_liminf_eq_top {xs : ι → ℝ≥0∞} (liminf_eq_top : F.liminf xs = ∞) :
     F.liminf (fun i ↦ (xs i).toNNReal) = 0 := by
   by_cases cobdd : IsCoboundedUnder (· ≥ ·) F (fun i ↦ (xs i).toReal)

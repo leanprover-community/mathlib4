@@ -1773,6 +1773,14 @@ lemma isCobounded_ge_of_frequently_le {u : R} (freq_le : ∃ᶠ r in F, r ≤ u)
     IsCobounded (· ≥ ·) F :=
   isCobounded_le_of_frequently_ge (R := Rᵒᵈ) freq_le
 
+lemma isCobounded_le_iff_frequently_ge [NeBot F] :
+    IsCobounded (· ≤ ·) F ↔ ∃ l, ∃ᶠ x in F, l ≤ x :=
+  ⟨fun a ↦ IsCobounded.frequently_ge a, fun ⟨_, hb⟩ ↦ isCobounded_le_of_frequently_ge hb⟩
+
+lemma isCobounded_ge_iff_frequently_le [NeBot F] :
+    IsCobounded (· ≥ ·) F ↔ ∃ u, ∃ᶠ x in F, x ≤ u :=
+  ⟨fun a ↦ IsCobounded.frequently_le a, fun ⟨_, hb⟩ ↦ isCobounded_ge_of_frequently_le hb⟩
+
 lemma Monotone.frequently_ge_map_of_frequently_ge {f : R → S} (f_incr : Monotone f)
     {l : R} (freq_ge : ∃ᶠ x in F, l ≤ x) :
     ∃ᶠ x' in F.map f, f l ≤ x' := by
