@@ -141,19 +141,21 @@ lemma LinearMap.localized'_ker_eq_ker_localizedMap (g : M →ₗ[R] P) :
     obtain ⟨c, hc⟩ := h
     refine ⟨c • a, by simpa, c * b, by simp⟩
 
+lemma LinearMap.ker_localizedMap_eq_localized'_ker (g : M →ₗ[R] P) :
+    LinearMap.ker (IsLocalizedModule.map p f f' g) =
+      ((LinearMap.ker g).localized' S p f).restrictScalars _ := by
+  rw [localized'_ker_eq_ker_localizedMap S p f f']
+  rfl
+
 /--
 The canonical map from the kernel of `g` to the kernel of `g` localized at a submonoid.
 
 This is a localization map by `LinearMap.toKerLocalized_isLocalizedModule`.
 -/
-@[simps]
-def LinearMap.toKerIsLocalized (g : M →ₗ[R] P) :
-    ker g →ₗ[R] ker (IsLocalizedModule.map p f f' g) where
-  toFun x := ⟨f x, by simp [LinearMap.mem_ker, LinearMap.mem_ker.mp x.property]⟩
-  map_add' x y := by
-    simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, map_add, AddSubmonoid.mk_add_mk]
-  map_smul' a x := by
-    simp only [SetLike.val_smul, LinearMapClass.map_smul, RingHom.id_apply, SetLike.mk_smul_mk]
+@[simps!]
+noncomputable def LinearMap.toKerIsLocalized (g : M →ₗ[R] P) :
+    ker g →ₗ[R] ker (IsLocalizedModule.map p f f' g) :=
+  f.restrict (fun x hx ↦ by simp [LinearMap.mem_ker, LinearMap.mem_ker.mp hx])
 
 /-- The canonical map to the kernel of the localization of `g` is localizing.
 In other words, localization commutes with kernels. -/

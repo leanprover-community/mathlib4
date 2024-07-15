@@ -913,11 +913,9 @@ namespace Algebra
 
 variable {R : Type*} [CommSemiring R] (S : Type*) [Semiring S] [Algebra R S]
 
-/-- The induced linear map from `I` to the span of `I` in an `R`-algebra `S`. -/
-@[simps]
-def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) where
-  toFun x := ⟨algebraMap R S x, Ideal.apply_coe_mem_map (algebraMap R S) I x⟩
-  map_add' x y := by simp
-  map_smul' a x := by simp [Algebra.smul_def]
+@[simps!]
+def idealMap (I : Ideal R) : I →ₗ[R] I.map (algebraMap R S) :=
+  (Algebra.linearMap R S).restrict (q := (I.map (algebraMap R S)).restrictScalars R)
+    (fun _ ↦ Ideal.mem_map_of_mem _)
 
 end Algebra
