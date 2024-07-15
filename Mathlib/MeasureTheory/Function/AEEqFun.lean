@@ -121,16 +121,13 @@ def mk {β : Type*} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasur
   Quotient.mk'' ⟨f, hf⟩
 #align measure_theory.ae_eq_fun.mk MeasureTheory.AEEqFun.mk
 
-/-- Auxiliary condition used in the cast function. -/
-def cast.Cond (f : α →ₘ[μ] β) : Prop :=
-  ∃ (g : α → β) (hg : StronglyMeasurable g),
-    f = mk g hg.aestronglyMeasurable ∧ g ∈ range (Function.const α)
-
 /-- Coercion from a space of equivalence classes of almost everywhere strongly measurable
-functions to functions. -/
+functions to functions. We ensure that if `f` has a constant representative,
+then we choose that one. -/
 @[coe]
 def cast (f : α →ₘ[μ] β) : α → β :=
-  if h : cast.Cond f then Classical.choose h else
+  if h : ∃ (b : β), f = mk (const α b) aestronglyMeasurable_const then
+    const α <| Classical.choose h else
     AEStronglyMeasurable.mk _ (Quotient.out' f : { f : α → β // AEStronglyMeasurable f μ }).2
 
 /-- A measurable representative of an `AEEqFun` [f] -/
@@ -140,7 +137,7 @@ instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
 protected theorem stronglyMeasurable (f : α →ₘ[μ] β) : StronglyMeasurable f := by
   simp only [cast]
   split_ifs with h
-  · exact (Classical.choose_spec h).1
+  · exact stronglyMeasurable_const
   · apply AEStronglyMeasurable.stronglyMeasurable_mk
 #align measure_theory.ae_eq_fun.strongly_measurable MeasureTheory.AEEqFun.stronglyMeasurable
 
@@ -173,7 +170,7 @@ theorem mk_eq_mk {f g : α → β} {hf hg} : (mk f hf : α →ₘ[μ] β) = mk g
 theorem mk_coeFn (f : α →ₘ[μ] β) : mk f f.aestronglyMeasurable = f := by
   conv_lhs => simp only [cast]
   split_ifs with h
-  · exact Classical.choose_spec h |>.2.1.symm
+  · exact Classical.choose_spec h |>.symm
   conv_rhs => rw [← Quotient.out_eq' f]
   rw [← mk, mk_eq_mk]
   exact (AEStronglyMeasurable.ae_eq_mk _).symm
