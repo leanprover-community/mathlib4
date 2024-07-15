@@ -2705,8 +2705,6 @@ import Mathlib.Init.Classical
 import Mathlib.Init.Control.Combinators
 import Mathlib.Init.Control.Lawful
 import Mathlib.Init.Core
-import Mathlib.Init.Data.Bool.Basic
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Buffer.Parser
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
