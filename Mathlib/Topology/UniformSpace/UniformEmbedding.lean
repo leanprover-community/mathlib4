@@ -107,8 +107,8 @@ theorem UniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (h
   rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map]; rfl
 #align uniform_inducing.uniform_continuous_iff UniformInducing.uniformContinuous_iff
 
-protected theorem UniformInducing.uniformInducing_iff {f : α → β} {g : β → γ}
-    (hg : UniformInducing g) : UniformInducing f ↔ UniformInducing (g ∘ f) := by
+protected theorem UniformInducing.uniformInducing_comp_iff {f : α → β} {g : β → γ}
+    (hg : UniformInducing g) : UniformInducing (g ∘ f) ↔ UniformInducing f := by
   simp only [uniformInducing_iff, ← hg.comap_uniformity, comap_comap]
   rfl
 
