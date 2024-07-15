@@ -124,7 +124,7 @@ end BaireMeasurableSet
 open Filter
 
 /--Any Borel set differs from some open set by a meager set. -/
-theorem MeasurableSet.residualEq_open [MeasurableSpace α] [BorelSpace α] (h : MeasurableSet s) :
+theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h : MeasurableSet s) :
     ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u := by
   apply h.induction_on_open (fun s hs => ⟨s, hs, EventuallyEq.rfl⟩)
   · rintro s - ⟨u, uo, su⟩
@@ -141,36 +141,33 @@ theorem MeasurableSet.residualEq_open [MeasurableSpace α] [BorelSpace α] (h : 
   exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
 
 /--Any `BaireMeasurableSet` differs from some open set by a meager set. -/
-theorem BaireMeasurableSet.residualEq_open (h : BaireMeasurableSet s) :
+theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :
     ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u := by
   borelize α
   rcases h with ⟨t, ht, hst⟩
-  rcases ht.residualEq_open with ⟨u, hu, htu⟩
+  rcases ht.residualEq_isOpen with ⟨u, hu, htu⟩
   exact ⟨u, hu, hst.trans htu⟩
 
 section Map
 
 open Set
 
-variable {f : α → β} (hc : Continuous f) (ho : IsOpenMap f)
+variable {f : α → β}
 
-/-- The preimage of a `Dense` set under a continuous open map is `Dense`. -/
-theorem Dense.dense_preimage_of_isOpenMap {t : Set β} (ht : Dense t) : Dense (f ⁻¹' t) := by
-  rw [dense_iff_closure_eq, ← ho.preimage_closure_eq_closure_preimage hc,
-    dense_iff_closure_eq.mp ht, preimage_univ]
-
-theorem residual_map_le_of_isOpenMap : (residual α).map f ≤ residual β := by
+theorem residual_map_le_of_isOpenMap (hc : Continuous f) (ho : IsOpenMap f) :
+    Tendsto f (residual α) (residual β) := by
   apply le_countableGenerate_iff_of_countableInterFilter.mpr
   rintro t ⟨ht, htd⟩
-  exact residual_of_dense_open (ht.preimage hc) (htd.dense_preimage_of_isOpenMap hc ho)
+  exact residual_of_dense_open (ht.preimage hc) (htd.dense_preimage_of_isOpenMap ho hc)
 
 /-- The preimage of a meager set under a continuous open map is meager. -/
-theorem IsMeagre.preimage_of_isOpenMap {s : Set β} (h : IsMeagre s) : IsMeagre (f ⁻¹' s) :=
+theorem IsMeagre.preimage_of_isOpenMap (hc : Continuous f) (ho : IsOpenMap f)
+    {s : Set β} (h : IsMeagre s) : IsMeagre (f ⁻¹' s) :=
   residual_map_le_of_isOpenMap hc ho h
 
 /-- The preimage of a `BaireMeasurableSet` under a continuous open map is Baire measurable. -/
-theorem BaireMeasurableSet.preimage {s : Set β} (h : BaireMeasurableSet s) :
-    BaireMeasurableSet (f⁻¹' s) := by
+theorem BaireMeasurableSet.preimage (hc : Continuous f) (ho : IsOpenMap f)
+    {s : Set β} (h : BaireMeasurableSet s) : BaireMeasurableSet (f⁻¹' s) := by
   rcases h with ⟨u, hu, hsu⟩
   refine ⟨f ⁻¹' u, ?_, hsu.filter_mono <| residual_map_le_of_isOpenMap hc ho⟩
   borelize α β

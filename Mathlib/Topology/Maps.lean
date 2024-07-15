@@ -429,6 +429,12 @@ theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.e
 
 end IsOpenMap
 
+/-- The preimage of a `Dense` set under a continuous open map is `Dense`. -/
+theorem Dense.dense_preimage_of_isOpenMap (hf : IsOpenMap f) (hfc : Continuous f)
+    {t : Set Y} (ht : Dense t) : Dense (f ⁻¹' t) := by
+  rw [dense_iff_closure_eq, ← hf.preimage_closure_eq_closure_preimage hfc,
+    dense_iff_closure_eq.mp ht, preimage_univ]
+
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
 #align is_open_map_iff_nhds_le isOpenMap_iff_nhds_le
