@@ -54,12 +54,12 @@ def diagonalCover : (pullback.diagonalObj f).OpenCover :=
 /-- The image of `𝒱 i j₁ ×_{𝒰 i} 𝒱 i j₂` in `diagonalCover` with `j₁ = j₂`  -/
 noncomputable
 def diagonalCoverDiagonal :
-  Opens (pullback.diagonalObj f).carrier :=
+    Opens (pullback.diagonalObj f).carrier :=
 ⨆ i : Σ i, (𝒱 i).J, ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
 
 -- by def
 lemma diagonalCover_map (I) : (diagonalCover f 𝒰 𝒱).map I =
-  pullback.map _ _ _ _
+    pullback.map _ _ _ _
     ((𝒱 I.fst).map _ ≫ pullback.fst _ _) ((𝒱 I.fst).map _ ≫ pullback.fst _ _) (𝒰.map _)
     (by simp only [Category.assoc, pullback.condition])
     (by simp only [Category.assoc, pullback.condition]) := sorry
@@ -70,22 +70,22 @@ Needs `Scheme.Pullback.range_map`
 inspired by https://stacks.math.columbia.edu/tag/0DVA
 -/
 lemma diagonalCoverDiagonal_eq_top_of_injective (hf : Function.Injective f.1.base) :
-  diagonalCoverDiagonal f 𝒰 𝒱 = ⊤ := sorry
+    diagonalCoverDiagonal f 𝒰 𝒱 = ⊤ := sorry
 
 /--
 Needs description of the underlying space of `X ×ₛ Y`
 -/
 lemma range_diagonal_subset_diagonalCoverDiagonal :
-  Set.range (pullback.diagonal f).1.base ⊆ (diagonalCoverDiagonal f 𝒰 𝒱).1 := sorry
+    Set.range (pullback.diagonal f).1.base ⊆ (diagonalCoverDiagonal f 𝒰 𝒱).1 := sorry
 
 -- by category theory
 def diagonalRestrictIsoDiagonal (i j) :
-  Arrow.mk (pullback.diagonal f ∣_ ((diagonalCover f 𝒰 𝒱).map ⟨i, j, j⟩).opensRange) ≅
+    Arrow.mk (pullback.diagonal f ∣_ ((diagonalCover f 𝒰 𝒱).map ⟨i, j, j⟩).opensRange) ≅
     Arrow.mk (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd _ _)) := sorry
 
 /-- By `IsClosedImmersion` is local at target and `diagonalRestrictIsoDiagonal` -/
 lemma isClosedImmersion_diagonal_restrict_aux
-  (H : ∀ i j, IsClosedImmersion (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd _ _))) :
+    (H : ∀ i j, IsClosedImmersion (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd _ _))) :
   IsClosedImmersion (pullback.diagonal f ∣_ diagonalCoverDiagonal f 𝒰 𝒱) := sorry
 
 /-- By `isClosedImmersion_diagonal_restrict` and
@@ -108,7 +108,7 @@ By `isClosedImmersion_diagonal_restrict` and `diagonalCoverDiagonal_eq_top_of_in
 https://stacks.math.columbia.edu/tag/0DVA
 -/
 lemma isClosedImmersion_diagonal_of_injective (hf : Function.Injective f.1.base) :
-  IsClosedImmersion (pullback.diagonal f) := sorry
+    IsClosedImmersion (pullback.diagonal f) := sorry
 
 -- by def
 lemma IsClosedImmersion.of_isImmersion [IsImmersion f] (h : IsClosed (Set.range f.1.base)) :

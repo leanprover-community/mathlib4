@@ -26,7 +26,7 @@ def Scheme.descResidueField {K : Type*} [Field K] (X : Scheme) {x}
 
 @[reassoc (attr := simp)]
 lemma Scheme.toResidueField_descResidueField {K : Type*} [Field K] (X : Scheme) {x}
-      (f : X.stalk x ⟶ .of K) [IsLocalRingHom f] :
+    (f : X.stalk x ⟶ .of K) [IsLocalRingHom f] :
     X.toResidueField x ≫ X.descResidueField f = f :=
   RingHom.ext fun _ ↦ rfl
 
@@ -133,11 +133,11 @@ instance [IsOpenImmersion f] (x) : IsIso (f.residueFieldMap x) := sorry
 
 /-- by `Scheme.fromSpecStalk_closedPoint` -/
 lemma Scheme.fromSpecResidueField_apply (x : X.carrier) (s) :
-  (X.fromSpecResidueField x).1.base s = x := by sorry
+    (X.fromSpecResidueField x).1.base s = x := by sorry
 
 -- by the previous lemma
 lemma Scheme.range_fromSpecResidueField  (x : X.carrier) :
-  Set.range (X.fromSpecResidueField x).1.base = {x} := sorry
+    Set.range (X.fromSpecResidueField x).1.base = {x} := sorry
 
 attribute [instance] isLocalRingHom_stalkClosedPointTo
 
@@ -147,12 +147,12 @@ lemma Scheme.descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Sc
       ≫ X.fromSpecResidueField x = Spec.map f ≫ X.fromSpecStalk x := sorry -- by def
 
 lemma Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField
-  (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
+    (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
   Spec.map (X.descResidueField (Scheme.stalkClosedPointTo _ f))
     ≫ X.fromSpecResidueField (f.1.base (closedPoint K)) = f := sorry -- by def
 
 lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
-  {f₁ f₂ : Σ x : X.carrier, X.residueField x ⟶ .of K} :
+    {f₁ f₂ : Σ x : X.carrier, X.residueField x ⟶ .of K} :
   f₁ = f₂ ↔ ∃ e : f₁.1 = f₂.1, f₁.2 = (X.residueFieldCongr e).hom ≫ f₂.2 := sorry -- by def
 
 def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :

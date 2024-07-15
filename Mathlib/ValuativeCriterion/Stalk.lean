@@ -12,7 +12,7 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 -- by def
 @[reassoc]
 lemma Scheme.stalkSpecializes_fromSpecStalk {X : Scheme} {x y : X.carrier} (h : x ⤳ y) :
-  Spec.map (X.presheaf.stalkSpecializes h) ≫ X.fromSpecStalk y = X.fromSpecStalk x := sorry
+    Spec.map (X.presheaf.stalkSpecializes h) ≫ X.fromSpecStalk y = X.fromSpecStalk x := sorry
 
 -- not sure if `hU` is necessary. More or less by def of `fromSpecStalk`.
 lemma IsAffineOpen.fromSpecStalk_app {U : Opens X} (hU : IsAffineOpen U)

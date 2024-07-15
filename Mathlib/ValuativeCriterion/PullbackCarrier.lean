@@ -122,7 +122,7 @@ lemma CommRingCat.nontrivial_pushout_of_isField {A B C : CommRingCat.{u}}
     [Nontrivial B] [Nontrivial C] : Nontrivial ↑(pushout f g) := sorry -- by linear algebra
 
 lemma Triplet.exists_preimage (T : Triplet f g) :
-  ∃ x : ↑(pullback f g),
+    ∃ x : ↑(pullback f g),
     (pullback.fst f g).1.base x = T.x ∧ (pullback.snd f g).1.base x = T.y := sorry
 
 variable (f g)
@@ -139,7 +139,7 @@ lemma range_base :
 
 -- via `Triplet.exists_preimage`
 lemma range_map {X Y S X' Y' S' : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S')
-  (g' : Y' ⟶ S') (i₁ : X ⟶ X') (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
+    (g' : Y' ⟶ S') (i₁ : X ⟶ X') (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
   (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
   Set.range (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂).1.base =
     (pullback.fst f' g').val.base ⁻¹' Set.range i₁.val.base ∩

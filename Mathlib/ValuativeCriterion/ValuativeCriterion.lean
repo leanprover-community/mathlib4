@@ -47,7 +47,7 @@ Uses `exists_factor_valuationRing` and `Scheme.fromSpecResidueField`.
 https://stacks.math.columbia.edu/tag/01KE
 -/
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
-  SpecializingMap f.1.base := sorry
+    SpecializingMap f.1.base := sorry
 
 /--
 Uses `bijective_rangeRestrict_comp_of_valuationRing` and `stalkClosedPointTo`
@@ -60,7 +60,7 @@ lemma of_specializingMap
 
 /-- by def -/
 lemma stableUnderBaseChange :
-  ValuativeCriterion.Existence.StableUnderBaseChange := sorry
+    ValuativeCriterion.Existence.StableUnderBaseChange := sorry
 
 /-- by the three lemmas above -/
 lemma eq :
@@ -69,11 +69,11 @@ lemma eq :
 
 /-- by `ValuativeCriterion.Existence.eq` and `universallyClosed_iff_specializingMap`. -/
 lemma _root_.AlgebraicGeometry.universallyClosed_of_valuativeCriterion [QuasiCompact f]
-  (hf : ValuativeCriterion.Existence f) : UniversallyClosed f := sorry
+    (hf : ValuativeCriterion.Existence f) : UniversallyClosed f := sorry
 
 /-- by `ValuativeCriterion.Existence.eq` and `universallyClosed_eq_universallySpecializing`. -/
 lemma _root_.AlgebraicGeometry.universallyClosed_eq_valuativeCriterion :
-  @UniversallyClosed = ValuativeCriterion.Existence ⊓ @QuasiCompact := sorry
+    @UniversallyClosed = ValuativeCriterion.Existence ⊓ @QuasiCompact := sorry
 
 end Existence
 
@@ -86,7 +86,7 @@ Needs `IsImmersion (pullback.diagonal f)`, `IsClosedImmersion.of_isImmersion`,
 https://stacks.math.columbia.edu/tag/01L0
 -/
 lemma isSeparated_of_valuativeCriterion [QuasiSeparated f]
-  (hf : ValuativeCriterion.Uniqueness f) : IsSeparated f := sorry
+    (hf : ValuativeCriterion.Uniqueness f) : IsSeparated f := sorry
 
 /--
 https://stacks.math.columbia.edu/tag/01KZ
@@ -121,10 +121,10 @@ end Uniqueness
 
 -- by definition
 lemma valuativeCriterion_eq :
-  ValuativeCriterion = ValuativeCriterion.Existence ⊓ ValuativeCriterion.Uniqueness := sorry
+    ValuativeCriterion = ValuativeCriterion.Existence ⊓ ValuativeCriterion.Uniqueness := sorry
 
 -- by lemmas above and `isProper_eq`
 lemma proper_eq_ValuativeCriterion :
-  @IsProper = ValuativeCriterion ⊓ @QuasiCompact ⊓ @QuasiSeparated ⊓ @LocallyOfFiniteType := sorry
+    @IsProper = ValuativeCriterion ⊓ @QuasiCompact ⊓ @QuasiSeparated ⊓ @LocallyOfFiniteType := sorry
 
 end AlgebraicGeometry

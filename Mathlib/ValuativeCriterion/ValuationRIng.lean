@@ -37,7 +37,7 @@ If not, then it is contained in some maximal ideal. The localization of that max
 a local subring that dominates `R`, contradicting the maximality of `R`.
 -/
 lemma map_maximalIdeal_eq_top_of_mem_maximalLocalSubrings {R : LocalSubring K}
-  (hR : R ∈ maximalLocalSubrings K) {S : Subring K} (hS : R.1 < S) :
+    (hR : R ∈ maximalLocalSubrings K) {S : Subring K} (hS : R.1 < S) :
     (maximalIdeal R).map (Subring.inclusion hS.le) = ⊤ := sorry
 
 open scoped Polynomial
@@ -64,7 +64,7 @@ and
 https://stacks.math.columbia.edu/tag/052K
 -/
 lemma LocalSubring.range_toLocalSubring :
-  Set.range ValuationSubring.toLocalSubring = maximalLocalSubrings K := sorry
+    Set.range ValuationSubring.toLocalSubring = maximalLocalSubrings K := sorry
 
 /--
 by Zorn's lemma and `LocalSubring.range_toLocalSubring`
@@ -87,5 +87,5 @@ lemma bijective_rangeRestrict_comp_of_valuationRing {R S K : Type*} [CommRing R]
 /-- Repackaging of `exists_valuation_subring_dominates`.
 Reduce to `R ⊆ K` by `LocalRing.of_surjective'`. -/
 lemma exists_factor_valuationRing {R : Type*} [CommRing R] [LocalRing R] {K : Type*} [Field K]
-  (f : R →+* K) :
+    (f : R →+* K) :
     ∃ (A : ValuationSubring K) (h : _), IsLocalRingHom (f.codRestrict A.toSubring h) := by sorry
