@@ -430,6 +430,7 @@ instance (k : ℕ) : Category (Δ k) := inferInstanceAs (Category (FullSubcatego
 end SimplexCategory
 
 open SimplexCategory
+
 /-- ER: The category of k-truncated simplicial sets is the category of contravariant functors from `SimplexCategory` to `Type u`. -/
 def truncSSet (k : ℕ)  : Type (u + 1) := (Δ k)ᵒᵖ ⥤ Type u
 
@@ -468,6 +469,8 @@ def skeletonAdj (k) : lan (Δ.ι k).op ⊣ truncation k := Lan.adjunction _ _
 def coskeletonAdj (k) : truncation k ⊣ ran (Δ.ι k).op := Ran.adjunction _ _
 
 end SimplexCategory
+
+-- open SimplexCategory -- ER: Is this a good idea?
 
 /- ER: Should these generalize to arbitrary k?-/
 def cosk₂ : SSet ⥤ SSet :=
@@ -547,7 +550,6 @@ def nerve2coskIso : nerveFunctor ≅ nerveFunctor₂ ⋙ ran (SimplexCategory.Δ
 --   -- let _ : HasLimit (Ran.diagram (SimplexCategory.Δ.ι 2).op (nerve2truncated C) { unop := [n] }) := inferInstance
 --   -- refine' IsLimit.hom_isIso _ (limit.isLimit _) _
 --   sorry
-
 end Nerve
 
 
@@ -748,26 +750,44 @@ def reflectiveOfCounitIso {C D} [Category C] [Category D] (R : D ⥤ C) (L : C �
   map_injective := sorry
   map_surjective := sorry
 
-def nerveCounitApp (C : Type u) [Category.{u} C] : SSet.hoFunctorObj (nerve C) ⥤ C := by
-  stop
-  refine Quotient.lift _ ((ReflQuiv.adj.homEquiv _ (Cat.of C)).symm OneTruncation.ofNerve.hom) ?_
-  rintro _ _ _ _ ⟨φ⟩
-  simp
-  sorry
+def nerveCounit.app (C : Type u) [Category.{u} C] : SSet.hoFunctorObj (nerve C) ⥤ C := by
+  fapply Quotient.lift
+  · have iso := (OneTruncation.ofNerve (Cat.of C)).hom
+    have Fiso := Cat.freeRefl.map iso
+    exact Fiso ≫ ReflQuiv.adj.counit.app (Cat.of C)
+  · intro x y f g rel
+    cases rel
+    simp
+    sorry
 
 def nerveCounitIso (C : Type u) [Category.{u} C] :
     Cat.of (SSet.hoFunctorObj (nerve C)) ≅ Cat.of C where
-  hom := nerveCounitApp C
+  hom := nerveCounit.app (Cat.of C)
   inv := sorry
   hom_inv_id := sorry
   inv_hom_id := sorry
 
+        -- naturality := by
+        --   intro C D F
+        --   apply Quotient.lift_unique'
+        --   unfold adj.counit.app
+        --   exact (Quiv.adj.counit.naturality F)
+
+
 theorem nerveCounit.naturality {C D : Type u} [Category C] [Category D] (F : C ⥤ D) :
-  SSet.hoFunctorMap (nerveFunctor.map (X := Cat.of C) (Y := Cat.of D) F) ⋙ nerveCounitApp D =
-  nerveCounitApp C ⋙ F := sorry
+    SSet.hoFunctorMap (nerveFunctor.map (X := Cat.of C) (Y := Cat.of D) F) ⋙ nerveCounit.app D =
+    nerveCounit.app C ⋙ F := by
+  apply Quotient.lift_unique'
+  unfold nerveCounit.app
+  have Farr : (Cat.of C) ⟶ (Cat.of D) := F
+-- ER: The following have universe errors.
+--  have := ReflQuiv.adj.counit.naturality Farr
+--  have := OneTruncation.ofNerveNatIso.hom.naturality Farr
+  simp
+  sorry
 
 def nerveCounit : nerveFunctor ⋙ SSet.hoFunctor ⟶ 𝟭 Cat where
-  app C := nerveCounitApp C
+  app C := nerveCounit.app C
   naturality X Y f := by
     simp [Functor.comp_eq_comp, SSet.hoFunctor]
     convert nerveCounit.naturality f
@@ -790,7 +810,7 @@ def nerveAdjunction : SSet.hoFunctor ⊣ nerveFunctor where
     right_inv := sorry
   }
   unit.app X := by simp; sorry
-  counit := nerveCounitNatIso.hom
+  counit := nerveCounit
 
 instance : Reflective nerveFunctor.{u} :=
   reflectiveOfCounitIso _ _ nerveAdjunction.{u} (Iso.isIso_hom nerveCounitNatIso.{u})
