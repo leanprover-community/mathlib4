@@ -3869,6 +3869,7 @@ import Mathlib.SetTheory.Cardinal.UnivLE
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Domineering
+import Mathlib.SetTheory.Game.IGame
 import Mathlib.SetTheory.Game.Impartial
 import Mathlib.SetTheory.Game.Nim
 import Mathlib.SetTheory.Game.Ordinal
