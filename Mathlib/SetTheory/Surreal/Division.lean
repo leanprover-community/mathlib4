@@ -115,7 +115,8 @@ lemma pos_num_eq_normalization :
   simp only [normalization, insertLeft]
   constructor <;> (
     rw [le_def]
-    simp
+    simp only [leftMoves_mk, moveLeft_mk, Sum.exists, Sum.elim_inl, Subtype.exists, exists_prop,
+      Sum.elim_inr, exists_const, rightMoves_mk, moveRight_mk]
   )
   · constructor
     · intro i
@@ -134,11 +135,13 @@ lemma pos_num_eq_normalization :
       right
       use j
   · constructor
-    · constructor
-      · intros i _
+    · intro i
+      rcases i with i | val
+      · simp only [Sum.elim_inl]
         left
         use i
-      · apply lf_of_lt at x_pos
+      · simp only [Sum.elim_inr, zero_rightMoves, IsEmpty.exists_iff, or_false]
+        apply lf_of_lt at x_pos
         rw [lf_iff_exists_le] at x_pos
         simp only [leftMoves_mk, moveLeft_mk, zero_rightMoves, IsEmpty.exists_iff, or_false]
           at x_pos
