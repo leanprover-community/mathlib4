@@ -335,14 +335,6 @@ theorem cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIs
         w := fun j => (asIso f.hom).inv_comp_eq.2 (f.w j).symm }, by aesop_cat⟩⟩
 #align category_theory.limits.cones.cone_iso_of_hom_iso CategoryTheory.Limits.Cones.cone_iso_of_hom_iso
 
-/-- Given an isomorphism of cones, produce an isomorphism of their points. -/
-@[simps]
-def ptIsoOfIso  {K : J ⥤ C} {c d : Cone K} (i : c ≅ d) : c.pt ≅ d.pt where
-  hom := i.hom.hom
-  inv := i.inv.hom
-  hom_inv_id := by simp [← Cone.category_comp_hom]
-  inv_hom_id := by simp [← Cone.category_comp_hom]
-
 /-- There is a morphism from an extended cone to the original cone. -/
 @[simps]
 def extend (s : Cone F) {X : C} (f : X ⟶ s.pt) : s.extend f ⟶ s where
