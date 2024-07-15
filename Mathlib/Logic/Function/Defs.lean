@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Mathport.Rename
-import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.TypeStar
