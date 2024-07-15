@@ -59,7 +59,7 @@ theorem unifTight_ennreal_iff {_ : MeasurableSpace α} (f : ι → α → β) (p
   · intro hut eε heε
     by_cases heε_top : eε = ∞
     · exact ⟨∅, (by measurability), fun _ => heε_top.symm ▸ le_top⟩
-    have hε := eε.toNNReal_pos heε.ne.symm heε_top
+    have hε := ENNReal.toNNReal_pos heε.ne.symm heε_top
     have hεeε := coe_toNNReal heε_top
     obtain ⟨s, hμs, hfε⟩ := hut hε
     use s, hμs; intro i
@@ -83,7 +83,7 @@ theorem unifTight_real_iff {_ : MeasurableSpace α} (f : ι → α → β) (p : 
 
 namespace UnifTight
 
-theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0} (hε : ε ≠ 0) :
     ∀ᶠ s in μ.cofinite.smallSets, ∀ i, snorm (s.indicator (f i)) p μ ≤ ε := by
   rcases hf (pos_iff_ne_zero.2 hε) with ⟨s, hμs, hfs⟩
   refine (eventually_smallSets' ?_).2 ⟨sᶜ, ?_, fun i ↦ hfs i⟩
@@ -91,7 +91,7 @@ theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} 
     exact (snorm_mono <| norm_indicator_le_of_subset hst _).trans (ht i)
   · rwa [Measure.compl_mem_cofinite, lt_top_iff_ne_top]
 
-protected theorem exists_measurableSet_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+protected theorem exists_measurableSet_indicator (hf : UnifTight f p μ) {ε : ℝ≥0} (hε : ε ≠ 0) :
     ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε :=
   let ⟨s, hμs, hsm, hfs⟩ := (hf.eventually_cofinite_indicator hε).exists_measurable_mem_of_smallSets
   ⟨sᶜ, hsm.compl, hμs, by rwa [compl_compl s]⟩
@@ -99,19 +99,28 @@ protected theorem exists_measurableSet_indicator (hf : UnifTight f p μ) {ε : �
 protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
     UnifTight (f + g) p μ := fun ε hε ↦ by
-  rcases exists_Lp_half β μ p hε.ne' with ⟨η, hη_pos, hη⟩
+  rcases exists_Lp_half β μ p (ENNReal.coe_ne_zero.mpr hε.ne') with ⟨η, hη_pos, hη⟩
+  by_cases hη_top : η = ∞
+  · replace hη := hη_top ▸ hη
+    refine ⟨∅, (by measurability), fun i ↦ ?_⟩
+    simp only [compl_empty, indicator_univ, Pi.add_apply]
+    exact (hη (f i) (g i) (hf_meas i) (hg_meas i) le_top le_top).le
+  have nnη_nz := (ENNReal.toNNReal_ne_zero.mpr ⟨hη_pos.ne',hη_top⟩)
   obtain ⟨s, hμs, hsm, hfs, hgs⟩ :
       ∃ s ∈ μ.cofinite, MeasurableSet s ∧
-        (∀ i, snorm (s.indicator (f i)) p μ ≤ η) ∧ (∀ i, snorm (s.indicator (g i)) p μ ≤ η) :=
-    ((hf.eventually_cofinite_indicator hη_pos.ne').and
-      (hg.eventually_cofinite_indicator hη_pos.ne')).exists_measurable_mem_of_smallSets
+        (∀ i, snorm (s.indicator (f i)) p μ ≤ η.toNNReal) ∧
+        (∀ i, snorm (s.indicator (g i)) p μ ≤ η.toNNReal)
+    :=
+    ((hf.eventually_cofinite_indicator nnη_nz).and
+      (hg.eventually_cofinite_indicator nnη_nz)).exists_measurable_mem_of_smallSets
   refine ⟨sᶜ, ne_of_lt hμs, fun i ↦ ?_⟩
+  have η_cast : ↑η.toNNReal = η := coe_toNNReal hη_top
   calc
     snorm (indicator sᶜᶜ (f i + g i)) p μ = snorm (indicator s (f i) + indicator s (g i)) p μ := by
       rw [compl_compl, indicator_add']
     _ ≤ ε := le_of_lt <|
       hη _ _ ((hf_meas i).indicator hsm) ((hg_meas i).indicator hsm)
-        (hfs i) (hgs i)
+        (η_cast ▸ hfs i) (η_cast ▸ hgs i)
 
 protected theorem neg (hf : UnifTight f p μ) : UnifTight (-f) p μ := by
   simp_rw [UnifTight, Pi.neg_apply, Set.indicator_neg', snorm_neg]
