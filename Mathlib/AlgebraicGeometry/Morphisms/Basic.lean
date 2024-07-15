@@ -327,6 +327,19 @@ structure PropertyIsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
       (∀ i : 𝒰.J, P (pullback.snd f (𝒰.map i))) → P f
 #align algebraic_geometry.property_is_local_at_target AlgebraicGeometry.PropertyIsLocalAtTarget
 
+/-- The intersection of two morphism properties that are local at the target is again local at
+the target. -/
+def propertyIsLocalAtTarget_inf (P Q : MorphismProperty Scheme) (hP : PropertyIsLocalAtTarget P)
+    (hQ : PropertyIsLocalAtTarget Q) : PropertyIsLocalAtTarget (P ⊓ Q) where
+  RespectsIso :=
+    letI := hP.RespectsIso
+    letI := hQ.RespectsIso
+    inferInstance
+  restrict f U hf :=
+    ⟨hP.restrict f U hf.left, hQ.restrict f U hf.right⟩
+  of_openCover f 𝒰 hf :=
+    ⟨hP.of_openCover f 𝒰 (fun i ↦ (hf i).left), hQ.of_openCover f 𝒰 (fun i ↦ (hf i).right)⟩
+
 lemma propertyIsLocalAtTarget_of_morphismRestrict (P : MorphismProperty Scheme)
     [P.RespectsIso]
     (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y), P f → P (f ∣_ U))
