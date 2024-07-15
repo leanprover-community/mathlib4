@@ -111,10 +111,10 @@ noncomputable abbrev functorObj : C :=
   pushout (functorObjTop f πX) (functorObjLeft f πX)
 
 /-- The canonical morphism `X ⟶ functorObj f πX`. -/
-noncomputable abbrev ιFunctorObj : X ⟶ functorObj f πX := pushout.inl
+noncomputable abbrev ιFunctorObj : X ⟶ functorObj f πX := pushout.inl _ _
 
 /-- The canonical morphism `∐ (functorObjTgtFamily f πX) ⟶ functorObj f πX`. -/
-noncomputable abbrev ρFunctorObj : ∐ functorObjTgtFamily f πX ⟶ functorObj f πX := pushout.inr
+noncomputable abbrev ρFunctorObj : ∐ functorObjTgtFamily f πX ⟶ functorObj f πX := pushout.inr _ _
 
 @[reassoc]
 lemma functorObj_comm :

@@ -81,6 +81,12 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
     simpa [hi] using h
 #align affine_independent_iff_of_fintype affineIndependent_iff_of_fintype
 
+@[simp] lemma affineIndependent_vadd {p : ι → P} {v : V} :
+    AffineIndependent k (v +ᵥ p) ↔ AffineIndependent k p := by
+  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_vadd]
+
+protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affineIndependent_vadd
+
 /-- A family is affinely independent if and only if the differences
 from a base point in that family are linearly independent. -/
 theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :

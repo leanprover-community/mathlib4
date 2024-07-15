@@ -593,7 +593,7 @@ scoped macro_rules (kind := bigproddvd)
   | `(∏ᵖ $x:ident ∣ $n, $r) => `(prodPrimeFactors (fun $x ↦ $r) $n)
 
 @[simp]
-theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f: ℕ → R} {n : ℕ} (hn : n ≠ 0) :
+theorem prodPrimeFactors_apply [CommMonoidWithZero R] {f : ℕ → R} {n : ℕ} (hn : n ≠ 0) :
     ∏ᵖ p ∣ n, f p = ∏ p ∈ n.primeFactors, f p :=
   if_neg hn
 
@@ -1143,7 +1143,7 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
 theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
     {f : ArithmeticFunction R} (h_mult : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
     ∏ p ∈ n.primeFactors, (1 + f p) = ∑ d ∈ n.divisors, f d := by
-  trans (∏ᵖ p ∣ n, ((ζ:ArithmeticFunction R) + f) p)
+  trans (∏ᵖ p ∣ n, ((ζ : ArithmeticFunction R) + f) p)
   · simp_rw [prodPrimeFactors_apply hn.ne_zero, add_apply, natCoe_apply]
     apply Finset.prod_congr rfl; intro p hp
     rw [zeta_apply_ne (prime_of_mem_factors <| List.mem_toFinset.mp hp).ne_zero, cast_one]
@@ -1153,7 +1153,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
     ∏ p ∈ n.primeFactors, (1 - f p) = ∑ d ∈ n.divisors, μ d * f d := by
-  trans (∏ p ∈ n.primeFactors, (1 + (ArithmeticFunction.pmul (μ:ArithmeticFunction R) f) p))
+  trans (∏ p ∈ n.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p))
   · apply Finset.prod_congr rfl; intro p hp
     rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
         (prime_of_mem_factors (List.mem_toFinset.mp hp))]
@@ -1312,7 +1312,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
       ∀ n > 0, n ∈ s → (∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
   constructor
   · intro h
-    let G := fun (n:ℕ) => (∑ i ∈ n.divisors, f i)
+    let G := fun (n : ℕ) => (∑ i ∈ n.divisors, f i)
     intro n hn hnP
     suffices ∑ d ∈ n.divisors, μ (n/d) • G d = f n from by
       rw [Nat.sum_divisorsAntidiagonal' (f := fun x y => μ x • g y), ← this, sum_congr rfl]
@@ -1322,7 +1322,7 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     apply sum_eq_iff_sum_smul_moebius_eq.mp _ n hn
     intro _ _; rfl
   · intro h
-    let F := fun (n:ℕ) => ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd
+    let F := fun (n : ℕ) => ∑ x ∈ n.divisorsAntidiagonal, μ x.fst • g x.snd
     intro n hn hnP
     suffices ∑ d ∈ n.divisors, F d = g n from by
       rw [← this, sum_congr rfl]

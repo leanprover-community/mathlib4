@@ -1644,13 +1644,13 @@ theorem aeval_eq_zero [Algebra R S₂] (f : σ → S₂) (φ : MvPolynomial σ R
 
 theorem aeval_sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
     aeval f (∑ i ∈ s, φ i) = ∑ i ∈ s, aeval f (φ i) :=
-  (MvPolynomial.aeval f).map_sum _ _
+  map_sum (MvPolynomial.aeval f) _ _
 #align mv_polynomial.aeval_sum MvPolynomial.aeval_sum
 
 @[to_additive existing]
 theorem aeval_prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) :
     aeval f (∏ i ∈ s, φ i) = ∏ i ∈ s, aeval f (φ i) :=
-  (MvPolynomial.aeval f).map_prod _ _
+  map_prod (MvPolynomial.aeval f) _ _
 #align mv_polynomial.aeval_prod MvPolynomial.aeval_prod
 
 variable (R)

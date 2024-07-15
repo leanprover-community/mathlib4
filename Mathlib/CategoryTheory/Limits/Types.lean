@@ -144,7 +144,7 @@ end
 
 end Small
 
-theorem hasLimit_iff_small_sections (F : J ⥤ Type u): HasLimit F ↔ Small.{u} F.sections :=
+theorem hasLimit_iff_small_sections (F : J ⥤ Type u) : HasLimit F ↔ Small.{u} F.sections :=
   ⟨fun _ => .mk ⟨_, ⟨(Equiv.ofBijective _
     ((isLimit_iff_bijective_sectionOfCone (limit.cone F)).mp ⟨limit.isLimit _⟩)).symm⟩⟩,
    fun _ => ⟨_, Small.limitConeIsLimit F⟩⟩

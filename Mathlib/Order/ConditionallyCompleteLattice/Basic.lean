@@ -1183,6 +1183,11 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
+@[simp]
+theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
+  isLeast_univ.csInf_eq
+#align cInf_univ csInf_univ
+
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {f : ι → α} {a : α}
 
 @[simp]
@@ -1198,11 +1203,6 @@ theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
 #align csupr_false ciSup_false
-
-@[simp]
-theorem csInf_univ : sInf (univ : Set α) = ⊥ :=
-  isLeast_univ.csInf_eq
-#align cInf_univ csInf_univ
 
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)

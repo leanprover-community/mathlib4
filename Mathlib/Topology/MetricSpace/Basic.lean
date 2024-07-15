@@ -280,7 +280,6 @@ instance : MetricSpace Empty where
   dist_self _ := rfl
   dist_comm _ _ := rfl
   edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
   eq_of_dist_eq_zero _ := Subsingleton.elim _ _
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
@@ -291,7 +290,6 @@ instance : MetricSpace PUnit.{u + 1} where
   dist_self _ := rfl
   dist_comm _ _ := rfl
   edist _ _ := 0
-  edist_dist _ _ := ENNReal.ofReal_zero.symm -- Porting note: should not be needed
   eq_of_dist_eq_zero _ := Subsingleton.elim _ _
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance

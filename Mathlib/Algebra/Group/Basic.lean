@@ -145,14 +145,14 @@ variable {M : Type u} [MulOneClass M]
 @[to_additive]
 theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :
     ite P (a * b) 1 = ite P a 1 * ite P b 1 := by
-  by_cases h:P <;> simp [h]
+  by_cases h : P <;> simp [h]
 #align ite_mul_one ite_mul_one
 #align ite_add_zero ite_add_zero
 
 @[to_additive]
 theorem ite_one_mul {P : Prop} [Decidable P] {a b : M} :
     ite P 1 (a * b) = ite P 1 a * ite P 1 b := by
-  by_cases h:P <;> simp [h]
+  by_cases h : P <;> simp [h]
 #align ite_one_mul ite_one_mul
 #align ite_zero_add ite_zero_add
 
@@ -217,16 +217,16 @@ set_option linter.deprecated false
 
 variable {M : Type u} [AddCommSemigroup M]
 
-theorem bit0_add (a b : M) : bit0 (a + b) = bit0 a + bit0 b :=
+theorem bit0_add (a b : M) : (a + b) + (a + b) = (a + a) + (b + b) :=
   add_add_add_comm _ _ _ _
 #align bit0_add bit0_add
 
-theorem bit1_add [One M] (a b : M) : bit1 (a + b) = bit0 a + bit1 b :=
+theorem bit1_add [One M] (a b : M) : ((a + b) + (a + b)) + 1 = (a + a) + ((b + b) + 1) :=
   (congr_arg (· + (1 : M)) <| bit0_add a b : _).trans (add_assoc _ _ _)
 #align bit1_add bit1_add
 
-theorem bit1_add' [One M] (a b : M) : bit1 (a + b) = bit1 a + bit0 b := by
-  rw [add_comm, bit1_add, add_comm]
+theorem bit1_add' [One M] (a b : M) : ((a + b) + (a + b)) + 1 = ((a + a) + 1) + (b + b) := by
+  rw [add_comm a b, bit1_add, add_comm]
 #align bit1_add' bit1_add'
 
 end AddCommSemigroup
@@ -236,14 +236,8 @@ set_option linter.deprecated false
 
 variable {M : Type u} [AddMonoid M] {a b c : M}
 
-@[simp]
-theorem bit0_zero : bit0 (0 : M) = 0 :=
-  add_zero _
-#align bit0_zero bit0_zero
-
-@[simp]
-theorem bit1_zero [One M] : bit1 (0 : M) = 1 := by rw [bit1, bit0_zero, zero_add]
-#align bit1_zero bit1_zero
+#noalign bit0_zero
+#noalign bit1_zero
 
 end AddMonoid
 
@@ -711,7 +705,8 @@ section SubtractionMonoid
 
 set_option linter.deprecated false
 
-lemma bit0_neg [SubtractionMonoid α] (a : α) : bit0 (-a) = -bit0 a := (neg_add_rev _ _).symm
+lemma bit0_neg [SubtractionMonoid α] (a : α) : (2:ℕ) • (-a) = -(2 • a) := by
+  rw [two_nsmul, two_nsmul, (neg_add_rev _ _).symm]
 #align bit0_neg bit0_neg
 
 end SubtractionMonoid

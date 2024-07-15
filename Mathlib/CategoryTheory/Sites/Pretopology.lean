@@ -113,7 +113,7 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   pullback_stable' X Y S g := by
     rintro ⟨R, hR, RS⟩
     refine ⟨_, K.pullbacks g _ hR, ?_⟩
-    rw [← Sieve.sets_iff_generate, Sieve.pullbackArrows_comm]
+    rw [← Sieve.generate_le_iff, Sieve.pullbackArrows_comm]
     apply Sieve.pullback_monotone
     rwa [Sieve.giGenerate.gc]
   transitive' := by
@@ -175,7 +175,7 @@ def trivial : Pretopology C where
   has_isos X Y f i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
-    refine ⟨pullback g f, pullback.snd, ?_, ?_⟩
+    refine ⟨pullback g f, pullback.snd _ _, ?_, ?_⟩
     · refine ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨?_, by aesop_cat⟩⟩⟩
       ext
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]

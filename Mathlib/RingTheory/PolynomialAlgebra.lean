@@ -157,13 +157,13 @@ theorem left_inv (x : A ⊗ R[X]) : invFun R A ((toFunAlgHom R A) x) = x := by
     simp only [Algebra.smul_def]
     rfl
   · intro p q hp hq
-    simp only [AlgHom.map_add, invFun_add, hp, hq]
+    simp only [map_add, invFun_add, hp, hq]
 #align poly_equiv_tensor.left_inv PolyEquivTensor.left_inv
 
 theorem right_inv (x : A[X]) : (toFunAlgHom R A) (invFun R A x) = x := by
   refine Polynomial.induction_on' x ?_ ?_
   · intro p q hp hq
-    simp only [invFun_add, AlgHom.map_add, hp, hq]
+    simp only [invFun_add, map_add, hp, hq]
   · intro n a
     rw [invFun_monomial, Algebra.TensorProduct.tmul_pow,
         one_pow, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul, toFunAlgHom_apply_tmul,
