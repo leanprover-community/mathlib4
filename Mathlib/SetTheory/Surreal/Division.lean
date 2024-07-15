@@ -652,31 +652,22 @@ lemma onag_1_10 :
       intro i
       cases i
       · case _ val =>
-          rcases val with ⟨i | val, j⟩ <;>
-              simp only [normalization, insertLeft, inv', mk_mul_moveLeft_inl]
+          rcases val with ⟨i | val, j⟩
           · specialize this (Sum.inl ⟨i, j⟩)
-            simp only at this
             rw [pos_num_eq_normalization x_num x_pos] at this
-            simp only [← mk_mul, ← mk_add, ← mk_sub] at this
-            simp only [inv', one_def, mk_lt_mk] at this
             exact this
-          · cases val
+          · cases val   -- the case `x' = 0`, not mentioned in ONAG
             rw [Game.PGame.lt_iff_game_lt]
+            simp only [normalization, insertLeft, inv', mk_mul_moveLeft_inl]
             simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
             have := onag_1_10_i_left j
             rw [pos_num_eq_normalization x_num x_pos] at this
-            simp only [normalization, insertLeft, inv', moveLeft_mk] at this
             exact this
       · case _ val =>
           rcases val with ⟨i, j⟩
-          · specialize this (Sum.inr ⟨i, j⟩)
-            simp only at this
-            simp only [normalization, insertLeft]
-            rw [pos_num_eq_normalization x_num x_pos] at this
-            simp only [← mk_mul, ← mk_add, ← mk_sub] at this
-            simp only [inv', mk_mul_moveLeft_inr]
-            simp only [inv', one_def, mk_lt_mk] at this
-            exact this
+          specialize this (Sum.inr ⟨i, j⟩)
+          rw [pos_num_eq_normalization x_num x_pos] at this
+          exact this
 
     have onag_1_10_iii_right : ∀ j, 1 < ((normalization x) * x.inv').moveRight j := by
       have := onag_1_10_iii_right' xL xR xl_num xr_num h3 h4 x_num inv_l inv_r
@@ -685,31 +676,22 @@ lemma onag_1_10 :
       intro i
       cases i
       · case _ val =>
-          rcases val with ⟨i | val, j⟩ <;>
-              simp only [normalization, insertLeft, inv', mk_mul_moveRight_inl]
+          rcases val with ⟨i | val, j⟩
           · specialize this (Sum.inl ⟨i, j⟩)
-            simp only at this
             rw [pos_num_eq_normalization x_num x_pos] at this
-            simp only [← mk_mul, ← mk_add, ← mk_sub] at this
-            simp only [inv', one_def, mk_lt_mk] at this
             exact this
-          · cases val
+          · cases val  -- the case `x' = 0`, not mentioned in ONAG
             rw [Game.PGame.lt_iff_game_lt]
+            simp only [normalization, insertLeft, inv', mk_mul_moveRight_inl]
             simp only [Sum.elim_inr, quot_sub, quot_add, quot_zero_mul, add_sub_cancel_left]
             have := onag_1_10_i_right j
             rw [pos_num_eq_normalization x_num x_pos] at this
-            simp only [normalization, insertLeft, inv', moveRight_mk] at this
             exact this
       · case _ val =>
           rcases val with ⟨i, j⟩
-          · specialize this (Sum.inr ⟨i, j⟩)
-            simp only at this
-            simp only [normalization, insertLeft]
-            rw [pos_num_eq_normalization x_num x_pos] at this
-            simp only [← mk_mul, ← mk_add, ← mk_sub] at this
-            simp only [inv', mk_mul_moveRight_inr]
-            simp only [one_def, inv', mk_lt_mk] at this
-            exact this
+          specialize this (Sum.inr ⟨i, j⟩)
+          rw [pos_num_eq_normalization x_num x_pos] at this
+          exact this
 
     have onag_1_10_iv' :
         Surreal.mk (normalization x) (num_of_normalization_num x_num x_pos) *
