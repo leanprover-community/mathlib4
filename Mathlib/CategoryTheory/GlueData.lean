@@ -401,4 +401,135 @@ theorem ι_jointly_surjective (F : C ⥤ Type v) [PreservesColimit D.diagram.mul
 
 end GlueData
 
+section GlueData'
+
+/--
+This is a variant of `GlueData` that only requires conditions on `V (i, j)` when `i ≠ j`.
+See `GlueData.ofGlueData'`
+-/
+structure GlueData' where
+  /-- Indexing type of a glue data. -/
+  J : Type v
+  /-- Objects of a glue data to be glued. -/
+  U : J → C
+  /-- Objects representing the intersections. -/
+  V : ∀ (i j : J), i ≠ j → C
+  /-- The inclusion maps of the intersection into the object. -/
+  f : ∀ i j h, V i j h ⟶ U i
+  f_mono : ∀ i j h, Mono (f i j h) := by infer_instance
+  f_hasPullback : ∀ i j k hij hik, HasPullback (f i j hij) (f i k hik) := by infer_instance
+  /-- The transition maps between the intersections. -/
+  t : ∀ i j h, V i j h ⟶ V j i h.symm
+  /-- The transition maps between the intersection of intersections. -/
+  t' : ∀ i j k hij hik hjk,
+    pullback (f i j hij) (f i k hik) ⟶ pullback (f j k hjk) (f j i hij.symm)
+  t_fac : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫ pullback.snd _ _ =
+    pullback.fst _ _ ≫ t i j hij
+  t_inv : ∀ i j hij, t i j hij ≫ t j i hij.symm = 𝟙 _
+  cocycle : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫
+    t' j k i hjk hij.symm hik.symm ≫ t' k i j hik.symm hjk.symm hij = 𝟙 _
+
+attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback mono_comp
+
+attribute [reassoc (attr := simp)] GlueData'.t_inv GlueData'.cocycle
+
+variable {C}
+
+open scoped Classical
+
+/-- (Implementation detail) the constructed `GlueData.f` from a `GlueData'`. -/
+abbrev GlueData'.f' (D : GlueData' C) (i j : D.J) :
+    (if h : i = j then D.U i else D.V i j h) ⟶ D.U i :=
+  if h : i = j then eqToHom (dif_pos h) else eqToHom (dif_neg h) ≫ D.f i j h
+
+instance (D : GlueData' C) (i j : D.J) :
+    Mono (D.f' i j) := by dsimp [GlueData'.f']; split_ifs <;> infer_instance
+
+instance (D : GlueData' C) (i : D.J) :
+    IsIso (D.f' i i) := by simp only [GlueData'.f', ↓reduceDIte]; infer_instance
+
+instance (D : GlueData' C) (i j k : D.J) :
+    HasPullback (D.f' i j) (D.f' i k) := by
+  if hij : i = j then
+    apply (config := { allowSynthFailures := true}) hasPullback_of_left_iso
+    simp only [GlueData'.f', dif_pos hij]
+    infer_instance
+  else if hik : i = k then
+    apply (config := { allowSynthFailures := true}) hasPullback_of_right_iso
+    simp only [GlueData'.f', dif_pos hik]
+    infer_instance
+  else
+    have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : HEq (eqToHom e ≫ f) f := by subst e; simp
+    convert D.f_hasPullback i j k hij hik <;> simp [GlueData'.f', hij, hik, this]
+
+/-- (Implementation detail) the constructed `GlueData.t'` from a `GlueData'`. -/
+def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
+    pullback (D.f' i j) (D.f' i k) ⟶ pullback (D.f' j k) (D.f' j i) :=
+  if hij : i = j then
+    (pullbackSymmetry _ _).hom ≫
+      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by aesop))
+        (by aesop) (by aesop)
+  else if hik : i = k then
+    have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
+      subst hik; infer_instance
+    pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
+      eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
+  else if hjk : j = k then
+    have : IsIso (pullback.snd (D.f' j k) (D.f' j i)) := by
+      apply (config := { allowSynthFailures := true}) pullback_snd_iso_of_left_iso
+      simp only [hjk, GlueData'.f', ↓reduceDIte]
+      infer_instance
+    pullback.fst _ _ ≫ eqToHom (dif_neg hij) ≫ D.t _ _ _ ≫
+      eqToHom (dif_neg (Ne.symm hij)).symm ≫ inv (pullback.snd _ _)
+  else
+    haveI := Ne.symm hij
+    pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by rw [dif_neg hik]))
+        (eqToHom (by aesop)) (by aesop) (by delta f'; aesop) ≫
+      D.t' i j k hij hik hjk ≫
+      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by aesop))
+        (by delta f'; aesop) (by delta f'; aesop)
+
+/--
+The constructed `GlueData` of a `GlueData'`, where `GlueData'` is a variant of `GlueData` that only
+requires conditions on `V (i, j)` when `i ≠ j`.
+-/
+def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
+  J := D.J
+  U := D.U
+  V ij := if h : ij.1 = ij.2 then D.U ij.1 else D.V ij.1 ij.2 h
+  f i j := D.f' i j
+  f_id i := by simp only [↓reduceDIte, GlueData'.f']; infer_instance
+  t i j := if h : i = j then eqToHom (by simp [h]) else
+    eqToHom (dif_neg h) ≫ D.t i j h ≫ eqToHom (dif_neg (Ne.symm h)).symm
+  t_id i := by simp
+  t' := D.t''
+  t_fac i j k := by
+    delta GlueData'.t''
+    split_ifs
+    · simp [*]
+    · cases ‹i ≠ j› (‹i = k›.trans ‹j = k›.symm)
+    · simp [‹j ≠ k›.symm, *]
+    · simp [*]
+    · simp [*, reassoc_of% D.t_fac]
+  cocycle i j k := by
+    delta GlueData'.t''
+    if hij : i = j then
+      subst hij
+      if hik : i = k then
+        subst hik
+        ext <;> simp
+      else
+        simp [hik, Ne.symm hik, fst_eq_snd_of_mono_eq]
+    else if hik : i = k then
+      subst hik
+      ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq, pullback.condition_assoc]
+    else if hjk : j = k then
+      subst hjk
+      ext <;> simp [hij, Ne.symm hij, fst_eq_snd_of_mono_eq, pullback.condition_assoc]
+    else
+      ext <;> simp [hij, Ne.symm hij, hik, Ne.symm hik, hjk, Ne.symm hjk,
+        pullback.map_comp_assoc]
+
+end GlueData'
+
 end CategoryTheory

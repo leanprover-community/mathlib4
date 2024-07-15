@@ -87,18 +87,8 @@ open Set
 theorem mk₂ (h: ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
     FiniteInter (insert (univ : Set α) S) where
   univ_mem := Set.mem_insert Set.univ S
-  inter_mem _ hs _ ht:= by
-    rcases hs with hsu | hsS
-    · rcases ht with htu | htS
-      · apply Or.inl
-        rw [hsu, htu, inter_self]
-      · apply Or.inr
-        rw [hsu, univ_inter]
-        exact htS
-    · apply Or.inr
-      rcases ht with htu | htS
-      · rw [htu, inter_univ]
-        exact hsS
-      · apply h hsS htS
+  inter_mem s hs t ht:= by
+    obtain ⟨(rfl | hs), (rfl | ht)⟩ := And.intro hs ht
+    all_goals aesop
 
 end FiniteInter
