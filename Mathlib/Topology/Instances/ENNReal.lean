@@ -638,7 +638,7 @@ theorem iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· 
   iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
 #align ennreal.supr_add_supr_of_monotone ENNReal.iSup_add_iSup_of_monotone
 
-theorem finset_sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
+theorem finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
     (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
     ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
   induction s using Finset.cons_induction with
@@ -649,14 +649,14 @@ theorem finset_sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ�
     gcongr
     exacts [(hk a).1, (hk _).2]
 
-theorem finset_sum_iSup_of_monotone {α} {ι} [Preorder ι] [IsDirected ι (· ≤ ·)]
+theorem finsetSum_iSup_of_monotone {α} {ι} [Preorder ι] [IsDirected ι (· ≤ ·)]
     {s : Finset α} {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) :
     (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
-  finset_sum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
-#align ennreal.finset_sum_supr_nat ENNReal.finset_sum_iSup_of_monotone
+  finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
+#align ennreal.finset_sum_supr_nat ENNReal.finsetSum_iSup_of_monotone
 
-@[deprecated finset_sum_iSup_of_monotone (since := "2024-07-14")]
-alias finset_sum_iSup_nat := finset_sum_iSup_of_monotone
+@[deprecated (since := "2024-07-14")]
+alias finset_sum_iSup_nat := finsetSum_iSup_of_monotone
 
 theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
   by_cases hf : ∀ i, f i = 0
