@@ -93,6 +93,10 @@ theorem restrict_mono_ae (h : s ≤ᵐ[μ] t) : μ.restrict s ≤ μ.restrict t 
   restrict_mono' h (le_refl μ)
 #align measure_theory.measure.restrict_mono_ae MeasureTheory.Measure.restrict_mono_ae
 
+@[gcongr]
+theorem restrict_mono_set (h : s ⊆ t) : μ.restrict s ≤ μ.restrict t :=
+  restrict_mono_ae <| ae_of_all _ h
+
 theorem restrict_congr_set (h : s =ᵐ[μ] t) : μ.restrict s = μ.restrict t :=
   le_antisymm (restrict_mono_ae h.le) (restrict_mono_ae h.symm.le)
 #align measure_theory.measure.restrict_congr_set MeasureTheory.Measure.restrict_congr_set
