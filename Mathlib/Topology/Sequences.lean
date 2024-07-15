@@ -285,11 +285,10 @@ variable [TopologicalSpace Y] {f : X → Y}
 theorem IsSeqCompact.image (f_cont : SeqContinuous f) {K : Set X} (K_cpt : IsSeqCompact K) :
     IsSeqCompact (f '' K) := by
   intro ys ys_in_fK
-  choose xs xs_in_K fxs_eq_ys using fun n ↦ (ys_in_fK n)
-  simp only [Set.mem_image, exists_exists_and_eq_and]
+  choose xs xs_in_K fxs_eq_ys using ys_in_fK
   obtain ⟨a, a_in_K, phi, phi_mono, xs_phi_lim⟩ := K_cpt xs_in_K
-  refine ⟨a, a_in_K, phi, phi_mono, ?_⟩
-  exact Filter.Tendsto.congr (fun x ↦ fxs_eq_ys (phi x)) (f_cont xs_phi_lim)
+  refine ⟨f a, mem_image_of_mem f a_in_K, phi, phi_mono, ?_⟩
+  exact (f_cont xs_phi_lim).congr fun x ↦ fxs_eq_ys (phi x)
 
 /-- The range of sequentially continuous function on a sequentially compact space is sequentially
 compact. -/
