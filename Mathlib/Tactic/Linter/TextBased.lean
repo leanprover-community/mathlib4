@@ -136,10 +136,14 @@ def compare (existing new : ErrorContext) : ComparisonResult := Id.run do
   match (existing.error, new.error) with
   -- File length errors are the biggest exceptions: generally, we prefer to keep the
     -- existing entry, *except* when a newer entry is much shorter.
-  | (StyleError.fileTooLong n _nLimit, StyleError.fileTooLong m _mLimit) =>
-    -- The only exception are "file too long" errors: generally, we prefer to keep the
-    -- existing entry, *except* when a newer entry is much shorter.
-    ComparisonResult.Comparable (m >= n + 200)
+  | (StyleError.fileTooLong n nLimit, StyleError.fileTooLong m _mLimit) =>
+    -- The only exception are "file too long" errors.
+    -- If a file got much longer, the existing exception does not apply;
+    if m > nLimit then ComparisonResult.Different
+    -- if it does apply, we prefer to keep the existing entry,
+    -- *unless* the newer entry is much shorter.
+    else if m + 200 <= n then ComparisonResult.Comparable false
+    else ComparisonResult.Comparable true
   -- We do *not* care about the *kind* of wrong copyright,
   -- nor about the particular length of a too long line.
   | (StyleError.copyright _, StyleError.copyright _) => ComparisonResult.Comparable true
