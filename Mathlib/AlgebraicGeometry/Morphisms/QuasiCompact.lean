@@ -171,7 +171,7 @@ instance quasiCompact_isStableUnderComposition :
 
 theorem quasiCompact_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @QuasiCompact := by
-  letI := isLocal_affineProperty @QuasiCompact
+  letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
   apply HasAffineProperty.stableUnderBaseChange
   apply AffineTargetMorphismProperty.StableUnderBaseChange.mk
   intro X Y S _ _ f g h
