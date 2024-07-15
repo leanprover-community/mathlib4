@@ -316,7 +316,7 @@ theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
   apply (DenseInducing.extend_unique (AbstractCompletion.denseInducing _) this
     (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous )).symm
   apply DenseInducing.continuous_extend
-  exact fun a => ⟨(pkg.denseInducing.extend f) a, h a⟩
+  exact fun a ↦ ⟨(pkg.denseInducing.extend f) a, h a⟩
 
 end Compare
 
