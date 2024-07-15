@@ -171,12 +171,13 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
 #align valued.mem_nhds_zero Valued.mem_nhds_zero
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
-  sorry -- c'est facile
-  -- rw [mem_nhds]
-  -- use Units.mk0 _ h
-  -- rw [Units.val_mk0]
-  -- intro y y_in
-  -- exact Valuation.map_eq_of_sub_lt _ y_in
+  -- sorry -- c'est facile
+  rw [mem_nhds]
+  let u := Units.mk0 _ h
+  have : u ∈ _i.v.rangeGroup := sorry
+  use ⟨u, this⟩
+  intro y y_in
+  exact Valuation.map_eq_of_sub_lt _ y_in
 #align valued.loc_const Valued.loc_const
 
 instance (priority := 100) : TopologicalRing R :=
