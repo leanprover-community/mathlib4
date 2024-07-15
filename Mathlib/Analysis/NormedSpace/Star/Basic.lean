@@ -27,7 +27,7 @@ To get a unital C⋆-algebra `E` over field `𝕜`, use
  [NormedAlgebra 𝕜 E] [StarModule 𝕜 E]`.
 
 For a non-unital C⋆-algebra, use
-`[NormedField 𝕜] [StarRing 𝕜] [NonUnitalNormedRing E] [StarRing E] [CstarRing E] [Module 𝕜 E]
+`[NormedField 𝕜] [StarRing 𝕜] [NonUnitalNormedRing E] [StarRing E] [CstarRing E] [NormedSpace 𝕜 E]
  [SMulCommClass 𝕜 E E] [IsScalarTower 𝕜 E E] [StarModule 𝕜 E]`.
 
 ## TODO
