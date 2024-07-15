@@ -56,7 +56,6 @@ theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := b
     lhs
     rw [binaryRec]
     simp [h]
-  rw [div2_bit]
 #align nat.size_bit Nat.size_bit
 
 section
@@ -161,5 +160,21 @@ theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   · simp [ih]
   · simpa [bit_eq_zero_iff]
 #align nat.size_eq_bits_len Nat.size_eq_bits_len
+
+lemma size_eq_iff_le_and_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n ∧ n < 2 ^ (i + 1) where
+  mp h := ⟨lt_size.mp <| h ▸ lt_succ_self _, h ▸ lt_size_self _⟩
+  mpr h := le_antisymm (size_le.mpr h.2) <| succ_le_iff.mp <| lt_size.mpr h.1
+
+lemma size_eq_iff_testBit (n : ℕ) (i : ℕ) : n.size = i + 1 ↔
+    n.testBit i ∧ ∀ j > i, n.testBit j = false := by
+  rw [size_eq_iff_le_and_lt]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have ⟨j, _, h'⟩ := ge_two_pow_implies_high_bit_true h.1
+    have t (j : ℕ) (hj : j > i) : n.testBit j = false :=
+      testBit_lt_two_pow <| (h.2).trans_le <| Nat.pow_le_pow_right (by decide) hj
+    suffices j ≤ i by convert And.intro h' t; omega
+    by_contra nh
+    exact Bool.true_eq_false.mp <| h' ▸ t j (not_le.mp nh)
+  · exact ⟨testBit_implies_ge h.1, lt_pow_two_of_testBit n h.2⟩
 
 end Nat
