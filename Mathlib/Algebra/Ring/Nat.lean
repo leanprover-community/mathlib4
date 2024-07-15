@@ -21,6 +21,13 @@ open Multiplicative
 
 namespace Nat
 
+theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
+  | 0, m => fun _ => Or.inl rfl
+  | succ n, m => by
+    rw [succ_mul]; intro h
+    exact Or.inr (Nat.eq_zero_of_add_eq_zero_left h)
+#align nat.eq_zero_of_mul_eq_zero Nat.eq_zero_of_mul_eq_zero
+
 /-! ### Instances -/
 
 instance instCommSemiring : CommSemiring ℕ where

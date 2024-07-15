@@ -676,6 +676,24 @@ section ltByCases
 
 variable [LinearOrder α] {P : Sort*} {x y : α}
 
+/-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
+def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
+  if h : x < y then h₁ h
+  else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
+#align lt_by_cases ltByCases
+
+@[deprecated (since := "2024-07-15")]
+protected def Nat.ltGeByCases {a b : ℕ} {C : Sort*} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
+  Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
+#align nat.lt_ge_by_cases Nat.ltGeByCases
+
+set_option linter.deprecated false in
+@[deprecated ltByCases (since := "2024-07-15")]
+protected def Nat.ltByCases {a b : ℕ} {C : Sort*} (h₁ : a < b → C) (h₂ : a = b → C) (h₃ : b < a → C) :
+    C :=
+  Nat.ltGeByCases h₁ fun h₁ => Nat.ltGeByCases h₃ fun h => h₂ (Nat.le_antisymm h h₁)
+#align nat.lt_by_cases Nat.ltByCases
+
 @[simp]
 lemma ltByCases_lt (h : x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
     ltByCases x y h₁ h₂ h₃ = h₁ h := dif_pos h

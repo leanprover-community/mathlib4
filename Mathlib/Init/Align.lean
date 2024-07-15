@@ -130,7 +130,6 @@ set_option align.precheck false in #align mk_array mkArray'
 #align nat.le_of_add_le_add_right Nat.le_of_add_le_add_rightₓ
 #align nat.mul_lt_mul Nat.mul_lt_mul_of_lt_of_le'ₓ
 #align nat.mul_lt_mul' Nat.mul_lt_mul_of_le_of_ltₓ
-#noalign nat.discriminate
 #align nat.sub_one_sub_lt Nat.sub_one_sub_ltₓ
 #align nat.div_eq_sub_div Nat.div_eq_sub_divₓ
 #align nat.div_eq_of_eq_mul_left Nat.div_eq_of_eq_mul_leftₓ
