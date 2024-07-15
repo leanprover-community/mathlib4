@@ -113,7 +113,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   | f b n IH =>
     by_cases h : bit b n = 0
     · apply this h
-    rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul, ← bit0_val]
+    rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul]
     exact bit_lt_bit0 _ (by simpa [shiftLeft_eq, shiftRight_eq_div_pow] using IH)
 #align nat.lt_size_self Nat.lt_size_self
 

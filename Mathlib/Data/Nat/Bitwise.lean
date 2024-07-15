@@ -69,7 +69,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
   conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp only [mod_two_of_bodd, cond]; cases bodd x <;> rfl
-  simp [hn, hm, mod_two_iff_bod, bit, div2_val]
+  simp [hn, hm, mod_two_iff_bod, bit, div2_val, Nat.shiftLeft_succ, two_mul]
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -77,7 +77,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   conv_lhs => unfold bitwise
   #adaptation_note /-- nightly-2024-03-16: simp was
   -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite] -/
-  simp only [bit, ite_apply, Bool.cond_eq_ite]
+  simp only [bit_val, ite_apply, Bool.cond_eq_ite]
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
@@ -159,7 +159,7 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
   rw [← bit_ne_zero_iff] at ham hbn
   simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
     ite_false]
-  conv_rhs => simp only [bit, bit1, bit0, Bool.cond_eq_ite]
+  conv_rhs => simp [bit, Bool.cond_eq_ite, Nat.shiftLeft_succ, two_mul]
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     bitwise f =
