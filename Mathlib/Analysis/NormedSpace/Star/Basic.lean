@@ -19,8 +19,8 @@ import Mathlib.Topology.Algebra.Module.Star
 A normed star group is a normed group with a compatible `star` which is isometric.
 
 A C⋆-ring is a normed star group that is also a ring and that verifies the stronger
-condition `‖x⋆ * x‖ = ‖x‖^2` for all `x`.  If a C⋆-ring is also a star algebra, then it is a
-C⋆-algebra.
+condition `‖x‖^2 ≤ ‖x⋆ * x‖` for all `x` (which actually implies equality). If a C⋆-ring is also
+a star algebra, then it is a C⋆-algebra.
 
 To get a C⋆-algebra `E` over field `𝕜`, use
 `[NormedField 𝕜] [StarRing 𝕜] [NormedRing E] [StarRing E] [CstarRing E]
