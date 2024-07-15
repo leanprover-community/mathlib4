@@ -14,6 +14,7 @@ import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Ring
 
 #align_import algebra.order.floor from "leanprover-community/mathlib"@"afdb43429311b885a7988ea15d0bac2aac80f69c"
 
@@ -981,6 +982,10 @@ lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
   (fract_nonneg a).lt_iff_ne.trans <| ne_comm.trans sub_ne_zero
 #align int.fract_pos Int.fract_pos
 
+lemma fract_eq_zero_iff: fract a = 0 ↔ a = ⌊a⌋ := by
+  rw [← not_iff_not, ← ne_eq, ← ne_eq, ← fract_pos]
+  exact (LE.le.gt_iff_ne <| fract_nonneg _).symm
+
 theorem fract_lt_one (a : α) : fract a < 1 :=
   sub_lt_comm.1 <| sub_one_lt_floor _
 #align int.fract_lt_one Int.fract_lt_one
@@ -1155,38 +1160,100 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
     rw [← Nat.cast_add, Nat.mod_add_div m n]
 #align int.fract_div_nat_cast_eq_div_nat_cast_mod Int.fract_div_natCast_eq_div_natCast_mod
 
--- TODO Generalise this to allow `n : ℤ` using `Int.fmod` instead of `Int.mod`.
+-- TODO: find a better place and golf
+theorem lt_fmod_of_pos (a b : Int) (h : b < 0) : b < a.fmod b := by
+  induction' b with b b
+  · by_contra
+    exact (negSucc_not_nonneg b).mp h
+  · induction' a with a a
+    · cases' a with a a
+      · simp
+        exact h
+      · unfold fmod
+        simp only [Int.subNatNat_eq_coe, negSucc_coe, Nat.cast_add, neg_add_rev, ofNat_emod,
+          add_neg_lt_iff_lt_add, sub_add_cancel]
+        exact Lean.Omega.Int.emod_ofNat_nonneg
+    · unfold fmod
+      simp only [Nat.cast_add, Nat.cast_one, negSucc_coe, neg_add_rev,  add_neg_lt_iff_lt_add,
+        lt_neg_add_iff_add_lt]
+      refine Int.emod_lt_of_pos ((a : ℤ) + 1) ?_
+      linarith
+
+-- TODO: find a better place and golf
+theorem fmod_nonpos {a b : Int}  (hb : b < 0) : a.fmod b ≤ 0 := by
+  induction' b with b b
+  · by_contra
+    exact (negSucc_not_nonneg b).mp hb
+  · induction' a with a a
+    · cases' a with a a
+      · simp
+      · unfold fmod
+        dsimp only [Nat.succ_eq_add_one]
+        have := Nat.mod_lt a <| Nat.zero_lt_succ b
+        have : a % (b + 1) ≤  b := by linarith
+        have : 0 ≤ b - a % (b + 1) := by linarith
+        unfold subNatNat
+        simp_all only [tsub_eq_zero_of_le, ofNat_eq_coe, Nat.cast_zero]
+        split
+        · rfl
+        · exact toNat_eq_zero.mp rfl
+    · unfold fmod
+      simp only [Left.neg_nonpos_iff]
+      exact le.intro_sub ((a + 1) % ((b : ℤ) + 1).natAbs + 0) rfl
+
+-- TODO: golf
+theorem fract_div_intCast_eq_div_intCast_fmod {m : ℤ} {n : ℤ} :
+    fract ((m : k) / n) = ↑(Int.fmod m  n) / n := by
+  by_cases hn : n = 0
+  · rw [hn, Int.cast_zero, div_zero, fract_zero]
+    exact (div_zero _).symm
+  · rw [fract, Int.fmod_def]
+    have h_div : (m : k) / n = (Int.fdiv m n : k) + ↑(Int.fmod m n) / n := by
+      nth_rw 1 [← Int.fdiv_add_fmod m n]
+      push_cast
+      ring_nf
+      rw [add_left_inj, mul_comm, ← mul_assoc, inv_mul_cancel <| cast_ne_zero.mpr hn, one_mul]
+    nth_rw 1 [h_div]
+    rw [Int.fmod_def]
+    have h : ⌊(m : k) / n⌋ = Int.fdiv m n := by
+      refine floor_eq_iff.mpr ?_
+      have h₁ : (n : k) * ↑(m.fdiv n) = m - m.fmod n := by
+        have := fdiv_add_fmod m  n
+        norm_cast
+        nth_rw 2 [← this]
+        simp only [add_sub_cancel_right]
+      by_cases h₂ : 0 < (n : k)
+      · have h₃ : 0 < n := cast_pos.mp h₂
+        constructor
+        · refine (le_div_iff' h₂).mpr ?_
+          rw [h₁]
+          simp only [tsub_le_iff_right, le_add_iff_nonneg_right, cast_nonneg]
+          exact fmod_nonneg' m h₃
+        · rw [fdiv_eq_ediv m _]
+          · refine (div_lt_iff h₂).mpr ?_
+            norm_cast
+            exact lt_ediv_add_one_mul_self m h₃
+          · omega
+      · have h₂ : (n : k) < 0 := lt_of_le_of_ne (not_lt.mp h₂) <| cast_ne_zero.mpr hn
+        have h₃ : n  < 0 := cast_lt_zero.mp h₂
+        constructor
+        · refine (le_div_iff_of_neg' ?_).mpr ?_
+          · exact h₂
+          · rw [h₁]
+            simp only [le_sub_self_iff, cast_nonpos, ge_iff_le]
+            convert fmod_nonpos _
+            omega
+        · refine (div_lt_iff_of_neg h₂).mpr ?_
+          rw [add_mul, mul_comm, h₁, one_mul]
+          have : (n : k) <  m.fmod n  := cast_lt.mpr <| lt_fmod_of_pos m n h₃
+          linarith
+    rw [h]
+    simp
+
 theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
-  rcases n.eq_zero_or_pos with (rfl | hn)
-  · simp
-  replace hn : 0 < (n : k) := by norm_cast
-  have : ∀ {l : ℤ}, 0 ≤ l → fract ((l : k) / n) = ↑(l % n) / n := by
-    intros l hl
-    obtain ⟨l₀, rfl | rfl⟩ := l.eq_nat_or_neg
-    · rw [cast_natCast, ← natCast_mod, cast_natCast, fract_div_natCast_eq_div_natCast_mod]
-    · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
-      simp [hl, zero_mod]
-  obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
-  · exact this (ofNat_nonneg m₀)
-  let q := ⌈↑m₀ / (n : k)⌉
-  let m₁ := q * ↑n - (↑m₀ : ℤ)
-  have hm₁ : 0 ≤ m₁ := by
-    simpa [m₁, ← @cast_le k, ← div_le_iff hn] using FloorRing.gc_ceil_coe.le_u_l _
-  calc
-    fract ((Int.cast (-(m₀ : ℤ)) : k) / (n : k))
-      -- Porting note: the `rw [cast_neg, cast_natCast]` was `push_cast`
-      = fract (-(m₀ : k) / n) := by rw [cast_neg, cast_natCast]
-    _ = fract ((m₁ : k) / n) := ?_
-    _ = Int.cast (m₁ % (n : ℤ)) / Nat.cast n := this hm₁
-    _ = Int.cast (-(↑m₀ : ℤ) % ↑n) / Nat.cast n := ?_
-
-  · rw [← fract_int_add q, ← mul_div_cancel_right₀ (q : k) hn.ne', ← add_div, ← sub_eq_add_neg]
-    -- Porting note: the `simp` was `push_cast`
-    simp [m₁]
-  · congr 2
-    change (q * ↑n - (↑m₀ : ℤ)) % ↑n = _
-    rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]
+  have := @fract_div_intCast_eq_div_intCast_fmod k _ _ m (n : ℤ)
+  simpa only [cast_natCast, fmod_eq_emod  _<| ofNat_zero_le n]
 #align int.fract_div_int_cast_eq_div_int_cast_mod Int.fract_div_intCast_eq_div_intCast_mod
 
 end LinearOrderedField
