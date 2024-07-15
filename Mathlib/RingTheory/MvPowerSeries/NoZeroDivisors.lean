@@ -20,6 +20,11 @@ then so does `MvPowerSeries σ R`.
 
 * Transfer/adapt these results to `HahnSeries`.
 
+## Remark
+
+The analogue of `Polynomial.nmem_nonZeroDivisors_iff`
+(McCoy theorem) does not hold for power series.
+A counterexample can be found in https://doi.org/10.1016/j.jpaa.2007.06.010
 -/
 
 noncomputable section

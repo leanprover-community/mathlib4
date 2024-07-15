@@ -105,6 +105,7 @@ theorem constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
 #align mv_power_series.constant_coeff_inv_of_unit MvPowerSeries.constantCoeff_invOfUnit
 
+@[simp]
 theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
     φ * invOfUnit φ u = 1 :=
   ext fun n =>
@@ -138,6 +139,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         exact Nat.eq_zero_of_le_zero (H s)
 #align mv_power_series.mul_inv_of_unit MvPowerSeries.mul_invOfUnit
 
+-- TODO : can one prove equivalence?
 @[simp]
 theorem invOfUnit_mul (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
     invOfUnit φ u * φ = 1 := by
@@ -146,7 +148,7 @@ theorem invOfUnit_mul (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
   apply mem_nonZeroDivisors_of_constantCoeff
   simp only [constantCoeff_invOfUnit, IsUnit.mem_nonZeroDivisors (Units.isUnit u⁻¹)]
 
-theorem isUnit_iff_constantCoeff (φ : MvPowerSeries σ R) :
+theorem isUnit_iff_constantCoeff {φ : MvPowerSeries σ R} :
     IsUnit φ ↔ IsUnit (constantCoeff σ R φ) := by
   constructor
   · exact IsUnit.map _
