@@ -50,7 +50,6 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
       · exact antisymm (h _ _ h₂s₁) h₂s₂
       · apply antisymm h₂s₁ (h _ _ h₂s₂)
   obtain ⟨s, hrs, hs⟩ := zorn_le_nonempty₀ S hS r ‹_›
-  -- obtain ⟨s, hs₁ : IsPartialOrder _ _, rs, hs₂⟩ := zorn_nonempty₀ S hS r ‹_›
   haveI : IsPartialOrder α s := hs.prop
   refine ⟨s,
     { total := ?_, refl := hs.1.refl, trans := hs.1.trans, antisymm := hs.1.antisymm }, hrs⟩
