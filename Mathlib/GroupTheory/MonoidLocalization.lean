@@ -1184,6 +1184,20 @@ theorem map_injective_of_injective (hg : Injective g) (k : LocalizationMap (S.ma
   rw [← (f.map_units x).mul_left_inj, hxz, hxw, f.eq_iff_exists]
   exact ⟨⟨c, hc⟩, eq⟩
 
+/-- Given a surjective `CommMonoid` homomorphism `g : M →* P`, and a submonoid `S ⊆ M`,
+the induced monoid homomorphism from the localization of `M` at `S` to the
+localization of `P` at `g S`, is surjective.
+-/
+@[to_additive "Given a surjective `AddCommMonoid` homomorphism `g : M →+ P`, and a
+submonoid `S ⊆ M`, the induced monoid homomorphism from the localization of `M` at `S`
+to the localization of `P` at `g S`, is surjective. "]
+theorem map_surjective_of_surjective (hg : Surjective g) (k : LocalizationMap (S.map g) Q) :
+    Surjective (map f (apply_coe_mem_map g S) k) := fun z ↦ by
+  obtain ⟨y, ⟨y', s, hs, rfl⟩, rfl⟩ := k.mk'_surjective z
+  obtain ⟨x, rfl⟩ := hg y
+  use f.mk' x ⟨s, hs⟩
+  rw [map_mk']
+
 section AwayMap
 
 variable (x : M)

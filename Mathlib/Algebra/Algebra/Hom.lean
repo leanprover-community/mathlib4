@@ -582,6 +582,27 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
     f • x = Units.map (f : A →* A) x := rfl
 
 end MulDistribMulAction
+
+variable (M : Submonoid R) {B : Type w} [CommRing B] [Algebra R B] {A}
+
+lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
+    (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by
+  ext x
+  constructor
+  · rintro ⟨a, ⟨r, hr, rfl⟩, rfl⟩
+    simp only [AlgHom.commutes]
+    use r
+  · rintro ⟨r, hr, rfl⟩
+    simp only [Submonoid.mem_map]
+    use (algebraMap R A r)
+    simp only [AlgHom.commutes, and_true]
+    use r
+
+lemma algebraMapSubmonoid_le_comap (f : A →ₐ[R] B) :
+    algebraMapSubmonoid A M ≤ (algebraMapSubmonoid B M).comap f.toRingHom := by
+  rw [← algebraMapSubmonoid_map_eq M f]
+  exact Submonoid.le_comap_map (Algebra.algebraMapSubmonoid A M)
+
 end Algebra
 
 namespace MulSemiringAction
