@@ -710,10 +710,12 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
       exact J
     obtain ⟨j, hj⟩ := L
     have LQ := h j hj
-
-
-
-
+    --have TFC : eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩) ≤
+    --    inf_restrict'' T hT hC i γ := by sorry
+    --have TFC : eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩) ≤
+    --    (⊤ :  := by sorry
+    #check Submodule.map (Submodule.subtype ((⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j))))
+    #check (Submodule.map (Submodule.subtype (⊤ : Submodule 𝕜 ↑(⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)))))
     --have HH := ext_experiment T hT hC i γ
     --have C : ↑v ∈ sSup {x | ∃ y, eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) y = x} := by sorry
     sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
