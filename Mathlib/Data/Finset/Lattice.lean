@@ -2120,7 +2120,7 @@ theorem minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s �
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) :=
   ⟨fun h ↦ ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx (erase_subset _ _) hxs⟩,
     fun h ↦ ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
-        h.2 x hxs <| hP ht (subset_erase.2 ⟨hts, hxt⟩)⟩⟩
+      h.2 x hxs <| hP ht (subset_erase.2 ⟨hts, hxt⟩)⟩⟩
 
 end minimal
 

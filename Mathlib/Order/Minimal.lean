@@ -299,11 +299,17 @@ theorem Minimal.not_prop_of_ssubset (h : Minimal P s) (ht : t ⊂ s) : ¬ P t :=
 theorem Minimal.not_ssubset (h : Minimal P s) (ht : P t) : ¬ t ⊂ s :=
   h.not_lt ht
 
+theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
+  h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
+
+theorem Minimal.not_mem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
+  fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
+
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
-  ⟨fun h ↦ ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx diff_subset hxs⟩,
-    fun h ↦ ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
-        h.2 x hxs <| hP ht (subset_diff_singleton hts hxt)⟩⟩
+  ⟨fun h ↦ ⟨h.1, fun _ hx hP ↦ h.not_mem_of_prop_diff_singleton hP hx⟩,
+    fun h ↦ ⟨h.1, fun _ ht hts x hxs ↦ by_contra fun hxt ↦
+      h.2 x hxs (hP ht <| subset_diff_singleton hts hxt)⟩⟩
 
 theorem Set.exists_diff_singleton_of_not_minimal (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) (hs : P s)
     (h : ¬ Minimal P s) : ∃ x ∈ s, P (s \ {x}) := by
@@ -320,9 +326,9 @@ theorem Maximal.not_ssubset (h : Maximal P s) (ht : P t) : ¬ s ⊂ t :=
 
 theorem Set.maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
     Maximal P s ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
-  simp only [Maximal, and_congr_right_iff]
-  exact fun _ ↦ ⟨fun h x hxs hx ↦ hxs <| h hx (subset_insert _ _) (mem_insert _ _),
-    fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
+  simp only [not_imp_not]
+  exact ⟨fun h ↦ ⟨h.1, fun x ↦ h.mem_of_prop_insert⟩,
+    fun h ↦ ⟨h.1, fun t ht hst x hxt ↦ h.2 x (hP ht <| insert_subset hxt hst)⟩⟩
 
 theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) (hs : P s)
     (h : ¬ Maximal P s) : ∃ x ∉ s, P (insert x s) := by
@@ -330,12 +336,6 @@ theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t �
 
 /- TODO : generalize `minimal_iff_forall_diff_singleton` and `maximal_iff_forall_insert`
 to `StronglyAtomic` orders. -/
-
-theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
-  h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
-
-theorem Minimal.not_mem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
-  fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
 
 end Subset
 
