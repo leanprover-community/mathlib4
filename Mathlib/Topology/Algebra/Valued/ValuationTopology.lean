@@ -33,27 +33,11 @@ namespace Valuation
 
 variable (v : Valuation R Γ₀)
 
-instance instCovariantClass_subgroup {G : Type*} [Group G] {r : G → G → Prop}
-    [CovariantClass G G (· * ·) r] (N : Subgroup G) :
-    CovariantClass N N (fun x y ↦ x * y) fun x y ↦ r x y := ⟨ by
-  rintro ⟨m, _⟩ ⟨n₁, _⟩ ⟨n₂, _⟩
-  simpa only [Submonoid.mk_mul_mk] using CovariantClass.elim m ⟩
-
-def instCovariantClass_submonoid {M : Type*} [Monoid M] {r : M → M → Prop}
+instance {M : Type*} [Monoid M] {r : M → M → Prop}
     [CovariantClass M M (· * ·) r] (N : Submonoid M):
       CovariantClass N N (· * ·) (fun x y ↦ r x y) := ⟨ by
   rintro ⟨m, _⟩ ⟨n₁, _⟩ ⟨n₂, _⟩
   simpa only [Submonoid.mk_mul_mk] using CovariantClass.elim m ⟩
-
-example {G : Type*} [Group G] [LT G] [CovariantClass G G (· * ·) (· < ·)] (N : Subgroup G):
-      CovariantClass N N (fun x y ↦ x * y) fun x y ↦ x < y := by
-  -- exact @instCovariantClass_submonoid G _ LT.lt _ N.toSubmonoid
-  refine { elim := by exact? }
-  exact instCovariantClass_subgroup N
-
-
-example (M : Type*) [Monoid M] (N : Submonoid M) : HMul N N N := by
-  exact instHMul
 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis :
