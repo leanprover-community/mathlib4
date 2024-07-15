@@ -546,6 +546,7 @@ The functor is implemented as, on object level `M ↦ (c ↦ M(c))` where the `R
 on `M(c)` is given by restriction of scalars along the unique morphism `R(c) ⟶ R(X)`; and on
 morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
 -/
+@[simps]
 noncomputable def forgetToPresheafModuleCatMap
     (X : Cᵒᵖ) (hX : Limits.IsInitial X) {M N : PresheafOfModules.{v} R}
     (f : M ⟶ N) :
@@ -565,6 +566,7 @@ The functor is implemented as, on object level `M ↦ (c ↦ M(c))` where the `R
 on `M(c)` is given by restriction of scalars along the unique morphism `R(c) ⟶ R(X)`; and on
 morphism level `(f : M ⟶ N) ↦ (c ↦ f(c))`.
 -/
+@[simps]
 noncomputable def forgetToPresheafModuleCat (X : Cᵒᵖ) (hX : Limits.IsInitial X) :
     PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ ModuleCat (R.1.obj X) where
   obj M := forgetToPresheafModuleCatObj X hX M
