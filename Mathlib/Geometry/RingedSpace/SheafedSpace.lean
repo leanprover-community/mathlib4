@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
+import Mathlib.Geometry.RingedSpace.Stalks
 import Mathlib.Topology.Sheaves.Functors
 
 #align_import algebraic_geometry.sheafed_space from "leanprover-community/mathlib"@"f384f5d1a4e39f36817b8d22afff7b52af8121d1"
@@ -178,7 +179,7 @@ set_option linter.uppercaseLean3 false in
 variable (C)
 
 /-- The forgetful functor from `SheafedSpace` to `Top`. -/
-def forget : SheafedSpace C ⥤ TopCat where
+protected def forget : SheafedSpace C ⥤ TopCat where
   obj X := (X : TopCat)
   map {X Y} f := f.base
 set_option linter.uppercaseLean3 false in
@@ -256,8 +257,41 @@ noncomputable instance [HasLimits C] :
 instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
   hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
-noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
+noncomputable instance [HasLimits C] : PreservesColimits (SheafedSpace.forget C) :=
   Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
+
+section ConcreteCategory
+
+variable [ConcreteCategory.{v} C] [HasColimits C] [PreservesFilteredColimits (forget C)]
+variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
+
+open PresheafedSpace hiding forget
+
+attribute [local instance] ConcreteCategory.instFunLike in
+lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
+    (h' : ∀ x, stalkMap f x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ stalkMap g x) :
+    f = g := by
+  obtain ⟨f, fc⟩ := f
+  obtain ⟨g, gc⟩ := g
+  obtain rfl : f = g := h
+  congr
+  ext U s
+  refine section_ext X.sheaf _ _ _ fun x ↦ show X.presheaf.germ x _ = X.presheaf.germ x _ from ?_
+  erw [← PresheafedSpace.stalkMap_germ_apply ⟨f, fc⟩, ← PresheafedSpace.stalkMap_germ_apply ⟨f, gc⟩]
+  simp [h']
+
+lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
+    (h₁ : Function.Injective f.base)
+    (h₂ : ∀ x, Epi (stalkMap f x)) : Mono f := by
+  constructor
+  intro Z ⟨g, gc⟩ ⟨h, hc⟩ e
+  obtain rfl : g = h := ConcreteCategory.hom_ext _ _ fun x ↦ h₁ congr(($e).base x)
+  refine SheafedSpace.hom_stalk_ext ⟨g, gc⟩ ⟨g, hc⟩ rfl fun x ↦ ?_
+  rw [← cancel_epi (stalkMap f (g x)), stalkCongr_hom, stalkSpecializes_refl, Category.id_comp,
+    ← stalkMap.comp ⟨g, gc⟩ f, ← stalkMap.comp ⟨g, hc⟩ f]
+  congr 1
+
+end ConcreteCategory
 
 end SheafedSpace
 
