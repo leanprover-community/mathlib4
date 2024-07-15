@@ -336,7 +336,7 @@ theorem Measurable.ite {p : α → Prop} {_ : DecidablePred p} (hp : MeasurableS
   Measurable.piecewise hp hf hg
 #align measurable.ite Measurable.ite
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.indicator [Zero β] (hf : Measurable f) (hs : MeasurableSet s) :
     Measurable (s.indicator f) :=
   hf.piecewise hs measurable_const
