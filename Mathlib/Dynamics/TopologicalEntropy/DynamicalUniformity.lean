@@ -8,20 +8,25 @@ import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Dynamical uniformities
-We implement Bowen-Dinaburg's definitions of the topological entropy. The most common version
-of this definition uses metric spaces and then defines dynamical balls. To get a more flexible
-version of topological entropy, we work instead with uniform spaces. Dynamical balls are
-replaced by (what I called) dynamical uniformities.
+Bowen-Dinaburg's definition of topological entropy of a transformation `T` in a metric space
+`(X, d)` relies on the so-called dynamical balls. These balls are sets
+`B (x, ε, n) = { y | ∀ k < n, d(T^[k] x, T^[k] y) < ε }`.
 
-The nomenclature may be changed.
+We implement Bowen-Dinaburg's definitions in the more general context of uniform spaces. Dynamical
+balls are replaced by what we call dynamical uniformities. This file collects all general lemmas
+about these objects.
+
+## Main definitions
+- `DynamicalUni`: dynamical uniformity associated with a given transformation `T`, uniformity `U`
+and time `n`.
+
+## Tags
+entropy
 -/
 
 namespace DynamicalUniformity
 
-open Prod UniformSpace
-
-/--Shorthand for the space of uniform neighborhoods-/
-notation "𝓤" => uniformity
+open Prod Uniformity UniformSpace
 
 variable {X : Type*}
 
@@ -33,14 +38,13 @@ theorem dynamical_uni_inter_Ico (T : X → X) (U : Set (X × X)) (n : ℕ) :
     DynamicalUni T U n = ⋂ k : Set.Ico 0 n, (map T T)^[k] ⁻¹' U := by
   simp only [DynamicalUni, Set.iInter_coe_set, Set.mem_Ico, zero_le, true_and]
 
-theorem dynamical_uni_mem (T : X → X) (U : Set (X × X)) (n : ℕ) (x y : X) :
+theorem dynamical_uni_mem {T : X → X} {U : Set (X × X)} {n : ℕ} {x y : X} :
     (x, y) ∈ DynamicalUni T U n ↔ ∀ k < n, (T^[k] x, T^[k] y) ∈ U := by
   simp only [DynamicalUni, map_iterate, Set.mem_preimage, Set.mem_iInter, map_apply]
 
-theorem dynamical_balls_mem (T : X → X) (U : Set (X × X)) (n : ℕ) (x y : X) :
+theorem dynamical_balls_mem {T : X → X} {U : Set (X × X)} {n : ℕ} {x y : X} :
     y ∈ ball x (DynamicalUni T U n) ↔ ∀ k < n, T^[k] y ∈ ball (T^[k] x) U := by
-  simp only [ball, Set.mem_preimage]
-  exact dynamical_uni_mem T U n x y
+  simp only [ball, Set.mem_preimage]; exact dynamical_uni_mem
 
 theorem dynamical_uni_of_uni [UniformSpace X] {T : X → X} (h : UniformContinuous T)
     {U : Set (X × X)} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
@@ -67,7 +71,7 @@ theorem dynamical_uni_of_symm_is_symm (T : X → X) {U : Set (X × X)} (h : Symm
   exact SymmetricRel.mk_mem_comm h
 
 theorem dynamical_uni_of_comp_is_comp (T : X → X) (U V : Set (X × X)) (n : ℕ) :
-    compRel (DynamicalUni T U n) (DynamicalUni T V n) ⊆ DynamicalUni T (compRel U V) n := by
+    (DynamicalUni T U n) ○ (DynamicalUni T V n) ⊆ DynamicalUni T (U ○ V) n := by
   simp only [DynamicalUni, map_iterate, Set.subset_iInter_iff]
   intro k k_n xy xy_comp
   simp only [compRel, Set.mem_iInter, Set.mem_preimage, map_apply, Set.mem_setOf_eq] at xy_comp ⊢
@@ -103,7 +107,7 @@ theorem dynamical_time_one {T : X → X} {U : Set (X × X)} :
 
 theorem inter_of_dynamical_balls (T : X → X) (n : ℕ) {U : Set (X × X)} (U_symm : SymmetricRel U)
     (x y : X) (h : (ball x (DynamicalUni T U n) ∩ ball y (DynamicalUni T U n)).Nonempty) :
-    x ∈ ball y (DynamicalUni T (compRel U U) n) := by
+    x ∈ ball y (DynamicalUni T (U ○ U) n) := by
   rcases h with ⟨z, z_Bx, z_By⟩
   rw [mem_ball_symmetry (dynamical_uni_of_symm_is_symm T U_symm n)] at z_Bx
   exact dynamical_uni_of_comp_is_comp T U U n (mem_ball_comp z_By z_Bx)
@@ -133,9 +137,9 @@ theorem dynamical_uni_prod {Y : Type*} (S : X → X) (T : Y → Y) (U : Set (X �
     DynamicalUni (map S T) (UniformityProd U V) n =
     UniformityProd (DynamicalUni S U n) (DynamicalUni T V n) := by
   ext xy
-  rw [dynamical_uni_mem (map S T) (UniformityProd U V) n xy.1 xy.2]
+  rw [dynamical_uni_mem]
   simp only [UniformityProd, Set.mem_setOf_eq]
-  rw [dynamical_uni_mem S U n xy.1.1 xy.2.1, dynamical_uni_mem T V n xy.1.2 xy.2.2, ← forall₂_and]
+  rw [dynamical_uni_mem, dynamical_uni_mem, ← forall₂_and]
   refine forall₂_congr fun k _ ↦ ?_
   simp only [map_iterate, map_fst, map_snd]
 
