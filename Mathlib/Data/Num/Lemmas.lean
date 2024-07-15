@@ -16,14 +16,6 @@ import Mathlib.Data.Num.Bitwise
 # Properties of the binary representation of integers
 -/
 
-/-
-Porting note:
-`bit0` and `bit1` are deprecated because it is mainly used to represent number literal in Lean3 but
-not in Lean4 anymore. However, this file uses them for encoding numbers so this linter is
-unnecessary.
--/
-set_option linter.deprecated false
-
 -- Porting note: Required for the notation `-[n+1]`.
 open Int Function
 
@@ -44,20 +36,20 @@ theorem cast_one' [One α] [Add α] : (PosNum.one : α) = 1 :=
 #align pos_num.cast_one' PosNum.cast_one'
 
 @[simp, norm_cast]
-theorem cast_bit0 [One α] [Add α] (n : PosNum) : (n.bit0 : α) = _root_.bit0 (n : α) :=
+theorem cast_bit0 [One α] [Add α] (n : PosNum) : (n.bit0 : α) = (n : α) + n :=
   rfl
 #align pos_num.cast_bit0 PosNum.cast_bit0
 
 @[simp, norm_cast]
-theorem cast_bit1 [One α] [Add α] (n : PosNum) : (n.bit1 : α) = _root_.bit1 (n : α) :=
+theorem cast_bit1 [One α] [Add α] (n : PosNum) : (n.bit1 : α) = ((n : α) + n) + 1 :=
   rfl
 #align pos_num.cast_bit1 PosNum.cast_bit1
 
 @[simp, norm_cast]
 theorem cast_to_nat [AddMonoidWithOne α] : ∀ n : PosNum, ((n : ℕ) : α) = n
   | 1 => Nat.cast_one
-  | bit0 p => (Nat.cast_bit0 _).trans <| congr_arg _root_.bit0 p.cast_to_nat
-  | bit1 p => (Nat.cast_bit1 _).trans <| congr_arg _root_.bit1 p.cast_to_nat
+  | bit0 p => by dsimp; rw [Nat.cast_add, p.cast_to_nat]
+  | bit1 p => by dsimp; rw [Nat.cast_add, Nat.cast_add, Nat.cast_one, p.cast_to_nat]
 #align pos_num.cast_to_nat PosNum.cast_to_nat
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
@@ -74,7 +66,7 @@ theorem succ_to_nat : ∀ n, (succ n : ℕ) = n + 1
   | 1 => rfl
   | bit0 p => rfl
   | bit1 p =>
-    (congr_arg _root_.bit0 (succ_to_nat p)).trans <|
+    (congr_arg (fun n ↦ n + n) (succ_to_nat p)).trans <|
       show ↑p + 1 + ↑p + 1 = ↑p + ↑p + 1 + 1 by simp [add_left_comm]
 #align pos_num.succ_to_nat PosNum.succ_to_nat
 
@@ -88,12 +80,12 @@ theorem add_one (n : PosNum) : n + 1 = succ n := by cases n <;> rfl
 theorem add_to_nat : ∀ m n, ((m + n : PosNum) : ℕ) = m + n
   | 1, b => by rw [one_add b, succ_to_nat, add_comm, cast_one]
   | a, 1 => by rw [add_one a, succ_to_nat, cast_one]
-  | bit0 a, bit0 b => (congr_arg _root_.bit0 (add_to_nat a b)).trans <| add_add_add_comm _ _ _ _
+  | bit0 a, bit0 b => (congr_arg (fun n ↦ n + n) (add_to_nat a b)).trans <| add_add_add_comm _ _ _ _
   | bit0 a, bit1 b =>
-    (congr_arg _root_.bit1 (add_to_nat a b)).trans <|
+    (congr_arg (fun n ↦ (n + n) + 1) (add_to_nat a b)).trans <|
       show (a + b + (a + b) + 1 : ℕ) = a + a + (b + b + 1) by simp [add_left_comm]
   | bit1 a, bit0 b =>
-    (congr_arg _root_.bit1 (add_to_nat a b)).trans <|
+    (congr_arg (fun n ↦ (n + n) + 1) (add_to_nat a b)).trans <|
       show (a + b + (a + b) + 1 : ℕ) = a + a + 1 + (b + b) by simp [add_comm, add_left_comm]
   | bit1 a, bit1 b =>
     show (succ (a + b) + succ (a + b) : ℕ) = a + a + 1 + (b + b + 1) by
@@ -110,14 +102,14 @@ theorem add_succ : ∀ m n : PosNum, m + succ n = succ (m + n)
   | bit1 a, bit1 b => congr_arg bit1 (add_succ a b)
 #align pos_num.add_succ PosNum.add_succ
 
-theorem bit0_of_bit0 : ∀ n, _root_.bit0 n = bit0 n
+theorem bit0_of_bit0 : ∀ n, n + n = bit0 n
   | 1 => rfl
   | bit0 p => congr_arg bit0 (bit0_of_bit0 p)
-  | bit1 p => show bit0 (succ (_root_.bit0 p)) = _ by rw [bit0_of_bit0 p, succ]
+  | bit1 p => show bit0 (succ (p + p)) = _ by rw [bit0_of_bit0 p, succ]
 #align pos_num.bit0_of_bit0 PosNum.bit0_of_bit0
 
-theorem bit1_of_bit1 (n : PosNum) : _root_.bit1 n = bit1 n :=
-  show _root_.bit0 n + 1 = bit1 n by rw [add_one, bit0_of_bit0, succ]
+theorem bit1_of_bit1 (n : PosNum) : (n + n) + 1 = bit1 n :=
+  show (n + n) + 1 = bit1 n by rw [add_one, bit0_of_bit0, succ]
 #align pos_num.bit1_of_bit1 PosNum.bit1_of_bit1
 
 @[norm_cast]
@@ -224,12 +216,12 @@ theorem add_succ : ∀ m n : Num, m + succ n = succ (m + n)
   | pos p, pos q => congr_arg pos (PosNum.add_succ _ _)
 #align num.add_succ Num.add_succ
 
-theorem bit0_of_bit0 : ∀ n : Num, bit0 n = n.bit0
+theorem bit0_of_bit0 : ∀ n : Num, n + n = n.bit0
   | 0 => rfl
   | pos p => congr_arg pos p.bit0_of_bit0
 #align num.bit0_of_bit0 Num.bit0_of_bit0
 
-theorem bit1_of_bit1 : ∀ n : Num, bit1 n = n.bit1
+theorem bit1_of_bit1 : ∀ n : Num, (n + n) + 1 = n.bit1
   | 0 => rfl
   | pos p => congr_arg pos p.bit1_of_bit1
 #align num.bit1_of_bit1 Num.bit1_of_bit1
@@ -255,9 +247,8 @@ theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
   @(Nat.binaryRec (by simp [zero_add]) fun b n ih => by
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
-      simp only [← bit1_of_bit1, ← bit0_of_bit0, cond, _root_.bit1]
-    · erw [show n.bit true + 1 = (n + 1).bit false by
-        simpa [Nat.bit, _root_.bit1, _root_.bit0] using Nat.add_left_comm n 1 1,
+      simp only [← bit1_of_bit1, ← bit0_of_bit0, cond]
+    · erw [show n.bit true + 1 = (n + 1).bit false by simp [Nat.bit, mul_add],
         ofNat'_bit, ofNat'_bit, ih]
       simp only [cond, add_one, bit1_succ])
 #align num.of_nat'_succ Num.ofNat'_succ
@@ -350,8 +341,10 @@ namespace PosNum
 @[simp]
 theorem of_to_nat' : ∀ n : PosNum, Num.ofNat' (n : ℕ) = Num.pos n
   | 1 => by erw [@Num.ofNat'_bit true 0, Num.ofNat'_zero]; rfl
-  | bit0 p => by erw [@Num.ofNat'_bit false, of_to_nat' p]; rfl
-  | bit1 p => by erw [@Num.ofNat'_bit true, of_to_nat' p]; rfl
+  | bit0 p => by
+      simpa only [Nat.bit_false, cond_false, two_mul, of_to_nat' p] using Num.ofNat'_bit false p
+  | bit1 p => by
+      simpa only [Nat.bit_true, cond_true, two_mul, of_to_nat' p] using Num.ofNat'_bit true p
 #align pos_num.of_to_nat' PosNum.of_to_nat'
 
 end PosNum
@@ -364,6 +357,7 @@ theorem of_to_nat' : ∀ n : Num, Num.ofNat' (n : ℕ) = n
   | pos p => p.of_to_nat'
 #align num.of_to_nat' Num.of_to_nat'
 
+set_option linter.deprecated false in
 lemma toNat_injective : Injective (castNum : Num → ℕ) := LeftInverse.injective of_to_nat'
 
 @[norm_cast]
@@ -529,7 +523,7 @@ theorem pred'_to_nat : ∀ n, (pred' n : ℕ) = Nat.pred n
     have : Nat.succ ↑(pred' n) = ↑n := by
       rw [pred'_to_nat n, Nat.succ_pred_eq_of_pos (to_nat_pos n)]
     match (motive :=
-        ∀ k : Num, Nat.succ ↑k = ↑n → ↑(Num.casesOn k 1 bit1 : PosNum) = Nat.pred (_root_.bit0 n))
+        ∀ k : Num, Nat.succ ↑k = ↑n → ↑(Num.casesOn k 1 bit1 : PosNum) = Nat.pred (n + n))
       pred' n, this with
     | 0, (h : ((1 : Num) : ℕ) = n) => by rw [← to_nat_inj.1 h]; rfl
     | Num.pos p, (h : Nat.succ ↑p = n) => by rw [← h]; exact (Nat.succ_add p p).symm
@@ -559,8 +553,9 @@ theorem dvd_to_nat {m n : PosNum} : (m : ℕ) ∣ n ↔ m ∣ n :=
 theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
   | 1 => Nat.size_one.symm
   | bit0 n => by
-    rw [size, succ_to_nat, size_to_nat n, cast_bit0, Nat.size_bit0 <| ne_of_gt <| to_nat_pos n]
-  | bit1 n => by rw [size, succ_to_nat, size_to_nat n, cast_bit1, Nat.size_bit1]
+      rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul,
+        Nat.size_bit0 <| ne_of_gt <| to_nat_pos n]
+  | bit1 n => by rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, Nat.size_bit1]
 #align pos_num.size_to_nat PosNum.size_to_nat
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
@@ -649,7 +644,7 @@ theorem cast_to_num (n : PosNum) : ↑n = Num.pos n := by rw [← cast_to_nat, �
 #align pos_num.cast_to_num PosNum.cast_to_num
 
 @[simp, norm_cast]
-theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by cases b <;> rfl
+theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by cases b <;> simp [bit, two_mul]
 #align pos_num.bit_to_nat PosNum.bit_to_nat
 
 @[simp, norm_cast]
@@ -708,7 +703,8 @@ variable {α : Type*}
 
 open PosNum
 
-theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by cases b <;> cases n <;> rfl
+theorem bit_to_nat (b n) : (bit b n : ℕ) = Nat.bit b n := by
+  cases b <;> cases n <;> simp [bit, two_mul] <;> rfl
 #align num.bit_to_nat Num.bit_to_nat
 
 theorem cast_succ' [AddMonoidWithOne α] (n) : (succ' n : α) = n + 1 := by
@@ -725,13 +721,13 @@ theorem cast_add [Semiring α] (m n) : ((m + n : Num) : α) = m + n := by
 #align num.cast_add Num.cast_add
 
 @[simp, norm_cast]
-theorem cast_bit0 [Semiring α] (n : Num) : (n.bit0 : α) = _root_.bit0 (n : α) := by
-  rw [← bit0_of_bit0, _root_.bit0, cast_add]; rfl
+theorem cast_bit0 [Semiring α] (n : Num) : (n.bit0 : α) = 2 * (n : α) := by
+  rw [← bit0_of_bit0, two_mul, cast_add]
 #align num.cast_bit0 Num.cast_bit0
 
 @[simp, norm_cast]
-theorem cast_bit1 [Semiring α] (n : Num) : (n.bit1 : α) = _root_.bit1 (n : α) := by
-  rw [← bit1_of_bit1, _root_.bit1, bit0_of_bit0, cast_add, cast_bit0]; rfl
+theorem cast_bit1 [Semiring α] (n : Num) : (n.bit1 : α) = 2 * (n : α) + 1 := by
+  rw [← bit1_of_bit1, bit0_of_bit0, cast_add, cast_bit0]; rfl
 #align num.cast_bit1 Num.cast_bit1
 
 @[simp, norm_cast]
@@ -906,7 +902,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
     all_goals
       repeat
         rw [show ∀ b n, (pos (PosNum.bit b n) : ℕ) = Nat.bit b ↑n by
-          intros b _; cases b <;> rfl]
+          intros b _; cases b <;> simp_all]
       rw [Nat.bitwise_bit gff]
     any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
     any_goals rw [Nat.bitwise_zero_left, ← Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
@@ -947,19 +943,18 @@ theorem castNum_shiftLeft (m : Num) (n : Nat) : ↑(m <<< n) = (m : ℕ) <<< (n 
   simp only [cast_pos]
   induction' n with n IH
   · rfl
-  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH,
-        Nat.bit0_val, pow_succ, ← mul_assoc, mul_comm,
-        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl]
+  simp [PosNum.shiftl_succ_eq_bit0_shiftl, Nat.shiftLeft_succ, IH, pow_succ, ← mul_assoc, mul_comm,
+        -shiftl_eq_shiftLeft, -PosNum.shiftl_eq_shiftLeft, shiftl, mul_two]
 #align num.shiftl_to_nat Num.castNum_shiftLeft
 
 @[simp, norm_cast]
-
-theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ)  := by
+theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n : ℕ) := by
   cases' m with m <;> dsimp only [← shiftr_eq_shiftRight, shiftr]
   · symm
     apply Nat.zero_shiftRight
   induction' n with n IH generalizing m
   · cases m <;> rfl
+  have hdiv2 : ∀ m, Nat.div2 (m + m) = m := by intro; rw [Nat.div2_val]; omega
   cases' m with m m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]
     symm
@@ -967,16 +962,16 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
     simp
   · trans
     · apply IH
-    change Nat.shiftRight m n = Nat.shiftRight (_root_.bit1 m) (n + 1)
+    change Nat.shiftRight m n = Nat.shiftRight (m + m + 1) (n + 1)
     rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
-    simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
+    simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
   · trans
     · apply IH
-    change Nat.shiftRight m n = Nat.shiftRight (_root_.bit0 m) (n + 1)
+    change Nat.shiftRight m n = Nat.shiftRight (m + m) (n + 1)
     rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
-    simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
+    simp [-add_assoc, Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, hdiv2]
 #align num.shiftr_to_nat Num.castNum_shiftRight
 
 @[simp]
@@ -990,11 +985,11 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     induction' n with n IH generalizing m <;> cases' m with m m
         <;> dsimp only [PosNum.testBit, Nat.zero_eq]
     · rfl
-    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_zero]
-    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_zero]
+    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_zero]
     · simp
-    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_bit_succ, IH]
-    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_bit_succ, IH]
+    · rw [PosNum.cast_bit1, ← two_mul, ← congr_fun Nat.bit_true, Nat.testBit_bit_succ, IH]
+    · rw [PosNum.cast_bit0, ← two_mul, ← congr_fun Nat.bit_false, Nat.testBit_bit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
 
 end Num
@@ -1086,29 +1081,29 @@ theorem cast_to_int [AddGroupWithOne α] : ∀ n : ZNum, ((n : ℤ) : α) = n
   | neg p => by rw [cast_neg, cast_neg, Int.cast_neg, PosNum.cast_to_int]
 #align znum.cast_to_int ZNum.cast_to_int
 
-theorem bit0_of_bit0 : ∀ n : ZNum, bit0 n = n.bit0
+theorem bit0_of_bit0 : ∀ n : ZNum, n + n = n.bit0
   | 0 => rfl
   | pos a => congr_arg pos a.bit0_of_bit0
   | neg a => congr_arg neg a.bit0_of_bit0
 #align znum.bit0_of_bit0 ZNum.bit0_of_bit0
 
-theorem bit1_of_bit1 : ∀ n : ZNum, bit1 n = n.bit1
+theorem bit1_of_bit1 : ∀ n : ZNum, n + n + 1 = n.bit1
   | 0 => rfl
   | pos a => congr_arg pos a.bit1_of_bit1
-  | neg a => show PosNum.sub' 1 (_root_.bit0 a) = _ by rw [PosNum.one_sub', a.bit0_of_bit0]; rfl
+  | neg a => show PosNum.sub' 1 (a + a) = _ by rw [PosNum.one_sub', a.bit0_of_bit0]; rfl
 #align znum.bit1_of_bit1 ZNum.bit1_of_bit1
 
 @[simp, norm_cast]
-theorem cast_bit0 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit0 : α) = bit0 (n : α)
+theorem cast_bit0 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit0 : α) = (n : α) + n
   | 0 => (add_zero _).symm
   | pos p => by rw [ZNum.bit0, cast_pos, cast_pos]; rfl
   | neg p => by
-    rw [ZNum.bit0, cast_neg, cast_neg, PosNum.cast_bit0, _root_.bit0, _root_.bit0, neg_add_rev]
+    rw [ZNum.bit0, cast_neg, cast_neg, PosNum.cast_bit0, neg_add_rev]
 #align znum.cast_bit0 ZNum.cast_bit0
 
 @[simp, norm_cast]
-theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = bit1 (n : α)
-  | 0 => by simp [ZNum.bit1, _root_.bit1, _root_.bit0]
+theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α) + n) + 1
+  | 0 => by simp [ZNum.bit1]
   | pos p => by rw [ZNum.bit1, cast_pos, cast_pos]; rfl
   | neg p => by
     rw [ZNum.bit1, cast_neg, cast_neg]
@@ -1116,22 +1111,22 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = bit1 (n :
       have ep : p = _ := (succ'_pred' p).symm.trans (congr_arg Num.succ' e)
     · conv at ep => change p = 1
       subst p
-      simp [_root_.bit1, _root_.bit0]
+      simp
     -- Porting note: `rw [Num.succ']` yields a `match` pattern.
     · dsimp only [Num.succ'] at ep
       subst p
       have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (- ↑a : ℤ) 1]
-      simpa [_root_.bit1, _root_.bit0] using this
+      simpa using this
 #align znum.cast_bit1 ZNum.cast_bit1
 
 @[simp]
-theorem cast_bitm1 [AddGroupWithOne α] (n : ZNum) : (n.bitm1 : α) = bit0 (n : α) - 1 := by
+theorem cast_bitm1 [AddGroupWithOne α] (n : ZNum) : (n.bitm1 : α) = (n : α) + n - 1 := by
   conv =>
     lhs
     rw [← zneg_zneg n]
   rw [← zneg_bit1, cast_zneg, cast_bit1]
   have : ((-1 + n + n : ℤ) : α) = (n + n + -1 : ℤ) := by simp [add_comm, add_left_comm]
-  simpa [_root_.bit1, _root_.bit0, sub_eq_add_neg] using this
+  simpa [sub_eq_add_neg] using this
 #align znum.cast_bitm1 ZNum.cast_bitm1
 
 theorem add_zero (n : ZNum) : n + 0 = n := by cases n <;> rfl
@@ -1154,8 +1149,12 @@ variable {α : Type*}
 
 theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
-  | bit0 p => (ZNum.bit0_of_bit0 p).trans <| congr_arg _ (cast_to_znum p)
-  | bit1 p => (ZNum.bit1_of_bit1 p).trans <| congr_arg _ (cast_to_znum p)
+  | bit0 p => by
+      have := congr_arg ZNum.bit0 (cast_to_znum p)
+      rwa [← ZNum.bit0_of_bit0] at this
+  | bit1 p => by
+      have := congr_arg ZNum.bit1 (cast_to_znum p)
+      rwa [← ZNum.bit1_of_bit1] at this
 #align pos_num.cast_to_znum PosNum.cast_to_znum
 
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
@@ -1169,21 +1168,21 @@ theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m -
   | bit0 a, bit0 b => by
     rw [sub', ZNum.cast_bit0, cast_sub' a b]
     have : ((a + -b + (a + -b) : ℤ) : α) = a + a + (-b + -b) := by simp [add_left_comm]
-    simpa [_root_.bit0, sub_eq_add_neg] using this
+    simpa [sub_eq_add_neg] using this
   | bit0 a, bit1 b => by
     rw [sub', ZNum.cast_bitm1, cast_sub' a b]
     have : ((-b + (a + (-b + -1)) : ℤ) : α) = (a + -1 + (-b + -b) : ℤ) := by
       simp [add_comm, add_left_comm]
-    simpa [_root_.bit1, _root_.bit0, sub_eq_add_neg] using this
+    simpa [sub_eq_add_neg] using this
   | bit1 a, bit0 b => by
     rw [sub', ZNum.cast_bit1, cast_sub' a b]
     have : ((-b + (a + (-b + 1)) : ℤ) : α) = (a + 1 + (-b + -b) : ℤ) := by
       simp [add_comm, add_left_comm]
-    simpa [_root_.bit1, _root_.bit0, sub_eq_add_neg] using this
+    simpa [sub_eq_add_neg] using this
   | bit1 a, bit1 b => by
     rw [sub', ZNum.cast_bit0, cast_sub' a b]
     have : ((-b + (a + -b) : ℤ) : α) = a + (-b + -b) := by simp [add_left_comm]
-    simpa [_root_.bit1, _root_.bit0, sub_eq_add_neg] using this
+    simpa [sub_eq_add_neg] using this
 #align pos_num.cast_sub' PosNum.cast_sub'
 
 theorem to_nat_eq_succ_pred (n : PosNum) : (n : ℕ) = n.pred' + 1 := by
@@ -1564,7 +1563,7 @@ end ZNum
 
 namespace PosNum
 
-theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * _root_.bit0 (q : ℕ) = n)
+theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q : ℕ) + q) = n)
     (h₂ : (r : ℕ) < 2 * d) :
     ((divModAux d q r).2 + d * (divModAux d q r).1 : ℕ) = ↑n ∧ ((divModAux d q r).2 : ℕ) < d := by
   unfold divModAux
@@ -1574,13 +1573,14 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * _ro
     rw [← ZNum.to_int_inj, Num.cast_toZNum, Num.cast_sub', sub_eq_iff_eq_add, ← Int.natCast_inj]
     simp
   cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂ <;> simp [divModAux]
-  · refine ⟨h₁, lt_of_not_ge fun h => ?_⟩
+  · rw [two_mul]
+    refine ⟨h₁, lt_of_not_ge fun h => ?_⟩
     cases' Nat.le.dest h with r₂ e'
     rw [← Num.to_of_nat r₂, add_comm] at e'
     cases e.symm.trans (this.2 e'.symm)
   · have := this.1 e
     constructor
-    · rwa [_root_.bit1, add_comm _ 1, mul_add, mul_one, ← add_assoc, ← this]
+    · rwa [two_mul, add_comm _ 1, mul_add, mul_one, ← add_assoc, ← this]
     · rwa [this, two_mul, add_lt_add_iff_right] at h₂
 #align pos_num.divmod_to_nat_aux PosNum.divMod_to_nat_aux
 
@@ -1595,19 +1595,16 @@ theorem divMod_to_nat (d n : PosNum) :
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux <;> simp
-    · rw [_root_.bit1, _root_.bit1, add_right_comm, bit0_eq_two_mul (n : ℕ), ← IH.1, mul_add, ←
-        bit0_eq_two_mul, mul_left_comm, ← bit0_eq_two_mul]
-    · rw [← bit0_eq_two_mul]
-      exact Nat.bit1_lt_bit0 IH.2
+    · rw [← add_assoc, ← add_assoc, ← two_mul, ← two_mul, add_right_comm,
+        mul_left_comm, ← mul_add, IH.1]
+    · exact IH.2
   · unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; cases' divMod d n with q r; intro IH
     simp only [divMod] at IH ⊢
     apply divMod_to_nat_aux <;> simp
-    · rw [bit0_eq_two_mul (n : ℕ), ← IH.1, mul_add, ← bit0_eq_two_mul, mul_left_comm, ←
-        bit0_eq_two_mul]
-    · rw [← bit0_eq_two_mul]
-      exact Nat.bit0_lt IH.2
+    · rw [← two_mul, ← two_mul, mul_left_comm, ← mul_add, ← IH.1]
+    · exact IH.2
 #align pos_num.divmod_to_nat PosNum.divMod_to_nat
 
 @[simp]
@@ -1773,7 +1770,7 @@ namespace Int
 
 /-- Cast a `SNum` to the corresponding integer. -/
 def ofSnum : SNum → ℤ :=
-  SNum.rec' (fun a => cond a (-1) 0) fun a _p IH => cond a (bit1 IH) (bit0 IH)
+  SNum.rec' (fun a => cond a (-1) 0) fun a _p IH => cond a (2 * IH + 1) (2 * IH)
 #align int.of_snum Int.ofSnum
 
 instance snumCoe : Coe SNum ℤ :=

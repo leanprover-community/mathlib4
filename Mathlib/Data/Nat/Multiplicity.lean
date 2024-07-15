@@ -304,9 +304,5 @@ theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicit
     · simpa [bit_val]
     · suffices multiplicity 2 (2 * n + 1) + multiplicity 2 (2 * n)! < ↑(2 * n) + 1 by
         simpa [multiplicity.mul, h2, ← two_mul, bit_val, factorial]
-      rw [multiplicity_eq_zero.2 (two_not_dvd_two_mul_add_one n), zero_add]
       refine this.trans ?_
       exact mod_cast lt_succ_self _
-#align nat.multiplicity_two_factorial_lt Nat.multiplicity_two_factorial_lt
-
-end Nat

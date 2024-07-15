@@ -209,13 +209,12 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
       ⨆ (φ : α →ₛ ℝ≥0) (_ : ∀ x, ↑(φ x) ≤ f x), (φ.map ((↑) : ℝ≥0 → ℝ≥0∞)).lintegral μ := by
   rw [lintegral]
   refine
-    le_antisymm (iSup₂_le fun φ hφ => ?_) (iSup_mono' fun φ => ⟨φ.map ((↑) : ℝ≥0 → ℝ≥0∞), le_rfl⟩)
+    le_antisymm (iSup₂_le fun φ hφ ↦ ?_) (iSup_mono' fun φ ↦ ⟨φ.map ((↑) : ℝ≥0 → ℝ≥0∞), le_rfl⟩)
   by_cases h : ∀ᵐ a ∂μ, φ a ≠ ∞
   · let ψ := φ.map ENNReal.toNNReal
     replace h : ψ.map ((↑) : ℝ≥0 → ℝ≥0∞) =ᵐ[μ] φ := h.mono fun a => ENNReal.coe_toNNReal
     have : ∀ x, ↑(ψ x) ≤ f x := fun x => le_trans ENNReal.coe_toNNReal_le_self (hφ x)
-    exact
-      le_iSup_of_le (φ.map ENNReal.toNNReal) (le_iSup_of_le this (ge_of_eq <| lintegral_congr h))
+    exact le_iSup₂_of_le (φ.map ENNReal.toNNReal) this (ge_of_eq <| lintegral_congr h)
   · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_zero_iff_ae_nmem.1 h
     refine le_trans le_top (ge_of_eq <| (iSup_eq_top _).2 fun b hb => ?_)
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
@@ -428,7 +427,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       (Finset.sum_congr rfl fun x _ => by
         rw [measure_iUnion_eq_iSup (mono x).directed_le, ENNReal.mul_iSup])
     _ = ⨆ n, ∑ r ∈ (rs.map c).range, r * μ (rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a }) := by
-      refine ENNReal.finset_sum_iSup_nat fun p i j h ↦ ?_
+      refine ENNReal.finsetSum_iSup_of_monotone fun p i j h ↦ ?_
       gcongr _ * μ ?_
       exact mono p h
     _ ≤ ⨆ n : ℕ, ((rs.map c).restrict { a | (rs.map c) a ≤ f n a }).lintegral μ := by
@@ -1729,24 +1728,16 @@ theorem lintegral_unique [Unique α] (f : α → ℝ≥0∞) : ∫⁻ x, f x ∂
 
 end Countable
 
-theorem ae_lt_top {f : α → ℝ≥0∞} (hf : Measurable f) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
+theorem ae_lt_top' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
     ∀ᵐ x ∂μ, f x < ∞ := by
   simp_rw [ae_iff, ENNReal.not_lt_top]
-  by_contra h
-  apply h2f.lt_top.not_le
-  have : (f ⁻¹' {∞}).indicator ⊤ ≤ f := by
-    intro x
-    by_cases hx : x ∈ f ⁻¹' {∞} <;> [simpa [indicator_of_mem hx]; simp [indicator_of_not_mem hx]]
-  convert lintegral_mono this
-  rw [lintegral_indicator _ (hf (measurableSet_singleton ∞))]
-  simp [ENNReal.top_mul', preimage, h]
-#align measure_theory.ae_lt_top MeasureTheory.ae_lt_top
-
-theorem ae_lt_top' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
-    ∀ᵐ x ∂μ, f x < ∞ :=
-  haveI h2f_meas : ∫⁻ x, hf.mk f x ∂μ ≠ ∞ := by rwa [← lintegral_congr_ae hf.ae_eq_mk]
-  (ae_lt_top hf.measurable_mk h2f_meas).mp (hf.ae_eq_mk.mono fun x hx h => by rwa [hx])
+  exact measure_eq_top_of_lintegral_ne_top hf h2f
 #align measure_theory.ae_lt_top' MeasureTheory.ae_lt_top'
+
+theorem ae_lt_top {f : α → ℝ≥0∞} (hf : Measurable f) (h2f : ∫⁻ x, f x ∂μ ≠ ∞) :
+    ∀ᵐ x ∂μ, f x < ∞ :=
+  ae_lt_top' hf.aemeasurable h2f
+#align measure_theory.ae_lt_top MeasureTheory.ae_lt_top
 
 /-- Lebesgue integral of a bounded function over a set of finite measure is finite.
 Note that this lemma assumes no regularity of either `f` or `s`. -/
