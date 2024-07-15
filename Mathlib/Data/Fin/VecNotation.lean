@@ -335,9 +335,10 @@ section bits
 
 set_option linter.deprecated false
 
-theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) = v ∘ bit0 := by
+theorem vecAlt0_vecAppend (v : Fin n → α) :
+    vecAlt0 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ n + n) := by
   ext i
-  simp_rw [Function.comp, bit0, vecAlt0, vecAppend_eq_ite]
+  simp_rw [Function.comp, vecAlt0, vecAppend_eq_ite]
   split_ifs with h <;> congr
   · rw [Fin.val_mk] at h
     exact (Nat.mod_eq_of_lt h).symm
@@ -347,7 +348,8 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
     omega
 #align matrix.vec_alt0_vec_append Matrix.vecAlt0_vecAppend
 
-theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ bit1 := by
+theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
+    vecAlt1 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ (n + n) + 1) := by
   ext i
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
   cases n with
@@ -355,7 +357,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl 
     cases' i with i hi
     simp only [Nat.zero_eq, Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
-    split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
+    split_ifs with h <;> congr
     · simp [Nat.mod_eq_of_lt, h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,
@@ -377,13 +379,13 @@ theorem vecHead_vecAlt1 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) 
 
 @[simp]
 theorem cons_vec_bit0_eq_alt0 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
-    vecCons x u (bit0 i) = vecAlt0 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
+    vecCons x u (i + i) = vecAlt0 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt0_vecAppend]; rfl
 #align matrix.cons_vec_bit0_eq_alt0 Matrix.cons_vec_bit0_eq_alt0
 
 @[simp]
 theorem cons_vec_bit1_eq_alt1 (x : α) (u : Fin n → α) (i : Fin (n + 1)) :
-    vecCons x u (bit1 i) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
+    vecCons x u ((i + i) + 1) = vecAlt1 rfl (vecAppend rfl (vecCons x u) (vecCons x u)) i := by
   rw [vecAlt1_vecAppend]; rfl
 #align matrix.cons_vec_bit1_eq_alt1 Matrix.cons_vec_bit1_eq_alt1
 
@@ -396,7 +398,8 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp [vecAlt0, Nat.add_right_comm, ← Nat.add_assoc]
+  · simp only [← Nat.add_assoc, Nat.add_right_comm, cons_val_succ',
+      cons_vecAppend, Nat.add_eq, vecAlt0]
 #align matrix.cons_vec_alt0 Matrix.cons_vecAlt0
 
 -- Although proved by simp, extracting element 8 of a five-element

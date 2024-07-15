@@ -3,11 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Group.Action
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.Ideal.Basic
 
 #align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
@@ -494,14 +492,12 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
 @[simp] lemma set_smul_bot : s • (⊥ : Submodule R M) = ⊥ :=
   eq_bot_iff.mpr fun x hx ↦ by induction x, hx using set_smul_inductionOn <;> aesop
 
--- TODO: `r • N` should be generalized to allow `r` to be an element of `S`.
-lemma singleton_set_smul [SMulCommClass R R M] (r : R) :
-    ({r} : Set R) • N = r • N := by
+lemma singleton_set_smul [SMulCommClass S R M] (r : S) : ({r} : Set S) • N = r • N := by
   apply set_smul_eq_of_le
-  · rintro r m rfl hm; exact ⟨m, hm, rfl⟩
+  · rintro _ m rfl hm; exact ⟨m, hm, rfl⟩
   · rintro _ ⟨m, hm, rfl⟩
     rw [mem_set_smul_def, Submodule.mem_sInf]
-    intro p hp; exact hp rfl hm
+    intro _ hp; exact hp rfl hm
 
 lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
     x ∈ ({r} : Set S) • N ↔ ∃ (m : M), m ∈ N ∧ x = r • m := by
