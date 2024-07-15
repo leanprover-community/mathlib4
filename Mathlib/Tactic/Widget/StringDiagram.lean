@@ -190,26 +190,89 @@ def Strand.toPenroseVar (s : Strand) : PenroseVar :=
 
 /-! ## Widget for general string diagrams -/
 
-open ProofWidgets Penrose DiagramBuilderM
+open ProofWidgets Penrose
+
+-- TODO: Make a PR on ProofWidget4 about the contents of this section.
+section DiagramBuilderM
+
+/-! # `DiagramBuilderM` -/
+
+/-- A monad to easily build Penrose diagrams in. -/
+abbrev DiagramBuilderM (m : Type → Type) [Monad m] := StateT DiagramState m
+
+namespace DiagramBuilderM
+
+variable {m : Type → Type}
+
+open scoped Jsx in
+/-- Assemble the diagram using the provided domain and style programs.
+
+`none` is returned iff nothing was added to the diagram. -/
+def buildDiagram [Monad m] (dsl sty : String) (maxOptSteps : Nat := 500) :
+    DiagramBuilderM m (Option Html) := do
+  let st ← get
+  if st.sub == "" && st.embeds.isEmpty then
+    return none
+  let mut sub := "AutoLabel All\n"
+  let mut embedHtmls := #[]
+  for (n, (tp, h)) in st.embeds.toArray do
+    sub := sub ++ s!"{tp} {n}\n"
+    embedHtmls := embedHtmls.push (n, h)
+  -- Note: order matters here, embed variables are declared first.
+  sub := sub ++ st.sub
+  return <Diagram
+    embeds={embedHtmls}
+    dsl={dsl} sty={sty} sub={sub}
+    maxOptSteps={maxOptSteps} />
+
+/-- Add an object `nm` of Penrose type `tp`,
+labelled by `h`, to the substance program. -/
+def addEmbed [Monad m] (nm : String) (tp : String) (h : Html) : DiagramBuilderM m Unit := do
+  modify fun st => { st with embeds := st.embeds.insert nm (tp, h) }
+
+open scoped Jsx in
+/-- Add an object of Penrose type `tp`,
+corresponding to (and labelled by) the expression `e`,
+to the substance program.
+Return its Penrose name. -/
+def addExpr [Monad m] [MonadLiftT MetaM m] (tp : String) (e : Expr) : DiagramBuilderM m String := do
+  let nm ← toString <$> Lean.Meta.ppExpr e
+  let h := <InteractiveCode fmt={← Widget.ppExprTagged e} />
+  addEmbed nm tp h
+  return nm
+
+/-- Add an instruction `i` to the substance program. -/
+def addInstruction [Monad m] (i : String) : DiagramBuilderM m Unit := do
+  modify fun st => { st with sub := st.sub ++ s!"{i}\n" }
+
+def run {α : Type} [Monad m] (x : DiagramBuilderM m α) : m α :=
+  x.run' {}
 
 open scoped Jsx in
 /-- Add the variable `v` with the type `tp` to the substance program. -/
-def addPenroseVar (tp : String) (v : PenroseVar) : DiagramBuilderM Unit := do
+def addPenroseVar [Monad m] [MonadLiftT MetaM m] (tp : String) (v : PenroseVar) :
+    DiagramBuilderM m Unit := do
   let h := <InteractiveCode fmt={← Widget.ppExprTagged v.e} />
   addEmbed (toString v) tp h
 
 /-- Add constructor `tp v := nm (vs)` to the substance program. -/
-def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List PenroseVar) :
-    DiagramBuilderM Unit := do
+def addConstructor [Monad m] (tp : String) (v : PenroseVar) (nm : String) (vs : List PenroseVar) :
+    DiagramBuilderM m Unit := do
   let vs' := ", ".intercalate (vs.map (fun v => toString v))
   addInstruction s!"{tp} {v} := {nm} ({vs'})"
+
+end DiagramBuilderM
+
+end DiagramBuilderM
+
+open DiagramBuilderM
 
 open scoped Jsx in
 /-- Construct a string diagram from a Penrose `sub`stance program and expressions `embeds` to
 display as labels in the diagram. -/
 def mkStringDiag (e : Expr) : MonoidalM Html := do
   DiagramBuilderM.run do
-    let e' ← eval e
+    let e' := (← eval e).expr
     let nodes ← e'.nodes
     let strands ← e'.strands
     /- Add 2-morphisms. -/
