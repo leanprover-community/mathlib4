@@ -19,9 +19,9 @@ in `α`
 
 ## Main definitions
 
-* `FreeCommRing α`     : the free commutative ring on a type α
+* `FreeCommRing α`   : the free commutative ring on a type α
 * `lift (f : α → R)` : the ring hom `FreeCommRing α →+* R` induced by functoriality from `f`.
-* `map (f : α → β)`      : the ring hom `FreeCommRing α →*+ FreeCommRing β` induced by
+* `map (f : α → β)`  : the ring hom `FreeCommRing α →*+ FreeCommRing β` induced by
                            functoriality from f.
 
 ## Main results

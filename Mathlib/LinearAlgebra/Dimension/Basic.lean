@@ -371,3 +371,5 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
 #align rank_subsingleton rank_subsingleton
 
 end
+
+end Module
