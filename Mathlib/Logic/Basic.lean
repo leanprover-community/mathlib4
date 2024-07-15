@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Init.Logic
-import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
+import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Basic
 import Batteries.Util.LibraryNote
 import Batteries.Tactic.Lint.Basic
 
@@ -65,22 +66,6 @@ theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → HEq (f a₁) (f a₂)
   | _, _, rfl => HEq.rfl
 #align congr_arg_heq congr_arg_heq
-
-theorem ULift.down_injective {α : Sort _} : Function.Injective (@ULift.down α)
-  | ⟨a⟩, ⟨b⟩, _ => by congr
-#align ulift.down_injective ULift.down_injective
-
-@[simp] theorem ULift.down_inj {α : Sort _} {a b : ULift α} : a.down = b.down ↔ a = b :=
-  ⟨fun h ↦ ULift.down_injective h, fun h ↦ by rw [h]⟩
-#align ulift.down_inj ULift.down_inj
-
-theorem PLift.down_injective : Function.Injective (@PLift.down α)
-  | ⟨a⟩, ⟨b⟩, _ => by congr
-#align plift.down_injective PLift.down_injective
-
-@[simp] theorem PLift.down_inj {a b : PLift α} : a.down = b.down ↔ a = b :=
-  ⟨fun h ↦ PLift.down_injective h, fun h ↦ by rw [h]⟩
-#align plift.down_inj PLift.down_inj
 
 @[simp] theorem eq_iff_eq_cancel_left {b c : α} : (∀ {a}, a = b ↔ a = c) ↔ b = c :=
   ⟨fun h ↦ by rw [← h], fun h a ↦ by rw [h]⟩
@@ -273,7 +258,8 @@ theorem not_imp_comm : ¬a → b ↔ ¬b → a := Decidable.not_imp_comm
 @[simp] theorem not_imp_self : ¬a → a ↔ a := Decidable.not_imp_self
 #align not_imp_self not_imp_self
 
-theorem Imp.swap {a b : Sort*} {c : Prop} : a → b → c ↔ b → a → c := ⟨Function.swap, Function.swap⟩
+theorem Imp.swap {a b : Sort*} {c : Prop} : a → b → c ↔ b → a → c :=
+  ⟨fun h x y ↦ h y x, fun h x y ↦ h y x⟩
 #align imp.swap Imp.swap
 
 alias Iff.not := not_congr
@@ -653,7 +639,8 @@ variable {α β : Sort*} {p q : α → Prop}
 
 #align exists_imp_exists' Exists.imp'
 
-theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y := ⟨swap, swap⟩
+theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y :=
+  ⟨fun f x y ↦ f y x, fun f x y ↦ f y x⟩
 #align forall_swap forall_swap
 
 theorem forall₂_swap
