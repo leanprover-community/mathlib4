@@ -386,5 +386,5 @@ def lintModules (moduleNames : Array String) (style : ErrorFormat) : IO UInt32 :
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
-    formatErrors allUnexpectedErrors style
+  formatErrors allUnexpectedErrors style
   return numberErrorFiles

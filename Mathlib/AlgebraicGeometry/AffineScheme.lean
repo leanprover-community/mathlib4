@@ -225,6 +225,10 @@ instance Scheme.isAffine_affineBasisCover (X : Scheme) (i : X.affineBasisCover.J
   isAffine_Spec _
 #align algebraic_geometry.Scheme.affine_basis_cover_is_affine AlgebraicGeometry.Scheme.isAffine_affineBasisCover
 
+instance Scheme.isAffine_affineOpenCover (X : Scheme) (𝒰 : X.AffineOpenCover) (i: 𝒰.J) :
+    IsAffine (𝒰.openCover.obj i) :=
+  inferInstanceAs (IsAffine (Spec (𝒰.obj i)))
+
 theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rw [Opens.isBasis_iff_nbhd]
   rintro U x (hU : x ∈ (U : Set X))
@@ -233,6 +237,13 @@ theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by
   rcases hS with ⟨i, rfl⟩
   exact isAffineOpen_opensRange _
 #align algebraic_geometry.is_basis_affine_open AlgebraicGeometry.isBasis_affine_open
+
+theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : Opens X) = ⊤ := by
+  apply Opens.ext
+  rw [Opens.coe_iSup]
+  apply IsTopologicalBasis.sUnion_eq
+  rw [← Set.image_eq_range]
+  exact isBasis_affine_open X
 
 theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     (X : Scheme) [IsAffine X] (f : Scheme.Γ.obj (op X)) :
