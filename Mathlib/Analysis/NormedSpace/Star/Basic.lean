@@ -99,7 +99,8 @@ variable [NonUnitalNormedRing E] [StarRing E] [CstarRing E]
 theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ := by
     by_cases hx : x = 0
     · simp [hx]
-    · push_neg at hx
+    · refine le_antisymm ?_ (CstarRing.norm_mul_self_le x)
+      push_neg at hx
       have hx' : 0 < ‖x‖ := norm_pos_iff'.mpr hx
       have h₁ : ∀ z : E, ‖z⋆ * z‖ ≤ ‖z⋆‖ * ‖z‖ := fun z => norm_mul_le z⋆ z
       have h₂ : ∀ z : E, 0 < ‖z‖ → ‖z‖ ≤ ‖z⋆‖ := fun z hz => by
@@ -107,8 +108,7 @@ theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ := by
       have h₃ : ‖x⋆‖ ≤ ‖x‖ := by
         conv_rhs => rw [← star_star x]
         exact h₂ x⋆ (gt_of_ge_of_gt (h₂ x hx') hx')
-      have h₄ : ‖x⋆ * x‖ ≤ ‖x‖ * ‖x‖ := (h₁ x).trans (by gcongr)
-      exact le_antisymm h₄ (CstarRing.norm_mul_self_le x)
+      exact (h₁ x).trans (by gcongr)
 
 -- see Note [lower instance priority]
 /-- In a C*-ring, star preserves the norm. -/
