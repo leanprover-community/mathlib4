@@ -1388,7 +1388,7 @@ variable (f : ContinuousMultilinearMap 𝕜 E G)
 
 /-- A continuous linear map is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff : ‖f‖ = 0 ↔ f = 0 := by
-  simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff f le_rfl, ext_iff]
+  simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff f le_rfl, ContinuousMultilinearMap.ext_iff]
 #align continuous_multilinear_map.op_norm_zero_iff ContinuousMultilinearMap.opNorm_zero_iff
 
 @[deprecated (since := "2024-02-02")] alias op_norm_zero_iff := opNorm_zero_iff

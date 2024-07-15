@@ -74,7 +74,7 @@ structure Hom (X Y : Grothendieck F) where
   fiber : (F.map base).obj X.fiber ⟶ Y.fiber
 #align category_theory.grothendieck.hom CategoryTheory.Grothendieck.Hom
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {X Y : Grothendieck F} (f g : Hom X Y) (w_base : f.base = g.base)
     (w_fiber : eqToHom (by rw [w_base]) ≫ f.fiber = g.fiber) : f = g := by
   cases f; cases g

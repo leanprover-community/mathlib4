@@ -120,15 +120,12 @@ lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b
 
 lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
 #align prod.mk_inj_right Prod.mk_inj_right
-
-theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
-  rw [mk.inj_iff]
 #align prod.ext_iff Prod.ext_iff
 
 #align prod.ext Prod.ext
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
-  funext fun p ↦ ext (map_fst f g p) (map_snd f g p)
+  funext fun p ↦ Prod.ext (map_fst f g p) (map_snd f g p)
 #align prod.map_def Prod.map_def
 
 theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
@@ -156,11 +153,11 @@ theorem snd_surjective [h : Nonempty α] : Function.Surjective (@snd α β) :=
 #align prod.snd_surjective Prod.snd_surjective
 
 theorem fst_injective [Subsingleton β] : Function.Injective (@fst α β) :=
-  fun _ _ h ↦ ext h (Subsingleton.elim _ _)
+  fun _ _ h ↦ Prod.ext h (Subsingleton.elim _ _)
 #align prod.fst_injective Prod.fst_injective
 
 theorem snd_injective [Subsingleton α] : Function.Injective (@snd α β) :=
-  fun _ _ h ↦ ext (Subsingleton.elim _ _) h
+  fun _ _ h ↦ Prod.ext (Subsingleton.elim _ _) h
 #align prod.snd_injective Prod.snd_injective
 
 /-- Swap the factors of a product. `swap (a, b) = (b, a)` -/
@@ -320,7 +317,7 @@ namespace Function
 variable {f : α → γ} {g : β → δ} {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α} {g₂ : δ → γ}
 
 theorem Injective.prodMap (hf : Injective f) (hg : Injective g) : Injective (map f g) :=
-  fun _ _ h ↦ ext (hf (ext_iff.1 h).1) (hg <| (ext_iff.1 h).2)
+  fun _ _ h ↦ Prod.ext (hf <| congr_arg Prod.fst h) (hg <| congr_arg Prod.snd h)
 #align function.injective.prod_map Function.Injective.prodMap
 
 theorem Surjective.prodMap (hf : Surjective f) (hg : Surjective g) : Surjective (map f g) :=

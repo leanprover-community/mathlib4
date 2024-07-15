@@ -285,7 +285,7 @@ def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
 
 theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
     (adj' : V → V → Prop) (hadj : adj' = G'.Adj) : G'.copy V'' hV adj' hadj = G' :=
-  Subgraph.ext _ _ hV hadj
+  Subgraph.ext hV hadj
 #align simple_graph.subgraph.copy_eq SimpleGraph.Subgraph.copy_eq
 
 /-- The union of two subgraphs. -/
@@ -440,7 +440,7 @@ theorem verts_spanningCoe_injective :
     (fun G' : Subgraph G => (G'.verts, G'.spanningCoe)).Injective := by
   intro G₁ G₂ h
   rw [Prod.ext_iff] at h
-  exact Subgraph.ext _ _ h.1 (spanningCoe_inj.1 h.2)
+  exact Subgraph.ext h.1 (spanningCoe_inj.1 h.2)
 
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
@@ -478,7 +478,7 @@ instance : CompletelyDistribLattice G.Subgraph :=
     le_sInf := fun s G' hG' =>
       ⟨Set.subset_iInter₂ fun H hH => (hG' _ hH).1, fun a b hab =>
         ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
-    iInf_iSup_eq := fun f => Subgraph.ext _ _ (by simpa using iInf_iSup_eq)
+    iInf_iSup_eq := fun f => Subgraph.ext (by simpa using iInf_iSup_eq)
       (by ext; simp [Classical.skolem]) }
 
 @[simps]

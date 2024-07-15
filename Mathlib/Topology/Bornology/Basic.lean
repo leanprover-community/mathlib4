@@ -80,10 +80,6 @@ lemma Bornology.ext (t t' : Bornology α)
   cases t'
   congr
 #align bornology.ext Bornology.ext
-
-lemma Bornology.ext_iff (t t' : Bornology α) :
-    t = t' ↔ @Bornology.cobounded α t = @Bornology.cobounded α t' :=
-⟨congrArg _, Bornology.ext _ _⟩
 #align bornology.ext_iff Bornology.ext_iff
 
 /-- A constructor for bornologies by specifying the bounded sets,
@@ -237,7 +233,7 @@ end
 
 theorem ext_iff' {t t' : Bornology α} :
     t = t' ↔ ∀ s, s ∈ @cobounded α t ↔ s ∈ @cobounded α t' :=
-  (Bornology.ext_iff _ _).trans Filter.ext_iff
+  Bornology.ext_iff.trans Filter.ext_iff
 #align bornology.ext_iff' Bornology.ext_iff'
 
 theorem ext_iff_isBounded {t t' : Bornology α} :

@@ -62,9 +62,6 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
 #align complex.ext Complex.ext
 
 attribute [local ext] Complex.ext
-
-theorem ext_iff {z w : ℂ} : z = w ↔ z.re = w.re ∧ z.im = w.im :=
-  ⟨fun H => by simp [H], fun h => ext h.1 h.2⟩
 #align complex.ext_iff Complex.ext_iff
 
 theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
@@ -212,7 +209,7 @@ theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
 
 @[simp, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
-  ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_add Complex.ofReal_add
 
 -- replaced by `Complex.ofReal_ofNat`
@@ -234,7 +231,7 @@ theorem neg_im (z : ℂ) : (-z).im = -z.im :=
 
 @[simp, norm_cast]
 theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
-  ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_neg Complex.ofReal_neg
 
 instance : Sub ℂ :=
@@ -255,7 +252,7 @@ theorem mul_im (z w : ℂ) : (z * w).im = z.re * w.im + z.im * w.re :=
 
 @[simp, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : ℂ) = r * s :=
-  ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_mul Complex.ofReal_mul
 
 theorem re_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).re = r * z.re := by simp [ofReal']
@@ -294,12 +291,12 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem I_mul_I : I * I = -1 :=
-  ext_iff.2 <| by simp
+  Complex.ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
 #align complex.I_mul_I Complex.I_mul_I
 
 theorem I_mul (z : ℂ) : I * z = ⟨-z.im, z.re⟩ :=
-  ext_iff.2 <| by simp
+  Complex.ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
 #align complex.I_mul Complex.I_mul
 
@@ -308,13 +305,13 @@ set_option linter.uppercaseLean3 false in
 #align complex.I_ne_zero Complex.I_ne_zero
 
 theorem mk_eq_add_mul_I (a b : ℝ) : Complex.mk a b = a + b * I :=
-  ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal']
 set_option linter.uppercaseLean3 false in
 #align complex.mk_eq_add_mul_I Complex.mk_eq_add_mul_I
 
 @[simp]
 theorem re_add_im (z : ℂ) : (z.re : ℂ) + z.im * I = z :=
-  ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal']
 #align complex.re_add_im Complex.re_add_im
 
 theorem mul_I_re (z : ℂ) : (z * I).re = -z.im := by simp
@@ -570,12 +567,12 @@ theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
 #align complex.conj_im Complex.conj_im
 
 theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
-  ext_iff.2 <| by simp [star]
+  Complex.ext_iff.2 <| by simp [star]
 #align complex.conj_of_real Complex.conj_ofReal
 
 @[simp]
 theorem conj_I : conj I = -I :=
-  ext_iff.2 <| by simp
+  Complex.ext_iff.2 <| by simp
   set_option linter.uppercaseLean3 false in
 #align complex.conj_I Complex.conj_I
 
@@ -596,7 +593,7 @@ theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : �
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
-  ext_iff.2 <| by simp
+  Complex.ext_iff.2 <| by simp
 set_option linter.uppercaseLean3 false in
 #align complex.conj_neg_I Complex.conj_neg_I
 
@@ -743,11 +740,11 @@ theorem im_sq_le_normSq (z : ℂ) : z.im * z.im ≤ normSq z :=
 #align complex.im_sq_le_norm_sq Complex.im_sq_le_normSq
 
 theorem mul_conj (z : ℂ) : z * conj z = normSq z :=
-  ext_iff.2 <| by simp [normSq, mul_comm, sub_eq_neg_add, add_comm, ofReal']
+  Complex.ext_iff.2 <| by simp [normSq, mul_comm, sub_eq_neg_add, add_comm, ofReal']
 #align complex.mul_conj Complex.mul_conj
 
 theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
-  ext_iff.2 <| by simp [two_mul, ofReal']
+  Complex.ext_iff.2 <| by simp [two_mul, ofReal']
 #align complex.add_conj Complex.add_conj
 
 /-- The coercion `ℝ → ℂ` as a `RingHom`. -/
@@ -784,7 +781,7 @@ theorem sub_im (z w : ℂ) : (z - w).im = z.im - w.im :=
 
 @[simp, norm_cast]
 theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : ℂ) = r - s :=
-  ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_sub Complex.ofReal_sub
 
 @[simp, norm_cast]
@@ -793,7 +790,7 @@ theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n :
 #align complex.of_real_pow Complex.ofReal_pow
 
 theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
-  ext_iff.2 <| by simp [two_mul, sub_eq_add_neg, ofReal']
+  Complex.ext_iff.2 <| by simp [two_mul, sub_eq_add_neg, ofReal']
 #align complex.sub_conj Complex.sub_conj
 
 theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
@@ -822,7 +819,7 @@ theorem inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, div
 
 @[simp, norm_cast]
 theorem ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : ℂ) = (r : ℂ)⁻¹ :=
-  ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal']
 #align complex.of_real_inv Complex.ofReal_inv
 
 protected theorem inv_zero : (0⁻¹ : ℂ) = 0 := by
@@ -853,8 +850,8 @@ noncomputable instance instField : Field ℂ where
   qsmul := (· • ·)
   nnratCast_def q := by ext <;> simp [NNRat.cast_def, div_re, div_im, mul_div_mul_comm]
   ratCast_def q := by ext <;> simp [Rat.cast_def, div_re, div_im, mul_div_mul_comm]
-  nnqsmul_def n z := ext_iff.2 <| by simp [NNRat.smul_def, smul_re, smul_im]
-  qsmul_def n z := ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
+  nnqsmul_def n z := Complex.ext_iff.2 <| by simp [NNRat.smul_def, smul_re, smul_im]
+  qsmul_def n z := Complex.ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
 #align complex.field Complex.instField
 
 @[simp, norm_cast]

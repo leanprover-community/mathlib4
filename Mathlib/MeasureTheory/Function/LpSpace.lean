@@ -169,9 +169,6 @@ theorem ext {f g : Lp E p μ} (h : f =ᵐ[μ] g) : f = g := by
   simp only [Subtype.mk_eq_mk]
   exact AEEqFun.ext h
 #align measure_theory.Lp.ext MeasureTheory.Lp.ext
-
-theorem ext_iff {f g : Lp E p μ} : f = g ↔ f =ᵐ[μ] g :=
-  ⟨fun h => by rw [h], fun h => ext h⟩
 #align measure_theory.Lp.ext_iff MeasureTheory.Lp.ext_iff
 
 theorem mem_Lp_iff_snorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ snorm f p μ < ∞ := Iff.rfl

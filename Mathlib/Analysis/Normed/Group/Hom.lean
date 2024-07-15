@@ -113,9 +113,6 @@ theorem coe_inj_iff : f = g ↔ (f : V₁ → V₂) = g :=
 theorem ext (H : ∀ x, f x = g x) : f = g :=
   coe_inj <| funext H
 #align normed_add_group_hom.ext NormedAddGroupHom.ext
-
-theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  ⟨by rintro rfl x; rfl, ext⟩
 #align normed_add_group_hom.ext_iff NormedAddGroupHom.ext_iff
 
 variable (f g)

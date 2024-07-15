@@ -115,12 +115,10 @@ theorem coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M
 @[ext]
 theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 #align bilin_form.ext LinearMap.BilinForm.ext
+#align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
 
 theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
 #align bilin_form.congr_fun LinearMap.BilinForm.congr_fun
-
-theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
-#align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
 
 @[deprecated (since := "2024-04-14")]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=

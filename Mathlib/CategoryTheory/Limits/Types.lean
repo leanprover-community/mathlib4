@@ -275,9 +275,6 @@ theorem limit_ext' (F : J ⥤ Type v) (x y : limit F) (w : ∀ j, limit.π F j x
     x = y :=
   limit_ext F x y w
 #align category_theory.limits.types.limit_ext' CategoryTheory.Limits.Types.limit_ext'
-
-theorem limit_ext_iff (x y : limit F) : x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
-  ⟨fun t _ => t ▸ rfl, limit_ext _ _ _⟩
 #align category_theory.limits.types.limit_ext_iff CategoryTheory.Limits.Types.limit_ext_iff
 
 theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :

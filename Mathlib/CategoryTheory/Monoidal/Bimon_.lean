@@ -44,7 +44,7 @@ namespace Bimon_
 instance : Category (Bimon_ C) := inferInstanceAs (Category (Comon_ (Mon_ C)))
 
 @[ext] lemma ext {X Y : Bimon_ C} {f g : X ⟶ Y} (w : f.hom.hom = g.hom.hom) : f = g :=
-  Comon_.Hom.ext _ _ (Mon_.Hom.ext _ _ w)
+  Comon_.Hom.ext (Mon_.Hom.ext w)
 
 @[simp] theorem id_hom' (M : Bimon_ C) : Comon_.Hom.hom (𝟙 M) = 𝟙 M.X := rfl
 

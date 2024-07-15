@@ -64,7 +64,7 @@ set_option linter.uppercaseLean3 false in
 -- for morphisms in `CommMon_ C`
 @[ext]
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon_.Hom.ext _ _ h
+  Mon_.Hom.ext h
 
 -- Porting note (#10688): the following two lemmas `id'` and `comp'`
 -- have been added to ease automation;

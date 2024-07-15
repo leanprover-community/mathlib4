@@ -341,7 +341,9 @@ theorem sum_range_pow (n p : ℕ) :
         mk fun p =>
           ∑ i ∈ range (p + 1), bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! by
       rw [← div_eq_iff (hne p), div_eq_mul_inv, sum_mul]
-      rw [PowerSeries.ext_iff] at this
+      #adaptation_note
+      /-- (2024-07-08): this was rw, but that created an instance goal -/
+      simp_rw [PowerSeries.ext_iff] at this
       simpa using this p
     -- the power series `exp ℚ - 1` is non-zero, a fact we need in order to use `mul_right_inj'`
     have hexp : exp ℚ - 1 ≠ 0 := by

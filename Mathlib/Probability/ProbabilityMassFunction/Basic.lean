@@ -56,9 +56,6 @@ instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
 protected theorem ext {p q : PMF α} (h : ∀ x, p x = q x) : p = q :=
   DFunLike.ext p q h
 #align pmf.ext PMF.ext
-
-theorem ext_iff {p q : PMF α} : p = q ↔ ∀ x, p x = q x :=
-  DFunLike.ext_iff
 #align pmf.ext_iff PMF.ext_iff
 
 theorem hasSum_coe_one (p : PMF α) : HasSum p 1 :=

@@ -65,9 +65,6 @@ protected theorem coe_injective : Injective ((↑) : ℚ≥0 → ℚ) :=
 theorem coe_inj : (p : ℚ) = q ↔ p = q :=
   Subtype.coe_inj
 #align nnrat.coe_inj NNRat.coe_inj
-
-theorem ext_iff : p = q ↔ (p : ℚ) = q :=
-  Subtype.ext_iff
 #align nnrat.ext_iff NNRat.ext_iff
 
 theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
