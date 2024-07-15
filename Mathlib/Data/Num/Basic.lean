@@ -198,8 +198,8 @@ set_option linter.deprecated false
 @[deprecated (since := "2022-11-18"), coe]
 def castPosNum : PosNum → α
   | 1 => 1
-  | PosNum.bit0 a => bit0 (castPosNum a)
-  | PosNum.bit1 a => bit1 (castPosNum a)
+  | PosNum.bit0 a => castPosNum a + castPosNum a
+  | PosNum.bit1 a => castPosNum a + castPosNum a + 1
 #align cast_pos_num castPosNum
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
