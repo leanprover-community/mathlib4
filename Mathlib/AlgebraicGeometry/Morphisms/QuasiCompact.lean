@@ -201,12 +201,12 @@ theorem QuasiCompact.openCover_tfae {X Y : Scheme.{u}} (f : X ⟶ Y) :
     List.TFAE
       [QuasiCompact f,
         ∃ 𝒰 : Scheme.OpenCover.{u} Y,
-          ∀ i : 𝒰.J, QuasiCompact (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
+          ∀ i : 𝒰.J, QuasiCompact (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
         ∀ (𝒰 : Scheme.OpenCover.{u} Y) (i : 𝒰.J),
-          QuasiCompact (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
+          QuasiCompact (pullback.snd _ _ : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
         ∀ U : Opens Y, QuasiCompact (f ∣_ U),
         ∀ {U : Scheme} (g : U ⟶ Y) [IsOpenImmersion g],
-          QuasiCompact (pullback.snd : pullback f g ⟶ _),
+          QuasiCompact (pullback.snd f g),
         ∃ (ι : Type u) (U : ι → Opens Y) (_ : iSup U = ⊤), ∀ i, QuasiCompact (f ∣_ U i)] :=
   quasiCompact_eq_affineProperty.symm ▸
     QuasiCompact.affineProperty_isLocal.targetAffineLocally_isLocal.openCover_TFAE f
@@ -229,7 +229,7 @@ theorem QuasiCompact.affine_openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.Open
 #align algebraic_geometry.quasi_compact.affine_open_cover_iff AlgebraicGeometry.QuasiCompact.affine_openCover_iff
 
 theorem QuasiCompact.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y) (f : X ⟶ Y) :
-    QuasiCompact f ↔ ∀ i, QuasiCompact (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
+    QuasiCompact f ↔ ∀ i, QuasiCompact (pullback.snd f (𝒰.map i)) :=
   quasiCompact_eq_affineProperty.symm ▸
     QuasiCompact.affineProperty_isLocal.targetAffineLocally_isLocal.openCover_iff f 𝒰
 #align algebraic_geometry.quasi_compact.open_cover_iff AlgebraicGeometry.QuasiCompact.openCover_iff
@@ -262,12 +262,10 @@ theorem quasiCompact_stableUnderBaseChange : MorphismProperty.StableUnderBaseCha
 
 variable {Z : Scheme.{u}}
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] :
-    QuasiCompact (pullback.fst : pullback f g ⟶ X) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] : QuasiCompact (pullback.fst f g) :=
   quasiCompact_stableUnderBaseChange.fst f g inferInstance
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] :
-    QuasiCompact (pullback.snd : pullback f g ⟶ Y) :=
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.snd f g) :=
   quasiCompact_stableUnderBaseChange.snd f g inferInstance
 
 @[elab_as_elim]

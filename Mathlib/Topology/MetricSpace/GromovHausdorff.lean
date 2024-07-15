@@ -414,8 +414,6 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
 instance : MetricSpace GHSpace where
   dist := dist
-  -- Porting note: why does Lean 4 want this?
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   dist_self x := by
     rcases exists_rep x with ⟨y, hy⟩
     refine le_antisymm ?_ ?_

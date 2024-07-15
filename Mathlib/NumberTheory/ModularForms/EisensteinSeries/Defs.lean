@@ -25,7 +25,7 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Complex Matrix
+open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup
 
 open scoped MatrixGroups
 
@@ -123,3 +123,5 @@ def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
 
 lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl
+
+end EisensteinSeries

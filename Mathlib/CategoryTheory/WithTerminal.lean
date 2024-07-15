@@ -220,6 +220,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
     · rfl
   map₂_associator := by
     intros
+    dsimp
     apply NatTrans.ext
     funext X
     cases X

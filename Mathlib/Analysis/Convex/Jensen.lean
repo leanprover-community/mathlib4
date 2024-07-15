@@ -195,7 +195,7 @@ lemma StrictConvexOn.map_sum_eq_iff {w : ι → 𝕜} {p : ι → E} (hf : Stric
       intro j hj
       apply hf.eq_of_le_map_sum h₀ h₁ hmem h_eq.ge hj hi₀
     calc p i = p i₀ := by rw [H _ hi]
-      _ = (1:𝕜) • p i₀ := by simp
+      _ = (1 : 𝕜) • p i₀ := by simp
       _ = (∑ j ∈ t, w j) • p i₀ := by rw [h₁]
       _ = ∑ j ∈ t, (w j • p i₀) := by rw [sum_smul]
       _ = ∑ j ∈ t, (w j • p j) := by congr! 2 with j hj; rw [← H _ hj]
