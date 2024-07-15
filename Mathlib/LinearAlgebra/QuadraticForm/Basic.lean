@@ -195,8 +195,8 @@ variable {Q}
 @[ext]
 theorem ext (H : ∀ x : M, Q x = Q' x) : Q = Q' :=
   DFunLike.ext _ _ H
-#align quadratic_form.ext QuadraticForm.ext
-#align quadratic_form.ext_iff QuadraticForm.ext_iff
+#align quadratic_form.ext QuadraticMap.ext
+#align quadratic_form.ext_iff QuadraticMap.ext_iff
 
 theorem congr_fun (h : Q = Q') (x : M) : Q x = Q' x :=
   DFunLike.congr_fun h _
