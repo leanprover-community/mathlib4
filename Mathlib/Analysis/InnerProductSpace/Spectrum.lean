@@ -557,6 +557,11 @@ theorem ext_experiment (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) : ∀
   have H := inf_restrict'' T hT hC i γ
   simp only [ne_eq, H, Submodule.mem_top, implies_true]
 
+theorem indexed_matching (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) (μ : 𝕜) :
+   Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
+      (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)
+       = (eigenspace (T i) μ ⊓ ⨅ j, eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
+
 theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
@@ -590,6 +595,7 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     sorry --must show that these eigenspaces exhaust...should be the symmetric operator exhaust
          --result...probably need to rewrite the approach.
          --the whole result may need revisiting...
+#exit
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
     (⨆ (γ : {x // i ≠ x} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // i ≠ x}),
