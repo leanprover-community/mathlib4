@@ -131,27 +131,27 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f where
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
 
+end IsClosedImmersion
+
 instance : (MorphismProperty.topologically ClosedEmbedding).RespectsIso :=
   MorphismProperty.topologically_respectsIso _ (fun e ↦ Homeomorph.closedEmbedding e)
     (fun _ _ hf hg ↦ ClosedEmbedding.comp hg hf)
 
 /-- Being topologically a closed embedding is local at the target. -/
-lemma closedEmbedding_localAtTarget : PropertyIsLocalAtTarget
+lemma closedEmbedding_propertyIsLocalAtTarget : PropertyIsLocalAtTarget
     (MorphismProperty.topologically ClosedEmbedding) :=
   MorphismProperty.topologically_propertyIsLocalAtTarget _
     (fun _ s hf ↦ ClosedEmbedding.restrictPreimage s hf)
     (fun _ _ _ hU hfcont hf ↦ (closedEmbedding_iff_closedEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
 
 /-- Being surjective on stalks is local at the target. -/
-lemma isSurjectiveOnStalks_localAtTarget : PropertyIsLocalAtTarget
+lemma isSurjectiveOnStalks_propertyIsLocalAtTarget : PropertyIsLocalAtTarget
     (MorphismProperty.stalkwise (fun f ↦ Function.Surjective f)) :=
   MorphismProperty.stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
 
 /-- Being a closed immersion is local at the target. -/
-lemma closedImmersion_localAtTarget : PropertyIsLocalAtTarget @IsClosedImmersion :=
-  eq_inf ▸ propertyIsLocalAtTarget_inf _ _ closedEmbedding_localAtTarget
-    isSurjectiveOnStalks_localAtTarget
-
-end IsClosedImmersion
+lemma IsClosedImmersion.localAtTarget : PropertyIsLocalAtTarget @IsClosedImmersion :=
+  eq_inf ▸ propertyIsLocalAtTarget_inf _ _ closedEmbedding_propertyIsLocalAtTarget
+    isSurjectiveOnStalks_propertyIsLocalAtTarget
 
 end AlgebraicGeometry
