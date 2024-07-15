@@ -17,7 +17,7 @@ All of these have been rewritten from the `lint-style.py` script.
 For now, this only contains the linters for the copyright and author headers and large files:
 further linters will be ported in subsequent PRs.
 
-An executable running all these linters is defined in `scripts/lint_style.lean`.
+An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
 
 open System
@@ -440,7 +440,7 @@ def lintModules (moduleNames : Array String) (mode : OutputSetting) : IO UInt32 
     formatErrors allUnexpectedErrors style
     if numberErrorFiles > 0 && mode matches OutputSetting.print _ then
       IO.println s!"error: found {numberErrorFiles} new style errors\n\
-        run `lake exe lint_style --update` to ignore all of them"
+        run `lake exe lint-style --update` to ignore all of them"
   | OutputSetting.update =>
     formatErrors allUnexpectedErrors ErrorFormat.humanReadable
     -- Regenerate the style exceptions file, including the Python output.
