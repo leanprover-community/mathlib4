@@ -43,7 +43,7 @@ If `inferInstance` is successful, then it returns the `Expr`ession representing 
 Otherwise it returns `none`.
 -/
 def getMinInstsFor (d : TSyntax ``Lean.Parser.Term.bracketedBinder)
-  (varDecls : Array (TSyntax ``Lean.Parser.Term.bracketedBinder)) :
+    (varDecls : Array (TSyntax ``Lean.Parser.Term.bracketedBinder)) :
       CommandElabM (Option Expr) := do
   let sc ← getScope
   let newName ← liftCoreM <| mkFreshUserName `hello
