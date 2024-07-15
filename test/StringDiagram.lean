@@ -61,3 +61,5 @@ example {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : f �
   with_panel_widgets [GoalTypePanel]
     rw [MonoidalCategory.whisker_exchange]
     rw [MonoidalCategory.tensorHom_def]
+
+end MonoidalCategory
