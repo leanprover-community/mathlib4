@@ -16,6 +16,37 @@ This is not ready for mathlib yet (as we still need the instance that the bounda
 of a manifold is a manifold again, might might need some hypotheses to be true).
 -/
 
+/-
+Missing API for this to work nicely:
+- boundary of manifolds: add a typeclass "HasNiceBoundary" (or so) which says
+  the boundary is a manifold, and the inclusion is smooth (perhaps with demanding "dimension one less")
+  The current definition of boundary and corners will not satisfy this, but many nice manifolds
+  will. Prove that boundaryless manifolds are of this form, or so.
+- add disjoint union of top. spaces and induced maps: mathlib has this in abstract nonsense form
+- define the disjoint union of smooth manifolds, and the associated maps: show they are smooth
+(perhaps prove as abstract nonsense? will see!)
+
+- basic lemmas about boundary and interior
+interior(M × N) = interior (M) × interior(N)
+cor. The boundary of M × N is ∂M × N ∪ (M × ∂N)
+cor. if M is boundaryless, ∂(M×N) = M × ∂N
+cor. If M is a smooth manifold without boundary, M x I has boundary M× {0,1};
+  this is diffeomorphic to M ⊔ M.
+
+- then: complete definition of unoriented cobordisms; complete constructions I had
+- fight DTT hell: why is the product with an interval not recognised?
+
+- define the bordism relation/how to define the set of equivalence classes?
+equivalences work nicely in the standard design... that's a "how to do X in Lean" question
+- postponed: transitivity of the bordism relation (uses the collar neighbourhood theorem)
+
+define induced maps between bordism groups (on singular n-manifolds is easy and done)
+functoriality: what exactly do I have to show? also DTT question
+
+prove some of the easy axioms of homology... perhaps all of it?
+does mathlib have a class "extraordinary homology theory"? this could be an interesting instance...
+-/
+
 open scoped Manifold
 open Metric (sphere)
 open FiniteDimensional
@@ -87,13 +118,6 @@ noncomputable def SingularNManifold.map (s : SingularNManifold X n M I)
 lemma SingularNManifold.map_comp (s : SingularNManifold X n M I)
     {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ):
     ((s.map hφ).map hψ).f = (s.map (hψ.comp hφ)).f := rfl
--- is this all I need to show functoriality?
--- -- xxx: good name? is functorial...
--- noncomputable def SingularNManifold.map_comp (s : SingularNManifold X n M I)
---     {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ): SingularNManifold Z n M I where
---   hdim := s.hdim
---   f := (ψ ∘ φ) ∘ f
---   hf := sorry
 
 variable [CompactSpace M'] [I'.Boundaryless] [FiniteDimensional ℝ E']
 
@@ -107,9 +131,9 @@ structure UnorientedCobordism (s : SingularNManifold X n M I) (t : SingularNMani
   hW' : finrank E'' = n + 1
   F : W → X
   hF : Continuous F
-  -- φ : Diffeomorph (Boundary W) J-induced (disUnion) I.disjUnion I'
-  -- hFf : F.restrict ... = s.f
-  -- hFg : F.restrict (N) = t.f
+  -- φ : Diffeomorph (∂ W) (induced J) (M ⊔ M') I.disjUnion I'
+  -- hFf : F.restrict φ^{-1}(M) = s.f
+  -- hFg : F.restrict φ^{-1}(N) = t.f
 
 open Set
 
@@ -161,3 +185,5 @@ noncomputable def UnorientedCobordism.symm (φ : UnorientedCobordism s t W J) :
 -- The unoriented `n`-bordism group `Ω_n^O(X)` of `X` is the set of all equivalence classes
 -- of singular n-manifolds up to bordism.
 -- then: functor between these...
+
+-- prove: every element in Ω_n^O(X) has order two
