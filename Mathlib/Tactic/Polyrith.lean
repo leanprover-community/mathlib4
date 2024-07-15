@@ -242,7 +242,7 @@ def Poly.pow' : ℕ → ℕ → Poly
   | i, k => .pow (.var i) (.const k)
 
 /-- Constructs a sum from a monadic function supplying the monomials. -/
-def Poly.sumM  {m : Type → Type*} {α : Type*} [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
+def Poly.sumM {m : Type → Type*} {α : Type*} [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
   a.foldlM (init := .const 0) fun p a => return p.add' (← f a)
 
 instance : FromJson Poly where

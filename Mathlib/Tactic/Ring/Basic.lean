@@ -1030,7 +1030,7 @@ def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
 -/
-partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum sα) e) := Lean.withIncRecDepth do
   let els := do
     try evalCast sα (← derive e)
@@ -1052,7 +1052,7 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
     | _ => els
   | ``HSMul.hSMul, _, _ => match e with
-    | ~q(($a : ℕ) • ($b : $α)) =>
+    | ~q(($a : ℕ) • ($b : «$α»)) =>
       let ⟨_, va, pa⟩ ← eval sℕ .nat a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalNSMul sα va vb
