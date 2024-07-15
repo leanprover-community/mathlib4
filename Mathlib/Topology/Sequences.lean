@@ -279,7 +279,7 @@ end FirstCountableTopology
 
 section Image
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+variable [TopologicalSpace Y] {f : X → Y}
 
 /-- Sequential compactness of sets is preserved under sequentially continuous functions. -/
 theorem IsSeqCompact.image (f_cont : SeqContinuous f) {K : Set X} (K_cpt : IsSeqCompact K) :
