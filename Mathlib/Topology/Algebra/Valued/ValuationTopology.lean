@@ -49,7 +49,8 @@ theorem subgroups_basis :
       constructor <;>
       · intro a ha
         apply lt_of_lt_of_le ha
-        simp only [Units.val_le_val, Subtype.coe_le_coe, SetLike.coe_sort_coe, min_le_left, min_le_right]
+        simp only [Units.val_le_val, Subtype.coe_le_coe, SetLike.coe_sort_coe,
+          min_le_left, min_le_right]
     mul := by
       rintro γ
       cases' exists_square_le γ with γ₀ h
@@ -99,7 +100,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, UniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
-    ∃ γ ∈ Subgroup.closure (Units.val ⁻¹' range v), { x : R | v x < γ } ⊆ s
+    ∃ γ ∈ v.rangeGroup, { x : R | v x < γ } ⊆ s
 #align valued Valued
 
 -- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
@@ -116,7 +117,7 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
       letI := @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
-      -- exact exists_congr fun γ => by rw [true_and]; rfl
+      exact exists_congr fun γ => by rw [true_and]; rfl
       simp only [true_and]
       }
 #align valued.mk' Valued.mk'
