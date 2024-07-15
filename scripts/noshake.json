@@ -319,13 +319,12 @@
   "Mathlib.Data.List.ProdSigma": ["Mathlib.Data.List.Basic"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
+  "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Data.DFinsupp.Notation": ["Mathlib.Data.Finsupp.Notation"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
-  "Mathlib.Combinatorics.SimpleGraph.Triangle.Basic":
-  ["Mathlib.Tactic.Positivity.Finset"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
