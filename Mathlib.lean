@@ -761,6 +761,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.FunctionField
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Gluing
+import Mathlib.AlgebraicGeometry.GluingOneHypercover
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
@@ -1911,12 +1912,14 @@ import Mathlib.Control.Bifunctor
 import Mathlib.Control.Bitraversable.Basic
 import Mathlib.Control.Bitraversable.Instances
 import Mathlib.Control.Bitraversable.Lemmas
+import Mathlib.Control.Combinators
 import Mathlib.Control.EquivFunctor
 import Mathlib.Control.EquivFunctor.Instances
 import Mathlib.Control.Fix
 import Mathlib.Control.Fold
 import Mathlib.Control.Functor
 import Mathlib.Control.Functor.Multivariate
+import Mathlib.Control.Lawful
 import Mathlib.Control.LawfulFix
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Cont
@@ -2207,6 +2210,7 @@ import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Data.NNReal.Star
 import Mathlib.Data.Nat.BinaryRec
+import Mathlib.Data.Nat.BitIndices
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Basic
@@ -2702,8 +2706,6 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Align
 import Mathlib.Init.Classes.Order
 import Mathlib.Init.Classical
-import Mathlib.Init.Control.Combinators
-import Mathlib.Init.Control.Lawful
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
@@ -3304,6 +3306,7 @@ import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 import Mathlib.NumberTheory.ModularForms.SlashActions
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 import Mathlib.NumberTheory.MulChar.Basic
+import Mathlib.NumberTheory.MulChar.Lemmas
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
