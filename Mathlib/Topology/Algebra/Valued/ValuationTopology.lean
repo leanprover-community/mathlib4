@@ -83,8 +83,8 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
 
 end Valuation
 
-/-- A valued ring is a ring that comes equipped with a distinguished valuation. The class `Valued`
-is designed for the situation that there is a canonical valuation on the ring.
+/-- A valued ring is a ring that comes equipped with a distinguished group-valued valuation.
+The class `Valued` is designed for the situation that there is a canonical valuation on the ring.
 
 TODO: show that there always exists an equivalent valuation taking values in a type belonging to
 the same universe as the ring.
