@@ -13,7 +13,8 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 ## Main result
 - `PrimeSpectrum.embedding_tensorProductTo_of_surjectiveOnStalks`:
   If `R →+* T` is surjective on stalks,
-  then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding.
+  then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding
+  (where `Spec S × Spec T` is the cartesian product with the product topology).
 -/
 
 variable (R S T) [CommRing R] [CommRing S] [Algebra R S]
@@ -21,7 +22,7 @@ variable [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 open TensorProduct
 
-/-- The canonical map `Spec(S ⊗[R] T) → Spec S × Spec T`. -/
+/-- The canonical map from `Spec(S ⊗[R] T)` to the cartesian product `Spec S × Spec T`. -/
 noncomputable
 def PrimeSpectrum.tensorProductTo (x : PrimeSpectrum (S ⊗[R] T)) :
     PrimeSpectrum S × PrimeSpectrum T :=
