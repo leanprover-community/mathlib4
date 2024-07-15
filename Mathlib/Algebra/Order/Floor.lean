@@ -1191,7 +1191,6 @@ theorem fmod_nonpos {a b : Int}  (hb : b < 0) : a.fmod b ≤ 0 := by
         dsimp only [Nat.succ_eq_add_one]
         have := Nat.mod_lt a <| Nat.zero_lt_succ b
         have : a % (b + 1) ≤  b := by linarith
-        have : 0 ≤ b - a % (b + 1) := by linarith
         unfold subNatNat
         simp_all only [tsub_eq_zero_of_le, ofNat_eq_coe, Nat.cast_zero]
         split
