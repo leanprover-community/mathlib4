@@ -235,7 +235,7 @@ theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeas
   have hμs : μ s < ∞ := (h s).trans_lt hμ's
   calc
     ‖T s‖ ≤ C * (μ s).toReal := hT.2 s hs hμs
-    _ ≤ C * (μ' s).toReal := by gcongr; exacts [hμ's.ne, h _]
+    _ ≤ C * (μ' s).toReal := by gcongr; exact hμ's.ne
 #align measure_theory.dominated_fin_meas_additive.of_measure_le MeasureTheory.DominatedFinMeasAdditive.of_measure_le
 
 theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
