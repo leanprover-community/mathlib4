@@ -166,7 +166,7 @@ theorem ofCoprodI_of (i : ι) (g : G i) :
 
 theorem induction_on {motive : PushoutI φ → Prop}
     (x : PushoutI φ)
-    (of  : ∀ (i : ι) (g : G i), motive (of i g))
+    (of : ∀ (i : ι) (g : G i), motive (of i g))
     (base : ∀ h, motive (base φ h))
     (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive x := by
   delta PushoutI PushoutI.of PushoutI.base at *
@@ -296,7 +296,6 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
   have hhead : ((d.compl i).equiv (Word.equivPair i w).head).2 =
       (Word.equivPair i w).head := by
     rw [Word.equivPair_head]
-    dsimp only
     split_ifs with h
     · rcases h with ⟨_, rfl⟩
       exact hw _ _ (List.head_mem _)

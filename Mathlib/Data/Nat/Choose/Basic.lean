@@ -116,7 +116,7 @@ theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
 theorem succ_mul_choose_eq : ∀ n k, succ n * choose n k = choose (succ n) (succ k) * succ k
   | 0, 0 => by decide
   | 0, k + 1 => by simp [choose]
-  | n + 1, 0 => by simp [choose, mul_succ, succ_eq_add_one, Nat.add_comm]
+  | n + 1, 0 => by simp [choose, mul_succ, Nat.add_comm]
   | n + 1, k + 1 => by
     rw [choose_succ_succ (succ n) (succ k), Nat.add_mul, ← succ_mul_choose_eq n, mul_succ, ←
       succ_mul_choose_eq n, Nat.add_right_comm, ← Nat.mul_add, ← choose_succ_succ, ← succ_mul]
@@ -148,13 +148,13 @@ theorem choose_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
   Nat.mul_right_cancel h <|
   calc
     n.choose k * k.choose s * ((n - k)! * (k - s)! * s !) =
-        n.choose k * (k.choose s * s ! * (k - s)!) * (n - k)! :=
-      by rw [Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc _ s !, Nat.mul_assoc,
+        n.choose k * (k.choose s * s ! * (k - s)!) * (n - k)! := by
+      rw [Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc, Nat.mul_assoc _ s !, Nat.mul_assoc,
         Nat.mul_comm (n - k)!, Nat.mul_comm s !]
-    _ = n ! :=
-      by rw [choose_mul_factorial_mul_factorial hsk, choose_mul_factorial_mul_factorial hkn]
-    _ = n.choose s * s ! * ((n - s).choose (k - s) * (k - s)! * (n - s - (k - s))!) :=
-      by rw [choose_mul_factorial_mul_factorial (Nat.sub_le_sub_right hkn _),
+    _ = n ! := by
+      rw [choose_mul_factorial_mul_factorial hsk, choose_mul_factorial_mul_factorial hkn]
+    _ = n.choose s * s ! * ((n - s).choose (k - s) * (k - s)! * (n - s - (k - s))!) := by
+      rw [choose_mul_factorial_mul_factorial (Nat.sub_le_sub_right hkn _),
         choose_mul_factorial_mul_factorial (hsk.trans hkn)]
     _ = n.choose s * (n - s).choose (k - s) * ((n - k)! * (k - s)! * s !) := by
       rw [Nat.sub_sub_sub_cancel_right hsk, Nat.mul_assoc, Nat.mul_left_comm s !, Nat.mul_assoc,
@@ -304,12 +304,10 @@ theorem choose_le_succ_of_lt_half_left {r n : ℕ} (h : r < n / 2) :
 
 /-- Show that for small values of the right argument, the middle value is largest. -/
 private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) :
-    choose n r ≤ choose n (n / 2) :=
-  decreasingInduction
-    (fun _ k a =>
-      (eq_or_lt_of_le a).elim (fun t => t.symm ▸ le_rfl) fun h =>
-        (choose_le_succ_of_lt_half_left h).trans (k h))
-    hr (fun _ => le_rfl) hr
+    choose n r ≤ choose n (n / 2) := by
+  induction hr using decreasingInduction with
+  | self => rfl
+  | of_succ k hk ih => exact (choose_le_succ_of_lt_half_left hk).trans ih
 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
@@ -397,7 +395,7 @@ theorem multichoose_one (k : ℕ) : multichoose 1 k = 1 := by
 theorem multichoose_two (k : ℕ) : multichoose 2 k = k + 1 := by
   induction' k with k IH; · simp
   rw [multichoose, IH]
-  simp [Nat.add_comm, succ_eq_add_one]
+  simp [Nat.add_comm]
 #align nat.multichoose_two Nat.multichoose_two
 
 @[simp]

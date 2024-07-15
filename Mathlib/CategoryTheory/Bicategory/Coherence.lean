@@ -162,7 +162,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
       (normalizeIso p f).hom ≫
         (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
-  rcases η with ⟨η'⟩; clear η;
+  rcases η with ⟨η'⟩; clear η
   induction η' with
   | id => simp
   | vcomp η θ ihf ihg =>
@@ -224,9 +224,8 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
       · rfl
       · ext1
         injection ih with ih
-        conv =>
-          rhs
-          rw [← ih]))
+        conv_rhs => rw [← ih]
+        rfl))
 #align category_theory.free_bicategory.normalize_equiv CategoryTheory.FreeBicategory.normalizeEquiv
 
 /-- The coherence theorem for bicategories. -/

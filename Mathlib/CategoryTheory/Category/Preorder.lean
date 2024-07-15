@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.ULift
 
@@ -68,11 +69,12 @@ def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 #align category_theory.hom_of_le CategoryTheory.homOfLE
 
-alias _root_.LE.le.hom := homOfLE
+@[inherit_doc homOfLE]
+abbrev _root_.LE.le.hom := @homOfLE
 #align has_le.le.hom LE.le.hom
 
 @[simp]
-theorem homOfLE_refl {x : X} : (le_refl x).hom = 𝟙 x :=
+theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
   rfl
 #align category_theory.hom_of_le_refl CategoryTheory.homOfLE_refl
 
@@ -88,7 +90,8 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.leOfHom
 
-alias _root_.Quiver.Hom.le := leOfHom
+@[nolint defLemma, inherit_doc leOfHom]
+abbrev _root_.Quiver.Hom.le := @leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
 -- Porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
@@ -103,6 +106,30 @@ theorem leOfHom_homOfLE {x y : X} (h : x ≤ y) : h.hom.le = h :=
 theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
   rfl
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
+
+lemma homOfLE_isIso_of_eq {x y : X} (h : x ≤ y) (heq : x = y) :
+    IsIso (homOfLE h) :=
+  ⟨homOfLE (le_of_eq heq.symm), by simp⟩
+
+@[simp, reassoc]
+lemma homOfLE_comp_eqToHom {a b c : X} (hab : a ≤ b) (hbc : b = c) :
+    homOfLE hab ≫ eqToHom hbc = homOfLE (hab.trans (le_of_eq hbc)) :=
+  rfl
+
+@[simp, reassoc]
+lemma eqToHom_comp_homOfLE {a b c : X} (hab : a = b) (hbc : b ≤ c) :
+    eqToHom hab ≫ homOfLE hbc = homOfLE ((le_of_eq hab).trans hbc) :=
+  rfl
+
+@[simp, reassoc]
+lemma homOfLE_op_comp_eqToHom {a b c : X} (hab : b ≤ a) (hbc : op b = op c) :
+    (homOfLE hab).op ≫ eqToHom hbc = (homOfLE ((le_of_eq (op_injective hbc.symm)).trans hab)).op :=
+  rfl
+
+@[simp, reassoc]
+lemma eqToHom_comp_homOfLE_op {a b c : X} (hab : op a = op b) (hbc : c ≤ b) :
+    eqToHom hab ≫ (homOfLE hbc).op = (homOfLE (hbc.trans (le_of_eq (op_injective hab.symm)))).op :=
+  rfl
 
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
 def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
@@ -122,6 +149,20 @@ instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
   default := homOfLE bot_le
   uniq := fun a => by rfl
 #align category_theory.unique_from_bot CategoryTheory.uniqueFromBot
+
+variable (X) in
+/-- The equivalence of categories from the order dual of a preordered type `X`
+to the opposite category of the preorder `X`. -/
+@[simps]
+def orderDualEquivalence : Xᵒᵈ ≌ Xᵒᵖ where
+  functor :=
+    { obj := fun x => op (OrderDual.ofDual x)
+      map := fun f => (homOfLE (leOfHom f)).op }
+  inverse :=
+    { obj := fun x => OrderDual.toDual x.unop
+      map := fun f => (homOfLE (leOfHom f.unop)) }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end CategoryTheory
 
@@ -146,6 +187,14 @@ theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f 
 -- Faithfulness is automatic because preorder categories are thin
 instance (f : X ↪o Y) : f.monotone.functor.Full where
   map_surjective h := ⟨homOfLE (f.map_rel_iff.1 h.le), rfl⟩
+
+/-- The equivalence of categories `X ≌ Y` induced by `e : X ≃o Y`. -/
+@[simps]
+def OrderIso.equivalence (e : X ≃o Y) : X ≌ Y where
+  functor := e.monotone.functor
+  inverse := e.symm.monotone.functor
+  unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
 
 end
 

@@ -185,10 +185,8 @@ end Equiv
 
 variable [FunLike F α β]
 
--- Porting note: Revisit this issue to see if it works in Lean 4. -/
--- See note [reducible non instances]
+-- Porting note: Revisit this issue to see if it works in Lean 4.
 /-- This can't be an instance because of typeclass loops. -/
-@[reducible]
 lemma BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
     [BoundedLatticeHomClass F α β] : BiheytingHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with

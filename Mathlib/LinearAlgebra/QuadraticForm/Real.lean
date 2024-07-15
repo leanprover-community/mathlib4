@@ -26,9 +26,9 @@ as in `equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 namespace QuadraticForm
 
-open scoped BigOperators
-
 open Finset SignType
+
+open QuadraticMap
 
 variable {ι : Type*} [Fintype ι]
 
@@ -43,7 +43,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     by positivity
   have hwu : ∀ i, w i / |(u i : ℝ)| = sign (w i) := fun i ↦ by
     by_cases hi : w i = 0 <;> field_simp [hi, u]
-  convert (weightedSumSquares ℝ w).isometryEquivBasisRepr
+  convert QuadraticForm.isometryEquivBasisRepr (weightedSumSquares ℝ w)
     ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
   ext1 v
   classical

@@ -3,8 +3,9 @@ Copyright (c) 2023 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
+import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
@@ -15,8 +16,7 @@ variable {n : ℕ} {M M₁ : Type*}
 /-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
 See note [reducible non-instances]. -/
-@[reducible]
-def AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
+abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
     Module (ZMod n) M := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
     suffices (c % n + c / n * n) • x = c • x by rwa [add_nsmul, mul_nsmul, h, add_zero] at this
@@ -35,8 +35,7 @@ def AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n �
 
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
 See note [reducible non-instances]. -/
-@[reducible]
-def AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
+abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
     Module (ZMod n) G :=
   match n with
   | 0 => AddCommGroup.intModule G
@@ -68,7 +67,7 @@ See also:
 `AddMonoidHom.toIntLinearMap`, `AddMonoidHom.toNatLinearMap`, `AddMonoidHom.toRatLinearMap` -/
 def toZModLinearMap (f : M →+ M₁) : M →ₗ[ZMod n] M₁ := { f with map_smul' := ZMod.map_smul f }
 
-theorem toZModLinearMap_injective: Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
+theorem toZModLinearMap_injective : Function.Injective <| toZModLinearMap n (M := M) (M₁ := M₁) :=
   fun _ _ h ↦ ext fun x ↦ congr($h x)
 
 @[simp]

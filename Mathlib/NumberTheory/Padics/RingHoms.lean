@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicIntegers
+import Mathlib.RingTheory.ZMod
 
 #align_import number_theory.padics.ring_homs from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
@@ -143,7 +143,7 @@ theorem zmod_congr_of_sub_mem_span_aux (n : ℕ) (x : ℤ_[p]) (a b : ℤ)
     (ha : x - a ∈ (Ideal.span {(p : ℤ_[p]) ^ n}))
     (hb : x - b ∈ (Ideal.span {(p : ℤ_[p]) ^ n})) : (a : ZMod (p ^ n)) = b := by
   rw [Ideal.mem_span_singleton] at ha hb
-  rw [← sub_eq_zero, ← Int.cast_sub, ZMod.intCast_zmod_eq_zero_iff_dvd, Int.coe_nat_pow]
+  rw [← sub_eq_zero, ← Int.cast_sub, ZMod.intCast_zmod_eq_zero_iff_dvd, Int.natCast_pow]
   rw [← dvd_neg, neg_sub] at ha
   have := dvd_add ha hb
   rwa [sub_eq_add_neg, sub_eq_add_neg, add_assoc, neg_add_cancel_left, ← sub_eq_add_neg, ←
@@ -290,8 +290,8 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     rw [← sub_zero x] at h
     dsimp [toZMod, toZModHom]
     convert zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
-    norm_cast
-    apply sub_zmodRepr_mem
+    · norm_cast
+    · apply sub_zmodRepr_mem
 #align padic_int.ker_to_zmod PadicInt.ker_toZMod
 
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
@@ -338,7 +338,7 @@ theorem dvd_appr_sub_appr (x : ℤ_[p]) (m n : ℕ) (h : m ≤ n) : p ^ m ∣ x.
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h; clear h
   induction' k with k ih
   · simp only [zero_eq, add_zero, le_refl, tsub_eq_zero_of_le, ne_eq, Nat.isUnit_iff, dvd_zero]
-  rw [Nat.succ_eq_add_one, ← add_assoc]
+  rw [← add_assoc]
   dsimp [appr]
   split_ifs with h
   · exact ih
@@ -459,6 +459,9 @@ theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   apply appr_spec
 #align padic_int.dense_range_nat_cast PadicInt.denseRange_natCast
 
+@[deprecated (since := "2024-04-17")]
+alias denseRange_nat_cast := denseRange_natCast
+
 theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
   intro x
   refine DenseRange.induction_on denseRange_natCast x ?_ ?_
@@ -467,6 +470,9 @@ theorem denseRange_intCast : DenseRange (Int.cast : ℤ → ℤ_[p]) := by
     apply subset_closure
     exact Set.mem_range_self _
 #align padic_int.dense_range_int_cast PadicInt.denseRange_intCast
+
+@[deprecated (since := "2024-04-17")]
+alias denseRange_int_cast := denseRange_intCast
 
 end RingHoms
 
@@ -499,7 +505,7 @@ variable {f}
 theorem pow_dvd_nthHom_sub (r : R) (i j : ℕ) (h : i ≤ j) :
     (p : ℤ) ^ i ∣ nthHom f r j - nthHom f r i := by
   specialize f_compat i j h
-  rw [← Int.coe_nat_pow, ← ZMod.intCast_zmod_eq_zero_iff_dvd, Int.cast_sub]
+  rw [← Int.natCast_pow, ← ZMod.intCast_zmod_eq_zero_iff_dvd, Int.cast_sub]
   dsimp [nthHom]
   rw [← f_compat, RingHom.comp_apply]
   simp only [ZMod.cast_id, ZMod.castHom_apply, sub_self, ZMod.natCast_val, ZMod.intCast_cast]
@@ -510,7 +516,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (p : ℚ) ^ (-((k : ℕ) : ℤ)) < ε := exists_pow_neg_lt_rat p hε
   use k
   intro j hj
-  refine' lt_of_le_of_lt _ hk
+  refine lt_of_le_of_lt ?_ hk
   -- Need to do beta reduction first, as `norm_cast` doesn't.
   -- Added to adapt to leanprover/lean4#2734.
   beta_reduce

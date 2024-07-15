@@ -53,9 +53,9 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
-set_option autoImplicit true in
+universe u in
 -- TODO: upstream into core/std
-instance [Inhabited α] : Inhabited (Thunk α) where
+instance {α : Type u} [Inhabited α] : Inhabited (Thunk α) where
   default := .pure default
 
 /-- This extension stores the lookup data generated from `#align` commands. -/
@@ -158,7 +158,9 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
         addConstInfo id4 c none
       else if align.precheck.get (← getOptions) then
         let note := "(add `set_option align.precheck false` to suppress this message)"
-        let inner := match ← try some <$> resolveGlobalConstWithInfos id4 catch _ => pure none with
+        let inner := match ←
+          try some <$> (liftCoreM <| realizeGlobalConstWithInfos id4)
+          catch _ => pure none with
         | none => m!""
         | some cs => m!" Did you mean:\n\n\
               {("\n":MessageData).joinSep (cs.map fun c' => m!"  #align {id3} {c'}")}\n\n\

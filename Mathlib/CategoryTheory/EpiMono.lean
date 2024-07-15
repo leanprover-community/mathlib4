@@ -251,16 +251,14 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Split monomorphisms are also absolute monomorphisms. -/
 @[simps]
-def SplitMono.map {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) (F : C ⥤ D) : SplitMono (F.map f)
-    where
+def SplitMono.map {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) (F : C ⥤ D) : SplitMono (F.map f) where
   retraction := F.map sm.retraction
   id := by rw [← Functor.map_comp, SplitMono.id, Functor.map_id]
 #align category_theory.split_mono.map CategoryTheory.SplitMono.map
 
 /-- Split epimorphisms are also absolute epimorphisms. -/
 @[simps]
-def SplitEpi.map {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) (F : C ⥤ D) : SplitEpi (F.map f)
-    where
+def SplitEpi.map {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) (F : C ⥤ D) : SplitEpi (F.map f) where
   section_ := F.map se.section_
   id := by rw [← Functor.map_comp, SplitEpi.id, Functor.map_id]
 #align category_theory.split_epi.map CategoryTheory.SplitEpi.map

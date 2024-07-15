@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.Meta.Tactic.Cleanup
-import Mathlib.Lean.Meta
+import Lean.Meta.Tactic.Cases
+import Lean.Meta.Tactic.Refl
+import Mathlib.Logic.IsEmpty
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`
@@ -89,6 +91,79 @@ where
     if ← g.subsingletonElim then return
     -- We have no more tricks.
     failure
+
+universe u v
+
+/-- A version of `Subsingleton` with few instances. It should fail fast. -/
+class FastSubsingleton (α : Sort u) : Prop where
+  /-- The subsingleton instance. -/
+  [inst : Subsingleton α]
+
+/-- A version of `IsEmpty` with few instances. It should fail fast. -/
+class FastIsEmpty (α : Sort u) : Prop where
+  [inst : IsEmpty α]
+
+protected theorem FastSubsingleton.elim {α : Sort u} [h : FastSubsingleton α] : (a b : α) → a = b :=
+  h.inst.allEq
+
+instance (priority := 100) {α : Type u} [inst : FastIsEmpty α] : FastSubsingleton α where
+  inst := have := inst.inst; inferInstance
+
+instance {p : Prop} : FastSubsingleton p := {}
+
+instance {p : Prop} : FastSubsingleton (Decidable p) := {}
+
+instance : FastSubsingleton (Fin 1) := {}
+
+instance : FastSubsingleton PUnit := {}
+
+instance : FastIsEmpty Empty := {}
+
+instance : FastIsEmpty False := {}
+
+instance : FastIsEmpty (Fin 0) := {}
+
+instance {α : Sort u} [inst : FastIsEmpty α] {β : (x : α) → Sort v} :
+    FastSubsingleton ((x : α) → β x) where
+  inst.allEq _ _ := funext fun a => (inst.inst.false a).elim
+
+instance {α : Sort u} {β : (x : α) → Sort v} [inst : ∀ x, FastSubsingleton (β x)] :
+    FastSubsingleton ((x : α) → β x) where
+  inst := have := λ x => (inst x).inst; inferInstance
+
+/--
+Runs `mx` in a context where all local `Subsingleton` and `IsEmpty` instances
+have associated `FastSubsingleton` and `FastIsEmpty` instances.
+The function passed to `mx` eliminates these instances from expressions,
+since they are only locally valid inside this context.
+-/
+def withSubsingletonAsFast {α : Type} [Inhabited α] (mx : (Expr → Expr) → MetaM α) : MetaM α := do
+  let insts1 := (← getLocalInstances).filter fun inst => inst.className == ``Subsingleton
+  let insts2 := (← getLocalInstances).filter fun inst => inst.className == ``IsEmpty
+  let mkInst (f : Name) (inst : Expr) : MetaM Expr := do
+    forallTelescopeReducing (← inferType inst) fun args _ => do
+      mkLambdaFVars args <| ← mkAppOptM f #[none, mkAppN inst args]
+  let vals := (← insts1.mapM fun inst => mkInst ``FastSubsingleton.mk inst.fvar)
+    ++ (← insts2.mapM fun inst => mkInst ``FastIsEmpty.mk inst.fvar)
+  let tys ← vals.mapM inferType
+  withLocalDeclsD (tys.map fun ty => (`inst, fun _ => pure ty)) fun args =>
+    withNewLocalInstances args 0 do
+      let elim (e : Expr) : Expr := e.replaceFVars args vals
+      mx elim
+
+/-- Like `subsingletonElim` but uses `FastSubsingleton` to fail fast. -/
+def fastSubsingletonElim (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `fastSubsingletonElim
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, rhs) := tgt.eq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← withSubsingletonAsFast fun elim =>
+        elim <$> mkAppM ``FastSubsingleton.elim #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
 
 /--
 `mkRichHCongr fType funInfo fixedFun fixedParams forceHEq`
@@ -267,7 +342,7 @@ where
     if ← mvarId.proofIrrelHeq then return
     -- Make the goal be an eq and then try `Subsingleton.elim`
     let mvarId ← mvarId.heqOfEq
-    if ← mvarId.subsingletonElim then return
+    if ← fastSubsingletonElim mvarId then return
     -- We have no more tricks.
     throwError "was not able to solve for proof"
   /-- Driver for `trySolveCore`. -/

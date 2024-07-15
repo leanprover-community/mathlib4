@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Data.Set.Image
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.GroupTheory.GroupAction.Group
 
 #align_import data.set.pointwise.smul from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
@@ -450,11 +452,17 @@ theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ �
 #align set.range_vadd_range Set.range_vadd_range
 
 @[to_additive]
-theorem smul_set_range [SMul α β] {ι : Sort*} {f : ι → β} :
+theorem smul_set_range [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
     a • range f = range fun i ↦ a • f i :=
   (range_comp _ _).symm
 #align set.smul_set_range Set.smul_set_range
 #align set.vadd_set_range Set.vadd_set_range
+
+@[to_additive] lemma range_smul [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
+    range (fun i ↦ a • f i) = a • range f := (smul_set_range ..).symm
+
+@[to_additive] lemma range_mul [Mul α] {ι : Sort*} (a : α) (f : ι → α) :
+    range (fun i ↦ a * f i) = a • range f := range_smul a f
 
 @[to_additive]
 instance smulCommClass_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
@@ -807,7 +815,7 @@ theorem zero_mem_smul_set (h : (0 : β) ∈ t) : (0 : β) ∈ a • t := ⟨0, h
 variable [Zero α] [NoZeroSMulDivisors α β]
 
 theorem zero_mem_smul_set_iff (ha : a ≠ 0) : (0 : β) ∈ a • t ↔ (0 : β) ∈ t := by
-  refine' ⟨_, zero_mem_smul_set⟩
+  refine ⟨?_, zero_mem_smul_set⟩
   rintro ⟨b, hb, h⟩
   rwa [(eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left ha] at hb
 #align set.zero_mem_smul_set_iff Set.zero_mem_smul_set_iff
@@ -947,6 +955,11 @@ theorem smul_set_inter : a • (s ∩ t) = a • s ∩ a • t :=
 #align set.vadd_set_inter Set.vadd_set_inter
 
 @[to_additive]
+theorem smul_set_iInter {ι : Type*}
+    (a : α) (t : ι → Set β) : (a • ⋂ i, t i) = ⋂ i, a • t i :=
+  image_iInter (MulAction.bijective a) t
+
+@[to_additive]
 theorem smul_set_sdiff : a • (s \ t) = a • s \ a • t :=
   image_diff (MulAction.injective a) _ _
 #align set.smul_set_sdiff Set.smul_set_sdiff
@@ -1017,8 +1030,8 @@ theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
 #align set.Union_neg_vadd Set.iUnion_neg_vadd
 
 @[to_additive]
-theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } :=
-  by simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
+theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } := by
+  simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
 #align set.Union_smul_eq_set_of_exists Set.iUnion_smul_eq_setOf_exists
 #align set.Union_vadd_eq_set_of_exists Set.iUnion_vadd_eq_setOf_exists
 
@@ -1135,7 +1148,6 @@ section Semiring
 
 variable [Semiring α] [AddCommMonoid β] [Module α β]
 
--- Porting note (#10756): new lemma
 theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
   rintro _ ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)

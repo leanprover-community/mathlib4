@@ -7,7 +7,6 @@ import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Nat.Units
 import Mathlib.Tactic.FinCases
 
 #align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
@@ -62,8 +61,7 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note (#10756): added an `ext` lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
@@ -288,7 +286,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     use Fin.last (n+3)
     simp only [hₙ.ne, not_false_eq_true, Fin.zero_eta, zero_add, true_and]
     intro j
-    fin_cases j <;> simp [Fin.ext_iff] <;> omega
+    fin_cases j <;> simp [Fin.ext_iff]
   · use 0
     simp only [h₀.ne', not_false_eq_true, true_and]
     intro j
@@ -357,8 +355,7 @@ instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
--- Porting note (#10756): added an `ext` lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=

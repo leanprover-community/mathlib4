@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Data.HashMap.WF
+import Batteries.Data.HashMap.WF
 import Mathlib.Lean.Name
 import Mathlib.Lean.Expr.Basic
 
@@ -16,7 +16,7 @@ For finding declarations with excessively long names.
 open Lean Meta Elab
 
 /-- Helper function for `#long_names` and `#long_instances`. -/
-def printNameHashMap (h : Std.HashMap Name (Array Name)) : IO Unit :=
+def printNameHashMap (h : Batteries.HashMap Name (Array Name)) : IO Unit :=
   for (m, names) in h.toList do
     IO.println "----"
     IO.println <| m.toString ++ ":"
@@ -45,6 +45,6 @@ elab "#long_instances " N:(num)?: command =>
   Command.runTermElabM fun _ => do
     let N := N.map TSyntax.getNat |>.getD 50
     let namesByModule ← allNamesByModule
-      (fun n => n.getString.startsWith "inst" && n.getString.length > N)
+      (fun n => n.lastComponentAsString.startsWith "inst" && n.lastComponentAsString.length > N)
     let namesByModule := namesByModule.filter fun m _ => m.getRoot.toString = "Mathlib"
     printNameHashMap namesByModule

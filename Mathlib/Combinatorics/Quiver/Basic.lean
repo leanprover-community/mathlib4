@@ -66,10 +66,10 @@ namespace Prefunctor
 -- Porting note: added during port.
 -- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
-lemma mk_obj {V : Type*} [Quiver V] {obj : V → V} {map} {X : V} :
+lemma mk_obj {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X : V} :
     (Prefunctor.mk obj map).obj X = obj X := rfl
 
-lemma mk_map {V : Type*} [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
+lemma mk_map {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X Y : V} {f : X ⟶ Y} :
     (Prefunctor.mk obj map).map f = map f := rfl
 
 @[ext]
@@ -100,7 +100,7 @@ instance (V : Type*) [Quiver V] : Inhabited (Prefunctor V V) :=
   ⟨id V⟩
 
 /-- Composition of morphisms between quivers. -/
-@[simps, pp_dot]
+@[simps]
 def comp {U : Type*} [Quiver U] {V : Type*} [Quiver V] {W : Type*} [Quiver W]
     (F : Prefunctor U V) (G : Prefunctor V W) : Prefunctor U W where
   obj X := G.obj (F.obj X)
@@ -149,12 +149,10 @@ instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
 #align quiver.opposite Quiver.opposite
 
 /-- The opposite of an arrow in `V`. -/
-@[pp_dot]
 def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 #align quiver.hom.op Quiver.Hom.op
 
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
-@[pp_dot]
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 #align quiver.hom.unop Quiver.Hom.unop
 
@@ -172,8 +170,7 @@ theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 #align quiver.empty_arrow Quiver.empty_arrow
 
 /-- A quiver is thin if it has no parallel arrows. -/
-@[reducible]
-def IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
+abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
 #align quiver.is_thin Quiver.IsThin
 
 end Quiver

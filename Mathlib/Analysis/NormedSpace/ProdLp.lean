@@ -32,11 +32,11 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This files is a straight-forward adaption of `Mathlib.Analysis.NormedSpace.PiLp`.
+This file is a straight-forward adaptation of `Mathlib.Analysis.NormedSpace.PiLp`.
 
 -/
 
-open Real Set Filter RCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
 
 noncomputable section
 
@@ -169,9 +169,7 @@ theorem prod_edist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
 theorem prod_edist_eq_sup (f g : WithLp ∞ (α × β)) :
-    edist f g = edist f.fst g.fst ⊔ edist f.snd g.snd := by
-  dsimp [edist]
-  exact if_neg ENNReal.top_ne_zero
+    edist f g = edist f.fst g.fst ⊔ edist f.snd g.snd := rfl
 
 end EDist
 
@@ -238,9 +236,7 @@ theorem prod_dist_eq_add (hp : 0 < p.toReal) (f g : WithLp p (α × β)) :
   (if_neg hp'.1.ne').trans (if_neg hp'.2.ne)
 
 theorem prod_dist_eq_sup (f g : WithLp ∞ (α × β)) :
-    dist f g = dist f.fst g.fst ⊔ dist f.snd g.snd := by
-  dsimp [dist]
-  exact if_neg ENNReal.top_ne_zero
+    dist f g = dist f.fst g.fst ⊔ dist f.snd g.snd := rfl
 
 end Dist
 
@@ -271,9 +267,7 @@ theorem prod_norm_eq_card (f : WithLp 0 (α × β)) :
     ‖f‖ = (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1) := by
   convert if_pos rfl
 
-theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := by
-  dsimp [Norm.norm]
-  exact if_neg ENNReal.top_ne_zero
+theorem prod_norm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖ = ‖f.fst‖ ⊔ ‖f.snd‖ := rfl
 
 theorem prod_norm_eq_add (hp : 0 < p.toReal) (f : WithLp p (α × β)) :
     ‖f‖ = (‖f.fst‖ ^ p.toReal + ‖f.snd‖ ^ p.toReal) ^ (1 / p.toReal) :=
@@ -356,8 +350,7 @@ structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
-@[reducible]
-def prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
+abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
@@ -369,7 +362,7 @@ def prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [prod_edist_eq_sup, prod_dist_eq_sup]
-      refine' le_antisymm (sup_le _ _) _
+      refine le_antisymm (sup_le ?_ ?_) ?_
       · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
           ← PseudoMetricSpace.edist_dist]
         exact le_sup_left
@@ -435,8 +428,8 @@ theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     (prod_antilipschitzWith_equiv_aux p α β).uniformInducing
       (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
-    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id :=
-    by ext i <;> rfl
+    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id := by
+    ext i <;> rfl
   rw [← A.comap_uniformity, this, comap_id]
 
 theorem prod_aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
@@ -675,7 +668,7 @@ section Single
 @[simp]
 theorem nnnorm_equiv_symm_fst (x : α) :
     ‖(WithLp.equiv p (α × β)).symm (x, 0)‖₊ = ‖x‖₊ := by
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
@@ -685,7 +678,7 @@ theorem nnnorm_equiv_symm_fst (x : α) :
 @[simp]
 theorem nnnorm_equiv_symm_snd (y : β) :
     ‖(WithLp.equiv p (α × β)).symm (0, y)‖₊ = ‖y‖₊ := by
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
@@ -750,8 +743,8 @@ instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
       exact norm_smul_le _ _
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
-      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, NNReal.rpow_one_div_le_iff hp0,
-        NNReal.mul_rpow, ← NNReal.rpow_mul, div_mul_cancel₀ 1 hp0.ne', NNReal.rpow_one, mul_add,
+      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
+        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
       exact add_le_add
         (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)

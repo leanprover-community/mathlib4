@@ -19,7 +19,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open scoped Topology Classical BigOperators NNReal ENNReal
+open scoped Topology Classical NNReal ENNReal
 
 open Set Filter Asymptotics
 

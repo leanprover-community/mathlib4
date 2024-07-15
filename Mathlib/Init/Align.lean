@@ -3,13 +3,23 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Selsam, Mario Carneiro
 -/
-import Std.Data.Option.Lemmas
-import Std.Data.Nat.Lemmas
+import Batteries.Data.List.Basic
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Relation.Trans
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
 # Realignments from lean 3 `init`
 
 These are collected in one place only for ease of maintenance of a bunch of files that would
@@ -118,8 +128,8 @@ set_option align.precheck false in #align mk_array mkArray'
 /-! ## `init.data.nat.lemmas` -/
 
 #align nat.le_of_add_le_add_right Nat.le_of_add_le_add_rightₓ
-#align nat.mul_lt_mul Nat.mul_lt_mulₓ
-#align nat.mul_lt_mul' Nat.mul_lt_mul'ₓ
+#align nat.mul_lt_mul Nat.mul_lt_mul_of_lt_of_le'ₓ
+#align nat.mul_lt_mul' Nat.mul_lt_mul_of_le_of_ltₓ
 #noalign nat.discriminate
 #align nat.sub_one_sub_lt Nat.sub_one_sub_ltₓ
 #align nat.div_eq_sub_div Nat.div_eq_sub_divₓ

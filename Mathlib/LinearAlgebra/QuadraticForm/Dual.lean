@@ -55,12 +55,12 @@ theorem separatingLeft_dualProd :
   rw [separatingLeft_iff_ker_eq_bot, ker_eq_bot]
   let e := LinearEquiv.prodComm R _ _ ≪≫ₗ Module.dualProdDualEquivDual R (Module.Dual R M) M
   let h_d := e.symm.toLinearMap.comp (dualProd R M)
-  refine' (Function.Injective.of_comp_iff e.symm.injective
-    (dualProd R M)).symm.trans _
+  refine (Function.Injective.of_comp_iff e.symm.injective
+    (dualProd R M)).symm.trans ?_
   rw [← LinearEquiv.coe_toLinearMap, ← coe_comp]
   change Function.Injective h_d ↔ _
   have : h_d = prodMap id (Module.Dual.eval R M) := by
-    refine' ext fun x => Prod.ext _ _
+    refine ext fun x => Prod.ext ?_ ?_
     · ext
       dsimp [e, h_d, Module.Dual.eval, LinearEquiv.prodComm]
       simp
@@ -68,7 +68,7 @@ theorem separatingLeft_dualProd :
       dsimp [e, h_d, Module.Dual.eval, LinearEquiv.prodComm]
       simp
   rw [this, coe_prodMap]
-  refine' Prod.map_injective.trans _
+  refine Prod.map_injective.trans ?_
   exact and_iff_right Function.injective_id
 #align bilin_form.nondenerate_dual_prod LinearMap.separatingLeft_dualProd
 
@@ -77,6 +77,8 @@ end Ring
 end LinearMap
 
 namespace QuadraticForm
+
+open QuadraticMap
 
 section Semiring
 
@@ -89,7 +91,7 @@ def dualProd : QuadraticForm R (Module.Dual R M × M) where
   toFun_smul a p := by
     dsimp only  -- Porting note: added
     rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, LinearMap.map_smul, smul_eq_mul,
-      smul_eq_mul, mul_assoc]
+      smul_eq_mul, smul_eq_mul, mul_assoc]
   exists_companion' :=
     ⟨LinearMap.dualProd R M, fun p q => by
       dsimp only  -- Porting note: added
@@ -100,7 +102,7 @@ def dualProd : QuadraticForm R (Module.Dual R M × M) where
 
 @[simp]
 theorem _root_.LinearMap.dualProd.toQuadraticForm :
-    (LinearMap.dualProd R M).toQuadraticForm = 2 • dualProd R M :=
+    (LinearMap.dualProd R M).toQuadraticMap = 2 • dualProd R M :=
   ext fun _a => (two_nsmul _).symm
 #align bilin_form.dual_prod.to_quadratic_form LinearMap.dualProd.toQuadraticForm
 
@@ -115,8 +117,8 @@ def dualProdIsometry (f : M ≃ₗ[R] N) : (dualProd R M).IsometryEquiv (dualPro
 
 /-- `QuadraticForm.dualProd` commutes (isometrically) with `QuadraticForm.prod`. -/
 @[simps!]
-def dualProdProdIsometry : (dualProd R (M × N)).IsometryEquiv ((dualProd R M).prod (dualProd R N))
-    where
+def dualProdProdIsometry :
+    (dualProd R (M × N)).IsometryEquiv ((dualProd R M).prod (dualProd R N)) where
   toLinearEquiv :=
     (Module.dualProdDualEquivDual R M N).symm.prod (LinearEquiv.refl R (M × N)) ≪≫ₗ
       LinearEquiv.prodProdProdComm R _ _ M N

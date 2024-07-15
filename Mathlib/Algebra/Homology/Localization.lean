@@ -71,7 +71,7 @@ lemma isIso_Q_map_iff_mem_quasiIso {K L : HomologicalComplex C c} (f : K ⟶ L) 
     rw [HomologicalComplex.mem_quasiIso_iff, quasiIso_iff]
     intro i
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    refine' (NatIso.isIso_map_iff (homologyFunctorFactors C c i) f).1 _
+    refine (NatIso.isIso_map_iff (homologyFunctorFactors C c i) f).1 ?_
     dsimp
     infer_instance
   · intro h
@@ -89,9 +89,9 @@ variable (C : Type*) [Category C] {ι : Type*} (c : ComplexShape ι) [Preadditiv
 lemma HomologicalComplexUpToQuasiIso.Q_inverts_homotopyEquivalences :
     (HomologicalComplex.homotopyEquivalences C c).IsInvertedBy
       HomologicalComplexUpToQuasiIso.Q :=
-  MorphismProperty.IsInvertedBy.of_subset _ _ _
+  MorphismProperty.IsInvertedBy.of_le _ _ _
     (Localization.inverts Q (HomologicalComplex.quasiIso C c))
-    (homotopyEquivalences_subset_quasiIso C c)
+    (homotopyEquivalences_le_quasiIso C c)
 
 namespace HomotopyCategory
 
@@ -114,10 +114,10 @@ lemma quotient_map_mem_quasiIso_iff {K L : HomologicalComplex C c} (f : K ⟶ L)
 
 variable (C c)
 
-lemma respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
+instance respectsIso_quasiIso : (quasiIso C c).RespectsIso := by
   apply MorphismProperty.RespectsIso.of_respects_arrow_iso
   intro f g e hf i
-  exact ((MorphismProperty.RespectsIso.isomorphisms C).arrow_mk_iso_iff
+  exact ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff
     ((homologyFunctor C c i).mapArrow.mapIso e)).1 (hf i)
 
 lemma homologyFunctor_inverts_quasiIso (i : ι) :
@@ -133,7 +133,7 @@ lemma quasiIso_eq_quasiIso_map_quotient :
     exact MorphismProperty.map_mem_map _ _ _ hf
   · rintro ⟨K', L', g, h, ⟨e⟩⟩
     rw [← quotient_map_mem_quasiIso_iff] at h
-    exact ((respectsIso_quasiIso C c).arrow_mk_iso_iff e).1 h
+    exact ((quasiIso C c).arrow_mk_iso_iff e).1 h
 
 end HomotopyCategory
 
@@ -198,7 +198,7 @@ instance : HomologicalComplexUpToQuasiIso.Qh.IsLocalization (HomotopyCategory.qu
   Functor.IsLocalization.of_comp (HomotopyCategory.quotient C c)
     Qh (HomologicalComplex.homotopyEquivalences C c)
     (HomotopyCategory.quasiIso C c) (HomologicalComplex.quasiIso C c)
-    (homotopyEquivalences_subset_quasiIso C c)
+    (homotopyEquivalences_le_quasiIso C c)
     (HomotopyCategory.quasiIso_eq_quasiIso_map_quotient C c)
 
 end
@@ -236,9 +236,9 @@ lemma ComplexShape.QFactorsThroughHomotopy_of_exists_prev [CategoryWithHomology 
   areEqualizedByLocalization {K L f g} h := by
     have : DecidableRel c.Rel := by classical infer_instance
     exact h.map_eq_of_inverts_homotopyEquivalences hc _
-      (MorphismProperty.IsInvertedBy.of_subset _ _ _
+      (MorphismProperty.IsInvertedBy.of_le _ _ _
         (Localization.inverts _ (HomologicalComplex.quasiIso C _))
-        (homotopyEquivalences_subset_quasiIso C _))
+        (homotopyEquivalences_le_quasiIso C _))
 
 end Cylinder
 
@@ -291,3 +291,74 @@ example [(HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).HasLocalization] 
   inferInstance
 
 end CochainComplex
+
+namespace CategoryTheory.Functor
+
+variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+  {ι : Type*} (c : ComplexShape ι)
+
+section
+
+variable [Preadditive C] [Preadditive D]
+  [CategoryWithHomology C] [CategoryWithHomology D]
+  [(HomologicalComplex.quasiIso C c).HasLocalization]
+  [(HomologicalComplex.quasiIso D c).HasLocalization]
+  [F.Additive] [F.PreservesHomology]
+
+lemma mapHomologicalComplex_upToQuasiIso_Q_inverts_quasiIso :
+    (HomologicalComplex.quasiIso C c).IsInvertedBy
+      (F.mapHomologicalComplex c ⋙ HomologicalComplexUpToQuasiIso.Q) := fun K L f hf ↦ by
+  apply Localization.inverts _ (HomologicalComplex.quasiIso D c)
+  have : QuasiIso f := hf
+  apply HomologicalComplex.quasiIso_map_of_preservesHomology
+
+/-- The functor `HomologicalComplexUpToQuasiIso C c ⥤ HomologicalComplexUpToQuasiIso D c`
+induced by a functor `F : C ⥤ D` whcih preserves homology. -/
+noncomputable def mapHomologicalComplexUpToQuasiIso :
+    HomologicalComplexUpToQuasiIso C c ⥤ HomologicalComplexUpToQuasiIso D c :=
+  Localization.lift _
+    (F.mapHomologicalComplex_upToQuasiIso_Q_inverts_quasiIso c)
+    HomologicalComplexUpToQuasiIso.Q
+
+noncomputable instance :
+    Localization.Lifting HomologicalComplexUpToQuasiIso.Q
+      (HomologicalComplex.quasiIso C c)
+      (F.mapHomologicalComplex c ⋙ HomologicalComplexUpToQuasiIso.Q)
+      (F.mapHomologicalComplexUpToQuasiIso c) := by
+  dsimp only [mapHomologicalComplexUpToQuasiIso]
+  infer_instance
+
+/-- The functor `F.mapHomologicalComplexUpToQuasiIso c` is induced by
+`F.mapHomologicalComplex c`. -/
+noncomputable def mapHomologicalComplexUpToQuasiIsoFactors :
+    HomologicalComplexUpToQuasiIso.Q ⋙ F.mapHomologicalComplexUpToQuasiIso c ≅
+      F.mapHomologicalComplex c ⋙ HomologicalComplexUpToQuasiIso.Q :=
+  Localization.Lifting.iso HomologicalComplexUpToQuasiIso.Q
+      (HomologicalComplex.quasiIso C c) _ _
+
+variable [c.QFactorsThroughHomotopy C] [c.QFactorsThroughHomotopy D]
+  [(HomotopyCategory.quotient C c).IsLocalization
+    (HomologicalComplex.homotopyEquivalences C c)]
+
+/-- The functor `F.mapHomologicalComplexUpToQuasiIso c` is induced by
+`F.mapHomotopyCategory c`. -/
+noncomputable def mapHomologicalComplexUpToQuasiIsoFactorsh :
+    HomologicalComplexUpToQuasiIso.Qh ⋙ F.mapHomologicalComplexUpToQuasiIso c ≅
+      F.mapHomotopyCategory c ⋙ HomologicalComplexUpToQuasiIso.Qh :=
+  Localization.liftNatIso (HomotopyCategory.quotient C c)
+    (HomologicalComplex.homotopyEquivalences C c)
+    (HomotopyCategory.quotient C c ⋙ HomologicalComplexUpToQuasiIso.Qh ⋙
+      F.mapHomologicalComplexUpToQuasiIso c)
+    (HomotopyCategory.quotient C c ⋙ F.mapHomotopyCategory c ⋙
+      HomologicalComplexUpToQuasiIso.Qh) _ _
+      (F.mapHomologicalComplexUpToQuasiIsoFactors c)
+
+noncomputable instance :
+    Localization.Lifting HomologicalComplexUpToQuasiIso.Qh (HomotopyCategory.quasiIso C c)
+      (F.mapHomotopyCategory c ⋙ HomologicalComplexUpToQuasiIso.Qh)
+      (F.mapHomologicalComplexUpToQuasiIso c) :=
+  ⟨F.mapHomologicalComplexUpToQuasiIsoFactorsh c⟩
+
+end
+
+end CategoryTheory.Functor

@@ -94,7 +94,7 @@ This ensures your subclass will not have issues with synthesis of the `[Mul M]` 
 before the value of `M` is known.
 -/
 @[notation_class * carrier Simps.findCoercionArgs]
-class SetLike (A : Type*) (B : outParam <| Type*) where
+class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/

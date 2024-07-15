@@ -8,6 +8,11 @@ import Lean
 /-!
 # Pretty printing projection notation
 
+**Deprecated** as of 2024-05-02 with Lean v4.8.0 since dot notation is now default with
+the introduction of `pp.fieldNotation.generalized`, which handles dot notation pervasively
+and correctly.
+
+
 This module contains the `@[pp_dot]` attribute, which is used to configure functions to pretty print
 using projection notation (i.e., like `x.f y` rather than `C.f x y`).
 
@@ -113,6 +118,9 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
   | `(attr| pp_dot) => do
+    logWarning "\
+      The @[pp_dot] attribute is deprecated now that dot notation is the default \
+      with the introduction of `pp.fieldNotation.generalized` in Lean v4.8.0."
     if (kind != AttributeKind.global) then
       throwError "`pp_dot` can only be used as a global attribute"
     liftCommandElabM <| withRef ref <| mkExtendedFieldNotationUnexpander src

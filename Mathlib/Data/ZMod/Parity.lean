@@ -3,7 +3,7 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.ZMod.Basic
 
 #align_import data.zmod.parity from "leanprover-community/mathlib"@"048240e809f04e2bde02482ab44bc230744cc6c9"

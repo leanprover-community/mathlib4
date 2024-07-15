@@ -361,7 +361,7 @@ theorem dimH_image_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ�
   rcases countable_cover_nhdsWithin htn with ⟨u, hus, huc, huU⟩
   replace huU := inter_eq_self_of_subset_left huU; rw [inter_iUnion₂] at huU
   rw [← huU, image_iUnion₂, dimH_bUnion huc, dimH_bUnion huc]; simp only [ENNReal.iSup_div]
-  exact iSup₂_mono fun x hx => ((hC x (hus hx)).mono (inter_subset_right _ _)).dimH_image_le hr
+  exact iSup₂_mono fun x hx => ((hC x (hus hx)).mono inter_subset_right).dimH_image_le hr
 set_option linter.uppercaseLean3 false in
 #align dimH_image_le_of_locally_holder_on dimH_image_le_of_locally_holder_on
 
@@ -572,6 +572,16 @@ theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
   rw [dimH_univ_eq_finrank ℝ, FiniteDimensional.finrank_self, Nat.cast_one]
 set_option linter.uppercaseLean3 false in
 #align real.dimH_univ Real.dimH_univ
+
+variable {E}
+
+lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ}
+    (hd : finrank ℝ E < d) : (μH[d] : Measure E) = 0 := by
+  lift d to ℝ≥0 using (Nat.cast_nonneg _).trans hd.le
+  rw [← measure_univ_eq_zero]
+  apply hausdorffMeasure_of_dimH_lt
+  rw [dimH_univ_eq_finrank]
+  exact mod_cast hd
 
 end Real
 

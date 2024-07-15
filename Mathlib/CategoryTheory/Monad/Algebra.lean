@@ -48,19 +48,12 @@ structure Algebra (T : Monad C) : Type max u₁ v₁ where
   assoc : T.μ.app A ≫ a = (T : C ⥤ C).map a ≫ a := by aesop_cat
 #align category_theory.monad.algebra CategoryTheory.Monad.Algebra
 
--- Porting note: Manually adding aligns.
 set_option linter.uppercaseLean3 false in
 #align category_theory.monad.algebra.A CategoryTheory.Monad.Algebra.A
 
 #align category_theory.monad.algebra.a CategoryTheory.Monad.Algebra.a
 #align category_theory.monad.algebra.unit CategoryTheory.Monad.Algebra.unit
 #align category_theory.monad.algebra.assoc CategoryTheory.Monad.Algebra.assoc
-
--- Porting note: no need to restate axioms in lean4.
-
---restate_axiom algebra.unit'
-
---restate_axiom algebra.assoc'
 
 attribute [reassoc] Algebra.unit Algebra.assoc
 
@@ -106,7 +99,7 @@ instance : CategoryStruct (Algebra T) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note: Adding this ext lemma to help automation below.
+-- Porting note (#11041): Adding this `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 
@@ -199,14 +192,7 @@ def adj : T.free ⊣ T.forget :=
           right_inv := fun f => by
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
-            apply Category.comp_id },
-      -- This used to be automatic before leanprover/lean4#2644
-      homEquiv_naturality_right := by
-        intros
-        -- This doesn't look good:
-        simp? says simp only [forget_obj, free_obj_A, forget_map]
-        dsimp
-        simp }
+            apply Category.comp_id } }
 #align category_theory.monad.adj CategoryTheory.Monad.adj
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
@@ -239,18 +225,8 @@ theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mo
   (forget T).mono_of_mono_map h
 #align category_theory.monad.algebra_mono_of_mono CategoryTheory.Monad.algebra_mono_of_mono
 
-instance : IsRightAdjoint T.forget :=
-  ⟨T.free, T.adj⟩
-
-@[simp]
-theorem leftAdjoint_forget : leftAdjoint T.forget = T.free :=
-  rfl
-#align category_theory.monad.left_adjoint_forget CategoryTheory.Monad.leftAdjoint_forget
-
-@[simp]
-theorem ofRightAdjoint_forget : Adjunction.ofRightAdjoint T.forget = T.adj :=
-  rfl
-#align category_theory.monad.of_right_adjoint_forget CategoryTheory.Monad.ofRightAdjoint_forget
+instance : T.forget.IsRightAdjoint  :=
+  ⟨T.free, ⟨T.adj⟩⟩
 
 /--
 Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras of `T₁` to algebras of
@@ -337,7 +313,6 @@ structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   coassoc : a ≫ G.δ.app A = a ≫ G.map a := by aesop_cat
 #align category_theory.comonad.coalgebra CategoryTheory.Comonad.Coalgebra
 
--- Porting note: manually adding aligns.
 set_option linter.uppercaseLean3 false in
 #align category_theory.comonad.coalgebra.A CategoryTheory.Comonad.Coalgebra.A
 
@@ -396,7 +371,7 @@ instance : CategoryStruct (Coalgebra G) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note: Adding ext lemma to help automation below.
+-- Porting note (#11041): Adding `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext _ _ h
 
@@ -520,18 +495,8 @@ theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : 
   (forget G).mono_of_mono_map h
 #align category_theory.comonad.algebra_mono_of_mono CategoryTheory.Comonad.algebra_mono_of_mono
 
-instance : IsLeftAdjoint G.forget :=
-  ⟨_, G.adj⟩
-
-@[simp]
-theorem rightAdjoint_forget : rightAdjoint G.forget = G.cofree :=
-  rfl
-#align category_theory.comonad.right_adjoint_forget CategoryTheory.Comonad.rightAdjoint_forget
-
-@[simp]
-theorem ofLeftAdjoint_forget : Adjunction.ofLeftAdjoint G.forget = G.adj :=
-  rfl
-#align category_theory.comonad.of_left_adjoint_forget CategoryTheory.Comonad.ofLeftAdjoint_forget
+instance : G.forget.IsLeftAdjoint  :=
+  ⟨_, ⟨G.adj⟩⟩
 
 end Comonad
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.CauSeq.Basic
+import Mathlib.Data.Rat.Cast.Defs
 
 #align_import data.real.cau_seq_completion from "leanprover-community/mathlib"@"cf4c49c445991489058260d75dae0ff2b1abca28"
 
@@ -236,7 +237,7 @@ theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
 #align cau_seq.completion.inv_mk CauSeq.Completion.inv_mk
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
-  have : LimZero (1 - 0) := Setoid.symm h
+  have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
   have : LimZero 1 := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 #align cau_seq.completion.cau_seq_zero_ne_one CauSeq.Completion.cau_seq_zero_ne_one

@@ -35,7 +35,7 @@ open LinearMap
 
 attribute [local ext] TensorProduct.ext
 
-variable (R : Type u) [CommSemiring R] (S) [CommSemiring S] [Algebra R S]
+variable (R : Type u) [CommSemiring R] (S) [Semiring S] [Algebra R S]
 variable {ι₁ : Type v₁} {ι₂ : Type v₂}
 variable [DecidableEq ι₁] [DecidableEq ι₂]
 variable (M₁ : ι₁ → Type w₁) (M₁' : Type w₁') (M₂ : ι₂ → Type w₂) (M₂' : Type w₂')

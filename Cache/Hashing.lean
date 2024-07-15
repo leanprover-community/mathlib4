@@ -53,8 +53,7 @@ def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
   -- revert potential file transformation by git's `autocrlf`
-  let contents := Lake.crlf2lf contents
-  hash contents
+  hash contents.crlfToLf
 
 /--
 Computes the root hash, which mixes the hashes of the content of:
@@ -113,8 +112,7 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
         depsMap := stt.depsMap.insert filePath fileImports })
 
 /-- Files to start hashing from. -/
-def roots : Array FilePath :=
-  #["Mathlib.lean", "MathlibExtras.lean"]
+def roots : Array FilePath := #["Mathlib.lean"]
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (extraRoots : Array FilePath) : CacheM HashMemo :=

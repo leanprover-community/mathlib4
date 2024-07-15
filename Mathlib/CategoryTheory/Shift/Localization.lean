@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Induced
-import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Localization.HasLocalization
+import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # The shift induced on a localized category
@@ -43,12 +44,20 @@ variable {A}
 
 lemma iff {X Y : C} (f : X ⟶ Y) (a : A) : W (f⟦a⟧') ↔ W f := by
   conv_rhs => rw [← @IsCompatibleWithShift.condition _ _ W A _ _ _ a]
+  rfl
 
 lemma shiftFunctor_comp_inverts (a : A) :
     W.IsInvertedBy (shiftFunctor C a ⋙ L) := fun _ _ f hf =>
   Localization.inverts L W _ (by simpa only [iff] using hf)
 
 end IsCompatibleWithShift
+
+variable {A} in
+/-- The morphism of localizer from `W` to `W` given by the functor `shiftFunctor C a`
+when `a : A` and `W` is compatible with the shift by `A`. -/
+abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
+  functor := shiftFunctor C a
+  map := by rw [MorphismProperty.IsCompatibleWithShift.condition]
 
 end MorphismProperty
 
@@ -86,5 +95,19 @@ noncomputable instance MorphismProperty.commShift_Q :
   Functor.CommShift.localized W.Q W A
 
 attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
+
+variable [W.HasLocalization]
+
+/-- The localized category `W.Localization'` is endowed with the induced shift.  -/
+noncomputable instance HasShift.localization' :
+    HasShift W.Localization' A :=
+  HasShift.localized W.Q' W A
+
+/-- The localization functor `W.Q' : C ⥤ W.Localization'` is compatible with the shift. -/
+noncomputable instance MorphismProperty.commShift_Q' :
+    W.Q'.CommShift A :=
+  Functor.CommShift.localized W.Q' W A
+
+attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
 
 end CategoryTheory
