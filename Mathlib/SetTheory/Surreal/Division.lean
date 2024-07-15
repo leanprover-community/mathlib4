@@ -147,12 +147,6 @@ lemma pos_num_eq_normalization :
       right
       use j
 
-lemma pos_of_normalization_pos_num {x : PGame} (x_num : x.Numeric) (x_pos : 0 < x) :
-    0 < normalization x := by
-  have := pos_num_eq_normalization x_num x_pos
-  simp only [mk_eq_mk] at this
-  exact lt_of_lt_of_equiv x_pos this
-
 /-! ### Options of inv' are numeric
 
   We prove by induction that if x is numeric, then the options of x.inv' are numeric. Note that
