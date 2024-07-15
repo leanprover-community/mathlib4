@@ -624,7 +624,7 @@ theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 #align is_R_or_C.norm_conj RCLike.norm_conj
 
 instance (priority := 100) : CstarRing K where
-  norm_star_mul_self {x} := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj
+  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj).symm
 
 /-! ### Cast lemmas -/
 
