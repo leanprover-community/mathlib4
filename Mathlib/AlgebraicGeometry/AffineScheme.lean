@@ -441,6 +441,9 @@ theorem basicOpen :
   exact Opens.ext (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
 #align algebraic_geometry.is_affine_open.basic_open_is_affine AlgebraicGeometry.IsAffineOpen.basicOpen
 
+instance [IsAffine X] (r : Γ(X, ⊤)) : IsAffine (X ∣_ᵤ X.basicOpen r) :=
+  (isAffineOpen_top X).basicOpen _
+
 theorem ιOpens_basicOpen_preimage (r : Γ(X, ⊤)) :
     IsAffineOpen (Scheme.ιOpens (X.basicOpen r) ⁻¹ᵁ U) := by
   apply (Scheme.ιOpens (X.basicOpen r)).isAffineOpen_iff_of_isOpenImmersion.mp
