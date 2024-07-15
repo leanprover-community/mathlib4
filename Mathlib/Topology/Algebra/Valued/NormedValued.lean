@@ -43,9 +43,44 @@ def valuation : Valuation K ℝ≥0 where
 
 theorem valuation_apply (x : K) : valuation h x = ‖x‖₊ := rfl
 
-theorem isTriviallyValued (ε : ℝ):
+theorem isTriviallyValued_or_exists {ε : ℝ} (hε : 0 < ε):
     (valuation h).rangeGroup = ⊥ ∨ (∃ (x : K), ‖x‖₊ ≠ 0 ∧ ‖x‖₊ < ε) := by
-  sorry
+  rw [Classical.or_iff_not_imp_right]
+  push_neg
+  intro H
+  rw [eq_bot_iff]
+  simp only [rangeGroup]
+  simp only [le_bot_iff, Subgroup.closure_eq_bot_iff, subset_singleton_iff, mem_preimage, mem_range,
+    forall_exists_index]
+  intro γ x hx
+  have hγ' : ∀ (n : ℤ), ε ≤ γ ^ n := fun n ↦ by
+    rw [← NNReal.coe_zpow, ← hx, valuation_apply, ← nnnorm_zpow]
+    apply H
+    apply ne_zero_of_lt (b := 0)
+    rw [nnnorm_zpow, ← valuation_apply, hx]
+    apply zpow_pos_of_pos
+    simp only [NNReal.coe_pos, gt_iff_lt, pos_iff_ne_zero, ← isUnit_iff_ne_zero, Units.isUnit]
+  rcases lt_trichotomy (γ : ℝ) 1 with (h1 | h2 | h3)
+  · exfalso
+    have h1' : 1 < ((γ⁻¹ : ℝ≥0ˣ) : ℝ) := by
+      rw [Units.val_inv_eq_inv_val, NNReal.coe_inv]
+      refine one_lt_inv ?_ h1
+      simp only [NNReal.coe_pos, gt_iff_lt, pos_iff_ne_zero, ← isUnit_iff_ne_zero, Units.isUnit]
+    obtain ⟨n, hn⟩ := exists_mem_Ioc_zpow hε h1'
+    simp only [mem_Ioc, ← not_le] at hn
+    apply hn.1
+    rw [Units.val_inv_eq_inv_val, NNReal.coe_inv, inv_zpow']
+    apply hγ'
+  · rw [← Units.eq_iff, ← NNReal.coe_inj, h2, Units.val_one, NNReal.coe_one]
+  · exfalso
+    obtain ⟨n, hn⟩ := exists_mem_Ioc_zpow hε h3
+    simp only [mem_Ioc, ← not_le] at hn
+    exact hn.1 (hγ' n)
+
+
+
+
+
 
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 def toValued : Valued K ℝ≥0 :=
@@ -56,7 +91,7 @@ def toValued : Valued K ℝ≥0 :=
       rw [Metric.mem_nhds_iff]
       constructor
       · intro ⟨ε, hε, hU⟩
-        rcases isTriviallyValued h ε with (H | ⟨x, hpos, h_lt⟩)
+        rcases isTriviallyValued_or_exists h hε with (H | ⟨x, hpos, h_lt⟩)
         · use 1, one_mem _
           intro x hx
           simp only [Units.val_one, mem_setOf_eq] at hx

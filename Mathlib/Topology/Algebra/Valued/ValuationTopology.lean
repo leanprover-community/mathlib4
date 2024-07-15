@@ -39,7 +39,7 @@ instance {M : Type*} [Monoid M] {r : M → M → Prop}
   rintro ⟨m, _⟩ ⟨n₁, _⟩ ⟨n₂, _⟩
   simpa only [Submonoid.mk_mul_mk] using CovariantClass.elim m ⟩
 
-def foo {M : Type*} [Monoid M] [LT M]
+instance {M : Type*} [Monoid M] [LT M]
     [CovariantClass M M (· * ·) (· < ·)] (N : Submonoid M):
       CovariantClass N N (· * ·) (fun x y ↦ x < y) := ⟨ by
   rintro ⟨m, _⟩ ⟨n₁, _⟩ ⟨n₂, _⟩
@@ -64,7 +64,7 @@ theorem subgroups_basis :
           min_le_left, min_le_right]
     mul := by
       rintro γ
-      letI := @foo Γ₀ˣ _ _ _ v.rangeGroup.toSubmonoid
+      -- letI := @foo Γ₀ˣ _ _ _ v.rangeGroup.toSubmonoid
       cases' exists_square_le γ with γ₀ h
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
