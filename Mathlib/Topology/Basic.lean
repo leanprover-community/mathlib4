@@ -668,6 +668,12 @@ theorem dense_compl_singleton_iff_not_open :
     exact ho hU
 #align dense_compl_singleton_iff_not_open dense_compl_singleton_iff_not_open
 
+theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
+    s ⊆ interior (closure s) := s_open.subset_interior_iff.mpr subset_closure
+
+theorem IsClosed.closure_interior_subset {s : Set X} (s_closed : IsClosed s) :
+    closure (interior s) ⊆ s := s_closed.closure_subset_iff.mpr interior_subset
+
 /-!
 ### Frontier of a set
 -/
@@ -701,8 +707,10 @@ theorem frontier_subset_closure : frontier s ⊆ closure s :=
   diff_subset
 #align frontier_subset_closure frontier_subset_closure
 
-theorem IsClosed.frontier_subset (hs : IsClosed s) : frontier s ⊆ s :=
-  frontier_subset_closure.trans hs.closure_eq.subset
+theorem frontier_subset_iff_isClosed : frontier s ⊆ s ↔ IsClosed s := by
+  rw [frontier, diff_subset_iff, union_eq_right.mpr interior_subset, closure_subset_iff_isClosed]
+
+alias ⟨_, IsClosed.frontier_subset⟩ := frontier_subset_iff_isClosed
 #align is_closed.frontier_subset IsClosed.frontier_subset
 
 theorem frontier_closure_subset : frontier (closure s) ⊆ frontier s :=
@@ -751,6 +759,10 @@ theorem IsOpen.frontier_eq (hs : IsOpen s) : frontier s = closure s \ s := by
 theorem IsOpen.inter_frontier_eq (hs : IsOpen s) : s ∩ frontier s = ∅ := by
   rw [hs.frontier_eq, inter_diff_self]
 #align is_open.inter_frontier_eq IsOpen.inter_frontier_eq
+
+theorem disjoint_frontier_iff_isOpen : Disjoint (frontier s) s ↔ IsOpen s := by
+  rw [← isClosed_compl_iff, ← frontier_subset_iff_isClosed,
+    frontier_compl, subset_compl_iff_disjoint_right]
 
 /-- The frontier of a set is closed. -/
 theorem isClosed_frontier : IsClosed (frontier s) := by
@@ -1805,8 +1817,12 @@ theorem DenseRange.closure_range (h : DenseRange f) : closure (range f) = univ :
   h.closure_eq
 #align dense_range.closure_range DenseRange.closure_range
 
-theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) := by
-  simpa only [DenseRange, Subtype.range_coe_subtype]
+@[simp]
+lemma denseRange_subtype_val {p : X → Prop} : DenseRange (@Subtype.val _ p) ↔ Dense {x | p x} := by
+  simp [DenseRange]
+
+theorem Dense.denseRange_val (h : Dense s) : DenseRange ((↑) : s → X) :=
+  denseRange_subtype_val.2 h
 #align dense.dense_range_coe Dense.denseRange_val
 
 theorem Continuous.range_subset_closure_image_dense {f : X → Y} (hf : Continuous f)
