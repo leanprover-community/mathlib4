@@ -320,15 +320,8 @@ lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b
 theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := rfl
 #align nat.bodd_div2_eq Nat.boddDiv2_eq
 
--- simp can prove this
-theorem bodd_bit0 (n) : bodd (2 * n) = false :=
-  bodd_bit false n
-#align nat.bodd_bit0 Nat.bodd_bit0
-
-@[simp]
-theorem bodd_bit1 (n) : bodd (2 * n + 1) = true :=
-  bodd_bit true n
-#align nat.bodd_bit1 Nat.bodd_bit1
+#noalign nat.bodd_bit0
+#noalign nat.bodd_bit1
 
 @[simp]
 theorem div2_bit0 (n) : div2 (2 * n) = n :=
