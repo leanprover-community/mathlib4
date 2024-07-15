@@ -697,7 +697,7 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
     obtain ⟨a, ⟨ha, hb⟩⟩ := hw
     rw [← hb.2]
     exact ha (eigenspace (Subtype.restrict (fun x ↦ ¬i = x) T ⟨j, hj⟩) (γ ⟨j, hj⟩)) j hj rfl
-  · have B := inf_restrict'' T hT hC i γ
+  · have B := inf_restrict''' T hT hC i γ
     --Submodule.comap_subtype_eq_top
     simp only [Submodule.mem_iInf, Subtype.forall, Submodule.mem_mk, AddSubmonoid.mem_mk,
       AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
@@ -710,7 +710,11 @@ theorem prelim_sub_exhaust (i : n) [Nontrivial n] (γ : {x // i ≠ x} → 𝕜)
       exact J
     obtain ⟨j, hj⟩ := L
     have LQ := h j hj
-
+    simp only [ne_eq, ultra_silly_lemma, Submodule.map_iSup, Submodule.map_top,
+      Submodule.range_subtype] at B
+    have RR : (⨆ μ : 𝕜, Submodule.map (⨅ (j : {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
+        (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)) ≤ F := by
+      simp only [ne_eq, ultra_silly_lemma, iSup_le_iff, hH1, implies_true]
     sorry
 
 theorem index_post_exhaust (i : n) [Nontrivial n] :
