@@ -259,15 +259,11 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 #align nat.binary_rec_eq Nat.binaryRec_eq
 #noalign nat.bitwise_bit_aux
 
-/-! ### `boddDiv2_eq` and `bodd` -/
-
-
-#noalign nat.bodd_bit0 Nat.bodd_bit0
-#noalign nat.div2_bit0 Nat.div2_bit0
-#noalign nat.div2_bit1 Nat.div2_bit1
-
 /-! ### `bit0` and `bit1` -/
 
+#noalign nat.bodd_bit0
+#noalign nat.div2_bit0
+#noalign nat.div2_bit1
 #noalign nat.bit0_eq_bit0
 #noalign nat.bit1_eq_bit1
 #noalign nat.bit1_eq_one
@@ -283,8 +279,8 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
   | false, _, _ => by dsimp [bit]; omega
 #align nat.bit_add' Nat.bit_add'
 
-theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> [exact Nat.bit0_ne_zero h; exact Nat.bit1_ne_zero _]
+theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 :=
+  bit_eq_zero_iff.not.mpr (h ·.1)
 #align nat.bit_ne_zero Nat.bit_ne_zero
 
 theorem bit0_mod_two : 2 * n % 2 = 0 := by
@@ -307,13 +303,13 @@ theorem pos_of_bit0_pos {n : ℕ} (h : 0 < 2 * n) : 0 < n := by
 
 @[simp]
 theorem bitCasesOn_bit0 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
-    bitCasesOn (2 * n) H = H false n :=
+    bitCasesOn (bit false n) H = H false n :=
   bitCasesOn_bit H false n
 #align nat.bit_cases_on_bit0 Nat.bitCasesOn_bit0
 
 @[simp]
 theorem bitCasesOn_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ) :
-    bitCasesOn (2 * n + 1) H = H true n :=
+    bitCasesOn (bit true n) H = H true n :=
   bitCasesOn_bit H true n
 #align nat.bit_cases_on_bit1 Nat.bitCasesOn_bit1
 

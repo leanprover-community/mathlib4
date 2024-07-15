@@ -23,18 +23,18 @@ namespace Nat
 /-- `bit b` appends the digit `b` to the little end of the binary representation of
   its natural number input. -/
 def bit (b : Bool) (n : Nat) : Nat :=
-  cond b (n + n + 1) (n + n)
+  cond b (n <<< 1 + 1) (n <<< 1)
 
 theorem shiftRight_one (n) : n >>> 1 = n / 2 := rfl
 
 theorem bit_testBit_zero_shiftRight_one (n : Nat) : bit (n.testBit 0) (n >>> 1) = n := by
   simp only [bit, testBit_zero]
   cases mod_two_eq_zero_or_one n with | _ h =>
-    simpa [h, shiftRight_one] using Eq.trans (by simp [h, Nat.two_mul]) (Nat.div_add_mod n 2)
+    simpa [h, shiftRight_one] using Eq.trans (by simp [h, Nat.shiftLeft_succ]) (Nat.div_add_mod n 2)
 
 @[simp]
 theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = false := by
-  cases n <;> cases b <;> simp [bit, ← Nat.add_assoc]
+  cases n <;> cases b <;> simp [bit, Nat.shiftLeft_succ, Nat.two_mul, ← Nat.add_assoc]
 
 /-- For a predicate `C : Nat → Sort u`, if instances can be
   constructed for natural numbers of the form `bit b n`,
@@ -83,10 +83,7 @@ def binaryRecFromOne {C : Nat → Sort u} (z₀ : C 0) (z₁ : C 1)
     else f b n h' ih
 
 theorem bit_val (b n) : bit b n = 2 * n + b.toNat := by
-  rw [Nat.mul_comm]
-  induction b with
-  | false => exact congrArg (· + n) n.zero_add.symm
-  | true => exact congrArg (· + n + 1) n.zero_add.symm
+  cases b <;> rfl
 
 @[simp]
 theorem bit_div_two (b n) : bit b n / 2 = n := by
