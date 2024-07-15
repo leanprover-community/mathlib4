@@ -387,8 +387,7 @@ theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderT
   by_cases hrx : r • x = 0
   · rw [hrx, orderTop_zero]
     exact not_top_lt
-  · have hx : x ≠ 0 := right_ne_zero_of_smul hrx
-    simp [orderTop_of_ne hx, orderTop_of_ne hrx]
+  · simp only [orderTop_of_ne hrx, orderTop_of_ne <| right_ne_zero_of_smul hrx, WithTop.coe_lt_coe]
     exact Set.IsWF.min_of_subset_not_lt_min
       (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
@@ -399,7 +398,8 @@ theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x �
   exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
 theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
-    x.order ≤ (r • x).order := le_of_not_lt (order_smul_not_lt r x h)
+    x.order ≤ (r • x).order :=
+  le_of_not_lt (order_smul_not_lt r x h)
 
 end SMulZeroClass
 

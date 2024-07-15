@@ -95,8 +95,12 @@ def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
 
 namespace HahnModule
 
+section
+
+variable [PartialOrder Γ] [Zero V] [SMul R V]
+
 /-- The casting function to the type synonym. -/
-def of {Γ : Type*} (R : Type*) {V : Type*} [PartialOrder Γ] [Zero V] [SMul R V] :
+def of (R : Type*) [SMul R V] :
     HahnSeries Γ V ≃ HahnModule Γ R V := Equiv.refl _
 
 /-- Recursion principle to reduce a result about the synonym to the original type. -/
@@ -114,11 +118,13 @@ theorem ext_iff [PartialOrder Γ] [Zero V] [SMul R V]
     (x y : HahnModule Γ R V) : ((of R).symm x).coeff = ((of R).symm y).coeff ↔ x = y := by
   simp_all only [HahnSeries.coeff_inj, EmbeddingLike.apply_eq_iff_eq]
 
+end
+
 section SMul
 
-variable [AddCommMonoid V] [SMul R V]
+section
 
-variable [PartialOrder Γ]
+variable [PartialOrder Γ] [AddCommMonoid V] [SMul R V]
 
 instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
@@ -136,6 +142,8 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 instance instBaseMod {V} [Semiring R] [AddCommMonoid V] [Module R V] :
     Module R (HahnModule Γ R V) :=
   inferInstanceAs <| Module R (HahnSeries Γ V)
+
+end
 
 variable [PartialOrder Γ'] [VAdd Γ Γ'] [MonoVAddReflectLE Γ Γ']
 
@@ -165,10 +173,12 @@ end SMul
 
 section SMulZeroClass
 
+section
+
 variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [MonoVAddReflectLE Γ Γ'] [Zero R]
   [AddCommMonoid V]
 
-instance instRSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
+instance instBaseSMulZeroClass [PartialOrder Γ] [SMulZeroClass R V] :
     SMulZeroClass R (HahnModule Γ R V) :=
   inferInstanceAs <| SMulZeroClass R (HahnSeries Γ V)
 

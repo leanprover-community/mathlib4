@@ -274,23 +274,25 @@ section Monoid
 variable [Monoid M]
 
 @[to_additive bit0_nsmul]
-lemma pow_bit0 (a : M) (n : ℕ) : a ^ bit0 n = a ^ n * a ^ n := pow_add _ _ _
+lemma pow_bit0 (a : M) (n : ℕ) : a ^ (2 * n) = a ^ n * a ^ n := by
+  rw [Nat.two_mul]
+  exact pow_add _ _ _
 #align pow_bit0 pow_bit0
 #align bit0_nsmul bit0_nsmul
 
 @[to_additive bit1_nsmul]
-lemma pow_bit1 (a : M) (n : ℕ) : a ^ bit1 n = a ^ n * a ^ n * a := by rw [bit1, pow_succ, pow_bit0]
+lemma pow_bit1 (a : M) (n : ℕ) : a ^ (2 * n + 1) = a ^ n * a ^ n * a := by rw [pow_succ, pow_bit0]
 #align pow_bit1 pow_bit1
 #align bit1_nsmul bit1_nsmul
 
 @[to_additive bit0_nsmul']
-lemma pow_bit0' (a : M) (n : ℕ) : a ^ bit0 n = (a * a) ^ n := by
+lemma pow_bit0' (a : M) (n : ℕ) : a ^ (2 * n) = (a * a) ^ n := by
   rw [pow_bit0, (Commute.refl a).mul_pow]
 #align pow_bit0' pow_bit0'
 #align bit0_nsmul' bit0_nsmul'
 
 @[to_additive bit1_nsmul']
-lemma pow_bit1' (a : M) (n : ℕ) : a ^ bit1 n = (a * a) ^ n * a := by rw [bit1, pow_succ, pow_bit0']
+lemma pow_bit1' (a : M) (n : ℕ) : a ^ (2 * n + 1) = (a * a) ^ n * a := by rw [pow_succ, pow_bit0']
 #align pow_bit1' pow_bit1'
 #align bit1_nsmul' bit1_nsmul'
 

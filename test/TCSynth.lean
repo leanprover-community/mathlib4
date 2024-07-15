@@ -42,7 +42,6 @@ section
 
 /-- info: NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring -/
 #guard_msgs in
-set_option synthInstance.maxHeartbeats 6000 in
 variable {A : Type} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A]
   [CstarRing A] [StarModule ℂ A] (x : A) in
 #synth NonUnitalNonAssocSemiring (elementalStarAlgebra ℂ x)
