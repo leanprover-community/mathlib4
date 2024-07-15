@@ -72,8 +72,7 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
 
 lemma IsSelfAdjoint.coe_mem_spectrum_complex {a : A} {x : ℝ} (ha : IsSelfAdjoint a := by cfc_tac) :
     (x : ℂ) ∈ spectrum ℂ a ↔ x ∈ spectrum ℝ a := by
-  have hsr : SpectrumRestricts a Complex.reCLM := ha.spectrumRestricts
-  simp [← hsr.algebraMap_image]
+  simp [← ha.spectrumRestricts.algebraMap_image]
 
 lemma coe_mem_spectrum_real_of_nonneg {a : A} {x : ℝ≥0} (ha : 0 ≤ a := by cfc_tac) :
     (x : ℝ) ∈ spectrum ℝ a ↔ x ∈ spectrum ℝ≥0 a := by
