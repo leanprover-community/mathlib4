@@ -137,55 +137,26 @@ lemma CstarRing.nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤
   rw [← coe_mem_spectrum_real_of_nonneg ha, coe_nnnorm]
   exact norm_mem_spectrum_of_nonneg ha
 
-/-- Note that this is an auxiliary lemma used to prove the more general statement
-`norm_le_norm_of_nonneg_of_le` which also holds in the non-unital case. -/
-lemma CstarRing.norm_le_norm_of_nonneg_of_le_unital [Nontrivial A] {a b : A} (ha : 0 ≤ a)
-    (hab : a ≤ b) : ‖a‖ ≤ ‖b‖ := by
-  have ha' : IsSelfAdjoint a := IsSelfAdjoint.of_nonneg ha
-  have hb : IsSelfAdjoint b := IsSelfAdjoint.of_nonneg <| ha.trans hab
-  have hb_nonneg : 0 ≤ b := ha.trans hab
-  have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
-    calc _ = a := by rw [cfc_id ℝ a ha']
-      _ ≤ b := hab
-      _ = cfc id b := (cfc_id ℝ b hb).symm
-      _ ≤ cfc (fun _ => ‖b‖) b := by
-          refine cfc_mono fun x hx => ?_
-          calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb_nonneg hx)).symm
-            _ ≤ ‖b‖ := spectrum.norm_le_norm_of_mem hx
-      _ = algebraMap ℝ A ‖b‖ := by rw [cfc_const _ _ hb]
-      _ = _ := by rw [cfc_const _ _]
-  rw [cfc_le_iff id (fun _ => ‖b‖) a (by fun_prop) (by fun_prop) ha'] at h₂
-  exact h₂ ‖a‖ <| norm_mem_spectrum_of_nonneg ha
-
-/-- Note that this is an auxiliary lemma used to prove the more general statement
-`conjugate_le_norm_mul` which also holds in the non-unital case. -/
-lemma CstarRing.conjugate_le_norm_mul_unital [Nontrivial A] {a b : A} (hb : IsSelfAdjoint b) :
-    star a * b * a ≤ ‖b‖ • (star a * a) := by
-  calc star a * b * a ≤ star a * (algebraMap ℝ A ‖b‖) * a := by
-        refine conjugate_le_conjugate ?_ _
-        refine le_algebraMap_of_spectrum_le fun x hx => ?_
-        calc x ≤ ‖x‖ := by exact Real.le_norm_self x
-          _ ≤ ‖b‖ := by exact spectrum.norm_le_norm_of_mem hx
-    _ = ‖b‖ • (star a * a) := by simp [Algebra.algebraMap_eq_smul_one]
-
 end Cstar_unital
 
 section Cstar_nonunital
 
-variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [Nontrivial A]
-  [PartialOrder A] [StarRing A] [StarOrderedRing A] [CstarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
+variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [PartialOrder A] [StarRing A]
+  [StarOrderedRing A] [CstarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
   [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 
 lemma CstarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : Unitization ℂ A, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
     have hb := ha.trans hab
-    simpa [Unitization.norm_inr] using this a b (by simpa) (by rwa [Unitization.inr_le_iff a b])
+    simpa only [ge_iff_le, Unitization.norm_inr] using
+      this a b (by simpa) (by rwa [Unitization.inr_le_iff a b])
   intro a b ha hab
   have hb_nonneg : 0 ≤ b := ha.trans hab
-  have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
+  have : 0 ≤ a := by cfc_tac
+  have h₂ : cfc (p := (IsSelfAdjoint : Unitization ℂ A → Prop)) (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
     calc _ = a := by rw [cfc_id ℝ a]
-      _ ≤ cfc id b := (cfc_id ℝ b) ▸ hab
+      _ ≤ cfc (p := (IsSelfAdjoint : Unitization ℂ A → Prop)) id b := (cfc_id ℝ b) ▸ hab
       _ ≤ cfc (fun _ => ‖b‖) b := by
           refine cfc_mono fun x hx => ?_
           calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb_nonneg hx)).symm
