@@ -109,8 +109,7 @@ protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
   obtain ⟨s, hμs, hsm, hfs, hgs⟩ :
       ∃ s ∈ μ.cofinite, MeasurableSet s ∧
         (∀ i, snorm (s.indicator (f i)) p μ ≤ η.toNNReal) ∧
-        (∀ i, snorm (s.indicator (g i)) p μ ≤ η.toNNReal)
-    :=
+        (∀ i, snorm (s.indicator (g i)) p μ ≤ η.toNNReal) :=
     ((hf.eventually_cofinite_indicator nnη_nz).and
       (hg.eventually_cofinite_indicator nnη_nz)).exists_measurable_mem_of_smallSets
   refine ⟨sᶜ, ne_of_lt hμs, fun i ↦ ?_⟩
