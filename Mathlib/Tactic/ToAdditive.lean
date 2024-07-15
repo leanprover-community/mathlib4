@@ -815,8 +815,8 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
     addInstance tgt attr_kind prio |>.run'
 
 /-- Warn the user when the multiplicative declaration has an attribute. -/
-def warnExt {σ α β : Type} [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ) (f : σ → Name → Bool)
-    (thisAttr attrName src tgt : Name) : CoreM Unit := do
+def warnExt {σ α β : Type} [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ)
+    (f : σ → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit := do
   if f (ext.getState (← getEnv)) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
       m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. \

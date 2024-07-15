@@ -2206,6 +2206,7 @@ import Mathlib.Data.NNRat.Defs
 import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Data.NNReal.Star
+import Mathlib.Data.Nat.BitIndices
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Cast.Basic
@@ -2832,6 +2833,7 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.FinsuppVectorSpace

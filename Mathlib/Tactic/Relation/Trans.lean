@@ -50,6 +50,7 @@ initialize registerBuiltinAttribute {
 }
 
 universe u v in
+universe u v in
 /-- Composition using the `Trans` class in the homogeneous case. -/
 def _root_.Trans.simple {α : Sort u} {r : α → α → Sort v} {a b c : α} [Trans r r r] :
     r a b → r b c → r a c := trans
