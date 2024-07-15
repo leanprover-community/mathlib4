@@ -316,9 +316,14 @@ theorem Set.exists_insert_of_not_maximal (hP : ∀ ⦃s t⦄, P t → s ⊆ t �
     (h : ¬ Maximal P s) : ∃ x ∉ s, P (insert x s) := by
   simpa [Set.maximal_iff_forall_insert hP, hs] using h
 
-
 /- TODO : generalize `minimal_iff_forall_diff_singleton` and `maximal_iff_forall_insert`
 to `StronglyAtomic` orders. -/
+
+theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x ∈ s :=
+  h.eq_of_subset hx (subset_insert _ _) ▸ mem_insert ..
+
+theorem Minimal.not_mem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
+  fun hxs ↦ ((h.eq_of_subset hx diff_subset).subset hxs).2 rfl
 
 end Subset
 
