@@ -371,7 +371,6 @@ def invOne : 1⁻¹ ≡r 1 := by
   exact inv'One
 #align pgame.inv_one SetTheory.PGame.invOne
 
-
 end PGame
 
 end SetTheory
