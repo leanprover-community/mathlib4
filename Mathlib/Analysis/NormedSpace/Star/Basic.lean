@@ -153,8 +153,7 @@ theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne, mul_star_self_eq_zero_iff]
 #align cstar_ring.mul_star_self_ne_zero_iff CstarRing.mul_star_self_ne_zero_iff
 
-theorem norm_eq_sSup_norm_mul [Module ℝ E] [SMulCommClass ℝ E E] [IsScalarTower ℝ E E]
-    [BoundedSMul ℝ E] (x : E) :
+theorem norm_eq_sSup_norm_mul [Module ℝ E] [IsScalarTower ℝ E E] [BoundedSMul ℝ E] (x : E) :
     ‖x‖ = sSup { c | ∃ y, c = ‖y * x‖ ∧ ‖y‖ ≤ 1 } := by
   let x' := ‖x⋆‖⁻¹ • x⋆
   have h₁ : ‖x‖ = ‖x' * x‖ := by
