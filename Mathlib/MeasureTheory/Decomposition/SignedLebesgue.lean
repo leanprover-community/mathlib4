@@ -309,7 +309,7 @@ private theorem eq_singularPart' (t : SignedMeasure α) {f : α → ℝ} (hf : M
     JordanDecomposition.toSignedMeasure]
   congr
   -- NB: `measurability` proves this `have`, but is slow.
-  -- XXX: fun_prop doesn't work yet...
+  -- TODO: make `fun_prop` able to handle this
   · have hfpos : Measurable fun x => ENNReal.ofReal (f x) := hf.real_toNNReal.coe_nnreal_ennreal
     refine eq_singularPart hfpos htμ.1 ?_
     rw [toJordanDecomposition_eq_of_eq_add_withDensity hf hfi htμ' hadd]
