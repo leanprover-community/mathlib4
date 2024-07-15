@@ -215,19 +215,14 @@ section deprecated
 
 set_option linter.deprecated false
 
-@[deprecated (since := "2023-01-02")]
-theorem bit0_val (n : ℤ) : 2 * n = 2 * n := rfl
-#align int.bit0_val Int.bit0_val
+#noalign int.bit0_val
 
-@[deprecated (since := "2023-01-02")]
-theorem bit1_val (n : ℤ) : 2 * n + 1 = 2 * n + 1 :=
-  congr_arg (· + (1 : ℤ)) (bit0_val _)
-#align int.bit1_val Int.bit1_val
+#noalign int.bit1_val
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  · apply (bit0_val n).trans (add_zero _).symm
-  · apply bit1_val
+  · apply (add_zero _).symm
+  · rfl
 #align int.bit_val Int.bit_val
 
 theorem bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
@@ -264,29 +259,11 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
   cases b <;> cases bodd n <;> simp [(show bodd 2 = false by rfl)]
 #align int.bodd_bit Int.bodd_bit
 
-@[simp, deprecated (since := "2023-01-02")]
-theorem bodd_bit0 (n : ℤ) : bodd (2 * n) = false :=
-  bodd_bit false n
-#align int.bodd_bit0 Int.bodd_bit0
-
-@[simp, deprecated (since := "2023-01-02")]
-theorem bodd_bit1 (n : ℤ) : bodd (2 * n + 1) = true :=
-  bodd_bit true n
-#align int.bodd_bit1 Int.bodd_bit1
-
-@[deprecated (since := "2023-01-02")]
-theorem bit0_ne_bit1 (m n : ℤ) : 2 * m ≠ 2 * n + 1 :=
-  mt (congr_arg bodd) <| by simp [← Bool.not_and]; rfl
-#align int.bit0_ne_bit1 Int.bit0_ne_bit1
-
-@[deprecated (since := "2023-01-02")]
-theorem bit1_ne_bit0 (m n : ℤ) : 2 * m + 1 ≠ 2 * n :=
-  (bit0_ne_bit1 _ _).symm
-#align int.bit1_ne_bit0 Int.bit1_ne_bit0
-
-@[deprecated (since := "2023-01-02")]
-theorem bit1_ne_zero (m : ℤ) : 2 * m + 1 ≠ 0 := by simpa using bit1_ne_bit0 m 0
-#align int.bit1_ne_zero Int.bit1_ne_zero
+#noalign int.bodd_bit0
+#noalign int.bodd_bit1
+#noalign int.bit0_ne_bit1
+#noalign int.bit1_ne_bit0
+#noalign int.bit1_ne_zero
 
 end deprecated
 

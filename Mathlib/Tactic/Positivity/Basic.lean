@@ -263,7 +263,6 @@ def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   _ ← synthInstanceQ (q(Nontrivial $α) : Q(Prop))
   pure (.positive (q(pow_zero_pos $a) : Expr))
 
-set_option linter.deprecated false in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity (_ : α) ^ (_ : ℕ)]
@@ -278,7 +277,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
     haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
-    pure (.nonnegative q(pow_bit0_nonneg $a $m))
+    pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do

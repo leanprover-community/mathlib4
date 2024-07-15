@@ -138,16 +138,11 @@ lemma div2_val (n) : div2 n = n / 2 := by
 def bit (b : Bool) : ℕ → ℕ := cond b (2 * · + 1) (2 * ·)
 #align nat.bit Nat.bit
 
-lemma bit0_val (n : Nat) : 2 * n = 2 * n := rfl
-#align nat.bit0_val Nat.bit0_val
-
-lemma bit1_val (n : Nat) : 2 * n + 1 = 2 * n + 1 := rfl
-#align nat.bit1_val Nat.bit1_val
+#noalign nat.bit0_val
+#noalign nat.bit1_val
 
 lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
-  cases b
-  · apply bit0_val
-  · apply bit1_val
+  cases b <;> rfl
 #align nat.bit_val Nat.bit_val
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
@@ -325,52 +320,25 @@ lemma binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b
 theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := rfl
 #align nat.bodd_div2_eq Nat.boddDiv2_eq
 
-@[simp]
-theorem bodd_bit0 (n) : bodd (2 * n) = false :=
-  bodd_bit false n
-#align nat.bodd_bit0 Nat.bodd_bit0
-
-@[simp]
-theorem bodd_bit1 (n) : bodd (2 * n + 1) = true :=
-  bodd_bit true n
-#align nat.bodd_bit1 Nat.bodd_bit1
+#noalign nat.bodd_bit0
+#noalign nat.bodd_bit1
 
 @[simp]
 theorem div2_bit0 (n) : div2 (2 * n) = n :=
   div2_bit false n
 #align nat.div2_bit0 Nat.div2_bit0
 
-@[simp]
+-- simp can prove this
 theorem div2_bit1 (n) : div2 (2 * n + 1) = n :=
   div2_bit true n
 #align nat.div2_bit1 Nat.div2_bit1
 
 /-! ### `bit0` and `bit1` -/
 
--- There is no need to prove `bit0_eq_zero : bit0 n = 0 ↔ n = 0`
--- as this is true for any `[Semiring R] [NoZeroDivisors R] [CharZero R]`
--- However the lemmas `bit0_eq_bit0`, `bit1_eq_bit1`, `bit1_eq_one`, `one_eq_bit1`
--- need `[Ring R] [NoZeroDivisors R] [CharZero R]` in general,
--- so we prove `ℕ` specialized versions here.
-@[simp]
-theorem bit0_eq_bit0 {m n : ℕ} : 2 * m = 2 * n ↔ m = n :=
-  ⟨Nat.bit0_inj, fun h => by subst h; rfl⟩
-#align nat.bit0_eq_bit0 Nat.bit0_eq_bit0
-
-@[simp]
-theorem bit1_eq_bit1 {m n : ℕ} : 2 * m + 1 = 2 * n + 1 ↔ m = n :=
-  ⟨Nat.bit1_inj, fun h => by subst h; rfl⟩
-#align nat.bit1_eq_bit1 Nat.bit1_eq_bit1
-
-@[simp]
-theorem bit1_eq_one {n : ℕ} : 2 * n + 1 = 1 ↔ n = 0 :=
-  ⟨@Nat.bit1_inj n 0, fun h => by subst h; rfl⟩
-#align nat.bit1_eq_one Nat.bit1_eq_one
-
-@[simp]
-theorem one_eq_bit1 {n : ℕ} : 1 = 2 * n + 1 ↔ n = 0 :=
-  ⟨fun h => (@Nat.bit1_inj 0 n h).symm, fun h => by subst h; rfl⟩
-#align nat.one_eq_bit1 Nat.one_eq_bit1
+#noalign nat.bit0_eq_bit0
+#noalign nat.bit1_eq_bit1
+#noalign nat.bit1_eq_one
+#noalign nat.one_eq_bit1
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
   | true,  _, _ => by dsimp [bit]; omega

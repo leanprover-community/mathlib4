@@ -657,16 +657,8 @@ theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
     p n
 #align polynomial.pow_comp Polynomial.pow_comp
 
-set_option linter.deprecated false in
-@[simp]
-theorem bit0_comp : comp (2 * p : R[X]) q = 2 * (p.comp q) := by simp only [two_mul, add_comp]
-#align polynomial.bit0_comp Polynomial.bit0_comp
-
-set_option linter.deprecated false in
-@[simp]
-theorem bit1_comp : comp (2 * p + 1 : R[X]) q = 2 * (p.comp q) + 1 := by
-  simp only [add_comp, bit0_comp, one_comp]
-#align polynomial.bit1_comp Polynomial.bit1_comp
+#noalign polynomial.bit0_comp
+#noalign polynomial.bit1_comp
 
 @[simp]
 theorem smul_comp [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S) (p q : R[X]) :

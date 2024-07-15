@@ -87,9 +87,7 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
   simp [eq_comm, two_mul, Even]
 #align range_two_mul range_two_mul
 
-set_option linter.deprecated false in
-@[simp] lemma even_bit0 (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
-#align even_bit0 even_bit0
+#noalign even_bit0
 
 @[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
 #align even_two even_two
@@ -118,9 +116,7 @@ lemma odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = 2 * b + 1 := exists_congr fun b
 alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
 #align odd.exists_bit1 Odd.exists_bit1
 
-set_option linter.deprecated false in
-@[simp] lemma odd_bit1 (a : α) : Odd (2 * a + 1) := odd_iff_exists_bit1.2 ⟨a, rfl⟩
-#align odd_bit1 odd_bit1
+#noalign odd_bit1
 
 @[simp] lemma range_two_mul_add_one (α : Type*) [Semiring α] :
     Set.range (fun x : α ↦ 2 * x + 1) = {a | Odd a} := by ext x; simp [Odd, eq_comm]
@@ -376,42 +372,14 @@ lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
 #align nat.one_add_div_two_mul_two_of_odd Nat.one_add_div_two_mul_two_of_odd
 
-set_option linter.deprecated false in
 section
 
-lemma bit0_div_two : 2 * n / 2 = n := Nat.bit0_inj $ by
-  rw [bit0_eq_two_mul, two_mul_div_two_of_even (even_bit0 n)]
-#align nat.bit0_div_two Nat.bit0_div_two
-
-lemma bit1_div_two : (2 * n + 1) / 2 = n := Nat.bit1_inj $ by
-  rw [bit0_eq_two_mul, Nat.two_mul_div_two_add_one_of_odd (odd_bit1 n)]
-#align nat.bit1_div_two Nat.bit1_div_two
-
-@[simp]
-lemma bit0_div_bit0 : 2 * n / (2 * m) = n / m := by
-  rw [bit0_eq_two_mul m, ← Nat.div_div_eq_div_mul, bit0_div_two]
-#align nat.bit0_div_bit0 Nat.bit0_div_bit0
-
-@[simp]
-lemma bit1_div_bit0 : (2 * n + 1) / (2 * m) = n / m := by
-  rw [bit0_eq_two_mul, ← Nat.div_div_eq_div_mul, bit1_div_two]
-#align nat.bit1_div_bit0 Nat.bit1_div_bit0
-
-@[simp]
-lemma bit0_mod_bit0 : (2 * n) % (2 * m) = 2 * (n % m) := by
-  rw [bit0_eq_two_mul n, bit0_eq_two_mul m, bit0_eq_two_mul (n % m), Nat.mul_mod_mul_left]
-#align nat.bit0_mod_bit0 Nat.bit0_mod_bit0
-
-@[simp]
-lemma bit1_mod_bit0 : (2 * n + 1) % (2 * m) = 2 * (n % m) + 1 := by
-  have h₁ := congr_arg (2 * · + 1) (Nat.div_add_mod n m)
-  -- `∀ m n : ℕ, bit0 m * n = bit0 (m * n)` seems to be missing...
-  dsimp at h₁
-  rw [mul_add, add_assoc, ← mul_assoc] at h₁
-  have h₂ := Nat.div_add_mod (2 * n + 1) (2 * m)
-  rw [bit1_div_bit0] at h₂
-  exact Nat.add_left_cancel (h₂.trans h₁.symm)
-#align nat.bit1_mod_bit0 Nat.bit1_mod_bit0
+#noalign nat.bit0_div_two
+#noalign nat.bit1_div_two
+#noalign nat.bit0_div_bit0
+#noalign nat.bit1_div_bit0
+#noalign nat.bit0_mod_bit0
+#noalign nat.bit1_mod_bit0
 
 end
 
