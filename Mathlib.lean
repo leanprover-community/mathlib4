@@ -733,6 +733,7 @@ import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.Free
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.Algebra.Star.NonUnitalSubsemiring
 import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Pointwise
@@ -743,6 +744,7 @@ import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.Algebra.Star.Subsemiring
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Algebra.Symmetrized
 import Mathlib.Algebra.TrivSqZeroExt
