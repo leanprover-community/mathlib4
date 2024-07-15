@@ -20,7 +20,7 @@ In this file we define `∫ x in a..b, f x ∂μ` to be `∫ x in Ioc a b, f x �
 ### Avoiding `if`, `min`, and `max`
 
 In order to avoid `if`s in the definition, we define `IntervalIntegrable f μ a b` as
-`integrable_on f (Ioc a b) μ ∧ integrable_on f (Ioc b a) μ`. For any `a`, `b` one of these
+`IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ`. For any `a`, `b` one of these
 intervals is empty and the other coincides with `Set.uIoc a b = Set.Ioc (min a b) (max a b)`.
 
 Similarly, we define `∫ x in a..b, f x ∂μ` to be `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`.
