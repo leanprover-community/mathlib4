@@ -406,7 +406,7 @@ variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
     [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul K E]
 
 theorem outCLM_uniformInducing : UniformInducing (outCLM K E) := by
-  rw [uniformInducing_mk.uniformInducing_iff, mk_comp_outCLM]
+  rw [← uniformInducing_mk.uniformInducing_comp_iff, mk_comp_outCLM]
   exact uniformInducing_id
 
 theorem outCLM_uniformEmbedding : UniformEmbedding (outCLM K E) where
