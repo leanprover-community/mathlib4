@@ -273,7 +273,8 @@ end Version2
 
 section Simultaneous
 
-variable {A B : E →ₗ[𝕜] E}  {α β : 𝕜} (hA : A.IsSymmetric) (hB : B.IsSymmetric) [FiniteDimensional 𝕜 E] (hAB : A ∘ₗ B = B ∘ₗ A)
+variable {A B : E →ₗ[𝕜] E}  {α β : 𝕜} (hA : A.IsSymmetric) (hB : B.IsSymmetric)
+     [FiniteDimensional 𝕜 E] (hAB : A ∘ₗ B = B ∘ₗ A)
 
 theorem eigenspace_invariant  (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
   intro v hv
@@ -538,6 +539,22 @@ theorem index_convert (i : n) [Nonempty n] (μ : 𝕜) (γ : {x // i ≠ x} → 
       rw [← B]
       exact hw j hj
 
+variable (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜)
+#check Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j))
+#check fun μ ↦ Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
+    (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ)
+#check (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j))
+
+/-
+theorem eigen_extend (γ : 𝕜) (x : E) : x ∈ Submodule.map (Submodule.subtype (eigenspace A α))
+    (eigenspace (B.restrict (eigenspace_invariant hAB α)) γ) → x ∈ eigenspace B γ
+-/
+
+theorem index_eigen_extend (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) (μ : 𝕜) (x : E) :
+    x ∈ Submodule.map (Submodule.subtype (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)))
+    (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) →
+    x ∈ (⨅ (j : {x // i ≠ x}), eigenspace (Subtype.restrict (fun x ↦ i ≠ x) T j) (γ j)) := by sorry
+
 theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
     ⨆ μ, Submodule.map (⨅ (j: {x // i ≠ x}), eigenspace (T ↑j) (γ j)).subtype
     (eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) μ) =
@@ -565,7 +582,7 @@ theorem prelim_sub_exhaust (i : n) [Nonempty n] (γ : {x // i ≠ x} → 𝕜) :
       AddSubsemigroup.mem_mk, Set.mem_iInter, SetLike.mem_coe]
     intro h F H
     simp only [iInf, sInf] at *
-    simp only [ne_eq, iSup, Set.range, Set.mem_setOf_eq] at B
+    --simp only [ne_eq, iSup, Set.range, Set.mem_setOf_eq] at B
     simp only [Submodule.map] at H --maybe `matching` version is needed.
 
     --have C : ↑v ∈ sSup {x | ∃ y, eigenspace ((T i).restrict ((invariance_iInf' T hC i γ))) y = x} := by sorry
