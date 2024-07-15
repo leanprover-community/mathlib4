@@ -196,18 +196,14 @@ lemma CstarRing.norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_t
 
 lemma CstarRing.conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
-  -- We use the corresponding fact for unital C⋆-algebras and apply it to the unitization
-  let a' : Unitization ℂ A := .inr a
-  let b' : Unitization ℂ A := .inr b
-  have hb' : IsSelfAdjoint b' := by exact IsSelfAdjoint.inr ℂ hb
-  have hmain : star a' * b' * a' ≤ ‖b'‖ • (star a' * a') :=
-    conjugate_le_norm_mul_unital hb' (A := Unitization ℂ A)
-  have h₁ : IsSelfAdjoint (star a * b * a) := by exact IsSelfAdjoint.conjugate' hb a
-  have h₂ : IsSelfAdjoint (‖b‖ • (star a * a)) :=
-    IsSelfAdjoint.smul (by exact rfl) (IsSelfAdjoint.star_mul_self a)
-  rw [← Unitization.inr_le_iff h₁ h₂]
-  simp only [Unitization.inr_mul, Unitization.inr_star, Unitization.inr_smul]
-  simpa only [b', Unitization.norm_inr] using hmain
+  suffices ∀ a b : Unitization ℂ A, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
+    rw [← Unitization.inr_le_iff _ _ (by aesop) ((IsSelfAdjoint.all _).smul (.star_mul_self a))]
+    simpa [Unitization.norm_inr] using this a b <| hb.inr ℂ
+  intro a b hb
+  calc
+    star a * b * a ≤ star a * (algebraMap ℝ (Unitization ℂ A) ‖b‖) * a :=
+      conjugate_le_conjugate hb.le_algebraMap_norm_self _
+    _ = ‖b‖ • (star a * a) := by simp [Algebra.algebraMap_eq_smul_one]
 
 lemma CstarRing.conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     a * b * star a ≤ ‖b‖ • (a * star a) := by
