@@ -638,16 +638,24 @@ theorem iSup_add_iSup_of_monotone {ι : Type*} [SemilatticeSup ι] {f g : ι →
   iSup_add_iSup fun i j => ⟨i ⊔ j, add_le_add (hf <| le_sup_left) (hg <| le_sup_right)⟩
 #align ennreal.supr_add_supr_of_monotone ENNReal.iSup_add_iSup_of_monotone
 
-theorem finset_sum_iSup_nat {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : α → ι → ℝ≥0∞}
-    (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n := by
-  refine Finset.induction_on s ?_ ?_
-  · simp
-  · intro a s has ih
-    simp only [Finset.sum_insert has]
-    rw [ih, iSup_add_iSup_of_monotone (hf a)]
-    intro i j h
-    exact Finset.sum_le_sum fun a _ => hf a h
-#align ennreal.finset_sum_supr_nat ENNReal.finset_sum_iSup_nat
+theorem finset_sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
+    (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
+    ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ihs =>
+    simp_rw [Finset.sum_cons, ihs]
+    refine iSup_add_iSup fun i j ↦ (hf i j).imp fun k hk ↦ ?_
+    gcongr
+    exacts [(hk a).1, (hk _).2]
+
+theorem finset_sum_iSup_of_monotone {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : α → ι → ℝ≥0∞}
+    (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
+  finset_sum_iSup fun i j ↦ ⟨i ⊔ j, fun a ↦ ⟨hf a le_sup_left, hf a le_sup_right⟩⟩
+#align ennreal.finset_sum_supr_nat ENNReal.finset_sum_iSup_of_monotone
+
+@[deprecated finset_sum_iSup_of_monotone (since := "2024-07-14")]
+alias finset_sum_iSup_nat := finset_sum_iSup_of_monotone
 
 theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
   by_cases hf : ∀ i, f i = 0
