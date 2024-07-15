@@ -234,7 +234,7 @@ instance respectsIso_of
 -/
 class IsLocal (P : AffineTargetMorphismProperty) : Prop where
   /-- `P` as a morphism property respects isomorphisms -/
-  respectsIso : P.toProperty.RespectsIso := by infer_instance
+  respectsIso : P.toProperty.RespectsIso
   /-- `P` is stable under restriction to basic open set of global sections. -/
   to_basicOpen :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (r : Γ(Y, ⊤)),

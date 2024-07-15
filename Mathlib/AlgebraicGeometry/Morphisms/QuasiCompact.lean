@@ -171,7 +171,7 @@ instance quasiCompact_isStableUnderComposition :
 
 theorem quasiCompact_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @QuasiCompact := by
-  apply HasAffineProperty.stableUnderBaseChange_mk
+  apply HasAffineProperty.stableUnderBaseChange
   intro X Y S _ _ f g h
   let 𝒰 := Scheme.Pullback.openCoverOfRight Y.affineCover.finiteSubcover f g
   have : Finite 𝒰.J := by dsimp [𝒰]; infer_instance

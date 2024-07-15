@@ -327,7 +327,7 @@ lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
     (hP₂ : (of P).StableUnderBaseChange) :
     P.StableUnderBaseChange :=
   letI := HasAffineProperty.of_isLocalAtTarget P
-  HasAffineProperty.stableUnderBaseChange_mk hP₂
+  HasAffineProperty.stableUnderBaseChange hP₂
 
 end AffineTargetMorphismProperty
 
