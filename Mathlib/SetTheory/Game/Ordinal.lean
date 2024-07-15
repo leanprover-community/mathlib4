@@ -124,10 +124,10 @@ theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 /-- `1.toPGame` has the same moves as `1`. -/
 lemma one_toPGame : toPGame.{u} 1 ≡ (1 : PGame.{u}) := by
   refine Identical.ext (fun z ↦ ?_) (fun z ↦ ?_)
-  · unfold memₗ
+  · dsimp [· ∈ₗ ·]
     simp_rw [one_toPGame_moveLeft, Unique.exists_iff]
     exact Identical.congr_right zero_toPGame
-  · unfold memᵣ
+  · dsimp [· ∈ᵣ ·]
     simp
 #align ordinal.one_to_pgame_relabelling Ordinal.one_toPGame
 
