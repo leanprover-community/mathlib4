@@ -33,32 +33,53 @@ namespace Valuation
 
 variable (v : Valuation R Γ₀)
 
+instance instCovariantClass_subgroup {G : Type*} [Group G] {r : G → G → Prop}
+    [CovariantClass G G (· * ·) r] (N : Subgroup G) :
+    CovariantClass N N (fun x y ↦ x * y) fun x y ↦ r x y := ⟨ by
+  rintro ⟨m, _⟩ ⟨n₁, _⟩ ⟨n₂, _⟩
+  simpa only [Submonoid.mk_mul_mk] using CovariantClass.elim m ⟩
+
+def instCovariantClass_submonoid {M : Type*} [Monoid M] {r : M → M → Prop}
+    [CovariantClass M M (· * ·) r] (N : Submonoid M):
+      CovariantClass N N (· * ·) (fun x y ↦ r x y) := ⟨ by
+  rintro ⟨m, _⟩ ⟨n₁, _⟩ ⟨n₂, _⟩
+  simpa only [Submonoid.mk_mul_mk] using CovariantClass.elim m ⟩
+
+example {G : Type*} [Group G] [LT G] [CovariantClass G G (· * ·) (· < ·)] (N : Subgroup G):
+      CovariantClass N N (fun x y ↦ x * y) fun x y ↦ x < y := by
+  -- exact @instCovariantClass_submonoid G _ LT.lt _ N.toSubmonoid
+  refine { elim := by exact? }
+  exact instCovariantClass_subgroup N
+
+
+example (M : Type*) [Monoid M] (N : Submonoid M) : HMul N N N := by
+  exact instHMul
+
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
-theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgroup γ : AddSubgroup R) :=
+theorem subgroups_basis :
+    RingSubgroupsBasis fun γ : v.rangeGroup => (v.ltAddSubgroup γ : AddSubgroup R) :=
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp only [ltAddSubgroup, ge_iff_le, Units.min_val, Units.val_le_val, lt_min_iff,
-        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
-        forall_const, and_true]
-      tauto
+      simp only [le_inf_iff]
+      constructor <;>
+      · intro a ha
+        apply lt_of_lt_of_le ha
+        simp only [Units.val_le_val, Subtype.coe_le_coe, SetLike.coe_sort_coe, min_le_left, min_le_right]
     mul := by
       rintro γ
       cases' exists_square_le γ with γ₀ h
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
-      calc
-        (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
-        _ < γ₀ * γ₀ := mul_lt_mul₀ r_in s_in
-        _ ≤ γ := mod_cast h
+      simp only [SetLike.mem_coe, mem_ltAddSubgroup_iff, _root_.map_mul]
+      apply lt_of_lt_of_le (mul_lt_mul₀ r_in s_in) h
     leftMul := by
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
-      · use (1 : Γ₀ˣ)
+      · use (1 : N)
         rintro y _
         change v (x * y) < _
-        rw [Valuation.map_mul, Hx, zero_mul]
-        exact Units.zero_lt γ
+        simp only [_root_.map_mul, Hx, zero_mul, Units.zero_lt]
       · use γx⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
         change (v (x * y) : Γ₀) < γ
@@ -93,7 +114,8 @@ See Note [forgetful inheritance] for why we extend `UniformSpace`, `UniformAddGr
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, UniformAddGroup R where
   v : Valuation R Γ₀
-  is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
+  is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔
+    ∃ γ ∈ Subgroup.closure (Units.val ⁻¹' range v), { x : R | v x < γ } ⊆ s
 #align valued Valued
 
 -- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
@@ -110,7 +132,9 @@ def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
       letI := @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
       intro s
       rw [Filter.hasBasis_iff.mp v.subgroups_basis.hasBasis_nhds_zero s]
-      exact exists_congr fun γ => by rw [true_and]; rfl }
+      -- exact exists_congr fun γ => by rw [true_and]; rfl
+      simp only [true_and]
+      }
 #align valued.mk' Valued.mk'
 
 variable (R Γ₀)
