@@ -141,6 +141,18 @@ instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
 
 end Decidable
 
+lemma monotone_inclusion_le_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.trans hkj⟩ : { i // i ≤ k } → { i // i ≤ j}) :=
+  fun _ _ h => h
+
+lemma monotone_inclusion_lt_le_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, hi.le.trans hkj⟩ : { i // i < k } → { i // i ≤ j}) :=
+  fun _ _ h => h
+
+lemma monotone_inclusion_lt_lt_of_le [Preorder α] {k j : α} (hkj : k ≤ j) :
+    Monotone (fun ⟨i, hi⟩ => ⟨i, lt_of_lt_of_le hi hkj⟩ : { i // i < k } → { i // i < j}) :=
+  fun _ _ h => h
+
 /-! ### Monotonicity on the dual order
 
 Strictly, many of the `*On.dual` lemmas in this section should use `ofDual ⁻¹' s` instead of `s`,
@@ -638,10 +650,10 @@ protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : �
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → f x < g y) :
     StrictMono fun x ↦ if p x then f x else g x := by
   intro x y h
-  by_cases hy:p y
+  by_cases hy : p y
   · have hx : p x := hp h hy
     simpa [hx, hy] using hf h
-  by_cases hx:p x
+  by_cases hx : p x
   · simpa [hx, hy] using hfg hx hy h
   · simpa [hx, hy] using hg h
 #align strict_mono.ite' StrictMono.ite'
@@ -1256,3 +1268,17 @@ theorem const_strictMono [Nonempty β] : StrictMono (const β : α → β → α
 #align function.const_strict_mono Function.const_strictMono
 
 end Function
+
+section apply
+variable {ι α : Type*} {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
+
+lemma monotone_iff_apply₂ : Monotone f ↔ ∀ i, Monotone (f · i) := by
+  simp [Monotone, Pi.le_def, @forall_swap ι]
+
+lemma antitone_iff_apply₂ : Antitone f ↔ ∀ i, Antitone (f · i) := by
+  simp [Antitone, Pi.le_def, @forall_swap ι]
+
+alias ⟨Monotone.apply₂, Monotone.of_apply₂⟩ := monotone_iff_apply₂
+alias ⟨Antitone.apply₂, Antitone.of_apply₂⟩ := antitone_iff_apply₂
+
+end apply

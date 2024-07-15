@@ -3,6 +3,7 @@ Copyright (c) 2021 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
@@ -147,6 +148,9 @@ instance : SMul (ConjAct G) G where smul g h := ofConjAct g * h * (ofConjAct g)�
 theorem smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAct g)⁻¹ :=
   rfl
 #align conj_act.smul_def ConjAct.smul_def
+
+theorem toConjAct_smul (g h : G) : toConjAct g • h = g * h * g⁻¹ :=
+  rfl
 
 end DivInvMonoid
 
